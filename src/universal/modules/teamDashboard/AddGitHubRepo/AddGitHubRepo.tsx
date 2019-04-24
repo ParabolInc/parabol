@@ -2,7 +2,7 @@ import ms from 'ms'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
-import RaisedButton from 'universal/components/RaisedButton'
+import SecondaryButton from 'universal/components/SecondaryButton'
 import Row from 'universal/components/Row/Row'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -11,11 +11,11 @@ import ServiceDropdownInput from 'universal/modules/integrations/components/Serv
 import AddGitHubRepoMutation from 'universal/mutations/AddGitHubRepoMutation'
 import formError from 'universal/styles/helpers/formError'
 import appTheme from 'universal/styles/theme/theme'
-import ui from 'universal/styles/ui'
 import {GITHUB_ENDPOINT} from 'universal/utils/constants'
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import {AddGitHubRepo_subbedRepos} from '__generated__/AddGitHubRepo_subbedRepos.graphql'
+import {Layout} from 'universal/types/constEnums'
 
 const StyledRow = styled(Row)({
   alignItems: 'flex-start',
@@ -39,8 +39,8 @@ const Footer = styled('div')({
   textAlign: 'right'
 })
 
-const StyledButton = styled(RaisedButton)({
-  marginLeft: ui.rowGutter,
+const StyledButton = styled(SecondaryButton)({
+  marginLeft: Layout.ROW_GUTTER,
   minWidth: '11rem',
   paddingLeft: 0,
   paddingRight: 0
@@ -270,9 +270,7 @@ class AddGitHubRepo extends Component<Props, State> {
           />
           <FooterBlock>{footerMessage}</FooterBlock>
         </DropdownAndError>
-        <StyledButton size='medium' palette='warm' onClick={this.handleAddRepo}>
-          {'Add Repo'}
-        </StyledButton>
+        <StyledButton onClick={this.handleAddRepo}>{'Add Repo'}</StyledButton>
       </StyledRow>
     )
   }

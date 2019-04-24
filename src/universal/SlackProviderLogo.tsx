@@ -1,10 +1,10 @@
 import styled from 'react-emotion'
-import slackMark from './styles/theme/images/graphics/Slack_Mark_Monochrome_White.svg'
+import slackMark from './styles/theme/images/graphics/slack-color.svg'
 
 const SlackProviderLogo = styled('div')({
   background: `url("${slackMark}")`,
-  height: 56,
-  width: 56
+  height: 48,
+  width: 48
 })
 
 export default SlackProviderLogo

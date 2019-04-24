@@ -10,6 +10,8 @@ import {PAID, PENDING, UPCOMING} from 'universal/utils/constants'
 import styled, {css, cx} from 'react-emotion'
 import Row from 'universal/components/Row/Row'
 import RowInfo from 'universal/components/Row/RowInfo'
+import RowInfoLink from 'universal/components/Row/RowInfoLink'
+import RowInfoHeading from 'universal/components/Row/RowInfoHeading'
 import Tag from 'universal/components/Tag/Tag'
 import Icon from 'universal/components/Icon'
 
@@ -27,7 +29,7 @@ const InvoiceAmount = styled('span')({
   color: ui.palette.dark
 })
 
-const InvoiceAvatar = styled('div')(({isEstimate}) => ({
+const InvoiceAvatar = styled('div')(({isEstimate}: {isEstimate: boolean}) => ({
   backgroundColor: isEstimate ? appTheme.palette.mid : appTheme.palette.mid40l,
   borderRadius: '.5rem'
 }))
@@ -36,11 +38,8 @@ const InvoiceInfo = styled(RowInfo)({
   width: '100%'
 })
 
-const InvoiceTitle = styled('div')({
-  color: ui.rowHeadingColor,
+const InvoiceTitle = styled(RowInfoHeading)({
   display: 'inline-block',
-  fontSize: ui.rowHeadingFontSize,
-  lineHeight: '1.625rem',
   verticalAlign: 'middle'
 })
 
@@ -61,7 +60,7 @@ const styledDate = css({
 })
 
 const styledToPay = css({
-  color: ui.palette.dark
+  color: ui.palette.midGray
 })
 
 const styledPaid = css({
@@ -72,14 +71,7 @@ const styledUnpaid = css({
   color: appTheme.palette.warm
 })
 
-const styledInfoLink = css({
-  ...ui.rowSubheading,
-  color: appTheme.palette.mid,
-  ':hover, :focus': {
-    color: appTheme.palette.mid,
-    textDecoration: 'underline'
-  }
-})
+const StyledLink = RowInfoLink.withComponent(Link)
 
 const InvoiceRow = (props) => {
   const {
@@ -104,14 +96,9 @@ const InvoiceRow = (props) => {
         </InfoRow>
         <InfoRow>
           <div>
-            <Link
-              className={styledInfoLink}
-              rel='noopener noreferrer'
-              target='_blank'
-              to={`/invoice/${invoiceId}`}
-            >
+            <StyledLink rel='noopener noreferrer' target='_blank' to={`/invoice/${invoiceId}`}>
               {'See Details'}
-            </Link>
+            </StyledLink>
           </div>
           <InfoRowRight>
             {status === UPCOMING && (

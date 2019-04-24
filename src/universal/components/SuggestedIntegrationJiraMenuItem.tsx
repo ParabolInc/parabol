@@ -9,6 +9,8 @@ import TypeAheadLabel from 'universal/components/TypeAheadLabel'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import CreateJiraIssueMutation from 'universal/mutations/CreateJiraIssueMutation'
 import {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import styled from 'react-emotion'
+import {ICON_SIZE} from 'universal/styles/typographyV2'
 
 interface Props {
   closePortal: () => void
@@ -20,6 +22,14 @@ interface Props {
   query: string
 }
 
+const MenuItemIcon = styled(MenuItemComponentAvatar)({
+  '& svg': {
+    display: 'block',
+    height: ICON_SIZE.MD18,
+    width: ICON_SIZE.MD18
+  }
+})
+
 const SuggestedIntegrationJiraMenuItem = forwardRef((props: Props, ref: any) => {
   const {suggestedIntegration, taskId, submitMutation, onError, onCompleted, query} = props
   const {cloudId, projectKey, projectName} = suggestedIntegration
@@ -29,9 +39,9 @@ const SuggestedIntegrationJiraMenuItem = forwardRef((props: Props, ref: any) => 
       ref={ref}
       label={
         <MenuItemLabel>
-          <MenuItemComponentAvatar>
+          <MenuItemIcon>
             <JiraSVG />
-          </MenuItemComponentAvatar>
+          </MenuItemIcon>
           <TypeAheadLabel query={query} label={projectName} />
         </MenuItemLabel>
       }

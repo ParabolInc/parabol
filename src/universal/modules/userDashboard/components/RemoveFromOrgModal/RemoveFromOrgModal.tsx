@@ -12,18 +12,6 @@ import RemoveOrgUserMutation from 'universal/mutations/RemoveOrgUserMutation'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import TeamManagementModalBoundary from '../../../teamDashboard/components/PromoteTeamMemberModal/TeamManagementModalBoundary'
 
-const StyledHeading = styled(DialogHeading)({
-  paddingLeft: 12,
-  paddingRight: 12,
-  paddingTop: 4
-})
-
-const StyledContent = styled(DialogContent)({
-  paddingBottom: 12,
-  paddingLeft: 12,
-  paddingRight: 12
-})
-
 const StyledButton = styled(PrimaryButton)({
   margin: '1.5rem auto 0'
 })
@@ -56,15 +44,15 @@ const RemoveFromOrgModal = (props: Props) => {
   }
   return (
     <ModalBoundary>
-      <StyledHeading>{'Are you sure?'}</StyledHeading>
-      <StyledContent>
+      <DialogHeading>{'Are you sure?'}</DialogHeading>
+      <DialogContent>
         {`This will remove ${preferredName} from the organization. Any outstanding tasks will be given
         to the team leads. Any time remaining on their subscription will be refunded on the next
         invoice.`}
         <StyledButton size='medium' onClick={handleClick} waiting={submitting}>
           <IconLabel icon='arrow_forward' iconAfter label={`Remove ${preferredName}`} />
         </StyledButton>
-      </StyledContent>
+      </DialogContent>
     </ModalBoundary>
   )
 }

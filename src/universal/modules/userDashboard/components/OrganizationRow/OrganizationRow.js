@@ -14,7 +14,7 @@ import TagPro from 'universal/components/Tag/TagPro'
 import RowInfoCopy from 'universal/components/Row/RowInfoCopy'
 import RowActions from 'universal/components/Row/RowActions'
 import FlatButton from 'universal/components/FlatButton'
-import IconLabel from 'universal/components/IconLabel'
+import SecondaryButton from 'universal/components/SecondaryButton'
 import TagBlock from 'universal/components/Tag/TagBlock'
 import RowInfoHeading from 'universal/components/Row/RowInfoHeading'
 
@@ -30,6 +30,10 @@ const Name = styled(RowInfoHeading)({
 const StyledTagBlock = styled(TagBlock)({
   marginLeft: '.125rem',
   marginTop: '-.5rem'
+})
+
+const StyledButton = styled(SecondaryButton)({
+  marginLeft: 8
 })
 
 const OrganizationRow = (props) => {
@@ -69,7 +73,7 @@ const OrganizationRow = (props) => {
             )}
           </Name>
         </RowInfoHeader>
-        <RowInfoCopy useHintCopy>
+        <RowInfoCopy>
           {`${totalUsers} ${plural(totalUsers, 'User')} (${activeUserCount} Active)`}
         </RowInfoCopy>
       </RowInfo>
@@ -79,9 +83,7 @@ const OrganizationRow = (props) => {
             {upgradeCTALabel}
           </FlatButton>
         )}
-        <FlatButton onClick={onRowClick}>
-          <IconLabel icon='settings' label='Settings' />
-        </FlatButton>
+        <StyledButton onClick={onRowClick}>{'Settings'}</StyledButton>
       </RowActions>
     </Row>
   )

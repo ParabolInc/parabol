@@ -22,7 +22,7 @@ const targetAnchor = {
 const DownButtonIcon = styled(Icon)({
   cursor: 'pointer',
   paddingRight: '1rem',
-  lineHeight: '2.375rem',
+  lineHeight: '2rem',
   left: '-1px',
   right: '-1px',
   height: '100%',
@@ -39,7 +39,7 @@ const DropdownBlock = styled('div')({
 
 const InputBlock = styled('div')({
   ...ui.fieldBaseStyles,
-  ...ui.fieldSizeStyles.medium,
+  ...ui.fieldSizeStyles.small,
   ...makeFieldColorPalette('white'),
   position: 'relative',
   userSelect: 'none'

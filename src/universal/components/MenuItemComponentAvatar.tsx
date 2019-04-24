@@ -3,10 +3,11 @@ import styled from 'react-emotion'
 const MenuItemComponentAvatar = styled('div')({
   alignItems: 'center',
   display: 'flex',
-  width: 24,
   height: 24,
-  marginRight: 12,
-  minWidth: 24 // required for search icon
+  justifyContent: 'center',
+  marginRight: 8,
+  minWidth: 24, // required for search icon
+  width: 24
 })
 
 export default MenuItemComponentAvatar

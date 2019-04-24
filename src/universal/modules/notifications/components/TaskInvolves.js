@@ -113,7 +113,7 @@ class TaskInvolves extends Component {
     const {status, tags, assignee} = task
     const action = involvementWord[involvement]
     return (
-      <Row compact>
+      <Row>
         <IconAvatar
           icon={involvement === MENTIONEE ? 'chat_bubble' : 'assignment_ind'}
           size='small'

@@ -23,7 +23,7 @@ const CONTROL_SIZE_SMALL = 'small'
 const CONTROL_SIZE_MEDIUM = 'medium'
 const CONTROL_SIZE_LARGE = 'large'
 
-const CONTROL_SMALL_FONT_SIZE = '.8125rem'
+const CONTROL_SMALL_FONT_SIZE = '.875rem'
 const CONTROL_SMALL_LINE_HEIGHT = '1.25rem'
 const CONTROL_SMALL_PADDING_HORIZONTAL = '.4375rem'
 const CONTROL_SMALL_BLOCK_PADDING_HORIZONTAL = '.5rem'
@@ -146,9 +146,6 @@ const MODAL_LAYOUT_MAIN = 'main'
 const MODAL_LAYOUT_MAIN_WITH_DASH_ALERT = 'mainHasDashAlert'
 const MODAL_LAYOUT_MAIN_WITH_DASH_ALERTS = 'mainHasDashAlerts'
 const MODAL_LAYOUT_VIEWPORT = 'viewport'
-
-// Panels
-const panelInnerBorderColor = appTheme.palette.mid10l
 
 // Transitions
 // NOTE: increases on a scale of 2x
@@ -483,7 +480,6 @@ const ui = {
   // Menus
   // ---------------------------------------------------------------------------
   menuBackgroundColor: '#fff',
-  menuBorderColor: appTheme.palette.mid30l,
   menuBorderRadius: borderRadiusSmall,
   menuGutterHorizontal: '1rem',
   menuGutterInner: '.75rem',
@@ -533,14 +529,6 @@ const ui = {
   // ---------------------------------------------------------------------------
   notificationButtonSize: BUTTON_SIZE_SMALL,
 
-  // Panels
-  // ---------------------------------------------------------------------------
-  panelInnerBorderColor,
-  panelBorderRadius: borderRadiusMedium,
-  panelGutter: '1rem',
-  panelCompactGutter: '.75rem',
-  panelMarginVertical: '1.5rem',
-
   // Placeholders
   // ---------------------------------------------------------------------------
   placeholderColor: FIELD_PLACEHOLDER_COLOR,
@@ -552,47 +540,6 @@ const ui = {
   taskColumnPaddingInnerLarge: '.9375rem',
   taskColumnsMaxWidth: '78.25rem',
   taskColumnsMinWidth: '48rem',
-
-  // Providers
-  // ---------------------------------------------------------------------------
-  providers: {
-    github: {
-      description: 'Create GitHub issues from Parabol',
-      color: '#333333',
-      icon: 'github',
-      providerName: 'GitHub'
-    },
-    slack: {
-      description: 'Notify channels when meetings begin and end',
-      color: '#6ecadc',
-      providerName: 'Slack'
-    }
-  },
-  providerIconBorderRadius: '.5rem', // 8px
-  providerIconSize: '3.5rem', // 56px,
-  providerName: {
-    color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s6,
-    lineHeight: appTheme.typography.s7
-  },
-
-  // Rows
-  // ---------------------------------------------------------------------------
-  rowBorderColor: panelInnerBorderColor,
-  rowHeadingColor: appTheme.palette.dark,
-  rowHeadingFontSize: appTheme.typography.s4,
-  rowGutter: '1rem',
-  rowCompactGutter: '.75rem',
-  rowHeading: {
-    color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s4,
-    lineHeight: '1.625rem'
-  },
-  rowSubheading: {
-    color: COLOR_TEXT,
-    fontSize: appTheme.typography.s2,
-    lineHeight: appTheme.typography.s4
-  },
 
   // Settings
   // ---------------------------------------------------------------------------

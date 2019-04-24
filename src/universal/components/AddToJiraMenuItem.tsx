@@ -7,11 +7,21 @@ import useAtmosphere from 'universal/hooks/useAtmosphere'
 import {IntegrationServiceEnum} from 'universal/types/graphql'
 import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
 import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
+import styled from 'react-emotion'
+import {ICON_SIZE} from 'universal/styles/typographyV2'
 
 interface Props {
   teamId: string
   mutationProps: MenuMutationProps
 }
+
+const MenuItemIcon = styled(MenuItemComponentAvatar)({
+  '& svg': {
+    display: 'block',
+    height: ICON_SIZE.MD18,
+    width: ICON_SIZE.MD18
+  }
+})
 
 const AddToJiraMenuItem = forwardRef((props: Props, ref) => {
   const {mutationProps, teamId} = props
@@ -23,9 +33,9 @@ const AddToJiraMenuItem = forwardRef((props: Props, ref) => {
       ref={ref}
       label={
         <MenuItemLabel>
-          <MenuItemComponentAvatar>
+          <MenuItemIcon>
             <JiraSVG />
-          </MenuItemComponentAvatar>
+          </MenuItemIcon>
           {'Add Jira integration'}
         </MenuItemLabel>
       }

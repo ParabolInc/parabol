@@ -21,7 +21,7 @@ const TeamArchived = (props) => {
   }
 
   return (
-    <Row compact>
+    <Row>
       <IconAvatar icon='archive' size='small' />
       <div className={css(defaultStyles.message)}>
         {'The team '}

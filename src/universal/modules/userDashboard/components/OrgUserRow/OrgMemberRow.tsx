@@ -2,7 +2,6 @@ import React, {lazy} from 'react'
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
 import InactivateUserMutation from 'universal/mutations/InactivateUserMutation'
 import styled from 'react-emotion'
-import ui from 'universal/styles/ui'
 import {BILLING_LEADER, PERSONAL} from 'universal/utils/constants'
 import Toggle from 'universal/components/Toggle/Toggle'
 import LoadableMenu from 'universal/components/LoadableMenu'
@@ -26,6 +25,7 @@ import RowActions from 'universal/components/Row/RowActions'
 import {OrgMemberRow_organizationUser} from '__generated__/OrgMemberRow_organizationUser.graphql'
 import {OrgMemberRow_organization} from '__generated__/OrgMemberRow_organization.graphql'
 import LoadableModal from '../../../../components/LoadableModal'
+import {Layout} from 'universal/types/constEnums'
 
 const originAnchor = {
   vertical: 'top',
@@ -44,12 +44,12 @@ const ActionsBlock = styled('div')({
 })
 
 const MenuToggleBlock = styled('div')({
-  marginLeft: ui.rowGutter,
+  marginLeft: Layout.ROW_GUTTER,
   width: '2rem'
 })
 
 const ToggleBlock = styled('div')({
-  marginLeft: ui.rowGutter,
+  marginLeft: Layout.ROW_GUTTER,
   width: '6.25rem'
 })
 

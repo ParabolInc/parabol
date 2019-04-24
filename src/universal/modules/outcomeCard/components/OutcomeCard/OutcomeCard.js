@@ -105,7 +105,7 @@ const OutcomeCard = (props) => {
           teamId={teamId}
           team={team}
         />
-        <TaskIntegrationLink integration={integration} />
+        <TaskIntegrationLink integration={integration || null} />
         <TaskFooter
           area={area}
           cardIsActive={cardIsActive}

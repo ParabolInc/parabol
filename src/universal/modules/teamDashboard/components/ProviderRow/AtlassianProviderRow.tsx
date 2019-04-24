@@ -8,8 +8,7 @@ import FlatButton from 'universal/components/FlatButton'
 import Icon from 'universal/components/Icon'
 import JiraConfigMenu from 'universal/components/JiraConfigMenu'
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
-import PlainButton from 'universal/components/PlainButton/PlainButton'
-import Row from 'universal/components/Row/Row'
+import ProviderCard from 'universal/components/ProviderCard'
 import RowActions from 'universal/components/Row/RowActions'
 import RowInfo from 'universal/components/Row/RowInfo'
 import RowInfoCopy from 'universal/components/Row/RowInfoCopy'
@@ -22,11 +21,11 @@ import useMenu from 'universal/hooks/useMenu'
 import {DECELERATE} from 'universal/styles/animation'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {ICON_SIZE} from 'universal/styles/typographyV2'
-import ui from 'universal/styles/ui'
+import {Layout, Providers} from 'universal/types/constEnums'
 import {IAuthToken, IntegrationServiceEnum} from 'universal/types/graphql'
 import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import AtlassianProviderLogo from '../../../../AtlassianProviderLogo'
+import AtlassianProviderLogo from 'universal/AtlassianProviderLogo'
 
 const StyledButton = styled(FlatButton)({
   borderColor: PALETTE.BORDER.LIGHT,
@@ -38,18 +37,9 @@ const StyledButton = styled(FlatButton)({
   width: '100%'
 })
 
-const StyledRow = styled(Row)({
-  justifyContent: 'flex-start'
-})
-
-const AtlassianAvatar = styled('div')({
-  backgroundColor: PALETTE.SERVICES.ATLASSIAN_BLUE,
-  borderRadius: ui.providerIconBorderRadius
-})
-
 const ProviderActions = styled(RowActions)({
   marginLeft: 'auto',
-  paddingLeft: ui.rowGutter,
+  paddingLeft: Layout.ROW_GUTTER,
   maxWidth: '10rem'
 })
 
@@ -74,11 +64,18 @@ const useFreshToken = (accessToken: string | undefined, retry: () => void) => {
   }, [accessToken])
 }
 
-const MenuButton = styled(PlainButton)({
+const MenuButton = styled(FlatButton)({
   color: PALETTE.PRIMARY.MAIN,
   fontSize: ICON_SIZE.MD18,
   height: 24,
-  userSelect: 'none'
+  userSelect: 'none',
+  marginLeft: 4,
+  padding: 0,
+  width: 24
+})
+
+const StyledIcon = styled(Icon)({
+  fontSize: ICON_SIZE.MD18
 })
 
 const ListAndMenu = styled('div')({
@@ -115,8 +112,8 @@ const SiteAvatar = styled('img')(({idx}: {idx: number}) => ({
 
 const ProviderName = styled('div')({
   color: PALETTE.TEXT.MAIN,
-  fontSize: 24,
-  lineHeight: '34px',
+  fontSize: 18,
+  lineHeight: '24px',
   alignItems: 'center',
   display: 'flex',
   marginRight: 16,
@@ -141,13 +138,11 @@ const AtlassianProviderRow = (props: Props) => {
   const {sites, status} = useAtlassianSites(accessToken)
   const {togglePortal, originRef, menuPortal, closePortal} = useMenu(MenuPosition.UPPER_RIGHT)
   return (
-    <StyledRow>
-      <AtlassianAvatar>
-        <AtlassianProviderLogo />
-      </AtlassianAvatar>
+    <ProviderCard>
+      <AtlassianProviderLogo />
       <RowInfo>
-        <ProviderName>{'Atlassian'}</ProviderName>
-        <RowInfoCopy>{'Create Jira issues from Parabol'}</RowInfoCopy>
+        <ProviderName>{Providers.ATLASSIAN_NAME}</ProviderName>
+        <RowInfoCopy>{Providers.ATLASSIAN_DESC}</RowInfoCopy>
       </RowInfo>
       {!accessToken && (
         <ProviderActions>
@@ -175,12 +170,12 @@ const AtlassianProviderRow = (props: Props) => {
             )}
           </SiteList>
           <MenuButton onClick={togglePortal} innerRef={originRef}>
-            <Icon>more_vert</Icon>
+            <StyledIcon>more_vert</StyledIcon>
           </MenuButton>
           {menuPortal(<JiraConfigMenu closePortal={closePortal} teamId={teamId} />)}
         </ListAndMenu>
       )}
-    </StyledRow>
+    </ProviderCard>
   )
 }
 

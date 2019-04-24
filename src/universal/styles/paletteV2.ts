@@ -16,9 +16,12 @@ export namespace PALETTE {
   }
 
   export const enum BORDER {
-    LIGHT = '#D1CBDB',
+    LIGHTER = '#DFDFE5',
+    LIGHT = '#C1C0CD',
     DARK = '#b6adc7',
-    MAIN = '#493272'
+    MAIN = '#493272',
+    BLUE = '#329AE5',
+    BLUE_LIGHT = '#99CDF2'
   }
   export const enum TEXT {
     MAIN = '#444258',
@@ -30,7 +33,8 @@ export namespace PALETTE {
   }
   export const enum LINK {
     BLUE = '#329AE5',
-    COLOR_NEUTRAL = '#444258'
+    MAIN = '#444258',
+    LIGHT = '#82809A'
   }
 
   export const enum TASK_STATUS {

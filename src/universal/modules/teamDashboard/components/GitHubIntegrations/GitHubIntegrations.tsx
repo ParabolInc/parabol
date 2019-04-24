@@ -8,8 +8,10 @@ import RaisedButton from 'universal/components/RaisedButton'
 import Row from 'universal/components/Row/Row'
 import RowActions from 'universal/components/Row/RowActions'
 import RowInfo from 'universal/components/Row/RowInfo'
+import RowInfoHeading from 'universal/components/Row/RowInfoHeading'
+import RowInfoCopy from 'universal/components/Row/RowInfoCopy'
 import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import GitHubProviderLogo from 'universal/GitHubProviderLogo'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
@@ -17,43 +19,19 @@ import AddGitHubRepo from 'universal/modules/teamDashboard/AddGitHubRepo/AddGitH
 import GitHubRepoRow from 'universal/modules/teamDashboard/components/GitHubRepoRow'
 import IntegrationsNavigateBack from 'universal/modules/teamDashboard/components/IntegrationsNavigateBack/IntegrationsNavigateBack'
 import RemoveProviderMutation from 'universal/mutations/RemoveProviderMutation'
-import ui from 'universal/styles/ui'
 import {GITHUB} from 'universal/utils/constants'
 import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import {Layout, Providers} from 'universal/types/constEnums'
 
 const ProviderDetails = styled(Row)({
   border: 0,
-  justifyContent: 'flex-start',
-  paddingRight: 0
-})
-
-const ProviderAvatar = styled('div')({
-  backgroundColor: ui.providers.github.color,
-  borderRadius: ui.providerIconBorderRadius
-})
-
-const ProviderName = styled('div')({
-  ...ui.providerName
-})
-
-const ProviderIcon = styled(StyledFontAwesome)({
-  alignItems: 'center',
-  color: ui.palette.white,
-  display: 'flex !important',
-  fontSize: `${ui.iconSize2x} !important`,
-  height: ui.providerIconSize,
-  justifyContent: 'center',
-  width: ui.providerIconSize
-})
-
-const SubHeading = styled('div')({
-  ...ui.rowSubheading
+  justifyContent: 'flex-start'
 })
 
 const AddGitHubButton = styled(RaisedButton)({
   margin: '0 auto',
-  marginBottom: ui.rowGutter
+  marginBottom: Layout.ROW_GUTTER
 })
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
@@ -79,38 +57,33 @@ const GitHubIntegrations = (props: Props) => {
     <SettingsWrapper>
       <IntegrationsNavigateBack teamId={teamId} />
       {/* TODO: see if we can share this with ProviderIntegrationRow even though it has a Link component */}
-      <ProviderDetails>
-        <ProviderAvatar>
-          <ProviderIcon name='github' />
-        </ProviderAvatar>
-        <RowInfo>
-          <ProviderName>{ui.providers.github.providerName}</ProviderName>
-          <SubHeading>{ui.providers.github.description}</SubHeading>
-        </RowInfo>
-        {accessToken && (
-          <RowActions>
-            <FlatButton
-              onClick={() =>
-                RemoveProviderMutation(
-                  atmosphere,
-                  {
-                    providerId: integrationProvider && integrationProvider.id,
-                    teamId
-                  },
-                  {service: GITHUB, onError, onCompleted}
-                )
-              }
-              palette='mid'
-            >
-              {'Remove GitHub'}
-            </FlatButton>
-            <FlatButton onClick={openOAuth} palette='mid'>
-              {`Refresh Token for ${providerUserName}`}
-            </FlatButton>
-          </RowActions>
-        )}
-      </ProviderDetails>
-      <Panel label='Repositories'>
+      <Panel>
+        <ProviderDetails>
+          <GitHubProviderLogo />
+          <RowInfo>
+            <RowInfoHeading>{Providers.GITHUB_NAME}</RowInfoHeading>
+            <RowInfoCopy>{Providers.GITHUB_DESC}</RowInfoCopy>
+          </RowInfo>
+          {accessToken && (
+            <RowActions>
+              <FlatButton
+                onClick={() =>
+                  RemoveProviderMutation(
+                    atmosphere,
+                    {
+                      providerId: integrationProvider && integrationProvider.id,
+                      teamId
+                    },
+                    {service: GITHUB, onError, onCompleted}
+                  )
+                }
+              >
+                {'Remove GitHub'}
+              </FlatButton>
+              <FlatButton onClick={openOAuth}>{`Refresh Token for ${providerUserName}`}</FlatButton>
+            </RowActions>
+          )}
+        </ProviderDetails>
         {accessToken ? (
           <Row>
             <AddGitHubRepo accessToken={accessToken} teamId={teamId} subbedRepos={githubRepos} />

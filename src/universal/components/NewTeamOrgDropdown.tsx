@@ -17,7 +17,6 @@ interface Props {
 
 const NewTeamOrgDropdown = (props: Props) => {
   const {defaultActiveIdx, onChange, organizations, closePortal} = props
-  console.log('active idx', defaultActiveIdx)
   return (
     <MenuWithShortcuts
       ariaLabel={'Select the organization the new team belongs to'}

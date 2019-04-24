@@ -15,6 +15,7 @@ import useAllIntegrations from 'universal/hooks/useAllIntegrations'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useFilteredItems from 'universal/hooks/useFilteredItems'
 import {PALETTE} from 'universal/styles/paletteV2'
+import {ICON_SIZE} from 'universal/styles/typographyV2'
 import {TaskServiceEnum} from 'universal/types/graphql'
 import useForm from 'universal/utils/relay/useForm'
 import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
@@ -29,21 +30,31 @@ interface Props {
 }
 
 const SearchIcon = styled(Icon)({
-  color: PALETTE.TEXT.MAIN,
-  fontSize: 20
+  color: PALETTE.TEXT.LIGHT,
+  fontSize: ICON_SIZE.MD18
 })
 
 const NoResults = styled(MenuItemLabel)({
-  paddingLeft: 44,
-  fontStyle: 'italic',
-  fontWeight: 600
+  color: PALETTE.TEXT.LIGHT,
+  justifyContent: 'center',
+  paddingLeft: 8,
+  paddingRight: 8,
+  fontStyle: 'italic'
 })
 
 const SearchItem = styled(MenuItemLabel)({
-  padding: 0,
   margin: '0 8px 8px',
-  borderRadius: 2,
-  boxShadow: `0px 0px 2px 2px ${PALETTE.BACKGROUND.BLUE}`
+  overflow: 'visible',
+  padding: 0,
+  position: 'relative'
+})
+
+const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
+  position: 'absolute',
+  left: 8,
+  margin: 0,
+  pointerEvents: 'none',
+  top: 4
 })
 
 const serviceToMenuItemLookup = {
@@ -83,9 +94,9 @@ const TaskFooterIntegrateMenu = (props: Props) => {
       resetActiveOnChanges={[allItems]}
     >
       <SearchItem>
-        <MenuItemComponentAvatar>
+        <StyledMenuItemIcon>
           <SearchIcon>search</SearchIcon>
-        </MenuItemComponentAvatar>
+        </StyledMenuItemIcon>
         <TaskFooterIntegrateMenuSearch
           placeholder={placeholder}
           value={value}

@@ -7,7 +7,6 @@ const LabelHeading = styled('div')({
   fontWeight: ui.labelHeadingFontWeight,
   letterSpacing: ui.labelHeadingLetterSpacing,
   lineHeight: ui.labelHeadingLineHeight,
-  opacity: '.8',
   textTransform: 'uppercase',
   userSelect: 'none'
 })

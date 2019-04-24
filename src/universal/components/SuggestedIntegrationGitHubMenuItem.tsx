@@ -9,6 +9,8 @@ import useAtmosphere from 'universal/hooks/useAtmosphere'
 import CreateGitHubIssueMutation from 'universal/mutations/CreateGitHubIssueMutation'
 import {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import TypeAheadLabel from './TypeAheadLabel'
+import styled from 'react-emotion'
+import {ICON_SIZE} from 'universal/styles/typographyV2'
 
 interface Props {
   closePortal: () => void
@@ -20,6 +22,14 @@ interface Props {
   query: string
 }
 
+const MenuItemIcon = styled(MenuItemComponentAvatar)({
+  '& svg': {
+    display: 'block',
+    height: ICON_SIZE.MD18,
+    width: ICON_SIZE.MD18
+  }
+})
+
 const SuggestedIntegrationGitHubMenuItem = forwardRef((props: Props, ref: any) => {
   const {query, suggestedIntegration, taskId, submitMutation, onError, onCompleted} = props
   const {nameWithOwner} = suggestedIntegration
@@ -29,9 +39,9 @@ const SuggestedIntegrationGitHubMenuItem = forwardRef((props: Props, ref: any) =
       ref={ref}
       label={
         <MenuItemLabel>
-          <MenuItemComponentAvatar>
+          <MenuItemIcon>
             <GitHubSVG />
-          </MenuItemComponentAvatar>
+          </MenuItemIcon>
           <TypeAheadLabel query={query} label={nameWithOwner} />
         </MenuItemLabel>
       }

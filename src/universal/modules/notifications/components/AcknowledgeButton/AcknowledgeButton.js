@@ -2,11 +2,10 @@ import React from 'react'
 import styled from 'react-emotion'
 import RaisedButton from 'universal/components/RaisedButton'
 import IconLabel from 'universal/components/IconLabel'
-import ui from 'universal/styles/ui'
 
 const StyledButton = styled(RaisedButton)({
-  marginLeft: ui.rowCompactGutter,
-  minWidth: '2rem',
+  marginLeft: 16, // #gutter
+  minWidth: 32,
   paddingLeft: 0,
   paddingRight: 0
 })
