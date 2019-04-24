@@ -17,3 +17,7 @@ export const enum MeetingTypes {
   ACTION = 'action',
   RETROSPECTIVE = 'retrospective'
 }
+
+export const enum Duration {
+  MENU_OPEN = 150
+}

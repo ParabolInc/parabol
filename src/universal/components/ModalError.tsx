@@ -3,9 +3,11 @@ import styled from 'react-emotion'
 import DialogContent from 'universal/components/DialogContent'
 import DialogTitle from 'universal/components/DialogTitle'
 import MenuContents from 'universal/components/MenuContents'
+import {PortalState} from 'universal/hooks/usePortal'
 
 interface Props {
   error: Error
+  status: PortalState
 }
 
 const ErrorBlock = styled(MenuContents)({
@@ -19,7 +21,7 @@ const SmallPrint = styled('div')({
 
 const ModalError = (props: Props) => {
   return (
-    <ErrorBlock>
+    <ErrorBlock status={props.status}>
       <DialogTitle>You found a bug!</DialogTitle>
       <DialogContent>
         {'We’ve alerted the developers. Try refreshing the page'}

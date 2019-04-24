@@ -1,11 +1,13 @@
 import {css} from 'emotion'
+import {Duration} from '../types/constEnums'
 import {PortalState} from 'universal/hooks/usePortal'
+import {DECELERATE} from 'universal/styles/animation'
 
 export default {
   [PortalState.Entered]: css({
     opacity: 1,
-    transform: 'translate3d(0, 0, 0)',
-    transition: `all 100ms ease-in`
+    transform: 'scale(1)',
+    transition: `all ${Duration.MENU_OPEN}ms ${DECELERATE}`
   }),
   [PortalState.Exiting]: css({
     opacity: 0,
@@ -14,7 +16,7 @@ export default {
   }),
   [PortalState.Entering]: css({
     opacity: 0,
-    transform: `translate3d(0, ${-8}px, 0)`
+    transform: `scale(0)`
   }),
   [PortalState.Exited]: ''
 }

@@ -118,6 +118,7 @@ const Menu = (props: Props) => {
         ref.closePortal = closePortal
         ref.isActive = activeIdx === idx
         ref.activate = () => setSafeIdx(idx)
+        ref.idx = idx
         return cloneElement(child as ReactElement, {ref})
       })
     },

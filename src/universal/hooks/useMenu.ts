@@ -13,13 +13,21 @@ const useMenu = (menuPosition: MenuPosition, options: Options = {}) => {
   const {onOpen, onClose} = options
   const {targetRef, originRef, coords} = useCoords(menuPosition)
   const {portal, closePortal, togglePortal, status} = usePortal({onOpen, onClose})
-  const maybeLoadingWidth = useMemo(() => {
+  const loadingWidth = useMemo(() => {
+    if (options.loadingWidth) return options.loadingWidth
     const bbox = getBBox(originRef.current)
     return Math.max(40, bbox ? bbox.width : 40)
   }, [originRef.current])
-  const loadingWidth = options.loadingWidth || maybeLoadingWidth
   const {loadingDelay, loadingDelayRef} = useLoadingDelay()
-  const menuPortal = useMenuPortal(portal, targetRef, loadingWidth, coords, status, loadingDelayRef)
+  const menuPortal = useMenuPortal(
+    portal,
+    targetRef,
+    loadingWidth,
+    coords,
+    status,
+    menuPosition,
+    loadingDelayRef
+  )
   return {togglePortal, originRef, menuPortal, closePortal, loadingDelay, loadingWidth}
 }
 
