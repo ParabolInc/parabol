@@ -958,13 +958,16 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         this.emit(TEAM, data)
       }
       return {endNewMeeting: data}
+    },
+    InviteToTeamMutation: ({invitees}) => {
+      return {inviteToTeam: {invitees}}
     }
   }
 
   fetch = async (opName: string, variables: Variables) => {
     const resolve = this.ops[opName]
     if (!resolve) {
-      console.log('op not found', opName)
+      console.error('op not found', opName)
       return {
         errors: [{message: `op not found ${opName}`}]
       }

@@ -92,6 +92,7 @@ import dismissNewFeature from 'server/graphql/mutations/dismissNewFeature'
 import addAtlassianAuth from 'server/graphql/mutations/addAtlassianAuth'
 import removeAtlassianAuth from 'server/graphql/mutations/removeAtlassianAuth'
 import createJiraIssue from 'server/graphql/mutations/createJiraIssue'
+import reflectTemplatePromptUpdateDescription from 'server/graphql/mutations/reflectTemplatePromptUpdateDescription'
 
 export default new GraphQLObjectType({
   name: 'Mutation',
@@ -145,6 +146,7 @@ export default new GraphQLObjectType({
     promoteFacilitator,
     promoteNewMeetingFacilitator,
     promoteToTeamLead,
+    reflectTemplatePromptUpdateDescription,
     removeAgendaItem,
     removeAtlassianAuth,
     removeProvider,
