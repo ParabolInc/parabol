@@ -9,6 +9,7 @@ interface Props {
   onClick: () => void
   submitting: boolean
   isError: boolean
+  existingAccount?: boolean
 }
 
 const helpText = {
@@ -25,10 +26,13 @@ const HelpMessage = styled(StyledTip)({
 })
 
 const GoogleOAuthButtonBlock = (props: Props) => {
-  const {label, onClick, submitting, isError} = props
+  const {label, onClick, submitting, isError, existingAccount} = props
   return (
     <React.Fragment>
       <GoogleOAuthButton label={label} onClick={onClick} waiting={submitting} />
+      {!isError && existingAccount && (
+        <ErrorMessage>Your account was created with Google! Sign in above</ErrorMessage>
+      )}
       {isError && !submitting && (
         <ErrorMessage>Error logging in! Did you close the popup?</ErrorMessage>
       )}

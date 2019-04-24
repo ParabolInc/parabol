@@ -51,6 +51,8 @@ const LoginMutation = (
       const serverError = getGraphQLError(res, errors)
       if (serverError) {
         console.error(serverError.message)
+        atmosphere.setAuthToken(null)
+        history && history.push(`/?error=${serverError.message}`)
         return
       }
       const {acceptTeamInvitation, login} = res

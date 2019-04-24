@@ -261,7 +261,11 @@ export default class Atmosphere extends Environment {
 
   setAuthToken = (authToken: string | null) => {
     this.authToken = authToken
-    if (!authToken) return
+    if (!authToken) {
+      this.authObj = null
+      window.localStorage.removeItem(APP_TOKEN_KEY)
+      return
+    }
     this.authObj = jwtDecode(authToken)
     if (!this.authObj) return
     const {exp, sub: viewerId} = this.authObj

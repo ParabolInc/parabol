@@ -1,11 +1,16 @@
 import React, {Component} from 'react'
 import styled from 'react-emotion'
+import {RouteComponentProps, withRouter} from 'react-router'
 import ErrorAlert from 'universal/components/ErrorAlert/ErrorAlert'
 import PrimaryButton from 'universal/components/PrimaryButton'
 import RaisedButton from 'universal/components/RaisedButton'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import auth0CreateAccountWithEmail from 'universal/utils/auth0CreateAccountWithEmail'
 import auth0LoginWithEmail from 'universal/utils/auth0LoginWithEmail'
 import {CREATE_ACCOUNT_BUTTON_LABEL, SIGNIN_LABEL} from 'universal/utils/constants'
+import getAuthProviders from 'universal/utils/getAuthProviders'
 import {emailRegex} from 'universal/validation/regex'
 import withForm, {WithFormProps} from '../utils/relay/withForm'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
@@ -13,11 +18,16 @@ import Legitity from '../validation/Legitity'
 import EmailInputField from './EmailInputField'
 import PasswordInputField from './PasswordInputField'
 
-interface Props extends WithMutationProps, WithFormProps {
+interface Props
+  extends WithAtmosphereProps,
+    WithMutationProps,
+    WithFormProps,
+    RouteComponentProps<{}> {
   email: string
   // is the primary login action (not secondary to Google Oauth)
   isPrimary?: boolean
   isSignin?: boolean
+  existingAccount?: boolean
 }
 
 const FieldGroup = styled('div')({
@@ -36,12 +46,19 @@ const Form = styled('form')({
 
 // exporting as a Base is a good indicator that a parent component is using this as a ref
 export class EmailPasswordAuthFormBase extends Component<Props> {
+  componentDidUpdate (prevProps: Props) {
+    const {location, onError} = this.props
+    if (prevProps.location !== location && prevProps.error) {
+      onError()
+    }
+  }
+
   handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     this.props.setDirtyField(e.target.name)
   }
 
   tryLogin = async (email: string, password: string, handleError?: () => void) => {
-    const {onCompleted, onError} = this.props
+    const {atmosphere, onCompleted, onError} = this.props
     try {
       await auth0LoginWithEmail(email, password)
       onCompleted()
@@ -49,6 +66,12 @@ export class EmailPasswordAuthFormBase extends Component<Props> {
       onError(e.error_description || e.description || e.message)
       // use the handler's error message, if any
       handleError && handleError()
+      if (e.code === 'access_denied') {
+        const authProviders = await getAuthProviders(atmosphere, email)
+        if (authProviders.length === 1 && authProviders[0] === 'google-oauth2') {
+          onError('Sign in with Google above')
+        }
+      }
     }
   }
 
@@ -90,19 +113,28 @@ export class EmailPasswordAuthFormBase extends Component<Props> {
   }
 
   render () {
-    const {error, fields, isPrimary, isSignin, submitting, onChange} = this.props
+    const {error, fields, isPrimary, isSignin, submitting, onChange, existingAccount} = this.props
     const Button = isPrimary ? PrimaryButton : RaisedButton
+    const hasEmail = !!fields.email.value
     return (
       <Form onSubmit={this.onSubmit}>
         {error && <ErrorAlert message={error} />}
+        {!error && existingAccount && (
+          <ErrorAlert message='Your account was created without Google. Sign in below' />
+        )}
         <FieldGroup>
           <FieldBlock>
-            <EmailInputField {...fields.email} onChange={onChange} onBlur={this.handleBlur} />
+            <EmailInputField
+              autoFocus={!hasEmail}
+              {...fields.email}
+              onChange={onChange}
+              onBlur={this.handleBlur}
+            />
           </FieldBlock>
           <FieldBlock>
             <PasswordInputField
+              autoFocus={hasEmail}
               {...fields.password}
-              autoFocus
               onChange={onChange}
               onBlur={this.handleBlur}
             />
@@ -132,4 +164,4 @@ const form = withForm({
   }
 })
 
-export default withMutationProps(form(EmailPasswordAuthFormBase))
+export default withAtmosphere(withMutationProps(withRouter(form(EmailPasswordAuthFormBase))))
