@@ -101,6 +101,7 @@ jobs:
               git config --global user.name "Parabol CircleCI"
               git config --global user.email "admin+circleci@parabol.co"
               git add .googlecloudkey.json build -f
+              git add src/server/graphql/queryMap.json build -f
               git commit -m "build $ACTION_VERSION"
             fi
       - deploy:
