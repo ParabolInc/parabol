@@ -58,15 +58,22 @@ class AuthenticationPage extends Component<Props, State> {
   }
 
   componentDidMount () {
+    this.updateExistingAccountError()
+  }
+
+  componentDidUpdate () {
+    this.updateExistingAccountError()
+  }
+
+  updateExistingAccountError () {
     if (!window.location.search) return
     const params = new URLSearchParams(window.location.search)
     const errorCode = params.get('error')
     const existingAccount = existingAccounts[errorCode!]
-    if (existingAccount) {
+    if (existingAccount !== this.state.existingAccount) {
       this.setState({existingAccount})
     }
   }
-
   onOAuth = async () => {
     const {atmosphere, history, onCompleted, onError, submitMutation} = this.props
     submitMutation()

@@ -1,11 +1,12 @@
 import styled from 'react-emotion'
 import {PALETTE} from 'universal/styles/paletteV2'
-import {ROW_SUBHEADING_STYLES} from 'universal/styles/rows'
+import RowInfoCopy from './RowInfoCopy'
 
 const color = PALETTE.LINK.LIGHT
 
-const RowInfoLink = styled('a')({
-  ...ROW_SUBHEADING_STYLES,
+const LinkComponent = RowInfoCopy.withComponent('a')
+
+const RowInfoLink = styled(LinkComponent)({
   color,
   ':hover, :focus, :active': {
     color,

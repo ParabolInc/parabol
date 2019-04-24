@@ -43,12 +43,7 @@ const addReflectTemplatePrompt = {
 
     // RESOLUTION
     const sortOrder = Math.max(...activePrompts.map((prompt) => prompt.sortOrder)) + 1 + dndNoise()
-    const phaseItem = new Prompt(
-      template,
-      sortOrder,
-      `New prompt #${activePrompts.length + 1}`,
-      'Prompt description'
-    )
+    const phaseItem = new Prompt(template, sortOrder, `New prompt #${activePrompts.length + 1}`, '')
 
     await r.table('CustomPhaseItem').insert(phaseItem)
 

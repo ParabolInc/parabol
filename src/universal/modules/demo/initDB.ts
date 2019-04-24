@@ -46,6 +46,10 @@ const initDemoUser = ({preferredName, email, picture}: BaseUser, idx: number) =>
     connectedSockets: [`socket${idx}`],
     createdAt: now,
     email,
+    featureFlags: {
+      jira: false,
+      video: false
+    },
     facilitatorUserId: id,
     facilitatorName: preferredName,
     inactive: false,
@@ -157,17 +161,20 @@ const initPhases = (teamMembers) => {
         {
           id: 'startId',
           retroPhaseItemId: 'startId',
-          question: 'Start'
+          question: 'Start',
+          description: 'What new behaviors should we adopt?'
         },
         {
           id: 'stopId',
           retroPhaseItemId: 'stopId',
-          question: 'Stop'
+          question: 'Stop',
+          description: 'What existing behaviors should we cease doing?'
         },
         {
           id: 'continueId',
           retroPhaseItemId: 'continueId',
-          question: 'Continue'
+          question: 'Continue',
+          description: 'What current behaviors should we keep doing?'
         }
       ],
       stages: [

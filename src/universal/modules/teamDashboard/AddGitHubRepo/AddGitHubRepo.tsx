@@ -11,11 +11,11 @@ import ServiceDropdownInput from 'universal/modules/integrations/components/Serv
 import AddGitHubRepoMutation from 'universal/mutations/AddGitHubRepoMutation'
 import formError from 'universal/styles/helpers/formError'
 import appTheme from 'universal/styles/theme/theme'
-import ui from 'universal/styles/ui'
 import {GITHUB_ENDPOINT} from 'universal/utils/constants'
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import {AddGitHubRepo_subbedRepos} from '__generated__/AddGitHubRepo_subbedRepos.graphql'
+import {Layout} from 'universal/types/constEnums'
 
 const StyledRow = styled(Row)({
   alignItems: 'flex-start',
@@ -40,7 +40,7 @@ const Footer = styled('div')({
 })
 
 const StyledButton = styled(SecondaryButton)({
-  marginLeft: ui.rowGutter,
+  marginLeft: Layout.ROW_GUTTER,
   minWidth: '11rem',
   paddingLeft: 0,
   paddingRight: 0
@@ -270,9 +270,7 @@ class AddGitHubRepo extends Component<Props, State> {
           />
           <FooterBlock>{footerMessage}</FooterBlock>
         </DropdownAndError>
-        <StyledButton size='small' onClick={this.handleAddRepo}>
-          {'Add Repo'}
-        </StyledButton>
+        <StyledButton onClick={this.handleAddRepo}>{'Add Repo'}</StyledButton>
       </StyledRow>
     )
   }

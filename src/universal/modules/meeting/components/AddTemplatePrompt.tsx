@@ -17,7 +17,8 @@ const AddPromptLink = styled(LinkButton)({
   alignItems: 'center',
   display: 'flex',
   fontSize: typeScale[5],
-  margin: '.75rem 0',
+  margin: 0,
+  marginBottom: 16,
   outline: 'none'
 })
 

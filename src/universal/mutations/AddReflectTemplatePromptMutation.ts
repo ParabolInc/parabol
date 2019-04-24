@@ -14,7 +14,10 @@ interface Context {
 graphql`
   fragment AddReflectTemplatePromptMutation_team on AddReflectTemplatePromptPayload {
     prompt {
+      ...AddTemplatePrompt_prompts @relay(mask: false)
+      ...TemplatePromptList_prompts @relay(mask: false)
       id
+      description
       question
       sortOrder
       templateId
@@ -58,6 +61,7 @@ const AddReflectTemplatePromptMutation = (
       const {templateId} = variables
       const nowISO = new Date().toJSON()
       const proxyTemplatePrompt = createProxyRecord(store, 'ReflectTemplatePrompt', {
+        description: '',
         question: `New prompt #${promptCount + 1}`,
         createdAt: nowISO,
         templateId,

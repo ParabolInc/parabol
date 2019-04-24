@@ -2,6 +2,65 @@ import getRethink from 'server/database/rethinkDriver'
 import segmentIo from 'server/utils/segmentIo'
 import resolvePromiseObj from 'universal/utils/resolvePromiseObj'
 import countTiersForUserId from 'server/graphql/queries/helpers/countTiersForUserId'
+import {ENTERPRISE, PERSONAL, PRO} from '../../universal/utils/constants'
+
+const PERSONAL_TIER_MAX_TEAMS = 2
+
+const getHubspotTraits = (userIds) => {
+  const r = getRethink()
+  // # of orgs the user is on where teams is >= 3
+  return r(userIds).map((userId) => ({
+    salesOpOrgCount: r
+      .table('OrganizationUser')
+      .getAll(userId, {index: 'userId'})
+      .filter({removedAt: null})
+      .coerceTo('array')('orgId')
+      .default([])
+      .do((orgIds) => {
+        return r
+          .table('Organization')
+          .getAll(r.args(orgIds), {index: 'id'})
+          .merge((row) => ({
+            teamCount: r
+              .table('Team')
+              .getAll(row('id'), {index: 'orgId'})
+              .count()
+          }))
+          .filter((row) => row('teamCount').gt(PERSONAL_TIER_MAX_TEAMS))
+          .count()
+      }),
+    salesOpMeetingCount: r
+      .table('MeetingMember')
+      .getAll(userId, {index: 'userId'})
+      .count(),
+    isAnyBillingLeader: r
+      .table('OrganizationUser')
+      .getAll(userId, {index: 'userId'})
+      .filter({removedAt: null, role: 'billingLeader'})
+      .count()
+      .ge(1),
+    highestTier: r
+      .table('OrganizationUser')
+      .getAll(userId, {index: 'userId'})
+      .filter({removedAt: null})
+      .coerceTo('array')('orgId')
+      .default([])
+      .do((orgIds) => {
+        return r
+          .table('Organization')
+          .getAll(r.args(orgIds), {index: 'id'})
+          .coerceTo('array')('tier')
+          .distinct()
+      })
+      .do((tiers) => {
+        return r.branch(
+          tiers.contains(ENTERPRISE),
+          ENTERPRISE,
+          r.branch(tiers.contains(PRO), PRO, PERSONAL)
+        )
+      })
+  }))
+}
 
 const getTraits = (userIds) => {
   const r = getRethink()
@@ -32,14 +91,18 @@ const getSegmentProps = (userIds, teamId) => {
 
 export const sendSegmentIdentify = async (maybeUserIds) => {
   const userIds = Array.isArray(maybeUserIds) ? maybeUserIds : [maybeUserIds]
-  const traitsArr = await getTraits(userIds)
-  traitsArr.forEach(async (traitsWithId) => {
+  const [traitsArr, hubspotTraitsArr] = await Promise.all([
+    getTraits(userIds),
+    getHubspotTraits(userIds)
+  ]).catch(console.error)
+  traitsArr.forEach(async (traitsWithId, idx) => {
     const {id: userId, ...traits} = traitsWithId
     const tiersCountTraits = await countTiersForUserId(userId)
     segmentIo.identify({
       userId,
       traits: {
         ...traits,
+        ...hubspotTraitsArr[idx],
         ...tiersCountTraits
       }
     })

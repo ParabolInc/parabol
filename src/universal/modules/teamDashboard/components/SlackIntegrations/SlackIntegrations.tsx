@@ -21,8 +21,7 @@ import {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmos
 import {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import {SlackIntegrations_viewer} from '__generated__/SlackIntegrations_viewer.graphql'
 import SlackProviderLogo from 'universal/SlackProviderLogo'
-import {SLACK_NAME, SLACK_DESC} from 'universal/styles/providers'
-import {ROW_GUTTER} from 'universal/styles/rows'
+import {Layout, Providers} from 'universal/types/constEnums'
 
 const ProviderDetails = styled(Row)({
   border: 0,
@@ -31,7 +30,7 @@ const ProviderDetails = styled(Row)({
 
 const AddSlackButton = styled(SecondaryButton)({
   margin: '0 auto',
-  marginBottom: ROW_GUTTER
+  marginBottom: Layout.ROW_GUTTER
 })
 
 const ChannelName = styled('div')({
@@ -77,8 +76,8 @@ const SlackIntegrations = (props: Props) => {
         <ProviderDetails>
           <SlackProviderLogo />
           <RowInfo>
-            <RowInfoHeading>{SLACK_NAME}</RowInfoHeading>
-            <RowInfoCopy>{SLACK_DESC}</RowInfoCopy>
+            <RowInfoHeading>{Providers.SLACK_NAME}</RowInfoHeading>
+            <RowInfoCopy>{Providers.SLACK_DESC}</RowInfoCopy>
           </RowInfo>
           {accessToken && (
             <RowActions>
@@ -101,7 +100,6 @@ const SlackIntegrations = (props: Props) => {
           <Row>
             <AddSlackChannel
               accessToken={accessToken}
-              environment={atmosphere}
               teamMemberId={teamMemberId}
               subbedChannels={slackChannels}
             />
