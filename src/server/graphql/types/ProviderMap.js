@@ -1,7 +1,7 @@
 import {GraphQLObjectType, GraphQLID} from 'graphql'
 import ProviderRow from 'server/graphql/types/ProviderRow'
 import {globalIdField} from 'graphql-relay'
-import {GITHUB, SLACK} from 'universal/utils/constants'
+import {SLACK} from 'universal/utils/constants'
 
 const ProviderMap = new GraphQLObjectType({
   name: 'ProviderMap',
@@ -13,10 +13,6 @@ const ProviderMap = new GraphQLObjectType({
     },
     [SLACK]: {
       description: 'All the big details associated with slack',
-      type: ProviderRow
-    },
-    [GITHUB]: {
-      description: 'All the big details associated with GitHub',
       type: ProviderRow
     }
   })

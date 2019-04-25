@@ -59,13 +59,13 @@ export const addProviderIntegrationUpdater = (payload, store, {atmosphere, teamI
   } else if (oldProviderMap) {
     // if there is no provider, then the mutation was not caused by the viewer, so ignore the accessToken change
     const oldProviderRow = oldProviderMap.getLinkedRecord(service)
+    if (!oldProviderRow) return
     newProviderRow.setValue(oldProviderRow.getValue('accessToken'), 'accessToken')
   }
   if (oldProviderMap) {
     const oldProviderRow = oldProviderMap.getLinkedRecord(service)
+    if (!oldProviderRow) return
     // copyFieldsFrom is just plain bad news
-    oldProviderRow.setValue(newProviderRow.getValue('userCount'), 'userCount')
-    oldProviderRow.setValue(newProviderRow.getValue('integrationCount'), 'integrationCount')
     oldProviderRow.setValue(newProviderRow.getValue('accessToken'), 'accessToken')
   }
 

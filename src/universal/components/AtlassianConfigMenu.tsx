@@ -5,38 +5,36 @@ import useAtmosphere from 'universal/hooks/useAtmosphere'
 import RemoveAtlassianAuthMutation from 'universal/mutations/RemoveAtlassianAuthMutation'
 import {IntegrationServiceEnum} from 'universal/types/graphql'
 import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
+import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
 
 interface Props {
   closePortal: () => void
+  mutationProps: MenuMutationProps
   teamId: string
 }
 
-const noop = () => {
-  /**/
-}
-
-const JiraConfigMenu = (props: Props) => {
-  const {closePortal, teamId} = props
+const AtlassianConfigMenu = (props: Props) => {
+  const {closePortal, mutationProps, teamId} = props
+  const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
   const openOAuth = handleOpenOAuth({
     name: IntegrationServiceEnum.atlassian,
-    submitting: false,
-    submitMutation: noop,
     atmosphere,
-    onError: noop,
-    onCompleted: noop,
-    teamId
+    teamId,
+    ...mutationProps
   })
 
   const removeAtlassian = () => {
-    RemoveAtlassianAuthMutation(atmosphere, {teamId}, {onError: noop, onCompleted: noop})
+    if (submitting) return
+    submitMutation()
+    RemoveAtlassianAuthMutation(atmosphere, {teamId}, {onError, onCompleted})
   }
   return (
-    <MenuWithShortcuts ariaLabel={'Configure your Jira integration'} closePortal={closePortal}>
+    <MenuWithShortcuts ariaLabel={'Configure your Atlassian integration'} closePortal={closePortal}>
       <MenuItemWithShortcuts label='Refresh token' onClick={openOAuth} />
       <MenuItemWithShortcuts label='Remove Atlassian' onClick={removeAtlassian} />
     </MenuWithShortcuts>
   )
 }
 
-export default JiraConfigMenu
+export default AtlassianConfigMenu

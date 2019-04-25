@@ -20,7 +20,7 @@ import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
 import {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import {SlackIntegrations_viewer} from '__generated__/SlackIntegrations_viewer.graphql'
-import SlackProviderLogo from 'universal/SlackProviderLogo'
+import SlackProviderLogo from 'universal/components/SlackProviderLogo'
 import {Layout, Providers} from 'universal/types/constEnums'
 
 const ProviderDetails = styled(Row)({
