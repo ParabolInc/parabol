@@ -18,7 +18,7 @@ const KickedOut = (props) => {
     ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted)
   }
   return (
-    <Row compact>
+    <Row>
       <IconAvatar icon='group' size='small' />
       <div className={css(defaultStyles.message)}>
         {'You have been removed from the '}

@@ -46,7 +46,7 @@ export default {
       .get(authId)
       .update({accessToken: null, refreshToken: null, isActive: false, updatedAt: now})
 
-    const data = {authId, teamId}
+    const data = {authId, teamId, userId: viewerId}
     publish(TEAM, teamId, RemoveAtlassianAuthPayload, data, subOptions)
     return data
   }

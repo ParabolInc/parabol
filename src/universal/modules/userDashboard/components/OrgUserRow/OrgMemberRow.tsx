@@ -23,10 +23,10 @@ import useMenu from 'universal/hooks/useMenu'
 import useModal from 'universal/hooks/useModal'
 import InactivateUserMutation from 'universal/mutations/InactivateUserMutation'
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
-import ui from 'universal/styles/ui'
 import {BILLING_LEADER, PERSONAL} from 'universal/utils/constants'
 import lazyPreload from 'universal/utils/lazyPreload'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import {Layout} from 'universal/types/constEnums'
 
 const ActionsBlock = styled('div')({
   alignItems: 'center',
@@ -35,12 +35,12 @@ const ActionsBlock = styled('div')({
 })
 
 const MenuToggleBlock = styled('div')({
-  marginLeft: ui.rowGutter,
+  marginLeft: Layout.ROW_GUTTER,
   width: '2rem'
 })
 
 const ToggleBlock = styled('div')({
-  marginLeft: ui.rowGutter,
+  marginLeft: Layout.ROW_GUTTER,
   width: '6.25rem'
 })
 

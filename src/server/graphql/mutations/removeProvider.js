@@ -5,8 +5,6 @@ import RemoveProviderPayload from 'server/graphql/types/RemoveProviderPayload'
 import getProviderRowData from 'server/safeQueries/getProviderRowData'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import {GITHUB, INTEGRATION, SLACK} from 'universal/utils/constants'
-import archiveTasksForManyRepos from 'server/safeMutations/archiveTasksForManyRepos'
-import removeGitHubReposForUserId from 'server/safeMutations/removeGitHubReposForUserId'
 import publish from 'server/utils/publish'
 import standardError from 'server/utils/standardError'
 
@@ -93,13 +91,9 @@ export default {
         .default([])
       data = await getPayload(service, channelChanges, teamId, userId)
     } else if (service === GITHUB) {
-      const repoChanges = await removeGitHubReposForUserId(userId, [teamId])
-      data = await getPayload(service, repoChanges, teamId, userId)
-      const archivedTasksByRepo = await archiveTasksForManyRepos(repoChanges)
-      data.archivedTaskIds = archivedTasksByRepo.reduce((arr, repoArr) => {
-        arr.push(...repoArr)
-        return arr
-      }, [])
+      // TODO this needs massaging after slack gets refactored
+      data = await getPayload(service, [], teamId, userId)
+      data.archivedTaskIds = []
     }
     publish(INTEGRATION, teamId, RemoveProviderPayload, data, subOptions)
     return data

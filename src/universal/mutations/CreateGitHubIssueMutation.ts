@@ -14,6 +14,7 @@ graphql`
           service
           nameWithOwner
         }
+        ...TaskIntegrationLinkIntegrationGitHub
       }
       updatedAt
     }

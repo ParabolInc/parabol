@@ -197,6 +197,8 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           break
         case 'RenameReflectTemplatePromptPayload':
           break
+        case 'ReflectTemplatePromptUpdateDescriptionPayload':
+          break
         case 'SelectRetroTemplatePayload':
           break
         case 'SetPhaseFocusPayload':

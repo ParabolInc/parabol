@@ -1,6 +1,6 @@
 import {GraphQLObjectType} from 'graphql'
 import StandardMutationError from 'server/graphql/types/StandardMutationError'
-import {getUserId, isSuperUser} from '../../utils/authorization'
+import {getUserId} from '../../utils/authorization'
 import AtlassianAuth from './AtlassianAuth'
 import User from './User'
 
@@ -13,13 +13,8 @@ const AddAtlassianAuthPayload = new GraphQLObjectType({
     atlassianAuth: {
       type: AtlassianAuth,
       description: 'The newly created auth',
-      resolve: async ({atlassianAuthId}, _args, {authToken, dataLoader}) => {
-        const viewerId = getUserId(authToken)
-        const atlassianAuth = await dataLoader.get('atlassianAuths').load(atlassianAuthId)
-        if (isSuperUser(authToken) || atlassianAuth.userId === viewerId) {
-          return atlassianAuth
-        }
-        return null
+      resolve: async ({atlassianAuthId}, _args, {dataLoader}) => {
+        return dataLoader.get('atlassianAuths').load(atlassianAuthId)
       }
     },
     user: {

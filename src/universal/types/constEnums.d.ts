@@ -23,3 +23,20 @@ export const enum Duration {
   MODAL_OPEN = 200,
   PORTAL_CLOSE = 120
 }
+
+export const enum Providers {
+  ATLASSIAN_NAME = 'Atlassian',
+  ATLASSIAN_DESC = 'Create Jira issues from Parabol',
+  GITHUB_NAME = 'GitHub',
+  GITHUB_DESC = 'Create issues from Parabol',
+  SLACK_NAME = 'Slack',
+  SLACK_DESC = 'Push meeting notifications'
+}
+
+// https://material.io/design/layout/spacing-methods.html
+// NOTE: iterate on this pattern as we go (TA)
+export const enum Layout {
+  TYPE_GRID = 4, // .5x
+  LAYOUT_GRID = 8, // 1x
+  ROW_GUTTER = 16 // 2x
+}

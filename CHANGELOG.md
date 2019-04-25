@@ -5,12 +5,33 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## v3.7.1
+## v3.8.0 2019-Apr-24
+
+### Added
+* Jira integration for issues (#2807, #2814)
+* GitHub integration direct from Task card (#2807)
+* Extra traits on users when retro meeting ends (#2818)
+* Extra call to identify on meeting end (#2795)
+* Over free tier alert (#2797)
+* Retro prompt descriptions (#2703)
+
+### Removed
+* Auto-end for long-running retrospective meetings (#2819)
+
+### Changed
+* Only allow 1 signup per email, regardless of OAuth or Email/pass
+
+## v3.7.2 2019-Apr-03
+
+### Fixed
+* Borked demo from featureFlags
+
+## v3.7.1 2019-Apr-02
 
 ### Added
 * Improvements to beta video functionality (#2762)
 
-## v3.7.0
+## v3.7.0 - Unreleased
 
 ### Fixed
 * New version toast (#2760)
@@ -23,12 +44,12 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 * Atlassian Integration OAuth via feature flag (#2743)
 * Video alpha (#2726)
 
-## v3.6.1
+## v3.6.1 2019-Mar-14
 
 ### Fixed
 * Demo was broken by #2712
 
-## v3.6.0
+## v3.6.0 2019-Mar-13
 
 ### Added
 * Spellcheck to cards (#2706)

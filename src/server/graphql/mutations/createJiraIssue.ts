@@ -113,7 +113,8 @@ export default {
       return standardError(new Error(Object.values(issueMetaRes.errors)[0]), {userId: viewerId})
     }
     const {projects} = issueMetaRes
-    const [project] = projects
+    // should always be the first and only item in the project arr
+    const project = projects.find((project) => project.key === projectKey)!
     const {issuetypes, name: projectName} = project
     const bestType = issuetypes.find((type) => type.name === 'Task') || issuetypes[0]
     const payload = {

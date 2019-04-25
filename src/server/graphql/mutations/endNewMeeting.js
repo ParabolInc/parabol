@@ -1,10 +1,10 @@
+import sendSegmentEvent, {sendSegmentIdentify} from 'server/utils/sendSegmentEvent'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {NOTIFICATION, TEAM} from 'universal/utils/constants'
 import EndNewMeetingPayload from 'server/graphql/types/EndNewMeetingPayload'
-import sendSegmentEvent from 'server/utils/sendSegmentEvent'
 import {endSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack'
 import sendNewMeetingSummary from 'server/graphql/mutations/helpers/endMeeting/sendNewMeetingSummary'
 import shortid from 'shortid'
@@ -96,6 +96,7 @@ export default {
         wasFacilitator: true
       })
       sendSegmentEvent('Retro Meeting Completed', nonFacilitators, traits)
+      sendSegmentIdentify(presentMemberUserIds)
       sendNewMeetingSummary(completedMeeting, dataLoader)
       const events = meetingMembers.map((meetingMember) => ({
         id: shortid.generate(),

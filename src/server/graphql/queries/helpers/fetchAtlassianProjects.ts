@@ -2,12 +2,8 @@ import {DataLoaderWorker} from 'server/graphql/graphql'
 import AtlassianManager from 'server/utils/AtlassianManager'
 import {Omit} from 'types/generics'
 import {ISuggestedIntegrationJira} from 'universal/types/graphql'
-
-const getProjectName = (projectName, sites, cloudId) => {
-  if (sites.length === 1) return projectName
-  const site = sites.find((site) => site.id === cloudId)
-  return `${site.name}/${projectName}`
-}
+import makeJiraProjectName from 'universal/utils/makeJiraProjectName'
+import makeSuggestedIntegrationId from 'universal/utils/makeSuggestedIntegrationId'
 
 const fetchAtlassianProjects = async (dataLoader: DataLoaderWorker, teamId, userId) => {
   const [accessToken, auths] = await Promise.all([
@@ -29,17 +25,18 @@ const fetchAtlassianProjects = async (dataLoader: DataLoaderWorker, teamId, user
 
   const cloudIds = sites.map((site) => site.id)
   const atlassianProjects = [] as Omit<ISuggestedIntegrationJira, '__typename' | 'remoteProject'>[]
+  const service = 'jira' as any // TaskServiceEnum.jira
   await manager.getProjects(cloudIds, (err, res) => {
     if (err) {
       console.error(err)
     } else if (res) {
       const {cloudId, newProjects} = res
       const newItems = newProjects.map((project) => ({
-        // projectId is not globally unique, but a cloudId is
-        id: `${cloudId}:${project.id}`,
-        service: 'jira' as any, // TaskServiceEnum.jira
+        // projectId/key is not globally unique, but a cloudId is
+        id: makeSuggestedIntegrationId({...project, projectKey: project.key, cloudId, service}),
+        service,
         cloudId,
-        projectName: getProjectName(project.name, sites, cloudId),
+        projectName: makeJiraProjectName(project.name, sites, cloudId),
         projectKey: project.key,
         avatar: project.avatarUrls['24x24']
       }))

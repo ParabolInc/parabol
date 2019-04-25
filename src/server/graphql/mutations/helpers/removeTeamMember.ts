@@ -1,12 +1,20 @@
 import getRethink from 'server/database/rethinkDriver'
-import archiveTasksForManyRepos from 'server/safeMutations/archiveTasksForManyRepos'
-import removeGitHubReposForUserId from 'server/safeMutations/removeGitHubReposForUserId'
-import shortid from 'shortid'
-import {GITHUB, KICKED_OUT} from 'universal/utils/constants'
-import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
+import {DataLoaderWorker} from 'server/graphql/graphql'
 import removeTeamMemberFromNewMeeting from 'server/graphql/mutations/helpers/removeTeamMemberFromNewMeeting'
+import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB'
+import shortid from 'shortid'
+import {KICKED_OUT} from 'universal/utils/constants'
+import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
 
-const removeTeamMember = async (teamMemberId, options, dataLoader) => {
+interface Options {
+  isKickout: boolean
+}
+
+const removeTeamMember = async (
+  teamMemberId: string,
+  options: Options,
+  dataLoader: DataLoaderWorker
+) => {
   const {isKickout} = options
   const r = getRethink()
   const now = new Date()
@@ -22,11 +30,13 @@ const removeTeamMember = async (teamMemberId, options, dataLoader) => {
   }
 
   if (activeTeamMembers.length === 1) {
+    // archive single-person teams
     await r
       .table('Team')
       .get(teamId)
       .update({isArchived: true})
   } else if (isLead) {
+    // assign new leader, remove old leader flag
     await r({
       newTeamLead: r
         .table('TeamMember')
@@ -42,7 +52,7 @@ const removeTeamMember = async (teamMemberId, options, dataLoader) => {
   }
 
   // assign active tasks to the team lead
-  const {changedProviders, reassignedTasks, removedNotifications, user} = await r({
+  const {integratedTasksToArchive, reassignedTasks, removedNotifications, user} = await r({
     teamMember: r
       .table('TeamMember')
       .get(teamMemberId)
@@ -50,13 +60,31 @@ const removeTeamMember = async (teamMemberId, options, dataLoader) => {
         isNotRemoved: false,
         updatedAt: now
       }),
+    integratedTasksToArchive: r
+      .table('Task')
+      .getAll(teamMemberId, {index: 'assigneeId'})
+      .filter((task) => {
+        r.and(
+          task('tags')
+            .contains('archived')
+            .not(),
+          task('integrations')
+            .default(null)
+            .ne(null)
+        )
+      }),
     reassignedTasks: r
       .table('Task')
       .getAll(teamMemberId, {index: 'assigneeId'})
       .filter((task) =>
-        task('tags')
-          .contains('archived')
-          .not()
+        r.and(
+          task('tags')
+            .contains('archived')
+            .not(),
+          task('integrations')
+            .default(null)
+            .eq(null)
+        )
       )
       .update(
         {
@@ -76,6 +104,7 @@ const removeTeamMember = async (teamMemberId, options, dataLoader) => {
         {returnChanges: true}
       )('changes')(0)('new_val')
       .default(null),
+    // not adjusting atlassian, if they join the team again, they'll be ready to go
     changedProviders: r
       .table('Provider')
       .getAll(teamId, {index: 'teamId'})
@@ -108,13 +137,8 @@ const removeTeamMember = async (teamMemberId, options, dataLoader) => {
     })
   }
 
-  const changedGitHubIntegrations = changedProviders.some((change) => change.service === GITHUB)
-  let archivedTaskIds = []
-  if (changedGitHubIntegrations) {
-    const repoChanges = await removeGitHubReposForUserId(userId, [teamId])
-    // TODO send the archived tasks in a mutation payload
-    archivedTaskIds = await archiveTasksForManyRepos(repoChanges)
-  }
+  const archivedTasks = await archiveTasksForDB(integratedTasksToArchive, dataLoader)
+  const archivedTaskIds = archivedTasks.map(({id}) => id)
 
   // if a new meeting was currently running, remove them from it
   await removeTeamMemberFromNewMeeting(teamMemberId, teamId, dataLoader)

@@ -3,6 +3,7 @@ import {ICreateIssueInput} from 'universal/types/githubGraphql'
 import {IGraphQLResponseError} from 'universal/types/graphql'
 import createIssue from './githubQueries/createIssue.graphql'
 import getRepoInfo from './githubQueries/getRepoInfo.graphql'
+import getProfile from './githubQueries/getProfile.graphql'
 import getRepos from './githubQueries/getRepos.graphql'
 
 interface GitHubClientManagerOptions {
@@ -25,12 +26,14 @@ type DocResponse<T> = T extends DocumentNode<infer R> ? R : never
 type DocVariables<T> = T extends DocumentNode<any, infer V> ? V : never
 
 class GitHubClientManager {
+  accessToken: string
   fetch: typeof fetch
   // the any is for node until we can use tsc in nodeland
   cache: {[key: string]: {result: any; expiration: number | any}} = {}
   timeout = 5000
   headers: any
   constructor (accessToken: string, options: GitHubClientManagerOptions = {}) {
+    this.accessToken = accessToken
     this.fetch = options.fetch || window.fetch
     this.headers = {
       'Content-Type': 'application/json',
@@ -90,8 +93,11 @@ class GitHubClientManager {
     return this.query(getRepoInfo, {repoName, repoOwner, assigneeLogin})
   }
 
+  async getProfile () {
+    return this.query(getProfile)
+  }
+
   async createIssue (createIssueInput: ICreateIssueInput) {
-    console.log('quer', createIssue)
     return this.mutate(createIssue, {input: createIssueInput})
   }
 }

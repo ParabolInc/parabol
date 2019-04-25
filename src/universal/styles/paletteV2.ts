@@ -6,7 +6,7 @@ export namespace PALETTE {
   }
   export const enum BACKGROUND {
     MAIN = '#F1F0FA',
-    MAIN_DARKENED = '#E0DFEC', // TEXT.LIGHT alpha .15 over BACKGROUND.MAIN
+    MAIN_DARKENED = '#E0DDEC', // PRIMARY.MAIN alpha 10% over BACKGROUND.MAIN
     MAIN_LIGHTENED = '#F5F4FB', // BACKGROUND.MAIN alpha .15 over #FFF
     LIGHTEST = '#F1F0FA80',
     BACKDROP = '#4442584D',
@@ -18,16 +18,18 @@ export namespace PALETTE {
   }
 
   export const enum BORDER {
-    // LIGHT = '#D1CBDB',
+    LIGHTER = '#DFDFE5',
     LIGHT = '#C1C0CD',
     DARK = '#b6adc7',
     MAIN = '#493272',
-    BLUE_RGB = '50, 154, 229'
+    BLUE = '#329AE5',
+    BLUE_LIGHT = '#99CDF2'
   }
   export const enum TEXT {
     MAIN = '#444258',
     LIGHT = '#82809A',
-    GREEN = '#61BF8B'
+    GREEN = '#61BF8B',
+    PINK = '#ED4C86'
   }
   export const enum ERROR {
     MAIN = '#ED4C56'

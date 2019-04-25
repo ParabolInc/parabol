@@ -227,7 +227,7 @@ class AtlassianClientManager {
       args = '?' + args
     }
     return this.get(
-      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/createmeta?${args}`
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/createmeta${args}`
     ) as IssueCreateMetadata | AtlassianError | JiraError
   }
 

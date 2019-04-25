@@ -1,11 +1,12 @@
 import {ProviderList_viewer} from '__generated__/ProviderList_viewer.graphql'
 import React from 'react'
+import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
 import AtlassianProviderRow from 'universal/modules/teamDashboard/components/ProviderRow/AtlassianProviderRow'
+import GitHubProviderRow from 'universal/modules/teamDashboard/components/ProviderRow/GitHubProviderRow'
 import ProviderRow from 'universal/modules/teamDashboard/components/ProviderRow/ProviderRow'
-import {GITHUB, SLACK} from 'universal/utils/constants'
-import styled from 'react-emotion'
+import {SLACK} from 'universal/utils/constants'
 
 interface Props {
   viewer: ProviderList_viewer
@@ -24,7 +25,7 @@ const ProviderList = (props: Props) => {
   return (
     <StyledWrapper>
       <AtlassianProviderRow teamId={teamId} retry={retry} viewer={viewer} />
-      <ProviderRow name={GITHUB} providerDetails={providerMap[GITHUB]} teamId={teamId} />
+      <GitHubProviderRow teamId={teamId} viewer={viewer} />
       <ProviderRow name={SLACK} providerDetails={providerMap[SLACK]} teamId={teamId} />
     </StyledWrapper>
   )
@@ -35,14 +36,12 @@ export default createFragmentContainer(
   graphql`
     fragment ProviderList_viewer on User {
       providerMap(teamId: $teamId) {
-        GitHubIntegration {
-          ...ProviderRow_providerDetails
-        }
         SlackIntegration {
           ...ProviderRow_providerDetails
         }
       }
       ...AtlassianProviderRow_viewer
+      ...GitHubProviderRow_viewer
     }
   `
 )

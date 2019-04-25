@@ -27,7 +27,7 @@ const handleEditTask = (payload, store) => {
   } else {
     for (let ii = 0; ii < taskEditors.length; ii++) {
       const taskEditor = taskEditors[ii]
-      if (taskEditor.getValue('userId') !== userId) {
+      if (taskEditor && taskEditor.getValue('userId') !== userId) {
         newTaskEditors.push(taskEditor)
       }
     }

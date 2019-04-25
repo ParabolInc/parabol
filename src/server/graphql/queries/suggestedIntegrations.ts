@@ -64,11 +64,9 @@ export default {
     for (let i = 0; i < userAndTeamItems.length; i++) {
       const integration = userAndTeamItems[i]
       if (!permLookup[integration.service] || idSet.has(integration.id)) {
-        console.log('ignoring', integration.id)
         continue
       }
       idSet.add(integration.id)
-      console.log('adding', integration.id)
       dedupedTeamIntegrations.push(integration)
     }
 

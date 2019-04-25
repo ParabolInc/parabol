@@ -30,7 +30,13 @@ import startStage_ from 'universal/utils/startStage_'
 import unlockAllStagesForPhase from 'universal/utils/unlockAllStagesForPhase'
 import unlockNextStages from 'universal/utils/unlockNextStages'
 import initBotScript from './initBotScript'
-import initDB, {demoMeetingId, demoTeamId, demoViewerId} from './initDB'
+import initDB, {
+  demoMeetingId,
+  demoTeamId,
+  demoViewerId,
+  GitHubProjectKeyLookup,
+  JiraProjectKeyLookup
+} from './initDB'
 import LocalAtmosphere from './LocalAtmosphere'
 
 interface DemoEvents {
@@ -140,11 +146,13 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
     },
-    GitHubReposMenuRootQuery: () => {
+    TaskFooterIntegrateMenuRootQuery: () => {
       return {
         viewer: {
           ...this.db.users[0],
-          githubRepos: []
+          userOnTeam: {
+            ...this.db.users[0]
+          }
         }
       }
     },
@@ -165,7 +173,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
     },
-    OutcomeCardAssignMenuRootQuery: () => {
+    TaskFooterUserAssigneeMenuRootQuery: () => {
       return {
         viewer: {
           ...this.db.users[0],
@@ -192,6 +200,64 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           }
         }
       }
+    },
+    useAllIntegrationsQuery: () => {
+      return {
+        viewer: {
+          ...this.db.users[0],
+          userOnTeam: {
+            ...this.db.users[0]
+          }
+        }
+      }
+    },
+    CreateGitHubIssueMutation: ({taskId, nameWithOwner}, userId) => {
+      const task = this.db.tasks.find((task) => task.id === taskId)
+      // if the human deleted the task, exit fast
+      if (!task) return null
+      Object.assign(task, {
+        updatedAt: new Date().toJSON(),
+        integration: {
+          __typename: 'TaskIntegrationGitHub',
+          id: `${taskId}:GitHub`,
+          ...GitHubProjectKeyLookup[nameWithOwner],
+          issueNumber: this.getTempId('')
+        }
+      })
+
+      const data = {
+        __typename: 'CreateGitHubIssuePayload',
+        error: null,
+        task
+      }
+      if (userId !== demoViewerId) {
+        this.emit(TASK, data)
+      }
+      return {createGitHubIssue: data}
+    },
+    CreateJiraIssueMutation: ({projectKey, taskId}, userId) => {
+      const task = this.db.tasks.find((task) => task.id === taskId)
+      // if the human deleted the task, exit fast
+      if (!task) return null
+      Object.assign(task, {
+        updatedAt: new Date().toJSON(),
+        integration: {
+          __typename: 'TaskIntegrationJira',
+          id: `${taskId}:jira`,
+          ...JiraProjectKeyLookup[projectKey],
+          issueKey: this.getTempId(`${projectKey}-`)
+        }
+      })
+
+      const data = {
+        __typename: 'CreateJiraIssuePayload',
+        error: null,
+        task
+      }
+      if (userId !== demoViewerId) {
+        this.emit(TASK, data)
+      }
+      return {createJiraIssue: data}
     },
     CreateReflectionMutation: (
       {input: {content, retroPhaseItemId, sortOrder, id, groupId}},
@@ -958,13 +1024,16 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         this.emit(TEAM, data)
       }
       return {endNewMeeting: data}
+    },
+    InviteToTeamMutation: ({invitees}) => {
+      return {inviteToTeam: {invitees}}
     }
   }
 
   fetch = async (opName: string, variables: Variables) => {
     const resolve = this.ops[opName]
     if (!resolve) {
-      console.log('op not found', opName)
+      console.error('op not found', opName)
       return {
         errors: [{message: `op not found ${opName}`}]
       }
