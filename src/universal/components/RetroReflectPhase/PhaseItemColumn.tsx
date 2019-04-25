@@ -201,11 +201,9 @@ class PhaseItemColumn extends Component<Props> {
                   tip={<div>Tap to highlight prompt for everybody</div>}
                   isDisabled={this.hasFocused || isFocused || !isViewerFacilitator || !!isComplete}
                 >
-                  <React.Fragment>
-                    <Prompt>{question}</Prompt>
-                    <Description>{description}</Description>
-                  </React.Fragment>
+                  <Prompt>{question}</Prompt>
                 </Tooltip>
+                <Description>{description}</Description>
               </PromptHeadder>
               <EditorAndStatus isPhaseComplete={!!isComplete}>
                 <PhaseItemEditor
