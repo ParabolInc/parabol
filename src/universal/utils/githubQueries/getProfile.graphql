@@ -1,0 +1,6 @@
+query getProfile {
+  viewer {
+    id
+    login
+  }
+}

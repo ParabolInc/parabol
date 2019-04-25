@@ -86,7 +86,6 @@ const GitHubProviderRow = (props: Props) => {
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
   const {githubAuth} = viewer
   const accessToken = (githubAuth && githubAuth.accessToken) || undefined
-  const providerId = githubAuth ? window.btoa(`Provider:${githubAuth.id}`) : ''
   const openOAuth = handleOpenOAuth({
     name: IntegrationServiceEnum.GitHubIntegration,
     submitting,
@@ -123,7 +122,6 @@ const GitHubProviderRow = (props: Props) => {
             <GitHubConfigMenu
               closePortal={closePortal}
               mutationProps={mutationProps}
-              providerId={providerId}
               teamId={teamId}
             />
           )}
@@ -136,7 +134,6 @@ const GitHubProviderRow = (props: Props) => {
 graphql`
   fragment GitHubProviderRowViewer on User {
     githubAuth(teamId: $teamId) {
-      id
       accessToken
       login
     }

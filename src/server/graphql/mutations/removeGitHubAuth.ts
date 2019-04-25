@@ -1,15 +1,15 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
-import RemoveAtlassianAuthPayload from 'server/graphql/types/RemoveAtlassianAuthPayload'
+import RemoveGitHubAuthPayload from 'server/graphql/types/RemoveGitHubAuthPayload'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import standardError from 'server/utils/standardError'
-import {TEAM} from 'universal/utils/constants'
+import {GITHUB, TEAM} from 'universal/utils/constants'
 
 export default {
-  name: 'RemoveAtlassianAuth',
-  type: new GraphQLNonNull(RemoveAtlassianAuthPayload),
-  description: 'Disconnect a team member from atlassian',
+  name: 'RemoveGitHubAuth',
+  type: new GraphQLNonNull(RemoveGitHubAuthPayload),
+  description: 'Disconnect a team member from GitHub',
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -30,9 +30,9 @@ export default {
 
     // RESOLUTION
     const existingAuth = await r
-      .table('AtlassianAuth')
-      .getAll(viewerId, {index: 'userId'})
-      .filter({teamId})
+      .table('Provider')
+      .getAll(teamId, {index: 'teamId'})
+      .filter({service: GITHUB, userId: viewerId})
       .nth(0)
       .default(null)
 
@@ -42,12 +42,12 @@ export default {
 
     const authId = existingAuth.id
     await r
-      .table('AtlassianAuth')
+      .table('Provider')
       .get(authId)
-      .update({accessToken: null, refreshToken: null, isActive: false, updatedAt: now})
+      .update({accessToken: null, isActive: false, updatedAt: now})
 
     const data = {authId, teamId, userId: viewerId}
-    publish(TEAM, teamId, RemoveAtlassianAuthPayload, data, subOptions)
+    publish(TEAM, teamId, RemoveGitHubAuthPayload, data, subOptions)
     return data
   }
 }

@@ -2652,11 +2652,6 @@ export interface IProviderMap {
    * All the big details associated with slack
    */
   SlackIntegration: IProviderRow | null
-
-  /**
-   * All the big details associated with GitHub
-   */
-  GitHubIntegration: IProviderRow | null
 }
 
 /**
@@ -2833,6 +2828,7 @@ export interface IMutation {
    * Give someone advanced features in a flag
    */
   addFeatureFlag: IAddFeatureFlagPayload | null
+  addGitHubAuth: IAddGitHubAuthPayload
 
   /**
    * Create a new team and add the first team member
@@ -3028,6 +3024,11 @@ export interface IMutation {
    * Disconnect a team member from atlassian
    */
   removeAtlassianAuth: IRemoveAtlassianAuthPayload
+
+  /**
+   * Disconnect a team member from GitHub
+   */
+  removeGitHubAuth: IRemoveGitHubAuthPayload
 
   /**
    * Disconnect a team from a Provider token
@@ -3262,6 +3263,11 @@ export interface IAddFeatureFlagOnMutationArguments {
    * the flag that you want to give to the user
    */
   flag: UserFlagEnum
+}
+
+export interface IAddGitHubAuthOnMutationArguments {
+  code: string
+  teamId: string
 }
 
 export interface IAddOrgOnMutationArguments {
@@ -3658,6 +3664,13 @@ export interface IRemoveAgendaItemOnMutationArguments {
 }
 
 export interface IRemoveAtlassianAuthOnMutationArguments {
+  /**
+   * the teamId to disconnect from the token
+   */
+  teamId: string
+}
+
+export interface IRemoveGitHubAuthOnMutationArguments {
   /**
    * the teamId to disconnect from the token
    */
@@ -4082,6 +4095,21 @@ export interface IAddFeatureFlagPayload {
    * A human-readable result
    */
   result: string | null
+}
+
+export interface IAddGitHubAuthPayload {
+  __typename: 'AddGitHubAuthPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The newly created auth
+   */
+  githubAuth: IGitHubAuth | null
+
+  /**
+   * The user with updated githubAuth
+   */
+  user: IUser | null
 }
 
 export interface INewTeamInput {
@@ -5562,6 +5590,22 @@ export interface IRemoveAtlassianAuthPayload {
   user: IUser | null
 }
 
+export interface IRemoveGitHubAuthPayload {
+  __typename: 'RemoveGitHubAuthPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The ID of the authorization removed
+   */
+  authId: string | null
+  teamId: string | null
+
+  /**
+   * The user with updated atlassianAuth
+   */
+  user: IUser | null
+}
+
 export interface IRemoveProviderPayload {
   __typename: 'RemoveProviderPayload'
   error: IStandardMutationError | null
@@ -6372,6 +6416,8 @@ export type TaskSubscriptionPayload =
 
 export type TeamSubscriptionPayload =
   | IAcceptTeamInvitationPayload
+  | IAddAtlassianAuthPayload
+  | IAddGitHubAuthPayload
   | IAddTeamPayload
   | IArchiveTeamPayload
   | IAutoGroupReflectionsPayload
@@ -6412,6 +6458,8 @@ export type TeamSubscriptionPayload =
   | IAddReflectTemplatePromptPayload
   | IMoveReflectTemplatePromptPayload
   | IReflectTemplatePromptUpdateDescriptionPayload
+  | IRemoveAtlassianAuthPayload
+  | IRemoveGitHubAuthPayload
   | IRemoveReflectTemplatePayload
   | IRemoveReflectTemplatePromptPayload
   | IRenameReflectTemplatePayload
