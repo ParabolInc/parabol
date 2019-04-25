@@ -17,12 +17,10 @@ import withAtmosphere, {
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import SetPhaseFocusMutation from 'universal/mutations/SetPhaseFocusMutation'
 import {DECELERATE} from 'universal/styles/animation'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
-import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
 import getNextSortOrder from 'universal/utils/getNextSortOrder'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import {PALETTE} from '../../styles/paletteV2'
+import {PALETTE} from 'universal/styles/paletteV2'
+import {ICON_SIZE} from 'universal/styles/typographyV2'
 
 const ColumnWrapper = styled('div')({
   alignItems: 'center',
@@ -33,11 +31,11 @@ const ColumnWrapper = styled('div')({
 })
 
 const ColumnHighlight = styled('div')(({isFocused}: {isFocused: boolean}) => ({
-  background: isFocused && appTheme.palette.mid10a,
+  backgroundColor: isFocused ? PALETTE.BACKGROUND.MAIN_DARKENED : undefined,
   height: '100%',
-  maxWidth: '26rem',
-  maxHeight: '38rem',
-  padding: '1rem',
+  maxWidth: 416,
+  maxHeight: 608,
+  padding: 16,
   transition: `background 150ms ${DECELERATE}`,
   width: '100%'
 }))
@@ -48,7 +46,7 @@ const ColumnContent = styled('div')({
   height: '100%',
   justifyContent: 'space-between',
   margin: '0 auto',
-  maxWidth: '320',
+  maxWidth: 320,
   width: '100%'
 })
 
@@ -56,33 +54,39 @@ const HeaderAndEditor = styled('div')({
   flex: 0.3
 })
 
-const TypeDescription = styled('div')({
-  fontSize: '1.25rem',
+const Prompt = styled('div')({
+  fontSize: 20,
   fontStyle: 'italic',
-  fontWeight: 600
+  fontWeight: 600,
+  lineHeight: '24px'
 })
 
 const Description = styled('div')({
-  color: PALETTE.TEXT.LIGHT,
-  fontSize: 14,
+  color: PALETTE.TEXT.MAIN,
+  fontSize: 13,
   fontStyle: 'italic',
   fontWeight: 400,
-  marginLeft: 18,
+  lineHeight: '20px',
   marginTop: 8
 })
 
 const FocusArrow = styled(Icon)(({isFocused}: {isFocused: boolean}) => ({
-  color: ui.palette.yellow,
-  fontSize: MD_ICONS_SIZE_18,
+  color: PALETTE.TEXT.PINK,
+  display: 'block',
+  fontSize: ICON_SIZE.MD24,
+  height: ICON_SIZE.MD24,
+  left: -18,
+  lineHeight: 1,
   opacity: isFocused ? 1 : 0,
-  paddingRight: isFocused ? '0.5rem' : 0,
+  position: 'absolute',
   transition: `all 150ms ${DECELERATE}`,
   transform: `translateX(${isFocused ? 0 : '-100%'})`
 }))
 
-const TypeHeader = styled('div')(({isClickable}: {isClickable: boolean}) => ({
+const PromptHeader = styled('div')(({isClickable}: {isClickable: boolean}) => ({
   cursor: isClickable ? 'pointer' : undefined,
-  padding: '0 0 1rem',
+  padding: '0 0 16px 12px',
+  position: 'relative',
   userSelect: 'none',
   width: '100%'
 }))
@@ -183,28 +187,24 @@ class PhaseItemColumn extends Component<Props> {
         <ColumnHighlight isFocused={isFocused}>
           <ColumnContent>
             <HeaderAndEditor>
-              <TypeHeader
+              <PromptHeader
                 isClickable={isViewerFacilitator && !isComplete}
                 onClick={this.setColumnFocus}
               >
-                <TypeDescription>
-                  <FocusArrow isFocused={isFocused}>forward</FocusArrow>
-                  <Tooltip
-                    delay={200}
-                    maxHeight={40}
-                    maxWidth={500}
-                    originAnchor={originAnchor}
-                    targetAnchor={targetAnchor}
-                    tip={<div>Tap to highlight prompt for everybody</div>}
-                    isDisabled={
-                      this.hasFocused || isFocused || !isViewerFacilitator || !!isComplete
-                    }
-                  >
-                    <span>{question}</span>
-                  </Tooltip>
-                  <Description>{description}</Description>
-                </TypeDescription>
-              </TypeHeader>
+                <FocusArrow isFocused={isFocused}>forward</FocusArrow>
+                <Tooltip
+                  delay={200}
+                  maxHeight={40}
+                  maxWidth={500}
+                  originAnchor={originAnchor}
+                  targetAnchor={targetAnchor}
+                  tip={<div>Tap to highlight prompt for everybody</div>}
+                  isDisabled={this.hasFocused || isFocused || !isViewerFacilitator || !!isComplete}
+                >
+                  <Prompt>{question}</Prompt>
+                </Tooltip>
+                <Description>{description}</Description>
+              </PromptHeader>
               <EditorAndStatus isPhaseComplete={!!isComplete}>
                 <PhaseItemEditor
                   phaseEditorRef={this.phaseEditorRef}
