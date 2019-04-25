@@ -27,9 +27,13 @@ const TaskIntegrationLink = (props: Props) => {
   const {service} = integration
   if (service === TaskServiceEnum.jira) {
     const {issueKey, projectKey, cloudName} = integration
+    const href =
+      cloudName === 'jira-demo'
+        ? 'https://www.parabol.co/features/integrations'
+        : `https://${cloudName}.atlassian.net/browse/${issueKey}`
     return (
       <StyledLink
-        href={`https://${cloudName}.atlassian.net/browse/${issueKey}`}
+        href={href}
         rel='noopener noreferrer'
         target='_blank'
         title={`Jira Issue #${issueKey} on ${projectKey}`}
@@ -39,9 +43,14 @@ const TaskIntegrationLink = (props: Props) => {
     )
   } else if (service === TaskServiceEnum.github) {
     const {nameWithOwner, issueNumber} = integration
+    console.log('taskint', integration)
+    const href =
+      nameWithOwner === 'ParabolInc/ParabolDemo'
+        ? 'https://github.com/ParabolInc/action'
+        : `https://www.github.com/${nameWithOwner}/issues/${issueNumber}`
     return (
       <StyledLink
-        href={`https://www.github.com/${nameWithOwner}/issues/${issueNumber}`}
+        href={href}
         rel='noopener noreferrer'
         target='_blank'
         title={`GitHub Issue #${issueNumber} on ${nameWithOwner}`}
@@ -61,15 +70,19 @@ graphql`
   }
 `
 
+graphql`
+  fragment TaskIntegrationLinkIntegrationGitHub on TaskIntegrationGitHub {
+    issueNumber
+    nameWithOwner
+  }
+`
+
 export default createFragmentContainer(
   TaskIntegrationLink,
   graphql`
     fragment TaskIntegrationLink_integration on TaskIntegration {
       service
-      ... on TaskIntegrationGitHub {
-        issueNumber
-        nameWithOwner
-      }
+      ...TaskIntegrationLinkIntegrationGitHub @relay(mask: false)
       ...TaskIntegrationLinkIntegrationJira @relay(mask: false)
     }
   `

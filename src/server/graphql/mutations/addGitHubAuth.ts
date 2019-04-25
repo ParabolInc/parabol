@@ -34,6 +34,10 @@ export default {
     const {accessToken} = manager
     const profile = await manager.getProfile()
 
+    if ('message' in profile) {
+      return standardError(new Error(profile.message), {userId: viewerId})
+    }
+
     if (Array.isArray(profile.errors)) {
       console.error(profile.errors[0])
       return standardError(new Error(profile.errors[0].message), {userId: viewerId})
