@@ -13,43 +13,39 @@ import NewMeetingCheckInPrompt from 'universal/modules/meeting/components/Meetin
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
 import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint'
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection'
-import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting'
-import ui from 'universal/styles/ui'
 import {MeetingTypeEnum} from 'universal/types/graphql'
-import {CHECKIN} from 'universal/utils/constants'
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import EndMeetingButton from './EndMeetingButton'
+import Icon from 'universal/components/Icon'
+import {PALETTE} from 'universal/styles/paletteV2'
+import {ICON_SIZE} from 'universal/styles/typographyV2'
 
 const CheckIn = styled('div')({
   display: 'flex',
   justifyContent: 'center',
-  padding: '1rem 0',
-  width: '100%',
-
-  [ui.breakpoint.wide]: {
-    padding: '2rem 0'
-  },
-
-  [ui.breakpoint.wider]: {
-    padding: '3rem 0'
-  },
-
-  [ui.breakpoint.widest]: {
-    padding: '4rem 0'
-  }
+  minHeight: 98,
+  padding: 16,
+  width: '100%'
 })
 
 const Hint = styled('div')({
-  marginTop: '2.5rem'
+  marginTop: 16
 })
 
 const BottomControlSpacer = styled('div')({
-  minWidth: '6rem'
+  minWidth: 96
 })
 
 const StyledBottomBar = styled(MeetingControlBar)({
   justifyContent: 'space-between'
+})
+
+const StyledIcon = styled(Icon)({
+  color: PALETTE.TEXT.LIGHT,
+  display: 'block',
+  margin: '0 auto 4px',
+  width: ICON_SIZE.MD24
 })
 
 interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
@@ -70,7 +66,7 @@ class NewMeetingCheckIn extends Component<Props> {
     const {newMeeting} = team
     if (!newMeeting) return
     const {
-      facilitator: {facilitatorName, facilitatorUserId},
+      facilitator: {facilitatorUserId},
       localStage: {localStageId},
       meetingId,
       phases
@@ -80,8 +76,6 @@ class NewMeetingCheckIn extends Component<Props> {
     const nextStageRes = findStageAfterId(phases, localStageId)
     // in case the checkin is the last phase of the meeting
     if (!nextStageRes) return null
-    const {phase: nextPhase} = nextStageRes
-    const lastCheckInStage = nextPhase.phaseType !== CHECKIN
     const {viewerId} = atmosphere
     const isFacilitating = facilitatorUserId === viewerId
     return (
@@ -89,26 +83,11 @@ class NewMeetingCheckIn extends Component<Props> {
         <MeetingSection flexToFill paddingBottom='1rem'>
           <NewMeetingCheckInPrompt team={team} teamMember={teamMember} />
           <CheckIn>
-            {!isFacilitating && (
+            {isMyMeetingSection && (
               <Hint>
-                <MeetingFacilitationHint showEllipsis={lastCheckInStage || !isMyMeetingSection}>
-                  {!lastCheckInStage ? (
-                    <span>
-                      {isMyMeetingSection ? (
-                        <span>{'Share with your teammates!'}</span>
-                      ) : (
-                        <span>
-                          {'Waiting for'} <b>{teamMember.preferredName}</b>{' '}
-                          {'to share with the team'}
-                        </span>
-                      )}
-                    </span>
-                  ) : (
-                    <span>
-                      {'Waiting for'} <b>{facilitatorName}</b>{' '}
-                      {`to advance to ${actionMeeting.updates.name}`}
-                    </span>
-                  )}
+                <StyledIcon>record_voice_over</StyledIcon>
+                <MeetingFacilitationHint>
+                  {'Verbally share your response with the team'}
                 </MeetingFacilitationHint>
               </Hint>
             )}
@@ -142,7 +121,6 @@ export default createFragmentContainer(
         facilitatorStageId
         facilitator {
           facilitatorUserId: id
-          facilitatorName: preferredName
         }
         localStage {
           localStageId: id
