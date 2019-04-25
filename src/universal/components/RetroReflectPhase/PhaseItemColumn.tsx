@@ -83,7 +83,7 @@ const FocusArrow = styled(Icon)(({isFocused}: {isFocused: boolean}) => ({
   transform: `translateX(${isFocused ? 0 : '-100%'})`
 }))
 
-const PromptHeadder = styled('div')(({isClickable}: {isClickable: boolean}) => ({
+const PromptHeader = styled('div')(({isClickable}: {isClickable: boolean}) => ({
   cursor: isClickable ? 'pointer' : undefined,
   padding: '0 0 16px 12px',
   position: 'relative',
@@ -187,7 +187,7 @@ class PhaseItemColumn extends Component<Props> {
         <ColumnHighlight isFocused={isFocused}>
           <ColumnContent>
             <HeaderAndEditor>
-              <PromptHeadder
+              <PromptHeader
                 isClickable={isViewerFacilitator && !isComplete}
                 onClick={this.setColumnFocus}
               >
@@ -204,7 +204,7 @@ class PhaseItemColumn extends Component<Props> {
                   <Prompt>{question}</Prompt>
                 </Tooltip>
                 <Description>{description}</Description>
-              </PromptHeadder>
+              </PromptHeader>
               <EditorAndStatus isPhaseComplete={!!isComplete}>
                 <PhaseItemEditor
                   phaseEditorRef={this.phaseEditorRef}
