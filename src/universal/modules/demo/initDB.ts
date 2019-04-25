@@ -1,11 +1,15 @@
 import {CHECKIN, DISCUSS, GROUP, PRO, REFLECT, RETROSPECTIVE, VOTE} from 'universal/utils/constants'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import {
+  IJiraRemoteProject,
   IRetroReflection,
   IRetroReflectionGroup,
   IRetrospectiveMeeting,
   IRetrospectiveMeetingSettings,
-  ITask
+  ISuggestedIntegrationGitHub,
+  ISuggestedIntegrationJira,
+  ITask,
+  TaskServiceEnum
 } from '../../types/graphql'
 import getDemoAvatar from 'universal/utils/getDemoAvatar'
 import demoUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
@@ -37,12 +41,58 @@ const initMeetingSettings = () => {
   } as Partial<IRetrospectiveMeetingSettings>
 }
 
+export const JiraDemoKey = 'Demo'
+export const JiraDemoCloudName = 'jira-demo'
+const JiraSecretKey = 'jira-secret'
+
+export const JiraProjectKeyLookup = {
+  [JiraDemoKey]: {
+    projectKey: JiraDemoKey,
+    projectName: 'Demo Jira Project',
+    cloudId: '123',
+    cloudName: JiraDemoCloudName,
+    avatar: 'foo',
+    service: TaskServiceEnum.jira
+  },
+  [JiraSecretKey]: {
+    projectKey: JiraSecretKey,
+    projectName: 'Secret Jira Project',
+    cloudId: '123',
+    cloudName: JiraDemoCloudName,
+    avatar: 'foo',
+    service: TaskServiceEnum.jira
+  }
+}
+
+export const GitHubDemoKey = 'ParabolInc/ParabolDemo'
+export const GitHubProjectKeyLookup = {
+  [GitHubDemoKey]: {
+    nameWithOwner: GitHubDemoKey,
+    service: TaskServiceEnum.github
+  }
+}
+
+const makeSuggestedIntegrationJira = (key): ISuggestedIntegrationJira => ({
+  __typename: 'SuggestedIntegrationJira',
+  id: key,
+  remoteProject: {} as IJiraRemoteProject,
+  ...JiraProjectKeyLookup[key]
+})
+
+const makeSuggestedIntegrationGitHub = (nameWithOwner): ISuggestedIntegrationGitHub => ({
+  __typename: 'SuggestedIntegrationGitHub',
+  id: nameWithOwner,
+  ...GitHubProjectKeyLookup[nameWithOwner]
+})
+
 const initDemoUser = ({preferredName, email, picture}: BaseUser, idx: number) => {
   const now = new Date().toJSON()
   const id = idx === 0 ? demoViewerId : `bot${idx}`
   return {
     id,
     viewerId: id,
+    atlassianAuth: {isActive: true, accessToken: '123'},
+    githubAuth: {isActive: true, accessToken: '123'},
     connectedSockets: [`socket${idx}`],
     createdAt: now,
     email,
@@ -59,6 +109,17 @@ const initDemoUser = ({preferredName, email, picture}: BaseUser, idx: number) =>
     // name: 'You',
     picture: picture,
     preferredName,
+    suggestedIntegrations: {
+      hasMore: true,
+      items: [
+        makeSuggestedIntegrationJira(JiraDemoKey),
+        makeSuggestedIntegrationGitHub(GitHubDemoKey)
+      ]
+    },
+    allAvailableIntegrations: [
+      makeSuggestedIntegrationJira(JiraDemoKey),
+      makeSuggestedIntegrationJira(JiraSecretKey)
+    ],
     tms: [demoTeamId]
   }
 }

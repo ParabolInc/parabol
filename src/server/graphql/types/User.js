@@ -8,7 +8,6 @@ import {
   GraphQLString
 } from 'graphql'
 import archivedTasksCount from 'server/graphql/queries/archivedTasksCount'
-import githubRepos from 'server/graphql/queries/githubRepos'
 import integrationProvider from 'server/graphql/queries/integrationProvider'
 import invoiceDetails from 'server/graphql/queries/invoiceDetails'
 import invoices from 'server/graphql/queries/invoices'
@@ -249,7 +248,6 @@ const User = new GraphQLObjectType({
     },
     archivedTasks,
     archivedTasksCount,
-    githubRepos,
     integrationProvider,
     invoices,
     invoiceDetails,

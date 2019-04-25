@@ -13,9 +13,6 @@ const Providers = lazy(() =>
 const SlackIntegrations = lazy(() =>
   import(/* webpackChunkName: 'SlackIntegrationsRoot' */ 'universal/modules/teamDashboard/containers/SlackIntegrationsRoot/SlackIntegrationsRoot')
 )
-const GithubIntegrations = lazy(() =>
-  import(/* webpackChunkName: 'GitHubIntegrationsRoot' */ 'universal/modules/teamDashboard/containers/GitHubIntegrationsRoot/GitHubIntegrationsRoot')
-)
 
 interface Props extends RouteComponentProps<{teamId: string}> {
   teamMemberId: string
@@ -46,10 +43,6 @@ const TeamSettingsWrapper = (props: Props) => {
           path={`${match.url}/integrations/slack`}
           render={(p) => <SlackIntegrations {...p} teamMemberId={teamMemberId} />}
         />
-        />
-        <Route
-          path={`${match.url}/integrations/github`}
-          render={(p) => <GithubIntegrations {...p} teamMemberId={teamMemberId} />}
         />
         <Route
           exact

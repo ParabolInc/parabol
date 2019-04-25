@@ -181,11 +181,6 @@ export interface IUser {
   archivedTasksCount: number | null
 
   /**
-   * list of git hub repos available to the viewer
-   */
-  githubRepos: Array<IGitHubIntegration>
-
-  /**
    * get an integration provider belonging to the user
    */
   integrationProvider: IProvider | null
@@ -329,13 +324,6 @@ export interface IArchivedTasksOnUserArguments {
 export interface IArchivedTasksCountOnUserArguments {
   /**
    * The unique team ID
-   */
-  teamId: string
-}
-
-export interface IGithubReposOnUserArguments {
-  /**
-   * The unique team Id
    */
   teamId: string
 }
@@ -2106,58 +2094,6 @@ export interface INewFeatureBroadcast {
 }
 
 /**
- * An integration that connects github issues & PRs to Parabol tasks
- */
-export interface IGitHubIntegration {
-  __typename: 'GitHubIntegration'
-
-  /**
-   * The ID of an object
-   */
-  id: string
-
-  /**
-   * The parabol userId of the admin for this repo (usually the creator)
-   */
-  adminUserId: string
-
-  /**
-   * The datetime the integration was created
-   */
-  createdAt: any
-
-  /**
-   * The name of the repo. Follows format of OWNER/NAME
-   */
-  nameWithOwner: string | null
-
-  /**
-   * defaults to true. true if this is used
-   */
-  isActive: boolean | null
-
-  /**
-   * *The team that is linked to this integration
-   */
-  teamId: string
-
-  /**
-   * The users that can CRUD this integration
-   */
-  teamMembers: Array<ITeamMember>
-
-  /**
-   * The datetime the integration was updated
-   */
-  updatedAt: any
-
-  /**
-   * *The userIds connected to the repo so they can CRUD things under their own name
-   */
-  userIds: Array<string | null> | null
-}
-
-/**
  * The list of services for integrations
  */
 export const enum IntegrationServiceEnum {
@@ -2716,11 +2652,6 @@ export interface IProviderMap {
    * All the big details associated with slack
    */
   SlackIntegration: IProviderRow | null
-
-  /**
-   * All the big details associated with GitHub
-   */
-  GitHubIntegration: IProviderRow | null
 }
 
 /**
@@ -2897,7 +2828,7 @@ export interface IMutation {
    * Give someone advanced features in a flag
    */
   addFeatureFlag: IAddFeatureFlagPayload | null
-  addGitHubRepo: IAddGitHubRepoPayload
+  addGitHubAuth: IAddGitHubAuthPayload
 
   /**
    * Create a new team and add the first team member
@@ -3020,16 +2951,6 @@ export interface IMutation {
   githubAddAssignee: boolean | null
 
   /**
-   * Receive a webhook from github saying an org member was added
-   */
-  githubAddMember: boolean | null
-
-  /**
-   * Receive a webhook from github saying an org member was removed
-   */
-  githubRemoveMember: boolean | null
-
-  /**
    * pauses the subscription for a single user
    */
   inactivateUser: IInactivateUserPayload | null
@@ -3040,11 +2961,6 @@ export interface IMutation {
   inviteToTeam: IInviteToTeamPayload
 
   /**
-   * Add a user to an integration
-   */
-  joinIntegration: IJoinIntegrationPayload
-
-  /**
    * Finish a meeting abruptly
    */
   killMeeting: IKillMeetingPayload | null
@@ -3053,11 +2969,6 @@ export interface IMutation {
    * Finish a new meeting abruptly
    */
   endNewMeeting: IEndNewMeetingPayload | null
-
-  /**
-   * Remove yourself from an integration
-   */
-  leaveIntegration: ILeaveIntegrationPayload
 
   /**
    * Check a member in as present or absent
@@ -3115,6 +3026,11 @@ export interface IMutation {
   removeAtlassianAuth: IRemoveAtlassianAuthPayload
 
   /**
+   * Disconnect a team member from GitHub
+   */
+  removeGitHubAuth: IRemoveGitHubAuthPayload
+
+  /**
    * Disconnect a team from a Provider token
    */
   removeProvider: IRemoveProviderPayload
@@ -3123,11 +3039,6 @@ export interface IMutation {
    * Remove a slack channel integration from a team
    */
   removeSlackChannel: IRemoveSlackChannelPayload
-
-  /**
-   * Remove a github repo integration from a team
-   */
-  removeGitHubRepo: IRemoveGitHubRepoPayload
 
   /**
    * Remove a user from an org
@@ -3354,9 +3265,9 @@ export interface IAddFeatureFlagOnMutationArguments {
   flag: UserFlagEnum
 }
 
-export interface IAddGitHubRepoOnMutationArguments {
+export interface IAddGitHubAuthOnMutationArguments {
+  code: string
   teamId: string
-  nameWithOwner: string
 }
 
 export interface IAddOrgOnMutationArguments {
@@ -3604,30 +3515,6 @@ export interface IGithubAddAssigneeOnMutationArguments {
   nameWithOwner: string
 }
 
-export interface IGithubAddMemberOnMutationArguments {
-  /**
-   * The github login
-   */
-  userName: string
-
-  /**
-   * The github org login
-   */
-  orgName: string
-}
-
-export interface IGithubRemoveMemberOnMutationArguments {
-  /**
-   * The github login
-   */
-  userName: string
-
-  /**
-   * The github org login
-   */
-  orgName: string
-}
-
 export interface IInactivateUserOnMutationArguments {
   /**
    * the user to pause
@@ -3643,13 +3530,6 @@ export interface IInviteToTeamOnMutationArguments {
   invitees: Array<any>
 }
 
-export interface IJoinIntegrationOnMutationArguments {
-  /**
-   * The global id of the integration to join
-   */
-  globalId: string
-}
-
 export interface IKillMeetingOnMutationArguments {
   /**
    * The team that will be having the meeting
@@ -3662,13 +3542,6 @@ export interface IEndNewMeetingOnMutationArguments {
    * The meeting to end
    */
   meetingId: string
-}
-
-export interface ILeaveIntegrationOnMutationArguments {
-  /**
-   * the id of the integration to remove
-   */
-  globalId: string
 }
 
 export interface IMeetingCheckInOnMutationArguments {
@@ -3797,6 +3670,13 @@ export interface IRemoveAtlassianAuthOnMutationArguments {
   teamId: string
 }
 
+export interface IRemoveGitHubAuthOnMutationArguments {
+  /**
+   * the teamId to disconnect from the token
+   */
+  teamId: string
+}
+
 export interface IRemoveProviderOnMutationArguments {
   /**
    * The relay id of the service to remove
@@ -3811,10 +3691,6 @@ export interface IRemoveProviderOnMutationArguments {
 
 export interface IRemoveSlackChannelOnMutationArguments {
   slackGlobalId: string
-}
-
-export interface IRemoveGitHubRepoOnMutationArguments {
-  githubIntegrationId: string
 }
 
 export interface IRemoveOrgUserOnMutationArguments {
@@ -4221,10 +4097,19 @@ export interface IAddFeatureFlagPayload {
   result: string | null
 }
 
-export interface IAddGitHubRepoPayload {
-  __typename: 'AddGitHubRepoPayload'
+export interface IAddGitHubAuthPayload {
+  __typename: 'AddGitHubAuthPayload'
   error: IStandardMutationError | null
-  repo: IGitHubIntegration
+
+  /**
+   * The newly created auth
+   */
+  githubAuth: IGitHubAuth | null
+
+  /**
+   * The user with updated githubAuth
+   */
+  user: IUser | null
 }
 
 export interface INewTeamInput {
@@ -5510,17 +5395,6 @@ export interface INotificationTeamInvitation {
   userIds: Array<string> | null
 }
 
-export interface IJoinIntegrationPayload {
-  __typename: 'JoinIntegrationPayload'
-  error: IStandardMutationError | null
-
-  /**
-   * The globalId of the integration with a removed member
-   */
-  globalId: string
-  teamMember: ITeamMember
-}
-
 export interface IKillMeetingPayload {
   __typename: 'KillMeetingPayload'
   error: IStandardMutationError | null
@@ -5542,26 +5416,6 @@ export interface IEndNewMeetingPayload {
    * The ID of the suggestion to try a retro meeting, if tried
    */
   removedSuggestedActionId: string | null
-}
-
-export interface ILeaveIntegrationPayload {
-  __typename: 'LeaveIntegrationPayload'
-  error: IStandardMutationError | null
-
-  /**
-   * The globalId of the integration with a removed member
-   */
-  globalId: string
-
-  /**
-   * The global userId of the viewer that left. if null, remove the entire integration
-   */
-  userId: string | null
-
-  /**
-   * The list of tasks removed triggered by a removed repo if this was the last viewer on the repo
-   */
-  archivedTaskIds: Array<string | null> | null
 }
 
 export interface IMeetingCheckInPayload {
@@ -5736,6 +5590,22 @@ export interface IRemoveAtlassianAuthPayload {
   user: IUser | null
 }
 
+export interface IRemoveGitHubAuthPayload {
+  __typename: 'RemoveGitHubAuthPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The ID of the authorization removed
+   */
+  authId: string | null
+  teamId: string | null
+
+  /**
+   * The user with updated atlassianAuth
+   */
+  user: IUser | null
+}
+
 export interface IRemoveProviderPayload {
   __typename: 'RemoveProviderPayload'
   error: IStandardMutationError | null
@@ -5757,13 +5627,6 @@ export interface IRemoveSlackChannelPayload {
   __typename: 'RemoveSlackChannelPayload'
   error: IStandardMutationError | null
   deletedId: string
-}
-
-export interface IRemoveGitHubRepoPayload {
-  __typename: 'RemoveGitHubRepoPayload'
-  deletedId: string | null
-  error: IStandardMutationError | null
-  archivedTaskIds: Array<string | null> | null
 }
 
 export interface IRemoveOrgUserPayload {
@@ -6443,12 +6306,7 @@ export interface IRenameReflectTemplatePromptPayload {
 export interface ISubscription {
   __typename: 'Subscription'
   agendaItemSubscription: AgendaItemSubscriptionPayload
-  githubMemberRemoved: IGitHubMemberRemovedPayload
-  githubRepoAdded: IAddGitHubRepoPayload
-  githubRepoRemoved: IRemoveGitHubRepoPayload
   integrationSubscription: IntegrationSubscriptionPayload
-  integrationJoined: IJoinIntegrationPayload
-  integrationLeft: ILeaveIntegrationPayload
   newAuthToken: string | null
   notificationSubscription: NotificationSubscriptionPayload
   organizationSubscription: OrganizationSubscriptionPayload
@@ -6463,29 +6321,7 @@ export interface IAgendaItemSubscriptionOnSubscriptionArguments {
   teamId: string
 }
 
-export interface IGithubMemberRemovedOnSubscriptionArguments {
-  teamId: string
-}
-
-export interface IGithubRepoAddedOnSubscriptionArguments {
-  teamId: string
-}
-
-export interface IGithubRepoRemovedOnSubscriptionArguments {
-  teamId: string
-}
-
 export interface IIntegrationSubscriptionOnSubscriptionArguments {
-  teamId: string
-}
-
-export interface IIntegrationJoinedOnSubscriptionArguments {
-  service: IntegrationServiceEnum
-  teamId: string
-}
-
-export interface IIntegrationLeftOnSubscriptionArguments {
-  service: IntegrationServiceEnum
   teamId: string
 }
 
@@ -6502,11 +6338,6 @@ export type AgendaItemSubscriptionPayload =
   | IRemoveAgendaItemPayload
   | IUpdateAgendaItemPayload
   | IMoveMeetingPayload
-
-export interface IGitHubMemberRemovedPayload {
-  __typename: 'GitHubMemberRemovedPayload'
-  leaveIntegration: Array<ILeaveIntegrationPayload | null> | null
-}
 
 export type IntegrationSubscriptionPayload = IAddProviderPayload | IRemoveProviderPayload
 
@@ -6585,6 +6416,8 @@ export type TaskSubscriptionPayload =
 
 export type TeamSubscriptionPayload =
   | IAcceptTeamInvitationPayload
+  | IAddAtlassianAuthPayload
+  | IAddGitHubAuthPayload
   | IAddTeamPayload
   | IArchiveTeamPayload
   | IAutoGroupReflectionsPayload
@@ -6625,6 +6458,8 @@ export type TeamSubscriptionPayload =
   | IAddReflectTemplatePromptPayload
   | IMoveReflectTemplatePromptPayload
   | IReflectTemplatePromptUpdateDescriptionPayload
+  | IRemoveAtlassianAuthPayload
+  | IRemoveGitHubAuthPayload
   | IRemoveReflectTemplatePayload
   | IRemoveReflectTemplatePromptPayload
   | IRenameReflectTemplatePayload

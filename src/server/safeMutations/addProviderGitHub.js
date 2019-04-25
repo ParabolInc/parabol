@@ -1,7 +1,6 @@
 import fetch from 'node-fetch'
 import {stringify} from 'querystring'
 import getRethink from 'server/database/rethinkDriver'
-import maybeJoinRepos from 'server/safeMutations/maybeJoinRepos'
 import getProviderRowData from 'server/safeQueries/getProviderRowData'
 import postOptions from 'server/utils/fetchOptions'
 import shortid from 'shortid'
@@ -21,18 +20,6 @@ query {
     }
   }
 }`
-
-const getJoinedIntegrationIds = async (teamId, provider, integrationCount, isUpdate) => {
-  if (integrationCount === 0 || isUpdate) return []
-  const r = getRethink()
-  const integrationsToJoin = await r
-    .table(GITHUB)
-    .getAll(teamId, {index: 'teamId'})
-    .filter({isActive: true})
-  const userIntegrations = await maybeJoinRepos(integrationsToJoin, [provider])
-  const {userId} = provider
-  return userIntegrations[userId]
-}
 
 const getTeamMember = async (joinedIntegrationIds, teamMemberId) => {
   if (joinedIntegrationIds.length > 0) {
@@ -117,16 +104,10 @@ const addProviderGitHub = async (code, teamId, userId) => {
           )('changes')(0)
       )
     })
-  const {new_val: provider, old_val: oldProvider} = providerChange
+  const {new_val: provider} = providerChange
 
   const rowDetails = await getProviderRowData(GITHUB, teamId)
-  const isUpdate = oldProvider && oldProvider.isActive
-  const joinedIntegrationIds = await getJoinedIntegrationIds(
-    teamId,
-    provider,
-    rowDetails.integrationCount,
-    isUpdate
-  )
+  const joinedIntegrationIds = []
   const teamMemberId = `${userId}::${teamId}`
   const teamMember = await getTeamMember(joinedIntegrationIds, teamMemberId)
   return {

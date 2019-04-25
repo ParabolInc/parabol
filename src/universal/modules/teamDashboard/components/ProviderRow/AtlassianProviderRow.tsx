@@ -6,7 +6,7 @@ import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import FlatButton from 'universal/components/FlatButton'
 import Icon from 'universal/components/Icon'
-import JiraConfigMenu from 'universal/components/JiraConfigMenu'
+import AtlassianConfigMenu from 'universal/components/AtlassianConfigMenu'
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
 import ProviderCard from 'universal/components/ProviderCard'
 import RowActions from 'universal/components/Row/RowActions'
@@ -24,7 +24,10 @@ import {ICON_SIZE} from 'universal/styles/typographyV2'
 import {Layout, Providers} from 'universal/types/constEnums'
 import {IAuthToken, IntegrationServiceEnum} from 'universal/types/graphql'
 import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import withMutationProps, {
+  MenuMutationProps,
+  WithMutationProps
+} from 'universal/utils/relay/withMutationProps'
 import AtlassianProviderLogo from 'universal/AtlassianProviderLogo'
 
 const StyledButton = styled(FlatButton)({
@@ -121,19 +124,25 @@ const ProviderName = styled('div')({
 })
 
 const AtlassianProviderRow = (props: Props) => {
-  const {atmosphere, teamId, submitting, submitMutation, onError, onCompleted} = props
-  const {retry, viewer} = props
+  const {
+    atmosphere,
+    retry,
+    viewer,
+    teamId,
+    submitting,
+    submitMutation,
+    onError,
+    onCompleted
+  } = props
+  const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
   const {atlassianAuth} = viewer
   const accessToken = (atlassianAuth && atlassianAuth.accessToken) || undefined
   useFreshToken(accessToken, retry)
   const openOAuth = handleOpenOAuth({
     name: IntegrationServiceEnum.atlassian,
-    submitting,
-    submitMutation,
     atmosphere,
-    onError,
-    onCompleted,
-    teamId
+    teamId,
+    ...mutationProps
   })
   const {sites, status} = useAtlassianSites(accessToken)
   const {togglePortal, originRef, menuPortal, closePortal} = useMenu(MenuPosition.UPPER_RIGHT)
@@ -172,7 +181,13 @@ const AtlassianProviderRow = (props: Props) => {
           <MenuButton onClick={togglePortal} innerRef={originRef}>
             <StyledIcon>more_vert</StyledIcon>
           </MenuButton>
-          {menuPortal(<JiraConfigMenu closePortal={closePortal} teamId={teamId} />)}
+          {menuPortal(
+            <AtlassianConfigMenu
+              mutationProps={mutationProps}
+              closePortal={closePortal}
+              teamId={teamId}
+            />
+          )}
         </ListAndMenu>
       )}
     </ProviderCard>

@@ -22,9 +22,8 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
   const assignableTeams = useMemo(() => teams.filter((team) => team.id !== teamId), [teamId, teams])
   const atmosphere = useAtmosphere()
   const handleTaskUpdate = (newTeam) => () => {
-    const {teamId} = newTeam
     if (teamId !== newTeam.id) {
-      ChangeTaskTeamMutation(atmosphere, {taskId, teamId})
+      ChangeTaskTeamMutation(atmosphere, {taskId, teamId: newTeam.id})
     }
   }
 

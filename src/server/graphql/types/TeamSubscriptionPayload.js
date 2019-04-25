@@ -44,9 +44,15 @@ import DowngradeToPersonalPayload from 'server/graphql/types/DowngradeToPersonal
 import AcceptTeamInvitationPayload from 'server/graphql/types/AcceptTeamInvitationPayload'
 import PromoteToTeamLeadPayload from 'server/graphql/types/PromoteToTeamLeadPayload'
 import ReflectTemplatePromptUpdateDescriptionPayload from 'server/graphql/types/ReflectTemplatePromptUpdateDescriptionPayload'
+import AddAtlassianAuthPayload from 'server/graphql/types/AddAtlassianAuthPayload'
+import AddGitHubAuthPayload from 'server/graphql/types/AddGitHubAuthPayload'
+import RemoveGitHubAuthPayload from 'server/graphql/types/RemoveGitHubAuthPayload'
+import RemoveAtlassianAuthPayload from 'server/graphql/types/RemoveAtlassianAuthPayload'
 
 const types = [
   AcceptTeamInvitationPayload,
+  AddAtlassianAuthPayload,
+  AddGitHubAuthPayload,
   AddTeamPayload,
   ArchiveTeamPayload,
   AutoGroupReflectionsPayload,
@@ -87,6 +93,8 @@ const types = [
   AddReflectTemplatePromptPayload,
   MoveReflectTemplatePromptPayload,
   ReflectTemplatePromptUpdateDescriptionPayload,
+  RemoveAtlassianAuthPayload,
+  RemoveGitHubAuthPayload,
   RemoveReflectTemplatePayload,
   RemoveReflectTemplatePromptPayload,
   RenameReflectTemplatePayload,

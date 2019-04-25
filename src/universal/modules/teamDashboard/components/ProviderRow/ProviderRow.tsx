@@ -18,8 +18,8 @@ import {ATLASSIAN_SCOPE, GITHUB, GITHUB_SCOPE, SLACK, SLACK_SCOPE} from 'univers
 import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
 import makeHref from 'universal/utils/makeHref'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import SlackProviderLogo from 'universal/SlackProviderLogo'
-import GitHubProviderLogo from 'universal/GitHubProviderLogo'
+import SlackProviderLogo from 'universal/components/SlackProviderLogo'
+import GitHubProviderLogo from 'universal/components/GitHubProviderLogo'
 import {Layout, Providers} from 'universal/types/constEnums'
 import {PALETTE} from 'universal/styles/paletteV2'
 

@@ -1,6 +1,5 @@
 import {commitMutation} from 'react-relay'
 import {SLACK} from 'universal/utils/constants'
-import incrementIntegrationCount from 'universal/utils/relay/incrementIntegrationCount'
 import {insertNodeBefore} from 'universal/utils/relay/insertEdge'
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
 
@@ -27,8 +26,6 @@ export const addSlackChannelUpdater = (store, viewerId, teamId, newSlackIntegrat
     const newNodes = insertNodeBefore(slackChannels, newSlackIntegration, 'channelName')
     viewer.setLinkedRecords(newNodes, 'slackChannels', {teamId})
   }
-
-  incrementIntegrationCount(viewer, teamId, SLACK, 1)
 }
 
 const AddSlackChannelMutation = (

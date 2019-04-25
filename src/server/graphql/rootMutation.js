@@ -1,6 +1,5 @@
 import {GraphQLObjectType} from 'graphql'
 import addAgendaItem from 'server/graphql/mutations/addAgendaItem'
-import addGitHubRepo from 'server/graphql/mutations/addGitHubRepo'
 import addOrg from 'server/graphql/mutations/addOrg'
 import addProvider from 'server/graphql/mutations/addProvider'
 import addSlackChannel from 'server/graphql/mutations/addSlackChannel'
@@ -16,12 +15,8 @@ import downgradeToPersonal from 'server/graphql/mutations/downgradeToPersonal'
 import editTask from 'server/graphql/mutations/editTask'
 import endMeeting from 'server/graphql/mutations/endMeeting'
 import githubAddAssignee from 'server/graphql/mutations/githubAddAssignee'
-import githubAddMember from 'server/graphql/mutations/githubAddMember'
-import githubRemoveMember from 'server/graphql/mutations/githubRemoveMember'
 import inactivateUser from 'server/graphql/mutations/inactivateUser'
-import joinIntegration from 'server/graphql/mutations/joinIntegration'
 import killMeeting from 'server/graphql/mutations/killMeeting'
-import leaveIntegration from 'server/graphql/mutations/leaveIntegration'
 import meetingCheckIn from 'server/graphql/mutations/meetingCheckIn'
 import moveMeeting from 'server/graphql/mutations/moveMeeting'
 import navigateMeeting from 'server/graphql/mutations/navigateMeeting'
@@ -29,7 +24,6 @@ import promoteFacilitator from 'server/graphql/mutations/promoteFacilitator'
 import promoteNewMeetingFacilitator from 'server/graphql/mutations/promoteNewMeetingFacilitator'
 import promoteToTeamLead from 'server/graphql/mutations/promoteToTeamLead'
 import removeAgendaItem from 'server/graphql/mutations/removeAgendaItem'
-import removeGitHubRepo from 'server/graphql/mutations/removeGitHubRepo'
 import removeProvider from 'server/graphql/mutations/removeProvider'
 import removeSlackChannel from 'server/graphql/mutations/removeSlackChannel'
 import removeTeamMember from 'server/graphql/mutations/removeTeamMember'
@@ -93,6 +87,8 @@ import addAtlassianAuth from 'server/graphql/mutations/addAtlassianAuth'
 import removeAtlassianAuth from 'server/graphql/mutations/removeAtlassianAuth'
 import createJiraIssue from 'server/graphql/mutations/createJiraIssue'
 import reflectTemplatePromptUpdateDescription from 'server/graphql/mutations/reflectTemplatePromptUpdateDescription'
+import addGitHubAuth from 'server/graphql/mutations/addGitHubAuth'
+import removeGitHubAuth from 'server/graphql/mutations/removeGitHubAuth'
 
 export default new GraphQLObjectType({
   name: 'Mutation',
@@ -101,7 +97,7 @@ export default new GraphQLObjectType({
     addAtlassianAuth,
     addAgendaItem,
     addFeatureFlag,
-    addGitHubRepo,
+    addGitHubAuth,
     addOrg,
     addProvider,
     addSlackChannel,
@@ -130,14 +126,10 @@ export default new GraphQLObjectType({
     editTask,
     endMeeting,
     githubAddAssignee,
-    githubAddMember,
-    githubRemoveMember,
     inactivateUser,
     inviteToTeam,
-    joinIntegration,
     killMeeting,
     endNewMeeting,
-    leaveIntegration,
     meetingCheckIn,
     moveMeeting,
     moveTeamToOrg,
@@ -149,9 +141,9 @@ export default new GraphQLObjectType({
     reflectTemplatePromptUpdateDescription,
     removeAgendaItem,
     removeAtlassianAuth,
+    removeGitHubAuth,
     removeProvider,
     removeSlackChannel,
-    removeGitHubRepo,
     removeOrgUser,
     removeReflection,
     removeTeamMember,
