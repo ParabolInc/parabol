@@ -26,7 +26,8 @@ const MenuContents = styled('div')(
     paddingBottom: 8,
     paddingTop: 8,
     textAlign: 'left',
-    width: minWidth || '100%',
+    width: '100%',
+    minWidth,
     ...animations[status]
   })
 )
