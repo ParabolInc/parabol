@@ -24,7 +24,7 @@ interface Props {
 function GoogleOAuthButton (props: Props) {
   const {onClick, label, waiting} = props
   return (
-    <WideButton size='medium' onClick={onClick} palette='gray' waiting={waiting}>
+    <WideButton size='medium' onClick={onClick} waiting={waiting}>
       <StyledIcon name='google' />
       <span>{label}</span>
     </WideButton>

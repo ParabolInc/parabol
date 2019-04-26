@@ -9,7 +9,7 @@ import {
   useState
 } from 'react'
 import {BBox} from 'types/animations'
-import getBBox, {RectElement} from 'universal/components/RetroReflectPhase/getBBox'
+import getBBox from 'universal/components/RetroReflectPhase/getBBox'
 import {getOffset} from 'universal/decorators/withCoordsV2'
 import useRefState from 'universal/hooks/useRefState'
 import useResizeObserver from 'universal/hooks/useResizeObserver'
@@ -147,7 +147,7 @@ const useCoords = (menuPosition: MenuPosition, options: UseCoordsOptions = {}) =
   const targetRef = useCallback((c) => {
     setTargetRef(c)
   }, [])
-  const originRef = useRef<RectElement | null>(null)
+  const originRef = useRef<HTMLElement | null>(null)
   const [coordsRef, setCoords] = useRefState<UseCoordsValue>({left: 0, top: 0})
   useLayoutEffect(() => {
     if (!currentTargetRef || !originRef.current) return

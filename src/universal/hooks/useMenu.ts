@@ -14,7 +14,7 @@ const useMenu = (menuPosition: MenuPosition, options: Options = {}) => {
   // TODO useCoords should export the actual menuPosition (it changes if there's not enough space to put it where it's preferred)
   const {targetRef, originRef, coords} = useCoords(menuPosition, {originCoords})
   if (originCoords) {
-    originRef.current = {getBoundingClientRect: () => originCoords} as RectElement
+    (originRef as any).current = {getBoundingClientRect: () => originCoords} as RectElement
   }
   const {portal, closePortal, togglePortal, status} = usePortal({onOpen, onClose})
   const loadingWidth = useMemo(() => {

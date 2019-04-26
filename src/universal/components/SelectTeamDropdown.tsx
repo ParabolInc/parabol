@@ -1,34 +1,31 @@
-// @flow
 import React from 'react'
-import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
-import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
+import Menu from 'universal/components/Menu'
+import MenuItem from 'universal/components/MenuItem'
 import DropdownMenuLabel from 'universal/components/DropdownMenuLabel'
 import DropdownMenuItemLabel from 'universal/components/DropdownMenuItemLabel'
+import {ITeam} from 'universal/types/graphql'
 
-type Props = {
-  closePortal: () => void,
-  teamHandleClick: (teamId: string) => void,
-  teams: Array<any>
+interface Props {
+  closePortal: () => void
+  teamHandleClick: (teamId: string) => () => void
+  teams: ReadonlyArray<Pick<ITeam, 'id' | 'name'>>
 }
 
 const SelectTeamDropdown = (props: Props) => {
   const {teams, closePortal, teamHandleClick} = props
   return (
-    <MenuWithShortcuts
-      ariaLabel={'Select the team associated with the new task'}
-      closePortal={closePortal}
-    >
+    <Menu ariaLabel={'Select the team associated with the new task'} closePortal={closePortal}>
       <DropdownMenuLabel>Select Team:</DropdownMenuLabel>
       {teams.map((team) => {
         return (
-          <MenuItemWithShortcuts
+          <MenuItem
             key={team.id}
             label={<DropdownMenuItemLabel>{team.name}</DropdownMenuItemLabel>}
             onClick={teamHandleClick(team.id)}
           />
         )
       })}
-    </MenuWithShortcuts>
+    </Menu>
   )
 }
 
