@@ -1,3 +1,4 @@
+/* Deprecated. See useMenu */
 import React from 'react'
 import {findDOMNode} from 'react-dom'
 import LoadableMenu from 'universal/components/LoadableMenu'

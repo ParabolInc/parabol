@@ -147,7 +147,7 @@ const useCoords = (menuPosition: MenuPosition, options: UseCoordsOptions = {}) =
   const targetRef = useCallback((c) => {
     setTargetRef(c)
   }, [])
-  const originRef = useRef<RectElement>()
+  const originRef = useRef<RectElement | null>(null)
   const [coordsRef, setCoords] = useRefState<UseCoordsValue>({left: 0, top: 0})
   useLayoutEffect(() => {
     if (!currentTargetRef || !originRef.current) return
