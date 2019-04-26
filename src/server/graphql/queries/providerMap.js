@@ -38,13 +38,6 @@ export default {
       .filter({isActive: true})
       .group('service')
       .ungroup()
-      .merge((row) => ({
-        integrationCount: r
-          .table(row('group'))
-          .getAll(teamId, {index: 'teamId'})
-          .filter({isActive: true})
-          .count()
-      }))
 
     const defaultMap = CURRENT_PROVIDERS.reduce((obj, service) => {
       obj[service] = {
@@ -63,8 +56,8 @@ export default {
       map[service] = {
         ...map[service],
         ...userDoc,
-        userCount: obj.reduction.length,
-        integrationCount: obj.integrationCount
+        userCount: 0,
+        integrationCount: 0
       }
       return map
     }, defaultMap)
