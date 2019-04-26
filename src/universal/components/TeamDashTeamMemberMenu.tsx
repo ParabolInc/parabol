@@ -1,19 +1,16 @@
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
-import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
+import {createFragmentContainer, graphql} from 'react-relay'
+import Menu from 'universal/components/Menu'
+import MenuItem from 'universal/components/MenuItem'
 import {filterTeamMember} from 'universal/modules/teamDashboard/ducks/teamDashDuck'
-import type {TeamDashTeamMemberMenu_team as Team} from '__generated__/TeamDashTeamMemberMenu_team.graphql'
-
-import type {Dispatch} from 'react-redux'
-import {connect} from 'react-redux'
+import {connect, DispatchProp} from 'react-redux'
 import DropdownMenuLabel from 'universal/components/DropdownMenuLabel'
+import {TeamDashTeamMemberMenu_team} from '__generated__/TeamDashTeamMemberMenu_team.graphql'
 
-type Props = {
-  closePortal: () => void,
-  dispatch: Dispatch<*>,
-  team: Team,
-  teamMemberFilterId: ?string
+interface Props extends DispatchProp {
+  closePortal: () => void
+  team: TeamDashTeamMemberMenu_team
+  teamMemberFilterId: string | null
 }
 
 const TeamDashTeamMemberMenu = (props: Props) => {
@@ -22,25 +19,25 @@ const TeamDashTeamMemberMenu = (props: Props) => {
   const defaultActiveIdx =
     teamMembers.findIndex((teamMember) => teamMember.id === teamMemberFilterId) + 2
   return (
-    <MenuWithShortcuts
+    <Menu
       ariaLabel={'Select the team member to filter by'}
       closePortal={closePortal}
       defaultActiveIdx={defaultActiveIdx}
     >
       <DropdownMenuLabel>{'Filter by:'}</DropdownMenuLabel>
-      <MenuItemWithShortcuts
+      <MenuItem
         key={'teamMemberFilterNULL'}
         label={'All members'}
         onClick={() => dispatch(filterTeamMember(null))}
       />
       {teamMembers.map((teamMember) => (
-        <MenuItemWithShortcuts
+        <MenuItem
           key={`teamMemberFilter${teamMember.id}`}
           label={teamMember.preferredName}
           onClick={() => dispatch(filterTeamMember(teamMember.id, teamMember.preferredName))}
         />
       ))}
-    </MenuWithShortcuts>
+    </Menu>
   )
 }
 

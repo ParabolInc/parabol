@@ -1,30 +1,21 @@
-import PropTypes from 'prop-types'
+import {TeamTasksHeader_team} from '__generated__/TeamTasksHeader_team.graphql'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {NavLink, withRouter} from 'react-router-dom'
+import styled, {css} from 'react-emotion'
+import {createFragmentContainer, graphql} from 'react-relay'
+import {NavLink, RouteComponentProps, withRouter} from 'react-router-dom'
+import DashHeading from 'universal/components/Dashboard/DashHeading'
+import DashSectionControl from 'universal/components/Dashboard/DashSectionControl'
+import DashSectionControls from 'universal/components/Dashboard/DashSectionControls'
+import DashSectionHeader from 'universal/components/Dashboard/DashSectionHeader'
 import DashFilterLabel from 'universal/components/DashFilterLabel/DashFilterLabel'
 import DashFilterToggle from 'universal/components/DashFilterToggle/DashFilterToggle'
-import ui from 'universal/styles/ui'
-import appTheme from 'universal/styles/theme/appTheme'
-import LoadableTeamDashTeamMemberMenu from 'universal/components/LoadableTeamDashTeamMemberMenu'
-import LoadableMenu from 'universal/components/LoadableMenu'
-import styled, {css} from 'react-emotion'
 import DashNavControl from 'universal/components/DashNavControl/DashNavControl'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
-import DashSectionHeader from 'universal/components/Dashboard/DashSectionHeader'
-import DashHeading from 'universal/components/Dashboard/DashHeading'
-import DashSectionControls from 'universal/components/Dashboard/DashSectionControls'
-import DashSectionControl from 'universal/components/Dashboard/DashSectionControl'
-
-const originAnchor = {
-  vertical: 'bottom',
-  horizontal: 'right'
-}
-
-const targetAnchor = {
-  vertical: 'top',
-  horizontal: 'right'
-}
+import {MenuPosition} from 'universal/hooks/useCoords'
+import useMenu from 'universal/hooks/useMenu'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import lazyPreload from 'universal/utils/lazyPreload'
 
 const OrgInfoBlock = styled('div')({
   alignItems: 'center',
@@ -42,10 +33,22 @@ const orgLinkStyles = css({
   }
 })
 
-const TeamTasksHeader = (props) => {
+const TeamDashTeamMemberMenu = lazyPreload(() =>
+  import(/* webpackChunkName: 'TeamDashTeamMemberMenu' */
+  'universal/components/TeamDashTeamMemberMenu')
+)
+
+interface Props extends RouteComponentProps<{}> {
+  team: TeamTasksHeader_team
+  teamMemberFilterId: string
+  teamMemberFilterName: string
+}
+
+const TeamTasksHeader = (props: Props) => {
   const {history, teamMemberFilterId, teamMemberFilterName, team} = props
   const {organization, teamId, teamName} = team
   const {orgName, orgId} = organization
+  const {togglePortal, closePortal, originRef, menuPortal} = useMenu(MenuPosition.UPPER_RIGHT)
   return (
     <DashSectionHeader>
       <div>
@@ -71,31 +74,23 @@ const TeamTasksHeader = (props) => {
             <b>{'Show Tasks for'}</b>
             {': '}
           </DashFilterLabel>
-          <LoadableMenu
-            LoadableComponent={LoadableTeamDashTeamMemberMenu}
-            maxWidth={350}
-            maxHeight={parseInt(ui.dashMenuHeight, 10) * 16}
-            originAnchor={originAnchor}
-            queryVars={{
-              team,
-              teamMemberFilterId
-            }}
-            targetAnchor={targetAnchor}
-            toggle={<DashFilterToggle label={teamMemberFilterName} />}
+          <DashFilterToggle
+            ref={originRef}
+            onClick={togglePortal}
+            onMouseEnter={TeamDashTeamMemberMenu.preload}
+            label={teamMemberFilterName}
           />
+          {menuPortal(
+            <TeamDashTeamMemberMenu
+              closePortal={closePortal}
+              team={team}
+              teamMemberFilterId={teamMemberFilterId}
+            />
+          )}
         </DashSectionControl>
       </DashSectionControls>
     </DashSectionHeader>
   )
-}
-
-TeamTasksHeader.propTypes = {
-  children: PropTypes.any,
-  dispatch: PropTypes.func.isRequired,
-  history: PropTypes.object,
-  team: PropTypes.object.isRequired,
-  teamMemberFilterId: PropTypes.string,
-  teamMemberFilterName: PropTypes.string
 }
 
 export default createFragmentContainer(
