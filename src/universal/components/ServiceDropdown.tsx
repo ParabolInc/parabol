@@ -1,35 +1,40 @@
 import React from 'react'
-import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
-import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
+import styled from 'react-emotion'
+import Menu from 'universal/components/Menu'
+import MenuItem from 'universal/components/MenuItem'
 import DropdownMenuItemLabel from 'universal/components/DropdownMenuItemLabel'
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
 
-interface Option {
+export interface ServiceDropdownOption {
   id: string
   label: string
 }
 interface Props {
   closePortal: () => void
-  handleItemClick: (option: Option) => () => void
+  handleItemClick: (option: ServiceDropdownOption) => () => void
   isLoaded: boolean
-  options: Array<Option>
+  options: Array<ServiceDropdownOption>
 }
+
+const WideMenu = styled(Menu)({
+  maxWidth: 'inherit'
+})
 
 const ServiceDropdown = (props: Props) => {
   const {handleItemClick, isLoaded, options, closePortal} = props
   if (!isLoaded) return <LoadingComponent height={100} width={'100%'} />
   return (
-    <MenuWithShortcuts ariaLabel={'Select the service to integrate'} closePortal={closePortal}>
+    <WideMenu ariaLabel={'Select the service to integrate'} closePortal={closePortal}>
       {options.map((option) => {
         return (
-          <MenuItemWithShortcuts
+          <MenuItem
             key={option.id}
             label={<DropdownMenuItemLabel>{option.label}</DropdownMenuItemLabel>}
             onClick={handleItemClick(option)}
           />
         )
       })}
-    </MenuWithShortcuts>
+    </WideMenu>
   )
 }
 

@@ -18,15 +18,17 @@ const animations = {
   }
 }
 
-const MenuContents = styled('div')(({status}: {status: PortalState}) => ({
-  borderRadius: '2px',
-  outline: 0,
-  overflowY: 'auto',
-  paddingBottom: 8,
-  paddingTop: 8,
-  textAlign: 'left',
-  width: '100%',
-  ...animations[status]
-}))
+const MenuContents = styled('div')(
+  ({status, minWidth}: {minWidth?: number; status: PortalState}) => ({
+    borderRadius: '2px',
+    outline: 0,
+    overflowY: 'auto',
+    paddingBottom: 8,
+    paddingTop: 8,
+    textAlign: 'left',
+    width: minWidth || '100%',
+    ...animations[status]
+  })
+)
 
 export default MenuContents

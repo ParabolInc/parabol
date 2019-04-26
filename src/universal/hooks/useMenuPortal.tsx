@@ -19,7 +19,7 @@ const MenuBlock = styled('div')({
 const useMenuPortal = (
   portal: (el: ReactElement) => ReactPortal | null,
   targetRef: (el: HTMLElement) => void,
-  loadingWidth: number,
+  minWidth: number,
   coords: UseCoordsValue,
   status: PortalState,
   menuPosition: MenuPosition,
@@ -30,13 +30,13 @@ const useMenuPortal = (
       <MenuBlock innerRef={targetRef} style={{...coords}}>
         <MenuBackground menuPosition={menuPosition} status={status} />
         <ErrorBoundary fallback={(error) => <ModalError error={error} status={status} />}>
-          <MenuContents status={status}>
+          <MenuContents minWidth={minWidth} status={status}>
             <Suspense
               fallback={
                 <LoadingComponent
                   loadingDelayRef={loadingDelayRef}
                   spinnerSize={24}
-                  width={loadingWidth}
+                  width={minWidth}
                   height={24}
                   showAfter={0}
                 />

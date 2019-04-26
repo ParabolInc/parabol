@@ -1,5 +1,4 @@
 import React from 'react'
-import styled from 'react-emotion'
 import Menu from 'universal/components/Menu'
 import {PRO} from 'universal/utils/constants'
 import TagPro from 'universal/components/Tag/TagPro'
@@ -16,14 +15,10 @@ interface Props {
   organizations: NewTeamOrgDropdown_organizations
 }
 
-const WideMenu = styled(Menu)({
-  minWidth: 256
-})
-
 const NewTeamOrgDropdown = (props: Props) => {
   const {defaultActiveIdx, onChange, organizations, closePortal} = props
   return (
-    <WideMenu
+    <Menu
       ariaLabel={'Select the organization the new team belongs to'}
       closePortal={closePortal}
       defaultActiveIdx={defaultActiveIdx + 1}
@@ -45,7 +40,7 @@ const NewTeamOrgDropdown = (props: Props) => {
           />
         )
       })}
-    </WideMenu>
+    </Menu>
   )
 }
 
