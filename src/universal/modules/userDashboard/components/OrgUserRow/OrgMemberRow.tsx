@@ -89,7 +89,7 @@ const OrgMemberRow = (props: Props) => {
     isViewerBillingLeader && isBillingLeader && billingLeaderCount === 1
   const {viewerId} = atmosphere
   const {togglePortal, originRef, menuPortal, closePortal} = useMenu(MenuPosition.UPPER_RIGHT)
-  const {togglePortal: toggleLeave, originRef: leaveRef, modalPortal} = useModal()
+  const {togglePortal: toggleLeave, modalPortal} = useModal()
 
   const toggleHandler = () => {
     if (isPersonalTier) return
@@ -137,11 +137,7 @@ const OrgMemberRow = (props: Props) => {
         <ActionsBlock>
           {!isBillingLeader && viewerId === userId && (
             <>
-              <FlatButton
-                onClick={toggleLeave}
-                onMouseEnter={LeaveOrgModal.preload}
-                innerRef={leaveRef}
-              >
+              <FlatButton onClick={toggleLeave} onMouseEnter={LeaveOrgModal.preload}>
                 Leave Organization
               </FlatButton>
               {modalPortal(<LeaveOrgModal orgId={orgId} />)}

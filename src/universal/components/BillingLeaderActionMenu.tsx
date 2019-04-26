@@ -53,8 +53,8 @@ const BillingLeaderActionMenu = (props: Props) => {
     SetOrgUserRoleMutation(atmosphere, variables, {}, onError, onCompleted)
   }
 
-  const {originRef: leaveRef, togglePortal: toggleLeave, modalPortal: leaveModal} = useModal()
-  const {originRef: removeRef, togglePortal: toggleRemove, modalPortal: removeModal} = useModal()
+  const {togglePortal: toggleLeave, modalPortal: leaveModal} = useModal()
+  const {togglePortal: toggleRemove, modalPortal: removeModal} = useModal()
   return (
     <>
       <Menu ariaLabel={'Select your action'} closePortal={closePortal}>
@@ -68,7 +68,6 @@ const BillingLeaderActionMenu = (props: Props) => {
           <MenuItem
             noCloseOnClick
             label='Leave Organization'
-            ref={leaveRef}
             onClick={toggleLeave}
             onMouseEnter={LeaveOrgModal.preload}
           />
@@ -79,7 +78,6 @@ const BillingLeaderActionMenu = (props: Props) => {
             label={
               new Date(newUserUntil) > new Date() ? 'Refund and Remove' : 'Remove from Organization'
             }
-            ref={removeRef}
             onClick={toggleRemove}
             onMouseEnter={RemoveFromOrgModal.preload}
           />

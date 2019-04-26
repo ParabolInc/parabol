@@ -76,7 +76,6 @@ const ModalContents = styled('div')(({status}: {status: PortalState}) => ({
 const useModalPortal = (
   portal: (el: ReactElement) => ReactPortal | null,
   targetRef: Ref<HTMLDivElement>,
-  loadingWidth: number,
   status: PortalState,
   loadingDelayRef: LoadingDelayRef,
   closePortal: () => void,
@@ -97,7 +96,6 @@ const useModalPortal = (
                 <LoadingComponent
                   loadingDelayRef={loadingDelayRef}
                   spinnerSize={24}
-                  width={loadingWidth}
                   height={24}
                   showAfter={0}
                 />

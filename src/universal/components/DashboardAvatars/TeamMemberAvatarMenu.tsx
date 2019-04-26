@@ -1,13 +1,14 @@
 import {TeamMemberAvatarMenu_teamMember} from '__generated__/TeamMemberAvatarMenu_teamMember.graphql'
-import React, {lazy} from 'react'
+import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import DropdownMenuLabel from 'universal/components/DropdownMenuLabel'
-import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
-import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
+import Menu from 'universal/components/Menu'
+import MenuItem from 'universal/components/MenuItem'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
-import LoadableModal from '../LoadableModal'
+import useModal from 'universal/hooks/useModal'
+import lazyPreload from 'universal/utils/lazyPreload'
 import MenuItemLabel from '../MenuItemLabel'
 
 interface Props extends WithAtmosphereProps {
@@ -17,13 +18,13 @@ interface Props extends WithAtmosphereProps {
   handleNavigate?: () => void
 }
 
-const PromoteTeamMemberModal = lazy(() =>
+const PromoteTeamMemberModal = lazyPreload(() =>
   import(/* webpackChunkName: 'PromoteTeamMemberModal' */ 'universal/modules/teamDashboard/components/PromoteTeamMemberModal/PromoteTeamMemberModal')
 )
-const RemoveTeamMemberModal = lazy(() =>
+const RemoveTeamMemberModal = lazyPreload(() =>
   import(/* webpackChunkName: 'RemoveTeamMemberModal' */ 'universal/modules/teamDashboard/components/RemoveTeamMemberModal/RemoveTeamMemberModal')
 )
-const LeaveTeamModal = lazy(() =>
+const LeaveTeamModal = lazyPreload(() =>
   import(/* webpackChunkName: 'LeaveTeamModal' */ 'universal/modules/teamDashboard/components/LeaveTeamModal/LeaveTeamModal')
 )
 
@@ -35,42 +36,55 @@ const TeamMemberAvatarMenu = (props: Props) => {
   const isSelf = userId === viewerId
   const connected = isConnected ? 'connected' : 'disconnected'
   const hasOptions = (isViewerLead && !isSelf) || (!isViewerLead && isSelf)
+  const {
+    closePortal: closePromote,
+    togglePortal: togglePromote,
+    modalPortal: portalPromote
+  } = useModal()
+  const {
+    closePortal: closeRemove,
+    togglePortal: toggleRemove,
+    modalPortal: portalRemove
+  } = useModal()
+  const {closePortal: closeLeave, togglePortal: toggleLeave, modalPortal: portalLeave} = useModal()
   return (
-    <MenuWithShortcuts
-      ariaLabel={'Select what to do with this team member'}
-      closePortal={closePortal}
-    >
-      <DropdownMenuLabel notMenuItem isEmpty={!hasOptions}>{`${
-        isSelf ? 'You are' : `${preferredName} is`
-      } ${connected}`}</DropdownMenuLabel>
-      {isViewerLead && !isSelf && (
-        <MenuItemWithShortcuts key='promote' noCloseOnClick>
-          <LoadableModal
-            LoadableComponent={PromoteTeamMemberModal}
-            queryVars={{teamMember}}
-            toggle={<MenuItemLabel>Promote {preferredName} to Team Lead</MenuItemLabel>}
+    <>
+      <Menu ariaLabel={'Select what to do with this team member'} closePortal={closePortal}>
+        <DropdownMenuLabel notMenuItem isEmpty={!hasOptions}>{`${
+          isSelf ? 'You are' : `${preferredName} is`
+        } ${connected}`}</DropdownMenuLabel>
+        {isViewerLead && !isSelf && (
+          <MenuItem
+            key='promote'
+            noCloseOnClick
+            onClick={togglePromote}
+            onMouseEnter={PromoteTeamMemberModal.preload}
+            label={<MenuItemLabel>Promote {preferredName} to Team Lead</MenuItemLabel>}
           />
-        </MenuItemWithShortcuts>
-      )}
-      {isViewerLead && !isSelf && (
-        <MenuItemWithShortcuts key='remove' noCloseOnClick>
-          <LoadableModal
-            LoadableComponent={RemoveTeamMemberModal}
-            queryVars={{teamMember}}
-            toggle={<MenuItemLabel>Remove {preferredName} from Team</MenuItemLabel>}
+        )}
+        {isViewerLead && !isSelf && (
+          <MenuItem
+            key='remove'
+            noCloseOnClick
+            onClick={toggleRemove}
+            onMouseEnter={RemoveTeamMemberModal.preload}
+            label={<MenuItemLabel>Remove {preferredName} from Team</MenuItemLabel>}
           />
-        </MenuItemWithShortcuts>
-      )}
-      {!isViewerLead && isSelf && (
-        <MenuItemWithShortcuts key='leave' noCloseOnClick>
-          <LoadableModal
-            LoadableComponent={LeaveTeamModal}
-            queryVars={{teamMember}}
-            toggle={<MenuItemLabel>Leave Team</MenuItemLabel>}
+        )}
+        {!isViewerLead && isSelf && (
+          <MenuItem
+            key='leave'
+            noCloseOnClick
+            onClick={toggleLeave}
+            onMouseEnter={LeaveTeamModal.preload}
+            label={<MenuItemLabel>Leave Team</MenuItemLabel>}
           />
-        </MenuItemWithShortcuts>
-      )}
-    </MenuWithShortcuts>
+        )}
+      </Menu>
+      {portalPromote(<PromoteTeamMemberModal teamMember={teamMember} closePortal={closePromote} />)}
+      {portalRemove(<RemoveTeamMemberModal teamMember={teamMember} closePortal={closeRemove} />)}
+      {portalLeave(<LeaveTeamModal teamMember={teamMember} closePortal={closeLeave} />)}
+    </>
   )
 }
 
