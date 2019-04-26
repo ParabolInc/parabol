@@ -1,10 +1,12 @@
 import React, {
   Children,
   cloneElement,
+  forwardRef,
   ReactElement,
   ReactNode,
   useCallback,
   useEffect,
+  useImperativeHandle,
   useRef,
   useState
 } from 'react'
@@ -32,7 +34,7 @@ interface Props {
   tabReturns?: boolean
 }
 
-const Menu = (props: Props) => {
+const Menu = forwardRef((props: Props, ref: any) => {
   const {
     ariaLabel,
     children,
@@ -46,6 +48,10 @@ const Menu = (props: Props) => {
   const [activeIdx, setActiveIdx] = useState<number>(defaultActiveIdx || 0)
   const menuRef = useRef<HTMLDivElement>(null)
   const itemHandles = useRef<{onClick: (e?: React.MouseEvent | React.KeyboardEvent) => void}[]>([])
+
+  useImperativeHandle(ref, () => ({
+    handleKeyDown
+  }))
 
   useEffect(() => {
     if (defaultActiveIdx === undefined) {
@@ -142,6 +148,7 @@ const Menu = (props: Props) => {
         e.preventDefault()
         closePortal()
       }
+      return e.defaultPrevented
     },
     [activeIdx, children, tabReturns]
   )
@@ -159,6 +166,6 @@ const Menu = (props: Props) => {
       {makeSmartChildren(children)}
     </MenuStyles>
   )
-}
+})
 
 export default Menu

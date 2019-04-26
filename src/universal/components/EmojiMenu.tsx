@@ -1,29 +1,26 @@
-// @flow
-import * as React from 'react'
-import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
+import {EditorState} from 'draft-js'
+import React, {Component, Ref} from 'react'
 import stringScore from 'string-score'
+import Menu from 'universal/components/Menu'
+import MenuItem from 'universal/components/MenuItem'
 import emojiArray from 'universal/utils/emojiArray'
-import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
-import dontTellDraft from 'universal/utils/draftjs/dontTellDraft'
-
-const {Component} = React
 
 type EmojiSuggestion = {
-  value: string,
+  value: string
   emoji: string
 }
 
-type Props = {
-  closePortal: () => void,
-  editorState: Object,
-  menuItemClickFactory: (emoji: string, editorState: ?Object) => () => void,
-  menuRef: () => void,
+interface Props {
+  closePortal: () => void
+  editorState: EditorState
+  menuItemClickFactory: (emoji: string, editorState: EditorState | null) => () => void
+  menuRef: Ref<any>
   query: string
 }
 
 type State = {
-  focusedEditorState: ?Object,
-  suggestedEmojis: Array<EmojiSuggestion>,
+  focusedEditorState: EditorState | null
+  suggestedEmojis: Array<EmojiSuggestion>
   query: string
 }
 
@@ -41,11 +38,14 @@ class EmojiMenu extends Component<Props, State> {
         .sort((a, b) => (a.score < b.score ? 1 : -1))
         .slice(0, 6)
         // ":place of worship:" shouldn't pop up when i type ":poop"
-        .filter((obj, idx, arr) => obj.score > 0 && arr[0].score - obj.score < 0.3)
+        .filter((obj, _idx, arr) => obj.score > 0 && arr[0].score - obj.score < 0.3)
     )
   }
 
-  static getDerivedStateFromProps (nextProps: Props, prevState: State): $Shape<State> | null {
+  static getDerivedStateFromProps (
+    nextProps: Readonly<Props>,
+    prevState: State
+  ): Partial<State> | null {
     const {editorState, query} = nextProps
     if (query && query === prevState.query) return null
     const suggestedEmojis = EmojiMenu.filterByQuery(query)
@@ -63,7 +63,7 @@ class EmojiMenu extends Component<Props, State> {
     }
   }
 
-  state = {
+  state: State = {
     focusedEditorState: null,
     suggestedEmojis: [],
     query: ''
@@ -74,22 +74,21 @@ class EmojiMenu extends Component<Props, State> {
     const {focusedEditorState} = this.state
     const {suggestedEmojis} = this.state
     return (
-      <MenuWithShortcuts
+      <Menu
         ariaLabel={'Select the emoji'}
         closePortal={closePortal}
         keepParentFocus
-        onMouseDown={dontTellDraft}
         ref={menuRef}
         tabReturns
       >
         {suggestedEmojis.map(({value, emoji}) => (
-          <MenuItemWithShortcuts
+          <MenuItem
             key={value}
             label={`${emoji} ${value}`}
             onClick={menuItemClickFactory(emoji, focusedEditorState)}
           />
         ))}
-      </MenuWithShortcuts>
+      </Menu>
     )
   }
 }

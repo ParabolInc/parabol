@@ -2,10 +2,14 @@
 
 import {BBox} from 'types/animations'
 
-const cache = new Map<HTMLElement, BBox>()
+const cache = new Map<RectElement, BBox>()
 let timer
 
-const getBBox = (el: HTMLElement | null) => {
+export interface RectElement {
+  getBoundingClientRect: HTMLElement['getBoundingClientRect']
+}
+
+const getBBox = (el: RectElement | null | undefined) => {
   if (!el) return null
   if (!cache.has(el)) {
     const {height, width, top, left} = el.getBoundingClientRect()

@@ -1,6 +1,15 @@
-import {useCallback, useLayoutEffect, useRef, useState} from 'react'
+import {
+  Dispatch,
+  MutableRefObject,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState
+} from 'react'
 import {BBox} from 'types/animations'
-import getBBox from 'universal/components/RetroReflectPhase/getBBox'
+import getBBox, {RectElement} from 'universal/components/RetroReflectPhase/getBBox'
 import {getOffset} from 'universal/decorators/withCoordsV2'
 import useRefState from 'universal/hooks/useRefState'
 import useResizeObserver from 'universal/hooks/useResizeObserver'
@@ -105,17 +114,43 @@ const getNextCoords = (targetBBox: BBox, originBBox: BBox, menuPosition: MenuPos
   return nextCoords as UseCoordsValue
 }
 
-const useCoords = (menuPosition: MenuPosition) => {
+export interface UseCoordsOptions {
+  originCoords?: BBox
+}
+
+const useWindowResize = (
+  coordsRef: MutableRefObject<UseCoordsValue>,
+  currentTargetRef: HTMLDivElement | null,
+  setCoords: Dispatch<SetStateAction<UseCoordsValue>>
+) => {
+  useEffect(() => {
+    const resizeWindow = () => {
+      const coords = coordsRef.current
+      if (currentTargetRef && ('right' in coords || 'bottom' in coords)) {
+        const targetCoords = currentTargetRef.getBoundingClientRect()
+        console.log('call set coords 3')
+        setCoords({
+          left: targetCoords.left,
+          top: targetCoords.top
+        })
+      }
+    }
+    window.addEventListener('resize', resizeWindow, {passive: true})
+    return () => {
+      window.removeEventListener('resize', resizeWindow)
+    }
+  }, [coordsRef, currentTargetRef, setCoords])
+}
+
+const useCoords = (menuPosition: MenuPosition, options: UseCoordsOptions = {}) => {
   const [currentTargetRef, setTargetRef] = useState<HTMLDivElement | null>(null)
   const targetRef = useCallback((c) => {
     setTargetRef(c)
   }, [])
-  const originRef = useRef<HTMLDivElement>(null)
+  const originRef = useRef<RectElement>()
   const [coordsRef, setCoords] = useRefState<UseCoordsValue>({left: 0, top: 0})
-  // const latestCoords = useRef(coords)
   useLayoutEffect(() => {
     if (!currentTargetRef || !originRef.current) return
-
     // Bounding adjustments mimic native (flip from below to above for Y, but adjust pixel-by-pixel for X)
     const targetBBox = getBBox(currentTargetRef)
     const originBBox = getBBox(originRef.current)
@@ -123,11 +158,7 @@ const useCoords = (menuPosition: MenuPosition) => {
       const nextCoords = getNextCoords(targetBBox, originBBox, menuPosition)
       setCoords(nextCoords)
     }
-    window.addEventListener('resize', resizeWindow, {passive: true})
-    return () => {
-      window.removeEventListener('resize', resizeWindow)
-    }
-  }, [currentTargetRef])
+  }, [options.originCoords])
 
   useResizeObserver(currentTargetRef, () => {
     const targetBBox = getBBox(currentTargetRef)!
@@ -138,16 +169,9 @@ const useCoords = (menuPosition: MenuPosition) => {
     }
   })
 
-  const resizeWindow = () => {
-    const coords = coordsRef.current
-    if (currentTargetRef && ('right' in coords || 'bottom' in coords)) {
-      const targetCoords = currentTargetRef.getBoundingClientRect()
-      setCoords({
-        left: targetCoords.left,
-        top: targetCoords.top
-      })
-    }
-  }
+  useWindowResize(coordsRef, currentTargetRef, setCoords)
+
+  // if (coordsRef.current && coordsRef.current.left !== originCoords && originCoords.left) debugger
   return {targetRef, originRef, coords: coordsRef.current}
 }
 

@@ -28,11 +28,10 @@ const usePortal = (options: UsePortalOptions) => {
   // terminate on unmount
   useEffect(() => terminatePortal, [])
 
-  const closePortal = useCallback((_e?: React.MouseEvent | React.TouchEvent) => {
+  const closePortal = useCallback(() => {
     document.removeEventListener('keydown', handleKeydown)
     document.removeEventListener('mousedown', handleDocumentClick)
     document.removeEventListener('touchstart', handleDocumentClick)
-    options.onClose && options.onClose()
     if (portalRef.current) {
       portalRef.current.addEventListener('transitionend', (e) => {
         if (e.propertyName === 'transform') {
@@ -41,6 +40,8 @@ const usePortal = (options: UsePortalOptions) => {
       })
     }
     setStatus(PortalState.Exiting)
+    // important! this should be last in case the onClose also tries to close the portal (see EmojiMenu)
+    options.onClose && options.onClose()
   }, [])
 
   const handleKeydown = useCallback((e: KeyboardEvent) => {
@@ -83,8 +84,8 @@ const usePortal = (options: UsePortalOptions) => {
     options.onOpen && options.onOpen(portalRef.current)
   }, [])
 
-  const togglePortal = useCallback((e: React.MouseEvent | React.TouchEvent) => {
-    portalRef.current ? closePortal(e) : openPortal(e)
+  const togglePortal = useCallback((e?: React.MouseEvent | React.TouchEvent) => {
+    portalRef.current ? closePortal() : openPortal(e)
   }, [])
 
   const portal = useCallback(
