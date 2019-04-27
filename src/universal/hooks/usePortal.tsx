@@ -1,6 +1,7 @@
 import React, {ReactElement, useCallback, useEffect, useRef, useState} from 'react'
 import {createPortal} from 'react-dom'
 import requestDoubleAnimationFrame from 'universal/components/RetroReflectPhase/requestDoubleAnimationFrame'
+import hideBodyScroll from 'universal/utils/hideBodyScroll'
 
 export enum PortalState {
   Entering,
@@ -16,12 +17,14 @@ export interface UsePortalOptions {
 const usePortal = (options: UsePortalOptions) => {
   const portalRef = useRef<HTMLDivElement>()
   const originRef = useRef<HTMLElement>()
+  const showBodyScroll = useRef<() => void>()
   const [status, setStatus] = useState(PortalState.Exited)
 
   const terminatePortal = useCallback(() => {
     if (portalRef.current) {
       document.body.removeChild(portalRef.current)
       portalRef.current = undefined
+      showBodyScroll.current && showBodyScroll.current()
     }
   }, [])
 
@@ -70,6 +73,7 @@ const usePortal = (options: UsePortalOptions) => {
     portalRef.current = document.createElement('div')
     portalRef.current.id = 'portal'
     document.body.appendChild(portalRef.current)
+    showBodyScroll.current = hideBodyScroll()
     document.addEventListener('keydown', handleKeydown)
     document.addEventListener('mousedown', handleDocumentClick)
     document.addEventListener('touchstart', handleDocumentClick)

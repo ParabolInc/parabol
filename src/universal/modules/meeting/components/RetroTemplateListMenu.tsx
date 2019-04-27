@@ -1,10 +1,10 @@
 import {RetroTemplateListMenu_retroMeetingSettings} from '__generated__/RetroTemplateListMenu_retroMeetingSettings.graphql'
 import {RetroTemplatePicker_settings} from '__generated__/RetroTemplatePicker_settings.graphql'
-import React, {Component} from 'react'
+import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
+import Menu from 'universal/components/Menu'
+import MenuItem from 'universal/components/MenuItem'
 import MenuItemHR from 'universal/components/MenuItemHR'
-import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
-import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
@@ -13,23 +13,27 @@ import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMu
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   closePortal: () => void
-  customize: () => void
   defaultActiveIdx: number
   retroMeetingSettings: RetroTemplateListMenu_retroMeetingSettings
   templates: RetroTemplatePicker_settings['reflectTemplates']
+  toggleModal: () => void
 }
 
-class RetroTemplateListMenu extends Component<Props> {
-  handleTemplateClick = (templateId: string) => () => {
-    const {
-      atmosphere,
-      retroMeetingSettings,
-      onCompleted,
-      onError,
-      submitMutation,
-      submitting
-    } = this.props
-    const {selectedTemplateId, teamId} = retroMeetingSettings
+const RetroTemplateListMenu = (props: Props) => {
+  const {
+    atmosphere,
+    retroMeetingSettings,
+    onCompleted,
+    onError,
+    submitMutation,
+    submitting,
+    closePortal,
+    defaultActiveIdx,
+    templates,
+    toggleModal
+  } = props
+  const {selectedTemplateId, teamId} = retroMeetingSettings
+  const handleTemplateClick = (templateId: string) => () => {
     if (submitting || templateId === selectedTemplateId) return
     submitMutation()
     SelectRetroTemplateMutation(
@@ -40,28 +44,20 @@ class RetroTemplateListMenu extends Component<Props> {
       onCompleted
     )
   }
-
-  render () {
-    const {closePortal, customize, defaultActiveIdx, templates} = this.props
-    return (
-      <MenuWithShortcuts
-        ariaLabel={'Select a template or create your own!'}
-        closePortal={closePortal}
-        defaultActiveIdx={defaultActiveIdx}
-      >
-        {templates.map((template) => {
-          const {id, name} = template
-          return (
-            <MenuItemWithShortcuts key={id} label={name} onClick={this.handleTemplateClick(id)} />
-          )
-        })}
-        {/*
-        // @ts-ignore*/}
-        <MenuItemHR notMenuItem />
-        <MenuItemWithShortcuts label='Customize...' onClick={customize} />
-      </MenuWithShortcuts>
-    )
-  }
+  return (
+    <Menu
+      ariaLabel={'Select a template or create your own!'}
+      closePortal={closePortal}
+      defaultActiveIdx={defaultActiveIdx}
+    >
+      {templates.map((template) => {
+        const {id, name} = template
+        return <MenuItem key={id} label={name} onClick={handleTemplateClick(id)} />
+      })}
+      <MenuItemHR key={'HR1'} />
+      <MenuItem label='Customize...' onClick={toggleModal} />
+    </Menu>
+  )
 }
 
 export default createFragmentContainer(

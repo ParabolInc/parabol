@@ -70,6 +70,10 @@ const BillingLeaderActionMenu = lazyPreload(() =>
   import(/* webpackChunkName: 'BillingLeaderActionMenu' */ 'universal/components/BillingLeaderActionMenu')
 )
 
+const RemoveFromOrgModal = lazyPreload(() =>
+  import(/* webpackChunkName: 'RemoveFromOrgModal' */ 'universal/modules/userDashboard/components/RemoveFromOrgModal/RemoveFromOrgModal')
+)
+
 const OrgMemberRow = (props: Props) => {
   const {
     atmosphere,
@@ -89,8 +93,8 @@ const OrgMemberRow = (props: Props) => {
     isViewerBillingLeader && isBillingLeader && billingLeaderCount === 1
   const {viewerId} = atmosphere
   const {togglePortal, originRef, menuPortal, closePortal} = useMenu(MenuPosition.UPPER_RIGHT)
-  const {togglePortal: toggleLeave, modalPortal} = useModal()
-
+  const {togglePortal: toggleLeave, modalPortal: leaveModal} = useModal()
+  const {togglePortal: toggleRemove, modalPortal: removeModal} = useModal()
   const toggleHandler = () => {
     if (isPersonalTier) return
     if (!inactive) {
@@ -140,7 +144,6 @@ const OrgMemberRow = (props: Props) => {
               <FlatButton onClick={toggleLeave} onMouseEnter={LeaveOrgModal.preload}>
                 Leave Organization
               </FlatButton>
-              {modalPortal(<LeaveOrgModal orgId={orgId} />)}
             </>
           )}
           {!isPersonalTier && isViewerBillingLeader && (
@@ -188,7 +191,13 @@ const OrgMemberRow = (props: Props) => {
               isViewerLastBillingLeader={isViewerLastBillingLeader}
               organizationUser={organizationUser}
               organization={organization}
+              toggleLeave={toggleLeave}
+              toggleRemove={toggleRemove}
             />
+          )}
+          {leaveModal(<LeaveOrgModal orgId={orgId} />)}
+          {removeModal(
+            <RemoveFromOrgModal orgId={orgId} userId={userId} preferredName={preferredName} />
           )}
         </ActionsBlock>
       </RowActions>

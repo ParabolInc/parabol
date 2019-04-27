@@ -7,10 +7,8 @@ import MenuItem from 'universal/components/MenuItem'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
-import useModal from 'universal/hooks/useModal'
 import SetOrgUserRoleMutation from 'universal/mutations/SetOrgUserRoleMutation'
 import {BILLING_LEADER} from 'universal/utils/constants'
-import lazyPreload from 'universal/utils/lazyPreload'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
@@ -18,15 +16,9 @@ interface Props extends WithMutationProps, WithAtmosphereProps {
   isViewerLastBillingLeader: boolean
   organizationUser: BillingLeaderActionMenu_organizationUser
   organization: BillingLeaderActionMenu_organization
+  toggleLeave: () => void
+  toggleRemove: () => void
 }
-
-const LeaveOrgModal = lazyPreload(() =>
-  import(/* webpackChunkName: 'LeaveOrgModal' */ 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal')
-)
-
-const RemoveFromOrgModal = lazyPreload(() =>
-  import(/* webpackChunkName: 'RemoveFromOrgModal' */ 'universal/modules/userDashboard/components/RemoveFromOrgModal/RemoveFromOrgModal')
-)
 
 const BillingLeaderActionMenu = (props: Props) => {
   const {
@@ -38,13 +30,15 @@ const BillingLeaderActionMenu = (props: Props) => {
     submitMutation,
     onError,
     onCompleted,
-    organization
+    organization,
+    toggleLeave,
+    toggleRemove
   } = props
   const {orgId} = organization
   const {viewerId} = atmosphere
   const {newUserUntil, role, user} = organizationUser
   const isBillingLeader = role === BILLING_LEADER
-  const {userId, preferredName} = user
+  const {id: userId} = user
 
   const setRole = (role = null) => () => {
     if (submitting) return
@@ -53,8 +47,6 @@ const BillingLeaderActionMenu = (props: Props) => {
     SetOrgUserRoleMutation(atmosphere, variables, {}, onError, onCompleted)
   }
 
-  const {togglePortal: toggleLeave, modalPortal: leaveModal} = useModal()
-  const {togglePortal: toggleRemove, modalPortal: removeModal} = useModal()
   return (
     <>
       <Menu ariaLabel={'Select your action'} closePortal={closePortal}>
@@ -65,28 +57,17 @@ const BillingLeaderActionMenu = (props: Props) => {
           <MenuItem label='Promote to Billing Leader' onClick={setRole(BILLING_LEADER)} />
         )}
         {viewerId === userId && !isViewerLastBillingLeader && (
-          <MenuItem
-            noCloseOnClick
-            label='Leave Organization'
-            onClick={toggleLeave}
-            onMouseEnter={LeaveOrgModal.preload}
-          />
+          <MenuItem label='Leave Organization' onClick={toggleLeave} />
         )}
         {viewerId !== userId && (
           <MenuItem
-            noCloseOnClick
             label={
               new Date(newUserUntil) > new Date() ? 'Refund and Remove' : 'Remove from Organization'
             }
             onClick={toggleRemove}
-            onMouseEnter={RemoveFromOrgModal.preload}
           />
         )}
       </Menu>
-      {leaveModal(<LeaveOrgModal orgId={orgId} />)}
-      {removeModal(
-        <RemoveFromOrgModal orgId={orgId} userId={userId} preferredName={preferredName} />
-      )}
     </>
   )
 }
@@ -102,8 +83,7 @@ export default createFragmentContainer(
       role
       newUserUntil
       user {
-        userId: id
-        preferredName
+        id
       }
     }
   `

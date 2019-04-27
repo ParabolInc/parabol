@@ -1,15 +1,15 @@
 import React, {forwardRef} from 'react'
 import styled from 'react-emotion'
 import {menuItemAnimation} from 'universal/components/MenuItem'
-import ui from 'universal/styles/ui'
+import {PALETTE} from 'universal/styles/paletteV2'
 
 const StyledHR = styled('hr')(({idx}: {idx: number}) => ({
   animation: menuItemAnimation(idx),
-  backgroundColor: ui.menuBorderColor,
+  backgroundColor: PALETTE.BORDER.LIGHT,
   border: 'none',
   height: '.0625rem',
-  marginBottom: ui.menuGutterVertical,
-  marginTop: ui.menuGutterVertical,
+  marginBottom: 8,
+  marginTop: 8,
   opacity: 0,
   padding: 0
 }))
