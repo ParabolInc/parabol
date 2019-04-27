@@ -6,8 +6,8 @@ import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import withStyles from 'universal/styles/withStyles'
-import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
-import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
+import Menu from 'universal/components/Menu'
+import MenuItem from 'universal/components/MenuItem'
 import textOverflow from 'universal/styles/helpers/textOverflow'
 
 const MeetingAvatarMenu = (props) => {
@@ -27,33 +27,30 @@ const MeetingAvatarMenu = (props) => {
   const phaseInfo = actionMeeting[localPhase]
   const {name: phaseName} = phaseInfo
   return (
-    <MenuWithShortcuts
-      ariaLabel={'Select what to do with this team member'}
-      closePortal={closePortal}
-    >
+    <Menu ariaLabel={'Select what to do with this team member'} closePortal={closePortal}>
       <div className={css(styles.label)}>{headerLabel}</div>
       {handleNavigate && (
-        <MenuItemWithShortcuts
+        <MenuItem
           key='handleNavigate'
           label={`See ${preferredName}’s ${phaseName}`}
           onClick={handleNavigate}
         />
       )}
       {handlePromote && (
-        <MenuItemWithShortcuts
+        <MenuItem
           key='promoteToFacilitator'
           label={`Promote ${preferredName} to Facilitator`}
           onClick={handlePromote}
         />
       )}
       {handleRequest && (
-        <MenuItemWithShortcuts
+        <MenuItem
           key='requestFacilitator'
           label={'Request to become Facilitator'}
           onClick={handleRequest}
         />
       )}
-    </MenuWithShortcuts>
+    </Menu>
   )
 }
 

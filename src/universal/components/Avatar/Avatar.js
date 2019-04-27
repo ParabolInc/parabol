@@ -92,7 +92,7 @@ Avatar.propTypes = {
   picture: PropTypes.string,
   sansRadius: PropTypes.bool,
   sansShadow: PropTypes.bool,
-  innerRef: PropTypes.func,
+  innerRef: PropTypes.any,
   size: PropTypes.oneOf([
     'fill',
     'smallest',
