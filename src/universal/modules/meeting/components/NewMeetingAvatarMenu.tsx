@@ -3,8 +3,8 @@ import {NewMeetingAvatarMenu_teamMember} from '__generated__/NewMeetingAvatarMen
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import DropdownMenuLabel from 'universal/components/DropdownMenuLabel'
-import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
-import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
+import MenuItem from 'universal/components/MenuItem'
+import Menu from 'universal/components/Menu'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
@@ -37,26 +37,25 @@ const NewMeetingAvatarMenu = (props: Props) => {
   const phaseLabel = localPhase ? phaseLabelLookup[localPhase.phaseType] : LOBBY
   const owner = isSelf ? 'your' : `${preferredName}’s`
   return (
-    <MenuWithShortcuts
-      ariaLabel={'Select what to do with this team member'}
-      closePortal={closePortal}
-    >
+    <Menu ariaLabel={'Select what to do with this team member'} closePortal={closePortal}>
       <DropdownMenuLabel>{headerLabel}</DropdownMenuLabel>
       {handleNavigate && (
-        <MenuItemWithShortcuts
+        <MenuItem
           key='handleNavigate'
           label={`See ${owner} ${phaseLabel}`}
           onClick={handleNavigate}
         />
       )}
-      {!avatarIsFacilitating && !window.location.pathname.startsWith('/retrospective-demo') && (
-        <MenuItemWithShortcuts
-          key='promoteToFacilitator'
-          label={`Promote ${isSelf ? 'yourself' : preferredName} to Facilitator`}
-          onClick={handlePromote}
-        />
-      )}
-    </MenuWithShortcuts>
+      {localPhase &&
+        !avatarIsFacilitating &&
+        !window.location.pathname.startsWith('/retrospective-demo') && (
+          <MenuItem
+            key='promoteToFacilitator'
+            label={`Promote ${isSelf ? 'yourself' : preferredName} to Facilitator`}
+            onClick={handlePromote}
+          />
+        )}
+    </Menu>
   )
 }
 
