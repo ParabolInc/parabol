@@ -99,7 +99,7 @@ interface Props extends WithAtmosphereProps {
   newMeeting: NewMeetingAvatar_newMeeting | null
   teamMember: NewMeetingAvatar_teamMember
   streamUI: StreamUI | undefined
-  swarm: MediaSwarm
+  swarm: MediaSwarm | null
 }
 
 const NewMeetingAvatarMenu = lazyPreload(() =>

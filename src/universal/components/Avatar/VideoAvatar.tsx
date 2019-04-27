@@ -54,7 +54,7 @@ const Picture = styled('img')(({isHidden}: {isHidden: boolean}) => ({
 interface Props {
   teamMember: VideoAvatar_teamMember
   streamUI: StreamUI | undefined
-  swarm: MediaSwarm
+  swarm: MediaSwarm | null
   onClick?: () => void
   onMouseEnter?: () => void
 }
@@ -69,7 +69,7 @@ const VideoAvatar = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
     } = props
     if (!streamUI) return
     const {hasVideo} = streamUI
-    if (hasVideo) {
+    if (hasVideo && swarm) {
       const el = videoRef.current!
       const stream = isSelf ? swarm.localStreams.cam.low : swarm.getStream('cam', userId)
       console.log('hasVideo', stream, hasVideo)

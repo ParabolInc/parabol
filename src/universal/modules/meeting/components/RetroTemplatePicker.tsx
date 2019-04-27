@@ -9,7 +9,6 @@ import lazyPreload from 'universal/utils/lazyPreload'
 
 interface Props {
   settings: RetroTemplatePicker_settings
-  toggleModal: () => void
 }
 
 const RetroTemplateListMenu = lazyPreload(() =>
