@@ -1,23 +1,31 @@
-// @flow
-import * as React from 'react'
-import styled from 'react-emotion'
-import LoadableMenu from 'universal/components/LoadableMenu'
-import LoadableDueDatePicker from 'universal/components/LoadableDueDatePicker'
-import {createFragmentContainer} from 'react-relay'
-import {shortMonths} from 'universal/utils/makeDateString'
-import ui from 'universal/styles/ui'
-import Icon from 'universal/components/Icon'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
-import CardButton from 'universal/components/CardButton'
+import {DueDateToggle_task} from '__generated__/DueDateToggle_task.graphql'
 import ms from 'ms'
+import React from 'react'
+import styled from 'react-emotion'
+import {createFragmentContainer, graphql} from 'react-relay'
 import tinycolor from 'tinycolor2'
+import CardButton from 'universal/components/CardButton'
+import Icon from 'universal/components/Icon'
+import {MenuPosition} from 'universal/hooks/useCoords'
+import useMenu from 'universal/hooks/useMenu'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import ui from 'universal/styles/ui'
+import lazyPreload from 'universal/utils/lazyPreload'
+import {shortMonths} from 'universal/utils/makeDateString'
 
 const darken = (color, amount) =>
   tinycolor(color)
     .darken(amount)
     .toString()
 
-const Toggle = styled(CardButton)(
+interface StyleProps {
+  cardIsActive: boolean
+  dueDate: boolean
+  isDueSoon: boolean
+  isPastDue: boolean
+}
+
+const Toggle = styled(CardButton)<StyleProps>(
   {
     alignItems: 'center',
     borderRadius: '4em',
@@ -26,10 +34,10 @@ const Toggle = styled(CardButton)(
     opacity: 0
   },
   ({cardIsActive}) => ({
-    opacity: cardIsActive && 0.5,
+    opacity: cardIsActive ? 0.5 : 0,
     ':hover, :focus': {
       backgroundColor: ui.palette.gray,
-      opacity: cardIsActive && 1
+      opacity: cardIsActive ? 1 : 0
     }
   }),
   ({dueDate}) =>
@@ -74,21 +82,11 @@ const DateString = styled('span')({
   marginLeft: '0.125rem'
 })
 
-const originAnchor = {
-  vertical: 'bottom',
-  horizontal: 'right'
-}
-
-const targetAnchor = {
-  vertical: 'top',
-  horizontal: 'right'
-}
-
-type Props = {|
-  cardIsActive: Boolean,
-  task: Object,
+interface Props {
+  cardIsActive: boolean
+  task: DueDateToggle_task
   toggleMenuState: () => void
-|}
+}
 
 const formatDueDate = (dueDate) => {
   const date = new Date(dueDate)
@@ -102,8 +100,7 @@ const action = 'tap to change'
 const getDateInfo = (dueDate) => {
   if (!dueDate) return {title: 'Add a due date'}
   const date = new Date(dueDate)
-  const now = new Date()
-  const timeDiff = date - now
+  const timeDiff = date.getTime() - Date.now()
   const diffDays = Math.ceil(timeDiff / ms('1d'))
   if (diffDays <= 0) return {title: `Past due, ${action}`, isPastDue: true}
   if (diffDays < 3) return {title: `Due soon, ${action}`, isDueSoon: true}
@@ -111,29 +108,33 @@ const getDateInfo = (dueDate) => {
   return {title: `Due ${dateString}, ${action}`}
 }
 
+const DueDatePicker = lazyPreload(() =>
+  import(/* webpackChunkName: 'DueDatePicker' */
+  'universal/components/DueDatePicker')
+)
+
 const DueDateToggle = (props: Props) => {
   const {cardIsActive, task, toggleMenuState} = props
   const {dueDate} = task
-  const toggle = (
-    <Toggle cardIsActive={!dueDate && cardIsActive} dueDate={dueDate} {...getDateInfo(dueDate)}>
-      <DueDateIcon>access_time</DueDateIcon>
-      {dueDate && <DateString>{formatDueDate(dueDate)}</DateString>}
-    </Toggle>
-  )
+  const {menuProps, menuPortal, originRef, togglePortal} = useMenu(MenuPosition.UPPER_RIGHT, {
+    onOpen: toggleMenuState,
+    onClose: toggleMenuState
+  })
   return (
-    <LoadableMenu
-      LoadableComponent={LoadableDueDatePicker}
-      maxWidth={350}
-      maxHeight={340}
-      originAnchor={originAnchor}
-      queryVars={{
-        task
-      }}
-      targetAnchor={targetAnchor}
-      toggle={toggle}
-      onOpen={toggleMenuState}
-      onClose={toggleMenuState}
-    />
+    <>
+      <Toggle
+        cardIsActive={!dueDate && cardIsActive}
+        dueDate={dueDate}
+        {...getDateInfo(dueDate)}
+        innerRef={originRef}
+        onClick={togglePortal}
+        onMouseEnter={DueDatePicker.preload}
+      >
+        <DueDateIcon>access_time</DueDateIcon>
+        {dueDate && <DateString>{formatDueDate(dueDate)}</DateString>}
+      </Toggle>
+      {menuPortal(<DueDatePicker menuProps={menuProps} task={task} />)}
+    </>
   )
 }
 

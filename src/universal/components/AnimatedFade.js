@@ -1,3 +1,4 @@
+/* Deprecated. See internals of useMenuPortal */
 // @flow
 import * as React from 'react'
 import {CSSTransition} from 'react-transition-group'
