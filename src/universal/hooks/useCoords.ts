@@ -116,7 +116,7 @@ const getNextCoords = (targetBBox: BBox, originBBox: BBox, preferredMenuPosition
     }
   }
   const menuPosition =
-    nextCoords.top === undefined ? lowerLookup[preferredMenuPosition] : preferredMenuPosition
+    (nextCoords.top === undefined && lowerLookup[preferredMenuPosition]) || preferredMenuPosition
   // if by choice or circumstance, put it above & anchor it from the bottom
   if (nextCoords.top === undefined) {
     const bottom = innerHeight - originTop - scrollY
@@ -188,6 +188,7 @@ const useCoords = (preferredMenuPosition: MenuPosition, options: UseCoordsOption
 
   useWindowResize(coordsRef, currentTargetRef, setCoords)
   const {coords, menuPosition} = coordsRef.current
+
   return {targetRef, originRef, coords, menuPosition}
 }
 

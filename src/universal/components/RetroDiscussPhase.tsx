@@ -7,7 +7,7 @@ import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
 import DiscussPhaseReflectionGrid from 'universal/components/DiscussPhaseReflectionGrid'
 import Icon from 'universal/components/Icon'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
-import DiscussHelpMenu from 'universal/components/MeetingHelp/DiscussHelpMenu'
+import MeetingHelpToggle from 'universal/components/MenuHelpToggle'
 import Overflow from 'universal/components/Overflow'
 import EditorHelpModalContainer from 'universal/containers/EditorHelpModalContainer/EditorHelpModalContainer'
 import withAtmosphere, {
@@ -19,12 +19,12 @@ import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 import {meetingVoteIcon} from 'universal/styles/meeting'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
+import lazyPreload from 'universal/utils/lazyPreload'
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
 import plural from 'universal/utils/plural'
 import handleRightArrow from '../utils/handleRightArrow'
 import isDemoRoute from '../utils/isDemoRoute'
 import EndMeetingButton from './EndMeetingButton'
-import DemoDiscussHelpMenu from './MeetingHelp/DemoDiscussHelpMenu'
 
 interface Props extends WithAtmosphereProps {
   gotoNext: () => void
@@ -126,6 +126,13 @@ const StyledBottomBar = styled(MeetingControlBar)({
   justifyContent: 'space-between'
 })
 
+const DiscussHelpMenu = lazyPreload(async () =>
+  import(/* webpackChunkName: 'DiscussHelpMenu' */ 'universal/components/MeetingHelp/DiscussHelpMenu')
+)
+const DemoDiscussHelpMenu = lazyPreload(async () =>
+  import(/* webpackChunkName: 'DemoDiscussHelpMenu' */ 'universal/components/MeetingHelp/DemoDiscussHelpMenu')
+)
+
 const RetroDiscussPhase = (props: Props) => {
   const {atmosphere, gotoNext, gotoNextRef, team, isDemoStageComplete} = props
   const {viewerId} = atmosphere
@@ -205,11 +212,10 @@ const RetroDiscussPhase = (props: Props) => {
           {!nextStageRes && <BottomControlSpacer />}
         </StyledBottomBar>
       )}
-      {isDemoRoute() ? (
-        <DemoDiscussHelpMenu />
-      ) : (
-        <DiscussHelpMenu floatAboveBottomBar={isFacilitating} />
-      )}
+      <MeetingHelpToggle
+        floatAboveBottomBar={isFacilitating}
+        menu={isDemoRoute() ? <DemoDiscussHelpMenu /> : <DiscussHelpMenu />}
+      />
 
       <EditorHelpModalContainer />
     </React.Fragment>

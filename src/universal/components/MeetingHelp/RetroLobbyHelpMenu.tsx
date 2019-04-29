@@ -1,11 +1,12 @@
-import HelpMenuCopy from 'universal/components/MeetingHelp/HelpMenuCopy'
+import React, {forwardRef} from 'react'
 import HelpMenuContent from 'universal/components/MeetingHelp/HelpMenuContent'
-import React from 'react'
-import withHelpMenu from 'universal/components/MeetingHelp/withHelpMenu'
+import HelpMenuCopy from 'universal/components/MeetingHelp/HelpMenuCopy'
 import HelpMenuLink from 'universal/components/MeetingHelp/HelpMenuLink'
 
-const RetroLobbyHelpMenu = (props) => {
-  const {closePortal} = props
+interface Props {}
+
+const RetroLobbyHelpMenu = forwardRef((_props: Props, ref: any) => {
+  const {closePortal} = ref
   return (
     <HelpMenuContent closePortal={closePortal}>
       <HelpMenuCopy>
@@ -23,6 +24,6 @@ const RetroLobbyHelpMenu = (props) => {
       </div>
     </HelpMenuContent>
   )
-}
+})
 
-export default withHelpMenu(RetroLobbyHelpMenu)
+export default RetroLobbyHelpMenu

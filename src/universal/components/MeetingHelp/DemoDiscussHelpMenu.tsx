@@ -1,14 +1,16 @@
-import React from 'react'
+import React, {forwardRef} from 'react'
 import HelpMenuContent from 'universal/components/MeetingHelp/HelpMenuContent'
 import HelpMenuHeader from 'universal/components/MeetingHelp/HelpMenuHeader'
-import withHelpMenu from 'universal/components/MeetingHelp/withHelpMenu'
+import useInterval from 'universal/hooks/useInterval'
 import DelayedCopy from './DelayedCopy'
-import withDemoHelpMenu from './withDemoHelpMenu'
-import withStaggerShow from './withStaggerShow'
 
 let permShow = 0
 
-const DemoDiscussHelpMenu = ({closePortal, staggerShow}) => {
+interface Props {}
+
+const DemoDiscussHelpMenu = forwardRef((_props: Props, ref: any) => {
+  const {closePortal} = ref
+  const staggerShow = useInterval(2000, 3)
   if (staggerShow > permShow) permShow = staggerShow
   return (
     <HelpMenuContent closePortal={closePortal}>
@@ -24,6 +26,6 @@ const DemoDiscussHelpMenu = ({closePortal, staggerShow}) => {
       </DelayedCopy>
     </HelpMenuContent>
   )
-}
+})
 
-export default withDemoHelpMenu(withHelpMenu(withStaggerShow(DemoDiscussHelpMenu)))
+export default DemoDiscussHelpMenu

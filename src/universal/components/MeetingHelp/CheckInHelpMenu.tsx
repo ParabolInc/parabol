@@ -1,11 +1,11 @@
 import React from 'react'
-import {ACTION, CHECKIN, RETROSPECTIVE} from 'universal/utils/constants'
-import withHelpMenu from 'universal/components/MeetingHelp/withHelpMenu'
 import HelpMenuContent from 'universal/components/MeetingHelp/HelpMenuContent'
-import HelpMenuHeader from 'universal/components/MeetingHelp/HelpMenuHeader'
 import HelpMenuCopy from 'universal/components/MeetingHelp/HelpMenuCopy'
-import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
+import HelpMenuHeader from 'universal/components/MeetingHelp/HelpMenuHeader'
 import HelpMenuLink from 'universal/components/MeetingHelp/HelpMenuLink'
+import {MeetingTypeEnum} from 'universal/types/graphql'
+import {ACTION, CHECKIN, RETROSPECTIVE} from 'universal/utils/constants'
+import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 
 const linkLookup = {
   [ACTION]: 'https://www.parabol.co/getting-started-guide/action-meetings-101#social-check-in',
@@ -13,10 +13,14 @@ const linkLookup = {
     'https://www.parabol.co/getting-started-guide/retrospective-meetings-101#social-check-in'
 }
 
-const CheckInHelpMenu = (props) => {
-  const {closePortal, meetingType} = props
+interface Props {
+  meetingType: MeetingTypeEnum
+}
+
+const CheckInHelpMenu = (props: Props) => {
+  const {meetingType} = props
   return (
-    <HelpMenuContent closePortal={closePortal}>
+    <HelpMenuContent>
       <HelpMenuHeader>{phaseLabelLookup[CHECKIN]}</HelpMenuHeader>
       <HelpMenuCopy>
         {
@@ -31,4 +35,4 @@ const CheckInHelpMenu = (props) => {
   )
 }
 
-export default withHelpMenu(CheckInHelpMenu)
+export default CheckInHelpMenu
