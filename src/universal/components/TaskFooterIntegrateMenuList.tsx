@@ -14,6 +14,7 @@ import TaskFooterIntegrateMenuSearch from 'universal/components/TaskFooterIntegr
 import useAllIntegrations from 'universal/hooks/useAllIntegrations'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useFilteredItems from 'universal/hooks/useFilteredItems'
+import {PortalState} from 'universal/hooks/usePortal'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {ICON_SIZE} from 'universal/styles/typographyV2'
 import {TaskServiceEnum} from 'universal/types/graphql'
@@ -26,6 +27,7 @@ interface Props {
   mutationProps: MenuMutationProps
   placeholder: string
   suggestedIntegrations: TaskFooterIntegrateMenuList_suggestedIntegrations
+  portalState: PortalState
   task: TaskFooterIntegrateMenuList_task
 }
 
@@ -63,7 +65,7 @@ const serviceToMenuItemLookup = {
 }
 
 const TaskFooterIntegrateMenu = (props: Props) => {
-  const {closePortal, mutationProps, placeholder, suggestedIntegrations, task} = props
+  const {closePortal, mutationProps, placeholder, suggestedIntegrations, portalState, task} = props
   const {hasMore} = suggestedIntegrations
   const items = suggestedIntegrations.items || []
   const {id: taskId, teamId, userId} = task
@@ -92,8 +94,9 @@ const TaskFooterIntegrateMenu = (props: Props) => {
       ariaLabel={'Export the task'}
       closePortal={closePortal}
       resetActiveOnChanges={[allItems]}
+      portalState={portalState}
     >
-      <SearchItem>
+      <SearchItem key='search'>
         <StyledMenuItemIcon>
           <SearchIcon>search</SearchIcon>
         </StyledMenuItemIcon>
@@ -122,7 +125,9 @@ const TaskFooterIntegrateMenu = (props: Props) => {
           />
         )
       })}
-      {status === 'loading' && <LoadingComponent spinnerSize={24} height={24} showAfter={0} />}
+      {status === 'loading' && (
+        <LoadingComponent key='loading' spinnerSize={24} height={24} showAfter={0} />
+      )}
     </Menu>
   )
 }

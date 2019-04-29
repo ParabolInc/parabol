@@ -11,11 +11,12 @@ import React, {
   useState
 } from 'react'
 import styled from 'react-emotion'
+import MenuItemAnimation from 'universal/components/MenuItemAnimation'
+import {PortalState} from 'universal/hooks/usePortal'
 
 const isMenuItem = (node: any) => node && node.onClick
 
 const MenuStyles = styled('div')({
-  background: '#fff',
   maxHeight: 224,
   maxWidth: 400,
   outline: 0,
@@ -32,6 +33,8 @@ interface Props {
   keepParentFocus?: boolean
   resetActiveOnChanges?: any[]
   tabReturns?: boolean
+  isDropdown?: boolean
+  portalState: PortalState
 }
 
 const Menu = forwardRef((props: Props, ref: any) => {
@@ -41,8 +44,10 @@ const Menu = forwardRef((props: Props, ref: any) => {
     className,
     closePortal,
     defaultActiveIdx,
+    isDropdown,
     keepParentFocus,
     resetActiveOnChanges,
+    portalState,
     tabReturns
   } = props
   const [activeIdx, setActiveIdx] = useState<number>(defaultActiveIdx || 0)
@@ -117,7 +122,10 @@ const Menu = forwardRef((props: Props, ref: any) => {
   const makeSmartChildren = useCallback(
     (children: ReactNode) => {
       // toArray removes bools whereas map does not
-      return Children.toArray(children).map((child, idx) => {
+      const childArr = Children.toArray(children)
+      const itemCount = childArr.length
+      return childArr.map((child, idx) => {
+        if (!child) return null
         // overloading a ref callback with useful props means intermediary components only need to forward the ref
         const ref = (c) => {
           itemHandles.current[idx] = c
@@ -125,8 +133,17 @@ const Menu = forwardRef((props: Props, ref: any) => {
         ref.closePortal = closePortal
         ref.isActive = activeIdx === idx
         ref.activate = () => setSafeIdx(idx)
-        ref.idx = idx
-        return cloneElement(child as ReactElement, {ref})
+        return (
+          <MenuItemAnimation
+            key={`mi${(child as any).key || child}`}
+            idx={idx}
+            itemsToAnimate={Math.min(6, itemCount)}
+            isDropdown={!!isDropdown}
+            portalState={portalState}
+          >
+            {cloneElement(child as ReactElement, {ref})}
+          </MenuItemAnimation>
+        )
       })
     },
     [activeIdx, children]

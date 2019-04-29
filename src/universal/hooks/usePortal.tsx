@@ -3,11 +3,12 @@ import {createPortal} from 'react-dom'
 import requestDoubleAnimationFrame from 'universal/components/RetroReflectPhase/requestDoubleAnimationFrame'
 import hideBodyScroll from 'universal/utils/hideBodyScroll'
 
-export enum PortalState {
-  Entering,
-  Entered,
-  Exiting,
-  Exited
+export const enum PortalState {
+  Entering, // node appended to DOM
+  Entered, // 2 animation frames after appended to DOM
+  AnimatedIn,
+  Exiting, // closePortal was called
+  Exited // initial state
 }
 
 export interface UsePortalOptions {
@@ -18,7 +19,7 @@ const usePortal = (options: UsePortalOptions) => {
   const portalRef = useRef<HTMLDivElement>()
   const originRef = useRef<HTMLElement>()
   const showBodyScroll = useRef<() => void>()
-  const [status, setStatus] = useState(PortalState.Exited)
+  const [portalState, setPortalState] = useState(PortalState.Exited)
 
   const terminatePortal = useCallback(() => {
     if (portalRef.current) {
@@ -42,7 +43,7 @@ const usePortal = (options: UsePortalOptions) => {
         }
       })
     }
-    setStatus(PortalState.Exiting)
+    setPortalState(PortalState.Exiting)
     // important! this should be last in case the onClose also tries to close the portal (see EmojiMenu)
     options.onClose && options.onClose()
   }, [])
@@ -77,13 +78,13 @@ const usePortal = (options: UsePortalOptions) => {
     document.addEventListener('keydown', handleKeydown)
     document.addEventListener('mousedown', handleDocumentClick)
     document.addEventListener('touchstart', handleDocumentClick)
-    setStatus(PortalState.Entering)
+    setPortalState(PortalState.Entering)
     if (e && e.currentTarget) {
       originRef.current = e.currentTarget as HTMLElement
     }
     // without rDAF: 1) coords may not be updated (if useCoords is used), 2) `enter` class hasn't had time to flush (if animations are used)
     requestDoubleAnimationFrame(() => {
-      setStatus(PortalState.Entered)
+      setPortalState(PortalState.Entered)
     })
     options.onOpen && options.onOpen(portalRef.current)
   }, [])
@@ -95,12 +96,22 @@ const usePortal = (options: UsePortalOptions) => {
   const portal = useCallback(
     (reactEl: ReactElement) => {
       const targetEl = portalRef.current
-      return !targetEl || status === PortalState.Exited ? null : createPortal(reactEl, targetEl)
+      return !targetEl || portalState === PortalState.Exited
+        ? null
+        : createPortal(reactEl, targetEl)
     },
-    [status]
+    [portalState]
   )
 
-  return {openPortal, closePortal, terminatePortal, togglePortal, portal, status}
+  return {
+    openPortal,
+    closePortal,
+    terminatePortal,
+    togglePortal,
+    portal,
+    portalState,
+    setPortalState
+  }
 }
 
 export default usePortal

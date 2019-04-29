@@ -12,24 +12,39 @@ const transformOrigins = {
   [MenuPosition.LOWER_RIGHT]: 'bottom right'
 }
 
-const backgroundStyles = {
-  [PortalState.Entered]: {
-    opacity: 1,
-    transform: 'scale(1)',
-    transition: `all ${Duration.MENU_OPEN}ms ${DECELERATE}`
-  },
-  [PortalState.Exiting]: {
-    opacity: 0,
-    transition: `all ${Duration.PORTAL_CLOSE}ms ${DECELERATE}`
-  },
-  [PortalState.Entering]: {
-    opacity: 0,
-    transform: `scale(0)`
+const backgroundStyles = (portalState: PortalState, isDropdown: boolean) => {
+  switch (portalState) {
+    case PortalState.Entered:
+    case PortalState.AnimatedIn:
+      return {
+        opacity: 1,
+        transform: isDropdown ? 'scaleY(1)' : 'scale(1)',
+        transition: `all ${Duration.MENU_OPEN}ms ${DECELERATE}`
+      }
+    case PortalState.Exiting:
+      return {
+        opacity: 0,
+        transition: `all ${Duration.PORTAL_CLOSE}ms ${DECELERATE}`
+      }
+    case PortalState.Entering:
+      return {
+        transform: isDropdown ? 'scaleY(0)' : 'scale(0)'
+      }
+    default:
+      return {}
   }
 }
 
 const MenuBackground = styled('div')(
-  ({menuPosition, status}: {menuPosition: MenuPosition; status: PortalState}) => ({
+  ({
+    menuPosition,
+    portalState,
+    isDropdown
+  }: {
+    menuPosition: MenuPosition
+    portalState: PortalState
+    isDropdown: boolean
+  }) => ({
     background: '#fff',
     borderRadius: '2px',
     boxShadow: menuShadow,
@@ -38,7 +53,7 @@ const MenuBackground = styled('div')(
     transformOrigin: transformOrigins[menuPosition],
     width: '100%',
     zIndex: -1,
-    ...backgroundStyles[status]
+    ...backgroundStyles(portalState, isDropdown)
   })
 )
 

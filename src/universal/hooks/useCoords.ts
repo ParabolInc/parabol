@@ -20,6 +20,11 @@ export type UseCoordsValue =
   | {bottom: number; right: number}
   | {bottom: number; left: number}
 
+interface CoordState {
+  coords: UseCoordsValue
+  menuPosition: MenuPosition
+}
+
 export interface ModalAnchor {
   horizontal: 'left' | 'center' | 'right'
   vertical: 'top' | 'center' | 'bottom'
@@ -75,10 +80,15 @@ const anchorLookup = {
   }
 }
 
-const getNextCoords = (targetBBox: BBox, originBBox: BBox, menuPosition: MenuPosition) => {
+const lowerLookup = {
+  [MenuPosition.UPPER_LEFT]: MenuPosition.LOWER_LEFT,
+  [MenuPosition.UPPER_RIGHT]: MenuPosition.LOWER_RIGHT
+}
+
+const getNextCoords = (targetBBox: BBox, originBBox: BBox, preferredMenuPosition: MenuPosition) => {
   const {height: modalHeight, width: modalWidth} = targetBBox
   const {height: originHeight, width: originWidth, left: originLeft, top: originTop} = originBBox
-  const {originAnchor, targetAnchor} = anchorLookup[menuPosition]
+  const {originAnchor, targetAnchor} = anchorLookup[preferredMenuPosition]
   const nextCoords = {} as any
 
   const originLeftOffset = getOffset(originAnchor.horizontal, originWidth)
@@ -105,13 +115,15 @@ const getNextCoords = (targetBBox: BBox, originBBox: BBox, menuPosition: MenuPos
       nextCoords.top = top
     }
   }
+  const menuPosition =
+    nextCoords.top === undefined ? lowerLookup[preferredMenuPosition] : preferredMenuPosition
   // if by choice or circumstance, put it above & anchor it from the bottom
   if (nextCoords.top === undefined) {
     const bottom = innerHeight - originTop - scrollY
     const maxBottom = innerHeight - modalHeight + scrollY
     nextCoords.bottom = Math.min(bottom, maxBottom)
   }
-  return nextCoords as UseCoordsValue
+  return {coords: nextCoords as UseCoordsValue, menuPosition}
 }
 
 export interface UseCoordsOptions {
@@ -119,19 +131,21 @@ export interface UseCoordsOptions {
 }
 
 const useWindowResize = (
-  coordsRef: MutableRefObject<UseCoordsValue>,
+  coordsRef: MutableRefObject<CoordState>,
   currentTargetRef: HTMLDivElement | null,
-  setCoords: Dispatch<SetStateAction<UseCoordsValue>>
+  setCoords: Dispatch<SetStateAction<CoordState>>
 ) => {
   useEffect(() => {
     const resizeWindow = () => {
-      const coords = coordsRef.current
+      const {coords, menuPosition} = coordsRef.current
       if (currentTargetRef && ('right' in coords || 'bottom' in coords)) {
         const targetCoords = currentTargetRef.getBoundingClientRect()
-        console.log('call set coords 3')
         setCoords({
-          left: targetCoords.left,
-          top: targetCoords.top
+          coords: {
+            left: targetCoords.left,
+            top: targetCoords.top
+          },
+          menuPosition
         })
       }
     }
@@ -142,21 +156,24 @@ const useWindowResize = (
   }, [coordsRef, currentTargetRef, setCoords])
 }
 
-const useCoords = (menuPosition: MenuPosition, options: UseCoordsOptions = {}) => {
+const useCoords = (preferredMenuPosition: MenuPosition, options: UseCoordsOptions = {}) => {
   const [currentTargetRef, setTargetRef] = useState<HTMLDivElement | null>(null)
   const targetRef = useCallback((c) => {
     setTargetRef(c)
   }, [])
   const originRef = useRef<HTMLElement | null>(null)
-  const [coordsRef, setCoords] = useRefState<UseCoordsValue>({left: 0, top: 0})
+  const [coordsRef, setCoords] = useRefState<CoordState>({
+    coords: {left: 0, top: 0},
+    menuPosition: preferredMenuPosition
+  })
   useLayoutEffect(() => {
     if (!currentTargetRef || !originRef.current) return
     // Bounding adjustments mimic native (flip from below to above for Y, but adjust pixel-by-pixel for X)
     const targetBBox = getBBox(currentTargetRef)
     const originBBox = getBBox(originRef.current)
     if (targetBBox && originBBox) {
-      const nextCoords = getNextCoords(targetBBox, originBBox, menuPosition)
-      setCoords(nextCoords)
+      const coordState = getNextCoords(targetBBox, originBBox, preferredMenuPosition)
+      setCoords(coordState)
     }
   }, [options.originCoords])
 
@@ -164,15 +181,14 @@ const useCoords = (menuPosition: MenuPosition, options: UseCoordsOptions = {}) =
     const targetBBox = getBBox(currentTargetRef)!
     const originBBox = getBBox(originRef.current)!
     if (targetBBox && originBBox) {
-      const nextCoords = getNextCoords(targetBBox, originBBox, menuPosition)
-      setCoords(nextCoords)
+      const coordState = getNextCoords(targetBBox, originBBox, preferredMenuPosition)
+      setCoords(coordState)
     }
   })
 
   useWindowResize(coordsRef, currentTargetRef, setCoords)
-
-  // if (coordsRef.current && coordsRef.current.left !== originCoords && originCoords.left) debugger
-  return {targetRef, originRef, coords: coordsRef.current}
+  const {coords, menuPosition} = coordsRef.current
+  return {targetRef, originRef, coords, menuPosition}
 }
 
 export default useCoords

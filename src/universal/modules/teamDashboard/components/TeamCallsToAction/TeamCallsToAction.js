@@ -40,8 +40,9 @@ const TeamCallsToActionMenu = lazyPreload(() =>
 
 const TeamCallToAction = (props: Props) => {
   const {teamId} = props
-  const {togglePortal, originRef, menuPortal, closePortal, loadingWidth} = useMenu(
-    MenuPosition.UPPER_RIGHT
+  const {togglePortal, originRef, menuPortal, closePortal, loadingWidth, portalState} = useMenu(
+    MenuPosition.UPPER_RIGHT,
+    {isDropdown: true}
   )
   return (
     <ButtonBlock>
@@ -53,7 +54,12 @@ const TeamCallToAction = (props: Props) => {
         <IconLabel icon='expand_more' iconAfter label='Start Meeting' />
       </StartButton>
       {menuPortal(
-        <TeamCallsToActionMenu closePortal={closePortal} teamId={teamId} minWidth={loadingWidth} />
+        <TeamCallsToActionMenu
+          closePortal={closePortal}
+          teamId={teamId}
+          minWidth={loadingWidth}
+          portalState={portalState}
+        />
       )}
     </ButtonBlock>
   )

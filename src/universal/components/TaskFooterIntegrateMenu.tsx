@@ -5,11 +5,13 @@ import {createFragmentContainer, graphql} from 'react-relay'
 import TaskFooterIntegrateMenuList from 'universal/components/TaskFooterIntegrateMenuList'
 import TaskFooterIntegrateMenuNoIntegrations from 'universal/components/TaskFooterIntegrateMenuNoIntegrations '
 import TaskFooterIntegrateMenuSignup from 'universal/components/TaskFooterIntegrateMenuSignup'
+import {PortalState} from 'universal/hooks/usePortal'
 import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
 
 interface Props {
   closePortal: () => void
   mutationProps: MenuMutationProps
+  portalState: PortalState
   task: TaskFooterIntegrateMenu_task
   viewer: TaskFooterIntegrateMenu_viewer
 }
@@ -22,7 +24,7 @@ const makePlaceholder = (hasGitHub: boolean, hasAtlassian: boolean) => {
 }
 
 const TaskFooterIntegrateMenu = (props: Props) => {
-  const {closePortal, mutationProps, task, viewer} = props
+  const {closePortal, mutationProps, task, viewer, portalState} = props
   const {id: viewerId, userOnTeam} = viewer
   const {atlassianAuth, githubAuth, preferredName, suggestedIntegrations} = userOnTeam!
   const {teamId, userId} = task
@@ -51,6 +53,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
       mutationProps={mutationProps}
       placeholder={placeholder}
       suggestedIntegrations={suggestedIntegrations}
+      portalState={portalState}
       task={task}
     />
   )

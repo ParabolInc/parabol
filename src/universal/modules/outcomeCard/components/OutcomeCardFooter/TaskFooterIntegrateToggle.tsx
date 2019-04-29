@@ -18,14 +18,19 @@ interface Props {
 
 const TaskFooterIntegrateToggle = (props: Props) => {
   const {mutationProps, task, toggleMenuState} = props
-  const {togglePortal, originRef, menuPortal, closePortal, loadingWidth, loadingDelay} = useMenu(
-    MenuPosition.UPPER_RIGHT,
-    {
-      loadingWidth: 200,
-      onOpen: toggleMenuState,
-      onClose: toggleMenuState
-    }
-  )
+  const {
+    togglePortal,
+    originRef,
+    menuPortal,
+    closePortal,
+    loadingWidth,
+    loadingDelay,
+    portalState
+  } = useMenu(MenuPosition.UPPER_RIGHT, {
+    loadingWidth: 200,
+    onOpen: toggleMenuState,
+    onClose: toggleMenuState
+  })
   return (
     <>
       <CardButton
@@ -41,6 +46,7 @@ const TaskFooterIntegrateToggle = (props: Props) => {
           loadingDelay={loadingDelay}
           loadingWidth={loadingWidth}
           mutationProps={mutationProps}
+          portalState={portalState}
           task={task}
         />
       )}

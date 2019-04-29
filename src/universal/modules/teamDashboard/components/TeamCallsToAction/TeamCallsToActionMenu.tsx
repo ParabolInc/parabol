@@ -5,12 +5,14 @@ import Menu from 'universal/components/Menu'
 import MenuItem from 'universal/components/MenuItem'
 import MenuItemIcon from 'universal/components/MenuItemIcon'
 import MenuItemLabel from 'universal/components/MenuItemLabel'
+import {PortalState} from 'universal/hooks/usePortal'
 import {ACTION, RETROSPECTIVE} from 'universal/utils/constants'
 import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 
 interface Props extends RouteComponentProps<{}> {
   closePortal: () => void
   minWidth: number
+  portalState: PortalState
   teamId: string
 }
 
@@ -19,7 +21,7 @@ const WideMenu = styled(Menu)(({minWidth}: {minWidth: number}) => ({
 }))
 
 const TeamCallsToActionMenu = (props: Props) => {
-  const {closePortal, history, minWidth, teamId} = props
+  const {closePortal, history, minWidth, portalState, teamId} = props
 
   const goToMeetingLobby = () => {
     const slug = meetingTypeToSlug[ACTION]
@@ -36,6 +38,8 @@ const TeamCallsToActionMenu = (props: Props) => {
       ariaLabel={'Select the meeting you would like start'}
       closePortal={closePortal}
       minWidth={minWidth}
+      portalState={portalState}
+      isDropdown
     >
       <MenuItem
         label={

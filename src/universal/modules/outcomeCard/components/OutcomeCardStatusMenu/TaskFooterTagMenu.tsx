@@ -8,6 +8,7 @@ import MenuItemDot from 'universal/components/MenuItemDot'
 import MenuItemHR from 'universal/components/MenuItemHR'
 import MenuItemLabel from 'universal/components/MenuItemLabel'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
+import {PortalState} from 'universal/hooks/usePortal'
 import TaskFooterTagMenuStatusItem from 'universal/modules/outcomeCard/components/OutcomeCardStatusMenu/TaskFooterTagMenuStatusItem'
 import DeleteTaskMutation from 'universal/mutations/DeleteTaskMutation'
 import {PALETTE} from 'universal/styles/paletteV2'
@@ -26,11 +27,12 @@ interface Props {
   // TODO make area enum more fine grained to get rid of isAgenda
   isAgenda: boolean
   mutationProps: MenuMutationProps
+  portalState: PortalState
   task: TaskFooterTagMenu_task
 }
 
 const TaskFooterTagMenu = (props: Props) => {
-  const {area, closePortal, editorState, isAgenda, task} = props
+  const {area, closePortal, editorState, isAgenda, portalState, task} = props
   const atmosphere = useAtmosphere()
   const {id: taskId, status: taskStatus, tags, content, teamId} = task
   const isPrivate = isTaskPrivate(tags)
@@ -40,7 +42,11 @@ const TaskFooterTagMenu = (props: Props) => {
       : addContentTag('#private', atmosphere, taskId, editorState.getCurrentContent(), area)
   }
   return (
-    <Menu ariaLabel={'Change the status of the task'} closePortal={closePortal}>
+    <Menu
+      ariaLabel={'Change the status of the task'}
+      closePortal={closePortal}
+      portalState={portalState}
+    >
       {statusItems
         .filter((status) => status !== taskStatus)
         .map((status) => (

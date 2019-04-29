@@ -1,22 +1,12 @@
-import {keyframes} from 'emotion'
 import React, {forwardRef, ReactNode, useEffect, useImperativeHandle, useRef} from 'react'
 import styled from 'react-emotion'
 import MenuItemLabel from 'universal/components/MenuItemLabel'
-import {DECELERATE} from 'universal/styles/animation'
 import {PALETTE} from 'universal/styles/paletteV2'
-import {Duration} from 'universal/types/constEnums'
-
-declare global {
-  interface Element {
-    scrollIntoViewIfNeeded: () => void
-  }
-}
 
 export interface MenuItemProps {
+  isActive: boolean
   activate: () => void
   closePortal: () => void
-  isActive: boolean
-  idx: number
 }
 
 interface Props {
@@ -26,29 +16,12 @@ interface Props {
   noCloseOnClick?: boolean
 }
 
-const fadeUp = keyframes`
-  0% {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-	100% {
-	  opacity: 1;
-	  transform: translateY(0);
-	}
-`
-const itemDuration = Duration.MENU_OPEN / 5
-export const menuItemAnimation = (idx) =>
-  `${fadeUp} ${itemDuration}ms ${DECELERATE} ${(idx * itemDuration) / 2 +
-    Duration.MENU_OPEN}ms forwards`
-
-const MenuItemStyles = styled('div')(({isActive, idx}: {isActive: boolean; idx: number}) => ({
-  animation: menuItemAnimation(idx),
+const MenuItemStyles = styled('div')(({isActive}: {isActive: boolean}) => ({
   alignItems: 'center',
-  backgroundColor: isActive ? PALETTE.BACKGROUND.MAIN : '#fff',
+  backgroundColor: isActive ? PALETTE.BACKGROUND.MAIN : undefined,
   color: PALETTE.TEXT.MAIN,
   cursor: 'pointer',
   display: 'flex',
-  opacity: 0,
   '&:hover,:focus': {
     backgroundColor: isActive ? PALETTE.BACKGROUND.MAIN : PALETTE.BACKGROUND.LIGHTEST,
     outline: 0
@@ -57,9 +30,9 @@ const MenuItemStyles = styled('div')(({isActive, idx}: {isActive: boolean; idx: 
 
 const MenuItem = forwardRef((props: Props, ref: any) => {
   const {label, noCloseOnClick, onMouseEnter, onClick} = props
-  const itemRef = useRef<HTMLDivElement>()
+  const itemRef = useRef<HTMLDivElement>(null)
   // we're doing something a little hacky here, overloading a callback ref with some props so we don't need to pass them explicitly
-  const {activate, closePortal, isActive, idx} = ref as MenuItemProps
+  const {activate, closePortal, isActive} = ref as MenuItemProps
 
   useEffect(() => {
     if (isActive && itemRef.current) {
@@ -84,12 +57,11 @@ const MenuItem = forwardRef((props: Props, ref: any) => {
 
   return (
     <MenuItemStyles
-      isActive={isActive}
       role='menuitem'
       innerRef={itemRef}
+      isActive={isActive}
       onClick={handleClick}
       onMouseEnter={onMouseEnter}
-      idx={idx}
     >
       {typeof label === 'string' ? <MenuItemLabel>{label}</MenuItemLabel> : label}
     </MenuItemStyles>

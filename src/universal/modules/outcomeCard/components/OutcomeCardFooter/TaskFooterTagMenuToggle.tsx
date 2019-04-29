@@ -22,10 +22,13 @@ const TaskFooterTagMenu = lazyPreload(() =>
 
 const TaskFooterTagMenuToggle = (props: Props) => {
   const {area, editorState, isAgenda, mutationProps, task, toggleMenuState} = props
-  const {togglePortal, originRef, menuPortal, closePortal} = useMenu(MenuPosition.UPPER_RIGHT, {
-    onOpen: toggleMenuState,
-    onClose: toggleMenuState
-  })
+  const {togglePortal, originRef, menuPortal, closePortal, portalState} = useMenu(
+    MenuPosition.UPPER_RIGHT,
+    {
+      onOpen: toggleMenuState,
+      onClose: toggleMenuState
+    }
+  )
 
   return (
     <>
@@ -42,6 +45,7 @@ const TaskFooterTagMenuToggle = (props: Props) => {
           editorState={editorState}
           isAgenda={isAgenda}
           closePortal={closePortal}
+          portalState={portalState}
           task={task}
           mutationProps={mutationProps}
         />

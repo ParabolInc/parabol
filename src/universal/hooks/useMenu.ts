@@ -7,16 +7,21 @@ import usePortal, {UsePortalOptions} from 'universal/hooks/usePortal'
 
 interface Options extends UsePortalOptions, UseCoordsOptions {
   loadingWidth?: number
+  isDropdown?: boolean
 }
 
-const useMenu = (menuPosition: MenuPosition, options: Options = {}) => {
-  const {onOpen, onClose, originCoords} = options
-  // TODO useCoords should export the actual menuPosition (it changes if there's not enough space to put it where it's preferred)
-  const {targetRef, originRef, coords} = useCoords(menuPosition, {originCoords})
+const useMenu = (preferredMenuPosition: MenuPosition, options: Options = {}) => {
+  const {onOpen, onClose, isDropdown, originCoords} = options
+  const {targetRef, originRef, coords, menuPosition} = useCoords(preferredMenuPosition, {
+    originCoords
+  })
   if (originCoords) {
     (originRef as any).current = {getBoundingClientRect: () => originCoords} as RectElement
   }
-  const {portal, closePortal, togglePortal, status} = usePortal({onOpen, onClose})
+  const {portal, closePortal, togglePortal, portalState, setPortalState} = usePortal({
+    onOpen,
+    onClose
+  })
   const loadingWidth = useMemo(() => {
     if (options.loadingWidth) return options.loadingWidth
     const bbox = getBBox(originRef.current)
@@ -28,11 +33,13 @@ const useMenu = (menuPosition: MenuPosition, options: Options = {}) => {
     targetRef,
     loadingWidth,
     coords,
-    status,
+    portalState,
+    setPortalState,
+    !!isDropdown,
     menuPosition,
     loadingDelayRef
   )
-  return {togglePortal, originRef, menuPortal, closePortal, loadingDelay, loadingWidth}
+  return {togglePortal, originRef, menuPortal, closePortal, portalState, loadingDelay, loadingWidth}
 }
 
 export default useMenu

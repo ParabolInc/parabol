@@ -1,5 +1,6 @@
 import React from 'react'
 import Menu from 'universal/components/Menu'
+import {PortalState} from 'universal/hooks/usePortal'
 import {PRO} from 'universal/utils/constants'
 import TagPro from 'universal/components/Tag/TagPro'
 import MenuItem from 'universal/components/MenuItem'
@@ -13,17 +14,20 @@ interface Props {
   defaultActiveIdx: number
   onChange: (orgId: string) => void
   organizations: NewTeamOrgDropdown_organizations
+  portalState: PortalState
 }
 
 const NewTeamOrgDropdown = (props: Props) => {
-  const {defaultActiveIdx, onChange, organizations, closePortal} = props
+  const {defaultActiveIdx, onChange, organizations, closePortal, portalState} = props
   return (
     <Menu
       ariaLabel={'Select the organization the new team belongs to'}
       closePortal={closePortal}
       defaultActiveIdx={defaultActiveIdx + 1}
+      isDropdown
+      portalState={portalState}
     >
-      <DropdownMenuLabel notMenuItem>Select Organization:</DropdownMenuLabel>
+      <DropdownMenuLabel>Select Organization:</DropdownMenuLabel>
       {organizations.map((anOrg) => {
         return (
           <MenuItem
