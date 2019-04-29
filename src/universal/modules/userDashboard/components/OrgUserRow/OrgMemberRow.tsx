@@ -92,7 +92,7 @@ const OrgMemberRow = (props: Props) => {
   const isViewerLastBillingLeader =
     isViewerBillingLeader && isBillingLeader && billingLeaderCount === 1
   const {viewerId} = atmosphere
-  const {togglePortal, originRef, menuPortal, closePortal} = useMenu(MenuPosition.UPPER_RIGHT)
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const {togglePortal: toggleLeave, modalPortal: leaveModal} = useModal()
   const {togglePortal: toggleRemove, modalPortal: removeModal} = useModal()
   const toggleHandler = () => {
@@ -187,7 +187,7 @@ const OrgMemberRow = (props: Props) => {
           )}
           {menuPortal(
             <BillingLeaderActionMenu
-              closePortal={closePortal}
+              menuProps={menuProps}
               isViewerLastBillingLeader={isViewerLastBillingLeader}
               organizationUser={organizationUser}
               organization={organization}

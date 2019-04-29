@@ -31,7 +31,9 @@ const RetroTemplatePicker = (props: Props) => {
   }, [reflectTemplates])
   const selectedTemplateIdx = templates.findIndex((template) => template.id === selectedTemplateId)
   const selectedTemplate = templates[selectedTemplateIdx]
-  const {menuPortal, togglePortal, closePortal, originRef} = useMenu(MenuPosition.UPPER_RIGHT)
+  const {menuPortal, togglePortal, menuProps, originRef} = useMenu(MenuPosition.UPPER_RIGHT, {
+    isDropdown: true
+  })
   const {togglePortal: toggleModal, modalPortal} = useModal()
   return (
     <>
@@ -43,7 +45,7 @@ const RetroTemplatePicker = (props: Props) => {
       />
       {menuPortal(
         <RetroTemplateListMenu
-          closePortal={closePortal}
+          menuProps={menuProps}
           defaultActiveIdx={selectedTemplateIdx}
           retroMeetingSettings={settings}
           templates={templates}

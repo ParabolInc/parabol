@@ -47,7 +47,7 @@ const TaskFooterTeamAssignee = (props: Props) => {
   const {canAssign, task, toggleMenuState} = props
   const {team} = task
   const {name: teamName} = team
-  const {togglePortal, originRef, menuPortal, closePortal} = useMenu(MenuPosition.UPPER_LEFT, {
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT, {
     onOpen: toggleMenuState,
     onClose: toggleMenuState
   })
@@ -61,7 +61,7 @@ const TaskFooterTeamAssignee = (props: Props) => {
       >
         {teamName}
       </TeamToggleButton>
-      {menuPortal(<TaskFooterTeamAssigneeMenuRoot closePortal={closePortal} task={task} />)}
+      {menuPortal(<TaskFooterTeamAssigneeMenuRoot menuProps={menuProps} task={task} />)}
     </>
   )
 }

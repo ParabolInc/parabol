@@ -1,6 +1,6 @@
 import styled from 'react-emotion'
 import {MenuPosition} from 'universal/hooks/useCoords'
-import {PortalState} from 'universal/hooks/usePortal'
+import {PortalStatus} from 'universal/hooks/usePortal'
 import {DECELERATE} from 'universal/styles/animation'
 import {menuShadow} from 'universal/styles/elevation'
 import {Duration} from 'universal/types/constEnums'
@@ -12,21 +12,21 @@ const transformOrigins = {
   [MenuPosition.LOWER_RIGHT]: 'bottom right'
 }
 
-const backgroundStyles = (portalState: PortalState, isDropdown: boolean) => {
-  switch (portalState) {
-    case PortalState.Entered:
-    case PortalState.AnimatedIn:
+const backgroundStyles = (portalStatus: PortalStatus, isDropdown: boolean) => {
+  switch (portalStatus) {
+    case PortalStatus.Entered:
+    case PortalStatus.AnimatedIn:
       return {
         opacity: 1,
         transform: isDropdown ? 'scaleY(1)' : 'scale(1)',
         transition: `all ${Duration.MENU_OPEN}ms ${DECELERATE}`
       }
-    case PortalState.Exiting:
+    case PortalStatus.Exiting:
       return {
         opacity: 0,
         transition: `all ${Duration.PORTAL_CLOSE}ms ${DECELERATE}`
       }
-    case PortalState.Entering:
+    case PortalStatus.Entering:
       return {
         transform: isDropdown ? 'scaleY(0)' : 'scale(0)'
       }
@@ -38,11 +38,11 @@ const backgroundStyles = (portalState: PortalState, isDropdown: boolean) => {
 const MenuBackground = styled('div')(
   ({
     menuPosition,
-    portalState,
+    portalStatus,
     isDropdown
   }: {
     menuPosition: MenuPosition
-    portalState: PortalState
+    portalStatus: PortalStatus
     isDropdown: boolean
   }) => ({
     background: '#fff',
@@ -53,7 +53,7 @@ const MenuBackground = styled('div')(
     transformOrigin: transformOrigins[menuPosition],
     width: '100%',
     zIndex: -1,
-    ...backgroundStyles(portalState, isDropdown)
+    ...backgroundStyles(portalStatus, isDropdown)
   })
 )
 

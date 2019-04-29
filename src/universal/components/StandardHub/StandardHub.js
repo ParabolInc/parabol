@@ -107,7 +107,7 @@ const StandardHub = (props) => {
 
   const navLinkStyles = css(notificationsStyles, notificationsCount > 0 && notificationsWithBadge)
   const userAvatar = picture || defaultUserAvatar
-  const {togglePortal, originRef, menuPortal, closePortal} = useMenu(MenuPosition.UPPER_LEFT)
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT)
   return (
     <StandardHubRoot>
       <User>
@@ -120,7 +120,7 @@ const StandardHub = (props) => {
           onMouseEnter={StandardHubUserMenu.preload}
           innerRef={originRef}
         />
-        {menuPortal(<StandardHubUserMenu closePortal={closePortal} viewer={viewer} />)}
+        {menuPortal(<StandardHubUserMenu menuProps={menuProps} viewer={viewer} />)}
       </User>
       <NavLink
         activeClassName={css(notificationsActive)}

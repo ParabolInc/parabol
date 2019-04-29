@@ -14,7 +14,7 @@ import TaskFooterIntegrateMenuSearch from 'universal/components/TaskFooterIntegr
 import useAllIntegrations from 'universal/hooks/useAllIntegrations'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useFilteredItems from 'universal/hooks/useFilteredItems'
-import {PortalState} from 'universal/hooks/usePortal'
+import {MenuProps} from 'universal/hooks/useMenu'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {ICON_SIZE} from 'universal/styles/typographyV2'
 import {TaskServiceEnum} from 'universal/types/graphql'
@@ -23,11 +23,10 @@ import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 
 interface Props {
-  closePortal: () => void
+  menuProps: MenuProps
   mutationProps: MenuMutationProps
   placeholder: string
   suggestedIntegrations: TaskFooterIntegrateMenuList_suggestedIntegrations
-  portalState: PortalState
   task: TaskFooterIntegrateMenuList_task
 }
 
@@ -65,7 +64,7 @@ const serviceToMenuItemLookup = {
 }
 
 const TaskFooterIntegrateMenu = (props: Props) => {
-  const {closePortal, mutationProps, placeholder, suggestedIntegrations, portalState, task} = props
+  const {mutationProps, menuProps, placeholder, suggestedIntegrations, task} = props
   const {hasMore} = suggestedIntegrations
   const items = suggestedIntegrations.items || []
   const {id: taskId, teamId, userId} = task
@@ -92,9 +91,8 @@ const TaskFooterIntegrateMenu = (props: Props) => {
     <Menu
       keepParentFocus
       ariaLabel={'Export the task'}
-      closePortal={closePortal}
+      {...menuProps}
       resetActiveOnChanges={[allItems]}
-      portalState={portalState}
     >
       <SearchItem key='search'>
         <StyledMenuItemIcon>
@@ -112,13 +110,14 @@ const TaskFooterIntegrateMenu = (props: Props) => {
         null}
       {allItems.slice(0, 10).map((suggestedIntegration) => {
         const {id, service} = suggestedIntegration
-        const MenuItem = serviceToMenuItemLookup[service] as ValueOf<typeof serviceToMenuItemLookup>
-        if (!MenuItem) return null
+        const ServiceMenuItem = serviceToMenuItemLookup[service] as ValueOf<
+          typeof serviceToMenuItemLookup
+        >
+        if (!ServiceMenuItem) return null
         return (
-          <MenuItem
+          <ServiceMenuItem
             {...mutationProps}
             key={id}
-            closePortal={closePortal}
             query={query}
             suggestedIntegration={suggestedIntegration}
             taskId={taskId}

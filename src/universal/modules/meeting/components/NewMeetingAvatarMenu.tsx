@@ -8,6 +8,7 @@ import Menu from 'universal/components/Menu'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {MenuProps} from 'universal/hooks/useMenu'
 import PromoteNewMeetingFacilitatorMutation from 'universal/mutations/PromoteNewMeetingFacilitatorMutation'
 import {LOBBY} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
@@ -16,12 +17,12 @@ import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
 interface Props extends WithAtmosphereProps {
   newMeeting: NewMeetingAvatarMenu_newMeeting
   teamMember: NewMeetingAvatarMenu_teamMember
-  closePortal: () => void
+  menuProps: MenuProps
   handleNavigate?: () => void
 }
 
 const NewMeetingAvatarMenu = (props: Props) => {
-  const {atmosphere, newMeeting, teamMember, closePortal, handleNavigate} = props
+  const {atmosphere, newMeeting, teamMember, menuProps, handleNavigate} = props
   const meeting = newMeeting || UNSTARTED_MEETING
   const {localPhase, facilitatorUserId, meetingId} = meeting
   const {meetingMember, isConnected, isSelf, preferredName, userId} = teamMember
@@ -37,7 +38,7 @@ const NewMeetingAvatarMenu = (props: Props) => {
   const phaseLabel = localPhase ? phaseLabelLookup[localPhase.phaseType] : LOBBY
   const owner = isSelf ? 'your' : `${preferredName}’s`
   return (
-    <Menu ariaLabel={'Select what to do with this team member'} closePortal={closePortal}>
+    <Menu ariaLabel={'Select what to do with this team member'} {...menuProps}>
       <DropdownMenuLabel>{headerLabel}</DropdownMenuLabel>
       {handleNavigate && (
         <MenuItem

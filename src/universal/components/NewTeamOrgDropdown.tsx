@@ -1,31 +1,28 @@
-import React from 'react'
-import Menu from 'universal/components/Menu'
-import {PortalState} from 'universal/hooks/usePortal'
-import {PRO} from 'universal/utils/constants'
-import TagPro from 'universal/components/Tag/TagPro'
-import MenuItem from 'universal/components/MenuItem'
-import DropdownMenuLabel from 'universal/components/DropdownMenuLabel'
-import DropdownMenuItemLabel from 'universal/components/DropdownMenuItemLabel'
-import {createFragmentContainer, graphql} from 'react-relay'
 import {NewTeamOrgDropdown_organizations} from '__generated__/NewTeamOrgDropdown_organizations.graphql'
+import React from 'react'
+import {createFragmentContainer, graphql} from 'react-relay'
+import DropdownMenuItemLabel from 'universal/components/DropdownMenuItemLabel'
+import DropdownMenuLabel from 'universal/components/DropdownMenuLabel'
+import Menu from 'universal/components/Menu'
+import MenuItem from 'universal/components/MenuItem'
+import TagPro from 'universal/components/Tag/TagPro'
+import {MenuProps} from 'universal/hooks/useMenu'
+import {PRO} from 'universal/utils/constants'
 
 interface Props {
-  closePortal: () => void
+  menuProps: MenuProps
   defaultActiveIdx: number
   onChange: (orgId: string) => void
   organizations: NewTeamOrgDropdown_organizations
-  portalState: PortalState
 }
 
 const NewTeamOrgDropdown = (props: Props) => {
-  const {defaultActiveIdx, onChange, organizations, closePortal, portalState} = props
+  const {defaultActiveIdx, onChange, organizations, menuProps} = props
   return (
     <Menu
       ariaLabel={'Select the organization the new team belongs to'}
-      closePortal={closePortal}
+      {...menuProps}
       defaultActiveIdx={defaultActiveIdx + 1}
-      isDropdown
-      portalState={portalState}
     >
       <DropdownMenuLabel>Select Organization:</DropdownMenuLabel>
       {organizations.map((anOrg) => {

@@ -1,21 +1,18 @@
 /**
  * Displays the calls to action at the top of the team dashboard.
  *
- * @flow
  */
-import type {RouterHistory} from 'react-router-dom'
 import React from 'react'
 import styled from 'react-emotion'
-import ui from 'universal/styles/ui'
-import PrimaryButton from 'universal/components/PrimaryButton'
 import IconLabel from 'universal/components/IconLabel'
-import useMenu from 'universal/hooks/useMenu'
+import PrimaryButton from 'universal/components/PrimaryButton'
 import {MenuPosition} from 'universal/hooks/useCoords'
+import useMenu from 'universal/hooks/useMenu'
+import ui from 'universal/styles/ui'
 import lazyPreload from 'universal/utils/lazyPreload'
 
-type Props = {
-  teamId: string,
-  history: RouterHistory
+interface Props {
+  teamId: string
 }
 
 const ButtonBlock = styled('div')({
@@ -35,12 +32,12 @@ const StartButton = styled(PrimaryButton)({
 
 const TeamCallsToActionMenu = lazyPreload(() =>
   import(/* webpackChunkName: 'TeamCallsToActionMenu' */
-    'universal/modules/teamDashboard/components/TeamCallsToAction/TeamCallsToActionMenu')
+  'universal/modules/teamDashboard/components/TeamCallsToAction/TeamCallsToActionMenu')
 )
 
 const TeamCallToAction = (props: Props) => {
   const {teamId} = props
-  const {togglePortal, originRef, menuPortal, closePortal, loadingWidth, portalState} = useMenu(
+  const {togglePortal, originRef, menuPortal, menuProps, loadingWidth} = useMenu(
     MenuPosition.UPPER_RIGHT,
     {isDropdown: true}
   )
@@ -54,12 +51,7 @@ const TeamCallToAction = (props: Props) => {
         <IconLabel icon='expand_more' iconAfter label='Start Meeting' />
       </StartButton>
       {menuPortal(
-        <TeamCallsToActionMenu
-          closePortal={closePortal}
-          teamId={teamId}
-          minWidth={loadingWidth}
-          portalState={portalState}
-        />
+        <TeamCallsToActionMenu menuProps={menuProps} teamId={teamId} minWidth={loadingWidth} />
       )}
     </ButtonBlock>
   )

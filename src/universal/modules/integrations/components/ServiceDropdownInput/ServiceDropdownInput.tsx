@@ -19,7 +19,9 @@ interface Props {
 }
 const ServiceDropdownInput = (props: Props) => {
   const {isLoaded, fetchOptions, dropdownText, handleItemClick, options} = props
-  const {menuPortal, togglePortal, originRef, closePortal} = useMenu(MenuPosition.UPPER_RIGHT)
+  const {menuPortal, togglePortal, originRef, menuProps} = useMenu(MenuPosition.UPPER_RIGHT, {
+    isDropdown: true
+  })
   const onClick = () => {
     fetchOptions()
     togglePortal()
@@ -34,7 +36,7 @@ const ServiceDropdownInput = (props: Props) => {
       />
       {menuPortal(
         <ServiceDropdown
-          closePortal={closePortal}
+          menuProps={menuProps}
           handleItemClick={handleItemClick}
           isLoaded={isLoaded}
           options={options}

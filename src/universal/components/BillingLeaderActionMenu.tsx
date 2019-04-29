@@ -7,12 +7,13 @@ import MenuItem from 'universal/components/MenuItem'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {MenuProps} from 'universal/hooks/useMenu'
 import SetOrgUserRoleMutation from 'universal/mutations/SetOrgUserRoleMutation'
 import {BILLING_LEADER} from 'universal/utils/constants'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
-  closePortal: () => void
+  menuProps: MenuProps
   isViewerLastBillingLeader: boolean
   organizationUser: BillingLeaderActionMenu_organizationUser
   organization: BillingLeaderActionMenu_organization
@@ -23,7 +24,7 @@ interface Props extends WithMutationProps, WithAtmosphereProps {
 const BillingLeaderActionMenu = (props: Props) => {
   const {
     atmosphere,
-    closePortal,
+    menuProps,
     isViewerLastBillingLeader,
     organizationUser,
     submitting,
@@ -49,7 +50,7 @@ const BillingLeaderActionMenu = (props: Props) => {
 
   return (
     <>
-      <Menu ariaLabel={'Select your action'} closePortal={closePortal}>
+      <Menu ariaLabel={'Select your action'} {...menuProps}>
         {isBillingLeader && !isViewerLastBillingLeader && (
           <MenuItem label='Remove Billing Leader role' onClick={setRole(null)} />
         )}

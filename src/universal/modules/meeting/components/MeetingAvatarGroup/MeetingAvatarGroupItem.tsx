@@ -38,7 +38,7 @@ const MeetingAvatarGroupItem = (props: Props) => {
   const onFacilitatorPhase = facilitatorPhase === localPhase
   const canNavigate = localPhase === CHECKIN || localPhase === UPDATES
   const atmosphere = useAtmosphere()
-  const {togglePortal, originRef, menuPortal, closePortal} = useMenu(MenuPosition.UPPER_RIGHT)
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const {isConnected, isSelf} = avatar
   const picture = avatar.picture || defaultUserAvatar
   const count = idx + 1
@@ -90,7 +90,7 @@ const MeetingAvatarGroupItem = (props: Props) => {
           handleRequest={handleRequest}
           avatar={avatar}
           localPhase={localPhase}
-          closePortal={closePortal}
+          menuProps={menuProps}
         />
       )}
     </div>

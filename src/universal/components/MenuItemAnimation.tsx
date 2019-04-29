@@ -2,7 +2,7 @@ import {keyframes} from 'emotion'
 import React, {ReactNode} from 'react'
 import styled from 'react-emotion'
 import {Omit} from 'types/generics'
-import {PortalState} from 'universal/hooks/usePortal'
+import {PortalStatus} from 'universal/hooks/usePortal'
 import {DECELERATE} from 'universal/styles/animation'
 import {Duration} from 'universal/types/constEnums'
 
@@ -50,27 +50,27 @@ interface Props {
   idx: number
   itemsToAnimate: number
   isDropdown: boolean
-  portalState: PortalState
+  portalStatus: PortalStatus
 }
 
 const MenuItemStyles = styled('div')(
-  ({idx, itemsToAnimate, isDropdown, portalState}: Omit<Props, 'children'>) => ({
+  ({idx, itemsToAnimate, isDropdown, portalStatus}: Omit<Props, 'children'>) => ({
     animation:
-      portalState < PortalState.AnimatedIn
+      portalStatus < PortalStatus.AnimatedIn
         ? menuItemAnimation(idx, itemsToAnimate, isDropdown)
         : undefined,
-    opacity: portalState < PortalState.AnimatedIn ? 0 : 1
+    opacity: portalStatus < PortalStatus.AnimatedIn ? 0 : 1
   })
 )
 
 const MenuItemAnimation = (props: Props) => {
-  const {children, idx, itemsToAnimate, isDropdown, portalState} = props
+  const {children, idx, itemsToAnimate, isDropdown, portalStatus} = props
   return (
     <MenuItemStyles
       idx={idx}
       itemsToAnimate={itemsToAnimate}
       isDropdown={isDropdown}
-      portalState={portalState}
+      portalStatus={portalStatus}
     >
       {children}
     </MenuItemStyles>

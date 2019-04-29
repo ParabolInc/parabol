@@ -116,7 +116,7 @@ const NewMeetingAvatar = (props: Props) => {
   const {teamMemberId, userId} = teamMember
   const avatarIsFacilitating = userId === facilitatorUserId
   const handleNavigate = canNavigate ? gotoStage : undefined
-  const {togglePortal, closePortal, menuPortal, originRef} = useMenu(MenuPosition.UPPER_RIGHT)
+  const {togglePortal, menuProps, menuPortal, originRef} = useMenu(MenuPosition.UPPER_RIGHT)
   return (
     <ErrorBoundary>
       <Item>
@@ -145,7 +145,7 @@ const NewMeetingAvatar = (props: Props) => {
           handleNavigate={handleNavigate}
           newMeeting={newMeeting!}
           teamMember={teamMember}
-          closePortal={closePortal}
+          menuProps={menuProps}
         />
       )}
     </ErrorBoundary>

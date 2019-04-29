@@ -7,12 +7,13 @@ import MenuItem from 'universal/components/MenuItem'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {MenuProps} from 'universal/hooks/useMenu'
 import MenuItemLabel from '../MenuItemLabel'
 
 interface Props extends WithAtmosphereProps {
   isViewerLead: boolean
   teamMember: TeamMemberAvatarMenu_teamMember
-  closePortal: () => void
+  menuProps: MenuProps
   handleNavigate?: () => void
   togglePromote: () => void
   toggleRemove: () => void
@@ -24,8 +25,7 @@ const TeamMemberAvatarMenu = (props: Props) => {
     atmosphere,
     isViewerLead,
     teamMember,
-    closePortal,
-    status,
+    menuProps,
     togglePromote,
     toggleRemove,
     toggleLeave
@@ -39,11 +39,7 @@ const TeamMemberAvatarMenu = (props: Props) => {
 
   return (
     <>
-      <Menu
-        ariaLabel={'Select what to do with this team member'}
-        closePortal={closePortal}
-        status={status}
-      >
+      <Menu ariaLabel={'Select what to do with this team member'} {...menuProps}>
         <DropdownMenuLabel isEmpty={!hasOptions}>{`${
           isSelf ? 'You are' : `${preferredName} is`
         } ${connected}`}</DropdownMenuLabel>

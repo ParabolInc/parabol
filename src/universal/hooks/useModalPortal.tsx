@@ -4,7 +4,7 @@ import ErrorBoundary from 'universal/components/ErrorBoundary'
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
 import ModalError from 'universal/components/ModalError'
 import {LoadingDelayRef} from 'universal/hooks/useLoadingDelay'
-import {PortalState} from 'universal/hooks/usePortal'
+import {PortalStatus} from 'universal/hooks/usePortal'
 import {DECELERATE} from 'universal/styles/animation'
 import {modalShadow} from 'universal/styles/elevation'
 import {PALETTE} from 'universal/styles/paletteV2'
@@ -24,59 +24,59 @@ const ModalBlock = styled('div')({
 })
 
 const backdropStyles = {
-  [PortalState.Entered]: {
+  [PortalStatus.Entered]: {
     opacity: 1,
     transition: `opacity ${Duration.MODAL_OPEN}ms ${DECELERATE}`
   },
-  [PortalState.Exiting]: {
+  [PortalStatus.Exiting]: {
     opacity: 0,
     transition: `opacity ${Duration.PORTAL_CLOSE}ms ${DECELERATE}`
   },
-  [PortalState.Entering]: {
+  [PortalStatus.Entering]: {
     opacity: 0
   }
 }
 
 const modalStyles = {
-  [PortalState.Entered]: {
+  [PortalStatus.Entered]: {
     opacity: 1,
     transform: 'translateY(0)',
     transition: `all ${Duration.MODAL_OPEN}ms ${DECELERATE}`
   },
-  [PortalState.Exiting]: {
+  [PortalStatus.Exiting]: {
     opacity: 0,
     transform: 'translateY(-32px)',
     transition: `all ${Duration.PORTAL_CLOSE}ms ${DECELERATE}`
   },
-  [PortalState.Entering]: {
+  [PortalStatus.Entering]: {
     opacity: 0,
     transform: 'translateY(32px)'
   }
 }
 const Backdrop = styled('div')(
-  ({background, status}: {background: string; status: PortalState}) => ({
+  ({background, portalStatus}: {background: string; portalStatus: PortalStatus}) => ({
     background,
     height: '100%',
     position: 'fixed',
     width: '100%',
-    ...backdropStyles[status]
+    ...backdropStyles[portalStatus]
   })
 )
 
-const ModalContents = styled('div')(({status}: {status: PortalState}) => ({
+const ModalContents = styled('div')(({portalStatus}: {portalStatus: PortalStatus}) => ({
   boxShadow: modalShadow,
   display: 'flex',
   flex: '0 1 auto',
   flexDirection: 'column',
   maxHeight: '90vh',
   position: 'relative',
-  ...modalStyles[status]
+  ...modalStyles[portalStatus]
 }))
 
 const useModalPortal = (
   portal: (el: ReactElement) => ReactPortal | null,
   targetRef: Ref<HTMLDivElement>,
-  status: PortalState,
+  portalStatus: PortalStatus,
   loadingDelayRef: LoadingDelayRef,
   closePortal: () => void,
   background: string | undefined
@@ -87,10 +87,12 @@ const useModalPortal = (
         <Backdrop
           onClick={closePortal}
           background={background || PALETTE.BACKGROUND.BACKDROP}
-          status={status}
+          portalStatus={portalStatus}
         />
-        <ErrorBoundary fallback={(error) => <ModalError error={error} status={status} />}>
-          <ModalContents status={status}>
+        <ErrorBoundary
+          fallback={(error) => <ModalError error={error} portalStatus={portalStatus} />}
+        >
+          <ModalContents portalStatus={portalStatus}>
             <Suspense
               fallback={
                 <LoadingComponent

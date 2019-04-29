@@ -20,14 +20,14 @@ const EmojiMenu = lazyPreload(() =>
 
 const EmojiMenuContainer = (props: Props) => {
   const {originCoords, removeModal, menuItemClickFactory, query, menuRef, editorState} = props
-  const {closePortal, menuPortal, togglePortal} = useMenu(MenuPosition.UPPER_LEFT, {
+  const {menuProps, menuPortal, togglePortal} = useMenu(MenuPosition.UPPER_LEFT, {
     originCoords,
     onClose: removeModal
   })
   useEffect(togglePortal, [])
   return menuPortal(
     <EmojiMenu
-      closePortal={closePortal}
+      menuProps={menuProps}
       menuItemClickFactory={menuItemClickFactory}
       query={query}
       menuRef={menuRef}

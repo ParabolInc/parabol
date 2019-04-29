@@ -51,7 +51,7 @@ const DashboardAvatar = (props: Props) => {
   const {isLead, picture} = teamMember
   const {user} = teamMember
   const {isConnected} = user
-  const {togglePortal, originRef, closePortal, menuPortal} = useMenu(MenuPosition.UPPER_RIGHT)
+  const {togglePortal, originRef, menuProps, menuPortal} = useMenu(MenuPosition.UPPER_RIGHT)
   const {
     closePortal: closePromote,
     togglePortal: togglePromote,
@@ -79,7 +79,7 @@ const DashboardAvatar = (props: Props) => {
       <AvatarTag colorPalette='blue' label='Team Lead' isLead={isLead} />
       {menuPortal(
         <TeamMemberAvatarMenu
-          closePortal={closePortal}
+          menuProps={menuProps}
           isViewerLead={isViewerLead}
           teamMember={teamMember}
           togglePromote={togglePromote}

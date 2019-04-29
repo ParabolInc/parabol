@@ -21,7 +21,9 @@ interface Props {
 
 const UserTasksHeader = (props: Props) => {
   const {teams, teamFilterId, teamFilterName} = props
-  const {menuPortal, togglePortal, originRef, closePortal} = useMenu(MenuPosition.UPPER_RIGHT)
+  const {menuPortal, togglePortal, originRef, menuProps} = useMenu(MenuPosition.UPPER_RIGHT, {
+    isDropdown: true
+  })
   // TODO refactor so we can pull teams from the relay cache instead of feeding it down a long tree
   return (
     <DashSectionHeader>
@@ -38,7 +40,7 @@ const UserTasksHeader = (props: Props) => {
             label={teamFilterName}
           />
           {menuPortal(
-            <UserDashTeamMenu closePortal={closePortal} teams={teams} teamFilterId={teamFilterId} />
+            <UserDashTeamMenu menuProps={menuProps} teams={teams} teamFilterId={teamFilterId} />
           )}
         </DashSectionControl>
       </DashSectionControls>

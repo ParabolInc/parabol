@@ -47,10 +47,9 @@ const NewTeamOrgPicker = (props: Props) => {
   const orgIdx = orgId ? sortedOrgs.findIndex((org) => org.id === orgId) : 0
   const org = sortedOrgs[orgIdx]
   const defaultText = org ? org.name : NO_ORGS
-  const {togglePortal, menuPortal, originRef, closePortal, portalState} = useMenu(
-    MenuPosition.UPPER_RIGHT,
-    {isDropdown: true}
-  )
+  const {togglePortal, menuPortal, originRef, menuProps} = useMenu(MenuPosition.UPPER_RIGHT, {
+    isDropdown: true
+  })
   return (
     <>
       <DropdownMenuToggle
@@ -67,11 +66,10 @@ const NewTeamOrgPicker = (props: Props) => {
       />
       {menuPortal(
         <NewTeamOrgDropdown
-          closePortal={closePortal}
+          menuProps={menuProps}
           onChange={onChange}
           organizations={sortedOrgs}
           defaultActiveIdx={orgIdx}
-          portalState={portalState}
         />
       )}
     </>

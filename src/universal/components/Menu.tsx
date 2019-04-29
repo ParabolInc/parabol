@@ -12,7 +12,7 @@ import React, {
 } from 'react'
 import styled from 'react-emotion'
 import MenuItemAnimation from 'universal/components/MenuItemAnimation'
-import {PortalState} from 'universal/hooks/usePortal'
+import {PortalStatus} from 'universal/hooks/usePortal'
 
 const isMenuItem = (node: any) => node && node.onClick
 
@@ -34,7 +34,7 @@ interface Props {
   resetActiveOnChanges?: any[]
   tabReturns?: boolean
   isDropdown?: boolean
-  portalState: PortalState
+  portalStatus: PortalStatus
 }
 
 const Menu = forwardRef((props: Props, ref: any) => {
@@ -47,7 +47,7 @@ const Menu = forwardRef((props: Props, ref: any) => {
     isDropdown,
     keepParentFocus,
     resetActiveOnChanges,
-    portalState,
+    portalStatus,
     tabReturns
   } = props
   const [activeIdx, setActiveIdx] = useState<number>(defaultActiveIdx || 0)
@@ -137,9 +137,9 @@ const Menu = forwardRef((props: Props, ref: any) => {
           <MenuItemAnimation
             key={`mi${(child as any).key || child}`}
             idx={idx}
-            itemsToAnimate={Math.min(6, itemCount)}
+            itemsToAnimate={Math.min(10, itemCount)}
             isDropdown={!!isDropdown}
-            portalState={portalState}
+            portalStatus={portalStatus}
           >
             {cloneElement(child as ReactElement, {ref})}
           </MenuItemAnimation>

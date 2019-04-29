@@ -13,7 +13,7 @@ import textOverflow from 'universal/styles/helpers/textOverflow'
 const MeetingAvatarMenu = (props) => {
   const {
     avatar,
-    closePortal,
+    menuProps,
     handleNavigate,
     handlePromote,
     handleRequest,
@@ -27,7 +27,7 @@ const MeetingAvatarMenu = (props) => {
   const phaseInfo = actionMeeting[localPhase]
   const {name: phaseName} = phaseInfo
   return (
-    <Menu ariaLabel={'Select what to do with this team member'} closePortal={closePortal}>
+    <Menu ariaLabel={'Select what to do with this team member'} {...menuProps}>
       <div className={css(styles.label)}>{headerLabel}</div>
       {handleNavigate && (
         <MenuItem
@@ -60,7 +60,6 @@ MeetingAvatarMenu.propTypes = {
     isConnected: PropTypes.bool,
     preferredName: PropTypes.string
   }).isRequired,
-  closePortal: PropTypes.func.isRequired,
   handleNavigate: PropTypes.func,
   handlePromote: PropTypes.func,
   handleRequest: PropTypes.func,

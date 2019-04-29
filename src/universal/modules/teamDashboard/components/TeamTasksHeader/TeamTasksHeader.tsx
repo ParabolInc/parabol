@@ -48,7 +48,9 @@ const TeamTasksHeader = (props: Props) => {
   const {history, teamMemberFilterId, teamMemberFilterName, team} = props
   const {organization, teamId, teamName} = team
   const {orgName, orgId} = organization
-  const {togglePortal, closePortal, originRef, menuPortal} = useMenu(MenuPosition.UPPER_RIGHT)
+  const {togglePortal, menuProps, originRef, menuPortal} = useMenu(MenuPosition.UPPER_RIGHT, {
+    isDropdown: true
+  })
   return (
     <DashSectionHeader>
       <div>
@@ -82,7 +84,7 @@ const TeamTasksHeader = (props: Props) => {
           />
           {menuPortal(
             <TeamDashTeamMemberMenu
-              closePortal={closePortal}
+              menuProps={menuProps}
               team={team}
               teamMemberFilterId={teamMemberFilterId}
             />

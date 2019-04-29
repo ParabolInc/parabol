@@ -23,7 +23,7 @@ const TaskColumnAddTaskSelectTeam = (props: Props) => {
   const {sortOrder, status, teams} = props
   const label = themeLabels.taskStatus[status].slug
   const atmosphere = useAtmosphere()
-  const {closePortal, originRef, menuPortal, togglePortal} = useMenu(MenuPosition.UPPER_LEFT)
+  const {menuProps, originRef, menuPortal, togglePortal} = useMenu(MenuPosition.UPPER_LEFT)
   const teamHandleClick = (teamId) => () => {
     CreateTaskMutation(atmosphere, {
       sortOrder,
@@ -41,11 +41,7 @@ const TaskColumnAddTaskSelectTeam = (props: Props) => {
         label={label}
       />
       {menuPortal(
-        <SelectTeamDropdown
-          closePortal={closePortal}
-          teamHandleClick={teamHandleClick}
-          teams={teams}
-        />
+        <SelectTeamDropdown menuProps={menuProps} teamHandleClick={teamHandleClick} teams={teams} />
       )}
     </>
   )

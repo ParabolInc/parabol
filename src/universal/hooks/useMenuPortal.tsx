@@ -8,7 +8,7 @@ import ModalError from 'universal/components/ModalError'
 import MenuBackground from 'universal/hooks/MenuBackground'
 import {MenuPosition, UseCoordsValue} from 'universal/hooks/useCoords'
 import {LoadingDelayRef} from 'universal/hooks/useLoadingDelay'
-import {PortalState} from 'universal/hooks/usePortal'
+import {PortalStatus} from 'universal/hooks/usePortal'
 import {Duration, ZIndex} from 'universal/types/constEnums'
 
 const MenuBlock = styled('div')({
@@ -22,41 +22,41 @@ const useMenuPortal = (
   targetRef: (el: HTMLElement) => void,
   minWidth: number,
   coords: UseCoordsValue,
-  portalState: PortalState,
-  setPortalState: any,
+  portalStatus: PortalStatus,
+  setPortalStatus: any,
   isDropdown: boolean,
   menuPosition: MenuPosition,
   loadingDelayRef: LoadingDelayRef
 ) => {
   useEffect(() => {
     let isMounted = true
-    if (portalState === PortalState.Entered) {
+    if (portalStatus === PortalStatus.Entered) {
       setTimeout(() => {
         if (isMounted) {
-          setPortalState(PortalState.AnimatedIn)
+          setPortalStatus(PortalStatus.AnimatedIn)
         }
       }, Duration.MENU_OPEN_MAX)
     }
     return () => {
       isMounted = false
     }
-  }, [portalState])
+  }, [portalStatus])
   return (reactEl) => {
     return portal(
       <MenuBlock innerRef={targetRef} style={{...coords}}>
         <MenuBackground
           menuPosition={menuPosition}
-          portalState={portalState}
+          portalStatus={portalStatus}
           isDropdown={isDropdown}
         />
         <ErrorBoundary
           fallback={(error) => (
-            <Menu ariaLabel='Error' closePortal={undefined as any} portalState={portalState}>
-              <ModalError error={error} portalState={portalState} />
+            <Menu ariaLabel='Error' closePortal={undefined as any} portalStatus={portalStatus}>
+              <ModalError error={error} portalStatus={portalStatus} />
             </Menu>
           )}
         >
-          <MenuContents minWidth={minWidth} portalState={portalState}>
+          <MenuContents minWidth={minWidth} portalStatus={portalStatus}>
             <Suspense
               fallback={
                 <LoadingComponent

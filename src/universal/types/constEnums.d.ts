@@ -19,8 +19,8 @@ export const enum MeetingTypes {
 }
 
 export const enum Duration {
-  MENU_OPEN = 1500,
-  MENU_OPEN_MAX = 1880,
+  MENU_OPEN = 150,
+  MENU_OPEN_MAX = 188,
   MODAL_OPEN = 200,
   PORTAL_CLOSE = 120
 }

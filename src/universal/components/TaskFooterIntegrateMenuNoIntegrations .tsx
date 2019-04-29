@@ -1,10 +1,11 @@
 import React from 'react'
 import styled from 'react-emotion'
 import Menu from 'universal/components/Menu'
+import {MenuProps} from 'universal/hooks/useMenu'
 import {PALETTE} from 'universal/styles/paletteV2'
 
 interface Props {
-  closePortal: () => void
+  menuProps: MenuProps
   preferredName: string
 }
 
@@ -21,9 +22,9 @@ const Label = styled('div')({
 })
 
 const TaskFooterIntegrateMenuNoIntegrations = (props: Props) => {
-  const {preferredName, closePortal} = props
+  const {preferredName, menuProps} = props
   return (
-    <NarrowMenu ariaLabel={'No providers available'} closePortal={closePortal}>
+    <NarrowMenu ariaLabel={'No providers available'} {...menuProps}>
       <Label>{preferredName} does not have any integrations for this team.</Label>
     </NarrowMenu>
   )

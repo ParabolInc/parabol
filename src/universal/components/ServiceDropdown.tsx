@@ -4,13 +4,14 @@ import Menu from 'universal/components/Menu'
 import MenuItem from 'universal/components/MenuItem'
 import DropdownMenuItemLabel from 'universal/components/DropdownMenuItemLabel'
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
+import {MenuProps} from 'universal/hooks/useMenu'
 
 export interface ServiceDropdownOption {
   id: string
   label: string
 }
 interface Props {
-  closePortal: () => void
+  menuProps: MenuProps
   handleItemClick: (option: ServiceDropdownOption) => () => void
   isLoaded: boolean
   options: Array<ServiceDropdownOption>
@@ -21,10 +22,10 @@ const WideMenu = styled(Menu)({
 })
 
 const ServiceDropdown = (props: Props) => {
-  const {handleItemClick, isLoaded, options, closePortal} = props
+  const {handleItemClick, isLoaded, options, menuProps} = props
   if (!isLoaded) return <LoadingComponent height={100} width={'100%'} />
   return (
-    <WideMenu ariaLabel={'Select the service to integrate'} closePortal={closePortal}>
+    <WideMenu ariaLabel={'Select the service to integrate'} {...menuProps}>
       {options.map((option) => {
         return (
           <MenuItem

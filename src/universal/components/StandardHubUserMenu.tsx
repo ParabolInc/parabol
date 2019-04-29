@@ -9,6 +9,7 @@ import MenuItem from 'universal/components/MenuItem'
 import MenuItemHR from 'universal/components/MenuItemHR'
 import MenuItemIcon from 'universal/components/MenuItemIcon'
 import MenuItemLabel from 'universal/components/MenuItemLabel'
+import {MenuProps} from 'universal/hooks/useMenu'
 import ui from 'universal/styles/ui'
 import {PERSONAL, PRO_LABEL, SIGNOUT_LABEL, SIGNOUT_SLUG} from 'universal/utils/constants'
 
@@ -24,13 +25,13 @@ const TallMenu = styled(Menu)({
 })
 
 interface Props extends RouteComponentProps<{}> {
-  closePortal: () => void
+  menuProps: MenuProps
   viewer: StandardHubUserMenu_viewer
 }
 
 const StandardHubUserMenu = (props: Props) => {
   const {
-    closePortal,
+    menuProps,
     history,
     viewer: {email, organizations}
   } = props
@@ -50,7 +51,7 @@ const StandardHubUserMenu = (props: Props) => {
   }
 
   return (
-    <TallMenu ariaLabel={'Select your settings'} closePortal={closePortal}>
+    <TallMenu ariaLabel={'Select your settings'} {...menuProps}>
       <DropdownMenuLabel>{email}</DropdownMenuLabel>
       <MenuItem
         label={

@@ -8,11 +8,12 @@ import MenuItemHR from 'universal/components/MenuItemHR'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {MenuProps} from 'universal/hooks/useMenu'
 import SelectRetroTemplateMutation from 'universal/mutations/SelectRetroTemplateMutation'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
-  closePortal: () => void
+  menuProps: MenuProps
   defaultActiveIdx: number
   retroMeetingSettings: RetroTemplateListMenu_retroMeetingSettings
   templates: RetroTemplatePicker_settings['reflectTemplates']
@@ -27,7 +28,7 @@ const RetroTemplateListMenu = (props: Props) => {
     onError,
     submitMutation,
     submitting,
-    closePortal,
+    menuProps,
     defaultActiveIdx,
     templates,
     toggleModal
@@ -47,7 +48,7 @@ const RetroTemplateListMenu = (props: Props) => {
   return (
     <Menu
       ariaLabel={'Select a template or create your own!'}
-      closePortal={closePortal}
+      {...menuProps}
       defaultActiveIdx={defaultActiveIdx}
     >
       {templates.map((template) => {

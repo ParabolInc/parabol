@@ -3,6 +3,7 @@ import React, {Component, Ref} from 'react'
 import stringScore from 'string-score'
 import Menu from 'universal/components/Menu'
 import MenuItem from 'universal/components/MenuItem'
+import {MenuProps} from 'universal/hooks/useMenu'
 import emojiArray from 'universal/utils/emojiArray'
 
 type EmojiSuggestion = {
@@ -11,7 +12,7 @@ type EmojiSuggestion = {
 }
 
 interface Props {
-  closePortal: () => void
+  menuProps: MenuProps
   editorState: EditorState
   menuItemClickFactory: (emoji: string, editorState: EditorState | null) => () => void
   menuRef: Ref<any>
@@ -50,7 +51,7 @@ class EmojiMenu extends Component<Props, State> {
     if (query && query === prevState.query) return null
     const suggestedEmojis = EmojiMenu.filterByQuery(query)
     if (suggestedEmojis.length === 0) {
-      nextProps.closePortal()
+      nextProps.menuProps.closePortal()
       return null
     }
     return {
@@ -70,17 +71,11 @@ class EmojiMenu extends Component<Props, State> {
   }
 
   render () {
-    const {closePortal, menuRef, menuItemClickFactory} = this.props
+    const {menuProps, menuRef, menuItemClickFactory} = this.props
     const {focusedEditorState} = this.state
     const {suggestedEmojis} = this.state
     return (
-      <Menu
-        ariaLabel={'Select the emoji'}
-        closePortal={closePortal}
-        keepParentFocus
-        ref={menuRef}
-        tabReturns
-      >
+      <Menu ariaLabel={'Select the emoji'} {...menuProps} keepParentFocus ref={menuRef} tabReturns>
         {suggestedEmojis.map(({value, emoji}) => (
           <MenuItem
             key={value}
