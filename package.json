@@ -242,6 +242,7 @@
     "react-router": "4.4.0-beta.6",
     "react-router-dom": "4.4.0-beta.6",
     "react-test-renderer": "^16.0.0",
+    "react-textarea-autosize": "^7.1.0",
     "react-transition-group": "https://github.com/mattkrick/react-transition-group/tarball/d2dac2cb5de9a7757c6e430b2b90f200c34d5369",
     "react-virtualized": "^9.18.5",
     "redux": "^4.0.1",

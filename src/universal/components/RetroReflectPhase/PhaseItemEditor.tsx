@@ -8,6 +8,7 @@ import withAtmosphere, {
 import CreateReflectionMutation from 'universal/mutations/CreateReflectionMutation'
 import EditReflectionMutation from 'universal/mutations/EditReflectionMutation'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import convertToTaskContent from 'universal/utils/draftjs/convertToTaskContent'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   meetingId: string
@@ -33,6 +34,33 @@ class PhaseItemEditor extends Component<Props, State> {
     window.clearTimeout(this.idleTimerId)
   }
 
+  handleKeyDownFallback = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key !== 'Enter' || e.shiftKey) return
+    e.preventDefault()
+    const {
+      atmosphere,
+      onError,
+      onCompleted,
+      meetingId,
+      nextSortOrder,
+      submitMutation,
+      retroPhaseItemId
+    } = this.props
+    const {value} = e.currentTarget
+    if (!value) return
+    submitMutation()
+    const input = {
+      content: convertToTaskContent(value),
+      retroPhaseItemId,
+      sortOrder: nextSortOrder()
+    }
+    CreateReflectionMutation(atmosphere, {input}, {meetingId}, onError, onCompleted)
+    const empty = EditorState.createEmpty()
+    const editorState = EditorState.moveFocusToEnd(empty)
+    this.setState({
+      editorState
+    })
+  }
   handleSubmit () {
     const {
       atmosphere,
@@ -122,6 +150,7 @@ class PhaseItemEditor extends Component<Props, State> {
           onBlur={this.handleEditorBlur}
           onFocus={this.handleEditorFocus}
           handleReturn={this.handleReturn}
+          handleKeyDownFallback={this.handleKeyDownFallback}
           keyBindingFn={this.keyBindingFn}
           placeholder='My reflection… (press enter to add)'
           setEditorState={this.setEditorState}

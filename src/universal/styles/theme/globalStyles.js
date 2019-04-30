@@ -60,6 +60,11 @@ export default `
     -webkit-font-smoothing: antialiased;
   }
 
+  textarea {
+    font-family: ${appTheme.typography.sansSerif};
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+  }
   img {
     max-width: 100%;
   }

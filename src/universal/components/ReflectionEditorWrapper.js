@@ -13,6 +13,8 @@ import {
   reflectionCardMaxHeight
 } from 'universal/styles/cards'
 import withEmojis from 'universal/components/TaskEditor/withEmojis'
+import AndroidEditorFallback from 'universal/components/AndroidEditorFallback'
+import isAndroid from 'universal/utils/draftjs/isAndroid'
 
 type Props = {
   ariaLabel: string,
@@ -51,10 +53,10 @@ const codeBlock = css({
   padding: '0 .5rem'
 })
 
-const EditorStyles = styled('div')(({userSelect}) => ({
+const EditorStyles = styled('div')(({showFallback, userSelect}) => ({
   color: appTheme.palette.dark,
   fontSize: cardContentFontSize,
-  lineHeight: cardContentLineHeight,
+  lineHeight: showFallback ? '14px' : cardContentLineHeight,
   maxHeight: reflectionCardMaxHeight,
   minHeight: '1rem',
   overflow: 'auto',
@@ -175,34 +177,48 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
       onBlur,
       onFocus,
       placeholder,
+      handleKeyDownFallback,
       renderModal,
       readOnly,
       userSelect
     } = this.props
+    const showFallback = isAndroid && !readOnly
+    // const showFallback = true
     return (
-      <EditorStyles userSelect={userSelect}>
-        <Editor
-          spellCheck
-          ariaLabel={ariaLabel}
-          blockStyleFn={this.blockStyleFn}
-          editorState={editorState}
-          handleBeforeInput={this.handleBeforeInput}
-          handleKeyCommand={this.handleKeyCommand}
-          handlePastedText={this.handlePastedText}
-          handleReturn={this.handleReturn}
-          keyBindingFn={this.keyBindingFn}
-          onBlur={onBlur}
-          onFocus={onFocus}
-          onChange={this.handleChange}
-          placeholder={placeholder}
-          readOnly={readOnly}
-          ref={this.setEditorRef}
-          style={{
-            padding: '.75rem',
-            userSelect,
-            WebkitUserSelect: userSelect
-          }}
-        />
+      <EditorStyles userSelect={userSelect} showFallback={showFallback}>
+        {showFallback ? (
+          <AndroidEditorFallback
+            editorState={editorState}
+            onBlur={onBlur}
+            onFocus={onFocus}
+            placeholder={placeholder}
+            onKeyDown={handleKeyDownFallback}
+            setEditorRef={this.setEditorRef}
+          />
+        ) : (
+          <Editor
+            spellCheck
+            ariaLabel={ariaLabel}
+            blockStyleFn={this.blockStyleFn}
+            editorState={editorState}
+            handleBeforeInput={this.handleBeforeInput}
+            handleKeyCommand={this.handleKeyCommand}
+            handlePastedText={this.handlePastedText}
+            handleReturn={this.handleReturn}
+            keyBindingFn={this.keyBindingFn}
+            onBlur={onBlur}
+            onFocus={onFocus}
+            onChange={this.handleChange}
+            placeholder={placeholder}
+            readOnly={readOnly}
+            ref={this.setEditorRef}
+            style={{
+              padding: 12,
+              userSelect,
+              WebkitUserSelect: userSelect
+            }}
+          />
+        )}
         {renderModal && renderModal()}
       </EditorStyles>
     )
