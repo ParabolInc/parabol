@@ -1,5 +1,5 @@
 import {Editor, EditorState, getDefaultKeyBinding} from 'draft-js'
-import React, {PureComponent} from 'react'
+import React, {PureComponent, Suspense} from 'react'
 import 'universal/components/TaskEditor/Draft.css'
 import withKeyboardShortcuts from 'universal/components/TaskEditor/withKeyboardShortcuts'
 import withMarkdown from 'universal/components/TaskEditor/withMarkdown'
@@ -13,6 +13,9 @@ import {
   reflectionCardMaxHeight
 } from 'universal/styles/cards'
 import withEmojis from 'universal/components/TaskEditor/withEmojis'
+import isRichDraft from 'universal/utils/draftjs/isRichDraft'
+import lazyPreload from 'universal/utils/lazyPreload'
+import isAndroid from 'universal/utils/draftjs/isAndroid'
 
 type Props = {
   ariaLabel: string,
@@ -51,10 +54,10 @@ const codeBlock = css({
   padding: '0 .5rem'
 })
 
-const EditorStyles = styled('div')(({userSelect}) => ({
+const EditorStyles = styled('div')(({useFallback, userSelect}) => ({
   color: appTheme.palette.dark,
   fontSize: cardContentFontSize,
-  lineHeight: cardContentLineHeight,
+  lineHeight: useFallback ? '14px' : cardContentLineHeight,
   maxHeight: reflectionCardMaxHeight,
   minHeight: '1rem',
   overflow: 'auto',
@@ -62,6 +65,10 @@ const EditorStyles = styled('div')(({userSelect}) => ({
   userSelect,
   width: '100%'
 }))
+
+const AndroidEditorFallback = lazyPreload(() =>
+  import(/* webpackChunkName: 'AndroidEditorFallback' */ 'universal/components/AndroidEditorFallback')
+)
 
 class ReflectionEditorWrapper extends PureComponent<Props> {
   setEditorRef = (c) => {
@@ -175,34 +182,50 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
       onBlur,
       onFocus,
       placeholder,
+      handleKeyDownFallback,
       renderModal,
       readOnly,
       userSelect
     } = this.props
+    const useFallback = isAndroid && !readOnly
+    const showFallback = useFallback && !isRichDraft(editorState)
     return (
-      <EditorStyles userSelect={userSelect}>
-        <Editor
-          spellCheck
-          ariaLabel={ariaLabel}
-          blockStyleFn={this.blockStyleFn}
-          editorState={editorState}
-          handleBeforeInput={this.handleBeforeInput}
-          handleKeyCommand={this.handleKeyCommand}
-          handlePastedText={this.handlePastedText}
-          handleReturn={this.handleReturn}
-          keyBindingFn={this.keyBindingFn}
-          onBlur={onBlur}
-          onFocus={onFocus}
-          onChange={this.handleChange}
-          placeholder={placeholder}
-          readOnly={readOnly}
-          ref={this.setEditorRef}
-          style={{
-            padding: '.75rem',
-            userSelect,
-            WebkitUserSelect: userSelect
-          }}
-        />
+      <EditorStyles userSelect={userSelect} useFallback={useFallback}>
+        {showFallback ? (
+          <Suspense fallback={<div />}>
+            <AndroidEditorFallback
+              editorState={editorState}
+              onBlur={onBlur}
+              onFocus={onFocus}
+              placeholder={placeholder}
+              onKeyDown={handleKeyDownFallback}
+              setEditorRef={this.setEditorRef}
+            />
+          </Suspense>
+        ) : (
+          <Editor
+            spellCheck
+            ariaLabel={ariaLabel}
+            blockStyleFn={this.blockStyleFn}
+            editorState={editorState}
+            handleBeforeInput={this.handleBeforeInput}
+            handleKeyCommand={this.handleKeyCommand}
+            handlePastedText={this.handlePastedText}
+            handleReturn={this.handleReturn}
+            keyBindingFn={this.keyBindingFn}
+            onBlur={onBlur}
+            onFocus={onFocus}
+            onChange={this.handleChange}
+            placeholder={placeholder}
+            readOnly={readOnly || (useFallback && !showFallback)}
+            ref={this.setEditorRef}
+            style={{
+              padding: 12,
+              userSelect,
+              WebkitUserSelect: userSelect
+            }}
+          />
+        )}
         {renderModal && renderModal()}
       </EditorStyles>
     )
