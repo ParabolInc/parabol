@@ -5,10 +5,11 @@ import GoogleSVG from 'universal/components/GoogleSVG'
 
 const StyledButton = styled(RaisedButton)({
   backgroundColor: 'white',
-  borderRadius: 2,
+  borderRadius: 20,
   height: 40,
   margin: '0 auto',
-  padding: '0 16px'
+  padding: '0 16px',
+  width: 240
 })
 
 const IconBlock = styled('div')({
