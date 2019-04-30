@@ -10,6 +10,8 @@ import DeleteTaskMutation from 'universal/mutations/DeleteTaskMutation'
 import EditTaskMutation from 'universal/mutations/EditTaskMutation'
 import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation'
 import mergeServerContent from 'universal/utils/mergeServerContent'
+import isAndroid from 'universal/utils/draftjs/isAndroid'
+import convertToTaskContent from 'universal/utils/draftjs/convertToTaskContent'
 
 class OutcomeCardContainer extends Component {
   constructor (props) {
@@ -102,17 +104,48 @@ class OutcomeCardContainer extends Component {
     }
   }
 
+  handleCardUpdateFallback = () => {
+    const {cardHasMenuOpen, cardHasFocus, editorState, editorRef} = this.state
+    const {area, atmosphere, task} = this.props
+    const {id: taskId, team} = task
+    const {id: teamId} = team
+    const {value} = editorRef
+    if (editorRef.type !== 'textarea') return
+    if (!cardHasFocus && !value && !cardHasMenuOpen) {
+      clearTimeout(this.updateTimer)
+      DeleteTaskMutation(atmosphere, taskId, teamId)
+    } else {
+      const initialContentState = editorState.getCurrentContent()
+      const initialText = initialContentState.getPlainText()
+      if (initialText !== value) {
+        clearTimeout(this.updateTimer)
+        this.updateTimer = setTimeout(() => {
+          const updatedTask = {
+            id: taskId,
+            content: convertToTaskContent(value)
+          }
+          UpdateTaskMutation(atmosphere, updatedTask, area)
+          this.updateTimer = undefined
+        }, 15)
+      }
+    }
+  }
+
   handleCardUpdate = () => {
     const {cardHasMenuOpen, cardHasFocus, editorState} = this.state
     const {
       area,
       atmosphere,
       task: {
-        taskId,
-        team: {teamId}
+        id: taskId,
+        team: {id: teamId}
       },
       contentState: initialContentState
     } = this.props
+    if (isAndroid) {
+      this.handleCardUpdateFallback()
+      return
+    }
     const contentState = editorState.getCurrentContent()
     if (!cardHasFocus && !contentState.hasText() && !cardHasMenuOpen) {
       // it's possible the user calls update, then delete, then the update timeout fires, so clear it here
@@ -149,7 +182,7 @@ class OutcomeCardContainer extends Component {
   announceEditing = (isEditing) => {
     const {
       atmosphere,
-      task: {taskId}
+      task: {id: taskId}
     } = this.props
     EditTaskMutation(atmosphere, taskId, isEditing)
   }
@@ -217,9 +250,9 @@ export default createFragmentContainer(
       editors {
         userId
       }
-      taskId: id
+      id
       team {
-        teamId: id
+        id
       }
       ...OutcomeCard_task
     }

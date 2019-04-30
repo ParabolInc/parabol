@@ -1,10 +1,11 @@
+import {EditorState} from 'draft-js'
 import React, {Ref, useEffect, useState} from 'react'
 import styled from 'react-emotion'
 import TextArea from 'react-textarea-autosize'
 import {cardContentFontSize, cardContentLineHeight} from 'universal/styles/cards'
-import {EditorState} from 'draft-js'
 
 interface Props {
+  className?: string
   editorState: EditorState
   onBlur: (e: React.FocusEvent) => void
   onFocus: (e: React.FocusEvent) => void
@@ -26,8 +27,9 @@ const TextAreaStyles = styled(TextArea)({
 })
 
 const AndroidEditorFallback = (props: Props) => {
-  const {editorState, onBlur, onFocus, onKeyDown, placeholder, setEditorRef} = props
+  const {className, editorState, onBlur, onFocus, onKeyDown, placeholder, setEditorRef} = props
   const [value, setValue] = useState('')
+  const [height, setHeight] = useState<number | undefined>(44)
 
   useEffect(() => {
     const currentContent = editorState.getCurrentContent()
@@ -41,6 +43,9 @@ const AndroidEditorFallback = (props: Props) => {
 
   return (
     <TextAreaStyles
+      className={className}
+      onHeightChange={(height) => setHeight(height)}
+      style={{height}}
       inputRef={setEditorRef}
       spellCheck
       placeholder={placeholder}

@@ -1,5 +1,5 @@
 import {Editor, EditorState, getDefaultKeyBinding} from 'draft-js'
-import React, {PureComponent} from 'react'
+import React, {PureComponent, Suspense} from 'react'
 import 'universal/components/TaskEditor/Draft.css'
 import withKeyboardShortcuts from 'universal/components/TaskEditor/withKeyboardShortcuts'
 import withMarkdown from 'universal/components/TaskEditor/withMarkdown'
@@ -13,7 +13,8 @@ import {
   reflectionCardMaxHeight
 } from 'universal/styles/cards'
 import withEmojis from 'universal/components/TaskEditor/withEmojis'
-import AndroidEditorFallback from 'universal/components/AndroidEditorFallback'
+import isRichDraft from 'universal/utils/draftjs/isRichDraft'
+import lazyPreload from 'universal/utils/lazyPreload'
 import isAndroid from 'universal/utils/draftjs/isAndroid'
 
 type Props = {
@@ -53,10 +54,10 @@ const codeBlock = css({
   padding: '0 .5rem'
 })
 
-const EditorStyles = styled('div')(({showFallback, userSelect}) => ({
+const EditorStyles = styled('div')(({useFallback, userSelect}) => ({
   color: appTheme.palette.dark,
   fontSize: cardContentFontSize,
-  lineHeight: showFallback ? '14px' : cardContentLineHeight,
+  lineHeight: useFallback ? '14px' : cardContentLineHeight,
   maxHeight: reflectionCardMaxHeight,
   minHeight: '1rem',
   overflow: 'auto',
@@ -64,6 +65,10 @@ const EditorStyles = styled('div')(({showFallback, userSelect}) => ({
   userSelect,
   width: '100%'
 }))
+
+const AndroidEditorFallback = lazyPreload(() =>
+  import(/* webpackChunkName: 'AndroidEditorFallback' */ 'universal/components/AndroidEditorFallback')
+)
 
 class ReflectionEditorWrapper extends PureComponent<Props> {
   setEditorRef = (c) => {
@@ -182,19 +187,21 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
       readOnly,
       userSelect
     } = this.props
-    const showFallback = isAndroid && !readOnly
-    // const showFallback = true
+    const useFallback = isAndroid && !readOnly
+    const showFallback = useFallback && !isRichDraft(editorState)
     return (
-      <EditorStyles userSelect={userSelect} showFallback={showFallback}>
+      <EditorStyles userSelect={userSelect} useFallback={useFallback}>
         {showFallback ? (
-          <AndroidEditorFallback
-            editorState={editorState}
-            onBlur={onBlur}
-            onFocus={onFocus}
-            placeholder={placeholder}
-            onKeyDown={handleKeyDownFallback}
-            setEditorRef={this.setEditorRef}
-          />
+          <Suspense fallback={<div />}>
+            <AndroidEditorFallback
+              editorState={editorState}
+              onBlur={onBlur}
+              onFocus={onFocus}
+              placeholder={placeholder}
+              onKeyDown={handleKeyDownFallback}
+              setEditorRef={this.setEditorRef}
+            />
+          </Suspense>
         ) : (
           <Editor
             spellCheck
@@ -210,7 +217,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
             onFocus={onFocus}
             onChange={this.handleChange}
             placeholder={placeholder}
-            readOnly={readOnly}
+            readOnly={readOnly || (useFallback && !showFallback)}
             ref={this.setEditorRef}
             style={{
               padding: 12,

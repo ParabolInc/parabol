@@ -1,6 +1,6 @@
 import {Editor, EditorState, getDefaultKeyBinding} from 'draft-js'
 import PropTypes from 'prop-types'
-import React, {Component} from 'react'
+import React, {Component, Suspense} from 'react'
 import withMarkdown from 'universal/components/TaskEditor/withMarkdown'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
@@ -12,6 +12,9 @@ import withLinks from './withLinks'
 import withSuggestions from './withSuggestions'
 import withEmojis from 'universal/components/TaskEditor/withEmojis'
 import styled, {css} from 'react-emotion'
+import lazyPreload from 'universal/utils/lazyPreload'
+import isRichDraft from 'universal/utils/draftjs/isRichDraft'
+import isAndroid from 'universal/utils/draftjs/isAndroid'
 
 const RootEditor = styled('div')(({noText}) => ({
   fontSize: ui.cardContentFontSize,
@@ -36,6 +39,14 @@ const codeBlockStyles = css({
   lineHeight: appTheme.typography.s6,
   margin: '0',
   padding: '0 .5rem'
+})
+
+const AndroidEditorFallback = lazyPreload(() =>
+  import(/* webpackChunkName: 'AndroidEditorFallback' */ 'universal/components/AndroidEditorFallback')
+)
+
+const TaskEditorFallback = styled(AndroidEditorFallback)({
+  padding: 0
 })
 
 class TaskEditor extends Component {
@@ -125,6 +136,13 @@ class TaskEditor extends Component {
     return 'not-handled'
   }
 
+  handleKeyDownFallback = (e) => {
+    if (e.key !== 'Enter' || e.shiftKey) return
+    e.preventDefault()
+    const {editorRef} = this.props
+    editorRef.blur()
+  }
+
   handleKeyCommand = (command) => {
     const {handleKeyCommand} = this.props
     if (handleKeyCommand) {
@@ -177,22 +195,35 @@ class TaskEditor extends Component {
     const {editorState, readOnly, renderModal, setEditorRef} = this.props
     const noText = !editorState.getCurrentContent().hasText()
     const placeholder = 'Describe what “Done” looks like'
+    const useFallback = isAndroid && !readOnly
+    const showFallback = useFallback && !isRichDraft(editorState)
     return (
       <RootEditor noText={noText}>
-        <Editor
-          spellCheck
-          blockStyleFn={this.blockStyleFn}
-          editorState={editorState}
-          handleBeforeInput={this.handleBeforeInput}
-          handleKeyCommand={this.handleKeyCommand}
-          handlePastedText={this.handlePastedText}
-          handleReturn={this.handleReturn}
-          keyBindingFn={this.keyBindingFn}
-          onChange={this.handleChange}
-          placeholder={placeholder}
-          readOnly={readOnly}
-          ref={setEditorRef}
-        />
+        {showFallback ? (
+          <Suspense fallback={<div />}>
+            <TaskEditorFallback
+              editorState={editorState}
+              placeholder={placeholder}
+              onKeyDown={this.handleKeyDownFallback}
+              setEditorRef={setEditorRef}
+            />
+          </Suspense>
+        ) : (
+          <Editor
+            spellCheck
+            blockStyleFn={this.blockStyleFn}
+            editorState={editorState}
+            handleBeforeInput={this.handleBeforeInput}
+            handleKeyCommand={this.handleKeyCommand}
+            handlePastedText={this.handlePastedText}
+            handleReturn={this.handleReturn}
+            keyBindingFn={this.keyBindingFn}
+            onChange={this.handleChange}
+            placeholder={placeholder}
+            readOnly={readOnly || (useFallback && !showFallback)}
+            ref={setEditorRef}
+          />
+        )}
         {renderModal && renderModal()}
       </RootEditor>
     )
