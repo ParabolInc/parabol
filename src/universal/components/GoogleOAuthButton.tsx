@@ -1,18 +1,28 @@
 import React from 'react'
 import styled from 'react-emotion'
-import PrimaryButton from 'universal/components/PrimaryButton'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
-import {ICON_SIZE_FA_1X} from 'universal/styles/icons'
+import RaisedButton from 'universal/components/RaisedButton'
+import GoogleSVG from 'universal/components/GoogleSVG'
 
-const WideButton = styled(PrimaryButton)({
-  width: '15rem'
+const StyledButton = styled(RaisedButton)({
+  backgroundColor: 'white',
+  borderRadius: 2,
+  height: 40,
+  margin: '0 auto',
+  padding: '0 16px'
 })
 
-const StyledIcon = styled(StyledFontAwesome)({
-  display: 'block',
-  color: 'inherit',
-  fontSize: ICON_SIZE_FA_1X,
-  marginRight: '.5rem'
+const IconBlock = styled('div')({
+  marginRight: 16,
+  '& svg': {
+    display: 'block',
+    height: 18,
+    width: 18
+  }
+})
+
+const Label = styled('div')({
+  color: 'rgba(0, 0, 0, .54)',
+  fontSize: 14
 })
 
 interface Props {
@@ -24,10 +34,12 @@ interface Props {
 function GoogleOAuthButton (props: Props) {
   const {onClick, label, waiting} = props
   return (
-    <WideButton size='medium' onClick={onClick} palette='gray' waiting={waiting}>
-      <StyledIcon name='google' />
-      <span>{label}</span>
-    </WideButton>
+    <StyledButton onClick={onClick} waiting={waiting}>
+      <IconBlock>
+        <GoogleSVG />
+      </IconBlock>
+      <Label>{label}</Label>
+    </StyledButton>
   )
 }
 
