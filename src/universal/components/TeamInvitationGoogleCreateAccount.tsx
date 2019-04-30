@@ -117,7 +117,7 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
           </CopyMargins>
           <InvitationCenteredCopy>
             <GoogleOAuthButtonBlock
-              label='Sign up using Google'
+              label='Sign up with Google'
               onClick={this.onOAuth}
               isError={!!error}
               submitting={!!submitting}
