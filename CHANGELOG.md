@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v3.8.2 2019-Apr-29
+
+### Fixed
+* call to missing primeStandardLoader
+
 ## v3.8.1 2019-Apr-25
 
 ### Fixed
