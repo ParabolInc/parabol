@@ -64,7 +64,7 @@ const removeTeamMember = async (
       .table('Task')
       .getAll(teamMemberId, {index: 'assigneeId'})
       .filter((task) => {
-        r.and(
+        return r.and(
           task('tags')
             .contains('archived')
             .not(),

@@ -15,9 +15,11 @@ const StyledButton = styled(RaisedButton)(({waiting}: {waiting: boolean | undefi
   color: waiting ? '#8D8D8D' : '#757575',
   height: 40,
   margin: '0 auto',
-  opacity: 1,
   padding: '0 16px',
-  width: 240
+  width: 240,
+  ':disabled': {
+    opacity: 1
+  }
 }))
 
 const IconBlock = styled('div')(({waiting}: {waiting: boolean | undefined}) => ({

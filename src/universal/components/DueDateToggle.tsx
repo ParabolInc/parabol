@@ -51,7 +51,8 @@ const Toggle = styled(CardButton)<StyleProps>(
       padding: '0 .25rem 0 .0625rem',
       ':hover,:focus': {
         backgroundColor: darken(ui.dueDateBg, 6),
-        color: darken(ui.dueDateColor, 6)
+        color: darken(ui.dueDateColor, 6),
+        opacity: 1
       }
     },
   ({isDueSoon}) =>
