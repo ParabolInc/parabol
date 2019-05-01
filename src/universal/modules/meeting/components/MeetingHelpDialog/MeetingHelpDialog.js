@@ -31,14 +31,17 @@ const MeetingHelpDialogMenu = lazyPreload(() =>
 const MeetingHelpDialog = ({phase}: Props) => {
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.LOWER_RIGHT)
   return (
-    <>'     '<StyledButton
-      palette='white'
-      onClick={togglePortal}
-      innerRef={originRef}
-      onMouseEnter={MeetingHelpDialogMenu.preload}
-    >
-      <IconLabel icon='help_outline' />
-    </StyledButton>'     '{menuPortal(<MeetingHelpDialogMenu phase={phase} menuProps={menuProps} />)}'   '</>
+    <React.Fragment>
+      <StyledButton
+        palette='white'
+        onClick={togglePortal}
+        innerRef={originRef}
+        onMouseEnter={MeetingHelpDialogMenu.preload}
+      >
+        <IconLabel icon='help_outline' />
+      </StyledButton>
+      {menuPortal(<MeetingHelpDialogMenu phase={phase} menuProps={menuProps} />)}
+    </React.Fragment>
   )
 }
 
