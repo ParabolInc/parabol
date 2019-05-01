@@ -1300,6 +1300,7 @@ export interface ITeamMeetingSettings {
  * The phase of the meeting
  */
 export const enum NewMeetingPhaseTypeEnum {
+  lobby = 'lobby',
   checkin = 'checkin',
   updates = 'updates',
   firstcall = 'firstcall',

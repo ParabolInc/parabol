@@ -1,5 +1,6 @@
 import {GraphQLEnumType} from 'graphql'
 import {
+  LOBBY,
   AGENDA_ITEMS,
   CHECKIN,
   DISCUSS,
@@ -15,6 +16,8 @@ const NewMeetingPhaseTypeEnum = new GraphQLEnumType({
   name: 'NewMeetingPhaseTypeEnum',
   description: 'The phase of the meeting',
   values: {
+    // NA
+    [LOBBY]: {},
     // Generic
     [CHECKIN]: {},
     // Action
