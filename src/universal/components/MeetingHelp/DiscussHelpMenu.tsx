@@ -1,15 +1,18 @@
 import React, {forwardRef} from 'react'
-import {DISCUSS} from 'universal/utils/constants'
 import HelpMenuContent from 'universal/components/MeetingHelp/HelpMenuContent'
-import HelpMenuHeader from 'universal/components/MeetingHelp/HelpMenuHeader'
 import HelpMenuCopy from 'universal/components/MeetingHelp/HelpMenuCopy'
-import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
+import HelpMenuHeader from 'universal/components/MeetingHelp/HelpMenuHeader'
 import HelpMenuLink from 'universal/components/MeetingHelp/HelpMenuLink'
+import useSegmentTrack from 'universal/hooks/useSegmentTrack'
+import {NewMeetingPhaseTypeEnum, SegmentClientEventEnum} from 'universal/types/graphql'
+import {DISCUSS} from 'universal/utils/constants'
+import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 
 interface Props {}
 
 const DiscussHelpMenu = forwardRef((_props: Props, ref: any) => {
   const {closePortal} = ref
+  useSegmentTrack(SegmentClientEventEnum.HelpMenuOpen, {phase: NewMeetingPhaseTypeEnum.discuss})
   return (
     <HelpMenuContent closePortal={closePortal}>
       <HelpMenuHeader>{phaseLabelLookup[DISCUSS]}</HelpMenuHeader>

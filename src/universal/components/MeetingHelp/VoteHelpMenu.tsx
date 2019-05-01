@@ -3,6 +3,8 @@ import HelpMenuContent from 'universal/components/MeetingHelp/HelpMenuContent'
 import HelpMenuCopy from 'universal/components/MeetingHelp/HelpMenuCopy'
 import HelpMenuHeader from 'universal/components/MeetingHelp/HelpMenuHeader'
 import HelpMenuLink from 'universal/components/MeetingHelp/HelpMenuLink'
+import useSegmentTrack from 'universal/hooks/useSegmentTrack'
+import {NewMeetingPhaseTypeEnum, SegmentClientEventEnum} from 'universal/types/graphql'
 import {VOTE} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 
@@ -10,6 +12,7 @@ interface Props {}
 
 const VoteHelpMenu = forwardRef((_props: Props, ref: any) => {
   const {closePortal} = ref
+  useSegmentTrack(SegmentClientEventEnum.HelpMenuOpen, {phase: NewMeetingPhaseTypeEnum.vote})
   return (
     <HelpMenuContent closePortal={closePortal}>
       <HelpMenuHeader>{phaseLabelLookup[VOTE]}</HelpMenuHeader>

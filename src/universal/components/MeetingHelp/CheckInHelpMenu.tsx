@@ -3,7 +3,12 @@ import HelpMenuContent from 'universal/components/MeetingHelp/HelpMenuContent'
 import HelpMenuCopy from 'universal/components/MeetingHelp/HelpMenuCopy'
 import HelpMenuHeader from 'universal/components/MeetingHelp/HelpMenuHeader'
 import HelpMenuLink from 'universal/components/MeetingHelp/HelpMenuLink'
-import {MeetingTypeEnum} from 'universal/types/graphql'
+import useSegmentTrack from 'universal/hooks/useSegmentTrack'
+import {
+  MeetingTypeEnum,
+  NewMeetingPhaseTypeEnum,
+  SegmentClientEventEnum
+} from 'universal/types/graphql'
 import {ACTION, CHECKIN, RETROSPECTIVE} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 
@@ -19,6 +24,7 @@ interface Props {
 
 const CheckInHelpMenu = (props: Props) => {
   const {meetingType} = props
+  useSegmentTrack(SegmentClientEventEnum.HelpMenuOpen, {phase: NewMeetingPhaseTypeEnum.checkin})
   return (
     <HelpMenuContent>
       <HelpMenuHeader>{phaseLabelLookup[CHECKIN]}</HelpMenuHeader>
