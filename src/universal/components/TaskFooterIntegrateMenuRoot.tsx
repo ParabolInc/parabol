@@ -4,6 +4,7 @@ import {createFragmentContainer, graphql} from 'react-relay'
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
 import TaskFooterIntegrateMenu from 'universal/components/TaskFooterIntegrateMenu'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
+import {MenuProps} from 'universal/hooks/useMenu'
 import {cacheConfig} from 'universal/utils/constants'
 import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
 import renderQuery from '../utils/relay/renderQuery'
@@ -17,7 +18,7 @@ const query = graphql`
 `
 
 interface Props {
-  closePortal: () => void
+  menuProps: MenuProps
   loadingDelay: number
   loadingWidth: number
   mutationProps: MenuMutationProps
@@ -25,7 +26,7 @@ interface Props {
 }
 
 const TaskFooterIntegrateMenuRoot = ({
-  closePortal,
+  menuProps,
   loadingDelay,
   loadingWidth,
   mutationProps,
@@ -42,7 +43,7 @@ const TaskFooterIntegrateMenuRoot = ({
       render={renderQuery(TaskFooterIntegrateMenu, {
         loadingDelay,
         menuLoadingWidth: loadingWidth,
-        props: {closePortal, mutationProps, task}
+        props: {menuProps, mutationProps, task}
       })}
     />
   )

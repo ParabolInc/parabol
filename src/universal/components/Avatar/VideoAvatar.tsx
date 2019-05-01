@@ -1,5 +1,5 @@
 import {VideoAvatar_teamMember} from '__generated__/VideoAvatar_teamMember.graphql'
-import React, {useEffect, useRef} from 'react'
+import React, {forwardRef, Ref, useEffect, useRef} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import AvatarBadge from 'universal/components/AvatarBadge/AvatarBadge'
@@ -54,11 +54,12 @@ const Picture = styled('img')(({isHidden}: {isHidden: boolean}) => ({
 interface Props {
   teamMember: VideoAvatar_teamMember
   streamUI: StreamUI | undefined
-  swarm: MediaSwarm
+  swarm: MediaSwarm | null
   onClick?: () => void
+  onMouseEnter?: () => void
 }
 
-const VideoAvatar = (props: Props) => {
+const VideoAvatar = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
   const videoRef = useRef<HTMLVideoElement>(null)
   useEffect(() => {
     const {
@@ -68,7 +69,7 @@ const VideoAvatar = (props: Props) => {
     } = props
     if (!streamUI) return
     const {hasVideo} = streamUI
-    if (hasVideo) {
+    if (hasVideo && swarm) {
       const el = videoRef.current!
       const stream = isSelf ? swarm.localStreams.cam.low : swarm.getStream('cam', userId)
       console.log('hasVideo', stream, hasVideo)
@@ -78,12 +79,12 @@ const VideoAvatar = (props: Props) => {
       }
     }
   })
-  const {streamUI, teamMember, onClick} = props
+  const {streamUI, teamMember, onClick, onMouseEnter} = props
   const {picture, isConnected, isSelf, meetingMember} = teamMember
   const isCheckedIn = meetingMember && meetingMember.isCheckedIn
   const showVideo = streamUI ? streamUI.hasVideo : false
   return (
-    <AvatarStyle onClick={onClick}>
+    <AvatarStyle innerRef={ref} onClick={onClick} onMouseEnter={onMouseEnter}>
       <Picture src={picture} isHidden={showVideo} />
       <Video innerRef={videoRef} isHidden={!showVideo} autoPlay muted={isSelf} />
       <BadgeBlock>
@@ -93,7 +94,7 @@ const VideoAvatar = (props: Props) => {
       </BadgeBlock>
     </AvatarStyle>
   )
-}
+})
 
 export default createFragmentContainer(
   VideoAvatar,

@@ -1,14 +1,18 @@
 import React, {
   Children,
   cloneElement,
+  forwardRef,
   ReactElement,
   ReactNode,
   useCallback,
   useEffect,
+  useImperativeHandle,
   useRef,
   useState
 } from 'react'
 import styled from 'react-emotion'
+import MenuItemAnimation from 'universal/components/MenuItemAnimation'
+import {PortalStatus} from 'universal/hooks/usePortal'
 
 const isMenuItem = (node: any) => node && node.onClick
 
@@ -29,22 +33,30 @@ interface Props {
   keepParentFocus?: boolean
   resetActiveOnChanges?: any[]
   tabReturns?: boolean
+  isDropdown?: boolean
+  portalStatus: PortalStatus
 }
 
-const Menu = (props: Props) => {
+const Menu = forwardRef((props: Props, ref: any) => {
   const {
     ariaLabel,
     children,
     className,
     closePortal,
     defaultActiveIdx,
+    isDropdown,
     keepParentFocus,
     resetActiveOnChanges,
+    portalStatus,
     tabReturns
   } = props
   const [activeIdx, setActiveIdx] = useState<number>(defaultActiveIdx || 0)
   const menuRef = useRef<HTMLDivElement>(null)
   const itemHandles = useRef<{onClick: (e?: React.MouseEvent | React.KeyboardEvent) => void}[]>([])
+
+  useImperativeHandle(ref, () => ({
+    handleKeyDown
+  }))
 
   useEffect(() => {
     if (defaultActiveIdx === undefined) {
@@ -110,7 +122,10 @@ const Menu = (props: Props) => {
   const makeSmartChildren = useCallback(
     (children: ReactNode) => {
       // toArray removes bools whereas map does not
-      return Children.toArray(children).map((child, idx) => {
+      const childArr = Children.toArray(children)
+      const itemCount = childArr.length
+      return childArr.map((child, idx) => {
+        if (!child) return null
         // overloading a ref callback with useful props means intermediary components only need to forward the ref
         const ref = (c) => {
           itemHandles.current[idx] = c
@@ -118,7 +133,17 @@ const Menu = (props: Props) => {
         ref.closePortal = closePortal
         ref.isActive = activeIdx === idx
         ref.activate = () => setSafeIdx(idx)
-        return cloneElement(child as ReactElement, {ref})
+        return (
+          <MenuItemAnimation
+            key={`mi${(child as any).key || child}`}
+            idx={idx}
+            itemsToAnimate={Math.min(10, itemCount)}
+            isDropdown={!!isDropdown}
+            portalStatus={portalStatus}
+          >
+            {cloneElement(child as ReactElement, {ref})}
+          </MenuItemAnimation>
+        )
       })
     },
     [activeIdx, children]
@@ -140,6 +165,7 @@ const Menu = (props: Props) => {
         e.preventDefault()
         closePortal()
       }
+      return e.defaultPrevented
     },
     [activeIdx, children, tabReturns]
   )
@@ -157,6 +183,6 @@ const Menu = (props: Props) => {
       {makeSmartChildren(children)}
     </MenuStyles>
   )
-}
+})
 
 export default Menu

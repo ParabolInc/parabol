@@ -2,6 +2,8 @@ import React from 'react'
 import DayPicker from 'react-day-picker'
 import 'universal/styles/daypicker.css'
 import {DayModifiers} from 'react-day-picker/types/common'
+import Menu from 'universal/components/Menu'
+import {MenuProps} from 'universal/hooks/useMenu'
 import UpdateTaskDueDateMutation from 'universal/mutations/UpdateTaskDueDateMutation'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -13,9 +15,13 @@ import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
-  closePortal (): void
+  menuProps: MenuProps
   task: DueDatePicker_task
 }
+
+const TallMenu = styled(Menu)({
+  maxHeight: 340
+})
 
 const PickerTitle = styled('div')({
   fontSize: '.875rem',
@@ -35,7 +41,7 @@ class DueDatePicker extends React.Component<Props> {
     if (disabled) return
     const {
       atmosphere,
-      closePortal,
+      menuProps,
       task: {taskId},
       submitMutation,
       onCompleted,
@@ -44,11 +50,12 @@ class DueDatePicker extends React.Component<Props> {
     submitMutation()
     const dueDate = selected ? null : day
     UpdateTaskDueDateMutation(atmosphere, {taskId, dueDate}, onCompleted, onError)
-    closePortal()
+    menuProps.closePortal()
   }
 
   render () {
     const {
+      menuProps,
       task: {dueDate}
     } = this.props
     const selectedDate = dueDate && new Date(dueDate)
@@ -56,7 +63,7 @@ class DueDatePicker extends React.Component<Props> {
     const now = new Date()
     const nextYear = new Date(new Date().setFullYear(now.getFullYear() + 1))
     return (
-      <React.Fragment>
+      <TallMenu ariaLabel='Pick a due date' {...menuProps}>
         <PickerTitle>{'Change Due Date'}</PickerTitle>
         {showHint && <Hint>{'To remove, tap selected date'}</Hint>}
         <DayPicker
@@ -67,7 +74,7 @@ class DueDatePicker extends React.Component<Props> {
           selectedDays={selectedDate}
           toMonth={nextYear}
         />
-      </React.Fragment>
+      </TallMenu>
     )
   }
 }

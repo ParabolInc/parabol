@@ -1,41 +1,32 @@
-import React, {lazy} from 'react'
-import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
-import InactivateUserMutation from 'universal/mutations/InactivateUserMutation'
+import {OrgMemberRow_organization} from '__generated__/OrgMemberRow_organization.graphql'
+import {OrgMemberRow_organizationUser} from '__generated__/OrgMemberRow_organizationUser.graphql'
+import React from 'react'
 import styled from 'react-emotion'
-import {BILLING_LEADER, PERSONAL} from 'universal/utils/constants'
-import Toggle from 'universal/components/Toggle/Toggle'
-import LoadableMenu from 'universal/components/LoadableMenu'
+import {createFragmentContainer, graphql} from 'react-relay'
+import Avatar from 'universal/components/Avatar/Avatar'
 import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
-import {createFragmentContainer, graphql} from 'react-relay'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import LoadableBillingLeaderActionMenu from 'universal/components/LoadableBillingLeaderActionMenu'
-import Tooltip from 'universal/components/Tooltip/Tooltip'
 import Row from 'universal/components/Row/Row'
-import Avatar from 'universal/components/Avatar/Avatar'
+import RowActions from 'universal/components/Row/RowActions'
 import RowInfo from 'universal/components/Row/RowInfo'
 import RowInfoHeader from 'universal/components/Row/RowInfoHeader'
 import RowInfoHeading from 'universal/components/Row/RowInfoHeading'
-import Tag from 'universal/components/Tag/Tag'
 import RowInfoLink from 'universal/components/Row/RowInfoLink'
-import RowActions from 'universal/components/Row/RowActions'
-import {OrgMemberRow_organizationUser} from '__generated__/OrgMemberRow_organizationUser.graphql'
-import {OrgMemberRow_organization} from '__generated__/OrgMemberRow_organization.graphql'
-import LoadableModal from '../../../../components/LoadableModal'
+import Tag from 'universal/components/Tag/Tag'
+import Toggle from 'universal/components/Toggle/Toggle'
+import Tooltip from 'universal/components/Tooltip/Tooltip'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {MenuPosition} from 'universal/hooks/useCoords'
+import useMenu from 'universal/hooks/useMenu'
+import useModal from 'universal/hooks/useModal'
+import InactivateUserMutation from 'universal/mutations/InactivateUserMutation'
+import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
+import {BILLING_LEADER, PERSONAL} from 'universal/utils/constants'
+import lazyPreload from 'universal/utils/lazyPreload'
+import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import {Layout} from 'universal/types/constEnums'
-
-const originAnchor = {
-  vertical: 'top',
-  horizontal: 'right'
-}
-
-const targetAnchor = {
-  vertical: 'top',
-  horizontal: 'left'
-}
 
 const ActionsBlock = styled('div')({
   alignItems: 'center',
@@ -71,9 +62,18 @@ const MenuButton = (props) => (
   </StyledButton>
 )
 
-const LeaveOrgModal = lazy(() =>
+const LeaveOrgModal = lazyPreload(() =>
   import(/* webpackChunkName: 'LeaveOrgModal' */ 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal')
 )
+
+const BillingLeaderActionMenu = lazyPreload(() =>
+  import(/* webpackChunkName: 'BillingLeaderActionMenu' */ 'universal/components/BillingLeaderActionMenu')
+)
+
+const RemoveFromOrgModal = lazyPreload(() =>
+  import(/* webpackChunkName: 'RemoveFromOrgModal' */ 'universal/modules/userDashboard/components/RemoveFromOrgModal/RemoveFromOrgModal')
+)
+
 const OrgMemberRow = (props: Props) => {
   const {
     atmosphere,
@@ -92,7 +92,9 @@ const OrgMemberRow = (props: Props) => {
   const isViewerLastBillingLeader =
     isViewerBillingLeader && isBillingLeader && billingLeaderCount === 1
   const {viewerId} = atmosphere
-
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
+  const {togglePortal: toggleLeave, modalPortal: leaveModal} = useModal()
+  const {togglePortal: toggleRemove, modalPortal: removeModal} = useModal()
   const toggleHandler = () => {
     if (isPersonalTier) return
     if (!inactive) {
@@ -138,11 +140,11 @@ const OrgMemberRow = (props: Props) => {
       <RowActions>
         <ActionsBlock>
           {!isBillingLeader && viewerId === userId && (
-            <LoadableModal
-              LoadableComponent={LeaveOrgModal}
-              queryVars={{orgId}}
-              toggle={<FlatButton>Leave Organization</FlatButton>}
-            />
+            <>
+              <FlatButton onClick={toggleLeave} onMouseEnter={LeaveOrgModal.preload}>
+                Leave Organization
+              </FlatButton>
+            </>
           )}
           {!isPersonalTier && isViewerBillingLeader && (
             <ToggleBlock>
@@ -176,20 +178,26 @@ const OrgMemberRow = (props: Props) => {
           )}
           {isViewerBillingLeader && !(isViewerLastBillingLeader && userId === viewerId) && (
             <MenuToggleBlock>
-              <LoadableMenu
-                LoadableComponent={LoadableBillingLeaderActionMenu}
-                maxWidth={224}
-                maxHeight={200}
-                originAnchor={originAnchor}
-                queryVars={{
-                  isViewerLastBillingLeader,
-                  organizationUser,
-                  organization
-                }}
-                targetAnchor={targetAnchor}
-                toggle={<MenuButton />}
+              <MenuButton
+                onClick={togglePortal}
+                onMouseEnter={BillingLeaderActionMenu.preload}
+                innerRef={originRef}
               />
             </MenuToggleBlock>
+          )}
+          {menuPortal(
+            <BillingLeaderActionMenu
+              menuProps={menuProps}
+              isViewerLastBillingLeader={isViewerLastBillingLeader}
+              organizationUser={organizationUser}
+              organization={organization}
+              toggleLeave={toggleLeave}
+              toggleRemove={toggleRemove}
+            />
+          )}
+          {leaveModal(<LeaveOrgModal orgId={orgId} />)}
+          {removeModal(
+            <RemoveFromOrgModal orgId={orgId} userId={userId} preferredName={preferredName} />
           )}
         </ActionsBlock>
       </RowActions>

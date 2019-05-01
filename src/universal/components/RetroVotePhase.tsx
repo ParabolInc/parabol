@@ -6,8 +6,8 @@ import BottomNavControl from 'universal/components/BottomNavControl'
 import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
 import Icon from 'universal/components/Icon'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
-import VoteHelpMenu from 'universal/components/MeetingHelp/VoteHelpMenu'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
+import MeetingHelpToggle from 'universal/components/MenuHelpToggle'
 import ScrollableBlock from 'universal/components/ScrollableBlock'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -21,11 +21,11 @@ import {fontFamily, typeScale} from 'universal/styles/theme/typography'
 import ui from 'universal/styles/ui'
 import {IDiscussPhase} from 'universal/types/graphql'
 import {DISCUSS} from 'universal/utils/constants'
+import lazyPreload from 'universal/utils/lazyPreload'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import handleRightArrow from '../utils/handleRightArrow'
 import isDemoRoute from '../utils/isDemoRoute'
 import EndMeetingButton from './EndMeetingButton'
-import DemoVoteHelpMenu from './MeetingHelp/DemoVoteHelpMenu'
 import PhaseItemMasonry from './PhaseItemMasonry'
 
 interface Props extends WithAtmosphereProps {
@@ -123,6 +123,13 @@ const StyledBottomBar = styled(MeetingControlBar)({
   justifyContent: 'space-between'
 })
 
+const VoteHelpMenu = lazyPreload(async () =>
+  import(/* webpackChunkName: 'VoteHelpMenu' */ 'universal/components/MeetingHelp/VoteHelpMenu')
+)
+const DemoVoteHelpMenu = lazyPreload(async () =>
+  import(/* webpackChunkName: 'DemoVoteHelpMenu' */ 'universal/components/MeetingHelp/DemoVoteHelpMenu')
+)
+
 const RetroVotePhase = (props: Props) => {
   const {
     atmosphere: {viewerId},
@@ -187,7 +194,10 @@ const RetroVotePhase = (props: Props) => {
           <EndMeetingButton meetingId={meetingId} />
         </StyledBottomBar>
       )}
-      {isDemoRoute() ? <DemoVoteHelpMenu /> : <VoteHelpMenu floatAboveBottomBar={isFacilitating} />}
+      <MeetingHelpToggle
+        floatAboveBottomBar={isFacilitating}
+        menu={isDemoRoute() ? <DemoVoteHelpMenu /> : <VoteHelpMenu />}
+      />
     </React.Fragment>
   )
 }

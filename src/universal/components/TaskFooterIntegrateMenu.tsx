@@ -5,10 +5,11 @@ import {createFragmentContainer, graphql} from 'react-relay'
 import TaskFooterIntegrateMenuList from 'universal/components/TaskFooterIntegrateMenuList'
 import TaskFooterIntegrateMenuNoIntegrations from 'universal/components/TaskFooterIntegrateMenuNoIntegrations '
 import TaskFooterIntegrateMenuSignup from 'universal/components/TaskFooterIntegrateMenuSignup'
+import {MenuProps} from 'universal/hooks/useMenu'
 import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
 
 interface Props {
-  closePortal: () => void
+  menuProps: MenuProps
   mutationProps: MenuMutationProps
   task: TaskFooterIntegrateMenu_task
   viewer: TaskFooterIntegrateMenu_viewer
@@ -22,7 +23,7 @@ const makePlaceholder = (hasGitHub: boolean, hasAtlassian: boolean) => {
 }
 
 const TaskFooterIntegrateMenu = (props: Props) => {
-  const {closePortal, mutationProps, task, viewer} = props
+  const {menuProps, mutationProps, task, viewer} = props
   const {id: viewerId, userOnTeam} = viewer
   const {atlassianAuth, githubAuth, preferredName, suggestedIntegrations} = userOnTeam!
   const {teamId, userId} = task
@@ -33,21 +34,18 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   if (!isAssigneeIntegrated) {
     return isViewerAssignee ? (
       <TaskFooterIntegrateMenuSignup
-        closePortal={closePortal}
+        menuProps={menuProps}
         mutationProps={mutationProps}
         teamId={teamId}
       />
     ) : (
-      <TaskFooterIntegrateMenuNoIntegrations
-        closePortal={closePortal}
-        preferredName={preferredName}
-      />
+      <TaskFooterIntegrateMenuNoIntegrations menuProps={menuProps} preferredName={preferredName} />
     )
   }
   const placeholder = makePlaceholder(hasGitHub, hasAtlassian)
   return (
     <TaskFooterIntegrateMenuList
-      closePortal={closePortal}
+      menuProps={menuProps}
       mutationProps={mutationProps}
       placeholder={placeholder}
       suggestedIntegrations={suggestedIntegrations}

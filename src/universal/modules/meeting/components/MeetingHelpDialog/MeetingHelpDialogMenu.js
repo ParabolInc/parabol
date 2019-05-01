@@ -7,6 +7,7 @@ import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import {actionPhaseHelpLookup} from 'universal/utils/meetings/helpLookups'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import Menu from 'universal/components/Menu'
 
 type Props = {
   closePortal: () => void,
@@ -45,18 +46,24 @@ const DialogClose = styled(Icon)({
   }
 })
 
+const TallMenu = styled(Menu)({
+  maxHeight: 320
+})
+
 const MeetingHelpDialogMenu = (props: Props) => {
-  const {closePortal, phase} = props
+  const {menuProps, phase} = props
   const phaseLabel = phaseLabelLookup[phase]
 
   return (
-    <DialogContent>
-      <DialogClose onClick={closePortal} title='Close help menu'>
-        close
-      </DialogClose>
-      {phaseLabel && <h3>{phaseLabel}</h3>}
-      {actionPhaseHelpLookup[phase]}
-    </DialogContent>
+    <TallMenu {...menuProps}>
+      <DialogContent>
+        <DialogClose onClick={menuProps.closePortal} title='Close help menu'>
+          close
+        </DialogClose>
+        {phaseLabel && <h3>{phaseLabel}</h3>}
+        {actionPhaseHelpLookup[phase]}
+      </DialogContent>
+    </TallMenu>
   )
 }
 

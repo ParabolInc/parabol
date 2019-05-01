@@ -2,44 +2,17 @@ import styled, {css} from 'react-emotion'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import withScrolling from 'react-dnd-scrollzone'
-import AddTaskButton from 'universal/components/AddTaskButton/AddTaskButton'
 import DraggableTask from 'universal/containers/TaskCard/DraggableTask'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import sortOrderBetween from 'universal/dnd/sortOrderBetween'
-import CreateTaskMutation from 'universal/mutations/CreateTaskMutation'
 import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation'
 import appTheme from 'universal/styles/theme/appTheme'
 import themeLabels from 'universal/styles/theme/labels'
 import ui from 'universal/styles/ui'
 import {TEAM_DASH, USER_DASH} from 'universal/utils/constants'
-import dndNoise from 'universal/utils/dndNoise'
-import getNextSortOrder from 'universal/utils/getNextSortOrder'
-import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
-
 import TaskColumnDropZone from './TaskColumnDropZone'
 import overflowTouch from 'universal/styles/helpers/overflowTouch'
-import LoadableMenu from 'universal/components/LoadableMenu'
-import LoadableSelectTeamDropdown from 'universal/components/LoadableSelectTeamDropdown'
-
-const originAnchor = {
-  vertical: 'bottom',
-  horizontal: 'right'
-}
-
-const targetAnchor = {
-  vertical: 'top',
-  horizontal: 'right'
-}
-
-const handleAddTaskFactory = (atmosphere, status, teamId, userId, sortOrder) => () => {
-  const newTask = {
-    status,
-    teamId,
-    userId,
-    sortOrder
-  }
-  CreateTaskMutation(atmosphere, newTask)
-}
+import TaskColumnAddTask from 'universal/modules/teamDashboard/components/TaskColumn/TaskColumnAddTask'
 
 const Column = styled('div')({
   display: 'flex',
@@ -125,55 +98,6 @@ class TaskColumn extends Component {
     teams: PropTypes.array
   }
 
-  makeAddTask = () => {
-    const {
-      area,
-      atmosphere,
-      isMyMeetingSection,
-      status,
-      tasks,
-      myTeamMemberId,
-      teamMemberFilterId,
-      teams
-    } = this.props
-    const label = themeLabels.taskStatus[status].slug
-    const sortOrder = getNextSortOrder(tasks, dndNoise())
-    if (area === TEAM_DASH || isMyMeetingSection) {
-      const {userId, teamId} = fromTeamMemberId(teamMemberFilterId || myTeamMemberId)
-      const handleAddTask = handleAddTaskFactory(atmosphere, status, teamId, userId, sortOrder)
-      return <AddTaskButton onClick={handleAddTask} label={label} />
-    } else if (area === USER_DASH) {
-      if (teams.length === 1) {
-        const {id: teamId} = teams[0]
-        const {userId} = atmosphere
-        const handleAddTask = handleAddTaskFactory(atmosphere, status, teamId, userId, sortOrder)
-        return <AddTaskButton onClick={handleAddTask} label={label} />
-      }
-      return (
-        <LoadableMenu
-          LoadableComponent={LoadableSelectTeamDropdown}
-          maxHeight={217}
-          menuWidth={160}
-          originAnchor={originAnchor}
-          queryVars={{
-            teams,
-            teamHandleClick: (teamId) => () => {
-              CreateTaskMutation(atmosphere, {
-                sortOrder,
-                status,
-                teamId,
-                userId: atmosphere.viewerId
-              })
-            }
-          }}
-          targetAnchor={targetAnchor}
-          toggle={<AddTaskButton label={label} />}
-        />
-      )
-    }
-    return null
-  }
-
   taskIsInPlace = (draggedTask, targetTask, before) => {
     const {tasks} = this.props
     const targetIndex = tasks.findIndex((p) => p.id === targetTask.id)
@@ -212,18 +136,29 @@ class TaskColumn extends Component {
       firstColumn,
       getTaskById,
       isMyMeetingSection,
+      myTeamMemberId,
+      teamMemberFilterId,
       lastColumn,
       status,
-      tasks
+      tasks,
+      teams
     } = this.props
     const label = themeLabels.taskStatus[status].slug
-    const userCanAdd = area === 'TEAM_DASH' || area === 'USER_DASH' || isMyMeetingSection
+    const userCanAdd = area === TEAM_DASH || area === USER_DASH || isMyMeetingSection
     const statusLabelBlockStyles = css(statusLabelBlock, userCanAdd && statusLabelBlockUserCanAdd)
 
     return (
       <Column firstColumn={firstColumn} lastColumn={lastColumn}>
         <ColumnHeader>
-          {this.makeAddTask()}
+          <TaskColumnAddTask
+            area={area}
+            isMyMeetingSection={isMyMeetingSection}
+            status={status}
+            tasks={tasks}
+            myTeamMemberId={myTeamMemberId}
+            teamMemberFilterId={teamMemberFilterId}
+            teams={teams}
+          />
           <div className={statusLabelBlockStyles}>
             <StatusLabel>{label}</StatusLabel>
             {tasks.length > 0 && <TasksCount>{tasks.length}</TasksCount>}

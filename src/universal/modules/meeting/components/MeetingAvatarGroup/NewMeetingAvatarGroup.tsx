@@ -56,7 +56,6 @@ const NewMeetingAvatarGroup = (props: Props) => {
       />
       {teamMembers.map((teamMember) => {
         return (
-          // @ts-ignore
           <NewMeetingAvatar
             key={teamMember.id}
             gotoStage={gotoStage(teamMember.id)}

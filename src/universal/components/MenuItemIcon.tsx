@@ -1,8 +1,7 @@
 import React from 'react'
 import styled from 'react-emotion'
 import Icon from 'universal/components/Icon'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
-import ui from 'universal/styles/ui'
+import {ICON_SIZE} from 'universal/styles/typographyV2'
 import {PALETTE} from '../styles/paletteV2'
 
 interface Props {
@@ -12,12 +11,8 @@ interface Props {
 
 const StyledIcon = styled(Icon)(({iconColor}: {iconColor?: string}) => ({
   color: iconColor || PALETTE.TEXT.LIGHT,
-  fontSize: `${MD_ICONS_SIZE_18} !important`,
-  lineHeight: 'inherit',
-  marginLeft: ui.menuGutterHorizontal,
-  marginRight: ui.menuGutterInner,
-  textAlign: 'center',
-  width: '1.25rem'
+  fontSize: ICON_SIZE.MD18,
+  marginRight: 8
 }))
 
 const MenuItemIcon = (props: Props) => {

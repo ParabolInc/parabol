@@ -1,32 +1,33 @@
-import React from 'react'
-import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
-import {PRO} from 'universal/utils/constants'
-import TagPro from 'universal/components/Tag/TagPro'
-import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
-import DropdownMenuLabel from 'universal/components/DropdownMenuLabel'
-import DropdownMenuItemLabel from 'universal/components/DropdownMenuItemLabel'
-import {createFragmentContainer, graphql} from 'react-relay'
 import {NewTeamOrgDropdown_organizations} from '__generated__/NewTeamOrgDropdown_organizations.graphql'
+import React from 'react'
+import {createFragmentContainer, graphql} from 'react-relay'
+import DropdownMenuItemLabel from 'universal/components/DropdownMenuItemLabel'
+import DropdownMenuLabel from 'universal/components/DropdownMenuLabel'
+import Menu from 'universal/components/Menu'
+import MenuItem from 'universal/components/MenuItem'
+import TagPro from 'universal/components/Tag/TagPro'
+import {MenuProps} from 'universal/hooks/useMenu'
+import {PRO} from 'universal/utils/constants'
 
 interface Props {
-  closePortal: () => void
+  menuProps: MenuProps
   defaultActiveIdx: number
   onChange: (orgId: string) => void
   organizations: NewTeamOrgDropdown_organizations
 }
 
 const NewTeamOrgDropdown = (props: Props) => {
-  const {defaultActiveIdx, onChange, organizations, closePortal} = props
+  const {defaultActiveIdx, onChange, organizations, menuProps} = props
   return (
-    <MenuWithShortcuts
+    <Menu
       ariaLabel={'Select the organization the new team belongs to'}
-      closePortal={closePortal}
+      {...menuProps}
       defaultActiveIdx={defaultActiveIdx + 1}
     >
-      <DropdownMenuLabel notMenuItem>Select Organization:</DropdownMenuLabel>
+      <DropdownMenuLabel>Select Organization:</DropdownMenuLabel>
       {organizations.map((anOrg) => {
         return (
-          <MenuItemWithShortcuts
+          <MenuItem
             key={anOrg.id}
             label={
               <DropdownMenuItemLabel>
@@ -40,7 +41,7 @@ const NewTeamOrgDropdown = (props: Props) => {
           />
         )
       })}
-    </MenuWithShortcuts>
+    </Menu>
   )
 }
 

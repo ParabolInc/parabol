@@ -1,12 +1,14 @@
 import React, {ReactElement, useCallback, useEffect, useRef, useState} from 'react'
 import {createPortal} from 'react-dom'
 import requestDoubleAnimationFrame from 'universal/components/RetroReflectPhase/requestDoubleAnimationFrame'
+import hideBodyScroll from 'universal/utils/hideBodyScroll'
 
-export enum PortalState {
-  Entering,
-  Entered,
-  Exiting,
-  Exited
+export const enum PortalStatus {
+  Entering, // node appended to DOM
+  Entered, // 2 animation frames after appended to DOM
+  AnimatedIn,
+  Exiting, // closePortal was called
+  Exited // initial state
 }
 
 export interface UsePortalOptions {
@@ -16,27 +18,34 @@ export interface UsePortalOptions {
 const usePortal = (options: UsePortalOptions) => {
   const portalRef = useRef<HTMLDivElement>()
   const originRef = useRef<HTMLElement>()
-  const [status, setStatus] = useState(PortalState.Exited)
+  const showBodyScroll = useRef<() => void>()
+  const [portalStatus, setPortalStatus] = useState(PortalStatus.Exited)
 
   const terminatePortal = useCallback(() => {
     if (portalRef.current) {
       document.body.removeChild(portalRef.current)
       portalRef.current = undefined
-      options.onClose && options.onClose()
+      showBodyScroll.current && showBodyScroll.current()
     }
   }, [])
 
   // terminate on unmount
   useEffect(() => terminatePortal, [])
 
-  const closePortal = useCallback((_e?: React.MouseEvent | React.TouchEvent) => {
+  const closePortal = useCallback(() => {
     document.removeEventListener('keydown', handleKeydown)
     document.removeEventListener('mousedown', handleDocumentClick)
     document.removeEventListener('touchstart', handleDocumentClick)
     if (portalRef.current) {
-      portalRef.current.addEventListener('transitionend', terminatePortal)
+      portalRef.current.addEventListener('transitionend', (e) => {
+        if (e.propertyName === 'transform') {
+          terminatePortal()
+        }
+      })
     }
-    setStatus(PortalState.Exiting)
+    setPortalStatus(PortalStatus.Exiting)
+    // important! this should be last in case the onClose also tries to close the portal (see EmojiMenu)
+    options.onClose && options.onClose()
   }, [])
 
   const handleKeydown = useCallback((e: KeyboardEvent) => {
@@ -65,33 +74,44 @@ const usePortal = (options: UsePortalOptions) => {
     portalRef.current = document.createElement('div')
     portalRef.current.id = 'portal'
     document.body.appendChild(portalRef.current)
+    showBodyScroll.current = hideBodyScroll()
     document.addEventListener('keydown', handleKeydown)
     document.addEventListener('mousedown', handleDocumentClick)
     document.addEventListener('touchstart', handleDocumentClick)
-    setStatus(PortalState.Entering)
+    setPortalStatus(PortalStatus.Entering)
     if (e && e.currentTarget) {
       originRef.current = e.currentTarget as HTMLElement
     }
     // without rDAF: 1) coords may not be updated (if useCoords is used), 2) `enter` class hasn't had time to flush (if animations are used)
     requestDoubleAnimationFrame(() => {
-      setStatus(PortalState.Entered)
+      setPortalStatus(PortalStatus.Entered)
     })
     options.onOpen && options.onOpen(portalRef.current)
   }, [])
 
-  const togglePortal = useCallback((e: React.MouseEvent | React.TouchEvent) => {
-    portalRef.current ? closePortal(e) : openPortal(e)
+  const togglePortal = useCallback((e?: React.MouseEvent | React.TouchEvent) => {
+    portalRef.current ? closePortal() : openPortal(e)
   }, [])
 
   const portal = useCallback(
     (reactEl: ReactElement) => {
       const targetEl = portalRef.current
-      return !targetEl || status === PortalState.Exited ? null : createPortal(reactEl, targetEl)
+      return !targetEl || portalStatus === PortalStatus.Exited
+        ? null
+        : createPortal(reactEl, targetEl)
     },
-    [status]
+    [portalStatus]
   )
 
-  return {openPortal, closePortal, terminatePortal, togglePortal, portal, status}
+  return {
+    openPortal,
+    closePortal,
+    terminatePortal,
+    togglePortal,
+    portal,
+    portalStatus,
+    setPortalStatus
+  }
 }
 
 export default usePortal

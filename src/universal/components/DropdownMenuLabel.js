@@ -14,5 +14,5 @@ const DropdownMenuLabel = styled('div')(({isEmpty}) => ({
   padding: `0 ${ui.menuGutterHorizontal}`,
   userSelect: 'none'
 }))
-DropdownMenuLabel.notMenuItem = true
+
 export default DropdownMenuLabel

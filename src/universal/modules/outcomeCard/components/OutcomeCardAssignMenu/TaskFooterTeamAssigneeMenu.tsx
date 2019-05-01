@@ -6,16 +6,17 @@ import DropdownMenuLabel from 'universal/components/DropdownMenuLabel'
 import Menu from 'universal/components/Menu'
 import MenuItem from 'universal/components/MenuItem'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
+import {MenuProps} from 'universal/hooks/useMenu'
 import ChangeTaskTeamMutation from 'universal/mutations/ChangeTaskTeamMutation'
 
 interface Props {
-  closePortal: () => void
+  menuProps: MenuProps
   viewer: TaskFooterTeamAssigneeMenu_viewer
   task: TaskFooterTeamAssigneeMenu_task
 }
 
 const TaskFooterTeamAssigneeMenu = (props: Props) => {
-  const {closePortal, task, viewer} = props
+  const {menuProps, task, viewer} = props
   const {team, id: taskId} = task
   const {id: teamId} = team
   const {teams} = viewer
@@ -28,7 +29,7 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
   }
 
   return (
-    <Menu ariaLabel={'Assign this task to another team'} closePortal={closePortal}>
+    <Menu {...menuProps} ariaLabel={'Assign this task to another team'}>
       <DropdownMenuLabel>Move to:</DropdownMenuLabel>
       {assignableTeams.map((team) => {
         return <MenuItem key={team.id} label={team.name} onClick={handleTaskUpdate(team)} />
