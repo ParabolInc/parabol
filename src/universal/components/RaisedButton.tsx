@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {forwardRef} from 'react'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
 import BaseButton, {BaseButtonProps} from 'universal/components/BaseButton'
@@ -19,7 +19,7 @@ export interface RaisedButtonProps extends BaseButtonProps {
   palette?: string
 }
 
-const RaisedButton = (props: RaisedButtonProps) => {
+const RaisedButton = forwardRef((props: RaisedButtonProps, ref: any) => {
   const {children, className, elevationHovered, elevationResting} = props
   return (
     <StyledBaseButton
@@ -27,10 +27,11 @@ const RaisedButton = (props: RaisedButtonProps) => {
       className={className}
       elevationHovered={elevationHovered || 8}
       elevationResting={elevationResting || 2}
+      innerRef={ref}
     >
       {children}
     </StyledBaseButton>
   )
-}
+})
 
 export default RaisedButton

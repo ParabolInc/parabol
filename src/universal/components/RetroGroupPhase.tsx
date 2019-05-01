@@ -8,8 +8,8 @@ import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import BottomNavControl from 'universal/components/BottomNavControl'
 import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
-import GroupHelpMenu from 'universal/components/MeetingHelp/GroupHelpMenu'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
+import MeetingHelpToggle from 'universal/components/MenuHelpToggle'
 import StyledError from 'universal/components/StyledError'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -17,12 +17,12 @@ import withAtmosphere, {
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
 import AutoGroupReflectionsMutation from 'universal/mutations/AutoGroupReflectionsMutation'
 import {VOTE} from 'universal/utils/constants'
+import lazyPreload from 'universal/utils/lazyPreload'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import handleRightArrow from '../utils/handleRightArrow'
 import isDemoRoute from '../utils/isDemoRoute'
 import EndMeetingButton from './EndMeetingButton'
-import DemoGroupHelpMenu from './MeetingHelp/DemoGroupHelpMenu'
 import PhaseItemMasonry from './PhaseItemMasonry'
 import ms from 'ms'
 
@@ -48,6 +48,14 @@ const CenteredControlBlock = styled('div')({
 interface State {
   isReadyToVote: boolean
 }
+
+const GroupHelpMenu = lazyPreload(async () =>
+  import(/* webpackChunkName: 'GroupHelpMenu' */ 'universal/components/MeetingHelp/GroupHelpMenu')
+)
+const DemoGroupHelpMenu = lazyPreload(async () =>
+  import(/* webpackChunkName: 'DemoGroupHelpMenu' */ 'universal/components/MeetingHelp/DemoGroupHelpMenu')
+)
+
 class RetroGroupPhase extends Component<Props, State> {
   state = {
     isReadyToVote: false
@@ -140,11 +148,10 @@ class RetroGroupPhase extends Component<Props, State> {
             <EndMeetingButton meetingId={meetingId} />
           </StyledBottomBar>
         )}
-        {isDemoRoute() ? (
-          <DemoGroupHelpMenu />
-        ) : (
-          <GroupHelpMenu floatAboveBottomBar={isFacilitating} />
-        )}
+        <MeetingHelpToggle
+          floatAboveBottomBar={isFacilitating}
+          menu={isDemoRoute() ? <DemoGroupHelpMenu /> : <GroupHelpMenu />}
+        />
       </React.Fragment>
     )
   }

@@ -145,7 +145,7 @@ const AtlassianProviderRow = (props: Props) => {
     ...mutationProps
   })
   const {sites, status} = useAtlassianSites(accessToken)
-  const {togglePortal, originRef, menuPortal, closePortal} = useMenu(MenuPosition.UPPER_RIGHT)
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   return (
     <ProviderCard>
       <AtlassianProviderLogo />
@@ -184,7 +184,7 @@ const AtlassianProviderRow = (props: Props) => {
           {menuPortal(
             <AtlassianConfigMenu
               mutationProps={mutationProps}
-              closePortal={closePortal}
+              menuProps={menuProps}
               teamId={teamId}
             />
           )}

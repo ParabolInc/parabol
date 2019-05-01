@@ -29,7 +29,6 @@ const AddToGitHubMenuItem = forwardRef((props: Props, ref) => {
   const atmosphere = useAtmosphere()
   return (
     <MenuItem
-      noCloseOnClick
       ref={ref}
       label={
         <MenuItemLabel>

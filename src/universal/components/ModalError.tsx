@@ -1,10 +1,10 @@
-import React from 'react'
+import React, {forwardRef, Ref} from 'react'
 import styled from 'react-emotion'
 import DialogContent from 'universal/components/DialogContent'
 import DialogTitle from 'universal/components/DialogTitle'
-import MenuContents from 'universal/components/MenuContents'
+import MenuContents, {MenuContentsProps} from 'universal/components/MenuContents'
 
-interface Props {
+interface Props extends MenuContentsProps {
   error: Error
 }
 
@@ -17,16 +17,17 @@ const SmallPrint = styled('div')({
   fontSize: 10
 })
 
-const ModalError = (props: Props) => {
+const ModalError = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
+  const {error, ...blockProps} = props
   return (
-    <ErrorBlock>
+    <ErrorBlock {...blockProps} innerRef={ref}>
       <DialogTitle>You found a bug!</DialogTitle>
       <DialogContent>
         {'We’ve alerted the developers. Try refreshing the page'}
-        <SmallPrint>Error: {props.error.message}</SmallPrint>
+        <SmallPrint>Error: {error.message}</SmallPrint>
       </DialogContent>
     </ErrorBlock>
   )
-}
+})
 
 export default ModalError

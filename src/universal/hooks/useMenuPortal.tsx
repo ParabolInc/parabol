@@ -1,14 +1,15 @@
-import React, {ReactElement, ReactPortal, Suspense} from 'react'
+import React, {ReactElement, ReactPortal, Suspense, useEffect} from 'react'
 import styled from 'react-emotion'
 import ErrorBoundary from 'universal/components/ErrorBoundary'
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
+import Menu from 'universal/components/Menu'
 import MenuContents from 'universal/components/MenuContents'
 import ModalError from 'universal/components/ModalError'
-import {UseCoordsValue} from 'universal/hooks/useCoords'
+import MenuBackground from 'universal/hooks/MenuBackground'
+import {MenuPosition, UseCoordsValue} from 'universal/hooks/useCoords'
 import {LoadingDelayRef} from 'universal/hooks/useLoadingDelay'
-import {PortalState} from 'universal/hooks/usePortal'
-import {ZIndex} from 'universal/types/constEnums'
-import menuAnimations from 'universal/utils/menuAnimations'
+import {PortalStatus} from 'universal/hooks/usePortal'
+import {Duration, ZIndex} from 'universal/types/constEnums'
 
 const MenuBlock = styled('div')({
   // no margins or paddings since they could force it too low & cause a scrollbar to appear
@@ -19,23 +20,49 @@ const MenuBlock = styled('div')({
 const useMenuPortal = (
   portal: (el: ReactElement) => ReactPortal | null,
   targetRef: (el: HTMLElement) => void,
-  loadingWidth: number,
+  minWidth: number,
   coords: UseCoordsValue,
-  status: PortalState,
+  portalStatus: PortalStatus,
+  setPortalStatus: any,
+  isDropdown: boolean,
+  menuPosition: MenuPosition,
   loadingDelayRef: LoadingDelayRef
 ) => {
-  const className = menuAnimations[status]
+  useEffect(() => {
+    let isMounted = true
+    if (portalStatus === PortalStatus.Entered) {
+      setTimeout(() => {
+        if (isMounted) {
+          setPortalStatus(PortalStatus.AnimatedIn)
+        }
+      }, Duration.MENU_OPEN_MAX)
+    }
+    return () => {
+      isMounted = false
+    }
+  }, [portalStatus])
   return (reactEl) => {
     return portal(
-      <MenuBlock innerRef={targetRef} style={{...coords}} className={className}>
-        <ErrorBoundary fallback={(error) => <ModalError error={error} />}>
-          <MenuContents>
+      <MenuBlock innerRef={targetRef} style={{...coords}}>
+        <MenuBackground
+          menuPosition={menuPosition}
+          portalStatus={portalStatus}
+          isDropdown={isDropdown}
+        />
+        <ErrorBoundary
+          fallback={(error) => (
+            <Menu ariaLabel='Error' closePortal={undefined as any} portalStatus={portalStatus}>
+              <ModalError error={error} portalStatus={portalStatus} />
+            </Menu>
+          )}
+        >
+          <MenuContents minWidth={minWidth} portalStatus={portalStatus}>
             <Suspense
               fallback={
                 <LoadingComponent
                   loadingDelayRef={loadingDelayRef}
                   spinnerSize={24}
-                  width={loadingWidth}
+                  width={minWidth}
                   height={24}
                   showAfter={0}
                 />

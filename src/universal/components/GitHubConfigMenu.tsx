@@ -1,20 +1,21 @@
 import React from 'react'
-import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
-import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
+import MenuItem from 'universal/components/MenuItem'
+import Menu from 'universal/components/Menu'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
+import {MenuProps} from 'universal/hooks/useMenu'
 import RemoveGitHubAuthMutation from 'universal/mutations/RemoveGitHubAuthMutation'
 import {IntegrationServiceEnum} from 'universal/types/graphql'
 import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
 import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
 
 interface Props {
-  closePortal: () => void
+  menuProps: MenuProps
   mutationProps: MenuMutationProps
   teamId: string
 }
 
 const GitHubConfigMenu = (props: Props) => {
-  const {closePortal, mutationProps, teamId} = props
+  const {menuProps, mutationProps, teamId} = props
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
   const openOAuth = handleOpenOAuth({
@@ -30,10 +31,10 @@ const GitHubConfigMenu = (props: Props) => {
     RemoveGitHubAuthMutation(atmosphere, {teamId}, {onCompleted, onError})
   }
   return (
-    <MenuWithShortcuts ariaLabel={'Configure your GitHub integration'} closePortal={closePortal}>
-      <MenuItemWithShortcuts label='Refresh token' onClick={openOAuth} />
-      <MenuItemWithShortcuts label='Remove GitHub' onClick={removeGitHub} />
-    </MenuWithShortcuts>
+    <Menu ariaLabel={'Configure your GitHub integration'} {...menuProps}>
+      <MenuItem label='Refresh token' onClick={openOAuth} />
+      <MenuItem label='Remove GitHub' onClick={removeGitHub} />
+    </Menu>
   )
 }
 

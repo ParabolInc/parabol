@@ -9,18 +9,18 @@ interface Props {
   waiting?: boolean
 }
 
-const StyledButton = styled(RaisedButton)(({waiting}: {waiting: boolean}) => ({
+const StyledButton = styled(RaisedButton)(({waiting}: {waiting: boolean | undefined}) => ({
   backgroundColor: waiting ? '#ebebeb' : 'white',
   borderRadius: 20,
   color: waiting ? '#8D8D8D' : '#757575',
   height: 40,
   margin: '0 auto',
-  opacity: '1 !important',
+  opacity: 1,
   padding: '0 16px',
   width: 240
 }))
 
-const IconBlock = styled('div')(({waiting}: {waiting: boolean}) => ({
+const IconBlock = styled('div')(({waiting}: {waiting: boolean | undefined}) => ({
   marginRight: 16,
   '& svg': {
     display: 'block',

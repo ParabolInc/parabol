@@ -1,16 +1,47 @@
 import styled from 'react-emotion'
-import {menuShadow} from 'universal/styles/elevation'
+import {PortalStatus} from 'universal/hooks/usePortal'
+import {DECELERATE} from 'universal/styles/animation'
+import {Duration} from 'universal/types/constEnums'
 
-const MenuContents = styled('div')({
-  backgroundColor: '#fff',
+const animations = (portalStatus) => {
+  switch (portalStatus) {
+    case PortalStatus.Entering:
+      return {
+        opacity: 0
+      }
+    case PortalStatus.Entered:
+    case PortalStatus.AnimatedIn:
+      return {
+        opacity: 1,
+        transition: `opacity ${Duration.MENU_OPEN}ms ${DECELERATE}`
+      }
+    case PortalStatus.Exiting:
+      return {
+        opacity: 0,
+        transition: `opacity ${Duration.PORTAL_CLOSE} ${DECELERATE}`
+      }
+    default:
+      return {}
+  }
+}
+
+export interface MenuContentsProps {
+  minWidth?: number
+  portalStatus: PortalStatus
+}
+
+const MenuContents = styled('div')(({minWidth, portalStatus}: MenuContentsProps) => ({
   borderRadius: '2px',
-  boxShadow: menuShadow,
   outline: 0,
-  overflowY: 'auto',
+  overflowY: portalStatus >= PortalStatus.AnimatedIn ? 'auto' : 'hidden',
   paddingBottom: 8,
   paddingTop: 8,
   textAlign: 'left',
-  width: '100%'
-})
+  width: '100%',
+  opacity: 0,
+  transition: `opacity 100ms ${DECELERATE} `,
+  minWidth,
+  ...animations(portalStatus)
+}))
 
 export default MenuContents

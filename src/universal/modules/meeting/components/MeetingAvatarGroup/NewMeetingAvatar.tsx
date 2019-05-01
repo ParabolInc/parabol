@@ -2,32 +2,22 @@ import {NewMeetingAvatar_newMeeting} from '__generated__/NewMeetingAvatar_newMee
 import {NewMeetingAvatar_teamMember} from '__generated__/NewMeetingAvatar_teamMember.graphql'
 import React from 'react'
 import styled from 'react-emotion'
-import {connect} from 'react-redux'
 import {createFragmentContainer, graphql} from 'react-relay'
 import VideoAvatar from 'universal/components/Avatar/VideoAvatar'
-import LoadableMenu from 'universal/components/LoadableMenu'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
-import LoadableNewMeetingAvatarMenu from 'universal/modules/meeting/components/LoadableNewMeetingAvatarMenu'
+import {MenuPosition} from 'universal/hooks/useCoords'
+import useMenu from 'universal/hooks/useMenu'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import {NewMeetingTeamMemberStage} from 'universal/types/graphql'
 import {CHECKIN, UPDATES} from 'universal/utils/constants'
+import lazyPreload from 'universal/utils/lazyPreload'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
 import ErrorBoundary from '../../../../components/ErrorBoundary'
 import {StreamUI} from '../../../../hooks/useSwarm'
 import MediaSwarm from '../../../../utils/swarm/MediaSwarm'
-
-const originAnchor = {
-  vertical: 'bottom',
-  horizontal: 'right'
-}
-
-const targetAnchor = {
-  vertical: 'top',
-  horizontal: 'right'
-}
 
 const borderActive = ui.palette.yellow
 const borderLocal = appTheme.palette.mid30l
@@ -109,8 +99,13 @@ interface Props extends WithAtmosphereProps {
   newMeeting: NewMeetingAvatar_newMeeting | null
   teamMember: NewMeetingAvatar_teamMember
   streamUI: StreamUI | undefined
-  swarm: MediaSwarm
+  swarm: MediaSwarm | null
 }
+
+const NewMeetingAvatarMenu = lazyPreload(() =>
+  import(/* webpackChunkName: 'NewMeetingAvatarMenu' */
+  'universal/modules/meeting/components/NewMeetingAvatarMenu')
+)
 
 const NewMeetingAvatar = (props: Props) => {
   const {gotoStage, isFacilitatorStage, newMeeting, teamMember, streamUI, swarm} = props
@@ -121,6 +116,7 @@ const NewMeetingAvatar = (props: Props) => {
   const {teamMemberId, userId} = teamMember
   const avatarIsFacilitating = userId === facilitatorUserId
   const handleNavigate = canNavigate ? gotoStage : undefined
+  const {togglePortal, menuProps, menuPortal, originRef} = useMenu(MenuPosition.UPPER_RIGHT)
   return (
     <ErrorBoundary>
       <Item>
@@ -133,28 +129,31 @@ const NewMeetingAvatar = (props: Props) => {
           }
           isFacilitatorStage={!!isFacilitatorStage}
         >
-          <LoadableMenu
-            LoadableComponent={LoadableNewMeetingAvatarMenu}
-            maxWidth={400}
-            maxHeight={225}
-            originAnchor={originAnchor}
-            queryVars={{
-              handleNavigate,
-              newMeeting,
-              teamMember
-            }}
-            targetAnchor={targetAnchor}
-            toggle={<VideoAvatar teamMember={teamMember} streamUI={streamUI} swarm={swarm} />}
+          <VideoAvatar
+            ref={originRef}
+            teamMember={teamMember}
+            streamUI={streamUI}
+            swarm={swarm}
+            onClick={togglePortal}
+            onMouseEnter={NewMeetingAvatarMenu.preload}
           />
         </AvatarBlock>
         {avatarIsFacilitating && <FacilitatorTag>{'Facilitator'}</FacilitatorTag>}
       </Item>
+      {menuPortal(
+        <NewMeetingAvatarMenu
+          handleNavigate={handleNavigate}
+          newMeeting={newMeeting!}
+          teamMember={teamMember}
+          menuProps={menuProps}
+        />
+      )}
     </ErrorBoundary>
   )
 }
 
 export default createFragmentContainer(
-  (connect as any)()(withAtmosphere(NewMeetingAvatar)),
+  withAtmosphere(NewMeetingAvatar),
   graphql`
     fragment NewMeetingAvatar_teamMember on TeamMember {
       teamMemberId: id

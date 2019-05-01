@@ -131,7 +131,7 @@ class AddSlackChannel extends Component<Props, State> {
             dropdownText={channelName}
             handleItemClick={this.updateDropdownItem}
             options={options}
-            isLoaded={isLoaded}
+            isLoaded={!!isLoaded}
           />
           <Error>{error && (error as any).message}</Error>
         </DropdownAndError>

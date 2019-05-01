@@ -1,83 +1,68 @@
 import {RetroTemplatePicker_settings} from '__generated__/RetroTemplatePicker_settings.graphql'
-import memoize from 'micro-memoize'
-import React, {Component} from 'react'
+import React, {useMemo} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import LoadableDropdownMenuToggle from 'universal/components/LoadableDropdownMenuToggle'
-import LoadableFreeModal from 'universal/components/LoadableFreeModal'
-import LoadableReflectTemplateModal from './LoadableReflectTemplateModal'
-import LoadableRetroTemplateListMenu from './LoadableRetroTemplateListMenu'
+import DropdownMenuToggle from 'universal/components/DropdownMenuToggle'
+import {MenuPosition} from 'universal/hooks/useCoords'
+import useMenu from 'universal/hooks/useMenu'
+import useModal from 'universal/hooks/useModal'
+import lazyPreload from 'universal/utils/lazyPreload'
 
 interface Props {
   settings: RetroTemplatePicker_settings
 }
 
-interface State {
-  isModalOpen: boolean
-}
+const RetroTemplateListMenu = lazyPreload(() =>
+  import(/* webpackChunkName: 'RetroTemplateListMenu' */
+  'universal/modules/meeting/components/RetroTemplateListMenu')
+)
 
-class RetroTemplatePicker extends Component<Props, State> {
-  state = {
-    isModalOpen: false
-  }
+const ReflectTemplateModal = lazyPreload(() =>
+  import(/* webpackChunkName: 'ReflectTemplateModal' */
+  'universal/modules/meeting/components/ReflectTemplateModal')
+)
 
-  customize = () => {
-    this.setState({
-      isModalOpen: true
-    })
-  }
-
-  closeModal = () => {
-    this.setState({
-      isModalOpen: false
-    })
-  }
-
-  sortedTemplates = memoize(
-    (reflectTemplates: RetroTemplatePicker_settings['reflectTemplates']) => {
-      const templates = reflectTemplates.slice()
-      templates.sort((a, b) => (a.lastUsedAt < b.lastUsedAt ? -1 : a.name < b.name ? -1 : 1))
-      return templates
-    }
+const RetroTemplatePicker = (props: Props) => {
+  const {settings} = props
+  const {selectedTemplateId, reflectTemplates} = settings
+  const templates = useMemo(() => {
+    const templates = reflectTemplates.slice()
+    templates.sort((a, b) => (a.lastUsedAt < b.lastUsedAt ? -1 : a.name < b.name ? -1 : 1))
+    return templates
+  }, [reflectTemplates])
+  const selectedTemplateIdx = templates.findIndex((template) => template.id === selectedTemplateId)
+  const selectedTemplate = templates[selectedTemplateIdx]
+  const {menuPortal, togglePortal, menuProps, originRef} = useMenu(MenuPosition.UPPER_RIGHT, {
+    isDropdown: true
+  })
+  const {togglePortal: toggleModal, modalPortal} = useModal()
+  return (
+    <>
+      <DropdownMenuToggle
+        defaultText={selectedTemplate.name}
+        onMouseEnter={RetroTemplateListMenu.preload}
+        onClick={togglePortal}
+        ref={originRef}
+      />
+      {menuPortal(
+        <RetroTemplateListMenu
+          menuProps={menuProps}
+          defaultActiveIdx={selectedTemplateIdx}
+          retroMeetingSettings={settings}
+          templates={templates}
+          toggleModal={toggleModal}
+        />
+      )}
+      {modalPortal(<ReflectTemplateModal retroMeetingSettings={settings} />)}
+    </>
   )
-
-  render () {
-    const {isModalOpen} = this.state
-    const {settings} = this.props
-    const {selectedTemplateId, reflectTemplates} = settings
-    const templates = this.sortedTemplates(reflectTemplates)
-    const selectedTemplateIdx = templates.findIndex(
-      (template) => template.id === selectedTemplateId
-    )
-    const selectedTemplate = templates[selectedTemplateIdx]
-    return (
-      <React.Fragment>
-        <LoadableDropdownMenuToggle
-          defaultText={selectedTemplate.name}
-          LoadableComponent={LoadableRetroTemplateListMenu}
-          queryVars={{
-            customize: this.customize,
-            defaultActiveIdx: selectedTemplateIdx,
-            templates,
-            retroMeetingSettings: settings
-          }}
-        />
-        <LoadableFreeModal
-          LoadableComponent={LoadableReflectTemplateModal}
-          queryVars={{retroMeetingSettings: settings}}
-          isModalOpen={isModalOpen}
-          closeModal={this.closeModal}
-        />
-      </React.Fragment>
-    )
-  }
 }
 
 export default createFragmentContainer(
   RetroTemplatePicker,
   graphql`
     fragment RetroTemplatePicker_settings on RetrospectiveMeetingSettings {
-      ...RetroTemplateListMenu_retroMeetingSettings
       ...ReflectTemplateModal_retroMeetingSettings
+      ...RetroTemplateListMenu_retroMeetingSettings
       selectedTemplateId
       reflectTemplates {
         id

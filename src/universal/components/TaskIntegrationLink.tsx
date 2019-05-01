@@ -43,7 +43,6 @@ const TaskIntegrationLink = (props: Props) => {
     )
   } else if (service === TaskServiceEnum.github) {
     const {nameWithOwner, issueNumber} = integration
-    console.log('taskint', integration)
     const href =
       nameWithOwner === 'ParabolInc/ParabolDemo'
         ? 'https://github.com/ParabolInc/action'

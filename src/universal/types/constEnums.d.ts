@@ -18,6 +18,13 @@ export const enum MeetingTypes {
   RETROSPECTIVE = 'retrospective'
 }
 
+export const enum Duration {
+  MENU_OPEN = 150,
+  MENU_OPEN_MAX = 188,
+  MODAL_OPEN = 200,
+  PORTAL_CLOSE = 120
+}
+
 export const enum Providers {
   ATLASSIAN_NAME = 'Atlassian',
   ATLASSIAN_DESC = 'Create Jira issues from Parabol',

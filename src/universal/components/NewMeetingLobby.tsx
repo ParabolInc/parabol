@@ -4,7 +4,7 @@ import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
-import RetroLobbyHelpMenu from 'universal/components/MeetingHelp/RetroLobbyHelpMenu'
+import MeetingHelpToggle from 'universal/components/MenuHelpToggle'
 import PrimaryButton from 'universal/components/PrimaryButton'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -16,6 +16,7 @@ import StartNewMeetingMutation from 'universal/mutations/StartNewMeetingMutation
 import {minWidthMediaQueries} from 'universal/styles/breakpoints'
 import {meetingSplashGutter} from 'universal/styles/meeting'
 import {MeetingTypeEnum} from 'universal/types/graphql'
+import lazyPreload from 'universal/utils/lazyPreload'
 import makeHref from 'universal/utils/makeHref'
 import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
@@ -104,6 +105,10 @@ const TemplatePickerBlock = styled('div')({
   width: '20rem'
 })
 
+const RetroLobbyHelpMenu = lazyPreload(() =>
+  import(/* webpackChunkName: 'RetroLobbyHelpMenu' */ 'universal/components/MeetingHelp/RetroLobbyHelpMenu')
+)
+
 class NewMeetingLobby extends React.Component<Props> {
   render () {
     const {
@@ -153,7 +158,7 @@ class NewMeetingLobby extends React.Component<Props> {
         <UrlBlock>
           <CopyShortLink url={makeHref(`/${meetingSlug}/${teamId}`)} />
         </UrlBlock>
-        <RetroLobbyHelpMenu />
+        <MeetingHelpToggle menu={<RetroLobbyHelpMenu />} />
       </Lobby>
     )
   }

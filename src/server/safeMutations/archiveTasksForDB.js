@@ -2,9 +2,8 @@ import {convertFromRaw, convertToRaw} from 'draft-js'
 import getRethink from 'server/database/rethinkDriver'
 import addTagToTask from 'universal/utils/draftjs/addTagToTask'
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap'
-import {primeStandardLoader} from 'server/utils/RethinkDataLoader'
 
-const archiveTasksForDB = async (tasks, dataLoader) => {
+const archiveTasksForDB = async (tasks) => {
   if (!tasks || tasks.length === 0) return []
   const r = getRethink()
   const tasksToArchive = tasks.map((task) => {
@@ -34,9 +33,6 @@ const archiveTasksForDB = async (tasks, dataLoader) => {
     })('changes')('new_val')
     .default([])
 
-  if (dataLoader) {
-    primeStandardLoader(dataLoader.get('tasks'), updatedTasks)
-  }
   return updatedTasks
 }
 

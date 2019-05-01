@@ -1,43 +1,36 @@
 import React, {forwardRef, ReactNode, useEffect, useImperativeHandle, useRef} from 'react'
 import styled from 'react-emotion'
 import MenuItemLabel from 'universal/components/MenuItemLabel'
-import ui from 'universal/styles/ui'
-
-declare global {
-  interface Element {
-    scrollIntoViewIfNeeded: () => void
-  }
-}
-
-const MenuItemStyle = styled('div')(({isActive}: {isActive: boolean}) => ({
-  alignItems: 'center',
-  backgroundColor: isActive ? ui.menuItemBackgroundColorActive : ui.menuBackgroundColor,
-  color: isActive ? ui.menuItemColorHoverActive : ui.menuItemColor,
-  cursor: 'pointer',
-  display: 'flex',
-  transition: `background-color ${ui.transition[0]}`,
-  '&:hover,:focus': {
-    backgroundColor: isActive ? ui.menuItemBackgroundColorActive : ui.menuItemBackgroundColorHover,
-    color: ui.menuItemColorHoverActive,
-    outline: 0
-  }
-}))
+import {PALETTE} from 'universal/styles/paletteV2'
 
 export interface MenuItemProps {
+  isActive: boolean
   activate: () => void
   closePortal: () => void
-  isActive: boolean
 }
 
 interface Props {
   label: ReactNode
   onClick?: (e: React.MouseEvent) => void
+  onMouseEnter?: (e: React.MouseEvent) => void
   noCloseOnClick?: boolean
 }
 
+const MenuItemStyles = styled('div')(({isActive}: {isActive: boolean}) => ({
+  alignItems: 'center',
+  backgroundColor: isActive ? PALETTE.BACKGROUND.MAIN : undefined,
+  color: PALETTE.TEXT.MAIN,
+  cursor: 'pointer',
+  display: 'flex',
+  '&:hover,:focus': {
+    backgroundColor: isActive ? PALETTE.BACKGROUND.MAIN : PALETTE.BACKGROUND.LIGHTEST,
+    outline: 0
+  }
+}))
+
 const MenuItem = forwardRef((props: Props, ref: any) => {
-  const {label, noCloseOnClick, onClick} = props
-  const itemRef = useRef<HTMLDivElement>()
+  const {label, noCloseOnClick, onMouseEnter, onClick} = props
+  const itemRef = useRef<HTMLDivElement>(null)
   // we're doing something a little hacky here, overloading a callback ref with some props so we don't need to pass them explicitly
   const {activate, closePortal, isActive} = ref as MenuItemProps
 
@@ -63,9 +56,15 @@ const MenuItem = forwardRef((props: Props, ref: any) => {
   }))
 
   return (
-    <MenuItemStyle isActive={isActive} role='menuitem' innerRef={itemRef} onClick={handleClick}>
+    <MenuItemStyles
+      role='menuitem'
+      innerRef={itemRef}
+      isActive={isActive}
+      onClick={handleClick}
+      onMouseEnter={onMouseEnter}
+    >
       {typeof label === 'string' ? <MenuItemLabel>{label}</MenuItemLabel> : label}
-    </MenuItemStyle>
+    </MenuItemStyles>
   )
 })
 

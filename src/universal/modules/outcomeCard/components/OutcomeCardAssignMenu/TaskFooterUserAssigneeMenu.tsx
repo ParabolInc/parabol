@@ -8,18 +8,19 @@ import MenuAvatar from 'universal/components/MenuAvatar'
 import MenuItem from 'universal/components/MenuItem'
 import MenuItemLabel from 'universal/components/MenuItemLabel'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
+import {MenuProps} from 'universal/hooks/useMenu'
 import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation'
 import avatarUser from 'universal/styles/theme/images/avatar-user.svg'
 
 interface Props {
   area: string
-  closePortal: () => void
+  menuProps: MenuProps
   viewer: TaskFooterUserAssigneeMenu_viewer
   task: TaskFooterUserAssigneeMenu_task
 }
 
 const TaskFooterUserAssigneeMenu = (props: Props) => {
-  const {area, closePortal, task, viewer} = props
+  const {area, menuProps, task, viewer} = props
   const {assignee, id: taskId} = task
   const {id: assigneeId} = assignee
   const {team} = viewer
@@ -38,7 +39,7 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
   }
 
   return (
-    <Menu ariaLabel={'Assign this task to a teammate'} closePortal={closePortal}>
+    <Menu ariaLabel={'Assign this task to a teammate'} {...menuProps}>
       <DropdownMenuLabel>Assign to:</DropdownMenuLabel>
       {assignees.map((assignee) => {
         return (

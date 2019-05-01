@@ -4,8 +4,8 @@ import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import BottomNavControl from 'universal/components/BottomNavControl'
 import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
-import ReflectHelpMenu from 'universal/components/MeetingHelp/ReflectHelpMenu'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
+import MeetingHelpToggle from 'universal/components/MenuHelpToggle'
 import PhaseItemColumn from 'universal/components/RetroReflectPhase/PhaseItemColumn'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -13,12 +13,12 @@ import withAtmosphere, {
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
 import {GROUP} from 'universal/utils/constants'
 import handleRightArrow from 'universal/utils/handleRightArrow'
+import lazyPreload from 'universal/utils/lazyPreload'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import {REFLECTION_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
 import Overflow from 'universal/components/Overflow'
 import isDemoRoute from 'universal/utils/isDemoRoute'
 import EndMeetingButton from '../EndMeetingButton'
-import DemoReflectHelpMenu from '../MeetingHelp/DemoReflectHelpMenu'
 import ms from 'ms'
 
 const minWidth = REFLECTION_WIDTH + 32
@@ -52,6 +52,13 @@ interface Props extends WithAtmosphereProps {
 interface State {
   minTimeComplete: boolean
 }
+
+const ReflectHelpMenu = lazyPreload(async () =>
+  import(/* webpackChunkName: 'ReflectHelpMenu' */ 'universal/components/MeetingHelp/ReflectHelpMenu')
+)
+const DemoReflectHelpMenu = lazyPreload(async () =>
+  import(/* webpackChunkName: 'DemoReflectHelpMenu' */ 'universal/components/MeetingHelp/DemoReflectHelpMenu')
+)
 
 class RetroReflectPhase extends Component<Props, State> {
   phaseRef = React.createRef<HTMLDivElement>()
@@ -124,11 +131,10 @@ class RetroReflectPhase extends Component<Props, State> {
             <EndMeetingButton meetingId={meetingId} />
           </StyledBottomBar>
         )}
-        {isDemoRoute() ? (
-          <DemoReflectHelpMenu />
-        ) : (
-          <ReflectHelpMenu floatAboveBottomBar={isFacilitating} />
-        )}
+        <MeetingHelpToggle
+          floatAboveBottomBar={isFacilitating}
+          menu={isDemoRoute() ? <DemoReflectHelpMenu /> : <ReflectHelpMenu />}
+        />
       </React.Fragment>
     )
   }

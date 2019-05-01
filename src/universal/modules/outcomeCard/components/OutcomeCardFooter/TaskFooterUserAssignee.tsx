@@ -84,7 +84,7 @@ const TaskFooterUserAssigneeMenuRoot = lazyPreload(() =>
 const TaskFooterUserAssignee = (props: Props) => {
   const {area, canAssign, cardIsActive, task, toggleMenuState} = props
   const {assignee} = task
-  const {togglePortal, originRef, menuPortal, closePortal} = useMenu(MenuPosition.UPPER_LEFT, {
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT, {
     onOpen: toggleMenuState,
     onClose: toggleMenuState
   })
@@ -101,9 +101,7 @@ const TaskFooterUserAssignee = (props: Props) => {
         </Avatar>
         <AvatarLabel>{assignee.preferredName}</AvatarLabel>
       </AvatarButton>
-      {menuPortal(
-        <TaskFooterUserAssigneeMenuRoot closePortal={closePortal} task={task} area={area} />
-      )}
+      {menuPortal(<TaskFooterUserAssigneeMenuRoot menuProps={menuProps} task={task} area={area} />)}
     </>
   )
 }

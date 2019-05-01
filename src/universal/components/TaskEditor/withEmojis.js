@@ -1,22 +1,10 @@
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import getWordAt from 'universal/components/TaskEditor/getWordAt'
-import ui from 'universal/styles/ui'
 import getDraftCoords from 'universal/utils/getDraftCoords'
 import getAnchorLocation from './getAnchorLocation'
-import LoadableDraftJSModal from 'universal/components/LoadableDraftJSModal'
-import LoadableEmojiMenu from 'universal/components/LoadableEmojiMenu'
 import {autoCompleteEmoji} from 'universal/utils/draftjs/completeEnitity'
-
-const originAnchor = {
-  vertical: 'top',
-  horizontal: 'left'
-}
-
-const targetAnchor = {
-  vertical: 'top',
-  horizontal: 'left'
-}
+import EmojiMenuContainer from 'universal/components/TaskEditor/EmojiMenuContainer'
 
 const withEmojis = (ComposedComponent) => {
   class WithEmojis extends Component {
@@ -95,28 +83,15 @@ const withEmojis = (ComposedComponent) => {
 
     renderModal = () => {
       const {query} = this.state
-      const {editorRef, editorState} = this.props
-      const coords = getDraftCoords(editorRef)
-      this.cachedCoords = coords || this.cachedCoords
-      if (!this.cachedCoords) {
-        return null
-      }
+      const {editorState} = this.props
+      this.cachedCoords = getDraftCoords() || this.cachedCoords
       return (
-        <LoadableDraftJSModal
-          isOpen={this.state.isOpen}
-          closePortal={this.removeModal}
-          LoadableComponent={LoadableEmojiMenu}
-          maxWidth={500}
-          maxHeight={200}
-          originAnchor={originAnchor}
-          queryVars={{
-            menuItemClickFactory: this.menuItemClickFactory,
-            query,
-            menuRef: this.menuRef,
-            editorState
-          }}
-          targetAnchor={targetAnchor}
-          marginFromOrigin={ui.draftModalMargin}
+        <EmojiMenuContainer
+          removeModal={this.removeModal}
+          menuItemClickFactory={this.menuItemClickFactory}
+          query={query}
+          menuRef={this.menuRef}
+          editorState={editorState}
           originCoords={this.cachedCoords}
         />
       )
