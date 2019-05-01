@@ -6405,6 +6405,7 @@ export interface ISetOrgUserRoleRemovedPayload {
 export type TaskSubscriptionPayload =
   | IChangeTaskTeamPayload
   | ICreateGitHubIssuePayload
+  | ICreateJiraIssuePayload
   | ICreateTaskPayload
   | IDeleteTaskPayload
   | IEditTaskPayload

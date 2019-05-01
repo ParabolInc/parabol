@@ -9,10 +9,12 @@ import UpdateTaskPayload from 'server/graphql/types/UpdateTaskPayload'
 import RemoveTeamMemberPayload from 'server/graphql/types/RemoveTeamMemberPayload'
 import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload'
 import UpdateTaskDueDatePayload from 'server/graphql/types/UpdateTaskDueDatePayload'
+import CreateJiraIssuePayload from 'server/graphql/types/CreateJiraIssuePayload'
 
 const types = [
   ChangeTaskTeamPayload,
   CreateGitHubIssuePayload,
+  CreateJiraIssuePayload,
   CreateTaskPayload,
   DeleteTaskPayload,
   EditTaskPayload,
