@@ -117,7 +117,7 @@ class AuthenticationPage extends Component<Props, State> {
             displayName={isCreate ? SIGNIN_LABEL : CREATE_ACCOUNT_LABEL}
           />
           <GoogleOAuthButtonBlock
-            label={isCreate ? 'Sign up using Google' : 'Sign in using Google'}
+            label={isCreate ? 'Sign up with Google' : 'Sign in with Google'}
             onClick={this.onOAuth}
             isError={!!error}
             submitting={!!submitting}

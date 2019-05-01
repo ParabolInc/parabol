@@ -68,13 +68,13 @@ class TeamInvitationGoogleSignin extends Component<Props> {
         <Helmet title={`Sign in with Google | Team Invitation`} />
         <DialogTitle>Welcome back, {preferredName}!</DialogTitle>
         <DialogContent>
-          <InvitationDialogCopy>You last signed in using Google. </InvitationDialogCopy>
+          <InvitationDialogCopy>You last signed in with Google. </InvitationDialogCopy>
           <InvitationDialogCopy>
             Tap below for immediate access to your team: <TeamName>{teamName}</TeamName>
           </InvitationDialogCopy>
           <InvitationCenteredCopy>
             <GoogleOAuthButtonBlock
-              label='Sign in using Google'
+              label='Sign in with Google'
               onClick={this.onOAuth}
               isError={!!error}
               submitting={!!submitting}
