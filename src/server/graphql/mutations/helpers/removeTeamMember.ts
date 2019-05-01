@@ -137,7 +137,7 @@ const removeTeamMember = async (
     })
   }
 
-  const archivedTasks = await archiveTasksForDB(integratedTasksToArchive, dataLoader)
+  const archivedTasks = await archiveTasksForDB(integratedTasksToArchive)
   const archivedTaskIds = archivedTasks.map(({id}) => id)
 
   // if a new meeting was currently running, remove them from it

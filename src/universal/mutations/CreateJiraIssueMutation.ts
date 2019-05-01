@@ -75,10 +75,13 @@ const CreateJiraIssueMutation = (
           service: TaskServiceEnum.jira
         }
         const id = makeSuggestedIntegrationId(nextItem)
-        const latestIntegration = createProxyRecord(store, 'SuggestedIntegrationJira', {
-          id,
-          ...nextItem
-        })
+        // the fallback is likely never used
+        const latestIntegration =
+          store.get(id) ||
+          createProxyRecord(store, 'SuggestedIntegrationJira', {
+            id,
+            ...nextItem
+          })
         const nextSuggestedIntegrations = [latestIntegration, ...items].slice(0, hasMore ? 3 : 1)
         suggestedIntegrations.setLinkedRecords(nextSuggestedIntegrations, 'items')
         suggestedIntegrations.setValue(true, 'hasMore')

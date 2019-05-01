@@ -184,7 +184,7 @@ export default {
         .coerceTo('array')
     })
 
-    const archivedTasks = await archiveTasksForDB(tasksToArchive, dataLoader)
+    const archivedTasks = await archiveTasksForDB(tasksToArchive)
     const {meetingNumber} = completedMeeting
     const userIds = completedMeeting.invitees
       .filter((invitee) => invitee.present)
