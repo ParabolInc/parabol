@@ -96,7 +96,6 @@ const GitHubProviderRow = (props: Props) => {
     teamId
   })
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
-  if (!githubAuth) return null
   return (
     <ProviderCard>
       <GitHubProviderLogo />
@@ -113,7 +112,7 @@ const GitHubProviderRow = (props: Props) => {
       )}
       {accessToken && (
         <ListAndMenu>
-          <GitHubLogin title={githubAuth.login}>
+          <GitHubLogin title={githubAuth!.login}>
             <GitHubSVG />
           </GitHubLogin>
           <MenuButton onClick={togglePortal} innerRef={originRef}>

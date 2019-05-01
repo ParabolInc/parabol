@@ -85,6 +85,8 @@ const lowerLookup = {
   [MenuPosition.UPPER_RIGHT]: MenuPosition.LOWER_RIGHT
 }
 
+const MENU_PADDING = 4
+
 const getNextCoords = (targetBBox: BBox, originBBox: BBox, preferredMenuPosition: MenuPosition) => {
   const {height: modalHeight, width: modalWidth} = targetBBox
   const {height: originHeight, width: originWidth, left: originLeft, top: originTop} = originBBox
@@ -112,7 +114,7 @@ const getNextCoords = (targetBBox: BBox, originBBox: BBox, preferredMenuPosition
     const top = scrollY + originTop + originTopOffset - targetTopOffset
     const isBelow = top + modalHeight < innerHeight + scrollY
     if (isBelow) {
-      nextCoords.top = top
+      nextCoords.top = top + MENU_PADDING
     }
   }
   const menuPosition =
@@ -121,7 +123,7 @@ const getNextCoords = (targetBBox: BBox, originBBox: BBox, preferredMenuPosition
   if (nextCoords.top === undefined) {
     const bottom = innerHeight - originTop - scrollY
     const maxBottom = innerHeight - modalHeight + scrollY
-    nextCoords.bottom = Math.min(bottom, maxBottom)
+    nextCoords.bottom = Math.min(bottom, maxBottom) + MENU_PADDING
   }
   return {coords: nextCoords as UseCoordsValue, menuPosition}
 }
