@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, {Component, Ref} from 'react'
 import styled from 'react-emotion'
 import {RouteComponentProps, withRouter} from 'react-router'
 import ErrorAlert from 'universal/components/ErrorAlert/ErrorAlert'
@@ -28,6 +28,7 @@ interface Props
   isPrimary?: boolean
   isSignin?: boolean
   existingAccount?: boolean
+  fieldsRef?: Ref<any>
 }
 
 const FieldGroup = styled('div')({

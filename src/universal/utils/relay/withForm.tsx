@@ -129,6 +129,10 @@ const withForm = (fields: FieldInputDict) => <P extends WithFormProps>(
       const {fields} = this.state
       // https://github.com/Microsoft/TypeScript/issues/10727
       const {forwardedRef, ...props} = this.props as any
+      const fieldsRef = (this.props as any).fieldsRef
+      if (fieldsRef) {
+        fieldsRef.current = fields
+      }
       return (
         <ComposedComponent
           setDirtyField={this.setDirty}

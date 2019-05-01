@@ -4,9 +4,7 @@ import styled from 'react-emotion'
 import {RouteComponentProps, withRouter} from 'react-router'
 import AuthHeader from 'universal/components/AuthHeader/AuthHeader'
 import AuthPage from 'universal/components/AuthPage/AuthPage'
-import EmailPasswordAuthForm, {
-  EmailPasswordAuthFormBase
-} from 'universal/components/EmailPasswordAuthForm'
+import EmailPasswordAuthForm from 'universal/components/EmailPasswordAuthForm'
 import HorizontalSeparator from 'universal/components/HorizontalSeparator/HorizontalSeparator'
 import PlainButton from 'universal/components/PlainButton/PlainButton'
 import autoLogin from 'universal/decorators/autoLogin'
@@ -93,11 +91,11 @@ class AuthenticationPage extends Component<Props, State> {
     LoginMutation(atmosphere, {auth0Token: idToken, segmentId}, {history})
   }
 
-  authFormRef = React.createRef<EmailPasswordAuthFormBase>()
+  authFormRef = React.createRef<any>()
 
   onForgot = () => {
     const {history} = this.props
-    const email = this.authFormRef.current && this.authFormRef.current.props.fields.email.value
+    const email = this.authFormRef.current && this.authFormRef.current.email.value
     history.push(`/reset-password?email=${email}`)
   }
 
@@ -127,7 +125,7 @@ class AuthenticationPage extends Component<Props, State> {
           <EmailPasswordAuthForm
             email=''
             isSignin={!isCreate}
-            ref={this.authFormRef}
+            fieldsRef={this.authFormRef}
             existingAccount={existingAccount === 'email'}
           />
           {isCreate ? (
