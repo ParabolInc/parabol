@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v3.9.0 2019-May-01
+
+### Added
+* Fallback editor for Android
+
+### Fixed
+* Forgot password link
+
+### Changed
+* Use Google colors for OAuth2 Button
+* Menus across entire app
+
 ## v3.8.2 2019-Apr-29
 
 ### Fixed
