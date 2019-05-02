@@ -9,10 +9,15 @@ graphql`
       message
     }
     team {
+      ...RetroMeetingTeam @relay(mask: false)
       id
       meetingId
       newMeeting {
-        ...CompleteNewMeetingFrag @relay(mask: false)
+        phases {
+          stages {
+            id
+          }
+        }
       }
     }
   }

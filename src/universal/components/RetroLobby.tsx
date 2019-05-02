@@ -158,7 +158,7 @@ const RetroLobby = (props: Props) => {
 export default createFragmentContainer(
   withMutationProps(RetroLobby),
   graphql`
-    fragment RetroLobby_team on Team {
+    fragment RetroLobby_team on Team @argumentDefinitions(meetingType: {type: "MeetingTypeEnum!"}) {
       teamId: id
       teamName: name
       meetingSettings(meetingType: $meetingType) {

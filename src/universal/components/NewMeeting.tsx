@@ -14,7 +14,7 @@ import RejoinFacilitatorButton from 'universal/modules/meeting/components/Rejoin
 import {minWidthMediaQueries} from 'universal/styles/breakpoints'
 import {meetingSidebarMediaQuery, meetingSidebarWidth} from 'universal/styles/meeting'
 import ui from 'universal/styles/ui'
-import {MeetingTypeEnum} from 'universal/types/graphql'
+import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
 import UNSTARTED_MEETING from '../utils/meetings/unstartedMeeting'
 
 const MeetingContainer = styled('div')({
@@ -70,6 +70,7 @@ interface Props {
   children: ReactNode
   gotoStageId: (stageId: string) => void
   meetingType: MeetingTypeEnum
+  phaseTypes: ReadonlyArray<NewMeetingPhaseTypeEnum>
   viewer: NewMeeting_viewer
 }
 
@@ -78,7 +79,7 @@ export interface NewMeetingTypeProps {
 }
 
 const NewMeeting = (props: Props) => {
-  const {children, gotoStageId, meetingType, viewer} = props
+  const {children, gotoStageId, meetingType, phaseTypes, viewer} = props
   const {featureFlags} = viewer
   const {video: allowVideo} = featureFlags
   const team = viewer.team!
@@ -92,6 +93,7 @@ const NewMeeting = (props: Props) => {
         gotoStageId={gotoStageId}
         meetingType={meetingType}
         isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
+        phaseTypes={phaseTypes}
         toggleSidebar={toggleSidebar}
         viewer={viewer}
       />

@@ -12,7 +12,7 @@ import {
   meetingSidebarWidth
 } from 'universal/styles/meeting'
 import {PALETTE} from 'universal/styles/paletteV2'
-import {MeetingTypeEnum} from 'universal/types/graphql'
+import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
 
 interface SidebarStyleProps {
   isMeetingSidebarCollapsed: boolean
@@ -61,12 +61,20 @@ interface Props {
   gotoStageId: (stageId: string) => void
   isMeetingSidebarCollapsed: boolean
   meetingType: MeetingTypeEnum
+  phaseTypes: ReadonlyArray<NewMeetingPhaseTypeEnum>
   toggleSidebar: () => void
   viewer: MeetingSidebarLayout_viewer
 }
 
 const MeetingSidebarLayout = (props: Props) => {
-  const {gotoStageId, isMeetingSidebarCollapsed, meetingType, toggleSidebar, viewer} = props
+  const {
+    gotoStageId,
+    isMeetingSidebarCollapsed,
+    meetingType,
+    phaseTypes,
+    toggleSidebar,
+    viewer
+  } = props
   const {team} = viewer
   if (!team) return null
   const atmosphere = useAtmosphere()
@@ -87,6 +95,7 @@ const MeetingSidebarLayout = (props: Props) => {
         <NewMeetingSidebar
           gotoStageId={gotoStageId}
           meetingType={meetingType}
+          phaseTypes={phaseTypes}
           toggleSidebar={toggleSidebar}
           viewer={viewer}
         />

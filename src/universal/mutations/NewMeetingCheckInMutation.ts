@@ -1,4 +1,8 @@
-import {commitMutation} from 'react-relay'
+import {NewMeetingCheckInMutation} from '__generated__/NewMeetingCheckInMutation.graphql'
+import {commitMutation, graphql} from 'react-relay'
+import Atmosphere from 'universal/Atmosphere'
+import {INewMeetingCheckInOnMutationArguments} from 'universal/types/graphql'
+import {LocalHandlers} from 'universal/types/relayMutations'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 
 graphql`
@@ -25,14 +29,19 @@ const mutation = graphql`
   }
 `
 
-const NewMeetingCheckInMutation = (environment, variables, onError, onCompleted) => {
-  return commitMutation(environment, {
+const NewMeetingCheckInMutation = (
+  atmosphere: Atmosphere,
+  variables: INewMeetingCheckInOnMutationArguments,
+  {onError, onCompleted}: LocalHandlers = {}
+) => {
+  return commitMutation<NewMeetingCheckInMutation>(atmosphere, {
     mutation,
     variables,
     optimisticUpdater: (store) => {
       const {meetingId, userId, isCheckedIn} = variables
       const meetingMemberId = toTeamMemberId(meetingId, userId)
-      store.get(meetingMemberId).setValue(isCheckedIn, 'isCheckedIn')
+      const meetingMember = store.get(meetingMemberId)!
+      meetingMember.setValue(isCheckedIn, 'isCheckedIn')
     },
     onCompleted,
     onError

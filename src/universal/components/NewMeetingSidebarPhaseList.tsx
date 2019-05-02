@@ -7,6 +7,7 @@ import NewMeetingSidebarPhaseListItemChildren from 'universal/components/NewMeet
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
 import {AGENDA_ITEMS, DISCUSS, LOBBY} from 'universal/utils/constants'
 import findStageById from 'universal/utils/meetings/findStageById'
 import {phaseTypeToPhaseGroup} from 'universal/utils/meetings/lookups'
@@ -21,6 +22,7 @@ const NavList = styled('ul')({
 
 interface Props extends WithAtmosphereProps {
   gotoStageId: (stageId: string) => void
+  phaseTypes: ReadonlyArray<NewMeetingPhaseTypeEnum>
   viewer: NewMeetingSidebarPhaseList_viewer
 }
 
@@ -38,12 +40,9 @@ const getItemStage = (name: string, phases: NewMeeting['phases'], facilitatorSta
 }
 
 const NewMeetingSidebarPhaseList = (props: Props) => {
-  const {gotoStageId, viewer} = props
+  const {gotoStageId, phaseTypes, viewer} = props
   const {viewerId, team} = viewer
-  const {
-    meetingSettings: {phaseTypes},
-    newMeeting
-  } = team!
+  const {newMeeting} = team!
   const meeting = newMeeting || UNSTARTED_MEETING
   const {facilitatorUserId, facilitatorStageId, localPhase, phases} = meeting
   const localGroup = phaseTypeToPhaseGroup[localPhase && localPhase.phaseType]
@@ -106,9 +105,6 @@ export default createFragmentContainer(
       team(teamId: $teamId) {
         isMeetingSidebarCollapsed
         id
-        meetingSettings(meetingType: $meetingType) {
-          phaseTypes
-        }
         newMeeting {
           meetingId: id
           facilitatorUserId

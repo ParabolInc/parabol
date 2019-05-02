@@ -139,10 +139,10 @@ const useUpdatedSafeRoute = (
     const newMeeting = team && team.newMeeting
     const {current: oldMeeting} = oldMeetingRef
     if (newMeeting === oldMeeting) return
-    const localStageId = (newMeeting && newMeeting.localStage && newMeeting.localStage.id) || ''
+    const localStageId = (newMeeting && newMeeting.localStage && newMeeting.localStage.id) || null
     const oldLocalStageId = oldMeeting && oldMeeting.localStage && oldMeeting.localStage.id
     oldMeetingRef.current = newMeeting
-    if (localStageId !== oldLocalStageId) {
+    if (localStageId && localStageId !== oldLocalStageId) {
       const meetingPath = getMeetingPathParams()
       const {meetingSlug, teamId} = meetingPath
       if (!meetingSlug || !teamId) {

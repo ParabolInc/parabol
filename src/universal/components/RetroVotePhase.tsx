@@ -204,7 +204,8 @@ const RetroVotePhase = (props: Props) => {
 export default createFragmentContainer(
   withAtmosphere(RetroVotePhase),
   graphql`
-    fragment RetroVotePhase_team on Team {
+    fragment RetroVotePhase_team on Team
+      @argumentDefinitions(meetingType: {type: "MeetingTypeEnum!"}) {
       meetingSettings(meetingType: $meetingType) {
         ... on RetrospectiveMeetingSettings {
           totalVotes

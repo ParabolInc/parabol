@@ -17,7 +17,7 @@ import {cacheConfig} from 'universal/utils/constants'
 import renderQuery from '../../utils/relay/renderQuery'
 
 const query = graphql`
-  query RetroRootQuery($teamId: ID!, $meetingType: MeetingTypeEnum!) {
+  query RetroRootQuery($teamId: ID!) {
     viewer {
       ...RetroMeeting_viewer
     }

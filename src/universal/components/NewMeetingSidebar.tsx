@@ -13,6 +13,7 @@ import SidebarToggle from 'universal/components/SidebarToggle'
 import {meetingSidebarWidth} from 'universal/styles/meeting'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
+import {NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
 import isDemoRoute from '../utils/isDemoRoute'
 
@@ -54,12 +55,13 @@ const TeamDashboardLink = styled(Link)({
 interface Props {
   gotoStageId: (stageId: string) => void
   meetingType: MeetingTypeEnum
+  phaseTypes: ReadonlyArray<NewMeetingPhaseTypeEnum>
   toggleSidebar: () => void
   viewer: NewMeetingSidebar_viewer
 }
 
 const NewMeetingSidebar = (props: Props) => {
-  const {gotoStageId, meetingType, toggleSidebar, viewer} = props
+  const {gotoStageId, meetingType, phaseTypes, toggleSidebar, viewer} = props
   const {team} = viewer
   const {teamId, teamName} = team!
   const meetingLabel = meetingTypeToLabel[meetingType]
@@ -74,7 +76,11 @@ const NewMeetingSidebar = (props: Props) => {
         <LabelHeading>{`${meetingLabel} Meeting`}</LabelHeading>
       </MeetingSidebarLabelBlock>
       <ScrollableBlock>
-        <NewMeetingSidebarPhaseList gotoStageId={gotoStageId} viewer={viewer} />
+        <NewMeetingSidebarPhaseList
+          gotoStageId={gotoStageId}
+          phaseTypes={phaseTypes}
+          viewer={viewer}
+        />
       </ScrollableBlock>
       <LogoBlock variant='primary' />
     </SidebarParent>

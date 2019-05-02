@@ -48,7 +48,8 @@ const RetroMeeting = (props: Props) => {
   const {handleGotoNext, gotoStageId, safeRoute} = useMeeting(MeetingTypeEnum.retrospective, team)
   const atmosphere = useAtmosphere()
   if (!team || !safeRoute) return null
-  const {id: teamId, newMeeting} = team
+  const {id: teamId, meetingSettings, newMeeting} = team
+  const {phaseTypes} = meetingSettings
   const {localPhase} = newMeeting || UNSTARTED_MEETING
   const localPhaseType = (localPhase && localPhase.phaseType) || NewMeetingPhaseTypeEnum.lobby
   const isDemoStageComplete =
@@ -61,6 +62,7 @@ const RetroMeeting = (props: Props) => {
       viewer={viewer}
       gotoStageId={gotoStageId}
       meetingType={MeetingTypeEnum.retrospective}
+      phaseTypes={phaseTypes as ReadonlyArray<NewMeetingPhaseTypeEnum>}
     >
       <Phase
         handleGotoNext={handleGotoNext}
@@ -88,6 +90,36 @@ graphql`
     isNavigableByFacilitator
   }
 `
+graphql`
+  fragment RetroMeetingTeam on Team {
+    ...RetroLobby_team @arguments(meetingType: retrospective)
+    ...NewMeetingCheckIn_team
+    ...RetroReflectPhase_team
+    ...RetroGroupPhase_team
+    ...RetroVotePhase_team @arguments(meetingType: retrospective)
+    ...RetroDiscussPhase_team
+    meetingSettings(meetingType: retrospective) {
+      phaseTypes
+    }
+    id
+    name
+    meetingId
+    newMeeting {
+      id
+      facilitatorStageId
+      facilitatorUserId
+      localPhase {
+        ...RetroMeetingLocalPhase @relay(mask: false)
+      }
+      localStage {
+        ...RetroMeetingLocalStage @relay(mask: false)
+      }
+      phases {
+        ...RetroMeetingLocalPhase @relay(mask: false)
+      }
+    }
+  }
+`
 
 export default createFragmentContainer(
   RetroMeeting,
@@ -95,29 +127,7 @@ export default createFragmentContainer(
     fragment RetroMeeting_viewer on User {
       ...NewMeeting_viewer
       team(teamId: $teamId) {
-        ...RetroLobby_team
-        ...NewMeetingCheckIn_team
-        ...RetroReflectPhase_team
-        ...RetroGroupPhase_team
-        ...RetroVotePhase_team
-        ...RetroDiscussPhase_team
-        id
-        name
-        meetingId
-        newMeeting {
-          id
-          facilitatorStageId
-          facilitatorUserId
-          localPhase {
-            ...RetroMeetingLocalPhase @relay(mask: false)
-          }
-          localStage {
-            ...RetroMeetingLocalStage @relay(mask: false)
-          }
-          phases {
-            ...RetroMeetingLocalPhase @relay(mask: false)
-          }
-        }
+        ...RetroMeetingTeam @relay(mask: false)
       }
     }
   `

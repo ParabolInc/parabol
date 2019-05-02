@@ -71,8 +71,7 @@ class ReflectionGroupVoting extends Component<Props> {
       NewMeetingCheckInMutation(
         atmosphere,
         {meetingId, userId, isCheckedIn: true},
-        onError,
-        sendVote
+        {onError, onCompleted: sendVote}
       )
     } else {
       sendVote()

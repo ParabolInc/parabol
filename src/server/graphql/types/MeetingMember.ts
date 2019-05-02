@@ -16,23 +16,23 @@ export const meetingMemberFields = () => ({
     description: 'true if present, false if absent, else null'
   },
   meetingId: {
-    type: GraphQLID
+    type: new GraphQLNonNull(GraphQLID)
   },
   meetingType: {
     type: new GraphQLNonNull(MeetingTypeEnum)
   },
   teamId: {
-    type: GraphQLID
+    type: new GraphQLNonNull(GraphQLID)
   },
   user: {
-    type: User,
+    type: new GraphQLNonNull(User),
     resolve: resolveUser
   },
   userId: {
-    type: GraphQLID
+    type: new GraphQLNonNull(GraphQLID)
   },
   updatedAt: {
-    type: GraphQLISO8601Type,
+    type: new GraphQLNonNull(GraphQLISO8601Type),
     description: 'The last time a meeting was updated (stage completed, finished, etc)'
   }
 })

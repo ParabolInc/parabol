@@ -1415,16 +1415,16 @@ export interface IMeetingMember {
    * true if present, false if absent, else null
    */
   isCheckedIn: boolean | null
-  meetingId: string | null
+  meetingId: string
   meetingType: MeetingTypeEnum
-  teamId: string | null
-  user: IUser | null
-  userId: string | null
+  teamId: string
+  user: IUser
+  userId: string
 
   /**
    * The last time a meeting was updated (stage completed, finished, etc)
    */
-  updatedAt: any | null
+  updatedAt: any
 }
 
 export type NewMeetingPhase = IReflectPhase | ICheckInPhase | IDiscussPhase | IGenericMeetingPhase
@@ -4426,16 +4426,16 @@ export interface IRetrospectiveMeetingMember {
    * true if present, false if absent, else null
    */
   isCheckedIn: boolean | null
-  meetingId: string | null
+  meetingId: string
   meetingType: MeetingTypeEnum
-  teamId: string | null
-  user: IUser | null
-  userId: string | null
+  teamId: string
+  user: IUser
+  userId: string
 
   /**
    * The last time a meeting was updated (stage completed, finished, etc)
    */
-  updatedAt: any | null
+  updatedAt: any
 
   /**
    * The tasks assigned to members during the meeting
