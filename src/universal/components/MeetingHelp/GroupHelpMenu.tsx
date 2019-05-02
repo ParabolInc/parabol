@@ -1,4 +1,6 @@
 import React, {forwardRef} from 'react'
+import useSegmentTrack from 'universal/hooks/useSegmentTrack'
+import {NewMeetingPhaseTypeEnum, SegmentClientEventEnum} from 'universal/types/graphql'
 import {GROUP} from 'universal/utils/constants'
 import HelpMenuContent from 'universal/components/MeetingHelp/HelpMenuContent'
 import HelpMenuHeader from 'universal/components/MeetingHelp/HelpMenuHeader'
@@ -10,6 +12,7 @@ interface Props {}
 
 const GroupHelpMenu = forwardRef((_props: Props, ref: any) => {
   const {closePortal} = ref
+  useSegmentTrack(SegmentClientEventEnum.HelpMenuOpen, {phase: NewMeetingPhaseTypeEnum.group})
   return (
     <HelpMenuContent closePortal={closePortal}>
       <HelpMenuHeader>{phaseLabelLookup[GROUP]}</HelpMenuHeader>

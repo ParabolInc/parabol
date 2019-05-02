@@ -1300,6 +1300,7 @@ export interface ITeamMeetingSettings {
  * The phase of the meeting
  */
 export const enum NewMeetingPhaseTypeEnum {
+  lobby = 'lobby',
   checkin = 'checkin',
   updates = 'updates',
   firstcall = 'firstcall',
@@ -3721,7 +3722,7 @@ export interface IRequestFacilitatorOnMutationArguments {
 }
 
 export interface ISegmentEventTrackOnMutationArguments {
-  event: string
+  event: SegmentClientEventEnum
   options?: ISegmentEventTrackOptions | null
 }
 
@@ -5790,14 +5791,19 @@ export interface IRequestFacilitatorPayload {
   requestor: ITeamMember | null
 }
 
+/**
+ * The client event to report to segment
+ */
+export const enum SegmentClientEventEnum {
+  UserLogout = 'UserLogout',
+  UserLogin = 'UserLogin',
+  HelpMenuOpen = 'HelpMenuOpen'
+}
+
 export interface ISegmentEventTrackOptions {
   teamId?: string | null
   orgId?: string | null
-
-  /**
-   * Used during the welcome wizard step 3
-   */
-  inviteeCount?: number | null
+  phase?: NewMeetingPhaseTypeEnum | null
 }
 
 export interface ISelectRetroTemplatePayload {

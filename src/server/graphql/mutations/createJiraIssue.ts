@@ -10,6 +10,7 @@ import publish from 'server/utils/publish'
 import standardError from 'server/utils/standardError'
 import {ICreateJiraIssueOnMutationArguments} from 'universal/types/graphql'
 import {TASK} from 'universal/utils/constants'
+import sendSegmentEvent from 'server/utils/sendSegmentEvent'
 
 export default {
   name: 'CreateJiraIssue',
@@ -44,7 +45,7 @@ export default {
     if (!task) {
       return standardError(new Error('Task not found'), {userId: viewerId})
     }
-    const {content: rawContentStr, teamId, userId} = task
+    const {content: rawContentStr, teamId, userId, meetingId} = task
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
@@ -157,6 +158,7 @@ export default {
     teamMembers.forEach(({userId}) => {
       publish(TASK, userId, CreateJiraIssuePayload, data, subOptions)
     })
+    sendSegmentEvent('Published Task to Jira', viewerId, {teamId, meetingId}).catch()
     return data
   }
 }

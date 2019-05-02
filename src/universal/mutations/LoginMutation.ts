@@ -2,6 +2,7 @@ import {LoginMutation, LoginMutationVariables} from '__generated__/LoginMutation
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import SendClientSegmentEventMutation from 'universal/mutations/SendClientSegmentEventMutation'
+import {SegmentClientEventEnum} from 'universal/types/graphql'
 import getGraphQLError from 'universal/utils/relay/getGraphQLError'
 import {Omit} from 'types/generics'
 import {LocalHandlers} from '../types/relayMutations'
@@ -58,7 +59,7 @@ const LoginMutation = (
       const {acceptTeamInvitation, login} = res
       const authToken = acceptTeamInvitation.authToken || login.authToken
       atmosphere.setAuthToken(authToken)
-      SendClientSegmentEventMutation(atmosphere, 'User Login')
+      SendClientSegmentEventMutation(atmosphere, SegmentClientEventEnum.UserLogin)
 
       if (!history) return
       const {team} = acceptTeamInvitation

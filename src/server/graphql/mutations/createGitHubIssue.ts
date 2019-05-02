@@ -7,6 +7,7 @@ import CreateGitHubIssuePayload from 'server/graphql/types/CreateGitHubIssuePayl
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import GitHubManager from 'server/utils/GitHubManager'
 import publish from 'server/utils/publish'
+import sendSegmentEvent from 'server/utils/sendSegmentEvent'
 import standardError from 'server/utils/standardError'
 import {ICreateGitHubIssueOnMutationArguments} from 'universal/types/graphql'
 import {GITHUB, TASK} from 'universal/utils/constants'
@@ -60,7 +61,7 @@ export default {
     }
 
     // RESOLUTION
-    const {userId, content: rawContentStr} = task
+    const {userId, content: rawContentStr, meetingId} = task
     const providers = await r
       .table('Provider')
       .getAll(teamId, {index: 'teamId'})
@@ -144,6 +145,7 @@ export default {
     teamMembers.forEach(({userId}) => {
       publish(TASK, userId, CreateGitHubIssuePayload, data, subOptions)
     })
+    sendSegmentEvent('Published Task to GitHub', viewerId, {teamId, meetingId}).catch()
     return data
   }
 }

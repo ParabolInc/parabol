@@ -2,11 +2,14 @@ import React, {forwardRef} from 'react'
 import HelpMenuContent from 'universal/components/MeetingHelp/HelpMenuContent'
 import HelpMenuCopy from 'universal/components/MeetingHelp/HelpMenuCopy'
 import HelpMenuLink from 'universal/components/MeetingHelp/HelpMenuLink'
+import useSegmentTrack from 'universal/hooks/useSegmentTrack'
+import {NewMeetingPhaseTypeEnum, SegmentClientEventEnum} from 'universal/types/graphql'
 
 interface Props {}
 
 const RetroLobbyHelpMenu = forwardRef((_props: Props, ref: any) => {
   const {closePortal} = ref
+  useSegmentTrack(SegmentClientEventEnum.HelpMenuOpen, {phase: NewMeetingPhaseTypeEnum.lobby})
   return (
     <HelpMenuContent closePortal={closePortal}>
       <HelpMenuCopy>

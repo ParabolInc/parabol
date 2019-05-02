@@ -1,12 +1,20 @@
 import getRethink from 'server/database/rethinkDriver'
-import segmentIo from 'server/utils/segmentIo'
-import resolvePromiseObj from 'universal/utils/resolvePromiseObj'
 import countTiersForUserId from 'server/graphql/queries/helpers/countTiersForUserId'
+import segmentIo from 'server/utils/segmentIo'
+import {ISegmentEventTrackOptions, TierEnum} from 'universal/types/graphql'
+import resolvePromiseObj from 'universal/utils/resolvePromiseObj'
 import {ENTERPRISE, PERSONAL, PRO} from '../../universal/utils/constants'
 
 const PERSONAL_TIER_MAX_TEAMS = 2
 
-const getHubspotTraits = (userIds) => {
+interface HubspotTraits {
+  solesOpOrgCount: number
+  salesOpMeetingCount: number
+  isAnyBillingLeader: boolean
+  highestTier: TierEnum
+}
+
+const getHubspotTraits = (userIds: string[]) => {
   const r = getRethink()
   // # of orgs the user is on where teams is >= 3
   return r(userIds).map((userId) => ({
@@ -59,10 +67,19 @@ const getHubspotTraits = (userIds) => {
           r.branch(tiers.contains(PRO), PRO, PERSONAL)
         )
       })
-  }))
+  })) as Promise<HubspotTraits[]>
 }
 
-const getTraits = (userIds) => {
+interface Traits {
+  avatar: string
+  createdAt: Date
+  email: string
+  id: string
+  name: string
+  parabolId: string
+}
+
+const getTraits = (userIds: string[]) => {
   const r = getRethink()
   return r
     .table('User')
@@ -74,7 +91,7 @@ const getTraits = (userIds) => {
       id: r.row('id').default(''),
       name: r.row('preferredName').default(''),
       parabolId: r.row('id').default('') // passed as a distinct trait name for HubSpot
-    })
+    }) as Promise<Traits[]>
 }
 
 const getOrgId = (teamId) => {
@@ -94,7 +111,7 @@ export const sendSegmentIdentify = async (maybeUserIds) => {
   const [traitsArr, hubspotTraitsArr] = await Promise.all([
     getTraits(userIds),
     getHubspotTraits(userIds)
-  ]).catch(console.error)
+  ])
   traitsArr.forEach(async (traitsWithId, idx) => {
     const {id: userId, ...traits} = traitsWithId
     const tiersCountTraits = await countTiersForUserId(userId)
@@ -109,7 +126,15 @@ export const sendSegmentIdentify = async (maybeUserIds) => {
   })
 }
 
-const sendSegmentEvent = async (event, maybeUserIds, options = {}) => {
+interface Options extends ISegmentEventTrackOptions {
+  [key: string]: any
+}
+
+const sendSegmentEvent = async (
+  event: string,
+  maybeUserIds: string | string[],
+  options: Options = {}
+) => {
   const userIds = Array.isArray(maybeUserIds) ? maybeUserIds : [maybeUserIds]
   const {traitsArr, orgId} = await getSegmentProps(userIds, options.teamId)
   traitsArr.forEach((traitsWithId) => {

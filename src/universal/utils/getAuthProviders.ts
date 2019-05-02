@@ -1,5 +1,5 @@
-import {graphql} from 'react-relay'
-import {getRequest} from 'relay-runtime'
+import {getAuthProvidersQuery} from '__generated__/getAuthProvidersQuery.graphql'
+import {fetchQuery, graphql} from 'react-relay'
 import Atmosphere from 'universal/Atmosphere'
 
 const query = graphql`
@@ -9,10 +9,8 @@ const query = graphql`
 `
 
 const getAuthProviders = async (atmosphere: Atmosphere, email: string) => {
-  const network = atmosphere.getNetwork()
-  const observable = network.execute(getRequest(query).params, {email}, {force: true}, undefined)
-  const res = await observable.toPromise()
-  return (res && res.data && res.data.authProviders) || []
+  const res = await fetchQuery<getAuthProvidersQuery>(atmosphere, query, {email})
+  return (res && res.authProviders) || []
 }
 
 export default getAuthProviders
