@@ -12,7 +12,7 @@ const getNextFacilitatorStage = (
 ) => {
   const facilitatorOnStage = facilitatorStageId === teamMemberStageId
   if (!facilitatorOnStage) {
-    const {stage} = findStageById(phases, facilitatorStageId)
+    const {stage} = findStageById(phases, facilitatorStageId)!
     return stage
   }
   // get the next stage. if this is the last stage, get the previous one

@@ -9,6 +9,7 @@ import Icon from 'universal/components/Icon'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import MeetingHelpToggle from 'universal/components/MenuHelpToggle'
 import Overflow from 'universal/components/Overflow'
+import {RetroMeetingPhaseProps} from 'universal/components/RetroMeeting'
 import EditorHelpModalContainer from 'universal/containers/EditorHelpModalContainer/EditorHelpModalContainer'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -26,10 +27,7 @@ import handleRightArrow from '../utils/handleRightArrow'
 import isDemoRoute from '../utils/isDemoRoute'
 import EndMeetingButton from './EndMeetingButton'
 
-interface Props extends WithAtmosphereProps {
-  gotoNext: () => void
-  gotoNextRef: React.RefObject<HTMLDivElement>
-  isDemoStageComplete: boolean
+interface Props extends WithAtmosphereProps, RetroMeetingPhaseProps {
   team: RetroDiscussPhase_team
 }
 
@@ -134,10 +132,12 @@ const DemoDiscussHelpMenu = lazyPreload(async () =>
 )
 
 const RetroDiscussPhase = (props: Props) => {
-  const {atmosphere, gotoNext, gotoNextRef, team, isDemoStageComplete} = props
+  const {atmosphere, handleGotoNext, team, isDemoStageComplete} = props
   const {viewerId} = atmosphere
   const {newMeeting, teamId} = team
   if (!newMeeting) return null
+  const {current} = handleGotoNext
+  const {gotoNext, ref: gotoNextRef} = current
   const {
     facilitatorUserId,
     localStage: {localStageId, reflectionGroup},
@@ -200,9 +200,9 @@ const RetroDiscussPhase = (props: Props) => {
             <React.Fragment>
               <BottomNavControl
                 isBouncing={isDemoStageComplete}
-                onClick={gotoNext}
+                onClick={() => gotoNext()}
                 innerRef={gotoNextRef}
-                onKeyDown={handleRightArrow(gotoNext)}
+                onKeyDown={handleRightArrow(() => gotoNext())}
               >
                 <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={'Next Topic'} />
               </BottomNavControl>

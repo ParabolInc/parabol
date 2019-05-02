@@ -16,6 +16,10 @@ import ui from 'universal/styles/ui'
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
 import isDemoRoute from '../utils/isDemoRoute'
 
+export const enum MEETING_SIDEBAR {
+  BREAKPOINT = 800
+}
+
 const SidebarHeader = styled('div')({
   alignItems: 'center',
   display: 'flex',

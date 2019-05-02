@@ -141,6 +141,7 @@ const useUpdatedSafeRoute = (
     if (newMeeting === oldMeeting) return
     const localStageId = (newMeeting && newMeeting.localStage && newMeeting.localStage.id) || ''
     const oldLocalStageId = oldMeeting && oldMeeting.localStage && oldMeeting.localStage.id
+    oldMeetingRef.current = newMeeting
     if (localStageId !== oldLocalStageId) {
       const meetingPath = getMeetingPathParams()
       const {meetingSlug, teamId} = meetingPath

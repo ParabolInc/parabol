@@ -1,8 +1,9 @@
-// @flow
+import {FindStageByIdPhase} from 'universal/utils/meetings/findStageById'
 
-// import type {NewMeetingPhase} from 'universal/types/schema.flow';
-
-const findStageAfterId = (phases: $ReadOnlyArray<Object>, stageId: string) => {
+const findStageAfterId = <T extends FindStageByIdPhase>(
+  phases: ReadonlyArray<T> | null | undefined,
+  stageId: string
+) => {
   if (!phases) return undefined
   let stageFound = false
   for (let ii = 0; ii < phases.length; ii++) {
@@ -10,7 +11,7 @@ const findStageAfterId = (phases: $ReadOnlyArray<Object>, stageId: string) => {
     const {stages} = phase
     for (let jj = 0; jj < stages.length; jj++) {
       const stage = stages[jj]
-      if (stageFound === true) {
+      if (stageFound) {
         return {phase, stage}
       }
       if (stage.id === stageId) {

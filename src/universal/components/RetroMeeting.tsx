@@ -2,7 +2,7 @@ import {RetroMeeting_viewer} from '__generated__/RetroMeeting_viewer.graphql'
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {ValueOf} from 'types/generics'
-import NewMeeting from 'universal/components/NewMeeting'
+import NewMeeting, {NewMeetingTypeProps} from 'universal/components/NewMeeting'
 import useMeeting from 'universal/hooks/newMeeting'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import {demoTeamId} from 'universal/modules/demo/initDB'
@@ -38,13 +38,14 @@ const phaseLookup = {
 
 type PhaseComponent = ValueOf<typeof phaseLookup>
 
+export interface RetroMeetingPhaseProps extends NewMeetingTypeProps {
+  isDemoStageComplete: boolean
+}
+
 const RetroMeeting = (props: Props) => {
   const {viewer} = props
   const {team} = viewer
-  const {gotoNext, gotoNextRef, gotoStageId, safeRoute} = useMeeting(
-    MeetingTypeEnum.retrospective,
-    team
-  )
+  const {handleGotoNext, gotoStageId, safeRoute} = useMeeting(MeetingTypeEnum.retrospective, team)
   const atmosphere = useAtmosphere()
   if (!team || !safeRoute) return null
   const {id: teamId, newMeeting} = team
@@ -62,8 +63,7 @@ const RetroMeeting = (props: Props) => {
       meetingType={MeetingTypeEnum.retrospective}
     >
       <Phase
-        gotoNext={gotoNext}
-        gotoNextRef={gotoNextRef}
+        handleGotoNext={handleGotoNext}
         team={team}
         isDemoStageComplete={isDemoStageComplete}
       />

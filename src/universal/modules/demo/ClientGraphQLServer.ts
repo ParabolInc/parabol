@@ -400,7 +400,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       let runBot = false
       if (completedStageId) {
         const completedStageRes = findStageById(phases, completedStageId)
-        const {stage} = completedStageRes
+        const {stage} = completedStageRes!
         if (!stage.isComplete) {
           runBot = true
           stage.isComplete = true
@@ -426,14 +426,14 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       if (facilitatorStageId) {
         const facilitatorStageRes = findStageById(phases, facilitatorStageId)
-        const {stage: facilitatorStage} = facilitatorStageRes
+        const {stage: facilitatorStage} = facilitatorStageRes!
         startStage_(facilitatorStage)
 
         // mutative! sets isNavigable and isNavigableByFacilitator
         unlockedStageIds = unlockNextStages(facilitatorStageId, phases, meetingId)
       }
 
-      const oldFacilitatorStageId = this.db.newMeeting.facilitatorStageId
+      const oldFacilitatorStageId = this.db.newMeeting.facilitatorStageId!
       Object.assign(this.db.newMeeting, {
         facilitatorStageId,
         updatedAt: new Date().toJSON()
@@ -444,11 +444,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         meetingId,
         meeting: this.db.newMeeting,
         oldFacilitatorStageId,
-        oldFacilitatorStage: findStageById(phases, oldFacilitatorStageId).stage,
+        oldFacilitatorStage: findStageById(phases, oldFacilitatorStageId)!.stage,
         facilitatorStageId,
-        facilitatorStage: findStageById(phases, facilitatorStageId).stage,
+        facilitatorStage: findStageById(phases, facilitatorStageId)!.stage,
         unlockedStageIds,
-        unlockedStages: unlockedStageIds.map((stageId) => findStageById(phases, stageId).stage),
+        unlockedStages: unlockedStageIds.map((stageId) => findStageById(phases, stageId)!.stage),
         phaseComplete: phaseCompleteData,
         __typename: 'NavigateMeetingMutation'
       }
@@ -821,7 +821,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         reflectionGroup,
         unlockedStageIds,
         unlockedStages: unlockedStageIds
-          ? unlockedStageIds.map((stageId) => findStageById(phases, stageId).stage)
+          ? unlockedStageIds.map((stageId) => findStageById(phases, stageId)!.stage)
           : []
       }
       if (userId !== demoViewerId) {

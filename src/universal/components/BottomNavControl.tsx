@@ -1,7 +1,5 @@
-import React, {ReactNode} from 'react'
 import styled, {keyframes} from 'react-emotion'
 import FlatButton, {FlatButtonProps} from 'universal/components/FlatButton'
-import withInnerRef from 'universal/decorators/withInnerRef'
 
 const BounceKeyframes = keyframes`
   from, 10%, 26%, 40%, 50%, to {
@@ -22,7 +20,11 @@ const BounceKeyframes = keyframes`
   }
 `
 
-const StyledFlatButton = styled(FlatButton)(({isBouncing}: {isBouncing: boolean}) => ({
+interface Props extends FlatButtonProps {
+  isBouncing?: boolean
+}
+
+const BottomNavControl = styled(FlatButton)(({isBouncing}: Props) => ({
   animation: isBouncing ? `${BounceKeyframes} 2s infinite` : undefined,
   border: 0,
   borderRadius: 0,
@@ -32,19 +34,4 @@ const StyledFlatButton = styled(FlatButton)(({isBouncing}: {isBouncing: boolean}
   transformOrigin: 'center bottom'
 }))
 
-interface Props extends FlatButtonProps {
-  children?: ReactNode
-  disabled: boolean
-  isBouncing: boolean
-}
-
-const BottomNavControl = (props: Props) => {
-  const {children, disabled, isBouncing} = props
-  return (
-    <StyledFlatButton {...props} disabled={disabled} isBouncing={isBouncing}>
-      {children}
-    </StyledFlatButton>
-  )
-}
-
-export default (withInnerRef as any)(BottomNavControl)
+export default BottomNavControl

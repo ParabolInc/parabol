@@ -7,6 +7,7 @@ import {createFragmentContainer, graphql} from 'react-relay'
 import ErrorBoundary from 'universal/components/ErrorBoundary'
 import MeetingSidebarLayout from 'universal/components/MeetingSidebarLayout'
 import NewMeetingPhaseHeading from 'universal/components/NewMeetingPhaseHeading/NewMeetingPhaseHeading'
+import {useGotoNext} from 'universal/hooks/newMeeting'
 import useMeetingWrapper from 'universal/hooks/useMeetingWrapper'
 import NewMeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import RejoinFacilitatorButton from 'universal/modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton'
@@ -70,6 +71,10 @@ interface Props {
   gotoStageId: (stageId: string) => void
   meetingType: MeetingTypeEnum
   viewer: NewMeeting_viewer
+}
+
+export interface NewMeetingTypeProps {
+  handleGotoNext: ReturnType<typeof useGotoNext>
 }
 
 const NewMeeting = (props: Props) => {

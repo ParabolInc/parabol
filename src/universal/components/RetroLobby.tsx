@@ -5,6 +5,7 @@ import {createFragmentContainer, graphql} from 'react-relay'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import MeetingHelpToggle from 'universal/components/MenuHelpToggle'
 import PrimaryButton from 'universal/components/PrimaryButton'
+import {RetroMeetingPhaseProps} from 'universal/components/RetroMeeting'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useRouter from 'universal/hooks/useRouter'
 import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink'
@@ -85,7 +86,7 @@ const UrlBlock = styled('div')({
   verticalAlign: 'middle'
 })
 
-interface Props extends WithMutationProps {
+interface Props extends WithMutationProps, RetroMeetingPhaseProps {
   team: RetroLobby_team
 }
 

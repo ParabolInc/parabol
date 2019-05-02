@@ -1,9 +1,9 @@
-interface Stage {
+export interface FindStageByIdStage {
   id: string
 }
 
 export interface FindStageByIdPhase {
-  stages: ReadonlyArray<Stage>
+  stages: ReadonlyArray<FindStageByIdStage>
 }
 
 const findStageById = <T extends FindStageByIdPhase>(
@@ -15,7 +15,7 @@ const findStageById = <T extends FindStageByIdPhase>(
     const phase = phases[ii]
     const {stages} = phase
     for (let jj = 0; jj < stages.length; jj++) {
-      const stage = stages[jj] as T['stages'][0] & Stage
+      const stage = stages[jj] as T['stages'][0] & FindStageByIdStage
       if (stage.id === stageId) {
         return {phase, stage, stageIdx: jj}
       }

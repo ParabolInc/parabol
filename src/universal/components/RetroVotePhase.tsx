@@ -8,6 +8,7 @@ import Icon from 'universal/components/Icon'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
 import MeetingHelpToggle from 'universal/components/MenuHelpToggle'
+import {RetroMeetingPhaseProps} from 'universal/components/RetroMeeting'
 import ScrollableBlock from 'universal/components/ScrollableBlock'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -28,10 +29,7 @@ import isDemoRoute from '../utils/isDemoRoute'
 import EndMeetingButton from './EndMeetingButton'
 import PhaseItemMasonry from './PhaseItemMasonry'
 
-interface Props extends WithAtmosphereProps {
-  gotoNext: () => void
-  gotoNextRef: React.RefObject<HTMLDivElement>
-  isDemoStageComplete: boolean
+interface Props extends WithAtmosphereProps, RetroMeetingPhaseProps {
   team: RetroVotePhase_team
 }
 
@@ -133,8 +131,7 @@ const DemoVoteHelpMenu = lazyPreload(async () =>
 const RetroVotePhase = (props: Props) => {
   const {
     atmosphere: {viewerId},
-    gotoNext,
-    gotoNextRef,
+    handleGotoNext,
     team,
     isDemoStageComplete
   } = props
@@ -143,6 +140,8 @@ const RetroVotePhase = (props: Props) => {
     newMeeting
   } = team
   if (!newMeeting) return null
+  const {current} = handleGotoNext
+  const {gotoNext, ref: gotoNextRef} = current
   const {facilitatorUserId, meetingId, phases, viewerMeetingMember} = newMeeting
   const teamVotesRemaining = newMeeting.teamVotesRemaining || 0
   const myVotesRemaining = viewerMeetingMember.myVotesRemaining || 0
@@ -181,8 +180,8 @@ const RetroVotePhase = (props: Props) => {
           <BottomNavControl
             isBouncing={isDemoStageComplete || teamVotesRemaining === 0}
             disabled={!discussStage.isNavigableByFacilitator}
-            onClick={gotoNext}
-            onKeyDown={handleRightArrow(gotoNext)}
+            onClick={() => gotoNext()}
+            onKeyDown={handleRightArrow(() => gotoNext())}
             innerRef={gotoNextRef}
           >
             <BottomNavIconLabel
