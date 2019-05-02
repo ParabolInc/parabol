@@ -566,12 +566,12 @@ export interface IUserFeatureFlags {
   /**
    * true if the user has access to retro meeting video
    */
-  video: boolean | null
+  video: boolean
 
   /**
    * true if jira is allowed
    */
-  jira: boolean | null
+  jira: boolean
 }
 
 /**
@@ -1440,7 +1440,7 @@ export interface INewMeetingPhase {
   /**
    * The type of phase
    */
-  phaseType: NewMeetingPhaseTypeEnum | null
+  phaseType: NewMeetingPhaseTypeEnum
   stages: Array<NewMeetingStage>
 }
 
@@ -1478,17 +1478,17 @@ export interface INewMeetingStage {
   /**
    * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
    */
-  isComplete: boolean | null
+  isComplete: boolean
 
   /**
    * true if any meeting participant can navigate to this stage
    */
-  isNavigable: boolean | null
+  isNavigable: boolean
 
   /**
    * true if the facilitator can navigate to this stage
    */
-  isNavigableByFacilitator: boolean | null
+  isNavigableByFacilitator: boolean
 
   /**
    * The phase this stage belongs to
@@ -5170,17 +5170,17 @@ export interface IRetroDiscussStage {
   /**
    * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
    */
-  isComplete: boolean | null
+  isComplete: boolean
 
   /**
    * true if any meeting participant can navigate to this stage
    */
-  isNavigable: boolean | null
+  isNavigable: boolean
 
   /**
    * true if the facilitator can navigate to this stage
    */
-  isNavigableByFacilitator: boolean | null
+  isNavigableByFacilitator: boolean
 
   /**
    * The phase this stage belongs to
@@ -5842,7 +5842,7 @@ export interface IReflectPhase {
   /**
    * The type of phase
    */
-  phaseType: NewMeetingPhaseTypeEnum | null
+  phaseType: NewMeetingPhaseTypeEnum
   stages: Array<IGenericMeetingStage>
 
   /**
@@ -5896,17 +5896,17 @@ export interface IGenericMeetingStage {
   /**
    * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
    */
-  isComplete: boolean | null
+  isComplete: boolean
 
   /**
    * true if any meeting participant can navigate to this stage
    */
-  isNavigable: boolean | null
+  isNavigable: boolean
 
   /**
    * true if the facilitator can navigate to this stage
    */
-  isNavigableByFacilitator: boolean | null
+  isNavigableByFacilitator: boolean
 
   /**
    * The phase this stage belongs to
@@ -6515,7 +6515,7 @@ export interface ICheckInPhase {
   /**
    * The type of phase
    */
-  phaseType: NewMeetingPhaseTypeEnum | null
+  phaseType: NewMeetingPhaseTypeEnum
   stages: Array<ICheckInStage>
 
   /**
@@ -6558,17 +6558,17 @@ export interface ICheckInStage {
   /**
    * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
    */
-  isComplete: boolean | null
+  isComplete: boolean
 
   /**
    * true if any meeting participant can navigate to this stage
    */
-  isNavigable: boolean | null
+  isNavigable: boolean
 
   /**
    * true if the facilitator can navigate to this stage
    */
-  isNavigableByFacilitator: boolean | null
+  isNavigableByFacilitator: boolean
 
   /**
    * The phase this stage belongs to
@@ -6642,7 +6642,7 @@ export interface IDiscussPhase {
   /**
    * The type of phase
    */
-  phaseType: NewMeetingPhaseTypeEnum | null
+  phaseType: NewMeetingPhaseTypeEnum
   stages: Array<IRetroDiscussStage>
 }
 
@@ -6660,7 +6660,7 @@ export interface IGenericMeetingPhase {
   /**
    * The type of phase
    */
-  phaseType: NewMeetingPhaseTypeEnum | null
+  phaseType: NewMeetingPhaseTypeEnum
   stages: Array<IGenericMeetingStage>
 }
 

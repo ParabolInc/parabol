@@ -173,8 +173,8 @@ export const navigateMeetingTeamUpdater = (
 const NavigateMeetingMutation = (
   atmosphere: Atmosphere,
   variables: NavigateMeetingMutationVariables,
-  onError,
-  onCompleted
+  onError?,
+  onCompleted?
 ) => {
   return commitMutation<NavigateMeetingMutation>(atmosphere, {
     mutation,

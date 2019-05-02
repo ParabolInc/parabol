@@ -1,10 +1,14 @@
-import {phaseIsMultiStage, phaseTypeToSlug} from 'universal/utils/meetings/lookups'
-import findStageById from 'universal/utils/meetings/findStageById'
+import findStageById, {FindStageByIdPhase} from 'universal/utils/meetings/findStageById'
 import getMeetingPathParams from 'universal/utils/meetings/getMeetingPathParams'
+import {phaseIsMultiStage, phaseTypeToSlug} from 'universal/utils/meetings/lookups'
 
-const fromStageIdToUrl = (stageId: string, phases: $ReadOnlyArray<Object>) => {
+export interface FromStageIdToUrlPhase extends FindStageByIdPhase {
+  phaseType: string
+}
+
+const fromStageIdToUrl = (stageId: string, phases: ReadonlyArray<FromStageIdToUrlPhase>) => {
   const stageRes = findStageById(phases, stageId)
-  if (!stageRes) return undefined
+  if (!stageRes) return '/'
   const {phase, stageIdx} = stageRes
   const {phaseType} = phase
   const phaseSlug = phaseTypeToSlug[phaseType]

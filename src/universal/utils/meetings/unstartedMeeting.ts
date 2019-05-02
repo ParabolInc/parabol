@@ -1,4 +1,5 @@
 const UNSTARTED_MEETING = {
+  id: '',
   facilitatorUserId: '',
   facilitatorStageId: '',
   phases: [],

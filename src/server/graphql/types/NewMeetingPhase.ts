@@ -13,7 +13,7 @@ export const newMeetingPhaseFields = () => ({
     description: 'shortid'
   },
   phaseType: {
-    type: NewMeetingPhaseTypeEnum,
+    type: new GraphQLNonNull(NewMeetingPhaseTypeEnum),
     description: 'The type of phase'
   },
   stages: {
