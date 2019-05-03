@@ -39,7 +39,7 @@ export const useEndMeetingHotkey = (meetingId: string) => {
     handleHotkey(() => {
       EndNewMeetingMutation(atmosphere, {meetingId}, {history})
     }),
-    [meetingId]
+    []
   )
   useHotkey('i c a n t h a c k i t', endMeeting)
 }
