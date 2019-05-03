@@ -1,4 +1,5 @@
 import {GraphQLID, GraphQLInt, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
+import {GQLContext} from 'server/graphql/graphql'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 import {makeResolve, resolveTeam} from 'server/graphql/resolvers'
 import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting'
@@ -40,7 +41,7 @@ export const newMeetingFields = () => ({
   meetingMembers: {
     type: new GraphQLList(MeetingMember),
     description: 'The team members that were active during the time of the meeting',
-    resolve: ({id: meetingId}, args, {dataLoader}) => {
+    resolve: ({id: meetingId}, _args, {dataLoader}: GQLContext) => {
       return dataLoader.get('meetingMembersByMeetingId').load(meetingId)
     }
   },
@@ -53,7 +54,13 @@ export const newMeetingFields = () => ({
   },
   phases: {
     type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeetingPhase))),
-    description: 'The phases the meeting will go through, including all phase-specific state'
+    description: 'The phases the meeting will go through, including all phase-specific state',
+    resolve: ({phases, id: meetingId}) => {
+      return phases.map((phase) => ({
+        ...phase,
+        meetingId
+      }))
+    }
   },
   summarySentAt: {
     type: GraphQLISO8601Type,
@@ -75,7 +82,7 @@ export const newMeetingFields = () => ({
   viewerMeetingMember: {
     type: new GraphQLNonNull(MeetingMember),
     description: 'The meeting member of the viewer',
-    resolve: ({id: meetingId}, args, {authToken, dataLoader}) => {
+    resolve: ({id: meetingId}, _args, {authToken, dataLoader}: GQLContext) => {
       const viewerId = getUserId(authToken)
       const meetingMemberId = toTeamMemberId(meetingId, viewerId)
       return dataLoader.get('meetingMembers').load(meetingMemberId)

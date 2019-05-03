@@ -1,12 +1,13 @@
 import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
 import NewMeeting from 'server/graphql/types/NewMeeting'
 import NewMeetingPhaseTypeEnum from 'server/graphql/types/NewMeetingPhaseTypeEnum'
-import {CHECKIN, DISCUSS, GROUP, REFLECT, VOTE} from 'universal/utils/constants'
+import {CHECKIN, DISCUSS, GROUP, REFLECT, UPDATES, VOTE} from 'universal/utils/constants'
 import CheckInStage from 'server/graphql/types/CheckInStage'
 import GenericMeetingStage from 'server/graphql/types/GenericMeetingStage'
 import RetroDiscussStage from 'server/graphql/types/RetroDiscussStage'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 import NewMeetingPhase from 'server/graphql/types/NewMeetingPhase'
+import UpdatesStage from 'server/graphql/types/UpdatesStage'
 
 /*
  * Each meeting has many phases.
@@ -95,7 +96,8 @@ const NewMeetingStage = new GraphQLInterfaceType({
       [REFLECT]: GenericMeetingStage,
       [GROUP]: GenericMeetingStage,
       [VOTE]: GenericMeetingStage,
-      [DISCUSS]: RetroDiscussStage
+      [DISCUSS]: RetroDiscussStage,
+      [UPDATES]: UpdatesStage
     }
     return resolveTypeLookup[phaseType]
   }

@@ -1,12 +1,10 @@
-import {RetroLobby_team} from '__generated__/RetroLobby_team.graphql'
 import React from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
+import {ActionMeetingPhaseProps} from 'universal/components/ActionMeeting'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
-import MeetingHelpToggle from 'universal/components/MenuHelpToggle'
 import NewMeetingLobby from 'universal/components/NewMeetingLobby'
 import PrimaryButton from 'universal/components/PrimaryButton'
-import {RetroMeetingPhaseProps} from 'universal/components/RetroMeeting'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useMutationProps from 'universal/hooks/useMutationProps'
 import useRouter from 'universal/hooks/useRouter'
@@ -16,11 +14,9 @@ import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPha
 import StartNewMeetingMutation from 'universal/mutations/StartNewMeetingMutation'
 import {minWidthMediaQueries} from 'universal/styles/breakpoints'
 import {MeetingTypeEnum} from 'universal/types/graphql'
-import lazyPreload from 'universal/utils/lazyPreload'
 import makeHref from 'universal/utils/makeHref'
 import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups'
-import {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import RetroTemplatePicker from '../modules/meeting/components/RetroTemplatePicker'
+import {ActionMeetingLobby_team} from '__generated__/ActionMeetingLobby_team.graphql'
 
 const ButtonGroup = styled('div')({
   display: 'flex',
@@ -48,38 +44,25 @@ const UrlBlock = styled('div')({
   verticalAlign: 'middle'
 })
 
-interface Props extends WithMutationProps, RetroMeetingPhaseProps {
-  team: RetroLobby_team
+interface Props extends ActionMeetingPhaseProps {
+  team: ActionMeetingLobby_team
 }
 
 const StyledButton = styled(PrimaryButton)({
   width: '100%'
 })
 
-const TemplatePickerLabel = styled(LabelHeading)({
-  margin: '0 0 .75rem'
-})
-
-const TemplatePickerBlock = styled('div')({
-  margin: '3rem 0 0',
-  width: '20rem'
-})
-
-const RetroLobbyHelpMenu = lazyPreload(() =>
-  import(/* webpackChunkName: 'RetroLobbyHelpMenu' */ 'universal/components/MeetingHelp/RetroLobbyHelpMenu')
-)
-
-const meetingType = MeetingTypeEnum.retrospective
+const meetingType = MeetingTypeEnum.action
 const meetingLabel = meetingTypeToLabel[meetingType]
 const meetingSlug = meetingTypeToSlug[meetingType]
 const buttonLabel = `Start ${meetingLabel} Meeting`
 
-const RetroLobby = (props: Props) => {
+const ActionMeetingLobby = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
-  const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
+  const {submitMutation, submitting, onError, onCompleted} = useMutationProps()
   const {team} = props
-  const {meetingSettings, id: teamId, name: teamName} = team
+  const {id: teamId, name: teamName} = team
   const onStartMeetingClick = () => {
     if (submitting) return
     submitMutation()
@@ -92,8 +75,11 @@ const RetroLobby = (props: Props) => {
       <StyledCopy>
         {'The person who presses “Start Meeting” will be today’s Facilitator.'}
         <br />
-        <br />
         {'Everyone’s display automatically follows the Facilitator.'}
+      </StyledCopy>
+      <StyledCopy>
+        <b>{'Today’s Facilitator'}</b>
+        {`: begin the ${meetingLabel} Meeting!`}
       </StyledCopy>
       <ButtonGroup>
         <ButtonBlock>
@@ -107,27 +93,20 @@ const RetroLobby = (props: Props) => {
           </StyledButton>
         </ButtonBlock>
       </ButtonGroup>
-      <TemplatePickerBlock>
-        <TemplatePickerLabel>Current Template</TemplatePickerLabel>
-        <RetroTemplatePicker settings={meetingSettings} />
-      </TemplatePickerBlock>
       <UrlBlock>
         <CopyShortLink url={makeHref(`/${meetingSlug}/${teamId}`)} />
       </UrlBlock>
-      <MeetingHelpToggle menu={<RetroLobbyHelpMenu />} />
     </NewMeetingLobby>
   )
 }
 
 export default createFragmentContainer(
-  RetroLobby,
+  ActionMeetingLobby,
   graphql`
-    fragment RetroLobby_team on Team @argumentDefinitions(meetingType: {type: "MeetingTypeEnum!"}) {
+    fragment ActionMeetingLobby_team on Team
+      @argumentDefinitions(meetingType: {type: "MeetingTypeEnum!"}) {
       id
       name
-      meetingSettings(meetingType: $meetingType) {
-        ...RetroTemplatePicker_settings
-      }
     }
   `
 )

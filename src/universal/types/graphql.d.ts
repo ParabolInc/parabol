@@ -1073,6 +1073,11 @@ export interface ITeam {
   meetingSettings: TeamMeetingSettings
 
   /**
+   * a list of meetings that are currently in progress
+   */
+  activeMeetings: Array<NewMeeting>
+
+  /**
    * The new meeting in progress, if any
    */
   newMeeting: NewMeeting | null
@@ -1436,6 +1441,7 @@ export interface INewMeetingPhase {
    * shortid
    */
   id: string
+  meetingId: string
 
   /**
    * The type of phase
@@ -5838,6 +5844,7 @@ export interface IReflectPhase {
    * shortid
    */
   id: string
+  meetingId: string
 
   /**
    * The type of phase
@@ -6511,6 +6518,7 @@ export interface ICheckInPhase {
    * shortid
    */
   id: string
+  meetingId: string
 
   /**
    * The type of phase
@@ -6599,11 +6607,6 @@ export interface ICheckInStage {
    * The team member that is the focus for this phase item
    */
   teamMember: ITeamMember | null
-
-  /**
-   * true if the team member is present for the meeting
-   */
-  present: boolean | null
 }
 
 /**
@@ -6638,6 +6641,7 @@ export interface IDiscussPhase {
    * shortid
    */
   id: string
+  meetingId: string
 
   /**
    * The type of phase
@@ -6656,6 +6660,7 @@ export interface IGenericMeetingPhase {
    * shortid
    */
   id: string
+  meetingId: string
 
   /**
    * The type of phase

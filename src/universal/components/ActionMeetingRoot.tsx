@@ -1,7 +1,7 @@
 import React from 'react'
 import {graphql} from 'react-relay'
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
-import RetroMeeting from 'universal/components/RetroMeeting'
+import ActionMeeting from 'universal/components/ActionMeeting'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useRouter from 'universal/hooks/useRouter'
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription'
@@ -12,12 +12,12 @@ import TeamMemberSubscription from 'universal/subscriptions/TeamMemberSubscripti
 import TeamSubscription from 'universal/subscriptions/TeamSubscription'
 import {MeetingTypeEnum} from 'universal/types/graphql'
 import {cacheConfig} from 'universal/utils/constants'
-import renderQuery from '../../utils/relay/renderQuery'
+import renderQuery from '../utils/relay/renderQuery'
 
 const query = graphql`
-  query RetroRootQuery($teamId: ID!) {
+  query ActionMeetingRootQuery($teamId: ID!) {
     viewer {
-      ...RetroMeeting_viewer
+      ...ActionMeeting_viewer
     }
   }
 `
@@ -31,8 +31,8 @@ const subscriptions = [
   TeamSubscription
 ]
 
-const meetingType = MeetingTypeEnum.retrospective
-const RetroRoot = () => {
+const meetingType = MeetingTypeEnum.action
+const ActionMeetingRoot = () => {
   const atmosphere = useAtmosphere()
   const {history, location, match} = useRouter<{teamId: string}>()
   const {params} = match
@@ -45,9 +45,9 @@ const RetroRoot = () => {
       variables={{teamId, meetingType}}
       subscriptions={subscriptions}
       subParams={{history, location}}
-      render={renderQuery(RetroMeeting)}
+      render={renderQuery(ActionMeeting)}
     />
   )
 }
 
-export default RetroRoot
+export default ActionMeetingRoot

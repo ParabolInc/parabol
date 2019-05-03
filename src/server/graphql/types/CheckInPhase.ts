@@ -1,7 +1,8 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
-import NewMeetingPhase, {newMeetingPhaseFields} from 'server/graphql/types/NewMeetingPhase'
-import MeetingGreeting from 'server/graphql/types/MeetingGreeting'
 import CheckInStage from 'server/graphql/types/CheckInStage'
+import MeetingGreeting from 'server/graphql/types/MeetingGreeting'
+import NewMeetingPhase, {newMeetingPhaseFields} from 'server/graphql/types/NewMeetingPhase'
+import {ICheckInPhase} from 'universal/types/graphql'
 
 const CheckInPhase = new GraphQLObjectType({
   name: 'CheckInPhase',
@@ -18,7 +19,13 @@ const CheckInPhase = new GraphQLObjectType({
       description: 'The checkIn question of the week (draft-js format)'
     },
     stages: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(CheckInStage)))
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(CheckInStage))),
+      resolve: ({phaseType, stages}: ICheckInPhase) => {
+        return stages.map((stage) => ({
+          ...stage,
+          phaseType
+        }))
+      }
     }
   })
 })

@@ -1,9 +1,10 @@
 // @flow
 import {GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
-import {CHECKIN} from 'universal/utils/constants'
+import {CHECKIN, UPDATES} from 'universal/utils/constants'
 import CheckInStage from 'server/graphql/types/CheckInStage'
 import {resolveTeamMember} from 'server/graphql/resolvers'
 import TeamMember from 'server/graphql/types/TeamMember'
+import UpdatesStage from 'server/graphql/types/UpdatesStage'
 
 export const newMeetingTeamMemberStageFields = () => ({
   teamMemberId: {
@@ -24,7 +25,8 @@ const NewMeetingTeamMemberStage = new GraphQLInterfaceType({
   fields: newMeetingTeamMemberStageFields,
   resolveType: ({phaseType}) => {
     const resolveTypeLookup = {
-      [CHECKIN]: CheckInStage
+      [CHECKIN]: CheckInStage,
+      [UPDATES]: UpdatesStage
     }
     return resolveTypeLookup[phaseType]
   }

@@ -4,8 +4,8 @@ import NewMeetingTeamMemberStage, {
   newMeetingTeamMemberStageFields
 } from 'server/graphql/types/NewMeetingTeamMemberStage'
 
-const CheckInStage = new GraphQLObjectType({
-  name: 'CheckInStage',
+const UpdatesStage = new GraphQLObjectType({
+  name: 'UpdatesStage',
   description: 'A stage that focuses on a single team member',
   interfaces: () => [NewMeetingStage, NewMeetingTeamMemberStage],
   fields: () => ({
@@ -14,4 +14,4 @@ const CheckInStage = new GraphQLObjectType({
   })
 })
 
-export default CheckInStage
+export default UpdatesStage

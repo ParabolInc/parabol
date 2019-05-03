@@ -8,6 +8,7 @@ import {
   GraphQLString
 } from 'graphql'
 import {forwardConnectionArgs} from 'graphql-relay'
+import {GQLContext} from 'server/graphql/graphql'
 import connectionFromTasks from 'server/graphql/queries/helpers/connectionFromTasks'
 import ActionMeetingPhaseEnum from 'server/graphql/types/ActionMeetingPhaseEnum'
 import AgendaItem from 'server/graphql/types/AgendaItem'
@@ -27,8 +28,9 @@ import {getUserId, isTeamMember} from 'server/utils/authorization'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import TeamInvitation from 'server/graphql/types/TeamInvitation'
 import standardError from 'server/utils/standardError'
+import {ITeam} from 'universal/types/graphql'
 
-const Team = new GraphQLObjectType({
+const Team = new GraphQLObjectType<ITeam, GQLContext>({
   name: 'Team',
   description: 'A team',
   fields: () => ({
@@ -85,7 +87,7 @@ const Team = new GraphQLObjectType({
     },
     customPhaseItems: {
       type: new GraphQLList(CustomPhaseItem),
-      resolve: ({id: teamId}, args, {dataLoader}) => {
+      resolve: ({id: teamId}, _args, {dataLoader}) => {
         // not useful for retros since there is no templateId filter
         return dataLoader.get('customPhaseItemsByTeamId').load(teamId)
       }
@@ -109,14 +111,14 @@ const Team = new GraphQLObjectType({
     teamInvitations: {
       type: new GraphQLList(new GraphQLNonNull(TeamInvitation)),
       description: 'The outstanding invitations to join the team',
-      resolve: async ({id: teamId}, _args, {authToken, dataLoader}) => {
+      resolve: async ({id: teamId}, _args, {dataLoader}) => {
         return dataLoader.get('teamInvitationsByTeamId').load(teamId)
       }
     },
     isLead: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the viewer is the team lead, else false',
-      resolve: async ({id: teamId}, args, {authToken, dataLoader}) => {
+      resolve: async ({id: teamId}, _args, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
         const teamMemberId = toTeamMemberId(teamId, viewerId)
         const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
@@ -146,10 +148,17 @@ const Team = new GraphQLObjectType({
         return allSettings.find((settings) => settings.meetingType === meetingType)
       }
     },
+    activeMeetings: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeeting))),
+      description: 'a list of meetings that are currently in progress',
+      resolve: ({id: teamId}, _args, {dataLoader}) => {
+        return dataLoader.get('activeMeetingsByTeamId').load(teamId)
+      }
+    },
     newMeeting: {
       type: NewMeeting,
       description: 'The new meeting in progress, if any',
-      resolve: ({meetingId, activeFacilitator}, args, {dataLoader}) => {
+      resolve: ({meetingId, activeFacilitator}, _args, {dataLoader}) => {
         if (meetingId && !activeFacilitator) {
           return dataLoader.get('newMeetings').load(meetingId)
         }
@@ -167,10 +176,8 @@ const Team = new GraphQLObjectType({
     agendaItems: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AgendaItem))),
       description: 'The agenda items for the upcoming or current meeting',
-      async resolve ({id: teamId}, args, {dataLoader}) {
-        const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
-        agendaItems.sort((a, b) => (a.sortOrder > b.sortOrder ? 1 : -1))
-        return agendaItems
+      async resolve ({id: teamId}, _args, {dataLoader}) {
+        return dataLoader.get('agendaItemsByTeamId').load(teamId)
       }
     },
     tasks: {
@@ -183,7 +190,7 @@ const Team = new GraphQLObjectType({
         }
       },
       description: 'All of the tasks for this team',
-      async resolve ({id: teamId}, args, {authToken, dataLoader}) {
+      async resolve ({id: teamId}, _args, {authToken, dataLoader}) {
         if (!isTeamMember(authToken, teamId)) {
           standardError(new Error('Team not found'))
           return null
@@ -195,7 +202,7 @@ const Team = new GraphQLObjectType({
     softTeamMembers: {
       type: new GraphQLList(SoftTeamMember),
       description: 'All the soft team members actively associated with the team',
-      async resolve ({id: teamId}, args, {dataLoader}) {
+      async resolve ({id: teamId}, _args, {dataLoader}) {
         const softTeamMembers = await dataLoader.get('softTeamMembersByTeamId').load(teamId)
         softTeamMembers.sort((a, b) => (a.preferredName > b.preferredName ? 1 : -1))
         return softTeamMembers

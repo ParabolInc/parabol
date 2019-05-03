@@ -436,7 +436,6 @@ export default createFragmentContainer(
           userId
         }
         ...MeetingAgendaLastCall_team
-        ...MeetingLobby_team
         ...MeetingAvatarGroup_team
         ...MeetingUpdatesPrompt_team
         ...MeetingCheckIn_team

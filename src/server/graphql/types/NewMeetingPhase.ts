@@ -1,5 +1,17 @@
 import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
-import {CHECKIN, DISCUSS, GROUP, REFLECT, VOTE} from 'universal/utils/constants'
+import AgendaItemsPhase from 'server/graphql/types/AgendaItemsPhase'
+import UpdatesPhase from 'server/graphql/types/UpdatesPhase'
+import {
+  CHECKIN,
+  DISCUSS,
+  GROUP,
+  REFLECT,
+  VOTE,
+  UPDATES,
+  FIRST_CALL,
+  AGENDA_ITEMS,
+  LAST_CALL
+} from 'universal/utils/constants'
 import NewMeetingPhaseTypeEnum from 'server/graphql/types/NewMeetingPhaseTypeEnum'
 import CheckInPhase from 'server/graphql/types/CheckInPhase'
 import GenericMeetingPhase from 'server/graphql/types/GenericMeetingPhase'
@@ -11,6 +23,9 @@ export const newMeetingPhaseFields = () => ({
   id: {
     type: new GraphQLNonNull(GraphQLID),
     description: 'shortid'
+  },
+  meetingId: {
+    type: new GraphQLNonNull(GraphQLID)
   },
   phaseType: {
     type: new GraphQLNonNull(NewMeetingPhaseTypeEnum),
@@ -29,7 +44,11 @@ const resolveTypeLookup = {
   [REFLECT]: ReflectPhase,
   [GROUP]: GenericMeetingPhase,
   [VOTE]: GenericMeetingPhase,
-  [DISCUSS]: DiscussPhase
+  [DISCUSS]: DiscussPhase,
+  [UPDATES]: UpdatesPhase,
+  [FIRST_CALL]: GenericMeetingPhase,
+  [AGENDA_ITEMS]: AgendaItemsPhase,
+  [LAST_CALL]: GenericMeetingPhase
 }
 
 const NewMeetingPhase = new GraphQLInterfaceType({

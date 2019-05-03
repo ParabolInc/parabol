@@ -99,12 +99,22 @@ export default class RethinkDataLoader {
   teams = this.pkLoader('Team')
   users = this.pkLoader('User')
 
+  activeMeetingsByTeamId = this.fkLoader(this.newMeetings, 'teamId', (teamIds) => {
+    const r = getRethink()
+    return r
+      .table('NewMeeting')
+      .getAll(r.args(teamIds), {index: 'teamId'})
+      .filter({endedAt: null}, {default: true})
+      .orderBy(r.desc('createdAt'))
+  })
+
   agendaItemsByTeamId = this.fkLoader(this.agendaItems, 'teamId', (teamIds) => {
     const r = getRethink()
     return r
       .table('AgendaItem')
       .getAll(r.args(teamIds), {index: 'teamId'})
       .filter({isActive: true})
+      .orderBy('sortOrder')
   })
 
   atlassianAuthByUserId = this.fkLoader<IAtlassianAuth[]>(
