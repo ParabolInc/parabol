@@ -5,9 +5,14 @@ import {createFragmentContainer, graphql} from 'react-relay'
 import BottomNavControl from 'universal/components/BottomNavControl'
 import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
 import DiscussPhaseReflectionGrid from 'universal/components/DiscussPhaseReflectionGrid'
+import ErrorBoundary from 'universal/components/ErrorBoundary'
 import Icon from 'universal/components/Icon'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
+import MeetingContent from 'universal/components/MeetingContent'
+import MeetingContentHeader from 'universal/components/MeetingContentHeader'
 import MeetingHelpToggle from 'universal/components/MenuHelpToggle'
+import PhaseHeaderDescription from 'universal/components/PhaseHeaderDescription'
+import PhaseHeaderTitle from 'universal/components/PhaseHeaderTitle'
 import Overflow from 'universal/components/Overflow'
 import {RetroMeetingPhaseProps} from 'universal/components/RetroMeeting'
 import EditorHelpModalContainer from 'universal/containers/EditorHelpModalContainer/EditorHelpModalContainer'
@@ -20,12 +25,14 @@ import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 import {meetingVoteIcon} from 'universal/styles/meeting'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
+import {NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
 import lazyPreload from 'universal/utils/lazyPreload'
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
 import plural from 'universal/utils/plural'
 import handleRightArrow from '../utils/handleRightArrow'
 import isDemoRoute from '../utils/isDemoRoute'
 import EndMeetingButton from './EndMeetingButton'
+import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 
 interface Props extends WithAtmosphereProps, RetroMeetingPhaseProps {
   team: RetroDiscussPhase_team
@@ -132,9 +139,9 @@ const DemoDiscussHelpMenu = lazyPreload(async () =>
 )
 
 const RetroDiscussPhase = (props: Props) => {
-  const {atmosphere, handleGotoNext, team, isDemoStageComplete} = props
+  const {avatarGroup, toggleSidebar, atmosphere, handleGotoNext, team, isDemoStageComplete} = props
   const {viewerId} = atmosphere
-  const {newMeeting, teamId} = team
+  const {isMeetingSidebarCollapsed, newMeeting, teamId} = team
   if (!newMeeting) return null
   const {current} = handleGotoNext
   const {gotoNext, ref: gotoNextRef} = current
@@ -150,75 +157,87 @@ const RetroDiscussPhase = (props: Props) => {
   const isFacilitating = facilitatorUserId === viewerId
   const nextStageRes = findStageAfterId(phases, localStageId)
   return (
-    <React.Fragment>
-      <PhaseWrapper>
-        <HeaderContainer>
-          <DiscussHeader>
-            <TopicHeading>{`“${title}”`}</TopicHeading>
-            <VoteMeta>
-              <VoteIcon>{meetingVoteIcon}</VoteIcon>
-              {voteCount}
-            </VoteMeta>
-          </DiscussHeader>
-        </HeaderContainer>
-        <ColumnsContainer>
-          <Column>
-            <LabelContainer>
-              <LabelHeading>
-                {reflections.length} {plural(reflections.length, 'Reflection')}
-              </LabelHeading>
-            </LabelContainer>
-            <Overflow>
-              <ColumnInner>
-                <DiscussPhaseReflectionGrid reflections={reflections} />
-              </ColumnInner>
-            </Overflow>
-          </Column>
-          <TaskColumn>
-            <LabelContainer>
-              <LabelHeading>Takeaway Tasks</LabelHeading>
-            </LabelContainer>
-            <Overflow>
-              <ColumnInner>
-                <TaskCardBlock>
-                  <MeetingAgendaCards
-                    meetingId={meetingId}
-                    reflectionGroupId={reflectionGroupId}
-                    tasks={tasks}
-                    teamId={teamId}
-                  />
-                </TaskCardBlock>
-              </ColumnInner>
-            </Overflow>
-          </TaskColumn>
-        </ColumnsContainer>
-      </PhaseWrapper>
-      {isFacilitating && (
-        <StyledBottomBar>
-          <BottomControlSpacer />
-          {nextStageRes && (
-            <React.Fragment>
-              <BottomNavControl
-                isBouncing={isDemoStageComplete}
-                onClick={() => gotoNext()}
-                innerRef={gotoNextRef}
-                onKeyDown={handleRightArrow(() => gotoNext())}
-              >
-                <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={'Next Topic'} />
-              </BottomNavControl>
-            </React.Fragment>
-          )}
-          <EndMeetingButton meetingId={meetingId} />
-          {!nextStageRes && <BottomControlSpacer />}
-        </StyledBottomBar>
-      )}
-      <MeetingHelpToggle
-        floatAboveBottomBar={isFacilitating}
-        menu={isDemoRoute() ? <DemoDiscussHelpMenu /> : <DiscussHelpMenu />}
-      />
+    <MeetingContent>
+      <MeetingContentHeader
+        avatarGroup={avatarGroup}
+        isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
+        toggleSidebar={toggleSidebar}
+      >
+        <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.discuss]}</PhaseHeaderTitle>
+        <PhaseHeaderDescription>
+          {'Create takeaway task cards to capture next steps'}
+        </PhaseHeaderDescription>
+      </MeetingContentHeader>
+      <ErrorBoundary>
+        <PhaseWrapper>
+          <HeaderContainer>
+            <DiscussHeader>
+              <TopicHeading>{`“${title}”`}</TopicHeading>
+              <VoteMeta>
+                <VoteIcon>{meetingVoteIcon}</VoteIcon>
+                {voteCount}
+              </VoteMeta>
+            </DiscussHeader>
+          </HeaderContainer>
+          <ColumnsContainer>
+            <Column>
+              <LabelContainer>
+                <LabelHeading>
+                  {reflections.length} {plural(reflections.length, 'Reflection')}
+                </LabelHeading>
+              </LabelContainer>
+              <Overflow>
+                <ColumnInner>
+                  <DiscussPhaseReflectionGrid reflections={reflections} />
+                </ColumnInner>
+              </Overflow>
+            </Column>
+            <TaskColumn>
+              <LabelContainer>
+                <LabelHeading>Takeaway Tasks</LabelHeading>
+              </LabelContainer>
+              <Overflow>
+                <ColumnInner>
+                  <TaskCardBlock>
+                    <MeetingAgendaCards
+                      meetingId={meetingId}
+                      reflectionGroupId={reflectionGroupId}
+                      tasks={tasks}
+                      teamId={teamId}
+                    />
+                  </TaskCardBlock>
+                </ColumnInner>
+              </Overflow>
+            </TaskColumn>
+          </ColumnsContainer>
+        </PhaseWrapper>
+        {isFacilitating && (
+          <StyledBottomBar>
+            <BottomControlSpacer />
+            {nextStageRes && (
+              <React.Fragment>
+                <BottomNavControl
+                  isBouncing={isDemoStageComplete}
+                  onClick={() => gotoNext()}
+                  innerRef={gotoNextRef}
+                  onKeyDown={handleRightArrow(() => gotoNext())}
+                >
+                  <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={'Next Topic'} />
+                </BottomNavControl>
+              </React.Fragment>
+            )}
+            <EndMeetingButton meetingId={meetingId} />
+            {!nextStageRes && <BottomControlSpacer />}
+          </StyledBottomBar>
+        )}
+        <MeetingHelpToggle
+          floatAboveBottomBar={isFacilitating}
+          menu={isDemoRoute() ? <DemoDiscussHelpMenu /> : <DiscussHelpMenu />}
+        />
 
-      <EditorHelpModalContainer />
-    </React.Fragment>
+        <EditorHelpModalContainer />
+      </ErrorBoundary>
+    </MeetingContent>
   )
 }
 
@@ -226,6 +245,7 @@ export default createFragmentContainer(
   withAtmosphere(RetroDiscussPhase),
   graphql`
     fragment RetroDiscussPhase_team on Team {
+      isMeetingSidebarCollapsed
       teamId: id
       newMeeting {
         meetingId: id

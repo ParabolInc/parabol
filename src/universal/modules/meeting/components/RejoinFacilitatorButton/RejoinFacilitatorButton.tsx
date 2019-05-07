@@ -1,9 +1,8 @@
-import PropTypes from 'prop-types'
 import React from 'react'
-import ui from 'universal/styles/ui'
+import styled from 'react-emotion'
 import FloatingActionButton from 'universal/components/FloatingActionButton'
 import IconLabel from 'universal/components/IconLabel'
-import styled from 'react-emotion'
+import ui from 'universal/styles/ui'
 
 const RejoinButton = styled(FloatingActionButton)({
   bottom: '1.25rem',
@@ -12,17 +11,19 @@ const RejoinButton = styled(FloatingActionButton)({
   zIndex: ui.ziRejoinFacilitatorButton
 })
 
-const RejoinFacilitatorButton = (props) => {
-  const {onClickHandler} = props
+interface Props {
+  inSync: boolean
+  onClick: (e: React.MouseEvent) => void
+}
+
+const RejoinFacilitatorButton = (props: Props) => {
+  const {inSync, onClick} = props
+  if (inSync) return null
   return (
-    <RejoinButton onClick={onClickHandler} palette='warm'>
+    <RejoinButton onClick={onClick} palette='warm'>
       <IconLabel icon='person_pin_circle' label='Rejoin Facilitator' />
     </RejoinButton>
   )
-}
-
-RejoinFacilitatorButton.propTypes = {
-  onClickHandler: PropTypes.func
 }
 
 export default RejoinFacilitatorButton

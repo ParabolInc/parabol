@@ -1096,7 +1096,7 @@ export interface ITeam {
   /**
    * All of the tasks for this team
    */
-  tasks: ITaskConnection | null
+  tasks: ITaskConnection
 
   /**
    * All the soft team members actively associated with the team
@@ -6329,7 +6329,6 @@ export interface IRenameReflectTemplatePromptPayload {
 
 export interface ISubscription {
   __typename: 'Subscription'
-  agendaItemSubscription: AgendaItemSubscriptionPayload
   integrationSubscription: IntegrationSubscriptionPayload
   newAuthToken: string | null
   notificationSubscription: NotificationSubscriptionPayload
@@ -6339,10 +6338,6 @@ export interface ISubscription {
   slackChannelRemoved: IRemoveSlackChannelPayload
   teamSubscription: TeamSubscriptionPayload
   teamMemberSubscription: TeamMemberSubscriptionPayload
-}
-
-export interface IAgendaItemSubscriptionOnSubscriptionArguments {
-  teamId: string
 }
 
 export interface IIntegrationSubscriptionOnSubscriptionArguments {
@@ -6356,12 +6351,6 @@ export interface ISlackChannelAddedOnSubscriptionArguments {
 export interface ISlackChannelRemovedOnSubscriptionArguments {
   teamId: string
 }
-
-export type AgendaItemSubscriptionPayload =
-  | IAddAgendaItemPayload
-  | IRemoveAgendaItemPayload
-  | IUpdateAgendaItemPayload
-  | IMoveMeetingPayload
 
 export type IntegrationSubscriptionPayload = IAddProviderPayload | IRemoveProviderPayload
 
@@ -6441,6 +6430,7 @@ export type TaskSubscriptionPayload =
 
 export type TeamSubscriptionPayload =
   | IAcceptTeamInvitationPayload
+  | IAddAgendaItemPayload
   | IAddAtlassianAuthPayload
   | IAddGitHubAuthPayload
   | IAddTeamPayload
@@ -6462,6 +6452,7 @@ export type TeamSubscriptionPayload =
   | IPromoteNewMeetingFacilitatorPayload
   | IPromoteToTeamLeadPayload
   | IRequestFacilitatorPayload
+  | IRemoveAgendaItemPayload
   | IRemoveOrgUserPayload
   | IRemoveReflectionPayload
   | IRemoveTeamMemberPayload
@@ -6470,6 +6461,7 @@ export type TeamSubscriptionPayload =
   | IStartDraggingReflectionPayload
   | IStartMeetingPayload
   | IStartNewMeetingPayload
+  | IUpdateAgendaItemPayload
   | IUpdateCheckInQuestionPayload
   | IUpdateCreditCardPayload
   | IUpdateDragLocationPayload

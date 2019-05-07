@@ -29,7 +29,9 @@ export namespace PALETTE {
     MAIN = '#444258',
     LIGHT = '#82809A',
     GREEN = '#61BF8B',
-    PINK = '#ED4C86'
+    PINK = '#ED4C86',
+    RED = '#FD6157',
+    PURPLE = '#493272'
   }
   export const enum ERROR {
     MAIN = '#ED4C56'

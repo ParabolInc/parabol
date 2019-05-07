@@ -6,7 +6,7 @@ import AddTeamMemberAvatarButton from 'universal/components/AddTeamMemberAvatarB
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {useGotoStageId} from 'universal/hooks/newMeeting'
+import {useGotoStageId} from 'universal/hooks/useMeeting'
 import NewMeetingAvatar from 'universal/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatar'
 import findStageById from 'universal/utils/meetings/findStageById'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'

@@ -1,9 +1,14 @@
 import {ActionMeeting_viewer} from '__generated__/ActionMeeting_viewer.graphql'
-import React from 'react'
+import React, {ReactElement} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {ValueOf} from 'types/generics'
-import NewMeeting, {NewMeetingTypeProps} from 'universal/components/NewMeeting'
-import useMeeting from 'universal/hooks/newMeeting'
+import ActionMeetingSidebar from 'universal/components/ActionMeetingSidebar'
+import LayoutPusher from 'universal/components/LayoutPusher'
+import MeetingArea from 'universal/components/MeetingArea'
+import MeetingStyles from 'universal/components/MeetingStyles'
+import useMeeting, {useGotoNext} from 'universal/hooks/useMeeting'
+import NewMeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
+import RejoinFacilitatorButton from 'universal/modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton'
 import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
 import lazyPreload from 'universal/utils/lazyPreload'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
@@ -16,9 +21,9 @@ const phaseLookup = {
   [NewMeetingPhaseTypeEnum.checkin]: lazyPreload(() =>
     import(/* webpackChunkName: 'NewMeetingCheckIn' */ 'universal/components/NewMeetingCheckIn')
   ),
-  // [NewMeetingPhaseTypeEnum.updates]: lazyPreload(() =>
-  //   import(/* webpackChunkName: 'ActionMeetingUpdates' */ 'universal/components/ActionMeetingUpdates')
-  // ),
+  [NewMeetingPhaseTypeEnum.updates]: lazyPreload(() =>
+    import(/* webpackChunkName: 'ActionMeetingUpdates' */ 'universal/components/ActionMeetingUpdates')
+  ),
   // [NewMeetingPhaseTypeEnum.firstcall]: lazyPreload(() =>
   //   import(/* webpackChunkName: 'ActionMeetingFirstCall' */ 'universal/components/ActionMeetingFirstCall')
   // ),
@@ -35,27 +40,55 @@ const phaseLookup = {
 
 type PhaseComponent = ValueOf<typeof phaseLookup>
 
-export interface ActionMeetingPhaseProps extends NewMeetingTypeProps {}
+export interface ActionMeetingPhaseProps {
+  avatarGroup: ReactElement
+  handleGotoNext: ReturnType<typeof useGotoNext>
+  toggleSidebar: () => void
+}
 
 const ActionMeeting = (props: Props) => {
   const {viewer} = props
-  const {team} = viewer
-  const {handleGotoNext, gotoStageId, safeRoute} = useMeeting(MeetingTypeEnum.action, team)
+  const team = viewer.team!
+  const {toggleSidebar, streams, swarm, handleGotoNext, gotoStageId, safeRoute} = useMeeting(
+    MeetingTypeEnum.retrospective,
+    team
+  )
   if (!team || !safeRoute) return null
-  const {meetingSettings, newMeeting} = team
-  const {phaseTypes} = meetingSettings
-  const {localPhase} = newMeeting || UNSTARTED_MEETING
+  const {featureFlags} = viewer
+  const {video: allowVideo} = featureFlags
+  const {isMeetingSidebarCollapsed, newMeeting} = team
+  const {facilitatorStageId, localPhase, localStage} = newMeeting || UNSTARTED_MEETING
   const localPhaseType = (localPhase && localPhase.phaseType) || NewMeetingPhaseTypeEnum.lobby
   const Phase = phaseLookup[localPhaseType] as PhaseComponent
   return (
-    <NewMeeting
-      viewer={viewer}
-      gotoStageId={gotoStageId}
-      meetingType={MeetingTypeEnum.action}
-      phaseTypes={phaseTypes as ReadonlyArray<NewMeetingPhaseTypeEnum>}
-    >
-      <Phase handleGotoNext={handleGotoNext} team={team} />
-    </NewMeeting>
+    <MeetingStyles>
+      <ActionMeetingSidebar
+        gotoStageId={gotoStageId}
+        toggleSidebar={toggleSidebar}
+        viewer={viewer}
+      />
+      <MeetingArea>
+        <LayoutPusher isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed} />
+        <Phase
+          handleGotoNext={handleGotoNext}
+          team={team}
+          toggleSidebar={toggleSidebar}
+          avatarGroup={
+            <NewMeetingAvatarGroup
+              allowVideo={allowVideo}
+              swarm={swarm}
+              gotoStageId={gotoStageId}
+              team={team}
+              camStreams={streams.cam}
+            />
+          }
+        />
+      </MeetingArea>
+      <RejoinFacilitatorButton
+        inSync={localStage ? localStage.id === facilitatorStageId : true}
+        onClick={() => gotoStageId(facilitatorStageId)}
+      />
+    </MeetingStyles>
   )
 }
 
@@ -81,14 +114,11 @@ graphql`
 graphql`
   fragment ActionMeetingTeam on Team {
     ...ActionMeetingLobby_team
+    ...ActionMeetingUpdates_team
     ...NewMeetingCheckIn_team
-    id
-    name
-    meetingId
+    ...useMeetingTeam @relay(mask: false)
+    isMeetingSidebarCollapsed
     newMeeting {
-      id
-      facilitatorStageId
-      facilitatorUserId
       localPhase {
         ...ActionMeetingLocalPhase @relay(mask: false)
       }
@@ -106,11 +136,12 @@ export default createFragmentContainer(
   ActionMeeting,
   graphql`
     fragment ActionMeeting_viewer on User {
-      ...NewMeeting_viewer
+      ...ActionMeetingSidebar_viewer
+      featureFlags {
+        video
+      }
       team(teamId: $teamId) {
-        meetingSettings(meetingType: action) {
-          phaseTypes
-        }
+        ...NewMeetingAvatarGroup_team
         ...ActionMeetingTeam @relay(mask: false)
       }
     }

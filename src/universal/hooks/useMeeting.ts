@@ -1,10 +1,13 @@
+import {useMeetingTeam} from '__generated__/useMeetingTeam.graphql'
 import {useCallback, useEffect, useRef} from 'react'
-import {commitLocalUpdate} from 'react-relay'
+import {commitLocalUpdate, graphql} from 'react-relay'
+import {Omit} from 'types/generics'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useDocumentTitle from 'universal/hooks/useDocumentTitle'
 import useForceUpdate from 'universal/hooks/useForceUpdate'
 import useHotkey from 'universal/hooks/useHotkey'
-import useMeetingLocalState, {SafeTeam} from 'universal/hooks/useMeetingLocalState'
+import useMeetingLocalState from 'universal/hooks/useMeetingLocalState'
+import useSwarm from 'universal/hooks/useSwarm'
 import {demoTeamId} from 'universal/modules/demo/initDB'
 import LocalAtmosphere from 'universal/modules/demo/LocalAtmosphere'
 import EndNewMeetingMutation from 'universal/mutations/EndNewMeetingMutation'
@@ -12,12 +15,13 @@ import NavigateMeetingMutation from 'universal/mutations/NavigateMeetingMutation
 import {INavigateMeetingOnMutationArguments, MeetingTypeEnum} from 'universal/types/graphql'
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
 import findStageBeforeId from 'universal/utils/meetings/findStageBeforeId'
-import findStageById, {FindStageByIdPhase} from 'universal/utils/meetings/findStageById'
+import findStageById from 'universal/utils/meetings/findStageById'
 import handleHotkey from 'universal/utils/meetings/handleHotkey'
 import isForwardProgress from 'universal/utils/meetings/isForwardProgress'
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
 import updateLocalStage from 'universal/utils/relay/updateLocalStage'
+import {useMeetingLocalStateTeam} from '__generated__/useMeetingLocalStateTeam.graphql'
 
 export const useDemoMeeting = () => {
   const atmosphere = useAtmosphere()
@@ -44,31 +48,29 @@ export const useEndMeetingHotkey = (meetingId: string) => {
   useHotkey('i c a n t h a c k i t', endMeeting)
 }
 
-interface GotoPhase extends FindStageByIdPhase {
-  stages: ReadonlyArray<
-    {
-      isComplete: boolean
-      isNavigable: boolean
-      isNavigableByFacilitator: boolean
-    } & FindStageByIdPhase['stages'][0]
-  >
-}
-
-interface GotoMeeting {
-  id: string
-  facilitatorStageId: string
-  facilitatorUserId: string
-  localStage: {
-    id: string
+graphql`
+  fragment useMeetingGotoStageIdTeam on Team {
+    id
+    newMeeting {
+      id
+      facilitatorStageId
+      facilitatorUserId
+      localStage {
+        id
+      }
+      phases {
+        stages {
+          id
+          isComplete
+          isNavigable
+          isNavigableByFacilitator
+        }
+      }
+    }
   }
-  phases: ReadonlyArray<GotoPhase>
-}
+`
 
-interface GotoTeam {
-  id: string
-  newMeeting: GotoMeeting | null
-}
-export const useGotoStageId = (team: GotoTeam | null) => {
+export const useGotoStageId = (team: Team | null) => {
   const atmosphere = useAtmosphere()
   return useCallback(
     async (stageId: string) => {
@@ -107,10 +109,7 @@ export const useGotoStageId = (team: GotoTeam | null) => {
   )
 }
 
-export const useGotoNext = (
-  team: GotoTeam | null,
-  gotoStageId: ReturnType<typeof useGotoStageId>
-) => {
+export const useGotoNext = (team: Team | null, gotoStageId: ReturnType<typeof useGotoStageId>) => {
   const ref = useRef<HTMLElement>(null)
   const handleGotoNext = useRef<{
     gotoNext: (options?: {isHotkey?: boolean}) => void
@@ -162,7 +161,7 @@ export const useGotoNextHotkey = (
 }
 
 export const useGotoPrevHotkey = (
-  team: GotoTeam | null,
+  team: Team | null,
   gotoStageId: ReturnType<typeof useGotoStageId>
 ) => {
   const gotoPrev = useGotoPrev(team, gotoStageId)
@@ -179,10 +178,7 @@ export const useGotoPrevHotkey = (
   useHotkey('left', cb)
 }
 
-export const useGotoPrev = (
-  team: GotoTeam | null,
-  gotoStageId: ReturnType<typeof useGotoStageId>
-) => {
+export const useGotoPrev = (team: Team | null, gotoStageId: ReturnType<typeof useGotoStageId>) => {
   return useCallback(() => {
     const {newMeeting} = team!
     if (!newMeeting) return
@@ -215,23 +211,33 @@ export const DEFAULT_TEAM = {
   newMeeting: null
 }
 
-interface UseMeetingTeam extends SafeTeam, GotoTeam {
-  name: string
-  newMeeting: null | {id: string} & SafeTeam['newMeeting'] & GotoTeam['newMeeting']
-}
+graphql`
+  fragment useMeetingTeam on Team {
+    id
+    isMeetingSidebarCollapsed
+    name
+    ...useMeetingLocalStateTeam @relay(mask: false)
+    ...useMeetingGotoStageIdTeam @relay(mask: false)
+  }
+`
 
-const useMeeting = (meetingType: MeetingTypeEnum, team: UseMeetingTeam | null) => {
+type Team = Omit<useMeetingTeam, ' $refType'>
+const useMeeting = (meetingType: MeetingTypeEnum, team: Team | null) => {
   const {name: teamName, newMeeting} = team || DEFAULT_TEAM
   const {id: meetingId} = newMeeting || UNSTARTED_MEETING
   const gotoStageId = useGotoStageId(team)
   const handleGotoNext = useGotoNext(team, gotoStageId)
-  const safeRoute = useMeetingLocalState(team)
+  const safeRoute = useMeetingLocalState((team as unknown) as useMeetingLocalStateTeam)
   useEndMeetingHotkey(meetingId)
   useGotoNextHotkey(handleGotoNext.current.gotoNext)
   useGotoPrevHotkey(team, gotoStageId)
   useDemoMeeting()
   useDocumentTitle(`${meetingTypeToLabel[meetingType]} Meeting | ${teamName}`)
-  return {handleGotoNext, gotoStageId, safeRoute}
+  const teamId = team ? team.id : ''
+  const isMeetingSidebarCollapsed = team ? team.isMeetingSidebarCollapsed : false
+  const toggleSidebar = useToggleSidebar(teamId, !!isMeetingSidebarCollapsed)
+  const {streams, swarm} = useSwarm(teamId)
+  return {handleGotoNext, gotoStageId, safeRoute, toggleSidebar, streams, swarm}
 }
 
 export default useMeeting

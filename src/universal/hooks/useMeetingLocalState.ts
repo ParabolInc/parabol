@@ -1,39 +1,18 @@
+import {useMeetingLocalStateTeam} from '__generated__/useMeetingLocalStateTeam.graphql'
 import {Dispatch, SetStateAction, useEffect, useRef, useState} from 'react'
+import {graphql} from 'react-relay'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useRouter from 'universal/hooks/useRouter'
 import findKeyByValue from 'universal/utils/findKeyByValue'
 import findStageById from 'universal/utils/meetings/findStageById'
-import fromStageIdToUrl, {FromStageIdToUrlPhase} from 'universal/utils/meetings/fromStageIdToUrl'
+import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl'
 import getMeetingPathParams from 'universal/utils/meetings/getMeetingPathParams'
 import {meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups'
 import updateLocalStage from 'universal/utils/relay/updateLocalStage'
 
-interface ItemStage {
-  isNavigable: boolean
-  isNavigableByFacilitator: boolean
-}
-
-interface Phase extends FromStageIdToUrlPhase {
-  stages: ReadonlyArray<ItemStage & FromStageIdToUrlPhase['stages'][0]>
-}
-
-interface SafeNewMeeting {
-  facilitatorStageId: string
-  facilitatorUserId: string
-  localStage: {
-    id: string
-  }
-  id: string
-  phases: ReadonlyArray<Phase>
-}
-
-export interface SafeTeam {
-  newMeeting: SafeNewMeeting | null
-}
-
 const useInitialSafeRoute = (
   setSafeRoute: Dispatch<SetStateAction<boolean>>,
-  team: SafeTeam | null
+  team: useMeetingLocalStateTeam | null
 ) => {
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
@@ -131,7 +110,7 @@ const useInitialSafeRoute = (
 
 const useUpdatedSafeRoute = (
   setSafeRoute: Dispatch<SetStateAction<boolean>>,
-  team: SafeTeam | null
+  team: useMeetingLocalStateTeam | null
 ) => {
   const {history} = useRouter()
   const oldMeetingRef = useRef(team && team.newMeeting)
@@ -162,7 +141,27 @@ const useUpdatedSafeRoute = (
   })
 }
 
-const useMeetingLocalState = (team: SafeTeam | null) => {
+graphql`
+  fragment useMeetingLocalStateTeam on Team {
+    newMeeting {
+      id
+      facilitatorStageId
+      facilitatorUserId
+      localStage {
+        id
+      }
+      id
+      phases {
+        ...fromStageIdToUrlPhases @relay(mask: false)
+        stages {
+          isNavigable
+          isNavigableByFacilitator
+        }
+      }
+    }
+  }
+`
+const useMeetingLocalState = (team: useMeetingLocalStateTeam | null) => {
   const [safeRoute, setSafeRoute] = useState(false)
   useInitialSafeRoute(setSafeRoute, team)
   useUpdatedSafeRoute(setSafeRoute, team)

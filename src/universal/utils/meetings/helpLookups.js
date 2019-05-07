@@ -1,13 +1,6 @@
 import React from 'react'
 
-import {
-  LOBBY,
-  CHECKIN,
-  UPDATES,
-  FIRST_CALL,
-  AGENDA_ITEMS,
-  LAST_CALL
-} from 'universal/utils/constants'
+import {AGENDA_ITEMS, FIRST_CALL, LAST_CALL} from 'universal/utils/constants'
 
 const makeLink = (link, copy) => {
   const href = `https://www.parabol.co/getting-started-guide/${link}`
@@ -19,46 +12,6 @@ const makeLink = (link, copy) => {
 }
 
 const teamAgendaHelpLink = makeLink('action-meetings-101#team-agenda', 'Learn More')
-
-const actionGettingStartedLink = makeLink('action-meetings-101', 'Getting Started Guide')
-
-const actionCheckInLink = makeLink('action-meetings-101#social-check-in', 'Learn More')
-
-const actionLobbyHelpContent = (
-  <div>
-    <p>
-      {'To learn more about how to run an Action Meeting, see our '}
-      {actionGettingStartedLink}
-      {'.'}
-    </p>
-  </div>
-)
-
-const checkInHelpContent = (
-  <div>
-    <p>
-      {
-        'The Social Check-In is an opportunity to quickly share some personal context with your team.'
-      }
-    </p>
-    <p>{'Avoid cross-talk so that everybody can have uninterrupted airtime.'}</p>
-    <p>{actionCheckInLink}</p>
-  </div>
-)
-
-const updatesHelpContent = (
-  <div>
-    <p>
-      {'During this phase each teammate has uninterrupted airtime to give an update on their work.'}
-    </p>
-    <p>
-      {
-        'Help keep your team stay on schedule by adding Agenda topics to the queue if updates inspire the need for discussion.'
-      }
-    </p>
-    <p>{makeLink('action-meetings-101#solo-updates', 'Learn More')}</p>
-  </div>
-)
 
 const firstCallHelpContent = (
   <div>
@@ -96,9 +49,6 @@ const lastCallHelpContent = (
 )
 
 export const actionPhaseHelpLookup = {
-  [LOBBY]: actionLobbyHelpContent,
-  [CHECKIN]: checkInHelpContent,
-  [UPDATES]: updatesHelpContent,
   [FIRST_CALL]: firstCallHelpContent,
   [AGENDA_ITEMS]: agendaTopicHelpContent,
   [LAST_CALL]: lastCallHelpContent

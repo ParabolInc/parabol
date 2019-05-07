@@ -181,7 +181,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       }
     },
     tasks: {
-      type: TaskConnection,
+      type: new GraphQLNonNull(TaskConnection),
       args: {
         ...forwardConnectionArgs,
         after: {
@@ -193,7 +193,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       async resolve ({id: teamId}, _args, {authToken, dataLoader}) {
         if (!isTeamMember(authToken, teamId)) {
           standardError(new Error('Team not found'))
-          return null
+          return []
         }
         const tasks = await dataLoader.get('tasksByTeamId').load(teamId)
         return connectionFromTasks(tasks)

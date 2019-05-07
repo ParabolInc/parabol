@@ -42,12 +42,12 @@ export const phaseLabelLookup = {
   [LAST_CALL]: 'Last Call'
 }
 
-export const phaseDescriptionLookup = {
-  [REFLECT]: 'Add anonymous reflections for each prompt',
-  [GROUP]: 'Drag cards to group by common topics',
-  [VOTE]: 'Vote on the topics you want to discuss',
-  [DISCUSS]: 'Create takeaway task cards to capture next steps'
-}
+// export const phaseDescriptionLookup = {
+//   [REFLECT]: 'Add anonymous reflections for each prompt',
+//   [GROUP]: 'Drag cards to group by common topics',
+//   [VOTE]: 'Vote on the topics you want to discuss',
+//   [DISCUSS]: 'Create takeaway task cards to capture next steps'
+// }
 
 export const meetingTypeToSlug = {
   [RETROSPECTIVE]: 'retro',

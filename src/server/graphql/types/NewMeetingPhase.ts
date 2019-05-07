@@ -1,23 +1,23 @@
-import {GraphQLBoolean, GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
 import AgendaItemsPhase from 'server/graphql/types/AgendaItemsPhase'
+import CheckInPhase from 'server/graphql/types/CheckInPhase'
+import DiscussPhase from 'server/graphql/types/DiscussPhase'
+import GenericMeetingPhase from 'server/graphql/types/GenericMeetingPhase'
+import NewMeetingPhaseTypeEnum from 'server/graphql/types/NewMeetingPhaseTypeEnum'
+import NewMeetingStage from 'server/graphql/types/NewMeetingStage'
+import ReflectPhase from 'server/graphql/types/ReflectPhase'
 import UpdatesPhase from 'server/graphql/types/UpdatesPhase'
 import {
+  AGENDA_ITEMS,
   CHECKIN,
   DISCUSS,
-  GROUP,
-  REFLECT,
-  VOTE,
-  UPDATES,
   FIRST_CALL,
-  AGENDA_ITEMS,
-  LAST_CALL
+  GROUP,
+  LAST_CALL,
+  REFLECT,
+  UPDATES,
+  VOTE
 } from 'universal/utils/constants'
-import NewMeetingPhaseTypeEnum from 'server/graphql/types/NewMeetingPhaseTypeEnum'
-import CheckInPhase from 'server/graphql/types/CheckInPhase'
-import GenericMeetingPhase from 'server/graphql/types/GenericMeetingPhase'
-import ReflectPhase from 'server/graphql/types/ReflectPhase'
-import DiscussPhase from 'server/graphql/types/DiscussPhase'
-import NewMeetingStage from 'server/graphql/types/NewMeetingStage'
 
 export const newMeetingPhaseFields = () => ({
   id: {

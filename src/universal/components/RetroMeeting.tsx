@@ -1,11 +1,18 @@
 import {RetroMeeting_viewer} from '__generated__/RetroMeeting_viewer.graphql'
-import React from 'react'
+import React, {ReactElement} from 'react'
+import {DragDropContext as dragDropContext} from 'react-dnd'
+import HTML5Backend from 'react-dnd-html5-backend'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {ValueOf} from 'types/generics'
-import NewMeeting, {NewMeetingTypeProps} from 'universal/components/NewMeeting'
-import useMeeting from 'universal/hooks/newMeeting'
+import LayoutPusher from 'universal/components/LayoutPusher'
+import MeetingArea from 'universal/components/MeetingArea'
+import MeetingStyles from 'universal/components/MeetingStyles'
+import RetroMeetingSidebar from 'universal/components/RetroMeetingSidebar'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
+import useMeeting, {useGotoNext} from 'universal/hooks/useMeeting'
 import {demoTeamId} from 'universal/modules/demo/initDB'
+import NewMeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
+import RejoinFacilitatorButton from 'universal/modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton'
 import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
 import lazyPreload from 'universal/utils/lazyPreload'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
@@ -38,20 +45,28 @@ const phaseLookup = {
 
 type PhaseComponent = ValueOf<typeof phaseLookup>
 
-export interface RetroMeetingPhaseProps extends NewMeetingTypeProps {
+export interface RetroMeetingPhaseProps {
+  handleGotoNext: ReturnType<typeof useGotoNext>
   isDemoStageComplete: boolean
   meetingSettings: any
+  team: any
+  toggleSidebar: () => void
+  avatarGroup: ReactElement
 }
 
 const RetroMeeting = (props: Props) => {
   const {viewer} = props
-  const {team} = viewer
-  const {handleGotoNext, gotoStageId, safeRoute} = useMeeting(MeetingTypeEnum.retrospective, team)
+  const team = viewer.team!
+  const {toggleSidebar, streams, swarm, handleGotoNext, gotoStageId, safeRoute} = useMeeting(
+    MeetingTypeEnum.retrospective,
+    team
+  )
   const atmosphere = useAtmosphere()
   if (!team || !safeRoute) return null
-  const {id: teamId, meetingSettings, newMeeting} = team
-  const {phaseTypes} = meetingSettings
-  const {localPhase} = newMeeting || UNSTARTED_MEETING
+  const {featureFlags} = viewer
+  const {video: allowVideo} = featureFlags
+  const {id: teamId, meetingSettings, isMeetingSidebarCollapsed, newMeeting} = team
+  const {facilitatorStageId, localPhase, localStage} = newMeeting || UNSTARTED_MEETING
   const localPhaseType = (localPhase && localPhase.phaseType) || NewMeetingPhaseTypeEnum.lobby
   const isDemoStageComplete =
     teamId === demoTeamId
@@ -59,19 +74,36 @@ const RetroMeeting = (props: Props) => {
       : false
   const Phase = phaseLookup[localPhaseType] as PhaseComponent
   return (
-    <NewMeeting
-      viewer={viewer}
-      gotoStageId={gotoStageId}
-      meetingType={MeetingTypeEnum.retrospective}
-      phaseTypes={phaseTypes as ReadonlyArray<NewMeetingPhaseTypeEnum>}
-    >
-      <Phase
-        handleGotoNext={handleGotoNext}
-        meetingSettings={meetingSettings}
-        team={team}
-        isDemoStageComplete={isDemoStageComplete}
+    <MeetingStyles>
+      <RetroMeetingSidebar
+        gotoStageId={gotoStageId}
+        toggleSidebar={toggleSidebar}
+        viewer={viewer}
       />
-    </NewMeeting>
+      <MeetingArea>
+        <LayoutPusher isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed} />
+        <Phase
+          handleGotoNext={handleGotoNext}
+          meetingSettings={meetingSettings}
+          team={team}
+          isDemoStageComplete={isDemoStageComplete}
+          toggleSidebar={toggleSidebar}
+          avatarGroup={
+            <NewMeetingAvatarGroup
+              allowVideo={allowVideo}
+              swarm={swarm}
+              gotoStageId={gotoStageId}
+              team={team}
+              camStreams={streams.cam}
+            />
+          }
+        />
+      </MeetingArea>
+      <RejoinFacilitatorButton
+        inSync={localStage ? localStage.id === facilitatorStageId : true}
+        onClick={() => gotoStageId(facilitatorStageId)}
+      />
+    </MeetingStyles>
   )
 }
 
@@ -100,12 +132,10 @@ graphql`
     ...RetroGroupPhase_team
     ...RetroVotePhase_team
     ...RetroDiscussPhase_team
+    ...useMeetingTeam @relay(mask: false)
     id
-    name
+    isMeetingSidebarCollapsed
     newMeeting {
-      id
-      facilitatorStageId
-      facilitatorUserId
       localPhase {
         ...RetroMeetingLocalPhase @relay(mask: false)
       }
@@ -120,16 +150,19 @@ graphql`
 `
 
 export default createFragmentContainer(
-  RetroMeeting,
+  dragDropContext(HTML5Backend)(RetroMeeting),
   graphql`
     fragment RetroMeeting_viewer on User {
-      ...NewMeeting_viewer
+      ...RetroMeetingSidebar_viewer
+      featureFlags {
+        video
+      }
       team(teamId: $teamId) {
+        ...NewMeetingAvatarGroup_team
         ...RetroMeetingTeam @relay(mask: false)
         meetingSettings(meetingType: retrospective) {
           ...RetroLobby_meetingSettings
           ...RetroVotePhase_meetingSettings
-          phaseTypes
         }
       }
     }

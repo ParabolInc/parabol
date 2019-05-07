@@ -9,7 +9,7 @@ import MeetingSubnavItem from 'universal/components/MeetingSubnavItem'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {useGotoStageId} from 'universal/hooks/newMeeting'
+import {useGotoStageId} from 'universal/hooks/useMeeting'
 import DragDiscussionTopicMutation from 'universal/mutations/DragDiscussionTopicMutation'
 import {navItemRaised} from 'universal/styles/elevation'
 import {meetingVoteIcon} from 'universal/styles/meeting'

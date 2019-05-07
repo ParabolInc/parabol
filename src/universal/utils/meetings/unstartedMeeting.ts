@@ -5,12 +5,13 @@ const UNSTARTED_MEETING = {
   phases: [],
   localPhase: null,
   localStage: null
-}
+} as UnstartedMeeting
 
 export interface UnstartedMeeting {
+  id: string
   facilitatorUserId: string
   facilitatorStageId: string
-  phases: Array<never>
+  phases: ReadonlyArray<any>
   localPhase: null
   localStage: null
 }

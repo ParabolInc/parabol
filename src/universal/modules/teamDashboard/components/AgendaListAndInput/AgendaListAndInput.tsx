@@ -3,7 +3,7 @@ import {AgendaListAndInput_team} from '__generated__/AgendaListAndInput_team.gra
 import React from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {useGotoStageId} from 'universal/hooks/newMeeting'
+import {useGotoStageId} from 'universal/hooks/useMeeting'
 import AgendaInput from 'universal/modules/teamDashboard/components/AgendaInput/AgendaInput'
 import AgendaList from 'universal/modules/teamDashboard/components/AgendaList/AgendaList'
 import {meetingSidebarGutter} from 'universal/styles/meeting'
@@ -21,14 +21,6 @@ const RootStyles = styled('div')(
     pointerEvents: disabled ? 'none' : undefined
   })
 )
-
-const Inner = styled('div')({
-  bottom: 0,
-  left: 0,
-  position: 'absolute',
-  right: 0,
-  top: 0
-})
 
 interface Props {
   agendaItemPhase: AgendaListAndInput_agendaItemPhase | null

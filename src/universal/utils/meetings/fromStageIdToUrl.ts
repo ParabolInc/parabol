@@ -1,12 +1,20 @@
-import findStageById, {FindStageByIdPhase} from 'universal/utils/meetings/findStageById'
+import {graphql} from 'react-relay'
+import findStageById from 'universal/utils/meetings/findStageById'
 import getMeetingPathParams from 'universal/utils/meetings/getMeetingPathParams'
 import {phaseIsMultiStage, phaseTypeToSlug} from 'universal/utils/meetings/lookups'
 
-export interface FromStageIdToUrlPhase extends FindStageByIdPhase {
-  phaseType: string
-}
+graphql`
+  fragment fromStageIdToUrlPhases on NewMeetingPhase @relay(plural: true) {
+    phaseType
+    stages {
+      id
+    }
+  }
+`
 
-const fromStageIdToUrl = (stageId: string, phases: ReadonlyArray<FromStageIdToUrlPhase>) => {
+// I think there's a TS bug where when i make a readonly array of an omit it returns the vals
+
+const fromStageIdToUrl = (stageId: string, phases: ReadonlyArray<any>) => {
   const stageRes = findStageById(phases, stageId)
   if (!stageRes) return '/'
   const {phase, stageIdx} = stageRes
