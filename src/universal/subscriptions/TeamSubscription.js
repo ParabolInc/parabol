@@ -42,6 +42,9 @@ import {
   acceptTeamInvitationTeamOnNext,
   acceptTeamInvitationTeamUpdater
 } from 'universal/mutations/AcceptTeamInvitationMutation'
+import {addAgendaItemUpdater} from 'universal/mutations/AddAgendaItemMutation'
+import {removeAgendaItemUpdater} from 'universal/mutations/RemoveAgendaItemMutation'
+import handleUpdateAgendaItems from 'universal/mutations/handlers/handleUpdateAgendaItems'
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -89,6 +92,9 @@ const subscription = graphql`
       ...UpdateTeamNameMutation_team @relay(mask: false)
       ...UpgradeToProMutation_team @relay(mask: false)
       ...VoteForReflectionGroupMutation_team @relay(mask: false)
+      ...AddAgendaItemMutation_team @relay(mask: false)
+      ...RemoveAgendaItemMutation_team @relay(mask: false)
+      ...UpdateAgendaItemMutation_team @relay(mask: false)
     }
   }
 `
@@ -118,6 +124,15 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
       if (!payload) return
       const type = payload.getValue('__typename')
       switch (type) {
+        case 'AddAgendaItemPayload':
+          addAgendaItemUpdater(payload, store)
+          break
+        case 'RemoveAgendaItemPayload':
+          removeAgendaItemUpdater(payload, store)
+          break
+        case 'UpdateAgendaItemPayload':
+          handleUpdateAgendaItems(payload, {store})
+          break
         case 'AcceptTeamInvitationPayload':
           acceptTeamInvitationTeamUpdater(payload, {store, atmosphere: environment})
           break

@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import RemoveAgendaItemPayload from 'server/graphql/types/RemoveAgendaItemPayload'
 import publish from 'server/utils/publish'
-import {AGENDA_ITEM} from 'universal/utils/constants'
+import {TEAM} from 'universal/utils/constants'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import standardError from 'server/utils/standardError'
 
@@ -15,7 +15,7 @@ export default {
       description: 'The agenda item unique id'
     }
   },
-  async resolve (source, {agendaItemId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (_source, {agendaItemId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -38,7 +38,7 @@ export default {
       return standardError(new Error('Agenda item not found'), {userId: viewerId})
     }
     const data = {agendaItem}
-    publish(AGENDA_ITEM, teamId, RemoveAgendaItemPayload, data, subOptions)
+    publish(TEAM, teamId, RemoveAgendaItemPayload, data, subOptions)
     return data
   }
 }

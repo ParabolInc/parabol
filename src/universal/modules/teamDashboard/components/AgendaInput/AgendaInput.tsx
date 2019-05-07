@@ -116,7 +116,7 @@ const AgendaInput = (props: Props) => {
     }
     resetValue()
     focusInput()
-    AddAgendaItemMutation(atmosphere, newAgendaItem, onError, onCompleted)
+    AddAgendaItemMutation(atmosphere, {newAgendaItem}, {onError, onCompleted})
   }
 
   const onKeyDown = (e: React.KeyboardEvent) => {

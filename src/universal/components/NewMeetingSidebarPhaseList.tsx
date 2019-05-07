@@ -41,6 +41,8 @@ const getItemStage = (name: string, phases: NewMeeting['phases'], facilitatorSta
   return itemPhase && itemPhase.stages[0]
 }
 
+const blackList = [NewMeetingPhaseTypeEnum.firstcall, NewMeetingPhaseTypeEnum.lastcall]
+
 const NewMeetingSidebarPhaseList = (props: Props) => {
   const {gotoStageId, meetingType, phaseTypes, viewer} = props
   const {viewerId, team} = viewer
@@ -66,35 +68,37 @@ const NewMeetingSidebarPhaseList = (props: Props) => {
   }
   return (
     <NavList>
-      {phaseTypes.map((phaseType, idx) => {
-        const itemStage = getItemStage(phaseType, phases, facilitatorStageId)
-        const {id: itemStageId = '', isNavigable = false, isNavigableByFacilitator = false} =
-          itemStage || {}
-        const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
-        const handleClick = () => {
-          gotoStageId(itemStageId).catch()
-          if (sidebarCanAutoCollapse()) toggleSidebar()
-        }
-        // when a primary nav item has sub-items, we want to show the sub-items as active, not the parent (TA)
-        const activeHasSubItems = phaseType === DISCUSS || phaseType === AGENDA_ITEMS
-        return (
-          <NewMeetingSidebarPhaseListItem
-            key={phaseType}
-            phaseType={phaseType}
-            listPrefix={String(idx + 1)}
-            isActive={!activeHasSubItems && localGroup === phaseType}
-            isFacilitatorPhaseGroup={facilitatorPhaseGroup === phaseType}
-            handleClick={canNavigate ? handleClick : undefined}
-          >
-            <NewMeetingSidebarPhaseListItemChildren
-              gotoStageId={gotoStageId}
-              meetingType={meetingType}
+      {phaseTypes
+        .filter((phaseType) => !blackList.includes(phaseType))
+        .map((phaseType, idx) => {
+          const itemStage = getItemStage(phaseType, phases, facilitatorStageId)
+          const {id: itemStageId = '', isNavigable = false, isNavigableByFacilitator = false} =
+            itemStage || {}
+          const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
+          const handleClick = () => {
+            gotoStageId(itemStageId).catch()
+            if (sidebarCanAutoCollapse()) toggleSidebar()
+          }
+          // when a primary nav item has sub-items, we want to show the sub-items as active, not the parent (TA)
+          const activeHasSubItems = phaseType === DISCUSS || phaseType === AGENDA_ITEMS
+          return (
+            <NewMeetingSidebarPhaseListItem
+              key={phaseType}
               phaseType={phaseType}
-              viewer={viewer}
-            />
-          </NewMeetingSidebarPhaseListItem>
-        )
-      })}
+              listPrefix={String(idx + 1)}
+              isActive={!activeHasSubItems && localGroup === phaseType}
+              isFacilitatorPhaseGroup={facilitatorPhaseGroup === phaseType}
+              handleClick={canNavigate ? handleClick : undefined}
+            >
+              <NewMeetingSidebarPhaseListItemChildren
+                gotoStageId={gotoStageId}
+                meetingType={meetingType}
+                phaseType={phaseType}
+                viewer={viewer}
+              />
+            </NewMeetingSidebarPhaseListItem>
+          )
+        })}
     </NavList>
   )
 }

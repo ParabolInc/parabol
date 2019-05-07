@@ -1,10 +1,14 @@
-import {commitMutation} from 'react-relay'
+import {commitMutation, graphql} from 'react-relay'
+import Atmosphere from 'universal/Atmosphere'
 import handleAddAgendaItems from 'universal/mutations/handlers/handleAddAgendaItems'
+import {IAddAgendaItemOnMutationArguments} from 'universal/types/graphql'
+import {LocalHandlers} from 'universal/types/relayMutations'
 import clientTempId from 'universal/utils/relay/clientTempId'
 import createProxyRecord from 'universal/utils/relay/createProxyRecord'
+import {AddAgendaItemMutation} from '__generated__/AddAgendaItemMutation.graphql'
 
 graphql`
-  fragment AddAgendaItemMutation_agendaItem on AddAgendaItemPayload {
+  fragment AddAgendaItemMutation_team on AddAgendaItemPayload {
     agendaItem {
       id
       content
@@ -26,27 +30,34 @@ const mutation = graphql`
       error {
         message
       }
-      ...AddAgendaItemMutation_agendaItem @relay(mask: false)
+      ...AddAgendaItemMutation_team @relay(mask: false)
     }
   }
 `
 
-export const addAgendaItemUpdater = (payload, store) => {
+export const addAgendaItemUpdater = (payload, {store}) => {
   const agendaItem = payload.getLinkedRecord('agendaItem')
   handleAddAgendaItems(agendaItem, store)
 }
 
-const AddAgendaItemMutation = (environment, newAgendaItem, onError, onCompleted) => {
-  const {teamId} = newAgendaItem
-  return commitMutation(environment, {
+const AddAgendaItemMutation = (
+  atmosphere: Atmosphere,
+  variables: IAddAgendaItemOnMutationArguments,
+  {onError, onCompleted}: LocalHandlers
+) => {
+  return commitMutation<AddAgendaItemMutation>(atmosphere, {
     mutation,
-    variables: {newAgendaItem},
+    variables,
     updater: (store) => {
       const payload = store.getRootField('addAgendaItem')
       if (!payload) return
-      addAgendaItemUpdater(payload, store)
+      addAgendaItemUpdater(payload, {store})
     },
     optimisticUpdater: (store) => {
+      const {newAgendaItem} = variables
+      const {teamId, teamMemberId} = newAgendaItem
+      const teamMember = store.get(teamMemberId)
+      if (!teamMember) return
       const optimisticAgendaItem = {
         ...newAgendaItem,
         id: clientTempId(teamId),
@@ -54,6 +65,7 @@ const AddAgendaItemMutation = (environment, newAgendaItem, onError, onCompleted)
         isComplete: false
       }
       const agendaItemNode = createProxyRecord(store, 'AgendaItem', optimisticAgendaItem)
+      agendaItemNode.setLinkedRecord(teamMember, 'teamMember')
       handleAddAgendaItems(agendaItemNode, store)
     },
     onCompleted,

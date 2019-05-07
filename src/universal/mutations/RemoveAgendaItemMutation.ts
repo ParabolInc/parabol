@@ -7,7 +7,7 @@ import getInProxy from 'universal/utils/relay/getInProxy'
 import {RemoveAgendaItemMutation} from '__generated__/RemoveAgendaItemMutation.graphql'
 
 graphql`
-  fragment RemoveAgendaItemMutation_agendaItem on RemoveAgendaItemPayload {
+  fragment RemoveAgendaItemMutation_team on RemoveAgendaItemPayload {
     agendaItem {
       id
     }
@@ -20,12 +20,12 @@ const mutation = graphql`
       error {
         message
       }
-      ...RemoveAgendaItemMutation_agendaItem @relay(mask: false)
+      ...RemoveAgendaItemMutation_team @relay(mask: false)
     }
   }
 `
 
-export const removeAgendaItemUpdater = (payload, store) => {
+export const removeAgendaItemUpdater = (payload, {store}) => {
   const agendaItemId = getInProxy(payload, 'agendaItem', 'id')
   handleRemoveAgendaItems(agendaItemId, store)
 }
@@ -41,7 +41,7 @@ const RemoveAgendaItemMutation = (
     updater: (store) => {
       const payload = store.getRootField('removeAgendaItem')
       if (!payload) return
-      removeAgendaItemUpdater(payload, store)
+      removeAgendaItemUpdater(payload, {store})
     },
     optimisticUpdater: (store) => {
       const {agendaItemId} = variables

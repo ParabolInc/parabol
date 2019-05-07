@@ -4,7 +4,7 @@ import AddAgendaItemPayload from 'server/graphql/types/AddAgendaItemPayload'
 import CreateAgendaItemInput from 'server/graphql/types/CreateAgendaItemInput'
 import publish from 'server/utils/publish'
 import shortid from 'shortid'
-import {AGENDA_ITEM} from 'universal/utils/constants'
+import {TEAM} from 'universal/utils/constants'
 import makeAgendaItemSchema from 'universal/validation/makeAgendaItemSchema'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import standardError from 'server/utils/standardError'
@@ -18,7 +18,7 @@ export default {
       description: 'The new task including an id, teamMemberId, and content'
     }
   },
-  async resolve (source, {newAgendaItem}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (_source, {newAgendaItem}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -50,7 +50,7 @@ export default {
     })
 
     const data = {agendaItemId}
-    publish(AGENDA_ITEM, teamId, AddAgendaItemPayload, data, subOptions)
+    publish(TEAM, teamId, AddAgendaItemPayload, data, subOptions)
     return data
   }
 }

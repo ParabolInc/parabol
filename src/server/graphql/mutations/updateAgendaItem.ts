@@ -4,7 +4,7 @@ import UpdateAgendaItemInput from 'server/graphql/types/UpdateAgendaItemInput'
 import UpdateAgendaItemPayload from 'server/graphql/types/UpdateAgendaItemPayload'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
-import {AGENDA_ITEM} from 'universal/utils/constants'
+import {TEAM} from 'universal/utils/constants'
 import makeUpdateAgendaItemSchema from 'universal/validation/makeUpdateAgendaItemSchema'
 import standardError from 'server/utils/standardError'
 
@@ -17,7 +17,7 @@ export default {
       description: 'The updated item including an id, content, status, sortOrder'
     }
   },
-  async resolve (source, {updatedAgendaItem}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (_source, {updatedAgendaItem}, {authToken, dataLoader, socketId: mutatorId}) {
     const now = new Date()
     const r = getRethink()
     const operationId = dataLoader.share()
@@ -51,7 +51,7 @@ export default {
       })
 
     const data = {agendaItemId}
-    publish(AGENDA_ITEM, teamId, UpdateAgendaItemPayload, data, subOptions)
+    publish(TEAM, teamId, UpdateAgendaItemPayload, data, subOptions)
     return data
   }
 }
