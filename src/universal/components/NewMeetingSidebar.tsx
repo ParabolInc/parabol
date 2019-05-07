@@ -1,5 +1,4 @@
 import {NewMeetingSidebar_viewer} from '__generated__/NewMeetingSidebar_viewer.graphql'
-import {MeetingTypeEnum} from '__generated__/RemoveOrgUserMutation_team.graphql'
 import React from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
@@ -10,10 +9,11 @@ import MeetingSidebarLabelBlock from 'universal/components/MeetingSidebarLabelBl
 import NewMeetingSidebarPhaseList from 'universal/components/NewMeetingSidebarPhaseList'
 import ScrollableBlock from 'universal/components/ScrollableBlock'
 import SidebarToggle from 'universal/components/SidebarToggle'
+import {useGotoStageId} from 'universal/hooks/newMeeting'
 import {meetingSidebarWidth} from 'universal/styles/meeting'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
-import {NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
+import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
 import isDemoRoute from '../utils/isDemoRoute'
 
@@ -53,7 +53,7 @@ const TeamDashboardLink = styled(Link)({
 })
 
 interface Props {
-  gotoStageId: (stageId: string) => void
+  gotoStageId: ReturnType<typeof useGotoStageId>
   meetingType: MeetingTypeEnum
   phaseTypes: ReadonlyArray<NewMeetingPhaseTypeEnum>
   toggleSidebar: () => void
@@ -78,6 +78,7 @@ const NewMeetingSidebar = (props: Props) => {
       <ScrollableBlock>
         <NewMeetingSidebarPhaseList
           gotoStageId={gotoStageId}
+          meetingType={meetingType}
           phaseTypes={phaseTypes}
           viewer={viewer}
         />

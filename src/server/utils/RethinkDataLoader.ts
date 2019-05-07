@@ -1,6 +1,7 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
 import getRethink from 'server/database/rethinkDriver'
+import Meeting from 'server/database/types/Meeting'
 import AtlassianManager from 'server/utils/AtlassianManager'
 import {getUserId} from 'server/utils/authorization'
 import sendToSentry from 'server/utils/sendToSentry'
@@ -43,6 +44,30 @@ const normalizeRethinkDbResults = (keys, indexField, cacheKeyFn = defaultCacheKe
   })
 }
 
+interface Tables {
+  AgendaItem: any
+  AtlassianAuth: any
+  CustomPhaseItem: any
+  Meeting: any
+  MeetingSettings: any
+  MeetingMember: any
+  NewMeeting: Meeting
+  NewFeature: any
+  Notification: any
+  Organization: any
+  OrganizationUser: any
+  ReflectTemplate: any
+  RetroReflectionGroup: any
+  RetroReflection: any
+  SoftTeamMember: any
+  SuggestedAction: any
+  Task: any
+  TeamMember: any
+  TeamInvitation: any
+  Team: any
+  User: any
+}
+
 export default class RethinkDataLoader {
   dataLoaderOptions: DataLoader.Options<any, any>
   authToken: null | IAuthToken
@@ -64,17 +89,17 @@ export default class RethinkDataLoader {
       })
       return ids.map((id) => items.filter((item) => item[field] === id))
     }
-    return new DataLoader<string, T>(batchFn, this.dataLoaderOptions)
+    return new DataLoader<string, T[]>(batchFn, this.dataLoaderOptions)
   }
 
-  private pkLoader (table: string) {
+  private pkLoader<T extends keyof Tables> (table: T) {
     // don't pass in a a filter here because they requested a specific ID, they know what they want
     const batchFn = async (keys) => {
       const r = getRethink()
       const docs = await r.table(table).getAll(r.args(keys), {index: 'id'})
       return normalizeRethinkDbResults(keys, 'id')(docs, this.authToken, table)
     }
-    return new DataLoader(batchFn, this.dataLoaderOptions)
+    return new DataLoader<string, Tables[T]>(batchFn, this.dataLoaderOptions)
   }
 
   agendaItems = this.pkLoader('AgendaItem')
@@ -117,7 +142,7 @@ export default class RethinkDataLoader {
       .orderBy('sortOrder')
   })
 
-  atlassianAuthByUserId = this.fkLoader<IAtlassianAuth[]>(
+  atlassianAuthByUserId = this.fkLoader<IAtlassianAuth>(
     this.atlassianAuths,
     'userId',
     (userIds) => {

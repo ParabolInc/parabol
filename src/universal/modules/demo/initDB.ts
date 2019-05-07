@@ -211,6 +211,7 @@ const initPhases = (teamMembers) => {
         '{"blocks":[{"key":"1bm6m","text":"What’s got your attention today, and why?","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}',
       id: 'checkinPhase',
       phaseType: CHECKIN,
+      meetingId: demoMeetingId,
       stages: teamMembers.map(initCheckInStage)
     },
     {
@@ -218,6 +219,7 @@ const initPhases = (teamMembers) => {
       id: 'reflectPhase',
       phaseType: REFLECT,
       focusedPhaseItemId: null,
+      meetingId: demoMeetingId,
       reflectPrompts: [
         {
           id: 'startId',
@@ -253,6 +255,7 @@ const initPhases = (teamMembers) => {
       __typename: 'GenericMeetingPhase',
       id: 'groupPhase',
       phaseType: GROUP,
+      meetingId: demoMeetingId,
       stages: [
         {
           __typename: 'GenericMeetingStage',
@@ -267,6 +270,7 @@ const initPhases = (teamMembers) => {
       __typename: 'GenericMeetingPhase',
       id: 'votePhase',
       phaseType: VOTE,
+      meetingId: demoMeetingId,
       stages: [
         {
           __typename: 'GenericMeetingStage',
@@ -281,6 +285,7 @@ const initPhases = (teamMembers) => {
       __typename: 'DiscussPhase',
       id: 'discussPhase',
       phaseType: DISCUSS,
+      meetingId: demoMeetingId,
       stages: [
         {
           __typename: 'RetroDiscussStage',

@@ -1,34 +1,42 @@
-import PropTypes from 'prop-types'
 import React from 'react'
-import ui from 'universal/styles/ui'
+import styled from 'react-emotion'
 import {meetingSidebarGutterInner} from 'universal/styles/meeting'
 import appTheme from 'universal/styles/theme/appTheme'
-import styled from 'react-emotion'
+import ui from 'universal/styles/ui'
 
 const lineHeight = ui.navTopicLineHeight
 
-const ItemRoot = styled('div')(
+interface ItemRootProps {
+  isActive: boolean
+  isComplete: boolean
+  isDisabled: boolean
+  isDragging: boolean
+  onClick: ((e: React.MouseEvent) => void) | undefined
+  isUnsyncedFacilitatorStage: boolean
+}
+
+const ItemRoot = styled('div')<ItemRootProps>(
   ({isActive, isComplete, isDisabled, isDragging, onClick}) => ({
     backgroundColor: isActive
       ? ui.navMenuLightBackgroundColorActive
       : isDragging
-        ? appTheme.palette.light50l
-        : '#fff',
-    boxShadow: isActive && `inset ${ui.navMenuLeftBorderWidth} 0 0 ${ui.palette.mid}`,
+      ? appTheme.palette.light50l
+      : '#fff',
+    boxShadow: isActive ? `inset ${ui.navMenuLeftBorderWidth} 0 0 ${ui.palette.mid}` : undefined,
     color: onClick ? ui.colorLink : ui.colorText,
     display: 'flex',
     fontSize: ui.navTopicFontSize,
     fontWeight: 400,
     minHeight: '2.5rem',
-    opacity: !isActive && isComplete && 0.5,
+    opacity: !isActive && isComplete ? 0.5 : undefined,
     padding: '.5rem 0',
     position: 'relative',
     userSelect: 'none',
     width: '100%',
     '&:hover': {
-      backgroundColor: onClick && !isActive && appTheme.palette.light50l,
-      cursor: !isActive && onClick && 'pointer',
-      opacity: !isDisabled && 1
+      backgroundColor: onClick && !isActive ? appTheme.palette.light50l : undefined,
+      cursor: !isActive && onClick ? 'pointer' : undefined,
+      opacity: !isDisabled ? 1 : undefined
     }
   }),
   ({isUnsyncedFacilitatorStage}) =>
@@ -60,12 +68,12 @@ const ItemOrderLabel = styled('div')({
   width: meetingSidebarGutterInner
 })
 
-const ItemLabel = styled('div')(({isComplete}) => ({
+const ItemLabel = styled('div')(({isComplete}: {isComplete: boolean}) => ({
   color: 'inherit',
   fontSize: appTheme.typography.s3,
   flex: 1,
   lineHeight,
-  textDecoration: isComplete && 'line-through',
+  textDecoration: isComplete ? 'line-through' : undefined,
   wordBreak: 'break-word'
 }))
 
@@ -76,7 +84,19 @@ const ItemMeta = styled('div')({
   paddingLeft: '.25rem'
 })
 
-const MeetingSubnavItem = (props) => {
+interface Props {
+  isActive: boolean
+  isComplete: boolean
+  isDisabled: boolean
+  isDragging: boolean
+  isUnsyncedFacilitatorStage: boolean
+  label: string
+  metaContent: any
+  onClick: ((e: React.MouseEvent) => void) | undefined
+  orderLabel: string
+}
+
+const MeetingSubnavItem = (props: Props) => {
   const {
     isActive,
     isComplete,
@@ -96,24 +116,13 @@ const MeetingSubnavItem = (props) => {
       isDisabled={isDisabled}
       isDragging={isDragging}
       isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
-      onClick={!isDisabled ? onClick : null}
+      onClick={!isDisabled ? onClick : undefined}
     >
       <ItemOrderLabel>{orderLabel}</ItemOrderLabel>
       <ItemLabel isComplete={isComplete}>{label}</ItemLabel>
       <ItemMeta>{metaContent}</ItemMeta>
     </ItemRoot>
   )
-}
-
-MeetingSubnavItem.propTypes = {
-  isActive: PropTypes.bool,
-  isComplete: PropTypes.bool,
-  isDisabled: PropTypes.bool,
-  isUnsyncedFacilitatorStage: PropTypes.bool,
-  label: PropTypes.string,
-  metaContent: PropTypes.any,
-  onClick: PropTypes.func,
-  orderLabel: PropTypes.string
 }
 
 export default MeetingSubnavItem

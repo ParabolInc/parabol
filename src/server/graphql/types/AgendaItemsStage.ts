@@ -1,4 +1,4 @@
-import {GraphQLFloat, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import NewMeetingStage, {newMeetingStageFields} from 'server/graphql/types/NewMeetingStage'
 
 const AgendaItemsStage = new GraphQLObjectType({
@@ -7,9 +7,9 @@ const AgendaItemsStage = new GraphQLObjectType({
   interfaces: () => [NewMeetingStage],
   fields: () => ({
     ...newMeetingStageFields(),
-    sortOrder: {
-      type: new GraphQLNonNull(GraphQLFloat),
-      description: 'The sort order for re-prioritizing agenda items'
+    agendaItemId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The id of the agenda item this relates to'
     }
   })
 })

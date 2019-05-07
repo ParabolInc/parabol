@@ -40,6 +40,7 @@ type PhaseComponent = ValueOf<typeof phaseLookup>
 
 export interface RetroMeetingPhaseProps extends NewMeetingTypeProps {
   isDemoStageComplete: boolean
+  meetingSettings: any
 }
 
 const RetroMeeting = (props: Props) => {
@@ -66,6 +67,7 @@ const RetroMeeting = (props: Props) => {
     >
       <Phase
         handleGotoNext={handleGotoNext}
+        meetingSettings={meetingSettings}
         team={team}
         isDemoStageComplete={isDemoStageComplete}
       />
@@ -92,18 +94,14 @@ graphql`
 `
 graphql`
   fragment RetroMeetingTeam on Team {
-    ...RetroLobby_team @arguments(meetingType: retrospective)
+    ...RetroLobby_team
     ...NewMeetingCheckIn_team
     ...RetroReflectPhase_team
     ...RetroGroupPhase_team
-    ...RetroVotePhase_team @arguments(meetingType: retrospective)
+    ...RetroVotePhase_team
     ...RetroDiscussPhase_team
-    meetingSettings(meetingType: retrospective) {
-      phaseTypes
-    }
     id
     name
-    meetingId
     newMeeting {
       id
       facilitatorStageId
@@ -128,6 +126,11 @@ export default createFragmentContainer(
       ...NewMeeting_viewer
       team(teamId: $teamId) {
         ...RetroMeetingTeam @relay(mask: false)
+        meetingSettings(meetingType: retrospective) {
+          ...RetroLobby_meetingSettings
+          ...RetroVotePhase_meetingSettings
+          phaseTypes
+        }
       }
     }
   `

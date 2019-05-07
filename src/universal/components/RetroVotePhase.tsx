@@ -28,8 +28,10 @@ import handleRightArrow from '../utils/handleRightArrow'
 import isDemoRoute from '../utils/isDemoRoute'
 import EndMeetingButton from './EndMeetingButton'
 import PhaseItemMasonry from './PhaseItemMasonry'
+import {RetroVotePhase_meetingSettings} from '__generated__/RetroVotePhase_meetingSettings.graphql'
 
 interface Props extends WithAtmosphereProps, RetroMeetingPhaseProps {
+  meetingSettings: RetroVotePhase_meetingSettings
   team: RetroVotePhase_team
 }
 
@@ -130,15 +132,13 @@ const DemoVoteHelpMenu = lazyPreload(async () =>
 
 const RetroVotePhase = (props: Props) => {
   const {
+    meetingSettings: {totalVotes = 0},
     atmosphere: {viewerId},
     handleGotoNext,
     team,
     isDemoStageComplete
   } = props
-  const {
-    meetingSettings: {totalVotes = 0},
-    newMeeting
-  } = team
+  const {newMeeting} = team
   if (!newMeeting) return null
   const {current} = handleGotoNext
   const {gotoNext, ref: gotoNextRef} = current
@@ -204,13 +204,10 @@ const RetroVotePhase = (props: Props) => {
 export default createFragmentContainer(
   withAtmosphere(RetroVotePhase),
   graphql`
-    fragment RetroVotePhase_team on Team
-      @argumentDefinitions(meetingType: {type: "MeetingTypeEnum!"}) {
-      meetingSettings(meetingType: $meetingType) {
-        ... on RetrospectiveMeetingSettings {
-          totalVotes
-        }
-      }
+    fragment RetroVotePhase_meetingSettings on RetrospectiveMeetingSettings {
+      totalVotes
+    }
+    fragment RetroVotePhase_team on Team {
       newMeeting {
         meetingId: id
         facilitatorUserId

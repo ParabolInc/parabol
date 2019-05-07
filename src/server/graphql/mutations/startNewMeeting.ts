@@ -68,6 +68,10 @@ export default {
       .load(meeting.teamId)) as ITeamMember[]
     const meetingMembers = await createMeetingMembers(meeting, teamMembers, dataLoader)
     await r({
+      team: r
+        .table('Team')
+        .get(teamId)
+        .update({meetingId: meeting.id}),
       meeting: r.table('NewMeeting').insert(meeting),
       members: r.table('MeetingMember').insert(meetingMembers)
     })

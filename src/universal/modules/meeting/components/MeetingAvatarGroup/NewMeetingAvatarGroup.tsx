@@ -6,6 +6,7 @@ import AddTeamMemberAvatarButton from 'universal/components/AddTeamMemberAvatarB
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {useGotoStageId} from 'universal/hooks/newMeeting'
 import NewMeetingAvatar from 'universal/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatar'
 import findStageById from 'universal/utils/meetings/findStageById'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
@@ -25,7 +26,7 @@ const MeetingAvatarGroupRoot = styled('div')({
 })
 
 interface Props extends WithAtmosphereProps {
-  gotoStageId: (stageId: string) => void
+  gotoStageId: ReturnType<typeof useGotoStageId>
   team: NewMeetingAvatarGroup_team
   camStreams: StreamUserDict
   swarm: MediaSwarm | null
@@ -44,7 +45,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
     const teamMemberStage =
       localPhase && localPhase.stages.find((stage) => stage.teamMemberId === teamMemberId)
     const teamMemberStageId = (teamMemberStage && teamMemberStage.id) || ''
-    gotoStageId(teamMemberStageId)
+    gotoStageId(teamMemberStageId).catch()
   }
 
   return (

@@ -1,3 +1,4 @@
+import {RetroLobby_meetingSettings} from '__generated__/RetroLobby_meetingSettings.graphql'
 import {RetroLobby_team} from '__generated__/RetroLobby_team.graphql'
 import React from 'react'
 import styled from 'react-emotion'
@@ -19,7 +20,6 @@ import {MeetingTypeEnum} from 'universal/types/graphql'
 import lazyPreload from 'universal/utils/lazyPreload'
 import makeHref from 'universal/utils/makeHref'
 import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups'
-import {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import RetroTemplatePicker from '../modules/meeting/components/RetroTemplatePicker'
 
 const ButtonGroup = styled('div')({
@@ -48,8 +48,9 @@ const UrlBlock = styled('div')({
   verticalAlign: 'middle'
 })
 
-interface Props extends WithMutationProps, RetroMeetingPhaseProps {
+interface Props extends RetroMeetingPhaseProps {
   team: RetroLobby_team
+  meetingSettings: RetroLobby_meetingSettings
 }
 
 const StyledButton = styled(PrimaryButton)({
@@ -78,8 +79,8 @@ const RetroLobby = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
-  const {team} = props
-  const {meetingSettings, id: teamId, name: teamName} = team
+  const {meetingSettings, team} = props
+  const {id: teamId, name: teamName} = team
   const onStartMeetingClick = () => {
     if (submitting) return
     submitMutation()
@@ -122,12 +123,12 @@ const RetroLobby = (props: Props) => {
 export default createFragmentContainer(
   RetroLobby,
   graphql`
-    fragment RetroLobby_team on Team @argumentDefinitions(meetingType: {type: "MeetingTypeEnum!"}) {
+    fragment RetroLobby_meetingSettings on RetrospectiveMeetingSettings {
+      ...RetroTemplatePicker_settings
+    }
+    fragment RetroLobby_team on Team {
       id
       name
-      meetingSettings(meetingType: $meetingType) {
-        ...RetroTemplatePicker_settings
-      }
     }
   `
 )

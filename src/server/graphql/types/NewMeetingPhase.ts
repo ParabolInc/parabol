@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
+import {GraphQLBoolean, GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
 import AgendaItemsPhase from 'server/graphql/types/AgendaItemsPhase'
 import UpdatesPhase from 'server/graphql/types/UpdatesPhase'
 import {
@@ -32,9 +32,6 @@ export const newMeetingPhaseFields = () => ({
     description: 'The type of phase'
   },
   stages: {
-    // this is really cool. GraphQL lets us keep stages set an an array of an abstract type here
-    // and in concrete types like CheckINPhase, we can redefine it as an array of concrete types
-    // this makes for much prettier graphql queries
     type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeetingStage)))
   }
 })

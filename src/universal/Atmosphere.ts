@@ -72,10 +72,11 @@ interface Toast {
   message: string
 }
 
-interface AtmosphereEvents {
+export interface AtmosphereEvents {
   addToast: Toast
   removeToast: (toast: string | any) => void
   endDraggingReflection: MasonryDragEndPayload
+  focusAgendaInput: void
   inviteToTeam: NonNullable<InviteToTeamMutation_notification['teamInvitationNotification']>
   meetingSidebarCollapsed: boolean
   newSubscriptionClient: void

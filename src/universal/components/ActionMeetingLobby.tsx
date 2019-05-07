@@ -103,8 +103,7 @@ const ActionMeetingLobby = (props: Props) => {
 export default createFragmentContainer(
   ActionMeetingLobby,
   graphql`
-    fragment ActionMeetingLobby_team on Team
-      @argumentDefinitions(meetingType: {type: "MeetingTypeEnum!"}) {
+    fragment ActionMeetingLobby_team on Team {
       id
       name
     }

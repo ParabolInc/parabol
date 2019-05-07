@@ -1,7 +1,8 @@
 import {GraphQLBoolean, GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
+import ActionMeetingMember from 'server/graphql/types/ActionMeetingMember'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum'
-import {RETROSPECTIVE} from 'universal/utils/constants'
+import {ACTION, RETROSPECTIVE} from 'universal/utils/constants'
 import RetrospectiveMeetingMember from 'server/graphql/types/RetrospectiveMeetingMember'
 import {resolveUser} from 'server/graphql/resolvers'
 import User from 'server/graphql/types/User'
@@ -43,7 +44,8 @@ const MeetingMember = new GraphQLInterfaceType({
   fields: meetingMemberFields,
   resolveType: ({meetingType}) => {
     const resolveTypeLookup = {
-      [RETROSPECTIVE]: RetrospectiveMeetingMember
+      [RETROSPECTIVE]: RetrospectiveMeetingMember,
+      [ACTION]: ActionMeetingMember
     }
     return resolveTypeLookup[meetingType]
   }

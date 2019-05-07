@@ -1320,7 +1320,7 @@ export const enum NewMeetingPhaseTypeEnum {
 /**
  * A team meeting history for all previous meetings
  */
-export type NewMeeting = IRetrospectiveMeeting
+export type NewMeeting = IRetrospectiveMeeting | IActionMeeting
 
 /**
  * A team meeting history for all previous meetings
@@ -1403,7 +1403,7 @@ export interface INewMeeting {
 /**
  * All the user details for a specific meeting
  */
-export type MeetingMember = IRetrospectiveMeetingMember
+export type MeetingMember = IRetrospectiveMeetingMember | IActionMeetingMember
 
 /**
  * All the user details for a specific meeting
@@ -1432,7 +1432,13 @@ export interface IMeetingMember {
   updatedAt: any
 }
 
-export type NewMeetingPhase = IReflectPhase | ICheckInPhase | IDiscussPhase | IGenericMeetingPhase
+export type NewMeetingPhase =
+  | IReflectPhase
+  | ICheckInPhase
+  | IDiscussPhase
+  | IUpdatesPhase
+  | IAgendaItemsPhase
+  | IGenericMeetingPhase
 
 export interface INewMeetingPhase {
   __typename: 'NewMeetingPhase'
@@ -1453,7 +1459,12 @@ export interface INewMeetingPhase {
 /**
  * An instance of a meeting phase item. On the client, this usually represents a single view
  */
-export type NewMeetingStage = IRetroDiscussStage | IGenericMeetingStage | ICheckInStage
+export type NewMeetingStage =
+  | IRetroDiscussStage
+  | IGenericMeetingStage
+  | ICheckInStage
+  | IUpdatesStage
+  | IAgendaItemsStage
 
 /**
  * An instance of a meeting phase item. On the client, this usually represents a single view
@@ -1550,12 +1561,12 @@ export interface IAgendaItem {
   /**
    * true until the agenda item has been marked isComplete and the meeting has ended
    */
-  isActive: boolean | null
+  isActive: boolean
 
   /**
    * true if the agenda item has been addressed in a meeting (will have a strikethrough or similar)
    */
-  isComplete: boolean | null
+  isComplete: boolean
 
   /**
    * The sort order of the agenda item in the list
@@ -1580,7 +1591,7 @@ export interface IAgendaItem {
   /**
    * The team member that created the agenda item
    */
-  teamMember: ITeamMember | null
+  teamMember: ITeamMember
 }
 
 /**
@@ -6612,7 +6623,7 @@ export interface ICheckInStage {
 /**
  * An instance of a meeting phase item. On the client, this usually represents a single view
  */
-export type NewMeetingTeamMemberStage = ICheckInStage
+export type NewMeetingTeamMemberStage = ICheckInStage | IUpdatesStage
 
 /**
  * An instance of a meeting phase item. On the client, this usually represents a single view
@@ -6648,6 +6659,183 @@ export interface IDiscussPhase {
    */
   phaseType: NewMeetingPhaseTypeEnum
   stages: Array<IRetroDiscussStage>
+}
+
+/**
+ * The meeting phase where all team members give updates one-by-one
+ */
+export interface IUpdatesPhase {
+  __typename: 'UpdatesPhase'
+
+  /**
+   * shortid
+   */
+  id: string
+  meetingId: string
+
+  /**
+   * The type of phase
+   */
+  phaseType: NewMeetingPhaseTypeEnum
+  stages: Array<IUpdatesStage>
+}
+
+/**
+ * A stage that focuses on a single team member
+ */
+export interface IUpdatesStage {
+  __typename: 'UpdatesStage'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * The datetime the stage was completed
+   */
+  endAt: any | null
+
+  /**
+   * foreign key. try using meeting
+   */
+  meetingId: string
+
+  /**
+   * The meeting this stage belongs to
+   */
+  meeting: NewMeeting | null
+
+  /**
+   * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
+   */
+  isComplete: boolean
+
+  /**
+   * true if any meeting participant can navigate to this stage
+   */
+  isNavigable: boolean
+
+  /**
+   * true if the facilitator can navigate to this stage
+   */
+  isNavigableByFacilitator: boolean
+
+  /**
+   * The phase this stage belongs to
+   */
+  phase: NewMeetingPhase | null
+
+  /**
+   * The type of the phase
+   */
+  phaseType: NewMeetingPhaseTypeEnum | null
+
+  /**
+   * The datetime the stage was started
+   */
+  startAt: any | null
+
+  /**
+   * Number of times the facilitator has visited this stage
+   */
+  viewCount: number | null
+
+  /**
+   * foreign key. use teamMember
+   */
+  teamMemberId: string
+
+  /**
+   * The team member that is the focus for this phase item
+   */
+  teamMember: ITeamMember | null
+}
+
+/**
+ * The meeting phase where all team members discuss the topics with the most votes
+ */
+export interface IAgendaItemsPhase {
+  __typename: 'AgendaItemsPhase'
+
+  /**
+   * shortid
+   */
+  id: string
+  meetingId: string
+
+  /**
+   * The type of phase
+   */
+  phaseType: NewMeetingPhaseTypeEnum
+  stages: Array<IAgendaItemsStage>
+}
+
+/**
+ * The stage where the team discusses a single agenda item
+ */
+export interface IAgendaItemsStage {
+  __typename: 'AgendaItemsStage'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * The datetime the stage was completed
+   */
+  endAt: any | null
+
+  /**
+   * foreign key. try using meeting
+   */
+  meetingId: string
+
+  /**
+   * The meeting this stage belongs to
+   */
+  meeting: NewMeeting | null
+
+  /**
+   * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
+   */
+  isComplete: boolean
+
+  /**
+   * true if any meeting participant can navigate to this stage
+   */
+  isNavigable: boolean
+
+  /**
+   * true if the facilitator can navigate to this stage
+   */
+  isNavigableByFacilitator: boolean
+
+  /**
+   * The phase this stage belongs to
+   */
+  phase: NewMeetingPhase | null
+
+  /**
+   * The type of the phase
+   */
+  phaseType: NewMeetingPhaseTypeEnum | null
+
+  /**
+   * The datetime the stage was started
+   */
+  startAt: any | null
+
+  /**
+   * Number of times the facilitator has visited this stage
+   */
+  viewCount: number | null
+
+  /**
+   * The id of the agenda item this relates to
+   */
+  agendaItemId: string
 }
 
 /**
@@ -6701,6 +6889,159 @@ export interface INotifyPromoteToOrgLeader {
    * *The userId that should see this notification
    */
   userIds: Array<string> | null
+}
+
+/**
+ * An action meeting
+ */
+export interface IActionMeeting {
+  __typename: 'ActionMeeting'
+
+  /**
+   * The unique meeting id. shortid.
+   */
+  id: string
+
+  /**
+   * The timestamp the meeting was created
+   */
+  createdAt: any | null
+
+  /**
+   * The timestamp the meeting officially ended
+   */
+  endedAt: any | null
+
+  /**
+   * The location of the facilitator in the meeting
+   */
+  facilitatorStageId: string
+
+  /**
+   * The userId (or anonymousId) of the most recent facilitator
+   */
+  facilitatorUserId: string
+
+  /**
+   * The facilitator user
+   */
+  facilitator: IUser
+
+  /**
+   * The team members that were active during the time of the meeting
+   */
+  meetingMembers: Array<MeetingMember | null> | null
+
+  /**
+   * The auto-incrementing meeting number for the team
+   */
+  meetingNumber: number
+  meetingType: MeetingTypeEnum
+
+  /**
+   * The phases the meeting will go through, including all phase-specific state
+   */
+  phases: Array<NewMeetingPhase>
+
+  /**
+   * The time the meeting summary was emailed to the team
+   */
+  summarySentAt: any | null
+
+  /**
+   * foreign key for team
+   */
+  teamId: string
+
+  /**
+   * The team that ran the meeting
+   */
+  team: ITeam
+
+  /**
+   * The last time a meeting was updated (stage completed, finished, etc)
+   */
+  updatedAt: any | null
+
+  /**
+   * The action meeting member of the viewer
+   */
+  viewerMeetingMember: IActionMeetingMember
+
+  /**
+   * The settings that govern the action meeting
+   */
+  settings: IActionMeetingSettings
+
+  /**
+   * The number of tasks generated in the meeting
+   */
+  taskCount: number
+
+  /**
+   * The tasks created within the meeting
+   */
+  tasks: Array<ITask>
+}
+
+/**
+ * All the meeting specifics for a user in a retro meeting
+ */
+export interface IActionMeetingMember {
+  __typename: 'ActionMeetingMember'
+
+  /**
+   * A composite of userId::meetingId
+   */
+  id: string
+
+  /**
+   * true if present, false if absent, else null
+   */
+  isCheckedIn: boolean | null
+  meetingId: string
+  meetingType: MeetingTypeEnum
+  teamId: string
+  user: IUser
+  userId: string
+
+  /**
+   * The last time a meeting was updated (stage completed, finished, etc)
+   */
+  updatedAt: any
+
+  /**
+   * The tasks assigned to members during the meeting
+   */
+  tasks: Array<ITask>
+}
+
+/**
+ * The action-specific meeting settings
+ */
+export interface IActionMeetingSettings {
+  __typename: 'ActionMeetingSettings'
+  id: string
+
+  /**
+   * The type of meeting these settings apply to
+   */
+  meetingType: MeetingTypeEnum | null
+
+  /**
+   * The broad phase types that will be addressed during the meeting
+   */
+  phaseTypes: Array<NewMeetingPhaseTypeEnum>
+
+  /**
+   * FK
+   */
+  teamId: string
+
+  /**
+   * The team these settings belong to
+   */
+  team: ITeam | null
 }
 
 /**
@@ -7209,34 +7550,6 @@ export interface ITimelineEventCompletedActionMeeting {
    * The meetingId that was completed
    */
   meetingId: string
-}
-
-/**
- * The action-specific meeting settings
- */
-export interface IActionMeetingSettings {
-  __typename: 'ActionMeetingSettings'
-  id: string
-
-  /**
-   * The type of meeting these settings apply to
-   */
-  meetingType: MeetingTypeEnum | null
-
-  /**
-   * The broad phase types that will be addressed during the meeting
-   */
-  phaseTypes: Array<NewMeetingPhaseTypeEnum>
-
-  /**
-   * FK
-   */
-  teamId: string
-
-  /**
-   * The team these settings belong to
-   */
-  team: ITeam | null
 }
 
 /**

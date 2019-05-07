@@ -1,12 +1,12 @@
-import AgendaItemStage from 'server/database/types/AgendaItemStage'
-import {AGENDA_ITEM} from 'universal/utils/constants'
+import AgendaItemsStage from 'server/database/types/AgendaItemsStage'
+import {AGENDA_ITEMS} from 'universal/utils/constants'
 import GenericMeetingPhase from './GenericMeetingPhase'
 
 export default class AgendaItemsPhase extends GenericMeetingPhase {
-  stages: AgendaItemStage[]
+  stages: AgendaItemsStage[]
 
   constructor (agendaItemIds: string[]) {
-    super(AGENDA_ITEM)
-    this.stages = agendaItemIds.map((id) => new AgendaItemStage(id))
+    super(AGENDA_ITEMS)
+    this.stages = agendaItemIds.map((id) => new AgendaItemsStage(id))
   }
 }

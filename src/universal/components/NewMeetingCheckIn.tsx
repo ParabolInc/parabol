@@ -4,7 +4,7 @@ import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import Icon from 'universal/components/Icon'
 import MeetingHelpToggle from 'universal/components/MenuHelpToggle'
-import {RetroMeetingPhaseProps} from 'universal/components/RetroMeeting'
+import {NewMeetingTypeProps} from 'universal/components/NewMeeting'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import CheckInControls from 'universal/modules/meeting/components/CheckInControls/CheckInControls'
 import NewMeetingCheckInPrompt from 'universal/modules/meeting/components/MeetingCheckInPrompt/NewMeetingCheckInPrompt'
@@ -48,7 +48,7 @@ const CheckInHelpMenu = lazyPreload(async () =>
   import(/* webpackChunkName: 'CheckInHelpMenu' */ 'universal/components/MeetingHelp/CheckInHelpMenu')
 )
 
-interface Props extends RetroMeetingPhaseProps {
+interface Props extends NewMeetingTypeProps {
   team: NewMeetingCheckIn_team
 }
 

@@ -7,7 +7,8 @@ import NewMeetingSidebarPhaseListItemChildren from 'universal/components/NewMeet
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
+import {useGotoStageId} from 'universal/hooks/newMeeting'
+import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
 import {AGENDA_ITEMS, DISCUSS, LOBBY} from 'universal/utils/constants'
 import findStageById from 'universal/utils/meetings/findStageById'
 import {phaseTypeToPhaseGroup} from 'universal/utils/meetings/lookups'
@@ -21,7 +22,8 @@ const NavList = styled('ul')({
 })
 
 interface Props extends WithAtmosphereProps {
-  gotoStageId: (stageId: string) => void
+  gotoStageId: ReturnType<typeof useGotoStageId>
+  meetingType: MeetingTypeEnum
   phaseTypes: ReadonlyArray<NewMeetingPhaseTypeEnum>
   viewer: NewMeetingSidebarPhaseList_viewer
 }
@@ -40,7 +42,7 @@ const getItemStage = (name: string, phases: NewMeeting['phases'], facilitatorSta
 }
 
 const NewMeetingSidebarPhaseList = (props: Props) => {
-  const {gotoStageId, phaseTypes, viewer} = props
+  const {gotoStageId, meetingType, phaseTypes, viewer} = props
   const {viewerId, team} = viewer
   const {newMeeting} = team!
   const meeting = newMeeting || UNSTARTED_MEETING
@@ -70,7 +72,7 @@ const NewMeetingSidebarPhaseList = (props: Props) => {
           itemStage || {}
         const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
         const handleClick = () => {
-          gotoStageId(itemStageId)
+          gotoStageId(itemStageId).catch()
           if (sidebarCanAutoCollapse()) toggleSidebar()
         }
         // when a primary nav item has sub-items, we want to show the sub-items as active, not the parent (TA)
@@ -86,6 +88,7 @@ const NewMeetingSidebarPhaseList = (props: Props) => {
           >
             <NewMeetingSidebarPhaseListItemChildren
               gotoStageId={gotoStageId}
+              meetingType={meetingType}
               phaseType={phaseType}
               viewer={viewer}
             />

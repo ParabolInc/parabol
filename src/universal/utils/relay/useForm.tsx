@@ -12,6 +12,7 @@ interface Field {
   value: string
   error: string | undefined
   dirty: boolean
+  resetValue: () => void
 }
 
 interface FieldState {
@@ -79,7 +80,10 @@ const useForm = (fieldInputDict: FieldInputDict, deps: any[] = []) => {
             obj[name] = {
               value: fieldInputDict[name].getDefault(),
               error: undefined,
-              dirty: false
+              dirty: false,
+              resetValue: (value = '') => {
+                dispatch({type: 'setValue', name, value})
+              }
             }
             return obj
           },

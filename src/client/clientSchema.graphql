@@ -3,6 +3,11 @@ extend interface NewMeeting {
   localStage: NewMeetingStage!
 }
 
+extend type ActionMeeting {
+  localPhase: NewMeetingPhase!
+  localStage: NewMeetingStage!
+}
+
 extend type RetrospectiveMeeting {
   isViewerDragInProgress: Boolean
   localPhase: NewMeetingPhase!

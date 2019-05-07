@@ -3,6 +3,7 @@ import React, {useCallback} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import NewMeetingSidebar from 'universal/components/NewMeetingSidebar'
+import {useGotoStageId} from 'universal/hooks/newMeeting'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import {DECELERATE} from 'universal/styles/animation'
 import makeShadowColor from 'universal/styles/helpers/makeShadowColor'
@@ -58,7 +59,7 @@ const SidebarBackdrop = styled('div')(({isMeetingSidebarCollapsed}: SidebarStyle
 }))
 
 interface Props {
-  gotoStageId: (stageId: string) => void
+  gotoStageId: ReturnType<typeof useGotoStageId>
   isMeetingSidebarCollapsed: boolean
   meetingType: MeetingTypeEnum
   phaseTypes: ReadonlyArray<NewMeetingPhaseTypeEnum>

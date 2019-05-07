@@ -7,7 +7,7 @@ import {createFragmentContainer, graphql} from 'react-relay'
 import ErrorBoundary from 'universal/components/ErrorBoundary'
 import MeetingSidebarLayout from 'universal/components/MeetingSidebarLayout'
 import NewMeetingPhaseHeading from 'universal/components/NewMeetingPhaseHeading/NewMeetingPhaseHeading'
-import {useGotoNext} from 'universal/hooks/newMeeting'
+import {useGotoNext, useGotoStageId} from 'universal/hooks/newMeeting'
 import useMeetingWrapper from 'universal/hooks/useMeetingWrapper'
 import NewMeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import RejoinFacilitatorButton from 'universal/modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton'
@@ -68,7 +68,7 @@ const MeetingAreaHeader = styled('div')({
 
 interface Props {
   children: ReactNode
-  gotoStageId: (stageId: string) => void
+  gotoStageId: ReturnType<typeof useGotoStageId>
   meetingType: MeetingTypeEnum
   phaseTypes: ReadonlyArray<NewMeetingPhaseTypeEnum>
   viewer: NewMeeting_viewer

@@ -1,6 +1,10 @@
-import {commitMutation} from 'react-relay'
+import {commitMutation, graphql} from 'react-relay'
+import Atmosphere from 'universal/Atmosphere'
 import handleRemoveAgendaItems from 'universal/mutations/handlers/handleRemoveAgendaItems'
+import {IRemoveAgendaItemOnMutationArguments} from 'universal/types/graphql'
+import {LocalHandlers} from 'universal/types/relayMutations'
 import getInProxy from 'universal/utils/relay/getInProxy'
+import {RemoveAgendaItemMutation} from '__generated__/RemoveAgendaItemMutation.graphql'
 
 graphql`
   fragment RemoveAgendaItemMutation_agendaItem on RemoveAgendaItemPayload {
@@ -26,16 +30,21 @@ export const removeAgendaItemUpdater = (payload, store) => {
   handleRemoveAgendaItems(agendaItemId, store)
 }
 
-const RemoveAgendaItemMutation = (environment, agendaItemId, onError, onCompleted) => {
-  return commitMutation(environment, {
+const RemoveAgendaItemMutation = (
+  atmosphere: Atmosphere,
+  variables: IRemoveAgendaItemOnMutationArguments,
+  {onError, onCompleted}: LocalHandlers = {}
+) => {
+  return commitMutation<RemoveAgendaItemMutation>(atmosphere, {
     mutation,
-    variables: {agendaItemId},
+    variables,
     updater: (store) => {
       const payload = store.getRootField('removeAgendaItem')
       if (!payload) return
       removeAgendaItemUpdater(payload, store)
     },
     optimisticUpdater: (store) => {
+      const {agendaItemId} = variables
       handleRemoveAgendaItems(agendaItemId, store)
     },
     onCompleted,

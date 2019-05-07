@@ -6,10 +6,12 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import {GQLContext} from 'server/graphql/graphql'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 import TeamMember from 'server/graphql/types/TeamMember'
+import {IAgendaItem} from 'universal/types/graphql'
 
-const AgendaItem = new GraphQLObjectType({
+const AgendaItem = new GraphQLObjectType<IAgendaItem, GQLContext>({
   name: 'AgendaItem',
   description: 'A request placeholder that will likely turn into 1 or more tasks',
   fields: () => ({
@@ -26,13 +28,16 @@ const AgendaItem = new GraphQLObjectType({
       description: 'The timestamp the agenda item was created'
     },
     isActive: {
-      type: GraphQLBoolean,
-      description: 'true until the agenda item has been marked isComplete and the meeting has ended'
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description:
+        'true until the agenda item has been marked isComplete and the meeting has ended',
+      resolve: ({isActive}) => !!isActive
     },
     isComplete: {
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
       description:
-        'true if the agenda item has been addressed in a meeting (will have a strikethrough or similar)'
+        'true if the agenda item has been addressed in a meeting (will have a strikethrough or similar)',
+      resolve: ({isComplete}) => !!isComplete
     },
     sortOrder: {
       type: new GraphQLNonNull(GraphQLFloat),
@@ -51,9 +56,9 @@ const AgendaItem = new GraphQLObjectType({
       description: 'The timestamp the agenda item was updated'
     },
     teamMember: {
-      type: TeamMember,
+      type: new GraphQLNonNull(TeamMember),
       description: 'The team member that created the agenda item',
-      resolve: async ({teamMemberId}, args, {dataLoader}) => {
+      resolve: async ({teamMemberId}, _args, {dataLoader}) => {
         return dataLoader.get('teamMembers').load(teamMemberId)
       }
     }

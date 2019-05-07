@@ -16,18 +16,18 @@ const phaseLookup = {
   [NewMeetingPhaseTypeEnum.checkin]: lazyPreload(() =>
     import(/* webpackChunkName: 'NewMeetingCheckIn' */ 'universal/components/NewMeetingCheckIn')
   ),
-  [NewMeetingPhaseTypeEnum.updates]: lazyPreload(() =>
-    import(/* webpackChunkName: 'ActionMeetingUpdates' */ 'universal/components/ActionMeetingUpdates')
-  ),
-  [NewMeetingPhaseTypeEnum.firstcall]: lazyPreload(() =>
-    import(/* webpackChunkName: 'ActionMeetingFirstCall' */ 'universal/components/ActionMeetingFirstCall')
-  ),
-  [NewMeetingPhaseTypeEnum.agendaitems]: lazyPreload(() =>
-    import(/* webpackChunkName: 'ActionMeetingAgendaItems' */ 'universal/components/ActionMeetingAgendaItems')
-  ),
-  [NewMeetingPhaseTypeEnum.lastcall]: lazyPreload(() =>
-    import(/* webpackChunkName: 'ActionMeetingLastCall' */ 'universal/components/ActionMeetingLastCall')
-  ),
+  // [NewMeetingPhaseTypeEnum.updates]: lazyPreload(() =>
+  //   import(/* webpackChunkName: 'ActionMeetingUpdates' */ 'universal/components/ActionMeetingUpdates')
+  // ),
+  // [NewMeetingPhaseTypeEnum.firstcall]: lazyPreload(() =>
+  //   import(/* webpackChunkName: 'ActionMeetingFirstCall' */ 'universal/components/ActionMeetingFirstCall')
+  // ),
+  // [NewMeetingPhaseTypeEnum.agendaitems]: lazyPreload(() =>
+  //   import(/* webpackChunkName: 'ActionMeetingAgendaItems' */ 'universal/components/ActionMeetingAgendaItems')
+  // ),
+  // [NewMeetingPhaseTypeEnum.lastcall]: lazyPreload(() =>
+  //   import(/* webpackChunkName: 'ActionMeetingLastCall' */ 'universal/components/ActionMeetingLastCall')
+  // ),
   [NewMeetingPhaseTypeEnum.lobby]: lazyPreload(() =>
     import(/* webpackChunkName: 'ActionMeetingLobby' */ 'universal/components/ActionMeetingLobby')
   )
@@ -80,11 +80,8 @@ graphql`
 
 graphql`
   fragment ActionMeetingTeam on Team {
-    ...ActionMeetingLobby_team @arguments(meetingType: action)
+    ...ActionMeetingLobby_team
     ...NewMeetingCheckIn_team
-    meetingSettings(meetingType: action) {
-      phaseTypes
-    }
     id
     name
     meetingId
@@ -111,6 +108,9 @@ export default createFragmentContainer(
     fragment ActionMeeting_viewer on User {
       ...NewMeeting_viewer
       team(teamId: $teamId) {
+        meetingSettings(meetingType: action) {
+          phaseTypes
+        }
         ...ActionMeetingTeam @relay(mask: false)
       }
     }

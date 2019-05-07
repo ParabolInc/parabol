@@ -10,7 +10,7 @@ graphql`
   fragment StartNewMeetingMutation_team on StartNewMeetingPayload {
     ...StartNewMeetingMutationOnNext @relay(mask: false)
     team {
-      ## FIXME ...ActionMeetingTeam @relay(mask: false)
+      ...ActionMeetingTeam @relay(mask: false)
       ...RetroMeetingTeam @relay(mask: false)
     }
   }

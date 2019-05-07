@@ -8,7 +8,7 @@ export default class Meeting {
   updatedAt = new Date()
   facilitatorStageId: string
   meetingNumber: number
-
+  isAsync: undefined
   constructor (
     public teamId: string,
     public meetingType: MeetingType,
