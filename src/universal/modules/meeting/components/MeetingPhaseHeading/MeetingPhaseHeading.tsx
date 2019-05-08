@@ -1,10 +1,9 @@
 import styled from 'react-emotion'
-import ui from 'universal/styles/ui'
-import {typeScale} from 'universal/styles/theme/typography'
+import {PALETTE} from 'universal/styles/paletteV2'
 
 const MeetingPhaseHeading = styled('div')({
-  color: ui.palette.dark,
-  fontSize: typeScale[8],
+  color: PALETTE.TEXT.MAIN,
+  fontSize: 34,
   fontWeight: 600,
   lineHeight: 1.25,
   textAlign: 'left'
