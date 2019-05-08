@@ -2,8 +2,10 @@ import {convertFromRaw, convertToRaw} from 'draft-js'
 import getRethink from 'server/database/rethinkDriver'
 import addTagToTask from 'universal/utils/draftjs/addTagToTask'
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap'
+import {ITask} from 'universal/types/graphql'
 
-const archiveTasksForDB = async (tasks) => {
+type Task = Pick<ITask, 'content' | 'id' | 'tags'>
+const archiveTasksForDB = async (tasks: Task[]) => {
   if (!tasks || tasks.length === 0) return []
   const r = getRethink()
   const tasksToArchive = tasks.map((task) => {

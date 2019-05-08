@@ -1,7 +1,11 @@
-import {commitMutation} from 'react-relay'
+import {commitMutation, graphql} from 'react-relay'
 import getMeetingPathParams from 'universal/utils/meetings/getMeetingPathParams'
 import handleMutationError from 'universal/mutations/handlers/handleMutationError'
 import handleRemoveSuggestedActions from 'universal/mutations/handlers/handleRemoveSuggestedActions'
+import Atmosphere from 'universal/Atmosphere'
+import {IEndNewMeetingOnMutationArguments} from 'universal/types/graphql'
+import {LocalHandlers} from 'universal/types/relayMutations'
+import {EndNewMeetingMutation} from '__generated__/EndNewMeetingMutation.graphql'
 
 graphql`
   fragment EndNewMeetingMutation_team on EndNewMeetingPayload {
@@ -76,9 +80,12 @@ export const endNewMeetingNotificationUpdater = (payload, {store}) => {
   handleRemoveSuggestedActions(removedSuggestedActionId, store)
 }
 
-const EndNewMeetingMutation = (atmosphere, variables, context, onError, onCompleted) => {
-  const {history} = context
-  return commitMutation(atmosphere, {
+const EndNewMeetingMutation = (
+  atmosphere: Atmosphere,
+  variables: IEndNewMeetingOnMutationArguments,
+  {onError, onCompleted, history}: LocalHandlers
+) => {
+  return commitMutation<EndNewMeetingMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {

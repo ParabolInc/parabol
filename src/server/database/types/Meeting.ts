@@ -6,6 +6,7 @@ export default class Meeting {
   id = shortid.generate()
   createdAt = new Date()
   updatedAt = new Date()
+  endedAt: Date | undefined = undefined
   facilitatorStageId: string
   meetingNumber: number
   isAsync: undefined
