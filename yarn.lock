@@ -1411,10 +1411,10 @@
     shortid "^2.2.12"
     tslib "^1.9.3"
 
-"@mattkrick/fast-rtc-swarm@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@mattkrick/fast-rtc-swarm/-/fast-rtc-swarm-0.3.0.tgz#fcb5f8d91d551f8512a77e23703bbb2ef7f887ec"
-  integrity sha512-xqeNRzkcQzyjFt9dUBsqdl7R9FbFicbRGXdNYAwE+XK7qjxCslqJmnPiw1RWRVeCNn21aN2wdmYZG5spRNOsmQ==
+"@mattkrick/fast-rtc-swarm@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@mattkrick/fast-rtc-swarm/-/fast-rtc-swarm-0.3.1.tgz#4656cae6d60718c56559f62141d4578829325e92"
+  integrity sha512-SBU6CS9zy1Cjry4f8lT/4mtPHN2VXzjK/b7J32+RWIZ7DAi7D5czIzILrnlfsTO5BsotAXIWjDVzH9AtEP8deg==
   dependencies:
     "@mattkrick/fast-rtc-peer" "^0.3.0"
     eventemitter3 "^3.1.0"
@@ -17014,10 +17014,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@^3.4.5:
-  version "3.4.5"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.4.5.tgz#2d2618d10bb566572b8d7aad5180d84257d70a99"
-  integrity sha512-YycBxUb49UUhdNMU5aJ7z5Ej2XGmaIBL0x34vZ82fn3hGvD+bgrMrVDpatgz2f7YxUMJxMkbWxJZeAvDxVe7Vw==
+typescript@3.4.1:
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.4.1.tgz#b6691be11a881ffa9a05765a205cb7383f3b63c6"
+  integrity sha512-3NSMb2VzDQm8oBTLH6Nj55VVtUEpe/rgkIzMir0qVoLyjDZlnMBva0U6vDiV3IH+sl/Yu6oP5QwsAQtHPmDd2Q==
 
 ua-parser-js@^0.7.18:
   version "0.7.19"

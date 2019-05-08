@@ -6828,6 +6828,7 @@ export interface IAgendaItemsStage {
    * The id of the agenda item this relates to
    */
   agendaItemId: string
+  agendaItem: IAgendaItem
 }
 
 /**

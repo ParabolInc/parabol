@@ -9,7 +9,6 @@ import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
 import ErrorBoundary from 'universal/components/ErrorBoundary'
 import MeetingContent from 'universal/components/MeetingContent'
 import MeetingContentHeader from 'universal/components/MeetingContentHeader'
-import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
 import MeetingHelpToggle from 'universal/components/MenuHelpToggle'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useTimeout from 'universal/hooks/useTimeout'
@@ -40,12 +39,20 @@ const ActionMeetingFirstCallHelpMenu = lazyPreload(async () =>
   import(/* webpackChunkName: 'ActionMeetingFirstCallHelpMenu' */ 'universal/components/MeetingHelp/ActionMeetingFirstCallHelpMenu')
 )
 
+const FirstCallWrapper = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '100%'
+})
+
 const ActionMeetingFirstCall = (props: Props) => {
   const {avatarGroup, toggleSidebar, team, handleGotoNext} = props
   const atmosphere = useAtmosphere()
   const {current} = handleGotoNext
   const {gotoNext, ref: gotoNextRef} = current
-  const minTimeComplete = useTimeout(ms('2m'))
+  const minTimeComplete = useTimeout(ms('30s'))
   const {viewerId} = atmosphere
   const {isMeetingSidebarCollapsed, newMeeting} = team
   const {facilitator, facilitatorUserId, id: meetingId} = newMeeting!
@@ -60,13 +67,13 @@ const ActionMeetingFirstCall = (props: Props) => {
         toggleSidebar={toggleSidebar}
       />
       <ErrorBoundary>
-        <MeetingPhaseWrapper>
+        <FirstCallWrapper>
           <MeetingPhaseHeading>{'Now, what do you need?'}</MeetingPhaseHeading>
 
           <MeetingCopy>{`Time to add your ${AGENDA_ITEM_LABEL}s to the list.`}</MeetingCopy>
 
           <AgendaShortcutHint />
-        </MeetingPhaseWrapper>
+        </FirstCallWrapper>
         {isFacilitating ? (
           <StyledBottomBar>
             <BottomControlSpacer />

@@ -29,9 +29,9 @@ const phaseLookup = {
   [NewMeetingPhaseTypeEnum.firstcall]: lazyPreload(() =>
     import(/* webpackChunkName: 'ActionMeetingFirstCall' */ 'universal/components/ActionMeetingFirstCall')
   ),
-  // [NewMeetingPhaseTypeEnum.agendaitems]: lazyPreload(() =>
-  //   import(/* webpackChunkName: 'ActionMeetingAgendaItems' */ 'universal/components/ActionMeetingAgendaItems')
-  // ),
+  [NewMeetingPhaseTypeEnum.agendaitems]: lazyPreload(() =>
+    import(/* webpackChunkName: 'ActionMeetingAgendaItems' */ 'universal/components/ActionMeetingAgendaItems')
+  ),
   // [NewMeetingPhaseTypeEnum.lastcall]: lazyPreload(() =>
   //   import(/* webpackChunkName: 'ActionMeetingLastCall' */ 'universal/components/ActionMeetingLastCall')
   // ),
@@ -118,6 +118,7 @@ graphql`
     ...ActionMeetingLobby_team
     ...ActionMeetingUpdates_team
     ...ActionMeetingFirstCall_team
+    ...ActionMeetingAgendaItems_team
     ...NewMeetingCheckIn_team
     ...useMeetingTeam @relay(mask: false)
     isMeetingSidebarCollapsed

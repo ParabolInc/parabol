@@ -87,7 +87,7 @@ export default createFragmentContainer(
             node {
               # grab these so we can sort correctly
               id
-              #              content @__clientField(handle: "contentText")
+              content @__clientField(handle: "contentText")
               contentText
               status
               sortOrder
