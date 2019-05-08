@@ -9,6 +9,7 @@ import handleCompletedStage from 'server/graphql/mutations/helpers/handleComplet
 import unlockNextStages from 'universal/utils/unlockNextStages'
 import startStage_ from 'universal/utils/startStage_'
 import standardError from 'server/utils/standardError'
+import Meeting from '../../database/types/Meeting'
 
 export default {
   type: new GraphQLNonNull(NavigateMeetingPayload),
@@ -28,7 +29,7 @@ export default {
     }
   },
   async resolve (
-    source,
+    _source,
     {completedStageId, facilitatorStageId, meetingId},
     {authToken, socketId: mutatorId, dataLoader}
   ) {
@@ -39,10 +40,10 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const meeting = await r
+    const meeting = (await r
       .table('NewMeeting')
       .get(meetingId)
-      .default(null)
+      .default(null)) as Meeting | null
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {facilitatorUserId, phases, teamId} = meeting
     if (viewerId !== facilitatorUserId) {
@@ -93,11 +94,11 @@ export default {
       .table('NewMeeting')
       .get(meetingId)
       .update(
-        {
-          facilitatorStageId,
-          phases,
-          updatedAt: now
-        },
+      {
+        facilitatorStageId,
+        phases,
+        updatedAt: now
+      },
         {returnChanges: true}
       )('changes')(0)('old_val')('facilitatorStageId')
 

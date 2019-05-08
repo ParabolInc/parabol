@@ -69,7 +69,7 @@ const AgendaItem = (props: Props) => {
   const {id: agendaItemId, content, teamMember} = agendaItem
   const {picture} = teamMember
   const isUnsyncedFacilitatorStage = isFacilitatorStage !== isLocalStage
-  const canDelete = !isComplete && !isFacilitatorStage && isNavigable && !isUnsyncedFacilitatorStage
+  const canDelete = agendaItemStage ? !isComplete && !isFacilitatorStage : true
   const ref = useRef<HTMLDivElement>(null)
   useEffect(() => {
     if (isFacilitatorStage) {
@@ -104,16 +104,14 @@ const AgendaItem = (props: Props) => {
         isDragging={isDragging}
         isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
       />
-      {canDelete && (
-        <DeleteIconButton
-          aria-label={'Remove this agenda topic'}
-          agendaLength={agendaLength}
-          disabled={isNavigable}
-          icon='cancel'
-          onClick={handleRemove}
-          palette='warm'
-        />
-      )}
+      <DeleteIconButton
+        aria-label={'Remove this agenda topic'}
+        agendaLength={agendaLength}
+        disabled={!canDelete}
+        icon='cancel'
+        onClick={handleRemove}
+        palette='warm'
+      />
     </AgendaItemStyles>
   )
 }

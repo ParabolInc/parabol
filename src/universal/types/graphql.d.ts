@@ -6609,7 +6609,7 @@ export interface ICheckInStage {
   /**
    * The team member that is the focus for this phase item
    */
-  teamMember: ITeamMember | null
+  teamMember: ITeamMember
 }
 
 /**
@@ -6631,7 +6631,7 @@ export interface INewMeetingTeamMemberStage {
   /**
    * The team member that is the focus for this phase item
    */
-  teamMember: ITeamMember | null
+  teamMember: ITeamMember
 }
 
 /**
@@ -6741,7 +6741,7 @@ export interface IUpdatesStage {
   /**
    * The team member that is the focus for this phase item
    */
-  teamMember: ITeamMember | null
+  teamMember: ITeamMember
 }
 
 /**

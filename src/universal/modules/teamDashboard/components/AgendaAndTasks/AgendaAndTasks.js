@@ -109,12 +109,7 @@ const AgendaAndTasks = (props) => {
         <AgendaToggle hideAgenda={hideAgenda} teamId={teamId} />
         {!hideAgenda && (
           <AgendaContent>
-            <AgendaListAndInput
-              canNavigate={false}
-              context='dashboard'
-              disabled={false}
-              team={team}
-            />
+            <AgendaListAndInput agendaItemPhase={null} team={team} />
           </AgendaContent>
         )}
       </AgendaMain>

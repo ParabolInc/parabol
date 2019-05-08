@@ -1,7 +1,20 @@
 import {graphql} from 'react-relay'
+import {NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
 import findStageById from 'universal/utils/meetings/findStageById'
 import getMeetingPathParams from 'universal/utils/meetings/getMeetingPathParams'
-import {phaseIsMultiStage, phaseTypeToSlug} from 'universal/utils/meetings/lookups'
+import {phaseTypeToSlug} from 'universal/utils/meetings/lookups'
+
+const phaseIsMultiStage = {
+  [NewMeetingPhaseTypeEnum.checkin]: true,
+  [NewMeetingPhaseTypeEnum.reflect]: false,
+  [NewMeetingPhaseTypeEnum.group]: false,
+  [NewMeetingPhaseTypeEnum.vote]: false,
+  [NewMeetingPhaseTypeEnum.discuss]: true,
+  [NewMeetingPhaseTypeEnum.updates]: true,
+  [NewMeetingPhaseTypeEnum.firstcall]: false,
+  [NewMeetingPhaseTypeEnum.agendaitems]: true,
+  [NewMeetingPhaseTypeEnum.lastcall]: false
+}
 
 graphql`
   fragment fromStageIdToUrlPhases on NewMeetingPhase @relay(plural: true) {

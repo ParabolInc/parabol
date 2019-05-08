@@ -16,7 +16,12 @@ const StyledPrompt = styled('div')({
   display: 'flex'
 })
 
-const PromptText = styled('div')({})
+const PromptText = styled('div')({
+  marginLeft: 16,
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center'
+})
 const getQuestion = (isCheckedIn, taskCount, preferredName) => {
   if (isCheckedIn) {
     return taskCount > 0 ? 'what’s changed with your tasks?' : 'what are you working on?'
@@ -33,12 +38,13 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
   const currentTeamMember = teamMembers.find(
     (teamMember) => teamMember.id === localStage.teamMemberId
   )!
-  const {isSelf: isMyMeetingSection, isCheckedIn, picture, preferredName} = currentTeamMember
+  const {isSelf: isMyMeetingSection, meetingMember, picture, preferredName} = currentTeamMember
+  const {isCheckedIn} = meetingMember!
   const prefix = isCheckedIn ? `${preferredName},` : ''
   const taskCount = tasks.edges.length
   return (
     <StyledPrompt>
-      <Avatar picture={picture || defaultUserAvatar} size='fill' />
+      <Avatar picture={picture || defaultUserAvatar} size='larger' />
       <PromptText>
         <PhaseHeaderTitle>
           {prefix}
@@ -79,7 +85,9 @@ export default createFragmentContainer(
         isSelf
         picture
         preferredName
-        isCheckedIn
+        meetingMember {
+          isCheckedIn
+        }
       }
       newMeeting {
         phases {

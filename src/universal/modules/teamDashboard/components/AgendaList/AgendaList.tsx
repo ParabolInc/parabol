@@ -87,9 +87,10 @@ const AgendaList = (props: Props) => {
               return (
                 <div ref={provided.innerRef}>
                   {filteredAgendaItems.map((item, idx) => {
-                    const agendaItemStage = agendaItemPhase
-                      ? agendaItemPhase.stages.find((stage) => stage.agendaItemId === item.id)!
-                      : null
+                    const agendaItemStage =
+                      (agendaItemPhase &&
+                        agendaItemPhase.stages.find((stage) => stage.agendaItemId === item.id)) ||
+                      null
                     return (
                       <Draggable key={item.id} draggableId={item.id} index={idx}>
                         {(dragProvided, dragSnapshot) => {

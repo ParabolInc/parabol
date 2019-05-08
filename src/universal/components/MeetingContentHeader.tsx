@@ -22,6 +22,7 @@ const MeetingContentHeaderStyles = styled('div')({
 const HeadingBlock = styled('div')({
   alignItems: 'flex-start',
   display: 'flex',
+  flex: 1,
   padding: '1.25rem 0 1rem'
 })
 
@@ -35,7 +36,9 @@ const Toggle = styled(SidebarToggle)(
   })
 )
 
-const ChildrenBlock = styled('div')({})
+const ChildrenBlock = styled('div')({
+  width: '100%'
+})
 
 interface Props {
   avatarGroup: ReactElement

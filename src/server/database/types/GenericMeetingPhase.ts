@@ -5,6 +5,6 @@ export default class GenericMeetingPhase {
   id = shortid.generate()
   stages: GenericMeetingStage[]
   constructor (public phaseType: string) {
-    this.stages = [new GenericMeetingStage()]
+    this.stages = [new GenericMeetingStage(phaseType)]
   }
 }

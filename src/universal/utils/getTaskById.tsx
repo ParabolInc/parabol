@@ -1,8 +1,6 @@
-import {ITask, ITaskConnection} from 'universal/types/graphql'
+import {ITask} from 'universal/types/graphql'
 
-const getTaskById = (taskConnection: ITaskConnection) => (
-  taskId: string
-): ITask | undefined | null => {
+const getTaskById = (taskConnection: any) => (taskId: string): ITask | undefined | null => {
   if (!taskConnection.edges) return undefined
   const edge = taskConnection.edges.find((edge) =>
     Boolean(edge && edge.node && edge.node.id === taskId)

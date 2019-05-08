@@ -7,6 +7,6 @@ export default class ReflectPhase extends GenericMeetingPhase {
 
   constructor (public teamId: string, public promptTemplateId: string) {
     super(REFLECT)
-    this.stages = [new GenericMeetingStage()]
+    this.stages = [new GenericMeetingStage(REFLECT)]
   }
 }

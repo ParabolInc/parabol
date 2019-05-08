@@ -1,5 +1,7 @@
 import {ActionMeeting_viewer} from '__generated__/ActionMeeting_viewer.graphql'
 import React, {ReactElement} from 'react'
+import {DragDropContext as dragDropContext} from 'react-dnd'
+import HTML5Backend from 'react-dnd-html5-backend'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {ValueOf} from 'types/generics'
 import ActionMeetingSidebar from 'universal/components/ActionMeetingSidebar'
@@ -133,7 +135,7 @@ graphql`
 `
 
 export default createFragmentContainer(
-  ActionMeeting,
+  dragDropContext(HTML5Backend)(ActionMeeting),
   graphql`
     fragment ActionMeeting_viewer on User {
       ...ActionMeetingSidebar_viewer

@@ -13,14 +13,7 @@ interface Props {
 
 const ActionSidebarPhaseListItemChildren = (props: Props) => {
   const {gotoStageId, phaseType, viewer} = props
-  const {team} = viewer
-  const {newMeeting} = team!
-  if (
-    phaseType === NewMeetingPhaseTypeEnum.agendaitems &&
-    newMeeting &&
-    newMeeting.localPhase &&
-    newMeeting.localPhase.phaseType === phaseType
-  ) {
+  if (phaseType === NewMeetingPhaseTypeEnum.agendaitems) {
     return <ActionSidebarAgendaItemsSection gotoStageId={gotoStageId} viewer={viewer} />
   }
   return null

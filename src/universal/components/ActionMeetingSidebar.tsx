@@ -9,6 +9,7 @@ import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
 import getSidebarItemStage from 'universal/utils/getSidebarItemStage'
 import findStageById from 'universal/utils/meetings/findStageById'
 import sidebarCanAutoCollapse from 'universal/utils/meetings/sidebarCanAutoCollapse'
+import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
 import NewMeetingSidebar from './NewMeetingSidebar'
 
 interface Props {
@@ -30,8 +31,8 @@ const ActionMeetingSidebar = (props: Props) => {
   const {id: viewerId, team} = viewer
   const {isMeetingSidebarCollapsed, meetingSettings, newMeeting} = team!
   const {phaseTypes} = meetingSettings
-  const meeting = newMeeting!
-  const {facilitatorUserId, facilitatorStageId, localPhase, phases} = meeting
+  const {facilitatorUserId, facilitatorStageId, localPhase, phases} =
+    newMeeting || UNSTARTED_MEETING
   const localPhaseType = localPhase ? localPhase.phaseType : ''
   const facilitatorStageRes = findStageById(phases, facilitatorStageId)
   const facilitatorPhaseType = facilitatorStageRes ? facilitatorStageRes.phase.phaseType : ''

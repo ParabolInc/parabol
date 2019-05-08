@@ -1,18 +1,20 @@
-import styled, {css} from 'react-emotion'
-import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import withScrolling from 'react-dnd-scrollzone'
+import styled, {css} from 'react-emotion'
 import DraggableTask from 'universal/containers/TaskCard/DraggableTask'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import sortOrderBetween from 'universal/dnd/sortOrderBetween'
+import TaskColumnAddTask from 'universal/modules/teamDashboard/components/TaskColumn/TaskColumnAddTask'
 import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation'
+import overflowTouch from 'universal/styles/helpers/overflowTouch'
 import appTheme from 'universal/styles/theme/appTheme'
 import themeLabels from 'universal/styles/theme/labels'
 import ui from 'universal/styles/ui'
+import {AreaEnum, ITask, TaskStatusEnum} from 'universal/types/graphql'
 import {TEAM_DASH, USER_DASH} from 'universal/utils/constants'
 import TaskColumnDropZone from './TaskColumnDropZone'
-import overflowTouch from 'universal/styles/helpers/overflowTouch'
-import TaskColumnAddTask from 'universal/modules/teamDashboard/components/TaskColumn/TaskColumnAddTask'
 
 const Column = styled('div')({
   display: 'flex',
@@ -83,21 +85,18 @@ const TasksCount = styled('div')({
   marginLeft: '.5rem'
 })
 
-class TaskColumn extends Component {
-  static propTypes = {
-    area: PropTypes.string,
-    atmosphere: PropTypes.object.isRequired,
-    firstColumn: PropTypes.bool,
-    getTaskById: PropTypes.func.isRequired,
-    isMyMeetingSection: PropTypes.bool,
-    lastColumn: PropTypes.bool,
-    myTeamMemberId: PropTypes.string,
-    tasks: PropTypes.array.isRequired,
-    status: PropTypes.string,
-    teamMemberFilterId: PropTypes.string,
-    teams: PropTypes.array
-  }
+interface Props extends WithAtmosphereProps {
+  area: AreaEnum
+  getTaskById: (taskId: string) => Partial<ITask> | undefined | null
+  isMyMeetingSection?: boolean
+  myTeamMemberId: string
+  tasks: any[]
+  status: TaskStatusEnum
+  teamMemberFilterId?: string
+  teams: any[]
+}
 
+class TaskColumn extends Component<Props> {
   taskIsInPlace = (draggedTask, targetTask, before) => {
     const {tasks} = this.props
     const targetIndex = tasks.findIndex((p) => p.id === targetTask.id)
@@ -124,7 +123,7 @@ class TaskColumn extends Component {
     const sortOrder = sortOrderBetween(targetTask, boundingTask, draggedTask, before)
     const updatedTask = {id: draggedTask.id, sortOrder}
     if (draggedTask.status !== targetTask.status) {
-      updatedTask.status = targetTask.status
+      (updatedTask as any).status = targetTask.status
     }
     UpdateTaskMutation(atmosphere, updatedTask, area)
   }
@@ -133,12 +132,10 @@ class TaskColumn extends Component {
     const {
       area,
       atmosphere,
-      firstColumn,
       getTaskById,
       isMyMeetingSection,
       myTeamMemberId,
       teamMemberFilterId,
-      lastColumn,
       status,
       tasks,
       teams
@@ -148,7 +145,7 @@ class TaskColumn extends Component {
     const statusLabelBlockStyles = css(statusLabelBlock, userCanAdd && statusLabelBlockUserCanAdd)
 
     return (
-      <Column firstColumn={firstColumn} lastColumn={lastColumn}>
+      <Column>
         <ColumnHeader>
           <TaskColumnAddTask
             area={area}
@@ -156,7 +153,7 @@ class TaskColumn extends Component {
             status={status}
             tasks={tasks}
             myTeamMemberId={myTeamMemberId}
-            teamMemberFilterId={teamMemberFilterId}
+            teamMemberFilterId={teamMemberFilterId || ''}
             teams={teams}
           />
           <div className={statusLabelBlockStyles}>
@@ -166,16 +163,18 @@ class TaskColumn extends Component {
         </ColumnHeader>
         <ColumnBody>
           <ScrollZone>
-            {tasks.map((task) => (
-              <DraggableTask
-                key={`teamCard${task.id}`}
-                area={area}
-                getTaskById={getTaskById}
-                task={task}
-                myUserId={atmosphere.userId}
-                insert={(draggedTask, before) => this.insertTask(draggedTask, task, before)}
-              />
-            ))}
+            {tasks.map((task) => {
+              return (
+                <DraggableTask
+                  key={`teamCard${task.id}`}
+                  area={area}
+                  getTaskById={getTaskById}
+                  task={task}
+                  myUserId={atmosphere.userId}
+                  insert={(draggedTask, before) => this.insertTask(draggedTask, task, before)}
+                />
+              )
+            })}
             <TaskColumnDropZone
               area={area}
               getTaskById={getTaskById}

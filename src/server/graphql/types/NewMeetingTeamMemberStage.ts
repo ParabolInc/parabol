@@ -13,7 +13,7 @@ export const newMeetingTeamMemberStageFields = () => ({
   },
   teamMember: {
     description: 'The team member that is the focus for this phase item',
-    type: TeamMember,
+    type: new GraphQLNonNull(TeamMember),
     resolve: resolveTeamMember
   }
 })
