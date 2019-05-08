@@ -6,15 +6,25 @@ import NewMeetingSummaryEmail from 'universal/modules/email/components/SummaryEm
 import makeAppLink from 'server/utils/makeAppLink'
 import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 import {headCSS} from 'universal/styles/email'
+import ssrGraphQL from 'server/graphql/ssrGraphQL'
+import {GQLContext} from 'server/graphql/graphql'
 
-const newMeetingSummaryEmailCreator = (props) => {
-  const {meeting} = props
+interface Props {
+  meetingId: string
+  context: GQLContext
+}
+
+const newMeetingSummaryEmailCreator = async (props: Props) => {
+  const {meetingId, context} = props
+  const query = require('__generated__/NewMeetingSummaryRootQuery.graphql')
   const {
-    id: meetingId,
-    meetingType,
-    team: {id: teamId, name: teamName},
-    endedAt
-  } = meeting
+    params: {id: documentId}
+  } = query.default
+  const res = await ssrGraphQL(documentId, {meetingId}, context)
+  const {viewer} = res
+  const {newMeeting} = viewer
+  const {meetingType, team, endedAt} = newMeeting
+  const {id: teamId, name: teamName} = team
   const dateStr = makeDateString(endedAt)
   const meetingLabel = meetingTypeToLabel[meetingType]
   const meetingSlug = meetingTypeToSlug[meetingType]
@@ -23,13 +33,14 @@ const newMeetingSummaryEmailCreator = (props) => {
   const meetingUrl = makeAppLink(`${meetingSlug}/${teamId}`)
   const teamDashUrl = makeAppLink(`team/${teamId}`)
   const emailCSVLUrl = makeAppLink(`new-summary/${meetingId}/csv`)
+
   return {
     subject,
     body: `Hello, ${teamName}. Here is your ${meetingLabel} meeting summary`,
     html: Oy.renderTemplate(
       <NewMeetingSummaryEmail
         emailCSVLUrl={emailCSVLUrl}
-        meeting={meeting}
+        meeting={newMeeting}
         meetingUrl={meetingUrl}
         referrer='email'
         referrerUrl={referrerUrl}

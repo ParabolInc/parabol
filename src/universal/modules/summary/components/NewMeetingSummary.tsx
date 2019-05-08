@@ -55,7 +55,7 @@ export default createFragmentContainer(
           id
           isCheckedIn
           user {
-            picture
+            rasterPicture
             preferredName
           }
           ... on RetrospectiveMeetingMember {

@@ -59,7 +59,7 @@ const quickStatsBlock = {
 
 interface Props {
   emailCSVLUrl?: string
-  isDemo: boolean
+  isDemo?: boolean
   meeting: any
   referrer: 'meeting' | 'email' | 'history'
   referrerUrl?: string
@@ -127,7 +127,7 @@ const SummaryEmail = (props: Props) => {
               <tr>
                 <td>
                   {/* Team Dashboard Button */}
-                  <SummaryCTA referrer={referrer} teamDashUrl={teamDashUrl} isDemo={isDemo} />
+                  <SummaryCTA referrer={referrer} teamDashUrl={teamDashUrl} isDemo={!!isDemo} />
                   {referrer === 'email' ? (
                     <ExportToCSVEmail emailCSVLUrl={emailCSVLUrl!} />
                   ) : (

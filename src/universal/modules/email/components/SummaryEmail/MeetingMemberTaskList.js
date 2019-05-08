@@ -50,7 +50,7 @@ const MeetingMemberTaskList = (props: Props) => {
   const {member} = props
   const {
     tasks,
-    user: {picture, preferredName},
+    user: {rasterPicture, preferredName},
     isCheckedIn
   } = member
   const presentLabel = isCheckedIn ? 'Present' : 'Absent'
@@ -69,7 +69,7 @@ const MeetingMemberTaskList = (props: Props) => {
         <tr>
           <td style={topBorderStyle}>
             <EmptySpace height={24} />
-            <img height='80' src={picture} style={avatarStyles} width='80' />
+            <img height='80' src={rasterPicture} style={avatarStyles} width='80' />
             <div style={nameStyle}>{preferredName}</div>
             <div style={presentLabelStyles}>{presentLabel}</div>
             <EmptySpace height={8} />

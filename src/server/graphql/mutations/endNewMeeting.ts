@@ -15,7 +15,7 @@ import {
 import removeSuggestedAction from 'server/safeMutations/removeSuggestedAction'
 import standardError from 'server/utils/standardError'
 import Meeting from 'server/database/types/Meeting'
-import {DataLoaderWorker} from 'server/graphql/graphql'
+import {DataLoaderWorker, GQLContext} from 'server/graphql/graphql'
 import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB'
 import {ITask} from 'universal/types/graphql'
 
@@ -126,7 +126,8 @@ export default {
       description: 'The meeting to end'
     }
   },
-  async resolve (_source, {meetingId}, {authToken, socketId: mutatorId, dataLoader}) {
+  async resolve (_source, {meetingId}, context: GQLContext) {
+    const {authToken, socketId: mutatorId, dataLoader} = context
     const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -205,7 +206,7 @@ export default {
       }).catch()
       sendSegmentEvent(eventName, nonFacilitators, traits).catch()
       sendSegmentIdentify(presentMemberUserIds).catch()
-      sendNewMeetingSummary(completedMeeting).catch()
+      sendNewMeetingSummary(completedMeeting, context).catch(console.log)
 
       const events = meetingMembers.map((meetingMember) => ({
         id: shortid.generate(),

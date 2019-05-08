@@ -25,8 +25,7 @@ const EndNewMeetingPayload = new GraphQLObjectType({
     removedSuggestedActionId: {
       type: GraphQLID,
       description: 'The ID of the suggestion to try a retro meeting, if tried'
-    },
-    action: {}
+    }
   })
 })
 

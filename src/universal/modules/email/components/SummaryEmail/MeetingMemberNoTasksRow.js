@@ -58,7 +58,12 @@ const MeetingMemberNoTasksRow = (props: Props) => {
   const cellWidth = members.length === 1 ? 320 : 132
   return members.map((member) => (
     <td align='center' style={cellStyle} width={cellWidth} key={member.id}>
-      <img height={avatarSize} src={member.user.picture} style={avatarStyles} width={avatarSize} />
+      <img
+        height={avatarSize}
+        src={member.user.rasterPicture}
+        style={avatarStyles}
+        width={avatarSize}
+      />
       <div style={nameStyle}>{member.user.preferredName}</div>
       {member.isCheckedIn ? (
         <div style={presentStyles}>Present</div>

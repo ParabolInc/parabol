@@ -211,6 +211,14 @@ const User = new GraphQLObjectType({
       type: GraphQLString,
       description: 'Nickname associated with the user'
     },
+    rasterPicture: {
+      type: GraphQLURLType,
+      description:
+        'url of user’s raster profile picture (if user profile pic is an SVG, raster will be a PNG)',
+      resolve: ({picture}) => {
+        return picture && picture.endsWith('.svg') ? picture.slice(0, -3) + 'png' : picture
+      }
+    },
     picture: {
       type: GraphQLURLType,
       description: 'url of user’s profile picture'

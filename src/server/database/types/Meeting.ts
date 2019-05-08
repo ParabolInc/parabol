@@ -7,6 +7,7 @@ export default class Meeting {
   createdAt = new Date()
   updatedAt = new Date()
   endedAt: Date | undefined = undefined
+  summarySentAt: Date | undefined = undefined
   facilitatorStageId: string
   meetingNumber: number
   isAsync: undefined

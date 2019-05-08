@@ -144,6 +144,11 @@ export interface IUser {
   nickname: string | null
 
   /**
+   * url of user’s raster profile picture (if user profile pic is an SVG, raster will be a PNG)
+   */
+  rasterPicture: any | null
+
+  /**
    * url of user’s profile picture
    */
   picture: any | null
@@ -2984,7 +2989,7 @@ export interface IMutation {
   killMeeting: IKillMeetingPayload | null
 
   /**
-   * Finish a new meeting abruptly
+   * Finish a new meeting
    */
   endNewMeeting: IEndNewMeetingPayload | null
 

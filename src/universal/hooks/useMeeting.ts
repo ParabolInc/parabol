@@ -22,6 +22,7 @@ import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
 import updateLocalStage from 'universal/utils/relay/updateLocalStage'
 import {useMeetingLocalStateTeam} from '__generated__/useMeetingLocalStateTeam.graphql'
+import useRouter from 'universal/hooks/useRouter'
 
 export const useDemoMeeting = () => {
   const atmosphere = useAtmosphere()
@@ -39,6 +40,7 @@ export const useDemoMeeting = () => {
 
 export const useEndMeetingHotkey = (meetingId: string) => {
   const atmosphere = useAtmosphere()
+  const {history} = useRouter()
   const endMeeting = useCallback(
     handleHotkey(() => {
       EndNewMeetingMutation(atmosphere, {meetingId}, {history})
