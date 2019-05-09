@@ -1,5 +1,5 @@
 import {ActionMeeting_viewer} from '__generated__/ActionMeeting_viewer.graphql'
-import React, {ReactElement} from 'react'
+import React, {ReactElement, useEffect} from 'react'
 import {DragDropContext as dragDropContext} from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 import {createFragmentContainer, graphql} from 'react-relay'
@@ -55,6 +55,9 @@ const ActionMeeting = (props: Props) => {
     MeetingTypeEnum.retrospective,
     team
   )
+  useEffect(() => {
+    Object.values(phaseLookup).forEach((lazy) => lazy.preload())
+  }, [])
   if (!team || !safeRoute) return null
   const {featureFlags} = viewer
   const {video: allowVideo} = featureFlags

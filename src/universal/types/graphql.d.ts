@@ -3860,6 +3860,11 @@ export interface IUpdateAgendaItemOnMutationArguments {
    * The updated item including an id, content, status, sortOrder
    */
   updatedAgendaItem: IUpdateAgendaItemInput
+
+  /**
+   * The meeting the update occurred in, if any
+   */
+  meetingId?: string | null
 }
 
 export interface IUpdateCreditCardOnMutationArguments {
@@ -6081,6 +6086,12 @@ export interface IUpdateAgendaItemInput {
 export interface IUpdateAgendaItemPayload {
   __typename: 'UpdateAgendaItemPayload'
   agendaItem: IAgendaItem | null
+  meetingId: string | null
+
+  /**
+   * The meeting with the updated agenda item, if any
+   */
+  meeting: NewMeeting | null
   error: IStandardMutationError | null
 }
 

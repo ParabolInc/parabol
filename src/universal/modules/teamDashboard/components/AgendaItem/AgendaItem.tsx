@@ -96,7 +96,7 @@ const AgendaItem = (props: Props) => {
             <Avatar hasBadge={false} picture={picture} size='smallest' />
           </AvatarBlock>
         }
-        isDisabled={isNavigable}
+        isDisabled={!isNavigable}
         onClick={gotoStageId && agendaItemStage ? () => gotoStageId(stageId) : undefined}
         orderLabel={`${idx + 1}.`}
         isActive={isLocalStage}

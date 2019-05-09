@@ -117,11 +117,20 @@ const useUpdatedSafeRoute = (
   useEffect(() => {
     const newMeeting = team && team.newMeeting
     const {current: oldMeeting} = oldMeetingRef
-    if (newMeeting === oldMeeting) return
-    const localStageId = (newMeeting && newMeeting.localStage && newMeeting.localStage.id) || null
+    if (!newMeeting || newMeeting === oldMeeting) {
+      // required. repro: enter meeting, click to team dash, go back to meeting
+      setSafeRoute(true)
+      return
+    }
+    const {localStage, localPhase} = newMeeting
+    const localStages = (localPhase && localPhase.stages) || null
+    const localStageId = (localStage && localStage.id) || null
+    const oldLocalStages =
+      (oldMeeting && oldMeeting.localPhase && oldMeeting.localPhase.stages) || null
     const oldLocalStageId = oldMeeting && oldMeeting.localStage && oldMeeting.localStage.id
     oldMeetingRef.current = newMeeting
-    if (localStageId && localStageId !== oldLocalStageId) {
+    // if the stage changes or the order of the stages changes, update the url
+    if ((localStageId && localStageId !== oldLocalStageId) || localStages !== oldLocalStages) {
       const meetingPath = getMeetingPathParams()
       const {meetingSlug, teamId} = meetingPath
       if (!meetingSlug || !teamId) {
@@ -134,6 +143,7 @@ const useUpdatedSafeRoute = (
         return
       }
       const {phases} = newMeeting
+      const localStageId = newMeeting.localStage.id
       const nextUrl = fromStageIdToUrl(localStageId, phases)
       history.replace(nextUrl)
     }
@@ -147,6 +157,11 @@ graphql`
       id
       facilitatorStageId
       facilitatorUserId
+      localPhase {
+        stages {
+          id
+        }
+      }
       localStage {
         id
       }
