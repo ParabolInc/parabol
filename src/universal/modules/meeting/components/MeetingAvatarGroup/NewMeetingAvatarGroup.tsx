@@ -73,6 +73,19 @@ const NewMeetingAvatarGroup = (props: Props) => {
   )
 }
 
+graphql`
+  fragment NewMeetingAvatarGroupPhases on NewMeetingPhase {
+    id
+    phaseType
+    stages {
+      id
+      ... on NewMeetingTeamMemberStage {
+        teamMemberId
+      }
+    }
+  }
+`
+
 export default createFragmentContainer(
   withAtmosphere(NewMeetingAvatarGroup),
   graphql`
@@ -88,23 +101,10 @@ export default createFragmentContainer(
       newMeeting {
         facilitatorStageId
         localPhase {
-          id
-          stages {
-            id
-            ... on NewMeetingTeamMemberStage {
-              teamMemberId
-            }
-          }
+          ...NewMeetingAvatarGroupPhases @relay(mask: false)
         }
         phases {
-          phaseType
-          stages {
-            id
-            # here to ensure it exists on localPhase
-            ... on NewMeetingTeamMemberStage {
-              teamMemberId
-            }
-          }
+          ...NewMeetingAvatarGroupPhases @relay(mask: false)
         }
         ...NewMeetingAvatar_newMeeting
       }

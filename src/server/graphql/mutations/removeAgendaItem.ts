@@ -5,6 +5,8 @@ import publish from 'server/utils/publish'
 import {TEAM} from 'universal/utils/constants'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import standardError from 'server/utils/standardError'
+import removeStagesFromNewMeeting from 'server/graphql/mutations/helpers/removeStagesFromNewMeeting'
+import AgendaItemsStage from 'server/database/types/AgendaItemsStage'
 
 export default {
   type: RemoveAgendaItemPayload,
@@ -37,7 +39,10 @@ export default {
     if (!agendaItem) {
       return standardError(new Error('Agenda item not found'), {userId: viewerId})
     }
-    const data = {agendaItem}
+    const filterFn = (stage: AgendaItemsStage) => stage.agendaItemId === agendaItemId
+    const meetingId = await removeStagesFromNewMeeting(filterFn, teamId, dataLoader)
+
+    const data = {agendaItem, meetingId}
     publish(TEAM, teamId, RemoveAgendaItemPayload, data, subOptions)
     return data
   }

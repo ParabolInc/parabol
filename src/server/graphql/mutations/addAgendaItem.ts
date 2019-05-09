@@ -8,6 +8,7 @@ import {TEAM} from 'universal/utils/constants'
 import makeAgendaItemSchema from 'universal/validation/makeAgendaItemSchema'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import standardError from 'server/utils/standardError'
+import addAgendaItemToNewMeeting from 'server/graphql/mutations/helpers/addAgendaItemToNewMeeting'
 
 export default {
   type: AddAgendaItemPayload,
@@ -49,7 +50,8 @@ export default {
       teamId
     })
 
-    const data = {agendaItemId}
+    const meetingId = await addAgendaItemToNewMeeting(agendaItemId, teamId, dataLoader)
+    const data = {agendaItemId, meetingId}
     publish(TEAM, teamId, AddAgendaItemPayload, data, subOptions)
     return data
   }

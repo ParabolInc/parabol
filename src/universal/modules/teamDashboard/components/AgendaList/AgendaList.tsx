@@ -69,9 +69,7 @@ const AgendaList = (props: Props) => {
           (agendaItems[destination.index + offset].sortOrder + destinationItem.sortOrder) / 2 +
           dndNoise()
       }
-      const meetingId = agendaItemPhase ? agendaItemPhase.meetingId : undefined
       UpdateAgendaItemMutation(atmosphere, {
-        meetingId,
         updatedAgendaItem: {id: sourceItem.id, sortOrder}
       })
     },
@@ -142,7 +140,6 @@ export default createFragmentContainer(
   AgendaList,
   graphql`
     fragment AgendaList_agendaItemPhase on AgendaItemsPhase {
-      meetingId
       stages {
         id
         agendaItemId

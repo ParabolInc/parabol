@@ -98,6 +98,7 @@ export default createFragmentContainer(
       }
       contentFilter
       tasks(first: 1000) @connection(key: "UserColumnsContainer_tasks") {
+        ...TaskColumns_tasks
         edges {
           node {
             # grab these so we can sort correctly
@@ -109,7 +110,6 @@ export default createFragmentContainer(
             team {
               id
             }
-            ...DraggableTask_task
           }
         }
       }

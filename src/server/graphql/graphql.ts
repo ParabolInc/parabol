@@ -22,6 +22,9 @@ export type GQLContext = Pick<ConnectionContext, 'authToken' | 'rateLimiter'> & 
   dataLoader: DataLoaderWorker
 }
 
+// type Unpromise<T> = T extends Promise<infer U> ? U : T
+// export type PayloadType<T extends {resolve: any}> = Unpromise<ReturnType<T['resolve']>>
+
 const graphql = async (
   schema: GraphQLSchema,
   source: string,
