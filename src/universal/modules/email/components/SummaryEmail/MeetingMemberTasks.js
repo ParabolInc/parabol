@@ -12,8 +12,10 @@ type Props = {|
 const MeetingMemberTasks = (props: Props) => {
   const {meetingType, meeting} = props
   const {meetingMembers} = meeting
-  const membersWithTasks = meetingMembers.filter(({tasks}) => tasks.length > 0)
-  const membersWithoutTasks = meetingMembers.filter(({tasks}) => tasks.length === 0)
+  const membersWithTasks = meetingMembers.filter(
+    ({doneTasks, tasks}) => tasks.length + doneTasks.length > 0
+  )
+  const membersWithoutTasks = meetingMembers.filter((member) => !membersWithTasks.includes(member))
   // local flag, going to show members with no tasks for attendance information (TA)
   const showMembersWithoutTasks = true
   return (

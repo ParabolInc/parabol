@@ -1776,6 +1776,11 @@ export interface ITask {
   agendaId: string | null
 
   /**
+   * The agenda item that the task was created in, if any
+   */
+  agendaItem: IAgendaItem | null
+
+  /**
    * The body of the task. If null, it is a new task.
    */
   content: string
@@ -1810,6 +1815,11 @@ export interface ITask {
    * the foreign key for the meeting the task was created in
    */
   meetingId: string | null
+
+  /**
+   * the foreign key for the meeting the task was marked as complete
+   */
+  doneMeetingId: string | null
 
   /**
    * the foreign key for the retrospective reflection group this was created in
@@ -7007,6 +7017,11 @@ export interface IActionMeetingMember {
    * The last time a meeting was updated (stage completed, finished, etc)
    */
   updatedAt: any
+
+  /**
+   * The tasks marked as done in the meeting
+   */
+  doneTasks: Array<ITask>
 
   /**
    * The tasks assigned to members during the meeting

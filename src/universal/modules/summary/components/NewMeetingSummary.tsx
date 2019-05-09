@@ -5,7 +5,7 @@ import {createFragmentContainer, graphql} from 'react-relay'
 import ui from 'universal/styles/ui'
 import {MEETING_SUMMARY_LABEL} from 'universal/utils/constants'
 import makeHref from 'universal/utils/makeHref'
-import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
+import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 import {demoTeamId} from 'universal/modules/demo/initDB'
 import NewMeetingSummaryEmail from 'universal/modules/email/components/SummaryEmail/NewMeetingSummaryEmail'
 
@@ -26,7 +26,8 @@ const NewMeetingSummary = (props: Props) => {
   } = newMeeting
   const meetingLabel = meetingTypeToLabel[meetingType]
   const title = `${meetingLabel} Meeting ${MEETING_SUMMARY_LABEL} | ${teamName} ${meetingNumber}`
-  const meetingUrl = makeHref(`/meeting/${teamId}`)
+  const slug = meetingTypeToSlug[meetingType]
+  const meetingUrl = makeHref(`/${slug}/${teamId}`)
   const teamDashUrl = `/team/${teamId}`
   return (
     <div style={{backgroundColor: ui.emailBackgroundColor, minHeight: '100vh'}}>
@@ -57,6 +58,20 @@ export default createFragmentContainer(
           user {
             rasterPicture
             preferredName
+          }
+          ... on ActionMeetingMember {
+            doneTasks {
+              id
+              content
+              status
+              tags
+            }
+            tasks {
+              id
+              content
+              status
+              tags
+            }
           }
           ... on RetrospectiveMeetingMember {
             tasks {

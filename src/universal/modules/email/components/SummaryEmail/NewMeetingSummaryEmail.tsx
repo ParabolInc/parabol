@@ -22,6 +22,8 @@ import {
   emailTextColorLight
 } from 'universal/styles/email'
 import {sheetShadow} from 'universal/styles/elevation'
+import ActionQuickStats from 'universal/modules/email/components/QuickStats/ActionQuickStats'
+import SummaryEmailScheduleCalendar from 'universal/modules/email/components/SummaryEmail/SummaryEmailScheduleCalendar'
 
 const sheetStyle = {
   boxShadow: sheetShadow,
@@ -57,6 +59,13 @@ const quickStatsBlock = {
   textAlign: 'center'
 }
 
+const tipStyle = {
+  fontFamily: emailFontFamily,
+  fontWeight: 400,
+  fontSize: '16px',
+  lineHeight: '24px'
+}
+
 interface Props {
   emailCSVLUrl?: string
   isDemo?: boolean
@@ -64,12 +73,21 @@ interface Props {
   referrer: 'meeting' | 'email' | 'history'
   referrerUrl?: string
   teamDashUrl: string
-  meetingUrl?: string
+  meetingUrl: string
   urlAction?: 'csv'
 }
 
 const SummaryEmail = (props: Props) => {
-  const {isDemo, emailCSVLUrl, meeting, referrer, referrerUrl, teamDashUrl, urlAction} = props
+  const {
+    isDemo,
+    emailCSVLUrl,
+    meeting,
+    referrer,
+    meetingUrl,
+    referrerUrl,
+    teamDashUrl,
+    urlAction
+  } = props
   const {
     id: meetingId,
     createdAt,
@@ -122,6 +140,7 @@ const SummaryEmail = (props: Props) => {
                 <td align='center' style={quickStatsBlock as React.CSSProperties}>
                   {/* Quick Stats */}
                   {meetingType === RETROSPECTIVE && <RetroQuickStats meeting={meeting} />}
+                  {meetingType === ACTION && <ActionQuickStats meeting={meeting} />}
                 </td>
               </tr>
               <tr>
@@ -139,9 +158,10 @@ const SummaryEmail = (props: Props) => {
             </tbody>
           </table>
 
-          {meetingType === RETROSPECTIVE && (
-            <MeetingMemberTasks meetingType={meetingType} meeting={meeting} />
-          )}
+          {meetingType === RETROSPECTIVE ||
+            (meetingType === ACTION && (
+              <MeetingMemberTasks meetingType={meetingType} meeting={meeting} />
+            ))}
           <EmptySpace height={0} />
           <hr style={ruleStyle} />
           <EmptySpace height={48} />
@@ -149,6 +169,35 @@ const SummaryEmail = (props: Props) => {
             <RetroDiscussionTopics
               imageSource={referrer === 'email' ? 'static' : 'local'}
               topics={meeting.reflectionGroups}
+            />
+          )}
+          {meetingType === ACTION && meetingNumber < 4 && (
+            // @ts-ignore
+            <table align='center' style={emailTableBase} width='100%'>
+              <tbody>
+                <tr>
+                  <td align='center' style={{padding: 0}}>
+                    <hr style={ruleStyle} />
+                    <EmptySpace height={32} />
+                    <div style={tipStyle}>
+                      <b>{'Pro Tip'}</b>
+                      {': all Tasks in the '}
+                      <b>{'Done'}</b>
+                      {' column are'}
+                      <br />
+                      {'automatically archived after each meeting.'}
+                    </div>
+                    <EmptySpace height={32} />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          )}
+          {meetingNumber === 1 && (
+            <SummaryEmailScheduleCalendar
+              createdAt={createdAt}
+              meetingUrl={meetingUrl}
+              teamName={teamName}
             />
           )}
           <div>

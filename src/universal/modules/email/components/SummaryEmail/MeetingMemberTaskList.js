@@ -4,7 +4,6 @@ import EmptySpace from '../../components/EmptySpace/EmptySpace'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import plural from 'universal/utils/plural'
-import {DONE} from 'universal/utils/constants'
 import MeetingMemberTaskListItem from 'universal/modules/email/components/SummaryEmail/MeetingMemberTaskListItem'
 
 const textCenter = {
@@ -49,7 +48,8 @@ type Props = {|
 const MeetingMemberTaskList = (props: Props) => {
   const {member} = props
   const {
-    tasks,
+    doneTasks,
+    tasks: newTasks,
     user: {rasterPicture, preferredName},
     isCheckedIn
   } = member
@@ -58,8 +58,6 @@ const MeetingMemberTaskList = (props: Props) => {
     ...presentLabelBase,
     color: isCheckedIn ? appTheme.brand.secondary.green : appTheme.palette.mid50l
   }
-  const doneTasks = tasks.filter((task) => task.status === DONE)
-  const newTasks = tasks.filter((task) => task.status !== DONE)
   const doneTasksLabel = `${doneTasks.length} ${plural(doneTasks.length, 'Task')} Done`
   const newTasksLabel = `${newTasks.length} New ${plural(newTasks.length, 'Task')}`
 

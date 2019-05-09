@@ -5,7 +5,8 @@ import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap'
 import {ITask} from 'universal/types/graphql'
 
 type Task = Pick<ITask, 'content' | 'id' | 'tags'>
-const archiveTasksForDB = async (tasks: Task[]) => {
+
+const archiveTasksForDB = async (tasks: Task[], doneMeetingId?: string) => {
   if (!tasks || tasks.length === 0) return []
   const r = getRethink()
   const tasksToArchive = tasks.map((task) => {
@@ -16,6 +17,7 @@ const archiveTasksForDB = async (tasks: Task[]) => {
     const nextContentStr = JSON.stringify(raw)
     return {
       content: nextContentStr,
+      doneMeetingId,
       tags: nextTags,
       id: task.id
     }
@@ -28,7 +30,8 @@ const archiveTasksForDB = async (tasks: Task[]) => {
         .update(
           {
             content: task('content'),
-            tags: task('tags')
+            tags: task('tags'),
+            doneMeetingId: task('doneMeetingId')
           },
           {returnChanges: true}
         )
