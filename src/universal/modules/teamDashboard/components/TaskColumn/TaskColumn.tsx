@@ -15,6 +15,7 @@ import ui from 'universal/styles/ui'
 import {AreaEnum, ITask, TaskStatusEnum} from 'universal/types/graphql'
 import {TEAM_DASH, USER_DASH} from 'universal/utils/constants'
 import TaskColumnDropZone from './TaskColumnDropZone'
+import {createFragmentContainer, graphql} from 'react-relay'
 
 const Column = styled('div')({
   display: 'flex',
@@ -188,4 +189,14 @@ class TaskColumn extends Component<Props> {
   }
 }
 
-export default withAtmosphere(TaskColumn)
+export default createFragmentContainer(
+  withAtmosphere(TaskColumn),
+  graphql`
+    fragment TaskColumn_tasks on Task @relay(plural: true) {
+      ...TaskColumnAddTask_tasks
+      ...DraggableTask_task
+      id
+      sortOrder
+    }
+  `
+)

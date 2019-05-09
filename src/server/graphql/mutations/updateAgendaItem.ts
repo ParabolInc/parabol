@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import UpdateAgendaItemInput from 'server/graphql/types/UpdateAgendaItemInput'
 import UpdateAgendaItemPayload from 'server/graphql/types/UpdateAgendaItemPayload'
@@ -20,15 +20,11 @@ export default {
     updatedAgendaItem: {
       type: new GraphQLNonNull(UpdateAgendaItemInput),
       description: 'The updated item including an id, content, status, sortOrder'
-    },
-    meetingId: {
-      type: GraphQLID,
-      description: 'The meeting the update occurred in, if any'
     }
   },
   async resolve (
     _source,
-    {meetingId, updatedAgendaItem},
+    {updatedAgendaItem},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const now = new Date()
@@ -62,7 +58,8 @@ export default {
         ...doc,
         updatedAt: now
       })
-
+    const team = await dataLoader.get('teams').load(teamId)
+    const {meetingId} = team
     if (meetingId) {
       const meeting = (await r.table('NewMeeting').get(meetingId)) as Meeting | null
       if (!meeting || meeting.meetingType !== ACTION) {

@@ -57,7 +57,10 @@ const ActionMeetingUpdates = (props: Props) => {
     const edges = tasks.edges.filter(
       ({node}) => node.userId === userId && !isTaskPrivate(node.tags)
     )
-    setTeamMemberTasks({edges})
+    setTeamMemberTasks({
+      ...tasks,
+      edges
+    })
   }, [tasks, userId])
   const isFacilitating = facilitatorUserId === viewerId
   return (
@@ -140,6 +143,7 @@ export default createFragmentContainer(
         }
       }
       tasks(first: 1000) @connection(key: "TeamColumnsContainer_tasks") {
+        ...TaskColumns_tasks
         edges {
           node {
             # grab these so we can sort correctly
@@ -151,7 +155,6 @@ export default createFragmentContainer(
               id
             }
             userId
-            ...DraggableTask_task
           }
         }
       }

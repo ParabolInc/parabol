@@ -63,11 +63,7 @@ class MeetingAgendaCards extends Component<Props> {
   }
 
   render () {
-    const {
-      atmosphere: {viewerId},
-      maxCols,
-      showPlaceholders
-    } = this.props
+    const {maxCols, showPlaceholders} = this.props
     const tasks = this.props.tasks || []
     return (
       <MasonryCSSGrid gap={16} colWidth={meetingGridMinWidth} maxCols={maxCols} items={tasks}>
@@ -81,7 +77,6 @@ class MeetingAgendaCards extends Component<Props> {
                       area={MEETING}
                       handleAddTask={this.handleAddTask}
                       isAgenda
-                      myUserId={viewerId}
                       task={task}
                     />
                   </div>

@@ -83,6 +83,7 @@ export default createFragmentContainer(
           preferredName
         }
         tasks(first: 1000) @connection(key: "TeamColumnsContainer_tasks") {
+          ...TaskColumns_tasks
           edges {
             node {
               # grab these so we can sort correctly
@@ -94,7 +95,6 @@ export default createFragmentContainer(
               assignee {
                 id
               }
-              ...DraggableTask_task
             }
           }
         }
