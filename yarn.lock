@@ -2271,6 +2271,11 @@
   resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-2.2.44.tgz#1d4a798e53f35212fd5ad4d04050620171cd5b5e"
   integrity sha512-k2tWTQU8G4+iSMvqKi0Q9IIsWAp/n8xzdZS4Q4YVIltApoMA00wFBFdlJnmoaK1/z7B0Cy0yPe6GgXteSmdUNw==
 
+"@types/mousetrap@^1.6.2":
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/@types/mousetrap/-/mousetrap-1.6.2.tgz#5f48bdbd28c8a447167263ae436488f1d8be072d"
+  integrity sha512-m67PUdzoHJGmYJ6Fno4iXocl+azw9cuz8tdUG21M04UzMRUT1YfxPIIIt3lQkXLMGwlGSKXYNGxCOMxKlGegIw==
+
 "@types/node@*":
   version "11.9.0"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-11.9.0.tgz#35fea17653490dab82e1d5e69731abfdbf13160d"
