@@ -103,11 +103,16 @@ const finishActionMeeting = async (meeting: Meeting, dataLoader: DataLoaderWorke
   const tasks = allTasks.filter((task) => task.meetingid === meetingId)
   const doneTasks = allTasks.filter((task) => task.status === DONE)
   const userIds = meetingMembers.map(({userId}) => userId)
+  const r = getRethink()
   const [archivedTasks, newTasks, clearedAgendaItems] = await Promise.all([
     archiveTasksForDB(doneTasks),
     updateTaskSortOrders(userIds, tasks),
     clearAgendaItems(teamId),
-    shuffleCheckInOrder(teamId)
+    shuffleCheckInOrder(teamId),
+    r
+      .table('NewMeeting')
+      .get(meetingId)
+      .update({taskCount: tasks.length})
   ])
   return {updatedTasks: [...archivedTasks, ...newTasks], clearedAgendaItems}
 }

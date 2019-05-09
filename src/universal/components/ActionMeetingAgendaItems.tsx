@@ -69,18 +69,10 @@ const ActionMeetingAgendaItems = (props: Props) => {
   const {agendaItems, isMeetingSidebarCollapsed, newMeeting, tasks} = team
   const {facilitatorUserId, id: meetingId, localStage, phases} = newMeeting!
   const {id: localStageId, agendaItemId} = localStage
-  const agendaItem = agendaItems.find((item) => item.id === agendaItemId!)!
-  const {content, teamMember} = agendaItem
-  const {picture, preferredName} = teamMember
-  const isFacilitating = facilitatorUserId === viewerId
-  const phaseName = phaseLabelLookup[AGENDA_ITEMS]
-  const nextStageRes = findStageAfterId(phases, localStageId)
-  const {phase: nextPhase} = nextStageRes!
   const [agendaTasks, setAgendaTasks] = useState<ReadonlyArray<typeof tasks['edges'][0]['node']>>(
     []
   )
-  const label =
-    nextPhase.phaseType === NewMeetingPhaseTypeEnum.lastcall ? 'Last Call' : 'Next Topic'
+  const agendaItem = agendaItems.find((item) => item.id === agendaItemId!)
   useEffect(() => {
     setAgendaTasks(
       tasks.edges
@@ -89,6 +81,17 @@ const ActionMeetingAgendaItems = (props: Props) => {
         .sort((a, b) => (a.sortOrder < b.sortOrder ? 1 : -1))
     )
   }, [agendaItemId, tasks])
+
+  if (!agendaItem) return null
+  const {content, teamMember} = agendaItem
+  const {picture, preferredName} = teamMember
+  const isFacilitating = facilitatorUserId === viewerId
+  const phaseName = phaseLabelLookup[AGENDA_ITEMS]
+  const nextStageRes = findStageAfterId(phases, localStageId)
+  const {phase: nextPhase} = nextStageRes!
+  const label =
+    nextPhase.phaseType === NewMeetingPhaseTypeEnum.lastcall ? 'Last Call' : 'Next Topic'
+
   return (
     <MeetingContent>
       <MeetingContentHeader

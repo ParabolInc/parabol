@@ -83,11 +83,7 @@ const ActionMeetingFirstCall = (props: Props) => {
               onKeyDown={handleRightArrow(() => gotoNext())}
               innerRef={gotoNextRef}
             >
-              <BottomNavIconLabel
-                icon='arrow_forward'
-                iconColor='warm'
-                label={`Let’s begin: ${phaseName}`}
-              />
+              <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={phaseName} />
             </BottomNavControl>
             <EndMeetingButton meetingId={meetingId} />
           </StyledBottomBar>

@@ -107,7 +107,6 @@ const AgendaItem = (props: Props) => {
       <DeleteIconButton
         aria-label={'Remove this agenda topic'}
         agendaLength={agendaLength}
-        disabled={!canDelete}
         icon='cancel'
         onClick={handleRemove}
         palette='warm'

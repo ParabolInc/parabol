@@ -29,7 +29,6 @@ const NullableTask = React.memo((props: Props) => {
   const {content, createdBy, assignee} = task
   const {preferredName} = assignee
   const [contentState, setContentState] = useState(() => {
-    console.log('task', task)
     return convertFromRaw(JSON.parse(content))
   })
 

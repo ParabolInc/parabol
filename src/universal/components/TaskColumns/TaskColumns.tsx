@@ -53,9 +53,9 @@ const TaskColumns = (props: Props) => {
     return makeTasksByStatus(tasks.edges.map(({node}) => node))
   })
   useEffect(() => {
-    const nodes = tasks.edges.map(({node}) => node)
-    setGroupedTasks(makeTasksByStatus(nodes))
+    setGroupedTasks(makeTasksByStatus(tasks.edges.map(({node}) => node)))
   }, [tasks])
+
   const lanes = area === MEETING ? meetingColumnArray : columnArray
   return (
     <RootBlock>

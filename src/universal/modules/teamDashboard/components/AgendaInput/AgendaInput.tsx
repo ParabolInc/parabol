@@ -86,7 +86,8 @@ interface Props {
 
 const AgendaInput = (props: Props) => {
   const inputRef = useRef<HTMLInputElement>(null)
-  const focusInput = useCallback(() => {
+  const focusInput = useCallback((e?: React.KeyboardEvent | ExtendedKeyboardEvent) => {
+    e && e.preventDefault()
     inputRef.current && inputRef.current.focus()
   }, [])
   useHotkey('+', focusInput)

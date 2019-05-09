@@ -16,6 +16,7 @@ import {AreaEnum, ITask, TaskStatusEnum} from 'universal/types/graphql'
 import {TEAM_DASH, USER_DASH} from 'universal/utils/constants'
 import TaskColumnDropZone from './TaskColumnDropZone'
 import {createFragmentContainer, graphql} from 'react-relay'
+import {TaskColumn_tasks} from '__generated__/TaskColumn_tasks.graphql'
 
 const Column = styled('div')({
   display: 'flex',
@@ -91,14 +92,15 @@ interface Props extends WithAtmosphereProps {
   getTaskById: (taskId: string) => Partial<ITask> | undefined | null
   isMyMeetingSection?: boolean
   myTeamMemberId: string
-  tasks: any[]
+  tasks: TaskColumn_tasks
   status: TaskStatusEnum
   teamMemberFilterId?: string
   teams: any[]
 }
 
+type Task = TaskColumn_tasks[0]
 class TaskColumn extends Component<Props> {
-  taskIsInPlace = (draggedTask, targetTask, before) => {
+  taskIsInPlace = (draggedTask: Task, targetTask: Task, before) => {
     const {tasks} = this.props
     const targetIndex = tasks.findIndex((p) => p.id === targetTask.id)
     const boundingTask = tasks[targetIndex + (before ? -1 : 1)]
@@ -111,7 +113,7 @@ class TaskColumn extends Component<Props> {
    * `before` - whether the dragged task is being inserted before (true) or
    * after (false) the target task.
    */
-  insertTask = (draggedTask, targetTask, before) => {
+  insertTask = (draggedTask: Task, targetTask: Task, before) => {
     if (this.taskIsInPlace(draggedTask, targetTask, before)) {
       return
     }
@@ -172,7 +174,7 @@ class TaskColumn extends Component<Props> {
                   getTaskById={getTaskById}
                   task={task}
                   myUserId={atmosphere.userId}
-                  insert={(draggedTask, before) => this.insertTask(draggedTask, task, before)}
+                  insert={(draggedTask: Task, before) => this.insertTask(draggedTask, task, before)}
                 />
               )
             })}
@@ -197,6 +199,7 @@ export default createFragmentContainer(
       ...DraggableTask_task
       id
       sortOrder
+      status
     }
   `
 )

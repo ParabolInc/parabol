@@ -45,6 +45,16 @@ const NewMeetingSummary = (props: Props) => {
 }
 
 // Grab everything we need here since SummaryEmail is shared by the server
+
+graphql`
+  fragment NewMeetingSummaryTask on Task {
+    id
+    content
+    status
+    tags
+  }
+`
+
 export default createFragmentContainer(
   NewMeetingSummary,
   graphql`
@@ -61,24 +71,15 @@ export default createFragmentContainer(
           }
           ... on ActionMeetingMember {
             doneTasks {
-              id
-              content
-              status
-              tags
+              ...NewMeetingSummaryTask @relay(mask: false)
             }
             tasks {
-              id
-              content
-              status
-              tags
+              ...NewMeetingSummaryTask @relay(mask: false)
             }
           }
           ... on RetrospectiveMeetingMember {
             tasks {
-              id
-              content
-              status
-              tags
+              ...NewMeetingSummaryTask @relay(mask: false)
             }
           }
         }
@@ -87,6 +88,16 @@ export default createFragmentContainer(
         team {
           id
           name
+        }
+        ... on ActionMeeting {
+          phases {
+            phaseType
+            ... on AgendaItemsPhase {
+              stages {
+                isComplete
+              }
+            }
+          }
         }
         ... on RetrospectiveMeeting {
           reflectionGroups(sortBy: voteCount) {
