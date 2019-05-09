@@ -5,15 +5,15 @@ import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import PrimaryButton from 'universal/components/PrimaryButton'
 import IconLabel from 'universal/components/IconLabel'
+import DialogContainer from 'universal/components/DialogContainer'
 import DialogHeading from 'universal/components/DialogHeading'
 import DialogContent from 'universal/components/DialogContent'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import RemoveTeamMemberMutation from 'universal/mutations/RemoveTeamMemberMutation'
-import TeamManagementModalBoundary from '../PromoteTeamMemberModal/TeamManagementModalBoundary'
 
-const StyledModalBoundary = styled(TeamManagementModalBoundary)({
+const StyledDialogContainer = styled(DialogContainer)({
   width: 356
 })
 
@@ -35,7 +35,7 @@ const LeaveTeamModal = (props: Props) => {
     RemoveTeamMemberMutation(atmosphere, teamMemberId)
   }
   return (
-    <StyledModalBoundary>
+    <StyledDialogContainer>
       <DialogHeading>{'Are you sure?'}</DialogHeading>
       <DialogContent>
         {'This will remove you from the team.'}
@@ -45,7 +45,7 @@ const LeaveTeamModal = (props: Props) => {
           <IconLabel icon='arrow_forward' iconAfter label='Leave the team' />
         </StyledButton>
       </DialogContent>
-    </StyledModalBoundary>
+    </StyledDialogContainer>
   )
 }
 

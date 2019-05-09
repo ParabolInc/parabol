@@ -6,7 +6,6 @@ import ModalError from 'universal/components/ModalError'
 import {LoadingDelayRef} from 'universal/hooks/useLoadingDelay'
 import {PortalStatus} from 'universal/hooks/usePortal'
 import {DECELERATE} from 'universal/styles/animation'
-import {modalShadow} from 'universal/styles/elevation'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {Duration, ZIndex} from 'universal/types/constEnums'
 
@@ -17,6 +16,8 @@ const ModalBlock = styled('div')({
   justifyContent: 'center',
   left: 0,
   // no margins or paddings since they could force it too low & cause a scrollbar to appear
+  maxHeight: '100%',
+  maxWidth: '100%',
   position: 'absolute',
   top: 0,
   width: '100%',
@@ -64,11 +65,9 @@ const Backdrop = styled('div')(
 )
 
 const ModalContents = styled('div')(({portalStatus}: {portalStatus: PortalStatus}) => ({
-  boxShadow: modalShadow,
   display: 'flex',
   flex: '0 1 auto',
   flexDirection: 'column',
-  maxHeight: '90vh',
   position: 'relative',
   ...modalStyles[portalStatus]
 }))
