@@ -3,7 +3,6 @@ import styled from 'react-emotion'
 import ErrorBoundary from 'universal/components/ErrorBoundary'
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
 import Menu from 'universal/components/Menu'
-import TooltipContents from 'universal/components/TooltipContents'
 import ModalError from 'universal/components/ModalError'
 import TooltipBackground from 'universal/hooks/TooltipBackground'
 import {MenuPosition, UseCoordsValue} from 'universal/hooks/useCoords'
@@ -24,7 +23,6 @@ const useTooltipPortal = (
   coords: UseCoordsValue,
   portalStatus: PortalStatus,
   setPortalStatus: any,
-  isDropdown: boolean,
   menuPosition: MenuPosition,
   loadingDelayRef: LoadingDelayRef
 ) => {
@@ -35,7 +33,7 @@ const useTooltipPortal = (
         if (isMounted) {
           setPortalStatus(PortalStatus.AnimatedIn)
         }
-      }, Duration.MENU_OPEN_MAX)
+      }, Duration.TOOLTIP_OPEN_MAX)
     }
     return () => {
       isMounted = false
@@ -44,11 +42,6 @@ const useTooltipPortal = (
   return (reactEl) => {
     return portal(
       <TooltipBlock innerRef={targetRef} style={{...coords}}>
-        <TooltipBackground
-          menuPosition={menuPosition}
-          portalStatus={portalStatus}
-          isDropdown={isDropdown}
-        />
         <ErrorBoundary
           fallback={(error) => (
             <Menu ariaLabel='Error' closePortal={undefined as any} portalStatus={portalStatus}>
@@ -56,7 +49,7 @@ const useTooltipPortal = (
             </Menu>
           )}
         >
-          <TooltipContents minWidth={minWidth} portalStatus={portalStatus}>
+          <TooltipBackground minWidth={minWidth} portalStatus={portalStatus}>
             <Suspense
               fallback={
                 <LoadingComponent
@@ -70,7 +63,7 @@ const useTooltipPortal = (
             >
               {reactEl}
             </Suspense>
-          </TooltipContents>
+          </TooltipBackground>
         </ErrorBoundary>
       </TooltipBlock>
     )

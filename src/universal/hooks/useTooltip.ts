@@ -7,19 +7,16 @@ import usePortal, {PortalStatus, UsePortalOptions} from 'universal/hooks/usePort
 
 interface Options extends UsePortalOptions, UseCoordsOptions {
   loadingWidth?: number
-  isDropdown?: boolean
 }
 
 export interface TooltipProps {
   openPortal: () => void
   closePortal: () => void
   portalStatus: PortalStatus
-  isDropdown: boolean
 }
 
 const useTooltip = (preferredMenuPosition: MenuPosition, options: Options = {}) => {
   const {onOpen, onClose, originCoords} = options
-  const isDropdown = !!options.isDropdown
   const {targetRef, originRef, coords, menuPosition} = useCoords(preferredMenuPosition, {
     originCoords
   })
@@ -43,11 +40,10 @@ const useTooltip = (preferredMenuPosition: MenuPosition, options: Options = {}) 
     coords,
     portalStatus,
     setPortalStatus,
-    isDropdown,
     menuPosition,
     loadingDelayRef
   )
-  const tooltipProps = {portalStatus, openPortal, closePortal, isDropdown}
+  const tooltipProps = {portalStatus, openPortal, closePortal}
   return {
     openPortal,
     closePortal,
