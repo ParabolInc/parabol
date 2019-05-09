@@ -14,7 +14,7 @@ import PromoteToTeamLeadMutation from 'universal/mutations/PromoteToTeamLeadMuta
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 
 const StyledDialogContainer = styled(DialogContainer)({
-  maxWidth: 420
+  width: 420
 })
 
 const StyledButton = styled(PrimaryButton)({
