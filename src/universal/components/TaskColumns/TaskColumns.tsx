@@ -6,6 +6,7 @@ import ui from 'universal/styles/ui'
 import {AreaEnum, ITask} from 'universal/types/graphql'
 import {columnArray, MEETING, meetingColumnArray} from 'universal/utils/constants'
 import makeTasksByStatus from 'universal/utils/makeTasksByStatus'
+import {createFragmentContainer, graphql} from 'react-relay'
 
 const RootBlock = styled('div')({
   display: 'flex',
@@ -78,4 +79,17 @@ const TaskColumns = (props: Props) => {
   )
 }
 
-export default TaskColumns
+export default createFragmentContainer(
+  TaskColumns,
+  graphql`
+    fragment TaskColumns_tasks on TaskConnection {
+      edges {
+        node {
+          ...TaskColumn_tasks
+          status
+          sortOrder
+        }
+      }
+    }
+  `
+)

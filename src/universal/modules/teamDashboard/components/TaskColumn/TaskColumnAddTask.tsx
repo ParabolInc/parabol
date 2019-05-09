@@ -4,16 +4,18 @@ import useAtmosphere from 'universal/hooks/useAtmosphere'
 import TaskColumnAddTaskSelectTeam from 'universal/modules/teamDashboard/components/TaskColumn/TaskColumnAddTaskSelectTeam'
 import CreateTaskMutation from 'universal/mutations/CreateTaskMutation'
 import themeLabels from 'universal/styles/theme/labels'
-import {AreaEnum, ITask, ITeam, TaskStatusEnum} from 'universal/types/graphql'
+import {AreaEnum, ITeam, TaskStatusEnum} from 'universal/types/graphql'
 import dndNoise from 'universal/utils/dndNoise'
 import getNextSortOrder from 'universal/utils/getNextSortOrder'
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
+import {createFragmentContainer, graphql} from 'react-relay'
+import {TaskColumnAddTask_tasks} from '__generated__/TaskColumnAddTask_tasks.graphql'
 
 interface Props {
   area: AreaEnum
   isMyMeetingSection?: boolean
   status: TaskStatusEnum
-  tasks: ReadonlyArray<Pick<ITask, 'sortOrder'>>
+  tasks: TaskColumnAddTask_tasks
   myTeamMemberId: string
   teamMemberFilterId: string
   teams: ReadonlyArray<Pick<ITeam, 'id' | 'name'>>
@@ -50,4 +52,11 @@ const TaskColumnAddTask = (props: Props) => {
   return null
 }
 
-export default TaskColumnAddTask
+export default createFragmentContainer(
+  TaskColumnAddTask,
+  graphql`
+    fragment TaskColumnAddTask_tasks on Task @relay(plural: true) {
+      sortOrder
+    }
+  `
+)

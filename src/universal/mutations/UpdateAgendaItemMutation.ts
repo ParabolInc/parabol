@@ -24,8 +24,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation UpdateAgendaItemMutation($updatedAgendaItem: UpdateAgendaItemInput!, $meetingId: ID) {
-    updateAgendaItem(updatedAgendaItem: $updatedAgendaItem, meetingId: $meetingId) {
+  mutation UpdateAgendaItemMutation($updatedAgendaItem: UpdateAgendaItemInput!) {
+    updateAgendaItem(updatedAgendaItem: $updatedAgendaItem) {
       error {
         message
       }
@@ -60,7 +60,7 @@ const handleUpdateAgendaPhase = (
   }
 }
 
-const updateAgendaItemUpdater = (payload: RecordProxy, {store}) => {
+export const updateAgendaItemUpdater = (payload: RecordProxy, {store}) => {
   const agendaItem = payload.getLinkedRecord('agendaItem')
   const meetingId = payload.getValue('meetingId')
   if (!agendaItem) return
@@ -87,8 +87,11 @@ const UpdateAgendaItemMutation = (
     optimisticUpdater: (store) => {
       const proxyAgendaItem = store.get(updatedAgendaItem.id)
       updateProxyRecord(proxyAgendaItem, updatedAgendaItem)
+      const team = store.get(teamId)
+      if (!team) return
+      const meetingId = team.getValue('meetingId')
       handleUpdateAgendaItems(store, teamId)
-      handleUpdateAgendaPhase(store, variables.meetingId)
+      handleUpdateAgendaPhase(store, meetingId)
     },
     onCompleted,
     onError

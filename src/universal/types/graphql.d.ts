@@ -3860,11 +3860,6 @@ export interface IUpdateAgendaItemOnMutationArguments {
    * The updated item including an id, content, status, sortOrder
    */
   updatedAgendaItem: IUpdateAgendaItemInput
-
-  /**
-   * The meeting the update occurred in, if any
-   */
-  meetingId?: string | null
 }
 
 export interface IUpdateCreditCardOnMutationArguments {
@@ -4103,8 +4098,14 @@ export interface ICreateAgendaItemInput {
 
 export interface IAddAgendaItemPayload {
   __typename: 'AddAgendaItemPayload'
-  agendaItem: IAgendaItem | null
   error: IStandardMutationError | null
+  agendaItem: IAgendaItem | null
+  meetingId: string | null
+
+  /**
+   * The meeting with the updated agenda item, if any
+   */
+  meeting: NewMeeting | null
 }
 
 /**
@@ -5610,6 +5611,12 @@ export interface IRemoveAgendaItemPayload {
   __typename: 'RemoveAgendaItemPayload'
   error: IStandardMutationError | null
   agendaItem: IAgendaItem | null
+  meetingId: string | null
+
+  /**
+   * The meeting with the updated agenda item, if any
+   */
+  meeting: NewMeeting | null
 }
 
 export interface IRemoveAtlassianAuthPayload {

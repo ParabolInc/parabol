@@ -9,7 +9,8 @@ export interface PubKickOutPayload {
 const handlePubKickOut = (ws: UWebSocket, payload: PubKickOutPayload) => {
   if (ws.context.createdAt === payload.createdAt) {
     sendSignal(ws, {type: 'signal_error', message: 'Duplicate id'})
-    ws.close(1006, 'Duplicate id')
+    // TODO allow multiple tabs
+    // ws.close(1006, 'Duplicate id')
   }
 }
 

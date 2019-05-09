@@ -1,7 +1,8 @@
 import createMeetingMembers from 'server/graphql/mutations/helpers/createMeetingMembers'
-import {CHECKIN} from 'universal/utils/constants'
+import {CHECKIN, UPDATES} from 'universal/utils/constants'
 import getRethink from 'server/database/rethinkDriver'
-import {makeCheckInStage} from 'server/graphql/mutations/helpers/makeCheckinStages'
+import CheckInStage from 'server/database/types/CheckInStage'
+import UpdatesStage from 'server/database/types/UpdatesStage'
 
 /*
  * NewMeetings have a predefined set of stages, we need to add the new team member manually
@@ -20,11 +21,13 @@ const addTeamMemberToNewMeeting = async (teamMember, teamId, dataLoader) => {
   if (!newMeeting) return false
   const {phases} = newMeeting
   const checkInPhase = phases.find((phase) => phase.phaseType === CHECKIN)
-  if (!checkInPhase) return false
-
-  const {stages} = checkInPhase
-  const newStage = makeCheckInStage(teamMember, meetingId, false)
-  stages.push(newStage)
+  const updatesPhase = phases.find((phase) => phase.phaseType === UPDATES)
+  if (checkInPhase) {
+    checkInPhase.stages.push(new CheckInStage(teamMember.id))
+  }
+  if (updatesPhase) {
+    updatesPhase.stages.push(new UpdatesStage(teamMember.id))
+  }
   const [meetingMember] = await createMeetingMembers(newMeeting, [teamMember], dataLoader)
   await r({
     meeting: r

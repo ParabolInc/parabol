@@ -64,8 +64,6 @@ const AddTeamMemberAvatarButton = (props: Props) => {
   return (
     <>
       <AddButton
-        onFocus={openTooltip}
-        onBlur={closeTooltip}
         onMouseEnter={openTooltip}
         onMouseLeave={closeTooltip}
         onClick={toggleModal}

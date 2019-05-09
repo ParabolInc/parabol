@@ -44,7 +44,7 @@ import {
 } from 'universal/mutations/AcceptTeamInvitationMutation'
 import {addAgendaItemUpdater} from 'universal/mutations/AddAgendaItemMutation'
 import {removeAgendaItemUpdater} from 'universal/mutations/RemoveAgendaItemMutation'
-import handleUpdateAgendaItems from 'universal/mutations/handlers/handleUpdateAgendaItems'
+import {updateAgendaItemUpdater} from 'universal/mutations/UpdateAgendaItemMutation'
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -125,13 +125,13 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
       const type = payload.getValue('__typename')
       switch (type) {
         case 'AddAgendaItemPayload':
-          addAgendaItemUpdater(payload, store)
+          addAgendaItemUpdater(payload, {store})
           break
         case 'RemoveAgendaItemPayload':
-          removeAgendaItemUpdater(payload, store)
+          removeAgendaItemUpdater(payload, {store})
           break
         case 'UpdateAgendaItemPayload':
-          handleUpdateAgendaItems(payload, {store})
+          updateAgendaItemUpdater(payload, {store})
           break
         case 'AcceptTeamInvitationPayload':
           acceptTeamInvitationTeamUpdater(payload, {store, atmosphere: environment})
