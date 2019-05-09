@@ -6,15 +6,15 @@ import PrimaryButton from 'universal/components/PrimaryButton'
 import IconLabel from 'universal/components/IconLabel'
 import DialogHeading from 'universal/components/DialogHeading'
 import DialogContent from 'universal/components/DialogContent'
+import DialogContainer from 'universal/components/DialogContainer'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import PromoteToTeamLeadMutation from 'universal/mutations/PromoteToTeamLeadMutation'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import TeamManagementModalBoundary from './TeamManagementModalBoundary'
 
-const StyledModalBoundary = styled(TeamManagementModalBoundary)({
-  width: 420
+const StyledDialogContainer = styled(DialogContainer)({
+  maxWidth: 420
 })
 
 const StyledButton = styled(PrimaryButton)({
@@ -42,7 +42,7 @@ const PromoteTeamMemberModal = (props: Props) => {
     closePortal()
   }
   return (
-    <StyledModalBoundary>
+    <StyledDialogContainer>
       <DialogHeading>{'Are you sure?'}</DialogHeading>
       <DialogContent>
         {`You will be removed as the team leader and promote ${preferredName}. You will no longer be able to change team membership. This cannot be undone!`}
@@ -50,7 +50,7 @@ const PromoteTeamMemberModal = (props: Props) => {
           <IconLabel icon='arrow_forward' iconAfter label={`Yes, promote ${preferredName}`} />
         </StyledButton>
       </DialogContent>
-    </StyledModalBoundary>
+    </StyledDialogContainer>
   )
 }
 

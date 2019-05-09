@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'react-emotion'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
+import DialogContainer from 'universal/components/DialogContainer'
 import DialogContent from 'universal/components/DialogContent'
 import DialogHeading from 'universal/components/DialogHeading'
 import IconLabel from 'universal/components/IconLabel'
@@ -10,7 +11,6 @@ import withAtmosphere, {
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import RemoveOrgUserMutation from 'universal/mutations/RemoveOrgUserMutation'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import TeamManagementModalBoundary from '../../../teamDashboard/components/PromoteTeamMemberModal/TeamManagementModalBoundary'
 
 const StyledButton = styled(PrimaryButton)({
   margin: '1.5rem auto 0'
@@ -22,7 +22,7 @@ interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentPr
   preferredName: string
 }
 
-const ModalBoundary = styled(TeamManagementModalBoundary)({
+const StyledDialogContainer = styled(DialogContainer)({
   width: '400'
 })
 
@@ -43,7 +43,7 @@ const RemoveFromOrgModal = (props: Props) => {
     RemoveOrgUserMutation(atmosphere, {orgId, userId}, {history}, onError, onCompleted)
   }
   return (
-    <ModalBoundary>
+    <StyledDialogContainer>
       <DialogHeading>{'Are you sure?'}</DialogHeading>
       <DialogContent>
         {`This will remove ${preferredName} from the organization. Any outstanding tasks will be given
@@ -53,7 +53,7 @@ const RemoveFromOrgModal = (props: Props) => {
           <IconLabel icon='arrow_forward' iconAfter label={`Remove ${preferredName}`} />
         </StyledButton>
       </DialogContent>
-    </ModalBoundary>
+    </StyledDialogContainer>
   )
 }
 
