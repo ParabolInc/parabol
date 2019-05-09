@@ -4,7 +4,7 @@ import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import PrimaryButton from 'universal/components/PrimaryButton'
 import IconLabel from 'universal/components/IconLabel'
-import DialogHeading from 'universal/components/DialogHeading'
+import DialogTitle from 'universal/components/DialogTitle'
 import DialogContent from 'universal/components/DialogContent'
 import DialogContainer from 'universal/components/DialogContainer'
 import withAtmosphere, {
@@ -43,7 +43,7 @@ const PromoteTeamMemberModal = (props: Props) => {
   }
   return (
     <StyledDialogContainer>
-      <DialogHeading>{'Are you sure?'}</DialogHeading>
+      <DialogTitle>{'Are you sure?'}</DialogTitle>
       <DialogContent>
         {`You will be removed as the team leader and promote ${preferredName}. You will no longer be able to change team membership. This cannot be undone!`}
         <StyledButton size='medium' onClick={handleClick} waiting={submitting}>

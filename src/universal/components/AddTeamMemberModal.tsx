@@ -39,10 +39,6 @@ const ButtonGroup = styled('div')({
   justifyContent: 'flex-end'
 })
 
-const OffsetTitle = styled(DialogTitle)({
-  paddingLeft: '1.75rem'
-})
-
 const ErrorMessage = styled(StyledError)({
   fontSize: '.8125rem',
   marginTop: '.5rem'
@@ -137,7 +133,7 @@ class AddTeamMemberModal extends Component<Props, State> {
     const title = invitees.length <= 1 ? 'Send Invitation' : `Send ${invitees.length} Invitations`
     return (
       <StyledDialogContainer>
-        <OffsetTitle>Invite to Team</OffsetTitle>
+        <DialogTitle>Invite to Team</DialogTitle>
         <DialogContent>
           <BasicTextArea
             autoFocus

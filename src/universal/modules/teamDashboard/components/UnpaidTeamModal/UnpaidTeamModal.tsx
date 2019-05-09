@@ -5,7 +5,7 @@ import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import DashModal from 'universal/components/Dashboard/DashModal'
 import DialogContent from 'universal/components/DialogContent'
-import DialogHeading from 'universal/components/DialogHeading'
+import DialogTitle from 'universal/components/DialogTitle'
 import IconLabel from 'universal/components/IconLabel'
 import PrimaryButton from 'universal/components/PrimaryButton'
 import withAtmosphere, {
@@ -36,7 +36,7 @@ const UnpaidTeamModal = (props: Props) => {
     : `Try reaching out to ${billingLeaderName}`
   return (
     <DashModal>
-      <DialogHeading>{'Oh dear…'}</DialogHeading>
+      <DialogTitle>{'Oh dear…'}</DialogTitle>
       <DialogContent>
         {problem}
         <br />

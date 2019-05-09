@@ -8,7 +8,7 @@ const DialogTitle = styled('h2')({
   fontWeight: 600,
   lineHeight: 1.5,
   margin: 0,
-  padding: '1.5rem 2rem 0'
+  padding: '24px 24px 0'
 })
 
 export default DialogTitle
