@@ -2,8 +2,8 @@ import styled from 'react-emotion'
 import {MenuPosition} from 'universal/hooks/useCoords'
 import {PortalStatus} from 'universal/hooks/usePortal'
 import {DECELERATE} from 'universal/styles/animation'
-import {menuShadow} from 'universal/styles/elevation'
-import {Duration, Radius} from 'universal/types/constEnums'
+// import {menuShadow} from 'universal/styles/elevation'
+import {Duration} from 'universal/types/constEnums'
 
 const transformOrigins = {
   [MenuPosition.UPPER_RIGHT]: 'top right',
@@ -19,12 +19,12 @@ const backgroundStyles = (portalStatus: PortalStatus, isDropdown: boolean) => {
       return {
         opacity: 1,
         transform: isDropdown ? 'scaleY(1)' : 'scale(1)',
-        transition: `all ${Duration.MENU_OPEN}ms ${DECELERATE}`
+        transition: `all ${Duration.TOOLTIP_OPEN}ms ${DECELERATE}`
       }
     case PortalStatus.Exiting:
       return {
         opacity: 0,
-        transition: `all ${Duration.PORTAL_CLOSE}ms ${DECELERATE}`
+        transition: `all ${Duration.TOOLTIP_CLOSE}ms ${DECELERATE}`
       }
     case PortalStatus.Entering:
       return {
@@ -35,7 +35,7 @@ const backgroundStyles = (portalStatus: PortalStatus, isDropdown: boolean) => {
   }
 }
 
-const MenuBackground = styled('div')(
+const TooltipBackground = styled('div')(
   ({
     menuPosition,
     portalStatus,
@@ -45,10 +45,6 @@ const MenuBackground = styled('div')(
     portalStatus: PortalStatus
     isDropdown: boolean
   }) => ({
-    background: '#fff',
-    borderRadius: Radius.MEDIUM,
-    boxShadow: menuShadow,
-    height: '100%',
     position: 'absolute',
     transformOrigin: transformOrigins[menuPosition],
     width: '100%',
@@ -57,4 +53,4 @@ const MenuBackground = styled('div')(
   })
 )
 
-export default MenuBackground
+export default TooltipBackground

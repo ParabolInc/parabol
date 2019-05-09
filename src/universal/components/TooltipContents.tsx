@@ -1,7 +1,8 @@
 import styled from 'react-emotion'
 import {PortalStatus} from 'universal/hooks/usePortal'
 import {DECELERATE} from 'universal/styles/animation'
-import {Duration, Radius} from 'universal/types/constEnums'
+import {Duration} from 'universal/types/constEnums'
+import TooltipStyled from 'universal/components/TooltipStyled'
 
 const animations = (portalStatus) => {
   switch (portalStatus) {
@@ -25,23 +26,16 @@ const animations = (portalStatus) => {
   }
 }
 
-export interface MenuContentsProps {
+export interface TooltipContentsProps {
   minWidth?: number
   portalStatus: PortalStatus
 }
 
-const MenuContents = styled('div')(({minWidth, portalStatus}: MenuContentsProps) => ({
-  borderRadius: Radius.MEDIUM,
-  outline: 0,
-  overflowY: portalStatus >= PortalStatus.AnimatedIn ? 'auto' : 'hidden',
-  paddingBottom: 8,
-  paddingTop: 8,
-  textAlign: 'left',
-  width: '100%',
+const TooltipContents = styled(TooltipStyled)(({minWidth, portalStatus}: TooltipContentsProps) => ({
   opacity: 0,
   transition: `opacity 100ms ${DECELERATE} `,
   minWidth,
   ...animations(portalStatus)
 }))
 
-export default MenuContents
+export default TooltipContents

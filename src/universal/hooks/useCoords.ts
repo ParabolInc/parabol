@@ -33,8 +33,10 @@ export interface ModalAnchor {
 export enum MenuPosition {
   UPPER_LEFT,
   UPPER_RIGHT,
+  UPPER_CENTER,
   LOWER_LEFT,
-  LOWER_RIGHT
+  LOWER_RIGHT,
+  LOWER_CENTER
 }
 
 const anchorLookup = {
@@ -58,6 +60,16 @@ const anchorLookup = {
       vertical: 'bottom'
     }
   },
+  [MenuPosition.UPPER_CENTER]: {
+    targetAnchor: {
+      horizontal: 'center',
+      vertical: 'top'
+    },
+    originAnchor: {
+      horizontal: 'center',
+      vertical: 'bottom'
+    }
+  },
   [MenuPosition.LOWER_LEFT]: {
     targetAnchor: {
       horizontal: 'left',
@@ -75,6 +87,16 @@ const anchorLookup = {
     },
     originAnchor: {
       horizontal: 'right',
+      vertical: 'top'
+    }
+  },
+  [MenuPosition.LOWER_CENTER]: {
+    targetAnchor: {
+      horizontal: 'center',
+      vertical: 'bottom'
+    },
+    originAnchor: {
+      horizontal: 'center',
       vertical: 'top'
     }
   }

@@ -22,7 +22,9 @@ export const enum Duration {
   MENU_OPEN = 150,
   MENU_OPEN_MAX = 188,
   MODAL_OPEN = 200,
-  PORTAL_CLOSE = 120
+  PORTAL_CLOSE = 120,
+  TOOLTIP_OPEN = 150,
+  TOOLTIP_CLOSE = 75
 }
 
 export const enum Providers {
@@ -40,4 +42,11 @@ export const enum Layout {
   TYPE_GRID = 4, // .5x
   LAYOUT_GRID = 8, // 1x
   ROW_GUTTER = 16 // 2x
+}
+
+// powers of 2 for cheap sense of scale
+export const enum Radius {
+  SMALL = 2,
+  MEDIUM = 4,
+  LARGE = 8
 }
