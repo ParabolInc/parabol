@@ -16,8 +16,6 @@ const ModalBlock = styled('div')({
   justifyContent: 'center',
   left: 0,
   // no margins or paddings since they could force it too low & cause a scrollbar to appear
-  maxHeight: '100%',
-  maxWidth: '100%',
   position: 'absolute',
   top: 0,
   width: '100%',
