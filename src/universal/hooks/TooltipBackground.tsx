@@ -29,7 +29,6 @@ const backgroundStyles = (portalStatus: PortalStatus) => {
 
 const TooltipBackground = styled(TooltipStyled)(
   ({minWidth, portalStatus}: {minWidth?: number; portalStatus: PortalStatus}) => ({
-    minHeight: 24,
     minWidth,
     zIndex: -1,
     ...backgroundStyles(portalStatus)

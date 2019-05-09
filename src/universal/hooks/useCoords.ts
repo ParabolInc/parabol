@@ -25,11 +25,6 @@ interface CoordState {
   menuPosition: MenuPosition
 }
 
-export interface ModalAnchor {
-  horizontal: 'left' | 'center' | 'right'
-  vertical: 'top' | 'center' | 'bottom'
-}
-
 export enum MenuPosition {
   UPPER_LEFT,
   UPPER_RIGHT,

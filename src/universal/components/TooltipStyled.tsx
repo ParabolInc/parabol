@@ -5,12 +5,11 @@ import {PALETTE} from 'universal/styles/paletteV2'
 
 const TooltipStyled = styled('div')({
   color: '#FFF',
-  backgroundColor: PALETTE.BACKGROUND.TOOLTIP,
+  backgroundColor: PALETTE.BACKGROUND.DARK,
   borderRadius: Radius.SMALL,
   fontSize: 11,
   fontWeight: 600,
   lineHeight: '16px',
-  maxHeight: 24,
   overflow: 'hidden',
   padding: '4px 8px',
   textAlign: 'center',

@@ -17,7 +17,7 @@ export interface TooltipProps {
 
 const useTooltip = (preferredMenuPosition: MenuPosition, options: Options = {}) => {
   const {onOpen, onClose, originCoords} = options
-  const {targetRef, originRef, coords, menuPosition} = useCoords(preferredMenuPosition, {
+  const {targetRef, originRef, coords} = useCoords(preferredMenuPosition, {
     originCoords
   })
   if (originCoords) {
@@ -40,7 +40,6 @@ const useTooltip = (preferredMenuPosition: MenuPosition, options: Options = {}) 
     coords,
     portalStatus,
     setPortalStatus,
-    menuPosition,
     loadingDelayRef
   )
   const tooltipProps = {portalStatus, openPortal, closePortal}

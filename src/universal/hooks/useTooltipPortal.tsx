@@ -5,7 +5,7 @@ import LoadingComponent from 'universal/components/LoadingComponent/LoadingCompo
 import Menu from 'universal/components/Menu'
 import ModalError from 'universal/components/ModalError'
 import TooltipBackground from 'universal/hooks/TooltipBackground'
-import {MenuPosition, UseCoordsValue} from 'universal/hooks/useCoords'
+import {UseCoordsValue} from 'universal/hooks/useCoords'
 import {LoadingDelayRef} from 'universal/hooks/useLoadingDelay'
 import {PortalStatus} from 'universal/hooks/usePortal'
 import {Duration, ZIndex} from 'universal/types/constEnums'
@@ -23,7 +23,6 @@ const useTooltipPortal = (
   coords: UseCoordsValue,
   portalStatus: PortalStatus,
   setPortalStatus: any,
-  menuPosition: MenuPosition,
   loadingDelayRef: LoadingDelayRef
 ) => {
   useEffect(() => {
