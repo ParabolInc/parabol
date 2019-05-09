@@ -5,7 +5,7 @@ import {createFragmentContainer, graphql} from 'react-relay'
 import PrimaryButton from 'universal/components/PrimaryButton'
 import IconLabel from 'universal/components/IconLabel'
 import DialogContainer from 'universal/components/DialogContainer'
-import DialogHeading from 'universal/components/DialogHeading'
+import DialogTitle from 'universal/components/DialogTitle'
 import DialogContent from 'universal/components/DialogContent'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -34,7 +34,7 @@ const RemoveTeamMemberModal = (props: Props) => {
   }
   return (
     <StyledDialogContainer>
-      <DialogHeading>Are you sure?</DialogHeading>
+      <DialogTitle>Are you sure?</DialogTitle>
       <DialogContent>
         This will remove {preferredName} from the team.
         <br />

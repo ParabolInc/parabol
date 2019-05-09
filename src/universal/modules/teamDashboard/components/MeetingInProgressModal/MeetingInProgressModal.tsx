@@ -3,7 +3,7 @@ import {RouteComponentProps, withRouter} from 'react-router-dom'
 import {ACTION, RETROSPECTIVE} from 'universal/utils/constants'
 import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 import DashModal from 'universal/components/Dashboard/DashModal'
-import DialogHeading from 'universal/components/DialogHeading'
+import DialogTitle from 'universal/components/DialogTitle'
 import DialogContent from 'universal/components/DialogContent'
 import PrimaryButton from 'universal/components/PrimaryButton'
 import IconLabel from 'universal/components/IconLabel'
@@ -30,7 +30,7 @@ const MeetingInProgressModal = (props: Props) => {
   if (!isPaid || !newMeeting) return null
   return (
     <DashModal>
-      <DialogHeading>{'Meeting in Progress…'}</DialogHeading>
+      <DialogTitle>{'Meeting in Progress…'}</DialogTitle>
       <DialogContent>
         {meetingType === ACTION && (
           <Fragment>

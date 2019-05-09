@@ -3,7 +3,7 @@ import styled from 'react-emotion'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import DialogContainer from 'universal/components/DialogContainer'
 import DialogContent from 'universal/components/DialogContent'
-import DialogHeading from 'universal/components/DialogHeading'
+import DialogTitle from 'universal/components/DialogTitle'
 import IconLabel from 'universal/components/IconLabel'
 import PrimaryButton from 'universal/components/PrimaryButton'
 import withAtmosphere, {
@@ -44,7 +44,7 @@ const RemoveFromOrgModal = (props: Props) => {
   }
   return (
     <StyledDialogContainer>
-      <DialogHeading>{'Are you sure?'}</DialogHeading>
+      <DialogTitle>{'Are you sure?'}</DialogTitle>
       <DialogContent>
         {`This will remove ${preferredName} from the organization. Any outstanding tasks will be given
         to the team leads. Any time remaining on their subscription will be refunded on the next
