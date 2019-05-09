@@ -2271,11 +2271,6 @@
   resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-2.2.44.tgz#1d4a798e53f35212fd5ad4d04050620171cd5b5e"
   integrity sha512-k2tWTQU8G4+iSMvqKi0Q9IIsWAp/n8xzdZS4Q4YVIltApoMA00wFBFdlJnmoaK1/z7B0Cy0yPe6GgXteSmdUNw==
 
-"@types/mousetrap@^1.6.2":
-  version "1.6.2"
-  resolved "https://registry.yarnpkg.com/@types/mousetrap/-/mousetrap-1.6.2.tgz#5f48bdbd28c8a447167263ae436488f1d8be072d"
-  integrity sha512-m67PUdzoHJGmYJ6Fno4iXocl+azw9cuz8tdUG21M04UzMRUT1YfxPIIIt3lQkXLMGwlGSKXYNGxCOMxKlGegIw==
-
 "@types/node@*":
   version "11.9.0"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-11.9.0.tgz#35fea17653490dab82e1d5e69731abfdbf13160d"
@@ -2344,9 +2339,9 @@
     "@types/relay-runtime" "*"
 
 "@types/react-router-dom@^4.3.2":
-  version "4.3.2"
-  resolved "https://registry.yarnpkg.com/@types/react-router-dom/-/react-router-dom-4.3.2.tgz#52c17c3682597638f31c17c42620403dc5c2a3f5"
-  integrity sha512-biesHodFxPgDxku2m08XwPeAfUYBcxAnrQG7pwFikuA3L2e3u2OKAb+Sb16bJuU3L5CTHd+Ivap+ke4mmGsHqQ==
+  version "4.3.3"
+  resolved "https://registry.yarnpkg.com/@types/react-router-dom/-/react-router-dom-4.3.3.tgz#7837e3e9fefbc84a8f6c8a51dca004f4e83e94e3"
+  integrity sha512-xj0DmFjgvAqRfh/kJPO7apD5G30yPQe+8slu/dugioQOkdKpyzc4Fgk4hoTelm6CSHz7pI2PPsW5+Y6GRBF2zw==
   dependencies:
     "@types/history" "*"
     "@types/react" "*"
@@ -2376,13 +2371,9 @@
     "@types/prop-types" "*"
     csstype "^2.2.0"
 
-"@types/relay-runtime@*", "@types/relay-runtime@https://github.com/mattkrick/relay-runtime-strict-types/tarball/2b79845de58b8f26a37a5b5886e0b66534ffa23d":
-  version "2.0.1"
-  resolved "https://github.com/mattkrick/relay-runtime-strict-types/tarball/2b79845de58b8f26a37a5b5886e0b66534ffa23d#2e32a30219edc08753095e29c60a3d6551e17923"
-
-"@types/relay-runtime@https://github.com/mattkrick/relay-runtime-strict-types/tarball/ea46a6d8eb056a9e503cd494ecd3c68fb9d08e3b":
-  version "2.0.1"
-  resolved "https://github.com/mattkrick/relay-runtime-strict-types/tarball/ea46a6d8eb056a9e503cd494ecd3c68fb9d08e3b#db237234a98af56540afa99bda2b3ff59e938de1"
+"@types/relay-runtime@*", "@types/relay-runtime@https://github.com/mattkrick/relay-runtime-strict-types/tarball/d8f23edaf09c660aa900abc8052b9f104861fa7a":
+  version "2.0.2"
+  resolved "https://github.com/mattkrick/relay-runtime-strict-types/tarball/d8f23edaf09c660aa900abc8052b9f104861fa7a#0a4617c5e68e4dc0a5909028bff76c2f91edd768"
 
 "@types/segment-analytics@^0.0.30":
   version "0.0.30"
@@ -16929,7 +16920,7 @@ tslint-eslint-rules@^5.3.1:
     tslib "1.9.0"
     tsutils "^3.0.0"
 
-tslint@^5.16.0:
+tslint@^5.13.1:
   version "5.16.0"
   resolved "https://registry.yarnpkg.com/tslint/-/tslint-5.16.0.tgz#ae61f9c5a98d295b9a4f4553b1b1e831c1984d67"
   integrity sha512-UxG2yNxJ5pgGwmMzPMYh/CCnCnh0HfPgtlVRDs1ykZklufFBL1ZoTlWFRz2NQjcoEiDoRp+JyT0lhBbbH/obyA==
