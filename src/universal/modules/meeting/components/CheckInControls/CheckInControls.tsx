@@ -42,8 +42,8 @@ const CheckInControls = (props: Props) => {
   const handleOnClickAbsent = useCallback(() => {
     const {userId, meetingMember} = teamMemberRef.current
     const {isCheckedIn, meetingId} = meetingMember!
-    if (!isCheckedIn) {
-      NewMeetingCheckInMutation(atmosphere, {meetingId, userId, isCheckedIn: true})
+    if (isCheckedIn !== false) {
+      NewMeetingCheckInMutation(atmosphere, {meetingId, userId, isCheckedIn: false})
     }
     handleGotoNext.current.gotoNext()
   }, [])

@@ -14,13 +14,20 @@ const TimelineEventCompletedActionMeeting = new GraphQLObjectType<any>({
     meeting: {
       type: new GraphQLNonNull(Meeting),
       description: 'The meeting that was completed',
-      resolve: ({meetingId}, _args, {dataLoader}) => {
-        return dataLoader.get('meetings').load(meetingId)
+      resolve: ({meetingId, legacyMeetingId}, _args, {dataLoader}) => {
+        if (meetingId) {
+          return dataLoader.get('newMeetings').load(meetingId)
+        }
+        return dataLoader.get('meetings').load(legacyMeetingId)
       }
     },
     meetingId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The meetingId that was completed'
+      type: GraphQLID,
+      description: 'The meetingId that was completed, null if legacyMeetingId is present'
+    },
+    legacyMeetingId: {
+      type: GraphQLID,
+      description: 'a meetingId to be used with legacy action meetings'
     },
     orgId: {
       type: new GraphQLNonNull(GraphQLID),

@@ -3,6 +3,7 @@ import React from 'react'
 import {emailFontFamily, emailTableBase} from 'universal/styles/email'
 import {createGoogleCalendarInviteURL, makeIcsUrl} from 'universal/utils/makeCalendarInvites'
 import EmptySpace from '../../components/EmptySpace/EmptySpace'
+import ui from 'universal/styles/ui'
 
 const message = {
   color: '#444258',
@@ -53,6 +54,12 @@ const iconLinkLabel = {
   verticalAlign: 'middle'
 } as React.CSSProperties
 
+const topBorderStyle = {
+  fontFamily: ui.emailFontFamily,
+  textAlign: 'center',
+  borderTop: `${ui.emailRuleHeight} solid ${ui.emailRuleColor}`
+} as React.CSSProperties
+
 interface Props {
   createdAt: Date
   meetingUrl: string
@@ -64,7 +71,7 @@ const SummaryEmailScheduleCalendar = (props: Props) => {
   return (
     // @ts-ignore
     <table align='center' style={emailTableBase} width='100%'>
-      <tbody>
+      <tbody style={topBorderStyle}>
         <tr>
           <td align='center' style={{padding: 0}}>
             <div style={message}>

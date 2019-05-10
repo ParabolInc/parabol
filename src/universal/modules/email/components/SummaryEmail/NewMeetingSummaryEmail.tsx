@@ -24,6 +24,7 @@ import {
 import {sheetShadow} from 'universal/styles/elevation'
 import ActionQuickStats from 'universal/modules/email/components/QuickStats/ActionQuickStats'
 import SummaryEmailScheduleCalendar from 'universal/modules/email/components/SummaryEmail/SummaryEmailScheduleCalendar'
+import ui from 'universal/styles/ui'
 
 const sheetStyle = {
   boxShadow: sheetShadow,
@@ -66,6 +67,12 @@ const tipStyle = {
   lineHeight: '24px'
 }
 
+const topBorderStyle = {
+  fontFamily: ui.emailFontFamily,
+  textAlign: 'center',
+  borderTop: `${ui.emailRuleHeight} solid ${ui.emailRuleColor}`
+} as React.CSSProperties
+
 interface Props {
   emailCSVLUrl?: string
   isDemo?: boolean
@@ -99,7 +106,7 @@ const SummaryEmail = (props: Props) => {
   const sheetStyleContainer = referrer !== 'email' ? sheetStyle : undefined
   return (
     <Layout>
-      {referrer === 'email' && (
+      {referrer !== 'email' && (
         <table style={emailTableBase}>
           <tbody>
             <tr>
@@ -162,9 +169,7 @@ const SummaryEmail = (props: Props) => {
             (meetingType === ACTION && (
               <MeetingMemberTasks meetingType={meetingType} meeting={meeting} />
             ))}
-          <EmptySpace height={0} />
-          <hr style={ruleStyle} />
-          <EmptySpace height={48} />
+
           {meetingType === RETROSPECTIVE && (
             <RetroDiscussionTopics
               imageSource={referrer === 'email' ? 'static' : 'local'}
@@ -174,10 +179,9 @@ const SummaryEmail = (props: Props) => {
           {meetingType === ACTION && meetingNumber < 4 && (
             // @ts-ignore
             <table align='center' style={emailTableBase} width='100%'>
-              <tbody>
+              <tbody style={topBorderStyle}>
                 <tr>
                   <td align='center' style={{padding: 0}}>
-                    <hr style={ruleStyle} />
                     <EmptySpace height={32} />
                     <div style={tipStyle}>
                       <b>{'Pro Tip'}</b>
@@ -188,21 +192,24 @@ const SummaryEmail = (props: Props) => {
                       {'automatically archived after each meeting.'}
                     </div>
                     <EmptySpace height={32} />
+                    <hr style={ruleStyle} />
+                    <EmptySpace height={32} />
                   </td>
                 </tr>
               </tbody>
             </table>
           )}
           {meetingNumber === 1 && (
-            <SummaryEmailScheduleCalendar
-              createdAt={createdAt}
-              meetingUrl={meetingUrl}
-              teamName={teamName}
-            />
+            <>
+              <SummaryEmailScheduleCalendar
+                createdAt={createdAt}
+                meetingUrl={meetingUrl}
+                teamName={teamName}
+              />
+              <EmptySpace height={32} />
+            </>
           )}
           <div>
-            <EmptySpace height={48} />
-            <hr style={ruleStyle} />
             {!isDemo && (
               <Fragment>
                 <EmptySpace height={48} />

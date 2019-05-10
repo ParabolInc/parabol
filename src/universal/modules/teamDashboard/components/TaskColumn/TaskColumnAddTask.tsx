@@ -14,6 +14,7 @@ import {TaskColumnAddTask_tasks} from '__generated__/TaskColumnAddTask_tasks.gra
 interface Props {
   area: AreaEnum
   isMyMeetingSection?: boolean
+  meetingId?: string
   status: TaskStatusEnum
   tasks: TaskColumnAddTask_tasks
   myTeamMemberId: string
@@ -21,30 +22,35 @@ interface Props {
   teams: ReadonlyArray<Pick<ITeam, 'id' | 'name'>>
 }
 
-const handleAddTaskFactory = (atmosphere, status, teamId, userId, sortOrder) => () => {
-  const newTask = {
-    status,
-    teamId,
-    userId,
-    sortOrder
-  }
-  CreateTaskMutation(atmosphere, newTask)
-}
-
 const TaskColumnAddTask = (props: Props) => {
-  const {area, isMyMeetingSection, status, tasks, myTeamMemberId, teamMemberFilterId, teams} = props
+  const {
+    area,
+    isMyMeetingSection,
+    status,
+    tasks,
+    meetingId,
+    myTeamMemberId,
+    teamMemberFilterId,
+    teams
+  } = props
   const atmosphere = useAtmosphere()
   const label = themeLabels.taskStatus[status].slug
   const sortOrder = getNextSortOrder(tasks, dndNoise())
   if (area === AreaEnum.teamDash || isMyMeetingSection) {
     const {userId, teamId} = fromTeamMemberId(teamMemberFilterId || myTeamMemberId)
-    const handleAddTask = handleAddTaskFactory(atmosphere, status, teamId, userId, sortOrder)
+    const handleAddTask = () =>
+      CreateTaskMutation(atmosphere, {status, teamId, userId, sortOrder, meetingId}, area)
     return <AddTaskButton onClick={handleAddTask} label={label} />
   } else if (area === AreaEnum.userDash) {
     if (teams.length === 1) {
       const {id: teamId} = teams[0]
       const {viewerId} = atmosphere
-      const handleAddTask = handleAddTaskFactory(atmosphere, status, teamId, viewerId, sortOrder)
+      const handleAddTask = () =>
+        CreateTaskMutation(
+          atmosphere,
+          {status, teamId, userId: viewerId, sortOrder, meetingId},
+          area
+        )
       return <AddTaskButton onClick={handleAddTask} label={label} />
     }
     return <TaskColumnAddTaskSelectTeam sortOrder={sortOrder} status={status} teams={teams} />

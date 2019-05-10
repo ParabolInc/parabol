@@ -257,7 +257,7 @@ export default createFragmentContainer(
               reflectionGroup {
                 id
                 tasks {
-                  ...NullableTask_task
+                  ...MeetingAgendaCards_tasks
                 }
               }
             }
@@ -285,7 +285,7 @@ export default createFragmentContainer(
                 content
                 createdAt
                 sortOrder
-                ...NullableTask_task
+                ...MeetingAgendaCards_tasks
               }
             }
           }

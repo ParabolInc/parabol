@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useMemo} from 'react'
 import styled from 'react-emotion'
 import EditorHelpModalContainer from 'universal/containers/EditorHelpModalContainer/EditorHelpModalContainer'
 import TaskColumn from 'universal/modules/teamDashboard/components/TaskColumn/TaskColumn'
@@ -33,6 +33,7 @@ interface Props {
   area: AreaEnum
   getTaskById: (taskId: string) => Partial<ITask> | undefined | null
   isMyMeetingSection?: boolean
+  meetingId?: string
   myTeamMemberId: string
   tasks: any
   teamMemberFilterId?: string
@@ -44,18 +45,15 @@ const TaskColumns = (props: Props) => {
     area,
     getTaskById,
     isMyMeetingSection,
+    meetingId,
     myTeamMemberId,
     teamMemberFilterId,
     teams,
     tasks
   } = props
-  const [groupedTasks, setGroupedTasks] = useState(() => {
+  const groupedTasks = useMemo(() => {
     return makeTasksByStatus(tasks.edges.map(({node}) => node))
-  })
-  useEffect(() => {
-    setGroupedTasks(makeTasksByStatus(tasks.edges.map(({node}) => node)))
   }, [tasks])
-
   const lanes = area === MEETING ? meetingColumnArray : columnArray
   return (
     <RootBlock>
@@ -66,6 +64,7 @@ const TaskColumns = (props: Props) => {
             area={area}
             isMyMeetingSection={isMyMeetingSection}
             getTaskById={getTaskById}
+            meetingId={meetingId}
             myTeamMemberId={myTeamMemberId}
             teamMemberFilterId={teamMemberFilterId}
             tasks={groupedTasks[status]}

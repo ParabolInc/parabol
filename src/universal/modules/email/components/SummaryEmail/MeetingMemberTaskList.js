@@ -6,17 +6,13 @@ import ui from 'universal/styles/ui'
 import plural from 'universal/utils/plural'
 import MeetingMemberTaskListItem from 'universal/modules/email/components/SummaryEmail/MeetingMemberTaskListItem'
 
-const textCenter = {
-  fontFamily: ui.emailFontFamily,
-  textAlign: 'center'
-}
-
 const avatarStyles = {
   borderRadius: '100%'
 }
 
 const topBorderStyle = {
-  ...textCenter,
+  fontFamily: ui.emailFontFamily,
+  textAlign: 'center',
   borderTop: `${ui.emailRuleHeight} solid ${ui.emailRuleColor}`
 }
 
@@ -63,9 +59,9 @@ const MeetingMemberTaskList = (props: Props) => {
 
   return (
     <table align='center' width='100%' style={ui.emailTableBase}>
-      <tbody>
+      <tbody style={topBorderStyle}>
         <tr>
-          <td style={topBorderStyle}>
+          <td>
             <EmptySpace height={24} />
             <img height='80' src={rasterPicture} style={avatarStyles} width='80' />
             <div style={nameStyle}>{preferredName}</div>

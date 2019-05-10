@@ -91,6 +91,7 @@ interface Props extends WithAtmosphereProps {
   area: AreaEnum
   getTaskById: (taskId: string) => Partial<ITask> | undefined | null
   isMyMeetingSection?: boolean
+  meetingId?: string
   myTeamMemberId: string
   tasks: TaskColumn_tasks
   status: TaskStatusEnum
@@ -137,6 +138,7 @@ class TaskColumn extends Component<Props> {
       atmosphere,
       getTaskById,
       isMyMeetingSection,
+      meetingId,
       myTeamMemberId,
       teamMemberFilterId,
       status,
@@ -155,6 +157,7 @@ class TaskColumn extends Component<Props> {
             isMyMeetingSection={isMyMeetingSection}
             status={status}
             tasks={tasks}
+            meetingId={meetingId}
             myTeamMemberId={myTeamMemberId}
             teamMemberFilterId={teamMemberFilterId || ''}
             teams={teams}

@@ -1,5 +1,5 @@
 import ms from 'ms'
-import React, {useEffect, useState} from 'react'
+import React, {useMemo} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {ActionMeetingPhaseProps} from 'universal/components/ActionMeeting'
@@ -69,20 +69,13 @@ const ActionMeetingAgendaItems = (props: Props) => {
   const {agendaItems, isMeetingSidebarCollapsed, newMeeting, tasks} = team
   const {facilitatorUserId, id: meetingId, localStage, phases} = newMeeting!
   const {id: localStageId, agendaItemId} = localStage
-  const [agendaTasks, setAgendaTasks] = useState<ReadonlyArray<typeof tasks['edges'][0]['node']>>(
-    []
-  )
-  const agendaItem = agendaItems.find((item) => item.id === agendaItemId!)
-  useEffect(() => {
-    setAgendaTasks(
-      tasks.edges
-        .map(({node}) => node)
-        .filter((node) => node.agendaId === agendaItemId)
-        .sort((a, b) => (a.sortOrder < b.sortOrder ? 1 : -1))
-    )
+  const agendaTasks = useMemo(() => {
+    return tasks.edges
+      .map(({node}) => node)
+      .filter((node) => node.agendaId === agendaItemId)
+      .sort((a, b) => (a.sortOrder < b.sortOrder ? 1 : -1))
   }, [agendaItemId, tasks])
-
-  if (!agendaItem) return null
+  const agendaItem = agendaItems.find((item) => item.id === agendaItemId!)!
   const {content, teamMember} = agendaItem
   const {picture, preferredName} = teamMember
   const isFacilitating = facilitatorUserId === viewerId
@@ -108,6 +101,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
             <MeetingAgendaCards
               agendaId={agendaItem.id}
               maxCols={4}
+              meetingId={meetingId}
               showPlaceholders
               tasks={agendaTasks}
               teamId={team.id}
@@ -182,11 +176,11 @@ export default createFragmentContainer(
       tasks(first: 1000) @connection(key: "TeamColumnsContainer_tasks") {
         edges {
           node {
+            ...MeetingAgendaCards_tasks
             id
             agendaId
             createdAt
             sortOrder
-            ...NullableTask_task
           }
         }
       }

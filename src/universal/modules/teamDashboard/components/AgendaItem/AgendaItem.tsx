@@ -69,7 +69,6 @@ const AgendaItem = (props: Props) => {
   const {id: agendaItemId, content, teamMember} = agendaItem
   const {picture} = teamMember
   const isUnsyncedFacilitatorStage = isFacilitatorStage !== isLocalStage
-  const canDelete = agendaItemStage ? !isComplete && !isFacilitatorStage : true
   const ref = useRef<HTMLDivElement>(null)
   useEffect(() => {
     if (isFacilitatorStage) {

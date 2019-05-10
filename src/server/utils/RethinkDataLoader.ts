@@ -5,8 +5,30 @@ import Meeting from 'server/database/types/Meeting'
 import AtlassianManager from 'server/utils/AtlassianManager'
 import {getUserId} from 'server/utils/authorization'
 import sendToSentry from 'server/utils/sendToSentry'
-import {IAtlassianAuth, IAuthToken} from 'universal/types/graphql'
+import {
+  IAgendaItem,
+  IAtlassianAuth,
+  IAuthToken,
+  ICustomPhaseItem,
+  IMeeting,
+  INewFeatureBroadcast,
+  INotification,
+  IOrganization,
+  IOrganizationUser,
+  IReflectTemplate,
+  IRetroReflection,
+  IRetroReflectionGroup,
+  ISoftTeamMember,
+  ISuggestedAction,
+  ITask,
+  ITeam,
+  ITeamInvitation,
+  ITeamMeetingSettings,
+  ITeamMember,
+  IUser
+} from 'universal/types/graphql'
 import promiseAllPartial from 'universal/utils/promiseAllPartial'
+import MeetingMember from 'server/database/types/MeetingMember'
 
 interface JiraRemoteProjectKey {
   accessToken: string
@@ -44,28 +66,29 @@ const normalizeRethinkDbResults = (keys, indexField, cacheKeyFn = defaultCacheKe
   })
 }
 
+// as we build out more constructors we can move away from using the gql types
 interface Tables {
-  AgendaItem: any
-  AtlassianAuth: any
-  CustomPhaseItem: any
-  Meeting: any
-  MeetingSettings: any
-  MeetingMember: any
+  AgendaItem: IAgendaItem
+  AtlassianAuth: IAtlassianAuth
+  CustomPhaseItem: ICustomPhaseItem
+  Meeting: IMeeting
+  MeetingSettings: ITeamMeetingSettings
+  MeetingMember: MeetingMember
   NewMeeting: Meeting
-  NewFeature: any
-  Notification: any
-  Organization: any
-  OrganizationUser: any
-  ReflectTemplate: any
-  RetroReflectionGroup: any
-  RetroReflection: any
-  SoftTeamMember: any
-  SuggestedAction: any
-  Task: any
-  TeamMember: any
-  TeamInvitation: any
-  Team: any
-  User: any
+  NewFeature: INewFeatureBroadcast
+  Notification: INotification
+  Organization: IOrganization
+  OrganizationUser: IOrganizationUser
+  ReflectTemplate: IReflectTemplate
+  RetroReflectionGroup: IRetroReflectionGroup
+  RetroReflection: IRetroReflection
+  SoftTeamMember: ISoftTeamMember
+  SuggestedAction: ISuggestedAction
+  Task: ITask
+  TeamMember: ITeamMember
+  TeamInvitation: ITeamInvitation
+  Team: ITeam
+  User: IUser
 }
 
 export default class RethinkDataLoader {

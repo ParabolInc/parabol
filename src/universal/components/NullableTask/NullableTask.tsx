@@ -1,5 +1,5 @@
 import {convertFromRaw} from 'draft-js'
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useMemo} from 'react'
 import NullCard from 'universal/components/NullCard/NullCard'
 import OutcomeCardContainer from 'universal/modules/outcomeCard/containers/OutcomeCard/OutcomeCardContainer'
 import {createFragmentContainer, graphql} from 'react-relay'
@@ -9,7 +9,6 @@ import {NullableTask_task} from '__generated__/NullableTask_task.graphql'
 interface Props {
   area: string
   hasDragStyles?: boolean
-  handleAddTask?: (content?: string) => () => void
   isAgenda?: boolean
   isDragging?: boolean
   isPreview?: boolean
@@ -25,12 +24,12 @@ const propsAreEqual = (prevProps: Props, nextProps: Props) => {
 }
 
 const NullableTask = React.memo((props: Props) => {
-  const {area, handleAddTask, hasDragStyles, isAgenda, task, isDragging} = props
+  const {area, hasDragStyles, isAgenda, task, isDragging} = props
   const {content, createdBy, assignee} = task
   const {preferredName} = assignee
-  const [contentState, setContentState] = useState(() => {
+  const contentState = useMemo(() => {
     return convertFromRaw(JSON.parse(content))
-  })
+  }, [content])
 
   const atmosphere = useAtmosphere()
   useEffect(() => {
@@ -43,16 +42,11 @@ const NullableTask = React.memo((props: Props) => {
     }
   }, [])
 
-  useEffect(() => {
-    setContentState(convertFromRaw(JSON.parse(content)))
-  }, [content])
-
   const showOutcome = contentState.hasText() || createdBy === atmosphere.viewerId
   return showOutcome ? (
     <OutcomeCardContainer
       area={area}
       contentState={contentState}
-      handleAddTask={handleAddTask}
       hasDragStyles={hasDragStyles}
       isDragging={isDragging}
       isAgenda={isAgenda}

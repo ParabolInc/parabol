@@ -89,7 +89,7 @@ const Task = new GraphQLObjectType({
       description: 'The status of the task'
     },
     tags: {
-      type: new GraphQLList(GraphQLString),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
       description: 'The tags associated with the task'
     },
     teamId: {

@@ -1,5 +1,5 @@
 import {TeamColumnsContainer_viewer} from '__generated__/TeamColumnsContainer_viewer.graphql'
-import React, {useEffect, useState} from 'react'
+import React, {useMemo} from 'react'
 import {connect} from 'react-redux'
 import {createFragmentContainer, graphql} from 'react-relay'
 import TaskColumns from 'universal/components/TaskColumns/TaskColumns'
@@ -31,8 +31,7 @@ const TeamColumnsContainer = (props: Props) => {
   const {myTeamMemberId, teamMemberFilterId, viewer} = props
   const {team} = viewer
   const {contentFilter, tasks, teamMembers} = team!
-  const [filteredTasks, setFilteredTasks] = useState(tasks)
-  useEffect(() => {
+  const filteredTasks = useMemo(() => {
     const contentFilterRegex = new RegExp(contentFilter!, 'i')
     const contentFilteredEdges = contentFilter
       ? tasks.edges.filter(({node}) => {
@@ -54,10 +53,10 @@ const TeamColumnsContainer = (props: Props) => {
         }
       }
     })
-    setFilteredTasks({
+    return {
       ...tasks,
       edges: edgesWithTeamMembers
-    })
+    }
   }, [teamMemberFilterId, tasks, contentFilter])
 
   return (

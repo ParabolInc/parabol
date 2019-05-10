@@ -1,6 +1,6 @@
 import {ActionMeetingUpdates_team} from '__generated__/ActionMeetingUpdates_team.graphql'
 import ms from 'ms'
-import React, {useEffect, useState} from 'react'
+import React, {useMemo} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {ActionMeetingPhaseProps} from 'universal/components/ActionMeeting'
@@ -52,15 +52,11 @@ const ActionMeetingUpdates = (props: Props) => {
   const {facilitatorUserId, id: meetingId, localStage} = newMeeting!
   const {teamMember} = localStage!
   const {userId} = teamMember!
-  const [teamMemberTasks, setTeamMemberTasks] = useState<typeof tasks>(tasks)
-  useEffect(() => {
-    const edges = tasks.edges.filter(
-      ({node}) => node.userId === userId && !isTaskPrivate(node.tags)
-    )
-    setTeamMemberTasks({
+  const teamMemberTasks = useMemo(() => {
+    return {
       ...tasks,
-      edges
-    })
+      edges: tasks.edges.filter(({node}) => node.userId === userId && !isTaskPrivate(node.tags))
+    }
   }, [tasks, userId])
   const isFacilitating = facilitatorUserId === viewerId
   return (
@@ -78,6 +74,7 @@ const ActionMeetingUpdates = (props: Props) => {
             area={AreaEnum.meeting}
             getTaskById={getTaskById(teamMemberTasks)}
             isMyMeetingSection={userId === viewerId}
+            meetingId={meetingId}
             myTeamMemberId={toTeamMemberId(teamId, viewerId)}
             tasks={teamMemberTasks}
           />

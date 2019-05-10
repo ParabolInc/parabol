@@ -1653,7 +1653,7 @@ export interface ITeamMember {
   /**
    * The place in line for checkIn, regenerated every meeting
    */
-  checkInOrder: number | null
+  checkInOrder: number
 
   /**
    * true if the user is connected
@@ -1839,7 +1839,7 @@ export interface ITask {
   /**
    * The tags associated with the task
    */
-  tags: Array<string | null> | null
+  tags: Array<string>
 
   /**
    * The id of the team (indexed). Needed for subscribing to archived tasks
@@ -7578,9 +7578,14 @@ export interface ITimelineEventCompletedActionMeeting {
   meeting: IMeeting
 
   /**
-   * The meetingId that was completed
+   * The meetingId that was completed, null if legacyMeetingId is present
    */
-  meetingId: string
+  meetingId: string | null
+
+  /**
+   * a meetingId to be used with legacy action meetings
+   */
+  legacyMeetingId: string | null
 }
 
 /**
