@@ -3,7 +3,7 @@ import EmptySpace from 'universal/modules/email/components/EmptySpace/EmptySpace
 import emailDir from 'universal/modules/email/emailDir'
 
 interface Props {
-  emailCSVLUrl: string
+  emailCSVUrl: string
 }
 
 const exportStyle = {
@@ -30,11 +30,11 @@ const iconLinkLabel = {
 
 class ExportToCSVEmail extends Component<Props> {
   render () {
-    const {emailCSVLUrl} = this.props
+    const {emailCSVUrl} = this.props
     return (
       <React.Fragment>
         <EmptySpace height={16} />
-        <a href={emailCSVLUrl} style={exportStyle} title={label}>
+        <a href={emailCSVUrl} style={exportStyle} title={label}>
           <img
             alt='Download CSV'
             style={iconLinkIcon}

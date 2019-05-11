@@ -74,7 +74,7 @@ const topBorderStyle = {
 } as React.CSSProperties
 
 interface Props {
-  emailCSVLUrl?: string
+  emailCSVUrl?: string
   isDemo?: boolean
   meeting: any
   referrer: 'meeting' | 'email' | 'history'
@@ -87,7 +87,7 @@ interface Props {
 const SummaryEmail = (props: Props) => {
   const {
     isDemo,
-    emailCSVLUrl,
+    emailCSVUrl,
     meeting,
     referrer,
     meetingUrl,
@@ -155,7 +155,7 @@ const SummaryEmail = (props: Props) => {
                   {/* Team Dashboard Button */}
                   <SummaryCTA referrer={referrer} teamDashUrl={teamDashUrl} isDemo={!!isDemo} />
                   {referrer === 'email' ? (
-                    <ExportToCSVEmail emailCSVLUrl={emailCSVLUrl!} />
+                    <ExportToCSVEmail emailCSVUrl={emailCSVUrl!} />
                   ) : (
                     <ExportToCSV meetingId={meetingId} urlAction={urlAction} />
                   )}
@@ -204,6 +204,7 @@ const SummaryEmail = (props: Props) => {
               <SummaryEmailScheduleCalendar
                 createdAt={createdAt}
                 meetingUrl={meetingUrl}
+                meetingNumber={meetingNumber}
                 teamName={teamName}
               />
               <EmptySpace height={32} />

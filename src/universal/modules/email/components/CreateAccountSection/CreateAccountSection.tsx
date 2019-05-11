@@ -1,71 +1,68 @@
 import React from 'react'
-import EmptySpace from '../EmptySpace/EmptySpace'
 import appTheme from 'universal/styles/theme/appTheme'
 import {emailFontFamily, emailPrimaryButtonStyle, emailTableBase} from 'universal/styles/email'
 import emailDir from 'universal/modules/email/emailDir'
+import EmailBorderBottom from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/EmailBorderBottom'
 
 const tableStyle = {
   ...emailTableBase,
   width: '100%'
-}
-const blockStyle = {
-  backgroundColor: '#fff',
-  color: appTheme.palette.dark,
-  fontFamily: emailFontFamily,
-  fontSize: '24px',
-  lineHeight: 1.5,
-  padding: '0 20px',
-  textAlign: 'center'
-}
+} as React.CSSProperties
+
 const textStyle = {
   color: appTheme.palette.dark,
   fontFamily: emailFontFamily
-}
+} as React.CSSProperties
 const headingStyle = {
   ...textStyle,
   fontSize: 24,
   fontWeight: 600,
-  margin: '0 0 16px'
-}
+  paddingTop: 24
+} as React.CSSProperties
 const copyStyle = {
   ...textStyle,
   fontSize: 16,
-  margin: '0 0 24px'
-}
+  paddingTop: 4
+} as React.CSSProperties
 const subHeadingStyle = {
   ...textStyle,
   fontWeight: 600,
   fontSize: 16,
-  margin: '48px 0 16px'
-}
+  paddingTop: 24
+} as React.CSSProperties
+
 const primaryButtonStyle = {
   ...emailPrimaryButtonStyle,
   width: '320px'
-}
+} as React.CSSProperties
 const iconSize = 40
 const labelWidth = 298
 const featureWidth = iconSize + labelWidth
 const featureTableStyle = {
   ...tableStyle,
   width: featureWidth
-}
+} as React.CSSProperties
 const featureIconCellStyle = {
   height: iconSize,
   padding: '6px 0',
   width: iconSize
-}
+} as React.CSSProperties
 const featureIconStyle = {
   display: 'block',
   height: iconSize,
   width: iconSize
-}
+} as React.CSSProperties
 const featureCopyCellStyle = {
   fontSize: 16,
   height: iconSize,
   padding: '6px 0 6px 18px',
   textAlign: 'left',
   width: 280
-}
+} as React.CSSProperties
+
+const buttonCellStyle = {
+  paddingTop: 24
+} as React.CSSProperties
 
 const features = [
   {icon: 'feature-prompts@3x.png', copy: 'Custom retrospective formats'},
@@ -90,37 +87,49 @@ const makeFeatureRow = (featureIconFile, featureCopy, idx) => {
   )
 }
 
-const CreateAccountSection = () => {
+const CreateAccountSection = (props) => {
+  const {isDemo} = props
+  if (!isDemo) return null
   return (
-    <div style={{padding: '0 16px'}}>
-      <EmptySpace height={32} />
-      <table style={tableStyle} width='100%'>
-        <tbody>
-          <tr>
-            <td style={blockStyle}>
-              <div style={headingStyle}>Thanks for playing!</div>
-              <div style={copyStyle}>
-                In just a few seconds you’ll have access
-                <br />
-                to run <b>unlimited retrospectives</b> with your team.
-              </div>
-              <div>
-                <a href={primaryActionLink} style={primaryButtonStyle} title={primaryActionLabel}>
-                  {primaryActionLabel}
-                </a>
-              </div>
-              <div style={subHeadingStyle}>The Parabol Difference</div>
-              <table style={featureTableStyle} width={featureWidth}>
-                <tbody>
-                  {features.map(({icon, copy}, idx) => makeFeatureRow(icon, copy, idx))}
-                </tbody>
-              </table>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <EmptySpace height={32} />
-    </div>
+    <>
+      <tr>
+        <td style={headingStyle} align='center'>
+          {'Thanks for playing!'}
+        </td>
+      </tr>
+      <tr>
+        <td align='center' style={copyStyle}>
+          In just a few seconds you’ll have access
+        </td>
+      </tr>
+      <tr>
+        <td align='center' style={copyStyle}>
+          <span>
+            to run <b>unlimited retrospectives</b> with your team.
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <td style={buttonCellStyle}>
+          <a href={primaryActionLink} style={primaryButtonStyle} title={primaryActionLabel}>
+            {primaryActionLabel}
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td align='center' style={subHeadingStyle}>
+          {'The Parabol Difference'}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table style={featureTableStyle} width={featureWidth}>
+            <tbody>{features.map(({icon, copy}, idx) => makeFeatureRow(icon, copy, idx))}</tbody>
+          </table>
+        </td>
+      </tr>
+      <EmailBorderBottom />
+    </>
   )
 }
 

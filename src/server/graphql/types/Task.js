@@ -83,9 +83,8 @@ const Task = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLFloat),
       description: 'the shared sort order for tasks on the team dash & user dash'
     },
-    // TODO make this nonnull again
     status: {
-      type: TaskStatusEnum,
+      type: new GraphQLNonNull(TaskStatusEnum),
       description: 'The status of the task'
     },
     tags: {

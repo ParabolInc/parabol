@@ -37,6 +37,13 @@ const RetrospectiveMeeting = new GraphQLObjectType({
         'the threshold used to achieve the autogroup. Useful for model tuning. Serves as a flag if autogroup was used.',
       resolve: resolveForSU('autoGroupThreshold')
     },
+    meetingMembers: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetrospectiveMeetingMember))),
+      description: 'The team members that were active during the time of the meeting',
+      resolve: ({id: meetingId}, _args, {dataLoader}) => {
+        return dataLoader.get('meetingMembersByMeetingId').load(meetingId)
+      }
+    },
     nextAutoGroupThreshold: {
       type: GraphQLFloat,
       description:

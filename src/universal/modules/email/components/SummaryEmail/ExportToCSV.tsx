@@ -1,18 +1,21 @@
+/* Deprecated see ExportToCSV */
 import {ExportToCSVQuery} from '__generated__/ExportToCSVQuery.graphql'
 import Json2csv from 'json2csv'
 import React, {Component} from 'react'
 import {fetchQuery, graphql} from 'react-relay'
-import FlatButton from 'universal/components/FlatButton'
-import IconLabel from 'universal/components/IconLabel'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import extractTextFromDraftString from 'universal/utils/draftjs/extractTextFromDraftString'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import emailDir from 'universal/modules/email/emailDir'
+import {PALETTE_TEXT_MAIN} from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/constants'
+import EmailBorderBottom from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/EmailBorderBottom'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   meetingId: string
   urlAction?: 'csv' | undefined
+  emailCSVUrl?: string
 }
 
 const query = graphql`
@@ -61,6 +64,21 @@ interface CSVRetroRow {
 interface CSVActionRow {
   agendaItem: string
   task: string
+}
+
+const label = 'Export to CSV'
+
+const iconLinkLabel = {
+  color: PALETTE_TEXT_MAIN,
+  fontSize: '13px',
+  paddingTop: 32
+}
+
+const labelStyle = {
+  paddingLeft: 8
+}
+const imageStyle = {
+  verticalAlign: 'middle'
 }
 
 class ExportToCSV extends Component<Props> {
@@ -164,17 +182,19 @@ class ExportToCSV extends Component<Props> {
   }
 
   render () {
-    const {submitting} = this.props
+    const {emailCSVUrl} = this.props
     return (
-      <FlatButton
-        aria-label={`Export to CSV`}
-        size='small'
-        onClick={this.exportToCSV}
-        waiting={submitting}
-        style={{margin: '16px auto 0'}}
-      >
-        <IconLabel icon='cloud_download' iconColor='green' iconLarge label={'Export to CSV'} />
-      </FlatButton>
+      <>
+        <tr>
+          <td align='center' style={iconLinkLabel} width='100%'>
+            <a href={emailCSVUrl} title={label}>
+              <img alt={label} src={`${emailDir}cloud_download.png`} style={imageStyle} />
+              <span style={labelStyle}>{label}</span>
+            </a>
+          </td>
+        </tr>
+        <EmailBorderBottom />
+      </>
     )
   }
 }

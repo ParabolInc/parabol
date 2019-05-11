@@ -40,7 +40,7 @@ export const newMeetingFields = () => ({
     resolve: makeResolve('facilitatorUserId', 'facilitator', 'users')
   },
   meetingMembers: {
-    type: new GraphQLList(MeetingMember),
+    type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(MeetingMember))),
     description: 'The team members that were active during the time of the meeting',
     resolve: ({id: meetingId}, _args, {dataLoader}: GQLContext) => {
       return dataLoader.get('meetingMembersByMeetingId').load(meetingId)

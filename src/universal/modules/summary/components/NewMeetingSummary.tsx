@@ -7,7 +7,7 @@ import {MEETING_SUMMARY_LABEL} from 'universal/utils/constants'
 import makeHref from 'universal/utils/makeHref'
 import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 import {demoTeamId} from 'universal/modules/demo/initDB'
-import NewMeetingSummaryEmail from 'universal/modules/email/components/SummaryEmail/NewMeetingSummaryEmail'
+import MeetingSummaryEmail from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail'
 
 interface Props {
   viewer: NewMeetingSummary_viewer
@@ -20,6 +20,7 @@ const NewMeetingSummary = (props: Props) => {
     viewer: {newMeeting}
   } = props
   const {
+    id: meetingId,
     meetingNumber,
     meetingType,
     team: {id: teamId, name: teamName}
@@ -29,91 +30,36 @@ const NewMeetingSummary = (props: Props) => {
   const slug = meetingTypeToSlug[meetingType]
   const meetingUrl = makeHref(`/${slug}/${teamId}`)
   const teamDashUrl = `/team/${teamId}`
+  const emailCSVUrl = `/new-summary/${meetingId}/csv`
   return (
     <div style={{backgroundColor: ui.emailBackgroundColor, minHeight: '100vh'}}>
       <Helmet title={title} />
-      <NewMeetingSummaryEmail
+      <MeetingSummaryEmail
         urlAction={urlAction}
         isDemo={teamId === demoTeamId}
         meeting={newMeeting}
         referrer='meeting'
         meetingUrl={meetingUrl}
         teamDashUrl={teamDashUrl}
+        emailCSVUrl={emailCSVUrl}
       />
     </div>
   )
 }
-
-// Grab everything we need here since SummaryEmail is shared by the server
-
-graphql`
-  fragment NewMeetingSummaryTask on Task {
-    id
-    content
-    status
-    tags
-  }
-`
 
 export default createFragmentContainer(
   NewMeetingSummary,
   graphql`
     fragment NewMeetingSummary_viewer on User {
       newMeeting(meetingId: $meetingId) {
+        ...MeetingSummaryEmail_meeting
         id
-        createdAt
-        meetingMembers {
-          id
-          isCheckedIn
-          user {
-            rasterPicture
-            preferredName
-          }
-          ... on ActionMeetingMember {
-            doneTasks {
-              ...NewMeetingSummaryTask @relay(mask: false)
-            }
-            tasks {
-              ...NewMeetingSummaryTask @relay(mask: false)
-            }
-          }
-          ... on RetrospectiveMeetingMember {
-            tasks {
-              ...NewMeetingSummaryTask @relay(mask: false)
-            }
-          }
-        }
-        meetingNumber
-        meetingType
         team {
           id
           name
         }
-        ... on ActionMeeting {
-          phases {
-            phaseType
-            ... on AgendaItemsPhase {
-              stages {
-                isComplete
-              }
-            }
-          }
-        }
-        ... on RetrospectiveMeeting {
-          reflectionGroups(sortBy: voteCount) {
-            id
-            title
-            voteCount
-            reflections {
-              id
-              content
-              sortOrder
-              phaseItem {
-                question
-              }
-            }
-          }
-        }
+        meetingType
+        meetingNumber
       }
     }
   `

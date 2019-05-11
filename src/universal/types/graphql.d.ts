@@ -1366,7 +1366,7 @@ export interface INewMeeting {
   /**
    * The team members that were active during the time of the meeting
    */
-  meetingMembers: Array<MeetingMember | null> | null
+  meetingMembers: Array<MeetingMember>
 
   /**
    * The auto-incrementing meeting number for the team
@@ -1834,7 +1834,7 @@ export interface ITask {
   /**
    * The status of the task
    */
-  status: TaskStatusEnum | null
+  status: TaskStatusEnum
 
   /**
    * The tags associated with the task
@@ -4371,7 +4371,7 @@ export interface IRetrospectiveMeeting {
   /**
    * The team members that were active during the time of the meeting
    */
-  meetingMembers: Array<MeetingMember | null> | null
+  meetingMembers: Array<IRetrospectiveMeetingMember>
 
   /**
    * The auto-incrementing meeting number for the team
@@ -6956,7 +6956,7 @@ export interface IActionMeeting {
   /**
    * The team members that were active during the time of the meeting
    */
-  meetingMembers: Array<MeetingMember | null> | null
+  meetingMembers: Array<IActionMeetingMember>
 
   /**
    * The auto-incrementing meeting number for the team
