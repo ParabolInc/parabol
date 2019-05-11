@@ -62,8 +62,7 @@ const TaskCardBlock = styled('div')({
 const ActionMeetingAgendaItems = (props: Props) => {
   const {avatarGroup, toggleSidebar, team, handleGotoNext} = props
   const atmosphere = useAtmosphere()
-  const {current} = handleGotoNext
-  const {gotoNext, ref: gotoNextRef} = current
+  const {gotoNext, ref: gotoNextRef} = handleGotoNext
   const minTimeComplete = useTimeout(ms('2m'))
   const {viewerId} = atmosphere
   const {agendaItems, isMeetingSidebarCollapsed, newMeeting, tasks} = team
@@ -84,7 +83,6 @@ const ActionMeetingAgendaItems = (props: Props) => {
   const {phase: nextPhase} = nextStageRes!
   const label =
     nextPhase.phaseType === NewMeetingPhaseTypeEnum.lastcall ? 'Last Call' : 'Next Topic'
-
   return (
     <MeetingContent>
       <MeetingContentHeader

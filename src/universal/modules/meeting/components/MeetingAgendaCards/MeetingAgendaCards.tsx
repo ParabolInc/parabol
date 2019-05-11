@@ -41,7 +41,7 @@ const MeetingAgendaCards = (props: Props) => {
   propsRef.current = props
   const handleAddTask = useCallback(() => {
     const {viewerId} = atmosphere
-    const {tasks, agendaId, meetingId, reflectionGroupId, teamId} = props
+    const {tasks, agendaId, meetingId, reflectionGroupId, teamId} = propsRef.current
     const maybeLastTask = tasks[tasks.length - 1]
     const newTask = {
       status: ACTIVE,

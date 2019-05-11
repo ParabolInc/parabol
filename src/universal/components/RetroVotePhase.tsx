@@ -147,8 +147,7 @@ const RetroVotePhase = (props: Props) => {
   } = props
   const {isMeetingSidebarCollapsed, newMeeting} = team
   if (!newMeeting) return null
-  const {current} = handleGotoNext
-  const {gotoNext, ref: gotoNextRef} = current
+  const {gotoNext, ref: gotoNextRef} = handleGotoNext
   const {facilitatorUserId, meetingId, phases, viewerMeetingMember} = newMeeting
   const teamVotesRemaining = newMeeting.teamVotesRemaining || 0
   const myVotesRemaining = viewerMeetingMember.myVotesRemaining || 0

@@ -50,8 +50,7 @@ const FirstCallWrapper = styled('div')({
 const ActionMeetingFirstCall = (props: Props) => {
   const {avatarGroup, toggleSidebar, team, handleGotoNext} = props
   const atmosphere = useAtmosphere()
-  const {current} = handleGotoNext
-  const {gotoNext, ref: gotoNextRef} = current
+  const {gotoNext, ref: gotoNextRef} = handleGotoNext
   const minTimeComplete = useTimeout(ms('30s'))
   const {viewerId} = atmosphere
   const {isMeetingSidebarCollapsed, newMeeting} = team
