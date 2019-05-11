@@ -26,7 +26,7 @@ interface Props {
 const RetroTopics = (props: Props) => {
   const {imageSource, meeting} = props
   const {reflectionGroups} = meeting
-  console.log('groups', reflectionGroups)
+  if (!reflectionGroups) return null
   return (
     <>
       <tr>

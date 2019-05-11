@@ -7,8 +7,8 @@ import {GQLContext} from 'server/graphql/graphql'
 import emailTemplate from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/EmailTemplate'
 import {PALETTE_BACKGROUND_MAIN} from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/constants'
 import MeetingSummaryEmailRootSSR from 'universal/modules/summary/components/MeetingSummaryEmailRootSSR'
-import getSSREnvironment from 'server/email/getSSREnvironment'
 import renderSSRElement from 'server/email/renderSSRElement'
+import ServerEnvironment from 'server/email/ServerEnvironment'
 
 interface Props {
   meetingId: string
@@ -17,15 +17,15 @@ interface Props {
 
 const newMeetingSummaryEmailCreator = async (props: Props) => {
   const {meetingId, context} = props
-  const {environment, getData} = getSSREnvironment(context)
-  const {res, bodyContent} = await renderSSRElement(
+  const {dataLoader} = context
+  const environment = new ServerEnvironment(context)
+  const bodyContent = await renderSSRElement(
     <MeetingSummaryEmailRootSSR environment={environment} meetingId={meetingId} />,
-    getData
+    environment
   )
-  const {data} = res
-  const {viewer} = data
-  const {newMeeting} = viewer
-  const {meetingType, team, endedAt} = newMeeting
+  const newMeeting = await dataLoader.get('newMeetings').load(meetingId)
+  const team = await dataLoader.get('teams').load(newMeeting.teamId)
+  const {meetingType, endedAt} = newMeeting
   const {name: teamName} = team
   const dateStr = makeDateString(endedAt)
   const meetingLabel = meetingTypeToLabel[meetingType]

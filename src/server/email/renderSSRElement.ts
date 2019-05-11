@@ -1,13 +1,16 @@
 import {ReactElement} from 'react'
 import ReactDOMServer from 'react-dom/server'
+import ServerEnvironment from 'server/email/ServerEnvironment'
 
-const renderSSRElement = async (element: ReactElement, getData: Promise<any>) => {
-  // initiate request
+const renderSSRElement = async (element: ReactElement, environment: ServerEnvironment) => {
+  // initiate data requests
   ReactDOMServer.renderToStaticMarkup(element)
-  // prime with data
-  const res = await getData
-  const bodyContent = ReactDOMServer.renderToStaticMarkup(element)
-  return {res, bodyContent}
+
+  // prime the cache
+  await environment.load()
+
+  // return html string
+  return ReactDOMServer.renderToStaticMarkup(element)
 }
 
 export default renderSSRElement

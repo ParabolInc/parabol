@@ -24,7 +24,9 @@ const context = {
   rateLimiter
 }
 
-newMeetingSummaryEmailCreator({meetingId: MEETING_ID, context}).then((email) => {
+const resendMeetingEmailDebugger = async () => {
+  const email = await newMeetingSummaryEmailCreator({meetingId: MEETING_ID, context})
   sendEmailContent(EMAIL_ADDRESS, email).catch(console.log)
-})
-  .catch()
+}
+
+export default resendMeetingEmailDebugger

@@ -39,7 +39,6 @@ const SummarySheet = (props: Props) => {
   const isDemo = !!props.isDemo
   const {id: meetingId} = meeting
   const meetingLabel = meetingTypeToLabel[meetingType]
-  console.log('meet', meeting)
   return (
     <table width='100%' height='100%' align='center' bgcolor='#ffffff' style={sheetStyle}>
       <tbody>
