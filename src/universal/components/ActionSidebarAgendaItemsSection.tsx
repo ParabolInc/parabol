@@ -21,23 +21,6 @@ const SidebarPhaseItemChild = styled('div')({
   flexDirection: 'column'
 })
 
-// const AgendaListBlock = styled('div')({
-//   display: 'flex',
-//   flex: 1,
-//   flexDirection: 'column',
-//   width: '100%'
-// })
-//
-// const AgendaLabelblock = styled('div')({
-//   borderTop: `.0625rem solid ${ui.palette.light}`,
-//   margin: '1.25rem 0 0 3.75rem',
-//   padding: '1rem 0'
-// })
-
-// const DraggableMeetingSubnavItem = styled('div')(({isDragging}: {isDragging: boolean}) => ({
-//   boxShadow: isDragging ? navItemRaised : undefined
-// }))
-
 const ActionSidebarAgendaItemsSection = (props: Props) => {
   const {
     gotoStageId,
@@ -46,7 +29,6 @@ const ActionSidebarAgendaItemsSection = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {id: teamId, isMeetingSidebarCollapsed, newMeeting} = team!
   const {localPhase, localStage, facilitatorStageId, phases} = newMeeting || UNSTARTED_MEETING
-  // if (!localPhase || !localPhase.stages || !localStage || !phases) return null
   const agendaItemPhase = phases!.find(
     (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.agendaitems
   )

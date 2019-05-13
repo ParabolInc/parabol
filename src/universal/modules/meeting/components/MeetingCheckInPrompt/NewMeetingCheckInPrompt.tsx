@@ -83,7 +83,6 @@ export default createFragmentContainer(
 
     fragment NewMeetingCheckInPrompt_teamMember on TeamMember {
       ...NewMeetingCheckInGreeting_teamMember
-      ...NewMeetingPrompt_teamMember
       picture
     }
   `
