@@ -44,8 +44,7 @@ const UpdatesHelpMenu = lazyPreload(async () =>
 const ActionMeetingUpdates = (props: Props) => {
   const {avatarGroup, toggleSidebar, team, handleGotoNext} = props
   const atmosphere = useAtmosphere()
-  const {current} = handleGotoNext
-  const {gotoNext, ref: gotoNextRef} = current
+  const {gotoNext, ref: gotoNextRef} = handleGotoNext
   const minTimeComplete = useTimeout(ms('2m'))
   const {viewerId} = atmosphere
   const {id: teamId, isMeetingSidebarCollapsed, newMeeting, tasks} = team

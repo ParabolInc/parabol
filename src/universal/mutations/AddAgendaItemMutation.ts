@@ -25,9 +25,9 @@ graphql`
       phases {
         ...ActionSidebarAgendaItemsSectionAgendaItemPhase @relay(mask: false)
         stages {
+          ...ActionMeetingAgendaItemsStage @relay(mask: false)
           # For useMeetingGotoStageId
           isNavigableByFacilitator
-          ...ActionMeetingAgendaItemsStage @relay(mask: false)
         }
       }
     }

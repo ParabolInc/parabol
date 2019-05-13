@@ -143,8 +143,7 @@ const RetroDiscussPhase = (props: Props) => {
   const {viewerId} = atmosphere
   const {isMeetingSidebarCollapsed, newMeeting, teamId} = team
   if (!newMeeting) return null
-  const {current} = handleGotoNext
-  const {gotoNext, ref: gotoNextRef} = current
+  const {gotoNext, ref: gotoNextRef} = handleGotoNext
   const {
     facilitatorUserId,
     localStage: {localStageId, reflectionGroup},

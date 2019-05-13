@@ -36,7 +36,7 @@ const CheckInControls = (props: Props) => {
     if (!isCheckedIn) {
       NewMeetingCheckInMutation(atmosphere, {meetingId, userId, isCheckedIn: true})
     }
-    handleGotoNext.current.gotoNext()
+    handleGotoNext.gotoNext()
   }, [])
 
   const handleOnClickAbsent = useCallback(() => {
@@ -45,7 +45,7 @@ const CheckInControls = (props: Props) => {
     if (isCheckedIn !== false) {
       NewMeetingCheckInMutation(atmosphere, {meetingId, userId, isCheckedIn: false})
     }
-    handleGotoNext.current.gotoNext()
+    handleGotoNext.gotoNext()
   }, [])
 
   useHotkey('h', handleOnClickPresent)
@@ -61,7 +61,7 @@ const CheckInControls = (props: Props) => {
         aria-label={`Mark ${preferredName} as “here” and move on`}
         onClick={handleOnClickPresent}
         onKeyDown={handleRightArrow(handleOnClickPresent)}
-        innerRef={handleGotoNext.current.ref}
+        innerRef={handleGotoNext.ref}
       >
         <BottomNavIconLabel icon='check_circle' iconColor='green' label={nextLabel} />
       </BottomNavControl>

@@ -62,8 +62,7 @@ const DemoReflectHelpMenu = lazyPreload(async () =>
 const RetroReflectPhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, team, handleGotoNext, isDemoStageComplete} = props
   const atmosphere = useAtmosphere()
-  const {current} = handleGotoNext
-  const {gotoNext, ref: gotoNextRef} = current
+  const {gotoNext, ref: gotoNextRef} = handleGotoNext
   const minTimeComplete = useTimeout(ms('2m'))
   const phaseRef = useRef<HTMLDivElement>(null)
   const {viewerId} = atmosphere
