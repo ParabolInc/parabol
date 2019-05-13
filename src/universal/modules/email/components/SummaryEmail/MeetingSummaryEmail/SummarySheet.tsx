@@ -15,11 +15,12 @@ import ContactUsFooter from 'universal/modules/email/components/SummaryEmail/Mee
 import LogoFooter from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/LogoFooter'
 import CreateAccountSection from 'universal/modules/email/components/CreateAccountSection/CreateAccountSection'
 import RetroTopics from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/RetroTopics'
+import {SummarySheet_meeting} from '__generated__/SummarySheet_meeting.graphql'
 
 interface Props {
   emailCSVUrl: string
   isDemo?: boolean
-  meeting: any
+  meeting: SummarySheet_meeting
   referrer: MeetingSummaryReferrer
   referrerUrl?: string
   teamDashUrl: string
@@ -75,6 +76,7 @@ export default createFragmentContainer(
   SummarySheet,
   graphql`
     fragment SummarySheet_meeting on NewMeeting {
+      id
       ...SummaryHeader_meeting
       ...QuickStats_meeting
       ...MeetingMembersWithTasks_meeting

@@ -2239,6 +2239,13 @@
   resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-3.3.6.tgz#5932ead926307ca21e5b36808257f7c926b06565"
   integrity sha512-403D4wN95Mtzt2EoQHARf5oe/jEPhzBOBNrunk+ydQGW8WmkQ/E8rViRAEB1qEt/vssfGfNVD6ujP4FVeegrLg==
 
+"@types/json2csv@^4.4.0":
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/@types/json2csv/-/json2csv-4.4.0.tgz#8e3b115a473ce4af4f850e194368059cc98e4f56"
+  integrity sha512-24S6hQGGsOZxTXbRyKvNaV5k882XTo9RX/LH6+RtVtimFNE2J0T/LWlru6BeEssByVA9/ZLif1PLk/8X8/qPCQ==
+  dependencies:
+    "@types/node" "*"
+
 "@types/jsonwebtoken@^8.3.0":
   version "8.3.0"
   resolved "https://registry.yarnpkg.com/@types/jsonwebtoken/-/jsonwebtoken-8.3.0.tgz#1fe79489df97b49273401ac3c8019cbf1dae4578"

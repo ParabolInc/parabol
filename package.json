@@ -82,6 +82,7 @@
     "@types/express": "^4.16.1",
     "@types/graphql": "^14.0.5",
     "@types/ioredis": "^4.0.10",
+    "@types/json2csv": "^4.4.0",
     "@types/jsonwebtoken": "^8.3.0",
     "@types/mousetrap": "^1.6.2",
     "@types/react": "^16.8.10",

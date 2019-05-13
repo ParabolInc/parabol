@@ -1,6 +1,5 @@
-/* Deprecated see ExportToCSV */
 import {ExportToCSVQuery} from '__generated__/ExportToCSVQuery.graphql'
-import Json2csv from 'json2csv'
+import * as Json2csv from 'json2csv'
 import React, {Component} from 'react'
 import {fetchQuery, graphql} from 'react-relay'
 import withAtmosphere, {
@@ -28,10 +27,16 @@ const query = graphql`
         }
         endedAt
         ... on ActionMeeting {
-          tasks {
-            content
-            agendaItem {
+          meetingMembers {
+            isCheckedIn
+            tasks {
               content
+              agendaItem {
+                content
+              }
+            }
+            user {
+              preferredName
             }
           }
         }
@@ -62,6 +67,8 @@ interface CSVRetroRow {
 }
 
 interface CSVActionRow {
+  user: string
+  status: 'present' | 'absent'
   agendaItem: string
   task: string
 }
@@ -89,11 +96,7 @@ class ExportToCSV extends Component<Props> {
   }
 
   handleRetroMeeting (newMeeting: Meeting) {
-    const {
-      reflectionGroups,
-      endedAt,
-      team: {name: teamName}
-    } = newMeeting
+    const {reflectionGroups} = newMeeting
 
     const rows = [] as Array<CSVRetroRow>
     reflectionGroups!.forEach((group) => {
@@ -115,30 +118,34 @@ class ExportToCSV extends Component<Props> {
         })
       })
     })
-    const parser = new Json2csv.Parser()
-    const csv = parser.parse(rows)
-    const csvContent = 'data:text/csv;charset=utf-8,' + csv
-    const date = new Date(endedAt)
-    const numDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
-    // copied from https://stackoverflow.com/questions/18848860/javascript-array-to-csv/18849208#18849208
-    const encodedUri = encodeURI(csvContent)
-    const link = document.createElement('a')
-    link.setAttribute('href', encodedUri)
-    link.setAttribute('download', `ParabolRetrospective_${teamName}_${numDate}.csv`)
-    document.body.appendChild(link) // Required for FF
-    link.click()
-    document.body.removeChild(link)
+    return rows
   }
 
   handleActionMeeting (newMeeting: Meeting) {
-    const {tasks} = newMeeting
+    const {meetingMembers} = newMeeting
 
     const rows = [] as Array<CSVActionRow>
-    tasks!.forEach((task) => {
-      const {content, agendaItem} = task
-      rows.push({
-        agendaItem: agendaItem!.content,
-        task: extractTextFromDraftString(content)
+    meetingMembers!.forEach((meetingMember) => {
+      const {isCheckedIn, tasks, user} = meetingMember
+      const status = isCheckedIn ? 'present' : 'absent'
+      const {preferredName} = user
+      if (tasks.length === 0) {
+        rows.push({
+          user: preferredName,
+          status,
+          task: '',
+          agendaItem: ''
+        })
+        return
+      }
+      tasks.forEach((task) => {
+        const {content, agendaItem} = task
+        rows.push({
+          user: preferredName,
+          status,
+          task: extractTextFromDraftString(content),
+          agendaItem: agendaItem ? agendaItem.content : ''
+        })
       })
     })
     return rows
