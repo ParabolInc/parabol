@@ -137,13 +137,12 @@ const useUpdatedSafeRoute = (
         setSafeRoute(false)
         return
       }
-      if (!newMeeting) {
+      if (!newMeeting || !localStageId) {
         // goto lobby
         history.replace(`/${meetingSlug}/${teamId}`)
         return
       }
       const {phases} = newMeeting
-      const localStageId = newMeeting.localStage.id
       const nextUrl = fromStageIdToUrl(localStageId, phases)
       history.replace(nextUrl)
     }
