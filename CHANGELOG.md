@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v3.10.1 2019-May-14
+
+### Fixed
+* RemoveTeamMember now works (#2880)
+
 ## v3.10.0 2019-May-08
 
 ### Added
