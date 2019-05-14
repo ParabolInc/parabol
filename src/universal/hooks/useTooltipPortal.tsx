@@ -1,12 +1,10 @@
-import React, {ReactElement, ReactPortal, Suspense, useEffect} from 'react'
+import React, {ReactElement, ReactPortal, useEffect} from 'react'
 import styled from 'react-emotion'
 import ErrorBoundary from 'universal/components/ErrorBoundary'
-import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
 import Menu from 'universal/components/Menu'
 import ModalError from 'universal/components/ModalError'
 import TooltipBackground from 'universal/hooks/TooltipBackground'
 import {UseCoordsValue} from 'universal/hooks/useCoords'
-import {LoadingDelayRef} from 'universal/hooks/useLoadingDelay'
 import {PortalStatus} from 'universal/hooks/usePortal'
 import {Duration, ZIndex} from 'universal/types/constEnums'
 
@@ -22,8 +20,7 @@ const useTooltipPortal = (
   minWidth: number,
   coords: UseCoordsValue,
   portalStatus: PortalStatus,
-  setPortalStatus: any,
-  loadingDelayRef: LoadingDelayRef
+  setPortalStatus: any
 ) => {
   useEffect(() => {
     let isMounted = true
@@ -32,7 +29,7 @@ const useTooltipPortal = (
         if (isMounted) {
           setPortalStatus(PortalStatus.AnimatedIn)
         }
-      }, Duration.TOOLTIP_OPEN_MAX)
+      }, Duration.TOOLTIP_OPEN_DELAY)
     }
     return () => {
       isMounted = false
@@ -49,19 +46,7 @@ const useTooltipPortal = (
           )}
         >
           <TooltipBackground minWidth={minWidth} portalStatus={portalStatus}>
-            <Suspense
-              fallback={
-                <LoadingComponent
-                  loadingDelayRef={loadingDelayRef}
-                  spinnerSize={24}
-                  width={minWidth}
-                  height={24}
-                  showAfter={0}
-                />
-              }
-            >
-              {reactEl}
-            </Suspense>
+            {reactEl}
           </TooltipBackground>
         </ErrorBoundary>
       </TooltipBlock>
