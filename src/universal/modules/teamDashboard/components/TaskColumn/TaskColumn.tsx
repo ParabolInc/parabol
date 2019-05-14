@@ -92,7 +92,7 @@ interface Props extends WithAtmosphereProps {
   getTaskById: (taskId: string) => Partial<ITask> | undefined | null
   isMyMeetingSection?: boolean
   meetingId?: string
-  myTeamMemberId: string
+  myTeamMemberId?: string
   tasks: TaskColumn_tasks
   status: TaskStatusEnum
   teamMemberFilterId?: string

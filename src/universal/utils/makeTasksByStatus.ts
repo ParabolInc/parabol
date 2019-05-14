@@ -4,7 +4,7 @@ import {TaskStatusEnum} from 'universal/types/graphql'
 // sorts post-split to be a little more efficient
 interface Task {
   status: string
-  sortOrtder: number
+  sortOrder: number
 }
 
 export default function makeTasksByStatus<T extends Task> (tasks: ReadonlyArray<T>) {
@@ -16,7 +16,6 @@ export default function makeTasksByStatus<T extends Task> (tasks: ReadonlyArray<
   }
   for (let i = 0; i < tasks.length; i++) {
     const task = tasks[i]
-    if (!tasksByStatus[task.status]) debugger
     tasksByStatus[task.status].push(task)
   }
 

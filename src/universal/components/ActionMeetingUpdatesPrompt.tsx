@@ -37,7 +37,8 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
   const {localStage} = newMeeting!
   const currentTeamMember = teamMembers.find(
     (teamMember) => teamMember.id === localStage.teamMemberId
-  )!
+  )
+  if (!currentTeamMember) return null
   const {isSelf: isMyMeetingSection, meetingMember, picture, preferredName} = currentTeamMember
   const {isCheckedIn} = meetingMember!
   const prefix = isCheckedIn ? `${preferredName},` : ''

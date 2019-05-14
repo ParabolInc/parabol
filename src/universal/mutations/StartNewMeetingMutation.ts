@@ -12,6 +12,7 @@ graphql`
     team {
       ...ActionMeetingTeam @relay(mask: false)
       ...RetroMeetingTeam @relay(mask: false)
+      ...MeetingInProgressModal_team @relay(mask: false)
     }
   }
 `

@@ -17,7 +17,7 @@ interface Props {
   meetingId?: string
   status: TaskStatusEnum
   tasks: TaskColumnAddTask_tasks
-  myTeamMemberId: string
+  myTeamMemberId?: string
   teamMemberFilterId: string
   teams: ReadonlyArray<Pick<ITeam, 'id' | 'name'>>
 }

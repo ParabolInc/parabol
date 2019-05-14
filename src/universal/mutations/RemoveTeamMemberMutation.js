@@ -51,6 +51,11 @@ graphql`
     team {
       id
       newMeeting {
+        facilitatorStageId
+        facilitatorUserId
+        meetingMembers {
+          id
+        }
         phases {
           stages {
             id

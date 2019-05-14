@@ -59,7 +59,7 @@ const useInitialSafeRoute = (
     // i'm headed to the lobby but the meeting is already going, send me there
     if (localStage && !phaseSlug) {
       const {id: localStageId} = localStage
-      const nextUrl = fromStageIdToUrl(localStageId, phases)
+      const nextUrl = fromStageIdToUrl(localStageId, phases, facilitatorStageId)
       history.replace(nextUrl)
       setSafeRoute(false)
       return
@@ -71,7 +71,7 @@ const useInitialSafeRoute = (
     const phase = phases.find((curPhase) => curPhase.phaseType === localPhaseType)
     if (!phase) {
       // typo in url, send to the facilitator
-      const nextUrl = fromStageIdToUrl(facilitatorStageId, phases)
+      const nextUrl = fromStageIdToUrl(facilitatorStageId, phases, facilitatorStageId)
       history.replace(nextUrl)
       updateLocalStage(atmosphere, meetingId, facilitatorStageId)
       setSafeRoute(false)
@@ -95,7 +95,7 @@ const useInitialSafeRoute = (
     const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
     if (!canNavigate) {
       // too early to visit meeting or typo, go to facilitator
-      const nextUrl = fromStageIdToUrl(facilitatorStageId, phases)
+      const nextUrl = fromStageIdToUrl(facilitatorStageId, phases, facilitatorStageId)
       history.replace(nextUrl)
       updateLocalStage(atmosphere, meetingId, facilitatorStageId)
       setSafeRoute(false)
@@ -122,7 +122,7 @@ const useUpdatedSafeRoute = (
       setSafeRoute(true)
       return
     }
-    const {localStage, localPhase} = newMeeting
+    const {localStage, localPhase, facilitatorStageId} = newMeeting
     const localStages = (localPhase && localPhase.stages) || null
     const localStageId = (localStage && localStage.id) || null
     const oldLocalStages =
@@ -143,8 +143,9 @@ const useUpdatedSafeRoute = (
         return
       }
       const {phases} = newMeeting
-      const nextUrl = fromStageIdToUrl(localStageId, phases)
+      const nextUrl = fromStageIdToUrl(localStageId, phases, facilitatorStageId)
       history.replace(nextUrl)
+      setSafeRoute(false)
     }
     setSafeRoute(true)
   })
