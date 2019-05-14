@@ -1,5 +1,5 @@
 import {CheckInControls_teamMember} from '__generated__/CheckInControls_teamMember.graphql'
-import React, {useCallback, useEffect, useRef} from 'react'
+import React, {useCallback, useRef} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import BottomNavControl from 'universal/components/BottomNavControl'
@@ -27,16 +27,16 @@ const CheckInControls = (props: Props) => {
   const {preferredName} = teamMember
   const atmosphere = useAtmosphere()
   const teamMemberRef = useRef(teamMember)
-  useEffect(() => {
-    teamMemberRef.current = teamMember
-  })
+  const handleGotoNextRef = useRef(handleGotoNext)
+  teamMemberRef.current = teamMember
+  handleGotoNextRef.current = handleGotoNext
   const handleOnClickPresent = useCallback(() => {
     const {userId, meetingMember} = teamMemberRef.current
     const {isCheckedIn, meetingId} = meetingMember!
     if (!isCheckedIn) {
       NewMeetingCheckInMutation(atmosphere, {meetingId, userId, isCheckedIn: true})
     }
-    handleGotoNext.gotoNext()
+    handleGotoNextRef.current && handleGotoNextRef.current.gotoNext()
   }, [])
 
   const handleOnClickAbsent = useCallback(() => {
@@ -45,7 +45,7 @@ const CheckInControls = (props: Props) => {
     if (isCheckedIn !== false) {
       NewMeetingCheckInMutation(atmosphere, {meetingId, userId, isCheckedIn: false})
     }
-    handleGotoNext.gotoNext()
+    handleGotoNextRef.current && handleGotoNextRef.current.gotoNext()
   }, [])
 
   useHotkey('h', handleOnClickPresent)
