@@ -35,7 +35,8 @@ const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
     taskCount: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of tasks generated in the meeting',
-      resolve: async ({id: meetingId}, _args, {dataLoader}) => {
+      resolve: async ({id: meetingId, taskCount}, _args, {dataLoader}) => {
+        if (Number.isFinite(taskCount)) return taskCount
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const {teamId} = meeting
         const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)

@@ -50,7 +50,12 @@ const SummarySheet = (props: Props) => {
           </td>
         </tr>
         <SummarySheetCTA referrer={referrer} isDemo={isDemo} teamDashUrl={teamDashUrl} />
-        <ExportToCSV emailCSVUrl={emailCSVUrl} meetingId={meetingId} urlAction={urlAction} />
+        <ExportToCSV
+          emailCSVUrl={emailCSVUrl}
+          meetingId={meetingId}
+          urlAction={urlAction}
+          referrer={referrer}
+        />
         <CreateAccountSection isDemo={isDemo} />
         <MeetingMembersWithTasks meeting={meeting} />
         <MeetingMembersWithoutTasks meeting={meeting} />

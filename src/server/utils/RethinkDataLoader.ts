@@ -71,7 +71,6 @@ interface Tables {
   AgendaItem: IAgendaItem
   AtlassianAuth: IAtlassianAuth
   CustomPhaseItem: ICustomPhaseItem
-  Meeting: IMeeting
   MeetingSettings: ITeamMeetingSettings
   MeetingMember: MeetingMember
   NewMeeting: Meeting
@@ -128,7 +127,6 @@ export default class RethinkDataLoader {
   agendaItems = this.pkLoader('AgendaItem')
   atlassianAuths = this.pkLoader('AtlassianAuth')
   customPhaseItems = this.pkLoader('CustomPhaseItem')
-  meetings = this.pkLoader('Meeting')
   meetingSettings = this.pkLoader('MeetingSettings')
   meetingMembers = this.pkLoader('MeetingMember')
   newMeetings = this.pkLoader('NewMeeting')

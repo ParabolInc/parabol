@@ -193,11 +193,6 @@ export interface IUser {
   invoiceDetails: IInvoice | null
 
   /**
-   * A previous meeting that the user was in (present or absent)
-   */
-  meeting: IMeeting | null
-
-  /**
    * The meeting member associated with this user, if a meeting is currently in progress
    */
   meetingMember: MeetingMember | null
@@ -363,13 +358,6 @@ export interface IInvoiceDetailsOnUserArguments {
    * The id of the invoice
    */
   invoiceId: string
-}
-
-export interface IMeetingOnUserArguments {
-  /**
-   * The meeting ID
-   */
-  meetingId: string
 }
 
 export interface IMeetingMemberOnUserArguments {
@@ -1497,14 +1485,9 @@ export interface IAgendaItem {
   createdAt: any | null
 
   /**
-   * true until the agenda item has been marked isComplete and the meeting has ended
+   * true if the agenda item has not been processed or deleted
    */
   isActive: boolean
-
-  /**
-   * true if the agenda item has been addressed in a meeting (will have a strikethrough or similar)
-   */
-  isComplete: boolean
 
   /**
    * The sort order of the agenda item in the list
@@ -2366,158 +2349,6 @@ export const enum InvoiceStatusEnum {
   PAID = 'PAID',
   FAILED = 'FAILED',
   UPCOMING = 'UPCOMING'
-}
-
-/**
- * A team meeting history for all previous meetings
- */
-export interface IMeeting {
-  __typename: 'Meeting'
-
-  /**
-   * The unique meeting id. shortid.
-   */
-  id: string
-
-  /**
-   * The number of agenda items completed during the meeting
-   */
-  agendaItemsCompleted: number | null
-
-  /**
-   * The timestamp the meeting was created
-   */
-  createdAt: any | null
-
-  /**
-   * The timestamp the meeting officially ended
-   */
-  endedAt: any | null
-
-  /**
-   * The teamMemberId of the person who ended the meeting
-   */
-  facilitator: string | null
-  invitees: Array<IMeetingInvitee | null> | null
-
-  /**
-   * The auto-incrementing meeting number for the team
-   */
-  meetingNumber: number
-
-  /**
-   * A list of immutable tasks, as they were created in the meeting
-   */
-  tasks: Array<IMeetingTask | null> | null
-
-  /**
-   * the number of tasks generated in the meeting
-   */
-  taskCount: number
-
-  /**
-   * The start time used to create the diff (all taskDiffs occurred between this time and the endTime
-   */
-  sinceTime: any | null
-
-  /**
-   * The happy introductory clause to the summary
-   */
-  successExpression: string | null
-
-  /**
-   * The happy body statement for the summary
-   */
-  successStatement: string | null
-
-  /**
-   * The time the meeting summary was emailed to the team
-   */
-  summarySentAt: any | null
-
-  /**
-   * The team associated with this meeting
-   */
-  teamId: string
-
-  /**
-   * The name as it was when the meeting occurred
-   */
-  teamName: string | null
-
-  /**
-   * All the team members associated who can join this team
-   */
-  teamMembers: Array<ITeamMember | null> | null
-}
-
-/**
- * The user invited to the meeting
- */
-export interface IMeetingInvitee {
-  __typename: 'MeetingInvitee'
-
-  /**
-   * The teamMemberId of the user invited to the meeting
-   */
-  id: string | null
-
-  /**
-   * true if the invitee was present in the meeting
-   */
-  present: boolean | null
-
-  /**
-   * A list of immutable tasks, as they were created in the meeting
-   */
-  tasks: Array<IMeetingTask | null> | null
-
-  /**
-   * url of user’s profile picture
-   */
-  picture: any | null
-
-  /**
-   * The name, as confirmed by the user
-   */
-  preferredName: string | null
-
-  /**
-   * All of the fields from the team member table
-   */
-  membership: ITeamMember | null
-}
-
-/**
- * The task that was created in a meeting
- */
-export interface IMeetingTask {
-  __typename: 'MeetingTask'
-
-  /**
-   * The unique action id, meetingId::taskId
-   */
-  id: string
-
-  /**
-   * The stringified Draft-js raw description of the action created during the meeting
-   */
-  content: string
-
-  /**
-   * The description of the action created during the meeting
-   */
-  status: TaskStatusEnum | null
-
-  /**
-   * The tags associated with the task
-   */
-  tags: Array<string | null> | null
-
-  /**
-   * The id of the team member the action was assigned to during the meeting
-   */
-  assigneeId: string
 }
 
 /**
@@ -5159,7 +4990,6 @@ export interface IEndMeetingPayload {
    * The list of tasks that were archived during the meeting
    */
   archivedTasks: Array<ITask | null> | null
-  meeting: IMeeting | null
 
   /**
    * The ID of the suggestion to try an action meeting, if tried
@@ -5838,14 +5668,9 @@ export interface IUpdateAgendaItemInput {
   content?: string | null
 
   /**
-   * true until the agenda item has been marked isComplete and the meeting has ended
+   * true if not processed or deleted
    */
   isActive?: boolean | null
-
-  /**
-   * true if the agenda item has been addressed in a meeting (will have a strikethrough or similar)
-   */
-  isComplete?: boolean | null
 
   /**
    * The sort order of the agenda item in the list
@@ -7339,17 +7164,12 @@ export interface ITimelineEventCompletedActionMeeting {
   /**
    * The meeting that was completed
    */
-  meeting: IMeeting
+  meeting: IActionMeeting
 
   /**
    * The meetingId that was completed, null if legacyMeetingId is present
    */
-  meetingId: string | null
-
-  /**
-   * a meetingId to be used with legacy action meetings
-   */
-  legacyMeetingId: string | null
+  meetingId: string
 }
 
 /**

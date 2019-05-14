@@ -1,5 +1,4 @@
 import {MeetingSummaryReferrer} from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail'
-import {Link} from 'react-router-dom'
 import React from 'react'
 import {
   FONT_FAMILY,
@@ -7,6 +6,7 @@ import {
   PALETTE_BACKGROUND_RED
 } from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/constants'
 import {buttonShadow} from 'universal/styles/elevation'
+import AnchorIfEmail from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/AnchorIfEmail'
 
 interface Props {
   referrer: MeetingSummaryReferrer
@@ -33,21 +33,21 @@ const primaryButtonStyle = {
 const buttonCellStyle = {
   paddingTop: 44
 }
+
 const SummarySheetCTA = (props: Props) => {
   const {isDemo, referrer, teamDashUrl} = props
   if (isDemo) return null
   return (
     <tr>
       <td align={'center'} style={buttonCellStyle}>
-        {referrer === 'email' ? (
-          <a href={teamDashUrl} title={teamDashLabel} style={primaryButtonStyle}>
-            {teamDashLabel}
-          </a>
-        ) : (
-          <Link style={primaryButtonStyle} to={teamDashUrl} title={teamDashLabel}>
-            {teamDashLabel}
-          </Link>
-        )}
+        <AnchorIfEmail
+          isEmail={referrer === 'email'}
+          href={teamDashUrl}
+          style={primaryButtonStyle}
+          title={teamDashLabel}
+        >
+          {teamDashLabel}
+        </AnchorIfEmail>
       </td>
     </tr>
   )

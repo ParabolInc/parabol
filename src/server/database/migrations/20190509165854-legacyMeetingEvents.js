@@ -1,11 +1,113 @@
+import MeetingMember from 'server/database/types/MeetingMember'
+import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
+import CheckInPhase from 'server/database/types/CheckInPhase'
+import UpdatesPhase from 'server/database/types/UpdatesPhase'
+import GenericMeetingPhase from 'server/database/types/GenericMeetingPhase'
+import AgendaItemsPhase from 'server/database/types/AgendaItemsPhase'
+import Meeting from 'server/database/types/Meeting'
+
+/* Migrate the old Action "Meeting" type into a "NewMeeting" type and sets an isLegacy flag on the Meeting */
+
 exports.up = async (r) => {
   try {
-    await r
-      .table('TimelineEvent')
-      .filter({type: 'actionComplete'})
-      .replace((row) => {
-        return row.merge({legacyMeetingId: row('meetingId')}).without('meetingId')
+    const meetings = await r.table('Meeting')
+    const completedAgendaItems = await r
+      .table('AgendaItem')
+      .filter({isActive: false})
+      .pluck('id', 'createdAt')
+    const agendaItemswithMeetingId = completedAgendaItems.map((agendaItem) => {
+      const teamMeetings = meetings.filter(
+        (meeting) => meeting.teamId === agendaItem.teamId && meeting.endedAt >= agendaItem.createdAt
+      )
+      teamMeetings.sort((a, b) => (a.createdAt < b.createdAt ? -1 : 1))
+      const meeting = teamMeetings[0]
+      return {
+        id: agendaItem.id,
+        meetingId: meeting ? meeting.id : null
+      }
+    })
+    const meetingMemberInserts = []
+    const taskUpdates = []
+    const meetingInserts = []
+    meetings.forEach((meeting) => {
+      const {
+        id: meetingId,
+        teamId,
+        endedAt,
+        createdAt,
+        invitees,
+        facilitator,
+        meetingNumber,
+        summarySentAt
+      } = meeting
+      if (!endedAt || !invitees || invitees.length === 0) return
+      const tasks = meeting.tasks || []
+      const facilitatorUserId = facilitator ? facilitator.split('::')[0] : null
+      meetingMemberInserts.push(
+        ...invitees.map((invitee) => {
+          const {id: teamMemberId, present} = invitee
+          const {userId} = fromTeamMemberId(teamMemberId)
+          const member = new MeetingMember(teamId, userId, 'action', meetingId)
+          member.isCheckedIn = present
+          member.isLegacy = true
+          return member
+        })
+      )
+
+      taskUpdates.push(
+        ...tasks.map((task) => {
+          return {
+            id: task.id.substr(teamId.length + 2),
+            meetingId: task.status === 'done' ? null : meetingId,
+            doneMeetingId: task.status === 'done' ? meetingId : null
+          }
+        })
+      )
+
+      const teamMembers = invitees.map((invitee, checkInOrder) => ({
+        id: invitee.id,
+        checkInOrder
+      }))
+      const agendaItemIds = agendaItemswithMeetingId
+        .filter((agendaItem) => agendaItem.meetingId === meetingId)
+        .map(({id}) => id)
+      const phases = [
+        new CheckInPhase(teamId, meetingNumber - 1, teamMembers),
+        new UpdatesPhase(teamMembers),
+        new GenericMeetingPhase('firstcall'),
+        new AgendaItemsPhase(agendaItemIds),
+        new GenericMeetingPhase('lastcall')
+      ]
+      phases.forEach((phase) => {
+        phase.stages.forEach((stage) => {
+          stage.startAt = createdAt
+          stage.endAt = endedAt
+        })
       })
+      if (!phases[0].stages[0]) {
+        console.log('bad phase', JSON.stringify(phases), meetingId)
+      }
+      const newMeeting = new Meeting(teamId, 'action', meetingNumber - 1, phases, facilitatorUserId)
+      newMeeting.createdAt = createdAt
+      newMeeting.endedAt = endedAt
+      newMeeting.summarySentAt = summarySentAt
+      newMeeting.id = meetingId
+      newMeeting.isLegacy = true
+      meetingInserts.push(newMeeting)
+    })
+    await r({
+      tasks: r(taskUpdates).forEach((task) => {
+        return r
+          .table('Task')
+          .get(task('id'))
+          .update({
+            doneMeetingId: task('doneMeetingId'),
+            meetingId: task('meetingId')
+          })
+      }),
+      meetingMembers: r.table('MeetingMember').insert(meetingMemberInserts),
+      meetings: r.table('NewMeeting').insert(meetingInserts)
+    })
   } catch (e) {
     console.log(e)
   }

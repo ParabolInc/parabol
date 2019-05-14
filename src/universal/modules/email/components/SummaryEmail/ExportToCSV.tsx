@@ -9,12 +9,15 @@ import extractTextFromDraftString from 'universal/utils/draftjs/extractTextFromD
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import emailDir from 'universal/modules/email/emailDir'
 import {PALETTE_TEXT_MAIN} from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/constants'
-import EmailBorderBottom from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/EmailBorderBottom'
+import AnchorIfEmail from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/AnchorIfEmail'
+import EmailBorderBottom from './MeetingSummaryEmail/EmailBorderBottom'
+import {MeetingSummaryReferrer} from './MeetingSummaryEmail/MeetingSummaryEmail'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   meetingId: string
   urlAction?: 'csv' | undefined
-  emailCSVUrl?: string
+  emailCSVUrl: string
+  referrer: MeetingSummaryReferrer
 }
 
 const query = graphql`
@@ -91,6 +94,12 @@ const imageStyle = {
 class ExportToCSV extends Component<Props> {
   componentDidMount () {
     if (this.props.urlAction === 'csv') {
+      this.exportToCSV().catch()
+    }
+  }
+
+  componentDidUpdate (prevProps: Readonly<Props>): void {
+    if (this.props.urlAction === 'csv' && prevProps.urlAction !== 'csv') {
       this.exportToCSV().catch()
     }
   }
@@ -189,15 +198,15 @@ class ExportToCSV extends Component<Props> {
   }
 
   render () {
-    const {emailCSVUrl} = this.props
+    const {emailCSVUrl, referrer} = this.props
     return (
       <>
         <tr>
           <td align='center' style={iconLinkLabel} width='100%'>
-            <a href={emailCSVUrl} title={label}>
+            <AnchorIfEmail isEmail={referrer === 'email'} href={emailCSVUrl} title={label}>
               <img alt={label} src={`${emailDir}cloud_download.png`} style={imageStyle} />
               <span style={labelStyle}>{label}</span>
-            </a>
+            </AnchorIfEmail>
           </td>
         </tr>
         <EmailBorderBottom />

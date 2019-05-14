@@ -36,8 +36,17 @@ const MeetingMembersWithoutTasks = (props: Props) => {
   const {meeting} = props
   const {meetingMembers, meetingType} = meeting
   // const meetingMembers = new Array(7).fill(mock)
-  if (meetingMembers.length === 0) return null
-  const grid = useEmailItemGrid(meetingMembers, 4)
+  const membersWithoutTasks = meetingMembers.filter(
+    (member) =>
+      ((member.tasks && member.tasks.length) || 0) +
+        ((member.doneTasks && member.doneTasks.length) || 0) ===
+      0
+  )
+  if (membersWithoutTasks.length === 0) return null
+  membersWithoutTasks.sort((a, b) =>
+    a.user.preferredName.toLowerCase() < b.user.preferredName.toLowerCase() ? -1 : 1
+  )
+  const grid = useEmailItemGrid(membersWithoutTasks, 4)
   return (
     <>
       <tr>
@@ -67,7 +76,21 @@ export default createFragmentContainer(
         id
         isCheckedIn
         user {
+          preferredName
           rasterPicture
+        }
+        ... on ActionMeetingMember {
+          tasks {
+            id
+          }
+          doneTasks {
+            id
+          }
+        }
+        ... on RetrospectiveMeetingMember {
+          tasks {
+            id
+          }
         }
       }
     }

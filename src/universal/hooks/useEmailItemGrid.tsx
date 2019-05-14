@@ -14,12 +14,12 @@ const useEmailItemGrid = (items: ReadonlyArray<any>, maxColumns: number, minColu
   return (cb: (item) => ReactElement) => {
     return rows.map((row, idx) => {
       return (
-        <table key={idx} width='92%' align='center'>
+        <table key={idx} align='center' width='50%'>
           <tbody>
             <tr>
               {row.map((item, idx) => {
                 return (
-                  <td key={idx} align='center' width={`${width}%`}>
+                  <td valign='top' key={idx} align='center' width={`${width}%`}>
                     <table width='100%'>
                       <tbody>{cb(item)}</tbody>
                     </table>

@@ -55,7 +55,7 @@ const EmailTaskCard = (props: Props) => {
   return (
     <tr>
       <td>
-        <table align='center' valign='top' width='188' style={contentStyle}>
+        <table align='center' width='188' style={contentStyle}>
           <tbody>
             <tr>
               <td>

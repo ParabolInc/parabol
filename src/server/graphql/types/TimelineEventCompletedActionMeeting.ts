@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import Meeting from 'server/graphql/types/Meeting'
 import Team from './Team'
 import TimelineEvent, {timelineEventInterfaceFields} from './TimelineEvent'
 import {COMPLETED_ACTION_MEETING} from './TimelineEventTypeEnum'
+import ActionMeeting from 'server/graphql/types/ActionMeeting'
 
 const TimelineEventCompletedActionMeeting = new GraphQLObjectType<any>({
   name: 'TimelineEventCompletedActionMeeting',
@@ -12,22 +12,15 @@ const TimelineEventCompletedActionMeeting = new GraphQLObjectType<any>({
   fields: () => ({
     ...timelineEventInterfaceFields(),
     meeting: {
-      type: new GraphQLNonNull(Meeting),
+      type: new GraphQLNonNull(ActionMeeting),
       description: 'The meeting that was completed',
-      resolve: ({meetingId, legacyMeetingId}, _args, {dataLoader}) => {
-        if (meetingId) {
-          return dataLoader.get('newMeetings').load(meetingId)
-        }
-        return dataLoader.get('meetings').load(legacyMeetingId)
+      resolve: ({meetingId}, _args, {dataLoader}) => {
+        return meetingId ? dataLoader.get('newMeetings').load(meetingId) : null
       }
     },
     meetingId: {
-      type: GraphQLID,
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The meetingId that was completed, null if legacyMeetingId is present'
-    },
-    legacyMeetingId: {
-      type: GraphQLID,
-      description: 'a meetingId to be used with legacy action meetings'
     },
     orgId: {
       type: new GraphQLNonNull(GraphQLID),

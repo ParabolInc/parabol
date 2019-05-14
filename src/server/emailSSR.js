@@ -14,9 +14,6 @@ const EMAIL_ALL_PROPS = {
       invitees: []
     }
   },
-  newMeetingSummaryEmailCreator: {
-    meetingId: 'viwwW1DtPd'
-  },
   notificationSummary: {
     userId: '123',
     email: 'fake@123.co',

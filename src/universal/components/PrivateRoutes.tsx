@@ -5,9 +5,6 @@ import requireAuth from 'universal/decorators/requireAuth/requireAuth'
 const Invoice = lazy(() =>
   import(/* webpackChunkName: 'InvoiceRoot' */ 'universal/modules/invoice/containers/InvoiceRoot')
 )
-const MeetingSummary = lazy(() =>
-  import(/* webpackChunkName: 'MeetingSummary' */ 'universal/modules/summary/components/MeetingSummaryRoot')
-)
 const NewMeetingSummary = lazy(() =>
   import(/* webpackChunkName: 'NewMeetingSummaryRoot' */ 'universal/modules/summary/components/NewMeetingSummaryRoot')
 )
@@ -46,7 +43,6 @@ const PrivateRoutes = () => {
       />
       <Route path='/retro/:teamId/:localPhaseSlug?/:stageIdxSlug?' component={RetroRoot} />
       <Route path='/invoice/:invoiceId' component={Invoice} />
-      <Route path='/summary/:meetingId' component={MeetingSummary} />
       <Route path='/new-summary/:meetingId/:urlAction?' component={NewMeetingSummary} />
       <Route path='/admin/graphql' component={Graphql} />
       <Route path='/admin/impersonate/:newUserId' component={Impersonate} />

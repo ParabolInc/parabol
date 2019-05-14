@@ -5,10 +5,10 @@ declare module 'react' {
     height?: string | number
     width?: string | number
     bgcolor?: string
+    valign?: string
   }
   interface TableHTMLAttributes<T> {
     align?: 'center' | 'left' | 'right'
-    valign?: string
     bgcolor?: string
     height?: string | number
     width?: string | number

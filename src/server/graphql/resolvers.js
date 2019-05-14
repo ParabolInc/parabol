@@ -7,10 +7,6 @@ export const resolveAgendaItem = ({agendaItemId, agendaItem}, args, {dataLoader}
   return agendaItemId ? dataLoader.get('agendaItems').load(agendaItemId) : agendaItem
 }
 
-export const resolveMeeting = ({meeting, meetingId}, args, {dataLoader}) => {
-  return meetingId ? dataLoader.get('meetings').load(meetingId) : meeting
-}
-
 export const resolveNewMeeting = ({meeting, meetingId}, args, {dataLoader}) => {
   return meetingId ? dataLoader.get('newMeetings').load(meetingId) : meeting
 }
