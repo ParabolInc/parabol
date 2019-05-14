@@ -10,7 +10,6 @@ import {
   IAtlassianAuth,
   IAuthToken,
   ICustomPhaseItem,
-  IMeeting,
   INewFeatureBroadcast,
   INotification,
   IOrganization,
