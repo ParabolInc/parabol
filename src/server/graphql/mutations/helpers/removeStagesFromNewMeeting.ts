@@ -2,7 +2,6 @@ import getRethink from 'server/database/rethinkDriver'
 import Meeting from 'server/database/types/Meeting'
 import getNextFacilitatorStageAfterStageRemoved from 'server/graphql/mutations/helpers/getNextFacilitatorStageAfterStageRemoved'
 import {DataLoaderWorker} from 'server/graphql/graphql'
-import {ITeam} from 'universal/types/graphql'
 
 /*
  * NewMeetings have a predefined set of stages, we need to remove it manually
@@ -15,7 +14,7 @@ const removeStagesFromNewMeeting = async (
 ) => {
   const now = new Date()
   const r = getRethink()
-  const team = (await dataLoader.get('teams').load(teamId))
+  const team = await dataLoader.get('teams').load(teamId)
   const {meetingId} = team
   if (meetingId) {
     // make sure it's a new meeting

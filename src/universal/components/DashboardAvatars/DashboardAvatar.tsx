@@ -71,8 +71,7 @@ const DashboardAvatar = (props: Props) => {
         hasBadge
         innerRef={originRef}
         isCheckedIn={teamMember.isCheckedIn}
-        isConnected={isConnected}
-        isClickable
+        isConnected={!!isConnected}
         onClick={togglePortal}
         size='smaller'
       />
