@@ -22,7 +22,7 @@ const useTooltip = (preferredMenuPosition: MenuPosition, options: Options = {}) 
   if (originCoords) {
     (originRef as any).current = {getBoundingClientRect: () => originCoords} as RectElement
   }
-  const {portal, openPortal, closePortal, togglePortal, portalStatus, setPortalStatus} = usePortal({
+  const {portal, openPortal, closePortal, togglePortal, portalStatus} = usePortal({
     onOpen,
     onClose
   })
@@ -31,14 +31,7 @@ const useTooltip = (preferredMenuPosition: MenuPosition, options: Options = {}) 
     const bbox = getBBox(originRef.current)
     return Math.max(40, bbox ? bbox.width : 40)
   }, [originRef.current])
-  const tooltipPortal = useTooltipPortal(
-    portal,
-    targetRef,
-    loadingWidth,
-    coords,
-    portalStatus,
-    setPortalStatus
-  )
+  const tooltipPortal = useTooltipPortal(portal, targetRef, loadingWidth, coords, portalStatus)
   const tooltipProps = {portalStatus, openPortal, closePortal}
   return {
     openPortal,
