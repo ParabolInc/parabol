@@ -36,7 +36,7 @@ class TimelineEventCompletedActionMeeting extends Component<Props> {
         <TimelineEventBody>
           {`It lasted ${meetingDuration} and generated ${taskCount} ${plural(taskCount, 'task')}.`}
           <br />
-          <StyledLink to={`/summary/${meetingId}`}>See the Full Summary</StyledLink>
+          <StyledLink to={`/new-summary/${meetingId}`}>See the Full Summary</StyledLink>
           {'.'}
         </TimelineEventBody>
       </TimelineEventCard>

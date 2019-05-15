@@ -96,7 +96,7 @@ class Team extends Component<Props> {
     return (
       <RelativeDashMain>
         <Suspense fallback={''}>
-          {hasActiveMeeting && isPaid && <MeetingInProgressModal team={team} />}
+          <MeetingInProgressModal team={team} />
           {!isPaid && <UnpaidTeamModalRoot teamId={teamId} />}
         </Suspense>
         <DashHeader

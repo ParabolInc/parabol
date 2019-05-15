@@ -97,7 +97,11 @@ const acceptTeamInvitation = async (
       .default([])
   })
   if (!userInOrg) {
-    await adjustUserCount(userId, orgId, ADD_USER)
+    try {
+      await adjustUserCount(userId, orgId, ADD_USER)
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   // if a meeting is going on right now, add them

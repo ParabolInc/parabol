@@ -33,11 +33,12 @@ const ActionMeetingMember = new GraphQLObjectType<IActionMeetingMember, GQLConte
       resolve: async ({meetingId, userId}, _args, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const {teamId} = meeting
-        const teamTasks = await dataLoader.get('tasksByUserId').load(teamId)
-        return teamTasks.filter(
+        const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
+        const tasks = teamTasks.filter(
           (task) =>
             task.meetingId === meetingId && task.userId === userId && !task.tags.includes('private')
         )
+        return tasks
       }
     }
   })

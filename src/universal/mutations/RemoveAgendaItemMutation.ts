@@ -11,6 +11,12 @@ graphql`
     agendaItem {
       id
     }
+    meeting {
+      facilitatorStageId
+      phases {
+        ...ActionSidebarAgendaItemsSectionAgendaItemPhase @relay(mask: false)
+      }
+    }
   }
 `
 

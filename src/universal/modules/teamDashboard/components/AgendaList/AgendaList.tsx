@@ -151,8 +151,7 @@ export default createFragmentContainer(
       agendaItems {
         id
         content
-        # need these 2 for the DnD
-        isComplete
+        # need this for the DnD
         sortOrder
         ...AgendaItem_agendaItem
       }

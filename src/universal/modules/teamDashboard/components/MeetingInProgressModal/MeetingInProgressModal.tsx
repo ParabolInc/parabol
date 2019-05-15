@@ -18,14 +18,16 @@ const StyledButton = styled(PrimaryButton)({
 interface Props extends RouteComponentProps<{}> {
   team: MeetingInProgressModal_team
 }
+
 const MeetingInProgressModal = (props: Props) => {
   const {team, history} = props
-  const {id: teamId, name: teamName, newMeeting} = team
+  const {id: teamId, name: teamName, newMeeting, isPaid} = team
   const meetingType = newMeeting ? newMeeting.meetingType : ACTION
   const handleClick = () => {
     const meetingSlug = meetingTypeToSlug[meetingType]
     history.push(`/${meetingSlug}/${teamId}`)
   }
+  if (!isPaid || !newMeeting) return null
   return (
     <DashModal>
       <DialogHeading>{'Meeting in Progress…'}</DialogHeading>
@@ -56,6 +58,7 @@ export default createFragmentContainer(
     fragment MeetingInProgressModal_team on Team {
       id
       name
+      isPaid
       newMeeting {
         meetingType
       }

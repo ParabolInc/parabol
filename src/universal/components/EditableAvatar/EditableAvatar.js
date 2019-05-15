@@ -61,7 +61,7 @@ const EditableAvatar = (props) => {
         <span>{'EDIT'}</span>
       </EditableAvatarEditOverlay>
       <EditableAvatarImgBlock hasPanel={hasPanel} size={size}>
-        <Avatar picture={picture} size='fill' sansRadius={unstyled} sansShadow={unstyled} />
+        <Avatar picture={picture} size={size} sansRadius={unstyled} sansShadow={unstyled} />
       </EditableAvatarImgBlock>
     </EditableAvatarRoot>
   )

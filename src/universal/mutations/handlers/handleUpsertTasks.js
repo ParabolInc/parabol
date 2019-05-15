@@ -8,10 +8,11 @@ import safeRemoveNodeFromConn from 'universal/utils/relay/safeRemoveNodeFromConn
 import {ConnectionHandler} from 'relay-runtime'
 import addNodeToArray from 'universal/utils/relay/addNodeToArray'
 
-const handleUpsertTask = (task, store, viewerId) => {
+const handleUpsertTask = (task, store) => {
   if (!task) return
   // we currently have 3 connections, user, team, and team archive
-  const viewer = store.get(viewerId)
+  const viewer = store.getRoot().getLinkedRecord('viewer')
+  const viewerId = viewer.getDataID()
   const teamId = task.getValue('teamId')
   const taskId = task.getValue('id')
   const tags = task.getValue('tags')

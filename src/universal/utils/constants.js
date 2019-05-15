@@ -28,7 +28,6 @@ export const FIRST_CALL = 'firstcall'
 export const AGENDA_ITEMS = 'agendaitems'
 export const LAST_CALL = 'lastcall'
 export const SUMMARY = 'summary'
-export const phaseArray = [LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY]
 
 /* Retrospective Phases */
 export const REFLECT = 'reflect'

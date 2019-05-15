@@ -79,8 +79,7 @@ const RetroGroupPhase = (props: Props) => {
   const isComplete = localStage ? localStage.isComplete : false
   const isFacilitating = facilitatorUserId === viewerId
   const nextPhaseLabel = phaseLabelLookup[VOTE]
-  const {current} = handleGotoNext
-  const {gotoNext, ref: gotoNextRef} = current
+  const {gotoNext, ref: gotoNextRef} = handleGotoNext
   const autoGroup = () => {
     if (submitting) return
     submitMutation()

@@ -74,7 +74,8 @@ const removeTeamMember = async (
             .default(null)
             .ne(null)
         )
-      }),
+      })
+      .coerceTo('array'),
     reassignedTasks: r
       .table('Task')
       .getAll(teamMemberId, {index: 'assigneeId'})

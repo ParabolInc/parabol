@@ -1,12 +1,13 @@
-import React, {useEffect, useState} from 'react'
+import React, {useMemo} from 'react'
 import styled from 'react-emotion'
 import EditorHelpModalContainer from 'universal/containers/EditorHelpModalContainer/EditorHelpModalContainer'
 import TaskColumn from 'universal/modules/teamDashboard/components/TaskColumn/TaskColumn'
 import ui from 'universal/styles/ui'
-import {AreaEnum, ITask} from 'universal/types/graphql'
+import {AreaEnum} from 'universal/types/graphql'
 import {columnArray, MEETING, meetingColumnArray} from 'universal/utils/constants'
 import makeTasksByStatus from 'universal/utils/makeTasksByStatus'
 import {createFragmentContainer, graphql} from 'react-relay'
+import {TaskColumns_tasks} from '__generated__/TaskColumns_tasks.graphql'
 
 const RootBlock = styled('div')({
   display: 'flex',
@@ -31,10 +32,11 @@ const ColumnsBlock = styled('div')({
 
 interface Props {
   area: AreaEnum
-  getTaskById: (taskId: string) => Partial<ITask> | undefined | null
+  getTaskById: (taskId: string) => any
   isMyMeetingSection?: boolean
-  myTeamMemberId: string
-  tasks: any
+  meetingId?: string
+  myTeamMemberId?: string
+  tasks: TaskColumns_tasks
   teamMemberFilterId?: string
   teams?: any
 }
@@ -44,17 +46,14 @@ const TaskColumns = (props: Props) => {
     area,
     getTaskById,
     isMyMeetingSection,
+    meetingId,
     myTeamMemberId,
     teamMemberFilterId,
     teams,
     tasks
   } = props
-  const [groupedTasks, setGroupedTasks] = useState(() => {
-    return makeTasksByStatus(tasks.edges.map(({node}) => node))
-  })
-  useEffect(() => {
-    const nodes = tasks.edges.map(({node}) => node)
-    setGroupedTasks(makeTasksByStatus(nodes))
+  const groupedTasks = useMemo(() => {
+    return makeTasksByStatus(tasks)
   }, [tasks])
   const lanes = area === MEETING ? meetingColumnArray : columnArray
   return (
@@ -66,6 +65,7 @@ const TaskColumns = (props: Props) => {
             area={area}
             isMyMeetingSection={isMyMeetingSection}
             getTaskById={getTaskById}
+            meetingId={meetingId}
             myTeamMemberId={myTeamMemberId}
             teamMemberFilterId={teamMemberFilterId}
             tasks={groupedTasks[status]}
@@ -82,14 +82,10 @@ const TaskColumns = (props: Props) => {
 export default createFragmentContainer(
   TaskColumns,
   graphql`
-    fragment TaskColumns_tasks on TaskConnection {
-      edges {
-        node {
-          ...TaskColumn_tasks
-          status
-          sortOrder
-        }
-      }
+    fragment TaskColumns_tasks on Task @relay(plural: true) {
+      ...TaskColumn_tasks
+      status
+      sortOrder
     }
   `
 )

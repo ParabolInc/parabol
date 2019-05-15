@@ -33,7 +33,7 @@ export default {
     if (userId !== viewerId) {
       const user = await dataLoader.get('users').load(userId)
       const {tms} = user
-      const onTeam = authToken.tms.find((teamId) => tms.includes(teamId))
+      const onTeam = authToken.tms.find((teamId) => tms!.includes(teamId))
       if (!onTeam) {
         return standardError(new Error('Not on same team as user'), {userId: viewerId})
       }

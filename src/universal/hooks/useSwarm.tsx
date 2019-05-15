@@ -30,11 +30,12 @@ const initState = {
 const useSwarm = (roomId) => {
   const atmosphere = useAtmosphere()
   const [state, dispatch] = useReducer(reducerSwarm, initState)
-  const disposable = useRef<() => void>()
+  const disposable = useRef<(() => void) | null>()
   useEffect(() => {
     joinSwarm(atmosphere, roomId, dispatch, disposable).catch()
     return () => {
       disposable.current && disposable.current()
+      disposable.current = null
     }
   }, [roomId])
   return state

@@ -1,8 +1,9 @@
 import emailDir from 'universal/modules/email/emailDir'
 import React from 'react'
-import {emailFontFamily, emailTableBase} from 'universal/styles/email'
+import {emailFontFamily} from 'universal/styles/email'
 import {createGoogleCalendarInviteURL, makeIcsUrl} from 'universal/utils/makeCalendarInvites'
 import EmptySpace from '../../components/EmptySpace/EmptySpace'
+import EmailBorderBottom from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/EmailBorderBottom'
 
 const message = {
   color: '#444258',
@@ -20,7 +21,7 @@ const meetingLinkTable = {
 } as React.CSSProperties
 
 const meetingLinkBlock = {
-  padding: '10px 8px',
+  // padding: '10px 8px',
   textAlign: 'center'
 } as React.CSSProperties
 
@@ -54,81 +55,84 @@ const iconLinkLabel = {
 } as React.CSSProperties
 
 interface Props {
-  createdAt: Date
+  createdAt: string
+  meetingNumber: number
   meetingUrl: string
   teamName: string
 }
 
+const sectionStart = {
+  paddingTop: 24
+}
+/* TODO remove divs */
+
 const SummaryEmailScheduleCalendar = (props: Props) => {
-  const {createdAt, meetingUrl, teamName} = props
+  const {createdAt, meetingUrl, meetingNumber, teamName} = props
+  if (meetingNumber > 2) return null
   return (
-    // @ts-ignore
-    <table align='center' style={emailTableBase} width='100%'>
-      <tbody>
-        <tr>
-          <td align='center' style={{padding: 0}}>
-            <div style={message}>
-              {`Way to go on your meeting!
-                        You are unlocking new superpowers.
-                        High-performing teams have regular habits!
+    <>
+      <tr>
+        <td align='center' style={sectionStart}>
+          <div style={message}>
+            {`Way to go on your meeting!
                         Create a 30-minute meeting at the start of each week.`}
+            <br />
+            <div>
+              <span>{'Tap here to schedule:'}</span>
               <br />
-              <div>
-                <span>{'Tap here to schedule:'}</span>
-                <br />
-                <div style={iconLinkBlock}>
-                  <a
-                    href={createGoogleCalendarInviteURL(createdAt, meetingUrl, teamName)}
-                    rel='noopener noreferrer'
-                    style={iconLink}
-                    target='_blank'
-                  >
-                    <img
-                      style={iconLinkIcon}
-                      src={`${emailDir}google@5x.png`}
-                      height={iconSize}
-                      width={iconSize}
-                    />
-                    <span style={iconLinkLabel}>{'Google Calendar'}</span>
-                  </a>
-                </div>
-                <div style={iconLinkBlock}>
-                  <a
-                    href={makeIcsUrl(createdAt, meetingUrl, teamName)}
-                    rel='noopener noreferrer'
-                    style={iconLink}
-                    target='_blank'
-                  >
-                    <img
-                      style={iconLinkIcon}
-                      src={`${emailDir}calendar-plus-o@5x.png`}
-                      height={iconSize}
-                      width={iconSize}
-                    />
-                    <span style={iconLinkLabel}>{'Outlook, etc.'}</span>
-                  </a>
-                </div>
+              <div style={iconLinkBlock}>
+                <a
+                  href={createGoogleCalendarInviteURL(createdAt, meetingUrl, teamName)}
+                  rel='noopener noreferrer'
+                  style={iconLink}
+                  target='_blank'
+                >
+                  <img
+                    style={iconLinkIcon}
+                    src={`${emailDir}google@5x.png`}
+                    height={iconSize}
+                    width={iconSize}
+                  />
+                  <span style={iconLinkLabel}>{'Google Calendar'}</span>
+                </a>
               </div>
-              {'Or, make your own and include this link as the location:'}
-              <EmptySpace height={8} />
-              {/*
-            // @ts-ignore*/}
-              <table align='center' style={meetingLinkTable} width='80%'>
-                <tbody>
-                  <tr>
-                    <td align='center' style={meetingLinkBlock}>
-                      <a href={meetingUrl} style={meetingLink}>
-                        {meetingUrl}
-                      </a>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <div style={iconLinkBlock}>
+                <a
+                  href={makeIcsUrl(createdAt, meetingUrl, teamName)}
+                  rel='noopener noreferrer'
+                  style={iconLink}
+                  target='_blank'
+                >
+                  <img
+                    style={iconLinkIcon}
+                    src={`${emailDir}calendar-plus-o@5x.png`}
+                    height={iconSize}
+                    width={iconSize}
+                  />
+                  <span style={iconLinkLabel}>{'Outlook, etc.'}</span>
+                </a>
+              </div>
             </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            {'Or, make your own and include this link as the location:'}
+            <EmptySpace height={8} />
+            {/*
+            // @ts-ignore*/}
+            <table align='center' style={meetingLinkTable} width='80%'>
+              <tbody>
+                <tr>
+                  <td align='center' style={meetingLinkBlock}>
+                    <a href={meetingUrl} style={meetingLink}>
+                      {meetingUrl}
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </td>
+      </tr>
+      <EmailBorderBottom />
+    </>
   )
 }
 

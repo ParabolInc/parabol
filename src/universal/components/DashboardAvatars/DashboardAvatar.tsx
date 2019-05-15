@@ -71,10 +71,9 @@ const DashboardAvatar = (props: Props) => {
         hasBadge
         innerRef={originRef}
         isCheckedIn={teamMember.isCheckedIn}
-        isConnected={isConnected}
-        isClickable
+        isConnected={!!isConnected}
         onClick={togglePortal}
-        size='smaller'
+        size={32}
       />
       <AvatarTag colorPalette='blue' label='Team Lead' isLead={isLead} />
       {menuPortal(

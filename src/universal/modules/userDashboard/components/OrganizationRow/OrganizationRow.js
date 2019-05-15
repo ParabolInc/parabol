@@ -60,7 +60,7 @@ const OrganizationRow = (props) => {
   return (
     <Row>
       <OrgAvatar onClick={onRowClick}>
-        <Avatar size='fill' picture={orgAvatar} />
+        <Avatar size={44} picture={orgAvatar} />
       </OrgAvatar>
       <RowInfo>
         <RowInfoHeader>

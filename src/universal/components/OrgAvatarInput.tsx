@@ -87,7 +87,7 @@ class OrgAvatarInput extends Component<Props> {
           {'Upload a New Photo'}
         </Type>
         <AvatarBlock>
-          <Avatar picture={picture} size='fill' />
+          <Avatar picture={picture} size={96} />
         </AvatarBlock>
         <AvatarInput error={dirty ? (error as string) : undefined} onSubmit={this.onSubmit} />
       </ModalBoundary>

@@ -102,7 +102,7 @@ const Organization = (props: Props) => {
             />
           ) : (
             <AvatarBlock>
-              <Avatar picture={pictureOrDefault} size='fill' sansRadius sansShadow />
+              <Avatar picture={pictureOrDefault} size={96} sansRadius sansShadow />
             </AvatarBlock>
           )}
           <OrgNameAndDetails>

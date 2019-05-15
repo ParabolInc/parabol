@@ -2,7 +2,7 @@ import Meeting from 'server/database/types/Meeting'
 import MeetingMember from 'server/database/types/MeetingMember'
 import RetroMeetingMember from 'server/database/types/RetroMeetingMember'
 import {DataLoaderWorker} from 'server/graphql/graphql'
-import {ITeamMember} from 'universal/types/graphql'
+import {IRetrospectiveMeetingSettings, ITeamMember} from 'universal/types/graphql'
 
 const createMeetingMembers = async (
   meeting: Meeting,
@@ -16,9 +16,9 @@ const createMeetingMembers = async (
       )
     case 'retrospective':
       const allSettings = await dataLoader.get('meetingSettingsByTeamId').load(meeting.teamId)
-      const retroSettings = allSettings.find(
+      const retroSettings = (allSettings.find(
         (settings) => settings.meetingType === meeting.meetingType
-      )
+      ) as unknown) as IRetrospectiveMeetingSettings
       const {totalVotes} = retroSettings
       return teamMembers.map(
         ({teamId, userId}) =>

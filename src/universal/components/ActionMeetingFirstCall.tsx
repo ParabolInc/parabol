@@ -50,8 +50,7 @@ const FirstCallWrapper = styled('div')({
 const ActionMeetingFirstCall = (props: Props) => {
   const {avatarGroup, toggleSidebar, team, handleGotoNext} = props
   const atmosphere = useAtmosphere()
-  const {current} = handleGotoNext
-  const {gotoNext, ref: gotoNextRef} = current
+  const {gotoNext, ref: gotoNextRef} = handleGotoNext
   const minTimeComplete = useTimeout(ms('30s'))
   const {viewerId} = atmosphere
   const {isMeetingSidebarCollapsed, newMeeting} = team
@@ -83,11 +82,7 @@ const ActionMeetingFirstCall = (props: Props) => {
               onKeyDown={handleRightArrow(() => gotoNext())}
               innerRef={gotoNextRef}
             >
-              <BottomNavIconLabel
-                icon='arrow_forward'
-                iconColor='warm'
-                label={`Let’s begin: ${phaseName}`}
-              />
+              <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={phaseName} />
             </BottomNavControl>
             <EndMeetingButton meetingId={meetingId} />
           </StyledBottomBar>

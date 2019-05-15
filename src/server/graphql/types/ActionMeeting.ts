@@ -15,6 +15,13 @@ const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
   description: 'An action meeting',
   fields: () => ({
     ...newMeetingFields(),
+    meetingMembers: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ActionMeetingMember))),
+      description: 'The team members that were active during the time of the meeting',
+      resolve: ({id: meetingId}, _args, {dataLoader}) => {
+        return dataLoader.get('meetingMembersByMeetingId').load(meetingId)
+      }
+    },
     settings: {
       type: new GraphQLNonNull(ActionMeetingSettings),
       description: 'The settings that govern the action meeting',
@@ -28,7 +35,8 @@ const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
     taskCount: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of tasks generated in the meeting',
-      resolve: async ({id: meetingId}, _args, {dataLoader}) => {
+      resolve: async ({id: meetingId, taskCount}, _args, {dataLoader}) => {
+        if (Number.isFinite(taskCount)) return taskCount
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const {teamId} = meeting
         const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)

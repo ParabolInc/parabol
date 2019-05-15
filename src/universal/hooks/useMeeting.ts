@@ -23,6 +23,7 @@ import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
 import updateLocalStage from 'universal/utils/relay/updateLocalStage'
 import {useMeetingLocalStateTeam} from '__generated__/useMeetingLocalStateTeam.graphql'
 import useRouter from 'universal/hooks/useRouter'
+import Team from 'universal/modules/teamDashboard/components/Team/Team'
 
 export const useDemoMeeting = () => {
   const atmosphere = useAtmosphere()
@@ -113,17 +114,8 @@ export const useGotoStageId = (team: Team | null) => {
 
 export const useGotoNext = (team: Team | null, gotoStageId: ReturnType<typeof useGotoStageId>) => {
   const ref = useRef<HTMLElement>(null)
-  const handleGotoNext = useRef<{
-    gotoNext: (options?: {isHotkey?: boolean}) => void
-    ref: typeof ref
-  }>({
-    gotoNext: () => {
-      /**/
-    },
-    ref
-  })
-  useEffect(() => {
-    handleGotoNext.current.gotoNext = (options: {isHotkey?: boolean} = {}) => {
+  const gotoNext = useCallback(
+    (options: {isHotkey?: boolean} = {}) => {
       const {newMeeting} = team!
       if (!newMeeting) return
       const {localStage, phases} = newMeeting
@@ -137,17 +129,15 @@ export const useGotoNext = (team: Team | null, gotoStageId: ReturnType<typeof us
       if (!options.isHotkey || currentStageRes.stage.isComplete) {
         gotoStageId(nextStageId).catch()
       } else if (options.isHotkey) {
-        const {ref} = handleGotoNext.current
         ref.current && ref.current.focus()
       }
-    }
-  }, [gotoStageId, team])
-  return handleGotoNext
+    },
+    [gotoStageId, team]
+  )
+  return {gotoNext, ref}
 }
 
-export const useGotoNextHotkey = (
-  gotoNext: ReturnType<typeof useGotoNext>['current']['gotoNext']
-) => {
+export const useGotoNextHotkey = (gotoNext: ReturnType<typeof useGotoNext>['gotoNext']) => {
   const latestHandler = useRef<typeof gotoNext>()
   useEffect(() => {
     latestHandler.current = gotoNext
@@ -231,7 +221,7 @@ const useMeeting = (meetingType: MeetingTypeEnum, team: Team | null) => {
   const handleGotoNext = useGotoNext(team, gotoStageId)
   const safeRoute = useMeetingLocalState((team as unknown) as useMeetingLocalStateTeam)
   useEndMeetingHotkey(meetingId)
-  useGotoNextHotkey(handleGotoNext.current.gotoNext)
+  useGotoNextHotkey(handleGotoNext.gotoNext)
   useGotoPrevHotkey(team, gotoStageId)
   useDemoMeeting()
   useDocumentTitle(`${meetingTypeToLabel[meetingType]} Meeting | ${teamName}`)

@@ -95,7 +95,7 @@ class TimelinePriorityTasks extends Component<Props> {
           <DraggableTask
             key={task.id}
             area={USER_DASH}
-            getTaskById={getTaskById(tasks as any)}
+            getTaskById={getTaskById(activeTasks)}
             task={task}
             insert={(draggedTask, before) => this.insertTask(draggedTask, task, before)}
           />

@@ -20,7 +20,7 @@ type RenderProp = (setItemRef: SetItemRef) => ReactNode
 
 interface Props extends GridProps {
   children: RenderProp
-  items?: Array<any>
+  items?: Array<any> | ReadonlyArray<any>
 }
 
 interface ItemRefs {

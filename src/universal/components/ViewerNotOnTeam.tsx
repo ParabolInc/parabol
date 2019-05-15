@@ -2,7 +2,6 @@ import {ViewerNotOnTeam_viewer} from '__generated__/ViewerNotOnTeam_viewer.graph
 import React, {useEffect} from 'react'
 import Helmet from 'react-helmet'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {RouteComponentProps, withRouter} from 'react-router'
 import Ellipsis from 'universal/components/Ellipsis/Ellipsis'
 import PrimaryButton from 'universal/components/PrimaryButton'
 import AcceptTeamInvitationMutation from 'universal/mutations/AcceptTeamInvitationMutation'
@@ -13,22 +12,33 @@ import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import DialogTitle from './DialogTitle'
 import TeamInvitationWrapper from './TeamInvitationWrapper'
+import useRouter from 'universal/hooks/useRouter'
 
-interface Props extends RouteComponentProps<{}> {
+interface Props {
+  teamId: string
   viewer: ViewerNotOnTeam_viewer
 }
 
 const ViewerNotOnTeam = (props: Props) => {
-  const {history, viewer} = props
+  const {teamId, viewer} = props
   const {teamInvitation} = viewer
   const atmosphere = useAtmosphere()
-  // if an invitation already exists, accept it
+  const {authObj} = atmosphere
+  const {history} = useRouter()
+
   useEffect(() => {
     if (teamInvitation) {
+      // if an invitation already exists, accept it
       AcceptTeamInvitationMutation(atmosphere, {invitationToken: teamInvitation.token}, {history})
+    } else if (authObj && authObj.tms && authObj.tms.includes(teamId)) {
+      // if already on the team, goto team dash
+      const redirectTo = new URLSearchParams(location.search).get('redirectTo')
+      const nextRoute = redirectTo || `/team/${teamId}`
+      history.replace(nextRoute)
     }
-  })
+  }, [])
 
+  // listen for a team invitation
   useEffect(() => {
     if (teamInvitation) return
     const handler = (invitation) => {
@@ -43,6 +53,7 @@ const ViewerNotOnTeam = (props: Props) => {
       atmosphere.eventEmitter.off('inviteToTeam', handler)
     }
   }, [])
+
   if (teamInvitation) {
     return null
   }
@@ -68,7 +79,7 @@ const ViewerNotOnTeam = (props: Props) => {
 }
 
 export default createFragmentContainer(
-  withRouter(ViewerNotOnTeam),
+  ViewerNotOnTeam,
   graphql`
     fragment ViewerNotOnTeam_viewer on User {
       teamInvitation(teamId: $teamId) {

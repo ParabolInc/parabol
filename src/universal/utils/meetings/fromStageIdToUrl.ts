@@ -27,8 +27,8 @@ graphql`
 
 // I think there's a TS bug where when i make a readonly array of an omit it returns the vals
 
-const fromStageIdToUrl = (stageId: string, phases: ReadonlyArray<any>) => {
-  const stageRes = findStageById(phases, stageId)
+const fromStageIdToUrl = (stageId: string, phases: ReadonlyArray<any>, fallbackStageId: string) => {
+  const stageRes = findStageById(phases, stageId) || findStageById(phases, fallbackStageId)
   if (!stageRes) return '/'
   const {phase, stageIdx} = stageRes
   const {phaseType} = phase

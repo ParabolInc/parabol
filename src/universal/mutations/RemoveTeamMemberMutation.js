@@ -36,6 +36,24 @@ graphql`
 `
 
 graphql`
+  fragment RemoveTeamMemberMutation_teamTeam on Team {
+    id
+    newMeeting {
+      facilitatorStageId
+      facilitatorUserId
+      meetingMembers {
+        id
+      }
+      phases {
+        stages {
+          id
+        }
+      }
+    }
+  }
+`
+
+graphql`
   fragment RemoveTeamMemberMutation_team on RemoveTeamMemberPayload {
     updatedTasks {
       id
@@ -49,14 +67,7 @@ graphql`
       ...KickedOut_notification @relay(mask: false)
     }
     team {
-      id
-      newMeeting {
-        phases {
-          stages {
-            id
-          }
-        }
-      }
+      ...RemoveTeamMemberMutation_teamTeam @relay(mask: false)
     }
     teamMember {
       userId
