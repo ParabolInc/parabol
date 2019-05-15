@@ -5,10 +5,16 @@
 import getAllConnections from 'universal/utils/relay/getAllConnections'
 import findConnectionWithNodeId from 'universal/utils/relay/findConnectionWithNodeId'
 import safeRemoveNodeFromConn from 'universal/utils/relay/safeRemoveNodeFromConn'
+import {RecordSourceSelectorProxy} from 'relay-runtime'
 
-const safeRemoveNodeFromUnknownConn = (store, viewerId, connectionName, nodeId) => {
+const safeRemoveNodeFromUnknownConn = (
+  store: RecordSourceSelectorProxy,
+  parentId: string,
+  connectionName: string,
+  nodeId: string
+) => {
   if (!nodeId) return
-  const teamConnections = getAllConnections(store, viewerId, connectionName)
+  const teamConnections = getAllConnections(store, parentId, connectionName)
   const conn = findConnectionWithNodeId(teamConnections, nodeId)
   safeRemoveNodeFromConn(nodeId, conn)
 }

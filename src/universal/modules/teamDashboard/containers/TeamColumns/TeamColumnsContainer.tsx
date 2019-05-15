@@ -52,7 +52,7 @@ const TeamColumnsContainer = (props: Props) => {
 
   return (
     <TaskColumns
-      getTaskById={getTaskById(tasks as any)}
+      getTaskById={getTaskById(filteredTasks)}
       myTeamMemberId={myTeamMemberId}
       tasks={filteredTasks}
       teamMemberFilterId={teamMemberFilterId}

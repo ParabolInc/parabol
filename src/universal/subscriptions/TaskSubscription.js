@@ -40,7 +40,7 @@ const TaskSubscription = (atmosphere, queryVariables, subParams) => {
         case 'CreateGitHubIssuePayload':
           break
         case 'ChangeTaskTeamPayload':
-          changeTaskTeamTaskUpdater(payload, store, viewerId)
+          changeTaskTeamTaskUpdater(payload, {store})
           break
         case 'CreateTaskPayload':
           createTaskTaskUpdater(payload, store, viewerId, false)
