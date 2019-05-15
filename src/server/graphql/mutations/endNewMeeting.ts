@@ -181,7 +181,6 @@ export default {
         )('changes')(0)('new_val')
     })
 
-    await finishMeetingType(completedMeeting, dataLoader)
     const meetingMembers = await dataLoader.get('meetingMembersByMeetingId').load(meetingId)
     const presentMembers = meetingMembers.filter(
       (meetingMember) => meetingMember.isCheckedIn === true
@@ -190,6 +189,7 @@ export default {
     endSlackMeeting(meetingId, teamId, true)
 
     if (currentStage) {
+      await finishMeetingType(completedMeeting, dataLoader)
       const {facilitatorUserId} = completedMeeting
       const nonFacilitators = presentMemberUserIds.filter((userId) => userId !== facilitatorUserId)
       const traits = {
