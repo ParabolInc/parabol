@@ -74,7 +74,9 @@ const ActionMeetingAgendaItems = (props: Props) => {
       .filter((node) => node.agendaId === agendaItemId)
       .sort((a, b) => (a.sortOrder < b.sortOrder ? 1 : -1))
   }, [agendaItemId, tasks])
-  const agendaItem = agendaItems.find((item) => item.id === agendaItemId!)!
+  const agendaItem = agendaItems.find((item) => item.id === agendaItemId!)
+  // optimistic updater could remove the agenda item
+  if (!agendaItem) return null
   const {content, teamMember} = agendaItem
   const {picture, preferredName} = teamMember
   const isFacilitating = facilitatorUserId === viewerId
@@ -92,7 +94,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
       />
       <ErrorBoundary>
         <AgendaItemsWrapper>
-          <Avatar picture={picture} size='larger' />
+          <Avatar picture={picture} size={96} />
           <MeetingPhaseHeading>{content}</MeetingPhaseHeading>
           <MeetingCopy>{`${preferredName}, what do you need?`}</MeetingCopy>
           <TaskCardBlock>

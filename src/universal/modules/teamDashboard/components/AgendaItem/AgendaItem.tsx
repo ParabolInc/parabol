@@ -92,7 +92,7 @@ const AgendaItem = (props: Props) => {
         label={content}
         metaContent={
           <AvatarBlock>
-            <Avatar hasBadge={false} picture={picture} size='smallest' />
+            <Avatar hasBadge={false} picture={picture} size={24} />
           </AvatarBlock>
         }
         isDisabled={!isNavigable}

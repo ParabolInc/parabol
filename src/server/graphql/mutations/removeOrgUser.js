@@ -115,7 +115,11 @@ const removeOrgUser = {
     // need to make sure the org doc is updated before adjusting this
     const {joinedAt, newUserUntil} = organizationUser
     const prorationDate = newUserUntil >= now ? new Date(joinedAt) : now
-    await adjustUserCount(userId, orgId, REMOVE_USER, {prorationDate})
+    try {
+      await adjustUserCount(userId, orgId, REMOVE_USER, {prorationDate})
+    } catch (e) {
+      console.log(e)
+    }
 
     const {tms} = user
     publish(NEW_AUTH_TOKEN, userId, UPDATED, {tms})

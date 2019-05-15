@@ -2,17 +2,6 @@ import React, {Ref} from 'react'
 import AvatarBadge from 'universal/components/AvatarBadge/AvatarBadge'
 import styled from 'react-emotion'
 
-const widthLookup = {
-  // NOTE: Size modifies avatarImageBlock
-  fill: '100%',
-  smallest: '1.5rem',
-  smaller: '2rem',
-  small: '2.75rem',
-  medium: '4rem',
-  large: '5rem',
-  larger: '6rem',
-  largest: '7.5rem'
-}
 type ImageBlockProps = Pick<Props, 'sansRadius' | 'sansShadow' | 'picture' | 'size' | 'onClick'>
 
 const ImageBlock = styled('div')(
@@ -25,8 +14,8 @@ const ImageBlock = styled('div')(
     boxShadow: sansShadow ? 'none' : undefined,
     cursor: onClick ? 'pointer' : 'default',
     display: 'block',
-    width: widthLookup[size],
-    height: widthLookup[size]
+    width: size,
+    height: size
   })
 )
 
@@ -56,7 +45,7 @@ interface Props {
   sansRadius?: boolean
   sansShadow?: boolean
   innerRef?: Ref<HTMLElement>
-  size: 'fill' | 'smallest' | 'smaller' | 'small' | 'medium' | 'large' | 'larger' | 'largest'
+  size: number
 }
 
 const Avatar = (props: Props) => {

@@ -6,8 +6,8 @@ import {createFragmentContainer, graphql} from 'react-relay'
 import Avatar from 'universal/components/Avatar/Avatar'
 import NewCheckInQuestion from 'universal/modules/meeting/components/MeetingCheckInPrompt/NewCheckInQuestion'
 import NewMeetingCheckInGreeting from 'universal/modules/meeting/components/NewMeetingCheckInGreeting'
-import {meetingSidebarMediaQuery} from 'universal/styles/meeting'
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
+import useBreakpoint from 'universal/hooks/useBreakpoint'
 
 const PromptBlock = styled('div')({
   alignItems: 'center',
@@ -22,13 +22,7 @@ const AvatarBlock = styled('div')({
   alignItems: 'center',
   display: 'flex',
   justifyContent: 'center',
-  padding: '.75rem',
-  width: '8rem',
-
-  [meetingSidebarMediaQuery]: {
-    padding: '1rem',
-    width: '10rem'
-  }
+  paddingBottom: 16
 })
 
 interface Props {
@@ -39,13 +33,15 @@ interface Props {
 const NewMeetingCheckinPrompt = (props: Props) => {
   const {team, teamMember} = props
   const {newMeeting} = team
+  const isLargeViewport = useBreakpoint(800)
   if (!newMeeting) return null
   const {picture} = teamMember
   const checkInGreeting = newMeeting.localPhase.checkInGreeting!
+  const size = isLargeViewport ? 160 : 128
   return (
     <PromptBlock>
       <AvatarBlock>
-        <Avatar picture={picture || defaultUserAvatar} size='fill' />
+        <Avatar picture={picture || defaultUserAvatar} size={size} />
       </AvatarBlock>
       <div>
         <NewMeetingCheckInGreeting checkInGreeting={checkInGreeting} teamMember={teamMember} />

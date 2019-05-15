@@ -114,6 +114,7 @@ const useUpdatedSafeRoute = (
 ) => {
   const {history} = useRouter()
   const oldMeetingRef = useRef(team && team.newMeeting)
+  const atmosphere = useAtmosphere()
   useEffect(() => {
     const newMeeting = team && team.newMeeting
     const {current: oldMeeting} = oldMeetingRef
@@ -130,22 +131,33 @@ const useUpdatedSafeRoute = (
     const oldLocalStageId = oldMeeting && oldMeeting.localStage && oldMeeting.localStage.id
     oldMeetingRef.current = newMeeting
     // if the stage changes or the order of the stages changes, update the url
-    if ((localStageId && localStageId !== oldLocalStageId) || localStages !== oldLocalStages) {
+    const isNewLocalStageId = localStageId && localStageId !== oldLocalStageId
+    const isUpdatedPhase = localStages !== oldLocalStages
+    if (isNewLocalStageId || isUpdatedPhase) {
       const meetingPath = getMeetingPathParams()
       const {meetingSlug, teamId} = meetingPath
       if (!meetingSlug || !teamId) {
         setSafeRoute(false)
         return
       }
-      if (!newMeeting || !localStageId) {
+      if (!localStageId) {
         // goto lobby
         history.replace(`/${meetingSlug}/${teamId}`)
+        setSafeRoute(false)
         return
       }
       const {phases} = newMeeting
-      const nextUrl = fromStageIdToUrl(localStageId, phases, facilitatorStageId)
-      history.replace(nextUrl)
-      setSafeRoute(false)
+      if (isUpdatedPhase && !findStageById(phases, localStageId)) {
+        // an item was removed and the local stage may be missing
+        updateLocalStage(atmosphere, newMeeting.id, facilitatorStageId)
+      }
+
+      const nextPathname = fromStageIdToUrl(localStageId, phases, facilitatorStageId)
+      if (nextPathname !== location.pathname) {
+        history.replace(nextPathname)
+        setSafeRoute(false)
+        return
+      }
     }
     setSafeRoute(true)
   })

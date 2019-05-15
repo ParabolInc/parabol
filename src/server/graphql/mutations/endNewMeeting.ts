@@ -66,12 +66,9 @@ const clearAgendaItems = async (teamId: string) => {
   return r
     .table('AgendaItem')
     .getAll(teamId, {index: 'teamId'})
-    .update(
-    {
+    .update({
       isActive: false
-    },
-      {returnChanges: true}
-    )('changes')('new_val')
+    })
 }
 
 const shuffleCheckInOrder = async (teamId: string) => {
@@ -104,7 +101,7 @@ const finishActionMeeting = async (meeting: Meeting, dataLoader: DataLoaderWorke
   const doneTasks = allTasks.filter((task) => task.status === DONE)
   const userIds = meetingMembers.map(({userId}) => userId)
   const r = getRethink()
-  const [archivedTasks, newTasks, clearedAgendaItems] = await Promise.all([
+  await Promise.all([
     archiveTasksForDB(doneTasks, meetingId),
     updateTaskSortOrders(userIds, tasks),
     clearAgendaItems(teamId),
@@ -114,7 +111,6 @@ const finishActionMeeting = async (meeting: Meeting, dataLoader: DataLoaderWorke
       .get(meetingId)
       .update({taskCount: tasks.length})
   ])
-  return {updatedTasks: [...archivedTasks, ...newTasks], clearedAgendaItems}
 }
 
 const finishMeetingType = async (meeting: Meeting, dataLoader: DataLoaderWorker) => {

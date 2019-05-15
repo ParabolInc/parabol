@@ -13,6 +13,11 @@ graphql`
       ...ActionMeetingTeam @relay(mask: false)
       ...RetroMeetingTeam @relay(mask: false)
       ...MeetingInProgressModal_team @relay(mask: false)
+      newMeeting {
+        phases {
+          ...NewMeetingAvatarGroupPhases @relay(mask: false)
+        }
+      }
     }
   }
 `

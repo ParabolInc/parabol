@@ -45,7 +45,7 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
   const taskCount = tasks.edges.length
   return (
     <StyledPrompt>
-      <Avatar picture={picture || defaultUserAvatar} size='larger' />
+      <Avatar picture={picture || defaultUserAvatar} size={96} />
       <PromptText>
         <PhaseHeaderTitle>
           {prefix}

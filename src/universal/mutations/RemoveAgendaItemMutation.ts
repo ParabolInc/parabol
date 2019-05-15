@@ -12,11 +12,9 @@ graphql`
       id
     }
     meeting {
+      facilitatorStageId
       phases {
         ...ActionSidebarAgendaItemsSectionAgendaItemPhase @relay(mask: false)
-        stages {
-          ...ActionMeetingAgendaItemsStage @relay(mask: false)
-        }
       }
     }
   }
