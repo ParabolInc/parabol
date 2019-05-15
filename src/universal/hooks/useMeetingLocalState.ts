@@ -143,7 +143,8 @@ const useUpdatedSafeRoute = (
       if (!localStageId) {
         // goto lobby
         history.replace(`/${meetingSlug}/${teamId}`)
-        setSafeRoute(false)
+        console.log('no local stage id')
+        // do not set as unsafe (repro: start meeting, end, start again)
         return
       }
       const {phases} = newMeeting
@@ -155,7 +156,7 @@ const useUpdatedSafeRoute = (
       const nextPathname = fromStageIdToUrl(localStageId, phases, facilitatorStageId)
       if (nextPathname !== location.pathname) {
         history.replace(nextPathname)
-        setSafeRoute(false)
+        // do not set as unsafe (repro: start meeting, end, start again)
         return
       }
     }
