@@ -24,6 +24,14 @@ const votesBlock = {
   lineHeight: MD_ICONS_SIZE_18
 }
 
+const voteCountStyle = {
+  paddingLeft: 4
+}
+
+const imageStyle = {
+  verticalAlign: 'text-bottom'
+}
+
 interface Props {
   imageSource: 'local' | 'static'
   topic: RetroTopic_topic
@@ -43,8 +51,8 @@ const RetroTopic = (props: Props) => {
       </tr>
       <tr>
         <td align='center' style={votesBlock}>
-          <img height='18' src={src} width='18' />
-          {voteCount}
+          <img height='18' src={src} width='18' style={imageStyle} />
+          <span style={voteCountStyle}>{voteCount}</span>
         </td>
       </tr>
       <tr>
