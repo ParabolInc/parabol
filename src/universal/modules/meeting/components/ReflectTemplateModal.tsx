@@ -5,6 +5,7 @@ import styled from 'react-emotion'
 import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {typeScale} from 'universal/styles/theme/typography'
+import DialogContainer from 'universal/components/DialogContainer'
 import Overflow from 'universal/components/Overflow'
 import TextOverflow from 'universal/components/TextOverflow'
 import withAtmosphere, {
@@ -23,10 +24,8 @@ interface Props extends WithAtmosphereProps {
 
 const contentPaddingLeft = '3rem'
 
-const ModalBoundary = styled('div')({
-  background: ui.palette.white,
-  borderRadius: ui.modalBorderRadius,
-  display: 'flex',
+const StyledDialogContainer = styled(DialogContainer)({
+  flexDirection: 'row',
   height: 374,
   width: 700
 })
@@ -36,7 +35,7 @@ const TemplateSidebar = styled('div')({
   flexDirection: 'column',
   backgroundColor: PALETTE.BACKGROUND.MAIN,
   borderRadius: `${ui.modalBorderRadius} 0 0 ${ui.modalBorderRadius}`,
-  width: '12.5rem'
+  width: 200
 })
 
 const Label = styled('div')({
@@ -86,6 +85,7 @@ const PromptEditor = styled('div')({
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
+  minWidth: 500,
   width: '100%'
 })
 
@@ -127,7 +127,7 @@ class ReflectTemplateModal extends Component<Props> {
     const activeTemplate = reflectTemplates.find((template) => template.id === activeTemplateId)
     if (!activeTemplate) return null
     return (
-      <ModalBoundary>
+      <StyledDialogContainer>
         <TemplateSidebar>
           <Label>Templates</Label>
           <ListAndAdd>
@@ -167,7 +167,7 @@ class ReflectTemplateModal extends Component<Props> {
           <TemplatePromptList prompts={activeTemplate.prompts} templateId={activeTemplate.id} />
           <AddTemplatePrompt templateId={activeTemplate.id} prompts={activeTemplate.prompts} />
         </PromptEditor>
-      </ModalBoundary>
+      </StyledDialogContainer>
     )
   }
 }
