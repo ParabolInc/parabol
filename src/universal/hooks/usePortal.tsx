@@ -15,7 +15,7 @@ export interface UsePortalOptions {
   onOpen?: (el: HTMLElement) => void
   onClose?: () => void
 }
-const usePortal = (options: UsePortalOptions) => {
+const usePortal = (options: UsePortalOptions = {}) => {
   const portalRef = useRef<HTMLDivElement>()
   const originRef = useRef<HTMLElement>()
   const showBodyScroll = useRef<() => void>()

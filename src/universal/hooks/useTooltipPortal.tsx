@@ -13,16 +13,13 @@ const TooltipBlock = styled('div')({
 const useTooltipPortal = (
   portal: (el: ReactElement) => ReactPortal | null,
   targetRef: (el: HTMLElement) => void,
-  minWidth: number,
   coords: UseCoordsValue,
   portalStatus: PortalStatus
 ) => {
   return (reactEl) => {
     return portal(
       <TooltipBlock innerRef={targetRef} style={{...coords}}>
-        <TooltipBackground minWidth={minWidth} portalStatus={portalStatus}>
-          {reactEl}
-        </TooltipBackground>
+        <TooltipBackground portalStatus={portalStatus}>{reactEl}</TooltipBackground>
       </TooltipBlock>
     )
   }
