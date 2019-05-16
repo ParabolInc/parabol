@@ -1,24 +1,23 @@
 import React from 'react'
 import {graphql} from 'react-relay'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
-import NewMeetingWithLocalState from 'universal/components/NewMeetingWithLocalState'
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import RetroMeeting from 'universal/components/RetroMeeting'
+import useAtmosphere from 'universal/hooks/useAtmosphere'
+import useRouter from 'universal/hooks/useRouter'
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription'
 import NotificationSubscription from 'universal/subscriptions/NotificationSubscription'
 import OrganizationSubscription from 'universal/subscriptions/OrganizationSubscription'
 import TaskSubscription from 'universal/subscriptions/TaskSubscription'
 import TeamMemberSubscription from 'universal/subscriptions/TeamMemberSubscription'
 import TeamSubscription from 'universal/subscriptions/TeamSubscription'
-import {cacheConfig, RETROSPECTIVE} from 'universal/utils/constants'
+import {MeetingTypeEnum} from 'universal/types/graphql'
+import {cacheConfig} from 'universal/utils/constants'
 import renderQuery from '../../utils/relay/renderQuery'
 
 const query = graphql`
-  query RetroRootQuery($teamId: ID!, $meetingType: MeetingTypeEnum!) {
+  query RetroRootQuery($teamId: ID!) {
     viewer {
-      ...NewMeetingWithLocalState_viewer
+      ...RetroMeeting_viewer
     }
   }
 `
@@ -32,15 +31,12 @@ const subscriptions = [
   TeamSubscription
 ]
 
-interface Props
-  extends WithAtmosphereProps,
-    RouteComponentProps<{localPhase: string; teamId: string}> {}
-
-const meetingType = RETROSPECTIVE
-const RetroRoot = ({atmosphere, history, location, match}: Props) => {
-  const {
-    params: {localPhase, teamId = 'demoTeam'}
-  } = match
+const meetingType = MeetingTypeEnum.retrospective
+const RetroRoot = () => {
+  const atmosphere = useAtmosphere()
+  const {history, location, match} = useRouter<{teamId: string}>()
+  const {params} = match
+  const {teamId = 'demoTeam'} = params
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}
@@ -49,9 +45,9 @@ const RetroRoot = ({atmosphere, history, location, match}: Props) => {
       variables={{teamId, meetingType}}
       subscriptions={subscriptions}
       subParams={{history, location}}
-      render={renderQuery(NewMeetingWithLocalState, {props: {localPhase, match, meetingType}})}
+      render={renderQuery(RetroMeeting)}
     />
   )
 }
 
-export default withAtmosphere(withRouter(RetroRoot))
+export default RetroRoot

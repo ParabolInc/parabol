@@ -1,11 +1,33 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
 import getRethink from 'server/database/rethinkDriver'
+import Meeting from 'server/database/types/Meeting'
 import AtlassianManager from 'server/utils/AtlassianManager'
 import {getUserId} from 'server/utils/authorization'
 import sendToSentry from 'server/utils/sendToSentry'
-import {IAtlassianAuth, IAuthToken} from 'universal/types/graphql'
+import {
+  IAgendaItem,
+  IAtlassianAuth,
+  IAuthToken,
+  ICustomPhaseItem,
+  INewFeatureBroadcast,
+  INotification,
+  IOrganization,
+  IOrganizationUser,
+  IReflectTemplate,
+  IRetroReflection,
+  IRetroReflectionGroup,
+  ISoftTeamMember,
+  ISuggestedAction,
+  ITask,
+  ITeam,
+  ITeamInvitation,
+  ITeamMeetingSettings,
+  ITeamMember,
+  IUser
+} from 'universal/types/graphql'
 import promiseAllPartial from 'universal/utils/promiseAllPartial'
+import MeetingMember from 'server/database/types/MeetingMember'
 
 interface JiraRemoteProjectKey {
   accessToken: string
@@ -43,6 +65,30 @@ const normalizeRethinkDbResults = (keys, indexField, cacheKeyFn = defaultCacheKe
   })
 }
 
+// as we build out more constructors we can move away from using the gql types
+interface Tables {
+  AgendaItem: IAgendaItem
+  AtlassianAuth: IAtlassianAuth
+  CustomPhaseItem: ICustomPhaseItem
+  MeetingSettings: ITeamMeetingSettings
+  MeetingMember: MeetingMember
+  NewMeeting: Meeting
+  NewFeature: INewFeatureBroadcast
+  Notification: INotification
+  Organization: IOrganization
+  OrganizationUser: IOrganizationUser
+  ReflectTemplate: IReflectTemplate
+  RetroReflectionGroup: IRetroReflectionGroup
+  RetroReflection: IRetroReflection
+  SoftTeamMember: ISoftTeamMember
+  SuggestedAction: ISuggestedAction
+  Task: ITask
+  TeamMember: ITeamMember
+  TeamInvitation: ITeamInvitation
+  Team: ITeam
+  User: IUser
+}
+
 export default class RethinkDataLoader {
   dataLoaderOptions: DataLoader.Options<any, any>
   authToken: null | IAuthToken
@@ -64,23 +110,22 @@ export default class RethinkDataLoader {
       })
       return ids.map((id) => items.filter((item) => item[field] === id))
     }
-    return new DataLoader<string, T>(batchFn, this.dataLoaderOptions)
+    return new DataLoader<string, T[]>(batchFn, this.dataLoaderOptions)
   }
 
-  private pkLoader (table: string) {
+  private pkLoader<T extends keyof Tables> (table: T) {
     // don't pass in a a filter here because they requested a specific ID, they know what they want
     const batchFn = async (keys) => {
       const r = getRethink()
       const docs = await r.table(table).getAll(r.args(keys), {index: 'id'})
       return normalizeRethinkDbResults(keys, 'id')(docs, this.authToken, table)
     }
-    return new DataLoader(batchFn, this.dataLoaderOptions)
+    return new DataLoader<string, Tables[T]>(batchFn, this.dataLoaderOptions)
   }
 
   agendaItems = this.pkLoader('AgendaItem')
   atlassianAuths = this.pkLoader('AtlassianAuth')
   customPhaseItems = this.pkLoader('CustomPhaseItem')
-  meetings = this.pkLoader('Meeting')
   meetingSettings = this.pkLoader('MeetingSettings')
   meetingMembers = this.pkLoader('MeetingMember')
   newMeetings = this.pkLoader('NewMeeting')
@@ -99,15 +144,25 @@ export default class RethinkDataLoader {
   teams = this.pkLoader('Team')
   users = this.pkLoader('User')
 
+  activeMeetingsByTeamId = this.fkLoader(this.newMeetings, 'teamId', (teamIds) => {
+    const r = getRethink()
+    return r
+      .table('NewMeeting')
+      .getAll(r.args(teamIds), {index: 'teamId'})
+      .filter({endedAt: null}, {default: true})
+      .orderBy(r.desc('createdAt'))
+  })
+
   agendaItemsByTeamId = this.fkLoader(this.agendaItems, 'teamId', (teamIds) => {
     const r = getRethink()
     return r
       .table('AgendaItem')
       .getAll(r.args(teamIds), {index: 'teamId'})
       .filter({isActive: true})
+      .orderBy('sortOrder')
   })
 
-  atlassianAuthByUserId = this.fkLoader<IAtlassianAuth[]>(
+  atlassianAuthByUserId = this.fkLoader<IAtlassianAuth>(
     this.atlassianAuths,
     'userId',
     (userIds) => {

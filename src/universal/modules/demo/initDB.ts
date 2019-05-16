@@ -211,6 +211,7 @@ const initPhases = (teamMembers) => {
         '{"blocks":[{"key":"1bm6m","text":"What’s got your attention today, and why?","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}',
       id: 'checkinPhase',
       phaseType: CHECKIN,
+      meetingId: demoMeetingId,
       stages: teamMembers.map(initCheckInStage)
     },
     {
@@ -218,6 +219,7 @@ const initPhases = (teamMembers) => {
       id: 'reflectPhase',
       phaseType: REFLECT,
       focusedPhaseItemId: null,
+      meetingId: demoMeetingId,
       reflectPrompts: [
         {
           id: 'startId',
@@ -243,6 +245,8 @@ const initPhases = (teamMembers) => {
           __typename: 'GenericMeetingStage',
           id: 'reflectStage',
           isComplete: false,
+          isNavigable: true,
+          isNavigableByFacilitator: true,
           meetingId: demoMeetingId,
           phaseType: REFLECT,
           startAt: now
@@ -253,6 +257,7 @@ const initPhases = (teamMembers) => {
       __typename: 'GenericMeetingPhase',
       id: 'groupPhase',
       phaseType: GROUP,
+      meetingId: demoMeetingId,
       stages: [
         {
           __typename: 'GenericMeetingStage',
@@ -267,6 +272,7 @@ const initPhases = (teamMembers) => {
       __typename: 'GenericMeetingPhase',
       id: 'votePhase',
       phaseType: VOTE,
+      meetingId: demoMeetingId,
       stages: [
         {
           __typename: 'GenericMeetingStage',
@@ -281,6 +287,7 @@ const initPhases = (teamMembers) => {
       __typename: 'DiscussPhase',
       id: 'discussPhase',
       phaseType: DISCUSS,
+      meetingId: demoMeetingId,
       stages: [
         {
           __typename: 'RetroDiscussStage',
@@ -309,6 +316,8 @@ const initNewMeeting = (teamMembers, meetingMembers) => {
     facilitatorUserId: demoViewerId,
     facilitator: viewerMeetingMember.user,
     id: demoMeetingId,
+    // alias is important for relay to normalize records correctly. if not supplied, value will be null
+    meetingId: demoMeetingId,
     meetingNumber: 1,
     meetingType: RETROSPECTIVE,
     meetingMember: viewerMeetingMember,

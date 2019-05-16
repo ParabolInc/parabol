@@ -9,7 +9,7 @@ export namespace PALETTE {
     MAIN_DARKENED = '#E0DDEC', // PRIMARY.MAIN alpha 10% over BACKGROUND.MAIN
     MAIN_LIGHTENED = '#F5F4FB', // BACKGROUND.MAIN alpha .15 over #FFF
     LIGHTEST = '#F1F0FA80',
-    BACKDROP = '#4442584D',
+    BACKDROP = '#4442584D', // rgba(68, 66, 88, 0.3)
     YELLOW = '#FFCC63',
     BLUE = '#329AE5',
     RED = '#FD6157',
@@ -29,7 +29,9 @@ export namespace PALETTE {
     MAIN = '#444258',
     LIGHT = '#82809A',
     GREEN = '#61BF8B',
-    PINK = '#ED4C86'
+    PINK = '#ED4C86',
+    RED = '#FD6157',
+    PURPLE = '#493272'
   }
   export const enum ERROR {
     MAIN = '#ED4C56'

@@ -2,7 +2,7 @@ import {RouterProps} from 'react-router'
 import {PayloadError, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 
 export interface CompletedHandler {
-  (response: any, errors?: Array<Error | string | PayloadError> | null): void
+  (response: any, errors?: Array<Error | PayloadError> | null): void
 }
 
 export interface ErrorHandler {

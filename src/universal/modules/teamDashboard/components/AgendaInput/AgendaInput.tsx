@@ -1,8 +1,13 @@
-import React, {Component} from 'react'
+import {AgendaInput_team} from '__generated__/AgendaInput_team.graphql'
+import React, {useCallback, useRef} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import Icon from 'universal/components/Icon'
 import Tooltip from 'universal/components/Tooltip/Tooltip'
+import useAtmosphere from 'universal/hooks/useAtmosphere'
+import useAtmosphereListener from 'universal/hooks/useAtmosphereListener'
+import useHotkey from 'universal/hooks/useHotkey'
+import useMutationProps from 'universal/hooks/useMutationProps'
 import AddAgendaItemMutation from 'universal/mutations/AddAgendaItemMutation'
 import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette'
 import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles'
@@ -11,12 +16,7 @@ import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import getNextSortOrder from 'universal/utils/getNextSortOrder'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import withHotkey from 'react-hotkey-hoc'
-import {AgendaInput_team} from '__generated__/AgendaInput_team.graphql'
+import useForm from 'universal/utils/relay/useForm'
 
 const AgendaInputBlock = styled('div')({
   padding: `${meetingSidebarGutter} 0`,
@@ -79,180 +79,99 @@ const StyledIcon = styled(Icon)({
   zIndex: 200
 })
 
-interface Props extends WithMutationProps, WithAtmosphereProps {
-  afterSubmitAgendaItem: () => void
-  bindHotkey: (key: string, cb: (e: KeyboardEvent) => void) => void
+interface Props {
   disabled: boolean
-  setAgendaInputRef: (c: HTMLInputElement) => void
   team: AgendaInput_team
 }
 
-interface State {
-  value: string
-}
-
-class AgendaInput extends Component<Props, State> {
-  state = {
-    value: ''
-  }
-
-  componentDidMount () {
-    const {disabled, bindHotkey} = this.props
-    if (!disabled) {
-      bindHotkey('+', this.focusOnInput)
+const AgendaInput = (props: Props) => {
+  const inputRef = useRef<HTMLInputElement>(null)
+  const focusInput = useCallback((e?: React.KeyboardEvent | ExtendedKeyboardEvent) => {
+    e && e.preventDefault()
+    inputRef.current && inputRef.current.focus()
+  }, [])
+  useHotkey('+', focusInput)
+  const {fields, onChange} = useForm({
+    newItem: {
+      getDefault: () => ''
     }
-  }
+  })
+  useAtmosphereListener('focusAgendaInput', focusInput)
+  const atmosphere = useAtmosphere()
+  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
+  const {newItem} = fields
+  const {resetValue, value} = newItem
+  const {disabled, team} = props
+  const {id: teamId, agendaItems} = team
 
-  componentWillUpdate () {
-    this.maybeSaveFocus()
-  }
-
-  componentDidUpdate () {
-    this.maybeRefocus()
-  }
-
-  innerRef = (c: HTMLInputElement) => {
-    const {setAgendaInputRef} = this.props
-    this.inputRef = c
-    if (setAgendaInputRef) {
-      setAgendaInputRef(c)
-    }
-  }
-
-  inputRef?: HTMLInputElement
-  refocusAfterUpdate = false
-
-  focusOnInput = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (this.inputRef) {
-      this.inputRef.focus()
-    }
-  }
-
-  handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    const {
-      afterSubmitAgendaItem,
-      atmosphere,
-      team: {agendaItems, teamId},
-      submitting,
-      submitMutation,
-      onError,
-      onCompleted
-    } = this.props
-    const {value} = this.state
-    const normalizedValue = value.trim()
-    if (submitting || !normalizedValue) return
+    const content = value.trim()
+    if (submitting || !content) return
     submitMutation()
-
-    const handleCompleted = () => {
-      onCompleted()
-      afterSubmitAgendaItem()
-    }
-
     const newAgendaItem = {
-      content: normalizedValue,
+      content,
       sortOrder: getNextSortOrder(agendaItems),
       teamId,
       teamMemberId: toTeamMemberId(teamId, atmosphere.viewerId)
     }
-    this.setState({
-      value: ''
-    })
-    AddAgendaItemMutation(atmosphere, newAgendaItem, onError, handleCompleted)
+    resetValue()
+    // setTimeout required when going from 0 to 1 agenda items
+    setTimeout(focusInput)
+    AddAgendaItemMutation(atmosphere, {newAgendaItem}, {onError, onCompleted})
   }
 
-  onChange = (e) => {
-    const {value} = e.target
-    this.setState({
-      value
-    })
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape' && inputRef.current) {
+      inputRef.current.blur()
+    }
   }
 
-  makeForm = () => {
-    const {disabled} = this.props
-    const {value} = this.state
-    return (
-      <InputForm disabled={disabled} onSubmit={this.handleSubmit}>
-        <InputField
-          autoCapitalize='off'
-          autoComplete='off'
-          disabled={disabled}
-          maxLength={63}
-          onChange={this.onChange}
-          onKeyDown={this.maybeBlur}
-          placeholder='Add Agenda Topic…'
-          innerRef={this.innerRef}
-          type='text'
-          value={value}
-        />
-        <StyledIcon>add_circle</StyledIcon>
-      </InputForm>
-    )
-  }
-
-  makeTooltip = () => (
-    <div style={{textAlign: 'center'}}>
-      {'Add meeting topics to discuss,'}
-      <br />
-      {'like “upcoming vacation”'}
-    </div>
+  const showTooltip = Boolean(agendaItems.length > 0 && !disabled)
+  return (
+    <AgendaInputBlock>
+      <Tooltip
+        delay={1000}
+        hideOnFocus
+        tip={
+          <div style={{textAlign: 'center'}}>
+            {'Add meeting topics to discuss,'}
+            <br />
+            {'like “upcoming vacation”'}
+          </div>
+        }
+        maxHeight={52}
+        maxWidth={224}
+        originAnchor={{vertical: 'top', horizontal: 'center'}}
+        targetAnchor={{vertical: 'bottom', horizontal: 'center'}}
+        isDisabled={!showTooltip}
+      >
+        <InputForm disabled={disabled} onSubmit={handleSubmit}>
+          <InputField
+            autoCapitalize='off'
+            autoComplete='off'
+            disabled={disabled}
+            maxLength={63}
+            name='newItem'
+            onChange={onChange}
+            onKeyDown={onKeyDown}
+            placeholder='Add Agenda Topic…'
+            innerRef={inputRef}
+            type='text'
+            value={value}
+          />
+          <StyledIcon>add_circle</StyledIcon>
+        </InputForm>
+      </Tooltip>
+    </AgendaInputBlock>
   )
-
-  maybeBlur = (e) => {
-    if (e.key === 'Escape' && this.inputRef) {
-      this.inputRef.blur()
-    }
-  }
-
-  maybeRefocus = () => {
-    if (this.inputRef && this.refocusAfterUpdate) {
-      this.inputRef.focus()
-      this.refocusAfterUpdate = false
-    }
-  }
-
-  maybeSaveFocus = () => {
-    if (document.activeElement === this.inputRef) {
-      this.refocusAfterUpdate = true
-    }
-  }
-
-  render () {
-    const {
-      disabled,
-      team: {agendaItems}
-    } = this.props
-
-    const form = this.makeForm()
-    const showTooltip = Boolean(agendaItems.length > 0 && !disabled)
-    return (
-      <AgendaInputBlock>
-        {showTooltip ? (
-          <Tooltip
-            delay={1000}
-            hideOnFocus
-            tip={this.makeTooltip()}
-            maxHeight={52}
-            maxWidth={224}
-            originAnchor={{vertical: 'top', horizontal: 'center'}}
-            targetAnchor={{vertical: 'bottom', horizontal: 'center'}}
-          >
-            {form}
-          </Tooltip>
-        ) : (
-          form
-        )}
-      </AgendaInputBlock>
-    )
-  }
 }
 
 export default createFragmentContainer(
-  withAtmosphere(withHotkey(withMutationProps(AgendaInput))),
+  AgendaInput,
   graphql`
     fragment AgendaInput_team on Team {
-      teamId: id
+      id
       agendaItems {
         sortOrder
       }

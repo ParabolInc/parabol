@@ -57,7 +57,6 @@ const OutcomeCard = (props) => {
     isAgenda,
     isDragging,
     isEditing,
-    handleAddTask,
     hasDragStyles,
     task,
     setEditorRef,
@@ -110,7 +109,6 @@ const OutcomeCard = (props) => {
           area={area}
           cardIsActive={cardIsActive}
           editorState={editorState}
-          handleAddTask={handleAddTask}
           isAgenda={isAgenda}
           isPrivate={isPrivate}
           task={task}
@@ -129,7 +127,6 @@ OutcomeCard.propTypes = {
   cardHasFocus: PropTypes.bool,
   cardHasMenuOpen: PropTypes.bool,
   cardHasIntegration: PropTypes.bool,
-  handleAddTask: PropTypes.func,
   hasDragStyles: PropTypes.bool,
   isAgenda: PropTypes.bool,
   isDragging: PropTypes.bool,

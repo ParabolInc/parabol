@@ -27,6 +27,10 @@ import TaskIntegrationGitHub from 'server/graphql/types/TaskIntegrationGitHub'
 import SuggestedIntegrationJira from 'server/graphql/types/SuggestedIntegrationJira'
 import SuggestedIntegrationGitHub from 'server/graphql/types/SuggestedIntegrationGitHub'
 import TaskIntegrationJira from 'server/graphql/types/TaskIntegrationJira'
+import ActionMeeting from 'server/graphql/types/ActionMeeting'
+import ActionMeetingMember from 'server/graphql/types/ActionMeetingMember'
+import UpdatesPhase from 'server/graphql/types/UpdatesPhase'
+import AgendaItemsPhase from 'server/graphql/types/AgendaItemsPhase'
 
 export default new GraphQLSchema({
   query,
@@ -36,10 +40,14 @@ export default new GraphQLSchema({
     CheckInPhase,
     ReflectPhase,
     DiscussPhase,
+    UpdatesPhase,
+    AgendaItemsPhase,
     GenericMeetingPhase,
     NotificationTeamInvitation,
     NotifyPromoteToOrgLeader,
     RetroPhaseItem,
+    ActionMeeting,
+    ActionMeetingMember,
     RetrospectiveMeeting,
     RetrospectiveMeetingMember,
     RetrospectiveMeetingSettings,

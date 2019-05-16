@@ -16,21 +16,15 @@ import editTask from 'server/graphql/mutations/editTask'
 import endMeeting from 'server/graphql/mutations/endMeeting'
 import githubAddAssignee from 'server/graphql/mutations/githubAddAssignee'
 import inactivateUser from 'server/graphql/mutations/inactivateUser'
-import killMeeting from 'server/graphql/mutations/killMeeting'
-import meetingCheckIn from 'server/graphql/mutations/meetingCheckIn'
-import moveMeeting from 'server/graphql/mutations/moveMeeting'
 import navigateMeeting from 'server/graphql/mutations/navigateMeeting'
-import promoteFacilitator from 'server/graphql/mutations/promoteFacilitator'
 import promoteNewMeetingFacilitator from 'server/graphql/mutations/promoteNewMeetingFacilitator'
 import promoteToTeamLead from 'server/graphql/mutations/promoteToTeamLead'
 import removeAgendaItem from 'server/graphql/mutations/removeAgendaItem'
 import removeProvider from 'server/graphql/mutations/removeProvider'
 import removeSlackChannel from 'server/graphql/mutations/removeSlackChannel'
 import removeTeamMember from 'server/graphql/mutations/removeTeamMember'
-import requestFacilitator from 'server/graphql/mutations/requestFacilitator'
 import segmentEventTrack from 'server/graphql/mutations/segmentEventTrack'
 import setOrgUserRole from 'server/graphql/mutations/setOrgUserRole'
-import startMeeting from 'server/graphql/mutations/startMeeting'
 import startNewMeeting from 'server/graphql/mutations/startNewMeeting'
 import stripeCreateInvoice from 'server/graphql/mutations/stripeCreateInvoice'
 import stripeFailPayment from 'server/graphql/mutations/stripeFailPayment'
@@ -42,7 +36,6 @@ import updateAgendaItem from 'server/graphql/mutations/updateAgendaItem'
 import updateCreditCard from 'server/graphql/mutations/updateCreditCard'
 import updateOrg from 'server/graphql/mutations/updateOrg'
 import updateTask from 'server/graphql/mutations/updateTask'
-import updateCheckInQuestion from 'server/graphql/mutations/updateTeamCheckInQuestion'
 import updateDragLocation from 'server/graphql/mutations/updateDragLocation'
 import updateNewCheckInQuestion from 'server/graphql/mutations/updateNewCheckInQuestion'
 import upgradeToPro from 'server/graphql/mutations/upgradeToPro'
@@ -128,14 +121,10 @@ export default new GraphQLObjectType({
     githubAddAssignee,
     inactivateUser,
     inviteToTeam,
-    killMeeting,
     endNewMeeting,
-    meetingCheckIn,
-    moveMeeting,
     moveTeamToOrg,
     navigateMeeting,
     newMeetingCheckIn,
-    promoteFacilitator,
     promoteNewMeetingFacilitator,
     promoteToTeamLead,
     reflectTemplatePromptUpdateDescription,
@@ -147,13 +136,11 @@ export default new GraphQLObjectType({
     removeOrgUser,
     removeReflection,
     removeTeamMember,
-    requestFacilitator,
     segmentEventTrack,
     selectRetroTemplate,
     setOrgUserRole,
     setPhaseFocus,
     startDraggingReflection,
-    startMeeting,
     startNewMeeting,
     stripeCreateInvoice,
     stripeFailPayment,
@@ -164,7 +151,6 @@ export default new GraphQLObjectType({
     updateAgendaItem,
     updateCreditCard,
     updateOrg,
-    updateCheckInQuestion,
     updateNewCheckInQuestion,
     updateDragLocation,
     updateReflectionContent,

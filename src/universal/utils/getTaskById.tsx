@@ -1,13 +1,12 @@
-import {ITask, ITaskConnection} from 'universal/types/graphql'
+interface Task {
+  id: string
+}
 
-const getTaskById = (taskConnection: ITaskConnection) => (
+const getTaskById = <T extends Task>(taskArr: ReadonlyArray<T>) => (
   taskId: string
-): ITask | undefined | null => {
-  if (!taskConnection.edges) return undefined
-  const edge = taskConnection.edges.find((edge) =>
-    Boolean(edge && edge.node && edge.node.id === taskId)
-  )
-  return edge ? edge.node : undefined
+): T | undefined | null => {
+  if (!taskArr) return undefined
+  return taskArr.find((task) => task.id === taskId)
 }
 
 export default getTaskById

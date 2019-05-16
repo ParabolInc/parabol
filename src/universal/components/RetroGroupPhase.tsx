@@ -1,21 +1,30 @@
 import {RetroGroupPhase_team} from '__generated__/RetroGroupPhase_team.graphql'
+import ms from 'ms'
 /**
  * Renders the UI for the reflection phase of the retrospective meeting
  *
  */
-import React, {Component} from 'react'
+import React from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import BottomNavControl from 'universal/components/BottomNavControl'
 import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
+import ErrorBoundary from 'universal/components/ErrorBoundary'
+import MeetingContent from 'universal/components/MeetingContent'
+import MeetingContentHeader from 'universal/components/MeetingContentHeader'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
 import MeetingHelpToggle from 'universal/components/MenuHelpToggle'
+import PhaseHeaderDescription from 'universal/components/PhaseHeaderDescription'
+import PhaseHeaderTitle from 'universal/components/PhaseHeaderTitle'
+import {RetroMeetingPhaseProps} from 'universal/components/RetroMeeting'
 import StyledError from 'universal/components/StyledError'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
+import useTimeoutWithReset from 'universal/hooks/useTimeoutWithReset'
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
 import AutoGroupReflectionsMutation from 'universal/mutations/AutoGroupReflectionsMutation'
+import {NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
 import {VOTE} from 'universal/utils/constants'
 import lazyPreload from 'universal/utils/lazyPreload'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
@@ -24,12 +33,8 @@ import handleRightArrow from '../utils/handleRightArrow'
 import isDemoRoute from '../utils/isDemoRoute'
 import EndMeetingButton from './EndMeetingButton'
 import PhaseItemMasonry from './PhaseItemMasonry'
-import ms from 'ms'
 
-interface Props extends WithMutationProps, WithAtmosphereProps {
-  gotoNext: () => void
-  gotoNextRef: React.RefObject<HTMLDivElement>
-  isDemoStageComplete: boolean
+interface Props extends RetroMeetingPhaseProps, WithMutationProps, WithAtmosphereProps {
   team: RetroGroupPhase_team
 }
 
@@ -45,10 +50,6 @@ const CenteredControlBlock = styled('div')({
   display: 'flex'
 })
 
-interface State {
-  isReadyToVote: boolean
-}
-
 const GroupHelpMenu = lazyPreload(async () =>
   import(/* webpackChunkName: 'GroupHelpMenu' */ 'universal/components/MeetingHelp/GroupHelpMenu')
 )
@@ -56,67 +57,50 @@ const DemoGroupHelpMenu = lazyPreload(async () =>
   import(/* webpackChunkName: 'DemoGroupHelpMenu' */ 'universal/components/MeetingHelp/DemoGroupHelpMenu')
 )
 
-class RetroGroupPhase extends Component<Props, State> {
-  state = {
-    isReadyToVote: false
+const RetroGroupPhase = (props: Props) => {
+  const [isReadyToVote, resetActivityTimeout] = useTimeoutWithReset(ms('1m'), ms('30s'))
+  const {
+    avatarGroup,
+    toggleSidebar,
+    atmosphere,
+    error,
+    handleGotoNext,
+    onError,
+    onCompleted,
+    submitting,
+    submitMutation,
+    team,
+    isDemoStageComplete
+  } = props
+  const {viewerId} = atmosphere
+  const {isMeetingSidebarCollapsed, newMeeting} = team
+  if (!newMeeting) return null
+  const {nextAutoGroupThreshold, facilitatorUserId, meetingId, localStage} = newMeeting
+  const isComplete = localStage ? localStage.isComplete : false
+  const isFacilitating = facilitatorUserId === viewerId
+  const nextPhaseLabel = phaseLabelLookup[VOTE]
+  const {gotoNext, ref: gotoNextRef} = handleGotoNext
+  const autoGroup = () => {
+    if (submitting) return
+    submitMutation()
+    const groupingThreshold = nextAutoGroupThreshold || 0.5
+    AutoGroupReflectionsMutation(atmosphere, {meetingId, groupingThreshold}, onError, onCompleted)
   }
-  activityTimeoutId = window.setTimeout(() => {
-    this.setState({
-      isReadyToVote: true
-    })
-  }, ms('1m'))
-
-  componentWillUnmount (): void {
-    window.clearTimeout(this.activityTimeoutId)
-  }
-
-  resetActivityTimeout = () => {
-    window.clearTimeout(this.activityTimeoutId)
-    if (this.state.isReadyToVote) {
-      this.setState({
-        isReadyToVote: false
-      })
-    }
-    this.activityTimeoutId = window.setTimeout(() => {
-      this.setState({
-        isReadyToVote: true
-      })
-    }, ms('30s'))
-  }
-
-  render () {
-    const {
-      atmosphere,
-      error,
-      gotoNext,
-      gotoNextRef,
-      onError,
-      onCompleted,
-      submitting,
-      submitMutation,
-      team,
-      isDemoStageComplete
-    } = this.props
-    const {isReadyToVote} = this.state
-    const {viewerId} = atmosphere
-    const {newMeeting} = team
-    if (!newMeeting) return null
-    const {nextAutoGroupThreshold, facilitatorUserId, meetingId, localStage} = newMeeting
-    const isComplete = localStage ? localStage.isComplete : false
-    const isFacilitating = facilitatorUserId === viewerId
-    const nextPhaseLabel = phaseLabelLookup[VOTE]
-    const autoGroup = () => {
-      if (submitting) return
-      submitMutation()
-      const groupingThreshold = nextAutoGroupThreshold || 0.5
-      AutoGroupReflectionsMutation(atmosphere, {meetingId, groupingThreshold}, onError, onCompleted)
-    }
-    const canAutoGroup = !isDemoRoute() && (!nextAutoGroupThreshold || nextAutoGroupThreshold < 1)
-    return (
-      <React.Fragment>
+  const canAutoGroup = !isDemoRoute() && (!nextAutoGroupThreshold || nextAutoGroupThreshold < 1)
+  return (
+    <MeetingContent>
+      <MeetingContentHeader
+        avatarGroup={avatarGroup}
+        isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
+        toggleSidebar={toggleSidebar}
+      >
+        <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.group]}</PhaseHeaderTitle>
+        <PhaseHeaderDescription>{'Drag cards to group by common topics'}</PhaseHeaderDescription>
+      </MeetingContentHeader>
+      <ErrorBoundary>
         {error && <StyledError>{error}</StyledError>}
         <MeetingPhaseWrapper>
-          <PhaseItemMasonry meeting={newMeeting} resetActivityTimeout={this.resetActivityTimeout} />
+          <PhaseItemMasonry meeting={newMeeting} resetActivityTimeout={resetActivityTimeout} />
         </MeetingPhaseWrapper>
         {isFacilitating && (
           <StyledBottomBar>
@@ -125,8 +109,8 @@ class RetroGroupPhase extends Component<Props, State> {
             <CenteredControlBlock>
               <BottomNavControl
                 isBouncing={isDemoStageComplete || (!isComplete && isReadyToVote)}
-                onClick={gotoNext}
-                onKeyDown={handleRightArrow(gotoNext)}
+                onClick={() => gotoNext()}
+                onKeyDown={handleRightArrow(() => gotoNext())}
                 innerRef={gotoNextRef}
               >
                 <BottomNavIconLabel
@@ -152,15 +136,16 @@ class RetroGroupPhase extends Component<Props, State> {
           floatAboveBottomBar={isFacilitating}
           menu={isDemoRoute() ? <DemoGroupHelpMenu /> : <GroupHelpMenu />}
         />
-      </React.Fragment>
-    )
-  }
+      </ErrorBoundary>
+    </MeetingContent>
+  )
 }
 
 export default createFragmentContainer(
   withMutationProps(withAtmosphere(RetroGroupPhase)),
   graphql`
     fragment RetroGroupPhase_team on Team {
+      isMeetingSidebarCollapsed
       newMeeting {
         meetingId: id
         facilitatorUserId

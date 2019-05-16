@@ -6,7 +6,8 @@
  * where it left off, making it look seamless.
  */
 
-import {MutableRefObject, useReducer, useRef} from 'react'
+import {MutableRefObject, useRef} from 'react'
+import useForceUpdate from 'universal/hooks/useForceUpdate'
 
 export type LoadingDelayRef = MutableRefObject<{
   start: number
@@ -15,7 +16,7 @@ export type LoadingDelayRef = MutableRefObject<{
 }>
 
 const useLoadingDelay = () => {
-  const forceUpdate = useReducer((x) => x + 1, 0)[1] as () => void
+  const forceUpdate = useForceUpdate()
   const loadingDelayRef = useRef({start: 0, stop: 0, forceUpdate})
   const {
     current: {start, stop}

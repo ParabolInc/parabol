@@ -19,9 +19,21 @@ graphql`
     }
     team {
       name
-      # alternatively, we could just send down the single stage
       newMeeting {
-        ...CompleteNewMeetingFrag @relay(mask: false)
+        phases {
+          phaseType
+          meetingId
+          stages {
+            isComplete
+            isNavigable
+            isNavigableByFacilitator
+            ...NewMeetingCheckInLocalStage @relay(mask: false)
+            ...ActionMeetingUpdatesStage @relay(mask: false)
+            ... on NewMeetingTeamMemberStage {
+              teamMemberId
+            }
+          }
+        }
       }
     }
   }

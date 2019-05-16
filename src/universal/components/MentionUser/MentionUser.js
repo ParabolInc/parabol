@@ -10,7 +10,7 @@ const MentionUser = (props) => {
   const itemStyle = css(styles.row, active && styles.active)
   return (
     <div className={itemStyle}>
-      <Avatar picture={picture} size='smallest' />
+      <Avatar picture={picture} size={24} />
       <div className={css(styles.description)}>{preferredName}</div>
     </div>
   )

@@ -133,8 +133,8 @@ export const navigateMeetingTeamUpdater = (
 ) => {
   const meetingId = safeProxy(payload)
     .getLinkedRecord('meeting')
-    .getValue('id')
-  const meeting = store.get<ClientRetrospectiveMeeting>(meetingId!)
+    .getValue('id')!
+  const meeting = store.get<ClientRetrospectiveMeeting>(meetingId)
   if (!meeting) return
 
   const viewerStageId = safeProxy(meeting)
@@ -173,8 +173,8 @@ export const navigateMeetingTeamUpdater = (
 const NavigateMeetingMutation = (
   atmosphere: Atmosphere,
   variables: NavigateMeetingMutationVariables,
-  onError,
-  onCompleted
+  onError?,
+  onCompleted?
 ) => {
   return commitMutation<NavigateMeetingMutation>(atmosphere, {
     mutation,

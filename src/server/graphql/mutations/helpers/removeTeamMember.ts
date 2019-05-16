@@ -1,10 +1,12 @@
 import getRethink from 'server/database/rethinkDriver'
 import {DataLoaderWorker} from 'server/graphql/graphql'
-import removeTeamMemberFromNewMeeting from 'server/graphql/mutations/helpers/removeTeamMemberFromNewMeeting'
 import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB'
 import shortid from 'shortid'
 import {KICKED_OUT} from 'universal/utils/constants'
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
+import removeStagesFromNewMeeting from 'server/graphql/mutations/helpers/removeStagesFromNewMeeting'
+import CheckInStage from 'server/database/types/CheckInStage'
+import UpdatesStage from 'server/database/types/UpdatesStage'
 
 interface Options {
   isKickout: boolean
@@ -72,7 +74,8 @@ const removeTeamMember = async (
             .default(null)
             .ne(null)
         )
-      }),
+      })
+      .coerceTo('array'),
     reassignedTasks: r
       .table('Task')
       .getAll(teamMemberId, {index: 'assigneeId'})
@@ -141,7 +144,10 @@ const removeTeamMember = async (
   const archivedTaskIds = archivedTasks.map(({id}) => id)
 
   // if a new meeting was currently running, remove them from it
-  await removeTeamMemberFromNewMeeting(teamMemberId, teamId, dataLoader)
+  const filterFn = (stage: CheckInStage | UpdatesStage) => {
+    return stage.teamMemberId === teamMemberId
+  }
+  await removeStagesFromNewMeeting(filterFn, teamId, dataLoader)
 
   return {
     user,

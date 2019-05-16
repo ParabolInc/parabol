@@ -5,9 +5,6 @@ import requireAuth from 'universal/decorators/requireAuth/requireAuth'
 const Invoice = lazy(() =>
   import(/* webpackChunkName: 'InvoiceRoot' */ 'universal/modules/invoice/containers/InvoiceRoot')
 )
-const MeetingSummary = lazy(() =>
-  import(/* webpackChunkName: 'MeetingSummary' */ 'universal/modules/summary/components/MeetingSummaryRoot')
-)
 const NewMeetingSummary = lazy(() =>
   import(/* webpackChunkName: 'NewMeetingSummaryRoot' */ 'universal/modules/summary/components/NewMeetingSummaryRoot')
 )
@@ -26,8 +23,8 @@ const NotFound = lazy(() =>
 const DashboardRoot = lazy(() =>
   import(/* webpackChunkName: 'DashboardRoot' */ 'universal/components/DashboardRoot')
 )
-const MeetingRoot = lazy(() =>
-  import(/* webpackChunkName: 'MeetingRoot' */ 'universal/modules/meeting/components/MeetingRoot')
+const ActionMeetingRoot = lazy(() =>
+  import(/* webpackChunkName: 'ActionMeetingRoot' */ 'universal/components/ActionMeetingRoot')
 )
 const RetroRoot = lazy(() =>
   import(/* webpackChunkName: 'RetroRoot' */ 'universal/components/RetroRoot/RetroRoot')
@@ -40,10 +37,12 @@ const PrivateRoutes = () => {
   return (
     <Switch>
       <Route path='(/me|/newteam|/team)' component={DashboardRoot} />
-      <Route path='/meeting/:teamId/:localPhase?/:localPhaseItem?' component={MeetingRoot} />
+      <Route
+        path='/meeting/:teamId/:localPhaseSlug?/:stageIdxSlug?'
+        component={ActionMeetingRoot}
+      />
       <Route path='/retro/:teamId/:localPhaseSlug?/:stageIdxSlug?' component={RetroRoot} />
       <Route path='/invoice/:invoiceId' component={Invoice} />
-      <Route path='/summary/:meetingId' component={MeetingSummary} />
       <Route path='/new-summary/:meetingId/:urlAction?' component={NewMeetingSummary} />
       <Route path='/admin/graphql' component={Graphql} />
       <Route path='/admin/impersonate/:newUserId' component={Impersonate} />

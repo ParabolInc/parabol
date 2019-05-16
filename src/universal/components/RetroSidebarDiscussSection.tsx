@@ -9,6 +9,7 @@ import MeetingSubnavItem from 'universal/components/MeetingSubnavItem'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {useGotoStageId} from 'universal/hooks/useMeeting'
 import DragDiscussionTopicMutation from 'universal/mutations/DragDiscussionTopicMutation'
 import {navItemRaised} from 'universal/styles/elevation'
 import {meetingVoteIcon} from 'universal/styles/meeting'
@@ -26,7 +27,7 @@ import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 interface Props extends WithAtmosphereProps {
-  gotoStageId: (stageId: string) => void
+  gotoStageId: ReturnType<typeof useGotoStageId>
   viewer: RetroSidebarDiscussSection_viewer
 }
 
@@ -68,10 +69,10 @@ const RetroSidebarDiscussSection = (props: Props) => {
   } = props
   const {newMeeting} = team!
   if (!newMeeting) return null
-  const {localPhase, localStage, facilitatorStageId, meetingId} = newMeeting
+  const {localPhase, localStage, facilitatorStageId, id: meetingId} = newMeeting
   if (!localPhase || !localPhase.stages || !localStage) return null
   const {stages} = localPhase
-  const {localStageId} = localStage
+  const {id: localStageId} = localStage
   const inSync = localStageId === facilitatorStageId
 
   const onDragEnd = (result) => {
@@ -110,7 +111,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
       atmosphere,
       viewer: {team}
     } = props
-    const {teamId, isMeetingSidebarCollapsed} = team!
+    const {id: teamId, isMeetingSidebarCollapsed} = team!
     commitLocalUpdate(atmosphere, (store) => {
       const team = store.get(teamId)
       if (!team) return
@@ -119,7 +120,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
   }
 
   const handleClick = (id) => {
-    gotoStageId(id)
+    gotoStageId(id).catch()
     if (sidebarCanAutoCollapse()) toggleSidebar()
   }
   return (
@@ -135,17 +136,11 @@ const RetroSidebarDiscussSection = (props: Props) => {
             return (
               <div ref={provided.innerRef}>
                 {stages.map((stage, idx) => {
-                  const {reflectionGroup, sortOrder} = stage
+                  const {reflectionGroup} = stage
                   if (!reflectionGroup) return null
                   const {title, voteCount} = reflectionGroup
                   // the local user is at another stage than the facilitator stage
                   const isUnsyncedFacilitatorStage = !inSync && stage.id === facilitatorStageId
-                  const navState = {
-                    isActive: localStage.localStageId === stage.id, // the local user is at this stage
-                    isComplete: stage.isComplete, // this stage is complete
-                    isDisabled: !stage.isNavigable,
-                    isUnsyncedFacilitatorStage
-                  }
                   const voteMeta = (
                     <VoteTally isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}>
                       <VoteIcon>{meetingVoteIcon}</VoteIcon>
@@ -165,12 +160,14 @@ const RetroSidebarDiscussSection = (props: Props) => {
                             <MeetingSubnavItem
                               key={stage.id}
                               isDragging={dragSnapshot.isDragging}
-                              label={title}
+                              label={title!}
                               metaContent={voteMeta}
                               onClick={() => handleClick(stage.id)}
                               orderLabel={`${idx + 1}.`}
-                              sortOrder={sortOrder}
-                              {...navState}
+                              isActive={localStage.id === stage.id}
+                              isComplete={stage.isComplete}
+                              isDisabled={!stage.isNavigable}
+                              isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
                             />
                           </DraggableMeetingSubnavItem>
                         )
@@ -187,49 +184,41 @@ const RetroSidebarDiscussSection = (props: Props) => {
   )
 }
 
+graphql`
+  fragment RetroSidebarDiscussSectionDiscussPhase on DiscussPhase {
+    stages {
+      id
+      isComplete
+      isNavigable
+      reflectionGroup {
+        title
+        voteCount
+      }
+      sortOrder
+    }
+  }
+`
+
 export default createFragmentContainer(
   withAtmosphere(RetroSidebarDiscussSection),
   graphql`
     fragment RetroSidebarDiscussSection_viewer on User {
       team(teamId: $teamId) {
         isMeetingSidebarCollapsed
-        teamId: id
+        id
         newMeeting {
-          meetingId: id
+          id
           localStage {
-            localStageId: id
+            id
           }
-
           ... on RetrospectiveMeeting {
             facilitatorStageId
             # load up the localPhase
             phases {
-              ... on DiscussPhase {
-                stages {
-                  id
-                  isComplete
-                  isNavigable
-                  reflectionGroup {
-                    title
-                    voteCount
-                  }
-                  sortOrder
-                }
-              }
+              ...RetroSidebarDiscussSectionDiscussPhase @relay(mask: false)
             }
             localPhase {
-              ... on DiscussPhase {
-                stages {
-                  id
-                  isComplete
-                  isNavigable
-                  reflectionGroup {
-                    title
-                    voteCount
-                  }
-                  sortOrder
-                }
-              }
+              ...RetroSidebarDiscussSectionDiscussPhase @relay(mask: false)
             }
           }
         }

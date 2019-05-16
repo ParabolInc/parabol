@@ -5,7 +5,6 @@ const subscription = graphql`
   subscription TeamMemberSubscription {
     teamMemberSubscription {
       __typename
-      ...MeetingCheckInMutation_teamMember @relay(mask: false)
       ...RemoveOrgUserMutation_teamMember @relay(mask: false)
       ...RemoveTeamMemberMutation_teamMember @relay(mask: false)
       ...UpdateUserProfileMutation_teamMember @relay(mask: false)
@@ -22,8 +21,6 @@ const TeamMemberSubscription = (atmosphere) => {
       if (!payload) return
       const type = payload.getValue('__typename')
       switch (type) {
-        case 'MeetingCheckInPayload':
-          break
         case 'RemoveOrgUserPayload':
           removeOrgUserTeamMemberUpdater(payload, store, viewerId)
           break

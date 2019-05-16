@@ -18,19 +18,13 @@ import BlockedUserType from 'server/graphql/types/BlockedUserType'
 import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType'
-import Meeting from 'server/graphql/types/Meeting'
 import Team from 'server/graphql/types/Team'
 import TeamMember from 'server/graphql/types/TeamMember'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import organization from 'server/graphql/queries/organization'
 import tasks from 'server/graphql/queries/tasks'
 import archivedTasks from 'server/graphql/queries/archivedTasks'
-import {
-  getUserId,
-  isPastOrPresentTeamMember,
-  isSuperUser,
-  isTeamMember
-} from 'server/utils/authorization'
+import {getUserId, isSuperUser, isTeamMember} from 'server/utils/authorization'
 import MeetingMember from 'server/graphql/types/MeetingMember'
 import UserFeatureFlags from 'server/graphql/types/UserFeatureFlags'
 import Organization from 'server/graphql/types/Organization'
@@ -211,6 +205,14 @@ const User = new GraphQLObjectType({
       type: GraphQLString,
       description: 'Nickname associated with the user'
     },
+    rasterPicture: {
+      type: GraphQLURLType,
+      description:
+        'url of user’s raster profile picture (if user profile pic is an SVG, raster will be a PNG)',
+      resolve: ({picture}) => {
+        return picture && picture.endsWith('.svg') ? picture.slice(0, -3) + 'png' : picture
+      }
+    },
     picture: {
       type: GraphQLURLType,
       description: 'url of user’s profile picture'
@@ -251,31 +253,6 @@ const User = new GraphQLObjectType({
     integrationProvider,
     invoices,
     invoiceDetails,
-    meeting: {
-      type: Meeting,
-      description: 'A previous meeting that the user was in (present or absent)',
-      args: {
-        meetingId: {
-          type: new GraphQLNonNull(GraphQLID),
-          description: 'The meeting ID'
-        }
-      },
-      async resolve (source, {meetingId}, {authToken, dataLoader}) {
-        const meeting = await dataLoader.get('meetings').load(meetingId)
-        const viewerId = getUserId(authToken)
-        if (!meeting) {
-          return standardError(new Error('Meeting not found'), {userId: viewerId})
-        }
-        const {teamId} = meeting
-        if (!isTeamMember(authToken, teamId)) {
-          if (!(await isPastOrPresentTeamMember(viewerId, teamId))) {
-            standardError(new Error('Team not found'), {userId: viewerId})
-            return null
-          }
-        }
-        return meeting
-      }
-    },
     meetingMember: {
       type: MeetingMember,
       description:

@@ -1,10 +1,10 @@
-import FastRTCSwarm from '@mattkrick/fast-rtc-swarm'
+import MediaSwarm from 'universal/utils/swarm/MediaSwarm'
 import {StreamDict, StreamUI} from '../../hooks/useSwarm'
 import {StreamName} from './joinSwarm'
 
 interface AddSwarm {
   type: 'addSwarm'
-  swarm: FastRTCSwarm
+  swarm: MediaSwarm
 }
 
 interface SetStream {
@@ -23,7 +23,7 @@ export type SwarmAction = SetStream | AddSwarm | RemoveStream
 
 export interface SwarmState {
   streams: StreamDict
-  swarm: FastRTCSwarm | null
+  swarm: MediaSwarm | null
 }
 
 const reducerSwarm = (state: SwarmState, action: SwarmAction) => {

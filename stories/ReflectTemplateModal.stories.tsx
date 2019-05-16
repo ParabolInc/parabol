@@ -46,11 +46,6 @@ storiesOf('ReflectTemplateModal', module)
   .addDecorator(withKnobs)
   .add('base', () => (
     <StoryProvider>
-      <ReflectTemplateModal
-        retroMeetingSettings={retroMeetingSettings as any}
-        onSuccess={() => {
-          /*noop*/
-        }}
-      />
+      <ReflectTemplateModal retroMeetingSettings={retroMeetingSettings as any} />
     </StoryProvider>
   ))

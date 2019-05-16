@@ -111,7 +111,7 @@ const StandardHub = (props) => {
   return (
     <StandardHubRoot>
       <User>
-        <Avatar hasBadge={false} picture={userAvatar} size='smaller' />
+        <Avatar hasBadge={false} picture={userAvatar} size={32} />
         <PreferredName>
           <span>{preferredName}</span>
         </PreferredName>

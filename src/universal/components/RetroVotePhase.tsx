@@ -4,10 +4,16 @@ import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import BottomNavControl from 'universal/components/BottomNavControl'
 import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
+import ErrorBoundary from 'universal/components/ErrorBoundary'
 import Icon from 'universal/components/Icon'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
+import MeetingContent from 'universal/components/MeetingContent'
+import MeetingContentHeader from 'universal/components/MeetingContentHeader'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
 import MeetingHelpToggle from 'universal/components/MenuHelpToggle'
+import PhaseHeaderDescription from 'universal/components/PhaseHeaderDescription'
+import PhaseHeaderTitle from 'universal/components/PhaseHeaderTitle'
+import {RetroMeetingPhaseProps} from 'universal/components/RetroMeeting'
 import ScrollableBlock from 'universal/components/ScrollableBlock'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -19,7 +25,7 @@ import {meetingVoteIcon} from 'universal/styles/meeting'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {fontFamily, typeScale} from 'universal/styles/theme/typography'
 import ui from 'universal/styles/ui'
-import {IDiscussPhase} from 'universal/types/graphql'
+import {IDiscussPhase, NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
 import {DISCUSS} from 'universal/utils/constants'
 import lazyPreload from 'universal/utils/lazyPreload'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
@@ -27,11 +33,10 @@ import handleRightArrow from '../utils/handleRightArrow'
 import isDemoRoute from '../utils/isDemoRoute'
 import EndMeetingButton from './EndMeetingButton'
 import PhaseItemMasonry from './PhaseItemMasonry'
+import {RetroVotePhase_meetingSettings} from '__generated__/RetroVotePhase_meetingSettings.graphql'
 
-interface Props extends WithAtmosphereProps {
-  gotoNext: () => void
-  gotoNextRef: React.RefObject<HTMLDivElement>
-  isDemoStageComplete: boolean
+interface Props extends WithAtmosphereProps, RetroMeetingPhaseProps {
+  meetingSettings: RetroVotePhase_meetingSettings
   team: RetroVotePhase_team
 }
 
@@ -132,17 +137,17 @@ const DemoVoteHelpMenu = lazyPreload(async () =>
 
 const RetroVotePhase = (props: Props) => {
   const {
+    avatarGroup,
+    toggleSidebar,
+    meetingSettings: {totalVotes = 0},
     atmosphere: {viewerId},
-    gotoNext,
-    gotoNextRef,
+    handleGotoNext,
     team,
     isDemoStageComplete
   } = props
-  const {
-    meetingSettings: {totalVotes = 0},
-    newMeeting
-  } = team
+  const {isMeetingSidebarCollapsed, newMeeting} = team
   if (!newMeeting) return null
+  const {gotoNext, ref: gotoNextRef} = handleGotoNext
   const {facilitatorUserId, meetingId, phases, viewerMeetingMember} = newMeeting
   const teamVotesRemaining = newMeeting.teamVotesRemaining || 0
   const myVotesRemaining = viewerMeetingMember.myVotesRemaining || 0
@@ -152,65 +157,74 @@ const RetroVotePhase = (props: Props) => {
   const nextPhaseLabel = phaseLabelLookup[DISCUSS]
   const checkMarks = [...Array(totalVotes).keys()]
   return (
-    <React.Fragment>
-      <VoteMeta>
-        <StyledMetaBlock>
-          <Label>{'My Votes Remaining'}</Label>
-          <MyVotesCountLabel>{myVotesRemaining}</MyVotesCountLabel>
-          <CheckMarkRow>
-            {checkMarks.map((idx) => (
-              <CheckIcon key={idx} isDark={idx < myVotesRemaining}>
-                {meetingVoteIcon}
-              </CheckIcon>
-            ))}
-          </CheckMarkRow>
-        </StyledMetaBlock>
-        <MetaBlock>
-          <Label>{'Team Votes Remaining'}</Label>
-          <TeamVotesCountLabel>{teamVotesRemaining}</TeamVotesCountLabel>
-        </MetaBlock>
-      </VoteMeta>
-      <ScrollableBlock>
-        <MeetingPhaseWrapper>
-          <PhaseItemMasonry meeting={newMeeting} />
-        </MeetingPhaseWrapper>
-      </ScrollableBlock>
-      {isFacilitating && (
-        <StyledBottomBar>
-          <BottomControlSpacer />
-          <BottomNavControl
-            isBouncing={isDemoStageComplete || teamVotesRemaining === 0}
-            disabled={!discussStage.isNavigableByFacilitator}
-            onClick={gotoNext}
-            onKeyDown={handleRightArrow(gotoNext)}
-            innerRef={gotoNextRef}
-          >
-            <BottomNavIconLabel
-              icon='arrow_forward'
-              iconColor='warm'
-              label={`Next: ${nextPhaseLabel}`}
-            />
-          </BottomNavControl>
-          <EndMeetingButton meetingId={meetingId} />
-        </StyledBottomBar>
-      )}
-      <MeetingHelpToggle
-        floatAboveBottomBar={isFacilitating}
-        menu={isDemoRoute() ? <DemoVoteHelpMenu /> : <VoteHelpMenu />}
-      />
-    </React.Fragment>
+    <MeetingContent>
+      <MeetingContentHeader
+        avatarGroup={avatarGroup}
+        isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
+        toggleSidebar={toggleSidebar}
+      >
+        <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.vote]}</PhaseHeaderTitle>
+        <PhaseHeaderDescription>{'Vote on the topics you want to discuss'}</PhaseHeaderDescription>
+      </MeetingContentHeader>
+      <ErrorBoundary>
+        <VoteMeta>
+          <StyledMetaBlock>
+            <Label>{'My Votes Remaining'}</Label>
+            <MyVotesCountLabel>{myVotesRemaining}</MyVotesCountLabel>
+            <CheckMarkRow>
+              {checkMarks.map((idx) => (
+                <CheckIcon key={idx} isDark={idx < myVotesRemaining}>
+                  {meetingVoteIcon}
+                </CheckIcon>
+              ))}
+            </CheckMarkRow>
+          </StyledMetaBlock>
+          <MetaBlock>
+            <Label>{'Team Votes Remaining'}</Label>
+            <TeamVotesCountLabel>{teamVotesRemaining}</TeamVotesCountLabel>
+          </MetaBlock>
+        </VoteMeta>
+        <ScrollableBlock>
+          <MeetingPhaseWrapper>
+            <PhaseItemMasonry meeting={newMeeting} />
+          </MeetingPhaseWrapper>
+        </ScrollableBlock>
+        {isFacilitating && (
+          <StyledBottomBar>
+            <BottomControlSpacer />
+            <BottomNavControl
+              isBouncing={isDemoStageComplete || teamVotesRemaining === 0}
+              disabled={!discussStage.isNavigableByFacilitator}
+              onClick={() => gotoNext()}
+              onKeyDown={handleRightArrow(() => gotoNext())}
+              innerRef={gotoNextRef}
+            >
+              <BottomNavIconLabel
+                icon='arrow_forward'
+                iconColor='warm'
+                label={`Next: ${nextPhaseLabel}`}
+              />
+            </BottomNavControl>
+            <EndMeetingButton meetingId={meetingId} />
+          </StyledBottomBar>
+        )}
+        <MeetingHelpToggle
+          floatAboveBottomBar={isFacilitating}
+          menu={isDemoRoute() ? <DemoVoteHelpMenu /> : <VoteHelpMenu />}
+        />
+      </ErrorBoundary>
+    </MeetingContent>
   )
 }
 
 export default createFragmentContainer(
   withAtmosphere(RetroVotePhase),
   graphql`
+    fragment RetroVotePhase_meetingSettings on RetrospectiveMeetingSettings {
+      totalVotes
+    }
     fragment RetroVotePhase_team on Team {
-      meetingSettings(meetingType: $meetingType) {
-        ... on RetrospectiveMeetingSettings {
-          totalVotes
-        }
-      }
+      isMeetingSidebarCollapsed
       newMeeting {
         meetingId: id
         facilitatorUserId

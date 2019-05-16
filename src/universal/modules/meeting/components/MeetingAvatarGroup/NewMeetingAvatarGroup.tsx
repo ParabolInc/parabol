@@ -6,6 +6,7 @@ import AddTeamMemberAvatarButton from 'universal/components/AddTeamMemberAvatarB
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {useGotoStageId} from 'universal/hooks/useMeeting'
 import NewMeetingAvatar from 'universal/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatar'
 import findStageById from 'universal/utils/meetings/findStageById'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
@@ -25,7 +26,7 @@ const MeetingAvatarGroupRoot = styled('div')({
 })
 
 interface Props extends WithAtmosphereProps {
-  gotoStageId: (stageId: string) => void
+  gotoStageId: ReturnType<typeof useGotoStageId>
   team: NewMeetingAvatarGroup_team
   camStreams: StreamUserDict
   swarm: MediaSwarm | null
@@ -44,7 +45,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
     const teamMemberStage =
       localPhase && localPhase.stages.find((stage) => stage.teamMemberId === teamMemberId)
     const teamMemberStageId = (teamMemberStage && teamMemberStage.id) || ''
-    gotoStageId(teamMemberStageId)
+    gotoStageId(teamMemberStageId).catch()
   }
 
   return (
@@ -72,6 +73,19 @@ const NewMeetingAvatarGroup = (props: Props) => {
   )
 }
 
+graphql`
+  fragment NewMeetingAvatarGroupPhases on NewMeetingPhase {
+    id
+    phaseType
+    stages {
+      id
+      ... on NewMeetingTeamMemberStage {
+        teamMemberId
+      }
+    }
+  }
+`
+
 export default createFragmentContainer(
   withAtmosphere(NewMeetingAvatarGroup),
   graphql`
@@ -87,23 +101,10 @@ export default createFragmentContainer(
       newMeeting {
         facilitatorStageId
         localPhase {
-          id
-          stages {
-            id
-            ... on NewMeetingTeamMemberStage {
-              teamMemberId
-            }
-          }
+          ...NewMeetingAvatarGroupPhases @relay(mask: false)
         }
         phases {
-          phaseType
-          stages {
-            id
-            # here to ensure it exists on localPhase
-            ... on NewMeetingTeamMemberStage {
-              teamMemberId
-            }
-          }
+          ...NewMeetingAvatarGroupPhases @relay(mask: false)
         }
         ...NewMeetingAvatar_newMeeting
       }

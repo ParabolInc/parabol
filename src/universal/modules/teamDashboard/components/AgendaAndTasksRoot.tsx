@@ -3,7 +3,6 @@ import {graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
 import AgendaAndTasks from 'universal/modules/teamDashboard/components/AgendaAndTasks/AgendaAndTasks'
-import AgendaItemSubscription from 'universal/subscriptions/AgendaItemSubscription'
 import {LoaderSize} from 'universal/types/constEnums'
 import {cacheConfig} from 'universal/utils/constants'
 import renderQuery from 'universal/utils/relay/renderQuery'
@@ -16,8 +15,6 @@ const query = graphql`
     }
   }
 `
-
-const subscriptions = [AgendaItemSubscription]
 
 interface Props extends RouteComponentProps<{teamId: string}> {}
 
@@ -34,7 +31,6 @@ const AgendaAndTasksRoot = (props: Props) => {
       environment={atmosphere}
       query={query}
       variables={{teamId}}
-      subscriptions={subscriptions}
       render={renderQuery(AgendaAndTasks, {size: LoaderSize.PANEL})}
     />
   )

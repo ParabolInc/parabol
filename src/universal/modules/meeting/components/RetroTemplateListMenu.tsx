@@ -9,6 +9,7 @@ import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {MenuProps} from 'universal/hooks/useMenu'
+import useModal from 'universal/hooks/useModal'
 import SelectRetroTemplateMutation from 'universal/mutations/SelectRetroTemplateMutation'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 
@@ -17,7 +18,7 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
   defaultActiveIdx: number
   retroMeetingSettings: RetroTemplateListMenu_retroMeetingSettings
   templates: RetroTemplatePicker_settings['reflectTemplates']
-  toggleModal: () => void
+  toggleModal: ReturnType<typeof useModal>['togglePortal']
 }
 
 const RetroTemplateListMenu = (props: Props) => {

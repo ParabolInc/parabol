@@ -15,12 +15,18 @@ const sectionHeading = {
   textAlign: 'center'
 }
 
+const topBorderStyle = {
+  fontFamily: ui.emailFontFamily,
+  textAlign: 'center',
+  borderTop: `${ui.emailRuleHeight} solid ${ui.emailRuleColor}`
+}
+
 const RetroDiscussionTopics = (props) => {
   const {imageSource, topics} = props
 
   return (
     <table style={ui.emailTableBase} width='100%'>
-      <tbody>
+      <tbody style={topBorderStyle}>
         <tr>
           <td style={sectionHeading}>
             <EmptySpace height={16} />

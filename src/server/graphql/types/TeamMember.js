@@ -46,7 +46,7 @@ const TeamMember = new GraphQLObjectType({
     },
     /* Ephemeral meeting state */
     checkInOrder: {
-      type: GraphQLInt,
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'The place in line for checkIn, regenerated every meeting'
     },
     isConnected: {

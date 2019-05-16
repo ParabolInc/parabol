@@ -9,17 +9,18 @@ import {
   NewMeetingPhaseTypeEnum,
   SegmentClientEventEnum
 } from 'universal/types/graphql'
-import {ACTION, CHECKIN, RETROSPECTIVE} from 'universal/utils/constants'
+import {CHECKIN} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 
 const linkLookup = {
-  [ACTION]: 'https://www.parabol.co/getting-started-guide/action-meetings-101#social-check-in',
-  [RETROSPECTIVE]:
+  [MeetingTypeEnum.action]:
+    'https://www.parabol.co/getting-started-guide/action-meetings-101#social-check-in',
+  [MeetingTypeEnum.retrospective]:
     'https://www.parabol.co/getting-started-guide/retrospective-meetings-101#social-check-in'
 }
 
 interface Props {
-  meetingType: MeetingTypeEnum
+  meetingType: string
 }
 
 const CheckInHelpMenu = (props: Props) => {

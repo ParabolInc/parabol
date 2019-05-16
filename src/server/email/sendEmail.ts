@@ -79,16 +79,14 @@ export function sendBatchEmail (recipients, template, props, recipientVariables)
 const mailgunFrom = process.env.MAILGUN_FROM || ''
 const mailgunKey = process.env.MAILGUN_API_KEY
 
-export default async function sendEmailPromise (to: unknown, template: string, props: any) {
-  if (!to || typeof to !== 'string') {
-    throw new Error('Expected `to` to be a string of comma-separated emails')
-  }
-  const emailFactory = templates[template]
-  if (!emailFactory) {
-    throw new Error(`Email template for ${template} does not exist!`)
-  }
+interface EmailContent {
+  subject: string
+  body: string
+  html: string
+}
 
-  const {subject, body, html} = emailFactory(props)
+const sendMailgunEmail = async (to: string, emailContent: EmailContent) => {
+  const {subject, body, html} = emailContent
   if (!mailgunKey) {
     console.log('No mailgun key. Logging email: ', to, '\n', subject, '\n', body)
     return true
@@ -105,4 +103,28 @@ export default async function sendEmailPromise (to: unknown, template: string, p
     return false
   }
   return true
+}
+
+export const sendEmailContent = (
+  maybeEmailAddresses: string | string[],
+  emailContent: EmailContent
+) => {
+  const emailAddresses = Array.isArray(maybeEmailAddresses)
+    ? maybeEmailAddresses
+    : [maybeEmailAddresses]
+  const to = emailAddresses.join(', ')
+  return sendMailgunEmail(to, emailContent)
+}
+
+export default async function sendEmailPromise (to: unknown, template: string, props: any) {
+  if (!to || typeof to !== 'string') {
+    throw new Error('Expected `to` to be a string of comma-separated emails')
+  }
+  const emailFactory = templates[template]
+  if (!emailFactory) {
+    throw new Error(`Email template for ${template} does not exist!`)
+  }
+
+  const emailContent = emailFactory(props)
+  return sendMailgunEmail(to, emailContent)
 }

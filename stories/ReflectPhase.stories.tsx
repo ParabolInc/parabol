@@ -70,6 +70,7 @@ storiesOf('Reflect Phase', module)
   .add('column', () => (
     <StoryProvider>
       <PhaseItemColumn
+        description={'foo'}
         idx={0}
         editorIds={[]}
         retroPhaseItemId='123'

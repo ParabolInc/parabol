@@ -15,6 +15,7 @@ import TaskStatusEnum from 'server/graphql/types/TaskStatusEnum'
 import Team from 'server/graphql/types/Team'
 import Assignee from 'server/graphql/types/Assignee'
 import TaskIntegration from 'server/graphql/types/TaskIntegration'
+import AgendaItem from 'server/graphql/types/AgendaItem'
 
 const Task = new GraphQLObjectType({
   name: 'Task',
@@ -27,6 +28,13 @@ const Task = new GraphQLObjectType({
     agendaId: {
       type: GraphQLID,
       description: 'the agenda item that created this task, if any'
+    },
+    agendaItem: {
+      type: AgendaItem,
+      description: 'The agenda item that the task was created in, if any',
+      resolve: ({agendaId}, _args, {dataLoader}) => {
+        return agendaId ? dataLoader.get('agendaItems').load(agendaId) : null
+      }
     },
     content: {
       type: new GraphQLNonNull(GraphQLString),
@@ -63,6 +71,10 @@ const Task = new GraphQLObjectType({
       type: GraphQLID,
       description: 'the foreign key for the meeting the task was created in'
     },
+    doneMeetingId: {
+      type: GraphQLID,
+      description: 'the foreign key for the meeting the task was marked as complete'
+    },
     reflectionGroupId: {
       type: GraphQLID,
       description: 'the foreign key for the retrospective reflection group this was created in'
@@ -71,13 +83,12 @@ const Task = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLFloat),
       description: 'the shared sort order for tasks on the team dash & user dash'
     },
-    // TODO make this nonnull again
     status: {
-      type: TaskStatusEnum,
+      type: new GraphQLNonNull(TaskStatusEnum),
       description: 'The status of the task'
     },
     tags: {
-      type: new GraphQLList(GraphQLString),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
       description: 'The tags associated with the task'
     },
     teamId: {

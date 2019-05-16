@@ -1,5 +1,4 @@
 import {GraphQLObjectType} from 'graphql'
-import agendaItemSubscription from 'server/graphql/subscriptions/agendaItemSubscription'
 import newAuthToken from 'server/graphql/subscriptions/newAuthToken'
 import notificationSubscription from 'server/graphql/subscriptions/notificationSubscription'
 import organizationSubscription from 'server/graphql/subscriptions/organizationSubscription'
@@ -13,7 +12,6 @@ import integrationSubscription from 'server/graphql/subscriptions/integrationSub
 export default new GraphQLObjectType({
   name: 'Subscription',
   fields: () => ({
-    agendaItemSubscription,
     integrationSubscription,
     newAuthToken,
     notificationSubscription,

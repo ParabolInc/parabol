@@ -52,4 +52,4 @@ const collect = (connect) => ({
 })
 
 const DND = DropTarget(TASK, spec, collect) as any
-export default withAtmosphere(DND(TaskColumnDropZone))
+export default withAtmosphere(DND(TaskColumnDropZone)) as any

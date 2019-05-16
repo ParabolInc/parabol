@@ -1,25 +1,31 @@
 import {RetroReflectPhase_team} from '__generated__/RetroReflectPhase_team.graphql'
-import React, {Component} from 'react'
+import ms from 'ms'
+import React, {useRef} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import BottomNavControl from 'universal/components/BottomNavControl'
 import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
+import ErrorBoundary from 'universal/components/ErrorBoundary'
+import MeetingContent from 'universal/components/MeetingContent'
+import MeetingContentHeader from 'universal/components/MeetingContentHeader'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
 import MeetingHelpToggle from 'universal/components/MenuHelpToggle'
+import PhaseHeaderDescription from 'universal/components/PhaseHeaderDescription'
+import PhaseHeaderTitle from 'universal/components/PhaseHeaderTitle'
+import Overflow from 'universal/components/Overflow'
+import {RetroMeetingPhaseProps} from 'universal/components/RetroMeeting'
 import PhaseItemColumn from 'universal/components/RetroReflectPhase/PhaseItemColumn'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import useAtmosphere from 'universal/hooks/useAtmosphere'
+import useTimeout from 'universal/hooks/useTimeout'
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
+import {NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
 import {GROUP} from 'universal/utils/constants'
 import handleRightArrow from 'universal/utils/handleRightArrow'
+import isDemoRoute from 'universal/utils/isDemoRoute'
 import lazyPreload from 'universal/utils/lazyPreload'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import {REFLECTION_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
-import Overflow from 'universal/components/Overflow'
-import isDemoRoute from 'universal/utils/isDemoRoute'
 import EndMeetingButton from '../EndMeetingButton'
-import ms from 'ms'
 
 const minWidth = REFLECTION_WIDTH + 32
 
@@ -42,15 +48,8 @@ const StyledBottomBar = styled(MeetingControlBar)({
   justifyContent: 'space-between'
 })
 
-interface Props extends WithAtmosphereProps {
-  gotoNext: () => void
-  gotoNextRef: React.RefObject<HTMLDivElement>
-  isDemoStageComplete: boolean
+interface Props extends RetroMeetingPhaseProps {
   team: RetroReflectPhase_team
-}
-
-interface State {
-  minTimeComplete: boolean
 }
 
 const ReflectHelpMenu = lazyPreload(async () =>
@@ -60,44 +59,44 @@ const DemoReflectHelpMenu = lazyPreload(async () =>
   import(/* webpackChunkName: 'DemoReflectHelpMenu' */ 'universal/components/MeetingHelp/DemoReflectHelpMenu')
 )
 
-class RetroReflectPhase extends Component<Props, State> {
-  phaseRef = React.createRef<HTMLDivElement>()
-  state = {
-    minTimeComplete: false
-  }
-  activityTimeoutId = window.setTimeout(() => {
-    this.setState({
-      minTimeComplete: true
-    })
-  }, ms('2m'))
-
-  componentWillUnmount (): void {
-    window.clearTimeout(this.activityTimeoutId)
-  }
-
-  render () {
-    const {atmosphere, team, gotoNext, gotoNextRef, isDemoStageComplete} = this.props
-    const {viewerId} = atmosphere
-    const {newMeeting} = team
-    if (!newMeeting) return
-    const {facilitatorUserId, localPhase, id: meetingId, reflectionGroups, localStage} = newMeeting
-    const isComplete = localStage ? localStage.isComplete : false
-    const reflectPrompts = localPhase!.reflectPrompts!
-    const isFacilitating = facilitatorUserId === viewerId
-    const nextPhaseLabel = phaseLabelLookup[GROUP]
-    const isEmpty = !reflectionGroups || reflectionGroups.length === 0
-    const isReadyToGroup =
-      !isComplete &&
-      !isEmpty &&
-      this.state.minTimeComplete &&
-      reflectPrompts.reduce(
-        (sum, prompt) => sum + (prompt.editorIds ? prompt.editorIds.length : 0),
-        0
-      ) === 0
-    return (
-      <React.Fragment>
+const RetroReflectPhase = (props: Props) => {
+  const {avatarGroup, toggleSidebar, team, handleGotoNext, isDemoStageComplete} = props
+  const atmosphere = useAtmosphere()
+  const {gotoNext, ref: gotoNextRef} = handleGotoNext
+  const minTimeComplete = useTimeout(ms('2m'))
+  const phaseRef = useRef<HTMLDivElement>(null)
+  const {viewerId} = atmosphere
+  const {isMeetingSidebarCollapsed, newMeeting} = team
+  if (!newMeeting) return null
+  const {facilitatorUserId, localPhase, id: meetingId, reflectionGroups, localStage} = newMeeting
+  const isComplete = localStage ? localStage.isComplete : false
+  const reflectPrompts = localPhase!.reflectPrompts!
+  const isFacilitating = facilitatorUserId === viewerId
+  const nextPhaseLabel = phaseLabelLookup[GROUP]
+  const isEmpty = !reflectionGroups || reflectionGroups.length === 0
+  const isReadyToGroup =
+    !isComplete &&
+    !isEmpty &&
+    minTimeComplete &&
+    reflectPrompts.reduce(
+      (sum, prompt) => sum + (prompt.editorIds ? prompt.editorIds.length : 0),
+      0
+    ) === 0
+  return (
+    <MeetingContent>
+      <MeetingContentHeader
+        avatarGroup={avatarGroup}
+        isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
+        toggleSidebar={toggleSidebar}
+      >
+        <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.reflect]}</PhaseHeaderTitle>
+        <PhaseHeaderDescription>
+          {'Add anonymous reflections for each prompt'}
+        </PhaseHeaderDescription>
+      </MeetingContentHeader>
+      <ErrorBoundary>
         <StyledOverflow>
-          <StyledWrapper phaseItemCount={reflectPrompts.length} innerRef={this.phaseRef}>
+          <StyledWrapper phaseItemCount={reflectPrompts.length} innerRef={phaseRef}>
             {reflectPrompts.map((prompt, idx) => (
               <PhaseItemColumn
                 key={prompt.id}
@@ -107,7 +106,7 @@ class RetroReflectPhase extends Component<Props, State> {
                 editorIds={prompt.editorIds}
                 description={prompt.description}
                 idx={idx}
-                phaseRef={this.phaseRef}
+                phaseRef={phaseRef}
               />
             ))}
           </StyledWrapper>
@@ -118,8 +117,8 @@ class RetroReflectPhase extends Component<Props, State> {
             <BottomNavControl
               isBouncing={isDemoStageComplete || isReadyToGroup}
               disabled={isEmpty}
-              onClick={gotoNext}
-              onKeyDown={handleRightArrow(gotoNext)}
+              onClick={() => gotoNext()}
+              onKeyDown={handleRightArrow(() => gotoNext())}
               innerRef={gotoNextRef}
             >
               <BottomNavIconLabel
@@ -135,9 +134,9 @@ class RetroReflectPhase extends Component<Props, State> {
           floatAboveBottomBar={isFacilitating}
           menu={isDemoRoute() ? <DemoReflectHelpMenu /> : <ReflectHelpMenu />}
         />
-      </React.Fragment>
-    )
-  }
+      </ErrorBoundary>
+    </MeetingContent>
+  )
 }
 
 graphql`
@@ -152,9 +151,10 @@ graphql`
 `
 
 export default createFragmentContainer(
-  withAtmosphere(RetroReflectPhase),
+  RetroReflectPhase,
   graphql`
     fragment RetroReflectPhase_team on Team {
+      isMeetingSidebarCollapsed
       newMeeting {
         ...PhaseItemColumn_meeting
         id

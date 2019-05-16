@@ -91,7 +91,6 @@ const handleTaskHover = (props: Props, monitor, component) => {
   if (!dropTargetDOMNode || dropTargetDOMNode instanceof (window as any).Text) {
     return
   }
-  // $FlowFixMe
   const {
     top: dropTargetTop,
     height: dropTargetHeight

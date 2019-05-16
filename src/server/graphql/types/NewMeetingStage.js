@@ -1,12 +1,24 @@
 import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
 import NewMeeting from 'server/graphql/types/NewMeeting'
 import NewMeetingPhaseTypeEnum from 'server/graphql/types/NewMeetingPhaseTypeEnum'
-import {CHECKIN, DISCUSS, GROUP, REFLECT, VOTE} from 'universal/utils/constants'
+import {
+  CHECKIN,
+  DISCUSS,
+  FIRST_CALL,
+  GROUP,
+  LAST_CALL,
+  REFLECT,
+  UPDATES,
+  VOTE,
+  AGENDA_ITEMS
+} from 'universal/utils/constants'
 import CheckInStage from 'server/graphql/types/CheckInStage'
 import GenericMeetingStage from 'server/graphql/types/GenericMeetingStage'
 import RetroDiscussStage from 'server/graphql/types/RetroDiscussStage'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 import NewMeetingPhase from 'server/graphql/types/NewMeetingPhase'
+import UpdatesStage from 'server/graphql/types/UpdatesStage'
+import AgendaItemsStage from 'server/graphql/types/AgendaItemsStage'
 
 /*
  * Each meeting has many phases.
@@ -41,16 +53,16 @@ export const newMeetingStageFields = () => ({
     }
   },
   isComplete: {
-    type: GraphQLBoolean,
+    type: new GraphQLNonNull(GraphQLBoolean),
     description:
       'true if the facilitator has completed this stage, else false. Should be boolean(endAt)'
   },
   isNavigable: {
-    type: GraphQLBoolean,
+    type: new GraphQLNonNull(GraphQLBoolean),
     description: 'true if any meeting participant can navigate to this stage'
   },
   isNavigableByFacilitator: {
-    type: GraphQLBoolean,
+    type: new GraphQLNonNull(GraphQLBoolean),
     description: 'true if the facilitator can navigate to this stage'
   },
   phase: {
@@ -95,7 +107,11 @@ const NewMeetingStage = new GraphQLInterfaceType({
       [REFLECT]: GenericMeetingStage,
       [GROUP]: GenericMeetingStage,
       [VOTE]: GenericMeetingStage,
-      [DISCUSS]: RetroDiscussStage
+      [DISCUSS]: RetroDiscussStage,
+      [UPDATES]: UpdatesStage,
+      [FIRST_CALL]: GenericMeetingStage,
+      [AGENDA_ITEMS]: AgendaItemsStage,
+      [LAST_CALL]: GenericMeetingStage
     }
     return resolveTypeLookup[phaseType]
   }

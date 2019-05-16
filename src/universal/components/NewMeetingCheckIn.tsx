@@ -1,25 +1,25 @@
 import {NewMeetingCheckIn_team} from '__generated__/NewMeetingCheckIn_team.graphql'
-import React, {useCallback} from 'react'
+import React, {ReactElement} from 'react'
 import styled from 'react-emotion'
-import withHotkey from 'react-hotkey-hoc'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
+import ErrorBoundary from 'universal/components/ErrorBoundary'
 import Icon from 'universal/components/Icon'
+import MeetingContent from 'universal/components/MeetingContent'
+import MeetingContentHeader from 'universal/components/MeetingContentHeader'
 import MeetingHelpToggle from 'universal/components/MenuHelpToggle'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import PhaseHeaderTitle from 'universal/components/PhaseHeaderTitle'
+import useAtmosphere from 'universal/hooks/useAtmosphere'
+import {useGotoNext} from 'universal/hooks/useMeeting'
 import CheckInControls from 'universal/modules/meeting/components/CheckInControls/CheckInControls'
 import NewMeetingCheckInPrompt from 'universal/modules/meeting/components/MeetingCheckInPrompt/NewMeetingCheckInPrompt'
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
 import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint'
-import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {ICON_SIZE} from 'universal/styles/typographyV2'
-import {MeetingTypeEnum} from 'universal/types/graphql'
+import {NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
 import lazyPreload from 'universal/utils/lazyPreload'
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import EndMeetingButton from './EndMeetingButton'
 
 const CheckIn = styled('div')({
@@ -49,117 +49,115 @@ const StyledIcon = styled(Icon)({
   width: ICON_SIZE.MD24
 })
 
+const CheckInWrapper = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '100%'
+})
+
 const CheckInHelpMenu = lazyPreload(async () =>
   import(/* webpackChunkName: 'CheckInHelpMenu' */ 'universal/components/MeetingHelp/CheckInHelpMenu')
 )
 
-interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
-  gotoNext (options: {isCheckedIn: boolean}): void
-  gotoNextRef: React.RefObject<HTMLDivElement>
-  meetingType: MeetingTypeEnum
+interface Props {
+  avatarGroup: ReactElement
+  handleGotoNext: ReturnType<typeof useGotoNext>
   team: NewMeetingCheckIn_team
+  toggleSidebar: () => void
 }
 
 const NewMeetingCheckIn = (props: Props) => {
-  const {atmosphere, gotoNextRef, team, meetingType} = props
-  const {newMeeting} = team
+  const {avatarGroup, handleGotoNext, team, toggleSidebar} = props
+  const atmosphere = useAtmosphere()
+  const {isMeetingSidebarCollapsed, newMeeting} = team
   if (!newMeeting) return null
   const {
-    facilitator: {facilitatorUserId},
-    localStage: {localStageId},
-    meetingId,
-    phases
+    facilitator: {id: facilitatorUserId},
+    localStage: {id: localStageId},
+    id: meetingId,
+    phases,
+    meetingType
   } = newMeeting
   const teamMember = newMeeting.localStage.teamMember!
-  const {isSelf: isMyMeetingSection} = teamMember
+  const {userId} = teamMember
   const nextStageRes = findStageAfterId(phases, localStageId)
   // in case the checkin is the last phase of the meeting
   if (!nextStageRes) return null
   const {viewerId} = atmosphere
   const isFacilitating = facilitatorUserId === viewerId
-  const checkinPressFactory = useCallback(
-    (isCheckedIn) => () => {
-      const {gotoNext} = props
-      gotoNext({isCheckedIn})
-    },
-    []
-  )
+  const isMyMeetingSection = userId === viewerId
   return (
-    <React.Fragment>
-      <MeetingSection flexToFill paddingBottom='1rem'>
-        <NewMeetingCheckInPrompt team={team} teamMember={teamMember} />
-        <CheckIn>
-          {isMyMeetingSection && (
-            <Hint>
-              <StyledIcon>record_voice_over</StyledIcon>
-              <MeetingFacilitationHint>
-                {'Verbally share your response with the team'}
-              </MeetingFacilitationHint>
-            </Hint>
-          )}
-        </CheckIn>
-      </MeetingSection>
-      {isFacilitating && (
-        <StyledBottomBar>
-          <BottomControlSpacer />
-          <CheckInControls
-            checkInPressFactory={checkinPressFactory}
-            currentMemberName={teamMember.preferredName}
-            localPhaseItem={localStageId}
-            gotoNextRef={gotoNextRef}
-          />
-          <EndMeetingButton meetingId={meetingId} />
-        </StyledBottomBar>
-      )}
-      <MeetingHelpToggle
-        floatAboveBottomBar={isFacilitating}
-        menu={<CheckInHelpMenu meetingType={meetingType} />}
-      />
-    </React.Fragment>
+    <MeetingContent>
+      <MeetingContentHeader
+        avatarGroup={avatarGroup}
+        isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
+        toggleSidebar={toggleSidebar}
+      >
+        <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.checkin]}</PhaseHeaderTitle>
+      </MeetingContentHeader>
+      <ErrorBoundary>
+        <CheckInWrapper>
+          <NewMeetingCheckInPrompt team={team} teamMember={teamMember} />
+          <CheckIn>
+            {isMyMeetingSection && (
+              <Hint>
+                <StyledIcon>record_voice_over</StyledIcon>
+                <MeetingFacilitationHint>
+                  {'Verbally share your response with the team'}
+                </MeetingFacilitationHint>
+              </Hint>
+            )}
+          </CheckIn>
+        </CheckInWrapper>
+        {isFacilitating && (
+          <StyledBottomBar>
+            <BottomControlSpacer />
+            <CheckInControls handleGotoNext={handleGotoNext} teamMember={teamMember} />
+            <EndMeetingButton meetingId={meetingId} />
+          </StyledBottomBar>
+        )}
+        <MeetingHelpToggle
+          floatAboveBottomBar={isFacilitating}
+          menu={<CheckInHelpMenu meetingType={meetingType} />}
+        />
+      </ErrorBoundary>
+    </MeetingContent>
   )
 }
 
+graphql`
+  fragment NewMeetingCheckInLocalStage on CheckInStage {
+    teamMember {
+      userId
+      ...NewMeetingCheckInPrompt_teamMember
+      ...CheckInControls_teamMember
+    }
+  }
+`
+
 export default createFragmentContainer(
-  withHotkey(withRouter(withAtmosphere(withMutationProps(NewMeetingCheckIn)))),
+  NewMeetingCheckIn,
   graphql`
     fragment NewMeetingCheckIn_team on Team {
       ...NewMeetingCheckInPrompt_team
+      isMeetingSidebarCollapsed
       newMeeting {
-        meetingId: id
+        meetingType
+        id
         facilitatorStageId
         facilitator {
-          facilitatorUserId: id
+          id
         }
         localStage {
-          localStageId: id
-          ... on CheckInStage {
-            teamMember {
-              id
-              isSelf
-              preferredName
-              userId
-              meetingMember {
-                isCheckedIn
-              }
-              ...NewMeetingCheckInPrompt_teamMember
-            }
-          }
+          id
+          ...NewMeetingCheckInLocalStage @relay(mask: false)
         }
         phases {
-          phaseType
           stages {
             id
-            ... on CheckInStage {
-              teamMember {
-                id
-                isSelf
-                meetingMember {
-                  isCheckedIn
-                }
-                preferredName
-                userId
-              }
-            }
+            ...NewMeetingCheckInLocalStage @relay(mask: false)
           }
         }
       }
