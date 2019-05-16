@@ -1,5 +1,5 @@
 import {TeamColumnsContainer_viewer} from '__generated__/TeamColumnsContainer_viewer.graphql'
-import React, {useEffect, useState} from 'react'
+import React, {useMemo} from 'react'
 import {connect} from 'react-redux'
 import {createFragmentContainer, graphql} from 'react-relay'
 import TaskColumns from 'universal/components/TaskColumns/TaskColumns'
@@ -31,38 +31,28 @@ const TeamColumnsContainer = (props: Props) => {
   const {myTeamMemberId, teamMemberFilterId, viewer} = props
   const {team} = viewer
   const {contentFilter, tasks, teamMembers} = team!
-  const [filteredTasks, setFilteredTasks] = useState(tasks)
-  useEffect(() => {
+  const filteredTasks = useMemo(() => {
     const contentFilterRegex = new RegExp(contentFilter!, 'i')
-    const contentFilteredEdges = contentFilter
-      ? tasks.edges.filter(({node}) => {
-        const {contentText} = node
-        return contentText && node.contentText!.match(contentFilterRegex)
+    const nodes = tasks.edges.map(({node}) => node)
+    const contentFilteredNodes = contentFilter
+      ? nodes.filter((task) => {
+        return task.contentText && task.contentText.match(contentFilterRegex)
       })
-      : tasks.edges
+      : nodes
 
-    const teamMemberFilteredEdges = teamMemberFilterId
-      ? contentFilteredEdges.filter(({node}) => node.assignee.id === teamMemberFilterId)
-      : contentFilteredEdges
+    const teamMemberFilteredNodes = teamMemberFilterId
+      ? contentFilteredNodes.filter((node) => node.assignee.id === teamMemberFilterId)
+      : contentFilteredNodes
 
-    const edgesWithTeamMembers = teamMemberFilteredEdges.map((edge) => {
-      return {
-        ...edge,
-        node: {
-          ...edge.node,
-          teamMembers
-        }
-      }
-    })
-    setFilteredTasks({
-      ...tasks,
-      edges: edgesWithTeamMembers
-    })
+    return teamMemberFilteredNodes.map((node) => ({
+      ...node,
+      teamMembers
+    }))
   }, [teamMemberFilterId, tasks, contentFilter])
 
   return (
     <TaskColumns
-      getTaskById={getTaskById(tasks as any)}
+      getTaskById={getTaskById(filteredTasks)}
       myTeamMemberId={myTeamMemberId}
       tasks={filteredTasks}
       teamMemberFilterId={teamMemberFilterId}
@@ -83,9 +73,9 @@ export default createFragmentContainer(
           preferredName
         }
         tasks(first: 1000) @connection(key: "TeamColumnsContainer_tasks") {
-          ...TaskColumns_tasks
           edges {
             node {
+              ...TaskColumns_tasks
               # grab these so we can sort correctly
               id
               content @__clientField(handle: "contentText")

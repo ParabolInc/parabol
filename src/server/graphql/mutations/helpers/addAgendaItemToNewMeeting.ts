@@ -31,7 +31,10 @@ const addAgendaItemToNewMeeting = async (
   if (!agendaItemPhase) return undefined
 
   const {stages} = agendaItemPhase
-  stages.push(new AgendaItemsStage(agendaItemId))
+  const newStage = new AgendaItemsStage(agendaItemId)
+  newStage.isNavigable = true
+  newStage.isNavigableByFacilitator = true
+  stages.push(newStage)
   await r
     .table('NewMeeting')
     .get(meetingId)

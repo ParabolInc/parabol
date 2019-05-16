@@ -2,9 +2,9 @@ import {ConnectionHandler} from 'relay-runtime'
 import getNotificationsConn from 'universal/mutations/connections/getNotificationsConn'
 import ensureArray from 'universal/utils/ensureArray'
 
-const handleRemoveNotifications = (maybeNotificationIds, store, viewerId) => {
+const handleRemoveNotifications = (maybeNotificationIds, store) => {
   if (!maybeNotificationIds) return
-  const viewer = store.get(viewerId)
+  const viewer = store.getRoot().getLinkedRecord('viewer')
   const conn = getNotificationsConn(viewer)
   if (conn) {
     const notificationIds = ensureArray(maybeNotificationIds)

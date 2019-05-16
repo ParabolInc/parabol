@@ -33,6 +33,10 @@ interface Props {
   viewer: DashAlertMeeting_viewer | null
 }
 
+const Link = styled(DashAlertLink)({
+  paddingRight: 4
+})
+
 const DashAlertMeeting = (props: Props) => {
   const {viewer} = props
   const activeMeetings = useMemo(() => getActiveMeetings(viewer), [viewer])
@@ -42,9 +46,9 @@ const DashAlertMeeting = (props: Props) => {
       <MessageBlock>{`${plural(activeMeetings.length, 'Meeting')} in progress:  `}</MessageBlock>
       {activeMeetings.map((meeting) => {
         return (
-          <DashAlertLink key={meeting.link} title='Join Active Meeting' to={meeting.link}>
+          <Link key={meeting.link} title='Join Meeting' to={meeting.link}>
             {meeting.name}
-          </DashAlertLink>
+          </Link>
         )
       })}
     </DashAlertBar>

@@ -66,12 +66,9 @@ const clearAgendaItems = async (teamId: string) => {
   return r
     .table('AgendaItem')
     .getAll(teamId, {index: 'teamId'})
-    .update(
-    {
+    .update({
       isActive: false
-    },
-      {returnChanges: true}
-    )('changes')('new_val')
+    })
 }
 
 const shuffleCheckInOrder = async (teamId: string) => {
@@ -100,16 +97,20 @@ const finishActionMeeting = async (meeting: Meeting, dataLoader: DataLoaderWorke
     dataLoader.get('meetingMembersByMeetingId').load(meetingId),
     dataLoader.get('tasksByTeamId').load(teamId)
   ])
-  const tasks = allTasks.filter((task) => task.meetingid === meetingId)
+  const tasks = allTasks.filter((task) => task.meetingId === meetingId)
   const doneTasks = allTasks.filter((task) => task.status === DONE)
   const userIds = meetingMembers.map(({userId}) => userId)
-  const [archivedTasks, newTasks, clearedAgendaItems] = await Promise.all([
-    archiveTasksForDB(doneTasks),
+  const r = getRethink()
+  await Promise.all([
+    archiveTasksForDB(doneTasks, meetingId),
     updateTaskSortOrders(userIds, tasks),
     clearAgendaItems(teamId),
-    shuffleCheckInOrder(teamId)
+    shuffleCheckInOrder(teamId),
+    r
+      .table('NewMeeting')
+      .get(meetingId)
+      .update({taskCount: tasks.length})
   ])
-  return {updatedTasks: [...archivedTasks, ...newTasks], clearedAgendaItems}
 }
 
 const finishMeetingType = async (meeting: Meeting, dataLoader: DataLoaderWorker) => {
@@ -180,7 +181,6 @@ export default {
         )('changes')(0)('new_val')
     })
 
-    await finishMeetingType(completedMeeting, dataLoader)
     const meetingMembers = await dataLoader.get('meetingMembersByMeetingId').load(meetingId)
     const presentMembers = meetingMembers.filter(
       (meetingMember) => meetingMember.isCheckedIn === true
@@ -189,6 +189,7 @@ export default {
     endSlackMeeting(meetingId, teamId, true)
 
     if (currentStage) {
+      await finishMeetingType(completedMeeting, dataLoader)
       const {facilitatorUserId} = completedMeeting
       const nonFacilitators = presentMemberUserIds.filter((userId) => userId !== facilitatorUserId)
       const traits = {

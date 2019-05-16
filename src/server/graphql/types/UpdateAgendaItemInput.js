@@ -20,12 +20,7 @@ const UpdateAgendaItemInput = new GraphQLInputObjectType({
     },
     isActive: {
       type: GraphQLBoolean,
-      description: 'true until the agenda item has been marked isComplete and the meeting has ended'
-    },
-    isComplete: {
-      type: GraphQLBoolean,
-      description:
-        'true if the agenda item has been addressed in a meeting (will have a strikethrough or similar)'
+      description: 'true if not processed or deleted'
     },
     sortOrder: {
       type: GraphQLFloat,

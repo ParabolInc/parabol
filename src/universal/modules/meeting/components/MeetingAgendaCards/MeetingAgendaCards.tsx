@@ -1,17 +1,15 @@
-import {MeetingAgendaItems_viewer} from '__generated__/MeetingAgendaItems_viewer.graphql'
-import React, {Component} from 'react'
-import withHotkey from 'react-hotkey-hoc'
-import {RouteComponentProps, withRouter} from 'react-router'
+import React, {useCallback, useRef} from 'react'
 import CreateCard from 'universal/components/CreateCard/CreateCard'
 import MasonryCSSGrid from 'universal/components/MasonryCSSGrid'
 import NullableTask from 'universal/components/NullableTask/NullableTask'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import sortOrderBetween from 'universal/dnd/sortOrderBetween'
 import CreateTaskMutation from 'universal/mutations/CreateTaskMutation'
 import {meetingGridMinWidth} from 'universal/styles/meeting'
 import {ACTIVE, MEETING} from 'universal/utils/constants'
+import useHotkey from 'universal/hooks/useHotkey'
+import useAtmosphere from 'universal/hooks/useAtmosphere'
+import {createFragmentContainer, graphql} from 'react-relay'
+import {MeetingAgendaCards_tasks} from '__generated__/MeetingAgendaCards_tasks.graphql'
 
 const makePlaceholders = (
   length: number,
@@ -26,33 +24,28 @@ const makePlaceholders = (
   ))
 }
 
-interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
+interface Props {
   agendaId?: string
-  bindHotkey: (key: string, cb: () => void) => void
   maxCols?: number
   meetingId: string
   reflectionGroupId?: string
-  tasks: Array<MeetingAgendaItems_viewer['tasks']['edges'][0]['node']> | null
-  showPlaceholders: boolean
+  tasks: MeetingAgendaCards_tasks
+  showPlaceholders?: boolean
   teamId: string
 }
 
-class MeetingAgendaCards extends Component<Props> {
-  componentWillMount () {
-    const {bindHotkey} = this.props
-    bindHotkey('t', this.handleAddTask())
-  }
-
-  handleAddTask = (content?: string) => () => {
-    const {agendaId, atmosphere, meetingId, reflectionGroupId, teamId} = this.props
-    const tasks = this.props.tasks || []
+const MeetingAgendaCards = (props: Props) => {
+  const {maxCols, showPlaceholders, tasks} = props
+  const atmosphere = useAtmosphere()
+  const propsRef = useRef(props)
+  propsRef.current = props
+  const handleAddTask = useCallback(() => {
     const {viewerId} = atmosphere
+    const {tasks, agendaId, meetingId, reflectionGroupId, teamId} = propsRef.current
     const maybeLastTask = tasks[tasks.length - 1]
-    const sortOrder = sortOrderBetween(maybeLastTask, null, null, false) || 0
     const newTask = {
-      content,
       status: ACTIVE,
-      sortOrder,
+      sortOrder: sortOrderBetween(maybeLastTask, null, null, false) || 0,
       agendaId,
       meetingId,
       reflectionGroupId,
@@ -60,38 +53,37 @@ class MeetingAgendaCards extends Component<Props> {
       teamId
     }
     CreateTaskMutation(atmosphere, newTask, MEETING)
-  }
-
-  render () {
-    const {maxCols, showPlaceholders} = this.props
-    const tasks = this.props.tasks || []
-    return (
-      <MasonryCSSGrid gap={16} colWidth={meetingGridMinWidth} maxCols={maxCols} items={tasks}>
-        {(setItemRef) => {
-          return (
-            <React.Fragment>
-              {tasks.map((task) => {
-                return (
-                  <div key={task.id} ref={setItemRef(task.id)}>
-                    <NullableTask
-                      area={MEETING}
-                      handleAddTask={this.handleAddTask}
-                      isAgenda
-                      task={task}
-                    />
-                  </div>
-                )
-              })}
-              <div ref={setItemRef('createACard')}>
-                <CreateCard handleAddTask={this.handleAddTask()} hasControls />
-              </div>
-              {showPlaceholders && maxCols && makePlaceholders(tasks.length, maxCols, setItemRef)}
-            </React.Fragment>
-          )
-        }}
-      </MasonryCSSGrid>
-    )
-  }
+  }, [])
+  useHotkey('t', handleAddTask)
+  return (
+    <MasonryCSSGrid gap={16} colWidth={meetingGridMinWidth} maxCols={maxCols} items={tasks}>
+      {(setItemRef) => {
+        return (
+          <React.Fragment>
+            {tasks.map((task) => {
+              return (
+                <div key={task.id} ref={setItemRef(task.id)}>
+                  <NullableTask area={MEETING} isAgenda task={task} />
+                </div>
+              )
+            })}
+            <div ref={setItemRef('createACard')}>
+              <CreateCard handleAddTask={handleAddTask} hasControls />
+            </div>
+            {showPlaceholders && maxCols && makePlaceholders(tasks.length, maxCols, setItemRef)}
+          </React.Fragment>
+        )
+      }}
+    </MasonryCSSGrid>
+  )
 }
 
-export default withHotkey(withRouter(withAtmosphere(MeetingAgendaCards)))
+export default createFragmentContainer(
+  MeetingAgendaCards,
+  graphql`
+    fragment MeetingAgendaCards_tasks on Task @relay(plural: true) {
+      ...NullableTask_task
+      id
+    }
+  `
+)

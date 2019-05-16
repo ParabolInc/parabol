@@ -27,6 +27,8 @@ graphql`
             isComplete
             isNavigable
             isNavigableByFacilitator
+            ...NewMeetingCheckInLocalStage @relay(mask: false)
+            ...ActionMeetingUpdatesStage @relay(mask: false)
             ... on NewMeetingTeamMemberStage {
               teamMemberId
             }

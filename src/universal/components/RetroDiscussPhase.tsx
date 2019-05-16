@@ -143,8 +143,7 @@ const RetroDiscussPhase = (props: Props) => {
   const {viewerId} = atmosphere
   const {isMeetingSidebarCollapsed, newMeeting, teamId} = team
   if (!newMeeting) return null
-  const {current} = handleGotoNext
-  const {gotoNext, ref: gotoNextRef} = current
+  const {gotoNext, ref: gotoNextRef} = handleGotoNext
   const {
     facilitatorUserId,
     localStage: {localStageId, reflectionGroup},
@@ -257,7 +256,7 @@ export default createFragmentContainer(
               reflectionGroup {
                 id
                 tasks {
-                  ...NullableTask_task
+                  ...MeetingAgendaCards_tasks
                 }
               }
             }
@@ -285,7 +284,7 @@ export default createFragmentContainer(
                 content
                 createdAt
                 sortOrder
-                ...NullableTask_task
+                ...MeetingAgendaCards_tasks
               }
             }
           }

@@ -12,7 +12,6 @@ graphql`
     agendaItem {
       id
       content
-      isComplete
       sortOrder
       teamId
       teamMember {
@@ -26,6 +25,8 @@ graphql`
         ...ActionSidebarAgendaItemsSectionAgendaItemPhase @relay(mask: false)
         stages {
           ...ActionMeetingAgendaItemsStage @relay(mask: false)
+          # For useMeetingGotoStageId
+          isNavigableByFacilitator
         }
       }
     }
@@ -69,8 +70,7 @@ const AddAgendaItemMutation = (
       const optimisticAgendaItem = {
         ...newAgendaItem,
         id: clientTempId(teamId),
-        isActive: true,
-        isComplete: false
+        isActive: true
       }
       const agendaItemNode = createProxyRecord(store, 'AgendaItem', optimisticAgendaItem)
       agendaItemNode.setLinkedRecord(teamMember, 'teamMember')

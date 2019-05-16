@@ -6,7 +6,6 @@ import {GQLContext} from 'server/graphql/graphql'
 
 export default async function sendNewMeetingSummary (newMeeting: Meeting, context: GQLContext) {
   const {id: meetingId, summarySentAt} = newMeeting
-  console.log('sendNMS')
   if (summarySentAt) return
   const now = new Date()
   const r = getRethink()

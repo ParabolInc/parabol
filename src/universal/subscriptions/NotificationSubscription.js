@@ -18,7 +18,6 @@ import {
 } from 'universal/mutations/InviteToTeamMutation'
 import {acceptTeamInvitationNotificationUpdater} from 'universal/mutations/AcceptTeamInvitationMutation'
 import {endNewMeetingNotificationUpdater} from 'universal/mutations/EndNewMeetingMutation'
-import {endMeetingNotificationUpdater} from 'universal/mutations/EndMeetingMutation'
 
 const subscription = graphql`
   subscription NotificationSubscription {
@@ -29,7 +28,6 @@ const subscription = graphql`
       ...ClearNotificationMutation_notification @relay(mask: false)
       ...CreateTaskMutation_notification @relay(mask: false)
       ...DeleteTaskMutation_notification @relay(mask: false)
-      ...EndMeetingMutation_notification @relay(mask: false)
       ...EndNewMeetingMutation_notification @relay(mask: false)
       ...InviteToTeamMutation_notification @relay(mask: false)
       ...RemoveOrgUserMutation_notification @relay(mask: false)
@@ -176,9 +174,6 @@ const NotificationSubscription = (atmosphere, queryVariables, subParams) => {
           break
         case 'DisconnectSocketPayload':
           disconnectSocketNotificationUpdater(payload, store)
-          break
-        case 'EndMeetingPayload':
-          endMeetingNotificationUpdater(payload, {store})
           break
         case 'EndNewMeetingPayload':
           endNewMeetingNotificationUpdater(payload, {store})

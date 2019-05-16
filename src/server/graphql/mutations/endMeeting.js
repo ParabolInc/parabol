@@ -1,7 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import getEndMeetingSortOrders from 'server/graphql/mutations/helpers/endMeeting/getEndMeetingSortOrders'
-import sendEmailSummary from 'server/graphql/mutations/helpers/endMeeting/sendEmailSummary'
 import {endSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack'
 import EndMeetingPayload from 'server/graphql/types/EndMeetingPayload'
 import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB'
@@ -235,7 +234,6 @@ export default {
     teamMembers.forEach(({userId}) => {
       publish(TASK, userId, EndMeetingPayload, data, subOptions)
     })
-    await sendEmailSummary(completedMeeting)
 
     return data
   }

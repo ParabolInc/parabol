@@ -11,7 +11,7 @@ const joinSwarm = async (
   atmosphere: Atmosphere,
   roomId: string,
   dispatchState: Dispatch<ReducerAction<typeof reducerSwarm>>,
-  disposable: MutableRefObject<(() => void) | undefined>
+  disposable: MutableRefObject<(() => void) | undefined | null>
 ) => {
   if (!atmosphere.upgradeTransport) return
   await atmosphere.upgradeTransport()
@@ -31,6 +31,9 @@ const joinSwarm = async (
     trebuchet,
     dispatchState: dispatchState
   })
+
+  // a disposable is null when component is unmounted
+  if (disposable.current == null) return
 
   dispatchState({
     type: 'addSwarm',

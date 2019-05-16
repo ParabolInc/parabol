@@ -1,7 +1,6 @@
 import {
   GraphQLBoolean,
   GraphQLID,
-  GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -11,11 +10,9 @@ import {forwardConnectionArgs} from 'graphql-relay'
 import {GQLContext} from 'server/graphql/graphql'
 import connectionFromTasks from 'server/graphql/queries/helpers/connectionFromTasks'
 import {resolveOrganization} from 'server/graphql/resolvers'
-import ActionMeetingPhaseEnum from 'server/graphql/types/ActionMeetingPhaseEnum'
 import AgendaItem from 'server/graphql/types/AgendaItem'
 import CustomPhaseItem from 'server/graphql/types/CustomPhaseItem'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
-import MeetingGreeting from 'server/graphql/types/MeetingGreeting'
 import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum'
 import NewMeeting from 'server/graphql/types/NewMeeting'
 import Organization from 'server/graphql/types/Organization'
@@ -55,11 +52,6 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       description:
         'true if the underlying org has a validUntil date greater than now. if false, subs do not work'
     },
-    meetingNumber: {
-      type: GraphQLInt,
-      description:
-        'The current or most recent meeting number (also the number of meetings the team has had'
-    },
     name: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the team'
@@ -76,15 +68,6 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       type: GraphQLISO8601Type,
       description: 'The datetime the team was last updated'
     },
-    /* Ephemeral meeting state */
-    checkInGreeting: {
-      type: MeetingGreeting,
-      description: 'The checkIn greeting (fun language)'
-    },
-    checkInQuestion: {
-      type: GraphQLString,
-      description: 'The checkIn question of the week'
-    },
     customPhaseItems: {
       type: new GraphQLList(CustomPhaseItem),
       resolve: ({id: teamId}, _args, {dataLoader}) => {
@@ -95,18 +78,6 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
     meetingId: {
       type: GraphQLID,
       description: 'The unique Id of the active meeting'
-    },
-    activeFacilitator: {
-      type: GraphQLID,
-      description: 'The current facilitator teamMemberId for this meeting'
-    },
-    facilitatorPhase: {
-      type: ActionMeetingPhaseEnum,
-      description: 'The phase of the facilitator'
-    },
-    facilitatorPhaseItem: {
-      type: GraphQLInt,
-      description: 'The current item number for the current phase for the facilitator, 1-indexed'
     },
     teamInvitations: {
       type: new GraphQLList(new GraphQLNonNull(TeamInvitation)),
@@ -124,15 +95,6 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
         const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
         return !!teamMember.isLead
       }
-    },
-    meetingPhase: {
-      type: ActionMeetingPhaseEnum,
-      description:
-        'The phase of the meeting, usually matches the facilitator phase, be could be further along'
-    },
-    meetingPhaseItem: {
-      type: GraphQLInt,
-      description: 'The current item number for the current phase for the meeting, 1-indexed'
     },
     meetingSettings: {
       type: new GraphQLNonNull(TeamMeetingSettings),
@@ -158,8 +120,8 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
     newMeeting: {
       type: NewMeeting,
       description: 'The new meeting in progress, if any',
-      resolve: ({meetingId, activeFacilitator}, _args, {dataLoader}) => {
-        if (meetingId && !activeFacilitator) {
+      resolve: ({meetingId}, _args, {dataLoader}) => {
+        if (meetingId) {
           return dataLoader.get('newMeetings').load(meetingId)
         }
         return null

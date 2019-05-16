@@ -121,7 +121,7 @@ const OrgMemberRow = (props: Props) => {
     <Row>
       <div>
         {picture ? (
-          <Avatar hasBadge={false} picture={picture} size='small' />
+          <Avatar hasBadge={false} picture={picture} size={44} />
         ) : (
           <img alt='' src={defaultUserAvatar} />
         )}

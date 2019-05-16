@@ -2,7 +2,6 @@ import {createTaskTaskUpdater} from 'universal/mutations/CreateTaskMutation'
 import {deleteTaskTaskUpdater} from 'universal/mutations/DeleteTaskMutation'
 import {editTaskTaskUpdater} from 'universal/mutations/EditTaskMutation'
 import {updateTaskTaskOnNext, updateTaskTaskUpdater} from 'universal/mutations/UpdateTaskMutation'
-import {endMeetingTaskUpdater} from 'universal/mutations/EndMeetingMutation'
 import {removeOrgUserTaskUpdater} from 'universal/mutations/RemoveOrgUserMutation'
 import {changeTaskTeamTaskUpdater} from 'universal/mutations/ChangeTaskTeamMutation'
 
@@ -17,7 +16,6 @@ const subscription = graphql`
       ...CreateTaskMutation_task @relay(mask: false)
       ...DeleteTaskMutation_task @relay(mask: false)
       ...EditTaskMutation_task @relay(mask: false)
-      ...EndMeetingMutation_task @relay(mask: false)
       ...RemoveOrgUserMutation_task @relay(mask: false)
       ...UpdateTaskMutation_task @relay(mask: false)
       ...UpdateTaskDueDateMutation_task @relay(mask: false)
@@ -42,7 +40,7 @@ const TaskSubscription = (atmosphere, queryVariables, subParams) => {
         case 'CreateGitHubIssuePayload':
           break
         case 'ChangeTaskTeamPayload':
-          changeTaskTeamTaskUpdater(payload, store, viewerId)
+          changeTaskTeamTaskUpdater(payload, {store})
           break
         case 'CreateTaskPayload':
           createTaskTaskUpdater(payload, store, viewerId, false)
@@ -52,9 +50,6 @@ const TaskSubscription = (atmosphere, queryVariables, subParams) => {
           break
         case 'EditTaskPayload':
           editTaskTaskUpdater(payload, store)
-          break
-        case 'EndMeetingPayload':
-          endMeetingTaskUpdater(payload, store, viewerId)
           break
         case 'RemoveOrgUserPayload':
           removeOrgUserTaskUpdater(payload, store, viewerId)

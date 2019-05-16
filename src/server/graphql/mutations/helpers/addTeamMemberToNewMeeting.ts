@@ -3,10 +3,20 @@ import {CHECKIN, UPDATES} from 'universal/utils/constants'
 import getRethink from 'server/database/rethinkDriver'
 import CheckInStage from 'server/database/types/CheckInStage'
 import UpdatesStage from 'server/database/types/UpdatesStage'
+import CheckInPhase from 'server/database/types/CheckInPhase'
+import UpdatesPhase from 'server/database/types/UpdatesPhase'
 
 /*
  * NewMeetings have a predefined set of stages, we need to add the new team member manually
  */
+
+const setInPhase = (phase: CheckInPhase | UpdatesPhase, newStage: CheckInStage | UpdatesStage) => {
+  const firstStage = phase.stages[0]
+  newStage.isNavigable = firstStage.isNavigable
+  newStage.isNavigableByFacilitator = firstStage.isNavigableByFacilitator
+  phase.stages.push(newStage)
+}
+
 const addTeamMemberToNewMeeting = async (teamMember, teamId, dataLoader) => {
   const now = new Date()
   const r = getRethink()
@@ -23,10 +33,10 @@ const addTeamMemberToNewMeeting = async (teamMember, teamId, dataLoader) => {
   const checkInPhase = phases.find((phase) => phase.phaseType === CHECKIN)
   const updatesPhase = phases.find((phase) => phase.phaseType === UPDATES)
   if (checkInPhase) {
-    checkInPhase.stages.push(new CheckInStage(teamMember.id))
+    setInPhase(checkInPhase, new CheckInStage(teamMember.id))
   }
   if (updatesPhase) {
-    updatesPhase.stages.push(new UpdatesStage(teamMember.id))
+    setInPhase(updatesPhase, new UpdatesStage(teamMember.id))
   }
   const [meetingMember] = await createMeetingMembers(newMeeting, [teamMember], dataLoader)
   await r({

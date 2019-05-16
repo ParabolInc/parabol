@@ -47,11 +47,7 @@ graphql`
 graphql`
   fragment RemoveOrgUserMutation_team on RemoveOrgUserPayload {
     teams {
-      id
-      # wildly wasteful in terms of overfetching, but no handler required
-      newMeeting {
-        ...CompleteNewMeetingFrag @relay(mask: false)
-      }
+      ...RemoveTeamMemberMutation_teamTeam @relay(mask: false)
     }
     user {
       id

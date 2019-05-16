@@ -8,6 +8,7 @@ import MenuItem from 'universal/components/MenuItem'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import {MenuProps} from 'universal/hooks/useMenu'
 import ChangeTaskTeamMutation from 'universal/mutations/ChangeTaskTeamMutation'
+import useMutationProps from 'universal/hooks/useMutationProps'
 
 interface Props {
   menuProps: MenuProps
@@ -22,9 +23,11 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
   const {teams} = viewer
   const assignableTeams = useMemo(() => teams.filter((team) => team.id !== teamId), [teamId, teams])
   const atmosphere = useAtmosphere()
+  const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const handleTaskUpdate = (newTeam) => () => {
-    if (teamId !== newTeam.id) {
-      ChangeTaskTeamMutation(atmosphere, {taskId, teamId: newTeam.id})
+    if (!submitting && teamId !== newTeam.id) {
+      submitMutation()
+      ChangeTaskTeamMutation(atmosphere, {taskId, teamId: newTeam.id}, {onError, onCompleted})
     }
   }
 

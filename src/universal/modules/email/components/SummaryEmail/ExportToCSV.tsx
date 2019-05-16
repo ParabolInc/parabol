@@ -1,18 +1,23 @@
 import {ExportToCSVQuery} from '__generated__/ExportToCSVQuery.graphql'
-import Json2csv from 'json2csv'
+import * as Json2csv from 'json2csv'
 import React, {Component} from 'react'
 import {fetchQuery, graphql} from 'react-relay'
-import FlatButton from 'universal/components/FlatButton'
-import IconLabel from 'universal/components/IconLabel'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import extractTextFromDraftString from 'universal/utils/draftjs/extractTextFromDraftString'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import emailDir from 'universal/modules/email/emailDir'
+import {PALETTE_TEXT_MAIN} from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/constants'
+import AnchorIfEmail from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/AnchorIfEmail'
+import EmailBorderBottom from './MeetingSummaryEmail/EmailBorderBottom'
+import {MeetingSummaryReferrer} from './MeetingSummaryEmail/MeetingSummaryEmail'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   meetingId: string
   urlAction?: 'csv' | undefined
+  emailCSVUrl: string
+  referrer: MeetingSummaryReferrer
 }
 
 const query = graphql`
@@ -25,10 +30,16 @@ const query = graphql`
         }
         endedAt
         ... on ActionMeeting {
-          tasks {
-            content
-            agendaItem {
+          meetingMembers {
+            isCheckedIn
+            tasks {
               content
+              agendaItem {
+                content
+              }
+            }
+            user {
+              preferredName
             }
           }
         }
@@ -59,8 +70,25 @@ interface CSVRetroRow {
 }
 
 interface CSVActionRow {
+  user: string
+  status: 'present' | 'absent'
   agendaItem: string
   task: string
+}
+
+const label = 'Export to CSV'
+
+const iconLinkLabel = {
+  color: PALETTE_TEXT_MAIN,
+  fontSize: '13px',
+  paddingTop: 32
+}
+
+const labelStyle = {
+  paddingLeft: 8
+}
+const imageStyle = {
+  verticalAlign: 'middle'
 }
 
 class ExportToCSV extends Component<Props> {
@@ -70,12 +98,14 @@ class ExportToCSV extends Component<Props> {
     }
   }
 
+  componentDidUpdate (prevProps: Readonly<Props>): void {
+    if (this.props.urlAction === 'csv' && prevProps.urlAction !== 'csv') {
+      this.exportToCSV().catch()
+    }
+  }
+
   handleRetroMeeting (newMeeting: Meeting) {
-    const {
-      reflectionGroups,
-      endedAt,
-      team: {name: teamName}
-    } = newMeeting
+    const {reflectionGroups} = newMeeting
 
     const rows = [] as Array<CSVRetroRow>
     reflectionGroups!.forEach((group) => {
@@ -97,30 +127,34 @@ class ExportToCSV extends Component<Props> {
         })
       })
     })
-    const parser = new Json2csv.Parser()
-    const csv = parser.parse(rows)
-    const csvContent = 'data:text/csv;charset=utf-8,' + csv
-    const date = new Date(endedAt)
-    const numDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
-    // copied from https://stackoverflow.com/questions/18848860/javascript-array-to-csv/18849208#18849208
-    const encodedUri = encodeURI(csvContent)
-    const link = document.createElement('a')
-    link.setAttribute('href', encodedUri)
-    link.setAttribute('download', `ParabolRetrospective_${teamName}_${numDate}.csv`)
-    document.body.appendChild(link) // Required for FF
-    link.click()
-    document.body.removeChild(link)
+    return rows
   }
 
   handleActionMeeting (newMeeting: Meeting) {
-    const {tasks} = newMeeting
+    const {meetingMembers} = newMeeting
 
     const rows = [] as Array<CSVActionRow>
-    tasks!.forEach((task) => {
-      const {content, agendaItem} = task
-      rows.push({
-        agendaItem: agendaItem!.content,
-        task: extractTextFromDraftString(content)
+    meetingMembers!.forEach((meetingMember) => {
+      const {isCheckedIn, tasks, user} = meetingMember
+      const status = isCheckedIn ? 'present' : 'absent'
+      const {preferredName} = user
+      if (tasks.length === 0) {
+        rows.push({
+          user: preferredName,
+          status,
+          task: '',
+          agendaItem: ''
+        })
+        return
+      }
+      tasks.forEach((task) => {
+        const {content, agendaItem} = task
+        rows.push({
+          user: preferredName,
+          status,
+          task: extractTextFromDraftString(content),
+          agendaItem: agendaItem ? agendaItem.content : ''
+        })
       })
     })
     return rows
@@ -164,17 +198,19 @@ class ExportToCSV extends Component<Props> {
   }
 
   render () {
-    const {submitting} = this.props
+    const {emailCSVUrl, referrer} = this.props
     return (
-      <FlatButton
-        aria-label={`Export to CSV`}
-        size='small'
-        onClick={this.exportToCSV}
-        waiting={submitting}
-        style={{margin: '16px auto 0'}}
-      >
-        <IconLabel icon='cloud_download' iconColor='green' iconLarge label={'Export to CSV'} />
-      </FlatButton>
+      <>
+        <tr>
+          <td align='center' style={iconLinkLabel} width='100%'>
+            <AnchorIfEmail isEmail={referrer === 'email'} href={emailCSVUrl} title={label}>
+              <img alt={label} src={`${emailDir}cloud_download.png`} style={imageStyle} />
+              <span style={labelStyle}>{label}</span>
+            </AnchorIfEmail>
+          </td>
+        </tr>
+        <EmailBorderBottom />
+      </>
     )
   }
 }

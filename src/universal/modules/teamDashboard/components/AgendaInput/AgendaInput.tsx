@@ -86,7 +86,8 @@ interface Props {
 
 const AgendaInput = (props: Props) => {
   const inputRef = useRef<HTMLInputElement>(null)
-  const focusInput = useCallback(() => {
+  const focusInput = useCallback((e?: React.KeyboardEvent | ExtendedKeyboardEvent) => {
+    e && e.preventDefault()
     inputRef.current && inputRef.current.focus()
   }, [])
   useHotkey('+', focusInput)
@@ -115,7 +116,8 @@ const AgendaInput = (props: Props) => {
       teamMemberId: toTeamMemberId(teamId, atmosphere.viewerId)
     }
     resetValue()
-    focusInput()
+    // setTimeout required when going from 0 to 1 agenda items
+    setTimeout(focusInput)
     AddAgendaItemMutation(atmosphere, {newAgendaItem}, {onError, onCompleted})
   }
 

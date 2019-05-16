@@ -180,7 +180,7 @@ const useCoords = (preferredMenuPosition: MenuPosition, options: UseCoordsOption
   const targetRef = useCallback((c) => {
     setTargetRef(c)
   }, [])
-  const originRef = useRef<HTMLElement | null>(null)
+  const originRef = useRef<HTMLDivElement | HTMLButtonElement | null>(null)
   const [coordsRef, setCoords] = useRefState<CoordState>({
     coords: {left: 0, top: 0},
     menuPosition: preferredMenuPosition

@@ -1,5 +1,5 @@
 import ms from 'ms'
-import React, {useEffect, useState} from 'react'
+import React, {useMemo} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {ActionMeetingPhaseProps} from 'universal/components/ActionMeeting'
@@ -62,33 +62,29 @@ const TaskCardBlock = styled('div')({
 const ActionMeetingAgendaItems = (props: Props) => {
   const {avatarGroup, toggleSidebar, team, handleGotoNext} = props
   const atmosphere = useAtmosphere()
-  const {current} = handleGotoNext
-  const {gotoNext, ref: gotoNextRef} = current
+  const {gotoNext, ref: gotoNextRef} = handleGotoNext
   const minTimeComplete = useTimeout(ms('2m'))
   const {viewerId} = atmosphere
   const {agendaItems, isMeetingSidebarCollapsed, newMeeting, tasks} = team
   const {facilitatorUserId, id: meetingId, localStage, phases} = newMeeting!
   const {id: localStageId, agendaItemId} = localStage
-  const agendaItem = agendaItems.find((item) => item.id === agendaItemId!)!
+  const agendaTasks = useMemo(() => {
+    return tasks.edges
+      .map(({node}) => node)
+      .filter((node) => node.agendaId === agendaItemId)
+      .sort((a, b) => (a.sortOrder < b.sortOrder ? 1 : -1))
+  }, [agendaItemId, tasks])
+  const agendaItem = agendaItems.find((item) => item.id === agendaItemId!)
+  // optimistic updater could remove the agenda item
+  if (!agendaItem) return null
   const {content, teamMember} = agendaItem
   const {picture, preferredName} = teamMember
   const isFacilitating = facilitatorUserId === viewerId
   const phaseName = phaseLabelLookup[AGENDA_ITEMS]
   const nextStageRes = findStageAfterId(phases, localStageId)
   const {phase: nextPhase} = nextStageRes!
-  const [agendaTasks, setAgendaTasks] = useState<ReadonlyArray<typeof tasks['edges'][0]['node']>>(
-    []
-  )
   const label =
     nextPhase.phaseType === NewMeetingPhaseTypeEnum.lastcall ? 'Last Call' : 'Next Topic'
-  useEffect(() => {
-    setAgendaTasks(
-      tasks.edges
-        .map(({node}) => node)
-        .filter((node) => node.agendaId === agendaItemId)
-        .sort((a, b) => (a.sortOrder < b.sortOrder ? 1 : -1))
-    )
-  }, [agendaItemId, tasks])
   return (
     <MeetingContent>
       <MeetingContentHeader
@@ -98,13 +94,14 @@ const ActionMeetingAgendaItems = (props: Props) => {
       />
       <ErrorBoundary>
         <AgendaItemsWrapper>
-          <Avatar picture={picture} size='larger' />
+          <Avatar picture={picture} size={96} />
           <MeetingPhaseHeading>{content}</MeetingPhaseHeading>
           <MeetingCopy>{`${preferredName}, what do you need?`}</MeetingCopy>
           <TaskCardBlock>
             <MeetingAgendaCards
               agendaId={agendaItem.id}
               maxCols={4}
+              meetingId={meetingId}
               showPlaceholders
               tasks={agendaTasks}
               teamId={team.id}
@@ -179,11 +176,11 @@ export default createFragmentContainer(
       tasks(first: 1000) @connection(key: "TeamColumnsContainer_tasks") {
         edges {
           node {
+            ...MeetingAgendaCards_tasks
             id
             agendaId
             createdAt
             sortOrder
-            ...NullableTask_task
           }
         }
       }

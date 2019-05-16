@@ -22,23 +22,21 @@ const archiveTasksForDB = async (tasks: Task[], doneMeetingId?: string) => {
       id: task.id
     }
   })
-  const updatedTasks = await r(tasksToArchive)
+  return r(tasksToArchive)
     .forEach((task) => {
       return r
         .table('Task')
         .get(task('id'))
         .update(
-          {
-            content: task('content'),
-            tags: task('tags'),
-            doneMeetingId: task('doneMeetingId')
-          },
+        {
+          content: task('content'),
+          tags: task('tags'),
+          doneMeetingId: task('doneMeetingId').default(null)
+        },
           {returnChanges: true}
         )
-    })('changes')('new_val')
-    .default([])
-
-  return updatedTasks
+    })
+    .default([])('changes')('new_val')
 }
 
 export default archiveTasksForDB

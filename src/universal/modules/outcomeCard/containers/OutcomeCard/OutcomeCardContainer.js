@@ -196,7 +196,7 @@ class OutcomeCardContainer extends Component {
       editorRef,
       editorState
     } = this.state
-    const {area, handleAddTask, hasDragStyles, isAgenda, task, isDragging} = this.props
+    const {area, hasDragStyles, isAgenda, task, isDragging} = this.props
     return (
       <div
         tabIndex={-1}
@@ -216,7 +216,6 @@ class OutcomeCardContainer extends Component {
           cardHasHover={cardHasHover}
           cardHasFocus={cardHasFocus}
           cardHasMenuOpen={cardHasMenuOpen}
-          handleAddTask={handleAddTask}
           hasDragStyles={hasDragStyles}
           isAgenda={isAgenda}
           isDragging={isDragging}
@@ -236,7 +235,6 @@ OutcomeCardContainer.propTypes = {
   area: PropTypes.string,
   atmosphere: PropTypes.object.isRequired,
   contentState: PropTypes.object.isRequired,
-  handleAddTask: PropTypes.func,
   task: PropTypes.object.isRequired,
   hasDragStyles: PropTypes.bool,
   isAgenda: PropTypes.bool,

@@ -22,6 +22,10 @@ import {
 const primePhases = (phases: GenericMeetingPhase[]) => {
   const [firstPhase, secondPhase] = phases
   firstPhase.stages[0].startAt = new Date()
+  firstPhase.stages.forEach((stage) => {
+    stage.isNavigable = true
+    stage.isNavigableByFacilitator = true
+  })
   secondPhase.stages[0].isNavigableByFacilitator = true
 }
 

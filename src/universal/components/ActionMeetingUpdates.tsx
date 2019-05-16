@@ -1,6 +1,6 @@
 import {ActionMeetingUpdates_team} from '__generated__/ActionMeetingUpdates_team.graphql'
 import ms from 'ms'
-import React, {useEffect, useState} from 'react'
+import React, {useMemo} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {ActionMeetingPhaseProps} from 'universal/components/ActionMeeting'
@@ -16,7 +16,7 @@ import TaskColumns from 'universal/components/TaskColumns/TaskColumns'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useTimeout from 'universal/hooks/useTimeout'
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
-import {AreaEnum, NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
+import {AreaEnum, IUpdatesStage, NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
 import getTaskById from 'universal/utils/getTaskById'
 import handleRightArrow from 'universal/utils/handleRightArrow'
 import isTaskPrivate from 'universal/utils/isTaskPrivate'
@@ -24,6 +24,7 @@ import lazyPreload from 'universal/utils/lazyPreload'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import EndMeetingButton from './EndMeetingButton'
+import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
 
 const BottomControlSpacer = styled('div')({
   minWidth: '6rem'
@@ -44,23 +45,23 @@ const UpdatesHelpMenu = lazyPreload(async () =>
 const ActionMeetingUpdates = (props: Props) => {
   const {avatarGroup, toggleSidebar, team, handleGotoNext} = props
   const atmosphere = useAtmosphere()
-  const {current} = handleGotoNext
-  const {gotoNext, ref: gotoNextRef} = current
+  const {gotoNext, ref: gotoNextRef} = handleGotoNext
   const minTimeComplete = useTimeout(ms('2m'))
   const {viewerId} = atmosphere
   const {id: teamId, isMeetingSidebarCollapsed, newMeeting, tasks} = team
-  const {facilitatorUserId, id: meetingId, localStage} = newMeeting!
-  const {teamMember} = localStage!
+  const {facilitatorUserId, id: meetingId, localStage, phases} = newMeeting!
+  const {id: localStageId, teamMember} = localStage!
   const {userId} = teamMember!
-  const [teamMemberTasks, setTeamMemberTasks] = useState<typeof tasks>(tasks)
-  useEffect(() => {
-    const edges = tasks.edges.filter(
-      ({node}) => node.userId === userId && !isTaskPrivate(node.tags)
-    )
-    setTeamMemberTasks({
-      ...tasks,
-      edges
-    })
+  const stageRes = findStageAfterId(phases, localStageId)!
+  const {phase: nextPhase, stage: nextStage} = stageRes
+  const label =
+    nextPhase.phaseType === NewMeetingPhaseTypeEnum.updates
+      ? (nextStage as IUpdatesStage).teamMember.preferredName
+      : phaseLabelLookup[nextPhase.phaseType]
+  const teamMemberTasks = useMemo(() => {
+    return tasks.edges
+      .map(({node}) => node)
+      .filter((task) => task.userId === userId && !isTaskPrivate(task.tags))
   }, [tasks, userId])
   const isFacilitating = facilitatorUserId === viewerId
   return (
@@ -78,6 +79,7 @@ const ActionMeetingUpdates = (props: Props) => {
             area={AreaEnum.meeting}
             getTaskById={getTaskById(teamMemberTasks)}
             isMyMeetingSection={userId === viewerId}
+            meetingId={meetingId}
             myTeamMemberId={toTeamMemberId(teamId, viewerId)}
             tasks={teamMemberTasks}
           />
@@ -91,11 +93,7 @@ const ActionMeetingUpdates = (props: Props) => {
               onKeyDown={handleRightArrow(() => gotoNext())}
               innerRef={gotoNextRef}
             >
-              <BottomNavIconLabel
-                icon='arrow_forward'
-                iconColor='warm'
-                label={`Next: ${phaseLabelLookup[NewMeetingPhaseTypeEnum.agendaitems]}`}
-              />
+              <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={`Next: ${label}`} />
             </BottomNavControl>
             <EndMeetingButton meetingId={meetingId} />
           </StyledBottomBar>
@@ -111,6 +109,7 @@ graphql`
     teamMember {
       id
       userId
+      preferredName
     }
   }
 `
@@ -135,6 +134,7 @@ export default createFragmentContainer(
             ...ActionMeetingUpdatesStage @relay(mask: false)
           }
           phases {
+            phaseType
             stages {
               id
               ...ActionMeetingUpdatesStage @relay(mask: false)
@@ -143,9 +143,9 @@ export default createFragmentContainer(
         }
       }
       tasks(first: 1000) @connection(key: "TeamColumnsContainer_tasks") {
-        ...TaskColumns_tasks
         edges {
           node {
+            ...TaskColumns_tasks
             # grab these so we can sort correctly
             id
             status

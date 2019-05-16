@@ -29,15 +29,8 @@ const AgendaItem = new GraphQLObjectType<IAgendaItem, GQLContext>({
     },
     isActive: {
       type: new GraphQLNonNull(GraphQLBoolean),
-      description:
-        'true until the agenda item has been marked isComplete and the meeting has ended',
+      description: 'true if the agenda item has not been processed or deleted',
       resolve: ({isActive}) => !!isActive
-    },
-    isComplete: {
-      type: new GraphQLNonNull(GraphQLBoolean),
-      description:
-        'true if the agenda item has been addressed in a meeting (will have a strikethrough or similar)',
-      resolve: ({isComplete}) => !!isComplete
     },
     sortOrder: {
       type: new GraphQLNonNull(GraphQLFloat),

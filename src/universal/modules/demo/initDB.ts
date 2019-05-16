@@ -245,6 +245,8 @@ const initPhases = (teamMembers) => {
           __typename: 'GenericMeetingStage',
           id: 'reflectStage',
           isComplete: false,
+          isNavigable: true,
+          isNavigableByFacilitator: true,
           meetingId: demoMeetingId,
           phaseType: REFLECT,
           startAt: now
@@ -314,6 +316,8 @@ const initNewMeeting = (teamMembers, meetingMembers) => {
     facilitatorUserId: demoViewerId,
     facilitator: viewerMeetingMember.user,
     id: demoMeetingId,
+    // alias is important for relay to normalize records correctly. if not supplied, value will be null
+    meetingId: demoMeetingId,
     meetingNumber: 1,
     meetingType: RETROSPECTIVE,
     meetingMember: viewerMeetingMember,
