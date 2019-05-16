@@ -5,10 +5,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v3.11.0 2019-May-15
+
+### Changed
+* Refactored Action meeting to new meeting format
+* Refactored email summary to support GMail mobile app
+
+### Fixed
+* Redirect from /invtation-required
+
+## v3.10.1 2019-May-14
+
+### Fixed
+* RemoveTeamMember now works (#2880)
+
 ## v3.10.0 2019-May-08
 
 ### Added
-* New Segment events to track logins, adding Jira or GitHu cards, and opening help menus in the Retro
+* New Segment events to track logins, adding Jira or GitHub cards, and opening help menus in the Retro
 
 ## v3.9.0 2019-May-01
 
