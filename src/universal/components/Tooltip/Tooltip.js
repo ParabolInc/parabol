@@ -1,34 +1,23 @@
+// Deprecated, see useTooltip
 import PropTypes from 'prop-types'
 import React, {Children, cloneElement, Component} from 'react'
 import {MAX_INT} from 'universal/utils/constants'
 import AnimatedFade from 'universal/components/AnimatedFade'
 import Modal from 'universal/components/Modal'
-import appTheme from 'universal/styles/theme/appTheme'
+import TooltipStyled from 'universal/components/TooltipStyled'
 import ui from 'universal/styles/ui'
-import {typeScale} from 'universal/styles/theme/typography'
 import styled from 'react-emotion'
 import withCoordsV2 from 'universal/decorators/withCoordsV2'
 
 const ModalBlock = styled('div')(({maxWidth}) => ({
-  padding: '.25rem .5rem',
+  padding: '4px 8px',
   position: 'absolute',
   zIndex: ui.ziTooltip,
   maxWidth
 }))
 
-const ModalContents = styled('div')(({maxHeight}) => ({
-  color: 'white',
-  backgroundColor: appTheme.palette.dark,
-  borderRadius: ui.borderRadiusSmall,
-  fontSize: typeScale[0],
-  fontWeight: 600,
-  lineHeight: typeScale[4],
-  maxHeight,
-  overflow: 'hidden',
-  padding: '.25rem .5rem',
-  textAlign: 'center',
-  whiteSpace: 'nowrap',
-  width: '100%'
+const ModalContents = styled(TooltipStyled)(({maxHeight}) => ({
+  maxHeight
 }))
 
 /*

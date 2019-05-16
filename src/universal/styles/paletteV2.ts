@@ -10,6 +10,7 @@ export namespace PALETTE {
     MAIN_LIGHTENED = '#F5F4FB', // BACKGROUND.MAIN alpha .15 over #FFF
     LIGHTEST = '#F1F0FA80',
     BACKDROP = '#4442584D', // rgba(68, 66, 88, 0.3)
+    DARK = '#444258E6',
     YELLOW = '#FFCC63',
     BLUE = '#329AE5',
     RED = '#FD6157',

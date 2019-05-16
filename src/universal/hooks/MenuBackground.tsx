@@ -3,7 +3,7 @@ import {MenuPosition} from 'universal/hooks/useCoords'
 import {PortalStatus} from 'universal/hooks/usePortal'
 import {DECELERATE} from 'universal/styles/animation'
 import {menuShadow} from 'universal/styles/elevation'
-import {Duration} from 'universal/types/constEnums'
+import {Duration, Radius} from 'universal/types/constEnums'
 
 const transformOrigins = {
   [MenuPosition.UPPER_RIGHT]: 'top right',
@@ -46,7 +46,7 @@ const MenuBackground = styled('div')(
     isDropdown: boolean
   }) => ({
     background: '#fff',
-    borderRadius: '2px',
+    borderRadius: Radius.MEDIUM,
     boxShadow: menuShadow,
     height: '100%',
     position: 'absolute',

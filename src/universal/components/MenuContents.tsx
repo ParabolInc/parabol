@@ -1,7 +1,7 @@
 import styled from 'react-emotion'
 import {PortalStatus} from 'universal/hooks/usePortal'
 import {DECELERATE} from 'universal/styles/animation'
-import {Duration} from 'universal/types/constEnums'
+import {Duration, Radius} from 'universal/types/constEnums'
 
 const animations = (portalStatus) => {
   switch (portalStatus) {
@@ -31,7 +31,7 @@ export interface MenuContentsProps {
 }
 
 const MenuContents = styled('div')(({minWidth, portalStatus}: MenuContentsProps) => ({
-  borderRadius: '2px',
+  borderRadius: Radius.MEDIUM,
   outline: 0,
   overflowY: portalStatus >= PortalStatus.AnimatedIn ? 'auto' : 'hidden',
   paddingBottom: 8,
