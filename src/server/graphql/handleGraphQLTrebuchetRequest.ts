@@ -9,9 +9,7 @@ import relayUnsubscribe from 'server/utils/relayUnsubscribe'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 
 interface Options {
-  persistedQueries?: {
-    [key: string]: string
-  }
+  getQueryString?: (hash: string) => string | Promise<string>
   isQueryAllowed? (query: string, connectionContext: ConnectionContext): boolean
 }
 
@@ -32,17 +30,17 @@ const handleGraphQLTrebuchetRequest = async (
       }
       const {variables, documentId} = payload
 
-      const {persistedQueries, isQueryAllowed} = options
+      const {getQueryString, isQueryAllowed} = options
       let query: string | null | undefined = payload.query
       // const isQueryAllowed = options.isQueryAllowed || trueOp
       if (query) {
-        if (persistedQueries) {
+        if (getQueryString) {
           if (isQueryAllowed && !isQueryAllowed(query, connectionContext)) {
             throw new Error('Custom queries are not allowed')
           }
         }
       } else {
-        query = persistedQueries ? persistedQueries[documentId!] : null
+        query = getQueryString ? await getQueryString(documentId!) : null
         if (!query) {
           throw new Error('Invalid document ID')
         }

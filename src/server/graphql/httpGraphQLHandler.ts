@@ -1,9 +1,9 @@
 import e from 'express'
-import queryMap from 'server/graphql/queryMap.json'
 import {getUserId} from '../utils/authorization'
 import sendToSentry from '../utils/sendToSentry'
 import handleGraphQLTrebuchetRequest from './handleGraphQLTrebuchetRequest'
 import isQueryAllowed from './isQueryAllowed'
+import getQueryString from 'server/graphql/getQueryString'
 
 export default (sharedDataLoader, rateLimiter, sseClients) => async (
   req: e.Request,
@@ -29,7 +29,7 @@ export default (sharedDataLoader, rateLimiter, sseClients) => async (
 
   try {
     const response = await handleGraphQLTrebuchetRequest(req.body, connectionContext, {
-      persistedQueries: queryMap,
+      getQueryString,
       isQueryAllowed
     })
     if (response) {
