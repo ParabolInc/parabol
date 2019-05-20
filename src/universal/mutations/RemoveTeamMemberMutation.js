@@ -111,9 +111,9 @@ export const removeTeamMemberTeamOnNext = (payload, {atmosphere, history}) => {
   popKickedOutNotification(payload, {atmosphere, history})
 }
 
-export const removeTeamMemberTasksUpdater = (payload, store, viewerId) => {
+export const removeTeamMemberTasksUpdater = (payload, store) => {
   const tasks = payload.getLinkedRecords('updatedTasks')
-  handleUpsertTasks(tasks, store, viewerId)
+  handleUpsertTasks(tasks, store)
 }
 
 export const removeTeamMemberTeamUpdater = (payload, store, viewerId) => {
@@ -139,7 +139,7 @@ export const removeTeamMemberTeamUpdater = (payload, store, viewerId) => {
 }
 
 export const removeTeamMemberUpdater = (payload, store, viewerId) => {
-  removeTeamMemberTasksUpdater(payload, store, viewerId)
+  removeTeamMemberTasksUpdater(payload, store)
   removeTeamMemberTeamUpdater(payload, store, viewerId)
 }
 

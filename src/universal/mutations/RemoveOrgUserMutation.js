@@ -152,7 +152,7 @@ export const removeOrgUserTaskUpdater = (payload, store, viewerId) => {
     const taskIds = getInProxy(tasks, 'id')
     handleRemoveTasks(taskIds, store, viewerId)
   } else {
-    handleUpsertTasks(tasks, store, viewerId)
+    handleUpsertTasks(tasks, store)
   }
 }
 

@@ -5101,6 +5101,12 @@ export interface IEndNewMeetingPayload {
    * The ID of the suggestion to try a retro meeting, if tried
    */
   removedSuggestedActionId: string | null
+  updatedTaskIds: Array<string> | null
+
+  /**
+   * Any tasks that were updated during the meeting
+   */
+  updatedTasks: Array<ITask>
 }
 
 export interface INavigateMeetingPayload {

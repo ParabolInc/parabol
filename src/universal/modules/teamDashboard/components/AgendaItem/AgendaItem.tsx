@@ -62,7 +62,7 @@ const AgendaItem = (props: Props) => {
     isComplete: false,
     isNavigable: false,
     isNavigableByFacilitator: false,
-    id: ''
+    id: null
   }
   const isLocalStage = localStageId === stageId
   const isFacilitatorStage = facilitatorStageId === stageId

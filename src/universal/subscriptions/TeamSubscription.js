@@ -17,7 +17,10 @@ import {startNewMeetingTeamOnNext} from 'universal/mutations/StartNewMeetingMuta
 import {navigateMeetingTeamUpdater} from 'universal/mutations/NavigateMeetingMutation'
 import {promoteNewMeetingFacilitatorTeamOnNext} from 'universal/mutations/PromoteNewMeetingFacilitatorMutation'
 import {editReflectionTeamUpdater} from 'universal/mutations/EditReflectionMutation'
-import {endNewMeetingTeamOnNext} from 'universal/mutations/EndNewMeetingMutation'
+import {
+  endNewMeetingTeamOnNext,
+  endNewMeetingTeamUpdater
+} from 'universal/mutations/EndNewMeetingMutation'
 import {updateDragLocationTeamUpdater} from 'universal/mutations/UpdateDragLocationMutation'
 import {
   endDraggingReflectionTeamOnNext,
@@ -152,6 +155,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           editReflectionTeamUpdater(payload, store)
           break
         case 'EndNewMeetingPayload':
+          endNewMeetingTeamUpdater(payload, {store})
           break
         case 'MeetingCheckInPayload':
           break

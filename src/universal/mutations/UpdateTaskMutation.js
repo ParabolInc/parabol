@@ -52,7 +52,7 @@ export const updateTaskTaskOnNext = (payload, {atmosphere, history}) => {
 
 export const updateTaskTaskUpdater = (payload, store, viewerId) => {
   const task = payload.getLinkedRecord('task')
-  handleUpsertTasks(task, store, viewerId)
+  handleUpsertTasks(task, store)
 
   const addedNotification = payload.getLinkedRecord('addedNotification')
   handleAddNotifications(addedNotification, store, viewerId)
@@ -111,7 +111,7 @@ const UpdateTaskMutation = (environment, updatedTask, area, onCompleted, onError
         const nextTags = getTagsFromEntityMap(entityMap)
         task.setValue(nextTags, 'tags')
       }
-      handleUpsertTasks(task, store, viewerId)
+      handleUpsertTasks(task, store)
     },
     onCompleted,
     onError

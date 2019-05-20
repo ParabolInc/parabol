@@ -62,7 +62,7 @@ export const createTaskTaskUpdater = (payload, store, viewerId, isEditing) => {
   const userId = task.getValue('userId')
   const editorPayload = getOptimisticTaskEditor(store, userId, taskId, isEditing)
   handleEditTask(editorPayload, store)
-  handleUpsertTasks(task, store, viewerId)
+  handleUpsertTasks(task, store)
 }
 
 export const createTaskNotificationOnNext = (payload, {atmosphere, history}) => {
@@ -112,7 +112,7 @@ const CreateTaskMutation = (environment, newTask, area, onError, onCompleted) =>
         .setLinkedRecord(store.get(teamId), 'team')
       const editorPayload = getOptimisticTaskEditor(store, userId, taskId, isEditing)
       handleEditTask(editorPayload, store)
-      handleUpsertTasks(task, store, viewerId)
+      handleUpsertTasks(task, store)
     },
     onError,
     onCompleted
