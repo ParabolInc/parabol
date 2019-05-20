@@ -1,18 +1,12 @@
-import {removeTeamMemberTeamMemberUpdater} from 'universal/mutations/RemoveTeamMemberMutation'
-import {removeOrgUserTeamMemberUpdater} from 'universal/mutations/RemoveOrgUserMutation'
-
 const subscription = graphql`
   subscription TeamMemberSubscription {
     teamMemberSubscription {
       __typename
-      ...RemoveOrgUserMutation_teamMember @relay(mask: false)
-      ...RemoveTeamMemberMutation_teamMember @relay(mask: false)
       ...UpdateUserProfileMutation_teamMember @relay(mask: false)
     }
   }
 `
-const TeamMemberSubscription = (atmosphere) => {
-  const {viewerId} = atmosphere
+const TeamMemberSubscription = () => {
   return {
     subscription,
     variables: {},
@@ -21,12 +15,6 @@ const TeamMemberSubscription = (atmosphere) => {
       if (!payload) return
       const type = payload.getValue('__typename')
       switch (type) {
-        case 'RemoveOrgUserPayload':
-          removeOrgUserTeamMemberUpdater(payload, store, viewerId)
-          break
-        case 'RemoveTeamMemberPayload':
-          removeTeamMemberTeamMemberUpdater(payload, store)
-          break
         case 'UpdateUserProfilePayload':
           break
         default:

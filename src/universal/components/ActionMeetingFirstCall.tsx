@@ -70,10 +70,14 @@ const ActionMeetingFirstCall = (props: Props) => {
           <MeetingPhaseHeading>{'Now, what do you need?'}</MeetingPhaseHeading>
 
           <MeetingCopy>{`Time to add your ${AGENDA_ITEM_LABEL}s to the list.`}</MeetingCopy>
-
           <AgendaShortcutHint />
+          {!isFacilitating && (
+            <MeetingFacilitationHint>
+              {'Waiting for'} <b>{preferredName}</b> {`to start the ${phaseName}`}
+            </MeetingFacilitationHint>
+          )}
         </FirstCallWrapper>
-        {isFacilitating ? (
+        {isFacilitating && (
           <StyledBottomBar>
             <BottomControlSpacer />
             <BottomNavControl
@@ -86,10 +90,6 @@ const ActionMeetingFirstCall = (props: Props) => {
             </BottomNavControl>
             <EndMeetingButton meetingId={meetingId} />
           </StyledBottomBar>
-        ) : (
-          <MeetingFacilitationHint>
-            {'Waiting for'} <b>{preferredName}</b> {`to start the ${phaseName}`}
-          </MeetingFacilitationHint>
         )}
       </ErrorBoundary>
       <MeetingHelpToggle

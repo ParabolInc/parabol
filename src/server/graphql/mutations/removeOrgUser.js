@@ -13,7 +13,6 @@ import {
   ORGANIZATION,
   TASK,
   TEAM,
-  TEAM_MEMBER,
   UPDATED
 } from 'universal/utils/constants'
 import standardError from 'server/utils/standardError'
@@ -142,7 +141,6 @@ const removeOrgUser = {
     teamIds.forEach((teamId) => {
       const teamData = {...data, teamFilterId: teamId}
       publish(TEAM, teamId, RemoveOrgUserPayload, teamData, subOptions)
-      publish(TEAM_MEMBER, teamId, RemoveOrgUserPayload, teamData, subOptions)
     })
 
     const remainingTeamMembers = await dataLoader.get('teamMembersByTeamId').loadMany(teamIds)

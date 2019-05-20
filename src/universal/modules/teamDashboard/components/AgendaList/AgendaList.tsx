@@ -1,4 +1,3 @@
-import {AgendaList_agendaItemPhase} from '__generated__/AgendaList_agendaItemPhase.graphql'
 import {AgendaList_team} from '__generated__/AgendaList_team.graphql'
 import React, {useCallback, useMemo} from 'react'
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
@@ -27,17 +26,14 @@ const DraggableAgendaItem = styled('div')(({isDragging}: {isDragging: boolean}) 
 }))
 
 interface Props {
-  agendaItemPhase: AgendaList_agendaItemPhase | null
-  facilitatorStageId: string | undefined
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
-  localStageId: string | undefined
   team: AgendaList_team
 }
 
 const AgendaList = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {agendaItemPhase, facilitatorStageId, gotoStageId, localStageId, team} = props
-  const {contentFilter, agendaItems} = team
+  const {gotoStageId, team} = props
+  const {contentFilter, agendaItems, newMeeting} = team
   const filteredAgendaItems = useMemo(() => {
     return contentFilter
       ? agendaItems.filter(({content}) => content.match(contentFilter))
@@ -77,7 +73,7 @@ const AgendaList = (props: Props) => {
   )
 
   if (filteredAgendaItems.length === 0) {
-    return <AgendaListEmptyState isDashboard={!agendaItemPhase} />
+    return <AgendaListEmptyState isDashboard={!newMeeting} />
   }
 
   return (
@@ -89,10 +85,6 @@ const AgendaList = (props: Props) => {
               return (
                 <div ref={provided.innerRef}>
                   {filteredAgendaItems.map((item, idx) => {
-                    const agendaItemStage =
-                      (agendaItemPhase &&
-                        agendaItemPhase.stages.find((stage) => stage.agendaItemId === item.id)) ||
-                      null
                     return (
                       <Draggable key={item.id} draggableId={item.id} index={idx}>
                         {(dragProvided, dragSnapshot) => {
@@ -106,19 +98,11 @@ const AgendaList = (props: Props) => {
                               <AgendaItem
                                 key={item.id}
                                 agendaItem={item}
-                                agendaItemStage={agendaItemStage}
                                 agendaLength={filteredAgendaItems.length}
                                 gotoStageId={gotoStageId}
                                 idx={agendaItems.findIndex((agendaItem) => agendaItem === item)}
                                 isDragging={dragSnapshot.isDragging}
-                                isLocalStage={
-                                  agendaItemStage ? agendaItemStage.id === localStageId : false
-                                }
-                                isFacilitatorStage={
-                                  agendaItemStage
-                                    ? agendaItemStage.id === facilitatorStageId
-                                    : false
-                                }
+                                newMeeting={newMeeting}
                               />
                             </DraggableAgendaItem>
                           )
@@ -139,13 +123,6 @@ const AgendaList = (props: Props) => {
 export default createFragmentContainer(
   AgendaList,
   graphql`
-    fragment AgendaList_agendaItemPhase on AgendaItemsPhase {
-      stages {
-        id
-        agendaItemId
-        ...AgendaItem_agendaItemStage
-      }
-    }
     fragment AgendaList_team on Team {
       contentFilter
       agendaItems {
@@ -154,6 +131,10 @@ export default createFragmentContainer(
         # need this for the DnD
         sortOrder
         ...AgendaItem_agendaItem
+      }
+      newMeeting {
+        ...AgendaItem_newMeeting
+        id
       }
     }
   `

@@ -200,7 +200,7 @@ export interface IUser {
   /**
    * A previous meeting that the user was in (present or absent)
    */
-  newMeeting: NewMeeting
+  newMeeting: NewMeeting | null
 
   /**
    * all the notifications for a single user
@@ -6114,10 +6114,7 @@ export interface IUpdateDragLocationPayload {
   userId: string
 }
 
-export type TeamMemberSubscriptionPayload =
-  | IRemoveTeamMemberPayload
-  | IRemoveOrgUserPayload
-  | IUpdateUserProfilePayload
+export type TeamMemberSubscriptionPayload = IUpdateUserProfilePayload
 
 /**
  * The meeting phase where all team members check in one-by-one

@@ -13,12 +13,9 @@ import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useTimeout from 'universal/hooks/useTimeout'
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
 import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy'
-import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint'
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
-import {AGENDA_ITEMS} from 'universal/utils/constants'
 import handleRightArrow from 'universal/utils/handleRightArrow'
 import lazyPreload from 'universal/utils/lazyPreload'
-import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import EndMeetingButton from './EndMeetingButton'
 import {ActionMeetingAgendaItems_team} from '__generated__/ActionMeetingAgendaItems_team.graphql'
 import Avatar from 'universal/components/Avatar/Avatar'
@@ -80,7 +77,6 @@ const ActionMeetingAgendaItems = (props: Props) => {
   const {content, teamMember} = agendaItem
   const {picture, preferredName} = teamMember
   const isFacilitating = facilitatorUserId === viewerId
-  const phaseName = phaseLabelLookup[AGENDA_ITEMS]
   const nextStageRes = findStageAfterId(phases, localStageId)
   const {phase: nextPhase} = nextStageRes!
   const label =
@@ -109,7 +105,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
           </TaskCardBlock>
           <EditorHelpModalContainer />
         </AgendaItemsWrapper>
-        {isFacilitating ? (
+        {isFacilitating && (
           <StyledBottomBar>
             <BottomControlSpacer />
             <BottomNavControl
@@ -122,10 +118,6 @@ const ActionMeetingAgendaItems = (props: Props) => {
             </BottomNavControl>
             <EndMeetingButton meetingId={meetingId} />
           </StyledBottomBar>
-        ) : (
-          <MeetingFacilitationHint>
-            {'Waiting for'} <b>{preferredName}</b> {`to start the ${phaseName}`}
-          </MeetingFacilitationHint>
         )}
       </ErrorBoundary>
       <MeetingHelpToggle

@@ -46,19 +46,14 @@ graphql`
 
 graphql`
   fragment RemoveOrgUserMutation_team on RemoveOrgUserPayload {
-    teams {
-      ...RemoveTeamMemberMutation_teamTeam @relay(mask: false)
+    teamMembers {
+      id
     }
     user {
       id
     }
-  }
-`
-
-graphql`
-  fragment RemoveOrgUserMutation_teamMember on RemoveOrgUserPayload {
-    teamMembers {
-      id
+    teams {
+      ...RemoveTeamMemberMutation_teamTeam @relay(mask: false)
     }
     user {
       id
@@ -85,7 +80,6 @@ const mutation = graphql`
       }
       ...RemoveOrgUserMutation_organization @relay(mask: false)
       ...RemoveOrgUserMutation_team @relay(mask: false)
-      ...RemoveOrgUserMutation_teamMember @relay(mask: false)
       ...RemoveOrgUserMutation_task @relay(mask: false)
     }
   }
@@ -144,13 +138,11 @@ export const removeOrgUserTeamUpdater = (payload, store, viewerId) => {
     const teams = payload.getLinkedRecords('teams')
     const teamIds = getInProxy(teams, 'id')
     handleRemoveTeams(teamIds, store, viewerId)
+  } else {
+    const teamMembers = payload.getLinkedRecords('teamMembers')
+    const teamMemberIds = getInProxy(teamMembers, 'id')
+    handleRemoveTeamMembers(teamMemberIds, store)
   }
-}
-
-export const removeOrgUserTeamMemberUpdater = (payload, store) => {
-  const teamMembers = payload.getLinkedRecords('teamMembers')
-  const teamMemberIds = getInProxy(teamMembers, 'id')
-  handleRemoveTeamMembers(teamMemberIds, store)
 }
 
 export const removeOrgUserTaskUpdater = (payload, store, viewerId) => {
@@ -213,6 +205,8 @@ const RemoveOrgUserMutation = (atmosphere, variables, context, onError, onComple
       const payload = store.getRootField('removeOrgUser')
       if (!payload) return
       removeOrgUserOrganizationUpdater(payload, store, viewerId)
+      removeOrgUserTeamUpdater(payload, store, viewerId)
+      removeOrgUserTaskUpdater(payload, store, viewerId)
     },
     // optimisticUpdater: (store) => {
     //   const {orgId, userId} = variables;

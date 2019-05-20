@@ -56,6 +56,7 @@ const iconLinkLabel = {
 
 interface Props {
   createdAt: string
+  isDemo: boolean
   meetingNumber: number
   meetingUrl: string
   teamName: string
@@ -67,8 +68,8 @@ const sectionStart = {
 /* TODO remove divs */
 
 const SummaryEmailScheduleCalendar = (props: Props) => {
-  const {createdAt, meetingUrl, meetingNumber, teamName} = props
-  if (meetingNumber > 2) return null
+  const {createdAt, isDemo, meetingUrl, meetingNumber, teamName} = props
+  if (meetingNumber > 2 || isDemo) return null
   return (
     <>
       <tr>

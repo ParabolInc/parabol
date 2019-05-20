@@ -28,12 +28,8 @@ const ActionSidebarAgendaItemsSection = (props: Props) => {
   } = props
   const atmosphere = useAtmosphere()
   const {id: teamId, isMeetingSidebarCollapsed, newMeeting} = team!
-  const {localPhase, localStage, facilitatorStageId, phases} = newMeeting || UNSTARTED_MEETING
-  const agendaItemPhase = phases!.find(
-    (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.agendaitems
-  )
+  const {localPhase} = newMeeting || UNSTARTED_MEETING
   const phaseType = localPhase ? localPhase.phaseType : null
-  const localStageId = localStage ? localStage.id : ''
 
   const handleClick = async (stageId: string) => {
     gotoStageId(stageId).catch()
@@ -51,11 +47,8 @@ const ActionSidebarAgendaItemsSection = (props: Props) => {
         <LabelHeading>{'Agenda Topics'}</LabelHeading>
       </MeetingSidebarLabelBlock>
       <AgendaListAndInput
-        agendaItemPhase={agendaItemPhase || null}
-        facilitatorStageId={facilitatorStageId}
         gotoStageId={handleClick}
         isDisabled={phaseType === NewMeetingPhaseTypeEnum.checkin}
-        localStageId={localStageId}
         team={team!}
       />
     </SidebarPhaseItemChild>
@@ -65,7 +58,6 @@ const ActionSidebarAgendaItemsSection = (props: Props) => {
 graphql`
   fragment ActionSidebarAgendaItemsSectionAgendaItemPhase on NewMeetingPhase {
     phaseType
-    ...AgendaListAndInput_agendaItemPhase
     ... on AgendaItemsPhase {
       stages {
         id

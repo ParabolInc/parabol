@@ -60,7 +60,7 @@ const query = graphql`
   }
 `
 
-type Meeting = NonNullable<ExportToCSVQuery['response']['viewer']>['newMeeting']
+type Meeting = NonNullable<NonNullable<ExportToCSVQuery['response']['viewer']>['newMeeting']>
 
 interface CSVRetroRow {
   title: string
@@ -178,6 +178,7 @@ class ExportToCSV extends Component<Props> {
     const {viewer} = data
     if (!viewer) return
     const {newMeeting} = viewer
+    if (!newMeeting) return
     const rows = this.getRows(newMeeting)
     const {endedAt, team, meetingType} = newMeeting
     const {name: teamName} = team

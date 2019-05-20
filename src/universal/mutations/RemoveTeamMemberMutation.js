@@ -28,14 +28,6 @@ graphql`
 `
 
 graphql`
-  fragment RemoveTeamMemberMutation_teamMember on RemoveTeamMemberPayload {
-    teamMember {
-      id
-    }
-  }
-`
-
-graphql`
   fragment RemoveTeamMemberMutation_teamTeam on Team {
     id
     newMeeting {
@@ -70,6 +62,7 @@ graphql`
       ...RemoveTeamMemberMutation_teamTeam @relay(mask: false)
     }
     teamMember {
+      id
       userId
     }
   }
@@ -81,7 +74,6 @@ const mutation = graphql`
       error {
         message
       }
-      ...RemoveTeamMemberMutation_teamMember @relay(mask: false)
       ...RemoveTeamMemberMutation_task @relay(mask: false)
       ...RemoveTeamMemberMutation_team @relay(mask: false)
     }
@@ -124,14 +116,13 @@ export const removeTeamMemberTasksUpdater = (payload, store, viewerId) => {
   handleUpsertTasks(tasks, store, viewerId)
 }
 
-export const removeTeamMemberTeamMemberUpdater = (payload, store) => {
-  const teamMemberId = getInProxy(payload, 'teamMember', 'id')
-  handleRemoveTeamMembers(teamMemberId, store)
-}
-
 export const removeTeamMemberTeamUpdater = (payload, store, viewerId) => {
   const removedUserId = getInProxy(payload, 'teamMember', 'userId')
-  if (removedUserId !== viewerId) return
+  if (removedUserId !== viewerId) {
+    const teamMemberId = getInProxy(payload, 'teamMember', 'id')
+    handleRemoveTeamMembers(teamMemberId, store)
+    return
+  }
   const removedNotifications = payload.getLinkedRecords('removedNotifications')
   const notificationIds = getInProxy(removedNotifications, 'id')
   handleRemoveNotifications(notificationIds, store, viewerId)
@@ -148,7 +139,6 @@ export const removeTeamMemberTeamUpdater = (payload, store, viewerId) => {
 }
 
 export const removeTeamMemberUpdater = (payload, store, viewerId) => {
-  removeTeamMemberTeamMemberUpdater(payload, store)
   removeTeamMemberTasksUpdater(payload, store, viewerId)
   removeTeamMemberTeamUpdater(payload, store, viewerId)
 }
