@@ -41,6 +41,7 @@ const SidebarParent = styled('div')({
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
+  height: '100vh',
   maxWidth: meetingSidebarWidth,
   minWidth: meetingSidebarWidth,
   padding: '1.25rem 0 0'
