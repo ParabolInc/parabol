@@ -22,7 +22,8 @@ const avatarCell = {
 }
 
 const avatarStyles = {
-  borderRadius: '100%'
+  borderRadius: '100%',
+  minWidth: 80
 }
 
 const nameStyle = {

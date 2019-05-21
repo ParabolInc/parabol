@@ -130,7 +130,7 @@ const finishMeetingType = async (meeting: Meeting, dataLoader: DataLoaderWorker)
   return undefined
 }
 
-const getIsKill = async (meetingType: MeetingType, phase: GenericMeetingPhase) => {
+const getIsKill = (meetingType: MeetingType, phase: GenericMeetingPhase) => {
   switch (meetingType) {
     case 'action':
       return ![AGENDA_ITEMS, LAST_CALL].includes(phase.phaseType)

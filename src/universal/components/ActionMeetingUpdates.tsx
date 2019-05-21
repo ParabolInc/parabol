@@ -52,7 +52,8 @@ const ActionMeetingUpdates = (props: Props) => {
   const {facilitatorUserId, id: meetingId, localStage, phases} = newMeeting!
   const {id: localStageId, teamMember} = localStage!
   const {userId} = teamMember!
-  const stageRes = findStageAfterId(phases, localStageId)!
+  const stageRes = findStageAfterId(phases, localStageId)
+  if (!stageRes) return null
   const {phase: nextPhase, stage: nextStage} = stageRes
   const label =
     nextPhase.phaseType === NewMeetingPhaseTypeEnum.updates

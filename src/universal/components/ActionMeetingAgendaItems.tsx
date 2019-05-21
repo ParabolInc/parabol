@@ -49,10 +49,7 @@ const AgendaItemsWrapper = styled('div')({
 })
 
 const TaskCardBlock = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  overflow: 'auto',
-  padding: 8,
+  padding: 16,
   width: '100%'
 })
 
@@ -98,7 +95,6 @@ const ActionMeetingAgendaItems = (props: Props) => {
               agendaId={agendaItem.id}
               maxCols={4}
               meetingId={meetingId}
-              showPlaceholders
               tasks={agendaTasks}
               teamId={team.id}
             />
