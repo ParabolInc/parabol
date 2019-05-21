@@ -8,7 +8,7 @@ const FlexDiv = styled('div')({
   /* zIndex notes: patch fix for responsive layout shortcomings
      similar to team dashboard patch, users can scroll task columns
      on small viewports */
-  zIndex: '200'
+  zIndex: 200
 })
 
 interface Props {
