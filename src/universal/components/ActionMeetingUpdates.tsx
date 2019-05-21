@@ -34,6 +34,22 @@ const StyledBottomBar = styled(MeetingControlBar)({
   justifyContent: 'space-between'
 })
 
+const StyledColumnsWrapper = styled(MeetingPhaseWrapper)({
+  position: 'relative'
+})
+
+/* InnerColumnsWrapper is a patch fix to ensure correct
+   behavior for task columns overflow in small viewports TA */
+const InnerColumnsWrapper = styled('div')({
+  display: 'flex',
+  overflow: 'auto',
+  position: 'absolute',
+  top: 0,
+  right: 0,
+  bottom: 0,
+  left: 0
+})
+
 interface Props extends ActionMeetingPhaseProps {
   team: ActionMeetingUpdates_team
 }
@@ -75,16 +91,18 @@ const ActionMeetingUpdates = (props: Props) => {
         <ActionMeetingUpdatesPrompt team={team} />
       </MeetingContentHeader>
       <ErrorBoundary>
-        <MeetingPhaseWrapper>
-          <TaskColumns
-            area={AreaEnum.meeting}
-            getTaskById={getTaskById(teamMemberTasks)}
-            isMyMeetingSection={userId === viewerId}
-            meetingId={meetingId}
-            myTeamMemberId={toTeamMemberId(teamId, viewerId)}
-            tasks={teamMemberTasks}
-          />
-        </MeetingPhaseWrapper>
+        <StyledColumnsWrapper>
+          <InnerColumnsWrapper>
+            <TaskColumns
+              area={AreaEnum.meeting}
+              getTaskById={getTaskById(teamMemberTasks)}
+              isMyMeetingSection={userId === viewerId}
+              meetingId={meetingId}
+              myTeamMemberId={toTeamMemberId(teamId, viewerId)}
+              tasks={teamMemberTasks}
+            />
+          </InnerColumnsWrapper>
+        </StyledColumnsWrapper>
         {isFacilitating && (
           <StyledBottomBar>
             <BottomControlSpacer />
