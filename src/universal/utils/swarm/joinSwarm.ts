@@ -33,7 +33,9 @@ const joinSwarm = async (
   })
 
   // a disposable is null when component is unmounted
-  if (disposable.current == null) return
+  if (disposable.current === null) {
+    return
+  }
 
   dispatchState({
     type: 'addSwarm',

@@ -14,7 +14,8 @@ const useEmailItemGrid = (items: ReadonlyArray<any>, maxColumns: number, minColu
   return (cb: (item) => ReactElement) => {
     return rows.map((row, idx) => {
       return (
-        <table key={idx} align='center' width='50%'>
+        // if width changes here, make sure the images inside the table don't collapse
+        <table key={idx} align='center' width='100%'>
           <tbody>
             <tr>
               {row.map((item, idx) => {

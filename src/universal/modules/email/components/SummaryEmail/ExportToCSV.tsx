@@ -185,11 +185,12 @@ class ExportToCSV extends Component<Props> {
     const label = meetingType[0].toUpperCase() + meetingType.slice(1)
     const parser = new Json2csv.Parser()
     const csv = parser.parse(rows)
-    const csvContent = 'data:text/csv;charset=utf-8,' + csv
     const date = new Date(endedAt)
     const numDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
     // copied from https://stackoverflow.com/questions/18848860/javascript-array-to-csv/18849208#18849208
-    const encodedUri = encodeURI(csvContent)
+    // note: using encodeUri does NOT work on the # symbol & breaks
+    const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'})
+    const encodedUri = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.setAttribute('href', encodedUri)
     link.setAttribute('download', `Parabol${label}_${teamName}_${numDate}.csv`)
