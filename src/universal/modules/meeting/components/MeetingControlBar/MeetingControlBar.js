@@ -1,25 +1,32 @@
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
+import {meetingBottomBarHeight, meetingSidebarMediaQuery} from 'universal/styles/meeting'
 import {
-  meetingBorderColor,
-  meetingBottomBarHeight,
-  meetingChromeBoxShadowInset
-} from 'universal/styles/meeting'
+  desktopBarShadow,
+  bottomBarShadow,
+  ZINDEX_BOTTOM_BAR,
+  ZINDEX_DESKTOP_BAR
+} from 'universal/styles/elevation'
 
 const MeetingControlBar = styled('div')({
   alignItems: 'center',
   backgroundColor: ui.palette.white,
-  borderTop: `.0625rem solid ${meetingBorderColor}`,
-  boxShadow: meetingChromeBoxShadowInset,
+  boxShadow: bottomBarShadow,
   boxSizing: 'content-box',
   color: ui.hintColor,
   display: 'flex',
   flexWrap: 'nowrap',
-  fontSize: '.8125rem',
+  fontSize: 13,
   justifyContent: 'center',
   minHeight: meetingBottomBarHeight,
   overflowX: 'auto',
-  width: '100%'
+  width: '100%',
+  zIndex: ZINDEX_BOTTOM_BAR,
+
+  [meetingSidebarMediaQuery]: {
+    boxShadow: desktopBarShadow,
+    zIndex: ZINDEX_DESKTOP_BAR
+  }
 })
 
 export default MeetingControlBar

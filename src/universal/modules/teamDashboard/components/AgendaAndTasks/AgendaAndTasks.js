@@ -8,13 +8,18 @@ import TeamColumnsContainer from 'universal/modules/teamDashboard/containers/Tea
 import TeamTasksHeaderContainer from 'universal/modules/teamDashboard/containers/TeamTasksHeader/TeamTasksHeaderContainer'
 import ui from 'universal/styles/ui'
 import styled from 'react-emotion'
+import {desktopSidebarShadow, navDrawerShadow} from 'universal/styles/elevation'
 
 const RootBlock = styled('div')({
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
   position: 'relative',
-  width: '100%'
+  minWidth: ui.taskColumnsMinWidth,
+  width: '100%',
+  '@media screen and (min-width: 1200px)': {
+    minWidth: 0
+  }
 })
 
 const TasksMain = styled('div')({
@@ -53,6 +58,7 @@ const Inner = styled('div')({
   flex: 1,
   margin: 0,
   maxWidth: ui.taskColumnsMaxWidth,
+  position: 'relative',
   width: '100%',
 
   [ui.dashTeamBreakpointUp]: {
@@ -60,8 +66,21 @@ const Inner = styled('div')({
   }
 })
 
+/* InnerOverflow is a patch fix to ensure correct
+   behavior for task columns overflow in small viewports TA */
+const InnerOverflow = styled('div')({
+  display: 'flex',
+  overflow: 'auto',
+  position: 'absolute',
+  top: 0,
+  right: 0,
+  bottom: 0,
+  left: 0
+})
+
 const AgendaMain = styled('div')(({hideAgenda}) => ({
-  backgroundColor: !hideAgenda && ui.palette.white,
+  backgroundColor: hideAgenda ? '' : ui.palette.white,
+  boxShadow: hideAgenda ? 'none' : navDrawerShadow,
   bottom: hideAgenda ? 'auto' : '0',
   display: 'flex',
   flex: 1,
@@ -69,7 +88,10 @@ const AgendaMain = styled('div')(({hideAgenda}) => ({
   position: 'absolute',
   right: 0,
   top: 0,
-  width: ui.dashAgendaWidth
+  width: ui.dashAgendaWidth,
+  '@media screen and (min-width: 800px)': {
+    boxShadow: hideAgenda ? 'none' : desktopSidebarShadow
+  }
 }))
 
 const AgendaContent = styled('div')({
@@ -99,7 +121,9 @@ const AgendaAndTasks = (props) => {
         </TasksHeader>
         <TasksContent hideAgenda={hideAgenda}>
           <Inner>
-            <TeamColumnsContainer teamId={teamId} viewer={viewer} />
+            <InnerOverflow>
+              <TeamColumnsContainer teamId={teamId} viewer={viewer} />
+            </InnerOverflow>
           </Inner>
         </TasksContent>
       </TasksMain>
