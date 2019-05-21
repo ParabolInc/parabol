@@ -85,6 +85,7 @@ const AgendaMain = styled('div')(({hideAgenda}) => ({
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
+  overflow: 'auto',
   position: 'absolute',
   right: 0,
   top: 0,
