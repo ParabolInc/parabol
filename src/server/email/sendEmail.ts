@@ -88,11 +88,13 @@ interface EmailContent {
 
 const sendMailgunEmail = async (to: string, emailContent: EmailContent) => {
   const {subject, body, html} = emailContent
+  console.log(7, subject)
   if (!mailgunKey) {
     console.log('No mailgun key. Logging email: ', to, '\n', subject, '\n', body)
     return true
   }
   try {
+    console.log(8, to)
     await mailgun.messages().send({
       from: mailgunFrom,
       to,

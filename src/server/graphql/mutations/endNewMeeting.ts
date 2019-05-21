@@ -228,7 +228,7 @@ export default {
     }).catch()
     sendSegmentEvent(eventName, nonFacilitators, traits).catch()
     sendSegmentIdentify(presentMemberUserIds).catch()
-    sendNewMeetingSummary(completedMeeting, context).catch()
+    sendNewMeetingSummary(completedMeeting, context).catch(console.log)
 
     const events = meetingMembers.map((meetingMember) => ({
       id: shortid.generate(),
