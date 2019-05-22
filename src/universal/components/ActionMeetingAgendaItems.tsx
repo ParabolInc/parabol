@@ -48,9 +48,45 @@ const AgendaItemsWrapper = styled('div')({
   height: '100%'
 })
 
+const AgendaVerbatim = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  margin: '0 auto'
+})
+
+const StyledHeading = styled(MeetingPhaseHeading)({
+  marginLeft: 16,
+  fontSize: 24
+})
+
+const StyledCopy = styled(MeetingCopy)({
+  margin: '16px 0 0'
+})
+
 const TaskCardBlock = styled('div')({
-  padding: 16,
+  display: 'flex',
+  flex: 1,
+  margin: '0 auto',
+  maxWidth: 296 * 4 + 16 * 5,
+  position: 'relative',
   width: '100%'
+})
+
+const Inner = styled('div')({
+  display: 'flex',
+  overflow: 'auto',
+  position: 'absolute',
+  top: 0,
+  right: 0,
+  bottom: 0,
+  left: 0
+})
+
+const Inception = styled('div')({
+  flex: 1,
+  margin: '0 auto',
+  height: '100%',
+  padding: 16
 })
 
 const ActionMeetingAgendaItems = (props: Props) => {
@@ -87,17 +123,24 @@ const ActionMeetingAgendaItems = (props: Props) => {
       />
       <ErrorBoundary>
         <AgendaItemsWrapper>
-          <Avatar picture={picture} size={96} />
-          <MeetingPhaseHeading>{content}</MeetingPhaseHeading>
-          <MeetingCopy>{`${preferredName}, what do you need?`}</MeetingCopy>
+          <AgendaVerbatim>
+            <Avatar picture={picture} size={64} />
+            <StyledHeading>{content}</StyledHeading>
+          </AgendaVerbatim>
+          <StyledCopy>{`${preferredName}, what do you need?`}</StyledCopy>
           <TaskCardBlock>
-            <MeetingAgendaCards
-              agendaId={agendaItem.id}
-              maxCols={4}
-              meetingId={meetingId}
-              tasks={agendaTasks}
-              teamId={team.id}
-            />
+            <Inner>
+              <Inception>
+                <MeetingAgendaCards
+                  agendaId={agendaItem.id}
+                  maxCols={4}
+                  meetingId={meetingId}
+                  showPlaceholders
+                  tasks={agendaTasks}
+                  teamId={team.id}
+                />
+              </Inception>
+            </Inner>
           </TaskCardBlock>
           <EditorHelpModalContainer />
         </AgendaItemsWrapper>
