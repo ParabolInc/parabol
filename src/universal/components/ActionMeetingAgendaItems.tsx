@@ -40,8 +40,6 @@ const ActionMeetingAgendaItemsHelpMenu = lazyPreload(async () =>
   import(/* webpackChunkName: 'ActionMeetingAgendaItemsHelpMenu' */ 'universal/components/MeetingHelp/ActionMeetingAgendaItemsHelpMenu')
 )
 
-// staging
-
 const AgendaItemsWrapper = styled('div')({
   display: 'flex',
   flexDirection: 'column',
