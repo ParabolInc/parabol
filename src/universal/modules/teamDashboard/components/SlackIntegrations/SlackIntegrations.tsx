@@ -53,7 +53,7 @@ const SlackIntegrations = (props: Props) => {
     onCompleted,
     teamMemberId
   } = props
-  const {slackChannels, integrationProvider} = viewer
+  const {integrationProvider} = viewer
   const handleRemoveChannel = (slackGlobalId) => () => {
     RemoveSlackChannelMutation(atmosphere, slackGlobalId, teamId)
   }
@@ -80,17 +80,7 @@ const SlackIntegrations = (props: Props) => {
           </RowInfo>
           {accessToken && (
             <RowActions>
-              <FlatButton
-                onClick={() =>
-                  RemoveProviderMutation(
-                    atmosphere,
-                    {providerId: integrationProvider && integrationProvider.id, teamId},
-                    {service: SLACK, onError, onCompleted}
-                  )
-                }
-              >
-                {'Remove Slack'}
-              </FlatButton>
+              <FlatButton>{'Remove Slack'}</FlatButton>
               <FlatButton onClick={openOAuth}>{'Refresh Token'}</FlatButton>
             </RowActions>
           )}
@@ -100,7 +90,7 @@ const SlackIntegrations = (props: Props) => {
             <AddSlackChannel
               accessToken={accessToken}
               teamMemberId={teamMemberId}
-              subbedChannels={slackChannels}
+              subbedChannels={[]}
             />
           </Row>
         ) : (
@@ -108,9 +98,9 @@ const SlackIntegrations = (props: Props) => {
             {'Authorize Slack to Add a Channel'}
           </AddSlackButton>
         )}
-        {slackChannels && (
+        {false && (
           <RowInfo>
-            {slackChannels.map((channel) => {
+            {[].map((channel) => {
               const {id, channelId, channelName} = channel
               return (
                 <IntegrationRow key={`${channelId}-row`}>
@@ -133,11 +123,6 @@ export default createFragmentContainer(
       integrationProvider(teamId: $teamId, service: $service) {
         id
         accessToken
-      }
-      slackChannels(teamId: $teamId) {
-        id
-        channelId
-        channelName
       }
     }
   `

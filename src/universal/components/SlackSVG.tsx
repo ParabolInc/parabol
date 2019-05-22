@@ -2,7 +2,7 @@ import React from 'react'
 
 const SlackSVG = React.memo(() => {
   return (
-    <svg width='48' height='48' viewBox='0 0 48 48' fill='none' xmlns='http://www.w3.org/2000/svg'>
+    <svg width='24' height='24' viewBox='0 0 48 48' fill='none' xmlns='http://www.w3.org/2000/svg'>
       <path
         d='M12.9837 29.013C12.9837 31.2101 11.1889 33.0049 8.99186 33.0049C6.79479 33.0049 5 31.2101 5 29.013C5 26.816 6.79479 25.0212 8.99186 25.0212H12.9837V29.013Z'
         fill='#E01E5A'

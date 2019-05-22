@@ -3,7 +3,7 @@ import shortid from 'shortid'
 // This deprecates the SlackIntegration table as well as all slack rows in the Provider table
 exports.up = async (r) => {
   try {
-    await Promise.all([r.tableCreate('SlackAuth')])
+    await Promise.all([r.tableCreate('SlackAuth'), r.tableCreate('SlackNotification')])
   } catch (e) {
     /**/
   }

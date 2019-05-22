@@ -13,7 +13,7 @@ const publish = (
   channel: string,
   type: GraphQLObjectType,
   payload: {[key: string]: any},
-  subOptions: SubOptions
+  subOptions: SubOptions = {}
 ) => {
   const data = {
     ...payload,

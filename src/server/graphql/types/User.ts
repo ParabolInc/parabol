@@ -11,7 +11,6 @@ import archivedTasksCount from 'server/graphql/queries/archivedTasksCount'
 import integrationProvider from 'server/graphql/queries/integrationProvider'
 import invoiceDetails from 'server/graphql/queries/invoiceDetails'
 import invoices from 'server/graphql/queries/invoices'
-import slackChannels from 'server/graphql/queries/slackChannels'
 import AuthIdentityType from 'server/graphql/types/AuthIdentityType'
 import BlockedUserType from 'server/graphql/types/BlockedUserType'
 import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType'
@@ -42,6 +41,7 @@ import {GITHUB} from 'universal/utils/constants'
 import allAvailableIntegrations from 'server/graphql/queries/allAvailableIntegrations'
 import {GQLContext} from 'server/graphql/graphql'
 import SlackAuth from 'server/graphql/types/SlackAuth'
+import SlackNotification from 'server/graphql/types/SlackNotification'
 
 const User = new GraphQLObjectType<any, GQLContext, any>({
   name: 'User',
@@ -367,7 +367,21 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
         return auths.find((auth) => auth.teamId === teamId)
       }
     },
-    slackChannels,
+    slackNotifications: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(SlackNotification))),
+      description: 'A list of events and the slack channels they get posted to',
+      args: {
+        teamId: {
+          type: new GraphQLNonNull(GraphQLID)
+        }
+      },
+      resolve: async (_source, {teamId}, {authToken, dataLoader}) => {
+        const viewerId = getUserId(authToken)
+        if (!isTeamMember(authToken, teamId)) return []
+        const slackNotifications = await dataLoader.get('slackNotificationsByUserId').load(viewerId)
+        return slackNotifications.filter((notification) => notification.teamId === teamId)
+      }
+    },
     suggestedIntegrations,
     tasks,
     team: require('../queries/team').default,

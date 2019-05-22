@@ -7,25 +7,23 @@ import makeAppLink from 'server/utils/makeAppLink'
 interface IncomingWebhook {
   url: string
   channel: string
+  channel_id: string
   configuration_url: string
 }
 
 interface OAuth2Response {
+  ok: boolean
   access_token: string
-  error: any
+  error?: any
   scope: string
   team_id: string
   team_name: string
+  user_id: string
   incoming_webhook: IncomingWebhook
   bot?: {
     bot_user_id: string
     bot_access_token: string
   }
-}
-
-interface Options {
-  teamId?: string
-  webhook?: IncomingWebhook
 }
 
 class SlackManager extends SlackClientManager {
@@ -51,7 +49,7 @@ class SlackManager extends SlackClientManager {
       }
     })
     const tokenJson = (await tokenRes.json()) as OAuth2Response
-    const {access_token: accessToken, error, scope, team_id, incoming_webhook} = tokenJson
+    const {error, scope} = tokenJson
 
     if (error) {
       throw new Error(`Slack: ${error}`)
@@ -62,16 +60,23 @@ class SlackManager extends SlackClientManager {
     if (!matchingScope) {
       throw new Error(`Slack Bad scope: ${scope}`)
     }
-    return new SlackManager(accessToken, {teamId: team_id, webhook: incoming_webhook})
+    return new SlackManager(tokenJson.access_token, tokenJson) as Required<SlackManager>
   }
 
-  teamId?: string
+  slackTeamId?: string
+  slackTeamName?: string
+  slackUserId?: string
   webhook?: IncomingWebhook
 
-  constructor (accessToken: string, {teamId, webhook}: Options = {}) {
+  constructor (accessToken, response?: OAuth2Response) {
     super(accessToken, {fetch})
-    this.teamId = teamId
-    this.webhook = webhook
+    if (response) {
+      const {team_id, team_name, user_id, incoming_webhook} = response
+      this.slackTeamId = team_id
+      this.slackTeamName = team_name
+      this.slackUserId = user_id
+      this.webhook = incoming_webhook
+    }
   }
 }
 

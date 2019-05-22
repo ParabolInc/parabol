@@ -1,8 +1,8 @@
-import {AddSlackAuthMutation} from '__generated__/AddSlackAuthMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import {IAddSlackAuthOnMutationArguments} from '../types/graphql'
 import {LocalHandlers} from '../types/relayMutations'
+import {AddSlackAuthMutation as ASAM} from '__generated__/AddSlackAuthMutation.graphql'
 
 graphql`
   fragment AddSlackAuthMutation_team on AddSlackAuthPayload {
@@ -28,7 +28,7 @@ const AddSlackAuthMutation = (
   variables: IAddSlackAuthOnMutationArguments,
   {onError, onCompleted}: LocalHandlers
 ): Disposable => {
-  return commitMutation<AddSlackAuthMutation>(atmosphere, {
+  return commitMutation<ASAM>(atmosphere, {
     mutation,
     variables,
     onCompleted,

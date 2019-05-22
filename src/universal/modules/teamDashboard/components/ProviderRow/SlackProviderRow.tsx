@@ -16,11 +16,11 @@ import useMenu from 'universal/hooks/useMenu'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {ICON_SIZE} from 'universal/styles/typographyV2'
 import {Layout, Providers} from 'universal/types/constEnums'
-import {IntegrationServiceEnum} from 'universal/types/graphql'
-import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
 import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useMutationProps from 'universal/hooks/useMutationProps'
+import SlackClientManager from 'universal/utils/SlackClientManager'
+import SlackNotificationList from 'universal/modules/teamDashboard/components/ProviderRow/SlackNotificationList'
 
 const StyledButton = styled(FlatButton)({
   borderColor: PALETTE.BORDER.LIGHT,
@@ -76,6 +76,15 @@ const ProviderName = styled('div')({
   verticalAlign: 'middle'
 })
 
+const CardTop = styled('div')({
+  display: 'flex',
+  justifyContent: 'flex-start'
+})
+
+const ExtraProviderCard = styled(ProviderCard)({
+  flexDirection: 'column'
+})
+
 const SlackProviderRow = (props: Props) => {
   const {viewer, teamId} = props
   const atmosphere = useAtmosphere()
@@ -83,51 +92,55 @@ const SlackProviderRow = (props: Props) => {
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
   const {slackAuth} = viewer
   const accessToken = (slackAuth && slackAuth.accessToken) || undefined
-  const openOAuth = handleOpenOAuth({
-    name: IntegrationServiceEnum.SlackIntegration,
-    submitting,
-    submitMutation,
-    atmosphere,
-    onError,
-    onCompleted,
-    teamId
-  })
+  const openOAuth = () => {
+    SlackClientManager.openOAuth(atmosphere, teamId, mutationProps)
+  }
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   return (
-    <ProviderCard>
-      <SlackProviderLogo />
-      <RowInfo>
-        <ProviderName>{Providers.SLACK_NAME}</ProviderName>
-        <RowInfoCopy>{Providers.SLACK_DESC}</RowInfoCopy>
-      </RowInfo>
-      {!accessToken && (
-        <ProviderActions>
-          <StyledButton onClick={openOAuth} palette='warm' waiting={submitting}>
-            {'Connect'}
-          </StyledButton>
-        </ProviderActions>
-      )}
-      {accessToken && (
-        <ListAndMenu>
-          <SlackLogin>
-            <SlackSVG />
-          </SlackLogin>
-          <MenuButton onClick={togglePortal} innerRef={originRef}>
-            <StyledIcon>more_vert</StyledIcon>
-          </MenuButton>
-          {menuPortal(
-            <SlackConfigMenu menuProps={menuProps} mutationProps={mutationProps} teamId={teamId} />
-          )}
-        </ListAndMenu>
-      )}
-    </ProviderCard>
+    <ExtraProviderCard>
+      <CardTop>
+        <SlackProviderLogo />
+        <RowInfo>
+          <ProviderName>{Providers.SLACK_NAME}</ProviderName>
+          <RowInfoCopy>{Providers.SLACK_DESC}</RowInfoCopy>
+        </RowInfo>
+        {!accessToken && (
+          <ProviderActions>
+            <StyledButton onClick={openOAuth} palette='warm' waiting={submitting}>
+              {'Connect'}
+            </StyledButton>
+          </ProviderActions>
+        )}
+        {accessToken && (
+          <ListAndMenu>
+            <SlackLogin title={slackAuth!.slackTeamName}>
+              <SlackSVG />
+            </SlackLogin>
+            <MenuButton onClick={togglePortal} innerRef={originRef}>
+              <StyledIcon>more_vert</StyledIcon>
+            </MenuButton>
+            {menuPortal(
+              <SlackConfigMenu
+                menuProps={menuProps}
+                mutationProps={mutationProps}
+                teamId={teamId}
+              />
+            )}
+          </ListAndMenu>
+        )}
+      </CardTop>
+      <SlackNotificationList viewer={viewer} />
+    </ExtraProviderCard>
   )
 }
 
 graphql`
   fragment SlackProviderRowViewer on User {
+    ...SlackNotificationList_viewer
     slackAuth(teamId: $teamId) {
       accessToken
+      slackTeamName
+      slackUserName
     }
   }
 `

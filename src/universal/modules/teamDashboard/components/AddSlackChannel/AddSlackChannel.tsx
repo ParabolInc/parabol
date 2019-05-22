@@ -7,7 +7,6 @@ import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import ServiceDropdownInput from 'universal/modules/integrations/components/ServiceDropdownInput/ServiceDropdownInput'
-import AddSlackChannelMutation from 'universal/mutations/AddSlackChannelMutation'
 import formError from 'universal/styles/helpers/formError'
 import {Layout} from 'universal/types/constEnums'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
@@ -83,10 +82,6 @@ class AddSlackChannel extends Component<Props, State> {
   }
 
   handleAddChannel = () => {
-    const {atmosphere, teamMemberId, onError, onCompleted} = this.props
-    const {selectedChannel} = this.state
-    if (!selectedChannel.channelId) return
-    AddSlackChannelMutation(atmosphere, selectedChannel, teamMemberId, onError, onCompleted)
     this.setState({
       selectedChannel: defaultSelectedChannel()
     })

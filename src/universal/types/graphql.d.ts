@@ -233,9 +233,9 @@ export interface IUser {
   slackAuth: ISlackAuth | null
 
   /**
-   * paginated list of slackChannels
+   * A list of events and the slack channels they get posted to
    */
-  slackChannels: Array<ISlackIntegration>
+  slackNotifications: Array<ISlackNotification>
 
   /**
    * The integrations that the user would probably like to use
@@ -405,10 +405,7 @@ export interface ISlackAuthOnUserArguments {
   teamId: string
 }
 
-export interface ISlackChannelsOnUserArguments {
-  /**
-   * The unique team Id
-   */
+export interface ISlackNotificationsOnUserArguments {
   teamId: string
 }
 
@@ -2460,6 +2457,26 @@ export interface ISlackAuth {
   createdAt: any
 
   /**
+   * The id of the team in slack
+   */
+  slackTeamId: string
+
+  /**
+   * The name of the team in slack
+   */
+  slackTeamName: string
+
+  /**
+   * The userId in slack
+   */
+  slackUserId: string
+
+  /**
+   * The name of the user in slack
+   */
+  slackUserName: string
+
+  /**
    * *The team that the token is linked to
    */
   teamId: string
@@ -2476,40 +2493,23 @@ export interface ISlackAuth {
 }
 
 /**
- * An integration that sends start/end meeting messages to a specified slack channel
+ * an event trigger and slack channel to receive it
  */
-export interface ISlackIntegration {
-  __typename: 'SlackIntegration'
-
-  /**
-   * The ID of an object
-   */
+export interface ISlackNotification {
+  __typename: 'SlackNotification'
   id: string
-
-  /**
-   * the id of the channel provided by the service, if available. Useful for fetching from their API
-   */
+  event: SlackNotificationEventEnum
   channelId: string
-
-  /**
-   * The name of the channel. Shared with all, updated when the integration owner looks at it
-   */
-  channelName: string | null
-
-  /**
-   * defaults to true. true if this is used to send notifications
-   */
-  isActive: boolean | null
-
-  /**
-   * The types of notifications the team wishes to receive
-   */
-  notifications: Array<string | null> | null
-
-  /**
-   * *The team that cares about these annoucements
-   */
   teamId: string
+  userId: string
+}
+
+/**
+ * The event that triggers a slack notification
+ */
+export const enum SlackNotificationEventEnum {
+  meetingStart = 'meetingStart',
+  meetingEnd = 'meetingEnd'
 }
 
 /**
@@ -2619,7 +2619,6 @@ export interface IMutation {
    */
   addOrg: IAddOrgPayload | null
   addProvider: IAddProviderPayload
-  addSlackChannel: IAddSlackChannelPayload
 
   /**
    * Create a new team and add the first team member
@@ -2843,6 +2842,7 @@ export interface IMutation {
    * Focus (or unfocus) a phase item
    */
   setPhaseFocus: ISetPhaseFocusPayload | null
+  setSlackNotification: ISetSlackNotificationPayload
 
   /**
    * Broadcast that the viewer started dragging a reflection
@@ -3045,10 +3045,6 @@ export interface IAddProviderOnMutationArguments {
   code: string
   service: IntegrationServiceEnum
   teamId: string
-}
-
-export interface IAddSlackChannelOnMutationArguments {
-  input: IAddSlackChannelInput
 }
 
 export interface IAddTeamOnMutationArguments {
@@ -3463,6 +3459,12 @@ export interface ISetPhaseFocusOnMutationArguments {
    * The currently focused phase item
    */
   focusedPhaseItemId?: string | null
+}
+
+export interface ISetSlackNotificationOnMutationArguments {
+  slackChannelId: string
+  slackNotificationEvent: SlackNotificationEventEnum
+  teamId: string
 }
 
 export interface IStartDraggingReflectionOnMutationArguments {
@@ -3906,24 +3908,6 @@ export interface IProviderRow {
    */
   service: IntegrationServiceEnum | null
   teamId: string | null
-}
-
-export interface IAddSlackChannelInput {
-  /**
-   * The id of the teamMember calling it.
-   */
-  teamMemberId: string
-
-  /**
-   * the slack channel that wants our messages
-   */
-  slackChannelId: string
-}
-
-export interface IAddSlackChannelPayload {
-  __typename: 'AddSlackChannelPayload'
-  error: IStandardMutationError | null
-  channel: ISlackIntegration
 }
 
 export interface IAddTeamPayload {
@@ -5644,6 +5628,16 @@ export interface IGenericMeetingStage {
    * Number of times the facilitator has visited this stage
    */
   viewCount: number | null
+}
+
+export interface ISetSlackNotificationPayload {
+  __typename: 'SetSlackNotificationPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The user with updated slack notifications
+   */
+  user: IUser | null
 }
 
 /**

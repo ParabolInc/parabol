@@ -43,7 +43,11 @@ const TeamSettingsWrapper = (props: Props) => {
           path={`${match.url}/integrations/slack`}
           render={(p) => <SlackIntegrations {...p} teamMemberId={teamMemberId} />}
         />
-        <Route exact path={`${match.url}/integrations`} component={TeamIntegrationsRoot} />
+        <Route
+          exact
+          path={`${match.url}/integrations`}
+          render={(p) => <TeamIntegrationsRoot {...p} teamId={teamId} />}
+        />
       </Switch>
     </IntegrationPage>
   )

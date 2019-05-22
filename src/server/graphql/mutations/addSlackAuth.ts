@@ -39,8 +39,13 @@ export default {
     const r = getRethink()
 
     const manager = await SlackManager.init(code)
-    const {accessToken, webhook} = manager
-
+    const {accessToken, slackTeamName, slackTeamId, slackUserId, webhook} = manager
+    // FIXME while app is getting re-approved, we can't fetch identity, so grab name from viewer
+    // const identity = await manager.getIdentity()
+    // if (!identity.ok) {
+    //   return standardError(new Error(identity.error), {userId: viewerId})
+    // }
+    const viewer = await dataLoader.get('users').load(viewerId)
     if (webhook) {
       const existingTeamNotificationsCount = await r
         .table('SlackNotification')
@@ -49,11 +54,20 @@ export default {
         .count()
       if (existingTeamNotificationsCount === 0) {
         // kick off some reasonable defaults if they're the first on the team to integration, else nothing
-        console.log('webhook', webhook)
         const {channel_id} = webhook
         const notifications = [
-          new SlackNotification('meetingStart', channel_id, teamId, viewerId),
-          new SlackNotification('meetingEnd', channel_id, teamId, viewerId)
+          new SlackNotification({
+            event: 'meetingStart',
+            channelId: channel_id,
+            teamId,
+            userId: viewerId
+          }),
+          new SlackNotification({
+            event: 'meetingEnd',
+            channelId: channel_id,
+            teamId,
+            userId: viewerId
+          })
         ]
         await r.table('SlackNotification').insert(notifications)
       }
@@ -65,7 +79,15 @@ export default {
       .filter({teamId})
       .nth(0)
       .default(null)
-    const slackAuth = new SlackAuth(accessToken, teamId, viewerId)
+    const slackAuth = new SlackAuth({
+      accessToken,
+      teamId,
+      userId: viewerId,
+      slackTeamId,
+      slackTeamName,
+      slackUserId,
+      slackUserName: viewer.preferredName
+    })
     if (existingAuth) {
       slackAuth.id = existingAuth.id
       slackAuth.createdAt = existingAuth.createdAt
@@ -77,7 +99,7 @@ export default {
       await r.table('SlackAuth').insert(slackAuth)
     }
 
-    const data = {slackAuthId: slackAuth.id}
+    const data = {slackAuthId: slackAuth.id, userId: viewerId}
     publish(TEAM, teamId, AddSlackAuthPayload, data, subOptions)
     return data
   }

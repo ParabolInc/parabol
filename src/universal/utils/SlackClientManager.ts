@@ -1,87 +1,139 @@
-import {DocumentNode} from 'graphql-typed'
-import {IGraphQLResponseError} from 'universal/types/graphql'
-import getProfile from './githubQueries/getProfile.graphql'
+import makeHref from 'universal/utils/makeHref'
+import {SLACK_SCOPE} from 'universal/utils/constants'
+import getOAuthPopupFeatures from 'universal/utils/getOAuthPopupFeatures'
+import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
+import AddSlackAuthMutation from 'universal/mutations/AddSlackAuthMutation'
+import Atmosphere from 'universal/Atmosphere'
 
 interface SlackClientManagerOptions {
   fetch?: Window['fetch']
 }
 
-export interface GQLResponse<TData> {
-  data?: TData
-  errors?: Array<IGraphQLResponseError>
+interface ErrorResponse {
+  ok: false
+  error: string
 }
 
-export interface SlackCredentialError {
-  message: string
-  documentation_url: string
+interface IdentityResponse {
+  ok: true
+  user: {
+    name: string
+    id: string
+  }
+  team: {
+    id: string
+  }
 }
 
-type SlackResponse<TData> = GQLResponse<TData> | SlackCredentialError
+interface ChannelInfoResponse {
+  ok: true
+  channel: {
+    is_archived: boolean
+  }
+}
 
-type DocResponse<T> = T extends DocumentNode<infer R> ? R : never
-type DocVariables<T> = T extends DocumentNode<any, infer V> ? V : never
+interface ChannelListResponse {
+  ok: true
+  channels: {
+    id: string
+    name: string
+  }[]
+}
 
 class SlackClientManager {
+  static openOAuth (atmosphere: Atmosphere, teamId: string, mutationProps: MenuMutationProps) {
+    const {submitting, onError, onCompleted, submitMutation} = mutationProps
+    const providerState = Math.random()
+      .toString(36)
+      .substring(5)
+    const redirect = makeHref('/auth/slack')
+    const uri = `https://slack.com/oauth/authorize?client_id=${
+      window.__ACTION__.slack
+    }&scope=${SLACK_SCOPE}&state=${providerState}&redirect_uri=${redirect}`
+    console.log('adding message listener')
+    window.addEventListener('message', (e) => {
+      console.log('E', e)
+    })
+    const popup = window.open(
+      uri,
+      'OAuth',
+      getOAuthPopupFeatures({width: 500, height: 600, top: 56})
+    )
+    const handler = (event) => {
+      if (typeof event.data !== 'object' || event.origin !== window.location.origin || submitting) {
+        return
+      }
+      const {code, state} = event.data
+      if (state !== providerState || typeof code !== 'string') return
+      submitMutation()
+      AddSlackAuthMutation(atmosphere, {code, teamId}, {onError, onCompleted})
+      popup && popup.close()
+      window.removeEventListener('message', handler)
+    }
+    window.addEventListener('message', handler)
+  }
+
   accessToken: string
   fetch: typeof fetch
   // the any is for node until we can use tsc in nodeland
   cache: {[key: string]: {result: any; expiration: number | any}} = {}
   timeout = 5000
   headers: any
+
   constructor (accessToken: string, options: SlackClientManagerOptions = {}) {
     this.accessToken = accessToken
     this.fetch = options.fetch || window.fetch
-    this.headers = {
-      'Content-Type': 'application/json',
-      // an Authorization requires a preflight request, ie reqs are slow
-      Authorization: `Bearer ${accessToken}`,
-      Accept: 'application/json' as 'application/json'
-    }
+    // const headers = {
+    //   'Content-Type': 'application/json',
+    //   Accept: 'application/json' as 'application/json'
+    // }
+
+    // this.post = async (url, payload) => {
+    //   const res = await fetch(url, {
+    //     method: 'POST',
+    //     headers,
+    //     body: JSON.stringify(payload)
+    //   })
+    //   return res.json()
+    // }
   }
 
-  private async post<T> (body: string): Promise<SlackResponse<T>> {
-    const res = await this.fetch('https://api.github.com/graphql', {
-      method: 'POST',
-      headers: this.headers,
-      body
-    })
-    return res.json()
-  }
-
-  private async query<T> (
-    query: T,
-    variables?: DocVariables<T>
-  ): Promise<SlackResponse<DocResponse<T>>> {
-    // const query = _query as unknown as string
-    const body = JSON.stringify({query, variables})
-    const record = this.cache[body]
+  async get<T> (url: string): Promise<T | ErrorResponse> {
+    const record = this.cache[url]
     if (!record) {
-      const result = await this.post(body)
-      this.cache[body] = {
+      const res = await this.fetch(url)
+      const result = await res.json()
+      this.cache[url] = {
         result,
         expiration: setTimeout(() => {
-          delete this.cache[body]
+          delete this.cache[url]
         }, this.timeout)
       }
     } else {
       clearTimeout(record.expiration)
       record.expiration = setTimeout(() => {
-        delete this.cache[body]
+        delete this.cache[url]
       }, this.timeout)
     }
-    return this.cache[body].result
+    return this.cache[url].result
   }
 
-  private async mutate<T> (
-    query: T,
-    variables?: DocVariables<T>
-  ): Promise<SlackResponse<DocResponse<T>>> {
-    const body = JSON.stringify({query, variables})
-    return this.post(body)
+  getChannelInfo (slackChannelId: string) {
+    return this.get<ChannelInfoResponse>(
+      `https://slack.com/api/channels.info?token=${this.accessToken}&channel=${slackChannelId}`
+    )
   }
 
-  async getProfile () {
-    return this.query(getProfile)
+  getChannelList () {
+    return this.get<ChannelListResponse>(
+      `https://slack.com/api/channels.list?token=${this.accessToken}&exclude_archived=1`
+    )
+  }
+
+  getIdentity () {
+    return this.get<IdentityResponse>(
+      `https://slack.com/api/users.identity?token=${this.accessToken}`
+    )
   }
 }
 

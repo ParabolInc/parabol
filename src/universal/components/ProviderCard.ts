@@ -2,7 +2,6 @@ import styled from 'react-emotion'
 import {cardShadow} from 'universal/styles/elevation'
 
 const ProviderCard = styled('div')({
-  alignItems: 'center',
   backgroundColor: 'white',
   borderRadius: 4,
   boxShadow: cardShadow,

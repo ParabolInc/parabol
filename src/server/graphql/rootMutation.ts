@@ -2,7 +2,6 @@ import {GraphQLObjectType} from 'graphql'
 import addAgendaItem from 'server/graphql/mutations/addAgendaItem'
 import addOrg from 'server/graphql/mutations/addOrg'
 import addProvider from 'server/graphql/mutations/addProvider'
-import addSlackChannel from 'server/graphql/mutations/addSlackChannel'
 import archiveTeam from 'server/graphql/mutations/archiveTeam'
 import clearNotification from 'server/graphql/mutations/clearNotification'
 import changeTaskTeam from 'server/graphql/mutations/changeTaskTeam'
@@ -85,6 +84,7 @@ import removeGitHubAuth from 'server/graphql/mutations/removeGitHubAuth'
 import removeSlackAuth from 'server/graphql/mutations/removeSlackAuth'
 import {GQLContext} from 'server/graphql/graphql'
 import addSlackAuth from 'server/graphql/mutations/addSlackAuth'
+import setSlackNotification from './mutations/setSlackNotification'
 
 export default new GraphQLObjectType<any, GQLContext, any>({
   name: 'Mutation',
@@ -97,7 +97,6 @@ export default new GraphQLObjectType<any, GQLContext, any>({
     addGitHubAuth,
     addOrg,
     addProvider,
-    addSlackChannel,
     addTeam,
     archiveTeam,
     autoGroupReflections,
@@ -145,6 +144,7 @@ export default new GraphQLObjectType<any, GQLContext, any>({
     selectRetroTemplate,
     setOrgUserRole,
     setPhaseFocus,
+    setSlackNotification,
     startDraggingReflection,
     startNewMeeting,
     stripeCreateInvoice,
