@@ -81,7 +81,7 @@
     "@types/auth0-js": "^8.11.11",
     "@types/draft-js": "^0.10.24",
     "@types/express": "^4.16.1",
-    "@types/graphql": "^14.0.5",
+    "@types/graphql": "^14.2.0",
     "@types/ioredis": "^4.0.10",
     "@types/json2csv": "^4.4.0",
     "@types/jsonwebtoken": "^8.3.0",

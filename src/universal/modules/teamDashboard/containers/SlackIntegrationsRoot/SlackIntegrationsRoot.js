@@ -6,10 +6,7 @@ import {DEFAULT_TTL, SLACK} from 'universal/utils/constants'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent'
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
-import SlackChannelAddedSubscription from 'universal/subscriptions/SlackChannelAddedSubscription'
-import SlackChannelRemovedSubscription from 'universal/subscriptions/SlackChannelRemovedSubscription'
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
-import IntegrationSubscription from 'universal/subscriptions/IntegrationSubscription'
 
 const slackChannelQuery = graphql`
   query SlackIntegrationsRootQuery($teamId: ID!, $service: IntegrationServiceEnum!) {
@@ -18,12 +15,6 @@ const slackChannelQuery = graphql`
     }
   }
 `
-
-const subscriptions = [
-  SlackChannelAddedSubscription,
-  SlackChannelRemovedSubscription,
-  IntegrationSubscription
-]
 
 const cacheConfig = {ttl: DEFAULT_TTL}
 
@@ -35,7 +26,6 @@ const SlackIntegrationsRoot = ({atmosphere, teamMemberId}) => {
       environment={atmosphere}
       query={slackChannelQuery}
       variables={{teamId, service: SLACK}}
-      subscriptions={subscriptions}
       subParams={{teamId}}
       render={({error, props}) => {
         if (error) {

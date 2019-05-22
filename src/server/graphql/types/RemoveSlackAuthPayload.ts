@@ -2,8 +2,8 @@ import {GraphQLID, GraphQLObjectType} from 'graphql'
 import StandardMutationError from 'server/graphql/types/StandardMutationError'
 import User from './User'
 
-const RemoveGitHubAuthPayload = new GraphQLObjectType({
-  name: 'RemoveGitHubAuthPayload',
+const RemoveSlackAuthPayload = new GraphQLObjectType({
+  name: 'RemoveSlackAuthPayload',
   fields: () => ({
     error: {
       type: StandardMutationError
@@ -17,7 +17,7 @@ const RemoveGitHubAuthPayload = new GraphQLObjectType({
     },
     user: {
       type: User,
-      description: 'The user with updated githubAuth',
+      description: 'The user with updated slackAuth',
       resolve: ({userId}, _args, {dataLoader}) => {
         return dataLoader.get('users').load(userId)
       }
@@ -25,4 +25,4 @@ const RemoveGitHubAuthPayload = new GraphQLObjectType({
   })
 })
 
-export default RemoveGitHubAuthPayload
+export default RemoveSlackAuthPayload

@@ -11,7 +11,6 @@ import archivedTasksCount from 'server/graphql/queries/archivedTasksCount'
 import integrationProvider from 'server/graphql/queries/integrationProvider'
 import invoiceDetails from 'server/graphql/queries/invoiceDetails'
 import invoices from 'server/graphql/queries/invoices'
-import providerMap from 'server/graphql/queries/providerMap'
 import slackChannels from 'server/graphql/queries/slackChannels'
 import AuthIdentityType from 'server/graphql/types/AuthIdentityType'
 import BlockedUserType from 'server/graphql/types/BlockedUserType'
@@ -41,8 +40,10 @@ import AtlassianAuth from 'server/graphql/types/AtlassianAuth'
 import GitHubAuth from 'server/graphql/types/GitHubAuth'
 import {GITHUB} from 'universal/utils/constants'
 import allAvailableIntegrations from 'server/graphql/queries/allAvailableIntegrations'
+import {GQLContext} from 'server/graphql/graphql'
+import SlackAuth from 'server/graphql/types/SlackAuth'
 
-const User = new GraphQLObjectType({
+const User = new GraphQLObjectType<any, GQLContext, any>({
   name: 'User',
   description: 'The user account profile',
   fields: () => ({
@@ -51,6 +52,8 @@ const User = new GraphQLObjectType({
       description: 'The userId provided by auth0'
     },
     allAvailableIntegrations,
+    archivedTasks,
+    archivedTasksCount,
     atlassianAuth: {
       type: AtlassianAuth,
       description:
@@ -98,7 +101,7 @@ const User = new GraphQLObjectType({
     featureFlags: {
       type: new GraphQLNonNull(UserFeatureFlags),
       description: 'Any super power given to the user via a super user',
-      resolve: (source) => {
+      resolve: (source: any) => {
         const featureFlags = source.featureFlags || []
         const flagObj = {}
         featureFlags.forEach((flag) => {
@@ -133,6 +136,14 @@ const User = new GraphQLObjectType({
       description: `An array of objects with information about the user's identities.
       More than one will exists in case accounts are linked`
     },
+    inactive: {
+      type: GraphQLBoolean,
+      description:
+        'true if the user is not currently being billed for service. removed on every websocket handshake'
+    },
+    integrationProvider,
+    invoiceDetails,
+    invoices,
     isConnected: {
       type: GraphQLBoolean,
       description: 'true if the user is currently online',
@@ -149,6 +160,10 @@ const User = new GraphQLObjectType({
       type: GraphQLString,
       description: 'Name associated with the user'
     },
+    nickname: {
+      type: GraphQLString,
+      description: 'Nickname associated with the user'
+    },
     suggestedActions: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(SuggestedAction))),
       description: 'the most important actions for the user to perform',
@@ -156,7 +171,7 @@ const User = new GraphQLObjectType({
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) return null
         const suggestedActions = await dataLoader.get('suggestedActionsByUserId').load(userId)
-        suggestedActions.sort((a, b) => (a.priority < b.priority ? -1 : 1))
+        suggestedActions.sort((a, b) => (a.priority! < b.priority! ? -1 : 1))
         return suggestedActions
       }
     },
@@ -173,7 +188,7 @@ const User = new GraphQLObjectType({
           description: 'the number of timeline events to return'
         }
       },
-      resolve: async ({id}, {after, first}, {dataLoader, authToken}) => {
+      resolve: async ({id}, {after, first}, {authToken}) => {
         const r = getRethink()
         const viewerId = getUserId(authToken)
         if (viewerId !== id && !isSuperUser(authToken)) return null
@@ -201,26 +216,6 @@ const User = new GraphQLObjectType({
         }
       }
     },
-    nickname: {
-      type: GraphQLString,
-      description: 'Nickname associated with the user'
-    },
-    rasterPicture: {
-      type: GraphQLURLType,
-      description:
-        'url of user’s raster profile picture (if user profile pic is an SVG, raster will be a PNG)',
-      resolve: ({picture}) => {
-        return picture && picture.endsWith('.svg') ? picture.slice(0, -3) + 'png' : picture
-      }
-    },
-    picture: {
-      type: GraphQLURLType,
-      description: 'url of user’s profile picture'
-    },
-    updatedAt: {
-      type: GraphQLISO8601Type,
-      description: 'The timestamp the user was last updated'
-    },
     newFeatureId: {
       type: GraphQLID,
       description: 'the ID of the newest feature, null if the user has dismissed it'
@@ -232,14 +227,9 @@ const User = new GraphQLObjectType({
         return newFeatureId ? dataLoader.get('newFeatures').load(newFeatureId) : null
       }
     },
-    lastSeenAt: {
-      type: GraphQLISO8601Type,
-      description: 'The last time the user connected via websocket'
-    },
-    inactive: {
-      type: GraphQLBoolean,
-      description:
-        'true if the user is not currently being billed for service. removed on every websocket handshake'
+    picture: {
+      type: GraphQLURLType,
+      description: 'url of user’s profile picture'
     },
     preferredName: {
       type: new GraphQLNonNull(GraphQLString),
@@ -248,11 +238,19 @@ const User = new GraphQLObjectType({
         return preferredName || name
       }
     },
-    archivedTasks,
-    archivedTasksCount,
-    integrationProvider,
-    invoices,
-    invoiceDetails,
+    rasterPicture: {
+      type: GraphQLURLType,
+      description:
+        'url of user’s raster profile picture (if user profile pic is an SVG, raster will be a PNG)',
+      resolve: ({picture}) => {
+        return picture && picture.endsWith('.svg') ? picture.slice(0, -3) + 'png' : picture
+      }
+    },
+    lastSeenAt: {
+      type: GraphQLISO8601Type,
+      description: 'The last time the user connected via websocket'
+    },
+
     meetingMember: {
       type: MeetingMember,
       description:
@@ -267,7 +265,7 @@ const User = new GraphQLObjectType({
           description: 'The teamId of the meeting currently in progress'
         }
       },
-      resolve: async (source, args, {authToken, dataLoader}) => {
+      resolve: async (_source, args, {authToken, dataLoader}) => {
         if (!args.teamId && !args.meetingId) return null
         const viewerId = getUserId(authToken)
         let meetingId = args.meetingId
@@ -281,8 +279,6 @@ const User = new GraphQLObjectType({
     },
     newMeeting,
     notifications: require('../queries/notifications').default,
-    providerMap,
-    slackChannels,
     organization,
     organizationUser: {
       description: 'The connection between a user and an organization',
@@ -315,7 +311,7 @@ const User = new GraphQLObjectType({
     organizationUsers: {
       description: 'A single user that is connected to a single organization',
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(OrganizationUser))),
-      resolve: async ({id: userId}, args, {authToken, dataLoader}) => {
+      resolve: async ({id: userId}, _args, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
         organizationUsers.sort((a, b) => (a.orgId > b.orgId ? 1 : -1))
@@ -334,7 +330,7 @@ const User = new GraphQLObjectType({
     organizations: {
       description: 'Get the list of all organizations a user belongs to',
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Organization))),
-      async resolve ({id: userId}, args, {authToken, dataLoader}) {
+      async resolve ({id: userId}, _args, {authToken, dataLoader}) {
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
         const orgIds = organizationUsers.map(({orgId}) => orgId)
         const organizations = await dataLoader.get('organizations').loadMany(orgIds)
@@ -355,6 +351,23 @@ const User = new GraphQLObjectType({
         'a string with message stating that the user is over the free tier limit, else null',
       type: GraphQLString
     },
+    slackAuth: {
+      type: SlackAuth,
+      description:
+        'The auth for the user. access token is null if not viewer. Use isActive to check for presence',
+      args: {
+        teamId: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The teamId for the auth object'
+        }
+      },
+      resolve: async ({id: userId}, {teamId}, {authToken, dataLoader}) => {
+        if (!isTeamMember(authToken, teamId)) return null
+        const auths = await dataLoader.get('slackAuthByUserId').load(userId)
+        return auths.find((auth) => auth.teamId === teamId)
+      }
+    },
+    slackChannels,
     suggestedIntegrations,
     tasks,
     team: require('../queries/team').default,
@@ -379,7 +392,7 @@ const User = new GraphQLObjectType({
     teams: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Team))),
       description: 'all the teams the user is on that the viewer can see.',
-      resolve: async ({id: userId}, args, {authToken, dataLoader}) => {
+      resolve: async ({id: userId}, _args, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
         const user = await dataLoader.get('users').load(userId)
         const teamIds =
@@ -400,7 +413,7 @@ const User = new GraphQLObjectType({
           description: 'The team the user is on'
         }
       },
-      resolve: (source, {teamId}, {authToken, dataLoader}) => {
+      resolve: (_source, {teamId}, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
         if (!isTeamMember(authToken, teamId)) {
           standardError(new Error('Team not found'), {userId: viewerId})
@@ -411,14 +424,18 @@ const User = new GraphQLObjectType({
       }
     },
     tms: {
-      type: new GraphQLList(GraphQLID),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
       description: 'all the teams the user is a part of that the viewer can see',
-      resolve: (source, args, {authToken}) => {
+      resolve: (source, _args, {authToken}) => {
         const viewerId = getUserId(authToken)
         return viewerId === source.id
           ? source.tms
           : source.tms.filter((teamId) => authToken.tms.includes(teamId))
       }
+    },
+    updatedAt: {
+      type: GraphQLISO8601Type,
+      description: 'The timestamp the user was last updated'
     },
     userOnTeam: {
       type: User,
@@ -428,7 +445,7 @@ const User = new GraphQLObjectType({
           description: 'The other user'
         }
       },
-      resolve: async (source, {userId}, {authToken, dataLoader}) => {
+      resolve: async (_source, {userId}, {authToken, dataLoader}) => {
         const userOnTeam = await dataLoader.get('users').load(userId)
         // const teams = new Set(userOnTeam)
         const {tms} = userOnTeam

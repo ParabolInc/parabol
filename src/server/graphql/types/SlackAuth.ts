@@ -2,8 +2,8 @@ import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'grap
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 import {getUserId} from 'server/utils/authorization'
 
-const GitHubAuth = new GraphQLObjectType({
-  name: 'GitHubAuth',
+const SlackAuth = new GraphQLObjectType({
+  name: 'SlackAuth',
   description: 'OAuth token for a team member',
   fields: () => ({
     id: {
@@ -16,17 +16,12 @@ const GitHubAuth = new GraphQLObjectType({
       resolve: ({accessToken}) => !!accessToken
     },
     accessToken: {
-      description: 'The access token to github. good forever',
+      description: 'The access token to slack, only visible to the owner',
       type: GraphQLID,
       resolve: async ({accessToken, userId}, _args, {authToken}) => {
         const viewerId = getUserId(authToken)
         return viewerId === userId ? accessToken : null
       }
-    },
-    login: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: '*The GitHub login used for queries',
-      resolve: ({providerUserId}) => providerUserId
     },
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
@@ -47,4 +42,4 @@ const GitHubAuth = new GraphQLObjectType({
   })
 })
 
-export default GitHubAuth
+export default SlackAuth

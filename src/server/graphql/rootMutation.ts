@@ -82,12 +82,16 @@ import createJiraIssue from 'server/graphql/mutations/createJiraIssue'
 import reflectTemplatePromptUpdateDescription from 'server/graphql/mutations/reflectTemplatePromptUpdateDescription'
 import addGitHubAuth from 'server/graphql/mutations/addGitHubAuth'
 import removeGitHubAuth from 'server/graphql/mutations/removeGitHubAuth'
+import removeSlackAuth from 'server/graphql/mutations/removeSlackAuth'
+import {GQLContext} from 'server/graphql/graphql'
+import addSlackAuth from 'server/graphql/mutations/addSlackAuth'
 
-export default new GraphQLObjectType({
+export default new GraphQLObjectType<any, GQLContext, any>({
   name: 'Mutation',
   fields: () => ({
     acceptTeamInvitation,
     addAtlassianAuth,
+    addSlackAuth,
     addAgendaItem,
     addFeatureFlag,
     addGitHubAuth,
@@ -135,6 +139,7 @@ export default new GraphQLObjectType({
     removeSlackChannel,
     removeOrgUser,
     removeReflection,
+    removeSlackAuth,
     removeTeamMember,
     segmentEventTrack,
     selectRetroTemplate,

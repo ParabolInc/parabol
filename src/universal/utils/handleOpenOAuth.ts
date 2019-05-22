@@ -4,8 +4,8 @@ import AddGitHubAuthMutation from 'universal/mutations/AddGitHubAuthMutation'
 import {IntegrationServiceEnum} from 'universal/types/graphql'
 import {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import {providerLookup} from '../modules/teamDashboard/components/ProviderRow/ProviderRow'
-import AddProviderMutation from '../mutations/AddProviderMutation'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
+import AddSlackAuthMutation from 'universal/mutations/AddSlackAuthMutation'
 
 interface Config {
   name: IntegrationServiceEnum
@@ -43,18 +43,8 @@ const handleOpenOAuth = ({
       AddAtlassianAuthMutation(atmosphere, {code, teamId}, {onError, onCompleted})
     } else if (name === IntegrationServiceEnum.GitHubIntegration) {
       AddGitHubAuthMutation(atmosphere, {code, teamId}, {onError, onCompleted})
-    } else {
-      AddProviderMutation(
-        atmosphere,
-        {
-          code,
-          service: name,
-          teamId
-        },
-        {},
-        onError,
-        onCompleted
-      )
+    } else if (name === IntegrationServiceEnum.SlackIntegration) {
+      AddSlackAuthMutation(atmosphere, {code, teamId}, {onError, onCompleted})
     }
     popup && popup.close()
     window.removeEventListener('message', handler)

@@ -33,7 +33,7 @@ export const enum Providers {
   GITHUB_NAME = 'GitHub',
   GITHUB_DESC = 'Create issues from Parabol',
   SLACK_NAME = 'Slack',
-  SLACK_DESC = 'Push meeting notifications'
+  SLACK_DESC = 'Push notifications to Slack'
 }
 
 // https://material.io/design/layout/spacing-methods.html

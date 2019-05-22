@@ -2,7 +2,6 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {fromGlobalId} from 'graphql-relay'
 import getRethink from 'server/database/rethinkDriver'
 import RemoveSlackChannelPayload from 'server/graphql/types/RemoveSlackChannelPayload'
-import getPubSub from 'server/utils/getPubSub'
 import {SLACK} from 'universal/utils/constants'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import standardError from 'server/utils/standardError'
@@ -45,10 +44,6 @@ export default {
     const slackChannelRemoved = {
       deletedId: slackGlobalId
     }
-    getPubSub().publish(`slackChannelRemoved.${teamId}`, {
-      slackChannelRemoved,
-      mutatorId
-    })
     return slackChannelRemoved
   }
 }

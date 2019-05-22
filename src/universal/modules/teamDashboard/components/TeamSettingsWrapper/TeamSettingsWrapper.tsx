@@ -7,7 +7,7 @@ import TeamSettingsToggleNav from 'universal/modules/teamDashboard/components/Te
 const TeamSettings = lazy(() =>
   import(/* webpackChunkName: 'TeamSettingsRoot' */ 'universal/modules/teamDashboard/components/TeamSettingsRoot')
 )
-const Providers = lazy(() =>
+const TeamIntegrationsRoot = lazy(() =>
   import(/* webpackChunkName: 'TeamIntegrationsRoot' */ 'universal/modules/teamDashboard/containers/TeamIntegrationsRoot/TeamIntegrationsRoot')
 )
 const SlackIntegrations = lazy(() =>
@@ -43,13 +43,7 @@ const TeamSettingsWrapper = (props: Props) => {
           path={`${match.url}/integrations/slack`}
           render={(p) => <SlackIntegrations {...p} teamMemberId={teamMemberId} />}
         />
-        />
-        <Route
-          exact
-          path={`${match.url}/integrations`}
-          render={(p) => <Providers {...p} teamMemberId={teamMemberId} />}
-        />
-        />
+        <Route exact path={`${match.url}/integrations`} component={TeamIntegrationsRoot} />
       </Switch>
     </IntegrationPage>
   )

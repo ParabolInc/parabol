@@ -1,9 +1,7 @@
 import {GraphQLID, GraphQLInputObjectType, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import AddSlackChannelPayload from 'server/graphql/types/AddSlackChannelPayload'
-import insertSlackChannel from 'server/safeMutations/insertSlackChannel'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
-import getPubSub from 'server/utils/getPubSub'
 import {SLACK} from 'universal/utils/constants'
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
 import fetch from 'node-fetch'
@@ -71,18 +69,14 @@ export default {
       return standardError(new Error('Slack error'), {userId: viewerId})
     }
 
-    const {is_archived: isArchived, name} = channel
+    const {is_archived: isArchived} = channel
     if (isArchived) return standardError(new Error('Slack channel archived'), {userId: viewerId})
 
     // RESOLUTION
-    const newChannel = await insertSlackChannel(slackChannelId, name, teamId)
+    // const newChannel = await insertSlackChannel(slackChannelId, name, teamId)
     const slackChannelAdded = {
-      channel: newChannel
+      channel: 'foo'
     }
-    getPubSub().publish(`slackChannelAdded.${teamId}`, {
-      slackChannelAdded,
-      mutatorId
-    })
     return slackChannelAdded
   }
 }
