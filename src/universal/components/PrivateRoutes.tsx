@@ -1,8 +1,6 @@
 import React, {lazy} from 'react'
 import {Route, Switch} from 'react-router'
 import requireAuth from 'universal/decorators/requireAuth/requireAuth'
-import {DragDropContext as dragDropContext} from 'react-dnd'
-import HTML5Backend from 'react-dnd-html5-backend'
 
 const Invoice = lazy(() =>
   import(/* webpackChunkName: 'InvoiceRoot' */ 'universal/modules/invoice/containers/InvoiceRoot')
@@ -55,4 +53,4 @@ const PrivateRoutes = () => {
   )
 }
 
-export default dragDropContext(HTML5Backend)(requireAuth(PrivateRoutes))
+export default requireAuth(PrivateRoutes)
