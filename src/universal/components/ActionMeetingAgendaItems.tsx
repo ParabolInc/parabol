@@ -67,7 +67,6 @@ const TaskCardBlock = styled('div')({
   display: 'flex',
   flex: 1,
   margin: '0 auto',
-  maxWidth: 296 * 4 + 16 * 5,
   position: 'relative',
   width: '100%'
 })
@@ -85,6 +84,7 @@ const Inner = styled('div')({
 const Inception = styled('div')({
   flex: 1,
   margin: '0 auto',
+  maxWidth: 296 * 4 + 16 * 5,
   height: '100%',
   padding: 16
 })
