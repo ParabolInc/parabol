@@ -1,4 +1,3 @@
-import {AgendaListAndInput_agendaItemPhase} from '__generated__/AgendaListAndInput_agendaItemPhase.graphql'
 import {AgendaListAndInput_team} from '__generated__/AgendaListAndInput_team.graphql'
 import React from 'react'
 import styled from 'react-emotion'
@@ -23,25 +22,17 @@ const RootStyles = styled('div')(
 )
 
 interface Props {
-  agendaItemPhase: AgendaListAndInput_agendaItemPhase | null
-  facilitatorStageId: string | undefined
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
   isDisabled?: boolean
-  localStageId: string | undefined
   team: AgendaListAndInput_team
 }
 
 const AgendaListAndInput = (props: Props) => {
-  const {agendaItemPhase, facilitatorStageId, gotoStageId, isDisabled, localStageId, team} = props
+  const {gotoStageId, isDisabled, team} = props
+  const {newMeeting} = team
   return (
-    <RootStyles isDashboard={!agendaItemPhase} disabled={!!isDisabled}>
-      <AgendaList
-        agendaItemPhase={agendaItemPhase}
-        facilitatorStageId={facilitatorStageId}
-        gotoStageId={gotoStageId}
-        localStageId={localStageId}
-        team={team}
-      />
+    <RootStyles isDashboard={!newMeeting} disabled={!!isDisabled}>
+      <AgendaList gotoStageId={gotoStageId} team={team} />
       <AgendaInput disabled={!!isDisabled} team={team} />
     </RootStyles>
   )
@@ -50,15 +41,9 @@ const AgendaListAndInput = (props: Props) => {
 export default createFragmentContainer(
   AgendaListAndInput,
   graphql`
-    fragment AgendaListAndInput_agendaItemPhase on AgendaItemsPhase {
-      ...AgendaList_agendaItemPhase
-      stages {
-        id
-        isComplete
-        isNavigable
-      }
-    }
     fragment AgendaListAndInput_team on Team {
+      ...AgendaInput_team
+      ...AgendaList_team
       agendaItems {
         id
         content
@@ -66,8 +51,9 @@ export default createFragmentContainer(
           id
         }
       }
-      ...AgendaInput_team
-      ...AgendaList_team
+      newMeeting {
+        id
+      }
     }
   `
 )

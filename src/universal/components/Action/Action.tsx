@@ -10,6 +10,8 @@ import {LoaderSize} from '../../types/constEnums'
 import ErrorBoundary from '../ErrorBoundary'
 import LoadingComponent from '../LoadingComponent/LoadingComponent'
 import PrivateRoutes from '../PrivateRoutes'
+import {DragDropContext as dragDropContext} from 'react-dnd'
+import HTML5Backend from 'react-dnd-html5-backend'
 
 const ResetPasswordPage = lazy(() =>
   import(/* webpackChunkName: 'ResetPasswordPage' */ 'universal/components/ResetPasswordPage/ResetPasswordPage')
@@ -73,4 +75,4 @@ const Action = () => {
   )
 }
 
-export default Action
+export default dragDropContext(HTML5Backend)(Action)

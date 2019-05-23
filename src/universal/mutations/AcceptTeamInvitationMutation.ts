@@ -11,6 +11,7 @@ import {
   AcceptTeamInvitationMutationVariables
 } from '__generated__/AcceptTeamInvitationMutation.graphql'
 import handleAddTeams from 'universal/mutations/handlers/handleAddTeams'
+import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 
 graphql`
   fragment AcceptTeamInvitationMutation_team on AcceptTeamInvitationPayload {
@@ -20,6 +21,7 @@ graphql`
     team {
       name
       newMeeting {
+        meetingType
         phases {
           phaseType
           meetingId
@@ -44,6 +46,9 @@ graphql`
     removedNotificationIds
     team {
       ...CompleteTeamFrag @relay(mask: false)
+      newMeeting {
+        meetingType
+      }
     }
     # this is just for the team lead
     teamLead {
@@ -123,7 +128,7 @@ const AcceptTeamInvitationMutation = (
       } = data
       atmosphere.setAuthToken(authToken)
       if (!team) return
-      const {id: teamId, name: teamName} = team
+      const {id: teamId, name: teamName, newMeeting} = team
       atmosphere.eventEmitter.emit('addToast', {
         level: 'info',
         autoDismiss: 10,
@@ -132,8 +137,17 @@ const AcceptTeamInvitationMutation = (
         action: {label: 'Great!'}
       })
       const redirectTo = new URLSearchParams(location.search).get('redirectTo')
-      const nextRoute = redirectTo || `/team/${teamId}`
-      history && history.push(nextRoute)
+      if (history) {
+        if (redirectTo) {
+          history.push(redirectTo)
+        } else if (newMeeting) {
+          const {meetingType} = newMeeting
+          const meetingSlug = meetingTypeToSlug[meetingType]
+          history.push(`/${meetingSlug}/${teamId}`)
+        } else {
+          history.push(`/team/${teamId}`)
+        }
+      }
     }
   })
 }

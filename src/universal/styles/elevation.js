@@ -46,7 +46,8 @@ export const fabRaisedShadow = elevation[12]
 export const menuShadow = elevation[8]
 export const modalShadow = elevation[24]
 export const ZINDEX_MODAL = 24
-export const navBarShadow = elevation[8]
+export const bottomBarShadow = elevation[8]
+export const ZINDEX_BOTTOM_BAR = 8
 export const navItemRaised = elevation[8]
 export const navDrawerShadow = elevation[16]
 export const panelShadow = elevation[1]
@@ -56,5 +57,9 @@ export const sheetShadow = elevation[16]
 export const snackbarShadow = elevation[6]
 export const switchShadow = elevation[1]
 export const textButtonShadow = elevation[0]
+
+export const desktopBarShadow = elevation[4]
+export const ZINDEX_DESKTOP_BAR = 4
+export const desktopSidebarShadow = elevation[4]
 
 export default elevation

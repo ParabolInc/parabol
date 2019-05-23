@@ -11,7 +11,9 @@ import RemoveAgendaItemMutation from 'universal/mutations/RemoveAgendaItemMutati
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 import {meetingSidebarGutter} from 'universal/styles/meeting'
 import {requestIdleCallback} from 'universal/utils/requestIdleCallback'
-import {AgendaItem_agendaItemStage} from '__generated__/AgendaItem_agendaItemStage.graphql'
+import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
+import findStageById from 'universal/utils/meetings/findStageById'
+import {AgendaItem_newMeeting} from '__generated__/AgendaItem_newMeeting.graphql'
 
 const DeleteIconButton = styled(IconButton)(
   ({agendaLength, disabled}: {agendaLength: number; disabled: boolean}) => ({
@@ -41,32 +43,29 @@ const AgendaItemStyles = styled('div')(({}) => ({
 
 interface Props {
   agendaItem: AgendaItem_agendaItem
-  agendaItemStage: AgendaItem_agendaItemStage | null
   agendaLength: number
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
   idx: number
   isDragging: boolean
-  isLocalStage: boolean
-  isFacilitatorStage: boolean
+  newMeeting: AgendaItem_newMeeting | null
 }
 
 const AgendaItem = (props: Props) => {
-  const {
-    agendaItem,
-    agendaItemStage,
-    agendaLength,
-    gotoStageId,
-    isDragging,
-    isFacilitatorStage,
-    idx,
-    isLocalStage
-  } = props
-  const {isComplete, isNavigable, id: stageId} = agendaItemStage || {
+  const {agendaItem, agendaLength, gotoStageId, isDragging, idx, newMeeting} = props
+  const {facilitatorUserId, facilitatorStageId, phases, localStage} =
+    newMeeting || UNSTARTED_MEETING
+  const localStageId = (localStage && localStage.id) || ''
+  const {id: agendaItemId, content, teamMember} = agendaItem
+  const agendaItemStageRes = findStageById(phases, agendaItemId, 'agendaItemId')
+  const agendaItemStage = agendaItemStageRes ? agendaItemStageRes.stage : null
+  const {isComplete, isNavigable, isNavigableByFacilitator, id: stageId} = agendaItemStage || {
     isComplete: false,
     isNavigable: false,
-    id: ''
+    isNavigableByFacilitator: false,
+    id: null
   }
-  const {id: agendaItemId, content, teamMember} = agendaItem
+  const isLocalStage = localStageId === stageId
+  const isFacilitatorStage = facilitatorStageId === stageId
   const {picture} = teamMember
   const isUnsyncedFacilitatorStage = isFacilitatorStage !== isLocalStage
   const ref = useRef<HTMLDivElement>(null)
@@ -83,6 +82,9 @@ const AgendaItem = (props: Props) => {
   }, [])
 
   const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
+  const isViewerFacilitator = viewerId === facilitatorUserId
+
   const handleRemove = () => {
     RemoveAgendaItemMutation(atmosphere, {agendaItemId})
   }
@@ -95,7 +97,7 @@ const AgendaItem = (props: Props) => {
             <Avatar hasBadge={false} picture={picture} size={24} />
           </AvatarBlock>
         }
-        isDisabled={!isNavigable}
+        isDisabled={isViewerFacilitator ? !isNavigableByFacilitator : !isNavigable}
         onClick={gotoStageId && agendaItemStage ? () => gotoStageId(stageId) : undefined}
         orderLabel={`${idx + 1}.`}
         isActive={isLocalStage}
@@ -117,10 +119,23 @@ const AgendaItem = (props: Props) => {
 export default createFragmentContainer(
   AgendaItem,
   graphql`
-    fragment AgendaItem_agendaItemStage on AgendaItemsStage {
-      id
-      isComplete
-      isNavigable
+    fragment AgendaItem_newMeeting on NewMeeting {
+      facilitatorStageId
+      facilitatorUserId
+      localStage {
+        id
+      }
+      phases {
+        stages {
+          ... on AgendaItemsStage {
+            id
+            agendaItemId
+            isComplete
+            isNavigable
+            isNavigableByFacilitator
+          }
+        }
+      }
     }
     fragment AgendaItem_agendaItem on AgendaItem {
       id
