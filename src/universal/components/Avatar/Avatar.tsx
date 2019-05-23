@@ -14,6 +14,7 @@ const ImageBlock = styled('div')(
     boxShadow: sansShadow ? 'none' : undefined,
     cursor: onClick ? 'pointer' : 'default',
     display: 'block',
+    flexShrink: 0,
     width: size,
     height: size
   })
