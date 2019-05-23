@@ -20,6 +20,9 @@ graphql`
       newMeeting {
         id
       }
+      agendaItems {
+        id
+      }
     }
     updatedTasks {
       content
