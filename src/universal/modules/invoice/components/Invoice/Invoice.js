@@ -91,74 +91,76 @@ const Invoice = (props) => {
   const makeAsterisk = () => <span className={css(styles.asterisk)}>{'*'}</span>
 
   return (
-    <div className={css(styles.invoice)}>
-      <Helmet title={`Invoice | ${subject}`} />
-      <InvoiceHeader orgName={orgName} emails={billingLeaderEmails} picture={picture} />
-      <div className={css(styles.panel)}>
-        {status === FAILED && <div className={css(styles.failedStamp)}>{'Payment Failed'}</div>}
-        {status === UPCOMING && (
-          <div className={css(styles.tagBlock)}>
-            <Tag colorPalette='light' label='Current Estimation' />
-          </div>
-        )}
-        {status === PENDING && (
-          <div className={css(styles.tagBlock)}>
-            <Tag colorPalette='gray' label='Payment Processing' />
-          </div>
-        )}
-        <div className={css(styles.label)}>{'Invoice'}</div>
-        <div className={css(styles.subject)}>{subject}</div>
+    <div className={css(styles.wrap)}>
+      <div className={css(styles.invoice)}>
+        <Helmet title={`Invoice | ${subject}`} />
+        <InvoiceHeader orgName={orgName} emails={billingLeaderEmails} picture={picture} />
+        <div className={css(styles.panel)}>
+          {status === FAILED && <div className={css(styles.failedStamp)}>{'Payment Failed'}</div>}
+          {status === UPCOMING && (
+            <div className={css(styles.tagBlock)}>
+              <Tag colorPalette='light' label='Current Estimation' />
+            </div>
+          )}
+          {status === PENDING && (
+            <div className={css(styles.tagBlock)}>
+              <Tag colorPalette='gray' label='Payment Processing' />
+            </div>
+          )}
+          <div className={css(styles.label)}>{'Invoice'}</div>
+          <div className={css(styles.subject)}>{subject}</div>
 
-        <div className={css(styles.sectionHeader)}>
-          <div className={css(styles.heading)}>{'Next month’s usage'}</div>
-          <div className={css(styles.meta)}>{nextChargesDates}</div>
-        </div>
-
-        <InvoiceLineItem item={nextUsage} />
-
-        {lines.length > 0 && (
           <div className={css(styles.sectionHeader)}>
-            <div className={css(styles.heading)}>
-              {'Last month’s adjustments'}
-              {makeAsterisk()}
-              <div className={css(styles.headingLabel)}>
-                {makeAsterisk()}
-                {'Prorated'}
-              </div>
-            </div>
-            <div className={css(styles.meta)}>{chargeDates}</div>
+            <div className={css(styles.heading)}>{'Next month’s usage'}</div>
+            <div className={css(styles.meta)}>{nextChargesDates}</div>
           </div>
-        )}
-        {makeLineItems(lines)}
 
-        <div className={css(styles.amountSection)}>
-          {startingBalance !== 0 && (
-            <div>
-              <div className={css(styles.amountLineSub)}>
-                <div>{'Total'}</div>
-                <div>{invoiceLineFormat(total)}</div>
+          <InvoiceLineItem item={nextUsage} />
+
+          {lines.length > 0 && (
+            <div className={css(styles.sectionHeader)}>
+              <div className={css(styles.heading)}>
+                {'Last month’s adjustments'}
+                {makeAsterisk()}
+                <div className={css(styles.headingLabel)}>
+                  {makeAsterisk()}
+                  {'Prorated'}
+                </div>
               </div>
-              <div className={css(styles.amountLineSub)}>
-                <div>{'Previous Balance'}</div>
-                <div>{invoiceLineFormat(startingBalance)}</div>
-              </div>
+              <div className={css(styles.meta)}>{chargeDates}</div>
             </div>
           )}
-          <div className={css(styles.amountLine)}>
-            <div>{'Amount due'}</div>
-            <div>{invoiceLineFormat(amountDue)}</div>
+          {makeLineItems(lines)}
+
+          <div className={css(styles.amountSection)}>
+            {startingBalance !== 0 && (
+              <div>
+                <div className={css(styles.amountLineSub)}>
+                  <div>{'Total'}</div>
+                  <div>{invoiceLineFormat(total)}</div>
+                </div>
+                <div className={css(styles.amountLineSub)}>
+                  <div>{'Previous Balance'}</div>
+                  <div>{invoiceLineFormat(startingBalance)}</div>
+                </div>
+              </div>
+            )}
+            <div className={css(styles.amountLine)}>
+              <div>{'Amount due'}</div>
+              <div>{invoiceLineFormat(amountDue)}</div>
+            </div>
+            {brand && (
+              <div className={css(styles.meta, status === FAILED && styles.metaError)}>
+                {chargeStatus[status]}
+                {' to '}
+                <b>{brand}</b> {'ending in '}
+                <b>{last4}</b>
+              </div>
+            )}
           </div>
-          {brand && (
-            <div className={css(styles.meta, status === FAILED && styles.metaError)}>
-              {chargeStatus[status]}
-              {' to '}
-              <b>{brand}</b> {'ending in '}
-              <b>{last4}</b>
-            </div>
-          )}
         </div>
+        <InvoiceFooter />
       </div>
-      <InvoiceFooter />
     </div>
   )
 }
@@ -176,8 +178,11 @@ const panelGutterSmall = ui.invoicePanelGutterSmall
 const panelGutterLarge = ui.invoicePanelGutterLarge
 
 const styleThunk = () => ({
+  wrap: {
+    overflow: 'hidden'
+  },
   invoice: {
-    backgroundColor: ui.backgroundColor,
+    backgroundColor: 'white',
     boxShadow: sheetShadow,
     color: appTheme.palette.dark,
     margin: '0 auto',
