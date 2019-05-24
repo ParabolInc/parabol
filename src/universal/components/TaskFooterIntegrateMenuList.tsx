@@ -19,7 +19,7 @@ import {PALETTE} from 'universal/styles/paletteV2'
 import {ICON_SIZE} from 'universal/styles/typographyV2'
 import {TaskServiceEnum} from 'universal/types/graphql'
 import useForm from 'universal/utils/relay/useForm'
-import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
+import {MenuMutationProps} from 'universal/hooks/useMutationProps'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 
 interface Props {

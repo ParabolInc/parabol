@@ -4,7 +4,7 @@ import IconLabel from 'universal/components/IconLabel'
 import {MenuPosition} from 'universal/hooks/useCoords'
 import useMenu from 'universal/hooks/useMenu'
 import lazyPreload from 'universal/utils/lazyPreload'
-import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
+import {MenuMutationProps} from 'universal/hooks/useMutationProps'
 
 const TaskFooterIntegrateMenuRoot = lazyPreload(() =>
   import(/* webpackChunkName: 'TaskFooterIntegrateMenuRoot' */ 'universal/components/TaskFooterIntegrateMenuRoot')

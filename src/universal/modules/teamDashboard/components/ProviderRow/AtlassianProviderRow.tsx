@@ -24,11 +24,9 @@ import {ICON_SIZE} from 'universal/styles/typographyV2'
 import {Layout, Providers} from 'universal/types/constEnums'
 import {IAuthToken, IntegrationServiceEnum} from 'universal/types/graphql'
 import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
-import withMutationProps, {
-  MenuMutationProps,
-  WithMutationProps
-} from 'universal/utils/relay/withMutationProps'
+import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import AtlassianProviderLogo from 'universal/AtlassianProviderLogo'
+import {MenuMutationProps} from 'universal/hooks/useMutationProps'
 
 const StyledButton = styled(FlatButton)({
   borderColor: PALETTE.BORDER.LIGHT,

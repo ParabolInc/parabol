@@ -3,7 +3,7 @@ import MenuItem from 'universal/components/MenuItem'
 import Menu from 'universal/components/Menu'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import {MenuProps} from 'universal/hooks/useMenu'
-import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
+import {MenuMutationProps} from 'universal/hooks/useMutationProps'
 import SlackClientManager from 'universal/utils/SlackClientManager'
 import RemoveSlackAuthMutation from 'universal/mutations/RemoveSlackAuthMutation'
 

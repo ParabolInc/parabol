@@ -6,7 +6,7 @@ import TaskFooterIntegrateMenu from 'universal/components/TaskFooterIntegrateMen
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import {MenuProps} from 'universal/hooks/useMenu'
 import {cacheConfig} from 'universal/utils/constants'
-import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
+import {MenuMutationProps} from 'universal/hooks/useMutationProps'
 import renderQuery from '../utils/relay/renderQuery'
 
 const query = graphql`

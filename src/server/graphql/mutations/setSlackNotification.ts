@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLList, GraphQLID, GraphQLNonNull} from 'graphql'
 import SetSlackNotificationPayload from 'server/graphql/types/SetSlackNotificationPayload'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import getRethink from '../../database/rethinkDriver'
@@ -15,10 +15,10 @@ export default {
   type: new GraphQLNonNull(SetSlackNotificationPayload),
   args: {
     slackChannelId: {
-      type: new GraphQLNonNull(GraphQLID)
+      type: GraphQLID
     },
-    slackNotificationEvent: {
-      type: new GraphQLNonNull(SlackNotificationEventEnum)
+    slackNotificationEvents: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(SlackNotificationEventEnum)))
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID)
@@ -26,7 +26,7 @@ export default {
   },
   resolve: async (
     _source,
-    {slackChannelId, slackNotificationEvent, teamId},
+    {slackChannelId, slackNotificationEvents, teamId},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const viewerId = getUserId(authToken)
@@ -39,7 +39,7 @@ export default {
       return standardError(new Error('Attempted teamId spoof'), {userId: viewerId})
     }
 
-    // RESOLUTION
+    // VALIDATION
     const slackAuths = await dataLoader.get('slackAuthByUserId').load(viewerId)
     const slackAuth = slackAuths.find((auth) => auth.teamId === teamId)
 
@@ -47,30 +47,40 @@ export default {
       return standardError(new Error('Slack authentication not found'), {userId: viewerId})
     }
 
-    const manager = new SlackManager(slackAuth.accessToken)
-    const channelInfo = await manager.getChannelInfo(slackChannelId)
+    if (slackChannelId) {
+      const manager = new SlackManager(slackAuth.accessToken)
+      const channelInfo = await manager.getChannelInfo(slackChannelId)
 
-    if (!channelInfo.ok) {
-      return standardError(new Error(channelInfo.error), {userId: viewerId})
+      if (!channelInfo.ok) {
+        return standardError(new Error(channelInfo.error), {userId: viewerId})
+      }
+      const {channel} = channelInfo
+      const {is_archived: isArchived} = channel
+      if (isArchived) return standardError(new Error('Slack channel archived'), {userId: viewerId})
     }
-    const {channel} = channelInfo
-    const {is_archived: isArchived} = channel
-    if (isArchived) return standardError(new Error('Slack channel archived'), {userId: viewerId})
 
-    const existingNotification = await r
+    // RESOLUTION
+    const existingNotifications = await r
       .table('SlackNotification')
       .getAll(viewerId, {index: 'userId'})
-      .filter({teamId, event: slackNotificationEvent})
-    const notification = new SlackNotification({
-      event: slackNotificationEvent,
-      channelId: slackChannelId,
-      teamId,
-      userId: viewerId,
-      id: (existingNotification && existingNotification.id) || undefined
-    })
-    await r.table('SlackNotification').insert(notification, {conflict: 'replace'})
+      .filter({teamId})
+      .filter((row) => r(slackNotificationEvents).contains(row('event')))
 
-    const data = {userId: viewerId}
+    const notifications = slackNotificationEvents.map((event) => {
+      const existingNotification = existingNotifications.find(
+        (notification) => notification.event === event
+      )
+      return new SlackNotification({
+        event,
+        channelId: slackChannelId,
+        teamId,
+        userId: viewerId,
+        id: (existingNotification && existingNotification.id) || undefined
+      })
+    })
+    await r.table('SlackNotification').insert(notifications, {conflict: 'replace'})
+    const slackNotificationIds = notifications.map(({id}) => id)
+    const data = {userId: viewerId, slackNotificationIds}
     publish(TEAM, teamId, SetSlackNotificationPayload, data, subOptions)
     return data
   }

@@ -6,7 +6,7 @@ import MenuItemLabel from 'universal/components/MenuItemLabel'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import {GITHUB} from 'universal/utils/constants'
 import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
-import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
+import {MenuMutationProps} from 'universal/hooks/useMutationProps'
 import styled from 'react-emotion'
 import {ICON_SIZE} from 'universal/styles/typographyV2'
 

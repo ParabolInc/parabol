@@ -4,7 +4,7 @@ type SlackNotificationEvent = 'meetingStart' | 'meetingEnd'
 
 interface Input {
   event: SlackNotificationEvent
-  channelId: string
+  channelId: string | null
   // channelName: string
   teamId: string
   userId: string
@@ -14,7 +14,7 @@ interface Input {
 export default class SlackNotification {
   id: string
   event: SlackNotificationEvent
-  channelId: string
+  channelId: string | null
   // channelName: string
   teamId: string
   userId: string

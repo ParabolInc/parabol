@@ -6,7 +6,7 @@ import {MenuProps} from 'universal/hooks/useMenu'
 import RemoveGitHubAuthMutation from 'universal/mutations/RemoveGitHubAuthMutation'
 import {IntegrationServiceEnum} from 'universal/types/graphql'
 import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
-import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
+import {MenuMutationProps} from 'universal/hooks/useMutationProps'
 
 interface Props {
   menuProps: MenuProps

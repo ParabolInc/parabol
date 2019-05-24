@@ -1,11 +1,19 @@
-import {createFragmentContainer, graphql} from 'react-relay'
 import {SlackNotificationEventEnum} from 'universal/types/graphql'
-import React, {useMemo} from 'react'
+import React from 'react'
+import styled from 'react-emotion'
+import Toggle from 'universal/components/Toggle/Toggle'
+import {createFragmentContainer, graphql} from 'react-relay'
 import {SlackNotificationRow_viewer} from '__generated__/SlackNotificationRow_viewer.graphql'
+import useAtmosphere from 'universal/hooks/useAtmosphere'
+import useMutationProps from 'universal/hooks/useMutationProps'
+import SetSlackNotificationMutation from 'universal/mutations/SetSlackNotificationMutation'
+import StyledError from 'universal/components/StyledError'
 
 interface Props {
   event: SlackNotificationEventEnum
+  localChannelId: string | null
   viewer: SlackNotificationRow_viewer
+  teamId: string
 }
 
 const labelLookup = {
@@ -13,17 +21,48 @@ const labelLookup = {
   [SlackNotificationEventEnum.meetingStart]: 'Meeting Start'
 }
 
+const Row = styled('div')({
+  alignItems: 'baseline',
+  display: 'flex'
+})
+
+const Label = styled('span')({
+  marginRight: 16,
+  width: '100%'
+})
+
 const SlackNotificationRow = (props: Props) => {
-  const {event, viewer} = props
+  const {event, localChannelId, teamId, viewer} = props
   const {slackNotifications} = viewer
-  const existingNotificaiton = useMemo(() => {
-    return slackNotifications.find((notification) => notification.event === event)
-  }, [slackNotifications])
   const label = labelLookup[event]
+  const atmosphere = useAtmosphere()
+  const existingNotification = slackNotifications.find(
+    (notification) => notification.event === event
+  )
+  const active = !!(existingNotification && existingNotification.channelId)
+  const {error, submitMutation, onCompleted, onError, submitting} = useMutationProps()
+  const onClick = () => {
+    if (submitting) return
+    submitMutation()
+    const slackChannelId = active ? null : localChannelId
+    SetSlackNotificationMutation(
+      atmosphere,
+      {slackChannelId, slackNotificationEvents: [event], teamId},
+      {
+        onError,
+        onCompleted
+      }
+    )
+  }
+
   return (
-    <div>
-      {label} - {existingNotificaiton ? existingNotificaiton.channelId : ''}
-    </div>
+    <>
+      <Row>
+        <Label>{label}</Label>
+        <Toggle active={active} disabled={submitting || !localChannelId} onClick={onClick} />
+      </Row>
+      {error && <StyledError>{error}</StyledError>}
+    </>
   )
 }
 

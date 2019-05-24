@@ -12,7 +12,8 @@ const SlackNotification = new GraphQLObjectType({
       type: new GraphQLNonNull(SlackNotificationEventEnum)
     },
     channelId: {
-      type: new GraphQLNonNull(GraphQLID)
+      type: GraphQLID,
+      description: 'null if no notification is to be sent'
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID)

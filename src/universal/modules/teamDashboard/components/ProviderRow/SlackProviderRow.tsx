@@ -16,9 +16,8 @@ import useMenu from 'universal/hooks/useMenu'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {ICON_SIZE} from 'universal/styles/typographyV2'
 import {Layout, Providers} from 'universal/types/constEnums'
-import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
+import useMutationProps, {MenuMutationProps} from 'universal/hooks/useMutationProps'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
-import useMutationProps from 'universal/hooks/useMutationProps'
 import SlackClientManager from 'universal/utils/SlackClientManager'
 import SlackNotificationList from 'universal/modules/teamDashboard/components/ProviderRow/SlackNotificationList'
 
@@ -129,7 +128,7 @@ const SlackProviderRow = (props: Props) => {
           </ListAndMenu>
         )}
       </CardTop>
-      <SlackNotificationList viewer={viewer} />
+      <SlackNotificationList teamId={teamId} viewer={viewer} />
     </ExtraProviderCard>
   )
 }

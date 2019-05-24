@@ -39,6 +39,7 @@ const InputBlock = styled('div')(
 )
 
 interface Props {
+  className?: string
   defaultText: string | ReactElement<any>
   disabled?: boolean
   onClick: ReturnType<typeof useMenu>['togglePortal']
@@ -46,9 +47,14 @@ interface Props {
 }
 
 const DropdownMenuToggle = forwardRef((props: Props, ref: any) => {
-  const {onClick, onMouseEnter, defaultText, disabled} = props
+  const {className, onClick, onMouseEnter, defaultText, disabled} = props
   return (
-    <DropdownBlock onMouseEnter={onMouseEnter} innerRef={ref} onClick={onClick}>
+    <DropdownBlock
+      className={className}
+      onMouseEnter={onMouseEnter}
+      innerRef={ref}
+      onClick={onClick}
+    >
       <FieldBlock>
         <InputBlock disabled={!!disabled} tabIndex={1}>
           <span>{defaultText}</span>

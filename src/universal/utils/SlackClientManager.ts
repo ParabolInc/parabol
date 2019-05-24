@@ -1,7 +1,7 @@
 import makeHref from 'universal/utils/makeHref'
 import {SLACK_SCOPE} from 'universal/utils/constants'
 import getOAuthPopupFeatures from 'universal/utils/getOAuthPopupFeatures'
-import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
+import {MenuMutationProps} from 'universal/hooks/useMutationProps'
 import AddSlackAuthMutation from 'universal/mutations/AddSlackAuthMutation'
 import Atmosphere from 'universal/Atmosphere'
 
@@ -25,19 +25,42 @@ interface IdentityResponse {
   }
 }
 
+interface SlackChannelInfo {
+  id: string
+  name: string
+  is_channel: boolean
+  created: number
+  is_archived: boolean
+  is_general: boolean
+  name_normalized: string
+  is_shared: boolean
+  is_org_shared: boolean
+  is_member: boolean
+  is_private: boolean
+  is_mpim: boolean
+  members: string[]
+  topic: {
+    value: string
+    creator: string
+    last_set: number
+  }
+  purpose: {
+    value: string
+    creator: string
+    last_set: number
+  }
+  previous_names: string[]
+  num_members: number
+}
+
 interface ChannelInfoResponse {
   ok: true
-  channel: {
-    is_archived: boolean
-  }
+  channel: SlackChannelInfo
 }
 
 interface ChannelListResponse {
   ok: true
-  channels: {
-    id: string
-    name: string
-  }[]
+  channels: SlackChannelInfo[]
 }
 
 class SlackClientManager {
@@ -51,9 +74,6 @@ class SlackClientManager {
       window.__ACTION__.slack
     }&scope=${SLACK_SCOPE}&state=${providerState}&redirect_uri=${redirect}`
     console.log('adding message listener')
-    window.addEventListener('message', (e) => {
-      console.log('E', e)
-    })
     const popup = window.open(
       uri,
       'OAuth',
@@ -82,7 +102,7 @@ class SlackClientManager {
 
   constructor (accessToken: string, options: SlackClientManagerOptions = {}) {
     this.accessToken = accessToken
-    this.fetch = options.fetch || window.fetch
+    this.fetch = options.fetch || window.fetch.bind(window)
     // const headers = {
     //   'Content-Type': 'application/json',
     //   Accept: 'application/json' as 'application/json'

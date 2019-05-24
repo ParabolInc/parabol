@@ -148,13 +148,7 @@ const OrgMemberRow = (props: Props) => {
           )}
           {!isPersonalTier && isViewerBillingLeader && (
             <ToggleBlock>
-              <Toggle
-                active={!inactive}
-                block
-                disabled={isPersonalTier}
-                label={inactive ? 'Inactive' : 'Active'}
-                onClick={toggleHandler}
-              />
+              <Toggle active={!inactive} disabled={isPersonalTier} onClick={toggleHandler} />
             </ToggleBlock>
           )}
           {isViewerLastBillingLeader && userId === viewerId && (

@@ -2499,7 +2499,11 @@ export interface ISlackNotification {
   __typename: 'SlackNotification'
   id: string
   event: SlackNotificationEventEnum
-  channelId: string
+
+  /**
+   * null if no notification is to be sent
+   */
+  channelId: string | null
   teamId: string
   userId: string
 }
@@ -3462,8 +3466,8 @@ export interface ISetPhaseFocusOnMutationArguments {
 }
 
 export interface ISetSlackNotificationOnMutationArguments {
-  slackChannelId: string
-  slackNotificationEvent: SlackNotificationEventEnum
+  slackChannelId?: string | null
+  slackNotificationEvents: Array<SlackNotificationEventEnum>
   teamId: string
 }
 
@@ -5633,6 +5637,7 @@ export interface IGenericMeetingStage {
 export interface ISetSlackNotificationPayload {
   __typename: 'SetSlackNotificationPayload'
   error: IStandardMutationError | null
+  slackNotifications: Array<ISlackNotification> | null
 
   /**
    * The user with updated slack notifications
