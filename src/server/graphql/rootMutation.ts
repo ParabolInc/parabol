@@ -20,7 +20,6 @@ import promoteNewMeetingFacilitator from 'server/graphql/mutations/promoteNewMee
 import promoteToTeamLead from 'server/graphql/mutations/promoteToTeamLead'
 import removeAgendaItem from 'server/graphql/mutations/removeAgendaItem'
 import removeProvider from 'server/graphql/mutations/removeProvider'
-import removeSlackChannel from 'server/graphql/mutations/removeSlackChannel'
 import removeTeamMember from 'server/graphql/mutations/removeTeamMember'
 import segmentEventTrack from 'server/graphql/mutations/segmentEventTrack'
 import setOrgUserRole from 'server/graphql/mutations/setOrgUserRole'
@@ -135,7 +134,6 @@ export default new GraphQLObjectType<any, GQLContext, any>({
     removeAtlassianAuth,
     removeGitHubAuth,
     removeProvider,
-    removeSlackChannel,
     removeOrgUser,
     removeReflection,
     removeSlackAuth,

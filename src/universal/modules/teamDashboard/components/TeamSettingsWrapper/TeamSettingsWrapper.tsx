@@ -10,13 +10,8 @@ const TeamSettings = lazy(() =>
 const TeamIntegrationsRoot = lazy(() =>
   import(/* webpackChunkName: 'TeamIntegrationsRoot' */ 'universal/modules/teamDashboard/containers/TeamIntegrationsRoot/TeamIntegrationsRoot')
 )
-const SlackIntegrations = lazy(() =>
-  import(/* webpackChunkName: 'SlackIntegrationsRoot' */ 'universal/modules/teamDashboard/containers/SlackIntegrationsRoot/SlackIntegrationsRoot')
-)
 
-interface Props extends RouteComponentProps<{teamId: string}> {
-  teamMemberId: string
-}
+interface Props extends RouteComponentProps<{teamId: string}> {}
 
 const IntegrationPage = styled('div')({
   alignItems: 'center',
@@ -27,8 +22,7 @@ const IntegrationPage = styled('div')({
 const TeamSettingsWrapper = (props: Props) => {
   const {
     location: {pathname},
-    match,
-    teamMemberId
+    match
   } = props
   const {
     params: {teamId}
@@ -39,10 +33,6 @@ const TeamSettingsWrapper = (props: Props) => {
       <TeamSettingsToggleNav activeKey={(areaMatch.params as any).area || ''} teamId={teamId} />
       <Switch>
         <Route exact path={match.url} render={(p) => <TeamSettings {...p} teamId={teamId} />} />
-        <Route
-          path={`${match.url}/integrations/slack`}
-          render={(p) => <SlackIntegrations {...p} teamMemberId={teamMemberId} />}
-        />
         <Route
           exact
           path={`${match.url}/integrations`}

@@ -2803,11 +2803,6 @@ export interface IMutation {
   removeProvider: IRemoveProviderPayload
 
   /**
-   * Remove a slack channel integration from a team
-   */
-  removeSlackChannel: IRemoveSlackChannelPayload
-
-  /**
    * Remove a user from an org
    */
   removeOrgUser: IRemoveOrgUserPayload | null
@@ -3393,10 +3388,6 @@ export interface IRemoveProviderOnMutationArguments {
    * the teamId to disconnect from the token
    */
   teamId: string
-}
-
-export interface IRemoveSlackChannelOnMutationArguments {
-  slackGlobalId: string
 }
 
 export interface IRemoveOrgUserOnMutationArguments {
@@ -5320,12 +5311,6 @@ export interface IRemoveProviderPayload {
    */
   userId: string | null
   archivedTaskIds: Array<string | null> | null
-}
-
-export interface IRemoveSlackChannelPayload {
-  __typename: 'RemoveSlackChannelPayload'
-  error: IStandardMutationError | null
-  deletedId: string
 }
 
 export interface IRemoveOrgUserPayload {
