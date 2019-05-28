@@ -4,7 +4,7 @@ type SlackNotificationEvent = 'meetingStart' | 'meetingEnd'
 
 interface Input {
   event: SlackNotificationEvent
-  channelId: string | null
+  channelId: string | null | undefined
   // channelName: string
   teamId: string
   userId: string
@@ -23,7 +23,7 @@ export default class SlackNotification {
     const {event, channelId, teamId, userId, id} = input
     this.id = id || shortid.generate()
     this.event = event
-    this.channelId = channelId
+    this.channelId = channelId || null
     // this.channelName = channelName
     this.teamId = teamId
     this.userId = userId

@@ -44,9 +44,21 @@ const SetSlackNotificationMutation = (
   return commitMutation<SetSlackNotificationMutation>(atmosphere, {
     mutation,
     variables,
-    // optimisticUpdater: (store) => {
-    //   const {slackNotificationEvents, slackChannelId, teamId} = variables
-    // },
+    optimisticUpdater: (store) => {
+      const {slackNotificationEvents, slackChannelId, teamId} = variables
+      const viewer = store.getRoot().getLinkedRecord('viewer')
+      if (!viewer) return
+      const existingNotifications = viewer.getLinkedRecords('slackNotifications', {teamId})
+      if (!existingNotifications) return
+      slackNotificationEvents.forEach((event) => {
+        const existingNotification = existingNotifications.find(
+          (notification) => !!(notification && notification.getValue('event') === event)
+        )
+        if (existingNotification) {
+          existingNotification.setValue(slackChannelId, 'channelId')
+        }
+      })
+    },
     onCompleted,
     onError
   })

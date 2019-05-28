@@ -9,6 +9,7 @@ import {TEAM} from 'universal/utils/constants'
 import {GQLContext} from 'server/graphql/graphql'
 import SlackNotification from 'server/database/types/SlackNotification'
 import SlackNotificationEventEnum from 'server/graphql/types/SlackNotificationEventEnum'
+import {ISetSlackNotificationOnMutationArguments} from 'universal/types/graphql'
 
 export default {
   name: 'SetSlackNotification',
@@ -26,7 +27,7 @@ export default {
   },
   resolve: async (
     _source,
-    {slackChannelId, slackNotificationEvents, teamId},
+    {slackChannelId, slackNotificationEvents, teamId}: ISetSlackNotificationOnMutationArguments,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const viewerId = getUserId(authToken)

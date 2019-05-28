@@ -55,11 +55,12 @@ const SlackNotificationRow = (props: Props) => {
     )
   }
 
+  // does not show disabled when submitting because the temporary disabled mouse icon is ugly
   return (
     <>
       <Row>
         <Label>{label}</Label>
-        <Toggle active={active} disabled={submitting || !localChannelId} onClick={onClick} />
+        <Toggle active={active} disabled={!localChannelId} onClick={onClick} />
       </Row>
       {error && <StyledError>{error}</StyledError>}
     </>

@@ -8,6 +8,7 @@ graphql`
   fragment AddSlackAuthMutation_team on AddSlackAuthPayload {
     user {
       ...SlackProviderRow_viewer
+      ...SlackNotificationRow_viewer
     }
   }
 `
