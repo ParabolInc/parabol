@@ -1,6 +1,5 @@
 import fetch from 'node-fetch'
 import {stringify} from 'querystring'
-import {SLACK_SCOPE} from 'universal/utils/constants'
 import SlackClientManager from 'universal/utils/SlackClientManager'
 import makeAppLink from 'server/utils/makeAppLink'
 
@@ -56,7 +55,7 @@ class SlackManager extends SlackClientManager {
     }
     const providedScope = scope.split(',')
     const matchingScope =
-      new Set([...SLACK_SCOPE.split(','), ...providedScope]).size === providedScope.length
+      new Set([...SlackManager.SCOPE.split(','), ...providedScope]).size === providedScope.length
     if (!matchingScope) {
       throw new Error(`Slack Bad scope: ${scope}`)
     }

@@ -22,11 +22,11 @@ import {DECELERATE} from 'universal/styles/animation'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {ICON_SIZE} from 'universal/styles/typographyV2'
 import {Layout, Providers} from 'universal/types/constEnums'
-import {IAuthToken, IntegrationServiceEnum} from 'universal/types/graphql'
-import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
+import {IAuthToken} from 'universal/types/graphql'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import AtlassianProviderLogo from 'universal/AtlassianProviderLogo'
 import {MenuMutationProps} from 'universal/hooks/useMutationProps'
+import AtlassianClientManager from 'universal/utils/AtlassianClientManager'
 
 const StyledButton = styled(FlatButton)({
   borderColor: PALETTE.BORDER.LIGHT,
@@ -136,12 +136,11 @@ const AtlassianProviderRow = (props: Props) => {
   const {atlassianAuth} = viewer
   const accessToken = (atlassianAuth && atlassianAuth.accessToken) || undefined
   useFreshToken(accessToken, retry)
-  const openOAuth = handleOpenOAuth({
-    name: IntegrationServiceEnum.atlassian,
-    atmosphere,
-    teamId,
-    ...mutationProps
-  })
+
+  const openOAuth = () => {
+    AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps)
+  }
+
   const {sites, status} = useAtlassianSites(accessToken)
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   return (

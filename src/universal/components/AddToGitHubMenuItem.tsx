@@ -4,11 +4,10 @@ import MenuItem from 'universal/components/MenuItem'
 import MenuItemComponentAvatar from 'universal/components/MenuItemComponentAvatar'
 import MenuItemLabel from 'universal/components/MenuItemLabel'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
-import {GITHUB} from 'universal/utils/constants'
-import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
 import {MenuMutationProps} from 'universal/hooks/useMutationProps'
 import styled from 'react-emotion'
 import {ICON_SIZE} from 'universal/styles/typographyV2'
+import GitHubClientManager from 'universal/utils/GitHubClientManager'
 
 interface Props {
   teamId: string
@@ -25,8 +24,10 @@ const MenuItemIcon = styled(MenuItemComponentAvatar)({
 
 const AddToGitHubMenuItem = forwardRef((props: Props, ref) => {
   const {mutationProps, teamId} = props
-  const {submitting, submitMutation, onError, onCompleted} = mutationProps
   const atmosphere = useAtmosphere()
+  const openOAuth = () => {
+    GitHubClientManager.openOAuth(atmosphere, teamId, mutationProps)
+  }
   return (
     <MenuItem
       ref={ref}
@@ -38,15 +39,7 @@ const AddToGitHubMenuItem = forwardRef((props: Props, ref) => {
           {'Add GitHub integration'}
         </MenuItemLabel>
       }
-      onClick={handleOpenOAuth({
-        name: GITHUB,
-        submitting,
-        submitMutation,
-        atmosphere,
-        onError,
-        onCompleted,
-        teamId
-      })}
+      onClick={openOAuth}
     />
   )
 })

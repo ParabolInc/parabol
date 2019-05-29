@@ -119,11 +119,6 @@ export interface IUser {
    * true if the user is not currently being billed for service. removed on every websocket handshake
    */
   inactive: boolean | null
-
-  /**
-   * get an integration provider belonging to the user
-   */
-  integrationProvider: IProvider | null
   invoiceDetails: IInvoice | null
   invoices: IInvoiceConnection | null
 
@@ -314,18 +309,6 @@ export interface IGithubAuthOnUserArguments {
    * The teamId for the auth object
    */
   teamId: string
-}
-
-export interface IIntegrationProviderOnUserArguments {
-  /**
-   * The unique team member Id
-   */
-  teamId: string
-
-  /**
-   * The name of the service
-   */
-  service: IntegrationServiceEnum
 }
 
 export interface IInvoiceDetailsOnUserArguments {
@@ -1848,72 +1831,6 @@ export interface IAuthIdentityType {
 }
 
 /**
- * The list of services for integrations
- */
-export const enum IntegrationServiceEnum {
-  GitHubIntegration = 'GitHubIntegration',
-  SlackIntegration = 'SlackIntegration',
-  atlassian = 'atlassian'
-}
-
-/**
- * A token for a user to be used on 1 or more teams
- */
-export interface IProvider {
-  __typename: 'Provider'
-
-  /**
-   * The ID of an object
-   */
-  id: string
-
-  /**
-   * The access token to the service
-   */
-  accessToken: string
-
-  /**
-   * The timestamp the provider was created
-   */
-  createdAt: any | null
-
-  /**
-   * True if the Provider is active. else false
-   */
-  isActive: boolean | null
-
-  /**
-   * *The id for the user used by the provider, eg SlackTeamId, GoogleUserId, githubLogin
-   */
-  providerUserId: string | null
-
-  /**
-   * The username (or email) attached to the provider
-   */
-  providerUserName: string | null
-
-  /**
-   * The name of the service
-   */
-  service: IntegrationServiceEnum | null
-
-  /**
-   * *The team that the token is linked to
-   */
-  teamId: string | null
-
-  /**
-   * The timestamp the task was updated
-   */
-  updatedAt: any | null
-
-  /**
-   * The user that the access token is attached to
-   */
-  userId: string | null
-}
-
-/**
  * A monthly billing invoice for an organization
  */
 export interface IInvoice {
@@ -2459,12 +2376,12 @@ export interface ISlackAuth {
   /**
    * The id of the team in slack
    */
-  slackTeamId: string
+  slackTeamId: string | null
 
   /**
    * The name of the team in slack
    */
-  slackTeamName: string
+  slackTeamName: string | null
 
   /**
    * The userId in slack
@@ -2622,7 +2539,6 @@ export interface IMutation {
    * Create a new team and add the first team member
    */
   addOrg: IAddOrgPayload | null
-  addProvider: IAddProviderPayload
 
   /**
    * Create a new team and add the first team member
@@ -2728,11 +2644,6 @@ export interface IMutation {
   editTask: IEditTaskPayload | null
 
   /**
-   * Finish a meeting and go to the summary
-   */
-  endMeeting: IEndMeetingPayload | null
-
-  /**
    * Receive a webhook from github saying an assignee was added
    */
   githubAddAssignee: boolean | null
@@ -2796,11 +2707,6 @@ export interface IMutation {
    * Disconnect a team member from GitHub
    */
   removeGitHubAuth: IRemoveGitHubAuthPayload
-
-  /**
-   * Disconnect a team from a Provider token
-   */
-  removeProvider: IRemoveProviderPayload
 
   /**
    * Remove a user from an org
@@ -3040,12 +2946,6 @@ export interface IAddOrgOnMutationArguments {
   orgName?: string | null
 }
 
-export interface IAddProviderOnMutationArguments {
-  code: string
-  service: IntegrationServiceEnum
-  teamId: string
-}
-
 export interface IAddTeamOnMutationArguments {
   /**
    * The new team object
@@ -3245,13 +3145,6 @@ export interface IEditTaskOnMutationArguments {
   isEditing: boolean
 }
 
-export interface IEndMeetingOnMutationArguments {
-  /**
-   * The team that will be having the meeting
-   */
-  teamId: string
-}
-
 export interface IGithubAddAssigneeOnMutationArguments {
   /**
    * The github issue id
@@ -3372,18 +3265,6 @@ export interface IRemoveAtlassianAuthOnMutationArguments {
 }
 
 export interface IRemoveGitHubAuthOnMutationArguments {
-  /**
-   * the teamId to disconnect from the token
-   */
-  teamId: string
-}
-
-export interface IRemoveProviderOnMutationArguments {
-  /**
-   * The relay id of the service to remove
-   */
-  providerId: string
-
   /**
    * the teamId to disconnect from the token
    */
@@ -3847,62 +3728,6 @@ export interface IAddOrgPayload {
    * The ID of the suggestion to create a new team
    */
   removedSuggestedActionId: string | null
-}
-
-export interface IAddProviderPayload {
-  __typename: 'AddProviderPayload'
-  error: IStandardMutationError | null
-  providerRow: IProviderRow | null
-  provider: IProvider | null
-
-  /**
-   * All the integrationIds that the provider has successfully joined
-   */
-  joinedIntegrationIds: Array<string> | null
-  teamMember: ITeamMember | null
-
-  /**
-   * The user with updated githubAuth
-   */
-  user: IUser | null
-}
-
-/**
- * All the details about a particular provider
- */
-export interface IProviderRow {
-  __typename: 'ProviderRow'
-
-  /**
-   * composite keyID
-   */
-  id: string
-
-  /**
-   * The access token attached to the userId. null if user does not have a token for the provider
-   */
-  accessToken: string | null
-
-  /**
-   * The count of all the people on the team that have linked their account to the provider
-   */
-  userCount: number
-
-  /**
-   * The number of integrations under this provider for the team
-   */
-  integrationCount: number
-
-  /**
-   * The username according to the provider
-   */
-  providerUserName: string | null
-
-  /**
-   * The name of the service
-   */
-  service: IntegrationServiceEnum | null
-  teamId: string | null
 }
 
 export interface IAddTeamPayload {
@@ -5017,22 +4842,6 @@ export interface IEditTaskPayload {
   isEditing: boolean | null
 }
 
-export interface IEndMeetingPayload {
-  __typename: 'EndMeetingPayload'
-  error: IStandardMutationError | null
-  team: ITeam | null
-
-  /**
-   * The list of tasks that were archived during the meeting
-   */
-  archivedTasks: Array<ITask | null> | null
-
-  /**
-   * The ID of the suggestion to try an action meeting, if tried
-   */
-  removedSuggestedActionId: string | null
-}
-
 export interface IInactivateUserPayload {
   __typename: 'InactivateUserPayload'
   error: IStandardMutationError | null
@@ -5300,23 +5109,6 @@ export interface IRemoveGitHubAuthPayload {
    * The user with updated githubAuth
    */
   user: IUser | null
-}
-
-export interface IRemoveProviderPayload {
-  __typename: 'RemoveProviderPayload'
-  error: IStandardMutationError | null
-  providerRow: IProviderRow | null
-
-  /**
-   * The globalIds of the removed integrations
-   */
-  deletedIntegrationIds: Array<string> | null
-
-  /**
-   * The userId of the person who removed the provider
-   */
-  userId: string | null
-  archivedTaskIds: Array<string | null> | null
 }
 
 export interface IRemoveOrgUserPayload {
@@ -6025,7 +5817,6 @@ export type NotificationSubscriptionPayload =
   | ICreateTaskPayload
   | IDeleteTaskPayload
   | IDisconnectSocketPayload
-  | IEndMeetingPayload
   | IEndNewMeetingPayload
   | IInviteToTeamPayload
   | IRemoveOrgUserPayload
@@ -6083,7 +5874,6 @@ export type TaskSubscriptionPayload =
   | ICreateTaskPayload
   | IDeleteTaskPayload
   | IEditTaskPayload
-  | IEndMeetingPayload
   | IRemoveOrgUserPayload
   | IRemoveTeamMemberPayload
   | IUpdateTaskPayload
@@ -6104,7 +5894,6 @@ export type TeamSubscriptionPayload =
   | IDragDiscussionTopicPayload
   | IEndDraggingReflectionPayload
   | IEditReflectionPayload
-  | IEndMeetingPayload
   | IEndNewMeetingPayload
   | INavigateMeetingPayload
   | INewMeetingCheckInPayload
