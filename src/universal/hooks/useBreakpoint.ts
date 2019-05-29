@@ -6,9 +6,17 @@ const useBreakpoint = (breakpoint: number) => {
   const [match, setMatch] = useState(mql.matches)
   useEffect(() => {
     const updateMatch = () => setMatch(mql.matches)
-    mql.addEventListener('change', updateMatch)
-    return () => {
-      mql.removeEventListener('change', updateMatch)
+    if (!mql.addEventListener) {
+      // fallback for safari https://developer.mozilla.org/en-US/docs/Web/API/MediaQueryList#Browser_compatibility
+      mql.addListener(updateMatch) // tslint:disable-line
+      return () => {
+        mql.removeListener(updateMatch) // tslint:disable-line
+      }
+    } else {
+      mql.addEventListener('change', updateMatch)
+      return () => {
+        mql.removeEventListener('change', updateMatch)
+      }
     }
   }, [])
 
