@@ -27,12 +27,9 @@ const backgroundStyles = (portalStatus: PortalStatus) => {
   }
 }
 
-const TooltipBackground = styled(TooltipStyled)(
-  ({minWidth, portalStatus}: {minWidth?: number; portalStatus: PortalStatus}) => ({
-    minWidth,
-    zIndex: -1,
-    ...backgroundStyles(portalStatus)
-  })
-)
+const TooltipBackground = styled(TooltipStyled)(({portalStatus}: {portalStatus: PortalStatus}) => ({
+  zIndex: -1,
+  ...backgroundStyles(portalStatus)
+}))
 
 export default TooltipBackground

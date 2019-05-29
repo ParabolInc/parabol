@@ -27,8 +27,15 @@ const textStyle = {
   paddingTop: 4
 }
 
-const ContactUsFooter = (props) => {
-  const {hasLearningLink, prompt, tagline} = props
+interface Props {
+  hasLearningLink: boolean
+  isDemo: boolean
+  prompt: string
+  tagline: string
+}
+const ContactUsFooter = (props: Props) => {
+  const {hasLearningLink, isDemo, prompt, tagline} = props
+  if (isDemo) return null
   return (
     <>
       <tr>

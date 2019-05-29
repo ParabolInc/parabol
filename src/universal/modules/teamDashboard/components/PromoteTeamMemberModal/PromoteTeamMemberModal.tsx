@@ -4,16 +4,16 @@ import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import PrimaryButton from 'universal/components/PrimaryButton'
 import IconLabel from 'universal/components/IconLabel'
-import DialogHeading from 'universal/components/DialogHeading'
+import DialogTitle from 'universal/components/DialogTitle'
 import DialogContent from 'universal/components/DialogContent'
+import DialogContainer from 'universal/components/DialogContainer'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import PromoteToTeamLeadMutation from 'universal/mutations/PromoteToTeamLeadMutation'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import TeamManagementModalBoundary from './TeamManagementModalBoundary'
 
-const StyledModalBoundary = styled(TeamManagementModalBoundary)({
+const StyledDialogContainer = styled(DialogContainer)({
   width: 420
 })
 
@@ -42,15 +42,15 @@ const PromoteTeamMemberModal = (props: Props) => {
     closePortal()
   }
   return (
-    <StyledModalBoundary>
-      <DialogHeading>{'Are you sure?'}</DialogHeading>
+    <StyledDialogContainer>
+      <DialogTitle>{'Are you sure?'}</DialogTitle>
       <DialogContent>
         {`You will be removed as the team leader and promote ${preferredName}. You will no longer be able to change team membership. This cannot be undone!`}
         <StyledButton size='medium' onClick={handleClick} waiting={submitting}>
           <IconLabel icon='arrow_forward' iconAfter label={`Yes, promote ${preferredName}`} />
         </StyledButton>
       </DialogContent>
-    </StyledModalBoundary>
+    </StyledDialogContainer>
   )
 }
 

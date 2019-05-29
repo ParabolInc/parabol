@@ -61,6 +61,7 @@ const useInitialSafeRoute = (
       const {id: localStageId} = localStage
       const nextUrl = fromStageIdToUrl(localStageId, phases, facilitatorStageId)
       history.replace(nextUrl)
+      updateLocalStage(atmosphere, meetingId, facilitatorStageId)
       setSafeRoute(false)
       return
     }

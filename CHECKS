@@ -1,2 +1,4 @@
-WAIT=30
+WAIT=15
+TIMEOUT=6000
+ATTEMPTS=20
 /static/checks.txt  Nostalgia - Poem by Billy Collins

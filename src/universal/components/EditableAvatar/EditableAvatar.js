@@ -9,13 +9,15 @@ import Icon from 'universal/components/Icon'
 
 const borderRadius = '50%'
 const borderRadiusPanel = 4
+const panelPadding = 8
+const panelPaddingHorizontal = panelPadding * 2
 
 const EditableAvatarRoot = styled('div')(({hasPanel, size}) => ({
   backgroundColor: hasPanel && ui.palette.white,
   boxShadow: hasPanel && panelShadow,
   borderRadius: hasPanel ? borderRadiusPanel : borderRadius,
   height: size,
-  padding: hasPanel && '.5rem',
+  padding: hasPanel ? panelPadding : '',
   position: 'relative',
   width: size
 }))
@@ -46,14 +48,15 @@ const EditableAvatarEditOverlay = styled('div')(({hasPanel, size}) => ({
 }))
 
 const EditableAvatarImgBlock = styled('div')(({hasPanel, size}) => ({
-  height: hasPanel ? size - 18 : size,
+  height: hasPanel ? size - panelPaddingHorizontal : size,
   position: 'relative',
-  width: hasPanel ? size - 18 : size,
+  width: hasPanel ? size - panelPaddingHorizontal : size,
   zIndex: 100
 }))
 
 const EditableAvatar = (props) => {
   const {hasPanel, onClick, picture, size, unstyled} = props
+  const avatarSize = hasPanel ? size - panelPaddingHorizontal : size
   return (
     <EditableAvatarRoot hasPanel={hasPanel} size={size}>
       <EditableAvatarEditOverlay hasPanel={hasPanel} onClick={onClick} size={size}>
@@ -61,7 +64,7 @@ const EditableAvatar = (props) => {
         <span>{'EDIT'}</span>
       </EditableAvatarEditOverlay>
       <EditableAvatarImgBlock hasPanel={hasPanel} size={size}>
-        <Avatar picture={picture} size={size} sansRadius={unstyled} sansShadow={unstyled} />
+        <Avatar picture={picture} size={avatarSize} sansRadius={unstyled} sansShadow={unstyled} />
       </EditableAvatarImgBlock>
     </EditableAvatarRoot>
   )

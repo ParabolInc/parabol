@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v3.11.2 2019-May-28
+
+### Fixed
+* Meetings for safari users (support window.matchMedia)
+
+## v3.11.1 2019-May-28
+
+### Fixed
+* Borked end action meeting (fast-rtc-swarm)
+* Action Meeting Title
+
+
 ## v3.11.0 2019-May-15
 
 ### Changed

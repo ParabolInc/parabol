@@ -61,7 +61,6 @@ const ChangeTaskTeamMutation = (
   variables: IChangeTaskTeamOnMutationArguments,
   {onError, onCompleted}: LocalHandlers
 ) => {
-  const {viewerId} = atmosphere
   return commitMutation<ChangeTaskTeamMutation>(atmosphere, {
     mutation,
     variables,
@@ -85,7 +84,7 @@ const ChangeTaskTeamMutation = (
       if (team) {
         task.setLinkedRecord(team, 'team')
       }
-      handleUpsertTasks(task, store, viewerId)
+      handleUpsertTasks(task, store)
     },
     onError,
     onCompleted

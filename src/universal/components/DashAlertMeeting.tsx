@@ -6,15 +6,14 @@ import DashAlertBar from 'universal/components/DashAlertBar'
 import DashAlertLink from 'universal/components/DashAlertLink'
 import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 import plural from 'universal/utils/plural'
-import {MeetingTypes} from '../types/constEnums'
 
 const getActiveMeetings = (viewer) => {
   const activeMeetings: {link: string; name: string}[] = []
   const teams = (viewer && viewer.teams) || []
   teams.forEach((team) => {
-    const {meetingId, newMeeting} = team
-    if (meetingId) {
-      const meetingType = newMeeting ? newMeeting.meetingType : MeetingTypes.ACTION
+    const {newMeeting} = team
+    if (newMeeting) {
+      const {meetingType} = newMeeting
       const meetingSlug = meetingTypeToSlug[meetingType]
       activeMeetings.push({
         link: `/${meetingSlug}/${team.id}`,

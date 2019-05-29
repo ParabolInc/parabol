@@ -4,7 +4,7 @@ import {getUserId, isPastOrPresentTeamMember, isTeamMember} from '../../utils/au
 import standardError from '../../utils/standardError'
 
 export default {
-  type: new GraphQLNonNull(NewMeeting),
+  type: NewMeeting,
   description: 'A previous meeting that the user was in (present or absent)',
   args: {
     meetingId: {

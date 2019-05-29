@@ -23,6 +23,7 @@ export const enum Duration {
   MENU_OPEN_MAX = 188,
   MODAL_OPEN = 200,
   PORTAL_CLOSE = 120,
+  TOOLTIP_DELAY = 400,
   TOOLTIP_OPEN = 150,
   TOOLTIP_CLOSE = 75
 }

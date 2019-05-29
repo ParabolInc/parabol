@@ -12,7 +12,7 @@ import ui from 'universal/styles/ui'
 import withStyles from 'universal/styles/withStyles'
 import {MAX_INT, TEAM_DASH} from 'universal/utils/constants'
 
-const CARD_WIDTH = 256
+const CARD_WIDTH = 256 + 32 // account for box model and horizontal padding
 const GRID_PADDING = 16
 const NAV_WIDTH = parseInt(ui.dashSidebarWidth, 10) * 16
 

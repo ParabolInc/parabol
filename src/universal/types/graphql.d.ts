@@ -200,7 +200,7 @@ export interface IUser {
   /**
    * A previous meeting that the user was in (present or absent)
    */
-  newMeeting: NewMeeting
+  newMeeting: NewMeeting | null
 
   /**
    * all the notifications for a single user
@@ -5101,6 +5101,12 @@ export interface IEndNewMeetingPayload {
    * The ID of the suggestion to try a retro meeting, if tried
    */
   removedSuggestedActionId: string | null
+  updatedTaskIds: Array<string> | null
+
+  /**
+   * Any tasks that were updated during the meeting
+   */
+  updatedTasks: Array<ITask>
 }
 
 export interface INavigateMeetingPayload {
@@ -6114,10 +6120,7 @@ export interface IUpdateDragLocationPayload {
   userId: string
 }
 
-export type TeamMemberSubscriptionPayload =
-  | IRemoveTeamMemberPayload
-  | IRemoveOrgUserPayload
-  | IUpdateUserProfilePayload
+export type TeamMemberSubscriptionPayload = IUpdateUserProfilePayload
 
 /**
  * The meeting phase where all team members check in one-by-one
