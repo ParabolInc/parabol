@@ -1,6 +1,7 @@
 // values copied from https://material-components.github.io/material-components-web-catalog/#/component/elevation
 // guidelines on how to use here: https://material.io/design/environment/elevation.html#default-elevations
 
+// lighter Parabol theme values (keep TA)
 // const rgb = '68, 66, 88' // MD default 0, 0, 0
 // const alpha = ['0.18', '0.12', '0.1'] // MD default 0.2, 0.14, 0.12
 

@@ -15,8 +15,7 @@ export namespace PALETTE {
     BLUE = '#329AE5',
     RED = '#FD6157',
     TEAL = '#55C0CF',
-    GREEN = '#61BF8B',
-    GREEN_38 = '#61BF8B61'
+    GREEN = '#61BF8B'
   }
 
   export const enum BORDER {
