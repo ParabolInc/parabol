@@ -41,10 +41,17 @@ export default {
     }
 
     const authId = existingAuth.id
-    await r
-      .table('SlackAuth')
-      .get(authId)
-      .update({accessToken: null, isActive: false, updatedAt: now})
+    await r({
+      auth: r
+        .table('SlackAuth')
+        .get(authId)
+        .update({accessToken: null, isActive: false, updatedAt: now}),
+      notifications: r
+        .table('SlackNotification')
+        .getAll(teamId, {index: 'teamId'})
+        .filter({userId: viewerId})
+        .delete()
+    })
 
     const data = {authId, teamId, userId: viewerId}
     publish(TEAM, teamId, RemoveSlackAuthPayload, data, subOptions)

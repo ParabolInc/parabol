@@ -79,6 +79,7 @@ export default {
         id: (existingNotification && existingNotification.id) || undefined
       })
     })
+    console.log('inserting', JSON.stringify(notifications))
     await r.table('SlackNotification').insert(notifications, {conflict: 'replace'})
     const slackNotificationIds = notifications.map(({id}) => id)
     const data = {userId: viewerId, slackNotificationIds}
