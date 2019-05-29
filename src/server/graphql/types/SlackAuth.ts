@@ -28,11 +28,11 @@ const SlackAuth = new GraphQLObjectType({
       description: 'The timestamp the provider was created'
     },
     slackTeamId: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: GraphQLID,
       description: 'The id of the team in slack'
     },
     slackTeamName: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
       description: 'The name of the team in slack'
     },
     slackUserId: {

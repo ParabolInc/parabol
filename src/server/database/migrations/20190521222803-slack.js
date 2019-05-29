@@ -27,7 +27,12 @@ exports.up = async (r) => {
     updatedAt: provider.updatedAt,
     teamId: provider.teamId,
     userId: provider.userId,
-    accessToken: provider.accessToken
+    accessToken: provider.accessToken,
+    // we can retroactively grab these later, post-migration
+    // slackTeamId,
+    // slackTeamName,
+    slackUserId: provider.providerUserId,
+    slackUserName: provider.providerUserName
   }))
   try {
     await r.table('SlackAuth').insert(slackAuths)
