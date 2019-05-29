@@ -3,6 +3,7 @@ import styled from 'react-emotion'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {DECELERATE} from 'universal/styles/animation'
 import {switchShadow} from 'universal/styles/elevation'
+import {Duration} from 'universal/types/constEnums'
 
 interface Props {
   active: boolean
@@ -32,7 +33,7 @@ const Track = styled('div')(
     minWidth: TRACK_WIDTH,
     opacity: disabled ? 0.38 : 1,
     position: 'relative',
-    transition: `all 150ms ${DECELERATE}`,
+    transition: `background-color ${Duration.SELECTION_CONTROL}ms ${DECELERATE}`,
     userSelect: 'none',
     width: TRACK_WIDTH
   })
@@ -46,7 +47,7 @@ const Thumb = styled('div')(({active}: {active: boolean}) => ({
   height: THUMB_SIZE,
   position: 'absolute',
   top: -((THUMB_SIZE - TRACK_HEIGHT) / 2),
-  transition: `transform 150ms ${DECELERATE}`,
+  transition: `transform ${Duration.SELECTION_CONTROL}ms ${DECELERATE}`,
   transform: `translateX(${active ? TRACK_WIDTH - THUMB_SIZE + 1 : -1}px)`,
   width: THUMB_SIZE
 }))
