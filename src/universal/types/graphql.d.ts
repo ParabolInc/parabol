@@ -2459,12 +2459,12 @@ export interface ISlackAuth {
   /**
    * The id of the team in slack
    */
-  slackTeamId: string
+  slackTeamId: string | null
 
   /**
    * The name of the team in slack
    */
-  slackTeamName: string
+  slackTeamName: string | null
 
   /**
    * The userId in slack

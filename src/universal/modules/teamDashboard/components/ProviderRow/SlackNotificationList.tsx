@@ -26,7 +26,8 @@ const TEAM_EVENTS = [SlackNotificationEventEnum.meetingStart, SlackNotificationE
 
 const TitleAndPicker = styled('div')({
   alignItems: 'center',
-  display: 'flex'
+  display: 'flex',
+  marginBottom: 16
 })
 
 const Heading = styled(LabelHeading)({

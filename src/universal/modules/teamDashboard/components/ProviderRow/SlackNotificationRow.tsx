@@ -22,11 +22,13 @@ const labelLookup = {
 }
 
 const Row = styled('div')({
-  alignItems: 'baseline',
-  display: 'flex'
+  alignItems: 'center',
+  display: 'flex',
+  padding: '8px 0'
 })
 
 const Label = styled('span')({
+  fontSize: 14,
   marginRight: 16,
   width: '100%'
 })

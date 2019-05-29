@@ -15,7 +15,8 @@ export namespace PALETTE {
     BLUE = '#329AE5',
     RED = '#FD6157',
     TEAL = '#55C0CF',
-    GREEN = '#61BF8B'
+    GREEN = '#61BF8B',
+    GREEN_38 = '#61BF8B61'
   }
 
   export const enum BORDER {
@@ -26,6 +27,14 @@ export namespace PALETTE {
     BLUE = '#329AE5',
     BLUE_LIGHT = '#99CDF2'
   }
+
+  export const enum CONTROL {
+    MAIN = '#493272',
+    MAIN_BACKGROUND = '#49327261',
+    LIGHT = '#FFFFFF',
+    LIGHT_BACKGROUND = '#9B9B9B'
+  }
+
   export const enum TEXT {
     MAIN = '#444258',
     LIGHT = '#82809A',
