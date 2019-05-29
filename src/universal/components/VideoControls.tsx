@@ -83,7 +83,7 @@ const VideoControls = (props: Props) => {
     }
   }
 
-  if (!showVideoButton) return null
+  if (!showVideoButton || !swarm) return null
 
   if (!localStreamUI) {
     return (

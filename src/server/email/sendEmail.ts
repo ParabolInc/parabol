@@ -3,6 +3,7 @@ import createEmbeddedImages from './createEmbeddedImages'
 import {getMailgunApiConfig, getMailgunOptions} from './getMailgunConfig'
 import mailgun from './mailgunDriver'
 import templates from './templates'
+import sendToSentry from 'server/utils/sendToSentry'
 
 // See https://documentation.mailgun.com/en/latest/user_manual.html#batch-sending
 const MAILGUN_MAX_BATCH_SIZE = 1000
@@ -100,6 +101,8 @@ const sendMailgunEmail = async (to: string, emailContent: EmailContent) => {
       html
     })
   } catch (e) {
+    console.log(e)
+    sendToSentry(new Error(`Error sending email: ${e.message}`))
     return false
   }
   return true

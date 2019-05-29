@@ -6,6 +6,7 @@ import Atmosphere from 'universal/Atmosphere'
 import {IEndNewMeetingOnMutationArguments} from 'universal/types/graphql'
 import {LocalHandlers} from 'universal/types/relayMutations'
 import {EndNewMeetingMutation} from '__generated__/EndNewMeetingMutation.graphql'
+import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks'
 
 graphql`
   fragment EndNewMeetingMutation_team on EndNewMeetingPayload {
@@ -19,6 +20,13 @@ graphql`
       newMeeting {
         id
       }
+      agendaItems {
+        id
+      }
+    }
+    updatedTasks {
+      content
+      tags
     }
   }
 `
@@ -80,6 +88,11 @@ export const endNewMeetingNotificationUpdater = (payload, {store}) => {
   handleRemoveSuggestedActions(removedSuggestedActionId, store)
 }
 
+export const endNewMeetingTeamUpdater = (payload, {store}) => {
+  const updatedTasks = payload.getLinkedRecords('updatedTasks')
+  handleUpsertTasks(updatedTasks, store)
+}
+
 const EndNewMeetingMutation = (
   atmosphere: Atmosphere,
   variables: IEndNewMeetingOnMutationArguments,
@@ -92,6 +105,7 @@ const EndNewMeetingMutation = (
       const payload = store.getRootField('endNewMeeting')
       if (!payload) return
       endNewMeetingNotificationUpdater(payload, {store})
+      endNewMeetingTeamUpdater(payload, {store})
     },
     onCompleted: (res, errors) => {
       if (onCompleted) {

@@ -61,12 +61,14 @@ const SummarySheet = (props: Props) => {
         <MeetingMembersWithoutTasks meeting={meeting} />
         <RetroTopics imageSource={referrer === 'email' ? 'static' : 'local'} meeting={meeting} />
         <SummaryEmailScheduleCalendar
+          isDemo={isDemo}
           createdAt={createdAt}
           meetingUrl={meetingUrl}
           meetingNumber={meetingNumber}
           teamName={teamName}
         />
         <ContactUsFooter
+          isDemo={isDemo}
           hasLearningLink={meetingType === ACTION}
           prompt={`How’d your ${meetingLabel} meeting go?`}
           tagline='We’re eager for your feedback!'

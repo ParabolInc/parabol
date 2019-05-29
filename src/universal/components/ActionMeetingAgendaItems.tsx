@@ -13,12 +13,9 @@ import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useTimeout from 'universal/hooks/useTimeout'
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
 import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy'
-import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint'
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
-import {AGENDA_ITEMS} from 'universal/utils/constants'
 import handleRightArrow from 'universal/utils/handleRightArrow'
 import lazyPreload from 'universal/utils/lazyPreload'
-import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import EndMeetingButton from './EndMeetingButton'
 import {ActionMeetingAgendaItems_team} from '__generated__/ActionMeetingAgendaItems_team.graphql'
 import Avatar from 'universal/components/Avatar/Avatar'
@@ -51,12 +48,45 @@ const AgendaItemsWrapper = styled('div')({
   height: '100%'
 })
 
+const AgendaVerbatim = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  margin: '0 auto'
+})
+
+const StyledHeading = styled(MeetingPhaseHeading)({
+  marginLeft: 16,
+  fontSize: 24
+})
+
+const StyledCopy = styled(MeetingCopy)({
+  margin: '16px 0 0'
+})
+
 const TaskCardBlock = styled('div')({
   display: 'flex',
-  justifyContent: 'center',
-  overflow: 'auto',
-  padding: 8,
+  flex: 1,
+  margin: '0 auto',
+  position: 'relative',
   width: '100%'
+})
+
+const Inner = styled('div')({
+  display: 'flex',
+  overflow: 'auto',
+  position: 'absolute',
+  top: 0,
+  right: 0,
+  bottom: 0,
+  left: 0
+})
+
+const Inception = styled('div')({
+  flex: 1,
+  margin: '0 auto',
+  maxWidth: 296 * 4 + 16 * 5,
+  height: '100%',
+  padding: 16
 })
 
 const ActionMeetingAgendaItems = (props: Props) => {
@@ -80,7 +110,6 @@ const ActionMeetingAgendaItems = (props: Props) => {
   const {content, teamMember} = agendaItem
   const {picture, preferredName} = teamMember
   const isFacilitating = facilitatorUserId === viewerId
-  const phaseName = phaseLabelLookup[AGENDA_ITEMS]
   const nextStageRes = findStageAfterId(phases, localStageId)
   const {phase: nextPhase} = nextStageRes!
   const label =
@@ -94,22 +123,28 @@ const ActionMeetingAgendaItems = (props: Props) => {
       />
       <ErrorBoundary>
         <AgendaItemsWrapper>
-          <Avatar picture={picture} size={96} />
-          <MeetingPhaseHeading>{content}</MeetingPhaseHeading>
-          <MeetingCopy>{`${preferredName}, what do you need?`}</MeetingCopy>
+          <AgendaVerbatim>
+            <Avatar picture={picture} size={64} />
+            <StyledHeading>{content}</StyledHeading>
+          </AgendaVerbatim>
+          <StyledCopy>{`${preferredName}, what do you need?`}</StyledCopy>
           <TaskCardBlock>
-            <MeetingAgendaCards
-              agendaId={agendaItem.id}
-              maxCols={4}
-              meetingId={meetingId}
-              showPlaceholders
-              tasks={agendaTasks}
-              teamId={team.id}
-            />
+            <Inner>
+              <Inception>
+                <MeetingAgendaCards
+                  agendaId={agendaItem.id}
+                  maxCols={4}
+                  meetingId={meetingId}
+                  showPlaceholders
+                  tasks={agendaTasks}
+                  teamId={team.id}
+                />
+              </Inception>
+            </Inner>
           </TaskCardBlock>
           <EditorHelpModalContainer />
         </AgendaItemsWrapper>
-        {isFacilitating ? (
+        {isFacilitating && (
           <StyledBottomBar>
             <BottomControlSpacer />
             <BottomNavControl
@@ -122,10 +157,6 @@ const ActionMeetingAgendaItems = (props: Props) => {
             </BottomNavControl>
             <EndMeetingButton meetingId={meetingId} />
           </StyledBottomBar>
-        ) : (
-          <MeetingFacilitationHint>
-            {'Waiting for'} <b>{preferredName}</b> {`to start the ${phaseName}`}
-          </MeetingFacilitationHint>
         )}
       </ErrorBoundary>
       <MeetingHelpToggle

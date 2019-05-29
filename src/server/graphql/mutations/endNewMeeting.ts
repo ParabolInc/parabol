@@ -3,21 +3,32 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
-import {NOTIFICATION, TEAM, RETROSPECTIVE, ACTION, DONE} from 'universal/utils/constants'
+import {
+  ACTION,
+  DONE,
+  NOTIFICATION,
+  RETROSPECTIVE,
+  TEAM,
+  AGENDA_ITEMS,
+  LAST_CALL,
+  DISCUSS
+} from 'universal/utils/constants'
 import EndNewMeetingPayload from 'server/graphql/types/EndNewMeetingPayload'
 import {endSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack'
 import sendNewMeetingSummary from 'server/graphql/mutations/helpers/endMeeting/sendNewMeetingSummary'
 import shortid from 'shortid'
 import {
-  COMPLETED_RETRO_MEETING,
-  COMPLETED_ACTION_MEETING
+  COMPLETED_ACTION_MEETING,
+  COMPLETED_RETRO_MEETING
 } from 'server/graphql/types/TimelineEventTypeEnum'
 import removeSuggestedAction from 'server/safeMutations/removeSuggestedAction'
 import standardError from 'server/utils/standardError'
-import Meeting from 'server/database/types/Meeting'
+import Meeting, {MeetingType} from 'server/database/types/Meeting'
 import {DataLoaderWorker, GQLContext} from 'server/graphql/graphql'
 import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB'
 import {ITask} from 'universal/types/graphql'
+import findStageById from 'universal/utils/meetings/findStageById'
+import GenericMeetingPhase from 'server/database/types/GenericMeetingPhase'
 
 const timelineEventLookup = {
   [RETROSPECTIVE]: COMPLETED_RETRO_MEETING,
@@ -111,11 +122,21 @@ const finishActionMeeting = async (meeting: Meeting, dataLoader: DataLoaderWorke
       .get(meetingId)
       .update({taskCount: tasks.length})
   ])
+  return {updatedTaskIds: [...tasks, ...doneTasks].map(({id}) => id)}
 }
 
 const finishMeetingType = async (meeting: Meeting, dataLoader: DataLoaderWorker) => {
   if (meeting.meetingType === ACTION) return finishActionMeeting(meeting, dataLoader)
   return undefined
+}
+
+const getIsKill = (meetingType: MeetingType, phase: GenericMeetingPhase) => {
+  switch (meetingType) {
+    case 'action':
+      return ![AGENDA_ITEMS, LAST_CALL].includes(phase.phaseType)
+    case 'retrospective':
+      return ![DISCUSS].includes(phase.phaseType)
+  }
 }
 
 export default {
@@ -140,7 +161,7 @@ export default {
       .get(meetingId)
       .default(null)) as Meeting | null
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
-    const {endedAt, meetingNumber, phases, teamId, meetingType} = meeting
+    const {endedAt, facilitatorStageId, meetingNumber, phases, teamId, meetingType} = meeting
 
     // VALIDATION
     // called by endOldMeetings, SU is OK
@@ -154,13 +175,13 @@ export default {
     }
 
     // RESOLUTION
-    const lastPhase = phases[phases.length - 1]
-    const currentStage = lastPhase.stages.find((stage) => !!stage.startAt && !stage.endAt)
-
-    if (currentStage) {
-      currentStage.isComplete = true
-      currentStage.endAt = now
+    const currentStageRes = findStageById(phases, facilitatorStageId)
+    if (!currentStageRes) {
+      return standardError(new Error('Cannot find facilitator stage'), {userId: viewerId})
     }
+    const {stage, phase} = currentStageRes
+    stage.isComplete = true
+    stage.endAt = now
 
     const {completedMeeting} = await r({
       team: r
@@ -188,63 +209,62 @@ export default {
     const presentMemberUserIds = presentMembers.map(({userId}) => userId)
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
 
-    if (currentStage) {
-      await finishMeetingType(completedMeeting, dataLoader)
-      const {facilitatorUserId} = completedMeeting
-      const nonFacilitators = presentMemberUserIds.filter((userId) => userId !== facilitatorUserId)
-      const traits = {
-        wasFacilitator: false,
-        teamMembersCount: meetingMembers.length,
-        teamMembersPresentCount: presentMembers.length,
-        teamId,
-        meetingNumber
-      }
+    const result = await finishMeetingType(completedMeeting, dataLoader)
+    const updatedTaskIds = (result && result.updatedTaskIds) || []
+    const {facilitatorUserId} = completedMeeting
+    const nonFacilitators = presentMemberUserIds.filter((userId) => userId !== facilitatorUserId)
+    const traits = {
+      wasFacilitator: false,
+      teamMembersCount: meetingMembers.length,
+      teamMembersPresentCount: presentMembers.length,
+      teamId,
+      meetingNumber
+    }
 
-      const eventName = `${meetingType} Meeting Completed`
-      sendSegmentEvent(eventName, facilitatorUserId, {
-        ...traits,
-        wasFacilitator: true
-      }).catch()
-      sendSegmentEvent(eventName, nonFacilitators, traits).catch()
-      sendSegmentIdentify(presentMemberUserIds).catch()
-      sendNewMeetingSummary(completedMeeting, context).catch()
+    const eventName = `${meetingType} Meeting Completed`
+    sendSegmentEvent(eventName, facilitatorUserId, {
+      ...traits,
+      wasFacilitator: true
+    }).catch()
+    sendSegmentEvent(eventName, nonFacilitators, traits).catch()
+    sendSegmentIdentify(presentMemberUserIds).catch()
+    sendNewMeetingSummary(completedMeeting, context).catch(console.log)
 
-      const events = meetingMembers.map((meetingMember) => ({
-        id: shortid.generate(),
-        createdAt: now,
-        interactionCount: 0,
-        seenCount: 0,
-        type: timelineEventLookup[meetingType],
-        userId: meetingMember.userId,
-        teamId,
-        orgId: team.orgId,
-        meetingId
-      }))
-      await r.table('TimelineEvent').insert(events)
-      if (team.isOnboardTeam) {
-        const teamLeadUserId = await r
-          .table('TeamMember')
-          .getAll(teamId, {index: 'teamId'})
-          .filter({isLead: true})
-          .nth(0)('userId')
+    const events = meetingMembers.map((meetingMember) => ({
+      id: shortid.generate(),
+      createdAt: now,
+      interactionCount: 0,
+      seenCount: 0,
+      type: timelineEventLookup[meetingType],
+      userId: meetingMember.userId,
+      teamId,
+      orgId: team.orgId,
+      meetingId
+    }))
+    await r.table('TimelineEvent').insert(events)
+    if (team.isOnboardTeam) {
+      const teamLeadUserId = await r
+        .table('TeamMember')
+        .getAll(teamId, {index: 'teamId'})
+        .filter({isLead: true})
+        .nth(0)('userId')
 
-        const removedSuggestedActionId = await removeSuggestedAction(
+      const removedSuggestedActionId = await removeSuggestedAction(
+        teamLeadUserId,
+        suggestedActionLookup[meetingType]
+      )
+      if (removedSuggestedActionId) {
+        publish(
+          NOTIFICATION,
           teamLeadUserId,
-          suggestedActionLookup[meetingType]
+          EndNewMeetingPayload,
+          {removedSuggestedActionId},
+          subOptions
         )
-        if (removedSuggestedActionId) {
-          publish(
-            NOTIFICATION,
-            teamLeadUserId,
-            EndNewMeetingPayload,
-            {removedSuggestedActionId},
-            subOptions
-          )
-        }
       }
     }
 
-    const data = {meetingId, teamId, isKill: !currentStage}
+    const data = {meetingId, teamId, isKill: getIsKill(meetingType, phase), updatedTaskIds}
     publish(TEAM, teamId, EndNewMeetingPayload, data, subOptions)
     return data
   }

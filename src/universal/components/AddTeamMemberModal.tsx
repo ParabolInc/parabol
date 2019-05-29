@@ -7,9 +7,9 @@ import parseEmailAddressList from 'universal/utils/parseEmailAddressList'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import InviteToTeamMutation from '../mutations/InviteToTeamMutation'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
-import AddTeamMemberModalBoundary from './AddTeamMemberModalBoundary'
 import AddTeamMemberModalSuccess from './AddTeamMemberModalSuccess'
 import BasicTextArea from './InputField/BasicTextArea'
+import DialogContainer from './DialogContainer'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
 import StyledError from './StyledError'
@@ -29,14 +29,14 @@ interface State {
   rawInvitees: string
 }
 
+const StyledDialogContainer = styled(DialogContainer)({
+  width: 500
+})
+
 const ButtonGroup = styled('div')({
   marginTop: '1rem',
   display: 'flex',
   justifyContent: 'flex-end'
-})
-
-const OffsetTitle = styled(DialogTitle)({
-  paddingLeft: '1.75rem'
 })
 
 const ErrorMessage = styled(StyledError)({
@@ -132,8 +132,8 @@ class AddTeamMemberModal extends Component<Props, State> {
     }
     const title = invitees.length <= 1 ? 'Send Invitation' : `Send ${invitees.length} Invitations`
     return (
-      <AddTeamMemberModalBoundary>
-        <OffsetTitle>Invite to Team</OffsetTitle>
+      <StyledDialogContainer>
+        <DialogTitle>Invite to Team</DialogTitle>
         <DialogContent>
           <BasicTextArea
             autoFocus
@@ -153,7 +153,7 @@ class AddTeamMemberModal extends Component<Props, State> {
             </PrimaryButton>
           </ButtonGroup>
         </DialogContent>
-      </AddTeamMemberModalBoundary>
+      </StyledDialogContainer>
     )
   }
 }

@@ -6,7 +6,7 @@ const DialogContent = styled('div')({
   color: TEXT.MAIN,
   fontSize: 14,
   lineHeight: 1.5,
-  padding: '16px 32px 32px'
+  padding: '16px 24px 24px'
 })
 
 export default DialogContent

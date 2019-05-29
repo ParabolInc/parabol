@@ -1,5 +1,5 @@
 import {NewMeetingSummary_viewer} from '__generated__/NewMeetingSummary_viewer.graphql'
-import React from 'react'
+import React, {useEffect} from 'react'
 import Helmet from 'react-helmet'
 import {createFragmentContainer, graphql} from 'react-relay'
 import ui from 'universal/styles/ui'
@@ -8,6 +8,7 @@ import makeHref from 'universal/utils/makeHref'
 import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 import {demoTeamId} from 'universal/modules/demo/initDB'
 import MeetingSummaryEmail from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail'
+import useRouter from 'universal/hooks/useRouter'
 
 interface Props {
   viewer: NewMeetingSummary_viewer
@@ -19,6 +20,18 @@ const NewMeetingSummary = (props: Props) => {
     urlAction,
     viewer: {newMeeting}
   } = props
+  const {history} = useRouter()
+  useEffect(() => {
+    if (!newMeeting) {
+      history.replace({
+        pathname: `/invitation-required/${teamId}`,
+        search: `?redirectTo=${encodeURIComponent(window.location.pathname)}`
+      })
+    }
+  }, [newMeeting])
+  if (!newMeeting) {
+    return null
+  }
   const {
     id: meetingId,
     meetingNumber,

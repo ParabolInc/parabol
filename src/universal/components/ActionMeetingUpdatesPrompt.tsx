@@ -22,6 +22,11 @@ const PromptText = styled('div')({
   flexDirection: 'column',
   justifyContent: 'center'
 })
+
+const StyledHeader = styled(PhaseHeaderTitle)({
+  fontSize: 18
+})
+
 const getQuestion = (isCheckedIn, taskCount, preferredName) => {
   if (isCheckedIn) {
     return taskCount > 0 ? 'what’s changed with your tasks?' : 'what are you working on?'
@@ -45,12 +50,12 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
   const taskCount = tasks.edges.length
   return (
     <StyledPrompt>
-      <Avatar picture={picture || defaultUserAvatar} size={96} />
+      <Avatar picture={picture || defaultUserAvatar} size={64} />
       <PromptText>
-        <PhaseHeaderTitle>
+        <StyledHeader>
           {prefix}
           <i>{getQuestion(isCheckedIn, taskCount, preferredName)}</i>
-        </PhaseHeaderTitle>
+        </StyledHeader>
         <PhaseHeaderDescription>
           {isMyMeetingSection && taskCount === 0 && 'Add cards to track your current work.'}
           {isMyMeetingSection && taskCount > 0 && 'Your turn to share! Quick updates only, please.'}

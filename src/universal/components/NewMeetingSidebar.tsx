@@ -10,16 +10,13 @@ import SidebarToggle from 'universal/components/SidebarToggle'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import {DECELERATE} from 'universal/styles/animation'
 import makeShadowColor from 'universal/styles/helpers/makeShadowColor'
-import {
-  meetingChromeBoxShadow,
-  meetingSidebarMediaQuery,
-  meetingSidebarWidth
-} from 'universal/styles/meeting'
+import {meetingSidebarMediaQuery, meetingSidebarWidth} from 'universal/styles/meeting'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {MeetingTypeEnum} from 'universal/types/graphql'
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
 import isDemoRoute from '../utils/isDemoRoute'
 import {NewMeetingSidebar_viewer} from '__generated__/NewMeetingSidebar_viewer.graphql'
+import {desktopSidebarShadow, navDrawerShadow} from 'universal/styles/elevation'
 
 interface SidebarStyleProps {
   isMeetingSidebarCollapsed: boolean
@@ -44,6 +41,7 @@ const SidebarParent = styled('div')({
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
+  height: '100vh',
   maxWidth: meetingSidebarWidth,
   minWidth: meetingSidebarWidth,
   padding: '1.25rem 0 0'
@@ -61,7 +59,7 @@ const TeamDashboardLink = styled(Link)({
 
 const boxShadowNone = makeShadowColor(0)
 const MeetingSidebarStyles = styled('div')(({isMeetingSidebarCollapsed}: SidebarStyleProps) => ({
-  boxShadow: isMeetingSidebarCollapsed ? boxShadowNone : meetingChromeBoxShadow[2],
+  boxShadow: isMeetingSidebarCollapsed ? boxShadowNone : navDrawerShadow,
   display: 'flex',
   flexDirection: 'column',
   height: '100vh',
@@ -77,7 +75,7 @@ const MeetingSidebarStyles = styled('div')(({isMeetingSidebarCollapsed}: Sidebar
   zIndex: 400,
 
   [meetingSidebarMediaQuery]: {
-    boxShadow: isMeetingSidebarCollapsed ? boxShadowNone : meetingChromeBoxShadow[0]
+    boxShadow: isMeetingSidebarCollapsed ? boxShadowNone : desktopSidebarShadow
   }
 }))
 

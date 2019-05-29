@@ -1,7 +1,5 @@
 import {RetroMeeting_viewer} from '__generated__/RetroMeeting_viewer.graphql'
 import React, {ReactElement} from 'react'
-import {DragDropContext as dragDropContext} from 'react-dnd'
-import HTML5Backend from 'react-dnd-html5-backend'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {ValueOf} from 'types/generics'
 import LayoutPusher from 'universal/components/LayoutPusher'
@@ -150,7 +148,7 @@ graphql`
 `
 
 export default createFragmentContainer(
-  dragDropContext(HTML5Backend)(RetroMeeting),
+  RetroMeeting,
   graphql`
     fragment RetroMeeting_viewer on User {
       ...RetroMeetingSidebar_viewer

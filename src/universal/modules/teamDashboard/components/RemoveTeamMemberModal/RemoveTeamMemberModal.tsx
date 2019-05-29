@@ -4,13 +4,17 @@ import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import PrimaryButton from 'universal/components/PrimaryButton'
 import IconLabel from 'universal/components/IconLabel'
-import DialogHeading from 'universal/components/DialogHeading'
+import DialogContainer from 'universal/components/DialogContainer'
+import DialogTitle from 'universal/components/DialogTitle'
 import DialogContent from 'universal/components/DialogContent'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import RemoveTeamMemberMutation from 'universal/mutations/RemoveTeamMemberMutation'
-import TeamManagementModalBoundary from '../PromoteTeamMemberModal/TeamManagementModalBoundary'
+
+const StyledDialogContainer = styled(DialogContainer)({
+  width: 320
+})
 
 const StyledButton = styled(PrimaryButton)({
   margin: '1.5rem auto 0'
@@ -29,8 +33,8 @@ const RemoveTeamMemberModal = (props: Props) => {
     RemoveTeamMemberMutation(atmosphere, teamMemberId)
   }
   return (
-    <TeamManagementModalBoundary>
-      <DialogHeading>Are you sure?</DialogHeading>
+    <StyledDialogContainer>
+      <DialogTitle>Are you sure?</DialogTitle>
       <DialogContent>
         This will remove {preferredName} from the team.
         <br />
@@ -38,7 +42,7 @@ const RemoveTeamMemberModal = (props: Props) => {
           <IconLabel icon='arrow_forward' iconAfter label={`Remove ${preferredName}`} />
         </StyledButton>
       </DialogContent>
-    </TeamManagementModalBoundary>
+    </StyledDialogContainer>
   )
 }
 

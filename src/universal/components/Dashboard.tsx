@@ -1,7 +1,5 @@
 import {Dashboard_viewer} from '__generated__/Dashboard_viewer.graphql'
 import React, {lazy} from 'react'
-import {DragDropContext as dragDropContext} from 'react-dnd'
-import HTML5Backend from 'react-dnd-html5-backend'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {Route, Switch} from 'react-router'
@@ -56,7 +54,7 @@ const Dashboard = (props: Props) => {
 }
 
 export default createFragmentContainer(
-  dragDropContext(HTML5Backend)(Dashboard),
+  Dashboard,
   graphql`
     fragment Dashboard_viewer on User {
       ...DashAlert_viewer
