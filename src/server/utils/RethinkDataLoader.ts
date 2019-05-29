@@ -240,9 +240,9 @@ export default class RethinkDataLoader {
     return r.table('SlackAuth').getAll(r.args(userIds), {index: 'userId'})
   })
 
-  slackNotificationsByUserId = this.fkLoader(this.slackNotifications, 'userId', (userIds) => {
+  slackNotificationsByTeamId = this.fkLoader(this.slackNotifications, 'teamId', (teamIds) => {
     const r = getRethink()
-    return r.table('SlackNotification').getAll(r.args(userIds), {index: 'userId'})
+    return r.table('SlackNotification').getAll(r.args(teamIds), {index: 'teamId'})
   })
 
   softTeamMembersByTeamId = this.fkLoader(this.softTeamMembers, 'teamId', (teamIds) => {

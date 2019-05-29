@@ -65,7 +65,7 @@ export default {
     const meeting = new Meeting(teamId, meetingType, meetingCount, phases, viewerId)
     const teamMembers = (await dataLoader
       .get('teamMembersByTeamId')
-      .load(meeting.teamId)) as ITeamMember[]
+      .load(meeting.teamId))
     const meetingMembers = await createMeetingMembers(meeting, teamMembers, dataLoader)
     await r({
       team: r
@@ -76,7 +76,7 @@ export default {
       members: r.table('MeetingMember').insert(meetingMembers)
     })
 
-    startSlackMeeting(teamId, meetingType)
+    startSlackMeeting(teamId, dataLoader, meetingType).catch(console.log)
     const data = {teamId, meetingId: meeting.id}
     publish(TEAM, teamId, StartNewMeetingPayload, data, subOptions)
     return data

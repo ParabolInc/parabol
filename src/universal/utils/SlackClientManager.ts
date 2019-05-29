@@ -63,6 +63,10 @@ interface ChannelListResponse {
   channels: SlackChannelInfo[]
 }
 
+interface PostMessageResponse {
+  ok: true
+}
+
 class SlackClientManager {
   static openOAuth (atmosphere: Atmosphere, teamId: string, mutationProps: MenuMutationProps) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
@@ -153,6 +157,14 @@ class SlackClientManager {
   getIdentity () {
     return this.get<IdentityResponse>(
       `https://slack.com/api/users.identity?token=${this.accessToken}`
+    )
+  }
+
+  postMessage (channelId: string, text: string) {
+    return this.get<PostMessageResponse>(
+      `https://slack.com/api/chat.postMessage?token=${
+        this.accessToken
+      }&channel=${channelId}&text=${text}&unfurl_links=true`
     )
   }
 }

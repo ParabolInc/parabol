@@ -378,8 +378,8 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
       resolve: async (_source, {teamId}, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
         if (!isTeamMember(authToken, teamId)) return []
-        const slackNotifications = await dataLoader.get('slackNotificationsByUserId').load(viewerId)
-        return slackNotifications.filter((notification) => notification.teamId === teamId)
+        const slackNotifications = await dataLoader.get('slackNotificationsByTeamId').load(teamId)
+        return slackNotifications.filter((notification) => notification.userId === viewerId)
       }
     },
     suggestedIntegrations,

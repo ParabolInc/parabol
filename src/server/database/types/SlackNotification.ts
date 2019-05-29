@@ -1,6 +1,6 @@
 import shortid from 'shortid'
 
-type SlackNotificationEvent = 'meetingStart' | 'meetingEnd'
+export type SlackNotificationEvent = 'meetingStart' | 'meetingEnd'
 
 interface Input {
   event: SlackNotificationEvent
