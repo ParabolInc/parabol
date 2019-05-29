@@ -12,7 +12,6 @@ import deleteTask from 'server/graphql/mutations/deleteTask'
 import disconnectSocket from 'server/graphql/mutations/disconnectSocket'
 import downgradeToPersonal from 'server/graphql/mutations/downgradeToPersonal'
 import editTask from 'server/graphql/mutations/editTask'
-import endMeeting from 'server/graphql/mutations/endMeeting'
 import githubAddAssignee from 'server/graphql/mutations/githubAddAssignee'
 import inactivateUser from 'server/graphql/mutations/inactivateUser'
 import navigateMeeting from 'server/graphql/mutations/navigateMeeting'
@@ -119,7 +118,6 @@ export default new GraphQLObjectType<any, GQLContext, any>({
     endDraggingReflection,
     editReflection,
     editTask,
-    endMeeting,
     githubAddAssignee,
     inactivateUser,
     inviteToTeam,
