@@ -50,7 +50,7 @@ const ActionMeeting = (props: Props) => {
   const {viewer} = props
   const team = viewer.team!
   const {toggleSidebar, streams, swarm, handleGotoNext, gotoStageId, safeRoute} = useMeeting(
-    MeetingTypeEnum.retrospective,
+    MeetingTypeEnum.action,
     team
   )
   useEffect(() => {
