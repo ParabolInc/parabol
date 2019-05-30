@@ -76,6 +76,7 @@ jobs:
               sudo python get-pip.py
               sudo pip install rethinkdb==2.3.0
               rethinkdb-restore --force cypress/fixtures/rdb_test.tar.gz
+              yarn db:migrate-testing
               yarn test:cypress
             fi
       - deploy:
