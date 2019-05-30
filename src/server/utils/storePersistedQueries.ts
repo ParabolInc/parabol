@@ -1,8 +1,8 @@
 import getRethink from 'server/database/rethinkDriver'
 import * as fs from 'fs'
-import queryMap from '../graphql/queryMap.json'
 
 const storePersistedQueries = async () => {
+  const queryMap = require('../graphql/queryMap.json')
   const hashes = Object.keys(queryMap)
   const records = hashes.map((hash) => ({
     id: hash,
