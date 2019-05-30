@@ -41,7 +41,7 @@ const MenuToggleBlock = styled('div')({
 
 const ToggleBlock = styled('div')({
   marginLeft: Layout.ROW_GUTTER,
-  width: 38
+  width: 36
 })
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
