@@ -101,8 +101,8 @@ const PALETTE_VALUES = {
 }
 
 // Fields
-const FIELD_BOX_SHADOW = 'inset 0 .0625rem .0625rem 0 rgba(0, 0, 0, .1)'
-const FIELD_BOX_SHADOW_FOCUS = '0 .0625rem .0625rem 0 rgba(0, 0, 0, .1)'
+const FIELD_BOX_SHADOW = 'none' // 'inset 0 .0625rem .0625rem 0 rgba(0, 0, 0, .1)'
+const FIELD_BOX_SHADOW_FOCUS = 'none' // '0 .0625rem .0625rem 0 rgba(0, 0, 0, .1)'
 const FIELD_PADDING_HORIZONTAL = '.75rem'
 const FIELD_PLACEHOLDER_COLOR = appTheme.palette.dark60a
 const FIELD_PLACEHOLDER_COLOR_FOCUS_ACTIVE = appTheme.palette.dark30a

@@ -13,7 +13,7 @@ interface Props {
 
 // https://material.io/design/components/selection-controls.html#switches
 const WEB_CONTROL_MIN_BOX = 24
-const TRACK_WIDTH = 36
+const TRACK_WIDTH = 34
 const TRACK_HEIGHT = 14
 const THUMB_SIZE = 20
 

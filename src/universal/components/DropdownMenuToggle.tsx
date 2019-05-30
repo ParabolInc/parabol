@@ -22,9 +22,7 @@ const DownButtonIcon = styled(Icon)({
 
 const DropdownBlock = styled('div')({
   display: 'inline-block',
-  width: '100%',
-  // space so the menu doesn't cover the border of the toggle
-  paddingBottom: 2
+  width: '100%'
 })
 
 const InputBlock = styled('div')(

@@ -77,11 +77,13 @@ const ProviderName = styled('div')({
 
 const CardTop = styled('div')({
   display: 'flex',
-  justifyContent: 'flex-start'
+  justifyContent: 'flex-start',
+  padding: Layout.ROW_GUTTER
 })
 
 const ExtraProviderCard = styled(ProviderCard)({
-  flexDirection: 'column'
+  flexDirection: 'column',
+  padding: 0
 })
 
 const SlackProviderRow = (props: Props) => {

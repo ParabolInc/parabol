@@ -12,9 +12,12 @@ import useAtmosphere from 'universal/hooks/useAtmosphere'
 import SetSlackNotificationMutation from 'universal/mutations/SetSlackNotificationMutation'
 import useSlackChannels from 'universal/hooks/useSlackChannels'
 import StyledError from 'universal/components/StyledError'
+import {PALETTE} from 'universal/styles/paletteV2'
+import {Layout} from 'universal/types/constEnums'
 
 const SlackNotificationListStyles = styled('div')({
-  marginTop: 16
+  borderTop: `1px solid ${PALETTE.BORDER.LIGHTER}`,
+  padding: Layout.ROW_GUTTER
 })
 
 interface Props {

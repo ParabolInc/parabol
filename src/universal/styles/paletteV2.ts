@@ -31,7 +31,7 @@ export namespace PALETTE {
     MAIN = '#493272',
     MAIN_BACKGROUND = '#49327261',
     LIGHT = '#FFFFFF',
-    LIGHT_BACKGROUND = '#9B9B9B'
+    LIGHT_BACKGROUND = '#9D9CA8'
   }
 
   export const enum TEXT {
