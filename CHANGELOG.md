@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## v3.12.0 2019-May-29 (draft)
+## v3.12.0 2019-May-29
 
 ### Added
 * Persist queryMap to DB, this allows folks to complete their old
