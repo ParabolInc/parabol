@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v3.12.0 2019-May-29 (draft)
+
+### Added
+* Persist queryMap to DB, this allows folks to complete their old
+  queries after a server upgrade.
+
+### Fixed
+* Org avatar input layout
+* Team archive grid layout
+* #2902 avatar shape
+* Wonky invoice layout with wrapping div, bg colors
+
 ## v3.11.2 2019-May-28
 
 ### Fixed
