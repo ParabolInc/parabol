@@ -78,6 +78,7 @@ jobs:
               rethinkdb-restore --force cypress/fixtures/rdb_test.tar.gz
               yarn db:migrate-testing
               yarn build
+              yarn postdeploy
               yarn test:cypress
             fi
       - deploy:
