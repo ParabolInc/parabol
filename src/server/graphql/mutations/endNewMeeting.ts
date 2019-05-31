@@ -5,13 +5,13 @@ import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {
   ACTION,
+  AGENDA_ITEMS,
+  DISCUSS,
   DONE,
+  LAST_CALL,
   NOTIFICATION,
   RETROSPECTIVE,
-  TEAM,
-  AGENDA_ITEMS,
-  LAST_CALL,
-  DISCUSS
+  TEAM
 } from 'universal/utils/constants'
 import EndNewMeetingPayload from 'server/graphql/types/EndNewMeetingPayload'
 import {endSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack'
@@ -104,14 +104,26 @@ const shuffleCheckInOrder = async (teamId: string) => {
 
 const finishActionMeeting = async (meeting: Meeting, dataLoader: DataLoaderWorker) => {
   const {id: meetingId, teamId} = meeting
-  const [meetingMembers, allTasks] = await Promise.all([
-    dataLoader.get('meetingMembersByMeetingId').load(meetingId),
-    dataLoader.get('tasksByTeamId').load(teamId)
-  ])
-  const tasks = allTasks.filter((task) => task.meetingId === meetingId)
-  const doneTasks = allTasks.filter((task) => task.status === DONE)
-  const userIds = meetingMembers.map(({userId}) => userId)
   const r = getRethink()
+  const [meetingMembers, tasks, doneTasks] = await Promise.all([
+    dataLoader.get('meetingMembersByMeetingId').load(meetingId),
+    r
+      .table('Task')
+      .getAll(teamId, {index: 'teamId'})
+      .filter({
+        meetingId
+      }),
+    r
+      .table('Task')
+      .getAll(teamId, {index: 'teamId'})
+      .filter({status: DONE})
+      .filter((task) =>
+        task('tags')
+          .contains('archived')
+          .not()
+      )
+  ])
+  const userIds = meetingMembers.map(({userId}) => userId)
   await Promise.all([
     archiveTasksForDB(doneTasks, meetingId),
     updateTaskSortOrders(userIds, tasks),
