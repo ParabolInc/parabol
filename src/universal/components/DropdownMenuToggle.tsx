@@ -36,6 +36,11 @@ const InputBlock = styled('div')(
   ({disabled}: {disabled: boolean}) => disabled && {...ui.fieldDisabled}
 )
 
+const Text = styled('span')({
+  display: 'block',
+  height: 24
+})
+
 interface Props {
   className?: string
   defaultText: string | ReactElement<any>
@@ -55,7 +60,7 @@ const DropdownMenuToggle = forwardRef((props: Props, ref: any) => {
     >
       <FieldBlock>
         <InputBlock disabled={!!disabled} tabIndex={1}>
-          <span>{defaultText}</span>
+          <Text>{defaultText}</Text>
           {!disabled && <DownButtonIcon>expand_more</DownButtonIcon>}
         </InputBlock>
       </FieldBlock>

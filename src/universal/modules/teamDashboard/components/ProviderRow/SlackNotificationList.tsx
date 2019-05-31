@@ -76,7 +76,6 @@ const SlackNotificationList = (props: Props) => {
     [slackNotifications, localChannelId]
   )
 
-  if (!slackAuth || !slackAuth.accessToken) return null
   return (
     <SlackNotificationListStyles>
       <TitleAndPicker>

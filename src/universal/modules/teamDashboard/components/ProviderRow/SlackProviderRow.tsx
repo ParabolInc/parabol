@@ -130,7 +130,7 @@ const SlackProviderRow = (props: Props) => {
           </ListAndMenu>
         )}
       </CardTop>
-      <SlackNotificationList teamId={teamId} viewer={viewer} />
+      {accessToken && <SlackNotificationList teamId={teamId} viewer={viewer} />}
     </ExtraProviderCard>
   )
 }

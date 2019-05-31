@@ -23,6 +23,14 @@ const SlackAuth = new GraphQLObjectType({
         return viewerId === userId ? accessToken : null
       }
     },
+    botUserId: {
+      type: GraphQLID,
+      description: 'the parabol bot user id'
+    },
+    botAccessToken: {
+      type: GraphQLID,
+      description: 'the parabol bot access token, used to communicate via direct message'
+    },
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The timestamp the provider was created'
