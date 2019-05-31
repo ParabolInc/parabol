@@ -2438,10 +2438,10 @@
   resolved "https://registry.yarnpkg.com/@types/string-similarity/-/string-similarity-3.0.0.tgz#12b655f1aab0156049657a4e9287caf3e6718d93"
   integrity sha512-vhHkPKxl0cudrbxr5Dog1HVgUGXtmyYP95qy1da/h5gFEzIqDMN/+SjJAS7/6DEAdeI+AJQX8zrdWXL3wP4FRA==
 
-"@types/stripe@^6.19.1":
-  version "6.19.7"
-  resolved "https://registry.yarnpkg.com/@types/stripe/-/stripe-6.19.7.tgz#a04c50d519ec50d820f72d12e31351f845c583fe"
-  integrity sha512-e4it4GNSZ+lrQth+2/7TDw0FVWmLcM4t/m+bDF8DhEwD17JmSKWnUNvPYbcafoeai4rI1i4RKmTeHuzB3IquRQ==
+"@types/stripe@^6.26.4":
+  version "6.26.4"
+  resolved "https://registry.yarnpkg.com/@types/stripe/-/stripe-6.26.4.tgz#a9779bee1215518ff8f815c5c41235d3a9309f7e"
+  integrity sha512-IiZP5mDL1A8yNolpMxOy95wZpC/uWxv8P2WiFybba7Pc8Uguu8UCx0GNRIetWJwcsYe7rCpkGbbhF3+nRmJvHQ==
   dependencies:
     "@types/node" "*"
 

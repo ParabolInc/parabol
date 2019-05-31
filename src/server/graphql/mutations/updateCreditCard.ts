@@ -1,12 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import stripe from 'server/billing/stripe'
-import getRethink from 'server/database/rethinkDriver'
-import getCCFromCustomer from 'server/graphql/mutations/helpers/getCCFromCustomer'
 import UpdateCreditCardPayload from 'server/graphql/types/UpdateCreditCardPayload'
 import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {ORGANIZATION, TEAM} from 'universal/utils/constants'
 import standardError from 'server/utils/standardError'
+import upgradeToPro from 'server/graphql/mutations/helpers/upgradeToPro'
+import {GQLContext} from 'server/graphql/graphql'
 
 export default {
   type: UpdateCreditCardPayload,
@@ -21,11 +20,13 @@ export default {
       description: 'The token that came back from stripe'
     }
   },
-  async resolve (source, {orgId, stripeToken}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (
+    _source,
+    {orgId, stripeToken},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
-    const r = getRethink()
-    const now = new Date()
 
     // AUTH
     const viewerId = getUserId(authToken)
@@ -33,43 +34,10 @@ export default {
       return standardError(new Error('Must be the organization leader'), {userId: viewerId})
     }
 
-    // VALIDATION
-    const {stripeId} = await r.table('Organization').get(orgId)
-
-    if (!stripeId) {
-      return standardError(
-        new Error('Cannot update credit card without an active stripe subscription'),
-        {userId: viewerId}
-      )
-    }
-
     // RESOLUTION
-    const customer = await stripe.customers.update(stripeId, {
-      source: stripeToken
-    })
-    const creditCard = getCCFromCustomer(customer)
-    const {updatedTeams} = await r({
-      updatedOrg: r
-        .table('Organization')
-        .get(orgId)
-        .update({
-          creditCard,
-          updatedAt: now
-        }),
-      updatedTeams: r
-        .table('Team')
-        .getAll(orgId, {index: 'orgId'})
-        .update(
-          {
-            isPaid: true,
-            updatedAt: now
-          },
-          {returnChanges: true}
-        )('changes')('new_val')
-        .default([])
-    })
-
-    const teamIds = updatedTeams.map(({id}) => id)
+    await upgradeToPro(orgId, stripeToken)
+    const teams = await dataLoader.get('teamsByOrgId').load(orgId)
+    const teamIds = teams.map(({id}) => id)
     const data = {teamIds, orgId}
 
     teamIds.forEach((teamId) => {
