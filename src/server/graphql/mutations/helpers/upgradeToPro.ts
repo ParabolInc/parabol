@@ -16,7 +16,7 @@ const upgradeToPro = async (orgId: string, source: string) => {
   const quantity = await r
     .table('OrganizationUser')
     .getAll(orgId, {index: 'orgId'})
-    .filter({removedAt: null})
+    .filter({removedAt: null, inactive: false})
     .count()
 
   const manager = new StripeManager()
