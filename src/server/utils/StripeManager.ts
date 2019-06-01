@@ -1,5 +1,6 @@
 import getDotenv from 'universal/utils/dotenv'
 import Stripe from 'stripe'
+// import {toEpochSeconds} from 'server/utils/epochTime'
 
 getDotenv()
 
@@ -18,6 +19,9 @@ export default class StripeManager {
 
   async createSubscription (customerId: string, orgId: string, quantity) {
     return this.stripe.subscriptions.create({
+      // USE THIS FOR TESTING A FAILING PAYMENT
+      // https://stripe.com/docs/billing/testing
+      // trial_end: toEpochSeconds(new Date(Date.now() + 1000 * 10)),
       customer: customerId,
       metadata: {
         orgId
@@ -27,9 +31,20 @@ export default class StripeManager {
           plan: StripeManager.PARABOL_PRO_MONTHLY,
           quantity
         }
-      ],
-      trial_period_days: 0
+      ]
     })
+  }
+
+  async retrieveCustomer (customerId: string) {
+    return this.stripe.customers.retrieve(customerId)
+  }
+
+  async retrieveInvoice (invoiceId: string) {
+    return this.stripe.invoices.retrieve(invoiceId)
+  }
+
+  async updateAccountBalance (customerId: string, newBalance: number) {
+    return this.stripe.customers.update(customerId, {account_balance: newBalance})
   }
 
   async updatePayment (customerId: string, source: string) {
