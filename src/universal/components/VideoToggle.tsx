@@ -6,6 +6,9 @@ import MediaSwarm from '../utils/swarm/MediaSwarm'
 import MediaControlToggle from './MediaControlToggle'
 
 const Toggle = styled(MediaControlToggle)({})
+const StyledIcon = styled(Icon)({
+  fontSize: 18
+})
 
 interface Props {
   localStreamUI: StreamUI
@@ -28,7 +31,7 @@ const VideoToggle = (props: Props) => {
   }
   return (
     <Toggle onClick={onClick}>
-      <Icon>{hasVideo ? 'videocam' : 'videocam_off'}</Icon>
+      <StyledIcon>{hasVideo ? 'videocam' : 'videocam_off'}</StyledIcon>
     </Toggle>
   )
 }

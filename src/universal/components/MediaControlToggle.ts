@@ -1,9 +1,11 @@
 import styled from 'react-emotion'
-import RaisedButton from './RaisedButton'
+import SecondaryButton from './SecondaryButton'
 
-const MediaControlToggle = styled(RaisedButton)({
+const MediaControlToggle = styled(SecondaryButton)({
   borderRadius: '100%',
-  padding: 8
+  height: 32,
+  padding: 4,
+  width: 32
 })
 
 export default MediaControlToggle

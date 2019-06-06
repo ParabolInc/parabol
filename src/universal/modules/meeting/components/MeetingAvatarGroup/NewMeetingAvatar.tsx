@@ -26,9 +26,11 @@ const boxShadowWarm = `${boxShadowBase} ${borderActive}`
 const boxShadowLocal = `${boxShadowBase} ${borderLocal}`
 
 const Item = styled('div')({
-  marginLeft: '1rem',
-  marginRight: '.25rem',
-  position: 'relative'
+  marginLeft: 12,
+  position: 'relative',
+  '&:first-child': {
+    marginLeft: 0
+  }
 })
 
 interface AvatarBlockProps {
@@ -40,25 +42,9 @@ interface AvatarBlockProps {
 const AvatarBlock = styled('div')(
   {
     borderRadius: '100%',
-    height: 36,
-    width: 36,
-    maxWidth: 36,
-    [ui.breakpoint.wide]: {
-      height: 40,
-      width: 40,
-      maxWidth: 40
-    },
-    [ui.breakpoint.wider]: {
-      height: 48,
-      width: 48,
-      maxWidth: 48
-    },
-    [ui.breakpoint.widest]: {
-      height: 64,
-      width: 64,
-      maxWidth: 64
-    },
-
+    height: 32,
+    width: 32,
+    maxWidth: 32,
     ':hover': {
       opacity: 0.5
     }
@@ -84,10 +70,10 @@ const FacilitatorTag = styled('div')({
   backgroundColor: ui.palette.white,
   borderRadius: '4em',
   color: ui.palette.dark,
-  fontSize: '.6875rem',
+  fontSize: 11,
   fontWeight: 600,
-  marginTop: '0.75rem',
-  padding: '0 .5rem',
+  marginTop: 4,
+  padding: '0 8px',
   position: 'absolute',
   right: '50%',
   transform: 'translateX(50%)'
