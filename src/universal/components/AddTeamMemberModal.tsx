@@ -8,6 +8,7 @@ import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/
 import InviteToTeamMutation from '../mutations/InviteToTeamMutation'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import AddTeamMemberModalSuccess from './AddTeamMemberModalSuccess'
+import AddTeamMemberModalDemoContent from './AddTeamMemberModalDemoContent'
 import BasicTextArea from './InputField/BasicTextArea'
 import DialogContainer from './DialogContainer'
 import DialogContent from './DialogContent'
@@ -15,6 +16,7 @@ import DialogTitle from './DialogTitle'
 import StyledError from './StyledError'
 import {AddTeamMemberModal_teamMembers} from '__generated__/AddTeamMemberModal_teamMembers.graphql'
 import plural from 'universal/utils/plural'
+import isDemoRoute from 'universal/utils/isDemoRoute'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   closePortal: () => void
@@ -52,6 +54,7 @@ class AddTeamMemberModal extends Component<Props, State> {
     rawInvitees: '',
     invitees: [] as Array<string>
   }
+
   onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const {error, onCompleted, onError, teamMembers} = this.props
     const rawInvitees = e.target.value
@@ -122,6 +125,13 @@ class AddTeamMemberModal extends Component<Props, State> {
   render () {
     const {closePortal, error, submitting} = this.props
     const {invitees, successfulInvitations, rawInvitees} = this.state
+    if (isDemoRoute()) {
+      return (
+        <StyledDialogContainer>
+          <AddTeamMemberModalDemoContent />
+        </StyledDialogContainer>
+      )
+    }
     if (successfulInvitations) {
       return (
         <AddTeamMemberModalSuccess
