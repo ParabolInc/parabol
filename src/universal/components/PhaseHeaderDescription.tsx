@@ -1,6 +1,6 @@
 import styled from 'react-emotion'
 import {PALETTE} from 'universal/styles/paletteV2'
-import {minWidthMediaQueries} from 'universal/styles/breakpoints'
+import {meetingTopBarMediaQuery} from 'universal/styles/meeting'
 
 const PhaseHeaderDescription = styled('h2')({
   color: PALETTE.TEXT.LIGHT,
@@ -8,7 +8,7 @@ const PhaseHeaderDescription = styled('h2')({
   fontWeight: 'normal',
   margin: 0,
 
-  [minWidthMediaQueries[1]]: {
+  [meetingTopBarMediaQuery]: {
     display: 'block',
     fontSize: '.875rem'
   }

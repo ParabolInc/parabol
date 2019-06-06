@@ -19,8 +19,7 @@ const MeetingAvatarGroupRoot = styled('div')({
   display: 'flex',
   flex: 1,
   flexDirection: 'row',
-  justifyContent: 'flex-end',
-  padding: '1rem 0',
+  justifyContent: 'center',
   position: 'relative',
   textAlign: 'center'
 })
@@ -68,7 +67,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
           />
         )
       })}
-      <AddTeamMemberAvatarButton isMeeting team={team} teamMembers={teamMembers} />
+      <AddTeamMemberAvatarButton team={team} teamMembers={teamMembers} />
     </MeetingAvatarGroupRoot>
   )
 }
