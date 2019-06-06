@@ -15,10 +15,10 @@ const MeetingContentHeaderStyles = styled('div')({
   justifyContent: 'space-between',
   margin: 0,
   maxWidth: '100%',
-  padding: '12px 16px 24px',
+  padding: '12px 16px 32px',
   width: '100%',
   [meetingTopBarMediaQuery]: {
-    padding: '16px 16px 24px'
+    padding: '16px 16px 32px'
   }
 })
 

@@ -4,10 +4,11 @@ import Icon from 'universal/components/Icon'
 import {StreamUI} from '../hooks/useSwarm'
 import MediaSwarm from '../utils/swarm/MediaSwarm'
 import MediaControlToggle from './MediaControlToggle'
+import {ICON_SIZE} from 'universal/styles/typographyV2'
 
 const Toggle = styled(MediaControlToggle)({})
 const StyledIcon = styled(Icon)({
-  fontSize: 18
+  fontSize: ICON_SIZE.MD18
 })
 
 interface Props {
