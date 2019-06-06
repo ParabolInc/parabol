@@ -94,11 +94,11 @@ const MeetingContentHeader = (props: Props) => {
         <ChildrenBlock>{children}</ChildrenBlock>
       </HeadingBlock>
       <AvatarGroupBlock isDemoRoute={isDemoRoute()}>{avatarGroup}</AvatarGroupBlock>
-      {isDemoRoute() ? (
+      {isDemoRoute() && (
         <PrimaryActionBlock>
           <CreateAccountButton />
         </PrimaryActionBlock>
-      ) : null}
+      )}
     </MeetingContentHeaderStyles>
   )
 }
