@@ -10,7 +10,7 @@ const StyledButton = styled(SecondaryButton)({
 
 const CreateAccountButton = (props: RouteComponentProps) => {
   const {history} = props
-  const handleClick = () => history.push('/create-account')
+  const handleClick = () => history.push('/create-account?from=demo')
   return <StyledButton onClick={handleClick}>{'Create Free Account'}</StyledButton>
 }
 
