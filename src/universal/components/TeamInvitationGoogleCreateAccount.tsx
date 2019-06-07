@@ -99,9 +99,13 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
   render () {
     const {error, submitting, verifiedInvitation} = this.props
     const {isEmailFallback} = this.state
-    const {teamInvitation, teamName} = verifiedInvitation
+    const {teamInvitation, teamName, meeting} = verifiedInvitation
     if (!teamInvitation) return null
     const {email} = teamInvitation
+    const exampleMeeting = {
+      meetingType: 'retrospective'
+    }
+    const maybeMeeting = meeting || exampleMeeting
     return (
       <StyledDialog>
         <Helmet title={`Sign up with Google | Team Invitation`} />
@@ -114,6 +118,11 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
             <InvitationDialogCopy>
               Tap below for immediate access to your team: <TeamName>{teamName}</TeamName>
             </InvitationDialogCopy>
+            {maybeMeeting && (
+              <InvitationDialogCopy>
+                Join the meeting! {maybeMeeting.meetingType}
+              </InvitationDialogCopy>
+            )}
           </CopyMargins>
           <InvitationCenteredCopy>
             <GoogleOAuthButtonBlock
@@ -144,6 +153,9 @@ export default createFragmentContainer(
         email
       }
       teamName
+      meeting {
+        meetingType
+      }
     }
   `
 )

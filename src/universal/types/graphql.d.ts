@@ -2588,6 +2588,16 @@ export interface IVerifiedInvitationPayload {
   teamName: string | null
 
   /**
+   * The meeting that maybe exists when accepting an invitation
+   */
+  meeting: NewMeeting | null
+
+  /**
+   * The meetingId if team has active meeting
+   */
+  meetingId: string | null
+
+  /**
    * The userId of the invitee, if already a parabol user
    */
   userId: string | null

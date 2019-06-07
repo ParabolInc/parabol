@@ -1,12 +1,12 @@
 import styled from 'react-emotion'
-import {cardShadow} from 'universal/styles/elevation'
+import {cardShadow, modalShadow} from 'universal/styles/elevation'
 
 const BasicCard = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
   background: 'white',
-  borderRadius: '4px',
-  boxShadow: cardShadow
+  borderRadius: 8,
+  boxShadow: modalShadow,
+  display: 'flex',
+  flexDirection: 'column'
 })
 
 export default BasicCard

@@ -1,6 +1,7 @@
 import React from 'react'
 import TeamInvitationDialog from './TeamInvitationDialog'
-import TeamInvitationWrapper from './TeamInvitationWrapper'
+// import TeamInvitationWrapper from './TeamInvitationWrapper'
+import TeamInvitationMeetingAbstract from './TeamInvitationMeetingAbstract'
 
 interface Props {
   verifiedInvitation: any
@@ -9,9 +10,9 @@ interface Props {
 function TeamInvitation (props: Props) {
   const {verifiedInvitation} = props
   return (
-    <TeamInvitationWrapper>
+    <TeamInvitationMeetingAbstract>
       <TeamInvitationDialog verifiedInvitation={verifiedInvitation} />
-    </TeamInvitationWrapper>
+    </TeamInvitationMeetingAbstract>
   )
 }
 
