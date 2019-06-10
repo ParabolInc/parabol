@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## vNext
+
+### Fixed
+* Create new stripe subscription after a failed payment followed by a CC update
+
+### Removed
+* legacy meeting fields on the Team object in the DB
+
+### Added
+* New stripe per-event handling 
+
 ## v3.12.0 2019-May-29
 
 ### Added
