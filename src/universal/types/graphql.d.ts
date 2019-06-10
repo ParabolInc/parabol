@@ -1187,7 +1187,7 @@ export interface ITeamInvitation {
 }
 
 /**
- * The phases of an action meeting
+ * The type of meeting
  */
 export const enum MeetingTypeEnum {
   action = 'action',
@@ -2586,11 +2586,6 @@ export interface IVerifiedInvitationPayload {
    * name of the inviting team, present if invitation exists
    */
   teamName: string | null
-
-  /**
-   * The meeting that maybe exists when accepting an invitation
-   */
-  meeting: NewMeeting | null
   meetingType: MeetingTypeEnum
 
   /**
