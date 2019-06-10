@@ -3,6 +3,20 @@
 // import MockDB from '../__tests__/setup/MockDB';
 // import fieldsToSerialize from 'server/__tests__/utils/fieldsToSerialize';
 // import fs from 'fs';
+import StripeManager from 'server/utils/StripeManager'
+import getRethink from 'server/database/rethinkDriver'
+
+const manuallyStartSub = async (orgId) => {
+  const r = getRethink()
+  const manager = new StripeManager()
+  const org = await r.table('Organization').get(orgId)
+  const {stripeId} = org
+  const quantity = 24
+  const subscription = await manager.createSubscription(stripeId, orgId, quantity)
+  console.log('sub', subscription.id)
+}
+
+manuallyStartSub('orgId').catch(console.log)
 
 // stripe.subscriptions.update('sub_A9nq7dAOWGUKlD', {
 //   trial_end: ~~((Date.now() + ms('5s')) / 1000)

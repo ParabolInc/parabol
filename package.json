@@ -98,7 +98,7 @@
     "@types/segment-analytics": "^0.0.30",
     "@types/shortid": "^0.0.29",
     "@types/string-similarity": "^3.0.0",
-    "@types/stripe": "^6.19.1",
+    "@types/stripe": "^6.26.4",
     "awesome-typescript-loader": "^5.2.0",
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.5",

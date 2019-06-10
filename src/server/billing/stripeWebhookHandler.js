@@ -73,6 +73,7 @@ const verifyBody = (req) => {
   try {
     return stripe.webhooks.constructEvent(req.rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET)
   } catch (e) {
+    console.error(e)
     return null
   }
 }
