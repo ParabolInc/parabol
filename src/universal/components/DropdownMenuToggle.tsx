@@ -22,9 +22,7 @@ const DownButtonIcon = styled(Icon)({
 
 const DropdownBlock = styled('div')({
   display: 'inline-block',
-  width: '100%',
-  // space so the menu doesn't cover the border of the toggle
-  paddingBottom: 2
+  width: '100%'
 })
 
 const InputBlock = styled('div')(
@@ -38,7 +36,13 @@ const InputBlock = styled('div')(
   ({disabled}: {disabled: boolean}) => disabled && {...ui.fieldDisabled}
 )
 
+const Text = styled('span')({
+  display: 'block',
+  height: 24
+})
+
 interface Props {
+  className?: string
   defaultText: string | ReactElement<any>
   disabled?: boolean
   onClick: ReturnType<typeof useMenu>['togglePortal']
@@ -46,12 +50,17 @@ interface Props {
 }
 
 const DropdownMenuToggle = forwardRef((props: Props, ref: any) => {
-  const {onClick, onMouseEnter, defaultText, disabled} = props
+  const {className, onClick, onMouseEnter, defaultText, disabled} = props
   return (
-    <DropdownBlock onMouseEnter={onMouseEnter} innerRef={ref} onClick={onClick}>
+    <DropdownBlock
+      className={className}
+      onMouseEnter={onMouseEnter}
+      innerRef={ref}
+      onClick={onClick}
+    >
       <FieldBlock>
         <InputBlock disabled={!!disabled} tabIndex={1}>
-          <span>{defaultText}</span>
+          <Text>{defaultText}</Text>
           {!disabled && <DownButtonIcon>expand_more</DownButtonIcon>}
         </InputBlock>
       </FieldBlock>

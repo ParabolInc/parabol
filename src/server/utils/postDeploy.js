@@ -16,7 +16,7 @@ const storePersistedQueries = async () => {
   }))
 
   const r = getRethink()
-  const res = await r.table('QueryMap').insert(records)
+  const res = await r.table('QueryMap').insert(records, {conflict: 'replace'})
   console.log(`Added ${res.inserted} records to the queryMap`)
 }
 

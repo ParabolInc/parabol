@@ -1,10 +1,10 @@
+/* Deprecated: move handlers into their respective managers. See SlackClientManager */
 import Atmosphere from 'universal/Atmosphere'
 import AddAtlassianAuthMutation from 'universal/mutations/AddAtlassianAuthMutation'
 import AddGitHubAuthMutation from 'universal/mutations/AddGitHubAuthMutation'
 import {IntegrationServiceEnum} from 'universal/types/graphql'
 import {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import {providerLookup} from '../modules/teamDashboard/components/ProviderRow/ProviderRow'
-import AddProviderMutation from '../mutations/AddProviderMutation'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 
 interface Config {
@@ -43,18 +43,6 @@ const handleOpenOAuth = ({
       AddAtlassianAuthMutation(atmosphere, {code, teamId}, {onError, onCompleted})
     } else if (name === IntegrationServiceEnum.GitHubIntegration) {
       AddGitHubAuthMutation(atmosphere, {code, teamId}, {onError, onCompleted})
-    } else {
-      AddProviderMutation(
-        atmosphere,
-        {
-          code,
-          service: name,
-          teamId
-        },
-        {},
-        onError,
-        onCompleted
-      )
     }
     popup && popup.close()
     window.removeEventListener('message', handler)

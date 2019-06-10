@@ -46,7 +46,7 @@ class DraggableTask extends Component<Props> {
     return connectDropTarget(
       connectDragSource(
         <div style={{marginBottom: '.625rem'}}>
-          {isDragging && <TaskDragLayer area={area} task={task} />}
+          {isDragging && <TaskDragLayer task={task} />}
           <div style={{opacity: isDragging ? 0.5 : 1}}>
             <NullableTask area={area} task={task} isDragging={isDragging} />
           </div>

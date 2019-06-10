@@ -17,11 +17,6 @@ export interface WithMutationProps {
   submitting: boolean | undefined
 }
 
-export type MenuMutationProps = Pick<
-  WithMutationProps,
-  'onCompleted' | 'onError' | 'submitMutation' | 'submitting'
->
-
 export interface MutationServerError {
   message: string
   path: Array<string>

@@ -11,7 +11,7 @@ import StartNewMeetingPayload from 'server/graphql/types/StartNewMeetingPayload'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import standardError from 'server/utils/standardError'
-import {IStartNewMeetingOnMutationArguments, ITeamMember} from 'universal/types/graphql'
+import {IStartNewMeetingOnMutationArguments} from 'universal/types/graphql'
 import {TEAM} from 'universal/utils/constants'
 
 export default {
@@ -63,9 +63,7 @@ export default {
       return standardError(new Error('Could not start meeting'), {userId: viewerId})
     }
     const meeting = new Meeting(teamId, meetingType, meetingCount, phases, viewerId)
-    const teamMembers = (await dataLoader
-      .get('teamMembersByTeamId')
-      .load(meeting.teamId)) as ITeamMember[]
+    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(meeting.teamId)
     const meetingMembers = await createMeetingMembers(meeting, teamMembers, dataLoader)
     await r({
       team: r
@@ -76,7 +74,7 @@ export default {
       members: r.table('MeetingMember').insert(meetingMembers)
     })
 
-    startSlackMeeting(teamId, meetingType)
+    startSlackMeeting(teamId, dataLoader, meetingType).catch(console.log)
     const data = {teamId, meetingId: meeting.id}
     publish(TEAM, teamId, StartNewMeetingPayload, data, subOptions)
     return data

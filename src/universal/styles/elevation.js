@@ -1,8 +1,14 @@
 // values copied from https://material-components.github.io/material-components-web-catalog/#/component/elevation
 // guidelines on how to use here: https://material.io/design/environment/elevation.html#default-elevations
 
-const rgb = '68, 66, 88' // default 0, 0, 0
-const alpha = ['0.18', '0.12', '0.1'] // default 0.2, 0.14, 0.12
+// lighter Parabol theme values (keep TA)
+// const rgb = '68, 66, 88' // MD default 0, 0, 0
+// const alpha = ['0.18', '0.12', '0.1'] // MD default 0.2, 0.14, 0.12
+
+// going to try to live with MD defaults for a little bit
+// which are darker and help some elements like switch thumbs stand out
+const rgb = '0, 0, 0'
+const alpha = ['0.2', '0.14', '0.12']
 
 // prettier-ignore
 const elevation = [
@@ -55,7 +61,9 @@ export const panelRaisedShadow = elevation[8]
 export const searchBarShadow = elevation[1]
 export const sheetShadow = elevation[16]
 export const snackbarShadow = elevation[6]
-export const switchShadow = elevation[1]
+// some MD examples show the switch to use elevation 2, others elevation 1
+// elevation 2 helps the white off switch thumb stand out more
+export const switchShadow = elevation[2]
 export const textButtonShadow = elevation[0]
 
 export const desktopBarShadow = elevation[4]

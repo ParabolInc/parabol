@@ -14,7 +14,7 @@ import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {IntegrationServiceEnum} from 'universal/types/graphql'
-import {ATLASSIAN_SCOPE, GITHUB, GITHUB_SCOPE, SLACK, SLACK_SCOPE} from 'universal/utils/constants'
+import {ATLASSIAN_SCOPE, GITHUB, GITHUB_SCOPE} from 'universal/utils/constants'
 import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
 import makeHref from 'universal/utils/makeHref'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
@@ -60,17 +60,6 @@ export const providerLookup = {
       `https://github.com/login/oauth/authorize?client_id=${
         window.__ACTION__.github
       }&scope=${GITHUB_SCOPE}&state=${state}`
-  },
-  [SLACK]: {
-    description: Providers.SLACK_DESC,
-    providerName: Providers.SLACK_NAME,
-    route: 'slack',
-    makeUri: (state) => {
-      const redirect = makeHref('/auth/slack')
-      return `https://slack.com/oauth/authorize?client_id=${
-        window.__ACTION__.slack
-      }&scope=${SLACK_SCOPE}&state=${state}&redirect_uri=${redirect}`
-    }
   }
 }
 

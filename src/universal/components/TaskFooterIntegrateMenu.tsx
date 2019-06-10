@@ -6,7 +6,7 @@ import TaskFooterIntegrateMenuList from 'universal/components/TaskFooterIntegrat
 import TaskFooterIntegrateMenuNoIntegrations from 'universal/components/TaskFooterIntegrateMenuNoIntegrations '
 import TaskFooterIntegrateMenuSignup from 'universal/components/TaskFooterIntegrateMenuSignup'
 import {MenuProps} from 'universal/hooks/useMenu'
-import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
+import {MenuMutationProps} from 'universal/hooks/useMutationProps'
 
 interface Props {
   menuProps: MenuProps

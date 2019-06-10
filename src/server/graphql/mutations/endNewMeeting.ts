@@ -219,7 +219,7 @@ export default {
       (meetingMember) => meetingMember.isCheckedIn === true
     )
     const presentMemberUserIds = presentMembers.map(({userId}) => userId)
-    endSlackMeeting(meetingId, teamId, true)
+    endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
 
     const result = await finishMeetingType(completedMeeting, dataLoader)
     const updatedTaskIds = (result && result.updatedTaskIds) || []

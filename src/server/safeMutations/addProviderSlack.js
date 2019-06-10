@@ -7,7 +7,6 @@ import getPubSub from 'server/utils/getPubSub'
 import makeAppLink from 'server/utils/makeAppLink'
 import shortid from 'shortid'
 import {SLACK, SLACK_SCOPE} from 'universal/utils/constants'
-import insertSlackChannel from 'server/safeMutations/insertSlackChannel'
 
 const addProviderSlack = async (code, teamId, userId) => {
   const r = getRethink()
@@ -37,7 +36,7 @@ const addProviderSlack = async (code, teamId, userId) => {
     throw new Error(`bad scope: ${scope}`)
   }
   const provider = await r
-    .table('Provider')
+    .table('SlackAuth')
     .getAll(teamId, {index: 'teamId'})
     .filter({service: SLACK})
     .nth(0)('id')
@@ -91,13 +90,10 @@ const addProviderSlack = async (code, teamId, userId) => {
 
   // add the first channel
   if (firstChannel) {
-    const {channel, channel_id: channelId} = firstChannel
-    const channelName = channel.substring(1)
-    const newChannel = await insertSlackChannel(channelId, channelName, teamId)
-    const slackChannelAdded = {
-      channel: newChannel
-    }
-    getPubSub().publish(`slackChannelAdded.${teamId}`, {slackChannelAdded})
+    // TODO
+    // const {channel, channel_id: channelId} = firstChannel
+    // const channelName = channel.substring(1)
+    // const newChannel = await insertSlackChannel(channelId, channelName, teamId)
   }
   return providerAdded
 }

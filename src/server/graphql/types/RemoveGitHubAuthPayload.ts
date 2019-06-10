@@ -17,7 +17,7 @@ const RemoveGitHubAuthPayload = new GraphQLObjectType({
     },
     user: {
       type: User,
-      description: 'The user with updated atlassianAuth',
+      description: 'The user with updated githubAuth',
       resolve: ({userId}, _args, {dataLoader}) => {
         return dataLoader.get('users').load(userId)
       }

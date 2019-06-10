@@ -45,12 +45,15 @@ import UpdateReflectionGroupTitlePayload from 'server/graphql/types/UpdateReflec
 import UpdateTeamNamePayload from 'server/graphql/types/UpdateTeamNamePayload'
 import UpgradeToProPayload from 'server/graphql/types/UpgradeToProPayload'
 import VoteForReflectionGroupPayload from 'server/graphql/types/VoteForReflectionGroupPayload'
+import RemoveSlackAuthPayload from 'server/graphql/types/RemoveSlackAuthPayload'
+import AddSlackAuthPayload from 'server/graphql/types/AddSlackAuthPayload'
 
 const types = [
   AcceptTeamInvitationPayload,
   AddAgendaItemPayload,
   AddAtlassianAuthPayload,
   AddGitHubAuthPayload,
+  AddSlackAuthPayload,
   AddTeamPayload,
   ArchiveTeamPayload,
   AutoGroupReflectionsPayload,
@@ -89,6 +92,7 @@ const types = [
   ReflectTemplatePromptUpdateDescriptionPayload,
   RemoveAtlassianAuthPayload,
   RemoveGitHubAuthPayload,
+  RemoveSlackAuthPayload,
   RemoveReflectTemplatePayload,
   RemoveReflectTemplatePromptPayload,
   RenameReflectTemplatePayload,

@@ -16,8 +16,7 @@ const GitHubAuth = new GraphQLObjectType({
       resolve: ({accessToken}) => !!accessToken
     },
     accessToken: {
-      description:
-        'The access token to atlassian, useful for 1 hour. null if no access token available',
+      description: 'The access token to github. good forever',
       type: GraphQLID,
       resolve: async ({accessToken, userId}, _args, {authToken}) => {
         const viewerId = getUserId(authToken)

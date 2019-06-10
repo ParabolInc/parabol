@@ -1,7 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import getEndMeetingSortOrders from 'server/graphql/mutations/helpers/endMeeting/getEndMeetingSortOrders'
-import {endSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack'
 import EndMeetingPayload from 'server/graphql/types/EndMeetingPayload'
 import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
@@ -189,7 +188,6 @@ export default {
       .filter((invitee) => invitee.present)
       .map((invitee) => invitee.id.split('::')[0])
     sendSegmentEvent('Meeting Completed', userIds, {teamId, meetingNumber})
-    endSlackMeeting(meetingId, teamId)
 
     const data = {
       team,

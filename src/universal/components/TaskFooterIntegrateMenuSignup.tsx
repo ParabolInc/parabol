@@ -4,7 +4,7 @@ import AddToJiraMenuItem from 'universal/components/AddToJiraMenuItem'
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
 import Menu from 'universal/components/Menu'
 import {MenuProps} from 'universal/hooks/useMenu'
-import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
+import {MenuMutationProps} from 'universal/hooks/useMutationProps'
 
 interface Props {
   menuProps: MenuProps
