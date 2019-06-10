@@ -1,7 +1,6 @@
 import {StartNewMeetingMutation} from '__generated__/StartNewMeetingMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import Atmosphere from 'universal/Atmosphere'
-import handleMutationError from 'universal/mutations/handlers/handleMutationError'
 import {IStartNewMeetingOnMutationArguments} from 'universal/types/graphql'
 import {LocalHandlers} from 'universal/types/relayMutations'
 import updateLocalStage from 'universal/utils/relay/updateLocalStage'
@@ -51,7 +50,6 @@ graphql`
 export const startNewMeetingTeamOnNext = (payload, context) => {
   const {atmosphere} = context
   const {
-    error,
     team: {
       newMeeting: {
         id: meetingId,
@@ -60,7 +58,6 @@ export const startNewMeetingTeamOnNext = (payload, context) => {
     }
   } = payload
   updateLocalStage(atmosphere, meetingId, firstPhase.stages[0].id)
-  handleMutationError(error, context)
 }
 
 const StartNewMeetingMutation = (
