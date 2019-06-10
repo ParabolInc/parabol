@@ -14,7 +14,6 @@ import DowngradeToPersonalPayload from 'server/graphql/types/DowngradeToPersonal
 import DragDiscussionTopicPayload from 'server/graphql/types/DragDiscussionTopicPayload'
 import EditReflectionPayload from 'server/graphql/types/EditReflectionPayload'
 import EndDraggingReflectionPayload from 'server/graphql/types/EndDraggingReflectionPayload'
-import EndMeetingPayload from 'server/graphql/types/EndMeetingPayload'
 import EndNewMeetingPayload from 'server/graphql/types/EndNewMeetingPayload'
 import MoveReflectTemplatePromptPayload from 'server/graphql/types/MoveReflectTemplatePromptPayload'
 import NavigateMeetingPayload from 'server/graphql/types/NavigateMeetingPayload'
@@ -63,7 +62,6 @@ const types = [
   DragDiscussionTopicPayload,
   EndDraggingReflectionPayload,
   EditReflectionPayload,
-  EndMeetingPayload,
   EndNewMeetingPayload,
   NavigateMeetingPayload,
   NewMeetingCheckInPayload,

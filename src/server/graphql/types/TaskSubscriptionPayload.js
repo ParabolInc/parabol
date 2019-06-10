@@ -4,7 +4,6 @@ import CreateGitHubIssuePayload from 'server/graphql/types/CreateGitHubIssuePayl
 import CreateTaskPayload from 'server/graphql/types/CreateTaskPayload'
 import DeleteTaskPayload from 'server/graphql/types/DeleteTaskPayload'
 import EditTaskPayload from 'server/graphql/types/EditTaskPayload'
-import EndMeetingPayload from 'server/graphql/types/EndMeetingPayload'
 import UpdateTaskPayload from 'server/graphql/types/UpdateTaskPayload'
 import RemoveTeamMemberPayload from 'server/graphql/types/RemoveTeamMemberPayload'
 import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload'
@@ -18,7 +17,6 @@ const types = [
   CreateTaskPayload,
   DeleteTaskPayload,
   EditTaskPayload,
-  EndMeetingPayload,
   RemoveOrgUserPayload,
   RemoveTeamMemberPayload,
   UpdateTaskPayload,
