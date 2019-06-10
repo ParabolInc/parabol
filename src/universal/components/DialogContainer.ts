@@ -5,7 +5,7 @@ import {Radius} from 'universal/types/constEnums'
 const DialogContainer = styled('div')({
   display: 'flex',
   backgroundColor: 'white',
-  borderRadius: Radius.LARGE,
+  borderRadius: Radius.DIALOG,
   boxShadow: modalShadow,
   flexDirection: 'column',
   overflow: 'auto',

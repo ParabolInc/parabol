@@ -45,9 +45,9 @@ export const enum Layout {
   ROW_GUTTER = 16 // 2x
 }
 
-// powers of 2 for cheap sense of scale
+// Use power of 2 for cheap sense of scale (e.g. 2, 4, 8)
 export const enum Radius {
-  SMALL = 2,
-  MEDIUM = 4,
-  LARGE = 8
+  DIALOG = 8,
+  MENU = 4,
+  TOOLTIP = 2
 }

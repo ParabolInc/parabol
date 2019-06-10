@@ -13,7 +13,7 @@ import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationP
 import EmailPasswordAuthForm from './EmailPasswordAuthForm'
 import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
 import InvitationCenteredCopy from './InvitationCenteredCopy'
-import BasicCard from './BasicCard'
+import InviteDialog from './InviteDialog'
 import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import DialogTitle from './DialogTitle'
@@ -33,7 +33,7 @@ interface State {
   isEmailFallback: boolean
 }
 
-const StyledDialog = styled(BasicCard)({
+const StyledDialog = styled(InviteDialog)({
   maxWidth: 356
 })
 
@@ -99,13 +99,10 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
   render () {
     const {error, submitting, verifiedInvitation} = this.props
     const {isEmailFallback} = this.state
-    const {teamInvitation, teamName, meeting} = verifiedInvitation
+    const {teamInvitation, teamName, meetingType} = verifiedInvitation
     if (!teamInvitation) return null
     const {email} = teamInvitation
-    const exampleMeeting = {
-      meetingType: 'retrospective'
-    }
-    const maybeMeeting = meeting || exampleMeeting
+    const maybeMeeting = meetingType || 'fake meeting type'
     return (
       <StyledDialog>
         <Helmet title={`Sign up with Google | Team Invitation`} />
@@ -119,9 +116,7 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
               Tap below for immediate access to your team: <TeamName>{teamName}</TeamName>
             </InvitationDialogCopy>
             {maybeMeeting && (
-              <InvitationDialogCopy>
-                Join the meeting! {maybeMeeting.meetingType}
-              </InvitationDialogCopy>
+              <InvitationDialogCopy>Join the meeting! {maybeMeeting}</InvitationDialogCopy>
             )}
           </CopyMargins>
           <InvitationCenteredCopy>
@@ -149,13 +144,11 @@ export default createFragmentContainer(
   withAtmosphere(withMutationProps(withRouter(TeamInvitationGoogleCreateAccount))),
   graphql`
     fragment TeamInvitationGoogleCreateAccount_verifiedInvitation on VerifiedInvitationPayload {
+      meetingType
       teamInvitation {
         email
       }
       teamName
-      meeting {
-        meetingType
-      }
     }
   `
 )

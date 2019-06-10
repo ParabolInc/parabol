@@ -2591,11 +2591,7 @@ export interface IVerifiedInvitationPayload {
    * The meeting that maybe exists when accepting an invitation
    */
   meeting: NewMeeting | null
-
-  /**
-   * The meetingId if team has active meeting
-   */
-  meetingId: string | null
+  meetingType: MeetingTypeEnum
 
   /**
    * The userId of the invitee, if already a parabol user

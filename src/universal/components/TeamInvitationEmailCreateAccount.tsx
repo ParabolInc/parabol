@@ -5,7 +5,7 @@ import Helmet from 'react-helmet'
 import {createFragmentContainer, graphql} from 'react-relay'
 import EmailPasswordAuthForm from './EmailPasswordAuthForm'
 import InvitationCenteredCopy from './InvitationCenteredCopy'
-import BasicCard from './BasicCard'
+import InviteDialog from './InviteDialog'
 import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import DialogTitle from './DialogTitle'
@@ -15,7 +15,7 @@ interface Props {
   verifiedInvitation: TeamInvitationEmailCreateAccount_verifiedInvitation
 }
 
-const StyledDialog = styled(BasicCard)({
+const StyledDialog = styled(InviteDialog)({
   maxWidth: 356
 })
 

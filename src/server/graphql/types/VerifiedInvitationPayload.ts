@@ -1,10 +1,9 @@
-// GraphQLNonNull
-import {GraphQLString, GraphQLID, GraphQLBoolean, GraphQLObjectType} from 'graphql'
+import {GraphQLString, GraphQLID, GraphQLBoolean, GraphQLObjectType, GraphQLNonNull} from 'graphql'
 import TeamInvitation from './TeamInvitation'
 import {resolveUser} from 'server/graphql/resolvers'
 import User from 'server/graphql/types/User'
 import TeamInvitationErrorEnum from './TeamInvitationErrorEnum'
-import NewMeeting from 'server/graphql/types/NewMeeting'
+import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum'
 
 const VerifiedInvitationPayload = new GraphQLObjectType({
   name: 'VerifiedInvitationPayload',
@@ -34,16 +33,8 @@ const VerifiedInvitationPayload = new GraphQLObjectType({
       type: GraphQLString,
       description: 'name of the inviting team, present if invitation exists'
     },
-    meeting: {
-      type: NewMeeting,
-      description: 'The meeting that maybe exists when accepting an invitation',
-      resolve: ({meetingId}, _args, {dataLoader}) => {
-        return meetingId ? dataLoader.get('newMeetings').load(meetingId) : null
-      }
-    },
-    meetingId: {
-      type: GraphQLID,
-      description: 'The meetingId if team has active meeting'
+    meetingType: {
+      type: new GraphQLNonNull(MeetingTypeEnum)
     },
     userId: {
       type: GraphQLID,

@@ -1,19 +1,33 @@
 import React from 'react'
+import {createFragmentContainer, graphql} from 'react-relay'
+// import {TeamInvitation_verifiedInvitation} from '__generated__/TeamInvitation_verifiedInvitation.graphql'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import TeamInvitationDialog from './TeamInvitationDialog'
-// import TeamInvitationWrapper from './TeamInvitationWrapper'
+import TeamInvitationWrapper from './TeamInvitationWrapper'
 import TeamInvitationMeetingAbstract from './TeamInvitationMeetingAbstract'
 
-interface Props {
+interface Props extends WithAtmosphereProps {
   verifiedInvitation: any
 }
 
 function TeamInvitation (props: Props) {
   const {verifiedInvitation} = props
+  const {meetingType} = verifiedInvitation
+  const Wrapper = meetingType ? TeamInvitationMeetingAbstract : TeamInvitationWrapper
   return (
-    <TeamInvitationMeetingAbstract>
+    <Wrapper>
       <TeamInvitationDialog verifiedInvitation={verifiedInvitation} />
-    </TeamInvitationMeetingAbstract>
+    </Wrapper>
   )
 }
 
-export default TeamInvitation
+export default createFragmentContainer(
+  withAtmosphere(TeamInvitation),
+  graphql`
+    fragment TeamInvitation_verifiedInvitation on VerifiedInvitationPayload {
+      meetingType
+    }
+  `
+)

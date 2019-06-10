@@ -11,7 +11,7 @@ import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/
 import auth0Authorize from '../utils/auth0Authorize'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import InvitationCenteredCopy from './InvitationCenteredCopy'
-import BasicCard from './BasicCard'
+import InviteDialog from './InviteDialog'
 import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import DialogTitle from './DialogTitle'
@@ -64,7 +64,7 @@ class TeamInvitationGoogleSignin extends Component<Props> {
     if (!user) return null
     const {preferredName} = user
     return (
-      <BasicCard>
+      <InviteDialog>
         <Helmet title={`Sign in with Google | Team Invitation`} />
         <DialogTitle>Welcome back, {preferredName}!</DialogTitle>
         <DialogContent>
@@ -81,7 +81,7 @@ class TeamInvitationGoogleSignin extends Component<Props> {
             />
           </InvitationCenteredCopy>
         </DialogContent>
-      </BasicCard>
+      </InviteDialog>
     )
   }
 }

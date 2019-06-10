@@ -47,12 +47,12 @@ export default {
     })
     const {meetingId} = team
     const meeting = meetingId ? await r.table('NewMeeting').get(meetingId) : null
+    const meetingType = meeting ? meeting.meetingType : null
     if (acceptedAt) {
       return {
         errorType: 'accepted',
         teamName: team.name,
-        meeting,
-        meetingId,
+        meetingType,
         inviterName: inviter.preferredName,
         inviterEmail: inviter.email,
         teamInvitation
@@ -63,8 +63,7 @@ export default {
       return {
         errorType: 'expired',
         teamName: team.name,
-        meeting,
-        meetingId,
+        meetingType,
         inviterName: inviter.preferredName,
         inviterEmail: inviter.email
       }
@@ -79,8 +78,7 @@ export default {
     const isGoogle = await getIsGoogleProvider(viewer, email)
     return {
       teamName: team.name,
-      meeting,
-      meetingId,
+      meetingType,
       inviterName: inviter.preferredName,
       inviterEmail: inviter.email,
       teamInvitation,
