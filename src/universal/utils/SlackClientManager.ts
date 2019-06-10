@@ -14,17 +14,6 @@ interface ErrorResponse {
   error: string
 }
 
-interface IdentityResponse {
-  ok: true
-  user: {
-    name: string
-    id: string
-  }
-  team: {
-    id: string
-  }
-}
-
 interface SlackChannelInfo {
   id: string
   name: string
