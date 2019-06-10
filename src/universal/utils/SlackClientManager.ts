@@ -13,17 +13,6 @@ interface ErrorResponse {
   error: string
 }
 
-interface IdentityResponse {
-  ok: true
-  user: {
-    name: string
-    id: string
-  }
-  team: {
-    id: string
-  }
-}
-
 interface SlackChannelInfo {
   id: string
   name: string
@@ -66,8 +55,55 @@ interface PostMessageResponse {
   ok: true
 }
 
+interface SlackUser {
+  id: string
+  team_id: string
+  name: string
+  deleted: boolean
+  color: string
+  real_name: string
+  tz: string
+  tz_label: string
+  tz_offset: number
+  profile: {
+    avatar_hash: string
+    status_text: string
+    status_emoj: string
+    status_expiration: number
+    real_name: string
+    display_name: string
+    real_name_normalized: string
+    display_name_normalized: string
+    // email?: string
+    image_original: string
+    image_24: string
+    image_32: string
+    image_48: string
+    image_72: string
+    image_192: string
+    image_512: string
+    team: string
+  }
+  is_admin: true
+  is_owner: boolean
+  is_primary_owner: boolean
+  is_restricted: boolean
+  is_ultra_restricted: boolean
+  is_bot: boolean
+  is_stranger: boolean
+  updated: number
+  is_app_user: boolean
+  has_2fa: boolean
+  locale: string
+}
+
+interface UserInfoResponse {
+  ok: true
+  user: SlackUser
+}
+
 class SlackClientManager {
-  static SCOPE = 'identify,incoming-webhook,channels:read,chat:write:bot'
+  static SCOPE = 'identify,bot,incoming-webhook,channels:read,users:read,chat:write:bot,im:write'
   static openOAuth (atmosphere: Atmosphere, teamId: string, mutationProps: MenuMutationProps) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const providerState = Math.random()
@@ -153,9 +189,9 @@ class SlackClientManager {
     )
   }
 
-  getIdentity () {
-    return this.get<IdentityResponse>(
-      `https://slack.com/api/users.identity?token=${this.accessToken}`
+  getUserInfo (userId: string) {
+    return this.get<UserInfoResponse>(
+      `https://slack.com/api/users.info?token=${this.accessToken}&user=${userId}`
     )
   }
 

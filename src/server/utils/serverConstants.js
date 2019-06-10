@@ -9,7 +9,6 @@ export const UPCOMING_INVOICE_EMAIL_WARNING = ms('4d')
 export const MEETING_FACILITATOR_ELECTION_TIMEOUT = 5000
 export const SHARED_DATA_LOADER_TTL = 5000
 // export const ACTION_MONTHLY = 'action-monthly' // $5/seat/mo DEPRECATED
-export const PARABOL_PRO_MONTHLY = 'parabol-pro-monthly' // $12/seat/mo
 export const ADD_USER = 'addUser'
 export const PAUSE_USER = 'pauseUser'
 export const AUTO_PAUSE_USER = 'autoPauseUser'

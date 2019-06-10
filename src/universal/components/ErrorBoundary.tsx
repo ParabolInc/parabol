@@ -28,6 +28,7 @@ class ErrorBoundary extends Component<Props, State> {
       Object.keys(errorInfo).forEach((key) => {
         scope.setExtra(key, errorInfo[key])
       })
+      scope.setLevel(Sentry.Severity.Fatal)
       Sentry.captureException(error)
     })
   }

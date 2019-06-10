@@ -27,7 +27,7 @@ const SlackChannelPicker = (props: Props) => {
     ? channels.findIndex((channel) => channel.id === localChannelId)
     : -1
   const activeText =
-    activeIdx !== -1 ? channels[activeIdx].name : localChannelId ? 'Loading...' : 'No Channel Set'
+    activeIdx !== -1 ? channels[activeIdx].name : localChannelId ? '' : 'No Channel Set'
   const {togglePortal, menuPortal, originRef, menuProps} = useMenu(MenuPosition.UPPER_RIGHT, {
     isDropdown: true
   })

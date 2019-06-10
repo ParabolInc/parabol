@@ -2369,6 +2369,16 @@ export interface ISlackAuth {
   accessToken: string | null
 
   /**
+   * the parabol bot user id
+   */
+  botUserId: string | null
+
+  /**
+   * the parabol bot access token, used to communicate via direct message
+   */
+  botAccessToken: string | null
+
+  /**
    * The timestamp the provider was created
    */
   createdAt: any

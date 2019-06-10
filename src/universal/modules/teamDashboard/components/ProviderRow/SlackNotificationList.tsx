@@ -12,9 +12,12 @@ import useAtmosphere from 'universal/hooks/useAtmosphere'
 import SetSlackNotificationMutation from 'universal/mutations/SetSlackNotificationMutation'
 import useSlackChannels from 'universal/hooks/useSlackChannels'
 import StyledError from 'universal/components/StyledError'
+import {PALETTE} from 'universal/styles/paletteV2'
+import {Layout} from 'universal/types/constEnums'
 
 const SlackNotificationListStyles = styled('div')({
-  marginTop: 16
+  borderTop: `1px solid ${PALETTE.BORDER.LIGHTER}`,
+  padding: Layout.ROW_GUTTER
 })
 
 interface Props {
@@ -26,7 +29,8 @@ const TEAM_EVENTS = [SlackNotificationEventEnum.meetingStart, SlackNotificationE
 
 const TitleAndPicker = styled('div')({
   alignItems: 'center',
-  display: 'flex'
+  display: 'flex',
+  marginBottom: 16
 })
 
 const Heading = styled(LabelHeading)({
@@ -42,7 +46,7 @@ const SlackNotificationList = (props: Props) => {
 
   const uniqueChannelIds = useMemo(() => {
     const notificationsForEvent = slackNotifications.filter((notification) =>
-      TEAM_EVENTS.includes(notification.event as any)
+      TEAM_EVENTS.includes(notification.event)
     )
     const channelsUsed = notificationsForEvent.map(({channelId}) => channelId)
     return Array.from(new Set(channelsUsed))
@@ -72,7 +76,6 @@ const SlackNotificationList = (props: Props) => {
     [slackNotifications, localChannelId]
   )
 
-  if (!slackAuth || !slackAuth.accessToken) return null
   return (
     <SlackNotificationListStyles>
       <TitleAndPicker>

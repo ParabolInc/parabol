@@ -22,9 +22,7 @@ const DownButtonIcon = styled(Icon)({
 
 const DropdownBlock = styled('div')({
   display: 'inline-block',
-  width: '100%',
-  // space so the menu doesn't cover the border of the toggle
-  paddingBottom: 2
+  width: '100%'
 })
 
 const InputBlock = styled('div')(
@@ -37,6 +35,11 @@ const InputBlock = styled('div')(
   }),
   ({disabled}: {disabled: boolean}) => disabled && {...ui.fieldDisabled}
 )
+
+const Text = styled('span')({
+  display: 'block',
+  height: 24
+})
 
 interface Props {
   className?: string
@@ -57,7 +60,7 @@ const DropdownMenuToggle = forwardRef((props: Props, ref: any) => {
     >
       <FieldBlock>
         <InputBlock disabled={!!disabled} tabIndex={1}>
-          <span>{defaultText}</span>
+          <Text>{defaultText}</Text>
           {!disabled && <DownButtonIcon>expand_more</DownButtonIcon>}
         </InputBlock>
       </FieldBlock>

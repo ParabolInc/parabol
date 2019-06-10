@@ -35,7 +35,7 @@ interface ItemDict {
 interface NextMonthCharges {
   amount: number
   quantity: number
-  nextPeriodEnd: number
+  nextPeriodEnd: Date
   unitPrice: number
 }
 
@@ -50,16 +50,16 @@ interface ReducedItemBase {
 }
 
 interface ReducedUnpausePartial extends ReducedItemBase {
-  endAt: number
+  endAt: Date
 }
 
 interface ReducedStandardPartial extends ReducedItemBase {
-  startAt: number
+  startAt: Date
 }
 
 interface ReducedItem extends ReducedItemBase {
-  startAt?: number
-  endAt?: number
+  startAt?: Date
+  endAt?: Date
 }
 
 interface ReducedItemsByType {
@@ -123,12 +123,12 @@ const reduceItemsByType = (typesDict: TypesDict, email: string) => {
       const {unusedTime, remainingTime} = lineItems
       const unusedTimeAmount = unusedTime ? unusedTime.amount : 0
       const remainingTimeAmount = remainingTime ? remainingTime.amount : 0
-      reducedItems[k] = {
+      reducedItems[k] = ({
         id: shortid.generate(),
         amount: unusedTimeAmount + remainingTimeAmount,
         email,
         [dateField]: fromEpochSeconds(startTime)
-      } as ReducedUnpausePartial | ReducedStandardPartial
+      } as unknown) as ReducedUnpausePartial | ReducedStandardPartial
     }
   }
   return reducedItemsByType

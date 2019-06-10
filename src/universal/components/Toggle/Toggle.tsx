@@ -3,6 +3,7 @@ import styled from 'react-emotion'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {DECELERATE} from 'universal/styles/animation'
 import {switchShadow} from 'universal/styles/elevation'
+import {Duration} from 'universal/types/constEnums'
 
 interface Props {
   active: boolean
@@ -10,46 +11,56 @@ interface Props {
   onClick: (e: React.MouseEvent) => void
 }
 
-const UNDERLAY_WIDTH = 56
-const KNOB_SIZE = 24
+// https://material.io/design/components/selection-controls.html#switches
+const WEB_CONTROL_MIN_BOX = 24
+const TRACK_WIDTH = 34
+const TRACK_HEIGHT = 14
+const THUMB_SIZE = 20
 
-const Underlay = styled('div')(
+const Switch = styled('div')({
+  // adds height for minimal control size target for clicks
+  padding: `${(WEB_CONTROL_MIN_BOX - TRACK_HEIGHT) / 2}px 1px`
+})
+
+const Track = styled('div')(
   ({active, disabled}: {active: boolean; disabled: boolean | undefined}) => ({
-    backgroundColor: active ? PALETTE.BACKGROUND.GREEN : PALETTE.BACKGROUND.MAIN_DARKENED,
-    borderRadius: 16,
-    color: '#fff',
+    backgroundColor: active ? PALETTE.CONTROL.MAIN_BACKGROUND : PALETTE.CONTROL.LIGHT_BACKGROUND,
+    borderRadius: TRACK_HEIGHT,
+    color: 'white',
     cursor: disabled ? 'not-allowed' : 'pointer',
     display: 'block',
-    height: KNOB_SIZE + 4,
-    minWidth: UNDERLAY_WIDTH,
-    opacity: disabled ? 0.5 : 1,
+    height: TRACK_HEIGHT,
+    minWidth: TRACK_WIDTH,
+    opacity: disabled ? 0.38 : 1,
     position: 'relative',
-    transition: `all 150ms ${DECELERATE}`,
+    transition: `background-color ${Duration.SELECTION_CONTROL}ms ${DECELERATE}`,
     userSelect: 'none',
-    width: UNDERLAY_WIDTH
+    width: TRACK_WIDTH
   })
 )
 
-const ToggleKnob = styled('div')(({active}: {active: boolean}) => ({
-  backgroundColor: '#fff',
+const Thumb = styled('div')(({active}: {active: boolean}) => ({
+  backgroundColor: active ? PALETTE.CONTROL.MAIN : PALETTE.CONTROL.LIGHT,
   borderRadius: '100%',
   boxShadow: switchShadow,
   display: 'block',
-  height: KNOB_SIZE,
+  height: THUMB_SIZE,
   position: 'absolute',
-  top: 2,
-  transition: `transform 150ms ${DECELERATE}`,
-  transform: `translateX(${active ? UNDERLAY_WIDTH - KNOB_SIZE - 4 : 4}px)`,
-  width: KNOB_SIZE
+  top: -((THUMB_SIZE - TRACK_HEIGHT) / 2),
+  transition: `transform ${Duration.SELECTION_CONTROL}ms ${DECELERATE}`,
+  transform: `translateX(${active ? TRACK_WIDTH - THUMB_SIZE + 1 : -1}px)`,
+  width: THUMB_SIZE
 }))
 
 const Toggle = (props: Props) => {
   const {active, disabled, onClick} = props
 
   return (
-    <Underlay active={active} disabled={disabled} onClick={disabled ? undefined : onClick}>
-      <ToggleKnob active={active} />
-    </Underlay>
+    <Switch onClick={disabled ? undefined : onClick}>
+      <Track active={active} disabled={disabled}>
+        <Thumb active={active} />
+      </Track>
+    </Switch>
   )
 }
 

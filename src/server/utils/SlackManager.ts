@@ -19,7 +19,7 @@ interface OAuth2Response {
   team_name: string
   user_id: string
   incoming_webhook: IncomingWebhook
-  bot?: {
+  bot: {
     bot_user_id: string
     bot_access_token: string
   }
@@ -62,20 +62,8 @@ class SlackManager extends SlackClientManager {
     return new SlackManager(tokenJson.access_token, tokenJson) as Required<SlackManager>
   }
 
-  slackTeamId?: string
-  slackTeamName?: string
-  slackUserId?: string
-  webhook?: IncomingWebhook
-
-  constructor (accessToken, response?: OAuth2Response) {
+  constructor (accessToken, public response?: OAuth2Response) {
     super(accessToken, {fetch})
-    if (response) {
-      const {team_id, team_name, user_id, incoming_webhook} = response
-      this.slackTeamId = team_id
-      this.slackTeamName = team_name
-      this.slackUserId = user_id
-      this.webhook = incoming_webhook
-    }
   }
 }
 

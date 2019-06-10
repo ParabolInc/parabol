@@ -39,13 +39,20 @@ export default {
     const r = getRethink()
 
     const manager = await SlackManager.init(code)
-    const {accessToken, slackTeamName, slackTeamId, slackUserId, webhook} = manager
-    // FIXME while app is getting re-approved, we can't fetch identity, so grab name from viewer
-    // const identity = await manager.getIdentity()
-    // if (!identity.ok) {
-    //   return standardError(new Error(identity.error), {userId: viewerId})
-    // }
-    const viewer = await dataLoader.get('users').load(viewerId)
+    const {response} = manager
+    const {
+      access_token: accessToken,
+      bot,
+      team_id: slackTeamId,
+      team_name: slackTeamName,
+      user_id: slackUserId,
+      incoming_webhook: webhook
+    } = response
+
+    const userInfo = await manager.getUserInfo(slackUserId)
+    if (!userInfo.ok) {
+      return standardError(new Error(userInfo.error), {userId: viewerId})
+    }
     if (webhook) {
       const existingTeamNotificationsCount = await r
         .table('SlackNotification')
@@ -86,7 +93,9 @@ export default {
       slackTeamId,
       slackTeamName,
       slackUserId,
-      slackUserName: viewer.preferredName
+      slackUserName: userInfo.user.profile.display_name,
+      botUserId: bot.bot_user_id,
+      botAccessToken: bot.bot_access_token
     })
     if (existingAuth) {
       slackAuth.id = existingAuth.id

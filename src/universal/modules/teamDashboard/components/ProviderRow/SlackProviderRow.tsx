@@ -77,11 +77,13 @@ const ProviderName = styled('div')({
 
 const CardTop = styled('div')({
   display: 'flex',
-  justifyContent: 'flex-start'
+  justifyContent: 'flex-start',
+  padding: Layout.ROW_GUTTER
 })
 
 const ExtraProviderCard = styled(ProviderCard)({
-  flexDirection: 'column'
+  flexDirection: 'column',
+  padding: 0
 })
 
 const SlackProviderRow = (props: Props) => {
@@ -112,7 +114,7 @@ const SlackProviderRow = (props: Props) => {
         )}
         {accessToken && (
           <ListAndMenu>
-            <SlackLogin title={slackAuth!.slackTeamName || 'Slack'}>
+            <SlackLogin title={slackAuth.slackTeamName || 'Slack'}>
               <SlackSVG />
             </SlackLogin>
             <MenuButton onClick={togglePortal} innerRef={originRef}>
@@ -128,7 +130,7 @@ const SlackProviderRow = (props: Props) => {
           </ListAndMenu>
         )}
       </CardTop>
-      <SlackNotificationList teamId={teamId} viewer={viewer} />
+      {accessToken && <SlackNotificationList teamId={teamId} viewer={viewer} />}
     </ExtraProviderCard>
   )
 }

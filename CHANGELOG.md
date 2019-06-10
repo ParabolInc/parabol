@@ -5,6 +5,41 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## vNext
+
+### Fixed
+* Create new stripe subscription after a failed payment followed by a CC update
+
+### Removed
+* legacy meeting fields on the Team object in the DB
+
+### Added
+* New stripe per-event handling 
+
+## v3.12.0 2019-May-29
+
+### Added
+* Persist queryMap to DB, this allows folks to complete their old
+  queries after a server upgrade.
+
+### Fixed
+* Org avatar input layout
+* Team archive grid layout
+* #2902 avatar shape
+* Wonky invoice layout with wrapping div, bg colors
+
+## v3.11.2 2019-May-28
+
+### Fixed
+* Meetings for safari users (support window.matchMedia)
+
+## v3.11.1 2019-May-28
+
+### Fixed
+* Borked end action meeting (fast-rtc-swarm)
+* Action Meeting Title
+
+
 ## v3.11.0 2019-May-15
 
 ### Changed
