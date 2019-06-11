@@ -10,6 +10,7 @@ import {MenuPosition} from 'universal/hooks/useCoords'
 import useTooltip from 'universal/hooks/useTooltip'
 import useModal from 'universal/hooks/useModal'
 import lazyPreload from 'universal/utils/lazyPreload'
+import isDemoRoute from 'universal/utils/isDemoRoute'
 
 interface Props extends WithAtmosphereProps {
   team: AddTeamMemberAvatarButton_team
@@ -30,12 +31,21 @@ const AddTeamMemberModal = lazyPreload(() =>
   import(/* webpackChunkName: 'AddTeamMemberModal' */ './AddTeamMemberModal')
 )
 
+const AddTeamMemberModalDemo = lazyPreload(() =>
+  import(/* webpackChunkName: 'AddTeamMemberModalDemo' */ './AddTeamMemberModalDemo')
+)
+
 const AddTeamMemberAvatarButton = (props: Props) => {
   const {team, teamMembers} = props
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip(
     MenuPosition.UPPER_CENTER
   )
   const {togglePortal: toggleModal, closePortal: closeModal, modalPortal} = useModal()
+  const modal = isDemoRoute() ? (
+    <AddTeamMemberModalDemo />
+  ) : (
+    <AddTeamMemberModal closePortal={closeModal} team={team} teamMembers={teamMembers} />
+  )
   return (
     <>
       <AddButton
@@ -48,9 +58,7 @@ const AddTeamMemberAvatarButton = (props: Props) => {
         <Icon>add</Icon>
       </AddButton>
       {tooltipPortal('Invite to Team')}
-      {modalPortal(
-        <AddTeamMemberModal closePortal={closeModal} team={team} teamMembers={teamMembers} />
-      )}
+      {modalPortal(modal)}
     </>
   )
 }

@@ -4,12 +4,14 @@ import CreateAccountPrimaryButton from 'universal/components/CreateAccountPrimar
 import Icon from 'universal/components/Icon'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {ICON_SIZE} from 'universal/styles/typographyV2'
+import DialogContainer from './DialogContainer'
 
-const StyledContainer = styled('div')({
+const StyledDialogContainer = styled(DialogContainer)({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
-  padding: '24px 16px 32px'
+  padding: '24px 16px 32px',
+  width: 500
 })
 
 const StyledCopy = styled('p')({
@@ -25,12 +27,12 @@ const StyledIcon = styled(Icon)({
   fontSize: ICON_SIZE.MD48
 })
 
-const AddTeamMemberModalDemoContent = () => (
-  <StyledContainer>
+const AddTeamMemberModalDemo = () => (
+  <StyledDialogContainer>
     <StyledIcon>group_add</StyledIcon>
     <StyledCopy>Sign up, invite your teammates, and kick off your own Retro!</StyledCopy>
     <CreateAccountPrimaryButton />
-  </StyledContainer>
+  </StyledDialogContainer>
 )
 
-export default AddTeamMemberModalDemoContent
+export default AddTeamMemberModalDemo
