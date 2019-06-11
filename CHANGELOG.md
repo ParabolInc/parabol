@@ -12,9 +12,13 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Removed
 * legacy meeting fields on the Team object in the DB
+* legacy Provider mutations
 
 ### Added
 * New stripe per-event handling 
+
+### Changed
+* Moved integration OAuth flow into their respective managers
 
 ## v3.12.0 2019-May-29
 
