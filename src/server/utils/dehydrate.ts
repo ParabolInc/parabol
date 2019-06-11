@@ -1,5 +1,3 @@
-// @flow
-
 /**
  * WARNING: this function does no HTML, JS, or JSON escaping whatsoever.
  * `globalScopeName` and `data` must be verified to be safe before templating
@@ -10,7 +8,7 @@
  * make data available to the client without requiring a request from within
  * the client app.
  */
-const dehydrate = (globalScopeName: string, data: any): string =>
+const dehydrate = (globalScopeName: string, data: object) =>
   `window.${globalScopeName} = ${JSON.stringify(data)}`
 
 export default dehydrate

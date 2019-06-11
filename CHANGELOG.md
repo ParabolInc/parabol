@@ -19,6 +19,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Changed
 * Moved integration OAuth flow into their respective managers
+* Refactor all flow components to typescript
 
 ## v3.12.0 2019-May-29
 

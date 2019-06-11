@@ -1,15 +1,11 @@
-// @flow
-import type {CompletedHandler, ErrorHandler} from 'universal/types/relay'
-import {commitMutation} from 'react-relay'
+import {commitMutation, graphql} from 'react-relay'
 import handleUpdateStageSort from 'universal/mutations/handlers/handleUpdateStageSort'
 import {DISCUSS} from 'universal/utils/constants'
 import getInProxy from 'universal/utils/relay/getInProxy'
-
-type Variables = {
-  stageId: string,
-  meetingId: string,
-  sortOrder: number
-}
+import {IDragDiscussionTopicOnMutationArguments} from 'universal/types/graphql'
+import Atmosphere from 'universal/Atmosphere'
+import {DragDiscussionTopicMutation as IDragDiscussionTopicMutation} from '__generated__/DragDiscussionTopicMutation.graphql'
+import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 
 graphql`
   fragment DragDiscussionTopicMutation_team on DragDiscussionTopicPayload {
@@ -31,29 +27,21 @@ const mutation = graphql`
   }
 `
 
-type Context = {}
-
-type UpdaterContext = {
-  store: Object
-}
-
-export const dragDiscussionTopicTeamUpdater = (payload: Object, {store}: UpdaterContext) => {
+export const dragDiscussionTopicTeamUpdater = (
+  payload: RecordProxy,
+  {store}: {store: RecordSourceSelectorProxy}
+) => {
   const meetingId = getInProxy(payload, 'meeting', 'id')
   handleUpdateStageSort(store, meetingId, DISCUSS)
 }
 
 const DragDiscussionTopicMutation = (
-  atmosphere: Object,
-  variables: Variables,
-  context?: Context,
-  onError?: ErrorHandler,
-  onCompleted?: CompletedHandler
+  atmosphere: Atmosphere,
+  variables: IDragDiscussionTopicOnMutationArguments
 ) => {
-  commitMutation(atmosphere, {
+  commitMutation<IDragDiscussionTopicMutation>(atmosphere, {
     mutation,
     variables,
-    onCompleted,
-    onError,
     updater: (store) => {
       const payload = store.getRootField('dragDiscussionTopic')
       if (!payload) return
@@ -62,6 +50,7 @@ const DragDiscussionTopicMutation = (
     optimisticUpdater: (store) => {
       const {meetingId, stageId, sortOrder} = variables
       const stage = store.get(stageId)
+      if (!stage) return
       stage.setValue(sortOrder, 'sortOrder')
       handleUpdateStageSort(store, meetingId, DISCUSS)
     }

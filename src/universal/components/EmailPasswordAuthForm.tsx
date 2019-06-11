@@ -119,7 +119,7 @@ export class EmailPasswordAuthFormBase extends Component<Props> {
     const hasEmail = !!fields.email.value
     return (
       <Form onSubmit={this.onSubmit}>
-        {error && <ErrorAlert message={error} />}
+        {error && <ErrorAlert message={error as string} />}
         {!error && existingAccount && (
           <ErrorAlert message='Your account was created without Google. Sign in below' />
         )}

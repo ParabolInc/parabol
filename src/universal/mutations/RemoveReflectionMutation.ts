@@ -2,17 +2,15 @@
  * Removes a reflection for the retrospective meeting.
  *
  */
-import type {CompletedHandler, ErrorHandler} from 'universal/types/relay'
-import {commitMutation} from 'react-relay'
+import {commitMutation, graphql} from 'react-relay'
 import getInProxy from 'universal/utils/relay/getInProxy'
 import handleRemoveReflectionGroups from 'universal/mutations/handlers/handleRemoveReflectionGroups'
+import {IRemoveReflectionOnMutationArguments} from 'universal/types/graphql'
+import {LocalHandlers} from 'universal/types/relayMutations'
+import Atmosphere from 'universal/Atmosphere'
 
 type Context = {
   meetingId: string
-}
-
-type Variables = {
-  reflectionId: string
 }
 
 graphql`
@@ -46,13 +44,13 @@ export const removeReflectionTeamUpdater = (payload, store) => {
 }
 
 const RemoveReflectionMutation = (
-  environment: Object,
-  variables: Variables,
+  atmosphere: Atmosphere,
+  variables: IRemoveReflectionOnMutationArguments,
   context: Context,
-  onError?: ErrorHandler,
-  onCompleted?: CompletedHandler
+  onError?: LocalHandlers['onError'],
+  onCompleted?: LocalHandlers['onCompleted']
 ) => {
-  return commitMutation(environment, {
+  return commitMutation(atmosphere, {
     mutation,
     variables,
     updater: (store) => {

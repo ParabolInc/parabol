@@ -1,4 +1,3 @@
-/* @flow */
 // Borrowed 90% from https://github.com/orta/react-storybooks-relay-container
 import React from 'react'
 

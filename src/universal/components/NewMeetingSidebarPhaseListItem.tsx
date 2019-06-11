@@ -1,6 +1,4 @@
-import type {Node} from 'react'
-// @flow
-import React from 'react'
+import React, {ReactNode} from 'react'
 import styled, {css} from 'react-emotion'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
@@ -11,7 +9,7 @@ const NavListItem = styled('li')({
   lineHeight: '2.5rem'
 })
 
-const NavItemBullet = styled('span')(
+const NavItemBullet = styled('span')<{isFacilitatorPhaseGroup: boolean}>(
   {
     backgroundColor: appTheme.palette.mid,
     borderRadius: '100%',
@@ -54,7 +52,12 @@ const navListItemLinkDisabled = css({
   }
 })
 
-const NavListItemLink = styled('div')(
+interface ILink {
+  isDisabled: boolean
+  isActive: boolean
+}
+
+const NavListItemLink = styled('div')<ILink>(
   {
     borderLeft: `${ui.navMenuLeftBorderWidth} solid transparent`,
     color: ui.colorText,
@@ -70,11 +73,11 @@ const NavListItemLink = styled('div')(
 )
 
 type Props = {
-  children: Node,
-  handleClick: ?() => void,
-  phaseType: string,
-  listPrefix: string,
-  isActive: boolean,
+  children: ReactNode
+  handleClick?: () => void
+  phaseType: string
+  listPrefix: string
+  isActive: boolean
   isFacilitatorPhaseGroup: boolean
 }
 

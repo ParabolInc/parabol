@@ -2,7 +2,6 @@
  * A horizontal separator; looks like:
  *  ---------- some text ----------
  *
- * @flow
  */
 
 import React, {Fragment} from 'react'
@@ -11,7 +10,7 @@ import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
 
-const SeparatorContainer = styled('div')(({margin}) => ({
+const SeparatorContainer = styled('div')(({margin}: {margin: string | number | undefined}) => ({
   color: ui.labelHeadingColor,
   display: 'flex',
   fontSize: '.6875rem',
@@ -27,7 +26,7 @@ const SeparatorContainer = styled('div')(({margin}) => ({
 const separatorLineStyles = {
   borderBottom: `0.0625rem solid ${appTheme.palette.mid50a}`,
   margin: 'auto',
-  opacity: '.25',
+  opacity: 0.25,
   width: '12rem'
 }
 
@@ -47,7 +46,7 @@ const FullSeparator = styled('div')({
 })
 
 type Props = {
-  margin?: string,
+  margin?: string
   text?: string
 }
 

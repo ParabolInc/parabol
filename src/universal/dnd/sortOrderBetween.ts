@@ -1,10 +1,8 @@
-// @flow
-
 import {SORT_STEP} from 'universal/utils/constants'
 import dndNoise from 'universal/utils/dndNoise'
 
 type Sortable = {
-  id: string,
+  id: string
   sortOrder: number
 }
 
@@ -13,9 +11,9 @@ type Sortable = {
  * `target` and `bounding`.
  */
 export default function sortOrderBetween (
-  target: ?Sortable,
-  bounding: ?Sortable,
-  toInsert: ?Sortable,
+  target: Sortable | undefined | null,
+  bounding: Sortable | undefined | null,
+  toInsert: Sortable | undefined | null,
   before: boolean
 ): number {
   if (target == null && bounding == null && toInsert == null) {

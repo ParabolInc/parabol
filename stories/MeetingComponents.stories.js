@@ -1,6 +1,4 @@
 // Working on new meeting components
-// @flow
-// $FlowFixMe
 import React from 'react'
 // import {action} from '@storybook/addon-actions';
 import {storiesOf} from '@storybook/react'

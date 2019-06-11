@@ -15,10 +15,6 @@
  *
  * They're exposed to the GraphQL server via context.releaseFlags
  *
- * @flow
  */
 
-export default {
-  // The single-page embedded signin
-  newSignIn: true
-}
+export default {}

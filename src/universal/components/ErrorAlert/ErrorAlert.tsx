@@ -3,7 +3,6 @@
  * Looks something like:
  *   [ (!) Your Message Here ]
  *
- * @flow
  */
 import React from 'react'
 import tinycolor from 'tinycolor2'
