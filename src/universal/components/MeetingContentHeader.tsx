@@ -4,6 +4,7 @@ import CreateAccountButton from 'universal/components/CreateAccountButton'
 import SidebarToggle from 'universal/components/SidebarToggle'
 import {meetingSidebarMediaQuery, meetingTopBarMediaQuery} from 'universal/styles/meeting'
 import isDemoRoute from 'universal/utils/isDemoRoute'
+import hasToken from 'universal/utils/hasToken'
 
 const localHeaderBreakpoint = '@media screen and (min-width: 600px)'
 
@@ -87,14 +88,15 @@ interface Props {
 
 const MeetingContentHeader = (props: Props) => {
   const {avatarGroup, children, isMeetingSidebarCollapsed, toggleSidebar} = props
+  const showButton = isDemoRoute() && !hasToken()
   return (
     <MeetingContentHeaderStyles>
       <HeadingBlock>
         <Toggle onClick={toggleSidebar} isMeetingSidebarCollapsed={isMeetingSidebarCollapsed} />
         <ChildrenBlock>{children}</ChildrenBlock>
       </HeadingBlock>
-      <AvatarGroupBlock isDemoRoute={isDemoRoute()}>{avatarGroup}</AvatarGroupBlock>
-      {isDemoRoute() && (
+      <AvatarGroupBlock isDemoRoute={showButton}>{avatarGroup}</AvatarGroupBlock>
+      {showButton && (
         <PrimaryActionBlock>
           <CreateAccountButton />
         </PrimaryActionBlock>

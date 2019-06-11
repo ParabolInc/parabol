@@ -5,6 +5,7 @@ import Icon from 'universal/components/Icon'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {ICON_SIZE} from 'universal/styles/typographyV2'
 import DialogContainer from './DialogContainer'
+import hasToken from 'universal/utils/hasToken'
 
 const StyledDialogContainer = styled(DialogContainer)({
   alignItems: 'center',
@@ -27,12 +28,17 @@ const StyledIcon = styled(Icon)({
   fontSize: ICON_SIZE.MD48
 })
 
-const AddTeamMemberModalDemo = () => (
-  <StyledDialogContainer>
-    <StyledIcon>group_add</StyledIcon>
-    <StyledCopy>Sign up, invite your teammates, and kick off your own Retro!</StyledCopy>
-    <CreateAccountPrimaryButton />
-  </StyledDialogContainer>
-)
+const AddTeamMemberModalDemo = () => {
+  const copy = hasToken()
+    ? 'Invite your teammates to a team and kick off a real Retro!'
+    : 'Sign up, invite your teammates, and kick off a real Retro!'
+  return (
+    <StyledDialogContainer>
+      <StyledIcon>group_add</StyledIcon>
+      <StyledCopy>{copy}</StyledCopy>
+      <CreateAccountPrimaryButton />
+    </StyledDialogContainer>
+  )
+}
 
 export default AddTeamMemberModalDemo
