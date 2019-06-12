@@ -2738,11 +2738,6 @@ export interface IMutation {
   editTask: IEditTaskPayload | null
 
   /**
-   * Finish a meeting and go to the summary
-   */
-  endMeeting: IEndMeetingPayload | null
-
-  /**
    * Receive a webhook from github saying an assignee was added
    */
   githubAddAssignee: boolean | null
@@ -3253,13 +3248,6 @@ export interface IEditTaskOnMutationArguments {
    * true if the editing is starting, false if it is stopping
    */
   isEditing: boolean
-}
-
-export interface IEndMeetingOnMutationArguments {
-  /**
-   * The team that will be having the meeting
-   */
-  teamId: string
 }
 
 export interface IGithubAddAssigneeOnMutationArguments {
@@ -5027,22 +5015,6 @@ export interface IEditTaskPayload {
   isEditing: boolean | null
 }
 
-export interface IEndMeetingPayload {
-  __typename: 'EndMeetingPayload'
-  error: IStandardMutationError | null
-  team: ITeam | null
-
-  /**
-   * The list of tasks that were archived during the meeting
-   */
-  archivedTasks: Array<ITask | null> | null
-
-  /**
-   * The ID of the suggestion to try an action meeting, if tried
-   */
-  removedSuggestedActionId: string | null
-}
-
 export interface IInactivateUserPayload {
   __typename: 'InactivateUserPayload'
   error: IStandardMutationError | null
@@ -6035,7 +6007,6 @@ export type NotificationSubscriptionPayload =
   | ICreateTaskPayload
   | IDeleteTaskPayload
   | IDisconnectSocketPayload
-  | IEndMeetingPayload
   | IEndNewMeetingPayload
   | IInviteToTeamPayload
   | IRemoveOrgUserPayload
@@ -6093,7 +6064,6 @@ export type TaskSubscriptionPayload =
   | ICreateTaskPayload
   | IDeleteTaskPayload
   | IEditTaskPayload
-  | IEndMeetingPayload
   | IRemoveOrgUserPayload
   | IRemoveTeamMemberPayload
   | IUpdateTaskPayload
@@ -6114,7 +6084,6 @@ export type TeamSubscriptionPayload =
   | IDragDiscussionTopicPayload
   | IEndDraggingReflectionPayload
   | IEditReflectionPayload
-  | IEndMeetingPayload
   | IEndNewMeetingPayload
   | INavigateMeetingPayload
   | INewMeetingCheckInPayload
