@@ -26,6 +26,7 @@ import lazyPreload from 'universal/utils/lazyPreload'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import {REFLECTION_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
 import EndMeetingButton from '../EndMeetingButton'
+import StageTimerControl from 'universal/components/StageTimerControl'
 
 const minWidth = REFLECTION_WIDTH + 32
 
@@ -114,6 +115,7 @@ const RetroReflectPhase = (props: Props) => {
         {isFacilitating && (
           <StyledBottomBar>
             <BottomControlSpacer />
+            <StageTimerControl defaultTimeLimit={5} stage={localStage!} />
             <BottomNavControl
               isBouncing={isDemoStageComplete || isReadyToGroup}
               disabled={isEmpty}
@@ -147,6 +149,9 @@ graphql`
       description
       editorIds
     }
+    stages {
+      ...StageTimerControl_stage
+    }
   }
 `
 
@@ -162,6 +167,7 @@ export default createFragmentContainer(
         ... on RetrospectiveMeeting {
           localStage {
             isComplete
+            ...StageTimerControl_stage
           }
           reflectionGroups {
             id

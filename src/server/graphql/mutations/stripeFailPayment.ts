@@ -32,7 +32,7 @@ export default {
     // VALIDATION
     const invoice = await manager.retrieveInvoice(invoiceId)
     const {amount_due: amountDue, customer, metadata, subscription, paid} = invoice
-    const customerId = customer
+    const customerId = customer as string
     let orgId = metadata.orgId
     if (!orgId) {
       const customer = await manager.retrieveCustomer(customerId)

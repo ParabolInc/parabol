@@ -5,11 +5,10 @@ import handleRemoveNotifications from 'universal/mutations/handlers/handleRemove
 import getInProxy from 'universal/utils/relay/getInProxy'
 import safeRemoveNodeFromUnknownConn from 'universal/utils/relay/safeRemoveNodeFromUnknownConn'
 import Atmosphere from 'universal/Atmosphere'
-import {IChangeTaskTeamOnMutationArguments, ITask} from 'universal/types/graphql'
+import {IChangeTaskTeamOnMutationArguments, ITask, ITeam} from 'universal/types/graphql'
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import getBaseRecord from 'universal/utils/relay/getBaseRecord'
 import {ChangeTaskTeamMutation} from '__generated__/ChangeTaskTeamMutation.graphql'
-import {ChangeTaskTeamMutation_task} from '__generated__/ChangeTaskTeamMutation_task.graphql'
 import {LocalHandlers} from 'universal/types/relayMutations'
 
 graphql`
@@ -40,7 +39,7 @@ const mutation = graphql`
 `
 
 export const changeTaskTeamTaskUpdater = (
-  payload: RecordProxy<ChangeTaskTeamMutation_task>,
+  payload: RecordProxy,
   {store}: {store: RecordSourceSelectorProxy}
 ) => {
   const task = payload.getLinkedRecord('task')
@@ -80,7 +79,7 @@ const ChangeTaskTeamMutation = (
       }
       updateProxyRecord(task, optimisticTask)
       task.setValue(teamId, 'teamId')
-      const team = store.get(teamId)
+      const team = store.get<ITeam>(teamId)
       if (team) {
         task.setLinkedRecord(team, 'team')
       }

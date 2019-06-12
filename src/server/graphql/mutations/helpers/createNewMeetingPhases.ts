@@ -39,7 +39,13 @@ const getPastStageDurations = async (teamId: string) => {
     .concatMap((row) => row('phases'))
     .concatMap((row) => row('stages'))
     .filter((row) => row.hasFields('startAt', 'endAt'))
-    .merge((row) => ({duration: r.sub(row('endAt'), row('startAt'))}))
+    // convert seconds to ms
+    .merge((row) => ({
+      duration: r
+        .sub(row('endAt'), row('startAt'))
+        .mul(1000)
+        .floor()
+    }))
     // remove stages that took under 30 seconds
     .filter((row) => row('duration').ge(30))
     .orderBy(r.desc('startAt'))

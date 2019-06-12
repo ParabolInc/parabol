@@ -8,16 +8,6 @@ import MediaSwarm from '../utils/swarm/MediaSwarm'
 import AudioToggle from './AudioToggle'
 import VideoToggle from './VideoToggle'
 
-declare global {
-  interface Navigator {
-    permissions: {
-      query: (queryObj: {
-        name: string
-      }) => Promise<{state: PushPermissionState; onchange: () => void | null}>
-    }
-  }
-}
-
 interface Props {
   allowVideo: boolean
   bindHotkey: (key: string, cb: () => void) => void
@@ -60,7 +50,7 @@ const VideoControls = (props: Props) => {
   }, [])
 
   const addVideo = async () => {
-    const descriptors = ['camera', 'microphone']
+    const descriptors = ['camera', 'microphone'] as PermissionName[]
     const permissions = await Promise.all(
       descriptors.map((name) => navigator.permissions.query({name}))
     )

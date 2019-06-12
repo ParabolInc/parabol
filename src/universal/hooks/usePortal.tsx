@@ -14,16 +14,25 @@ export const enum PortalStatus {
 export interface UsePortalOptions {
   onOpen?: (el: HTMLElement) => void
   onClose?: () => void
+  id?: string
+  parentId?: string
 }
+
 const usePortal = (options: UsePortalOptions = {}) => {
   const portalRef = useRef<HTMLDivElement>()
   const originRef = useRef<HTMLElement>()
   const showBodyScroll = useRef<() => void>()
   const [portalStatus, setPortalStatus] = useState(PortalStatus.Exited)
 
+  const getParent = () => {
+    const parent = options.parentId ? document.getElementById(options.parentId) : document.body
+    if (!parent) throw new Error('Could not find parent ' + options.parentId)
+    return parent
+  }
+
   const terminatePortal = useCallback(() => {
     if (portalRef.current) {
-      document.body.removeChild(portalRef.current)
+      getParent().removeChild(portalRef.current)
       portalRef.current = undefined
       showBodyScroll.current && showBodyScroll.current()
     }
@@ -72,8 +81,8 @@ const usePortal = (options: UsePortalOptions = {}) => {
   const openPortal = useCallback((e?: React.MouseEvent | React.TouchEvent) => {
     terminatePortal()
     portalRef.current = document.createElement('div')
-    portalRef.current.id = 'portal'
-    document.body.appendChild(portalRef.current)
+    portalRef.current.id = options.id || 'portal'
+    getParent().appendChild(portalRef.current)
     showBodyScroll.current = hideBodyScroll()
     document.addEventListener('keydown', handleKeydown)
     document.addEventListener('mousedown', handleDocumentClick)

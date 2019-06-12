@@ -46,7 +46,7 @@ const ErrorMessage = styled(StyledError)({
 
 class AddTeamMemberModal extends Component<Props, State> {
   _mounted = true
-  state = {
+  state: State = {
     pendingSuccessfulInvitations: [] as Array<string>,
     successfulInvitations: null,
     rawInvitees: '',
