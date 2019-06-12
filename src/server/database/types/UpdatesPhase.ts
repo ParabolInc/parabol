@@ -9,10 +9,10 @@ interface TeamMember {
 
 export default class UpdatesPhase extends GenericMeetingPhase {
   stages: UpdatesStage[]
-  constructor (teamMembers: TeamMember[]) {
+  constructor (teamMembers: TeamMember[], durations: number[] | undefined) {
     super(UPDATES)
     this.stages = teamMembers
       .sort((a, b) => (a.checkInOrder > b.checkInOrder ? 1 : -1))
-      .map((teamMember) => new UpdatesStage(teamMember.id))
+      .map((teamMember) => new UpdatesStage(teamMember.id, durations))
   }
 }

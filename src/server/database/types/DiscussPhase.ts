@@ -5,8 +5,8 @@ import GenericMeetingPhase from './GenericMeetingPhase'
 
 export default class DiscussPhase extends GenericMeetingPhase {
   stages: GenericMeetingStage[]
-  constructor () {
+  constructor (durations: number[] | undefined) {
     super(DISCUSS)
-    this.stages = [new DiscussStage(0)]
+    this.stages = [new DiscussStage(0, durations)]
   }
 }
