@@ -10,10 +10,11 @@ interface Props {
   stage: StageTimerDisplay_stage
 }
 
-const DisplayRow = styled('div')({
+const DisplayRow = styled('div')(({show}: {show: boolean}) => ({
   display: 'flex',
-  justifyContent: 'center'
-})
+  justifyContent: 'center',
+  visibility: show ? undefined : 'hidden'
+}))
 
 const Gauge = styled('div')({
   color: '#fff',
@@ -41,10 +42,9 @@ const StageTimerDisplay = (props: Props) => {
     setEndTime(reconciledEndTime)
   }, [scheduledEndTime, timeRemaining])
 
-  if (!endTime) return null
-  const fromNow = countdown(endTime) || 'Time’s Up!'
+  const fromNow = (endTime && countdown(endTime)) || 'Time’s Up!'
   return (
-    <DisplayRow>
+    <DisplayRow show={!!endTime}>
       <Gauge>{fromNow}</Gauge>
     </DisplayRow>
   )

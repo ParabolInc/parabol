@@ -26,7 +26,7 @@ export const countdown = (date: string | Date) => {
   const MAX = 2
   const periods = {
     Y: abs / YEAR,
-    m: (abs % YEAR) / MONTH,
+    M: (abs % YEAR) / MONTH,
     d: (abs % MONTH) / DAY,
     h: (abs % DAY) / HOUR,
     m: (abs % HOUR) / MIN,

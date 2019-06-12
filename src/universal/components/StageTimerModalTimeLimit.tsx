@@ -13,6 +13,7 @@ import SetStageTimerMutation from 'universal/mutations/SetStageTimerMutation'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useMutationProps from 'universal/hooks/useMutationProps'
 import StyledError from 'universal/components/StyledError'
+import Icon from 'universal/components/Icon'
 
 interface Props {
   closePortal: () => void
@@ -23,15 +24,29 @@ interface Props {
 
 const Toggle = styled(DropdownMenuToggle)({
   padding: 8,
-  minWidth: 200
+  minWidth: 184
+})
+
+const Row = styled('div')({
+  alignItems: 'center',
+  display: 'flex'
+})
+
+const SetLimit = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  flexDirection: 'column',
+  padding: 16
 })
 
 const StageTimerModalTimeLimit = (props: Props) => {
   const {closePortal, defaultTimeLimit, meetingId, stage} = props
-  const {suggestedTimeLimit} = stage
-  const initialTimeLimit = suggestedTimeLimit
-    ? Math.min(10, Math.max(1, Math.round(suggestedTimeLimit / ms('1m'))))
-    : defaultTimeLimit
+  const {suggestedTimeLimit, scheduledEndTime} = stage
+  const initialTimeLimit =
+    scheduledEndTime || !suggestedTimeLimit
+      ? defaultTimeLimit
+      : Math.min(10, Math.max(1, Math.round(suggestedTimeLimit / ms('1m'))))
+  // scheduledEndTime means we're editing an existing timer
   const atmosphere = useAtmosphere()
   const [minuteTimeLimit, setMinuteTimeLimit] = useState(initialTimeLimit)
   const {menuPortal, togglePortal, menuProps: minutePickerProps, originRef} = useMenu(
@@ -45,24 +60,29 @@ const StageTimerModalTimeLimit = (props: Props) => {
   const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
   const startTimer = () => {
     if (submitting) return
-    const timeRemaining = minuteTimeLimit * ms('1m')
-    const scheduledEndTime = new Date(Date.now() + timeRemaining)
+    const spareTime = scheduledEndTime
+      ? Math.max(0, new Date(scheduledEndTime).getTime() - Date.now())
+      : 0
+    const timeRemaining = minuteTimeLimit * ms('1m') + spareTime
     submitMutation()
     SetStageTimerMutation(
       atmosphere,
-      {meetingId, timeRemaining, scheduledEndTime},
+      {meetingId, timeRemaining, scheduledEndTime: new Date(Date.now() + timeRemaining)},
       {onError, onCompleted}
     )
     closePortal()
   }
 
   return (
-    <>
-      <Toggle
-        defaultText={`${minuteTimeLimit} ${plural(minuteTimeLimit, 'minute')}`}
-        onClick={togglePortal}
-        innerRef={originRef}
-      />
+    <SetLimit>
+      <Row>
+        <Icon>timer</Icon>
+        <Toggle
+          defaultText={`${minuteTimeLimit} ${plural(minuteTimeLimit, 'minute')}`}
+          onClick={togglePortal}
+          innerRef={originRef}
+        />
+      </Row>
       {menuPortal(
         <StageTimerMinutePicker
           minuteTimeLimit={minuteTimeLimit}
@@ -70,9 +90,11 @@ const StageTimerModalTimeLimit = (props: Props) => {
           setMinuteTimeLimit={setMinuteTimeLimit}
         />
       )}
-      <SecondaryButton onClick={startTimer}>{'Start Timer'}</SecondaryButton>
+      <SecondaryButton onClick={startTimer}>
+        {scheduledEndTime ? 'Add Time' : 'Start Timer'}
+      </SecondaryButton>
       {error && <StyledError>{error}</StyledError>}
-    </>
+    </SetLimit>
   )
 }
 
@@ -81,6 +103,7 @@ export default createFragmentContainer(
   graphql`
     fragment StageTimerModalTimeLimit_stage on NewMeetingStage {
       suggestedTimeLimit
+      scheduledEndTime
     }
   `
 )

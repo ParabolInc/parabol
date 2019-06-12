@@ -97,8 +97,8 @@ const RetroReflectPhase = (props: Props) => {
         </PhaseHeaderDescription>
       </MeetingContentHeader>
       <ErrorBoundary>
+        <StageTimerDisplay stage={localStage!} />
         <StyledOverflow>
-          <StageTimerDisplay stage={localStage} />
           <StyledWrapper phaseItemCount={reflectPrompts.length} innerRef={phaseRef}>
             {reflectPrompts.map((prompt, idx) => (
               <PhaseItemColumn

@@ -8,6 +8,7 @@ import Icon from 'universal/components/Icon'
 import styled from 'react-emotion'
 import SwipeableViews from 'react-swipeable-views'
 import StageTimerModalTimeLimit from 'universal/components/StageTimerModalTimeLimit'
+import StageTimerModalEditTimeLimit from 'universal/components/StageTimerModalEditTimeLimit'
 
 interface Props {
   defaultTimeLimit: number
@@ -16,10 +17,6 @@ interface Props {
   menuProps: MenuProps
 }
 
-const FullTabs = styled(Tabs)({
-  width: 240
-})
-
 const FullTab = styled(Tab)({
   justifyContent: 'center',
   paddingTop: 4,
@@ -27,9 +24,11 @@ const FullTab = styled(Tab)({
 })
 
 const Modal = styled('div')({
+  alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
-  alignItems: 'center'
+  overflow: 'hidden',
+  width: 240
 })
 
 const TabContents = styled('div')({
@@ -40,14 +39,22 @@ const TabContents = styled('div')({
 
 const StageTimerModal = (props: Props) => {
   const {defaultTimeLimit, meetingId, menuProps, stage} = props
+  const {isAsync} = stage
   const [activeIdx, setActiveIdx] = useState(0)
   const {closePortal} = menuProps
+  if (isAsync === false) {
+    return (
+      <StageTimerModalEditTimeLimit meetingId={meetingId} closePortal={closePortal} stage={stage} />
+    )
+  } else if (isAsync) {
+    // TODO
+  }
   return (
     <Modal>
-      <FullTabs activeIdx={activeIdx}>
+      <Tabs activeIdx={activeIdx}>
         <FullTab label={<Icon>{'timer'}</Icon>} onClick={() => setActiveIdx(0)} />
         <FullTab label={<Icon>{'event'}</Icon>} onClick={() => setActiveIdx(1)} />
-      </FullTabs>
+      </Tabs>
       <SwipeableViews enableMouseEvents index={activeIdx} onChangeIndex={setActiveIdx}>
         <TabContents>
           <StageTimerModalTimeLimit
@@ -57,7 +64,7 @@ const StageTimerModal = (props: Props) => {
             stage={stage}
           />
         </TabContents>
-        <TabContents />
+        <TabContents>Coming Soon!</TabContents>
       </SwipeableViews>
     </Modal>
   )
@@ -68,6 +75,9 @@ export default createFragmentContainer(
   graphql`
     fragment StageTimerModal_stage on NewMeetingStage {
       ...StageTimerModalTimeLimit_stage
+      ...StageTimerModalEditTimeLimit_stage
+      isAsync
+      suggestedTimeLimit
     }
   `
 )
