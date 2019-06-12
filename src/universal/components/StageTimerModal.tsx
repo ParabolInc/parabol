@@ -11,6 +11,7 @@ import StageTimerModalTimeLimit from 'universal/components/StageTimerModalTimeLi
 
 interface Props {
   defaultTimeLimit: number
+  meetingId: string
   stage: StageTimerModal_stage
   menuProps: MenuProps
 }
@@ -38,8 +39,9 @@ const TabContents = styled('div')({
 })
 
 const StageTimerModal = (props: Props) => {
-  const {defaultTimeLimit, stage} = props
+  const {defaultTimeLimit, meetingId, menuProps, stage} = props
   const [activeIdx, setActiveIdx] = useState(0)
+  const {closePortal} = menuProps
   return (
     <Modal>
       <FullTabs activeIdx={activeIdx}>
@@ -48,7 +50,12 @@ const StageTimerModal = (props: Props) => {
       </FullTabs>
       <SwipeableViews enableMouseEvents index={activeIdx} onChangeIndex={setActiveIdx}>
         <TabContents>
-          <StageTimerModalTimeLimit defaultTimeLimit={defaultTimeLimit} stage={stage} />
+          <StageTimerModalTimeLimit
+            defaultTimeLimit={defaultTimeLimit}
+            meetingId={meetingId}
+            closePortal={closePortal}
+            stage={stage}
+          />
         </TabContents>
         <TabContents />
       </SwipeableViews>

@@ -2782,6 +2782,11 @@ export interface IMutation {
    * Focus (or unfocus) a phase item
    */
   setPhaseFocus: ISetPhaseFocusPayload | null
+
+  /**
+   * Set or clear a timer for a meeting stage
+   */
+  setStageTimer: ISetStageTimerPayload | null
   setSlackNotification: ISetSlackNotificationPayload
 
   /**
@@ -3370,6 +3375,23 @@ export interface ISetPhaseFocusOnMutationArguments {
    * The currently focused phase item
    */
   focusedPhaseItemId?: string | null
+}
+
+export interface ISetStageTimerOnMutationArguments {
+  /**
+   * the id of the meeting
+   */
+  meetingId: string
+
+  /**
+   * The time the timer is scheduled to go off (based on client clock), null if unsetting the timer
+   */
+  scheduledEndTime?: any | null
+
+  /**
+   * scheduledEndTime - now. Used to reconcile bad client clocks. Present for time limit, else null
+   */
+  timeRemaining?: number | null
 }
 
 export interface ISetSlackNotificationOnMutationArguments {
@@ -5502,6 +5524,16 @@ export interface IGenericMeetingStage {
   timeRemaining: number | null
 }
 
+export interface ISetStageTimerPayload {
+  __typename: 'SetStageTimerPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The updated stage
+   */
+  stage: NewMeetingStage | null
+}
+
 export interface ISetSlackNotificationPayload {
   __typename: 'SetSlackNotificationPayload'
   error: IStandardMutationError | null
@@ -5990,6 +6022,7 @@ export type TeamSubscriptionPayload =
   | IRemoveTeamMemberPayload
   | ISelectRetroTemplatePayload
   | ISetPhaseFocusPayload
+  | ISetStageTimerPayload
   | IStartDraggingReflectionPayload
   | IStartNewMeetingPayload
   | IUpdateAgendaItemPayload

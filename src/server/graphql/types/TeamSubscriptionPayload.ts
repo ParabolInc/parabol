@@ -46,6 +46,7 @@ import UpgradeToProPayload from 'server/graphql/types/UpgradeToProPayload'
 import VoteForReflectionGroupPayload from 'server/graphql/types/VoteForReflectionGroupPayload'
 import RemoveSlackAuthPayload from 'server/graphql/types/RemoveSlackAuthPayload'
 import AddSlackAuthPayload from 'server/graphql/types/AddSlackAuthPayload'
+import SetStageTimerPayload from 'server/graphql/types/SetStageTimerPayload'
 
 const types = [
   AcceptTeamInvitationPayload,
@@ -73,6 +74,7 @@ const types = [
   RemoveTeamMemberPayload,
   SelectRetroTemplatePayload,
   SetPhaseFocusPayload,
+  SetStageTimerPayload,
   StartDraggingReflectionPayload,
   StartNewMeetingPayload,
   UpdateAgendaItemPayload,

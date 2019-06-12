@@ -27,6 +27,7 @@ import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import {REFLECTION_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
 import EndMeetingButton from '../EndMeetingButton'
 import StageTimerControl from 'universal/components/StageTimerControl'
+import StageTimerDisplay from './StageTimerDisplay'
 
 const minWidth = REFLECTION_WIDTH + 32
 
@@ -97,6 +98,7 @@ const RetroReflectPhase = (props: Props) => {
       </MeetingContentHeader>
       <ErrorBoundary>
         <StyledOverflow>
+          <StageTimerDisplay stage={localStage} />
           <StyledWrapper phaseItemCount={reflectPrompts.length} innerRef={phaseRef}>
             {reflectPrompts.map((prompt, idx) => (
               <PhaseItemColumn
@@ -115,7 +117,7 @@ const RetroReflectPhase = (props: Props) => {
         {isFacilitating && (
           <StyledBottomBar>
             <BottomControlSpacer />
-            <StageTimerControl defaultTimeLimit={5} stage={localStage!} />
+            <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} stage={localStage!} />
             <BottomNavControl
               isBouncing={isDemoStageComplete || isReadyToGroup}
               disabled={isEmpty}
@@ -151,6 +153,7 @@ graphql`
     }
     stages {
       ...StageTimerControl_stage
+      ...StageTimerDisplay_stage
     }
   }
 `
@@ -168,6 +171,7 @@ export default createFragmentContainer(
           localStage {
             isComplete
             ...StageTimerControl_stage
+            ...StageTimerDisplay_stage
           }
           reflectionGroups {
             id

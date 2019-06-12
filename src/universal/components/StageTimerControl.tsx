@@ -9,6 +9,7 @@ import lazyPreload from 'universal/utils/lazyPreload'
 
 interface Props {
   defaultTimeLimit: number
+  meetingId: string
   stage: StageTimerControl_stage
 }
 
@@ -17,7 +18,7 @@ const StageTimerModal = lazyPreload(async () =>
 )
 
 const StageTimerControl = (props: Props) => {
-  const {defaultTimeLimit, stage} = props
+  const {defaultTimeLimit, meetingId, stage} = props
   const {scheduledEndTime} = stage
   const color = scheduledEndTime ? 'green' : 'midGray'
   const {menuProps, menuPortal, originRef, togglePortal} = useMenu(MenuPosition.LOWER_LEFT, {
@@ -34,7 +35,12 @@ const StageTimerControl = (props: Props) => {
         <BottomNavIconLabel icon='timer' iconColor={color} label={'Timer'} />
       </BottomNavControl>
       {menuPortal(
-        <StageTimerModal defaultTimeLimit={defaultTimeLimit} menuProps={menuProps} stage={stage} />
+        <StageTimerModal
+          defaultTimeLimit={defaultTimeLimit}
+          meetingId={meetingId}
+          menuProps={menuProps}
+          stage={stage}
+        />
       )}
     </>
   )

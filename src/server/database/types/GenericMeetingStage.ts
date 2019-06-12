@@ -20,12 +20,13 @@ const filterOutliers = (someArray: number[]) => {
 
 export default class GenericMeetingStage {
   id = shortid.generate()
-  meetingId
+  isAsync: boolean | undefined | null
   isComplete = false
   isNavigable = false
   isNavigableByFacilitator = false
   startAt: Date | undefined = undefined
   endAt: Date | undefined = undefined
+  scheduledEndTime: Date | undefined | null
   suggestedEndTime: Date | undefined
   suggestedTimeLimit: number | undefined
   viewCount = 0

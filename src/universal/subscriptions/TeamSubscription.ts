@@ -44,6 +44,7 @@ import {
 import {addAgendaItemUpdater} from 'universal/mutations/AddAgendaItemMutation'
 import {removeAgendaItemUpdater} from 'universal/mutations/RemoveAgendaItemMutation'
 import {updateAgendaItemUpdater} from 'universal/mutations/UpdateAgendaItemMutation'
+import {graphql} from 'react-relay'
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -74,6 +75,7 @@ const subscription = graphql`
       ...RenameReflectTemplatePromptMutation_team @relay(mask: false)
       ...SelectRetroTemplateMutation_team @relay(mask: false)
       ...SetPhaseFocusMutation_team @relay(mask: false)
+      ...SetStageTimerMutation_team @relay(mask: false)
       ...StartDraggingReflectionMutation_team @relay(mask: false)
       ...StartNewMeetingMutation_team @relay(mask: false)
       ...UpdateNewCheckInQuestionMutation_team @relay(mask: false)
@@ -103,7 +105,7 @@ const onNextHandlers = {
   RemoveTeamMemberPayload: removeTeamMemberTeamOnNext
 }
 
-const TeamSubscription = (environment, queryVariables, subParams) => {
+const TeamSubscription = (environment, _queryVariables, subParams) => {
   const {viewerId} = environment
   return {
     subscription,
@@ -123,7 +125,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           updateAgendaItemUpdater(payload, {store})
           break
         case 'AcceptTeamInvitationPayload':
-          acceptTeamInvitationTeamUpdater(payload, {store, atmosphere: environment})
+          acceptTeamInvitationTeamUpdater(payload, {store})
           break
         case 'AddReflectTemplatePayload':
           addReflectTemplateTeamUpdater(payload, {store})
@@ -140,7 +142,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           createReflectionTeamUpdater(payload, store)
           break
         case 'EndDraggingReflectionPayload':
-          endDraggingReflectionTeamUpdater(payload, {atmosphere: environment, store})
+          endDraggingReflectionTeamUpdater(payload, {store})
           break
         case 'DragDiscussionTopicPayload':
           dragDiscussionTopicTeamUpdater(payload, {store})
@@ -163,7 +165,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           moveReflectTemplatePromptTeamUpdater(payload, {store})
           break
         case 'NavigateMeetingPayload':
-          navigateMeetingTeamUpdater(payload, store, viewerId)
+          navigateMeetingTeamUpdater(payload, store)
           break
         case 'NewMeetingCheckInPayload':
           break

@@ -9,9 +9,15 @@ import styled from 'react-emotion'
 import DropdownMenuToggle from 'universal/components/DropdownMenuToggle'
 import {StageTimerModalTimeLimit_stage} from '__generated__/StageTimerModalTimeLimit_stage.graphql'
 import ms from 'ms'
+import SetStageTimerMutation from 'universal/mutations/SetStageTimerMutation'
+import useAtmosphere from 'universal/hooks/useAtmosphere'
+import useMutationProps from 'universal/hooks/useMutationProps'
+import StyledError from 'universal/components/StyledError'
 
 interface Props {
+  closePortal: () => void
   defaultTimeLimit: number
+  meetingId: string
   stage: StageTimerModalTimeLimit_stage
 }
 
@@ -21,11 +27,12 @@ const Toggle = styled(DropdownMenuToggle)({
 })
 
 const StageTimerModalTimeLimit = (props: Props) => {
-  const {defaultTimeLimit, stage} = props
+  const {closePortal, defaultTimeLimit, meetingId, stage} = props
   const {suggestedTimeLimit} = stage
   const initialTimeLimit = suggestedTimeLimit
     ? Math.min(10, Math.max(1, Math.round(suggestedTimeLimit / ms('1m'))))
     : defaultTimeLimit
+  const atmosphere = useAtmosphere()
   const [minuteTimeLimit, setMinuteTimeLimit] = useState(initialTimeLimit)
   const {menuPortal, togglePortal, menuProps: minutePickerProps, originRef} = useMenu(
     MenuPosition.LOWER_LEFT,
@@ -35,6 +42,20 @@ const StageTimerModalTimeLimit = (props: Props) => {
       isDropdown: true
     }
   )
+  const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
+  const startTimer = () => {
+    if (submitting) return
+    const timeRemaining = minuteTimeLimit * ms('1m')
+    const scheduledEndTime = new Date(Date.now() + timeRemaining)
+    submitMutation()
+    SetStageTimerMutation(
+      atmosphere,
+      {meetingId, timeRemaining, scheduledEndTime},
+      {onError, onCompleted}
+    )
+    closePortal()
+  }
+
   return (
     <>
       <Toggle
@@ -49,7 +70,8 @@ const StageTimerModalTimeLimit = (props: Props) => {
           setMinuteTimeLimit={setMinuteTimeLimit}
         />
       )}
-      <SecondaryButton>{'Start Timer'}</SecondaryButton>
+      <SecondaryButton onClick={startTimer}>{'Start Timer'}</SecondaryButton>
+      {error && <StyledError>{error}</StyledError>}
     </>
   )
 }
