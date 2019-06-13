@@ -187,6 +187,12 @@ get involved and how to get compensated.
 
 For details on all releases, refer to [CHANGELOG.md](./CHANGELOG.md).
 
+## Deployment
+
+For deployment:
+   * ...with dokku, see [here](./docs/deployment_dokku.md)
+   * ...with docker, see [here](./docs/deployment_docker.md)
+
 ## About
 
 Authored and maintained by [Parabol](http://parabol.co).
@@ -196,11 +202,10 @@ Authored and maintained by [Parabol](http://parabol.co).
 * [jordanh](https://github.com/jordanh)
 * [ackernaut](https://github.com/ackernaut)
 * [mattkrick](https://github.com/mattkrick)
-* [dan-f](https://github.com/dan-f)
 
 ### License
 
-Copyright 2016, 2017, 2018 Parabol, Inc.
+Copyright 2016, 2017, 2018, 2019 Parabol, Inc.
 
 Action is dual-licensed under the GNU AFFERO GENERAL PUBLIC LICENSE,
 Version 3.0 while holding, at its sole discretion, the right to create

@@ -1,4 +1,4 @@
-# Deployment
+# Deployment with Dokku
 
 Our developer experience is oriented around git. We want any
 authorized developer to be able to push to the `development`,
