@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'react-emotion'
-import CreateAccountPrimaryButton from 'universal/components/CreateAccountPrimaryButton'
+import DemoCreateAccountPrimaryButton from 'universal/components/DemoCreateAccountPrimaryButton'
 import Icon from 'universal/components/Icon'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {ICON_SIZE} from 'universal/styles/typographyV2'
@@ -36,7 +36,7 @@ const AddTeamMemberModalDemo = () => {
     <StyledDialogContainer>
       <StyledIcon>group_add</StyledIcon>
       <StyledCopy>{copy}</StyledCopy>
-      <CreateAccountPrimaryButton />
+      <DemoCreateAccountPrimaryButton />
     </StyledDialogContainer>
   )
 }

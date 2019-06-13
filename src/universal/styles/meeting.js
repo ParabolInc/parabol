@@ -9,6 +9,7 @@ export const meetingHelpWithBottomBar = '4.75rem'
 export const meetingSidebarBreakpoint = breakpoints[1]
 export const meetingSidebarMediaQuery = minWidthMediaQueries[1]
 export const meetingTopBarMediaQuery = minWidthMediaQueries[2]
+export const meetingAvatarMediaQueries = [minWidthMediaQueries[2], minWidthMediaQueries[4]]
 export const meetingSidebarGutter = '.5rem'
 export const meetingSidebarGutterInner = '3.75rem'
 export const meetingSidebarWidth = '15rem'

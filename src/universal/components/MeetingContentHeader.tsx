@@ -1,6 +1,6 @@
 import React, {ReactElement, ReactNode} from 'react'
 import styled from 'react-emotion'
-import CreateAccountButton from 'universal/components/CreateAccountButton'
+import DemoCreateAccountButton from 'universal/components/DemoCreateAccountButton'
 import SidebarToggle from 'universal/components/SidebarToggle'
 import {meetingSidebarMediaQuery, meetingTopBarMediaQuery} from 'universal/styles/meeting'
 import isDemoRoute from 'universal/utils/isDemoRoute'
@@ -98,7 +98,7 @@ const MeetingContentHeader = (props: Props) => {
       <AvatarGroupBlock isDemoRoute={showButton}>{avatarGroup}</AvatarGroupBlock>
       {showButton && (
         <PrimaryActionBlock>
-          <CreateAccountButton />
+          <DemoCreateAccountButton />
         </PrimaryActionBlock>
       )}
     </MeetingContentHeaderStyles>

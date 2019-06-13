@@ -67,7 +67,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
           />
         )
       })}
-      <AddTeamMemberAvatarButton team={team} teamMembers={teamMembers} />
+      <AddTeamMemberAvatarButton isMeeting team={team} teamMembers={teamMembers} />
     </MeetingAvatarGroupRoot>
   )
 }

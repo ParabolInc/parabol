@@ -18,6 +18,7 @@ import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
 import ErrorBoundary from '../../../../components/ErrorBoundary'
 import {StreamUI} from '../../../../hooks/useSwarm'
 import MediaSwarm from '../../../../utils/swarm/MediaSwarm'
+import {meetingAvatarMediaQueries} from 'universal/styles/meeting'
 
 const borderActive = ui.palette.yellow
 const borderLocal = appTheme.palette.mid30l
@@ -43,10 +44,20 @@ const AvatarBlock = styled('div')(
   {
     borderRadius: '100%',
     height: 32,
-    width: 32,
     maxWidth: 32,
+    width: 32,
     ':hover': {
       opacity: 0.5
+    },
+    [meetingAvatarMediaQueries[0]]: {
+      height: 48,
+      maxWidth: 48,
+      width: 48
+    },
+    [meetingAvatarMediaQueries[1]]: {
+      height: 56,
+      maxWidth: 56,
+      width: 56
     }
   },
   ({isLocalStage, isFacilitatorStage, isReadOnly}: AvatarBlockProps) => {
