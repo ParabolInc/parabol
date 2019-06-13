@@ -47,8 +47,7 @@ exports.up = async (r) => {
     if (!slackAuth) return
     const notifications = ['meetingStart', 'meetingEnd'].map((event) => ({
       id: shortid.generate(),
-      isActive: true,
-      channelId: integration.channelId,
+      channelId: integration.isActive ? integration.channelId : null,
       channelName: integration.channelName,
       teamId: integration.teamId,
       userId: slackAuth.userId,

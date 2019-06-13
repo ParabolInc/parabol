@@ -14,6 +14,7 @@ import useSlackChannels from 'universal/hooks/useSlackChannels'
 import StyledError from 'universal/components/StyledError'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {Layout} from 'universal/types/constEnums'
+import SlackClientManager from 'universal/utils/SlackClientManager'
 
 const SlackNotificationListStyles = styled('div')({
   borderTop: `1px solid ${PALETTE.BORDER.LIGHTER}`,
@@ -51,6 +52,11 @@ const SlackNotificationList = (props: Props) => {
     const channelsUsed = notificationsForEvent.map(({channelId}) => channelId)
     return Array.from(new Set(channelsUsed))
   }, [slackNotifications])
+  // const foo = async () => {
+  //   const manager = new SlackClientManager(slackAuth!.botAccessToken!)
+  //   const res = await manager.getConversationInfo(uniqueChannelIds[0]!)
+  // }
+  // foo()
   const [localChannelId, setLocalChannelId] = useState(uniqueChannelIds[0])
 
   const changeChannel: SlackChannelDropdownOnClick = useCallback(
@@ -110,7 +116,7 @@ export default createFragmentContainer(
     fragment SlackNotificationList_viewer on User {
       ...SlackNotificationRow_viewer
       slackAuth(teamId: $teamId) {
-        accessToken
+        botAccessToken
       }
       slackNotifications(teamId: $teamId) {
         channelId

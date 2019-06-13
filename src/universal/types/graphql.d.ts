@@ -2523,7 +2523,8 @@ export interface ISlackNotification {
  */
 export const enum SlackNotificationEventEnum {
   meetingStart = 'meetingStart',
-  meetingEnd = 'meetingEnd'
+  meetingEnd = 'meetingEnd',
+  meetingStageTimeLimit = 'meetingStageTimeLimit'
 }
 
 /**

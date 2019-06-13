@@ -1,6 +1,5 @@
 import fetch from 'node-fetch'
 import {stringify} from 'querystring'
-import {SLACK_SCOPE} from 'universal/utils/constants'
 import SlackClientManager from 'universal/utils/SlackClientManager'
 import makeAppLink from 'server/utils/makeAppLink'
 
@@ -49,22 +48,16 @@ class SlackManager extends SlackClientManager {
       }
     })
     const tokenJson = (await tokenRes.json()) as OAuth2Response
-    const {error, scope} = tokenJson
+    const {error} = tokenJson
 
     if (error) {
       throw new Error(`Slack: ${error}`)
     }
-    const providedScope = scope.split(',')
-    const matchingScope =
-      new Set([...SLACK_SCOPE.split(','), ...providedScope]).size === providedScope.length
-    if (!matchingScope) {
-      throw new Error(`Slack Bad scope: ${scope}`)
-    }
-    return new SlackManager(tokenJson.access_token, tokenJson) as Required<SlackManager>
+    return new SlackManager(tokenJson.bot.bot_access_token, tokenJson) as Required<SlackManager>
   }
 
-  constructor (accessToken, public response?: OAuth2Response) {
-    super(accessToken, {fetch})
+  constructor (botAccessToken, public response?: OAuth2Response) {
+    super(botAccessToken, {fetch})
   }
 }
 
