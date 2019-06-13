@@ -1,0 +1,29 @@
+version: "3"
+
+services:
+  rethinkdb:
+    image: rethinkdb:2.3.6
+    restart: always
+
+  redis:
+    image: redis:3.2.8
+
+  web:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        - ENV_FILE=.env
+    restart: always
+    expose:
+      - "3000"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - rethinkdb
+      - redis
+    env_file:
+      - ./.env
+    entrypoint: ./docker_entrypoint.sh
+    command: yarn start
+
