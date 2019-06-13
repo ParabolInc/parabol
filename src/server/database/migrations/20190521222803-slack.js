@@ -28,8 +28,8 @@ exports.up = async (r) => {
     teamId: provider.teamId,
     userId: provider.userId,
     accessToken: provider.accessToken,
-    // we can retroactively grab these later, post-migration
-    // slackTeamId,
+    slackTeamId: provider.teamId,
+    // we can retroactively grab this later, after they re-up with a new scope
     // slackTeamName,
     slackUserId: provider.providerUserId,
     slackUserName: provider.providerUserName
