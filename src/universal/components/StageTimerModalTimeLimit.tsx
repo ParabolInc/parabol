@@ -24,7 +24,7 @@ interface Props {
 
 const Toggle = styled(DropdownMenuToggle)({
   padding: 8,
-  minWidth: 184
+  minWidth: 160
 })
 
 const Row = styled('div')({

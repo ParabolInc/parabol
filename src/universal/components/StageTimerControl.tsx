@@ -19,8 +19,9 @@ const StageTimerModal = lazyPreload(async () =>
 
 const StageTimerControl = (props: Props) => {
   const {defaultTimeLimit, meetingId, stage} = props
-  const {scheduledEndTime} = stage
+  const {isAsync, scheduledEndTime} = stage
   const color = scheduledEndTime ? 'green' : 'midGray'
+  const icon = isAsync ? 'event' : 'timer'
   const {menuProps, menuPortal, originRef, togglePortal} = useMenu(MenuPosition.LOWER_LEFT, {
     isDropdown: true,
     id: 'StageTimerModal'
@@ -32,7 +33,7 @@ const StageTimerControl = (props: Props) => {
         onMouseEnter={StageTimerModal.preload}
         onClick={togglePortal}
       >
-        <BottomNavIconLabel icon='timer' iconColor={color} label={'Timer'} />
+        <BottomNavIconLabel icon={icon} iconColor={color} label={'Timer'} />
       </BottomNavControl>
       {menuPortal(
         <StageTimerModal
@@ -52,6 +53,7 @@ export default createFragmentContainer(
     fragment StageTimerControl_stage on NewMeetingStage {
       ...StageTimerModal_stage
       scheduledEndTime
+      isAsync
     }
   `
 )

@@ -9,6 +9,10 @@ import styled from 'react-emotion'
 import SwipeableViews from 'react-swipeable-views'
 import StageTimerModalTimeLimit from 'universal/components/StageTimerModalTimeLimit'
 import StageTimerModalEditTimeLimit from 'universal/components/StageTimerModalEditTimeLimit'
+import StageTimerModalEndTime from 'universal/components/StageTimerModalEndTime'
+import StageTimerModalEditTimeEnd from 'universal/components/StageTimerModalEditTimeEnd'
+
+const WIDTH = 240
 
 interface Props {
   defaultTimeLimit: number
@@ -20,7 +24,7 @@ interface Props {
 const FullTab = styled(Tab)({
   justifyContent: 'center',
   paddingTop: 4,
-  width: 120
+  width: WIDTH / 2
 })
 
 const Modal = styled('div')({
@@ -28,7 +32,7 @@ const Modal = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   overflow: 'hidden',
-  width: 240
+  width: WIDTH
 })
 
 const TabContents = styled('div')({
@@ -47,7 +51,9 @@ const StageTimerModal = (props: Props) => {
       <StageTimerModalEditTimeLimit meetingId={meetingId} closePortal={closePortal} stage={stage} />
     )
   } else if (isAsync) {
-    // TODO
+    return (
+      <StageTimerModalEditTimeEnd meetingId={meetingId} closePortal={closePortal} stage={stage} />
+    )
   }
   return (
     <Modal>
@@ -55,7 +61,12 @@ const StageTimerModal = (props: Props) => {
         <FullTab label={<Icon>{'timer'}</Icon>} onClick={() => setActiveIdx(0)} />
         <FullTab label={<Icon>{'event'}</Icon>} onClick={() => setActiveIdx(1)} />
       </Tabs>
-      <SwipeableViews enableMouseEvents index={activeIdx} onChangeIndex={setActiveIdx}>
+      <SwipeableViews
+        enableMouseEvents
+        index={activeIdx}
+        onChangeIndex={setActiveIdx}
+        animateHeight
+      >
         <TabContents>
           <StageTimerModalTimeLimit
             defaultTimeLimit={defaultTimeLimit}
@@ -64,7 +75,9 @@ const StageTimerModal = (props: Props) => {
             stage={stage}
           />
         </TabContents>
-        <TabContents>Coming Soon!</TabContents>
+        <TabContents>
+          <StageTimerModalEndTime meetingId={meetingId} closePortal={closePortal} stage={stage} />
+        </TabContents>
       </SwipeableViews>
     </Modal>
   )
@@ -76,6 +89,8 @@ export default createFragmentContainer(
     fragment StageTimerModal_stage on NewMeetingStage {
       ...StageTimerModalTimeLimit_stage
       ...StageTimerModalEditTimeLimit_stage
+      ...StageTimerModalEndTime_stage
+      ...StageTimerModalEditTimeEnd_stage
       isAsync
       suggestedTimeLimit
     }
