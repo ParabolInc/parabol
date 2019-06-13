@@ -53,31 +53,30 @@ export default {
     if (!userInfo.ok) {
       return standardError(new Error(userInfo.error), {userId: viewerId})
     }
-    if (webhook) {
-      const existingTeamNotificationsCount = await r
-        .table('SlackNotification')
-        .getAll(teamId, {index: 'teamId'})
-        .filter({isActive: true})
-        .count()
-      if (existingTeamNotificationsCount === 0) {
-        // kick off some reasonable defaults if they're the first on the team to integration, else nothing
-        const {channel_id} = webhook
-        const notifications = [
-          new SlackNotification({
-            event: 'meetingStart',
-            channelId: channel_id,
-            teamId,
-            userId: viewerId
-          }),
-          new SlackNotification({
-            event: 'meetingEnd',
-            channelId: channel_id,
-            teamId,
-            userId: viewerId
-          })
-        ]
-        await r.table('SlackNotification').insert(notifications)
-      }
+
+    const existingTeamNotificationsCount = await r
+      .table('SlackNotification')
+      .getAll(teamId, {index: 'teamId'})
+      .filter({isActive: true})
+      .count()
+    if (existingTeamNotificationsCount === 0) {
+      // kick off some reasonable defaults if they're the first on the team to integration, else nothing
+      const {channel_id} = webhook
+      const notifications = [
+        new SlackNotification({
+          event: 'meetingStart',
+          channelId: channel_id,
+          teamId,
+          userId: viewerId
+        }),
+        new SlackNotification({
+          event: 'meetingEnd',
+          channelId: channel_id,
+          teamId,
+          userId: viewerId
+        })
+      ]
+      await r.table('SlackNotification').insert(notifications)
     }
 
     const existingAuth = await r
