@@ -57,8 +57,12 @@ export default {
         return standardError(new Error(channelInfo.error), {userId: viewerId})
       }
       const {channel} = channelInfo
-      const {is_archived: isArchived} = channel
-      if (isArchived) return standardError(new Error('Slack channel archived'), {userId: viewerId})
+      if (!channel.is_im) {
+        const {is_archived: isArchived} = channel
+        if (isArchived) {
+          return standardError(new Error('Slack channel archived'), {userId: viewerId})
+        }
+      }
     }
 
     // RESOLUTION

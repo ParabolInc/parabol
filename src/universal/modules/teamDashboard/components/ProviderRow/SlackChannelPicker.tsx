@@ -8,12 +8,16 @@ import {
 } from 'universal/components/SlackChannelDropdown'
 import lazyPreload from 'universal/utils/lazyPreload'
 import {SlackNotificationEventEnum} from '__generated__/SetSlackNotificationMutation.graphql'
+import SlackClientManager from 'universal/utils/SlackClientManager'
+import useAtmosphere from 'universal/hooks/useAtmosphere'
+import useMutationProps from 'universal/hooks/useMutationProps'
 
 interface Props {
   channels: SlackChannelDropdownChannels
   events: ReadonlyArray<SlackNotificationEventEnum>
   localChannelId: string | null
   onClick: SlackChannelDropdownOnClick
+  teamId: string
 }
 
 const SlackChannelDropdown = lazyPreload(() =>
@@ -21,21 +25,44 @@ const SlackChannelDropdown = lazyPreload(() =>
   'universal/components/SlackChannelDropdown')
 )
 
+enum ChannelState {
+  ready,
+  loading,
+  error
+}
+
 const SlackChannelPicker = (props: Props) => {
-  const {channels, localChannelId, onClick} = props
+  const {channels, localChannelId, onClick, teamId} = props
   const activeIdx = localChannelId
     ? channels.findIndex((channel) => channel.id === localChannelId)
     : -1
-  const activeText =
-    activeIdx !== -1 ? channels[activeIdx].name : localChannelId ? '' : 'No Channel Set'
+  const activeChannel = channels[activeIdx]
+  const channelState = activeChannel
+    ? ChannelState.ready
+    : localChannelId
+    ? ChannelState.loading
+    : ChannelState.error
+  const activeText = activeChannel
+    ? activeChannel.name
+    : channelState === ChannelState.loading
+    ? ''
+    : 'Token Expired! Click to renew'
   const {togglePortal, menuPortal, originRef, menuProps} = useMenu(MenuPosition.UPPER_RIGHT, {
     isDropdown: true
   })
+  const atmosphere = useAtmosphere()
+  const mutationProps = useMutationProps()
+  const handleClick =
+    channelState !== ChannelState.error
+      ? togglePortal
+      : () => {
+        SlackClientManager.openOAuth(atmosphere, teamId, mutationProps)
+      }
   return (
     <>
       <DropdownMenuToggle
         onMouseEnter={SlackChannelDropdown.preload}
-        onClick={togglePortal}
+        onClick={handleClick}
         ref={originRef}
         defaultText={activeText}
       />

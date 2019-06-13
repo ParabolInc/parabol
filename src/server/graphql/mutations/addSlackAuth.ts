@@ -50,12 +50,12 @@ const upsertAuth = async (
   slackRes: NonNullable<SlackManager['response']>
 ) => {
   const r = getRethink()
-  const existingAuth = r
+  const existingAuth = (await r
     .table('SlackAuth')
     .getAll(viewerId, {index: 'userId'})
     .filter({teamId})
     .nth(0)
-    .default(null)
+    .default(null)) as SlackAuth | null
   const slackAuth = new SlackAuth({
     id: (existingAuth && existingAuth.id) || undefined,
     createdAt: (existingAuth && existingAuth.createdAt) || undefined,
@@ -116,11 +116,9 @@ export default {
     }
     const {channel} = botChannelRes
     const {id: botChannelId} = channel
+    // The default channel could be anything: public, private, im, mpim. Only allow public channels or the @Parabol channel
     const teamChannelId = convoRes.ok ? defaultChannelId : botChannelId
 
-    console.log('botChannelId', botChannelId)
-    console.log('teamChannelId', teamChannelId, convoRes.ok, defaultChannelId)
-    console.log('res', response)
     const [, slackAuthId] = await Promise.all([
       upsertNotifications(viewerId, teamId, teamChannelId, botChannelId),
       upsertAuth(viewerId, teamId, userInfoRes.user.profile.display_name, response)

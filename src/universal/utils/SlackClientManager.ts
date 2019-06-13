@@ -14,12 +14,22 @@ interface ErrorResponse {
   error: string
 }
 
-interface SlackConversation {
+interface SlackIM {
+  created: number
+  id: string
+  is_im: true
+  is_org_shared: boolean
+  is_user_deleted: boolean
+  priority: number
+  user: string
+}
+
+export interface SlackPublicConversation {
   id: string
   name: string
   is_channel: boolean
   is_group: boolean
-  is_im: boolean
+  is_im: false
   created: number
   creator: string
   is_archived: boolean
@@ -51,6 +61,8 @@ interface SlackConversation {
   locale: string
 }
 
+type SlackConversation = SlackPublicConversation | SlackIM
+
 interface SlackChannelInfo {
   id: string
   name: string
@@ -77,6 +89,11 @@ interface SlackChannelInfo {
   }
   previous_names: string[]
   num_members: number
+}
+
+interface ChannelListResponse {
+  ok: true
+  channels: SlackChannelInfo[]
 }
 
 interface ConversationListResponse {
@@ -147,6 +164,8 @@ interface ConversationInfoResponse {
   channel: SlackConversation
 }
 
+type ConversationType = 'public_channel' | 'private_channel' | 'im' | 'mpim'
+
 class SlackClientManager {
   static openOAuth (atmosphere: Atmosphere, teamId: string, mutationProps: MenuMutationProps) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
@@ -177,15 +196,16 @@ class SlackClientManager {
     window.addEventListener('message', handler)
   }
 
-  botAccessToken: string
+  // token can be a botAccessToken or accessToken!
+  token: string
   fetch: typeof fetch
   // the any is for node until we can use tsc in nodeland
   cache: {[key: string]: {result: any; expiration: number | any}} = {}
   timeout = 5000
   headers: any
 
-  constructor (botAccessToken: string, options: SlackClientManagerOptions = {}) {
-    this.botAccessToken = botAccessToken
+  constructor (token: string, options: SlackClientManagerOptions = {}) {
+    this.token = token
     this.fetch = options.fetch || window.fetch.bind(window)
   }
 
@@ -211,37 +231,42 @@ class SlackClientManager {
 
   getConversationInfo (slackChannelId: string) {
     return this.get<ConversationInfoResponse>(
-      `https://slack.com/api/conversations.info?token=${
-        this.botAccessToken
-      }&channel=${slackChannelId}`
+      `https://slack.com/api/conversations.info?token=${this.token}&channel=${slackChannelId}`
     )
   }
 
-  getConversationList () {
+  getChannelList () {
+    return this.get<ChannelListResponse>(
+      `https://slack.com/api/channels.list?token=${this.token}&exclude_archived=1`
+    )
+  }
+
+  getConversationList (types: ConversationType[] = ['public_channel']) {
+    const typeStr = types.join(',')
     return this.get<ConversationListResponse>(
       `https://slack.com/api/conversations.list?token=${
-        this.botAccessToken
-      }&exclude_archived=1&types=public_channel,private_channel,mpim,im`
+        this.token
+      }&exclude_archived=1&types=${typeStr}`
     )
   }
 
   getUserInfo (userId: string) {
     return this.get<UserInfoResponse>(
-      `https://slack.com/api/users.info?token=${this.botAccessToken}&user=${userId}`
+      `https://slack.com/api/users.info?token=${this.token}&user=${userId}`
     )
   }
 
   postMessage (channelId: string, text: string) {
     return this.get<PostMessageResponse>(
       `https://slack.com/api/chat.postMessage?token=${
-        this.botAccessToken
+        this.token
       }&channel=${channelId}&text=${text}&unfurl_links=true`
     )
   }
 
   openIM (slackUserId: string) {
     return this.get<IMOpenResponse>(
-      `https://slack.com/api/im.open?token=${this.botAccessToken}&user=${slackUserId}`
+      `https://slack.com/api/im.open?token=${this.token}&user=${slackUserId}`
     )
   }
 }
