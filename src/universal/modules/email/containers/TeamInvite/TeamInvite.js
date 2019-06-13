@@ -49,48 +49,53 @@ const TeamInvite = (props) => {
     </a>
   )
   const nameOrEmail = inviteeName || inviteeEmailBlock
-  const buttonLabel = meeting
-    ? `Join ${meetingTypeToLabel[meeting.meetingType]} Meeting`
-    : 'Join Team'
   const meetingCopyLabelLookup = {
     action: 'an Action Meeting',
     retrospective: 'a Retrospective Meeting'
   }
-  const activeMeetingCopy = meeting ? (
-    <span>
-      {`) has started ${meetingCopyLabelLookup[meeting.meetingType]} for your team (`}
-      <b>{teamName}</b>
-      {'). Just a few clicks and you’re in!'}
-    </span>
-  ) : (
-    undefined
-  )
-  const defaultCopy = (
-    <span>
-      {') has invited you to join a team ('}
-      <b>{teamName}</b>
-      {') on Parabol.'}
-    </span>
-  )
-  const copy = meeting ? activeMeetingCopy : defaultCopy
   return (
     <Layout maxWidth={544}>
       <EmailBlock innerMaxWidth={innerMaxWidth}>
         <Header />
-        <p style={emailCopyStyle}>
-          {'Hi '}
-          <span style={emailCopyStyle}>{nameOrEmail}</span>
-          {','}
-        </p>
-        <p style={emailCopyStyle}>
-          <span style={boldStyle}>{inviterName}</span>
-          {' ('}
-          <a href={`mailto:${inviterEmail}`} style={emailLinkStyle}>
-            {inviterEmail}
-          </a>
-          {copy}
-        </p>
-        <Button url={inviteLink}>{buttonLabel}</Button>
+        {meeting ? (
+          <div>
+            <p style={emailCopyStyle}>
+              {'Hi '}
+              <span style={emailCopyStyle}>{nameOrEmail}</span>
+              {','}
+            </p>
+            <p style={emailCopyStyle}>
+              <span style={boldStyle}>{inviterName}</span>
+              {' ('}
+              <a href={`mailto:${inviterEmail}`} style={emailLinkStyle}>
+                {inviterEmail}
+              </a>
+              {`) has started ${meetingCopyLabelLookup[meeting.meetingType]} for your team (`}
+              <b>{teamName}</b>
+              {'). Just a few clicks and you’re in!'}
+            </p>
+            <Button url={inviteLink}>Join {meetingTypeToLabel[meeting.meetingType]} Meeting</Button>
+          </div>
+        ) : (
+          <div>
+            <p style={emailCopyStyle}>
+              {'Hi '}
+              <span style={emailCopyStyle}>{nameOrEmail}</span>
+              {','}
+            </p>
+            <p style={emailCopyStyle}>
+              <span style={boldStyle}>{inviterName}</span>
+              {' ('}
+              <a href={`mailto:${inviterEmail}`} style={emailLinkStyle}>
+                {inviterEmail}
+              </a>
+              {') has invited you to join a team ('}
+              <b>{teamName}</b>
+              {') on Parabol.'}
+            </p>
+            <Button url={inviteLink}>Join Team</Button>
+          </div>
+        )}
         <EmptySpace height={24} />
         <p style={emailCopyStyle}>
           <span style={boldStyle}>{'New to Parabol?'}</span>
