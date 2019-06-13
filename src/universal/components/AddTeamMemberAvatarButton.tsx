@@ -86,7 +86,7 @@ const AddTeamMemberAvatarButton = (props: Props) => {
         isMeeting={isMeeting}
         palette='blue'
       >
-        <StyledIcon isMeeting={isMeeting}>add</StyledIcon>
+        <StyledIcon isMeeting={Boolean(isMeeting)}>add</StyledIcon>
       </AddButton>
       {tooltipPortal('Invite to Team')}
       {modalPortal(modal)}
