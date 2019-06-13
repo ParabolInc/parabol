@@ -16,6 +16,7 @@ const WIDTH = 240
 
 interface Props {
   defaultTimeLimit: number
+  defaultToAsync: boolean
   meetingId: string
   stage: StageTimerModal_stage
   menuProps: MenuProps
@@ -42,9 +43,9 @@ const TabContents = styled('div')({
 })
 
 const StageTimerModal = (props: Props) => {
-  const {defaultTimeLimit, meetingId, menuProps, stage} = props
+  const {defaultTimeLimit, defaultToAsync, meetingId, menuProps, stage} = props
   const {isAsync} = stage
-  const [activeIdx, setActiveIdx] = useState(0)
+  const [activeIdx, setActiveIdx] = useState(defaultToAsync ? 1 : 0)
   const {closePortal} = menuProps
   if (isAsync === false) {
     return (

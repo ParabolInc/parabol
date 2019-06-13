@@ -117,7 +117,7 @@ const RetroReflectPhase = (props: Props) => {
         {isFacilitating && (
           <StyledBottomBar>
             <BottomControlSpacer />
-            <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} stage={localStage!} />
+            <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
             <BottomNavControl
               isBouncing={isDemoStageComplete || isReadyToGroup}
               disabled={isEmpty}
@@ -151,10 +151,6 @@ graphql`
       description
       editorIds
     }
-    stages {
-      ...StageTimerControl_stage
-      ...StageTimerDisplay_stage
-    }
   }
 `
 
@@ -162,6 +158,7 @@ export default createFragmentContainer(
   RetroReflectPhase,
   graphql`
     fragment RetroReflectPhase_team on Team {
+      ...StageTimerControl_team
       isMeetingSidebarCollapsed
       newMeeting {
         ...PhaseItemColumn_meeting
@@ -170,8 +167,6 @@ export default createFragmentContainer(
         ... on RetrospectiveMeeting {
           localStage {
             isComplete
-            ...StageTimerControl_stage
-            ...StageTimerDisplay_stage
           }
           reflectionGroups {
             id
