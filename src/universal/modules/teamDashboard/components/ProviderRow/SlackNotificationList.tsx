@@ -83,8 +83,10 @@ const SlackNotificationList = (props: Props) => {
         <SlackChannelPicker
           channels={channels}
           events={TEAM_EVENTS}
+          isTokenValid={(slackAuth && !!slackAuth.botAccessToken) || false}
           localChannelId={localChannelId}
           onClick={changeChannel}
+          teamId={teamId}
         />
       </TitleAndPicker>
       {error && <StyledError>{error}</StyledError>}
@@ -111,6 +113,8 @@ export default createFragmentContainer(
       ...SlackNotificationRow_viewer
       slackAuth(teamId: $teamId) {
         accessToken
+        botAccessToken
+        slackUserId
       }
       slackNotifications(teamId: $teamId) {
         channelId

@@ -16,7 +16,8 @@ const SlackAuth = new GraphQLObjectType({
       resolve: ({accessToken}) => !!accessToken
     },
     accessToken: {
-      description: 'The access token to slack, only visible to the owner',
+      description:
+        'The access token to slack, only visible to the owner. Used as a fallback to botAccessToken',
       type: GraphQLID,
       resolve: async ({accessToken, userId}, _args, {authToken}) => {
         const viewerId = getUserId(authToken)
@@ -29,7 +30,11 @@ const SlackAuth = new GraphQLObjectType({
     },
     botAccessToken: {
       type: GraphQLID,
-      description: 'the parabol bot access token, used to communicate via direct message'
+      description: 'the parabol bot access token, used as primary communication',
+      resolve: async ({botAccessToken, userId}, _args, {authToken}) => {
+        const viewerId = getUserId(authToken)
+        return viewerId === userId ? botAccessToken : null
+      }
     },
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
