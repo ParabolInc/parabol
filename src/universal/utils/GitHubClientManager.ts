@@ -5,6 +5,10 @@ import createIssue from './githubQueries/createIssue.graphql'
 import getRepoInfo from './githubQueries/getRepoInfo.graphql'
 import getProfile from './githubQueries/getProfile.graphql'
 import getRepos from './githubQueries/getRepos.graphql'
+import Atmosphere from 'universal/Atmosphere'
+import {MenuMutationProps} from 'universal/hooks/useMutationProps'
+import getOAuthPopupFeatures from 'universal/utils/getOAuthPopupFeatures'
+import AddGitHubAuthMutation from 'universal/mutations/AddGitHubAuthMutation'
 
 interface GitHubClientManagerOptions {
   fetch?: Window['fetch']
@@ -26,6 +30,35 @@ type DocResponse<T> = T extends DocumentNode<infer R> ? R : never
 type DocVariables<T> = T extends DocumentNode<any, infer V> ? V : never
 
 class GitHubClientManager {
+  static SCOPE = 'admin:org_hook,read:org,repo,user:email,write:repo_hook'
+  static openOAuth (atmosphere: Atmosphere, teamId: string, mutationProps: MenuMutationProps) {
+    const {submitting, onError, onCompleted, submitMutation} = mutationProps
+    const providerState = Math.random()
+      .toString(36)
+      .substring(5)
+    const uri = `https://github.com/login/oauth/authorize?client_id=${
+      window.__ACTION__.github
+    }&scope=${GitHubClientManager.SCOPE}&state=${providerState}`
+
+    const popup = window.open(
+      uri,
+      'OAuth',
+      getOAuthPopupFeatures({width: 500, height: 750, top: 56})
+    )
+    const handler = (event) => {
+      if (typeof event.data !== 'object' || event.origin !== window.location.origin || submitting) {
+        return
+      }
+      const {code, state} = event.data
+      if (state !== providerState || typeof code !== 'string') return
+      submitMutation()
+      AddGitHubAuthMutation(atmosphere, {code, teamId}, {onError, onCompleted})
+      popup && popup.close()
+      window.removeEventListener('message', handler)
+    }
+    window.addEventListener('message', handler)
+  }
+
   accessToken: string
   fetch: typeof fetch
   // the any is for node until we can use tsc in nodeland

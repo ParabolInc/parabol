@@ -1,6 +1,5 @@
 import {commitMutation, graphql} from 'react-relay'
 import getMeetingPathParams from 'universal/utils/meetings/getMeetingPathParams'
-import handleMutationError from 'universal/mutations/handlers/handleMutationError'
 import handleRemoveSuggestedActions from 'universal/mutations/handlers/handleRemoveSuggestedActions'
 import Atmosphere from 'universal/Atmosphere'
 import {IEndNewMeetingOnMutationArguments} from 'universal/types/graphql'
@@ -60,9 +59,8 @@ export const popEndNewMeetingToast = (atmosphere) => {
 }
 
 export const endNewMeetingTeamOnNext = (payload, context) => {
-  const {error, isKill, meeting} = payload
+  const {isKill, meeting} = payload
   const {atmosphere, history} = context
-  handleMutationError(error, context)
   if (!meeting) return
   const {id: meetingId} = meeting
   if (isKill) {

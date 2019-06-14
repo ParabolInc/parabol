@@ -1,5 +1,4 @@
 import makeHref from 'universal/utils/makeHref'
-import {SLACK_SCOPE} from 'universal/utils/constants'
 import getOAuthPopupFeatures from 'universal/utils/getOAuthPopupFeatures'
 import {MenuMutationProps} from 'universal/hooks/useMutationProps'
 import AddSlackAuthMutation from 'universal/mutations/AddSlackAuthMutation'
@@ -167,16 +166,16 @@ interface ConversationInfoResponse {
 type ConversationType = 'public_channel' | 'private_channel' | 'im' | 'mpim'
 
 class SlackClientManager {
+  static SCOPE = 'identify,bot,incoming-webhook,channels:read,chat:write:bot'
   static openOAuth (atmosphere: Atmosphere, teamId: string, mutationProps: MenuMutationProps) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const providerState = Math.random()
       .toString(36)
       .substring(5)
     const redirect = makeHref('/auth/slack')
-    const uri = `https://slack.com/oauth/authorize?client_id=${
-      window.__ACTION__.slack
-    }&scope=${SLACK_SCOPE}&state=${providerState}&redirect_uri=${redirect}`
-    console.log('adding message listener')
+    const uri = `https://slack.com/oauth/authorize?client_id=${window.__ACTION__.slack}&scope=${
+      SlackClientManager.SCOPE
+    }&state=${providerState}&redirect_uri=${redirect}`
     const popup = window.open(
       uri,
       'OAuth',

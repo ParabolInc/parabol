@@ -8,7 +8,6 @@ import {
   GraphQLString
 } from 'graphql'
 import archivedTasksCount from 'server/graphql/queries/archivedTasksCount'
-import integrationProvider from 'server/graphql/queries/integrationProvider'
 import invoiceDetails from 'server/graphql/queries/invoiceDetails'
 import invoices from 'server/graphql/queries/invoices'
 import AuthIdentityType from 'server/graphql/types/AuthIdentityType'
@@ -141,7 +140,6 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
       description:
         'true if the user is not currently being billed for service. removed on every websocket handshake'
     },
-    integrationProvider,
     invoiceDetails,
     invoices,
     isConnected: {

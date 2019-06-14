@@ -1,4 +1,4 @@
-import {AddGitHubAuthMutation} from '__generated__/AddGitHubAuthMutation.graphql'
+import {AddGitHubAuthMutation as TAddGitHubAuthMutation} from '__generated__/AddGitHubAuthMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import {IAddGitHubAuthOnMutationArguments} from '../types/graphql'
@@ -31,7 +31,7 @@ const AddGitHubAuthMutation = (
   variables: IAddGitHubAuthOnMutationArguments,
   {onError, onCompleted}: LocalHandlers
 ): Disposable => {
-  return commitMutation<AddGitHubAuthMutation>(atmosphere, {
+  return commitMutation<TAddGitHubAuthMutation>(atmosphere, {
     mutation,
     variables,
     onCompleted,

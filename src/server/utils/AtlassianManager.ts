@@ -1,6 +1,5 @@
 import fetch from 'node-fetch'
 import AtlassianClientManager from 'universal/utils/AtlassianClientManager'
-import {ATLASSIAN_SCOPE} from 'universal/utils/constants'
 import makeAppLink from './makeAppLink'
 
 interface AuthQueryParams {
@@ -63,7 +62,8 @@ class AtlassianManager extends AtlassianClientManager {
     }
     const providedScope = scope.split(' ')
     const matchingScope =
-      new Set([...ATLASSIAN_SCOPE.split(' '), ...providedScope]).size === providedScope.length
+      new Set([...AtlassianManager.SCOPE.split(' '), ...providedScope]).size ===
+      providedScope.length
     if (!matchingScope) {
       throw new Error(`bad scope: ${scope}`)
     }

@@ -1,7 +1,6 @@
 import {GraphQLObjectType} from 'graphql'
 import addAgendaItem from 'server/graphql/mutations/addAgendaItem'
 import addOrg from 'server/graphql/mutations/addOrg'
-import addProvider from 'server/graphql/mutations/addProvider'
 import archiveTeam from 'server/graphql/mutations/archiveTeam'
 import clearNotification from 'server/graphql/mutations/clearNotification'
 import changeTaskTeam from 'server/graphql/mutations/changeTaskTeam'
@@ -18,7 +17,6 @@ import navigateMeeting from 'server/graphql/mutations/navigateMeeting'
 import promoteNewMeetingFacilitator from 'server/graphql/mutations/promoteNewMeetingFacilitator'
 import promoteToTeamLead from 'server/graphql/mutations/promoteToTeamLead'
 import removeAgendaItem from 'server/graphql/mutations/removeAgendaItem'
-import removeProvider from 'server/graphql/mutations/removeProvider'
 import removeTeamMember from 'server/graphql/mutations/removeTeamMember'
 import segmentEventTrack from 'server/graphql/mutations/segmentEventTrack'
 import setOrgUserRole from 'server/graphql/mutations/setOrgUserRole'
@@ -97,7 +95,6 @@ export default new GraphQLObjectType<any, Context, any>({
     addFeatureFlag,
     addGitHubAuth,
     addOrg,
-    addProvider,
     addTeam,
     archiveTeam,
     autoGroupReflections,
@@ -134,7 +131,6 @@ export default new GraphQLObjectType<any, Context, any>({
     removeAgendaItem,
     removeAtlassianAuth,
     removeGitHubAuth,
-    removeProvider,
     removeOrgUser,
     removeReflection,
     removeSlackAuth,

@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## vNEXT
+
+### Changed
+* Moved integration OAuth flow into their respective managers
+
+### Removed
+* Legacy Provider mutations
+
 ## v3.13.0 2019-Jun-12
 
 ### Changed

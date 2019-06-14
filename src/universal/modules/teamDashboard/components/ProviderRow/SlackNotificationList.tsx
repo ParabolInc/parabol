@@ -46,7 +46,7 @@ const SlackNotificationList = (props: Props) => {
 
   const uniqueChannelIds = useMemo(() => {
     const notificationsForEvent = slackNotifications.filter((notification) =>
-      TEAM_EVENTS.includes(notification.event as any)
+      TEAM_EVENTS.includes(notification.event)
     )
     const channelsUsed = notificationsForEvent.map(({channelId}) => channelId)
     return Array.from(new Set(channelsUsed))

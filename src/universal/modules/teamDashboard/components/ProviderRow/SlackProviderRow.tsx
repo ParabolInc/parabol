@@ -114,7 +114,7 @@ const SlackProviderRow = (props: Props) => {
         )}
         {accessToken && (
           <ListAndMenu>
-            <SlackLogin title={slackAuth!.slackTeamName || 'Slack'}>
+            <SlackLogin title={slackAuth.slackTeamName || 'Slack'}>
               <SlackSVG />
             </SlackLogin>
             <MenuButton onClick={togglePortal} innerRef={originRef}>
