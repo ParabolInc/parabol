@@ -7,7 +7,6 @@ import {
   SlackChannelDropdownOnClick
 } from 'universal/components/SlackChannelDropdown'
 import lazyPreload from 'universal/utils/lazyPreload'
-import {SlackNotificationEventEnum} from '__generated__/SetSlackNotificationMutation.graphql'
 import SlackClientManager from 'universal/utils/SlackClientManager'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useMutationProps from 'universal/hooks/useMutationProps'
@@ -15,7 +14,6 @@ import useMutationProps from 'universal/hooks/useMutationProps'
 interface Props {
   isTokenValid: boolean
   channels: SlackChannelDropdownChannels
-  events: ReadonlyArray<SlackNotificationEventEnum>
   localChannelId: string | null
   onClick: SlackChannelDropdownOnClick
   teamId: string

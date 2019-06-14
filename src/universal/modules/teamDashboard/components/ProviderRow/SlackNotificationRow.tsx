@@ -1,4 +1,3 @@
-import {SlackNotificationEventEnum} from 'universal/types/graphql'
 import React from 'react'
 import styled from 'react-emotion'
 import Toggle from 'universal/components/Toggle/Toggle'
@@ -8,6 +7,7 @@ import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useMutationProps from 'universal/hooks/useMutationProps'
 import SetSlackNotificationMutation from 'universal/mutations/SetSlackNotificationMutation'
 import StyledError from 'universal/components/StyledError'
+import {SlackNotificationEventEnum} from 'universal/types/graphql'
 
 interface Props {
   event: SlackNotificationEventEnum
@@ -18,7 +18,9 @@ interface Props {
 
 const labelLookup = {
   [SlackNotificationEventEnum.meetingEnd]: 'Meeting End',
-  [SlackNotificationEventEnum.meetingStart]: 'Meeting Start'
+  [SlackNotificationEventEnum.meetingStart]: 'Meeting Start',
+  [SlackNotificationEventEnum.meetingStageTimeLimit]: 'Meeting Ready to Progress',
+  [SlackNotificationEventEnum.meetingNextStageReady]: 'Next Meeting Stage Unlocked'
 }
 
 const Row = styled('div')({
@@ -49,7 +51,7 @@ const SlackNotificationRow = (props: Props) => {
     const slackChannelId = active ? null : localChannelId
     SetSlackNotificationMutation(
       atmosphere,
-      {slackChannelId, slackNotificationEvents: [event], teamId},
+      {slackChannelId, slackNotificationEvents: [event as any], teamId},
       {
         onError,
         onCompleted

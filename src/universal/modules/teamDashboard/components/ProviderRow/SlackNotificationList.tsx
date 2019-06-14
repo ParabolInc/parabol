@@ -25,12 +25,21 @@ interface Props {
   viewer: SlackNotificationList_viewer
 }
 
-const TEAM_EVENTS = [SlackNotificationEventEnum.meetingStart, SlackNotificationEventEnum.meetingEnd]
+const TEAM_EVENTS = [
+  SlackNotificationEventEnum.meetingStart,
+  SlackNotificationEventEnum.meetingEnd,
+  SlackNotificationEventEnum.meetingNextStageReady
+]
+const USER_EVENTS = [SlackNotificationEventEnum.meetingStageTimeLimit]
 
-const TitleAndPicker = styled('div')({
+const TeamGroup = styled('div')({
   alignItems: 'center',
   display: 'flex',
-  marginBottom: 16
+  paddingBottom: 16
+})
+
+const UserGroup = styled(TeamGroup)({
+  paddingTop: 32
 })
 
 const Heading = styled(LabelHeading)({
@@ -43,24 +52,33 @@ const SlackNotificationList = (props: Props) => {
   const channels = useSlackChannels(slackAuth)
   const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
   const atmosphere = useAtmosphere()
-
+  const localPrivateChannel = channels.find((channel) => channel.name === '@Parabol')
+  const localPrivateChannelId = localPrivateChannel && localPrivateChannel.id
   const uniqueChannelIds = useMemo(() => {
-    const notificationsForEvent = slackNotifications.filter((notification) =>
-      TEAM_EVENTS.includes(notification.event as any)
+    const notificationsForEvent = slackNotifications.filter(
+      (notification) => TEAM_EVENTS.includes(notification.event as any) && notification.channelId
     )
     const channelsUsed = notificationsForEvent.map(({channelId}) => channelId)
     return Array.from(new Set(channelsUsed))
   }, [slackNotifications])
-  const [localChannelId, setLocalChannelId] = useState(uniqueChannelIds[0])
+  const [localTeamChannelId, setLocalTeamChannelId] = useState(uniqueChannelIds[0])
 
-  const changeChannel: SlackChannelDropdownOnClick = useCallback(
+  const changeTeamChannel: SlackChannelDropdownOnClick = useCallback(
     (slackChannelId) => () => {
-      setLocalChannelId(slackChannelId)
+      setLocalTeamChannelId(slackChannelId)
       // only change the active events
       const slackNotificationEvents = slackNotifications
-        .filter((notification) => notification.channelId)
+        .filter(
+          (notification) =>
+            notification.channelId &&
+            TEAM_EVENTS.includes(notification.event as SlackNotificationEventEnum)
+        )
         .map(({event}) => event)
-      if (submitting || localChannelId === slackChannelId || slackNotificationEvents.length === 0) {
+      if (
+        submitting ||
+        localTeamChannelId === slackChannelId ||
+        slackNotificationEvents.length === 0
+      ) {
         return
       }
       submitMutation()
@@ -73,35 +91,50 @@ const SlackNotificationList = (props: Props) => {
         }
       )
     },
-    [slackNotifications, localChannelId]
+    [slackNotifications, localTeamChannelId]
   )
 
   return (
     <SlackNotificationListStyles>
-      <TitleAndPicker>
+      <TeamGroup>
         <Heading>Team Notifications</Heading>
         <SlackChannelPicker
           channels={channels}
-          events={TEAM_EVENTS}
           isTokenValid={(slackAuth && !!slackAuth.botAccessToken) || false}
-          localChannelId={localChannelId}
-          onClick={changeChannel}
+          localChannelId={localTeamChannelId}
+          onClick={changeTeamChannel}
           teamId={teamId}
         />
-      </TitleAndPicker>
+      </TeamGroup>
       {error && <StyledError>{error}</StyledError>}
-      <SlackNotificationRow
-        event={SlackNotificationEventEnum.meetingStart}
-        localChannelId={localChannelId}
-        teamId={teamId}
-        viewer={viewer}
-      />
-      <SlackNotificationRow
-        event={SlackNotificationEventEnum.meetingEnd}
-        localChannelId={localChannelId}
-        teamId={teamId}
-        viewer={viewer}
-      />
+      {TEAM_EVENTS.map((event) => {
+        return (
+          <SlackNotificationRow
+            key={event}
+            event={event}
+            localChannelId={localTeamChannelId}
+            teamId={teamId}
+            viewer={viewer}
+          />
+        )
+      })}
+      <UserGroup>
+        <Heading>Private Notifications</Heading>
+        {'@Parabol'}
+      </UserGroup>
+      {error && <StyledError>{error}</StyledError>}
+      {localPrivateChannelId &&
+        USER_EVENTS.map((event) => {
+          return (
+            <SlackNotificationRow
+              key={event}
+              event={event}
+              localChannelId={localPrivateChannelId}
+              teamId={teamId}
+              viewer={viewer}
+            />
+          )
+        })}
     </SlackNotificationListStyles>
   )
 }

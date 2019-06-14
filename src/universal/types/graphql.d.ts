@@ -2466,7 +2466,8 @@ export interface ISlackNotification {
 export const enum SlackNotificationEventEnum {
   meetingStart = 'meetingStart',
   meetingEnd = 'meetingEnd',
-  meetingStageTimeLimit = 'meetingStageTimeLimit'
+  meetingStageTimeLimit = 'meetingStageTimeLimit',
+  meetingNextStageReady = 'meetingNextStageReady'
 }
 
 /**
