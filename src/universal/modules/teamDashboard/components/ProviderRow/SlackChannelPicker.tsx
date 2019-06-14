@@ -13,6 +13,7 @@ import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useMutationProps from 'universal/hooks/useMutationProps'
 
 interface Props {
+  isTokenValid: boolean
   channels: SlackChannelDropdownChannels
   events: ReadonlyArray<SlackNotificationEventEnum>
   localChannelId: string | null
@@ -32,14 +33,14 @@ enum ChannelState {
 }
 
 const SlackChannelPicker = (props: Props) => {
-  const {channels, localChannelId, onClick, teamId} = props
+  const {isTokenValid, channels, localChannelId, onClick, teamId} = props
   const activeIdx = localChannelId
     ? channels.findIndex((channel) => channel.id === localChannelId)
     : -1
   const activeChannel = channels[activeIdx]
   const channelState = activeChannel
     ? ChannelState.ready
-    : localChannelId
+    : localChannelId && isTokenValid
     ? ChannelState.loading
     : ChannelState.error
   const activeText = activeChannel

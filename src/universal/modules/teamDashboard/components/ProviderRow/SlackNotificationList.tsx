@@ -83,6 +83,7 @@ const SlackNotificationList = (props: Props) => {
         <SlackChannelPicker
           channels={channels}
           events={TEAM_EVENTS}
+          isTokenValid={(slackAuth && !!slackAuth.botAccessToken) || false}
           localChannelId={localChannelId}
           onClick={changeChannel}
           teamId={teamId}

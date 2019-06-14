@@ -30,11 +30,8 @@ const upsertNotifications = async (
     )
     return new SlackNotification({
       event,
-      channelId: existingNotification
-        ? existingNotification.channelId
-        : teamEvents.includes(event)
-        ? teamChannelId
-        : botChannelId,
+      // the existing notification channel could be a bad one (legacy reasons, bad means not public or not @Parabol)
+      channelId: teamEvents.includes(event) ? teamChannelId : botChannelId,
       teamId,
       userId: viewerId,
       id: (existingNotification && existingNotification.id) || undefined
