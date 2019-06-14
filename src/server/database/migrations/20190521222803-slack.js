@@ -28,8 +28,8 @@ exports.up = async (r) => {
     teamId: provider.teamId,
     userId: provider.userId,
     accessToken: provider.accessToken,
-    // we can retroactively grab these later, post-migration
-    // slackTeamId,
+    slackTeamId: provider.teamId,
+    // we can retroactively grab this later, after they re-up with a new scope
     // slackTeamName,
     slackUserId: provider.providerUserId,
     slackUserName: provider.providerUserName
@@ -47,8 +47,7 @@ exports.up = async (r) => {
     if (!slackAuth) return
     const notifications = ['meetingStart', 'meetingEnd'].map((event) => ({
       id: shortid.generate(),
-      isActive: true,
-      channelId: integration.channelId,
+      channelId: integration.isActive ? integration.channelId : null,
       channelName: integration.channelName,
       teamId: integration.teamId,
       userId: slackAuth.userId,

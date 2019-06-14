@@ -2,17 +2,35 @@ import {useEffect, useState} from 'react'
 import {SlackChannelDropdownChannels} from 'universal/components/SlackChannelDropdown'
 import SlackClientManager from 'universal/utils/SlackClientManager'
 
-const useSlackChannels = (slackAuth: {accessToken: string | null} | null) => {
+const useSlackChannels = (
+  slackAuth: {accessToken: string | null; botAccessToken: string | null; slackUserId: string} | null
+) => {
   const [channels, setChannels] = useState<SlackChannelDropdownChannels>([])
   useEffect(() => {
-    if (!slackAuth || !slackAuth.accessToken) return
+    if (!slackAuth || !slackAuth.botAccessToken) return
     let isMounted = true
     const getChannels = async () => {
-      const manager = new SlackClientManager(slackAuth.accessToken!)
-      const channelResponse = await manager.getChannelList()
-      if (!isMounted || !channelResponse.ok) return
-      const channels = channelResponse.channels.filter((channel) => channel.is_member)
-      setChannels(channels)
+      const botManager = new SlackClientManager(slackAuth.botAccessToken!)
+      const userManager = new SlackClientManager(slackAuth.accessToken!)
+      const [channelResponse, convoResponse] = await Promise.all([
+        userManager.getChannelList(),
+        botManager.getConversationList(['im'])
+      ])
+      if (!isMounted) return
+      if (!channelResponse.ok) {
+        console.error(channelResponse.error)
+        return
+      }
+      const {channels: publicChannels} = channelResponse
+      const memberChannels = publicChannels.filter((channel) => channel.is_member)
+      if (convoResponse.ok) {
+        const {channels: ims} = convoResponse
+        const botChannel = ims.find((im) => im.is_im && im.user === slackAuth.slackUserId) as any
+        if (botChannel) {
+          memberChannels.unshift({...botChannel, name: '@Parabol'})
+        }
+      }
+      setChannels(memberChannels)
     }
     getChannels().catch()
     return () => {

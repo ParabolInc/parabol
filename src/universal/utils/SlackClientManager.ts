@@ -13,6 +13,55 @@ interface ErrorResponse {
   error: string
 }
 
+interface SlackIM {
+  created: number
+  id: string
+  is_im: true
+  is_org_shared: boolean
+  is_user_deleted: boolean
+  priority: number
+  user: string
+}
+
+export interface SlackPublicConversation {
+  id: string
+  name: string
+  is_channel: boolean
+  is_group: boolean
+  is_im: false
+  created: number
+  creator: string
+  is_archived: boolean
+  is_general: boolean
+  unlinked: number
+  name_normalized: string
+  is_read_only: boolean
+  is_shared: boolean
+  parent_conversation: null
+  is_ext_shared: boolean
+  is_org_shared: boolean
+  pending_shared: []
+  is_pending_ext_shared: boolean
+  is_member: boolean
+  is_private: boolean
+  is_mpim: boolean
+  last_read: string
+  topic: {
+    value: string
+    creator: string
+    last_set: number
+  }
+  purpose: {
+    value: string
+    creator: string
+    last_set: number
+  }
+  previous_names: string[]
+  locale: string
+}
+
+type SlackConversation = SlackPublicConversation | SlackIM
+
 interface SlackChannelInfo {
   id: string
   name: string
@@ -41,14 +90,14 @@ interface SlackChannelInfo {
   num_members: number
 }
 
-interface ChannelInfoResponse {
-  ok: true
-  channel: SlackChannelInfo
-}
-
 interface ChannelListResponse {
   ok: true
   channels: SlackChannelInfo[]
+}
+
+interface ConversationListResponse {
+  ok: true
+  channels: SlackConversation[]
 }
 
 interface PostMessageResponse {
@@ -102,8 +151,22 @@ interface UserInfoResponse {
   user: SlackUser
 }
 
+interface IMOpenResponse {
+  ok: true
+  channel: {
+    id: string
+  }
+}
+
+interface ConversationInfoResponse {
+  ok: true
+  channel: SlackConversation
+}
+
+type ConversationType = 'public_channel' | 'private_channel' | 'im' | 'mpim'
+
 class SlackClientManager {
-  static SCOPE = 'identify,bot,incoming-webhook,channels:read,users:read,chat:write:bot,im:write'
+  static SCOPE = 'identify,bot,incoming-webhook,channels:read,chat:write:bot'
   static openOAuth (atmosphere: Atmosphere, teamId: string, mutationProps: MenuMutationProps) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const providerState = Math.random()
@@ -132,29 +195,17 @@ class SlackClientManager {
     window.addEventListener('message', handler)
   }
 
-  accessToken: string
+  // token can be a botAccessToken or accessToken!
+  token: string
   fetch: typeof fetch
   // the any is for node until we can use tsc in nodeland
   cache: {[key: string]: {result: any; expiration: number | any}} = {}
   timeout = 5000
   headers: any
 
-  constructor (accessToken: string, options: SlackClientManagerOptions = {}) {
-    this.accessToken = accessToken
+  constructor (token: string, options: SlackClientManagerOptions = {}) {
+    this.token = token
     this.fetch = options.fetch || window.fetch.bind(window)
-    // const headers = {
-    //   'Content-Type': 'application/json',
-    //   Accept: 'application/json' as 'application/json'
-    // }
-
-    // this.post = async (url, payload) => {
-    //   const res = await fetch(url, {
-    //     method: 'POST',
-    //     headers,
-    //     body: JSON.stringify(payload)
-    //   })
-    //   return res.json()
-    // }
   }
 
   async get<T> (url: string): Promise<T | ErrorResponse> {
@@ -177,29 +228,44 @@ class SlackClientManager {
     return this.cache[url].result
   }
 
-  getChannelInfo (slackChannelId: string) {
-    return this.get<ChannelInfoResponse>(
-      `https://slack.com/api/channels.info?token=${this.accessToken}&channel=${slackChannelId}`
+  getConversationInfo (slackChannelId: string) {
+    return this.get<ConversationInfoResponse>(
+      `https://slack.com/api/conversations.info?token=${this.token}&channel=${slackChannelId}`
     )
   }
 
   getChannelList () {
     return this.get<ChannelListResponse>(
-      `https://slack.com/api/channels.list?token=${this.accessToken}&exclude_archived=1`
+      `https://slack.com/api/channels.list?token=${this.token}&exclude_archived=1`
+    )
+  }
+
+  getConversationList (types: ConversationType[] = ['public_channel']) {
+    const typeStr = types.join(',')
+    return this.get<ConversationListResponse>(
+      `https://slack.com/api/conversations.list?token=${
+        this.token
+      }&exclude_archived=1&types=${typeStr}`
     )
   }
 
   getUserInfo (userId: string) {
     return this.get<UserInfoResponse>(
-      `https://slack.com/api/users.info?token=${this.accessToken}&user=${userId}`
+      `https://slack.com/api/users.info?token=${this.token}&user=${userId}`
     )
   }
 
   postMessage (channelId: string, text: string) {
     return this.get<PostMessageResponse>(
       `https://slack.com/api/chat.postMessage?token=${
-        this.accessToken
+        this.token
       }&channel=${channelId}&text=${text}&unfurl_links=true`
+    )
+  }
+
+  openIM (slackUserId: string) {
+    return this.get<IMOpenResponse>(
+      `https://slack.com/api/im.open?token=${this.token}&user=${slackUserId}`
     )
   }
 }

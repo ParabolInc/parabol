@@ -1,8 +1,12 @@
 import React, {ReactElement, ReactNode} from 'react'
 import styled from 'react-emotion'
+import DemoCreateAccountButton from 'universal/components/DemoCreateAccountButton'
 import SidebarToggle from 'universal/components/SidebarToggle'
-import {minWidthMediaQueries} from 'universal/styles/breakpoints'
-import {meetingSidebarMediaQuery} from 'universal/styles/meeting'
+import {meetingSidebarMediaQuery, meetingTopBarMediaQuery} from 'universal/styles/meeting'
+import isDemoRoute from 'universal/utils/isDemoRoute'
+import hasToken from 'universal/utils/hasToken'
+
+const localHeaderBreakpoint = '@media screen and (min-width: 600px)'
 
 const MeetingContentHeaderStyles = styled('div')({
   alignItems: 'flex-start',
@@ -12,26 +16,61 @@ const MeetingContentHeaderStyles = styled('div')({
   justifyContent: 'space-between',
   margin: 0,
   maxWidth: '100%',
-  padding: '0 1rem 1rem',
+  padding: '12px 16px 32px',
   width: '100%',
-  [minWidthMediaQueries[3]]: {
-    padding: '0 1rem 2rem'
+  [meetingTopBarMediaQuery]: {
+    padding: '16px 16px 32px'
   }
 })
 
 const HeadingBlock = styled('div')({
-  alignItems: 'flex-start',
+  alignItems: 'center',
   display: 'flex',
-  flex: 1,
-  padding: '1.25rem 0 1rem'
+  minHeight: 32,
+  [localHeaderBreakpoint]: {
+    flex: 1
+  },
+  [meetingTopBarMediaQuery]: {
+    alignItems: 'flex-start'
+  }
 })
+
+const PrimaryActionBlock = styled('div')({
+  order: 2,
+  [localHeaderBreakpoint]: {
+    order: 3,
+    paddingLeft: 16
+  }
+})
+
+const AvatarGroupBlock = styled('div')(
+  {
+    display: 'flex',
+    justifyContent: 'center',
+    padding: 0
+  },
+  ({isDemoRoute}: {isDemoRoute: boolean}) =>
+    isDemoRoute && {
+      order: 3,
+      margin: '0 auto',
+      paddingTop: 12,
+      width: '100%',
+      [localHeaderBreakpoint]: {
+        margin: 0,
+        order: 2,
+        paddingTop: 0,
+        width: 'auto'
+      }
+    }
+)
 
 const Toggle = styled(SidebarToggle)(
   ({isMeetingSidebarCollapsed}: {isMeetingSidebarCollapsed: boolean}) => ({
-    margin: '.0625rem .75rem .0625rem .5rem',
+    margin: 'auto 16px auto 0',
 
     [meetingSidebarMediaQuery]: {
-      display: isMeetingSidebarCollapsed ? 'flex' : 'none'
+      display: isMeetingSidebarCollapsed ? 'flex' : 'none',
+      marginTop: 3
     }
   })
 )
@@ -49,13 +88,19 @@ interface Props {
 
 const MeetingContentHeader = (props: Props) => {
   const {avatarGroup, children, isMeetingSidebarCollapsed, toggleSidebar} = props
+  const showButton = isDemoRoute() && !hasToken()
   return (
     <MeetingContentHeaderStyles>
       <HeadingBlock>
         <Toggle onClick={toggleSidebar} isMeetingSidebarCollapsed={isMeetingSidebarCollapsed} />
         <ChildrenBlock>{children}</ChildrenBlock>
       </HeadingBlock>
-      {avatarGroup}
+      <AvatarGroupBlock isDemoRoute={showButton}>{avatarGroup}</AvatarGroupBlock>
+      {showButton && (
+        <PrimaryActionBlock>
+          <DemoCreateAccountButton />
+        </PrimaryActionBlock>
+      )}
     </MeetingContentHeaderStyles>
   )
 }
