@@ -1,7 +1,6 @@
 /*
  * Let’s take a look at misc. UI components
  *
- * @flow
  */
 import React from 'react'
 import {storiesOf} from '@storybook/react'

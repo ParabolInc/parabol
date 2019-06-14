@@ -1,9 +1,5 @@
-// @flow
-
-// import type {NewMeetingPhase} from 'universal/types/schema.flow';
-
 const isForwardProgress = (
-  phases: $ReadOnlyArray<Object>,
+  phases: ReadonlyArray<{stages: ReadonlyArray<{id: string}>}>,
   stageId: string,
   nextStageId: string
 ) => {

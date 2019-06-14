@@ -1,16 +1,12 @@
 /**
  * Updates a reflection's title for the retrospective meeting.
  *
- * @flow
  */
-import {commitMutation} from 'react-relay'
-import type {CompletedHandler, ErrorHandler} from 'universal/types/relay'
+import {commitMutation, graphql} from 'react-relay'
 import updateProxyRecord from 'universal/utils/relay/updateProxyRecord'
-
-type Variables = {
-  title: string,
-  reflectionGroupId: string
-}
+import {IUpdateReflectionGroupTitleOnMutationArguments} from 'universal/types/graphql'
+import Atmosphere from 'universal/Atmosphere'
+import {LocalHandlers} from 'universal/types/relayMutations'
 
 graphql`
   fragment UpdateReflectionGroupTitleMutation_team on UpdateReflectionGroupTitlePayload {
@@ -28,13 +24,12 @@ const mutation = graphql`
   }
 `
 
-const CreateReflectionMutation = (
-  environment: Object,
-  variables: Variables,
-  onError?: ErrorHandler,
-  onCompleted?: CompletedHandler
+const UpdateReflectionGroupTitleMutation = (
+  atmosphere: Atmosphere,
+  variables: IUpdateReflectionGroupTitleOnMutationArguments,
+  {onCompleted, onError}: LocalHandlers
 ) => {
-  return commitMutation(environment, {
+  return commitMutation(atmosphere, {
     mutation,
     variables,
     onCompleted,
@@ -52,4 +47,4 @@ const CreateReflectionMutation = (
   })
 }
 
-export default CreateReflectionMutation
+export default UpdateReflectionGroupTitleMutation

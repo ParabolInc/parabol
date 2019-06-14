@@ -1,4 +1,3 @@
-// @flow
 import {GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
 import {CHECKIN, UPDATES} from 'universal/utils/constants'
 import CheckInStage from 'server/graphql/types/CheckInStage'

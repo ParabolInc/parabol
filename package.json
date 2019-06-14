@@ -306,9 +306,6 @@
       "__CLIENT__",
       "__PRODUCTION__",
       "graphql",
-      "$ReadOnlyArray",
-      "$Shape",
-      "$Keys",
       "SyntheticKeyboardEvent",
       "ClientRect",
       "HTMLElement",
@@ -319,7 +316,6 @@
       "Cypress"
     ],
     "ignore": [
-      "schema.flow.js",
       "QueryRenderer.js"
     ]
   }

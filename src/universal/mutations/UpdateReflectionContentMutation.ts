@@ -1,16 +1,12 @@
 /**
  * Updates a reflection's content for the retrospective meeting.
  *
- * @flow
  */
-import {commitMutation} from 'react-relay'
-import type {CompletedHandler, ErrorHandler} from 'universal/types/relay'
+import {commitMutation, graphql} from 'react-relay'
 import updateProxyRecord from 'universal/utils/relay/updateProxyRecord'
-
-type Variables = {
-  content: string,
-  reflectionId: string
-}
+import {LocalHandlers} from 'universal/types/relayMutations'
+import {IUpdateReflectionContentOnMutationArguments} from 'universal/types/graphql'
+import Atmosphere from 'universal/Atmosphere'
 
 graphql`
   fragment UpdateReflectionContentMutation_team on UpdateReflectionContentPayload {
@@ -36,12 +32,11 @@ const mutation = graphql`
 `
 
 const UpdateReflectionContentMutation = (
-  environment: Object,
-  variables: Variables,
-  onError?: ErrorHandler,
-  onCompleted?: CompletedHandler
+  atmosphere: Atmosphere,
+  variables: IUpdateReflectionContentOnMutationArguments,
+  {onError, onCompleted}: LocalHandlers
 ) => {
-  return commitMutation(environment, {
+  return commitMutation(atmosphere, {
     mutation,
     variables,
     onCompleted,

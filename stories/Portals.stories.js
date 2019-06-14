@@ -1,7 +1,6 @@
 /**
  * Stories for Portal components.
  *
- * @flow
  */
 
 import React from 'react'

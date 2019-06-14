@@ -1,14 +1,17 @@
 /* Deprecated. See internals of useMenuPortal */
-// @flow
-import * as React from 'react'
+
+import React, {Component, ReactNode} from 'react'
 import {CSSTransition} from 'react-transition-group'
 import {css} from 'react-emotion'
 
-const {Component} = React
-
-type Props = {
-  children: React.Node,
-  duration?: number,
+interface Props extends CSSTransition {
+  appear?: boolean
+  in?: boolean
+  onExited?: () => void
+  exit?: boolean
+  unmountOnExit?: boolean
+  children: ReactNode
+  duration?: number
   slide?: number
 }
 
@@ -22,7 +25,7 @@ class AnimatedFade extends Component<Props> {
       transform: `translate3d(0, ${slide}px, 0)`
     })
     const enterActive = css({
-      opacity: '1 !important',
+      opacity: '1 !important' as any,
       transform: 'translate3d(0, 0, 0) !important',
       transition: `all ${duration}ms ease-in !important`
     })
@@ -33,7 +36,7 @@ class AnimatedFade extends Component<Props> {
     })
 
     const exitActive = css({
-      opacity: '0 !important',
+      opacity: '0 !important' as any,
       transform: `translate3d(0, ${-slide}px, 0) !important`,
       transition: `all ${duration}ms ease-in !important`
     })

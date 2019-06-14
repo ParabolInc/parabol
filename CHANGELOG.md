@@ -9,6 +9,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Changed
 * Moved integration OAuth flow into their respective managers
+* Refactor all flow components to typescript
 
 ### Removed
 * Legacy Provider mutations
@@ -26,6 +27,9 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Added
 * New stripe per-event handling
+
+### Changed
+* Moved integration OAuth flow into their respective managers
 
 ## v3.12.0 2019-May-29
 

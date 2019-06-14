@@ -82,9 +82,12 @@ import {GQLContext} from 'server/graphql/graphql'
 import addSlackAuth from 'server/graphql/mutations/addSlackAuth'
 import setSlackNotification from './mutations/setSlackNotification'
 
-interface Context extends GQLContext {
+interface InternalContext {
   serverSecret: string
 }
+
+interface Context extends InternalContext, GQLContext {}
+
 export default new GraphQLObjectType<any, Context, any>({
   name: 'Mutation',
   fields: () => ({

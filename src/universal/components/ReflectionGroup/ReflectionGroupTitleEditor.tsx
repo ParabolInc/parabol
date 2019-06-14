@@ -180,8 +180,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
     UpdateReflectionGroupTitleMutation(
       atmosphere,
       {title: normalizedTitle, reflectionGroupId},
-      onError,
-      onCompleted
+      {onError, onCompleted}
     )
   }
 
