@@ -51,7 +51,7 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
 
 const Notifications = (props: Props) => {
   const {atmosphere, notifications, submitMutation, onCompleted, onError, submitting} = props
-
+  if (!notifications) return null
   const clearableNotifs = notifications.edges.filter(({node}) => node && !requiresAction(node.type))
   const clearAllNotifications = () => {
     submitMutation()
