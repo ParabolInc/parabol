@@ -51,6 +51,7 @@ const TeamDashboardLink = styled(Link)({
   fontSize: 20,
   fontWeight: 600,
   lineHeight: '1.5',
+  wordBreak: 'break-word',
   ':hover': {
     color: PALETTE.TEXT.PURPLE,
     cursor: 'pointer'

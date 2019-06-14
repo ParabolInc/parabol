@@ -42,7 +42,7 @@ const Dashboard = (props: Props) => {
           <Route
             path='/me'
             render={(p) => (
-              <UserDashboard {...p} notifications={viewer ? viewer.notifications : []} />
+              <UserDashboard {...p} notifications={viewer ? viewer.notifications : null} />
             )}
           />
           <Route path='/team/:teamId' component={TeamRoot} />

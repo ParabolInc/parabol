@@ -49,15 +49,20 @@ export default {
     }
 
     if (slackChannelId) {
-      const manager = new SlackManager(slackAuth.accessToken)
-      const channelInfo = await manager.getChannelInfo(slackChannelId)
+      // use accessToken as a fallback for folks who haven't refreshed their auth lately
+      const manager = new SlackManager(slackAuth.botAccessToken || slackAuth.accessToken)
+      const channelInfo = await manager.getConversationInfo(slackChannelId)
 
       if (!channelInfo.ok) {
         return standardError(new Error(channelInfo.error), {userId: viewerId})
       }
       const {channel} = channelInfo
-      const {is_archived: isArchived} = channel
-      if (isArchived) return standardError(new Error('Slack channel archived'), {userId: viewerId})
+      if (!channel.is_im) {
+        const {is_archived: isArchived} = channel
+        if (isArchived) {
+          return standardError(new Error('Slack channel archived'), {userId: viewerId})
+        }
+      }
     }
 
     // RESOLUTION
@@ -79,7 +84,6 @@ export default {
         id: (existingNotification && existingNotification.id) || undefined
       })
     })
-    console.log('inserting', JSON.stringify(notifications))
     await r.table('SlackNotification').insert(notifications, {conflict: 'replace'})
     const slackNotificationIds = notifications.map(({id}) => id)
     const data = {userId: viewerId, slackNotificationIds}

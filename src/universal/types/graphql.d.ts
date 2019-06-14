@@ -2364,7 +2364,7 @@ export interface ISlackAuth {
   isActive: boolean
 
   /**
-   * The access token to slack, only visible to the owner
+   * The access token to slack, only visible to the owner. Used as a fallback to botAccessToken
    */
   accessToken: string | null
 
@@ -2374,7 +2374,7 @@ export interface ISlackAuth {
   botUserId: string | null
 
   /**
-   * the parabol bot access token, used to communicate via direct message
+   * the parabol bot access token, used as primary communication
    */
   botAccessToken: string | null
 
@@ -2440,7 +2440,8 @@ export interface ISlackNotification {
  */
 export const enum SlackNotificationEventEnum {
   meetingStart = 'meetingStart',
-  meetingEnd = 'meetingEnd'
+  meetingEnd = 'meetingEnd',
+  meetingStageTimeLimit = 'meetingStageTimeLimit'
 }
 
 /**

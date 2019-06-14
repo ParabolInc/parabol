@@ -45,8 +45,8 @@ const notifySlack = async (
     const auth = slackAuths[i]
     if (!auth) continue
     const {channelId} = notification
-    const {accessToken} = auth
-    const manager = new SlackManager(accessToken)
+    const {accessToken, botAccessToken} = auth
+    const manager = new SlackManager(botAccessToken || accessToken)
     const res = await manager.postMessage(channelId!, slackText)
 
     if ('error' in res) {

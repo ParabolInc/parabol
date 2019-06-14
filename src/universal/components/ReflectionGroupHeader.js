@@ -18,10 +18,11 @@ const GroupHeader = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flexShrink: 1,
-  fontSize: '.875rem',
+  fontSize: 14,
   justifyContent: 'space-between',
   maxWidth: REFLECTION_CARD_WIDTH,
-  padding: '0 .5rem .5rem .75rem',
+  minHeight: 32,
+  padding: '0 8px 8px 12px',
   position: 'relative',
   width: '100%'
 })

@@ -23,7 +23,10 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        include: [path.join(__dirname, '..')],
+        include: [
+          path.join(__dirname, '..'),
+          path.join(__dirname, '..', '..', 'src', 'server', 'utils')
+        ],
         use: babelLoader
       }
     ]
