@@ -1,9 +1,13 @@
 import styled from 'react-emotion'
+import {meetingTopBarMediaQuery} from 'universal/styles/meeting'
 
 const PhaseHeaderTitle = styled('h1')({
-  fontSize: '1.25rem',
+  fontSize: 16,
   lineHeight: '1.5',
-  margin: 0
+  margin: 0,
+  [meetingTopBarMediaQuery]: {
+    fontSize: 20
+  }
 })
 
 export default PhaseHeaderTitle

@@ -52,6 +52,7 @@ class AddTeamMemberModal extends Component<Props, State> {
     rawInvitees: '',
     invitees: [] as Array<string>
   }
+
   onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const {error, onCompleted, onError, teamMembers} = this.props
     const rawInvitees = e.target.value

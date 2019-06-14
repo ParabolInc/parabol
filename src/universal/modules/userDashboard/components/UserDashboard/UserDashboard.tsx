@@ -16,8 +16,8 @@ const UserDashMain = lazy(() =>
 const UserProfile = lazy(() =>
   import(/* webpackChunkName: 'UserProfileRoot' */ 'universal/modules/userDashboard/components/UserProfileRoot')
 )
-const NotificationsMod = lazy(() =>
-  import(/* webpackChunkName: 'NotificationsContainer' */ 'universal/modules/notifications/containers/Notifications/NotificationsContainer')
+const Notifications = lazy(() =>
+  import(/* webpackChunkName: 'NotificationsContainer' */ 'universal/modules/notifications/components/Notifications/Notifications')
 )
 
 interface Props {
@@ -34,7 +34,7 @@ const UserDashboard = (props: Props) => {
       <Route path={`${match.url}/organizations/:orgId`} component={Organization} />
       <Route
         path={`${match.url}/notifications`}
-        render={(p) => <NotificationsMod {...p} notifications={notifications} />}
+        render={(p) => <Notifications {...p} notifications={notifications} />}
       />
       <Route path={match.url} component={UserDashMain} />
     </Switch>

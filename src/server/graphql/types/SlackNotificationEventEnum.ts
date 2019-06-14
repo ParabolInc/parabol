@@ -5,7 +5,8 @@ const SlackNotificationEventEnum = new GraphQLEnumType({
   description: 'The event that triggers a slack notification',
   values: {
     meetingStart: {},
-    meetingEnd: {}
+    meetingEnd: {},
+    meetingStageTimeLimit: {}
   }
 })
 

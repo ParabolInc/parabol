@@ -19,7 +19,6 @@ import {RETRO_TOPIC_LABEL} from 'universal/utils/constants'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
-import {retroGroupTitleWidth} from 'universal/styles/meeting'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   isExpanded: boolean
@@ -87,7 +86,7 @@ const NameInput = styled('input')(
     // need to use a content editable if we wanna animate this since input el forces width
     // card width is set at REFLECTION_WIDTH, so this can be a PX, too
     textAlign: 'left',
-    width: retroGroupTitleWidth,
+    width: 196,
     transition: 'all 200ms'
   })
 )

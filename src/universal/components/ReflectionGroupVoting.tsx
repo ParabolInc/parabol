@@ -9,7 +9,7 @@ import withAtmosphere, {
 import VoteForReflectionGroupMutation from 'universal/mutations/VoteForReflectionGroupMutation'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import ui from 'universal/styles/ui'
-import {meetingVoteIcon, retroMeetingVotingWidth} from 'universal/styles/meeting'
+import {meetingVoteIcon} from 'universal/styles/meeting'
 import NewMeetingCheckInMutation from 'universal/mutations/NewMeetingCheckInMutation'
 import appTheme from 'universal/styles/theme/appTheme'
 import Icon from 'universal/components/Icon'
@@ -32,15 +32,19 @@ const UpvoteIcon = styled(Icon)(({color}: {color: string}) => ({
   color,
   cursor: 'pointer',
   fontSize: MD_ICONS_SIZE_18,
-  marginLeft: '.25rem',
-  userSelect: 'none'
+  height: 24,
+  lineHeight: '24px',
+  marginLeft: 8,
+  textAlign: 'center',
+  userSelect: 'none',
+  width: 24
 }))
 
 const UpvoteColumn = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
-  width: retroMeetingVotingWidth
+  width: 96
 })
 
 class ReflectionGroupVoting extends Component<Props> {
