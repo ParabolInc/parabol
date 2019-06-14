@@ -23,7 +23,7 @@ const NotifyKickedOut = new GraphQLObjectType({
     team: {
       type: new GraphQLNonNull(Team),
       description: 'The team the task is on',
-      resolve: ({teamId}, args, {dataLoader}) => {
+      resolve: ({teamId}, _args, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)
       }
     }

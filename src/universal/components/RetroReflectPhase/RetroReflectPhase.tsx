@@ -151,6 +151,9 @@ graphql`
       description
       editorIds
     }
+    stages {
+      ...StageTimerDisplay_stage
+    }
   }
 `
 
@@ -166,6 +169,7 @@ export default createFragmentContainer(
         facilitatorUserId
         ... on RetrospectiveMeeting {
           localStage {
+            ...StageTimerDisplay_stage
             isComplete
           }
           reflectionGroups {

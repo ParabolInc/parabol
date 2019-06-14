@@ -37,7 +37,10 @@ interface Options {
   showDay?: boolean
 }
 
-export default function makeDateString (datetime: Date | string, options: Options = {}) {
+export default function makeDateString (
+  datetime: Date | string | number | undefined | null,
+  options: Options = {}
+) {
   const timestamp = ensureDate(datetime)
   const {showDay} = options
   const day = timestamp.getDay()

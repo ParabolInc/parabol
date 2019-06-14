@@ -6,14 +6,13 @@ import StrictEventEmitter from 'strict-event-emitter-types'
 import handleCompletedDemoStage from 'universal/modules/demo/handleCompletedDemoStage'
 import {
   DragReflectionDropTargetTypeEnum,
-  ICreateReflectionPayload,
   IDiscussPhase,
-  IEditReflectionPayload,
   INewMeetingStage,
   IReflectPhase,
   IRetroReflection,
   IRetroReflectionGroup,
-  NewMeetingPhase
+  NewMeetingPhase,
+  NewMeetingPhaseTypeEnum
 } from 'universal/types/graphql'
 import groupReflections from 'universal/utils/autogroup/groupReflections'
 import makeRetroGroupTitle from 'universal/utils/autogroup/makeRetroGroupTitle'
@@ -39,8 +38,13 @@ import initDB, {
 } from './initDB'
 import LocalAtmosphere from './LocalAtmosphere'
 
+interface Payload {
+  __typename: string
+  [key: string]: any
+}
 interface DemoEvents {
-  team: IEditReflectionPayload | ICreateReflectionPayload
+  task: Payload
+  team: Payload
   botsFinished: void
 }
 
@@ -167,7 +171,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
             ),
             meetingMembers: this.db.newMeeting.meetingMembers!.map((member) => ({
               ...member,
-              tasks: member!.tasks.filter((task) => !task.tags!.includes('private'))
+              tasks: member.tasks.filter((task) => !task.tags.includes('private'))
             }))
           }
         }
@@ -313,7 +317,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       this.db.reflections.push(reflection)
       const unlockedStageIds = unlockAllStagesForPhase(
         this.db.newMeeting.phases as any,
-        GROUP,
+        NewMeetingPhaseTypeEnum.group,
         true
       )
       const unlockedStages = this.getUnlockedStages(unlockedStageIds)
@@ -360,7 +364,12 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const remainingReflections = this.db.reflections.filter((reflection) => reflection.isActive)
 
       const unlockedStageIds = remainingReflections.length
-        ? unlockAllStagesForPhase(this.db.newMeeting.phases as any, GROUP, true, false)
+        ? unlockAllStagesForPhase(
+            this.db.newMeeting.phases as any,
+            NewMeetingPhaseTypeEnum.group,
+            true,
+            false
+          )
         : []
       const unlockedStages = this.getUnlockedStages(unlockedStageIds)
       const data = {
@@ -807,7 +816,12 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       const phases = this.db.newMeeting.phases as any
       if (isUnlock !== undefined) {
-        unlockedStageIds = unlockAllStagesForPhase(phases, DISCUSS, true, isUnlock)
+        unlockedStageIds = unlockAllStagesForPhase(
+          phases,
+          NewMeetingPhaseTypeEnum.discuss,
+          true,
+          isUnlock
+        )
       }
 
       const data = {
@@ -962,7 +976,12 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         (group) => group.id === reflectionGroupId
       )!
       reflectionGroup.tasks!.splice(reflectionGroup.tasks!.indexOf(task as any), 1)
-      const data = {error: null, task, involvementNotification: null}
+      const data = {
+        __typename: 'DeleteTaskPayload',
+        error: null,
+        task,
+        involvementNotification: null
+      }
       if (userId !== demoViewerId) {
         this.emit(TASK, data)
       }
@@ -989,6 +1008,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         return a.sortOrder > b.sortOrder ? 1 : -1
       })
       const data = {
+        __typename: 'DragDiscussionTopicPayload',
         meeting: this.db.newMeeting,
         error: null,
         stage: draggedStage

@@ -6,7 +6,7 @@ import TaskColumns from 'universal/components/TaskColumns/TaskColumns'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import getTaskById from '../../../../utils/getTaskById'
-import {TEAM_DASH} from 'universal/utils/constants'
+import {AreaEnum} from 'universal/types/graphql'
 
 const mapStateToProps = (state, props) => {
   const {
@@ -56,7 +56,7 @@ const TeamColumnsContainer = (props: Props) => {
       myTeamMemberId={myTeamMemberId}
       tasks={filteredTasks}
       teamMemberFilterId={teamMemberFilterId}
-      area={TEAM_DASH}
+      area={AreaEnum.teamDash}
     />
   )
 }

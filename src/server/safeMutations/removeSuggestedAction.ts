@@ -1,7 +1,6 @@
-import {SuggestedActionTypeEnum} from 'universal/types/graphql'
 import getRethink from '../database/rethinkDriver'
 
-const removeSuggestedAction = (userId: string, type: SuggestedActionTypeEnum) => {
+const removeSuggestedAction = (userId: string, type: string) => {
   const r = getRethink()
   return r
     .table('SuggestedAction')

@@ -201,6 +201,7 @@ const NotificationSubscription = (atmosphere: Atmosphere, _queryVariables, subPa
   const {viewerId} = atmosphere
   return {
     subscription,
+    variables: {},
     updater: (store) => {
       const payload = store.getRootField('notificationSubscription')
       if (!payload) return
