@@ -1,4 +1,4 @@
-import {GraphQLObjectType} from 'graphql'
+import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {resolveNotification, resolveOrganization} from 'server/graphql/resolvers'
 import NotifyPaymentRejected from 'server/graphql/types/NotifyPaymentRejected'
 import Organization from 'server/graphql/types/Organization'
@@ -15,7 +15,7 @@ const StripeFailPaymentPayload = new GraphQLObjectType({
       resolve: resolveOrganization
     },
     notification: {
-      type: NotifyPaymentRejected,
+      type: new GraphQLNonNull(NotifyPaymentRejected),
       description: 'The notification to billing leaders stating the payment was rejected',
       resolve: resolveNotification
     }

@@ -71,7 +71,7 @@ export const archiveTeamTeamUpdater = (payload, store, viewerId) => {
   safeRemoveNodeFromArray(teamId, viewer, 'teams')
 
   const notification = payload.getLinkedRecord('notification')
-  handleAddNotifications(notification, store, viewerId)
+  handleAddNotifications(notification, store)
 }
 
 export const archiveTeamTeamOnNext = (payload: ArchiveTeamMutation_team, {atmosphere, history}) => {

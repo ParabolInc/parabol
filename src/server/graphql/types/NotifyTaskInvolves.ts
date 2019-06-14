@@ -13,7 +13,7 @@ const NotifyTaskInvolves = new GraphQLObjectType({
   fields: () => ({
     ...notificationInterfaceFields,
     involvement: {
-      type: TaskInvolvementType,
+      type: new GraphQLNonNull(TaskInvolvementType),
       description: 'How the user is affiliated with the task'
     },
     taskId: {
@@ -21,7 +21,7 @@ const NotifyTaskInvolves = new GraphQLObjectType({
       description: 'The taskId that now involves the userId'
     },
     task: {
-      type: Task,
+      type: new GraphQLNonNull(Task),
       description: 'The task that now involves the userId',
       resolve: ({taskId}, args, {dataLoader}) => {
         return dataLoader.get('tasks').load(taskId)
@@ -32,7 +32,7 @@ const NotifyTaskInvolves = new GraphQLObjectType({
       description: 'The teamMemberId of the person that made the change'
     },
     changeAuthor: {
-      type: TeamMember,
+      type: new GraphQLNonNull(TeamMember),
       description: 'The TeamMember of the person that made the change',
       resolve: ({changeAuthorId}, args, {dataLoader}) => {
         return dataLoader.get('teamMembers').load(changeAuthorId)

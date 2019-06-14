@@ -25,7 +25,7 @@ exports.up = async (r) => {
         userId,
         teamId,
         channelId: null,
-        event: 'meetingStageTimeLimit'
+        event: 'MEETING_STAGE_TIME_LIMIT'
       })
     })
     const stageReadyNotifications = slackUsers.map((slackUser) => {

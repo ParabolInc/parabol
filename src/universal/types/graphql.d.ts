@@ -2326,6 +2326,7 @@ export type Notification =
   | INotificationTeamInvitation
   | INotifyKickedOut
   | INotifyPaymentRejected
+  | INotificationMeetingStageTimeLimit
   | INotifyPromoteToOrgLeader
 
 export interface INotification {
@@ -2349,27 +2350,27 @@ export interface INotification {
   /**
    * The datetime to activate the notification & send it to the client
    */
-  startAt: any | null
-  type: NotificationEnum | null
+  startAt: any
+  type: NotificationEnum
 
   /**
    * *The userId that should see this notification
    */
-  userIds: Array<string> | null
+  userIds: Array<string>
 }
 
 /**
  * The kind of notification
  */
 export const enum NotificationEnum {
-  FACILITATOR_DISCONNECTED = 'FACILITATOR_DISCONNECTED',
   KICKED_OUT = 'KICKED_OUT',
   PAYMENT_REJECTED = 'PAYMENT_REJECTED',
-  TASK_INVOLVES = 'TASK_INVOLVES',
+  PROMOTE_TO_BILLING_LEADER = 'PROMOTE_TO_BILLING_LEADER',
   TEAM_INVITATION = 'TEAM_INVITATION',
   TEAM_ARCHIVED = 'TEAM_ARCHIVED',
+  TASK_INVOLVES = 'TASK_INVOLVES',
   VERSION_INFO = 'VERSION_INFO',
-  PROMOTE_TO_BILLING_LEADER = 'PROMOTE_TO_BILLING_LEADER'
+  MEETING_STAGE_TIME_LIMIT = 'MEETING_STAGE_TIME_LIMIT'
 }
 
 /**
@@ -2466,7 +2467,7 @@ export interface ISlackNotification {
 export const enum SlackNotificationEventEnum {
   meetingStart = 'meetingStart',
   meetingEnd = 'meetingEnd',
-  meetingStageTimeLimit = 'meetingStageTimeLimit',
+  MEETING_STAGE_TIME_LIMIT = 'MEETING_STAGE_TIME_LIMIT',
   meetingNextStageReady = 'meetingNextStageReady'
 }
 
@@ -3847,48 +3848,19 @@ export interface INotifyTeamArchived {
   /**
    * The datetime to activate the notification & send it to the client
    */
-  startAt: any | null
-  type: NotificationEnum | null
+  startAt: any
+  type: NotificationEnum
 
   /**
    * *The userId that should see this notification
    */
-  userIds: Array<string> | null
+  userIds: Array<string>
 }
 
-export type TeamRemovedNotification = INotifyTeamArchived | INotifyKickedOut
-
-export interface ITeamRemovedNotification {
-  __typename: 'TeamRemovedNotification'
-
-  /**
-   * A shortid for the notification
-   */
-  id: string
-
-  /**
-   * true if the notification has been archived, else false (or null)
-   */
-  isArchived: boolean | null
-
-  /**
-   * *The unique organization ID for this notification. Can be blank for targeted notifications
-   */
-  orgId: string | null
-
-  /**
-   * The datetime to activate the notification & send it to the client
-   */
-  startAt: any | null
-  type: NotificationEnum | null
-
-  /**
-   * *The userId that should see this notification
-   */
-  userIds: Array<string> | null
-}
-
-export type TeamNotification = INotifyTaskInvolves | INotificationTeamInvitation
+export type TeamNotification =
+  | INotifyTaskInvolves
+  | INotificationTeamInvitation
+  | INotificationMeetingStageTimeLimit
 
 export interface ITeamNotification {
   __typename: 'TeamNotification'
@@ -4493,18 +4465,18 @@ export interface INotifyTaskInvolves {
   /**
    * The datetime to activate the notification & send it to the client
    */
-  startAt: any | null
-  type: NotificationEnum | null
+  startAt: any
+  type: NotificationEnum
 
   /**
    * *The userId that should see this notification
    */
-  userIds: Array<string> | null
+  userIds: Array<string>
 
   /**
    * How the user is affiliated with the task
    */
-  involvement: TaskInvolvementType | null
+  involvement: TaskInvolvementType
 
   /**
    * The taskId that now involves the userId
@@ -4514,7 +4486,7 @@ export interface INotifyTaskInvolves {
   /**
    * The task that now involves the userId
    */
-  task: ITask | null
+  task: ITask
 
   /**
    * The teamMemberId of the person that made the change
@@ -4524,7 +4496,7 @@ export interface INotifyTaskInvolves {
   /**
    * The TeamMember of the person that made the change
    */
-  changeAuthor: ITeamMember | null
+  changeAuthor: ITeamMember
   teamId: string
 
   /**
@@ -5006,13 +4978,13 @@ export interface INotificationTeamInvitation {
   /**
    * The datetime to activate the notification & send it to the client
    */
-  startAt: any | null
-  type: NotificationEnum | null
+  startAt: any
+  type: NotificationEnum
 
   /**
    * *The userId that should see this notification
    */
-  userIds: Array<string> | null
+  userIds: Array<string>
 }
 
 export interface IEndNewMeetingPayload {
@@ -5270,13 +5242,13 @@ export interface INotifyKickedOut {
   /**
    * The datetime to activate the notification & send it to the client
    */
-  startAt: any | null
-  type: NotificationEnum | null
+  startAt: any
+  type: NotificationEnum
 
   /**
    * *The userId that should see this notification
    */
-  userIds: Array<string> | null
+  userIds: Array<string>
 
   /**
    * true if kicked out, false if leaving by choice
@@ -5585,7 +5557,7 @@ export interface IStripeFailPaymentPayload {
   /**
    * The notification to billing leaders stating the payment was rejected
    */
-  notification: INotifyPaymentRejected | null
+  notification: INotifyPaymentRejected
 }
 
 /**
@@ -5593,7 +5565,7 @@ export interface IStripeFailPaymentPayload {
  */
 export interface INotifyPaymentRejected {
   __typename: 'NotifyPaymentRejected'
-  organization: IOrganization | null
+  organization: IOrganization
 
   /**
    * A shortid for the notification
@@ -5613,13 +5585,13 @@ export interface INotifyPaymentRejected {
   /**
    * The datetime to activate the notification & send it to the client
    */
-  startAt: any | null
-  type: NotificationEnum | null
+  startAt: any
+  type: NotificationEnum
 
   /**
    * *The userId that should see this notification
    */
-  userIds: Array<string> | null
+  userIds: Array<string>
 }
 
 export type OrganizationNotification = INotifyPaymentRejected | INotifyPromoteToOrgLeader
@@ -5938,6 +5910,7 @@ export type NotificationSubscriptionPayload =
   | IDisconnectSocketPayload
   | IEndNewMeetingPayload
   | IInviteToTeamPayload
+  | IMeetingStageTimeLimitPayload
   | IRemoveOrgUserPayload
   | IStripeFailPaymentPayload
   | IUser
@@ -5950,6 +5923,58 @@ export interface IAddNewFeaturePayload {
    * the new feature broadcast
    */
   newFeature: INewFeatureBroadcast | null
+}
+
+export interface IMeetingStageTimeLimitPayload {
+  __typename: 'MeetingStageTimeLimitPayload'
+
+  /**
+   * The new notification that was just created
+   */
+  notification: INotificationMeetingStageTimeLimit
+}
+
+/**
+ * A notification sent to a facilitator that was invited to a new team
+ */
+export interface INotificationMeetingStageTimeLimit {
+  __typename: 'NotificationMeetingStageTimeLimit'
+
+  /**
+   * A shortid for the notification
+   */
+  id: string
+
+  /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
+
+  /**
+   * *The unique organization ID for this notification. Can be blank for targeted notifications
+   */
+  orgId: string | null
+
+  /**
+   * The datetime to activate the notification & send it to the client
+   */
+  startAt: any
+  type: NotificationEnum
+
+  /**
+   * *The userId that should see this notification
+   */
+  userIds: Array<string>
+
+  /**
+   * FK
+   */
+  meetingId: string
+
+  /**
+   * The meeting that had the time limit expire
+   */
+  meeting: NewMeeting
 }
 
 export type OrganizationSubscriptionPayload =
@@ -6506,7 +6531,7 @@ export interface IGenericMeetingPhase {
  */
 export interface INotifyPromoteToOrgLeader {
   __typename: 'NotifyPromoteToOrgLeader'
-  organization: IOrganization | null
+  organization: IOrganization
 
   /**
    * A shortid for the notification
@@ -6526,13 +6551,13 @@ export interface INotifyPromoteToOrgLeader {
   /**
    * The datetime to activate the notification & send it to the client
    */
-  startAt: any | null
-  type: NotificationEnum | null
+  startAt: any
+  type: NotificationEnum
 
   /**
    * *The userId that should see this notification
    */
-  userIds: Array<string> | null
+  userIds: Array<string>
 }
 
 /**

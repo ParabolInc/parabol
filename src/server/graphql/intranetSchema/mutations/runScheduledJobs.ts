@@ -3,16 +3,55 @@ import getRethink from 'server/database/rethinkDriver'
 import {requireSU} from 'server/utils/authorization'
 import ScheduledJob from 'server/database/types/ScheduledJob'
 import ScheduledJobMeetingStageTimeLimit from 'server/database/types/ScheduledJobMetingStageTimeLimit'
+import SlackManager from 'server/utils/SlackManager'
+import makeAppLink from 'server/utils/makeAppLink'
+import Meeting from 'server/database/types/Meeting'
+import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
+import NotificationMeetingStageTimeLimit from 'server/database/types/NotificationMeetingStageTimeLimit'
+import publish from 'server/utils/publish'
+import MeetingStageTimeLimitPayload from 'server/graphql/types/MeetingStageTimeLimitPayload'
 
 const processMeetingStageTimeLimits = async (job: ScheduledJobMeetingStageTimeLimit) => {
   const r = getRethink()
   const {meetingId} = job
-  const meeting = await r.table('NewMeeting').get(meetingId)
-  const {teamId, facilitatorUserId} = meeting
-  const slackNotification = await r
-    .table('SlackNotification')
-    .getAll(facilitatorUserId, {index: 'userId'})
-    .filter({teamId, event: 'meetingStageTimeLimit'})
+  const meeting = (await r.table('NewMeeting').get(meetingId)) as Meeting
+  const {teamId, facilitatorUserId, meetingType} = meeting
+  const {slackNotification, slackAuth} = await r({
+    slackNotification: r
+      .table('SlackNotification')
+      .getAll(facilitatorUserId, {index: 'userId'})
+      .filter({teamId, event: 'MEETING_STAGE_TIME_LIMIT'})
+      .nth(0)
+      .default(null),
+    slackAuth: r
+      .table('SlackAuth')
+      .getAll(facilitatorUserId, {index: 'userId'})
+      .filter({teamId})
+  })
+
+  let sendViaSlack =
+    slackAuth && slackAuth.botAccessToken && slackNotification && slackNotification.channelId
+  if (sendViaSlack) {
+    const {channelId} = slackNotification
+    const {botAccessToken} = slackAuth
+    const manager = new SlackManager(botAccessToken)
+    const slug = meetingTypeToSlug[meetingType]
+    const meetingUrl = makeAppLink(`${slug}/${teamId}`)
+    const slackText = `Time’s up! Progress your meeting to the next stage: ${meetingUrl}`
+    const res = await manager.postMessage(channelId, slackText)
+    if (!res.ok) {
+      sendViaSlack = false
+    }
+  }
+  if (!sendViaSlack) {
+    const notification = new NotificationMeetingStageTimeLimit({
+      meetingId,
+      userIds: [facilitatorUserId]
+    })
+    await r.table('Notification').insert(notification)
+    publish('notification', facilitatorUserId, MeetingStageTimeLimitPayload, {notification})
+  }
+
   // get the meeting
   // get the facilitator
   // see if the facilitator has turned on slack notifications for the meeting
@@ -21,7 +60,7 @@ const processMeetingStageTimeLimits = async (job: ScheduledJobMeetingStageTimeLi
 }
 
 const jobProcessors = {
-  MeetingStageTimeLimit: processMeetingStageTimeLimits
+  MEETING_STAGE_TIME_LIMIT: processMeetingStageTimeLimits
 }
 
 const processJob = async (job: ScheduledJob) => {

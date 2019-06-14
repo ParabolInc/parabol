@@ -2,24 +2,14 @@ import {GraphQLBoolean, GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNon
 import connectionDefinitions from 'server/graphql/connectionDefinitions'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 import NotificationEnum from 'server/graphql/types/NotificationEnum'
-import NotifyFacilitatorDisconnected from 'server/graphql/types/NotifyFacilitatorDisconnected'
 import NotifyKickedOut from 'server/graphql/types/NotifyKickedOut'
 import NotifyPaymentRejected from 'server/graphql/types/NotifyPaymentRejected'
 import NotifyTaskInvolves from 'server/graphql/types/NotifyTaskInvolves'
 import NotifyPromoteToOrgLeader from 'server/graphql/types/NotifyPromoteToOrgLeader'
 import NotifyTeamArchived from 'server/graphql/types/NotifyTeamArchived'
 import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor'
-
-import {
-  FACILITATOR_DISCONNECTED,
-  KICKED_OUT,
-  PAYMENT_REJECTED,
-  PROMOTE_TO_BILLING_LEADER,
-  TASK_INVOLVES,
-  TEAM_ARCHIVED,
-  TEAM_INVITATION
-} from 'universal/utils/constants'
 import NotificationTeamInvitation from 'server/graphql/types/NotificationTeamInvitation'
+import NotificationMeetingStageTimeLimit from 'server/graphql/types/NotificationMeetingStageTimeLimit'
 
 export const notificationInterfaceFields = {
   id: {
@@ -36,14 +26,14 @@ export const notificationInterfaceFields = {
       '*The unique organization ID for this notification. Can be blank for targeted notifications'
   },
   startAt: {
-    type: GraphQLISO8601Type,
+    type: new GraphQLNonNull(GraphQLISO8601Type),
     description: 'The datetime to activate the notification & send it to the client'
   },
   type: {
-    type: NotificationEnum
+    type: new GraphQLNonNull(NotificationEnum)
   },
   userIds: {
-    type: new GraphQLList(new GraphQLNonNull(GraphQLID)),
+    type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
     description: '*The userId that should see this notification'
   }
 }
@@ -55,13 +45,13 @@ const Notification = new GraphQLInterfaceType({
     // type lookup needs to be resolved in a thunk since there is a circular reference when loading
     // alternative to treating it like a DB driver if GCing is an issue
     const resolveTypeLookup = {
-      [FACILITATOR_DISCONNECTED]: NotifyFacilitatorDisconnected,
-      [KICKED_OUT]: NotifyKickedOut,
-      [PAYMENT_REJECTED]: NotifyPaymentRejected,
-      [TASK_INVOLVES]: NotifyTaskInvolves,
-      [PROMOTE_TO_BILLING_LEADER]: NotifyPromoteToOrgLeader,
-      [TEAM_ARCHIVED]: NotifyTeamArchived,
-      [TEAM_INVITATION]: NotificationTeamInvitation
+      KICKED_OUT: NotifyKickedOut,
+      PAYMENT_REJECTED: NotifyPaymentRejected,
+      TASK_INVOLVES: NotifyTaskInvolves,
+      PROMOTE_TO_BILLING_LEADER: NotifyPromoteToOrgLeader,
+      TEAM_ARCHIVED: NotifyTeamArchived,
+      TEAM_INVITATION: NotificationTeamInvitation,
+      MEETING_STAGE_TIME_LIMIT: NotificationMeetingStageTimeLimit
     }
 
     return resolveTypeLookup[value.type]

@@ -1,8 +1,6 @@
 import {convertFromRaw, Editor, EditorState} from 'draft-js'
-import PropTypes from 'prop-types'
-import React, {Component} from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {withRouter} from 'react-router-dom'
+import React, {useEffect} from 'react'
+import {createFragmentContainer, graphql} from 'react-relay'
 import OutcomeCardStatusIndicator from 'universal/modules/outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
 import editorDecorators from 'universal/components/TaskEditor/decorators'
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation'
@@ -16,6 +14,12 @@ import Row from 'universal/components/Row/Row'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 import RaisedButton from 'universal/components/RaisedButton'
 import AcknowledgeButton from 'universal/modules/notifications/components/AcknowledgeButton/AcknowledgeButton'
+import {TaskInvolves_notification} from '__generated__/TaskInvolves_notification.graphql'
+import useRefState from 'universal/hooks/useRefState'
+import useMutationProps from 'universal/hooks/useMutationProps'
+import useAtmosphere from 'universal/hooks/useAtmosphere'
+import useRouter from 'universal/hooks/useRouter'
+import NotificationErrorMessage from 'universal/modules/notifications/components/NotificationErrorMessage'
 
 const involvementWord = {
   [ASSIGNEE]: 'assigned',
@@ -42,77 +46,49 @@ const StyledButton = styled(RaisedButton)({
   width: '100%'
 })
 
-class TaskInvolves extends Component {
-  constructor (props) {
-    super(props)
-    const {
-      notification: {
-        task: {content}
-      }
-    } = props
-    const contentState = convertFromRaw(JSON.parse(content))
-    this.state = {
-      editorState: EditorState.createWithContent(
-        contentState,
-        editorDecorators(this.getEditorState)
-      )
-    }
-  }
+const makeEditorState = (content, editorStateRef) => {
+  const contentState = convertFromRaw(JSON.parse(content))
+  const getEditorState = () => editorStateRef.current
+  return EditorState.createWithContent(contentState, editorDecorators(getEditorState))
+}
 
-  componentWillReceiveProps (nextProps) {
-    const {
-      notification: {
-        task: {content: oldContent}
-      }
-    } = this.props
-    const {
-      notification: {
-        task: {content}
-      }
-    } = nextProps
-    if (content !== oldContent) {
-      const contentState = convertFromRaw(JSON.parse(content))
-      this.setState({
-        editorState: EditorState.createWithContent(
-          contentState,
-          editorDecorators(this.getEditorState)
-        )
-      })
-    }
-  }
+interface Props {
+  notification: TaskInvolves_notification
+}
 
-  getEditorState = () => this.state.editorState
+const TaskInvolves = (props: Props) => {
+  const {notification} = props
+  const {id: notificationId, task, team, involvement, changeAuthor} = notification
+  const {content, status, tags, assignee} = task
+  const {changeAuthorName} = changeAuthor
+  const {name: teamName, id: teamId} = team
+  const action = involvementWord[involvement]
+  const [editorStateRef, setEditorState] = useRefState<EditorState>(() =>
+    makeEditorState(content, editorStateRef)
+  )
+  useEffect(() => {
+    setEditorState(makeEditorState(content, editorStateRef))
+  }, [content])
+  const {error, submitMutation, onCompleted, onError, submitting} = useMutationProps()
+  const atmosphere = useAtmosphere()
+  const {history} = useRouter()
 
-  acknowledge = () => {
-    const {atmosphere, notification, submitMutation, onError, onCompleted} = this.props
-    const {notificationId} = notification
+  const acknowledge = () => {
+    if (submitting) return
     submitMutation()
     ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted)
   }
-  gotoBoard = () => {
-    const {atmosphere, notification, submitMutation, onError, onCompleted, history} = this.props
-    const {notificationId, task, team} = notification
-    const {tags} = task
-    const {teamId} = team
+
+  const gotoBoard = () => {
+    if (submitting) return
     submitMutation()
     ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted)
     const archiveSuffix = tags.includes('archived') ? '/archive' : ''
     history.push(`/team/${teamId}${archiveSuffix}`)
   }
 
-  render () {
-    const {editorState} = this.state
-    const {notification, submitting} = this.props
-    const {
-      team,
-      task,
-      involvement,
-      changeAuthor: {changeAuthorName}
-    } = notification
-    const {teamName} = team
-    const {status, tags, assignee} = task
-    const action = involvementWord[involvement]
-    return (
+  return (
+    <>
       <Row>
         <IconAvatar
           icon={involvement === MENTIONEE ? 'chat_bubble' : 'assignment_ind'}
@@ -129,7 +105,7 @@ class TaskInvolves extends Component {
             <span>{' a task for '}</span>
             <span
               className={css(defaultStyles.messageVar, defaultStyles.notifLink)}
-              onClick={this.gotoBoard}
+              onClick={gotoBoard}
               title={`Go to ${teamName}’s Board`}
             >
               {teamName}
@@ -142,7 +118,13 @@ class TaskInvolves extends Component {
               {tags.includes('private') && <OutcomeCardStatusIndicator status='private' />}
               {tags.includes('archived') && <OutcomeCardStatusIndicator status='archived' />}
             </div>
-            <Editor readOnly editorState={editorState} />
+            <Editor
+              readOnly
+              editorState={editorStateRef.current}
+              onChange={() => {
+                /*noop*/
+              }}
+            />
             {assignee && (
               <div className={css(defaultStyles.owner)}>
                 <img
@@ -161,7 +143,7 @@ class TaskInvolves extends Component {
               aria-label='Go to this board'
               palette='warm'
               size={ui.notificationButtonSize}
-              onClick={this.gotoBoard}
+              onClick={gotoBoard}
               waiting={submitting}
             >
               {'Go to Board'}
@@ -169,37 +151,28 @@ class TaskInvolves extends Component {
           </div>
           <AcknowledgeButton
             aria-label={clearNotificationLabel}
-            onClick={this.acknowledge}
+            onClick={acknowledge}
             waiting={submitting}
           />
         </div>
       </Row>
-    )
-  }
-}
-
-TaskInvolves.propTypes = {
-  atmosphere: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired,
-  onCompleted: PropTypes.func.isRequired,
-  onError: PropTypes.func.isRequired,
-  submitMutation: PropTypes.func.isRequired,
-  submitting: PropTypes.bool,
-  notification: PropTypes.object.isRequired
+      <NotificationErrorMessage error={error} />
+    </>
+  )
 }
 
 export default createFragmentContainer(
-  withRouter(TaskInvolves),
+  TaskInvolves,
   graphql`
     fragment TaskInvolves_notification on NotifyTaskInvolves {
-      notificationId: id
+      id
       changeAuthor {
         changeAuthorName: preferredName
       }
       involvement
       team {
-        teamId: id
-        teamName: name
+        id
+        name
       }
       task {
         content

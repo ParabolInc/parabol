@@ -1,24 +1,25 @@
 import styled, {css} from 'react-emotion'
-import PropTypes from 'prop-types'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {withRouter} from 'react-router-dom'
+import {createFragmentContainer, graphql} from 'react-relay'
 import defaultStyles from 'universal/modules/notifications/helpers/styles'
 import ui from 'universal/styles/ui'
 import Row from 'universal/components/Row/Row'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 import RaisedButton from 'universal/components/RaisedButton'
+import useRouter from 'universal/hooks/useRouter'
+import {PaymentRejected_notification} from '__generated__/PaymentRejected_notification.graphql'
 
 const StyledButton = styled(RaisedButton)({...ui.buttonBlockStyles})
 
-const PaymentRejected = (props) => {
-  const {history, notification} = props
-  const {
-    organization: {
-      orgId,
-      creditCard: {last4, brand}
-    }
-  } = notification
+interface Props {
+  notification: PaymentRejected_notification
+}
+const PaymentRejected = (props: Props) => {
+  const {notification} = props
+  const {history} = useRouter()
+  const {organization} = notification
+  const {id: orgId, creditCard} = organization
+  const {last4, brand} = creditCard || {last4: '****', brand: 'Unknown'}
   const addBilling = () => {
     history.push(`/me/organizations/${orgId}`)
   }
@@ -48,18 +49,12 @@ const PaymentRejected = (props) => {
   )
 }
 
-PaymentRejected.propTypes = {
-  history: PropTypes.object.isRequired,
-  notification: PropTypes.object.isRequired
-}
-
 export default createFragmentContainer(
-  withRouter(PaymentRejected),
+  PaymentRejected,
   graphql`
     fragment PaymentRejected_notification on NotifyPaymentRejected {
-      notificationId: id
       organization {
-        orgId: id
+        id
         creditCard {
           last4
           brand

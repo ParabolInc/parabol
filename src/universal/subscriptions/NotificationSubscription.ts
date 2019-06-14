@@ -18,6 +18,12 @@ import {
 } from 'universal/mutations/InviteToTeamMutation'
 import {acceptTeamInvitationNotificationUpdater} from 'universal/mutations/AcceptTeamInvitationMutation'
 import {endNewMeetingNotificationUpdater} from 'universal/mutations/EndNewMeetingMutation'
+import {graphql} from 'react-relay'
+import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups'
+import {OnNextContext, OnNextHandler, UpdaterHandler} from 'universal/types/relayMutations'
+import {GraphQLSubscriptionConfig} from 'relay-runtime'
+import {NotificationSubscriptionResponse} from '__generated__/NotificationSubscription.graphql'
+import Atmosphere from 'universal/Atmosphere'
 
 const subscription = graphql`
   subscription NotificationSubscription {
@@ -74,6 +80,21 @@ const subscription = graphql`
           url
         }
       }
+
+      # ScheduledJob Result
+      ... on MeetingStageTimeLimitPayload {
+        notification {
+          ...MeetingStageTimeLimit_notification
+          type
+          meeting {
+            meetingType
+            team {
+              id
+              name
+            }
+          }
+        }
+      }
     }
   }
 `
@@ -104,9 +125,15 @@ const disconnectSocketNotificationUpdater = (payload, store) => {
   })
 }
 
-const stripeFailPaymentNotificationOnNext = (payload, {atmosphere, history}) => {
+type NextHandler = OnNextHandler<NotificationSubscriptionResponse['notificationSubscription']>
+
+const stripeFailPaymentNotificationOnNext: NextHandler = (
+  payload: any,
+  {atmosphere, history}: OnNextContext
+) => {
   if (!payload) return
-  const {organization} = payload
+  const {notification} = payload
+  const {organization} = notification
   if (!organization) return
   const {id: orgId, name: orgName} = organization
   atmosphere.eventEmitter.emit('addToast', {
@@ -122,9 +149,38 @@ const stripeFailPaymentNotificationOnNext = (payload, {atmosphere, history}) => 
     }
   })
 }
-const stripeFailPaymentNotificationUpdater = (payload, store, viewerId) => {
+
+// there's a bug in relay compiler that only shows part of the discriminated union
+const meetingStageTimeLimitOnNext: NextHandler = (payload: any, {atmosphere, history}) => {
+  if (!payload || payload.__typename !== 'MeetingStageTimeLimitPayload') return
+  const {notification} = payload
+  const {meeting} = notification
+  const {meetingType, team} = meeting
+  const {id: teamId, name: teamName} = team
+  const meetingLabel = meetingTypeToLabel[meetingType]
+  const meetingSlug = meetingTypeToSlug[meetingType]
+  atmosphere.eventEmitter.emit('addToast', {
+    level: 'info',
+    autoDismiss: 10,
+    title: 'Time’s up!',
+    message: `Your ${meetingLabel} meeting for ${teamName} is ready to move forward!`,
+    action: {
+      label: 'Go there',
+      callback: () => {
+        history.push(`/${meetingSlug}/${teamId}`)
+      }
+    }
+  })
+}
+
+const meetingStageTimeLimitUpdater: UpdaterHandler = (payload, {store}) => {
   const notification = payload.getLinkedRecord('notification')
-  handleAddNotifications(notification, store, viewerId)
+  handleAddNotifications(notification, store)
+}
+
+const stripeFailPaymentNotificationUpdater: UpdaterHandler = (payload, {store}) => {
+  const notification = payload.getLinkedRecord('notification')
+  handleAddNotifications(notification, store)
 }
 
 const addNewFeatureNotificationUpdater = (payload, {store}) => {
@@ -137,10 +193,11 @@ const onNextHandlers = {
   CreateTaskPayload: createTaskNotificationOnNext,
   InviteToTeamPayload: inviteToTeamNotificationOnNext,
   RemoveOrgUserPayload: removeOrgUserNotificationOnNext,
-  StripeFailPaymentPayload: stripeFailPaymentNotificationOnNext
+  StripeFailPaymentPayload: stripeFailPaymentNotificationOnNext,
+  MeetingStageTimeLimitPayload: meetingStageTimeLimitOnNext
 }
 
-const NotificationSubscription = (atmosphere, queryVariables, subParams) => {
+const NotificationSubscription = (atmosphere: Atmosphere, _queryVariables, subParams) => {
   const {viewerId} = atmosphere
   return {
     subscription,
@@ -148,20 +205,21 @@ const NotificationSubscription = (atmosphere, queryVariables, subParams) => {
       const payload = store.getRootField('notificationSubscription')
       if (!payload) return
       const type = payload.getValue('__typename')
+      const context = {store, atmosphere}
       switch (type) {
         case 'AcceptTeamInvitationPayload':
-          acceptTeamInvitationNotificationUpdater(payload, {store, atmosphere})
+          acceptTeamInvitationNotificationUpdater(payload, context)
           break
         case 'AddFeatureFlagPayload':
           break
         case 'AddNewFeaturePayload':
-          addNewFeatureNotificationUpdater(payload, {store})
+          addNewFeatureNotificationUpdater(payload, context)
           break
         case 'AddOrgPayload':
-          addOrgMutationNotificationUpdater(payload, {store})
+          addOrgMutationNotificationUpdater(payload, context)
           break
         case 'AddTeamPayload':
-          addTeamMutationNotificationUpdater(payload, {store})
+          addTeamMutationNotificationUpdater(payload, context)
           break
         case 'ClearNotificationPayload':
           clearNotificationNotificationUpdater(payload, store, viewerId)
@@ -176,19 +234,22 @@ const NotificationSubscription = (atmosphere, queryVariables, subParams) => {
           disconnectSocketNotificationUpdater(payload, store)
           break
         case 'EndNewMeetingPayload':
-          endNewMeetingNotificationUpdater(payload, {store})
+          endNewMeetingNotificationUpdater(payload, context)
           break
         case 'InviteToTeamPayload':
-          inviteToTeamNotificationUpdater(payload, {atmosphere, store})
+          inviteToTeamNotificationUpdater(payload, context)
           break
         case 'User':
           connectSocketUserUpdater(payload, store)
+          break
+        case 'MeetingStageTimeLimitPayload':
+          meetingStageTimeLimitUpdater(payload, context)
           break
         case 'RemoveOrgUserPayload':
           removeOrgUserNotificationUpdater(payload, store, viewerId)
           break
         case 'StripeFailPaymentPayload':
-          stripeFailPaymentNotificationUpdater(payload, store, viewerId)
+          stripeFailPaymentNotificationUpdater(payload, context)
           break
         case 'UpdateUserProfilePayload':
           break
@@ -196,14 +257,16 @@ const NotificationSubscription = (atmosphere, queryVariables, subParams) => {
           console.error('NotificationSubscription case fail', type)
       }
     },
-    onNext: ({notificationSubscription}) => {
+    onNext: (response) => {
+      if (!response) return
+      const {notificationSubscription} = response
       const {__typename: type} = notificationSubscription
       const handler = onNextHandlers[type]
       if (handler) {
         handler(notificationSubscription, {...subParams, atmosphere})
       }
     }
-  }
+  } as GraphQLSubscriptionConfig<NotificationSubscriptionResponse>
 }
 
 export default NotificationSubscription

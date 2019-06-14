@@ -70,6 +70,10 @@ interface Toast {
   autoDismiss?: number
   title: string
   message: string
+  action?: {
+    label: string
+    callback: () => void
+  }
 }
 
 export interface AtmosphereEvents {

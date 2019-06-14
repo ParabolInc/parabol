@@ -14,6 +14,7 @@ import InviteToTeamPayload from 'server/graphql/types/InviteToTeamPayload'
 import AcceptTeamInvitationPayload from 'server/graphql/types/AcceptTeamInvitationPayload'
 import EndNewMeetingPayload from 'server/graphql/types/EndNewMeetingPayload'
 import AddNewFeaturePayload from 'server/graphql/types/addNewFeaturePayload'
+import MeetingStageTimeLimitPayload from 'server/graphql/types/MeetingStageTimeLimitPayload'
 
 const types = [
   AcceptTeamInvitationPayload,
@@ -27,6 +28,7 @@ const types = [
   DisconnectSocketPayload,
   EndNewMeetingPayload,
   InviteToTeamPayload,
+  MeetingStageTimeLimitPayload,
   RemoveOrgUserPayload,
   StripeFailPaymentPayload,
   // User doesn't have an error field, either make an exception & add it (because it's the Viewer) or use a payload here

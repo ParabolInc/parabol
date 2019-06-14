@@ -62,9 +62,7 @@ export const USER_DASH = 'userDash'
 export const PERSONAL_LABEL = 'Personal'
 export const PRO_LABEL = 'Pro'
 
-/* NotificationRow Types */
-// Sent to meeting participants when the facilitator disconnects
-export const FACILITATOR_DISCONNECTED = 'FACILITATOR_DISCONNECTED'
+/* DEPRECATED. Use NotificationEnum */
 // sent to someone just kicked out of a team
 export const KICKED_OUT = 'KICKED_OUT'
 // Sent to Billing Leaders when a reoccuring payment gets rejected

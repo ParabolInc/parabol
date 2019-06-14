@@ -30,7 +30,7 @@ const TEAM_EVENTS = [
   SlackNotificationEventEnum.meetingEnd,
   SlackNotificationEventEnum.meetingNextStageReady
 ]
-const USER_EVENTS = [SlackNotificationEventEnum.meetingStageTimeLimit]
+const USER_EVENTS = [SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT]
 
 const TeamGroup = styled('div')({
   alignItems: 'center',
