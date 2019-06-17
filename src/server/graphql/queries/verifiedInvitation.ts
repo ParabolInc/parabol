@@ -63,7 +63,6 @@ export default {
       return {
         errorType: 'expired',
         teamName: team.name,
-        meetingType,
         inviterName: inviter.preferredName,
         inviterEmail: inviter.email
       }

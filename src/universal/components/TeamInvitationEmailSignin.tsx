@@ -10,6 +10,7 @@ import InviteDialog from './InviteDialog'
 import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import DialogTitle from './DialogTitle'
+import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
 
 interface Props {
   verifiedInvitation: TeamInvitationEmailSignin_verifiedInvitation
@@ -26,7 +27,7 @@ const TeamName = styled('span')({
 
 const TeamInvitationEmailSignin = (props: Props) => {
   const {verifiedInvitation} = props
-  const {user, teamInvitation, teamName} = verifiedInvitation
+  const {meetingType, user, teamInvitation, teamName} = verifiedInvitation
   if (!user || !teamInvitation) return null
   const {preferredName} = user
   const {email} = teamInvitation
@@ -35,9 +36,16 @@ const TeamInvitationEmailSignin = (props: Props) => {
       <Helmet title={`Sign in | Team Invitation`} />
       <DialogTitle>Welcome back, {preferredName}!</DialogTitle>
       <DialogContent>
-        <InvitationDialogCopy>
-          Enter your password for immediate access to your team: <TeamName>{teamName}</TeamName>
-        </InvitationDialogCopy>
+        {meetingType ? (
+          <InvitationDialogCopy>
+            Enter your password to join the {meetingTypeToLabel[meetingType]} Meeting for: (
+            <TeamName>{teamName}</TeamName>)
+          </InvitationDialogCopy>
+        ) : (
+          <InvitationDialogCopy>
+            Enter your password for immediate access to your team: <TeamName>{teamName}</TeamName>
+          </InvitationDialogCopy>
+        )}
         <InvitationCenteredCopy>
           <EmailPasswordAuthForm email={email} isPrimary isSignin />
           <ForgotPasswordOneClick email={email} />
@@ -51,6 +59,7 @@ export default createFragmentContainer(
   TeamInvitationEmailSignin,
   graphql`
     fragment TeamInvitationEmailSignin_verifiedInvitation on VerifiedInvitationPayload {
+      meetingType
       user {
         preferredName
       }

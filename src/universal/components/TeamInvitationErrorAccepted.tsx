@@ -8,6 +8,7 @@ import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import DialogTitle from './DialogTitle'
 import StyledLink from './StyledLink'
+import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
 
 interface Props {
   verifiedInvitation: TeamInvitationErrorAccepted_verifiedInvitation
@@ -19,7 +20,7 @@ const InlineCopy = styled(InvitationDialogCopy)({
 
 const TeamInvitationErrorAccepted = (props: Props) => {
   const {verifiedInvitation} = props
-  const {teamInvitation, teamName} = verifiedInvitation
+  const {meetingType, teamInvitation, teamName} = verifiedInvitation
   if (!teamInvitation || teamName === null) return null
   const {teamId} = teamInvitation
   return (
@@ -30,10 +31,24 @@ const TeamInvitationErrorAccepted = (props: Props) => {
         <InvitationDialogCopy>
           The invitation to {teamName} has already been redeemed.
         </InvitationDialogCopy>
-        <InlineCopy>Visit the</InlineCopy>{' '}
-        <StyledLink to={`/team/${teamId}`} title='Visit the Team Dashboard'>
-          Team Dashboard
-        </StyledLink>
+        {meetingType ? (
+          <>
+            <StyledLink
+              to={`/meeting/${teamId}`}
+              title={`Join the ${meetingTypeToLabel[meetingType]}`}
+            >
+              Join the {meetingTypeToLabel[meetingType]} Meeting
+            </StyledLink>{' '}
+            <InlineCopy>in progress…</InlineCopy>
+          </>
+        ) : (
+          <>
+            <InlineCopy>Visit the</InlineCopy>{' '}
+            <StyledLink to={`/team/${teamId}`} title='Visit the Team Dashboard'>
+              Team Dashboard
+            </StyledLink>
+          </>
+        )}
       </DialogContent>
     </InviteDialog>
   )
@@ -43,6 +58,7 @@ export default createFragmentContainer(
   TeamInvitationErrorAccepted,
   graphql`
     fragment TeamInvitationErrorAccepted_verifiedInvitation on VerifiedInvitationPayload {
+      meetingType
       teamName
       teamInvitation {
         teamId

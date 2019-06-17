@@ -15,6 +15,7 @@ import InviteDialog from './InviteDialog'
 import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import DialogTitle from './DialogTitle'
+import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
 
 interface Props
   extends WithAtmosphereProps,
@@ -60,7 +61,7 @@ class TeamInvitationGoogleSignin extends Component<Props> {
 
   render () {
     const {error, submitting, verifiedInvitation} = this.props
-    const {user, teamName} = verifiedInvitation
+    const {meetingType, user, teamName} = verifiedInvitation
     if (!user) return null
     const {preferredName} = user
     return (
@@ -69,9 +70,16 @@ class TeamInvitationGoogleSignin extends Component<Props> {
         <DialogTitle>Welcome back, {preferredName}!</DialogTitle>
         <DialogContent>
           <InvitationDialogCopy>You last signed in with Google. </InvitationDialogCopy>
-          <InvitationDialogCopy>
-            Tap below for immediate access to your team: <TeamName>{teamName}</TeamName>
-          </InvitationDialogCopy>
+          {meetingType ? (
+            <InvitationDialogCopy>
+              Tap below to join the {meetingTypeToLabel[meetingType]} Meeting for:{' '}
+              <TeamName>{teamName}</TeamName>
+            </InvitationDialogCopy>
+          ) : (
+            <InvitationDialogCopy>
+              Tap below for immediate access to your team: <TeamName>{teamName}</TeamName>
+            </InvitationDialogCopy>
+          )}
           <InvitationCenteredCopy>
             <GoogleOAuthButtonBlock
               label='Sign in with Google'
@@ -90,6 +98,7 @@ export default createFragmentContainer(
   withAtmosphere(withMutationProps(withRouter(TeamInvitationGoogleSignin))),
   graphql`
     fragment TeamInvitationGoogleSignin_verifiedInvitation on VerifiedInvitationPayload {
+      meetingType
       user {
         email
         preferredName

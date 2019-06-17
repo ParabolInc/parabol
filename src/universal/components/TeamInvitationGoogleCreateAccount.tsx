@@ -21,6 +21,7 @@ import LINK = PALETTE.LINK
 import PlainButton from 'universal/components/PlainButton/PlainButton'
 import HorizontalSeparator from 'universal/components/HorizontalSeparator/HorizontalSeparator'
 import AuthPrivacyFooter from 'universal/components/AuthPrivacyFooter'
+import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
 
 interface Props
   extends WithAtmosphereProps,
@@ -43,7 +44,7 @@ const StyledContent = styled(DialogContent)({
 })
 
 const CopyMargins = styled('div')({
-  padding: '0 2rem'
+  padding: '0 1.5rem'
 })
 
 const UseEmailFallback = styled(PlainButton)({
@@ -99,24 +100,31 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
   render () {
     const {error, submitting, verifiedInvitation} = this.props
     const {isEmailFallback} = this.state
-    const {teamInvitation, teamName, meetingType} = verifiedInvitation
+    const {meetingType, teamInvitation, teamName} = verifiedInvitation
     if (!teamInvitation) return null
     const {email} = teamInvitation
-    const maybeMeeting = meetingType || 'fake meeting type'
     return (
       <StyledDialog>
         <Helmet title={`Sign up with Google | Team Invitation`} />
-        <DialogTitle>Welcome!</DialogTitle>
+        <DialogTitle>
+          {meetingType
+            ? `Join ${meetingTypeToLabel[meetingType]} Meeting in progress…`
+            : 'Join Team'}
+        </DialogTitle>
         <StyledContent>
           <CopyMargins>
             <InvitationDialogCopy>
               It looks like your email is hosted by Google.
             </InvitationDialogCopy>
-            <InvitationDialogCopy>
-              Tap below for immediate access to your team: <TeamName>{teamName}</TeamName>
-            </InvitationDialogCopy>
-            {maybeMeeting && (
-              <InvitationDialogCopy>Join the meeting! {maybeMeeting}</InvitationDialogCopy>
+            {meetingType ? (
+              <InvitationDialogCopy>
+                You’re just 1 step away from participating with your team:{' '}
+                <TeamName>{teamName}</TeamName>
+              </InvitationDialogCopy>
+            ) : (
+              <InvitationDialogCopy>
+                Tap below for immediate access to your team: <TeamName>{teamName}</TeamName>
+              </InvitationDialogCopy>
             )}
           </CopyMargins>
           <InvitationCenteredCopy>

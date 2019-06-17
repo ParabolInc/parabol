@@ -10,6 +10,7 @@ import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import DialogTitle from './DialogTitle'
 import AuthPrivacyFooter from 'universal/components/AuthPrivacyFooter'
+import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
 
 interface Props {
   verifiedInvitation: TeamInvitationEmailCreateAccount_verifiedInvitation
@@ -26,17 +27,26 @@ const TeamName = styled('span')({
 
 const TeamInvitationEmailCreateAccount = (props: Props) => {
   const {verifiedInvitation} = props
-  const {teamName, teamInvitation} = verifiedInvitation
+  const {meetingType, teamName, teamInvitation} = verifiedInvitation
   if (!teamInvitation) return null
   const {email} = teamInvitation
   return (
     <StyledDialog>
       <Helmet title={`Sign up | Team Invitation`} />
-      <DialogTitle>Welcome!</DialogTitle>
+      <DialogTitle>
+        {meetingType ? `Join ${meetingTypeToLabel[meetingType]} Meeting in progress…` : 'Join Team'}
+      </DialogTitle>
       <DialogContent>
-        <InvitationDialogCopy>
-          Choose a password for immediate access to your team: <TeamName>{teamName}</TeamName>
-        </InvitationDialogCopy>
+        {meetingType ? (
+          <InvitationDialogCopy>
+            You’re just 1 step away from participating with your team:{' '}
+            <TeamName>{teamName}</TeamName>
+          </InvitationDialogCopy>
+        ) : (
+          <InvitationDialogCopy>
+            Choose a password for immediate access to your team: <TeamName>{teamName}</TeamName>
+          </InvitationDialogCopy>
+        )}
         <InvitationCenteredCopy>
           <EmailPasswordAuthForm email={email} isPrimary />
         </InvitationCenteredCopy>
@@ -50,6 +60,7 @@ export default createFragmentContainer(
   TeamInvitationEmailCreateAccount,
   graphql`
     fragment TeamInvitationEmailCreateAccount_verifiedInvitation on VerifiedInvitationPayload {
+      meetingType
       teamInvitation {
         email
       }
