@@ -5,6 +5,32 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## vNEXT
+
+### Changed
+* Moved integration OAuth flow into their respective managers
+* Refactor all flow components to typescript
+
+### Removed
+* Legacy Provider mutations
+
+## v3.13.0 2019-Jun-12
+
+### Changed
+* Refactored the Slack integration to support target UX for team and personal notifications
+
+### Fixed
+* Create new stripe subscription after a failed payment followed by a CC update
+
+### Removed
+* Legacy meeting fields on the Team object in the DB
+
+### Added
+* New stripe per-event handling
+
+### Changed
+* Moved integration OAuth flow into their respective managers
+
 ## v3.12.0 2019-May-29
 
 ### Added
@@ -125,7 +151,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ### Fixed
 * Squelch Google NLP unsupported languages (again)
 * Updated linter (#2725)
-* Fix infinite recursion when facilitatorPhaseItem is invalid (#2724) 
+* Fix infinite recursion when facilitatorPhaseItem is invalid (#2724)
 * Fix buld:dll (#2719)
 * Lock check-in question editing to facilitator (#2718)
 * Fix DashAlert when page is scrollable (#2714)
@@ -186,7 +212,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 * User Settings renamed to User Profile
 * Upgraded to Relay v2.0.0
 * Use persisted queries instead of full query text
- 
+
 ### Removed
 * redux-form
 * Usage of legacy React context

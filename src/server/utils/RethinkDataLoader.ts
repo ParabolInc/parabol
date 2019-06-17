@@ -28,6 +28,8 @@ import {
 } from 'universal/types/graphql'
 import promiseAllPartial from 'universal/utils/promiseAllPartial'
 import MeetingMember from 'server/database/types/MeetingMember'
+import SlackAuth from 'server/database/types/SlackAuth'
+import SlackNotification from 'server/database/types/SlackNotification'
 
 interface JiraRemoteProjectKey {
   accessToken: string
@@ -80,6 +82,8 @@ interface Tables {
   ReflectTemplate: IReflectTemplate
   RetroReflectionGroup: IRetroReflectionGroup
   RetroReflection: IRetroReflection
+  SlackAuth: SlackAuth
+  SlackNotification: SlackNotification
   SoftTeamMember: ISoftTeamMember
   SuggestedAction: ISuggestedAction
   Task: ITask
@@ -136,6 +140,8 @@ export default class RethinkDataLoader {
   reflectTemplates = this.pkLoader('ReflectTemplate')
   retroReflectionGroups = this.pkLoader('RetroReflectionGroup')
   retroReflections = this.pkLoader('RetroReflection')
+  slackAuths = this.pkLoader('SlackAuth')
+  slackNotifications = this.pkLoader('SlackNotification')
   softTeamMembers = this.pkLoader('SoftTeamMember')
   suggestedActions = this.pkLoader('SuggestedAction')
   tasks = this.pkLoader('Task')
@@ -162,14 +168,10 @@ export default class RethinkDataLoader {
       .orderBy('sortOrder')
   })
 
-  atlassianAuthByUserId = this.fkLoader<IAtlassianAuth>(
-    this.atlassianAuths,
-    'userId',
-    (userIds) => {
-      const r = getRethink()
-      return r.table('AtlassianAuth').getAll(r.args(userIds), {index: 'userId'})
-    }
-  )
+  atlassianAuthByUserId = this.fkLoader(this.atlassianAuths, 'userId', (userIds) => {
+    const r = getRethink()
+    return r.table('AtlassianAuth').getAll(r.args(userIds), {index: 'userId'})
+  })
 
   customPhaseItemsByTeamId = this.fkLoader(this.customPhaseItems, 'teamId', (teamIds) => {
     const r = getRethink()
@@ -231,6 +233,16 @@ export default class RethinkDataLoader {
       .table('RetroReflection')
       .getAll(r.args(meetingIds), {index: 'meetingId'})
       .filter({isActive: true})
+  })
+
+  slackAuthByUserId = this.fkLoader(this.slackAuths, 'userId', (userIds) => {
+    const r = getRethink()
+    return r.table('SlackAuth').getAll(r.args(userIds), {index: 'userId'})
+  })
+
+  slackNotificationsByTeamId = this.fkLoader(this.slackNotifications, 'teamId', (teamIds) => {
+    const r = getRethink()
+    return r.table('SlackNotification').getAll(r.args(teamIds), {index: 'teamId'})
   })
 
   softTeamMembersByTeamId = this.fkLoader(this.softTeamMembers, 'teamId', (teamIds) => {

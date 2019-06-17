@@ -14,7 +14,6 @@ import DowngradeToPersonalPayload from 'server/graphql/types/DowngradeToPersonal
 import DragDiscussionTopicPayload from 'server/graphql/types/DragDiscussionTopicPayload'
 import EditReflectionPayload from 'server/graphql/types/EditReflectionPayload'
 import EndDraggingReflectionPayload from 'server/graphql/types/EndDraggingReflectionPayload'
-import EndMeetingPayload from 'server/graphql/types/EndMeetingPayload'
 import EndNewMeetingPayload from 'server/graphql/types/EndNewMeetingPayload'
 import MoveReflectTemplatePromptPayload from 'server/graphql/types/MoveReflectTemplatePromptPayload'
 import NavigateMeetingPayload from 'server/graphql/types/NavigateMeetingPayload'
@@ -45,12 +44,15 @@ import UpdateReflectionGroupTitlePayload from 'server/graphql/types/UpdateReflec
 import UpdateTeamNamePayload from 'server/graphql/types/UpdateTeamNamePayload'
 import UpgradeToProPayload from 'server/graphql/types/UpgradeToProPayload'
 import VoteForReflectionGroupPayload from 'server/graphql/types/VoteForReflectionGroupPayload'
+import RemoveSlackAuthPayload from 'server/graphql/types/RemoveSlackAuthPayload'
+import AddSlackAuthPayload from 'server/graphql/types/AddSlackAuthPayload'
 
 const types = [
   AcceptTeamInvitationPayload,
   AddAgendaItemPayload,
   AddAtlassianAuthPayload,
   AddGitHubAuthPayload,
+  AddSlackAuthPayload,
   AddTeamPayload,
   ArchiveTeamPayload,
   AutoGroupReflectionsPayload,
@@ -60,7 +62,6 @@ const types = [
   DragDiscussionTopicPayload,
   EndDraggingReflectionPayload,
   EditReflectionPayload,
-  EndMeetingPayload,
   EndNewMeetingPayload,
   NavigateMeetingPayload,
   NewMeetingCheckInPayload,
@@ -89,6 +90,7 @@ const types = [
   ReflectTemplatePromptUpdateDescriptionPayload,
   RemoveAtlassianAuthPayload,
   RemoveGitHubAuthPayload,
+  RemoveSlackAuthPayload,
   RemoveReflectTemplatePayload,
   RemoveReflectTemplatePromptPayload,
   RenameReflectTemplatePayload,

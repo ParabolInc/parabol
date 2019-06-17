@@ -26,13 +26,22 @@ export namespace PALETTE {
     BLUE = '#329AE5',
     BLUE_LIGHT = '#99CDF2'
   }
+
+  export const enum CONTROL {
+    MAIN = '#493272',
+    MAIN_BACKGROUND = '#49327261',
+    LIGHT = '#FFFFFF',
+    LIGHT_BACKGROUND = '#9D9CA8'
+  }
+
   export const enum TEXT {
     MAIN = '#444258',
     LIGHT = '#82809A',
     GREEN = '#61BF8B',
     PINK = '#ED4C86',
     RED = '#FD6157',
-    PURPLE = '#493272'
+    PURPLE = '#493272',
+    BLUE = '#329AE5'
   }
   export const enum ERROR {
     MAIN = '#ED4C56'

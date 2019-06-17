@@ -1,10 +1,16 @@
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {PayloadError} from 'relay-runtime'
+import {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 
 interface MutationServerError {
   message: string
   path: Array<string>
 }
+
+export type MenuMutationProps = Pick<
+  WithMutationProps,
+  'onCompleted' | 'onError' | 'submitMutation' | 'submitting'
+>
 
 const getOnCompletedError = (
   res: null | {[operationNames: string]: {error?: MutationServerError}},

@@ -4,11 +4,10 @@ import MenuItem from 'universal/components/MenuItem'
 import MenuItemComponentAvatar from 'universal/components/MenuItemComponentAvatar'
 import MenuItemLabel from 'universal/components/MenuItemLabel'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
-import {IntegrationServiceEnum} from 'universal/types/graphql'
-import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
-import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
+import {MenuMutationProps} from 'universal/hooks/useMutationProps'
 import styled from 'react-emotion'
 import {ICON_SIZE} from 'universal/styles/typographyV2'
+import AtlassianClientManager from 'universal/utils/AtlassianClientManager'
 
 interface Props {
   teamId: string
@@ -25,8 +24,10 @@ const MenuItemIcon = styled(MenuItemComponentAvatar)({
 
 const AddToJiraMenuItem = forwardRef((props: Props, ref) => {
   const {mutationProps, teamId} = props
-  const {submitMutation, submitting, onError, onCompleted} = mutationProps
   const atmosphere = useAtmosphere()
+  const onClick = () => {
+    AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps)
+  }
   return (
     <MenuItem
       ref={ref}
@@ -38,15 +39,7 @@ const AddToJiraMenuItem = forwardRef((props: Props, ref) => {
           {'Add Jira integration'}
         </MenuItemLabel>
       }
-      onClick={handleOpenOAuth({
-        name: IntegrationServiceEnum.atlassian,
-        submitting,
-        submitMutation,
-        atmosphere,
-        onError,
-        onCompleted,
-        teamId
-      })}
+      onClick={onClick}
     />
   )
 })

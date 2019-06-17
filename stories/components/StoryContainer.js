@@ -2,7 +2,6 @@
  * Provides global style primitives so that comonents rendered in the storybook
  * look like those rendered in the app.
  *
- * @flow
  */
 import type {Node} from 'react'
 import React, {Component} from 'react'

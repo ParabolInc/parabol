@@ -36,7 +36,6 @@ const ArchivedTasks = lazy(() =>
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
   teamId: string
-  teamMemberId: string
   viewer: TeamContainer_viewer
 }
 
@@ -46,7 +45,6 @@ const TeamContainer = (props: Props) => {
     location: {pathname},
     match,
     teamId,
-    teamMemberId,
     viewer
   } = props
   useEffect(() => {
@@ -70,10 +68,7 @@ const TeamContainer = (props: Props) => {
         <Switch>
           {/* TODO: replace match.path with a relative when the time comes: https://github.com/ReactTraining/react-router/pull/4539 */}
           <Route exact path={match.path} component={AgendaTasks} />
-          <Route
-            path={`${match.path}/settings`}
-            render={(p) => <TeamSettings {...p} teamMemberId={teamMemberId} />}
-          />
+          <Route path={`${match.path}/settings`} component={TeamSettings} />
           <Route
             path={`${match.path}/archive`}
             render={(p) => <ArchivedTasks {...p} team={team} />}

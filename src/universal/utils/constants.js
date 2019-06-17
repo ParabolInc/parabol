@@ -133,10 +133,6 @@ export const DEFAULT_TTL = ms('5m')
 export const cacheConfig = {ttl: DEFAULT_TTL}
 export const GITHUB = 'GitHubIntegration'
 export const SLACK = 'SlackIntegration'
-export const CURRENT_PROVIDERS = [GITHUB, SLACK]
-export const GITHUB_SCOPE = 'admin:org_hook,read:org,repo,user:email,write:repo_hook'
-export const SLACK_SCOPE = 'identify,incoming-webhook,channels:read,chat:write:bot'
-export const ATLASSIAN_SCOPE = 'read:jira-user read:jira-work write:jira-work offline_access'
 export const GITHUB_ENDPOINT = 'https://api.github.com/graphql'
 
 /* JavaScript specifics */
@@ -146,7 +142,6 @@ export const MAX_INT = 2147483647
 export const NEW_AUTH_TOKEN = 'newAuthToken'
 export const NOTIFICATION = 'notification'
 export const ORGANIZATION = 'organization'
-export const INTEGRATION = 'integration'
 // export const TASK = 'task'; // TODO refactor so it doesn't conflict with DnD
 // export const MEETING = 'meeting'; // conflicts with area
 // export const AGENDA_ITEM = 'agendaItem'; // conflict

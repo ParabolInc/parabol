@@ -1,3 +1,5 @@
+/* Deprecated, use StripeManager */
+
 import initStripe from 'stripe'
 import getDotenv from '../../universal/utils/dotenv'
 import {usedMethods, usedResources} from './constants'

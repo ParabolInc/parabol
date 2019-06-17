@@ -16,7 +16,7 @@ import labels from 'universal/styles/theme/labels'
 import addContentTag from 'universal/utils/draftjs/addContentTag'
 import removeContentTag from 'universal/utils/draftjs/removeContentTag'
 import isTaskPrivate from 'universal/utils/isTaskPrivate'
-import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
+import {MenuMutationProps} from 'universal/hooks/useMutationProps'
 
 const statusItems = labels.taskStatus.slugs.slice()
 

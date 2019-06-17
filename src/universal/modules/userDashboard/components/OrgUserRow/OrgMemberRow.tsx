@@ -41,7 +41,7 @@ const MenuToggleBlock = styled('div')({
 
 const ToggleBlock = styled('div')({
   marginLeft: Layout.ROW_GUTTER,
-  width: '6.25rem'
+  width: 36
 })
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
@@ -148,13 +148,7 @@ const OrgMemberRow = (props: Props) => {
           )}
           {!isPersonalTier && isViewerBillingLeader && (
             <ToggleBlock>
-              <Toggle
-                active={!inactive}
-                block
-                disabled={isPersonalTier}
-                label={inactive ? 'Inactive' : 'Active'}
-                onClick={toggleHandler}
-              />
+              <Toggle active={!inactive} disabled={isPersonalTier} onClick={toggleHandler} />
             </ToggleBlock>
           )}
           {isViewerLastBillingLeader && userId === viewerId && (

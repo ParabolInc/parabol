@@ -56,6 +56,8 @@ export interface IUser {
    * All the integrations that the user could possibly use
    */
   allAvailableIntegrations: Array<SuggestedIntegration>
+  archivedTasks: ITaskConnection | null
+  archivedTasksCount: number | null
 
   /**
    * The auth for the user. access token is null if not viewer. Use isActive to check for presence
@@ -114,6 +116,13 @@ export interface IUser {
   identities: Array<IAuthIdentityType | null> | null
 
   /**
+   * true if the user is not currently being billed for service. removed on every websocket handshake
+   */
+  inactive: boolean | null
+  invoiceDetails: IInvoice | null
+  invoices: IInvoiceConnection | null
+
+  /**
    * true if the user is currently online
    */
   isConnected: boolean | null
@@ -129,6 +138,11 @@ export interface IUser {
   name: string | null
 
   /**
+   * Nickname associated with the user
+   */
+  nickname: string | null
+
+  /**
    * the most important actions for the user to perform
    */
   suggestedActions: Array<SuggestedAction>
@@ -137,26 +151,6 @@ export interface IUser {
    * The timeline of important events for the viewer
    */
   timeline: ITimelineEventConnection
-
-  /**
-   * Nickname associated with the user
-   */
-  nickname: string | null
-
-  /**
-   * url of user’s raster profile picture (if user profile pic is an SVG, raster will be a PNG)
-   */
-  rasterPicture: any | null
-
-  /**
-   * url of user’s profile picture
-   */
-  picture: any | null
-
-  /**
-   * The timestamp the user was last updated
-   */
-  updatedAt: any | null
 
   /**
    * the ID of the newest feature, null if the user has dismissed it
@@ -169,28 +163,24 @@ export interface IUser {
   newFeature: INewFeatureBroadcast | null
 
   /**
-   * The last time the user connected via websocket
+   * url of user’s profile picture
    */
-  lastSeenAt: any | null
-
-  /**
-   * true if the user is not currently being billed for service. removed on every websocket handshake
-   */
-  inactive: boolean | null
+  picture: any | null
 
   /**
    * The application-specific name, defaults to nickname
    */
   preferredName: string
-  archivedTasks: ITaskConnection | null
-  archivedTasksCount: number | null
 
   /**
-   * get an integration provider belonging to the user
+   * url of user’s raster profile picture (if user profile pic is an SVG, raster will be a PNG)
    */
-  integrationProvider: IProvider | null
-  invoices: IInvoiceConnection | null
-  invoiceDetails: IInvoice | null
+  rasterPicture: any | null
+
+  /**
+   * The last time the user connected via websocket
+   */
+  lastSeenAt: any | null
 
   /**
    * The meeting member associated with this user, if a meeting is currently in progress
@@ -206,16 +196,6 @@ export interface IUser {
    * all the notifications for a single user
    */
   notifications: INotificationConnection | null
-
-  /**
-   * The list of providers as seen on the integrations page
-   */
-  providerMap: IProviderMap
-
-  /**
-   * paginated list of slackChannels
-   */
-  slackChannels: Array<ISlackIntegration>
 
   /**
    * get a single organization and the count of users by status
@@ -241,6 +221,16 @@ export interface IUser {
    * a string with message stating that the user is over the free tier limit, else null
    */
   overLimitCopy: string | null
+
+  /**
+   * The auth for the user. access token is null if not viewer. Use isActive to check for presence
+   */
+  slackAuth: ISlackAuth | null
+
+  /**
+   * A list of events and the slack channels they get posted to
+   */
+  slackNotifications: Array<ISlackNotification>
 
   /**
    * The integrations that the user would probably like to use
@@ -271,7 +261,12 @@ export interface IUser {
   /**
    * all the teams the user is a part of that the viewer can see
    */
-  tms: Array<string | null> | null
+  tms: Array<string>
+
+  /**
+   * The timestamp the user was last updated
+   */
+  updatedAt: any | null
   userOnTeam: IUser | null
 }
 
@@ -280,32 +275,6 @@ export interface IAllAvailableIntegrationsOnUserArguments {
    * a teamId to use as a filter for the access tokens
    */
   teamId: string
-}
-
-export interface IAtlassianAuthOnUserArguments {
-  /**
-   * The teamId for the atlassian auth token
-   */
-  teamId: string
-}
-
-export interface IGithubAuthOnUserArguments {
-  /**
-   * The teamId for the auth object
-   */
-  teamId: string
-}
-
-export interface ITimelineOnUserArguments {
-  /**
-   * the datetime cursor
-   */
-  after?: any | null
-
-  /**
-   * the number of timeline events to return
-   */
-  first: number
 }
 
 export interface IArchivedTasksOnUserArguments {
@@ -328,16 +297,25 @@ export interface IArchivedTasksCountOnUserArguments {
   teamId: string
 }
 
-export interface IIntegrationProviderOnUserArguments {
+export interface IAtlassianAuthOnUserArguments {
   /**
-   * The unique team member Id
+   * The teamId for the atlassian auth token
    */
   teamId: string
+}
 
+export interface IGithubAuthOnUserArguments {
   /**
-   * The name of the service
+   * The teamId for the auth object
    */
-  service: IntegrationServiceEnum
+  teamId: string
+}
+
+export interface IInvoiceDetailsOnUserArguments {
+  /**
+   * The id of the invoice
+   */
+  invoiceId: string
 }
 
 export interface IInvoicesOnUserArguments {
@@ -353,11 +331,16 @@ export interface IInvoicesOnUserArguments {
   orgId: string
 }
 
-export interface IInvoiceDetailsOnUserArguments {
+export interface ITimelineOnUserArguments {
   /**
-   * The id of the invoice
+   * the datetime cursor
    */
-  invoiceId: string
+  after?: any | null
+
+  /**
+   * the number of timeline events to return
+   */
+  first: number
 }
 
 export interface IMeetingMemberOnUserArguments {
@@ -384,20 +367,6 @@ export interface INotificationsOnUserArguments {
   first?: number | null
 }
 
-export interface IProviderMapOnUserArguments {
-  /**
-   * The unique team member Id
-   */
-  teamId: string
-}
-
-export interface ISlackChannelsOnUserArguments {
-  /**
-   * The unique team Id
-   */
-  teamId: string
-}
-
 export interface IOrganizationOnUserArguments {
   /**
    * the orgId
@@ -410,6 +379,17 @@ export interface IOrganizationUserOnUserArguments {
    * the orgId
    */
   orgId: string
+}
+
+export interface ISlackAuthOnUserArguments {
+  /**
+   * The teamId for the auth object
+   */
+  teamId: string
+}
+
+export interface ISlackNotificationsOnUserArguments {
+  teamId: string
 }
 
 export interface ISuggestedIntegrationsOnUserArguments {
@@ -477,237 +457,10 @@ export const enum TaskServiceEnum {
 }
 
 /**
- * OAuth token for a team member
- */
-export interface IAtlassianAuth {
-  __typename: 'AtlassianAuth'
-
-  /**
-   * shortid
-   */
-  id: string
-
-  /**
-   * true if the auth is valid, else false
-   */
-  isActive: boolean
-
-  /**
-   * The access token to atlassian, useful for 1 hour. null if no access token available
-   */
-  accessToken: string | null
-
-  /**
-   * *The atlassian account ID
-   */
-  accountId: string
-
-  /**
-   * The atlassian cloud IDs that the user has granted
-   */
-  cloudIds: Array<string>
-
-  /**
-   * The timestamp the provider was created
-   */
-  createdAt: any
-
-  /**
-   * The refresh token to atlassian to receive a new 1-hour accessToken, always null since server secret is required
-   */
-  refreshToken: string | null
-
-  /**
-   * *The team that the token is linked to
-   */
-  teamId: string
-
-  /**
-   * The timestamp the token was updated at
-   */
-  updatedAt: any
-
-  /**
-   * The user that the access token is attached to
-   */
-  userId: string
-}
-
-/**
- * Identifier and IP address blocked
- */
-export interface IBlockedUserType {
-  __typename: 'BlockedUserType'
-
-  /**
-   * The identifier (usually email) of blocked user
-   */
-  identifier: string | null
-
-  /**
-   * The IP address of the blocked user
-   */
-  id: string | null
-}
-
-/**
- * The user account profile
- */
-export interface IUserFeatureFlags {
-  __typename: 'UserFeatureFlags'
-
-  /**
-   * true if the user has access to retro meeting video
-   */
-  video: boolean
-
-  /**
-   * true if jira is allowed
-   */
-  jira: boolean
-}
-
-/**
- * OAuth token for a team member
- */
-export interface IGitHubAuth {
-  __typename: 'GitHubAuth'
-
-  /**
-   * shortid
-   */
-  id: string
-
-  /**
-   * true if an access token exists, else false
-   */
-  isActive: boolean
-
-  /**
-   * The access token to atlassian, useful for 1 hour. null if no access token available
-   */
-  accessToken: string | null
-
-  /**
-   * *The GitHub login used for queries
-   */
-  login: string
-
-  /**
-   * The timestamp the provider was created
-   */
-  createdAt: any
-
-  /**
-   * *The team that the token is linked to
-   */
-  teamId: string
-
-  /**
-   * The timestamp the token was updated at
-   */
-  updatedAt: any
-
-  /**
-   * The user that the access token is attached to
-   */
-  userId: string
-}
-
-export interface IAuthIdentityType {
-  __typename: 'AuthIdentityType'
-
-  /**
-   * The connection name.
-   *       This field is not itself updateable
-   *       but is needed when updating email, email_verified, username or password.
-   */
-  connection: string | null
-
-  /**
-   * The unique identifier for the user for the identity.
-   */
-  userId: string | null
-
-  /**
-   * The type of identity provider.
-   */
-  provider: string | null
-
-  /**
-   * true if the identity provider is a social provider, false otherwise
-   */
-  isSocial: boolean | null
-}
-
-/**
- * A past event that is important to the viewer
- */
-export type SuggestedAction =
-  | ISuggestedActionInviteYourTeam
-  | ISuggestedActionTryRetroMeeting
-  | ISuggestedActionTryActionMeeting
-  | ISuggestedActionCreateNewTeam
-  | ISuggestedActionTryTheDemo
-
-/**
- * A past event that is important to the viewer
- */
-export interface ISuggestedAction {
-  __typename: 'SuggestedAction'
-
-  /**
-   * shortid
-   */
-  id: string
-
-  /**
-   * * The timestamp the action was created at
-   */
-  createdAt: any
-
-  /**
-   * The priority of the suggested action compared to other suggested actions (smaller number is higher priority)
-   */
-  priority: number | null
-
-  /**
-   * * The timestamp the action was removed at
-   */
-  removedAt: any
-
-  /**
-   * The specific type of suggested action
-   */
-  type: SuggestedActionTypeEnum
-
-  /**
-   * * The userId this action is for
-   */
-  userId: string
-
-  /**
-   * The user than can see this event
-   */
-  user: IUser
-}
-
-/**
- * The specific type of the suggested action
- */
-export const enum SuggestedActionTypeEnum {
-  inviteYourTeam = 'inviteYourTeam',
-  tryTheDemo = 'tryTheDemo',
-  tryRetroMeeting = 'tryRetroMeeting',
-  createNewTeam = 'createNewTeam',
-  tryActionMeeting = 'tryActionMeeting'
-}
-
-/**
  * A connection to a list of items.
  */
-export interface ITimelineEventConnection {
-  __typename: 'TimelineEventConnection'
+export interface ITaskConnection {
+  __typename: 'TaskConnection'
 
   /**
    * Page info with cursors coerced to ISO8601 dates
@@ -717,7 +470,7 @@ export interface ITimelineEventConnection {
   /**
    * A list of edges.
    */
-  edges: Array<ITimelineEventEdge>
+  edges: Array<ITaskEdge>
 }
 
 /**
@@ -750,30 +503,21 @@ export interface IPageInfoDateCursor {
 /**
  * An edge in a connection.
  */
-export interface ITimelineEventEdge {
-  __typename: 'TimelineEventEdge'
+export interface ITaskEdge {
+  __typename: 'TaskEdge'
 
   /**
    * The item at the end of the edge
    */
-  node: TimelineEvent
+  node: ITask
   cursor: any | null
 }
 
 /**
- * A past event that is important to the viewer
+ * A long-term task shared across the team, assigned to a single user
  */
-export type TimelineEvent =
-  | ITimelineEventTeamCreated
-  | ITimelineEventJoinedParabol
-  | ITimelineEventCompletedRetroMeeting
-  | ITimelineEventCompletedActionMeeting
-
-/**
- * A past event that is important to the viewer
- */
-export interface ITimelineEvent {
-  __typename: 'TimelineEvent'
+export interface ITask {
+  __typename: 'Task'
 
   /**
    * shortid
@@ -781,181 +525,327 @@ export interface ITimelineEvent {
   id: string
 
   /**
-   * * The timestamp the event was created at
+   * the agenda item that created this task, if any
    */
-  createdAt: any
+  agendaId: string | null
 
   /**
-   * the number of times the user has interacted with (ie clicked) this event
+   * The agenda item that the task was created in, if any
    */
-  interactionCount: number
+  agendaItem: IAgendaItem | null
 
   /**
-   * The orgId this event is associated with. Null if not traceable to one org
+   * The body of the task. If null, it is a new task.
    */
-  orgId: string | null
+  content: string
 
   /**
-   * The organization this event is associated with
+   * The timestamp the task was created
    */
-  organization: IOrganization | null
+  createdAt: any | null
 
   /**
-   * the number of times the user has seen this event
+   * The userId that created the task
    */
-  seenCount: number
+  createdBy: string | null
 
   /**
-   * The teamId this event is associated with. Null if not traceable to one team
+   * a user-defined due date
    */
-  teamId: string | null
+  dueDate: any | null
 
   /**
-   * The team that can see this event
+   * a list of users currently editing the task (fed by a subscription, so queries return null)
    */
-  team: ITeam | null
+  editors: Array<ITaskEditorDetails | null> | null
+  integration: TaskIntegration | null
 
   /**
-   * The specific type of event
+   * true if this is assigned to a soft team member
    */
-  type: TimelineEventEnum
+  isSoftTask: boolean | null
 
   /**
-   * * The userId that can see this event
+   * the foreign key for the meeting the task was created in
+   */
+  meetingId: string | null
+
+  /**
+   * the foreign key for the meeting the task was marked as complete
+   */
+  doneMeetingId: string | null
+
+  /**
+   * the foreign key for the retrospective reflection group this was created in
+   */
+  reflectionGroupId: string | null
+
+  /**
+   * the shared sort order for tasks on the team dash & user dash
+   */
+  sortOrder: number
+
+  /**
+   * The status of the task
+   */
+  status: TaskStatusEnum
+
+  /**
+   * The tags associated with the task
+   */
+  tags: Array<string>
+
+  /**
+   * The id of the team (indexed). Needed for subscribing to archived tasks
+   */
+  teamId: string
+
+  /**
+   * The team this task belongs to
+   */
+  team: ITeam
+
+  /**
+   * The team member (or soft team member) that owns this task
+   */
+  assignee: Assignee
+
+  /**
+   * The id of the team member (or soft team member) assigned to this task
+   */
+  assigneeId: string
+
+  /**
+   * The timestamp the task was updated
+   */
+  updatedAt: any | null
+
+  /**
+   * * The userId, index useful for server-side methods getting all tasks under a user
    */
   userId: string
-
-  /**
-   * The user than can see this event
-   */
-  user: IUser
 }
 
 /**
- * An organization
+ * A request placeholder that will likely turn into 1 or more tasks
  */
-export interface IOrganization {
-  __typename: 'Organization'
+export interface IAgendaItem {
+  __typename: 'AgendaItem'
 
   /**
-   * The unique organization ID
+   * The unique agenda item id teamId::shortid
    */
   id: string
 
   /**
-   * The datetime the organization was created
+   * The body of the agenda item
    */
-  createdAt: any
+  content: string
 
   /**
-   * The safe credit card details
+   * The timestamp the agenda item was created
    */
-  creditCard: ICreditCard | null
+  createdAt: any | null
 
   /**
-   * true if the viewer is the billing leader for the org
+   * true if the agenda item has not been processed or deleted
    */
-  isBillingLeader: boolean
+  isActive: boolean
 
   /**
-   * The name of the organization
+   * The sort order of the agenda item in the list
    */
-  name: string
+  sortOrder: number
 
   /**
-   * The org avatar
+   * *The team for this agenda item
+   */
+  teamId: string
+
+  /**
+   * The teamMemberId that created this agenda item
+   */
+  teamMemberId: string
+
+  /**
+   * The timestamp the agenda item was updated
+   */
+  updatedAt: any | null
+
+  /**
+   * The team member that created the agenda item
+   */
+  teamMember: ITeamMember
+}
+
+/**
+ * A member of a team
+ */
+export interface ITeamMember {
+  __typename: 'TeamMember'
+
+  /**
+   * An ID for the teamMember. userId::teamId
+   */
+  id: string
+
+  /**
+   * The name of the assignee
+   */
+  preferredName: string
+
+  /**
+   * foreign key to Team table
+   */
+  teamId: string
+
+  /**
+   * true if the user is a part of the team, false if they no longer are
+   */
+  isNotRemoved: boolean | null
+
+  /**
+   * Is user a team lead?
+   */
+  isLead: boolean | null
+
+  /**
+   * Is user a team facilitator?
+   */
+  isFacilitator: boolean | null
+
+  /**
+   * hide the agenda list on the dashboard
+   */
+  hideAgenda: boolean | null
+
+  /**
+   * The user email
+   */
+  email: any
+
+  /**
+   * url of user’s profile picture
    */
   picture: any | null
 
   /**
-   * all the teams the viewer is on in the organization
+   * The place in line for checkIn, regenerated every meeting
    */
-  teams: Array<ITeam>
+  checkInOrder: number
 
   /**
-   * The level of access to features on the parabol site
+   * true if the user is connected
    */
-  tier: TierEnum | null
+  isConnected: boolean | null
 
   /**
-   * THe datetime the current billing cycle ends
+   * true if present, false if absent, null before check-in
    */
-  periodEnd: any | null
+  isCheckedIn: boolean | null
 
   /**
-   * The datetime the current billing cycle starts
+   * true if this team member belongs to the user that queried it
    */
-  periodStart: any | null
+  isSelf: boolean
 
   /**
-   * The total number of retroMeetings given to the team
-   * @deprecated "Unlimited retros for all!"
+   * The meeting specifics for the meeting the team member is currently in
    */
-  retroMeetingsOffered: number
+  meetingMember: MeetingMember | null
 
   /**
-   * Number of retro meetings that can be run (if not pro)
-   * @deprecated "Unlimited retros for all!"
+   * foreign key to User table
    */
-  retroMeetingsRemaining: number
+  userId: string
 
   /**
-   * The customerId from stripe
+   * The team this team member belongs to
    */
-  stripeId: string | null
+  team: ITeam | null
 
   /**
-   * The subscriptionId from stripe
+   * The user for the team member
    */
-  stripeSubscriptionId: string | null
+  user: IUser
 
   /**
-   * The last upcoming invoice email that was sent, null if never sent
+   * Tasks owned by the team member
    */
-  upcomingInvoiceEmailSentAt: any | null
-
-  /**
-   * The datetime the organization was last updated
-   */
-  updatedAt: any | null
-  organizationUsers: IOrganizationUserConnection
-
-  /**
-   * The count of active & inactive users
-   */
-  orgUserCount: IOrgUserCount
-
-  /**
-   * The leaders of the org
-   */
-  billingLeaders: Array<IUser>
+  tasks: ITaskConnection | null
 }
 
-export interface IOrganizationUsersOnOrganizationArguments {
-  after?: string | null
+export interface IMeetingMemberOnTeamMemberArguments {
+  meetingId?: string | null
+}
+
+export interface ITasksOnTeamMemberArguments {
+  /**
+   * the datetime cursor
+   */
+  after?: any | null
   first?: number | null
 }
 
+export type Assignee = ITeamMember | ISoftTeamMember
+
+export interface IAssignee {
+  __typename: 'Assignee'
+
+  /**
+   * The teamMemberId or softTeamMemberId
+   */
+  id: string
+
+  /**
+   * The name of the assignee
+   */
+  preferredName: string
+
+  /**
+   * foreign key to Team table
+   */
+  teamId: string
+}
+
 /**
- * A credit card
+ * All the user details for a specific meeting
  */
-export interface ICreditCard {
-  __typename: 'CreditCard'
+export type MeetingMember = IRetrospectiveMeetingMember | IActionMeetingMember
+
+/**
+ * All the user details for a specific meeting
+ */
+export interface IMeetingMember {
+  __typename: 'MeetingMember'
 
   /**
-   * The brand of the credit card, as provided by skype
+   * A composite of userId::meetingId
    */
-  brand: string | null
+  id: string
 
   /**
-   * The MM/YY string of the expiration date
+   * true if present, false if absent, else null
    */
-  expiry: string | null
+  isCheckedIn: boolean | null
+  meetingId: string
+  meetingType: MeetingTypeEnum
+  teamId: string
+  user: IUser
+  userId: string
 
   /**
-   * The last 4 digits of a credit card
+   * The last time a meeting was updated (stage completed, finished, etc)
    */
-  last4: number | null
+  updatedAt: any
+}
+
+/**
+ * The type of meeting
+ */
+export const enum MeetingTypeEnum {
+  action = 'action',
+  retrospective = 'retrospective'
 }
 
 /**
@@ -1187,14 +1077,6 @@ export interface ITeamInvitation {
 }
 
 /**
- * The type of meeting
- */
-export const enum MeetingTypeEnum {
-  action = 'action',
-  retrospective = 'retrospective'
-}
-
-/**
  * The team settings for a specific type of meeting
  */
 export type TeamMeetingSettings = IRetrospectiveMeetingSettings | IActionMeetingSettings
@@ -1326,38 +1208,6 @@ export interface INewMeeting {
   viewerMeetingMember: MeetingMember
 }
 
-/**
- * All the user details for a specific meeting
- */
-export type MeetingMember = IRetrospectiveMeetingMember | IActionMeetingMember
-
-/**
- * All the user details for a specific meeting
- */
-export interface IMeetingMember {
-  __typename: 'MeetingMember'
-
-  /**
-   * A composite of userId::meetingId
-   */
-  id: string
-
-  /**
-   * true if present, false if absent, else null
-   */
-  isCheckedIn: boolean | null
-  meetingId: string
-  meetingType: MeetingTypeEnum
-  teamId: string
-  user: IUser
-  userId: string
-
-  /**
-   * The last time a meeting was updated (stage completed, finished, etc)
-   */
-  updatedAt: any
-}
-
 export type NewMeetingPhase =
   | IReflectPhase
   | ICheckInPhase
@@ -1464,415 +1314,130 @@ export const enum TierEnum {
 }
 
 /**
- * A request placeholder that will likely turn into 1 or more tasks
+ * An organization
  */
-export interface IAgendaItem {
-  __typename: 'AgendaItem'
+export interface IOrganization {
+  __typename: 'Organization'
 
   /**
-   * The unique agenda item id teamId::shortid
+   * The unique organization ID
    */
   id: string
 
   /**
-   * The body of the agenda item
+   * The datetime the organization was created
    */
-  content: string
+  createdAt: any
 
   /**
-   * The timestamp the agenda item was created
+   * The safe credit card details
    */
-  createdAt: any | null
+  creditCard: ICreditCard | null
 
   /**
-   * true if the agenda item has not been processed or deleted
+   * true if the viewer is the billing leader for the org
    */
-  isActive: boolean
+  isBillingLeader: boolean
 
   /**
-   * The sort order of the agenda item in the list
+   * The name of the organization
    */
-  sortOrder: number
+  name: string
 
   /**
-   * *The team for this agenda item
-   */
-  teamId: string
-
-  /**
-   * The teamMemberId that created this agenda item
-   */
-  teamMemberId: string
-
-  /**
-   * The timestamp the agenda item was updated
-   */
-  updatedAt: any | null
-
-  /**
-   * The team member that created the agenda item
-   */
-  teamMember: ITeamMember
-}
-
-/**
- * A member of a team
- */
-export interface ITeamMember {
-  __typename: 'TeamMember'
-
-  /**
-   * An ID for the teamMember. userId::teamId
-   */
-  id: string
-
-  /**
-   * The name of the assignee
-   */
-  preferredName: string
-
-  /**
-   * foreign key to Team table
-   */
-  teamId: string
-
-  /**
-   * true if the user is a part of the team, false if they no longer are
-   */
-  isNotRemoved: boolean | null
-
-  /**
-   * Is user a team lead?
-   */
-  isLead: boolean | null
-
-  /**
-   * Is user a team facilitator?
-   */
-  isFacilitator: boolean | null
-
-  /**
-   * hide the agenda list on the dashboard
-   */
-  hideAgenda: boolean | null
-
-  /**
-   * The user email
-   */
-  email: any
-
-  /**
-   * url of user’s profile picture
+   * The org avatar
    */
   picture: any | null
 
   /**
-   * The place in line for checkIn, regenerated every meeting
+   * all the teams the viewer is on in the organization
    */
-  checkInOrder: number
+  teams: Array<ITeam>
 
   /**
-   * true if the user is connected
+   * The level of access to features on the parabol site
    */
-  isConnected: boolean | null
+  tier: TierEnum | null
 
   /**
-   * true if present, false if absent, null before check-in
+   * THe datetime the current billing cycle ends
    */
-  isCheckedIn: boolean | null
+  periodEnd: any | null
 
   /**
-   * true if this team member belongs to the user that queried it
+   * The datetime the current billing cycle starts
    */
-  isSelf: boolean
+  periodStart: any | null
 
   /**
-   * The meeting specifics for the meeting the team member is currently in
+   * The total number of retroMeetings given to the team
+   * @deprecated "Unlimited retros for all!"
    */
-  meetingMember: MeetingMember | null
+  retroMeetingsOffered: number
 
   /**
-   * foreign key to User table
+   * Number of retro meetings that can be run (if not pro)
+   * @deprecated "Unlimited retros for all!"
    */
-  userId: string
+  retroMeetingsRemaining: number
 
   /**
-   * The team this team member belongs to
+   * The customerId from stripe
    */
-  team: ITeam | null
+  stripeId: string | null
 
   /**
-   * The user for the team member
+   * The subscriptionId from stripe
    */
-  user: IUser
+  stripeSubscriptionId: string | null
 
   /**
-   * Tasks owned by the team member
+   * The last upcoming invoice email that was sent, null if never sent
    */
-  tasks: ITaskConnection | null
-}
-
-export interface IMeetingMemberOnTeamMemberArguments {
-  meetingId?: string | null
-}
-
-export interface ITasksOnTeamMemberArguments {
-  /**
-   * the datetime cursor
-   */
-  after?: any | null
-  first?: number | null
-}
-
-export type Assignee = ITeamMember | ISoftTeamMember
-
-export interface IAssignee {
-  __typename: 'Assignee'
+  upcomingInvoiceEmailSentAt: any | null
 
   /**
-   * The teamMemberId or softTeamMemberId
-   */
-  id: string
-
-  /**
-   * The name of the assignee
-   */
-  preferredName: string
-
-  /**
-   * foreign key to Team table
-   */
-  teamId: string
-}
-
-/**
- * A connection to a list of items.
- */
-export interface ITaskConnection {
-  __typename: 'TaskConnection'
-
-  /**
-   * Page info with cursors coerced to ISO8601 dates
-   */
-  pageInfo: IPageInfoDateCursor | null
-
-  /**
-   * A list of edges.
-   */
-  edges: Array<ITaskEdge>
-}
-
-/**
- * An edge in a connection.
- */
-export interface ITaskEdge {
-  __typename: 'TaskEdge'
-
-  /**
-   * The item at the end of the edge
-   */
-  node: ITask
-  cursor: any | null
-}
-
-/**
- * A long-term task shared across the team, assigned to a single user
- */
-export interface ITask {
-  __typename: 'Task'
-
-  /**
-   * shortid
-   */
-  id: string
-
-  /**
-   * the agenda item that created this task, if any
-   */
-  agendaId: string | null
-
-  /**
-   * The agenda item that the task was created in, if any
-   */
-  agendaItem: IAgendaItem | null
-
-  /**
-   * The body of the task. If null, it is a new task.
-   */
-  content: string
-
-  /**
-   * The timestamp the task was created
-   */
-  createdAt: any | null
-
-  /**
-   * The userId that created the task
-   */
-  createdBy: string | null
-
-  /**
-   * a user-defined due date
-   */
-  dueDate: any | null
-
-  /**
-   * a list of users currently editing the task (fed by a subscription, so queries return null)
-   */
-  editors: Array<ITaskEditorDetails | null> | null
-  integration: TaskIntegration | null
-
-  /**
-   * true if this is assigned to a soft team member
-   */
-  isSoftTask: boolean | null
-
-  /**
-   * the foreign key for the meeting the task was created in
-   */
-  meetingId: string | null
-
-  /**
-   * the foreign key for the meeting the task was marked as complete
-   */
-  doneMeetingId: string | null
-
-  /**
-   * the foreign key for the retrospective reflection group this was created in
-   */
-  reflectionGroupId: string | null
-
-  /**
-   * the shared sort order for tasks on the team dash & user dash
-   */
-  sortOrder: number
-
-  /**
-   * The status of the task
-   */
-  status: TaskStatusEnum
-
-  /**
-   * The tags associated with the task
-   */
-  tags: Array<string>
-
-  /**
-   * The id of the team (indexed). Needed for subscribing to archived tasks
-   */
-  teamId: string
-
-  /**
-   * The team this task belongs to
-   */
-  team: ITeam
-
-  /**
-   * The team member (or soft team member) that owns this task
-   */
-  assignee: Assignee
-
-  /**
-   * The id of the team member (or soft team member) assigned to this task
-   */
-  assigneeId: string
-
-  /**
-   * The timestamp the task was updated
+   * The datetime the organization was last updated
    */
   updatedAt: any | null
+  organizationUsers: IOrganizationUserConnection
 
   /**
-   * * The userId, index useful for server-side methods getting all tasks under a user
+   * The count of active & inactive users
    */
-  userId: string
+  orgUserCount: IOrgUserCount
+
+  /**
+   * The leaders of the org
+   */
+  billingLeaders: Array<IUser>
 }
 
-export interface ITaskEditorDetails {
-  __typename: 'TaskEditorDetails'
-
-  /**
-   * The userId of the person editing the task
-   */
-  userId: string
-
-  /**
-   * The name of the userId editing the task
-   */
-  preferredName: string
-}
-
-export type TaskIntegration = ITaskIntegrationGitHub | ITaskIntegrationJira
-
-export interface ITaskIntegration {
-  __typename: 'TaskIntegration'
-  id: string
-  service: TaskServiceEnum
-}
-
-/**
- * The status of the task
- */
-export const enum TaskStatusEnum {
-  active = 'active',
-  stuck = 'stuck',
-  done = 'done',
-  future = 'future'
-}
-
-/**
- * A member of a team
- */
-export interface ISoftTeamMember {
-  __typename: 'SoftTeamMember'
-
-  /**
-   * The teamMemberId or softTeamMemberId
-   */
-  id: string
-
-  /**
-   * The name of the assignee
-   */
-  preferredName: string
-
-  /**
-   * foreign key to Team table
-   */
-  teamId: string
-
-  /**
-   * The datetime the team was created
-   */
-  createdAt: any | null
-
-  /**
-   * The user email
-   */
-  email: any | null
-
-  /**
-   * True if this is still a soft team member, false if they were rejected or became a team member
-   */
-  isActive: boolean | null
-
-  /**
-   * Tasks owned by the team member
-   */
-  tasks: ITaskConnection | null
-
-  /**
-   * The team this team member belongs to
-   */
-  team: ITeam | null
-}
-
-export interface ITasksOnSoftTeamMemberArguments {
-  /**
-   * the datetime cursor
-   */
-  after?: any | null
+export interface IOrganizationUsersOnOrganizationArguments {
+  after?: string | null
   first?: number | null
+}
+
+/**
+ * A credit card
+ */
+export interface ICreditCard {
+  __typename: 'CreditCard'
+
+  /**
+   * The brand of the credit card, as provided by skype
+   */
+  brand: string | null
+
+  /**
+   * The MM/YY string of the expiration date
+   */
+  expiry: string | null
+
+  /**
+   * The last 4 digits of a credit card
+   */
+  last4: number | null
 }
 
 /**
@@ -2015,127 +1580,254 @@ export interface IOrgUserCount {
 }
 
 /**
- * The specific type of event
+ * A member of a team
  */
-export const enum TimelineEventEnum {
-  retroComplete = 'retroComplete',
-  actionComplete = 'actionComplete',
-  joinedParabol = 'joinedParabol',
-  createdTeam = 'createdTeam'
-}
-
-/**
- * The latest features released by Parabol
- */
-export interface INewFeatureBroadcast {
-  __typename: 'NewFeatureBroadcast'
-  id: string
+export interface ISoftTeamMember {
+  __typename: 'SoftTeamMember'
 
   /**
-   * The description of the new features
-   */
-  copy: string
-
-  /**
-   * The permalink to the blog post describing the new features
-   */
-  url: string
-}
-
-/**
- * The list of services for integrations
- */
-export const enum IntegrationServiceEnum {
-  GitHubIntegration = 'GitHubIntegration',
-  SlackIntegration = 'SlackIntegration',
-  atlassian = 'atlassian'
-}
-
-/**
- * A token for a user to be used on 1 or more teams
- */
-export interface IProvider {
-  __typename: 'Provider'
-
-  /**
-   * The ID of an object
+   * The teamMemberId or softTeamMemberId
    */
   id: string
 
   /**
-   * The access token to the service
+   * The name of the assignee
    */
-  accessToken: string
+  preferredName: string
 
   /**
-   * The timestamp the provider was created
+   * foreign key to Team table
+   */
+  teamId: string
+
+  /**
+   * The datetime the team was created
    */
   createdAt: any | null
 
   /**
-   * True if the Provider is active. else false
+   * The user email
+   */
+  email: any | null
+
+  /**
+   * True if this is still a soft team member, false if they were rejected or became a team member
    */
   isActive: boolean | null
 
   /**
-   * *The id for the user used by the provider, eg SlackTeamId, GoogleUserId, githubLogin
+   * Tasks owned by the team member
    */
-  providerUserId: string | null
+  tasks: ITaskConnection | null
 
   /**
-   * The username (or email) attached to the provider
+   * The team this team member belongs to
    */
-  providerUserName: string | null
+  team: ITeam | null
+}
+
+export interface ITasksOnSoftTeamMemberArguments {
+  /**
+   * the datetime cursor
+   */
+  after?: any | null
+  first?: number | null
+}
+
+export interface ITaskEditorDetails {
+  __typename: 'TaskEditorDetails'
 
   /**
-   * The name of the service
+   * The userId of the person editing the task
    */
-  service: IntegrationServiceEnum | null
+  userId: string
+
+  /**
+   * The name of the userId editing the task
+   */
+  preferredName: string
+}
+
+export type TaskIntegration = ITaskIntegrationGitHub | ITaskIntegrationJira
+
+export interface ITaskIntegration {
+  __typename: 'TaskIntegration'
+  id: string
+  service: TaskServiceEnum
+}
+
+/**
+ * The status of the task
+ */
+export const enum TaskStatusEnum {
+  active = 'active',
+  stuck = 'stuck',
+  done = 'done',
+  future = 'future'
+}
+
+/**
+ * OAuth token for a team member
+ */
+export interface IAtlassianAuth {
+  __typename: 'AtlassianAuth'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * true if the auth is valid, else false
+   */
+  isActive: boolean
+
+  /**
+   * The access token to atlassian, useful for 1 hour. null if no access token available
+   */
+  accessToken: string | null
+
+  /**
+   * *The atlassian account ID
+   */
+  accountId: string
+
+  /**
+   * The atlassian cloud IDs that the user has granted
+   */
+  cloudIds: Array<string>
+
+  /**
+   * The timestamp the provider was created
+   */
+  createdAt: any
+
+  /**
+   * The refresh token to atlassian to receive a new 1-hour accessToken, always null since server secret is required
+   */
+  refreshToken: string | null
 
   /**
    * *The team that the token is linked to
    */
-  teamId: string | null
+  teamId: string
 
   /**
-   * The timestamp the task was updated
+   * The timestamp the token was updated at
    */
-  updatedAt: any | null
+  updatedAt: any
 
   /**
    * The user that the access token is attached to
    */
+  userId: string
+}
+
+/**
+ * Identifier and IP address blocked
+ */
+export interface IBlockedUserType {
+  __typename: 'BlockedUserType'
+
+  /**
+   * The identifier (usually email) of blocked user
+   */
+  identifier: string | null
+
+  /**
+   * The IP address of the blocked user
+   */
+  id: string | null
+}
+
+/**
+ * The user account profile
+ */
+export interface IUserFeatureFlags {
+  __typename: 'UserFeatureFlags'
+
+  /**
+   * true if the user has access to retro meeting video
+   */
+  video: boolean
+
+  /**
+   * true if jira is allowed
+   */
+  jira: boolean
+}
+
+/**
+ * OAuth token for a team member
+ */
+export interface IGitHubAuth {
+  __typename: 'GitHubAuth'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * true if an access token exists, else false
+   */
+  isActive: boolean
+
+  /**
+   * The access token to github. good forever
+   */
+  accessToken: string | null
+
+  /**
+   * *The GitHub login used for queries
+   */
+  login: string
+
+  /**
+   * The timestamp the provider was created
+   */
+  createdAt: any
+
+  /**
+   * *The team that the token is linked to
+   */
+  teamId: string
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any
+
+  /**
+   * The user that the access token is attached to
+   */
+  userId: string
+}
+
+export interface IAuthIdentityType {
+  __typename: 'AuthIdentityType'
+
+  /**
+   * The connection name.
+   *       This field is not itself updateable
+   *       but is needed when updating email, email_verified, username or password.
+   */
+  connection: string | null
+
+  /**
+   * The unique identifier for the user for the identity.
+   */
   userId: string | null
-}
-
-/**
- * A connection to a list of items.
- */
-export interface IInvoiceConnection {
-  __typename: 'InvoiceConnection'
 
   /**
-   * Page info with cursors coerced to ISO8601 dates
+   * The type of identity provider.
    */
-  pageInfo: IPageInfoDateCursor | null
+  provider: string | null
 
   /**
-   * A list of edges.
+   * true if the identity provider is a social provider, false otherwise
    */
-  edges: Array<IInvoiceEdge>
-}
-
-/**
- * An edge in a connection.
- */
-export interface IInvoiceEdge {
-  __typename: 'InvoiceEdge'
-
-  /**
-   * The item at the end of the edge
-   */
-  node: IInvoice
-  cursor: any | null
+  isSocial: boolean | null
 }
 
 /**
@@ -2354,6 +2046,228 @@ export const enum InvoiceStatusEnum {
 /**
  * A connection to a list of items.
  */
+export interface IInvoiceConnection {
+  __typename: 'InvoiceConnection'
+
+  /**
+   * Page info with cursors coerced to ISO8601 dates
+   */
+  pageInfo: IPageInfoDateCursor | null
+
+  /**
+   * A list of edges.
+   */
+  edges: Array<IInvoiceEdge>
+}
+
+/**
+ * An edge in a connection.
+ */
+export interface IInvoiceEdge {
+  __typename: 'InvoiceEdge'
+
+  /**
+   * The item at the end of the edge
+   */
+  node: IInvoice
+  cursor: any | null
+}
+
+/**
+ * A past event that is important to the viewer
+ */
+export type SuggestedAction =
+  | ISuggestedActionInviteYourTeam
+  | ISuggestedActionTryRetroMeeting
+  | ISuggestedActionTryActionMeeting
+  | ISuggestedActionCreateNewTeam
+  | ISuggestedActionTryTheDemo
+
+/**
+ * A past event that is important to the viewer
+ */
+export interface ISuggestedAction {
+  __typename: 'SuggestedAction'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * * The timestamp the action was created at
+   */
+  createdAt: any
+
+  /**
+   * The priority of the suggested action compared to other suggested actions (smaller number is higher priority)
+   */
+  priority: number | null
+
+  /**
+   * * The timestamp the action was removed at
+   */
+  removedAt: any
+
+  /**
+   * The specific type of suggested action
+   */
+  type: SuggestedActionTypeEnum
+
+  /**
+   * * The userId this action is for
+   */
+  userId: string
+
+  /**
+   * The user than can see this event
+   */
+  user: IUser
+}
+
+/**
+ * The specific type of the suggested action
+ */
+export const enum SuggestedActionTypeEnum {
+  inviteYourTeam = 'inviteYourTeam',
+  tryTheDemo = 'tryTheDemo',
+  tryRetroMeeting = 'tryRetroMeeting',
+  createNewTeam = 'createNewTeam',
+  tryActionMeeting = 'tryActionMeeting'
+}
+
+/**
+ * A connection to a list of items.
+ */
+export interface ITimelineEventConnection {
+  __typename: 'TimelineEventConnection'
+
+  /**
+   * Page info with cursors coerced to ISO8601 dates
+   */
+  pageInfo: IPageInfoDateCursor | null
+
+  /**
+   * A list of edges.
+   */
+  edges: Array<ITimelineEventEdge>
+}
+
+/**
+ * An edge in a connection.
+ */
+export interface ITimelineEventEdge {
+  __typename: 'TimelineEventEdge'
+
+  /**
+   * The item at the end of the edge
+   */
+  node: TimelineEvent
+  cursor: any | null
+}
+
+/**
+ * A past event that is important to the viewer
+ */
+export type TimelineEvent =
+  | ITimelineEventTeamCreated
+  | ITimelineEventJoinedParabol
+  | ITimelineEventCompletedRetroMeeting
+  | ITimelineEventCompletedActionMeeting
+
+/**
+ * A past event that is important to the viewer
+ */
+export interface ITimelineEvent {
+  __typename: 'TimelineEvent'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * * The timestamp the event was created at
+   */
+  createdAt: any
+
+  /**
+   * the number of times the user has interacted with (ie clicked) this event
+   */
+  interactionCount: number
+
+  /**
+   * The orgId this event is associated with. Null if not traceable to one org
+   */
+  orgId: string | null
+
+  /**
+   * The organization this event is associated with
+   */
+  organization: IOrganization | null
+
+  /**
+   * the number of times the user has seen this event
+   */
+  seenCount: number
+
+  /**
+   * The teamId this event is associated with. Null if not traceable to one team
+   */
+  teamId: string | null
+
+  /**
+   * The team that can see this event
+   */
+  team: ITeam | null
+
+  /**
+   * The specific type of event
+   */
+  type: TimelineEventEnum
+
+  /**
+   * * The userId that can see this event
+   */
+  userId: string
+
+  /**
+   * The user than can see this event
+   */
+  user: IUser
+}
+
+/**
+ * The specific type of event
+ */
+export const enum TimelineEventEnum {
+  retroComplete = 'retroComplete',
+  actionComplete = 'actionComplete',
+  joinedParabol = 'joinedParabol',
+  createdTeam = 'createdTeam'
+}
+
+/**
+ * The latest features released by Parabol
+ */
+export interface INewFeatureBroadcast {
+  __typename: 'NewFeatureBroadcast'
+  id: string
+
+  /**
+   * The description of the new features
+   */
+  copy: string
+
+  /**
+   * The permalink to the blog post describing the new features
+   */
+  url: string
+}
+
+/**
+ * A connection to a list of items.
+ */
 export interface INotificationConnection {
   __typename: 'NotificationConnection'
 
@@ -2434,96 +2348,100 @@ export const enum NotificationEnum {
 }
 
 /**
- * A token for a user to be used on 1 or more teams
+ * OAuth token for a team member
  */
-export interface IProviderMap {
-  __typename: 'ProviderMap'
+export interface ISlackAuth {
+  __typename: 'SlackAuth'
 
   /**
-   * The ID of an object
-   */
-  id: string
-  teamId: string | null
-
-  /**
-   * All the big details associated with slack
-   */
-  SlackIntegration: IProviderRow | null
-}
-
-/**
- * All the details about a particular provider
- */
-export interface IProviderRow {
-  __typename: 'ProviderRow'
-
-  /**
-   * composite keyID
+   * shortid
    */
   id: string
 
   /**
-   * The access token attached to the userId. null if user does not have a token for the provider
+   * true if an access token exists, else false
+   */
+  isActive: boolean
+
+  /**
+   * The access token to slack, only visible to the owner. Used as a fallback to botAccessToken
    */
   accessToken: string | null
 
   /**
-   * The count of all the people on the team that have linked their account to the provider
+   * the parabol bot user id
    */
-  userCount: number
+  botUserId: string | null
 
   /**
-   * The number of integrations under this provider for the team
+   * the parabol bot access token, used as primary communication
    */
-  integrationCount: number
+  botAccessToken: string | null
 
   /**
-   * The username according to the provider
+   * The timestamp the provider was created
    */
-  providerUserName: string | null
+  createdAt: any
 
   /**
-   * The name of the service
+   * The id of the team in slack
    */
-  service: IntegrationServiceEnum | null
-  teamId: string | null
+  slackTeamId: string | null
+
+  /**
+   * The name of the team in slack
+   */
+  slackTeamName: string | null
+
+  /**
+   * The userId in slack
+   */
+  slackUserId: string
+
+  /**
+   * The name of the user in slack
+   */
+  slackUserName: string
+
+  /**
+   * *The team that the token is linked to
+   */
+  teamId: string
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any
+
+  /**
+   * The user that the access token is attached to
+   */
+  userId: string
 }
 
 /**
- * An integration that sends start/end meeting messages to a specified slack channel
+ * an event trigger and slack channel to receive it
  */
-export interface ISlackIntegration {
-  __typename: 'SlackIntegration'
-
-  /**
-   * The ID of an object
-   */
+export interface ISlackNotification {
+  __typename: 'SlackNotification'
   id: string
+  event: SlackNotificationEventEnum
 
   /**
-   * the id of the channel provided by the service, if available. Useful for fetching from their API
+   * null if no notification is to be sent
    */
-  channelId: string
-
-  /**
-   * The name of the channel. Shared with all, updated when the integration owner looks at it
-   */
-  channelName: string | null
-
-  /**
-   * defaults to true. true if this is used to send notifications
-   */
-  isActive: boolean | null
-
-  /**
-   * The types of notifications the team wishes to receive
-   */
-  notifications: Array<string | null> | null
-
-  /**
-   * *The team that cares about these annoucements
-   */
+  channelId: string | null
   teamId: string
+  userId: string
+}
+
+/**
+ * The event that triggers a slack notification
+ */
+export const enum SlackNotificationEventEnum {
+  meetingStart = 'meetingStart',
+  meetingEnd = 'meetingEnd',
+  meetingStageTimeLimit = 'meetingStageTimeLimit'
 }
 
 /**
@@ -2586,7 +2504,7 @@ export interface IVerifiedInvitationPayload {
    * name of the inviting team, present if invitation exists
    */
   teamName: string | null
-  meetingType: MeetingTypeEnum
+  meetingType: MeetingTypeEnum | null
 
   /**
    * The userId of the invitee, if already a parabol user
@@ -2616,6 +2534,7 @@ export interface IMutation {
    */
   acceptTeamInvitation: IAcceptTeamInvitationPayload
   addAtlassianAuth: IAddAtlassianAuthPayload
+  addSlackAuth: IAddSlackAuthPayload
 
   /**
    * Create a new agenda item
@@ -2632,8 +2551,6 @@ export interface IMutation {
    * Create a new team and add the first team member
    */
   addOrg: IAddOrgPayload | null
-  addProvider: IAddProviderPayload
-  addSlackChannel: IAddSlackChannelPayload
 
   /**
    * Create a new team and add the first team member
@@ -2739,11 +2656,6 @@ export interface IMutation {
   editTask: IEditTaskPayload | null
 
   /**
-   * Finish a meeting and go to the summary
-   */
-  endMeeting: IEndMeetingPayload | null
-
-  /**
    * Receive a webhook from github saying an assignee was added
    */
   githubAddAssignee: boolean | null
@@ -2809,16 +2721,6 @@ export interface IMutation {
   removeGitHubAuth: IRemoveGitHubAuthPayload
 
   /**
-   * Disconnect a team from a Provider token
-   */
-  removeProvider: IRemoveProviderPayload
-
-  /**
-   * Remove a slack channel integration from a team
-   */
-  removeSlackChannel: IRemoveSlackChannelPayload
-
-  /**
    * Remove a user from an org
    */
   removeOrgUser: IRemoveOrgUserPayload | null
@@ -2827,6 +2729,11 @@ export interface IMutation {
    * Remove a reflection
    */
   removeReflection: IRemoveReflectionPayload | null
+
+  /**
+   * Disconnect a team member from Slack
+   */
+  removeSlackAuth: IRemoveSlackAuthPayload
 
   /**
    * Remove a team member from the team
@@ -2852,6 +2759,7 @@ export interface IMutation {
    * Focus (or unfocus) a phase item
    */
   setPhaseFocus: ISetPhaseFocusPayload | null
+  setSlackNotification: ISetSlackNotificationPayload
 
   /**
    * Broadcast that the viewer started dragging a reflection
@@ -3008,6 +2916,11 @@ export interface IAddAtlassianAuthOnMutationArguments {
   teamId: string
 }
 
+export interface IAddSlackAuthOnMutationArguments {
+  code: string
+  teamId: string
+}
+
 export interface IAddAgendaItemOnMutationArguments {
   /**
    * The new task including an id, teamMemberId, and content
@@ -3043,16 +2956,6 @@ export interface IAddOrgOnMutationArguments {
    * The name of the new team
    */
   orgName?: string | null
-}
-
-export interface IAddProviderOnMutationArguments {
-  code: string
-  service: IntegrationServiceEnum
-  teamId: string
-}
-
-export interface IAddSlackChannelOnMutationArguments {
-  input: IAddSlackChannelInput
 }
 
 export interface IAddTeamOnMutationArguments {
@@ -3254,13 +3157,6 @@ export interface IEditTaskOnMutationArguments {
   isEditing: boolean
 }
 
-export interface IEndMeetingOnMutationArguments {
-  /**
-   * The team that will be having the meeting
-   */
-  teamId: string
-}
-
 export interface IGithubAddAssigneeOnMutationArguments {
   /**
    * The github issue id
@@ -3387,22 +3283,6 @@ export interface IRemoveGitHubAuthOnMutationArguments {
   teamId: string
 }
 
-export interface IRemoveProviderOnMutationArguments {
-  /**
-   * The relay id of the service to remove
-   */
-  providerId: string
-
-  /**
-   * the teamId to disconnect from the token
-   */
-  teamId: string
-}
-
-export interface IRemoveSlackChannelOnMutationArguments {
-  slackGlobalId: string
-}
-
 export interface IRemoveOrgUserOnMutationArguments {
   /**
    * the user to remove
@@ -3417,6 +3297,13 @@ export interface IRemoveOrgUserOnMutationArguments {
 
 export interface IRemoveReflectionOnMutationArguments {
   reflectionId: string
+}
+
+export interface IRemoveSlackAuthOnMutationArguments {
+  /**
+   * the teamId to disconnect from the token
+   */
+  teamId: string
 }
 
 export interface IRemoveTeamMemberOnMutationArguments {
@@ -3460,6 +3347,12 @@ export interface ISetPhaseFocusOnMutationArguments {
    * The currently focused phase item
    */
   focusedPhaseItemId?: string | null
+}
+
+export interface ISetSlackNotificationOnMutationArguments {
+  slackChannelId?: string | null
+  slackNotificationEvents: Array<SlackNotificationEventEnum>
+  teamId: string
 }
 
 export interface IStartDraggingReflectionOnMutationArguments {
@@ -3732,6 +3625,21 @@ export interface IAddAtlassianAuthPayload {
   user: IUser | null
 }
 
+export interface IAddSlackAuthPayload {
+  __typename: 'AddSlackAuthPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The newly created auth
+   */
+  slackAuth: ISlackAuth | null
+
+  /**
+   * The user with updated slackAuth
+   */
+  user: IUser | null
+}
+
 export interface ICreateAgendaItemInput {
   /**
    * The content of the agenda item
@@ -3832,42 +3740,6 @@ export interface IAddOrgPayload {
    * The ID of the suggestion to create a new team
    */
   removedSuggestedActionId: string | null
-}
-
-export interface IAddProviderPayload {
-  __typename: 'AddProviderPayload'
-  error: IStandardMutationError | null
-  providerRow: IProviderRow | null
-  provider: IProvider | null
-
-  /**
-   * All the integrationIds that the provider has successfully joined
-   */
-  joinedIntegrationIds: Array<string> | null
-  teamMember: ITeamMember | null
-
-  /**
-   * The user with updated githubAuth
-   */
-  user: IUser | null
-}
-
-export interface IAddSlackChannelInput {
-  /**
-   * The id of the teamMember calling it.
-   */
-  teamMemberId: string
-
-  /**
-   * the slack channel that wants our messages
-   */
-  slackChannelId: string
-}
-
-export interface IAddSlackChannelPayload {
-  __typename: 'AddSlackChannelPayload'
-  error: IStandardMutationError | null
-  channel: ISlackIntegration
 }
 
 export interface IAddTeamPayload {
@@ -4982,22 +4854,6 @@ export interface IEditTaskPayload {
   isEditing: boolean | null
 }
 
-export interface IEndMeetingPayload {
-  __typename: 'EndMeetingPayload'
-  error: IStandardMutationError | null
-  team: ITeam | null
-
-  /**
-   * The list of tasks that were archived during the meeting
-   */
-  archivedTasks: Array<ITask | null> | null
-
-  /**
-   * The ID of the suggestion to try an action meeting, if tried
-   */
-  removedSuggestedActionId: string | null
-}
-
 export interface IInactivateUserPayload {
   __typename: 'InactivateUserPayload'
   error: IStandardMutationError | null
@@ -5262,32 +5118,9 @@ export interface IRemoveGitHubAuthPayload {
   teamId: string | null
 
   /**
-   * The user with updated atlassianAuth
+   * The user with updated githubAuth
    */
   user: IUser | null
-}
-
-export interface IRemoveProviderPayload {
-  __typename: 'RemoveProviderPayload'
-  error: IStandardMutationError | null
-  providerRow: IProviderRow | null
-
-  /**
-   * The globalIds of the removed integrations
-   */
-  deletedIntegrationIds: Array<string> | null
-
-  /**
-   * The userId of the person who removed the provider
-   */
-  userId: string | null
-  archivedTaskIds: Array<string | null> | null
-}
-
-export interface IRemoveSlackChannelPayload {
-  __typename: 'RemoveSlackChannelPayload'
-  error: IStandardMutationError | null
-  deletedId: string
 }
 
 export interface IRemoveOrgUserPayload {
@@ -5404,6 +5237,22 @@ export interface IRemoveReflectionPayload {
    * The stages that were unlocked by navigating
    */
   unlockedStages: Array<NewMeetingStage> | null
+}
+
+export interface IRemoveSlackAuthPayload {
+  __typename: 'RemoveSlackAuthPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The ID of the authorization removed
+   */
+  authId: string | null
+  teamId: string | null
+
+  /**
+   * The user with updated slackAuth
+   */
+  user: IUser | null
 }
 
 export interface IRemoveTeamMemberPayload {
@@ -5578,6 +5427,17 @@ export interface IGenericMeetingStage {
    * Number of times the facilitator has visited this stage
    */
   viewCount: number | null
+}
+
+export interface ISetSlackNotificationPayload {
+  __typename: 'SetSlackNotificationPayload'
+  error: IStandardMutationError | null
+  slackNotifications: Array<ISlackNotification> | null
+
+  /**
+   * The user with updated slack notifications
+   */
+  user: IUser | null
 }
 
 /**
@@ -5951,30 +5811,13 @@ export interface IRenameReflectTemplatePromptPayload {
 
 export interface ISubscription {
   __typename: 'Subscription'
-  integrationSubscription: IntegrationSubscriptionPayload
   newAuthToken: string | null
   notificationSubscription: NotificationSubscriptionPayload
   organizationSubscription: OrganizationSubscriptionPayload
   taskSubscription: TaskSubscriptionPayload
-  slackChannelAdded: IAddSlackChannelPayload
-  slackChannelRemoved: IRemoveSlackChannelPayload
   teamSubscription: TeamSubscriptionPayload
   teamMemberSubscription: TeamMemberSubscriptionPayload
 }
-
-export interface IIntegrationSubscriptionOnSubscriptionArguments {
-  teamId: string
-}
-
-export interface ISlackChannelAddedOnSubscriptionArguments {
-  teamId: string
-}
-
-export interface ISlackChannelRemovedOnSubscriptionArguments {
-  teamId: string
-}
-
-export type IntegrationSubscriptionPayload = IAddProviderPayload | IRemoveProviderPayload
 
 export type NotificationSubscriptionPayload =
   | IAcceptTeamInvitationPayload
@@ -5986,7 +5829,6 @@ export type NotificationSubscriptionPayload =
   | ICreateTaskPayload
   | IDeleteTaskPayload
   | IDisconnectSocketPayload
-  | IEndMeetingPayload
   | IEndNewMeetingPayload
   | IInviteToTeamPayload
   | IRemoveOrgUserPayload
@@ -6044,7 +5886,6 @@ export type TaskSubscriptionPayload =
   | ICreateTaskPayload
   | IDeleteTaskPayload
   | IEditTaskPayload
-  | IEndMeetingPayload
   | IRemoveOrgUserPayload
   | IRemoveTeamMemberPayload
   | IUpdateTaskPayload
@@ -6055,6 +5896,7 @@ export type TeamSubscriptionPayload =
   | IAddAgendaItemPayload
   | IAddAtlassianAuthPayload
   | IAddGitHubAuthPayload
+  | IAddSlackAuthPayload
   | IAddTeamPayload
   | IArchiveTeamPayload
   | IAutoGroupReflectionsPayload
@@ -6064,7 +5906,6 @@ export type TeamSubscriptionPayload =
   | IDragDiscussionTopicPayload
   | IEndDraggingReflectionPayload
   | IEditReflectionPayload
-  | IEndMeetingPayload
   | IEndNewMeetingPayload
   | INavigateMeetingPayload
   | INewMeetingCheckInPayload
@@ -6093,6 +5934,7 @@ export type TeamSubscriptionPayload =
   | IReflectTemplatePromptUpdateDescriptionPayload
   | IRemoveAtlassianAuthPayload
   | IRemoveGitHubAuthPayload
+  | IRemoveSlackAuthPayload
   | IRemoveReflectTemplatePayload
   | IRemoveReflectTemplatePromptPayload
   | IRenameReflectTemplatePayload

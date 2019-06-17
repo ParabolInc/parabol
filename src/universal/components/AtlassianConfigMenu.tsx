@@ -4,9 +4,8 @@ import MenuItem from 'universal/components/MenuItem'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import {MenuProps} from 'universal/hooks/useMenu'
 import RemoveAtlassianAuthMutation from 'universal/mutations/RemoveAtlassianAuthMutation'
-import {IntegrationServiceEnum} from 'universal/types/graphql'
-import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
-import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
+import {MenuMutationProps} from 'universal/hooks/useMutationProps'
+import AtlassianClientManager from 'universal/utils/AtlassianClientManager'
 
 interface Props {
   menuProps: MenuProps
@@ -18,12 +17,9 @@ const AtlassianConfigMenu = (props: Props) => {
   const {menuProps, mutationProps, teamId} = props
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
-  const openOAuth = handleOpenOAuth({
-    name: IntegrationServiceEnum.atlassian,
-    atmosphere,
-    teamId,
-    ...mutationProps
-  })
+  const openOAuth = () => {
+    AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps)
+  }
 
   const removeAtlassian = () => {
     if (submitting) return

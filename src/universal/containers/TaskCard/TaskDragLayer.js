@@ -16,7 +16,7 @@ const layerStyles = {
 }
 
 function getItemStyles (props) {
-  const {area, currentOffset} = props
+  const {currentOffset} = props
   if (!currentOffset) {
     return {
       display: 'none'
@@ -25,30 +25,11 @@ function getItemStyles (props) {
   const {x, y} = currentOffset
   const transform = `translate3d(${x}px, ${y}px, 0px)`
 
-  // NOTE: Widths are calculated based on the results of UI constants, but yeah, manual (TA)
-  // TODO: Robots, please substract chrome box values, kthxbai (TA)
-  const calcWidth = (value) => `calc((100vw - ${value}) / 4)`
-  const widthValues = {
-    meeting: {
-      minWidth: '12.40625rem',
-      width: calcWidth('25.375rem')
-    },
-    teamDash: {
-      minWidth: '10.125rem',
-      width: calcWidth('38.3125rem')
-    },
-    userDash: {
-      minWidth: '13.90625rem',
-      width: calcWidth('23.375rem')
-    }
-  }
-
   return {
     ...layerStyles,
-    minWidth: widthValues[area].minWidth,
+    minWidth: 256,
     transform,
-    WebkitTransform: transform,
-    width: widthValues[area].width
+    WebkitTransform: transform
   }
 }
 

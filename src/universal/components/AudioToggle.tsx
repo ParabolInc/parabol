@@ -4,8 +4,12 @@ import Icon from 'universal/components/Icon'
 import {StreamUI} from '../hooks/useSwarm'
 import MediaSwarm from '../utils/swarm/MediaSwarm'
 import MediaControlToggle from './MediaControlToggle'
+import {ICON_SIZE} from 'universal/styles/typographyV2'
 
 const Toggle = styled(MediaControlToggle)({})
+const StyledIcon = styled(Icon)({
+  fontSize: ICON_SIZE.MD18
+})
 
 interface Props {
   localStreamUI: StreamUI
@@ -28,7 +32,7 @@ const AudioToggle = (props: Props) => {
   }
   return (
     <Toggle onClick={onClick}>
-      <Icon>{hasAudio ? 'mic' : 'mic_off'}</Icon>
+      <StyledIcon>{hasAudio ? 'mic' : 'mic_off'}</StyledIcon>
     </Toggle>
   )
 }

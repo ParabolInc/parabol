@@ -1,6 +1,5 @@
 import fetch from 'node-fetch'
 import {stringify} from 'querystring'
-import {GITHUB_SCOPE} from 'universal/utils/constants'
 import GitHubClientManager from 'universal/utils/GitHubClientManager'
 
 interface OAuth2Response {
@@ -37,7 +36,7 @@ class GitHubManager extends GitHubClientManager {
     }
     const providedScope = scope.split(',')
     const matchingScope =
-      new Set([...GITHUB_SCOPE.split(','), ...providedScope]).size === providedScope.length
+      new Set([...GitHubManager.SCOPE.split(','), ...providedScope]).size === providedScope.length
     if (!matchingScope) {
       throw new Error(`GitHub Bad scope: ${scope}`)
     }

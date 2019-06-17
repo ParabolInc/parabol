@@ -1,4 +1,4 @@
-import {AddAtlassianAuthMutation} from '__generated__/AddAtlassianAuthMutation.graphql'
+import {AddAtlassianAuthMutation as TAddAtlassianAuthMutation} from '__generated__/AddAtlassianAuthMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import {IAddAtlassianAuthOnMutationArguments} from '../types/graphql'
@@ -31,7 +31,7 @@ const AddAtlassianAuthMutation = (
   variables: IAddAtlassianAuthOnMutationArguments,
   {onError, onCompleted}: LocalHandlers
 ): Disposable => {
-  return commitMutation<AddAtlassianAuthMutation>(atmosphere, {
+  return commitMutation<TAddAtlassianAuthMutation>(atmosphere, {
     mutation,
     variables,
     onCompleted,

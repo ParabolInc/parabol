@@ -15,7 +15,6 @@ import {
 } from 'universal/utils/constants'
 import getWeekOfYear from 'universal/utils/getWeekOfYear'
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting'
-import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy'
 import convertToRichText from './convertToRichText'
 import creditCardByToken from 'server/__tests__/utils/creditCardByToken'
 
@@ -241,8 +240,6 @@ class MockDB {
         agendaItemsCompleted: 3,
         endedAt: new Date(),
         facilitator: this.context.team.activeFacilitator,
-        successExpression: makeSuccessExpression(),
-        successStatement: makeSuccessStatement(),
         invitees: this.db.teamMember
           .filter((tm) => tm.teamId === teamId)
           .map((teamMember) => ({

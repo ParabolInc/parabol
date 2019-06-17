@@ -1,3 +1,9 @@
+import Atmosphere from 'universal/Atmosphere'
+import {MenuMutationProps} from 'universal/hooks/useMutationProps'
+import makeHref from 'universal/utils/makeHref'
+import getOAuthPopupFeatures from 'universal/utils/getOAuthPopupFeatures'
+import AddAtlassianAuthMutation from 'universal/mutations/AddAtlassianAuthMutation'
+
 export interface JiraUser {
   self: string
   key: string
@@ -122,6 +128,38 @@ interface JiraError {
 }
 
 class AtlassianClientManager {
+  static SCOPE = 'read:jira-user read:jira-work write:jira-work offline_access'
+  static openOAuth (atmosphere: Atmosphere, teamId: string, mutationProps: MenuMutationProps) {
+    const {submitting, onError, onCompleted, submitMutation} = mutationProps
+    const providerState = Math.random()
+      .toString(36)
+      .substring(5)
+    const redirect = makeHref('/auth/atlassian')
+    const uri = `https://auth.atlassian.com/authorize?audience=api.atlassian.com&client_id=${
+      window.__ACTION__.atlassian
+    }&scope=${encodeURI(
+      AtlassianClientManager.SCOPE
+    )}&redirect_uri=${redirect}&state=${providerState}&response_type=code&prompt=consent`
+
+    const popup = window.open(
+      uri,
+      'OAuth',
+      getOAuthPopupFeatures({width: 500, height: 810, top: 56})
+    )
+    const handler = (event) => {
+      if (typeof event.data !== 'object' || event.origin !== window.location.origin || submitting) {
+        return
+      }
+      const {code, state} = event.data
+      if (state !== providerState || typeof code !== 'string') return
+      submitMutation()
+      AddAtlassianAuthMutation(atmosphere, {code, teamId}, {onError, onCompleted})
+      popup && popup.close()
+      window.removeEventListener('message', handler)
+    }
+    window.addEventListener('message', handler)
+  }
+
   accessToken: string
   refreshToken?: string
   private readonly get: (url: string) => any

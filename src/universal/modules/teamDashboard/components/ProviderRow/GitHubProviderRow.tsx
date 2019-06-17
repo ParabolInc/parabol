@@ -20,12 +20,9 @@ import useMenu from 'universal/hooks/useMenu'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {ICON_SIZE} from 'universal/styles/typographyV2'
 import {Layout, Providers} from 'universal/types/constEnums'
-import {IntegrationServiceEnum} from 'universal/types/graphql'
-import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
-import withMutationProps, {
-  MenuMutationProps,
-  WithMutationProps
-} from 'universal/utils/relay/withMutationProps'
+import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import {MenuMutationProps} from 'universal/hooks/useMutationProps'
+import GitHubClientManager from 'universal/utils/GitHubClientManager'
 
 const StyledButton = styled(FlatButton)({
   borderColor: PALETTE.BORDER.LIGHT,
@@ -86,15 +83,9 @@ const GitHubProviderRow = (props: Props) => {
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
   const {githubAuth} = viewer
   const accessToken = (githubAuth && githubAuth.accessToken) || undefined
-  const openOAuth = handleOpenOAuth({
-    name: IntegrationServiceEnum.GitHubIntegration,
-    submitting,
-    submitMutation,
-    atmosphere,
-    onError,
-    onCompleted,
-    teamId
-  })
+  const openOAuth = () => {
+    GitHubClientManager.openOAuth(atmosphere, teamId, mutationProps)
+  }
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   return (
     <ProviderCard>

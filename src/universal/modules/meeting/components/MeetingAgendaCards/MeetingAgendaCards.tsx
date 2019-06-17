@@ -84,6 +84,7 @@ export default createFragmentContainer(
     fragment MeetingAgendaCards_tasks on Task @relay(plural: true) {
       ...NullableTask_task
       id
+      sortOrder
     }
   `
 )
