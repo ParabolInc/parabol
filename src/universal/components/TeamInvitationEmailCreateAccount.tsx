@@ -34,7 +34,7 @@ const TeamInvitationEmailCreateAccount = (props: Props) => {
     <StyledDialog>
       <Helmet title={`Sign up | Team Invitation`} />
       <DialogTitle>
-        {meetingType ? `Join ${meetingTypeToLabel[meetingType]} Meeting in progress…` : 'Join Team'}
+        {meetingType ? `Join ${meetingTypeToLabel[meetingType]} Meeting in Progress` : 'Join Team'}
       </DialogTitle>
       <DialogContent>
         {meetingType ? (

@@ -108,7 +108,7 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
         <Helmet title={`Sign up with Google | Team Invitation`} />
         <DialogTitle>
           {meetingType
-            ? `Join ${meetingTypeToLabel[meetingType]} Meeting in progress…`
+            ? `Join ${meetingTypeToLabel[meetingType]} Meeting in Progress`
             : 'Join Team'}
         </DialogTitle>
         <StyledContent>
