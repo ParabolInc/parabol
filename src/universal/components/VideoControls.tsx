@@ -51,9 +51,11 @@ const VideoControls = (props: Props) => {
 
   const addVideo = async () => {
     const descriptors = ['camera', 'microphone'] as PermissionName[]
-    const permissions = await Promise.all(
-      descriptors.map((name) => navigator.permissions.query({name}))
-    )
+    // https://caniuse.com/#feat=permissions-api
+    const permissions =
+      navigator.permissions && navigator.permissions.query
+        ? await Promise.all(descriptors.map((name) => navigator.permissions.query({name})))
+        : []
     const isPrompting = permissions.some(({state}) => state === 'prompt')
     if (isPrompting) {
       setDeviceStatus('prompt')

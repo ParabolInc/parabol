@@ -1402,21 +1402,21 @@
     shortid "^2.2.12"
     tslib "^1.9.3"
 
-"@mattkrick/fast-rtc-peer@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@mattkrick/fast-rtc-peer/-/fast-rtc-peer-0.3.1.tgz#007980b454ab950860fec9be5f51d512aacaa487"
-  integrity sha512-byQSOzhjManS7Lgeva064rdPU8INyvnLFCYDsKeHxaaNcYFGJZ/qsjwFqI8W0Lt2Qf21vKdPb2Q4eKimREyb1Q==
+"@mattkrick/fast-rtc-peer@^0.3.2":
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/@mattkrick/fast-rtc-peer/-/fast-rtc-peer-0.3.2.tgz#1d52730d0ccf342cbc7557e01ea57d810f286eac"
+  integrity sha512-4P8EiJNyKQvPpB0ZFvY5XpMPsnb9k+pisg1eYdBZ5ChQZHpjRJnAi58b6fCmqlGIsLqcZHSp19swj5fg4HVs6w==
   dependencies:
     eventemitter3 "^3.1.0"
     shortid "^2.2.12"
     tslib "^1.9.3"
 
-"@mattkrick/fast-rtc-swarm@^0.3.2":
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/@mattkrick/fast-rtc-swarm/-/fast-rtc-swarm-0.3.2.tgz#79409331c5727557522a516f9a704452becf6c31"
-  integrity sha512-VHT9KiA9sDGNMIIqpChBFdBXTWKrir3i9ijOOXbkhwwLx8RSbNlP8J6xb3LbjQmImzTc1gXb22UFujbjsiKwBA==
+"@mattkrick/fast-rtc-swarm@^0.3.3":
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/@mattkrick/fast-rtc-swarm/-/fast-rtc-swarm-0.3.3.tgz#3fd2f6dd0e9a10fbd3c8ad50abbaf010c0d6b038"
+  integrity sha512-U5n5B9UPHzFBS0PYNjZTwCCt9NR6osLDes8MT7hTm7KKBGo2r84qzxwR5fRwS+EuQeL0jJIWWad43LDdmraQwg==
   dependencies:
-    "@mattkrick/fast-rtc-peer" "^0.3.1"
+    "@mattkrick/fast-rtc-peer" "^0.3.2"
     eventemitter3 "^3.1.0"
     tslib "^1.9.3"
 
