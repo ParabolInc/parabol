@@ -30,7 +30,6 @@ class TeamInvitationDialog extends Component<Props> {
   render () {
     const {atmosphere, verifiedInvitation} = this.props
     const {errorType, isGoogle, user} = verifiedInvitation
-
     switch (errorType) {
       case 'notFound':
         return <TeamInvitationErrorNotFound />
