@@ -6,7 +6,7 @@ import {PALETTE} from 'universal/styles/paletteV2'
 const TooltipStyled = styled('div')({
   color: '#FFF',
   backgroundColor: PALETTE.BACKGROUND.DARK,
-  borderRadius: Radius.SMALL,
+  borderRadius: Radius.TOOLTIP,
   fontSize: 11,
   fontWeight: 600,
   lineHeight: '16px',

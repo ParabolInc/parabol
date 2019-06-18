@@ -192,10 +192,19 @@ export default class Atmosphere extends Environment {
     const {name, id: documentId} = operation
     const subKey = Atmosphere.getKey(name, variables)
     await this.upgradeTransport()
-    this.subscriptions[subKey] = (this.transport as GQLTrebuchetClient).subscribe(
-      {documentId, variables},
-      observer
-    )
+    if (!__PRODUCTION__) {
+      const queryMap = await import('../server/graphql/queryMap.json')
+      const query = queryMap[documentId!]
+      this.subscriptions[subKey] = (this.transport as GQLTrebuchetClient).subscribe(
+        {query, variables},
+        observer
+      )
+    } else {
+      this.subscriptions[subKey] = (this.transport as GQLTrebuchetClient).subscribe(
+        {documentId, variables},
+        observer
+      )
+    }
     return this.makeDisposable(subKey)
   }
 
@@ -252,6 +261,12 @@ export default class Atmosphere extends Environment {
     _cacheConfig?: CacheConfig
   ): Promise<ObservableFromValue<GraphQLResponse>> => {
     // await sleep(500)
+    if (!__PRODUCTION__ && request.id) {
+      const queryMap = await import('../server/graphql/queryMap.json')
+      const query = queryMap[request.id]
+      // @ts-ignore
+      return this.transport.fetch({query, variables})
+    }
     const field = request.id ? 'documentId' : 'query'
     const data = request.id || request.text
     // @ts-ignore

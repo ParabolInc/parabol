@@ -6,16 +6,17 @@ import {createFragmentContainer, graphql} from 'react-relay'
 import EmailPasswordAuthForm from './EmailPasswordAuthForm'
 import ForgotPasswordOneClick from './ForgotPasswordOneClick'
 import InvitationCenteredCopy from './InvitationCenteredCopy'
-import BasicCard from './BasicCard'
+import InviteDialog from './InviteDialog'
 import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import DialogTitle from './DialogTitle'
+import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
 
 interface Props {
   verifiedInvitation: TeamInvitationEmailSignin_verifiedInvitation
 }
 
-const StyledDialog = styled(BasicCard)({
+const StyledDialog = styled(InviteDialog)({
   maxWidth: 356
 })
 
@@ -26,7 +27,7 @@ const TeamName = styled('span')({
 
 const TeamInvitationEmailSignin = (props: Props) => {
   const {verifiedInvitation} = props
-  const {user, teamInvitation, teamName} = verifiedInvitation
+  const {meetingType, user, teamInvitation, teamName} = verifiedInvitation
   if (!user || !teamInvitation) return null
   const {preferredName} = user
   const {email} = teamInvitation
@@ -36,7 +37,11 @@ const TeamInvitationEmailSignin = (props: Props) => {
       <DialogTitle>Welcome back, {preferredName}!</DialogTitle>
       <DialogContent>
         <InvitationDialogCopy>
-          Enter your password for immediate access to your team: <TeamName>{teamName}</TeamName>
+          Enter your password
+          {meetingType
+            ? ` to join the ${meetingTypeToLabel[meetingType]} Meeting for: `
+            : ' for immediate access to your team: '}
+          <TeamName>{teamName}</TeamName>
         </InvitationDialogCopy>
         <InvitationCenteredCopy>
           <EmailPasswordAuthForm email={email} isPrimary isSignin />
@@ -51,6 +56,7 @@ export default createFragmentContainer(
   TeamInvitationEmailSignin,
   graphql`
     fragment TeamInvitationEmailSignin_verifiedInvitation on VerifiedInvitationPayload {
+      meetingType
       user {
         preferredName
       }

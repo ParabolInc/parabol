@@ -31,7 +31,7 @@ export interface MenuContentsProps {
 }
 
 const MenuContents = styled('div')(({minWidth, portalStatus}: MenuContentsProps) => ({
-  borderRadius: Radius.MEDIUM,
+  borderRadius: Radius.MENU,
   outline: 0,
   overflowY: portalStatus >= PortalStatus.AnimatedIn ? 'auto' : 'hidden',
   paddingBottom: 8,

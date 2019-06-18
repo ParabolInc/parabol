@@ -825,7 +825,7 @@ export interface IMeetingMember {
 }
 
 /**
- * The phases of an action meeting
+ * The type of meeting
  */
 export const enum MeetingTypeEnum {
   action = 'action',
@@ -2536,6 +2536,7 @@ export interface IVerifiedInvitationPayload {
    * name of the inviting team, present if invitation exists
    */
   teamName: string | null
+  meetingType: MeetingTypeEnum | null
 
   /**
    * The userId of the invitee, if already a parabol user
