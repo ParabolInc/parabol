@@ -70,16 +70,13 @@ class TeamInvitationGoogleSignin extends Component<Props> {
         <DialogTitle>Welcome back, {preferredName}!</DialogTitle>
         <DialogContent>
           <InvitationDialogCopy>You last signed in with Google. </InvitationDialogCopy>
-          {meetingType ? (
-            <InvitationDialogCopy>
-              Tap below to join the {meetingTypeToLabel[meetingType]} Meeting for:{' '}
-              <TeamName>{teamName}</TeamName>
-            </InvitationDialogCopy>
-          ) : (
-            <InvitationDialogCopy>
-              Tap below for immediate access to your team: <TeamName>{teamName}</TeamName>
-            </InvitationDialogCopy>
-          )}
+          <InvitationDialogCopy>
+            Tap below
+            {meetingType
+              ? ` to join the ${meetingTypeToLabel[meetingType]} Meeting for: `
+              : ' for immediate access to your team: '}
+            <TeamName>{teamName}</TeamName>
+          </InvitationDialogCopy>
           <InvitationCenteredCopy>
             <GoogleOAuthButtonBlock
               label='Sign in with Google'

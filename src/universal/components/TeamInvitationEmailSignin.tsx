@@ -36,16 +36,13 @@ const TeamInvitationEmailSignin = (props: Props) => {
       <Helmet title={`Sign in | Team Invitation`} />
       <DialogTitle>Welcome back, {preferredName}!</DialogTitle>
       <DialogContent>
-        {meetingType ? (
-          <InvitationDialogCopy>
-            Enter your password to join the {meetingTypeToLabel[meetingType]} Meeting for: (
-            <TeamName>{teamName}</TeamName>)
-          </InvitationDialogCopy>
-        ) : (
-          <InvitationDialogCopy>
-            Enter your password for immediate access to your team: <TeamName>{teamName}</TeamName>
-          </InvitationDialogCopy>
-        )}
+        <InvitationDialogCopy>
+          Enter your password
+          {meetingType
+            ? ` to join the ${meetingTypeToLabel[meetingType]} Meeting for: `
+            : ' for immediate access to your team: '}
+          <TeamName>{teamName}</TeamName>
+        </InvitationDialogCopy>
         <InvitationCenteredCopy>
           <EmailPasswordAuthForm email={email} isPrimary isSignin />
           <ForgotPasswordOneClick email={email} />

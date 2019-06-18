@@ -107,25 +107,18 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
       <StyledDialog>
         <Helmet title={`Sign up with Google | Team Invitation`} />
         <DialogTitle>
-          {meetingType
-            ? `Join ${meetingTypeToLabel[meetingType]} Meeting in Progress`
-            : 'Join Team'}
+          {meetingType ? `Join ${meetingTypeToLabel[meetingType]} Meeting` : 'Join Team'}
         </DialogTitle>
         <StyledContent>
           <CopyMargins>
             <InvitationDialogCopy>
               It looks like your email is hosted by Google.
             </InvitationDialogCopy>
-            {meetingType ? (
-              <InvitationDialogCopy>
-                You’re just 1 step away from participating with your team:{' '}
-                <TeamName>{teamName}</TeamName>
-              </InvitationDialogCopy>
-            ) : (
-              <InvitationDialogCopy>
-                Tap below for immediate access to your team: <TeamName>{teamName}</TeamName>
-              </InvitationDialogCopy>
-            )}
+            <InvitationDialogCopy>
+              Tap below for immediate access
+              {meetingType ? ' to the team meeting for: ' : ' to your team: '}
+              <TeamName>{teamName}</TeamName>
+            </InvitationDialogCopy>
           </CopyMargins>
           <InvitationCenteredCopy>
             <GoogleOAuthButtonBlock
