@@ -1,8 +1,9 @@
 import React, {Component} from 'react'
 import {graphql, QueryRenderer} from 'react-relay'
 import {RouteComponentProps} from 'react-router'
-import {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import withAtmosphere from '../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import TeamInvitation from './TeamInvitation'
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{token: string}> {}
@@ -10,7 +11,7 @@ interface Props extends WithAtmosphereProps, RouteComponentProps<{token: string}
 const query = graphql`
   query TeamInvitationRootQuery($token: ID!) {
     verifiedInvitation(token: $token) {
-      ...TeamInvitationDialog_verifiedInvitation
+      ...TeamInvitation_verifiedInvitation
     }
   }
 `

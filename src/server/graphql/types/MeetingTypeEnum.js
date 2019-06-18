@@ -3,7 +3,7 @@ import {ACTION, RETROSPECTIVE} from 'universal/utils/constants'
 
 const MeetingTypeEnum = new GraphQLEnumType({
   name: 'MeetingTypeEnum',
-  description: 'The phases of an action meeting',
+  description: 'The type of meeting',
   values: {
     [ACTION]: {},
     [RETROSPECTIVE]: {}

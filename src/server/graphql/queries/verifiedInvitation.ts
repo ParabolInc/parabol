@@ -45,10 +45,14 @@ export default {
       team: r.table('Team').get(teamId),
       inviter: r.table('User').get(invitedBy)
     })
+    const {meetingId} = team
+    const meeting = meetingId ? await r.table('NewMeeting').get(meetingId) : null
+    const meetingType = meeting ? meeting.meetingType : null
     if (acceptedAt) {
       return {
         errorType: 'accepted',
         teamName: team.name,
+        meetingType,
         inviterName: inviter.preferredName,
         inviterEmail: inviter.email,
         teamInvitation
@@ -73,6 +77,7 @@ export default {
     const isGoogle = await getIsGoogleProvider(viewer, email)
     return {
       teamName: team.name,
+      meetingType,
       inviterName: inviter.preferredName,
       inviterEmail: inviter.email,
       teamInvitation,

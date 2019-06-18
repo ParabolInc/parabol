@@ -46,7 +46,7 @@ const MenuBackground = styled('div')(
     isDropdown: boolean
   }) => ({
     background: '#fff',
-    borderRadius: Radius.MEDIUM,
+    borderRadius: Radius.MENU,
     boxShadow: menuShadow,
     height: '100%',
     position: 'absolute',

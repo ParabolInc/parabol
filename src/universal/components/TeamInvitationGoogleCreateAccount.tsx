@@ -13,7 +13,7 @@ import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationP
 import EmailPasswordAuthForm from './EmailPasswordAuthForm'
 import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
 import InvitationCenteredCopy from './InvitationCenteredCopy'
-import BasicCard from './BasicCard'
+import InviteDialog from './InviteDialog'
 import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import DialogTitle from './DialogTitle'
@@ -21,6 +21,7 @@ import LINK = PALETTE.LINK
 import PlainButton from 'universal/components/PlainButton/PlainButton'
 import HorizontalSeparator from 'universal/components/HorizontalSeparator/HorizontalSeparator'
 import AuthPrivacyFooter from 'universal/components/AuthPrivacyFooter'
+import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
 
 interface Props
   extends WithAtmosphereProps,
@@ -33,7 +34,7 @@ interface State {
   isEmailFallback: boolean
 }
 
-const StyledDialog = styled(BasicCard)({
+const StyledDialog = styled(InviteDialog)({
   maxWidth: 356
 })
 
@@ -43,7 +44,7 @@ const StyledContent = styled(DialogContent)({
 })
 
 const CopyMargins = styled('div')({
-  padding: '0 2rem'
+  padding: '0 1.5rem'
 })
 
 const UseEmailFallback = styled(PlainButton)({
@@ -99,20 +100,24 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
   render () {
     const {error, submitting, verifiedInvitation} = this.props
     const {isEmailFallback} = this.state
-    const {teamInvitation, teamName} = verifiedInvitation
+    const {meetingType, teamInvitation, teamName} = verifiedInvitation
     if (!teamInvitation) return null
     const {email} = teamInvitation
     return (
       <StyledDialog>
         <Helmet title={`Sign up with Google | Team Invitation`} />
-        <DialogTitle>Welcome!</DialogTitle>
+        <DialogTitle>
+          {meetingType ? `Join ${meetingTypeToLabel[meetingType]} Meeting` : 'Join Team'}
+        </DialogTitle>
         <StyledContent>
           <CopyMargins>
             <InvitationDialogCopy>
               It looks like your email is hosted by Google.
             </InvitationDialogCopy>
             <InvitationDialogCopy>
-              Tap below for immediate access to your team: <TeamName>{teamName}</TeamName>
+              Tap below for immediate access
+              {meetingType ? ' to the team meeting for: ' : ' to your team: '}
+              <TeamName>{teamName}</TeamName>
             </InvitationDialogCopy>
           </CopyMargins>
           <InvitationCenteredCopy>
@@ -140,6 +145,7 @@ export default createFragmentContainer(
   withAtmosphere(withMutationProps(withRouter(TeamInvitationGoogleCreateAccount))),
   graphql`
     fragment TeamInvitationGoogleCreateAccount_verifiedInvitation on VerifiedInvitationPayload {
+      meetingType
       teamInvitation {
         email
       }

@@ -3,6 +3,7 @@ import TeamInvitation from './TeamInvitation'
 import {resolveUser} from 'server/graphql/resolvers'
 import User from 'server/graphql/types/User'
 import TeamInvitationErrorEnum from './TeamInvitationErrorEnum'
+import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum'
 
 const VerifiedInvitationPayload = new GraphQLObjectType({
   name: 'VerifiedInvitationPayload',
@@ -31,6 +32,9 @@ const VerifiedInvitationPayload = new GraphQLObjectType({
     teamName: {
       type: GraphQLString,
       description: 'name of the inviting team, present if invitation exists'
+    },
+    meetingType: {
+      type: MeetingTypeEnum
     },
     userId: {
       type: GraphQLID,

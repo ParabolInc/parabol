@@ -11,10 +11,11 @@ import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/
 import auth0Authorize from '../utils/auth0Authorize'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import InvitationCenteredCopy from './InvitationCenteredCopy'
-import BasicCard from './BasicCard'
+import InviteDialog from './InviteDialog'
 import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import DialogTitle from './DialogTitle'
+import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
 
 interface Props
   extends WithAtmosphereProps,
@@ -60,17 +61,21 @@ class TeamInvitationGoogleSignin extends Component<Props> {
 
   render () {
     const {error, submitting, verifiedInvitation} = this.props
-    const {user, teamName} = verifiedInvitation
+    const {meetingType, user, teamName} = verifiedInvitation
     if (!user) return null
     const {preferredName} = user
     return (
-      <BasicCard>
+      <InviteDialog>
         <Helmet title={`Sign in with Google | Team Invitation`} />
         <DialogTitle>Welcome back, {preferredName}!</DialogTitle>
         <DialogContent>
           <InvitationDialogCopy>You last signed in with Google. </InvitationDialogCopy>
           <InvitationDialogCopy>
-            Tap below for immediate access to your team: <TeamName>{teamName}</TeamName>
+            Tap below
+            {meetingType
+              ? ` to join the ${meetingTypeToLabel[meetingType]} Meeting for: `
+              : ' for immediate access to your team: '}
+            <TeamName>{teamName}</TeamName>
           </InvitationDialogCopy>
           <InvitationCenteredCopy>
             <GoogleOAuthButtonBlock
@@ -81,7 +86,7 @@ class TeamInvitationGoogleSignin extends Component<Props> {
             />
           </InvitationCenteredCopy>
         </DialogContent>
-      </BasicCard>
+      </InviteDialog>
     )
   }
 }
@@ -90,6 +95,7 @@ export default createFragmentContainer(
   withAtmosphere(withMutationProps(withRouter(TeamInvitationGoogleSignin))),
   graphql`
     fragment TeamInvitationGoogleSignin_verifiedInvitation on VerifiedInvitationPayload {
+      meetingType
       user {
         email
         preferredName

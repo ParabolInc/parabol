@@ -2,17 +2,12 @@ import styled from 'react-emotion'
 import {Radius} from 'universal/types/constEnums'
 import {modalShadow} from 'universal/styles/elevation'
 
-const AuthDialog = styled('div')({
-  backgroundColor: 'white',
+const InviteDialog = styled('div')({
+  background: 'white',
   borderRadius: Radius.DIALOG,
   boxShadow: modalShadow,
   display: 'flex',
-  flexDirection: 'column',
-  flexShrink: 0,
-  alignItems: 'center',
-  maxWidth: 356,
-  padding: '24px 0 32px',
-  width: '100%'
+  flexDirection: 'column'
 })
 
-export default AuthDialog
+export default InviteDialog
