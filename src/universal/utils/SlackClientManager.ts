@@ -211,7 +211,7 @@ class SlackClientManager {
   async get<T> (url: string): Promise<T | ErrorResponse> {
     const record = this.cache[url]
     if (!record) {
-      const res = await this.fetch(url)
+      const res = await this.fetch(encodeURI(url))
       const result = await res.json()
       this.cache[url] = {
         result,

@@ -1,10 +1,11 @@
 import getRethink from 'server/database/rethinkDriver'
 import makeAppLink from 'server/utils/makeAppLink'
-import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
+import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 import {MeetingType} from 'server/database/types/Meeting'
 import {DataLoaderWorker} from 'server/graphql/graphql'
 import SlackNotification, {SlackNotificationEvent} from 'server/database/types/SlackNotification'
 import SlackManager from 'server/utils/SlackManager'
+import GenericMeetingStage from 'server/database/types/GenericMeetingStage'
 
 const getDistinctChannelNotifications = async (
   event: SlackNotificationEvent,
@@ -84,5 +85,26 @@ export const endSlackMeeting = async (meetingId, teamId, dataLoader: DataLoaderW
   const slackText = `The meeting for ${
     team.name
   } has ended!\n Check out the summary here: ${summaryUrl}`
+  notifySlack('meetingEnd', dataLoader, teamId, slackText).catch(console.log)
+}
+
+export const notifySlackStageComplete = async (
+  meetingId: string,
+  teamId: string,
+  dataLoader: DataLoaderWorker,
+  nextStage: GenericMeetingStage
+) => {
+  const [team, meeting] = await Promise.all([
+    dataLoader.get('teams').load(teamId),
+    dataLoader.get('newMeetings').load(meetingId)
+  ])
+  const {meetingType} = meeting
+  const slug = meetingTypeToSlug[meetingType]
+  const meetingUrl = makeAppLink(`${slug}/${teamId}`)
+  const meetingLabel = meetingTypeToLabel[meetingType]
+  const {phaseType} = nextStage
+  const slackText = `The ${phaseType} phase for your ${meetingLabel} meeting on ${
+    team.name
+  } has begun! Check it out: ${meetingUrl}`
   notifySlack('meetingEnd', dataLoader, teamId, slackText).catch(console.log)
 }

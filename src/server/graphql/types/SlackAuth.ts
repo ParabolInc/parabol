@@ -40,6 +40,10 @@ const SlackAuth = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The timestamp the provider was created'
     },
+    defaultTeamChannelId: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The default channel to assign to new team notifications'
+    },
     slackTeamId: {
       type: GraphQLID,
       description: 'The id of the team in slack'

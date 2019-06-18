@@ -19,9 +19,9 @@ const StageTimerModal = lazyPreload(async () =>
 
 const StageTimerControl = (props: Props) => {
   const {defaultTimeLimit, meetingId, team} = props
-  const {teamMembers, newMeeting} = team
-  const {localStage} = newMeeting!
-  const {isAsync, scheduledEndTime} = localStage
+  const {teamMembers, newMeeting, id: teamId} = team
+  const {localStage, facilitator} = newMeeting!
+  const {isAsync, isComplete, scheduledEndTime} = localStage
   const connectedMemberCount = teamMembers.filter((teamMember) => teamMember.isConnected).length
   const color = scheduledEndTime ? 'green' : 'midGray'
   const icon = isAsync ? 'event' : 'timer'
@@ -29,6 +29,7 @@ const StageTimerControl = (props: Props) => {
     isDropdown: true,
     id: 'StageTimerModal'
   })
+  if (isComplete) return null
   return (
     <>
       <BottomNavControl
@@ -45,6 +46,8 @@ const StageTimerControl = (props: Props) => {
           meetingId={meetingId}
           menuProps={menuProps}
           stage={localStage}
+          facilitator={facilitator}
+          teamId={teamId}
         />
       )}
     </>
@@ -56,6 +59,7 @@ graphql`
     ...StageTimerModal_stage
     scheduledEndTime
     isAsync
+    isComplete
   }
 `
 
@@ -63,6 +67,7 @@ export default createFragmentContainer(
   StageTimerControl,
   graphql`
     fragment StageTimerControl_team on Team {
+      id
       teamMembers(sortBy: "checkInOrder") {
         isConnected
       }
@@ -74,6 +79,9 @@ export default createFragmentContainer(
           stages {
             ...StageTimerControlStage @relay(mask: false)
           }
+        }
+        facilitator {
+          ...StageTimerModal_facilitator
         }
       }
     }

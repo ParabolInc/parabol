@@ -7,7 +7,7 @@ graphql`
     meeting {
       facilitatorUserId
       facilitator {
-        id
+        userId
         preferredName
       }
     }
@@ -38,7 +38,7 @@ export const promoteNewMeetingFacilitatorTeamOnNext = (
   if (!oldFacilitator || !meeting) return
   const {isConnected, preferredName: oldFacilitatorName} = oldFacilitator
   const {
-    facilitator: {preferredName: newFacilitatorName, id: newFacilitatorUserId}
+    facilitator: {preferredName: newFacilitatorName, userId: newFacilitatorUserId}
   } = meeting
   const isSelf = newFacilitatorUserId === viewerId
   const title = isConnected ? 'New facilitator!' : `${oldFacilitatorName} disconnected!`

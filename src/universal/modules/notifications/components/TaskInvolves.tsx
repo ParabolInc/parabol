@@ -7,7 +7,6 @@ import ClearNotificationMutation from 'universal/mutations/ClearNotificationMuta
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import {ASSIGNEE, MENTIONEE} from 'universal/utils/constants'
-import {clearNotificationLabel} from '../helpers/constants'
 import styled, {css} from 'react-emotion'
 import defaultStyles from 'universal/modules/notifications/helpers/styles'
 import Row from 'universal/components/Row/Row'
@@ -46,9 +45,8 @@ const StyledButton = styled(RaisedButton)({
   width: '100%'
 })
 
-const makeEditorState = (content, editorStateRef) => {
+const makeEditorState = (content, getEditorState) => {
   const contentState = convertFromRaw(JSON.parse(content))
-  const getEditorState = () => editorStateRef.current
   return EditorState.createWithContent(contentState, editorDecorators(getEditorState))
 }
 
@@ -64,10 +62,10 @@ const TaskInvolves = (props: Props) => {
   const {name: teamName, id: teamId} = team
   const action = involvementWord[involvement]
   const [editorStateRef, setEditorState] = useRefState<EditorState>(() =>
-    makeEditorState(content, editorStateRef)
+    makeEditorState(content, () => editorStateRef.current)
   )
   useEffect(() => {
-    setEditorState(makeEditorState(content, editorStateRef))
+    setEditorState(makeEditorState(content, () => editorStateRef.current))
   }, [content])
   const {error, submitMutation, onCompleted, onError, submitting} = useMutationProps()
   const atmosphere = useAtmosphere()
@@ -149,11 +147,7 @@ const TaskInvolves = (props: Props) => {
               {'Go to Board'}
             </StyledButton>
           </div>
-          <AcknowledgeButton
-            aria-label={clearNotificationLabel}
-            onClick={acknowledge}
-            waiting={submitting}
-          />
+          <AcknowledgeButton onClick={acknowledge} waiting={submitting} />
         </div>
       </Row>
       <NotificationErrorMessage error={error} />

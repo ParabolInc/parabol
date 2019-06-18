@@ -3,7 +3,6 @@ graphql`
     id
     checkInOrder
     isLead
-    isCheckedIn
     isConnected
     isNotRemoved
     picture

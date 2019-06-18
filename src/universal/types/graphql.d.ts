@@ -223,16 +223,6 @@ export interface IUser {
   overLimitCopy: string | null
 
   /**
-   * The auth for the user. access token is null if not viewer. Use isActive to check for presence
-   */
-  slackAuth: ISlackAuth | null
-
-  /**
-   * A list of events and the slack channels they get posted to
-   */
-  slackNotifications: Array<ISlackNotification>
-
-  /**
    * The integrations that the user would probably like to use
    */
   suggestedIntegrations: ISuggestedIntegrationQueryPayload
@@ -379,17 +369,6 @@ export interface IOrganizationUserOnUserArguments {
    * the orgId
    */
   orgId: string
-}
-
-export interface ISlackAuthOnUserArguments {
-  /**
-   * The teamId for the auth object
-   */
-  teamId: string
-}
-
-export interface ISlackNotificationsOnUserArguments {
-  teamId: string
 }
 
 export interface ISuggestedIntegrationsOnUserArguments {
@@ -740,11 +719,6 @@ export interface ITeamMember {
   isConnected: boolean | null
 
   /**
-   * true if present, false if absent, null before check-in
-   */
-  isCheckedIn: boolean | null
-
-  /**
    * true if this team member belongs to the user that queried it
    */
   isSelf: boolean
@@ -753,6 +727,16 @@ export interface ITeamMember {
    * The meeting specifics for the meeting the team member is currently in
    */
   meetingMember: MeetingMember | null
+
+  /**
+   * The slack auth for the team member.
+   */
+  slackAuth: ISlackAuth | null
+
+  /**
+   * A list of events and the slack channels they get posted to
+   */
+  slackNotifications: Array<ISlackNotification>
 
   /**
    * foreign key to User table
@@ -846,6 +830,125 @@ export interface IMeetingMember {
 export const enum MeetingTypeEnum {
   action = 'action',
   retrospective = 'retrospective'
+}
+
+/**
+ * OAuth token for a team member
+ */
+export interface ISlackAuth {
+  __typename: 'SlackAuth'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * true if an access token exists, else false
+   */
+  isActive: boolean
+
+  /**
+   * The access token to slack, only visible to the owner. Used as a fallback to botAccessToken
+   */
+  accessToken: string | null
+
+  /**
+   * the parabol bot user id
+   */
+  botUserId: string | null
+
+  /**
+   * the parabol bot access token, used as primary communication
+   */
+  botAccessToken: string | null
+
+  /**
+   * The timestamp the provider was created
+   */
+  createdAt: any
+
+  /**
+   * The default channel to assign to new team notifications
+   */
+  defaultTeamChannelId: string
+
+  /**
+   * The id of the team in slack
+   */
+  slackTeamId: string | null
+
+  /**
+   * The name of the team in slack
+   */
+  slackTeamName: string | null
+
+  /**
+   * The userId in slack
+   */
+  slackUserId: string
+
+  /**
+   * The name of the user in slack
+   */
+  slackUserName: string
+
+  /**
+   * *The team that the token is linked to
+   */
+  teamId: string
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any
+
+  /**
+   * The user that the access token is attached to
+   */
+  userId: string
+}
+
+/**
+ * an event trigger and slack channel to receive it
+ */
+export interface ISlackNotification {
+  __typename: 'SlackNotification'
+  id: string
+  event: SlackNotificationEventEnum
+  eventType: SlackNotificationEventTypeEnum
+
+  /**
+   * null if no notification is to be sent
+   */
+  channelId: string | null
+  teamId: string
+  userId: string
+}
+
+/**
+ * The event that triggers a slack notification
+ */
+export const enum SlackNotificationEventEnum {
+  meetingStart = 'meetingStart',
+  meetingEnd = 'meetingEnd',
+  MEETING_STAGE_TIME_LIMIT = 'MEETING_STAGE_TIME_LIMIT',
+  meetingNextStageReady = 'meetingNextStageReady'
+}
+
+/**
+ * The type of event for a slack notification
+ */
+export const enum SlackNotificationEventTypeEnum {
+  /**
+   * notification that concerns the whole team
+   */
+  team = 'team',
+
+  /**
+   * notification that concerns a single member on the team
+   */
+  member = 'member'
 }
 
 /**
@@ -1162,9 +1265,9 @@ export interface INewMeeting {
   facilitatorUserId: string
 
   /**
-   * The facilitator user
+   * The facilitator team member
    */
-  facilitator: IUser
+  facilitator: ITeamMember
 
   /**
    * The team members that were active during the time of the meeting
@@ -2371,104 +2474,6 @@ export const enum NotificationEnum {
   TASK_INVOLVES = 'TASK_INVOLVES',
   VERSION_INFO = 'VERSION_INFO',
   MEETING_STAGE_TIME_LIMIT = 'MEETING_STAGE_TIME_LIMIT'
-}
-
-/**
- * OAuth token for a team member
- */
-export interface ISlackAuth {
-  __typename: 'SlackAuth'
-
-  /**
-   * shortid
-   */
-  id: string
-
-  /**
-   * true if an access token exists, else false
-   */
-  isActive: boolean
-
-  /**
-   * The access token to slack, only visible to the owner. Used as a fallback to botAccessToken
-   */
-  accessToken: string | null
-
-  /**
-   * the parabol bot user id
-   */
-  botUserId: string | null
-
-  /**
-   * the parabol bot access token, used as primary communication
-   */
-  botAccessToken: string | null
-
-  /**
-   * The timestamp the provider was created
-   */
-  createdAt: any
-
-  /**
-   * The id of the team in slack
-   */
-  slackTeamId: string | null
-
-  /**
-   * The name of the team in slack
-   */
-  slackTeamName: string | null
-
-  /**
-   * The userId in slack
-   */
-  slackUserId: string
-
-  /**
-   * The name of the user in slack
-   */
-  slackUserName: string
-
-  /**
-   * *The team that the token is linked to
-   */
-  teamId: string
-
-  /**
-   * The timestamp the token was updated at
-   */
-  updatedAt: any
-
-  /**
-   * The user that the access token is attached to
-   */
-  userId: string
-}
-
-/**
- * an event trigger and slack channel to receive it
- */
-export interface ISlackNotification {
-  __typename: 'SlackNotification'
-  id: string
-  event: SlackNotificationEventEnum
-
-  /**
-   * null if no notification is to be sent
-   */
-  channelId: string | null
-  teamId: string
-  userId: string
-}
-
-/**
- * The event that triggers a slack notification
- */
-export const enum SlackNotificationEventEnum {
-  meetingStart = 'meetingStart',
-  meetingEnd = 'meetingEnd',
-  MEETING_STAGE_TIME_LIMIT = 'MEETING_STAGE_TIME_LIMIT',
-  meetingNextStageReady = 'meetingNextStageReady'
 }
 
 /**
@@ -3909,9 +3914,9 @@ export interface IRetrospectiveMeeting {
   facilitatorUserId: string
 
   /**
-   * The facilitator user
+   * The facilitator team member
    */
-  facilitator: IUser
+  facilitator: ITeamMember
 
   /**
    * The team members that were active during the time of the meeting
@@ -6592,9 +6597,9 @@ export interface IActionMeeting {
   facilitatorUserId: string
 
   /**
-   * The facilitator user
+   * The facilitator team member
    */
-  facilitator: IUser
+  facilitator: ITeamMember
 
   /**
    * The team members that were active during the time of the meeting

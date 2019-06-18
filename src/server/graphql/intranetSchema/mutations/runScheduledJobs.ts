@@ -27,6 +27,7 @@ const processMeetingStageTimeLimits = async (job: ScheduledJobMeetingStageTimeLi
       .table('SlackAuth')
       .getAll(facilitatorUserId, {index: 'userId'})
       .filter({teamId})
+      .nth(0)
   })
 
   let sendViaSlack =
@@ -96,7 +97,7 @@ const runScheduledJobs = {
 
     // RESOLUTION
     const before = new Date(now.getTime() + seconds * 1000)
-    const upcomingJobs = r.table('ScheduledJob').between(r.minval, before, {index: 'runAt'})
+    const upcomingJobs = await r.table('ScheduledJob').between(r.minval, before, {index: 'runAt'})
 
     upcomingJobs.forEach((job) => {
       const {runAt} = job

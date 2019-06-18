@@ -10,26 +10,29 @@ export interface MenuItemProps {
 }
 
 interface Props {
+  isDisabled?: boolean
   label: ReactNode
   onClick?: (e: React.MouseEvent) => void
   onMouseEnter?: (e: React.MouseEvent) => void
   noCloseOnClick?: boolean
 }
 
-const MenuItemStyles = styled('div')(({isActive}: {isActive: boolean}) => ({
-  alignItems: 'center',
-  backgroundColor: isActive ? PALETTE.BACKGROUND.MAIN : undefined,
-  color: PALETTE.TEXT.MAIN,
-  cursor: 'pointer',
-  display: 'flex',
-  '&:hover,:focus': {
-    backgroundColor: isActive ? PALETTE.BACKGROUND.MAIN : PALETTE.BACKGROUND.LIGHTEST,
-    outline: 0
-  }
-}))
+const MenuItemStyles = styled('div')(
+  ({isActive, isDisabled}: {isActive: boolean; isDisabled: boolean | undefined}) => ({
+    alignItems: 'center',
+    backgroundColor: isActive ? PALETTE.BACKGROUND.MAIN : undefined,
+    color: isDisabled ? PALETTE.TEXT.LIGHT : PALETTE.TEXT.MAIN,
+    cursor: isDisabled ? 'not-allowed' : 'pointer',
+    display: 'flex',
+    '&:hover,:focus': {
+      backgroundColor: isActive ? PALETTE.BACKGROUND.MAIN : PALETTE.BACKGROUND.LIGHTEST,
+      outline: 0
+    }
+  })
+)
 
 const MenuItem = forwardRef((props: Props, ref: any) => {
-  const {label, noCloseOnClick, onMouseEnter, onClick} = props
+  const {isDisabled, label, noCloseOnClick, onMouseEnter, onClick} = props
   const itemRef = useRef<HTMLDivElement>(null)
   // we're doing something a little hacky here, overloading a callback ref with some props so we don't need to pass them explicitly
   const {activate, closePortal, isActive} = ref as MenuItemProps
@@ -41,6 +44,7 @@ const MenuItem = forwardRef((props: Props, ref: any) => {
   }, [isActive])
 
   const handleClick = (e) => {
+    if (isDisabled) return
     if (noCloseOnClick) {
       activate()
     } else if (closePortal) {
@@ -57,6 +61,7 @@ const MenuItem = forwardRef((props: Props, ref: any) => {
 
   return (
     <MenuItemStyles
+      isDisabled={isDisabled}
       role='menuitem'
       innerRef={itemRef}
       isActive={isActive}

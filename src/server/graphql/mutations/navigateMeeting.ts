@@ -10,6 +10,8 @@ import unlockNextStages from 'universal/utils/unlockNextStages'
 import startStage_ from 'universal/utils/startStage_'
 import standardError from 'server/utils/standardError'
 import Meeting from '../../database/types/Meeting'
+import removeScheduledJobs from 'server/graphql/mutations/helpers/removeScheduledJobs'
+import {notifySlackStageComplete} from 'server/graphql/mutations/helpers/notifySlack'
 
 export default {
   type: new GraphQLNonNull(NavigateMeetingPayload),
@@ -53,6 +55,7 @@ export default {
     // VALIDATION
     let phaseCompleteData
     let unlockedStageIds
+    let notifySlack = false
     if (completedStageId) {
       const completedStageRes = findStageById(phases, completedStageId)
       if (!completedStageRes) {
@@ -68,6 +71,12 @@ export default {
         stage.endAt = now
         // handle any side effects, this could mutate the meeting object!
         phaseCompleteData = await handleCompletedStage(stage, meeting, dataLoader)
+        if (stage.scheduledEndTime) {
+          // not critical, no await needed
+          removeScheduledJobs(stage.scheduledEndTime, {meetingId}).catch(console.error)
+          stage.scheduledEndTime = null
+        }
+        notifySlack = !!stage.isAsync
       }
     }
     if (facilitatorStageId) {
@@ -87,6 +96,11 @@ export default {
 
       // mutative! sets isNavigable and isNavigableByFacilitator
       unlockedStageIds = unlockNextStages(facilitatorStageId, phases, meetingId)
+      if (notifySlack) {
+        notifySlackStageComplete(meetingId, teamId, dataLoader, facilitatorStage).catch(
+          console.error
+        )
+      }
     }
 
     // RESOLUTION

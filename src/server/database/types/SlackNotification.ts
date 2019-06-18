@@ -1,10 +1,13 @@
 import shortid from 'shortid'
 
-export type SlackNotificationEvent =
-  | 'meetingStart'
-  | 'meetingEnd'
-  | 'MEETING_STAGE_TIME_LIMIT'
-  | 'meetingNextStageReady'
+export const slackNotificationEventTypeLookup = {
+  meetingStart: 'team' as 'team',
+  meetingEnd: 'team' as 'team',
+  MEETING_STAGE_TIME_LIMIT: 'team' as 'team',
+  meetingNextStageReady: 'member' as 'member'
+}
+
+export type SlackNotificationEvent = keyof typeof slackNotificationEventTypeLookup
 
 interface Input {
   event: SlackNotificationEvent

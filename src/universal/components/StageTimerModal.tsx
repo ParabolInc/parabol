@@ -11,6 +11,7 @@ import StageTimerModalTimeLimit from 'universal/components/StageTimerModalTimeLi
 import StageTimerModalEditTimeLimit from 'universal/components/StageTimerModalEditTimeLimit'
 import StageTimerModalEndTime from 'universal/components/StageTimerModalEndTime'
 import StageTimerModalEditTimeEnd from 'universal/components/StageTimerModalEditTimeEnd'
+import {StageTimerModal_facilitator} from '__generated__/StageTimerModal_facilitator.graphql'
 
 const WIDTH = 240
 
@@ -20,6 +21,8 @@ interface Props {
   meetingId: string
   stage: StageTimerModal_stage
   menuProps: MenuProps
+  teamId: string
+  facilitator: StageTimerModal_facilitator
 }
 
 const FullTab = styled(Tab)({
@@ -43,7 +46,7 @@ const TabContents = styled('div')({
 })
 
 const StageTimerModal = (props: Props) => {
-  const {defaultTimeLimit, defaultToAsync, meetingId, menuProps, stage} = props
+  const {defaultTimeLimit, defaultToAsync, meetingId, menuProps, stage, facilitator, teamId} = props
   const {isAsync} = stage
   const [activeIdx, setActiveIdx] = useState(defaultToAsync ? 1 : 0)
   const {closePortal} = menuProps
@@ -53,7 +56,13 @@ const StageTimerModal = (props: Props) => {
     )
   } else if (isAsync) {
     return (
-      <StageTimerModalEditTimeEnd meetingId={meetingId} closePortal={closePortal} stage={stage} />
+      <StageTimerModalEditTimeEnd
+        meetingId={meetingId}
+        closePortal={closePortal}
+        stage={stage}
+        facilitator={facilitator}
+        teamId={teamId}
+      />
     )
   }
   return (
@@ -77,7 +86,13 @@ const StageTimerModal = (props: Props) => {
           />
         </TabContents>
         <TabContents>
-          <StageTimerModalEndTime meetingId={meetingId} closePortal={closePortal} stage={stage} />
+          <StageTimerModalEndTime
+            facilitator={facilitator}
+            meetingId={meetingId}
+            closePortal={closePortal}
+            stage={stage}
+            teamId={teamId}
+          />
         </TabContents>
       </SwipeableViews>
     </Modal>
@@ -87,6 +102,10 @@ const StageTimerModal = (props: Props) => {
 export default createFragmentContainer(
   StageTimerModal,
   graphql`
+    fragment StageTimerModal_facilitator on TeamMember {
+      ...StageTimerModalEndTime_facilitator
+      ...StageTimerModalEditTimeEnd_facilitator
+    }
     fragment StageTimerModal_stage on NewMeetingStage {
       ...StageTimerModalTimeLimit_stage
       ...StageTimerModalEditTimeLimit_stage

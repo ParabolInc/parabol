@@ -8,7 +8,7 @@ import formatTime from 'universal/utils/formatTime'
 interface Props {
   endTime: Date
   menuProps: MenuProps
-  onClick: (n: number) => void
+  onClick: (n: Date) => void
 }
 
 const options = [...Array(48).keys()].map((n) => n * ms('30m'))
@@ -16,7 +16,7 @@ const options = [...Array(48).keys()].map((n) => n * ms('30m'))
 const StageTimerHourPicker = (props: Props) => {
   const {menuProps, endTime, onClick} = props
   const currentValue = endTime.getHours() * ms('1h') + endTime.getMinutes() * ms('1m')
-  console.log('curVal', currentValue)
+  const startOfToday = new Date(endTime).setHours(0, 0, 0, 0)
   return (
     <Menu
       {...menuProps}
@@ -24,8 +24,16 @@ const StageTimerHourPicker = (props: Props) => {
       defaultActiveIdx={options.findIndex((n) => n === currentValue)}
     >
       {options.map((n) => {
-        const label = formatTime(new Date(n), true)
-        return <MenuItem key={n} label={label} onClick={() => onClick(n)} />
+        const proposedTime = new Date(startOfToday + n)
+        const isDisabled = proposedTime.getTime() < Date.now()
+        return (
+          <MenuItem
+            key={n}
+            label={formatTime(proposedTime)}
+            isDisabled={isDisabled}
+            onClick={() => onClick(proposedTime)}
+          />
+        )
       })}
     </Menu>
   )

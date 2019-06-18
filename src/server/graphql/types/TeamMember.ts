@@ -1,4 +1,11 @@
-import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {
+  GraphQLBoolean,
+  GraphQLID,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType
+} from 'graphql'
 import {forwardConnectionArgs} from 'graphql-relay'
 import connectionFromTasks from 'server/graphql/queries/helpers/connectionFromTasks'
 import {resolveTeam} from 'server/graphql/resolvers'
@@ -11,6 +18,8 @@ import Team from 'server/graphql/types/Team'
 import User from 'server/graphql/types/User'
 import {getUserId} from 'server/utils/authorization'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
+import SlackAuth from 'server/graphql/types/SlackAuth'
+import SlackNotification from 'server/graphql/types/SlackNotification'
 
 const TeamMember = new GraphQLObjectType({
   name: 'TeamMember',
@@ -52,7 +61,7 @@ const TeamMember = new GraphQLObjectType({
     isConnected: {
       type: GraphQLBoolean,
       description: 'true if the user is connected',
-      resolve: async (source, args, {dataLoader}) => {
+      resolve: async (source, _args, {dataLoader}) => {
         if (source.hasOwnProperty('isConnected')) {
           return source.isConnected
         }
@@ -65,14 +74,10 @@ const TeamMember = new GraphQLObjectType({
         return false
       }
     },
-    isCheckedIn: {
-      type: GraphQLBoolean,
-      description: 'true if present, false if absent, null before check-in'
-    },
     isSelf: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if this team member belongs to the user that queried it',
-      resolve: (source, args, {authToken}) => {
+      resolve: (source, _args, {authToken}) => {
         const userId = getUserId(authToken)
         return source.userId === userId
       }
@@ -95,6 +100,22 @@ const TeamMember = new GraphQLObjectType({
         return meetingId ? dataLoader.get('meetingMembers').load(meetingMemberId) : undefined
       }
     },
+    slackAuth: {
+      type: SlackAuth,
+      description: 'The slack auth for the team member.',
+      resolve: async ({userId, teamId}, _args, {dataLoader}) => {
+        const auths = await dataLoader.get('slackAuthByUserId').load(userId)
+        return auths.find((auth) => auth.teamId === teamId)
+      }
+    },
+    slackNotifications: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(SlackNotification))),
+      description: 'A list of events and the slack channels they get posted to',
+      resolve: async ({userId, teamId}, _args, {dataLoader}) => {
+        const slackNotifications = await dataLoader.get('slackNotificationsByTeamId').load(teamId)
+        return slackNotifications.filter((notification) => notification.userId === userId)
+      }
+    },
     /* Foreign keys */
     userId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -108,7 +129,7 @@ const TeamMember = new GraphQLObjectType({
     user: {
       type: new GraphQLNonNull(User),
       description: 'The user for the team member',
-      resolve ({userId}, args, {dataLoader}) {
+      resolve ({userId}, _args, {dataLoader}) {
         return dataLoader.get('users').load(userId)
       }
     },
@@ -122,7 +143,7 @@ const TeamMember = new GraphQLObjectType({
           description: 'the datetime cursor'
         }
       },
-      resolve: async ({teamId, userId}, args, {dataLoader}) => {
+      resolve: async ({teamId, userId}, _args, {dataLoader}) => {
         const allTasks = await dataLoader.get('tasksByTeamId').load(teamId)
         const tasksForUserId = allTasks.filter((task) => task.userId === userId)
         const publicTasksForUserId = tasksForUserId.filter((task) => !task.tags.includes('private'))

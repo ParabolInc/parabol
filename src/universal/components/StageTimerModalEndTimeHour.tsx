@@ -28,11 +28,7 @@ const StageTimerModalEndTimeHour = (props: Props) => {
     isDropdown: true
   })
 
-  const handleHourPick = (time: number) => {
-    const nextEndTime = new Date(endTime)
-    const nextDate = new Date(time)
-    nextEndTime.setHours(nextDate.getUTCHours())
-    nextEndTime.setMinutes(nextDate.getUTCMinutes())
+  const handleHourPick = (nextEndTime: Date) => {
     setEndTime(nextEndTime)
     menuProps.closePortal()
   }

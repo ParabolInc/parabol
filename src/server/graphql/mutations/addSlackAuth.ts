@@ -21,7 +21,11 @@ const upsertNotifications = async (
     .table('SlackNotification')
     .getAll(viewerId, {index: 'userId'})
     .filter({teamId})
-  const teamEvents = ['meetingStart', 'meetingEnd'] as SlackNotificationEvent[]
+  const teamEvents = [
+    'meetingStart',
+    'meetingEnd',
+    'meetingNextStageReady'
+  ] as SlackNotificationEvent[]
   const userEvents = ['MEETING_STAGE_TIME_LIMIT'] as SlackNotificationEvent[]
   const events = [...teamEvents, ...userEvents]
   const upsertableNotifications = events.map((event) => {
@@ -43,6 +47,7 @@ const upsertNotifications = async (
 const upsertAuth = async (
   viewerId: string,
   teamId: string,
+  teamChannelId: string,
   slackUserName: string,
   slackRes: NonNullable<SlackManager['response']>
 ) => {
@@ -57,6 +62,7 @@ const upsertAuth = async (
     id: (existingAuth && existingAuth.id) || undefined,
     createdAt: (existingAuth && existingAuth.createdAt) || undefined,
     accessToken: slackRes.access_token,
+    defaultTeamChannelId: teamChannelId,
     teamId,
     userId: viewerId,
     slackTeamId: slackRes.team_id,
@@ -118,7 +124,7 @@ export default {
 
     const [, slackAuthId] = await Promise.all([
       upsertNotifications(viewerId, teamId, teamChannelId, botChannelId),
-      upsertAuth(viewerId, teamId, userInfoRes.user.profile.display_name, response)
+      upsertAuth(viewerId, teamId, teamChannelId, userInfoRes.user.profile.display_name, response)
     ])
     const data = {slackAuthId, userId: viewerId}
     publish(TEAM, teamId, AddSlackAuthPayload, data, subOptions)

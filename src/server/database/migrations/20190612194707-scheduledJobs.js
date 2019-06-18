@@ -36,8 +36,27 @@ exports.up = async (r) => {
       const channelId = (teamMemberNotification && teamMemberNotification.channelId) || null
       return new SlackNotification({userId, teamId, channelId, event: 'meetingNextStageReady'})
     })
+    const authUpdates = slackUsers.map((slackUser) => {
+      const {userId, teamId} = slackUser
+      const teamMemberNotification = slackNotifications.find(
+        (notification) =>
+          notification.teamId === teamId && notification.userId === userId && notification.channelId
+      )
+      return {
+        id: slackUser.id,
+        channelId: (teamMemberNotification && teamMemberNotification.channelId) || null
+      }
+    })
     const records = [...stageCompleteNotifications, ...stageReadyNotifications]
     await r.table('SlackNotification').insert(records)
+    await r(authUpdates).forEach((auth) => {
+      return r
+        .table('SlackAuth')
+        .get(auth('id'))
+        .update({
+          defaultTeamChannelId: auth('channelId')
+        })
+    })
   } catch (e) {
     console.log(e)
   }

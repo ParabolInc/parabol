@@ -11,8 +11,10 @@ import sendUpcomingInvoiceEmails from 'server/graphql/intranetSchema/mutations/s
 import addNewFeature from 'server/graphql/intranetSchema/mutations/addNewFeature'
 import user from 'server/graphql/intranetSchema/queries/user'
 import flagOverLimit from 'server/graphql/intranetSchema/mutations/flagOverLimit'
+import runScheduledJobs from 'server/graphql/intranetSchema/mutations/runScheduledJobs'
+import {GQLContext} from 'server/graphql/graphql'
 
-const query = new GraphQLObjectType({
+const query = new GraphQLObjectType<any, GQLContext, any>({
   name: 'Query',
   fields: () => ({
     pingActionTick,
@@ -24,13 +26,14 @@ const query = new GraphQLObjectType({
   })
 })
 
-const mutation = new GraphQLObjectType({
+const mutation = new GraphQLObjectType<any, GQLContext, any>({
   name: 'Mutation',
   fields: () => ({
     addNewFeature,
     autopauseUsers,
     endOldMeetings,
     flagOverLimit,
+    runScheduledJobs,
     sendBatchNotificationEmails,
     sendUpcomingInvoiceEmails
   })

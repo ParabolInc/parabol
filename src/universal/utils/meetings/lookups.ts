@@ -28,13 +28,13 @@ export const phaseLabelLookup = {
 }
 
 export const meetingTypeToSlug = {
-  [RETROSPECTIVE]: 'retro',
-  [ACTION]: 'meeting'
+  [RETROSPECTIVE]: 'retro' as 'retro',
+  [ACTION]: 'meeting' as 'meeting'
 }
 
 export const meetingTypeToLabel = {
-  [RETROSPECTIVE]: 'Retrospective',
-  [ACTION]: 'Action'
+  [RETROSPECTIVE]: 'Retrospective' as 'Retrospective',
+  [ACTION]: 'Action' as 'Action'
 }
 
 export const phaseTypeToSlug = {

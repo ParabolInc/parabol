@@ -5,7 +5,6 @@ import AcknowledgeButton from 'universal/modules/notifications/components/Acknow
 import defaultStyles from 'universal/modules/notifications/helpers/styles'
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation'
 import ui from 'universal/styles/ui'
-import {clearNotificationLabel} from '../../helpers/constants'
 import Row from 'universal/components/Row/Row'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 import RaisedButton from 'universal/components/RaisedButton'
@@ -71,11 +70,7 @@ const PromoteToBillingLeader = (props: Props) => {
             {'See Organization'}
           </StyledButton>
         </div>
-        <AcknowledgeButton
-          aria-label={clearNotificationLabel}
-          onClick={acknowledge}
-          waiting={submitting}
-        />
+        <AcknowledgeButton onClick={acknowledge} waiting={submitting} />
       </Row>
       <NotificationErrorMessage error={error} />
     </>

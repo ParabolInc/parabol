@@ -1,6 +1,7 @@
-import {commitMutation} from 'react-relay'
+import {commitMutation, graphql} from 'react-relay'
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications'
 import getInProxy from 'universal/utils/relay/getInProxy'
+import Atmosphere from 'universal/Atmosphere'
 
 graphql`
   fragment ClearNotificationMutation_notification on ClearNotificationPayload {
@@ -26,9 +27,14 @@ export const clearNotificationNotificationUpdater = (payload, store, viewerId) =
   handleRemoveNotifications(notificationId, store, viewerId)
 }
 
-const ClearNotificationMutation = (environment, notificationId, onError, onCompleted) => {
-  const {viewerId} = environment
-  return commitMutation(environment, {
+const ClearNotificationMutation = (
+  atmosphere: Atmosphere,
+  notificationId,
+  onError?,
+  onCompleted?
+) => {
+  const {viewerId} = atmosphere
+  return commitMutation(atmosphere, {
     mutation,
     variables: {notificationId},
     updater: (store) => {

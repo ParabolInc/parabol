@@ -11,7 +11,7 @@ const StyledButton = styled(RaisedButton)({
 })
 
 const AcknowledgeButton = (props) => (
-  <StyledButton {...props}>
+  <StyledButton aria-label={'Clear this notification'} {...props}>
     <IconLabel icon='check' />
   </StyledButton>
 )

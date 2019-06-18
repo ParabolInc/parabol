@@ -4,7 +4,6 @@ import {createFragmentContainer, graphql} from 'react-relay'
 import AcknowledgeButton from 'universal/modules/notifications/components/AcknowledgeButton/AcknowledgeButton'
 import defaultStyles from 'universal/modules/notifications/helpers/styles'
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation'
-import {clearNotificationLabel} from '../../helpers/constants'
 import Row from 'universal/components/Row/Row'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 import {TeamArchived_notification} from '__generated__/TeamArchived_notification.graphql'
@@ -38,11 +37,7 @@ const TeamArchived = (props: Props) => {
           <b>{teamName}</b>
           {' was archived.'}
         </div>
-        <AcknowledgeButton
-          aria-label={clearNotificationLabel}
-          onClick={acknowledge}
-          waiting={submitting}
-        />
+        <AcknowledgeButton onClick={acknowledge} waiting={submitting} />
       </Row>
       <NotificationErrorMessage error={error} />
     </>

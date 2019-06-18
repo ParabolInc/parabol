@@ -70,7 +70,6 @@ const DashboardAvatar = (props: Props) => {
         picture={picture || defaultUserAvatar}
         hasBadge
         innerRef={originRef}
-        isCheckedIn={teamMember.isCheckedIn}
         isConnected={!!isConnected}
         onClick={togglePortal}
         size={32}
@@ -101,7 +100,6 @@ export default createFragmentContainer(
       ...LeaveTeamModal_teamMember
       ...PromoteTeamMemberModal_teamMember
       ...RemoveTeamMemberModal_teamMember
-      isCheckedIn
       isLead
       isSelf
       picture

@@ -23,7 +23,8 @@ const ActionMeetingUpdatesPromptTeamHelpText = (props: Props) => {
   const handleAgendaControl = () => {
     atmosphere.eventEmitter.emit('focusAgendaInput')
   }
-  const isCheckedInFalse = currentTeamMember.isCheckedIn === false
+  const {meetingMember} = currentTeamMember
+  const isCheckedInFalse = meetingMember && meetingMember.isCheckedIn === false
   return (
     <span>
       <span>{isCheckedInFalse ? '(' : `(${currentTeamMember.preferredName} is sharing. `}</span>
@@ -38,7 +39,9 @@ export default createFragmentContainer(
   graphql`
     fragment ActionMeetingUpdatesPromptTeamHelpText_currentTeamMember on TeamMember {
       preferredName
-      isCheckedIn
+      meetingMember {
+        isCheckedIn
+      }
     }
   `
 )

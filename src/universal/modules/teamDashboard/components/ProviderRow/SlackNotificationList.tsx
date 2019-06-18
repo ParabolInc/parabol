@@ -1,9 +1,9 @@
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {SlackNotificationEventEnum} from 'universal/types/graphql'
+import {SlackNotificationEventEnum, SlackNotificationEventTypeEnum} from 'universal/types/graphql'
 import SlackNotificationRow from 'universal/modules/teamDashboard/components/ProviderRow/SlackNotificationRow'
 import {SlackNotificationList_viewer} from '__generated__/SlackNotificationList_viewer.graphql'
-import React, {useCallback, useMemo, useState} from 'react'
+import React, {useCallback} from 'react'
 import {SlackChannelDropdownOnClick} from 'universal/components/SlackChannelDropdown'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import SlackChannelPicker from 'universal/modules/teamDashboard/components/ProviderRow/SlackChannelPicker'
@@ -25,13 +25,6 @@ interface Props {
   viewer: SlackNotificationList_viewer
 }
 
-const TEAM_EVENTS = [
-  SlackNotificationEventEnum.meetingStart,
-  SlackNotificationEventEnum.meetingEnd,
-  SlackNotificationEventEnum.meetingNextStageReady
-]
-const USER_EVENTS = [SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT]
-
 const TeamGroup = styled('div')({
   alignItems: 'center',
   display: 'flex',
@@ -46,37 +39,36 @@ const Heading = styled(LabelHeading)({
   width: '100%'
 })
 
+const TEAM_EVENTS = [
+  SlackNotificationEventEnum.meetingStart,
+  SlackNotificationEventEnum.meetingEnd,
+  SlackNotificationEventEnum.meetingNextStageReady
+]
+const USER_EVENTS = [SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT]
+
 const SlackNotificationList = (props: Props) => {
   const {teamId, viewer} = props
-  const {slackAuth, slackNotifications} = viewer
+  const {teamMember} = viewer
+  const {slackAuth, slackNotifications} = teamMember!
   const channels = useSlackChannels(slackAuth)
   const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
   const atmosphere = useAtmosphere()
   const localPrivateChannel = channels.find((channel) => channel.name === '@Parabol')
   const localPrivateChannelId = localPrivateChannel && localPrivateChannel.id
-  const uniqueChannelIds = useMemo(() => {
-    const notificationsForEvent = slackNotifications.filter(
-      (notification) => TEAM_EVENTS.includes(notification.event as any) && notification.channelId
-    )
-    const channelsUsed = notificationsForEvent.map(({channelId}) => channelId)
-    return Array.from(new Set(channelsUsed))
-  }, [slackNotifications])
-  const [localTeamChannelId, setLocalTeamChannelId] = useState(uniqueChannelIds[0])
+  const {botAccessToken, defaultTeamChannelId} = slackAuth!
 
   const changeTeamChannel: SlackChannelDropdownOnClick = useCallback(
     (slackChannelId) => () => {
-      setLocalTeamChannelId(slackChannelId)
       // only change the active events
       const slackNotificationEvents = slackNotifications
         .filter(
           (notification) =>
-            notification.channelId &&
-            TEAM_EVENTS.includes(notification.event as SlackNotificationEventEnum)
+            notification.channelId && notification.eventType === SlackNotificationEventTypeEnum.team
         )
         .map(({event}) => event)
       if (
         submitting ||
-        localTeamChannelId === slackChannelId ||
+        defaultTeamChannelId === slackChannelId ||
         slackNotificationEvents.length === 0
       ) {
         return
@@ -91,7 +83,7 @@ const SlackNotificationList = (props: Props) => {
         }
       )
     },
-    [slackNotifications, localTeamChannelId]
+    [slackNotifications, defaultTeamChannelId]
   )
 
   return (
@@ -100,8 +92,8 @@ const SlackNotificationList = (props: Props) => {
         <Heading>Team Notifications</Heading>
         <SlackChannelPicker
           channels={channels}
-          isTokenValid={(slackAuth && !!slackAuth.botAccessToken) || false}
-          localChannelId={localTeamChannelId}
+          isTokenValid={!!botAccessToken}
+          localChannelId={defaultTeamChannelId}
           onClick={changeTeamChannel}
           teamId={teamId}
         />
@@ -112,7 +104,7 @@ const SlackNotificationList = (props: Props) => {
           <SlackNotificationRow
             key={event}
             event={event}
-            localChannelId={localTeamChannelId}
+            localChannelId={defaultTeamChannelId}
             teamId={teamId}
             viewer={viewer}
           />
@@ -144,14 +136,18 @@ export default createFragmentContainer(
   graphql`
     fragment SlackNotificationList_viewer on User {
       ...SlackNotificationRow_viewer
-      slackAuth(teamId: $teamId) {
-        accessToken
-        botAccessToken
-        slackUserId
-      }
-      slackNotifications(teamId: $teamId) {
-        channelId
-        event
+      teamMember(teamId: $teamId) {
+        slackAuth {
+          accessToken
+          botAccessToken
+          slackUserId
+          defaultTeamChannelId
+        }
+        slackNotifications {
+          channelId
+          event
+          eventType
+        }
       }
     }
   `

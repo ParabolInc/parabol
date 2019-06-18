@@ -7,8 +7,11 @@ import {AddSlackAuthMutation as ASAM} from '__generated__/AddSlackAuthMutation.g
 graphql`
   fragment AddSlackAuthMutation_team on AddSlackAuthPayload {
     user {
+      ...SlackNotificationList_viewer
       ...SlackProviderRow_viewer
-      ...SlackNotificationRow_viewer
+      teamMember(teamId: $teamId) {
+        ...StageTimerModalEndTimeSlackToggle_facilitator
+      }
     }
   }
 `
