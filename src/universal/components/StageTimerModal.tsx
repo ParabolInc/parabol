@@ -74,7 +74,7 @@ const StageTimerModal = (props: Props) => {
       <SwipeableViews
         enableMouseEvents
         index={activeIdx}
-        onChangeIndex={setActiveIdx}
+        onChangeIndex={(idx) => setActiveIdx(idx)}
         animateHeight
       >
         <TabContents>

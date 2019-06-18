@@ -23,27 +23,20 @@ export const countdown = (date: string | Date) => {
   const now = new Date()
   const abs = new Date(date).getTime() - now.getTime()
   if (abs < 0) return null
-  const MAX = 2
   const periods = {
-    Y: abs / YEAR,
-    M: (abs % YEAR) / MONTH,
     d: (abs % MONTH) / DAY,
     h: (abs % DAY) / HOUR,
     m: (abs % HOUR) / MIN,
     s: (abs % MIN) / SECOND
   }
-  let k
-  let val
   const keep: string[] = []
 
-  for (k in periods) {
-    if (keep.length < MAX) {
-      val = Math.floor(periods[k])
-      if (!val) continue
-      keep.push(val + k)
-    }
+  for (let k in periods) {
+    const val = String(Math.floor(periods[k]))
+    if (val === '0' && keep.length === 0 && k !== 'm') continue
+    keep.push(keep.length === 0 ? val : val.padStart(2, '0'))
   }
-  return keep.join(' ')
+  return keep.join(':')
 }
 
 const relativeDate = (date: string | Date, opts: Opts = {}) => {

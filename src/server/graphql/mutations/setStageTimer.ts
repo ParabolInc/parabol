@@ -56,7 +56,7 @@ export default {
     }
 
     // VALIDATION
-    if (newScheduledEndTime.getTime() < now.getTime()) {
+    if (newScheduledEndTime && newScheduledEndTime.getTime() < now.getTime()) {
       return standardError(new Error('Time must be in the future'), {userId: viewerId})
     }
 

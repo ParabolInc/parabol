@@ -33,14 +33,12 @@ import handleRightArrow from '../utils/handleRightArrow'
 import isDemoRoute from '../utils/isDemoRoute'
 import EndMeetingButton from './EndMeetingButton'
 import PhaseItemMasonry from './PhaseItemMasonry'
+import StageTimerDisplay from 'universal/components/RetroReflectPhase/StageTimerDisplay'
+import StageTimerControl from 'universal/components/StageTimerControl'
 
 interface Props extends RetroMeetingPhaseProps, WithMutationProps, WithAtmosphereProps {
   team: RetroGroupPhase_team
 }
-
-const BottomControlSpacer = styled('div')({
-  minWidth: '6rem'
-})
 
 const StyledBottomBar = styled(MeetingControlBar)({
   justifyContent: 'space-between'
@@ -98,14 +96,14 @@ const RetroGroupPhase = (props: Props) => {
         <PhaseHeaderDescription>{'Drag cards to group by common topics'}</PhaseHeaderDescription>
       </MeetingContentHeader>
       <ErrorBoundary>
+        <StageTimerDisplay stage={localStage!} />
         {error && <StyledError>{error}</StyledError>}
         <MeetingPhaseWrapper>
           <PhaseItemMasonry meeting={newMeeting} resetActivityTimeout={resetActivityTimeout} />
         </MeetingPhaseWrapper>
         {isFacilitating && (
           <StyledBottomBar>
-            {/* ControlBlock and div for layout spacing */}
-            <BottomControlSpacer />
+            <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
             <CenteredControlBlock>
               <BottomNavControl
                 isBouncing={isDemoStageComplete || (!isComplete && isReadyToVote)}
@@ -141,10 +139,18 @@ const RetroGroupPhase = (props: Props) => {
   )
 }
 
+graphql`
+  fragment RetroGroupPhase_stage on GenericMeetingStage {
+    ...StageTimerDisplay_stage
+    isComplete
+  }
+`
+
 export default createFragmentContainer(
   withMutationProps(withAtmosphere(RetroGroupPhase)),
   graphql`
     fragment RetroGroupPhase_team on Team {
+      ...StageTimerControl_team
       isMeetingSidebarCollapsed
       newMeeting {
         meetingId: id
@@ -153,7 +159,12 @@ export default createFragmentContainer(
         ... on RetrospectiveMeeting {
           ...PhaseItemMasonry_meeting
           localStage {
-            isComplete
+            ...RetroGroupPhase_stage @relay(mask: false)
+          }
+          phases {
+            stages {
+              ...RetroGroupPhase_stage @relay(mask: false)
+            }
           }
           nextAutoGroupThreshold
           reflectionGroups {

@@ -46,8 +46,8 @@ const getPastStageDurations = async (teamId: string) => {
         .mul(1000)
         .floor()
     }))
-    // remove stages that took under 30 seconds
-    .filter((row) => row('duration').ge(30))
+    // remove stages that took under 1 minute
+    .filter((row) => row('duration').ge(60000))
     .orderBy(r.desc('startAt'))
     .group('phaseType')
     .ungroup()

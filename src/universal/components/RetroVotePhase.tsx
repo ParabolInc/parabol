@@ -34,6 +34,8 @@ import isDemoRoute from '../utils/isDemoRoute'
 import EndMeetingButton from './EndMeetingButton'
 import PhaseItemMasonry from './PhaseItemMasonry'
 import {RetroVotePhase_meetingSettings} from '__generated__/RetroVotePhase_meetingSettings.graphql'
+import StageTimerControl from 'universal/components/StageTimerControl'
+import StageTimerDisplay from 'universal/components/RetroReflectPhase/StageTimerDisplay'
 
 interface Props extends WithAtmosphereProps, RetroMeetingPhaseProps {
   meetingSettings: RetroVotePhase_meetingSettings
@@ -120,10 +122,6 @@ const TeamVotesCountLabel = styled(VoteCountLabel)({
   minWidth: '1.25rem'
 })
 
-const BottomControlSpacer = styled('div')({
-  minWidth: '6rem'
-})
-
 const StyledBottomBar = styled(MeetingControlBar)({
   justifyContent: 'space-between'
 })
@@ -148,7 +146,7 @@ const RetroVotePhase = (props: Props) => {
   const {isMeetingSidebarCollapsed, newMeeting} = team
   if (!newMeeting) return null
   const {gotoNext, ref: gotoNextRef} = handleGotoNext
-  const {facilitatorUserId, meetingId, phases, viewerMeetingMember} = newMeeting
+  const {facilitatorUserId, meetingId, phases, viewerMeetingMember, localStage} = newMeeting
   const teamVotesRemaining = newMeeting.teamVotesRemaining || 0
   const myVotesRemaining = viewerMeetingMember.myVotesRemaining || 0
   const isFacilitating = facilitatorUserId === viewerId
@@ -184,6 +182,7 @@ const RetroVotePhase = (props: Props) => {
             <TeamVotesCountLabel>{teamVotesRemaining}</TeamVotesCountLabel>
           </MetaBlock>
         </VoteMeta>
+        <StageTimerDisplay stage={localStage} />
         <ScrollableBlock>
           <MeetingPhaseWrapper>
             <PhaseItemMasonry meeting={newMeeting} />
@@ -191,7 +190,7 @@ const RetroVotePhase = (props: Props) => {
         </ScrollableBlock>
         {isFacilitating && (
           <StyledBottomBar>
-            <BottomControlSpacer />
+            <StageTimerControl defaultTimeLimit={3} meetingId={meetingId} team={team} />
             <BottomNavControl
               isBouncing={isDemoStageComplete || teamVotesRemaining === 0}
               disabled={!discussStage.isNavigableByFacilitator}
@@ -224,15 +223,20 @@ export default createFragmentContainer(
       totalVotes
     }
     fragment RetroVotePhase_team on Team {
+      ...StageTimerControl_team
       isMeetingSidebarCollapsed
       newMeeting {
+        ...PhaseItemColumn_meeting
         meetingId: id
         facilitatorUserId
-        ...PhaseItemColumn_meeting
+        localStage {
+          ...StageTimerDisplay_stage
+        }
         phases {
           phaseType
           ... on DiscussPhase {
             stages {
+              ...StageTimerDisplay_stage
               ... on RetroDiscussStage {
                 id
                 isNavigableByFacilitator

@@ -2,33 +2,23 @@ import React, {useEffect, useState} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {StageTimerDisplay_stage} from '__generated__/StageTimerDisplay_stage.graphql'
 import styled from 'react-emotion'
-import {countdown} from 'universal/utils/relativeDate'
-import {PALETTE} from 'universal/styles/paletteV2'
-import useRefreshInterval from 'universal/hooks/useRefreshInterval'
+import StageTimerDisplayGauge from 'universal/components/RetroReflectPhase/StageTimerDisplayGauge'
 
 interface Props {
   stage: StageTimerDisplay_stage
 }
 
-const DisplayRow = styled('div')(({show}: {show: boolean}) => ({
+const DisplayRow = styled('div')({
   display: 'flex',
   justifyContent: 'center',
-  visibility: show ? undefined : 'hidden'
-}))
-
-const Gauge = styled('div')({
-  color: '#fff',
-  background: PALETTE.BACKGROUND.GREEN,
-  minWidth: 112,
-  padding: 8,
-  textAlign: 'center'
+  // dont' want stuff to move when it turns on
+  minHeight: 32
 })
 
 const StageTimerDisplay = (props: Props) => {
   const {stage} = props
   const {timeRemaining} = stage
   const scheduledEndTime = stage.scheduledEndTime as string | null
-  useRefreshInterval(1000)
   const [endTime, setEndTime] = useState<string | null>(scheduledEndTime)
   useEffect(() => {
     let reconciledEndTime = scheduledEndTime
@@ -41,13 +31,7 @@ const StageTimerDisplay = (props: Props) => {
     }
     setEndTime(reconciledEndTime)
   }, [scheduledEndTime, timeRemaining])
-
-  const fromNow = (endTime && countdown(endTime)) || 'Time’s Up!'
-  return (
-    <DisplayRow show={!!endTime}>
-      <Gauge>{fromNow}</Gauge>
-    </DisplayRow>
-  )
+  return <DisplayRow>{endTime ? <StageTimerDisplayGauge endTime={endTime} /> : null}</DisplayRow>
 }
 
 export default createFragmentContainer(

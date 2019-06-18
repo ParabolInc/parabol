@@ -5,7 +5,7 @@ import styled from 'react-emotion'
 import DropdownMenuToggle from 'universal/components/DropdownMenuToggle'
 import ms from 'ms'
 import Icon from 'universal/components/Icon'
-import {days, shortMonths} from 'universal/utils/makeDateString'
+import {days, shortDays, shortMonths} from 'universal/utils/makeDateString'
 import DayPicker, {DayModifiers} from 'react-day-picker'
 import 'universal/styles/daypicker.css'
 
@@ -26,7 +26,7 @@ const formatDay = (date: Date) => {
   const month = date.getMonth()
   const day = date.getDate()
   const monthStr = shortMonths[month]
-  const name = days[date.getDay()]
+  const name = shortDays[date.getDay()]
   return `${name}, ${monthStr} ${day}`
 }
 
@@ -46,9 +46,7 @@ const StageTimerModalEndTimeDate = (props: Props) => {
   const handleDayClick = (day: Date, {disabled, selected}: DayModifiers) => {
     if (disabled || selected) return
     const nextDate = new Date(endTime)
-    nextDate.setFullYear(day.getFullYear())
-    nextDate.setMonth(day.getMonth())
-    nextDate.setDate(day.getDate())
+    nextDate.setFullYear(day.getFullYear(), day.getMonth(), day.getDate())
     setEndTime(nextDate)
     endTimeMenuProps.closePortal()
   }
