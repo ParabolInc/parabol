@@ -27,7 +27,7 @@ const endOldMeetings = {
       .table('NewMeeting')
       .getAll(r.args(meetingIdsInProgress), {index: 'id'})
       .filter((meeting) => meeting('createdAt').le(activeThresh))
-      .pick('id', 'meetingType')
+      .pluck('id', 'meetingType')
 
     await Promise.all(
       meetings.map((meeting) => {

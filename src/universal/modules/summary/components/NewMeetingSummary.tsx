@@ -23,10 +23,7 @@ const NewMeetingSummary = (props: Props) => {
   const {history} = useRouter()
   useEffect(() => {
     if (!newMeeting) {
-      history.replace({
-        pathname: `/invitation-required/${teamId}`,
-        search: `?redirectTo=${encodeURIComponent(window.location.pathname)}`
-      })
+      history.replace('/me')
     }
   }, [newMeeting])
   if (!newMeeting) {
