@@ -2,13 +2,12 @@ import React from 'react'
 import styled from 'react-emotion'
 import FloatingActionButton from 'universal/components/FloatingActionButton'
 import IconLabel from 'universal/components/IconLabel'
-import ui from 'universal/styles/ui'
 
 const RejoinButton = styled(FloatingActionButton)({
   bottom: '1.25rem',
   position: 'fixed',
   right: '4.5rem',
-  zIndex: ui.ziRejoinFacilitatorButton
+  zIndex: 400
 })
 
 interface Props {

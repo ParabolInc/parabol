@@ -44,7 +44,7 @@ const ModalBlock = styled('div')({
   left: 0,
   pointerEvents: 'none',
   position: 'absolute',
-  zIndex: ui.ziTooltip
+  zIndex: 400
 })
 
 const makeTransition = (isClosing, isViewerDragging) => {

@@ -1,17 +1,19 @@
-import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import React, {Ref} from 'react'
+import {createFragmentContainer, graphql} from 'react-relay'
 import styled from 'react-emotion'
 import ReflectionGroupTitleEditor from 'universal/components/ReflectionGroup/ReflectionGroupTitleEditor'
-import type {ReflectionGroupHeader_meeting as Meeting} from '__generated__/ReflectionGroupHeader_meeting.graphql'
-import type {ReflectionGroupHeader_reflectionGroup as ReflectionGroup} from '__generated__/ReflectionGroupHeader_reflectionGroup.graphql'
 import {GROUP, VOTE} from 'universal/utils/constants'
 import ReflectionGroupVoting from 'universal/components/ReflectionGroupVoting'
 import Tag from 'universal/components/Tag/Tag'
 import {REFLECTION_CARD_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
+import {ReflectionGroupHeader_reflectionGroup} from '__generated__/ReflectionGroupHeader_reflectionGroup.graphql'
+import {ReflectionGroupHeader_meeting} from '__generated__/ReflectionGroupHeader_meeting.graphql'
 
 type Props = {
-  meeting: Meeting,
-  reflectionGroup: ReflectionGroup
+  meeting: ReflectionGroupHeader_meeting
+  reflectionGroup: ReflectionGroupHeader_reflectionGroup
+  innerRef: Ref<any>
+  isExpanded: boolean
 }
 
 const GroupHeader = styled('div')({
@@ -36,7 +38,7 @@ const ReflectionGroupHeader = (props: Props) => {
     localPhase: {phaseType}
   } = meeting
   const {reflections} = reflectionGroup
-  const canEdit = phaseType === GROUP && localStage.isComplete === false
+  const canEdit = phaseType === GROUP && !localStage.isComplete
   return (
     <GroupHeader innerRef={innerRef}>
       <ReflectionGroupTitleEditor

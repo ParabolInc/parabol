@@ -7,16 +7,13 @@ import appTheme from 'universal/styles/theme/appTheme'
 import makeGradient from 'universal/styles/helpers/makeGradient'
 import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles'
 import makeShadowColor from 'universal/styles/helpers/makeShadowColor'
-import zIndexScale from 'universal/styles/helpers/zIndexScale'
 
 // Reusable constants for UI object
 // -----------------------------------------------------------------------------
 
 // Breakpoints
 // #deprecated use breakpoints.js instead of ui.breakpoint object (TA)
-const BREAKPOINT_WIDE = '@media (min-width: 90rem)'
 const BREAKPOINT_WIDER = '@media (min-width: 100rem)'
-const BREAKPOINT_WIDEST = '@media (min-width: 120rem)'
 
 // Control sizes (used by buttons and fields)
 const CONTROL_SIZE_SMALL = 'small'
@@ -71,20 +68,6 @@ const COLOR_ERROR = red
 // Color palette
 const white = '#fff'
 const gray = appTheme.palette.light
-const PALETTE_OPTIONS = [
-  'cool',
-  'warm',
-  'dark',
-  'mid',
-  'light',
-  'white',
-  'gray',
-  'midGray',
-  'green',
-  'red',
-  'yellow',
-  'blue'
-]
 const PALETTE_VALUES = {
   cool,
   warm,
@@ -136,52 +119,10 @@ const gradientWarmLightened = makeGradient(
 
 // Icons
 const iconSize = '14px' // FontAwesome base
-const iconSizeAvatar = '21px' // FontAwesome 1.5x
-const iconSize2x = '28px' // FontAwesome 2x
-const iconSize3x = '42px' // FontAwesome 3x
 const iconExternalLink = 'open_in_new'
 
-// Modals
-const MODAL_LAYOUT_MAIN = 'main'
-const MODAL_LAYOUT_MAIN_WITH_DASH_ALERT = 'mainHasDashAlert'
-const MODAL_LAYOUT_MAIN_WITH_DASH_ALERTS = 'mainHasDashAlerts'
-const MODAL_LAYOUT_VIEWPORT = 'viewport'
-
-// Transitions
-// NOTE: increases on a scale of 2x
-const transition = [
-  '100ms ease-in',
-  '200ms ease-in',
-  '400ms ease-in',
-  '800ms ease-in',
-  '1600ms ease-in',
-  '3200ms ease-in'
-]
-
 // Type
-const TYPE_REGULAR = 400
 const TYPE_SEMIBOLD = 600
-
-// Shadows
-// NOTE: levels increase on a scale of 2x
-// #deprecated use elevation.js and named constants instead (TA)
-// https://github.com/ParabolInc/action/issues/2324
-
-const baseShadowColor = [
-  makeShadowColor('.15'),
-  makeShadowColor('.17'),
-  makeShadowColor('.19'),
-  makeShadowColor('.21'),
-  makeShadowColor('.23')
-]
-
-const shadow = [
-  `0 .0625rem .25rem ${baseShadowColor[0]}, 0 0 .0625rem ${baseShadowColor[0]}`,
-  `0 .125rem .5rem ${baseShadowColor[1]}, 0 0 .0625rem ${baseShadowColor[1]}`,
-  `0 .25rem 1rem ${baseShadowColor[2]}, 0 0 .0625rem ${baseShadowColor[2]}`,
-  `0 .5rem 2rem ${baseShadowColor[3]}, 0 0 .0625rem ${baseShadowColor[3]}`,
-  `0 1rem 4rem ${baseShadowColor[4]}, 0 0 .0625rem ${baseShadowColor[4]}`
-]
 
 // -----------------------------------------------------------------------------
 
@@ -190,28 +131,9 @@ const ui = {
   // ---------------------------------------------------------------------------
   backgroundColor,
   borderRadiusSmall,
-  borderRadiusMedium,
   borderRadiusLarge,
-  paletteOptions: PALETTE_OPTIONS,
   palette: PALETTE_VALUES,
   filterBlur,
-
-  // Private tasks
-  // ---------------------------------------------------------------------------
-  privateCardBgColor: appTheme.palette.light50l,
-
-  // Avatars
-  // ---------------------------------------------------------------------------
-  avatarDefaultSize: '2.75rem',
-
-  // Breakpoints
-  // ---------------------------------------------------------------------------
-  // #deprecated use breakpoints.js instead of ui.breakpoint object (TA)
-  breakpoint: {
-    wide: BREAKPOINT_WIDE,
-    wider: BREAKPOINT_WIDER,
-    widest: BREAKPOINT_WIDEST
-  },
 
   // Buttons
   // ---------------------------------------------------------------------------
@@ -249,7 +171,6 @@ const ui = {
   cardBorderColor: appTheme.palette.mid30l,
   cardBorderRadius: borderRadiusMedium,
   cardButtonHeight: '1.5rem',
-  cardButtonBorderColor: appTheme.palette.mid30l,
   cardContentFontSize: '.875rem',
   cardContentLineHeight: '1.25rem',
   cardPaddingBase: '.9375rem',
@@ -257,11 +178,6 @@ const ui = {
   // Card Controls (tapping these makes cards)
   // ---------------------------------------------------------------------------
   cardControlBackgroundColor: appTheme.palette.mid10a,
-  cardControlTransition: 'background-color 100ms ease-in, box-shadow 100ms ease-in',
-
-  // CTA Panels
-  // ---------------------------------------------------------------------------
-  ctaPanelButtonSize: BUTTON_SIZE_LARGE,
 
   // Color (default for text)
   // ---------------------------------------------------------------------------
@@ -297,54 +213,14 @@ const ui = {
     lineHeight: '1.5'
   },
   dashMenuBorder: '.0625rem solid #5A4580', // variant of primary purple TODO: theme-able?
-  dashMenuHeight: '13.5625rem',
-  dashMenuWidth: '10rem',
-
-  // Note: property 'dashMinWidth' prevents layout from collapsing in Safari
-  //       in a better future we may be more adaptive/responsive (TA)
-
-  // dashMinWidth: '79rem',
-  dashAlertHeight: '2.625rem',
-  dashAlertsHeight: '5.25rem',
 
   dashControlFontColor: COLOR_TEXT_LIGHT,
-  dashControlFontSize: appTheme.typography.s2,
   dashControlHeight: '1.25rem',
 
   dashSidebarBackgroundColor: appTheme.palette.mid,
   // TODO replace with DIMS.DASH_SIDEBAR_WIDTH
   dashSidebarWidth: '15rem',
-  dashTeamBreakpointUp: '@media (min-width: 123.25rem)',
   draftModalMargin: 32,
-
-  // Dates
-  // ---------------------------------------------------------------------------
-  dueDateBg: light,
-  dueDateColor: '#65637A',
-  dueDatePastBg: '#FFE2E2',
-  dueDatePastColor: red,
-  dueDateSoonBg: '#FFF0D1',
-  dueDateSoonColor: '#F28934',
-
-  // Email
-  // ---------------------------------------------------------------------------
-  emailBackgroundColor: backgroundColor,
-  emailBodyColor: '#FFFFFF',
-  emailFontFamily:
-    '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif',
-  emailRuleColor: appTheme.palette.mid20l, // email rule color
-  emailRuleHeight: '1px', // email rule height
-  emailRuleStyle: {
-    backgroundColor: appTheme.palette.mid20l, // email rule color
-    border: 0,
-    height: '1px', // email rule height
-    margin: '0 auto'
-  },
-  emailTableBase: {
-    borderCollapse: 'collapse',
-    borderSpacing: '0px',
-    margin: '0px auto'
-  },
 
   // Fields
   // ---------------------------------------------------------------------------
@@ -362,7 +238,6 @@ const ui = {
     padding: `.25em ${FIELD_PADDING_HORIZONTAL}`,
     width: '100%'
   },
-  fieldBoxShadow: FIELD_BOX_SHADOW,
   fieldFocusBoxShadow: FIELD_BOX_SHADOW_FOCUS,
   fieldColorPalettes: {
     // gray: input and textarea default style
@@ -418,13 +293,7 @@ const ui = {
       padding: `${CONTROL_LARGE_PADDING_VERTICAL} ${CONTROL_LARGE_PADDING_HORIZONTAL}`
     }
   },
-  fieldReadOnly: {
-    cursor: 'default'
-  },
   fieldLabelGutter: '.5rem',
-  fieldPaddingHorizontal: FIELD_PADDING_HORIZONTAL,
-  fieldPlaceholderColor: FIELD_PLACEHOLDER_COLOR,
-  fieldErrorBorderColor: appTheme.palette.warm90a,
   fieldErrorPlaceholderColor: appTheme.palette.warm90a,
 
   // Gradients
@@ -438,18 +307,11 @@ const ui = {
   // ---------------------------------------------------------------------------
   hintColor: COLOR_TEXT_LIGHT,
   hintFontSize: appTheme.typography.s2,
-  hintFontSizeLarger: appTheme.typography.s3,
 
   // Icons
   // ---------------------------------------------------------------------------
   iconSize,
-  iconSizeAvatar,
-  iconSize2x,
-  iconSize3x,
   iconExternalLink,
-
-  // Integrations
-  // ---------------------------------------------------------------------------
 
   // Invoice
   // ---------------------------------------------------------------------------
@@ -479,10 +341,7 @@ const ui = {
 
   // Menus
   // ---------------------------------------------------------------------------
-  menuBackgroundColor: '#fff',
   menuBorderRadius: borderRadiusSmall,
-  menuGutterHorizontal: '1rem',
-  menuGutterInner: '.75rem',
   menuGutterVertical: '.5rem',
   menuItemBackgroundColorHover: appTheme.palette.light50a,
   menuItemBackgroundColorActive: appTheme.palette.light,
@@ -490,23 +349,11 @@ const ui = {
   menuItemColorHoverActive: appTheme.palette.dark50d,
   menuItemFontSize: '.9375rem',
   menuItemHeight: '2rem',
-  menuItemIconColor: midGray,
 
   // Modals
   // ---------------------------------------------------------------------------
   modalBackdropBackgroundColor: makeShadowColor('.3'),
   modalBorderRadius: borderRadiusLarge,
-  modalButtonSize: BUTTON_SIZE_MEDIUM,
-  modalLayoutMain: MODAL_LAYOUT_MAIN,
-  modalLayoutMainWithDashAlert: MODAL_LAYOUT_MAIN_WITH_DASH_ALERT,
-  modalLayoutMainWithDashAlerts: MODAL_LAYOUT_MAIN_WITH_DASH_ALERTS,
-  modalLayoutViewport: MODAL_LAYOUT_VIEWPORT,
-  modalLayout: [
-    MODAL_LAYOUT_MAIN,
-    MODAL_LAYOUT_MAIN_WITH_DASH_ALERT,
-    MODAL_LAYOUT_MAIN_WITH_DASH_ALERTS,
-    MODAL_LAYOUT_VIEWPORT
-  ],
 
   // Nav
   // ---------------------------------------------------------------------------
@@ -522,12 +369,7 @@ const ui = {
   // Nav Topics (team agenda, retro discuss)
   // ---------------------------------------------------------------------------
 
-  navTopicFontSize: appTheme.typography.s3,
   navTopicLineHeight: '1.5rem',
-
-  // Notifications
-  // ---------------------------------------------------------------------------
-  notificationButtonSize: BUTTON_SIZE_SMALL,
 
   // Placeholders
   // ---------------------------------------------------------------------------
@@ -543,45 +385,13 @@ const ui = {
 
   // Settings
   // ---------------------------------------------------------------------------
-  settingsGutter: '1rem',
   settingsPanelMaxWidth: '48rem',
   settingsPanelMaxWidthNarrow: '40.25rem',
 
   // Shadows
-  shadow,
   scrollableBackgroundColor: appTheme.palette.mid10a,
   scrollableBottomShadow: `0 -.125rem .5rem ${makeShadowColor('.4')}`,
-  scrollableTopShadow: `0 .125rem .5rem ${makeShadowColor('.4')}`,
-
-  // Tags
-  // ---------------------------------------------------------------------------
-  tagFontSize: '.6875rem',
-  tagFontWeight: 600,
-  tagGutter: '.75rem',
-  tagHeight: '1rem',
-  tagPadding: '0 .5rem',
-  tagPalette: ['cool', 'gray', 'midGray', 'light', 'warm', 'yellow', 'blue', 'white'],
-
-  // Transitions
-  // ---------------------------------------------------------------------------
-  transition,
-
-  // Typography
-  // ---------------------------------------------------------------------------
-  typeRegular: TYPE_REGULAR,
-  typeSemiBold: TYPE_SEMIBOLD,
-
-  // Upgrade
-  // ---------------------------------------------------------------------------
-  upgradeColor: blue,
-  upgradeColorOption: 'blue',
-
-  // …and then component-specific constants:
-
-  ziMenu: zIndexScale(4),
-  ziCardDragLayer: zIndexScale(6),
-  ziRejoinFacilitatorButton: zIndexScale(4),
-  ziTooltip: zIndexScale(4)
+  scrollableTopShadow: `0 .125rem .5rem ${makeShadowColor('.4')}`
 }
 
 export default ui

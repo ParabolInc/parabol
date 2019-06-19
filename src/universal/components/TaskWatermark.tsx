@@ -2,7 +2,6 @@ import React from 'react'
 import styled from 'react-emotion'
 import GitHubSVG from 'universal/components/GitHubSVG'
 import JiraSVG from 'universal/components/JiraSVG'
-import ui from 'universal/styles/ui'
 import {TaskServiceEnum} from 'universal/types/graphql'
 
 const iconLookup = {
@@ -21,7 +20,7 @@ const WatermarkBlock = styled('div')({
   top: 0,
   verticalAlign: 'middle',
   opacity: 0.2,
-  zIndex: ui.ziMenu - 2,
+  zIndex: 398,
   '& svg': {
     height: 120,
     width: 120,

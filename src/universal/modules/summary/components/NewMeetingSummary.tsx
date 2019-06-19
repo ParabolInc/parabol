@@ -2,13 +2,13 @@ import {NewMeetingSummary_viewer} from '__generated__/NewMeetingSummary_viewer.g
 import React, {useEffect} from 'react'
 import Helmet from 'react-helmet'
 import {createFragmentContainer, graphql} from 'react-relay'
-import ui from 'universal/styles/ui'
 import {MEETING_SUMMARY_LABEL} from 'universal/utils/constants'
 import makeHref from 'universal/utils/makeHref'
 import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 import {demoTeamId} from 'universal/modules/demo/initDB'
 import MeetingSummaryEmail from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail'
 import useRouter from 'universal/hooks/useRouter'
+import {PALETTE} from 'universal/styles/paletteV2'
 
 interface Props {
   viewer: NewMeetingSummary_viewer
@@ -45,7 +45,7 @@ const NewMeetingSummary = (props: Props) => {
   const teamDashUrl = `/team/${teamId}`
   const emailCSVUrl = `/new-summary/${meetingId}/csv`
   return (
-    <div style={{backgroundColor: ui.emailBackgroundColor, minHeight: '100vh'}}>
+    <div style={{backgroundColor: PALETTE.BACKGROUND.MAIN, minHeight: '100vh'}}>
       <Helmet title={title} />
       <MeetingSummaryEmail
         urlAction={urlAction}

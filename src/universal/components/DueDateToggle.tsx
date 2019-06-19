@@ -12,6 +12,7 @@ import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 import ui from 'universal/styles/ui'
 import lazyPreload from 'universal/utils/lazyPreload'
 import {shortMonths} from 'universal/utils/makeDateString'
+import {PALETTE} from 'universal/styles/paletteV2'
 
 const darken = (color, amount) =>
   tinycolor(color)
@@ -24,6 +25,13 @@ interface StyleProps {
   isDueSoon: boolean
   isPastDue: boolean
 }
+
+const dueDateBg = PALETTE.BACKGROUND.MAIN
+const dueDateColor = '#65637A'
+const dueDatePastBg = '#FFE2E2'
+const dueDatePastColor = PALETTE.ERROR.MAIN
+const dueDateSoonBg = '#FFF0D1'
+const dueDateSoonColor = '#F28934'
 
 const Toggle = styled(CardButton)<StyleProps>(
   {
@@ -43,34 +51,34 @@ const Toggle = styled(CardButton)<StyleProps>(
   ({dueDate}) =>
     dueDate && {
       backgroundColor: ui.dueDateBg,
-      color: ui.dueDateColor,
+      color: dueDateColor,
       fontSize: 'inherit',
       height: '1.375rem',
       lineHeight: '1rem',
       opacity: 1,
       padding: '0 .25rem 0 .0625rem',
       ':hover,:focus': {
-        backgroundColor: darken(ui.dueDateBg, 6),
-        color: darken(ui.dueDateColor, 6),
+        backgroundColor: darken(dueDateBg, 6),
+        color: darken(dueDateColor, 6),
         opacity: 1
       }
     },
   ({isDueSoon}) =>
     isDueSoon && {
-      backgroundColor: ui.dueDateSoonBg,
-      color: ui.dueDateSoonColor,
+      backgroundColor: dueDateSoonBg,
+      color: dueDateSoonColor,
       ':hover,:focus': {
-        backgroundColor: darken(ui.dueDateSoonBg, 9),
-        color: darken(ui.dueDateSoonColor, 9)
+        backgroundColor: darken(dueDateSoonBg, 9),
+        color: darken(dueDateSoonColor, 9)
       }
     },
   ({isPastDue}) =>
     isPastDue && {
-      backgroundColor: ui.dueDatePastBg,
-      color: ui.dueDatePastColor,
+      backgroundColor: dueDatePastBg,
+      color: dueDatePastColor,
       ':hover,:focus': {
-        backgroundColor: darken(ui.dueDatePastBg, 9),
-        color: darken(ui.dueDatePastColor, 9)
+        backgroundColor: darken(dueDatePastBg, 9),
+        color: darken(dueDatePastColor, 9)
       }
     }
 )

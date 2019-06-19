@@ -38,7 +38,7 @@ const PaymentRejected = (props: Props) => {
       <div className={css(defaultStyles.widestButton)}>
         <StyledButton
           aria-label='Go to the billing page to update billing information'
-          size={ui.notificationButtonSize}
+          size={'small'}
           onClick={addBilling}
           palette='warm'
         >

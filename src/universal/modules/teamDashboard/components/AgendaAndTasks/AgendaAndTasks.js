@@ -28,6 +28,7 @@ const TasksMain = styled('div')({
   flexDirection: 'column'
 })
 
+const dashTeamBreakpointUp = '@media (min-width: 123.25rem)'
 const TasksHeader = styled('div')(({hideAgenda}) => ({
   display: 'flex',
   paddingRight: !hideAgenda && ui.dashAgendaWidth,
@@ -35,7 +36,7 @@ const TasksHeader = styled('div')(({hideAgenda}) => ({
   justifyContent: 'flex-start',
   width: '100%',
 
-  [ui.dashTeamBreakpointUp]: {
+  [dashTeamBreakpointUp]: {
     justifyContent: 'center',
     paddingTop: 0
   }
@@ -48,7 +49,7 @@ const TasksContent = styled('div')(({hideAgenda}) => ({
   paddingRight: !hideAgenda && ui.dashAgendaWidth,
   width: '100%',
 
-  [ui.dashTeamBreakpointUp]: {
+  [dashTeamBreakpointUp]: {
     margin: '0 auto'
   }
 }))
@@ -61,7 +62,7 @@ const Inner = styled('div')({
   position: 'relative',
   width: '100%',
 
-  [ui.dashTeamBreakpointUp]: {
+  [dashTeamBreakpointUp]: {
     margin: '0 auto'
   }
 })

@@ -62,7 +62,7 @@ const PromoteToBillingLeader = (props: Props) => {
         <div className={css(defaultStyles.widerButton)}>
           <StyledButton
             aria-label='Go to the Organization page'
-            size={ui.notificationButtonSize}
+            size={'small'}
             onClick={goToOrg}
             palette='warm'
             waiting={submitting}

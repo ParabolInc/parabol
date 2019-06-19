@@ -1,20 +1,22 @@
 import React, {Component} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {createFragmentContainer, graphql} from 'react-relay'
 import EditorInputWrapper from 'universal/components/EditorInputWrapper'
 import PlainButton from 'universal/components/PlainButton/PlainButton'
 import editorDecorators from 'universal/components/TaskEditor/decorators'
 import 'universal/components/TaskEditor/Draft.css'
 import Tooltip from 'universal/components/Tooltip/Tooltip'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import ui from 'universal/styles/ui'
 import styled from 'react-emotion'
 import UpdateNewCheckInQuestionMutation from 'universal/mutations/UpdateNewCheckInQuestionMutation'
-import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
-import type {NewCheckInQuestion_team as Team} from '__generated__/NewCheckInQuestion_team.graphql'
+import {convertFromRaw, convertToRaw, EditorState, SelectionState} from 'draft-js'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import {NewCheckInQuestion_team} from '__generated__/NewCheckInQuestion_team.graphql'
 
-const CogIcon = styled(Icon)(({isEditing}) => ({
+const CogIcon = styled(Icon)(({isEditing}: {isEditing: boolean}) => ({
   color: ui.colorText,
   display: 'block',
   height: '1.5rem',
@@ -49,13 +51,12 @@ const getCheckInQuestion = (props) => {
   return newMeeting.localPhase.checkInQuestion
 }
 
-type Props = {
-  atmosphere: Object,
-  team: Team
+interface Props extends WithAtmosphereProps {
+  team: NewCheckInQuestion_team
 }
 
 type State = {
-  editorState: Object
+  editorState: EditorState
 }
 
 class NewCheckInQuestion extends Component<Props, State> {
@@ -91,12 +92,9 @@ class NewCheckInQuestion extends Component<Props, State> {
     const wasFocused = this.state.editorState.getSelection().getHasFocus()
     const isFocused = editorState.getSelection().getHasFocus()
     if (wasFocused && !isFocused) {
-      const {
-        atmosphere,
-        team: {
-          newMeeting: {meetingId}
-        }
-      } = this.props
+      const {atmosphere, team} = this.props
+      const {newMeeting} = team
+      const {id: meetingId} = newMeeting!
       const checkInQuestion = JSON.stringify(convertToRaw(editorState.getCurrentContent()))
       const oldValue = getCheckInQuestion(this.props)
       if (oldValue === checkInQuestion) return
@@ -122,7 +120,7 @@ class NewCheckInQuestion extends Component<Props, State> {
       focusKey: contentState.getLastBlock().getKey(),
       anchorOffset: 0,
       focusOffset: contentState.getLastBlock().getLength()
-    })
+    }) as SelectionState
     const nextEditorState = EditorState.forceSelection(editorState, fullSelection)
     this.setEditorState(nextEditorState)
   }
@@ -178,7 +176,7 @@ export default createFragmentContainer(
     fragment NewCheckInQuestion_team on Team {
       id
       newMeeting {
-        meetingId: id
+        id
         facilitatorUserId
         localPhase {
           ... on CheckInPhase {

@@ -140,7 +140,7 @@ const TaskInvolves = (props: Props) => {
             <StyledButton
               aria-label='Go to this board'
               palette='warm'
-              size={ui.notificationButtonSize}
+              size={'small'}
               onClick={gotoBoard}
               waiting={submitting}
             >

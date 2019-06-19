@@ -5,7 +5,7 @@ import appTheme from 'universal/styles/theme/appTheme'
 const DashHeading = styled('div')(({textAlign}) => ({
   color: ui.colorText,
   fontSize: appTheme.typography.s6,
-  fontWeight: ui.typeSemiBold,
+  fontWeight: 600,
   lineHeight: '1.25',
   textAlign,
   [ui.dashBreakpoint]: {

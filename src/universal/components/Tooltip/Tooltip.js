@@ -5,14 +5,13 @@ import {MAX_INT} from 'universal/utils/constants'
 import AnimatedFade from 'universal/components/AnimatedFade'
 import Modal from 'universal/components/Modal'
 import TooltipStyled from 'universal/components/TooltipStyled'
-import ui from 'universal/styles/ui'
 import styled from 'react-emotion'
 import withCoordsV2 from 'universal/decorators/withCoordsV2'
 
 const ModalBlock = styled('div')(({maxWidth}) => ({
   padding: '4px 8px',
   position: 'absolute',
-  zIndex: ui.ziTooltip,
+  zIndex: 400,
   maxWidth
 }))
 

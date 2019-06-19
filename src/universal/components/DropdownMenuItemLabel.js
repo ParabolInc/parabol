@@ -6,7 +6,7 @@ const DropdownMenuItemLabel = styled('span')({
   ...textOverflow,
   fontSize: ui.menuItemFontSize,
   lineHeight: ui.menuItemHeight,
-  padding: `0 ${ui.menuGutterHorizontal}`
+  padding: `0 16px`
 })
 
 export default DropdownMenuItemLabel

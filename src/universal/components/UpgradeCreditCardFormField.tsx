@@ -1,36 +1,16 @@
-import * as React from 'react'
+import React from 'react'
 import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles'
-import styled, {css, cx} from 'react-emotion'
+import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
-const fieldStyles = css({
-  ...ui.fieldBaseStyles,
-  backgroundColor: ui.palette.white,
-  border: 0,
-  borderRadius: 0,
-  boxShadow: 'none',
-  color: appTheme.palette.dark,
-  fontSize: '.9375rem',
-  lineHeight: appTheme.typography.s6,
-  padding: `.5rem ${ui.fieldPaddingHorizontal} .5rem 2rem`,
-  ':focus, :active': {
-    ...makePlaceholderStyles(ui.placeholderColorFocusActive)
-  }
-})
-
-const fieldErrorStyles = css({
-  // boxShadow: `inset 0 0 .0625rem .0625rem ${ui.fieldErrorBorderColor}`,
-  ...makePlaceholderStyles(ui.fieldErrorPlaceholderColor)
-})
-
 const FieldBlock = styled('div')({
   position: 'relative'
 })
 
-const FieldIcon = styled(Icon)(({hasError}) => ({
+const FieldIcon = styled(Icon)(({hasError}: {hasError: boolean}) => ({
   color: hasError ? ui.colorError : ui.hintColor,
   display: 'block',
   fontSize: MD_ICONS_SIZE_18,
@@ -41,17 +21,33 @@ const FieldIcon = styled(Icon)(({hasError}) => ({
   top: '.6875rem'
 }))
 
-type Props = {|
-  autoComplete: string,
-  autoFocus: string,
-  hasError: boolean,
-  iconName: string,
-  maxLength: number,
-  onChange: (SyntheticKeyboardEvent<*>) => void,
-  placeholder: string,
-  error: string,
+type Props = {
+  autoComplete: string
+  autoFocus: boolean
+  hasError: boolean
+  iconName: string
+  maxLength: number
+  onChange: (e: React.ChangeEvent) => void
+  placeholder: string
+  error: string
   value: string
-|}
+}
+
+const Input = styled('input')(({hasError}: {hasError: boolean}) => ({
+  ...ui.fieldBaseStyles,
+  backgroundColor: ui.palette.white,
+  border: 0,
+  borderRadius: 0,
+  boxShadow: 'none',
+  color: appTheme.palette.dark,
+  fontSize: '.9375rem',
+  lineHeight: appTheme.typography.s6,
+  padding: `.5rem .75rem .5rem 2rem`,
+  ':focus, :active': {
+    ...makePlaceholderStyles(ui.placeholderColorFocusActive)
+  },
+  '::placeholder': hasError ? ui.fieldErrorPlaceholderColor : undefined
+}))
 
 const UpgradeCreditCardFormField = (props: Props) => {
   const {
@@ -72,16 +68,13 @@ const UpgradeCreditCardFormField = (props: Props) => {
     }
   }
 
-  // TODO move to styled layout
-  const fieldClassName = cx(fieldStyles, hasError && fieldErrorStyles)
-
   return (
     <FieldBlock>
       <FieldIcon hasError={hasError}>{iconName}</FieldIcon>
-      <input
+      <Input
+        hasError={hasError}
         autoComplete={autoComplete}
         autoFocus={autoFocus}
-        className={fieldClassName}
         onChange={onChange}
         maxLength={maxLength}
         placeholder={placeholder}

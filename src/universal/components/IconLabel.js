@@ -42,7 +42,7 @@ const IconLabel = (props) => {
 IconLabel.propTypes = {
   icon: PropTypes.string,
   iconAfter: PropTypes.bool,
-  iconColor: PropTypes.oneOf(ui.paletteOptions),
+  iconColor: PropTypes.any,
   iconLarge: PropTypes.bool,
   label: PropTypes.any
 }

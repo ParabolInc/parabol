@@ -5,7 +5,7 @@ const DashSectionControl = styled('div')({
   alignItems: 'center',
   color: ui.dashControlFontColor,
   display: 'flex',
-  fontSize: ui.dashControlFontSize,
+  fontSize: 13,
   height: ui.dashControlHeight,
   marginLeft: '2rem'
 })
