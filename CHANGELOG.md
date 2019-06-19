@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## vNext
+
+### Fixed
+* capitalized segment Meeting Completed events (#2916)
+
 ## v3.14.0 2019-Jun-19
 
 ### Changed
