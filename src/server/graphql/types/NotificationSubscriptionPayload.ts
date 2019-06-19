@@ -7,7 +7,6 @@ import DeleteTaskPayload from 'server/graphql/types/DeleteTaskPayload'
 import StripeFailPaymentPayload from 'server/graphql/types/StripeFailPaymentPayload'
 import User from 'server/graphql/types/User'
 import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload'
-import UpdateUserProfilePayload from 'server/graphql/types/UpdateUserProfilePayload'
 import DisconnectSocketPayload from 'server/graphql/types/DisconnectSocketPayload'
 import AddFeatureFlagPayload from 'server/graphql/types/AddFeatureFlagPayload'
 import InviteToTeamPayload from 'server/graphql/types/InviteToTeamPayload'
@@ -32,8 +31,7 @@ const types = [
   RemoveOrgUserPayload,
   StripeFailPaymentPayload,
   // User doesn't have an error field, either make an exception & add it (because it's the Viewer) or use a payload here
-  User,
-  UpdateUserProfilePayload
+  User
 ]
 
 export default graphQLSubscriptionType('NotificationSubscriptionPayload', types)

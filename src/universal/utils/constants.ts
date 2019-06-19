@@ -145,7 +145,6 @@ export const ORGANIZATION = 'organization'
 // export const MEETING = 'meeting'; // conflicts with area
 // export const AGENDA_ITEM = 'agendaItem'; // conflict
 export const TEAM = 'team'
-export const TEAM_MEMBER = 'teamMember'
 
 /* WebSocket keep alive interval */
 export const WS_KEEP_ALIVE = 10000

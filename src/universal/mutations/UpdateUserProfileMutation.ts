@@ -1,19 +1,14 @@
-import {commitMutation} from 'react-relay'
+import {commitMutation, graphql} from 'react-relay'
 
 graphql`
-  fragment UpdateUserProfileMutation_notification on UpdateUserProfilePayload {
-    user {
-      preferredName
-      picture
-    }
-  }
-`
-
-graphql`
-  fragment UpdateUserProfileMutation_teamMember on UpdateUserProfilePayload {
+  fragment UpdateUserProfileMutation_team on UpdateUserProfilePayload {
     teamMembers {
       preferredName
       picture
+      user {
+        picture
+        preferredName
+      }
     }
   }
 `
@@ -24,8 +19,7 @@ const mutation = graphql`
       error {
         message
       }
-      ...UpdateUserProfileMutation_notification @relay(mask: false)
-      ...UpdateUserProfileMutation_teamMember @relay(mask: false)
+      ...UpdateUserProfileMutation_team @relay(mask: false)
     }
   }
 `

@@ -5,12 +5,13 @@ import UpdateUserProfilePayload from 'server/graphql/types/UpdateUserProfilePayl
 import {getUserId, isAuthenticated} from 'server/utils/authorization'
 import makeUserServerSchema from 'universal/validation/makeUserServerSchema'
 import publish from 'server/utils/publish'
-import {NOTIFICATION, TEAM_MEMBER} from 'universal/utils/constants'
+import {TEAM} from 'universal/utils/constants'
 import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent'
 import {JSDOM} from 'jsdom'
 import sanitizeSVG from '@mattkrick/sanitize-svg'
 import fetch from 'node-fetch'
 import standardError from 'server/utils/standardError'
+import linkify from 'universal/utils/linkify'
 
 const updateUserProfile = {
   type: UpdateUserProfilePayload,
@@ -20,11 +21,12 @@ const updateUserProfile = {
       description: 'The input object containing the user profile fields that can be changed'
     }
   },
-  async resolve (source, {updatedUser}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (_source, {updatedUser}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
+    const viewerId = getUserId(authToken)
 
     // AUTH
     if (!isAuthenticated(authToken)) return standardError(new Error('Not authenticated'))
@@ -46,6 +48,14 @@ const updateUserProfile = {
         return {error: {message: 'Attempted Stored XSS attack', title: 'Uh oh'}}
       }
     }
+
+    if (validUpdatedUser.preferredName) {
+      const links = linkify.match(validUpdatedUser.preferredName)
+      if (links) {
+        return standardError(new Error('Name cannot be a hyperlink'), {userId: viewerId})
+      }
+    }
+
     // RESOLUTION
     const updates = {
       ...validUpdatedUser,
@@ -75,14 +85,12 @@ const updateUserProfile = {
     // }
     //
     await sendSegmentIdentify(user.id)
-    const teamMemberIds = teamMembers.map(({id}) => id)
     const teamIds = teamMembers.map(({teamId}) => teamId)
-    const data = {userId, teamMemberIds}
     teamIds.forEach((teamId) => {
-      publish(TEAM_MEMBER, teamId, UpdateUserProfilePayload, data, subOptions)
+      const data = {userId, teamIds: [teamId]}
+      publish(TEAM, teamId, UpdateUserProfilePayload, data, subOptions)
     })
-    publish(NOTIFICATION, userId, UpdateUserProfilePayload, data, subOptions)
-    return data
+    return {userId, teamIds}
   }
 }
 

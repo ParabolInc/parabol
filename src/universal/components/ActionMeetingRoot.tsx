@@ -8,7 +8,6 @@ import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscr
 import NotificationSubscription from 'universal/subscriptions/NotificationSubscription'
 import OrganizationSubscription from 'universal/subscriptions/OrganizationSubscription'
 import TaskSubscription from 'universal/subscriptions/TaskSubscription'
-import TeamMemberSubscription from 'universal/subscriptions/TeamMemberSubscription'
 import TeamSubscription from 'universal/subscriptions/TeamSubscription'
 import {MeetingTypeEnum} from 'universal/types/graphql'
 import {cacheConfig} from 'universal/utils/constants'
@@ -27,7 +26,6 @@ const subscriptions = [
   NotificationSubscription,
   OrganizationSubscription,
   TaskSubscription,
-  TeamMemberSubscription,
   TeamSubscription
 ]
 

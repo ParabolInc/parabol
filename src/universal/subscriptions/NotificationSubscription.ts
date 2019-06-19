@@ -37,7 +37,6 @@ const subscription = graphql`
       ...EndNewMeetingMutation_notification @relay(mask: false)
       ...InviteToTeamMutation_notification @relay(mask: false)
       ...RemoveOrgUserMutation_notification @relay(mask: false)
-      ...UpdateUserProfileMutation_notification @relay(mask: false)
 
       # ConnectSocket
       ... on User {
@@ -251,8 +250,6 @@ const NotificationSubscription = (atmosphere: Atmosphere, _queryVariables, subPa
           break
         case 'StripeFailPaymentPayload':
           stripeFailPaymentNotificationUpdater(payload, context)
-          break
-        case 'UpdateUserProfilePayload':
           break
         default:
           console.error('NotificationSubscription case fail', type)
