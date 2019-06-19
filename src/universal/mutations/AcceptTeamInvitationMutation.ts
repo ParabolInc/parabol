@@ -12,6 +12,7 @@ import {
 } from '__generated__/AcceptTeamInvitationMutation.graphql'
 import handleAddTeams from 'universal/mutations/handlers/handleAddTeams'
 import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
+import getValidRedirectParam from 'universal/utils/getValidRedirectParam'
 
 graphql`
   fragment AcceptTeamInvitationMutation_team on AcceptTeamInvitationPayload {
@@ -136,7 +137,7 @@ const AcceptTeamInvitationMutation = (
         message: `You’ve been added to team ${teamName}`,
         action: {label: 'Great!'}
       })
-      const redirectTo = new URLSearchParams(location.search).get('redirectTo')
+      const redirectTo = getValidRedirectParam()
       if (history) {
         if (redirectTo) {
           history.push(redirectTo)

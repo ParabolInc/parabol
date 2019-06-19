@@ -7,6 +7,7 @@ import getGraphQLError from 'universal/utils/relay/getGraphQLError'
 import {Omit} from 'types/generics'
 import {LocalHandlers} from '../types/relayMutations'
 import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
+import getValidRedirectParam from 'universal/utils/getValidRedirectParam'
 
 const mutation = graphql`
   mutation LoginMutation(
@@ -73,8 +74,7 @@ const LoginMutation = (
       }
 
       // standard redirect logic
-      const redirectTo = new URLSearchParams(location.search).get('redirectTo')
-      const nextUrl = redirectTo || '/me'
+      const nextUrl = getValidRedirectParam() || '/me'
       history.push(nextUrl)
     },
     onError: (err) => {

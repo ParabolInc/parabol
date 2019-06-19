@@ -13,6 +13,7 @@ import InvitationDialogCopy from './InvitationDialogCopy'
 import DialogTitle from './DialogTitle'
 import TeamInvitationWrapper from './TeamInvitationWrapper'
 import useRouter from 'universal/hooks/useRouter'
+import getValidRedirectParam from 'universal/utils/getValidRedirectParam'
 
 interface Props {
   teamId: string
@@ -32,7 +33,7 @@ const ViewerNotOnTeam = (props: Props) => {
       AcceptTeamInvitationMutation(atmosphere, {invitationToken: teamInvitation.token}, {history})
     } else if (authObj && authObj.tms && authObj.tms.includes(teamId)) {
       // if already on the team, goto team dash
-      const redirectTo = new URLSearchParams(location.search).get('redirectTo')
+      const redirectTo = getValidRedirectParam()
       const nextRoute = redirectTo || `/team/${teamId}`
       history.replace(nextRoute)
     }
