@@ -23,13 +23,12 @@ const FieldIcon = styled(Icon)(({hasError}: {hasError: boolean}) => ({
 
 type Props = {
   autoComplete: string
-  autoFocus: boolean
+  autoFocus?: boolean
   hasError: boolean
   iconName: string
   maxLength: number
   onChange: (e: React.ChangeEvent) => void
   placeholder: string
-  error: string
   value: string
 }
 

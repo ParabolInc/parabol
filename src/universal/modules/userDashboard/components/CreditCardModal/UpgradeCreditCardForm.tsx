@@ -323,7 +323,7 @@ class UpgradeCreditCardForm extends React.Component<Props, State> {
                 autoFocus
                 hasError={Boolean(error && error.creditCardNumber)}
                 iconName='credit_card'
-                maxLength='20'
+                maxLength={20}
                 onChange={this.handleNumberChange}
                 placeholder='Card number'
                 value={creditCardNumber}
@@ -335,7 +335,7 @@ class UpgradeCreditCardForm extends React.Component<Props, State> {
                   autoComplete='cc-exp'
                   hasError={Boolean(error && error.expiry)}
                   iconName='date_range'
-                  maxLength='5'
+                  maxLength={5}
                   onChange={this.handleExpiryChange}
                   placeholder='MM/YY'
                   value={expiry}
@@ -346,8 +346,7 @@ class UpgradeCreditCardForm extends React.Component<Props, State> {
                   autoComplete='cc-csc'
                   hasError={Boolean(error && error.cvc)}
                   iconName='lock'
-                  maxLength='4'
-                  name='cvc'
+                  maxLength={4}
                   onChange={this.handleCVCChange}
                   placeholder='CVC'
                   value={cvc}

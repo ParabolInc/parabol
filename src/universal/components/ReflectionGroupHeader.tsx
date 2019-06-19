@@ -13,7 +13,7 @@ type Props = {
   meeting: ReflectionGroupHeader_meeting
   reflectionGroup: ReflectionGroupHeader_reflectionGroup
   innerRef: Ref<any>
-  isExpanded: boolean
+  isExpanded?: boolean
 }
 
 const GroupHeader = styled('div')({
@@ -32,7 +32,8 @@ const GroupHeader = styled('div')({
 const StyledTag = styled(Tag)({marginRight: 4})
 
 const ReflectionGroupHeader = (props: Props) => {
-  const {innerRef, isExpanded, meeting, reflectionGroup} = props
+  const {innerRef, meeting, reflectionGroup} = props
+  const isExpanded = !!props.isExpanded
   const {
     localStage,
     localPhase: {phaseType}

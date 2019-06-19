@@ -5,7 +5,7 @@ import styled from 'react-emotion'
 import DropdownMenuToggle from 'universal/components/DropdownMenuToggle'
 import ms from 'ms'
 import Icon from 'universal/components/Icon'
-import {days, shortDays, shortMonths} from 'universal/utils/makeDateString'
+import {shortDays, shortMonths} from 'universal/utils/makeDateString'
 import DayPicker, {DayModifiers} from 'react-day-picker'
 import 'universal/styles/daypicker.css'
 

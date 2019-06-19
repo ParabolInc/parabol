@@ -340,7 +340,7 @@ class ReflectionGroup extends Component<Props> {
           <GroupStyle innerRef={this.setModalRef} isModal>
             <Background innerRef={this.setBackgroundRef} />
             <ReflectionGroupHeader
-              isExpanded={isExpanded}
+              isExpanded={!!isExpanded}
               innerRef={this.setHeaderRef}
               meeting={meeting}
               reflectionGroup={reflectionGroup}

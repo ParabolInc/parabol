@@ -93,7 +93,7 @@ const addTeamStyles = css({
   opacity: '.65',
   padding: '.625rem .5rem .625rem 2rem',
   position: 'relative',
-  transition: `opacity ${ui.transition[0]}`,
+  transition: `opacity 100ms ease-in`,
   userSelect: 'none',
 
   ...makeHoverFocus({
