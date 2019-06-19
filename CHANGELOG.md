@@ -5,14 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## vNEXT
+## v3.14.0 2019-Jun-19
 
 ### Changed
 * Moved integration OAuth flow into their respective managers
-* Refactor all flow components to typescript
+* Refactored all flow components to typescript
+* Improved handling of browsers without permissions API
 
 ### Removed
 * Legacy Provider mutations
+* Need for calling postdeploy in development
+
+### Added
+* Invite emails and dialog views conditionally have active team meeting context
+* A primary button Create Free Account was added to the demo in the top bar and invite dialog
 
 ## v3.13.0 2019-Jun-12
 
@@ -27,9 +33,6 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Added
 * New stripe per-event handling
-
-### Changed
-* Moved integration OAuth flow into their respective managers
 
 ## v3.12.0 2019-May-29
 
