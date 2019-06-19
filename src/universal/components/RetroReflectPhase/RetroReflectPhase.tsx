@@ -26,6 +26,8 @@ import lazyPreload from 'universal/utils/lazyPreload'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import {REFLECTION_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
 import EndMeetingButton from '../EndMeetingButton'
+import StageTimerControl from 'universal/components/StageTimerControl'
+import StageTimerDisplay from './StageTimerDisplay'
 
 const minWidth = REFLECTION_WIDTH + 32
 
@@ -95,6 +97,7 @@ const RetroReflectPhase = (props: Props) => {
         </PhaseHeaderDescription>
       </MeetingContentHeader>
       <ErrorBoundary>
+        <StageTimerDisplay stage={localStage!} />
         <StyledOverflow>
           <StyledWrapper phaseItemCount={reflectPrompts.length} innerRef={phaseRef}>
             {reflectPrompts.map((prompt, idx) => (
@@ -114,6 +117,7 @@ const RetroReflectPhase = (props: Props) => {
         {isFacilitating && (
           <StyledBottomBar>
             <BottomControlSpacer />
+            <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
             <BottomNavControl
               isBouncing={isDemoStageComplete || isReadyToGroup}
               disabled={isEmpty}
@@ -154,6 +158,7 @@ export default createFragmentContainer(
   RetroReflectPhase,
   graphql`
     fragment RetroReflectPhase_team on Team {
+      ...StageTimerControl_team
       isMeetingSidebarCollapsed
       newMeeting {
         ...PhaseItemColumn_meeting

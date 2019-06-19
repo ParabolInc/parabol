@@ -46,7 +46,9 @@ interface Props {
   defaultText: string | ReactElement<any>
   disabled?: boolean
   onClick: ReturnType<typeof useMenu>['togglePortal']
-  onMouseEnter: () => void
+  onMouseEnter?: () => void
+  // hack to get around extending this component with styles
+  innerRef?: any
 }
 
 const DropdownMenuToggle = forwardRef((props: Props, ref: any) => {

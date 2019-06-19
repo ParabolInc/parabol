@@ -1,4 +1,11 @@
-import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
+import {
+  GraphQLBoolean,
+  GraphQLFloat,
+  GraphQLID,
+  GraphQLInt,
+  GraphQLInterfaceType,
+  GraphQLNonNull
+} from 'graphql'
 import NewMeeting from 'server/graphql/types/NewMeeting'
 import NewMeetingPhaseTypeEnum from 'server/graphql/types/NewMeetingPhaseTypeEnum'
 import {
@@ -48,7 +55,7 @@ export const newMeetingStageFields = () => ({
   meeting: {
     type: NewMeeting,
     description: 'The meeting this stage belongs to',
-    resolve: ({meetingId}, args, {dataLoader}) => {
+    resolve: ({meetingId}, _args, {dataLoader}) => {
       return dataLoader.get('newMeetings').load(meetingId)
     }
   },
@@ -68,7 +75,7 @@ export const newMeetingStageFields = () => ({
   phase: {
     type: NewMeetingPhase,
     description: 'The phase this stage belongs to',
-    resolve: async ({meetingId, phaseType}, args, {dataLoader}) => {
+    resolve: async ({meetingId, phaseType}, _args, {dataLoader}) => {
       const meeting = await dataLoader.get('newMeetings').load(meetingId)
       const {phases} = meeting
       return phases.find((phase) => phase.phaseType === phaseType)
@@ -85,15 +92,34 @@ export const newMeetingStageFields = () => ({
   viewCount: {
     description: 'Number of times the facilitator has visited this stage',
     type: GraphQLInt
+  },
+  isAsync: {
+    type: GraphQLBoolean,
+    description: 'true if a time limit is set, false if end time is set, null if neither is set'
+  },
+  scheduledEndTime: {
+    type: GraphQLISO8601Type,
+    description:
+      'The datetime the phase is scheduled to be finished, null if no time limit or end time is set'
+  },
+  suggestedEndTime: {
+    type: GraphQLISO8601Type,
+    description:
+      'The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion'
+  },
+  suggestedTimeLimit: {
+    type: GraphQLFloat,
+    description:
+      'The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion'
+  },
+  timeRemaining: {
+    type: GraphQLFloat,
+    description:
+      'The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null',
+    resolve: ({scheduledEndTime}) => {
+      return scheduledEndTime ? scheduledEndTime - Date.now() : null
+    }
   }
-  // isViewOnce: {
-  //   description: 'true if the meeting phase can only be viewed once (eg first call)',
-  //   type: GraphQLBoolean
-  // },
-  // isAutoAdvanced: {
-  //   description: 'true if the meeting phase automatically advances to the next (eg Phase1.part2 completes when part1 completes)',
-  //   type: GraphQLBoolean
-  // }
 })
 
 const NewMeetingStage = new GraphQLInterfaceType({

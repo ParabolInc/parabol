@@ -3,7 +3,8 @@
 // capitalized J in just now
 // set my own defaults
 
-const MIN = 60 * 1e3
+const SECOND = 1000
+const MIN = SECOND * 60
 const HOUR = MIN * 60
 const DAY = HOUR * 24
 const YEAR = DAY * 365
@@ -16,6 +17,33 @@ interface Opts {
   suffix?: boolean
   now?: string | Date
   smallDiff?: string
+}
+
+export const countdown = (date: string | Date) => {
+  const now = new Date()
+  const abs = new Date(date).getTime() - now.getTime()
+  if (abs < 0) return null
+  const MAX = 2
+  const periods = {
+    Y: abs / YEAR,
+    M: (abs % YEAR) / MONTH,
+    d: (abs % MONTH) / DAY,
+    h: (abs % DAY) / HOUR,
+    m: (abs % HOUR) / MIN,
+    s: (abs % MIN) / SECOND
+  }
+  let k
+  let val
+  const keep: string[] = []
+
+  for (k in periods) {
+    if (keep.length < MAX) {
+      val = Math.floor(periods[k])
+      if (!val) continue
+      keep.push(val + k)
+    }
+  }
+  return keep.join(' ')
 }
 
 const relativeDate = (date: string | Date, opts: Opts = {}) => {

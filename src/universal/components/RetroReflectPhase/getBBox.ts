@@ -9,8 +9,8 @@ export interface RectElement {
   getBoundingClientRect: HTMLElement['getBoundingClientRect']
 }
 
-const getBBox = (el: RectElement | null) => {
-  if (!el) return null
+const getBBox = (el: RectElement | null | Text) => {
+  if (!el || !('getBoundingClientRect' in el)) return null
   if (!cache.has(el)) {
     const {height, width, top, left} = el.getBoundingClientRect()
     cache.set(el, {height, width, top, left})

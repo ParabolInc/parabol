@@ -1,7 +1,15 @@
-import React, {Children, cloneElement, Component, ReactElement, ReactNode} from 'react'
+import React, {
+  Children,
+  cloneElement,
+  Component,
+  ReactElement,
+  ReactInstance,
+  ReactNode
+} from 'react'
 import styled from 'react-emotion'
-import Tab from 'universal/components/Tab/Tab'
 import {PALETTE} from 'universal/styles/paletteV2'
+import getBBox from 'universal/components/RetroReflectPhase/getBBox'
+import {findDOMNode} from 'react-dom'
 
 interface Props {
   activeIdx: number
@@ -36,7 +44,7 @@ const TabHeaders = styled('div')({
 })
 
 class Tabs extends Component<Props> {
-  activeChildRef?: Tab
+  activeChildRef?: ReactInstance
   parentRef?: HTMLDivElement
 
   state = {
@@ -56,9 +64,9 @@ class Tabs extends Component<Props> {
     this.parentRef = c
   }
 
-  moveInkBar = (parent: HTMLDivElement | undefined, child: Tab | undefined) => {
-    const childBBox = child && child.getBoundingRect()
-    const parentBBox = parent && parent.getBoundingClientRect()
+  moveInkBar = (parent: HTMLDivElement | undefined, child: ReactInstance | undefined) => {
+    const childBBox = child && getBBox(findDOMNode(child))
+    const parentBBox = parent && getBBox(parent)
     if (!childBBox || !parentBBox) return
     const left = childBBox.left - parentBBox.left
     this.setState({

@@ -17,7 +17,7 @@ export interface MenuProps {
 }
 
 const useMenu = (preferredMenuPosition: MenuPosition, options: Options = {}) => {
-  const {onOpen, onClose, originCoords} = options
+  const {onOpen, onClose, id, parentId, originCoords} = options
   const isDropdown = !!options.isDropdown
   const {targetRef, originRef, coords, menuPosition} = useCoords(preferredMenuPosition, {
     originCoords
@@ -26,8 +26,10 @@ const useMenu = (preferredMenuPosition: MenuPosition, options: Options = {}) => 
     (originRef as any).current = {getBoundingClientRect: () => originCoords} as RectElement
   }
   const {portal, closePortal, togglePortal, portalStatus, setPortalStatus} = usePortal({
+    id,
     onOpen,
-    onClose
+    onClose,
+    parentId
   })
   const loadingWidth = useMemo(() => {
     if (options.loadingWidth) return options.loadingWidth

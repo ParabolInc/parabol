@@ -81,6 +81,7 @@ import removeSlackAuth from 'server/graphql/mutations/removeSlackAuth'
 import {GQLContext} from 'server/graphql/graphql'
 import addSlackAuth from 'server/graphql/mutations/addSlackAuth'
 import setSlackNotification from './mutations/setSlackNotification'
+import setStageTimer from 'server/graphql/mutations/setStageTimer'
 
 interface InternalContext {
   serverSecret: string
@@ -142,6 +143,7 @@ export default new GraphQLObjectType<any, Context, any>({
     selectRetroTemplate,
     setOrgUserRole,
     setPhaseFocus,
+    setStageTimer,
     setSlackNotification,
     startDraggingReflection,
     startNewMeeting,

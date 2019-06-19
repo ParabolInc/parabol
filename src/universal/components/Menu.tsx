@@ -15,6 +15,8 @@ import MenuItemAnimation from 'universal/components/MenuItemAnimation'
 import {PortalStatus} from 'universal/hooks/usePortal'
 
 const isMenuItem = (node: any) => node && node.onClick
+const REACT_ELEMENT = Symbol.for('react.element')
+const isReactElement = (child: any) => child && child.$$typeof === REACT_ELEMENT
 
 const MenuStyles = styled('div')({
   maxHeight: 224,
@@ -121,11 +123,12 @@ const Menu = forwardRef((props: Props, ref: any) => {
 
   const makeSmartChildren = useCallback(
     (children: ReactNode) => {
-      // toArray removes bools whereas map does not
+      // toArray removes bools whereas map does not. Use the filter to remove possible portals
       const childArr = Children.toArray(children)
       const itemCount = childArr.length
       return childArr.map((child, idx) => {
         if (!child) return null
+        if (!isReactElement(child)) return child
         // overloading a ref callback with useful props means intermediary components only need to forward the ref
         const ref = (c) => {
           itemHandles.current[idx] = c

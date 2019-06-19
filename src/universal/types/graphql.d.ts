@@ -1302,6 +1302,31 @@ export interface INewMeetingStage {
    * Number of times the facilitator has visited this stage
    */
   viewCount: number | null
+
+  /**
+   * true if a time limit is set, false if end time is set, null if neither is set
+   */
+  isAsync: boolean | null
+
+  /**
+   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+   */
+  scheduledEndTime: any | null
+
+  /**
+   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+   */
+  suggestedEndTime: any | null
+
+  /**
+   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+   */
+  suggestedTimeLimit: number | null
+
+  /**
+   * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+   */
+  timeRemaining: number | null
 }
 
 /**
@@ -2759,6 +2784,11 @@ export interface IMutation {
    * Focus (or unfocus) a phase item
    */
   setPhaseFocus: ISetPhaseFocusPayload | null
+
+  /**
+   * Set or clear a timer for a meeting stage
+   */
+  setStageTimer: ISetStageTimerPayload | null
   setSlackNotification: ISetSlackNotificationPayload
 
   /**
@@ -3347,6 +3377,23 @@ export interface ISetPhaseFocusOnMutationArguments {
    * The currently focused phase item
    */
   focusedPhaseItemId?: string | null
+}
+
+export interface ISetStageTimerOnMutationArguments {
+  /**
+   * the id of the meeting
+   */
+  meetingId: string
+
+  /**
+   * The time the timer is scheduled to go off (based on client clock), null if unsetting the timer
+   */
+  scheduledEndTime?: any | null
+
+  /**
+   * scheduledEndTime - now. Used to reconcile bad client clocks. Present for time limit, else null
+   */
+  timeRemaining?: number | null
 }
 
 export interface ISetSlackNotificationOnMutationArguments {
@@ -4767,6 +4814,31 @@ export interface IRetroDiscussStage {
   viewCount: number | null
 
   /**
+   * true if a time limit is set, false if end time is set, null if neither is set
+   */
+  isAsync: boolean | null
+
+  /**
+   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+   */
+  scheduledEndTime: any | null
+
+  /**
+   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+   */
+  suggestedEndTime: any | null
+
+  /**
+   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+   */
+  suggestedTimeLimit: number | null
+
+  /**
+   * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+   */
+  timeRemaining: number | null
+
+  /**
    * foreign key. use reflectionGroup
    */
   reflectionGroupId: string | null
@@ -5427,6 +5499,41 @@ export interface IGenericMeetingStage {
    * Number of times the facilitator has visited this stage
    */
   viewCount: number | null
+
+  /**
+   * true if a time limit is set, false if end time is set, null if neither is set
+   */
+  isAsync: boolean | null
+
+  /**
+   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+   */
+  scheduledEndTime: any | null
+
+  /**
+   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+   */
+  suggestedEndTime: any | null
+
+  /**
+   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+   */
+  suggestedTimeLimit: number | null
+
+  /**
+   * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+   */
+  timeRemaining: number | null
+}
+
+export interface ISetStageTimerPayload {
+  __typename: 'SetStageTimerPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The updated stage
+   */
+  stage: NewMeetingStage | null
 }
 
 export interface ISetSlackNotificationPayload {
@@ -5917,6 +6024,7 @@ export type TeamSubscriptionPayload =
   | IRemoveTeamMemberPayload
   | ISelectRetroTemplatePayload
   | ISetPhaseFocusPayload
+  | ISetStageTimerPayload
   | IStartDraggingReflectionPayload
   | IStartNewMeetingPayload
   | IUpdateAgendaItemPayload
@@ -6054,6 +6162,31 @@ export interface ICheckInStage {
    * Number of times the facilitator has visited this stage
    */
   viewCount: number | null
+
+  /**
+   * true if a time limit is set, false if end time is set, null if neither is set
+   */
+  isAsync: boolean | null
+
+  /**
+   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+   */
+  scheduledEndTime: any | null
+
+  /**
+   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+   */
+  suggestedEndTime: any | null
+
+  /**
+   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+   */
+  suggestedTimeLimit: number | null
+
+  /**
+   * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+   */
+  timeRemaining: number | null
 
   /**
    * foreign key. use teamMember
@@ -6202,6 +6335,31 @@ export interface IUpdatesStage {
   viewCount: number | null
 
   /**
+   * true if a time limit is set, false if end time is set, null if neither is set
+   */
+  isAsync: boolean | null
+
+  /**
+   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+   */
+  scheduledEndTime: any | null
+
+  /**
+   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+   */
+  suggestedEndTime: any | null
+
+  /**
+   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+   */
+  suggestedTimeLimit: number | null
+
+  /**
+   * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+   */
+  timeRemaining: number | null
+
+  /**
    * foreign key. use teamMember
    */
   teamMemberId: string
@@ -6291,6 +6449,31 @@ export interface IAgendaItemsStage {
    * Number of times the facilitator has visited this stage
    */
   viewCount: number | null
+
+  /**
+   * true if a time limit is set, false if end time is set, null if neither is set
+   */
+  isAsync: boolean | null
+
+  /**
+   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+   */
+  scheduledEndTime: any | null
+
+  /**
+   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+   */
+  suggestedEndTime: any | null
+
+  /**
+   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+   */
+  suggestedTimeLimit: number | null
+
+  /**
+   * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+   */
+  timeRemaining: number | null
 
   /**
    * The id of the agenda item this relates to

@@ -5,8 +5,12 @@ import {REFLECT} from 'universal/utils/constants'
 export default class ReflectPhase extends GenericMeetingPhase {
   stages: GenericMeetingStage[]
 
-  constructor (public teamId: string, public promptTemplateId: string) {
+  constructor (
+    public teamId: string,
+    public promptTemplateId: string,
+    durations: number[] | undefined
+  ) {
     super(REFLECT)
-    this.stages = [new GenericMeetingStage(REFLECT)]
+    this.stages = [new GenericMeetingStage(REFLECT, durations)]
   }
 }

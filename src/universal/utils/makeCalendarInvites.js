@@ -1,6 +1,7 @@
 import ms from 'ms'
 import {MEETING_NAME} from 'universal/utils/constants'
 import ensureDate from 'universal/utils/ensureDate'
+import roundDateToNearestHalfHour from 'universal/utils/roundDateToNearestHalfHour'
 
 // the ICS doesn't get the 'Add your conference' line because it doesn't accept line breaks. that's cool though because it isn't editable
 // eslint-disable-next-line max-len
@@ -8,20 +9,7 @@ const description = `Our weekly meeting to update each other on our progress, bu
 Add your conference or dial-in bridge information here.`
 
 const getStartTime = (createdAt) => {
-  const newTime = new Date(createdAt.getTime() + ms('7d'))
-  const oldMins = newTime.getMinutes()
-  if (oldMins >= 45) {
-    // round up
-    newTime.setHours(newTime.getHours() + 1)
-    newTime.setMinutes(0)
-  } else if (oldMins > 20) {
-    // round to nearest :30 minutes
-    newTime.setMinutes(30)
-  } else {
-    // round down
-    newTime.setMinutes(0)
-  }
-  newTime.setSeconds(0)
+  const newTime = roundDateToNearestHalfHour(new Date(createdAt.getTime() + ms('7d')))
 
   // start
   const start = newTime.toISOString().replace(/-|:|\.\d\d\d/g, '')

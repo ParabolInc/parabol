@@ -1,11 +1,12 @@
-import React, {Component} from 'react'
+import React, {forwardRef, ReactNode} from 'react'
 import styled from 'react-emotion'
 import PlainButton from 'universal/components/PlainButton/PlainButton'
 import {PALETTE} from 'universal/styles/paletteV2'
 
 interface Props {
+  className?: string
   isActive?: boolean
-  label?: string
+  label?: ReactNode
   onClick: () => void
 }
 
@@ -16,9 +17,10 @@ const TabStyle = styled(PlainButton)<{isActive: boolean; isClickable: boolean}>(
     cursor: isClickable ? 'pointer' : 'default',
     display: 'flex',
     fontSize: '.875rem',
+    justifyContent: 'center',
     outline: 0,
     lineHeight: '1.25rem',
-    padding: '.875rem 1rem',
+    padding: '12px 16px',
     userSelect: 'none'
   })
 )
@@ -27,22 +29,19 @@ const Label = styled('div')({
   fontWeight: 600
 })
 
-class Tab extends Component<Props> {
-  ref = React.createRef<HTMLButtonElement>()
-  getBoundingRect = () => {
-    const el = this.ref.current
-    if (!el) return null
-    return el.getBoundingClientRect()
-  }
-
-  render () {
-    const {isActive, label, onClick} = this.props
-    return (
-      <TabStyle isActive={!!isActive} isClickable={!isActive} onClick={onClick} innerRef={this.ref}>
-        <Label>{label}</Label>
-      </TabStyle>
-    )
-  }
-}
+const Tab = forwardRef((props: Props, ref: any) => {
+  const {className, isActive, label, onClick} = props
+  return (
+    <TabStyle
+      className={className}
+      isActive={!!isActive}
+      isClickable={!isActive}
+      onClick={onClick}
+      innerRef={ref}
+    >
+      <Label>{label}</Label>
+    </TabStyle>
+  )
+})
 
 export default Tab
