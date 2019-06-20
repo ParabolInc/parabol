@@ -8,6 +8,7 @@ import {ENTERPRISE, PERSONAL, PRO} from '../../universal/utils/constants'
 const PERSONAL_TIER_MAX_TEAMS = 2
 
 interface HubspotTraits {
+  id: string
   solesOpOrgCount: number
   salesOpMeetingCount: number
   isAnyBillingLeader: boolean
@@ -18,6 +19,7 @@ const getHubspotTraits = (userIds: string[]) => {
   const r = getRethink()
   // # of orgs the user is on where teams is >= 3
   return r(userIds).map((userId) => ({
+    id: userId,
     salesOpOrgCount: r
       .table('OrganizationUser')
       .getAll(userId, {index: 'userId'})
@@ -75,8 +77,8 @@ interface Traits {
   createdAt: Date
   email: string
   id: string
-  name: string
   parabolId: string
+  parabolPreferredName: string
 }
 
 const getTraits = (userIds: string[]) => {
@@ -89,8 +91,8 @@ const getTraits = (userIds: string[]) => {
       createdAt: r.row('createdAt').default(0),
       email: r.row('email').default(''),
       id: r.row('id').default(''),
-      name: r.row('preferredName').default(''),
-      parabolId: r.row('id').default('') // passed as a distinct trait name for HubSpot
+      parabolId: r.row('id').default(''), // passed as a distinct trait name for HubSpot
+      parabolPreferredName: r.row('preferredName').default('')
     }) as Promise<Traits[]>
 }
 
@@ -112,14 +114,16 @@ export const sendSegmentIdentify = async (maybeUserIds) => {
     getTraits(userIds),
     getHubspotTraits(userIds)
   ])
-  traitsArr.forEach(async (traitsWithId, idx) => {
-    const {id: userId, ...traits} = traitsWithId
+  traitsArr.forEach(async (traitsWithId) => {
+    const {id: userId, ...traits} = {
+      ...traitsWithId,
+      ...hubspotTraitsArr.find((hubspotTraitsWithId) => traitsWithId.id === hubspotTraitsWithId.id)
+    }
     const tiersCountTraits = await countTiersForUserId(userId)
     segmentIo.identify({
       userId,
       traits: {
         ...traits,
-        ...hubspotTraitsArr[idx],
         ...tiersCountTraits
       }
     })
