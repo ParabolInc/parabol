@@ -37,7 +37,7 @@ class AnalyticsIdentifier extends Component<Props, State> {
       avatar,
       created,
       email,
-      name
+      parabolPreferredName: name
     })
   }
 
