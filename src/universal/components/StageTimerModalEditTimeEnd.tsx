@@ -10,6 +10,7 @@ import useMutationProps from 'universal/hooks/useMutationProps'
 import MenuItemHR from 'universal/components/MenuItemHR'
 import StageTimerModalEndTime from 'universal/components/StageTimerModalEndTime'
 import {StageTimerModalEditTimeEnd_facilitator} from '__generated__/StageTimerModalEditTimeEnd_facilitator.graphql'
+import {PALETTE} from 'universal/styles/paletteV2'
 
 interface Props {
   closePortal: () => void
@@ -42,6 +43,11 @@ const HR = styled(MenuItemHR)({
   marginBottom: -8,
   width: '100%'
 })
+
+const StyledIcon = styled(Icon)({
+  color: PALETTE.TEXT.LIGHT
+})
+
 const StageTimerModalEditTimeEnd = (props: Props) => {
   const {meetingId, closePortal, facilitator, teamId, stage} = props
   const atmosphere = useAtmosphere()
@@ -55,7 +61,7 @@ const StageTimerModalEditTimeEnd = (props: Props) => {
   return (
     <Modal>
       <EndTimer onClick={endTimer}>
-        <Icon>stop</Icon>
+        <StyledIcon>stop</StyledIcon>
         <Label>End Timebox</Label>
       </EndTimer>
       <HR />

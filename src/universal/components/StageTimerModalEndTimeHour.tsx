@@ -7,6 +7,7 @@ import Icon from 'universal/components/Icon'
 import 'universal/styles/daypicker.css'
 import formatTime from 'universal/utils/formatTime'
 import StageTimerHourPicker from 'universal/components/StageTimerHourPicker'
+import {PALETTE} from 'universal/styles/paletteV2'
 
 interface Props {
   endTime: Date
@@ -15,18 +16,25 @@ interface Props {
 
 const Toggle = styled(DropdownMenuToggle)({
   fontSize: 14,
-  padding: 8,
+  padding: '8px 0 8px 8px',
   minWidth: 160
+})
+
+const StyledIcon = styled(Icon)({
+  color: PALETTE.TEXT.LIGHT
 })
 
 const StageTimerModalEndTimeHour = (props: Props) => {
   const {endTime, setEndTime} = props
   const timeStr = formatTime(endTime)
-  const {menuPortal, togglePortal, menuProps, originRef} = useMenu(MenuPosition.LOWER_LEFT, {
-    id: 'StageTimerEndTimePicker',
-    parentId: 'StageTimerModal',
-    isDropdown: true
-  })
+  const {menuPortal, togglePortal, menuProps, originRef, portalStatus} = useMenu(
+    MenuPosition.LOWER_LEFT,
+    {
+      id: 'StageTimerEndTimePicker',
+      parentId: 'StageTimerModal',
+      isDropdown: true
+    }
+  )
 
   const handleHourPick = (nextEndTime: Date) => {
     setEndTime(nextEndTime)
@@ -35,8 +43,8 @@ const StageTimerModalEndTimeHour = (props: Props) => {
 
   return (
     <>
-      <Icon>event</Icon>
-      <Toggle defaultText={timeStr} onClick={togglePortal} innerRef={originRef} />
+      <StyledIcon>event</StyledIcon>
+      <Toggle defaultText={timeStr} onClick={togglePortal} innerRef={originRef} flat size='small' />
       {menuPortal(
         <StageTimerHourPicker endTime={endTime} menuProps={menuProps} onClick={handleHourPick} />
       )}

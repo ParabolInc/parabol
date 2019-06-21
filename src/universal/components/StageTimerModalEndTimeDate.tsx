@@ -5,9 +5,10 @@ import styled from 'react-emotion'
 import DropdownMenuToggle from 'universal/components/DropdownMenuToggle'
 import ms from 'ms'
 import Icon from 'universal/components/Icon'
-import {days, shortDays, shortMonths} from 'universal/utils/makeDateString'
+import {shortDays, shortMonths} from 'universal/utils/makeDateString'
 import DayPicker, {DayModifiers} from 'react-day-picker'
 import 'universal/styles/daypicker.css'
+import {PALETTE} from 'universal/styles/paletteV2'
 
 interface Props {
   endTime: Date
@@ -16,8 +17,12 @@ interface Props {
 
 const Toggle = styled(DropdownMenuToggle)({
   fontSize: 14,
-  padding: 8,
+  padding: '8px 0 8px 8px',
   minWidth: 160
+})
+
+const StyledIcon = styled(Icon)({
+  color: PALETTE.TEXT.LIGHT
 })
 
 const NEXT_YEAR = new Date(Date.now() + ms('1y'))
@@ -53,8 +58,8 @@ const StageTimerModalEndTimeDate = (props: Props) => {
 
   return (
     <>
-      <Icon>event</Icon>
-      <Toggle defaultText={dayStr} onClick={togglePortal} innerRef={originRef} />
+      <StyledIcon>event</StyledIcon>
+      <Toggle defaultText={dayStr} onClick={togglePortal} innerRef={originRef} flat size='small' />
       {menuPortal(
         <DayPicker
           disabledDays={{before: now}}
