@@ -42,6 +42,10 @@ const StyledButton = styled(SecondaryButton)({
   minWidth: 192
 })
 
+const ErrorMessage = styled(NotificationErrorMessage)({
+  marginBottom: -8
+})
+
 const DEFAULT_DURATION = ms('1d')
 const TOMORROW = roundDateToNearestHalfHour(new Date(Date.now() + DEFAULT_DURATION))
 
@@ -81,10 +85,10 @@ const StageTimerModalEndTime = (props: Props) => {
       <Row>
         <StageTimerModalEndTimeSlackToggle teamId={teamId} facilitator={facilitator} />
       </Row>
+      <ErrorMessage error={error} />
       <StyledButton onClick={startTimer}>
         {scheduledEndTime ? 'Update Timebox' : 'Start Timebox'}
       </StyledButton>
-      <NotificationErrorMessage error={error} />
     </SetLimit>
   )
 }

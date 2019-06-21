@@ -23,7 +23,7 @@ const TeamArchived = (props: Props) => {
   const {name: teamName} = team
 
   const acknowledge = () => {
-    if (!submitting) return
+    if (submitting) return
     submitMutation()
     ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted)
   }

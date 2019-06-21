@@ -9,6 +9,7 @@ import {shortDays, shortMonths} from 'universal/utils/makeDateString'
 import DayPicker, {DayModifiers} from 'react-day-picker'
 import 'universal/styles/daypicker.css'
 import {PALETTE} from 'universal/styles/paletteV2'
+import roundDateToNearestHalfHour from 'universal/utils/roundDateToNearestHalfHour'
 
 interface Props {
   endTime: Date
@@ -52,6 +53,11 @@ const StageTimerModalEndTimeDate = (props: Props) => {
     if (disabled || selected) return
     const nextDate = new Date(endTime)
     nextDate.setFullYear(day.getFullYear(), day.getMonth(), day.getDate())
+    const now = new Date()
+    if (nextDate < now) {
+      const roundedDate = roundDateToNearestHalfHour(now)
+      nextDate.setHours(roundedDate.getHours() + 1, roundedDate.getMinutes())
+    }
     setEndTime(nextDate)
     endTimeMenuProps.closePortal()
   }
