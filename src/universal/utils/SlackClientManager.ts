@@ -153,21 +153,21 @@ interface SlackUser {
   locale: string
 }
 
-interface SlackMessage {
-  type: 'message'
-  user: string
-  text: string
-  ts: string
-  attachments?: {
-    service_name: string
-    text: string
-    fallback: string
-    thumb_url: string
-    thumb_width: number
-    thumb_height: number
-    id: number
-  }[]
-}
+// interface SlackMessage {
+//   type: 'message'
+//   user: string
+//   text: string
+//   ts: string
+//   attachments?: {
+//     service_name: string
+//     text: string
+//     fallback: string
+//     thumb_url: string
+//     thumb_width: number
+//     thumb_height: number
+//     id: number
+//   }[]
+// }
 
 interface UserInfoResponse {
   ok: true

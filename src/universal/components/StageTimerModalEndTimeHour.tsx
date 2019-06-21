@@ -21,14 +21,11 @@ const Toggle = styled(DropdownMenuToggle)({
 const StageTimerModalEndTimeHour = (props: Props) => {
   const {endTime, setEndTime} = props
   const timeStr = formatTime(endTime)
-  const {menuPortal, togglePortal, menuProps, originRef, portalStatus} = useMenu(
-    MenuPosition.LOWER_LEFT,
-    {
-      id: 'StageTimerEndTimePicker',
-      parentId: 'StageTimerModal',
-      isDropdown: true
-    }
-  )
+  const {menuPortal, togglePortal, menuProps, originRef} = useMenu(MenuPosition.LOWER_LEFT, {
+    id: 'StageTimerEndTimePicker',
+    parentId: 'StageTimerModal',
+    isDropdown: true
+  })
 
   const handleHourPick = (nextEndTime: Date) => {
     setEndTime(nextEndTime)

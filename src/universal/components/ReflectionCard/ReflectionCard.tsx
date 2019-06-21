@@ -26,7 +26,7 @@ interface Props extends WithMutationProps, WithAtmosphereProps {
   meetingId?: string
   phaseItemId?: string
   readOnly?: boolean
-  shadow?: number
+  shadow?: string
   showOriginFooter?: boolean
   userSelect?: 'text' | 'none'
   innerRef?: (c: ReactElement<any>) => void
