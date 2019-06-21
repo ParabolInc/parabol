@@ -42,12 +42,12 @@ const StyledWrapper = styled(MeetingPhaseWrapper)(({phaseItemCount}: {phaseItemC
   position: 'absolute'
 }))
 
-const BottomControlSpacer = styled('div')({
-  minWidth: '6rem'
-})
-
 const StyledBottomBar = styled(MeetingControlBar)({
   justifyContent: 'space-between'
+})
+
+const BottomControlSpacer = styled('div')({
+  minWidth: 96
 })
 
 interface Props extends RetroMeetingPhaseProps {
@@ -116,8 +116,11 @@ const RetroReflectPhase = (props: Props) => {
         </StyledOverflow>
         {isFacilitating && (
           <StyledBottomBar>
-            <BottomControlSpacer />
-            <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
+            {isComplete ? (
+              <BottomControlSpacer />
+            ) : (
+              <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
+            )}
             <BottomNavControl
               isBouncing={isDemoStageComplete || isReadyToGroup}
               disabled={isEmpty}
@@ -151,6 +154,9 @@ graphql`
       description
       editorIds
     }
+    stages {
+      ...StageTimerDisplay_stage
+    }
   }
 `
 
@@ -166,6 +172,7 @@ export default createFragmentContainer(
         facilitatorUserId
         ... on RetrospectiveMeeting {
           localStage {
+            ...StageTimerDisplay_stage
             isComplete
           }
           reflectionGroups {

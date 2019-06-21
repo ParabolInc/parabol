@@ -15,7 +15,6 @@ const insertNewTeamMember = (userId, teamId, options = {}) => {
         .insert(
           {
             id: teamMemberId,
-            isCheckedIn: null,
             isNotRemoved: true,
             isLead,
             isFacilitator: true,

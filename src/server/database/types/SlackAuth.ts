@@ -4,6 +4,7 @@ interface Input {
   accessToken: string
   botUserId: string
   botAccessToken: string
+  defaultTeamChannelId: string
   teamId: string
   userId: string
   slackTeamId: string
@@ -21,6 +22,7 @@ export default class SlackAuth {
   botUserId: string
   botAccessToken: string
   createdAt: Date
+  defaultTeamChannelId: string
   accessToken: string
   teamId: string
   userId: string
@@ -34,6 +36,7 @@ export default class SlackAuth {
       accessToken,
       botUserId,
       botAccessToken,
+      defaultTeamChannelId,
       teamId,
       userId,
       slackTeamId,
@@ -48,6 +51,7 @@ export default class SlackAuth {
     this.accessToken = accessToken
     this.botUserId = botUserId
     this.botAccessToken = botAccessToken
+    this.defaultTeamChannelId = defaultTeamChannelId
     this.teamId = teamId
     this.userId = userId
     this.slackTeamId = slackTeamId

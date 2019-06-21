@@ -41,7 +41,7 @@ const BillingLeaderActionMenu = (props: Props) => {
   const isBillingLeader = role === BILLING_LEADER
   const {id: userId} = user
 
-  const setRole = (role = null) => () => {
+  const setRole = (role: string | null = null) => () => {
     if (submitting) return
     submitMutation()
     const variables = {orgId, userId, role}

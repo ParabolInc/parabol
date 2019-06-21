@@ -11,8 +11,10 @@ import StageTimerModalTimeLimit from 'universal/components/StageTimerModalTimeLi
 import StageTimerModalEditTimeLimit from 'universal/components/StageTimerModalEditTimeLimit'
 import StageTimerModalEndTime from 'universal/components/StageTimerModalEndTime'
 import StageTimerModalEditTimeEnd from 'universal/components/StageTimerModalEditTimeEnd'
+import {StageTimerModal_facilitator} from '__generated__/StageTimerModal_facilitator.graphql'
+import {PALETTE} from 'universal/styles/paletteV2'
 
-const WIDTH = 240
+const WIDTH = 224
 
 interface Props {
   defaultTimeLimit: number
@@ -20,11 +22,13 @@ interface Props {
   meetingId: string
   stage: StageTimerModal_stage
   menuProps: MenuProps
+  teamId: string
+  facilitator: StageTimerModal_facilitator
 }
 
 const FullTab = styled(Tab)({
   justifyContent: 'center',
-  paddingTop: 4,
+  padding: '4px 0 8px',
   width: WIDTH / 2
 })
 
@@ -37,13 +41,17 @@ const Modal = styled('div')({
 })
 
 const TabContents = styled('div')({
+  alignItems: 'center',
   display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center'
+  flexDirection: 'column'
+})
+
+const StyledTabsBar = styled(Tabs)({
+  boxShadow: `inset 0 -1px 0 ${PALETTE.BORDER.LIGHTER}`
 })
 
 const StageTimerModal = (props: Props) => {
-  const {defaultTimeLimit, defaultToAsync, meetingId, menuProps, stage} = props
+  const {defaultTimeLimit, defaultToAsync, meetingId, menuProps, stage, facilitator, teamId} = props
   const {isAsync} = stage
   const [activeIdx, setActiveIdx] = useState(defaultToAsync ? 1 : 0)
   const {closePortal} = menuProps
@@ -53,19 +61,25 @@ const StageTimerModal = (props: Props) => {
     )
   } else if (isAsync) {
     return (
-      <StageTimerModalEditTimeEnd meetingId={meetingId} closePortal={closePortal} stage={stage} />
+      <StageTimerModalEditTimeEnd
+        meetingId={meetingId}
+        closePortal={closePortal}
+        stage={stage}
+        facilitator={facilitator}
+        teamId={teamId}
+      />
     )
   }
   return (
     <Modal>
-      <Tabs activeIdx={activeIdx}>
+      <StyledTabsBar activeIdx={activeIdx}>
         <FullTab label={<Icon>{'timer'}</Icon>} onClick={() => setActiveIdx(0)} />
         <FullTab label={<Icon>{'event'}</Icon>} onClick={() => setActiveIdx(1)} />
-      </Tabs>
+      </StyledTabsBar>
       <SwipeableViews
         enableMouseEvents
         index={activeIdx}
-        onChangeIndex={setActiveIdx}
+        onChangeIndex={(idx) => setActiveIdx(idx)}
         animateHeight
       >
         <TabContents>
@@ -77,7 +91,13 @@ const StageTimerModal = (props: Props) => {
           />
         </TabContents>
         <TabContents>
-          <StageTimerModalEndTime meetingId={meetingId} closePortal={closePortal} stage={stage} />
+          <StageTimerModalEndTime
+            facilitator={facilitator}
+            meetingId={meetingId}
+            closePortal={closePortal}
+            stage={stage}
+            teamId={teamId}
+          />
         </TabContents>
       </SwipeableViews>
     </Modal>
@@ -87,6 +107,10 @@ const StageTimerModal = (props: Props) => {
 export default createFragmentContainer(
   StageTimerModal,
   graphql`
+    fragment StageTimerModal_facilitator on TeamMember {
+      ...StageTimerModalEndTime_facilitator
+      ...StageTimerModalEditTimeEnd_facilitator
+    }
     fragment StageTimerModal_stage on NewMeetingStage {
       ...StageTimerModalTimeLimit_stage
       ...StageTimerModalEditTimeLimit_stage

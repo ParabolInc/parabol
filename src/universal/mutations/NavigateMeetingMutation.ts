@@ -6,7 +6,7 @@ import {NavigateMeetingMutation_team} from '__generated__/NavigateMeetingMutatio
 import {commitMutation, graphql} from 'react-relay'
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import handleRemoveReflectionGroups from 'universal/mutations/handlers/handleRemoveReflectionGroups'
-import {DISCUSS, VOTE} from 'universal/utils/constants'
+import {VOTE} from 'universal/utils/constants'
 import isInterruptingChickenPhase from 'universal/utils/isInterruptingChickenPhase'
 import isViewerTyping from 'universal/utils/isViewerTyping'
 import clientTempId from 'universal/utils/relay/clientTempId'
@@ -17,7 +17,12 @@ import {setLocalStageAndPhase} from 'universal/utils/relay/updateLocalStage'
 import {DeepNullable, DeepPartial} from '../../types/generics'
 import Atmosphere from '../Atmosphere'
 import {ClientRetroPhaseItem, ClientRetrospectiveMeeting} from '../types/clientSchema'
-import {IReflectPhase, IRetroDiscussStage, IRetrospectiveMeeting} from '../types/graphql'
+import {
+  IReflectPhase,
+  IRetroDiscussStage,
+  IRetrospectiveMeeting,
+  NewMeetingPhaseTypeEnum
+} from '../types/graphql'
 import safeProxy from '../utils/relay/safeProxy'
 
 graphql`
@@ -117,7 +122,7 @@ const optimisticallyCreateRetroTopics = (
         id: clientTempId(),
         meetingId,
         isComplete: false,
-        phaseType: DISCUSS,
+        phaseType: NewMeetingPhaseTypeEnum.discuss,
         reflectionGroupId
       }
     )

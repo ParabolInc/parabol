@@ -1,7 +1,7 @@
 import getPubSub from 'server/utils/getPubSub'
 import {GraphQLObjectType} from 'graphql'
 
-type Topic = 'team' | 'organization' | 'notification' | 'newAuthToken'
+type Topic = 'team' | 'organization' | 'notification' | 'newAuthToken' | 'task'
 
 interface SubOptions {
   mutatorId?: string
@@ -11,7 +11,7 @@ interface SubOptions {
 const publish = (
   topic: Topic,
   channel: string,
-  type: GraphQLObjectType,
+  type: GraphQLObjectType | 'updated',
   payload: {[key: string]: any},
   subOptions: SubOptions = {}
 ) => {

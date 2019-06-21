@@ -1,4 +1,3 @@
-import {SlackNotificationEventEnum} from 'universal/types/graphql'
 import React from 'react'
 import styled from 'react-emotion'
 import Toggle from 'universal/components/Toggle/Toggle'
@@ -8,6 +7,7 @@ import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useMutationProps from 'universal/hooks/useMutationProps'
 import SetSlackNotificationMutation from 'universal/mutations/SetSlackNotificationMutation'
 import StyledError from 'universal/components/StyledError'
+import {SlackNotificationEventEnum} from 'universal/types/graphql'
 
 interface Props {
   event: SlackNotificationEventEnum
@@ -18,7 +18,9 @@ interface Props {
 
 const labelLookup = {
   [SlackNotificationEventEnum.meetingEnd]: 'Meeting End',
-  [SlackNotificationEventEnum.meetingStart]: 'Meeting Start'
+  [SlackNotificationEventEnum.meetingStart]: 'Meeting Start',
+  [SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_END]: 'Meeting Time Limit Ended',
+  [SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_START]: 'Meeting Time Limit Started'
 }
 
 const Row = styled('div')({
@@ -35,7 +37,8 @@ const Label = styled('span')({
 
 const SlackNotificationRow = (props: Props) => {
   const {event, localChannelId, teamId, viewer} = props
-  const {slackNotifications} = viewer
+  const {teamMember} = viewer
+  const {slackNotifications} = teamMember!
   const label = labelLookup[event]
   const atmosphere = useAtmosphere()
   const existingNotification = slackNotifications.find(
@@ -49,7 +52,7 @@ const SlackNotificationRow = (props: Props) => {
     const slackChannelId = active ? null : localChannelId
     SetSlackNotificationMutation(
       atmosphere,
-      {slackChannelId, slackNotificationEvents: [event], teamId},
+      {slackChannelId, slackNotificationEvents: [event as any], teamId},
       {
         onError,
         onCompleted
@@ -73,9 +76,11 @@ export default createFragmentContainer(
   SlackNotificationRow,
   graphql`
     fragment SlackNotificationRow_viewer on User {
-      slackNotifications(teamId: $teamId) {
-        channelId
-        event
+      teamMember(teamId: $teamId) {
+        slackNotifications {
+          channelId
+          event
+        }
       }
     }
   `

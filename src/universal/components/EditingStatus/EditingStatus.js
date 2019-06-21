@@ -7,7 +7,7 @@ import {createFragmentContainer} from 'react-relay'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import DueDateToggle from 'universal/components/DueDateToggle'
 import styled from 'react-emotion'
-import relativeDate from 'universal/utils/relativeDate'
+import relativeDate from 'universal/utils/date/relativeDate'
 
 const StatusHeader = styled('div')({
   alignItems: 'center',

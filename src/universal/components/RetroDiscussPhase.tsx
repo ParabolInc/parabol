@@ -33,6 +33,8 @@ import handleRightArrow from '../utils/handleRightArrow'
 import isDemoRoute from '../utils/isDemoRoute'
 import EndMeetingButton from './EndMeetingButton'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
+import StageTimerDisplay from 'universal/components/RetroReflectPhase/StageTimerDisplay'
+import StageTimerControl from 'universal/components/StageTimerControl'
 
 interface Props extends WithAtmosphereProps, RetroMeetingPhaseProps {
   team: RetroDiscussPhase_team
@@ -99,7 +101,8 @@ const PhaseWrapper = styled('div')({
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
-  overflow: 'hidden'
+  overflow: 'hidden',
+  paddingTop: 16
 })
 
 const Column = styled('div')({
@@ -124,7 +127,7 @@ const TaskCardBlock = styled('div')({
 })
 
 const BottomControlSpacer = styled('div')({
-  minWidth: '6rem'
+  minWidth: 96
 })
 
 const StyledBottomBar = styled(MeetingControlBar)({
@@ -144,12 +147,8 @@ const RetroDiscussPhase = (props: Props) => {
   const {isMeetingSidebarCollapsed, newMeeting, teamId} = team
   if (!newMeeting) return null
   const {gotoNext, ref: gotoNextRef} = handleGotoNext
-  const {
-    facilitatorUserId,
-    localStage: {localStageId, reflectionGroup},
-    meetingId,
-    phases
-  } = newMeeting
+  const {facilitatorUserId, localStage, meetingId, phases} = newMeeting
+  const {localStageId, reflectionGroup} = localStage
   // reflection group will be null until the server overwrites the placeholder.
   if (!reflectionGroup) return null
   const {reflectionGroupId, tasks, title, reflections, voteCount} = reflectionGroup
@@ -168,6 +167,7 @@ const RetroDiscussPhase = (props: Props) => {
         </PhaseHeaderDescription>
       </MeetingContentHeader>
       <ErrorBoundary>
+        <StageTimerDisplay stage={localStage} />
         <PhaseWrapper>
           <HeaderContainer>
             <DiscussHeader>
@@ -212,7 +212,7 @@ const RetroDiscussPhase = (props: Props) => {
         </PhaseWrapper>
         {isFacilitating && (
           <StyledBottomBar>
-            <BottomControlSpacer />
+            <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
             {nextStageRes && (
               <React.Fragment>
                 <BottomNavControl
@@ -244,6 +244,7 @@ export default createFragmentContainer(
   withAtmosphere(RetroDiscussPhase),
   graphql`
     fragment RetroDiscussPhase_team on Team {
+      ...StageTimerControl_team
       isMeetingSidebarCollapsed
       teamId: id
       newMeeting {
@@ -251,6 +252,7 @@ export default createFragmentContainer(
         facilitatorUserId
         phases {
           stages {
+            ...StageTimerDisplay_stage
             id
             ... on RetroDiscussStage {
               reflectionGroup {
@@ -268,6 +270,7 @@ export default createFragmentContainer(
           }
         }
         localStage {
+          ...StageTimerDisplay_stage
           localStageId: id
           ... on RetroDiscussStage {
             reflectionGroup {

@@ -10,6 +10,7 @@ import unlockNextStages from 'universal/utils/unlockNextStages'
 import startStage_ from 'universal/utils/startStage_'
 import standardError from 'server/utils/standardError'
 import Meeting from '../../database/types/Meeting'
+import removeScheduledJobs from 'server/graphql/mutations/helpers/removeScheduledJobs'
 
 export default {
   type: new GraphQLNonNull(NavigateMeetingPayload),
@@ -68,6 +69,11 @@ export default {
         stage.endAt = now
         // handle any side effects, this could mutate the meeting object!
         phaseCompleteData = await handleCompletedStage(stage, meeting, dataLoader)
+        if (stage.scheduledEndTime) {
+          // not critical, no await needed
+          removeScheduledJobs(stage.scheduledEndTime, {meetingId}).catch(console.error)
+          stage.scheduledEndTime = null
+        }
       }
     }
     if (facilitatorStageId) {

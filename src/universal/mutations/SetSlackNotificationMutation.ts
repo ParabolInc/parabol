@@ -5,13 +5,16 @@ import {
   SetSlackNotificationMutation,
   SetSlackNotificationMutationVariables
 } from '__generated__/SetSlackNotificationMutation.graphql'
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 
 graphql`
   fragment SetSlackNotificationMutation_team on SetSlackNotificationPayload {
     user {
       ...SlackProviderRow_viewer
-      slackNotifications(teamId: $teamId) {
-        channelId
+      teamMember(teamId: $teamId) {
+        slackNotifications {
+          channelId
+        }
       }
     }
   }
@@ -46,9 +49,11 @@ const SetSlackNotificationMutation = (
     variables,
     optimisticUpdater: (store) => {
       const {slackNotificationEvents, slackChannelId, teamId} = variables
-      const viewer = store.getRoot().getLinkedRecord('viewer')
-      if (!viewer) return
-      const existingNotifications = viewer.getLinkedRecords('slackNotifications', {teamId})
+      const {viewerId} = atmosphere
+      const teamMemberId = toTeamMemberId(teamId, viewerId)
+      const teamMember = store.get(teamMemberId)
+      if (!teamMember) return
+      const existingNotifications = teamMember.getLinkedRecords('slackNotifications')
       if (!existingNotifications) return
       slackNotificationEvents.forEach((event) => {
         const existingNotification = existingNotifications.find(

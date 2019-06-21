@@ -1,4 +1,4 @@
-import {GraphQLList, GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import SetSlackNotificationPayload from 'server/graphql/types/SetSlackNotificationPayload'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import getRethink from '../../database/rethinkDriver'
@@ -7,7 +7,9 @@ import standardError from '../../utils/standardError'
 import publish from 'server/utils/publish'
 import {TEAM} from 'universal/utils/constants'
 import {GQLContext} from 'server/graphql/graphql'
-import SlackNotification from 'server/database/types/SlackNotification'
+import SlackNotification, {
+  slackNotificationEventTypeLookup
+} from 'server/database/types/SlackNotification'
 import SlackNotificationEventEnum from 'server/graphql/types/SlackNotificationEventEnum'
 import {ISetSlackNotificationOnMutationArguments} from 'universal/types/graphql'
 
@@ -62,6 +64,14 @@ export default {
         if (isArchived) {
           return standardError(new Error('Slack channel archived'), {userId: viewerId})
         }
+      }
+      if (
+        slackNotificationEvents.every((event) => slackNotificationEventTypeLookup[event] === 'team')
+      ) {
+        await r
+          .table('SlackAuth')
+          .get(slackAuth.id)
+          .update({defaultTeamChannelId: slackChannelId})
       }
     }
 

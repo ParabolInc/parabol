@@ -8,6 +8,9 @@ import standardError from 'server/utils/standardError'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 import {GQLContext} from 'server/graphql/graphql'
 import findStageById from 'universal/utils/meetings/findStageById'
+import ScheduledJobMeetingStageTimeLimit from 'server/database/types/ScheduledJobMetingStageTimeLimit'
+import removeScheduledJobs from 'server/graphql/mutations/helpers/removeScheduledJobs'
+import {notifySlackTimeLimitStart} from 'server/graphql/mutations/helpers/notifySlack'
 
 const BAD_CLOCK_THRESH = 2000
 const AVG_PING = 150
@@ -33,7 +36,7 @@ export default {
   },
   async resolve (
     _source,
-    {meetingId, scheduledEndTime, timeRemaining},
+    {meetingId, scheduledEndTime: newScheduledEndTime, timeRemaining},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = getRethink()
@@ -53,19 +56,43 @@ export default {
       return standardError(new Error('Not the facilitator'), {userId: viewerId})
     }
 
+    // VALIDATION
+    if (newScheduledEndTime && newScheduledEndTime.getTime() < now.getTime()) {
+      return standardError(new Error('Time must be in the future'), {userId: viewerId})
+    }
+
     const stageRes = findStageById(phases, facilitatorStageId)!
     const {stage} = stageRes
+    const {scheduledEndTime, isComplete} = stage
+    if (isComplete) {
+      return standardError(new Error('Stage is already complete'), {userId: viewerId})
+    }
+
+    // RESOLUTION
     if (scheduledEndTime) {
+      // remove existing jobs
+      await removeScheduledJobs(scheduledEndTime, {meetingId})
+    }
+    if (newScheduledEndTime) {
       if (timeRemaining) {
         stage.isAsync = false
-        const actualTimeRemaining = scheduledEndTime - now.getTime()
+        const actualTimeRemaining = newScheduledEndTime - now.getTime()
         const badClientClock = Math.abs(timeRemaining - actualTimeRemaining) > BAD_CLOCK_THRESH
-        stage.scheduledEndTime = badClientClock ? now + timeRemaining - AVG_PING : scheduledEndTime
+        stage.scheduledEndTime = badClientClock
+          ? now + timeRemaining - AVG_PING
+          : newScheduledEndTime
       } else {
         stage.isAsync = true
-        stage.scheduledEndTime = scheduledEndTime
+        stage.scheduledEndTime = newScheduledEndTime
+        await r
+          .table('ScheduledJob')
+          .insert(new ScheduledJobMeetingStageTimeLimit(newScheduledEndTime, meetingId))
+        notifySlackTimeLimitStart(newScheduledEndTime, meetingId, teamId, dataLoader).catch(
+          console.error
+        )
       }
     } else {
+      // TODO delete slack message when unset
       stage.isAsync = null
       stage.scheduledEndTime = null
     }

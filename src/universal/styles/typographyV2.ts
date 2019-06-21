@@ -1,4 +1,5 @@
 export const enum FONT_FAMILY {
+  MONOSPACE = '"IBM Plex Mono", Menlo, Monaco, Consolas, "Courier New", monospace',
   SANS_SERIF = '"IBM Plex Sans", "Helvetica Neue", Helvetica, Arial, sans-serif'
 }
 

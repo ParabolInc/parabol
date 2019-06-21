@@ -48,6 +48,7 @@ export const enum Layout {
 
 // Use power of 2 for cheap sense of scale (e.g. 2, 4, 8)
 export const enum Radius {
+  FIELD = 2,
   DIALOG = 8,
   MENU = 4,
   TOOLTIP = 2

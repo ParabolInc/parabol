@@ -53,7 +53,7 @@ const QuickStats = (props: Props) => {
   const {meeting} = props
   const {meetingType} = meeting
   const quickStatMaker = quickStatsLookup[meetingType]
-  const stats = quickStatMaker(meeting)
+  const stats = quickStatMaker(meeting as any)
   return (
     <table width='75%' align='center' style={tableStyle}>
       <tbody>

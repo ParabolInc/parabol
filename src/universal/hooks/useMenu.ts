@@ -49,7 +49,7 @@ const useMenu = (preferredMenuPosition: MenuPosition, options: Options = {}) => 
     loadingDelayRef
   )
   const menuProps = {portalStatus, closePortal, isDropdown}
-  return {togglePortal, originRef, menuPortal, menuProps, loadingDelay, loadingWidth}
+  return {togglePortal, originRef, menuPortal, menuProps, loadingDelay, loadingWidth, portalStatus}
 }
 
 export default useMenu

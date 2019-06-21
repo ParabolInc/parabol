@@ -1,9 +1,9 @@
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {SlackNotificationEventEnum} from 'universal/types/graphql'
+import {SlackNotificationEventEnum, SlackNotificationEventTypeEnum} from 'universal/types/graphql'
 import SlackNotificationRow from 'universal/modules/teamDashboard/components/ProviderRow/SlackNotificationRow'
 import {SlackNotificationList_viewer} from '__generated__/SlackNotificationList_viewer.graphql'
-import React, {useCallback, useMemo, useState} from 'react'
+import React, {useCallback} from 'react'
 import {SlackChannelDropdownOnClick} from 'universal/components/SlackChannelDropdown'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import SlackChannelPicker from 'universal/modules/teamDashboard/components/ProviderRow/SlackChannelPicker'
@@ -25,42 +25,52 @@ interface Props {
   viewer: SlackNotificationList_viewer
 }
 
-const TEAM_EVENTS = [SlackNotificationEventEnum.meetingStart, SlackNotificationEventEnum.meetingEnd]
-
-const TitleAndPicker = styled('div')({
+const TeamGroup = styled('div')({
   alignItems: 'center',
   display: 'flex',
-  marginBottom: 16
+  paddingBottom: 16
+})
+
+const UserGroup = styled(TeamGroup)({
+  paddingTop: 32
 })
 
 const Heading = styled(LabelHeading)({
   width: '100%'
 })
 
+const TEAM_EVENTS = [
+  SlackNotificationEventEnum.meetingStart,
+  SlackNotificationEventEnum.meetingEnd,
+  SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_START
+]
+const USER_EVENTS = [SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_END]
+
 const SlackNotificationList = (props: Props) => {
   const {teamId, viewer} = props
-  const {slackAuth, slackNotifications} = viewer
+  const {teamMember} = viewer
+  const {slackAuth, slackNotifications} = teamMember!
   const channels = useSlackChannels(slackAuth)
   const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
   const atmosphere = useAtmosphere()
+  const localPrivateChannel = channels.find((channel) => channel.name === '@Parabol')
+  const localPrivateChannelId = localPrivateChannel && localPrivateChannel.id
+  const {isActive, defaultTeamChannelId} = slackAuth!
 
-  const uniqueChannelIds = useMemo(() => {
-    const notificationsForEvent = slackNotifications.filter((notification) =>
-      TEAM_EVENTS.includes(notification.event as any)
-    )
-    const channelsUsed = notificationsForEvent.map(({channelId}) => channelId)
-    return Array.from(new Set(channelsUsed))
-  }, [slackNotifications])
-  const [localChannelId, setLocalChannelId] = useState(uniqueChannelIds[0])
-
-  const changeChannel: SlackChannelDropdownOnClick = useCallback(
+  const changeTeamChannel: SlackChannelDropdownOnClick = useCallback(
     (slackChannelId) => () => {
-      setLocalChannelId(slackChannelId)
       // only change the active events
       const slackNotificationEvents = slackNotifications
-        .filter((notification) => notification.channelId)
+        .filter(
+          (notification) =>
+            notification.channelId && notification.eventType === SlackNotificationEventTypeEnum.team
+        )
         .map(({event}) => event)
-      if (submitting || localChannelId === slackChannelId || slackNotificationEvents.length === 0) {
+      if (
+        submitting ||
+        defaultTeamChannelId === slackChannelId ||
+        slackNotificationEvents.length === 0
+      ) {
         return
       }
       submitMutation()
@@ -73,35 +83,50 @@ const SlackNotificationList = (props: Props) => {
         }
       )
     },
-    [slackNotifications, localChannelId]
+    [slackNotifications, defaultTeamChannelId]
   )
 
   return (
     <SlackNotificationListStyles>
-      <TitleAndPicker>
+      <TeamGroup>
         <Heading>Team Notifications</Heading>
         <SlackChannelPicker
           channels={channels}
-          events={TEAM_EVENTS}
-          isTokenValid={(slackAuth && !!slackAuth.botAccessToken) || false}
-          localChannelId={localChannelId}
-          onClick={changeChannel}
+          isTokenValid={isActive}
+          localChannelId={defaultTeamChannelId}
+          onClick={changeTeamChannel}
           teamId={teamId}
         />
-      </TitleAndPicker>
+      </TeamGroup>
       {error && <StyledError>{error}</StyledError>}
-      <SlackNotificationRow
-        event={SlackNotificationEventEnum.meetingStart}
-        localChannelId={localChannelId}
-        teamId={teamId}
-        viewer={viewer}
-      />
-      <SlackNotificationRow
-        event={SlackNotificationEventEnum.meetingEnd}
-        localChannelId={localChannelId}
-        teamId={teamId}
-        viewer={viewer}
-      />
+      {TEAM_EVENTS.map((event) => {
+        return (
+          <SlackNotificationRow
+            key={event}
+            event={event}
+            localChannelId={defaultTeamChannelId}
+            teamId={teamId}
+            viewer={viewer}
+          />
+        )
+      })}
+      <UserGroup>
+        <Heading>Private Notifications</Heading>
+        {'@Parabol'}
+      </UserGroup>
+      {error && <StyledError>{error}</StyledError>}
+      {localPrivateChannelId &&
+        USER_EVENTS.map((event) => {
+          return (
+            <SlackNotificationRow
+              key={event}
+              event={event}
+              localChannelId={localPrivateChannelId}
+              teamId={teamId}
+              viewer={viewer}
+            />
+          )
+        })}
     </SlackNotificationListStyles>
   )
 }
@@ -111,14 +136,19 @@ export default createFragmentContainer(
   graphql`
     fragment SlackNotificationList_viewer on User {
       ...SlackNotificationRow_viewer
-      slackAuth(teamId: $teamId) {
-        accessToken
-        botAccessToken
-        slackUserId
-      }
-      slackNotifications(teamId: $teamId) {
-        channelId
-        event
+      teamMember(teamId: $teamId) {
+        slackAuth {
+          accessToken
+          botAccessToken
+          isActive
+          slackUserId
+          defaultTeamChannelId
+        }
+        slackNotifications {
+          channelId
+          event
+          eventType
+        }
       }
     }
   `

@@ -18,6 +18,15 @@ const filterOutliers = (someArray: number[]) => {
   return values.filter((x) => x <= maxValue && x >= minValue)
 }
 
+// allDurations is sorted by age, descending
+const getSuggestedDuration = (filteredDurations: number[], allDurations: number[]) => {
+  for (let i = 0; i < allDurations.length; i++) {
+    const curDur = allDurations[i]
+    if (filteredDurations.includes(curDur)) return curDur
+  }
+  return undefined
+}
+
 export default class GenericMeetingStage {
   id = shortid.generate()
   isAsync: boolean | undefined | null
@@ -40,8 +49,8 @@ export default class GenericMeetingStage {
         durations.filter((duration) => duration >= MAX_SYNC_STAGE_DURATION)
       )
       // naively estimate the time limit to be how long it took them last time (ignoring outliers)
-      this.suggestedTimeLimit = shortDurations[0]
-      const longDuration = longDurations[0]
+      this.suggestedTimeLimit = getSuggestedDuration(shortDurations, durations)
+      const longDuration = getSuggestedDuration(longDurations, durations)
       this.suggestedEndTime = longDuration ? new Date(Date.now() + longDuration) : undefined
     }
   }

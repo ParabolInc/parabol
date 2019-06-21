@@ -2,9 +2,9 @@ import React, {useMemo} from 'react'
 import {connect} from 'react-redux'
 import {createFragmentContainer, graphql} from 'react-relay'
 import TaskColumns from 'universal/components/TaskColumns/TaskColumns'
-import {USER_DASH} from 'universal/utils/constants'
 import getTaskById from 'universal/utils/getTaskById'
 import {UserColumnsContainer_viewer} from '__generated__/UserColumnsContainer_viewer.graphql'
+import {AreaEnum} from 'universal/types/graphql'
 
 const mapStateToProps = (state) => {
   return {
@@ -46,7 +46,7 @@ const UserColumnsContainer = (props: Props) => {
 
     return (
       <TaskColumns
-        area={USER_DASH}
+        area={AreaEnum.userDash}
         getTaskById={getTaskById(filteredTasks)}
         tasks={filteredTasks}
         teams={teams}

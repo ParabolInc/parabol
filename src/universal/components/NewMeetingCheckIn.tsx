@@ -74,7 +74,7 @@ const NewMeetingCheckIn = (props: Props) => {
   const {isMeetingSidebarCollapsed, newMeeting} = team
   if (!newMeeting) return null
   const {
-    facilitator: {id: facilitatorUserId},
+    facilitator: {userId: facilitatorUserId},
     localStage: {id: localStageId},
     id: meetingId,
     phases,
@@ -148,7 +148,7 @@ export default createFragmentContainer(
         id
         facilitatorStageId
         facilitator {
-          id
+          userId
         }
         localStage {
           id

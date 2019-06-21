@@ -39,8 +39,6 @@ import GitHubAuth from 'server/graphql/types/GitHubAuth'
 import {GITHUB} from 'universal/utils/constants'
 import allAvailableIntegrations from 'server/graphql/queries/allAvailableIntegrations'
 import {GQLContext} from 'server/graphql/graphql'
-import SlackAuth from 'server/graphql/types/SlackAuth'
-import SlackNotification from 'server/graphql/types/SlackNotification'
 
 const User = new GraphQLObjectType<any, GQLContext, any>({
   name: 'User',
@@ -348,37 +346,6 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
       description:
         'a string with message stating that the user is over the free tier limit, else null',
       type: GraphQLString
-    },
-    slackAuth: {
-      type: SlackAuth,
-      description:
-        'The auth for the user. access token is null if not viewer. Use isActive to check for presence',
-      args: {
-        teamId: {
-          type: new GraphQLNonNull(GraphQLID),
-          description: 'The teamId for the auth object'
-        }
-      },
-      resolve: async ({id: userId}, {teamId}, {authToken, dataLoader}) => {
-        if (!isTeamMember(authToken, teamId)) return null
-        const auths = await dataLoader.get('slackAuthByUserId').load(userId)
-        return auths.find((auth) => auth.teamId === teamId)
-      }
-    },
-    slackNotifications: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(SlackNotification))),
-      description: 'A list of events and the slack channels they get posted to',
-      args: {
-        teamId: {
-          type: new GraphQLNonNull(GraphQLID)
-        }
-      },
-      resolve: async (_source, {teamId}, {authToken, dataLoader}) => {
-        const viewerId = getUserId(authToken)
-        if (!isTeamMember(authToken, teamId)) return []
-        const slackNotifications = await dataLoader.get('slackNotificationsByTeamId').load(teamId)
-        return slackNotifications.filter((notification) => notification.userId === viewerId)
-      }
     },
     suggestedIntegrations,
     tasks,

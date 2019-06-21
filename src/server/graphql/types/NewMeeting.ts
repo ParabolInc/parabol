@@ -2,16 +2,16 @@ import {GraphQLID, GraphQLInt, GraphQLInterfaceType, GraphQLList, GraphQLNonNull
 import {GQLContext} from 'server/graphql/graphql'
 import ActionMeeting from 'server/graphql/types/ActionMeeting'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
-import {makeResolve, resolveTeam} from 'server/graphql/resolvers'
+import {resolveTeam} from 'server/graphql/resolvers'
 import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting'
 import Team from 'server/graphql/types/Team'
 import NewMeetingPhase from 'server/graphql/types/NewMeetingPhase'
 import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum'
 import {ACTION, RETROSPECTIVE} from 'universal/utils/constants'
-import User from 'server/graphql/types/User'
 import MeetingMember from 'server/graphql/types/MeetingMember'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import {getUserId} from 'server/utils/authorization'
+import TeamMember from 'server/graphql/types/TeamMember'
 
 export const newMeetingFields = () => ({
   id: {
@@ -35,9 +35,12 @@ export const newMeetingFields = () => ({
     description: 'The userId (or anonymousId) of the most recent facilitator'
   },
   facilitator: {
-    type: new GraphQLNonNull(User),
-    description: 'The facilitator user',
-    resolve: makeResolve('facilitatorUserId', 'facilitator', 'users')
+    type: new GraphQLNonNull(TeamMember),
+    description: 'The facilitator team member',
+    resolve: ({facilitatorUserId, teamId}, _args, {dataLoader}) => {
+      const teamMemberId = toTeamMemberId(teamId, facilitatorUserId)
+      return dataLoader.get('teamMembers').load(teamMemberId)
+    }
   },
   meetingMembers: {
     type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(MeetingMember))),

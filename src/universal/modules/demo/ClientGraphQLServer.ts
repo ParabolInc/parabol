@@ -1,19 +1,17 @@
 import EventEmitter from 'eventemitter3'
 import {parse} from 'flatted'
-import ms from 'ms'
 import {Variables} from 'relay-runtime'
 import StrictEventEmitter from 'strict-event-emitter-types'
 import handleCompletedDemoStage from 'universal/modules/demo/handleCompletedDemoStage'
 import {
   DragReflectionDropTargetTypeEnum,
-  ICreateReflectionPayload,
   IDiscussPhase,
-  IEditReflectionPayload,
   INewMeetingStage,
   IReflectPhase,
   IRetroReflection,
   IRetroReflectionGroup,
-  NewMeetingPhase
+  NewMeetingPhase,
+  NewMeetingPhaseTypeEnum
 } from 'universal/types/graphql'
 import groupReflections from 'universal/utils/autogroup/groupReflections'
 import makeRetroGroupTitle from 'universal/utils/autogroup/makeRetroGroupTitle'
@@ -39,8 +37,15 @@ import initDB, {
 } from './initDB'
 import LocalAtmosphere from './LocalAtmosphere'
 
+interface Payload {
+  __typename: string
+
+  [key: string]: any
+}
+
 interface DemoEvents {
-  team: IEditReflectionPayload | ICreateReflectionPayload
+  task: Payload
+  team: Payload
   botsFinished: void
 }
 
@@ -61,8 +66,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     } catch (e) {
       // noop
     }
-    // const isStale = true
-    const isStale = !validDB || new Date(validDB._updatedAt).getTime() < Date.now() - ms('5m')
+    const isStale = true
+    // const isStale = !validDB || new Date(validDB._updatedAt).getTime() < Date.now() - ms('5m')
     this.db = isStale ? initDB(initBotScript()) : validDB
   }
 
@@ -167,7 +172,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
             ),
             meetingMembers: this.db.newMeeting.meetingMembers!.map((member) => ({
               ...member,
-              tasks: member!.tasks.filter((task) => !task.tags!.includes('private'))
+              tasks: member.tasks.filter((task) => !task.tags.includes('private'))
             }))
           }
         }
@@ -313,7 +318,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       this.db.reflections.push(reflection)
       const unlockedStageIds = unlockAllStagesForPhase(
         this.db.newMeeting.phases as any,
-        GROUP,
+        NewMeetingPhaseTypeEnum.group,
         true
       )
       const unlockedStages = this.getUnlockedStages(unlockedStageIds)
@@ -360,7 +365,12 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const remainingReflections = this.db.reflections.filter((reflection) => reflection.isActive)
 
       const unlockedStageIds = remainingReflections.length
-        ? unlockAllStagesForPhase(this.db.newMeeting.phases as any, GROUP, true, false)
+        ? unlockAllStagesForPhase(
+            this.db.newMeeting.phases as any,
+            NewMeetingPhaseTypeEnum.group,
+            true,
+            false
+          )
         : []
       const unlockedStages = this.getUnlockedStages(unlockedStageIds)
       const data = {
@@ -475,6 +485,53 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         this.emit(TEAM, data)
       }
       return {setPhaseFocus: data}
+    },
+    SetSlackNotificationMutation: ({slackChannelId, slackNotificationEvents}, userId) => {
+      const teamMember = this.db.teamMembers.find((teamMember) => teamMember.userId === userId)!
+      const {slackNotifications} = teamMember
+      const filteredNotifications = slackNotifications.filter((notification) =>
+        slackNotificationEvents.includes(notification.event)
+      )
+      filteredNotifications.forEach((notification) => {
+        notification.channelId = slackChannelId
+      })
+      const slackNotificationIds = filteredNotifications.map(({id}) => id)
+      const data = {
+        __typename: 'SetSlackNotificationMutation',
+        error: null,
+        userId,
+        user: this.db.users.find((user) => user.id === userId),
+        slackNotificationIds
+      }
+      if (userId !== demoViewerId) {
+        this.emit(TEAM, data)
+      }
+      return {setSlackNotification: data}
+    },
+    SetStageTimerMutation: ({scheduledEndTime: newScheduledEndTime, timeRemaining}, userId) => {
+      const {phases, facilitatorStageId} = this.db.newMeeting
+      const stageRes = findStageById(phases, facilitatorStageId!)
+      const {stage} = stageRes!
+
+      if (newScheduledEndTime) {
+        stage.scheduledEndTime = newScheduledEndTime
+        stage.isAsync = !timeRemaining
+      } else {
+        stage.isAsync = null
+        stage.scheduledEndTime = null
+      }
+      const data = {
+        __typename: 'SetStageTimerMutation',
+        error: null,
+        meetingId: demoMeetingId,
+        meeting: this.db.newMeeting,
+        stageId: facilitatorStageId,
+        stage
+      }
+      if (userId !== demoViewerId) {
+        this.emit(TEAM, data)
+      }
+      return {setStageTimer: data}
     },
     StartDraggingReflectionMutation: ({reflectionId, initialCoords, dragId}, userId) => {
       let dragCoords = initialCoords
@@ -807,7 +864,12 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       const phases = this.db.newMeeting.phases as any
       if (isUnlock !== undefined) {
-        unlockedStageIds = unlockAllStagesForPhase(phases, DISCUSS, true, isUnlock)
+        unlockedStageIds = unlockAllStagesForPhase(
+          phases,
+          NewMeetingPhaseTypeEnum.discuss,
+          true,
+          isUnlock
+        )
       }
 
       const data = {
@@ -962,7 +1024,12 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         (group) => group.id === reflectionGroupId
       )!
       reflectionGroup.tasks!.splice(reflectionGroup.tasks!.indexOf(task as any), 1)
-      const data = {error: null, task, involvementNotification: null}
+      const data = {
+        __typename: 'DeleteTaskPayload',
+        error: null,
+        task,
+        involvementNotification: null
+      }
       if (userId !== demoViewerId) {
         this.emit(TASK, data)
       }
@@ -989,6 +1056,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         return a.sortOrder > b.sortOrder ? 1 : -1
       })
       const data = {
+        __typename: 'DragDiscussionTopicPayload',
         meeting: this.db.newMeeting,
         error: null,
         stage: draggedStage

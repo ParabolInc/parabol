@@ -91,7 +91,8 @@ const SlackProviderRow = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
-  const {slackAuth} = viewer
+  const {teamMember} = viewer
+  const {slackAuth} = teamMember!
   const accessToken = (slackAuth && slackAuth.accessToken) || undefined
   const openOAuth = () => {
     SlackClientManager.openOAuth(atmosphere, teamId, mutationProps)
@@ -138,10 +139,12 @@ const SlackProviderRow = (props: Props) => {
 graphql`
   fragment SlackProviderRowViewer on User {
     ...SlackNotificationList_viewer
-    slackAuth(teamId: $teamId) {
-      accessToken
-      slackTeamName
-      slackUserName
+    teamMember(teamId: $teamId) {
+      slackAuth {
+        accessToken
+        slackTeamName
+        slackUserName
+      }
     }
   }
 `

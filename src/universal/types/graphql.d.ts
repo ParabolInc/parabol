@@ -223,16 +223,6 @@ export interface IUser {
   overLimitCopy: string | null
 
   /**
-   * The auth for the user. access token is null if not viewer. Use isActive to check for presence
-   */
-  slackAuth: ISlackAuth | null
-
-  /**
-   * A list of events and the slack channels they get posted to
-   */
-  slackNotifications: Array<ISlackNotification>
-
-  /**
    * The integrations that the user would probably like to use
    */
   suggestedIntegrations: ISuggestedIntegrationQueryPayload
@@ -379,17 +369,6 @@ export interface IOrganizationUserOnUserArguments {
    * the orgId
    */
   orgId: string
-}
-
-export interface ISlackAuthOnUserArguments {
-  /**
-   * The teamId for the auth object
-   */
-  teamId: string
-}
-
-export interface ISlackNotificationsOnUserArguments {
-  teamId: string
 }
 
 export interface ISuggestedIntegrationsOnUserArguments {
@@ -740,11 +719,6 @@ export interface ITeamMember {
   isConnected: boolean | null
 
   /**
-   * true if present, false if absent, null before check-in
-   */
-  isCheckedIn: boolean | null
-
-  /**
    * true if this team member belongs to the user that queried it
    */
   isSelf: boolean
@@ -753,6 +727,16 @@ export interface ITeamMember {
    * The meeting specifics for the meeting the team member is currently in
    */
   meetingMember: MeetingMember | null
+
+  /**
+   * The slack auth for the team member.
+   */
+  slackAuth: ISlackAuth | null
+
+  /**
+   * A list of events and the slack channels they get posted to
+   */
+  slackNotifications: Array<ISlackNotification>
 
   /**
    * foreign key to User table
@@ -846,6 +830,125 @@ export interface IMeetingMember {
 export const enum MeetingTypeEnum {
   action = 'action',
   retrospective = 'retrospective'
+}
+
+/**
+ * OAuth token for a team member
+ */
+export interface ISlackAuth {
+  __typename: 'SlackAuth'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * true if the auth is updated & ready to use for all features, else false
+   */
+  isActive: boolean
+
+  /**
+   * The access token to slack, only visible to the owner. Used as a fallback to botAccessToken
+   */
+  accessToken: string | null
+
+  /**
+   * the parabol bot user id
+   */
+  botUserId: string | null
+
+  /**
+   * the parabol bot access token, used as primary communication
+   */
+  botAccessToken: string | null
+
+  /**
+   * The timestamp the provider was created
+   */
+  createdAt: any
+
+  /**
+   * The default channel to assign to new team notifications
+   */
+  defaultTeamChannelId: string
+
+  /**
+   * The id of the team in slack
+   */
+  slackTeamId: string | null
+
+  /**
+   * The name of the team in slack
+   */
+  slackTeamName: string | null
+
+  /**
+   * The userId in slack
+   */
+  slackUserId: string
+
+  /**
+   * The name of the user in slack
+   */
+  slackUserName: string
+
+  /**
+   * *The team that the token is linked to
+   */
+  teamId: string
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any
+
+  /**
+   * The user that the access token is attached to
+   */
+  userId: string
+}
+
+/**
+ * an event trigger and slack channel to receive it
+ */
+export interface ISlackNotification {
+  __typename: 'SlackNotification'
+  id: string
+  event: SlackNotificationEventEnum
+  eventType: SlackNotificationEventTypeEnum
+
+  /**
+   * null if no notification is to be sent
+   */
+  channelId: string | null
+  teamId: string
+  userId: string
+}
+
+/**
+ * The event that triggers a slack notification
+ */
+export const enum SlackNotificationEventEnum {
+  meetingStart = 'meetingStart',
+  meetingEnd = 'meetingEnd',
+  MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END',
+  MEETING_STAGE_TIME_LIMIT_START = 'MEETING_STAGE_TIME_LIMIT_START'
+}
+
+/**
+ * The type of event for a slack notification
+ */
+export const enum SlackNotificationEventTypeEnum {
+  /**
+   * notification that concerns the whole team
+   */
+  team = 'team',
+
+  /**
+   * notification that concerns a single member on the team
+   */
+  member = 'member'
 }
 
 /**
@@ -1162,9 +1265,9 @@ export interface INewMeeting {
   facilitatorUserId: string
 
   /**
-   * The facilitator user
+   * The facilitator team member
    */
-  facilitator: IUser
+  facilitator: ITeamMember
 
   /**
    * The team members that were active during the time of the meeting
@@ -2326,6 +2429,7 @@ export type Notification =
   | INotificationTeamInvitation
   | INotifyKickedOut
   | INotifyPaymentRejected
+  | INotificationMeetingStageTimeLimitEnd
   | INotifyPromoteToOrgLeader
 
 export interface INotification {
@@ -2349,124 +2453,27 @@ export interface INotification {
   /**
    * The datetime to activate the notification & send it to the client
    */
-  startAt: any | null
-  type: NotificationEnum | null
+  startAt: any
+  type: NotificationEnum
 
   /**
    * *The userId that should see this notification
    */
-  userIds: Array<string> | null
+  userIds: Array<string>
 }
 
 /**
  * The kind of notification
  */
 export const enum NotificationEnum {
-  FACILITATOR_DISCONNECTED = 'FACILITATOR_DISCONNECTED',
   KICKED_OUT = 'KICKED_OUT',
   PAYMENT_REJECTED = 'PAYMENT_REJECTED',
-  TASK_INVOLVES = 'TASK_INVOLVES',
+  PROMOTE_TO_BILLING_LEADER = 'PROMOTE_TO_BILLING_LEADER',
   TEAM_INVITATION = 'TEAM_INVITATION',
   TEAM_ARCHIVED = 'TEAM_ARCHIVED',
+  TASK_INVOLVES = 'TASK_INVOLVES',
   VERSION_INFO = 'VERSION_INFO',
-  PROMOTE_TO_BILLING_LEADER = 'PROMOTE_TO_BILLING_LEADER'
-}
-
-/**
- * OAuth token for a team member
- */
-export interface ISlackAuth {
-  __typename: 'SlackAuth'
-
-  /**
-   * shortid
-   */
-  id: string
-
-  /**
-   * true if an access token exists, else false
-   */
-  isActive: boolean
-
-  /**
-   * The access token to slack, only visible to the owner. Used as a fallback to botAccessToken
-   */
-  accessToken: string | null
-
-  /**
-   * the parabol bot user id
-   */
-  botUserId: string | null
-
-  /**
-   * the parabol bot access token, used as primary communication
-   */
-  botAccessToken: string | null
-
-  /**
-   * The timestamp the provider was created
-   */
-  createdAt: any
-
-  /**
-   * The id of the team in slack
-   */
-  slackTeamId: string | null
-
-  /**
-   * The name of the team in slack
-   */
-  slackTeamName: string | null
-
-  /**
-   * The userId in slack
-   */
-  slackUserId: string
-
-  /**
-   * The name of the user in slack
-   */
-  slackUserName: string
-
-  /**
-   * *The team that the token is linked to
-   */
-  teamId: string
-
-  /**
-   * The timestamp the token was updated at
-   */
-  updatedAt: any
-
-  /**
-   * The user that the access token is attached to
-   */
-  userId: string
-}
-
-/**
- * an event trigger and slack channel to receive it
- */
-export interface ISlackNotification {
-  __typename: 'SlackNotification'
-  id: string
-  event: SlackNotificationEventEnum
-
-  /**
-   * null if no notification is to be sent
-   */
-  channelId: string | null
-  teamId: string
-  userId: string
-}
-
-/**
- * The event that triggers a slack notification
- */
-export const enum SlackNotificationEventEnum {
-  meetingStart = 'meetingStart',
-  meetingEnd = 'meetingEnd',
-  meetingStageTimeLimit = 'meetingStageTimeLimit'
+  MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END'
 }
 
 /**
@@ -3847,48 +3854,19 @@ export interface INotifyTeamArchived {
   /**
    * The datetime to activate the notification & send it to the client
    */
-  startAt: any | null
-  type: NotificationEnum | null
+  startAt: any
+  type: NotificationEnum
 
   /**
    * *The userId that should see this notification
    */
-  userIds: Array<string> | null
+  userIds: Array<string>
 }
 
-export type TeamRemovedNotification = INotifyTeamArchived | INotifyKickedOut
-
-export interface ITeamRemovedNotification {
-  __typename: 'TeamRemovedNotification'
-
-  /**
-   * A shortid for the notification
-   */
-  id: string
-
-  /**
-   * true if the notification has been archived, else false (or null)
-   */
-  isArchived: boolean | null
-
-  /**
-   * *The unique organization ID for this notification. Can be blank for targeted notifications
-   */
-  orgId: string | null
-
-  /**
-   * The datetime to activate the notification & send it to the client
-   */
-  startAt: any | null
-  type: NotificationEnum | null
-
-  /**
-   * *The userId that should see this notification
-   */
-  userIds: Array<string> | null
-}
-
-export type TeamNotification = INotifyTaskInvolves | INotificationTeamInvitation
+export type TeamNotification =
+  | INotifyTaskInvolves
+  | INotificationTeamInvitation
+  | INotificationMeetingStageTimeLimitEnd
 
 export interface ITeamNotification {
   __typename: 'TeamNotification'
@@ -3937,9 +3915,9 @@ export interface IRetrospectiveMeeting {
   facilitatorUserId: string
 
   /**
-   * The facilitator user
+   * The facilitator team member
    */
-  facilitator: IUser
+  facilitator: ITeamMember
 
   /**
    * The team members that were active during the time of the meeting
@@ -4493,18 +4471,18 @@ export interface INotifyTaskInvolves {
   /**
    * The datetime to activate the notification & send it to the client
    */
-  startAt: any | null
-  type: NotificationEnum | null
+  startAt: any
+  type: NotificationEnum
 
   /**
    * *The userId that should see this notification
    */
-  userIds: Array<string> | null
+  userIds: Array<string>
 
   /**
    * How the user is affiliated with the task
    */
-  involvement: TaskInvolvementType | null
+  involvement: TaskInvolvementType
 
   /**
    * The taskId that now involves the userId
@@ -4514,7 +4492,7 @@ export interface INotifyTaskInvolves {
   /**
    * The task that now involves the userId
    */
-  task: ITask | null
+  task: ITask
 
   /**
    * The teamMemberId of the person that made the change
@@ -4524,7 +4502,7 @@ export interface INotifyTaskInvolves {
   /**
    * The TeamMember of the person that made the change
    */
-  changeAuthor: ITeamMember | null
+  changeAuthor: ITeamMember
   teamId: string
 
   /**
@@ -5006,13 +4984,13 @@ export interface INotificationTeamInvitation {
   /**
    * The datetime to activate the notification & send it to the client
    */
-  startAt: any | null
-  type: NotificationEnum | null
+  startAt: any
+  type: NotificationEnum
 
   /**
    * *The userId that should see this notification
    */
-  userIds: Array<string> | null
+  userIds: Array<string>
 }
 
 export interface IEndNewMeetingPayload {
@@ -5270,13 +5248,13 @@ export interface INotifyKickedOut {
   /**
    * The datetime to activate the notification & send it to the client
    */
-  startAt: any | null
-  type: NotificationEnum | null
+  startAt: any
+  type: NotificationEnum
 
   /**
    * *The userId that should see this notification
    */
-  userIds: Array<string> | null
+  userIds: Array<string>
 
   /**
    * true if kicked out, false if leaving by choice
@@ -5585,7 +5563,7 @@ export interface IStripeFailPaymentPayload {
   /**
    * The notification to billing leaders stating the payment was rejected
    */
-  notification: INotifyPaymentRejected | null
+  notification: INotifyPaymentRejected
 }
 
 /**
@@ -5593,7 +5571,7 @@ export interface IStripeFailPaymentPayload {
  */
 export interface INotifyPaymentRejected {
   __typename: 'NotifyPaymentRejected'
-  organization: IOrganization | null
+  organization: IOrganization
 
   /**
    * A shortid for the notification
@@ -5613,13 +5591,13 @@ export interface INotifyPaymentRejected {
   /**
    * The datetime to activate the notification & send it to the client
    */
-  startAt: any | null
-  type: NotificationEnum | null
+  startAt: any
+  type: NotificationEnum
 
   /**
    * *The userId that should see this notification
    */
-  userIds: Array<string> | null
+  userIds: Array<string>
 }
 
 export type OrganizationNotification = INotifyPaymentRejected | INotifyPromoteToOrgLeader
@@ -5938,6 +5916,7 @@ export type NotificationSubscriptionPayload =
   | IDisconnectSocketPayload
   | IEndNewMeetingPayload
   | IInviteToTeamPayload
+  | IMeetingStageTimeLimitPayload
   | IRemoveOrgUserPayload
   | IStripeFailPaymentPayload
   | IUser
@@ -5950,6 +5929,58 @@ export interface IAddNewFeaturePayload {
    * the new feature broadcast
    */
   newFeature: INewFeatureBroadcast | null
+}
+
+export interface IMeetingStageTimeLimitPayload {
+  __typename: 'MeetingStageTimeLimitPayload'
+
+  /**
+   * The new notification that was just created
+   */
+  notification: INotificationMeetingStageTimeLimitEnd
+}
+
+/**
+ * A notification sent to a facilitator that the stage time limit has ended
+ */
+export interface INotificationMeetingStageTimeLimitEnd {
+  __typename: 'NotificationMeetingStageTimeLimitEnd'
+
+  /**
+   * A shortid for the notification
+   */
+  id: string
+
+  /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
+
+  /**
+   * *The unique organization ID for this notification. Can be blank for targeted notifications
+   */
+  orgId: string | null
+
+  /**
+   * The datetime to activate the notification & send it to the client
+   */
+  startAt: any
+  type: NotificationEnum
+
+  /**
+   * *The userId that should see this notification
+   */
+  userIds: Array<string>
+
+  /**
+   * FK
+   */
+  meetingId: string
+
+  /**
+   * The meeting that had the time limit expire
+   */
+  meeting: NewMeeting
 }
 
 export type OrganizationSubscriptionPayload =
@@ -6506,7 +6537,7 @@ export interface IGenericMeetingPhase {
  */
 export interface INotifyPromoteToOrgLeader {
   __typename: 'NotifyPromoteToOrgLeader'
-  organization: IOrganization | null
+  organization: IOrganization
 
   /**
    * A shortid for the notification
@@ -6526,13 +6557,13 @@ export interface INotifyPromoteToOrgLeader {
   /**
    * The datetime to activate the notification & send it to the client
    */
-  startAt: any | null
-  type: NotificationEnum | null
+  startAt: any
+  type: NotificationEnum
 
   /**
    * *The userId that should see this notification
    */
-  userIds: Array<string> | null
+  userIds: Array<string>
 }
 
 /**
@@ -6567,9 +6598,9 @@ export interface IActionMeeting {
   facilitatorUserId: string
 
   /**
-   * The facilitator user
+   * The facilitator team member
    */
-  facilitator: IUser
+  facilitator: ITeamMember
 
   /**
    * The team members that were active during the time of the meeting

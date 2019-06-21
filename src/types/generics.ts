@@ -37,3 +37,8 @@ export type NotVoid =
   | undefined
 
 export type ValueOf<T> = T[keyof T]
+
+export type FirstParam<T> = T extends (arg1: infer A, ...args: any[]) => any ? A : never
+export type SecondPlusParams<T> = T extends (node: any, ...args: infer A) => void ? A : never
+export type UnshiftToTuple<V, T extends any[]> = Parameters<(a: V, ...args: T) => void>
+export type Unpromise<T> = T extends Promise<infer U> ? U : T

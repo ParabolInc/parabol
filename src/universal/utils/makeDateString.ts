@@ -1,7 +1,7 @@
 import ensureDate from 'universal/utils/ensureDate'
 
 export const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-// export const shortDays = ['Sun', 'Mon', 'Tues', 'Wed', 'Thur', 'Fri', 'Sat']
+export const shortDays = ['Sun', 'Mon', 'Tues', 'Wed', 'Thur', 'Fri', 'Sat']
 
 export const months = [
   'January',
@@ -37,7 +37,10 @@ interface Options {
   showDay?: boolean
 }
 
-export default function makeDateString (datetime: Date | string, options: Options = {}) {
+export default function makeDateString (
+  datetime: Date | string | number | undefined | null,
+  options: Options = {}
+) {
   const timestamp = ensureDate(datetime)
   const {showDay} = options
   const day = timestamp.getDay()

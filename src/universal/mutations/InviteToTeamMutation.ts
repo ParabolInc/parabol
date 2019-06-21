@@ -67,10 +67,9 @@ const popInvitationReceivedToast = (
   })
 }
 
-export const inviteToTeamNotificationUpdater = (payload, {atmosphere, store}) => {
-  const {viewerId} = atmosphere
+export const inviteToTeamNotificationUpdater = (payload, {store}) => {
   const teamInvitationNotification = payload.getLinkedRecord('teamInvitationNotification')
-  handleAddNotifications(teamInvitationNotification, store, viewerId)
+  handleAddNotifications(teamInvitationNotification, store)
 }
 
 export const inviteToTeamNotificationOnNext = (

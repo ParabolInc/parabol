@@ -9,11 +9,15 @@ import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useMutationProps from 'universal/hooks/useMutationProps'
 import MenuItemHR from 'universal/components/MenuItemHR'
 import StageTimerModalEndTime from 'universal/components/StageTimerModalEndTime'
+import {StageTimerModalEditTimeEnd_facilitator} from '__generated__/StageTimerModalEditTimeEnd_facilitator.graphql'
+import {PALETTE} from 'universal/styles/paletteV2'
 
 interface Props {
+  closePortal: () => void
+  facilitator: StageTimerModalEditTimeEnd_facilitator
   meetingId: string
   stage: StageTimerModalEditTimeEnd_stage
-  closePortal: () => void
+  teamId: string
 }
 
 const Modal = styled('div')({
@@ -39,8 +43,13 @@ const HR = styled(MenuItemHR)({
   marginBottom: -8,
   width: '100%'
 })
+
+const StyledIcon = styled(Icon)({
+  color: PALETTE.TEXT.LIGHT
+})
+
 const StageTimerModalEditTimeEnd = (props: Props) => {
-  const {meetingId, closePortal, stage} = props
+  const {meetingId, closePortal, facilitator, teamId, stage} = props
   const atmosphere = useAtmosphere()
   const {submitMutation, onCompleted, onError, submitting} = useMutationProps()
   const endTimer = () => {
@@ -52,11 +61,17 @@ const StageTimerModalEditTimeEnd = (props: Props) => {
   return (
     <Modal>
       <EndTimer onClick={endTimer}>
-        <Icon>stop</Icon>
+        <StyledIcon>stop</StyledIcon>
         <Label>End Timebox</Label>
       </EndTimer>
       <HR />
-      <StageTimerModalEndTime closePortal={closePortal} stage={stage} meetingId={meetingId} />
+      <StageTimerModalEndTime
+        closePortal={closePortal}
+        facilitator={facilitator}
+        stage={stage}
+        meetingId={meetingId}
+        teamId={teamId}
+      />
     </Modal>
   )
 }
@@ -64,6 +79,9 @@ const StageTimerModalEditTimeEnd = (props: Props) => {
 export default createFragmentContainer(
   StageTimerModalEditTimeEnd,
   graphql`
+    fragment StageTimerModalEditTimeEnd_facilitator on TeamMember {
+      ...StageTimerModalEndTime_facilitator
+    }
     fragment StageTimerModalEditTimeEnd_stage on NewMeetingStage {
       ...StageTimerModalEndTime_stage
     }
