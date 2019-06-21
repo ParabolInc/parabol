@@ -26,7 +26,8 @@ interface Props {
 const Row = styled('div')({
   alignItems: 'center',
   display: 'flex',
-  width: '100%'
+  width: '100%',
+  userSelect: 'none'
 })
 
 const SetLimit = styled('div')({

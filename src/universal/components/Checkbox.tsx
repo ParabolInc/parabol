@@ -7,7 +7,7 @@ interface Props {
   active: boolean
   className?: string
   disabled?: boolean
-  onClick: (e: React.MouseEvent) => void
+  onClick?: (e: React.MouseEvent) => void
 }
 
 const StyledIcon = styled(Icon)(({disabled}: {disabled: boolean | undefined}) => ({

@@ -19,6 +19,7 @@ interface Props {
 }
 
 const ToggleBlock = styled(Row)({
+  cursor: 'pointer',
   alignItems: 'center',
   border: 0,
   display: 'flex',
@@ -37,6 +38,7 @@ const StyledCheckbox = styled(Checkbox)({
   fontSize: ICON_SIZE.MD18,
   marginRight: 8,
   textAlign: 'center',
+  userSelect: 'none',
   width: ICON_SIZE.MD24
 })
 
@@ -68,9 +70,9 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
     }
   }
   return (
-    <ToggleBlock>
-      <StyledCheckbox active={slackToggleActive} onClick={onClick} />
-      <Label onClick={onClick}>{'Notify team via Slack'}</Label>
+    <ToggleBlock onClick={onClick}>
+      <StyledCheckbox active={slackToggleActive} />
+      <Label>{'Notify team via Slack'}</Label>
       <NotificationErrorMessage error={error} />
     </ToggleBlock>
   )
