@@ -53,6 +53,10 @@ exports.up = async (r) => {
       }
     })
     const records = [...stageCompleteNotifications, ...stageReadyNotifications]
+    await r
+      .table('SlackNotification')
+      .filter({event: 'meetingStageTimeLimit'})
+      .update({event: 'MEETING_STAGE_TIME_LIMIT_END'})
     await r.table('SlackNotification').insert(records)
     await r(authUpdates).forEach((auth) => {
       return r
