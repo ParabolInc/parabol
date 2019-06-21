@@ -156,5 +156,5 @@ export const resolveForBillingLeaders = (fieldName) => async (
   const {id: orgId} = source
   const viewerId = getUserId(authToken)
   const isBillingLeader = await isUserBillingLeader(viewerId, orgId, dataLoader)
-  return isBillingLeader ? source[fieldName] : undefined
+  return isBillingLeader || isSuperUser(authToken) ? source[fieldName] : undefined
 }
