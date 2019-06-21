@@ -1897,7 +1897,7 @@ export interface IGitHubAuth {
   id: string
 
   /**
-   * true if the auth is updated & ready to use for all features, else false
+   * true if an access token exists, else false
    */
   isActive: boolean
 

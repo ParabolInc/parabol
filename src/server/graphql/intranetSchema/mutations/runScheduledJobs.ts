@@ -38,7 +38,7 @@ const processMeetingStageTimeLimits = async (job: ScheduledJobMeetingStageTimeLi
     const manager = new SlackManager(botAccessToken)
     const slug = meetingTypeToSlug[meetingType]
     const meetingUrl = makeAppLink(`${slug}/${teamId}`)
-    const slackText = `Time’s up! Progress your meeting to the next stage: ${meetingUrl}`
+    const slackText = `Time’s up! Advance your meeting to the next phase: ${meetingUrl}`
     const res = await manager.postMessage(channelId, slackText)
     if (!res.ok) {
       sendViaSlack = false
