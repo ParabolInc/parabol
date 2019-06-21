@@ -40,7 +40,7 @@ const ButtonRoot = styled(PlainButton)(
       flexShrink: 0,
       justifyContent: 'center',
       textAlign: 'center',
-      transition: `box-shadow ${ui.transition[0]}`,
+      transition: `box-shadow 100ms ease-in`,
       userSelect: 'none',
       whiteSpace: 'nowrap',
       ':hover,:focus,:active': {

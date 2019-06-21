@@ -23,7 +23,7 @@ const navLinkcss = css({
   fontWeight: 600,
   lineHeight: ui.navMenuLineHeight,
   padding: '.625rem .5rem .625rem 2rem',
-  transition: `background-color ${ui.transition[0]}`,
+  transition: `background-color 100ms ease-in`,
   userSelect: 'none',
   width: '100%',
   ':hover': {

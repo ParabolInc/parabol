@@ -22,7 +22,7 @@ const CardWithControls = css({
   borderTop: 0,
   paddingLeft: 0,
   paddingRight: 0,
-  transition: ui.cardControlTransition,
+  transition: 'background-color 100ms ease-in, box-shadow 100ms ease-in',
   '&:hover': {
     backgroundColor: ui.palette.white,
     boxShadow: cardHoverShadow,

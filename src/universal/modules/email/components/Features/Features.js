@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import EmptySpace from '../EmptySpace/EmptySpace'
 import ui from 'universal/styles/ui'
+import {emailTableBase} from 'universal/styles/email'
 
 const Features = (props) => {
   const copyStyle = {
@@ -17,7 +18,7 @@ const Features = (props) => {
   return (
     <div>
       <EmptySpace height={props.vSpacing} />
-      <table style={ui.emailTableBase}>
+      <table style={emailTableBase}>
         <tbody>
           <tr>
             <td style={copyStyle}>

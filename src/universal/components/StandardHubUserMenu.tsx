@@ -12,9 +12,10 @@ import MenuItemLabel from 'universal/components/MenuItemLabel'
 import {MenuProps} from 'universal/hooks/useMenu'
 import ui from 'universal/styles/ui'
 import {PERSONAL, PRO_LABEL, SIGNOUT_LABEL, SIGNOUT_SLUG} from 'universal/utils/constants'
+import {PALETTE} from 'universal/styles/paletteV2'
 
 const UpgradeCTA = styled('span')({
-  color: ui.upgradeColor,
+  color: PALETTE.TEXT.BLUE,
   fontSize: ui.menuItemFontSize,
   lineHeight: ui.menuItemHeight,
   marginRight: '2rem'

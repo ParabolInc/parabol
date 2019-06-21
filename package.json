@@ -68,7 +68,6 @@
     "@babel/preset-typescript": "^7.0.0",
     "@babel/register": "^7.0.0",
     "@cypress/webpack-preprocessor": "^4.0.3",
-    "@mattkrick/relay-runtime-strict-types": "^2.0.0",
     "@playlyfe/gql": "^2.6.0",
     "@sentry/webpack-plugin": "^1.6.2",
     "@storybook/addon-actions": "^4.1.11",

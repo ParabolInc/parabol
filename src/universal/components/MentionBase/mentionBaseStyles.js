@@ -9,7 +9,7 @@ const mentionBaseStyles = {
     fontSize: ui.menuItemFontSize,
     height: ui.menuItemHeight,
     lineHeight: ui.menuItemHeight,
-    padding: `0 ${ui.menuGutterHorizontal}`,
+    padding: `0 16px`,
 
     ':hover': {
       backgroundColor: ui.menuItemBackgroundColorHover,
@@ -29,7 +29,7 @@ const mentionBaseStyles = {
   description: {
     fontSize: ui.menuItemFontSize,
     lineHeight: ui.menuItemHeight,
-    paddingLeft: ui.menuGutterInner
+    paddingLeft: '.75rem'
   }
 }
 export default mentionBaseStyles

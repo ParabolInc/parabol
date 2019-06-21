@@ -16,7 +16,7 @@ const NavItemBullet = styled('span')<{isFacilitatorPhaseGroup: boolean}>(
     color: ui.palette.white,
     display: 'inline-block',
     fontSize: '.6875rem',
-    fontWeight: ui.typeSemiBold,
+    fontWeight: 600,
     height: '1.5rem',
     lineHeight: '1.5rem',
     marginLeft: '1.3125rem',

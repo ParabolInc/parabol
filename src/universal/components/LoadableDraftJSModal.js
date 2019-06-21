@@ -3,7 +3,6 @@ import ui from 'universal/styles/ui'
 import {menuShadow} from 'universal/styles/elevation'
 import AnimatedFade from 'universal/components/AnimatedFade'
 import styled from 'react-emotion'
-import type {WithCoordsProps} from 'universal/decorators/withCoordsV2'
 import Modal from 'universal/components/Modal'
 import withCoordsV2 from 'universal/decorators/withCoordsV2'
 
@@ -11,11 +10,11 @@ const MenuBlock = styled('div')(({maxWidth}) => ({
   maxWidth,
   padding: '.25rem 0',
   position: 'absolute',
-  zIndex: ui.ziMenu
+  zIndex: 400
 }))
 
 const MenuContents = styled('div')(({maxHeight}) => ({
-  backgroundColor: ui.menuBackgroundColor,
+  backgroundColor: '#fff',
   borderRadius: ui.menuBorderRadius,
   boxShadow: menuShadow,
   maxHeight,
@@ -27,13 +26,7 @@ const MenuContents = styled('div')(({maxHeight}) => ({
   width: '100%'
 }))
 
-type Props = {
-  LoadableComponent: React.Component,
-  queryVars?: Object,
-  ...WithCoordsProps
-}
-
-const LoadableDraftJSModal = (props: Props) => {
+const LoadableDraftJSModal = (props) => {
   const {
     closePortal,
     coords,

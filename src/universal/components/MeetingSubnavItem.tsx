@@ -25,7 +25,7 @@ const ItemRoot = styled('div')<ItemRootProps>(
     boxShadow: isActive ? `inset ${ui.navMenuLeftBorderWidth} 0 0 ${ui.palette.mid}` : undefined,
     color: onClick ? ui.colorLink : ui.colorText,
     display: 'flex',
-    fontSize: ui.navTopicFontSize,
+    fontSize: 14,
     fontWeight: 400,
     minHeight: '2.5rem',
     opacity: !isActive && isComplete ? 0.5 : undefined,

@@ -61,7 +61,7 @@ const TeamInvitation = (props: Props) => {
       <NotificationButton>
         <StyledButton
           aria-label='Accept team invitation'
-          size={ui.notificationButtonSize}
+          size={'small'}
           onClick={accept}
           palette='warm'
           waiting={submitting}

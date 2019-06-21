@@ -11,7 +11,7 @@ const DropdownMenuLabel = styled('div')(({isEmpty}) => ({
   fontWeight: 600,
   lineHeight: ui.menuItemHeight,
   marginBottom: isEmpty ? '-' + ui.menuGutterVertical : ui.menuGutterVertical,
-  padding: `0 ${ui.menuGutterHorizontal}`,
+  padding: `0 16px`,
   userSelect: 'none'
 }))
 

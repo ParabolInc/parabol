@@ -20,7 +20,6 @@ import withAtmosphere, {
 import UpdateDragLocationMutation from 'universal/mutations/UpdateDragLocationMutation'
 import {DECELERATE} from 'universal/styles/animation'
 import {cardRaisedShadow} from 'universal/styles/elevation'
-import ui from 'universal/styles/ui'
 import getTargetReference from 'universal/utils/multiplayerMasonry/getTargetReference'
 import shakeUpBottomCells from 'universal/utils/multiplayerMasonry/shakeUpBottomCells'
 import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray'
@@ -44,7 +43,7 @@ const ModalBlock = styled('div')({
   left: 0,
   pointerEvents: 'none',
   position: 'absolute',
-  zIndex: ui.ziTooltip
+  zIndex: 400
 })
 
 const makeTransition = (isClosing, isViewerDragging) => {

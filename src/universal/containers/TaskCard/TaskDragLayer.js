@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import NullableTask from 'universal/components/NullableTask/NullableTask'
 import {DragLayer as dragLayer} from 'react-dnd'
-import ui from 'universal/styles/ui'
 import {cardRaisedShadow} from 'universal/styles/elevation'
 
 const layerStyles = {
@@ -12,7 +11,7 @@ const layerStyles = {
   pointerEvents: 'none',
   position: 'fixed',
   top: 0,
-  zIndex: ui.ziCardDragLayer
+  zIndex: 600
 }
 
 function getItemStyles (props) {

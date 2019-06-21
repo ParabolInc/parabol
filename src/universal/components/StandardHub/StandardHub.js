@@ -30,7 +30,7 @@ const User = styled('div')({
   cursor: 'pointer',
   flex: 1,
   position: 'relative',
-  transition: `opacity ${ui.transition[0]}`,
+  transition: `opacity 100ms ease-in`,
 
   ':hover': {
     opacity: '.5'
@@ -65,7 +65,7 @@ const notificationsStyles = {
   height: 32,
   justifyContent: 'center',
   position: 'relative',
-  transition: `background-color ${ui.transition[0]}`,
+  transition: `background-color 100ms ease-in`,
   width: 32,
   '&:hover,:focus': {
     backgroundColor: ui.navMenuDarkBackgroundColorHover

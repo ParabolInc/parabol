@@ -21,7 +21,7 @@ const RootCard = styled('div')(({cardHasHover, cardHasFocus, hasDragStyles}) => 
   borderTop: 0,
   outline: 'none',
   padding: `${ui.cardPaddingBase} 0 0`,
-  transition: `box-shadow ${ui.transition[0]}`,
+  transition: `box-shadow 100ms ease-in`,
   // hover before focus, it matters
   boxShadow: hasDragStyles
     ? 'none'
@@ -34,7 +34,7 @@ const RootCard = styled('div')(({cardHasHover, cardHasFocus, hasDragStyles}) => 
 
 const ContentBlock = styled('div')({
   position: 'relative',
-  zIndex: ui.ziMenu - 1
+  zIndex: 399
 })
 
 const CardTopMeta = styled('div')({

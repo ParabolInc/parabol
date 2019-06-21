@@ -6,7 +6,6 @@ import {buttonShadow} from 'universal/styles/elevation'
 
 export const emailBackgroundColor = ui.palette.light
 export const emailBodyColor = '#FFFFFF'
-export const emailBrandColor = ui.palette.mid
 export const emailFontFamily =
   '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif'
 export const emailFontSize = '16px'
@@ -19,7 +18,7 @@ export const emailPrimaryButtonStyle = {
   color: '#FFFFFF',
   cursor: 'pointer',
   display: 'block',
-  fontFamily: ui.emailFontFamily,
+  fontFamily: emailFontFamily,
   fontSize: '16px',
   fontWeight: 600,
   lineHeight: '1.5',
@@ -32,7 +31,7 @@ export const emailPrimaryButtonStyle = {
 
 export const emailCopyStyle = {
   color: ui.palette.dark,
-  fontFamily: ui.emailFontFamily,
+  fontFamily: emailFontFamily,
   fontSize: '16px',
   fontWeight: 400,
   lineHeight: '1.5',
@@ -45,7 +44,7 @@ export const emailLineHeight = 1.5
 
 export const emailLinkStyle = {
   color: ui.palette.blue,
-  fontFamily: ui.emailFontFamily,
+  fontFamily: emailFontFamily,
   fontWeight: 600,
   textDecoration: 'none'
 }
@@ -73,9 +72,6 @@ export const emailTableBase = {
 
 export const emailTextColor = ui.palette.dark
 export const emailTextColorLight = ui.palette.midGray
-
-export const emailLabelColorPresent = appTheme.brand.secondary.green
-export const emailLabelColorAbsent = appTheme.palette.mid50l
 
 export const headCSS = `
   @media only screen and (max-width: 620px) {

@@ -54,12 +54,7 @@ const MeetingStageTimeLimitEnd = (props: Props) => {
           {' is ready to move forward!'}
         </NotificationMessage>
         <NotificationButton>
-          <StyledButton
-            aria-label='Go to meeting'
-            size={ui.notificationButtonSize}
-            onClick={goThere}
-            palette='warm'
-          >
+          <StyledButton aria-label='Go to meeting' size={'small'} onClick={goThere} palette='warm'>
             {'Go to Meeting'}
           </StyledButton>
         </NotificationButton>

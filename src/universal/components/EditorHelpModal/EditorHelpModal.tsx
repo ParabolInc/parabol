@@ -29,14 +29,14 @@ const ModalHeaderTitle = styled('div')({
 })
 
 const CloseButton = styled(IconButton)({
-  height: ui.iconSize2x,
-  lineHeight: ui.iconSize2x,
+  height: 28,
+  lineHeight: 28,
   opacity: 0.75,
   padding: 0,
   position: 'absolute',
   right: '.125rem',
   top: 0,
-  width: ui.iconSize2x
+  width: 28
 })
 
 const HelpList = styled('div')(({listIndex}: {listIndex: number}) => ({

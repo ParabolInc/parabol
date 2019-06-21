@@ -25,7 +25,7 @@ import {meetingVoteIcon} from 'universal/styles/meeting'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {fontFamily, typeScale} from 'universal/styles/theme/typography'
 import ui from 'universal/styles/ui'
-import {IDiscussPhase, NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
+import {NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
 import {DISCUSS} from 'universal/utils/constants'
 import lazyPreload from 'universal/utils/lazyPreload'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
@@ -155,8 +155,8 @@ const RetroVotePhase = (props: Props) => {
   const teamVotesRemaining = newMeeting.teamVotesRemaining || 0
   const myVotesRemaining = viewerMeetingMember.myVotesRemaining || 0
   const isFacilitating = facilitatorUserId === viewerId
-  const discussPhase = phases.find((phase) => phase.phaseType === DISCUSS) as IDiscussPhase
-  const discussStage = discussPhase.stages[0]
+  const discussPhase = phases.find((phase) => phase.phaseType === DISCUSS)!
+  const discussStage = discussPhase.stages![0]
   const nextPhaseLabel = phaseLabelLookup[DISCUSS]
   const checkMarks = [...Array(totalVotes).keys()]
   return (
