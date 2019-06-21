@@ -33,7 +33,12 @@ const SetLimit = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
-  padding: 16
+  padding: '16px 16px 8px'
+})
+
+const StyledButton = styled(SecondaryButton)({
+  marginTop: 8,
+  minWidth: 192
 })
 
 const DEFAULT_DURATION = ms('1d')
@@ -75,9 +80,9 @@ const StageTimerModalEndTime = (props: Props) => {
       <Row>
         <StageTimerModalEndTimeSlackToggle teamId={teamId} facilitator={facilitator} />
       </Row>
-      <SecondaryButton onClick={startTimer}>
+      <StyledButton onClick={startTimer}>
         {scheduledEndTime ? 'Update Timebox' : 'Start Timebox'}
-      </SecondaryButton>
+      </StyledButton>
       <NotificationErrorMessage error={error} />
     </SetLimit>
   )

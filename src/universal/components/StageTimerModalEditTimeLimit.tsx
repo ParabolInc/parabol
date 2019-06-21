@@ -9,6 +9,7 @@ import SetStageTimerMutation from 'universal/mutations/SetStageTimerMutation'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useMutationProps from 'universal/hooks/useMutationProps'
 import MenuItemHR from 'universal/components/MenuItemHR'
+import {PALETTE} from 'universal/styles/paletteV2'
 
 interface Props {
   meetingId: string
@@ -39,6 +40,11 @@ const HR = styled(MenuItemHR)({
   marginBottom: -8,
   width: '100%'
 })
+
+const StyledIcon = styled(Icon)({
+  color: PALETTE.TEXT.LIGHT
+})
+
 const StageTimerModalEditTimeLimit = (props: Props) => {
   const {meetingId, closePortal, stage} = props
   const atmosphere = useAtmosphere()
@@ -52,7 +58,7 @@ const StageTimerModalEditTimeLimit = (props: Props) => {
   return (
     <Modal>
       <EndTimer onClick={endTimer}>
-        <Icon>timer_off</Icon>
+        <StyledIcon>timer_off</StyledIcon>
         <Label>End Timer</Label>
       </EndTimer>
       <HR />

@@ -1,44 +1,48 @@
 import React, {forwardRef, ReactElement} from 'react'
 import styled from 'react-emotion'
-import FieldBlock from 'universal/components/FieldBlock/FieldBlock'
 import Icon from 'universal/components/Icon'
 import useMenu from 'universal/hooks/useMenu'
 import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette'
-import {ICON_SIZE} from 'universal/styles/typographyV2'
 import ui from 'universal/styles/ui'
+import {PALETTE} from 'universal/styles/paletteV2'
 
-const DownButtonIcon = styled(Icon)({
-  cursor: 'pointer',
-  paddingRight: 16,
-  lineHeight: '38px',
-  right: '-1px',
-  height: '100%',
-  position: 'absolute',
-  textAlign: 'right',
-  top: 0,
-  width: '100%',
-  fontSize: ICON_SIZE.MD18
+const DropdownIcon = styled(Icon)({
+  color: PALETTE.TEXT.LIGHT
 })
 
 const DropdownBlock = styled('div')({
   display: 'inline-block',
+  margin: '0 auto',
+  maxWidth: '100%',
   width: '100%'
 })
 
-const InputBlock = styled('div')(
-  ({disabled}: {disabled: boolean}) => ({
+interface InputStyleProps {
+  disabled: boolean
+  flat: boolean | undefined
+  size?: string
+}
+
+const InputBlock = styled('div')<InputStyleProps>(
+  ({disabled, size}) => ({
     ...ui.fieldBaseStyles,
-    ...ui.fieldSizeStyles.medium,
+    ...ui.fieldSizeStyles[size],
     ...makeFieldColorPalette('white', !disabled),
+    cursor: 'pointer',
     position: 'relative',
     userSelect: 'none'
   }),
-  ({disabled}: {disabled: boolean}) => disabled && {...ui.fieldDisabled}
+  ({disabled}) => disabled && {...ui.fieldDisabled},
+  ({flat}) => flat && {borderColor: 'transparent'},
+  {
+    alignItems: 'center',
+    display: 'flex'
+  }
 )
 
-const Text = styled('span')({
+const Value = styled('span')({
   display: 'block',
-  height: 24
+  flex: 1
 })
 
 interface Props {
@@ -49,23 +53,24 @@ interface Props {
   onMouseEnter?: () => void
   // hack to get around extending this component with styles
   innerRef?: any
+  // style hacks until a better pattern
+  flat?: boolean
+  size?: string
 }
 
 const DropdownMenuToggle = forwardRef((props: Props, ref: any) => {
-  const {className, onClick, onMouseEnter, defaultText, disabled} = props
+  const {className, onClick, onMouseEnter, defaultText, disabled, flat, size} = props
   return (
     <DropdownBlock
       className={className}
       onMouseEnter={onMouseEnter}
       innerRef={ref}
-      onClick={onClick}
+      onClick={disabled ? undefined : onClick}
     >
-      <FieldBlock>
-        <InputBlock disabled={!!disabled} tabIndex={1}>
-          <Text>{defaultText}</Text>
-          {!disabled && <DownButtonIcon>expand_more</DownButtonIcon>}
-        </InputBlock>
-      </FieldBlock>
+      <InputBlock disabled={!!disabled} flat={flat} size={size || 'medium'} tabIndex={1}>
+        <Value>{defaultText}</Value>
+        {!disabled && <DropdownIcon>expand_more</DropdownIcon>}
+      </InputBlock>
     </DropdownBlock>
   )
 })
