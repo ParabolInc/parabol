@@ -125,7 +125,7 @@ const RetroGroupPhase = (props: Props) => {
                   label={`Next: ${nextPhaseLabel}`}
                 />
               </BottomNavControl>
-              {canAutoGroup && (
+              {canAutoGroup && !isComplete && (
                 <BottomNavControl onClick={autoGroup} waiting={submitting}>
                   <BottomNavIconLabel
                     icon='photo_filter'

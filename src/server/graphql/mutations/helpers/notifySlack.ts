@@ -1,6 +1,10 @@
 import getRethink from 'server/database/rethinkDriver'
 import makeAppLink from 'server/utils/makeAppLink'
-import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups'
+import {
+  meetingTypeToLabel,
+  meetingTypeToSlug,
+  phaseLabelLookup
+} from 'universal/utils/meetings/lookups'
 import {MeetingType} from 'server/database/types/Meeting'
 import {DataLoaderWorker} from 'server/graphql/graphql'
 import SlackNotification, {SlackNotificationEvent} from 'server/database/types/SlackNotification'
@@ -148,7 +152,8 @@ export const notifySlackTimeLimitStart = async (
   const {phaseType} = stage
   const date = formatWeekday(scheduledEndTime)
   const time = formatTime(scheduledEndTime)
-  const slackText = `The ${phaseType} stage for your ${meetingLabel} meeting on ${
+  const phaseLabel = phaseLabelLookup[phaseType]
+  const slackText = `The ${phaseLabel} phase for your ${meetingLabel} meeting on ${
     team.name
   } has begun! You have until ${time} on ${date} to complete it. Check it out: ${meetingUrl}`
   const slackDetails = await getSlackDetails('MEETING_STAGE_TIME_LIMIT_START', teamId, dataLoader)
