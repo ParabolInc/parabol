@@ -3,7 +3,7 @@ import Menu from 'universal/components/Menu'
 import {MenuProps} from 'universal/hooks/useMenu'
 import MenuItem from 'universal/components/MenuItem'
 import ms from 'ms'
-import formatTime from 'universal/utils/formatTime'
+import formatTime from 'universal/utils/date/formatTime'
 
 interface Props {
   endTime: Date

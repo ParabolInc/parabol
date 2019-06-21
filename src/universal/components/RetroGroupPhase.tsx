@@ -48,6 +48,10 @@ const CenteredControlBlock = styled('div')({
   display: 'flex'
 })
 
+const BottomControlSpacer = styled('div')({
+  minWidth: 96
+})
+
 const GroupHelpMenu = lazyPreload(async () =>
   import(/* webpackChunkName: 'GroupHelpMenu' */ 'universal/components/MeetingHelp/GroupHelpMenu')
 )
@@ -103,7 +107,11 @@ const RetroGroupPhase = (props: Props) => {
         </MeetingPhaseWrapper>
         {isFacilitating && (
           <StyledBottomBar>
-            <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
+            {isComplete ? (
+              <BottomControlSpacer />
+            ) : (
+              <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
+            )}
             <CenteredControlBlock>
               <BottomNavControl
                 isBouncing={isDemoStageComplete || (!isComplete && isReadyToVote)}
@@ -117,7 +125,7 @@ const RetroGroupPhase = (props: Props) => {
                   label={`Next: ${nextPhaseLabel}`}
                 />
               </BottomNavControl>
-              {canAutoGroup && (
+              {canAutoGroup && !isComplete && (
                 <BottomNavControl onClick={autoGroup} waiting={submitting}>
                   <BottomNavIconLabel
                     icon='photo_filter'

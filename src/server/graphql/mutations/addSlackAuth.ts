@@ -24,9 +24,9 @@ const upsertNotifications = async (
   const teamEvents = [
     'meetingStart',
     'meetingEnd',
-    'meetingNextStageReady'
+    'MEETING_STAGE_TIME_LIMIT_START'
   ] as SlackNotificationEvent[]
-  const userEvents = ['MEETING_STAGE_TIME_LIMIT'] as SlackNotificationEvent[]
+  const userEvents = ['MEETING_STAGE_TIME_LIMIT_END'] as SlackNotificationEvent[]
   const events = [...teamEvents, ...userEvents]
   const upsertableNotifications = events.map((event) => {
     const existingNotification = existingNotifications.find(

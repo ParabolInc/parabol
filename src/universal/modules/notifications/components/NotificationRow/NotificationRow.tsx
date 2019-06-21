@@ -24,8 +24,8 @@ const typePicker = {
   [NotificationEnum.TEAM_INVITATION]: lazyPreload(() =>
     import(/* webpackChunkName: 'TeamInvitation' */ 'universal/modules/notifications/components/TeamInvitation')
   ),
-  [NotificationEnum.MEETING_STAGE_TIME_LIMIT]: lazyPreload(() =>
-    import(/* webpackChunkName: 'MeetingStageTimeLimit' */ 'universal/modules/notifications/components/MeetingStageTimeLimit')
+  [NotificationEnum.MEETING_STAGE_TIME_LIMIT_END]: lazyPreload(() =>
+    import(/* webpackChunkName: 'MeetingStageTimeLimitEnd' */ 'universal/modules/notifications/components/MeetingStageTimeLimitEnd')
   )
 }
 
@@ -55,7 +55,7 @@ export default createFragmentContainer(
       ...PromoteToBillingLeader_notification
       ...TeamArchived_notification
       ...TeamInvitation_notification
-      ...MeetingStageTimeLimit_notification
+      ...MeetingStageTimeLimitEnd_notification
     }
   `
 )

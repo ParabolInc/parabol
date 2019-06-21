@@ -12,8 +12,9 @@ import StageTimerModalEditTimeLimit from 'universal/components/StageTimerModalEd
 import StageTimerModalEndTime from 'universal/components/StageTimerModalEndTime'
 import StageTimerModalEditTimeEnd from 'universal/components/StageTimerModalEditTimeEnd'
 import {StageTimerModal_facilitator} from '__generated__/StageTimerModal_facilitator.graphql'
+import {PALETTE} from 'universal/styles/paletteV2'
 
-const WIDTH = 240
+const WIDTH = 224
 
 interface Props {
   defaultTimeLimit: number
@@ -27,7 +28,7 @@ interface Props {
 
 const FullTab = styled(Tab)({
   justifyContent: 'center',
-  paddingTop: 4,
+  padding: '4px 0 8px',
   width: WIDTH / 2
 })
 
@@ -40,9 +41,13 @@ const Modal = styled('div')({
 })
 
 const TabContents = styled('div')({
+  alignItems: 'center',
   display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center'
+  flexDirection: 'column'
+})
+
+const StyledTabsBar = styled(Tabs)({
+  boxShadow: `inset 0 -1px 0 ${PALETTE.BORDER.LIGHTER}`
 })
 
 const StageTimerModal = (props: Props) => {
@@ -67,10 +72,10 @@ const StageTimerModal = (props: Props) => {
   }
   return (
     <Modal>
-      <Tabs activeIdx={activeIdx}>
+      <StyledTabsBar activeIdx={activeIdx}>
         <FullTab label={<Icon>{'timer'}</Icon>} onClick={() => setActiveIdx(0)} />
         <FullTab label={<Icon>{'event'}</Icon>} onClick={() => setActiveIdx(1)} />
-      </Tabs>
+      </StyledTabsBar>
       <SwipeableViews
         enableMouseEvents
         index={activeIdx}

@@ -6,6 +6,7 @@ import useMenu from 'universal/hooks/useMenu'
 import {MenuPosition} from 'universal/hooks/useCoords'
 import lazyPreload from 'universal/utils/lazyPreload'
 import {StageTimerControl_team} from '__generated__/StageTimerControl_team.graphql'
+import styled from 'react-emotion'
 
 interface Props {
   defaultTimeLimit: number
@@ -16,6 +17,11 @@ interface Props {
 const StageTimerModal = lazyPreload(async () =>
   import(/* webpackChunkName: 'StageTimerModal' */ 'universal/components/StageTimerModal')
 )
+
+const IconLabel = styled(BottomNavIconLabel)({
+  // required to keep an 8px left padding for the modal
+  minWidth: 80
+})
 
 const StageTimerControl = (props: Props) => {
   const {defaultTimeLimit, meetingId, team} = props
@@ -32,12 +38,8 @@ const StageTimerControl = (props: Props) => {
   if (isComplete) return null
   return (
     <>
-      <BottomNavControl
-        innerRef={originRef}
-        onMouseEnter={StageTimerModal.preload}
-        onClick={togglePortal}
-      >
-        <BottomNavIconLabel icon={icon} iconColor={color} label={'Timer'} />
+      <BottomNavControl onMouseEnter={StageTimerModal.preload} onClick={togglePortal}>
+        <IconLabel innerRef={originRef} icon={icon} iconColor={color} label={'Timer'} />
       </BottomNavControl>
       {menuPortal(
         <StageTimerModal

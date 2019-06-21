@@ -11,12 +11,13 @@ const StyledError = styled('div')({
 })
 
 interface Props {
+  className?: string
   error: {message: string} | undefined | null
 }
 const NotificationErrorMessage = (props: Props) => {
-  const {error} = props
+  const {className, error} = props
   if (!error) return null
-  return <StyledError>{error.message}</StyledError>
+  return <StyledError className={className}>{error.message}</StyledError>
 }
 
 export default NotificationErrorMessage

@@ -127,7 +127,7 @@ const TaskCardBlock = styled('div')({
 })
 
 const BottomControlSpacer = styled('div')({
-  minWidth: '6rem'
+  minWidth: 96
 })
 
 const StyledBottomBar = styled(MeetingControlBar)({

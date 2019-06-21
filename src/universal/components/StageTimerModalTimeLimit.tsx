@@ -14,6 +14,7 @@ import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useMutationProps from 'universal/hooks/useMutationProps'
 import StyledError from 'universal/components/StyledError'
 import Icon from 'universal/components/Icon'
+import {PALETTE} from 'universal/styles/paletteV2'
 
 interface Props {
   closePortal: () => void
@@ -23,20 +24,30 @@ interface Props {
 }
 
 const Toggle = styled(DropdownMenuToggle)({
-  padding: 8,
+  padding: '8px 0 8px 8px',
   minWidth: 160
 })
 
 const Row = styled('div')({
   alignItems: 'center',
-  display: 'flex'
+  display: 'flex',
+  width: '100%'
 })
 
 const SetLimit = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
-  padding: 16
+  padding: '16px 16px 8px'
+})
+
+const StyledIcon = styled(Icon)({
+  color: PALETTE.TEXT.LIGHT
+})
+
+const StyledButton = styled(SecondaryButton)({
+  marginTop: 8,
+  minWidth: 192
 })
 
 const StageTimerModalTimeLimit = (props: Props) => {
@@ -76,11 +87,13 @@ const StageTimerModalTimeLimit = (props: Props) => {
   return (
     <SetLimit>
       <Row>
-        <Icon>timer</Icon>
+        <StyledIcon>timer</StyledIcon>
         <Toggle
           defaultText={`${minuteTimeLimit} ${plural(minuteTimeLimit, 'minute')}`}
           onClick={togglePortal}
           innerRef={originRef}
+          size='small'
+          flat
         />
       </Row>
       {menuPortal(
@@ -90,9 +103,9 @@ const StageTimerModalTimeLimit = (props: Props) => {
           setMinuteTimeLimit={setMinuteTimeLimit}
         />
       )}
-      <SecondaryButton onClick={startTimer}>
+      <StyledButton onClick={startTimer}>
         {scheduledEndTime ? 'Add Time' : 'Start Timer'}
-      </SecondaryButton>
+      </StyledButton>
       {error && <StyledError>{error}</StyledError>}
     </SetLimit>
   )
