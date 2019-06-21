@@ -67,7 +67,7 @@ const DropdownMenuToggle = forwardRef((props: Props, ref: any) => {
       innerRef={ref}
       onClick={disabled ? undefined : onClick}
     >
-      <InputBlock disabled={!!disabled} flat={flat} size={size || 'medium'} tabIndex={1}>
+      <InputBlock disabled={!!disabled} flat={flat} size={size || 'medium'} tabIndex={0}>
         <Value>{defaultText}</Value>
         {!disabled && <DropdownIcon>expand_more</DropdownIcon>}
       </InputBlock>

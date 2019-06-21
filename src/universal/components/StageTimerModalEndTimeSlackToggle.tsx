@@ -7,23 +7,23 @@ import SlackClientManager from 'universal/utils/SlackClientManager'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useMutationProps from 'universal/hooks/useMutationProps'
 import Checkbox from 'universal/components/Checkbox'
-import Row from 'universal/components/Row/Row'
 import NotificationErrorMessage from 'universal/modules/notifications/components/NotificationErrorMessage'
 import SetSlackNotificationMutation from 'universal/mutations/SetSlackNotificationMutation'
 import {StageTimerModalEndTimeSlackToggle_facilitator} from '__generated__/StageTimerModalEndTimeSlackToggle_facilitator.graphql'
 import {ICON_SIZE} from 'universal/styles/typographyV2'
+import PlainButton from 'universal/components/PlainButton/PlainButton'
 
 interface Props {
   facilitator: StageTimerModalEndTimeSlackToggle_facilitator
   teamId: string
 }
 
-const ToggleBlock = styled(Row)({
-  cursor: 'pointer',
+const ButtonRow = styled(PlainButton)({
   alignItems: 'center',
-  border: 0,
   display: 'flex',
-  padding: '0 0 8px'
+  justifyContent: 'space-between',
+  paddingBottom: 8,
+  width: '100%'
 })
 
 const Label = styled('div')({
@@ -40,6 +40,11 @@ const StyledCheckbox = styled(Checkbox)({
   textAlign: 'center',
   userSelect: 'none',
   width: ICON_SIZE.MD24
+})
+
+const Block = styled('div')({
+  display: 'flex',
+  flexDirection: 'column'
 })
 
 const StageTimerModalEndTimeSlackToggle = (props: Props) => {
@@ -70,11 +75,13 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
     }
   }
   return (
-    <ToggleBlock onClick={onClick}>
-      <StyledCheckbox active={slackToggleActive} />
-      <Label>{'Notify team via Slack'}</Label>
+    <Block>
+      <ButtonRow onClick={onClick}>
+        <StyledCheckbox active={slackToggleActive} />
+        <Label>{'Notify team via Slack'}</Label>
+      </ButtonRow>
       <NotificationErrorMessage error={error} />
-    </ToggleBlock>
+    </Block>
   )
 }
 

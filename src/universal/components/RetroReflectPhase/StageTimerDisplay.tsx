@@ -17,7 +17,7 @@ const DisplayRow = styled('div')({
 
 const StageTimerDisplay = (props: Props) => {
   const {stage} = props
-  const {timeRemaining} = stage
+  const {isComplete, timeRemaining} = stage
   const scheduledEndTime = stage.scheduledEndTime as string | null
   const [endTime, setEndTime] = useState<string | null>(scheduledEndTime)
   useEffect(() => {
@@ -31,13 +31,18 @@ const StageTimerDisplay = (props: Props) => {
     }
     setEndTime(reconciledEndTime)
   }, [scheduledEndTime, timeRemaining])
-  return <DisplayRow>{endTime ? <StageTimerDisplayGauge endTime={endTime} /> : null}</DisplayRow>
+  return (
+    <DisplayRow>
+      {endTime && !isComplete ? <StageTimerDisplayGauge endTime={endTime} /> : null}
+    </DisplayRow>
+  )
 }
 
 export default createFragmentContainer(
   StageTimerDisplay,
   graphql`
     fragment StageTimerDisplay_stage on NewMeetingStage {
+      isComplete
       scheduledEndTime
       timeRemaining
     }

@@ -1,10 +1,12 @@
-import React from 'react'
+import React, {forwardRef} from 'react'
 import styled from 'react-emotion'
 import Icon from 'universal/components/Icon'
 import {meetingBottomBarHeight} from 'universal/styles/meeting'
 import ui from 'universal/styles/ui'
 
 interface Props {
+  innerRef?: any
+  className?: string
   icon: string | undefined
   iconColor: string | undefined
   label: any | undefined
@@ -29,14 +31,14 @@ const Label = styled('div')({
   lineHeight: '16px'
 })
 
-const BottomNavIconLabel = (props: Props) => {
-  const {icon, iconColor, label} = props
+const BottomNavIconLabel = forwardRef((props: Props, ref: any) => {
+  const {className, icon, iconColor, label} = props
   return (
-    <Inner>
+    <Inner className={className} innerRef={ref}>
       <StyledIcon iconColor={iconColor}>{icon}</StyledIcon>
       <Label>{label}</Label>
     </Inner>
   )
-}
+})
 
 export default BottomNavIconLabel
