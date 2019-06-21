@@ -5,10 +5,11 @@ import {MeetingType} from 'server/database/types/Meeting'
 import {DataLoaderWorker} from 'server/graphql/graphql'
 import SlackNotification, {SlackNotificationEvent} from 'server/database/types/SlackNotification'
 import SlackManager from 'server/utils/SlackManager'
-import {days, shortMonths} from 'universal/utils/makeDateString'
 import findStageById from 'universal/utils/meetings/findStageById'
 import {Unpromise} from 'types/generics'
 import ms from 'ms'
+import formatTime from 'universal/utils/date/formatTime'
+import formatWeekday from 'universal/utils/date/formatWeekday'
 
 const getSlackDetails = async (
   event: SlackNotificationEvent,
@@ -89,14 +90,6 @@ export const endSlackMeeting = async (meetingId, teamId, dataLoader: DataLoaderW
   notifySlack('meetingEnd', dataLoader, teamId, slackText).catch(console.log)
 }
 
-const formatDay = (ts: Date) => {
-  const month = ts.getMonth()
-  const date = ts.getDate()
-  const monthStr = shortMonths[month]
-  const weekDay = days[ts.getDay()]
-  return `${weekDay}, ${monthStr} ${date}`
-}
-
 const upsertSlackMessage = async (
   slackDetails: Unpromise<ReturnType<typeof getSlackDetails>>[0],
   slackText: string
@@ -118,7 +111,10 @@ const upsertSlackMessage = async (
         const ageThresh = new Date(Date.now() - ms('5m'))
         if (timestamp >= ageThresh) {
           // trigger update
-          botManager.updateMessage(channelId, slackText, ts).catch(console.error)
+          const res = await botManager.updateMessage(channelId, slackText, ts)
+          if (!res.ok) {
+            console.error(res.error)
+          }
           return
         }
       }
@@ -128,7 +124,10 @@ const upsertSlackMessage = async (
   } else {
     // handle error?
   }
-  botManager.postMessage(channelId, slackText).catch(console.error)
+  const res = await botManager.postMessage(channelId, slackText)
+  if (!res.ok) {
+    console.error(res.error)
+  }
 }
 export const notifySlackTimeLimitStart = async (
   scheduledEndTime: Date,
@@ -147,11 +146,11 @@ export const notifySlackTimeLimitStart = async (
   const meetingUrl = makeAppLink(`${slug}/${teamId}`)
   const meetingLabel = meetingTypeToLabel[meetingType]
   const {phaseType} = stage
+  const date = formatWeekday(scheduledEndTime)
+  const time = formatTime(scheduledEndTime)
   const slackText = `The ${phaseType} stage for your ${meetingLabel} meeting on ${
     team.name
-  } has begun! You have until ${formatDay(
-    scheduledEndTime
-  )} to complete it. Check it out: ${meetingUrl}`
+  } has begun! You have until ${time} on ${date} to complete it. Check it out: ${meetingUrl}`
   const slackDetails = await getSlackDetails('MEETING_STAGE_TIME_LIMIT_START', teamId, dataLoader)
   slackDetails.forEach((slackDetail) => {
     upsertSlackMessage(slackDetail, slackText).catch(console.error)

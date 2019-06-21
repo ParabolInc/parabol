@@ -2,7 +2,7 @@ import ms from 'ms'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import {PALETTE} from '../styles/paletteV2'
-import relativeDate from '../utils/relativeDate'
+import relativeDate from '../utils/date/relativeDate'
 import TEXT = PALETTE.TEXT
 
 const StyledSpan = styled('span')({

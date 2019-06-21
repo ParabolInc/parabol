@@ -5,7 +5,7 @@ import styled from 'react-emotion'
 import DropdownMenuToggle from 'universal/components/DropdownMenuToggle'
 import Icon from 'universal/components/Icon'
 import 'universal/styles/daypicker.css'
-import formatTime from 'universal/utils/formatTime'
+import formatTime from 'universal/utils/date/formatTime'
 import StageTimerHourPicker from 'universal/components/StageTimerHourPicker'
 
 interface Props {

@@ -104,6 +104,13 @@ interface PostMessageResponse {
   ok: true
 }
 
+interface UpdateMessageResponse {
+  ok: true
+  channel: string
+  ts: string
+  text: string
+}
+
 interface SlackUser {
   id: string
   team_id: string
@@ -324,8 +331,8 @@ class SlackClientManager {
   }
 
   updateMessage (channelId: string, text: string, ts: string) {
-    return this.get<PostMessageResponse>(
-      `https://slack.com/api/chat.postMessage?token=${
+    return this.get<UpdateMessageResponse>(
+      `https://slack.com/api/chat.update?token=${
         this.token
       }&channel=${channelId}&text=${text}&ts=${ts}`
     )

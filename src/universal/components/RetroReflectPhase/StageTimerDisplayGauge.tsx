@@ -1,6 +1,6 @@
 import React from 'react'
 import styled, {keyframes} from 'react-emotion'
-import {countdown} from 'universal/utils/relativeDate'
+import {countdown} from 'universal/utils/date/relativeDate'
 import {PALETTE} from 'universal/styles/paletteV2'
 import useRefreshInterval from 'universal/hooks/useRefreshInterval'
 import {buttonRaisedShadow} from 'universal/styles/elevation'
