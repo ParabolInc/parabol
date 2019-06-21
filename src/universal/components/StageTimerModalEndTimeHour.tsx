@@ -3,9 +3,8 @@ import useMenu from 'universal/hooks/useMenu'
 import {MenuPosition} from 'universal/hooks/useCoords'
 import styled from 'react-emotion'
 import DropdownMenuToggle from 'universal/components/DropdownMenuToggle'
-import Icon from 'universal/components/Icon'
 import 'universal/styles/daypicker.css'
-import formatTime from 'universal/utils/formatTime'
+import formatTime from 'universal/utils/date/formatTime'
 import StageTimerHourPicker from 'universal/components/StageTimerHourPicker'
 
 interface Props {
@@ -15,7 +14,7 @@ interface Props {
 
 const Toggle = styled(DropdownMenuToggle)({
   fontSize: 14,
-  padding: 8,
+  padding: '4px 0 4px 32px',
   minWidth: 160
 })
 
@@ -35,8 +34,7 @@ const StageTimerModalEndTimeHour = (props: Props) => {
 
   return (
     <>
-      <Icon>event</Icon>
-      <Toggle defaultText={timeStr} onClick={togglePortal} innerRef={originRef} />
+      <Toggle defaultText={timeStr} onClick={togglePortal} innerRef={originRef} flat size='small' />
       {menuPortal(
         <StageTimerHourPicker endTime={endTime} menuProps={menuProps} onClick={handleHourPick} />
       )}

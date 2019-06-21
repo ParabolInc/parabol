@@ -126,6 +126,10 @@ const StyledBottomBar = styled(MeetingControlBar)({
   justifyContent: 'space-between'
 })
 
+const BottomControlSpacer = styled('div')({
+  minWidth: 96
+})
+
 const VoteHelpMenu = lazyPreload(async () =>
   import(/* webpackChunkName: 'VoteHelpMenu' */ 'universal/components/MeetingHelp/VoteHelpMenu')
 )
@@ -147,6 +151,7 @@ const RetroVotePhase = (props: Props) => {
   if (!newMeeting) return null
   const {gotoNext, ref: gotoNextRef} = handleGotoNext
   const {facilitatorUserId, meetingId, phases, viewerMeetingMember, localStage} = newMeeting
+  const isComplete = localStage ? localStage.isComplete : false
   const teamVotesRemaining = newMeeting.teamVotesRemaining || 0
   const myVotesRemaining = viewerMeetingMember.myVotesRemaining || 0
   const isFacilitating = facilitatorUserId === viewerId
@@ -190,7 +195,11 @@ const RetroVotePhase = (props: Props) => {
         </ScrollableBlock>
         {isFacilitating && (
           <StyledBottomBar>
-            <StageTimerControl defaultTimeLimit={3} meetingId={meetingId} team={team} />
+            {isComplete ? (
+              <BottomControlSpacer />
+            ) : (
+              <StageTimerControl defaultTimeLimit={3} meetingId={meetingId} team={team} />
+            )}
             <BottomNavControl
               isBouncing={isDemoStageComplete || teamVotesRemaining === 0}
               disabled={!discussStage.isNavigableByFacilitator}
@@ -231,6 +240,7 @@ export default createFragmentContainer(
         facilitatorUserId
         localStage {
           ...StageTimerDisplay_stage
+          isComplete
         }
         phases {
           phaseType

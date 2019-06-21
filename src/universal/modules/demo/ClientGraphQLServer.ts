@@ -1,6 +1,5 @@
 import EventEmitter from 'eventemitter3'
 import {parse} from 'flatted'
-import ms from 'ms'
 import {Variables} from 'relay-runtime'
 import StrictEventEmitter from 'strict-event-emitter-types'
 import handleCompletedDemoStage from 'universal/modules/demo/handleCompletedDemoStage'
@@ -40,8 +39,10 @@ import LocalAtmosphere from './LocalAtmosphere'
 
 interface Payload {
   __typename: string
+
   [key: string]: any
 }
+
 interface DemoEvents {
   task: Payload
   team: Payload
@@ -65,8 +66,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     } catch (e) {
       // noop
     }
-    // const isStale = true
-    const isStale = !validDB || new Date(validDB._updatedAt).getTime() < Date.now() - ms('5m')
+    const isStale = true
+    // const isStale = !validDB || new Date(validDB._updatedAt).getTime() < Date.now() - ms('5m')
     this.db = isStale ? initDB(initBotScript()) : validDB
   }
 
@@ -484,6 +485,53 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         this.emit(TEAM, data)
       }
       return {setPhaseFocus: data}
+    },
+    SetSlackNotificationMutation: ({slackChannelId, slackNotificationEvents}, userId) => {
+      const teamMember = this.db.teamMembers.find((teamMember) => teamMember.userId === userId)!
+      const {slackNotifications} = teamMember
+      const filteredNotifications = slackNotifications.filter((notification) =>
+        slackNotificationEvents.includes(notification.event)
+      )
+      filteredNotifications.forEach((notification) => {
+        notification.channelId = slackChannelId
+      })
+      const slackNotificationIds = filteredNotifications.map(({id}) => id)
+      const data = {
+        __typename: 'SetSlackNotificationMutation',
+        error: null,
+        userId,
+        user: this.db.users.find((user) => user.id === userId),
+        slackNotificationIds
+      }
+      if (userId !== demoViewerId) {
+        this.emit(TEAM, data)
+      }
+      return {setSlackNotification: data}
+    },
+    SetStageTimerMutation: ({scheduledEndTime: newScheduledEndTime, timeRemaining}, userId) => {
+      const {phases, facilitatorStageId} = this.db.newMeeting
+      const stageRes = findStageById(phases, facilitatorStageId!)
+      const {stage} = stageRes!
+
+      if (newScheduledEndTime) {
+        stage.scheduledEndTime = newScheduledEndTime
+        stage.isAsync = !timeRemaining
+      } else {
+        stage.isAsync = null
+        stage.scheduledEndTime = null
+      }
+      const data = {
+        __typename: 'SetStageTimerMutation',
+        error: null,
+        meetingId: demoMeetingId,
+        meeting: this.db.newMeeting,
+        stageId: facilitatorStageId,
+        stage
+      }
+      if (userId !== demoViewerId) {
+        this.emit(TEAM, data)
+      }
+      return {setStageTimer: data}
     },
     StartDraggingReflectionMutation: ({reflectionId, initialCoords, dragId}, userId) => {
       let dragCoords = initialCoords

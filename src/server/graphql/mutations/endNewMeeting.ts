@@ -29,6 +29,7 @@ import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB'
 import {ITask} from 'universal/types/graphql'
 import findStageById from 'universal/utils/meetings/findStageById'
 import GenericMeetingPhase from 'server/database/types/GenericMeetingPhase'
+import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
 
 const timelineEventLookup = {
   [RETROSPECTIVE]: COMPLETED_RETRO_MEETING,
@@ -232,8 +233,8 @@ export default {
       teamId,
       meetingNumber
     }
-
-    const eventName = `${meetingType} Meeting Completed`
+    const meetingLabel = meetingTypeToLabel[meetingType]
+    const eventName = `${meetingLabel} Meeting Completed`
     sendSegmentEvent(eventName, facilitatorUserId, {
       ...traits,
       wasFacilitator: true

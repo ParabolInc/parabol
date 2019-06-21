@@ -10,6 +10,7 @@ import {GQLContext} from 'server/graphql/graphql'
 import findStageById from 'universal/utils/meetings/findStageById'
 import ScheduledJobMeetingStageTimeLimit from 'server/database/types/ScheduledJobMetingStageTimeLimit'
 import removeScheduledJobs from 'server/graphql/mutations/helpers/removeScheduledJobs'
+import {notifySlackTimeLimitStart} from 'server/graphql/mutations/helpers/notifySlack'
 
 const BAD_CLOCK_THRESH = 2000
 const AVG_PING = 150
@@ -86,8 +87,12 @@ export default {
         await r
           .table('ScheduledJob')
           .insert(new ScheduledJobMeetingStageTimeLimit(newScheduledEndTime, meetingId))
+        notifySlackTimeLimitStart(newScheduledEndTime, meetingId, teamId, dataLoader).catch(
+          console.error
+        )
       }
     } else {
+      // TODO delete slack message when unset
       stage.isAsync = null
       stage.scheduledEndTime = null
     }

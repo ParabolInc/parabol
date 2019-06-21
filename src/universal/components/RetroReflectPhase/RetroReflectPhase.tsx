@@ -46,6 +46,10 @@ const StyledBottomBar = styled(MeetingControlBar)({
   justifyContent: 'space-between'
 })
 
+const BottomControlSpacer = styled('div')({
+  minWidth: 96
+})
+
 interface Props extends RetroMeetingPhaseProps {
   team: RetroReflectPhase_team
 }
@@ -112,7 +116,11 @@ const RetroReflectPhase = (props: Props) => {
         </StyledOverflow>
         {isFacilitating && (
           <StyledBottomBar>
-            <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
+            {isComplete ? (
+              <BottomControlSpacer />
+            ) : (
+              <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
+            )}
             <BottomNavControl
               isBouncing={isDemoStageComplete || isReadyToGroup}
               disabled={isEmpty}

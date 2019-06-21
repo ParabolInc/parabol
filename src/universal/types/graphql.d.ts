@@ -844,7 +844,7 @@ export interface ISlackAuth {
   id: string
 
   /**
-   * true if an access token exists, else false
+   * true if the auth is updated & ready to use for all features, else false
    */
   isActive: boolean
 
@@ -932,8 +932,8 @@ export interface ISlackNotification {
 export const enum SlackNotificationEventEnum {
   meetingStart = 'meetingStart',
   meetingEnd = 'meetingEnd',
-  MEETING_STAGE_TIME_LIMIT = 'MEETING_STAGE_TIME_LIMIT',
-  meetingNextStageReady = 'meetingNextStageReady'
+  MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END',
+  MEETING_STAGE_TIME_LIMIT_START = 'MEETING_STAGE_TIME_LIMIT_START'
 }
 
 /**
@@ -2429,7 +2429,7 @@ export type Notification =
   | INotificationTeamInvitation
   | INotifyKickedOut
   | INotifyPaymentRejected
-  | INotificationMeetingStageTimeLimit
+  | INotificationMeetingStageTimeLimitEnd
   | INotifyPromoteToOrgLeader
 
 export interface INotification {
@@ -2473,7 +2473,7 @@ export const enum NotificationEnum {
   TEAM_ARCHIVED = 'TEAM_ARCHIVED',
   TASK_INVOLVES = 'TASK_INVOLVES',
   VERSION_INFO = 'VERSION_INFO',
-  MEETING_STAGE_TIME_LIMIT = 'MEETING_STAGE_TIME_LIMIT'
+  MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END'
 }
 
 /**
@@ -3866,7 +3866,7 @@ export interface INotifyTeamArchived {
 export type TeamNotification =
   | INotifyTaskInvolves
   | INotificationTeamInvitation
-  | INotificationMeetingStageTimeLimit
+  | INotificationMeetingStageTimeLimitEnd
 
 export interface ITeamNotification {
   __typename: 'TeamNotification'
@@ -5937,14 +5937,14 @@ export interface IMeetingStageTimeLimitPayload {
   /**
    * The new notification that was just created
    */
-  notification: INotificationMeetingStageTimeLimit
+  notification: INotificationMeetingStageTimeLimitEnd
 }
 
 /**
- * A notification sent to a facilitator that was invited to a new team
+ * A notification sent to a facilitator that the stage time limit has ended
  */
-export interface INotificationMeetingStageTimeLimit {
-  __typename: 'NotificationMeetingStageTimeLimit'
+export interface INotificationMeetingStageTimeLimitEnd {
+  __typename: 'NotificationMeetingStageTimeLimitEnd'
 
   /**
    * A shortid for the notification

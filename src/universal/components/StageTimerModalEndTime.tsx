@@ -26,14 +26,24 @@ interface Props {
 const Row = styled('div')({
   alignItems: 'center',
   display: 'flex',
-  width: '100%'
+  width: '100%',
+  userSelect: 'none'
 })
 
 const SetLimit = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
-  padding: 16
+  padding: '16px 16px 8px'
+})
+
+const StyledButton = styled(SecondaryButton)({
+  marginTop: 8,
+  minWidth: 192
+})
+
+const ErrorMessage = styled(NotificationErrorMessage)({
+  marginBottom: -8
 })
 
 const DEFAULT_DURATION = ms('1d')
@@ -50,7 +60,7 @@ const StageTimerModalEndTime = (props: Props) => {
   const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
 
   const startTimer = () => {
-    if (submitting) return
+    if (submitting || endTime === new Date(scheduledEndTime || 0)) return
     if (endTime.getTime() <= Date.now()) {
       onError(new Error('Time must be in the future'))
       return
@@ -75,10 +85,10 @@ const StageTimerModalEndTime = (props: Props) => {
       <Row>
         <StageTimerModalEndTimeSlackToggle teamId={teamId} facilitator={facilitator} />
       </Row>
-      <SecondaryButton onClick={startTimer}>
+      <ErrorMessage error={error} />
+      <StyledButton onClick={startTimer}>
         {scheduledEndTime ? 'Update Timebox' : 'Start Timebox'}
-      </SecondaryButton>
-      <NotificationErrorMessage error={error} />
+      </StyledButton>
     </SetLimit>
   )
 }

@@ -8,7 +8,7 @@ export type NotificationType =
   | 'TEAM_ARCHIVED'
   | 'TASK_INVOLVES'
   | 'VERSION_INFO'
-  | 'MEETING_STAGE_TIME_LIMIT'
+  | 'MEETING_STAGE_TIME_LIMIT_END'
 
 export interface NotificationInput {
   type: NotificationType

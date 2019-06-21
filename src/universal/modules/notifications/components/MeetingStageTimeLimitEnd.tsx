@@ -1,4 +1,4 @@
-import {MeetingStageTimeLimit_notification} from '__generated__/MeetingStageTimeLimit_notification.graphql'
+import {MeetingStageTimeLimitEnd_notification} from '__generated__/MeetingStageTimeLimitEnd_notification.graphql'
 import React from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
@@ -17,12 +17,12 @@ import useAtmosphere from 'universal/hooks/useAtmosphere'
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation'
 
 interface Props {
-  notification: MeetingStageTimeLimit_notification
+  notification: MeetingStageTimeLimitEnd_notification
 }
 
 const StyledButton = styled(RaisedButton)({...ui.buttonBlockStyles})
 
-const MeetingStageTimeLimit = (props: Props) => {
+const MeetingStageTimeLimitEnd = (props: Props) => {
   const {notification} = props
   const {history} = useRouter()
   const {id: notificationId, meeting} = notification
@@ -66,9 +66,9 @@ const MeetingStageTimeLimit = (props: Props) => {
 }
 
 export default createFragmentContainer(
-  MeetingStageTimeLimit,
+  MeetingStageTimeLimitEnd,
   graphql`
-    fragment MeetingStageTimeLimit_notification on NotificationMeetingStageTimeLimit {
+    fragment MeetingStageTimeLimitEnd_notification on NotificationMeetingStageTimeLimitEnd {
       id
       meeting {
         meetingType

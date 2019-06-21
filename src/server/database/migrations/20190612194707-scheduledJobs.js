@@ -25,7 +25,7 @@ exports.up = async (r) => {
         userId,
         teamId,
         channelId: null,
-        event: 'MEETING_STAGE_TIME_LIMIT'
+        event: 'MEETING_STAGE_TIME_LIMIT_END'
       })
     })
     const stageReadyNotifications = slackUsers.map((slackUser) => {
@@ -34,7 +34,12 @@ exports.up = async (r) => {
         (notification) => notification.teamId === teamId && notification.userId === userId
       )
       const channelId = (teamMemberNotification && teamMemberNotification.channelId) || null
-      return new SlackNotification({userId, teamId, channelId, event: 'meetingNextStageReady'})
+      return new SlackNotification({
+        userId,
+        teamId,
+        channelId,
+        event: 'MEETING_STAGE_TIME_LIMIT_START'
+      })
     })
     const authUpdates = slackUsers.map((slackUser) => {
       const {userId, teamId} = slackUser
@@ -48,6 +53,10 @@ exports.up = async (r) => {
       }
     })
     const records = [...stageCompleteNotifications, ...stageReadyNotifications]
+    await r
+      .table('SlackNotification')
+      .filter({event: 'meetingStageTimeLimit'})
+      .update({event: 'MEETING_STAGE_TIME_LIMIT_END'})
     await r.table('SlackNotification').insert(records)
     await r(authUpdates).forEach((auth) => {
       return r
