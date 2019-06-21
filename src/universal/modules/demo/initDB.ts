@@ -9,6 +9,7 @@ import {
   ISuggestedIntegrationGitHub,
   ISuggestedIntegrationJira,
   ITask,
+  SlackNotificationEventEnum,
   TaskServiceEnum
 } from '../../types/graphql'
 import getDemoAvatar from 'universal/utils/getDemoAvatar'
@@ -124,6 +125,32 @@ const initDemoUser = ({preferredName, email, picture}: BaseUser, idx: number) =>
   }
 }
 
+const initSlackNotification = (userId) => ({
+  __typename: 'SlackNotification',
+  id: 'demoSlackNotification',
+  event: SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_START,
+  eventType: 'team',
+  channelId: 'demoChannelId',
+  userId,
+  teamId: demoTeamId
+})
+
+const initSlackAuth = (userId) => ({
+  __typename: 'SlackAuth',
+  isActive: true,
+  accessToken: 'demoToken',
+  botUserId: 'demoSlackBotId',
+  botAccessToken: 'demoToken',
+  defaultTeamChannelId: 'demoChannelId',
+  teamId: demoTeamId,
+  userId,
+  slackTeamId: 'demoSlackTeamId',
+  slackTeamName: 'demoTeam',
+  slackUserId: 'demoUserId',
+  slackUserName: 'Demo Slack User',
+  id: 'demoSlackUser'
+})
+
 const initDemoTeamMember = ({id: userId, preferredName, picture}, idx) => {
   const teamMemberId = toTeamMemberId(demoTeamId, userId)
   return {
@@ -138,6 +165,8 @@ const initDemoTeamMember = ({id: userId, preferredName, picture}, idx) => {
     isSelf: idx === 0,
     picture: picture,
     preferredName,
+    slackAuth: initSlackAuth(userId),
+    slackNotifications: [initSlackNotification(userId)],
     teamId: demoTeamId,
     userId
   }
@@ -308,13 +337,14 @@ const initPhases = (teamMembers) => {
 const initNewMeeting = (teamMembers, meetingMembers) => {
   const now = new Date().toJSON()
   const [viewerMeetingMember] = meetingMembers
+  const [viewerTeamMember] = teamMembers
   return {
     __typename: 'RetrospectiveMeeting',
     createdAt: now,
     endedAt: null,
     facilitatorStageId: 'reflectStage',
     facilitatorUserId: demoViewerId,
-    facilitator: viewerMeetingMember.user,
+    facilitator: viewerTeamMember,
     id: demoMeetingId,
     // alias is important for relay to normalize records correctly. if not supplied, value will be null
     meetingId: demoMeetingId,
@@ -350,6 +380,9 @@ const initDB = (botScript) => {
     meetingMember: meetingMembers[idx],
     user: users[idx]
   }))
+  users.forEach((user, idx) => {
+    (user as any).teamMember = teamMembers[idx]
+  })
   const org = initDemoOrg()
   const newMeeting = initNewMeeting(teamMembers, meetingMembers)
   const team = initDemoTeam(org, teamMembers, newMeeting)

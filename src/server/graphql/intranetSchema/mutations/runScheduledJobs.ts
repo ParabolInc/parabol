@@ -7,9 +7,9 @@ import SlackManager from 'server/utils/SlackManager'
 import makeAppLink from 'server/utils/makeAppLink'
 import Meeting from 'server/database/types/Meeting'
 import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
-import NotificationMeetingStageTimeLimit from 'server/database/types/NotificationMeetingStageTimeLimit'
 import publish from 'server/utils/publish'
 import MeetingStageTimeLimitPayload from 'server/graphql/types/MeetingStageTimeLimitPayload'
+import NotificationMeetingStageTimeLimitEnd from 'server/database/types/NotificationMeetingStageTimeLimitEnd'
 
 const processMeetingStageTimeLimits = async (job: ScheduledJobMeetingStageTimeLimit) => {
   const r = getRethink()
@@ -20,7 +20,7 @@ const processMeetingStageTimeLimits = async (job: ScheduledJobMeetingStageTimeLi
     slackNotification: r
       .table('SlackNotification')
       .getAll(facilitatorUserId, {index: 'userId'})
-      .filter({teamId, event: 'MEETING_STAGE_TIME_LIMIT'})
+      .filter({teamId, event: 'MEETING_STAGE_TIME_LIMIT_END'})
       .nth(0)
       .default(null),
     slackAuth: r
@@ -45,7 +45,7 @@ const processMeetingStageTimeLimits = async (job: ScheduledJobMeetingStageTimeLi
     }
   }
   if (!sendViaSlack) {
-    const notification = new NotificationMeetingStageTimeLimit({
+    const notification = new NotificationMeetingStageTimeLimitEnd({
       meetingId,
       userIds: [facilitatorUserId]
     })
@@ -61,7 +61,7 @@ const processMeetingStageTimeLimits = async (job: ScheduledJobMeetingStageTimeLi
 }
 
 const jobProcessors = {
-  MEETING_STAGE_TIME_LIMIT: processMeetingStageTimeLimits
+  MEETING_STAGE_TIME_LIMIT_END: processMeetingStageTimeLimits
 }
 
 const processJob = async (job: ScheduledJob) => {

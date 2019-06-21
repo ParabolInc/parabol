@@ -84,7 +84,7 @@ const subscription = graphql`
       # ScheduledJob Result
       ... on MeetingStageTimeLimitPayload {
         notification {
-          ...MeetingStageTimeLimit_notification
+          ...MeetingStageTimeLimitEnd_notification
           type
           meeting {
             meetingType

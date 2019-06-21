@@ -42,9 +42,9 @@ const Heading = styled(LabelHeading)({
 const TEAM_EVENTS = [
   SlackNotificationEventEnum.meetingStart,
   SlackNotificationEventEnum.meetingEnd,
-  SlackNotificationEventEnum.meetingNextStageReady
+  SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_START
 ]
-const USER_EVENTS = [SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT]
+const USER_EVENTS = [SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_END]
 
 const SlackNotificationList = (props: Props) => {
   const {teamId, viewer} = props
@@ -55,7 +55,7 @@ const SlackNotificationList = (props: Props) => {
   const atmosphere = useAtmosphere()
   const localPrivateChannel = channels.find((channel) => channel.name === '@Parabol')
   const localPrivateChannelId = localPrivateChannel && localPrivateChannel.id
-  const {botAccessToken, defaultTeamChannelId} = slackAuth!
+  const {isActive, defaultTeamChannelId} = slackAuth!
 
   const changeTeamChannel: SlackChannelDropdownOnClick = useCallback(
     (slackChannelId) => () => {
@@ -92,7 +92,7 @@ const SlackNotificationList = (props: Props) => {
         <Heading>Team Notifications</Heading>
         <SlackChannelPicker
           channels={channels}
-          isTokenValid={!!botAccessToken}
+          isTokenValid={isActive}
           localChannelId={defaultTeamChannelId}
           onClick={changeTeamChannel}
           teamId={teamId}
@@ -140,6 +140,7 @@ export default createFragmentContainer(
         slackAuth {
           accessToken
           botAccessToken
+          isActive
           slackUserId
           defaultTeamChannelId
         }

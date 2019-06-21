@@ -19,7 +19,8 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
   const {facilitator, teamId} = props
   const {slackAuth, slackNotifications} = facilitator
   const timeLimitEvent = slackNotifications.find(
-    (notification) => notification.event === SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT
+    (notification) =>
+      notification.event === SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_START
   )
   const slackToggleActive = (timeLimitEvent && !!timeLimitEvent.channelId) || false
   const atmosphere = useAtmosphere()
@@ -27,13 +28,13 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
   const {onError, onCompleted, submitMutation, error, submitting} = mutationProps
 
   const onClick = () => {
-    if (slackAuth) {
+    if (slackAuth && slackAuth.isActive) {
       if (submitting) return
       const {defaultTeamChannelId} = slackAuth
       submitMutation()
       const variables = {
         slackChannelId: slackToggleActive ? null : defaultTeamChannelId,
-        slackNotificationEvents: [SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT],
+        slackNotificationEvents: [SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_START],
         teamId
       }
       SetSlackNotificationMutation(atmosphere, variables, {onError, onCompleted})
@@ -44,7 +45,7 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
   return (
     <>
       <Toggle active={slackToggleActive} onClick={onClick} />
-      <span>{'Notify me via Slack'}</span>
+      <span>{'Notify team via Slack'}</span>
       <NotificationErrorMessage error={error} />
     </>
   )
@@ -55,6 +56,7 @@ export default createFragmentContainer(
   graphql`
     fragment StageTimerModalEndTimeSlackToggle_facilitator on TeamMember {
       slackAuth {
+        isActive
         defaultTeamChannelId
       }
       slackNotifications {

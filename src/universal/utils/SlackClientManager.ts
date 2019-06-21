@@ -146,6 +146,22 @@ interface SlackUser {
   locale: string
 }
 
+interface SlackMessage {
+  type: 'message'
+  user: string
+  text: string
+  ts: string
+  attachments?: {
+    service_name: string
+    text: string
+    fallback: string
+    thumb_url: string
+    thumb_width: number
+    thumb_height: number
+    id: number
+  }[]
+}
+
 interface UserInfoResponse {
   ok: true
   user: SlackUser
@@ -163,6 +179,37 @@ interface ConversationInfoResponse {
   channel: SlackConversation
 }
 
+interface ChannelInfoResponse {
+  ok: true
+  channel: SlackChannelInfo & {
+    creator: string
+    latest?: {
+      text: string
+      username: string
+      bot_id: string
+      attachments: {
+        text: string
+        id: number
+        fallback: string
+      }[]
+      type: 'message'
+      subtype: string
+      ts: string
+      unread_count: number
+      unread_count_display: number
+    }
+  }
+}
+
+// interface ConversationHistoryResponse {
+//   ok: true
+//   message: SlackMessage[]
+//   has_more: boolean
+//   pin_count: number
+//   response_metadata: {
+//     next_cursor: string
+//   }
+// }
 type ConversationType = 'public_channel' | 'private_channel' | 'im' | 'mpim'
 
 class SlackClientManager {
@@ -234,11 +281,24 @@ class SlackClientManager {
     )
   }
 
+  getChannelInfo (channelId: string) {
+    return this.get<ChannelInfoResponse>(
+      `https://slack.com/api/channels.info?token=${this.token}&channel=${channelId}`
+    )
+  }
+
   getChannelList () {
     return this.get<ChannelListResponse>(
       `https://slack.com/api/channels.list?token=${this.token}&exclude_archived=1`
     )
   }
+
+  // getConversationHistory(channelId: string) {
+  //   const oldest = toEpochSeconds(Date.now() - ms('30m'))
+  //   return this.get<ConversationHistoryResponse>(`https://slack.com/api/conversations.history?token=${
+  //     this.token
+  //     }&channel=${channelId}&oldest=${oldest}`)
+  // }
 
   getConversationList (types: ConversationType[] = ['public_channel']) {
     const typeStr = types.join(',')
@@ -260,6 +320,14 @@ class SlackClientManager {
       `https://slack.com/api/chat.postMessage?token=${
         this.token
       }&channel=${channelId}&text=${text}&unfurl_links=true`
+    )
+  }
+
+  updateMessage (channelId: string, text: string, ts: string) {
+    return this.get<PostMessageResponse>(
+      `https://slack.com/api/chat.postMessage?token=${
+        this.token
+      }&channel=${channelId}&text=${text}&ts=${ts}`
     )
   }
 

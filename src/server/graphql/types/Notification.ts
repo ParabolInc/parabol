@@ -9,7 +9,7 @@ import NotifyPromoteToOrgLeader from 'server/graphql/types/NotifyPromoteToOrgLea
 import NotifyTeamArchived from 'server/graphql/types/NotifyTeamArchived'
 import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor'
 import NotificationTeamInvitation from 'server/graphql/types/NotificationTeamInvitation'
-import NotificationMeetingStageTimeLimit from 'server/graphql/types/NotificationMeetingStageTimeLimit'
+import NotificationMeetingStageTimeLimitEnd from 'server/graphql/types/NotificationMeetingStageTimeLimitEnd'
 
 export const notificationInterfaceFields = {
   id: {
@@ -51,7 +51,7 @@ const Notification = new GraphQLInterfaceType({
       PROMOTE_TO_BILLING_LEADER: NotifyPromoteToOrgLeader,
       TEAM_ARCHIVED: NotifyTeamArchived,
       TEAM_INVITATION: NotificationTeamInvitation,
-      MEETING_STAGE_TIME_LIMIT: NotificationMeetingStageTimeLimit
+      MEETING_STAGE_TIME_LIMIT_END: NotificationMeetingStageTimeLimitEnd
     }
 
     return resolveTypeLookup[value.type]
