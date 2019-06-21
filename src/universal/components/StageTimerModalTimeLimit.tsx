@@ -38,7 +38,7 @@ const SetLimit = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
-  padding: 16
+  padding: '16px 16px 8px'
 })
 
 const StyledIcon = styled(Icon)({

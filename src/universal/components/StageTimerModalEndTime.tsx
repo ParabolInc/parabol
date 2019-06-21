@@ -33,7 +33,7 @@ const SetLimit = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
-  padding: '8px 16px 16px'
+  padding: '16px 16px 8px'
 })
 
 const StyledButton = styled(SecondaryButton)({

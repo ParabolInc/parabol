@@ -14,7 +14,7 @@ import StageTimerModalEditTimeEnd from 'universal/components/StageTimerModalEdit
 import {StageTimerModal_facilitator} from '__generated__/StageTimerModal_facilitator.graphql'
 import {PALETTE} from 'universal/styles/paletteV2'
 
-const WIDTH = 240
+const WIDTH = 224
 
 interface Props {
   defaultTimeLimit: number
