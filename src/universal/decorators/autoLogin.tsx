@@ -3,6 +3,7 @@ import {RouteComponentProps, withRouter} from 'react-router-dom'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
+import getValidRedirectParam from 'universal/utils/getValidRedirectParam'
 
 export interface AutoLoginPropsProps extends WithAtmosphereProps, RouteComponentProps<{}> {}
 
@@ -13,12 +14,10 @@ const autoLogin = (ComposedComponent: React.ComponentType<any>) => {
       super(props)
       const {
         atmosphere: {authObj},
-        history,
-        location
+        history
       } = props
-      const {search} = location
       if (authObj) {
-        const nextUrl = new URLSearchParams(search).get('redirectTo') || '/me'
+        const nextUrl = getValidRedirectParam() || '/me'
         // always replace otherwise they could get stuck in a back-button loop
         history.replace(nextUrl)
         this.redir = true

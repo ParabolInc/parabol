@@ -21,6 +21,7 @@ import Legitity from 'universal/validation/Legitity'
 import {UserProfile_viewer} from '__generated__/UserProfile_viewer.graphql'
 import {Layout} from 'universal/types/constEnums'
 import {PALETTE} from 'universal/styles/paletteV2'
+import NotificationErrorMessage from 'universal/modules/notifications/components/NotificationErrorMessage'
 
 const SettingsBlock = styled('div')({
   width: '100%'
@@ -85,7 +86,7 @@ class UserProfile extends Component<Props> {
   }
 
   render () {
-    const {fields, onChange, viewer} = this.props
+    const {fields, onChange, viewer, error} = this.props
     const {picture} = viewer
     const pictureOrDefault = picture || defaultUserAvatar
     return (
@@ -124,6 +125,7 @@ class UserProfile extends Component<Props> {
                   </FieldBlock>
                   <StyledButton size='medium'>{'Update'}</StyledButton>
                 </ControlBlock>
+                <NotificationErrorMessage error={{message: error} as any} />
               </InfoBlock>
             </SettingsForm>
           </Panel>

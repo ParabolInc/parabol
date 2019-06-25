@@ -1,5 +1,5 @@
 import ms from 'ms'
-import React, {useMemo} from 'react'
+import React, {useEffect, useMemo} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {ActionMeetingPhaseProps} from 'universal/components/ActionMeeting'
@@ -10,7 +10,6 @@ import MeetingContent from 'universal/components/MeetingContent'
 import MeetingContentHeader from 'universal/components/MeetingContentHeader'
 import MeetingHelpToggle from 'universal/components/MenuHelpToggle'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
-import useTimeout from 'universal/hooks/useTimeout'
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
 import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy'
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
@@ -23,6 +22,7 @@ import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgen
 import EditorHelpModalContainer from 'universal/containers/EditorHelpModalContainer/EditorHelpModalContainer'
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
 import {NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
+import useTimeoutWithReset from 'universal/hooks/useTimeoutWithReset'
 
 const BottomControlSpacer = styled('div')({
   minWidth: '6rem'
@@ -93,11 +93,15 @@ const ActionMeetingAgendaItems = (props: Props) => {
   const {avatarGroup, toggleSidebar, team, handleGotoNext} = props
   const atmosphere = useAtmosphere()
   const {gotoNext, ref: gotoNextRef} = handleGotoNext
-  const minTimeComplete = useTimeout(ms('2m'))
+  const [minTimeComplete, resetMinTimeComplete] = useTimeoutWithReset(ms('2m'))
   const {viewerId} = atmosphere
   const {agendaItems, isMeetingSidebarCollapsed, newMeeting, tasks} = team
   const {facilitatorUserId, id: meetingId, localStage, phases} = newMeeting!
   const {id: localStageId, agendaItemId} = localStage
+  useEffect(() => {
+    resetMinTimeComplete()
+  }, [agendaItemId])
+
   const agendaTasks = useMemo(() => {
     return tasks.edges
       .map(({node}) => node)

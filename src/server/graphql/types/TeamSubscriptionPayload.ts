@@ -47,6 +47,7 @@ import VoteForReflectionGroupPayload from 'server/graphql/types/VoteForReflectio
 import RemoveSlackAuthPayload from 'server/graphql/types/RemoveSlackAuthPayload'
 import AddSlackAuthPayload from 'server/graphql/types/AddSlackAuthPayload'
 import SetStageTimerPayload from 'server/graphql/types/SetStageTimerPayload'
+import UpdateUserProfilePayload from 'server/graphql/types/UpdateUserProfilePayload'
 
 const types = [
   AcceptTeamInvitationPayload,
@@ -96,7 +97,8 @@ const types = [
   RemoveReflectTemplatePayload,
   RemoveReflectTemplatePromptPayload,
   RenameReflectTemplatePayload,
-  RenameReflectTemplatePromptPayload
+  RenameReflectTemplatePromptPayload,
+  UpdateUserProfilePayload
 ]
 
 export default graphQLSubscriptionType('TeamSubscriptionPayload', types)

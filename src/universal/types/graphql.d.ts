@@ -5600,14 +5600,6 @@ export interface INotifyPaymentRejected {
   userIds: Array<string>
 }
 
-export type OrganizationNotification = INotifyPaymentRejected | INotifyPromoteToOrgLeader
-
-export interface IOrganizationNotification {
-  __typename: 'OrganizationNotification'
-  id: string | null
-  type: NotificationEnum | null
-}
-
 export interface IUpdateAgendaItemInput {
   /**
    * The unique agenda item ID, composed of a teamId::shortid
@@ -5802,9 +5794,9 @@ export interface IUpdateUserProfilePayload {
   user: IUser | null
 
   /**
-   * The updated team members
+   * The updated team member
    */
-  teamMembers: Array<ITeamMember | null> | null
+  teamMembers: Array<ITeamMember> | null
 }
 
 export interface IVoteForReflectionGroupPayload {
@@ -5901,7 +5893,6 @@ export interface ISubscription {
   organizationSubscription: OrganizationSubscriptionPayload
   taskSubscription: TaskSubscriptionPayload
   teamSubscription: TeamSubscriptionPayload
-  teamMemberSubscription: TeamMemberSubscriptionPayload
 }
 
 export type NotificationSubscriptionPayload =
@@ -5920,7 +5911,6 @@ export type NotificationSubscriptionPayload =
   | IRemoveOrgUserPayload
   | IStripeFailPaymentPayload
   | IUser
-  | IUpdateUserProfilePayload
 
 export interface IAddNewFeaturePayload {
   __typename: 'AddNewFeaturePayload'
@@ -6002,7 +5992,7 @@ export interface ISetOrgUserRoleAddedPayload {
   /**
    * If promoted, notify them and give them all other admin notifications
    */
-  notificationsAdded: Array<OrganizationNotification | null> | null
+  notificationsAdded: Array<Notification | null> | null
 }
 
 export interface ISetOrgUserRoleRemovedPayload {
@@ -6014,7 +6004,7 @@ export interface ISetOrgUserRoleRemovedPayload {
   /**
    * If demoted, notify them and remove all other admin notifications
    */
-  notificationsRemoved: Array<OrganizationNotification | null> | null
+  notificationsRemoved: Array<Notification | null> | null
 }
 
 export type TaskSubscriptionPayload =
@@ -6078,6 +6068,7 @@ export type TeamSubscriptionPayload =
   | IRemoveReflectTemplatePromptPayload
   | IRenameReflectTemplatePayload
   | IRenameReflectTemplatePromptPayload
+  | IUpdateUserProfilePayload
 
 export interface IUpdateDragLocationPayload {
   __typename: 'UpdateDragLocationPayload'
@@ -6101,8 +6092,6 @@ export interface IUpdateDragLocationPayload {
   targetOffset: ICoords2D | null
   userId: string
 }
-
-export type TeamMemberSubscriptionPayload = IUpdateUserProfilePayload
 
 /**
  * The meeting phase where all team members check in one-by-one
