@@ -1,4 +1,4 @@
-import {InviteToTeamMutation} from '__generated__/InviteToTeamMutation.graphql'
+import {InviteToTeamMutation as TInviteToTeamMutation} from '__generated__/InviteToTeamMutation.graphql'
 import {InviteToTeamMutation_notification} from '__generated__/InviteToTeamMutation_notification.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import {matchPath} from 'react-router'
@@ -93,7 +93,7 @@ const InviteToTeamMutation = (
   variables: IInviteToTeamOnMutationArguments,
   {onError, onCompleted}: LocalHandlers
 ): Disposable => {
-  return commitMutation<InviteToTeamMutation>(atmosphere, {
+  return commitMutation<TInviteToTeamMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {

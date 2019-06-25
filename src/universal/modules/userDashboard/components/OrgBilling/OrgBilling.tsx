@@ -14,13 +14,13 @@ import {Layout} from 'universal/types/constEnums'
 import {PALETTE} from 'universal/styles/paletteV2'
 
 const panelCell = {
-  borderTop: `1px solid ${PALETTE.BORDER.LIGHTER}`,
+  borderTop: `1px solid ${PALETTE.BORDER_LIGHTER}`,
   padding: Layout.ROW_GUTTER
 }
 
 const CreditCardInfo = styled('div')({
   alignItems: 'center',
-  color: PALETTE.TEXT.MAIN,
+  color: PALETTE.TEXT_MAIN,
   display: 'flex',
   fontSize: 14,
   lineHeight: '20px'
@@ -72,12 +72,12 @@ const PanelRow = styled('div')({
 
 const Unsubscribe = styled('div')({
   alignItems: 'center',
-  color: PALETTE.LINK.MAIN,
+  color: PALETTE.LINK_MAIN,
   display: 'flex',
   justifyContent: 'center',
   '& a': {
     alignItems: 'center',
-    color: PALETTE.LINK.BLUE,
+    color: PALETTE.LINK_BLUE,
     display: 'flex',
     marginLeft: 8,
     '& > u': {

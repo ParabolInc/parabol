@@ -1987,6 +1987,13 @@
     react-modal "^3.6.1"
     react-treebeard "^3.1.0"
 
+"@sucrase/webpack-loader@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@sucrase/webpack-loader/-/webpack-loader-2.0.0.tgz#b8a70b8d3df3eeb570e6a3315e1a9c6b723e4a37"
+  integrity sha512-KUfWr83g70Qm+ZqjGL+M4tX01taDP3BldQcI6NSMlDf7WTDfuo0RvLlS0ekF6dPVslNyZhbFFBy2OBTB6Sa6+Q==
+  dependencies:
+    loader-utils "^1.1.0"
+
 "@svgr/babel-plugin-add-jsx-attribute@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@svgr/babel-plugin-add-jsx-attribute/-/babel-plugin-add-jsx-attribute-4.0.0.tgz#5acf239cd2747b1a36ec7e708de05d914cb9b948"
@@ -2790,6 +2797,11 @@ any-observable@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/any-observable/-/any-observable-0.3.0.tgz#af933475e5806a67d0d7df090dd5e8bef65d119b"
   integrity sha512-/FQM1EDkTsf63Ub2C6O7GuYFDsSXUwsaZDurV0np41ocwq0jthUAYCmhBX9f+KwlaCgIuWyr/4WlUQUBfKfZog==
+
+any-promise@^1.0.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/any-promise/-/any-promise-1.3.0.tgz#abc6afeedcea52e809cdc0376aed3ce39635d17f"
+  integrity sha1-q8av7tzqUugJzcA3au0845Y10X8=
 
 anymatch@^1.3.0:
   version "1.3.2"
@@ -10896,6 +10908,11 @@ limiter@^1.1.0:
   resolved "https://registry.yarnpkg.com/limiter/-/limiter-1.1.4.tgz#87c9c3972d389fdb0ba67a45aadbc5d2f8413bc1"
   integrity sha512-XCpr5bElgDI65vVgstP8TWjv6/QKWm9GU5UG0Pr5sLQ3QLo8NVKsioe+Jed5/3vFOe3IQuqE7DKwTvKQkjTHvg==
 
+lines-and-columns@^1.1.6:
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-1.1.6.tgz#1c00c743b433cd0a4e80758f7b64a57440d9ff00"
+  integrity sha1-HADHQ7QzzQpOgHWPe2SldEDZ/wA=
+
 linkify-it@^2.0.0, linkify-it@^2.0.3:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/linkify-it/-/linkify-it-2.1.0.tgz#c4caf38a6cd7ac2212ef3c7d2bde30a91561f9db"
@@ -12006,6 +12023,15 @@ mute-stream@0.0.7:
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
   integrity sha1-MHXOk7whuPq0PhvE2n6BFe0ee6s=
+
+mz@^2.7.0:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/mz/-/mz-2.7.0.tgz#95008057a56cafadc2bc63dde7f9ff6955948e32"
+  integrity sha512-z81GNO7nnYMEhrGh9LeymoE4+Yr0Wn5McHIZMK5cfQCl+NDX08sCZgUc9/6MHni9IWuFLm1Z3HTCXu2z9fN62Q==
+  dependencies:
+    any-promise "^1.0.0"
+    object-assign "^4.0.1"
+    thenify-all "^1.0.0"
 
 nan@^2.0.0, nan@^2.9.2:
   version "2.12.1"
@@ -16265,6 +16291,16 @@ stylis@^3.5.0:
   resolved "https://registry.yarnpkg.com/stylis/-/stylis-3.5.4.tgz#f665f25f5e299cf3d64654ab949a57c768b73fbe"
   integrity sha512-8/3pSmthWM7lsPBKv7NXkzn2Uc9W7NotcwGNpJaa3k7WMM1XDCA4MgT5k/8BIexd5ydZdboXtU90XH9Ec4Bv/Q==
 
+sucrase@^3.10.1:
+  version "3.10.1"
+  resolved "https://registry.yarnpkg.com/sucrase/-/sucrase-3.10.1.tgz#70ce0bad0e4c8fbc3c3184dbd1797e82990d0602"
+  integrity sha512-nMOs6rFWwkYRxcKHHDjyQmC5CmLbHN2LwRyWF1n2i0kb/pq0xcB9M19TdY5Ivfcj1BsWfs+az9Ga5B0tFdE5ww==
+  dependencies:
+    commander "^2.19.0"
+    lines-and-columns "^1.1.6"
+    mz "^2.7.0"
+    pirates "^4.0.0"
+
 superagent-proxy@^1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/superagent-proxy/-/superagent-proxy-1.0.3.tgz#acfa776672f11c24a90ad575e855def8be44f741"
@@ -16486,6 +16522,20 @@ text-table@0.2.0, text-table@^0.2.0, text-table@~0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
   integrity sha1-f17oI66AUgfACvLfSoTsP8+lcLQ=
+
+thenify-all@^1.0.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/thenify-all/-/thenify-all-1.6.0.tgz#1a1918d402d8fc3f98fbf234db0bcc8cc10e9726"
+  integrity sha1-GhkY1ALY/D+Y+/I02wvMjMEOlyY=
+  dependencies:
+    thenify ">= 3.1.0 < 4"
+
+"thenify@>= 3.1.0 < 4":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/thenify/-/thenify-3.3.0.tgz#e69e38a1babe969b0108207978b9f62b88604839"
+  integrity sha1-5p44obq+lpsBCCB5eLn2K4hgSDk=
+  dependencies:
+    any-promise "^1.0.0"
 
 throat@^4.0.0:
   version "4.1.0"

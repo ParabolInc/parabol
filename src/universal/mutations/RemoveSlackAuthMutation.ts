@@ -1,4 +1,4 @@
-import {RemoveSlackAuthMutation} from '__generated__/RemoveSlackAuthMutation.graphql'
+import {RemoveSlackAuthMutation as TRemoveSlackAuthMutation} from '__generated__/RemoveSlackAuthMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import Atmosphere from 'universal/Atmosphere'
@@ -29,7 +29,7 @@ const RemoveSlackAuthMutation = (
   variables: IRemoveSlackAuthOnMutationArguments,
   {onError, onCompleted}: LocalHandlers
 ): Disposable => {
-  return commitMutation<RemoveSlackAuthMutation>(atmosphere, {
+  return commitMutation<TRemoveSlackAuthMutation>(atmosphere, {
     mutation,
     variables,
     onError,

@@ -30,7 +30,7 @@ const PanelsLayout = styled('div')({
 })
 
 const PanelRow = styled('div')({
-  borderTop: `1px solid ${PALETTE.BORDER.LIGHTER}`,
+  borderTop: `1px solid ${PALETTE.BORDER_LIGHTER}`,
   padding: Layout.ROW_GUTTER
 })
 

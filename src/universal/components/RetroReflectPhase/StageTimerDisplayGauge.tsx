@@ -23,8 +23,8 @@ const fadeIn = keyframes`
 
 const Gauge = styled('div')(({isTimeUp}: {isTimeUp: boolean}) => ({
   animation: `${fadeIn} 300ms ${DECELERATE}`,
-  color: isTimeUp ? PALETTE.TEXT.MAIN : '#fff',
-  background: isTimeUp ? PALETTE.BACKGROUND.YELLOW : PALETTE.BACKGROUND.GREEN,
+  color: isTimeUp ? PALETTE.TEXT_MAIN : '#fff',
+  background: isTimeUp ? PALETTE.BACKGROUND_YELLOW : PALETTE.BACKGROUND_GREEN,
   boxShadow: buttonRaisedShadow,
   borderRadius: 2,
   fontWeight: 600,

@@ -3,7 +3,7 @@ import {minWidthMediaQueries} from 'universal/styles/breakpoints'
 import {PALETTE} from 'universal/styles/paletteV2'
 
 const MeetingCopy = styled('div')({
-  color: PALETTE.TEXT.MAIN,
+  color: PALETTE.TEXT_MAIN,
   fontSize: 13,
   lineHeight: 1.5,
   margin: '24px 0',

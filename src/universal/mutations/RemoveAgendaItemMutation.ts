@@ -4,7 +4,7 @@ import handleRemoveAgendaItems from 'universal/mutations/handlers/handleRemoveAg
 import {IRemoveAgendaItemOnMutationArguments} from 'universal/types/graphql'
 import {LocalHandlers} from 'universal/types/relayMutations'
 import getInProxy from 'universal/utils/relay/getInProxy'
-import {RemoveAgendaItemMutation} from '__generated__/RemoveAgendaItemMutation.graphql'
+import {RemoveAgendaItemMutation as TRemoveAgendaItemMutation} from '__generated__/RemoveAgendaItemMutation.graphql'
 
 graphql`
   fragment RemoveAgendaItemMutation_team on RemoveAgendaItemPayload {
@@ -41,7 +41,7 @@ const RemoveAgendaItemMutation = (
   variables: IRemoveAgendaItemOnMutationArguments,
   {onError, onCompleted}: LocalHandlers = {}
 ) => {
-  return commitMutation<RemoveAgendaItemMutation>(atmosphere, {
+  return commitMutation<TRemoveAgendaItemMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {

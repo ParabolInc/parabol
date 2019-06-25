@@ -17,7 +17,6 @@ import InviteDialog from './InviteDialog'
 import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import DialogTitle from './DialogTitle'
-import LINK = PALETTE.LINK
 import PlainButton from 'universal/components/PlainButton/PlainButton'
 import HorizontalSeparator from 'universal/components/HorizontalSeparator/HorizontalSeparator'
 import AuthPrivacyFooter from 'universal/components/AuthPrivacyFooter'
@@ -49,7 +48,7 @@ const CopyMargins = styled('div')({
 
 const UseEmailFallback = styled(PlainButton)({
   margin: '1rem',
-  color: LINK.BLUE
+  color: PALETTE.LINK_BLUE
 })
 
 const TeamName = styled('span')({

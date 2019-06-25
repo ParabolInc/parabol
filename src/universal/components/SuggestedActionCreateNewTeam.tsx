@@ -24,7 +24,7 @@ class SuggestedActionCreateNewTeam extends Component<Props> {
     const {id: suggestedActionId} = suggestedAction
     return (
       <SuggestedActionCard
-        backgroundColor={PALETTE.BACKGROUND.GREEN}
+        backgroundColor={PALETTE.BACKGROUND_GREEN}
         iconName='group_add'
         suggestedActionId={suggestedActionId}
       >

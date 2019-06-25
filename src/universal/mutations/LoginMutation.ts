@@ -1,4 +1,7 @@
-import {LoginMutation, LoginMutationVariables} from '__generated__/LoginMutation.graphql'
+import {
+  LoginMutation as TLoginMutation,
+  LoginMutationVariables
+} from '__generated__/LoginMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import SendClientSegmentEventMutation from 'universal/mutations/SendClientSegmentEventMutation'
@@ -43,7 +46,7 @@ const LoginMutation = (
   {onCompleted, history}: LocalHandlers
 ): Disposable => {
   atmosphere.setAuthToken(variables.auth0Token)
-  return commitMutation<LoginMutation>(atmosphere, {
+  return commitMutation<TLoginMutation>(atmosphere, {
     mutation,
     variables: {...variables, isOrganic: !variables.invitationToken},
     onCompleted: (res, errors) => {

@@ -14,7 +14,7 @@ import lazyPreload from 'universal/utils/lazyPreload'
 const TeamToggleButton = styled(CardButton)({
   ...textOverflow,
   borderRadius: ui.borderRadiusSmall,
-  color: PALETTE.TEXT.LIGHT,
+  color: PALETTE.TEXT_LIGHT,
   display: 'block',
   fontSize: 12,
   fontWeight: 400,

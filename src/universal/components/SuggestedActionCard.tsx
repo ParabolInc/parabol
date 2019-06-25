@@ -45,7 +45,7 @@ const Surface = styled('div')({
 const CancelIcon = styled(Icon)({
   background: `rgba(255,255,255,0.8)`,
   borderRadius: '100%',
-  color: PALETTE.TEXT.MAIN,
+  color: PALETTE.TEXT_MAIN,
   position: 'absolute',
   right: 8,
   top: 8,
@@ -56,8 +56,8 @@ const CancelIcon = styled(Icon)({
 })
 
 const FloatingSealIcon = styled(Icon)({
-  color: PALETTE.PRIMARY.MAIN,
-  background: PALETTE.BACKGROUND.MAIN_DARKENED,
+  color: PALETTE.PRIMARY_MAIN,
+  background: PALETTE.BACKGROUND_MAIN_DARKENED,
   borderRadius: '100%',
   boxShadow: buttonShadow,
   padding: 8,

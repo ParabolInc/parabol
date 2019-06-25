@@ -20,7 +20,7 @@ interface Props {
 const INKBAR_HEIGHT = 2
 
 const InkBar = styled('div')({
-  background: PALETTE.PRIMARY.DARK,
+  background: PALETTE.PRIMARY_DARK,
   bottom: 0,
   height: INKBAR_HEIGHT,
   left: 0,

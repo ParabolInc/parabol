@@ -3,7 +3,7 @@ import {PALETTE} from 'universal/styles/paletteV2'
 import {Layout} from 'universal/types/constEnums'
 
 const NotificationMessage = styled('div')({
-  color: PALETTE.TEXT.MAIN,
+  color: PALETTE.TEXT_MAIN,
   flex: 1,
   fontSize: 14,
   lineHeight: '20px',

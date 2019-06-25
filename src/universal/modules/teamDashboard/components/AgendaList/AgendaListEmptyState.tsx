@@ -20,7 +20,7 @@ const EmptyEmoji = styled('div')({
 })
 
 const EmptyMessage = styled('div')({
-  color: PALETTE.TEXT.MAIN,
+  color: PALETTE.TEXT_MAIN,
   flex: 1,
   fontSize: 13,
   lineHeight: '1.5',

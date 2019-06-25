@@ -4,14 +4,13 @@ import PlainButton from 'universal/components/PlainButton/PlainButton'
 import {PALETTE} from '../styles/paletteV2'
 import auth0ChangePassword from '../utils/auth0ChangePassword'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
-import LINK = PALETTE.LINK
 
 interface Props extends WithMutationProps {
   email: string
 }
 
 const ForgotButton = styled(PlainButton)({
-  color: LINK.BLUE,
+  color: PALETTE.LINK_BLUE,
   marginTop: '1rem'
 })
 

@@ -1,5 +1,5 @@
 import {
-  DismissSuggestedActionMutation,
+  DismissSuggestedActionMutation as TDismissSuggestedActionMutation,
   DismissSuggestedActionMutationVariables
 } from '__generated__/DismissSuggestedActionMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
@@ -23,7 +23,7 @@ const DismissSuggestedActionMutation = (
   {onCompleted, onError}: LocalHandlers
 ): Disposable => {
   const {suggestedActionId} = variables
-  return commitMutation<DismissSuggestedActionMutation>(atmosphere, {
+  return commitMutation<TDismissSuggestedActionMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {

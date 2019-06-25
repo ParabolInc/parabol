@@ -20,12 +20,12 @@ interface Props {
 const MenuItemStyles = styled('div')(
   ({isActive, isDisabled}: {isActive: boolean; isDisabled: boolean | undefined}) => ({
     alignItems: 'center',
-    backgroundColor: isActive ? PALETTE.BACKGROUND.MAIN : undefined,
-    color: isDisabled ? PALETTE.TEXT.LIGHT : PALETTE.TEXT.MAIN,
+    backgroundColor: isActive ? PALETTE.BACKGROUND_MAIN : undefined,
+    color: isDisabled ? PALETTE.TEXT_LIGHT : PALETTE.TEXT_MAIN,
     cursor: isDisabled ? 'not-allowed' : 'pointer',
     display: 'flex',
     '&:hover,:focus': {
-      backgroundColor: isActive ? PALETTE.BACKGROUND.MAIN : PALETTE.BACKGROUND.LIGHTEST,
+      backgroundColor: isActive ? PALETTE.BACKGROUND_MAIN : PALETTE.BACKGROUND_LIGHTEST,
       outline: 0
     }
   })

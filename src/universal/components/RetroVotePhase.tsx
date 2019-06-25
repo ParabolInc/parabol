@@ -46,7 +46,7 @@ const votePhaseBreakpoint = minWidthMediaQueries[1]
 
 const VoteMeta = styled('div')({
   alignItems: 'center',
-  borderBottom: `.0625rem solid ${PALETTE.BORDER.LIGHT}`,
+  borderBottom: `.0625rem solid ${PALETTE.BORDER_LIGHT}`,
   display: 'flex',
   justifyContent: 'center',
   margin: '0 auto 1rem',

@@ -29,7 +29,7 @@ const SettingsBlock = styled('div')({
 
 const SettingsForm = styled('form')({
   alignItems: 'center',
-  borderTop: `1px solid ${PALETTE.BORDER.LIGHTER}`,
+  borderTop: `1px solid ${PALETTE.BORDER_LIGHTER}`,
   display: 'flex',
   padding: Layout.ROW_GUTTER,
   width: '100%'

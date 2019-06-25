@@ -26,7 +26,7 @@ const SuggestedActionInviteYourTeam = (props: Props) => {
   const {name: teamName, teamMembers} = team
   return (
     <SuggestedActionCard
-      backgroundColor={PALETTE.BACKGROUND.BLUE}
+      backgroundColor={PALETTE.BACKGROUND_BLUE}
       iconName='person_add'
       suggestedActionId={suggestedActionId}
     >

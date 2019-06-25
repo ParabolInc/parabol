@@ -12,7 +12,7 @@ import {PALETTE} from 'universal/styles/paletteV2'
 import {typeScale} from 'universal/styles/theme/typography'
 
 const Error = styled('span')({
-  color: PALETTE.ERROR.MAIN,
+  color: PALETTE.ERROR_MAIN,
   display: 'block',
   fontSize: typeScale[1],
   margin: '0 0 .5rem'

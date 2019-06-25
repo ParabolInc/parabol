@@ -1,3 +1,5 @@
+import {graphql} from 'react-relay'
+
 const subscription = graphql`
   subscription NewAuthTokenSubscription {
     newAuthToken

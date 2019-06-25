@@ -22,8 +22,8 @@ import SlackClientManager from 'universal/utils/SlackClientManager'
 import SlackNotificationList from 'universal/modules/teamDashboard/components/ProviderRow/SlackNotificationList'
 
 const StyledButton = styled(FlatButton)({
-  borderColor: PALETTE.BORDER.LIGHT,
-  color: PALETTE.TEXT.MAIN,
+  borderColor: PALETTE.BORDER_LIGHT,
+  color: PALETTE.TEXT_MAIN,
   fontSize: 14,
   fontWeight: 600,
   paddingLeft: 0,
@@ -43,7 +43,7 @@ interface Props {
 }
 
 const MenuButton = styled(FlatButton)({
-  color: PALETTE.PRIMARY.MAIN,
+  color: PALETTE.PRIMARY_MAIN,
   fontSize: ICON_SIZE.MD18,
   height: 24,
   userSelect: 'none',
@@ -66,7 +66,7 @@ const ListAndMenu = styled('div')({
 const SlackLogin = styled('div')({})
 
 const ProviderName = styled('div')({
-  color: PALETTE.TEXT.MAIN,
+  color: PALETTE.TEXT_MAIN,
   fontSize: 18,
   lineHeight: '24px',
   alignItems: 'center',

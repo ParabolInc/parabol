@@ -13,7 +13,7 @@ import {LoaderSize} from '../../../../types/constEnums'
 // import DebugButton from './DebugButton'
 
 const TabBody = styled('div')({
-  backgroundColor: PALETTE.BACKGROUND.MAIN,
+  backgroundColor: PALETTE.BACKGROUND_MAIN,
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
@@ -42,10 +42,10 @@ const TopTabs = styled(Tabs)({
 interface Props extends RouteComponentProps<{}> {}
 
 const MyDashboardTasksRoot = lazy(() =>
-  import(/* webpackChunkName: MyDashboardTasksRoot */ 'universal/components/MyDashboardTasksRoot')
+  import(/* webpackChunkName: 'MyDashboardTasksRoot' */ 'universal/components/MyDashboardTasksRoot')
 )
 const MyDashboardTimelineRoot = lazy(() =>
-  import(/* webpackChunkName: MyDashboardTimelineRoot */ 'universal/components/MyDashboardTimelineRoot')
+  import(/* webpackChunkName: 'MyDashboardTimelineRoot' */ 'universal/components/MyDashboardTimelineRoot')
 )
 
 const UserDashMain = (props: Props) => {

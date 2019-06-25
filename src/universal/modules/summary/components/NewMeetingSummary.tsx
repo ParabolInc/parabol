@@ -42,7 +42,7 @@ const NewMeetingSummary = (props: Props) => {
   const teamDashUrl = `/team/${teamId}`
   const emailCSVUrl = `/new-summary/${meetingId}/csv`
   return (
-    <div style={{backgroundColor: PALETTE.BACKGROUND.MAIN, minHeight: '100vh'}}>
+    <div style={{backgroundColor: PALETTE.BACKGROUND_MAIN, minHeight: '100vh'}}>
       <Helmet title={title} />
       <MeetingSummaryEmail
         urlAction={urlAction}

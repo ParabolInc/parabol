@@ -2,7 +2,6 @@ import {TeamInvitationErrorExpired_verifiedInvitation} from '__generated__/TeamI
 import React from 'react'
 import styled from 'react-emotion'
 import {PALETTE} from '../styles/paletteV2'
-import LINK = PALETTE.LINK
 import Helmet from 'react-helmet'
 import {createFragmentContainer, graphql} from 'react-relay'
 import InviteDialog from './InviteDialog'
@@ -15,7 +14,7 @@ interface Props {
 }
 
 const StyledEmailLink = styled('a')({
-  color: LINK.BLUE
+  color: PALETTE.LINK_BLUE
 })
 
 const TeamName = styled('span')({

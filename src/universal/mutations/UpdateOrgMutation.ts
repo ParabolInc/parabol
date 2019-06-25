@@ -2,7 +2,7 @@ import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
 import {
-  UpdateOrgMutation,
+  UpdateOrgMutation as TUpdateOrgMutation,
   UpdateOrgMutationVariables
 } from '__generated__/UpdateOrgMutation.graphql'
 import {LocalHandlers} from '../types/relayMutations'
@@ -31,7 +31,7 @@ const UpdateOrgMutation = (
   variables: UpdateOrgMutationVariables,
   {onCompleted, onError}: LocalHandlers
 ): Disposable => {
-  return commitMutation<UpdateOrgMutation>(atmosphere, {
+  return commitMutation<TUpdateOrgMutation>(atmosphere, {
     mutation,
     variables,
     optimisticUpdater: (store) => {

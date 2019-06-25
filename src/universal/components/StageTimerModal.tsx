@@ -47,7 +47,7 @@ const TabContents = styled('div')({
 })
 
 const StyledTabsBar = styled(Tabs)({
-  boxShadow: `inset 0 -1px 0 ${PALETTE.BORDER.LIGHTER}`
+  boxShadow: `inset 0 -1px 0 ${PALETTE.BORDER_LIGHTER}`
 })
 
 const StageTimerModal = (props: Props) => {

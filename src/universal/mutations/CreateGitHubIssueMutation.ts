@@ -1,4 +1,4 @@
-import {CreateGitHubIssueMutation} from '__generated__/CreateGitHubIssueMutation.graphql'
+import {CreateGitHubIssueMutation as TCreateGitHubIssueMutation} from '__generated__/CreateGitHubIssueMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import Atmosphere from 'universal/Atmosphere'
 import {ICreateGitHubIssueOnMutationArguments, TaskServiceEnum} from 'universal/types/graphql'
@@ -37,7 +37,7 @@ const CreateGitHubIssueMutation = (
   variables: ICreateGitHubIssueOnMutationArguments,
   {onError, onCompleted}: LocalHandlers
 ) => {
-  return commitMutation<CreateGitHubIssueMutation>(atmosphere, {
+  return commitMutation<TCreateGitHubIssueMutation>(atmosphere, {
     mutation,
     variables,
     optimisticUpdater: (store) => {

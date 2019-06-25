@@ -38,7 +38,7 @@ const CardHeader = styled('div')({
 const EventIcon = styled(Icon)({
   // explicit alignSelf & height for multi-line titles
   alignSelf: 'center',
-  background: PALETTE.TEXT.LIGHT,
+  background: PALETTE.TEXT_LIGHT,
   borderRadius: '100%',
   boxShadow: buttonShadow,
   color: '#fff',
@@ -51,7 +51,7 @@ const EventIcon = styled(Icon)({
 })
 
 // const MenuIcon = styled(Icon)({
-//   color: PALETTE.PRIMARY.MAIN,
+//   color: PALETTE.PRIMARY_MAIN,
 //   position: 'absolute',
 //   fontSize: ICON_SIZE.MD18,
 //   top: 0,

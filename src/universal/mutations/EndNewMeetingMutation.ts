@@ -4,7 +4,7 @@ import handleRemoveSuggestedActions from 'universal/mutations/handlers/handleRem
 import Atmosphere from 'universal/Atmosphere'
 import {IEndNewMeetingOnMutationArguments} from 'universal/types/graphql'
 import {LocalHandlers} from 'universal/types/relayMutations'
-import {EndNewMeetingMutation} from '__generated__/EndNewMeetingMutation.graphql'
+import {EndNewMeetingMutation as TEndNewMeetingMutation} from '__generated__/EndNewMeetingMutation.graphql'
 import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks'
 
 graphql`
@@ -96,7 +96,7 @@ const EndNewMeetingMutation = (
   variables: IEndNewMeetingOnMutationArguments,
   {onError, onCompleted, history}: LocalHandlers
 ) => {
-  return commitMutation<EndNewMeetingMutation>(atmosphere, {
+  return commitMutation<TEndNewMeetingMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {

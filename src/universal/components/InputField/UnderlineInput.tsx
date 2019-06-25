@@ -3,16 +3,14 @@ import styled from 'react-emotion'
 import StyledError from 'universal/components/StyledError'
 import {PALETTE} from '../../styles/paletteV2'
 import {FONT_FAMILY} from '../../styles/typographyV2'
-import BORDER = PALETTE.BORDER
-import TEXT = PALETTE.TEXT
 
 const Input = styled('input')({
   appearance: 'none',
   borderWidth: 0,
-  borderBottom: `0.0625rem solid ${BORDER.LIGHT}`,
+  borderBottom: `0.0625rem solid ${PALETTE.BORDER_LIGHT}`,
   borderRadius: 0,
   boxShadow: 'none',
-  color: TEXT.MAIN,
+  color: PALETTE.TEXT_MAIN,
   display: 'block',
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: '.875rem',
@@ -22,7 +20,7 @@ const Input = styled('input')({
   padding: '.3125rem 1rem .3125rem 0',
   width: '100%',
   ':hover,:focus,:active': {
-    borderColor: BORDER.MAIN
+    borderColor: PALETTE.BORDER_MAIN
   }
 })
 

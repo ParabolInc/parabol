@@ -20,7 +20,7 @@ const ThumbsUp = styled(Icon)({
 
 const RallyLink = styled('span')({
   fontWeight: 600,
-  color: PALETTE.LINK.BLUE
+  color: PALETTE.LINK_BLUE
 })
 
 const TimelineNoTasks = () => {

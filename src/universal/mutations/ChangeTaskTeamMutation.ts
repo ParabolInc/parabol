@@ -8,7 +8,7 @@ import Atmosphere from 'universal/Atmosphere'
 import {IChangeTaskTeamOnMutationArguments, ITask, ITeam} from 'universal/types/graphql'
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import getBaseRecord from 'universal/utils/relay/getBaseRecord'
-import {ChangeTaskTeamMutation} from '__generated__/ChangeTaskTeamMutation.graphql'
+import {ChangeTaskTeamMutation as TChangeTaskTeamMutation} from '__generated__/ChangeTaskTeamMutation.graphql'
 import {LocalHandlers} from 'universal/types/relayMutations'
 
 graphql`
@@ -60,7 +60,7 @@ const ChangeTaskTeamMutation = (
   variables: IChangeTaskTeamOnMutationArguments,
   {onError, onCompleted}: LocalHandlers
 ) => {
-  return commitMutation<ChangeTaskTeamMutation>(atmosphere, {
+  return commitMutation<TChangeTaskTeamMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {

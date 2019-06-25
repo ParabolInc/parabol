@@ -15,7 +15,7 @@ import {PERSONAL, PRO_LABEL, SIGNOUT_LABEL, SIGNOUT_SLUG} from 'universal/utils/
 import {PALETTE} from 'universal/styles/paletteV2'
 
 const UpgradeCTA = styled('span')({
-  color: PALETTE.TEXT.BLUE,
+  color: PALETTE.TEXT_BLUE,
   fontSize: ui.menuItemFontSize,
   lineHeight: ui.menuItemHeight,
   marginRight: '2rem'

@@ -2,7 +2,7 @@ import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import {LocalHandlers} from '../types/relayMutations'
 import {
-  SetSlackNotificationMutation,
+  SetSlackNotificationMutation as TSetSlackNotificationMutation,
   SetSlackNotificationMutationVariables
 } from '__generated__/SetSlackNotificationMutation.graphql'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
@@ -44,7 +44,7 @@ const SetSlackNotificationMutation = (
   variables: SetSlackNotificationMutationVariables,
   {onError, onCompleted}: LocalHandlers
 ): Disposable => {
-  return commitMutation<SetSlackNotificationMutation>(atmosphere, {
+  return commitMutation<TSetSlackNotificationMutation>(atmosphere, {
     mutation,
     variables,
     optimisticUpdater: (store) => {

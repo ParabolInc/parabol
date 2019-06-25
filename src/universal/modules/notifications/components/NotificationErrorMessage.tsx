@@ -3,7 +3,7 @@ import {PALETTE} from 'universal/styles/paletteV2'
 import React from 'react'
 
 const StyledError = styled('div')({
-  color: PALETTE.ERROR.MAIN,
+  color: PALETTE.ERROR_MAIN,
   fontWeight: 600,
   fontSize: 14,
   textAlign: 'center'

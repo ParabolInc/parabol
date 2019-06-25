@@ -1,5 +1,5 @@
 import {
-  DismissNewFeatureMutation,
+  DismissNewFeatureMutation as TDismissNewFeatureMutation,
   DismissNewFeatureMutationVariables
 } from '__generated__/DismissNewFeatureMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
@@ -21,7 +21,7 @@ const DismissNewFeatureMutation = (
   variables: DismissNewFeatureMutationVariables,
   {onCompleted, onError}: LocalHandlers
 ): Disposable => {
-  return commitMutation<DismissNewFeatureMutation>(atmosphere, {
+  return commitMutation<TDismissNewFeatureMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {

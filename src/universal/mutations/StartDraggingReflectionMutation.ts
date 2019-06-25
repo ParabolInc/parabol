@@ -7,7 +7,7 @@ import addNodeToArray from 'universal/utils/relay/addNodeToArray'
 import createProxyRecord from 'universal/utils/relay/createProxyRecord'
 import getInProxy from 'universal/utils/relay/getInProxy'
 import {
-  StartDraggingReflectionMutation,
+  StartDraggingReflectionMutation as TStartDraggingReflectionMutation,
   StartDraggingReflectionMutationVariables
 } from '../../__generated__/StartDraggingReflectionMutation.graphql'
 import {Coords} from '../../types/animations'
@@ -171,7 +171,7 @@ const StartDraggingReflectionMutation = (
   onError?: ErrorHandler,
   onCompleted?: CompletedHandler
 ): Disposable => {
-  return commitMutation<StartDraggingReflectionMutation>(atmosphere, {
+  return commitMutation<TStartDraggingReflectionMutation>(atmosphere, {
     mutation,
     variables,
     onCompleted,

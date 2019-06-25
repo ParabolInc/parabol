@@ -3,8 +3,8 @@ import {PALETTE} from 'universal/styles/paletteV2'
 import FlatButton from 'universal/components/FlatButton'
 
 const SecondaryButton = styled(FlatButton)({
-  borderColor: PALETTE.BORDER.LIGHT,
-  color: PALETTE.TEXT.MAIN,
+  borderColor: PALETTE.BORDER_LIGHT,
+  color: PALETTE.TEXT_MAIN,
   fontWeight: 600
 })
 

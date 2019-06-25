@@ -31,7 +31,7 @@ const ColumnWrapper = styled('div')({
 })
 
 const ColumnHighlight = styled('div')(({isFocused}: {isFocused: boolean}) => ({
-  backgroundColor: isFocused ? PALETTE.BACKGROUND.MAIN_DARKENED : undefined,
+  backgroundColor: isFocused ? PALETTE.BACKGROUND_MAIN_DARKENED : undefined,
   height: '100%',
   maxWidth: 416,
   maxHeight: 608,
@@ -62,7 +62,7 @@ const Prompt = styled('div')({
 })
 
 const Description = styled('div')({
-  color: PALETTE.TEXT.MAIN,
+  color: PALETTE.TEXT_MAIN,
   fontSize: 13,
   fontStyle: 'italic',
   fontWeight: 400,
@@ -71,7 +71,7 @@ const Description = styled('div')({
 })
 
 const FocusArrow = styled(Icon)(({isFocused}: {isFocused: boolean}) => ({
-  color: PALETTE.TEXT.PINK,
+  color: PALETTE.TEXT_PINK,
   display: 'block',
   fontSize: ICON_SIZE.MD24,
   height: ICON_SIZE.MD24,

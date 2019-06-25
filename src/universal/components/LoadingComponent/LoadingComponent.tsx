@@ -59,7 +59,7 @@ const LoadingComponent = forwardRef((props: Props, ref: any) => {
     <LoadingWrapper innerRef={ref} height={height} width={width}>
       <Spinner
         delay={delay}
-        fill={timedOut ? PALETTE.ERROR.MAIN : PALETTE.BACKGROUND.TEAL}
+        fill={timedOut ? PALETTE.ERROR_MAIN : PALETTE.BACKGROUND_TEAL}
         width={spinnerSize}
       />
     </LoadingWrapper>

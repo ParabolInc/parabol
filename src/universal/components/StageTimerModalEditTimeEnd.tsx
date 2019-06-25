@@ -45,7 +45,7 @@ const HR = styled(MenuItemHR)({
 })
 
 const StyledIcon = styled(Icon)({
-  color: PALETTE.TEXT.LIGHT
+  color: PALETTE.TEXT_LIGHT
 })
 
 const StageTimerModalEditTimeEnd = (props: Props) => {
