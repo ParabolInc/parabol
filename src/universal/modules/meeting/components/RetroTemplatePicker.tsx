@@ -30,7 +30,8 @@ const RetroTemplatePicker = (props: Props) => {
     return templates
   }, [reflectTemplates])
   const selectedTemplateIdx = templates.findIndex((template) => template.id === selectedTemplateId)
-  const selectedTemplate = templates[selectedTemplateIdx]
+  const safeIdx = selectedTemplateIdx === -1 ? 0 : selectedTemplateIdx
+  const selectedTemplate = templates[safeIdx]
   const {menuPortal, togglePortal, menuProps, originRef} = useMenu(MenuPosition.UPPER_RIGHT, {
     isDropdown: true
   })
