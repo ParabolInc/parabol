@@ -4,6 +4,7 @@ const webpack = require('webpack')
 const pluginDynamicImport = require('@babel/plugin-syntax-dynamic-import').default
 const pluginRelay = require('babel-plugin-relay')
 const vendors = require('../dll/vendors')
+const pluginInlineImport = require('babel-plugin-inline-import').default
 // const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 const babelLoader = {
@@ -11,7 +12,11 @@ const babelLoader = {
   options: {
     cacheDirectory: true,
     babelrc: false,
-    plugins: [pluginDynamicImport, [pluginRelay, {artifactDirectory: './src/__generated__'}]]
+    plugins: [
+      pluginInlineImport,
+      pluginDynamicImport,
+      [pluginRelay, {artifactDirectory: './src/__generated__'}]
+    ]
   }
 }
 
