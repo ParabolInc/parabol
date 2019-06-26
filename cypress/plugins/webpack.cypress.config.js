@@ -25,7 +25,9 @@ module.exports = {
         test: /\.tsx?$/,
         include: [
           path.join(__dirname, '..'),
-          path.join(__dirname, '..', '..', 'src', 'server', 'utils')
+          path.join(__dirname, '..', '..', 'src', 'server', 'utils'),
+          // used for universal constants
+          path.join(__dirname, '..', '..', 'src', 'universal', 'utils')
         ],
         use: babelLoader
       }
