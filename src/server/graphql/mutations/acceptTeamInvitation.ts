@@ -72,7 +72,7 @@ export default {
 
       const viewer = await r.table('User').get(viewerId)
       if (acceptedAt || (viewer.tms && viewer.tms.includes(teamId))) {
-        return standardError(new Error('Team already joined'), {userId: viewerId})
+        return {error: {message: 'Team already joined'}}
       }
 
       // RESOLUTION
