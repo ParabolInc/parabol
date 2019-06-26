@@ -5,7 +5,7 @@ import {IAddAgendaItemOnMutationArguments} from 'universal/types/graphql'
 import {LocalHandlers} from 'universal/types/relayMutations'
 import clientTempId from 'universal/utils/relay/clientTempId'
 import createProxyRecord from 'universal/utils/relay/createProxyRecord'
-import {AddAgendaItemMutation} from '__generated__/AddAgendaItemMutation.graphql'
+import {AddAgendaItemMutation as TAddAgendaItemMutation} from '__generated__/AddAgendaItemMutation.graphql'
 
 graphql`
   fragment AddAgendaItemMutation_team on AddAgendaItemPayload {
@@ -54,7 +54,7 @@ const AddAgendaItemMutation = (
   variables: IAddAgendaItemOnMutationArguments,
   {onError, onCompleted}: LocalHandlers
 ) => {
-  return commitMutation<AddAgendaItemMutation>(atmosphere, {
+  return commitMutation<TAddAgendaItemMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {

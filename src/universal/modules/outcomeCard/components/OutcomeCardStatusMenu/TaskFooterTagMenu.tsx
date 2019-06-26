@@ -52,7 +52,7 @@ const TaskFooterTagMenu = (props: Props) => {
         key='private'
         label={
           <MenuItemLabel>
-            <MenuItemDot color={PALETTE.TASK_STATUS.PRIVATE} />
+            <MenuItemDot color={PALETTE.STATUS_PRIVATE} />
             <span>
               {isPrivate ? 'Remove ' : 'Set as '}
               <b>{'#private'}</b>
@@ -66,7 +66,7 @@ const TaskFooterTagMenu = (props: Props) => {
           key='delete'
           label={
             <MenuItemLabel>
-              <MenuItemDot color={PALETTE.ERROR.MAIN} />
+              <MenuItemDot color={PALETTE.ERROR_MAIN} />
               {'Delete this Task'}
             </MenuItemLabel>
           }
@@ -77,7 +77,7 @@ const TaskFooterTagMenu = (props: Props) => {
           key='archive'
           label={
             <MenuItemLabel>
-              <MenuItemDot color={PALETTE.TASK_STATUS.ARCHIVED} />
+              <MenuItemDot color={PALETTE.STATUS_ARCHIVED} />
               <span>
                 {'Set as '}
                 <b>{'#archived'}</b>

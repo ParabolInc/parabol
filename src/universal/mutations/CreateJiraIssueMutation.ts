@@ -4,7 +4,7 @@ import makeSuggestedIntegrationId from 'universal/utils/makeSuggestedIntegration
 import createProxyRecord from 'universal/utils/relay/createProxyRecord'
 import Atmosphere from 'universal/Atmosphere'
 import {LocalHandlers} from 'universal/types/relayMutations'
-import {CreateJiraIssueMutation} from '__generated__/CreateJiraIssueMutation.graphql'
+import {CreateJiraIssueMutation as TCreateJiraIssueMutation} from '__generated__/CreateJiraIssueMutation.graphql'
 
 graphql`
   fragment CreateJiraIssueMutation_task on CreateJiraIssuePayload {
@@ -41,7 +41,7 @@ const CreateJiraIssueMutation = (
   variables: ICreateJiraIssueOnMutationArguments,
   {onCompleted, onError}: LocalHandlers
 ) => {
-  return commitMutation<CreateJiraIssueMutation>(atmosphere, {
+  return commitMutation<TCreateJiraIssueMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {

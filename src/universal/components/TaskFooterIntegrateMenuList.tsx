@@ -31,12 +31,12 @@ interface Props {
 }
 
 const SearchIcon = styled(Icon)({
-  color: PALETTE.TEXT.LIGHT,
+  color: PALETTE.TEXT_LIGHT,
   fontSize: ICON_SIZE.MD18
 })
 
 const NoResults = styled(MenuItemLabel)({
-  color: PALETTE.TEXT.LIGHT,
+  color: PALETTE.TEXT_LIGHT,
   justifyContent: 'center',
   paddingLeft: 8,
   paddingRight: 8,

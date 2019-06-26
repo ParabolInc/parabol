@@ -43,7 +43,7 @@ const StyledBottomBar = styled(MeetingControlBar)({
 })
 
 const StyledIcon = styled(Icon)({
-  color: PALETTE.TEXT.LIGHT,
+  color: PALETTE.TEXT_LIGHT,
   display: 'block',
   margin: '0 auto 4px',
   width: ICON_SIZE.MD24

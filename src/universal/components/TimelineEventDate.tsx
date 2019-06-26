@@ -3,10 +3,9 @@ import React, {Component} from 'react'
 import styled from 'react-emotion'
 import {PALETTE} from '../styles/paletteV2'
 import relativeDate from '../utils/date/relativeDate'
-import TEXT = PALETTE.TEXT
 
 const StyledSpan = styled('span')({
-  color: TEXT.LIGHT,
+  color: PALETTE.TEXT_LIGHT,
   fontSize: 11,
   lineHeight: '1rem',
   paddingTop: 4

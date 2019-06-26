@@ -3,7 +3,7 @@ import {PALETTE} from 'universal/styles/paletteV2'
 import {meetingTopBarMediaQuery} from 'universal/styles/meeting'
 
 const PhaseHeaderDescription = styled('h2')({
-  color: PALETTE.TEXT.LIGHT,
+  color: PALETTE.TEXT_LIGHT,
   display: 'none',
   fontWeight: 'normal',
   margin: 0,

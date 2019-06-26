@@ -1,5 +1,5 @@
 import {
-  ArchiveTeamMutation,
+  ArchiveTeamMutation as TArchiveTeamMutation,
   ArchiveTeamMutationVariables
 } from '__generated__/ArchiveTeamMutation.graphql'
 import {ArchiveTeamMutation_team} from '__generated__/ArchiveTeamMutation_team.graphql'
@@ -84,7 +84,7 @@ const ArchiveTeamMutation = (
   {onError, onCompleted, history}: LocalHandlers
 ): Disposable => {
   const {viewerId} = atmosphere
-  return commitMutation<ArchiveTeamMutation>(atmosphere, {
+  return commitMutation<TArchiveTeamMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {

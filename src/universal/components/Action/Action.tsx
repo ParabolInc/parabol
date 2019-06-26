@@ -37,7 +37,7 @@ const TeamInvitation = lazy(() =>
 
 const ActionStyles = styled('div')({
   // bg is important since we do a slide up animation we don't want the background to slide up, too
-  background: PALETTE.BACKGROUND.MAIN,
+  background: PALETTE.BACKGROUND_MAIN,
   margin: 0,
   minHeight: '100vh',
   padding: 0,

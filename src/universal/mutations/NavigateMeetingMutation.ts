@@ -1,5 +1,5 @@
 import {
-  NavigateMeetingMutation,
+  NavigateMeetingMutation as TNavigateMeetingMutation,
   NavigateMeetingMutationVariables
 } from '__generated__/NavigateMeetingMutation.graphql'
 import {NavigateMeetingMutation_team} from '__generated__/NavigateMeetingMutation_team.graphql'
@@ -181,7 +181,7 @@ const NavigateMeetingMutation = (
   onError?,
   onCompleted?
 ) => {
-  return commitMutation<NavigateMeetingMutation>(atmosphere, {
+  return commitMutation<TNavigateMeetingMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {

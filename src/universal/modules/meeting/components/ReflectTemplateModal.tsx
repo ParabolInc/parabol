@@ -33,14 +33,14 @@ const StyledDialogContainer = styled(DialogContainer)({
 const TemplateSidebar = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  backgroundColor: PALETTE.BACKGROUND.MAIN,
+  backgroundColor: PALETTE.BACKGROUND_MAIN,
   borderRadius: `${ui.modalBorderRadius} 0 0 ${ui.modalBorderRadius}`,
   width: 200
 })
 
 const Label = styled('div')({
-  color: PALETTE.TEXT.LIGHT,
-  borderBottom: `.0625rem solid ${PALETTE.BORDER.LIGHT}`,
+  color: PALETTE.TEXT_LIGHT,
+  borderBottom: `.0625rem solid ${PALETTE.BORDER_LIGHT}`,
   fontSize: typeScale[1],
   fontWeight: 600,
   lineHeight: '1.5',
@@ -63,7 +63,7 @@ const TemplateList = styled('ul')({
 })
 
 const TemplateItem = styled('li')(({isActive}: {isActive: boolean}) => ({
-  backgroundColor: isActive ? PALETTE.BACKGROUND.MAIN_DARKENED : undefined,
+  backgroundColor: isActive ? PALETTE.BACKGROUND_MAIN_DARKENED : undefined,
   borderRadius: '.125rem',
   cursor: 'pointer',
   fontSize: typeScale[3],

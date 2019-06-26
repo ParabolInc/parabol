@@ -1,4 +1,4 @@
-import {RemoveAtlassianAuthMutation} from '__generated__/RemoveAtlassianAuthMutation.graphql'
+import {RemoveAtlassianAuthMutation as TRemoveAtlassianAuthMutation} from '__generated__/RemoveAtlassianAuthMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import Atmosphere from 'universal/Atmosphere'
@@ -29,7 +29,7 @@ const RemoveAtlassianAuthMutation = (
   variables: IRemoveAtlassianAuthOnMutationArguments,
   {onError, onCompleted}: LocalHandlers
 ): Disposable => {
-  return commitMutation<RemoveAtlassianAuthMutation>(atmosphere, {
+  return commitMutation<TRemoveAtlassianAuthMutation>(atmosphere, {
     mutation,
     variables,
     onError,

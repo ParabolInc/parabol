@@ -15,7 +15,7 @@ const getTranslate = (y: number) =>
 
 const Alert = styled('div')(
   {
-    backgroundColor: PALETTE.BACKGROUND.RED,
+    backgroundColor: PALETTE.BACKGROUND_RED,
     color: '#fff',
     display: 'flex',
     fontSize: 18,

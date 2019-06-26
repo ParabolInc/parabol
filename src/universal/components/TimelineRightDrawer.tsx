@@ -6,8 +6,8 @@ import ErrorBoundary from 'universal/components/ErrorBoundary'
 import TimelinePriorityTasks from 'universal/components/TimelinePriorityTasks'
 import {PALETTE} from '../styles/paletteV2'
 import {DASH_SIDEBAR} from './Dashboard/DashSidebar'
-import {DASH_TIMELINE} from './MyDashboardTimeline'
 import TimelineNewFeature from './TimelineNewFeature'
+import {DASH_TIMELINE} from 'universal/types/constEnums'
 
 interface Props {
   viewer: TimelineRightDrawer_viewer
@@ -23,7 +23,7 @@ export const RightDrawer = styled('div')({
   display: 'none',
   minWidth: DASH_TIMELINE.TIMELINE_DRAWER_WIDTH,
   maxWidth: DASH_TIMELINE.TIMELINE_DRAWER_WIDTH,
-  borderLeft: `1px solid ${PALETTE.BORDER.LIGHT}`,
+  borderLeft: `1px solid ${PALETTE.BORDER_LIGHT}`,
   padding: 24,
   [`@media screen and (min-width: ${MIN_WIDTH}px)`]: {
     display: 'block'

@@ -1,4 +1,4 @@
-import {StartNewMeetingMutation} from '__generated__/StartNewMeetingMutation.graphql'
+import {StartNewMeetingMutation as TStartNewMeetingMutation} from '__generated__/StartNewMeetingMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import Atmosphere from 'universal/Atmosphere'
 import {IStartNewMeetingOnMutationArguments} from 'universal/types/graphql'
@@ -65,7 +65,7 @@ const StartNewMeetingMutation = (
   variables: IStartNewMeetingOnMutationArguments,
   {history, onError, onCompleted}: LocalHandlers
 ) => {
-  return commitMutation<StartNewMeetingMutation>(atmosphere, {
+  return commitMutation<TStartNewMeetingMutation>(atmosphere, {
     mutation,
     variables,
     onError,

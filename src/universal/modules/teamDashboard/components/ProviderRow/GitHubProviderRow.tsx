@@ -25,8 +25,8 @@ import {MenuMutationProps} from 'universal/hooks/useMutationProps'
 import GitHubClientManager from 'universal/utils/GitHubClientManager'
 
 const StyledButton = styled(FlatButton)({
-  borderColor: PALETTE.BORDER.LIGHT,
-  color: PALETTE.TEXT.MAIN,
+  borderColor: PALETTE.BORDER_LIGHT,
+  color: PALETTE.TEXT_MAIN,
   fontSize: 14,
   fontWeight: 600,
   paddingLeft: 0,
@@ -46,7 +46,7 @@ interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentPr
 }
 
 const MenuButton = styled(FlatButton)({
-  color: PALETTE.PRIMARY.MAIN,
+  color: PALETTE.PRIMARY_MAIN,
   fontSize: ICON_SIZE.MD18,
   height: 24,
   userSelect: 'none',
@@ -69,7 +69,7 @@ const ListAndMenu = styled('div')({
 const GitHubLogin = styled('div')({})
 
 const ProviderName = styled('div')({
-  color: PALETTE.TEXT.MAIN,
+  color: PALETTE.TEXT_MAIN,
   fontSize: 18,
   lineHeight: '24px',
   alignItems: 'center',

@@ -25,7 +25,7 @@ const PlaceholderCard = styled('div')({
 })
 
 const Tip = styled('div')({
-  color: PALETTE.TEXT.LIGHT,
+  color: PALETTE.TEXT_LIGHT,
   fontSize: typeScale[2],
   padding: '1rem',
   textAlign: 'center',

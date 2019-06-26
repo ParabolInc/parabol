@@ -2,7 +2,7 @@ import styled from 'react-emotion'
 import {PALETTE} from 'universal/styles/paletteV2'
 import RowInfoCopy from './RowInfoCopy'
 
-const color = PALETTE.LINK.LIGHT
+const color = PALETTE.LINK_LIGHT
 
 const LinkComponent = RowInfoCopy.withComponent('a')
 

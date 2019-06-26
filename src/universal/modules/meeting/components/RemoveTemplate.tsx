@@ -13,7 +13,7 @@ import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 const Button = styled(FlatButton)(({canDelete}: {canDelete: boolean}) => ({
   alignItems: 'center',
   display: !canDelete ? 'none' : 'flex',
-  color: PALETTE.TEXT.LIGHT,
+  color: PALETTE.TEXT_LIGHT,
   height: '2.125rem',
   justifyContent: 'center',
   paddingLeft: 0,

@@ -24,7 +24,7 @@ const StyledCopy = styled('p')({
 })
 
 const StyledIcon = styled(Icon)({
-  color: PALETTE.TEXT.BLUE,
+  color: PALETTE.TEXT_BLUE,
   fontSize: ICON_SIZE.MD48
 })
 

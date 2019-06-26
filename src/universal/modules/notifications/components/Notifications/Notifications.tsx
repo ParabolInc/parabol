@@ -29,8 +29,8 @@ const NotificationListBlock = styled('div')({
 
 const NotificationsEmptyBlock = styled('div')({
   alignItems: 'center',
-  borderTop: `1px solid ${PALETTE.BORDER.LIGHTER}`,
-  color: PALETTE.TEXT.MAIN,
+  borderTop: `1px solid ${PALETTE.BORDER_LIGHTER}`,
+  color: PALETTE.TEXT_MAIN,
   display: 'flex',
   fontSize: 20,
   height: 77,

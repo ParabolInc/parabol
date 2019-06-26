@@ -4,7 +4,7 @@ import {Layout} from 'universal/types/constEnums'
 
 const Row = styled('div')({
   alignItems: 'center',
-  borderTop: `1px solid ${PALETTE.BORDER.LIGHTER}`,
+  borderTop: `1px solid ${PALETTE.BORDER_LIGHTER}`,
   display: 'flex',
   justifyContent: 'space-between',
   padding: Layout.ROW_GUTTER,

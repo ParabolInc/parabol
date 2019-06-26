@@ -20,7 +20,7 @@ interface Props extends WithAtmosphereProps {
 }
 
 const PriorityTasksHeader = styled('div')({
-  color: PALETTE.TEXT.LIGHT,
+  color: PALETTE.TEXT_LIGHT,
   fontSize: 14,
   fontWeight: 600,
   marginBottom: 16

@@ -6,7 +6,7 @@ import {PALETTE} from 'universal/styles/paletteV2'
 import {ActionMeetingUpdatesPromptTeamHelpText_currentTeamMember} from '__generated__/ActionMeetingUpdatesPromptTeamHelpText_currentTeamMember.graphql'
 
 const AgendaControl = styled('span')({
-  color: PALETTE.TEXT.RED,
+  color: PALETTE.TEXT_RED,
   cursor: 'pointer',
   '&:hover': {
     textDecoration: 'underline'

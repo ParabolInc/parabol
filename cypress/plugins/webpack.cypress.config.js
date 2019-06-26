@@ -1,21 +1,6 @@
 require('../../src/server/babelRegister')
 const resolve = require('../../webpack/webpackResolve')
-const pluginObjectRestSpread = require('@babel/plugin-proposal-object-rest-spread').default
-const pluginClassProps = require('@babel/plugin-proposal-class-properties').default
-const pluginDynamicImport = require('@babel/plugin-syntax-dynamic-import').default
-const presetReact = require('@babel/preset-react').default
-const presetTypescript = require('@babel/preset-typescript').default
 const path = require('path')
-
-const babelLoader = {
-  loader: 'babel-loader',
-  options: {
-    cacheDirectory: true,
-    babelrc: false,
-    plugins: [pluginObjectRestSpread, pluginClassProps, pluginDynamicImport],
-    presets: [presetReact, presetTypescript]
-  }
-}
 
 module.exports = {
   resolve,
@@ -29,7 +14,12 @@ module.exports = {
           // used for universal constants
           path.join(__dirname, '..', '..', 'src', 'universal', 'utils')
         ],
-        use: babelLoader
+        use: {
+          loader: '@sucrase/webpack-loader',
+          options: {
+            transforms: ['jsx', 'typescript']
+          }
+        }
       }
     ]
   }

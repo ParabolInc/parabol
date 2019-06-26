@@ -1,4 +1,4 @@
-import {NewMeetingCheckInMutation} from '__generated__/NewMeetingCheckInMutation.graphql'
+import {NewMeetingCheckInMutation as TNewMeetingCheckInMutation} from '__generated__/NewMeetingCheckInMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import Atmosphere from 'universal/Atmosphere'
 import {INewMeetingCheckInOnMutationArguments} from 'universal/types/graphql'
@@ -34,7 +34,7 @@ const NewMeetingCheckInMutation = (
   variables: INewMeetingCheckInOnMutationArguments,
   {onError, onCompleted}: LocalHandlers = {}
 ) => {
-  return commitMutation<NewMeetingCheckInMutation>(atmosphere, {
+  return commitMutation<TNewMeetingCheckInMutation>(atmosphere, {
     mutation,
     variables,
     optimisticUpdater: (store) => {

@@ -83,7 +83,7 @@ const useModalPortal = (
       <ModalBlock innerRef={targetRef}>
         <Backdrop
           onClick={closePortal}
-          background={background || PALETTE.BACKGROUND.BACKDROP}
+          background={background || PALETTE.BACKGROUND_BACKDROP}
           portalStatus={portalStatus}
         />
         <ErrorBoundary

@@ -7,7 +7,7 @@ import ui from 'universal/styles/ui'
 import {PALETTE} from 'universal/styles/paletteV2'
 
 const DropdownIcon = styled(Icon)({
-  color: PALETTE.TEXT.LIGHT
+  color: PALETTE.TEXT_LIGHT
 })
 
 const DropdownBlock = styled('div')({

@@ -1,4 +1,4 @@
-import {ReflectTemplatePromptUpdateDescriptionMutation} from '__generated__/ReflectTemplatePromptUpdateDescriptionMutation.graphql'
+import {ReflectTemplatePromptUpdateDescriptionMutation as TReflectTemplatePromptUpdateDescriptionMutation} from '__generated__/ReflectTemplatePromptUpdateDescriptionMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import Atmosphere from 'universal/Atmosphere'
@@ -29,7 +29,7 @@ const ReflectTemplatePromptUpdateDescriptionMutation = (
   variables: IReflectTemplatePromptUpdateDescriptionOnMutationArguments,
   {onError, onCompleted}: LocalHandlers
 ): Disposable => {
-  return commitMutation<ReflectTemplatePromptUpdateDescriptionMutation>(atmosphere, {
+  return commitMutation<TReflectTemplatePromptUpdateDescriptionMutation>(atmosphere, {
     mutation,
     variables,
     onCompleted,

@@ -28,7 +28,7 @@ import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
 
 interface Props extends WithAtmosphereProps, RouteComponentProps, WithMutationProps {}
 
-const color = PALETTE.LINK.BLUE
+const color = PALETTE.LINK_BLUE
 
 const ForgotPasswordLink = styled(PlainButton)({
   color,

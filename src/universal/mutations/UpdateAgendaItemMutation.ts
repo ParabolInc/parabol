@@ -10,7 +10,7 @@ import {
 } from 'universal/types/graphql'
 import {LocalHandlers} from 'universal/types/relayMutations'
 import updateProxyRecord from 'universal/utils/relay/updateProxyRecord'
-import {UpdateAgendaItemMutation} from '__generated__/UpdateAgendaItemMutation.graphql'
+import {UpdateAgendaItemMutation as TUpdateAgendaItemMutation} from '__generated__/UpdateAgendaItemMutation.graphql'
 
 graphql`
   fragment UpdateAgendaItemMutation_team on UpdateAgendaItemPayload {
@@ -76,7 +76,7 @@ const UpdateAgendaItemMutation = (
 ) => {
   const {updatedAgendaItem} = variables
   const [teamId] = updatedAgendaItem.id.split('::')
-  return commitMutation<UpdateAgendaItemMutation>(atmosphere, {
+  return commitMutation<TUpdateAgendaItemMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {

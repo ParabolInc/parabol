@@ -31,6 +31,7 @@ const UpdateUserProfileMutation = (environment, updatedUser, {onError, onComplet
     variables: {updatedUser},
     optimisticUpdater: (store) => {
       const viewer = store.get(viewerId)
+      if (!viewer) return
       const {picture, preferredName} = updatedUser
       if (viewer) {
         if (preferredName) {

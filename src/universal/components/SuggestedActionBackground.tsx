@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'react-emotion'
 import patternTile from '../styles/theme/images/icon-pattern-tile.svg'
-import {DASH_TIMELINE} from './MyDashboardTimeline'
+import {DASH_TIMELINE} from 'universal/types/constEnums'
 
 const ROTATION = 15
 const BACKGROUND_HEIGHT = 142

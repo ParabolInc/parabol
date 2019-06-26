@@ -24,7 +24,7 @@ const Switch = styled('div')({
 
 const Track = styled('div')(
   ({active, disabled}: {active: boolean; disabled: boolean | undefined}) => ({
-    backgroundColor: active ? PALETTE.CONTROL.MAIN_BACKGROUND : PALETTE.CONTROL.LIGHT_BACKGROUND,
+    backgroundColor: active ? PALETTE.CONTROL_MAIN_BACKGROUND : PALETTE.CONTROL_LIGHT_BACKGROUND,
     borderRadius: TRACK_HEIGHT,
     color: 'white',
     cursor: disabled ? 'not-allowed' : 'pointer',
@@ -40,7 +40,7 @@ const Track = styled('div')(
 )
 
 const Thumb = styled('div')(({active}: {active: boolean}) => ({
-  backgroundColor: active ? PALETTE.CONTROL.MAIN : PALETTE.CONTROL.LIGHT,
+  backgroundColor: active ? PALETTE.CONTROL_MAIN : PALETTE.CONTROL_LIGHT,
   borderRadius: '100%',
   boxShadow: switchShadow,
   display: 'block',

@@ -6,16 +6,10 @@ import TimelineFeedList from 'universal/components/TimelineFeedList'
 import TimelineSuggestedAction from 'universal/components/TimelineSuggestedAction'
 import TimelineLoadingEvents from './TimelineLoadingEvents'
 import TimelineRightDrawer from './TimelineRightDrawer'
+import {DASH_TIMELINE} from 'universal/types/constEnums'
 
 interface Props {
   viewer: MyDashboardTimeline_viewer
-}
-
-export const enum DASH_TIMELINE {
-  FEED_MAX_WIDTH = 600,
-  FEED_MIN_WIDTH = 400,
-  MIN_PADDING = 8,
-  TIMELINE_DRAWER_WIDTH = 336
 }
 
 const TimelineFeed = styled('div')({

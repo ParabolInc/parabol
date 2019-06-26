@@ -16,7 +16,7 @@ import {PALETTE} from 'universal/styles/paletteV2'
 import {Layout} from 'universal/types/constEnums'
 
 const SlackNotificationListStyles = styled('div')({
-  borderTop: `1px solid ${PALETTE.BORDER.LIGHTER}`,
+  borderTop: `1px solid ${PALETTE.BORDER_LIGHTER}`,
   padding: Layout.ROW_GUTTER
 })
 

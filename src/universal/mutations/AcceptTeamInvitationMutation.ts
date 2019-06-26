@@ -7,7 +7,7 @@ import getGraphQLError from 'universal/utils/relay/getGraphQLError'
 import getInProxy from 'universal/utils/relay/getInProxy'
 import {LocalHandlers} from '../types/relayMutations'
 import {
-  AcceptTeamInvitationMutation,
+  AcceptTeamInvitationMutation as TAcceptTeamInvitationMutation,
   AcceptTeamInvitationMutationVariables
 } from '__generated__/AcceptTeamInvitationMutation.graphql'
 import handleAddTeams from 'universal/mutations/handlers/handleAddTeams'
@@ -109,7 +109,7 @@ const AcceptTeamInvitationMutation = (
   variables: AcceptTeamInvitationMutationVariables,
   {history, onCompleted, onError}: LocalHandlers
 ): Disposable => {
-  return commitMutation<AcceptTeamInvitationMutation>(atmosphere, {
+  return commitMutation<TAcceptTeamInvitationMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {

@@ -1,13 +1,11 @@
 import React, {ReactNode} from 'react'
 import styled from 'react-emotion'
 import {PALETTE} from '../styles/paletteV2'
-import BACKGROUND = PALETTE.BACKGROUND
-import TEXT = PALETTE.TEXT
 
 const PageContainer = styled('div')({
   alignItems: 'center',
-  backgroundColor: BACKGROUND.MAIN,
-  color: TEXT.MAIN,
+  backgroundColor: PALETTE.BACKGROUND_MAIN,
+  color: PALETTE.TEXT_MAIN,
   display: 'flex',
   flexDirection: 'column',
   maxWidth: '100%',
@@ -28,7 +26,7 @@ const CenteredBlock = styled('div')({
 })
 
 const Backdrop = styled('div')({
-  backgroundColor: BACKGROUND.BACKDROP,
+  backgroundColor: PALETTE.BACKGROUND_BACKDROP,
   height: '100vh',
   left: 0,
   position: 'absolute',
@@ -60,7 +58,7 @@ const AbstractSidebar = styled('div')({
 })
 
 const AbstractSidebarHeading = styled('div')({
-  backgroundColor: TEXT.MAIN,
+  backgroundColor: PALETTE.TEXT_MAIN,
   borderRadius: 14,
   height: 14,
   margin: '21px 0 35px 60px',
@@ -84,7 +82,7 @@ const AbstractSidebarNavItem = styled('div')({
 })
 
 const AbstractSidebarNavItemBullet = styled('div')({
-  backgroundColor: TEXT.PURPLE,
+  backgroundColor: PALETTE.TEXT_PURPLE,
   borderRadius: 24,
   height: 24,
   marginRight: 12,
@@ -92,7 +90,7 @@ const AbstractSidebarNavItemBullet = styled('div')({
 })
 
 const AbstractSidebarNavItemLabel = styled('div')({
-  backgroundColor: TEXT.LIGHT,
+  backgroundColor: PALETTE.TEXT_LIGHT,
   borderRadius: 14,
   height: 14,
   width: 120
@@ -116,7 +114,7 @@ const AbstractAvatarGroup = styled('div')({
 })
 
 const AbstractAvatar = styled('div')({
-  backgroundColor: BACKGROUND.YELLOW,
+  backgroundColor: PALETTE.BACKGROUND_YELLOW,
   borderRadius: 32,
   marginLeft: 8,
   height: 32,

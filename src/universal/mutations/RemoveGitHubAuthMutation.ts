@@ -1,4 +1,4 @@
-import {RemoveGitHubAuthMutation} from '__generated__/RemoveGitHubAuthMutation.graphql'
+import {RemoveGitHubAuthMutation as TRemoveGitHubAuthMutation} from '__generated__/RemoveGitHubAuthMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import Atmosphere from 'universal/Atmosphere'
@@ -29,7 +29,7 @@ const RemoveGitHubAuthMutation = (
   variables: IRemoveGitHubAuthOnMutationArguments,
   {onError, onCompleted}: LocalHandlers
 ): Disposable => {
-  return commitMutation<RemoveGitHubAuthMutation>(atmosphere, {
+  return commitMutation<TRemoveGitHubAuthMutation>(atmosphere, {
     mutation,
     variables,
     onError,

@@ -25,7 +25,7 @@ class SuggestedActionTryActionMeeting extends Component<Props> {
     const {name: teamName} = team
     return (
       <SuggestedActionCard
-        backgroundColor={PALETTE.BACKGROUND.TEAL}
+        backgroundColor={PALETTE.BACKGROUND_TEAL}
         iconName='change_history'
         suggestedActionId={suggestedActionId}
       >

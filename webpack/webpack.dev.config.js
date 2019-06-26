@@ -1,14 +1,10 @@
 const resolve = require('./webpackResolve')
 const path = require('path')
 const webpack = require('webpack')
-const pluginObjectRestSpread = require('@babel/plugin-proposal-object-rest-spread').default
-const pluginClassProps = require('@babel/plugin-proposal-class-properties').default
 const pluginDynamicImport = require('@babel/plugin-syntax-dynamic-import').default
 const pluginRelay = require('babel-plugin-relay')
-const presetFlow = require('@babel/preset-flow').default
-const presetReact = require('@babel/preset-react').default
-const pluginInlineImport = require('babel-plugin-inline-import').default
 const vendors = require('../dll/vendors')
+const pluginInlineImport = require('babel-plugin-inline-import').default
 // const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 const babelLoader = {
@@ -18,12 +14,9 @@ const babelLoader = {
     babelrc: false,
     plugins: [
       pluginInlineImport,
-      pluginObjectRestSpread,
-      pluginClassProps,
       pluginDynamicImport,
       [pluginRelay, {artifactDirectory: './src/__generated__'}]
-    ],
-    presets: [presetFlow, [presetReact, {development: true}]]
+    ]
   }
 }
 
@@ -59,7 +52,15 @@ module.exports = {
       {
         test: /\.js$/,
         include: [path.join(__dirname, '../src/client'), path.join(__dirname, '../src/universal')],
-        use: babelLoader
+        use: [
+          babelLoader,
+          {
+            loader: '@sucrase/webpack-loader',
+            options: {
+              transforms: ['jsx', 'flow']
+            }
+          }
+        ]
       },
       {
         test: /\.mjs$/,
@@ -78,11 +79,9 @@ module.exports = {
         use: [
           babelLoader,
           {
-            loader: 'awesome-typescript-loader',
+            loader: '@sucrase/webpack-loader',
             options: {
-              useCache: true,
-              forceIsolatedModules: true,
-              errorsAsWarnings: true
+              transforms: ['jsx', 'typescript']
             }
           }
         ]

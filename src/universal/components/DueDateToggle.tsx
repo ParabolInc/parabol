@@ -26,10 +26,10 @@ interface StyleProps {
   isPastDue: boolean
 }
 
-const dueDateBg = PALETTE.BACKGROUND.MAIN
+const dueDateBg = PALETTE.BACKGROUND_MAIN
 const dueDateColor = '#65637A'
 const dueDatePastBg = '#FFE2E2'
-const dueDatePastColor = PALETTE.ERROR.MAIN
+const dueDatePastColor = PALETTE.ERROR_MAIN
 const dueDateSoonBg = '#FFF0D1'
 const dueDateSoonColor = '#F28934'
 

@@ -39,7 +39,7 @@ const lineHeight = '2.75rem'
 
 const PromptItem = styled('li')(({isHover, isDragging}: StyledProps) => ({
   alignItems: 'flex-start',
-  backgroundColor: isHover || isDragging ? PALETTE.BACKGROUND.MAIN_LIGHTENED : undefined,
+  backgroundColor: isHover || isDragging ? PALETTE.BACKGROUND_MAIN_LIGHTENED : undefined,
   borderRadius: '.125rem',
   display: 'flex',
   fontSize: typeScale[5],
@@ -48,7 +48,7 @@ const PromptItem = styled('li')(({isHover, isDragging}: StyledProps) => ({
 }))
 
 const RemovePromptIcon = styled(Icon)(({isHover}: StyledProps) => ({
-  color: PALETTE.TEXT.LIGHT,
+  color: PALETTE.TEXT_LIGHT,
   cursor: 'pointer',
   display: 'block',
   fontSize: MD_ICONS_SIZE_18,

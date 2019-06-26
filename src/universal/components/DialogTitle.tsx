@@ -1,9 +1,8 @@
 import styled from 'react-emotion'
 import {PALETTE} from '../styles/paletteV2'
-import TEXT = PALETTE.TEXT
 
 const DialogTitle = styled('h2')({
-  color: TEXT.MAIN,
+  color: PALETTE.TEXT_MAIN,
   fontSize: 20,
   fontWeight: 600,
   lineHeight: 1.5,

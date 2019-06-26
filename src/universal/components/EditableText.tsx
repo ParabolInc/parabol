@@ -21,20 +21,20 @@ const StaticBlock = styled('div')({
 })
 
 const Placeholder = styled('div')({
-  color: PALETTE.TEXT.LIGHT
+  color: PALETTE.TEXT_LIGHT
 })
 
 const StaticValue = styled('div')({
-  color: PALETTE.TEXT.MAIN
+  color: PALETTE.TEXT_MAIN
 })
 
 const Error = styled('div')({
-  color: PALETTE.ERROR.MAIN,
+  color: PALETTE.ERROR_MAIN,
   fontSize: '.85rem'
 })
 
 const StyledIcon = styled(Icon)({
-  color: PALETTE.TEXT.LIGHT,
+  color: PALETTE.TEXT_LIGHT,
   fontSize: MD_ICONS_SIZE_18,
   marginLeft: '.5rem'
 })
@@ -42,7 +42,7 @@ const StyledIcon = styled(Icon)({
 const Input = styled('input')({
   backgroundColor: 'transparent',
   border: 0,
-  color: PALETTE.TEXT.MAIN,
+  color: PALETTE.TEXT_MAIN,
   display: 'block',
   fontSize: 'inherit',
   fontWeight: 'inherit',

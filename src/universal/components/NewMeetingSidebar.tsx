@@ -53,7 +53,7 @@ const TeamDashboardLink = styled(Link)({
   lineHeight: '1.5',
   wordBreak: 'break-word',
   ':hover': {
-    color: PALETTE.TEXT.PURPLE,
+    color: PALETTE.TEXT_PURPLE,
     cursor: 'pointer'
   }
 })
@@ -81,7 +81,7 @@ const MeetingSidebarStyles = styled('div')(({isMeetingSidebarCollapsed}: Sidebar
 }))
 
 const SidebarBackdrop = styled('div')(({isMeetingSidebarCollapsed}: SidebarStyleProps) => ({
-  backgroundColor: PALETTE.BACKGROUND.BACKDROP,
+  backgroundColor: PALETTE.BACKGROUND_BACKDROP,
   bottom: 0,
   left: 0,
   opacity: isMeetingSidebarCollapsed ? 0 : 1,

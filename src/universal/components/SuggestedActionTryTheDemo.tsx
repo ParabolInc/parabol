@@ -37,7 +37,7 @@ class SuggestedActionTryTheDemo extends Component<Props> {
     const {id: suggestedActionId} = suggestedAction
     return (
       <SuggestedActionCard
-        backgroundColor={PALETTE.BACKGROUND.YELLOW}
+        backgroundColor={PALETTE.BACKGROUND_YELLOW}
         iconName='group_work'
         suggestedActionId={suggestedActionId}
       >

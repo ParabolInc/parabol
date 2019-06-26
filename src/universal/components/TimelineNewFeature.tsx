@@ -41,7 +41,7 @@ const NewFeature = styled('div')({
 })
 
 const CancelIcon = styled(Icon)({
-  color: PALETTE.TEXT.LIGHT,
+  color: PALETTE.TEXT_LIGHT,
   cursor: 'pointer',
   fontSize: ICON_SIZE.MD18,
   position: 'absolute',
@@ -79,11 +79,11 @@ const Body = styled('div')({
 })
 
 const LearnMore = styled('a')({
-  color: PALETTE.LINK.BLUE,
+  color: PALETTE.LINK_BLUE,
   paddingTop: 8,
   textAlign: 'right',
   ':hover,:focus,:active': {
-    color: PALETTE.LINK.BLUE,
+    color: PALETTE.LINK_BLUE,
     textDecoration: 'none'
   }
 })
