@@ -34,7 +34,7 @@ const selectRetroTemplate = {
 
     // VALIDATION
     const template = await r.table('ReflectTemplate').get(selectedTemplateId)
-    if (!template || template.teamId !== teamId) {
+    if (!template || template.teamId !== teamId || !template.isActive) {
       return standardError(new Error('Template not found'), {userId: viewerId})
     }
 
