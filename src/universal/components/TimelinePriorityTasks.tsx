@@ -10,7 +10,7 @@ import DraggableTask from '../containers/TaskCard/DraggableTask'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {ITask} from '../types/graphql'
+import {TaskStatusEnum} from '../types/graphql'
 import getTaskById from '../utils/getTaskById'
 import Icon from 'universal/components/Icon'
 import TimelineNoTasks from './TimelineNoTasks'
@@ -73,11 +73,15 @@ class TimelinePriorityTasks extends Component<Props> {
     // the front or back of the list, this will be `undefined`.
     const boundingTask = activeTasks[targetIndex + (before ? -1 : 1)]
     const sortOrder = sortOrderBetween(targetTask, boundingTask, draggedTask, before)
-    const updatedTask = {id: draggedTask.id, sortOrder} as Partial<ITask>
+    const updatedTask = {id: draggedTask.id, sortOrder} as {
+      id: string
+      sortOrder: number
+      status?: TaskStatusEnum
+    }
     if (draggedTask.status !== targetTask.status) {
       updatedTask.status = targetTask.status
     }
-    UpdateTaskMutation(atmosphere, updatedTask, USER_DASH)
+    UpdateTaskMutation(atmosphere, {updatedTask, area: USER_DASH})
   }
 
   render () {

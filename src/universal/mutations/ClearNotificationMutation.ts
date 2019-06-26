@@ -22,9 +22,9 @@ const mutation = graphql`
   }
 `
 
-export const clearNotificationNotificationUpdater = (payload, store, viewerId) => {
+export const clearNotificationNotificationUpdater = (payload, store) => {
   const notificationId = getInProxy(payload, 'notification', 'id')
-  handleRemoveNotifications(notificationId, store, viewerId)
+  handleRemoveNotifications(notificationId, store)
 }
 
 const ClearNotificationMutation = (
@@ -33,17 +33,16 @@ const ClearNotificationMutation = (
   onError?,
   onCompleted?
 ) => {
-  const {viewerId} = atmosphere
   return commitMutation(atmosphere, {
     mutation,
     variables: {notificationId},
     updater: (store) => {
       const payload = store.getRootField('clearNotification')
       if (!payload) return
-      clearNotificationNotificationUpdater(payload, store, viewerId)
+      clearNotificationNotificationUpdater(payload, store)
     },
     optimisticUpdater: (store) => {
-      handleRemoveNotifications(notificationId, store, viewerId)
+      handleRemoveNotifications(notificationId, store)
     },
     onCompleted,
     onError

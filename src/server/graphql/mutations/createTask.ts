@@ -59,7 +59,11 @@ const validateTaskMeetingId = async (
   return undefined
 }
 
-const validateTaskUserId = async (userId: string, teamId: string, dataLoader: DataLoaderWorker) => {
+export const validateTaskUserId = async (
+  userId: string,
+  teamId: string,
+  dataLoader: DataLoaderWorker
+) => {
   const teamMemberId = toTeamMemberId(teamId, userId)
   const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
   return teamMember ? undefined : 'Invalid user ID'

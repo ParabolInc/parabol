@@ -7,10 +7,11 @@ import MenuItemLabel from 'universal/components/MenuItemLabel'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation'
 import labels from 'universal/styles/theme/labels'
+import {AreaEnum, TaskStatusEnum} from 'universal/types/graphql'
 
 interface Props {
-  area: string
-  status: string
+  area: AreaEnum
+  status: TaskStatusEnum
   task: TaskFooterTagMenuStatusItem_task
 }
 
@@ -26,7 +27,7 @@ const TaskFooterTagMenuStatusItem = forwardRef((props: Props, ref) => {
       id: task.id,
       status
     }
-    UpdateTaskMutation(atmosphere, updatedTask, area)
+    UpdateTaskMutation(atmosphere, {updatedTask, area})
   }
   return (
     <MenuItem

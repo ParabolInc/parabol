@@ -9,11 +9,12 @@ import UpdateTaskPayload from 'server/graphql/types/UpdateTaskPayload'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import shortid from 'shortid'
-import {TASK} from 'universal/utils/constants'
-import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap'
-import makeTaskSchema from 'universal/validation/makeTaskSchema'
-import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
+import {MEETING, TASK} from 'universal/utils/constants'
 import standardError from 'server/utils/standardError'
+import {IUpdateTaskOnMutationArguments} from 'universal/types/graphql'
+import {GQLContext} from 'server/graphql/graphql'
+import {validateTaskUserId} from 'server/graphql/mutations/createTask'
+import Task from 'server/database/types/Task'
 
 const DEBOUNCE_TIME = ms('5m')
 
@@ -30,69 +31,64 @@ export default {
       description: 'the updated task including the id, and at least one other field'
     }
   },
-  async resolve (source, {area, updatedTask}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (
+    _source,
+    {area, updatedTask}: IUpdateTaskOnMutationArguments,
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
-
-    // AUTH
     const viewerId = getUserId(authToken)
-    const {id: taskId} = updatedTask
-    const task = await r.table('Task').get(taskId)
-    if (!task) return standardError(new Error('Task not found'), {userId: viewerId})
-    const {teamId} = task
-    if (!isTeamMember(authToken, teamId)) {
-      return standardError(new Error('Team not found'), {userId: viewerId})
-    }
 
     // VALIDATION
-    const schema = makeTaskSchema()
-    const {errors, data: validUpdatedTask} = schema(updatedTask)
-    if (Object.keys(errors).length) {
-      return standardError(new Error('Failed input validation'), {userId: viewerId})
+    const {
+      id: taskId,
+      teamId: inputTeamId,
+      userId: inputUserId,
+      status,
+      sortOrder,
+      content
+    } = updatedTask
+    const task = await r.table('Task').get(taskId)
+    if (!task) return standardError(new Error('Task not found'), {userId: viewerId})
+    const {teamId, userId} = task
+    const nextUserId = inputUserId || userId
+    const nextTeamId = inputTeamId || teamId
+    if (!isTeamMember(authToken, teamId) || !isTeamMember(authToken, nextTeamId)) {
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    const {agendaId, content, status, assigneeId, sortOrder} = validUpdatedTask
-    if (assigneeId) {
-      const res = await r
-        .table('TeamMember')
-        .get(assigneeId)
-        .default(null)
-      if (!res) {
-        return standardError(new Error('Team member not found'), {userId: viewerId})
+    if (inputTeamId || inputUserId) {
+      const error = await validateTaskUserId(nextUserId, nextTeamId, dataLoader)
+      if (error) {
+        return standardError(new Error('Invalid user ID'), {userId: viewerId})
       }
     }
 
     // RESOLUTION
-    const taskUpdates = {
-      agendaId,
-      content,
-      status,
-      tags: content ? getTagsFromEntityMap(JSON.parse(content).entityMap) : undefined,
-      teamId,
-      assigneeId,
-      sortOrder
-    }
-
-    if (assigneeId) {
-      taskUpdates.userId = fromTeamMemberId(assigneeId).userId
-      if (assigneeId === false) {
-        taskUpdates.userId = null
-      }
-    }
+    const isSortOrderUpdate =
+      updatedTask.sortOrder !== undefined && Object.keys(updatedTask).length === 2
+    const nextTask = new Task({
+      ...task,
+      teamId: nextTeamId,
+      userId: nextUserId,
+      status: status || task.status,
+      sortOrder: sortOrder || task.sortOrder,
+      content: content || task.content,
+      updatedAt: isSortOrderUpdate ? task.updatedAt : now
+    })
 
     let taskHistory
-    if (Object.keys(updatedTask).length > 2 || taskUpdates.sortOrder === undefined) {
+    if (!isSortOrderUpdate) {
       // if this is anything but a sort update, log it to history
-      taskUpdates.updatedAt = now
       const mergeDoc = {
         content,
         taskId,
         status,
-        assigneeId: taskUpdates.assigneeId,
-        isSoftTask: taskUpdates.isSoftTask,
+        assigneeId: nextTask.assigneeId,
         updatedAt: now,
-        tags: taskUpdates.tags
+        tags: nextTask.tags
       }
       taskHistory = r
         .table('TaskHistory')
@@ -104,7 +100,7 @@ export default {
         .default({updatedAt: r.epochTime(0)})
         .do((lastDoc) => {
           return r.branch(
-            lastDoc('updatedAt').gt(r.epochTime((now - DEBOUNCE_TIME) / 1000)),
+            lastDoc('updatedAt').gt(r.epochTime((now.getTime() - DEBOUNCE_TIME) / 1000)),
             r
               .table('TaskHistory')
               .get(lastDoc('id'))
@@ -117,7 +113,7 @@ export default {
       newTask: r
         .table('Task')
         .get(taskId)
-        .update(taskUpdates, {returnChanges: true})('changes')(0)('new_val')
+        .update(nextTask, {returnChanges: true})('changes')(0)('new_val')
         .default(null),
       history: taskHistory,
       teamMembers: r
@@ -128,7 +124,9 @@ export default {
         })
         .coerceTo('array')
     })
-    const usersToIgnore = getUsersToIgnore(area, teamMembers)
+    const team = area === MEETING ? await r.table('Team').get(nextTeamId) : undefined
+    const meetingId = team ? team.meetingId : undefined
+    const usersToIgnore = await getUsersToIgnore(meetingId, dataLoader)
     if (!newTask) return standardError(new Error('Already updated task'), {userId: viewerId})
 
     // send task updated messages

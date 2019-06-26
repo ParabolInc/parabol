@@ -134,7 +134,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation> = (
         .setLinkedRecord(store.get(teamId), 'team')
       const editorPayload = getOptimisticTaskEditor(store, userId, taskId, isEditing)
       handleEditTask(editorPayload, store)
-      handleUpsertTasks(task, store)
+      handleUpsertTasks(task as any, store)
     },
     onError,
     onCompleted

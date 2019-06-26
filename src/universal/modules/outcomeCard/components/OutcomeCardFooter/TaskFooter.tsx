@@ -15,6 +15,7 @@ import {USER_DASH} from 'universal/utils/constants'
 import removeContentTag from 'universal/utils/draftjs/removeContentTag'
 import isTaskArchived from 'universal/utils/isTaskArchived'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import {AreaEnum} from 'universal/types/graphql'
 
 const Footer = styled('div')({
   display: 'flex',
@@ -44,7 +45,7 @@ const AvatarBlock = styled('div')({
 })
 
 interface Props extends WithMutationProps {
-  area: string
+  area: AreaEnum
   cardIsActive: boolean
   editorState: EditorState
   isAgenda: boolean

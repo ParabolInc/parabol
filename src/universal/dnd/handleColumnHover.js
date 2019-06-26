@@ -35,9 +35,9 @@ export default function handleTaskHover (targetProps, monitor) {
     sourceProps.status = targetStatus
   }
   lastSentAt = now
-  UpdateTaskMutation(atmosphere, updatedTask)
+  UpdateTaskMutation(atmosphere, {updatedTask, area: undefined})
   if (rebalanceDoc) {
     // bad times. just toss the offending doc to the bottom of the column
-    UpdateTaskMutation(atmosphere, rebalanceDoc)
+    UpdateTaskMutation(atmosphere, {updatedTask: rebalanceDoc, area: undefined})
   }
 }

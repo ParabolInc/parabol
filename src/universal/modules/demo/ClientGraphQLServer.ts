@@ -910,7 +910,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         editors: [],
         integration: null,
         team: this.db.team,
-        isSoftTask: false,
         meetingId: demoMeetingId,
         reflectionGroupId,
         sortOrder: sortOrder || 0,
@@ -965,7 +964,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         teamId: demoTeamId,
         assigneeId,
         sortOrder,
-        isSoftTask: false,
         userId: null
       }
       const task = this.db.tasks.find((task) => task.id === updatedTask.id)

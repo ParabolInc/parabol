@@ -222,7 +222,7 @@ const NotificationSubscription = (atmosphere: Atmosphere, _queryVariables, subPa
           addTeamMutationNotificationUpdater(payload, context)
           break
         case 'ClearNotificationPayload':
-          clearNotificationNotificationUpdater(payload, store, viewerId)
+          clearNotificationNotificationUpdater(payload, store)
           break
         case 'CreateTaskPayload':
           createTaskNotificationUpdater(payload as any, context)

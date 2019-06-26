@@ -1,5 +1,4 @@
 import {
-  GraphQLBoolean,
   GraphQLFloat,
   GraphQLID,
   GraphQLList,
@@ -63,10 +62,6 @@ const Task = new GraphQLObjectType<any, GQLContext, any>({
     },
     integration: {
       type: TaskIntegration
-    },
-    isSoftTask: {
-      type: GraphQLBoolean,
-      description: 'true if this is assigned to a soft team member'
     },
     meetingId: {
       type: GraphQLID,

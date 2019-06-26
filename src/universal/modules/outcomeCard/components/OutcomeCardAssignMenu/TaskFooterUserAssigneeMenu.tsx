@@ -11,9 +11,10 @@ import useAtmosphere from 'universal/hooks/useAtmosphere'
 import {MenuProps} from 'universal/hooks/useMenu'
 import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation'
 import avatarUser from 'universal/styles/theme/images/avatar-user.svg'
+import {AreaEnum} from 'universal/types/graphql'
 
 interface Props {
-  area: string
+  area: AreaEnum
   menuProps: MenuProps
   viewer: TaskFooterUserAssigneeMenu_viewer
   task: TaskFooterUserAssigneeMenu_task
@@ -22,7 +23,7 @@ interface Props {
 const TaskFooterUserAssigneeMenu = (props: Props) => {
   const {area, menuProps, task, viewer} = props
   const {assignee, id: taskId} = task
-  const {id: assigneeId} = assignee
+  const {id: assigneeId, userId} = assignee
   const {team} = viewer
   if (!team) return null
   const {teamMembers} = team
@@ -33,8 +34,8 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const handleTaskUpdate = (newAssignee) => () => {
-    if (assigneeId !== newAssignee.id) {
-      UpdateTaskMutation(atmosphere, {id: taskId, assigneeId: newAssignee.id}, area)
+    if (userId !== newAssignee.userId) {
+      UpdateTaskMutation(atmosphere, {updatedTask: {id: taskId, userId: newAssignee.userId}, area})
     }
   }
 
@@ -69,6 +70,7 @@ export default createFragmentContainer(
           id
           picture
           preferredName
+          userId
         }
       }
     }
@@ -77,6 +79,7 @@ export default createFragmentContainer(
       id
       assignee {
         id
+        userId
       }
       team {
         id

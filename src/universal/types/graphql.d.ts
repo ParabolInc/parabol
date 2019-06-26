@@ -540,11 +540,6 @@ export interface ITask {
   integration: TaskIntegration | null
 
   /**
-   * true if this is assigned to a soft team member
-   */
-  isSoftTask: boolean | null
-
-  /**
    * the foreign key for the meeting the task was created in
    */
   meetingId: string | null
@@ -5645,15 +5640,12 @@ export interface IUpdateTaskInput {
   /**
    * The task id
    */
-  id?: string | null
+  id: string
   content?: string | null
   sortOrder?: number | null
   status?: TaskStatusEnum | null
-
-  /**
-   * The teamMemberId
-   */
-  assigneeId?: string | null
+  teamId?: string | null
+  userId?: string | null
 }
 
 export interface IUpdateTaskPayload {

@@ -129,7 +129,7 @@ class TaskColumn extends Component<Props> {
     if (draggedTask.status !== targetTask.status) {
       (updatedTask as any).status = targetTask.status
     }
-    UpdateTaskMutation(atmosphere, updatedTask, area)
+    UpdateTaskMutation(atmosphere, {updatedTask, area})
   }
 
   render () {

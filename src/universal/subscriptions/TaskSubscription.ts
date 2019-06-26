@@ -5,6 +5,7 @@ import {updateTaskTaskOnNext, updateTaskTaskUpdater} from 'universal/mutations/U
 import {removeOrgUserTaskUpdater} from 'universal/mutations/RemoveOrgUserMutation'
 import {changeTaskTeamTaskUpdater} from 'universal/mutations/ChangeTaskTeamMutation'
 import {graphql} from 'react-relay'
+import {RecordSourceSelectorProxy} from 'relay-runtime'
 
 const subscription = graphql`
   subscription TaskSubscription {
@@ -33,7 +34,7 @@ const TaskSubscription = (atmosphere, _queryVariables, subParams) => {
   return {
     subscription,
     variables: {},
-    updater: (store) => {
+    updater: (store: RecordSourceSelectorProxy) => {
       const payload = store.getRootField('taskSubscription')
       if (!payload) return
       const type = payload.getValue('__typename')
@@ -57,7 +58,7 @@ const TaskSubscription = (atmosphere, _queryVariables, subParams) => {
           removeOrgUserTaskUpdater(payload, store, viewerId)
           break
         case 'UpdateTaskPayload':
-          updateTaskTaskUpdater(payload, store, viewerId)
+          updateTaskTaskUpdater(payload, context)
           break
         case 'UpdateTaskDueDatePayload':
           break
