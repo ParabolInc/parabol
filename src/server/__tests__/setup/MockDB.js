@@ -36,7 +36,6 @@ class MockDB {
       organization: [],
       task: [],
       taskHistory: [],
-      softTeamMember: [],
       team: [],
       teamMember: [],
       user: []
@@ -335,18 +334,6 @@ class MockDB {
       assigneeId,
       status,
       updatedAt,
-      ...overrides
-    })
-  }
-
-  newSoftTeamMember (overrides = {}) {
-    const table = this.db.softTeamMember
-    return this.closeout('softTeamMember', {
-      id: shortid.generate(),
-      createdAt: new Date(__anHourAgo + table.length),
-      isActive: true,
-      preferredName: 'newSoft',
-      teamId: this.context.team.id,
       ...overrides
     })
   }

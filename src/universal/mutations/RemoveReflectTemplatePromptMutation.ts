@@ -2,9 +2,10 @@ import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import Atmosphere from 'universal/Atmosphere'
 import getInProxy from 'universal/utils/relay/getInProxy'
-import {CompletedHandler, ErrorHandler, TeamUpdater} from '../types/relayMutations'
+import {CompletedHandler, ErrorHandler, SharedUpdater} from '../types/relayMutations'
 import handleRemoveReflectTemplatePrompt from './handlers/handleRemoveReflectTemplatePrompt'
 import {IRemoveReflectTemplatePromptOnMutationArguments} from 'universal/types/graphql'
+import {RemoveReflectTemplatePromptMutation_team} from '__generated__/RemoveReflectTemplatePromptMutation_team.graphql'
 
 graphql`
   fragment RemoveReflectTemplatePromptMutation_team on RemoveReflectTemplatePromptPayload {
@@ -22,7 +23,9 @@ const mutation = graphql`
   }
 `
 
-export const removeReflectTemplatePromptTeamUpdater: TeamUpdater = (payload, {store}) => {
+export const removeReflectTemplatePromptTeamUpdater: SharedUpdater<
+  RemoveReflectTemplatePromptMutation_team
+> = (payload, {store}) => {
   const promptId = getInProxy(payload, 'prompt', 'id')
   handleRemoveReflectTemplatePrompt(promptId, store)
 }
@@ -42,7 +45,7 @@ const RemoveReflectTemplatePromptMutation = (
     updater: (store) => {
       const payload = store.getRootField('removeReflectTemplatePrompt')
       if (!payload) return
-      removeReflectTemplatePromptTeamUpdater(payload, {store})
+      removeReflectTemplatePromptTeamUpdater(payload, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
       const {promptId} = variables

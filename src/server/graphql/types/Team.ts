@@ -16,7 +16,6 @@ import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum'
 import NewMeeting from 'server/graphql/types/NewMeeting'
 import Organization from 'server/graphql/types/Organization'
-import SoftTeamMember from 'server/graphql/types/SoftTeamMember'
 import {TaskConnection} from 'server/graphql/types/Task'
 import TeamInvitation from 'server/graphql/types/TeamInvitation'
 import TeamMeetingSettings from 'server/graphql/types/TeamMeetingSettings'
@@ -159,15 +158,6 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
         }
         const tasks = await dataLoader.get('tasksByTeamId').load(teamId)
         return connectionFromTasks(tasks)
-      }
-    },
-    softTeamMembers: {
-      type: new GraphQLList(SoftTeamMember),
-      description: 'All the soft team members actively associated with the team',
-      async resolve ({id: teamId}, _args, {dataLoader}) {
-        const softTeamMembers = await dataLoader.get('softTeamMembersByTeamId').load(teamId)
-        softTeamMembers.sort((a, b) => (a.preferredName > b.preferredName ? 1 : -1))
-        return softTeamMembers
       }
     },
     teamMembers: {

@@ -19,7 +19,6 @@ import {DISCUSS, GROUP, REFLECT, TASK, TEAM, VOTE} from 'universal/utils/constan
 import dndNoise from 'universal/utils/dndNoise'
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap'
 import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr'
-import getIsSoftTeamMember from 'universal/utils/getIsSoftTeamMember'
 import findStageById from 'universal/utils/meetings/findStageById'
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
@@ -973,9 +972,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       // if the human deleted the task, exit fast
       if (!task) return null
       if (assigneeId) {
-        const isSoftTask = getIsSoftTeamMember(assigneeId)
-        taskUpdates.isSoftTask = isSoftTask
-        taskUpdates.userId = isSoftTask ? null : fromTeamMemberId(assigneeId).userId
+        taskUpdates.userId = fromTeamMemberId(assigneeId).userId
         if (assigneeId === false) {
           taskUpdates.userId = null
         }

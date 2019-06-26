@@ -13,7 +13,7 @@ const UpdateTaskInput = new GraphQLInputObjectType({
     status: {type: TaskStatusEnum},
     assigneeId: {
       type: GraphQLID,
-      description: 'The teamMemberId or softTeamMemberId'
+      description: 'The teamMemberId'
     }
   })
 })

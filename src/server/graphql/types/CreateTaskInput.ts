@@ -1,4 +1,10 @@
-import {GraphQLFloat, GraphQLID, GraphQLInputObjectType, GraphQLString} from 'graphql'
+import {
+  GraphQLFloat,
+  GraphQLID,
+  GraphQLInputObjectType,
+  GraphQLNonNull,
+  GraphQLString
+} from 'graphql'
 import TaskStatusEnum from 'server/graphql/types/TaskStatusEnum'
 
 const CreateTaskInput = new GraphQLInputObjectType({
@@ -23,14 +29,14 @@ const CreateTaskInput = new GraphQLInputObjectType({
       type: GraphQLFloat
     },
     status: {
-      type: TaskStatusEnum
+      type: new GraphQLNonNull(TaskStatusEnum)
     },
     teamId: {
-      type: GraphQLID,
+      type: new GraphQLNonNull(GraphQLID),
       description: 'teamId, the team the task is on'
     },
     userId: {
-      type: GraphQLID,
+      type: new GraphQLNonNull(GraphQLID),
       description: 'userId, the owner of the task'
     }
   })

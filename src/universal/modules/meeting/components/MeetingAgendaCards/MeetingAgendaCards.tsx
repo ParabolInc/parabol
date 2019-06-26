@@ -5,11 +5,12 @@ import NullableTask from 'universal/components/NullableTask/NullableTask'
 import sortOrderBetween from 'universal/dnd/sortOrderBetween'
 import CreateTaskMutation from 'universal/mutations/CreateTaskMutation'
 import {meetingGridMinWidth} from 'universal/styles/meeting'
-import {ACTIVE, MEETING} from 'universal/utils/constants'
+import {MEETING} from 'universal/utils/constants'
 import useHotkey from 'universal/hooks/useHotkey'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {MeetingAgendaCards_tasks} from '__generated__/MeetingAgendaCards_tasks.graphql'
+import {TaskStatusEnum} from 'universal/types/graphql'
 
 const makePlaceholders = (
   length: number,
@@ -44,7 +45,7 @@ const MeetingAgendaCards = (props: Props) => {
     const {tasks, agendaId, meetingId, reflectionGroupId, teamId} = propsRef.current
     const maybeLastTask = tasks[tasks.length - 1]
     const newTask = {
-      status: ACTIVE,
+      status: TaskStatusEnum.active,
       sortOrder: sortOrderBetween(maybeLastTask, null, null, false) || 0,
       agendaId,
       meetingId,
@@ -52,7 +53,7 @@ const MeetingAgendaCards = (props: Props) => {
       userId: viewerId,
       teamId
     }
-    CreateTaskMutation(atmosphere, newTask, MEETING)
+    CreateTaskMutation(atmosphere, {newTask})
   }, [])
   useHotkey('t', handleAddTask)
   return (

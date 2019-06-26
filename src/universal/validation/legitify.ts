@@ -1,12 +1,12 @@
 import Legitity from './Legitity'
 
-const legitify = (expected) => (actual) => {
+const legitify = (expected: {[key: string]: any}) => (actual: any) => {
   if (Array.isArray(expected)) {
     const schema = legitify(expected[0])
-    const data = []
-    const errors = []
+    const data = [] as any[]
+    const errors = [] as any[]
     let hasErrors = false
-    for (let i = 0; i < actual.length; i++) {
+    for (let i = 0; i < (actual as any[]).length; i++) {
       const actualValue = actual[i]
       const res = schema(actualValue)
       data[i] = res.data

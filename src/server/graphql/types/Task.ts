@@ -13,11 +13,12 @@ import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor'
 import TaskEditorDetails from 'server/graphql/types/TaskEditorDetails'
 import TaskStatusEnum from 'server/graphql/types/TaskStatusEnum'
 import Team from 'server/graphql/types/Team'
-import Assignee from 'server/graphql/types/Assignee'
 import TaskIntegration from 'server/graphql/types/TaskIntegration'
 import AgendaItem from 'server/graphql/types/AgendaItem'
+import TeamMember from 'server/graphql/types/TeamMember'
+import {GQLContext} from 'server/graphql/graphql'
 
-const Task = new GraphQLObjectType({
+const Task = new GraphQLObjectType<any, GQLContext, any>({
   name: 'Task',
   description: 'A long-term task shared across the team, assigned to a single user ',
   fields: () => ({
@@ -98,17 +99,15 @@ const Task = new GraphQLObjectType({
     team: {
       type: new GraphQLNonNull(Team),
       description: 'The team this task belongs to',
-      resolve: ({teamId}, args, {dataLoader}) => {
+      resolve: ({teamId}, _args, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)
       }
     },
     assignee: {
-      type: new GraphQLNonNull(Assignee),
-      description: 'The team member (or soft team member) that owns this task',
-      resolve: ({assigneeId, isSoftTask}, args, {dataLoader}) => {
-        return isSoftTask
-          ? dataLoader.get('softTeamMembers').load(assigneeId)
-          : dataLoader.get('teamMembers').load(assigneeId)
+      type: new GraphQLNonNull(TeamMember),
+      description: 'The team member that owns this task',
+      resolve: ({assigneeId}, _args, {dataLoader}) => {
+        return dataLoader.get('teamMembers').load(assigneeId)
       }
     },
     assigneeId: {

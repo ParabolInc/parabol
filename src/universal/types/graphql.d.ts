@@ -585,9 +585,9 @@ export interface ITask {
   team: ITeam
 
   /**
-   * The team member (or soft team member) that owns this task
+   * The team member that owns this task
    */
-  assignee: Assignee
+  assignee: ITeamMember
 
   /**
    * The id of the team member (or soft team member) assigned to this task
@@ -669,16 +669,6 @@ export interface ITeamMember {
   id: string
 
   /**
-   * The name of the assignee
-   */
-  preferredName: string
-
-  /**
-   * foreign key to Team table
-   */
-  teamId: string
-
-  /**
    * true if the user is a part of the team, false if they no longer are
    */
   isNotRemoved: boolean | null
@@ -729,6 +719,11 @@ export interface ITeamMember {
   meetingMember: MeetingMember | null
 
   /**
+   * The name of the assignee
+   */
+  preferredName: string
+
+  /**
    * The slack auth for the team member.
    */
   slackAuth: ISlackAuth | null
@@ -739,9 +734,9 @@ export interface ITeamMember {
   slackNotifications: Array<ISlackNotification>
 
   /**
-   * foreign key to User table
+   * Tasks owned by the team member
    */
-  userId: string
+  tasks: ITaskConnection | null
 
   /**
    * The team this team member belongs to
@@ -749,14 +744,19 @@ export interface ITeamMember {
   team: ITeam | null
 
   /**
+   * foreign key to Team table
+   */
+  teamId: string
+
+  /**
    * The user for the team member
    */
   user: IUser
 
   /**
-   * Tasks owned by the team member
+   * foreign key to User table
    */
-  tasks: ITaskConnection | null
+  userId: string
 }
 
 export interface IMeetingMemberOnTeamMemberArguments {
@@ -769,27 +769,6 @@ export interface ITasksOnTeamMemberArguments {
    */
   after?: any | null
   first?: number | null
-}
-
-export type Assignee = ITeamMember | ISoftTeamMember
-
-export interface IAssignee {
-  __typename: 'Assignee'
-
-  /**
-   * The teamMemberId or softTeamMemberId
-   */
-  id: string
-
-  /**
-   * The name of the assignee
-   */
-  preferredName: string
-
-  /**
-   * foreign key to Team table
-   */
-  teamId: string
 }
 
 /**
@@ -1043,11 +1022,6 @@ export interface ITeam {
    * All of the tasks for this team
    */
   tasks: ITaskConnection
-
-  /**
-   * All the soft team members actively associated with the team
-   */
-  softTeamMembers: Array<ISoftTeamMember | null> | null
 
   /**
    * All the team members actively associated with the team
@@ -1705,61 +1679,6 @@ export interface IOrgUserCount {
    * The number of orgUsers who do not have an inactive flag
    */
   activeUserCount: number
-}
-
-/**
- * A member of a team
- */
-export interface ISoftTeamMember {
-  __typename: 'SoftTeamMember'
-
-  /**
-   * The teamMemberId or softTeamMemberId
-   */
-  id: string
-
-  /**
-   * The name of the assignee
-   */
-  preferredName: string
-
-  /**
-   * foreign key to Team table
-   */
-  teamId: string
-
-  /**
-   * The datetime the team was created
-   */
-  createdAt: any | null
-
-  /**
-   * The user email
-   */
-  email: any | null
-
-  /**
-   * True if this is still a soft team member, false if they were rejected or became a team member
-   */
-  isActive: boolean | null
-
-  /**
-   * Tasks owned by the team member
-   */
-  tasks: ITaskConnection | null
-
-  /**
-   * The team this team member belongs to
-   */
-  team: ITeam | null
-}
-
-export interface ITasksOnSoftTeamMemberArguments {
-  /**
-   * the datetime cursor
-   */
-  after?: any | null
-  first?: number | null
 }
 
 export interface ITaskEditorDetails {
@@ -4616,17 +4535,17 @@ export interface ICreateTaskInput {
    */
   reflectionGroupId?: string | null
   sortOrder?: number | null
-  status?: TaskStatusEnum | null
+  status: TaskStatusEnum
 
   /**
    * teamId, the team the task is on
    */
-  teamId?: string | null
+  teamId: string
 
   /**
    * userId, the owner of the task
    */
-  userId?: string | null
+  userId: string
 }
 
 /**
@@ -5732,7 +5651,7 @@ export interface IUpdateTaskInput {
   status?: TaskStatusEnum | null
 
   /**
-   * The teamMemberId or softTeamMemberId
+   * The teamMemberId
    */
   assigneeId?: string | null
 }

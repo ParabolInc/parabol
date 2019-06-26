@@ -13,7 +13,6 @@ import {TASK} from 'universal/utils/constants'
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap'
 import makeTaskSchema from 'universal/validation/makeTaskSchema'
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
-import getIsSoftTeamMember from 'universal/utils/getIsSoftTeamMember'
 import standardError from 'server/utils/standardError'
 
 const DEBOUNCE_TIME = ms('5m')
@@ -55,9 +54,8 @@ export default {
     }
     const {agendaId, content, status, assigneeId, sortOrder} = validUpdatedTask
     if (assigneeId) {
-      const table = getIsSoftTeamMember(assigneeId) ? 'SoftTeamMember' : 'TeamMember'
       const res = await r
-        .table(table)
+        .table('TeamMember')
         .get(assigneeId)
         .default(null)
       if (!res) {
@@ -77,9 +75,7 @@ export default {
     }
 
     if (assigneeId) {
-      const isSoftTask = getIsSoftTeamMember(assigneeId)
-      taskUpdates.isSoftTask = isSoftTask
-      taskUpdates.userId = isSoftTask ? null : fromTeamMemberId(assigneeId).userId
+      taskUpdates.userId = fromTeamMemberId(assigneeId).userId
       if (assigneeId === false) {
         taskUpdates.userId = null
       }
