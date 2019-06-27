@@ -68,7 +68,8 @@ const RetroReflectionGroup = new GraphQLObjectType({
     },
     smartTitle: {
       type: GraphQLString,
-      description: 'Our auto-suggested title, to be compared to the actual title for analytics'
+      description: 'Our auto-suggested title, to be compared to the actual title for analytics',
+      resolve: resolveForSU('smartTitle')
     },
     sortOrder: {
       type: new GraphQLNonNull(GraphQLFloat),

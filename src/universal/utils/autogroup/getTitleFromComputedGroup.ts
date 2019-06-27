@@ -3,7 +3,8 @@
  * Uses the most salient entities to create a 40-character theme to summarize the content of the reflections
  */
 
-import {IGoogleAnalyzedEntity} from 'universal/types/graphql'
+import {IGoogleAnalyzedEntity, IRetroReflection} from 'universal/types/graphql'
+import extractTextFromDraftString from 'universal/utils/draftjs/extractTextFromDraftString'
 
 const SALIENT_THRESHOLD = 0.6
 const MIN_ENTITIES = 2
@@ -28,7 +29,8 @@ const getNameFromLemma = (lemma: string, reflectionEntities: IGoogleAnalyzedEnti
 const getTitleFromComputedGroup = (
   uniqueLemmaArr: string[],
   group: DistanceArray[],
-  reflectionEntities: IGoogleAnalyzedEntity[][]
+  reflectionEntities: IGoogleAnalyzedEntity[][],
+  reflections: IRetroReflection[]
 ) => {
   const sumArr = new Array(uniqueLemmaArr.length).fill(0)
   group.forEach((reflectionDistanceArr) => {
@@ -60,7 +62,13 @@ const getTitleFromComputedGroup = (
     // if they get the jist, abort
     if (cumlSalience > SALIENT_THRESHOLD) break
   }
-  if (titleArr.length === 0) return 'New group'
+  if (titleArr.length === 0) {
+    const [firstReflection] = reflections
+    const text = extractTextFromDraftString(firstReflection.content)
+    const maxStr = text.slice(0, MAX_CHARS)
+    const lastSpace = maxStr.lastIndexOf(' ')
+    return lastSpace === -1 ? maxStr : maxStr.slice(0, lastSpace).trim()
+  }
   return titleArr.join(' ')
 }
 

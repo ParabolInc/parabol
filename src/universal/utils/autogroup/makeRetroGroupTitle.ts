@@ -5,9 +5,9 @@
 import getAllLemmasFromReflections from 'universal/utils/autogroup/getAllLemmasFromReflections'
 import computeDistanceMatrix from 'universal/utils/autogroup/computeDistanceMatrix'
 import getTitleFromComputedGroup from 'universal/utils/autogroup/getTitleFromComputedGroup'
-import extractTextFromDraftString from 'universal/utils/draftjs/extractTextFromDraftString'
+import {IRetroReflection} from 'universal/types/graphql'
 
-const makeRetroGroupTitle = (reflections) => {
+const makeRetroGroupTitle = (reflections: IRetroReflection[]) => {
   const allReflectionEntities = reflections.map(({entities}) => entities).filter(Boolean)
   const uniqueLemmaArr = getAllLemmasFromReflections(allReflectionEntities)
 
@@ -16,16 +16,11 @@ const makeRetroGroupTitle = (reflections) => {
   const smartTitle = getTitleFromComputedGroup(
     uniqueLemmaArr,
     distanceMatrix,
-    allReflectionEntities
+    allReflectionEntities,
+    reflections
   )
-  if (smartTitle) {
-    // need to filter out the current group if we want to check for dupes. but a dupe is good, it makes it obvious they should be merged
-    return {smartTitle, title: smartTitle}
-  }
-  const title = reflections[0]
-    ? extractTextFromDraftString(reflections[0].content).slice(0, 20)
-    : 'Unnamed group'
-  return {title}
+  // need to filter out the current group if we want to check for dupes. but a dupe is good, it makes it obvious they should be merged
+  return {smartTitle, title: smartTitle}
 }
 
 export default makeRetroGroupTitle

@@ -121,9 +121,9 @@ class ReflectionGroup extends Component<Props, State> {
   modalRef?: HTMLDivElement | null
   titleInputRef = React.createRef<HTMLInputElement>()
   state: State = {
-    // repro: start with smartTitle !== title, then change it so smartTitle == title. we don't want title to just disappear
     isEditingSingleCardTitle:
-      this.props.reflectionGroup.smartTitle !== this.props.reflectionGroup.title
+      this.props.reflectionGroup.reflections.length === 1 &&
+      this.props.reflectionGroup.titleIsUserDefined
   }
 
   componentDidUpdate (prevProps: Props) {
@@ -282,10 +282,10 @@ class ReflectionGroup extends Component<Props, State> {
 
   handleClick = () => {
     const {reflectionGroup} = this.props
-    const {isExpanded, reflections, smartTitle, title} = reflectionGroup
+    const {isExpanded, reflections, titleIsUserDefined} = reflectionGroup
     if (reflections.length > 1 && !isExpanded) {
       this.expandGroup()
-    } else if (reflections.length === 1 && smartTitle === title) {
+    } else if (reflections.length === 1 && !titleIsUserDefined) {
       this.setState({
         isEditingSingleCardTitle: !this.state.isEditingSingleCardTitle
       })
@@ -432,8 +432,7 @@ export default createFragmentContainer<PassedProps>(
       retroPhaseItemId
       reflectionGroupId: id
       sortOrder
-      smartTitle
-      title
+      titleIsUserDefined
       reflections {
         id
         retroPhaseItemId

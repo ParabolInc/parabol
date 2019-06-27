@@ -38,7 +38,12 @@ const groupReflections = (reflections: IRetroReflection[], groupingThreshold: nu
     const groupedReflectionEntities = groupedReflections
       .map(({entities}) => entities)
       .filter(Boolean)
-    const smartTitle = getTitleFromComputedGroup(uniqueLemmaArr, group, groupedReflectionEntities)
+    const smartTitle = getTitleFromComputedGroup(
+      uniqueLemmaArr,
+      group,
+      groupedReflectionEntities,
+      reflections
+    )
 
     updatedReflections.push(...groupedReflections)
     return {
