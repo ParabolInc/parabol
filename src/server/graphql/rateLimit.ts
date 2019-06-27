@@ -1,7 +1,14 @@
 import {getUserId} from 'server/utils/authorization'
 import standardError from 'server/utils/standardError'
+import {GraphQLFieldResolver} from 'graphql'
 
-const rateLimit = ({perMinute, perHour}) => (resolve) => (source, args, context, info) => {
+interface Options {
+  perMinute: number
+  perHour: number
+}
+const rateLimit = <TSource = any, TContext = any, TArgs = any>({perMinute, perHour}: Options) => (
+  resolve: GraphQLFieldResolver<TSource, TContext, TArgs>
+) => (source, args, context, info) => {
   const {authToken, rateLimiter} = context
   const {fieldName, returnType} = info
   const userId = getUserId(authToken)
