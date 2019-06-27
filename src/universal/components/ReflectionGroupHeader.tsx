@@ -41,13 +41,10 @@ const ReflectionGroupHeader = (props: Props) => {
     localStage,
     localPhase: {phaseType}
   } = meeting
-  const {reflections, smartTitle, title} = reflectionGroup
+  const {reflections, titleIsUserDefined} = reflectionGroup
   const canEdit = phaseType === GROUP && !localStage.isComplete
   const showHeader =
-    reflections.length > 1 ||
-    phaseType !== GROUP ||
-    (smartTitle && smartTitle !== title) ||
-    isEditingSingleCardTitle
+    reflections.length > 1 || phaseType !== GROUP || titleIsUserDefined || isEditingSingleCardTitle
   if (!showHeader) return null
   return (
     <GroupHeader innerRef={innerRef}>
@@ -95,8 +92,7 @@ export default createFragmentContainer(
       reflections {
         id
       }
-      smartTitle
-      title
+      titleIsUserDefined
     }
   `
 )
