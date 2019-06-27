@@ -4,7 +4,7 @@ import {ReflectionGroupTitleEditor_reflectionGroup} from '__generated__/Reflecti
  * Edits the name of a reflection group.
  *
  */
-import React, {Component} from 'react'
+import React, {Component, RefObject} from 'react'
 import styled from 'react-emotion'
 import reactLifecyclesCompat from 'react-lifecycles-compat'
 import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
@@ -25,6 +25,7 @@ interface Props extends WithMutationProps, WithAtmosphereProps {
   reflectionGroup: ReflectionGroupTitleEditor_reflectionGroup
   readOnly: boolean
   meeting: ReflectionGroupTitleEditor_meeting
+  titleInputRef: RefObject<HTMLInputElement>
 }
 
 const fontSize = appTheme.typography.s3
@@ -107,7 +108,6 @@ const getValidationError = (title: string | null, reflectionGroups, reflectionGr
 
 class ReflectionGroupTitleEditor extends Component<Props> {
   initialTitle: string
-  inputRef = React.createRef<HTMLInputElement>()
 
   constructor (props: Props) {
     super(props)
@@ -148,9 +148,8 @@ class ReflectionGroupTitleEditor extends Component<Props> {
   }
 
   onClick = () => {
-    if (this.inputRef.current) {
-      this.inputRef.current.select()
-    }
+    const {titleInputRef} = this.props
+    titleInputRef.current && titleInputRef.current.select()
   }
 
   onSubmit = (e) => {
@@ -189,7 +188,8 @@ class ReflectionGroupTitleEditor extends Component<Props> {
       isExpanded,
       error,
       readOnly,
-      reflectionGroup: {title}
+      reflectionGroup: {title},
+      titleInputRef
     } = this.props
     return (
       <InputWithIconWrap>
@@ -201,7 +201,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
               onChange={this.onChange}
               placeholder={RETRO_TOPIC_LABEL}
               readOnly={readOnly}
-              innerRef={this.inputRef}
+              innerRef={titleInputRef}
               size={20}
               type='text'
               value={title || ''}

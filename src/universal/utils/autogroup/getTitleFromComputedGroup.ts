@@ -3,13 +3,16 @@
  * Uses the most salient entities to create a 40-character theme to summarize the content of the reflections
  */
 
+import {IGoogleAnalyzedEntity} from 'universal/types/graphql'
+
 const SALIENT_THRESHOLD = 0.6
 const MIN_ENTITIES = 2
 const MAX_CHARS = 30
 const MIN_SALIENCE = 0.1
 
-const getNameFromLemma = (lemma, reflectionEntities) => {
-  const names = new Set()
+type DistanceArray = number[]
+const getNameFromLemma = (lemma: string, reflectionEntities: IGoogleAnalyzedEntity[][]) => {
+  const names = new Set<string>()
   reflectionEntities.forEach((entities) => {
     entities.forEach((entity) => {
       if (entity.lemma === lemma) {
@@ -22,7 +25,11 @@ const getNameFromLemma = (lemma, reflectionEntities) => {
   return Array.from(names)[0]
 }
 
-const getTitleFromComputedGroup = (uniqueLemmaArr, group, reflectionEntities) => {
+const getTitleFromComputedGroup = (
+  uniqueLemmaArr: string[],
+  group: DistanceArray[],
+  reflectionEntities: IGoogleAnalyzedEntity[][]
+) => {
   const sumArr = new Array(uniqueLemmaArr.length).fill(0)
   group.forEach((reflectionDistanceArr) => {
     for (let jj = 0; jj < reflectionDistanceArr.length; jj++) {
@@ -30,14 +37,14 @@ const getTitleFromComputedGroup = (uniqueLemmaArr, group, reflectionEntities) =>
     }
   })
 
-  const arrWithIdx = []
+  const arrWithIdx = [] as [number, number][]
   for (let i = 0; i < sumArr.length; i++) {
     arrWithIdx[i] = [sumArr[i], i]
   }
   // add the existing idx & sort greatest to smallest so we can get the most salient entities
   arrWithIdx.sort((a, b) => (a[0] < b[0] ? 1 : -1))
   let cumlSalience = 0
-  const titleArr = []
+  const titleArr = [] as string[]
   for (let ii = 0; ii < arrWithIdx.length; ii++) {
     const [totalSalience, idx] = arrWithIdx[ii]
     if (totalSalience < MIN_SALIENCE) continue
