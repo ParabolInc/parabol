@@ -72,11 +72,13 @@ const RetroReflectPhase = (props: Props) => {
   if (!newMeeting) return null
   const {facilitatorUserId, localPhase, id: meetingId, reflectionGroups, localStage} = newMeeting
   const isComplete = localStage ? localStage.isComplete : false
+  const isAsync = localStage ? localStage.isAsync : false
   const reflectPrompts = localPhase!.reflectPrompts!
   const isFacilitating = facilitatorUserId === viewerId
   const nextPhaseLabel = phaseLabelLookup[GROUP]
   const isEmpty = !reflectionGroups || reflectionGroups.length === 0
   const isReadyToGroup =
+    !isAsync &&
     !isComplete &&
     !isEmpty &&
     minTimeComplete &&
@@ -156,6 +158,8 @@ graphql`
     }
     stages {
       ...StageTimerDisplay_stage
+      isAsync
+      isComplete
     }
   }
 `
@@ -173,6 +177,7 @@ export default createFragmentContainer(
         ... on RetrospectiveMeeting {
           localStage {
             ...StageTimerDisplay_stage
+            isAsync
             isComplete
           }
           reflectionGroups {
