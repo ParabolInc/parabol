@@ -612,7 +612,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         })
         this.db.newMeeting.nextAutoGroupThreshold = null
         const {smartTitle: nextGroupSmartTitle, title: nextGroupTitle} = makeRetroGroupTitle([
-          reflection
+          reflection as IRetroReflection
         ])
         newReflectionGroup.smartTitle = nextGroupSmartTitle
         newReflectionGroup.title = nextGroupTitle
@@ -656,10 +656,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
             1
           )
           if (oldReflectionGroupId !== newReflectionGroupId) {
-            const nextReflections = this.db.reflections.filter(
+            const reflections = this.db.reflections as IRetroReflection[]
+            const nextReflections = reflections.filter(
               (reflection) => reflection.reflectionGroupId === newReflectionGroupId
             )
-            const oldReflections = this.db.reflections.filter(
+            const oldReflections = reflections.filter(
               (reflection) => reflection.reflectionGroupId === oldReflectionGroupId
             )
             const {smartTitle: nextGroupSmartTitle, title: nextGroupTitle} = makeRetroGroupTitle(

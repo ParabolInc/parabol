@@ -147,9 +147,9 @@
     "style-loader": "^0.21.0",
     "sucrase": "^3.10.1",
     "terser-webpack-plugin": "^1.2.2",
-    "tslint": "^5.13.1",
+    "tslint": "^5.18.0",
     "tslint-config-standard": "^8.0.1",
-    "typescript": "^3.5.1",
+    "typescript": "^3.5.2",
     "url-loader": "^1.0.1",
     "webpack": "^4.29.3",
     "webpack-bundle-analyzer": "^3.0.3",
@@ -201,8 +201,8 @@
     "express-rate-limit": "^3.2.1",
     "fbjs": "^0.8.14",
     "flatted": "^1.0.2",
-    "graphiql": "^0.13.0",
-    "graphql": "^14.1.1",
+    "graphiql": "^0.13.2",
+    "graphql": "^14.4.0",
     "graphql-redis-subscriptions": "^2.0.0",
     "graphql-relay": "^0.5.2",
     "hoist-non-react-statics": "^3.3.0",
@@ -267,7 +267,7 @@
     "tinycolor2": "^1.4.1",
     "tlds": "^1.192.0",
     "ts-node": "^7.0.1",
-    "tslib": "^1.9.3",
+    "tslib": "^1.10.0",
     "unicode-substring": "^1.0.0"
   },
   "engines": {
@@ -300,7 +300,7 @@
     "@types/react": "16.8.10",
     "@types/react-dom": "16.8.3",
     "relay-runtime": "https://github.com/mattkrick/relay/tarball/0a49c03689370fc471fe066fb0515b7992dd04b1",
-    "graphql": "14.1.1"
+    "graphql": "14.4.0"
   },
   "standard": {
     "parser": "babel-eslint",

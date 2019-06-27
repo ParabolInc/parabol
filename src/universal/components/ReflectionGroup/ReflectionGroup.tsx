@@ -122,8 +122,9 @@ class ReflectionGroup extends Component<Props, State> {
   titleInputRef = React.createRef<HTMLInputElement>()
   state: State = {
     isEditingSingleCardTitle:
-      this.props.reflectionGroup.reflections.length === 1 &&
-      this.props.reflectionGroup.titleIsUserDefined
+      (this.props.reflectionGroup.reflections.length === 1 &&
+        this.props.reflectionGroup.titleIsUserDefined) ||
+      false
   }
 
   componentDidUpdate (prevProps: Props) {

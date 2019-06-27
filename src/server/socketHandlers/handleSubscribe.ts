@@ -62,7 +62,10 @@ const handleSubscribe = async (connectionContext, parsedMessage, options: Option
     if (errors) {
       const {query, variables} = parsedMessage.payload
       const viewerId = getUserId(authToken)
-      sendToSentry(new Error(errors[0].message), {tags: {query, variables}, userId: viewerId})
+      sendToSentry(new Error(errors[0].message), {
+        tags: {query: query.slice(0, 40), variables: JSON.stringify(variables)},
+        userId: viewerId
+      })
       sendMessage(socket, GQL_ERROR, {errors}, opId)
     }
     return
