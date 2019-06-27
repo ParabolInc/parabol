@@ -2,11 +2,12 @@ import getAllLemmasFromReflections from 'universal/utils/autogroup/getAllLemmasF
 import computeDistanceMatrix from 'universal/utils/autogroup/computeDistanceMatrix'
 import getGroupMatrix from 'server/graphql/mutations/helpers/autoGroup/getGroupMatrix'
 import getTitleFromComputedGroup from 'universal/utils/autogroup/getTitleFromComputedGroup'
+import {IRetroReflection} from 'universal/types/graphql'
 
 /*
  * Read each reflection, parse the content for entities (i.e. nouns), group the reflections based on common themes
  */
-const groupReflections = (reflections, groupingThreshold) => {
+const groupReflections = (reflections: IRetroReflection[], groupingThreshold: number) => {
   const allReflectionEntities = reflections.map(({entities}) => entities)
   const oldReflectionGroupIds = reflections.map(({reflectionGroupId}) => reflectionGroupId)
 
@@ -19,14 +20,14 @@ const groupReflections = (reflections, groupingThreshold) => {
     groupingThreshold
   )
   // replace the arrays with reflections
-  const updatedReflections = []
+  const updatedReflections = [] as IRetroReflection[]
   const updatedGroups = groupedArrays.map((group) => {
     // look up the reflection by its vector, put them all in the same group
     let reflectionGroupId = ''
     const groupedReflections = group.map((reflectionDistanceArr, sortOrder) => {
       const idx = distanceMatrix.indexOf(reflectionDistanceArr)
       const reflection = reflections[idx]
-      reflectionGroupId = reflectionGroupId || reflection.reflectionGroupId
+      reflectionGroupId = (reflectionGroupId || reflection.reflectionGroupId) as string
       return {
         ...reflection,
         sortOrder,

@@ -1,4 +1,4 @@
-import React, {Ref} from 'react'
+import React, {Ref, RefObject} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import styled from 'react-emotion'
 import ReflectionGroupTitleEditor from 'universal/components/ReflectionGroup/ReflectionGroupTitleEditor'
@@ -8,12 +8,15 @@ import Tag from 'universal/components/Tag/Tag'
 import {REFLECTION_CARD_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
 import {ReflectionGroupHeader_reflectionGroup} from '__generated__/ReflectionGroupHeader_reflectionGroup.graphql'
 import {ReflectionGroupHeader_meeting} from '__generated__/ReflectionGroupHeader_meeting.graphql'
+import plural from 'universal/utils/plural'
 
 type Props = {
   meeting: ReflectionGroupHeader_meeting
   reflectionGroup: ReflectionGroupHeader_reflectionGroup
   innerRef: Ref<any>
   isExpanded?: boolean
+  isEditingSingleCardTitle?: boolean
+  titleInputRef: RefObject<HTMLInputElement>
 }
 
 const GroupHeader = styled('div')({
@@ -32,14 +35,20 @@ const GroupHeader = styled('div')({
 const StyledTag = styled(Tag)({marginRight: 4})
 
 const ReflectionGroupHeader = (props: Props) => {
-  const {innerRef, meeting, reflectionGroup} = props
+  const {innerRef, meeting, reflectionGroup, isEditingSingleCardTitle, titleInputRef} = props
   const isExpanded = !!props.isExpanded
   const {
     localStage,
     localPhase: {phaseType}
   } = meeting
-  const {reflections} = reflectionGroup
+  const {reflections, smartTitle, title} = reflectionGroup
   const canEdit = phaseType === GROUP && !localStage.isComplete
+  const showHeader =
+    reflections.length > 1 ||
+    phaseType !== GROUP ||
+    (smartTitle && smartTitle !== title) ||
+    isEditingSingleCardTitle
+  if (!showHeader) return null
   return (
     <GroupHeader innerRef={innerRef}>
       <ReflectionGroupTitleEditor
@@ -47,11 +56,12 @@ const ReflectionGroupHeader = (props: Props) => {
         reflectionGroup={reflectionGroup}
         meeting={meeting}
         readOnly={!canEdit}
+        titleInputRef={titleInputRef}
       />
       {phaseType === GROUP && (
         <StyledTag
           colorPalette={isExpanded ? 'white' : 'midGray'}
-          label={`${reflections.length} Cards`}
+          label={`${reflections.length} ${plural(reflections.length, 'Card')}`}
         />
       )}
       {phaseType === VOTE && (
@@ -85,6 +95,8 @@ export default createFragmentContainer(
       reflections {
         id
       }
+      smartTitle
+      title
     }
   `
 )

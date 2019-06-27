@@ -8,6 +8,8 @@ import sendSegmentEvent from 'server/utils/sendSegmentEvent'
 import UpdateReflectionGroupTitlePayload from 'server/graphql/types/UpdateReflectionGroupTitlePayload'
 import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
 import standardError from 'server/utils/standardError'
+import {IUpdateReflectionGroupTitleOnMutationArguments} from 'universal/types/graphql'
+import {GQLContext} from 'server/graphql/graphql'
 
 export default {
   type: UpdateReflectionGroupTitlePayload,
@@ -21,7 +23,11 @@ export default {
       description: 'The new title for the group'
     }
   },
-  async resolve (source, {reflectionGroupId, title}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (
+    _source,
+    {reflectionGroupId, title}: IUpdateReflectionGroupTitleOnMutationArguments,
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const now = new Date()
@@ -75,7 +81,7 @@ export default {
         similarity,
         smartTitle,
         title: normalizedTitle
-      })
+      }).catch()
     }
 
     const data = {meetingId, reflectionGroupId}
