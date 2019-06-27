@@ -32,7 +32,11 @@ const usePortal = (options: UsePortalOptions = {}) => {
 
   const terminatePortal = useCallback(() => {
     if (portalRef.current) {
-      getParent().removeChild(portalRef.current)
+      try {
+        getParent().removeChild(portalRef.current)
+      } catch (e) {
+        /* portal already removed (possible when parent is not document.body) */
+      }
       portalRef.current = undefined
       showBodyScroll.current && showBodyScroll.current()
     }

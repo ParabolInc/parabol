@@ -79,6 +79,7 @@ const RetroGroupPhase = (props: Props) => {
   if (!newMeeting) return null
   const {nextAutoGroupThreshold, facilitatorUserId, meetingId, localStage} = newMeeting
   const isComplete = localStage ? localStage.isComplete : false
+  const isAsync = localStage ? localStage.isAsync : false
   const isFacilitating = facilitatorUserId === viewerId
   const nextPhaseLabel = phaseLabelLookup[VOTE]
   const {gotoNext, ref: gotoNextRef} = handleGotoNext
@@ -114,7 +115,7 @@ const RetroGroupPhase = (props: Props) => {
             )}
             <CenteredControlBlock>
               <BottomNavControl
-                isBouncing={isDemoStageComplete || (!isComplete && isReadyToVote)}
+                isBouncing={isDemoStageComplete || (!isAsync && !isComplete && isReadyToVote)}
                 onClick={() => gotoNext()}
                 onKeyDown={handleRightArrow(() => gotoNext())}
                 innerRef={gotoNextRef}
@@ -150,6 +151,7 @@ const RetroGroupPhase = (props: Props) => {
 graphql`
   fragment RetroGroupPhase_stage on GenericMeetingStage {
     ...StageTimerDisplay_stage
+    isAsync
     isComplete
   }
 `
