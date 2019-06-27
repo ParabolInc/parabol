@@ -9,7 +9,13 @@ const query = graphql`
 `
 
 const getAuthProviders = async (atmosphere: Atmosphere, email: string) => {
-  const res = await fetchQuery<getAuthProvidersQuery>(atmosphere, query, {email})
+  let res
+  try {
+    res = await fetchQuery<getAuthProvidersQuery>(atmosphere, query, {email})
+  } catch (e) {
+    // server error, probably rate limited
+    return []
+  }
   return (res && res.authProviders) || []
 }
 
