@@ -88,7 +88,10 @@ const AgendaInput = (props: Props) => {
   const inputRef = useRef<HTMLInputElement>(null)
   const focusInput = useCallback((e?: React.KeyboardEvent | ExtendedKeyboardEvent) => {
     e && e.preventDefault()
-    inputRef.current && inputRef.current.focus()
+    if (inputRef.current) {
+      inputRef.current.focus()
+      inputRef.current.scrollIntoViewIfNeeded()
+    }
   }, [])
   useHotkey('+', focusInput)
   const {fields, onChange} = useForm({
