@@ -32,7 +32,12 @@ export default async function wsGraphQLHandler (
     const viewerId = getUserId(authToken)
     const error = prepareErrorForSentry(result.errors[0])
     sendToSentry(error, {
-      tags: {query, variables, path: error.path, locations: error.locations},
+      tags: {
+        query: query.slice(0, 40),
+        variables: JSON.stringify(variables),
+        path: error.path,
+        locations: JSON.stringify(error.locations)
+      },
       userId: viewerId
     })
   }
