@@ -1,8 +1,11 @@
-import {ConnectionHandler} from 'relay-runtime'
+import {ConnectionHandler, RecordSourceSelectorProxy} from 'relay-runtime'
 import getNotificationsConn from 'universal/mutations/connections/getNotificationsConn'
 import ensureArray from 'universal/utils/ensureArray'
 
-const handleRemoveNotifications = (maybeNotificationIds, store) => {
+const handleRemoveNotifications = (
+  maybeNotificationIds: string[] | undefined | null,
+  store: RecordSourceSelectorProxy
+) => {
   if (!maybeNotificationIds) return
   const viewer = store.getRoot().getLinkedRecord('viewer')
   const conn = getNotificationsConn(viewer)

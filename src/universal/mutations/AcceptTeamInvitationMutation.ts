@@ -81,7 +81,7 @@ export const acceptTeamInvitationNotificationUpdater = (
   const team = payload.getLinkedRecord('team')
   handleAddTeams(team, store, viewerId)
   const notificationIds = getInProxy(payload, 'removedNotificationIds')
-  handleRemoveNotifications(notificationIds, store, viewerId)
+  handleRemoveNotifications(notificationIds, store)
 }
 
 export const acceptTeamInvitationTeamUpdater = (payload: RecordProxy, {store}) => {

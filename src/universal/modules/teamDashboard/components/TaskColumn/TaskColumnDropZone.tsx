@@ -1,16 +1,17 @@
 import React, {ReactElement} from 'react'
 import {DropTarget} from 'react-dnd'
 
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import sortOrderBetween from 'universal/dnd/sortOrderBetween'
 import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation'
-import {ITask, IUpdateTaskInput, TaskStatusEnum} from 'universal/types/graphql'
+import {AreaEnum, ITask, IUpdateTaskInput, TaskStatusEnum} from 'universal/types/graphql'
 import {TASK} from 'universal/utils/constants'
 
-interface Props {
+interface Props extends WithAtmosphereProps {
   connectDropTarget: (reactEl: ReactElement<HTMLDivElement>) => ReactElement<HTMLDivElement>
-  area: string
-  atmosphere: Object // TODO: atmosphere needs a type definition
+  area: AreaEnum
   getTaskById: (taskId: string) => ITask
   lastTask?: ITask // the last task in a column; may be undefined if the column is empty
   status: TaskStatusEnum
@@ -43,7 +44,7 @@ const spec = {
     if (draggedTask.status !== status) {
       updatedTask.status = status
     }
-    UpdateTaskMutation(atmosphere, updatedTask, area)
+    UpdateTaskMutation(atmosphere, {updatedTask, area})
   }
 }
 

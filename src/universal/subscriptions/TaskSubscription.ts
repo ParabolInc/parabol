@@ -4,6 +4,8 @@ import {editTaskTaskUpdater} from 'universal/mutations/EditTaskMutation'
 import {updateTaskTaskOnNext, updateTaskTaskUpdater} from 'universal/mutations/UpdateTaskMutation'
 import {removeOrgUserTaskUpdater} from 'universal/mutations/RemoveOrgUserMutation'
 import {changeTaskTeamTaskUpdater} from 'universal/mutations/ChangeTaskTeamMutation'
+import {graphql} from 'react-relay'
+import {RecordSourceSelectorProxy} from 'relay-runtime'
 
 const subscription = graphql`
   subscription TaskSubscription {
@@ -27,23 +29,24 @@ const onNextHandlers = {
   UpdateTaskPayload: updateTaskTaskOnNext
 }
 
-const TaskSubscription = (atmosphere, queryVariables, subParams) => {
+const TaskSubscription = (atmosphere, _queryVariables, subParams) => {
   const {viewerId} = atmosphere
   return {
     subscription,
     variables: {},
-    updater: (store) => {
+    updater: (store: RecordSourceSelectorProxy) => {
       const payload = store.getRootField('taskSubscription')
       if (!payload) return
       const type = payload.getValue('__typename')
+      const context = {atmosphere, store}
       switch (type) {
         case 'CreateGitHubIssuePayload':
           break
         case 'ChangeTaskTeamPayload':
-          changeTaskTeamTaskUpdater(payload, {store})
+          changeTaskTeamTaskUpdater(payload, context)
           break
         case 'CreateTaskPayload':
-          createTaskTaskUpdater(payload, store, viewerId, false)
+          createTaskTaskUpdater(payload, context)
           break
         case 'DeleteTaskPayload':
           deleteTaskTaskUpdater(payload, store, viewerId)
@@ -55,7 +58,7 @@ const TaskSubscription = (atmosphere, queryVariables, subParams) => {
           removeOrgUserTaskUpdater(payload, store, viewerId)
           break
         case 'UpdateTaskPayload':
-          updateTaskTaskUpdater(payload, store, viewerId)
+          updateTaskTaskUpdater(payload, context)
           break
         case 'UpdateTaskDueDatePayload':
           break

@@ -2,9 +2,10 @@ import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import Atmosphere from 'universal/Atmosphere'
 import createProxyRecord from 'universal/utils/relay/createProxyRecord'
-import {CompletedHandler, ErrorHandler, TeamUpdater} from '../types/relayMutations'
+import {CompletedHandler, ErrorHandler, SharedUpdater} from '../types/relayMutations'
 import handleAddReflectTemplatePrompt from './handlers/handleAddReflectTemplatePrompt'
 import {IAddReflectTemplatePromptOnMutationArguments} from 'universal/types/graphql'
+import {AddReflectTemplatePromptMutation_team} from '__generated__/AddReflectTemplatePromptMutation_team.graphql'
 
 interface Context {
   promptCount: number
@@ -33,7 +34,9 @@ const mutation = graphql`
   }
 `
 
-export const addReflectTemplatePromptTeamUpdater: TeamUpdater = (payload, {store}) => {
+export const addReflectTemplatePromptTeamUpdater: SharedUpdater<
+  AddReflectTemplatePromptMutation_team
+> = (payload, {store}) => {
   const prompt = payload.getLinkedRecord('prompt')
   if (!prompt) return
   handleAddReflectTemplatePrompt(prompt, store)
@@ -54,7 +57,7 @@ const AddReflectTemplatePromptMutation = (
     updater: (store) => {
       const payload = store.getRootField('addReflectTemplatePrompt')
       if (!payload) return
-      addReflectTemplatePromptTeamUpdater(payload, {store})
+      addReflectTemplatePromptTeamUpdater(payload, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
       const {promptCount, sortOrder} = context

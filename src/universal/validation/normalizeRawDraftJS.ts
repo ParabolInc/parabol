@@ -1,6 +1,7 @@
 import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr'
 
-const normalizeRawDraftJS = (str) => {
+const normalizeRawDraftJS = (str: string | undefined | null) => {
+  if (!str) return makeEmptyStr()
   let parsedContent
   try {
     parsedContent = JSON.parse(str)

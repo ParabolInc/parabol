@@ -17,7 +17,6 @@ import {
   IReflectTemplate,
   IRetroReflection,
   IRetroReflectionGroup,
-  ISoftTeamMember,
   ISuggestedAction,
   ITask,
   ITeam,
@@ -84,7 +83,6 @@ interface Tables {
   RetroReflection: IRetroReflection
   SlackAuth: SlackAuth
   SlackNotification: SlackNotification
-  SoftTeamMember: ISoftTeamMember
   SuggestedAction: ISuggestedAction
   Task: ITask
   TeamMember: ITeamMember
@@ -142,7 +140,6 @@ export default class RethinkDataLoader {
   retroReflections = this.pkLoader('RetroReflection')
   slackAuths = this.pkLoader('SlackAuth')
   slackNotifications = this.pkLoader('SlackNotification')
-  softTeamMembers = this.pkLoader('SoftTeamMember')
   suggestedActions = this.pkLoader('SuggestedAction')
   tasks = this.pkLoader('Task')
   teamMembers = this.pkLoader('TeamMember')
@@ -243,14 +240,6 @@ export default class RethinkDataLoader {
   slackNotificationsByTeamId = this.fkLoader(this.slackNotifications, 'teamId', (teamIds) => {
     const r = getRethink()
     return r.table('SlackNotification').getAll(r.args(teamIds), {index: 'teamId'})
-  })
-
-  softTeamMembersByTeamId = this.fkLoader(this.softTeamMembers, 'teamId', (teamIds) => {
-    const r = getRethink()
-    return r
-      .table('SoftTeamMember')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter({isActive: true})
   })
 
   suggestedActionsByUserId = this.fkLoader(this.suggestedActions, 'userId', (userIds) => {

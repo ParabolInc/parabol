@@ -2,9 +2,10 @@ import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import Atmosphere from 'universal/Atmosphere'
 import getInProxy from 'universal/utils/relay/getInProxy'
-import {CompletedHandler, ErrorHandler, TeamUpdater} from '../types/relayMutations'
+import {CompletedHandler, ErrorHandler, SharedUpdater} from '../types/relayMutations'
 import handleRemoveReflectTemplate from './handlers/handleRemoveReflectTemplate'
 import {IRemoveReflectTemplateOnMutationArguments} from 'universal/types/graphql'
+import {RemoveReflectTemplateMutation_team} from '__generated__/RemoveReflectTemplateMutation_team.graphql'
 
 graphql`
   fragment RemoveReflectTemplateMutation_team on RemoveReflectTemplatePayload {
@@ -25,7 +26,10 @@ const mutation = graphql`
   }
 `
 
-export const removeReflectTemplateTeamUpdater: TeamUpdater = (payload, {store}) => {
+export const removeReflectTemplateTeamUpdater: SharedUpdater<RemoveReflectTemplateMutation_team> = (
+  payload,
+  {store}
+) => {
   const templateId = getInProxy(payload, 'reflectTemplate', 'id')
   handleRemoveReflectTemplate(templateId, store)
 }
@@ -45,7 +49,7 @@ const RemoveReflectTemplateMutation = (
     updater: (store) => {
       const payload = store.getRootField('removeReflectTemplate')
       if (!payload) return
-      removeReflectTemplateTeamUpdater(payload, {store})
+      removeReflectTemplateTeamUpdater(payload, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
       const {templateId} = variables

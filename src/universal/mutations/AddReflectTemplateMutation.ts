@@ -3,9 +3,10 @@ import {Disposable} from 'relay-runtime'
 import Atmosphere from 'universal/Atmosphere'
 import createProxyRecord from 'universal/utils/relay/createProxyRecord'
 import {IAddReflectTemplateOnMutationArguments} from 'universal/types/graphql'
-import {CompletedHandler, ErrorHandler, TeamUpdater} from '../types/relayMutations'
+import {CompletedHandler, ErrorHandler, SharedUpdater} from '../types/relayMutations'
 import getCachedRecord from '../utils/relay/getCachedRecord'
 import handleAddReflectTemplate from './handlers/handleAddReflectTemplate'
+import {AddReflectTemplateMutation_team} from '__generated__/AddReflectTemplateMutation_team.graphql'
 
 graphql`
   fragment AddReflectTemplateMutation_team on AddReflectTemplatePayload {
@@ -30,7 +31,10 @@ const mutation = graphql`
   }
 `
 
-export const addReflectTemplateTeamUpdater: TeamUpdater = (payload, {store}) => {
+export const addReflectTemplateTeamUpdater: SharedUpdater<AddReflectTemplateMutation_team> = (
+  payload,
+  {store}
+) => {
   const template = payload.getLinkedRecord('reflectTemplate')
   if (!template) return
   const templateId = template.getValue('id')
@@ -63,7 +67,7 @@ const AddReflectTemplateMutation = (
     updater: (store) => {
       const payload = store.getRootField('addReflectTemplate')
       if (!payload) return
-      addReflectTemplateTeamUpdater(payload, {store})
+      addReflectTemplateTeamUpdater(payload, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
       const {teamId} = variables

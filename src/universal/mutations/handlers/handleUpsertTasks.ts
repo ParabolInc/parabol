@@ -5,13 +5,25 @@ import pluralizeHandler from 'universal/mutations/handlers/pluralizeHandler'
 import getNodeById from 'universal/utils/relay/getNodeById'
 import {insertEdgeAfter} from 'universal/utils/relay/insertEdge'
 import safeRemoveNodeFromConn from 'universal/utils/relay/safeRemoveNodeFromConn'
-import {ConnectionHandler} from 'relay-runtime'
+import {ConnectionHandler, RecordSourceSelectorProxy} from 'relay-runtime'
 import addNodeToArray from 'universal/utils/relay/addNodeToArray'
+import {RecordProxy} from 'relay-runtime/RelayStoreTypes'
 
-const handleUpsertTask = (task, store) => {
+type Task = RecordProxy<{
+  readonly id: string
+  readonly teamId: string
+  readonly tags: ReadonlyArray<string>
+  readonly reflectionGroupId: string | null
+  readonly meetingId: string | null
+  readonly updatedAt: string
+  readonly userId: string
+}>
+
+const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy) => {
   if (!task) return
   // we currently have 3 connections, user, team, and team archive
   const viewer = store.getRoot().getLinkedRecord('viewer')
+  if (!viewer) return
   const viewerId = viewer.getDataID()
   const teamId = task.getValue('teamId')
   const taskId = task.getValue('id')

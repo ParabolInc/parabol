@@ -1,4 +1,4 @@
-import {commitMutation} from 'react-relay'
+import {commitMutation, graphql} from 'react-relay'
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications'
 import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks'
@@ -7,8 +7,16 @@ import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap'
 import getInProxy from 'universal/utils/relay/getInProxy'
 import updateProxyRecord from 'universal/utils/relay/updateProxyRecord'
 import handleRemoveTasks from 'universal/mutations/handlers/handleRemoveTasks'
-import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
 import ContentFilterHandler from 'universal/utils/relay/ContentFilterHandler'
+import {
+  LocalHandlers,
+  OnNextHandler,
+  SharedUpdater,
+  StandardMutation
+} from 'universal/types/relayMutations'
+import {UpdateTaskMutation_task} from '__generated__/UpdateTaskMutation_task.graphql'
+import {UpdateTaskMutation as TUpdateTaskMutation} from '__generated__/UpdateTaskMutation.graphql'
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 
 graphql`
   fragment UpdateTaskMutation_task on UpdateTaskPayload {
@@ -45,17 +53,20 @@ const mutation = graphql`
   }
 `
 
-export const updateTaskTaskOnNext = (payload, {atmosphere, history}) => {
+export const updateTaskTaskOnNext: OnNextHandler<UpdateTaskMutation_task> = (
+  payload,
+  {atmosphere, history}
+) => {
   if (!payload) return
   popInvolvementToast(payload.addedNotification, {atmosphere, history})
 }
 
-export const updateTaskTaskUpdater = (payload, store, viewerId) => {
+export const updateTaskTaskUpdater: SharedUpdater<UpdateTaskMutation_task> = (payload, {store}) => {
   const task = payload.getLinkedRecord('task')
   handleUpsertTasks(task, store)
 
   const addedNotification = payload.getLinkedRecord('addedNotification')
-  handleAddNotifications(addedNotification, store, viewerId)
+  handleAddNotifications(addedNotification, store)
   if (task) {
     ContentFilterHandler.update(store, {
       dataID: task.getDataID(),
@@ -63,8 +74,9 @@ export const updateTaskTaskUpdater = (payload, store, viewerId) => {
     })
   }
   const removedNotificationId = getInProxy(payload, 'removedNotification', 'id')
-  handleRemoveNotifications(removedNotificationId, store, viewerId)
-
+  handleRemoveNotifications(removedNotificationId, store)
+  const viewer = store.getRoot().getLinkedRecord('viewer')
+  const viewerId = viewer && viewer.getDataID()
   const privatizedTaskId = payload.getValue('privatizedTaskId')
   const taskUserId = getInProxy(task, 'userId')
   if (taskUserId !== viewerId && privatizedTaskId) {
@@ -72,9 +84,12 @@ export const updateTaskTaskUpdater = (payload, store, viewerId) => {
   }
 }
 
-const UpdateTaskMutation = (environment, updatedTask, area, onCompleted, onError) => {
-  const {viewerId} = environment
-  return commitMutation(environment, {
+const UpdateTaskMutation: StandardMutation<TUpdateTaskMutation> = (
+  atmosphere,
+  {updatedTask, area},
+  {onCompleted, onError}: LocalHandlers = {}
+) => {
+  return commitMutation<TUpdateTaskMutation>(atmosphere, {
     mutation,
     variables: {
       area,
@@ -83,10 +98,10 @@ const UpdateTaskMutation = (environment, updatedTask, area, onCompleted, onError
     updater: (store) => {
       const payload = store.getRootField('updateTask')
       if (!payload) return
-      updateTaskTaskUpdater(payload, store, viewerId)
+      updateTaskTaskUpdater(payload, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
-      const {id, content, assigneeId} = updatedTask
+      const {id, content, teamId, userId} = updatedTask
       const task = store.get(id)
       if (!task) return
       const now = new Date()
@@ -95,15 +110,15 @@ const UpdateTaskMutation = (environment, updatedTask, area, onCompleted, onError
         updatedAt: now.toJSON()
       }
       updateProxyRecord(task, optimisticTask)
-      if (assigneeId) {
+      if (teamId || userId) {
+        const nextTeamId = teamId || task.getValue('teamId')
+        const nextUserId = userId || task.getValue('userId')
+        const assigneeId = toTeamMemberId(nextTeamId, nextUserId)
         task.setValue(assigneeId, 'assigneeId')
         const assignee = store.get(assigneeId)
         if (assignee) {
           task.setLinkedRecord(assignee, 'assignee')
-          if (assignee.getValue('__typename') === 'TeamMember') {
-            const {userId} = fromTeamMemberId(assigneeId)
-            task.setValue(userId, 'userId')
-          }
+          task.setValue(nextUserId, 'userId')
         }
       }
       if (content) {
@@ -111,7 +126,7 @@ const UpdateTaskMutation = (environment, updatedTask, area, onCompleted, onError
         const nextTags = getTagsFromEntityMap(entityMap)
         task.setValue(nextTags, 'tags')
       }
-      handleUpsertTasks(task, store)
+      handleUpsertTasks(task as any, store)
     },
     onCompleted,
     onError

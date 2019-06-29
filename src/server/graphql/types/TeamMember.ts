@@ -4,12 +4,12 @@ import {
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
-  GraphQLObjectType
+  GraphQLObjectType,
+  GraphQLString
 } from 'graphql'
 import {forwardConnectionArgs} from 'graphql-relay'
 import connectionFromTasks from 'server/graphql/queries/helpers/connectionFromTasks'
 import {resolveTeam} from 'server/graphql/resolvers'
-import Assignee, {assigneeInterfaceFields} from 'server/graphql/types/Assignee'
 import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType'
@@ -24,9 +24,7 @@ import SlackNotification from 'server/graphql/types/SlackNotification'
 const TeamMember = new GraphQLObjectType({
   name: 'TeamMember',
   description: 'A member of a team',
-  interfaces: () => [Assignee],
   fields: () => ({
-    ...assigneeInterfaceFields(),
     id: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'An ID for the teamMember. userId::teamId'
@@ -100,6 +98,10 @@ const TeamMember = new GraphQLObjectType({
         return meetingId ? dataLoader.get('meetingMembers').load(meetingMemberId) : undefined
       }
     },
+    preferredName: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The name of the assignee'
+    },
     slackAuth: {
       type: SlackAuth,
       description: 'The slack auth for the team member.',
@@ -114,23 +116,6 @@ const TeamMember = new GraphQLObjectType({
       resolve: async ({userId, teamId}, _args, {dataLoader}) => {
         const slackNotifications = await dataLoader.get('slackNotificationsByTeamId').load(teamId)
         return slackNotifications.filter((notification) => notification.userId === userId)
-      }
-    },
-    /* Foreign keys */
-    userId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'foreign key to User table'
-    },
-    team: {
-      type: Team,
-      description: 'The team this team member belongs to',
-      resolve: resolveTeam
-    },
-    user: {
-      type: new GraphQLNonNull(User),
-      description: 'The user for the team member',
-      resolve ({userId}, _args, {dataLoader}) {
-        return dataLoader.get('users').load(userId)
       }
     },
     tasks: {
@@ -149,6 +134,26 @@ const TeamMember = new GraphQLObjectType({
         const publicTasksForUserId = tasksForUserId.filter((task) => !task.tags.includes('private'))
         return connectionFromTasks(publicTasksForUserId)
       }
+    },
+    team: {
+      type: Team,
+      description: 'The team this team member belongs to',
+      resolve: resolveTeam
+    },
+    teamId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'foreign key to Team table'
+    },
+    user: {
+      type: new GraphQLNonNull(User),
+      description: 'The user for the team member',
+      resolve ({userId}, _args, {dataLoader}) {
+        return dataLoader.get('users').load(userId)
+      }
+    },
+    userId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'foreign key to User table'
     }
   })
 })

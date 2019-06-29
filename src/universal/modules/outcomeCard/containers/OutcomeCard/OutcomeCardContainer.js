@@ -124,7 +124,7 @@ class OutcomeCardContainer extends Component {
             id: taskId,
             content: convertToTaskContent(value)
           }
-          UpdateTaskMutation(atmosphere, updatedTask, area)
+          UpdateTaskMutation(atmosphere, {updatedTask, area})
           this.updateTimer = undefined
         }, 15)
       }
@@ -162,7 +162,7 @@ class OutcomeCardContainer extends Component {
             id: taskId,
             content
           }
-          UpdateTaskMutation(atmosphere, updatedTask, area)
+          UpdateTaskMutation(atmosphere, {updatedTask, area})
           this.updateTimer = undefined
         }, 15)
       }

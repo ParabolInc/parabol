@@ -1,5 +1,5 @@
 import {RouterProps} from 'react-router'
-import {PayloadError, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import {PayloadError, RecordProxy, RecordSourceSelectorProxy, commitMutation} from 'relay-runtime'
 import Atmosphere from 'universal/Atmosphere'
 
 export interface CompletedHandler {
@@ -17,12 +17,13 @@ export interface LocalHandlers {
 }
 
 interface UpdaterContext {
+  atmosphere: Atmosphere
   store: RecordSourceSelectorProxy
-  viewerId?: string
+  // viewerId?: string
 }
 
-export interface TeamUpdater {
-  (payload: RecordProxy, context: UpdaterContext): void
+export interface SharedUpdater<T> {
+  (payload: RecordProxy<Omit<T, ' $refType'>>, context: UpdaterContext): void
 }
 
 export interface OnNextContext {
@@ -36,3 +37,14 @@ export type UpdaterHandler<T = any> = (
   payload: RecordProxy<T>,
   context: {atmosphere: Atmosphere; store: RecordSourceSelectorProxy}
 ) => void
+
+interface GeneratedMutationType {
+  readonly response: any
+  readonly variables: any
+}
+
+export type StandardMutation<T extends GeneratedMutationType> = (
+  atmosphere: Atmosphere,
+  variables: T['variables'],
+  localHandlers?: LocalHandlers
+) => ReturnType<typeof commitMutation>

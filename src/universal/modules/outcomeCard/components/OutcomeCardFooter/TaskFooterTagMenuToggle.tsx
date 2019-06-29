@@ -6,9 +6,10 @@ import {MenuPosition} from 'universal/hooks/useCoords'
 import useMenu from 'universal/hooks/useMenu'
 import lazyPreload from 'universal/utils/lazyPreload'
 import {MenuMutationProps} from 'universal/hooks/useMutationProps'
+import {AreaEnum} from 'universal/types/graphql'
 
 interface Props {
-  area: string
+  area: AreaEnum
   editorState: EditorState
   isAgenda: boolean
   task: any

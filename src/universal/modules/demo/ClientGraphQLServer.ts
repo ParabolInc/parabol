@@ -19,7 +19,6 @@ import {DISCUSS, GROUP, REFLECT, TASK, TEAM, VOTE} from 'universal/utils/constan
 import dndNoise from 'universal/utils/dndNoise'
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap'
 import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr'
-import getIsSoftTeamMember from 'universal/utils/getIsSoftTeamMember'
 import findStageById from 'universal/utils/meetings/findStageById'
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
@@ -911,7 +910,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         editors: [],
         integration: null,
         team: this.db.team,
-        isSoftTask: false,
         meetingId: demoMeetingId,
         reflectionGroupId,
         sortOrder: sortOrder || 0,
@@ -966,16 +964,13 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         teamId: demoTeamId,
         assigneeId,
         sortOrder,
-        isSoftTask: false,
         userId: null
       }
       const task = this.db.tasks.find((task) => task.id === updatedTask.id)
       // if the human deleted the task, exit fast
       if (!task) return null
       if (assigneeId) {
-        const isSoftTask = getIsSoftTeamMember(assigneeId)
-        taskUpdates.isSoftTask = isSoftTask
-        taskUpdates.userId = isSoftTask ? null : fromTeamMemberId(assigneeId).userId
+        taskUpdates.userId = fromTeamMemberId(assigneeId).userId
         if (assigneeId === false) {
           taskUpdates.userId = null
         }

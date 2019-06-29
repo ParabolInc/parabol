@@ -206,7 +206,6 @@ const initDemoTeam = (organization, teamMembers, newMeeting) => {
     name: demoTeamName,
     teamName: demoTeamName,
     orgId: demoOrgId,
-    softTeamMembers: [],
     tier: PRO,
     teamId: demoTeamId,
     organization,

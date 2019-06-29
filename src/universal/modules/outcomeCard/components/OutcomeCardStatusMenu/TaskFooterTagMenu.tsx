@@ -17,11 +17,12 @@ import addContentTag from 'universal/utils/draftjs/addContentTag'
 import removeContentTag from 'universal/utils/draftjs/removeContentTag'
 import isTaskPrivate from 'universal/utils/isTaskPrivate'
 import {MenuMutationProps} from 'universal/hooks/useMutationProps'
+import {AreaEnum} from 'universal/types/graphql'
 
 const statusItems = labels.taskStatus.slugs.slice()
 
 interface Props {
-  area: string
+  area: AreaEnum
   menuProps: MenuProps
   editorState: EditorState
   // TODO make area enum more fine grained to get rid of isAgenda

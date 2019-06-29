@@ -21,7 +21,7 @@ import {endNewMeetingNotificationUpdater} from 'universal/mutations/EndNewMeetin
 import {graphql} from 'react-relay'
 import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 import {OnNextContext, OnNextHandler, UpdaterHandler} from 'universal/types/relayMutations'
-import {GraphQLSubscriptionConfig} from 'relay-runtime'
+import {GraphQLSubscriptionConfig, RecordSourceSelectorProxy} from 'relay-runtime'
 import {NotificationSubscriptionResponse} from '__generated__/NotificationSubscription.graphql'
 import Atmosphere from 'universal/Atmosphere'
 
@@ -201,12 +201,12 @@ const NotificationSubscription = (atmosphere: Atmosphere, _queryVariables, subPa
   return {
     subscription,
     variables: {},
-    updater: (store) => {
+    updater: (store: RecordSourceSelectorProxy<NotificationSubscriptionResponse>) => {
       const payload = store.getRootField('notificationSubscription')
       if (!payload) return
       const type = payload.getValue('__typename')
       const context = {store, atmosphere}
-      switch (type) {
+      switch (type as string) {
         case 'AcceptTeamInvitationPayload':
           acceptTeamInvitationNotificationUpdater(payload, context)
           break
@@ -222,10 +222,10 @@ const NotificationSubscription = (atmosphere: Atmosphere, _queryVariables, subPa
           addTeamMutationNotificationUpdater(payload, context)
           break
         case 'ClearNotificationPayload':
-          clearNotificationNotificationUpdater(payload, store, viewerId)
+          clearNotificationNotificationUpdater(payload, store)
           break
         case 'CreateTaskPayload':
-          createTaskNotificationUpdater(payload, store, viewerId)
+          createTaskNotificationUpdater(payload as any, context)
           break
         case 'DeleteTaskPayload':
           deleteTaskNotificationUpdater(payload, store, viewerId)

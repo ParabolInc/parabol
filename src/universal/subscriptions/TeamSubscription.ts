@@ -105,8 +105,8 @@ const onNextHandlers = {
   RemoveTeamMemberPayload: removeTeamMemberTeamOnNext
 }
 
-const TeamSubscription = (environment, _queryVariables, subParams) => {
-  const {viewerId} = environment
+const TeamSubscription = (atmosphere, _queryVariables, subParams) => {
+  const {viewerId} = atmosphere
   return {
     subscription,
     variables: {},
@@ -114,27 +114,28 @@ const TeamSubscription = (environment, _queryVariables, subParams) => {
       const payload = store.getRootField('teamSubscription')
       if (!payload) return
       const type = payload.getValue('__typename')
+      const context = {atmosphere, store}
       switch (type) {
         case 'AddAgendaItemPayload':
-          addAgendaItemUpdater(payload, {store})
+          addAgendaItemUpdater(payload, context)
           break
         case 'RemoveAgendaItemPayload':
-          removeAgendaItemUpdater(payload, {store})
+          removeAgendaItemUpdater(payload, context)
           break
         case 'UpdateAgendaItemPayload':
-          updateAgendaItemUpdater(payload, {store})
+          updateAgendaItemUpdater(payload, context)
           break
         case 'AcceptTeamInvitationPayload':
-          acceptTeamInvitationTeamUpdater(payload, {store})
+          acceptTeamInvitationTeamUpdater(payload, context)
           break
         case 'AddReflectTemplatePayload':
-          addReflectTemplateTeamUpdater(payload, {store})
+          addReflectTemplateTeamUpdater(payload, context)
           break
         case 'AddReflectTemplatePromptPayload':
-          addReflectTemplatePromptTeamUpdater(payload, {store})
+          addReflectTemplatePromptTeamUpdater(payload, context)
           break
         case 'AutoGroupReflectionsPayload':
-          autoGroupReflectionsTeamUpdater(payload, {atmosphere: environment, store})
+          autoGroupReflectionsTeamUpdater(payload, context)
           break
         case 'CreateGitHubIssuePayload':
           break
@@ -142,10 +143,10 @@ const TeamSubscription = (environment, _queryVariables, subParams) => {
           createReflectionTeamUpdater(payload, store)
           break
         case 'EndDraggingReflectionPayload':
-          endDraggingReflectionTeamUpdater(payload, {store})
+          endDraggingReflectionTeamUpdater(payload, context)
           break
         case 'DragDiscussionTopicPayload':
-          dragDiscussionTopicTeamUpdater(payload, {store})
+          dragDiscussionTopicTeamUpdater(payload, context)
           break
         case 'AddTeamMutationPayload':
           addTeamTeamUpdater(payload, store, viewerId)
@@ -157,12 +158,12 @@ const TeamSubscription = (environment, _queryVariables, subParams) => {
           editReflectionTeamUpdater(payload, store)
           break
         case 'EndNewMeetingPayload':
-          endNewMeetingTeamUpdater(payload, {store})
+          endNewMeetingTeamUpdater(payload, context)
           break
         case 'MeetingCheckInPayload':
           break
         case 'MoveReflectTemplatePromptPayload':
-          moveReflectTemplatePromptTeamUpdater(payload, {store})
+          moveReflectTemplatePromptTeamUpdater(payload, context)
           break
         case 'NavigateMeetingPayload':
           navigateMeetingTeamUpdater(payload, store)
@@ -177,10 +178,10 @@ const TeamSubscription = (environment, _queryVariables, subParams) => {
           removeOrgUserTeamUpdater(payload, store, viewerId)
           break
         case 'RemoveReflectTemplatePayload':
-          removeReflectTemplateTeamUpdater(payload, {store, viewerId})
+          removeReflectTemplateTeamUpdater(payload, context)
           break
         case 'RemoveReflectTemplatePromptPayload':
-          removeReflectTemplatePromptTeamUpdater(payload, {store})
+          removeReflectTemplatePromptTeamUpdater(payload, context)
           break
         case 'RemoveReflectionPayload':
           removeReflectionTeamUpdater(payload, store)
@@ -199,14 +200,14 @@ const TeamSubscription = (environment, _queryVariables, subParams) => {
         case 'SetPhaseFocusPayload':
           break
         case 'StartDraggingReflectionPayload':
-          startDraggingReflectionTeamUpdater(payload, {atmosphere: environment, store})
+          startDraggingReflectionTeamUpdater(payload, context)
           break
         case 'StartNewMeetingPayload':
           break
         case 'UpdateCreditCardPayload':
           break
         case 'UpdateDragLocationPayload':
-          updateDragLocationTeamUpdater(payload, {atmosphere: environment, store})
+          updateDragLocationTeamUpdater(payload, context)
           break
         case 'UpdateNewCheckInQuestionPayload':
           break
@@ -226,7 +227,7 @@ const TeamSubscription = (environment, _queryVariables, subParams) => {
       const {__typename: type} = teamSubscription
       const handler = onNextHandlers[type]
       if (handler) {
-        handler(teamSubscription, {...subParams, atmosphere: environment})
+        handler(teamSubscription, {...subParams, atmosphere: atmosphere})
       }
     }
   }
