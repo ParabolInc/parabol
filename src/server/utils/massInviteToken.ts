@@ -5,8 +5,10 @@ import ms from 'ms'
 // 'eyJhbGciOiJIUzI1NiJ9'
 const header = Buffer.from(JSON.stringify({alg: 'HS256'})).toString('base64')
 
+const LIFESPAN = ms('1d')
+
 export const signMassInviteToken = (teamId: string, userId: string) => {
-  const exp = toEpochSeconds(Date.now() + ms('1d'))
+  const exp = toEpochSeconds(Date.now() + LIFESPAN)
   const raw = [exp, teamId, userId].join('.')
   const fullToken = sign(raw, process.env.AUTH0_CLIENT_SECRET!)
   // remove the alg header
