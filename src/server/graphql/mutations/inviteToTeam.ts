@@ -14,6 +14,7 @@ import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import standardError from '../../utils/standardError'
 import InviteToTeamPayload from '../types/InviteToTeamPayload'
 import {TEAM_INVITATION_LIFESPAN} from 'server/utils/serverConstants'
+import TeamInvitation from 'server/database/types/TeamInvitation'
 
 const randomBytes = promisify(crypto.randomBytes, crypto)
 
@@ -67,16 +68,15 @@ export default {
       const tokens = bufferTokens.map((buffer: Buffer) => buffer.toString('hex'))
       const expiresAt = new Date(Date.now() + TEAM_INVITATION_LIFESPAN)
       // insert invitation records
-      const teamInvitationsToInsert = newInvitees.map((email, idx) => ({
-        id: shortid.generate(),
-        acceptedAt: null,
-        createdAt: now,
-        expiresAt,
-        email,
-        invitedBy: viewerId,
-        teamId,
-        token: tokens[idx]
-      }))
+      const teamInvitationsToInsert = newInvitees.map((email, idx) => {
+        return new TeamInvitation({
+          expiresAt,
+          email,
+          invitedBy: viewerId,
+          teamId,
+          token: tokens[idx]
+        })
+      })
       await r.table('TeamInvitation').insert(teamInvitationsToInsert)
 
       // remove suggested action, if any

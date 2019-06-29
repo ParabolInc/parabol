@@ -20,14 +20,15 @@ const SeparatorContainer = styled('div')(({margin}: {margin: string | number | u
   margin,
   maxWidth: '100%',
   padding: '1rem 0',
-  textTransform: 'uppercase'
+  textTransform: 'uppercase',
+  width: '100%'
 }))
 
 const separatorLineStyles = {
   borderBottom: `0.0625rem solid ${appTheme.palette.mid50a}`,
   margin: 'auto',
   opacity: 0.25,
-  width: '12rem'
+  flex: 1
 }
 
 const LeftSeparator = styled('div')({
@@ -42,7 +43,7 @@ const RightSeparator = styled('div')({
 
 const FullSeparator = styled('div')({
   ...separatorLineStyles,
-  width: '20rem'
+  flex: 1
 })
 
 type Props = {

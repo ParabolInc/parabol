@@ -123,7 +123,11 @@ const RetroLobby = (props: Props) => {
             <RetroTemplatePicker settings={meetingSettings} />
           </TemplatePickerBlock>
           <UrlBlock>
-            <CopyShortLink url={makeHref(`/${meetingSlug}/${teamId}`)} />
+            <CopyShortLink
+              url={makeHref(`/${meetingSlug}/${teamId}`)}
+              title={'Copy Meeting Link'}
+              tooltip={'Copied the meeting link!'}
+            />
           </UrlBlock>
           <MeetingHelpToggle menu={<RetroLobbyHelpMenu />} />
         </NewMeetingLobby>

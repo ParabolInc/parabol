@@ -1,11 +1,9 @@
-import PropTypes from 'prop-types'
-import React from 'react'
+import React, {ReactNode} from 'react'
 import styled from 'react-emotion'
 import CopyLink from 'universal/components/CopyLink'
-import ui from 'universal/styles/ui'
-import appTheme from 'universal/styles/theme/appTheme'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import {PALETTE} from 'universal/styles/paletteV2'
 
 const CopyIcon = styled(Icon)({
   color: 'inherit',
@@ -20,24 +18,30 @@ const CopyIcon = styled(Icon)({
 
 const CopyLabel = styled('div')({
   color: 'inherit',
-  fontSize: appTheme.typography.s2
+  fontSize: 13
 })
 
 const CopyBlock = styled('div')({
-  color: ui.hintColor,
+  color: PALETTE.TEXT_LIGHT,
   position: 'relative',
   '&:hover': {
-    color: ui.colorText,
+    color: PALETTE.TEXT_MAIN,
     cursor: 'pointer'
-  }
+  },
+  userSelect: 'none'
 })
 
-const CopyShortLink = (props) => {
-  const {icon, label, url} = props
+interface Props {
+  icon?: string
+  label?: ReactNode
+  title?: string | undefined
+  tooltip?: string | undefined
+  url: string
+}
+const CopyShortLink = (props: Props) => {
+  const {icon, label, url, title, tooltip} = props
   const theIcon = icon || 'link'
   const theLabel = label || url
-  const title = 'Copy Meeting Link'
-  const tooltip = 'Copied the meeting link!'
   return (
     <CopyLink url={url} title={title} tooltip={tooltip}>
       <CopyBlock>
@@ -46,12 +50,6 @@ const CopyShortLink = (props) => {
       </CopyBlock>
     </CopyLink>
   )
-}
-
-CopyShortLink.propTypes = {
-  icon: PropTypes.string,
-  label: PropTypes.string,
-  url: PropTypes.string
 }
 
 export default CopyShortLink

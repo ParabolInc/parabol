@@ -1,46 +1,24 @@
-import {Component} from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
-import {RouteComponentProps, withRouter} from 'react-router'
-import {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import withAtmosphere from '../decorators/withAtmosphere/withAtmosphere'
+import {useEffect} from 'react'
 import AcceptTeamInvitationMutation from 'universal/mutations/AcceptTeamInvitationMutation'
-import {TeamInvitationAccept_verifiedInvitation} from '__generated__/TeamInvitationAccept_verifiedInvitation.graphql'
+import useRouter from 'universal/hooks/useRouter'
+import useAtmosphere from 'universal/hooks/useAtmosphere'
 
-interface Props extends WithAtmosphereProps, RouteComponentProps<{token: string}> {
-  verifiedInvitation: TeamInvitationAccept_verifiedInvitation
+interface Props {
+  invitationToken: string
+  teamId: string
 }
 
-class TeamInvitation extends Component<Props> {
-  constructor (props: Props) {
-    super(props)
-    const {
-      atmosphere,
-      history,
-      match: {
-        params: {token}
-      },
-      verifiedInvitation: {teamInvitation}
-    } = props
-    if (!teamInvitation) return
-    const {teamId} = teamInvitation
-    const onCompleted = () => {
-      history.replace(`/team/${teamId}`)
-    }
-    AcceptTeamInvitationMutation(atmosphere, {invitationToken: token}, {history, onCompleted})
+const TeamInvitationAccept = (props: Props) => {
+  const {invitationToken, teamId} = props
+  const {history} = useRouter()
+  const onCompleted = () => {
+    history.replace(`/team/${teamId}`)
   }
-
-  render () {
-    return null
-  }
+  const atmosphere = useAtmosphere()
+  useEffect(() => {
+    AcceptTeamInvitationMutation(atmosphere, {invitationToken}, {history, onCompleted})
+  })
+  return null
 }
 
-export default createFragmentContainer(
-  withAtmosphere(withRouter(TeamInvitation)),
-  graphql`
-    fragment TeamInvitationAccept_verifiedInvitation on VerifiedInvitationPayload {
-      teamInvitation {
-        teamId
-      }
-    }
-  `
-)
+export default TeamInvitationAccept
