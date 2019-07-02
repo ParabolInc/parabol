@@ -38,6 +38,7 @@ import {
 } from '../PhaseItemMasonry'
 import {DragReflectionDropTargetTypeEnum} from 'universal/types/graphql'
 import {cardStackPerspectiveY} from 'universal/styles/cards'
+import updateColumnHeight from 'universal/utils/multiplayerMasonry/updateColumnHeight'
 
 interface PassedProps {
   meeting: ReflectionGroup_meeting
@@ -110,11 +111,22 @@ const GroupStyle = styled('div')(
     }
 )
 
-class ReflectionGroup extends Component<Props> {
+interface State {
+  isEditingSingleCardTitle: boolean
+}
+
+class ReflectionGroup extends Component<Props, State> {
   isClosing = false
   backgroundRef?: HTMLDivElement | null
   headerRef?: HTMLDivElement | null
   modalRef?: HTMLDivElement | null
+  titleInputRef = React.createRef<HTMLInputElement>()
+  state: State = {
+    isEditingSingleCardTitle:
+      (this.props.reflectionGroup.reflections.length === 1 &&
+        this.props.reflectionGroup.titleIsUserDefined) ||
+      false
+  }
 
   componentDidUpdate (prevProps: Props) {
     const {
@@ -270,6 +282,21 @@ class ReflectionGroup extends Component<Props> {
     )
   }
 
+  handleClick = () => {
+    const {childrenCache, reflectionGroup} = this.props
+    const {isExpanded, reflections, titleIsUserDefined, reflectionGroupId} = reflectionGroup
+    if (reflections.length > 1 && !isExpanded) {
+      this.expandGroup()
+    } else if (reflections.length === 1 && !titleIsUserDefined) {
+      this.setState({
+        isEditingSingleCardTitle: !this.state.isEditingSingleCardTitle
+      })
+      setTimeout(() => {
+        updateColumnHeight(childrenCache, reflectionGroupId)
+        this.titleInputRef.current && this.titleInputRef.current.select()
+      }, 0)
+    }
+  }
   expandGroup = () => {
     const {
       atmosphere,
@@ -306,7 +333,6 @@ class ReflectionGroup extends Component<Props> {
     const canExpand = !isExpanded && reflections.length > 1
     const [firstReflection] = reflections
     const isDraggable = phaseType === GROUP && !isComplete
-    const showHeader = reflections.length > 1 || phaseType !== GROUP
     // always render the in-grid group so we can get a read on the size if the title is removed
     let gutterN = 0
     if (reflections.length === 2) gutterN = 1
@@ -318,17 +344,17 @@ class ReflectionGroup extends Component<Props> {
           isHidden={isExpanded}
           gutterN={gutterN}
         >
-          {showHeader && (
-            <ReflectionGroupHeader
-              innerRef={this.setHeaderRef}
-              meeting={meeting}
-              reflectionGroup={reflectionGroup}
-            />
-          )}
+          <ReflectionGroupHeader
+            innerRef={this.setHeaderRef}
+            meeting={meeting}
+            reflectionGroup={reflectionGroup}
+            isEditingSingleCardTitle={this.state.isEditingSingleCardTitle}
+            titleInputRef={this.titleInputRef}
+          />
           {connectDropTarget(
             <div
               className={reflectionsStyle(canDrop, isDraggable, canExpand, isComplete)}
-              onClick={canExpand ? this.expandGroup : undefined}
+              onClick={this.handleClick}
             >
               {reflections.map((reflection, idx) =>
                 this.renderReflection(reflection, idx, {isModal: false, isDraggable})
@@ -344,6 +370,7 @@ class ReflectionGroup extends Component<Props> {
               innerRef={this.setHeaderRef}
               meeting={meeting}
               reflectionGroup={reflectionGroup}
+              titleInputRef={this.titleInputRef}
             />
             <div className={reflectionsStyle(canDrop, isDraggable, canExpand, isComplete)}>
               {reflections.map((reflection, idx) =>
@@ -408,6 +435,7 @@ export default createFragmentContainer<PassedProps>(
       retroPhaseItemId
       reflectionGroupId: id
       sortOrder
+      titleIsUserDefined
       reflections {
         id
         retroPhaseItemId

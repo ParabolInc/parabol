@@ -612,7 +612,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         })
         this.db.newMeeting.nextAutoGroupThreshold = null
         const {smartTitle: nextGroupSmartTitle, title: nextGroupTitle} = makeRetroGroupTitle([
-          reflection
+          reflection as IRetroReflection
         ])
         newReflectionGroup.smartTitle = nextGroupSmartTitle
         newReflectionGroup.title = nextGroupTitle
@@ -656,10 +656,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
             1
           )
           if (oldReflectionGroupId !== newReflectionGroupId) {
-            const nextReflections = this.db.reflections.filter(
+            const reflections = this.db.reflections as IRetroReflection[]
+            const nextReflections = reflections.filter(
               (reflection) => reflection.reflectionGroupId === newReflectionGroupId
             )
-            const oldReflections = this.db.reflections.filter(
+            const oldReflections = reflections.filter(
               (reflection) => reflection.reflectionGroupId === oldReflectionGroupId
             )
             const {smartTitle: nextGroupSmartTitle, title: nextGroupTitle} = makeRetroGroupTitle(
@@ -734,7 +735,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         groups,
         removedReflectionGroupIds,
         nextThresh
-      } = groupReflections(reflections, groupingThreshold)
+      } = groupReflections(reflections as any, groupingThreshold)
       removedReflectionGroupIds.forEach((groupId) => {
         const group = this.db.reflectionGroups.find((group) => group.id === groupId)!
         group.isActive = false
@@ -780,7 +781,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         reflections: groupedReflections,
         reflectionGroups: groups,
         removedReflectionGroups: this.db.reflectionGroups.filter((group) =>
-          removedReflectionGroupIds.includes(group.id)
+          removedReflectionGroupIds.includes(group.id as string)
         ),
         reflectionGroupIds,
         reflectionIds,

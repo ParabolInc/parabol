@@ -8,7 +8,7 @@ import getSyntaxFromText from 'server/graphql/mutations/helpers/autoGroup/getSyn
 import addLemmaToEntities from 'server/graphql/mutations/helpers/autoGroup/addLemmaToEntities'
 import sendToSentry from 'server/utils/sendToSentry'
 
-const catchHandler = (e: Error): undefined => {
+const catchHandler = (e: Error) => {
   const re = /the language \S+ is not supported/i
   if (!re.test(e.message)) {
     sendToSentry(new Error(`Grouping Error: Google NLP: ${e.message}`))

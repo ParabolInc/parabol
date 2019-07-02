@@ -4,7 +4,7 @@ import getRethink from '../database/rethinkDriver'
 export interface SentryOptions {
   userId?: string
   tags?: {
-    [tag: string]: any
+    [tag: string]: string
   }
 }
 
@@ -25,11 +25,10 @@ const sendToSentry = async (error: Error, options: SentryOptions = {}): void => 
       .pluck('id', 'email')
       .default(null)
   }
-
   Sentry.withScope((scope) => {
     user && scope.setUser(user)
     if (tags) {
-      Object.keys((tag) => {
+      Object.keys(tags).forEach((tag) => {
         scope.setTag(tag, tags[tag])
       })
     }
