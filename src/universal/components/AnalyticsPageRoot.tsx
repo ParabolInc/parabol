@@ -1,14 +1,14 @@
 import React from 'react'
 import {graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import AnalyticsIdentifier from 'universal/components/AnalyticsIdentifier'
+import AnalyticsPage from 'universal/components/AnalyticsPage'
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 
 const query = graphql`
-  query AnalyticsIdentifierRootQuery {
+  query AnalyticsPageRootQuery {
     viewer {
       viewerId: id
       created: createdAt
@@ -21,11 +21,11 @@ const query = graphql`
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {}
 
-const AnalyticsIdentifierRoot = (props: Props) => {
+const AnalyticsPageRoot = (props: Props) => {
   const {atmosphere, location} = props
   const {authToken} = atmosphere
   if (!authToken) {
-    return <AnalyticsIdentifier location={location} viewer={null} />
+    return <AnalyticsPage location={location} viewer={null} />
   }
   return (
     <QueryRenderer
@@ -34,14 +34,11 @@ const AnalyticsIdentifierRoot = (props: Props) => {
       variables={{}}
       render={({props: renderProps}) => {
         return (
-          <AnalyticsIdentifier
-            location={location}
-            viewer={renderProps ? renderProps.viewer : null}
-          />
+          <AnalyticsPage location={location} viewer={renderProps ? renderProps.viewer : null} />
         )
       }}
     />
   )
 }
 
-export default withRouter(withAtmosphere(AnalyticsIdentifierRoot))
+export default withRouter(withAtmosphere(AnalyticsPageRoot))

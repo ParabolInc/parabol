@@ -38,6 +38,7 @@ import {
 } from '../PhaseItemMasonry'
 import {DragReflectionDropTargetTypeEnum} from 'universal/types/graphql'
 import {cardStackPerspectiveY} from 'universal/styles/cards'
+import updateColumnHeight from 'universal/utils/multiplayerMasonry/updateColumnHeight'
 
 interface PassedProps {
   meeting: ReflectionGroup_meeting
@@ -282,8 +283,8 @@ class ReflectionGroup extends Component<Props, State> {
   }
 
   handleClick = () => {
-    const {reflectionGroup} = this.props
-    const {isExpanded, reflections, titleIsUserDefined} = reflectionGroup
+    const {childrenCache, reflectionGroup} = this.props
+    const {isExpanded, reflections, titleIsUserDefined, reflectionGroupId} = reflectionGroup
     if (reflections.length > 1 && !isExpanded) {
       this.expandGroup()
     } else if (reflections.length === 1 && !titleIsUserDefined) {
@@ -291,6 +292,7 @@ class ReflectionGroup extends Component<Props, State> {
         isEditingSingleCardTitle: !this.state.isEditingSingleCardTitle
       })
       setTimeout(() => {
+        updateColumnHeight(childrenCache, reflectionGroupId)
         this.titleInputRef.current && this.titleInputRef.current.select()
       }, 0)
     }
