@@ -21,13 +21,13 @@ const InvitationLinkDialog = (props: Props) => {
   const {params} = match
   const {token} = params
   useEffect(() => {
-    window.localStorage.setItem('massInvitationToken', token)
+    window.localStorage.setItem('invitationToken', token)
   }, [])
   const {massInvitation} = props
   const {errorType, teamId, teamName} = massInvitation
   switch (errorType) {
     case 'notFound':
-      return <TeamInvitationErrorNotFound />
+      return <TeamInvitationErrorNotFound isMassInvite />
     case 'expired':
       return <InvitationLinkErrorExpired massInvitation={massInvitation} />
   }

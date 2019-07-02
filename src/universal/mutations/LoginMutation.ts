@@ -67,13 +67,15 @@ const LoginMutation = (
       const {team} = acceptTeamInvitation
       // redirect directly into meeting
       if (team) {
-        const {newMeeting} = team
+        const {newMeeting, id: teamId} = team
         if (newMeeting) {
           const {meetingType} = newMeeting
           const slug = meetingTypeToSlug[meetingType]
-          history.push(`/${slug}/${team.id}`)
-          return
+          history.push(`/${slug}/${teamId}`)
+        } else {
+          history.push(`/team/${teamId}`)
         }
+        return
       }
 
       // standard redirect logic
