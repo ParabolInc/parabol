@@ -1,7 +1,7 @@
 import React, {lazy, Suspense} from 'react'
 import styled from 'react-emotion'
 import {Route, Switch} from 'react-router'
-import AnalyticsIdentifierRoot from 'universal/components/AnalyticsIdentifierRoot'
+import AnalyticsPageRoot from 'universal/components/AnalyticsPageRoot'
 import SocketHealthMonitor from 'universal/components/SocketHealthMonitor'
 import Toast from 'universal/modules/toast/containers/Toast/Toast'
 import {CREATE_ACCOUNT_SLUG, SIGNIN_SLUG} from 'universal/utils/constants'
@@ -50,7 +50,7 @@ const Action = () => {
       <ErrorBoundary>
         <Toast />
         <SocketHealthMonitor />
-        <AnalyticsIdentifierRoot />
+        <AnalyticsPageRoot />
         <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.WHOLE_PAGE} />}>
           <Switch>
             <Route exact path='/' component={AuthenticationPage} />

@@ -5,7 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## vNext
+## v3.15.0 2019-Jun-25
+
+### Added
+* Timer, Time Box, and associated Slack notifications
+* Added SU permission to `resolveForBillingLeaders()`
+
+### Fixed
+* Segment fixes:
+   * Capitailze first letter of meeting names
+   * `identify()` events were occasionally passing the wrong HubSpot traits
+   * renamed `name` trait to `parabolPreferredName`
+   * Other misc fixes
+
+### Removed
+* Segment identify() call when viewer changes
+* Some cruft from `ui.js`
 
 ### Fixed
 * capitalized segment Meeting Completed events (#2916)

@@ -33,11 +33,13 @@ const UpdateUserProfileMutation = (environment, updatedUser, {onError, onComplet
       const viewer = store.get(viewerId)
       if (!viewer) return
       const {picture, preferredName} = updatedUser
-      if (preferredName) {
-        viewer.setValue(preferredName, 'preferredName')
-      }
-      if (picture) {
-        viewer.setValue(picture, 'picture')
+      if (viewer) {
+        if (preferredName) {
+          viewer.setValue(preferredName, 'preferredName')
+        }
+        if (picture) {
+          viewer.setValue(picture, 'picture')
+        }
       }
     },
     onCompleted,
