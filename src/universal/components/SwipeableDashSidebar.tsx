@@ -81,7 +81,7 @@ const HYSTERESIS = 0.55 // how far must it be pulled out to stay out (0 -1)
 const HYSTERESIS_THRESH = HYSTERESIS * DASH_SIDEBAR.WIDTH
 const MIN_ARC_ANGLE = 30 // how sloppy can the pull be. 0 means everything is a drag, 90 means all but perfect pulls are a scroll (0 - 90)
 const MIN_ARC_RADS = (MIN_ARC_ANGLE / 180) * Math.PI
-const MIN_SPEED = 10 // faster than this and it's a fling
+const MIN_SPEED = 5 // faster than this and it's a fling
 const UNCERTAINTY_THRESHOLD = 3 // pixels to move along 1 plane until we determine intent
 // singleton ref
 const swipe = {
