@@ -13,6 +13,7 @@ import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import DashNavItem from './DashNavItem'
+import {navDrawerShadow} from 'universal/styles/elevation'
 
 export const enum DASH_SIDEBAR {
   WIDTH = 240
@@ -30,9 +31,11 @@ const linkBaseStyles = {
 }
 
 const ScrollWrapper = styled('div')({
+  boxShadow: navDrawerShadow,
   backgroundColor: ui.dashSidebarBackgroundColor,
   maxWidth: DASH_SIDEBAR.WIDTH,
-  minWidth: DASH_SIDEBAR.WIDTH
+  minWidth: DASH_SIDEBAR.WIDTH,
+  userSelect: 'none'
 })
 
 const DashSidebarStyles = styled('div')({
@@ -42,7 +45,6 @@ const DashSidebarStyles = styled('div')({
   flexDirection: 'column',
   maxWidth: DASH_SIDEBAR.WIDTH,
   minWidth: DASH_SIDEBAR.WIDTH,
-  position: 'fixed',
   overflow: 'hidden',
   height: '100vh'
 })

@@ -5,6 +5,7 @@ import {createFragmentContainer, graphql} from 'react-relay'
 import {Route, Switch} from 'react-router'
 import DashSidebar from './Dashboard/DashSidebar'
 import DashAlert from './DashAlert'
+import ResponsiveDashSidebar from 'universal/components/ResponsiveDashSidebar'
 
 const UserDashboard = lazy(() =>
   import(/* webpackChunkName: 'UserDashboard' */ 'universal/modules/userDashboard/components/UserDashboard/UserDashboard')
@@ -36,7 +37,9 @@ const Dashboard = (props: Props) => {
   const {viewer} = props
   return (
     <DashLayout>
-      <DashSidebar viewer={viewer} location={location} />
+      <ResponsiveDashSidebar>
+        <DashSidebar viewer={viewer} location={location} />
+      </ResponsiveDashSidebar>
       <DashPanel>
         <DashAlert viewer={viewer} />
         <Switch>
