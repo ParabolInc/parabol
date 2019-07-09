@@ -28,7 +28,7 @@ const Backdrop = styled('div')({
   right: 0,
   textAlign: 'center',
   top: 0,
-  zIndex: 400
+  zIndex: 200
 })
 
 const Modal = styled('div')({
