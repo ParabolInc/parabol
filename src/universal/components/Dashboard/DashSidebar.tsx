@@ -13,14 +13,14 @@ import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import DashNavItem from './DashNavItem'
-import {navDrawerShadow} from 'universal/styles/elevation'
 
 export const enum DASH_SIDEBAR {
+  BREAKPOINT = 800,
   WIDTH = 240
 }
 
 interface Props {
-  location: any
+  handleMenuClick: () => void
   viewer: DashSidebar_viewer | null
 }
 
@@ -32,7 +32,6 @@ const linkBaseStyles = {
 
 const DashSidebarStyles = styled('div')({
   backgroundColor: ui.dashSidebarBackgroundColor,
-  boxShadow: navDrawerShadow,
   color: textColor,
   display: 'flex',
   flexDirection: 'column',
@@ -121,23 +120,29 @@ const AddTeamLabel = styled('div')({
 })
 
 const DashSidebar = (props: Props) => {
-  const {location, viewer} = props
+  const {handleMenuClick, viewer} = props
   return (
     <DashSidebarStyles>
-      <StandardHub location={location} viewer={viewer} />
+      <StandardHub handleMenuClick={handleMenuClick} viewer={viewer} />
       <NavBlock>
         <Nav>
           {/* use div for flex layout */}
           <div>
             <MyDashboard>
-              <DashNavItem location={location} href='/me' icon='dashboard' label='My Dashboard' />
+              <DashNavItem
+                href='/me'
+                icon='dashboard'
+                label='My Dashboard'
+                onClick={handleMenuClick}
+              />
             </MyDashboard>
             <NavLabel>{'My Teams'}</NavLabel>
           </div>
           <NavMain>
-            <DashNavList location={location} viewer={viewer} />
+            <DashNavList viewer={viewer} onClick={handleMenuClick} />
           </NavMain>
           <NavLink
+            onClick={handleMenuClick}
             className={addTeamStyles}
             activeClassName={disabledAddTeamStyles}
             title='Add New Team'
@@ -148,7 +153,7 @@ const DashSidebar = (props: Props) => {
           </NavLink>
         </Nav>
       </NavBlock>
-      <LogoBlock variant='white' />
+      <LogoBlock variant='white' onClick={handleMenuClick} />
     </DashSidebarStyles>
   )
 }

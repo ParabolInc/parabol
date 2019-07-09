@@ -1,12 +1,11 @@
-import PropTypes from 'prop-types'
-import {createFragmentContainer} from 'react-relay'
-import {withRouter} from 'react-router-dom'
+import {createFragmentContainer, graphql} from 'react-relay'
 import DashNavItem from 'universal/components/Dashboard/DashNavItem'
 import React from 'react'
 import appTheme from 'universal/styles/theme/appTheme'
 import styled from 'react-emotion'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import {DashNavTeam_team} from '__generated__/DashNavTeam_team.graphql'
 
 const WarningIcon = styled(Icon)({
   color: appTheme.palette.light,
@@ -21,26 +20,23 @@ const IconAndLink = styled('div')({
   position: 'relative'
 })
 
-const DashNavTeam = (props) => {
-  const {team} = props
+interface Props {
+  team: DashNavTeam_team
+  onClick: () => void
+}
+
+const DashNavTeam = (props: Props) => {
+  const {onClick, team} = props
   return (
     <IconAndLink>
       {!team.isPaid && <WarningIcon title='Team is disabled for nonpayment'>warning</WarningIcon>}
-      <DashNavItem
-        href={`/team/${team.id}`}
-        label={team.name}
-        icon={team.isPaid ? 'group' : undefined}
-      />
+      <DashNavItem href={`/team/${team.id}`} label={team.name} icon={'group'} onClick={onClick} />
     </IconAndLink>
   )
 }
 
-DashNavTeam.propTypes = {
-  team: PropTypes.object.isRequired
-}
-
 export default createFragmentContainer(
-  withRouter(DashNavTeam),
+  DashNavTeam,
   graphql`
     fragment DashNavTeam_team on Team {
       id

@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 import ui from 'universal/styles/ui'
 import {NavLink} from 'react-router-dom'
@@ -9,8 +8,8 @@ import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 const StyledIcon = styled(Icon)({
   display: 'block',
   fontSize: MD_ICONS_SIZE_18,
-  marginRight: '.5rem',
-  opacity: '.5',
+  marginRight: 8,
+  opacity: 0.5,
   textAlign: 'left'
 })
 
@@ -22,17 +21,12 @@ const navLinkcss = css({
   fontSize: ui.navMenuFontSize,
   fontWeight: 600,
   lineHeight: ui.navMenuLineHeight,
-  padding: '.625rem .5rem .625rem 2rem',
+  padding: '10px 8px 10px 32px',
   transition: `background-color 100ms ease-in`,
   userSelect: 'none',
   width: '100%',
-  ':hover': {
+  ':hover,:focus': {
     backgroundColor: ui.navMenuDarkBackgroundColorHover,
-    color: 'inherit',
-    cursor: 'pointer',
-    textDecoration: 'none'
-  },
-  ':focus': {
     color: 'inherit',
     cursor: 'pointer',
     textDecoration: 'none'
@@ -57,7 +51,7 @@ const Label = styled('div')({
   wordBreak: 'break-word'
 })
 
-const myDashActive = (href) => (match, location) => {
+const myDashActive = (href) => (_match, location) => {
   const {pathname} = location
   const slashlessPath = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname
   if (href === '/me') {
@@ -66,8 +60,15 @@ const myDashActive = (href) => (match, location) => {
   return slashlessPath.startsWith(href)
 }
 
-const DashNavItem = (props) => {
-  const {label, href, icon} = props
+interface Props {
+  label: string
+  href: string
+  icon: string
+  onClick: () => void
+}
+
+const DashNavItem = (props: Props) => {
+  const {label, href, icon, onClick} = props
   return (
     <NavLink
       activeClassName={activeNavLinkcss}
@@ -75,17 +76,12 @@ const DashNavItem = (props) => {
       isActive={myDashActive(href)}
       title={label}
       to={href}
+      onClick={onClick}
     >
       {icon && <StyledIcon>{icon}</StyledIcon>}
       <Label>{label}</Label>
     </NavLink>
   )
-}
-
-DashNavItem.propTypes = {
-  href: PropTypes.string,
-  icon: PropTypes.string,
-  label: PropTypes.string
 }
 
 export default DashNavItem

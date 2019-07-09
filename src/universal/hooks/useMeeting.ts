@@ -24,6 +24,8 @@ import updateLocalStage from 'universal/utils/relay/updateLocalStage'
 import {useMeetingLocalStateTeam} from '__generated__/useMeetingLocalStateTeam.graphql'
 import useRouter from 'universal/hooks/useRouter'
 import Team from 'universal/modules/teamDashboard/components/Team/Team'
+import useBreakpoint from 'universal/hooks/useBreakpoint'
+import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
 
 export const useDemoMeeting = () => {
   const atmosphere = useAtmosphere()
@@ -187,13 +189,42 @@ export const useGotoPrev = (team: Team | null, gotoStageId: ReturnType<typeof us
   }, [gotoStageId, team])
 }
 
-export const useToggleSidebar = (teamId: string, isMeetingSidebarCollapsed: boolean) => {
+export const useToggleSidebar = (teamId: string) => {
   const atmosphere = useAtmosphere()
   return useCallback(() => {
     commitLocalUpdate(atmosphere, (store) => {
-      store.get(teamId)!.setValue(!isMeetingSidebarCollapsed, 'isMeetingSidebarCollapsed')
+      const team = store.get(teamId)
+      if (!team) return
+      const val = team.getValue('isMeetingSidebarCollapsed')
+      team.setValue(!val, 'isMeetingSidebarCollapsed')
     })
-  }, [teamId, isMeetingSidebarCollapsed])
+  }, [teamId])
+}
+
+const useHandleMenuClick = (teamId: string, isDesktop: boolean) => {
+  const atmosphere = useAtmosphere()
+  return useCallback(() => {
+    if (isDesktop) return
+    commitLocalUpdate(atmosphere, (store) => {
+      const team = store.get(teamId)
+      if (!team) return
+      const val = team.getValue('isMeetingSidebarCollapsed')
+      if (!val) {
+        team.setValue(true, 'isMeetingSidebarCollapsed')
+      }
+    })
+  }, [teamId, isDesktop])
+}
+
+const useMobileSidebarDefaultClosed = (
+  isDesktop: boolean,
+  toggleSidebar: ReturnType<typeof useToggleSidebar>
+) => {
+  useEffect(() => {
+    if (!isDesktop) {
+      toggleSidebar()
+    }
+  }, [])
 }
 
 export const DEFAULT_TEAM = {
@@ -226,10 +257,21 @@ const useMeeting = (meetingType: MeetingTypeEnum, team: Team | null) => {
   useDemoMeeting()
   useDocumentTitle(`${meetingTypeToLabel[meetingType]} Meeting | ${teamName}`)
   const teamId = team ? team.id : ''
-  const isMeetingSidebarCollapsed = team ? team.isMeetingSidebarCollapsed : false
-  const toggleSidebar = useToggleSidebar(teamId, !!isMeetingSidebarCollapsed)
+  const isDesktop = useBreakpoint(DASH_SIDEBAR.BREAKPOINT)
+  const toggleSidebar = useToggleSidebar(teamId)
+  const handleMenuClick = useHandleMenuClick(teamId, isDesktop)
+  useMobileSidebarDefaultClosed(isDesktop, toggleSidebar)
   const {streams, swarm} = useSwarm(teamId)
-  return {handleGotoNext, gotoStageId, safeRoute, toggleSidebar, streams, swarm}
+  return {
+    handleGotoNext,
+    gotoStageId,
+    safeRoute,
+    toggleSidebar,
+    streams,
+    swarm,
+    isDesktop,
+    handleMenuClick
+  }
 }
 
 export default useMeeting

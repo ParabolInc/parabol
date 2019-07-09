@@ -7,14 +7,21 @@ import {NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
+  handleMenuClick: () => void
   phaseType: keyof typeof NewMeetingPhaseTypeEnum | string
   viewer: ActionSidebarPhaseListItemChildren_viewer
 }
 
 const ActionSidebarPhaseListItemChildren = (props: Props) => {
-  const {gotoStageId, phaseType, viewer} = props
+  const {gotoStageId, handleMenuClick, phaseType, viewer} = props
   if (phaseType === NewMeetingPhaseTypeEnum.agendaitems) {
-    return <ActionSidebarAgendaItemsSection gotoStageId={gotoStageId} viewer={viewer} />
+    return (
+      <ActionSidebarAgendaItemsSection
+        gotoStageId={gotoStageId}
+        handleMenuClick={handleMenuClick}
+        viewer={viewer}
+      />
+    )
   }
   return null
 }

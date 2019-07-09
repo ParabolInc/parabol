@@ -1,6 +1,5 @@
-import PropTypes from 'prop-types'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {createFragmentContainer, graphql} from 'react-relay'
 import {NavLink} from 'react-router-dom'
 import Avatar from 'universal/components/Avatar/Avatar'
 import Badge from 'universal/components/Badge/Badge'
@@ -15,6 +14,7 @@ import {APP_BAR_HEIGHT} from 'universal/styles/appbars'
 import useMenu from 'universal/hooks/useMenu'
 import {MenuPosition} from 'universal/hooks/useCoords'
 import lazyPreload from 'universal/utils/lazyPreload'
+import {StandardHub_viewer} from '__generated__/StandardHub_viewer.graphql'
 
 const StandardHubRoot = styled('div')({
   alignItems: 'center',
@@ -33,7 +33,7 @@ const User = styled('div')({
   transition: `opacity 100ms ease-in`,
 
   ':hover': {
-    opacity: '.5'
+    opacity: 0.5
   }
 })
 
@@ -64,7 +64,7 @@ const notificationsStyles = {
   display: 'flex',
   height: 32,
   justifyContent: 'center',
-  position: 'relative',
+  position: 'relative' as 'relative',
   transition: `background-color 100ms ease-in`,
   width: 32,
   '&:hover,:focus': {
@@ -99,8 +99,13 @@ const StandardHubUserMenu = lazyPreload(() =>
   import(/* webpackChunkName: 'StandardHubUserMenu' */ 'universal/components/StandardHubUserMenu')
 )
 
-const StandardHub = (props) => {
-  const {viewer} = props
+interface Props {
+  handleMenuClick: () => void
+  viewer: StandardHub_viewer | null
+}
+
+const StandardHub = (props: Props) => {
+  const {handleMenuClick, viewer} = props
   const notifications = viewer && viewer.notifications && viewer.notifications.edges
   const notificationsCount = notifications ? notifications.length : 0
   const {picture = '', preferredName = ''} = viewer || {}
@@ -120,7 +125,13 @@ const StandardHub = (props) => {
           onMouseEnter={StandardHubUserMenu.preload}
           innerRef={originRef}
         />
-        {menuPortal(<StandardHubUserMenu menuProps={menuProps} viewer={viewer} />)}
+        {menuPortal(
+          <StandardHubUserMenu
+            handleMenuClick={handleMenuClick}
+            menuProps={menuProps}
+            viewer={viewer!}
+          />
+        )}
       </User>
       <NavLink
         activeClassName={css(notificationsActive)}
@@ -136,11 +147,6 @@ const StandardHub = (props) => {
       </NavLink>
     </StandardHubRoot>
   )
-}
-
-StandardHub.propTypes = {
-  notificationsCount: PropTypes.number,
-  viewer: PropTypes.object
 }
 
 export default createFragmentContainer(

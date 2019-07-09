@@ -26,22 +26,36 @@ const TallMenu = styled(Menu)({
 })
 
 interface Props extends RouteComponentProps<{}> {
+  handleMenuClick: () => void
   menuProps: MenuProps
   viewer: StandardHubUserMenu_viewer
 }
 
 const StandardHubUserMenu = (props: Props) => {
   const {
+    handleMenuClick,
     menuProps,
     history,
     viewer: {email, organizations}
   } = props
 
   // nav menu routes
-  const goToProfile = () => history.push('/me/profile')
-  const goToOrganizations = () => history.push('/me/organizations')
-  const goToNotifications = () => history.push('/me/notifications')
-  const signOut = () => history.push(`/${SIGNOUT_SLUG}`)
+  const goToProfile = () => {
+    history.push('/me/profile')
+    handleMenuClick()
+  }
+  const goToOrganizations = () => {
+    history.push('/me/organizations')
+    handleMenuClick()
+  }
+  const goToNotifications = () => {
+    history.push('/me/notifications')
+    handleMenuClick()
+  }
+  const signOut = () => {
+    history.push(`/${SIGNOUT_SLUG}`)
+    handleMenuClick()
+  }
 
   const ownedFreeOrgs = organizations.filter((org) => org.tier === PERSONAL)
   const showUpgradeCTA = ownedFreeOrgs.length > 0

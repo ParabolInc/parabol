@@ -2,7 +2,7 @@ import {RetroSidebarDiscussSection_viewer} from '__generated__/RetroSidebarDiscu
 import React from 'react'
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
 import styled from 'react-emotion'
-import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer, graphql} from 'react-relay'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import MeetingSidebarLabelBlock from 'universal/components/MeetingSidebarLabelBlock'
 import MeetingSubnavItem from 'universal/components/MeetingSubnavItem'
@@ -21,13 +21,13 @@ import {
   SORT_STEP
 } from 'universal/utils/constants'
 import dndNoise from 'universal/utils/dndNoise'
-import sidebarCanAutoCollapse from 'universal/utils/meetings/sidebarCanAutoCollapse'
 import plural from 'universal/utils/plural'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 interface Props extends WithAtmosphereProps {
   gotoStageId: ReturnType<typeof useGotoStageId>
+  handleMenuClick: () => void
   viewer: RetroSidebarDiscussSection_viewer
 }
 
@@ -65,6 +65,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
   const {
     atmosphere,
     gotoStageId,
+    handleMenuClick,
     viewer: {team}
   } = props
   const {newMeeting} = team!
@@ -106,22 +107,9 @@ const RetroSidebarDiscussSection = (props: Props) => {
     DragDiscussionTopicMutation(atmosphere, variables)
   }
 
-  const toggleSidebar = () => {
-    const {
-      atmosphere,
-      viewer: {team}
-    } = props
-    const {id: teamId, isMeetingSidebarCollapsed} = team!
-    commitLocalUpdate(atmosphere, (store) => {
-      const team = store.get(teamId)
-      if (!team) return
-      team.setValue(!isMeetingSidebarCollapsed, 'isMeetingSidebarCollapsed')
-    })
-  }
-
   const handleClick = (id) => {
     gotoStageId(id).catch()
-    if (sidebarCanAutoCollapse()) toggleSidebar()
+    handleMenuClick()
   }
   return (
     <DragDropContext onDragEnd={onDragEnd}>

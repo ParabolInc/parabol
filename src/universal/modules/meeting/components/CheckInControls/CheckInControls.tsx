@@ -4,7 +4,6 @@ import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import BottomNavControl from 'universal/components/BottomNavControl'
 import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
-import {MEETING_SIDEBAR} from 'universal/components/NewMeetingSidebar'
 import {useGotoNext} from 'universal/hooks/useMeeting'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useBreakpoint from 'universal/hooks/useBreakpoint'
@@ -12,6 +11,7 @@ import useHotkey from 'universal/hooks/useHotkey'
 import useTimeout from 'universal/hooks/useTimeout'
 import NewMeetingCheckInMutation from 'universal/mutations/NewMeetingCheckInMutation'
 import handleRightArrow from 'universal/utils/handleRightArrow'
+import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
 
 const ButtonBlock = styled('div')({
   display: 'flex'
@@ -51,7 +51,7 @@ const CheckInControls = (props: Props) => {
   useHotkey('h', handleOnClickPresent)
   useHotkey('n', handleOnClickAbsent)
   const isReadyForNext = useTimeout(30000)
-  const isSmallerBreakpoint = !useBreakpoint(MEETING_SIDEBAR.BREAKPOINT)
+  const isSmallerBreakpoint = !useBreakpoint(DASH_SIDEBAR.BREAKPOINT)
   const nextLabel = isSmallerBreakpoint ? 'Here' : `${preferredName} is Here`
   const skipLabel = isSmallerBreakpoint ? 'Not Here' : `${preferredName} is Not Here`
   return (

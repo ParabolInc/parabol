@@ -30,6 +30,9 @@ import updateColumnHeight from 'universal/utils/multiplayerMasonry/updateColumnH
 import isTempId from 'universal/utils/relay/isTempId'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import Atmosphere from '../Atmosphere'
+import ResizeObserverPolyfill from 'universal/components/MasonryCSSGrid'
+
+const ResizeObserver = window.ResizeObserver || ResizeObserverPolyfill
 
 interface CollectedProps {
   connectDropTarget: ConnectDropTarget
@@ -155,14 +158,12 @@ class PhaseItemMasonry extends React.Component<Props> {
 
   childrenCache: MasonryChildrenCache = {}
   itemCache: MasonryItemCache = {}
-
+  resizeObserver = new ResizeObserver(() => {
+    this.handleResize()
+  })
   componentDidMount () {
-    const {
-      atmosphere: {eventEmitter}
-    } = this.props
     initializeGrid(this.itemCache, this.childrenCache, this.parentCache, true)
-    window.addEventListener('resize', this.handleResize)
-    eventEmitter.on('meetingSidebarCollapsed', this.handleResize)
+    this.resizeObserver.observe(this.parentCache.el!)
   }
 
   componentWillUnmount () {
@@ -170,8 +171,7 @@ class PhaseItemMasonry extends React.Component<Props> {
     const {eventEmitter} = atmosphere
     eventEmitter.off('endDraggingReflection', this.handleDragEnd)
     delete atmosphere.getMasonry
-    window.removeEventListener('resize', this.handleResize)
-    eventEmitter.off('meetingSidebarCollapsed', this.handleResize)
+    this.resizeObserver.disconnect()
   }
 
   handleDragEnd = (payload: MasonryDragEndPayload) => {

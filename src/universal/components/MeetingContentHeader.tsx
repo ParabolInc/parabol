@@ -2,7 +2,7 @@ import React, {ReactElement, ReactNode} from 'react'
 import styled from 'react-emotion'
 import DemoCreateAccountButton from 'universal/components/DemoCreateAccountButton'
 import SidebarToggle from 'universal/components/SidebarToggle'
-import {meetingSidebarMediaQuery, meetingTopBarMediaQuery} from 'universal/styles/meeting'
+import {meetingTopBarMediaQuery} from 'universal/styles/meeting'
 import isDemoRoute from 'universal/utils/isDemoRoute'
 import hasToken from 'universal/utils/hasToken'
 
@@ -27,6 +27,7 @@ const HeadingBlock = styled('div')({
   alignItems: 'center',
   display: 'flex',
   minHeight: 32,
+  paddingLeft: 8,
   [localHeaderBreakpoint]: {
     flex: 1
   },
@@ -64,19 +65,12 @@ const AvatarGroupBlock = styled('div')(
     }
 )
 
-const Toggle = styled(SidebarToggle)(
-  ({isMeetingSidebarCollapsed}: {isMeetingSidebarCollapsed: boolean}) => ({
-    margin: 'auto 16px auto 0',
-
-    [meetingSidebarMediaQuery]: {
-      display: isMeetingSidebarCollapsed ? 'flex' : 'none',
-      marginTop: 3
-    }
-  })
-)
-
 const ChildrenBlock = styled('div')({
   width: '100%'
+})
+
+const Toggle = styled(SidebarToggle)({
+  paddingRight: 16
 })
 
 interface Props {
@@ -92,7 +86,7 @@ const MeetingContentHeader = (props: Props) => {
   return (
     <MeetingContentHeaderStyles>
       <HeadingBlock>
-        <Toggle onClick={toggleSidebar} isMeetingSidebarCollapsed={isMeetingSidebarCollapsed} />
+        {isMeetingSidebarCollapsed ? <Toggle onClick={toggleSidebar} /> : null}
         <ChildrenBlock>{children}</ChildrenBlock>
       </HeadingBlock>
       <AvatarGroupBlock isDemoRoute={showButton}>{avatarGroup}</AvatarGroupBlock>

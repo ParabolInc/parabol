@@ -7,12 +7,13 @@ import {NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
+  handleMenuClick: () => void
   phaseType: keyof typeof NewMeetingPhaseTypeEnum | string
   viewer: RetroSidebarPhaseListItemChildren_viewer
 }
 
 const RetroSidebarPhaseListItemChildren = (props: Props) => {
-  const {gotoStageId, phaseType, viewer} = props
+  const {gotoStageId, handleMenuClick, phaseType, viewer} = props
   const {team} = viewer
   const {newMeeting} = team!
   if (
@@ -21,7 +22,13 @@ const RetroSidebarPhaseListItemChildren = (props: Props) => {
     newMeeting.localPhase &&
     newMeeting.localPhase.phaseType === phaseType
   ) {
-    return <RetroSidebarDiscussSection gotoStageId={gotoStageId} viewer={viewer} />
+    return (
+      <RetroSidebarDiscussSection
+        gotoStageId={gotoStageId}
+        handleMenuClick={handleMenuClick}
+        viewer={viewer}
+      />
+    )
   }
   return null
 }

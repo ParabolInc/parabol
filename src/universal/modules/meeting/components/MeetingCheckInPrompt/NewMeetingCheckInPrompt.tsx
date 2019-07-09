@@ -8,6 +8,7 @@ import NewCheckInQuestion from 'universal/modules/meeting/components/MeetingChec
 import NewMeetingCheckInGreeting from 'universal/modules/meeting/components/NewMeetingCheckInGreeting'
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
 import useBreakpoint from 'universal/hooks/useBreakpoint'
+import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
 
 const PromptBlock = styled('div')({
   alignItems: 'center',
@@ -33,7 +34,7 @@ interface Props {
 const NewMeetingCheckinPrompt = (props: Props) => {
   const {team, teamMember} = props
   const {newMeeting} = team
-  const isLargeViewport = useBreakpoint(800)
+  const isLargeViewport = useBreakpoint(DASH_SIDEBAR.BREAKPOINT)
   if (!newMeeting) return null
   const {picture} = teamMember
   const checkInGreeting = newMeeting.localPhase.checkInGreeting!

@@ -33,8 +33,7 @@ const RootCard = styled('div')(({cardHasHover, cardHasFocus, hasDragStyles}) => 
 }))
 
 const ContentBlock = styled('div')({
-  position: 'relative',
-  zIndex: 399
+  position: 'relative'
 })
 
 const CardTopMeta = styled('div')({

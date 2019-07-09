@@ -8,12 +8,12 @@ import {useGotoStageId} from 'universal/hooks/useMeeting'
 import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
 import getSidebarItemStage from 'universal/utils/getSidebarItemStage'
 import findStageById from 'universal/utils/meetings/findStageById'
-import sidebarCanAutoCollapse from 'universal/utils/meetings/sidebarCanAutoCollapse'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
 import NewMeetingSidebar from './NewMeetingSidebar'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
+  handleMenuClick: () => void
   toggleSidebar: () => void
   viewer: RetroMeetingSidebar_viewer
 }
@@ -25,9 +25,9 @@ const NavList = styled('ul')({
 })
 
 const RetroMeetingSidebar = (props: Props) => {
-  const {gotoStageId, toggleSidebar, viewer} = props
+  const {gotoStageId, handleMenuClick, toggleSidebar, viewer} = props
   const {id: viewerId, team} = viewer
-  const {isMeetingSidebarCollapsed, meetingSettings, newMeeting} = team!
+  const {meetingSettings, newMeeting} = team!
   const {phaseTypes} = meetingSettings
   const {facilitatorUserId, facilitatorStageId, localPhase, phases} =
     newMeeting || UNSTARTED_MEETING
@@ -37,8 +37,8 @@ const RetroMeetingSidebar = (props: Props) => {
   const isViewerFacilitator = facilitatorUserId === viewerId
   return (
     <NewMeetingSidebar
+      handleMenuClick={handleMenuClick}
       meetingType={MeetingTypeEnum.retrospective}
-      isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
       toggleSidebar={toggleSidebar}
       viewer={viewer}
     >
@@ -50,7 +50,7 @@ const RetroMeetingSidebar = (props: Props) => {
           const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
           const handleClick = () => {
             gotoStageId(itemStageId).catch()
-            if (sidebarCanAutoCollapse()) toggleSidebar()
+            handleMenuClick()
           }
           return (
             <NewMeetingSidebarPhaseListItem
@@ -65,6 +65,7 @@ const RetroMeetingSidebar = (props: Props) => {
             >
               <RetroSidebarPhaseListItemChildren
                 gotoStageId={gotoStageId}
+                handleMenuClick={handleMenuClick}
                 phaseType={phaseType}
                 viewer={viewer}
               />

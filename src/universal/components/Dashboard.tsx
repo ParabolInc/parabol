@@ -6,6 +6,7 @@ import {Route, Switch} from 'react-router'
 import DashSidebar from './Dashboard/DashSidebar'
 import DashAlert from './DashAlert'
 import ResponsiveDashSidebar from 'universal/components/ResponsiveDashSidebar'
+import useSidebar from 'universal/hooks/useSidebar'
 
 const UserDashboard = lazy(() =>
   import(/* webpackChunkName: 'UserDashboard' */ 'universal/modules/userDashboard/components/UserDashboard/UserDashboard')
@@ -35,10 +36,11 @@ const DashPanel = styled('div')({
 
 const Dashboard = (props: Props) => {
   const {viewer} = props
+  const {isOpen, toggle, handleMenuClick} = useSidebar()
   return (
     <DashLayout>
-      <ResponsiveDashSidebar>
-        <DashSidebar viewer={viewer} location={location} />
+      <ResponsiveDashSidebar isOpen={isOpen} onToggle={toggle}>
+        <DashSidebar viewer={viewer} handleMenuClick={handleMenuClick} />
       </ResponsiveDashSidebar>
       <DashPanel>
         <DashAlert viewer={viewer} />

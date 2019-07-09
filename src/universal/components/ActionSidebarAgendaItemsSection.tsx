@@ -1,18 +1,17 @@
 import {ActionSidebarAgendaItemsSection_viewer} from '__generated__/ActionSidebarAgendaItemsSection_viewer.graphql'
 import React from 'react'
 import styled from 'react-emotion'
-import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer, graphql} from 'react-relay'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import MeetingSidebarLabelBlock from 'universal/components/MeetingSidebarLabelBlock'
 import {useGotoStageId} from 'universal/hooks/useMeeting'
-import useAtmosphere from 'universal/hooks/useAtmosphere'
 import AgendaListAndInput from 'universal/modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput'
 import {NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
-import sidebarCanAutoCollapse from 'universal/utils/meetings/sidebarCanAutoCollapse'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
+  handleMenuClick: () => void
   viewer: ActionSidebarAgendaItemsSection_viewer
 }
 
@@ -24,22 +23,16 @@ const SidebarPhaseItemChild = styled('div')({
 const ActionSidebarAgendaItemsSection = (props: Props) => {
   const {
     gotoStageId,
+    handleMenuClick,
     viewer: {team}
   } = props
-  const atmosphere = useAtmosphere()
-  const {id: teamId, isMeetingSidebarCollapsed, newMeeting} = team!
+  const {newMeeting} = team!
   const {localPhase} = newMeeting || UNSTARTED_MEETING
   const phaseType = localPhase ? localPhase.phaseType : null
 
   const handleClick = async (stageId: string) => {
     gotoStageId(stageId).catch()
-    if (sidebarCanAutoCollapse()) {
-      commitLocalUpdate(atmosphere, (store) => {
-        const team = store.get(teamId)
-        if (!team) return
-        team.setValue(!isMeetingSidebarCollapsed, 'isMeetingSidebarCollapsed')
-      })
-    }
+    handleMenuClick()
   }
   return (
     <SidebarPhaseItemChild>
@@ -74,8 +67,6 @@ export default createFragmentContainer(
     fragment ActionSidebarAgendaItemsSection_viewer on User {
       team(teamId: $teamId) {
         ...AgendaListAndInput_team
-        isMeetingSidebarCollapsed
-        id
         newMeeting {
           id
           localStage {
