@@ -2,7 +2,7 @@ import {fromEpochSeconds, toEpochSeconds} from 'server/utils/epochTime'
 import {sign, verify} from 'jsonwebtoken'
 import ms from 'ms'
 
-// 'eyJhbGciOiJIUzI1NiJ9'
+// 'eyJhbGciOiJIUzI1NiJ9' is the result for the following line
 const header = Buffer.from(JSON.stringify({alg: 'HS256'})).toString('base64')
 
 const LIFESPAN = ms('1d')
