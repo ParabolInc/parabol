@@ -22,6 +22,7 @@ import {UserProfile_viewer} from '__generated__/UserProfile_viewer.graphql'
 import {Layout} from 'universal/types/constEnums'
 import {PALETTE} from 'universal/styles/paletteV2'
 import NotificationErrorMessage from 'universal/modules/notifications/components/NotificationErrorMessage'
+import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
 
 const SettingsBlock = styled('div')({
   width: '100%'
@@ -31,8 +32,12 @@ const SettingsForm = styled('form')({
   alignItems: 'center',
   borderTop: `1px solid ${PALETTE.BORDER_LIGHTER}`,
   display: 'flex',
+  flexDirection: 'column',
   padding: Layout.ROW_GUTTER,
-  width: '100%'
+  width: '100%',
+  [`@media screen and (min-width: ${DASH_SIDEBAR.BREAKPOINT}px)`]: {
+    flexDirection: 'row'
+  }
 })
 
 const InfoBlock = styled('div')({
@@ -43,15 +48,21 @@ const InfoBlock = styled('div')({
 const FieldBlock = styled('div')({
   flex: 1,
   minWidth: 0,
-  paddingRight: 16
+  padding: '0 0 16px',
+  [`@media screen and (min-width: ${DASH_SIDEBAR.BREAKPOINT}px)`]: {
+    padding: '0 16px 0 0'
+  }
 })
 
 const ControlBlock = styled('div')({
   alignItems: 'center',
   display: 'flex',
-  flexDirection: 'row',
-  flex: 1,
-  width: '100%'
+  flexDirection: 'column',
+  width: '100%',
+  [`@media screen and (min-width: ${DASH_SIDEBAR.BREAKPOINT}px)`]: {
+    flexDirection: 'row',
+    flex: 1
+  }
 })
 
 const StyledButton = styled(SecondaryButton)({

@@ -5,7 +5,7 @@ import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import DashContent from 'universal/components/Dashboard/DashContent'
 import DashHeader from 'universal/components/Dashboard/DashHeader'
-import DashHeaderInfo from 'universal/components/Dashboard/DashHeaderInfo'
+import TeamDashHeaderInfo from 'universal/components/Dashboard/TeamDashHeaderInfo'
 import DashMain from 'universal/components/Dashboard/DashMain'
 import DashSearchControl from 'universal/components/Dashboard/DashSearchControl'
 import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars'
@@ -16,6 +16,7 @@ import withAtmosphere, {
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import EditableTeamName from 'universal/modules/teamDashboard/components/EditTeamName/EditableTeamName'
 import TeamCallsToAction from 'universal/modules/teamDashboard/components/TeamCallsToAction/TeamCallsToAction'
+import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
 
 const TeamViewNavBlock = styled('div')({
   display: 'flex',
@@ -25,6 +26,13 @@ const TeamViewNavBlock = styled('div')({
 const StyledButton = styled(FlatButton)({
   paddingLeft: '1rem',
   paddingRight: '1rem'
+})
+
+const HackHideButton = styled(StyledButton)({
+  display: 'none',
+  [`@media screen and (min-width: ${DASH_SIDEBAR.BREAKPOINT}px)`]: {
+    display: 'block'
+  }
 })
 
 const RelativeDashMain = styled(DashMain)({
@@ -91,7 +99,7 @@ class Team extends Component<Props> {
     const {id: teamId, isPaid, meetingId} = team
     const hasActiveMeeting = Boolean(meetingId)
     const hasOverlay = hasActiveMeeting || !isPaid
-    const DashHeaderInfoTitle = isSettings ? <EditableTeamName team={team} /> : ''
+    const TeamDashHeaderInfoTitle = isSettings ? <EditableTeamName team={team} /> : ''
 
     return (
       <RelativeDashMain>
@@ -104,23 +112,23 @@ class Team extends Component<Props> {
           hasOverlay={hasOverlay}
           key={`team${isSettings ? 'Dash' : 'Settings'}Header`}
         >
-          <DashHeaderInfo title={DashHeaderInfoTitle}>
+          <TeamDashHeaderInfo title={TeamDashHeaderInfoTitle} isSettings={Boolean(isSettings)}>
             {!isSettings && (
               <DashSearchControl
                 onChange={this.updateFilter}
                 placeholder='Search Team Tasks & Agenda'
               />
             )}
-          </DashHeaderInfo>
+          </TeamDashHeaderInfo>
           <TeamViewNavBlock>
             {isSettings ? (
-              <StyledButton
+              <HackHideButton
                 aria-label='Back to Team Dashboard'
                 key='1'
                 onClick={this.goToTeamDashboard}
               >
                 <IconLabel icon='arrow_back' label='Back to Team Dashboard' />
-              </StyledButton>
+              </HackHideButton>
             ) : (
               <StyledButton aria-label='Team Settings' key='2' onClick={this.goToTeamSettings}>
                 <IconLabel icon='settings' label='Team Settings' />

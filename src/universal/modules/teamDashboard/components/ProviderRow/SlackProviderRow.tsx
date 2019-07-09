@@ -20,12 +20,15 @@ import useMutationProps, {MenuMutationProps} from 'universal/hooks/useMutationPr
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import SlackClientManager from 'universal/utils/SlackClientManager'
 import SlackNotificationList from 'universal/modules/teamDashboard/components/ProviderRow/SlackNotificationList'
+import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
+import useBreakpoint from 'universal/hooks/useBreakpoint'
 
 const StyledButton = styled(FlatButton)({
   borderColor: PALETTE.BORDER_LIGHT,
   color: PALETTE.TEXT_MAIN,
   fontSize: 14,
   fontWeight: 600,
+  minWidth: 36,
   paddingLeft: 0,
   paddingRight: 0,
   width: '100%'
@@ -33,8 +36,14 @@ const StyledButton = styled(FlatButton)({
 
 const ProviderActions = styled(RowActions)({
   marginLeft: 'auto',
-  paddingLeft: Layout.ROW_GUTTER,
-  maxWidth: '10rem'
+  paddingLeft: 8,
+  maxWidth: 36,
+  width: 36,
+  [`@media screen and (min-width: ${DASH_SIDEBAR.BREAKPOINT}px)`]: {
+    paddingLeft: Layout.ROW_GUTTER,
+    maxWidth: '10rem',
+    width: 'auto'
+  }
 })
 
 interface Props {
@@ -98,6 +107,7 @@ const SlackProviderRow = (props: Props) => {
     SlackClientManager.openOAuth(atmosphere, teamId, mutationProps)
   }
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
+  const isDesktop = useBreakpoint(DASH_SIDEBAR.BREAKPOINT)
   return (
     <ExtraProviderCard>
       <CardTop>
@@ -109,7 +119,7 @@ const SlackProviderRow = (props: Props) => {
         {!accessToken && (
           <ProviderActions>
             <StyledButton onClick={openOAuth} palette='warm' waiting={submitting}>
-              {'Connect'}
+              {isDesktop ? 'Connect' : <Icon>add</Icon>}
             </StyledButton>
           </ProviderActions>
         )}

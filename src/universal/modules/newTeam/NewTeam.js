@@ -9,6 +9,8 @@ import ui from 'universal/styles/ui'
 import {cardShadow} from 'universal/styles/elevation'
 import appTheme from 'universal/styles/theme/appTheme'
 import NewTeamForm from 'universal/modules/newTeam/components/NewTeamForm/NewTeamForm'
+import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
+import useBreakpoint from 'universal/hooks/useBreakpoint'
 
 const NewTeamLayout = styled('div')({
   alignItems: 'center',
@@ -23,8 +25,8 @@ const NewTeamLayout = styled('div')({
 const NewTeamInner = styled('div')({
   display: 'flex',
   justifyContent: 'center',
-  minWidth: '60rem',
-  paddingBottom: '10vh',
+  maxWidth: 960,
+  // paddingBottom: '10vh',
   width: '100%'
 })
 
@@ -62,10 +64,10 @@ const LearnMoreLink = styled(LinkButton)({
 
 const NewTeam = (props) => {
   const {defaultOrgId, viewer} = props
-
   const {organizations} = viewer
   const firstOrgId = organizations[0] && organizations[0].id
   const orgId = organizations.find((org) => org.id === defaultOrgId) ? defaultOrgId : firstOrgId
+  const isDesktop = useBreakpoint(DASH_SIDEBAR.BREAKPOINT)
   return (
     <NewTeamLayout>
       <NewTeamInner>
@@ -74,22 +76,24 @@ const NewTeam = (props) => {
           initialValues={{orgId, isNewOrganization: String(!defaultOrgId)}}
           organizations={organizations}
         />
-        <HelpLayout>
-          <HelpBlock>
-            <HelpHeading>{'What’s an Organization?'}</HelpHeading>
-            <HelpCopy>
-              {`It’s the billing entity for a group of teams
-              such as a company, non-profit, or
-              for your personal use. Once created, you can
-              create teams and invite others, even if they
-              don't share your email domain. New Organizations
-              start out on the Free Personal Plan.`}
-            </HelpCopy>
-            <LearnMoreLink palette='blue' onClick={() => window.open(PRICING_LINK, '_blank')}>
-              <IconLabel icon={ui.iconExternalLink} iconAfter label='Learn More' />
-            </LearnMoreLink>
-          </HelpBlock>
-        </HelpLayout>
+        {isDesktop && (
+          <HelpLayout>
+            <HelpBlock>
+              <HelpHeading>{'What’s an Organization?'}</HelpHeading>
+              <HelpCopy>
+                {`It’s the billing entity for a group of teams
+                such as a company, non-profit, or
+                for your personal use. Once created, you can
+                create teams and invite others, even if they
+                don't share your email domain. New Organizations
+                start out on the Free Personal Plan.`}
+              </HelpCopy>
+              <LearnMoreLink palette='blue' onClick={() => window.open(PRICING_LINK, '_blank')}>
+                <IconLabel icon={ui.iconExternalLink} iconAfter label='Learn More' />
+              </LearnMoreLink>
+            </HelpBlock>
+          </HelpLayout>
+        )}
       </NewTeamInner>
     </NewTeamLayout>
   )

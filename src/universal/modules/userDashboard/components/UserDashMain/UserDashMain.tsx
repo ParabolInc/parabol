@@ -7,10 +7,19 @@ import DashMain from 'universal/components/Dashboard/DashMain'
 import Tab from 'universal/components/Tab/Tab'
 import Tabs from 'universal/components/Tabs/Tabs'
 import LoadingComponent from '../../../../components/LoadingComponent/LoadingComponent'
-
-import {PALETTE} from '../../../../styles/paletteV2'
 import {LoaderSize} from '../../../../types/constEnums'
-// import DebugButton from './DebugButton'
+import Icon from 'universal/components/Icon'
+import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
+import useBreakpoint from 'universal/hooks/useBreakpoint'
+import {PALETTE} from 'universal/styles/paletteV2'
+
+const MenuIcon = styled(Icon)({
+  color: PALETTE.TEXT_LIGHT,
+  cursor: 'pointer',
+  display: 'block',
+  marginRight: 16,
+  userSelect: 'none'
+})
 
 const TabBody = styled('div')({
   backgroundColor: PALETTE.BACKGROUND_MAIN,
@@ -20,23 +29,8 @@ const TabBody = styled('div')({
   height: '100%'
 })
 
-// const HeaderCopy = styled('div')({
-//   color: ui.colorText,
-//   flex: 1,
-//   fontSize: appTheme.typography.s2,
-//   fontWeight: 600,
-//   lineHeight: '1.25',
-//   textAlign: 'right'
-// })
-//
-// const RallyLink = styled('span')({
-//   color: 'inherit',
-//   fontWeight: 400,
-//   fontStyle: 'italic'
-// })
-
 const TopTabs = styled(Tabs)({
-  marginTop: 8
+  marginTop: 12
 })
 
 interface Props extends RouteComponentProps<{}> {}
@@ -51,23 +45,17 @@ const MyDashboardTimelineRoot = lazy(() =>
 const UserDashMain = (props: Props) => {
   const {history, match} = props
   const isTasks = !!matchPath(location.pathname, {path: `${match.url}/tasks`})
+  const isDesktop = useBreakpoint(DASH_SIDEBAR.BREAKPOINT)
+  const handleOnClick = () => console.log('menu icon click')
   return (
     <DashMain>
       <Helmet title='My Dashboard | Parabol' />
       <DashHeader area='userDash'>
+        {!isDesktop && <MenuIcon onClick={handleOnClick}>menu</MenuIcon>}
         <TopTabs activeIdx={isTasks ? 1 : 0}>
           <Tab label='TIMELINE' onClick={() => history.push('/me')} />
           <Tab label='TASKS' onClick={() => history.push('/me/tasks')} />
         </TopTabs>
-        {/*<HeaderCopy>*/}
-        {/*/!*<DebugButton />*!/*/}
-        {/*{makeDateString(new Date(), {showDay: true})}*/}
-        {/*{' • '}*/}
-        {/*<RallyLink>*/}
-        {/*{getRallyLink()}*/}
-        {/*{'!'}*/}
-        {/*</RallyLink>*/}
-        {/*</HeaderCopy>*/}
       </DashHeader>
       <TabBody>
         <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.PANEL} />}>

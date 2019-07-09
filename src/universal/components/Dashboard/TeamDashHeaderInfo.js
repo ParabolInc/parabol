@@ -1,25 +1,11 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import {withRouter} from 'react-router-dom'
-import {PROFILE, ORGANIZATIONS, NOTIFICATIONS} from 'universal/utils/constants'
 import DashHeaderTitle from 'universal/components/DashHeaderTitle'
 import Icon from 'universal/components/Icon'
 import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
 import useBreakpoint from 'universal/hooks/useBreakpoint'
 import styled from 'react-emotion'
 import {PALETTE} from 'universal/styles/paletteV2'
-
-const heading = {
-  [PROFILE]: {
-    label: 'Profile'
-  },
-  [ORGANIZATIONS]: {
-    label: 'Organizations'
-  },
-  [NOTIFICATIONS]: {
-    label: 'Notifications'
-  }
-}
 
 const Root = styled('div')({
   alignItems: 'center',
@@ -28,8 +14,7 @@ const Root = styled('div')({
 })
 
 const Title = styled(DashHeaderTitle)({
-  margin: 0,
-  padding: 0
+  marginRight: 32
 })
 
 const MenuIcon = styled(Icon)({
@@ -40,21 +25,27 @@ const MenuIcon = styled(Icon)({
   userSelect: 'none'
 })
 
-const SettingsHeader = (props) => {
-  const {location} = props
-  const [area] = location.pathname.slice(4).split('/')
+const TeamDashHeaderInfo = (props) => {
+  const {children, title, isSettings} = props
   const isDesktop = useBreakpoint(DASH_SIDEBAR.BREAKPOINT)
-  const handleOnClick = () => console.log('menu icon click')
+  const handleOnClick = () => {
+    if (isSettings) return console.log('go back to team')
+    return console.log('open menu')
+  }
+  const icon = isSettings ? 'arrow_back' : 'menu'
   return (
     <Root>
-      {!isDesktop && <MenuIcon onClick={handleOnClick}>menu</MenuIcon>}
-      <Title>{heading[area].label}</Title>
+      {!isDesktop && <MenuIcon onClick={handleOnClick}>{icon}</MenuIcon>}
+      {title && <Title>{title}</Title>}
+      {children}
     </Root>
   )
 }
 
-SettingsHeader.propTypes = {
-  location: PropTypes.object
+TeamDashHeaderInfo.propTypes = {
+  children: PropTypes.any,
+  title: PropTypes.any,
+  isSettings: PropTypes.bool
 }
 
-export default withRouter(SettingsHeader)
+export default TeamDashHeaderInfo
