@@ -148,7 +148,7 @@ class ResetPasswordPage extends Component<Props, State> {
         <DialogTitle>{isSent ? 'You’re all set!' : 'Forgot your password?'}</DialogTitle>
         {!isSent && (
           <DialogSubTitle>
-            <span>{isSent ? '' : 'Remember it?'}</span>
+            <span>{isSent ? '' : 'Remember it? '}</span>
             <BrandedLink onClick={gotoSignIn}>{isSent ? '' : 'Sign in with password'}</BrandedLink>
           </DialogSubTitle>
         )}

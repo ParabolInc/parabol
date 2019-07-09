@@ -154,7 +154,7 @@ class AddTeamMemberModal extends Component<Props, State> {
             value={rawInvitees}
           />
           {error && <ErrorMessage>{error}</ErrorMessage>}
-          <HorizontalSeparator text={'or, share this'} />
+          <HorizontalSeparator text={'or, share this link'} />
           <ShareableLink>
             <CopyShortLink
               url={url}
