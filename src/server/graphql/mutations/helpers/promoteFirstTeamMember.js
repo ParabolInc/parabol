@@ -23,7 +23,7 @@ const promoteFirstTeamMember = (oldFacilitatorUserId, subOptions) => async (team
               .count()
               .ge(1)
           )
-          .min((row) => row('checkInOrder'))('userId')
+          .min((row) => row('checkInOrder').default(1))('userId')
           .default(meeting('facilitatorUserId')),
         updatedAt: now
       }),
