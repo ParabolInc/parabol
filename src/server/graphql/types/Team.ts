@@ -25,6 +25,7 @@ import {getUserId, isTeamMember} from 'server/utils/authorization'
 import standardError from 'server/utils/standardError'
 import {ITeam} from 'universal/types/graphql'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
+import {signMassInviteToken} from 'server/utils/massInviteToken'
 
 const Team = new GraphQLObjectType<ITeam, GQLContext>({
   name: 'Team',
@@ -46,6 +47,15 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
     //   type: GraphQLBoolean,
     //   description: 'true if the team is active, false if it is in the archive'
     // },
+    massInviteToken: {
+      type: GraphQLID,
+      description:
+        'a user-specific token that allows anyone who uses it within 24 hours to join the team',
+      resolve: ({id: teamId}, _args, {authToken}) => {
+        const viewerId = getUserId(authToken)
+        return isTeamMember(authToken, teamId) ? signMassInviteToken(teamId, viewerId) : null
+      }
+    },
     isPaid: {
       type: GraphQLBoolean,
       description:

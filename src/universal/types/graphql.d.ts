@@ -23,8 +23,16 @@ export interface IGraphQLResponseErrorLocation {
 export interface IQuery {
   __typename: 'Query'
   viewer: IUser | null
+  massInvitation: IMassInvitationPayload | null
   verifiedInvitation: IVerifiedInvitationPayload | null
   authProviders: Array<string>
+}
+
+export interface IMassInvitationOnQueryArguments {
+  /**
+   * The mass invitation token
+   */
+  token: string
 }
 
 export interface IVerifiedInvitationOnQueryArguments {
@@ -945,6 +953,11 @@ export interface ITeam {
    * The userId that created the team. Non-null at v2.22.0+
    */
   createdBy: string | null
+
+  /**
+   * a user-specific token that allows anyone who uses it within 24 hours to join the team
+   */
+  massInviteToken: string | null
 
   /**
    * true if the underlying org has a validUntil date greater than now. if false, subs do not work
@@ -2422,6 +2435,36 @@ export interface IStandardMutationError {
   message: string
 }
 
+export interface IMassInvitationPayload {
+  __typename: 'MassInvitationPayload'
+  errorType: TeamInvitationErrorEnum | null
+
+  /**
+   * The name of the person that sent the invitation, present if errorType is expired
+   */
+  inviterName: string | null
+
+  /**
+   * The teamId from the token
+   */
+  teamId: string | null
+
+  /**
+   * name of the inviting team, present if invitation exists
+   */
+  teamName: string | null
+  meetingType: MeetingTypeEnum | null
+}
+
+/**
+ * The reason the invitation failed
+ */
+export const enum TeamInvitationErrorEnum {
+  accepted = 'accepted',
+  expired = 'expired',
+  notFound = 'notFound'
+}
+
 export interface IVerifiedInvitationPayload {
   __typename: 'VerifiedInvitationPayload'
   errorType: TeamInvitationErrorEnum | null
@@ -2461,15 +2504,6 @@ export interface IVerifiedInvitationPayload {
    * The invitee, if already a parabol user, present if errorType is null
    */
   user: IUser | null
-}
-
-/**
- * The reason the invitation failed
- */
-export const enum TeamInvitationErrorEnum {
-  accepted = 'accepted',
-  expired = 'expired',
-  notFound = 'notFound'
 }
 
 export interface IMutation {
@@ -2852,7 +2886,7 @@ export interface IMutation {
 
 export interface IAcceptTeamInvitationOnMutationArguments {
   /**
-   * The 48-byte hex encoded invitation token
+   * The 48-byte hex encoded invitation token or the 2-part JWT for mass invitation tokens
    */
   invitationToken?: string | null
 

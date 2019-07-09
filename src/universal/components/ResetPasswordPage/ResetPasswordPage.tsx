@@ -4,30 +4,28 @@
  */
 import React, {Component, Fragment} from 'react'
 import styled from 'react-emotion'
-import {RouteComponentProps, withRouter} from 'react-router'
-import AuthDialog from 'universal/components/AuthDialog'
-import AuthHeader from 'universal/components/AuthHeader/AuthHeader'
-import AuthPage from 'universal/components/AuthPage/AuthPage'
 import EmailInputField from 'universal/components/EmailInputField'
 import PlainButton from 'universal/components/PlainButton/PlainButton'
 import PrimaryButton from 'universal/components/PrimaryButton'
 import appTheme from 'universal/styles/theme/appTheme'
-import {SIGNIN_SLUG} from 'universal/utils/constants'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import {emailRegex} from 'universal/validation/regex'
 import auth0ChangePassword from 'universal/utils/auth0ChangePassword'
 import Legitity from 'universal/validation/Legitity'
+import AuthenticationDialog from '../AuthenticationDialog'
+import {GotoAuathPage} from 'universal/components/GenericAuthentication'
+import DialogTitle from 'universal/components/DialogTitle'
+import {PALETTE} from 'universal/styles/paletteV2'
 
 type State = {
   isSent: boolean
   email: string
 }
 
-interface Props extends WithMutationProps, RouteComponentProps {}
-
-const StyledDialog = styled(AuthDialog)({
-  maxWidth: '19rem'
-})
+interface Props extends WithMutationProps {
+  email?: string
+  gotoPage: GotoAuathPage
+}
 
 const Form = styled('form')({
   display: 'flex',
@@ -59,6 +57,22 @@ const SubmitButton = styled(PrimaryButton)({
   marginTop: '1rem'
 })
 
+const BrandedLink = styled(PlainButton)({
+  color: PALETTE.LINK_BLUE,
+  ':hover,:focus': {
+    color: PALETTE.LINK_BLUE,
+    textDecoration: 'underline'
+  }
+})
+
+const DialogSubTitle = styled('div')({
+  fontSize: 14,
+  fontWeight: 400,
+  lineHeight: 1.5,
+  paddingTop: 16,
+  paddingBottom: 24
+})
+
 class ResetPasswordPage extends Component<Props, State> {
   constructor (props) {
     super(props)
@@ -66,7 +80,7 @@ class ResetPasswordPage extends Component<Props, State> {
     const email = params.get('email')
     this.state = {
       isSent: false,
-      email: email || ''
+      email: props.email || email || ''
     }
   }
 
@@ -124,53 +138,55 @@ class ResetPasswordPage extends Component<Props, State> {
   }
 
   render () {
-    const {dirty, error, submitting} = this.props
+    const {dirty, error, submitting, gotoPage} = this.props
     const {isSent, email} = this.state
+    const gotoSignIn = () => {
+      gotoPage('signin', location.search)
+    }
     return (
-      <AuthPage title='Reset Password | Parabol'>
-        <StyledDialog>
-          <AuthHeader
-            heading={isSent ? 'You’re all set!' : 'Forgot your password?'}
-            relativeUrl={`/${SIGNIN_SLUG}`}
-            displayName={isSent ? '' : 'Sign in with password'}
-            actionCopy={isSent ? '' : 'Remember it?'}
-          />
-          <Container>
-            {isSent ? (
-              <Fragment>
-                <P>{'We’ve sent you an email with password recovery instructions.'}</P>
-                <P>
-                  {'Didn’t get it? Check your spam folder, or '}
-                  <LinkButton onClick={this.resetState}>click here</LinkButton>
-                  {' to try again.'}
-                </P>
-              </Fragment>
-            ) : (
-              <Fragment>
-                <P>
-                  {
-                    'Confirm your email address, and we’ll send you an email with password recovery instructions.'
-                  }
-                </P>
-                <Form onSubmit={this.onSubmit}>
-                  <EmailInputField
-                    dirty={!!dirty}
-                    error={error as string}
-                    value={email}
-                    onChange={this.onChange}
-                    onBlur={this.onBlur}
-                  />
-                  <SubmitButton size='medium' waiting={submitting}>
-                    {'Send Email'}
-                  </SubmitButton>
-                </Form>
-              </Fragment>
-            )}
-          </Container>
-        </StyledDialog>
-      </AuthPage>
+      <AuthenticationDialog>
+        <DialogTitle>{isSent ? 'You’re all set!' : 'Forgot your password?'}</DialogTitle>
+        {!isSent && (
+          <DialogSubTitle>
+            <span>{isSent ? '' : 'Remember it? '}</span>
+            <BrandedLink onClick={gotoSignIn}>{isSent ? '' : 'Sign in with password'}</BrandedLink>
+          </DialogSubTitle>
+        )}
+        <Container>
+          {isSent ? (
+            <Fragment>
+              <P>{'We’ve sent you an email with password recovery instructions.'}</P>
+              <P>
+                {'Didn’t get it? Check your spam folder, or '}
+                <LinkButton onClick={this.resetState}>click here</LinkButton>
+                {' to try again.'}
+              </P>
+            </Fragment>
+          ) : (
+            <Fragment>
+              <P>
+                {
+                  'Confirm your email address, and we’ll send you an email with password recovery instructions.'
+                }
+              </P>
+              <Form onSubmit={this.onSubmit}>
+                <EmailInputField
+                  dirty={!!dirty}
+                  error={error as string}
+                  value={email}
+                  onChange={this.onChange}
+                  onBlur={this.onBlur}
+                />
+                <SubmitButton size='medium' waiting={submitting}>
+                  {'Send Email'}
+                </SubmitButton>
+              </Form>
+            </Fragment>
+          )}
+        </Container>
+      </AuthenticationDialog>
     )
   }
 }
 
-export default withMutationProps(withRouter(ResetPasswordPage))
+export default withMutationProps(ResetPasswordPage)

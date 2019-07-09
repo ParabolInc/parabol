@@ -3,16 +3,23 @@ import InviteDialog from './InviteDialog'
 import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import DialogTitle from './DialogTitle'
-import Helmet from 'react-helmet'
+import useDocumentTitle from 'universal/hooks/useDocumentTitle'
 
-const TeamInvitationErrorNotFound = () => {
+interface Props {
+  isMassInvite?: boolean
+}
+const TeamInvitationErrorNotFound = (props: Props) => {
+  const {isMassInvite} = props
+  useDocumentTitle(`Token not found | Team Invitation`)
+  const tip = isMassInvite
+    ? 'Try requesting another link.'
+    : 'Try copying the link from your email again.'
   return (
     <InviteDialog>
-      <Helmet title={`Token not found | Team Invitation`} />
       <DialogTitle>Invalid Invitation</DialogTitle>
       <DialogContent>
         <InvitationDialogCopy>The invitation token is not valid.</InvitationDialogCopy>
-        <InvitationDialogCopy>Try copying the link from your email again.</InvitationDialogCopy>
+        <InvitationDialogCopy>{tip}</InvitationDialogCopy>
       </DialogContent>
     </InviteDialog>
   )

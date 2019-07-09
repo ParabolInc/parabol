@@ -13,9 +13,6 @@ import PrivateRoutes from '../PrivateRoutes'
 import {DragDropContext as dragDropContext} from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 
-const ResetPasswordPage = lazy(() =>
-  import(/* webpackChunkName: 'ResetPasswordPage' */ 'universal/components/ResetPasswordPage/ResetPasswordPage')
-)
 const AuthenticationPage = lazy(() =>
   import(/* webpackChunkName: 'AuthenticationPage' */ 'universal/components/AuthenticationPage')
 )
@@ -33,6 +30,9 @@ const OauthRedirect = lazy(() =>
 )
 const TeamInvitation = lazy(() =>
   import(/* webpackChunkName: 'TeamInvitationRoot' */ 'universal/components/TeamInvitationRoot')
+)
+const InvitationLink = lazy(() =>
+  import(/* webpackChunkName: 'InvitationLinkRoot' */ 'universal/components/InvitationLinkRoot')
 )
 
 const ActionStyles = styled('div')({
@@ -53,9 +53,17 @@ const Action = () => {
         <AnalyticsPageRoot />
         <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.WHOLE_PAGE} />}>
           <Switch>
-            <Route exact path='/' component={AuthenticationPage} />
-            <Route exact path={`/${SIGNIN_SLUG}`} component={AuthenticationPage} />
-            <Route exact path={`/${CREATE_ACCOUNT_SLUG}`} component={AuthenticationPage} />
+            <Route exact path='/' render={(p) => <AuthenticationPage {...p} page={'signin'} />} />
+            <Route
+              exact
+              path={`/${SIGNIN_SLUG}`}
+              render={(p) => <AuthenticationPage {...p} page={'signin'} />}
+            />
+            <Route
+              exact
+              path={`/${CREATE_ACCOUNT_SLUG}`}
+              render={(p) => <AuthenticationPage {...p} page={'create-account'} />}
+            />
             <Route exact path={`/auth/:provider`} component={AuthProvider} />
             <Route exact path={`/oauth-redirect`} component={OauthRedirect} />
             <Route
@@ -63,10 +71,15 @@ const Action = () => {
               component={DemoMeeting}
             />
             <Route path='/retrospective-demo-summary' component={DemoSummary} />
-            <Route exact path='/reset-password' component={ResetPasswordPage} />
+            <Route
+              exact
+              path={`/reset-password`}
+              render={(p) => <AuthenticationPage {...p} page={'reset-password'} />}
+            />
             {/*Legacy route, still referenced by old invite emails*/}
             <Route path='/invitation/:inviteToken' component={TeamInvitation} />
             <Route path='/team-invitation/:token' component={TeamInvitation} />
+            <Route path='/invitation-link/:token' component={InvitationLink} />
             <Route component={PrivateRoutes} />
           </Switch>
         </Suspense>

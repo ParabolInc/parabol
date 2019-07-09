@@ -15,6 +15,9 @@ import DialogTitle from './DialogTitle'
 import StyledError from './StyledError'
 import {AddTeamMemberModal_teamMembers} from '__generated__/AddTeamMemberModal_teamMembers.graphql'
 import plural from 'universal/utils/plural'
+import makeHref from 'universal/utils/makeHref'
+import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink'
+import HorizontalSeparator from 'universal/components/HorizontalSeparator/HorizontalSeparator'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   closePortal: () => void
@@ -42,6 +45,11 @@ const ButtonGroup = styled('div')({
 const ErrorMessage = styled(StyledError)({
   fontSize: '.8125rem',
   marginTop: '.5rem'
+})
+
+const ShareableLink = styled('div')({
+  display: 'flex',
+  justifyContent: 'center'
 })
 
 class AddTeamMemberModal extends Component<Props, State> {
@@ -121,8 +129,9 @@ class AddTeamMemberModal extends Component<Props, State> {
   }
 
   render () {
-    const {closePortal, error, submitting} = this.props
+    const {closePortal, error, submitting, team} = this.props
     const {invitees, successfulInvitations, rawInvitees} = this.state
+    const {massInviteToken} = team
     if (successfulInvitations) {
       return (
         <AddTeamMemberModalSuccess
@@ -131,6 +140,7 @@ class AddTeamMemberModal extends Component<Props, State> {
         />
       )
     }
+    const url = makeHref(`/invitation-link/${massInviteToken}`)
     const title = invitees.length <= 1 ? 'Send Invitation' : `Send ${invitees.length} Invitations`
     return (
       <StyledDialogContainer>
@@ -144,6 +154,14 @@ class AddTeamMemberModal extends Component<Props, State> {
             value={rawInvitees}
           />
           {error && <ErrorMessage>{error}</ErrorMessage>}
+          <HorizontalSeparator text={'or, share this link'} />
+          <ShareableLink>
+            <CopyShortLink
+              url={url}
+              label={url.slice(0, 45) + '…'}
+              tooltip={'Copied! Valid for 1 day'}
+            />
+          </ShareableLink>
           <ButtonGroup>
             <PrimaryButton
               onClick={this.sendInvitations}
@@ -164,6 +182,7 @@ export default createFragmentContainer(
   graphql`
     fragment AddTeamMemberModal_team on Team {
       id
+      massInviteToken
     }
 
     fragment AddTeamMemberModal_teamMembers on TeamMember @relay(plural: true) {

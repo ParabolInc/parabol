@@ -28,8 +28,10 @@ class TeamInvitationDialog extends Component<Props> {
   }
 
   render () {
-    const {atmosphere, verifiedInvitation} = this.props
-    const {errorType, isGoogle, user} = verifiedInvitation
+    const {atmosphere, verifiedInvitation, match} = this.props
+    const {params} = match
+    const {token} = params
+    const {errorType, isGoogle, user, teamInvitation} = verifiedInvitation
     switch (errorType) {
       case 'notFound':
         return <TeamInvitationErrorNotFound />
@@ -39,8 +41,9 @@ class TeamInvitationDialog extends Component<Props> {
         return <TeamInvitationErrorExpired verifiedInvitation={verifiedInvitation} />
     }
     const {authToken} = atmosphere
+    const {teamId} = teamInvitation!
     if (authToken) {
-      return <TeamInvitationAccept verifiedInvitation={verifiedInvitation} />
+      return <TeamInvitationAccept invitationToken={token} teamId={teamId} />
     }
     if (user) {
       return isGoogle ? (
@@ -67,7 +70,9 @@ export default createFragmentContainer(
       ...TeamInvitationGoogleCreateAccount_verifiedInvitation
       ...TeamInvitationEmailSignin_verifiedInvitation
       ...TeamInvitationEmailCreateAccount_verifiedInvitation
-      ...TeamInvitationAccept_verifiedInvitation
+      teamInvitation {
+        teamId
+      }
       errorType
       isGoogle
       user {
