@@ -1,6 +1,5 @@
-import PropTypes from 'prop-types'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {createFragmentContainer, graphql} from 'react-relay'
 import LinkButton from 'universal/components/LinkButton'
 import IconLabel from 'universal/components/IconLabel'
 import {PRICING_LINK} from 'universal/utils/externalLinks'
@@ -11,6 +10,7 @@ import appTheme from 'universal/styles/theme/appTheme'
 import NewTeamForm from 'universal/modules/newTeam/components/NewTeamForm/NewTeamForm'
 import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
 import useBreakpoint from 'universal/hooks/useBreakpoint'
+import {NewTeam_viewer} from '__generated__/NewTeam_viewer.graphql'
 
 const NewTeamLayout = styled('div')({
   alignItems: 'center',
@@ -61,20 +61,19 @@ const LearnMoreLink = styled(LinkButton)({
   margin: '0 auto'
 })
 
-const NewTeam = (props) => {
+interface Props {
+  defaultOrgId: string
+  viewer: NewTeam_viewer
+}
+
+const NewTeam = (props: Props) => {
   const {defaultOrgId, viewer} = props
   const {organizations} = viewer
-  const firstOrgId = organizations[0] && organizations[0].id
-  const orgId = organizations.find((org) => org.id === defaultOrgId) ? defaultOrgId : firstOrgId
   const isDesktop = useBreakpoint(DASH_SIDEBAR.BREAKPOINT)
   return (
     <NewTeamLayout>
       <NewTeamInner>
-        <NewTeamForm
-          defaultOrgId={defaultOrgId}
-          initialValues={{orgId, isNewOrganization: String(!defaultOrgId)}}
-          organizations={organizations}
-        />
+        <NewTeamForm isNewOrganization={!defaultOrgId} organizations={organizations} />
         {isDesktop && (
           <HelpLayout>
             <HelpBlock>
@@ -96,11 +95,6 @@ const NewTeam = (props) => {
       </NewTeamInner>
     </NewTeamLayout>
   )
-}
-
-NewTeam.propTypes = {
-  defaultOrgId: PropTypes.string,
-  viewer: PropTypes.object.isRequired
 }
 
 export default createFragmentContainer(
