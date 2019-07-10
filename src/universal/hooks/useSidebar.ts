@@ -16,6 +16,8 @@ const useSidebar = () => {
   }, [])
 
   const toggle = useCallback(() => {
+    console.log('toggle')
+    console.log(isOpen.current, 'isOpen.current')
     setIsOpen(!isOpen.current)
   }, [])
 

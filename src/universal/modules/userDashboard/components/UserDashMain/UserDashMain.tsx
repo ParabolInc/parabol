@@ -8,18 +8,7 @@ import Tab from 'universal/components/Tab/Tab'
 import Tabs from 'universal/components/Tabs/Tabs'
 import LoadingComponent from '../../../../components/LoadingComponent/LoadingComponent'
 import {LoaderSize} from '../../../../types/constEnums'
-import Icon from 'universal/components/Icon'
-import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
-import useBreakpoint from 'universal/hooks/useBreakpoint'
 import {PALETTE} from 'universal/styles/paletteV2'
-
-const MenuIcon = styled(Icon)({
-  color: PALETTE.TEXT_LIGHT,
-  cursor: 'pointer',
-  display: 'block',
-  marginRight: 16,
-  userSelect: 'none'
-})
 
 const TabBody = styled('div')({
   backgroundColor: PALETTE.BACKGROUND_MAIN,
@@ -45,13 +34,10 @@ const MyDashboardTimelineRoot = lazy(() =>
 const UserDashMain = (props: Props) => {
   const {history, match} = props
   const isTasks = !!matchPath(location.pathname, {path: `${match.url}/tasks`})
-  const isDesktop = useBreakpoint(DASH_SIDEBAR.BREAKPOINT)
-  const handleOnClick = () => console.log('menu icon click')
   return (
     <DashMain>
       <Helmet title='My Dashboard | Parabol' />
       <DashHeader area='userDash'>
-        {!isDesktop && <MenuIcon onClick={handleOnClick}>menu</MenuIcon>}
         <TopTabs activeIdx={isTasks ? 1 : 0}>
           <Tab label='TIMELINE' onClick={() => history.push('/me')} />
           <Tab label='TASKS' onClick={() => history.push('/me/tasks')} />

@@ -21,9 +21,6 @@ import NewTeamFormOrgName from './NewTeamFormOrgName'
 import NewTeamFormTeamName from './NewTeamFormTeamName'
 import StyledError from 'universal/components/StyledError'
 import DashHeaderTitle from 'universal/components/DashHeaderTitle'
-import Icon from 'universal/components/Icon'
-import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
-import {PALETTE} from 'universal/styles/paletteV2'
 
 const StyledForm = styled('form')({
   margin: 0,
@@ -48,17 +45,6 @@ const FormHeading = styled(DashHeaderTitle)({
   margin: 0,
   padding: 0,
   width: '100%'
-})
-
-const BackIcon = styled(Icon)({
-  color: PALETTE.TEXT_LIGHT,
-  cursor: 'pointer',
-  display: 'block',
-  marginRight: 16,
-  userSelect: 'none',
-  [`@media screen and (min-width: ${DASH_SIDEBAR.BREAKPOINT}px)`]: {
-    display: 'none'
-  }
 })
 
 const FormInner = styled('div')({
@@ -273,7 +259,6 @@ class NewTeamForm extends Component<Props, State> {
     return (
       <StyledForm onSubmit={this.onSubmit}>
         <Header>
-          <BackIcon onClick={() => console.log('go back to previous view')}>arrow_back</BackIcon>
           <FormHeading>{'Create a New Team'}</FormHeading>
         </Header>
         <StyledPanel>

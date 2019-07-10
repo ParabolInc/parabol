@@ -16,7 +16,6 @@ import withAtmosphere, {
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import EditableTeamName from 'universal/modules/teamDashboard/components/EditTeamName/EditableTeamName'
 import TeamCallsToAction from 'universal/modules/teamDashboard/components/TeamCallsToAction/TeamCallsToAction'
-import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
 
 const TeamViewNavBlock = styled('div')({
   display: 'flex',
@@ -26,13 +25,6 @@ const TeamViewNavBlock = styled('div')({
 const StyledButton = styled(FlatButton)({
   paddingLeft: '1rem',
   paddingRight: '1rem'
-})
-
-const HackHideButton = styled(StyledButton)({
-  display: 'none',
-  [`@media screen and (min-width: ${DASH_SIDEBAR.BREAKPOINT}px)`]: {
-    display: 'block'
-  }
 })
 
 const RelativeDashMain = styled(DashMain)({
@@ -122,13 +114,13 @@ class Team extends Component<Props> {
           </TeamDashHeaderInfo>
           <TeamViewNavBlock>
             {isSettings ? (
-              <HackHideButton
+              <StyledButton
                 aria-label='Back to Team Dashboard'
                 key='1'
                 onClick={this.goToTeamDashboard}
               >
                 <IconLabel icon='arrow_back' label='Back to Team Dashboard' />
-              </HackHideButton>
+              </StyledButton>
             ) : (
               <StyledButton aria-label='Team Settings' key='2' onClick={this.goToTeamSettings}>
                 <IconLabel icon='settings' label='Team Settings' />

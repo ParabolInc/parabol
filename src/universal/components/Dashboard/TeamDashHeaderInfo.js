@@ -1,11 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import DashHeaderTitle from 'universal/components/DashHeaderTitle'
-import Icon from 'universal/components/Icon'
-import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
-import useBreakpoint from 'universal/hooks/useBreakpoint'
 import styled from 'react-emotion'
-import {PALETTE} from 'universal/styles/paletteV2'
+import DashHeaderTitle from 'universal/components/DashHeaderTitle'
 
 const Root = styled('div')({
   alignItems: 'center',
@@ -17,25 +13,10 @@ const Title = styled(DashHeaderTitle)({
   marginRight: 32
 })
 
-const MenuIcon = styled(Icon)({
-  color: PALETTE.TEXT_LIGHT,
-  cursor: 'pointer',
-  display: 'block',
-  marginRight: 16,
-  userSelect: 'none'
-})
-
 const TeamDashHeaderInfo = (props) => {
-  const {children, title, isSettings} = props
-  const isDesktop = useBreakpoint(DASH_SIDEBAR.BREAKPOINT)
-  const handleOnClick = () => {
-    if (isSettings) return console.log('go back to team')
-    return console.log('open menu')
-  }
-  const icon = isSettings ? 'arrow_back' : 'menu'
+  const {children, title} = props
   return (
     <Root>
-      {!isDesktop && <MenuIcon onClick={handleOnClick}>{icon}</MenuIcon>}
       {title && <Title>{title}</Title>}
       {children}
     </Root>
