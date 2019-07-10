@@ -2262,7 +2262,7 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-dom@16.8.6", "@types/react-dom@^16.8.4":
+"@types/react-dom@16.8.4", "@types/react-dom@^16.8.4":
   version "16.8.4"
   resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.8.4.tgz#7fb7ba368857c7aa0f4e4511c4710ca2c5a12a88"
   integrity sha512-eIRpEW73DCzPIMaNBDP5pPIpK1KXyZwNgfxiVagb5iGiz6da+9A5hslSX6GAQKdO7SayVCS/Fr2kjqprgAvkfA==
@@ -14775,17 +14775,20 @@ relateurl@0.2.x:
   resolved "https://registry.yarnpkg.com/relateurl/-/relateurl-0.2.7.tgz#54dbf377e51440aca90a4cd274600d3ff2d888a9"
   integrity sha1-VNvzd+UUQKypCkzSdGANP/LYiKk=
 
-"relay-compiler-language-typescript@https://github.com/mattkrick/relay-compiler-language-typescript/tarball/40770db90f769a59e31999ca0c14d1bd2517ae01":
-  version "2.0.0"
-  resolved "https://github.com/mattkrick/relay-compiler-language-typescript/tarball/40770db90f769a59e31999ca0c14d1bd2517ae01#67599e7476c65cf7b49852bc06ae5a7320b6af0a"
+relay-compiler-language-typescript@^4.3.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/relay-compiler-language-typescript/-/relay-compiler-language-typescript-4.3.0.tgz#4069253adfe7866d677324c50f166ee20ea53240"
+  integrity sha512-X7hOG3Q/YkkwCuP6MA881aY3JmqatpsnCpW/J58LOaS6NQ6osl1aurmL7qVwfrIUfk+aSXvUbyUrFeQUj/DhXg==
   dependencies:
     immutable "^3.8.2"
     invariant "^2.2.2"
 
-"relay-compiler@https://github.com/mattkrick/relay/tarball/b8c5d6120e4fb7b54f7349e63731a2ee988688bc":
-  version "2.0.0"
-  resolved "https://github.com/mattkrick/relay/tarball/b8c5d6120e4fb7b54f7349e63731a2ee988688bc#8aece86da47dffaeb3dad390f384ebc70cc4e2e4"
+relay-compiler@5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/relay-compiler/-/relay-compiler-5.0.0.tgz#ca2514bda20ff829550ac87f126d07a1517bf6de"
+  integrity sha512-q8gKlPRTJe/TwtIokbdXehy1SxDFIyLBZdsfg60J4OcqyviIx++Vhc+h4lXzBY8LsBVaJjTuolftYcXJLhlE6g==
   dependencies:
+    "@babel/core" "^7.0.0"
     "@babel/generator" "^7.0.0"
     "@babel/parser" "^7.0.0"
     "@babel/polyfill" "^7.0.0"
@@ -14799,13 +14802,13 @@ relateurl@0.2.x:
     fbjs "^1.0.0"
     immutable "~3.7.6"
     nullthrows "^1.1.0"
-    relay-runtime "2.0.0"
+    relay-runtime "5.0.0"
     signedsource "^1.0.0"
     yargs "^9.0.0"
 
-relay-runtime@2.0.0, relay-runtime@3.0.0, "relay-runtime@https://github.com/mattkrick/relay/tarball/0a49c03689370fc471fe066fb0515b7992dd04b1":
-  version "3.0.0"
-  resolved "https://github.com/mattkrick/relay/tarball/0a49c03689370fc471fe066fb0515b7992dd04b1#c4ed078045fb23690ee0e475017beadcf6442391"
+relay-runtime@3.0.0, relay-runtime@5.0.0, "relay-runtime@https://github.com/mattkrick/relay/tarball/c11564fd90f1b4146e57605e1ab90400d4b0641f":
+  version "5.0.0"
+  resolved "https://github.com/mattkrick/relay/tarball/c11564fd90f1b4146e57605e1ab90400d4b0641f#1127e431508f54048b1bedc1325f22a50d9e444b"
   dependencies:
     "@babel/runtime" "^7.0.0"
     fbjs "^1.0.0"

@@ -14,7 +14,7 @@ import {
   StoreUpdater
 } from 'relay-runtime'
 import normalizeRelayPayload from 'relay-runtime/lib/normalizeRelayPayload'
-import RelayInMemoryRecordSource from 'relay-runtime/lib/RelayInMemoryRecordSource'
+import RelayRecordSource from 'relay-runtime/lib/RelayRecordSource'
 
 import RelayReader from 'relay-runtime/lib/RelayReader'
 import RelayRecordSourceMutator from 'relay-runtime/lib/RelayRecordSourceMutator'
@@ -55,6 +55,7 @@ interface SourcePayload {
 }
 
 type DataToCommit = ClientPayload | OptimisticPayload | ServerPayload | SourcePayload
+type GetDataID = (fieldValue: {[key: string]: any}, typeName: string) => any
 
 /**
  * Coordinates the concurrent modification of a `Store`
@@ -67,7 +68,7 @@ type DataToCommit = ClientPayload | OptimisticPayload | ServerPayload | SourcePa
 class LinearPublishQueue {
   _store: Store
   _handlerProvider: HandlerProvider | null
-
+  _getDataID: GetDataID
   // A "negative" of all applied updaters. It can be published to the store to
   // undo them in order to re-apply
   _backup: MutableRecordSource
@@ -84,10 +85,11 @@ class LinearPublishQueue {
   // in the event of a revert.
   _pendingUpdates: Array<DataToCommit>
 
-  constructor (store: Store, handlerProvider?: HandlerProvider | null) {
-    this._backup = new RelayInMemoryRecordSource()
+  constructor (store: Store, handlerProvider: HandlerProvider | null, getDataID: GetDataID) {
+    this._backup = RelayRecordSource.create()
     this._currentStoreIdx = 0
     this._gcHold = null
+    this._getDataID = getDataID
     this._handlerProvider = handlerProvider || null
     this._pendingBackupRebase = false
     this._pendingUpdates = []
@@ -181,7 +183,7 @@ class LinearPublishQueue {
    * Execute all queued up operations from the other public methods.
    * There is a single queue for all updates to guarantee linearizability
    */
-  run (): void {
+  run () {
     if (this._pendingBackupRebase) {
       this._currentStoreIdx = 0
       if (this._backup.size()) {
@@ -193,7 +195,7 @@ class LinearPublishQueue {
 
     this._pendingBackupRebase = false
     this._currentStoreIdx = this._pendingUpdates.length
-    this._store.notify()
+    return (this._store.notify() as unknown) as ReadonlyArray<OperationDescriptor>
   }
 
   _applyPendingUpdates () {
@@ -220,13 +222,13 @@ class LinearPublishQueue {
   }
 
   _handleUpdates (updates: DataToCommit[], isCommit?: boolean) {
-    const sink = new RelayInMemoryRecordSource()
+    const sink = RelayRecordSource.create()
     const mutator = new RelayRecordSourceMutator(
       this._store.getSource(),
       sink,
       isCommit ? undefined : this._backup
     )
-    const store = new RelayRecordSourceProxy(mutator, this._handlerProvider)
+    const store = new RelayRecordSourceProxy(mutator, this._getDataID, this._handlerProvider)
     for (let ii = 0; ii < updates.length; ii++) {
       const update = updates[ii]
       switch (update.kind) {
@@ -240,7 +242,7 @@ class LinearPublishQueue {
           )
           break
         case 'optimistic':
-          applyOptimisticUpdate(update.updater, store)
+          applyOptimisticUpdate(update.updater, store, this._getDataID)
           break
         case 'payload':
           applyServerPayloadUpdate(update.payload, store)
@@ -254,12 +256,14 @@ class LinearPublishQueue {
   }
 }
 
-function applyOptimisticUpdate (optimisticUpdate, store) {
+function applyOptimisticUpdate (optimisticUpdate, store, getDataID) {
   if (optimisticUpdate.operation) {
     const {selectorStoreUpdater, operation, response} = optimisticUpdate
 
     if (response) {
-      const {source, fieldPayloads} = normalizeRelayPayload(operation.root, response)
+      const {source, fieldPayloads} = normalizeRelayPayload(operation.root, response, null, {
+        getDataID
+      })
       store.publishSource(source, fieldPayloads)
       if (selectorStoreUpdater) {
         const selectorData = lookupSelector(source, operation.fragment, operation)
