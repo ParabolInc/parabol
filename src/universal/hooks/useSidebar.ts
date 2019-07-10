@@ -1,12 +1,8 @@
 import {useCallback} from 'react'
 import useHotkey from 'universal/hooks/useHotkey'
-import UserAgent from 'fbjs/lib/UserAgent'
 import useRefState from './useRefState'
 import useBreakpoint from 'universal/hooks/useBreakpoint'
 import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
-
-const isOSX = UserAgent.isPlatform('Mac OS X')
-const mod = isOSX ? 'command' : 'ctrl'
 
 const useSidebar = () => {
   const isDesktop = useBreakpoint(DASH_SIDEBAR.BREAKPOINT)
@@ -29,8 +25,8 @@ const useSidebar = () => {
     }
   }, [isDesktop])
 
-  useHotkey(`${mod}+left`, close)
-  useHotkey(`${mod}+right`, open)
+  useHotkey(`shift+left`, close)
+  useHotkey(`shift+right`, open)
   return {isOpen: isOpen.current, toggle, handleMenuClick}
 }
 

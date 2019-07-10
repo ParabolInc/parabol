@@ -70,7 +70,7 @@ export default {
         )('changes')('new_val')('id')
         .default([])
     })
-    sendSegmentEvent('Downgrade to personal', viewerId, {orgId})
+    sendSegmentEvent('Downgrade to personal', viewerId, {orgId}).catch()
     const data = {orgId, teamIds}
     publish(ORGANIZATION, orgId, DowngradeToPersonalPayload, data, subOptions)
 
@@ -86,7 +86,7 @@ export default {
       .getAll(orgId, {index: 'orgId'})
       .filter({removedAt: null})('userId')
     allUserIds.forEach((userId) => {
-      sendSegmentIdentify(userId)
+      sendSegmentIdentify(userId).catch()
     })
     return data
   }
