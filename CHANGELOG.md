@@ -11,6 +11,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ### Added
 * Mass invite link to the team invitation modal (#2994)
 * Single cards can have group titles (#2990)
+* Swipeable mobile left nav for dash and meeting (#3008)
 
 ### Fixed
 * Timebox works on facilitator change (#2984)
