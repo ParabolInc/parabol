@@ -3,8 +3,9 @@ import React, {ReactNode} from 'react'
 import SwipeableDashSidebar from 'universal/components/SwipeableDashSidebar'
 import StaticSidebar from 'universal/components/StaticSidebar'
 import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
-import {desktopSidebarShadow} from 'universal/styles/elevation'
+import elevation, {desktopSidebarShadow} from 'universal/styles/elevation'
 import styled from 'react-emotion'
+import {DECELERATE} from 'universal/styles/animation'
 
 interface Props {
   children: ReactNode
@@ -12,9 +13,10 @@ interface Props {
   onToggle: () => void
 }
 
-const Sidebar = styled('div')({
-  boxShadow: desktopSidebarShadow
-})
+const Sidebar = styled('div')(({isOpen}: {isOpen: boolean}) => ({
+  boxShadow: isOpen ? desktopSidebarShadow : elevation[0],
+  transition: `box-shadow 200ms ${DECELERATE}`
+}))
 
 const ResponsiveDashSidebar = (props: Props) => {
   const {children, isOpen, onToggle} = props
@@ -22,7 +24,7 @@ const ResponsiveDashSidebar = (props: Props) => {
   if (isDesktop) {
     return (
       <StaticSidebar isOpen={isOpen}>
-        <Sidebar>{children}</Sidebar>
+        <Sidebar isOpen={isOpen}>{children}</Sidebar>
       </StaticSidebar>
     )
   }
