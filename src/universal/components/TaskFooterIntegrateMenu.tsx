@@ -25,7 +25,10 @@ const makePlaceholder = (hasGitHub: boolean, hasAtlassian: boolean) => {
 const TaskFooterIntegrateMenu = (props: Props) => {
   const {menuProps, mutationProps, task, viewer} = props
   const {id: viewerId, userOnTeam} = viewer
-  const {atlassianAuth, githubAuth, preferredName, suggestedIntegrations} = userOnTeam!
+  // not 100% sure how this could be, maybe if we manually deleted a user?
+  // https://github.com/ParabolInc/action/issues/2980
+  if (!userOnTeam) return null
+  const {atlassianAuth, githubAuth, preferredName, suggestedIntegrations} = userOnTeam
   const {teamId, userId} = task
   const isViewerAssignee = viewerId === userId
   const hasAtlassian = !!(atlassianAuth && atlassianAuth.isActive)
