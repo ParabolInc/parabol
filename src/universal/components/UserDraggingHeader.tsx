@@ -1,13 +1,10 @@
 import React from 'react'
 import appTheme from 'universal/styles/theme/appTheme'
-import {createFragmentContainer} from 'react-relay'
+import {createFragmentContainer, graphql} from 'react-relay'
 import styled from 'react-emotion'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import Tag from 'universal/components/Tag/Tag'
-
-type Props = {
-  user: any
-}
+import {UserDraggingHeader_user} from '__generated__/UserDraggingHeader_user.graphql'
+import useAtmosphere from 'universal/hooks/useAtmosphere'
 
 const Header = styled('div')({
   bottom: '100%',
@@ -19,11 +16,14 @@ const Header = styled('div')({
   textAlign: 'end'
 })
 
+interface Props {
+  user: UserDraggingHeader_user
+}
+
 const UserDraggingHeader = (props: Props) => {
-  const {
-    atmosphere: {viewerId},
-    user
-  } = props
+  const {user} = props
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
   if (!user) return null
   const {userId, preferredName} = user
   const name = userId === viewerId ? 'Your ghost 👻' : preferredName
@@ -35,7 +35,7 @@ const UserDraggingHeader = (props: Props) => {
 }
 
 export default createFragmentContainer(
-  withAtmosphere(UserDraggingHeader),
+  UserDraggingHeader,
   graphql`
     fragment UserDraggingHeader_user on User {
       userId: id
