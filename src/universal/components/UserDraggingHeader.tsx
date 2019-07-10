@@ -34,12 +34,11 @@ const UserDraggingHeader = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  UserDraggingHeader,
-  graphql`
+export default createFragmentContainer(UserDraggingHeader, {
+  user: graphql`
     fragment UserDraggingHeader_user on User {
       userId: id
       preferredName
     }
   `
-)
+})

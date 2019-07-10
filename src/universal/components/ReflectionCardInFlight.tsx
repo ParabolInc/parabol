@@ -217,9 +217,8 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
   }
 }
 
-export default createFragmentContainer(
-  withAtmosphere(ReflectionCardInFlight),
-  graphql`
+export default createFragmentContainer(withAtmosphere(ReflectionCardInFlight), {
+  reflection: graphql`
     fragment ReflectionCardInFlight_reflection on RetroReflection {
       meetingId
       reflectionId: id
@@ -251,4 +250,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

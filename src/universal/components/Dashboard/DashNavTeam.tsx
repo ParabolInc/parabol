@@ -35,13 +35,12 @@ const DashNavTeam = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  DashNavTeam,
-  graphql`
+export default createFragmentContainer(DashNavTeam, {
+  team: graphql`
     fragment DashNavTeam_team on Team {
       id
       isPaid
       name
     }
   `
-)
+})

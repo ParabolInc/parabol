@@ -106,9 +106,8 @@ const TaskFooterUserAssignee = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  TaskFooterUserAssignee,
-  graphql`
+export default createFragmentContainer(TaskFooterUserAssignee, {
+  task: graphql`
     fragment TaskFooterUserAssignee_task on Task {
       ...TaskFooterUserAssigneeMenuRoot_task
       assignee {
@@ -122,4 +121,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

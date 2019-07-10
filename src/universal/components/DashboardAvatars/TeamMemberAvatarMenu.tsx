@@ -69,9 +69,8 @@ const TeamMemberAvatarMenu = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  withAtmosphere(TeamMemberAvatarMenu),
-  graphql`
+export default createFragmentContainer(withAtmosphere(TeamMemberAvatarMenu), {
+  teamMember: graphql`
     fragment TeamMemberAvatarMenu_teamMember on TeamMember {
       isSelf
       preferredName
@@ -82,4 +81,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

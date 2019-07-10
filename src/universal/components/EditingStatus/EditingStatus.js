@@ -111,9 +111,8 @@ EditingStatus.propTypes = {
   styles: PropTypes.object
 }
 
-export default createFragmentContainer(
-  withAtmosphere(EditingStatus),
-  graphql`
+export default createFragmentContainer(withAtmosphere(EditingStatus), {
+  task: graphql`
     fragment EditingStatus_task on Task {
       editors {
         userId
@@ -122,4 +121,4 @@ export default createFragmentContainer(
       ...DueDateToggle_task
     }
   `
-)
+})

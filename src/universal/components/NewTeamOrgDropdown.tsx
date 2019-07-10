@@ -45,13 +45,12 @@ const NewTeamOrgDropdown = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  NewTeamOrgDropdown,
-  graphql`
+export default createFragmentContainer(NewTeamOrgDropdown, {
+  organizations: graphql`
     fragment NewTeamOrgDropdown_organizations on Organization @relay(plural: true) {
       id
       name
       tier
     }
   `
-)
+})

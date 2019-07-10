@@ -180,9 +180,8 @@ graphql`
   }
 `
 
-export default createFragmentContainer(
-  ActionMeetingAgendaItems,
-  graphql`
+export default createFragmentContainer(ActionMeetingAgendaItems, {
+  team: graphql`
     fragment ActionMeetingAgendaItems_team on Team {
       id
       isMeetingSidebarCollapsed
@@ -221,4 +220,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

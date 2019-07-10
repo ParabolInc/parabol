@@ -74,9 +74,8 @@ graphql`
   }
 `
 
-export default createFragmentContainer(
-  ActionMeetingUpdatesPrompt,
-  graphql`
+export default createFragmentContainer(ActionMeetingUpdatesPrompt, {
+  team: graphql`
     fragment ActionMeetingUpdatesPrompt_team on Team {
       tasks(first: 1000) @connection(key: "TeamColumnsContainer_tasks") {
         edges {
@@ -107,4 +106,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

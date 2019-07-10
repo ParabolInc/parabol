@@ -79,13 +79,12 @@ const TaskColumns = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  TaskColumns,
-  graphql`
+export default createFragmentContainer(TaskColumns, {
+  tasks: graphql`
     fragment TaskColumns_tasks on Task @relay(plural: true) {
       ...TaskColumn_tasks
       status
       sortOrder
     }
   `
-)
+})

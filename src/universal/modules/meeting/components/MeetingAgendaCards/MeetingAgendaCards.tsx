@@ -79,13 +79,12 @@ const MeetingAgendaCards = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  MeetingAgendaCards,
-  graphql`
+export default createFragmentContainer(MeetingAgendaCards, {
+  tasks: graphql`
     fragment MeetingAgendaCards_tasks on Task @relay(plural: true) {
       ...NullableTask_task
       id
       sortOrder
     }
   `
-)
+})

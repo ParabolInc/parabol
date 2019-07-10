@@ -38,9 +38,8 @@ const AgendaListAndInput = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  AgendaListAndInput,
-  graphql`
+export default createFragmentContainer(AgendaListAndInput, {
+  team: graphql`
     fragment AgendaListAndInput_team on Team {
       ...AgendaInput_team
       ...AgendaList_team
@@ -56,4 +55,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

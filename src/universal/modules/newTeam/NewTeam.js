@@ -100,9 +100,8 @@ NewTeam.propTypes = {
   viewer: PropTypes.object.isRequired
 }
 
-export default createFragmentContainer(
-  NewTeam,
-  graphql`
+export default createFragmentContainer(NewTeam, {
+  viewer: graphql`
     fragment NewTeam_viewer on User {
       organizations {
         id
@@ -110,4 +109,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

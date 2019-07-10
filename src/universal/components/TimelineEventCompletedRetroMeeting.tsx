@@ -43,9 +43,8 @@ class TimelineEventCompletedRetroMeeting extends Component<Props> {
   }
 }
 
-export default createFragmentContainer(
-  TimelineEventCompletedRetroMeeting,
-  graphql`
+export default createFragmentContainer(TimelineEventCompletedRetroMeeting, {
+  timelineEvent: graphql`
     fragment TimelineEventCompletedRetroMeeting_timelineEvent on TimelineEventCompletedRetroMeeting {
       ...TimelineEventCard_timelineEvent
       id
@@ -61,4 +60,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

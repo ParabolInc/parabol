@@ -174,36 +174,40 @@ class OrgBilling extends Component<Props> {
 
 export default createPaginationContainer(
   OrgBilling,
-  graphql`
-    fragment OrgBilling_organization on Organization {
-      id
-      creditCard {
-        brand
-        last4
-        expiry
+  {
+    organization: graphql`
+      fragment OrgBilling_organization on Organization {
+        id
+        creditCard {
+          brand
+          last4
+          expiry
+        }
       }
-    }
-    fragment OrgBilling_viewer on User {
-      invoices(first: $first, orgId: $orgId, after: $after)
-        @connection(key: "OrgBilling_invoices") {
-        edges {
-          cursor
-          node {
-            id
-            amountDue
-            endAt
-            paidAt
-            startAt
-            status
+    `,
+    viewer: graphql`
+      fragment OrgBilling_viewer on User {
+        invoices(first: $first, orgId: $orgId, after: $after)
+          @connection(key: "OrgBilling_invoices") {
+          edges {
+            cursor
+            node {
+              id
+              amountDue
+              endAt
+              paidAt
+              startAt
+              status
+            }
+          }
+          pageInfo {
+            hasNextPage
+            endCursor
           }
         }
-        pageInfo {
-          hasNextPage
-          endCursor
-        }
       }
-    }
-  `,
+    `
+  },
   {
     direction: 'forward',
     // @ts-ignore

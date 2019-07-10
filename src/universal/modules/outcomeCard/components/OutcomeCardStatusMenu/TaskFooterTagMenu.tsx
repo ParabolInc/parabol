@@ -94,9 +94,8 @@ const TaskFooterTagMenu = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  TaskFooterTagMenu,
-  graphql`
+export default createFragmentContainer(TaskFooterTagMenu, {
+  task: graphql`
     fragment TaskFooterTagMenu_task on Task {
       ...TaskFooterTagMenuStatusItem_task
       id
@@ -106,4 +105,4 @@ export default createFragmentContainer(
       teamId
     }
   `
-)
+})

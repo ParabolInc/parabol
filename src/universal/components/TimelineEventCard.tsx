@@ -88,12 +88,11 @@ class TimelineEventCard extends Component<Props> {
   }
 }
 
-export default createFragmentContainer(
-  TimelineEventCard,
-  graphql`
+export default createFragmentContainer(TimelineEventCard, {
+  timelineEvent: graphql`
     fragment TimelineEventCard_timelineEvent on TimelineEvent {
       id
       createdAt
     }
   `
-)
+})

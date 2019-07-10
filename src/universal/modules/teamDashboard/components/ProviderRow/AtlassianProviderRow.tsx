@@ -201,9 +201,11 @@ graphql`
 
 export default createFragmentContainer(
   withAtmosphere(withMutationProps(withRouter(AtlassianProviderRow))),
-  graphql`
-    fragment AtlassianProviderRow_viewer on User {
-      ...AtlassianProviderRowViewer @relay(mask: false)
-    }
-  `
+  {
+    viewer: graphql`
+      fragment AtlassianProviderRow_viewer on User {
+        ...AtlassianProviderRowViewer @relay(mask: false)
+      }
+    `
+  }
 )

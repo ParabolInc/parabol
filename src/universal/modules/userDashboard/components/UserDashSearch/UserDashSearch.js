@@ -36,12 +36,11 @@ UserDashSearch.propTypes = {
   viewer: PropTypes.object
 }
 
-export default createFragmentContainer(
-  withAtmosphere(UserDashSearch),
-  graphql`
+export default createFragmentContainer(withAtmosphere(UserDashSearch), {
+  viewer: graphql`
     fragment UserDashSearch_viewer on User {
       userId: id
       contentFilter
     }
   `
-)
+})

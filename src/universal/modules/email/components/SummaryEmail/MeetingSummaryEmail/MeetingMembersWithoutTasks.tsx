@@ -66,9 +66,8 @@ const MeetingMembersWithoutTasks = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  MeetingMembersWithoutTasks,
-  graphql`
+export default createFragmentContainer(MeetingMembersWithoutTasks, {
+  meeting: graphql`
     fragment MeetingMembersWithoutTasks_meeting on NewMeeting {
       meetingType
       meetingMembers {
@@ -95,4 +94,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

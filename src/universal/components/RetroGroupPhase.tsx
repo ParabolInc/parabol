@@ -156,9 +156,8 @@ graphql`
   }
 `
 
-export default createFragmentContainer(
-  withMutationProps(withAtmosphere(RetroGroupPhase)),
-  graphql`
+export default createFragmentContainer(withMutationProps(withAtmosphere(RetroGroupPhase)), {
+  team: graphql`
     fragment RetroGroupPhase_team on Team {
       ...StageTimerControl_team
       isMeetingSidebarCollapsed
@@ -192,4 +191,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

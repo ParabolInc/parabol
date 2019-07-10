@@ -92,9 +92,8 @@ const QuickStats = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  QuickStats,
-  graphql`
+export default createFragmentContainer(QuickStats, {
+  meeting: graphql`
     fragment QuickStats_meeting on NewMeeting {
       __typename
       meetingType
@@ -134,4 +133,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

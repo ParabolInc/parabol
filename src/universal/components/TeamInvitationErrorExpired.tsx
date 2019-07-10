@@ -45,13 +45,12 @@ const TeamInvitationErrorExpired = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  TeamInvitationErrorExpired,
-  graphql`
+export default createFragmentContainer(TeamInvitationErrorExpired, {
+  verifiedInvitation: graphql`
     fragment TeamInvitationErrorExpired_verifiedInvitation on VerifiedInvitationPayload {
       teamName
       inviterName
       inviterEmail
     }
   `
-)
+})

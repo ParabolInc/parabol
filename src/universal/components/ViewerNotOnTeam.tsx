@@ -79,13 +79,12 @@ const ViewerNotOnTeam = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  ViewerNotOnTeam,
-  graphql`
+export default createFragmentContainer(ViewerNotOnTeam, {
+  viewer: graphql`
     fragment ViewerNotOnTeam_viewer on User {
       teamInvitation(teamId: $teamId) {
         token
       }
     }
   `
-)
+})

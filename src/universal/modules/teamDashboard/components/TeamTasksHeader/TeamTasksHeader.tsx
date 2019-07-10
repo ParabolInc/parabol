@@ -95,9 +95,8 @@ const TeamTasksHeader = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  withRouter(TeamTasksHeader),
-  graphql`
+export default createFragmentContainer(withRouter(TeamTasksHeader), {
+  team: graphql`
     fragment TeamTasksHeader_team on Team {
       teamId: id
       teamName: name
@@ -108,4 +107,4 @@ export default createFragmentContainer(
       ...TeamDashTeamMemberMenu_team
     }
   `
-)
+})

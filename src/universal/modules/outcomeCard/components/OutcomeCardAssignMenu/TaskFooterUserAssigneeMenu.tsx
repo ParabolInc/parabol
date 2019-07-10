@@ -60,9 +60,8 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  TaskFooterUserAssigneeMenu,
-  graphql`
+export default createFragmentContainer(TaskFooterUserAssigneeMenu, {
+  viewer: graphql`
     fragment TaskFooterUserAssigneeMenu_viewer on User {
       team(teamId: $teamId) {
         teamId: id
@@ -74,7 +73,8 @@ export default createFragmentContainer(
         }
       }
     }
-
+  `,
+  task: graphql`
     fragment TaskFooterUserAssigneeMenu_task on Task {
       id
       assignee {
@@ -86,4 +86,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

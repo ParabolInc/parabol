@@ -85,12 +85,14 @@ export default createFragmentContainer(
       (connect as any)(mapStateToProps)(withRouter(TeamContainer))
     )
   ),
-  graphql`
-    fragment TeamContainer_viewer on User {
-      team(teamId: $teamId) {
-        ...Team_team
-        ...TeamArchive_team
+  {
+    viewer: graphql`
+      fragment TeamContainer_viewer on User {
+        team(teamId: $teamId) {
+          ...Team_team
+          ...TeamArchive_team
+        }
       }
-    }
-  `
+    `
+  }
 )

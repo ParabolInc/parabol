@@ -39,9 +39,11 @@ class SuggestedActionCreateNewTeam extends Component<Props> {
 
 export default createFragmentContainer(
   withAtmosphere(withMutationProps(withRouter(SuggestedActionCreateNewTeam))),
-  graphql`
-    fragment SuggestedActionCreateNewTeam_suggestedAction on SuggestedActionCreateNewTeam {
-      id
-    }
-  `
+  {
+    suggestedAction: graphql`
+      fragment SuggestedActionCreateNewTeam_suggestedAction on SuggestedActionCreateNewTeam {
+        id
+      }
+    `
+  }
 )

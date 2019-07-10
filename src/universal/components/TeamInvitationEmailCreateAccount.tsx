@@ -51,9 +51,8 @@ const TeamInvitationEmailCreateAccount = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  TeamInvitationEmailCreateAccount,
-  graphql`
+export default createFragmentContainer(TeamInvitationEmailCreateAccount, {
+  verifiedInvitation: graphql`
     fragment TeamInvitationEmailCreateAccount_verifiedInvitation on VerifiedInvitationPayload {
       meetingType
       teamInvitation {
@@ -62,4 +61,4 @@ export default createFragmentContainer(
       teamName
     }
   `
-)
+})

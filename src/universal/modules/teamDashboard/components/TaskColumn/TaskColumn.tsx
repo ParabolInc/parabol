@@ -194,9 +194,8 @@ class TaskColumn extends Component<Props> {
   }
 }
 
-export default createFragmentContainer(
-  withAtmosphere(TaskColumn),
-  graphql`
+export default createFragmentContainer(withAtmosphere(TaskColumn), {
+  tasks: graphql`
     fragment TaskColumn_tasks on Task @relay(plural: true) {
       ...TaskColumnAddTask_tasks
       ...DraggableTask_task
@@ -205,4 +204,4 @@ export default createFragmentContainer(
       status
     }
   `
-)
+})

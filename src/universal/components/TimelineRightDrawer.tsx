@@ -44,12 +44,11 @@ const TimelineRightDrawer = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  TimelineRightDrawer,
-  graphql`
+export default createFragmentContainer(TimelineRightDrawer, {
+  viewer: graphql`
     fragment TimelineRightDrawer_viewer on User {
       ...TimelineNewFeature_viewer
       ...TimelinePriorityTasks_viewer
     }
   `
-)
+})

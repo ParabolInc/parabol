@@ -34,9 +34,8 @@ const ActionMeetingUpdatesPromptTeamHelpText = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  ActionMeetingUpdatesPromptTeamHelpText,
-  graphql`
+export default createFragmentContainer(ActionMeetingUpdatesPromptTeamHelpText, {
+  currentTeamMember: graphql`
     fragment ActionMeetingUpdatesPromptTeamHelpText_currentTeamMember on TeamMember {
       preferredName
       meetingMember {
@@ -44,4 +43,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

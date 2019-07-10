@@ -93,14 +93,16 @@ class TeamInvitationGoogleSignin extends Component<Props> {
 
 export default createFragmentContainer(
   withAtmosphere(withMutationProps(withRouter(TeamInvitationGoogleSignin))),
-  graphql`
-    fragment TeamInvitationGoogleSignin_verifiedInvitation on VerifiedInvitationPayload {
-      meetingType
-      user {
-        email
-        preferredName
+  {
+    verifiedInvitation: graphql`
+      fragment TeamInvitationGoogleSignin_verifiedInvitation on VerifiedInvitationPayload {
+        meetingType
+        user {
+          email
+          preferredName
+        }
+        teamName
       }
-      teamName
-    }
-  `
+    `
+  }
 )

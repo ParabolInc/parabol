@@ -61,9 +61,8 @@ graphql`
   }
 `
 
-export default createFragmentContainer(
-  ActionSidebarAgendaItemsSection,
-  graphql`
+export default createFragmentContainer(ActionSidebarAgendaItemsSection, {
+  viewer: graphql`
     fragment ActionSidebarAgendaItemsSection_viewer on User {
       team(teamId: $teamId) {
         ...AgendaListAndInput_team
@@ -86,4 +85,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

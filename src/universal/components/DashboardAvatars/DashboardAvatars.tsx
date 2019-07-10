@@ -36,9 +36,8 @@ const DashboardAvatars = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  DashboardAvatars,
-  graphql`
+export default createFragmentContainer(DashboardAvatars, {
+  team: graphql`
     fragment DashboardAvatars_team on Team {
       id
       isLead
@@ -50,4 +49,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

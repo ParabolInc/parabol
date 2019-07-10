@@ -220,9 +220,8 @@ const OrgPlanSqueeze = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  OrgPlanSqueeze,
-  graphql`
+export default createFragmentContainer(OrgPlanSqueeze, {
+  organization: graphql`
     fragment OrgPlanSqueeze_organization on Organization {
       orgId: id
       isBillingLeader
@@ -236,4 +235,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

@@ -1,7 +1,7 @@
 import {css} from 'aphrodite-local-styles/no-important'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import {createPaginationContainer} from 'react-relay'
+import {createPaginationContainer, graphql} from 'react-relay'
 import {AutoSizer, CellMeasurer, CellMeasurerCache, Grid, InfiniteLoader} from 'react-virtualized'
 import NullableTask from 'universal/components/NullableTask/NullableTask'
 import Helmet from 'react-helmet'
@@ -305,29 +305,32 @@ const styleThunk = () => ({
 
 export default createPaginationContainer(
   withStyles(styleThunk)(TeamArchive),
-  graphql`
-    fragment TeamArchive_viewer on User {
-      archivedTasks(first: $first, teamId: $teamId, after: $after)
-        @connection(key: "TeamArchive_archivedTasks") {
-        edges {
-          cursor
-          node {
-            id
-            ...NullableTask_task
+  {
+    viewer: graphql`
+      fragment TeamArchive_viewer on User {
+        archivedTasks(first: $first, teamId: $teamId, after: $after)
+          @connection(key: "TeamArchive_archivedTasks") {
+          edges {
+            cursor
+            node {
+              id
+              ...NullableTask_task
+            }
+          }
+          pageInfo {
+            hasNextPage
+            endCursor
           }
         }
-        pageInfo {
-          hasNextPage
-          endCursor
-        }
       }
-    }
-
-    fragment TeamArchive_team on Team {
-      teamName: name
-      orgId
-    }
-  `,
+    `,
+    team: graphql`
+      fragment TeamArchive_team on Team {
+        teamName: name
+        orgId
+      }
+    `
+  },
   {
     direction: 'forward',
     getConnectionFromProps (props) {

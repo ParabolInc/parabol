@@ -100,9 +100,8 @@ const ActionMeetingFirstCall = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  ActionMeetingFirstCall,
-  graphql`
+export default createFragmentContainer(ActionMeetingFirstCall, {
+  team: graphql`
     fragment ActionMeetingFirstCall_team on Team {
       id
       isMeetingSidebarCollapsed
@@ -115,4 +114,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

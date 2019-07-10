@@ -172,9 +172,8 @@ class ReflectTemplateModal extends Component<Props> {
   }
 }
 
-export default createFragmentContainer(
-  withAtmosphere(ReflectTemplateModal),
-  graphql`
+export default createFragmentContainer(withAtmosphere(ReflectTemplateModal), {
+  retroMeetingSettings: graphql`
     fragment ReflectTemplateModal_retroMeetingSettings on RetrospectiveMeetingSettings {
       settingsId: id
       reflectTemplates {
@@ -193,4 +192,4 @@ export default createFragmentContainer(
       teamId
     }
   `
-)
+})

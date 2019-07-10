@@ -85,9 +85,8 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  StageTimerModalEndTimeSlackToggle,
-  graphql`
+export default createFragmentContainer(StageTimerModalEndTimeSlackToggle, {
+  facilitator: graphql`
     fragment StageTimerModalEndTimeSlackToggle_facilitator on TeamMember {
       slackAuth {
         isActive
@@ -99,4 +98,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

@@ -145,9 +145,8 @@ graphql`
   }
 `
 
-export default createFragmentContainer(
-  ActionMeeting,
-  graphql`
+export default createFragmentContainer(ActionMeeting, {
+  viewer: graphql`
     fragment ActionMeeting_viewer on User {
       ...ActionMeetingSidebar_viewer
       featureFlags {
@@ -159,4 +158,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

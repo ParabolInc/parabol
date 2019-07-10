@@ -54,9 +54,8 @@ const TeamInvitationErrorAccepted = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  TeamInvitationErrorAccepted,
-  graphql`
+export default createFragmentContainer(TeamInvitationErrorAccepted, {
+  verifiedInvitation: graphql`
     fragment TeamInvitationErrorAccepted_verifiedInvitation on VerifiedInvitationPayload {
       meetingType
       teamName
@@ -65,4 +64,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

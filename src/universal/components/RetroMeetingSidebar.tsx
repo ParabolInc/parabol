@@ -77,9 +77,8 @@ const RetroMeetingSidebar = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  RetroMeetingSidebar,
-  graphql`
+export default createFragmentContainer(RetroMeetingSidebar, {
+  viewer: graphql`
     fragment RetroMeetingSidebar_viewer on User {
       ...RetroSidebarPhaseListItemChildren_viewer
       ...NewMeetingSidebar_viewer
@@ -110,4 +109,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

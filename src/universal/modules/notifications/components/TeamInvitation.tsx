@@ -75,18 +75,20 @@ const TeamInvitation = (props: Props) => {
 
 export default createFragmentContainer(
   withAtmosphere(withMutationProps(withRouter(TeamInvitation))),
-  graphql`
-    fragment TeamInvitation_notification on NotificationTeamInvitation {
-      id
-      invitation {
-        token
-        inviter {
-          preferredName
+  {
+    notification: graphql`
+      fragment TeamInvitation_notification on NotificationTeamInvitation {
+        id
+        invitation {
+          token
+          inviter {
+            preferredName
+          }
+        }
+        team {
+          name
         }
       }
-      team {
-        name
-      }
-    }
-  `
+    `
+  }
 )

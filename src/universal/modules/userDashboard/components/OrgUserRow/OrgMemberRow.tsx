@@ -199,16 +199,16 @@ const OrgMemberRow = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  withAtmosphere(withMutationProps(OrgMemberRow)),
-  graphql`
+export default createFragmentContainer(withAtmosphere(withMutationProps(OrgMemberRow)), {
+  organization: graphql`
     fragment OrgMemberRow_organization on Organization {
       isViewerBillingLeader: isBillingLeader
       orgId: id
       tier
       ...BillingLeaderActionMenu_organization
     }
-
+  `,
+  organizationUser: graphql`
     fragment OrgMemberRow_organizationUser on OrganizationUser {
       user {
         userId: id
@@ -222,4 +222,4 @@ export default createFragmentContainer(
       ...BillingLeaderActionMenu_organizationUser
     }
   `
-)
+})

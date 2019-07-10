@@ -126,6 +126,7 @@
     "ignore-loader": "^0.1.2",
     "jest": "^22.0.0",
     "jest-junit-reporter": "^1.0.1",
+    "jscodeshift": "^0.6.4",
     "jsdom": "^11.1.0",
     "json-loader": "^0.5.7",
     "lint-staged": "^8.1.3",

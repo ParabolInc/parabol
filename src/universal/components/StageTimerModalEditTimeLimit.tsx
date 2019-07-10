@@ -72,11 +72,10 @@ const StageTimerModalEditTimeLimit = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  StageTimerModalEditTimeLimit,
-  graphql`
+export default createFragmentContainer(StageTimerModalEditTimeLimit, {
+  stage: graphql`
     fragment StageTimerModalEditTimeLimit_stage on NewMeetingStage {
       ...StageTimerModalTimeLimit_stage
     }
   `
-)
+})

@@ -55,9 +55,8 @@ const UserColumnsContainer = (props: Props) => {
   }
 }
 
-export default createFragmentContainer(
-  connect(mapStateToProps)(UserColumnsContainer),
-  graphql`
+export default createFragmentContainer(connect(mapStateToProps)(UserColumnsContainer), {
+  viewer: graphql`
     fragment UserColumnsContainer_viewer on User {
       teams {
         id
@@ -83,4 +82,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

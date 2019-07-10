@@ -177,16 +177,16 @@ class AddTeamMemberModal extends Component<Props, State> {
   }
 }
 
-export default createFragmentContainer(
-  withAtmosphere(withMutationProps(AddTeamMemberModal)),
-  graphql`
+export default createFragmentContainer(withAtmosphere(withMutationProps(AddTeamMemberModal)), {
+  team: graphql`
     fragment AddTeamMemberModal_team on Team {
       id
       massInviteToken
     }
-
+  `,
+  teamMembers: graphql`
     fragment AddTeamMemberModal_teamMembers on TeamMember @relay(plural: true) {
       email
     }
   `
-)
+})

@@ -66,9 +66,8 @@ const RetroTopic = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  RetroTopic,
-  graphql`
+export default createFragmentContainer(RetroTopic, {
+  topic: graphql`
     fragment RetroTopic_topic on RetroReflectionGroup {
       title
       voteCount
@@ -77,4 +76,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

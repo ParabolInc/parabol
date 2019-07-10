@@ -77,9 +77,8 @@ const NewMeetingSidebar = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  NewMeetingSidebar,
-  graphql`
+export default createFragmentContainer(NewMeetingSidebar, {
+  viewer: graphql`
     fragment NewMeetingSidebar_viewer on User {
       team(teamId: $teamId) {
         id
@@ -87,4 +86,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

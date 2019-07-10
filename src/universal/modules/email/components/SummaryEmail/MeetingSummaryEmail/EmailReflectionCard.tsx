@@ -89,9 +89,8 @@ const EmailReflectionCard = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  EmailReflectionCard,
-  graphql`
+export default createFragmentContainer(EmailReflectionCard, {
+  reflection: graphql`
     fragment EmailReflectionCard_reflection on RetroReflection {
       content
       phaseItem {
@@ -99,4 +98,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

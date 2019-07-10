@@ -149,11 +149,10 @@ graphql`
   }
 `
 
-export default createFragmentContainer(
-  SlackProviderRow,
-  graphql`
+export default createFragmentContainer(SlackProviderRow, {
+  viewer: graphql`
     fragment SlackProviderRow_viewer on User {
       ...SlackProviderRowViewer @relay(mask: false)
     }
   `
-)
+})

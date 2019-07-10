@@ -62,12 +62,11 @@ const RetroTemplateListMenu = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  withAtmosphere(withMutationProps(RetroTemplateListMenu)),
-  graphql`
+export default createFragmentContainer(withAtmosphere(withMutationProps(RetroTemplateListMenu)), {
+  retroMeetingSettings: graphql`
     fragment RetroTemplateListMenu_retroMeetingSettings on RetrospectiveMeetingSettings {
       selectedTemplateId
       teamId
     }
   `
-)
+})

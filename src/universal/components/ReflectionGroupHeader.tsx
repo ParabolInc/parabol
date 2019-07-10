@@ -72,9 +72,8 @@ const ReflectionGroupHeader = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  ReflectionGroupHeader,
-  graphql`
+export default createFragmentContainer(ReflectionGroupHeader, {
+  meeting: graphql`
     fragment ReflectionGroupHeader_meeting on RetrospectiveMeeting {
       localStage {
         isComplete
@@ -85,7 +84,8 @@ export default createFragmentContainer(
       ...ReflectionGroupTitleEditor_meeting
       ...ReflectionGroupVoting_meeting
     }
-
+  `,
+  reflectionGroup: graphql`
     fragment ReflectionGroupHeader_reflectionGroup on RetroReflectionGroup {
       ...ReflectionGroupTitleEditor_reflectionGroup
       ...ReflectionGroupVoting_reflectionGroup
@@ -95,4 +95,4 @@ export default createFragmentContainer(
       titleIsUserDefined
     }
   `
-)
+})

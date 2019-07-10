@@ -240,9 +240,8 @@ const RetroDiscussPhase = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  withAtmosphere(RetroDiscussPhase),
-  graphql`
+export default createFragmentContainer(withAtmosphere(RetroDiscussPhase), {
+  team: graphql`
     fragment RetroDiscussPhase_team on Team {
       ...StageTimerControl_team
       isMeetingSidebarCollapsed
@@ -295,4 +294,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

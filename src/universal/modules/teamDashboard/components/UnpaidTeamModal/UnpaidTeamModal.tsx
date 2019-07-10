@@ -51,9 +51,8 @@ const UnpaidTeamModal = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  withAtmosphere(withRouter(UnpaidTeamModal)),
-  graphql`
+export default createFragmentContainer(withAtmosphere(withRouter(UnpaidTeamModal)), {
+  viewer: graphql`
     fragment UnpaidTeamModal_viewer on User {
       team(teamId: $teamId) {
         organization {
@@ -71,4 +70,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

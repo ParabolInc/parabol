@@ -137,9 +137,8 @@ graphql`
   }
 `
 
-export default createFragmentContainer(
-  NewMeetingCheckIn,
-  graphql`
+export default createFragmentContainer(NewMeetingCheckIn, {
+  team: graphql`
     fragment NewMeetingCheckIn_team on Team {
       ...NewMeetingCheckInPrompt_team
       isMeetingSidebarCollapsed
@@ -164,4 +163,4 @@ export default createFragmentContainer(
       teamId: id
     }
   `
-)
+})

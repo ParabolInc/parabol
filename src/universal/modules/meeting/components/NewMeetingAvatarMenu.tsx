@@ -60,9 +60,8 @@ const NewMeetingAvatarMenu = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  withAtmosphere(NewMeetingAvatarMenu),
-  graphql`
+export default createFragmentContainer(withAtmosphere(NewMeetingAvatarMenu), {
+  newMeeting: graphql`
     fragment NewMeetingAvatarMenu_newMeeting on NewMeeting {
       meetingId: id
       facilitatorUserId
@@ -70,7 +69,8 @@ export default createFragmentContainer(
         phaseType
       }
     }
-
+  `,
+  teamMember: graphql`
     fragment NewMeetingAvatarMenu_teamMember on TeamMember {
       meetingMember {
         isCheckedIn
@@ -81,4 +81,4 @@ export default createFragmentContainer(
       userId
     }
   `
-)
+})

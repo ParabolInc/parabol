@@ -65,9 +65,8 @@ graphql`
   }
 `
 
-export default createFragmentContainer(
-  StageTimerControl,
-  graphql`
+export default createFragmentContainer(StageTimerControl, {
+  team: graphql`
     fragment StageTimerControl_team on Team {
       id
       teamMembers(sortBy: "checkInOrder") {
@@ -88,4 +87,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

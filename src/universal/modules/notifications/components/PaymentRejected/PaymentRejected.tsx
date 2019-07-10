@@ -49,9 +49,8 @@ const PaymentRejected = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  PaymentRejected,
-  graphql`
+export default createFragmentContainer(PaymentRejected, {
+  notification: graphql`
     fragment PaymentRejected_notification on NotifyPaymentRejected {
       organization {
         id
@@ -62,4 +61,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

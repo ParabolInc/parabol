@@ -65,9 +65,8 @@ const MeetingStageTimeLimitEnd = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  MeetingStageTimeLimitEnd,
-  graphql`
+export default createFragmentContainer(MeetingStageTimeLimitEnd, {
+  notification: graphql`
     fragment MeetingStageTimeLimitEnd_notification on NotificationMeetingStageTimeLimitEnd {
       id
       meeting {
@@ -79,4 +78,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

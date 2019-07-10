@@ -32,16 +32,16 @@ const NewMeetingCheckInGreeting = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  NewMeetingCheckInGreeting,
-  graphql`
+export default createFragmentContainer(NewMeetingCheckInGreeting, {
+  teamMember: graphql`
     fragment NewMeetingCheckInGreeting_teamMember on TeamMember {
       preferredName
     }
-
+  `,
+  checkInGreeting: graphql`
     fragment NewMeetingCheckInGreeting_checkInGreeting on MeetingGreeting {
       content
       language
     }
   `
-)
+})

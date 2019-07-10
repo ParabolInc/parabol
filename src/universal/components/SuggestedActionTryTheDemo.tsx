@@ -52,9 +52,11 @@ class SuggestedActionTryTheDemo extends Component<Props> {
 
 export default createFragmentContainer(
   withAtmosphere(withMutationProps(withRouter(SuggestedActionTryTheDemo))),
-  graphql`
-    fragment SuggestedActionTryTheDemo_suggestedAction on SuggestedActionTryTheDemo {
-      id
-    }
-  `
+  {
+    suggestedAction: graphql`
+      fragment SuggestedActionTryTheDemo_suggestedAction on SuggestedActionTryTheDemo {
+        id
+      }
+    `
+  }
 )
