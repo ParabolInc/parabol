@@ -27,7 +27,7 @@ interface ItemRefs {
   [id: string]: HTMLElement
 }
 
-const ResizeObserver = (window as any).ResizeObserver || ResizeObserverPolyfill
+const ResizeObserver = window.ResizeObserver || ResizeObserverPolyfill
 class MasonryCSSGrid extends Component<Props> {
   itemRefs: ItemRefs = {}
   gridRef = React.createRef<HTMLDivElement>()

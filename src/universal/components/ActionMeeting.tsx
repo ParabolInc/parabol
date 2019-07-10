@@ -3,7 +3,6 @@ import React, {ReactElement, useEffect} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {ValueOf} from 'types/generics'
 import ActionMeetingSidebar from 'universal/components/ActionMeetingSidebar'
-import LayoutPusher from 'universal/components/LayoutPusher'
 import MeetingArea from 'universal/components/MeetingArea'
 import MeetingStyles from 'universal/components/MeetingStyles'
 import useMeeting, {useGotoNext} from 'universal/hooks/useMeeting'
@@ -12,6 +11,7 @@ import RejoinFacilitatorButton from 'universal/modules/meeting/components/Rejoin
 import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
 import lazyPreload from 'universal/utils/lazyPreload'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
+import ResponsiveDashSidebar from 'universal/components/ResponsiveDashSidebar'
 
 interface Props {
   viewer: ActionMeeting_viewer
@@ -49,29 +49,36 @@ export interface ActionMeetingPhaseProps {
 const ActionMeeting = (props: Props) => {
   const {viewer} = props
   const team = viewer.team!
-  const {toggleSidebar, streams, swarm, handleGotoNext, gotoStageId, safeRoute} = useMeeting(
-    MeetingTypeEnum.action,
-    team
-  )
+  const {
+    toggleSidebar,
+    streams,
+    swarm,
+    handleGotoNext,
+    gotoStageId,
+    safeRoute,
+    handleMenuClick
+  } = useMeeting(MeetingTypeEnum.action, team)
   useEffect(() => {
     Object.values(phaseLookup).forEach((lazy) => lazy.preload())
   }, [])
   if (!team || !safeRoute) return null
   const {featureFlags} = viewer
   const {video: allowVideo} = featureFlags
-  const {isMeetingSidebarCollapsed, newMeeting} = team
+  const {newMeeting, isMeetingSidebarCollapsed} = team
   const {facilitatorStageId, localPhase, localStage} = newMeeting || UNSTARTED_MEETING
   const localPhaseType = (localPhase && localPhase.phaseType) || NewMeetingPhaseTypeEnum.lobby
   const Phase = phaseLookup[localPhaseType] as PhaseComponent
   return (
     <MeetingStyles>
-      <ActionMeetingSidebar
-        gotoStageId={gotoStageId}
-        toggleSidebar={toggleSidebar}
-        viewer={viewer}
-      />
+      <ResponsiveDashSidebar isOpen={!isMeetingSidebarCollapsed} onToggle={toggleSidebar}>
+        <ActionMeetingSidebar
+          gotoStageId={gotoStageId}
+          handleMenuClick={handleMenuClick}
+          toggleSidebar={toggleSidebar}
+          viewer={viewer}
+        />
+      </ResponsiveDashSidebar>
       <MeetingArea>
-        <LayoutPusher isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed} />
         <Phase
           handleGotoNext={handleGotoNext}
           team={team}

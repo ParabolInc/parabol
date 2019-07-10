@@ -82,7 +82,6 @@ export interface AtmosphereEvents {
   endDraggingReflection: MasonryDragEndPayload
   focusAgendaInput: void
   inviteToTeam: NonNullable<InviteToTeamMutation_notification['teamInvitationNotification']>
-  meetingSidebarCollapsed: boolean
   newSubscriptionClient: void
   removeGitHubRepo: void
 }

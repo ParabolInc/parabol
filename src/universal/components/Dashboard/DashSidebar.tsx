@@ -15,11 +15,12 @@ import ui from 'universal/styles/ui'
 import DashNavItem from './DashNavItem'
 
 export const enum DASH_SIDEBAR {
+  BREAKPOINT = 800,
   WIDTH = 240
 }
 
 interface Props {
-  location: any
+  handleMenuClick: () => void
   viewer: DashSidebar_viewer | null
 }
 
@@ -29,22 +30,16 @@ const linkBaseStyles = {
   textDecoration: 'none'
 }
 
-const ScrollWrapper = styled('div')({
-  backgroundColor: ui.dashSidebarBackgroundColor,
-  maxWidth: DASH_SIDEBAR.WIDTH,
-  minWidth: DASH_SIDEBAR.WIDTH
-})
-
 const DashSidebarStyles = styled('div')({
   backgroundColor: ui.dashSidebarBackgroundColor,
   color: textColor,
   display: 'flex',
   flexDirection: 'column',
+  height: '100vh',
   maxWidth: DASH_SIDEBAR.WIDTH,
   minWidth: DASH_SIDEBAR.WIDTH,
-  position: 'fixed',
   overflow: 'hidden',
-  height: '100vh'
+  userSelect: 'none'
 })
 
 const MyDashboard = styled('div')({
@@ -125,37 +120,41 @@ const AddTeamLabel = styled('div')({
 })
 
 const DashSidebar = (props: Props) => {
-  const {location, viewer} = props
+  const {handleMenuClick, viewer} = props
   return (
-    <ScrollWrapper>
-      <DashSidebarStyles>
-        <StandardHub location={location} viewer={viewer} />
-        <NavBlock>
-          <Nav>
-            {/* use div for flex layout */}
-            <div>
-              <MyDashboard>
-                <DashNavItem location={location} href='/me' icon='dashboard' label='My Dashboard' />
-              </MyDashboard>
-              <NavLabel>{'My Teams'}</NavLabel>
-            </div>
-            <NavMain>
-              <DashNavList location={location} viewer={viewer} />
-            </NavMain>
-            <NavLink
-              className={addTeamStyles}
-              activeClassName={disabledAddTeamStyles}
-              title='Add New Team'
-              to='/newteam/1'
-            >
-              <AddTeamIcon>add_circle</AddTeamIcon>
-              <AddTeamLabel>{'Add New Team'}</AddTeamLabel>
-            </NavLink>
-          </Nav>
-        </NavBlock>
-        <LogoBlock variant='white' />
-      </DashSidebarStyles>
-    </ScrollWrapper>
+    <DashSidebarStyles>
+      <StandardHub handleMenuClick={handleMenuClick} viewer={viewer} />
+      <NavBlock>
+        <Nav>
+          {/* use div for flex layout */}
+          <div>
+            <MyDashboard>
+              <DashNavItem
+                href='/me'
+                icon='dashboard'
+                label='My Dashboard'
+                onClick={handleMenuClick}
+              />
+            </MyDashboard>
+            <NavLabel>{'My Teams'}</NavLabel>
+          </div>
+          <NavMain>
+            <DashNavList viewer={viewer} onClick={handleMenuClick} />
+          </NavMain>
+          <NavLink
+            onClick={handleMenuClick}
+            className={addTeamStyles}
+            activeClassName={disabledAddTeamStyles}
+            title='Add New Team'
+            to='/newteam/1'
+          >
+            <AddTeamIcon>add_circle</AddTeamIcon>
+            <AddTeamLabel>{'Add New Team'}</AddTeamLabel>
+          </NavLink>
+        </Nav>
+      </NavBlock>
+      <LogoBlock variant='white' onClick={handleMenuClick} />
+    </DashSidebarStyles>
   )
 }
 

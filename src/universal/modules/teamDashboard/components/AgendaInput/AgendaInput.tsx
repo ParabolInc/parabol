@@ -30,7 +30,7 @@ const InputForm = styled('form')(({disabled}: {disabled: boolean}) => ({
   padding: `0 ${meetingSidebarGutter}`,
   position: 'relative',
   width: '100%',
-  zIndex: 100,
+  // zIndex: 100,
   ':hover': {
     backgroundColor: disabled ? 'transparent' : undefined
   }
@@ -55,7 +55,7 @@ const InputField = styled('input')(
     position: 'relative',
     textIndent: '.1875rem',
     width: '100%',
-    zIndex: 200,
+    // zIndex: 200,
     ...makeFieldColorPalette('primary', false),
     ...inputPlaceholderStyles
   },
@@ -75,8 +75,8 @@ const StyledIcon = styled(Icon)({
   left: '1.625rem',
   pointerEvents: 'none',
   position: 'absolute',
-  top: '.5625rem',
-  zIndex: 200
+  top: '.5625rem'
+  // zIndex: 200
 })
 
 interface Props {

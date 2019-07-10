@@ -2,7 +2,6 @@ import {RetroMeeting_viewer} from '__generated__/RetroMeeting_viewer.graphql'
 import React, {ReactElement} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {ValueOf} from 'types/generics'
-import LayoutPusher from 'universal/components/LayoutPusher'
 import MeetingArea from 'universal/components/MeetingArea'
 import MeetingStyles from 'universal/components/MeetingStyles'
 import RetroMeetingSidebar from 'universal/components/RetroMeetingSidebar'
@@ -15,6 +14,7 @@ import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
 import lazyPreload from 'universal/utils/lazyPreload'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
 import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
+import ResponsiveDashSidebar from 'universal/components/ResponsiveDashSidebar'
 
 interface Props {
   viewer: RetroMeeting_viewer
@@ -55,15 +55,20 @@ export interface RetroMeetingPhaseProps {
 const RetroMeeting = (props: Props) => {
   const {viewer} = props
   const team = viewer.team!
-  const {toggleSidebar, streams, swarm, handleGotoNext, gotoStageId, safeRoute} = useMeeting(
-    MeetingTypeEnum.retrospective,
-    team
-  )
+  const {
+    toggleSidebar,
+    streams,
+    swarm,
+    handleGotoNext,
+    gotoStageId,
+    safeRoute,
+    handleMenuClick
+  } = useMeeting(MeetingTypeEnum.retrospective, team)
   const atmosphere = useAtmosphere()
   if (!team || !safeRoute) return null
   const {featureFlags} = viewer
   const {video: allowVideo} = featureFlags
-  const {id: teamId, meetingSettings, isMeetingSidebarCollapsed, newMeeting} = team
+  const {id: teamId, meetingSettings, newMeeting, isMeetingSidebarCollapsed} = team
   const {facilitatorStageId, localPhase, localStage} = newMeeting || UNSTARTED_MEETING
   const localPhaseType = (localPhase && localPhase.phaseType) || NewMeetingPhaseTypeEnum.lobby
   const isDemoStageComplete =
@@ -73,13 +78,15 @@ const RetroMeeting = (props: Props) => {
   const Phase = phaseLookup[localPhaseType] as PhaseComponent
   return (
     <MeetingStyles>
-      <RetroMeetingSidebar
-        gotoStageId={gotoStageId}
-        toggleSidebar={toggleSidebar}
-        viewer={viewer}
-      />
+      <ResponsiveDashSidebar isOpen={!isMeetingSidebarCollapsed} onToggle={toggleSidebar}>
+        <RetroMeetingSidebar
+          gotoStageId={gotoStageId}
+          handleMenuClick={handleMenuClick}
+          toggleSidebar={toggleSidebar}
+          viewer={viewer}
+        />
+      </ResponsiveDashSidebar>
       <MeetingArea>
-        <LayoutPusher isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed} />
         <Phase
           handleGotoNext={handleGotoNext}
           meetingSettings={meetingSettings}

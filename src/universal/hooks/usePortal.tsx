@@ -16,6 +16,10 @@ export interface UsePortalOptions {
   onClose?: () => void
   id?: string
   parentId?: string
+  // allow body to scroll while modal is open
+  allowScroll?: boolean
+  // ignore click, tap, and ESC handlers
+  noClose?: boolean
 }
 
 const usePortal = (options: UsePortalOptions = {}) => {
@@ -87,10 +91,14 @@ const usePortal = (options: UsePortalOptions = {}) => {
     portalRef.current = document.createElement('div')
     portalRef.current.id = options.id || 'portal'
     getParent().appendChild(portalRef.current)
-    showBodyScroll.current = hideBodyScroll()
-    document.addEventListener('keydown', handleKeydown)
-    document.addEventListener('mousedown', handleDocumentClick)
-    document.addEventListener('touchstart', handleDocumentClick)
+    if (!options.allowScroll) {
+      showBodyScroll.current = hideBodyScroll()
+    }
+    if (!options.noClose) {
+      document.addEventListener('keydown', handleKeydown)
+      document.addEventListener('mousedown', handleDocumentClick)
+      document.addEventListener('touchstart', handleDocumentClick)
+    }
     setPortalStatus(PortalStatus.Entering)
     if (e && e.currentTarget) {
       originRef.current = e.currentTarget as HTMLElement

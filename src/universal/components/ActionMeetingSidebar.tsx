@@ -8,12 +8,12 @@ import {useGotoStageId} from 'universal/hooks/useMeeting'
 import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
 import getSidebarItemStage from 'universal/utils/getSidebarItemStage'
 import findStageById from 'universal/utils/meetings/findStageById'
-import sidebarCanAutoCollapse from 'universal/utils/meetings/sidebarCanAutoCollapse'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
 import NewMeetingSidebar from './NewMeetingSidebar'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
+  handleMenuClick: () => void
   toggleSidebar: () => void
   viewer: ActionMeetingSidebar_viewer
 }
@@ -27,9 +27,9 @@ const NavList = styled('ul')({
 const blackList: string[] = [NewMeetingPhaseTypeEnum.firstcall, NewMeetingPhaseTypeEnum.lastcall]
 
 const ActionMeetingSidebar = (props: Props) => {
-  const {gotoStageId, toggleSidebar, viewer} = props
+  const {gotoStageId, handleMenuClick, toggleSidebar, viewer} = props
   const {id: viewerId, team} = viewer
-  const {isMeetingSidebarCollapsed, meetingSettings, newMeeting} = team!
+  const {meetingSettings, newMeeting} = team!
   const {phaseTypes} = meetingSettings
   const {facilitatorUserId, facilitatorStageId, localPhase, phases} =
     newMeeting || UNSTARTED_MEETING
@@ -39,8 +39,8 @@ const ActionMeetingSidebar = (props: Props) => {
   const isViewerFacilitator = facilitatorUserId === viewerId
   return (
     <NewMeetingSidebar
+      handleMenuClick={handleMenuClick}
       meetingType={MeetingTypeEnum.action}
-      isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
       toggleSidebar={toggleSidebar}
       viewer={viewer}
     >
@@ -54,7 +54,7 @@ const ActionMeetingSidebar = (props: Props) => {
             const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
             const handleClick = () => {
               gotoStageId(itemStageId).catch()
-              if (sidebarCanAutoCollapse()) toggleSidebar()
+              handleMenuClick()
             }
             return (
               <NewMeetingSidebarPhaseListItem
@@ -75,6 +75,7 @@ const ActionMeetingSidebar = (props: Props) => {
               >
                 <ActionSidebarPhaseListItemChildren
                   gotoStageId={gotoStageId}
+                  handleMenuClick={handleMenuClick}
                   phaseType={phaseType}
                   viewer={viewer}
                 />
