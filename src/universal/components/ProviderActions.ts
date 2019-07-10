@@ -13,7 +13,7 @@ const ProviderActions = styled('div')({
   width: 36,
   [`@media screen and (min-width: ${DASH_SIDEBAR.BREAKPOINT}px)`]: {
     paddingLeft: Layout.ROW_GUTTER,
-    maxWidth: '10rem',
+    maxWidth: 160,
     width: 'auto'
   }
 })
