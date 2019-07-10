@@ -20,6 +20,7 @@ import {
   Store,
   Variables
 } from 'relay-runtime'
+import defaultGetDataID from 'relay-runtime/lib/defaultGetDataID'
 import StrictEventEmitter from 'strict-event-emitter-types'
 import LinearPublishQueue from 'universal/LinearPublishQueue'
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription'
@@ -112,7 +113,7 @@ export default class Atmosphere extends Environment {
       handlerProvider,
       network: Network.create(noop),
       // @ts-ignore
-      publishQueue: new LinearPublishQueue(store, handlerProvider)
+      publishQueue: new LinearPublishQueue(store, handlerProvider, defaultGetDataID)
     })
     // @ts-ignore we should update the relay-runtime typings, this.handleSubscribe should be able to return a promise
     this._network = Network.create(this.handleFetch, this.handleSubscribe)
