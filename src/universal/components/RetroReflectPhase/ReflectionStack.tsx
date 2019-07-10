@@ -146,7 +146,7 @@ class ReflectionStack extends Component<Props, State> {
     ) {
       return null
     }
-    const duration = ANIMATION_DURATION - (Date.now() - this.animationStart)
+    const duration = ANIMATION_DURATION - (performance.now() - this.animationStart)
     if (duration <= 0) {
       return isTempId(newTop && newTop.id) ? {duration: ANIMATION_DURATION, easing: EASING} : null
     }
@@ -174,8 +174,8 @@ class ReflectionStack extends Component<Props, State> {
     const last = getBBox(firstReflectionDiv) || getBBox(this.placeholderRef.current)
     if (!first || !last) return
     firstReflectionDiv.style.transform = getTransform(first, last)
+    this.animationStart = performance.now() // must occur before rAF because gSBU could occur again in the demo
     requestAnimationFrame(() => {
-      this.animationStart = Date.now()
       firstReflectionDiv.style.transition = `transform ${duration}ms ${easing}`
       firstReflectionDiv.style.transform = null
     })

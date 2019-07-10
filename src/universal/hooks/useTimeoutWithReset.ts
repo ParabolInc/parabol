@@ -2,12 +2,14 @@ import {useCallback, useEffect, useRef, useState} from 'react'
 
 const useTimeoutWithReset = (duration: number, resetDuration: number = duration) => {
   const [timedOut, setTimedOut] = useState(false)
-  let resetTimerRef = useRef<number | undefined>()
+  const resetTimerRef = useRef<number | undefined>()
+  let isMounted = true
   useEffect(() => {
     const timer = window.setTimeout(() => {
       setTimedOut(true)
     }, duration)
     return () => {
+      isMounted = false
       clearTimeout(timer)
       clearTimeout(resetTimerRef.current)
     }
@@ -16,7 +18,9 @@ const useTimeoutWithReset = (duration: number, resetDuration: number = duration)
   const reset = useCallback(() => {
     setTimedOut(false)
     resetTimerRef.current = window.setTimeout(() => {
-      setTimedOut(true)
+      if (isMounted) {
+        setTimedOut(true)
+      }
     }, resetDuration)
   }, [])
 

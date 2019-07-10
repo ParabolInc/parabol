@@ -35,6 +35,7 @@ import initDB, {
   JiraProjectKeyLookup
 } from './initDB'
 import LocalAtmosphere from './LocalAtmosphere'
+import ms from 'ms'
 
 interface Payload {
   __typename: string
@@ -65,8 +66,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     } catch (e) {
       // noop
     }
-    const isStale = true
-    // const isStale = !validDB || new Date(validDB._updatedAt).getTime() < Date.now() - ms('5m')
+    // const isStale = true
+    const isStale = !validDB || new Date(validDB._updatedAt).getTime() < Date.now() - ms('5m')
     this.db = isStale ? initDB(initBotScript()) : validDB
   }
 
@@ -308,6 +309,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         reflections: [reflection],
         sortOrder,
         tasks: [],
+        titleIsUserDefined: false,
         updatedAt: now,
         voterIds: []
       } as Partial<IRetroReflectionGroup>
@@ -1082,6 +1084,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         team: this.db.team,
         teamId: demoTeamId,
         isKill: !currentStage,
+        updatedTasks: this.db.tasks,
         __typename: 'EndNewMeetingPayload'
       }
       if (userId !== demoViewerId) {
