@@ -45,6 +45,7 @@ import {addAgendaItemUpdater} from 'universal/mutations/AddAgendaItemMutation'
 import {removeAgendaItemUpdater} from 'universal/mutations/RemoveAgendaItemMutation'
 import {updateAgendaItemUpdater} from 'universal/mutations/UpdateAgendaItemMutation'
 import {graphql} from 'react-relay'
+import {pushInvitationTeamOnNext} from 'universal/mutations/PushInvitationMutation'
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -66,6 +67,7 @@ const subscription = graphql`
       ...NewMeetingCheckInMutation_team @relay(mask: false)
       ...PromoteNewMeetingFacilitatorMutation_team @relay(mask: false)
       ...PromoteToTeamLeadMutation_team @relay(mask: false)
+      ...PushInvitationMutation_team @relay(mask: false)
       ...RemoveReflectionMutation_team @relay(mask: false)
       ...RemoveReflectTemplateMutation_team @relay(mask: false)
       ...RemoveReflectTemplatePromptMutation_team @relay(mask: false)
@@ -102,7 +104,8 @@ const onNextHandlers = {
   PromoteNewMeetingFacilitatorPayload: promoteNewMeetingFacilitatorTeamOnNext,
   RemoveOrgUserPayload: removeOrgUserTeamOnNext,
   EndDraggingReflectionPayload: endDraggingReflectionTeamOnNext,
-  RemoveTeamMemberPayload: removeTeamMemberTeamOnNext
+  RemoveTeamMemberPayload: removeTeamMemberTeamOnNext,
+  PushInvitationPayload: pushInvitationTeamOnNext
 }
 
 const TeamSubscription = (atmosphere, _queryVariables, subParams) => {

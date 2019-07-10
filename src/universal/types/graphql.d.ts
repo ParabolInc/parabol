@@ -2601,6 +2601,11 @@ export interface IMutation {
   deleteTask: IDeleteTaskPayload | null
 
   /**
+   * Deny a user from joining via push invitation
+   */
+  denyPushInvitation: IDenyPushInvitationPayload | null
+
+  /**
    * a server-side mutation called when a client disconnects
    */
   disconnectSocket: IDisconnectSocketPayload | null
@@ -2674,6 +2679,11 @@ export interface IMutation {
    * Check a member in as present or absent
    */
   newMeetingCheckIn: INewMeetingCheckInPayload | null
+
+  /**
+   * Request to be invited to a team in real time
+   */
+  pushInvitation: IPushInvitationPayload | null
 
   /**
    * Change a facilitator while the meeting is in progress
@@ -3087,6 +3097,10 @@ export interface IDeleteTaskOnMutationArguments {
   taskId: string
 }
 
+export interface IDenyPushInvitationOnMutationArguments {
+  teamId: string
+}
+
 export interface IDismissSuggestedActionOnMutationArguments {
   /**
    * The id of the suggested action to dismiss
@@ -3230,6 +3244,10 @@ export interface INewMeetingCheckInOnMutationArguments {
    * true if the member is present, false if absent, null if undecided
    */
   isCheckedIn?: boolean | null
+}
+
+export interface IPushInvitationOnMutationArguments {
+  teamId: string
 }
 
 export interface IPromoteNewMeetingFacilitatorOnMutationArguments {
@@ -4637,6 +4655,11 @@ export interface IDeleteTaskPayload {
   involvementNotification: INotifyTaskInvolves | null
 }
 
+export interface IDenyPushInvitationPayload {
+  __typename: 'DenyPushInvitationPayload'
+  error: IStandardMutationError | null
+}
+
 export interface IDisconnectSocketPayload {
   __typename: 'DisconnectSocketPayload'
 
@@ -5056,6 +5079,12 @@ export interface INewMeetingCheckInPayload {
   error: IStandardMutationError | null
   meetingMember: MeetingMember | null
   meeting: NewMeeting | null
+}
+
+export interface IPushInvitationPayload {
+  __typename: 'PushInvitationPayload'
+  error: IStandardMutationError | null
+  user: IUser | null
 }
 
 export interface IPromoteNewMeetingFacilitatorPayload {
@@ -5992,6 +6021,7 @@ export type TeamSubscriptionPayload =
   | IEndNewMeetingPayload
   | INavigateMeetingPayload
   | INewMeetingCheckInPayload
+  | IPushInvitationPayload
   | IPromoteNewMeetingFacilitatorPayload
   | IPromoteToTeamLeadPayload
   | IRemoveAgendaItemPayload
