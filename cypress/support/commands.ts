@@ -37,7 +37,7 @@ const login = (_overrides = {}) => {
   const exp = toEpochSeconds(now + JWT_LIFESPAN)
   const iat = toEpochSeconds(now)
   const tokenObj = {
-    sub: 'auth0|5c79ca45df6d5c2e9a5290f3',
+    sub: 'auth0|5c75e3a068d77f71b39513a9',
     aud: Cypress.env('AUTH0_CLIENT_ID'),
     iss: window.location.origin,
     exp,
