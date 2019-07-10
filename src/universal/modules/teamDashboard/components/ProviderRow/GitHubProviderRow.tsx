@@ -9,7 +9,7 @@ import GitHubProviderLogo from 'universal/components/GitHubProviderLogo'
 import GitHubSVG from 'universal/components/GitHubSVG'
 import Icon from 'universal/components/Icon'
 import ProviderCard from 'universal/components/ProviderCard'
-import RowActions from 'universal/components/Row/RowActions'
+import ProviderActions from 'universal/components/ProviderActions'
 import RowInfo from 'universal/components/Row/RowInfo'
 import RowInfoCopy from 'universal/components/Row/RowInfoCopy'
 import withAtmosphere, {
@@ -19,7 +19,7 @@ import {MenuPosition} from 'universal/hooks/useCoords'
 import useMenu from 'universal/hooks/useMenu'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {ICON_SIZE} from 'universal/styles/typographyV2'
-import {Layout, Providers} from 'universal/types/constEnums'
+import {Providers} from 'universal/types/constEnums'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import {MenuMutationProps} from 'universal/hooks/useMutationProps'
 import GitHubClientManager from 'universal/utils/GitHubClientManager'
@@ -35,18 +35,6 @@ const StyledButton = styled(FlatButton)({
   paddingLeft: 0,
   paddingRight: 0,
   width: '100%'
-})
-
-const ProviderActions = styled(RowActions)({
-  marginLeft: 'auto',
-  paddingLeft: 8,
-  maxWidth: 36,
-  width: 36,
-  [`@media screen and (min-width: ${DASH_SIDEBAR.BREAKPOINT}px)`]: {
-    paddingLeft: Layout.ROW_GUTTER,
-    maxWidth: '10rem',
-    width: 'auto'
-  }
 })
 
 interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {

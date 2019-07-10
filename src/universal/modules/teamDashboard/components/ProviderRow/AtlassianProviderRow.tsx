@@ -9,7 +9,7 @@ import Icon from 'universal/components/Icon'
 import AtlassianConfigMenu from 'universal/components/AtlassianConfigMenu'
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
 import ProviderCard from 'universal/components/ProviderCard'
-import RowActions from 'universal/components/Row/RowActions'
+import ProviderActions from 'universal/components/ProviderActions'
 import RowInfo from 'universal/components/Row/RowInfo'
 import RowInfoCopy from 'universal/components/Row/RowInfoCopy'
 import withAtmosphere, {
@@ -21,7 +21,7 @@ import useMenu from 'universal/hooks/useMenu'
 import {DECELERATE} from 'universal/styles/animation'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {ICON_SIZE} from 'universal/styles/typographyV2'
-import {Layout, Providers} from 'universal/types/constEnums'
+import {Providers} from 'universal/types/constEnums'
 import {IAuthToken} from 'universal/types/graphql'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import AtlassianProviderLogo from 'universal/AtlassianProviderLogo'
@@ -39,18 +39,6 @@ const StyledButton = styled(FlatButton)({
   paddingLeft: 0,
   paddingRight: 0,
   width: '100%'
-})
-
-const ProviderActions = styled(RowActions)({
-  marginLeft: 'auto',
-  paddingLeft: 8,
-  maxWidth: 36,
-  width: 36,
-  [`@media screen and (min-width: ${DASH_SIDEBAR.BREAKPOINT}px)`]: {
-    paddingLeft: Layout.ROW_GUTTER,
-    maxWidth: '10rem',
-    width: 'auto'
-  }
 })
 
 interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {

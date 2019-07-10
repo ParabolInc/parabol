@@ -5,17 +5,18 @@ import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import DashContent from 'universal/components/Dashboard/DashContent'
 import DashHeader from 'universal/components/Dashboard/DashHeader'
-import TeamDashHeaderInfo from 'universal/components/Dashboard/TeamDashHeaderInfo'
 import DashMain from 'universal/components/Dashboard/DashMain'
 import DashSearchControl from 'universal/components/Dashboard/DashSearchControl'
 import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars'
 import FlatButton from 'universal/components/FlatButton'
+import Icon from 'universal/components/Icon'
 import IconLabel from 'universal/components/IconLabel'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import EditableTeamName from 'universal/modules/teamDashboard/components/EditTeamName/EditableTeamName'
 import TeamCallsToAction from 'universal/modules/teamDashboard/components/TeamCallsToAction/TeamCallsToAction'
+import {PALETTE} from 'universal/styles/paletteV2'
 
 const TeamViewNavBlock = styled('div')({
   display: 'flex',
@@ -27,8 +28,28 @@ const StyledButton = styled(FlatButton)({
   paddingRight: '1rem'
 })
 
+const IconButton = styled(StyledButton)({
+  color: PALETTE.TEXT_LIGHT,
+  marginRight: 16,
+  padding: '3px 0',
+  width: 32,
+  ':hover,:focus,:active': {
+    color: PALETTE.TEXT_MAIN
+  }
+})
+
 const RelativeDashMain = styled(DashMain)({
   position: 'relative'
+})
+
+const TeamDashHeaderInner = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  width: '100%'
+})
+
+const BackIcon = styled(Icon)({
+  color: 'inherit'
 })
 
 const MeetingInProgressModal = lazy(() =>
@@ -91,7 +112,6 @@ class Team extends Component<Props> {
     const {id: teamId, isPaid, meetingId} = team
     const hasActiveMeeting = Boolean(meetingId)
     const hasOverlay = hasActiveMeeting || !isPaid
-    const TeamDashHeaderInfoTitle = isSettings ? <EditableTeamName team={team} /> : ''
 
     return (
       <RelativeDashMain>
@@ -104,24 +124,27 @@ class Team extends Component<Props> {
           hasOverlay={hasOverlay}
           key={`team${isSettings ? 'Dash' : 'Settings'}Header`}
         >
-          <TeamDashHeaderInfo title={TeamDashHeaderInfoTitle} isSettings={Boolean(isSettings)}>
-            {!isSettings && (
+          <TeamDashHeaderInner>
+            {isSettings ? (
+              <>
+                <IconButton
+                  aria-label='Back to Team Dashboard'
+                  key='1'
+                  onClick={this.goToTeamDashboard}
+                >
+                  <BackIcon>arrow_back</BackIcon>
+                </IconButton>
+                <EditableTeamName team={team} />
+              </>
+            ) : (
               <DashSearchControl
                 onChange={this.updateFilter}
                 placeholder='Search Team Tasks & Agenda'
               />
             )}
-          </TeamDashHeaderInfo>
+          </TeamDashHeaderInner>
           <TeamViewNavBlock>
-            {isSettings ? (
-              <StyledButton
-                aria-label='Back to Team Dashboard'
-                key='1'
-                onClick={this.goToTeamDashboard}
-              >
-                <IconLabel icon='arrow_back' label='Back to Team Dashboard' />
-              </StyledButton>
-            ) : (
+            {!isSettings && (
               <StyledButton aria-label='Team Settings' key='2' onClick={this.goToTeamSettings}>
                 <IconLabel icon='settings' label='Team Settings' />
               </StyledButton>

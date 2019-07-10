@@ -26,7 +26,6 @@ const NewTeamInner = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   maxWidth: 960,
-  // paddingBottom: '10vh',
   width: '100%'
 })
 

@@ -8,7 +8,7 @@ import SlackProviderLogo from 'universal/components/SlackProviderLogo'
 import SlackSVG from 'universal/components/SlackSVG'
 import Icon from 'universal/components/Icon'
 import ProviderCard from 'universal/components/ProviderCard'
-import RowActions from 'universal/components/Row/RowActions'
+import ProviderActions from 'universal/components/ProviderActions'
 import RowInfo from 'universal/components/Row/RowInfo'
 import RowInfoCopy from 'universal/components/Row/RowInfoCopy'
 import {MenuPosition} from 'universal/hooks/useCoords'
@@ -32,18 +32,6 @@ const StyledButton = styled(FlatButton)({
   paddingLeft: 0,
   paddingRight: 0,
   width: '100%'
-})
-
-const ProviderActions = styled(RowActions)({
-  marginLeft: 'auto',
-  paddingLeft: 8,
-  maxWidth: 36,
-  width: 36,
-  [`@media screen and (min-width: ${DASH_SIDEBAR.BREAKPOINT}px)`]: {
-    paddingLeft: Layout.ROW_GUTTER,
-    maxWidth: '10rem',
-    width: 'auto'
-  }
 })
 
 interface Props {

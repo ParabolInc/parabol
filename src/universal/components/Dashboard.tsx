@@ -37,8 +37,6 @@ const DashPanel = styled('div')({
 const Dashboard = (props: Props) => {
   const {viewer} = props
   const {isOpen, toggle, handleMenuClick} = useSidebar()
-  // const {isDashSidebarCollapsed} = viewer
-  // console.log(isDashSidebarCollapsed, 'Dashboard.tsx isDashSidebarCollapsed')
   return (
     <DashLayout>
       <ResponsiveDashSidebar isOpen={isOpen} onToggle={toggle}>
