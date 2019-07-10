@@ -1,10 +1,13 @@
 import {PromoteNewMeetingFacilitatorMutation_team} from '__generated__/PromoteNewMeetingFacilitatorMutation_team.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
+import {OnNextHandler, StandardMutation} from 'universal/types/relayMutations'
+import {PromoteNewMeetingFacilitatorMutation as TPromoteNewMeetingFacilitatorMutation} from '__generated__/PromoteNewMeetingFacilitatorMutation.graphql'
 
 graphql`
   fragment PromoteNewMeetingFacilitatorMutation_team on PromoteNewMeetingFacilitatorPayload {
     meeting {
+      defaultFacilitatorUserId
       facilitatorUserId
       facilitator {
         # https://github.com/ParabolInc/action/issues/2984
@@ -31,10 +34,9 @@ const mutation = graphql`
   }
 `
 
-export const promoteNewMeetingFacilitatorTeamOnNext = (
-  payload: PromoteNewMeetingFacilitatorMutation_team,
-  {atmosphere}
-) => {
+export const promoteNewMeetingFacilitatorTeamOnNext: OnNextHandler<
+  PromoteNewMeetingFacilitatorMutation_team
+> = (payload, {atmosphere}) => {
   const {viewerId} = atmosphere
   const {oldFacilitator, meeting} = payload
   if (!oldFacilitator || !meeting) return
@@ -52,8 +54,10 @@ export const promoteNewMeetingFacilitatorTeamOnNext = (
   })
 }
 
-const PromoteNewMeetingFacilitatorMutation = (atmosphere, variables): Disposable => {
-  return commitMutation(atmosphere, {
+const PromoteNewMeetingFacilitatorMutation: StandardMutation<
+  TPromoteNewMeetingFacilitatorMutation
+> = (atmosphere, variables): Disposable => {
+  return commitMutation<TPromoteNewMeetingFacilitatorMutation>(atmosphere, {
     mutation,
     variables,
     optimisticUpdater: (store) => {

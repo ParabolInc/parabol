@@ -1,12 +1,16 @@
-import publish from 'server/utils/publish'
+import publish, {SubOptions} from 'server/utils/publish'
 import {TEAM} from 'universal/utils/constants'
-import PromoteNewMeetingFacilitatorPayload from 'server/graphql/types/PromoteNewMeetingFacilitatorPayload'
 import getRethink from 'server/database/rethinkDriver'
+import PromoteNewMeetingFacilitatorPayload from 'server/graphql/types/PromoteNewMeetingFacilitatorPayload'
 
-const promoteFirstTeamMember = (oldFacilitatorUserId, subOptions) => async (team) => {
+const promoteFirstTeamMember = async (
+  meetingId: string,
+  teamId: string,
+  oldFacilitatorUserId: string,
+  subOptions: SubOptions
+) => {
   const r = getRethink()
   const now = new Date()
-  const {teamId, meetingId} = team
   await r
     .table('NewMeeting')
     .get(meetingId)
@@ -23,7 +27,7 @@ const promoteFirstTeamMember = (oldFacilitatorUserId, subOptions) => async (team
               .count()
               .ge(1)
           )
-          .min((row) => row('checkInOrder'))('userId')
+          .min((row) => row('checkInOrder').default(1))('userId')
           .default(meeting('facilitatorUserId')),
         updatedAt: now
       }),

@@ -4,17 +4,17 @@ import publish from 'server/utils/publish'
 import {NOTIFICATION} from 'universal/utils/constants'
 import DisconnectSocketPayload from 'server/graphql/types/DisconnectSocketPayload'
 import promoteFirstTeamMember from 'server/graphql/mutations/helpers/promoteFirstTeamMember'
-import {
-  MEETING_FACILITATOR_ELECTION_TIMEOUT,
-  SHARED_DATA_LOADER_TTL
-} from 'server/utils/serverConstants'
+import {MEETING_FACILITATOR_ELECTION_TIMEOUT} from 'server/utils/serverConstants'
 import sendSegmentEvent from 'server/utils/sendSegmentEvent'
+import findStageById from 'universal/utils/meetings/findStageById'
+import Meeting from 'server/database/types/Meeting'
+import {GQLContext} from 'server/graphql/graphql'
 
 export default {
   name: 'DisconnectSocket',
   description: 'a server-side mutation called when a client disconnects',
   type: DisconnectSocketPayload,
-  resolve: async (source, args, {authToken, dataLoader, socketId}) => {
+  resolve: async (_source, _args, {authToken, dataLoader, socketId}: GQLContext) => {
     // Note: no server secret means a client could call this themselves & appear disconnected when they aren't!
     const r = getRethink()
 
@@ -41,32 +41,24 @@ export default {
     const data = {user: disconnectedUser}
     if (connectedSockets.length === 0) {
       // If that was the last socket, tell everyone they went offline
-      const {listeningUserIds, facilitatingTeams} = await r({
+      const {listeningUserIds, facilitatingMeetings} = await r({
         listeningUserIds: r
           .table('TeamMember')
           .getAll(r.args(tms), {index: 'teamId'})
           .filter({isNotRemoved: true})('userId')
           .distinct(),
-        facilitatingTeams: r
-          .table('Team')
-          .getAll(r.args(tms))
-          .eqJoin('meetingId', r.table('NewMeeting'))
-          .zip()
-          .filter((row) => row('facilitatorUserId').eq(userId))
-          .pluck('teamId', 'meetingId')
+        facilitatingMeetings: r
+          .table('NewMeeting')
+          .getAll(userId, {index: 'facilitatorUserId'})
           .coerceTo('array')
           .default([])
       })
-      const customTTL =
-        facilitatingTeams.length > 0
-          ? MEETING_FACILITATOR_ELECTION_TIMEOUT + SHARED_DATA_LOADER_TTL
-          : undefined
-      const operationId = dataLoader.share(customTTL)
+      const operationId = dataLoader.share()
       const subOptions = {mutatorId: socketId, operationId}
       listeningUserIds.forEach((onlineUserId) => {
         publish(NOTIFICATION, onlineUserId, DisconnectSocketPayload, data, subOptions)
       })
-      if (facilitatingTeams.length > 0) {
+      if (facilitatingMeetings.length > 0) {
         setTimeout(async () => {
           const userOffline = await r
             .table('User')
@@ -75,8 +67,13 @@ export default {
             .eq(0)
             .default(true)
           if (userOffline) {
-            const teamMemberPromotion = promoteFirstTeamMember(userId, subOptions)
-            facilitatingTeams.forEach(teamMemberPromotion)
+            facilitatingMeetings.forEach((meeting) => {
+              const {phases, facilitatorStageId, id: meetingId, teamId} = meeting as Meeting
+              const {stage} = findStageById(phases, facilitatorStageId)!
+              if (!stage.isAsync) {
+                promoteFirstTeamMember(meetingId, teamId, userId, subOptions).catch(console.error)
+              }
+            })
           }
         }, MEETING_FACILITATOR_ELECTION_TIMEOUT)
       }
@@ -85,7 +82,7 @@ export default {
       connectedSockets,
       socketId,
       tms
-    })
+    }).catch()
     return data
   }
 }

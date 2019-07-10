@@ -62,7 +62,13 @@ export default {
     } catch (e) {
       return standardError(new Error('Could not start meeting'), {userId: viewerId})
     }
-    const meeting = new Meeting(teamId, meetingType, meetingCount, phases, viewerId)
+    const meeting = new Meeting({
+      teamId,
+      meetingType,
+      meetingCount,
+      phases,
+      facilitatorUserId: viewerId
+    })
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(meeting.teamId)
     const meetingMembers = await createMeetingMembers(meeting, teamMembers, dataLoader)
     await r({

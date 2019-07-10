@@ -28,10 +28,13 @@ export interface SharedUpdater<T> {
 
 export interface OnNextContext {
   atmosphere: Atmosphere
-  history: RouterProps['history']
+  history?: RouterProps['history']
 }
 
-export type OnNextHandler<TSubResponse> = (payload: TSubResponse, context: OnNextContext) => void
+export type OnNextHandler<TSubResponse> = (
+  payload: Omit<TSubResponse, ' $refType'>,
+  context: OnNextContext
+) => void
 
 export type UpdaterHandler<T = any> = (
   payload: RecordProxy<T>,

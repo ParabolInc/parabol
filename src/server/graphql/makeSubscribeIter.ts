@@ -1,16 +1,23 @@
 import {$$asyncIterator} from 'iterall'
 import getPubSub from 'server/utils/getPubSub'
+import {DataLoaderWorker} from 'server/graphql/graphql'
 
 const defaultFilterFn = () => true
 
-const makeSubscribeIter = (channelName, options = {}) => {
+interface Options {
+  dataLoader: DataLoaderWorker
+  filterFn: (value: any) => boolean
+  resolve: (value: any) => any
+}
+
+const makeSubscribeIter = (channelName: string | string[], options: Options) => {
   const {dataLoader, filterFn = defaultFilterFn, resolve} = options
-  const asyncIterator = getPubSub().asyncIterator(channelName)
+  const asyncIterator = getPubSub().asyncIterator<{operationId?: number}>(channelName)
   const getNextPromise = async () => {
     const nextRes = await asyncIterator.next()
     const {value, done} = nextRes
     if (done) {
-      return asyncIterator.return()
+      return asyncIterator.return!()
     }
     if (filterFn(value)) {
       if (value.operationId) {
@@ -34,10 +41,10 @@ const makeSubscribeIter = (channelName, options = {}) => {
     },
     return () {
       dataLoader.dispose({force: true})
-      return asyncIterator.return()
+      return asyncIterator.return!()
     },
     throw (error) {
-      return asyncIterator.throw(error)
+      return asyncIterator.throw!(error)
     },
     [$$asyncIterator] () {
       return this

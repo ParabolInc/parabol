@@ -1232,6 +1232,11 @@ export interface INewMeeting {
   createdAt: any | null
 
   /**
+   * The userId of the desired facilitator (different form facilitatorUserId if disconnected)
+   */
+  defaultFacilitatorUserId: string
+
+  /**
    * The timestamp the meeting officially ended
    */
   endedAt: any | null
@@ -3846,6 +3851,11 @@ export interface IRetrospectiveMeeting {
    * The timestamp the meeting was created
    */
   createdAt: any | null
+
+  /**
+   * The userId of the desired facilitator (different form facilitatorUserId if disconnected)
+   */
+  defaultFacilitatorUserId: string
 
   /**
    * The timestamp the meeting officially ended
@@ -6515,6 +6525,11 @@ export interface IActionMeeting {
    * The timestamp the meeting was created
    */
   createdAt: any | null
+
+  /**
+   * The userId of the desired facilitator (different form facilitatorUserId if disconnected)
+   */
+  defaultFacilitatorUserId: string
 
   /**
    * The timestamp the meeting officially ended

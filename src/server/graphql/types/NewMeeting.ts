@@ -22,6 +22,11 @@ export const newMeetingFields = () => ({
     type: GraphQLISO8601Type,
     description: 'The timestamp the meeting was created'
   },
+  defaultFacilitatorUserId: {
+    type: new GraphQLNonNull(GraphQLID),
+    description:
+      'The userId of the desired facilitator (different form facilitatorUserId if disconnected)'
+  },
   endedAt: {
     type: GraphQLISO8601Type,
     description: 'The timestamp the meeting officially ended'
