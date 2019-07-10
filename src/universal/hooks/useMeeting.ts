@@ -23,9 +23,11 @@ import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
 import updateLocalStage from 'universal/utils/relay/updateLocalStage'
 import {useMeetingLocalStateTeam} from '__generated__/useMeetingLocalStateTeam.graphql'
 import useRouter from 'universal/hooks/useRouter'
-import Team from 'universal/modules/teamDashboard/components/Team/Team'
 import useBreakpoint from 'universal/hooks/useBreakpoint'
 import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
+import useResumeFacilitation from './useResumeFacilitation'
+
+type Team = Omit<useMeetingTeam, ' $refType'>
 
 export const useDemoMeeting = () => {
   const atmosphere = useAtmosphere()
@@ -239,18 +241,19 @@ graphql`
     id
     isMeetingSidebarCollapsed
     name
+    ...useResumeFacilitationTeam @relay(mask: false)
     ...useMeetingLocalStateTeam @relay(mask: false)
     ...useMeetingGotoStageIdTeam @relay(mask: false)
   }
 `
 
-type Team = Omit<useMeetingTeam, ' $refType'>
 const useMeeting = (meetingType: MeetingTypeEnum, team: Team | null) => {
   const {name: teamName, newMeeting} = team || DEFAULT_TEAM
   const {id: meetingId} = newMeeting || UNSTARTED_MEETING
   const gotoStageId = useGotoStageId(team)
   const handleGotoNext = useGotoNext(team, gotoStageId)
   const safeRoute = useMeetingLocalState((team as unknown) as useMeetingLocalStateTeam)
+  useResumeFacilitation(team as any)
   useEndMeetingHotkey(meetingId)
   useGotoNextHotkey(handleGotoNext.gotoNext)
   useGotoPrevHotkey(team, gotoStageId)

@@ -19,7 +19,7 @@ export default {
     }
   },
   async resolve (
-    source,
+    _source,
     {facilitatorUserId, meetingId},
     {authToken, dataLoader, socketId: mutatorId}
   ) {
@@ -51,6 +51,7 @@ export default {
       .table('NewMeeting')
       .get(meetingId)
       .update({
+        defaultFacilitatorUserId: facilitatorUserId,
         facilitatorUserId,
         updatedAt: now
       })

@@ -9,7 +9,7 @@ import prepareErrorForSentry from '../utils/prepareErrorForSentry'
 
 interface Payload {
   query: string
-  variables: {[key: string]: any} | undefined
+  variables?: {[key: string]: any} | undefined
 }
 
 export default async function wsGraphQLHandler (

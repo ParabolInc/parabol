@@ -4,10 +4,11 @@ import TeamSubscriptionPayload from 'server/graphql/types/TeamSubscriptionPayloa
 import {getUserId, isAuthenticated} from 'server/utils/authorization'
 import {TEAM} from 'universal/utils/constants'
 import standardError from 'server/utils/standardError'
+import {GQLContext} from 'server/graphql/graphql'
 
 export default {
   type: new GraphQLNonNull(TeamSubscriptionPayload),
-  subscribe: (source, args, {authToken, dataLoader, socketId}) => {
+  subscribe: (_source, _args, {authToken, dataLoader, socketId}: GQLContext) => {
     // AUTH
     if (!isAuthenticated(authToken)) {
       return standardError(new Error('Not authenticated'))

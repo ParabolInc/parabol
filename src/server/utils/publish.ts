@@ -3,7 +3,7 @@ import {GraphQLObjectType} from 'graphql'
 
 type Topic = 'team' | 'organization' | 'notification' | 'newAuthToken' | 'task'
 
-interface SubOptions {
+export interface SubOptions {
   mutatorId?: string
   operationId?: number | null
 }
@@ -22,7 +22,7 @@ const publish = (
 
   getPubSub()
     .publish(`${topic}.${channel}`, {data, ...subOptions})
-    .catch()
+    .catch(console.error)
 }
 
 export default publish
