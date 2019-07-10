@@ -7,10 +7,8 @@ import DashMain from 'universal/components/Dashboard/DashMain'
 import Tab from 'universal/components/Tab/Tab'
 import Tabs from 'universal/components/Tabs/Tabs'
 import LoadingComponent from '../../../../components/LoadingComponent/LoadingComponent'
-
-import {PALETTE} from '../../../../styles/paletteV2'
 import {LoaderSize} from '../../../../types/constEnums'
-// import DebugButton from './DebugButton'
+import {PALETTE} from 'universal/styles/paletteV2'
 
 const TabBody = styled('div')({
   backgroundColor: PALETTE.BACKGROUND_MAIN,
@@ -20,23 +18,8 @@ const TabBody = styled('div')({
   height: '100%'
 })
 
-// const HeaderCopy = styled('div')({
-//   color: ui.colorText,
-//   flex: 1,
-//   fontSize: appTheme.typography.s2,
-//   fontWeight: 600,
-//   lineHeight: '1.25',
-//   textAlign: 'right'
-// })
-//
-// const RallyLink = styled('span')({
-//   color: 'inherit',
-//   fontWeight: 400,
-//   fontStyle: 'italic'
-// })
-
 const TopTabs = styled(Tabs)({
-  marginTop: 8
+  marginTop: 12
 })
 
 interface Props extends RouteComponentProps<{}> {}
@@ -59,15 +42,6 @@ const UserDashMain = (props: Props) => {
           <Tab label='TIMELINE' onClick={() => history.push('/me')} />
           <Tab label='TASKS' onClick={() => history.push('/me/tasks')} />
         </TopTabs>
-        {/*<HeaderCopy>*/}
-        {/*/!*<DebugButton />*!/*/}
-        {/*{makeDateString(new Date(), {showDay: true})}*/}
-        {/*{' • '}*/}
-        {/*<RallyLink>*/}
-        {/*{getRallyLink()}*/}
-        {/*{'!'}*/}
-        {/*</RallyLink>*/}
-        {/*</HeaderCopy>*/}
       </DashHeader>
       <TabBody>
         <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.PANEL} />}>

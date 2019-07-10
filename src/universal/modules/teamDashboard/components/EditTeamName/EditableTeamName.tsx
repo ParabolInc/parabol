@@ -17,9 +17,9 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
 
 const InheritedStyles = styled('div')({
   fontFamily: appTheme.typography.sansSerif,
-  fontSize: '1.5rem',
+  fontSize: 20,
   fontWeight: 600,
-  lineHeight: '2.125rem'
+  lineHeight: 1.5
 })
 
 class EditableTeamName extends Component<Props> {

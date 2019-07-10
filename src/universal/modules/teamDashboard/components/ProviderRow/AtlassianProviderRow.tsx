@@ -9,7 +9,7 @@ import Icon from 'universal/components/Icon'
 import AtlassianConfigMenu from 'universal/components/AtlassianConfigMenu'
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
 import ProviderCard from 'universal/components/ProviderCard'
-import RowActions from 'universal/components/Row/RowActions'
+import ProviderActions from 'universal/components/ProviderActions'
 import RowInfo from 'universal/components/Row/RowInfo'
 import RowInfoCopy from 'universal/components/Row/RowInfoCopy'
 import withAtmosphere, {
@@ -21,27 +21,24 @@ import useMenu from 'universal/hooks/useMenu'
 import {DECELERATE} from 'universal/styles/animation'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {ICON_SIZE} from 'universal/styles/typographyV2'
-import {Layout, Providers} from 'universal/types/constEnums'
+import {Providers} from 'universal/types/constEnums'
 import {IAuthToken} from 'universal/types/graphql'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import AtlassianProviderLogo from 'universal/AtlassianProviderLogo'
 import {MenuMutationProps} from 'universal/hooks/useMutationProps'
 import AtlassianClientManager from 'universal/utils/AtlassianClientManager'
+import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
+import useBreakpoint from 'universal/hooks/useBreakpoint'
 
 const StyledButton = styled(FlatButton)({
   borderColor: PALETTE.BORDER_LIGHT,
   color: PALETTE.TEXT_MAIN,
   fontSize: 14,
   fontWeight: 600,
+  minWidth: 36,
   paddingLeft: 0,
   paddingRight: 0,
   width: '100%'
-})
-
-const ProviderActions = styled(RowActions)({
-  marginLeft: 'auto',
-  paddingLeft: Layout.ROW_GUTTER,
-  maxWidth: '10rem'
 })
 
 interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
@@ -143,6 +140,7 @@ const AtlassianProviderRow = (props: Props) => {
 
   const {sites, status} = useAtlassianSites(accessToken)
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
+  const isDesktop = useBreakpoint(DASH_SIDEBAR.BREAKPOINT)
   return (
     <ProviderCard>
       <AtlassianProviderLogo />
@@ -153,7 +151,7 @@ const AtlassianProviderRow = (props: Props) => {
       {!accessToken && (
         <ProviderActions>
           <StyledButton key='linkAccount' onClick={openOAuth} palette='warm' waiting={submitting}>
-            {'Connect'}
+            {isDesktop ? 'Connect' : <Icon>add</Icon>}
           </StyledButton>
         </ProviderActions>
       )}

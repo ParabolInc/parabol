@@ -23,7 +23,7 @@ const UserSettingsWrapper = (props) => {
       <DashHeader>
         <SettingsHeader />
       </DashHeader>
-      <DashContent padding='0 0 0 1rem'>
+      <DashContent padding='0 16px'>
         <SettingsContentBlock>{children}</SettingsContentBlock>
       </DashContent>
     </DashMain>

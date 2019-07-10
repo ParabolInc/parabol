@@ -206,12 +206,6 @@ const ui = {
   dashBreakpoint: BREAKPOINT_WIDER,
   dashGutterSmall: '1.25rem',
   dashGutterLarge: '2rem',
-  dashHeaderTitleStyles: {
-    color: COLOR_TEXT,
-    fontSize: '1.5rem',
-    fontWeight: 600,
-    lineHeight: '1.5'
-  },
   dashMenuBorder: '.0625rem solid #5A4580', // variant of primary purple TODO: theme-able?
 
   dashControlFontColor: COLOR_TEXT_LIGHT,
