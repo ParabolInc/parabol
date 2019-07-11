@@ -5,7 +5,9 @@
  */
 import {Dispatch, MutableRefObject, SetStateAction, useCallback, useRef, useState} from 'react'
 
-const useRefState = <S>(initialState: S): [MutableRefObject<S>, Dispatch<SetStateAction<S>>] => {
+const useRefState = <S>(
+  initialState: S | (() => S)
+): [MutableRefObject<S>, Dispatch<SetStateAction<S>>] => {
   const [firstState, _setState] = useState<S>(initialState)
   const latestState = useRef<S>(firstState)
   const setState = useCallback((nextState) => {

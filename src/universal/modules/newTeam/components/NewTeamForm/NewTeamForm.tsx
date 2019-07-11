@@ -13,7 +13,6 @@ import withAtmosphere, {
 import NewTeamOrgPicker from 'universal/modules/team/components/NewTeamOrgPicker'
 import AddOrgMutation from 'universal/mutations/AddOrgMutation'
 import AddTeamMutation from 'universal/mutations/AddTeamMutation'
-import ui from 'universal/styles/ui'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import Legitity from 'universal/validation/Legitity'
 import teamNameValidation from 'universal/validation/teamNameValidation'
@@ -21,18 +20,30 @@ import NewTeamFormBlock from './NewTeamFormBlock'
 import NewTeamFormOrgName from './NewTeamFormOrgName'
 import NewTeamFormTeamName from './NewTeamFormTeamName'
 import StyledError from 'universal/components/StyledError'
+import DashHeaderTitle from 'universal/components/DashHeaderTitle'
 
 const StyledForm = styled('form')({
   margin: 0,
   maxWidth: '40rem',
-  padding: '0 2rem .5rem',
+  padding: 16,
   width: '100%'
 })
 
-const FormHeading = styled('div')({
-  ...ui.dashHeaderTitleStyles,
-  padding: '0 0 2rem',
-  textAlign: 'center',
+const StyledPanel = styled(Panel)({
+  margin: '16px 0'
+})
+
+const Header = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  height: 24,
+  margin: '0 0 16px',
+  width: '100%'
+})
+
+const FormHeading = styled(DashHeaderTitle)({
+  margin: 0,
+  padding: 0,
   width: '100%'
 })
 
@@ -247,9 +258,11 @@ class NewTeamForm extends Component<Props, State> {
 
     return (
       <StyledForm onSubmit={this.onSubmit}>
-        <Panel>
+        <Header>
+          <FormHeading>{'Create a New Team'}</FormHeading>
+        </Header>
+        <StyledPanel>
           <FormInner>
-            <FormHeading>{'Create a New Team'}</FormHeading>
             <NewTeamFormBlock>
               <FieldLabel fieldSize={controlSize} indent label='Add Team to…' />
             </NewTeamFormBlock>
@@ -293,7 +306,7 @@ class NewTeamForm extends Component<Props, State> {
             </StyledButton>
             {error && <StyledError>{error}</StyledError>}
           </FormInner>
-        </Panel>
+        </StyledPanel>
       </StyledForm>
     )
   }

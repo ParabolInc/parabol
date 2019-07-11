@@ -4,9 +4,13 @@ import FieldLabel from 'universal/components/FieldLabel/FieldLabel'
 import BasicInput from 'universal/components/InputField/BasicInput'
 import {NewTeamFieldBlock} from './NewTeamForm'
 import NewTeamFormBlock from './NewTeamFormBlock'
+import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
 
 const FormBlockInline = styled(NewTeamFormBlock)({
-  marginTop: '3rem'
+  marginTop: 16,
+  [`@media screen and (min-width: ${DASH_SIDEBAR.BREAKPOINT}px)`]: {
+    marginTop: 48
+  }
 })
 
 interface Props {

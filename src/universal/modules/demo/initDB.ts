@@ -107,7 +107,7 @@ const initDemoUser = ({preferredName, email, picture}: BaseUser, idx: number) =>
     isConnected: true,
     lastLogin: now,
     lastSeenAt: now,
-    // name: 'You',
+    rasterPicture: picture,
     picture: picture,
     preferredName,
     suggestedIntegrations: {
@@ -202,6 +202,8 @@ const initDemoTeam = (organization, teamMembers, newMeeting) => {
     id: demoTeamId,
     isArchived: false,
     isPaid: true,
+    agendaItems: [],
+    massInviteToken: '42',
     meetingId: demoMeetingId,
     name: demoTeamName,
     teamName: demoTeamName,

@@ -8,7 +8,9 @@ const Placeholder = styled('div')(({isOpen}: {isOpen: boolean}) => ({
   minWidth: isOpen ? DASH_SIDEBAR.WIDTH : 0,
   maxWidth: isOpen ? DASH_SIDEBAR.WIDTH : 0,
   // changing width is expensive, but this is only run on non-mobile devices, so it's not horrible & looks better than alternatives
-  transition: `all ${DURATION}ms ${DECELERATE}`
+  transition: `all ${DURATION}ms ${DECELERATE}`,
+  // needs to be above the main view area
+  zIndex: 200
 }))
 
 const Fixed = styled('div')(({isOpen}: {isOpen: boolean}) => ({

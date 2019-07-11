@@ -144,8 +144,7 @@ const RetroVotePhase = (props: Props) => {
     meetingSettings: {totalVotes = 0},
     atmosphere: {viewerId},
     handleGotoNext,
-    team,
-    isDemoStageComplete
+    team
   } = props
   const {isMeetingSidebarCollapsed, newMeeting} = team
   if (!newMeeting) return null
@@ -201,7 +200,7 @@ const RetroVotePhase = (props: Props) => {
               <StageTimerControl defaultTimeLimit={3} meetingId={meetingId} team={team} />
             )}
             <BottomNavControl
-              isBouncing={isDemoStageComplete || teamVotesRemaining === 0}
+              isBouncing={teamVotesRemaining === 0}
               disabled={!discussStage.isNavigableByFacilitator}
               onClick={() => gotoNext()}
               onKeyDown={handleRightArrow(() => gotoNext())}

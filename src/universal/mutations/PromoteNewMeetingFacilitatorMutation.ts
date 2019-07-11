@@ -7,6 +7,7 @@ import {PromoteNewMeetingFacilitatorMutation as TPromoteNewMeetingFacilitatorMut
 graphql`
   fragment PromoteNewMeetingFacilitatorMutation_team on PromoteNewMeetingFacilitatorPayload {
     meeting {
+      defaultFacilitatorUserId
       facilitatorUserId
       facilitator {
         # https://github.com/ParabolInc/action/issues/2984

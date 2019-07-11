@@ -1,5 +1,3 @@
-import 'cypress'
-
 describe('login', () => {
   it('performs a login', () => {
     cy.visit('/')

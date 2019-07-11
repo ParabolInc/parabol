@@ -6,20 +6,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 
-## vNEXT
+## v3.16.0 2019-Jul-10
 
 ### Added
 * Mass invite link to the team invitation modal (#2994)
 * Single cards can have group titles (#2990)
+* Swipeable mobile left nav for dash and meeting (#3008)
+* Improved logic for automatic facilitator selection (#3010, #2985)
 
 ### Fixed
 * Timebox works on facilitator change (#2984)
 * No bounce for async stage (#2982)
-* Can't remove child on portal (#2991)
+* Can’t remove child on portal (#2991)
 * Scroll to agenda input if needed (#2900)
 * Ignore unsupported Google NLP languages (#2850)
 * Tags correctly sent to sentry (#2849)
 * Handle rate limit reached (#2977)
+* Improved responsive view styles (#3009)
 
 ## v3.15.0 2019-Jun-25
 

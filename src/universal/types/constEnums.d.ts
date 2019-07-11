@@ -57,7 +57,7 @@ export const enum Radius {
 
 export const enum DASH_TIMELINE {
   FEED_MAX_WIDTH = 600,
-  FEED_MIN_WIDTH = 400,
-  MIN_PADDING = 8,
+  FEED_MIN_WIDTH = 288,
+  MIN_PADDING = 16,
   TIMELINE_DRAWER_WIDTH = 336
 }

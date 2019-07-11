@@ -17,30 +17,30 @@ const Alert = styled('div')(
   {
     backgroundColor: PALETTE.BACKGROUND_RED,
     color: '#fff',
-    display: 'flex',
-    fontSize: 18,
-    justifyContent: 'center',
+    fontSize: 14,
     lineHeight: '22px',
-    padding: '10px 16px',
     transition: 'opacity 200ms',
-    textAlign: 'center',
-    userSelect: 'none',
-    // for maintaining spaces with the over limit message
-    whiteSpace: 'pre',
     width: '100%'
   },
   ({scrollY}: {scrollY: number}) =>
     scrollY > ALERT_HEIGHT && {
       alignSelf: 'center',
-      borderRadius: '42px',
-      opacity: 0.5,
+      borderRadius: '4em',
       width: 'auto',
-      zIndex: 1,
-      ':hover': {
-        opacity: 1
-      }
+      zIndex: 1
     }
 )
+
+const Inner = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  maxWidth: '100vw',
+  padding: '10px 16px',
+  textAlign: 'center',
+  userSelect: 'none',
+  // for maintaining spaces with the over limit message
+  whiteSpace: 'pre'
+})
 
 interface Props {
   children: ReactNode
@@ -51,7 +51,7 @@ const DashAlertBar = (props: Props) => {
   const scrollY = useScrollY()
   return (
     <Alert scrollY={scrollY} style={{transform: `translateY(${getTranslate(scrollY)}px)`}}>
-      {children}
+      <Inner>{children}</Inner>
     </Alert>
   )
 }

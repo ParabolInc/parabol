@@ -143,7 +143,7 @@ const stripeFailPaymentNotificationOnNext: NextHandler = (
     action: {
       label: 'Fix it!',
       callback: () => {
-        history.push(`/me/organizations/${orgId}`)
+        history!.push(`/me/organizations/${orgId}`)
       }
     }
   })
@@ -166,7 +166,7 @@ const meetingStageTimeLimitOnNext: NextHandler = (payload: any, {atmosphere, his
     action: {
       label: 'Go there',
       callback: () => {
-        history.push(`/${meetingSlug}/${teamId}`)
+        history!.push(`/${meetingSlug}/${teamId}`)
       }
     }
   })

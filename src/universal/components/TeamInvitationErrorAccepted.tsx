@@ -8,7 +8,7 @@ import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import DialogTitle from './DialogTitle'
 import StyledLink from './StyledLink'
-import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
+import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 
 interface Props {
   verifiedInvitation: TeamInvitationErrorAccepted_verifiedInvitation
@@ -34,7 +34,7 @@ const TeamInvitationErrorAccepted = (props: Props) => {
         {meetingType ? (
           <>
             <StyledLink
-              to={`/meeting/${teamId}`}
+              to={`/${meetingTypeToSlug[meetingType]}/${teamId}`}
               title={`Join the ${meetingTypeToLabel[meetingType]}`}
             >
               Join the {meetingTypeToLabel[meetingType]} Meeting

@@ -9,7 +9,7 @@ import GitHubProviderLogo from 'universal/components/GitHubProviderLogo'
 import GitHubSVG from 'universal/components/GitHubSVG'
 import Icon from 'universal/components/Icon'
 import ProviderCard from 'universal/components/ProviderCard'
-import RowActions from 'universal/components/Row/RowActions'
+import ProviderActions from 'universal/components/ProviderActions'
 import RowInfo from 'universal/components/Row/RowInfo'
 import RowInfoCopy from 'universal/components/Row/RowInfoCopy'
 import withAtmosphere, {
@@ -19,25 +19,22 @@ import {MenuPosition} from 'universal/hooks/useCoords'
 import useMenu from 'universal/hooks/useMenu'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {ICON_SIZE} from 'universal/styles/typographyV2'
-import {Layout, Providers} from 'universal/types/constEnums'
+import {Providers} from 'universal/types/constEnums'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import {MenuMutationProps} from 'universal/hooks/useMutationProps'
 import GitHubClientManager from 'universal/utils/GitHubClientManager'
+import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
+import useBreakpoint from 'universal/hooks/useBreakpoint'
 
 const StyledButton = styled(FlatButton)({
   borderColor: PALETTE.BORDER_LIGHT,
   color: PALETTE.TEXT_MAIN,
   fontSize: 14,
   fontWeight: 600,
+  minWidth: 36,
   paddingLeft: 0,
   paddingRight: 0,
   width: '100%'
-})
-
-const ProviderActions = styled(RowActions)({
-  marginLeft: 'auto',
-  paddingLeft: Layout.ROW_GUTTER,
-  maxWidth: '10rem'
 })
 
 interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
@@ -87,6 +84,7 @@ const GitHubProviderRow = (props: Props) => {
     GitHubClientManager.openOAuth(atmosphere, teamId, mutationProps)
   }
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
+  const isDesktop = useBreakpoint(DASH_SIDEBAR.BREAKPOINT)
   return (
     <ProviderCard>
       <GitHubProviderLogo />
@@ -97,7 +95,7 @@ const GitHubProviderRow = (props: Props) => {
       {!accessToken && (
         <ProviderActions>
           <StyledButton key='linkAccount' onClick={openOAuth} palette='warm' waiting={submitting}>
-            {'Connect'}
+            {isDesktop ? 'Connect' : <Icon>add</Icon>}
           </StyledButton>
         </ProviderActions>
       )}

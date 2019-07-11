@@ -44,15 +44,16 @@ const PanelBody = styled('div')({
 interface Props {
   badgeCount?: number
   children: ReactNode
+  className?: string
   controls?: any
   label?: any
 }
 
 const Panel = (props: Props) => {
-  const {badgeCount, children, controls, label} = props
+  const {badgeCount, children, className, controls, label} = props
 
   return (
-    <PanelRoot>
+    <PanelRoot className={className}>
       {label && (
         <PanelHeader>
           <PanelLabel>{label}</PanelLabel>

@@ -1,3 +1,6 @@
+// importing cypress for typescript defs
+import 'cypress'
+
 const getRethink = require('server/database/rethinkDriver')
 
 interface DBOptions {
