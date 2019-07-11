@@ -30,7 +30,7 @@ import updateColumnHeight from 'universal/utils/multiplayerMasonry/updateColumnH
 import isTempId from 'universal/utils/relay/isTempId'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import Atmosphere from '../Atmosphere'
-import ResizeObserverPolyfill from 'universal/components/MasonryCSSGrid'
+import ResizeObserverPolyfill from 'resize-observer-polyfill'
 
 const ResizeObserver = window.ResizeObserver || ResizeObserverPolyfill
 

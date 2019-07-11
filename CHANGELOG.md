@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v3.16.1 2019-Jul-10
+
+### Fixed
+* ResizeObserverPolyfill wrong import
 
 ## v3.16.0 2019-Jul-10
 
