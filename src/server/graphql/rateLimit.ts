@@ -1,6 +1,12 @@
 import {getUserId} from 'server/utils/authorization'
 import standardError from 'server/utils/standardError'
-import {GraphQLFieldResolver} from 'graphql'
+import {
+  GraphQLFieldResolver,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLOutputType,
+  GraphQLResolveInfo
+} from 'graphql'
 
 interface Options {
   perMinute: number
@@ -8,18 +14,22 @@ interface Options {
 }
 const rateLimit = <TSource = any, TContext = any, TArgs = any>({perMinute, perHour}: Options) => (
   resolve: GraphQLFieldResolver<TSource, TContext, TArgs>
-) => (source, args, context, info) => {
+) => (source, args, context, info: GraphQLResolveInfo) => {
   const {authToken, rateLimiter} = context
   const {fieldName, returnType} = info
   const userId = getUserId(authToken)
   // when we scale horizontally & stop using sticky servers, periodically push to redis
   const {lastMinute, lastHour} = rateLimiter.log(userId, fieldName, !!perHour)
   if (lastMinute > perMinute || lastHour > perHour) {
-    const returnVal = standardError(new Error('Rate limit reached'), {userId})
+    const returnVal = standardError(new Error('Rate limit reached'), {
+      userId,
+      tags: {query: fieldName, variables: JSON.stringify(args)}
+    })
     // if (lastMinute > perMinute + 10) {
     // TODO Handle suspected bot by dynamically blacklisting in nginx
     // }
-    const baseType = returnType.ofType || returnType
+    const baseType = ((returnType as GraphQLNonNull<GraphQLOutputType>).ofType ||
+      returnType) as GraphQLObjectType
     const fields = baseType.getFields && baseType.getFields()
     if (fields && fields.error) {
       return returnVal
