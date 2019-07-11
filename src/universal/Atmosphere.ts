@@ -22,7 +22,7 @@ import {
 } from 'relay-runtime'
 import defaultGetDataID from 'relay-runtime/lib/defaultGetDataID'
 import StrictEventEmitter from 'strict-event-emitter-types'
-import LinearPublishQueue from 'universal/LinearPublishQueue'
+import LinearPublishQueue from 'relay-linear-publish-queue'
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription'
 import {APP_TOKEN_KEY, NEW_AUTH_TOKEN} from 'universal/utils/constants'
 import handlerProvider from 'universal/utils/relay/handlerProvider'

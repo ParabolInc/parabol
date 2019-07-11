@@ -255,7 +255,8 @@
     "react-virtualized": "^9.18.5",
     "redux": "^4.0.1",
     "redux-thunk": "2.2.0",
-    "relay-runtime": "https://github.com/mattkrick/relay/tarball/c11564fd90f1b4146e57605e1ab90400d4b0641f",
+    "relay-linear-publish-queue": "^0.1.2",
+    "relay-runtime": "https://github.com/mattkrick/relay/tarball/dbd07bab510551e0c421aad70e5b57bb86520d32",
     "resize-observer-polyfill": "^1.5.0",
     "rethinkdbdash": "^2.3.31",
     "secure-compare": "^3.0.1",
@@ -300,7 +301,7 @@
     "@types/relay-runtime": "https://github.com/mattkrick/relay-runtime-strict-types/tarball/3cd987da18e0bf2f4ddf45b605305e2a7b81944e",
     "@types/react": "16.8.22",
     "@types/react-dom": "16.8.4",
-    "relay-runtime": "https://github.com/mattkrick/relay/tarball/c11564fd90f1b4146e57605e1ab90400d4b0641f",
+    "relay-runtime": "https://github.com/mattkrick/relay/tarball/dbd07bab510551e0c421aad70e5b57bb86520d32",
     "graphql": "14.4.0"
   },
   "standard": {

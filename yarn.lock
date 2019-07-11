@@ -14934,9 +14934,17 @@ relay-compiler@5.0.0:
     signedsource "^1.0.0"
     yargs "^9.0.0"
 
-relay-runtime@3.0.0, relay-runtime@5.0.0, "relay-runtime@https://github.com/mattkrick/relay/tarball/c11564fd90f1b4146e57605e1ab90400d4b0641f":
+relay-linear-publish-queue@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/relay-linear-publish-queue/-/relay-linear-publish-queue-0.1.2.tgz#2196f1fa017b655b3bc9e27c0172f28d6d2e2918"
+  integrity sha512-c9/5t6SMBLEW9v1QnneyULruHdZnyyTCMavHxkLS/GbztatUdyL74eu6sRQ61aslZWq0NDc9nXwV9zdlr9UUMw==
+  dependencies:
+    fbjs "^1.0.0"
+    relay-runtime "https://github.com/mattkrick/relay/tarball/dbd07bab510551e0c421aad70e5b57bb86520d32"
+
+relay-runtime@3.0.0, relay-runtime@5.0.0, "relay-runtime@https://github.com/mattkrick/relay/tarball/dbd07bab510551e0c421aad70e5b57bb86520d32":
   version "5.0.0"
-  resolved "https://github.com/mattkrick/relay/tarball/c11564fd90f1b4146e57605e1ab90400d4b0641f#1127e431508f54048b1bedc1325f22a50d9e444b"
+  resolved "https://github.com/mattkrick/relay/tarball/dbd07bab510551e0c421aad70e5b57bb86520d32#fdc9a1003eb7219622e3d173fb0935d173187665"
   dependencies:
     "@babel/runtime" "^7.0.0"
     fbjs "^1.0.0"
