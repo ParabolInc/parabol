@@ -170,9 +170,8 @@ const AgendaInput = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  AgendaInput,
-  graphql`
+export default createFragmentContainer(AgendaInput, {
+  team: graphql`
     fragment AgendaInput_team on Team {
       id
       agendaItems {
@@ -180,4 +179,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

@@ -222,17 +222,20 @@ class ReflectionGroupTitleEditor extends Component<Props> {
 reactLifecyclesCompat(ReflectionGroupTitleEditor)
 export default createFragmentContainer(
   withAtmosphere(withMutationProps(ReflectionGroupTitleEditor)),
-  graphql`
-    fragment ReflectionGroupTitleEditor_reflectionGroup on RetroReflectionGroup {
-      reflectionGroupId: id
-      title
-    }
-
-    fragment ReflectionGroupTitleEditor_meeting on RetrospectiveMeeting {
-      reflectionGroups {
-        id
+  {
+    reflectionGroup: graphql`
+      fragment ReflectionGroupTitleEditor_reflectionGroup on RetroReflectionGroup {
+        reflectionGroupId: id
         title
       }
-    }
-  `
+    `,
+    meeting: graphql`
+      fragment ReflectionGroupTitleEditor_meeting on RetrospectiveMeeting {
+        reflectionGroups {
+          id
+          title
+        }
+      }
+    `
+  }
 )

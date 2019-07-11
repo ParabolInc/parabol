@@ -76,13 +76,12 @@ graphql`
   }
 `
 
-export default createFragmentContainer(
-  TaskIntegrationLink,
-  graphql`
+export default createFragmentContainer(TaskIntegrationLink, {
+  integration: graphql`
     fragment TaskIntegrationLink_integration on TaskIntegration {
       service
       ...TaskIntegrationLinkIntegrationGitHub @relay(mask: false)
       ...TaskIntegrationLinkIntegrationJira @relay(mask: false)
     }
   `
-)
+})

@@ -29,12 +29,11 @@ class TimelineEventJoinedParabol extends Component<Props> {
   }
 }
 
-export default createFragmentContainer(
-  TimelineEventJoinedParabol,
-  graphql`
+export default createFragmentContainer(TimelineEventJoinedParabol, {
+  timelineEvent: graphql`
     fragment TimelineEventJoinedParabol_timelineEvent on TimelineEventJoinedParabol {
       ...TimelineEventCard_timelineEvent
       id
     }
   `
-)
+})

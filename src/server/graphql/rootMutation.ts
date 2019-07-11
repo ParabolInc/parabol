@@ -82,6 +82,8 @@ import {GQLContext} from 'server/graphql/graphql'
 import addSlackAuth from 'server/graphql/mutations/addSlackAuth'
 import setSlackNotification from './mutations/setSlackNotification'
 import setStageTimer from 'server/graphql/mutations/setStageTimer'
+import pushInvitation from 'server/graphql/mutations/pushInvitation'
+import denyPushInvitation from 'server/graphql/mutations/denyPushInvitation'
 
 interface InternalContext {
   serverSecret: string
@@ -114,6 +116,7 @@ export default new GraphQLObjectType<any, Context, any>({
     createTask,
     createUserPicturePutUrl,
     deleteTask,
+    denyPushInvitation,
     disconnectSocket,
     dismissNewFeature,
     dismissSuggestedAction,
@@ -129,6 +132,7 @@ export default new GraphQLObjectType<any, Context, any>({
     moveTeamToOrg,
     navigateMeeting,
     newMeetingCheckIn,
+    pushInvitation,
     promoteNewMeetingFacilitator,
     promoteToTeamLead,
     reflectTemplatePromptUpdateDescription,

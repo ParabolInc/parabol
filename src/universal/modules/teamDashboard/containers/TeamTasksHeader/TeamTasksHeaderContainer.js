@@ -51,12 +51,11 @@ TeamTasksHeaderContainer.propTypes = {
   team: PropTypes.object.isRequired
 }
 
-export default createFragmentContainer(
-  connect(mapStateToProps)(TeamTasksHeaderContainer),
-  graphql`
+export default createFragmentContainer(connect(mapStateToProps)(TeamTasksHeaderContainer), {
+  team: graphql`
     fragment TeamTasksHeaderContainer_team on Team {
       teamId: id
       ...TeamTasksHeader_team
     }
   `
-)
+})

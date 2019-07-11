@@ -65,13 +65,12 @@ class EditingStatusContainer extends Component {
   }
 }
 
-export default createFragmentContainer(
-  EditingStatusContainer,
-  graphql`
+export default createFragmentContainer(EditingStatusContainer, {
+  task: graphql`
     fragment EditingStatusContainer_task on Task {
       createdAt
       updatedAt
       ...EditingStatus_task
     }
   `
-)
+})

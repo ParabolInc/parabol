@@ -38,9 +38,8 @@ const InvitationLinkDialog = (props: Props) => {
   return <InvitationLinkAuthentication teamName={teamName!} invitationToken={token} />
 }
 
-export default createFragmentContainer(
-  withAtmosphere(withRouter(InvitationLinkDialog)),
-  graphql`
+export default createFragmentContainer(withAtmosphere(withRouter(InvitationLinkDialog)), {
+  massInvitation: graphql`
     fragment InvitationLinkDialog_massInvitation on MassInvitationPayload {
       ...InvitationLinkErrorExpired_massInvitation
       errorType
@@ -50,4 +49,4 @@ export default createFragmentContainer(
       teamId
     }
   `
-)
+})

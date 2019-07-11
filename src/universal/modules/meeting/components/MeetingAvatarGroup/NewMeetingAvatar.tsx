@@ -150,9 +150,8 @@ const NewMeetingAvatar = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  withAtmosphere(NewMeetingAvatar),
-  graphql`
+export default createFragmentContainer(withAtmosphere(NewMeetingAvatar), {
+  teamMember: graphql`
     fragment NewMeetingAvatar_teamMember on TeamMember {
       teamMemberId: id
       meetingMember {
@@ -166,7 +165,8 @@ export default createFragmentContainer(
       ...NewMeetingAvatarMenu_teamMember
       ...VideoAvatar_teamMember
     }
-
+  `,
+  newMeeting: graphql`
     fragment NewMeetingAvatar_newMeeting on NewMeeting {
       facilitatorUserId
       localStage {
@@ -180,4 +180,4 @@ export default createFragmentContainer(
       ...NewMeetingAvatarMenu_newMeeting
     }
   `
-)
+})

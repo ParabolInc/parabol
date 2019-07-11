@@ -60,9 +60,8 @@ class TeamInvitationDialog extends Component<Props> {
   }
 }
 
-export default createFragmentContainer(
-  withAtmosphere(withRouter(TeamInvitationDialog)),
-  graphql`
+export default createFragmentContainer(withAtmosphere(withRouter(TeamInvitationDialog)), {
+  verifiedInvitation: graphql`
     fragment TeamInvitationDialog_verifiedInvitation on VerifiedInvitationPayload {
       ...TeamInvitationErrorAccepted_verifiedInvitation
       ...TeamInvitationErrorExpired_verifiedInvitation
@@ -80,4 +79,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

@@ -20,12 +20,11 @@ function TeamInvitation (props: Props) {
   )
 }
 
-export default createFragmentContainer(
-  TeamInvitation,
-  graphql`
+export default createFragmentContainer(TeamInvitation, {
+  verifiedInvitation: graphql`
     fragment TeamInvitation_verifiedInvitation on VerifiedInvitationPayload {
       ...TeamInvitationDialog_verifiedInvitation
       meetingType
     }
   `
-)
+})

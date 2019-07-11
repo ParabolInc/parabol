@@ -60,13 +60,12 @@ graphql`
   }
 `
 
-export default createFragmentContainer(
-  TimelineSuggestedAction,
-  graphql`
+export default createFragmentContainer(TimelineSuggestedAction, {
+  viewer: graphql`
     fragment TimelineSuggestedAction_viewer on User {
       suggestedActions {
         ...TimelineSuggestedAction_suggestedAction @relay(mask: false)
       }
     }
   `
-)
+})

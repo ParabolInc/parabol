@@ -116,9 +116,8 @@ const AgendaItem = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  AgendaItem,
-  graphql`
+export default createFragmentContainer(AgendaItem, {
+  newMeeting: graphql`
     fragment AgendaItem_newMeeting on NewMeeting {
       facilitatorStageId
       facilitatorUserId
@@ -137,6 +136,8 @@ export default createFragmentContainer(
         }
       }
     }
+  `,
+  agendaItem: graphql`
     fragment AgendaItem_agendaItem on AgendaItem {
       id
       content
@@ -145,4 +146,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

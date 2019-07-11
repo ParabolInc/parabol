@@ -113,19 +113,21 @@ export default createFragmentContainer(
   dragSource(TASK, taskDragSpec, taskDragCollect)(
     dropTarget(TASK, taskDropSpec, taskDropCollect)(DraggableTask)
   ),
-  graphql`
-    fragment DraggableTask_task on Task {
-      id
-      content
-      integration {
-        service
-      }
-      status
-      sortOrder
-      assignee {
+  {
+    task: graphql`
+      fragment DraggableTask_task on Task {
         id
+        content
+        integration {
+          service
+        }
+        status
+        sortOrder
+        assignee {
+          id
+        }
+        ...NullableTask_task
       }
-      ...NullableTask_task
-    }
-  `
+    `
+  }
 )

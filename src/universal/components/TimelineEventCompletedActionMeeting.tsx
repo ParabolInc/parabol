@@ -44,9 +44,8 @@ class TimelineEventCompletedActionMeeting extends Component<Props> {
   }
 }
 
-export default createFragmentContainer(
-  TimelineEventCompletedActionMeeting,
-  graphql`
+export default createFragmentContainer(TimelineEventCompletedActionMeeting, {
+  timelineEvent: graphql`
     fragment TimelineEventCompletedActionMeeting_timelineEvent on TimelineEventCompletedActionMeeting {
       ...TimelineEventCard_timelineEvent
       id
@@ -62,4 +61,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

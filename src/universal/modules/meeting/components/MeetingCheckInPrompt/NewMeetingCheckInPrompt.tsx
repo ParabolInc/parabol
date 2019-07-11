@@ -52,9 +52,8 @@ const NewMeetingCheckinPrompt = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  NewMeetingCheckinPrompt,
-  graphql`
+export default createFragmentContainer(NewMeetingCheckinPrompt, {
+  team: graphql`
     fragment NewMeetingCheckInPrompt_team on Team {
       ...NewCheckInQuestion_team
       newMeeting {
@@ -77,10 +76,11 @@ export default createFragmentContainer(
         }
       }
     }
-
+  `,
+  teamMember: graphql`
     fragment NewMeetingCheckInPrompt_teamMember on TeamMember {
       ...NewMeetingCheckInGreeting_teamMember
       picture
     }
   `
-)
+})

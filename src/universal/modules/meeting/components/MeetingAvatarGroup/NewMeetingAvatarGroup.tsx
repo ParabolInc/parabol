@@ -85,9 +85,8 @@ graphql`
   }
 `
 
-export default createFragmentContainer(
-  withAtmosphere(NewMeetingAvatarGroup),
-  graphql`
+export default createFragmentContainer(withAtmosphere(NewMeetingAvatarGroup), {
+  team: graphql`
     fragment NewMeetingAvatarGroup_team on Team {
       teamId: id
       ...AddTeamMemberAvatarButton_team
@@ -109,4 +108,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

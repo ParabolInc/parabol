@@ -76,9 +76,8 @@ const CheckInControls = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  CheckInControls,
-  graphql`
+export default createFragmentContainer(CheckInControls, {
+  teamMember: graphql`
     fragment CheckInControls_teamMember on TeamMember {
       meetingMember {
         meetingId
@@ -88,4 +87,4 @@ export default createFragmentContainer(
       userId
     }
   `
-)
+})

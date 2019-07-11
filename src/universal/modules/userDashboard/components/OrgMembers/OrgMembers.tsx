@@ -37,28 +37,30 @@ const OrgMembers = (props: Props) => {
 
 export default createPaginationContainer<Props>(
   OrgMembers,
-  graphql`
-    fragment OrgMembers_viewer on User {
-      organization(orgId: $orgId) {
-        ...OrgMemberRow_organization
-        organizationUsers(first: $first, after: $after)
-          @connection(key: "OrgMembers_organizationUsers") {
-          edges {
-            cursor
-            node {
-              id
-              role
-              ...OrgMemberRow_organizationUser
+  {
+    viewer: graphql`
+      fragment OrgMembers_viewer on User {
+        organization(orgId: $orgId) {
+          ...OrgMemberRow_organization
+          organizationUsers(first: $first, after: $after)
+            @connection(key: "OrgMembers_organizationUsers") {
+            edges {
+              cursor
+              node {
+                id
+                role
+                ...OrgMemberRow_organizationUser
+              }
             }
-          }
-          pageInfo {
-            hasNextPage
-            endCursor
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
           }
         }
       }
-    }
-  `,
+    `
+  },
   {
     direction: 'forward',
     getConnectionFromProps (props) {

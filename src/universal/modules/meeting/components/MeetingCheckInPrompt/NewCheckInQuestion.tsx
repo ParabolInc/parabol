@@ -170,9 +170,8 @@ class NewCheckInQuestion extends Component<Props, State> {
   }
 }
 
-export default createFragmentContainer(
-  withAtmosphere(NewCheckInQuestion),
-  graphql`
+export default createFragmentContainer(withAtmosphere(NewCheckInQuestion), {
+  team: graphql`
     fragment NewCheckInQuestion_team on Team {
       id
       newMeeting {
@@ -192,4 +191,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

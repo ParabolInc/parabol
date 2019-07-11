@@ -148,9 +148,8 @@ AgendaAndTasks.propTypes = {
   viewer: PropTypes.object
 }
 
-export default createFragmentContainer(
-  AgendaAndTasks,
-  graphql`
+export default createFragmentContainer(AgendaAndTasks, {
+  viewer: graphql`
     fragment AgendaAndTasks_viewer on User {
       team(teamId: $teamId) {
         teamId: id
@@ -164,4 +163,4 @@ export default createFragmentContainer(
       ...TeamColumnsContainer_viewer
     }
   `
-)
+})

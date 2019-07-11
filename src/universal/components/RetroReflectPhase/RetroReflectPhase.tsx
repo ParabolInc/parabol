@@ -164,9 +164,8 @@ graphql`
   }
 `
 
-export default createFragmentContainer(
-  RetroReflectPhase,
-  graphql`
+export default createFragmentContainer(RetroReflectPhase, {
+  team: graphql`
     fragment RetroReflectPhase_team on Team {
       ...StageTimerControl_team
       isMeetingSidebarCollapsed
@@ -193,4 +192,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

@@ -52,9 +52,8 @@ const MeetingInProgressModal = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  withRouter(MeetingInProgressModal),
-  graphql`
+export default createFragmentContainer(withRouter(MeetingInProgressModal), {
+  team: graphql`
     fragment MeetingInProgressModal_team on Team {
       id
       name
@@ -64,4 +63,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

@@ -35,9 +35,8 @@ UserTasksHeaderContainer.propTypes = {
   teamFilterName: PropTypes.string
 }
 
-export default createFragmentContainer(
-  connect(mapStateToProps)(UserTasksHeaderContainer),
-  graphql`
+export default createFragmentContainer(connect(mapStateToProps)(UserTasksHeaderContainer), {
+  viewer: graphql`
     fragment UserTasksHeaderContainer_viewer on User {
       teams {
         id
@@ -46,4 +45,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

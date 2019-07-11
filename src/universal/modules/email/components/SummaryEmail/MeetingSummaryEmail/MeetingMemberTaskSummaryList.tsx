@@ -24,9 +24,8 @@ const MeetingMemberTaskSummaryList = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  MeetingMemberTaskSummaryList,
-  graphql`
+export default createFragmentContainer(MeetingMemberTaskSummaryList, {
+  meetingMember: graphql`
     fragment MeetingMemberTaskSummaryList_meetingMember on MeetingMember {
       ...SummaryAvatarHeader_meetingMember
       ... on ActionMeetingMember {
@@ -44,4 +43,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

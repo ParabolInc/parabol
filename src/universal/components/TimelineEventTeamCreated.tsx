@@ -37,9 +37,8 @@ class TimelineEventTeamCreated extends Component<Props> {
   }
 }
 
-export default createFragmentContainer(
-  TimelineEventTeamCreated,
-  graphql`
+export default createFragmentContainer(TimelineEventTeamCreated, {
+  timelineEvent: graphql`
     fragment TimelineEventTeamCreated_timelineEvent on TimelineEventTeamCreated {
       ...TimelineEventCard_timelineEvent
       id
@@ -50,4 +49,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

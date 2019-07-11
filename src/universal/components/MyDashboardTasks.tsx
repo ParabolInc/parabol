@@ -18,12 +18,11 @@ const MyDashboardTasks = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  MyDashboardTasks,
-  graphql`
+export default createFragmentContainer(MyDashboardTasks, {
+  viewer: graphql`
     fragment MyDashboardTasks_viewer on User {
       ...UserColumnsContainer_viewer
       ...UserTasksHeaderContainer_viewer
     }
   `
-)
+})

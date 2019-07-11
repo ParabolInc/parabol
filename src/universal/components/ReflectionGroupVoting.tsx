@@ -131,9 +131,8 @@ class ReflectionGroupVoting extends Component<Props> {
   }
 }
 
-export default createFragmentContainer(
-  withMutationProps(withAtmosphere(ReflectionGroupVoting)),
-  graphql`
+export default createFragmentContainer(withMutationProps(withAtmosphere(ReflectionGroupVoting)), {
+  meeting: graphql`
     fragment ReflectionGroupVoting_meeting on RetrospectiveMeeting {
       meetingId: id
       viewerMeetingMember {
@@ -147,10 +146,11 @@ export default createFragmentContainer(
         totalVotes
       }
     }
-
+  `,
+  reflectionGroup: graphql`
     fragment ReflectionGroupVoting_reflectionGroup on RetroReflectionGroup {
       reflectionGroupId: id
       viewerVoteCount
     }
   `
-)
+})

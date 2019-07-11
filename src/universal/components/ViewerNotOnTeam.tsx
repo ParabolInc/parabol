@@ -1,5 +1,5 @@
 import {ViewerNotOnTeam_viewer} from '__generated__/ViewerNotOnTeam_viewer.graphql'
-import React, {useEffect} from 'react'
+import React, {useCallback, useEffect} from 'react'
 import Helmet from 'react-helmet'
 import {createFragmentContainer, graphql} from 'react-relay'
 import Ellipsis from 'universal/components/Ellipsis/Ellipsis'
@@ -14,6 +14,7 @@ import DialogTitle from './DialogTitle'
 import TeamInvitationWrapper from './TeamInvitationWrapper'
 import useRouter from 'universal/hooks/useRouter'
 import getValidRedirectParam from 'universal/utils/getValidRedirectParam'
+import PushInvitationMutation from 'universal/mutations/PushInvitationMutation'
 
 interface Props {
   teamId: string
@@ -27,6 +28,14 @@ const ViewerNotOnTeam = (props: Props) => {
   const {authObj} = atmosphere
   const {history} = useRouter()
 
+  const handler = useCallback((invitation) => {
+    const {
+      invitation: {token: invitationToken},
+      id: notificationId
+    } = invitation
+    AcceptTeamInvitationMutation(atmosphere, {invitationToken, notificationId}, {history})
+  }, [])
+
   useEffect(() => {
     if (teamInvitation) {
       // if an invitation already exists, accept it
@@ -36,23 +45,14 @@ const ViewerNotOnTeam = (props: Props) => {
       const redirectTo = getValidRedirectParam()
       const nextRoute = redirectTo || `/team/${teamId}`
       history.replace(nextRoute)
+    } else {
+      PushInvitationMutation(atmosphere, {teamId})
+      atmosphere.eventEmitter.on('inviteToTeam', handler)
+      return () => {
+        atmosphere.eventEmitter.off('inviteToTeam', handler)
+      }
     }
-  }, [])
-
-  // listen for a team invitation
-  useEffect(() => {
-    if (teamInvitation) return
-    const handler = (invitation) => {
-      const {
-        invitation: {token: invitationToken},
-        id: notificationId
-      } = invitation
-      AcceptTeamInvitationMutation(atmosphere, {invitationToken, notificationId}, {history})
-    }
-    atmosphere.eventEmitter.on('inviteToTeam', handler)
-    return () => {
-      atmosphere.eventEmitter.off('inviteToTeam', handler)
-    }
+    return undefined
   }, [])
 
   if (teamInvitation) {
@@ -79,13 +79,12 @@ const ViewerNotOnTeam = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  ViewerNotOnTeam,
-  graphql`
+export default createFragmentContainer(ViewerNotOnTeam, {
+  viewer: graphql`
     fragment ViewerNotOnTeam_viewer on User {
       teamInvitation(teamId: $teamId) {
         token
       }
     }
   `
-)
+})

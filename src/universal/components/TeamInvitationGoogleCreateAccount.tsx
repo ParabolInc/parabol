@@ -142,13 +142,15 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
 
 export default createFragmentContainer(
   withAtmosphere(withMutationProps(withRouter(TeamInvitationGoogleCreateAccount))),
-  graphql`
-    fragment TeamInvitationGoogleCreateAccount_verifiedInvitation on VerifiedInvitationPayload {
-      meetingType
-      teamInvitation {
-        email
+  {
+    verifiedInvitation: graphql`
+      fragment TeamInvitationGoogleCreateAccount_verifiedInvitation on VerifiedInvitationPayload {
+        meetingType
+        teamInvitation {
+          email
+        }
+        teamName
       }
-      teamName
-    }
-  `
+    `
+  }
 )

@@ -42,9 +42,8 @@ const TeamDashTeamMemberMenu = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  connect()(TeamDashTeamMemberMenu),
-  graphql`
+export default createFragmentContainer(connect()(TeamDashTeamMemberMenu), {
+  team: graphql`
     fragment TeamDashTeamMemberMenu_team on Team {
       teamMembers(sortBy: "preferredName") {
         id
@@ -52,4 +51,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

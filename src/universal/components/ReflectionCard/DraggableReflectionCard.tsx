@@ -277,20 +277,22 @@ export default createFragmentContainer(
       DraggableReflectionCard
     )
   ),
-  graphql`
-    fragment DraggableReflectionCard_reflection on RetroReflection {
-      content
-      meetingId
-      reflectionId: id
-      reflectionGroupId
-      retroPhaseItemId
-      dragContext {
-        dragId: id
-        dragUserId
-        isViewerDragging
+  {
+    reflection: graphql`
+      fragment DraggableReflectionCard_reflection on RetroReflection {
+        content
+        meetingId
+        reflectionId: id
+        reflectionGroupId
+        retroPhaseItemId
+        dragContext {
+          dragId: id
+          dragUserId
+          isViewerDragging
+        }
+        ...ReflectionCard_reflection
+        ...ReflectionCardInFlight_reflection
       }
-      ...ReflectionCard_reflection
-      ...ReflectionCardInFlight_reflection
-    }
-  `
+    `
+  }
 )

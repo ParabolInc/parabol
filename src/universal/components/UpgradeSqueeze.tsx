@@ -165,9 +165,8 @@ const UpgradeSqueeze = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  UpgradeSqueeze,
-  graphql`
+export default createFragmentContainer(UpgradeSqueeze, {
+  organization: graphql`
     fragment UpgradeSqueeze_organization on Organization {
       orgId: id
       isBillingLeader
@@ -180,4 +179,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

@@ -360,30 +360,32 @@ export default createFragmentContainer<PassedProps>(
       )
     )
   ),
-  graphql`
-    fragment PhaseItemMasonry_meeting on RetrospectiveMeeting {
-      ...ReflectionGroup_meeting
-      meetingId: id
-      reflectionGroups {
-        ...ReflectionGroup_reflectionGroup
-        reflectionGroupId: id
-        meetingId
-        sortOrder
-        retroPhaseItemId
-        reflections {
-          reflectionId: id
-          retroPhaseItemId
+  {
+    meeting: graphql`
+      fragment PhaseItemMasonry_meeting on RetrospectiveMeeting {
+        ...ReflectionGroup_meeting
+        meetingId: id
+        reflectionGroups {
+          ...ReflectionGroup_reflectionGroup
+          reflectionGroupId: id
+          meetingId
           sortOrder
-          dragContext {
-            dragId: id
+          retroPhaseItemId
+          reflections {
+            reflectionId: id
+            retroPhaseItemId
+            sortOrder
+            dragContext {
+              dragId: id
+            }
           }
         }
+        reflectionsInFlight {
+          id
+          ...ReflectionCardInFlight_reflection
+        }
+        teamId
       }
-      reflectionsInFlight {
-        id
-        ...ReflectionCardInFlight_reflection
-      }
-      teamId
-    }
-  `
+    `
+  }
 )

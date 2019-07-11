@@ -44,9 +44,8 @@ const TeamArchived = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  TeamArchived,
-  graphql`
+export default createFragmentContainer(TeamArchived, {
+  notification: graphql`
     fragment TeamArchived_notification on NotifyTeamArchived {
       id
       team {
@@ -54,4 +53,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

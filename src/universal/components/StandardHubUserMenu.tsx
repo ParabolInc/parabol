@@ -124,9 +124,8 @@ const StandardHubUserMenu = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  withRouter(StandardHubUserMenu),
-  graphql`
+export default createFragmentContainer(withRouter(StandardHubUserMenu), {
+  viewer: graphql`
     fragment StandardHubUserMenu_viewer on User {
       email
       organizations {
@@ -135,4 +134,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

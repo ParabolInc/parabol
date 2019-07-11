@@ -35,9 +35,8 @@ function TimelineEvent (props: Props) {
   )
 }
 
-export default createFragmentContainer(
-  TimelineEvent,
-  graphql`
+export default createFragmentContainer(TimelineEvent, {
+  timelineEvent: graphql`
     fragment TimelineEvent_timelineEvent on TimelineEvent {
       ...TimelineEventJoinedParabol_timelineEvent
       ...TimelineEventTeamCreated_timelineEvent
@@ -46,4 +45,4 @@ export default createFragmentContainer(
       __typename
     }
   `
-)
+})

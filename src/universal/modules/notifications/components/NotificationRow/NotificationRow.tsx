@@ -44,9 +44,8 @@ const NotificationRow = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  NotificationRow,
-  graphql`
+export default createFragmentContainer(NotificationRow, {
+  notification: graphql`
     fragment NotificationRow_notification on Notification {
       type
       ...KickedOut_notification
@@ -58,4 +57,4 @@ export default createFragmentContainer(
       ...MeetingStageTimeLimitEnd_notification
     }
   `
-)
+})

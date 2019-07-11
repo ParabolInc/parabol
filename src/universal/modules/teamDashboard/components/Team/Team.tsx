@@ -161,9 +161,8 @@ class Team extends Component<Props> {
   }
 }
 
-export default createFragmentContainer(
-  withAtmosphere(withRouter(Team)),
-  graphql`
+export default createFragmentContainer(withAtmosphere(withRouter(Team)), {
+  team: graphql`
     fragment Team_team on Team {
       contentFilter
       id
@@ -174,4 +173,4 @@ export default createFragmentContainer(
       ...EditableTeamName_team
     }
   `
-)
+})

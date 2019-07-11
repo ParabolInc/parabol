@@ -136,16 +136,17 @@ const RetroLobby = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  RetroLobby,
-  graphql`
+export default createFragmentContainer(RetroLobby, {
+  meetingSettings: graphql`
     fragment RetroLobby_meetingSettings on RetrospectiveMeetingSettings {
       ...RetroTemplatePicker_settings
     }
+  `,
+  team: graphql`
     fragment RetroLobby_team on Team {
       id
       name
       isMeetingSidebarCollapsed
     }
   `
-)
+})

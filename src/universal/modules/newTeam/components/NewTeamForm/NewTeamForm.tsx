@@ -312,9 +312,8 @@ class NewTeamForm extends Component<Props, State> {
   }
 }
 
-export default createFragmentContainer(
-  withAtmosphere(withRouter(withMutationProps(NewTeamForm))),
-  graphql`
+export default createFragmentContainer(withAtmosphere(withRouter(withMutationProps(NewTeamForm))), {
+  organizations: graphql`
     fragment NewTeamForm_organizations on Organization @relay(plural: true) {
       ...NewTeamOrgPicker_organizations
       id
@@ -323,4 +322,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

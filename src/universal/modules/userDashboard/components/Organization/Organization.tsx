@@ -121,9 +121,8 @@ const Organization = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  withRouter(Organization),
-  graphql`
+export default createFragmentContainer(withRouter(Organization), {
+  viewer: graphql`
     fragment Organization_viewer on User {
       organization(orgId: $orgId) {
         ...EditableOrgName_organization
@@ -148,4 +147,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

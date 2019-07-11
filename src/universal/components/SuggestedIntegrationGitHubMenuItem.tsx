@@ -43,11 +43,10 @@ const SuggestedIntegrationGitHubMenuItem = forwardRef((props: Props, ref: any) =
   )
 })
 
-export default createFragmentContainer(
-  SuggestedIntegrationGitHubMenuItem,
-  graphql`
+export default createFragmentContainer(SuggestedIntegrationGitHubMenuItem, {
+  suggestedIntegration: graphql`
     fragment SuggestedIntegrationGitHubMenuItem_suggestedIntegration on SuggestedIntegrationGitHub {
       nameWithOwner
     }
   `
-)
+})

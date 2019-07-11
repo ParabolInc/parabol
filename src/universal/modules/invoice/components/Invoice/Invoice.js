@@ -337,9 +337,8 @@ const styleThunk = () => ({
   }
 })
 
-export default createFragmentContainer(
-  withStyles(styleThunk)(Invoice),
-  graphql`
+export default createFragmentContainer(withStyles(styleThunk)(Invoice), {
+  viewer: graphql`
     fragment Invoice_viewer on User {
       invoiceDetails(invoiceId: $invoiceId) {
         id
@@ -378,4 +377,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

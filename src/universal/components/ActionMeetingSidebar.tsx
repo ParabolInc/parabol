@@ -87,9 +87,8 @@ const ActionMeetingSidebar = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  ActionMeetingSidebar,
-  graphql`
+export default createFragmentContainer(ActionMeetingSidebar, {
+  viewer: graphql`
     fragment ActionMeetingSidebar_viewer on User {
       ...ActionSidebarPhaseListItemChildren_viewer
       ...NewMeetingSidebar_viewer
@@ -120,4 +119,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

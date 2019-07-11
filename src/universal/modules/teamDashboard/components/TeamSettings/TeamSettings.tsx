@@ -81,9 +81,8 @@ class TeamSettings extends Component<Props> {
   }
 }
 
-export default createFragmentContainer(
-  withAtmosphere(withRouter(TeamSettings)),
-  graphql`
+export default createFragmentContainer(withAtmosphere(withRouter(TeamSettings)), {
+  viewer: graphql`
     fragment TeamSettings_viewer on User {
       team(teamId: $teamId) {
         ...ArchiveTeamContainer_team
@@ -102,4 +101,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

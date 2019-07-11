@@ -65,11 +65,10 @@ class AddNewReflectTemplate extends Component<Props> {
   }
 }
 
-export default createFragmentContainer(
-  withMutationProps(withAtmosphere(AddNewReflectTemplate)),
-  graphql`
+export default createFragmentContainer(withMutationProps(withAtmosphere(AddNewReflectTemplate)), {
+  reflectTemplates: graphql`
     fragment AddNewReflectTemplate_reflectTemplates on ReflectTemplate @relay(plural: true) {
       name
     }
   `
-)
+})

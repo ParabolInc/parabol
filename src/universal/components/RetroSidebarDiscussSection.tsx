@@ -187,9 +187,8 @@ graphql`
   }
 `
 
-export default createFragmentContainer(
-  withAtmosphere(RetroSidebarDiscussSection),
-  graphql`
+export default createFragmentContainer(withAtmosphere(RetroSidebarDiscussSection), {
+  viewer: graphql`
     fragment RetroSidebarDiscussSection_viewer on User {
       team(teamId: $teamId) {
         isMeetingSidebarCollapsed
@@ -213,4 +212,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

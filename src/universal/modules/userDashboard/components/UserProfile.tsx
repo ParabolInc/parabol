@@ -158,12 +158,11 @@ const form = withForm({
   }
 })
 
-export default createFragmentContainer(
-  withAtmosphere(withMutationProps(form(UserProfile))),
-  graphql`
+export default createFragmentContainer(withAtmosphere(withMutationProps(form(UserProfile))), {
+  viewer: graphql`
     fragment UserProfile_viewer on User {
       preferredName
       picture
     }
   `
-)
+})

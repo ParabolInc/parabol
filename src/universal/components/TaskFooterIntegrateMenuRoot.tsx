@@ -49,13 +49,12 @@ const TaskFooterIntegrateMenuRoot = ({
   )
 }
 
-export default createFragmentContainer(
-  TaskFooterIntegrateMenuRoot,
-  graphql`
+export default createFragmentContainer(TaskFooterIntegrateMenuRoot, {
+  task: graphql`
     fragment TaskFooterIntegrateMenuRoot_task on Task {
       teamId
       userId
       ...TaskFooterIntegrateMenu_task
     }
   `
-)
+})

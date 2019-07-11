@@ -241,9 +241,8 @@ OutcomeCardContainer.propTypes = {
   isDragging: PropTypes.bool
 }
 
-export default createFragmentContainer(
-  withAtmosphere(OutcomeCardContainer),
-  graphql`
+export default createFragmentContainer(withAtmosphere(OutcomeCardContainer), {
+  task: graphql`
     fragment OutcomeCardContainer_task on Task {
       editors {
         userId
@@ -255,4 +254,4 @@ export default createFragmentContainer(
       ...OutcomeCard_task
     }
   `
-)
+})

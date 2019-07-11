@@ -2,22 +2,18 @@ import React from 'react'
 import LinkButton from 'universal/components/LinkButton'
 import IconLabel from 'universal/components/IconLabel'
 import PrimaryButton from 'universal/components/PrimaryButton'
-import {
-  BILLING_LEADER_LABEL,
-  PERSONAL,
-  PERSONAL_LABEL,
-  PRO,
-  PRO_LABEL
-} from 'universal/utils/constants'
+import {BILLING_LEADER_LABEL, PERSONAL, PERSONAL_LABEL, PRO_LABEL} from 'universal/utils/constants'
 import {PRICING_LINK} from 'universal/utils/externalLinks'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
-import {panelShadow, panelRaisedShadow} from 'universal/styles/elevation'
+import {panelRaisedShadow, panelShadow} from 'universal/styles/elevation'
 import makeGradient from 'universal/styles/helpers/makeGradient'
-import {createFragmentContainer} from 'react-relay'
+import {createFragmentContainer, graphql} from 'react-relay'
 import InlineEstimatedCost from 'universal/components/InlineEstimatedCost'
 import UpgradeModalRootLoadable from 'universal/components/UpgradeModalRootLoadable'
 import LoadableModal from 'universal/components/LoadableModal'
+import {OrgPlanSqueeze_organization} from '__generated__/OrgPlanSqueeze_organization.graphql'
+import {TierEnum} from 'universal/types/graphql'
 
 const personalGradient = makeGradient(ui.palette.mid, ui.palette.midGray)
 const professionalGradient = makeGradient(ui.palette.yellow, ui.palette.warm)
@@ -40,13 +36,13 @@ const TierPanelLayout = styled('div')({
   width: '100%'
 })
 
-const TierPanel = styled('div')(({tier}) => ({
+const TierPanel = styled('div')(({tier}: {tier: TierEnum}) => ({
   boxShadow: tier === PERSONAL ? panelShadow : panelRaisedShadow,
   borderRadius: ui.borderRadiusLarge,
   width: tier === PERSONAL ? '15rem' : '21.25rem'
 }))
 
-const TierPanelHeader = styled('div')(({tier}) => ({
+const TierPanelHeader = styled('div')(({tier}: {tier: TierEnum}) => ({
   alignItems: 'center',
   backgroundImage: tier === PERSONAL ? personalGradient : professionalGradient,
   fontSize: tier === PERSONAL ? '1.25rem' : '1.5rem',
@@ -117,9 +113,9 @@ const StyledPrimaryButton = styled(PrimaryButton)({
   ...ui.buttonBlockStyles
 })
 
-type Props = {|
-  organization: Object
-|}
+interface Props {
+  organization: OrgPlanSqueeze_organization
+}
 
 const OrgPlanSqueeze = (props: Props) => {
   const {
@@ -146,8 +142,6 @@ const OrgPlanSqueeze = (props: Props) => {
       <ButtonBlock>
         <LoadableModal
           LoadableComponent={UpgradeModalRootLoadable}
-          maxWidth={350}
-          maxHeight={225}
           queryVars={{orgId}}
           toggle={toggle}
         />
@@ -195,8 +189,8 @@ const OrgPlanSqueeze = (props: Props) => {
     <OrgPlanSqueezeRoot>
       <TierPanelLayout>
         {/* Personal Panel */}
-        <TierPanel tier={PERSONAL}>
-          <TierPanelHeader tier={PERSONAL}>{PERSONAL_LABEL}</TierPanelHeader>
+        <TierPanel tier={TierEnum.personal}>
+          <TierPanelHeader tier={TierEnum.personal}>{PERSONAL_LABEL}</TierPanelHeader>
           <TierPanelBody>
             <CopyWithStatus>
               <b>{'Your current plan.'}</b>
@@ -206,8 +200,8 @@ const OrgPlanSqueeze = (props: Props) => {
           </TierPanelBody>
         </TierPanel>
         {/* Professional Panel */}
-        <TierPanel tier={PRO}>
-          <TierPanelHeader tier={PRO}>
+        <TierPanel tier={TierEnum.pro}>
+          <TierPanelHeader tier={TierEnum.pro}>
             {'Upgrade to '}
             {PRO_LABEL}
           </TierPanelHeader>
@@ -226,9 +220,8 @@ const OrgPlanSqueeze = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  OrgPlanSqueeze,
-  graphql`
+export default createFragmentContainer(OrgPlanSqueeze, {
+  organization: graphql`
     fragment OrgPlanSqueeze_organization on Organization {
       orgId: id
       isBillingLeader
@@ -242,4 +235,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

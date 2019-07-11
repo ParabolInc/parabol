@@ -60,24 +60,26 @@ class TimelineFeedList extends Component<Props> {
 
 export default createPaginationContainer(
   TimelineFeedList,
-  graphql`
-    fragment TimelineFeedList_viewer on User {
-      timeline(first: $first, after: $after) @connection(key: "TimelineFeedList_timeline") {
-        edges {
-          cursor
-          node {
-            ...TimelineEvent_timelineEvent
-            __typename
-            id
+  {
+    viewer: graphql`
+      fragment TimelineFeedList_viewer on User {
+        timeline(first: $first, after: $after) @connection(key: "TimelineFeedList_timeline") {
+          edges {
+            cursor
+            node {
+              ...TimelineEvent_timelineEvent
+              __typename
+              id
+            }
+          }
+          pageInfo {
+            hasNextPage
+            endCursor
           }
         }
-        pageInfo {
-          hasNextPage
-          endCursor
-        }
       }
-    }
-  `,
+    `
+  },
   {
     direction: 'forward',
     getConnectionFromProps (props: any) {

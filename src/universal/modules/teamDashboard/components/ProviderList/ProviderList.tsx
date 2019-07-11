@@ -29,13 +29,12 @@ const ProviderList = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  ProviderList,
-  graphql`
+export default createFragmentContainer(ProviderList, {
+  viewer: graphql`
     fragment ProviderList_viewer on User {
       ...AtlassianProviderRow_viewer
       ...GitHubProviderRow_viewer
       ...SlackProviderRow_viewer
     }
   `
-)
+})

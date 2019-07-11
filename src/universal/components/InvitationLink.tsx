@@ -18,11 +18,10 @@ function InvitationLink (props: Props) {
   )
 }
 
-export default createFragmentContainer(
-  InvitationLink,
-  graphql`
+export default createFragmentContainer(InvitationLink, {
+  massInvitation: graphql`
     fragment InvitationLink_massInvitation on MassInvitationPayload {
       ...InvitationLinkDialog_massInvitation
     }
   `
-)
+})

@@ -94,15 +94,15 @@ const AddTeamMemberAvatarButton = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  withAtmosphere(AddTeamMemberAvatarButton),
-  graphql`
+export default createFragmentContainer(withAtmosphere(AddTeamMemberAvatarButton), {
+  team: graphql`
     fragment AddTeamMemberAvatarButton_team on Team {
       ...AddTeamMemberModal_team
     }
-
+  `,
+  teamMembers: graphql`
     fragment AddTeamMemberAvatarButton_teamMembers on TeamMember @relay(plural: true) {
       ...AddTeamMemberModal_teamMembers
     }
   `
-)
+})

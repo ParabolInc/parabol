@@ -44,12 +44,11 @@ const TaskFooterTagMenuStatusItem = forwardRef((props: Props, ref) => {
   )
 })
 
-export default createFragmentContainer(
-  TaskFooterTagMenuStatusItem,
-  graphql`
+export default createFragmentContainer(TaskFooterTagMenuStatusItem, {
+  task: graphql`
     fragment TaskFooterTagMenuStatusItem_task on Task {
       id
       status
     }
   `
-)
+})

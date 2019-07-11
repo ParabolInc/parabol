@@ -48,6 +48,7 @@ import RemoveSlackAuthPayload from 'server/graphql/types/RemoveSlackAuthPayload'
 import AddSlackAuthPayload from 'server/graphql/types/AddSlackAuthPayload'
 import SetStageTimerPayload from 'server/graphql/types/SetStageTimerPayload'
 import UpdateUserProfilePayload from 'server/graphql/types/UpdateUserProfilePayload'
+import PushInvitationPayload from 'server/graphql/types/PushInvitationPayload'
 
 const types = [
   AcceptTeamInvitationPayload,
@@ -67,6 +68,7 @@ const types = [
   EndNewMeetingPayload,
   NavigateMeetingPayload,
   NewMeetingCheckInPayload,
+  PushInvitationPayload,
   PromoteNewMeetingFacilitatorPayload,
   PromoteToTeamLeadPayload,
   RemoveAgendaItemPayload,

@@ -120,9 +120,8 @@ const AgendaList = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  AgendaList,
-  graphql`
+export default createFragmentContainer(AgendaList, {
+  team: graphql`
     fragment AgendaList_team on Team {
       contentFilter
       agendaItems {
@@ -138,7 +137,7 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})
 
 // <SexyScrollbar color='rgba(0, 0, 0, 0.3)' activeColor='rgba(0, 0, 0, 0.5)'>
 //  {(scrollRef) => {

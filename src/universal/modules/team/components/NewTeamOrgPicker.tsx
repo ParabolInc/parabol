@@ -76,9 +76,8 @@ const NewTeamOrgPicker = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  NewTeamOrgPicker,
-  graphql`
+export default createFragmentContainer(NewTeamOrgPicker, {
+  organizations: graphql`
     fragment NewTeamOrgPicker_organizations on Organization @relay(plural: true) {
       ...NewTeamOrgDropdown_organizations
       id
@@ -86,4 +85,4 @@ export default createFragmentContainer(
       tier
     }
   `
-)
+})

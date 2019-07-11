@@ -155,9 +155,8 @@ const TaskInvolves = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  TaskInvolves,
-  graphql`
+export default createFragmentContainer(TaskInvolves, {
+  notification: graphql`
     fragment TaskInvolves_notification on NotifyTaskInvolves {
       id
       changeAuthor {
@@ -181,4 +180,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

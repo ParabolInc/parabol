@@ -15,13 +15,12 @@ const DashAlert = (props: Props) => {
   return <DashAlertMeeting viewer={viewer} />
 }
 
-export default createFragmentContainer(
-  DashAlert,
-  graphql`
+export default createFragmentContainer(DashAlert, {
+  viewer: graphql`
     fragment DashAlert_viewer on User {
       overLimitCopy
       ...DashAlertOverLimit_viewer
       ...DashAlertMeeting_viewer
     }
   `
-)
+})
