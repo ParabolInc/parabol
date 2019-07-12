@@ -63,6 +63,7 @@ Sentry.init({
   environment: process.env.NODE_ENV,
   dsn: process.env.SENTRY_DSN,
   release: APP_VERSION,
+  ignoreErrors: ['429 Too Many Requests', /language \S+ is not supported/],
   integrations: [
     new Sentry.Integrations.RewriteFrames({
       root: global.__rootdir__
