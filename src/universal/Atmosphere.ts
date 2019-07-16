@@ -66,8 +66,10 @@ const noop = (): any => {
   /* noop */
 }
 
-interface Toast {
-  level: 'info' | 'warning' | 'error' | 'success'
+export type SnackLevel = 'info' | 'warning' | 'error' | 'success'
+
+export interface Snack {
+  level: SnackLevel
   autoDismiss?: number
   title: string
   message: string
@@ -78,7 +80,7 @@ interface Toast {
 }
 
 export interface AtmosphereEvents {
-  addToast: Toast
+  addToast: Snack
   removeToast: (toast: string | any) => void
   endDraggingReflection: MasonryDragEndPayload
   focusAgendaInput: void

@@ -56,10 +56,10 @@ interface Props {
 const MenuItemStyles = styled('div')(
   ({idx, itemsToAnimate, isDropdown, portalStatus}: Omit<Props, 'children'>) => ({
     animation:
-      portalStatus < PortalStatus.AnimatedIn
+      portalStatus < PortalStatus.Entered
         ? menuItemAnimation(idx, itemsToAnimate, isDropdown)
         : undefined,
-    opacity: portalStatus < PortalStatus.AnimatedIn ? 0 : 1
+    opacity: portalStatus < PortalStatus.Entered ? 0 : 1
   })
 )
 

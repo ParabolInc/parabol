@@ -30,10 +30,10 @@ const useMenuPortal = (
 ) => {
   useEffect(() => {
     let isMounted = true
-    if (portalStatus === PortalStatus.Entered) {
+    if (portalStatus === PortalStatus.Entering) {
       setTimeout(() => {
         if (isMounted) {
-          setPortalStatus(PortalStatus.AnimatedIn)
+          setPortalStatus(PortalStatus.Entered)
         }
       }, Duration.MENU_OPEN_MAX)
     }

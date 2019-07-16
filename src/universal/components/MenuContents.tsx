@@ -5,12 +5,12 @@ import {Duration, Radius} from 'universal/types/constEnums'
 
 const animations = (portalStatus) => {
   switch (portalStatus) {
-    case PortalStatus.Entering:
+    case PortalStatus.Mounted:
       return {
         opacity: 0
       }
+    case PortalStatus.Entering:
     case PortalStatus.Entered:
-    case PortalStatus.AnimatedIn:
       return {
         opacity: 1,
         transition: `opacity ${Duration.MENU_OPEN}ms ${DECELERATE}`
@@ -33,7 +33,7 @@ export interface MenuContentsProps {
 const MenuContents = styled('div')(({minWidth, portalStatus}: MenuContentsProps) => ({
   borderRadius: Radius.MENU,
   outline: 0,
-  overflowY: portalStatus >= PortalStatus.AnimatedIn ? 'auto' : 'hidden',
+  overflowY: portalStatus >= PortalStatus.Entered ? 'auto' : 'hidden',
   paddingBottom: 8,
   paddingTop: 8,
   textAlign: 'left',

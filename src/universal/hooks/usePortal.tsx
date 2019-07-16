@@ -1,12 +1,13 @@
-import React, {ReactElement, useCallback, useEffect, useRef, useState} from 'react'
+import React, {ReactElement, useCallback, useEffect, useRef} from 'react'
 import {createPortal} from 'react-dom'
 import requestDoubleAnimationFrame from 'universal/components/RetroReflectPhase/requestDoubleAnimationFrame'
 import hideBodyScroll from 'universal/utils/hideBodyScroll'
+import useRefState from 'universal/hooks/useRefState'
 
 export const enum PortalStatus {
-  Entering, // node appended to DOM
-  Entered, // 2 animation frames after appended to DOM
-  AnimatedIn,
+  Mounted, // node appended to DOM
+  Entering, // 2 animation frames after appended to DOM
+  Entered, // animation complete
   Exiting, // closePortal was called
   Exited // initial state
 }
@@ -22,43 +23,51 @@ export interface UsePortalOptions {
   noClose?: boolean
 }
 
+const getParent = (parentId: string | undefined) => {
+  const parent = parentId ? document.getElementById(parentId) : document.body
+  if (!parent) throw new Error('Could not find parent ' + parentId)
+  return parent
+}
+
 const usePortal = (options: UsePortalOptions = {}) => {
   const portalRef = useRef<HTMLDivElement>()
   const originRef = useRef<HTMLElement>()
+  const timeoutRef = useRef<number | null>(null)
   const showBodyScroll = useRef<() => void>()
-  const [portalStatus, setPortalStatus] = useState(PortalStatus.Exited)
-
-  const getParent = () => {
-    const parent = options.parentId ? document.getElementById(options.parentId) : document.body
-    if (!parent) throw new Error('Could not find parent ' + options.parentId)
-    return parent
-  }
+  const [portalStatusRef, setPortalStatus] = useRefState(PortalStatus.Exited)
 
   const terminatePortal = useCallback(() => {
     if (portalRef.current) {
       try {
-        getParent().removeChild(portalRef.current)
+        getParent(options.parentId).removeChild(portalRef.current)
       } catch (e) {
         /* portal already removed (possible when parent is not document.body) */
       }
       portalRef.current = undefined
       showBodyScroll.current && showBodyScroll.current()
+      timeoutRef.current = null
     }
+    document.removeEventListener('keydown', handleKeydown)
+    document.removeEventListener('mousedown', handleDocumentClick)
+    document.removeEventListener('touchstart', handleDocumentClick)
+    setPortalStatus(PortalStatus.Exited)
   }, [])
 
   // terminate on unmount
   useEffect(() => terminatePortal, [])
 
+  const terminateAfterTransition = useCallback(() => {
+    // setTimeout because the portal should terminate only after all other transitionend events had time to fire
+    timeoutRef.current = setTimeout(terminatePortal)
+  }, [])
+
   const closePortal = useCallback(() => {
+    if (portalStatusRef.current >= PortalStatus.Exiting) return
     document.removeEventListener('keydown', handleKeydown)
     document.removeEventListener('mousedown', handleDocumentClick)
     document.removeEventListener('touchstart', handleDocumentClick)
     if (portalRef.current) {
-      portalRef.current.addEventListener('transitionend', (e) => {
-        if (e.propertyName === 'transform') {
-          terminatePortal()
-        }
-      })
+      portalRef.current.addEventListener('transitionend', terminateAfterTransition)
     }
     setPortalStatus(PortalStatus.Exiting)
     // important! this should be last in case the onClose also tries to close the portal (see EmojiMenu)
@@ -87,10 +96,9 @@ const usePortal = (options: UsePortalOptions = {}) => {
   }, [])
 
   const openPortal = useCallback((e?: React.MouseEvent | React.TouchEvent) => {
-    terminatePortal()
-    portalRef.current = document.createElement('div')
-    portalRef.current.id = options.id || 'portal'
-    getParent().appendChild(portalRef.current)
+    const {current: portalStatus} = portalStatusRef
+    if (portalStatus <= PortalStatus.Entered) return
+
     if (!options.allowScroll) {
       showBodyScroll.current = hideBodyScroll()
     }
@@ -99,30 +107,41 @@ const usePortal = (options: UsePortalOptions = {}) => {
       document.addEventListener('mousedown', handleDocumentClick)
       document.addEventListener('touchstart', handleDocumentClick)
     }
-    setPortalStatus(PortalStatus.Entering)
-    if (e && e.currentTarget) {
-      originRef.current = e.currentTarget as HTMLElement
-    }
-    // without rDAF: 1) coords may not be updated (if useCoords is used), 2) `enter` class hasn't had time to flush (if animations are used)
-    requestDoubleAnimationFrame(() => {
+    if (portalStatus === PortalStatus.Exiting) {
+      if (portalRef.current) {
+        portalRef.current.removeEventListener('transitionend', terminateAfterTransition)
+      }
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
       setPortalStatus(PortalStatus.Entered)
-    })
-    options.onOpen && options.onOpen(portalRef.current)
+    } else if (portalStatus === PortalStatus.Exited) {
+      setPortalStatus(PortalStatus.Mounted)
+      // without rDAF: 1) coords may not be updated (if useCoords is used), 2) `enter` class hasn't had time to flush (if animations are used)
+      requestDoubleAnimationFrame(() => {
+        setPortalStatus(PortalStatus.Entering)
+      })
+
+      portalRef.current = document.createElement('div')
+      portalRef.current.id = options.id || 'portal'
+      getParent(options.parentId).appendChild(portalRef.current)
+      if (e && e.currentTarget) {
+        originRef.current = e.currentTarget as HTMLElement
+      }
+      options.onOpen && options.onOpen(portalRef.current)
+    }
   }, [])
 
   const togglePortal = useCallback((e?: React.MouseEvent | React.TouchEvent) => {
     portalRef.current ? closePortal() : openPortal(e)
   }, [])
 
-  const portal = useCallback(
-    (reactEl: ReactElement) => {
-      const targetEl = portalRef.current
-      return !targetEl || portalStatus === PortalStatus.Exited
-        ? null
-        : createPortal(reactEl, targetEl)
-    },
-    [portalStatus]
-  )
+  const portal = useCallback((reactEl: ReactElement) => {
+    const targetEl = portalRef.current
+    return !targetEl || portalStatusRef.current === PortalStatus.Exited
+      ? null
+      : createPortal(reactEl, targetEl)
+  }, [])
 
   return {
     openPortal,
@@ -130,7 +149,7 @@ const usePortal = (options: UsePortalOptions = {}) => {
     terminatePortal,
     togglePortal,
     portal,
-    portalStatus,
+    portalStatus: portalStatusRef.current,
     setPortalStatus
   }
 }

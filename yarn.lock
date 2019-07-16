@@ -3759,10 +3759,10 @@ babel-plugin-react-docgen@^2.0.0:
     react-docgen "^3.0.0"
     recast "^0.14.7"
 
-babel-plugin-relay@3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/babel-plugin-relay/-/babel-plugin-relay-3.0.0.tgz#dc5b66c94c8565f2e52edf8fbe86aadff6e7966d"
-  integrity sha512-lI+PR4/H8XytNVUtz8cYYM7sR2unFMeTsBbnKFvuU/mnxxmDO3JA7OHxtTdctLjlRSYrcCVmvIEL2JDehMxlTg==
+babel-plugin-relay@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-relay/-/babel-plugin-relay-5.0.0.tgz#e8ab872a33af7e950c446c961207faebb0408763"
+  integrity sha512-IkrocTTmq+QjesIBqwJjSVZfKsonxIGHmuXPkKgIt/gVVZbwLZV7UVXq6aZdmmEc49TG+5LtzlxGAwlQDjGgNQ==
   dependencies:
     babel-plugin-macros "^2.0.0"
 
@@ -14330,16 +14330,15 @@ react-redux@^6.0.0:
     prop-types "^15.6.2"
     react-is "^16.6.3"
 
-react-relay@3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/react-relay/-/react-relay-3.0.0.tgz#b3fe7931f812a6700e2420a853adb74156e162b9"
-  integrity sha512-HZQ1CXhF2EBt6f5XG2nWoT5FZIn9zdoHeo8+u5rqQ3fCRBr4qmvLihfehWlCcYCcx57pnAiqsjUdJmwxGUmbsg==
+react-relay@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/react-relay/-/react-relay-5.0.0.tgz#66af68e8e5fad05879a3f21f895a0296ef2741a8"
+  integrity sha512-gpUvedaCaPVPT0nMrTbev2TzrU0atgq2j/zAnGHiR9WgqRXwtHsK6FWFN65HRbopO2DzuJx9VZ2I3VO6uL5EMA==
   dependencies:
     "@babel/runtime" "^7.0.0"
     fbjs "^1.0.0"
     nullthrows "^1.1.0"
-    prop-types "^15.5.8"
-    relay-runtime "3.0.0"
+    relay-runtime "5.0.0"
 
 react-router-dom@4.4.0-beta.6:
   version "4.4.0-beta.6"
@@ -14942,7 +14941,7 @@ relay-linear-publish-queue@^0.1.2:
     fbjs "^1.0.0"
     relay-runtime "https://github.com/mattkrick/relay/tarball/dbd07bab510551e0c421aad70e5b57bb86520d32"
 
-relay-runtime@3.0.0, relay-runtime@5.0.0, "relay-runtime@https://github.com/mattkrick/relay/tarball/dbd07bab510551e0c421aad70e5b57bb86520d32":
+relay-runtime@5.0.0, "relay-runtime@https://github.com/mattkrick/relay/tarball/dbd07bab510551e0c421aad70e5b57bb86520d32":
   version "5.0.0"
   resolved "https://github.com/mattkrick/relay/tarball/dbd07bab510551e0c421aad70e5b57bb86520d32#fdc9a1003eb7219622e3d173fb0935d173187665"
   dependencies:

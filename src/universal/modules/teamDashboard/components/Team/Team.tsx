@@ -17,6 +17,7 @@ import withAtmosphere, {
 import EditableTeamName from 'universal/modules/teamDashboard/components/EditTeamName/EditableTeamName'
 import TeamCallsToAction from 'universal/modules/teamDashboard/components/TeamCallsToAction/TeamCallsToAction'
 import {PALETTE} from 'universal/styles/paletteV2'
+// import DebugButton from 'universal/modules/userDashboard/components/UserDashMain/DebugButton'
 
 const TeamViewNavBlock = styled('div')({
   display: 'flex',
@@ -142,6 +143,7 @@ class Team extends Component<Props> {
                 placeholder='Search Team Tasks & Agenda'
               />
             )}
+            {/*<DebugButton/>*/}
           </TeamDashHeaderInner>
           <TeamViewNavBlock>
             {!isSettings && (
