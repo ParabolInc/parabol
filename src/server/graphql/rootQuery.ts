@@ -5,8 +5,9 @@ import verifiedInvitation from 'server/graphql/queries/verifiedInvitation'
 import rateLimit from 'server/graphql/rateLimit'
 import getRethink from 'server/database/rethinkDriver'
 import massInvitation from 'server/graphql/queries/massInvitation'
+import {GQLContext} from 'server/graphql/graphql'
 
-export default new GraphQLObjectType({
+export default new GraphQLObjectType<any, GQLContext>({
   name: 'Query',
   fields: () => ({
     viewer: {
