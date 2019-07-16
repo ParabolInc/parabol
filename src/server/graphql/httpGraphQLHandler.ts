@@ -5,6 +5,7 @@ import handleGraphQLTrebuchetRequest from './handleGraphQLTrebuchetRequest'
 import isQueryAllowed from './isQueryAllowed'
 import getQueryString from 'server/graphql/getQueryString'
 
+const SSE_PROBLEM_USERS = [] as string[]
 export default (sharedDataLoader, rateLimiter, sseClients) => async (
   req: e.Request,
   res: e.Response
@@ -16,7 +17,10 @@ export default (sharedDataLoader, rateLimiter, sseClients) => async (
     : {sharedDataLoader, rateLimiter, authToken}
   if (!connectionContext) {
     const viewerId = getUserId(authToken)
-    sendToSentry(new Error('SSE response not found'), {userId: viewerId})
+    if (!SSE_PROBLEM_USERS.includes(viewerId)) {
+      SSE_PROBLEM_USERS.push(viewerId)
+      sendToSentry(new Error('SSE response not found'), {userId: viewerId})
+    }
     res.send('SSE Response not found')
     return
   }
@@ -27,6 +31,9 @@ export default (sharedDataLoader, rateLimiter, sseClients) => async (
     res.sendStatus(200)
   }
 
+  if (req.body && req.body.type && req.body.type === 'WRTC_SIGNAL') {
+    return
+  }
   try {
     const response = await handleGraphQLTrebuchetRequest(req.body, connectionContext, {
       getQueryString,

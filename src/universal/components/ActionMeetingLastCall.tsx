@@ -19,6 +19,7 @@ import EndNewMeetingMutation from 'universal/mutations/EndNewMeetingMutation'
 import useRouter from 'universal/hooks/useRouter'
 import {NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
 import plural from 'universal/utils/plural'
+import useMutationProps from 'universal/hooks/useMutationProps'
 
 interface Props extends ActionMeetingPhaseProps {
   team: ActionMeetingLastCall_team
@@ -41,6 +42,7 @@ const ActionMeetingLastCall = (props: Props) => {
   const {avatarGroup, toggleSidebar, team} = props
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
+  const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
   const {viewerId} = atmosphere
   const {isMeetingSidebarCollapsed, newMeeting} = team
   const {facilitator, facilitatorUserId, id: meetingId, phases} = newMeeting!
@@ -53,7 +55,9 @@ const ActionMeetingLastCall = (props: Props) => {
   const isFacilitating = facilitatorUserId === viewerId
   const labelAgendaItems = plural(0, AGENDA_ITEM_LABEL)
   const endMeeting = () => {
-    EndNewMeetingMutation(atmosphere, {meetingId}, {history})
+    if (submitting) return
+    submitMutation()
+    EndNewMeetingMutation(atmosphere, {meetingId}, {history, onError, onCompleted})
   }
   return (
     <MeetingContent>
