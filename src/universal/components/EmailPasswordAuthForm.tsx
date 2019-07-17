@@ -62,9 +62,12 @@ export class EmailPasswordAuthFormBase extends Component<Props> {
     const {atmosphere, onCompleted, onError} = this.props
     const manager = new Auth0ClientManager()
     const errorResult = await manager.login(email, password)
-    if (!errorResult) return
+    if (!errorResult) {
+      onCompleted()
+      return
+    }
     onError(error || errorResult.error_description)
-    if (errorResult.code === 'access_denied') {
+    if (errorResult.error === 'access_denied') {
       const authProviders = await getAuthProviders(atmosphere, email)
       if (authProviders.length === 1 && authProviders[0] === 'google-oauth2') {
         onError('Sign in with Google above')

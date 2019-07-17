@@ -1,4 +1,5 @@
 import makeHref from 'universal/utils/makeHref'
+import getOAuthPopupFeatures from 'universal/utils/getOAuthPopupFeatures'
 
 interface SignupResponse {
   email: string
@@ -40,17 +41,17 @@ export default class Auth0ClientManager {
     this.fetch = window.fetch.bind(window)
   }
 
-  async post<T> (url: string, payload: object): Promise<T> {
+  async post<T> (url: string, payload: object, initOptions: RequestInit = {}): Promise<T> {
     const res = await this.fetch(url, {
       method: 'POST',
-      // hugely important! without credentials, the login_ticket will be invalid
-      credentials: 'include',
       headers: {
         'Content-Type': 'application/json'
       },
+      ...initOptions,
       body: JSON.stringify(payload)
     })
-    return res.json()
+    // the text is for change password
+    return res.bodyUsed ? res.json() : res.text()
   }
 
   signup (email: string, password: string) {
@@ -74,6 +75,10 @@ export default class Auth0ClientManager {
         username: email,
         password,
         realm: Auth0ClientManager.CONNECTION
+      },
+      {
+        // hugely important! without credentials, the login_ticket will be invalid
+        credentials: 'include'
       }
     )
     if ('login_ticket' in res) {
@@ -95,5 +100,63 @@ export default class Auth0ClientManager {
       return
     }
     return res
+  }
+
+  async loginWithGoogle (email?: string): Promise<{idToken: string} | null> {
+    const state = Math.random()
+      .toString(36)
+      .substring(5)
+    const params = new URLSearchParams({
+      client_id: this.clientId,
+      scope: Auth0ClientManager.SCOPE,
+      connection: 'google-oauth2',
+      redirect_uri: makeHref(`/oauth-redirect${window.location.search}`),
+      response_type: 'token',
+      state,
+      prompt: 'select_account'
+    })
+    if (email) {
+      params.append('login_hint', email)
+    }
+    const authUrl = `https://${this.domain}/authorize?${params.toString()}`
+    const popup = window.open(
+      authUrl,
+      'OAuth',
+      getOAuthPopupFeatures({width: 385, height: 550, top: 64})
+    )
+    let closeCheckerId
+    return new Promise((resolve, reject) => {
+      const handler = (event) => {
+        // an extension posted to the opener
+        if (typeof event.data !== 'object' || event.data.state !== state) return
+        const {code} = event.data
+        window.clearInterval(closeCheckerId)
+        if (event.origin !== window.location.origin || typeof code !== 'string') {
+          reject(`Bad response: ${event.data}, ${event.origin}`)
+          return
+        }
+
+        popup && popup.close()
+        window.removeEventListener('message', handler)
+        resolve({idToken: code})
+      }
+
+      closeCheckerId = window.setInterval(() => {
+        if (popup && popup.closed) {
+          resolve(null)
+          window.clearInterval(closeCheckerId)
+          window.removeEventListener('message', handler)
+        }
+      }, 100)
+      window.addEventListener('message', handler)
+    })
+  }
+
+  changePassword (email: string) {
+    return this.post<string>(`https://${this.domain}/dbconnections/change_password`, {
+      client_id: this.clientId,
+      email,
+      connection: Auth0ClientManager.CONNECTION
+    })
   }
 }
