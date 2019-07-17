@@ -58,7 +58,6 @@ export class EmailPasswordAuthFormBase extends Component<Props> {
   }
 
   tryLogin = async (email: string, password: string, error?: string) => {
-    // await auth0LoginWithEmail(email, password)
     const {atmosphere, onCompleted, onError} = this.props
     const manager = new Auth0ClientManager()
     const errorResult = await manager.login(email, password)

@@ -15,6 +15,10 @@ class OAuthRedirect extends Component<Props> {
     const {atmosphere, history} = this.props
     const search = window.location.hash.slice(1)
     const params = new URLSearchParams(search)
+    const storedState = window.localStorage.getItem('auth0State')
+    const invitationToken = window.localStorage.getItem('invitationToken')
+    window.localStorage.removeItem('invitationToken')
+    window.localStorage.removeItem('auth0State')
     const state = params.get('state')
     const code = params.get('id_token')
     const error = params.get('error')
@@ -24,15 +28,9 @@ class OAuthRedirect extends Component<Props> {
     }
     // if handled in a popup window ie google
     if (window.opener) {
-      // Auth0 sends params in a hash, not a search
       window.opener.postMessage({state, code}, window.location.origin)
     } else {
       // if handled on same page ie email/pass
-      // const parseHash = promisify(webAuth.parseHash, webAuth)
-      const storedState = window.localStorage.getItem('auth0State')
-      const invitationToken = window.localStorage.getItem('invitationToken')
-      window.localStorage.removeItem('invitationToken')
-      window.localStorage.removeItem('auth0State')
       if (!code || !storedState || storedState !== state) {
         window.location.href = window.location.origin
         return
