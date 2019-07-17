@@ -3,9 +3,19 @@ import ms from 'ms'
 const HOUR = ms('1h')
 const MINUTE = ms('1m')
 
+interface Records {
+  [userId: string]: {
+    [fieldName: string]: number[]
+  }
+}
+
+interface LastCall {
+  [userId: string]: number
+}
+
 class RateLimiter {
-  private _records = {}
-  private _lastCall = {}
+  private _records = {} as Records
+  private _lastCall = {} as LastCall
 
   constructor () {
     setInterval(() => {
