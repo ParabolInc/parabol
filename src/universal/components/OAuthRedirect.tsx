@@ -1,4 +1,3 @@
-import promisify from 'es6-promisify'
 import {Component} from 'react'
 import {RouteComponentProps, withRouter} from 'react-router'
 import LoginMutation from 'universal/mutations/LoginMutation'
@@ -14,30 +13,32 @@ class OAuthRedirect extends Component<Props> {
 
   callOpener = async () => {
     const {atmosphere, history} = this.props
-    const auth0 = await import(/* webpackChunkName: 'Auth0' */ 'auth0-js/build/auth0')
-    const webAuth = new auth0.WebAuth({
-      domain: window.__ACTION__.auth0Domain,
-      clientID: window.__ACTION__.auth0,
-      scope: 'openid rol tms bet'
-    })
+    const search = window.location.hash.slice(1)
+    const params = new URLSearchParams(search)
+    const state = params.get('state')
+    const code = params.get('id_token')
+    const error = params.get('error')
+    if (error) {
+      console.error(error)
+      return
+    }
     // if handled in a popup window ie google
     if (window.opener) {
       // Auth0 sends params in a hash, not a search
-      const search = window.location.hash.slice(1)
-      const params = new URLSearchParams(search)
-      const state = params.get('state')
-      const code = params.get('id_token')
-      if (!window.opener) return
       window.opener.postMessage({state, code}, window.location.origin)
     } else {
       // if handled on same page ie email/pass
-      const parseHash = promisify(webAuth.parseHash, webAuth)
-      const res = await parseHash()
-      const {idToken} = res
+      // const parseHash = promisify(webAuth.parseHash, webAuth)
+      const storedState = window.localStorage.getItem('auth0State')
       const invitationToken = window.localStorage.getItem('invitationToken')
       window.localStorage.removeItem('invitationToken')
+      window.localStorage.removeItem('auth0State')
+      if (!code || !storedState || storedState !== state) {
+        window.location.href = window.location.origin
+        return
+      }
       const segmentId = getAnonymousId()
-      LoginMutation(atmosphere, {auth0Token: idToken, invitationToken, segmentId}, {history})
+      LoginMutation(atmosphere, {auth0Token: code, invitationToken, segmentId}, {history})
     }
   }
 
