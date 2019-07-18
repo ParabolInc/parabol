@@ -26,7 +26,8 @@ const MessageStyles = styled('div')(({status}: {status: TransitionStatus}) => ({
   transform: `translateY(${
     status === TransitionStatus.MOUNTED ? 20 : status === TransitionStatus.EXITING ? -20 : 0
   }px)`,
-  pointerEvents: 'auto'
+  pointerEvents: 'auto',
+  userSelect: 'none'
 }))
 
 const SnackbarMessage = (props: SnackProps) => {

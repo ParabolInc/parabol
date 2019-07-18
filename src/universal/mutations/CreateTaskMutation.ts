@@ -30,26 +30,7 @@ graphql`
 graphql`
   fragment CreateTaskMutation_notification on CreateTaskPayload {
     involvementNotification {
-      id
-      changeAuthor {
-        preferredName
-      }
-      involvement
-      team {
-        id
-        name
-      }
-      task {
-        content
-        status
-        tags
-        assignee {
-          ... on TeamMember {
-            picture
-          }
-          preferredName
-        }
-      }
+      ...TaskInvolves_notification @relay(mask: false)
     }
   }
 `
@@ -82,7 +63,7 @@ export const createTaskNotificationOnNext: OnNextHandler<CreateTaskMutation_noti
   payload,
   {atmosphere, history}
 ) => {
-  if (!payload) return
+  if (!payload || !payload.involvementNotification) return
   popInvolvementToast(payload.involvementNotification, {atmosphere, history})
 }
 

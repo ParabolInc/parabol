@@ -28,6 +28,7 @@ import {APP_TOKEN_KEY, NEW_AUTH_TOKEN} from 'universal/utils/constants'
 import handlerProvider from 'universal/utils/relay/handlerProvider'
 import {MasonryDragEndPayload} from './components/PhaseItemMasonry'
 import {IAuthToken} from './types/graphql'
+import {Snack, SnackbarRemoveFn} from 'universal/components/Snackbar'
 
 // import sleep from 'universal/utils/sleep'
 
@@ -66,27 +67,16 @@ const noop = (): any => {
   /* noop */
 }
 
-export type SnackLevel = 'info' | 'warning' | 'error' | 'success'
-
-export interface Snack {
-  level: SnackLevel
-  autoDismiss?: number
-  title: string
-  message: string
-  action?: {
-    label: string
-    callback: () => void
-  }
-}
-
 export interface AtmosphereEvents {
-  addToast: Snack
-  removeToast: (toast: string | any) => void
-  endDraggingReflection: MasonryDragEndPayload
-  focusAgendaInput: void
-  inviteToTeam: NonNullable<InviteToTeamMutation_notification['teamInvitationNotification']>
-  newSubscriptionClient: void
-  removeGitHubRepo: void
+  addSnackbar: (snack: Snack) => void
+  removeSnackbar: (filterFn: SnackbarRemoveFn) => void
+  endDraggingReflection: (payload: MasonryDragEndPayload) => void
+  focusAgendaInput: () => void
+  inviteToTeam: (
+    notification: NonNullable<InviteToTeamMutation_notification['teamInvitationNotification']>
+  ) => void
+  newSubscriptionClient: () => void
+  removeGitHubRepo: () => void
 }
 
 const store = new Store(new RecordSource())

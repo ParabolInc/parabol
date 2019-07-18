@@ -4,13 +4,6 @@ import {reset as resetAppState} from 'universal/redux/rootDuck'
 import {APP_TOKEN_KEY} from 'universal/utils/constants'
 import {SegmentClientEventEnum} from 'universal/types/graphql'
 
-const signoutSuccess = {
-  title: 'Tootles!',
-  level: 'success' as 'success',
-  message: 'You’ve been logged out successfully.',
-  autoDismiss: 5
-}
-
 const signout = (atmosphere: Atmosphere, dispatch: any, history: any) => {
   window.localStorage.removeItem(APP_TOKEN_KEY)
   SendClientSegmentEventMutation(atmosphere, SegmentClientEventEnum.UserLogout)
@@ -19,7 +12,11 @@ const signout = (atmosphere: Atmosphere, dispatch: any, history: any) => {
     history.replace('/')
   }
   dispatch && dispatch(resetAppState())
-  atmosphere.eventEmitter.emit('addToast', signoutSuccess)
+  atmosphere.eventEmitter.emit('addSnackbar', {
+    key: 'logOut',
+    message: 'You’ve been logged out successfully.',
+    autoDismiss: 5
+  })
   atmosphere.close()
 }
 

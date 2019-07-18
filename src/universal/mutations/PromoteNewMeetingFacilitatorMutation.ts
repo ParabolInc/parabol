@@ -45,12 +45,13 @@ export const promoteNewMeetingFacilitatorTeamOnNext: OnNextHandler<
     facilitator: {preferredName: newFacilitatorName, userId: newFacilitatorUserId}
   } = meeting
   const isSelf = newFacilitatorUserId === viewerId
-  const title = isConnected ? 'New facilitator!' : `${oldFacilitatorName} disconnected!`
+  const prefix = isConnected ? '' : `${oldFacilitatorName} disconnected! `
   const intro = isSelf ? 'You are' : `${newFacilitatorName} is`
-  atmosphere.eventEmitter.emit('addToast', {
-    level: 'info',
-    title,
-    message: `${intro} the new facilitator`
+  atmosphere.eventEmitter.emit('removeSnackbar', (snack) => snack.key.startsWith('newFacilitator'))
+  atmosphere.eventEmitter.emit('addSnackbar', {
+    autoDismiss: 5,
+    key: `newFacilitator:${newFacilitatorUserId}`,
+    message: `${prefix}${intro} the new facilitator`
   })
 }
 

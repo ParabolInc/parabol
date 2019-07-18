@@ -8,11 +8,15 @@ interface Props extends WithAtmosphereProps {}
 class DebugButton extends Component<Props> {
   onClick = () => {
     const {atmosphere} = this.props
-    atmosphere.eventEmitter.emit('addToast', {
-      message: 'hello',
-      title: 'got it',
-      level: 'info',
-      autoDismiss: 2
+    // atmosphere.eventEmitter.emit('addSnackbar', {
+    //   message: 'hello',
+    //   autoDismiss: 2,
+    //   type: 'foo'
+    // })
+    atmosphere.eventEmitter.emit('addSnackbar', {
+      autoDismiss: 5,
+      message: 'Your internet is unstable. Behind a firewall? Contact us for support',
+      key: 'firewall'
     })
     // commitLocalUpdate(atmosphere, (store) => {
     //   const teamId = 'qa1S56OMu'

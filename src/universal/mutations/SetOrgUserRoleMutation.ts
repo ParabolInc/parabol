@@ -1,8 +1,10 @@
-import {commitMutation} from 'react-relay'
+import {commitMutation, graphql} from 'react-relay'
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
 import handleAddOrganization from 'universal/mutations/handlers/handleAddOrganization'
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications'
 import getInProxy from 'universal/utils/relay/getInProxy'
+import {OnNextHandler} from 'universal/types/relayMutations'
+import {SetOrgUserRoleMutationAdded_organization} from '__generated__/SetOrgUserRoleMutationAdded_organization.graphql'
 
 graphql`
   fragment SetOrgUserRoleMutationAdded_organization on SetOrgUserRoleAddedPayload {
@@ -53,32 +55,29 @@ const mutation = graphql`
   }
 `
 
-const popPromoteToBillingLeaderToast = (payload, {atmosphere, history}) => {
+export const setOrgUserRoleAddedOrganizationOnNext: OnNextHandler<
+  SetOrgUserRoleMutationAdded_organization
+> = (payload, {atmosphere, history}) => {
   if (!payload || !payload.organization) return
   const {id: orgId, name: orgName} = payload.organization
-  atmosphere.eventEmitter.emit('addToast', {
-    level: 'info',
+  atmosphere.eventEmitter.emit('addSnackbar', {
+    key: `promotedToBillingLead:${orgId}`,
     autoDismiss: 10,
-    title: 'Congratulations!',
-    message: `You’ve been promoted to billing leader for ${orgName}`,
+    message: `Congratulations! You’ve been promoted to billing leader for ${orgName}`,
     action: {
       label: 'Check it out!',
       callback: () => {
-        history.push(`/me/organizations/${orgId}/members`)
+        history && history.push(`/me/organizations/${orgId}/members`)
       }
     }
   })
-}
-
-export const setOrgUserRoleAddedOrganizationOnNext = (payload, {atmosphere, history}) => {
-  popPromoteToBillingLeaderToast(payload, {atmosphere, history})
 }
 
 export const setOrgUserRoleAddedOrganizationUpdater = (payload, store, viewerId) => {
   const promotedUserId = getInProxy(payload, 'updatedOrgMember', 'user', 'id')
   if (promotedUserId === viewerId) {
     const notificationsAdded = payload.getLinkedRecords('notificationsAdded')
-    handleAddNotifications(notificationsAdded, store, viewerId)
+    handleAddNotifications(notificationsAdded, store)
 
     const org = payload.getLinkedRecord('organization')
     handleAddOrganization(org, store, viewerId)
@@ -90,13 +89,13 @@ export const setOrgUserRoleRemovedOrganizationUpdater = (payload, store, viewerI
   if (removedUserId === viewerId) {
     const notificationsRemoved = payload.getLinkedRecords('notificationsRemoved')
     const notificationIdsRemoved = getInProxy(notificationsRemoved, 'id')
-    handleRemoveNotifications(notificationIdsRemoved, store, viewerId)
+    handleRemoveNotifications(notificationIdsRemoved, store)
     // const orgId = getInProxy(payload, 'organization', 'id');
     // handleRemoveOrganization(orgId, store, viewerId);
   }
 }
 
-const SetOrgUserRoleMutation = (environment, variables, options, onError, onCompleted) => {
+const SetOrgUserRoleMutation = (environment, variables, _options, onError, onCompleted) => {
   return commitMutation(environment, {
     mutation,
     variables,

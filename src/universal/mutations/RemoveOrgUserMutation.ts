@@ -1,4 +1,4 @@
-import {commitLocalUpdate, commitMutation} from 'react-relay'
+import {commitLocalUpdate, commitMutation, graphql} from 'react-relay'
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications'
 import handleRemoveOrganization from 'universal/mutations/handlers/handleRemoveOrganization'
@@ -12,6 +12,8 @@ import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks'
 import {setLocalStageAndPhase} from 'universal/utils/relay/updateLocalStage'
 import findStageById from 'universal/utils/meetings/findStageById'
 import onExOrgRoute from 'universal/utils/onExOrgRoute'
+import {OnNextHandler} from 'universal/types/relayMutations'
+import {RemoveOrgUserMutation_notification} from '__generated__/RemoveOrgUserMutation_notification.graphql'
 
 graphql`
   fragment RemoveOrgUserMutation_organization on RemoveOrgUserPayload {
@@ -34,6 +36,7 @@ graphql`
       id
     }
     organization {
+      id
       name
     }
     kickOutNotifications {
@@ -85,29 +88,6 @@ const mutation = graphql`
   }
 `
 
-const popKickedOutToast = (payload, {atmosphere, history}) => {
-  if (!payload) return
-  const {organization, kickOutNotifications} = payload
-  if (!organization || !kickOutNotifications) return
-  const {name: orgName} = organization
-  const teamIds = kickOutNotifications.map((notification) => notification.team.id)
-  atmosphere.eventEmitter.emit('addToast', {
-    level: 'warning',
-    autoDismiss: 10,
-    title: 'So long!',
-    message: `You have been removed from ${orgName} and all its teams`
-  })
-
-  const {pathname} = history.location
-  for (let ii = 0; ii < teamIds.length; ii++) {
-    const teamId = teamIds[ii]
-    if (onTeamRoute(pathname, teamId)) {
-      history.push('/me')
-      return
-    }
-  }
-}
-
 export const removeOrgUserOrganizationUpdater = (payload, store, viewerId) => {
   const removedUserId = getInProxy(payload, 'user', 'id')
   const removedOrgUserId = getInProxy(payload, 'organizationUserId')
@@ -119,17 +99,17 @@ export const removeOrgUserOrganizationUpdater = (payload, store, viewerId) => {
   }
 }
 
-export const removeOrgUserNotificationUpdater = (payload, store, viewerId) => {
+export const removeOrgUserNotificationUpdater = (payload, store) => {
   const removedTeamNotifications = payload.getLinkedRecords('removedTeamNotifications')
   const teamNotificationIds = getInProxy(removedTeamNotifications, 'id')
-  handleRemoveNotifications(teamNotificationIds, store, viewerId)
+  handleRemoveNotifications(teamNotificationIds, store)
 
   const removedOrgNotifications = payload.getLinkedRecords('removedOrgNotifications')
   const orgNotificationIds = getInProxy(removedOrgNotifications, 'id')
-  handleRemoveNotifications(orgNotificationIds, store, viewerId)
+  handleRemoveNotifications(orgNotificationIds, store)
 
   const kickOutNotifications = payload.getLinkedRecords('kickOutNotifications')
-  handleAddNotifications(kickOutNotifications, store, viewerId)
+  handleAddNotifications(kickOutNotifications, store)
 }
 
 export const removeOrgUserTeamUpdater = (payload, store, viewerId) => {
@@ -192,8 +172,28 @@ export const removeOrgUserOrganizationOnNext = (payload, context) => {
   }
 }
 
-export const removeOrgUserNotificationOnNext = (payload, {atmosphere, history}) => {
-  popKickedOutToast(payload, {atmosphere, history})
+export const removeOrgUserNotificationOnNext: OnNextHandler<RemoveOrgUserMutation_notification> = (
+  payload,
+  {atmosphere, history}
+) => {
+  if (!payload) return
+  const {organization, kickOutNotifications} = payload
+  if (!organization || !kickOutNotifications) return
+  const {name: orgName, id: orgId} = organization
+  const teamIds = kickOutNotifications.map((notification) => notification && notification.team.id)
+  atmosphere.eventEmitter.emit('addSnackbar', {
+    key: `removedFromOrg:${orgId}`,
+    autoDismiss: 10,
+    message: `You have been removed from ${orgName} and all its teams`
+  })
+
+  for (let ii = 0; ii < teamIds.length; ii++) {
+    const teamId = teamIds[ii]
+    if (onTeamRoute(window.location.pathname, teamId)) {
+      history && history.push('/me')
+      return
+    }
+  }
 }
 
 const RemoveOrgUserMutation = (atmosphere, variables, context, onError, onCompleted) => {

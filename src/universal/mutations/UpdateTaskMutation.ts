@@ -57,7 +57,7 @@ export const updateTaskTaskOnNext: OnNextHandler<UpdateTaskMutation_task> = (
   payload,
   {atmosphere, history}
 ) => {
-  if (!payload) return
+  if (!payload || !payload.addedNotification) return
   popInvolvementToast(payload.addedNotification, {atmosphere, history})
 }
 

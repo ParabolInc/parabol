@@ -1,8 +1,10 @@
-import {commitMutation} from 'react-relay'
+import {commitMutation, graphql} from 'react-relay'
 import handleAddTeams from 'universal/mutations/handlers/handleAddTeams'
 import createProxyRecord from 'universal/utils/relay/createProxyRecord'
 import getGraphQLError from 'universal/utils/relay/getGraphQLError'
 import handleRemoveSuggestedActions from 'universal/mutations/handlers/handleRemoveSuggestedActions'
+import {OnNextHandler} from 'universal/types/relayMutations'
+import {AddTeamMutation_team} from '__generated__/AddTeamMutation_team.graphql'
 
 graphql`
   fragment AddTeamMutation_team on AddTeamPayload {
@@ -29,14 +31,19 @@ const mutation = graphql`
   }
 `
 
-const popTeamCreatedToast = (payload, {atmosphere, history}) => {
-  const {id: teamId, name: teamName} = payload.team
-  atmosphere.eventEmitter.emit('addToast', {
-    level: 'success',
-    title: 'Team successfully created!',
-    message: `Here's your new team dashboard for ${teamName}`
+const popTeamCreatedToast: OnNextHandler<AddTeamMutation_team> = (
+  payload,
+  {atmosphere, history}
+) => {
+  const {team} = payload
+  if (!team) return
+  const {id: teamId, name: teamName} = team
+  atmosphere.eventEmitter.emit('addSnackbar', {
+    autoDismiss: 5,
+    key: `teamCreated:${teamId}`,
+    message: `Team created! Here's your new team dashboard for ${teamName}`
   })
-  history.push(`/team/${teamId}`)
+  history && history.push(`/team/${teamId}`)
 }
 
 export const addTeamTeamUpdater = (payload, store, viewerId) => {
@@ -57,7 +64,7 @@ const AddTeamMutation = (atmosphere, variables, options, onError, onCompleted) =
     updater: (store) => {
       const payload = store.getRootField('addTeam')
       if (!payload) return
-      addTeamTeamUpdater(payload, store, viewerId, options)
+      addTeamTeamUpdater(payload, store, viewerId)
     },
     optimisticUpdater: (store) => {
       const {newTeam} = variables

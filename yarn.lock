@@ -2419,9 +2419,9 @@
     "@types/prop-types" "*"
     csstype "^2.2.0"
 
-"@types/relay-runtime@*", "@types/relay-runtime@https://github.com/mattkrick/relay-runtime-strict-types/tarball/3cd987da18e0bf2f4ddf45b605305e2a7b81944e":
-  version "2.0.3"
-  resolved "https://github.com/mattkrick/relay-runtime-strict-types/tarball/3cd987da18e0bf2f4ddf45b605305e2a7b81944e#e1bd98b46c0465704f2cb6eb4ad55d978fa259cb"
+"@types/relay-runtime@*", "@types/relay-runtime@https://github.com/mattkrick/relay-runtime-strict-types/tarball/7c43a3f72e423042d096cf222587e4748aa0d05e":
+  version "5.0.0"
+  resolved "https://github.com/mattkrick/relay-runtime-strict-types/tarball/7c43a3f72e423042d096cf222587e4748aa0d05e#fec5b87f547826af9840a87599254256d319e2a0"
 
 "@types/segment-analytics@^0.0.30":
   version "0.0.30"
@@ -5856,7 +5856,7 @@ create-hmac@^1.1.0, create-hmac@^1.1.2, create-hmac@^1.1.4:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
-create-react-class@^15.5.1, create-react-class@^15.6.2:
+create-react-class@^15.6.2:
   version "15.6.3"
   resolved "https://registry.yarnpkg.com/create-react-class/-/create-react-class-15.6.3.tgz#2d73237fb3f970ae6ebe011a9e66f46dbca80036"
   integrity sha512-M+/3Q6E6DLO6Yx3OwrWjwHBnvfXXYA7W+dFjt/ZDBemHO1DDZhsalX/NUtnTYclN6GfnBDRh4qRHjcDHmlJBJg==
@@ -14296,15 +14296,6 @@ react-motion@^0.5.2:
     prop-types "^15.5.8"
     raf "^3.1.0"
 
-react-notification-system@^0.2.16:
-  version "0.2.17"
-  resolved "https://registry.yarnpkg.com/react-notification-system/-/react-notification-system-0.2.17.tgz#a60eddbb62225ad8f9fc5d7837546bf6cdb36818"
-  integrity sha1-pg7du2IiWtj5/F14N1Rr9s2zaBg=
-  dependencies:
-    create-react-class "^15.5.1"
-    object-assign "^4.0.1"
-    prop-types "^15.5.6"
-
 react-redux@^5.0.7:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-5.1.1.tgz#88e368682c7fa80e34e055cd7ac56f5936b0f52f"
@@ -14902,10 +14893,9 @@ relateurl@0.2.x:
   resolved "https://registry.yarnpkg.com/relateurl/-/relateurl-0.2.7.tgz#54dbf377e51440aca90a4cd274600d3ff2d888a9"
   integrity sha1-VNvzd+UUQKypCkzSdGANP/LYiKk=
 
-relay-compiler-language-typescript@^4.3.0:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/relay-compiler-language-typescript/-/relay-compiler-language-typescript-4.3.0.tgz#4069253adfe7866d677324c50f166ee20ea53240"
-  integrity sha512-X7hOG3Q/YkkwCuP6MA881aY3JmqatpsnCpW/J58LOaS6NQ6osl1aurmL7qVwfrIUfk+aSXvUbyUrFeQUj/DhXg==
+"relay-compiler-language-typescript@https://github.com/mattkrick/relay-compiler-language-typescript/tarball/3dd0275fc831c6b53c4fdfd5da2879dcaac87078":
+  version "4.1.0"
+  resolved "https://github.com/mattkrick/relay-compiler-language-typescript/tarball/3dd0275fc831c6b53c4fdfd5da2879dcaac87078#957a2ce681e80ae8c2f1982f8756a804ca440f3f"
   dependencies:
     immutable "^3.8.2"
     invariant "^2.2.2"

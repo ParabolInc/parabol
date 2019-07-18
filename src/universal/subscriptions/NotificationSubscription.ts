@@ -86,6 +86,7 @@ const subscription = graphql`
           ...MeetingStageTimeLimitEnd_notification
           type
           meeting {
+            id
             meetingType
             team {
               id
@@ -135,10 +136,9 @@ const stripeFailPaymentNotificationOnNext: NextHandler = (
   const {organization} = notification
   if (!organization) return
   const {id: orgId, name: orgName} = organization
-  atmosphere.eventEmitter.emit('addToast', {
-    level: 'warning',
+  atmosphere.eventEmitter.emit('addSnackbar', {
+    key: `rejectedPayment:${orgId}`,
     autoDismiss: 10,
-    title: 'Oh no!',
     message: `Your credit card for ${orgName} was rejected.`,
     action: {
       label: 'Fix it!',
@@ -154,14 +154,13 @@ const meetingStageTimeLimitOnNext: NextHandler = (payload: any, {atmosphere, his
   if (!payload || payload.__typename !== 'MeetingStageTimeLimitPayload') return
   const {notification} = payload
   const {meeting} = notification
-  const {meetingType, team} = meeting
+  const {meetingType, team, id: meetingId} = meeting
   const {id: teamId, name: teamName} = team
   const meetingLabel = meetingTypeToLabel[meetingType]
   const meetingSlug = meetingTypeToSlug[meetingType]
-  atmosphere.eventEmitter.emit('addToast', {
-    level: 'info',
+  atmosphere.eventEmitter.emit('addSnackbar', {
+    key: `meetingStageLimitReached:${meetingId}`,
     autoDismiss: 10,
-    title: 'Time’s up!',
     message: `Your ${meetingLabel} meeting for ${teamName} is ready to move forward!`,
     action: {
       label: 'Go there',
@@ -246,7 +245,7 @@ const NotificationSubscription = (atmosphere: Atmosphere, _queryVariables, subPa
           meetingStageTimeLimitUpdater(payload, context)
           break
         case 'RemoveOrgUserPayload':
-          removeOrgUserNotificationUpdater(payload, store, viewerId)
+          removeOrgUserNotificationUpdater(payload, store)
           break
         case 'StripeFailPaymentPayload':
           stripeFailPaymentNotificationUpdater(payload, context)
