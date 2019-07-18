@@ -16,7 +16,7 @@ const Modal = styled('div')({
   height: '100%',
   justifyContent: 'flex-end',
   left: 0,
-  paddingBottom: 16,
+  padding: 8,
   position: 'absolute',
   top: 0,
   width: '100%',
@@ -25,19 +25,15 @@ const Modal = styled('div')({
 
 export type SnackbarRemoveFn = (snack: Snack) => boolean
 
-interface SnackAction {
+export interface SnackAction {
   label: string
   callback: () => void
 }
 
-// type SnackTypes = 'offline'
-
 export interface Snack {
+  key: string // string following format: `type` OR `type:variable`
   message: string
-  // type?: SnackTypes
-  key: string
   autoDismiss: number // seconds. 0 means never dismiss
-  // typeKey?: string
   action?: SnackAction
   secondaryAction?: SnackAction
 }
@@ -49,6 +45,11 @@ const Snackbar = () => {
   const {openPortal, terminatePortal, portal} = usePortal({id: 'snackbar'})
   const transitionChildren = useTransition(snacksRef.current)
   const transitionChildrenRef = useRef(transitionChildren)
+
+  // used to ensure the snack isn't dismissed when the cursor is on it
+  const [hoveredSnackRef, setHoveredSnack] = useRefState<Snack | null>(null)
+  const dismissOnLeaveRef = useRef<Snack>()
+
   transitionChildrenRef.current = transitionChildren
 
   const filterSnacks = useCallback((removeFn: SnackbarRemoveFn) => {
@@ -68,10 +69,26 @@ const Snackbar = () => {
     setActiveSnacks([...snacksRef.current, snack])
     if (snack.autoDismiss !== 0) {
       setTimeout(() => {
-        dismissSnack(snack)
+        if (hoveredSnackRef.current === snack) {
+          dismissOnLeaveRef.current = snack
+        } else {
+          dismissSnack(snack)
+        }
       }, snack.autoDismiss * 1000)
     }
   }, [])
+
+  const onMouseEnter = (snack: Snack) => () => {
+    setHoveredSnack(snack)
+  }
+
+  const onMouseLeave = () => {
+    if (dismissOnLeaveRef.current) {
+      dismissSnack(dismissOnLeaveRef.current)
+      dismissOnLeaveRef.current = undefined
+    }
+    setHoveredSnack(null)
+  }
 
   // handle events
   useEffect(() => {
@@ -118,9 +135,13 @@ const Snackbar = () => {
           <SnackbarMessage
             key={child.key}
             message={child.message}
+            action={child.action}
+            secondaryAction={child.secondaryAction}
             status={status}
             onTransitionEnd={onTransitionEnd}
             dismissSnack={() => dismissSnack(child)}
+            onMouseEnter={onMouseEnter(child)}
+            onMouseLeave={onMouseLeave}
           />
         )
       })}

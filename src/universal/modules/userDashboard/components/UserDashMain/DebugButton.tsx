@@ -16,7 +16,13 @@ class DebugButton extends Component<Props> {
     atmosphere.eventEmitter.emit('addSnackbar', {
       autoDismiss: 5,
       message: 'Your internet is unstable. Behind a firewall? Contact us for support',
-      key: 'firewall'
+      key: 'firewall',
+      action: {
+        label: 'nice',
+        callback: () => {
+          console.log('hey')
+        }
+      }
     })
     // commitLocalUpdate(atmosphere, (store) => {
     //   const teamId = 'qa1S56OMu'

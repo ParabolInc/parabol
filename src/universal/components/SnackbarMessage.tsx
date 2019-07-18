@@ -4,38 +4,68 @@ import {PALETTE} from 'universal/styles/paletteV2'
 import {Radius} from 'universal/types/constEnums'
 import React from 'react'
 import {DECELERATE} from 'universal/styles/animation'
+import {SnackAction} from 'universal/components/Snackbar'
+import SnackbarMessageAction from 'universal/components/SnackbarMessageAction'
 
-interface SnackProps {
+interface Props {
   onTransitionEnd: () => void
   message: string
   status: TransitionStatus
   dismissSnack: () => void
+  action?: SnackAction
+  secondaryAction?: SnackAction
+  onMouseEnter: () => void
+  onMouseLeave: () => void
 }
 
 const Space = styled('div')({
   paddingBottom: 8
 })
 
-const MessageStyles = styled('div')(({status}: {status: TransitionStatus}) => ({
-  background: PALETTE.BACKGROUND_DARK,
-  borderRadius: Radius.SNACKBAR,
+const Text = styled('div')({
   color: '#fff',
-  padding: 16,
+  fontSize: 14,
+  padding: 8,
+  userSelect: 'none'
+})
+
+const MessageStyles = styled('div')(({status}: {status: TransitionStatus}) => ({
+  alignItems: 'center',
+  background: PALETTE.BACKGROUND_DARK_OPAQUE,
+  borderRadius: Radius.SNACKBAR,
+  display: 'flex',
+  padding: 8,
   transition: `all 300ms ${DECELERATE}`,
   opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
   transform: `translateY(${
     status === TransitionStatus.MOUNTED ? 20 : status === TransitionStatus.EXITING ? -20 : 0
   }px)`,
-  pointerEvents: 'auto',
-  userSelect: 'none'
+  pointerEvents: 'auto'
 }))
 
-const SnackbarMessage = (props: SnackProps) => {
-  const {status, message, onTransitionEnd, dismissSnack} = props
+const SnackbarMessage = (props: Props) => {
+  const {
+    action,
+    secondaryAction,
+    status,
+    message,
+    onTransitionEnd,
+    dismissSnack,
+    onMouseEnter,
+    onMouseLeave
+  } = props
   return (
     <Space>
-      <MessageStyles status={status} onTransitionEnd={onTransitionEnd} onClick={dismissSnack}>
-        {message}
+      <MessageStyles
+        status={status}
+        onTransitionEnd={onTransitionEnd}
+        onClick={dismissSnack}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+      >
+        <Text>{message}</Text>
+        <SnackbarMessageAction action={action} />
+        <SnackbarMessageAction action={secondaryAction} />
       </MessageStyles>
     </Space>
   )
