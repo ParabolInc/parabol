@@ -11,7 +11,7 @@ import onTeamRoute from 'universal/utils/onTeamRoute'
 import getInProxy from 'universal/utils/relay/getInProxy'
 import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray'
 import Atmosphere from '../Atmosphere'
-import {LocalHandlers} from '../types/relayMutations'
+import {LocalHandlers, OnNextHandler} from '../types/relayMutations'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 
 graphql`
@@ -40,13 +40,15 @@ const mutation = graphql`
   }
 `
 
-const popTeamArchivedToast = (payload: ArchiveTeamMutation_team, {history, atmosphere}) => {
+const popTeamArchivedToast: OnNextHandler<ArchiveTeamMutation_team> = (
+  payload,
+  {history, atmosphere}
+) => {
   if (!payload || !payload.team) return
   const {id: teamId, name: teamName} = payload.team
-  atmosphere.eventEmitter.emit('addToast', {
-    level: 'info',
-    autoDismiss: 10,
-    title: 'That’s it, folks!',
+  atmosphere.eventEmitter.emit('addSnackbar', {
+    key: `teamArchived:${teamId}`,
+    autoDismiss: 5,
     message: `${teamName} has been archived.`,
     action: {
       label: 'OK',
@@ -59,9 +61,8 @@ const popTeamArchivedToast = (payload: ArchiveTeamMutation_team, {history, atmos
       }
     }
   })
-  const {pathname} = history.location
-  if (onTeamRoute(pathname, teamId)) {
-    history.push('/me')
+  if (onTeamRoute(window.location.pathname, teamId)) {
+    history && history.push('/me')
   }
 }
 

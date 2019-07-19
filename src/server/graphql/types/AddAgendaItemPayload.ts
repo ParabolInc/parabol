@@ -1,12 +1,10 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql'
-import {resolveAgendaItem} from 'server/graphql/resolvers'
 import AgendaItem from 'server/graphql/types/AgendaItem'
 import StandardMutationError from 'server/graphql/types/StandardMutationError'
-import {IAddAgendaItemPayload} from 'universal/types/graphql'
 import {GQLContext} from 'server/graphql/graphql'
 import NewMeeting from 'server/graphql/types/NewMeeting'
 
-const AddAgendaItemPayload = new GraphQLObjectType<IAddAgendaItemPayload, GQLContext>({
+const AddAgendaItemPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'AddAgendaItemPayload',
   fields: () => ({
     error: {
@@ -14,7 +12,9 @@ const AddAgendaItemPayload = new GraphQLObjectType<IAddAgendaItemPayload, GQLCon
     },
     agendaItem: {
       type: AgendaItem,
-      resolve: resolveAgendaItem
+      resolve: ({agendaItemId}, _args, {dataLoader}) => {
+        return dataLoader.get('agendaItems').load(agendaItemId)
+      }
     },
     meetingId: {
       type: GraphQLID

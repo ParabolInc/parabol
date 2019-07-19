@@ -1,29 +1,26 @@
 import React, {useEffect} from 'react'
 import {RouteComponentProps} from 'react-router'
-import requireAuthAndRole from 'universal/decorators/requireAuthAndRole/requireAuthAndRole'
 import CreateImposterTokenMutation from 'universal/mutations/CreateImposterTokenMutation'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useAuthRoute from 'universal/hooks/useAuthRoute'
+import {AuthTokenRole} from 'universal/types/graphql'
 
 interface Props extends RouteComponentProps<{newUserId: string}> {}
 
 const Impersonate = (props: Props) => {
-  const {
-    match: {
-      params: {newUserId}
-    },
-    history,
-    location
-  } = props
+  const {match, history} = props
+  const {params} = match
+  const {newUserId} = params
   const atmosphere = useAtmosphere()
+  useAuthRoute({role: AuthTokenRole.su, silent: true})
   useEffect(() => {
     if (newUserId) {
       CreateImposterTokenMutation(atmosphere, newUserId, {
-        history,
-        location
+        history
       })
     }
   })
   return <div>{newUserId ? 'Impersonating...' : 'No userId provided!'}</div>
 }
 
-export default requireAuthAndRole({role: 'su', silent: true})(Impersonate)
+export default Impersonate

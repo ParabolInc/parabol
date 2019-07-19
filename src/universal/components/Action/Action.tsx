@@ -1,9 +1,8 @@
-import React, {lazy, Suspense} from 'react'
+import React, {lazy, memo, Suspense} from 'react'
 import styled from 'react-emotion'
 import {Route, Switch} from 'react-router'
 import AnalyticsPageRoot from 'universal/components/AnalyticsPageRoot'
 import SocketHealthMonitor from 'universal/components/SocketHealthMonitor'
-import Toast from 'universal/modules/toast/containers/Toast/Toast'
 import {CREATE_ACCOUNT_SLUG, SIGNIN_SLUG} from 'universal/utils/constants'
 import {PALETTE} from '../../styles/paletteV2'
 import {LoaderSize} from '../../types/constEnums'
@@ -12,6 +11,7 @@ import LoadingComponent from '../LoadingComponent/LoadingComponent'
 import PrivateRoutes from '../PrivateRoutes'
 import {DragDropContext as dragDropContext} from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
+import Snackbar from '../Snackbar'
 
 const AuthenticationPage = lazy(() =>
   import(/* webpackChunkName: 'AuthenticationPage' */ 'universal/components/AuthenticationPage')
@@ -44,11 +44,11 @@ const ActionStyles = styled('div')({
   width: '100%'
 })
 
-const Action = () => {
+const Action = memo(() => {
   return (
     <ActionStyles>
       <ErrorBoundary>
-        <Toast />
+        <Snackbar />
         <SocketHealthMonitor />
         <AnalyticsPageRoot />
         <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.WHOLE_PAGE} />}>
@@ -86,6 +86,6 @@ const Action = () => {
       </ErrorBoundary>
     </ActionStyles>
   )
-}
+})
 
 export default dragDropContext(HTML5Backend)(Action)

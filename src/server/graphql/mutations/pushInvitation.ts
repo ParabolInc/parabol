@@ -12,7 +12,7 @@ import PushInvitation from 'server/database/types/PushInvitation'
 
 const MAX_GLOBAL_DENIALS = 3
 const GLOBAL_DENIAL_TIME = ms('30d')
-const MAX_TEAM_DENIALS = 1
+const MAX_TEAM_DENIALS = 2
 
 export default {
   type: PushInvitationPayload,
@@ -42,7 +42,7 @@ export default {
     const teamPushInvitation = pushInvitations.find((row) => row.teamId === teamId)
     if (teamPushInvitation) {
       const {denialCount, lastDenialAt} = teamPushInvitation
-      if (denialCount > MAX_TEAM_DENIALS && lastDenialAt && lastDenialAt >= thresh) {
+      if (denialCount >= MAX_TEAM_DENIALS && lastDenialAt && lastDenialAt >= thresh) {
         return standardError(new Error('Previously denied. Must wait for an invitation'))
       }
     }
@@ -50,7 +50,7 @@ export default {
     const globalBlacklist = pushInvitations.filter(
       ({lastDenialAt}) => lastDenialAt && lastDenialAt >= thresh
     )
-    if (globalBlacklist.length > MAX_GLOBAL_DENIALS) {
+    if (globalBlacklist.length >= MAX_GLOBAL_DENIALS) {
       return standardError(new Error('Denied from other teams. Must wait for an invitation'))
     }
 
@@ -60,7 +60,7 @@ export default {
       await r.table('PushInvitation').insert(new PushInvitation({userId: viewerId, teamId}))
     }
 
-    const data = {userId: viewerId}
+    const data = {userId: viewerId, teamId}
     publish(TEAM, teamId, PushInvitationPayload, data, subOptions)
     return null
   })

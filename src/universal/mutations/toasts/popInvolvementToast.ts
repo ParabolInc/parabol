@@ -1,13 +1,20 @@
 import {matchPath} from 'react-router-dom'
 import {MENTIONEE} from 'universal/utils/constants'
+import {OnNextHandler} from 'universal/types/relayMutations'
+import {TaskInvolves_notification} from '__generated__/TaskInvolves_notification.graphql'
 
-const popInvolvementToast = (notification, {atmosphere, history}) => {
+const popInvolvementToast: OnNextHandler<TaskInvolves_notification> = (
+  notification,
+  {atmosphere, history}
+) => {
   if (!notification) return
   const {
     involvement,
-    changeAuthor: {preferredName: changeAuthorName}
+    changeAuthor: {preferredName: changeAuthorName},
+    task
   } = notification
-  const {pathname} = history.location
+  const {id: taskId} = task
+  const {pathname} = window.location
   const inMeeting =
     Boolean(
       matchPath(pathname, {
@@ -25,15 +32,14 @@ const popInvolvementToast = (notification, {atmosphere, history}) => {
 
   const wording = involvement === MENTIONEE ? 'mentioned you in' : 'assigned you to'
   const message = `${changeAuthorName} ${wording} a task`
-  atmosphere.eventEmitter.emit('addToast', {
-    level: 'info',
+  atmosphere.eventEmitter.emit('addSnackbar', {
+    key: `taskInvolvement:${taskId}`,
     autoDismiss: 10,
-    title: 'Fresh work!',
     message,
     action: {
       label: 'Check it out!',
       callback: () => {
-        history.push('/me/notifications')
+        history && history.push('/me/notifications')
       }
     }
   })

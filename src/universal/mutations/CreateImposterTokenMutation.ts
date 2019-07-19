@@ -1,7 +1,8 @@
-import {commitMutation} from 'react-relay'
+import {commitMutation, graphql} from 'react-relay'
 import signout from 'universal/containers/Signout/signout'
 import getGraphQLError from 'universal/utils/relay/getGraphQLError'
 import LoginMutation from 'universal/mutations/LoginMutation'
+import Atmosphere from 'universal/Atmosphere'
 
 graphql`
   fragment CreateImposterTokenMutation_agendaItem on CreateImposterTokenPayload {
@@ -25,11 +26,11 @@ const mutation = graphql`
   }
 `
 
-const CreateImposterTokenMutation = (atmosphere, userId, {dispatch, history}) => {
+const CreateImposterTokenMutation = (atmosphere: Atmosphere, userId, {history}) => {
   const onError = (err) => {
-    atmosphere.eventEmitter.emit('addToast', {
-      level: 'error',
-      title: 'Whoa there!',
+    atmosphere.eventEmitter.emit('addSnackbar', {
+      autoDismiss: 5,
+      key: 'imposterError',
       message: err.message
     })
   }
@@ -37,7 +38,7 @@ const CreateImposterTokenMutation = (atmosphere, userId, {dispatch, history}) =>
   return commitMutation(atmosphere, {
     mutation,
     variables: {userId},
-    onCompleted: async (res, errors) => {
+    onCompleted: (res, errors) => {
       const serverError = getGraphQLError(res, errors)
       if (serverError) {
         onError(serverError)
@@ -47,7 +48,7 @@ const CreateImposterTokenMutation = (atmosphere, userId, {dispatch, history}) =>
       const {authToken} = createImposterToken
 
       // Reset application state:
-      await signout(atmosphere, dispatch)
+      signout(atmosphere, undefined, history)
 
       // Assume the identity of the new user:
       const onCompleted = () => {

@@ -1,7 +1,9 @@
-import {commitMutation} from 'react-relay'
+import {commitMutation, graphql} from 'react-relay'
 import handleAddOrganization from 'universal/mutations/handlers/handleAddOrganization'
 import handleAddTeams from 'universal/mutations/handlers/handleAddTeams'
 import handleRemoveSuggestedActions from 'universal/mutations/handlers/handleRemoveSuggestedActions'
+import {OnNextHandler} from 'universal/types/relayMutations'
+import {AddOrgMutation_organization} from '__generated__/AddOrgMutation_organization.graphql'
 
 graphql`
   fragment AddOrgMutation_organization on AddOrgPayload {
@@ -41,13 +43,17 @@ const mutation = graphql`
   }
 `
 
-const popOrganizationCreatedToast = (payload, {atmosphere}) => {
-  const teamName = payload.team.name
-  if (!teamName) return
-  atmosphere.eventEmitter.emit('addToast', {
-    level: 'success',
-    title: 'Organization successfully created!',
-    message: `Here's your new team dashboard for ${teamName}`
+const popOrganizationCreatedToast: OnNextHandler<AddOrgMutation_organization> = (
+  payload,
+  {atmosphere}
+) => {
+  const {team} = payload
+  if (!team) return
+  const {name: teamName, id: teamId} = team
+  atmosphere.eventEmitter.emit('addSnackbar', {
+    autoDismiss: 5,
+    key: `orgCreated:${teamId}`,
+    message: `Organization created! Here's your new team dashboard for ${teamName}`
   })
 }
 
@@ -80,7 +86,7 @@ const AddOrgMutation = (atmosphere, variables, {history}, onError, onCompleted) 
       }
       if (!errors) {
         const payload = res.addOrg
-        popOrganizationCreatedToast(payload, {history, atmosphere})
+        popOrganizationCreatedToast(payload, {atmosphere})
         const teamId = payload.team && payload.team.id
         history.push(`/team/${teamId}`)
       }

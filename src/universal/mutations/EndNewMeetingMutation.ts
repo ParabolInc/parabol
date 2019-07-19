@@ -47,14 +47,11 @@ const mutation = graphql`
   }
 `
 
-export const popEndNewMeetingToast = (atmosphere) => {
-  atmosphere.eventEmitter.emit('addToast', {
-    level: 'info',
-    autoDismiss: 10,
-    title: 'It’s dead!',
-    message: `You killed the meeting.
-    Just like your goldfish.`,
-    action: {label: 'Good.'}
+const popEndNewMeetingToast = (atmosphere: Atmosphere, meetingId: string) => {
+  atmosphere.eventEmitter.emit('addSnackbar', {
+    key: `meetingKilled:${meetingId}`,
+    autoDismiss: 5,
+    message: `The meeting has been terminated`
   })
 }
 
@@ -70,7 +67,7 @@ export const endNewMeetingTeamOnNext = (payload, context) => {
       history.push('/create-account')
     } else {
       history.push(`/${meetingSlug}/${teamId}`)
-      popEndNewMeetingToast(atmosphere)
+      popEndNewMeetingToast(atmosphere, meetingId)
     }
   } else {
     if (meetingId === 'demoMeeting') {

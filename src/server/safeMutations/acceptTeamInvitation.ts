@@ -110,6 +110,13 @@ const acceptTeamInvitation = async (
   // update auth0
   const tms = user.tms ? user.tms.concat(teamId) : [teamId]
   auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
+
+  // if accepted to team, don't count it towards the global denial count
+  await r
+    .table('PushInvitation')
+    .getAll(userId, {index: 'userId'})
+    .filter({teamId})
+    .delete()
   return {
     teamLeadUserIdWithNewActions,
     removedNotificationIds: removedNotificationIds as Array<string>

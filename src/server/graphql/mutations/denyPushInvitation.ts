@@ -6,6 +6,8 @@ import {GQLContext} from 'server/graphql/graphql'
 import rateLimit from 'server/graphql/rateLimit'
 import DenyPushInvitationPayload from 'server/graphql/types/DenyPushInvitationPayload'
 import PushInvitation from 'server/database/types/PushInvitation'
+import publish from 'server/utils/publish'
+import {TEAM} from 'universal/utils/constants'
 
 export default {
   type: DenyPushInvitationPayload,
@@ -13,12 +15,15 @@ export default {
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID)
+    },
+    userId: {
+      type: new GraphQLNonNull(GraphQLID)
     }
   },
   resolve: rateLimit({
     perMinute: 10,
     perHour: 20
-  })(async (_source, {userId, teamId}, {authToken}: GQLContext) => {
+  })(async (_source, {userId, teamId}, {authToken, socketId: mutatorId}: GQLContext) => {
     const r = getRethink()
     const viewerId = getUserId(authToken)
     const now = new Date()
@@ -39,12 +44,14 @@ export default {
       return standardError(new Error('User did not request push invitation'), {userId: viewerId})
     }
 
+    // RESOLUTION
     await r
       .table('PushInvitation')
       .get(teamBlacklist.id)
-      .update({denialCount: teamBlacklist.denialCount + 1, lastDeniedAt: now})
+      .update({denialCount: teamBlacklist.denialCount + 1, lastDenialAt: now})
 
-    // RESOLUTION
-    return null
+    const data = {teamId, userId}
+    publish(TEAM, teamId, DenyPushInvitationPayload, data, {mutatorId})
+    return data
   })
 }

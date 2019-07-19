@@ -3,21 +3,21 @@ import nullIfEmpty from 'universal/utils/nullIfEmpty'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import findStageById from 'universal/utils/meetings/findStageById'
 
-export const resolveAgendaItem = ({agendaItemId, agendaItem}, args, {dataLoader}) => {
+export const resolveAgendaItem = ({agendaItemId, agendaItem}, _args, {dataLoader}) => {
   return agendaItemId ? dataLoader.get('agendaItems').load(agendaItemId) : agendaItem
 }
 
-export const resolveNewMeeting = ({meeting, meetingId}, args, {dataLoader}) => {
+export const resolveNewMeeting = ({meeting, meetingId}, _args, {dataLoader}) => {
   return meetingId ? dataLoader.get('newMeetings').load(meetingId) : meeting
 }
 
-export const resolveNotification = ({notificationId, notification}, args, {dataLoader}) => {
+export const resolveNotification = ({notificationId, notification}, _args, {dataLoader}) => {
   return notificationId ? dataLoader.get('notifications').load(notificationId) : notification
 }
 
 export const resolveNotificationForViewer = async (
   {notificationIds, notifications},
-  args,
+  _args,
   {authToken, dataLoader}
 ) => {
   const notificationDocs =
@@ -30,7 +30,7 @@ export const resolveNotificationForViewer = async (
 
 export const makeResolveNotificationForViewer = (idArray, docArray) => async (
   source,
-  args,
+  _args,
   {authToken, dataLoader}
 ) => {
   const notificationIds = source[idArray]
@@ -45,7 +45,7 @@ export const makeResolveNotificationForViewer = (idArray, docArray) => async (
 
 export const makeResolveNotificationsForViewer = (idArray, docArray) => async (
   source,
-  args,
+  _args,
   {authToken, dataLoader}
 ) => {
   const notificationIds = source[idArray]
@@ -60,17 +60,17 @@ export const makeResolveNotificationsForViewer = (idArray, docArray) => async (
   return nullIfEmpty(viewerNotifications)
 }
 
-export const resolveMeetingMember = ({meetingId, userId}, args, {dataLoader}) => {
+export const resolveMeetingMember = ({meetingId, userId}, _args, {dataLoader}) => {
   if (!meetingId || !userId) return null
   const meetingMemberId = toTeamMemberId(meetingId, userId)
   return dataLoader.get('meetingMembers').load(meetingMemberId)
 }
 
-export const resolveOrganization = ({orgId, organization}, args, {dataLoader}) => {
+export const resolveOrganization = ({orgId, organization}, _args, {dataLoader}) => {
   return orgId ? dataLoader.get('organizations').load(orgId) : organization
 }
 
-export const resolveTask = async ({task, taskId}, args, {authToken, dataLoader}) => {
+export const resolveTask = async ({task, taskId}, _args, {authToken, dataLoader}) => {
   const taskDoc = taskId ? await dataLoader.get('tasks').load(taskId) : task
   if (!taskDoc) return null
   const {userId, tags, teamId} = taskDoc
@@ -79,7 +79,7 @@ export const resolveTask = async ({task, taskId}, args, {authToken, dataLoader})
   return isViewer || (!tags.includes('private') && isViewerOnTeam) ? taskDoc : null
 }
 
-export const resolveTasks = async ({taskIds}, args, {authToken, dataLoader}) => {
+export const resolveTasks = async ({taskIds}, _args, {authToken, dataLoader}) => {
   if (!taskIds || taskIds.length === 0) return null
   const tasks = await dataLoader.get('tasks').loadMany(taskIds)
   const {userId} = tasks[0]
@@ -88,7 +88,7 @@ export const resolveTasks = async ({taskIds}, args, {authToken, dataLoader}) => 
   return isViewer ? teamTasks : nullIfEmpty(teamTasks.filter((p) => !p.tags.includes('private')))
 }
 
-export const resolveTeam = ({team, teamId}, args, {dataLoader}) => {
+export const resolveTeam = ({team, teamId}, _args, {dataLoader}) => {
   // TODO figure out how to lock this down without using the tms, since the mutation may have invalidated it
   return teamId ? dataLoader.get('teams').load(teamId) : team
   // const teamDoc = teamId ? await dataLoader.get('teams').load(teamId) : team;
@@ -96,7 +96,7 @@ export const resolveTeam = ({team, teamId}, args, {dataLoader}) => {
   // return tms.includes(teamDoc.id) ? teamDoc : null;
 }
 
-export const resolveTeams = ({teamIds, teams}, args, {dataLoader}) => {
+export const resolveTeams = ({teamIds, teams}, _args, {dataLoader}) => {
   // TODO figure out how to lock this down without using the tms, since the mutation may have invalidated it
   return teamIds && teamIds.length > 0 ? dataLoader.get('teams').loadMany(teamIds) : teams
   // const {tms} = authToken;
@@ -104,35 +104,35 @@ export const resolveTeams = ({teamIds, teams}, args, {dataLoader}) => {
   // return Array.isArray(teamDocs) ? teamDocs.filter((team) => tms.includes(team.id)) : null;
 }
 
-export const resolveTeamMember = ({teamMemberId, teamMember}, args, {dataLoader}) => {
+export const resolveTeamMember = ({teamMemberId, teamMember}, _args, {dataLoader}) => {
   return teamMemberId ? dataLoader.get('teamMembers').load(teamMemberId) : teamMember
 }
 
-export const resolveTeamMembers = ({teamMemberIds, teamMembers}, args, {dataLoader}) => {
+export const resolveTeamMembers = ({teamMemberIds, teamMembers}, _args, {dataLoader}) => {
   return teamMemberIds && teamMemberIds.length > 0
     ? dataLoader.get('teamMembers').loadMany(teamMemberIds)
     : teamMembers
 }
 
-export const resolveUnlockedStages = async ({meetingId, unlockedStageIds}, args, {dataLoader}) => {
+export const resolveUnlockedStages = async ({meetingId, unlockedStageIds}, _args, {dataLoader}) => {
   if (!unlockedStageIds || unlockedStageIds.length === 0 || !meetingId) return undefined
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  return unlockedStageIds.map((stageId) => findStageById(meeting.phases, stageId).stage)
+  return unlockedStageIds.map((stageId) => findStageById(meeting.phases, stageId)!.stage)
 }
 
-export const resolveUser = ({userId, user}, args, {dataLoader}) => {
+export const resolveUser = ({userId, user}, _args, {dataLoader}) => {
   return userId ? dataLoader.get('users').load(userId) : user
 }
 
 /* Special resolvers */
 
-export const resolveForSU = (fieldName) => (source, args, {authToken}) => {
+export const resolveForSU = (fieldName) => (source, _args, {authToken}) => {
   return isSuperUser(authToken) ? source[fieldName] : undefined
 }
 
-export const makeResolve = (idName, docName, dataLoaderName, isMany) => (
+export const makeResolve = (idName, docName, dataLoaderName, isMany?: boolean) => (
   source,
-  args,
+  _args,
   {dataLoader}
 ) => {
   const idValue = source[idName]
@@ -140,9 +140,9 @@ export const makeResolve = (idName, docName, dataLoaderName, isMany) => (
   return idValue ? dataLoader.get(dataLoaderName)[method](idValue) : source[docName]
 }
 
-export const resolveFilterByTeam = (resolver, getTeamId) => async (source, args, context) => {
+export const resolveFilterByTeam = (resolver, getTeamId) => async (source, _args, context) => {
   const {teamIdFilter} = source
-  const resolvedArray = await resolver(source, args, context)
+  const resolvedArray = await resolver(source, _args, context)
   return teamIdFilter
     ? resolvedArray.filter((obj) => getTeamId(obj) === teamIdFilter)
     : resolvedArray
@@ -150,7 +150,7 @@ export const resolveFilterByTeam = (resolver, getTeamId) => async (source, args,
 
 export const resolveForBillingLeaders = (fieldName) => async (
   source,
-  args,
+  _args,
   {authToken, dataLoader}
 ) => {
   const {id: orgId} = source

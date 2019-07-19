@@ -5,7 +5,7 @@ import {matchPath} from 'react-router'
 import {Disposable} from 'relay-runtime'
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
 import {IInviteToTeamOnMutationArguments} from '../types/graphql'
-import {LocalHandlers} from '../types/relayMutations'
+import {LocalHandlers, OnNextContext} from '../types/relayMutations'
 import AcceptTeamInvitationMutation from './AcceptTeamInvitationMutation'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 
@@ -43,21 +43,21 @@ const mutation = graphql`
 
 const popInvitationReceivedToast = (
   notification: InviteToTeamMutation_notification['teamInvitationNotification'] | null,
-  {atmosphere, history}
+  {atmosphere, history}: OnNextContext
 ) => {
   if (!notification) return
   const {
     id: notificationId,
-    team: {name: teamName},
+    team: {name: teamName, id: teamId},
     invitation: {
       token: invitationToken,
       inviter: {preferredName: inviterName}
     }
   } = notification
-  atmosphere.eventEmitter.emit('addToast', {
+  atmosphere.eventEmitter.emit('addSnackbar', {
+    key: `inviteToTeam:${teamId}`,
     autoDismiss: 10,
-    title: 'You’re invited!',
-    message: `${inviterName} would like you to join their team ${teamName}`,
+    message: `${inviterName} has invited you to join their team ${teamName}`,
     action: {
       label: 'Accept!',
       callback: () => {
@@ -91,7 +91,7 @@ export const inviteToTeamNotificationOnNext = (
 const InviteToTeamMutation = (
   atmosphere: any,
   variables: IInviteToTeamOnMutationArguments,
-  {onError, onCompleted}: LocalHandlers
+  {onError, onCompleted}: LocalHandlers = {}
 ): Disposable => {
   return commitMutation<TInviteToTeamMutation>(atmosphere, {
     mutation,

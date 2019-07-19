@@ -6,8 +6,8 @@ import TooltipStyled from 'universal/components/TooltipStyled'
 
 const backgroundStyles = (portalStatus: PortalStatus) => {
   switch (portalStatus) {
+    case PortalStatus.Entering:
     case PortalStatus.Entered:
-    case PortalStatus.AnimatedIn:
       return {
         opacity: 1,
         transform: 'scale(1)',
@@ -18,7 +18,7 @@ const backgroundStyles = (portalStatus: PortalStatus) => {
         opacity: 0,
         transition: `all ${Duration.TOOLTIP_CLOSE}ms ${DECELERATE}`
       }
-    case PortalStatus.Entering:
+    case PortalStatus.Mounted:
       return {
         transform: 'scale(0)'
       }

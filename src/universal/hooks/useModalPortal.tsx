@@ -23,7 +23,7 @@ const ModalBlock = styled('div')({
 })
 
 const backdropStyles = {
-  [PortalStatus.Entered]: {
+  [PortalStatus.Entering]: {
     opacity: 1,
     transition: `opacity ${Duration.MODAL_OPEN}ms ${DECELERATE}`
   },
@@ -31,13 +31,13 @@ const backdropStyles = {
     opacity: 0,
     transition: `opacity ${Duration.PORTAL_CLOSE}ms ${DECELERATE}`
   },
-  [PortalStatus.Entering]: {
+  [PortalStatus.Mounted]: {
     opacity: 0
   }
 }
 
 const modalStyles = {
-  [PortalStatus.Entered]: {
+  [PortalStatus.Entering]: {
     opacity: 1,
     transform: 'translateY(0)',
     transition: `all ${Duration.MODAL_OPEN}ms ${DECELERATE}`
@@ -47,7 +47,7 @@ const modalStyles = {
     transform: 'translateY(-32px)',
     transition: `all ${Duration.PORTAL_CLOSE}ms ${DECELERATE}`
   },
-  [PortalStatus.Entering]: {
+  [PortalStatus.Mounted]: {
     opacity: 0,
     transform: 'translateY(32px)'
   }

@@ -1,4 +1,4 @@
-const fromTeamMemberId = (teamMemberId) => {
+const fromTeamMemberId = (teamMemberId: string) => {
   const [userId, teamId] = teamMemberId.split('::')
   return {userId, teamId}
 }

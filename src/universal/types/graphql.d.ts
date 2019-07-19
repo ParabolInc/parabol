@@ -3099,6 +3099,7 @@ export interface IDeleteTaskOnMutationArguments {
 
 export interface IDenyPushInvitationOnMutationArguments {
   teamId: string
+  userId: string
 }
 
 export interface IDismissSuggestedActionOnMutationArguments {
@@ -4658,6 +4659,8 @@ export interface IDeleteTaskPayload {
 export interface IDenyPushInvitationPayload {
   __typename: 'DenyPushInvitationPayload'
   error: IStandardMutationError | null
+  teamId: string | null
+  userId: string | null
 }
 
 export interface IDisconnectSocketPayload {
@@ -5085,6 +5088,7 @@ export interface IPushInvitationPayload {
   __typename: 'PushInvitationPayload'
   error: IStandardMutationError | null
   user: IUser | null
+  team: ITeam | null
 }
 
 export interface IPromoteNewMeetingFacilitatorPayload {
@@ -6014,6 +6018,7 @@ export type TeamSubscriptionPayload =
   | IAutoGroupReflectionsPayload
   | ICreateReflectionPayload
   | ICreateReflectionGroupPayload
+  | IDenyPushInvitationPayload
   | IDowngradeToPersonalPayload
   | IDragDiscussionTopicPayload
   | IEndDraggingReflectionPayload

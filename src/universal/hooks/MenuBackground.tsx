@@ -14,8 +14,8 @@ const transformOrigins = {
 
 const backgroundStyles = (portalStatus: PortalStatus, isDropdown: boolean) => {
   switch (portalStatus) {
+    case PortalStatus.Entering:
     case PortalStatus.Entered:
-    case PortalStatus.AnimatedIn:
       return {
         opacity: 1,
         transform: isDropdown ? 'scaleY(1)' : 'scale(1)',
@@ -26,7 +26,7 @@ const backgroundStyles = (portalStatus: PortalStatus, isDropdown: boolean) => {
         opacity: 0,
         transition: `all ${Duration.PORTAL_CLOSE}ms ${DECELERATE}`
       }
-    case PortalStatus.Entering:
+    case PortalStatus.Mounted:
       return {
         transform: isDropdown ? 'scaleY(0)' : 'scale(0)'
       }

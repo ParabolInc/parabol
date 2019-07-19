@@ -1,17 +1,17 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql'
-import {resolveAgendaItem} from 'server/graphql/resolvers'
 import AgendaItem from 'server/graphql/types/AgendaItem'
 import StandardMutationError from 'server/graphql/types/StandardMutationError'
 import NewMeeting from 'server/graphql/types/NewMeeting'
-import {IUpdateAgendaItemPayload} from 'universal/types/graphql'
 import {GQLContext} from 'server/graphql/graphql'
 
-const UpdateAgendaItemPayload = new GraphQLObjectType<IUpdateAgendaItemPayload, GQLContext>({
+const UpdateAgendaItemPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'UpdateAgendaItemPayload',
   fields: () => ({
     agendaItem: {
       type: AgendaItem,
-      resolve: resolveAgendaItem
+      resolve: ({agendaItemId}, _args, {dataLoader}) => {
+        return dataLoader.get('agendaItems').load(agendaItemId)
+      }
     },
     meetingId: {
       type: GraphQLID
