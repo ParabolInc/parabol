@@ -10,8 +10,11 @@ interface Props {
 }
 
 const Action = styled(PlainButton)({
-  borderRadius: 4,
+  borderRadius: 2,
   color: PALETTE.TEXT_PINK,
+  fontSize: 14,
+  fontWeight: 600,
+  marginLeft: 8,
   padding: 8,
   transition: `background 100ms ${DECELERATE}`,
   ':hover,:focus,:active': {

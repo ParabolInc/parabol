@@ -26,7 +26,7 @@ const Space = styled('div')({
 const Text = styled('div')({
   color: '#fff',
   fontSize: 14,
-  padding: 8
+  padding: '6px 8px'
 })
 
 const MessageStyles = styled('div')(({status}: {status: TransitionStatus}) => ({
