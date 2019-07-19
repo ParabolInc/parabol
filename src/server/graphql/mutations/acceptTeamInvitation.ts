@@ -12,6 +12,7 @@ import standardError from '../../utils/standardError'
 import AcceptTeamInvitationPayload from '../types/AcceptTeamInvitationPayload'
 import TeamInvitation from 'server/database/types/TeamInvitation'
 import {verifyMassInviteToken} from 'server/utils/massInviteToken'
+import sendSegmentEvent from 'server/utils/sendSegmentEvent'
 
 export default {
   type: new GraphQLNonNull(AcceptTeamInvitationPayload),
@@ -132,7 +133,7 @@ export default {
           subOptions
         )
       }
-
+      sendSegmentEvent('Invite Accepted', viewerId, {teamId}).catch()
       return {
         ...data,
         authToken: encodeAuthTokenObj(makeAuthTokenObj({...authToken, tms}))
