@@ -130,7 +130,7 @@ export const resolveForSU = (fieldName) => (source, _args, {authToken}) => {
   return isSuperUser(authToken) ? source[fieldName] : undefined
 }
 
-export const makeResolve = (idName, docName, dataLoaderName, isMany) => (
+export const makeResolve = (idName, docName, dataLoaderName, isMany?: boolean) => (
   source,
   _args,
   {dataLoader}

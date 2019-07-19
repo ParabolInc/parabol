@@ -967,7 +967,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         teamId: demoTeamId,
         assigneeId,
         sortOrder,
-        userId: null
+        userId: null as null | string
       }
       const task = this.db.tasks.find((task) => task.id === updatedTask.id)
       // if the human deleted the task, exit fast
