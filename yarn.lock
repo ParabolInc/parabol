@@ -14893,9 +14893,9 @@ relateurl@0.2.x:
   resolved "https://registry.yarnpkg.com/relateurl/-/relateurl-0.2.7.tgz#54dbf377e51440aca90a4cd274600d3ff2d888a9"
   integrity sha1-VNvzd+UUQKypCkzSdGANP/LYiKk=
 
-"relay-compiler-language-typescript@https://github.com/mattkrick/relay-compiler-language-typescript/tarball/3dd0275fc831c6b53c4fdfd5da2879dcaac87078":
+"relay-compiler-language-typescript@https://github.com/mattkrick/relay-compiler-language-typescript/tarball/0b93ff31546894afcba4f6e7bb73ac737f83cc18":
   version "4.1.0"
-  resolved "https://github.com/mattkrick/relay-compiler-language-typescript/tarball/3dd0275fc831c6b53c4fdfd5da2879dcaac87078#957a2ce681e80ae8c2f1982f8756a804ca440f3f"
+  resolved "https://github.com/mattkrick/relay-compiler-language-typescript/tarball/0b93ff31546894afcba4f6e7bb73ac737f83cc18#dcc9484f34528d58fe8ea5d63af9b277180ff298"
   dependencies:
     immutable "^3.8.2"
     invariant "^2.2.2"

@@ -1,11 +1,12 @@
 import styled from 'react-emotion'
 import {TransitionStatus} from 'universal/hooks/useTransition'
 import {PALETTE} from 'universal/styles/paletteV2'
-import {Radius} from 'universal/types/constEnums'
+import {Radius, ZIndex} from 'universal/types/constEnums'
 import React from 'react'
 import {DECELERATE} from 'universal/styles/animation'
 import {SnackAction} from 'universal/components/Snackbar'
 import SnackbarMessageAction from 'universal/components/SnackbarMessageAction'
+import {snackbarShadow} from 'universal/styles/elevation'
 
 interface Props {
   onTransitionEnd: () => void
@@ -25,14 +26,14 @@ const Space = styled('div')({
 const Text = styled('div')({
   color: '#fff',
   fontSize: 14,
-  padding: 8,
-  userSelect: 'none'
+  padding: 8
 })
 
 const MessageStyles = styled('div')(({status}: {status: TransitionStatus}) => ({
   alignItems: 'center',
   background: PALETTE.BACKGROUND_DARK_OPAQUE,
   borderRadius: Radius.SNACKBAR,
+  boxShadow: snackbarShadow,
   display: 'flex',
   padding: 8,
   transition: `all 300ms ${DECELERATE}`,
@@ -40,7 +41,9 @@ const MessageStyles = styled('div')(({status}: {status: TransitionStatus}) => ({
   transform: `translateY(${
     status === TransitionStatus.MOUNTED ? 20 : status === TransitionStatus.EXITING ? -20 : 0
   }px)`,
-  pointerEvents: 'auto'
+  pointerEvents: 'auto',
+  userSelect: 'none',
+  zIndex: ZIndex.SNACKBAR
 }))
 
 const SnackbarMessage = (props: Props) => {

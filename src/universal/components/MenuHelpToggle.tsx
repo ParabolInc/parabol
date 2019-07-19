@@ -6,6 +6,7 @@ import {MenuPosition} from 'universal/hooks/useCoords'
 import useMenu from 'universal/hooks/useMenu'
 import useTimeout from 'universal/hooks/useTimeout'
 import isDemoRoute from 'universal/utils/isDemoRoute'
+import useFABPad from 'universal/hooks/useFABPad'
 
 interface Props {
   menu: ReactNode
@@ -23,9 +24,9 @@ const MeetingHelpToggle = (props: Props) => {
   useEffect(() => {
     if (demoPauseOpen && isDemoRoute()) {
       togglePortal()
-      // originRef.current && originRef.current.click()
     }
   }, [demoPauseOpen])
+  useFABPad(originRef)
   return (
     <>
       <HelpMenuToggle

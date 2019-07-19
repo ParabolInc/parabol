@@ -6,10 +6,21 @@ import useTransition from 'universal/hooks/useTransition'
 import shortid from 'shortid'
 import styled from 'react-emotion'
 import SnackbarMessage from './SnackbarMessage'
+import {graphql} from 'react-relay'
+import useLocalQuery from 'universal/hooks/useLocalQuery'
+import {SnackbarQuery} from '__generated__/SnackbarQuery.graphql'
 
 const MAX_SNACKS = 1
 
-const Modal = styled('div')({
+const query = graphql`
+  query SnackbarQuery {
+    viewer {
+      topOfFAB
+    }
+  }
+`
+
+const Modal = styled('div')(({topOfFAB}: {topOfFAB: number | undefined | null}) => ({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
@@ -17,11 +28,13 @@ const Modal = styled('div')({
   justifyContent: 'flex-end',
   left: 0,
   padding: 8,
+  paddingBottom: topOfFAB || 8,
   position: 'absolute',
   top: 0,
   width: '100%',
-  pointerEvents: 'none'
-})
+  pointerEvents: 'none',
+  zIndex: 1 // hack to hide task cards since draft-editor has a z-index of 1, it'll shine through if this isn't present
+}))
 
 export type SnackbarRemoveFn = (snack: Snack) => boolean
 
@@ -38,14 +51,15 @@ export interface Snack {
   secondaryAction?: SnackAction
 }
 
-const Snackbar = () => {
+const Snackbar = React.memo(() => {
   const snackQueueRef = useRef<Snack[]>([])
   const [snacksRef, setActiveSnacks] = useRefState<Snack[]>([])
   const atmosphere = useAtmosphere()
   const {openPortal, terminatePortal, portal} = usePortal({id: 'snackbar'})
   const transitionChildren = useTransition(snacksRef.current)
   const transitionChildrenRef = useRef(transitionChildren)
-
+  const data = useLocalQuery<SnackbarQuery>(query)
+  const topOfFAB = data && data.viewer && data.viewer.topOfFAB
   // used to ensure the snack isn't dismissed when the cursor is on it
   const [hoveredSnackRef, setHoveredSnack] = useRefState<Snack | null>(null)
   const dismissOnLeaveRef = useRef<Snack>()
@@ -129,7 +143,7 @@ const Snackbar = () => {
   }, [transitionChildren])
 
   return portal(
-    <Modal>
+    <Modal topOfFAB={topOfFAB}>
       {transitionChildren.map(({child, onTransitionEnd, status}) => {
         return (
           <SnackbarMessage
@@ -147,6 +161,6 @@ const Snackbar = () => {
       })}
     </Modal>
   )
-}
+})
 
 export default Snackbar

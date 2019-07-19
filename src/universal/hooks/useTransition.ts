@@ -77,6 +77,7 @@ const useTransition = <T extends {key: string}>(children: T[]) => {
     const currentTChildren = [] as TransitionChild<T>[]
     const {current: prevTChildren} = previousTransitionChildrenRef
 
+    let touched = false
     // add mounted nodes
     for (let i = 0; i < children.length; i++) {
       const nextChild = children[i]
@@ -88,6 +89,7 @@ const useTransition = <T extends {key: string}>(children: T[]) => {
         onTransitionEnd: transitionEndFactory(nextChild.key)
       })
       if (idxInPrev === -1) {
+        touched = true
         beginTransition(nextChild.key)
       }
     }
@@ -99,12 +101,16 @@ const useTransition = <T extends {key: string}>(children: T[]) => {
       const {key} = child
       const idxInNext = children.findIndex((child) => child.key === key)
       if (idxInNext === -1) {
+        touched = true
         const exitingTChild = {...prevTChild, status: TransitionStatus.EXITING}
         currentTChildren.splice(i, 0, exitingTChild)
       }
     }
-    previousTransitionChildrenRef.current = currentTChildren
-    return currentTChildren
+    if (touched) {
+      // keep deep equal things the same to reduce render count
+      previousTransitionChildrenRef.current = currentTChildren
+    }
+    return previousTransitionChildrenRef.current
   }, [children, previousTransitionChildrenRef.current])
 }
 

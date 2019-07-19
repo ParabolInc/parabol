@@ -51,7 +51,7 @@ const popEndNewMeetingToast = (atmosphere: Atmosphere, meetingId: string) => {
   atmosphere.eventEmitter.emit('addSnackbar', {
     key: `meetingKilled:${meetingId}`,
     autoDismiss: 5,
-    message: `The meeting has been aborted`
+    message: `The meeting has been terminated`
   })
 }
 

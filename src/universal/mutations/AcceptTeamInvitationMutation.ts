@@ -10,6 +10,7 @@ import {AcceptTeamInvitationMutation as TAcceptTeamInvitationMutation} from '__g
 import handleAddTeams from 'universal/mutations/handlers/handleAddTeams'
 import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 import getValidRedirectParam from 'universal/utils/getValidRedirectParam'
+import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
 
 graphql`
   fragment AcceptTeamInvitationMutation_team on AcceptTeamInvitationPayload {
@@ -94,6 +95,11 @@ export const acceptTeamInvitationTeamOnNext: OnNextHandler<AcceptTeamInvitationM
   if (!team || !teamMember) return
   const {name: teamName} = team
   const {id: teamMemberId, preferredName} = teamMember
+  const {teamId, userId} = fromTeamMemberId(teamMemberId)
+  atmosphere.eventEmitter.emit(
+    'removeSnackbar',
+    (snack) => snack.key === `pushInvitation:${teamId}:${userId}`
+  )
   atmosphere.eventEmitter.emit('addSnackbar', {
     autoDismiss: 5,
     key: `acceptTeamInvitation:${teamMemberId}`,

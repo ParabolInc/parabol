@@ -91,7 +91,7 @@ export const inviteToTeamNotificationOnNext = (
 const InviteToTeamMutation = (
   atmosphere: any,
   variables: IInviteToTeamOnMutationArguments,
-  {onError, onCompleted}: LocalHandlers
+  {onError, onCompleted}: LocalHandlers = {}
 ): Disposable => {
   return commitMutation<TInviteToTeamMutation>(atmosphere, {
     mutation,

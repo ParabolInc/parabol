@@ -1,4 +1,4 @@
-import React, {lazy, Suspense} from 'react'
+import React, {lazy, memo, Suspense} from 'react'
 import styled from 'react-emotion'
 import {Route, Switch} from 'react-router'
 import AnalyticsPageRoot from 'universal/components/AnalyticsPageRoot'
@@ -44,7 +44,7 @@ const ActionStyles = styled('div')({
   width: '100%'
 })
 
-const Action = () => {
+const Action = memo(() => {
   return (
     <ActionStyles>
       <ErrorBoundary>
@@ -86,6 +86,6 @@ const Action = () => {
       </ErrorBoundary>
     </ActionStyles>
   )
-}
+})
 
 export default dragDropContext(HTML5Backend)(Action)

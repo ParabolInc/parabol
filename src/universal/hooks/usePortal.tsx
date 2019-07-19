@@ -37,20 +37,19 @@ const usePortal = (options: UsePortalOptions = {}) => {
   const [portalStatusRef, setPortalStatus] = useRefState(PortalStatus.Exited)
 
   const terminatePortal = useCallback(() => {
-    if (portalRef.current) {
-      try {
-        getParent(options.parentId).removeChild(portalRef.current)
-      } catch (e) {
-        /* portal already removed (possible when parent is not document.body) */
-      }
-      portalRef.current = undefined
-      showBodyScroll.current && showBodyScroll.current()
-      timeoutRef.current = null
-    }
+    if (!portalRef.current) return
     document.removeEventListener('keydown', handleKeydown)
     document.removeEventListener('mousedown', handleDocumentClick)
     document.removeEventListener('touchstart', handleDocumentClick)
     setPortalStatus(PortalStatus.Exited)
+    try {
+      getParent(options.parentId).removeChild(portalRef.current)
+    } catch (e) {
+      /* portal already removed (possible when parent is not document.body) */
+    }
+    portalRef.current = undefined
+    showBodyScroll.current && showBodyScroll.current()
+    timeoutRef.current = null
   }, [])
 
   // terminate on unmount

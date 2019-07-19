@@ -5,7 +5,7 @@ interface Input {
   userId: string
   teamId: string
   denialCount?: number
-  lastDeniedAt?: Date
+  lastDenialAt?: Date
 }
 
 export default class PushInvitation {
@@ -16,11 +16,11 @@ export default class PushInvitation {
   lastDenialAt?: Date
 
   constructor (input: Input) {
-    const {id, userId, teamId, denialCount, lastDeniedAt} = input
+    const {id, userId, teamId, denialCount, lastDenialAt} = input
     this.id = id || shortid.generate()
     this.userId = userId
     this.teamId = teamId
     this.denialCount = denialCount || 0
-    this.lastDenialAt = lastDeniedAt || undefined
+    this.lastDenialAt = lastDenialAt || undefined
   }
 }

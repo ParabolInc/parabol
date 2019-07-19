@@ -6,12 +6,19 @@ import {
   PushInvitationMutationVariables
 } from '__generated__/PushInvitationMutation.graphql'
 import {PushInvitationMutation_team} from '__generated__/PushInvitationMutation_team.graphql'
+import InviteToTeamMutation from 'universal/mutations/InviteToTeamMutation'
+import DenyPushInvitationMutation from 'universal/mutations/DenyPushInvitationMutation'
 
 graphql`
   fragment PushInvitationMutation_team on PushInvitationPayload {
     user {
+      id
       preferredName
       email
+    }
+    team {
+      id
+      name
     }
   }
 `
@@ -31,13 +38,27 @@ export const pushInvitationTeamOnNext: OnNextHandler<PushInvitationMutation_team
   payload,
   {atmosphere}
 ) => {
-  const {user} = payload
-  if (!user) return
-  const {preferredName, email} = user
-  // const deny = () => {
-  console.log(preferredName, email, atmosphere)
-  // }
-  // TODO toast with an accept/deny
+  const {user, team} = payload
+  if (!user || !team) return
+  const {preferredName, email, id: userId} = user
+  const {name: teamName, id: teamId} = team
+  atmosphere.eventEmitter.emit('addSnackbar', {
+    autoDismiss: 0,
+    key: `pushInvitation:${teamId}:${userId}`,
+    message: `${preferredName} (${email}) is requesting to join ${teamName}.`,
+    action: {
+      label: 'Accept',
+      callback: () => {
+        InviteToTeamMutation(atmosphere, {teamId, invitees: [email]})
+      }
+    },
+    secondaryAction: {
+      label: 'Deny',
+      callback: () => {
+        DenyPushInvitationMutation(atmosphere, {teamId, userId})
+      }
+    }
+  })
 }
 
 const PushInvitationMutation = (
