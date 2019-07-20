@@ -15,8 +15,9 @@ import RetroPhaseItem from 'server/graphql/types/RetroPhaseItem'
 import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup'
 import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting'
 import {getUserId} from 'server/utils/authorization'
+import {GQLContext} from 'server/graphql/graphql'
 
-const RetroReflection = new GraphQLObjectType({
+const RetroReflection = new GraphQLObjectType<any, GQLContext>({
   name: 'RetroReflection',
   description: 'A reflection created during the reflect phase of a retrospective',
   fields: () => ({
@@ -60,7 +61,7 @@ const RetroReflection = new GraphQLObjectType({
     isViewerCreator: {
       description: 'true if the viewer (userId) is the creator of the retro reflection, else false',
       type: GraphQLBoolean,
-      resolve: ({creatorId}, args, {authToken}) => {
+      resolve: ({creatorId}, _args, {authToken}) => {
         const viewerId = getUserId(authToken)
         return viewerId === creatorId
       }
@@ -82,13 +83,13 @@ const RetroReflection = new GraphQLObjectType({
     meeting: {
       type: RetrospectiveMeeting,
       description: 'The retrospective meeting this reflection was created in',
-      resolve: ({meetingId}, args, {dataLoader}) => {
+      resolve: ({meetingId}, _args, {dataLoader}) => {
         return dataLoader.get('newMeetings').load(meetingId)
       }
     },
     phaseItem: {
       type: new GraphQLNonNull(RetroPhaseItem),
-      resolve: ({retroPhaseItemId}, args, {dataLoader}) => {
+      resolve: ({retroPhaseItemId}, _args, {dataLoader}) => {
         return dataLoader.get('customPhaseItems').load(retroPhaseItemId)
       }
     },
@@ -104,7 +105,7 @@ const RetroReflection = new GraphQLObjectType({
     retroReflectionGroup: {
       type: RetroReflectionGroup,
       description: 'The group the reflection belongs to, if any',
-      resolve: async ({reflectionGroupId}, args, {dataLoader}) => {
+      resolve: async ({reflectionGroupId}, _args, {dataLoader}) => {
         return dataLoader.get('retroReflectionGroups').load(reflectionGroupId)
       }
     },
@@ -115,7 +116,7 @@ const RetroReflection = new GraphQLObjectType({
     team: {
       type: RetrospectiveMeeting,
       description: 'The team that is running the meeting that contains this reflection',
-      resolve: async ({meetingId}, args, {dataLoader}) => {
+      resolve: async ({meetingId}, _args, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         return dataLoader.get('teams').load(meeting.teamId)
       }

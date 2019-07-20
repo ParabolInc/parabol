@@ -37,19 +37,22 @@ const backdropStyles = {
 }
 
 const modalStyles = {
+  [PortalStatus.Mounted]: {
+    opacity: 0,
+    transform: 'translateY(32px)'
+  },
   [PortalStatus.Entering]: {
     opacity: 1,
     transform: 'translateY(0)',
     transition: `all ${Duration.MODAL_OPEN}ms ${DECELERATE}`
   },
+  [PortalStatus.Entered]: {
+    // TODO wipe transform so it plays nicely with react-beautiful-dnd
+  },
   [PortalStatus.Exiting]: {
     opacity: 0,
     transform: 'translateY(-32px)',
     transition: `all ${Duration.PORTAL_CLOSE}ms ${DECELERATE}`
-  },
-  [PortalStatus.Mounted]: {
-    opacity: 0,
-    transform: 'translateY(32px)'
   }
 }
 const Backdrop = styled('div')(

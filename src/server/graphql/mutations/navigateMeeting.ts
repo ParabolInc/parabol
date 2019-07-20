@@ -46,9 +46,12 @@ export default {
       .get(meetingId)
       .default(null)) as Meeting | null
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
-    const {facilitatorUserId, phases, teamId} = meeting
+    const {defaultFacilitatorUserId, facilitatorUserId, phases, teamId} = meeting
     if (viewerId !== facilitatorUserId) {
-      return standardError(new Error('Not meeting facilitator'), {userId: viewerId})
+      if (viewerId !== defaultFacilitatorUserId) {
+        return standardError(new Error('Not meeting facilitator'), {userId: viewerId})
+      }
+      return standardError(new Error('Not meeting facilitator anymore'), {userId: viewerId})
     }
 
     // VALIDATION

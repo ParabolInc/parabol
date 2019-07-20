@@ -27,6 +27,7 @@ import SSEPingHandler from 'server/sse/SSEPingHandler'
 import ms from 'ms'
 import rateLimit from 'express-rate-limit'
 import demoEntityHandler from 'server/demoEntityHandler'
+import * as Integrations from '@sentry/integrations'
 
 declare global {
   namespace NodeJS {
@@ -63,8 +64,9 @@ Sentry.init({
   environment: process.env.NODE_ENV,
   dsn: process.env.SENTRY_DSN,
   release: APP_VERSION,
+  ignoreErrors: ['429 Too Many Requests', /language \S+ is not supported/],
   integrations: [
-    new Sentry.Integrations.RewriteFrames({
+    new Integrations.RewriteFrames({
       root: global.__rootdir__
     })
   ]

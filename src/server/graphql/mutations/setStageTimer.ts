@@ -11,6 +11,7 @@ import findStageById from 'universal/utils/meetings/findStageById'
 import ScheduledJobMeetingStageTimeLimit from 'server/database/types/ScheduledJobMetingStageTimeLimit'
 import removeScheduledJobs from 'server/graphql/mutations/helpers/removeScheduledJobs'
 import {notifySlackTimeLimitStart} from 'server/graphql/mutations/helpers/notifySlack'
+import sendSegmentEvent from 'server/utils/sendSegmentEvent'
 
 const BAD_CLOCK_THRESH = 2000
 const AVG_PING = 150
@@ -107,7 +108,22 @@ export default {
       })
 
     const data = {meetingId, stageId: facilitatorStageId}
+    const {isAsync, phaseType, startAt, viewCount} = stage
+    const segmentOptions = {
+      isAsync,
+      meetingId,
+      newScheduledEndTime,
+      phaseType,
+      previousScheduledEndTime: scheduledEndTime,
+      stageStartAt: startAt,
+      timeRemaining,
+      viewCount
+    }
+    const stoppedOrStarted = newScheduledEndTime ? 'Meeting Timer Started' : 'Meeting Timer Stopped'
+    const eventName =
+      scheduledEndTime && newScheduledEndTime ? 'Meeting Timer Updated' : stoppedOrStarted
     publish(TEAM, teamId, SetStageTimerPayload, data, subOptions)
+    sendSegmentEvent(eventName, viewerId, segmentOptions).catch()
     return data
   }
 }

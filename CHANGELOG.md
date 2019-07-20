@@ -5,6 +5,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v3.16.2 2019-Jul-15
+
+### Changed
+* Updated sentry
+* Send new error message for offline default facilitator
+* Add tags to rate limiter sentry event
+* Ignore 429 error and google nlp error for sentry
+
+### Fixed
+* Patched dataloader-warehouse
+* Prevent duplicate SSE error events for the same user
+* Prevent duplicate end meeting mutations sent from client
+* Prevent missing getMasonry event on demo
+
+## v3.16.1 2019-Jul-10
+
+### Fixed
+* ResizeObserverPolyfill wrong import
 
 ## v3.16.0 2019-Jul-10
 

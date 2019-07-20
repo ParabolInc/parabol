@@ -1,31 +1,34 @@
-import React, {Component} from 'react'
-import {RouteComponentProps, withRouter} from 'react-router'
+import React from 'react'
 import EndNewMeetingMutation from 'universal/mutations/EndNewMeetingMutation'
-import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import isDemoRoute from '../utils/isDemoRoute'
-import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
+import useAtmosphere from 'universal/hooks/useAtmosphere'
+import useRouter from 'universal/hooks/useRouter'
+import useMutationProps from 'universal/hooks/useMutationProps'
 
-interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
+interface Props {
   meetingId: string
 }
 
-class EndMeetingButton extends Component<Props> {
-  endMeeting = () => {
-    const {atmosphere, history, meetingId} = this.props
-    EndNewMeetingMutation(atmosphere, {meetingId}, {history})
+const EndMeetingButton = (props: Props) => {
+  const {meetingId} = props
+  const atmosphere = useAtmosphere()
+  const {history} = useRouter()
+  const {submitMutation, onCompleted, onError, submitting} = useMutationProps()
+
+  const endMeeting = () => {
+    if (submitting) return
+    submitMutation()
+    EndNewMeetingMutation(atmosphere, {meetingId}, {history, onError, onCompleted})
   }
 
-  render () {
-    const {submitting} = this.props
-    const label = isDemoRoute() ? 'End Demo' : 'End Meeting'
-    return (
-      <BottomNavControl onClick={this.endMeeting} waiting={submitting}>
-        <BottomNavIconLabel icon='flag' iconColor='blue' label={label} />
-      </BottomNavControl>
-    )
-  }
+  const label = isDemoRoute() ? 'End Demo' : 'End Meeting'
+  return (
+    <BottomNavControl onClick={endMeeting} waiting={submitting}>
+      <BottomNavIconLabel icon='flag' iconColor='blue' label={label} />
+    </BottomNavControl>
+  )
 }
 
-export default withRouter(withAtmosphere(withMutationProps(EndMeetingButton)))
+export default EndMeetingButton
