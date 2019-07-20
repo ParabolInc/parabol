@@ -19,6 +19,7 @@ const pluginRelay = require('babel-plugin-relay')
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const pluginInlineImport = require('babel-plugin-inline-import').default
+// const {InjectManifest, GenerateSW} = require('workbox-webpack-plugin')
 
 const publicPath = getWebpackPublicPath.default()
 const buildPath = path.join(__dirname, '../build')
@@ -46,7 +47,7 @@ if (process.env.WEBPACK_DEPLOY) {
 }
 
 if (process.env.WEBPACK_STATS) {
-  extraPlugins.push(new BundleAnalyzerPlugin())
+  extraPlugins.push(new BundleAnalyzerPlugin({generateStatsFile: true}))
 }
 const babelConfig = {
   loader: 'babel-loader',
@@ -115,6 +116,7 @@ module.exports = {
     }
   },
   plugins: [
+    // new GenerateSW(),
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: 'src/server/template.html'
@@ -155,8 +157,8 @@ module.exports = {
         include: [
           path.join(__dirname, '../src/__generated__'),
           path.join(__dirname, '../src/client'),
-          path.join(__dirname, '../src/universal'),
-          path.join(__dirname, '../stories')
+          path.join(__dirname, '../src/universal')
+          // path.join(__dirname, '../stories')
         ],
         use: [
           babelConfig,

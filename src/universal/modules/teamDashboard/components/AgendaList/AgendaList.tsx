@@ -4,7 +4,6 @@ import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
 // import SexyScrollbar from 'universal/components/Dashboard/SexyScrollbar'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
-import ScrollableBlock from 'universal/components/ScrollableBlock'
 import {useGotoStageId} from 'universal/hooks/useMeeting'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import AgendaItem from 'universal/modules/teamDashboard/components/AgendaItem/AgendaItem'
@@ -17,7 +16,8 @@ import dndNoise from 'universal/utils/dndNoise'
 const AgendaListRoot = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  maxHeight: 'calc(100% - 3.625rem)',
+  overflow: 'auto',
+  height: '100%', // trickle down height for overflow
   width: '100%'
 })
 
@@ -78,44 +78,41 @@ const AgendaList = (props: Props) => {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <AgendaListRoot>
-        <ScrollableBlock>
-          <Droppable droppableId={AGENDA_ITEM}>
-            {(provided) => {
-              return (
-                <div ref={provided.innerRef}>
-                  {filteredAgendaItems.map((item, idx) => {
-                    return (
-                      <Draggable key={item.id} draggableId={item.id} index={idx}>
-                        {(dragProvided, dragSnapshot) => {
-                          return (
-                            <DraggableAgendaItem
-                              isDragging={dragSnapshot.isDragging}
-                              innerRef={dragProvided.innerRef}
-                              {...dragProvided.draggableProps}
-                              {...dragProvided.dragHandleProps}
-                            >
-                              <AgendaItem
-                                key={item.id}
-                                agendaItem={item}
-                                agendaLength={filteredAgendaItems.length}
-                                gotoStageId={gotoStageId}
-                                idx={agendaItems.findIndex((agendaItem) => agendaItem === item)}
-                                isDragging={dragSnapshot.isDragging}
-                                newMeeting={newMeeting}
-                              />
-                            </DraggableAgendaItem>
-                          )
-                        }}
-                      </Draggable>
-                    )
-                  })}
-                </div>
-              )
-            }}
-          </Droppable>
-        </ScrollableBlock>
-      </AgendaListRoot>
+      <Droppable droppableId={AGENDA_ITEM}>
+        {(provided) => {
+          return (
+            <AgendaListRoot innerRef={provided.innerRef}>
+              {filteredAgendaItems.map((item, idx) => {
+                return (
+                  <Draggable key={item.id} draggableId={item.id} index={idx}>
+                    {(dragProvided, dragSnapshot) => {
+                      return (
+                        <DraggableAgendaItem
+                          isDragging={dragSnapshot.isDragging}
+                          innerRef={dragProvided.innerRef}
+                          {...dragProvided.draggableProps}
+                          {...dragProvided.dragHandleProps}
+                        >
+                          <AgendaItem
+                            key={item.id}
+                            agendaItem={item}
+                            agendaLength={filteredAgendaItems.length}
+                            gotoStageId={gotoStageId}
+                            idx={agendaItems.findIndex((agendaItem) => agendaItem === item)}
+                            isDragging={dragSnapshot.isDragging}
+                            newMeeting={newMeeting}
+                          />
+                        </DraggableAgendaItem>
+                      )
+                    }}
+                  </Draggable>
+                )
+              })}
+              {provided.placeholder}
+            </AgendaListRoot>
+          )
+        }}
+      </Droppable>
     </DragDropContext>
   )
 }

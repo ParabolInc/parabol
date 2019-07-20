@@ -6,7 +6,9 @@ import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 
 const NavListItem = styled('li')({
   fontWeight: 600,
-  lineHeight: '2.5rem'
+  lineHeight: '2.5rem',
+  display: 'flex',
+  flexDirection: 'column'
 })
 
 const NavItemBullet = styled('span')<{isFacilitatorPhaseGroup: boolean}>(
