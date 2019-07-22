@@ -1,5 +1,4 @@
 import {applyMiddleware, compose, createStore} from 'redux'
-import thunkMiddleware from 'redux-thunk'
 import makeReducer from 'universal/redux/makeReducer'
 import {APP_VERSION_KEY} from 'universal/utils/constants'
 
@@ -10,7 +9,7 @@ export default (initialState) => {
    * Special action types, such as thunks, must be placed before
    * storageMiddleware so they can be properly interpreted:
    */
-  const middlewares = [thunkMiddleware]
+  const middlewares = []
 
   if (__PRODUCTION__) {
     store = createStore(reducer, initialState, compose(applyMiddleware(...middlewares)))

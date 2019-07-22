@@ -6,7 +6,6 @@ import {ReflectionGroupTitleEditor_reflectionGroup} from '__generated__/Reflecti
  */
 import React, {Component, RefObject} from 'react'
 import styled from 'react-emotion'
-import reactLifecyclesCompat from 'react-lifecycles-compat'
 import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
 import StyledError from 'universal/components/StyledError'
 import withAtmosphere, {
@@ -219,7 +218,6 @@ class ReflectionGroupTitleEditor extends Component<Props> {
   }
 }
 
-reactLifecyclesCompat(ReflectionGroupTitleEditor)
 export default createFragmentContainer(
   withAtmosphere(withMutationProps(ReflectionGroupTitleEditor)),
   {
