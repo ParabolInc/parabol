@@ -20,7 +20,7 @@ const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const pluginInlineImport = require('babel-plugin-inline-import').default
 // const {InjectManifest, GenerateSW} = require('workbox-webpack-plugin')
-const BundleBuddyWebpackPlugin = require('bundle-buddy-webpack-plugin')
+// const BundleBuddyWebpackPlugin = require('bundle-buddy-webpack-plugin')
 
 const publicPath = getWebpackPublicPath.default()
 const buildPath = path.join(__dirname, '../build')
@@ -49,7 +49,7 @@ if (process.env.WEBPACK_DEPLOY) {
 
 if (process.env.WEBPACK_STATS) {
   extraPlugins.push(new BundleAnalyzerPlugin({generateStatsFile: true}))
-  extraPlugins.push(new BundleBuddyWebpackPlugin())
+  // extraPlugins.push(new BundleBuddyWebpackPlugin())
 }
 const babelConfig = {
   loader: 'babel-loader',
