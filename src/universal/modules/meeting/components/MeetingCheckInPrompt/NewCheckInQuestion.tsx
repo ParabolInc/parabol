@@ -115,7 +115,7 @@ class NewCheckInQuestion extends Component<Props, State> {
     const {editorState} = this.state
     const selection = editorState.getSelection()
     const contentState = editorState.getCurrentContent()
-    const fullSelection = selection.merge({
+    const fullSelection = (selection as any).merge({
       anchorKey: contentState.getFirstBlock().getKey(),
       focusKey: contentState.getLastBlock().getKey(),
       anchorOffset: 0,

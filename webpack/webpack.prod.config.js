@@ -4,7 +4,7 @@ const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
 const getWebpackPublicPath = require('../src/server/utils/getWebpackPublicPath')
-const CleanWebpackPlugin = require('clean-webpack-plugin')
+const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 const S3Plugin = require('webpack-s3-plugin')
 const {getS3BasePath} = require('./utils/getS3BasePath')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
@@ -20,6 +20,7 @@ const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const pluginInlineImport = require('babel-plugin-inline-import').default
 // const {InjectManifest, GenerateSW} = require('workbox-webpack-plugin')
+const BundleBuddyWebpackPlugin = require('bundle-buddy-webpack-plugin')
 
 const publicPath = getWebpackPublicPath.default()
 const buildPath = path.join(__dirname, '../build')
@@ -48,6 +49,7 @@ if (process.env.WEBPACK_DEPLOY) {
 
 if (process.env.WEBPACK_STATS) {
   extraPlugins.push(new BundleAnalyzerPlugin({generateStatsFile: true}))
+  extraPlugins.push(new BundleBuddyWebpackPlugin())
 }
 const babelConfig = {
   loader: 'babel-loader',
@@ -68,6 +70,7 @@ const babelConfig = {
           targets: {
             browsers: ['> 1%', 'not ie 11']
           },
+          corejs: 3,
           useBuiltIns: 'entry'
         }
       ],
@@ -112,7 +115,11 @@ module.exports = {
       })
     ],
     splitChunks: {
-      chunks: 'all'
+      chunks: 'all',
+      // OK to be above 6 because we serve these via http2
+      maxAsyncRequests: 20,
+      maxInitialRequests: 20,
+      minSize: 4096
     }
   },
   plugins: [
@@ -128,10 +135,7 @@ module.exports = {
         value: 'fallback(this)'
       }
     }),
-    new CleanWebpackPlugin([path.join(__dirname, '../build/*.*')], {
-      root: path.join(__dirname, '..'),
-      exclude: []
-    }),
+    new CleanWebpackPlugin(),
     new webpack.DefinePlugin({
       __CLIENT__: true,
       __PRODUCTION__: true,
@@ -180,7 +184,7 @@ module.exports = {
           {
             loader: 'url-loader',
             options: {
-              limit: 8192
+              limit: 4096
             }
           }
         ]

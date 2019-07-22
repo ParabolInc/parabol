@@ -46,7 +46,7 @@ const rateLimit = <TSource = any, TContext = GQLContext, TArgs = any>({
       throw new Error('429 Too Many Requests')
     }
   }
-  return resolve(source, args, context, info)
+  return resolve(source, args, context as any, info)
 }
 
 export default rateLimit

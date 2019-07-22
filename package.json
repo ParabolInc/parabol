@@ -105,6 +105,7 @@
     "babel-plugin-inline-import": "^3.0.0",
     "babel-plugin-module-resolver": "^3.1.3",
     "babel-plugin-relay": "^5.0.0",
+    "bundle-buddy-webpack-plugin": "^0.3.0",
     "chance": "^1.0.6",
     "clean-webpack-plugin": "^3.0.0",
     "codecov": "^3.5.0",
@@ -297,7 +298,8 @@
     "@types/react": "16.8.23",
     "@types/react-dom": "16.8.4",
     "relay-runtime": "https://github.com/mattkrick/relay/tarball/dbd07bab510551e0c421aad70e5b57bb86520d32",
-    "graphql": "14.4.2"
+    "graphql": "14.4.2",
+    "immutable": "4.0.0-rc.12"
   },
   "standard": {
     "parser": "babel-eslint",
