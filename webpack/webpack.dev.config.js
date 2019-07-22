@@ -37,7 +37,6 @@ module.exports = {
   plugins: [
     // reliably produces errors on rebuild, disabled for now
     // new HardSourceWebpackPlugin(),
-    new webpack.NamedModulesPlugin(),
     new webpack.DefinePlugin({
       __CLIENT__: true,
       __PRODUCTION__: false,
@@ -101,7 +100,7 @@ module.exports = {
           {
             loader: 'url-loader',
             options: {
-              limit: 8192
+              limit: 4096
             }
           }
         ]
