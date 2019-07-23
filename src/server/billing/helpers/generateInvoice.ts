@@ -63,10 +63,10 @@ interface ReducedItem extends ReducedItemBase {
 }
 
 interface ReducedItemsByType {
-  addUser: Array<ReducedStandardPartial>
-  removeUser: Array<ReducedStandardPartial>
-  pauseUser: Array<ReducedStandardPartial>
-  unpauseUser: Array<ReducedUnpausePartial>
+  addUser: ReducedStandardPartial[]
+  removeUser: ReducedStandardPartial[]
+  pauseUser: ReducedStandardPartial[]
+  unpauseUser: ReducedUnpausePartial[]
 }
 
 interface QuantityChangeDetail extends ReducedItem {
@@ -76,18 +76,18 @@ interface QuantityChangeDetail extends ReducedItem {
 interface QuantityChangeLineItem {
   id: string
   amount: number
-  details: Array<QuantityChangeDetail>
+  details: QuantityChangeDetail[]
   quantity: number
   type: keyof DetailedLineItemDict
 }
 
 interface DetailedLineItemDict {
-  ADDED_USERS: Array<ReducedStandardPartial>
-  REMOVED_USERS: Array<ReducedStandardPartial>
-  INACTIVITY_ADJUSTMENTS: Array<ReducedItem>
+  ADDED_USERS: ReducedStandardPartial[]
+  REMOVED_USERS: ReducedStandardPartial[]
+  INACTIVITY_ADJUSTMENTS: ReducedItem[]
 }
 
-const getEmailLookup = async (userIds: Array<string>) => {
+const getEmailLookup = async (userIds: string[]) => {
   const r = getRethink()
   const usersAndEmails = await r
     .table('User')
@@ -100,12 +100,12 @@ const getEmailLookup = async (userIds: Array<string>) => {
 }
 
 const reduceItemsByType = (typesDict: TypesDict, email: string) => {
-  const userTypes = Object.keys(typesDict) as Array<keyof TypesDict>
+  const userTypes = Object.keys(typesDict) as (keyof TypesDict)[]
   const reducedItemsByType: ReducedItemsByType = {
-    addUser: [] as Array<ReducedStandardPartial>,
-    removeUser: [] as Array<ReducedStandardPartial>,
-    pauseUser: [] as Array<ReducedStandardPartial>,
-    unpauseUser: [] as Array<ReducedUnpausePartial>
+    addUser: [] as ReducedStandardPartial[],
+    removeUser: [] as ReducedStandardPartial[],
+    pauseUser: [] as ReducedStandardPartial[],
+    unpauseUser: [] as ReducedUnpausePartial[]
   }
   for (let j = 0; j < userTypes.length; j++) {
     // for each type
@@ -135,10 +135,10 @@ const reduceItemsByType = (typesDict: TypesDict, email: string) => {
 }
 
 const makeDetailedPauseEvents = (
-  pausedItems: Array<ReducedStandardPartial>,
-  unpausedItems: Array<ReducedUnpausePartial>
+  pausedItems: ReducedStandardPartial[],
+  unpausedItems: ReducedUnpausePartial[]
 ) => {
-  const inactivityDetails: Array<ReducedItem> = []
+  const inactivityDetails: ReducedItem[] = []
   // if an unpause happened before a pause, we know they came into this period paused, so we don't want a start date
   if (
     unpausedItems.length > 0 &&
@@ -168,11 +168,11 @@ const makeDetailedPauseEvents = (
 }
 
 const makeQuantityChangeLineItems = (detailedLineItems: DetailedLineItemDict) => {
-  const quantityChangeLineItems: Array<QuantityChangeLineItem> = []
-  const lineItemTypes = Object.keys(detailedLineItems) as Array<keyof DetailedLineItemDict>
+  const quantityChangeLineItems: QuantityChangeLineItem[] = []
+  const lineItemTypes = Object.keys(detailedLineItems) as (keyof DetailedLineItemDict)[]
   for (let i = 0; i < lineItemTypes.length; i++) {
     const lineItemType = lineItemTypes[i]
-    const details = detailedLineItems[lineItemType] as Array<ReducedItem>
+    const details = detailedLineItems[lineItemType] as ReducedItem[]
     if (details.length > 0) {
       const id = shortid.generate()
       quantityChangeLineItems.push({
@@ -192,9 +192,9 @@ const makeDetailedLineItems = async (itemDict: ItemDict) => {
   const userIds = Object.keys(itemDict)
   const emailLookup = await getEmailLookup(userIds)
   const detailedLineItems = {
-    ADDED_USERS: [] as Array<ReducedStandardPartial>,
-    REMOVED_USERS: [] as Array<ReducedStandardPartial>,
-    INACTIVITY_ADJUSTMENTS: [] as Array<ReducedItem>
+    ADDED_USERS: [] as ReducedStandardPartial[],
+    REMOVED_USERS: [] as ReducedStandardPartial[],
+    INACTIVITY_ADJUSTMENTS: [] as ReducedItem[]
   } as DetailedLineItemDict
 
   for (let i = 0; i < userIds.length; i++) {
@@ -230,9 +230,9 @@ const addToDict = (itemDict: ItemDict, lineItem: Stripe.invoices.IInvoiceLineIte
   startTimeItems[bucket] = lineItem
 }
 
-const makeItemDict = (stripeLineItems: Array<Stripe.invoices.IInvoiceLineItem>) => {
+const makeItemDict = (stripeLineItems: Stripe.invoices.IInvoiceLineItem[]) => {
   const itemDict = {} as ItemDict
-  const unknownLineItems = [] as Array<Stripe.invoices.IInvoiceLineItem>
+  const unknownLineItems = [] as Stripe.invoices.IInvoiceLineItem[]
   let nextMonthCharges!: NextMonthCharges
   for (let i = 0; i < stripeLineItems.length; i++) {
     const lineItem = stripeLineItems[i]
@@ -266,12 +266,12 @@ const makeItemDict = (stripeLineItems: Array<Stripe.invoices.IInvoiceLineItem>) 
 }
 
 const maybeReduceUnknowns = async (
-  unknownLineItems: Array<Stripe.invoices.IInvoiceLineItem>,
+  unknownLineItems: Stripe.invoices.IInvoiceLineItem[],
   itemDict: ItemDict,
   stripeSubscriptionId: string
 ) => {
   const r = getRethink()
-  const unknowns = [] as Array<Stripe.invoices.IInvoiceLineItem>
+  const unknowns = [] as Stripe.invoices.IInvoiceLineItem[]
   for (let i = 0; i < unknownLineItems.length; i++) {
     const unknownLineItem = unknownLineItems[i]
     // this could be inefficient but if all goes as planned, we'll never use this function
@@ -306,7 +306,7 @@ const maybeReduceUnknowns = async (
 
 export default async function generateInvoice (
   invoice: Stripe.invoices.IInvoice,
-  stripeLineItems: Array<Stripe.invoices.IInvoiceLineItem>,
+  stripeLineItems: Stripe.invoices.IInvoiceLineItem[],
   orgId: string,
   invoiceId: string
 ) {

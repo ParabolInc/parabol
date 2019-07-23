@@ -22,7 +22,7 @@ interface NotificationToInsert {
   id: string
   type: string
   startAt: Date
-  userIds: Array<string>
+  userIds: string[]
   invitationId: string
   teamId: string
 }
@@ -86,7 +86,7 @@ export default {
         removedSuggestedActionId = await removeSuggestedAction(viewerId, 'inviteYourTeam' as any)
       }
       // insert notification records
-      const notificationsToInsert = [] as Array<NotificationToInsert>
+      const notificationsToInsert = [] as NotificationToInsert[]
       teamInvitationsToInsert.forEach((invitation) => {
         const user = users.find((user) => user.email === invitation.email)
         if (user) {

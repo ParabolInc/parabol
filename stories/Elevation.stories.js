@@ -7,7 +7,7 @@ import React from 'react'
 import {storiesOf} from '@storybook/react'
 import RetroBackground from './components/RetroBackground'
 import StoryContainer from './components/StoryContainer'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import elevation from 'universal/styles/elevation'
 import ui from 'universal/styles/ui'
 

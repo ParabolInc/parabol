@@ -1,5 +1,4 @@
 import express from 'express'
-import webpack from 'webpack' // eslint-disable-line import/no-extraneous-dependencies
 import compression from 'compression'
 import cors from 'cors'
 import bodyParser from 'body-parser'
@@ -75,6 +74,7 @@ Sentry.init({
 if (!PROD) {
   const config = require('../../webpack/webpack.dev.config')
   const hotClient = require('webpack-hot-client')
+  const webpack = require('webpack')
   const compiler = webpack(config)
   hotClient(compiler, {port: 8082})
   // hotClient(compiler, {port: 8082, host: '192.168.1.103'})

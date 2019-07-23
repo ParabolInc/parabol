@@ -19,7 +19,7 @@ const demoEntityHandler = async (req, res) => {
     res.sendStatus(404)
     return
   }
-  const texts = req.body.texts as Array<string>
+  const texts = req.body.texts as string[]
   // intelligently extract the entities from the body of the text
   const {reflectionResponses, reflectionSyntax} = await promiseAllObj({
     reflectionResponses: promiseAllPartial(texts.map(getEntitiesFromText), catchHandler),

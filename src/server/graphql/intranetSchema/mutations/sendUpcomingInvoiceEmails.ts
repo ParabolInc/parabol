@@ -21,7 +21,7 @@ const makePeriodEndStr = (periodEnd: Date) => {
 }
 
 const getEmailDetails = (organizations) => {
-  const details = [] as Array<Details>
+  const details = [] as Details[]
   for (let ii = 0; ii < organizations.length; ii++) {
     const organization = organizations[ii]
     const {id: orgId, billingLeaders, periodEnd} = organization

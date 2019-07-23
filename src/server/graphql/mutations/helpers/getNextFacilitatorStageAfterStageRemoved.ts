@@ -6,7 +6,7 @@ import findStageBeforeId from 'universal/utils/meetings/findStageBeforeId'
 const getNextFacilitatorStageAfterStageRemoved = (
   facilitatorStageId: string,
   removedStageId: string,
-  phases: ReadonlyArray<GenericMeetingPhase>
+  phases: readonly GenericMeetingPhase[]
 ) => {
   const facilitatorOnStage = facilitatorStageId === removedStageId
   if (!facilitatorOnStage) {

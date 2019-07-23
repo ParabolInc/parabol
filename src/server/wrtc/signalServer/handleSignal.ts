@@ -29,7 +29,7 @@ const handlers = {
   close: closeWRTC
 } as {[key: string]: Handler}
 
-type Payload = {type: string; [key: string]: any}
+interface Payload {type: string; [key: string]: any}
 
 const handleSignal = (ws: UWebSocket, payload: Payload) => {
   const {type} = payload

@@ -119,7 +119,7 @@ const acceptTeamInvitation = async (
     .delete()
   return {
     teamLeadUserIdWithNewActions,
-    removedNotificationIds: removedNotificationIds as Array<string>
+    removedNotificationIds: removedNotificationIds as string[]
   }
 }
 

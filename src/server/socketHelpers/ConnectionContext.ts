@@ -10,7 +10,7 @@ export interface UserWebSocket extends WebSocket {
 
 class ConnectionContext {
   authToken: IAuthToken
-  availableResubs: Array<any> = []
+  availableResubs: any[] = []
   cancelKeepAlive: NodeJS.Timeout | null = null
   id = shortid.generate()
   isAlive = true

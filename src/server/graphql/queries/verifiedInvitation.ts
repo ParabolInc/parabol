@@ -18,7 +18,7 @@ const getIsGoogleProvider = async (user: any, email: string) => {
   } catch (e) {
     return false
   }
-  const [mxRecord] = res as Array<MxRecord>
+  const [mxRecord] = res as MxRecord[]
   const exchange = (mxRecord && mxRecord.exchange) || ''
   return exchange.toLowerCase().endsWith('google.com')
 }

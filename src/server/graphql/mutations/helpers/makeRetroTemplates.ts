@@ -98,12 +98,12 @@ interface TemplatePrompt {
 }
 
 interface TemplateObject {
-  [templateName: string]: Array<TemplatePrompt>
+  [templateName: string]: TemplatePrompt[]
 }
 
 const makeRetroTemplates = (teamId: string, templateObj: TemplateObject = templateBase) => {
-  const phaseItems: Array<Prompt> = []
-  const templates: Array<Template> = []
+  const phaseItems: Prompt[] = []
+  const templates: Template[] = []
   const templateNames = Object.keys(templateObj)
   templateNames.forEach((templateName) => {
     const promptBase = templateObj[templateName]
