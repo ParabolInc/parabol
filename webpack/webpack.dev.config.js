@@ -5,7 +5,7 @@ const pluginDynamicImport = require('@babel/plugin-syntax-dynamic-import').defau
 const pluginRelay = require('babel-plugin-relay')
 const vendors = require('../dll/vendors')
 const pluginInlineImport = require('babel-plugin-inline-import').default
-// const {InjectManifest, GenerateSW} = require('workbox-webpack-plugin').default
+// const {InjectManifest} = require('workbox-webpack-plugin')
 // const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 const babelLoader = {
@@ -46,9 +46,8 @@ module.exports = {
     new webpack.DllReferencePlugin({
       manifest: vendors
     })
-    // new GenerateSW(),
     // new InjectManifest({
-    //   swSrc: './src/client/sw.ts'
+    //   swSrc: path.join(__dirname, '../src/client/sw.ts')
     // })
   ],
   module: {

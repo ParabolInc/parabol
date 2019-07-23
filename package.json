@@ -156,7 +156,7 @@
     "webpack-hot-client": "^4.1.1",
     "webpack-hot-middleware": "^2.22.2",
     "webpack-s3-plugin": "^1.0.0-rc.0",
-    "workbox-webpack-plugin": "5.0.0-alpha.1"
+    "workbox-webpack-plugin": "^4.3.1"
   },
   "dependencies": {
     "@babel/polyfill": "^7.0.0",

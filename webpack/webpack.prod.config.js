@@ -19,8 +19,7 @@ const pluginRelay = require('babel-plugin-relay')
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const pluginInlineImport = require('babel-plugin-inline-import').default
-// const {InjectManifest, GenerateSW} = require('workbox-webpack-plugin')
-// const BundleBuddyWebpackPlugin = require('bundle-buddy-webpack-plugin')
+const {InjectManifest} = require('workbox-webpack-plugin')
 
 const publicPath = getWebpackPublicPath.default()
 const buildPath = path.join(__dirname, '../build')
@@ -86,7 +85,7 @@ module.exports = {
   },
   mode: 'production',
   entry: {
-    app: [path.join(__dirname, '../src/client/client.js')]
+    app: [path.join(__dirname, '../src/client/client.tsx')]
   },
   output: {
     path: buildPath,
@@ -145,6 +144,10 @@ module.exports = {
     new webpack.SourceMapDevToolPlugin({
       filename: '[name]_[hash].js.map',
       append: `\n//# sourceMappingURL=${publicPath}[url]`
+    }),
+    new InjectManifest({
+      swSrc: path.join(__dirname, '../src/client/sw.ts'),
+      importWorkboxFrom: 'disabled'
     }),
     ...extraPlugins
   ],

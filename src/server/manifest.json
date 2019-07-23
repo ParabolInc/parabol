@@ -1,0 +1,14 @@
+{
+  "short_name": "Parabol",
+  "name": "Parabol",
+  "icons": [
+    {
+      "src": "https://action.parabol.co/static/mark-color-cropped.svg",
+      "sizes": "32x32 192x192 512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#F1F0FA",
+  "display": "standalone",
+  "theme_color": "#493272"
+}
