@@ -152,7 +152,7 @@ export default class Auth0ClientManager {
   }
 
   changePassword (email: string) {
-    return this.post<string>(`https://${this.domain}/dbconnections/change_password`, {
+    return this.post<undefined>(`https://${this.domain}/dbconnections/change_password`, {
       client_id: this.clientId,
       email,
       connection: Auth0ClientManager.CONNECTION
