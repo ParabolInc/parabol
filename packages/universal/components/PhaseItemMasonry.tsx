@@ -12,7 +12,7 @@ import {
 } from 'react-dnd'
 import withScrolling from 'react-dnd-scrollzone'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {BBox, Coords} from 'types/animations'
+import {BBox, Coords} from 'universal/types/animations'
 import Modal from 'universal/components/Modal'
 import ReflectionCardInFlight from 'universal/components/ReflectionCardInFlight'
 import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGroup'

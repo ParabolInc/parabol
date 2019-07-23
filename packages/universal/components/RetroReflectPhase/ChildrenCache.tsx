@@ -1,4 +1,4 @@
-import {BBox, Dims, Point} from 'types/animations'
+import {BBox, Dims, Point} from 'universal/types/animations'
 import getBBox from 'universal/components/RetroReflectPhase/getBBox'
 import getTransform from 'universal/components/RetroReflectPhase/getTransform'
 import requestDoubleAnimationFrame from 'universal/components/RetroReflectPhase/requestDoubleAnimationFrame'

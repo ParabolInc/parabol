@@ -1,4 +1,4 @@
-import {BBox} from 'types/animations'
+import {BBox} from 'universal/types/animations'
 
 const setElementBBox = (el: HTMLElement, bbox: Partial<BBox>) => {
   Object.keys(bbox).forEach((key) => {

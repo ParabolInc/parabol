@@ -3,7 +3,7 @@ import {TaskFooterIntegrateMenuList_task} from '__generated__/TaskFooterIntegrat
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {ValueOf} from 'types/generics'
+import {ValueOf} from 'universal/types/generics'
 import Icon from 'universal/components/Icon'
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
 import Menu from 'universal/components/Menu'

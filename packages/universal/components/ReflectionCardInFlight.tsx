@@ -3,7 +3,7 @@ import {convertFromRaw, EditorState} from 'draft-js'
 import React from 'react'
 import styled from '@emotion/styled'
 import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
-import {Coords} from 'types/animations'
+import {Coords} from 'universal/types/animations'
 import {
   MasonryChildrenCache,
   MasonryItemCache,

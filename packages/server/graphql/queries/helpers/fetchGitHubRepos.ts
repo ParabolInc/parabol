@@ -1,6 +1,6 @@
 import getRethink from 'server/database/rethinkDriver'
 import GitHubManager from 'server/utils/GitHubManager'
-import {Omit} from 'types/generics'
+import {Omit} from 'universal/types/generics'
 import {ISuggestedIntegrationGitHub} from 'universal/types/graphql'
 import {GITHUB} from 'universal/utils/constants'
 import {GetReposQueryData} from 'universal/utils/githubQueries/getRepos.graphql'

@@ -14,7 +14,7 @@ import createProxyRecord from 'universal/utils/relay/createProxyRecord'
 import getBaseRecord from 'universal/utils/relay/getBaseRecord'
 import getInProxy from 'universal/utils/relay/getInProxy'
 import {setLocalStageAndPhase} from 'universal/utils/relay/updateLocalStage'
-import {DeepNullable, DeepPartial} from '../../types/generics'
+import {DeepNullable, DeepPartial} from '../types/generics'
 import Atmosphere from '../Atmosphere'
 import {ClientRetroPhaseItem, ClientRetrospectiveMeeting} from '../types/clientSchema'
 import {

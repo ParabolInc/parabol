@@ -1,6 +1,6 @@
 import React, {Component, ReactElement} from 'react'
 import {findDOMNode} from 'react-dom'
-import {Subtract} from 'types/generics'
+import {Subtract} from 'universal/types/generics'
 import getDisplayName from 'universal/utils/getDisplayName'
 import isKeyboardEvent from 'universal/utils/isKeyboardEvent'
 

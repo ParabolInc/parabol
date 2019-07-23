@@ -1,6 +1,6 @@
 import React, {cloneElement, Component, ComponentElement} from 'react'
 import {findDOMNode} from 'react-dom'
-import {BBox} from 'types/animations'
+import {BBox} from 'universal/types/animations'
 import ChildrenCache from 'universal/components/RetroReflectPhase/ChildrenCache'
 import ParentCache from 'universal/components/RetroReflectPhase/ParentCache'
 import {

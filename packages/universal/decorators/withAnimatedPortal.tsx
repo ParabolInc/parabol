@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Subtract} from 'types/generics'
+import {Subtract} from 'universal/types/generics'
 import getDisplayName from 'universal/utils/getDisplayName'
 
 /*

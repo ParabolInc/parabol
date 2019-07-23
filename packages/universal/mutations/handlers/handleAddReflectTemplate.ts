@@ -1,7 +1,7 @@
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import {RETROSPECTIVE} from 'universal/utils/constants'
 import addNodeToArray from 'universal/utils/relay/addNodeToArray'
-import {DeepNullable} from '../../../types/generics'
+import {DeepNullable} from '../../types/generics'
 import {IRetrospectiveMeetingSettings, ITeam} from '../../types/graphql'
 
 const handleAddReflectTemplate = (

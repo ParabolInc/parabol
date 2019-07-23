@@ -4,7 +4,7 @@
  * This does that, and does it quickly, assuming that the first promise in the array will resolve first
  */
 
-import {NotVoid} from '../../types/generics'
+import {NotVoid} from '../types/generics'
 
 type CatchHandler = (e: Error) => NotVoid
 

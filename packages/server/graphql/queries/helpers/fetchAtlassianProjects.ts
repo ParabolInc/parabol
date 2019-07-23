@@ -1,6 +1,6 @@
 import {DataLoaderWorker} from 'server/graphql/graphql'
 import AtlassianManager from 'server/utils/AtlassianManager'
-import {Omit} from 'types/generics'
+import {Omit} from 'universal/types/generics'
 import {ISuggestedIntegrationJira} from 'universal/types/graphql'
 import makeJiraProjectName from 'universal/utils/makeJiraProjectName'
 import makeSuggestedIntegrationId from 'universal/utils/makeSuggestedIntegrationId'

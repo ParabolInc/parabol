@@ -10,7 +10,7 @@ import {
   StartDraggingReflectionMutation as TStartDraggingReflectionMutation,
   StartDraggingReflectionMutationVariables
 } from '../../__generated__/StartDraggingReflectionMutation.graphql'
-import {Coords} from '../../types/animations'
+import {Coords} from '../types/animations'
 import {MasonryAtmosphere} from '../components/PhaseItemMasonry'
 import {CompletedHandler, ErrorHandler} from '../types/relayMutations'
 

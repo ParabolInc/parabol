@@ -1,7 +1,7 @@
 import {ActionMeeting_viewer} from '__generated__/ActionMeeting_viewer.graphql'
 import React, {ReactElement, useEffect} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {ValueOf} from 'types/generics'
+import {ValueOf} from 'universal/types/generics'
 import ActionMeetingSidebar from 'universal/components/ActionMeetingSidebar'
 import MeetingArea from 'universal/components/MeetingArea'
 import MeetingStyles from 'universal/components/MeetingStyles'

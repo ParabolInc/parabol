@@ -1,7 +1,7 @@
 import {useMeetingTeam} from '__generated__/useMeetingTeam.graphql'
 import {useCallback, useEffect, useRef} from 'react'
 import {commitLocalUpdate, graphql} from 'react-relay'
-import {Omit} from 'types/generics'
+import {Omit} from 'universal/types/generics'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useDocumentTitle from 'universal/hooks/useDocumentTitle'
 import useForceUpdate from 'universal/hooks/useForceUpdate'

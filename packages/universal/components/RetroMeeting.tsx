@@ -1,7 +1,7 @@
 import {RetroMeeting_viewer} from '__generated__/RetroMeeting_viewer.graphql'
 import React, {ReactElement} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {ValueOf} from 'types/generics'
+import {ValueOf} from 'universal/types/generics'
 import MeetingArea from 'universal/components/MeetingArea'
 import MeetingStyles from 'universal/components/MeetingStyles'
 import RetroMeetingSidebar from 'universal/components/RetroMeetingSidebar'

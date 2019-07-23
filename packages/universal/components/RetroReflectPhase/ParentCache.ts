@@ -1,5 +1,5 @@
 import setElementBBox from 'universal/components/RetroReflectPhase/setElementBBox'
-import {BBox} from 'types/animations'
+import {BBox} from 'universal/types/animations'
 
 class ParentCache {
   el!: HTMLElement
