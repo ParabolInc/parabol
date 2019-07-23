@@ -7,8 +7,8 @@ const ignorePatterns = [
   '\\/\\.',
   '~$',
   '\\.json$',
-  'src/server/database/migrations/.*$',
-  'src/server/billing/.*$',
+  'packages/server/database/migrations/.*$',
+  'packages/server/billing/.*$',
   '__tests__*$'
 ]
 

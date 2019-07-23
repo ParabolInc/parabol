@@ -106,7 +106,7 @@ $ npm run bs
 
 The database schema version is managed by
 [migrate-rethinkdb](https://github.com/ParabolInc/migrate-rethinkdb).
-Migration scripts are stored in `./src/server/database/migrations`.
+Migration scripts are stored in `./packages/server/database/migrations`.
 
 If you make changes to the Action schema, make certain to create a new
 migration.

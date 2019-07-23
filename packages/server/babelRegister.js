@@ -23,10 +23,10 @@ require('@babel/register')({
       pluginModuleResolver,
       {
         extensions,
-        root: ['./src']
+        root: ['./packages']
       }
     ],
-    [pluginRelay, {artifactDirectory: './src/__generated__'}]
+    [pluginRelay, {artifactDirectory: './packages/__generated__'}]
   ],
   presets: [
     [

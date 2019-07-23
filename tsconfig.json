@@ -22,7 +22,7 @@
 //      example of how to alias
 //      "relay-runtime": ["node_modules/@mattkrick/relay-runtime"],
        "*": [
-         "src/*",
+         "packages/*",
          "stories/*"
        ]
     },
@@ -45,7 +45,7 @@
   ],
   "awesomeTypescriptLoaderOptions": {
     "reportFiles": [
-      "src/**/*.{ts,tsx}"
+      "packages/**/*.{ts,tsx}"
 //      "stories/**/*.{ts,tsx}"
     ]
   }

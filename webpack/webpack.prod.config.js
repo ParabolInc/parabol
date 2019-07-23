@@ -21,9 +21,12 @@ const TerserPlugin = require('terser-webpack-plugin')
 const pluginInlineImport = require('babel-plugin-inline-import').default
 const {InjectManifest} = require('workbox-webpack-plugin')
 
-const publicPath = getWebpackPublicPath.default()
-const buildPath = path.join(__dirname, '../build')
 getDotenv.default()
+
+const CLIENT_ROOT = path.join(__dirname, '..')
+const PROJECT_ROOT = path.join(CLIENT_ROOT, '..', '..')
+const publicPath = getWebpackPublicPath.default()
+const buildPath = path.join(PROJECT_ROOT, 'build')
 
 // babel-plugin-relay requires a prod BABEL_ENV to remove hash checking logic. Probably a bug in the package.
 process.env.BABEL_ENV = 'production'
@@ -60,7 +63,7 @@ const babelConfig = {
       pluginObjectRestSpread,
       pluginClassProps,
       pluginDynamicImport,
-      [pluginRelay, {artifactDirectory: './src/__generated__'}]
+      [pluginRelay, {artifactDirectory: path.join(CLIENT_ROOT, '__generated__')}]
     ],
     presets: [
       [
@@ -85,7 +88,7 @@ module.exports = {
   },
   mode: 'production',
   entry: {
-    app: [path.join(__dirname, '../src/client/client.tsx')]
+    app: [path.join(CLIENT_ROOT, 'client.tsx')]
   },
   output: {
     path: buildPath,
@@ -125,7 +128,7 @@ module.exports = {
     // new GenerateSW(),
     new HtmlWebpackPlugin({
       filename: 'index.html',
-      template: 'src/server/template.html'
+      template: path.join(PROJECT_ROOT, 'packages', 'server', 'template.html')
     }),
     new ScriptExtHtmlWebpackPlugin({
       custom: {
@@ -146,7 +149,7 @@ module.exports = {
       append: `\n//# sourceMappingURL=${publicPath}[url]`
     }),
     new InjectManifest({
-      swSrc: path.join(__dirname, '../src/client/sw.ts'),
+      swSrc: path.join(CLIENT_ROOT, 'sw.ts'),
       importWorkboxFrom: 'disabled'
     }),
     ...extraPlugins
@@ -161,12 +164,7 @@ module.exports = {
       {test: /\.flow$/, loader: 'ignore-loader'},
       {
         test: /\.tsx?$/,
-        include: [
-          path.join(__dirname, '../src/__generated__'),
-          path.join(__dirname, '../src/client'),
-          path.join(__dirname, '../src/universal')
-          // path.join(__dirname, '../stories')
-        ],
+        include: [CLIENT_ROOT],
         use: [
           babelConfig,
           {

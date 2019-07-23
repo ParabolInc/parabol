@@ -8,17 +8,17 @@
       ],
       "excludes": [
         "githubSchema.graphql",
-        "./src/universal/utils/githubQueries"
+        "./packages/universal/utils/githubQueries"
       ]
     },
     "GitHub": {
-      "schemaPath": "./src/server/utils/githubSchema.graphql",
+      "schemaPath": "./packages/server/utils/githubSchema.graphql",
       "name": "GitHub GraphQL Schema",
       "includes": [
-        "./src/universal/utils/githubQueries/*.graphql"
+        "./packages/universal/utils/githubQueries/*.graphql"
       ],
       "extensions": {
-        "schemaTypesPath": "src/universal/utils/githubQueries/types"
+        "schemaTypesPath": "packages/universal/utils/githubQueries/types"
       }
     }
   }

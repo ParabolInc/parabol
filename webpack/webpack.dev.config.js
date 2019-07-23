@@ -7,6 +7,8 @@ const vendors = require('../dll/vendors')
 const pluginInlineImport = require('babel-plugin-inline-import').default
 // const {InjectManifest} = require('workbox-webpack-plugin')
 // const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
+const CLIENT_ROOT = path.join(__dirname, '..')
+const PROJECT_ROOT = path.join(CLIENT_ROOT, '..', '..')
 
 const babelLoader = {
   loader: 'babel-loader',
@@ -16,7 +18,7 @@ const babelLoader = {
     plugins: [
       pluginInlineImport,
       pluginDynamicImport,
-      [pluginRelay, {artifactDirectory: './src/__generated__'}]
+      [pluginRelay, {artifactDirectory: path.join(CLIENT_ROOT, '__generated__')}]
     ]
   }
 }
@@ -25,10 +27,10 @@ module.exports = {
   devtool: 'eval',
   mode: 'development',
   entry: {
-    app: [path.join(__dirname, '../src/client/client.js')]
+    app: [path.join(CLIENT_ROOT, 'client.tsx')]
   },
   output: {
-    path: path.join(__dirname, '../build/'),
+    path: path.join(PROJECT_ROOT, 'build'),
     filename: '[name].js',
     chunkFilename: '[name].chunk.js',
     publicPath: '/static/'
@@ -47,14 +49,14 @@ module.exports = {
       manifest: vendors
     })
     // new InjectManifest({
-    //   swSrc: path.join(__dirname, '../src/client/sw.ts')
+    //   swSrc: path.join(__dirname, '../packages/client/sw.ts')
     // })
   ],
   module: {
     rules: [
       {
         test: /\.js$/,
-        include: [path.join(__dirname, '../src/client'), path.join(__dirname, '../src/universal')],
+        include: [CLIENT_ROOT],
         use: [
           babelLoader,
           {
@@ -73,12 +75,7 @@ module.exports = {
       {test: /\.flow$/, loader: 'ignore-loader'},
       {
         test: /\.tsx?$/,
-        include: [
-          path.join(__dirname, '../src/__generated__'),
-          path.join(__dirname, '../src/client'),
-          path.join(__dirname, '../src/universal'),
-          path.join(__dirname, '../stories')
-        ],
+        include: [CLIENT_ROOT],
         use: [
           babelLoader,
           {
