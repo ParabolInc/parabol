@@ -1,1 +1,1 @@
-export default (tags: ReadonlyArray<string>) => tags.includes('private')
+export default (tags: readonly string[]) => tags.includes('private')

@@ -14,7 +14,7 @@ import isTaskArchived from 'universal/utils/isTaskArchived'
 import isTaskPrivate from 'universal/utils/isTaskPrivate'
 import isTempId from 'universal/utils/relay/isTempId'
 import cardRootStyles from 'universal/styles/helpers/cardRootStyles'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 
 const RootCard = styled('div')(({cardHasHover, cardHasFocus, hasDragStyles}) => ({
   ...cardRootStyles,

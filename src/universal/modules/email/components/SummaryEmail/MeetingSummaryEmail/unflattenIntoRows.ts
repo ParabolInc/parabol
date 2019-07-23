@@ -1,4 +1,4 @@
-const unflattenIntoRows = (items: ReadonlyArray<any>, rowCount: number, columnCount: number) => {
+const unflattenIntoRows = (items: readonly any[], rowCount: number, columnCount: number) => {
   const rows = new Array(rowCount).fill(undefined)
   rows.forEach((_, idx) => {
     const start = columnCount * idx

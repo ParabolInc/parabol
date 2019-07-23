@@ -1,6 +1,6 @@
 import {MeetingStageTimeLimitEnd_notification} from '__generated__/MeetingStageTimeLimitEnd_notification.graphql'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 import RaisedButton from 'universal/components/RaisedButton'

@@ -51,8 +51,6 @@ interface Props {
   disabled?: boolean
   onClick: ReturnType<typeof useMenu>['togglePortal']
   onMouseEnter?: () => void
-  // hack to get around extending this component with styles
-  innerRef?: any
   // style hacks until a better pattern
   flat?: boolean
   size?: string

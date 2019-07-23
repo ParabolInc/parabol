@@ -11,7 +11,7 @@ export interface UnstartedMeeting {
   id: string
   facilitatorUserId: string
   facilitatorStageId: string
-  phases: ReadonlyArray<any>
+  phases: readonly any[]
   localPhase: null
   localStage: null
 }

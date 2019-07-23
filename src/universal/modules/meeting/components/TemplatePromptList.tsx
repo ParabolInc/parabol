@@ -1,7 +1,7 @@
 import {TemplatePromptList_prompts} from '__generated__/TemplatePromptList_prompts.graphql'
 import React, {Component} from 'react'
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import withAtmosphere, {
   WithAtmosphereProps

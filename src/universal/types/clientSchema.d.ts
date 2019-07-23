@@ -15,16 +15,16 @@ export interface ClientNewMeeting extends INewMeeting {
 }
 
 export interface ClientRetrospectiveMeeting extends IRetrospectiveMeeting {
-  isViewerDragInProgress: Boolean
+  isViewerDragInProgress: boolean
   localPhase: NewMeetingPhase
   localStage: NewMeetingStage
-  reflectionsInFlight: Array<IRetroReflection>
+  reflectionsInFlight: IRetroReflection[]
 }
 
 export interface ClientDragContext extends IDragContext {
-  isClosing: Boolean
-  isPendingStartDrag: Boolean
-  isViewerDragging: Boolean
+  isClosing: boolean
+  isPendingStartDrag: boolean
+  isViewerDragging: boolean
   initialCursorCoords: ICoords2D
   initialComponentCoords: ICoords2D
 }

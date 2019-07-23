@@ -9,7 +9,7 @@ import {IRemoveReflectionOnMutationArguments} from 'universal/types/graphql'
 import {LocalHandlers} from 'universal/types/relayMutations'
 import Atmosphere from 'universal/Atmosphere'
 
-type Context = {
+interface Context {
   meetingId: string
 }
 

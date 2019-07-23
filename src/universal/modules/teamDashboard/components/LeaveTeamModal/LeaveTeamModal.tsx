@@ -1,6 +1,6 @@
 import {LeaveTeamModal_teamMember} from '__generated__/LeaveTeamModal_teamMember.graphql'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import PrimaryButton from 'universal/components/PrimaryButton'

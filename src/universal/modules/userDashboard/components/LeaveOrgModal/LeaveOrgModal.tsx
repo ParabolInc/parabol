@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import DialogContainer from 'universal/components/DialogContainer'
 import DialogContent from 'universal/components/DialogContent'

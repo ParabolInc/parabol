@@ -49,16 +49,18 @@ interface DemoEvents {
   botsFinished: void
 }
 
-type GQLDemoEmitter = {new (): StrictEventEmitter<EventEmitter, DemoEvents>}
+interface GQLDemoEmitter {new (): StrictEventEmitter<EventEmitter, DemoEvents>}
 
 class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
+  atmosphere: LocalAtmosphere
   db: ReturnType<typeof initDB>
   getTempId = (prefix) => `${prefix}${this.db._tempID++}`
   pendingBotTimeout: number | undefined
-  pendingBotAction?: (() => Array<any>) | undefined
+  pendingBotAction?: (() => any[]) | undefined
 
-  constructor (public atmosphere: LocalAtmosphere) {
+  constructor (atmosphere: LocalAtmosphere) {
     super()
+    this.atmosphere = atmosphere
     const demoDB = window.localStorage.getItem('retroDemo') || ''
     let validDB
     try {
@@ -71,8 +73,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     this.db = isStale ? initDB(initBotScript()) : validDB
   }
 
-  getUnlockedStages (stageIds: Array<string>) {
-    let unlockedStages = [] as Array<INewMeetingStage>
+  getUnlockedStages (stageIds: string[]) {
+    let unlockedStages = [] as INewMeetingStage[]
     this.db.newMeeting.phases!.forEach((phase) => {
       (phase.stages as any).forEach((stage) => {
         if (stageIds.includes(stage.id)) {
@@ -122,7 +124,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       mutationsToFlush.length = 0
       this.pendingBotAction = undefined
     } else {
-      const mutationThunks = [] as Array<() => Promise<any>>
+      const mutationThunks = [] as (() => Promise<any>)[]
       mutationsToFlush.forEach((mutation) => {
         if (mutation.op === 'UpdateDragLocationMutation') return
         const thunk = () => this.ops[mutation.op](mutation.variables, mutation.botId)
@@ -1065,7 +1067,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       return {dragDiscussionTopic: data}
     },
     EndNewMeetingMutation: ({meetingId}, userId) => {
-      const phases = this.db.newMeeting.phases as Array<NewMeetingPhase>
+      const phases = this.db.newMeeting.phases as NewMeetingPhase[]
       const lastPhase = phases[phases.length - 1] as IDiscussPhase
       const currentStage = lastPhase.stages.find((stage) => stage.startAt && !stage.endAt)
       const now = new Date().toJSON()

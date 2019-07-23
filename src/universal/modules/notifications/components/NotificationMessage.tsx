@@ -1,13 +1,12 @@
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {PALETTE} from 'universal/styles/paletteV2'
-import {Layout} from 'universal/types/constEnums'
 
 const NotificationMessage = styled('div')({
   color: PALETTE.TEXT_MAIN,
   flex: 1,
   fontSize: 14,
   lineHeight: '20px',
-  marginLeft: Layout.ROW_GUTTER
+  marginLeft: 16
 })
 
 export default NotificationMessage

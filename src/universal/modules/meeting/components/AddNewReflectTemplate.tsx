@@ -1,6 +1,6 @@
 import {AddNewReflectTemplate_reflectTemplates} from '__generated__/AddNewReflectTemplate_reflectTemplates.graphql'
 import React, {Component} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import RaisedButton from 'universal/components/RaisedButton'
 import withAtmosphere, {

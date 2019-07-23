@@ -7,6 +7,7 @@ const {
   DEFAULT_TYPE_BUILDER,
   DEFAULT_ENUM_TYPE_BUILDER,
   DEFAULT_EXPORT_FUNCTION
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
 } = require('@gql2ts/language-typescript')
 
 const namesToPrefix = new Set(['User'])

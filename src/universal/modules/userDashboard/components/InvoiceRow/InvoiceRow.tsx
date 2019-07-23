@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
@@ -7,13 +6,14 @@ import makeMonthString from 'universal/utils/makeMonthString'
 import {Link} from 'react-router-dom'
 import invoiceLineFormat from 'universal/modules/invoice/helpers/invoiceLineFormat'
 import {PAID, PENDING, UPCOMING} from 'universal/utils/constants'
-import styled, {css, cx} from 'react-emotion'
+import styled from '@emotion/styled'
 import Row from 'universal/components/Row/Row'
 import RowInfo from 'universal/components/Row/RowInfo'
 import RowInfoLink from 'universal/components/Row/RowInfoLink'
 import RowInfoHeading from 'universal/components/Row/RowInfoHeading'
 import Tag from 'universal/components/Tag/Tag'
 import Icon from 'universal/components/Icon'
+import {PALETTE} from 'universal/styles/paletteV2'
 
 const FileIcon = styled(Icon)({
   alignItems: 'center',
@@ -29,7 +29,7 @@ const InvoiceAmount = styled('span')({
   color: ui.palette.dark
 })
 
-const InvoiceAvatar = styled('div')(({isEstimate}: {isEstimate: boolean}) => ({
+const InvoiceAvatar = styled('div')<{isEstimate: boolean}>(({isEstimate}) => ({
   backgroundColor: isEstimate ? appTheme.palette.mid : appTheme.palette.mid40l,
   borderRadius: '.5rem'
 }))
@@ -55,25 +55,18 @@ const InfoRowRight = styled('div')({
   textAlign: 'right'
 })
 
-const styledDate = css({
-  fontSize: appTheme.typography.s2
-})
-
-const styledToPay = css({
-  color: ui.palette.midGray
-})
-
-const styledPaid = css({
-  color: ui.hintColor
-})
-
-const styledUnpaid = css({
-  color: appTheme.palette.warm
-})
-
 const StyledLink = RowInfoLink.withComponent(Link)
 
-const InvoiceRow = (props) => {
+const StyledDate = styled('span')<{styledToPay?: boolean, styledPaid?: boolean}>(({styledToPay, styledPaid}) => ({
+  fontSize: 13,
+  color: styledToPay || styledPaid ? PALETTE.TEXT_LIGHT : PALETTE.ERROR_MAIN
+}))
+
+interface Props {
+  hasCard: boolean
+  invoice: any
+}
+const InvoiceRow = (props: Props) => {
   const {
     hasCard,
     invoice: {id: invoiceId, amountDue, endAt, paidAt, status}
@@ -102,34 +95,29 @@ const InvoiceRow = (props) => {
           </div>
           <InfoRowRight>
             {status === UPCOMING && (
-              <span className={cx(styledDate, styledToPay)}>
+              <StyledDate styledToPay>
                 {hasCard
                   ? `card will be charged on ${makeDateString(endAt)}`
                   : `Make sure to add billing info before ${makeDateString(endAt)}!`}
-              </span>
+              </StyledDate>
             )}
             {status === PAID && (
-              <span className={cx(styledDate, styledPaid)}>
+              <StyledDate styledPaid>
                 {'Paid on '}
                 {makeDateString(paidAt)}
-              </span>
+              </StyledDate>
             )}
             {status !== PAID && status !== UPCOMING && (
-              <span className={status === PENDING ? styledPaid : styledUnpaid}>
+              <StyledDate styledPaid={status === PENDING}>
                 {'Status: '}
                 {status}
-              </span>
+              </StyledDate>
             )}
           </InfoRowRight>
         </InfoRow>
       </InvoiceInfo>
     </Row>
   )
-}
-
-InvoiceRow.propTypes = {
-  hasCard: PropTypes.bool,
-  invoice: PropTypes.object
 }
 
 export default InvoiceRow

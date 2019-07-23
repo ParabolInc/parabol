@@ -1,5 +1,5 @@
 import {TaskFooterTeamAssignee_task} from '__generated__/TaskFooterTeamAssignee_task.graphql'
-import React, {RefObject} from 'react'
+import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import CardButton from 'universal/components/CardButton'
@@ -57,7 +57,7 @@ const TaskFooterTeamAssignee = (props: Props) => {
         aria-label='Assign this task to another team'
         onClick={canAssign ? togglePortal : undefined}
         onMouseEnter={TaskFooterTeamAssigneeMenuRoot.preload}
-        ref={originRef as any}
+        ref={originRef}
       >
         {teamName}
       </TeamToggleButton>

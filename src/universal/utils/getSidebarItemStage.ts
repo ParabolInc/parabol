@@ -2,14 +2,14 @@ import findStageById from 'universal/utils/meetings/findStageById'
 
 interface Phase {
   phaseType: string
-  stages: ReadonlyArray<{
+  stages: readonly {
     id: string
     isNavigable: boolean
     isNavigableByFacilitator: boolean
-  }>
+  }[]
 }
 
-const getSidebarItemStage = <T extends ReadonlyArray<Phase>>(
+const getSidebarItemStage = <T extends readonly Phase[]>(
   name: string,
   phases: T,
   facilitatorStageId: string

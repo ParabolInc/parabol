@@ -334,7 +334,7 @@ class ReflectionGroup extends Component<Props, State> {
           gutterN={gutterN}
         >
           <ReflectionGroupHeader
-            innerRef={this.setHeaderRef}
+            ref={this.setHeaderRef}
             meeting={meeting}
             reflectionGroup={reflectionGroup}
             isEditingSingleCardTitle={this.state.isEditingSingleCardTitle}
@@ -360,7 +360,7 @@ class ReflectionGroup extends Component<Props, State> {
             <Background ref={this.setBackgroundRef} />
             <ReflectionGroupHeader
               isExpanded={!!isExpanded}
-              innerRef={this.setHeaderRef}
+              ref={this.setHeaderRef}
               meeting={meeting}
               reflectionGroup={reflectionGroup}
               titleInputRef={this.titleInputRef}

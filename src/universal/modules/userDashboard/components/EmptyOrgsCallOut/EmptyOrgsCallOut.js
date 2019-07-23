@@ -3,7 +3,7 @@ import React from 'react'
 import PrimaryButton from 'universal/components/PrimaryButton'
 import Panel from 'universal/components/Panel/Panel'
 import {withRouter} from 'react-router-dom'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 
 const Body = styled('div')({
   padding: '32px',

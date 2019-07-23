@@ -1,7 +1,6 @@
 import React, {Component} from 'react'
 import withScrolling from 'react-dnd-scrollzone'
 import styled from '@emotion/styled';
-import { css } from 'emotion';
 import DraggableTask from 'universal/containers/TaskCard/DraggableTask'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -66,18 +65,6 @@ const ColumnInner = styled('div')({
 // scrolling its contents when another element is dragged close to its edges.
 const ScrollZone = withScrolling(ColumnInner)
 
-const statusLabelBlock = {
-  alignItems: 'center',
-  display: 'flex',
-  flex: 1,
-  fontSize: '1.0625rem',
-  marginLeft: '.9375rem'
-}
-
-const statusLabelBlockUserCanAdd = {
-  marginLeft: '.5625rem'
-}
-
 const StatusLabel = styled('div')({
   fontWeight: 600,
   textTransform: 'capitalize'
@@ -87,6 +74,14 @@ const TasksCount = styled('div')({
   color: appTheme.palette.dark40a,
   marginLeft: '.5rem'
 })
+
+const StatusLabelBlock = styled('div')<{userCanAdd: boolean | undefined}>(({userCanAdd}) => ({
+  alignItems: 'center',
+    display: 'flex',
+    flex: 1,
+    fontSize: '1.0625rem',
+    marginLeft: userCanAdd ? 9 : 15
+}))
 
 interface Props extends WithAtmosphereProps {
   area: AreaEnum
@@ -148,7 +143,6 @@ class TaskColumn extends Component<Props> {
     } = this.props
     const label = themeLabels.taskStatus[status].slug
     const userCanAdd = area === TEAM_DASH || area === USER_DASH || isMyMeetingSection
-    const statusLabelBlockStyles = css(statusLabelBlock, userCanAdd && statusLabelBlockUserCanAdd)
 
     return (
       <Column>
@@ -163,10 +157,10 @@ class TaskColumn extends Component<Props> {
             teamMemberFilterId={teamMemberFilterId || ''}
             teams={teams}
           />
-          <div className={statusLabelBlockStyles}>
+          <StatusLabelBlock userCanAdd={userCanAdd}>
             <StatusLabel>{label}</StatusLabel>
             {tasks.length > 0 && <TasksCount>{tasks.length}</TasksCount>}
-          </div>
+          </StatusLabelBlock>
         </ColumnHeader>
         <ColumnBody>
           <ScrollZone>

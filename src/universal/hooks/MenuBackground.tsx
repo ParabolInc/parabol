@@ -1,4 +1,4 @@
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {MenuPosition} from 'universal/hooks/useCoords'
 import {PortalStatus} from 'universal/hooks/usePortal'
 import {DECELERATE} from 'universal/styles/animation'
@@ -35,15 +35,17 @@ const backgroundStyles = (portalStatus: PortalStatus, isDropdown: boolean) => {
   }
 }
 
-const MenuBackground = styled('div')(
+interface BackgroundProps {
+  menuPosition: MenuPosition
+  portalStatus: PortalStatus
+  isDropdown: boolean
+}
+
+const MenuBackground = styled('div')<BackgroundProps>(
   ({
     menuPosition,
     portalStatus,
     isDropdown
-  }: {
-    menuPosition: MenuPosition
-    portalStatus: PortalStatus
-    isDropdown: boolean
   }) => ({
     background: '#fff',
     borderRadius: Radius.MENU,

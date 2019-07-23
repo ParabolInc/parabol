@@ -1,4 +1,4 @@
-import React, {Ref, RefObject} from 'react'
+import React, {forwardRef, Ref, RefObject} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import styled from '@emotion/styled'
 import ReflectionGroupTitleEditor from 'universal/components/ReflectionGroup/ReflectionGroupTitleEditor'
@@ -13,7 +13,6 @@ import plural from 'universal/utils/plural'
 interface Props {
   meeting: ReflectionGroupHeader_meeting
   reflectionGroup: ReflectionGroupHeader_reflectionGroup
-  innerRef: Ref<HTMLDivElement>
   isExpanded?: boolean
   isEditingSingleCardTitle?: boolean
   titleInputRef: RefObject<HTMLInputElement>
@@ -34,8 +33,8 @@ const GroupHeader = styled('div')({
 
 const StyledTag = styled(Tag)({marginRight: 4})
 
-const ReflectionGroupHeader = (props: Props) => {
-  const {innerRef, meeting, reflectionGroup, isEditingSingleCardTitle, titleInputRef} = props
+const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
+  const {meeting, reflectionGroup, isEditingSingleCardTitle, titleInputRef} = props
   const isExpanded = !!props.isExpanded
   const {
     localStage,
@@ -47,7 +46,7 @@ const ReflectionGroupHeader = (props: Props) => {
     reflections.length > 1 || phaseType !== GROUP || titleIsUserDefined || isEditingSingleCardTitle
   if (!showHeader) return null
   return (
-    <GroupHeader ref={innerRef}>
+    <GroupHeader ref={ref}>
       <ReflectionGroupTitleEditor
         isExpanded={isExpanded}
         reflectionGroup={reflectionGroup}
@@ -70,7 +69,7 @@ const ReflectionGroupHeader = (props: Props) => {
       )}
     </GroupHeader>
   )
-}
+})
 
 export default createFragmentContainer(ReflectionGroupHeader, {
   meeting: graphql`

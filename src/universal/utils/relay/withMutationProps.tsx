@@ -19,11 +19,11 @@ export interface WithMutationProps {
 
 export interface MutationServerError {
   message: string
-  path: Array<string>
+  path: string[]
 }
 
 export const formatError = (
-  rawError?: string | ErrorObject | MutationServerError | Array<MutationServerError> | undefined
+  rawError?: string | ErrorObject | MutationServerError | MutationServerError[] | undefined
 ) => {
   const firstError = Array.isArray(rawError) ? rawError[0] : rawError
   if (typeof firstError === 'object' && 'message' in firstError) {
@@ -66,7 +66,7 @@ const withMutationProps = <P extends WithMutationProps>(
       return error
     }
 
-    onError = (rawError?: string | MutationServerError | Array<MutationServerError>) => {
+    onError = (rawError?: string | MutationServerError | MutationServerError[]) => {
       if (this._mounted) {
         this.setState({
           submitting: false,

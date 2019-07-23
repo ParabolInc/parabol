@@ -1,5 +1,5 @@
 import React, {ReactNode} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import CopyLink from 'universal/components/CopyLink'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'

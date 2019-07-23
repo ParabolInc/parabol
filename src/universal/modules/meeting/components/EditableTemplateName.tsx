@@ -7,7 +7,7 @@ import withAtmosphere, {
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import RenameReflectTemplateMutation from '../../../mutations/RenameReflectTemplateMutation'
 import Legitity from 'universal/validation/Legitity'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   name: string

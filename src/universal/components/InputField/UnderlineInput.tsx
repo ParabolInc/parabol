@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
 import StyledError from 'universal/components/StyledError'
 import {PALETTE} from '../../styles/paletteV2'
@@ -33,7 +33,6 @@ interface Props {
   autoFocus?: boolean
   disabled?: boolean
   error: string | undefined
-  innerRef?: React.RefObject<HTMLInputElement>
   name?: string
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
@@ -42,12 +41,11 @@ interface Props {
   value: string
 }
 
-const UnderlineInput = (props: Props) => {
+const UnderlineInput = forwardRef((props: Props, ref: Ref<HTMLInputElement>) => {
   const {
     autoFocus,
     disabled,
     error,
-    innerRef,
     name,
     onBlur,
     onChange,
@@ -60,7 +58,7 @@ const UnderlineInput = (props: Props) => {
       <Input
         autoFocus={autoFocus}
         disabled={Boolean(disabled)}
-        ref={innerRef}
+        ref={ref}
         name={name}
         placeholder={placeholder}
         onBlur={onBlur}
@@ -71,6 +69,6 @@ const UnderlineInput = (props: Props) => {
       {error && <ErrorMessage>{error}</ErrorMessage>}
     </React.Fragment>
   )
-}
+})
 
 export default UnderlineInput

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {withRouter} from 'react-router-dom'
 import {PROFILE, ORGANIZATIONS, NOTIFICATIONS} from 'universal/utils/constants'
 import DashHeaderTitle from 'universal/components/DashHeaderTitle'

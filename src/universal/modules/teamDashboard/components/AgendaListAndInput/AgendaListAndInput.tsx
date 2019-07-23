@@ -1,14 +1,14 @@
 import {AgendaListAndInput_team} from '__generated__/AgendaListAndInput_team.graphql'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {useGotoStageId} from 'universal/hooks/useMeeting'
 import AgendaInput from 'universal/modules/teamDashboard/components/AgendaInput/AgendaInput'
 import AgendaList from 'universal/modules/teamDashboard/components/AgendaList/AgendaList'
 import {meetingSidebarGutter} from 'universal/styles/meeting'
 
-const RootStyles = styled('div')(
-  ({disabled, isMeeting}: {isMeeting: boolean | undefined; disabled: boolean}) => ({
+const RootStyles = styled('div')<{isMeeting: boolean | undefined; disabled: boolean}>(
+  ({disabled, isMeeting}) => ({
     display: 'flex',
     flexDirection: 'column',
     paddingTop: isMeeting ? meetingSidebarGutter : 0,

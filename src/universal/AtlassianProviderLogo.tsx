@@ -1,4 +1,4 @@
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import atlassianMark from './styles/theme/images/graphics/atlassian-gradient.svg'
 
 const AtlassianProviderLogo = styled('div')({

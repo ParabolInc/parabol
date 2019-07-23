@@ -20,12 +20,12 @@ const gqlQuery = graphql`
 const useAllIntegrations = (
   atmosphere: Atmosphere,
   query: string,
-  suggestedItems: ReadonlyArray<any>,
+  suggestedItems: readonly any[],
   hasMore: boolean,
   teamId: string,
   userId: string
 ) => {
-  const [fetchedItems, setFetchedItems] = useState<ReadonlyArray<any>>([])
+  const [fetchedItems, setFetchedItems] = useState<readonly any[]>([])
   const [status, setStatus] = useState<null | 'loading' | 'loaded' | 'error'>(null)
   // important! isMounted as a plain varaible doesn't work, assumably because isMounted comes from another closure
   // repro: type 2+ characters quickly before the result comes back, isMounted is false after await fetchQuery

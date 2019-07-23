@@ -1,7 +1,7 @@
 import {NewMeetingCheckInPrompt_team} from '__generated__/NewMeetingCheckInPrompt_team.graphql'
 import {NewMeetingCheckInPrompt_teamMember} from '__generated__/NewMeetingCheckInPrompt_teamMember.graphql'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import Avatar from 'universal/components/Avatar/Avatar'
 import NewCheckInQuestion from 'universal/modules/meeting/components/MeetingCheckInPrompt/NewCheckInQuestion'

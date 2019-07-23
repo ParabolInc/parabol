@@ -16,7 +16,7 @@ interface GitHubClientManagerOptions {
 
 export interface GQLResponse<TData> {
   data?: TData
-  errors?: Array<IGraphQLResponseError>
+  errors?: IGraphQLResponseError[]
 }
 
 export interface GitHubCredentialError {

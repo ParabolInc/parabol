@@ -1,8 +1,6 @@
-import {css} from 'react-emotion'
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import AcknowledgeButton from 'universal/modules/notifications/components/AcknowledgeButton/AcknowledgeButton'
-import defaultStyles from 'universal/modules/notifications/helpers/styles'
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation'
 import Row from 'universal/components/Row/Row'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
@@ -10,6 +8,7 @@ import {TeamArchived_notification} from '__generated__/TeamArchived_notification
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useMutationProps from 'universal/hooks/useMutationProps'
 import NotificationErrorMessage from 'universal/modules/notifications/components/NotificationErrorMessage'
+import NotificationMessage from 'universal/modules/notifications/components/NotificationMessage'
 
 interface Props {
   notification: TeamArchived_notification
@@ -32,11 +31,11 @@ const TeamArchived = (props: Props) => {
     <>
       <Row>
         <IconAvatar icon='archive' size='small' />
-        <div className={css(defaultStyles.message)}>
+        <NotificationMessage>
           {'The team '}
           <b>{teamName}</b>
           {' was archived.'}
-        </div>
+        </NotificationMessage>
         <AcknowledgeButton onClick={acknowledge} waiting={submitting} />
       </Row>
       <NotificationErrorMessage error={error} />

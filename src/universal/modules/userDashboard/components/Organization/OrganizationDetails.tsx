@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import TagBlock from 'universal/components/Tag/TagBlock'
 import TagPro from 'universal/components/Tag/TagPro'
 import makeDateString from 'universal/utils/makeDateString'

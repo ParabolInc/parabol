@@ -3,11 +3,11 @@ export interface FindStageByIdStage {
 }
 
 export interface FindStageByIdPhase {
-  stages: ReadonlyArray<FindStageByIdStage>
+  stages: readonly FindStageByIdStage[]
 }
 
 const findStageById = <T extends FindStageByIdPhase>(
-  phases: ReadonlyArray<T> | null | undefined,
+  phases: readonly T[] | null | undefined,
   foreginKey: string,
   stageKey: string = 'id'
 ) => {

@@ -89,7 +89,7 @@ export default class Atmosphere extends Environment {
   transport!: GQLHTTPClient | GQLTrebuchetClient
   authToken: string | null = null
   authObj: IAuthToken | null = null
-  querySubscriptions: Array<QuerySubscription> = []
+  querySubscriptions: QuerySubscription[] = []
   queryTimeouts: {
     [queryKey: string]: number
   } = {}
@@ -140,7 +140,7 @@ export default class Atmosphere extends Environment {
     queryKey: string,
     queryFetcher: QueryFetcher,
     options: {
-      subscriptions?: Array<SubCreator>
+      subscriptions?: SubCreator[]
       subParams?: any
       queryVariables?: Variables | undefined
     } = {}
@@ -250,7 +250,7 @@ export default class Atmosphere extends Environment {
   handleFetch = async (
     request: RequestParameters,
     variables: Variables,
-    _cacheConfig?: CacheConfig
+    // _cacheConfig?: CacheConfig
   ): Promise<ObservableFromValue<GraphQLResponse>> => {
     // await sleep(500)
     if (!__PRODUCTION__ && request.id) {
@@ -317,7 +317,7 @@ export default class Atmosphere extends Environment {
     }
   }
 
-  unregisterQuery (maybeQueryKeys: string | Array<string>, delay?: number) {
+  unregisterQuery (maybeQueryKeys: string | string[], delay?: number) {
     if (delay && delay > 0) {
       if (typeof maybeQueryKeys !== 'string') throw new Error('must not use arr')
       this.queryTimeouts[maybeQueryKeys] = window.setTimeout(() => {

@@ -4,7 +4,7 @@ import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.
 import {PERSONAL, PRO, PRO_LABEL} from 'universal/utils/constants'
 import {withRouter} from 'react-router-dom'
 import plural from 'universal/utils/plural'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import Row from 'universal/components/Row/Row'
 import Avatar from 'universal/components/Avatar/Avatar'
 import RowInfo from 'universal/components/Row/RowInfo'

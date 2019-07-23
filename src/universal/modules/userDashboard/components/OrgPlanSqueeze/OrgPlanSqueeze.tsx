@@ -2,9 +2,9 @@ import React from 'react'
 import LinkButton from 'universal/components/LinkButton'
 import IconLabel from 'universal/components/IconLabel'
 import PrimaryButton from 'universal/components/PrimaryButton'
-import {BILLING_LEADER_LABEL, PERSONAL, PERSONAL_LABEL, PRO_LABEL} from 'universal/utils/constants'
+import {BILLING_LEADER_LABEL, PERSONAL_LABEL, PRO_LABEL} from 'universal/utils/constants'
 import {PRICING_LINK} from 'universal/utils/externalLinks'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import ui from 'universal/styles/ui'
 import {panelRaisedShadow, panelShadow} from 'universal/styles/elevation'
 import makeGradient from 'universal/styles/helpers/makeGradient'
@@ -36,21 +36,21 @@ const TierPanelLayout = styled('div')({
   width: '100%'
 })
 
-const TierPanel = styled('div')(({tier}: {tier: TierEnum}) => ({
-  boxShadow: tier === PERSONAL ? panelShadow : panelRaisedShadow,
+const TierPanel = styled('div')<{tier: TierEnum}>(({tier}) => ({
+  boxShadow: tier === TierEnum.personal ? panelShadow : panelRaisedShadow,
   borderRadius: ui.borderRadiusLarge,
-  width: tier === PERSONAL ? '15rem' : '21.25rem'
+  width: tier === TierEnum.personal ? '15rem' : '21.25rem'
 }))
 
-const TierPanelHeader = styled('div')(({tier}: {tier: TierEnum}) => ({
+const TierPanelHeader = styled('div')<{tier: TierEnum}>(({tier}) => ({
   alignItems: 'center',
-  backgroundImage: tier === PERSONAL ? personalGradient : professionalGradient,
-  fontSize: tier === PERSONAL ? '1.25rem' : '1.5rem',
+  backgroundImage: tier === TierEnum.personal ? personalGradient : professionalGradient,
+  fontSize: tier === TierEnum.personal ? '1.25rem' : '1.5rem',
   fontWeight: 600,
   borderRadius: `${ui.borderRadiusLarge} ${ui.borderRadiusLarge} 0 0`,
   color: ui.palette.white,
   display: 'flex',
-  height: tier === PERSONAL ? '6rem' : '8rem',
+  height: tier === TierEnum.personal ? '6rem' : '8rem',
   justifyContent: 'center',
   width: '100%'
 }))

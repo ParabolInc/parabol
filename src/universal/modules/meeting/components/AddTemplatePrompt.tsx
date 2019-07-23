@@ -1,6 +1,6 @@
 import {AddTemplatePrompt_prompts} from '__generated__/AddTemplatePrompt_prompts.graphql'
 import React, {Component} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import LinkButton from 'universal/components/LinkButton'
 import {typeScale} from 'universal/styles/theme/typography'

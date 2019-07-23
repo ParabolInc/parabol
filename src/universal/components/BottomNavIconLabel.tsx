@@ -5,7 +5,6 @@ import {meetingBottomBarHeight} from 'universal/styles/meeting'
 import ui from 'universal/styles/ui'
 
 interface Props {
-  innerRef?: any
   className?: string
   icon: string | undefined
   iconColor: string | undefined

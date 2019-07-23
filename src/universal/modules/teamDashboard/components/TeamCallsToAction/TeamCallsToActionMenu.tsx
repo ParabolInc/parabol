@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import Menu from 'universal/components/Menu'
 import MenuItem from 'universal/components/MenuItem'
@@ -15,7 +15,7 @@ interface Props extends RouteComponentProps<{}> {
   teamId: string
 }
 
-const WideMenu = styled(Menu)(({minWidth}: {minWidth: number}) => ({
+const WideMenu = styled(Menu)<{minWidth: number}>(({minWidth}) => ({
   minWidth
 }))
 

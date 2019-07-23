@@ -12,7 +12,7 @@ import {RecordProxy} from 'relay-runtime/RelayStoreTypes'
 type Task = RecordProxy<{
   readonly id: string
   readonly teamId: string
-  readonly tags: ReadonlyArray<string>
+  readonly tags: readonly string[]
   readonly reflectionGroupId: string | null
   readonly meetingId: string | null
   readonly updatedAt: string

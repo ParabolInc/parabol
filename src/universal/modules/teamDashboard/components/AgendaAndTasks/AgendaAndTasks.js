@@ -7,7 +7,7 @@ import AgendaListAndInput from 'universal/modules/teamDashboard/components/Agend
 import TeamColumnsContainer from 'universal/modules/teamDashboard/containers/TeamColumns/TeamColumnsContainer'
 import TeamTasksHeaderContainer from 'universal/modules/teamDashboard/containers/TeamTasksHeader/TeamTasksHeaderContainer'
 import ui from 'universal/styles/ui'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {desktopSidebarShadow, navDrawerShadow} from 'universal/styles/elevation'
 
 const RootBlock = styled('div')({

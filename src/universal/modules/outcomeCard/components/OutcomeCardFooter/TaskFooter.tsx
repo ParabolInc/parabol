@@ -1,7 +1,7 @@
 import {TaskFooter_task} from '__generated__/TaskFooter_task.graphql'
 import {EditorState} from 'draft-js'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import CardButton from 'universal/components/CardButton'
 import IconLabel from 'universal/components/IconLabel'
@@ -24,7 +24,7 @@ const Footer = styled('div')({
   padding: `12px 15px 15px`
 })
 
-const ButtonGroup = styled('div')(({cardIsActive}: {cardIsActive: boolean}) => ({
+const ButtonGroup = styled('div')<{cardIsActive: boolean}>(({cardIsActive}) => ({
   display: 'flex',
   justifyContent: 'flex-end',
   opacity: cardIsActive ? 1 : 0

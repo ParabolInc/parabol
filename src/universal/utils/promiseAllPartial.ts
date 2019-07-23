@@ -8,7 +8,7 @@ import {NotVoid} from '../../types/generics'
 
 type CatchHandler = (e: Error) => NotVoid
 
-const defaultCatchHandler: CatchHandler = (_e: Error) => null
+const defaultCatchHandler: CatchHandler = () => null
 
 const promiseAllPartial = async (promiseArr, catchHandler: CatchHandler = defaultCatchHandler) => {
   const arr: any[] = []

@@ -30,7 +30,7 @@ const ColumnWrapper = styled('div')({
   justifyContent: 'flex-start'
 })
 
-const ColumnHighlight = styled('div')(({isFocused}: {isFocused: boolean}) => ({
+const ColumnHighlight = styled('div')<{isFocused: boolean}>(({isFocused}) => ({
   backgroundColor: isFocused ? PALETTE.BACKGROUND_MAIN_DARKENED : undefined,
   height: '100%',
   maxWidth: 416,
@@ -70,7 +70,7 @@ const Description = styled('div')({
   marginTop: 8
 })
 
-const FocusArrow = styled(Icon)(({isFocused}: {isFocused: boolean}) => ({
+const FocusArrow = styled(Icon)<{isFocused: boolean}>(({isFocused}) => ({
   color: PALETTE.TEXT_PINK,
   display: 'block',
   fontSize: ICON_SIZE.MD24,
@@ -83,7 +83,7 @@ const FocusArrow = styled(Icon)(({isFocused}: {isFocused: boolean}) => ({
   transform: `translateX(${isFocused ? 0 : '-100%'})`
 }))
 
-const PromptHeader = styled('div')(({isClickable}: {isClickable: boolean}) => ({
+const PromptHeader = styled('div')<{isClickable: boolean}>(({isClickable}) => ({
   cursor: isClickable ? 'pointer' : undefined,
   padding: '0 0 16px 12px',
   position: 'relative',
@@ -95,7 +95,7 @@ interface EditorAndStatusProps {
   isPhaseComplete: boolean
 }
 
-const EditorAndStatus = styled('div')(({isPhaseComplete}: EditorAndStatusProps) => ({
+const EditorAndStatus = styled('div')<EditorAndStatusProps>(({isPhaseComplete}) => ({
   visibility: isPhaseComplete ? 'hidden' : undefined
 }))
 

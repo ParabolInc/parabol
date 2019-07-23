@@ -1,6 +1,6 @@
 import {SlackProviderRow_viewer} from '__generated__/SlackProviderRow_viewer.graphql'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import FlatButton from 'universal/components/FlatButton'
 import SlackConfigMenu from 'universal/components/SlackConfigMenu'
@@ -116,7 +116,7 @@ const SlackProviderRow = (props: Props) => {
             <SlackLogin title={slackAuth!.slackTeamName || 'Slack'}>
               <SlackSVG />
             </SlackLogin>
-            <MenuButton onClick={togglePortal} innerRef={originRef}>
+            <MenuButton onClick={togglePortal} ref={originRef}>
               <StyledIcon>more_vert</StyledIcon>
             </MenuButton>
             {menuPortal(

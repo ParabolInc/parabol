@@ -1,6 +1,6 @@
 import {EditableTeamName_team} from '__generated__/EditableTeamName_team.graphql'
 import React, {Component} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import EditableText from 'universal/components/EditableText'
 import withAtmosphere, {

@@ -1,7 +1,7 @@
 import {NewMeetingAvatar_newMeeting} from '__generated__/NewMeetingAvatar_newMeeting.graphql'
 import {NewMeetingAvatar_teamMember} from '__generated__/NewMeetingAvatar_teamMember.graphql'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import VideoAvatar from 'universal/components/Avatar/VideoAvatar'
 import withAtmosphere, {
@@ -40,7 +40,7 @@ interface AvatarBlockProps {
   isReadOnly: boolean
 }
 
-const AvatarBlock = styled('div')(
+const AvatarBlock = styled('div')<AvatarBlockProps>(
   {
     borderRadius: '100%',
     height: 32,
@@ -60,7 +60,7 @@ const AvatarBlock = styled('div')(
       width: 56
     }
   },
-  ({isLocalStage, isFacilitatorStage, isReadOnly}: AvatarBlockProps) => {
+  ({isLocalStage, isFacilitatorStage, isReadOnly}) => {
     let boxShadow
     if (isFacilitatorStage) {
       boxShadow = boxShadowWarm
@@ -114,7 +114,7 @@ const NewMeetingAvatar = (props: Props) => {
   const {teamMemberId, userId} = teamMember
   const avatarIsFacilitating = userId === facilitatorUserId
   const handleNavigate = canNavigate ? gotoStage : undefined
-  const {togglePortal, menuProps, menuPortal, originRef} = useMenu(MenuPosition.UPPER_RIGHT)
+  const {togglePortal, menuProps, menuPortal, originRef} = useMenu<HTMLDivElement>(MenuPosition.UPPER_RIGHT)
   return (
     <ErrorBoundary>
       <Item>

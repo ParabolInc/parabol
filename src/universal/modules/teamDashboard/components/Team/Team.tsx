@@ -1,6 +1,6 @@
 import {Team_team} from '__generated__/Team_team.graphql'
 import React, {Component, lazy, Suspense} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import DashContent from 'universal/components/Dashboard/DashContent'

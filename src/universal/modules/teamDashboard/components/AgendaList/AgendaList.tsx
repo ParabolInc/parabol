@@ -2,7 +2,7 @@ import {AgendaList_team} from '__generated__/AgendaList_team.graphql'
 import React, {useCallback, useMemo} from 'react'
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
 // import SexyScrollbar from 'universal/components/Dashboard/SexyScrollbar'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {useGotoStageId} from 'universal/hooks/useMeeting'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
@@ -21,7 +21,7 @@ const AgendaListRoot = styled('div')({
   width: '100%'
 })
 
-const DraggableAgendaItem = styled('div')(({isDragging}: {isDragging: boolean}) => ({
+const DraggableAgendaItem = styled('div')<{isDragging: boolean}>(({isDragging}) => ({
   boxShadow: isDragging ? navItemRaised : undefined
 }))
 
@@ -81,7 +81,7 @@ const AgendaList = (props: Props) => {
       <Droppable droppableId={AGENDA_ITEM}>
         {(provided) => {
           return (
-            <AgendaListRoot innerRef={provided.innerRef}>
+            <AgendaListRoot ref={provided.innerRef}>
               {filteredAgendaItems.map((item, idx) => {
                 return (
                   <Draggable key={item.id} draggableId={item.id} index={idx}>
@@ -89,7 +89,7 @@ const AgendaList = (props: Props) => {
                       return (
                         <DraggableAgendaItem
                           isDragging={dragSnapshot.isDragging}
-                          innerRef={dragProvided.innerRef}
+                          ref={dragProvided.innerRef}
                           {...dragProvided.draggableProps}
                           {...dragProvided.dragHandleProps}
                         >

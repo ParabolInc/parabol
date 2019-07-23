@@ -1,7 +1,7 @@
 import {ReflectTemplateModal_retroMeetingSettings} from '__generated__/ReflectTemplateModal_retroMeetingSettings.graphql'
 import memoize from 'micro-memoize'
 import React, {Component} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {typeScale} from 'universal/styles/theme/typography'
@@ -62,7 +62,7 @@ const TemplateList = styled('ul')({
   padding: 0
 })
 
-const TemplateItem = styled('li')(({isActive}: {isActive: boolean}) => ({
+const TemplateItem = styled('li')<{isActive: boolean}>(({isActive}) => ({
   backgroundColor: isActive ? PALETTE.BACKGROUND_MAIN_DARKENED : undefined,
   borderRadius: '.125rem',
   cursor: 'pointer',

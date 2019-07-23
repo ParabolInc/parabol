@@ -1,16 +1,15 @@
-import React, {ReactNode, RefObject} from 'react'
+import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
 import ui from 'universal/styles/ui'
-import BaseButton from 'universal/components/BaseButton'
+import BaseButton, {BaseButtonProps} from 'universal/components/BaseButton'
 
-export interface FlatButtonProps {
+export interface FlatButtonProps extends BaseButtonProps{
   size?: 'small' | 'medium' | 'large'
   children?: ReactNode
   disabled?: boolean
-  innerRef?: RefObject<HTMLElement>
   onClick?: (e: React.MouseEvent) => void
   onKeyDown?: (e: React.KeyboardEvent) => void
-  palette?: 'warm' | 'mid' | 'dark'
+  palette?: 'warm' | 'mid' | 'dark' | 'blue'
   style?: object
   waiting?: boolean
 }

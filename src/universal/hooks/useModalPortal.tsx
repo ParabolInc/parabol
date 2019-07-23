@@ -55,8 +55,8 @@ const modalStyles = {
     transition: `all ${Duration.PORTAL_CLOSE}ms ${DECELERATE}`
   }
 }
-const Backdrop = styled('div')(
-  ({background, portalStatus}: {background: string; portalStatus: PortalStatus}) => ({
+const Backdrop = styled('div')<{background: string; portalStatus: PortalStatus}>(
+  ({background, portalStatus}) => ({
     background,
     height: '100%',
     position: 'fixed',
@@ -65,7 +65,7 @@ const Backdrop = styled('div')(
   })
 )
 
-const ModalContents = styled('div')(({portalStatus}: {portalStatus: PortalStatus}) => ({
+const ModalContents = styled('div')<{portalStatus: PortalStatus}>(({portalStatus}) => ({
   display: 'flex',
   flex: '0 1 auto',
   flexDirection: 'column',

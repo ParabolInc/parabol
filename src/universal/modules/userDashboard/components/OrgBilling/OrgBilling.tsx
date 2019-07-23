@@ -3,7 +3,7 @@ import {createPaginationContainer, graphql, RelayPaginationProp} from 'react-rel
 import SecondaryButton from 'universal/components/SecondaryButton'
 import Panel from 'universal/components/Panel/Panel'
 import InvoiceRow from 'universal/modules/userDashboard/components/InvoiceRow/InvoiceRow'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import LoadableModal from 'universal/components/LoadableModal'
 import UpdateCreditCardLoadable from 'universal/components/UpdateCreditCardLoadable'
 import Icon from 'universal/components/Icon'

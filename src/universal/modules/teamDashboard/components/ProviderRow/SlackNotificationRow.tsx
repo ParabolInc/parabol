@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import Toggle from 'universal/components/Toggle/Toggle'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {SlackNotificationRow_viewer} from '__generated__/SlackNotificationRow_viewer.graphql'

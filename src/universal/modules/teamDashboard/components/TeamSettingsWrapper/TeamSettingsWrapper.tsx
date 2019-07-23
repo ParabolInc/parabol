@@ -1,5 +1,5 @@
 import React, {lazy} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {Route} from 'react-router'
 import {matchPath, RouteComponentProps, Switch, withRouter} from 'react-router-dom'
 import TeamSettingsToggleNav from 'universal/modules/teamDashboard/components/TeamSettingsToggleNav/TeamSettingsToggleNav'

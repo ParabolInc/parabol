@@ -1,6 +1,6 @@
 import {IRetroReflectionGroup} from 'universal/types/graphql'
 
-const mapGroupsToStages = (reflectionGroups: Array<IRetroReflectionGroup>) => {
+const mapGroupsToStages = (reflectionGroups: IRetroReflectionGroup[]) => {
   const importantReflectionGroups = reflectionGroups.filter((group) => group.voterIds.length > 0)
   // handle edge case that no one votes
   if (importantReflectionGroups.length === 0) return reflectionGroups

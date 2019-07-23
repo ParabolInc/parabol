@@ -1,4 +1,4 @@
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
 
 const NewTeamFormBlock = styled('div')({

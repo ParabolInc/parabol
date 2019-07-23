@@ -14,7 +14,7 @@ const UserDashTeamMenu = lazyPreload(() =>
 )
 
 interface Props {
-  teams: Array<any>
+  teams: any[]
   teamFilterId: string
   teamFilterName: string
 }

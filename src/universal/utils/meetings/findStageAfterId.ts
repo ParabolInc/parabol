@@ -1,7 +1,7 @@
 import {FindStageByIdPhase} from 'universal/utils/meetings/findStageById'
 
 const findStageAfterId = <T extends FindStageByIdPhase>(
-  phases: ReadonlyArray<T> | null | undefined,
+  phases: readonly T[] | null | undefined,
   stageId: string
 ) => {
   if (!phases) return undefined

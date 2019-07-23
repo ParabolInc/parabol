@@ -1,7 +1,7 @@
 import React from 'react'
 import formError from 'universal/styles/helpers/formError'
 import {normalizeExpiry, normalizeNumeric} from './normalizers'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
 import withAtmosphere, {

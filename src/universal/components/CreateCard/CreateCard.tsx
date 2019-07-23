@@ -28,7 +28,7 @@ const ControlHint = styled('div')({
   opacity: 0.7
 })
 
-const Card = styled('div')<{hasControls: boolean}>(({hasControls}) => ({
+const Card = styled('div')<{hasControls: boolean | undefined}>(({hasControls}) => ({
   ...CreateCardRootStyles,
   backgroundColor: hasControls ? ui.cardControlBackgroundColor : 'transparent',
   border: `.0625rem dashed ${appTheme.palette.mid30l}`,
@@ -45,8 +45,8 @@ const Card = styled('div')<{hasControls: boolean}>(({hasControls}) => ({
 }))
 
 interface Props {
-  handleAddTask: (e: React.MouseEvent) => void
-  hasControls: boolean
+  handleAddTask?: (e: React.MouseEvent) => void
+  hasControls?: boolean
 }
 
 const CreateCard = (props: Props) => {

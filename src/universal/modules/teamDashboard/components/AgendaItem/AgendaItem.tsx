@@ -1,6 +1,6 @@
 import {AgendaItem_agendaItem} from '__generated__/AgendaItem_agendaItem.graphql'
 import React, {useEffect, useRef} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import Avatar from 'universal/components/Avatar/Avatar'
 import IconButton from 'universal/components/IconButton'
@@ -15,8 +15,8 @@ import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
 import findStageById from 'universal/utils/meetings/findStageById'
 import {AgendaItem_newMeeting} from '__generated__/AgendaItem_newMeeting.graphql'
 
-const DeleteIconButton = styled(IconButton)(
-  ({agendaLength, disabled}: {agendaLength: number; disabled: boolean}) => ({
+const DeleteIconButton = styled(IconButton)<{agendaLength: number; disabled: boolean}>(
+  ({agendaLength, disabled}) => ({
     display: 'block',
     // we can make the position of the del (x) more centered when there’s a low number of agenda items
     left: agendaLength < 10 ? '.8125rem' : meetingSidebarGutter,

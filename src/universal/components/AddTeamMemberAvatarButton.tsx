@@ -19,7 +19,7 @@ interface Props extends WithAtmosphereProps {
   teamMembers: AddTeamMemberAvatarButton_teamMembers
 }
 
-const AddButton = styled(OutlinedButton)<{isMeeting: boolean}>(
+const AddButton = styled(OutlinedButton)<{isMeeting: boolean | undefined}>(
   {
     fontSize: 24,
     fontWeight: 400,

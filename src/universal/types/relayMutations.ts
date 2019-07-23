@@ -3,7 +3,7 @@ import {PayloadError, RecordProxy, RecordSourceSelectorProxy, commitMutation} fr
 import Atmosphere from 'universal/Atmosphere'
 
 export interface CompletedHandler {
-  (response: any, errors?: Array<Error | PayloadError> | null): void
+  (response: any, errors?: (Error | PayloadError)[] | null): void
 }
 
 export interface ErrorHandler {

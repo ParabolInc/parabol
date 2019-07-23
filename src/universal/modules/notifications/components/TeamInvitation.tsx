@@ -1,6 +1,6 @@
 import {TeamInvitation_notification} from '__generated__/TeamInvitation_notification.graphql'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'

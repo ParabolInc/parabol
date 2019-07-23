@@ -1,7 +1,7 @@
 import {INewMeetingPhase, NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
 
 const unlockAllStagesForPhase = (
-  phases: Array<INewMeetingPhase>,
+  phases: INewMeetingPhase[],
   phaseType: NewMeetingPhaseTypeEnum,
   isForFacilitator: boolean,
   isUnlock = true

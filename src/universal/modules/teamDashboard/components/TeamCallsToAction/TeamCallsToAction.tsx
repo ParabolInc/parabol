@@ -3,7 +3,7 @@
  *
  */
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import IconLabel from 'universal/components/IconLabel'
 import PrimaryButton from 'universal/components/PrimaryButton'
 import {MenuPosition} from 'universal/hooks/useCoords'
@@ -46,7 +46,7 @@ const TeamCallToAction = (props: Props) => {
       <StartButton
         onClick={togglePortal}
         onMouseEnter={TeamCallsToActionMenu.preload}
-        innerRef={originRef}
+        ref={originRef}
       >
         <IconLabel icon='expand_more' iconAfter label='Start Meeting' />
       </StartButton>

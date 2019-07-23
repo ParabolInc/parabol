@@ -1,6 +1,6 @@
 import {TeamTasksHeader_team} from '__generated__/TeamTasksHeader_team.graphql'
 import React from 'react'
-import styled, {css} from 'react-emotion'
+import styled from '@emotion/styled';
 import {createFragmentContainer, graphql} from 'react-relay'
 import {NavLink, RouteComponentProps, withRouter} from 'react-router-dom'
 import DashHeading from 'universal/components/Dashboard/DashHeading'
@@ -16,6 +16,7 @@ import useMenu from 'universal/hooks/useMenu'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import lazyPreload from 'universal/utils/lazyPreload'
+import {ClassNames} from '@emotion/core'
 
 const OrgInfoBlock = styled('div')({
   alignItems: 'center',
@@ -25,13 +26,13 @@ const OrgInfoBlock = styled('div')({
   marginTop: '.125rem'
 })
 
-const orgLinkStyles = css({
+const orgLinkStyles = {
   color: ui.linkColor,
   cursor: 'pointer',
   ':hover, :focus': {
     color: ui.linkColorHover
   }
-})
+}
 
 const TeamDashTeamMemberMenu = lazyPreload(() =>
   import(/* webpackChunkName: 'TeamDashTeamMemberMenu' */
@@ -57,9 +58,15 @@ const TeamTasksHeader = (props: Props) => {
         <LabelHeading>{'Team Dashboard'}</LabelHeading>
         <DashHeading>{`${teamName} Tasks`}</DashHeading>
         <OrgInfoBlock>
-          <NavLink className={orgLinkStyles} title={orgName} to={`/me/organizations/${orgId}`}>
-            {orgName}
-          </NavLink>
+          <ClassNames>
+            {({css}) => {
+              return (
+                <NavLink className={css(orgLinkStyles)} title={orgName} to={`/me/organizations/${orgId}`}>
+                  {orgName}
+                </NavLink>
+              )
+            }}
+          </ClassNames>
         </OrgInfoBlock>
       </div>
       <DashSectionControls>

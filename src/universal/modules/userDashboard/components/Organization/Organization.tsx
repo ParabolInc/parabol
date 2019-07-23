@@ -1,6 +1,6 @@
 import {Organization_viewer} from '__generated__/Organization_viewer.graphql'
 import React, {lazy, useEffect} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import Helmet from 'react-helmet'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'

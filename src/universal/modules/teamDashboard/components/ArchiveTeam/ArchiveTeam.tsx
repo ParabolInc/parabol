@@ -5,7 +5,7 @@ import Type from 'universal/components/Type/Type'
 
 import ArchiveTeamForm from './ArchiveTeamForm'
 
-type Props = {
+interface Props {
   teamName: string
   teamId: string
   handleFormBlur: () => any

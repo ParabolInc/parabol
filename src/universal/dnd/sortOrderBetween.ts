@@ -1,7 +1,7 @@
 import {SORT_STEP} from 'universal/utils/constants'
 import dndNoise from 'universal/utils/dndNoise'
 
-type Sortable = {
+interface Sortable {
   id: string
   sortOrder: number
 }

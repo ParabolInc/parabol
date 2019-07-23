@@ -1,7 +1,7 @@
 import GraphiQL from 'graphiql'
 import 'graphiql/graphiql.css'
 import React, {useRef, useState} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import logoMarkPrimary from 'universal/styles/theme/images/brand/parabol-lockup-h-dark.svg'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useAuthRoute from 'universal/hooks/useAuthRoute'
@@ -24,7 +24,7 @@ const GraphqlContainer = () => {
   useAuthRoute({role: AuthTokenRole.su})
 
   const publicFetcher = async ({query, variables}) => {
-    return atmosphere.handleFetch({text: query} as any, variables, {})
+    return atmosphere.handleFetch({text: query} as any, variables)
   }
 
   const privateFetcher = async ({query, variables}) => {

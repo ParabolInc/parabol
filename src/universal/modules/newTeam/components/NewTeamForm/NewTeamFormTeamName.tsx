@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import FieldLabel from 'universal/components/FieldLabel/FieldLabel'
 import BasicInput from 'universal/components/InputField/BasicInput'
 import {NewTeamFieldBlock} from './NewTeamForm'

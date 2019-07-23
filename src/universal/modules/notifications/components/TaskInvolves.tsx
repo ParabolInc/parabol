@@ -1,14 +1,12 @@
 import {convertFromRaw, Editor, EditorState} from 'draft-js'
 import React, {useEffect} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import OutcomeCardStatusIndicator from 'universal/modules/outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
+import OutcomeCardStatusIndicator
+  from 'universal/modules/outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
 import editorDecorators from 'universal/components/TaskEditor/decorators'
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation'
-import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
 import {ASSIGNEE, MENTIONEE} from 'universal/utils/constants'
-import styled, {css} from 'react-emotion'
-import defaultStyles from 'universal/modules/notifications/helpers/styles'
+import styled from '@emotion/styled'
 import Row from 'universal/components/Row/Row'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 import RaisedButton from 'universal/components/RaisedButton'
@@ -19,31 +17,63 @@ import useMutationProps from 'universal/hooks/useMutationProps'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useRouter from 'universal/hooks/useRouter'
 import NotificationErrorMessage from 'universal/modules/notifications/components/NotificationErrorMessage'
+import NotificationMessage from 'universal/modules/notifications/components/NotificationMessage'
+import {PALETTE} from 'universal/styles/paletteV2'
 
 const involvementWord = {
   [ASSIGNEE]: 'assigned',
   [MENTIONEE]: 'mentioned'
 }
 
-const localStyles = {
-  taskListView: {
-    backgroundColor: appTheme.palette.light,
-    borderRadius: ui.cardBorderRadius,
-    margin: '.25rem 0 0',
-    padding: '.5rem'
-  },
+const TaskListView = styled('div')({
+  backgroundColor: PALETTE.BACKGROUND_MAIN,
+  borderRadius: 4,
+  margin: '4px 0 0',
+  padding: 8
+})
 
-  indicatorsBlock: {
-    display: 'flex',
-    margin: '0 0 .5rem'
-  }
-}
+const IndicatorsBlock = styled('div')({
+  display: 'flex',
+  margin: '0 0 8px'
+})
 
 const StyledButton = styled(RaisedButton)({
   paddingLeft: 0,
   paddingRight: 0,
   width: '100%'
 })
+
+const MessageVar = styled('div')({
+  cursor: 'pointer',
+  textDecoration: 'underline',
+  ':hover': {
+    color: PALETTE.ERROR_MAIN
+  }
+})
+
+const Owner = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  paddingTop: 8
+})
+const OwnerName = styled('div')({
+  fontWeight: 600,
+  paddingLeft: 8
+})
+const OwnerAvatar = styled('img')({
+  borderRadius: '100%',
+  display: 'block',
+  height: 24,
+  width: 24
+})
+const ButtonGroup = styled('div')({
+
+})
+const WiderButton = styled('div')({
+  marginLeft: 16,
+  minWidth: 132
+})
+const MessageText = styled('div')({})
 
 const makeEditorState = (content, getEditorState) => {
   const contentState = convertFromRaw(JSON.parse(content))
@@ -92,8 +122,8 @@ const TaskInvolves = (props: Props) => {
           icon={involvement === MENTIONEE ? 'chat_bubble' : 'assignment_ind'}
           size='small'
         />
-        <div className={css(defaultStyles.message)}>
-          <div className={css(defaultStyles.messageText)}>
+        <NotificationMessage>
+          <MessageText>
             <b>{changeAuthorName}</b>
             <span>{' has '}</span>
             <b>
@@ -101,21 +131,20 @@ const TaskInvolves = (props: Props) => {
             </b>
             {involvement === MENTIONEE ? ' in' : ''}
             <span>{' a task for '}</span>
-            <span
-              className={css(defaultStyles.messageVar, defaultStyles.notifLink)}
+            <MessageVar
               onClick={gotoBoard}
               title={`Go to ${teamName}’s Board`}
             >
               {teamName}
-            </span>
+            </MessageVar>
             <span>{':'}</span>
-          </div>
-          <div className={css(localStyles.taskListView)}>
-            <div className={css(localStyles.indicatorsBlock)}>
+          </MessageText>
+          <TaskListView>
+            <IndicatorsBlock>
               <OutcomeCardStatusIndicator status={status} />
               {tags.includes('private') && <OutcomeCardStatusIndicator status='private' />}
               {tags.includes('archived') && <OutcomeCardStatusIndicator status='archived' />}
-            </div>
+            </IndicatorsBlock>
             <Editor
               readOnly
               editorState={editorStateRef.current}
@@ -124,19 +153,18 @@ const TaskInvolves = (props: Props) => {
               }}
             />
             {assignee && (
-              <div className={css(defaultStyles.owner)}>
-                <img
+              <Owner>
+                <OwnerAvatar
                   alt='Avatar'
-                  className={css(defaultStyles.ownerAvatar)}
                   src={assignee.picture}
                 />
-                <div className={css(defaultStyles.ownerName)}>{assignee.preferredName}</div>
-              </div>
+                <OwnerName >{assignee.preferredName}</OwnerName>
+              </Owner>
             )}
-          </div>
-        </div>
-        <div className={css(defaultStyles.buttonGroup)}>
-          <div className={css(defaultStyles.widerButton)}>
+          </TaskListView>
+        </NotificationMessage>
+        <ButtonGroup>
+          <WiderButton>
             <StyledButton
               aria-label='Go to this board'
               palette='warm'
@@ -146,9 +174,9 @@ const TaskInvolves = (props: Props) => {
             >
               {'Go to Board'}
             </StyledButton>
-          </div>
+          </WiderButton>
           <AcknowledgeButton onClick={acknowledge} waiting={submitting} />
-        </div>
+        </ButtonGroup>
       </Row>
       <NotificationErrorMessage error={error} />
     </>

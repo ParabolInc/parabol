@@ -1,4 +1,4 @@
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {PortalStatus} from 'universal/hooks/usePortal'
 import {DECELERATE} from 'universal/styles/animation'
 import {Duration} from 'universal/types/constEnums'
@@ -27,7 +27,7 @@ const backgroundStyles = (portalStatus: PortalStatus) => {
   }
 }
 
-const TooltipBackground = styled(TooltipStyled)(({portalStatus}: {portalStatus: PortalStatus}) => ({
+const TooltipBackground = styled(TooltipStyled)<{portalStatus: PortalStatus}>(({portalStatus}) => ({
   zIndex: -1,
   ...backgroundStyles(portalStatus)
 }))

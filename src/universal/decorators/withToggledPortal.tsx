@@ -121,7 +121,7 @@ const withToggledPortal = <P extends WithToggledPortalProps>(
             LoadableComponent.preload()
           }
         },
-        [this.props.isToggleNativeElement ? 'ref' : 'innerRef']: (c) => {
+        [this.props.isToggleNativeElement ? 'ref' : 'ref']: (c) => {
           this.toggleRef = c
         }
       })

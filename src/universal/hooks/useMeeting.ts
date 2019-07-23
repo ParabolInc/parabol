@@ -117,7 +117,7 @@ export const useGotoStageId = (team: Team | null) => {
 }
 
 export const useGotoNext = (team: Team | null, gotoStageId: ReturnType<typeof useGotoStageId>) => {
-  const ref = useRef<HTMLElement>(null)
+  const ref = useRef<HTMLButtonElement>(null)
   const gotoNext = useCallback(
     (options: {isHotkey?: boolean} = {}) => {
       const {newMeeting} = team!

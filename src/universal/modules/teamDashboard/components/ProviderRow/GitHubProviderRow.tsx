@@ -1,6 +1,6 @@
 import {GitHubProviderRow_viewer} from '__generated__/GitHubProviderRow_viewer.graphql'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import FlatButton from 'universal/components/FlatButton'
@@ -104,7 +104,7 @@ const GitHubProviderRow = (props: Props) => {
           <GitHubLogin title={githubAuth!.login}>
             <GitHubSVG />
           </GitHubLogin>
-          <MenuButton onClick={togglePortal} innerRef={originRef}>
+          <MenuButton onClick={togglePortal} ref={originRef}>
             <StyledIcon>more_vert</StyledIcon>
           </MenuButton>
           {menuPortal(

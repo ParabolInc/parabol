@@ -1,6 +1,6 @@
 import {NewTeamForm_organizations} from '__generated__/NewTeamForm_organizations.graphql'
 import React, {Component} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import FieldLabel from 'universal/components/FieldLabel/FieldLabel'
@@ -135,7 +135,7 @@ class NewTeamForm extends Component<Props, State> {
     const {organizations} = this.props
     const {isNewOrg, orgId, fields} = this.state
     const rawTeamName = fields.teamName.value
-    let teamNames: Array<string> = []
+    let teamNames: string[] = []
     if (!isNewOrg) {
       const org = organizations.find((org) => org.id === orgId)
       if (org) {
@@ -226,7 +226,7 @@ class NewTeamForm extends Component<Props, State> {
     e.preventDefault()
     if (submitting) return
     const {isNewOrg, orgId} = this.state
-    const fieldNames: Array<FieldName> = ['teamName']
+    const fieldNames: FieldName[] = ['teamName']
     fieldNames.forEach(this.setDirty)
     const fieldRes = fieldNames.map(this.validate)
     const hasError = fieldRes.reduce((err: boolean, val) => err || !!val.error, false)

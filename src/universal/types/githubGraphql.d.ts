@@ -4,13 +4,13 @@
 
 export interface IGraphQLResponseRoot {
   data?: IQuery | IMutation
-  errors?: Array<IGraphQLResponseError>
+  errors?: IGraphQLResponseError[]
 }
 
 export interface IGraphQLResponseError {
   /** Required for all errors */
   message: string
-  locations?: Array<IGraphQLResponseErrorLocation>
+  locations?: IGraphQLResponseErrorLocation[]
   /** 7.2.2 says 'GraphQL servers may provide additional entries to error' */
   [propName: string]: any
 }
@@ -34,7 +34,7 @@ export interface IQuery {
   /**
    * Look up a code of conduct by its key
    */
-  codesOfConduct: Array<ICodeOfConduct | null> | null
+  codesOfConduct: (ICodeOfConduct | null)[] | null
 
   /**
    * Look up an open source license by its key
@@ -44,12 +44,12 @@ export interface IQuery {
   /**
    * Return a list of known open source licenses
    */
-  licenses: Array<ILicense | null>
+  licenses: (ILicense | null)[]
 
   /**
    * Get alphabetically sorted list of Marketplace categories
    */
-  marketplaceCategories: Array<IMarketplaceCategory>
+  marketplaceCategories: IMarketplaceCategory[]
 
   /**
    * Look up a Marketplace category by its slug.
@@ -79,7 +79,7 @@ export interface IQuery {
   /**
    * Lookup nodes by a list of IDs.
    */
-  nodes: Array<Node | null>
+  nodes: (Node | null)[]
 
   /**
    * Lookup a organization by login.
@@ -165,7 +165,7 @@ export interface IMarketplaceCategoriesOnQueryArguments {
   /**
    * Return only the specified categories.
    */
-  includeCategories?: Array<string> | null
+  includeCategories?: string[] | null
 
   /**
    * Exclude categories with no listings.
@@ -255,7 +255,7 @@ export interface IMarketplaceListingsOnQueryArguments {
   /**
    * Select the listings with these slugs, if they are visible to the viewer.
    */
-  slugs?: Array<string | null> | null
+  slugs?: (string | null)[] | null
 
   /**
    * Select only listings where the primary category matches the given category slug.
@@ -281,7 +281,7 @@ export interface INodesOnQueryArguments {
   /**
    * The list of node IDs.
    */
-  ids: Array<string>
+  ids: string[]
 }
 
 export interface IOrganizationOnQueryArguments {
@@ -425,7 +425,7 @@ export interface ISecurityVulnerabilitiesOnQueryArguments {
   /**
    * A list of severities to filter vulnerabilities by.
    */
-  severities?: Array<SecurityAdvisorySeverity> | null
+  severities?: SecurityAdvisorySeverity[] | null
 
   /**
    * Returns the elements in the list that come after the specified cursor.
@@ -617,7 +617,7 @@ export interface ILicense {
   /**
    * The conditions set by the license
    */
-  conditions: Array<ILicenseRule | null>
+  conditions: (ILicenseRule | null)[]
 
   /**
    * A human-readable description of the license
@@ -648,7 +648,7 @@ export interface ILicense {
   /**
    * The limitations set by the license
    */
-  limitations: Array<ILicenseRule | null>
+  limitations: (ILicenseRule | null)[]
 
   /**
    * The license full name specified by <https://spdx.org/licenses>
@@ -663,7 +663,7 @@ export interface ILicense {
   /**
    * The permissions set by the license
    */
-  permissions: Array<ILicenseRule | null>
+  permissions: (ILicenseRule | null)[]
 
   /**
    * Whether the license is a pseudo-license placeholder (e.g., other, no-license)
@@ -936,7 +936,7 @@ export interface IMarketplaceListing {
   /**
    * The URLs for the listing's screenshots.
    */
-  screenshotUrls: Array<string | null>
+  screenshotUrls: (string | null)[]
 
   /**
    * An alternate category that describes the listing.
@@ -1128,12 +1128,12 @@ export interface IMarketplaceListingConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IMarketplaceListingEdge | null> | null
+  edges: (IMarketplaceListingEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IMarketplaceListing | null> | null
+  nodes: (IMarketplaceListing | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -1204,17 +1204,17 @@ export interface IGitHubMetadata {
   /**
    * IP addresses that users connect to for git operations
    */
-  gitIpAddresses: Array<string> | null
+  gitIpAddresses: string[] | null
 
   /**
    * IP addresses that service hooks are sent from
    */
-  hookIpAddresses: Array<string> | null
+  hookIpAddresses: string[] | null
 
   /**
    * IP addresses that the importer connects from
    */
-  importerIpAddresses: Array<string> | null
+  importerIpAddresses: string[] | null
 
   /**
    * Whether or not users are verified
@@ -1224,7 +1224,7 @@ export interface IGitHubMetadata {
   /**
    * IP addresses for GitHub Pages' A records
    */
-  pagesIpAddresses: Array<string> | null
+  pagesIpAddresses: string[] | null
 }
 
 /**
@@ -1530,7 +1530,7 @@ export interface IPinnableItemsOnOrganizationArguments {
   /**
    * Filter the types of pinnable items that are returned.
    */
-  types?: Array<PinnableItemType> | null
+  types?: PinnableItemType[] | null
 
   /**
    * Returns the elements in the list that come after the specified cursor.
@@ -1557,7 +1557,7 @@ export interface IPinnedItemsOnOrganizationArguments {
   /**
    * Filter the types of pinned items that are returned.
    */
-  types?: Array<PinnableItemType> | null
+  types?: PinnableItemType[] | null
 
   /**
    * Returns the elements in the list that come after the specified cursor.
@@ -1594,12 +1594,12 @@ export interface IPinnedRepositoriesOnOrganizationArguments {
   /**
    * Array of viewer's affiliation options for repositories returned from the connection. For example, OWNER will include only repositories that the current viewer owns.
    */
-  affiliations?: Array<RepositoryAffiliation | null> | null
+  affiliations?: (RepositoryAffiliation | null)[] | null
 
   /**
    * Array of owner's affiliation options for repositories returned from the connection. For example, OWNER will include only repositories that the organization or user being viewed owns.
    */
-  ownerAffiliations?: Array<RepositoryAffiliation | null> | null
+  ownerAffiliations?: (RepositoryAffiliation | null)[] | null
 
   /**
    * If non-null, filters repositories according to whether they have been locked
@@ -1648,7 +1648,7 @@ export interface IProjectsOnOrganizationArguments {
   /**
    * A list of states to filter the projects by.
    */
-  states?: Array<ProjectState> | null
+  states?: ProjectState[] | null
 
   /**
    * Returns the elements in the list that come after the specified cursor.
@@ -1685,12 +1685,12 @@ export interface IRepositoriesOnOrganizationArguments {
   /**
    * Array of viewer's affiliation options for repositories returned from the connection. For example, OWNER will include only repositories that the current viewer owns.
    */
-  affiliations?: Array<RepositoryAffiliation | null> | null
+  affiliations?: (RepositoryAffiliation | null)[] | null
 
   /**
    * Array of owner's affiliation options for repositories returned from the connection. For example, OWNER will include only repositories that the organization or user being viewed owns.
    */
-  ownerAffiliations?: Array<RepositoryAffiliation | null> | null
+  ownerAffiliations?: (RepositoryAffiliation | null)[] | null
 
   /**
    * If non-null, filters repositories according to whether they have been locked
@@ -1756,7 +1756,7 @@ export interface ITeamsOnOrganizationArguments {
   /**
    * User logins to filter by
    */
-  userLogins?: Array<string> | null
+  userLogins?: string[] | null
 
   /**
    * Ordering options for teams returned from the connection
@@ -1919,7 +1919,7 @@ export interface IProjectsOnProjectOwnerArguments {
   /**
    * A list of states to filter the projects by.
    */
-  states?: Array<ProjectState> | null
+  states?: ProjectState[] | null
 
   /**
    * Returns the elements in the list that come after the specified cursor.
@@ -2081,7 +2081,7 @@ export interface IPendingCardsOnProjectArguments {
   /**
    * A list of archived states to filter the cards by
    */
-  archivedStates?: Array<ProjectCardArchivedState | null> | null
+  archivedStates?: (ProjectCardArchivedState | null)[] | null
 }
 
 /**
@@ -2140,12 +2140,12 @@ export interface IProjectColumnConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IProjectColumnEdge | null> | null
+  edges: (IProjectColumnEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IProjectColumn | null> | null
+  nodes: (IProjectColumn | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -2252,7 +2252,7 @@ export interface ICardsOnProjectColumnArguments {
   /**
    * A list of archived states to filter the cards by
    */
-  archivedStates?: Array<ProjectCardArchivedState | null> | null
+  archivedStates?: (ProjectCardArchivedState | null)[] | null
 }
 
 /**
@@ -2279,12 +2279,12 @@ export interface IProjectCardConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IProjectCardEdge | null> | null
+  edges: (IProjectCardEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IProjectCard | null> | null
+  nodes: (IProjectCard | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -2516,7 +2516,7 @@ export interface IIssue {
   /**
    * A list of reactions grouped by content left on the subject.
    */
-  reactionGroups: Array<IReactionGroup> | null
+  reactionGroups: IReactionGroup[] | null
 
   /**
    * A list of Reactions left on the Issue.
@@ -2586,7 +2586,7 @@ export interface IIssue {
   /**
    * Reasons why the current viewer can not update this comment.
    */
-  viewerCannotUpdateReasons: Array<CommentCannotUpdateReason>
+  viewerCannotUpdateReasons: CommentCannotUpdateReason[]
 
   /**
    * Did the viewer author this comment.
@@ -2711,7 +2711,7 @@ export interface IProjectCardsOnIssueArguments {
   /**
    * A list of archived states to filter the cards by
    */
-  archivedStates?: Array<ProjectCardArchivedState | null> | null
+  archivedStates?: (ProjectCardArchivedState | null)[] | null
 }
 
 export interface IReactionsOnIssueArguments {
@@ -2787,7 +2787,7 @@ export interface ITimelineItemsOnIssueArguments {
   /**
    * Filter timeline items by type.
    */
-  itemTypes?: Array<IssueTimelineItemsItemType> | null
+  itemTypes?: IssueTimelineItemsItemType[] | null
 
   /**
    * Returns the elements in the list that come after the specified cursor.
@@ -2880,12 +2880,12 @@ export interface IUserConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IUserEdge | null> | null
+  edges: (IUserEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IGitHubUser | null> | null
+  nodes: (IGitHubUser | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -3388,12 +3388,12 @@ export interface IIssuesOnUserArguments {
   /**
    * A list of label names to filter the pull requests by.
    */
-  labels?: Array<string> | null
+  labels?: string[] | null
 
   /**
    * A list of states to filter the issues by.
    */
-  states?: Array<IssueState> | null
+  states?: IssueState[] | null
 
   /**
    * Filtering options for issues returned from the connection.
@@ -3454,7 +3454,7 @@ export interface IPinnableItemsOnUserArguments {
   /**
    * Filter the types of pinnable items that are returned.
    */
-  types?: Array<PinnableItemType> | null
+  types?: PinnableItemType[] | null
 
   /**
    * Returns the elements in the list that come after the specified cursor.
@@ -3481,7 +3481,7 @@ export interface IPinnedItemsOnUserArguments {
   /**
    * Filter the types of pinned items that are returned.
    */
-  types?: Array<PinnableItemType> | null
+  types?: PinnableItemType[] | null
 
   /**
    * Returns the elements in the list that come after the specified cursor.
@@ -3518,12 +3518,12 @@ export interface IPinnedRepositoriesOnUserArguments {
   /**
    * Array of viewer's affiliation options for repositories returned from the connection. For example, OWNER will include only repositories that the current viewer owns.
    */
-  affiliations?: Array<RepositoryAffiliation | null> | null
+  affiliations?: (RepositoryAffiliation | null)[] | null
 
   /**
    * Array of owner's affiliation options for repositories returned from the connection. For example, OWNER will include only repositories that the organization or user being viewed owns.
    */
-  ownerAffiliations?: Array<RepositoryAffiliation | null> | null
+  ownerAffiliations?: (RepositoryAffiliation | null)[] | null
 
   /**
    * If non-null, filters repositories according to whether they have been locked
@@ -3572,7 +3572,7 @@ export interface IProjectsOnUserArguments {
   /**
    * A list of states to filter the projects by.
    */
-  states?: Array<ProjectState> | null
+  states?: ProjectState[] | null
 
   /**
    * Returns the elements in the list that come after the specified cursor.
@@ -3621,12 +3621,12 @@ export interface IPullRequestsOnUserArguments {
   /**
    * A list of states to filter the pull requests by.
    */
-  states?: Array<PullRequestState> | null
+  states?: PullRequestState[] | null
 
   /**
    * A list of label names to filter the pull requests by.
    */
-  labels?: Array<string> | null
+  labels?: string[] | null
 
   /**
    * The head ref name to filter the pull requests by.
@@ -3678,12 +3678,12 @@ export interface IRepositoriesOnUserArguments {
   /**
    * Array of viewer's affiliation options for repositories returned from the connection. For example, OWNER will include only repositories that the current viewer owns.
    */
-  affiliations?: Array<RepositoryAffiliation | null> | null
+  affiliations?: (RepositoryAffiliation | null)[] | null
 
   /**
    * Array of owner's affiliation options for repositories returned from the connection. For example, OWNER will include only repositories that the organization or user being viewed owns.
    */
-  ownerAffiliations?: Array<RepositoryAffiliation | null> | null
+  ownerAffiliations?: (RepositoryAffiliation | null)[] | null
 
   /**
    * If non-null, filters repositories according to whether they have been locked
@@ -3740,7 +3740,7 @@ export interface IRepositoriesContributedToOnUserArguments {
   /**
    * If non-null, include only the specified types of contributions. The GitHub.com UI uses [COMMIT, ISSUE, PULL_REQUEST, REPOSITORY]
    */
-  contributionTypes?: Array<RepositoryContributionType | null> | null
+  contributionTypes?: (RepositoryContributionType | null)[] | null
 
   /**
    * Returns the elements in the list that come after the specified cursor.
@@ -3816,12 +3816,12 @@ export interface IWatchingOnUserArguments {
   /**
    * Affiliation options for repositories returned from the connection
    */
-  affiliations?: Array<RepositoryAffiliation | null> | null
+  affiliations?: (RepositoryAffiliation | null)[] | null
 
   /**
    * Array of owner's affiliation options for repositories returned from the connection. For example, OWNER will include only repositories that the organization or user being viewed owns.
    */
-  ownerAffiliations?: Array<RepositoryAffiliation | null> | null
+  ownerAffiliations?: (RepositoryAffiliation | null)[] | null
 
   /**
    * If non-null, filters repositories according to whether they have been locked
@@ -3919,12 +3919,12 @@ export interface IPinnedRepositoriesOnRepositoryOwnerArguments {
   /**
    * Array of viewer's affiliation options for repositories returned from the connection. For example, OWNER will include only repositories that the current viewer owns.
    */
-  affiliations?: Array<RepositoryAffiliation | null> | null
+  affiliations?: (RepositoryAffiliation | null)[] | null
 
   /**
    * Array of owner's affiliation options for repositories returned from the connection. For example, OWNER will include only repositories that the organization or user being viewed owns.
    */
-  ownerAffiliations?: Array<RepositoryAffiliation | null> | null
+  ownerAffiliations?: (RepositoryAffiliation | null)[] | null
 
   /**
    * If non-null, filters repositories according to whether they have been locked
@@ -3966,12 +3966,12 @@ export interface IRepositoriesOnRepositoryOwnerArguments {
   /**
    * Array of viewer's affiliation options for repositories returned from the connection. For example, OWNER will include only repositories that the current viewer owns.
    */
-  affiliations?: Array<RepositoryAffiliation | null> | null
+  affiliations?: (RepositoryAffiliation | null)[] | null
 
   /**
    * Array of owner's affiliation options for repositories returned from the connection. For example, OWNER will include only repositories that the organization or user being viewed owns.
    */
-  ownerAffiliations?: Array<RepositoryAffiliation | null> | null
+  ownerAffiliations?: (RepositoryAffiliation | null)[] | null
 
   /**
    * If non-null, filters repositories according to whether they have been locked
@@ -4115,12 +4115,12 @@ export interface IRepositoryConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IRepositoryEdge | null> | null
+  edges: (IRepositoryEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IRepository | null> | null
+  nodes: (IRepository | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -4637,7 +4637,7 @@ export interface IDeploymentsOnRepositoryArguments {
   /**
    * Environments to list deployments for
    */
-  environments?: Array<string> | null
+  environments?: string[] | null
 
   /**
    * Ordering options for deployments returned from the connection.
@@ -4679,12 +4679,12 @@ export interface IForksOnRepositoryArguments {
   /**
    * Array of viewer's affiliation options for repositories returned from the connection. For example, OWNER will include only repositories that the current viewer owns.
    */
-  affiliations?: Array<RepositoryAffiliation | null> | null
+  affiliations?: (RepositoryAffiliation | null)[] | null
 
   /**
    * Array of owner's affiliation options for repositories returned from the connection. For example, OWNER will include only repositories that the organization or user being viewed owns.
    */
-  ownerAffiliations?: Array<RepositoryAffiliation | null> | null
+  ownerAffiliations?: (RepositoryAffiliation | null)[] | null
 
   /**
    * If non-null, filters repositories according to whether they have been locked
@@ -4735,12 +4735,12 @@ export interface IIssuesOnRepositoryArguments {
   /**
    * A list of label names to filter the pull requests by.
    */
-  labels?: Array<string> | null
+  labels?: string[] | null
 
   /**
    * A list of states to filter the issues by.
    */
-  states?: Array<IssueState> | null
+  states?: IssueState[] | null
 
   /**
    * Filtering options for issues returned from the connection.
@@ -4882,7 +4882,7 @@ export interface IMilestonesOnRepositoryArguments {
   /**
    * Filter by the state of the milestones.
    */
-  states?: Array<MilestoneState> | null
+  states?: MilestoneState[] | null
 
   /**
    * Ordering options for milestones.
@@ -4923,7 +4923,7 @@ export interface IProjectsOnRepositoryArguments {
   /**
    * A list of states to filter the projects by.
    */
-  states?: Array<ProjectState> | null
+  states?: ProjectState[] | null
 
   /**
    * Returns the elements in the list that come after the specified cursor.
@@ -4957,12 +4957,12 @@ export interface IPullRequestsOnRepositoryArguments {
   /**
    * A list of states to filter the pull requests by.
    */
-  states?: Array<PullRequestState> | null
+  states?: PullRequestState[] | null
 
   /**
    * A list of label names to filter the pull requests by.
    */
-  labels?: Array<string> | null
+  labels?: string[] | null
 
   /**
    * The head ref name to filter the pull requests by.
@@ -5284,12 +5284,12 @@ export interface IStargazerConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IStargazerEdge | null> | null
+  edges: (IStargazerEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IGitHubUser | null> | null
+  nodes: (IGitHubUser | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -5526,12 +5526,12 @@ export interface IBranchProtectionRuleConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IBranchProtectionRuleEdge | null> | null
+  edges: (IBranchProtectionRuleEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IBranchProtectionRule | null> | null
+  nodes: (IBranchProtectionRule | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -5621,7 +5621,7 @@ export interface IBranchProtectionRule {
   /**
    * List of required status check contexts that must pass for commits to be accepted to matching branches.
    */
-  requiredStatusCheckContexts: Array<string | null> | null
+  requiredStatusCheckContexts: (string | null)[] | null
 
   /**
    * Are approving reviews required to update matching branches.
@@ -5756,12 +5756,12 @@ export interface IBranchProtectionRuleConflictConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IBranchProtectionRuleConflictEdge | null> | null
+  edges: (IBranchProtectionRuleConflictEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IBranchProtectionRuleConflict | null> | null
+  nodes: (IBranchProtectionRuleConflict | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -5850,12 +5850,12 @@ export interface IAssociatedPullRequestsOnRefArguments {
   /**
    * A list of states to filter the pull requests by.
    */
-  states?: Array<PullRequestState> | null
+  states?: PullRequestState[] | null
 
   /**
    * A list of label names to filter the pull requests by.
    */
-  labels?: Array<string> | null
+  labels?: string[] | null
 
   /**
    * The head ref name to filter the pull requests by.
@@ -5957,12 +5957,12 @@ export interface IPullRequestConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IPullRequestEdge | null> | null
+  edges: (IPullRequestEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IPullRequest | null> | null
+  nodes: (IPullRequest | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -6232,7 +6232,7 @@ export interface IPullRequest {
   /**
    * A list of reactions grouped by content left on the subject.
    */
-  reactionGroups: Array<IReactionGroup> | null
+  reactionGroups: IReactionGroup[] | null
 
   /**
    * A list of Reactions left on the Issue.
@@ -6282,7 +6282,7 @@ export interface IPullRequest {
   /**
    * A list of reviewer suggestions based on commit history and past review comments.
    */
-  suggestedReviewers: Array<ISuggestedReviewer | null>
+  suggestedReviewers: (ISuggestedReviewer | null)[]
 
   /**
    * A list of events, comments, commits, etc. associated with the pull request.
@@ -6337,7 +6337,7 @@ export interface IPullRequest {
   /**
    * Reasons why the current viewer can not update this comment.
    */
-  viewerCannotUpdateReasons: Array<CommentCannotUpdateReason>
+  viewerCannotUpdateReasons: CommentCannotUpdateReason[]
 
   /**
    * Did the viewer author this comment.
@@ -6506,7 +6506,7 @@ export interface IProjectCardsOnPullRequestArguments {
   /**
    * A list of archived states to filter the cards by
    */
-  archivedStates?: Array<ProjectCardArchivedState | null> | null
+  archivedStates?: (ProjectCardArchivedState | null)[] | null
 }
 
 export interface IReactionsOnPullRequestArguments {
@@ -6609,7 +6609,7 @@ export interface IReviewsOnPullRequestArguments {
   /**
    * A list of states to filter the reviews.
    */
-  states?: Array<PullRequestReviewState> | null
+  states?: PullRequestReviewState[] | null
 
   /**
    * Filter by author of the review.
@@ -6658,7 +6658,7 @@ export interface ITimelineItemsOnPullRequestArguments {
   /**
    * Filter timeline items by type.
    */
-  itemTypes?: Array<PullRequestTimelineItemsItemType> | null
+  itemTypes?: PullRequestTimelineItemsItemType[] | null
 
   /**
    * Returns the elements in the list that come after the specified cursor.
@@ -6864,12 +6864,12 @@ export interface IUserContentEditConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IUserContentEditEdge | null> | null
+  edges: (IUserContentEditEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IUserContentEdit | null> | null
+  nodes: (IUserContentEdit | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -6963,7 +6963,7 @@ export interface IUpdatableComment {
   /**
    * Reasons why the current viewer can not update this comment.
    */
-  viewerCannotUpdateReasons: Array<CommentCannotUpdateReason>
+  viewerCannotUpdateReasons: CommentCannotUpdateReason[]
 }
 
 /**
@@ -7049,12 +7049,12 @@ export interface ILabelConnection {
   /**
    * A list of edges.
    */
-  edges: Array<ILabelEdge | null> | null
+  edges: (ILabelEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<ILabel | null> | null
+  nodes: (ILabel | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -7156,12 +7156,12 @@ export interface IIssuesOnLabelArguments {
   /**
    * A list of label names to filter the pull requests by.
    */
-  labels?: Array<string> | null
+  labels?: string[] | null
 
   /**
    * A list of states to filter the issues by.
    */
-  states?: Array<IssueState> | null
+  states?: IssueState[] | null
 
   /**
    * Filtering options for issues returned from the connection.
@@ -7193,12 +7193,12 @@ export interface IPullRequestsOnLabelArguments {
   /**
    * A list of states to filter the pull requests by.
    */
-  states?: Array<PullRequestState> | null
+  states?: PullRequestState[] | null
 
   /**
    * A list of label names to filter the pull requests by.
    */
-  labels?: Array<string> | null
+  labels?: string[] | null
 
   /**
    * The head ref name to filter the pull requests by.
@@ -7268,7 +7268,7 @@ export interface IIssueFilters {
   /**
    * List issues where the list of label names exist on the issue.
    */
-  labels?: Array<string> | null
+  labels?: string[] | null
 
   /**
    * List issues where the given name is mentioned in the issue.
@@ -7288,7 +7288,7 @@ export interface IIssueFilters {
   /**
    * List issues filtered by the list of states given.
    */
-  states?: Array<IssueState> | null
+  states?: IssueState[] | null
 
   /**
    * List issues subscribed to by viewer.
@@ -7306,12 +7306,12 @@ export interface IIssueConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IIssueEdge | null> | null
+  edges: (IIssueEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IIssue | null> | null
+  nodes: (IIssue | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -7414,7 +7414,7 @@ export interface IReactable {
   /**
    * A list of reactions grouped by content left on the subject.
    */
-  reactionGroups: Array<IReactionGroup> | null
+  reactionGroups: IReactionGroup[] | null
 
   /**
    * A list of Reactions left on the Issue.
@@ -7567,12 +7567,12 @@ export interface IReactingUserConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IReactingUserEdge | null> | null
+  edges: (IReactingUserEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IGitHubUser | null> | null
+  nodes: (IGitHubUser | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -7637,12 +7637,12 @@ export interface IReactionConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IReactionEdge | null> | null
+  edges: (IReactionEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IReaction | null> | null
+  nodes: (IReaction | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -7744,12 +7744,12 @@ export interface IIssueCommentConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IIssueCommentEdge | null> | null
+  edges: (IIssueCommentEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IIssueComment | null> | null
+  nodes: (IIssueComment | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -7871,7 +7871,7 @@ export interface IIssueComment {
   /**
    * A list of reactions grouped by content left on the subject.
    */
-  reactionGroups: Array<IReactionGroup> | null
+  reactionGroups: IReactionGroup[] | null
 
   /**
    * A list of Reactions left on the Issue.
@@ -7926,7 +7926,7 @@ export interface IIssueComment {
   /**
    * Reasons why the current viewer can not update this comment.
    */
-  viewerCannotUpdateReasons: Array<CommentCannotUpdateReason>
+  viewerCannotUpdateReasons: CommentCannotUpdateReason[]
 
   /**
    * Did the viewer author this comment.
@@ -8019,12 +8019,12 @@ export interface IPullRequestCommitConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IPullRequestCommitEdge | null> | null
+  edges: (IPullRequestCommitEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IPullRequestCommit | null> | null
+  nodes: (IPullRequestCommit | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -8337,7 +8337,7 @@ export interface IDeploymentsOnCommitArguments {
   /**
    * Environments to list deployments for
    */
-  environments?: Array<string> | null
+  environments?: string[] | null
 
   /**
    * Ordering options for deployments returned from the connection.
@@ -8545,7 +8545,7 @@ export interface IBlame {
   /**
    * The list of ranges from a Git blame.
    */
-  ranges: Array<IBlameRange>
+  ranges: IBlameRange[]
 }
 
 /**
@@ -8584,12 +8584,12 @@ export interface ICommitCommentConnection {
   /**
    * A list of edges.
    */
-  edges: Array<ICommitCommentEdge | null> | null
+  edges: (ICommitCommentEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<ICommitComment | null> | null
+  nodes: (ICommitComment | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -8714,7 +8714,7 @@ export interface ICommitComment {
   /**
    * A list of reactions grouped by content left on the subject.
    */
-  reactionGroups: Array<IReactionGroup> | null
+  reactionGroups: IReactionGroup[] | null
 
   /**
    * A list of Reactions left on the Issue.
@@ -8769,7 +8769,7 @@ export interface ICommitComment {
   /**
    * Reasons why the current viewer can not update this comment.
    */
-  viewerCannotUpdateReasons: Array<CommentCannotUpdateReason>
+  viewerCannotUpdateReasons: CommentCannotUpdateReason[]
 
   /**
    * Did the viewer author this comment.
@@ -8865,12 +8865,12 @@ export interface IDeploymentConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IDeploymentEdge | null> | null
+  edges: (IDeploymentEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IDeployment | null> | null
+  nodes: (IDeployment | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -9152,12 +9152,12 @@ export interface IDeploymentStatusConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IDeploymentStatusEdge | null> | null
+  edges: (IDeploymentStatusEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IDeploymentStatus | null> | null
+  nodes: (IDeploymentStatus | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -9199,7 +9199,7 @@ export interface ICommitAuthor {
   /**
    * Email addresses to filter by. Commits authored by any of the specified email addresses will be returned.
    */
-  emails?: Array<string> | null
+  emails?: string[] | null
 }
 
 /**
@@ -9211,12 +9211,12 @@ export interface ICommitHistoryConnection {
   /**
    * A list of edges.
    */
-  edges: Array<ICommitEdge | null> | null
+  edges: (ICommitEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<ICommit | null> | null
+  nodes: (ICommit | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -9255,12 +9255,12 @@ export interface ICommitConnection {
   /**
    * A list of edges.
    */
-  edges: Array<ICommitEdge | null> | null
+  edges: (ICommitEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<ICommit | null> | null
+  nodes: (ICommit | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -9429,7 +9429,7 @@ export interface IStatus {
   /**
    * The individual status contexts for this commit.
    */
-  contexts: Array<IStatusContext>
+  contexts: IStatusContext[]
   id: string
 
   /**
@@ -9542,7 +9542,7 @@ export interface ITree {
   /**
    * A list of tree entries.
    */
-  entries: Array<ITreeEntry> | null
+  entries: ITreeEntry[] | null
   id: string
 
   /**
@@ -9602,12 +9602,12 @@ export interface IPullRequestChangedFileConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IPullRequestChangedFileEdge | null> | null
+  edges: (IPullRequestChangedFileEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IPullRequestChangedFile | null> | null
+  nodes: (IPullRequestChangedFile | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -9771,12 +9771,12 @@ export interface IIssuesOnMilestoneArguments {
   /**
    * A list of label names to filter the pull requests by.
    */
-  labels?: Array<string> | null
+  labels?: string[] | null
 
   /**
    * A list of states to filter the issues by.
    */
-  states?: Array<IssueState> | null
+  states?: IssueState[] | null
 
   /**
    * Filtering options for issues returned from the connection.
@@ -9808,12 +9808,12 @@ export interface IPullRequestsOnMilestoneArguments {
   /**
    * A list of states to filter the pull requests by.
    */
-  states?: Array<PullRequestState> | null
+  states?: PullRequestState[] | null
 
   /**
    * A list of label names to filter the pull requests by.
    */
-  labels?: Array<string> | null
+  labels?: string[] | null
 
   /**
    * The head ref name to filter the pull requests by.
@@ -9875,12 +9875,12 @@ export interface IReviewRequestConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IReviewRequestEdge | null> | null
+  edges: (IReviewRequestEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IReviewRequest | null> | null
+  nodes: (IReviewRequest | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -10140,7 +10140,7 @@ export interface IChildTeamsOnTeamArguments {
   /**
    * User logins to filter by
    */
-  userLogins?: Array<string> | null
+  userLogins?: string[] | null
 
   /**
    * Whether to list immediate child teams or all descendant child teams.
@@ -10371,12 +10371,12 @@ export interface IUserStatusConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IUserStatusEdge | null> | null
+  edges: (IUserStatusEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IUserStatus | null> | null
+  nodes: (IUserStatus | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -10462,12 +10462,12 @@ export interface ITeamConnection {
   /**
    * A list of edges.
    */
-  edges: Array<ITeamEdge | null> | null
+  edges: (ITeamEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<ITeam | null> | null
+  nodes: (ITeam | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -10531,12 +10531,12 @@ export interface IOrganizationInvitationConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IOrganizationInvitationEdge | null> | null
+  edges: (IOrganizationInvitationEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IOrganizationInvitation | null> | null
+  nodes: (IOrganizationInvitation | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -10723,12 +10723,12 @@ export interface ITeamMemberConnection {
   /**
    * A list of edges.
    */
-  edges: Array<ITeamMemberEdge | null> | null
+  edges: (ITeamMemberEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IGitHubUser | null> | null
+  nodes: (IGitHubUser | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -10843,12 +10843,12 @@ export interface ITeamRepositoryConnection {
   /**
    * A list of edges.
    */
-  edges: Array<ITeamRepositoryEdge | null> | null
+  edges: (ITeamRepositoryEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IRepository | null> | null
+  nodes: (IRepository | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -10908,12 +10908,12 @@ export interface IPullRequestReviewThreadConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IPullRequestReviewThreadEdge | null> | null
+  edges: (IPullRequestReviewThreadEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IPullRequestReviewThread | null> | null
+  nodes: (IPullRequestReviewThread | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -11017,12 +11017,12 @@ export interface IPullRequestReviewCommentConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IPullRequestReviewCommentEdge | null> | null
+  edges: (IPullRequestReviewCommentEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IPullRequestReviewComment | null> | null
+  nodes: (IPullRequestReviewComment | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -11182,7 +11182,7 @@ export interface IPullRequestReviewComment {
   /**
    * A list of reactions grouped by content left on the subject.
    */
-  reactionGroups: Array<IReactionGroup> | null
+  reactionGroups: IReactionGroup[] | null
 
   /**
    * A list of Reactions left on the Issue.
@@ -11247,7 +11247,7 @@ export interface IPullRequestReviewComment {
   /**
    * Reasons why the current viewer can not update this comment.
    */
-  viewerCannotUpdateReasons: Array<CommentCannotUpdateReason>
+  viewerCannotUpdateReasons: CommentCannotUpdateReason[]
 
   /**
    * Did the viewer author this comment.
@@ -11399,7 +11399,7 @@ export interface IPullRequestReview {
   /**
    * A list of reactions grouped by content left on the subject.
    */
-  reactionGroups: Array<IReactionGroup> | null
+  reactionGroups: IReactionGroup[] | null
 
   /**
    * A list of Reactions left on the Issue.
@@ -11459,7 +11459,7 @@ export interface IPullRequestReview {
   /**
    * Reasons why the current viewer can not update this comment.
    */
-  viewerCannotUpdateReasons: Array<CommentCannotUpdateReason>
+  viewerCannotUpdateReasons: CommentCannotUpdateReason[]
 
   /**
    * Did the viewer author this comment.
@@ -11619,12 +11619,12 @@ export interface IPullRequestReviewConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IPullRequestReviewEdge | null> | null
+  edges: (IPullRequestReviewEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IPullRequestReview | null> | null
+  nodes: (IPullRequestReview | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -11685,12 +11685,12 @@ export interface IPullRequestTimelineConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IPullRequestTimelineItemEdge | null> | null
+  edges: (IPullRequestTimelineItemEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<PullRequestTimelineItem | null> | null
+  nodes: (PullRequestTimelineItem | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -12946,7 +12946,7 @@ export interface IPullRequestTimelineItemsConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IPullRequestTimelineItemsEdge | null> | null
+  edges: (IPullRequestTimelineItemsEdge | null)[] | null
 
   /**
    * Identifies the count of items after applying `before` and `after` filters.
@@ -12956,7 +12956,7 @@ export interface IPullRequestTimelineItemsConnection {
   /**
    * A list of nodes.
    */
-  nodes: Array<PullRequestTimelineItems | null> | null
+  nodes: (PullRequestTimelineItems | null)[] | null
 
   /**
    * Identifies the count of items after applying `before`/`after` filters and `first`/`last`/`skip` slicing.
@@ -13369,12 +13369,12 @@ export interface IRefConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IRefEdge | null> | null
+  edges: (IRefEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IRef | null> | null
+  nodes: (IRef | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -13413,12 +13413,12 @@ export interface IPushAllowanceConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IPushAllowanceEdge | null> | null
+  edges: (IPushAllowanceEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IPushAllowance | null> | null
+  nodes: (IPushAllowance | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -13480,12 +13480,12 @@ export interface IReviewDismissalAllowanceConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IReviewDismissalAllowanceEdge | null> | null
+  edges: (IReviewDismissalAllowanceEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IReviewDismissalAllowance | null> | null
+  nodes: (IReviewDismissalAllowance | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -13567,12 +13567,12 @@ export interface IRepositoryCollaboratorConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IRepositoryCollaboratorEdge | null> | null
+  edges: (IRepositoryCollaboratorEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IGitHubUser | null> | null
+  nodes: (IGitHubUser | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -13605,7 +13605,7 @@ export interface IRepositoryCollaboratorEdge {
   /**
    * A list of sources for the user's access to the repository.
    */
-  permissionSources: Array<IPermissionSource> | null
+  permissionSources: IPermissionSource[] | null
 }
 
 /**
@@ -13669,12 +13669,12 @@ export interface IDeployKeyConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IDeployKeyEdge | null> | null
+  edges: (IDeployKeyEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IDeployKey | null> | null
+  nodes: (IDeployKey | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -13776,12 +13776,12 @@ export interface ILanguageConnection {
   /**
    * A list of edges.
    */
-  edges: Array<ILanguageEdge | null> | null
+  edges: (ILanguageEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<ILanguage | null> | null
+  nodes: (ILanguage | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -13880,12 +13880,12 @@ export interface IMilestoneConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IMilestoneEdge | null> | null
+  edges: (IMilestoneEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IMilestone | null> | null
+  nodes: (IMilestone | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -13974,12 +13974,12 @@ export interface IProjectConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IProjectEdge | null> | null
+  edges: (IProjectEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IProject | null> | null
+  nodes: (IProject | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -14148,12 +14148,12 @@ export interface IReleaseAssetConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IReleaseAssetEdge | null> | null
+  edges: (IReleaseAssetEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IReleaseAsset | null> | null
+  nodes: (IReleaseAsset | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -14280,12 +14280,12 @@ export interface IReleaseConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IReleaseEdge | null> | null
+  edges: (IReleaseEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IRelease | null> | null
+  nodes: (IRelease | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -14324,12 +14324,12 @@ export interface IRepositoryTopicConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IRepositoryTopicEdge | null> | null
+  edges: (IRepositoryTopicEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IRepositoryTopic | null> | null
+  nodes: (IRepositoryTopic | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -14399,7 +14399,7 @@ export interface ITopic {
    * first. Returns up to 10 Topics.
    *
    */
-  relatedTopics: Array<ITopic>
+  relatedTopics: ITopic[]
 
   /**
    * A list of users who have starred this starrable.
@@ -14526,7 +14526,7 @@ export interface IPinnableItemsOnProfileOwnerArguments {
   /**
    * Filter the types of pinnable items that are returned.
    */
-  types?: Array<PinnableItemType> | null
+  types?: PinnableItemType[] | null
 
   /**
    * Returns the elements in the list that come after the specified cursor.
@@ -14553,7 +14553,7 @@ export interface IPinnedItemsOnProfileOwnerArguments {
   /**
    * Filter the types of pinned items that are returned.
    */
-  types?: Array<PinnableItemType> | null
+  types?: PinnableItemType[] | null
 
   /**
    * Returns the elements in the list that come after the specified cursor.
@@ -14639,12 +14639,12 @@ export interface IPinnableItemConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IPinnableItemEdge | null> | null
+  edges: (IPinnableItemEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<PinnableItem | null> | null
+  nodes: (PinnableItem | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -14703,7 +14703,7 @@ export interface IGist {
   /**
    * The files in this gist.
    */
-  files: Array<IGistFile | null> | null
+  files: (IGistFile | null)[] | null
   id: string
 
   /**
@@ -14813,12 +14813,12 @@ export interface IGistCommentConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IGistCommentEdge | null> | null
+  edges: (IGistCommentEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IGistComment | null> | null
+  nodes: (IGistComment | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -14958,7 +14958,7 @@ export interface IGistComment {
   /**
    * Reasons why the current viewer can not update this comment.
    */
-  viewerCannotUpdateReasons: Array<CommentCannotUpdateReason>
+  viewerCannotUpdateReasons: CommentCannotUpdateReason[]
 
   /**
    * Did the viewer author this comment.
@@ -15056,7 +15056,7 @@ export interface IContributionsCollection {
   /**
    * Commit contributions made by the user, grouped by repository.
    */
-  commitContributionsByRepository: Array<ICommitContributionsByRepository>
+  commitContributionsByRepository: ICommitContributionsByRepository[]
 
   /**
    * A calendar of this user's contributions on GitHub.
@@ -15066,7 +15066,7 @@ export interface IContributionsCollection {
   /**
    * The years the user has been making contributions with the most recent year first.
    */
-  contributionYears: Array<number>
+  contributionYears: number[]
 
   /**
    * Determine if this collection's time span ends in the current month.
@@ -15127,7 +15127,7 @@ export interface IContributionsCollection {
   /**
    * Issue contributions made by the user, grouped by repository.
    */
-  issueContributionsByRepository: Array<IIssueContributionsByRepository>
+  issueContributionsByRepository: IIssueContributionsByRepository[]
 
   /**
    * When the user signed up for GitHub. This will be null if that sign up date falls outside the collection's time range and ignoreTimeRange is false.
@@ -15175,7 +15175,7 @@ export interface IContributionsCollection {
   /**
    * Pull request contributions made by the user, grouped by repository.
    */
-  pullRequestContributionsByRepository: Array<IPullRequestContributionsByRepository>
+  pullRequestContributionsByRepository: IPullRequestContributionsByRepository[]
 
   /**
    * Pull request review contributions made by the user.
@@ -15185,7 +15185,7 @@ export interface IContributionsCollection {
   /**
    * Pull request review contributions made by the user, grouped by repository.
    */
-  pullRequestReviewContributionsByRepository: Array<IPullRequestReviewContributionsByRepository>
+  pullRequestReviewContributionsByRepository: IPullRequestReviewContributionsByRepository[]
 
   /**
    * A list of repositories owned by the user that the user created in this time range.
@@ -15656,12 +15656,12 @@ export interface ICreatedCommitContributionConnection {
   /**
    * A list of edges.
    */
-  edges: Array<ICreatedCommitContributionEdge | null> | null
+  edges: (ICreatedCommitContributionEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<ICreatedCommitContribution | null> | null
+  nodes: (ICreatedCommitContribution | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -15795,7 +15795,7 @@ export interface IContributionCalendar {
   /**
    * A list of hex color codes used in this calendar. The darker the color, the more contributions it represents.
    */
-  colors: Array<string>
+  colors: string[]
 
   /**
    * Determine if the color set was chosen because it's currently Halloween.
@@ -15805,7 +15805,7 @@ export interface IContributionCalendar {
   /**
    * A list of the months of contributions in this calendar.
    */
-  months: Array<IContributionCalendarMonth>
+  months: IContributionCalendarMonth[]
 
   /**
    * The count of total contributions in the calendar.
@@ -15815,7 +15815,7 @@ export interface IContributionCalendar {
   /**
    * A list of the weeks of contributions in this calendar.
    */
-  weeks: Array<IContributionCalendarWeek>
+  weeks: IContributionCalendarWeek[]
 }
 
 /**
@@ -15854,7 +15854,7 @@ export interface IContributionCalendarWeek {
   /**
    * The days of contributions in this week.
    */
-  contributionDays: Array<IContributionCalendarDay>
+  contributionDays: IContributionCalendarDay[]
 
   /**
    * The date of the earliest square in this week.
@@ -16103,12 +16103,12 @@ export interface ICreatedIssueContributionConnection {
   /**
    * A list of edges.
    */
-  edges: Array<ICreatedIssueContributionEdge | null> | null
+  edges: (ICreatedIssueContributionEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<ICreatedIssueContribution | null> | null
+  nodes: (ICreatedIssueContribution | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -16227,12 +16227,12 @@ export interface ICreatedPullRequestContributionConnection {
   /**
    * A list of edges.
    */
-  edges: Array<ICreatedPullRequestContributionEdge | null> | null
+  edges: (ICreatedPullRequestContributionEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<ICreatedPullRequestContribution | null> | null
+  nodes: (ICreatedPullRequestContribution | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -16315,12 +16315,12 @@ export interface ICreatedPullRequestReviewContributionConnection {
   /**
    * A list of edges.
    */
-  edges: Array<ICreatedPullRequestReviewContributionEdge | null> | null
+  edges: (ICreatedPullRequestReviewContributionEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<ICreatedPullRequestReviewContribution | null> | null
+  nodes: (ICreatedPullRequestReviewContribution | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -16454,12 +16454,12 @@ export interface ICreatedRepositoryContributionConnection {
   /**
    * A list of edges.
    */
-  edges: Array<ICreatedRepositoryContributionEdge | null> | null
+  edges: (ICreatedRepositoryContributionEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<ICreatedRepositoryContribution | null> | null
+  nodes: (ICreatedRepositoryContribution | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -16498,12 +16498,12 @@ export interface IFollowerConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IUserEdge | null> | null
+  edges: (IUserEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IGitHubUser | null> | null
+  nodes: (IGitHubUser | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -16525,12 +16525,12 @@ export interface IFollowingConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IUserEdge | null> | null
+  edges: (IUserEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IGitHubUser | null> | null
+  nodes: (IGitHubUser | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -16607,12 +16607,12 @@ export interface IGistConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IGistEdge | null> | null
+  edges: (IGistEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IGist | null> | null
+  nodes: (IGist | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -16651,12 +16651,12 @@ export interface IOrganizationConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IOrganizationEdge | null> | null
+  edges: (IOrganizationEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IOrganization | null> | null
+  nodes: (IOrganization | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -16695,12 +16695,12 @@ export interface IPublicKeyConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IPublicKeyEdge | null> | null
+  edges: (IPublicKeyEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IPublicKey | null> | null
+  nodes: (IPublicKey | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -16807,12 +16807,12 @@ export interface IStarredRepositoryConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IStarredRepositoryEdge | null> | null
+  edges: (IStarredRepositoryEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IRepository | null> | null
+  nodes: (IRepository | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -16852,12 +16852,12 @@ export interface IIssueTimelineConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IIssueTimelineItemEdge | null> | null
+  edges: (IIssueTimelineItemEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IssueTimelineItem | null> | null
+  nodes: (IssueTimelineItem | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -17055,7 +17055,7 @@ export interface IIssueTimelineItemsConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IIssueTimelineItemsEdge | null> | null
+  edges: (IIssueTimelineItemsEdge | null)[] | null
 
   /**
    * Identifies the count of items after applying `before` and `after` filters.
@@ -17065,7 +17065,7 @@ export interface IIssueTimelineItemsConnection {
   /**
    * A list of nodes.
    */
-  nodes: Array<IssueTimelineItems | null> | null
+  nodes: (IssueTimelineItems | null)[] | null
 
   /**
    * Identifies the count of items after applying `before`/`after` filters and `first`/`last`/`skip` slicing.
@@ -17185,12 +17185,12 @@ export interface IOrganizationMemberConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IOrganizationMemberEdge | null> | null
+  edges: (IOrganizationMemberEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IGitHubUser | null> | null
+  nodes: (IGitHubUser | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -17319,12 +17319,12 @@ export interface IExternalIdentityConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IExternalIdentityEdge | null> | null
+  edges: (IExternalIdentityEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<IExternalIdentity | null> | null
+  nodes: (IExternalIdentity | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -17492,7 +17492,7 @@ export interface ISearchResultItemConnection {
   /**
    * A list of edges.
    */
-  edges: Array<ISearchResultItemEdge | null> | null
+  edges: (ISearchResultItemEdge | null)[] | null
 
   /**
    * The number of issues that matched the search query.
@@ -17502,7 +17502,7 @@ export interface ISearchResultItemConnection {
   /**
    * A list of nodes.
    */
-  nodes: Array<SearchResultItem | null> | null
+  nodes: (SearchResultItem | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -17544,7 +17544,7 @@ export interface ISearchResultItemEdge {
   /**
    * Text matches on the result found.
    */
-  textMatches: Array<ITextMatch | null> | null
+  textMatches: (ITextMatch | null)[] | null
 }
 
 /**
@@ -17572,7 +17572,7 @@ export interface ITextMatch {
   /**
    * Highlights within the matched fragment.
    */
-  highlights: Array<ITextMatchHighlight>
+  highlights: ITextMatchHighlight[]
 
   /**
    * The property matched on.
@@ -17671,12 +17671,12 @@ export interface ISecurityAdvisoryConnection {
   /**
    * A list of edges.
    */
-  edges: Array<ISecurityAdvisoryEdge | null> | null
+  edges: (ISecurityAdvisoryEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<ISecurityAdvisory | null> | null
+  nodes: (ISecurityAdvisory | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -17731,7 +17731,7 @@ export interface ISecurityAdvisory {
   /**
    * A list of identifiers for this advisory
    */
-  identifiers: Array<ISecurityAdvisoryIdentifier>
+  identifiers: ISecurityAdvisoryIdentifier[]
 
   /**
    * When the advisory was published
@@ -17741,7 +17741,7 @@ export interface ISecurityAdvisory {
   /**
    * A list of references for this advisory
    */
-  references: Array<ISecurityAdvisoryReference>
+  references: ISecurityAdvisoryReference[]
 
   /**
    * The severity of the advisory
@@ -17788,7 +17788,7 @@ export interface IVulnerabilitiesOnSecurityAdvisoryArguments {
   /**
    * A list of severities to filter vulnerabilities by.
    */
-  severities?: Array<SecurityAdvisorySeverity> | null
+  severities?: SecurityAdvisorySeverity[] | null
 
   /**
    * Returns the elements in the list that come after the specified cursor.
@@ -17929,12 +17929,12 @@ export interface ISecurityVulnerabilityConnection {
   /**
    * A list of edges.
    */
-  edges: Array<ISecurityVulnerabilityEdge | null> | null
+  edges: (ISecurityVulnerabilityEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<ISecurityVulnerability | null> | null
+  nodes: (ISecurityVulnerability | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -18615,7 +18615,7 @@ export interface IAddAssigneesToAssignableInput {
   /**
    * The id of users to add as assignees.
    */
-  assigneeIds: Array<string>
+  assigneeIds: string[]
 
   /**
    * A unique identifier for the client performing the mutation.
@@ -18699,7 +18699,7 @@ export interface IAddLabelsToLabelableInput {
   /**
    * The ids of the labels to add.
    */
-  labelIds: Array<string>
+  labelIds: string[]
 
   /**
    * A unique identifier for the client performing the mutation.
@@ -18840,7 +18840,7 @@ export interface IAddPullRequestReviewInput {
   /**
    * The review line comments.
    */
-  comments?: Array<IDraftPullRequestReviewComment | null> | null
+  comments?: (IDraftPullRequestReviewComment | null)[] | null
 
   /**
    * A unique identifier for the client performing the mutation.
@@ -19366,7 +19366,7 @@ export interface ICreateBranchProtectionRuleInput {
   /**
    * A list of User or Team IDs allowed to dismiss reviews on pull requests targeting matching branches.
    */
-  reviewDismissalActorIds?: Array<string> | null
+  reviewDismissalActorIds?: string[] | null
 
   /**
    * Is pushing to matching branches restricted.
@@ -19376,12 +19376,12 @@ export interface ICreateBranchProtectionRuleInput {
   /**
    * A list of User or Team IDs allowed to push to matching branches.
    */
-  pushActorIds?: Array<string> | null
+  pushActorIds?: string[] | null
 
   /**
    * List of required status check contexts that must pass for commits to be accepted to matching branches.
    */
-  requiredStatusCheckContexts?: Array<string> | null
+  requiredStatusCheckContexts?: string[] | null
 
   /**
    * A unique identifier for the client performing the mutation.
@@ -19428,7 +19428,7 @@ export interface ICreateIssueInput {
   /**
    * The Node ID for the user assignee for this issue.
    */
-  assigneeIds?: Array<string> | null
+  assigneeIds?: string[] | null
 
   /**
    * The Node ID of the milestone for this issue.
@@ -19438,12 +19438,12 @@ export interface ICreateIssueInput {
   /**
    * An array of Node IDs of labels for this issue.
    */
-  labelIds?: Array<string> | null
+  labelIds?: string[] | null
 
   /**
    * An array of Node IDs for projects associated with this issue.
    */
-  projectIds?: Array<string> | null
+  projectIds?: string[] | null
 
   /**
    * A unique identifier for the client performing the mutation.
@@ -20108,7 +20108,7 @@ export interface IRemoveAssigneesFromAssignableInput {
   /**
    * The id of users to remove as assignees.
    */
-  assigneeIds: Array<string>
+  assigneeIds: string[]
 
   /**
    * A unique identifier for the client performing the mutation.
@@ -20145,7 +20145,7 @@ export interface IRemoveLabelsFromLabelableInput {
   /**
    * The ids of labels to remove.
    */
-  labelIds: Array<string>
+  labelIds: string[]
 
   /**
    * A unique identifier for the client performing the mutation.
@@ -20357,12 +20357,12 @@ export interface IRequestReviewsInput {
   /**
    * The Node IDs of the user to request.
    */
-  userIds?: Array<string> | null
+  userIds?: string[] | null
 
   /**
    * The Node IDs of the team to request.
    */
-  teamIds?: Array<string> | null
+  teamIds?: string[] | null
 
   /**
    * Add users to the set rather than replace.
@@ -20634,7 +20634,7 @@ export interface IUpdateBranchProtectionRuleInput {
   /**
    * A list of User or Team IDs allowed to dismiss reviews on pull requests targeting matching branches.
    */
-  reviewDismissalActorIds?: Array<string> | null
+  reviewDismissalActorIds?: string[] | null
 
   /**
    * Is pushing to matching branches restricted.
@@ -20644,12 +20644,12 @@ export interface IUpdateBranchProtectionRuleInput {
   /**
    * A list of User or Team IDs allowed to push to matching branches.
    */
-  pushActorIds?: Array<string> | null
+  pushActorIds?: string[] | null
 
   /**
    * List of required status check contexts that must pass for commits to be accepted to matching branches.
    */
-  requiredStatusCheckContexts?: Array<string> | null
+  requiredStatusCheckContexts?: string[] | null
 
   /**
    * A unique identifier for the client performing the mutation.
@@ -20696,7 +20696,7 @@ export interface IUpdateIssueInput {
   /**
    * An array of Node IDs of users for this issue.
    */
-  assigneeIds?: Array<string> | null
+  assigneeIds?: string[] | null
 
   /**
    * The Node ID of the milestone for this issue.
@@ -20706,7 +20706,7 @@ export interface IUpdateIssueInput {
   /**
    * An array of Node IDs of labels for this issue.
    */
-  labelIds?: Array<string> | null
+  labelIds?: string[] | null
 
   /**
    * The desired issue state.
@@ -20716,7 +20716,7 @@ export interface IUpdateIssueInput {
   /**
    * An array of Node IDs for projects associated with this issue.
    */
-  projectIds?: Array<string> | null
+  projectIds?: string[] | null
 
   /**
    * A unique identifier for the client performing the mutation.
@@ -21086,7 +21086,7 @@ export interface IUpdateTopicsInput {
   /**
    * An array of topic names.
    */
-  topicNames: Array<string>
+  topicNames: string[]
 
   /**
    * A unique identifier for the client performing the mutation.
@@ -21108,7 +21108,7 @@ export interface IUpdateTopicsPayload {
   /**
    * Names of the provided topics that are not valid.
    */
-  invalidTopicNames: Array<string> | null
+  invalidTopicNames: string[] | null
 
   /**
    * The updated repository.
@@ -21363,12 +21363,12 @@ export interface ITopicConnection {
   /**
    * A list of edges.
    */
-  edges: Array<ITopicEdge | null> | null
+  edges: (ITopicEdge | null)[] | null
 
   /**
    * A list of nodes.
    */
-  nodes: Array<ITopic | null> | null
+  nodes: (ITopic | null)[] | null
 
   /**
    * Information to aid in pagination.
@@ -21513,7 +21513,7 @@ export interface IImportProjectInput {
   /**
    * A list of columns containing issues and pull requests.
    */
-  columnImports: Array<IProjectColumnImport>
+  columnImports: IProjectColumnImport[]
 
   /**
    * A unique identifier for the client performing the mutation.
@@ -21538,7 +21538,7 @@ export interface IProjectColumnImport {
   /**
    * A list of issues and pull requests in the column.
    */
-  issues?: Array<IProjectCardImport> | null
+  issues?: IProjectCardImport[] | null
 }
 
 /**

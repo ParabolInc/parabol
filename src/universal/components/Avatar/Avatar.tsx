@@ -1,4 +1,4 @@
-import React, {forwardRef, Ref} from 'react'
+import React, {forwardRef} from 'react'
 import AvatarBadge from 'universal/components/AvatarBadge/AvatarBadge'
 import styled from '@emotion/styled'
 
@@ -45,7 +45,6 @@ interface Props {
   picture: string
   sansRadius?: boolean
   sansShadow?: boolean
-  innerRef?: Ref<HTMLElement>
   size: number
 }
 

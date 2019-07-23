@@ -35,6 +35,7 @@ const Inner = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   maxWidth: '100vw',
+  overflow: 'hidden', // repro: mobile, new team form, 3+ meetings in progress
   padding: '10px 16px',
   textAlign: 'center',
   userSelect: 'none',

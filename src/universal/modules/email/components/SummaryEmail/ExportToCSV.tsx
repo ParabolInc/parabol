@@ -107,7 +107,7 @@ class ExportToCSV extends Component<Props> {
   handleRetroMeeting (newMeeting: Meeting) {
     const {reflectionGroups} = newMeeting
 
-    const rows = [] as Array<CSVRetroRow>
+    const rows = [] as CSVRetroRow[]
     reflectionGroups!.forEach((group) => {
       const {reflections, tasks, title, voteCount: votes} = group
       tasks.forEach((task) => {
@@ -133,7 +133,7 @@ class ExportToCSV extends Component<Props> {
   handleActionMeeting (newMeeting: Meeting) {
     const {meetingMembers} = newMeeting
 
-    const rows = [] as Array<CSVActionRow>
+    const rows = [] as CSVActionRow[]
     meetingMembers!.forEach((meetingMember) => {
       const {isCheckedIn, tasks, user} = meetingMember
       const status = isCheckedIn ? 'present' : 'absent'

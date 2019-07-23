@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import FlatButton from 'universal/components/FlatButton'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -10,7 +10,7 @@ import {PALETTE} from 'universal/styles/paletteV2'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
-const Button = styled(FlatButton)(({canDelete}: {canDelete: boolean}) => ({
+const Button = styled(FlatButton)<{canDelete: boolean}>(({canDelete}) => ({
   alignItems: 'center',
   display: !canDelete ? 'none' : 'flex',
   color: PALETTE.TEXT_LIGHT,

@@ -4,7 +4,7 @@ import {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 
 interface MutationServerError {
   message: string
-  path: Array<string>
+  path: string[]
 }
 
 export type MenuMutationProps = Pick<

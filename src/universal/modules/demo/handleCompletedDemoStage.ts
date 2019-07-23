@@ -129,13 +129,13 @@ const addDefaultGroupTitles = (db) => {
 const addStageToBotScript = (stageId, db, reflectionGroupId) => {
   const reflectionGroup = db.reflectionGroups.find((group) => group.id === reflectionGroupId)
   const {reflections} = reflectionGroup
-  const stageTasks = [] as Array<string>
+  const stageTasks = [] as string[]
   reflections.forEach((reflection) => {
     const tasks = taskLookup[reflection.id]
     if (!tasks) return
     stageTasks.push(...tasks)
   })
-  const ops = [] as Array<any>
+  const ops = [] as any[]
   stageTasks.forEach((taskContent, idx) => {
     const taskId = `botTask${stageId}:${idx}`
     const botId = idx % 2 === 0 ? 'bot2' : 'bot1'

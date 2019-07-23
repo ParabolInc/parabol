@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
 import StyledError from 'universal/components/StyledError'
 import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette'
@@ -17,7 +17,6 @@ interface Props {
   autoFocus?: boolean
   disabled?: boolean
   error: string | undefined
-  innerRef?: React.RefObject<HTMLInputElement>
   name: string
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
@@ -27,12 +26,11 @@ interface Props {
   value: string
 }
 
-const BasicInput = (props: Props) => {
+const BasicInput = forwardRef((props: Props, ref: Ref<HTMLInputElement>) => {
   const {
     autoFocus,
     disabled,
     error,
-    innerRef,
     name,
     onBlur,
     onChange,
@@ -46,7 +44,7 @@ const BasicInput = (props: Props) => {
       <Input
         autoFocus={autoFocus}
         disabled={Boolean(disabled)}
-        ref={innerRef}
+        ref={ref}
         name={name}
         placeholder={placeholder}
         onBlur={onBlur}
@@ -58,6 +56,6 @@ const BasicInput = (props: Props) => {
       {error && <StyledError>{error}</StyledError>}
     </React.Fragment>
   )
-}
+})
 
 export default BasicInput

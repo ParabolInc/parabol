@@ -16,7 +16,7 @@ const listItemStyle = {
 export interface UpcomingInvoiceEmailProps {
   memberUrl: string
   periodEndStr: string
-  newUsers: Array<{email: string; name: string}>
+  newUsers: {email: string; name: string}[]
 }
 
 const UpcomingInvoiceEmail = (props: UpcomingInvoiceEmailProps) => {

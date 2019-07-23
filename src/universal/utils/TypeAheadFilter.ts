@@ -1,8 +1,8 @@
 export default class TypeAheadFilter {
   private lastQuery = ''
-  private lastResult = [] as ReadonlyArray<any>
+  private lastResult = [] as readonly any[]
 
-  compare (query: string, fullArray: ReadonlyArray<any>, getValue: (item: any) => string) {
+  compare (query: string, fullArray: readonly any[], getValue: (item: any) => string) {
     const arr = this.lastQuery && query.includes(this.lastQuery) ? this.lastResult : fullArray
     const scoredArray = [] as {item: any; score: number}[]
     for (let i = 0; i < arr.length; i++) {

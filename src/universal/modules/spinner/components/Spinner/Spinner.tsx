@@ -1,5 +1,6 @@
 import React from 'react'
-import styled, {keyframes} from 'react-emotion'
+import styled from '@emotion/styled';
+import { keyframes } from '@emotion/core';
 
 // NOTE: Let’s set this up!
 //    1. PATHS    for leaves of the logo
@@ -45,14 +46,14 @@ const keyframesOpacity = keyframes`
   }
 }`
 
-const Root = styled('div')(({width}: Pick<Props, 'width'>) => ({
+const Root = styled('div')<Pick<Props, 'width'>>(({width}) => ({
   display: 'inline-block',
   height: width * 1.11,
   position: 'relative',
   width
 }))
 
-const Block = styled('div')(({width}: Pick<Props, 'width'>) => ({
+const Block = styled('div')<Pick<Props, 'width'>>(({width}) => ({
   left: '50%',
   position: 'absolute',
   top: '50%',
@@ -60,7 +61,7 @@ const Block = styled('div')(({width}: Pick<Props, 'width'>) => ({
   width
 }))
 
-const SVG = styled('svg')(({delay, width}: Pick<Props, 'delay' | 'width'>) => ({
+const SVG = styled('svg')<Pick<Props, 'delay' | 'width'>>(({delay, width}) => ({
   animationDelay: `${delay}ms`,
   animationDuration: DURATION,
   animationIterationCount: 'infinite',
@@ -69,7 +70,7 @@ const SVG = styled('svg')(({delay, width}: Pick<Props, 'delay' | 'width'>) => ({
   width
 }))
 
-const Path = styled('path')(({delay, fill}: Pick<Props, 'delay' | 'fill'>) => ({
+const Path = styled('path')<Pick<Props, 'delay' | 'fill'>>(({delay, fill}) => ({
   animationDelay: `${delay}ms`,
   animationDuration: DURATION,
   animationIterationCount: 'infinite',

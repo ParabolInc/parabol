@@ -1,5 +1,5 @@
 interface RemovalFilter {
-  [parentType: string]: Array<String>
+  [parentType: string]: string[]
 }
 
 /*

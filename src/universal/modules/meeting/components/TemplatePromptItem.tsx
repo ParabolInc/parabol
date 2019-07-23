@@ -37,7 +37,7 @@ interface StyledProps {
 
 const lineHeight = '2.75rem'
 
-const PromptItem = styled('li')(({isHover, isDragging}: StyledProps) => ({
+const PromptItem = styled('li')<StyledProps>(({isHover, isDragging}) => ({
   alignItems: 'flex-start',
   backgroundColor: isHover || isDragging ? PALETTE.BACKGROUND_MAIN_LIGHTENED : undefined,
   borderRadius: '.125rem',
@@ -47,7 +47,7 @@ const PromptItem = styled('li')(({isHover, isDragging}: StyledProps) => ({
   padding: '0 .6875rem 0 1rem'
 }))
 
-const RemovePromptIcon = styled(Icon)(({isHover}: StyledProps) => ({
+const RemovePromptIcon = styled(Icon)<StyledProps>(({isHover}) => ({
   color: PALETTE.TEXT_LIGHT,
   cursor: 'pointer',
   display: 'block',
@@ -109,7 +109,7 @@ class TemplatePromptItem extends Component<Props, State> {
     const {isEditingDescription, isHover} = this.state
     return (
       <PromptItem
-        ref={dragProvided.innerRef as any}
+        ref={dragProvided.innerRef}
         {...dragProvided.dragHandleProps}
         {...dragProvided.draggableProps}
         isDragging={isDragging}

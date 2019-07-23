@@ -1,9 +1,9 @@
 type FilterFn = (record: Record) => boolean | null | undefined | void
-type Options = {
+interface Options {
   isPlural: boolean
 }
 
-type Record = {
+interface Record {
   __id: string
   __typename: string
   [field: string]: any
@@ -23,14 +23,14 @@ function getCachedRecord (
   store: any,
   filterFn: FilterFn,
   options: {isPlural: true} & Options
-): Array<Record>
+): Record[]
 function getCachedRecord (
   store: any,
   filterFn: FilterFn,
   options: Options = {isPlural: false}
-): Array<Record> | Record {
+): Record[] | Record {
   const sources = store.__recordSource.__mutator.__sources
-  const filteredRecords: Array<Record> = []
+  const filteredRecords: Record[] = []
   for (let ss = 0; ss < sources.length; ss++) {
     const source = sources[ss]
     const records = source._records

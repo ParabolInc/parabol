@@ -1,10 +1,10 @@
 import {OrgMemberRow_organization} from '__generated__/OrgMemberRow_organization.graphql'
 import {OrgMemberRow_organizationUser} from '__generated__/OrgMemberRow_organizationUser.graphql'
-import React from 'react'
-import styled from 'react-emotion'
+import React, {forwardRef, Ref} from 'react'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import Avatar from 'universal/components/Avatar/Avatar'
-import FlatButton from 'universal/components/FlatButton'
+import FlatButton, {FlatButtonProps} from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
 import Row from 'universal/components/Row/Row'
 import RowActions from 'universal/components/Row/RowActions'
@@ -56,11 +56,11 @@ const StyledButton = styled(FlatButton)({
   width: '100%'
 })
 
-const MenuButton = (props) => (
-  <StyledButton {...props} disabled={props.disabled}>
+const MenuButton = forwardRef((props: FlatButtonProps, ref: Ref<HTMLButtonElement>) => (
+  <StyledButton {...props} disabled={props.disabled} ref={ref}>
     <IconLabel icon='more_vert' />
   </StyledButton>
-)
+))
 
 const LeaveOrgModal = lazyPreload(() =>
   import(/* webpackChunkName: 'LeaveOrgModal' */ 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal')
@@ -175,7 +175,7 @@ const OrgMemberRow = (props: Props) => {
               <MenuButton
                 onClick={togglePortal}
                 onMouseEnter={BillingLeaderActionMenu.preload}
-                innerRef={originRef}
+                ref={originRef}
               />
             </MenuToggleBlock>
           )}

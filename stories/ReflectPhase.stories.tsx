@@ -31,7 +31,7 @@ storiesOf('Reflect Phase', module)
   .addDecorator(withKnobs)
   .add('placeholder', () => (
     <StoryProvider>
-      <ReflectionStackPlaceholder idx={0} innerRef={undefined as any} />
+      <ReflectionStackPlaceholder idx={0} />
     </StoryProvider>
   ))
   .add('editor', () => (

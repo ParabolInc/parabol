@@ -1,8 +1,7 @@
-import styled, {css} from 'react-emotion'
+import styled from '@emotion/styled'
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import AcknowledgeButton from 'universal/modules/notifications/components/AcknowledgeButton/AcknowledgeButton'
-import defaultStyles from 'universal/modules/notifications/helpers/styles'
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation'
 import ui from 'universal/styles/ui'
 import Row from 'universal/components/Row/Row'
@@ -13,8 +12,21 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import useRouter from '../../../../hooks/useRouter'
 import NotificationErrorMessage from '../NotificationErrorMessage'
+import NotificationMessage from 'universal/modules/notifications/components/NotificationMessage'
+import {PALETTE} from 'universal/styles/paletteV2'
 
 const StyledButton = styled(RaisedButton)({...ui.buttonBlockStyles})
+const MessageVar = styled('div')({
+  cursor: 'pointer',
+  textDecoration: 'underline',
+  ':hover': {
+    color: PALETTE.ERROR_MAIN
+  }
+})
+const WiderButton = styled('div')({
+  marginLeft: 16,
+  minWidth: 132
+})
 
 interface Props {
   notification: PromoteToBillingLeader_notification
@@ -45,21 +57,20 @@ const PromoteToBillingLeader = (props: Props) => {
     <>
       <Row>
         <IconAvatar icon='account_balance' size='small' />
-        <div className={css(defaultStyles.message)}>
+        <NotificationMessage>
           {'You are now a '}
           <b>
             <i>{'Billing Leader'}</i>
           </b>
           {' for '}
-          <span
-            className={css(defaultStyles.messageVar, defaultStyles.notifLink)}
+          <MessageVar
             onClick={goToOrg}
           >
             {orgName}
-          </span>
+          </MessageVar>
           {'.'}
-        </div>
-        <div className={css(defaultStyles.widerButton)}>
+        </NotificationMessage>
+        <WiderButton>
           <StyledButton
             aria-label='Go to the Organization page'
             size={'small'}
@@ -69,7 +80,7 @@ const PromoteToBillingLeader = (props: Props) => {
           >
             {'See Organization'}
           </StyledButton>
-        </div>
+        </WiderButton>
         <AcknowledgeButton onClick={acknowledge} waiting={submitting} />
       </Row>
       <NotificationErrorMessage error={error} />

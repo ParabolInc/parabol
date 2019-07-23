@@ -9,14 +9,14 @@ import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import ui from 'universal/styles/ui'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import UpdateNewCheckInQuestionMutation from 'universal/mutations/UpdateNewCheckInQuestionMutation'
 import {convertFromRaw, convertToRaw, EditorState, SelectionState} from 'draft-js'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 import {NewCheckInQuestion_team} from '__generated__/NewCheckInQuestion_team.graphql'
 
-const CogIcon = styled(Icon)(({isEditing}: {isEditing: boolean}) => ({
+const CogIcon = styled(Icon)<{isEditing: boolean}>(({isEditing}) => ({
   color: ui.colorText,
   display: 'block',
   height: '1.5rem',
@@ -55,7 +55,7 @@ interface Props extends WithAtmosphereProps {
   team: NewCheckInQuestion_team
 }
 
-type State = {
+interface State {
   editorState: EditorState
 }
 

@@ -1,15 +1,20 @@
-import styled, {css} from 'react-emotion'
+import styled from '@emotion/styled'
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import defaultStyles from 'universal/modules/notifications/helpers/styles'
 import ui from 'universal/styles/ui'
 import Row from 'universal/components/Row/Row'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 import RaisedButton from 'universal/components/RaisedButton'
 import useRouter from 'universal/hooks/useRouter'
 import {PaymentRejected_notification} from '__generated__/PaymentRejected_notification.graphql'
+import NotificationMessage from 'universal/modules/notifications/components/NotificationMessage'
 
 const StyledButton = styled(RaisedButton)({...ui.buttonBlockStyles})
+
+const WidestButton = styled('div')({
+  marginLeft: 16,
+  minWidth: 176
+})
 
 interface Props {
   notification: PaymentRejected_notification
@@ -26,7 +31,7 @@ const PaymentRejected = (props: Props) => {
   return (
     <Row>
       <IconAvatar icon='credit_card' size='small' />
-      <div className={css(defaultStyles.message)}>
+      <NotificationMessage>
         {'Your '}
         <b>{brand}</b>
         {' card ending in '}
@@ -34,8 +39,8 @@ const PaymentRejected = (props: Props) => {
         {' was rejected.'}
         <br />
         {'Call your card provider or head to the settings page to try a new card.'}
-      </div>
-      <div className={css(defaultStyles.widestButton)}>
+      </NotificationMessage>
+      <WidestButton>
         <StyledButton
           aria-label='Go to the billing page to update billing information'
           size={'small'}
@@ -44,7 +49,7 @@ const PaymentRejected = (props: Props) => {
         >
           {'See Billing'}
         </StyledButton>
-      </div>
+      </WidestButton>
     </Row>
   )
 }

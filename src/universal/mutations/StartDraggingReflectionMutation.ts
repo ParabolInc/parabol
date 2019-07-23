@@ -14,7 +14,7 @@ import {Coords} from '../../types/animations'
 import {MasonryAtmosphere} from '../components/PhaseItemMasonry'
 import {CompletedHandler, ErrorHandler} from '../types/relayMutations'
 
-type Context = {
+interface Context {
   initialCursorCoords: Coords
   meetingId: string
 }

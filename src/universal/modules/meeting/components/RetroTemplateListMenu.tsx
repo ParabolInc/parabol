@@ -12,7 +12,7 @@ import {MenuProps} from 'universal/hooks/useMenu'
 import useModal from 'universal/hooks/useModal'
 import SelectRetroTemplateMutation from 'universal/mutations/SelectRetroTemplateMutation'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   menuProps: MenuProps

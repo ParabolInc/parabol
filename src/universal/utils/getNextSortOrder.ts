@@ -1,7 +1,7 @@
 import {SORT_STEP} from 'universal/utils/constants'
 
 export default function getNextSortOrder (
-  arr: ReadonlyArray<{sortOrder: number}>,
+  arr: readonly {sortOrder: number}[],
   noise: number = 0
 ) {
   const maxVal = Math.max(...arr.map((val) => val.sortOrder))

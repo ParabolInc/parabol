@@ -7,7 +7,7 @@ import React, {ReactElement} from 'react'
  *   Easy enough to support variable rows, just need another unflatten predicate
  * */
 
-const useEmailItemGrid = (items: ReadonlyArray<any>, maxColumns: number, minColumns?: number) => {
+const useEmailItemGrid = (items: readonly any[], maxColumns: number, minColumns?: number) => {
   const {cols, rowCount} = getMinColumns(maxColumns, items.length, minColumns)
   const rows = unflattenIntoRows(items, rowCount, cols)
   const width = Math.floor(100 / maxColumns)

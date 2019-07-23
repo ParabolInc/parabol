@@ -105,11 +105,9 @@ interface CreateIssueFields {
 }
 
 interface IssueCreateMetadata {
-  projects: Array<
-    Pick<JiraProject, 'self' | 'id' | 'key' | 'name' | 'avatarUrls'> & {
+  projects: (Pick<JiraProject, 'self' | 'id' | 'key' | 'name' | 'avatarUrls'> & {
       issuetypes: JiraIssueType[]
-    }
-  >
+    })[]
 }
 
 interface JiraCreateIssueResponse {

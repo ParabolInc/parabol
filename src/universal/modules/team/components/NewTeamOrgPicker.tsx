@@ -47,7 +47,7 @@ const NewTeamOrgPicker = (props: Props) => {
   const orgIdx = orgId ? sortedOrgs.findIndex((org) => org.id === orgId) : 0
   const org = sortedOrgs[orgIdx]
   const defaultText = org ? org.name : NO_ORGS
-  const {togglePortal, menuPortal, originRef, menuProps} = useMenu(MenuPosition.UPPER_RIGHT, {
+  const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLDivElement>(MenuPosition.UPPER_RIGHT, {
     isDropdown: true
   })
   return (

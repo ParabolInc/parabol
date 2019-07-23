@@ -56,7 +56,7 @@ const relativeDate = (date: string | Date, opts: Opts = {}) => {
 
   let k
   let val
-  const keep: Array<string> = []
+  const keep: string[] = []
   let max: number | string = opts.max === undefined ? 1 : opts.max
 
   for (k in periods) {

@@ -1,4 +1,4 @@
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {minWidthMediaQueries} from 'universal/styles/breakpoints'
 import {PALETTE} from 'universal/styles/paletteV2'
 

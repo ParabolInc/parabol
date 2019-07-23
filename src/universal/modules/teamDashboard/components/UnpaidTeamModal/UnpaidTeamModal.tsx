@@ -1,6 +1,6 @@
 import {UnpaidTeamModal_viewer} from '__generated__/UnpaidTeamModal_viewer.graphql'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import DashModal from 'universal/components/Dashboard/DashModal'

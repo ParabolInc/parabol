@@ -1,6 +1,6 @@
 import {ProviderList_viewer} from '__generated__/ProviderList_viewer.graphql'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
 import AtlassianProviderRow from 'universal/modules/teamDashboard/components/ProviderRow/AtlassianProviderRow'

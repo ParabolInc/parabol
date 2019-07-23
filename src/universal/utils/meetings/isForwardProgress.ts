@@ -1,5 +1,5 @@
 const isForwardProgress = (
-  phases: ReadonlyArray<{stages: ReadonlyArray<{id: string}>}>,
+  phases: readonly {stages: readonly {id: string}[]}[],
   stageId: string,
   nextStageId: string
 ) => {

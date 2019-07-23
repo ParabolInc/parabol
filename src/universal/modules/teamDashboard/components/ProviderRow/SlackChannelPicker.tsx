@@ -46,7 +46,7 @@ const SlackChannelPicker = (props: Props) => {
     : channelState === ChannelState.loading
     ? ''
     : 'Token Expired! Click to renew'
-  const {togglePortal, menuPortal, originRef, menuProps} = useMenu(MenuPosition.UPPER_RIGHT, {
+  const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLDivElement>(MenuPosition.UPPER_RIGHT, {
     isDropdown: true
   })
   const atmosphere = useAtmosphere()

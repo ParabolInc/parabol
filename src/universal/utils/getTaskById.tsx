@@ -2,7 +2,7 @@ interface Task {
   id: string
 }
 
-const getTaskById = <T extends Task>(taskArr: ReadonlyArray<T>) => (
+const getTaskById = <T extends Task>(taskArr: readonly T[]) => (
   taskId: string
 ): T | undefined | null => {
   if (!taskArr) return undefined

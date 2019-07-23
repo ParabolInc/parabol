@@ -1,7 +1,8 @@
 import {AtlassianProviderRow_viewer} from '__generated__/AtlassianProviderRow_viewer.graphql'
 import jwtDecode from 'jwt-decode'
 import React, {useEffect} from 'react'
-import styled, {keyframes} from 'react-emotion'
+import styled from '@emotion/styled';
+import { keyframes } from '@emotion/core';
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import FlatButton from 'universal/components/FlatButton'
@@ -96,7 +97,7 @@ const fadeIn = keyframes`
 	}
 `
 
-const SiteAvatar = styled('img')(({idx}: {idx: number}) => ({
+const SiteAvatar = styled('img')<{idx: number}>(({idx}) => ({
   animation: `${fadeIn} 300ms ${DECELERATE} ${idx * 50}ms forwards`,
   animationName: fadeIn,
   animationDuration: '300ms',
@@ -173,7 +174,7 @@ const AtlassianProviderRow = (props: Props) => {
               <LoadingComponent spinnerSize={24} height={24} showAfter={0} />
             )}
           </SiteList>
-          <MenuButton onClick={togglePortal} innerRef={originRef}>
+          <MenuButton onClick={togglePortal} ref={originRef}>
             <StyledIcon>more_vert</StyledIcon>
           </MenuButton>
           {menuPortal(

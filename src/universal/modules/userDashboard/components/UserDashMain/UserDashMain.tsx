@@ -1,5 +1,5 @@
 import React, {lazy, Suspense} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import Helmet from 'react-helmet'
 import {matchPath, Route, RouteComponentProps, Switch, withRouter} from 'react-router'
 import DashHeader from 'universal/components/Dashboard/DashHeader'

@@ -1,6 +1,6 @@
 import {RemoveTeamMemberModal_teamMember} from '__generated__/RemoveTeamMemberModal_teamMember.graphql'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import PrimaryButton from 'universal/components/PrimaryButton'
 import IconLabel from 'universal/components/IconLabel'

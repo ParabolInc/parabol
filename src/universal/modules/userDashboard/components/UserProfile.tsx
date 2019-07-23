@@ -1,5 +1,5 @@
 import React, {Component, lazy} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import Helmet from 'react-helmet'
 import {createFragmentContainer, graphql} from 'react-relay'
 import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar'

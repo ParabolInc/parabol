@@ -171,13 +171,13 @@ export default (ComposedComponent) => {
   return WithCoordsV2
 }
 
-export type WithCoordsProps = {
+export interface WithCoordsProps {
   coords: {
     left?: number,
     right?: number,
     top?: number,
     bottom?: number
-  },
-  setModalRef: (component: any) => void,
-  setOriginRef: (component: any) => void
+  };
+  setModalRef: (component: any) => void;
+  setOriginRef: (component: any) => void;
 }

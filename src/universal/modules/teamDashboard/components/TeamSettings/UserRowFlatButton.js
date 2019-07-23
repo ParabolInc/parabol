@@ -1,4 +1,4 @@
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import appTheme from 'universal/styles/theme/theme'
 
 const UserRowFlatButton = styled('div')({

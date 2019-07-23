@@ -19,7 +19,7 @@ interface Props {
   tasks: TaskColumnAddTask_tasks
   myTeamMemberId?: string
   teamMemberFilterId: string
-  teams: ReadonlyArray<Pick<ITeam, 'id' | 'name'>>
+  teams: readonly Pick<ITeam, 'id' | 'name'>[]
 }
 
 const TaskColumnAddTask = (props: Props) => {

@@ -11,7 +11,7 @@ import lazyPreload from 'universal/utils/lazyPreload'
 interface Props {
   status: TaskStatusEnum
   sortOrder: number
-  teams: ReadonlyArray<Pick<ITeam, 'id' | 'name'>>
+  teams: readonly Pick<ITeam, 'id' | 'name'>[]
 }
 
 const SelectTeamDropdown = lazyPreload(() =>

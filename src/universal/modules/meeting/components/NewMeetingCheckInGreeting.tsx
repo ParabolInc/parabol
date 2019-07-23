@@ -1,7 +1,7 @@
 import {NewMeetingCheckInGreeting_checkInGreeting} from '__generated__/NewMeetingCheckInGreeting_checkInGreeting.graphql'
 import {NewMeetingCheckInGreeting_teamMember} from '__generated__/NewMeetingCheckInGreeting_teamMember.graphql'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 
 const GreetingBlock = styled('div')({
@@ -16,7 +16,7 @@ const GreetingSpan = styled('span')({
   fontStyle: 'italic'
 })
 
-type Props = {
+interface Props {
   teamMember: NewMeetingCheckInGreeting_teamMember
   checkInGreeting: NewMeetingCheckInGreeting_checkInGreeting
 }

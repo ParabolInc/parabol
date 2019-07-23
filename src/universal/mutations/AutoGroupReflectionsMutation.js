@@ -24,7 +24,7 @@ graphql`
   }
 `
 
-export const autoGroupReflectionsTeamUpdater = (payload, {atmosphere, store}) => {
+export const autoGroupReflectionsTeamUpdater = (payload, {store}) => {
   const reflections = payload.getLinkedRecords('reflections')
   reflections.forEach((reflection) => {
     const baseRecord = getBaseRecord(store, reflection.getValue('id'))

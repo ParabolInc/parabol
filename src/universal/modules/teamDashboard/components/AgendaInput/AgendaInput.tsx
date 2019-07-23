@@ -23,7 +23,7 @@ const AgendaInputBlock = styled('div')({
   position: 'relative'
 })
 
-const InputForm = styled('form')(({disabled}: {disabled: boolean}) => ({
+const InputForm = styled('form')<{disabled: boolean}>(({disabled}) => ({
   backgroundColor: 'transparent',
   color: appTheme.palette.cool,
   fontSize: appTheme.typography.s3,
