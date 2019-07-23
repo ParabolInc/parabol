@@ -41,7 +41,7 @@ export default class Auth0ClientManager {
     this.fetch = window.fetch.bind(window)
   }
 
-  async post<T> (url: string, payload: object, initOptions: RequestInit = {}): Promise<T> {
+  async post<T> (url: string, payload: object, initOptions: RequestInit = {}, ignoreResult?: boolean): Promise<T> {
     const res = await this.fetch(url, {
       method: 'POST',
       headers: {
@@ -50,8 +50,7 @@ export default class Auth0ClientManager {
       ...initOptions,
       body: JSON.stringify(payload)
     })
-    // the text is for change password
-    return res.bodyUsed ? res.json() : res.text()
+    return ignoreResult ? undefined : res.json()
   }
 
   signup (email: string, password: string) {
@@ -157,6 +156,6 @@ export default class Auth0ClientManager {
       client_id: this.clientId,
       email,
       connection: Auth0ClientManager.CONNECTION
-    })
+    }, undefined, true)
   }
 }
