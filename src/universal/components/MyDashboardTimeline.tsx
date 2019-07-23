@@ -1,6 +1,6 @@
 import {MyDashboardTimeline_viewer} from '__generated__/MyDashboardTimeline_viewer.graphql'
 import React, {Suspense} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import TimelineFeedList from 'universal/components/TimelineFeedList'
 import TimelineSuggestedAction from 'universal/components/TimelineSuggestedAction'

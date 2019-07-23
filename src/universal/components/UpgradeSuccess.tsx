@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import ui from 'universal/styles/ui'
 import {PRO_LABEL} from 'universal/utils/constants'
 import RaisedButton from 'universal/components/RaisedButton'
@@ -48,11 +48,11 @@ const ModalButton = styled(RaisedButton)({
   width: '22.5rem'
 })
 
-type Props = {
+interface Props {
   handleClose: () => void
 }
 
-type State = {
+interface State {
   active: boolean
 }
 

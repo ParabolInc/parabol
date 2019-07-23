@@ -1,4 +1,4 @@
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {TransitionStatus} from 'universal/hooks/useTransition'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {Radius, ZIndex} from 'universal/types/constEnums'
@@ -29,7 +29,7 @@ const Text = styled('div')({
   padding: '6px 8px'
 })
 
-const MessageStyles = styled('div')(({status}: {status: TransitionStatus}) => ({
+const MessageStyles = styled('div')<{status: TransitionStatus}>(({status}) => ({
   alignItems: 'center',
   background: PALETTE.BACKGROUND_DARK_OPAQUE,
   borderRadius: Radius.SNACKBAR,

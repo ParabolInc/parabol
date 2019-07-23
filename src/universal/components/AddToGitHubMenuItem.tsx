@@ -5,7 +5,7 @@ import MenuItemComponentAvatar from 'universal/components/MenuItemComponentAvata
 import MenuItemLabel from 'universal/components/MenuItemLabel'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import {MenuMutationProps} from 'universal/hooks/useMutationProps'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {ICON_SIZE} from 'universal/styles/typographyV2'
 import GitHubClientManager from 'universal/utils/GitHubClientManager'
 

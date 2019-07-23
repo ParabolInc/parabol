@@ -1,6 +1,6 @@
 import ms from 'ms'
 import React, {useEffect, useMemo} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {ActionMeetingPhaseProps} from 'universal/components/ActionMeeting'
 import BottomNavControl from 'universal/components/BottomNavControl'
@@ -37,7 +37,9 @@ interface Props extends ActionMeetingPhaseProps {
 }
 
 const ActionMeetingAgendaItemsHelpMenu = lazyPreload(async () =>
-  import(/* webpackChunkName: 'ActionMeetingAgendaItemsHelpMenu' */ 'universal/components/MeetingHelp/ActionMeetingAgendaItemsHelpMenu')
+  import(
+    /* webpackChunkName: 'ActionMeetingAgendaItemsHelpMenu' */ 'universal/components/MeetingHelp/ActionMeetingAgendaItemsHelpMenu'
+  )
 )
 
 const AgendaItemsWrapper = styled('div')({

@@ -1,4 +1,5 @@
-import styled, {keyframes} from 'react-emotion'
+import styled from '@emotion/styled'
+import {keyframes} from '@emotion/core'
 import FlatButton, {FlatButtonProps} from 'universal/components/FlatButton'
 
 const BounceKeyframes = keyframes`
@@ -24,7 +25,7 @@ interface Props extends FlatButtonProps {
   isBouncing?: boolean
 }
 
-const BottomNavControl = styled(FlatButton)(({isBouncing}: Props) => ({
+const BottomNavControl = styled(FlatButton)<Props>(({isBouncing}) => ({
   animation: isBouncing ? `${BounceKeyframes} 2s infinite` : undefined,
   border: 0,
   borderRadius: 0,

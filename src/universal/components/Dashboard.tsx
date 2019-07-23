@@ -1,6 +1,6 @@
 import {Dashboard_viewer} from '__generated__/Dashboard_viewer.graphql'
 import React, {lazy} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {Route, Switch} from 'react-router'
 import DashSidebar from './Dashboard/DashSidebar'
@@ -9,13 +9,17 @@ import ResponsiveDashSidebar from 'universal/components/ResponsiveDashSidebar'
 import useSidebar from 'universal/hooks/useSidebar'
 
 const UserDashboard = lazy(() =>
-  import(/* webpackChunkName: 'UserDashboard' */ 'universal/modules/userDashboard/components/UserDashboard/UserDashboard')
+  import(
+    /* webpackChunkName: 'UserDashboard' */ 'universal/modules/userDashboard/components/UserDashboard/UserDashboard'
+  )
 )
 const TeamRoot = lazy(() =>
   import(/* webpackChunkName: 'TeamRoot' */ 'universal/modules/teamDashboard/components/TeamRoot')
 )
 const NewTeam = lazy(() =>
-  import(/* webpackChunkName: 'NewTeamRoot' */ 'universal/modules/newTeam/containers/NewTeamForm/NewTeamRoot')
+  import(
+    /* webpackChunkName: 'NewTeamRoot' */ 'universal/modules/newTeam/containers/NewTeamForm/NewTeamRoot'
+  )
 )
 
 interface Props {

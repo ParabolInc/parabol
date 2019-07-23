@@ -1,5 +1,5 @@
 import React, {Component, lazy, Suspense} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import RaisedButton from 'universal/components/RaisedButton'
 import StyledError from 'universal/components/StyledError'
 
@@ -54,7 +54,7 @@ class AvatarInput extends Component<Props> {
               accept='image/*'
               onChange={this.onChange}
               type='file'
-              innerRef={this.inputRef}
+              ref={this.inputRef}
             />
           </form>
         </Control>

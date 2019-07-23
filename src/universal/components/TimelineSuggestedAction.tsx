@@ -1,6 +1,6 @@
 import {TimelineSuggestedAction_viewer} from '__generated__/TimelineSuggestedAction_viewer.graphql'
 import React, {lazy} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import DelayUnmount from 'universal/components/DelayUnmount'
 
@@ -10,19 +10,29 @@ interface Props {
 
 const lookup = {
   SuggestedActionInviteYourTeam: lazy(() =>
-    import(/* webpackChunkName: 'SuggestedActionInviteYourTeam' */ 'universal/components/SuggestedActionInviteYourTeam')
+    import(
+      /* webpackChunkName: 'SuggestedActionInviteYourTeam' */ 'universal/components/SuggestedActionInviteYourTeam'
+    )
   ),
   SuggestedActionTryTheDemo: lazy(() =>
-    import(/* webpackChunkName: 'SuggestedActionTryTheDemo' */ 'universal/components/SuggestedActionTryTheDemo')
+    import(
+      /* webpackChunkName: 'SuggestedActionTryTheDemo' */ 'universal/components/SuggestedActionTryTheDemo'
+    )
   ),
   SuggestedActionTryRetroMeeting: lazy(() =>
-    import(/* webpackChunkName: 'SuggestedActionTryRetroMeeting' */ 'universal/components/SuggestedActionTryRetroMeeting')
+    import(
+      /* webpackChunkName: 'SuggestedActionTryRetroMeeting' */ 'universal/components/SuggestedActionTryRetroMeeting'
+    )
   ),
   SuggestedActionTryActionMeeting: lazy(() =>
-    import(/* webpackChunkName: 'SuggestedActionTryActionMeeting' */ 'universal/components/SuggestedActionTryActionMeeting')
+    import(
+      /* webpackChunkName: 'SuggestedActionTryActionMeeting' */ 'universal/components/SuggestedActionTryActionMeeting'
+    )
   ),
   SuggestedActionCreateNewTeam: lazy(() =>
-    import(/* webpackChunkName: 'SuggestedActionCreateNewTeam' */ 'universal/components/SuggestedActionCreateNewTeam')
+    import(
+      /* webpackChunkName: 'SuggestedActionCreateNewTeam' */ 'universal/components/SuggestedActionCreateNewTeam'
+    )
   )
 }
 

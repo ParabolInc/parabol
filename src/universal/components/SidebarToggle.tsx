@@ -1,6 +1,6 @@
 import React from 'react'
 import IconButton from 'universal/components/IconButton'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {BaseButtonProps} from 'universal/components/BaseButton'
 

@@ -1,6 +1,6 @@
 import {TimelineRightDrawer_viewer} from '__generated__/TimelineRightDrawer_viewer.graphql'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import ErrorBoundary from 'universal/components/ErrorBoundary'
 import TimelinePriorityTasks from 'universal/components/TimelinePriorityTasks'

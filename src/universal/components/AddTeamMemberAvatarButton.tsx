@@ -1,7 +1,7 @@
 import {AddTeamMemberAvatarButton_team} from '__generated__/AddTeamMemberAvatarButton_team.graphql'
 import {AddTeamMemberAvatarButton_teamMembers} from '__generated__/AddTeamMemberAvatarButton_teamMembers.graphql'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import Icon from 'universal/components/Icon'
 import OutlinedButton from 'universal/components/OutlinedButton'
@@ -19,7 +19,7 @@ interface Props extends WithAtmosphereProps {
   teamMembers: AddTeamMemberAvatarButton_teamMembers
 }
 
-const AddButton = styled(OutlinedButton)(
+const AddButton = styled(OutlinedButton)<{isMeeting: boolean}>(
   {
     fontSize: 24,
     fontWeight: 400,
@@ -29,7 +29,7 @@ const AddButton = styled(OutlinedButton)(
     padding: 0,
     width: 32
   },
-  ({isMeeting}: {isMeeting: boolean}) =>
+  ({isMeeting}) =>
     isMeeting && {
       height: 32,
       maxWidth: 32,
@@ -47,8 +47,8 @@ const AddButton = styled(OutlinedButton)(
     }
 )
 
-const StyledIcon = styled(Icon)(
-  ({isMeeting}: {isMeeting: boolean}) =>
+const StyledIcon = styled(Icon)<{isMeeting: boolean}>(
+  ({isMeeting}) =>
     isMeeting && {
       fontSize: 24,
       [meetingAvatarMediaQueries[1]]: {

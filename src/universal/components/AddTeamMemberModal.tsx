@@ -1,6 +1,6 @@
 import {AddTeamMemberModal_team} from '__generated__/AddTeamMemberModal_team.graphql'
 import React, {Component} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import PrimaryButton from 'universal/components/PrimaryButton'
 import parseEmailAddressList from 'universal/utils/parseEmailAddressList'
@@ -26,9 +26,9 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
 }
 
 interface State {
-  invitees: Array<string>
-  pendingSuccessfulInvitations: Array<string>
-  successfulInvitations: null | Array<string>
+  invitees: string[]
+  pendingSuccessfulInvitations: string[]
+  successfulInvitations: null | string[]
   rawInvitees: string
 }
 
@@ -55,10 +55,10 @@ const ShareableLink = styled('div')({
 class AddTeamMemberModal extends Component<Props, State> {
   _mounted = true
   state: State = {
-    pendingSuccessfulInvitations: [] as Array<string>,
+    pendingSuccessfulInvitations: [] as string[],
     successfulInvitations: null,
     rawInvitees: '',
-    invitees: [] as Array<string>
+    invitees: [] as string[]
   }
 
   onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -66,7 +66,7 @@ class AddTeamMemberModal extends Component<Props, State> {
     const rawInvitees = e.target.value
     const parsedInvitees = parseEmailAddressList(rawInvitees)
     const allInvitees = parsedInvitees
-      ? (parsedInvitees.map(({address}) => address) as Array<string>)
+      ? (parsedInvitees.map(({address}) => address) as string[])
       : this.state.invitees
     const teamEmailSet = new Set(teamMembers.map(({email}) => email))
     const uniqueInvitees = Array.from(new Set(allInvitees))

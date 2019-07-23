@@ -1,7 +1,7 @@
 import {TimelinePriorityTasks_viewer} from '__generated__/TimelinePriorityTasks_viewer.graphql'
 import memoize from 'micro-memoize'
 import React, {Component} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import sortOrderBetween from 'universal/dnd/sortOrderBetween'
 import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation'

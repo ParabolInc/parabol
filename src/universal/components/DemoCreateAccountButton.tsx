@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import SecondaryButton from 'universal/components/SecondaryButton'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import {meetingAvatarMediaQueries} from 'universal/styles/meeting'

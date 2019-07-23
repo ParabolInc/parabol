@@ -1,6 +1,6 @@
 import {SuggestedActionInviteYourTeam_suggestedAction} from '__generated__/SuggestedActionInviteYourTeam_suggestedAction.graphql'
 import React, {lazy} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import LoadableModal from 'universal/components/LoadableModal'
 import {PALETTE} from '../styles/paletteV2'

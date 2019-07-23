@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 import {PALETTE} from 'universal/styles/paletteV2'
@@ -157,7 +157,7 @@ class EditableText extends Component<Props, State> {
       <Form onSubmit={this.onSubmit}>
         <Input
           autoFocus
-          innerRef={this.inputRef}
+          ref={this.inputRef}
           maxLength={maxLength}
           onBlur={this.onSubmit}
           onChange={this.onChange}

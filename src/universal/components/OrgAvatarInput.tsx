@@ -1,6 +1,6 @@
 import sanitizeSVG from '@mattkrick/sanitize-svg'
 import React, {Component} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import Avatar from 'universal/components/Avatar/Avatar'
 import AvatarInput from 'universal/components/AvatarInput'
 import Type from 'universal/components/Type/Type'

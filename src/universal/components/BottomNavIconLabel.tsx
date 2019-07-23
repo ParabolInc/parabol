@@ -1,5 +1,5 @@
 import React, {forwardRef} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import Icon from 'universal/components/Icon'
 import {meetingBottomBarHeight} from 'universal/styles/meeting'
 import ui from 'universal/styles/ui'
@@ -20,7 +20,7 @@ const Inner = styled('div')({
   padding: '.5rem .75rem .25rem'
 })
 
-const StyledIcon = styled(Icon)(({iconColor}: {iconColor?: string}) => ({
+const StyledIcon = styled(Icon)<{iconColor?: string}>(({iconColor}) => ({
   color: iconColor ? ui.palette[iconColor] : 'inherit'
 }))
 
@@ -34,7 +34,7 @@ const Label = styled('div')({
 const BottomNavIconLabel = forwardRef((props: Props, ref: any) => {
   const {className, icon, iconColor, label} = props
   return (
-    <Inner className={className} innerRef={ref}>
+    <Inner className={className} ref={ref}>
       <StyledIcon iconColor={iconColor}>{icon}</StyledIcon>
       <Label>{label}</Label>
     </Inner>

@@ -10,7 +10,7 @@ import React, {
   useRef,
   useState
 } from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import MenuItemAnimation from 'universal/components/MenuItemAnimation'
 import {PortalStatus} from 'universal/hooks/usePortal'
 
@@ -181,7 +181,7 @@ const Menu = forwardRef((props: Props, ref: any) => {
       tabIndex={-1}
       onMouseDown={handleMouseDown}
       onKeyDown={handleKeyDown}
-      innerRef={menuRef}
+      ref={menuRef}
     >
       {makeSmartChildren(children)}
     </MenuStyles>

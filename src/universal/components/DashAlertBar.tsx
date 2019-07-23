@@ -1,5 +1,5 @@
 import React, {ReactNode} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import useScrollY from 'universal/hooks/useScrollY'
 import {PALETTE} from '../styles/paletteV2'
 
@@ -13,7 +13,7 @@ const getTranslate = (y: number) =>
     ? ((y - ALERT_HEIGHT) * (ALERT_HEIGHT * 2 + ALERT_TOP_PADDING)) / ALERT_HEIGHT
     : y + ALERT_TOP_PADDING
 
-const Alert = styled('div')(
+const Alert = styled('div')<{scrollY: number}>(
   {
     backgroundColor: PALETTE.BACKGROUND_RED,
     color: '#fff',
@@ -22,7 +22,7 @@ const Alert = styled('div')(
     transition: 'opacity 200ms',
     width: '100%'
   },
-  ({scrollY}: {scrollY: number}) =>
+  ({scrollY}) =>
     scrollY > ALERT_HEIGHT && {
       alignSelf: 'center',
       borderRadius: '4em',

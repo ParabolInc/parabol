@@ -1,4 +1,4 @@
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {Link} from 'react-router-dom'
 import {PALETTE} from '../styles/paletteV2'
 

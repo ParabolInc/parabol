@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {typeScale} from 'universal/styles/theme/typography'
 import elevation from 'universal/styles/elevation'
 import {PALETTE} from 'universal/styles/paletteV2'

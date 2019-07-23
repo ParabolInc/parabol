@@ -1,6 +1,6 @@
 import {DashAlertOverLimit_viewer} from '__generated__/DashAlertOverLimit_viewer.graphql'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import DashAlertBar from 'universal/components/DashAlertBar'
 import DashAlertLink from 'universal/components/DashAlertLink'
@@ -23,9 +23,12 @@ const DashAlertOverLimit = (props: Props) => {
   const emailStr = extractedEmails ? extractedEmails[0] : null
   const [prefix, suffix] = emailStr ? overLimitCopy.split(emailStr) : [overLimitCopy, '']
 
+
   return (
     <DashAlertBar>
       <MessageBlock>{prefix}</MessageBlock>
+      {/*
+      // @ts-ignore */}
       <StyledAnchor
         rel='noopener noreferrer'
         target='_blank'

@@ -1,9 +1,9 @@
 import React, {forwardRef} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import ui from 'universal/styles/ui'
 import BaseButton, {BaseButtonProps} from 'universal/components/BaseButton'
 
-const StyledBaseButton = styled(BaseButton)(({palette = 'gray'}: {palette?: string}) => {
+const StyledBaseButton = styled(BaseButton)<{palette?: string}>(({palette = 'gray'}) => {
   const backgroundColor = ui.palette[palette]
   const color = ui.buttonLightThemes.includes(palette) ? ui.palette.dark : ui.palette.white
   return {

@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import patternTile from '../styles/theme/images/icon-pattern-tile.svg'
 import {DASH_TIMELINE} from 'universal/types/constEnums'
 
@@ -43,7 +43,7 @@ const FullBackground = styled('div')({
   position: 'absolute'
 })
 
-const ColorBackground = styled(FullBackground)(({backgroundColor}: {backgroundColor: string}) => ({
+const ColorBackground = styled(FullBackground)<{backgroundColor: string}>(({backgroundColor}) => ({
   backgroundImage: 'none',
   backgroundColor,
   opacity: 0.5

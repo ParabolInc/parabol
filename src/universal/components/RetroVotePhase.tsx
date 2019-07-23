@@ -1,6 +1,6 @@
 import {RetroVotePhase_team} from '__generated__/RetroVotePhase_team.graphql'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import BottomNavControl from 'universal/components/BottomNavControl'
 import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
@@ -82,7 +82,7 @@ const Label = styled(LabelHeading)({
   }
 })
 
-const CheckIcon = styled(Icon)(({isDark}: {isDark: boolean | undefined | null}) => ({
+const CheckIcon = styled(Icon)<{isDark: boolean | undefined | null}>(({isDark}) => ({
   color: ui.palette.warm,
   display: 'block',
   fontSize: MD_ICONS_SIZE_18,
@@ -134,7 +134,9 @@ const VoteHelpMenu = lazyPreload(async () =>
   import(/* webpackChunkName: 'VoteHelpMenu' */ 'universal/components/MeetingHelp/VoteHelpMenu')
 )
 const DemoVoteHelpMenu = lazyPreload(async () =>
-  import(/* webpackChunkName: 'DemoVoteHelpMenu' */ 'universal/components/MeetingHelp/DemoVoteHelpMenu')
+  import(
+    /* webpackChunkName: 'DemoVoteHelpMenu' */ 'universal/components/MeetingHelp/DemoVoteHelpMenu'
+  )
 )
 
 const RetroVotePhase = (props: Props) => {

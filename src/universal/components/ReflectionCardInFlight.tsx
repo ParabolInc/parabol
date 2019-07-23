@@ -1,7 +1,7 @@
 import {ReflectionCardInFlight_reflection} from '__generated__/ReflectionCardInFlight_reflection.graphql'
 import {convertFromRaw, EditorState} from 'draft-js'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
 import {Coords} from 'types/animations'
 import {

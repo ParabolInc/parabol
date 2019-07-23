@@ -1,5 +1,5 @@
 import React, {useCallback, useRef} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {PALETTE} from 'universal/styles/paletteV2'
 
 interface Props {
@@ -37,7 +37,7 @@ const TaskFooterIntegrateMenuSearch = (props: Props) => {
   return (
     <Input
       autoFocus
-      innerRef={ref}
+      ref={ref}
       name='search'
       onBlur={onBlur}
       onChange={onChange}

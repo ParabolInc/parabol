@@ -1,4 +1,4 @@
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import tinycolor from 'tinycolor2'
 import ui from 'universal/styles/ui'
 import BaseButton from 'universal/components/BaseButton'

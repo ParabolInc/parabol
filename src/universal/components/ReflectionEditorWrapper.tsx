@@ -1,12 +1,12 @@
-import {Editor, EditorState, getDefaultKeyBinding} from 'draft-js'
-import React, {PureComponent, Suspense} from 'react'
+import {DraftHandleValue, Editor, EditorState, getDefaultKeyBinding} from 'draft-js'
+import React, {PureComponent, Ref, Suspense} from 'react'
 import 'universal/components/TaskEditor/Draft.css'
 import withKeyboardShortcuts from 'universal/components/TaskEditor/withKeyboardShortcuts'
 import withMarkdown from 'universal/components/TaskEditor/withMarkdown'
 import appTheme from 'universal/styles/theme/appTheme'
 import {textTags} from 'universal/utils/constants'
 import entitizeText from 'universal/utils/draftjs/entitizeText'
-import styled, {css} from 'react-emotion'
+import styled from '@emotion/styled'
 import {
   cardContentFontSize,
   cardContentLineHeight,
@@ -17,34 +17,36 @@ import isRichDraft from 'universal/utils/draftjs/isRichDraft'
 import lazyPreload from 'universal/utils/lazyPreload'
 import isAndroid from 'universal/utils/draftjs/isAndroid'
 
-type Props = {
-  ariaLabel: string,
-  autoFocusOnEmpty: boolean,
-  editorState: Object,
-  handleBeforeInput: () => void,
-  handleChange: () => void,
-  handleKeyCommand: () => void,
-  handleReturn: () => void,
-  isBlurred: boolean,
-  keyBindingFn: () => void,
-  placeholder: string,
-  onBlur: () => void,
-  onFocus: () => void,
-  readOnly: boolean,
-  removeModal?: () => void,
-  renderModal?: () => void,
-  setEditorState: () => void,
-  innerRef: () => void
+interface Props {
+  ariaLabel: string
+  autoFocusOnEmpty: boolean
+  editorState: EditorState
+  handleBeforeInput: (char: string) => DraftHandleValue
+  handleChange: (editorState: EditorState) => void
+  handleKeyCommand: (command: string) => DraftHandleValue
+  handleReturn: (e: React.KeyboardEvent) => DraftHandleValue
+  isBlurred: boolean
+  keyBindingFn: (e: React.KeyboardEvent) => string
+  placeholder: string
+  onBlur: () => void
+  onFocus: () => void
+  readOnly: boolean
+  removeModal?: () => void
+  renderModal?: () => null
+  setEditorState: (editorState: EditorState) => void
+  innerRef: (c: any) => void
+  handleKeyDownFallback: () => void
+  userSelect: string
 }
 
-const editorBlockquote = css({
+const editorBlockquote = {
   fontStyle: 'italic',
   borderLeft: `.25rem ${appTheme.palette.mid40a} solid`,
   margin: '1rem 0',
   padding: '0 .5rem'
-})
+}
 
-const codeBlock = css({
+const codeBlock = {
   backgroundColor: appTheme.palette.mid10a,
   color: appTheme.palette.warm,
   fontFamily: appTheme.typography.monospace,
@@ -52,9 +54,9 @@ const codeBlock = css({
   lineHeight: appTheme.typography.s6,
   margin: '0',
   padding: '0 .5rem'
-})
+}
 
-const EditorStyles = styled('div')(({useFallback, userSelect}) => ({
+const EditorStyles = styled('div')(({useFallback, userSelect}: any) => ({
   color: appTheme.palette.dark,
   fontSize: cardContentFontSize,
   lineHeight: useFallback ? '14px' : cardContentLineHeight,
@@ -64,13 +66,17 @@ const EditorStyles = styled('div')(({useFallback, userSelect}) => ({
   position: 'relative',
   userSelect,
   width: '100%'
-}))
+})) as any
 
 const AndroidEditorFallback = lazyPreload(() =>
-  import(/* webpackChunkName: 'AndroidEditorFallback' */ 'universal/components/AndroidEditorFallback')
+  import(
+    /* webpackChunkName: 'AndroidEditorFallback' */ 'universal/components/AndroidEditorFallback'
+  )
 )
 
 class ReflectionEditorWrapper extends PureComponent<Props> {
+  editorRef: Ref<HTMLDivElement> = null
+  entityPasteStart?: {anchorOffset: number; anchorKey: string} = undefined
   setEditorRef = (c) => {
     const {innerRef} = this.props
     if (innerRef) {
@@ -80,13 +86,14 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
   }
 
   blockStyleFn = (contentBlock) => {
+    // TODO complete emtotion migration to provider a string className
     const type = contentBlock.getType()
     if (type === 'blockquote') {
       return editorBlockquote
     } else if (type === 'code-block') {
       return codeBlock
     }
-    return undefined
+    return ''
   }
 
   handleChange = (editorState) => {
@@ -125,7 +132,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     if (handleKeyCommand) {
       return handleKeyCommand(command)
     }
-    return undefined
+    return 'not-handled'
   }
 
   keyBindingFn = (e) => {
@@ -139,7 +146,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     if (e.key === 'Escape') {
       e.preventDefault()
       this.removeModal()
-      return undefined
+      return null
     }
     return getDefaultKeyBinding(e)
   }
@@ -149,7 +156,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     if (handleBeforeInput) {
       return handleBeforeInput(char)
     }
-    return undefined
+    return 'not-handled'
   }
 
   handlePastedText = (text) => {
@@ -165,7 +172,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
         }
       }
     }
-    return 'not-handled'
+    return 'not-handled' as 'not-handled'
   }
 
   removeModal = () => {
@@ -190,7 +197,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     const useFallback = isAndroid && !readOnly
     const showFallback = useFallback && !isRichDraft(editorState)
     return (
-      <EditorStyles userSelect={userSelect} useFallback={useFallback}>
+      <EditorStyles useFallback={useFallback} userSelect={userSelect}>
         {showFallback ? (
           <Suspense fallback={<div />}>
             <AndroidEditorFallback
@@ -203,10 +210,10 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
             />
           </Suspense>
         ) : (
+          // @ts-ignore
           <Editor
             spellCheck
             ariaLabel={ariaLabel}
-            blockStyleFn={this.blockStyleFn}
             editorState={editorState}
             handleBeforeInput={this.handleBeforeInput}
             handleKeyCommand={this.handleKeyCommand}

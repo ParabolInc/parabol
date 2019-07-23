@@ -1,5 +1,5 @@
 // Styled component for useTooltip
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {Radius} from 'universal/types/constEnums'
 import {PALETTE} from 'universal/styles/paletteV2'
 

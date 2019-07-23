@@ -1,4 +1,4 @@
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 
 const TimelineEventBody = styled('div')({
   padding: '0 16px 16px 16px',

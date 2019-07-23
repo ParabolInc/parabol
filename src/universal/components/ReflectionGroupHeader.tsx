@@ -1,6 +1,6 @@
 import React, {Ref, RefObject} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import ReflectionGroupTitleEditor from 'universal/components/ReflectionGroup/ReflectionGroupTitleEditor'
 import {GROUP, VOTE} from 'universal/utils/constants'
 import ReflectionGroupVoting from 'universal/components/ReflectionGroupVoting'
@@ -10,7 +10,7 @@ import {ReflectionGroupHeader_reflectionGroup} from '__generated__/ReflectionGro
 import {ReflectionGroupHeader_meeting} from '__generated__/ReflectionGroupHeader_meeting.graphql'
 import plural from 'universal/utils/plural'
 
-type Props = {
+interface Props {
   meeting: ReflectionGroupHeader_meeting
   reflectionGroup: ReflectionGroupHeader_reflectionGroup
   innerRef: Ref<any>
@@ -47,7 +47,7 @@ const ReflectionGroupHeader = (props: Props) => {
     reflections.length > 1 || phaseType !== GROUP || titleIsUserDefined || isEditingSingleCardTitle
   if (!showHeader) return null
   return (
-    <GroupHeader innerRef={innerRef}>
+    <GroupHeader ref={innerRef}>
       <ReflectionGroupTitleEditor
         isExpanded={isExpanded}
         reflectionGroup={reflectionGroup}

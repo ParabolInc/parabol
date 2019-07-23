@@ -1,7 +1,7 @@
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 
-const DelayUnmountShrinkAndScale = styled('div')(
-  ({isExiting, duration}: {isExiting: boolean; duration: number}) => ({
+const DelayUnmountShrinkAndScale = styled('div')<{isExiting: boolean; duration: number}>(
+  ({isExiting, duration}) => ({
     height: isExiting ? 0 : '100%',
     opacity: isExiting ? 0 : 1,
     // hidden means no box shadow

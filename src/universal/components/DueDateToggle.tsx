@@ -1,7 +1,7 @@
 import {DueDateToggle_task} from '__generated__/DueDateToggle_task.graphql'
 import ms from 'ms'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import tinycolor from 'tinycolor2'
 import CardButton from 'universal/components/CardButton'
@@ -118,8 +118,10 @@ const getDateInfo = (dueDate) => {
 }
 
 const DueDatePicker = lazyPreload(() =>
-  import(/* webpackChunkName: 'DueDatePicker' */
-  'universal/components/DueDatePicker')
+  import(
+    /* webpackChunkName: 'DueDatePicker' */
+    'universal/components/DueDatePicker'
+  )
 )
 
 const DueDateToggle = (props: Props) => {

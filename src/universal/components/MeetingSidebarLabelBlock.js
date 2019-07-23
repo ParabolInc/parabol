@@ -1,6 +1,6 @@
 import ui from 'universal/styles/ui'
 import {meetingSidebarGutterInner} from 'universal/styles/meeting'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 
 const MeetingSidebarLabelBlock = styled('div')({
   borderTop: `.0625rem solid ${ui.palette.light}`,

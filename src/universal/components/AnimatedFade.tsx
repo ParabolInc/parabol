@@ -2,7 +2,7 @@
 
 import React, {Component, ReactNode} from 'react'
 import {CSSTransition} from 'react-transition-group'
-import {css} from 'react-emotion'
+import {ClassNames} from '@emotion/core'
 
 interface Props extends CSSTransition {
   appear?: boolean
@@ -20,46 +20,53 @@ class AnimatedFade extends Component<Props> {
   render () {
     const {children, duration = 100, slide = 32, ...props} = this.props
 
-    const enter = css({
-      opacity: 0,
-      transform: `translate3d(0, ${slide}px, 0)`
-    })
-    const enterActive = css({
-      opacity: '1 !important' as any,
-      transform: 'translate3d(0, 0, 0) !important',
-      transition: `all ${duration}ms ease-in !important`
-    })
+    const classNames = (css) => {
+      const enter = css({
+        opacity: 0,
+        transform: `translate3d(0, ${slide}px, 0)`
+      })
+      const enterActive = css({
+        opacity: '1 !important' as any,
+        transform: 'translate3d(0, 0, 0) !important',
+        transition: `all ${duration}ms ease-in !important`
+      })
 
-    const exit = css({
-      opacity: 1,
-      transform: 'translate3d(0, 0, 0)'
-    })
+      const exit = css({
+        opacity: 1,
+        transform: 'translate3d(0, 0, 0)'
+      })
 
-    const exitActive = css({
-      opacity: '0 !important' as any,
-      transform: `translate3d(0, ${-slide}px, 0) !important`,
-      transition: `all ${duration}ms ease-in !important`
-    })
-
-    const classNames = {
-      appear: enter,
-      appearActive: enterActive,
-      enter,
-      enterActive,
-      exit,
-      exitActive
+      const exitActive = css({
+        opacity: '0 !important' as any,
+        transform: `translate3d(0, ${-slide}px, 0) !important`,
+        transition: `all ${duration}ms ease-in !important`
+      })
+      return {
+        appear: enter,
+        appearActive: enterActive,
+        enter,
+        enterActive,
+        exit,
+        exitActive
+      }
     }
     return (
-      <CSSTransition
-        {...props}
-        classNames={classNames}
-        timeout={{
-          enter: duration,
-          exit: duration
+      <ClassNames>
+        {({css}) => {
+          return (
+            <CSSTransition
+              {...props}
+              classNames={classNames(css)}
+              timeout={{
+                enter: duration,
+                exit: duration
+              }}
+            >
+              {children}
+            </CSSTransition>
+          )
         }}
-      >
-        {children}
-      </CSSTransition>
+      </ClassNames>
     )
   }
 }

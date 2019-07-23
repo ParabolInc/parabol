@@ -1,5 +1,5 @@
 import React, {Component, ReactNode} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import ResizeObserverPolyfill from 'resize-observer-polyfill'
 
 interface GridProps {
@@ -8,7 +8,7 @@ interface GridProps {
   maxCols?: number
 }
 
-const Grid = styled('div')(({colWidth, gap, maxCols}: GridProps) => ({
+const Grid = styled('div')<GridProps>(({colWidth, gap, maxCols}) => ({
   display: 'grid',
   gridColumnGap: gap,
   gridAutoRows: gap / 2,
@@ -20,7 +20,7 @@ type RenderProp = (setItemRef: SetItemRef) => ReactNode
 
 interface Props extends GridProps {
   children: RenderProp
-  items?: Array<any> | ReadonlyArray<any>
+  items?: any[] | readonly any[]
 }
 
 interface ItemRefs {
@@ -88,7 +88,7 @@ class MasonryCSSGrid extends Component<Props> {
   render () {
     const {children, gap, colWidth, maxCols} = this.props
     return (
-      <Grid gap={gap} colWidth={colWidth} maxCols={maxCols} innerRef={this.gridRef}>
+      <Grid gap={gap} colWidth={colWidth} maxCols={maxCols} ref={this.gridRef}>
         {children(this.setItemRef)}
       </Grid>
     )

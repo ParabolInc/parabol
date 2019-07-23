@@ -1,9 +1,9 @@
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 
 const Overflow = styled('div')({
   flex: 1,
   overflowY: 'auto',
-  '-webkit-overflow-scrolling': 'touch',
+  webkitOverflowScrolling: 'touch',
   width: '100%'
 })
 

@@ -5,7 +5,7 @@ import ms from 'ms'
  *
  */
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import BottomNavControl from 'universal/components/BottomNavControl'
 import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
@@ -56,7 +56,9 @@ const GroupHelpMenu = lazyPreload(async () =>
   import(/* webpackChunkName: 'GroupHelpMenu' */ 'universal/components/MeetingHelp/GroupHelpMenu')
 )
 const DemoGroupHelpMenu = lazyPreload(async () =>
-  import(/* webpackChunkName: 'DemoGroupHelpMenu' */ 'universal/components/MeetingHelp/DemoGroupHelpMenu')
+  import(
+    /* webpackChunkName: 'DemoGroupHelpMenu' */ 'universal/components/MeetingHelp/DemoGroupHelpMenu'
+  )
 )
 
 const RetroGroupPhase = (props: Props) => {

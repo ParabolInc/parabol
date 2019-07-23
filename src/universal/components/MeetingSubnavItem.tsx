@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {meetingSidebarGutterInner} from 'universal/styles/meeting'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
@@ -68,7 +68,7 @@ const ItemOrderLabel = styled('div')({
   width: meetingSidebarGutterInner
 })
 
-const ItemLabel = styled('div')(({isComplete}: {isComplete: boolean}) => ({
+const ItemLabel = styled('div')<{isComplete: boolean}>(({isComplete}) => ({
   color: 'inherit',
   fontSize: appTheme.typography.s3,
   flex: 1,

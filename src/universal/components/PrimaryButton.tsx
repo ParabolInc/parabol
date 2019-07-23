@@ -1,5 +1,5 @@
 import React, {forwardRef} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import BaseButton, {BaseButtonProps} from 'universal/components/BaseButton'
 import ui from 'universal/styles/ui'
 

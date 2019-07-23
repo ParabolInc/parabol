@@ -4,7 +4,7 @@ import SwipeableDashSidebar from 'universal/components/SwipeableDashSidebar'
 import StaticSidebar from 'universal/components/StaticSidebar'
 import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
 import elevation, {desktopSidebarShadow} from 'universal/styles/elevation'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {DECELERATE} from 'universal/styles/animation'
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
   onToggle: () => void
 }
 
-const Sidebar = styled('div')(({isOpen}: {isOpen: boolean}) => ({
+const Sidebar = styled('div')<{isOpen: boolean}>(({isOpen}) => ({
   boxShadow: isOpen ? desktopSidebarShadow : elevation[0],
   transition: `box-shadow 200ms ${DECELERATE}`
 }))

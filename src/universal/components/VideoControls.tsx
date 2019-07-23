@@ -1,5 +1,5 @@
 import React, {lazy, useEffect, useState} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import withHotkey from 'react-hotkey-hoc'
 import LoadableFreeModal from 'universal/components/LoadableFreeModal'
 import PrimaryButton from 'universal/components/PrimaryButton'
@@ -28,7 +28,9 @@ const ButtonWrapper = styled('div')({
 })
 
 const WebcamPermissionsModal = lazy(() =>
-  import(/* webpackChunkName: 'WebcamPermissionsModal' */ 'universal/components/WebcamPermissionsModal')
+  import(
+    /* webpackChunkName: 'WebcamPermissionsModal' */ 'universal/components/WebcamPermissionsModal'
+  )
 )
 
 const VideoControls = (props: Props) => {

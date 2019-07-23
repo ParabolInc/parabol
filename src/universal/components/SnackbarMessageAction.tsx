@@ -1,6 +1,6 @@
 import React from 'react'
 import {SnackAction} from 'universal/components/Snackbar'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import PlainButton from 'universal/components/PlainButton/PlainButton'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {DECELERATE} from 'universal/styles/animation'

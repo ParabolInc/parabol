@@ -1,4 +1,4 @@
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {modalShadow} from 'universal/styles/elevation'
 import {Radius} from 'universal/types/constEnums'
 

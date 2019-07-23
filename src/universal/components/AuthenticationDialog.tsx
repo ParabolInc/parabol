@@ -1,4 +1,4 @@
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import InviteDialog from 'universal/components/InviteDialog'
 
 const AuthenticationDialog = styled(InviteDialog)({

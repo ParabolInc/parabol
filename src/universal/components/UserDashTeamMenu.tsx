@@ -9,7 +9,7 @@ import {ITeam} from 'universal/types/graphql'
 
 interface Props extends DispatchProp {
   menuProps: MenuProps
-  teams: Array<Partial<ITeam>>
+  teams: Partial<ITeam>[]
   teamFilterId: string | null
 }
 

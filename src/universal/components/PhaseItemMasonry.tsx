@@ -1,3 +1,5 @@
+/** @jsx jsx */
+import {jsx} from '@emotion/core'
 import {PhaseItemMasonry_meeting} from '__generated__/PhaseItemMasonry_meeting.graphql'
 import React from 'react'
 import {
@@ -9,16 +11,13 @@ import {
   DropTargetSpec
 } from 'react-dnd'
 import withScrolling from 'react-dnd-scrollzone'
-import {css} from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {BBox, Coords} from 'types/animations'
 import Modal from 'universal/components/Modal'
 import ReflectionCardInFlight from 'universal/components/ReflectionCardInFlight'
 import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGroup'
 import getBBox from 'universal/components/RetroReflectPhase/getBBox'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import appTheme from 'universal/styles/theme/appTheme'
 import {DragReflectionDropTargetTypeEnum} from 'universal/types/graphql'
 import {REFLECTION_CARD} from 'universal/utils/constants'
@@ -48,11 +47,11 @@ interface Props extends WithAtmosphereProps, WithMutationProps, CollectedProps, 
   atmosphere: MasonryAtmosphere
 }
 
-const gridStyle = css({
+const gridStyle = {
   overflowX: 'auto',
   position: 'relative',
   width: '100%'
-})
+} as React.CSSProperties
 
 interface ItemCache {
   el?: HTMLElement | undefined
@@ -94,7 +93,7 @@ export interface MasonryChildrenCache {
 export interface MasonryParentCache {
   el: HTMLElement | null
   boundingBox: BBox | null
-  columnLefts: Array<number>
+  columnLefts: number[]
   cardsInFlight: {[itemId: string]: Coords}
   // the location for a group that has not been created yet (caused by an ungrouping)
   incomingChildren: {
@@ -133,7 +132,7 @@ interface CancelDropPayload {
 export type MasonryDragEndPayload = DropOnGridPayload | DropOnGroupPayload | CancelDropPayload
 
 class PhaseItemMasonry extends React.Component<Props> {
-  constructor (props: Props) {
+  constructor(props: Props) {
     super(props)
     const {atmosphere} = props
     const {eventEmitter} = atmosphere
@@ -161,12 +160,13 @@ class PhaseItemMasonry extends React.Component<Props> {
   resizeObserver = new ResizeObserver(() => {
     this.handleResize()
   })
-  componentDidMount () {
+
+  componentDidMount() {
     initializeGrid(this.itemCache, this.childrenCache, this.parentCache, true)
     this.resizeObserver.observe(this.parentCache.el!)
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     const {atmosphere} = this.props
     const {eventEmitter} = atmosphere
     eventEmitter.off('endDraggingReflection', this.handleDragEnd)
@@ -287,15 +287,14 @@ class PhaseItemMasonry extends React.Component<Props> {
     this.parentCache.el = c
   }
 
-  render () {
+  render() {
     const {canDrop, connectDropTarget, meeting} = this.props
     const {reflectionGroups, teamId} = meeting
     const reflectionsInFlight = meeting.reflectionsInFlight || []
     return connectDropTarget(
       <div
         ref={this.setParentRef}
-        className={gridStyle}
-        style={{backgroundColor: canDrop && appTheme.palette.light70l}}
+        style={{...gridStyle, backgroundColor: canDrop && appTheme.palette.light70l}}
       >
         {reflectionGroups.map((reflectionGroup) => {
           const {reflectionGroupId} = reflectionGroup
@@ -332,10 +331,10 @@ class PhaseItemMasonry extends React.Component<Props> {
 }
 
 const reflectionDropSpec: DropTargetSpec<Props> = {
-  canDrop (_props, monitor) {
+  canDrop(_props, monitor) {
     return monitor.isOver({shallow: true}) && !monitor.getItem().isSingleCardGroup
   },
-  drop () {
+  drop() {
     return {dropTargetType: DragReflectionDropTargetTypeEnum.REFLECTION_GRID}
   }
 }

@@ -1,4 +1,4 @@
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {MD_ICONS_SIZE_24} from 'universal/styles/icons'
 
 const Icon = styled('i')({
@@ -15,13 +15,13 @@ const Icon = styled('i')({
   whiteSpace: 'nowrap',
   direction: 'ltr',
   // Support for all WebKit browsers
-  '-webkit-font-smoothing': 'antialiased',
+  WebkitFontSmoothing: 'antialiased',
   // Support for Safari and Chrome
-  'text-rendering': 'optimizeLegibility',
+  textRendering: 'optimizeLegibility',
   // Support for Firefox
-  '-moz-osx-font-smoothing': 'grayscale',
+  mozOsxFontSmoothing: 'grayscale',
   // Support for IE
-  'font-feature-settings': 'liga'
+  fontFeatureSettings: 'liga'
 })
 
 export default Icon

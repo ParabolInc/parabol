@@ -1,6 +1,6 @@
 import {DashAlertMeeting_viewer} from '__generated__/DashAlertMeeting_viewer.graphql'
 import React, {useMemo} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import DashAlertBar from 'universal/components/DashAlertBar'
 import DashAlertLink from 'universal/components/DashAlertLink'

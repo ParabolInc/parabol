@@ -1,6 +1,6 @@
 import {ActionMeetingLastCall_team} from '__generated__/ActionMeetingLastCall_team.graphql'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {ActionMeetingPhaseProps} from 'universal/components/ActionMeeting'
 import ErrorBoundary from 'universal/components/ErrorBoundary'
@@ -26,7 +26,9 @@ interface Props extends ActionMeetingPhaseProps {
 }
 
 const ActionMeetingLastCallHelpMenu = lazyPreload(async () =>
-  import(/* webpackChunkName: 'ActionMeetingLastCallHelpMenu' */ 'universal/components/MeetingHelp/ActionMeetingLastCallHelpMenu')
+  import(
+    /* webpackChunkName: 'ActionMeetingLastCallHelpMenu' */ 'universal/components/MeetingHelp/ActionMeetingLastCallHelpMenu'
+  )
 )
 
 const LastCallWrapper = styled('div')({

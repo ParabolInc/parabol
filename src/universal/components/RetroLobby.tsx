@@ -1,7 +1,7 @@
 import {RetroLobby_meetingSettings} from '__generated__/RetroLobby_meetingSettings.graphql'
 import {RetroLobby_team} from '__generated__/RetroLobby_team.graphql'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import ErrorBoundary from 'universal/components/ErrorBoundary'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
@@ -70,7 +70,9 @@ const TemplatePickerBlock = styled('div')({
 })
 
 const RetroLobbyHelpMenu = lazyPreload(() =>
-  import(/* webpackChunkName: 'RetroLobbyHelpMenu' */ 'universal/components/MeetingHelp/RetroLobbyHelpMenu')
+  import(
+    /* webpackChunkName: 'RetroLobbyHelpMenu' */ 'universal/components/MeetingHelp/RetroLobbyHelpMenu'
+  )
 )
 
 const meetingType = MeetingTypeEnum.retrospective

@@ -13,7 +13,7 @@ interface Props extends WithAtmosphereProps {
   viewer: UpgradeModal_viewer
 }
 
-type State = {
+interface State {
   isPaid: boolean
 }
 

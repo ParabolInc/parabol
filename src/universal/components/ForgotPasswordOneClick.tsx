@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import PlainButton from 'universal/components/PlainButton/PlainButton'
 import {PALETTE} from '../styles/paletteV2'
 import auth0ChangePassword from '../utils/auth0ChangePassword'

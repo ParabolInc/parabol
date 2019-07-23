@@ -2,7 +2,7 @@ import React from 'react'
 import ui from 'universal/styles/ui'
 import {menuShadow} from 'universal/styles/elevation'
 import AnimatedFade from 'universal/components/AnimatedFade'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import Modal from 'universal/components/Modal'
 import withCoordsV2 from 'universal/decorators/withCoordsV2'
 

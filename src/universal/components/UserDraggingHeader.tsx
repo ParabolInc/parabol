@@ -1,7 +1,7 @@
 import React from 'react'
 import appTheme from 'universal/styles/theme/appTheme'
 import {createFragmentContainer, graphql} from 'react-relay'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import Tag from 'universal/components/Tag/Tag'
 import {UserDraggingHeader_user} from '__generated__/UserDraggingHeader_user.graphql'
 import useAtmosphere from 'universal/hooks/useAtmosphere'

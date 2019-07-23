@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import 'universal/styles/daypicker.css'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {SlackNotificationEventEnum} from 'universal/types/graphql'

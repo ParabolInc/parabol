@@ -36,7 +36,7 @@ const StyledOverflow = styled(Overflow)({
   position: 'relative'
 })
 
-const StyledWrapper = styled(MeetingPhaseWrapper)(({phaseItemCount}: {phaseItemCount: number}) => ({
+const StyledWrapper = styled(MeetingPhaseWrapper)<{phaseItemCount: number, innerRef: any}>(({phaseItemCount}) => ({
   minWidth: phaseItemCount * minWidth,
   // using position helps with overflow of columns for small screens
   position: 'absolute'

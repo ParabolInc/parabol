@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import DemoCreateAccountPrimaryButton from 'universal/components/DemoCreateAccountPrimaryButton'
 import Icon from 'universal/components/Icon'
 import {PALETTE} from 'universal/styles/paletteV2'

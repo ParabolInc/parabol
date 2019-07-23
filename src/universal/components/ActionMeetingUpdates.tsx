@@ -1,7 +1,7 @@
 import {ActionMeetingUpdates_team} from '__generated__/ActionMeetingUpdates_team.graphql'
 import ms from 'ms'
 import React, {useMemo} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {ActionMeetingPhaseProps} from 'universal/components/ActionMeeting'
 import ActionMeetingUpdatesPrompt from 'universal/components/ActionMeetingUpdatesPrompt'
@@ -55,7 +55,9 @@ interface Props extends ActionMeetingPhaseProps {
 }
 
 const UpdatesHelpMenu = lazyPreload(async () =>
-  import(/* webpackChunkName: 'UpdatesHelpMenu' */ 'universal/components/MeetingHelp/UpdatesHelpMenu')
+  import(
+    /* webpackChunkName: 'UpdatesHelpMenu' */ 'universal/components/MeetingHelp/UpdatesHelpMenu'
+  )
 )
 
 const ActionMeetingUpdates = (props: Props) => {

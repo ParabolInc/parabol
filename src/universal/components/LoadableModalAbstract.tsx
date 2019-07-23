@@ -1,5 +1,5 @@
 import React, {Component, ComponentType, Suspense} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import AnimatedFade from 'universal/components/AnimatedFade'
 import Modal from 'universal/components/Modal'
 import ui from 'universal/styles/ui'
@@ -27,7 +27,7 @@ const ModalContents = styled('div')({
   position: 'relative'
 })
 
-const Backdrop = styled('div')(({background}: {background: string}) => ({
+const Backdrop = styled('div')<{background: string}>(({background}) => ({
   background,
   height: '100%',
   position: 'fixed',

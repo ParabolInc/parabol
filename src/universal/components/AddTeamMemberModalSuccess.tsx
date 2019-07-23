@@ -1,12 +1,12 @@
 import React, {Component} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import DialogContainer from './DialogContainer'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
 
 interface Props {
   closePortal: () => void
-  successfulInvitations: Array<string>
+  successfulInvitations: string[]
 }
 
 const StyledDialogContainer = styled(DialogContainer)({

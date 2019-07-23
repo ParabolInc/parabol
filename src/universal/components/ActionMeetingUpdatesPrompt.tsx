@@ -1,6 +1,6 @@
 import {ActionMeetingUpdatesPrompt_team} from '__generated__/ActionMeetingUpdatesPrompt_team.graphql'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import PhaseHeaderDescription from 'universal/components/PhaseHeaderDescription'
 import PhaseHeaderTitle from 'universal/components/PhaseHeaderTitle'

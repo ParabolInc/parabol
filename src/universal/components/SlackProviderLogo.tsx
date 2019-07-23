@@ -1,4 +1,4 @@
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import slackMark from 'universal/styles/theme/images/graphics/slack-color.svg'
 
 const SlackProviderLogo = styled('div')({

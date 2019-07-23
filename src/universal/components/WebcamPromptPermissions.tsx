@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import DialogContent from 'universal/components/DialogContent'
 import InvitationDialogCopy from 'universal/components/InvitationDialogCopy'
 import DialogTitle from 'universal/components/DialogTitle'

@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
-import styled, {keyframes} from 'react-emotion'
+import styled from '@emotion/styled'
+import {keyframes} from '@emotion/core'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {TimelineNewFeature_viewer} from '__generated__/TimelineNewFeature_viewer.graphql'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'

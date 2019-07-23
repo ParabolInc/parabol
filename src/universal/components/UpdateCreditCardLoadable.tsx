@@ -10,8 +10,10 @@ import React from 'react'
 
 const UpgradeModalLoadable = Loadable({
   loader: () =>
-    import(/* webpackChunkName: 'UpdateCreditCard' */
-    'universal/components/UpdateCreditCard'),
+    import(
+      /* webpackChunkName: 'UpdateCreditCard' */
+      'universal/components/UpdateCreditCard'
+    ),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),

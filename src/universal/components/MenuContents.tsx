@@ -1,4 +1,4 @@
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {PortalStatus} from 'universal/hooks/usePortal'
 import {DECELERATE} from 'universal/styles/animation'
 import {Duration, Radius} from 'universal/types/constEnums'
@@ -30,7 +30,7 @@ export interface MenuContentsProps {
   portalStatus: PortalStatus
 }
 
-const MenuContents = styled('div')(({minWidth, portalStatus}: MenuContentsProps) => ({
+const MenuContents = styled('div')<MenuContentsProps>(({minWidth, portalStatus}) => ({
   borderRadius: Radius.MENU,
   outline: 0,
   overflowY: portalStatus >= PortalStatus.Entered ? 'auto' : 'hidden',

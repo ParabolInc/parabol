@@ -1,5 +1,5 @@
 import React, {ReactElement, ReactNode} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import DemoCreateAccountButton from 'universal/components/DemoCreateAccountButton'
 import SidebarToggle from 'universal/components/SidebarToggle'
 import {meetingTopBarMediaQuery} from 'universal/styles/meeting'
@@ -44,13 +44,13 @@ const PrimaryActionBlock = styled('div')({
   }
 })
 
-const AvatarGroupBlock = styled('div')(
+const AvatarGroupBlock = styled('div')<{isDemoRoute: boolean}>(
   {
     display: 'flex',
     justifyContent: 'center',
     padding: 0
   },
-  ({isDemoRoute}: {isDemoRoute: boolean}) =>
+  ({isDemoRoute}) =>
     isDemoRoute && {
       order: 3,
       margin: '0 auto',

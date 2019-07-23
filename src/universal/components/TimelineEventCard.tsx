@@ -1,6 +1,6 @@
 import {TimelineEventCard_timelineEvent} from '__generated__/TimelineEventCard_timelineEvent.graphql'
 import React, {Component, ReactNode} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import Icon from 'universal/components/Icon'
 import {buttonShadow, cardShadow} from 'universal/styles/elevation'

@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import GitHubSVG from 'universal/components/GitHubSVG'
 import JiraSVG from 'universal/components/JiraSVG'
 import {TaskServiceEnum} from 'universal/types/graphql'

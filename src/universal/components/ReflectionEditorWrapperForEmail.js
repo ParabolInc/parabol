@@ -3,8 +3,8 @@ import React, {Component} from 'react'
 import editorDecorators from 'universal/components/TaskEditor/decorators'
 import truncateCard from 'universal/utils/draftjs/truncateCard'
 
-type Props = {
-  content: string
+interface Props {
+  content: string;
 }
 
 class ReflectionEditorWrapperForEmail extends Component<Props> {

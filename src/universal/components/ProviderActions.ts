@@ -1,4 +1,4 @@
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {Layout} from 'universal/types/constEnums'
 import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
 

@@ -1,5 +1,5 @@
 import React, {ReactNode, useEffect} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import HelpMenuToggle from 'universal/components/MeetingHelp/HelpMenuToggle'
 import Menu from 'universal/components/Menu'
 import {MenuPosition} from 'universal/hooks/useCoords'

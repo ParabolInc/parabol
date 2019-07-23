@@ -1,5 +1,5 @@
 import React, {lazy, memo, Suspense} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {Route, Switch} from 'react-router'
 import AnalyticsPageRoot from 'universal/components/AnalyticsPageRoot'
 import SocketHealthMonitor from 'universal/components/SocketHealthMonitor'

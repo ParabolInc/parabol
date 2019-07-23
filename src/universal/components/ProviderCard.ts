@@ -1,4 +1,4 @@
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {cardShadow} from 'universal/styles/elevation'
 
 const ProviderCard = styled('div')({

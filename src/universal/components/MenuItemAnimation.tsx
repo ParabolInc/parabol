@@ -1,6 +1,6 @@
-import {keyframes} from 'emotion'
+import {keyframes} from '@emotion/core'
 import React, {ReactNode} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {Omit} from 'types/generics'
 import {PortalStatus} from 'universal/hooks/usePortal'
 import {DECELERATE} from 'universal/styles/animation'
@@ -53,8 +53,8 @@ interface Props {
   portalStatus: PortalStatus
 }
 
-const MenuItemStyles = styled('div')(
-  ({idx, itemsToAnimate, isDropdown, portalStatus}: Omit<Props, 'children'>) => ({
+const MenuItemStyles = styled('div')<Omit<Props, 'children'>>(
+  ({idx, itemsToAnimate, isDropdown, portalStatus}) => ({
     animation:
       portalStatus < PortalStatus.Entered
         ? menuItemAnimation(idx, itemsToAnimate, isDropdown)

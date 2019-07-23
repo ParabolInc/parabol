@@ -1,4 +1,4 @@
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {FONT_FAMILY} from 'universal/styles/typographyV2'
 import {Radius} from 'universal/types/constEnums'
 

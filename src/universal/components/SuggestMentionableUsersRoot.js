@@ -26,8 +26,10 @@ const loading = (props) => (
 )
 const LoadableSuggestMentionableUsers = Loadable({
   loader: () =>
-    import(/* webpackChunkName: 'SuggestMentionableUsers' */
-      'universal/components/SuggestMentionableUsers'),
+    import(
+      /* webpackChunkName: 'SuggestMentionableUsers' */
+      'universal/components/SuggestMentionableUsers'
+    ),
   loading,
   delay: HUMAN_ADDICTION_THRESH,
   timeout: MAX_WAIT_TIME

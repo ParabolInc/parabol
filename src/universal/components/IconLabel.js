@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import ui from 'universal/styles/ui'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18, MD_ICONS_SIZE_24} from 'universal/styles/icons'

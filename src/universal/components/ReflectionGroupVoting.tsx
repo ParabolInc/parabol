@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {ReflectionGroupVoting_meeting} from '__generated__/ReflectionGroupVoting_meeting.graphql'
 import {ReflectionGroupVoting_reflectionGroup} from '__generated__/ReflectionGroupVoting_reflectionGroup.graphql'
 import withAtmosphere, {
@@ -27,7 +27,7 @@ const UpvoteRow = styled('div')({
   justifyContent: 'flex-end'
 })
 
-const UpvoteIcon = styled(Icon)(({color}: {color: string}) => ({
+const UpvoteIcon = styled(Icon)<{color: string}>(({color}) => ({
   color,
   cursor: 'pointer',
   fontSize: MD_ICONS_SIZE_18,

@@ -1,5 +1,5 @@
 import React, {Component, Ref} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {RouteComponentProps, withRouter} from 'react-router'
 import ErrorAlert from 'universal/components/ErrorAlert/ErrorAlert'
 import PrimaryButton from 'universal/components/PrimaryButton'

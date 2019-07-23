@@ -1,7 +1,7 @@
 import {RetroSidebarDiscussSection_viewer} from '__generated__/RetroSidebarDiscussSection_viewer.graphql'
 import React from 'react'
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import MeetingSidebarLabelBlock from 'universal/components/MeetingSidebarLabelBlock'
@@ -32,8 +32,8 @@ interface Props extends WithAtmosphereProps {
   viewer: RetroSidebarDiscussSection_viewer
 }
 
-const VoteTally = styled('div')(
-  ({isUnsyncedFacilitatorStage}: {isUnsyncedFacilitatorStage: boolean | null}) => ({
+const VoteTally = styled('div')<{isUnsyncedFacilitatorStage: boolean | null}>(
+  ({isUnsyncedFacilitatorStage}) => ({
     alignItems: 'center',
     color: isUnsyncedFacilitatorStage ? ui.palette.warm : ui.palette.midGray,
     display: 'flex',
@@ -53,7 +53,7 @@ const VoteIcon = styled(Icon)({
   marginRight: '.125rem'
 })
 
-const DraggableMeetingSubnavItem = styled('div')(({isDragging}: {isDragging: boolean}) => ({
+const DraggableMeetingSubnavItem = styled('div')<{isDragging: boolean}>(({isDragging}) => ({
   boxShadow: isDragging ? navItemRaised : undefined
 }))
 
@@ -123,7 +123,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
         <Droppable droppableId={DISCUSSION_TOPIC}>
           {(provided) => {
             return (
-              <ScrollWrapper innerRef={provided.innerRef}>
+              <ScrollWrapper ref={provided.innerRef}>
                 {stages.map((stage, idx) => {
                   const {reflectionGroup} = stage
                   if (!reflectionGroup) return null
@@ -142,7 +142,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
                         return (
                           <DraggableMeetingSubnavItem
                             isDragging={dragSnapshot.isDragging}
-                            innerRef={dragProvided.innerRef}
+                            ref={dragProvided.innerRef}
                             {...dragProvided.draggableProps}
                             {...dragProvided.dragHandleProps}
                           >

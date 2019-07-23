@@ -1,5 +1,5 @@
 import React, {forwardRef, Ref} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import DialogContent from 'universal/components/DialogContent'
 import DialogTitle from 'universal/components/DialogTitle'
 import MenuContents, {MenuContentsProps} from 'universal/components/MenuContents'
@@ -20,7 +20,7 @@ const SmallPrint = styled('div')({
 const ModalError = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
   const {error, ...blockProps} = props
   return (
-    <ErrorBlock {...blockProps} innerRef={ref}>
+    <ErrorBlock {...blockProps} ref={ref}>
       <DialogTitle>You found a bug!</DialogTitle>
       <DialogContent>
         {'We’ve alerted the developers. Try refreshing the page'}

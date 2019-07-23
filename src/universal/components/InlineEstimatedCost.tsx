@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {MONTHLY_PRICE} from 'universal/utils/constants'
 import plural from 'universal/utils/plural'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import ui from 'universal/styles/ui'
 import tinycolor from 'tinycolor2'
 import Icon from 'universal/components/Icon'
@@ -10,7 +10,11 @@ import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 const {green, mid} = ui.palette
 const hoverColor = tinycolor.mix(mid, '#000', 15).toHexString()
 
-const InlineEstimatedCostBlock = styled('div')(({showCost}) => ({
+interface StyleProps {
+  showCost: boolean
+}
+
+const InlineEstimatedCostBlock = styled('div')<StyleProps>(({showCost}) => ({
   alignItems: 'center',
   color: showCost ? green : mid,
   cursor: showCost ? 'default' : 'pointer',
@@ -22,16 +26,16 @@ const InlineEstimatedCostBlock = styled('div')(({showCost}) => ({
   }
 }))
 
-const StyledIcon = styled(Icon)(({showCost}) => ({
+const StyledIcon = styled(Icon)<StyleProps>(({showCost}) => ({
   color: 'inherit',
   fontSize: MD_ICONS_SIZE_18,
   marginRight: '.5rem',
   opacity: showCost ? 1 : 0.5
 }))
 
-type Props = {|
-  activeUserCount: Number
-|}
+interface Props {
+  activeUserCount: number
+}
 
 class InlineEstimatedCost extends Component<Props> {
   state = {showCost: false}
@@ -54,7 +58,7 @@ class InlineEstimatedCost extends Component<Props> {
     const copy = showCost ? estimate : question
     return (
       <InlineEstimatedCostBlock
-        onClick={!showCost ? this.getCost : null}
+        onClick={!showCost ? this.getCost : undefined}
         showCost={showCost}
         title={`${question}?`}
       >

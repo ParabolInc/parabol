@@ -1,6 +1,6 @@
 import React from 'react'
 import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
 import Icon from 'universal/components/Icon'
@@ -10,7 +10,10 @@ const FieldBlock = styled('div')({
   position: 'relative'
 })
 
-const FieldIcon = styled(Icon)(({hasError}: {hasError: boolean}) => ({
+interface StyleProps {
+  hasError: boolean
+}
+const FieldIcon = styled(Icon)<StyleProps>(({hasError}) => ({
   color: hasError ? ui.colorError : ui.hintColor,
   display: 'block',
   fontSize: MD_ICONS_SIZE_18,
@@ -21,7 +24,7 @@ const FieldIcon = styled(Icon)(({hasError}: {hasError: boolean}) => ({
   top: '.6875rem'
 }))
 
-type Props = {
+interface Props {
   autoComplete: string
   autoFocus?: boolean
   hasError: boolean
@@ -32,7 +35,7 @@ type Props = {
   value: string
 }
 
-const Input = styled('input')(({hasError}: {hasError: boolean}) => ({
+const Input = styled('input')<StyleProps>(({hasError}) => ({
   ...ui.fieldBaseStyles,
   backgroundColor: ui.palette.white,
   border: 0,

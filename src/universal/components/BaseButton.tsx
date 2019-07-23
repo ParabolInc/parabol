@@ -1,5 +1,5 @@
 import React, {Component, ReactNode, Ref} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import ui from 'universal/styles/ui'
 import PlainButton, {PlainButtonProps} from 'universal/components/PlainButton/PlainButton'
 import withInnerRef from 'universal/decorators/withInnerRef'
@@ -28,8 +28,8 @@ interface Root {
   size: 'small' | 'medium' | 'large'
 }
 
-const ButtonRoot = styled(PlainButton)(
-  ({disabled, elevationResting, elevationHovered, pressedDown, size}: Root) => {
+const ButtonRoot = styled(PlainButton)<Root>(
+  ({disabled, elevationResting, elevationHovered, pressedDown, size}) => {
     return {
       // size is easy to override, it adds: fontSize, lineHeight, padding
       ...ui.buttonSizeStyles[size],

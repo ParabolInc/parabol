@@ -1,5 +1,5 @@
 import React, {forwardRef, ReactElement} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import Icon from 'universal/components/Icon'
 import useMenu from 'universal/hooks/useMenu'
 import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette'
@@ -64,7 +64,7 @@ const DropdownMenuToggle = forwardRef((props: Props, ref: any) => {
     <DropdownBlock
       className={className}
       onMouseEnter={onMouseEnter}
-      innerRef={ref}
+      ref={ref}
       onClick={disabled ? undefined : onClick}
     >
       <InputBlock disabled={!!disabled} flat={flat} size={size || 'medium'} tabIndex={0}>

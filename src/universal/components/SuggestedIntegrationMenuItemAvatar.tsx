@@ -1,4 +1,4 @@
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import MenuItemComponentAvatar from 'universal/components/MenuItemComponentAvatar'
 import {ICON_SIZE} from 'universal/styles/typographyV2'
 

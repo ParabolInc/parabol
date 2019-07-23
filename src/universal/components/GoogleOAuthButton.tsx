@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import RaisedButton from 'universal/components/RaisedButton'
 import GoogleSVG from 'universal/components/GoogleSVG'
 
@@ -9,7 +9,11 @@ interface Props {
   waiting?: boolean
 }
 
-const StyledButton = styled(RaisedButton)(({waiting}: {waiting: boolean | undefined}) => ({
+interface StyleProps {
+  waiting: boolean | undefined
+}
+
+const StyledButton = styled(RaisedButton)<StyleProps>(({waiting}) => ({
   backgroundColor: waiting ? '#ebebeb' : 'white',
   borderRadius: 20,
   color: waiting ? '#8D8D8D' : '#757575',
@@ -22,7 +26,7 @@ const StyledButton = styled(RaisedButton)(({waiting}: {waiting: boolean | undefi
   }
 }))
 
-const IconBlock = styled('div')(({waiting}: {waiting: boolean | undefined}) => ({
+const IconBlock = styled('div')<StyleProps>(({waiting}) => ({
   marginRight: 16,
   '& svg': {
     display: 'block',

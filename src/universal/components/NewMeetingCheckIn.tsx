@@ -1,6 +1,6 @@
 import {NewMeetingCheckIn_team} from '__generated__/NewMeetingCheckIn_team.graphql'
 import React, {ReactElement} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import ErrorBoundary from 'universal/components/ErrorBoundary'
 import Icon from 'universal/components/Icon'
@@ -58,7 +58,9 @@ const CheckInWrapper = styled('div')({
 })
 
 const CheckInHelpMenu = lazyPreload(async () =>
-  import(/* webpackChunkName: 'CheckInHelpMenu' */ 'universal/components/MeetingHelp/CheckInHelpMenu')
+  import(
+    /* webpackChunkName: 'CheckInHelpMenu' */ 'universal/components/MeetingHelp/CheckInHelpMenu'
+  )
 )
 
 interface Props {

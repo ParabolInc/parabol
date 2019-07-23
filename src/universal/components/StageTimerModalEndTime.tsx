@@ -1,7 +1,7 @@
 import SecondaryButton from 'universal/components/SecondaryButton'
 import React, {useState} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {StageTimerModalEndTime_stage} from '__generated__/StageTimerModalEndTime_stage.graphql'
 import ms from 'ms'
 import SetStageTimerMutation from 'universal/mutations/SetStageTimerMutation'

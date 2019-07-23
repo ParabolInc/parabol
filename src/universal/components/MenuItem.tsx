@@ -1,5 +1,5 @@
 import React, {forwardRef, ReactNode, useEffect, useImperativeHandle, useRef} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import MenuItemLabel from 'universal/components/MenuItemLabel'
 import {PALETTE} from 'universal/styles/paletteV2'
 
@@ -17,8 +17,8 @@ interface Props {
   noCloseOnClick?: boolean
 }
 
-const MenuItemStyles = styled('div')(
-  ({isActive, isDisabled}: {isActive: boolean; isDisabled: boolean | undefined}) => ({
+const MenuItemStyles = styled('div')<{isActive: boolean; isDisabled: boolean | undefined}>(
+  ({isActive, isDisabled}) => ({
     alignItems: 'center',
     backgroundColor: isActive ? PALETTE.BACKGROUND_MAIN : undefined,
     color: isDisabled ? PALETTE.TEXT_LIGHT : PALETTE.TEXT_MAIN,
@@ -63,7 +63,7 @@ const MenuItem = forwardRef((props: Props, ref: any) => {
     <MenuItemStyles
       isDisabled={isDisabled}
       role='menuitem'
-      innerRef={itemRef}
+      ref={itemRef}
       isActive={isActive}
       onClick={handleClick}
       onMouseEnter={onMouseEnter}

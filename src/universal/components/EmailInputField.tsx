@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import UnderlineInput from './InputField/UnderlineInput'
 import TinyLabel from 'universal/components/TinyLabel'
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {PALETTE} from 'universal/styles/paletteV2'
 import Icon from 'universal/components/Icon'
 
@@ -10,7 +10,7 @@ interface Props {
   onClick?: (e: React.MouseEvent) => void
 }
 
-const StyledIcon = styled(Icon)(({disabled}: {disabled: boolean | undefined}) => ({
+const StyledIcon = styled(Icon)<{disabled: boolean | undefined}>(({disabled}) => ({
   color: PALETTE.TEXT_LIGHT,
   cursor: disabled ? 'not-allowed' : 'pointer',
   display: 'block',

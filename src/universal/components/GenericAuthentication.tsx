@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/browser'
 import React, {Component} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {RouteComponentProps, withRouter} from 'react-router'
 import EmailPasswordAuthForm from 'universal/components/EmailPasswordAuthForm'
 import HorizontalSeparator from 'universal/components/HorizontalSeparator/HorizontalSeparator'

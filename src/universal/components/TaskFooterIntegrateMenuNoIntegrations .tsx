@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import Menu from 'universal/components/Menu'
 import {MenuProps} from 'universal/hooks/useMenu'
 import {PALETTE} from 'universal/styles/paletteV2'

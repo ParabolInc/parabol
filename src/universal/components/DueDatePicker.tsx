@@ -11,7 +11,7 @@ import withAtmosphere, {
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {DueDatePicker_task} from '__generated__/DueDatePicker_task.graphql'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import ui from 'universal/styles/ui'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {

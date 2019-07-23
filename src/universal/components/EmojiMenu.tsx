@@ -6,7 +6,7 @@ import MenuItem from 'universal/components/MenuItem'
 import {MenuProps} from 'universal/hooks/useMenu'
 import emojiArray from 'universal/utils/emojiArray'
 
-type EmojiSuggestion = {
+interface EmojiSuggestion {
   value: string
   emoji: string
 }
@@ -19,9 +19,9 @@ interface Props {
   query: string
 }
 
-type State = {
+interface State {
   focusedEditorState: EditorState | null
-  suggestedEmojis: Array<EmojiSuggestion>
+  suggestedEmojis: EmojiSuggestion[]
   query: string
 }
 

@@ -1,9 +1,9 @@
-import {injectGlobal} from 'react-emotion'
 import PropTypes from 'prop-types'
-import React, {Component} from 'react'
-import {withRouter} from 'react-router-dom'
+import React, { Component } from 'react'
+import { withRouter } from 'react-router-dom'
 import Action from 'universal/components/Action/Action'
 import globalStyles from 'universal/styles/theme/globalStyles'
+import { css, Global } from '@emotion/core'
 
 class ActionContainer extends Component {
   static propTypes = {
@@ -15,11 +15,15 @@ class ActionContainer extends Component {
 
   constructor (props) {
     super(props)
-    injectGlobal(globalStyles)
   }
 
   render () {
-    return <Action {...this.props} />
+    return (
+      <>
+        <Global styles={css`${globalStyles}`} />
+        <Action {...this.props} />
+      </>
+    )
   }
 }
 

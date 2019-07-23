@@ -1,4 +1,4 @@
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import logo from 'universal/styles/theme/images/graphics/github-flat.svg'
 
 const GitHubProviderLogo = styled('div')({

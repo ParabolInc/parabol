@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import StyledError from './StyledError'
 import StyledTip from './StyledTip'
 import GoogleOAuthButton from './GoogleOAuthButton'

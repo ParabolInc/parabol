@@ -6,7 +6,7 @@ import useMenu from 'universal/hooks/useMenu'
 import {MenuPosition} from 'universal/hooks/useCoords'
 import lazyPreload from 'universal/utils/lazyPreload'
 import {StageTimerControl_team} from '__generated__/StageTimerControl_team.graphql'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 
 interface Props {
   defaultTimeLimit: number

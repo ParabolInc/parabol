@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import styled, {css} from 'react-emotion'
+import styled from '@emotion/styled'
 import ui from 'universal/styles/ui'
 
 const ScrollableRoot = styled('div')({
@@ -11,10 +11,10 @@ const ScrollableRoot = styled('div')({
   width: '100%'
 })
 
-const ScrollableInner = css({
+const ScrollableInner = styled('div')({
   flex: 1,
   overflowY: 'auto',
-  '-webkit-overflow-scrolling': 'touch',
+  webkitOverflowScrolling: 'touch',
   width: '100%'
 })
 
@@ -94,9 +94,7 @@ class ScrollableBlock extends Component {
     return (
       <ScrollableRoot>
         {overflownAbove && <ScrollableShadow overflown='top' />}
-        <div className={ScrollableInner} ref={this.setOverflowContainerElRef}>
-          {children}
-        </div>
+        <ScrollableInner innerRef={this.setOverflowContainerElRef}>{children}</ScrollableInner>
         {overflownBelow && <ScrollableShadow overflown='bottom' />}
       </ScrollableRoot>
     )

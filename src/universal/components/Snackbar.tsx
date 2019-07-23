@@ -4,7 +4,7 @@ import useRefState from 'universal/hooks/useRefState'
 import usePortal from 'universal/hooks/usePortal'
 import useTransition from 'universal/hooks/useTransition'
 import shortid from 'shortid'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import SnackbarMessage from './SnackbarMessage'
 import {graphql} from 'react-relay'
 import useLocalQuery from 'universal/hooks/useLocalQuery'
@@ -20,7 +20,7 @@ const query = graphql`
   }
 `
 
-const Modal = styled('div')(({topOfFAB}: {topOfFAB: number | undefined | null}) => ({
+const Modal = styled('div')<{topOfFAB: number | undefined | null}>(({topOfFAB}) => ({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',

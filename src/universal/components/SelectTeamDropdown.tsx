@@ -9,7 +9,7 @@ import {ITeam} from 'universal/types/graphql'
 interface Props {
   menuProps: MenuProps
   teamHandleClick: (teamId: string) => () => void
-  teams: ReadonlyArray<Pick<ITeam, 'id' | 'name'>>
+  teams: readonly Pick<ITeam, 'id' | 'name'>[]
 }
 
 const SelectTeamDropdown = (props: Props) => {

@@ -1,5 +1,6 @@
 import React, {Component, ReactNode} from 'react'
-import styled, {keyframes} from 'react-emotion'
+import styled from '@emotion/styled'
+import {keyframes} from '@emotion/core'
 import Icon from 'universal/components/Icon'
 import PlainButton from 'universal/components/PlainButton/PlainButton'
 import DismissSuggestedActionMutation from 'universal/mutations/DismissSuggestedActionMutation'

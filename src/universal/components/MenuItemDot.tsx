@@ -1,6 +1,6 @@
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 
-const MenuItemDot = styled('div')(({color}: {color: string}) => ({
+const MenuItemDot = styled('div')<{color: string}>(({color}) => ({
   backgroundColor: color,
   borderRadius: 6,
   display: 'inline-block',

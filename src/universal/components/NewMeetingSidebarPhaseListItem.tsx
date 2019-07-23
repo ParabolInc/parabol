@@ -1,5 +1,8 @@
+/** @jsx jsx */
+import {css, jsx} from '@emotion/core'
+// @ts-ignore
 import React, {ReactNode} from 'react'
-import styled, {css} from 'react-emotion'
+import styled from '@emotion/styled'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
@@ -54,12 +57,12 @@ const navListItemLinkDisabled = css({
   }
 })
 
-interface ILink {
+interface LinkProps {
   isDisabled: boolean
   isActive: boolean
 }
 
-const NavListItemLink = styled('div')<ILink>(
+const NavListItemLink = styled('div')<LinkProps>(
   {
     borderLeft: `${ui.navMenuLeftBorderWidth} solid transparent`,
     color: ui.colorText,
@@ -74,7 +77,7 @@ const NavListItemLink = styled('div')<ILink>(
   ({isActive}) => isActive && navListItemLinkActive
 )
 
-type Props = {
+interface Props {
   children: ReactNode
   handleClick?: () => void
   phaseType: string

@@ -1,4 +1,4 @@
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import textOverflow from 'universal/styles/helpers/textOverflow'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'

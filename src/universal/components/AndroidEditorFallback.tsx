@@ -1,6 +1,6 @@
 import {EditorState} from 'draft-js'
 import React, {Ref, useEffect, useState} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import TextArea from 'react-textarea-autosize'
 import {cardContentFontSize, cardContentLineHeight} from 'universal/styles/cards'
 
@@ -12,7 +12,7 @@ interface Props {
   onKeyDown: (e: React.KeyboardEvent) => void
   placeholder: string
   setEditorRef: Ref<HTMLTextAreaElement>
-  onChange: () => void
+  onChange?: () => void
 }
 
 const TextAreaStyles = styled(TextArea)({

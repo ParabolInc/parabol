@@ -4,7 +4,7 @@ import usePortal from 'universal/hooks/usePortal'
 import useRefState from 'universal/hooks/useRefState'
 import {ZIndex} from 'universal/types/constEnums'
 import {DECELERATE} from 'universal/styles/animation'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {PALETTE} from 'universal/styles/paletteV2'
 import hideBodyScroll from 'universal/utils/hideBodyScroll'
 import PlainButton from 'universal/components/PlainButton/PlainButton'
@@ -19,7 +19,10 @@ const SidebarAndScrim = styled('div')({
   height: '100%'
 })
 
-const Scrim = styled('div')(({x}: {x: number}) => ({
+interface StyleProps {
+x: number
+}
+const Scrim = styled('div')<StyleProps>(({x}) => ({
   background: PALETTE.BACKGROUND_FORCED_BACKDROP,
   height: '100%',
   left: 0,
@@ -31,7 +34,7 @@ const Scrim = styled('div')(({x}: {x: number}) => ({
   zIndex: ZIndex.SIDEBAR
 }))
 
-const SidebarAndHandle = styled('div')(({x}: {x: number}) => ({
+const SidebarAndHandle = styled('div')<StyleProps>(({x}) => ({
   display: 'flex',
   position: 'fixed',
   transform: `translateX(${x}px)`,
@@ -39,7 +42,7 @@ const SidebarAndHandle = styled('div')(({x}: {x: number}) => ({
   zIndex: ZIndex.SIDEBAR
 }))
 
-const Sidebar = styled('div')(({x}: {x: number}) => ({
+const Sidebar = styled('div')<StyleProps>(({x}) => ({
   boxShadow: x > 0 ? navDrawerShadow : undefined,
   pointerEvents: x > HYSTERESIS_THRESH ? undefined : 'none'
 }))

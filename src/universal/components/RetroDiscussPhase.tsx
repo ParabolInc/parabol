@@ -1,6 +1,6 @@
 import {RetroDiscussPhase_team} from '__generated__/RetroDiscussPhase_team.graphql'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import BottomNavControl from 'universal/components/BottomNavControl'
 import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
@@ -135,10 +135,14 @@ const StyledBottomBar = styled(MeetingControlBar)({
 })
 
 const DiscussHelpMenu = lazyPreload(async () =>
-  import(/* webpackChunkName: 'DiscussHelpMenu' */ 'universal/components/MeetingHelp/DiscussHelpMenu')
+  import(
+    /* webpackChunkName: 'DiscussHelpMenu' */ 'universal/components/MeetingHelp/DiscussHelpMenu'
+  )
 )
 const DemoDiscussHelpMenu = lazyPreload(async () =>
-  import(/* webpackChunkName: 'DemoDiscussHelpMenu' */ 'universal/components/MeetingHelp/DemoDiscussHelpMenu')
+  import(
+    /* webpackChunkName: 'DemoDiscussHelpMenu' */ 'universal/components/MeetingHelp/DemoDiscussHelpMenu'
+  )
 )
 
 const RetroDiscussPhase = (props: Props) => {

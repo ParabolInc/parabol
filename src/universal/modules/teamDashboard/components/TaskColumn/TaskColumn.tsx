@@ -8,7 +8,6 @@ import withAtmosphere, {
 import sortOrderBetween from 'universal/dnd/sortOrderBetween'
 import TaskColumnAddTask from 'universal/modules/teamDashboard/components/TaskColumn/TaskColumnAddTask'
 import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation'
-import overflowTouch from 'universal/styles/helpers/overflowTouch'
 import appTheme from 'universal/styles/theme/appTheme'
 import themeLabels from 'universal/styles/theme/labels'
 import ui from 'universal/styles/ui'
@@ -45,7 +44,8 @@ const ColumnBody = styled('div')({
 })
 
 const ColumnInner = styled('div')({
-  ...overflowTouch,
+  overflow: 'auto',
+  webkitOverflowScrolling: 'touch',
   display: 'flex',
   flexDirection: 'column',
   height: '100%',

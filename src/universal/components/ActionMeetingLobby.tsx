@@ -1,6 +1,6 @@
 import {ActionMeetingLobby_team} from '__generated__/ActionMeetingLobby_team.graphql'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {ActionMeetingPhaseProps} from 'universal/components/ActionMeeting'
 import ErrorBoundary from 'universal/components/ErrorBoundary'
@@ -63,7 +63,9 @@ const meetingSlug = meetingTypeToSlug[meetingType]
 const buttonLabel = `Start ${meetingLabel} Meeting`
 
 const ActionMeetingLobbyHelpMenu = lazyPreload(() =>
-  import(/*WebpackChunkName: ActionMeetingLobbyHelpMenu*/ 'universal/components/MeetingHelp/ActionMeetingLobbyHelpMenu')
+  import(
+    /*WebpackChunkName: ActionMeetingLobbyHelpMenu*/ 'universal/components/MeetingHelp/ActionMeetingLobbyHelpMenu'
+  )
 )
 
 const ActionMeetingLobby = (props: Props) => {
