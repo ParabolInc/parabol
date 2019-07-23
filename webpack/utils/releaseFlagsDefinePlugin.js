@@ -4,8 +4,8 @@
  * value of <flagName> in the bundle.
  */
 
-import webpack from 'webpack';
-import releaseFlags from '../../src/universal/releaseFlags';
+import webpack from 'webpack'
+import releaseFlags from '../../packages/universal/releaseFlags'
 
 export default new webpack.DefinePlugin(
   Object.entries(releaseFlags).reduce(
@@ -15,4 +15,4 @@ export default new webpack.DefinePlugin(
     }),
     {}
   )
-);
+)

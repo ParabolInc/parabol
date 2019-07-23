@@ -5,9 +5,9 @@ import React from 'react'
 import PhaseItemColumn from 'universal/components/RetroReflectPhase/PhaseItemColumn'
 import PhaseItemEditor from 'universal/components/RetroReflectPhase/PhaseItemEditor'
 import ReflectionStackPlaceholder from 'universal/components/RetroReflectPhase/ReflectionStackPlaceholder'
-import PhaseItemChits from '../src/universal/components/RetroReflectPhase/PhaseItemChits'
-import PhaseItemHealthBar from '../src/universal/components/RetroReflectPhase/PhaseItemHealthBar'
-import ReflectionStack from '../src/universal/components/RetroReflectPhase/ReflectionStack'
+import PhaseItemChits from '../packages/universal/components/RetroReflectPhase/PhaseItemChits'
+import PhaseItemHealthBar from '../packages/universal/components/RetroReflectPhase/PhaseItemHealthBar'
+import ReflectionStack from '../packages/universal/components/RetroReflectPhase/ReflectionStack'
 import StoryProvider from './components/StoryProvider'
 
 const meeting = {

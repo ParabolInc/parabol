@@ -1,7 +1,7 @@
 import {storiesOf} from '@storybook/react'
 import React from 'react'
 import TimelineNewFeature from 'universal/components/TimelineNewFeature'
-import {RightDrawer} from '../src/universal/components/TimelineRightDrawer'
+import {RightDrawer} from '../packages/universal/components/TimelineRightDrawer'
 import StoryProvider from './components/StoryProvider'
 
 const viewer = {

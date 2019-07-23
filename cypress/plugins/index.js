@@ -1,4 +1,4 @@
-require('../../src/server/babelRegister')
+require('../../packages/server/babelRegister')
 const wp = require('@cypress/webpack-preprocessor')
 const webpackOptions = require('./webpack.cypress.config')
 const dotenv = require('dotenv')

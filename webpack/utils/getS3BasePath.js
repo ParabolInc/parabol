@@ -1,5 +1,5 @@
 import url from 'url'
-import getWebpackBuildPath from '../../src/server/utils/getWebpackPublicPath'
+import getWebpackBuildPath from '../../packages/server/utils/getWebpackPublicPath'
 
 export function getS3BasePath () {
   let publicPath = getWebpackBuildPath()

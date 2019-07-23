@@ -34,18 +34,18 @@
     "sourceMap": true,
     "typeRoots": [
       "node_modules/@types",
-      "src/types"
+      "packages/types"
     ],
     "traceResolution": false
   },
   "include": [
-    "src",
+    "packages",
     "stories",
     "cypress"
   ],
   "awesomeTypescriptLoaderOptions": {
     "reportFiles": [
-      "src/**/*.{ts,tsx}",
+      "src/**/*.{ts,tsx}"
 //      "stories/**/*.{ts,tsx}"
     ]
   }

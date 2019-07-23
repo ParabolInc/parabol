@@ -1,4 +1,4 @@
-require('../../src/server/babelRegister')
+require('../../packages/server/babelRegister')
 const resolve = require('../../webpack/webpackResolve')
 const path = require('path')
 

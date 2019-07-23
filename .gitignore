@@ -23,4 +23,4 @@ webpack-assets.json
 .awcache/
 cypress/videos/
 cypress/screenshots/
-src/server/graphql/queryMap.json
+packages/server/graphql/queryMap.json

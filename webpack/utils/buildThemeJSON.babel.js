@@ -1,2 +1,2 @@
-require('../../src/server/babelRegister')
+require('../../packages/server/babelRegister')
 module.exports = require('./buildThemeJSON')
