@@ -132,7 +132,7 @@ interface CancelDropPayload {
 export type MasonryDragEndPayload = DropOnGridPayload | DropOnGroupPayload | CancelDropPayload
 
 class PhaseItemMasonry extends React.Component<Props> {
-  constructor(props: Props) {
+  constructor (props: Props) {
     super(props)
     const {atmosphere} = props
     const {eventEmitter} = atmosphere
@@ -161,12 +161,12 @@ class PhaseItemMasonry extends React.Component<Props> {
     this.handleResize()
   })
 
-  componentDidMount() {
+  componentDidMount () {
     initializeGrid(this.itemCache, this.childrenCache, this.parentCache, true)
     this.resizeObserver.observe(this.parentCache.el!)
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     const {atmosphere} = this.props
     const {eventEmitter} = atmosphere
     eventEmitter.off('endDraggingReflection', this.handleDragEnd)
@@ -287,7 +287,7 @@ class PhaseItemMasonry extends React.Component<Props> {
     this.parentCache.el = c
   }
 
-  render() {
+  render () {
     const {canDrop, connectDropTarget, meeting} = this.props
     const {reflectionGroups, teamId} = meeting
     const reflectionsInFlight = meeting.reflectionsInFlight || []
@@ -331,10 +331,10 @@ class PhaseItemMasonry extends React.Component<Props> {
 }
 
 const reflectionDropSpec: DropTargetSpec<Props> = {
-  canDrop(_props, monitor) {
+  canDrop (_props, monitor) {
     return monitor.isOver({shallow: true}) && !monitor.getItem().isSingleCardGroup
   },
-  drop() {
+  drop () {
     return {dropTargetType: DragReflectionDropTargetTypeEnum.REFLECTION_GRID}
   }
 }

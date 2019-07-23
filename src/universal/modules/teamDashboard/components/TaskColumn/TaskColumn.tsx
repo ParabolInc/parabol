@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import withScrolling from 'react-dnd-scrollzone'
-import styled, {css} from 'react-emotion'
+import styled from '@emotion/styled';
+import { css } from 'emotion';
 import DraggableTask from 'universal/containers/TaskCard/DraggableTask'
 import withAtmosphere, {
   WithAtmosphereProps

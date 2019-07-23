@@ -19,10 +19,13 @@ class ActionContainer extends Component {
 
   render () {
     return (
-      <>
-        <Global styles={css`${globalStyles}`} />
-        <Action {...this.props} />
-      </>
+      <React.Fragment>
+        <Global
+          styles={css`
+            ${globalStyles}
+          `}
+        /><Action {...this.props} />
+      </React.Fragment>
     )
   }
 }

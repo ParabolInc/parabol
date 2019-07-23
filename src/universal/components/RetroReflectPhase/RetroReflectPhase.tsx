@@ -1,7 +1,7 @@
 import {RetroReflectPhase_team} from '__generated__/RetroReflectPhase_team.graphql'
 import ms from 'ms'
 import React, {useRef} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import BottomNavControl from 'universal/components/BottomNavControl'
 import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
