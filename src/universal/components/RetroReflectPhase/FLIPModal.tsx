@@ -1,5 +1,5 @@
 import React, {Component, ReactChild} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import getBBox from 'universal/components/RetroReflectPhase/getBBox'
 import getTransform from 'universal/components/RetroReflectPhase/getTransform'
 import setElementBBox from 'universal/components/RetroReflectPhase/setElementBBox'
@@ -157,8 +157,8 @@ class FLIPModal extends Component<Props> {
   render () {
     return (
       <React.Fragment>
-        <ModalBackground innerRef={this.backgroundRef} />
-        <ModalContent innerRef={this.contentRef}>{this.props.children(this.setBBox)}</ModalContent>
+        <ModalBackground ref={this.backgroundRef} />
+        <ModalContent ref={this.contentRef}>{this.props.children(this.setBBox)}</ModalContent>
       </React.Fragment>
     )
   }

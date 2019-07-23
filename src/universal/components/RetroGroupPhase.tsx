@@ -120,7 +120,7 @@ const RetroGroupPhase = (props: Props) => {
                 isBouncing={isDemoStageComplete || (!isAsync && !isComplete && isReadyToVote)}
                 onClick={() => gotoNext()}
                 onKeyDown={handleRightArrow(() => gotoNext())}
-                innerRef={gotoNextRef}
+                ref={gotoNextRef}
               >
                 <BottomNavIconLabel
                   icon='arrow_forward'

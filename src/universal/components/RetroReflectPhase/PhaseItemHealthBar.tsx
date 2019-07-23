@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
-import styled, {keyframes} from 'react-emotion'
+import styled from '@emotion/styled';
+import { keyframes } from '@emotion/core';
 import {DECELERATE} from 'universal/styles/animation'
 import plural from 'universal/utils/plural'
 import appTheme from 'universal/styles/theme/appTheme'
@@ -13,7 +14,7 @@ const {
   }
 } = appTheme
 
-const BarMask = styled('div')((props: Props) => ({
+const BarMask = styled('div')<Props>((props) => ({
   borderRadius: '8px',
   height: 4,
   overflow: 'hidden',

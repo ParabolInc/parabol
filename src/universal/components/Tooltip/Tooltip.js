@@ -5,7 +5,7 @@ import {MAX_INT} from 'universal/utils/constants'
 import AnimatedFade from 'universal/components/AnimatedFade'
 import Modal from 'universal/components/Modal'
 import TooltipStyled from 'universal/components/TooltipStyled'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import withCoordsV2 from 'universal/decorators/withCoordsV2'
 
 const ModalBlock = styled('div')(({maxWidth}) => ({
@@ -218,7 +218,7 @@ class Tooltip extends Component {
             onEntered={this.makeCloseable}
             onExited={this.terminatePortal}
           >
-            <ModalBlock style={coords} innerRef={this.setModalBlockRef}>
+            <ModalBlock style={coords} ref={this.setModalBlockRef}>
               <ModalContents>{this.makeSmartTip()}</ModalContents>
             </ModalBlock>
           </AnimatedFade>

@@ -1,16 +1,11 @@
-import React, {RefObject} from 'react'
-import styled from 'react-emotion'
-import {
-  cardBorderRadius,
-  reflectionCardMaxHeight,
-  reflectionCardWidth
-} from 'universal/styles/cards'
+import React, {forwardRef, Ref} from 'react'
+import styled from '@emotion/styled'
+import {cardBorderRadius, reflectionCardMaxHeight, reflectionCardWidth} from 'universal/styles/cards'
 import {typeScale} from 'universal/styles/theme/typography'
 import {PALETTE} from 'universal/styles/paletteV2'
 
 interface Props {
   idx: number
-  innerRef: RefObject<HTMLDivElement>
 }
 
 const PlaceholderCard = styled('div')({
@@ -42,14 +37,14 @@ const placeholders = [
 ]
 
 const seed = Math.floor(Math.random() * placeholders.length)
-const ReflectionStackPlaceholder = (props: Props) => {
-  const {idx, innerRef} = props
+const ReflectionStackPlaceholder = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
+  const {idx} = props
   const tip = placeholders[(seed + idx) % placeholders.length]
   return (
     <PlaceholderCard>
-      <Tip innerRef={innerRef}>{tip}</Tip>
+      <Tip ref={ref}>{tip}</Tip>
     </PlaceholderCard>
   )
-}
+})
 
 export default ReflectionStackPlaceholder

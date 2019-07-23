@@ -1,5 +1,5 @@
 import React, {ReactNode} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import Badge from 'universal/components/Badge/Badge'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import {panelShadow} from 'universal/styles/elevation'

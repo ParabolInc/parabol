@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
-import styled, {keyframes} from 'react-emotion'
+import styled from '@emotion/styled';
+import { keyframes } from '@emotion/core';
 import {DECELERATE} from 'universal/styles/animation'
 import appTheme from 'universal/styles/theme/appTheme'
 import elevation from 'universal/styles/elevation'
@@ -78,7 +79,7 @@ const ActiveChitMask = styled('div')({
   width: CHIT_WIDTH - PROGRESS_MARGIN * 2
 })
 
-const ActiveChit = styled('div')(({idx}: {idx: number}) => ({
+const ActiveChit = styled('div')<{idx: number}>(({idx}) => ({
   animation: `${shiftColor(idx)} 2000ms linear infinite`,
   background: `linear-gradient(90deg, ${purpleLightened} 0%, ${orange} 33%, ${teal} 66%, ${purpleLightened} 100%)`,
   height: CHIT_HEIGHT,

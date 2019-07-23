@@ -1,6 +1,6 @@
 import {DashboardAvatars_team} from '__generated__/DashboardAvatars_team.graphql'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import AddTeamMemberAvatarButton from '../AddTeamMemberAvatarButton'
 import DashboardAvatar from './DashboardAvatar'

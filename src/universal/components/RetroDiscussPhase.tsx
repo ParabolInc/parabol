@@ -222,7 +222,7 @@ const RetroDiscussPhase = (props: Props) => {
                 <BottomNavControl
                   isBouncing={isDemoStageComplete}
                   onClick={() => gotoNext()}
-                  innerRef={gotoNextRef}
+                  ref={gotoNextRef}
                   onKeyDown={handleRightArrow(() => gotoNext())}
                 >
                   <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={'Next Topic'} />

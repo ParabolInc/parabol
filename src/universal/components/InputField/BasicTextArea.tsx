@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import StyledError from 'universal/components/StyledError'
 import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette'
 import ui from 'universal/styles/ui'

@@ -1,5 +1,5 @@
-import React, {forwardRef, ReactNode} from 'react'
-import styled from 'react-emotion'
+import React, {forwardRef, ReactNode, Ref} from 'react'
+import styled from '@emotion/styled'
 import PlainButton from 'universal/components/PlainButton/PlainButton'
 import {PALETTE} from 'universal/styles/paletteV2'
 
@@ -29,7 +29,7 @@ const Label = styled('div')({
   fontWeight: 600
 })
 
-const Tab = forwardRef((props: Props, ref: any) => {
+const Tab = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
   const {className, isActive, label, onClick} = props
   return (
     <TabStyle
@@ -37,7 +37,7 @@ const Tab = forwardRef((props: Props, ref: any) => {
       isActive={!!isActive}
       isClickable={!isActive}
       onClick={onClick}
-      innerRef={ref}
+      ref={ref}
     >
       <Label>{label}</Label>
     </TabStyle>

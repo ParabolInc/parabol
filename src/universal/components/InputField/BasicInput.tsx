@@ -1,16 +1,16 @@
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import StyledError from 'universal/components/StyledError'
 import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette'
 import ui from 'universal/styles/ui'
 
-const Input = styled('input')(
+const Input = styled('input')<{disabled: boolean}>(
   ({disabled}) => ({
     ...ui.fieldBaseStyles,
     ...ui.fieldSizeStyles.medium,
     ...makeFieldColorPalette('gray', !disabled)
   }),
-  ({disabled}: {disabled: boolean}) => disabled && {...ui.fieldDisabled}
+  ({disabled}) => disabled && {...ui.fieldDisabled}
 )
 
 interface Props {
@@ -46,7 +46,7 @@ const BasicInput = (props: Props) => {
       <Input
         autoFocus={autoFocus}
         disabled={Boolean(disabled)}
-        innerRef={innerRef}
+        ref={innerRef}
         name={name}
         placeholder={placeholder}
         onBlur={onBlur}

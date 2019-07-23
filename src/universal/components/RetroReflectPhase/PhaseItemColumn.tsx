@@ -5,7 +5,7 @@ import memoize from 'micro-memoize'
  * (e.g. positive or negative) during the Reflect phase of the retro meeting.
  */
 import React, {Component} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import Icon from 'universal/components/Icon'
 import PhaseItemChits from 'universal/components/RetroReflectPhase/PhaseItemChits'
@@ -116,7 +116,7 @@ const targetAnchor = {
 interface Props extends WithAtmosphereProps, WithMutationProps {
   idx: number
   description: string | null
-  editorIds: ReadonlyArray<string> | null
+  editorIds: readonly string[] | null
   meeting: PhaseItemColumn_meeting
   phaseRef: React.RefObject<HTMLDivElement>
   retroPhaseItemId: string

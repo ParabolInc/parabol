@@ -206,7 +206,7 @@ const RetroVotePhase = (props: Props) => {
               disabled={!discussStage.isNavigableByFacilitator}
               onClick={() => gotoNext()}
               onKeyDown={handleRightArrow(() => gotoNext())}
-              innerRef={gotoNextRef}
+              ref={gotoNextRef}
             >
               <BottomNavIconLabel
                 icon='arrow_forward'

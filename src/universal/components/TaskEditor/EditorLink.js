@@ -7,7 +7,7 @@ const baseStyle = {
 }
 
 const EditorLink = (getEditorState) =>
-  class _EditorLink extends Component {
+  class InnerEditorLink extends Component {
     static propTypes = {
       children: PropTypes.any,
       contentState: PropTypes.object.isRequired,

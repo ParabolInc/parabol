@@ -86,7 +86,7 @@ const ActionMeetingFirstCall = (props: Props) => {
               isBouncing={minTimeComplete}
               onClick={() => gotoNext()}
               onKeyDown={handleRightArrow(() => gotoNext())}
-              innerRef={gotoNextRef}
+              ref={gotoNextRef}
             >
               <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={phaseName} />
             </BottomNavControl>

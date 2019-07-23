@@ -94,10 +94,10 @@ const extractMarkdownStyles = (editorState, getNextState, blockKey) => {
   return undefined
 }
 
-const doUndo = (editorState, count) => {
-  const nextEditorState = EditorState.undo(editorState)
-  return count === 1 ? nextEditorState : doUndo(nextEditorState, count - 1)
-}
+// const doUndo = (editorState, count) => {
+//   const nextEditorState = EditorState.undo(editorState)
+//   return count === 1 ? nextEditorState : doUndo(nextEditorState, count - 1)
+// }
 
 const withMarkdown = (ComposedComponent) => {
   return class WithMarkdown extends Component {

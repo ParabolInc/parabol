@@ -1,6 +1,6 @@
 import {AgendaInput_team} from '__generated__/AgendaInput_team.graphql'
 import React, {useCallback, useRef} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import Icon from 'universal/components/Icon'
 import Tooltip from 'universal/components/Tooltip/Tooltip'
@@ -38,7 +38,7 @@ const InputForm = styled('form')(({disabled}: {disabled: boolean}) => ({
 
 const inputPlaceholderStyles = makePlaceholderStyles(appTheme.palette.warm)
 
-const InputField = styled('input')(
+const InputField = styled('input')<{disabled: boolean}>(
   {
     ...ui.fieldBaseStyles,
     ...ui.fieldSizeStyles.medium,
@@ -59,7 +59,7 @@ const InputField = styled('input')(
     ...makeFieldColorPalette('primary', false),
     ...inputPlaceholderStyles
   },
-  ({disabled}: {disabled: boolean}) => {
+  ({disabled}) => {
     return (
       !disabled && {
         cursor: 'text',
@@ -159,7 +159,7 @@ const AgendaInput = (props: Props) => {
             onChange={onChange}
             onKeyDown={onKeyDown}
             placeholder='Add Agenda Topic…'
-            innerRef={inputRef}
+            ref={inputRef}
             type='text'
             value={value}
           />

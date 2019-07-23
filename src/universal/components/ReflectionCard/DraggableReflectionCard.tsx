@@ -6,11 +6,8 @@ import {DraggableReflectionCard_reflection} from '__generated__/DraggableReflect
 import React, {Component, ReactElement} from 'react'
 import {DragSource as dragSource} from 'react-dnd'
 import {getEmptyImage} from 'react-dnd-html5-backend'
-import {css} from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import EndDraggingReflectionMutation from 'universal/mutations/EndDraggingReflectionMutation'
 import StartDraggingReflectionMutation from 'universal/mutations/StartDraggingReflectionMutation'
 import {
@@ -26,13 +23,14 @@ import clientTempId from 'universal/utils/relay/clientTempId'
 import {MasonryAtmosphere, MasonryDragEndPayload, SetItemRef} from '../PhaseItemMasonry'
 import {MasonryDropResult} from '../ReflectionGroup/ReflectionGroup'
 import ReflectionCard from './ReflectionCard'
+import {ClassNames} from '@emotion/core'
 
 interface Props extends WithAtmosphereProps {
-  closeGroupModal? (): void
+  closeGroupModal?(): void
 
-  connectDragPreview (reactEl: HTMLImageElement): void
+  connectDragPreview(reactEl: HTMLImageElement): void
 
-  connectDragSource (reactEl: ReactElement<{}>): ReactElement<{}>
+  connectDragSource(reactEl: ReactElement<{}>): ReactElement<{}>
 
   reflection: DraggableReflectionCard_reflection
 
@@ -45,29 +43,29 @@ interface Props extends WithAtmosphereProps {
   isSingleCardGroup: boolean
 }
 
-const hiddenWhileDraggingStyle = css({
+const hiddenWhileDraggingStyle = {
   opacity: 0,
   cursor: 'default'
-})
+}
 
-const hiddenAndInvisibleWhileDraggingStyle = css({
+const hiddenAndInvisibleWhileDraggingStyle = {
   opacity: 0,
   cursor: 'default',
   position: 'absolute'
-})
+}
 
-const modalTopStyle = css({
+const modalTopStyle = {
   position: 'absolute',
   zIndex: 1
-})
+}
 
-const modalStyle = css({
+const modalStyle = {
   position: 'absolute',
   top: 0,
   zIndex: 1
-})
+}
 
-const hiddenCardStyle = css({
+const hiddenCardStyle = {
   overflow: 'hidden',
   opacity: 0,
   position: 'absolute',
@@ -77,7 +75,7 @@ const hiddenCardStyle = css({
   right: -6,
   bottom: -2,
   width: REFLECTION_CARD_WIDTH
-})
+}
 
 const HIDE_LINES_HACK_STYLES = {
   background: cardBackgroundColor,
@@ -119,13 +117,13 @@ const CARD_IN_STACK = {
   }
 }
 
-const topCardStyle = css({
+const topCardStyle = {
   cursor: 'pointer',
   position: 'relative',
   zIndex: 2
-})
+}
 
-const secondCardStyle = css({
+const secondCardStyle = {
   ...CARD_IN_STACK,
   bottom: -cardStackPerspectiveY,
   left: cardStackPerspectiveX,
@@ -136,17 +134,17 @@ const secondCardStyle = css({
     transformOrigin: 'left',
     width: REFLECTION_CARD_WIDTH
   }
-} as any)
+} as any
 
-const thirdCardStyle = css({
+const thirdCardStyle = {
   ...CARD_IN_STACK,
   bottom: -(cardStackPerspectiveY * 2),
   left: cardStackPerspectiveX * 2,
   right: cardStackPerspectiveX * 2,
   top: cardStackPerspectiveY * 2
-} as any)
+} as any
 
-const getClassName = (idx, dragContext, isModal) => {
+const getStyleObj = (idx: number, dragContext: any, isModal: boolean) => {
   const isTopCard = idx === 0
   const isDragging = Boolean(dragContext)
   if (isDragging) {
@@ -186,13 +184,20 @@ class DraggableReflectionCard extends Component<Props> {
   render () {
     const {connectDragSource, reflection, setItemRef, idx, isModal} = this.props
     const {dragContext, reflectionId} = reflection
-    const className = getClassName(idx, dragContext, isModal)
+    return (
+      <ClassNames>
+        {({css}) => {
+          return (
+            connectDragSource(
+              // the `id` is in the case when the ref callback isn't called in time
+              <div className={css(getStyleObj(idx, dragContext, isModal))} ref={setItemRef(reflectionId, isModal)} id={reflectionId}>
+                <ReflectionCard readOnly userSelect='none' reflection={reflection} showOriginFooter />
+              </div>
+            )
+          )
+        }}
+      </ClassNames>
 
-    return connectDragSource(
-      // the `id` is in the case when the ref callback isn't called in time
-      <div className={className} ref={setItemRef(reflectionId, isModal)} id={reflectionId}>
-        <ReflectionCard readOnly userSelect='none' reflection={reflection} showOriginFooter />
-      </div>
     )
   }
 }

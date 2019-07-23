@@ -3,7 +3,7 @@ import React from 'react'
 import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 

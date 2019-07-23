@@ -1,11 +1,11 @@
-import React, {Ref} from 'react'
+import React, {forwardRef, Ref} from 'react'
 import AvatarBadge from 'universal/components/AvatarBadge/AvatarBadge'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 
 type ImageBlockProps = Pick<Props, 'sansRadius' | 'sansShadow' | 'picture' | 'size' | 'onClick'>
 
-const ImageBlock = styled('div')(
-  ({sansRadius, sansShadow, picture, size, onClick}: ImageBlockProps) => ({
+const ImageBlock = styled('div')<ImageBlockProps>(
+  ({sansRadius, sansShadow, picture, size, onClick}) => ({
     backgroundImage: `url(${picture})`,
     backgroundPosition: 'center center',
     backgroundRepeat: 'no-repeat',
@@ -49,7 +49,7 @@ interface Props {
   size: number
 }
 
-const Avatar = (props: Props) => {
+const Avatar = forwardRef((props: Props, ref: any) => {
   const {
     hasBadge,
     isCheckedIn,
@@ -58,13 +58,12 @@ const Avatar = (props: Props) => {
     picture,
     sansRadius,
     sansShadow,
-    innerRef,
     size
   } = props
 
   return (
     <ImageBlock
-      innerRef={innerRef}
+      ref={ref}
       onClick={onClick}
       sansRadius={sansRadius}
       sansShadow={sansShadow}
@@ -80,6 +79,6 @@ const Avatar = (props: Props) => {
       )}
     </ImageBlock>
   )
-}
+})
 
 export default Avatar

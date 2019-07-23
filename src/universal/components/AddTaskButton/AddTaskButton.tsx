@@ -1,5 +1,5 @@
-import React, {forwardRef} from 'react'
-import styled from 'react-emotion'
+import React, {forwardRef, Ref} from 'react'
+import styled from '@emotion/styled'
 import IconLabel from 'universal/components/IconLabel'
 import RaisedButton from 'universal/components/RaisedButton'
 
@@ -17,7 +17,7 @@ interface Props {
   onMouseEnter?: (e: React.MouseEvent) => void
 }
 
-const AddTaskButton = forwardRef((props: Props, ref: any) => {
+const AddTaskButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
   const {label, onClick, onMouseEnter} = props
   return (
     <StyledButton
@@ -25,7 +25,7 @@ const AddTaskButton = forwardRef((props: Props, ref: any) => {
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       palette='white'
-      innerRef={ref}
+      ref={ref}
     >
       <IconLabel icon='add' />
     </StyledButton>

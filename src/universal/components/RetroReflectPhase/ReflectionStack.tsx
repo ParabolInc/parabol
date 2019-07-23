@@ -1,6 +1,6 @@
 import {PhaseItemColumn_meeting} from '__generated__/PhaseItemColumn_meeting.graphql'
 import React, {Component} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
 import ExpandedReflectionStack from 'universal/components/RetroReflectPhase/ExpandedReflectionStack'
 import getBBox from 'universal/components/RetroReflectPhase/getBBox'
@@ -26,14 +26,14 @@ interface Props {
   phaseEditorRef: React.RefObject<HTMLDivElement>
   phaseRef: React.RefObject<HTMLDivElement>
   readOnly: boolean
-  reflectionStack: ReadonlyArray<PhaseItemColumn_meeting['reflectionGroups'][0]['reflections'][0]>
+  reflectionStack: readonly PhaseItemColumn_meeting['reflectionGroups'][0]['reflections'][0][]
 }
 
 interface State {
   isExpanded: boolean
 }
 
-const CardStack = styled('div')(({isVisible}: {isVisible: boolean}) => ({
+const CardStack = styled('div')<{isVisible: boolean}>(({isVisible}) => ({
   alignItems: 'flex-start',
   display: 'flex',
   justifyContent: 'center',
@@ -86,8 +86,8 @@ const CARD_IN_STACK = {
   }
 }
 
-const ReflectionWrapper = styled('div')(
-  ({count, idx}: {count: number; idx: number}): any => {
+const ReflectionWrapper = styled('div')<{count: number; idx: number}>(
+  ({count, idx}): any => {
     switch (count - idx) {
       case 1:
         return {
@@ -196,7 +196,7 @@ class ReflectionStack extends Component<Props, State> {
     const {idx, reflectionStack, phaseItemId, phaseRef, meetingId, readOnly} = this.props
     const {isExpanded} = this.state
     if (reflectionStack.length === 0) {
-      return <ReflectionStackPlaceholder idx={idx} innerRef={this.placeholderRef} />
+      return <ReflectionStackPlaceholder idx={idx} ref={this.placeholderRef} />
     }
     const maxStack = reflectionStack.slice(Math.max(0, reflectionStack.length - 3))
     return (
@@ -212,7 +212,7 @@ class ReflectionStack extends Component<Props, State> {
           firstReflectionRef={this.firstReflectionRef}
           readOnly={readOnly}
         />
-        <CardStack onClick={this.expand} isVisible={!isExpanded} innerRef={this.stackRef}>
+        <CardStack onClick={this.expand} isVisible={!isExpanded} ref={this.stackRef}>
           <CenteredCardStack>
             {maxStack.length === 1 && (
               <div ref={this.firstReflectionRef}>
@@ -231,7 +231,7 @@ class ReflectionStack extends Component<Props, State> {
                     key={reflection.id}
                     idx={idx}
                     count={maxStack.length}
-                    innerRef={idx === maxStack.length - 1 ? this.firstReflectionRef : undefined}
+                    ref={idx === maxStack.length - 1 ? this.firstReflectionRef : undefined}
                   >
                     <ReflectionCard
                       meetingId={meetingId}

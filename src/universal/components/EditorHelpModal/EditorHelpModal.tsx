@@ -1,6 +1,6 @@
 import UserAgent from 'fbjs/lib/UserAgent'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import IconButton from 'universal/components/IconButton'
 import IconLabel from 'universal/components/IconLabel'
 import appTheme from 'universal/styles/theme/appTheme'
@@ -39,7 +39,7 @@ const CloseButton = styled(IconButton)({
   width: 28
 })
 
-const HelpList = styled('div')(({listIndex}: {listIndex: number}) => ({
+const HelpList = styled('div')<{listIndex: number}>(({listIndex}) => ({
   border: `.0625rem solid ${appTheme.palette.mid30l}`,
   color: appTheme.palette.dark50d,
   fontSize: appTheme.typography.s2,
@@ -49,7 +49,7 @@ const HelpList = styled('div')(({listIndex}: {listIndex: number}) => ({
   textAlign: 'left'
 }))
 
-const HelpRow = styled('div')(({shortcutIndex}: {shortcutIndex: number}) => ({
+const HelpRow = styled('div')<{shortcutIndex: number}>(({shortcutIndex}) => ({
   alignItems: 'center',
   backgroundColor: shortcutIndex % 2 ? ui.palette.white : appTheme.palette.mid10l,
   display: 'flex',

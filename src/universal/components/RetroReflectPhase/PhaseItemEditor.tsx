@@ -143,7 +143,7 @@ class PhaseItemEditor extends Component<Props, State> {
     const {editorState} = this.state
     const {phaseEditorRef} = this.props
     return (
-      <ReflectionCardRoot innerRef={phaseEditorRef}>
+      <ReflectionCardRoot ref={phaseEditorRef}>
         <ReflectionEditorWrapper
           ariaLabel='Edit this reflection'
           editorState={editorState}

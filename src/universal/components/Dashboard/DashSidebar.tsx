@@ -1,6 +1,6 @@
 import {DashSidebar_viewer} from '__generated__/DashSidebar_viewer.graphql'
 import React from 'react'
-import styled, {css} from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {NavLink} from 'react-router-dom'
 import tinycolor from 'tinycolor2'
@@ -13,6 +13,7 @@ import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import DashNavItem from './DashNavItem'
+import {ClassNames} from '@emotion/core'
 
 export const enum DASH_SIDEBAR {
   BREAKPOINT = 800,
@@ -78,7 +79,7 @@ const NavLabel = styled('div')({
   textTransform: 'uppercase'
 })
 
-const addTeamStyles = css({
+const addTeamStyles = {
   ...linkBaseStyles,
   alignItems: 'center',
   borderLeft: `${ui.navMenuLeftBorderWidth} solid transparent`,
@@ -96,9 +97,9 @@ const addTeamStyles = css({
     backgroundColor: ui.navMenuDarkBackgroundColorHover,
     opacity: 1
   })
-})
+}
 
-const disabledAddTeamStyles = css({
+const disabledAddTeamStyles = {
   backgroundColor: ui.navMenuDarkBackgroundColorActive,
   cursor: 'default',
   opacity: 1,
@@ -107,7 +108,7 @@ const disabledAddTeamStyles = css({
     backgroundColor: ui.navMenuDarkBackgroundColorActive,
     opacity: 1
   })
-})
+}
 
 const AddTeamIcon = styled(Icon)({
   fontSize: MD_ICONS_SIZE_18,
@@ -141,16 +142,22 @@ const DashSidebar = (props: Props) => {
           <NavMain>
             <DashNavList viewer={viewer} onClick={handleMenuClick} />
           </NavMain>
-          <NavLink
-            onClick={handleMenuClick}
-            className={addTeamStyles}
-            activeClassName={disabledAddTeamStyles}
-            title='Add New Team'
-            to='/newteam/1'
-          >
-            <AddTeamIcon>add_circle</AddTeamIcon>
-            <AddTeamLabel>{'Add New Team'}</AddTeamLabel>
-          </NavLink>
+          <ClassNames>
+            {({css}) => {
+              return (
+                <NavLink
+                  onClick={handleMenuClick}
+                  className={css(addTeamStyles)}
+                  activeClassName={css(disabledAddTeamStyles)}
+                  title='Add New Team'
+                  to='/newteam/1'
+                >
+                  <AddTeamIcon>add_circle</AddTeamIcon>
+                  <AddTeamLabel>{'Add New Team'}</AddTeamLabel>
+                </NavLink>
+              )
+            }}
+          </ClassNames>
         </Nav>
       </NavBlock>
       <LogoBlock variant='white' onClick={handleMenuClick} />

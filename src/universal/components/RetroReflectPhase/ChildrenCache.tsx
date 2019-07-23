@@ -19,7 +19,7 @@ interface CachedChild {
 }
 
 class ChildrenCache {
-  cache: Array<CachedChild> = []
+  cache: CachedChild[] = []
   childPadding: number = 0
   childWidth: number = 0
   gridPadding: number = 0
@@ -34,9 +34,9 @@ class ChildrenCache {
     const fullColumnWidth = this.childWidth + this.childPadding
     const maxCols = Math.floor(this.maxWidth / fullColumnWidth)
     let bestPerimeter = 1e6
-    let result = {height: 0, width: 0, children: [] as Array<Point>}
+    let result = {height: 0, width: 0, children: [] as Point[]}
     for (let ii = 1; ii < maxCols; ii++) {
-      const proposedChildren = [] as Array<Point>
+      const proposedChildren = [] as Point[]
       const currentColumnHeights = new Array(ii).fill(this.gridPadding)
       const modalColumnLefts = currentColumnHeights.map(
         (_, idx) => fullColumnWidth * idx + this.gridPadding
@@ -190,7 +190,7 @@ class ChildrenCache {
     return this.updateChildren()
   }
 
-  removeKeys (keys: Array<string>) {
+  removeKeys (keys: string[]) {
     keys.forEach((key) => {
       const cachedChild = this.get(key)
       if (!cachedChild) return

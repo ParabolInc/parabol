@@ -1,8 +1,7 @@
-import React, {Component, ReactNode, Ref} from 'react'
+import React, {forwardRef, ReactNode, Ref, useState} from 'react'
 import styled from '@emotion/styled'
 import ui from 'universal/styles/ui'
 import PlainButton, {PlainButtonProps} from 'universal/components/PlainButton/PlainButton'
-import withInnerRef from 'universal/decorators/withInnerRef'
 import elevation from 'universal/styles/elevation'
 
 const isValidElevation = (elevation) => elevation >= 0 && elevation <= 24
@@ -58,7 +57,6 @@ export interface BaseButtonProps extends PlainButtonProps {
   className?: string
   elevationHovered?: number
   elevationResting?: number
-  innerRef?: Ref<any>
   onClick?: React.MouseEventHandler
   onMouseDown?: React.MouseEventHandler
   onMouseEnter?: React.MouseEventHandler
@@ -66,87 +64,68 @@ export interface BaseButtonProps extends PlainButtonProps {
   style?: object
 }
 
-interface State {
-  pressedDown: boolean
-}
+const BaseButton = forwardRef((props: BaseButtonProps, ref: Ref<HTMLButtonElement>) => {
+  const {
+    onMouseDown, onMouseLeave, 'aria-label': ariaLabel,
+    size = 'small',
+    children,
+    className,
+    disabled,
+    elevationHovered,
+    elevationResting,
+    onClick,
+    onMouseEnter,
+    style,
+    waiting
+  } = props
+  const hasDisabledStyles = !!(disabled || waiting)
 
-class BaseButton extends Component<BaseButtonProps, State> {
-  state: State = {
-    pressedDown: false
-  }
+  const [pressedDown, setPressedDown] = useState(false)
 
-  onMouseDown = (e) => {
+  const handleMouseDown = (e: React.MouseEvent) => {
     if (e.button === 0) {
-      this.setState({pressedDown: true})
+      setPressedDown((true))
     }
-    const {onMouseDown} = this.props
     onMouseDown && onMouseDown(e)
   }
 
-  onMouseUp = (e) => {
-    if (this.state.pressedDown) {
-      this.setState({pressedDown: false})
-    }
+  const handleMouseUp = (e: React.MouseEvent) => {
+    setPressedDown(false)
     // We don’t want 'focus' styles to linger after the click (TA)
     // wait till next tick because other components might need to use the button as the relativeTarget when they get blurred
     // pull the target out of the event so react can recycle the event
     const {currentTarget} = e
-    setTimeout(() => currentTarget.blur())
+    setTimeout(() => (currentTarget as HTMLElement).blur())
   }
 
-  onMouseLeave = (e) => {
-    if (this.state.pressedDown) {
-      this.setState({pressedDown: false})
-    }
-    const {onMouseLeave} = this.props
-    if (onMouseLeave) {
-      onMouseLeave(e)
-    }
+  const handleMouseLeave = (e: React.MouseEvent) => {
+    setPressedDown(false)
+    onMouseLeave && onMouseLeave(e)
   }
 
-  render () {
-    const {
-      'aria-label': ariaLabel,
-      size = 'small',
-      children,
-      className,
-      disabled,
-      elevationHovered,
-      elevationResting,
-      innerRef,
-      onClick,
-      onMouseEnter,
-      style,
-      waiting
-    } = this.props
+  // spread props to allow for html attributes like type when needed
+  return (
+    <ButtonRoot
+      {...props}
+      aria-label={ariaLabel}
+      className={className}
+      disabled={hasDisabledStyles}
+      elevationHovered={elevationHovered}
+      elevationResting={elevationResting}
+      ref={ref}
+      onClick={onClick}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      pressedDown={!hasDisabledStyles && pressedDown}
+      size={size}
+      style={style}
+      waiting={waiting}
+    >
+      {children}
+    </ButtonRoot>
+  )
+})
 
-    const {pressedDown} = this.state
-    const hasDisabledStyles = !!(disabled || waiting)
-
-    // spread props to allow for html attributes like type when needed
-    return (
-      <ButtonRoot
-        {...this.props}
-        aria-label={ariaLabel}
-        className={className}
-        disabled={hasDisabledStyles}
-        elevationHovered={elevationHovered}
-        elevationResting={elevationResting}
-        innerRef={innerRef}
-        onClick={onClick}
-        onMouseDown={this.onMouseDown}
-        onMouseUp={this.onMouseUp}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={this.onMouseLeave}
-        pressedDown={!hasDisabledStyles && pressedDown}
-        size={size}
-        style={style}
-        waiting={waiting}
-      >
-        {children}
-      </ButtonRoot>
-    )
-  }
-}
-
-export default withInnerRef(BaseButton)
+export default BaseButton

@@ -2,6 +2,8 @@ import {makePlaceholderStylesString} from 'universal/styles/helpers/makePlacehol
 import appTheme from 'universal/styles/theme/appTheme'
 import fontLoader from 'universal/styles/theme/fontLoader'
 import ui from 'universal/styles/ui'
+import {FONT_FAMILY} from 'universal/styles/typographyV2'
+import {PALETTE} from 'universal/styles/paletteV2'
 
 const placeholderStyles = makePlaceholderStylesString(ui.placeholderColor)
 
@@ -28,14 +30,14 @@ const draftStyles = `
   }
   
   .draft-codeblock {
-    background-color: #F1F0FA;
+    background-color: ${PALETTE.BACKGROUND_MAIN};
     border-left: 2px #49327266 solid;
-     border-radius: 1px;
-     font-family: ${appTheme.typography.monospace};
-     font-size: 13px;
-     line-height: 1.5;
-     margin: 0;
-     padding: 0 8px;
+    border-radius: 1px;
+    font-family: ${FONT_FAMILY.MONOSPACE};
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0 8px;
   }
 `
 

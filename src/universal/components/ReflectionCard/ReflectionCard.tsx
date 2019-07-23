@@ -1,7 +1,7 @@
 import {ReflectionCard_reflection} from '__generated__/ReflectionCard_reflection.graphql'
 import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
-import React, {Component, ReactElement} from 'react'
-import styled from 'react-emotion'
+import React, {Component} from 'react'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper'
 import ReflectionFooter from 'universal/components/ReflectionFooter'
@@ -29,7 +29,7 @@ interface Props extends WithMutationProps, WithAtmosphereProps {
   shadow?: string
   showOriginFooter?: boolean
   userSelect?: 'text' | 'none'
-  innerRef?: (c: ReactElement<any>) => void
+  innerRef?: (c: HTMLDivElement | null) => void
 }
 
 interface State {
@@ -42,7 +42,7 @@ interface ReflectionCardRootProps {
   shadow?: string | null
 }
 
-export const ReflectionCardRoot = styled('div')(
+export const ReflectionCardRoot = styled('div')<ReflectionCardRootProps>(
   {
     backgroundColor: cardBackgroundColor,
     borderRadius: cardBorderRadius,
@@ -53,7 +53,7 @@ export const ReflectionCardRoot = styled('div')(
     transition: `box-shadow 2000ms ${DECELERATE}`,
     width: reflectionCardWidth
   },
-  ({isClosing, shadow}: ReflectionCardRootProps) =>
+  ({isClosing, shadow}) =>
     shadow !== null && {
       boxShadow: isClosing ? cardShadow : shadow
     }
@@ -169,7 +169,7 @@ class ReflectionCard extends Component<Props, State> {
       reflectionId
     } = reflection
     return (
-      <ReflectionCardRoot shadow={shadow} innerRef={innerRef}>
+      <ReflectionCardRoot shadow={shadow} ref={innerRef}>
         <ReflectionEditorWrapper
           ariaLabel='Edit this reflection'
           editorRef={this.editorRef}

@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import ui from 'universal/styles/ui'
 
 const Base = styled('label')({

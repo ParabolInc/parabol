@@ -1,11 +1,11 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import appTheme from 'universal/styles/theme/appTheme'
 import logoMarkPrimary from 'universal/styles/theme/images/brand/mark-primary.svg'
 import logoMarkWhite from 'universal/styles/theme/images/brand/mark-white.svg'
 
-const RootBlock = styled('div')(({variant}: {variant: 'primary' | 'white'}) => ({
+const RootBlock = styled('div')<{variant: 'primary' | 'white'}>(({variant}) => ({
   alignItems: 'flex-end',
   borderTop: variant === 'primary' ? `.0625rem solid ${appTheme.palette.mid10a}` : undefined,
   boxSizing: 'content-box',

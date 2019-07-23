@@ -1,7 +1,7 @@
 import {TemplatePromptItem_prompt} from '__generated__/TemplatePromptItem_prompt.graphql'
 import React, {Component} from 'react'
 import {DraggableProvided} from 'react-beautiful-dnd'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import Icon from 'universal/components/Icon'
 import withAtmosphere, {
@@ -109,7 +109,7 @@ class TemplatePromptItem extends Component<Props, State> {
     const {isEditingDescription, isHover} = this.state
     return (
       <PromptItem
-        innerRef={dragProvided.innerRef}
+        ref={dragProvided.innerRef as any}
         {...dragProvided.dragHandleProps}
         {...dragProvided.draggableProps}
         isDragging={isDragging}

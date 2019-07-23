@@ -1,5 +1,5 @@
 import React, {forwardRef, useEffect} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {LoadingDelayRef} from 'universal/hooks/useLoadingDelay'
 import Spinner from 'universal/modules/spinner/components/Spinner/Spinner'
 import {PALETTE} from 'universal/styles/paletteV2'
@@ -11,8 +11,8 @@ interface WrapperProps {
   width?: string | number
 }
 
-const LoadingWrapper = styled('div')(
-  ({height = 'fill-available', width = 'fill-available'}: WrapperProps) => ({
+const LoadingWrapper = styled('div')<WrapperProps>(
+  ({height = 'fill-available', width = 'fill-available'}) => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
@@ -22,7 +22,7 @@ const LoadingWrapper = styled('div')(
   })
 )
 
-type Props = {
+interface Props {
   delay?: number
   height?: number | string
   width?: number | string
@@ -56,7 +56,7 @@ const LoadingComponent = forwardRef((props: Props, ref: any) => {
   }, [])
   if (showAfter && !minDelay) return null
   return (
-    <LoadingWrapper innerRef={ref} height={height} width={width}>
+    <LoadingWrapper ref={ref} height={height} width={width}>
       <Spinner
         delay={delay}
         fill={timedOut ? PALETTE.ERROR_MAIN : PALETTE.BACKGROUND_TEAL}

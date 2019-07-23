@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import ui from 'universal/styles/ui'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 
 const FieldLabelStyles = styled('label')(({customStyles, fieldSize, indent, inline}) => {
   const size = fieldSize || ui.buttonSizeOptions[1]

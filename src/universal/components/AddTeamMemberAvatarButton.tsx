@@ -82,7 +82,7 @@ const AddTeamMemberAvatarButton = (props: Props) => {
         onMouseEnter={openTooltip}
         onMouseLeave={closeTooltip}
         onClick={toggleModal}
-        innerRef={originRef}
+        ref={originRef}
         isMeeting={isMeeting}
         palette='blue'
       >

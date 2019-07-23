@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import StyledError from 'universal/components/StyledError'
 import {PALETTE} from '../../styles/paletteV2'
 import {FONT_FAMILY} from '../../styles/typographyV2'
@@ -60,7 +60,7 @@ const UnderlineInput = (props: Props) => {
       <Input
         autoFocus={autoFocus}
         disabled={Boolean(disabled)}
-        innerRef={innerRef}
+        ref={innerRef}
         name={name}
         placeholder={placeholder}
         onBlur={onBlur}

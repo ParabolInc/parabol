@@ -6,7 +6,7 @@ import React, {
   ReactInstance,
   ReactNode
 } from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {PALETTE} from 'universal/styles/paletteV2'
 import getBBox from 'universal/components/RetroReflectPhase/getBBox'
 import {findDOMNode} from 'react-dom'
@@ -85,7 +85,7 @@ class Tabs extends Component<Props> {
       })
     })
     return (
-      <TabsAndBar className={className} innerRef={this.setParentRef}>
+      <TabsAndBar className={className} ref={this.setParentRef}>
         <TabHeaders>{properChildren}</TabHeaders>
         <InkBar style={{transform}} />
       </TabsAndBar>

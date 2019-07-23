@@ -1,4 +1,4 @@
-import React, {forwardRef, ReactElement} from 'react'
+import React, {forwardRef, ReactElement, Ref} from 'react'
 import styled from '@emotion/styled'
 import Icon from 'universal/components/Icon'
 import useMenu from 'universal/hooks/useMenu'
@@ -58,7 +58,7 @@ interface Props {
   size?: string
 }
 
-const DropdownMenuToggle = forwardRef((props: Props, ref: any) => {
+const DropdownMenuToggle = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
   const {className, onClick, onMouseEnter, defaultText, disabled, flat, size} = props
   return (
     <DropdownBlock

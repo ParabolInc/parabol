@@ -2,7 +2,6 @@ import {Editor, EditorState, getDefaultKeyBinding} from 'draft-js'
 import PropTypes from 'prop-types'
 import React, {Component, Suspense} from 'react'
 import withMarkdown from 'universal/components/TaskEditor/withMarkdown'
-import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import {textTags} from 'universal/utils/constants'
 import entitizeText from 'universal/utils/draftjs/entitizeText'
@@ -11,7 +10,7 @@ import withKeyboardShortcuts from './withKeyboardShortcuts'
 import withLinks from './withLinks'
 import withSuggestions from './withSuggestions'
 import withEmojis from 'universal/components/TaskEditor/withEmojis'
-import styled, {css} from 'react-emotion'
+import styled from '@emotion/styled'
 import lazyPreload from 'universal/utils/lazyPreload'
 import isRichDraft from 'universal/utils/draftjs/isRichDraft'
 import isAndroid from 'universal/utils/draftjs/isAndroid'
@@ -23,26 +22,10 @@ const RootEditor = styled('div')(({noText}) => ({
   height: noText ? '2.75rem' : undefined // Use this if the placeholder wraps
 }))
 
-const editorBlockquoteStyles = css({
-  fontStyle: 'italic',
-  borderLeft: `.125rem ${appTheme.palette.mid40a} solid`,
-  margin: '.5rem 0',
-  padding: '0 .5rem'
-})
-
-const codeBlockStyles = css({
-  backgroundColor: appTheme.palette.light,
-  borderLeft: `.125rem ${appTheme.palette.mid40a} solid`,
-  borderRadius: '.0625rem',
-  fontFamily: appTheme.typography.monospace,
-  fontSize: appTheme.typography.s2,
-  lineHeight: appTheme.typography.s6,
-  margin: '0',
-  padding: '0 .5rem'
-})
-
 const AndroidEditorFallback = lazyPreload(() =>
-  import(/* webpackChunkName: 'AndroidEditorFallback' */ 'universal/components/AndroidEditorFallback')
+  import(
+    /* webpackChunkName: 'AndroidEditorFallback' */ 'universal/components/AndroidEditorFallback'
+  )
 )
 
 const TaskEditorFallback = styled(AndroidEditorFallback)({
@@ -87,11 +70,11 @@ class TaskEditor extends Component {
   blockStyleFn = (contentBlock) => {
     const type = contentBlock.getType()
     if (type === 'blockquote') {
-      return editorBlockquoteStyles
+      return 'draft-blockquote'
     } else if (type === 'code-block') {
-      return codeBlockStyles
+      return 'draft-codeblock'
     }
-    return undefined
+    return ''
   }
 
   removeModal = () => {

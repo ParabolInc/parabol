@@ -156,7 +156,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
             <BottomNavControl
               isBouncing={minTimeComplete}
               onClick={() => gotoNext()}
-              innerRef={gotoNextRef}
+              ref={gotoNextRef}
               onKeyDown={handleRightArrow(() => gotoNext())}
             >
               <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={label} />

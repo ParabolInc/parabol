@@ -32,7 +32,7 @@ const TaskFooterTagMenuToggle = (props: Props) => {
     <>
       <CardButton
         onMouseEnter={TaskFooterTagMenu.preload}
-        innerRef={originRef}
+        ref={originRef}
         onClick={togglePortal}
       >
         <IconLabel icon='more_vert' />

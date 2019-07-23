@@ -5,12 +5,12 @@
  */
 
 import React, {Fragment} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
 
-const SeparatorContainer = styled('div')(({margin}: {margin: string | number | undefined}) => ({
+const SeparatorContainer = styled('div')<{margin: string | number | undefined}>(({margin}) => ({
   color: ui.labelHeadingColor,
   display: 'flex',
   fontSize: '.6875rem',
@@ -46,7 +46,7 @@ const FullSeparator = styled('div')({
   flex: 1
 })
 
-type Props = {
+interface Props {
   margin?: string
   text?: string
 }

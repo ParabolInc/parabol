@@ -1,6 +1,6 @@
 import {PhaseItemColumn_meeting} from '__generated__/PhaseItemColumn_meeting.graphql'
 import React, {Component} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import ResizeObserverPolyfill from 'resize-observer-polyfill'
 import Modal from 'universal/components/Modal'
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
@@ -16,7 +16,7 @@ interface Props {
   phaseRef: React.RefObject<HTMLDivElement>
   stackRef: React.RefObject<HTMLDivElement>
   firstReflectionRef: React.RefObject<HTMLDivElement>
-  reflectionStack: ReadonlyArray<PhaseItemColumn_meeting['reflectionGroups'][0]['reflections'][0]>
+  reflectionStack: readonly PhaseItemColumn_meeting['reflectionGroups'][0]['reflections'][0][]
   meetingId: string
   phaseItemId: string
   readOnly: boolean
@@ -112,7 +112,7 @@ class ExpandedReflectionStack extends Component<Props, State> {
                   <ModalReflectionWrapper
                     key={reflection.id}
                     style={{zIndex: idx + 1}}
-                    innerRef={this.setItemRef}
+                    ref={this.setItemRef}
                     id={reflection.id}
                   >
                     <ReflectionCard

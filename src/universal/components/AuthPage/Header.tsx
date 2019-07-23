@@ -3,7 +3,7 @@
  *
  */
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {Link} from 'react-router-dom'
 
 import ui from 'universal/styles/ui'

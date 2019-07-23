@@ -8,7 +8,7 @@ interface Props {
   onMouseEnter: () => void
 }
 
-const DashFilterToggle = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
+const DashFilterToggle = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
   const {label, onClick, onMouseEnter} = props
   return (
     <LinkButton
@@ -16,7 +16,7 @@ const DashFilterToggle = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       palette='midGray'
-      innerRef={ref}
+      ref={ref}
     >
       <IconLabel icon='expand_more' iconAfter label={label} />
     </LinkButton>

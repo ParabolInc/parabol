@@ -1,11 +1,11 @@
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import HelpMenuCopy from 'universal/components/MeetingHelp/HelpMenuCopy'
 import React from 'react'
 import Ellipsis from 'universal/components/Ellipsis/Ellipsis'
 
-const StyledHelpMenuCopy = styled(HelpMenuCopy)(({margin}: {margin: string}) => ({margin}))
+const StyledHelpMenuCopy = styled(HelpMenuCopy)<{margin: string}>(({margin}) => ({margin}))
 
-const DelayedCopyInner = styled('span')(({show, thresh}: {show: number; thresh: number}) => ({
+const DelayedCopyInner = styled('span')<{show: number; thresh: number}>(({show, thresh}) => ({
   opacity: show >= thresh ? 1 : 0,
   transform: show >= thresh ? 'translateY(0)' : 'translateY(10px)',
   transition: `all 500ms`

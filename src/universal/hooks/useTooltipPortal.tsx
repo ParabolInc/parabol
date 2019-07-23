@@ -1,5 +1,5 @@
 import React, {ReactElement, ReactPortal} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import TooltipBackground from 'universal/hooks/TooltipBackground'
 import {UseCoordsValue} from 'universal/hooks/useCoords'
 import {PortalStatus} from 'universal/hooks/usePortal'
@@ -12,13 +12,13 @@ const TooltipBlock = styled('div')({
 
 const useTooltipPortal = (
   portal: (el: ReactElement) => ReactPortal | null,
-  targetRef: (el: HTMLElement) => void,
+  targetRef: (el: HTMLDivElement | null) => void,
   coords: UseCoordsValue,
   portalStatus: PortalStatus
 ) => {
   return (reactEl) => {
     return portal(
-      <TooltipBlock innerRef={targetRef} style={{...coords}}>
+      <TooltipBlock ref={targetRef as any} style={{...coords}}>
         <TooltipBackground portalStatus={portalStatus}>{reactEl}</TooltipBackground>
       </TooltipBlock>
     )

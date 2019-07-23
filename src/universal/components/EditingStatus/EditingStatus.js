@@ -6,7 +6,7 @@ import Ellipsis from 'universal/components/Ellipsis/Ellipsis'
 import {createFragmentContainer} from 'react-relay'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import DueDateToggle from 'universal/components/DueDateToggle'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import relativeDate from 'universal/utils/date/relativeDate'
 
 const StatusHeader = styled('div')({

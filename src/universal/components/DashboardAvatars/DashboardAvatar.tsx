@@ -1,6 +1,6 @@
 import {DashboardAvatar_teamMember} from '__generated__/DashboardAvatar_teamMember.graphql'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import Avatar from 'universal/components/Avatar/Avatar'
 import Tag from 'universal/components/Tag/Tag'
@@ -20,7 +20,7 @@ const AvatarAndTag = styled('div')({
   flexDirection: 'column',
   alignItems: 'center'
 })
-const AvatarTag = styled(Tag)(({isLead}: {isLead: boolean}) => ({
+const AvatarTag = styled(Tag)<{isLead: boolean}>(({isLead}) => ({
   bottom: '-1.5rem',
   marginLeft: 0,
   opacity: isLead ? 1 : 0,
@@ -69,7 +69,7 @@ const DashboardAvatar = (props: Props) => {
         {...teamMember}
         picture={picture || defaultUserAvatar}
         hasBadge
-        innerRef={originRef}
+        ref={originRef}
         isConnected={!!isConnected}
         onClick={togglePortal}
         size={32}

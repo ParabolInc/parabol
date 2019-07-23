@@ -94,7 +94,7 @@ class ScrollableBlock extends Component {
     return (
       <ScrollableRoot>
         {overflownAbove && <ScrollableShadow overflown='top' />}
-        <ScrollableInner innerRef={this.setOverflowContainerElRef}>{children}</ScrollableInner>
+        <ScrollableInner ref={this.setOverflowContainerElRef}>{children}</ScrollableInner>
         {overflownBelow && <ScrollableShadow overflown='bottom' />}
       </ScrollableRoot>
     )

@@ -3,7 +3,7 @@
  *
  */
 import React, {Component, Fragment} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import EmailInputField from 'universal/components/EmailInputField'
 import PlainButton from 'universal/components/PlainButton/PlainButton'
 import PrimaryButton from 'universal/components/PrimaryButton'
@@ -17,7 +17,7 @@ import {GotoAuathPage} from 'universal/components/GenericAuthentication'
 import DialogTitle from 'universal/components/DialogTitle'
 import {PALETTE} from 'universal/styles/paletteV2'
 
-type State = {
+interface State {
   isSent: boolean
   email: string
 }

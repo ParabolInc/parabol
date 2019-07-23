@@ -1,5 +1,5 @@
 import ui from 'universal/styles/ui'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 
 const DashSectionHeader = styled('div')({
   alignItems: 'flex-end',

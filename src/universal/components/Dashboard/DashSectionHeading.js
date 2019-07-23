@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import ui from 'universal/styles/ui'
 import Type from 'universal/components/Type/Type'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 

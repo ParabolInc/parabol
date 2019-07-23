@@ -5,7 +5,7 @@ import {ReflectionGroupTitleEditor_reflectionGroup} from '__generated__/Reflecti
  *
  */
 import React, {Component, RefObject} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
 import StyledError from 'universal/components/StyledError'
 import withAtmosphere, {
@@ -43,7 +43,7 @@ const InputWithIconWrap = styled('div')({
   display: 'flex'
 })
 
-const PencilIcon = styled(Icon)(({isExpanded}: {isExpanded?: boolean}) => ({
+const PencilIcon = styled(Icon)<{isExpanded?: boolean}>(({isExpanded}) => ({
   color: isExpanded ? '#fff' : ui.hintColor,
   display: 'block',
   fontSize: MD_ICONS_SIZE_18,
@@ -67,8 +67,8 @@ const FormBlock = styled('form')({
 })
 
 // This is gonna turn into slate, no use in spending time fixing it now
-const NameInput = styled('input')(
-  ({isExpanded, readOnly}: {isExpanded: boolean; readOnly: boolean}) => ({
+const NameInput = styled('input')<{isExpanded: boolean; readOnly: boolean}>(
+  ({isExpanded, readOnly}) => ({
     ...underlineStyles,
     ':hover,:focus,:active': {
       underlineStyles
@@ -200,7 +200,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
               onChange={this.onChange}
               placeholder={RETRO_TOPIC_LABEL}
               readOnly={readOnly}
-              innerRef={titleInputRef}
+              ref={titleInputRef}
               size={20}
               type='text'
               value={title || ''}

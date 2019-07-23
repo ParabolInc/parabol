@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {DECELERATE} from 'universal/styles/animation'
 import {switchShadow} from 'universal/styles/elevation'

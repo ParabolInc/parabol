@@ -1,7 +1,7 @@
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import DashNavTeam from 'universal/components/Dashboard/DashNavTeam'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {DashNavList_viewer} from '__generated__/DashNavList_viewer.graphql'
 // import SexyScrollbar from 'universal/components/Dashboard/SexyScrollbar'
 
@@ -39,7 +39,7 @@ const DashNavList = (props: Props) => {
 //   <SexyScrollbar>
 //     {(scrollRef) => {
 //       return (
-//         <DashNavListStyles innerRef={scrollRef}>
+//         <DashNavListStyles ref={scrollRef}>
 //           {teams.map((team) => <DashNavTeam key={team.id} location={location} team={team} />)}
 //         </DashNavListStyles>
 //       )

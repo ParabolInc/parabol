@@ -1,4 +1,4 @@
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 
 const HelpMenuHeader = styled('h3')({
   fontSize: '1em',

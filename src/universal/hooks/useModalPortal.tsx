@@ -1,5 +1,5 @@
 import React, {ReactElement, ReactPortal, Ref, Suspense, useEffect} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import ErrorBoundary from 'universal/components/ErrorBoundary'
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
 import ModalError from 'universal/components/ModalError'
@@ -97,7 +97,7 @@ const useModalPortal = (
   }, [portalStatus])
   return (reactEl) => {
     return portal(
-      <ModalBlock innerRef={targetRef}>
+      <ModalBlock ref={targetRef as any}>
         <Backdrop
           onClick={closePortal}
           background={background || PALETTE.BACKGROUND_BACKDROP}

@@ -2,7 +2,6 @@ import React, {ReactNode, RefObject} from 'react'
 import styled from '@emotion/styled'
 import ui from 'universal/styles/ui'
 import BaseButton from 'universal/components/BaseButton'
-import withInnerRef from 'universal/decorators/withInnerRef'
 
 export interface FlatButtonProps {
   size?: 'small' | 'medium' | 'large'
@@ -34,4 +33,4 @@ const FlatButton = styled(BaseButton)<FlatButtonProps>((props) => {
   }
 })
 
-export default withInnerRef(FlatButton)
+export default FlatButton

@@ -1,6 +1,6 @@
 import {EditorState, SelectionState} from 'draft-js'
 import React, {Component, RefObject} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import RaisedButton from 'universal/components/RaisedButton'
 import ui from 'universal/styles/ui'
 import completeEntity from 'universal/utils/draftjs/completeEnitity'
@@ -119,7 +119,7 @@ class EditorLinkChanger extends Component<Props> {
         onBlur={this.handleBlur}
         onKeyDown={this.handleKeyDown}
         tabIndex={-1}
-        innerRef={innerRef}
+        ref={innerRef}
       >
         <form onSubmit={this.onSubmit}>
           {text !== null && (

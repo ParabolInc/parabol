@@ -36,7 +36,7 @@ const StyledOverflow = styled(Overflow)({
   position: 'relative'
 })
 
-const StyledWrapper = styled(MeetingPhaseWrapper)<{phaseItemCount: number, innerRef: any}>(({phaseItemCount}) => ({
+const StyledWrapper = styled(MeetingPhaseWrapper)<{phaseItemCount: number}>(({phaseItemCount}) => ({
   minWidth: phaseItemCount * minWidth,
   // using position helps with overflow of columns for small screens
   position: 'absolute'
@@ -101,7 +101,7 @@ const RetroReflectPhase = (props: Props) => {
       <ErrorBoundary>
         <StageTimerDisplay stage={localStage!} />
         <StyledOverflow>
-          <StyledWrapper phaseItemCount={reflectPrompts.length} innerRef={phaseRef}>
+          <StyledWrapper phaseItemCount={reflectPrompts.length} ref={phaseRef}>
             {reflectPrompts.map((prompt, idx) => (
               <PhaseItemColumn
                 key={prompt.id}
@@ -128,7 +128,7 @@ const RetroReflectPhase = (props: Props) => {
               disabled={isEmpty}
               onClick={() => gotoNext()}
               onKeyDown={handleRightArrow(() => gotoNext())}
-              innerRef={gotoNextRef}
+              ref={gotoNextRef}
             >
               <BottomNavIconLabel
                 icon='arrow_forward'

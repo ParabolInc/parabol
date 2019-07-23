@@ -22,8 +22,8 @@ const darken = (color, amount) =>
 interface StyleProps {
   cardIsActive: boolean
   dueDate: boolean
-  isDueSoon: boolean
-  isPastDue: boolean
+  isDueSoon?: boolean
+  isPastDue?: boolean
 }
 
 const dueDateBg = PALETTE.BACKGROUND_MAIN
@@ -137,7 +137,7 @@ const DueDateToggle = (props: Props) => {
         cardIsActive={!dueDate && cardIsActive}
         dueDate={dueDate}
         {...getDateInfo(dueDate)}
-        innerRef={originRef}
+        ref={originRef}
         onClick={togglePortal}
         onMouseEnter={DueDatePicker.preload}
       >

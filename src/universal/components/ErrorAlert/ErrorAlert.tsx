@@ -6,13 +6,13 @@
  */
 import React from 'react'
 import tinycolor from 'tinycolor2'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
-type Props = {
+interface Props {
   message: string
 }
 

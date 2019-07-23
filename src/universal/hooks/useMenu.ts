@@ -16,10 +16,10 @@ export interface MenuProps {
   isDropdown: boolean
 }
 
-const useMenu = (preferredMenuPosition: MenuPosition, options: Options = {}) => {
+const useMenu = <T extends HTMLElement = HTMLButtonElement>(preferredMenuPosition: MenuPosition, options: Options = {}) => {
   const {onOpen, onClose, id, parentId, originCoords} = options
   const isDropdown = !!options.isDropdown
-  const {targetRef, originRef, coords, menuPosition} = useCoords(preferredMenuPosition, {
+  const {targetRef, originRef, coords, menuPosition} = useCoords<T>(preferredMenuPosition, {
     originCoords
   })
   if (originCoords) {

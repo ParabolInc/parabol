@@ -1,21 +1,13 @@
 import {ReflectionGroup_meeting} from '__generated__/ReflectionGroup_meeting.graphql'
 import {ReflectionGroup_reflectionGroup} from '__generated__/ReflectionGroup_reflectionGroup.graphql'
 import React, {Component} from 'react'
-import {
-  ConnectDropTarget,
-  DropTarget,
-  DropTargetConnector,
-  DropTargetMonitor,
-  DropTargetSpec
-} from 'react-dnd'
-import styled, {css} from 'react-emotion'
+import {ConnectDropTarget, DropTarget, DropTargetConnector, DropTargetMonitor, DropTargetSpec} from 'react-dnd'
+import styled from '@emotion/styled'
 import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
 import Modal from 'universal/components/Modal'
 import DraggableReflectionCard from 'universal/components/ReflectionCard/DraggableReflectionCard'
 import ReflectionGroupHeader from 'universal/components/ReflectionGroupHeader'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {STANDARD_CURVE} from 'universal/styles/animation'
 import {GROUP, REFLECTION_CARD} from 'universal/utils/constants'
 import getScaledModalBackground from 'universal/utils/multiplayerMasonry/getScaledModalBackground'
@@ -29,16 +21,11 @@ import {
 } from 'universal/utils/multiplayerMasonry/masonryConstants'
 import updateReflectionsInModal from 'universal/utils/multiplayerMasonry/updateReflectionsInModal'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import {
-  MasonryChildrenCache,
-  MasonryItemCache,
-  MasonryParentCache,
-  SetChildRef,
-  SetItemRef
-} from '../PhaseItemMasonry'
+import {MasonryChildrenCache, MasonryItemCache, MasonryParentCache, SetChildRef, SetItemRef} from '../PhaseItemMasonry'
 import {DragReflectionDropTargetTypeEnum} from 'universal/types/graphql'
 import {cardStackPerspectiveY} from 'universal/styles/cards'
 import updateColumnHeight from 'universal/utils/multiplayerMasonry/updateColumnHeight'
+import {ClassNames} from '@emotion/core'
 
 interface PassedProps {
   meeting: ReflectionGroup_meeting
@@ -55,9 +42,11 @@ interface CollectedProps {
   canDrop: boolean
 }
 
-interface Props extends WithAtmosphereProps, WithMutationProps, PassedProps, CollectedProps {}
+interface Props extends WithAtmosphereProps, WithMutationProps, PassedProps, CollectedProps {
+}
 
 const reflectionsStyle = (
+  css: any,
   canDrop: boolean | undefined,
   isDraggable: boolean | undefined,
   canExpand: boolean | undefined,
@@ -84,7 +73,7 @@ interface GroupProps {
   gutterN?: number | null
 }
 
-const GroupStyle = styled('div')(
+const GroupStyle = styled('div')<GroupProps>(
   {
     padding: CARD_PADDING,
     position: 'absolute',
@@ -92,11 +81,11 @@ const GroupStyle = styled('div')(
     display: 'block',
     transition: 'transform 200ms'
   },
-  ({gutterN}: GroupProps) =>
+  ({gutterN}) =>
     gutterN && {
       paddingBottom: CARD_PADDING + gutterN * cardStackPerspectiveY
     },
-  ({isModal}: GroupProps) =>
+  ({isModal}) =>
     isModal && {
       borderRadius: 8,
       padding: MODAL_PADDING,
@@ -104,7 +93,7 @@ const GroupStyle = styled('div')(
       transition: 'unset',
       zIndex: 100
     },
-  ({isHidden}: GroupProps) =>
+  ({isHidden}) =>
     isHidden && {
       opacity: 0,
       pointerEvents: 'none'
@@ -338,9 +327,9 @@ class ReflectionGroup extends Component<Props, State> {
     if (reflections.length === 2) gutterN = 1
     if (reflections.length >= 3) gutterN = 2
     return (
-      <React.Fragment>
+      <>
         <GroupStyle
-          innerRef={setChildRef(reflectionGroupId, firstReflection.id)}
+          ref={setChildRef(reflectionGroupId, firstReflection.id)}
           isHidden={isExpanded}
           gutterN={gutterN}
         >
@@ -351,20 +340,24 @@ class ReflectionGroup extends Component<Props, State> {
             isEditingSingleCardTitle={this.state.isEditingSingleCardTitle}
             titleInputRef={this.titleInputRef}
           />
-          {connectDropTarget(
-            <div
-              className={reflectionsStyle(canDrop, isDraggable, canExpand, isComplete)}
-              onClick={this.handleClick}
-            >
-              {reflections.map((reflection, idx) =>
-                this.renderReflection(reflection, idx, {isModal: false, isDraggable})
-              )}
-            </div>
-          )}
+          <ClassNames>
+            {({css}) => {
+              return connectDropTarget(
+                <div
+                  className={reflectionsStyle(css, canDrop, isDraggable, canExpand, isComplete)}
+                  onClick={this.handleClick}
+                >
+                  {reflections.map((reflection, idx) =>
+                    this.renderReflection(reflection, idx, {isModal: false, isDraggable})
+                  )}
+                </div>
+              )
+            }}
+          </ClassNames>
         </GroupStyle>
         <Modal clickToClose escToClose isOpen={isExpanded} onClose={() => this.closeGroupModal()}>
-          <GroupStyle innerRef={this.setModalRef} isModal>
-            <Background innerRef={this.setBackgroundRef} />
+          <GroupStyle ref={this.setModalRef} isModal>
+            <Background ref={this.setBackgroundRef} />
             <ReflectionGroupHeader
               isExpanded={!!isExpanded}
               innerRef={this.setHeaderRef}
@@ -372,14 +365,20 @@ class ReflectionGroup extends Component<Props, State> {
               reflectionGroup={reflectionGroup}
               titleInputRef={this.titleInputRef}
             />
-            <div className={reflectionsStyle(canDrop, isDraggable, canExpand, isComplete)}>
-              {reflections.map((reflection, idx) =>
-                this.renderReflection(reflection, idx, {isModal: true, isDraggable})
-              )}
-            </div>
+            <ClassNames>
+              {({css}) => {
+                return (
+                  <div className={reflectionsStyle(css, canDrop, isDraggable, canExpand, isComplete)}>
+                    {reflections.map((reflection, idx) =>
+                      this.renderReflection(reflection, idx, {isModal: true, isDraggable})
+                    )}
+                  </div>
+                )
+              }}
+            </ClassNames>
           </GroupStyle>
         </Modal>
-      </React.Fragment>
+      </>
     )
   }
 }

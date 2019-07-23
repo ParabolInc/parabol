@@ -13,6 +13,7 @@ module.exports = {
   },
   rules: {
     'space-before-function-paren': ['error', 'always'], // remove when done refactoring
+    ' react/no-find-dom-node': 'off',
     'react/no-unescaped-entities': 'off',
     'react/display-name': 'off',
     'react/prop-types': 'off',

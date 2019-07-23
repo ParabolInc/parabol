@@ -149,9 +149,9 @@ export interface UseCoordsOptions {
   originCoords?: BBox
 }
 
-const useWindowResize = (
+const useWindowResize = <T extends HTMLElement = HTMLButtonElement>(
   coordsRef: MutableRefObject<CoordState>,
-  currentTargetRef: HTMLDivElement | null,
+  currentTargetRef: T | null,
   setCoords: Dispatch<SetStateAction<CoordState>>
 ) => {
   useEffect(() => {
@@ -175,12 +175,12 @@ const useWindowResize = (
   }, [coordsRef, currentTargetRef, setCoords])
 }
 
-const useCoords = (preferredMenuPosition: MenuPosition, options: UseCoordsOptions = {}) => {
-  const [currentTargetRef, setTargetRef] = useState<HTMLDivElement | null>(null)
-  const targetRef = useCallback((c) => {
+const useCoords = <T extends HTMLElement = HTMLButtonElement, P extends HTMLElement = HTMLDivElement>(preferredMenuPosition: MenuPosition, options: UseCoordsOptions = {}) => {
+  const [currentTargetRef, setTargetRef] = useState<P | null>(null)
+  const targetRef = useCallback((c: P | null) => {
     setTargetRef(c)
   }, [])
-  const originRef = useRef<HTMLDivElement | HTMLButtonElement | null>(null)
+  const originRef = useRef<T | null>(null)
   const [coordsRef, setCoords] = useRefState<CoordState>({
     coords: {left: 0, top: 0},
     menuPosition: preferredMenuPosition

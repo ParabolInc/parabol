@@ -1,5 +1,5 @@
 import React, {ReactElement, ReactPortal, Suspense, useEffect} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import ErrorBoundary from 'universal/components/ErrorBoundary'
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
 import Menu from 'universal/components/Menu'
@@ -17,9 +17,10 @@ const MenuBlock = styled('div')({
   zIndex: ZIndex.MODAL
 })
 
+
 const useMenuPortal = (
   portal: (el: ReactElement) => ReactPortal | null,
-  targetRef: (el: HTMLElement) => void,
+  targetRef: (el: HTMLDivElement | null) => void,
   minWidth: number,
   coords: UseCoordsValue,
   portalStatus: PortalStatus,
@@ -43,7 +44,7 @@ const useMenuPortal = (
   }, [portalStatus])
   return (reactEl) => {
     return portal(
-      <MenuBlock innerRef={targetRef} style={{...coords}}>
+      <MenuBlock ref={targetRef as any} style={{...coords}}>
         <MenuBackground
           menuPosition={menuPosition}
           portalStatus={portalStatus}

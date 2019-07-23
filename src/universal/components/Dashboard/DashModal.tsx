@@ -1,5 +1,5 @@
 import React, {ReactNode} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {modalShadow} from 'universal/styles/elevation'
 import ui from 'universal/styles/ui'
 import {DECELERATE} from '../../styles/animation'

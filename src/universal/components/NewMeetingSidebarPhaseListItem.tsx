@@ -1,6 +1,3 @@
-/** @jsx jsx */
-import {css, jsx} from '@emotion/core'
-// @ts-ignore
 import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
 import appTheme from 'universal/styles/theme/appTheme'
@@ -41,21 +38,21 @@ const NavItemLabel = styled('span')({
   verticalAlign: 'middle'
 })
 
-const navListItemLinkActive = css({
+const navListItemLinkActive = {
   backgroundColor: ui.navMenuLightBackgroundColorActive,
   borderLeftColor: ui.palette.mid,
   color: appTheme.palette.dark,
   ':hover,:focus': {
     backgroundColor: ui.navMenuLightBackgroundColorActive
   }
-})
+}
 
-const navListItemLinkDisabled = css({
+const navListItemLinkDisabled = {
   cursor: 'not-allowed',
   ':hover,:focus': {
     backgroundColor: 'transparent'
   }
-})
+}
 
 interface LinkProps {
   isDisabled: boolean

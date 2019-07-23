@@ -27,7 +27,7 @@ const PrimaryButton = forwardRef((props: Props, ref: any) => {
   return (
     <StyledBaseButton
       {...props}
-      innerRef={ref}
+      ref={ref}
       className={className}
       elevationHovered={elevationHovered || 8}
       elevationResting={elevationResting || 2}

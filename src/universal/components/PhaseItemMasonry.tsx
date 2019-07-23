@@ -106,7 +106,7 @@ export interface MasonryParentCache {
 }
 
 export type SetItemRef = (itemId: string, isModal?: boolean) => (c: HTMLDivElement) => void
-export type SetChildRef = (groupId: string, reflectionId: string) => (c: HTMLElement) => void
+export type SetChildRef = (groupId: string, reflectionId: string) => (c: HTMLElement | null) => void
 export type SetInFlightCoords = (x: number, y: number, itemId: string) => void
 
 interface DropOnGridPayload {

@@ -3,7 +3,7 @@ import RaisedButton, {RaisedButtonProps} from 'universal/components/RaisedButton
 
 interface Props extends RaisedButtonProps {}
 
-const FloatingActionButton = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
+const FloatingActionButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
   return (
     <RaisedButton
       {...props}

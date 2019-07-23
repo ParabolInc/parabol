@@ -21,7 +21,7 @@ const Toggle = styled(DropdownMenuToggle)({
 const StageTimerModalEndTimeHour = (props: Props) => {
   const {endTime, setEndTime} = props
   const timeStr = formatTime(endTime)
-  const {menuPortal, togglePortal, menuProps, originRef} = useMenu(MenuPosition.LOWER_LEFT, {
+  const {menuPortal, togglePortal, menuProps, originRef} = useMenu<HTMLDivElement>(MenuPosition.LOWER_LEFT, {
     id: 'StageTimerEndTimePicker',
     parentId: 'StageTimerModal',
     isDropdown: true
@@ -34,7 +34,7 @@ const StageTimerModalEndTimeHour = (props: Props) => {
 
   return (
     <>
-      <Toggle defaultText={timeStr} onClick={togglePortal} innerRef={originRef} flat size='small' />
+      <Toggle defaultText={timeStr} onClick={togglePortal} ref={originRef} flat size='small' />
       {menuPortal(
         <StageTimerHourPicker endTime={endTime} menuProps={menuProps} onClick={handleHourPick} />
       )}

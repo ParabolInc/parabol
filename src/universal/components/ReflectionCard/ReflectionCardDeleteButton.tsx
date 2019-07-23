@@ -3,7 +3,7 @@
  * corner of the card.
  */
 import React, {Component} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import PlainButton from 'universal/components/PlainButton/PlainButton'
 import withAtmosphere, {
   WithAtmosphereProps

@@ -1,4 +1,4 @@
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import ui from 'universal/styles/ui'
 
 const LabelHeading = styled('div')({

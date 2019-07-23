@@ -112,7 +112,7 @@ const ActionMeetingUpdates = (props: Props) => {
               isBouncing={minTimeComplete}
               onClick={() => gotoNext()}
               onKeyDown={handleRightArrow(() => gotoNext())}
-              innerRef={gotoNextRef}
+              ref={gotoNextRef}
             >
               <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={`Next: ${label}`} />
             </BottomNavControl>

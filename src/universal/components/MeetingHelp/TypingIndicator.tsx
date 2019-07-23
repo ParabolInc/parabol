@@ -1,5 +1,6 @@
 import React from 'react'
-import styled, {keyframes} from 'react-emotion'
+import styled from '@emotion/styled';
+import { keyframes } from '@emotion/core';
 import ui from 'universal/styles/ui'
 
 const BulgeKeyframes = keyframes`
@@ -51,7 +52,7 @@ const TypingIndicatorBubble = styled('div')(() => ({
   animation: `2s ${BulgeKeyframes} infinite ease-out`
 }))
 
-const BlinkyThoughtDot = styled('span')(({n}: {n: number}) => ({
+const BlinkyThoughtDot = styled('span')<{n: number}>(({n}) => ({
   height: '8px',
   width: '8px',
   float: 'left',

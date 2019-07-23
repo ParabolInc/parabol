@@ -1,6 +1,6 @@
 import IconLabel from 'universal/components/IconLabel'
-import React, {forwardRef} from 'react'
-import styled from 'react-emotion'
+import React, {forwardRef, Ref} from 'react'
+import styled from '@emotion/styled'
 import FloatingActionButton from 'universal/components/FloatingActionButton'
 import {meetingHelpWithBottomBar} from 'universal/styles/meeting'
 
@@ -21,9 +21,9 @@ interface Props {
   onMouseEnter: () => void
 }
 
-const HelpMenuToggle = forwardRef((props: Props, ref: any) => {
+const HelpMenuToggle = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
   return (
-    <StyledButton palette='white' {...props} innerRef={ref}>
+    <StyledButton palette='white' {...props} ref={ref}>
       <IconLabel icon='help_outline' />
     </StyledButton>
   )

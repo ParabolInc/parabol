@@ -1,6 +1,6 @@
 import {VideoAvatar_teamMember} from '__generated__/VideoAvatar_teamMember.graphql'
 import React, {forwardRef, Ref, useEffect, useRef} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import AvatarBadge from 'universal/components/AvatarBadge/AvatarBadge'
 import {StreamUI} from '../../hooks/useSwarm'
@@ -32,7 +32,10 @@ const BadgeBlockInner = styled('div')({
   width: '14px'
 })
 
-const Video = styled('video')(({isHidden}: {isHidden: boolean}) => ({
+interface StyleProps {
+  isHidden: boolean
+}
+const Video = styled('video')<StyleProps>(({isHidden}) => ({
   display: isHidden ? 'none' : undefined,
   borderRadius: '100%',
   height: '100%',
@@ -42,7 +45,7 @@ const Video = styled('video')(({isHidden}: {isHidden: boolean}) => ({
   width: '100%'
 }))
 
-const Picture = styled('img')(({isHidden}: {isHidden: boolean}) => ({
+const Picture = styled('img')<StyleProps>(({isHidden}) => ({
   display: isHidden ? 'none' : undefined,
   borderRadius: '100%',
   height: '100%',
@@ -59,7 +62,7 @@ interface Props {
   onMouseEnter?: () => void
 }
 
-const VideoAvatar = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
+const VideoAvatar = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
   const videoRef = useRef<HTMLVideoElement>(null)
   useEffect(() => {
     const {
@@ -84,9 +87,9 @@ const VideoAvatar = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
   const isCheckedIn = meetingMember && meetingMember.isCheckedIn
   const showVideo = streamUI ? streamUI.hasVideo : false
   return (
-    <AvatarStyle innerRef={ref} onClick={onClick} onMouseEnter={onMouseEnter}>
+    <AvatarStyle ref={ref} onClick={onClick} onMouseEnter={onMouseEnter}>
       <Picture src={picture} isHidden={showVideo} />
-      <Video innerRef={videoRef} isHidden={!showVideo} autoPlay muted={isSelf} />
+      <Video ref={videoRef} isHidden={!showVideo} autoPlay muted={isSelf} />
       <BadgeBlock>
         <BadgeBlockInner>
           <AvatarBadge isCheckedIn={isCheckedIn} isConnected={isConnected || isSelf} />

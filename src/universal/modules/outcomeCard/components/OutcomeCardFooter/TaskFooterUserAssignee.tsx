@@ -1,6 +1,6 @@
 import {TaskFooterUserAssignee_task} from '__generated__/TaskFooterUserAssignee_task.graphql'
 import React from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import BaseButton from 'universal/components/BaseButton'
 import {MenuPosition} from 'universal/hooks/useCoords'
@@ -94,7 +94,7 @@ const TaskFooterUserAssignee = (props: Props) => {
         aria-label='Assign this task to a teammate'
         onClick={canAssign ? togglePortal : undefined}
         onMouseEnter={TaskFooterUserAssigneeMenuRoot.preload}
-        innerRef={originRef}
+        ref={originRef}
       >
         <Avatar cardIsActive={cardIsActive}>
           <AvatarImage alt={assignee.preferredName} src={assignee.picture || avatarUser} />

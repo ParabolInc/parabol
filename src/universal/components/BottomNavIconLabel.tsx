@@ -1,4 +1,4 @@
-import React, {forwardRef} from 'react'
+import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
 import Icon from 'universal/components/Icon'
 import {meetingBottomBarHeight} from 'universal/styles/meeting'
@@ -31,7 +31,7 @@ const Label = styled('div')({
   lineHeight: '16px'
 })
 
-const BottomNavIconLabel = forwardRef((props: Props, ref: any) => {
+const BottomNavIconLabel = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
   const {className, icon, iconColor, label} = props
   return (
     <Inner className={className} ref={ref}>

@@ -1,6 +1,6 @@
 import {CheckInControls_teamMember} from '__generated__/CheckInControls_teamMember.graphql'
 import React, {useCallback, useRef} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import BottomNavControl from 'universal/components/BottomNavControl'
 import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
@@ -61,7 +61,7 @@ const CheckInControls = (props: Props) => {
         aria-label={`Mark ${preferredName} as “here” and move on`}
         onClick={handleOnClickPresent}
         onKeyDown={handleRightArrow(handleOnClickPresent)}
-        innerRef={handleGotoNext.ref}
+        ref={handleGotoNext.ref}
       >
         <BottomNavIconLabel icon='check_circle' iconColor='green' label={nextLabel} />
       </BottomNavControl>

@@ -13,7 +13,7 @@ import plural from 'universal/utils/plural'
 interface Props {
   meeting: ReflectionGroupHeader_meeting
   reflectionGroup: ReflectionGroupHeader_reflectionGroup
-  innerRef: Ref<any>
+  innerRef: Ref<HTMLDivElement>
   isExpanded?: boolean
   isEditingSingleCardTitle?: boolean
   titleInputRef: RefObject<HTMLInputElement>

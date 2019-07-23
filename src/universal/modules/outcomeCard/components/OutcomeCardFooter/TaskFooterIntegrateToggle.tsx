@@ -30,7 +30,7 @@ const TaskFooterIntegrateToggle = (props: Props) => {
     <>
       <CardButton
         onClick={togglePortal}
-        innerRef={originRef}
+        ref={originRef}
         onMouseEnter={TaskFooterIntegrateMenuRoot.preload}
       >
         <IconLabel icon='publish' />

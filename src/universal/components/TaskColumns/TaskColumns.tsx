@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react'
-import styled from 'react-emotion'
+import styled from '@emotion/styled'
 import EditorHelpModalContainer from 'universal/containers/EditorHelpModalContainer/EditorHelpModalContainer'
 import TaskColumn from 'universal/modules/teamDashboard/components/TaskColumn/TaskColumn'
 import ui from 'universal/styles/ui'

@@ -41,7 +41,7 @@ const StageTimerModalEndTimeDate = (props: Props) => {
   const dayStr = formatDay(endTime)
 
   const now = new Date()
-  const {menuPortal, togglePortal, menuProps: endTimeMenuProps, originRef} = useMenu(
+  const {menuPortal, togglePortal, menuProps: endTimeMenuProps, originRef} = useMenu<HTMLDivElement>(
     MenuPosition.LOWER_LEFT,
     {
       id: 'StageTimerEndTimePicker',
@@ -65,7 +65,7 @@ const StageTimerModalEndTimeDate = (props: Props) => {
   return (
     <>
       <StyledIcon>event</StyledIcon>
-      <Toggle defaultText={dayStr} onClick={togglePortal} innerRef={originRef} flat size='small' />
+      <Toggle defaultText={dayStr} onClick={togglePortal} ref={originRef} flat size='small' />
       {menuPortal(
         <DayPicker
           disabledDays={{before: now}}

@@ -6,7 +6,7 @@ import Badge from 'universal/components/Badge/Badge'
 import appTheme from 'universal/styles/theme/appTheme'
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
 import ui from 'universal/styles/ui'
-import styled, {css} from 'react-emotion'
+import styled from '@emotion/styled';
 import textOverflow from 'universal/styles/helpers/textOverflow'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
@@ -15,6 +15,7 @@ import useMenu from 'universal/hooks/useMenu'
 import {MenuPosition} from 'universal/hooks/useCoords'
 import lazyPreload from 'universal/utils/lazyPreload'
 import {StandardHub_viewer} from '__generated__/StandardHub_viewer.graphql'
+import {ClassNames} from '@emotion/core'
 
 const StandardHubRoot = styled('div')({
   alignItems: 'center',
@@ -110,9 +111,8 @@ const StandardHub = (props: Props) => {
   const notificationsCount = notifications ? notifications.length : 0
   const {picture = '', preferredName = ''} = viewer || {}
 
-  const navLinkStyles = css(notificationsStyles, notificationsCount > 0 && notificationsWithBadge)
   const userAvatar = picture || defaultUserAvatar
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT)
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu<HTMLDivElement>(MenuPosition.UPPER_LEFT)
   return (
     <StandardHubRoot>
       <User>
@@ -123,7 +123,7 @@ const StandardHub = (props: Props) => {
         <MenuToggle
           onClick={togglePortal}
           onMouseEnter={StandardHubUserMenu.preload}
-          innerRef={originRef}
+          ref={originRef}
         />
         {menuPortal(
           <StandardHubUserMenu
@@ -133,18 +133,25 @@ const StandardHub = (props: Props) => {
           />
         )}
       </User>
-      <NavLink
-        activeClassName={css(notificationsActive)}
-        className={navLinkStyles}
-        to='/me/notifications'
-      >
-        <NotificationIcon>notifications</NotificationIcon>
-        {notificationsCount > 0 && (
-          <BadgeBlock>
-            <Badge value={notificationsCount} />
-          </BadgeBlock>
-        )}
-      </NavLink>
+      <ClassNames>
+        {({css}) => {
+          return (
+            <NavLink
+              activeClassName={css(notificationsActive)}
+              className={css(notificationsStyles, notificationsCount > 0 && notificationsWithBadge)}
+              to='/me/notifications'
+            >
+              <NotificationIcon>notifications</NotificationIcon>
+              {notificationsCount > 0 && (
+                <BadgeBlock>
+                  <Badge value={notificationsCount} />
+                </BadgeBlock>
+              )}
+            </NavLink>
+          )
+        }}
+      </ClassNames>
+
     </StandardHubRoot>
   )
 }

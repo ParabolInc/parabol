@@ -1,9 +1,10 @@
 import React from 'react'
 import ui from 'universal/styles/ui'
 import {NavLink} from 'react-router-dom'
-import styled, {css} from 'react-emotion'
+import styled from '@emotion/styled';
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import {ClassNames} from '@emotion/core'
 
 const StyledIcon = styled(Icon)({
   display: 'block',
@@ -13,7 +14,7 @@ const StyledIcon = styled(Icon)({
   textAlign: 'left'
 })
 
-const navLinkcss = css({
+const navLinkcss = {
   borderLeft: '.1875rem solid transparent',
   color: 'inherit',
   display: 'flex',
@@ -23,7 +24,7 @@ const navLinkcss = css({
   lineHeight: ui.navMenuLineHeight,
   padding: '10px 8px 10px 32px',
   transition: `background-color 100ms ease-in`,
-  userSelect: 'none',
+  userSelect: 'none' as 'none',
   width: '100%',
   ':hover,:focus': {
     backgroundColor: ui.navMenuDarkBackgroundColorHover,
@@ -31,9 +32,9 @@ const navLinkcss = css({
     cursor: 'pointer',
     textDecoration: 'none'
   }
-})
+}
 
-const activeNavLinkcss = css({
+const activeNavLinkcss = {
   backgroundColor: ui.navMenuDarkBackgroundColorActive,
   borderColor: `${ui.palette.white} !important`,
   cursor: 'default',
@@ -44,7 +45,7 @@ const activeNavLinkcss = css({
     cursor: 'pointer',
     textDecoration: 'none'
   }
-})
+}
 
 const Label = styled('div')({
   flex: 1,
@@ -70,17 +71,24 @@ interface Props {
 const DashNavItem = (props: Props) => {
   const {label, href, icon, onClick} = props
   return (
-    <NavLink
-      activeClassName={activeNavLinkcss}
-      className={navLinkcss}
-      isActive={myDashActive(href)}
-      title={label}
-      to={href}
-      onClick={onClick}
-    >
-      {icon && <StyledIcon>{icon}</StyledIcon>}
-      <Label>{label}</Label>
-    </NavLink>
+    <ClassNames>
+      {({css}) => {
+        return (
+          <NavLink
+            activeClassName={css(activeNavLinkcss)}
+            className={css(navLinkcss)}
+            isActive={myDashActive(href)}
+            title={label}
+            to={href}
+            onClick={onClick}
+          >
+            {icon && <StyledIcon>{icon}</StyledIcon>}
+            <Label>{label}</Label>
+          </NavLink>
+        )
+      }}
+
+    </ClassNames>
   )
 }
 

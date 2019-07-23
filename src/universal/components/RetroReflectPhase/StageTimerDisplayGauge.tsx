@@ -1,5 +1,6 @@
 import React from 'react'
-import styled, {keyframes} from 'react-emotion'
+import styled from '@emotion/styled';
+import { keyframes } from '@emotion/core';
 import {countdown} from 'universal/utils/date/relativeDate'
 import {PALETTE} from 'universal/styles/paletteV2'
 import useRefreshInterval from 'universal/hooks/useRefreshInterval'
@@ -21,7 +22,7 @@ const fadeIn = keyframes`
 	}
 `
 
-const Gauge = styled('div')(({isTimeUp}: {isTimeUp: boolean}) => ({
+const Gauge = styled('div')<{isTimeUp: boolean}>(({isTimeUp}) => ({
   animation: `${fadeIn} 300ms ${DECELERATE}`,
   color: isTimeUp ? PALETTE.TEXT_MAIN : '#fff',
   background: isTimeUp ? PALETTE.BACKGROUND_YELLOW : PALETTE.BACKGROUND_GREEN,

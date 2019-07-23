@@ -19,7 +19,7 @@ interface Props {
 }
 
 interface State {
-  children: Array<ComponentElement<any, any>>
+  children: ComponentElement<any, any>[]
 }
 
 class FLIPGrid extends Component<Props, State> {
@@ -58,7 +58,7 @@ class FLIPGrid extends Component<Props, State> {
       this.updateChildren()
       this.childrenCache.animateOut(this.first, this.parentCache.bbox)
     }
-    const childArray = this.props.children as Array<ComponentElement<any, any>>
+    const childArray = this.props.children as ComponentElement<any, any>[]
     const keysRemoved = this.state.children
       .map((child) => child.key)
       .filter((key) => !childArray.find((child) => child.key === key))
@@ -72,7 +72,7 @@ class FLIPGrid extends Component<Props, State> {
 
   updateChildren = () => {
     this.setState({
-      children: this.makeReffedChildren(this.props.children as Array<ComponentElement<any, any>>)
+      children: this.makeReffedChildren(this.props.children as ComponentElement<any, any>[])
     })
   }
 
@@ -94,7 +94,7 @@ class FLIPGrid extends Component<Props, State> {
     this.handleGridChange(dims)
   }
 
-  makeReffedChildren (children: Array<ComponentElement<any, any>>) {
+  makeReffedChildren (children: ComponentElement<any, any>[]) {
     return children.map((child) => {
       return cloneElement(child, {
         ref: (c) => {
