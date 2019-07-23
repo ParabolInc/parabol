@@ -4,7 +4,8 @@ import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import {cardHoverShadow} from 'universal/styles/elevation'
 import CreateCardRootStyles from './CreateCardRootStyles'
-import styled, {css, cx} from 'react-emotion'
+import styled from '@emotion/styled';
+import { css, cx } from 'emotion';
 
 const CardBlock = css({
   ...CreateCardRootStyles,

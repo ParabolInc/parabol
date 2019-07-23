@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
-import { withRouter } from 'react-router-dom'
+import React, {Component} from 'react'
+import {withRouter} from 'react-router-dom'
 import Action from 'universal/components/Action/Action'
 import globalStyles from 'universal/styles/theme/globalStyles'
-import { css, Global } from '@emotion/core'
+import {css, Global} from '@emotion/core'
 
 class ActionContainer extends Component {
   static propTypes = {
@@ -24,7 +24,8 @@ class ActionContainer extends Component {
           styles={css`
             ${globalStyles}
           `}
-        /><Action {...this.props} />
+        />
+        <Action {...this.props} />
       </React.Fragment>
     )
   }

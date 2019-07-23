@@ -19,6 +19,26 @@ const fontFaceDefinitions = fontLoader
   )
   .join('\n')
 
+const draftStyles = `
+  .draft-blockquote {
+    font-style: italic;
+    border-left: 2px #49327266 solid;
+    margin 8px 0;
+    padding 0 8px;
+  }
+  
+  .draft-codeblock {
+    background-color: #F1F0FA;
+    border-left: 2px #49327266 solid;
+     border-radius: 1px;
+     font-family: ${appTheme.typography.monospace};
+     font-size: 13px;
+     line-height: 1.5;
+     margin: 0;
+     padding: 0 8px;
+  }
+`
+
 export default `
   * {
     box-sizing: border-box;
@@ -113,6 +133,8 @@ export default `
       display: none !important;
     }
   }
+  
+  ${draftStyles}
 
   ${placeholderStyles}
 
