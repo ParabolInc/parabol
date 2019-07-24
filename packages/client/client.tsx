@@ -17,8 +17,8 @@ const initialState = {}
 export const store = makeStore(initialState)
 render(<Root store={store} />, document.getElementById('root'))
 
-if (module.hot) {
-  module.hot.accept('./Root', () => {
+if ((module as any).hot) {
+  (module as any).hot.accept('./Root', () => {
     const Root = require('./Root').default
     render(<Root store={store} />, document.getElementById('root'))
   })
