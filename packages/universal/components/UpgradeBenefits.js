@@ -1,8 +1,8 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import ui from 'universal/styles/ui'
-import Icon from 'universal/components/Icon'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import ui from '../styles/ui'
+import Icon from './Icon'
+import {MD_ICONS_SIZE_18} from '../styles/icons'
 
 const StyledIcon = styled(Icon)({
   color: ui.palette.green,

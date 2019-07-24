@@ -1,12 +1,12 @@
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
-import OrgBilling from 'universal/modules/userDashboard/components/OrgBilling/OrgBilling'
-import {LoaderSize} from 'universal/types/constEnums'
-import {cacheConfig} from 'universal/utils/constants'
-import renderQuery from 'universal/utils/relay/renderQuery'
+import QueryRenderer from '../../../../components/QueryRenderer/QueryRenderer'
+import OrgBilling from '../../components/OrgBilling/OrgBilling'
+import {LoaderSize} from '../../../../types/constEnums'
+import {cacheConfig} from '../../../../utils/constants'
+import renderQuery from '../../../../utils/relay/renderQuery'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {OrgBillingRoot_organization} from '__generated__/OrgBillingRoot_organization.graphql'
+import {OrgBillingRoot_organization} from '../../../../../__generated__/OrgBillingRoot_organization.graphql'
 
 const query = graphql`
   query OrgBillingRootQuery($orgId: ID!, $first: Int!, $after: DateTime) {

@@ -1,7 +1,7 @@
 import {useEffect} from 'react'
-import AcceptTeamInvitationMutation from 'universal/mutations/AcceptTeamInvitationMutation'
-import useRouter from 'universal/hooks/useRouter'
-import useAtmosphere from 'universal/hooks/useAtmosphere'
+import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
+import useRouter from '../hooks/useRouter'
+import useAtmosphere from '../hooks/useAtmosphere'
 
 interface Props {
   invitationToken: string

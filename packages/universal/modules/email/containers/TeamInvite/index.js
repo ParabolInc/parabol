@@ -1,7 +1,7 @@
 import React from 'react'
 import Oy from 'oy-vey'
 import TeamInvite, {teamInviteText} from './TeamInvite'
-import {headCSS} from 'universal/styles/email'
+import {headCSS} from '../../../../styles/email'
 
 const subject = 'You’ve been invited to Parabol'
 

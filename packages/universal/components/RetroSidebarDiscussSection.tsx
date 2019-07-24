@@ -1,29 +1,29 @@
-import {RetroSidebarDiscussSection_viewer} from '__generated__/RetroSidebarDiscussSection_viewer.graphql'
+import {RetroSidebarDiscussSection_viewer} from '../../__generated__/RetroSidebarDiscussSection_viewer.graphql'
 import React from 'react'
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
-import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
-import MeetingSidebarLabelBlock from 'universal/components/MeetingSidebarLabelBlock'
-import MeetingSubnavItem from 'universal/components/MeetingSubnavItem'
+import LabelHeading from './LabelHeading/LabelHeading'
+import MeetingSidebarLabelBlock from './MeetingSidebarLabelBlock'
+import MeetingSubnavItem from './MeetingSubnavItem'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {useGotoStageId} from 'universal/hooks/useMeeting'
-import DragDiscussionTopicMutation from 'universal/mutations/DragDiscussionTopicMutation'
-import {navItemRaised} from 'universal/styles/elevation'
-import {meetingVoteIcon} from 'universal/styles/meeting'
-import ui from 'universal/styles/ui'
+} from '../decorators/withAtmosphere/withAtmosphere'
+import {useGotoStageId} from '../hooks/useMeeting'
+import DragDiscussionTopicMutation from '../mutations/DragDiscussionTopicMutation'
+import {navItemRaised} from '../styles/elevation'
+import {meetingVoteIcon} from '../styles/meeting'
+import ui from '../styles/ui'
 import {
   DISCUSSION_TOPIC,
   RETRO_TOPIC_LABEL,
   RETRO_VOTED_LABEL,
   SORT_STEP
-} from 'universal/utils/constants'
-import dndNoise from 'universal/utils/dndNoise'
-import plural from 'universal/utils/plural'
-import Icon from 'universal/components/Icon'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+} from '../utils/constants'
+import dndNoise from '../utils/dndNoise'
+import plural from '../utils/plural'
+import Icon from './Icon'
+import {MD_ICONS_SIZE_18} from '../styles/icons'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
 
 interface Props extends WithAtmosphereProps {

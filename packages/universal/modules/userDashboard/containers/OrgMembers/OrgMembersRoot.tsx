@@ -1,8 +1,8 @@
 import React from 'react'
 import {graphql} from 'react-relay'
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
-import OrgMembers from 'universal/modules/userDashboard/components/OrgMembers/OrgMembers'
-import renderQuery from 'universal/utils/relay/renderQuery'
+import QueryRenderer from '../../../../components/QueryRenderer/QueryRenderer'
+import OrgMembers from '../../components/OrgMembers/OrgMembers'
+import renderQuery from '../../../../utils/relay/renderQuery'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {LoaderSize} from '../../../../types/constEnums'
 

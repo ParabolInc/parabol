@@ -1,11 +1,11 @@
 import {EditorState, Modifier} from 'draft-js'
-import {List, Map, OrderedSet} from 'immutable'
+import {List, Map, OrderedSet} from '../../../immutable'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import getAnchorLocation from 'universal/components/TaskEditor/getAnchorLocation'
-import addSpace from 'universal/utils/draftjs/addSpace'
-import splitBlock from 'universal/utils/draftjs/splitBlock'
-import linkify from 'universal/utils/linkify'
+import getAnchorLocation from './getAnchorLocation'
+import addSpace from '../../utils/draftjs/addSpace'
+import splitBlock from '../../utils/draftjs/splitBlock'
+import linkify from '../../utils/linkify'
 
 const inlineMatchers = {
   CODE: {regex: /`([^`]+)`/, matchIdx: 1},

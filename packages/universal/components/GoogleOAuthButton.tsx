@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import RaisedButton from 'universal/components/RaisedButton'
-import GoogleSVG from 'universal/components/GoogleSVG'
+import RaisedButton from './RaisedButton'
+import GoogleSVG from './GoogleSVG'
 
 interface Props {
   label: string

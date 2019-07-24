@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {MD_ICONS_SIZE_24} from 'universal/styles/icons'
+import {MD_ICONS_SIZE_24} from '../styles/icons'
 
 const Icon = styled('i')({
   fontFamily: 'Material Icons',

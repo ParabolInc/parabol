@@ -1,7 +1,7 @@
 import {useEffect} from 'react'
-import useAtmosphere from 'universal/hooks/useAtmosphere'
-import SendClientSegmentEventMutation from 'universal/mutations/SendClientSegmentEventMutation'
-import {SegmentClientEventEnum} from 'universal/types/graphql'
+import useAtmosphere from './useAtmosphere'
+import SendClientSegmentEventMutation from '../mutations/SendClientSegmentEventMutation'
+import {SegmentClientEventEnum} from '../types/graphql'
 
 const useSegmentTrack = (event: SegmentClientEventEnum, options: object) => {
   const atmosphere = useAtmosphere()

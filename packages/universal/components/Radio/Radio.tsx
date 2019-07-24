@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import styled from '@emotion/styled'
-import ui from 'universal/styles/ui'
+import ui from '../../styles/ui'
 
 const Base = styled('label')({
   alignItems: 'center',

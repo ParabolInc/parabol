@@ -1,6 +1,6 @@
 // dom lookups, cached for just a tick
 
-import {BBox} from 'universal/types/animations'
+import {BBox} from '../../types/animations'
 
 const cache = new Map<RectElement, BBox>()
 let timer

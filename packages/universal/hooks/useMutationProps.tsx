@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {PayloadError} from 'relay-runtime'
-import {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import {WithMutationProps} from '../utils/relay/withMutationProps'
 
 interface MutationServerError {
   message: string

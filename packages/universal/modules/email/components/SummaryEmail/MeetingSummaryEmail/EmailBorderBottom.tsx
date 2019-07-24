@@ -1,5 +1,5 @@
 import React from 'react'
-import {PALETTE_BORDER_LIGHT} from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/constants'
+import {PALETTE_BORDER_LIGHT} from './constants'
 
 const borderStyles = {
   borderBottom: `1px solid ${PALETTE_BORDER_LIGHT}`,

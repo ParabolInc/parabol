@@ -1,13 +1,13 @@
-import {ActionSidebarAgendaItemsSection_viewer} from '__generated__/ActionSidebarAgendaItemsSection_viewer.graphql'
+import {ActionSidebarAgendaItemsSection_viewer} from '../../__generated__/ActionSidebarAgendaItemsSection_viewer.graphql'
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
-import MeetingSidebarLabelBlock from 'universal/components/MeetingSidebarLabelBlock'
-import {useGotoStageId} from 'universal/hooks/useMeeting'
-import AgendaListAndInput from 'universal/modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput'
-import {NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
-import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
-import MeetingSidebarPhaseItemChild from 'universal/components/MeetingSidebarPhaseItemChild'
+import LabelHeading from './LabelHeading/LabelHeading'
+import MeetingSidebarLabelBlock from './MeetingSidebarLabelBlock'
+import {useGotoStageId} from '../hooks/useMeeting'
+import AgendaListAndInput from '../modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput'
+import {NewMeetingPhaseTypeEnum} from '../types/graphql'
+import UNSTARTED_MEETING from '../utils/meetings/unstartedMeeting'
+import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>

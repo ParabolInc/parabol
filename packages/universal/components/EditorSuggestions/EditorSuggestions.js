@@ -1,10 +1,10 @@
 import {css} from 'aphrodite-local-styles/no-important'
 import React from 'react'
-import MentionTag from 'universal/components/MentionTag/MentionTag'
-import MentionUser from 'universal/components/MentionUser/MentionUser'
-import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
-import withStyles from 'universal/styles/withStyles'
+import MentionTag from '../MentionTag/MentionTag'
+import MentionUser from '../MentionUser/MentionUser'
+import appTheme from '../../styles/theme/appTheme'
+import ui from '../../styles/ui'
+import withStyles from '../../styles/withStyles'
 import PropTypes from 'prop-types'
 
 const dontTellDraft = (e) => {

@@ -1,6 +1,6 @@
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
-import {RETROSPECTIVE} from 'universal/utils/constants'
-import addNodeToArray from 'universal/utils/relay/addNodeToArray'
+import {RETROSPECTIVE} from '../../utils/constants'
+import addNodeToArray from '../../utils/relay/addNodeToArray'
 import {DeepNullable} from '../../types/generics'
 import {IRetrospectiveMeetingSettings, ITeam} from '../../types/graphql'
 

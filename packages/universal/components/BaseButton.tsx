@@ -1,8 +1,8 @@
 import React, {forwardRef, ReactNode, Ref, useState} from 'react'
 import styled from '@emotion/styled'
-import ui from 'universal/styles/ui'
-import PlainButton, {PlainButtonProps} from 'universal/components/PlainButton/PlainButton'
-import elevation from 'universal/styles/elevation'
+import ui from '../styles/ui'
+import PlainButton, {PlainButtonProps} from './PlainButton/PlainButton'
+import elevation from '../styles/elevation'
 
 const isValidElevation = (elevation) => elevation >= 0 && elevation <= 24
 

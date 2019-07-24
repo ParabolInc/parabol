@@ -1,14 +1,14 @@
 import {convertFromRaw, Editor, EditorState} from 'draft-js'
 import React, {useMemo, useRef} from 'react'
-import ui from 'universal/styles/ui'
+import ui from '../../../../../styles/ui'
 import {
   FONT_FAMILY,
   PALETTE_TEXT_LIGHT,
   PALETTE_TEXT_MAIN
-} from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/constants'
+} from './constants'
 import {createFragmentContainer, graphql} from 'react-relay'
-import editorDecorators from 'universal/components/TaskEditor/decorators'
-import {EmailReflectionCard_reflection} from '__generated__/EmailReflectionCard_reflection.graphql'
+import editorDecorators from '../../../../../components/TaskEditor/decorators'
+import {EmailReflectionCard_reflection} from '../../../../../../__generated__/EmailReflectionCard_reflection.graphql'
 
 interface Props {
   reflection: EmailReflectionCard_reflection

@@ -1,20 +1,20 @@
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import styled from '@emotion/styled'
-import {ReflectionGroupVoting_meeting} from '__generated__/ReflectionGroupVoting_meeting.graphql'
-import {ReflectionGroupVoting_reflectionGroup} from '__generated__/ReflectionGroupVoting_reflectionGroup.graphql'
+import {ReflectionGroupVoting_meeting} from '../../__generated__/ReflectionGroupVoting_meeting.graphql'
+import {ReflectionGroupVoting_reflectionGroup} from '../../__generated__/ReflectionGroupVoting_reflectionGroup.graphql'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import VoteForReflectionGroupMutation from 'universal/mutations/VoteForReflectionGroupMutation'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import ui from 'universal/styles/ui'
-import {meetingVoteIcon} from 'universal/styles/meeting'
-import NewMeetingCheckInMutation from 'universal/mutations/NewMeetingCheckInMutation'
-import appTheme from 'universal/styles/theme/appTheme'
-import Icon from 'universal/components/Icon'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
-import getGraphQLError from 'universal/utils/relay/getGraphQLError'
+} from '../decorators/withAtmosphere/withAtmosphere'
+import VoteForReflectionGroupMutation from '../mutations/VoteForReflectionGroupMutation'
+import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
+import ui from '../styles/ui'
+import {meetingVoteIcon} from '../styles/meeting'
+import NewMeetingCheckInMutation from '../mutations/NewMeetingCheckInMutation'
+import appTheme from '../styles/theme/appTheme'
+import Icon from './Icon'
+import {MD_ICONS_SIZE_18} from '../styles/icons'
+import getGraphQLError from '../utils/relay/getGraphQLError'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   isExpanded: boolean

@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from '@emotion/styled';
 import { keyframes } from '@emotion/core';
-import ui from 'universal/styles/ui'
+import ui from '../../styles/ui'
 
 const BulgeKeyframes = keyframes`
   50% {

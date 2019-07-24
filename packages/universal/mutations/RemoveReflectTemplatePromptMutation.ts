@@ -1,11 +1,11 @@
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
-import Atmosphere from 'universal/Atmosphere'
-import getInProxy from 'universal/utils/relay/getInProxy'
+import Atmosphere from '../Atmosphere'
+import getInProxy from '../utils/relay/getInProxy'
 import {CompletedHandler, ErrorHandler, SharedUpdater} from '../types/relayMutations'
 import handleRemoveReflectTemplatePrompt from './handlers/handleRemoveReflectTemplatePrompt'
-import {IRemoveReflectTemplatePromptOnMutationArguments} from 'universal/types/graphql'
-import {RemoveReflectTemplatePromptMutation_team} from '__generated__/RemoveReflectTemplatePromptMutation_team.graphql'
+import {IRemoveReflectTemplatePromptOnMutationArguments} from '../types/graphql'
+import {RemoveReflectTemplatePromptMutation_team} from '../../__generated__/RemoveReflectTemplatePromptMutation_team.graphql'
 
 graphql`
   fragment RemoveReflectTemplatePromptMutation_team on RemoveReflectTemplatePromptPayload {

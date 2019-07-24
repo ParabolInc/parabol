@@ -1,10 +1,10 @@
 import React from 'react'
-import AddToGitHubMenuItem from 'universal/components/AddToGitHubMenuItem'
-import AddToJiraMenuItem from 'universal/components/AddToJiraMenuItem'
-import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
-import Menu from 'universal/components/Menu'
-import {MenuProps} from 'universal/hooks/useMenu'
-import {MenuMutationProps} from 'universal/hooks/useMutationProps'
+import AddToGitHubMenuItem from './AddToGitHubMenuItem'
+import AddToJiraMenuItem from './AddToJiraMenuItem'
+import LoadingComponent from './LoadingComponent/LoadingComponent'
+import Menu from './Menu'
+import {MenuProps} from '../hooks/useMenu'
+import {MenuMutationProps} from '../hooks/useMutationProps'
 
 interface Props {
   menuProps: MenuProps

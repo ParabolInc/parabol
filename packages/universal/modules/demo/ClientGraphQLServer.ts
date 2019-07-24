@@ -2,7 +2,7 @@ import EventEmitter from 'eventemitter3'
 import {parse} from 'flatted'
 import {Variables} from 'relay-runtime'
 import StrictEventEmitter from 'strict-event-emitter-types'
-import handleCompletedDemoStage from 'universal/modules/demo/handleCompletedDemoStage'
+import handleCompletedDemoStage from './handleCompletedDemoStage'
 import {
   DragReflectionDropTargetTypeEnum,
   IDiscussPhase,
@@ -12,20 +12,20 @@ import {
   IRetroReflectionGroup,
   NewMeetingPhase,
   NewMeetingPhaseTypeEnum
-} from 'universal/types/graphql'
-import groupReflections from 'universal/utils/autogroup/groupReflections'
-import makeRetroGroupTitle from 'universal/utils/autogroup/makeRetroGroupTitle'
-import {DISCUSS, GROUP, REFLECT, TASK, TEAM, VOTE} from 'universal/utils/constants'
-import dndNoise from 'universal/utils/dndNoise'
-import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap'
-import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr'
-import findStageById from 'universal/utils/meetings/findStageById'
-import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
-import sleep from 'universal/utils/sleep'
-import startStage_ from 'universal/utils/startStage_'
-import unlockAllStagesForPhase from 'universal/utils/unlockAllStagesForPhase'
-import unlockNextStages from 'universal/utils/unlockNextStages'
+} from '../../types/graphql'
+import groupReflections from '../../utils/autogroup/groupReflections'
+import makeRetroGroupTitle from '../../utils/autogroup/makeRetroGroupTitle'
+import {DISCUSS, GROUP, REFLECT, TASK, TEAM, VOTE} from '../../utils/constants'
+import dndNoise from '../../utils/dndNoise'
+import getTagsFromEntityMap from '../../utils/draftjs/getTagsFromEntityMap'
+import makeEmptyStr from '../../utils/draftjs/makeEmptyStr'
+import findStageById from '../../utils/meetings/findStageById'
+import fromTeamMemberId from '../../utils/relay/fromTeamMemberId'
+import toTeamMemberId from '../../utils/relay/toTeamMemberId'
+import sleep from '../../utils/sleep'
+import startStage_ from '../../utils/startStage_'
+import unlockAllStagesForPhase from '../../utils/unlockAllStagesForPhase'
+import unlockNextStages from '../../utils/unlockNextStages'
 import initBotScript from './initBotScript'
 import initDB, {
   demoMeetingId,

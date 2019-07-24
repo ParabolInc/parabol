@@ -7,7 +7,7 @@ import {
   IRetrospectiveMeeting,
   NewMeetingPhase,
   NewMeetingStage
-} from 'universal/types/graphql'
+} from './graphql'
 
 export interface ClientNewMeeting extends INewMeeting {
   localPhase: NewMeetingPhase

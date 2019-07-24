@@ -1,6 +1,6 @@
 import {applyMiddleware, compose, createStore} from 'redux'
-import makeReducer from 'universal/redux/makeReducer'
-import {APP_VERSION_KEY} from 'universal/utils/constants'
+import makeReducer from './redux/makeReducer'
+import {APP_VERSION_KEY} from './utils/constants'
 
 export default (initialState) => {
   let store

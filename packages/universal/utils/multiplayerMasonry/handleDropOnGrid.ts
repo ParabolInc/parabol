@@ -1,7 +1,7 @@
-import setClosingTransform from 'universal/utils/multiplayerMasonry/setClosingTransform'
-import {CARD_PADDING} from 'universal/utils/multiplayerMasonry/masonryConstants'
-import getLastCardPerColumn from 'universal/utils/multiplayerMasonry/getLastCardPerColumn'
-import isTempId from 'universal/utils/relay/isTempId'
+import setClosingTransform from './setClosingTransform'
+import {CARD_PADDING} from './masonryConstants'
+import getLastCardPerColumn from './getLastCardPerColumn'
+import isTempId from '../relay/isTempId'
 import Atmosphere from '../../Atmosphere'
 import {
   MasonryChildrenCache,

@@ -1,14 +1,14 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import ToggleAgendaListMutation from 'universal/mutations/ToggleAgendaListMutation'
-import ui from 'universal/styles/ui'
-import withMutationProps from 'universal/utils/relay/withMutationProps'
+import withAtmosphere from '../../../../decorators/withAtmosphere/withAtmosphere'
+import ToggleAgendaListMutation from '../../../../mutations/ToggleAgendaListMutation'
+import ui from '../../../../styles/ui'
+import withMutationProps from '../../../../utils/relay/withMutationProps'
 import styled from '@emotion/styled'
-import {AGENDA_ITEM_LABEL} from 'universal/utils/constants'
-import OutlinedButton from 'universal/components/OutlinedButton'
-import FlatButton from 'universal/components/FlatButton'
-import IconLabel from 'universal/components/IconLabel'
+import {AGENDA_ITEM_LABEL} from '../../../../utils/constants'
+import OutlinedButton from '../../../../components/OutlinedButton'
+import FlatButton from '../../../../components/FlatButton'
+import IconLabel from '../../../../components/IconLabel'
 
 const RootBlock = styled('div')({
   alignItems: 'flex-end',

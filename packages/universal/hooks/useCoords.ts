@@ -8,11 +8,11 @@ import {
   useRef,
   useState
 } from 'react'
-import {BBox} from 'universal/types/animations'
-import getBBox from 'universal/components/RetroReflectPhase/getBBox'
-import {getOffset} from 'universal/decorators/withCoordsV2'
-import useRefState from 'universal/hooks/useRefState'
-import useResizeObserver from 'universal/hooks/useResizeObserver'
+import {BBox} from '../types/animations'
+import getBBox from '../components/RetroReflectPhase/getBBox'
+import {getOffset} from '../decorators/withCoordsV2'
+import useRefState from './useRefState'
+import useResizeObserver from './useResizeObserver'
 
 export type UseCoordsValue =
   | {top: number; left: number}

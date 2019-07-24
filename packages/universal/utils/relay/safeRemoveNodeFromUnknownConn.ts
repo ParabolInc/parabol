@@ -2,9 +2,9 @@
  * Sometimes a node may exist in 1 of many different connections.
  * This removes it from the first one it is found in
  */
-import getAllConnections from 'universal/utils/relay/getAllConnections'
-import findConnectionWithNodeId from 'universal/utils/relay/findConnectionWithNodeId'
-import safeRemoveNodeFromConn from 'universal/utils/relay/safeRemoveNodeFromConn'
+import getAllConnections from './getAllConnections'
+import findConnectionWithNodeId from './findConnectionWithNodeId'
+import safeRemoveNodeFromConn from './safeRemoveNodeFromConn'
 import {RecordSourceSelectorProxy} from 'relay-runtime'
 
 const safeRemoveNodeFromUnknownConn = (

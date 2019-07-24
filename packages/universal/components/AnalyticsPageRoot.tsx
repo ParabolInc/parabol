@@ -1,11 +1,11 @@
 import React from 'react'
 import {graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import AnalyticsPage from 'universal/components/AnalyticsPage'
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
+import AnalyticsPage from './AnalyticsPage'
+import QueryRenderer from './QueryRenderer/QueryRenderer'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
+} from '../decorators/withAtmosphere/withAtmosphere'
 
 const query = graphql`
   query AnalyticsPageRootQuery {

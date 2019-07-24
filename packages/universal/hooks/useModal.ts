@@ -1,7 +1,7 @@
 import {useRef} from 'react'
-import useLoadingDelay from 'universal/hooks/useLoadingDelay'
-import useModalPortal from 'universal/hooks/useModalPortal'
-import usePortal, {UsePortalOptions} from 'universal/hooks/usePortal'
+import useLoadingDelay from './useLoadingDelay'
+import useModalPortal from './useModalPortal'
+import usePortal, {UsePortalOptions} from './usePortal'
 
 interface Options extends UsePortalOptions {
   background?: string

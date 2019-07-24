@@ -1,9 +1,9 @@
 import {useMemo} from 'react'
-import getBBox, {RectElement} from 'universal/components/RetroReflectPhase/getBBox'
-import useCoords, {MenuPosition, UseCoordsOptions} from 'universal/hooks/useCoords'
-import useLoadingDelay from 'universal/hooks/useLoadingDelay'
-import useMenuPortal from 'universal/hooks/useMenuPortal'
-import usePortal, {PortalStatus, UsePortalOptions} from 'universal/hooks/usePortal'
+import getBBox, {RectElement} from '../components/RetroReflectPhase/getBBox'
+import useCoords, {MenuPosition, UseCoordsOptions} from './useCoords'
+import useLoadingDelay from './useLoadingDelay'
+import useMenuPortal from './useMenuPortal'
+import usePortal, {PortalStatus, UsePortalOptions} from './usePortal'
 
 interface Options extends UsePortalOptions, UseCoordsOptions {
   loadingWidth?: number

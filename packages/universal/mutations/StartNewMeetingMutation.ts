@@ -1,9 +1,9 @@
-import {StartNewMeetingMutation as TStartNewMeetingMutation} from '__generated__/StartNewMeetingMutation.graphql'
+import {StartNewMeetingMutation as TStartNewMeetingMutation} from '../../__generated__/StartNewMeetingMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
-import Atmosphere from 'universal/Atmosphere'
-import {IStartNewMeetingOnMutationArguments} from 'universal/types/graphql'
-import {LocalHandlers} from 'universal/types/relayMutations'
-import updateLocalStage from 'universal/utils/relay/updateLocalStage'
+import Atmosphere from '../Atmosphere'
+import {IStartNewMeetingOnMutationArguments} from '../types/graphql'
+import {LocalHandlers} from '../types/relayMutations'
+import updateLocalStage from '../utils/relay/updateLocalStage'
 
 graphql`
   fragment StartNewMeetingMutation_team on StartNewMeetingPayload {

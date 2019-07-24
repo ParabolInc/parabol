@@ -1,6 +1,6 @@
 import React, {forwardRef, Ref} from 'react'
-import IconLabel from 'universal/components/IconLabel'
-import LinkButton from 'universal/components/LinkButton'
+import IconLabel from '../IconLabel'
+import LinkButton from '../LinkButton'
 
 interface Props {
   label: string

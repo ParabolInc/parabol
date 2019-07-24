@@ -1,15 +1,15 @@
-import {BBox, Dims, Point} from 'universal/types/animations'
-import getBBox from 'universal/components/RetroReflectPhase/getBBox'
-import getTransform from 'universal/components/RetroReflectPhase/getTransform'
-import requestDoubleAnimationFrame from 'universal/components/RetroReflectPhase/requestDoubleAnimationFrame'
-import setElementBBox from 'universal/components/RetroReflectPhase/setElementBBox'
-import {DECELERATE, STANDARD_CURVE} from 'universal/styles/animation'
+import {BBox, Dims, Point} from '../../types/animations'
+import getBBox from './getBBox'
+import getTransform from './getTransform'
+import requestDoubleAnimationFrame from './requestDoubleAnimationFrame'
+import setElementBBox from './setElementBBox'
+import {DECELERATE, STANDARD_CURVE} from '../../styles/animation'
 import {
   ITEM_DURATION,
   MIN_VAR_ITEM_DELAY,
   MOVE_DELAY,
   MOVE_DURATION
-} from 'universal/utils/multiplayerMasonry/masonryConstants'
+} from '../../utils/multiplayerMasonry/masonryConstants'
 
 interface CachedChild {
   key: string

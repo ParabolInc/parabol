@@ -1,9 +1,9 @@
 import React from 'react'
 import {graphql} from 'react-relay'
 import {RouteComponentProps} from 'react-router'
-import useAtmosphere from 'universal/hooks/useAtmosphere'
+import useAtmosphere from '../hooks/useAtmosphere'
 import InvitationLink from './InvitationLink'
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
+import QueryRenderer from './QueryRenderer/QueryRenderer'
 
 interface Props extends RouteComponentProps<{token: string}> {}
 

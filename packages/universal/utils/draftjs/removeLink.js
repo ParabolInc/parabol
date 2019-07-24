@@ -1,5 +1,5 @@
 import {EditorState, Modifier} from 'draft-js'
-import getFullLinkSelection from 'universal/utils/draftjs/getFullLinkSelection'
+import getFullLinkSelection from './getFullLinkSelection'
 
 const removeLink = (editorState) => {
   const selectionState = editorState.getSelection()

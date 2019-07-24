@@ -1,6 +1,6 @@
 import {ConnectionHandler, RecordSourceSelectorProxy} from 'relay-runtime'
-import getNotificationsConn from 'universal/mutations/connections/getNotificationsConn'
-import ensureArray from 'universal/utils/ensureArray'
+import getNotificationsConn from '../connections/getNotificationsConn'
+import ensureArray from '../../utils/ensureArray'
 
 const handleRemoveNotifications = (
   maybeNotificationIds: string[] | undefined | null,

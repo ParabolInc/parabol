@@ -1,4 +1,4 @@
-import ui from 'universal/styles/ui'
+import ui from '../ui'
 
 export default function makeFieldColorPalette (
   colorPalette,

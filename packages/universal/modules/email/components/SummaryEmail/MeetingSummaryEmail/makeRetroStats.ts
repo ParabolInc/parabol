@@ -1,5 +1,5 @@
-import {RETRO_TOPIC_LABEL, RETRO_VOTED_LABEL} from 'universal/utils/constants'
-import plural from 'universal/utils/plural'
+import {RETRO_TOPIC_LABEL, RETRO_VOTED_LABEL} from '../../../../../utils/constants'
+import plural from '../../../../../utils/plural'
 
 interface Meeting {
   reflectionGroups: {

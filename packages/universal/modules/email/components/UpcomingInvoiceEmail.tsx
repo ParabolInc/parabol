@@ -1,5 +1,5 @@
 import React from 'react'
-import {emailCopyStyle, emailLinkStyle, emailProductTeamSignature} from 'universal/styles/email'
+import {emailCopyStyle, emailLinkStyle, emailProductTeamSignature} from '../../../styles/email'
 import EmailBlock from './EmailBlock/EmailBlock'
 import EmailFooter from './EmailFooter/EmailFooter'
 import EmptySpace from './EmptySpace/EmptySpace'

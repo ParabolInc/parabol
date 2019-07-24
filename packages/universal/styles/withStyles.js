@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {StyleSheet} from 'aphrodite-local-styles/no-important'
-import getDisplayName from 'universal/utils/getDisplayName'
+import getDisplayName from '../utils/getDisplayName'
 
 const contextMap = new WeakMap()
 

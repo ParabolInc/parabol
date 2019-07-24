@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import WebcamDeniedPermissions from 'universal/components/WebcamDeniedPermissions'
-import WebcamPromptPermissions from 'universal/components/WebcamPromptPermissions'
+import WebcamDeniedPermissions from './WebcamDeniedPermissions'
+import WebcamPromptPermissions from './WebcamPromptPermissions'
 
 const ModalBoundary = styled('div')({
   background: '#fff',

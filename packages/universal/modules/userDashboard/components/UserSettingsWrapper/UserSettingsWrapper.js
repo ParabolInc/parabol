@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import SettingsHeader from 'universal/modules/userDashboard/components/SettingsHeader/SettingsHeader'
+import SettingsHeader from '../SettingsHeader/SettingsHeader'
 import styled from '@emotion/styled'
-import ui from 'universal/styles/ui'
-import DashMain from 'universal/components/Dashboard/DashMain'
-import DashHeader from 'universal/components/Dashboard/DashHeader'
-import DashContent from 'universal/components/Dashboard/DashContent'
+import ui from '../../../../styles/ui'
+import DashMain from '../../../../components/Dashboard/DashMain'
+import DashHeader from '../../../../components/Dashboard/DashHeader'
+import DashContent from '../../../../components/Dashboard/DashContent'
 
 const SettingsContentBlock = styled('div')({
   alignItems: 'center',

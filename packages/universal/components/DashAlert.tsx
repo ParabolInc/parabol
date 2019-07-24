@@ -1,8 +1,8 @@
-import {DashAlert_viewer} from '__generated__/DashAlert_viewer.graphql'
+import {DashAlert_viewer} from '../../__generated__/DashAlert_viewer.graphql'
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import DashAlertMeeting from 'universal/components/DashAlertMeeting'
-import DashAlertOverLimit from 'universal/components/DashAlertOverLimit'
+import DashAlertMeeting from './DashAlertMeeting'
+import DashAlertOverLimit from './DashAlertOverLimit'
 
 interface Props {
   viewer: DashAlert_viewer | null

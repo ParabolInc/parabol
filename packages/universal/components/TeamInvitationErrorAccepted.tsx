@@ -1,4 +1,4 @@
-import {TeamInvitationErrorAccepted_verifiedInvitation} from '__generated__/TeamInvitationErrorAccepted_verifiedInvitation.graphql'
+import {TeamInvitationErrorAccepted_verifiedInvitation} from '../../__generated__/TeamInvitationErrorAccepted_verifiedInvitation.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import Helmet from 'react-helmet'
@@ -8,7 +8,7 @@ import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import DialogTitle from './DialogTitle'
 import StyledLink from './StyledLink'
-import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups'
+import {meetingTypeToLabel, meetingTypeToSlug} from '../utils/meetings/lookups'
 
 interface Props {
   verifiedInvitation: TeamInvitationErrorAccepted_verifiedInvitation

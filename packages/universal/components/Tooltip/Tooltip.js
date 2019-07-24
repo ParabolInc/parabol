@@ -1,12 +1,12 @@
 // Deprecated, see useTooltip
 import PropTypes from 'prop-types'
 import React, {Children, cloneElement, Component} from 'react'
-import {MAX_INT} from 'universal/utils/constants'
-import AnimatedFade from 'universal/components/AnimatedFade'
-import Modal from 'universal/components/Modal'
-import TooltipStyled from 'universal/components/TooltipStyled'
+import {MAX_INT} from '../../utils/constants'
+import AnimatedFade from '../AnimatedFade'
+import Modal from '../Modal'
+import TooltipStyled from '../TooltipStyled'
 import styled from '@emotion/styled'
-import withCoordsV2 from 'universal/decorators/withCoordsV2'
+import withCoordsV2 from '../../decorators/withCoordsV2'
 
 const ModalBlock = styled('div')(({maxWidth}) => ({
   padding: '4px 8px',

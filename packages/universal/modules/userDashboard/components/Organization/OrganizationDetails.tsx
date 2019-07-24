@@ -1,9 +1,9 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import TagBlock from 'universal/components/Tag/TagBlock'
-import TagPro from 'universal/components/Tag/TagPro'
-import makeDateString from 'universal/utils/makeDateString'
-import {TierEnum} from 'universal/types/graphql'
+import TagBlock from '../../../../components/Tag/TagBlock'
+import TagPro from '../../../../components/Tag/TagPro'
+import makeDateString from '../../../../utils/makeDateString'
+import {TierEnum} from '../../../../types/graphql'
 
 const StyledTagBlock = styled(TagBlock)({
   marginLeft: 4,

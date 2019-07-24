@@ -1,5 +1,5 @@
-import {ReflectionGroupTitleEditor_meeting} from '__generated__/ReflectionGroupTitleEditor_meeting.graphql'
-import {ReflectionGroupTitleEditor_reflectionGroup} from '__generated__/ReflectionGroupTitleEditor_reflectionGroup.graphql'
+import {ReflectionGroupTitleEditor_meeting} from '../../../__generated__/ReflectionGroupTitleEditor_meeting.graphql'
+import {ReflectionGroupTitleEditor_reflectionGroup} from '../../../__generated__/ReflectionGroupTitleEditor_reflectionGroup.graphql'
 /**
  * Edits the name of a reflection group.
  *
@@ -7,17 +7,17 @@ import {ReflectionGroupTitleEditor_reflectionGroup} from '__generated__/Reflecti
 import React, {Component, RefObject} from 'react'
 import styled from '@emotion/styled'
 import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
-import StyledError from 'universal/components/StyledError'
+import StyledError from '../StyledError'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import UpdateReflectionGroupTitleMutation from 'universal/mutations/UpdateReflectionGroupTitleMutation'
-import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
-import {RETRO_TOPIC_LABEL} from 'universal/utils/constants'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import Icon from 'universal/components/Icon'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+} from '../../decorators/withAtmosphere/withAtmosphere'
+import UpdateReflectionGroupTitleMutation from '../../mutations/UpdateReflectionGroupTitleMutation'
+import appTheme from '../../styles/theme/appTheme'
+import ui from '../../styles/ui'
+import {RETRO_TOPIC_LABEL} from '../../utils/constants'
+import withMutationProps, {WithMutationProps} from '../../utils/relay/withMutationProps'
+import Icon from '../Icon'
+import {MD_ICONS_SIZE_18} from '../../styles/icons'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   isExpanded: boolean

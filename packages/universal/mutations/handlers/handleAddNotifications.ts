@@ -1,6 +1,6 @@
-import getNotificationsConn from 'universal/mutations/connections/getNotificationsConn'
-import pluralizeHandler from 'universal/mutations/handlers/pluralizeHandler'
-import filterNodesInConn from 'universal/utils/relay/filterNodesInConn'
+import getNotificationsConn from '../connections/getNotificationsConn'
+import pluralizeHandler from './pluralizeHandler'
+import filterNodesInConn from '../../utils/relay/filterNodesInConn'
 import {ConnectionHandler, RecordProxy, RecordSourceProxy} from 'relay-runtime'
 
 const handleAddNotification = (newNode: RecordProxy | null, store: RecordSourceProxy) => {

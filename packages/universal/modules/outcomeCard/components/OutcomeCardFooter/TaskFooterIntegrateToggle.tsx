@@ -1,10 +1,10 @@
 import React from 'react'
-import CardButton from 'universal/components/CardButton'
-import IconLabel from 'universal/components/IconLabel'
-import {MenuPosition} from 'universal/hooks/useCoords'
-import useMenu from 'universal/hooks/useMenu'
-import lazyPreload from 'universal/utils/lazyPreload'
-import {MenuMutationProps} from 'universal/hooks/useMutationProps'
+import CardButton from '../../../../components/CardButton'
+import IconLabel from '../../../../components/IconLabel'
+import {MenuPosition} from '../../../../hooks/useCoords'
+import useMenu from '../../../../hooks/useMenu'
+import lazyPreload from '../../../../utils/lazyPreload'
+import {MenuMutationProps} from '../../../../hooks/useMutationProps'
 
 const TaskFooterIntegrateMenuRoot = lazyPreload(() =>
   import(/* webpackChunkName: 'TaskFooterIntegrateMenuRoot' */ 'universal/components/TaskFooterIntegrateMenuRoot')

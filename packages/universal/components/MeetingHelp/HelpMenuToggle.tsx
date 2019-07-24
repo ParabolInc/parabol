@@ -1,8 +1,8 @@
-import IconLabel from 'universal/components/IconLabel'
+import IconLabel from '../IconLabel'
 import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
-import FloatingActionButton from 'universal/components/FloatingActionButton'
-import {meetingHelpWithBottomBar} from 'universal/styles/meeting'
+import FloatingActionButton from '../FloatingActionButton'
+import {meetingHelpWithBottomBar} from '../../styles/meeting'
 
 const StyledButton = styled(FloatingActionButton)<Props>(({floatAboveBottomBar}) => ({
   bottom: floatAboveBottomBar ? meetingHelpWithBottomBar : '1.25rem',

@@ -1,12 +1,12 @@
 import React, {ReactNode, useEffect} from 'react'
 import styled from '@emotion/styled'
-import HelpMenuToggle from 'universal/components/MeetingHelp/HelpMenuToggle'
-import Menu from 'universal/components/Menu'
-import {MenuPosition} from 'universal/hooks/useCoords'
-import useMenu from 'universal/hooks/useMenu'
-import useTimeout from 'universal/hooks/useTimeout'
-import isDemoRoute from 'universal/utils/isDemoRoute'
-import useFABPad from 'universal/hooks/useFABPad'
+import HelpMenuToggle from './MeetingHelp/HelpMenuToggle'
+import Menu from './Menu'
+import {MenuPosition} from '../hooks/useCoords'
+import useMenu from '../hooks/useMenu'
+import useTimeout from '../hooks/useTimeout'
+import isDemoRoute from '../utils/isDemoRoute'
+import useFABPad from '../hooks/useFABPad'
 
 interface Props {
   menu: ReactNode

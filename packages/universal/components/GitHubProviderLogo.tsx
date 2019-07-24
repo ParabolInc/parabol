@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import logo from 'universal/styles/theme/images/graphics/github-flat.svg'
+import logo from '../styles/theme/images/graphics/github-flat.svg'
 
 const GitHubProviderLogo = styled('div')({
   background: `url("${logo}")`,

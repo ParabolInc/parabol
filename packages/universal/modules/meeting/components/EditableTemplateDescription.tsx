@@ -1,12 +1,12 @@
 import React, {Component} from 'react'
 import styled from '@emotion/styled'
-import EditableText from 'universal/components/EditableText'
+import EditableText from '../../../components/EditableText'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import ReflectTemplatePromptUpdateDescriptionMutation from 'universal/mutations/ReflectTemplatePromptUpdateDescriptionMutation'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import Legitity from 'universal/validation/Legitity'
+} from '../../../decorators/withAtmosphere/withAtmosphere'
+import ReflectTemplatePromptUpdateDescriptionMutation from '../../../mutations/ReflectTemplatePromptUpdateDescriptionMutation'
+import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
+import Legitity from '../../../validation/Legitity'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   description: string

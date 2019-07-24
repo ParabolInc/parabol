@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import textOverflow from 'universal/styles/helpers/textOverflow'
-import ui from 'universal/styles/ui'
+import textOverflow from '../styles/helpers/textOverflow'
+import ui from '../styles/ui'
 
 const DropdownMenuItemLabel = styled('span')({
   ...textOverflow,

@@ -3,10 +3,10 @@
 // -----------------------------------------------------------------------------
 
 import tinycolor from 'tinycolor2'
-import appTheme from 'universal/styles/theme/appTheme'
-import makeGradient from 'universal/styles/helpers/makeGradient'
-import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles'
-import makeShadowColor from 'universal/styles/helpers/makeShadowColor'
+import appTheme from './theme/appTheme'
+import makeGradient from './helpers/makeGradient'
+import makePlaceholderStyles from './helpers/makePlaceholderStyles'
+import makeShadowColor from './helpers/makeShadowColor'
 
 // Reusable constants for UI object
 // -----------------------------------------------------------------------------

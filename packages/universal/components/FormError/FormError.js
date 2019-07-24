@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 
-import formError from 'universal/styles/helpers/formError'
+import formError from '../../styles/helpers/formError'
 
 const FormError = styled('div')({...formError})
 

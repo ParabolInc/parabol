@@ -1,10 +1,10 @@
 import {EditorState} from 'draft-js'
 import React, {Component, Ref} from 'react'
 import stringScore from 'string-score'
-import Menu from 'universal/components/Menu'
-import MenuItem from 'universal/components/MenuItem'
-import {MenuProps} from 'universal/hooks/useMenu'
-import emojiArray from 'universal/utils/emojiArray'
+import Menu from './Menu'
+import MenuItem from './MenuItem'
+import {MenuProps} from '../hooks/useMenu'
+import emojiArray from '../utils/emojiArray'
 
 interface EmojiSuggestion {
   value: string

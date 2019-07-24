@@ -1,7 +1,7 @@
 import React from 'react'
-import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
-import {cardHoverShadow} from 'universal/styles/elevation'
+import appTheme from '../../styles/theme/appTheme'
+import ui from '../../styles/ui'
+import {cardHoverShadow} from '../../styles/elevation'
 import CreateCardRootStyles from './CreateCardRootStyles'
 import styled from '@emotion/styled'
 

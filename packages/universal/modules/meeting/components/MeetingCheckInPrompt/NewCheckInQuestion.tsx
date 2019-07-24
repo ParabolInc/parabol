@@ -1,20 +1,20 @@
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import EditorInputWrapper from 'universal/components/EditorInputWrapper'
-import PlainButton from 'universal/components/PlainButton/PlainButton'
-import editorDecorators from 'universal/components/TaskEditor/decorators'
-import 'universal/components/TaskEditor/Draft.css'
-import Tooltip from 'universal/components/Tooltip/Tooltip'
+import EditorInputWrapper from '../../../../components/EditorInputWrapper'
+import PlainButton from '../../../../components/PlainButton/PlainButton'
+import editorDecorators from '../../../../components/TaskEditor/decorators'
+import '../../../../components/TaskEditor/Draft.css'
+import Tooltip from '../../../../components/Tooltip/Tooltip'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import ui from 'universal/styles/ui'
+} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import ui from '../../../../styles/ui'
 import styled from '@emotion/styled'
-import UpdateNewCheckInQuestionMutation from 'universal/mutations/UpdateNewCheckInQuestionMutation'
+import UpdateNewCheckInQuestionMutation from '../../../../mutations/UpdateNewCheckInQuestionMutation'
 import {convertFromRaw, convertToRaw, EditorState, SelectionState} from 'draft-js'
-import Icon from 'universal/components/Icon'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
-import {NewCheckInQuestion_team} from '__generated__/NewCheckInQuestion_team.graphql'
+import Icon from '../../../../components/Icon'
+import {MD_ICONS_SIZE_18} from '../../../../styles/icons'
+import {NewCheckInQuestion_team} from '../../../../../__generated__/NewCheckInQuestion_team.graphql'
 
 const CogIcon = styled(Icon)<{isEditing: boolean}>(({isEditing}) => ({
   color: ui.colorText,

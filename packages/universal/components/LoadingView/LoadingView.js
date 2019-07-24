@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import withStyles from 'universal/styles/withStyles'
+import withStyles from '../../styles/withStyles'
 import {css} from 'aphrodite-local-styles/no-important'
-import ui from 'universal/styles/ui'
-import appTheme from 'universal/styles/theme/appTheme'
-import Pato from 'universal/styles/theme/images/graphics/pato.svg'
+import ui from '../../styles/ui'
+import appTheme from '../../styles/theme/appTheme'
+import Pato from '../../styles/theme/images/graphics/pato.svg'
 
 const LoadingDuck = (props) => {
   return <img alt={'Duck by Sergey Demushkin'} className={props.className} src={Pato} />

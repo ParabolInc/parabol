@@ -1,11 +1,11 @@
 import React from 'react'
 import {graphql} from 'react-relay'
-import MyDashboardTasks from 'universal/components/MyDashboardTasks'
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
+import MyDashboardTasks from './MyDashboardTasks'
+import QueryRenderer from './QueryRenderer/QueryRenderer'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {cacheConfig} from 'universal/utils/constants'
+} from '../decorators/withAtmosphere/withAtmosphere'
+import {cacheConfig} from '../utils/constants'
 import {LoaderSize} from '../types/constEnums'
 import renderQuery from '../utils/relay/renderQuery'
 

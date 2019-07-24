@@ -1,14 +1,14 @@
 import React, {Component} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
-import EditableText from 'universal/components/EditableText'
+import EditableText from './EditableText'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+} from '../decorators/withAtmosphere/withAtmosphere'
+import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import UpdateOrgMutation from '../mutations/UpdateOrgMutation'
 import Legitity from '../validation/Legitity'
-import {EditableOrgName_organization} from '__generated__/EditableOrgName_organization.graphql'
+import {EditableOrgName_organization} from '../../__generated__/EditableOrgName_organization.graphql'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   organization: EditableOrgName_organization

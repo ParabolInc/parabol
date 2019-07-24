@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import {Radius} from 'universal/types/constEnums'
-import {modalShadow} from 'universal/styles/elevation'
+import {Radius} from '../types/constEnums'
+import {modalShadow} from '../styles/elevation'
 
 const AuthDialog = styled('div')({
   backgroundColor: 'white',

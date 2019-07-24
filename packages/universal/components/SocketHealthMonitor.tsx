@@ -2,10 +2,10 @@ import GQLTrebuchetClient from '@mattkrick/graphql-trebuchet-client'
 import {Component} from 'react'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {APP_VERSION_KEY} from 'universal/utils/constants'
+} from '../decorators/withAtmosphere/withAtmosphere'
+import {APP_VERSION_KEY} from '../utils/constants'
 import {commitLocalUpdate} from 'react-relay'
-import createProxyRecord from 'universal/utils/relay/createProxyRecord'
+import createProxyRecord from '../utils/relay/createProxyRecord'
 import ms from 'ms'
 
 interface Props extends WithAtmosphereProps {}

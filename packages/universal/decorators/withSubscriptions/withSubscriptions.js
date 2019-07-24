@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import getDisplayName from 'universal/utils/getDisplayName'
+import getDisplayName from '../../utils/getDisplayName'
 
 export default (subscription, options = {}) => (ComposedComponent) => {
   class WithSubscriptions extends Component {

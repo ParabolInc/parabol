@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import {modalShadow} from 'universal/styles/elevation'
-import {Radius} from 'universal/types/constEnums'
+import {modalShadow} from '../styles/elevation'
+import {Radius} from '../types/constEnums'
 
 const DialogContainer = styled('div')({
   display: 'flex',

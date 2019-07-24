@@ -1,14 +1,14 @@
 import {convertFromRaw, Editor, EditorState} from 'draft-js'
 import React, {useMemo, useRef} from 'react'
-import editorDecorators from 'universal/components/TaskEditor/decorators'
-import labels from 'universal/styles/theme/labels'
-import ui from 'universal/styles/ui'
+import editorDecorators from '../../../../../components/TaskEditor/decorators'
+import labels from '../../../../../styles/theme/labels'
+import ui from '../../../../../styles/ui'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {EmailTaskCard_task} from '__generated__/EmailTaskCard_task.graphql'
+import {EmailTaskCard_task} from '../../../../../../__generated__/EmailTaskCard_task.graphql'
 import {
   FONT_FAMILY,
   PALETTE_TEXT_MAIN
-} from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/constants'
+} from './constants'
 
 interface Props {
   task: EmailTaskCard_task

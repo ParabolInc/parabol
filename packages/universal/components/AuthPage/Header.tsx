@@ -6,9 +6,9 @@ import React from 'react'
 import styled from '@emotion/styled'
 import {Link} from 'react-router-dom'
 
-import ui from 'universal/styles/ui'
-import appTheme from 'universal/styles/theme/appTheme'
-import parabolLogo from 'universal/styles/theme/images/brand/logo.svg'
+import ui from '../../styles/ui'
+import appTheme from '../../styles/theme/appTheme'
+import parabolLogo from '../../styles/theme/images/brand/logo.svg'
 
 const HeaderContainer = styled('div')({
   alignItems: 'center',

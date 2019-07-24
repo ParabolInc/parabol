@@ -1,17 +1,17 @@
-import {RetroTemplateListMenu_retroMeetingSettings} from '__generated__/RetroTemplateListMenu_retroMeetingSettings.graphql'
-import {RetroTemplatePicker_settings} from '__generated__/RetroTemplatePicker_settings.graphql'
+import {RetroTemplateListMenu_retroMeetingSettings} from '../../../../__generated__/RetroTemplateListMenu_retroMeetingSettings.graphql'
+import {RetroTemplatePicker_settings} from '../../../../__generated__/RetroTemplatePicker_settings.graphql'
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import Menu from 'universal/components/Menu'
-import MenuItem from 'universal/components/MenuItem'
-import MenuItemHR from 'universal/components/MenuItemHR'
+import Menu from '../../../components/Menu'
+import MenuItem from '../../../components/MenuItem'
+import MenuItemHR from '../../../components/MenuItemHR'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {MenuProps} from 'universal/hooks/useMenu'
-import useModal from 'universal/hooks/useModal'
-import SelectRetroTemplateMutation from 'universal/mutations/SelectRetroTemplateMutation'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+} from '../../../decorators/withAtmosphere/withAtmosphere'
+import {MenuProps} from '../../../hooks/useMenu'
+import useModal from '../../../hooks/useModal'
+import SelectRetroTemplateMutation from '../../../mutations/SelectRetroTemplateMutation'
+import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import styled from '@emotion/styled'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {

@@ -1,15 +1,15 @@
-import {EditableTeamName_team} from '__generated__/EditableTeamName_team.graphql'
+import {EditableTeamName_team} from '../../../../../__generated__/EditableTeamName_team.graphql'
 import React, {Component} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
-import EditableText from 'universal/components/EditableText'
+import EditableText from '../../../../components/EditableText'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import UpdateTeamNameMutation from 'universal/mutations/UpdateTeamNameMutation'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import UpdateTeamNameMutation from '../../../../mutations/UpdateTeamNameMutation'
+import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 import teamNameValidation from '../../../../validation/teamNameValidation'
-import appTheme from 'universal/styles/theme/appTheme'
+import appTheme from '../../../../styles/theme/appTheme'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   team: EditableTeamName_team

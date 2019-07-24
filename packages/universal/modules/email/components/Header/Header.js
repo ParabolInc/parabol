@@ -1,6 +1,6 @@
 import React from 'react'
-import {emailTableBase} from 'universal/styles/email'
-import emailDir from 'universal/modules/email/emailDir'
+import {emailTableBase} from '../../../../styles/email'
+import emailDir from '../../emailDir'
 
 const imageStyle = {
   border: '0px',

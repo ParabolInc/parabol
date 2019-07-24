@@ -1,12 +1,12 @@
-import {MeetingSummaryReferrer} from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail'
+import {MeetingSummaryReferrer} from './MeetingSummaryEmail'
 import React from 'react'
 import {
   FONT_FAMILY,
   PALETTE_BACKGROUND_GRADIENT,
   PALETTE_BACKGROUND_RED
-} from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/constants'
-import {buttonShadow} from 'universal/styles/elevation'
-import AnchorIfEmail from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/AnchorIfEmail'
+} from './constants'
+import {buttonShadow} from '../../../../../styles/elevation'
+import AnchorIfEmail from './AnchorIfEmail'
 
 interface Props {
   referrer: MeetingSummaryReferrer

@@ -1,15 +1,15 @@
-import {AddNewReflectTemplate_reflectTemplates} from '__generated__/AddNewReflectTemplate_reflectTemplates.graphql'
+import {AddNewReflectTemplate_reflectTemplates} from '../../../../__generated__/AddNewReflectTemplate_reflectTemplates.graphql'
 import React, {Component} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
-import RaisedButton from 'universal/components/RaisedButton'
+import RaisedButton from '../../../components/RaisedButton'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import AddReflectTemplateMutation from 'universal/mutations/AddReflectTemplateMutation'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import {PALETTE} from 'universal/styles/paletteV2'
-import {typeScale} from 'universal/styles/theme/typography'
+} from '../../../decorators/withAtmosphere/withAtmosphere'
+import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
+import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
+import {PALETTE} from '../../../styles/paletteV2'
+import {typeScale} from '../../../styles/theme/typography'
 
 const Error = styled('span')({
   color: PALETTE.ERROR_MAIN,

@@ -1,9 +1,9 @@
 import React, {useEffect} from 'react'
 import {RouteComponentProps} from 'react-router'
-import CreateImposterTokenMutation from 'universal/mutations/CreateImposterTokenMutation'
+import CreateImposterTokenMutation from '../../../../mutations/CreateImposterTokenMutation'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import useAuthRoute from 'universal/hooks/useAuthRoute'
-import {AuthTokenRole} from 'universal/types/graphql'
+import useAuthRoute from '../../../../hooks/useAuthRoute'
+import {AuthTokenRole} from '../../../../types/graphql'
 
 interface Props extends RouteComponentProps<{newUserId: string}> {}
 

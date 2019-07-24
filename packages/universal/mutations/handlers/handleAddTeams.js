@@ -1,5 +1,5 @@
-import pluralizeHandler from 'universal/mutations/handlers/pluralizeHandler'
-import addNodeToArray from 'universal/utils/relay/addNodeToArray'
+import pluralizeHandler from './pluralizeHandler'
+import addNodeToArray from '../../utils/relay/addNodeToArray'
 
 const handleAddTeam = (newNode, store, viewerId) => {
   const viewer = store.get(viewerId)

@@ -1,4 +1,4 @@
-import {tags} from 'universal/utils/constants'
+import {tags} from '../../utils/constants'
 
 export const resolveHashTag = async (query) => {
   return tags.filter((tag) => tag.name.startsWith(query))

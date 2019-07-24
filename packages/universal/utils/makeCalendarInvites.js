@@ -1,7 +1,7 @@
 import ms from 'ms'
-import {MEETING_NAME} from 'universal/utils/constants'
-import ensureDate from 'universal/utils/ensureDate'
-import roundDateToNearestHalfHour from 'universal/utils/roundDateToNearestHalfHour'
+import {MEETING_NAME} from './constants'
+import ensureDate from './ensureDate'
+import roundDateToNearestHalfHour from './roundDateToNearestHalfHour'
 
 // the ICS doesn't get the 'Add your conference' line because it doesn't accept line breaks. that's cool though because it isn't editable
 // eslint-disable-next-line max-len

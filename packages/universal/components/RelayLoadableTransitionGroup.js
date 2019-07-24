@@ -1,8 +1,8 @@
 import {PropTypes} from 'prop-types'
 import React, {Component} from 'react'
 import {TransitionGroup} from 'react-transition-group'
-import AnimatedFade from 'universal/components/AnimatedFade'
-import {HUMAN_ADDICTION_THRESH} from 'universal/styles/ui'
+import AnimatedFade from './AnimatedFade'
+import {HUMAN_ADDICTION_THRESH} from '../styles/ui'
 
 /*
  * A Component to stick in any Root component (one that uses the QueryRenderer from relay)

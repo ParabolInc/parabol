@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import InviteDialog from 'universal/components/InviteDialog'
+import InviteDialog from './InviteDialog'
 
 const AuthenticationDialog = styled(InviteDialog)({
   alignItems: 'center',

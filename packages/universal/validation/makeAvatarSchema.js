@@ -1,4 +1,4 @@
-import {avatar} from 'universal/validation/templates'
+import {avatar} from './templates'
 import legitify from './legitify'
 
 export default function makeAvatarSchema () {

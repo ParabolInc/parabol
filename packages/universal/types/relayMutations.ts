@@ -1,6 +1,6 @@
 import {RouterProps} from 'react-router'
 import {PayloadError, RecordProxy, RecordSourceSelectorProxy, commitMutation} from 'relay-runtime'
-import Atmosphere from 'universal/Atmosphere'
+import Atmosphere from '../Atmosphere'
 
 export interface CompletedHandler {
   (response: any, errors?: (Error | PayloadError)[] | null): void

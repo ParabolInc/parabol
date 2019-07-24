@@ -1,9 +1,9 @@
-import {RemoveGitHubAuthMutation as TRemoveGitHubAuthMutation} from '__generated__/RemoveGitHubAuthMutation.graphql'
+import {RemoveGitHubAuthMutation as TRemoveGitHubAuthMutation} from '../../__generated__/RemoveGitHubAuthMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
-import Atmosphere from 'universal/Atmosphere'
-import {IRemoveGitHubAuthOnMutationArguments} from 'universal/types/graphql'
-import {LocalHandlers} from 'universal/types/relayMutations'
+import Atmosphere from '../Atmosphere'
+import {IRemoveGitHubAuthOnMutationArguments} from '../types/graphql'
+import {LocalHandlers} from '../types/relayMutations'
 
 graphql`
   fragment RemoveGitHubAuthMutation_team on RemoveGitHubAuthPayload {

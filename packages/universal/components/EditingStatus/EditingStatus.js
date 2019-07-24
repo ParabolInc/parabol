@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
-import Ellipsis from 'universal/components/Ellipsis/Ellipsis'
+import appTheme from '../../styles/theme/appTheme'
+import ui from '../../styles/ui'
+import Ellipsis from '../Ellipsis/Ellipsis'
 import {createFragmentContainer} from 'react-relay'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import DueDateToggle from 'universal/components/DueDateToggle'
+import withAtmosphere from '../../decorators/withAtmosphere/withAtmosphere'
+import DueDateToggle from '../DueDateToggle'
 import styled from '@emotion/styled'
-import relativeDate from 'universal/utils/date/relativeDate'
+import relativeDate from '../../utils/date/relativeDate'
 
 const StatusHeader = styled('div')({
   alignItems: 'center',

@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import withStyles from 'universal/styles/withStyles'
+import withStyles from '../../../../styles/withStyles'
 import {css} from 'aphrodite-local-styles/no-important'
-import appTheme from 'universal/styles/theme/appTheme'
-import lockup from 'universal/styles/theme/images/brand/parabol-lockup-v-dark.svg'
+import appTheme from '../../../../styles/theme/appTheme'
+import lockup from '../../../../styles/theme/images/brand/parabol-lockup-v-dark.svg'
 
 const InvoiceFooter = (props) => {
   const {styles} = props

@@ -1,22 +1,22 @@
 import {commitMutation, graphql} from 'react-relay'
-import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
-import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications'
-import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks'
-import popInvolvementToast from 'universal/mutations/toasts/popInvolvementToast'
-import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap'
-import getInProxy from 'universal/utils/relay/getInProxy'
-import updateProxyRecord from 'universal/utils/relay/updateProxyRecord'
-import handleRemoveTasks from 'universal/mutations/handlers/handleRemoveTasks'
-import ContentFilterHandler from 'universal/utils/relay/ContentFilterHandler'
+import handleAddNotifications from './handlers/handleAddNotifications'
+import handleRemoveNotifications from './handlers/handleRemoveNotifications'
+import handleUpsertTasks from './handlers/handleUpsertTasks'
+import popInvolvementToast from './toasts/popInvolvementToast'
+import getTagsFromEntityMap from '../utils/draftjs/getTagsFromEntityMap'
+import getInProxy from '../utils/relay/getInProxy'
+import updateProxyRecord from '../utils/relay/updateProxyRecord'
+import handleRemoveTasks from './handlers/handleRemoveTasks'
+import ContentFilterHandler from '../utils/relay/ContentFilterHandler'
 import {
   LocalHandlers,
   OnNextHandler,
   SharedUpdater,
   StandardMutation
-} from 'universal/types/relayMutations'
-import {UpdateTaskMutation_task} from '__generated__/UpdateTaskMutation_task.graphql'
-import {UpdateTaskMutation as TUpdateTaskMutation} from '__generated__/UpdateTaskMutation.graphql'
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
+} from '../types/relayMutations'
+import {UpdateTaskMutation_task} from '../../__generated__/UpdateTaskMutation_task.graphql'
+import {UpdateTaskMutation as TUpdateTaskMutation} from '../../__generated__/UpdateTaskMutation.graphql'
+import toTeamMemberId from '../utils/relay/toTeamMemberId'
 
 graphql`
   fragment UpdateTaskMutation_task on UpdateTaskPayload {

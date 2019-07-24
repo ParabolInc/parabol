@@ -1,8 +1,8 @@
-import Atmosphere from 'universal/Atmosphere'
-import {MenuMutationProps} from 'universal/hooks/useMutationProps'
-import makeHref from 'universal/utils/makeHref'
-import getOAuthPopupFeatures from 'universal/utils/getOAuthPopupFeatures'
-import AddAtlassianAuthMutation from 'universal/mutations/AddAtlassianAuthMutation'
+import Atmosphere from '../Atmosphere'
+import {MenuMutationProps} from '../hooks/useMutationProps'
+import makeHref from './makeHref'
+import getOAuthPopupFeatures from './getOAuthPopupFeatures'
+import AddAtlassianAuthMutation from '../mutations/AddAtlassianAuthMutation'
 
 export interface JiraUser {
   self: string

@@ -1,11 +1,11 @@
 import React, {Component} from 'react'
-import {MONTHLY_PRICE} from 'universal/utils/constants'
-import plural from 'universal/utils/plural'
+import {MONTHLY_PRICE} from '../utils/constants'
+import plural from '../utils/plural'
 import styled from '@emotion/styled'
-import ui from 'universal/styles/ui'
+import ui from '../styles/ui'
 import tinycolor from 'tinycolor2'
-import Icon from 'universal/components/Icon'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import Icon from './Icon'
+import {MD_ICONS_SIZE_18} from '../styles/icons'
 
 const {green, mid} = ui.palette
 const hoverColor = tinycolor.mix(mid, '#000', 15).toHexString()

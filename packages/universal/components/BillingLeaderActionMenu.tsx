@@ -1,16 +1,16 @@
-import {BillingLeaderActionMenu_organization} from '__generated__/BillingLeaderActionMenu_organization.graphql'
-import {BillingLeaderActionMenu_organizationUser} from '__generated__/BillingLeaderActionMenu_organizationUser.graphql'
+import {BillingLeaderActionMenu_organization} from '../../__generated__/BillingLeaderActionMenu_organization.graphql'
+import {BillingLeaderActionMenu_organizationUser} from '../../__generated__/BillingLeaderActionMenu_organizationUser.graphql'
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import Menu from 'universal/components/Menu'
-import MenuItem from 'universal/components/MenuItem'
+import Menu from './Menu'
+import MenuItem from './MenuItem'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {MenuProps} from 'universal/hooks/useMenu'
-import SetOrgUserRoleMutation from 'universal/mutations/SetOrgUserRoleMutation'
-import {BILLING_LEADER} from 'universal/utils/constants'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+} from '../decorators/withAtmosphere/withAtmosphere'
+import {MenuProps} from '../hooks/useMenu'
+import SetOrgUserRoleMutation from '../mutations/SetOrgUserRoleMutation'
+import {BILLING_LEADER} from '../utils/constants'
+import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   menuProps: MenuProps

@@ -1,24 +1,26 @@
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import getWordAt from 'universal/components/TaskEditor/getWordAt'
-import resolvers from 'universal/components/TaskEditor/resolvers'
+import getWordAt from './getWordAt'
+import resolvers from './resolvers'
 import ui, {
   DEFAULT_MENU_HEIGHT,
   DEFAULT_MENU_WIDTH,
   HUMAN_ADDICTION_THRESH,
   MAX_WAIT_TIME
-} from 'universal/styles/ui'
-import completeEntity from 'universal/utils/draftjs/completeEnitity'
-import getDraftCoords from 'universal/utils/getDraftCoords'
+} from '../../styles/ui'
+import completeEntity from '../../utils/draftjs/completeEnitity'
+import getDraftCoords from '../../utils/getDraftCoords'
 import getAnchorLocation from './getAnchorLocation'
 import Loadable from 'react-loadable'
-import LoadableLoading from 'universal/components/LoadableLoading'
-import LoadableDraftJSModal from 'universal/components/LoadableDraftJSModal'
+import LoadableLoading from '../LoadableLoading'
+import LoadableDraftJSModal from '../LoadableDraftJSModal'
 
 const LoadableEditorSuggestions = Loadable({
   loader: () =>
-    import(/* webpackChunkName: 'EditorSuggestions' */
-      'universal/components/EditorSuggestions/EditorSuggestions'),
+    import(
+      /* webpackChunkName: 'EditorSuggestions' */
+      'universal/components/EditorSuggestions/EditorSuggestions'
+    ),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),
@@ -28,8 +30,10 @@ const LoadableEditorSuggestions = Loadable({
 
 const LoadableMentionableUsersRoot = Loadable({
   loader: () =>
-    import(/* webpackChunkName: 'SuggestMentionableUsersRoot' */
-      'universal/components/SuggestMentionableUsersRoot'),
+    import(
+      /* webpackChunkName: 'SuggestMentionableUsersRoot' */
+      'universal/components/SuggestMentionableUsersRoot'
+    ),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),

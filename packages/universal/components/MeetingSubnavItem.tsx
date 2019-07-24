@@ -1,8 +1,8 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import {meetingSidebarGutterInner} from 'universal/styles/meeting'
-import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
+import {meetingSidebarGutterInner} from '../styles/meeting'
+import appTheme from '../styles/theme/appTheme'
+import ui from '../styles/ui'
 
 const lineHeight = ui.navTopicLineHeight
 

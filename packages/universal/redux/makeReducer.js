@@ -1,5 +1,5 @@
 import {combineReducers} from 'redux'
-import makeRootReducer from 'universal/redux/rootDuck'
+import makeRootReducer from './rootDuck'
 
 const appReducers = {
   noop: (state = null) => state

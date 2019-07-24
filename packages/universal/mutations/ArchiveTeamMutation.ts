@@ -1,15 +1,15 @@
 import {
   ArchiveTeamMutation as TArchiveTeamMutation,
   ArchiveTeamMutationVariables
-} from '__generated__/ArchiveTeamMutation.graphql'
-import {ArchiveTeamMutation_team} from '__generated__/ArchiveTeamMutation_team.graphql'
+} from '../../__generated__/ArchiveTeamMutation.graphql'
+import {ArchiveTeamMutation_team} from '../../__generated__/ArchiveTeamMutation_team.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
-import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation'
-import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
-import onTeamRoute from 'universal/utils/onTeamRoute'
-import getInProxy from 'universal/utils/relay/getInProxy'
-import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray'
+import ClearNotificationMutation from './ClearNotificationMutation'
+import handleAddNotifications from './handlers/handleAddNotifications'
+import onTeamRoute from '../utils/onTeamRoute'
+import getInProxy from '../utils/relay/getInProxy'
+import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
 import Atmosphere from '../Atmosphere'
 import {LocalHandlers, OnNextHandler} from '../types/relayMutations'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'

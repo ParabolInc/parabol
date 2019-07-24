@@ -1,17 +1,17 @@
-import {PromoteTeamMemberModal_teamMember} from '__generated__/PromoteTeamMemberModal_teamMember.graphql'
+import {PromoteTeamMemberModal_teamMember} from '../../../../../__generated__/PromoteTeamMemberModal_teamMember.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
-import PrimaryButton from 'universal/components/PrimaryButton'
-import IconLabel from 'universal/components/IconLabel'
-import DialogTitle from 'universal/components/DialogTitle'
-import DialogContent from 'universal/components/DialogContent'
-import DialogContainer from 'universal/components/DialogContainer'
+import PrimaryButton from '../../../../components/PrimaryButton'
+import IconLabel from '../../../../components/IconLabel'
+import DialogTitle from '../../../../components/DialogTitle'
+import DialogContent from '../../../../components/DialogContent'
+import DialogContainer from '../../../../components/DialogContainer'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import PromoteToTeamLeadMutation from 'universal/mutations/PromoteToTeamLeadMutation'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import PromoteToTeamLeadMutation from '../../../../mutations/PromoteToTeamLeadMutation'
+import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 
 const StyledDialogContainer = styled(DialogContainer)({
   width: 420

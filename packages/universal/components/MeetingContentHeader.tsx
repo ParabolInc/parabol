@@ -1,10 +1,10 @@
 import React, {ReactElement, ReactNode} from 'react'
 import styled from '@emotion/styled'
-import DemoCreateAccountButton from 'universal/components/DemoCreateAccountButton'
-import SidebarToggle from 'universal/components/SidebarToggle'
-import {meetingTopBarMediaQuery} from 'universal/styles/meeting'
-import isDemoRoute from 'universal/utils/isDemoRoute'
-import hasToken from 'universal/utils/hasToken'
+import DemoCreateAccountButton from './DemoCreateAccountButton'
+import SidebarToggle from './SidebarToggle'
+import {meetingTopBarMediaQuery} from '../styles/meeting'
+import isDemoRoute from '../utils/isDemoRoute'
+import hasToken from '../utils/hasToken'
 
 const localHeaderBreakpoint = '@media screen and (min-width: 600px)'
 

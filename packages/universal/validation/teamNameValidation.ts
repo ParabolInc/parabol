@@ -1,4 +1,4 @@
-import Legitity from 'universal/validation/Legitity'
+import Legitity from './Legitity'
 
 const teamNameValidation = (rawTeamName, teamNames) => {
   return new Legitity(rawTeamName)

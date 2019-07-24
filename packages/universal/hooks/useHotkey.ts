@@ -1,4 +1,4 @@
-import Mousetrap from 'mousetrap'
+import Mousetrap from '../../mousetrap'
 import {useEffect, useRef} from 'react'
 
 type Binding = string | string[]

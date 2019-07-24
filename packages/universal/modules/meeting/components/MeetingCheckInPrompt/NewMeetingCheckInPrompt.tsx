@@ -1,14 +1,14 @@
-import {NewMeetingCheckInPrompt_team} from '__generated__/NewMeetingCheckInPrompt_team.graphql'
-import {NewMeetingCheckInPrompt_teamMember} from '__generated__/NewMeetingCheckInPrompt_teamMember.graphql'
+import {NewMeetingCheckInPrompt_team} from '../../../../../__generated__/NewMeetingCheckInPrompt_team.graphql'
+import {NewMeetingCheckInPrompt_teamMember} from '../../../../../__generated__/NewMeetingCheckInPrompt_teamMember.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
-import Avatar from 'universal/components/Avatar/Avatar'
-import NewCheckInQuestion from 'universal/modules/meeting/components/MeetingCheckInPrompt/NewCheckInQuestion'
-import NewMeetingCheckInGreeting from 'universal/modules/meeting/components/NewMeetingCheckInGreeting'
-import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
-import useBreakpoint from 'universal/hooks/useBreakpoint'
-import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
+import Avatar from '../../../../components/Avatar/Avatar'
+import NewCheckInQuestion from './NewCheckInQuestion'
+import NewMeetingCheckInGreeting from '../NewMeetingCheckInGreeting'
+import defaultUserAvatar from '../../../../styles/theme/images/avatar-user.svg'
+import useBreakpoint from '../../../../hooks/useBreakpoint'
+import {DASH_SIDEBAR} from '../../../../components/Dashboard/DashSidebar'
 
 const PromptBlock = styled('div')({
   alignItems: 'center',

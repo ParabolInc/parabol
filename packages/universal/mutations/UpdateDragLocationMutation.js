@@ -1,6 +1,6 @@
-import getInProxy from 'universal/utils/relay/getInProxy'
-import createProxyRecord from 'universal/utils/relay/createProxyRecord'
-import {REFLECTION_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
+import getInProxy from '../utils/relay/getInProxy'
+import createProxyRecord from '../utils/relay/createProxyRecord'
+import {REFLECTION_WIDTH} from '../utils/multiplayerMasonry/masonryConstants'
 import {getRequest} from 'relay-runtime'
 
 graphql`

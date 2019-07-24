@@ -1,15 +1,15 @@
 import React from 'react'
-import DropdownMenuToggle from 'universal/components/DropdownMenuToggle'
-import useMenu from 'universal/hooks/useMenu'
-import {MenuPosition} from 'universal/hooks/useCoords'
+import DropdownMenuToggle from '../../../../components/DropdownMenuToggle'
+import useMenu from '../../../../hooks/useMenu'
+import {MenuPosition} from '../../../../hooks/useCoords'
 import {
   SlackChannelDropdownChannels,
   SlackChannelDropdownOnClick
-} from 'universal/components/SlackChannelDropdown'
-import lazyPreload from 'universal/utils/lazyPreload'
-import SlackClientManager from 'universal/utils/SlackClientManager'
-import useAtmosphere from 'universal/hooks/useAtmosphere'
-import useMutationProps from 'universal/hooks/useMutationProps'
+} from '../../../../components/SlackChannelDropdown'
+import lazyPreload from '../../../../utils/lazyPreload'
+import SlackClientManager from '../../../../utils/SlackClientManager'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useMutationProps from '../../../../hooks/useMutationProps'
 
 interface Props {
   isTokenValid: boolean

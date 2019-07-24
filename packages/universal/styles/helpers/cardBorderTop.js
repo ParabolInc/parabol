@@ -1,5 +1,5 @@
-import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
+import appTheme from '../theme/appTheme'
+import ui from '../ui'
 
 const cardBorderTop = {
   backgroundColor: 'currentColor',

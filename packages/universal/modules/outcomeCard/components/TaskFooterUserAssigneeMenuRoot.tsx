@@ -1,12 +1,12 @@
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
-import useAtmosphere from 'universal/hooks/useAtmosphere'
-import {MenuProps} from 'universal/hooks/useMenu'
-import TaskFooterUserAssigneeMenu from 'universal/modules/outcomeCard/components/OutcomeCardAssignMenu/TaskFooterUserAssigneeMenu'
-import {cacheConfig} from 'universal/utils/constants'
+import QueryRenderer from '../../../components/QueryRenderer/QueryRenderer'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import {MenuProps} from '../../../hooks/useMenu'
+import TaskFooterUserAssigneeMenu from './OutcomeCardAssignMenu/TaskFooterUserAssigneeMenu'
+import {cacheConfig} from '../../../utils/constants'
 import renderQuery from '../../../utils/relay/renderQuery'
-import {TaskFooterUserAssigneeMenuRoot_task} from '__generated__/TaskFooterUserAssigneeMenuRoot_task.graphql'
+import {TaskFooterUserAssigneeMenuRoot_task} from '../../../../__generated__/TaskFooterUserAssigneeMenuRoot_task.graphql'
 
 const query = graphql`
   query TaskFooterUserAssigneeMenuRootQuery($teamId: ID!) {

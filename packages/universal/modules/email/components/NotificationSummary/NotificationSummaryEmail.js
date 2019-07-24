@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import makeAppLink from 'server/utils/makeAppLink'
+import makeAppLink from '../../../../../server/utils/makeAppLink'
 import EmailBlock from '../EmailBlock/EmailBlock'
 import EmptySpace from '..//EmptySpace/EmptySpace'
 import Button from '../Button/Button'
 import Header from '../Header/Header'
 import Layout from '../Layout/Layout'
 import EmailFooter from '../EmailFooter/EmailFooter'
-import {emailCopyStyle, emailLinkStyle, emailProductTeamSignature} from 'universal/styles/email'
+import {emailCopyStyle, emailLinkStyle, emailProductTeamSignature} from '../../../../styles/email'
 
 const innerMaxWidth = 480
 

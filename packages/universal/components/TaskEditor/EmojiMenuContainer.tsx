@@ -1,9 +1,9 @@
 import {EditorState} from 'draft-js'
 import React, {Ref, useEffect} from 'react'
-import {BBox} from 'universal/types/animations'
-import {MenuPosition} from 'universal/hooks/useCoords'
-import useMenu from 'universal/hooks/useMenu'
-import lazyPreload from 'universal/utils/lazyPreload'
+import {BBox} from '../../types/animations'
+import {MenuPosition} from '../../hooks/useCoords'
+import useMenu from '../../hooks/useMenu'
+import lazyPreload from '../../utils/lazyPreload'
 
 interface Props {
   originCoords: BBox

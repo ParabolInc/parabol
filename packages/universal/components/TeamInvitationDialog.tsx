@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router'
-import {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import withAtmosphere from '../decorators/withAtmosphere/withAtmosphere'
 import TeamInvitationAccept from './TeamInvitationAccept'
 import TeamInvitationEmailCreateAccount from './TeamInvitationEmailCreateAccount'
@@ -11,7 +11,7 @@ import TeamInvitationErrorExpired from './TeamInvitationErrorExpired'
 import TeamInvitationErrorNotFound from './TeamInvitationErrorNotFound'
 import TeamInvitationGoogleCreateAccount from './TeamInvitationGoogleCreateAccount'
 import TeamInvitationGoogleSignin from './TeamInvitationGoogleSignin'
-import {TeamInvitationDialog_verifiedInvitation} from '__generated__/TeamInvitationDialog_verifiedInvitation.graphql'
+import {TeamInvitationDialog_verifiedInvitation} from '../../__generated__/TeamInvitationDialog_verifiedInvitation.graphql'
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{token: string}> {
   verifiedInvitation: TeamInvitationDialog_verifiedInvitation

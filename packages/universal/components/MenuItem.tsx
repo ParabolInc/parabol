@@ -1,7 +1,7 @@
 import React, {forwardRef, ReactNode, useEffect, useImperativeHandle, useRef} from 'react'
 import styled from '@emotion/styled'
-import MenuItemLabel from 'universal/components/MenuItemLabel'
-import {PALETTE} from 'universal/styles/paletteV2'
+import MenuItemLabel from './MenuItemLabel'
+import {PALETTE} from '../styles/paletteV2'
 
 export interface MenuItemProps {
   isActive: boolean

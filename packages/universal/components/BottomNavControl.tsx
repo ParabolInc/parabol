@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {keyframes} from '@emotion/core'
-import FlatButton, {FlatButtonProps} from 'universal/components/FlatButton'
+import FlatButton, {FlatButtonProps} from './FlatButton'
 
 const BounceKeyframes = keyframes`
   from, 10%, 26%, 40%, 50%, to {

@@ -1,11 +1,11 @@
 import React from 'react'
 import styled from '@emotion/styled';
 import { keyframes } from '@emotion/core';
-import {countdown} from 'universal/utils/date/relativeDate'
-import {PALETTE} from 'universal/styles/paletteV2'
-import useRefreshInterval from 'universal/hooks/useRefreshInterval'
-import {buttonRaisedShadow} from 'universal/styles/elevation'
-import {DECELERATE} from 'universal/styles/animation'
+import {countdown} from '../../utils/date/relativeDate'
+import {PALETTE} from '../../styles/paletteV2'
+import useRefreshInterval from '../../hooks/useRefreshInterval'
+import {buttonRaisedShadow} from '../../styles/elevation'
+import {DECELERATE} from '../../styles/animation'
 
 interface Props {
   endTime: string

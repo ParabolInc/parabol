@@ -1,6 +1,6 @@
 import {commitLocalUpdate} from 'react-relay'
 import {RecordSourceProxy} from 'relay-runtime'
-import Atmosphere from 'universal/Atmosphere'
+import Atmosphere from '../../Atmosphere'
 
 export const setLocalStageAndPhase = (
   store: RecordSourceProxy,

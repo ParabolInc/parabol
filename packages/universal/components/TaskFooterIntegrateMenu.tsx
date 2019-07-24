@@ -1,12 +1,12 @@
-import {TaskFooterIntegrateMenu_task} from '__generated__/TaskFooterIntegrateMenu_task.graphql'
-import {TaskFooterIntegrateMenu_viewer} from '__generated__/TaskFooterIntegrateMenu_viewer.graphql'
+import {TaskFooterIntegrateMenu_task} from '../../__generated__/TaskFooterIntegrateMenu_task.graphql'
+import {TaskFooterIntegrateMenu_viewer} from '../../__generated__/TaskFooterIntegrateMenu_viewer.graphql'
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import TaskFooterIntegrateMenuList from 'universal/components/TaskFooterIntegrateMenuList'
-import TaskFooterIntegrateMenuNoIntegrations from 'universal/components/TaskFooterIntegrateMenuNoIntegrations '
-import TaskFooterIntegrateMenuSignup from 'universal/components/TaskFooterIntegrateMenuSignup'
-import {MenuProps} from 'universal/hooks/useMenu'
-import {MenuMutationProps} from 'universal/hooks/useMutationProps'
+import TaskFooterIntegrateMenuList from './TaskFooterIntegrateMenuList'
+import TaskFooterIntegrateMenuNoIntegrations from './TaskFooterIntegrateMenuNoIntegrations '
+import TaskFooterIntegrateMenuSignup from './TaskFooterIntegrateMenuSignup'
+import {MenuProps} from '../hooks/useMenu'
+import {MenuMutationProps} from '../hooks/useMutationProps'
 
 interface Props {
   menuProps: MenuProps

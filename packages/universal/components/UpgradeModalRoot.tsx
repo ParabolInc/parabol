@@ -1,15 +1,15 @@
 import React from 'react'
 import {graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import LoadableLoading from 'universal/components/LoadableLoading'
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
-import RelayLoadableTransitionGroup from 'universal/components/RelayLoadableTransitionGroup'
-import UpgradeModalLoadable from 'universal/components/UpgradeModalLoadable'
+import LoadableLoading from './LoadableLoading'
+import QueryRenderer from './QueryRenderer/QueryRenderer'
+import RelayLoadableTransitionGroup from './RelayLoadableTransitionGroup'
+import UpgradeModalLoadable from './UpgradeModalLoadable'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {DEFAULT_MENU_HEIGHT, DEFAULT_MENU_WIDTH} from 'universal/styles/ui'
-import {cacheConfig} from 'universal/utils/constants'
+} from '../decorators/withAtmosphere/withAtmosphere'
+import {DEFAULT_MENU_HEIGHT, DEFAULT_MENU_WIDTH} from '../styles/ui'
+import {cacheConfig} from '../utils/constants'
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
   closePortal: () => void

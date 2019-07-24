@@ -1,8 +1,8 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import ui from 'universal/styles/ui'
-import {PRO_LABEL} from 'universal/utils/constants'
-import RaisedButton from 'universal/components/RaisedButton'
+import ui from '../styles/ui'
+import {PRO_LABEL} from '../utils/constants'
+import RaisedButton from './RaisedButton'
 import Confetti from './Confetti'
 
 const flexBase = {

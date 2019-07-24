@@ -1,15 +1,15 @@
 import React from 'react'
-import useMenu from 'universal/hooks/useMenu'
-import {MenuPosition} from 'universal/hooks/useCoords'
+import useMenu from '../hooks/useMenu'
+import {MenuPosition} from '../hooks/useCoords'
 import styled from '@emotion/styled'
-import DropdownMenuToggle from 'universal/components/DropdownMenuToggle'
+import DropdownMenuToggle from './DropdownMenuToggle'
 import ms from 'ms'
-import Icon from 'universal/components/Icon'
-import {shortDays, shortMonths} from 'universal/utils/makeDateString'
+import Icon from './Icon'
+import {shortDays, shortMonths} from '../utils/makeDateString'
 import DayPicker, {DayModifiers} from 'react-day-picker'
-import 'universal/styles/daypicker.css'
-import {PALETTE} from 'universal/styles/paletteV2'
-import roundDateToNearestHalfHour from 'universal/utils/roundDateToNearestHalfHour'
+import '../styles/daypicker.css'
+import {PALETTE} from '../styles/paletteV2'
+import roundDateToNearestHalfHour from '../utils/roundDateToNearestHalfHour'
 
 interface Props {
   endTime: Date

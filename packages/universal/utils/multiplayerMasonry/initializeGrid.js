@@ -1,4 +1,4 @@
-import {REFLECTION_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
+import {REFLECTION_WIDTH} from './masonryConstants'
 const OFFSET_DELAY = 50
 const DURATION = 400
 

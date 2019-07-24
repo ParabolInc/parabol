@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import {emailBackgroundColor, emailMaxWidth, emailTableBase} from 'universal/styles/email'
+import {emailBackgroundColor, emailMaxWidth, emailTableBase} from '../../../../styles/email'
 
 const containerStyle = {
   ...emailTableBase,

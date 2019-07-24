@@ -1,16 +1,16 @@
 import React from 'react'
-import HelpMenuContent from 'universal/components/MeetingHelp/HelpMenuContent'
-import HelpMenuCopy from 'universal/components/MeetingHelp/HelpMenuCopy'
-import HelpMenuHeader from 'universal/components/MeetingHelp/HelpMenuHeader'
-import HelpMenuLink from 'universal/components/MeetingHelp/HelpMenuLink'
-import useSegmentTrack from 'universal/hooks/useSegmentTrack'
+import HelpMenuContent from './HelpMenuContent'
+import HelpMenuCopy from './HelpMenuCopy'
+import HelpMenuHeader from './HelpMenuHeader'
+import HelpMenuLink from './HelpMenuLink'
+import useSegmentTrack from '../../hooks/useSegmentTrack'
 import {
   MeetingTypeEnum,
   NewMeetingPhaseTypeEnum,
   SegmentClientEventEnum
-} from 'universal/types/graphql'
-import {CHECKIN} from 'universal/utils/constants'
-import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
+} from '../../types/graphql'
+import {CHECKIN} from '../../utils/constants'
+import {phaseLabelLookup} from '../../utils/meetings/lookups'
 
 const linkLookup = {
   [MeetingTypeEnum.action]:

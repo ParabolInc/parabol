@@ -1,8 +1,8 @@
 import {ContentState, convertToRaw} from 'draft-js'
-import Atmosphere from 'universal/Atmosphere'
-import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation'
-import addTagToTask from 'universal/utils/draftjs/addTagToTask'
-import {AreaEnum} from 'universal/types/graphql'
+import Atmosphere from '../../Atmosphere'
+import UpdateTaskMutation from '../../mutations/UpdateTaskMutation'
+import addTagToTask from './addTagToTask'
+import {AreaEnum} from '../../types/graphql'
 
 const addContentTag = (
   tag: string,

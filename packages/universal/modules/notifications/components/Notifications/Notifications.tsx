@@ -1,20 +1,20 @@
 import React from 'react'
 import styled from '@emotion/styled'
 import Helmet from 'react-helmet'
-import FlatButton from 'universal/components/FlatButton'
-import IconLabel from 'universal/components/IconLabel'
-import Panel from 'universal/components/Panel/Panel'
-import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
+import FlatButton from '../../../../components/FlatButton'
+import IconLabel from '../../../../components/IconLabel'
+import Panel from '../../../../components/Panel/Panel'
+import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import NotificationRow from 'universal/modules/notifications/components/NotificationRow/NotificationRow'
-import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper'
-import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation'
-import {PALETTE} from 'universal/styles/paletteV2'
-import {Layout} from 'universal/types/constEnums'
-import {PAYMENT_REJECTED} from 'universal/utils/constants'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import NotificationRow from '../NotificationRow/NotificationRow'
+import UserSettingsWrapper from '../../../userDashboard/components/UserSettingsWrapper/UserSettingsWrapper'
+import ClearNotificationMutation from '../../../../mutations/ClearNotificationMutation'
+import {PALETTE} from '../../../../styles/paletteV2'
+import {Layout} from '../../../../types/constEnums'
+import {PAYMENT_REJECTED} from '../../../../utils/constants'
+import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 
 const ClearAllButton = styled(FlatButton)({
   alignSelf: 'center',

@@ -2,10 +2,10 @@
  * Takes a guess at what the cards are talking about.
  * If that fails, just gives them a generic name
  */
-import getAllLemmasFromReflections from 'universal/utils/autogroup/getAllLemmasFromReflections'
-import computeDistanceMatrix from 'universal/utils/autogroup/computeDistanceMatrix'
-import getTitleFromComputedGroup from 'universal/utils/autogroup/getTitleFromComputedGroup'
-import {IRetroReflection} from 'universal/types/graphql'
+import getAllLemmasFromReflections from './getAllLemmasFromReflections'
+import computeDistanceMatrix from './computeDistanceMatrix'
+import getTitleFromComputedGroup from './getTitleFromComputedGroup'
+import {IRetroReflection} from '../../types/graphql'
 
 const makeRetroGroupTitle = (reflections: IRetroReflection[]) => {
   const allReflectionEntities = reflections.map(({entities}) => entities).filter(Boolean)

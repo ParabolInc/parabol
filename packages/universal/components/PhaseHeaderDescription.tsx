@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import {PALETTE} from 'universal/styles/paletteV2'
-import {meetingTopBarMediaQuery} from 'universal/styles/meeting'
+import {PALETTE} from '../styles/paletteV2'
+import {meetingTopBarMediaQuery} from '../styles/meeting'
 
 const PhaseHeaderDescription = styled('h2')({
   color: PALETTE.TEXT_LIGHT,

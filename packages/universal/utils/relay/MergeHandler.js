@@ -1,4 +1,4 @@
-import {UPDATE} from 'universal/utils/constants'
+import {UPDATE} from '../constants'
 
 const MergeHandler = {
   update (store, payload) {

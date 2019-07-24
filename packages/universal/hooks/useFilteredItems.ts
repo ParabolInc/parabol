@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from 'react'
-import TypeAheadFilter from 'universal/utils/TypeAheadFilter'
+import TypeAheadFilter from '../utils/TypeAheadFilter'
 
 const useFilteredItems = (query: string, items: readonly any[]) => {
   const typeAheadFilterRef = useRef(new TypeAheadFilter())

@@ -1,7 +1,7 @@
 /*
  * Cache the content's text for faster searches
  */
-import extractTextFromDraftString from 'universal/utils/draftjs/extractTextFromDraftString'
+import extractTextFromDraftString from '../draftjs/extractTextFromDraftString'
 
 const ContentTextHandler = {
   update (store, payload) {

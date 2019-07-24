@@ -1,6 +1,6 @@
 import React from 'react'
 import DOMConfetti from 'react-dom-confetti'
-import appTheme from 'universal/styles/theme/appTheme'
+import appTheme from '../styles/theme/appTheme'
 
 const confettiConfig = {
   angle: 90,

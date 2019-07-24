@@ -1,14 +1,14 @@
 import React, {Component} from 'react'
 import styled from '@emotion/styled'
-import FlatButton from 'universal/components/FlatButton'
+import FlatButton from '../../../components/FlatButton'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import RemoveReflectTemplateMutation from 'universal/mutations/RemoveReflectTemplateMutation'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import {PALETTE} from 'universal/styles/paletteV2'
-import Icon from 'universal/components/Icon'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+} from '../../../decorators/withAtmosphere/withAtmosphere'
+import RemoveReflectTemplateMutation from '../../../mutations/RemoveReflectTemplateMutation'
+import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
+import {PALETTE} from '../../../styles/paletteV2'
+import Icon from '../../../components/Icon'
+import {MD_ICONS_SIZE_18} from '../../../styles/icons'
 
 const Button = styled(FlatButton)<{canDelete: boolean}>(({canDelete}) => ({
   alignItems: 'center',

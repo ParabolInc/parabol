@@ -1,7 +1,7 @@
 import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
-import IconLabel from 'universal/components/IconLabel'
-import RaisedButton from 'universal/components/RaisedButton'
+import IconLabel from '../IconLabel'
+import RaisedButton from '../RaisedButton'
 
 const StyledButton = styled(RaisedButton)({
   border: 0,

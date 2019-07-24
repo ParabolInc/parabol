@@ -1,8 +1,8 @@
 import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
-import Icon from 'universal/components/Icon'
-import {meetingBottomBarHeight} from 'universal/styles/meeting'
-import ui from 'universal/styles/ui'
+import Icon from './Icon'
+import {meetingBottomBarHeight} from '../styles/meeting'
+import ui from '../styles/ui'
 
 interface Props {
   className?: string

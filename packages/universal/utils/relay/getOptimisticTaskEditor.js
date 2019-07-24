@@ -1,4 +1,4 @@
-import createProxyRecord from 'universal/utils/relay/createProxyRecord'
+import createProxyRecord from './createProxyRecord'
 
 const getOptimisticTaskEditor = (store, userId, taskId, isEditing) => {
   const task = store.get(taskId)

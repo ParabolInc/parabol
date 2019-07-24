@@ -1,14 +1,14 @@
 import React, {useCallback, useEffect, useLayoutEffect, useRef} from 'react'
-import useAtmosphere from 'universal/hooks/useAtmosphere'
-import useRefState from 'universal/hooks/useRefState'
-import usePortal from 'universal/hooks/usePortal'
-import useTransition from 'universal/hooks/useTransition'
+import useAtmosphere from '../hooks/useAtmosphere'
+import useRefState from '../hooks/useRefState'
+import usePortal from '../hooks/usePortal'
+import useTransition from '../hooks/useTransition'
 import shortid from 'shortid'
 import styled from '@emotion/styled'
 import SnackbarMessage from './SnackbarMessage'
 import {graphql} from 'react-relay'
-import useLocalQuery from 'universal/hooks/useLocalQuery'
-import {SnackbarQuery} from '__generated__/SnackbarQuery.graphql'
+import useLocalQuery from '../hooks/useLocalQuery'
+import {SnackbarQuery} from '../../__generated__/SnackbarQuery.graphql'
 
 const MAX_SNACKS = 1
 

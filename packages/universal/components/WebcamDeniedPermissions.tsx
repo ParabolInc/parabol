@@ -1,8 +1,8 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import DialogContent from 'universal/components/DialogContent'
-import InvitationDialogCopy from 'universal/components/InvitationDialogCopy'
-import DialogTitle from 'universal/components/DialogTitle'
+import DialogContent from './DialogContent'
+import InvitationDialogCopy from './InvitationDialogCopy'
+import DialogTitle from './DialogTitle'
 
 const OffsetTitle = styled(DialogTitle)({
   paddingLeft: '1.75rem'

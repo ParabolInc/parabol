@@ -3,9 +3,9 @@ import {
   DEFAULT_MENU_WIDTH,
   HUMAN_ADDICTION_THRESH,
   MAX_WAIT_TIME
-} from 'universal/styles/ui'
+} from '../styles/ui'
 import Loadable from 'react-loadable'
-import LoadableLoading from 'universal/components/LoadableLoading'
+import LoadableLoading from './LoadableLoading'
 import React from 'react'
 
 const UpgradeModalLoadable = Loadable({

@@ -1,4 +1,4 @@
-import addNodeToArray from 'universal/utils/relay/addNodeToArray'
+import addNodeToArray from '../../utils/relay/addNodeToArray'
 
 const handleAddReflectionToGroup = (reflectionProxy, store) => {
   if (!reflectionProxy) return

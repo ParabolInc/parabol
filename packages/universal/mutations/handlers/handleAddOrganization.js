@@ -1,4 +1,4 @@
-import addNodeToArray from 'universal/utils/relay/addNodeToArray'
+import addNodeToArray from '../../utils/relay/addNodeToArray'
 
 const handleAddOrganization = (newNode, store, viewerId) => {
   const viewer = store.get(viewerId)

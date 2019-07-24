@@ -1,14 +1,14 @@
 import React, {Component} from 'react'
 import {RouteComponentProps, withRouter} from 'react-router'
-import BasicInput from 'universal/components/InputField/BasicInput'
+import BasicInput from '../../../../components/InputField/BasicInput'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import ArchiveTeamMutation from 'universal/mutations/ArchiveTeamMutation'
-import withForm, {WithFormProps} from 'universal/utils/relay/withForm'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import Legitity from 'universal/validation/Legitity'
-import FieldLabel from 'universal/components/FieldLabel/FieldLabel'
+} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import ArchiveTeamMutation from '../../../../mutations/ArchiveTeamMutation'
+import withForm, {WithFormProps} from '../../../../utils/relay/withForm'
+import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
+import Legitity from '../../../../validation/Legitity'
+import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
 
 interface Props
   extends WithAtmosphereProps,

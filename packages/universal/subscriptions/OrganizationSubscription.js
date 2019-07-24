@@ -1,13 +1,13 @@
-import {addOrgMutationOrganizationUpdater} from 'universal/mutations/AddOrgMutation'
+import {addOrgMutationOrganizationUpdater} from '../mutations/AddOrgMutation'
 import {
   setOrgUserRoleAddedOrganizationOnNext,
   setOrgUserRoleAddedOrganizationUpdater,
   setOrgUserRoleRemovedOrganizationUpdater
-} from 'universal/mutations/SetOrgUserRoleMutation'
+} from '../mutations/SetOrgUserRoleMutation'
 import {
   removeOrgUserOrganizationOnNext,
   removeOrgUserOrganizationUpdater
-} from 'universal/mutations/RemoveOrgUserMutation'
+} from '../mutations/RemoveOrgUserMutation'
 
 const subscription = graphql`
   subscription OrganizationSubscription {

@@ -1,10 +1,10 @@
 import React from 'react'
-import appTheme from 'universal/styles/theme/appTheme'
+import appTheme from '../styles/theme/appTheme'
 import {createFragmentContainer, graphql} from 'react-relay'
 import styled from '@emotion/styled'
-import Tag from 'universal/components/Tag/Tag'
-import {UserDraggingHeader_user} from '__generated__/UserDraggingHeader_user.graphql'
-import useAtmosphere from 'universal/hooks/useAtmosphere'
+import Tag from './Tag/Tag'
+import {UserDraggingHeader_user} from '../../__generated__/UserDraggingHeader_user.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
 
 const Header = styled('div')({
   bottom: '100%',

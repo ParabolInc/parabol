@@ -1,18 +1,18 @@
-import {TemplatePromptItem_prompt} from '__generated__/TemplatePromptItem_prompt.graphql'
+import {TemplatePromptItem_prompt} from '../../../../__generated__/TemplatePromptItem_prompt.graphql'
 import React, {Component} from 'react'
 import {DraggableProvided} from 'react-beautiful-dnd'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
-import Icon from 'universal/components/Icon'
+import Icon from '../../../components/Icon'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import EditableTemplateDescription from 'universal/modules/meeting/components/EditableTemplateDescription'
-import RemoveReflectTemplatePromptMutation from 'universal/mutations/RemoveReflectTemplatePromptMutation'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
-import {PALETTE} from 'universal/styles/paletteV2'
-import {typeScale} from 'universal/styles/theme/typography'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+} from '../../../decorators/withAtmosphere/withAtmosphere'
+import EditableTemplateDescription from './EditableTemplateDescription'
+import RemoveReflectTemplatePromptMutation from '../../../mutations/RemoveReflectTemplatePromptMutation'
+import {MD_ICONS_SIZE_18} from '../../../styles/icons'
+import {PALETTE} from '../../../styles/paletteV2'
+import {typeScale} from '../../../styles/theme/typography'
+import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import EditableTemplatePrompt from './EditableTemplatePrompt'
 
 interface PassedProps {

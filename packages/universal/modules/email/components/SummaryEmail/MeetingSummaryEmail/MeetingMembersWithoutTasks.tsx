@@ -1,14 +1,14 @@
 import React from 'react'
-import {RETROSPECTIVE} from 'universal/utils/constants'
+import {RETROSPECTIVE} from '../../../../../utils/constants'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {MeetingMembersWithoutTasks_meeting} from '__generated__/MeetingMembersWithoutTasks_meeting.graphql'
-import SummaryAvatarHeader from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/SummaryAvatarHeader'
-import useEmailItemGrid from 'universal/hooks/useEmailItemGrid'
-import EmailBorderBottom from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/EmailBorderBottom'
+import {MeetingMembersWithoutTasks_meeting} from '../../../../../../__generated__/MeetingMembersWithoutTasks_meeting.graphql'
+import SummaryAvatarHeader from './SummaryAvatarHeader'
+import useEmailItemGrid from '../../../../../hooks/useEmailItemGrid'
+import EmailBorderBottom from './EmailBorderBottom'
 import {
   FONT_FAMILY,
   PALETTE_TEXT_MAIN
-} from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/constants'
+} from './constants'
 
 const headerStyle = {
   color: PALETTE_TEXT_MAIN,

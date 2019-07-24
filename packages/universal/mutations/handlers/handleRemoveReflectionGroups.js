@@ -1,5 +1,5 @@
-import pluralizeHandler from 'universal/mutations/handlers/pluralizeHandler'
-import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray'
+import pluralizeHandler from './pluralizeHandler'
+import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
 
 const handleRemoveReflectionGroup = (reflectionGroupId, meetingId, store) => {
   const reflectionGroup = store.get(reflectionGroupId)

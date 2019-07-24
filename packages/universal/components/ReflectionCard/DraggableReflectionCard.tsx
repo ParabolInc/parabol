@@ -1,4 +1,4 @@
-import {DraggableReflectionCard_reflection} from '__generated__/DraggableReflectionCard_reflection.graphql'
+import {DraggableReflectionCard_reflection} from '../../../__generated__/DraggableReflectionCard_reflection.graphql'
 /**
  * A drag-and-drop enabled reflection card.
  *
@@ -7,19 +7,19 @@ import React, {Component, ReactElement} from 'react'
 import {DragSource as dragSource} from 'react-dnd'
 import {getEmptyImage} from 'react-dnd-html5-backend'
 import {createFragmentContainer, graphql} from 'react-relay'
-import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import EndDraggingReflectionMutation from 'universal/mutations/EndDraggingReflectionMutation'
-import StartDraggingReflectionMutation from 'universal/mutations/StartDraggingReflectionMutation'
+import withAtmosphere, {WithAtmosphereProps} from '../../decorators/withAtmosphere/withAtmosphere'
+import EndDraggingReflectionMutation from '../../mutations/EndDraggingReflectionMutation'
+import StartDraggingReflectionMutation from '../../mutations/StartDraggingReflectionMutation'
 import {
   cardBackgroundColor,
   cardBorderRadius,
   cardStackPerspectiveX,
   cardStackPerspectiveY
-} from 'universal/styles/cards'
-import {cardShadow} from 'universal/styles/elevation'
-import {REFLECTION_CARD} from 'universal/utils/constants'
-import {REFLECTION_CARD_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
-import clientTempId from 'universal/utils/relay/clientTempId'
+} from '../../styles/cards'
+import {cardShadow} from '../../styles/elevation'
+import {REFLECTION_CARD} from '../../utils/constants'
+import {REFLECTION_CARD_WIDTH} from '../../utils/multiplayerMasonry/masonryConstants'
+import clientTempId from '../../utils/relay/clientTempId'
 import {MasonryAtmosphere, MasonryDragEndPayload, SetItemRef} from '../PhaseItemMasonry'
 import {MasonryDropResult} from '../ReflectionGroup/ReflectionGroup'
 import ReflectionCard from './ReflectionCard'

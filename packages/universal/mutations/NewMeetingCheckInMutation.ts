@@ -1,9 +1,9 @@
-import {NewMeetingCheckInMutation as TNewMeetingCheckInMutation} from '__generated__/NewMeetingCheckInMutation.graphql'
+import {NewMeetingCheckInMutation as TNewMeetingCheckInMutation} from '../../__generated__/NewMeetingCheckInMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
-import Atmosphere from 'universal/Atmosphere'
-import {INewMeetingCheckInOnMutationArguments} from 'universal/types/graphql'
-import {LocalHandlers} from 'universal/types/relayMutations'
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
+import Atmosphere from '../Atmosphere'
+import {INewMeetingCheckInOnMutationArguments} from '../types/graphql'
+import {LocalHandlers} from '../types/relayMutations'
+import toTeamMemberId from '../utils/relay/toTeamMemberId'
 
 graphql`
   fragment NewMeetingCheckInMutation_team on NewMeetingCheckInPayload {

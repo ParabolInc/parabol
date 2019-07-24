@@ -1,13 +1,13 @@
 import {css} from 'aphrodite-local-styles/no-important'
 import React, {Component} from 'react'
-import FlatButton from 'universal/components/FlatButton'
-import removeLink from 'universal/utils/draftjs/removeLink'
-import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
-import withStyles from 'universal/styles/withStyles'
+import FlatButton from '../FlatButton'
+import removeLink from '../../utils/draftjs/removeLink'
+import appTheme from '../../styles/theme/appTheme'
+import ui from '../../styles/ui'
+import withStyles from '../../styles/withStyles'
 import PropTypes from 'prop-types'
-import dontTellDraft from 'universal/utils/draftjs/dontTellDraft'
-import textOverflow from 'universal/styles/helpers/textOverflow'
+import dontTellDraft from '../../utils/draftjs/dontTellDraft'
+import textOverflow from '../../styles/helpers/textOverflow'
 
 class EditorLinkViewer extends Component {
   render () {

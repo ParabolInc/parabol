@@ -1,5 +1,5 @@
 import {commitMutation, graphql} from 'react-relay'
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
+import toTeamMemberId from '../utils/relay/toTeamMemberId'
 
 graphql`
   fragment VoteForReflectionGroupMutation_team on VoteForReflectionGroupPayload {

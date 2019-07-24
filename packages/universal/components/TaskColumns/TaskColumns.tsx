@@ -1,13 +1,13 @@
 import React, {useMemo} from 'react'
 import styled from '@emotion/styled'
-import EditorHelpModalContainer from 'universal/containers/EditorHelpModalContainer/EditorHelpModalContainer'
-import TaskColumn from 'universal/modules/teamDashboard/components/TaskColumn/TaskColumn'
-import ui from 'universal/styles/ui'
-import {AreaEnum} from 'universal/types/graphql'
-import {columnArray, MEETING, meetingColumnArray} from 'universal/utils/constants'
-import makeTasksByStatus from 'universal/utils/makeTasksByStatus'
+import EditorHelpModalContainer from '../../containers/EditorHelpModalContainer/EditorHelpModalContainer'
+import TaskColumn from '../../modules/teamDashboard/components/TaskColumn/TaskColumn'
+import ui from '../../styles/ui'
+import {AreaEnum} from '../../types/graphql'
+import {columnArray, MEETING, meetingColumnArray} from '../../utils/constants'
+import makeTasksByStatus from '../../utils/makeTasksByStatus'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {TaskColumns_tasks} from '__generated__/TaskColumns_tasks.graphql'
+import {TaskColumns_tasks} from '../../../__generated__/TaskColumns_tasks.graphql'
 
 const RootBlock = styled('div')({
   display: 'flex',

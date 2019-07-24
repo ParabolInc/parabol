@@ -1,5 +1,5 @@
-import {MAX_INT} from 'universal/utils/constants'
-import ensureDate from 'universal/utils/ensureDate'
+import {MAX_INT} from './constants'
+import ensureDate from './ensureDate'
 
 const thresholds = {
   second: 1000,

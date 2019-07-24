@@ -1,14 +1,14 @@
 import {DocumentNode} from 'graphql-typed'
-import {ICreateIssueInput} from 'universal/types/githubGraphql'
-import {IGraphQLResponseError} from 'universal/types/graphql'
+import {ICreateIssueInput} from '../types/githubGraphql'
+import {IGraphQLResponseError} from '../types/graphql'
 import createIssue from './githubQueries/createIssue.graphql'
 import getRepoInfo from './githubQueries/getRepoInfo.graphql'
 import getProfile from './githubQueries/getProfile.graphql'
 import getRepos from './githubQueries/getRepos.graphql'
-import Atmosphere from 'universal/Atmosphere'
-import {MenuMutationProps} from 'universal/hooks/useMutationProps'
-import getOAuthPopupFeatures from 'universal/utils/getOAuthPopupFeatures'
-import AddGitHubAuthMutation from 'universal/mutations/AddGitHubAuthMutation'
+import Atmosphere from '../Atmosphere'
+import {MenuMutationProps} from '../hooks/useMutationProps'
+import getOAuthPopupFeatures from './getOAuthPopupFeatures'
+import AddGitHubAuthMutation from '../mutations/AddGitHubAuthMutation'
 
 interface GitHubClientManagerOptions {
   fetch?: Window['fetch']

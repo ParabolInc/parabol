@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import ui from 'universal/styles/ui'
+import ui from '../../styles/ui'
 
 const DashFilterLabel = styled('div')({
   height: ui.dashControlHeight,

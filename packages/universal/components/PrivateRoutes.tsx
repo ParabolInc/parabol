@@ -1,6 +1,6 @@
 import React, {lazy} from 'react'
 import {Route, Switch} from 'react-router'
-import useAuthRoute from 'universal/hooks/useAuthRoute'
+import useAuthRoute from '../hooks/useAuthRoute'
 
 const Invoice = lazy(() =>
   import(/* webpackChunkName: 'InvoiceRoot' */ 'universal/modules/invoice/containers/InvoiceRoot')

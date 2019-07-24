@@ -1,4 +1,4 @@
-import {DISCUSS} from 'universal/utils/constants'
+import {DISCUSS} from './constants'
 
 const makeDiscussionStage = (
   reflectionGroupId: string,

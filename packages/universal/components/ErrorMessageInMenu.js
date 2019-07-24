@@ -1,8 +1,8 @@
 import {css} from 'aphrodite-local-styles/no-important'
 import React, {Component} from 'react'
-import formError from 'universal/styles/helpers/formError'
-import appTheme from 'universal/styles/theme/appTheme'
-import withStyles from 'universal/styles/withStyles'
+import formError from '../styles/helpers/formError'
+import appTheme from '../styles/theme/appTheme'
+import withStyles from '../styles/withStyles'
 import PropTypes from 'prop-types'
 
 class ErrorMessageInMenu extends Component {

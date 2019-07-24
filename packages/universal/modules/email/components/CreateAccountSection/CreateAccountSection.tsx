@@ -1,8 +1,8 @@
 import React from 'react'
-import appTheme from 'universal/styles/theme/appTheme'
-import {emailFontFamily, emailPrimaryButtonStyle, emailTableBase} from 'universal/styles/email'
-import emailDir from 'universal/modules/email/emailDir'
-import EmailBorderBottom from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/EmailBorderBottom'
+import appTheme from '../../../../styles/theme/appTheme'
+import {emailFontFamily, emailPrimaryButtonStyle, emailTableBase} from '../../../../styles/email'
+import emailDir from '../../emailDir'
+import EmailBorderBottom from '../SummaryEmail/MeetingSummaryEmail/EmailBorderBottom'
 
 const tableStyle = {
   ...emailTableBase,

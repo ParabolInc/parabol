@@ -1,4 +1,4 @@
-import {DragReflectionDropTargetTypeEnum} from 'universal/types/graphql'
+import {DragReflectionDropTargetTypeEnum} from '../../types/graphql'
 import {demoTeamId} from './initDB'
 
 const initBotScript = () => {

@@ -1,13 +1,13 @@
-import {TimelineRightDrawer_viewer} from '__generated__/TimelineRightDrawer_viewer.graphql'
+import {TimelineRightDrawer_viewer} from '../../__generated__/TimelineRightDrawer_viewer.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
-import ErrorBoundary from 'universal/components/ErrorBoundary'
-import TimelinePriorityTasks from 'universal/components/TimelinePriorityTasks'
+import ErrorBoundary from './ErrorBoundary'
+import TimelinePriorityTasks from './TimelinePriorityTasks'
 import {PALETTE} from '../styles/paletteV2'
 import {DASH_SIDEBAR} from './Dashboard/DashSidebar'
 import TimelineNewFeature from './TimelineNewFeature'
-import {DASH_TIMELINE} from 'universal/types/constEnums'
+import {DASH_TIMELINE} from '../types/constEnums'
 
 interface Props {
   viewer: TimelineRightDrawer_viewer

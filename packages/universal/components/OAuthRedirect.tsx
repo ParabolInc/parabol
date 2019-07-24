@@ -1,7 +1,7 @@
 import promisify from 'es6-promisify'
 import {Component} from 'react'
 import {RouteComponentProps, withRouter} from 'react-router'
-import LoginMutation from 'universal/mutations/LoginMutation'
+import LoginMutation from '../mutations/LoginMutation'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import getAnonymousId from '../utils/getAnonymousId'
 

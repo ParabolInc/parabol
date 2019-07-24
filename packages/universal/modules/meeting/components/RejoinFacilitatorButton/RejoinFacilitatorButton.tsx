@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import FloatingActionButton from 'universal/components/FloatingActionButton'
-import IconLabel from 'universal/components/IconLabel'
+import FloatingActionButton from '../../../../components/FloatingActionButton'
+import IconLabel from '../../../../components/IconLabel'
 
 const RejoinButton = styled(FloatingActionButton)({
   bottom: '1.25rem',

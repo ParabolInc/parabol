@@ -1,7 +1,7 @@
-import {DiscussPhaseReflectionGrid_reflections} from '__generated__/DiscussPhaseReflectionGrid_reflections.graphql'
+import {DiscussPhaseReflectionGrid_reflections} from '../../__generated__/DiscussPhaseReflectionGrid_reflections.graphql'
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {meetingGridMinWidth} from 'universal/styles/meeting'
+import {meetingGridMinWidth} from '../styles/meeting'
 import MasonryCSSGrid from './MasonryCSSGrid'
 import ReflectionCard from './ReflectionCard/ReflectionCard'
 

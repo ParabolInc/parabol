@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react'
 import AtlassianClientManager, {
   AccessibleResource,
   AtlassianError
-} from 'universal/utils/AtlassianClientManager'
+} from '../utils/AtlassianClientManager'
 
 const useAtlassianSites = (accessToken?: string) => {
   let isMounted = true

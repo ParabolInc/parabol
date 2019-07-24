@@ -1,12 +1,12 @@
-import {ReflectTemplateModal_retroMeetingSettings} from '__generated__/ReflectTemplateModal_retroMeetingSettings.graphql'
+import {ReflectTemplateModal_retroMeetingSettings} from '../../../../__generated__/ReflectTemplateModal_retroMeetingSettings.graphql'
 import React, {Component} from 'react'
-import EditableText from 'universal/components/EditableText'
+import EditableText from '../../../components/EditableText'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+} from '../../../decorators/withAtmosphere/withAtmosphere'
+import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import RenameReflectTemplateMutation from '../../../mutations/RenameReflectTemplateMutation'
-import Legitity from 'universal/validation/Legitity'
+import Legitity from '../../../validation/Legitity'
 import styled from '@emotion/styled'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {

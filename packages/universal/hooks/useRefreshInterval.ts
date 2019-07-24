@@ -1,4 +1,4 @@
-import useForceUpdate from 'universal/hooks/useForceUpdate'
+import useForceUpdate from './useForceUpdate'
 import {useEffect} from 'react'
 
 const useRefreshInterval = (ms: number) => {

@@ -1,10 +1,10 @@
 import {keyframes} from '@emotion/core'
 import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
-import {Omit} from 'universal/types/generics'
-import {PortalStatus} from 'universal/hooks/usePortal'
-import {DECELERATE} from 'universal/styles/animation'
-import {Duration} from 'universal/types/constEnums'
+import {Omit} from '../types/generics'
+import {PortalStatus} from '../hooks/usePortal'
+import {DECELERATE} from '../styles/animation'
+import {Duration} from '../types/constEnums'
 
 declare global {
   interface Element {

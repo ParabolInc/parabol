@@ -1,8 +1,8 @@
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
-import Atmosphere from 'universal/Atmosphere'
+import Atmosphere from '../Atmosphere'
 import {CompletedHandler, ErrorHandler} from '../types/relayMutations'
-import {IRenameReflectTemplatePromptOnMutationArguments} from 'universal/types/graphql'
+import {IRenameReflectTemplatePromptOnMutationArguments} from '../types/graphql'
 
 graphql`
   fragment RenameReflectTemplatePromptMutation_team on RenameReflectTemplatePromptPayload {

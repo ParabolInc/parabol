@@ -1,8 +1,8 @@
-import {VideoAvatar_teamMember} from '__generated__/VideoAvatar_teamMember.graphql'
+import {VideoAvatar_teamMember} from '../../../__generated__/VideoAvatar_teamMember.graphql'
 import React, {forwardRef, Ref, useEffect, useRef} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
-import AvatarBadge from 'universal/components/AvatarBadge/AvatarBadge'
+import AvatarBadge from '../AvatarBadge/AvatarBadge'
 import {StreamUI} from '../../hooks/useSwarm'
 import MediaSwarm from '../../utils/swarm/MediaSwarm'
 

@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import RaisedButton from 'universal/components/RaisedButton'
-import IconLabel from 'universal/components/IconLabel'
+import RaisedButton from '../../../../components/RaisedButton'
+import IconLabel from '../../../../components/IconLabel'
 
 const StyledButton = styled(RaisedButton)({
   marginLeft: 16, // #gutter

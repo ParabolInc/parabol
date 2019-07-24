@@ -1,8 +1,8 @@
-import {ReflectTemplatePromptUpdateDescriptionMutation as TReflectTemplatePromptUpdateDescriptionMutation} from '__generated__/ReflectTemplatePromptUpdateDescriptionMutation.graphql'
+import {ReflectTemplatePromptUpdateDescriptionMutation as TReflectTemplatePromptUpdateDescriptionMutation} from '../../__generated__/ReflectTemplatePromptUpdateDescriptionMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
-import Atmosphere from 'universal/Atmosphere'
-import {IReflectTemplatePromptUpdateDescriptionOnMutationArguments} from 'universal/types/graphql'
+import Atmosphere from '../Atmosphere'
+import {IReflectTemplatePromptUpdateDescriptionOnMutationArguments} from '../types/graphql'
 import {LocalHandlers} from '../types/relayMutations'
 
 graphql`

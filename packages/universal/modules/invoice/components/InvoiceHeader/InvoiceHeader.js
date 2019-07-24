@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import withStyles from 'universal/styles/withStyles'
+import withStyles from '../../../../styles/withStyles'
 import {css} from 'aphrodite-local-styles/no-important'
-import ui from 'universal/styles/ui'
-import appTheme from 'universal/styles/theme/appTheme'
-import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg'
+import ui from '../../../../styles/ui'
+import appTheme from '../../../../styles/theme/appTheme'
+import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
 
 const InvoiceHeader = (props) => {
   const {emails, picture, orgName, styles} = props

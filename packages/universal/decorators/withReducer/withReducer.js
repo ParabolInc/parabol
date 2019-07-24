@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
-import makeReducer from 'universal/redux/makeReducer'
-import {store} from 'client/client'
+import makeReducer from '../../redux/makeReducer'
+import {store} from '../../../client/client'
 
 export default (reducerObj) => (ComposedComponent) => {
   class WithReducer extends Component {

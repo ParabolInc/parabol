@@ -1,12 +1,12 @@
-import {Dashboard_viewer} from '__generated__/Dashboard_viewer.graphql'
+import {Dashboard_viewer} from '../../__generated__/Dashboard_viewer.graphql'
 import React, {lazy} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {Route, Switch} from 'react-router'
 import DashSidebar from './Dashboard/DashSidebar'
 import DashAlert from './DashAlert'
-import ResponsiveDashSidebar from 'universal/components/ResponsiveDashSidebar'
-import useSidebar from 'universal/hooks/useSidebar'
+import ResponsiveDashSidebar from './ResponsiveDashSidebar'
+import useSidebar from '../hooks/useSidebar'
 
 const UserDashboard = lazy(() =>
   import(

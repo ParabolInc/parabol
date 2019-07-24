@@ -2,7 +2,7 @@ import {EditorState} from 'draft-js'
 import React, {Ref, useEffect, useState} from 'react'
 import styled from '@emotion/styled'
 import TextArea from 'react-textarea-autosize'
-import {cardContentFontSize, cardContentLineHeight} from 'universal/styles/cards'
+import {cardContentFontSize, cardContentLineHeight} from '../styles/cards'
 
 interface Props {
   className?: string

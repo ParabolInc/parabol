@@ -1,8 +1,8 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import SecondaryButton from 'universal/components/SecondaryButton'
+import SecondaryButton from './SecondaryButton'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import {meetingAvatarMediaQueries} from 'universal/styles/meeting'
+import {meetingAvatarMediaQueries} from '../styles/meeting'
 
 const StyledButton = styled(SecondaryButton)({
   height: 32,

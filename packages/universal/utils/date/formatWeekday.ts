@@ -1,4 +1,4 @@
-import {days, shortMonths} from 'universal/utils/makeDateString'
+import {days, shortMonths} from '../makeDateString'
 
 const formatWeekday = (ts: Date) => {
   const month = ts.getMonth()

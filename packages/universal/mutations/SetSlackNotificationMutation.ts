@@ -4,8 +4,8 @@ import {LocalHandlers} from '../types/relayMutations'
 import {
   SetSlackNotificationMutation as TSetSlackNotificationMutation,
   SetSlackNotificationMutationVariables
-} from '__generated__/SetSlackNotificationMutation.graphql'
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
+} from '../../__generated__/SetSlackNotificationMutation.graphql'
+import toTeamMemberId from '../utils/relay/toTeamMemberId'
 
 graphql`
   fragment SetSlackNotificationMutation_team on SetSlackNotificationPayload {

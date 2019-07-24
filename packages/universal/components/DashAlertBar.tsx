@@ -1,6 +1,6 @@
 import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
-import useScrollY from 'universal/hooks/useScrollY'
+import useScrollY from '../hooks/useScrollY'
 import {PALETTE} from '../styles/paletteV2'
 
 // todo get reference to get dynamic height

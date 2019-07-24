@@ -1,5 +1,5 @@
 import {columnArray} from './constants'
-import {TaskStatusEnum} from 'universal/types/graphql'
+import {TaskStatusEnum} from '../types/graphql'
 
 // sorts post-split to be a little more efficient
 interface Task {

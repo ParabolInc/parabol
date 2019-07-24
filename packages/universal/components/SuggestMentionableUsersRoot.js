@@ -1,17 +1,17 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {cacheConfig} from 'universal/utils/constants'
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
+import withAtmosphere from '../decorators/withAtmosphere/withAtmosphere'
+import {cacheConfig} from '../utils/constants'
+import QueryRenderer from './QueryRenderer/QueryRenderer'
 import {
   DEFAULT_MENU_HEIGHT,
   DEFAULT_MENU_WIDTH,
   HUMAN_ADDICTION_THRESH,
   MAX_WAIT_TIME
-} from 'universal/styles/ui'
+} from '../styles/ui'
 import Loadable from 'react-loadable'
-import LoadableLoading from 'universal/components/LoadableLoading'
-import RelayLoadableTransitionGroup from 'universal/components/RelayLoadableTransitionGroup'
+import LoadableLoading from './LoadableLoading'
+import RelayLoadableTransitionGroup from './RelayLoadableTransitionGroup'
 
 const query = graphql`
   query SuggestMentionableUsersRootQuery($teamId: ID!) {

@@ -1,9 +1,9 @@
 import {commitMutation, graphql} from 'react-relay'
-import handleAddOrganization from 'universal/mutations/handlers/handleAddOrganization'
-import handleAddTeams from 'universal/mutations/handlers/handleAddTeams'
-import handleRemoveSuggestedActions from 'universal/mutations/handlers/handleRemoveSuggestedActions'
-import {OnNextHandler} from 'universal/types/relayMutations'
-import {AddOrgMutation_organization} from '__generated__/AddOrgMutation_organization.graphql'
+import handleAddOrganization from './handlers/handleAddOrganization'
+import handleAddTeams from './handlers/handleAddTeams'
+import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
+import {OnNextHandler} from '../types/relayMutations'
+import {AddOrgMutation_organization} from '../../__generated__/AddOrgMutation_organization.graphql'
 
 graphql`
   fragment AddOrgMutation_organization on AddOrgPayload {

@@ -1,8 +1,8 @@
-import Atmosphere from 'universal/Atmosphere'
-import SendClientSegmentEventMutation from 'universal/mutations/SendClientSegmentEventMutation'
-import {reset as resetAppState} from 'universal/redux/rootDuck'
-import {APP_TOKEN_KEY} from 'universal/utils/constants'
-import {SegmentClientEventEnum} from 'universal/types/graphql'
+import Atmosphere from '../../Atmosphere'
+import SendClientSegmentEventMutation from '../../mutations/SendClientSegmentEventMutation'
+import {reset as resetAppState} from '../../redux/rootDuck'
+import {APP_TOKEN_KEY} from '../../utils/constants'
+import {SegmentClientEventEnum} from '../../types/graphql'
 
 const signout = (atmosphere: Atmosphere, dispatch: any, history: any) => {
   window.localStorage.removeItem(APP_TOKEN_KEY)

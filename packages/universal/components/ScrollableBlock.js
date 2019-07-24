@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import styled from '@emotion/styled'
-import ui from 'universal/styles/ui'
+import ui from '../styles/ui'
 
 const ScrollableRoot = styled('div')({
   display: 'flex',

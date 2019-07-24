@@ -1,11 +1,11 @@
 import {createFragmentContainer, graphql} from 'react-relay'
-import DashNavItem from 'universal/components/Dashboard/DashNavItem'
+import DashNavItem from './DashNavItem'
 import React from 'react'
-import appTheme from 'universal/styles/theme/appTheme'
+import appTheme from '../../styles/theme/appTheme'
 import styled from '@emotion/styled'
-import Icon from 'universal/components/Icon'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
-import {DashNavTeam_team} from '__generated__/DashNavTeam_team.graphql'
+import Icon from '../Icon'
+import {MD_ICONS_SIZE_18} from '../../styles/icons'
+import {DashNavTeam_team} from '../../../__generated__/DashNavTeam_team.graphql'
 
 const WarningIcon = styled(Icon)({
   color: appTheme.palette.light,

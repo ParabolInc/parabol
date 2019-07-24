@@ -1,4 +1,4 @@
-import MediaSwarm from 'universal/utils/swarm/MediaSwarm'
+import MediaSwarm from './MediaSwarm'
 import {StreamDict, StreamUI} from '../../hooks/useSwarm'
 import {StreamName} from './joinSwarm'
 

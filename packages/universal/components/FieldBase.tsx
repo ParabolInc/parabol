@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import {FONT_FAMILY} from 'universal/styles/typographyV2'
-import {Radius} from 'universal/types/constEnums'
+import {FONT_FAMILY} from '../styles/typographyV2'
+import {Radius} from '../types/constEnums'
 
 // TODO: pattern WIP
 const FieldBase = styled('div')({

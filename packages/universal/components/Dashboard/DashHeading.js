@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import ui from 'universal/styles/ui'
-import appTheme from 'universal/styles/theme/appTheme'
+import ui from '../../styles/ui'
+import appTheme from '../../styles/theme/appTheme'
 
 const DashHeading = styled('div')(({textAlign}) => ({
   color: ui.colorText,

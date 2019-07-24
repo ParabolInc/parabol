@@ -1,8 +1,8 @@
 import {commitMutation} from 'react-relay'
-import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications'
-import handleRemoveTasks from 'universal/mutations/handlers/handleRemoveTasks'
-import getInProxy from 'universal/utils/relay/getInProxy'
-import isTempId from 'universal/utils/relay/isTempId'
+import handleRemoveNotifications from './handlers/handleRemoveNotifications'
+import handleRemoveTasks from './handlers/handleRemoveTasks'
+import getInProxy from '../utils/relay/getInProxy'
+import isTempId from '../utils/relay/isTempId'
 
 graphql`
   fragment DeleteTaskMutation_task on DeleteTaskPayload {

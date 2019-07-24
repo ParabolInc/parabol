@@ -1,4 +1,4 @@
-import getLastCardPerColumn from 'universal/utils/multiplayerMasonry/getLastCardPerColumn'
+import getLastCardPerColumn from './getLastCardPerColumn'
 
 const AXIS_ANIMATION_DURATION = 100
 // increasing this decreases movement, but increases the probability of 1 column being much taller than the others

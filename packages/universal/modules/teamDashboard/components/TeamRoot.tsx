@@ -1,9 +1,9 @@
 import React from 'react'
 import {graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
-import TeamContainer from 'universal/modules/teamDashboard/containers/Team/TeamContainer'
-import {cacheConfig} from 'universal/utils/constants'
+import QueryRenderer from '../../../components/QueryRenderer/QueryRenderer'
+import TeamContainer from '../containers/Team/TeamContainer'
+import {cacheConfig} from '../../../utils/constants'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 
 const query = graphql`

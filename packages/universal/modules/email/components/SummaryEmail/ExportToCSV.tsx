@@ -1,15 +1,15 @@
-import {ExportToCSVQuery} from '__generated__/ExportToCSVQuery.graphql'
+import {ExportToCSVQuery} from '../../../../../__generated__/ExportToCSVQuery.graphql'
 import Parser from 'json2csv/lib/JSON2CSVParser' // only grab the sync parser
 import React, {Component} from 'react'
 import {fetchQuery, graphql} from 'react-relay'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import extractTextFromDraftString from 'universal/utils/draftjs/extractTextFromDraftString'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import emailDir from 'universal/modules/email/emailDir'
-import {PALETTE_TEXT_MAIN} from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/constants'
-import AnchorIfEmail from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/AnchorIfEmail'
+} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import extractTextFromDraftString from '../../../../utils/draftjs/extractTextFromDraftString'
+import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
+import emailDir from '../../emailDir'
+import {PALETTE_TEXT_MAIN} from './MeetingSummaryEmail/constants'
+import AnchorIfEmail from './MeetingSummaryEmail/AnchorIfEmail'
 import EmailBorderBottom from './MeetingSummaryEmail/EmailBorderBottom'
 import {MeetingSummaryReferrer} from './MeetingSummaryEmail/MeetingSummaryEmail'
 

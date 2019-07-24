@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import getWordAt from 'universal/components/TaskEditor/getWordAt'
-import getDraftCoords from 'universal/utils/getDraftCoords'
+import getWordAt from './getWordAt'
+import getDraftCoords from '../../utils/getDraftCoords'
 import getAnchorLocation from './getAnchorLocation'
-import {autoCompleteEmoji} from 'universal/utils/draftjs/completeEnitity'
-import EmojiMenuContainer from 'universal/components/TaskEditor/EmojiMenuContainer'
+import {autoCompleteEmoji} from '../../utils/draftjs/completeEnitity'
+import EmojiMenuContainer from './EmojiMenuContainer'
 
 const withEmojis = (ComposedComponent) => {
   class WithEmojis extends Component {

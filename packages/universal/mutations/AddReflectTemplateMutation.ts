@@ -1,12 +1,12 @@
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
-import Atmosphere from 'universal/Atmosphere'
-import createProxyRecord from 'universal/utils/relay/createProxyRecord'
-import {IAddReflectTemplateOnMutationArguments} from 'universal/types/graphql'
+import Atmosphere from '../Atmosphere'
+import createProxyRecord from '../utils/relay/createProxyRecord'
+import {IAddReflectTemplateOnMutationArguments} from '../types/graphql'
 import {CompletedHandler, ErrorHandler, SharedUpdater} from '../types/relayMutations'
 import getCachedRecord from '../utils/relay/getCachedRecord'
 import handleAddReflectTemplate from './handlers/handleAddReflectTemplate'
-import {AddReflectTemplateMutation_team} from '__generated__/AddReflectTemplateMutation_team.graphql'
+import {AddReflectTemplateMutation_team} from '../../__generated__/AddReflectTemplateMutation_team.graphql'
 
 graphql`
   fragment AddReflectTemplateMutation_team on AddReflectTemplatePayload {

@@ -1,17 +1,17 @@
-import {AddTemplatePrompt_prompts} from '__generated__/AddTemplatePrompt_prompts.graphql'
+import {AddTemplatePrompt_prompts} from '../../../../__generated__/AddTemplatePrompt_prompts.graphql'
 import React, {Component} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
-import LinkButton from 'universal/components/LinkButton'
-import {typeScale} from 'universal/styles/theme/typography'
-import dndNoise from 'universal/utils/dndNoise'
+import LinkButton from '../../../components/LinkButton'
+import {typeScale} from '../../../styles/theme/typography'
+import dndNoise from '../../../utils/dndNoise'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import AddReflectTemplatePromptMutation from 'universal/mutations/AddReflectTemplatePromptMutation'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import Icon from 'universal/components/Icon'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+} from '../../../decorators/withAtmosphere/withAtmosphere'
+import AddReflectTemplatePromptMutation from '../../../mutations/AddReflectTemplatePromptMutation'
+import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
+import Icon from '../../../components/Icon'
+import {MD_ICONS_SIZE_18} from '../../../styles/icons'
 
 const AddPromptLink = styled(LinkButton)({
   alignItems: 'center',

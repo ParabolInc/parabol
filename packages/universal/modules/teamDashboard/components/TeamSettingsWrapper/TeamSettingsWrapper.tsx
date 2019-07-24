@@ -2,7 +2,7 @@ import React, {lazy} from 'react'
 import styled from '@emotion/styled'
 import {Route} from 'react-router'
 import {matchPath, RouteComponentProps, Switch, withRouter} from 'react-router-dom'
-import TeamSettingsToggleNav from 'universal/modules/teamDashboard/components/TeamSettingsToggleNav/TeamSettingsToggleNav'
+import TeamSettingsToggleNav from '../TeamSettingsToggleNav/TeamSettingsToggleNav'
 
 const TeamSettings = lazy(() =>
   import(/* webpackChunkName: 'TeamSettingsRoot' */ 'universal/modules/teamDashboard/components/TeamSettingsRoot')

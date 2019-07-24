@@ -1,5 +1,5 @@
 import ms from 'ms'
-import {TaskStatusEnum} from 'universal/types/graphql'
+import {TaskStatusEnum} from '../types/graphql'
 
 /**
  * Big stuff:

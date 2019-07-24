@@ -3,8 +3,8 @@
  * Uses the most salient entities to create a 40-character theme to summarize the content of the reflections
  */
 
-import {IGoogleAnalyzedEntity, IRetroReflection} from 'universal/types/graphql'
-import extractTextFromDraftString from 'universal/utils/draftjs/extractTextFromDraftString'
+import {IGoogleAnalyzedEntity, IRetroReflection} from '../../types/graphql'
+import extractTextFromDraftString from '../draftjs/extractTextFromDraftString'
 
 const SALIENT_THRESHOLD = 0.6
 const MIN_ENTITIES = 2

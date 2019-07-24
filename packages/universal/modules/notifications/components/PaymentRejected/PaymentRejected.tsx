@@ -1,13 +1,13 @@
 import styled from '@emotion/styled'
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import ui from 'universal/styles/ui'
-import Row from 'universal/components/Row/Row'
-import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
-import RaisedButton from 'universal/components/RaisedButton'
-import useRouter from 'universal/hooks/useRouter'
-import {PaymentRejected_notification} from '__generated__/PaymentRejected_notification.graphql'
-import NotificationMessage from 'universal/modules/notifications/components/NotificationMessage'
+import ui from '../../../../styles/ui'
+import Row from '../../../../components/Row/Row'
+import IconAvatar from '../../../../components/IconAvatar/IconAvatar'
+import RaisedButton from '../../../../components/RaisedButton'
+import useRouter from '../../../../hooks/useRouter'
+import {PaymentRejected_notification} from '../../../../../__generated__/PaymentRejected_notification.graphql'
+import NotificationMessage from '../NotificationMessage'
 
 const StyledButton = styled(RaisedButton)({...ui.buttonBlockStyles})
 

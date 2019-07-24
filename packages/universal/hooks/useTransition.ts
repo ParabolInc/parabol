@@ -1,5 +1,5 @@
 import {useCallback, useMemo, useRef} from 'react'
-import useForceUpdate from 'universal/hooks/useForceUpdate'
+import useForceUpdate from './useForceUpdate'
 
 // const getValidChildren = (children: ReactNode) => {
 //   const validChildren = [] as ReactElement<any>[]

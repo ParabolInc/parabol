@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
-import HelpMenuCopy from 'universal/components/MeetingHelp/HelpMenuCopy'
+import HelpMenuCopy from './HelpMenuCopy'
 import React from 'react'
-import Ellipsis from 'universal/components/Ellipsis/Ellipsis'
+import Ellipsis from '../Ellipsis/Ellipsis'
 
 const StyledHelpMenuCopy = styled(HelpMenuCopy)<{margin: string}>(({margin}) => ({margin}))
 

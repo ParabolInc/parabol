@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import ui from 'universal/styles/ui'
+import ui from '../../styles/ui'
 
 const baseStyle = {
   color: ui.colorText // TODO: theme-able?

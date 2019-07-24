@@ -1,12 +1,12 @@
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {TaskSummarySection_tasks} from '__generated__/TaskSummarySection_tasks.graphql'
-import useEmailItemGrid from 'universal/hooks/useEmailItemGrid'
-import EmailTaskCard from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/EmailTaskCard'
+import {TaskSummarySection_tasks} from '../../../../../../__generated__/TaskSummarySection_tasks.graphql'
+import useEmailItemGrid from '../../../../../hooks/useEmailItemGrid'
+import EmailTaskCard from './EmailTaskCard'
 import {
   FONT_FAMILY,
   PALETTE_TEXT_MAIN
-} from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/constants'
+} from './constants'
 
 interface Props {
   label: string

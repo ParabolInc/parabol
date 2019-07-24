@@ -1,7 +1,7 @@
 /* Deprecated, see useCoords */
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import getDisplayName from 'universal/utils/getDisplayName'
+import getDisplayName from '../utils/getDisplayName'
 
 /*
  * Almost identical to V1, except it assumes the composed component does not load styles async (ie uses aphrodite)
@@ -169,15 +169,4 @@ export default (ComposedComponent) => {
   }
 
   return WithCoordsV2
-}
-
-export interface WithCoordsProps {
-  coords: {
-    left?: number,
-    right?: number,
-    top?: number,
-    bottom?: number
-  };
-  setModalRef: (component: any) => void;
-  setOriginRef: (component: any) => void;
 }

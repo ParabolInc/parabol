@@ -1,16 +1,16 @@
 import sanitizeSVG from '@mattkrick/sanitize-svg'
 import React, {Component} from 'react'
 import styled from '@emotion/styled'
-import Avatar from 'universal/components/Avatar/Avatar'
-import AvatarInput from 'universal/components/AvatarInput'
-import Type from 'universal/components/Type/Type'
+import Avatar from './Avatar/Avatar'
+import AvatarInput from './AvatarInput'
+import Type from './Type/Type'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import CreateUserPicturePutUrlMutation from 'universal/mutations/CreateUserPicturePutUrlMutation'
-import UpdateUserProfileMutation from 'universal/mutations/UpdateUserProfileMutation'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import sendAssetToS3 from 'universal/utils/sendAssetToS3'
+} from '../decorators/withAtmosphere/withAtmosphere'
+import CreateUserPicturePutUrlMutation from '../mutations/CreateUserPicturePutUrlMutation'
+import UpdateUserProfileMutation from '../mutations/UpdateUserProfileMutation'
+import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
+import sendAssetToS3 from '../utils/sendAssetToS3'
 import svgToPng from '../utils/svgToPng'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {

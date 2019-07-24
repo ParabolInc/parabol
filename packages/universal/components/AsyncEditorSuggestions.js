@@ -1,8 +1,8 @@
 import {css} from 'aphrodite-local-styles/no-important'
 import PropTypes from 'prop-types'
 import React from 'react'
-import ui from 'universal/styles/ui'
-import withStyles from 'universal/styles/withStyles'
+import ui from '../styles/ui'
+import withStyles from '../styles/withStyles'
 
 const dontTellDraft = (e) => {
   e.preventDefault()

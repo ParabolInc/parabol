@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import PrimaryButton from 'universal/components/PrimaryButton'
-import Panel from 'universal/components/Panel/Panel'
+import PrimaryButton from '../../../../components/PrimaryButton'
+import Panel from '../../../../components/Panel/Panel'
 import {withRouter} from 'react-router-dom'
 import styled from '@emotion/styled'
 

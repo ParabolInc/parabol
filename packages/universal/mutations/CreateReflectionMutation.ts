@@ -4,12 +4,12 @@
  */
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
-import {CompletedHandler, ErrorHandler} from 'universal/types/relayMutations'
-import handleAddReflectionGroups from 'universal/mutations/handlers/handleAddReflectionGroups'
-import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr'
-import clientTempId from 'universal/utils/relay/clientTempId'
-import createProxyRecord from 'universal/utils/relay/createProxyRecord'
-import {ICreateReflectionOnMutationArguments} from 'universal/types/graphql'
+import {CompletedHandler, ErrorHandler} from '../types/relayMutations'
+import handleAddReflectionGroups from './handlers/handleAddReflectionGroups'
+import makeEmptyStr from '../utils/draftjs/makeEmptyStr'
+import clientTempId from '../utils/relay/clientTempId'
+import createProxyRecord from '../utils/relay/createProxyRecord'
+import {ICreateReflectionOnMutationArguments} from '../types/graphql'
 
 interface Context {
   meetingId: string

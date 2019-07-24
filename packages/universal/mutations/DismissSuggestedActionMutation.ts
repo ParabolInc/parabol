@@ -1,7 +1,7 @@
 import {
   DismissSuggestedActionMutation as TDismissSuggestedActionMutation,
   DismissSuggestedActionMutationVariables
-} from '__generated__/DismissSuggestedActionMutation.graphql'
+} from '../../__generated__/DismissSuggestedActionMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import {LocalHandlers} from '../types/relayMutations'

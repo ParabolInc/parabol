@@ -1,10 +1,10 @@
 import React, {forwardRef, ReactElement, Ref} from 'react'
 import styled from '@emotion/styled'
-import Icon from 'universal/components/Icon'
-import useMenu from 'universal/hooks/useMenu'
-import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette'
-import ui from 'universal/styles/ui'
-import {PALETTE} from 'universal/styles/paletteV2'
+import Icon from './Icon'
+import useMenu from '../hooks/useMenu'
+import makeFieldColorPalette from '../styles/helpers/makeFieldColorPalette'
+import ui from '../styles/ui'
+import {PALETTE} from '../styles/paletteV2'
 
 const DropdownIcon = styled(Icon)({
   color: PALETTE.TEXT_LIGHT

@@ -1,12 +1,12 @@
-import {ActionMeetingUpdatesPrompt_team} from '__generated__/ActionMeetingUpdatesPrompt_team.graphql'
+import {ActionMeetingUpdatesPrompt_team} from '../../__generated__/ActionMeetingUpdatesPrompt_team.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
-import PhaseHeaderDescription from 'universal/components/PhaseHeaderDescription'
-import PhaseHeaderTitle from 'universal/components/PhaseHeaderTitle'
-import ActionMeetingUpdatesPromptTeamHelpText from 'universal/modules/meeting/components/ActionMeetingUpdatesPromptTeamHelpText'
-import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
-import Avatar from 'universal/components/Avatar/Avatar'
+import PhaseHeaderDescription from './PhaseHeaderDescription'
+import PhaseHeaderTitle from './PhaseHeaderTitle'
+import ActionMeetingUpdatesPromptTeamHelpText from '../modules/meeting/components/ActionMeetingUpdatesPromptTeamHelpText'
+import defaultUserAvatar from '../styles/theme/images/avatar-user.svg'
+import Avatar from './Avatar/Avatar'
 
 interface Props {
   team: ActionMeetingUpdatesPrompt_team

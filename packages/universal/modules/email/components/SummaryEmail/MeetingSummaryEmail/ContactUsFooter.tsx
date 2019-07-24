@@ -1,10 +1,10 @@
 import React from 'react'
-import {MEETING_NAME} from 'universal/utils/constants'
+import {MEETING_NAME} from '../../../../../utils/constants'
 import {
   FONT_FAMILY,
   PALETTE_BACKGROUND_RED,
   PALETTE_TEXT_MAIN
-} from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/constants'
+} from './constants'
 
 const promptStyle = {
   color: PALETTE_TEXT_MAIN,

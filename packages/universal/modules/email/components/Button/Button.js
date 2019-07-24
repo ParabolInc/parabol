@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import {emailTableBase, emailPrimaryButtonStyle} from 'universal/styles/email'
+import {emailTableBase, emailPrimaryButtonStyle} from '../../../../styles/email'
 
 const cellStyle = {
   color: '#FFFFFF',

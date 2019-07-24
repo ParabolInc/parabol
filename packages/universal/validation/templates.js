@@ -1,5 +1,5 @@
-import {APP_MAX_AVATAR_FILE_SIZE, TASK_MAX_CHARS} from 'universal/utils/constants'
-import {compositeIdRegex, emailRegex, idRegex, urlRegex} from 'universal/validation/regex'
+import {APP_MAX_AVATAR_FILE_SIZE, TASK_MAX_CHARS} from '../utils/constants'
+import {compositeIdRegex, emailRegex, idRegex, urlRegex} from './regex'
 
 export const avatar = {
   size: (value) =>

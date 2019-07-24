@@ -1,4 +1,4 @@
-import {urlRegex} from 'universal/validation/regex'
+import {urlRegex} from './regex'
 import legitify from './legitify'
 
 export default function makeUserServerSchema () {

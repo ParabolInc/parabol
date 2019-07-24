@@ -1,9 +1,9 @@
-import {RetroSidebarPhaseListItemChildren_viewer} from '__generated__/RetroSidebarPhaseListItemChildren_viewer.graphql'
+import {RetroSidebarPhaseListItemChildren_viewer} from '../../__generated__/RetroSidebarPhaseListItemChildren_viewer.graphql'
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import RetroSidebarDiscussSection from 'universal/components/RetroSidebarDiscussSection'
-import {useGotoStageId} from 'universal/hooks/useMeeting'
-import {NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
+import RetroSidebarDiscussSection from './RetroSidebarDiscussSection'
+import {useGotoStageId} from '../hooks/useMeeting'
+import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>

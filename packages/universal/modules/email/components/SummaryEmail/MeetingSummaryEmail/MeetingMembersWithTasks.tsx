@@ -1,8 +1,8 @@
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import MeetingMemberTaskSummaryList from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/MeetingMemberTaskSummaryList'
-import {MeetingMembersWithTasks_meeting} from '__generated__/MeetingMembersWithTasks_meeting.graphql'
-import EmailBorderBottom from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/EmailBorderBottom'
+import MeetingMemberTaskSummaryList from './MeetingMemberTaskSummaryList'
+import {MeetingMembersWithTasks_meeting} from '../../../../../../__generated__/MeetingMembersWithTasks_meeting.graphql'
+import EmailBorderBottom from './EmailBorderBottom'
 
 interface Props {
   meeting: MeetingMembersWithTasks_meeting

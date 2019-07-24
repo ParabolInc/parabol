@@ -1,13 +1,13 @@
-import {NewTeamOrgDropdown_organizations} from '__generated__/NewTeamOrgDropdown_organizations.graphql'
+import {NewTeamOrgDropdown_organizations} from '../../__generated__/NewTeamOrgDropdown_organizations.graphql'
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import DropdownMenuItemLabel from 'universal/components/DropdownMenuItemLabel'
-import DropdownMenuLabel from 'universal/components/DropdownMenuLabel'
-import Menu from 'universal/components/Menu'
-import MenuItem from 'universal/components/MenuItem'
-import TagPro from 'universal/components/Tag/TagPro'
-import {MenuProps} from 'universal/hooks/useMenu'
-import {PRO} from 'universal/utils/constants'
+import DropdownMenuItemLabel from './DropdownMenuItemLabel'
+import DropdownMenuLabel from './DropdownMenuLabel'
+import Menu from './Menu'
+import MenuItem from './MenuItem'
+import TagPro from './Tag/TagPro'
+import {MenuProps} from '../hooks/useMenu'
+import {PRO} from '../utils/constants'
 
 interface Props {
   menuProps: MenuProps

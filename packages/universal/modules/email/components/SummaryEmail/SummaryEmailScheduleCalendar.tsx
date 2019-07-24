@@ -1,9 +1,9 @@
-import emailDir from 'universal/modules/email/emailDir'
+import emailDir from '../../emailDir'
 import React from 'react'
-import {emailFontFamily} from 'universal/styles/email'
-import {createGoogleCalendarInviteURL, makeIcsUrl} from 'universal/utils/makeCalendarInvites'
+import {emailFontFamily} from '../../../../styles/email'
+import {createGoogleCalendarInviteURL, makeIcsUrl} from '../../../../utils/makeCalendarInvites'
 import EmptySpace from '../../components/EmptySpace/EmptySpace'
-import EmailBorderBottom from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/EmailBorderBottom'
+import EmailBorderBottom from './MeetingSummaryEmail/EmailBorderBottom'
 
 const message = {
   color: '#444258',

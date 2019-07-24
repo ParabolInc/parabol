@@ -1,7 +1,7 @@
-import {ArchiveTeamContainer_team} from '__generated__/ArchiveTeamContainer_team.graphql'
+import {ArchiveTeamContainer_team} from '../../../../../__generated__/ArchiveTeamContainer_team.graphql'
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import ArchiveTeam from 'universal/modules/teamDashboard/components/ArchiveTeam/ArchiveTeam'
+import ArchiveTeam from '../../components/ArchiveTeam/ArchiveTeam'
 
 interface Props {
   team: ArchiveTeamContainer_team

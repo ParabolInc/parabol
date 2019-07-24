@@ -1,9 +1,9 @@
-import {RemoveAtlassianAuthMutation as TRemoveAtlassianAuthMutation} from '__generated__/RemoveAtlassianAuthMutation.graphql'
+import {RemoveAtlassianAuthMutation as TRemoveAtlassianAuthMutation} from '../../__generated__/RemoveAtlassianAuthMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
-import Atmosphere from 'universal/Atmosphere'
-import {IRemoveAtlassianAuthOnMutationArguments} from 'universal/types/graphql'
-import {LocalHandlers} from 'universal/types/relayMutations'
+import Atmosphere from '../Atmosphere'
+import {IRemoveAtlassianAuthOnMutationArguments} from '../types/graphql'
+import {LocalHandlers} from '../types/relayMutations'
 
 graphql`
   fragment RemoveAtlassianAuthMutation_team on RemoveAtlassianAuthPayload {

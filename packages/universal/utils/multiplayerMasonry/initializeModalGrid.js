@@ -6,12 +6,12 @@ import {
   MIN_VAR_ITEM_DELAY,
   MODAL_PADDING,
   REFLECTION_WIDTH
-} from 'universal/utils/multiplayerMasonry/masonryConstants'
-import {STANDARD_CURVE} from 'universal/styles/animation'
-import getScaledModalBackground from 'universal/utils/multiplayerMasonry/getScaledModalBackground'
-import hideBodyScroll from 'universal/utils/hideBodyScroll'
-import {cardShadow, modalShadow} from 'universal/styles/elevation'
-import getBBox from 'universal/components/RetroReflectPhase/getBBox'
+} from './masonryConstants'
+import {STANDARD_CURVE} from '../../styles/animation'
+import getScaledModalBackground from './getScaledModalBackground'
+import hideBodyScroll from '../hideBodyScroll'
+import {cardShadow, modalShadow} from '../../styles/elevation'
+import getBBox from '../../components/RetroReflectPhase/getBBox'
 
 const makeResetHandler = (reflections, itemCache, modalRef, resetBodyStyles) => {
   const resetQueue = reflections.map((reflection) => {

@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import ui from 'universal/styles/ui'
+import ui from '../../styles/ui'
 import styled from '@emotion/styled'
-import {APP_BAR_HEIGHT} from 'universal/styles/appbars'
+import {APP_BAR_HEIGHT} from '../../styles/appbars'
 
 const RootBlock = styled('div')(({hasOverlay}) => ({
   alignItems: 'center',

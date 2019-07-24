@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
-import {MenuPosition} from 'universal/hooks/useCoords'
-import {PortalStatus} from 'universal/hooks/usePortal'
-import {DECELERATE} from 'universal/styles/animation'
-import {menuShadow} from 'universal/styles/elevation'
-import {Duration, Radius} from 'universal/types/constEnums'
+import {MenuPosition} from './useCoords'
+import {PortalStatus} from './usePortal'
+import {DECELERATE} from '../styles/animation'
+import {menuShadow} from '../styles/elevation'
+import {Duration, Radius} from '../types/constEnums'
 
 const transformOrigins = {
   [MenuPosition.UPPER_RIGHT]: 'top right',

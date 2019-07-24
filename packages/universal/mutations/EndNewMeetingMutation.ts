@@ -1,11 +1,11 @@
 import {commitMutation, graphql} from 'react-relay'
-import getMeetingPathParams from 'universal/utils/meetings/getMeetingPathParams'
-import handleRemoveSuggestedActions from 'universal/mutations/handlers/handleRemoveSuggestedActions'
-import Atmosphere from 'universal/Atmosphere'
-import {IEndNewMeetingOnMutationArguments} from 'universal/types/graphql'
-import {LocalHandlers} from 'universal/types/relayMutations'
-import {EndNewMeetingMutation as TEndNewMeetingMutation} from '__generated__/EndNewMeetingMutation.graphql'
-import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks'
+import getMeetingPathParams from '../utils/meetings/getMeetingPathParams'
+import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
+import Atmosphere from '../Atmosphere'
+import {IEndNewMeetingOnMutationArguments} from '../types/graphql'
+import {LocalHandlers} from '../types/relayMutations'
+import {EndNewMeetingMutation as TEndNewMeetingMutation} from '../../__generated__/EndNewMeetingMutation.graphql'
+import handleUpsertTasks from './handlers/handleUpsertTasks'
 
 graphql`
   fragment EndNewMeetingMutation_team on EndNewMeetingPayload {

@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import PrimaryButton from 'universal/components/PrimaryButton'
+import PrimaryButton from './PrimaryButton'
 
 const ActionButton = styled(PrimaryButton)({
   fontSize: 14,

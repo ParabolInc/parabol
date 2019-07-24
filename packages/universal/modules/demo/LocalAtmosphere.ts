@@ -10,8 +10,8 @@ import {
   Store,
   SubscribeFunction
 } from 'relay-runtime'
-import {TASK, TEAM} from 'universal/utils/constants'
-import handlerProvider from 'universal/utils/relay/handlerProvider'
+import {TASK, TEAM} from '../../utils/constants'
+import handlerProvider from '../../utils/relay/handlerProvider'
 import Atmosphere from '../../Atmosphere'
 import ClientGraphQLServer from './ClientGraphQLServer'
 // import sleep from 'universal/utils/sleep'

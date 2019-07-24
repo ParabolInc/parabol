@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import {connect} from 'react-redux'
-import UserTasksHeader from 'universal/modules/userDashboard/components/UserTasksHeader/UserTasksHeader'
+import UserTasksHeader from '../../components/UserTasksHeader/UserTasksHeader'
 import {createFragmentContainer} from 'react-relay'
 
 const mapStateToProps = (state) => {

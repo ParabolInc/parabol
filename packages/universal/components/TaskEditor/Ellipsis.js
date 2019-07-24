@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import Ellipsis from 'universal/components/Ellipsis/Ellipsis'
+import Ellipsis from '../Ellipsis/Ellipsis'
 
 const EllipsisDecorator = (props) => {
   const {offsetkey} = props

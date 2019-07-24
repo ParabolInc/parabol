@@ -9,7 +9,7 @@ interface Props {
 }
 
 const TruncatedEllipsis = (setEditorState) =>
-  class TruncatedEllipsisClass extends Component<Props> {
+  (class TruncatedEllipsisClass extends Component<Props> {
     onClick = () => {
       const {contentState, entityKey} = this.props
       const {value} = contentState.getEntity(entityKey).getData()
@@ -24,6 +24,6 @@ const TruncatedEllipsis = (setEditorState) =>
         </span>
       )
     }
-  }
+  })
 
 export default TruncatedEllipsis

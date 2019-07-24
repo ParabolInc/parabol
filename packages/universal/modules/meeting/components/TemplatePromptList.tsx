@@ -1,15 +1,15 @@
-import {TemplatePromptList_prompts} from '__generated__/TemplatePromptList_prompts.graphql'
+import {TemplatePromptList_prompts} from '../../../../__generated__/TemplatePromptList_prompts.graphql'
 import React, {Component} from 'react'
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import MoveReflectTemplatePromptMutation from 'universal/mutations/MoveReflectTemplatePromptMutation'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+} from '../../../decorators/withAtmosphere/withAtmosphere'
+import MoveReflectTemplatePromptMutation from '../../../mutations/MoveReflectTemplatePromptMutation'
+import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import TemplatePromptItem from './TemplatePromptItem'
-import dndNoise from 'universal/utils/dndNoise'
+import dndNoise from '../../../utils/dndNoise'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   prompts: TemplatePromptList_prompts

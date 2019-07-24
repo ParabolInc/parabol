@@ -1,4 +1,4 @@
-import handleRemoveReflectionGroups from 'universal/mutations/handlers/handleRemoveReflectionGroups'
+import handleRemoveReflectionGroups from './handleRemoveReflectionGroups'
 
 const handleRemoveEmptyReflectionGroup = (reflectionGroupId, store) => {
   const reflectionGroup = store.get(reflectionGroupId)

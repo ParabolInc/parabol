@@ -1,5 +1,5 @@
 import {useContext} from 'react'
-import {AtmosphereContext} from 'universal/components/AtmosphereProvider/AtmosphereProvider'
+import {AtmosphereContext} from '../components/AtmosphereProvider/AtmosphereProvider'
 import Atmosphere from '../Atmosphere'
 
 const useAtmosphere = () => {

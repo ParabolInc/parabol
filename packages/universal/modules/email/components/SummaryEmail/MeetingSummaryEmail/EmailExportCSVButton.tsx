@@ -1,9 +1,9 @@
-import emailDir from 'universal/modules/email/emailDir'
+import emailDir from '../../../emailDir'
 import React from 'react'
 import {
   FONT_FAMILY,
   PALETTE_TEXT_MAIN
-} from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/constants'
+} from './constants'
 
 interface Props {
   emailCSVUrl: string

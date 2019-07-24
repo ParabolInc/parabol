@@ -1,9 +1,9 @@
 import React from 'react'
-import emailDir from 'universal/modules/email/emailDir'
+import emailDir from '../../../emailDir'
 import {
   FONT_FAMILY,
   PALETTE_TEXT_MAIN
-} from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/constants'
+} from './constants'
 
 const logoStyle = {
   paddingTop: 64

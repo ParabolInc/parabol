@@ -3,7 +3,7 @@ import InviteDialog from './InviteDialog'
 import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import DialogTitle from './DialogTitle'
-import useDocumentTitle from 'universal/hooks/useDocumentTitle'
+import useDocumentTitle from '../hooks/useDocumentTitle'
 
 interface Props {
   isMassInvite?: boolean

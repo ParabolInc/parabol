@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {meetingTopBarMediaQuery} from 'universal/styles/meeting'
+import {meetingTopBarMediaQuery} from '../styles/meeting'
 
 const PhaseHeaderTitle = styled('h1')({
   fontSize: 16,

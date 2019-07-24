@@ -1,6 +1,6 @@
-import {AnalyticsPageRootQueryResponse} from '__generated__/AnalyticsPageRootQuery.graphql'
+import {AnalyticsPageRootQueryResponse} from '../../__generated__/AnalyticsPageRootQuery.graphql'
 import {Component} from 'react'
-import makeHref from 'universal/utils/makeHref'
+import makeHref from '../utils/makeHref'
 
 import AnalyticsJS = SegmentAnalytics.AnalyticsJS
 

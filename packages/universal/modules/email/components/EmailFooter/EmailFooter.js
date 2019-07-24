@@ -1,6 +1,6 @@
 import React from 'react'
 import EmptySpace from '../EmptySpace/EmptySpace'
-import {emailCopyStyle, emailTextColorLight, emailTableBase} from 'universal/styles/email'
+import {emailCopyStyle, emailTextColorLight, emailTableBase} from '../../../../styles/email'
 
 const copyStyle = {
   ...emailCopyStyle,

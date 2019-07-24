@@ -7,8 +7,8 @@
 import React, {Fragment} from 'react'
 import styled from '@emotion/styled'
 
-import ui from 'universal/styles/ui'
-import appTheme from 'universal/styles/theme/appTheme'
+import ui from '../../styles/ui'
+import appTheme from '../../styles/theme/appTheme'
 
 const SeparatorContainer = styled('div')<{margin: string | number | undefined}>(({margin}) => ({
   color: ui.labelHeadingColor,

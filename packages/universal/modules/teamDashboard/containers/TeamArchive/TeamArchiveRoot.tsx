@@ -1,10 +1,10 @@
 import React from 'react'
 import {graphql} from 'react-relay'
 import {RouteComponentProps} from 'react-router'
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
-import TeamArchive from 'universal/modules/teamDashboard/components/TeamArchive/TeamArchive'
-import {LoaderSize} from 'universal/types/constEnums'
-import renderQuery from 'universal/utils/relay/renderQuery'
+import QueryRenderer from '../../../../components/QueryRenderer/QueryRenderer'
+import TeamArchive from '../../components/TeamArchive/TeamArchive'
+import {LoaderSize} from '../../../../types/constEnums'
+import renderQuery from '../../../../utils/relay/renderQuery'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 
 const query = graphql`

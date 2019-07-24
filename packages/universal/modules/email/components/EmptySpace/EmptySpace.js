@@ -3,7 +3,7 @@
 
 import PropTypes from 'prop-types'
 import React from 'react'
-import {emailTableBase} from 'universal/styles/email'
+import {emailTableBase} from '../../../../styles/email'
 
 const EmptySpace = (props) => {
   const cellStyle = {

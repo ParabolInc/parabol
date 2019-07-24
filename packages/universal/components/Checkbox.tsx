@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import {PALETTE} from 'universal/styles/paletteV2'
-import Icon from 'universal/components/Icon'
+import {PALETTE} from '../styles/paletteV2'
+import Icon from './Icon'
 
 interface Props {
   active: boolean

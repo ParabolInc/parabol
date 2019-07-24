@@ -1,31 +1,31 @@
 import React from 'react'
-import formError from 'universal/styles/helpers/formError'
+import formError from '../../../../styles/helpers/formError'
 import {normalizeExpiry, normalizeNumeric} from './normalizers'
 import styled from '@emotion/styled'
-import ui from 'universal/styles/ui'
-import appTheme from 'universal/styles/theme/appTheme'
+import ui from '../../../../styles/ui'
+import appTheme from '../../../../styles/theme/appTheme'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
+} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import withAsync from 'react-async-hoc'
 import * as Sentry from '@sentry/browser'
-import UpgradeToProMutation from 'universal/mutations/UpgradeToProMutation'
-import UpdateCreditCardMutation from 'universal/mutations/UpdateCreditCardMutation'
-import UpgradeCreditCardFormField from 'universal/components/UpgradeCreditCardFormField'
+import UpgradeToProMutation from '../../../../mutations/UpgradeToProMutation'
+import UpdateCreditCardMutation from '../../../../mutations/UpdateCreditCardMutation'
+import UpgradeCreditCardFormField from '../../../../components/UpgradeCreditCardFormField'
 import {
   cardTypeLookup,
   CCValidationErrors,
   stripeFieldLookup
-} from 'universal/utils/creditCardLookup'
+} from '../../../../utils/creditCardLookup'
 import withMutationProps, {
   ErrorObject,
   WithMutationProps
-} from 'universal/utils/relay/withMutationProps'
-import PrimaryButton from 'universal/components/PrimaryButton'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
-import Icon from 'universal/components/Icon'
-import {ICON_SIZE_FA_2X, MD_ICONS_SIZE_18} from 'universal/styles/icons'
-import {typeScale} from 'universal/styles/theme/typography'
+} from '../../../../utils/relay/withMutationProps'
+import PrimaryButton from '../../../../components/PrimaryButton'
+import StyledFontAwesome from '../../../../components/StyledFontAwesome'
+import Icon from '../../../../components/Icon'
+import {ICON_SIZE_FA_2X, MD_ICONS_SIZE_18} from '../../../../styles/icons'
+import {typeScale} from '../../../../styles/theme/typography'
 
 const inputBorder = '.0625rem solid transparent'
 const borderBottom = '.125rem solid transparent'

@@ -1,7 +1,7 @@
 import React, {forwardRef} from 'react'
 import styled from '@emotion/styled'
-import BaseButton, {BaseButtonProps} from 'universal/components/BaseButton'
-import ui from 'universal/styles/ui'
+import BaseButton, {BaseButtonProps} from './BaseButton'
+import ui from '../styles/ui'
 
 const StyledBaseButton = styled(BaseButton)((props: BaseButtonProps) => {
   const {disabled, waiting} = props

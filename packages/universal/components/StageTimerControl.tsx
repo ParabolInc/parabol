@@ -1,11 +1,11 @@
 import React from 'react'
-import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
-import BottomNavControl from 'universal/components/BottomNavControl'
+import BottomNavIconLabel from './BottomNavIconLabel'
+import BottomNavControl from './BottomNavControl'
 import {createFragmentContainer, graphql} from 'react-relay'
-import useMenu from 'universal/hooks/useMenu'
-import {MenuPosition} from 'universal/hooks/useCoords'
-import lazyPreload from 'universal/utils/lazyPreload'
-import {StageTimerControl_team} from '__generated__/StageTimerControl_team.graphql'
+import useMenu from '../hooks/useMenu'
+import {MenuPosition} from '../hooks/useCoords'
+import lazyPreload from '../utils/lazyPreload'
+import {StageTimerControl_team} from '../../__generated__/StageTimerControl_team.graphql'
 import styled from '@emotion/styled'
 
 interface Props {

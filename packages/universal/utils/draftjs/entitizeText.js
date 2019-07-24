@@ -1,5 +1,5 @@
 import {Modifier} from 'draft-js'
-import {textTags} from 'universal/utils/constants'
+import {textTags} from '../constants'
 
 const entitizeText = (contentState, selectionState) => {
   const anchorOffset = selectionState.getAnchorOffset()

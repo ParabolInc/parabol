@@ -1,16 +1,16 @@
-import {UnpaidTeamModal_viewer} from '__generated__/UnpaidTeamModal_viewer.graphql'
+import {UnpaidTeamModal_viewer} from '../../../../../__generated__/UnpaidTeamModal_viewer.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import DashModal from 'universal/components/Dashboard/DashModal'
-import DialogContent from 'universal/components/DialogContent'
-import DialogTitle from 'universal/components/DialogTitle'
-import IconLabel from 'universal/components/IconLabel'
-import PrimaryButton from 'universal/components/PrimaryButton'
+import DashModal from '../../../../components/Dashboard/DashModal'
+import DialogContent from '../../../../components/DialogContent'
+import DialogTitle from '../../../../components/DialogTitle'
+import IconLabel from '../../../../components/IconLabel'
+import PrimaryButton from '../../../../components/PrimaryButton'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
+} from '../../../../decorators/withAtmosphere/withAtmosphere'
 
 const StyledButton = styled(PrimaryButton)({
   margin: '1.5rem auto 0'

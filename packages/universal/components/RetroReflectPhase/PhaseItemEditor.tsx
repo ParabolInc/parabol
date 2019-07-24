@@ -1,14 +1,14 @@
 import {convertToRaw, EditorState} from 'draft-js'
 import React, {Component} from 'react'
-import {ReflectionCardRoot} from 'universal/components/ReflectionCard/ReflectionCard'
-import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper'
+import {ReflectionCardRoot} from '../ReflectionCard/ReflectionCard'
+import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import CreateReflectionMutation from 'universal/mutations/CreateReflectionMutation'
-import EditReflectionMutation from 'universal/mutations/EditReflectionMutation'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import convertToTaskContent from 'universal/utils/draftjs/convertToTaskContent'
+} from '../../decorators/withAtmosphere/withAtmosphere'
+import CreateReflectionMutation from '../../mutations/CreateReflectionMutation'
+import EditReflectionMutation from '../../mutations/EditReflectionMutation'
+import withMutationProps, {WithMutationProps} from '../../utils/relay/withMutationProps'
+import convertToTaskContent from '../../utils/draftjs/convertToTaskContent'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   meetingId: string

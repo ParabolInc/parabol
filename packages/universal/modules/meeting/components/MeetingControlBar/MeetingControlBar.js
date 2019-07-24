@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
-import ui from 'universal/styles/ui'
-import {meetingBottomBarHeight, meetingSidebarMediaQuery} from 'universal/styles/meeting'
+import ui from '../../../../styles/ui'
+import {meetingBottomBarHeight, meetingSidebarMediaQuery} from '../../../../styles/meeting'
 import {
   desktopBarShadow,
   bottomBarShadow,
   ZINDEX_BOTTOM_BAR,
   ZINDEX_DESKTOP_BAR
-} from 'universal/styles/elevation'
+} from '../../../../styles/elevation'
 
 const MeetingControlBar = styled('div')({
   alignItems: 'center',

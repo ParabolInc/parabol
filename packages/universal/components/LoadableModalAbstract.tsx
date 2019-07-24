@@ -1,9 +1,9 @@
 import React, {Component, ComponentType, Suspense} from 'react'
 import styled from '@emotion/styled'
-import AnimatedFade from 'universal/components/AnimatedFade'
-import Modal from 'universal/components/Modal'
-import ui from 'universal/styles/ui'
-import {modalShadow} from 'universal/styles/elevation'
+import AnimatedFade from './AnimatedFade'
+import Modal from './Modal'
+import ui from '../styles/ui'
+import {modalShadow} from '../styles/elevation'
 import {WithAnimatedPortalProps} from '../decorators/withAnimatedPortal'
 
 const ModalBlock = styled('div')({

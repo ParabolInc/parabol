@@ -1,12 +1,12 @@
-import {EditableTemplatePrompt_prompts} from '__generated__/EditableTemplatePrompt_prompts.graphql'
+import {EditableTemplatePrompt_prompts} from '../../../../__generated__/EditableTemplatePrompt_prompts.graphql'
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import EditableText from 'universal/components/EditableText'
+import EditableText from '../../../components/EditableText'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import Legitity from 'universal/validation/Legitity'
+} from '../../../decorators/withAtmosphere/withAtmosphere'
+import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
+import Legitity from '../../../validation/Legitity'
 import RenameReflectTemplatePromptMutation from '../../../mutations/RenameReflectTemplatePromptMutation'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {

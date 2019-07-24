@@ -1,10 +1,10 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import Icon from 'universal/components/Icon'
+import Icon from './Icon'
 import {StreamUI} from '../hooks/useSwarm'
 import MediaSwarm from '../utils/swarm/MediaSwarm'
 import MediaControlToggle from './MediaControlToggle'
-import {ICON_SIZE} from 'universal/styles/typographyV2'
+import {ICON_SIZE} from '../styles/typographyV2'
 
 const Toggle = styled(MediaControlToggle)({})
 const StyledIcon = styled(Icon)({

@@ -1,8 +1,8 @@
 import React from 'react'
-import Menu from 'universal/components/Menu'
-import {MenuProps} from 'universal/hooks/useMenu'
-import MenuItem from 'universal/components/MenuItem'
-import plural from 'universal/utils/plural'
+import Menu from './Menu'
+import {MenuProps} from '../hooks/useMenu'
+import MenuItem from './MenuItem'
+import plural from '../utils/plural'
 
 interface Props {
   minuteTimeLimit: number

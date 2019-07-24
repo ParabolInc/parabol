@@ -1,8 +1,8 @@
 import {useCallback, useRef} from 'react'
-import useCoords, {MenuPosition} from 'universal/hooks/useCoords'
-import useTooltipPortal from 'universal/hooks/useTooltipPortal'
-import usePortal from 'universal/hooks/usePortal'
-import {Duration} from 'universal/types/constEnums'
+import useCoords, {MenuPosition} from './useCoords'
+import useTooltipPortal from './useTooltipPortal'
+import usePortal from './usePortal'
+import {Duration} from '../types/constEnums'
 
 interface Options {
   delay?: number

@@ -1,8 +1,8 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import Menu from 'universal/components/Menu'
-import {MenuProps} from 'universal/hooks/useMenu'
-import {PALETTE} from 'universal/styles/paletteV2'
+import Menu from './Menu'
+import {MenuProps} from '../hooks/useMenu'
+import {PALETTE} from '../styles/paletteV2'
 
 interface Props {
   menuProps: MenuProps

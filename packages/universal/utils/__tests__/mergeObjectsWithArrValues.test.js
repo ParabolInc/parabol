@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import mergeObjectsWithArrValues from 'universal/utils/mergeObjectsWithArrValues'
+import mergeObjectsWithArrValues from '../mergeObjectsWithArrValues'
 
 describe('mergeObjectsWithArrValues', () => {
   test('returns the same object if only 1 is passed', () => {

@@ -1,5 +1,5 @@
 import React, {forwardRef, Ref} from 'react'
-import RaisedButton, {RaisedButtonProps} from 'universal/components/RaisedButton'
+import RaisedButton, {RaisedButtonProps} from './RaisedButton'
 
 interface Props extends RaisedButtonProps {}
 

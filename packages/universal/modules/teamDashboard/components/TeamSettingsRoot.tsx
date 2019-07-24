@@ -1,10 +1,10 @@
 import React from 'react'
 import {graphql} from 'react-relay'
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
-import TeamSettings from 'universal/modules/teamDashboard/components/TeamSettings/TeamSettings'
-import {LoaderSize} from 'universal/types/constEnums'
-import {cacheConfig} from 'universal/utils/constants'
-import renderQuery from 'universal/utils/relay/renderQuery'
+import QueryRenderer from '../../../components/QueryRenderer/QueryRenderer'
+import TeamSettings from './TeamSettings/TeamSettings'
+import {LoaderSize} from '../../../types/constEnums'
+import {cacheConfig} from '../../../utils/constants'
+import renderQuery from '../../../utils/relay/renderQuery'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 
 const query = graphql`

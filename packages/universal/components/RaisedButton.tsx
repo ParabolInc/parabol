@@ -1,7 +1,7 @@
 import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
-import ui from 'universal/styles/ui'
-import BaseButton, {BaseButtonProps} from 'universal/components/BaseButton'
+import ui from '../styles/ui'
+import BaseButton, {BaseButtonProps} from './BaseButton'
 
 const StyledBaseButton = styled(BaseButton)<{palette?: string}>(({palette = 'gray'}) => {
   const backgroundColor = ui.palette[palette]

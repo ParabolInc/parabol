@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
-import getDisplayName from 'universal/utils/getDisplayName'
-import {Subtract} from 'universal/types/generics'
-import Atmosphere from 'universal/Atmosphere'
+import getDisplayName from '../../utils/getDisplayName'
+import {Subtract} from '../../types/generics'
+import Atmosphere from '../../Atmosphere'
 import {AtmosphereContext} from '../../components/AtmosphereProvider/AtmosphereProvider'
 
 export interface WithAtmosphereProps {

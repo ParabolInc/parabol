@@ -1,5 +1,5 @@
 import {commitLocalUpdate} from 'react-relay'
-import createProxyRecord from 'universal/utils/relay/createProxyRecord'
+import createProxyRecord from '../relay/createProxyRecord'
 
 const setClosingTransform = (atmosphere, itemId, finalCoords) => {
   commitLocalUpdate(atmosphere, (store) => {

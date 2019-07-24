@@ -1,7 +1,7 @@
 import React, {forwardRef} from 'react'
-import HelpMenuContent from 'universal/components/MeetingHelp/HelpMenuContent'
-import HelpMenuHeader from 'universal/components/MeetingHelp/HelpMenuHeader'
-import useInterval from 'universal/hooks/useInterval'
+import HelpMenuContent from './HelpMenuContent'
+import HelpMenuHeader from './HelpMenuHeader'
+import useInterval from '../../hooks/useInterval'
 import DelayedCopy from './DelayedCopy'
 
 let permShow = 0

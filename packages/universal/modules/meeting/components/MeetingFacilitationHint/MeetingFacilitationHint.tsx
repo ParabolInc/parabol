@@ -1,7 +1,7 @@
 import React from 'react'
-import Ellipsis from 'universal/components/Ellipsis/Ellipsis'
+import Ellipsis from '../../../../components/Ellipsis/Ellipsis'
 import styled from '@emotion/styled'
-import {PALETTE} from 'universal/styles/paletteV2'
+import {PALETTE} from '../../../../styles/paletteV2'
 
 const Hint = styled('div')({
   color: PALETTE.TEXT_LIGHT,

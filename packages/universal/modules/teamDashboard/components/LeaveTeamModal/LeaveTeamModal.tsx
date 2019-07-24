@@ -1,17 +1,17 @@
-import {LeaveTeamModal_teamMember} from '__generated__/LeaveTeamModal_teamMember.graphql'
+import {LeaveTeamModal_teamMember} from '../../../../../__generated__/LeaveTeamModal_teamMember.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import PrimaryButton from 'universal/components/PrimaryButton'
-import IconLabel from 'universal/components/IconLabel'
-import DialogContainer from 'universal/components/DialogContainer'
-import DialogTitle from 'universal/components/DialogTitle'
-import DialogContent from 'universal/components/DialogContent'
+import PrimaryButton from '../../../../components/PrimaryButton'
+import IconLabel from '../../../../components/IconLabel'
+import DialogContainer from '../../../../components/DialogContainer'
+import DialogTitle from '../../../../components/DialogTitle'
+import DialogContent from '../../../../components/DialogContent'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import RemoveTeamMemberMutation from 'universal/mutations/RemoveTeamMemberMutation'
+} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import RemoveTeamMemberMutation from '../../../../mutations/RemoveTeamMemberMutation'
 
 const StyledDialogContainer = styled(DialogContainer)({
   width: 356

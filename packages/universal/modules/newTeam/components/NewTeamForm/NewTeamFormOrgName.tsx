@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
-import BasicInput from 'universal/components/InputField/BasicInput'
-import Radio from 'universal/components/Radio/Radio'
-import {NewTeamFieldBlock} from 'universal/modules/newTeam/components/NewTeamForm/NewTeamForm'
+import BasicInput from '../../../../components/InputField/BasicInput'
+import Radio from '../../../../components/Radio/Radio'
+import {NewTeamFieldBlock} from './NewTeamForm'
 import NewTeamFormBlock from './NewTeamFormBlock'
 
 interface Props {

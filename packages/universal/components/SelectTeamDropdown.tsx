@@ -1,10 +1,10 @@
 import React from 'react'
-import Menu from 'universal/components/Menu'
-import MenuItem from 'universal/components/MenuItem'
-import DropdownMenuLabel from 'universal/components/DropdownMenuLabel'
-import DropdownMenuItemLabel from 'universal/components/DropdownMenuItemLabel'
-import {MenuProps} from 'universal/hooks/useMenu'
-import {ITeam} from 'universal/types/graphql'
+import Menu from './Menu'
+import MenuItem from './MenuItem'
+import DropdownMenuLabel from './DropdownMenuLabel'
+import DropdownMenuItemLabel from './DropdownMenuItemLabel'
+import {MenuProps} from '../hooks/useMenu'
+import {ITeam} from '../types/graphql'
 
 interface Props {
   menuProps: MenuProps

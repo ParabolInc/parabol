@@ -1,11 +1,11 @@
 import React from 'react'
-import MenuItem from 'universal/components/MenuItem'
-import Menu from 'universal/components/Menu'
-import useAtmosphere from 'universal/hooks/useAtmosphere'
-import {MenuProps} from 'universal/hooks/useMenu'
-import {MenuMutationProps} from 'universal/hooks/useMutationProps'
-import SlackClientManager from 'universal/utils/SlackClientManager'
-import RemoveSlackAuthMutation from 'universal/mutations/RemoveSlackAuthMutation'
+import MenuItem from './MenuItem'
+import Menu from './Menu'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {MenuProps} from '../hooks/useMenu'
+import {MenuMutationProps} from '../hooks/useMutationProps'
+import SlackClientManager from '../utils/SlackClientManager'
+import RemoveSlackAuthMutation from '../mutations/RemoveSlackAuthMutation'
 
 interface Props {
   menuProps: MenuProps

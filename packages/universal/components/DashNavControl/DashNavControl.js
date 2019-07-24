@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import LinkButton from 'universal/components/LinkButton'
-import IconLabel from 'universal/components/IconLabel'
+import LinkButton from '../LinkButton'
+import IconLabel from '../IconLabel'
 
 const DashNavControl = (props) => {
   const {icon, label, onClick} = props

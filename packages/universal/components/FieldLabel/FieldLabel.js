@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import ui from 'universal/styles/ui'
+import ui from '../../styles/ui'
 import styled from '@emotion/styled'
 
 const FieldLabelStyles = styled('label')(({customStyles, fieldSize, indent, inline}) => {

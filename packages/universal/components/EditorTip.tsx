@@ -1,8 +1,8 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import {typeScale} from 'universal/styles/theme/typography'
-import elevation from 'universal/styles/elevation'
-import {PALETTE} from 'universal/styles/paletteV2'
+import {typeScale} from '../styles/theme/typography'
+import elevation from '../styles/elevation'
+import {PALETTE} from '../styles/paletteV2'
 
 const TipBlock = styled('div')({
   alignItems: 'center',

@@ -1,20 +1,20 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import Helmet from 'react-helmet'
-import withStyles from 'universal/styles/withStyles'
+import withStyles from '../../../../styles/withStyles'
 import {css} from 'aphrodite-local-styles/no-important'
-import ui from 'universal/styles/ui'
-import appTheme from 'universal/styles/theme/appTheme'
+import ui from '../../../../styles/ui'
+import appTheme from '../../../../styles/theme/appTheme'
 import InvoiceHeader from '../InvoiceHeader/InvoiceHeader'
 import InvoiceFooter from '../InvoiceFooter/InvoiceFooter'
-import InvoiceLineItemContainer from 'universal/modules/invoice/containers/InvoiceLineItemContainer/InvoiceLineItemContainer'
-import makeMonthString from 'universal/utils/makeMonthString'
-import makeDateString from 'universal/utils/makeDateString'
-import InvoiceLineItem from 'universal/modules/invoice/components/InvoiceLineItem/InvoiceLineItem'
-import plural from 'universal/utils/plural'
-import invoiceLineFormat from 'universal/modules/invoice/helpers/invoiceLineFormat'
-import Tag from 'universal/components/Tag/Tag'
-import {sheetShadow} from 'universal/styles/elevation'
+import InvoiceLineItemContainer from '../../containers/InvoiceLineItemContainer/InvoiceLineItemContainer'
+import makeMonthString from '../../../../utils/makeMonthString'
+import makeDateString from '../../../../utils/makeDateString'
+import InvoiceLineItem from '../InvoiceLineItem/InvoiceLineItem'
+import plural from '../../../../utils/plural'
+import invoiceLineFormat from '../../helpers/invoiceLineFormat'
+import Tag from '../../../../components/Tag/Tag'
+import {sheetShadow} from '../../../../styles/elevation'
 
 import {
   PAID,
@@ -24,7 +24,7 @@ import {
   ADDED_USERS,
   REMOVED_USERS,
   INACTIVITY_ADJUSTMENTS
-} from 'universal/utils/constants'
+} from '../../../../utils/constants'
 import {createFragmentContainer} from 'react-relay'
 
 const descriptionMaker = {

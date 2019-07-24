@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react'
-import {SlackChannelDropdownChannels} from 'universal/components/SlackChannelDropdown'
-import SlackClientManager from 'universal/utils/SlackClientManager'
+import {SlackChannelDropdownChannels} from '../components/SlackChannelDropdown'
+import SlackClientManager from '../utils/SlackClientManager'
 
 const useSlackChannels = (
   slackAuth: {accessToken: string | null; botAccessToken: string | null; slackUserId: string} | null

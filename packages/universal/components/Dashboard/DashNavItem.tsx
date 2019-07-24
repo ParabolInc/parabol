@@ -1,9 +1,9 @@
 import React from 'react'
-import ui from 'universal/styles/ui'
+import ui from '../../styles/ui'
 import {NavLink} from 'react-router-dom'
 import styled from '@emotion/styled';
-import Icon from 'universal/components/Icon'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import Icon from '../Icon'
+import {MD_ICONS_SIZE_18} from '../../styles/icons'
 import {ClassNames} from '@emotion/core'
 
 const StyledIcon = styled(Icon)({

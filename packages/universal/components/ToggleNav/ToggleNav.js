@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import withStyles from 'universal/styles/withStyles'
+import withStyles from '../../styles/withStyles'
 import {css} from 'aphrodite-local-styles/no-important'
-import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
-import Icon from 'universal/components/Icon'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import appTheme from '../../styles/theme/appTheme'
+import ui from '../../styles/ui'
+import Icon from '../Icon'
+import {MD_ICONS_SIZE_18} from '../../styles/icons'
 
 //    TODO:
 //  • Add themes, not just mid/purple (TA)

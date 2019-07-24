@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import EmptySpace from '../EmptySpace/EmptySpace'
-import ui from 'universal/styles/ui'
-import {emailTableBase} from 'universal/styles/email'
+import ui from '../../../../styles/ui'
+import {emailTableBase} from '../../../../styles/email'
 
 const Features = (props) => {
   const copyStyle = {

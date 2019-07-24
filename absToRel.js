@@ -11,7 +11,7 @@ const makeIsDependency = (packageDir) => {
     ..._builtinLibs,
     ...Object.keys(dependencies),
     ...Object.keys(devDependencies),
-    ...Object.keys(peerDependencies)
+    ...Object.keys(peerDependencies || {})
   ]
   return (importedModulePath) =>
     allDependencies.some(
@@ -29,9 +29,8 @@ const makeGetDiskPathFromImportPath = (rootDirs) => {
     if (diskPath) {
       return diskPath
     }
-    const importedModuleRoot = rootDirs.find((root) =>
-      existsSync(path.join(root, importedModulePath))
-    )
+    const importedModuleRoot =
+      rootDirs.find((root) => existsSync(path.join(root, importedModulePath))) || rootDirs[0]
     if (importedModuleRoot) {
       diskPath = path.join(importedModuleRoot, importedModulePath)
       importPathToDiskPath[importedModulePath] = diskPath
@@ -103,16 +102,10 @@ module.exports = (fileInfo, api, options) => {
 
   const j = api.jscodeshift
   const root = j(fileInfo.source)
-  const {comments} = root.find(j.Program).get('body', 0).node
+  root.find(j.ImportDeclaration).forEach((node) => {
+    node.value.source.value = changePathToRelativeIfNeeded(node.value.source.value)
+  })
 
-  const importDeclarations = root.find(j.ImportDeclaration)
-  const sortedImportDeclarations = sortImportDeclarations(
-    importDeclarations,
-    changePathToRelativeIfNeeded
-  )
-  replaceBySortedImportDeclarations(j, importDeclarations, sortedImportDeclarations)
-
-  root.get().node.comments = comments
   return root.toSource({
     objectCurlySpacing: false,
     quote: 'single'

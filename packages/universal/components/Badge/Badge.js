@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import ui from 'universal/styles/ui'
-import appTheme from 'universal/styles/theme/appTheme'
+import ui from '../../styles/ui'
+import appTheme from '../../styles/theme/appTheme'
 import styled from '@emotion/styled'
 
 const boxShadow = '.0625rem .0625rem .125rem rgba(0, 0, 0, .5)'

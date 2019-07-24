@@ -11,7 +11,7 @@
 // };
 
 import {RecordProxy, RecordSourceProxy, RecordSourceSelectorProxy} from 'relay-runtime'
-import clientTempId from 'universal/utils/relay/clientTempId'
+import clientTempId from './clientTempId'
 
 // interface PRecord {
 //   // id?: string,

@@ -1,8 +1,8 @@
 import EditorLink from './EditorLink'
 import {CompositeDecorator} from 'draft-js'
-import Hashtag from 'universal/components/TaskEditor/Hashtag'
-import Mention from 'universal/components/TaskEditor/Mention'
-import TruncatedEllipsis from 'universal/components/TaskEditor/TruncatedEllipsis'
+import Hashtag from './Hashtag'
+import Mention from './Mention'
+import TruncatedEllipsis from './TruncatedEllipsis'
 
 const findEntity = (entityType) => (contentBlock, callback, contentState) => {
   contentBlock.findEntityRanges((character) => {

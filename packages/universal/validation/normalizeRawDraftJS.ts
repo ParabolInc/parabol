@@ -1,4 +1,4 @@
-import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr'
+import makeEmptyStr from '../utils/draftjs/makeEmptyStr'
 
 const normalizeRawDraftJS = (str: string | undefined | null) => {
   if (!str) return makeEmptyStr()

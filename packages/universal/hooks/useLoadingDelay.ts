@@ -7,7 +7,7 @@
  */
 
 import {MutableRefObject, useRef} from 'react'
-import useForceUpdate from 'universal/hooks/useForceUpdate'
+import useForceUpdate from './useForceUpdate'
 
 export type LoadingDelayRef = MutableRefObject<{
   start: number

@@ -1,5 +1,5 @@
 import React from 'react'
-import ViewInBrowserHeader from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/ViewInBrowserHeader'
+import ViewInBrowserHeader from './ViewInBrowserHeader'
 import SummarySheet from './SummarySheet'
 import {createFragmentContainer, graphql} from 'react-relay'
 

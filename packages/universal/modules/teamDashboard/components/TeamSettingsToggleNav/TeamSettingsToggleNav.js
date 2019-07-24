@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {withRouter} from 'react-router-dom'
-import ui from 'universal/styles/ui'
-import ToggleNav from 'universal/components/ToggleNav/ToggleNav'
+import ui from '../../../../styles/ui'
+import ToggleNav from '../../../../components/ToggleNav/ToggleNav'
 
 const TeamSettingsToggleNav = (props) => {
   const {activeKey, history, teamId} = props

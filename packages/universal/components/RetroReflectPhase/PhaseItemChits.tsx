@@ -1,15 +1,15 @@
 import React, {Component} from 'react'
 import styled from '@emotion/styled';
 import { keyframes } from '@emotion/core';
-import {DECELERATE} from 'universal/styles/animation'
-import appTheme from 'universal/styles/theme/appTheme'
-import elevation from 'universal/styles/elevation'
+import {DECELERATE} from '../../styles/animation'
+import appTheme from '../../styles/theme/appTheme'
+import elevation from '../../styles/elevation'
 import {
   REFLECTION_CARD_WIDTH,
   REFLECTION_WIDTH
-} from 'universal/utils/multiplayerMasonry/masonryConstants'
-import plural from 'universal/utils/plural'
-import TinyLabel from 'universal/components/TinyLabel'
+} from '../../utils/multiplayerMasonry/masonryConstants'
+import plural from '../../utils/plural'
+import TinyLabel from '../TinyLabel'
 
 interface Props {
   count: number

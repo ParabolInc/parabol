@@ -1,12 +1,12 @@
-import {PhaseItemColumn_meeting} from '__generated__/PhaseItemColumn_meeting.graphql'
+import {PhaseItemColumn_meeting} from '../../../__generated__/PhaseItemColumn_meeting.graphql'
 import React, {Component} from 'react'
 import styled from '@emotion/styled'
-import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
-import ExpandedReflectionStack from 'universal/components/RetroReflectPhase/ExpandedReflectionStack'
-import getBBox from 'universal/components/RetroReflectPhase/getBBox'
-import getTransform from 'universal/components/RetroReflectPhase/getTransform'
-import ReflectionStackPlaceholder from 'universal/components/RetroReflectPhase/ReflectionStackPlaceholder'
-import {STANDARD_CURVE} from 'universal/styles/animation'
+import ReflectionCard from '../ReflectionCard/ReflectionCard'
+import ExpandedReflectionStack from './ExpandedReflectionStack'
+import getBBox from './getBBox'
+import getTransform from './getTransform'
+import ReflectionStackPlaceholder from './ReflectionStackPlaceholder'
+import {STANDARD_CURVE} from '../../styles/animation'
 import {
   cardBackgroundColor,
   cardBorderRadius,
@@ -14,10 +14,10 @@ import {
   cardStackPerspectiveY,
   reflectionCardMaxHeight,
   reflectionCardWidth
-} from 'universal/styles/cards'
-import {cardShadow} from 'universal/styles/elevation'
-import getDeCasteljau from 'universal/utils/getDeCasteljau'
-import isTempId from 'universal/utils/relay/isTempId'
+} from '../../styles/cards'
+import {cardShadow} from '../../styles/elevation'
+import getDeCasteljau from '../../utils/getDeCasteljau'
+import isTempId from '../../utils/relay/isTempId'
 
 interface Props {
   idx: number

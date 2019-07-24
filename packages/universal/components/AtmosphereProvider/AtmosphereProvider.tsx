@@ -1,5 +1,5 @@
 import React, {Component, ReactNode} from 'react'
-import Atmosphere from 'universal/Atmosphere'
+import Atmosphere from '../../Atmosphere'
 import TLocalAtmosphere from '../../modules/demo/LocalAtmosphere'
 
 export const AtmosphereContext = React.createContext<Atmosphere | TLocalAtmosphere | undefined>(

@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import FlatButton from 'universal/components/FlatButton'
+import FlatButton from './FlatButton'
 
 const OutlinedButton = styled(FlatButton)({borderColor: 'currentColor'})
 

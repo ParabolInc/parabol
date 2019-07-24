@@ -1,16 +1,16 @@
 import {commitMutation, graphql} from 'react-relay'
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
-import Atmosphere from 'universal/Atmosphere'
-import handleUpdateAgendaItems from 'universal/mutations/handlers/handleUpdateAgendaItems'
+import Atmosphere from '../Atmosphere'
+import handleUpdateAgendaItems from './handlers/handleUpdateAgendaItems'
 import {
   IActionMeeting,
   IAgendaItemsPhase,
   IUpdateAgendaItemOnMutationArguments,
   NewMeetingPhaseTypeEnum
-} from 'universal/types/graphql'
-import {LocalHandlers} from 'universal/types/relayMutations'
-import updateProxyRecord from 'universal/utils/relay/updateProxyRecord'
-import {UpdateAgendaItemMutation as TUpdateAgendaItemMutation} from '__generated__/UpdateAgendaItemMutation.graphql'
+} from '../types/graphql'
+import {LocalHandlers} from '../types/relayMutations'
+import updateProxyRecord from '../utils/relay/updateProxyRecord'
+import {UpdateAgendaItemMutation as TUpdateAgendaItemMutation} from '../../__generated__/UpdateAgendaItemMutation.graphql'
 
 graphql`
   fragment UpdateAgendaItemMutation_team on UpdateAgendaItemPayload {

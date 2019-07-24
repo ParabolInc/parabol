@@ -1,6 +1,6 @@
 import {RecordSourceSelectorProxy} from 'relay-runtime'
-import pluralizeHandler from 'universal/mutations/handlers/pluralizeHandler'
-import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray'
+import pluralizeHandler from './pluralizeHandler'
+import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
 import getCachedRecord from '../../utils/relay/getCachedRecord'
 
 const handleRemoveReflectTemplate = (templateId: string, store: RecordSourceSelectorProxy) => {

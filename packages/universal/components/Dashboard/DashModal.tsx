@@ -1,7 +1,7 @@
 import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
-import {modalShadow} from 'universal/styles/elevation'
-import ui from 'universal/styles/ui'
+import {modalShadow} from '../../styles/elevation'
+import ui from '../../styles/ui'
 import {DECELERATE} from '../../styles/animation'
 
 const animateIn = {

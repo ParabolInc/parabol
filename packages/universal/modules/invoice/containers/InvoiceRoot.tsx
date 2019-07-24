@@ -1,10 +1,10 @@
 import React from 'react'
 import {graphql} from 'react-relay'
 import {RouteComponentProps} from 'react-router'
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
-import Invoice from 'universal/modules/invoice/components/Invoice/Invoice'
-import {LoaderSize} from 'universal/types/constEnums'
-import renderQuery from 'universal/utils/relay/renderQuery'
+import QueryRenderer from '../../../components/QueryRenderer/QueryRenderer'
+import Invoice from '../components/Invoice/Invoice'
+import {LoaderSize} from '../../../types/constEnums'
+import renderQuery from '../../../utils/relay/renderQuery'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 
 const query = graphql`

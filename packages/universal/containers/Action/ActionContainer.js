@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import {withRouter} from 'react-router-dom'
-import Action from 'universal/components/Action/Action'
-import globalStyles from 'universal/styles/theme/globalStyles'
+import Action from '../../components/Action/Action'
+import globalStyles from '../../styles/theme/globalStyles'
 import {css, Global} from '@emotion/core'
 
 class ActionContainer extends Component {

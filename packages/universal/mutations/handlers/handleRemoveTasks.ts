@@ -1,9 +1,9 @@
-import getArchivedTasksConn from 'universal/mutations/connections/getArchivedTasksConn'
-import getTeamTasksConn from 'universal/mutations/connections/getTeamTasksConn'
-import getUserTasksConn from 'universal/mutations/connections/getUserTasksConn'
-import pluralizeHandler from 'universal/mutations/handlers/pluralizeHandler'
-import safeRemoveNodeFromConn from 'universal/utils/relay/safeRemoveNodeFromConn'
-import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray'
+import getArchivedTasksConn from '../connections/getArchivedTasksConn'
+import getTeamTasksConn from '../connections/getTeamTasksConn'
+import getUserTasksConn from '../connections/getUserTasksConn'
+import pluralizeHandler from './pluralizeHandler'
+import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
+import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
 
 const handleRemoveTask = (taskId, store, viewerId) => {
   const viewer = store.get(viewerId)

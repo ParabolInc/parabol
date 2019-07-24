@@ -1,14 +1,14 @@
-import {SuggestedIntegrationJiraMenuItem_suggestedIntegration} from '__generated__/SuggestedIntegrationJiraMenuItem_suggestedIntegration.graphql'
+import {SuggestedIntegrationJiraMenuItem_suggestedIntegration} from '../../__generated__/SuggestedIntegrationJiraMenuItem_suggestedIntegration.graphql'
 import React, {forwardRef} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import JiraSVG from 'universal/components/JiraSVG'
-import MenuItem from 'universal/components/MenuItem'
-import MenuItemLabel from 'universal/components/MenuItemLabel'
-import SuggestedIntegrationMenuItemAvatar from 'universal/components/SuggestedIntegrationMenuItemAvatar'
-import TypeAheadLabel from 'universal/components/TypeAheadLabel'
-import useAtmosphere from 'universal/hooks/useAtmosphere'
-import CreateJiraIssueMutation from 'universal/mutations/CreateJiraIssueMutation'
-import {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import JiraSVG from './JiraSVG'
+import MenuItem from './MenuItem'
+import MenuItemLabel from './MenuItemLabel'
+import SuggestedIntegrationMenuItemAvatar from './SuggestedIntegrationMenuItemAvatar'
+import TypeAheadLabel from './TypeAheadLabel'
+import useAtmosphere from '../hooks/useAtmosphere'
+import CreateJiraIssueMutation from '../mutations/CreateJiraIssueMutation'
+import {WithMutationProps} from '../utils/relay/withMutationProps'
 
 interface Props {
   suggestedIntegration: SuggestedIntegrationJiraMenuItem_suggestedIntegration

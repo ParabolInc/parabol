@@ -1,9 +1,9 @@
 import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
-import CopyLink from 'universal/components/CopyLink'
-import Icon from 'universal/components/Icon'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
-import {PALETTE} from 'universal/styles/paletteV2'
+import CopyLink from '../../../../components/CopyLink'
+import Icon from '../../../../components/Icon'
+import {MD_ICONS_SIZE_18} from '../../../../styles/icons'
+import {PALETTE} from '../../../../styles/paletteV2'
 
 const CopyIcon = styled(Icon)({
   color: 'inherit',

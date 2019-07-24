@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
-import textOverflow from 'universal/styles/helpers/textOverflow'
-import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
+import textOverflow from '../styles/helpers/textOverflow'
+import appTheme from '../styles/theme/appTheme'
+import ui from '../styles/ui'
 
 const DropdownMenuLabel = styled('div')(({isEmpty}) => ({
   ...textOverflow,

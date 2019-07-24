@@ -1,14 +1,14 @@
 import React from 'react'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
-import emailDir from 'universal/modules/email/emailDir'
+import {MD_ICONS_SIZE_18} from '../../../../../styles/icons'
+import emailDir from '../../../emailDir'
 import {
   FONT_FAMILY,
   PALETTE_TEXT_MAIN
-} from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/constants'
-import useEmailItemGrid from 'universal/hooks/useEmailItemGrid'
-import EmailReflectionCard from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/EmailReflectionCard'
+} from './constants'
+import useEmailItemGrid from '../../../../../hooks/useEmailItemGrid'
+import EmailReflectionCard from './EmailReflectionCard'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {RetroTopic_topic} from '__generated__/RetroTopic_topic.graphql'
+import {RetroTopic_topic} from '../../../../../../__generated__/RetroTopic_topic.graphql'
 
 const topicThemeHeading = {
   color: PALETTE_TEXT_MAIN,

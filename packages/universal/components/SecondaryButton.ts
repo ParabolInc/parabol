@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import {PALETTE} from 'universal/styles/paletteV2'
-import FlatButton from 'universal/components/FlatButton'
+import {PALETTE} from '../styles/paletteV2'
+import FlatButton from './FlatButton'
 
 const SecondaryButton = styled(FlatButton)({
   borderColor: PALETTE.BORDER_LIGHT,

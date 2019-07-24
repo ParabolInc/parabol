@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import withStyles from 'universal/styles/withStyles'
+import withStyles from '../../styles/withStyles'
 import {css} from 'aphrodite-local-styles/no-important'
 
 const Ellipsis = (props) => {

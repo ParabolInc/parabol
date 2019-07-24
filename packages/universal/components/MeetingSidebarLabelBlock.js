@@ -1,5 +1,5 @@
-import ui from 'universal/styles/ui'
-import {meetingSidebarGutterInner} from 'universal/styles/meeting'
+import ui from '../styles/ui'
+import {meetingSidebarGutterInner} from '../styles/meeting'
 import styled from '@emotion/styled'
 
 const MeetingSidebarLabelBlock = styled('div')({

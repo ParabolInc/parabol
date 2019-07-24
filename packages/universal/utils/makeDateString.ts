@@ -1,4 +1,4 @@
-import ensureDate from 'universal/utils/ensureDate'
+import ensureDate from './ensureDate'
 
 export const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 export const shortDays = ['Sun', 'Mon', 'Tues', 'Wed', 'Thur', 'Fri', 'Sat']

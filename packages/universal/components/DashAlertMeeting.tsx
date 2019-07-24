@@ -1,11 +1,11 @@
-import {DashAlertMeeting_viewer} from '__generated__/DashAlertMeeting_viewer.graphql'
+import {DashAlertMeeting_viewer} from '../../__generated__/DashAlertMeeting_viewer.graphql'
 import React, {useMemo} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
-import DashAlertBar from 'universal/components/DashAlertBar'
-import DashAlertLink from 'universal/components/DashAlertLink'
-import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
-import plural from 'universal/utils/plural'
+import DashAlertBar from './DashAlertBar'
+import DashAlertLink from './DashAlertLink'
+import {meetingTypeToSlug} from '../utils/meetings/lookups'
+import plural from '../utils/plural'
 
 const getActiveMeetings = (viewer) => {
   const activeMeetings: {link: string; name: string}[] = []

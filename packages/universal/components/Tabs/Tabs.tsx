@@ -7,8 +7,8 @@ import React, {
   ReactNode
 } from 'react'
 import styled from '@emotion/styled'
-import {PALETTE} from 'universal/styles/paletteV2'
-import getBBox from 'universal/components/RetroReflectPhase/getBBox'
+import {PALETTE} from '../../styles/paletteV2'
+import getBBox from '../RetroReflectPhase/getBBox'
 import {findDOMNode} from 'react-dom'
 
 interface Props {

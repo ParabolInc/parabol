@@ -1,4 +1,4 @@
-import findStageById from 'universal/utils/meetings/findStageById'
+import findStageById from './meetings/findStageById'
 
 interface Phase {
   phaseType: string

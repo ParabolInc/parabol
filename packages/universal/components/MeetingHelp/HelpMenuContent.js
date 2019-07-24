@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
-import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
+import appTheme from '../../styles/theme/appTheme'
+import ui from '../../styles/ui'
 import React from 'react'
-import Icon from 'universal/components/Icon'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import Icon from '../Icon'
+import {MD_ICONS_SIZE_18} from '../../styles/icons'
 
 const Content = styled('div')({
   fontSize: appTheme.typography.s2,

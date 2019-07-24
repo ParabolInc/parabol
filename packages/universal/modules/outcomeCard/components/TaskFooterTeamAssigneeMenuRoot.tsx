@@ -1,10 +1,10 @@
 import React from 'react'
 import {graphql} from 'react-relay'
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
-import useAtmosphere from 'universal/hooks/useAtmosphere'
-import {MenuProps} from 'universal/hooks/useMenu'
-import TaskFooterTeamAssigneeMenu from 'universal/modules/outcomeCard/components/OutcomeCardAssignMenu/TaskFooterTeamAssigneeMenu'
-import {cacheConfig} from 'universal/utils/constants'
+import QueryRenderer from '../../../components/QueryRenderer/QueryRenderer'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import {MenuProps} from '../../../hooks/useMenu'
+import TaskFooterTeamAssigneeMenu from './OutcomeCardAssignMenu/TaskFooterTeamAssigneeMenu'
+import {cacheConfig} from '../../../utils/constants'
 import renderQuery from '../../../utils/relay/renderQuery'
 
 const query = graphql`

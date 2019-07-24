@@ -1,6 +1,6 @@
 import React, {Component, Ref} from 'react'
-import {Subtract} from 'universal/types/generics'
-import getDisplayName from 'universal/utils/getDisplayName'
+import {Subtract} from '../../types/generics'
+import getDisplayName from '../getDisplayName'
 import Legitity from '../../validation/Legitity'
 
 export interface WithFormProps {

@@ -1,11 +1,11 @@
 import React from 'react'
-import MenuItem from 'universal/components/MenuItem'
-import Menu from 'universal/components/Menu'
-import useAtmosphere from 'universal/hooks/useAtmosphere'
-import {MenuProps} from 'universal/hooks/useMenu'
-import RemoveGitHubAuthMutation from 'universal/mutations/RemoveGitHubAuthMutation'
-import {MenuMutationProps} from 'universal/hooks/useMutationProps'
-import GitHubClientManager from 'universal/utils/GitHubClientManager'
+import MenuItem from './MenuItem'
+import Menu from './Menu'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {MenuProps} from '../hooks/useMenu'
+import RemoveGitHubAuthMutation from '../mutations/RemoveGitHubAuthMutation'
+import {MenuMutationProps} from '../hooks/useMutationProps'
+import GitHubClientManager from '../utils/GitHubClientManager'
 
 interface Props {
   menuProps: MenuProps

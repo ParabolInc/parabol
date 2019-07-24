@@ -1,11 +1,11 @@
 import shortid from 'shortid'
-import {ACTIVE, DISCUSS, GROUP, REFLECT, VOTE} from 'universal/utils/constants'
-import extractTextFromDraftString from 'universal/utils/draftjs/extractTextFromDraftString'
-import makeDiscussionStage from 'universal/utils/makeDiscussionStage'
-import mapGroupsToStages from 'universal/utils/makeGroupsToStages'
+import {ACTIVE, DISCUSS, GROUP, REFLECT, VOTE} from '../../utils/constants'
+import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraftString'
+import makeDiscussionStage from '../../utils/makeDiscussionStage'
+import mapGroupsToStages from '../../utils/makeGroupsToStages'
 import {demoMeetingId, demoViewerId} from './initDB'
 import taskLookup from './taskLookup'
-import makeRetroGroupTitle from 'universal/utils/autogroup/makeRetroGroupTitle'
+import makeRetroGroupTitle from '../../utils/autogroup/makeRetroGroupTitle'
 
 const removeEmptyReflections = (db) => {
   const reflections = db.reflections.filter((reflection) => reflection.isActive)

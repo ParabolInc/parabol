@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {minWidthMediaQueries} from 'universal/styles/breakpoints'
+import {minWidthMediaQueries} from '../styles/breakpoints'
 
 const NewMeetingLobby = styled('div')({
   alignItems: 'center',

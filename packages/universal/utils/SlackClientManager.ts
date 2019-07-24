@@ -1,8 +1,8 @@
-import makeHref from 'universal/utils/makeHref'
-import getOAuthPopupFeatures from 'universal/utils/getOAuthPopupFeatures'
-import {MenuMutationProps} from 'universal/hooks/useMutationProps'
-import AddSlackAuthMutation from 'universal/mutations/AddSlackAuthMutation'
-import Atmosphere from 'universal/Atmosphere'
+import makeHref from './makeHref'
+import getOAuthPopupFeatures from './getOAuthPopupFeatures'
+import {MenuMutationProps} from '../hooks/useMutationProps'
+import AddSlackAuthMutation from '../mutations/AddSlackAuthMutation'
+import Atmosphere from '../Atmosphere'
 
 interface SlackClientManagerOptions {
   fetch?: Window['fetch']

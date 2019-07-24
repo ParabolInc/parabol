@@ -1,5 +1,5 @@
-import {SORT_STEP} from 'universal/utils/constants'
-import dndNoise from 'universal/utils/dndNoise'
+import {SORT_STEP} from '../utils/constants'
+import dndNoise from '../utils/dndNoise'
 
 interface Sortable {
   id: string

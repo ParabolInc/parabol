@@ -1,12 +1,12 @@
-import {TeamColumnsContainer_viewer} from '__generated__/TeamColumnsContainer_viewer.graphql'
+import {TeamColumnsContainer_viewer} from '../../../../../__generated__/TeamColumnsContainer_viewer.graphql'
 import React, {useMemo} from 'react'
 import {connect} from 'react-redux'
 import {createFragmentContainer, graphql} from 'react-relay'
-import TaskColumns from 'universal/components/TaskColumns/TaskColumns'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
+import TaskColumns from '../../../../components/TaskColumns/TaskColumns'
+import withAtmosphere from '../../../../decorators/withAtmosphere/withAtmosphere'
+import toTeamMemberId from '../../../../utils/relay/toTeamMemberId'
 import getTaskById from '../../../../utils/getTaskById'
-import {AreaEnum} from 'universal/types/graphql'
+import {AreaEnum} from '../../../../types/graphql'
 
 const mapStateToProps = (state, props) => {
   const {

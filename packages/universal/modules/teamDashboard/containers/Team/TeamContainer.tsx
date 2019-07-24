@@ -1,4 +1,4 @@
-import {TeamContainer_viewer} from '__generated__/TeamContainer_viewer.graphql'
+import {TeamContainer_viewer} from '../../../../../__generated__/TeamContainer_viewer.graphql'
 import React, {lazy, Suspense, useEffect} from 'react'
 import {connect} from 'react-redux'
 import {createFragmentContainer, graphql} from 'react-relay'
@@ -6,11 +6,11 @@ import {Route, RouteComponentProps, withRouter} from 'react-router'
 import {matchPath, Switch} from 'react-router-dom'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import withReducer from 'universal/decorators/withReducer/withReducer'
-import Team from 'universal/modules/teamDashboard/components/Team/Team'
-import teamDashReducer from 'universal/modules/teamDashboard/ducks/teamDashDuck'
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
+} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import withReducer from '../../../../decorators/withReducer/withReducer'
+import Team from '../../components/Team/Team'
+import teamDashReducer from '../../ducks/teamDashDuck'
+import toTeamMemberId from '../../../../utils/relay/toTeamMemberId'
 
 const mapStateToProps = (_state, props) => {
   const {

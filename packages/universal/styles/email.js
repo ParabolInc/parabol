@@ -1,8 +1,8 @@
 // styles/email.js
 
-import ui from 'universal/styles/ui'
-import appTheme from 'universal/styles/theme/appTheme'
-import {buttonShadow} from 'universal/styles/elevation'
+import ui from './ui'
+import appTheme from './theme/appTheme'
+import {buttonShadow} from './elevation'
 
 export const emailBackgroundColor = ui.palette.light
 export const emailBodyColor = '#FFFFFF'

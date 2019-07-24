@@ -2,13 +2,13 @@ import React, {lazy, Suspense} from 'react'
 import styled from '@emotion/styled'
 import Helmet from 'react-helmet'
 import {matchPath, Route, RouteComponentProps, Switch, withRouter} from 'react-router'
-import DashHeader from 'universal/components/Dashboard/DashHeader'
-import DashMain from 'universal/components/Dashboard/DashMain'
-import Tab from 'universal/components/Tab/Tab'
-import Tabs from 'universal/components/Tabs/Tabs'
+import DashHeader from '../../../../components/Dashboard/DashHeader'
+import DashMain from '../../../../components/Dashboard/DashMain'
+import Tab from '../../../../components/Tab/Tab'
+import Tabs from '../../../../components/Tabs/Tabs'
 import LoadingComponent from '../../../../components/LoadingComponent/LoadingComponent'
 import {LoaderSize} from '../../../../types/constEnums'
-import {PALETTE} from 'universal/styles/paletteV2'
+import {PALETTE} from '../../../../styles/paletteV2'
 
 const TabBody = styled('div')({
   backgroundColor: PALETTE.BACKGROUND_MAIN,

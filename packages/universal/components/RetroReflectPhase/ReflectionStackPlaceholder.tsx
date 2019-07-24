@@ -1,8 +1,8 @@
 import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
-import {cardBorderRadius, reflectionCardMaxHeight, reflectionCardWidth} from 'universal/styles/cards'
-import {typeScale} from 'universal/styles/theme/typography'
-import {PALETTE} from 'universal/styles/paletteV2'
+import {cardBorderRadius, reflectionCardMaxHeight, reflectionCardWidth} from '../../styles/cards'
+import {typeScale} from '../../styles/theme/typography'
+import {PALETTE} from '../../styles/paletteV2'
 
 interface Props {
   idx: number

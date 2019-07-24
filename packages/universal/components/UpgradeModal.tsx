@@ -1,12 +1,12 @@
-import {UpgradeModal_viewer} from '__generated__/UpgradeModal_viewer.graphql'
+import {UpgradeModal_viewer} from '../../__generated__/UpgradeModal_viewer.graphql'
 import React from 'react'
 import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
-import UpgradeSqueeze from 'universal/components/UpgradeSqueeze'
-import UpgradeSuccess from 'universal/components/UpgradeSuccess'
+import UpgradeSqueeze from './UpgradeSqueeze'
+import UpgradeSuccess from './UpgradeSuccess'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {PRO} from 'universal/utils/constants'
+} from '../decorators/withAtmosphere/withAtmosphere'
+import {PRO} from '../utils/constants'
 
 interface Props extends WithAtmosphereProps {
   closePortal: () => void

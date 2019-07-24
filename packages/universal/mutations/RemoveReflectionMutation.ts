@@ -3,11 +3,11 @@
  *
  */
 import {commitMutation, graphql} from 'react-relay'
-import getInProxy from 'universal/utils/relay/getInProxy'
-import handleRemoveReflectionGroups from 'universal/mutations/handlers/handleRemoveReflectionGroups'
-import {IRemoveReflectionOnMutationArguments} from 'universal/types/graphql'
-import {LocalHandlers} from 'universal/types/relayMutations'
-import Atmosphere from 'universal/Atmosphere'
+import getInProxy from '../utils/relay/getInProxy'
+import handleRemoveReflectionGroups from './handlers/handleRemoveReflectionGroups'
+import {IRemoveReflectionOnMutationArguments} from '../types/graphql'
+import {LocalHandlers} from '../types/relayMutations'
+import Atmosphere from '../Atmosphere'
 
 interface Context {
   meetingId: string

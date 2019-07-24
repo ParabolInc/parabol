@@ -4,12 +4,12 @@
  */
 import React from 'react'
 import styled from '@emotion/styled'
-import IconLabel from 'universal/components/IconLabel'
-import PrimaryButton from 'universal/components/PrimaryButton'
-import {MenuPosition} from 'universal/hooks/useCoords'
-import useMenu from 'universal/hooks/useMenu'
-import ui from 'universal/styles/ui'
-import lazyPreload from 'universal/utils/lazyPreload'
+import IconLabel from '../../../../components/IconLabel'
+import PrimaryButton from '../../../../components/PrimaryButton'
+import {MenuPosition} from '../../../../hooks/useCoords'
+import useMenu from '../../../../hooks/useMenu'
+import ui from '../../../../styles/ui'
+import lazyPreload from '../../../../utils/lazyPreload'
 
 interface Props {
   teamId: string

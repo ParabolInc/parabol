@@ -1,8 +1,8 @@
 import React from 'react'
 import Oy from 'oy-vey'
 
-import makeDateString from 'universal/utils/makeDateString'
-import makeAppLink from 'server/utils/makeAppLink'
+import makeDateString from '../../../../utils/makeDateString'
+import makeAppLink from '../../../../../server/utils/makeAppLink'
 
 import NotificationSummaryEmail from './NotificationSummaryEmail'
 

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent'
-import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
+import ErrorComponent from './ErrorComponent/ErrorComponent'
+import LoadingComponent from './LoadingComponent/LoadingComponent'
 
 /*
  * A component to handle the loading, long loading, and error states for react-loadable

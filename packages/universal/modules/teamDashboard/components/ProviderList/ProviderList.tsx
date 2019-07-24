@@ -1,11 +1,11 @@
-import {ProviderList_viewer} from '__generated__/ProviderList_viewer.graphql'
+import {ProviderList_viewer} from '../../../../../__generated__/ProviderList_viewer.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
-import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
-import AtlassianProviderRow from 'universal/modules/teamDashboard/components/ProviderRow/AtlassianProviderRow'
-import GitHubProviderRow from 'universal/modules/teamDashboard/components/ProviderRow/GitHubProviderRow'
-import SlackProviderRow from 'universal/modules/teamDashboard/components/ProviderRow/SlackProviderRow'
+import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
+import AtlassianProviderRow from '../ProviderRow/AtlassianProviderRow'
+import GitHubProviderRow from '../ProviderRow/GitHubProviderRow'
+import SlackProviderRow from '../ProviderRow/SlackProviderRow'
 
 interface Props {
   viewer: ProviderList_viewer

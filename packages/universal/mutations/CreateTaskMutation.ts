@@ -1,23 +1,23 @@
 import {commitMutation, graphql} from 'react-relay'
-import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
-import handleEditTask from 'universal/mutations/handlers/handleEditTask'
-import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks'
-import popInvolvementToast from 'universal/mutations/toasts/popInvolvementToast'
-import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr'
-import clientTempId from 'universal/utils/relay/clientTempId'
-import createProxyRecord from 'universal/utils/relay/createProxyRecord'
-import getOptimisticTaskEditor from 'universal/utils/relay/getOptimisticTaskEditor'
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
-import Atmosphere from 'universal/Atmosphere'
+import handleAddNotifications from './handlers/handleAddNotifications'
+import handleEditTask from './handlers/handleEditTask'
+import handleUpsertTasks from './handlers/handleUpsertTasks'
+import popInvolvementToast from './toasts/popInvolvementToast'
+import makeEmptyStr from '../utils/draftjs/makeEmptyStr'
+import clientTempId from '../utils/relay/clientTempId'
+import createProxyRecord from '../utils/relay/createProxyRecord'
+import getOptimisticTaskEditor from '../utils/relay/getOptimisticTaskEditor'
+import toTeamMemberId from '../utils/relay/toTeamMemberId'
+import Atmosphere from '../Atmosphere'
 import {
   LocalHandlers,
   OnNextHandler,
   SharedUpdater,
   StandardMutation
-} from 'universal/types/relayMutations'
-import {CreateTaskMutation as TCreateTaskMutation} from '__generated__/CreateTaskMutation.graphql'
-import {CreateTaskMutation_task} from '__generated__/CreateTaskMutation_task.graphql'
-import {CreateTaskMutation_notification} from '__generated__/CreateTaskMutation_notification.graphql'
+} from '../types/relayMutations'
+import {CreateTaskMutation as TCreateTaskMutation} from '../../__generated__/CreateTaskMutation.graphql'
+import {CreateTaskMutation_task} from '../../__generated__/CreateTaskMutation_task.graphql'
+import {CreateTaskMutation_notification} from '../../__generated__/CreateTaskMutation_notification.graphql'
 
 graphql`
   fragment CreateTaskMutation_task on CreateTaskPayload {

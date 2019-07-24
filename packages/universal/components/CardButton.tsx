@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import ui from 'universal/styles/ui'
-import BaseButton from 'universal/components/BaseButton'
+import ui from '../styles/ui'
+import BaseButton from './BaseButton'
 
 const CardButton = styled(BaseButton)({
   alignItems: 'center',

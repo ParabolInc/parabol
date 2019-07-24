@@ -1,9 +1,9 @@
 import React from 'react'
-import TeamInvitationWrapper from 'universal/components/TeamInvitationWrapper'
+import TeamInvitationWrapper from './TeamInvitationWrapper'
 import GenericAuthentication, {AuthPageSlug, GotoAuathPage} from './GenericAuthentication'
-import useRouter from 'universal/hooks/useRouter'
-import getValidRedirectParam from 'universal/utils/getValidRedirectParam'
-import useAtmosphere from 'universal/hooks/useAtmosphere'
+import useRouter from '../hooks/useRouter'
+import getValidRedirectParam from '../utils/getValidRedirectParam'
+import useAtmosphere from '../hooks/useAtmosphere'
 
 interface Props {
   page: AuthPageSlug

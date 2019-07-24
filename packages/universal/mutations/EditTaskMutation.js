@@ -1,7 +1,7 @@
 import {commitMutation} from 'react-relay'
-import handleEditTask from 'universal/mutations/handlers/handleEditTask'
-import getOptimisticTaskEditor from 'universal/utils/relay/getOptimisticTaskEditor'
-import isTempId from 'universal/utils/relay/isTempId'
+import handleEditTask from './handlers/handleEditTask'
+import getOptimisticTaskEditor from '../utils/relay/getOptimisticTaskEditor'
+import isTempId from '../utils/relay/isTempId'
 
 graphql`
   fragment EditTaskMutation_task on EditTaskPayload {

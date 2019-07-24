@@ -1,6 +1,6 @@
-import pluralizeHandler from 'universal/mutations/handlers/pluralizeHandler'
-import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
-import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray'
+import pluralizeHandler from './pluralizeHandler'
+import fromTeamMemberId from '../../utils/relay/fromTeamMemberId'
+import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
 
 const handleUpdateTeamMember = (updatedTeamMember, store) => {
   if (!updatedTeamMember) return

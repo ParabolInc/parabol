@@ -1,11 +1,11 @@
-import {RetroTemplatePicker_settings} from '__generated__/RetroTemplatePicker_settings.graphql'
+import {RetroTemplatePicker_settings} from '../../../../__generated__/RetroTemplatePicker_settings.graphql'
 import React, {useMemo} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import DropdownMenuToggle from 'universal/components/DropdownMenuToggle'
-import {MenuPosition} from 'universal/hooks/useCoords'
-import useMenu from 'universal/hooks/useMenu'
-import useModal from 'universal/hooks/useModal'
-import lazyPreload from 'universal/utils/lazyPreload'
+import DropdownMenuToggle from '../../../components/DropdownMenuToggle'
+import {MenuPosition} from '../../../hooks/useCoords'
+import useMenu from '../../../hooks/useMenu'
+import useModal from '../../../hooks/useModal'
+import lazyPreload from '../../../utils/lazyPreload'
 
 interface Props {
   settings: RetroTemplatePicker_settings

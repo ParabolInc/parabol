@@ -1,6 +1,6 @@
-import checkDragForUpdate from 'universal/dnd/checkDragForUpdate'
-import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation'
-import {DND_THROTTLE} from 'universal/utils/constants'
+import checkDragForUpdate from './checkDragForUpdate'
+import UpdateTaskMutation from '../mutations/UpdateTaskMutation'
+import {DND_THROTTLE} from '../utils/constants'
 
 /**
  * Assuming the whole column is a single drop target, we need to figure out where the drag source should go.

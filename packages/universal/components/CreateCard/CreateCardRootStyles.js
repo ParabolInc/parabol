@@ -1,4 +1,4 @@
-import cardRootStyles from 'universal/styles/helpers/cardRootStyles'
+import cardRootStyles from '../../styles/helpers/cardRootStyles'
 
 const CreateCardRootStyles = {
   ...cardRootStyles,

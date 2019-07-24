@@ -1,52 +1,52 @@
-import {addTeamTeamUpdater} from 'universal/mutations/AddTeamMutation'
+import {addTeamTeamUpdater} from '../mutations/AddTeamMutation'
 import {
   archiveTeamTeamOnNext,
   archiveTeamTeamUpdater
-} from 'universal/mutations/ArchiveTeamMutation'
-import {createReflectionTeamUpdater} from 'universal/mutations/CreateReflectionMutation'
-import {removeReflectionTeamUpdater} from 'universal/mutations/RemoveReflectionMutation'
+} from '../mutations/ArchiveTeamMutation'
+import {createReflectionTeamUpdater} from '../mutations/CreateReflectionMutation'
+import {removeReflectionTeamUpdater} from '../mutations/RemoveReflectionMutation'
 import {
   removeTeamMemberTeamOnNext,
   removeTeamMemberTeamUpdater
-} from 'universal/mutations/RemoveTeamMemberMutation'
+} from '../mutations/RemoveTeamMemberMutation'
 import {
   removeOrgUserTeamOnNext,
   removeOrgUserTeamUpdater
-} from 'universal/mutations/RemoveOrgUserMutation'
-import {startNewMeetingTeamOnNext} from 'universal/mutations/StartNewMeetingMutation'
-import {navigateMeetingTeamUpdater} from 'universal/mutations/NavigateMeetingMutation'
-import {promoteNewMeetingFacilitatorTeamOnNext} from 'universal/mutations/PromoteNewMeetingFacilitatorMutation'
-import {editReflectionTeamUpdater} from 'universal/mutations/EditReflectionMutation'
+} from '../mutations/RemoveOrgUserMutation'
+import {startNewMeetingTeamOnNext} from '../mutations/StartNewMeetingMutation'
+import {navigateMeetingTeamUpdater} from '../mutations/NavigateMeetingMutation'
+import {promoteNewMeetingFacilitatorTeamOnNext} from '../mutations/PromoteNewMeetingFacilitatorMutation'
+import {editReflectionTeamUpdater} from '../mutations/EditReflectionMutation'
 import {
   endNewMeetingTeamOnNext,
   endNewMeetingTeamUpdater
-} from 'universal/mutations/EndNewMeetingMutation'
-import {updateDragLocationTeamUpdater} from 'universal/mutations/UpdateDragLocationMutation'
+} from '../mutations/EndNewMeetingMutation'
+import {updateDragLocationTeamUpdater} from '../mutations/UpdateDragLocationMutation'
 import {
   endDraggingReflectionTeamOnNext,
   endDraggingReflectionTeamUpdater
-} from 'universal/mutations/EndDraggingReflectionMutation'
-import {dragDiscussionTopicTeamUpdater} from 'universal/mutations/DragDiscussionTopicMutation'
-import {startDraggingReflectionTeamUpdater} from 'universal/mutations/StartDraggingReflectionMutation'
+} from '../mutations/EndDraggingReflectionMutation'
+import {dragDiscussionTopicTeamUpdater} from '../mutations/DragDiscussionTopicMutation'
+import {startDraggingReflectionTeamUpdater} from '../mutations/StartDraggingReflectionMutation'
 import {
   autoGroupReflectionsTeamOnNext,
   autoGroupReflectionsTeamUpdater
-} from 'universal/mutations/AutoGroupReflectionsMutation'
-import {addReflectTemplateTeamUpdater} from 'universal/mutations/AddReflectTemplateMutation'
-import {removeReflectTemplateTeamUpdater} from 'universal/mutations/RemoveReflectTemplateMutation'
-import {addReflectTemplatePromptTeamUpdater} from 'universal/mutations/AddReflectTemplatePromptMutation'
-import {removeReflectTemplatePromptTeamUpdater} from 'universal/mutations/RemoveReflectTemplatePromptMutation'
-import {moveReflectTemplatePromptTeamUpdater} from 'universal/mutations/MoveReflectTemplatePromptMutation'
+} from '../mutations/AutoGroupReflectionsMutation'
+import {addReflectTemplateTeamUpdater} from '../mutations/AddReflectTemplateMutation'
+import {removeReflectTemplateTeamUpdater} from '../mutations/RemoveReflectTemplateMutation'
+import {addReflectTemplatePromptTeamUpdater} from '../mutations/AddReflectTemplatePromptMutation'
+import {removeReflectTemplatePromptTeamUpdater} from '../mutations/RemoveReflectTemplatePromptMutation'
+import {moveReflectTemplatePromptTeamUpdater} from '../mutations/MoveReflectTemplatePromptMutation'
 import {
   acceptTeamInvitationTeamOnNext,
   acceptTeamInvitationTeamUpdater
-} from 'universal/mutations/AcceptTeamInvitationMutation'
-import {addAgendaItemUpdater} from 'universal/mutations/AddAgendaItemMutation'
-import {removeAgendaItemUpdater} from 'universal/mutations/RemoveAgendaItemMutation'
-import {updateAgendaItemUpdater} from 'universal/mutations/UpdateAgendaItemMutation'
+} from '../mutations/AcceptTeamInvitationMutation'
+import {addAgendaItemUpdater} from '../mutations/AddAgendaItemMutation'
+import {removeAgendaItemUpdater} from '../mutations/RemoveAgendaItemMutation'
+import {updateAgendaItemUpdater} from '../mutations/UpdateAgendaItemMutation'
 import {graphql} from 'react-relay'
-import {pushInvitationTeamOnNext} from 'universal/mutations/PushInvitationMutation'
-import {denyPushInvitationTeamOnNext} from 'universal/mutations/DenyPushInvitationMutation'
+import {pushInvitationTeamOnNext} from '../mutations/PushInvitationMutation'
+import {denyPushInvitationTeamOnNext} from '../mutations/DenyPushInvitationMutation'
 
 const subscription = graphql`
   subscription TeamSubscription {

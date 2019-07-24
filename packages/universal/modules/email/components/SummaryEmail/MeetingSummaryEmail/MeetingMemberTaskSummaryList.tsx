@@ -1,9 +1,9 @@
 import React from 'react'
-import {MeetingMemberTaskSummaryList_meetingMember} from '__generated__/MeetingMemberTaskSummaryList_meetingMember.graphql'
-import plural from 'universal/utils/plural'
+import {MeetingMemberTaskSummaryList_meetingMember} from '../../../../../../__generated__/MeetingMemberTaskSummaryList_meetingMember.graphql'
+import plural from '../../../../../utils/plural'
 import {createFragmentContainer, graphql} from 'react-relay'
-import TaskSummarySection from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/TaskSummarySection'
-import SummaryAvatarHeader from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/SummaryAvatarHeader'
+import TaskSummarySection from './TaskSummarySection'
+import SummaryAvatarHeader from './SummaryAvatarHeader'
 
 interface Props {
   meetingMember: MeetingMemberTaskSummaryList_meetingMember

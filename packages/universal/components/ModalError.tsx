@@ -1,8 +1,8 @@
 import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
-import DialogContent from 'universal/components/DialogContent'
-import DialogTitle from 'universal/components/DialogTitle'
-import MenuContents, {MenuContentsProps} from 'universal/components/MenuContents'
+import DialogContent from './DialogContent'
+import DialogTitle from './DialogTitle'
+import MenuContents, {MenuContentsProps} from './MenuContents'
 
 interface Props extends MenuContentsProps {
   error: Error

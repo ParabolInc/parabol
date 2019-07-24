@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import labels from 'universal/styles/theme/labels'
+import labels from '../../../../styles/theme/labels'
 
 const height = '.25rem'
 const width = '1.875rem'

@@ -1,10 +1,10 @@
 import React from 'react'
 import {graphql} from 'react-relay'
 import {RouteComponentProps} from 'react-router'
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
-import Organization from 'universal/modules/userDashboard/components/Organization/Organization'
-import {cacheConfig} from 'universal/utils/constants'
-import renderQuery from 'universal/utils/relay/renderQuery'
+import QueryRenderer from '../../../../components/QueryRenderer/QueryRenderer'
+import Organization from '../../components/Organization/Organization'
+import {cacheConfig} from '../../../../utils/constants'
+import renderQuery from '../../../../utils/relay/renderQuery'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 
 const query = graphql`

@@ -1,4 +1,4 @@
-import {compositeId, id} from 'universal/validation/templates'
+import {compositeId, id} from './templates'
 import legitify from './legitify'
 
 export default function makeAgendaItemSchema () {

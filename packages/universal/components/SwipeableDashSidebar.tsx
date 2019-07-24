@@ -1,14 +1,14 @@
-import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
+import {DASH_SIDEBAR} from './Dashboard/DashSidebar'
 import React, {ReactNode, useCallback, useEffect} from 'react'
-import usePortal from 'universal/hooks/usePortal'
-import useRefState from 'universal/hooks/useRefState'
-import {ZIndex} from 'universal/types/constEnums'
-import {DECELERATE} from 'universal/styles/animation'
+import usePortal from '../hooks/usePortal'
+import useRefState from '../hooks/useRefState'
+import {ZIndex} from '../types/constEnums'
+import {DECELERATE} from '../styles/animation'
 import styled from '@emotion/styled'
-import {PALETTE} from 'universal/styles/paletteV2'
-import hideBodyScroll from 'universal/utils/hideBodyScroll'
-import PlainButton from 'universal/components/PlainButton/PlainButton'
-import {navDrawerShadow} from 'universal/styles/elevation'
+import {PALETTE} from '../styles/paletteV2'
+import hideBodyScroll from '../utils/hideBodyScroll'
+import PlainButton from './PlainButton/PlainButton'
+import {navDrawerShadow} from '../styles/elevation'
 
 const PEEK_WIDTH = 20
 

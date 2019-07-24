@@ -1,5 +1,5 @@
-import ui from 'universal/styles/ui'
-import {cardShadow} from 'universal/styles/elevation'
+import ui from '../ui'
+import {cardShadow} from '../elevation'
 
 const cardRootStyles = {
   backgroundColor: ui.palette.white,

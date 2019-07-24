@@ -1,8 +1,8 @@
-import getAllLemmasFromReflections from 'universal/utils/autogroup/getAllLemmasFromReflections'
-import computeDistanceMatrix from 'universal/utils/autogroup/computeDistanceMatrix'
-import getGroupMatrix from 'server/graphql/mutations/helpers/autoGroup/getGroupMatrix'
-import getTitleFromComputedGroup from 'universal/utils/autogroup/getTitleFromComputedGroup'
-import {IRetroReflection} from 'universal/types/graphql'
+import getAllLemmasFromReflections from './getAllLemmasFromReflections'
+import computeDistanceMatrix from './computeDistanceMatrix'
+import getGroupMatrix from '../../../server/graphql/mutations/helpers/autoGroup/getGroupMatrix'
+import getTitleFromComputedGroup from './getTitleFromComputedGroup'
+import {IRetroReflection} from '../../types/graphql'
 
 /*
  * Read each reflection, parse the content for entities (i.e. nouns), group the reflections based on common themes

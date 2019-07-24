@@ -1,8 +1,8 @@
 import {graphql} from 'react-relay'
-import {NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
-import findStageById from 'universal/utils/meetings/findStageById'
-import getMeetingPathParams from 'universal/utils/meetings/getMeetingPathParams'
-import {phaseTypeToSlug} from 'universal/utils/meetings/lookups'
+import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
+import findStageById from './findStageById'
+import getMeetingPathParams from './getMeetingPathParams'
+import {phaseTypeToSlug} from './lookups'
 
 const phaseIsMultiStage = {
   [NewMeetingPhaseTypeEnum.checkin]: true,

@@ -1,30 +1,32 @@
 import {EditorState, KeyBindingUtil} from 'draft-js'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import getAnchorLocation from 'universal/components/TaskEditor/getAnchorLocation'
-import getSelectionLink from 'universal/components/TaskEditor/getSelectionLink'
-import getSelectionText from 'universal/components/TaskEditor/getSelectionText'
-import getWordAt from 'universal/components/TaskEditor/getWordAt'
+import getAnchorLocation from './getAnchorLocation'
+import getSelectionLink from './getSelectionLink'
+import getSelectionText from './getSelectionText'
+import getWordAt from './getWordAt'
 import ui, {
   DEFAULT_MENU_HEIGHT,
   DEFAULT_MENU_WIDTH,
   HUMAN_ADDICTION_THRESH,
   MAX_WAIT_TIME
-} from 'universal/styles/ui'
-import addSpace from 'universal/utils/draftjs/addSpace'
-import getFullLinkSelection from 'universal/utils/draftjs/getFullLinkSelection'
-import makeAddLink from 'universal/utils/draftjs/makeAddLink'
-import splitBlock from 'universal/utils/draftjs/splitBlock'
-import getDraftCoords from 'universal/utils/getDraftCoords'
-import linkify from 'universal/utils/linkify'
+} from '../../styles/ui'
+import addSpace from '../../utils/draftjs/addSpace'
+import getFullLinkSelection from '../../utils/draftjs/getFullLinkSelection'
+import makeAddLink from '../../utils/draftjs/makeAddLink'
+import splitBlock from '../../utils/draftjs/splitBlock'
+import getDraftCoords from '../../utils/getDraftCoords'
+import linkify from '../../utils/linkify'
 import Loadable from 'react-loadable'
-import LoadableLoading from 'universal/components/LoadableLoading'
-import LoadableDraftJSModal from 'universal/components/LoadableDraftJSModal'
+import LoadableLoading from '../LoadableLoading'
+import LoadableDraftJSModal from '../LoadableDraftJSModal'
 
 const LoadableEditorLinkChanger = Loadable({
   loader: () =>
-    import(/* webpackChunkName: 'EditorLinkChanger' */
-      'universal/components/EditorLinkChanger/EditorLinkChanger'),
+    import(
+      /* webpackChunkName: 'EditorLinkChanger' */
+      'universal/components/EditorLinkChanger/EditorLinkChanger'
+    ),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),
@@ -34,8 +36,10 @@ const LoadableEditorLinkChanger = Loadable({
 
 const LoadableEditorLinkViewer = Loadable({
   loader: () =>
-    import(/* webpackChunkName: 'EditorLinkViewer' */
-      'universal/components/EditorLinkViewer/EditorLinkViewer'),
+    import(
+      /* webpackChunkName: 'EditorLinkViewer' */
+      'universal/components/EditorLinkViewer/EditorLinkViewer'
+    ),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),

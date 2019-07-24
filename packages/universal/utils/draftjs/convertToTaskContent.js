@@ -1,5 +1,5 @@
 import {ContentState, convertToRaw} from 'draft-js'
-import entitizeText from 'universal/utils/draftjs/entitizeText'
+import entitizeText from './entitizeText'
 
 const removeSpaces = (str) =>
   str

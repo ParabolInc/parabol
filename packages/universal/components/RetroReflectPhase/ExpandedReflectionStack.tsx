@@ -1,13 +1,13 @@
-import {PhaseItemColumn_meeting} from '__generated__/PhaseItemColumn_meeting.graphql'
+import {PhaseItemColumn_meeting} from '../../../__generated__/PhaseItemColumn_meeting.graphql'
 import React, {Component} from 'react'
 import styled from '@emotion/styled'
 import ResizeObserverPolyfill from 'resize-observer-polyfill'
-import Modal from 'universal/components/Modal'
-import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
-import FLIPGrid from 'universal/components/RetroReflectPhase/FLIPGrid'
-import FLIPModal from 'universal/components/RetroReflectPhase/FLIPModal'
-import getBBox from 'universal/components/RetroReflectPhase/getBBox'
-import {cardShadow} from 'universal/styles/elevation'
+import Modal from '../Modal'
+import ReflectionCard from '../ReflectionCard/ReflectionCard'
+import FLIPGrid from './FLIPGrid'
+import FLIPModal from './FLIPModal'
+import getBBox from './getBBox'
+import {cardShadow} from '../../styles/elevation'
 
 interface Props {
   collapse (): void

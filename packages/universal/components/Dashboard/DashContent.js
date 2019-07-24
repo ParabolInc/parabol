@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import withStyles from 'universal/styles/withStyles'
+import withStyles from '../../styles/withStyles'
 import {css} from 'aphrodite-local-styles/no-important'
-import ui from 'universal/styles/ui'
+import ui from '../../styles/ui'
 
 const DashContent = (props) => {
   const {children, hasOverlay, padding, styles} = props

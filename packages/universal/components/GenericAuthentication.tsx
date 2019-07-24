@@ -2,27 +2,27 @@ import * as Sentry from '@sentry/browser'
 import React, {Component} from 'react'
 import styled from '@emotion/styled'
 import {RouteComponentProps, withRouter} from 'react-router'
-import EmailPasswordAuthForm from 'universal/components/EmailPasswordAuthForm'
-import HorizontalSeparator from 'universal/components/HorizontalSeparator/HorizontalSeparator'
-import PlainButton from 'universal/components/PlainButton/PlainButton'
+import EmailPasswordAuthForm from './EmailPasswordAuthForm'
+import HorizontalSeparator from './HorizontalSeparator/HorizontalSeparator'
+import PlainButton from './PlainButton/PlainButton'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import LoginMutation from 'universal/mutations/LoginMutation'
-import {PALETTE} from 'universal/styles/paletteV2'
+} from '../decorators/withAtmosphere/withAtmosphere'
+import LoginMutation from '../mutations/LoginMutation'
+import {PALETTE} from '../styles/paletteV2'
 import {
   CREATE_ACCOUNT_LABEL,
   CREATE_ACCOUNT_SLUG,
   SIGNIN_LABEL,
   SIGNIN_SLUG
-} from 'universal/utils/constants'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+} from '../utils/constants'
+import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import auth0Authorize from '../utils/auth0Authorize'
 import getAnonymousId from '../utils/getAnonymousId'
 import AuthPrivacyFooter from './AuthPrivacyFooter'
 import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
-import DialogTitle from 'universal/components/DialogTitle'
-import ResetPasswordPage from 'universal/components/ResetPasswordPage/ResetPasswordPage'
+import DialogTitle from './DialogTitle'
+import ResetPasswordPage from './ResetPasswordPage/ResetPasswordPage'
 import AuthenticationDialog from './AuthenticationDialog'
 
 export type AuthPageSlug = 'create-account' | 'signin' | 'reset-password'

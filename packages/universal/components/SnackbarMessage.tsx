@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
-import {TransitionStatus} from 'universal/hooks/useTransition'
-import {PALETTE} from 'universal/styles/paletteV2'
-import {Radius, ZIndex} from 'universal/types/constEnums'
+import {TransitionStatus} from '../hooks/useTransition'
+import {PALETTE} from '../styles/paletteV2'
+import {Radius, ZIndex} from '../types/constEnums'
 import React from 'react'
-import {DECELERATE} from 'universal/styles/animation'
-import {SnackAction} from 'universal/components/Snackbar'
-import SnackbarMessageAction from 'universal/components/SnackbarMessageAction'
-import {snackbarShadow} from 'universal/styles/elevation'
+import {DECELERATE} from '../styles/animation'
+import {SnackAction} from './Snackbar'
+import SnackbarMessageAction from './SnackbarMessageAction'
+import {snackbarShadow} from '../styles/elevation'
 
 interface Props {
   onTransitionEnd: () => void

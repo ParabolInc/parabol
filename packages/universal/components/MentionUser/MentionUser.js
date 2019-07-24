@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import withStyles from 'universal/styles/withStyles'
+import withStyles from '../../styles/withStyles'
 import {css} from 'aphrodite-local-styles/no-important'
 import mentionBaseStyles from '../MentionBase/mentionBaseStyles'
-import Avatar from 'universal/components/Avatar/Avatar'
+import Avatar from '../Avatar/Avatar'
 
 const MentionUser = (props) => {
   const {active, preferredName, picture, styles} = props

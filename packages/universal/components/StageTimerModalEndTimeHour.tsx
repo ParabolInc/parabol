@@ -1,11 +1,11 @@
 import React from 'react'
-import useMenu from 'universal/hooks/useMenu'
-import {MenuPosition} from 'universal/hooks/useCoords'
+import useMenu from '../hooks/useMenu'
+import {MenuPosition} from '../hooks/useCoords'
 import styled from '@emotion/styled'
-import DropdownMenuToggle from 'universal/components/DropdownMenuToggle'
-import 'universal/styles/daypicker.css'
-import formatTime from 'universal/utils/date/formatTime'
-import StageTimerHourPicker from 'universal/components/StageTimerHourPicker'
+import DropdownMenuToggle from './DropdownMenuToggle'
+import '../styles/daypicker.css'
+import formatTime from '../utils/date/formatTime'
+import StageTimerHourPicker from './StageTimerHourPicker'
 
 interface Props {
   endTime: Date

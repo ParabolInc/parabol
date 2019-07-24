@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
-import {Subtract} from 'universal/types/generics'
-import getDisplayName from 'universal/utils/getDisplayName'
+import {Subtract} from '../types/generics'
+import getDisplayName from '../utils/getDisplayName'
 
 /*
  * Takes the child component and puts it in a modal.

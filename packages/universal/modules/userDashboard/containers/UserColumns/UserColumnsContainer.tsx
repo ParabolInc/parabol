@@ -1,10 +1,10 @@
 import React, {useMemo} from 'react'
 import {connect} from 'react-redux'
 import {createFragmentContainer, graphql} from 'react-relay'
-import TaskColumns from 'universal/components/TaskColumns/TaskColumns'
-import getTaskById from 'universal/utils/getTaskById'
-import {UserColumnsContainer_viewer} from '__generated__/UserColumnsContainer_viewer.graphql'
-import {AreaEnum} from 'universal/types/graphql'
+import TaskColumns from '../../../../components/TaskColumns/TaskColumns'
+import getTaskById from '../../../../utils/getTaskById'
+import {UserColumnsContainer_viewer} from '../../../../../__generated__/UserColumnsContainer_viewer.graphql'
+import {AreaEnum} from '../../../../types/graphql'
 
 const mapStateToProps = (state) => {
   return {

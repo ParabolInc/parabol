@@ -1,5 +1,5 @@
 import React from 'react'
-import PrimaryButton from 'universal/components/PrimaryButton'
+import PrimaryButton from './PrimaryButton'
 
 const PrimaryFloatingActionButton = (props) => (
   <PrimaryButton {...props} className={props.className} elevationHovered={12} elevationResting={6}>

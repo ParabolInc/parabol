@@ -1,29 +1,29 @@
-import {addOrgMutationNotificationUpdater} from 'universal/mutations/AddOrgMutation'
-import {addTeamMutationNotificationUpdater} from 'universal/mutations/AddTeamMutation'
-import {clearNotificationNotificationUpdater} from 'universal/mutations/ClearNotificationMutation'
+import {addOrgMutationNotificationUpdater} from '../mutations/AddOrgMutation'
+import {addTeamMutationNotificationUpdater} from '../mutations/AddTeamMutation'
+import {clearNotificationNotificationUpdater} from '../mutations/ClearNotificationMutation'
 import {
   createTaskNotificationOnNext,
   createTaskNotificationUpdater
-} from 'universal/mutations/CreateTaskMutation'
-import {deleteTaskNotificationUpdater} from 'universal/mutations/DeleteTaskMutation'
-import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
+} from '../mutations/CreateTaskMutation'
+import {deleteTaskNotificationUpdater} from '../mutations/DeleteTaskMutation'
+import handleAddNotifications from '../mutations/handlers/handleAddNotifications'
+import toTeamMemberId from '../utils/relay/toTeamMemberId'
 import {
   removeOrgUserNotificationOnNext,
   removeOrgUserNotificationUpdater
-} from 'universal/mutations/RemoveOrgUserMutation'
+} from '../mutations/RemoveOrgUserMutation'
 import {
   inviteToTeamNotificationOnNext,
   inviteToTeamNotificationUpdater
-} from 'universal/mutations/InviteToTeamMutation'
-import {acceptTeamInvitationNotificationUpdater} from 'universal/mutations/AcceptTeamInvitationMutation'
-import {endNewMeetingNotificationUpdater} from 'universal/mutations/EndNewMeetingMutation'
+} from '../mutations/InviteToTeamMutation'
+import {acceptTeamInvitationNotificationUpdater} from '../mutations/AcceptTeamInvitationMutation'
+import {endNewMeetingNotificationUpdater} from '../mutations/EndNewMeetingMutation'
 import {graphql} from 'react-relay'
-import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups'
-import {OnNextContext, OnNextHandler, UpdaterHandler} from 'universal/types/relayMutations'
+import {meetingTypeToLabel, meetingTypeToSlug} from '../utils/meetings/lookups'
+import {OnNextContext, OnNextHandler, UpdaterHandler} from '../types/relayMutations'
 import {GraphQLSubscriptionConfig, RecordSourceSelectorProxy} from 'relay-runtime'
-import {NotificationSubscriptionResponse} from '__generated__/NotificationSubscription.graphql'
-import Atmosphere from 'universal/Atmosphere'
+import {NotificationSubscriptionResponse} from '../../__generated__/NotificationSubscription.graphql'
+import Atmosphere from '../Atmosphere'
 
 const subscription = graphql`
   subscription NotificationSubscription {

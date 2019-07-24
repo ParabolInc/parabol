@@ -1,7 +1,7 @@
 import {RefObject, useEffect} from 'react'
-import getBBox from 'universal/components/RetroReflectPhase/getBBox'
+import getBBox from '../components/RetroReflectPhase/getBBox'
 import {commitLocalUpdate} from 'relay-runtime'
-import useAtmosphere from 'universal/hooks/useAtmosphere'
+import useAtmosphere from './useAtmosphere'
 
 const useFABPad = (ref: RefObject<HTMLElement>) => {
   const atmosphere = useAtmosphere()

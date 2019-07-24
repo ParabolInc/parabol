@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
-import AtmosphereProvider from 'universal/components/AtmosphereProvider/AtmosphereProvider'
-import NewMeetingSummaryRoot from 'universal/modules/summary/components/NewMeetingSummaryRoot'
+import AtmosphereProvider from './AtmosphereProvider/AtmosphereProvider'
+import NewMeetingSummaryRoot from '../modules/summary/components/NewMeetingSummaryRoot'
 
 class DemoSummary extends Component {
   componentWillUnmount () {

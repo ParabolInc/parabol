@@ -1,28 +1,28 @@
-import {ReflectionCardInFlight_reflection} from '__generated__/ReflectionCardInFlight_reflection.graphql'
+import {ReflectionCardInFlight_reflection} from '../../__generated__/ReflectionCardInFlight_reflection.graphql'
 import {convertFromRaw, EditorState} from 'draft-js'
 import React from 'react'
 import styled from '@emotion/styled'
 import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
-import {Coords} from 'universal/types/animations'
+import {Coords} from '../types/animations'
 import {
   MasonryChildrenCache,
   MasonryItemCache,
   MasonryParentCache,
   SetInFlightCoords
-} from 'universal/components/PhaseItemMasonry'
-import {ReflectionCardRoot} from 'universal/components/ReflectionCard/ReflectionCard'
-import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper'
-import ReflectionFooter from 'universal/components/ReflectionFooter'
-import UserDraggingHeader from 'universal/components/UserDraggingHeader'
+} from './PhaseItemMasonry'
+import {ReflectionCardRoot} from './ReflectionCard/ReflectionCard'
+import ReflectionEditorWrapper from './ReflectionEditorWrapper'
+import ReflectionFooter from './ReflectionFooter'
+import UserDraggingHeader from './UserDraggingHeader'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import UpdateDragLocationMutation from 'universal/mutations/UpdateDragLocationMutation'
-import {DECELERATE} from 'universal/styles/animation'
-import {cardRaisedShadow} from 'universal/styles/elevation'
-import getTargetReference from 'universal/utils/multiplayerMasonry/getTargetReference'
-import shakeUpBottomCells from 'universal/utils/multiplayerMasonry/shakeUpBottomCells'
-import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray'
+} from '../decorators/withAtmosphere/withAtmosphere'
+import UpdateDragLocationMutation from '../mutations/UpdateDragLocationMutation'
+import {DECELERATE} from '../styles/animation'
+import {cardRaisedShadow} from '../styles/elevation'
+import getTargetReference from '../utils/multiplayerMasonry/getTargetReference'
+import shakeUpBottomCells from '../utils/multiplayerMasonry/shakeUpBottomCells'
+import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
 
 interface Props extends WithAtmosphereProps {
   itemCache: MasonryItemCache

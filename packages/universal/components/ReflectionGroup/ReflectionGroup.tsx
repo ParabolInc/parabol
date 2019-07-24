@@ -1,30 +1,30 @@
-import {ReflectionGroup_meeting} from '__generated__/ReflectionGroup_meeting.graphql'
-import {ReflectionGroup_reflectionGroup} from '__generated__/ReflectionGroup_reflectionGroup.graphql'
+import {ReflectionGroup_meeting} from '../../../__generated__/ReflectionGroup_meeting.graphql'
+import {ReflectionGroup_reflectionGroup} from '../../../__generated__/ReflectionGroup_reflectionGroup.graphql'
 import React, {Component} from 'react'
 import {ConnectDropTarget, DropTarget, DropTargetConnector, DropTargetMonitor, DropTargetSpec} from 'react-dnd'
 import styled from '@emotion/styled'
 import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
-import Modal from 'universal/components/Modal'
-import DraggableReflectionCard from 'universal/components/ReflectionCard/DraggableReflectionCard'
-import ReflectionGroupHeader from 'universal/components/ReflectionGroupHeader'
-import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {STANDARD_CURVE} from 'universal/styles/animation'
-import {GROUP, REFLECTION_CARD} from 'universal/utils/constants'
-import getScaledModalBackground from 'universal/utils/multiplayerMasonry/getScaledModalBackground'
-import initializeModalGrid from 'universal/utils/multiplayerMasonry/initializeModalGrid'
+import Modal from '../Modal'
+import DraggableReflectionCard from '../ReflectionCard/DraggableReflectionCard'
+import ReflectionGroupHeader from '../ReflectionGroupHeader'
+import withAtmosphere, {WithAtmosphereProps} from '../../decorators/withAtmosphere/withAtmosphere'
+import {STANDARD_CURVE} from '../../styles/animation'
+import {GROUP, REFLECTION_CARD} from '../../utils/constants'
+import getScaledModalBackground from '../../utils/multiplayerMasonry/getScaledModalBackground'
+import initializeModalGrid from '../../utils/multiplayerMasonry/initializeModalGrid'
 import {
   CARD_PADDING,
   EXIT_DURATION,
   MIN_ITEM_DELAY,
   MIN_VAR_ITEM_DELAY,
   MODAL_PADDING
-} from 'universal/utils/multiplayerMasonry/masonryConstants'
-import updateReflectionsInModal from 'universal/utils/multiplayerMasonry/updateReflectionsInModal'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+} from '../../utils/multiplayerMasonry/masonryConstants'
+import updateReflectionsInModal from '../../utils/multiplayerMasonry/updateReflectionsInModal'
+import withMutationProps, {WithMutationProps} from '../../utils/relay/withMutationProps'
 import {MasonryChildrenCache, MasonryItemCache, MasonryParentCache, SetChildRef, SetItemRef} from '../PhaseItemMasonry'
-import {DragReflectionDropTargetTypeEnum} from 'universal/types/graphql'
-import {cardStackPerspectiveY} from 'universal/styles/cards'
-import updateColumnHeight from 'universal/utils/multiplayerMasonry/updateColumnHeight'
+import {DragReflectionDropTargetTypeEnum} from '../../types/graphql'
+import {cardStackPerspectiveY} from '../../styles/cards'
+import updateColumnHeight from '../../utils/multiplayerMasonry/updateColumnHeight'
 import {ClassNames} from '@emotion/core'
 
 interface PassedProps {

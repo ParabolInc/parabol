@@ -1,8 +1,4 @@
-import {
-  CARD_PADDING,
-  MODAL_PADDING,
-  REFLECTION_WIDTH
-} from 'universal/utils/multiplayerMasonry/masonryConstants'
+import {CARD_PADDING, MODAL_PADDING, REFLECTION_WIDTH} from './masonryConstants'
 
 const updateReflectionsInModal = (
   reflections,

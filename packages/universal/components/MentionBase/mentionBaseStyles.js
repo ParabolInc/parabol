@@ -1,4 +1,4 @@
-import ui from 'universal/styles/ui'
+import ui from '../../styles/ui'
 
 const mentionBaseStyles = {
   row: {

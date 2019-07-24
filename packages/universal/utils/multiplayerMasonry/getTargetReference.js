@@ -1,4 +1,4 @@
-import {REFLECTION_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
+import {REFLECTION_WIDTH} from './masonryConstants'
 
 // The following improves accuracy by predicting where the cursor is headed, not where it is
 

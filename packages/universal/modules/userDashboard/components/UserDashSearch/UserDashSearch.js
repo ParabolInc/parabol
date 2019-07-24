@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import DashSearchControl from 'universal/components/Dashboard/DashSearchControl'
+import withAtmosphere from '../../../../decorators/withAtmosphere/withAtmosphere'
+import DashSearchControl from '../../../../components/Dashboard/DashSearchControl'
 
 class UserDashSearch extends Component {
   componentWillUnmount () {

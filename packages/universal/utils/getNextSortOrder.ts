@@ -1,4 +1,4 @@
-import {SORT_STEP} from 'universal/utils/constants'
+import {SORT_STEP} from './constants'
 
 export default function getNextSortOrder (
   arr: readonly {sortOrder: number}[],

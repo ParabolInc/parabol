@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import textOverflow from 'universal/styles/helpers/textOverflow'
+import textOverflow from '../styles/helpers/textOverflow'
 
 const MenuItemLabel = styled('div')({
   ...textOverflow,

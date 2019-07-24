@@ -11,8 +11,8 @@ import React, {
   useState
 } from 'react'
 import styled from '@emotion/styled'
-import MenuItemAnimation from 'universal/components/MenuItemAnimation'
-import {PortalStatus} from 'universal/hooks/usePortal'
+import MenuItemAnimation from './MenuItemAnimation'
+import {PortalStatus} from '../hooks/usePortal'
 
 const isMenuItem = (node: any) => node && node.onClick
 const REACT_ELEMENT = Symbol.for('react.element')

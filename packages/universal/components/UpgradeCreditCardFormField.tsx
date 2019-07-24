@@ -1,10 +1,10 @@
 import React from 'react'
-import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles'
+import makePlaceholderStyles from '../styles/helpers/makePlaceholderStyles'
 import styled from '@emotion/styled'
-import ui from 'universal/styles/ui'
-import appTheme from 'universal/styles/theme/appTheme'
-import Icon from 'universal/components/Icon'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import ui from '../styles/ui'
+import appTheme from '../styles/theme/appTheme'
+import Icon from './Icon'
+import {MD_ICONS_SIZE_18} from '../styles/icons'
 
 const FieldBlock = styled('div')({
   position: 'relative'

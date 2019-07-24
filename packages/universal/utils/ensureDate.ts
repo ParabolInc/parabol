@@ -1,4 +1,4 @@
-import isValidDate from 'universal/utils/isValidDate'
+import isValidDate from './isValidDate'
 
 const ensureDate = (maybeDate: unknown) => {
   const date = new Date(maybeDate as string)

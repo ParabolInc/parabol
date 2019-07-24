@@ -1,7 +1,7 @@
 import React, {forwardRef, ReactNode, Ref} from 'react'
 import styled from '@emotion/styled'
-import PlainButton from 'universal/components/PlainButton/PlainButton'
-import {PALETTE} from 'universal/styles/paletteV2'
+import PlainButton from '../PlainButton/PlainButton'
+import {PALETTE} from '../../styles/paletteV2'
 
 interface Props {
   className?: string

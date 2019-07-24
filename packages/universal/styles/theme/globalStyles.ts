@@ -1,9 +1,9 @@
-import {makePlaceholderStylesString} from 'universal/styles/helpers/makePlaceholderStyles'
-import appTheme from 'universal/styles/theme/appTheme'
-import fontLoader from 'universal/styles/theme/fontLoader'
-import ui from 'universal/styles/ui'
-import {FONT_FAMILY} from 'universal/styles/typographyV2'
-import {PALETTE} from 'universal/styles/paletteV2'
+import {makePlaceholderStylesString} from '../helpers/makePlaceholderStyles'
+import appTheme from './appTheme'
+import fontLoader from './fontLoader'
+import ui from '../ui'
+import {FONT_FAMILY} from '../typographyV2'
+import {PALETTE} from '../paletteV2'
 
 const placeholderStyles = makePlaceholderStylesString(ui.placeholderColor)
 

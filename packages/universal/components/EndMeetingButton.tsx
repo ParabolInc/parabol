@@ -1,11 +1,11 @@
 import React from 'react'
-import EndNewMeetingMutation from 'universal/mutations/EndNewMeetingMutation'
+import EndNewMeetingMutation from '../mutations/EndNewMeetingMutation'
 import isDemoRoute from '../utils/isDemoRoute'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
-import useAtmosphere from 'universal/hooks/useAtmosphere'
-import useRouter from 'universal/hooks/useRouter'
-import useMutationProps from 'universal/hooks/useMutationProps'
+import useAtmosphere from '../hooks/useAtmosphere'
+import useRouter from '../hooks/useRouter'
+import useMutationProps from '../hooks/useMutationProps'
 
 interface Props {
   meetingId: string

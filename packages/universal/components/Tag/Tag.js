@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import styled from '@emotion/styled'
-import ui from 'universal/styles/ui'
-import appTheme from 'universal/styles/theme/theme'
+import ui from '../../styles/ui'
+import appTheme from '../../styles/theme/theme'
 
 const tagTheme = {
   cool: {

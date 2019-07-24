@@ -3,9 +3,9 @@
  * Grabbing state from the url is non-deterministic depending on when a component updates!
  */
 import {matchPath} from 'react-router-dom'
-import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
-import findKeyByValue from 'universal/utils/findKeyByValue'
-import {meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups'
+import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from '../../types/graphql'
+import findKeyByValue from '../findKeyByValue'
+import {meetingTypeToSlug, phaseTypeToSlug} from './lookups'
 
 interface MeetingPathResults {
   meetingSlug?: 'meeting' | 'retro' | 'retrospective-demo'

@@ -1,7 +1,7 @@
 import React, {ReactNode} from 'react'
 import CopyToClipboard from 'react-copy-to-clipboard'
-import useTooltip from 'universal/hooks/useTooltip'
-import {MenuPosition} from 'universal/hooks/useCoords'
+import useTooltip from '../hooks/useTooltip'
+import {MenuPosition} from '../hooks/useCoords'
 
 interface Props {
   children: ReactNode

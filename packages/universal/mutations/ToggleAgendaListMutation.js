@@ -1,5 +1,5 @@
 import {commitMutation} from 'react-relay'
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
+import toTeamMemberId from '../utils/relay/toTeamMemberId'
 
 const mutation = graphql`
   mutation ToggleAgendaListMutation($teamId: ID!) {

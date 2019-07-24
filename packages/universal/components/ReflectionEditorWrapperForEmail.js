@@ -1,13 +1,9 @@
 import {convertFromRaw, Editor, EditorState} from 'draft-js'
 import React, {Component} from 'react'
-import editorDecorators from 'universal/components/TaskEditor/decorators'
-import truncateCard from 'universal/utils/draftjs/truncateCard'
+import editorDecorators from './TaskEditor/decorators'
+import truncateCard from '../utils/draftjs/truncateCard'
 
-interface Props {
-  content: string;
-}
-
-class ReflectionEditorWrapperForEmail extends Component<Props> {
+class ReflectionEditorWrapperForEmail extends Component {
   setEditorState = (content) => {
     const contentState = convertFromRaw(JSON.parse(content))
     this.setState({

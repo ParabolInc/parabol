@@ -1,16 +1,16 @@
 import {
   LoginMutation as TLoginMutation,
   LoginMutationVariables
-} from '__generated__/LoginMutation.graphql'
+} from '../../__generated__/LoginMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
-import SendClientSegmentEventMutation from 'universal/mutations/SendClientSegmentEventMutation'
-import {SegmentClientEventEnum} from 'universal/types/graphql'
-import getGraphQLError from 'universal/utils/relay/getGraphQLError'
-import {Omit} from 'universal/types/generics'
+import SendClientSegmentEventMutation from './SendClientSegmentEventMutation'
+import {SegmentClientEventEnum} from '../types/graphql'
+import getGraphQLError from '../utils/relay/getGraphQLError'
+import {Omit} from '../types/generics'
 import {LocalHandlers} from '../types/relayMutations'
-import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
-import getValidRedirectParam from 'universal/utils/getValidRedirectParam'
+import {meetingTypeToSlug} from '../utils/meetings/lookups'
+import getValidRedirectParam from '../utils/getValidRedirectParam'
 
 const mutation = graphql`
   mutation LoginMutation(

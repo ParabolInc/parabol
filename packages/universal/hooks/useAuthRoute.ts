@@ -1,7 +1,7 @@
-import useAtmosphere from 'universal/hooks/useAtmosphere'
-import useRouter from 'universal/hooks/useRouter'
+import useAtmosphere from './useAtmosphere'
+import useRouter from './useRouter'
 import {useEffect} from 'react'
-import {AuthTokenRole} from 'universal/types/graphql'
+import {AuthTokenRole} from '../types/graphql'
 
 interface Options {
   role?: AuthTokenRole

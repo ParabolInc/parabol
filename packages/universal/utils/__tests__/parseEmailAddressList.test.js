@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import parseEmailAddressList from 'universal/utils/parseEmailAddressList'
+import parseEmailAddressList from '../parseEmailAddressList'
 
 const getAddressStr = (res) => res && res.map((val) => val.address).join(', ')
 

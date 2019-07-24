@@ -4,15 +4,15 @@
  */
 import React, {Component} from 'react'
 import styled from '@emotion/styled'
-import PlainButton from 'universal/components/PlainButton/PlainButton'
+import PlainButton from '../PlainButton/PlainButton'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import RemoveReflectionMutation from 'universal/mutations/RemoveReflectionMutation'
-import ui from 'universal/styles/ui'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import Icon from 'universal/components/Icon'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+} from '../../decorators/withAtmosphere/withAtmosphere'
+import RemoveReflectionMutation from '../../mutations/RemoveReflectionMutation'
+import ui from '../../styles/ui'
+import withMutationProps, {WithMutationProps} from '../../utils/relay/withMutationProps'
+import Icon from '../Icon'
+import {MD_ICONS_SIZE_18} from '../../styles/icons'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   meetingId: string

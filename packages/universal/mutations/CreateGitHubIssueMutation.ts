@@ -1,9 +1,9 @@
-import {CreateGitHubIssueMutation as TCreateGitHubIssueMutation} from '__generated__/CreateGitHubIssueMutation.graphql'
+import {CreateGitHubIssueMutation as TCreateGitHubIssueMutation} from '../../__generated__/CreateGitHubIssueMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
-import Atmosphere from 'universal/Atmosphere'
-import {ICreateGitHubIssueOnMutationArguments, TaskServiceEnum} from 'universal/types/graphql'
-import {LocalHandlers} from 'universal/types/relayMutations'
-import createProxyRecord from 'universal/utils/relay/createProxyRecord'
+import Atmosphere from '../Atmosphere'
+import {ICreateGitHubIssueOnMutationArguments, TaskServiceEnum} from '../types/graphql'
+import {LocalHandlers} from '../types/relayMutations'
+import createProxyRecord from '../utils/relay/createProxyRecord'
 
 graphql`
   fragment CreateGitHubIssueMutation_task on CreateGitHubIssuePayload {

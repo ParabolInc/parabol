@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from '@emotion/styled'
 import UnderlineInput from './InputField/UnderlineInput'
-import TinyLabel from 'universal/components/TinyLabel'
+import TinyLabel from './TinyLabel'
 
 interface Props {
   autoFocus?: boolean

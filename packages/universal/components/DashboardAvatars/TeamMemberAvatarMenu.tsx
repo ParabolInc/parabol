@@ -1,13 +1,13 @@
-import {TeamMemberAvatarMenu_teamMember} from '__generated__/TeamMemberAvatarMenu_teamMember.graphql'
+import {TeamMemberAvatarMenu_teamMember} from '../../../__generated__/TeamMemberAvatarMenu_teamMember.graphql'
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import DropdownMenuLabel from 'universal/components/DropdownMenuLabel'
-import Menu from 'universal/components/Menu'
-import MenuItem from 'universal/components/MenuItem'
+import DropdownMenuLabel from '../DropdownMenuLabel'
+import Menu from '../Menu'
+import MenuItem from '../MenuItem'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {MenuProps} from 'universal/hooks/useMenu'
+} from '../../decorators/withAtmosphere/withAtmosphere'
+import {MenuProps} from '../../hooks/useMenu'
 import MenuItemLabel from '../MenuItemLabel'
 
 interface Props extends WithAtmosphereProps {

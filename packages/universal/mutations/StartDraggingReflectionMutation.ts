@@ -1,11 +1,11 @@
 import {commitMutation, graphql} from 'react-relay'
 import {matchPath} from 'react-router-dom'
 import {Disposable, RecordSourceProxy, RecordSourceSelectorProxy} from 'relay-runtime'
-import {RETROSPECTIVE} from 'universal/utils/constants'
-import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
-import addNodeToArray from 'universal/utils/relay/addNodeToArray'
-import createProxyRecord from 'universal/utils/relay/createProxyRecord'
-import getInProxy from 'universal/utils/relay/getInProxy'
+import {RETROSPECTIVE} from '../utils/constants'
+import {meetingTypeToSlug} from '../utils/meetings/lookups'
+import addNodeToArray from '../utils/relay/addNodeToArray'
+import createProxyRecord from '../utils/relay/createProxyRecord'
+import getInProxy from '../utils/relay/getInProxy'
 import {
   StartDraggingReflectionMutation as TStartDraggingReflectionMutation,
   StartDraggingReflectionMutationVariables

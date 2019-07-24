@@ -1,6 +1,6 @@
 import React, {ComponentType, ReactNode} from 'react'
 import {TransitionGroup} from 'react-transition-group'
-import AnimatedFade from 'universal/components/AnimatedFade'
+import AnimatedFade from '../../components/AnimatedFade'
 import ErrorComponent from '../../components/ErrorComponent/ErrorComponent'
 import LoadingComponent from '../../components/LoadingComponent/LoadingComponent'
 

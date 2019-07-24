@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import styled from '@emotion/styled'
-import Avatar from 'universal/components/Avatar/Avatar'
-import ui from 'universal/styles/ui'
-import {panelShadow} from 'universal/styles/elevation'
-import appTheme from 'universal/styles/theme/appTheme'
-import Icon from 'universal/components/Icon'
+import Avatar from '../Avatar/Avatar'
+import ui from '../../styles/ui'
+import {panelShadow} from '../../styles/elevation'
+import appTheme from '../../styles/theme/appTheme'
+import Icon from '../Icon'
 
 const borderRadius = '50%'
 const borderRadiusPanel = 4

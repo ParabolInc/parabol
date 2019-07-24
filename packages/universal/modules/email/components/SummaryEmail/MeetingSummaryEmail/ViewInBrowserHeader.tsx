@@ -1,9 +1,9 @@
 import React from 'react'
-import {MeetingSummaryReferrer} from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail'
+import {MeetingSummaryReferrer} from './MeetingSummaryEmail'
 import {
   FONT_FAMILY,
   PALETTE_TEXT_LIGHT
-} from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/constants'
+} from './constants'
 
 const bannerLink = {
   color: `${PALETTE_TEXT_LIGHT} !important`,

@@ -1,7 +1,7 @@
-import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
-import findStageById from 'universal/utils/meetings/findStageById'
-import unlockAllStagesForPhase from 'universal/utils/unlockAllStagesForPhase'
-import {DISCUSS, GROUP} from 'universal/utils/constants'
+import findStageAfterId from './meetings/findStageAfterId'
+import findStageById from './meetings/findStageById'
+import unlockAllStagesForPhase from './unlockAllStagesForPhase'
+import {DISCUSS, GROUP} from './constants'
 
 const phasesWithExtraRequirements = [GROUP, DISCUSS]
 

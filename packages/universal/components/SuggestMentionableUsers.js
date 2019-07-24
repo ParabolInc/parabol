@@ -2,9 +2,9 @@ import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import stringScore from 'string-score'
-import AsyncEditorSuggestions from 'universal/components/AsyncEditorSuggestions'
-import MentionUser from 'universal/components/MentionUser/MentionUser'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import AsyncEditorSuggestions from './AsyncEditorSuggestions'
+import MentionUser from './MentionUser/MentionUser'
+import withAtmosphere from '../decorators/withAtmosphere/withAtmosphere'
 
 const makeSuggestions = (triggerWord, teamMembers) => {
   if (!triggerWord) {

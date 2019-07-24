@@ -1,8 +1,8 @@
 import React, {Component, ReactElement} from 'react'
 import {findDOMNode} from 'react-dom'
-import {Subtract} from 'universal/types/generics'
-import getDisplayName from 'universal/utils/getDisplayName'
-import isKeyboardEvent from 'universal/utils/isKeyboardEvent'
+import {Subtract} from '../types/generics'
+import getDisplayName from '../utils/getDisplayName'
+import isKeyboardEvent from '../utils/isKeyboardEvent'
 
 /*
  * Takes the child component and puts it in a modal.

@@ -1,10 +1,10 @@
 import React, {Component} from 'react'
 import styled from '@emotion/styled'
-import FieldLabel from 'universal/components/FieldLabel/FieldLabel'
-import BasicInput from 'universal/components/InputField/BasicInput'
+import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
+import BasicInput from '../../../../components/InputField/BasicInput'
 import {NewTeamFieldBlock} from './NewTeamForm'
 import NewTeamFormBlock from './NewTeamFormBlock'
-import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
+import {DASH_SIDEBAR} from '../../../../components/Dashboard/DashSidebar'
 
 const FormBlockInline = styled(NewTeamFormBlock)({
   marginTop: 16,

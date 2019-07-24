@@ -1,13 +1,13 @@
 import React, {forwardRef} from 'react'
-import JiraSVG from 'universal/components/JiraSVG'
-import MenuItem from 'universal/components/MenuItem'
-import MenuItemComponentAvatar from 'universal/components/MenuItemComponentAvatar'
-import MenuItemLabel from 'universal/components/MenuItemLabel'
-import useAtmosphere from 'universal/hooks/useAtmosphere'
-import {MenuMutationProps} from 'universal/hooks/useMutationProps'
+import JiraSVG from './JiraSVG'
+import MenuItem from './MenuItem'
+import MenuItemComponentAvatar from './MenuItemComponentAvatar'
+import MenuItemLabel from './MenuItemLabel'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {MenuMutationProps} from '../hooks/useMutationProps'
 import styled from '@emotion/styled'
-import {ICON_SIZE} from 'universal/styles/typographyV2'
-import AtlassianClientManager from 'universal/utils/AtlassianClientManager'
+import {ICON_SIZE} from '../styles/typographyV2'
+import AtlassianClientManager from '../utils/AtlassianClientManager'
 
 interface Props {
   teamId: string

@@ -1,11 +1,11 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import DemoCreateAccountPrimaryButton from 'universal/components/DemoCreateAccountPrimaryButton'
-import Icon from 'universal/components/Icon'
-import {PALETTE} from 'universal/styles/paletteV2'
-import {ICON_SIZE} from 'universal/styles/typographyV2'
+import DemoCreateAccountPrimaryButton from './DemoCreateAccountPrimaryButton'
+import Icon from './Icon'
+import {PALETTE} from '../styles/paletteV2'
+import {ICON_SIZE} from '../styles/typographyV2'
 import DialogContainer from './DialogContainer'
-import hasToken from 'universal/utils/hasToken'
+import hasToken from '../utils/hasToken'
 
 const StyledDialogContainer = styled(DialogContainer)({
   alignItems: 'center',

@@ -1,4 +1,4 @@
-import {IRetroReflectionGroup} from 'universal/types/graphql'
+import {IRetroReflectionGroup} from '../types/graphql'
 
 const mapGroupsToStages = (reflectionGroups: IRetroReflectionGroup[]) => {
   const importantReflectionGroups = reflectionGroups.filter((group) => group.voterIds.length > 0)

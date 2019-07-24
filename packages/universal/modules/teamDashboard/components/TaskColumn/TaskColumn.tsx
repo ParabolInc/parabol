@@ -1,21 +1,21 @@
 import React, {Component} from 'react'
 import withScrolling from 'react-dnd-scrollzone'
 import styled from '@emotion/styled';
-import DraggableTask from 'universal/containers/TaskCard/DraggableTask'
+import DraggableTask from '../../../../containers/TaskCard/DraggableTask'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import sortOrderBetween from 'universal/dnd/sortOrderBetween'
-import TaskColumnAddTask from 'universal/modules/teamDashboard/components/TaskColumn/TaskColumnAddTask'
-import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation'
-import appTheme from 'universal/styles/theme/appTheme'
-import themeLabels from 'universal/styles/theme/labels'
-import ui from 'universal/styles/ui'
-import {AreaEnum, ITask, TaskStatusEnum} from 'universal/types/graphql'
-import {TEAM_DASH, USER_DASH} from 'universal/utils/constants'
+} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import sortOrderBetween from '../../../../dnd/sortOrderBetween'
+import TaskColumnAddTask from './TaskColumnAddTask'
+import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
+import appTheme from '../../../../styles/theme/appTheme'
+import themeLabels from '../../../../styles/theme/labels'
+import ui from '../../../../styles/ui'
+import {AreaEnum, ITask, TaskStatusEnum} from '../../../../types/graphql'
+import {TEAM_DASH, USER_DASH} from '../../../../utils/constants'
 import TaskColumnDropZone from './TaskColumnDropZone'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {TaskColumn_tasks} from '__generated__/TaskColumn_tasks.graphql'
+import {TaskColumn_tasks} from '../../../../../__generated__/TaskColumn_tasks.graphql'
 
 const Column = styled('div')({
   display: 'flex',

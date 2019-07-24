@@ -1,9 +1,9 @@
 import React, {Suspense} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {NotificationRow_notification} from '__generated__/NotificationRow_notification.graphql'
-import {NotificationEnum} from 'universal/types/graphql'
-import lazyPreload from 'universal/utils/lazyPreload'
-import {ValueOf} from 'universal/types/generics'
+import {NotificationRow_notification} from '../../../../../__generated__/NotificationRow_notification.graphql'
+import {NotificationEnum} from '../../../../types/graphql'
+import lazyPreload from '../../../../utils/lazyPreload'
+import {ValueOf} from '../../../../types/generics'
 
 const typePicker = {
   [NotificationEnum.KICKED_OUT]: lazyPreload(() =>

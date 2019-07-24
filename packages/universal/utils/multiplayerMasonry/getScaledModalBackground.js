@@ -1,8 +1,4 @@
-import {
-  CARD_PADDING,
-  MODAL_PADDING,
-  REFLECTION_WIDTH
-} from 'universal/utils/multiplayerMasonry/masonryConstants'
+import {CARD_PADDING, MODAL_PADDING, REFLECTION_WIDTH} from './masonryConstants'
 
 const getScaledModalBackground = (modalHeight, modalWidth, topCardHeight, headerHeight) => {
   const scaleX = (REFLECTION_WIDTH + CARD_PADDING * 2) / modalWidth

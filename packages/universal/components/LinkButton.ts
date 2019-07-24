@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import tinycolor from 'tinycolor2'
-import ui from 'universal/styles/ui'
-import BaseButton, {BaseButtonProps} from 'universal/components/BaseButton'
+import ui from '../styles/ui'
+import BaseButton, {BaseButtonProps} from './BaseButton'
 
 interface Props extends BaseButtonProps {
   palette: string

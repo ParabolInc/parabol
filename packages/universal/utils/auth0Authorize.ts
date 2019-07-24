@@ -1,4 +1,4 @@
-import makeHref from 'universal/utils/makeHref'
+import makeHref from './makeHref'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 
 /*

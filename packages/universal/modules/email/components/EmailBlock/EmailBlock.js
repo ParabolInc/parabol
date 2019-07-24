@@ -9,7 +9,7 @@ import {
   emailLineHeight,
   emailTableBase,
   emailTextColor
-} from 'universal/styles/email'
+} from '../../../../styles/email'
 
 const cellStyle = {
   color: emailTextColor,

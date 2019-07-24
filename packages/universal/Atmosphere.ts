@@ -3,7 +3,7 @@ import GQLTrebuchetClient, {
   OperationPayload
 } from '@mattkrick/graphql-trebuchet-client'
 import getTrebuchet, {SocketTrebuchet, SSETrebuchet} from '@mattkrick/trebuchet-client'
-import {InviteToTeamMutation_notification} from '__generated__/InviteToTeamMutation_notification.graphql'
+import {InviteToTeamMutation_notification} from '../__generated__/InviteToTeamMutation_notification.graphql'
 import EventEmitter from 'eventemitter3'
 import jwtDecode from 'jwt-decode'
 import {requestSubscription} from 'react-relay'
@@ -23,12 +23,12 @@ import {
 import defaultGetDataID from 'relay-runtime/lib/defaultGetDataID'
 import StrictEventEmitter from 'strict-event-emitter-types'
 import LinearPublishQueue from 'relay-linear-publish-queue'
-import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription'
-import {APP_TOKEN_KEY, NEW_AUTH_TOKEN} from 'universal/utils/constants'
-import handlerProvider from 'universal/utils/relay/handlerProvider'
+import NewAuthTokenSubscription from './subscriptions/NewAuthTokenSubscription'
+import {APP_TOKEN_KEY, NEW_AUTH_TOKEN} from './utils/constants'
+import handlerProvider from './utils/relay/handlerProvider'
 import {MasonryDragEndPayload} from './components/PhaseItemMasonry'
 import {IAuthToken} from './types/graphql'
-import {Snack, SnackbarRemoveFn} from 'universal/components/Snackbar'
+import {Snack, SnackbarRemoveFn} from './components/Snackbar'
 
 // import sleep from 'universal/utils/sleep'
 

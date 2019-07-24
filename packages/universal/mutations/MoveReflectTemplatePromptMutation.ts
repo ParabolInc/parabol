@@ -1,9 +1,9 @@
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
-import Atmosphere from 'universal/Atmosphere'
+import Atmosphere from '../Atmosphere'
 import handleMoveTemplatePrompt from './handlers/handleMoveTemplatePrompt'
-import {IMoveReflectTemplatePromptOnMutationArguments} from 'universal/types/graphql'
-import getInProxy from 'universal/utils/relay/getInProxy'
+import {IMoveReflectTemplatePromptOnMutationArguments} from '../types/graphql'
+import getInProxy from '../utils/relay/getInProxy'
 
 interface Context {
   templateId: string

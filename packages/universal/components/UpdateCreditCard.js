@@ -1,12 +1,7 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import ui from 'universal/styles/ui'
-import UpgradeCreditCardForm from 'universal/modules/userDashboard/components/CreditCardModal/UpgradeCreditCardForm'
-
-interface Props {
-  closePortal: () => void;
-  orgId: string;
-}
+import ui from '../styles/ui'
+import UpgradeCreditCardForm from '../modules/userDashboard/components/CreditCardModal/UpgradeCreditCardForm'
 
 const flexBase = {
   alignItems: 'center',
@@ -29,7 +24,7 @@ const ModalActionPanel = styled('div')({
   width: '20rem'
 })
 
-const UpdateCreditCard = (props: Props) => {
+const UpdateCreditCard = (props) => {
   const {closePortal, orgId} = props
   return (
     <ModalBoundary>

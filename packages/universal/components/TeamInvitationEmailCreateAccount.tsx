@@ -1,4 +1,4 @@
-import {TeamInvitationEmailCreateAccount_verifiedInvitation} from '__generated__/TeamInvitationEmailCreateAccount_verifiedInvitation.graphql'
+import {TeamInvitationEmailCreateAccount_verifiedInvitation} from '../../__generated__/TeamInvitationEmailCreateAccount_verifiedInvitation.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import Helmet from 'react-helmet'
@@ -9,8 +9,8 @@ import InviteDialog from './InviteDialog'
 import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import DialogTitle from './DialogTitle'
-import AuthPrivacyFooter from 'universal/components/AuthPrivacyFooter'
-import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
+import AuthPrivacyFooter from './AuthPrivacyFooter'
+import {meetingTypeToLabel} from '../utils/meetings/lookups'
 
 interface Props {
   verifiedInvitation: TeamInvitationEmailCreateAccount_verifiedInvitation

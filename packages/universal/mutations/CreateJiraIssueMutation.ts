@@ -1,10 +1,10 @@
 import {commitMutation, graphql} from 'react-relay'
-import {ICreateJiraIssueOnMutationArguments, TaskServiceEnum} from 'universal/types/graphql'
-import makeSuggestedIntegrationId from 'universal/utils/makeSuggestedIntegrationId'
-import createProxyRecord from 'universal/utils/relay/createProxyRecord'
-import Atmosphere from 'universal/Atmosphere'
-import {LocalHandlers} from 'universal/types/relayMutations'
-import {CreateJiraIssueMutation as TCreateJiraIssueMutation} from '__generated__/CreateJiraIssueMutation.graphql'
+import {ICreateJiraIssueOnMutationArguments, TaskServiceEnum} from '../types/graphql'
+import makeSuggestedIntegrationId from '../utils/makeSuggestedIntegrationId'
+import createProxyRecord from '../utils/relay/createProxyRecord'
+import Atmosphere from '../Atmosphere'
+import {LocalHandlers} from '../types/relayMutations'
+import {CreateJiraIssueMutation as TCreateJiraIssueMutation} from '../../__generated__/CreateJiraIssueMutation.graphql'
 
 graphql`
   fragment CreateJiraIssueMutation_task on CreateJiraIssuePayload {

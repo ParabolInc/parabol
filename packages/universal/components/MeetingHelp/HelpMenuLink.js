@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import ExternalLink from 'universal/components/ExternalLink'
+import ExternalLink from '../ExternalLink'
 
 const HelpMenuLink = styled(ExternalLink)({
   textDecoration: 'underline'

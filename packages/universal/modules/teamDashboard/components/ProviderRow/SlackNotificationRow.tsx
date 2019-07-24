@@ -1,13 +1,13 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import Toggle from 'universal/components/Toggle/Toggle'
+import Toggle from '../../../../components/Toggle/Toggle'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {SlackNotificationRow_viewer} from '__generated__/SlackNotificationRow_viewer.graphql'
-import useAtmosphere from 'universal/hooks/useAtmosphere'
-import useMutationProps from 'universal/hooks/useMutationProps'
-import SetSlackNotificationMutation from 'universal/mutations/SetSlackNotificationMutation'
-import StyledError from 'universal/components/StyledError'
-import {SlackNotificationEventEnum} from 'universal/types/graphql'
+import {SlackNotificationRow_viewer} from '../../../../../__generated__/SlackNotificationRow_viewer.graphql'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useMutationProps from '../../../../hooks/useMutationProps'
+import SetSlackNotificationMutation from '../../../../mutations/SetSlackNotificationMutation'
+import StyledError from '../../../../components/StyledError'
+import {SlackNotificationEventEnum} from '../../../../types/graphql'
 
 interface Props {
   event: SlackNotificationEventEnum

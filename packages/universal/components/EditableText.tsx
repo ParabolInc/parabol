@@ -1,9 +1,9 @@
 import React, {Component} from 'react'
 import styled from '@emotion/styled'
-import Icon from 'universal/components/Icon'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
-import {PALETTE} from 'universal/styles/paletteV2'
-import appTheme from 'universal/styles/theme/appTheme'
+import Icon from './Icon'
+import {MD_ICONS_SIZE_18} from '../styles/icons'
+import {PALETTE} from '../styles/paletteV2'
+import appTheme from '../styles/theme/appTheme'
 import Legitity from '../validation/Legitity'
 
 const StaticBlock = styled('div')({

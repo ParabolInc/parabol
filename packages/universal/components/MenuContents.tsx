@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
-import {PortalStatus} from 'universal/hooks/usePortal'
-import {DECELERATE} from 'universal/styles/animation'
-import {Duration, Radius} from 'universal/types/constEnums'
+import {PortalStatus} from '../hooks/usePortal'
+import {DECELERATE} from '../styles/animation'
+import {Duration, Radius} from '../types/constEnums'
 
 const animations = (portalStatus) => {
   switch (portalStatus) {

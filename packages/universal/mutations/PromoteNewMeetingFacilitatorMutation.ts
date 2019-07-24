@@ -1,8 +1,8 @@
-import {PromoteNewMeetingFacilitatorMutation_team} from '__generated__/PromoteNewMeetingFacilitatorMutation_team.graphql'
+import {PromoteNewMeetingFacilitatorMutation_team} from '../../__generated__/PromoteNewMeetingFacilitatorMutation_team.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
-import {OnNextHandler, StandardMutation} from 'universal/types/relayMutations'
-import {PromoteNewMeetingFacilitatorMutation as TPromoteNewMeetingFacilitatorMutation} from '__generated__/PromoteNewMeetingFacilitatorMutation.graphql'
+import {OnNextHandler, StandardMutation} from '../types/relayMutations'
+import {PromoteNewMeetingFacilitatorMutation as TPromoteNewMeetingFacilitatorMutation} from '../../__generated__/PromoteNewMeetingFacilitatorMutation.graphql'
 
 graphql`
   fragment PromoteNewMeetingFacilitatorMutation_team on PromoteNewMeetingFacilitatorPayload {

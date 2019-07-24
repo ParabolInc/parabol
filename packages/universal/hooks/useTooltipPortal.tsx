@@ -1,9 +1,9 @@
 import React, {ReactElement, ReactPortal} from 'react'
 import styled from '@emotion/styled'
-import TooltipBackground from 'universal/hooks/TooltipBackground'
-import {UseCoordsValue} from 'universal/hooks/useCoords'
-import {PortalStatus} from 'universal/hooks/usePortal'
-import {ZIndex} from 'universal/types/constEnums'
+import TooltipBackground from './TooltipBackground'
+import {UseCoordsValue} from './useCoords'
+import {PortalStatus} from './usePortal'
+import {ZIndex} from '../types/constEnums'
 
 const TooltipBlock = styled('div')({
   position: 'absolute',

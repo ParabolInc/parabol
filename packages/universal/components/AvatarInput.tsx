@@ -1,7 +1,7 @@
 import React, {Component, lazy, Suspense} from 'react'
 import styled from '@emotion/styled'
-import RaisedButton from 'universal/components/RaisedButton'
-import StyledError from 'universal/components/StyledError'
+import RaisedButton from './RaisedButton'
+import StyledError from './StyledError'
 
 const HiddenInput = styled('input')({
   display: 'none'

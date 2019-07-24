@@ -1,4 +1,4 @@
-import {FindStageByIdPhase} from 'universal/utils/meetings/findStageById'
+import {FindStageByIdPhase} from './findStageById'
 
 const findStageAfterId = <T extends FindStageByIdPhase>(
   phases: readonly T[] | null | undefined,

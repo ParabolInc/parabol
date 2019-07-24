@@ -1,5 +1,5 @@
 import {CompositeDecorator} from 'draft-js'
-import EllipsisDecorator from 'universal/components/TaskEditor/Ellipsis'
+import EllipsisDecorator from './Ellipsis'
 
 const findEntity = (entityType) => (contentBlock, callback, contentState) => {
   contentBlock.findEntityRanges((character) => {

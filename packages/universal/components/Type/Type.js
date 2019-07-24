@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import appTheme from 'universal/styles/theme/appTheme'
+import appTheme from '../../styles/theme/appTheme'
 
 const white = '#fff'
 const black = appTheme.palette.dark10d

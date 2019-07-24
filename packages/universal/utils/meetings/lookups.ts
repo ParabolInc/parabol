@@ -10,7 +10,7 @@ import {
   RETROSPECTIVE,
   UPDATES,
   VOTE
-} from 'universal/utils/constants'
+} from '../constants'
 
 /* Used by the server! cannot convert to enums yet */
 

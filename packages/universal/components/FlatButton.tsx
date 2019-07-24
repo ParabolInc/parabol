@@ -1,7 +1,7 @@
 import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
-import ui from 'universal/styles/ui'
-import BaseButton, {BaseButtonProps} from 'universal/components/BaseButton'
+import ui from '../styles/ui'
+import BaseButton, {BaseButtonProps} from './BaseButton'
 
 export interface FlatButtonProps extends BaseButtonProps{
   size?: 'small' | 'medium' | 'large'

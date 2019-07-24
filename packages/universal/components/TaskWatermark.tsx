@@ -1,8 +1,8 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import GitHubSVG from 'universal/components/GitHubSVG'
-import JiraSVG from 'universal/components/JiraSVG'
-import {TaskServiceEnum} from 'universal/types/graphql'
+import GitHubSVG from './GitHubSVG'
+import JiraSVG from './JiraSVG'
+import {TaskServiceEnum} from '../types/graphql'
 
 const iconLookup = {
   github: GitHubSVG,

@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import withStyles from 'universal/styles/withStyles'
+import withStyles from '../../../../styles/withStyles'
 import {css} from 'aphrodite-local-styles/no-important'
-import ui from 'universal/styles/ui'
-import appTheme from 'universal/styles/theme/appTheme'
-import invoiceLineFormat from 'universal/modules/invoice/helpers/invoiceLineFormat'
-import {ADDED_USERS, REMOVED_USERS, INACTIVITY_ADJUSTMENTS} from 'universal/utils/constants'
-import makeDateString from 'universal/utils/makeDateString'
+import ui from '../../../../styles/ui'
+import appTheme from '../../../../styles/theme/appTheme'
+import invoiceLineFormat from '../../helpers/invoiceLineFormat'
+import {ADDED_USERS, REMOVED_USERS, INACTIVITY_ADJUSTMENTS} from '../../../../utils/constants'
+import makeDateString from '../../../../utils/makeDateString'
 
 const detailDescriptionMaker = {
   [ADDED_USERS]: (detail) => `${detail.email} joined ${makeDateString(detail.startAt)}`,

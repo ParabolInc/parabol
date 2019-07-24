@@ -1,5 +1,5 @@
 import promisify from 'es6-promisify'
-import {AUTH0_DB_CONNECTION} from 'universal/utils/constants'
+import {AUTH0_DB_CONNECTION} from './constants'
 import makeWebAuth from './makeWebAuth'
 
 const auth0ChangePassword = async (email) => {

@@ -1,10 +1,10 @@
 import React from 'react'
-import ui from 'universal/styles/ui'
-import {menuShadow} from 'universal/styles/elevation'
-import AnimatedFade from 'universal/components/AnimatedFade'
+import ui from '../styles/ui'
+import {menuShadow} from '../styles/elevation'
+import AnimatedFade from './AnimatedFade'
 import styled from '@emotion/styled'
-import Modal from 'universal/components/Modal'
-import withCoordsV2 from 'universal/decorators/withCoordsV2'
+import Modal from './Modal'
+import withCoordsV2 from '../decorators/withCoordsV2'
 
 const MenuBlock = styled('div')(({maxWidth}) => ({
   maxWidth,

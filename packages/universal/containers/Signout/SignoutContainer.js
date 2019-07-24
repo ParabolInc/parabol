@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, {Component} from 'react' // eslint-disable-line
 import signout from './signout'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere from '../../decorators/withAtmosphere/withAtmosphere'
 import {connect} from 'react-redux'
 
 class SignoutContainer extends Component {

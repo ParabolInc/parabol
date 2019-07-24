@@ -2,8 +2,8 @@ import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {createFragmentContainer} from 'react-relay'
-import TeamTasksHeader from 'universal/modules/teamDashboard/components/TeamTasksHeader/TeamTasksHeader'
-import {filterTeamMember} from 'universal/modules/teamDashboard/ducks/teamDashDuck'
+import TeamTasksHeader from '../../components/TeamTasksHeader/TeamTasksHeader'
+import {filterTeamMember} from '../../ducks/teamDashDuck'
 
 const mapStateToProps = (state) => {
   return {

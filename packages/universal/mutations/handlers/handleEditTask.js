@@ -1,5 +1,5 @@
-import createProxyRecord from 'universal/utils/relay/createProxyRecord'
-import getInProxy from 'universal/utils/relay/getInProxy'
+import createProxyRecord from '../../utils/relay/createProxyRecord'
+import getInProxy from '../../utils/relay/getInProxy'
 
 const handleEditTask = (payload, store) => {
   const taskId = getInProxy(payload, 'task', 'id')

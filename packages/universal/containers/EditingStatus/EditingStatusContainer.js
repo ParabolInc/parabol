@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import EditingStatus from 'universal/components/EditingStatus/EditingStatus'
-import getRefreshPeriod from 'universal/utils/getRefreshPeriod'
+import EditingStatus from '../../components/EditingStatus/EditingStatus'
+import getRefreshPeriod from '../../utils/getRefreshPeriod'
 
 class EditingStatusContainer extends Component {
   static propTypes = {

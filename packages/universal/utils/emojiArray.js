@@ -1,4 +1,4 @@
-import emojis from 'universal/utils/emojis.json'
+import emojis from './emojis.json'
 
 // delete emojis.shit;
 // delete emojis.fu;

@@ -1,5 +1,5 @@
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
-import addNodeToArray from 'universal/utils/relay/addNodeToArray'
+import addNodeToArray from '../../utils/relay/addNodeToArray'
 
 const handleAddReflectTemplatePrompt = (
   newNode: RecordProxy | null,

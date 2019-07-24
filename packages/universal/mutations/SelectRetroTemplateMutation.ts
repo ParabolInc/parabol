@@ -1,9 +1,9 @@
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
-import Atmosphere from 'universal/Atmosphere'
+import Atmosphere from '../Atmosphere'
 import {CompletedHandler, ErrorHandler} from '../types/relayMutations'
-import {ISelectRetroTemplateOnMutationArguments} from 'universal/types/graphql'
-import {RETROSPECTIVE} from 'universal/utils/constants'
+import {ISelectRetroTemplateOnMutationArguments} from '../types/graphql'
+import {RETROSPECTIVE} from '../utils/constants'
 
 graphql`
   fragment SelectRetroTemplateMutation_team on SelectRetroTemplatePayload {

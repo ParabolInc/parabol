@@ -1,5 +1,5 @@
-import {AGENDA_ITEM_LABEL, AGENDA_ITEMS} from 'universal/utils/constants'
-import plural from 'universal/utils/plural'
+import {AGENDA_ITEM_LABEL, AGENDA_ITEMS} from '../../../../../utils/constants'
+import plural from '../../../../../utils/plural'
 
 interface Meeting {
   meetingMembers: {

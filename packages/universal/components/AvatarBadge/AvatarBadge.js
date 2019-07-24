@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import appTheme from 'universal/styles/theme/appTheme'
-import srOnly from 'universal/styles/helpers/srOnly'
+import appTheme from '../../styles/theme/appTheme'
+import srOnly from '../../styles/helpers/srOnly'
 import styled from '@emotion/styled'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import StyledFontAwesome from '../StyledFontAwesome'
 
 const checkInStatus = {
   null: {

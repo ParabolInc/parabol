@@ -1,12 +1,12 @@
 import React from 'react'
 import {graphql} from 'react-relay'
 import {RouteComponentProps} from 'react-router'
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
-import {LoaderSize} from 'universal/types/constEnums'
-import renderQuery from 'universal/utils/relay/renderQuery'
+import QueryRenderer from './QueryRenderer/QueryRenderer'
+import {LoaderSize} from '../types/constEnums'
+import renderQuery from '../utils/relay/renderQuery'
 import useAtmosphere from '../hooks/useAtmosphere'
 import ViewerNotOnTeam from './ViewerNotOnTeam'
-import NotificationSubscription from 'universal/subscriptions/NotificationSubscription'
+import NotificationSubscription from '../subscriptions/NotificationSubscription'
 
 const query = graphql`
   query ViewerNotOnTeamRootQuery($teamId: ID!) {

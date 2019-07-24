@@ -1,16 +1,16 @@
 import React from 'react'
 import styled from '@emotion/styled'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import DialogContainer from 'universal/components/DialogContainer'
-import DialogContent from 'universal/components/DialogContent'
-import DialogTitle from 'universal/components/DialogTitle'
-import IconLabel from 'universal/components/IconLabel'
-import PrimaryButton from 'universal/components/PrimaryButton'
+import DialogContainer from '../../../../components/DialogContainer'
+import DialogContent from '../../../../components/DialogContent'
+import DialogTitle from '../../../../components/DialogTitle'
+import IconLabel from '../../../../components/IconLabel'
+import PrimaryButton from '../../../../components/PrimaryButton'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import RemoveOrgUserMutation from 'universal/mutations/RemoveOrgUserMutation'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import RemoveOrgUserMutation from '../../../../mutations/RemoveOrgUserMutation'
+import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 
 const StyledButton = styled(PrimaryButton)({
   margin: '1.5rem auto 0'

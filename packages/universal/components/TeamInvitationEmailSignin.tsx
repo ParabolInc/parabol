@@ -1,4 +1,4 @@
-import {TeamInvitationEmailSignin_verifiedInvitation} from '__generated__/TeamInvitationEmailSignin_verifiedInvitation.graphql'
+import {TeamInvitationEmailSignin_verifiedInvitation} from '../../__generated__/TeamInvitationEmailSignin_verifiedInvitation.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import Helmet from 'react-helmet'
@@ -10,7 +10,7 @@ import InviteDialog from './InviteDialog'
 import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import DialogTitle from './DialogTitle'
-import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
+import {meetingTypeToLabel} from '../utils/meetings/lookups'
 
 interface Props {
   verifiedInvitation: TeamInvitationEmailSignin_verifiedInvitation

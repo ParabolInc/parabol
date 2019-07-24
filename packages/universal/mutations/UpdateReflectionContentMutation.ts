@@ -3,10 +3,10 @@
  *
  */
 import {commitMutation, graphql} from 'react-relay'
-import updateProxyRecord from 'universal/utils/relay/updateProxyRecord'
-import {LocalHandlers} from 'universal/types/relayMutations'
-import {IUpdateReflectionContentOnMutationArguments} from 'universal/types/graphql'
-import Atmosphere from 'universal/Atmosphere'
+import updateProxyRecord from '../utils/relay/updateProxyRecord'
+import {LocalHandlers} from '../types/relayMutations'
+import {IUpdateReflectionContentOnMutationArguments} from '../types/graphql'
+import Atmosphere from '../Atmosphere'
 
 graphql`
   fragment UpdateReflectionContentMutation_team on UpdateReflectionContentPayload {

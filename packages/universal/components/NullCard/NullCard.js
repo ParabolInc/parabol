@@ -2,8 +2,8 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import CreateCardRootStyles from '../CreateCard/CreateCardRootStyles'
 import styled from '@emotion/styled'
-import ui from 'universal/styles/ui'
-import Ellipsis from 'universal/components/Ellipsis/Ellipsis'
+import ui from '../../styles/ui'
+import Ellipsis from '../Ellipsis/Ellipsis'
 
 const CardBlock = styled('div')({
   ...CreateCardRootStyles,

@@ -1,14 +1,14 @@
-import {NewMeetingSummary_viewer} from '__generated__/NewMeetingSummary_viewer.graphql'
+import {NewMeetingSummary_viewer} from '../../../../__generated__/NewMeetingSummary_viewer.graphql'
 import React, {useEffect} from 'react'
 import Helmet from 'react-helmet'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {MEETING_SUMMARY_LABEL} from 'universal/utils/constants'
-import makeHref from 'universal/utils/makeHref'
-import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups'
-import {demoTeamId} from 'universal/modules/demo/initDB'
-import MeetingSummaryEmail from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail'
-import useRouter from 'universal/hooks/useRouter'
-import {PALETTE} from 'universal/styles/paletteV2'
+import {MEETING_SUMMARY_LABEL} from '../../../utils/constants'
+import makeHref from '../../../utils/makeHref'
+import {meetingTypeToLabel, meetingTypeToSlug} from '../../../utils/meetings/lookups'
+import {demoTeamId} from '../../demo/initDB'
+import MeetingSummaryEmail from '../../email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail'
+import useRouter from '../../../hooks/useRouter'
+import {PALETTE} from '../../../styles/paletteV2'
 
 interface Props {
   viewer: NewMeetingSummary_viewer

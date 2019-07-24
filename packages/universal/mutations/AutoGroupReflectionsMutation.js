@@ -1,7 +1,7 @@
 import {commitMutation} from 'react-relay'
-import getBaseRecord from 'universal/utils/relay/getBaseRecord'
-import {moveReflectionLocation} from 'universal/mutations/EndDraggingReflectionMutation'
-import initializeGrid from 'universal/utils/multiplayerMasonry/initializeGrid'
+import getBaseRecord from '../utils/relay/getBaseRecord'
+import {moveReflectionLocation} from './EndDraggingReflectionMutation'
+import initializeGrid from '../utils/multiplayerMasonry/initializeGrid'
 
 graphql`
   fragment AutoGroupReflectionsMutation_team on AutoGroupReflectionsPayload {

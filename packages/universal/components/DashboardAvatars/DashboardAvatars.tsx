@@ -1,4 +1,4 @@
-import {DashboardAvatars_team} from '__generated__/DashboardAvatars_team.graphql'
+import {DashboardAvatars_team} from '../../../__generated__/DashboardAvatars_team.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'

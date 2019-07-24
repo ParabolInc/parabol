@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import NullableTask from 'universal/components/NullableTask/NullableTask'
+import NullableTask from '../../components/NullableTask/NullableTask'
 import {DragLayer as dragLayer} from 'react-dnd'
-import {cardRaisedShadow} from 'universal/styles/elevation'
+import {cardRaisedShadow} from '../../styles/elevation'
 
 const layerStyles = {
   left: 0,

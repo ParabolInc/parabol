@@ -1,9 +1,9 @@
 import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
-import Badge from 'universal/components/Badge/Badge'
-import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
-import {panelShadow} from 'universal/styles/elevation'
-import {Layout} from 'universal/types/constEnums'
+import Badge from '../Badge/Badge'
+import LabelHeading from '../LabelHeading/LabelHeading'
+import {panelShadow} from '../../styles/elevation'
+import {Layout} from '../../types/constEnums'
 
 const PanelRoot = styled('div')({
   backgroundColor: 'white',

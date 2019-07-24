@@ -1,14 +1,14 @@
 import React from 'react'
-import plural from 'universal/utils/plural'
-import {RETRO_TOPIC_LABEL, RETRO_VOTED_LABEL} from 'universal/utils/constants'
+import plural from '../../../../../utils/plural'
+import {RETRO_TOPIC_LABEL, RETRO_VOTED_LABEL} from '../../../../../utils/constants'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {
   FONT_FAMILY,
   PALETTE_TEXT_MAIN
-} from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/constants'
-import RetroTopic from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/RetroTopic'
-import {RetroTopics_meeting} from '__generated__/RetroTopics_meeting.graphql'
-import EmailBorderBottom from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/EmailBorderBottom'
+} from './constants'
+import RetroTopic from './RetroTopic'
+import {RetroTopics_meeting} from '../../../../../../__generated__/RetroTopics_meeting.graphql'
+import EmailBorderBottom from './EmailBorderBottom'
 
 const sectionHeading = {
   color: PALETTE_TEXT_MAIN,

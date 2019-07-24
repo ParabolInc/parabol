@@ -1,10 +1,10 @@
 import React from 'react'
 import {Environment} from 'relay-runtime'
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
+import QueryRenderer from '../../../components/QueryRenderer/QueryRenderer'
 import {graphql} from 'react-relay'
-import MeetingSummaryEmail from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail'
-import makeAppLink from 'server/utils/makeAppLink'
-import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
+import MeetingSummaryEmail from '../../email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail'
+import makeAppLink from '../../../../server/utils/makeAppLink'
+import {meetingTypeToSlug} from '../../../utils/meetings/lookups'
 
 const query = graphql`
   query MeetingSummaryEmailRootSSRQuery($meetingId: ID!) {

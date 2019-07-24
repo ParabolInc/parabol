@@ -1,14 +1,14 @@
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import AcknowledgeButton from 'universal/modules/notifications/components/AcknowledgeButton/AcknowledgeButton'
-import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation'
-import Row from 'universal/components/Row/Row'
-import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
-import {TeamArchived_notification} from '__generated__/TeamArchived_notification.graphql'
-import useAtmosphere from 'universal/hooks/useAtmosphere'
-import useMutationProps from 'universal/hooks/useMutationProps'
-import NotificationErrorMessage from 'universal/modules/notifications/components/NotificationErrorMessage'
-import NotificationMessage from 'universal/modules/notifications/components/NotificationMessage'
+import AcknowledgeButton from '../AcknowledgeButton/AcknowledgeButton'
+import ClearNotificationMutation from '../../../../mutations/ClearNotificationMutation'
+import Row from '../../../../components/Row/Row'
+import IconAvatar from '../../../../components/IconAvatar/IconAvatar'
+import {TeamArchived_notification} from '../../../../../__generated__/TeamArchived_notification.graphql'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useMutationProps from '../../../../hooks/useMutationProps'
+import NotificationErrorMessage from '../NotificationErrorMessage'
+import NotificationMessage from '../NotificationMessage'
 
 interface Props {
   notification: TeamArchived_notification

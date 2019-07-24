@@ -1,8 +1,8 @@
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import DashNavTeam from 'universal/components/Dashboard/DashNavTeam'
+import DashNavTeam from '../Dashboard/DashNavTeam'
 import styled from '@emotion/styled'
-import {DashNavList_viewer} from '__generated__/DashNavList_viewer.graphql'
+import {DashNavList_viewer} from '../../../__generated__/DashNavList_viewer.graphql'
 // import SexyScrollbar from 'universal/components/Dashboard/SexyScrollbar'
 
 const DashNavListStyles = styled('div')({

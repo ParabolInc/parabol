@@ -1,12 +1,12 @@
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import Menu from 'universal/components/Menu'
-import MenuItem from 'universal/components/MenuItem'
-import {MenuProps} from 'universal/hooks/useMenu'
-import {filterTeamMember} from 'universal/modules/teamDashboard/ducks/teamDashDuck'
+import Menu from './Menu'
+import MenuItem from './MenuItem'
+import {MenuProps} from '../hooks/useMenu'
+import {filterTeamMember} from '../modules/teamDashboard/ducks/teamDashDuck'
 import {connect, DispatchProp} from 'react-redux'
-import DropdownMenuLabel from 'universal/components/DropdownMenuLabel'
-import {TeamDashTeamMemberMenu_team} from '__generated__/TeamDashTeamMemberMenu_team.graphql'
+import DropdownMenuLabel from './DropdownMenuLabel'
+import {TeamDashTeamMemberMenu_team} from '../../__generated__/TeamDashTeamMemberMenu_team.graphql'
 
 interface Props extends DispatchProp {
   menuProps: MenuProps

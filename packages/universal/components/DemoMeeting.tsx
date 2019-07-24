@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import Helmet from 'react-helmet'
-import AtmosphereProvider from 'universal/components/AtmosphereProvider/AtmosphereProvider'
-import RetroRoot from 'universal/components/RetroRoot/RetroRoot'
+import AtmosphereProvider from './AtmosphereProvider/AtmosphereProvider'
+import RetroRoot from './RetroRoot/RetroRoot'
 
 class DemoMeeting extends Component {
   render () {

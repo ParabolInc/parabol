@@ -1,9 +1,9 @@
-import {useAllIntegrationsQueryResponse} from '__generated__/useAllIntegrationsQuery.graphql'
+import {useAllIntegrationsQueryResponse} from '../../__generated__/useAllIntegrationsQuery.graphql'
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {graphql} from 'react-relay'
-import Atmosphere from 'universal/Atmosphere'
-import useFilteredItems from 'universal/hooks/useFilteredItems'
-import fetchMaybeCachedQuery from 'universal/utils/relay/fetchMaybeCachedQuery'
+import Atmosphere from '../Atmosphere'
+import useFilteredItems from './useFilteredItems'
+import fetchMaybeCachedQuery from '../utils/relay/fetchMaybeCachedQuery'
 
 const gqlQuery = graphql`
   query useAllIntegrationsQuery($teamId: ID!, $userId: ID!) {

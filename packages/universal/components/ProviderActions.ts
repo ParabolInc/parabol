@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import {Layout} from 'universal/types/constEnums'
-import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
+import {Layout} from '../types/constEnums'
+import {DASH_SIDEBAR} from './Dashboard/DashSidebar'
 
 const ProviderActions = styled('div')({
   alignItems: 'center',

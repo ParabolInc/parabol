@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import FieldHelpText from 'universal/components/FieldHelpText/FieldHelpText'
+import FieldHelpText from '../../../../components/FieldHelpText/FieldHelpText'
 
 const StripeTokenField = (props) => {
   const {

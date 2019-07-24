@@ -4,12 +4,12 @@ import {
   PALETTE_BACKGROUND_MAIN,
   PALETTE_TEXT_LIGHT,
   PALETTE_TEXT_MAIN
-} from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/constants'
-import makeActionStats from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/makeActionStats'
-import makeRetroStats from 'universal/modules/email/components/SummaryEmail/MeetingSummaryEmail/makeRetroStats'
-import {ACTION, RETROSPECTIVE} from 'universal/utils/constants'
+} from './constants'
+import makeActionStats from './makeActionStats'
+import makeRetroStats from './makeRetroStats'
+import {ACTION, RETROSPECTIVE} from '../../../../../utils/constants'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {QuickStats_meeting} from '__generated__/QuickStats_meeting.graphql'
+import {QuickStats_meeting} from '../../../../../../__generated__/QuickStats_meeting.graphql'
 
 const statLabel = (idx, len) =>
   ({

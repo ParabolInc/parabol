@@ -1,4 +1,4 @@
-import {PhaseItemColumn_meeting} from '__generated__/PhaseItemColumn_meeting.graphql'
+import {PhaseItemColumn_meeting} from '../../../__generated__/PhaseItemColumn_meeting.graphql'
 import memoize from 'micro-memoize'
 /**
  * Renders a column for a particular "type" of reflection
@@ -7,20 +7,20 @@ import memoize from 'micro-memoize'
 import React, {Component} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
-import Icon from 'universal/components/Icon'
-import PhaseItemChits from 'universal/components/RetroReflectPhase/PhaseItemChits'
-import PhaseItemEditor from 'universal/components/RetroReflectPhase/PhaseItemEditor'
-import ReflectionStack from 'universal/components/RetroReflectPhase/ReflectionStack'
-import Tooltip from 'universal/components/Tooltip/Tooltip'
+import Icon from '../Icon'
+import PhaseItemChits from './PhaseItemChits'
+import PhaseItemEditor from './PhaseItemEditor'
+import ReflectionStack from './ReflectionStack'
+import Tooltip from '../Tooltip/Tooltip'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import SetPhaseFocusMutation from 'universal/mutations/SetPhaseFocusMutation'
-import {DECELERATE} from 'universal/styles/animation'
-import getNextSortOrder from 'universal/utils/getNextSortOrder'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import {PALETTE} from 'universal/styles/paletteV2'
-import {ICON_SIZE} from 'universal/styles/typographyV2'
+} from '../../decorators/withAtmosphere/withAtmosphere'
+import SetPhaseFocusMutation from '../../mutations/SetPhaseFocusMutation'
+import {DECELERATE} from '../../styles/animation'
+import getNextSortOrder from '../../utils/getNextSortOrder'
+import withMutationProps, {WithMutationProps} from '../../utils/relay/withMutationProps'
+import {PALETTE} from '../../styles/paletteV2'
+import {ICON_SIZE} from '../../styles/typographyV2'
 
 const ColumnWrapper = styled('div')({
   alignItems: 'center',

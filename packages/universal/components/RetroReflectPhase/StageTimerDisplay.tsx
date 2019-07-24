@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {StageTimerDisplay_stage} from '__generated__/StageTimerDisplay_stage.graphql'
+import {StageTimerDisplay_stage} from '../../../__generated__/StageTimerDisplay_stage.graphql'
 import styled from '@emotion/styled'
-import StageTimerDisplayGauge from 'universal/components/RetroReflectPhase/StageTimerDisplayGauge'
+import StageTimerDisplayGauge from './StageTimerDisplayGauge'
 
 interface Props {
   stage: StageTimerDisplay_stage

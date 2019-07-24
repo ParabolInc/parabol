@@ -1,13 +1,13 @@
-import {TaskFooterTagMenuStatusItem_task} from '__generated__/TaskFooterTagMenuStatusItem_task.graphql'
+import {TaskFooterTagMenuStatusItem_task} from '../../../../../__generated__/TaskFooterTagMenuStatusItem_task.graphql'
 import React, {forwardRef} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import MenuItem from 'universal/components/MenuItem'
-import MenuItemDot from 'universal/components/MenuItemDot'
-import MenuItemLabel from 'universal/components/MenuItemLabel'
-import useAtmosphere from 'universal/hooks/useAtmosphere'
-import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation'
-import labels from 'universal/styles/theme/labels'
-import {AreaEnum, TaskStatusEnum} from 'universal/types/graphql'
+import MenuItem from '../../../../components/MenuItem'
+import MenuItemDot from '../../../../components/MenuItemDot'
+import MenuItemLabel from '../../../../components/MenuItemLabel'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
+import labels from '../../../../styles/theme/labels'
+import {AreaEnum, TaskStatusEnum} from '../../../../types/graphql'
 
 interface Props {
   area: AreaEnum

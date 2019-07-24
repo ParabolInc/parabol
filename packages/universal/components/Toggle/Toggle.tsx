@@ -1,9 +1,9 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import {PALETTE} from 'universal/styles/paletteV2'
-import {DECELERATE} from 'universal/styles/animation'
-import {switchShadow} from 'universal/styles/elevation'
-import {Duration} from 'universal/types/constEnums'
+import {PALETTE} from '../../styles/paletteV2'
+import {DECELERATE} from '../../styles/animation'
+import {switchShadow} from '../../styles/elevation'
+import {Duration} from '../../types/constEnums'
 
 interface Props {
   active: boolean

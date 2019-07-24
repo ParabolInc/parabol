@@ -3,11 +3,11 @@ import {DropTarget} from 'react-dnd'
 
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import sortOrderBetween from 'universal/dnd/sortOrderBetween'
-import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation'
-import {AreaEnum, ITask, IUpdateTaskInput, TaskStatusEnum} from 'universal/types/graphql'
-import {TASK} from 'universal/utils/constants'
+} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import sortOrderBetween from '../../../../dnd/sortOrderBetween'
+import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
+import {AreaEnum, ITask, IUpdateTaskInput, TaskStatusEnum} from '../../../../types/graphql'
+import {TASK} from '../../../../utils/constants'
 
 interface Props extends WithAtmosphereProps {
   connectDropTarget: (reactEl: ReactElement<HTMLDivElement>) => ReactElement<HTMLDivElement>

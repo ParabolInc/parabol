@@ -1,4 +1,4 @@
-import {FirstParam, SecondPlusParams} from 'universal/types/generics'
+import {FirstParam, SecondPlusParams} from '../../types/generics'
 
 const pluralizeHandler = <T extends (...args: any[]) => any>(handler: T) => (
   newNodeOrNodes: FirstParam<T> | FirstParam<T>[],

@@ -1,7 +1,7 @@
-import Atmosphere from 'universal/Atmosphere'
-import removeAllRangesForEntity from 'universal/utils/draftjs/removeAllRangesForEntity'
-import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation'
-import {AreaEnum} from 'universal/types/graphql'
+import Atmosphere from '../../Atmosphere'
+import removeAllRangesForEntity from './removeAllRangesForEntity'
+import UpdateTaskMutation from '../../mutations/UpdateTaskMutation'
+import {AreaEnum} from '../../types/graphql'
 
 const removeContentTag = (
   tagValue: string,

@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {cardShadow} from 'universal/styles/elevation'
+import {cardShadow} from '../styles/elevation'
 
 const ProviderCard = styled('div')({
   backgroundColor: 'white',

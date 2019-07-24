@@ -1,5 +1,5 @@
 import React from 'react'
-import TimelineEventMock from 'universal/components/TimelineEventMock'
+import TimelineEventMock from './TimelineEventMock'
 
 const TimelineLoadingEvents = () => {
   return (

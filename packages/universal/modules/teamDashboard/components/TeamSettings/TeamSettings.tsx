@@ -1,20 +1,20 @@
-import {TeamSettings_viewer} from '__generated__/TeamSettings_viewer.graphql'
+import {TeamSettings_viewer} from '../../../../../__generated__/TeamSettings_viewer.graphql'
 import React, {Component} from 'react'
 import styled from '@emotion/styled'
 import Helmet from 'react-helmet'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import Panel from 'universal/components/Panel/Panel'
-import PrimaryButton from 'universal/components/PrimaryButton'
-import Row from 'universal/components/Row/Row'
+import Panel from '../../../../components/Panel/Panel'
+import PrimaryButton from '../../../../components/PrimaryButton'
+import Row from '../../../../components/Row/Row'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import ArchiveTeamContainer from 'universal/modules/teamDashboard/containers/ArchiveTeamContainer/ArchiveTeamContainer'
-import {PALETTE} from 'universal/styles/paletteV2'
-import ui from 'universal/styles/ui'
-import {Layout} from 'universal/types/constEnums'
-import {PERSONAL, PRO_LABEL} from 'universal/utils/constants'
+} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import ArchiveTeamContainer from '../../containers/ArchiveTeamContainer/ArchiveTeamContainer'
+import {PALETTE} from '../../../../styles/paletteV2'
+import ui from '../../../../styles/ui'
+import {Layout} from '../../../../types/constEnums'
+import {PERSONAL, PRO_LABEL} from '../../../../utils/constants'
 
 const TeamSettingsLayout = styled('div')({
   display: 'flex',

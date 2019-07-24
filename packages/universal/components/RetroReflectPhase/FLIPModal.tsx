@@ -1,14 +1,14 @@
 import React, {Component, ReactChild} from 'react'
 import styled from '@emotion/styled'
-import getBBox from 'universal/components/RetroReflectPhase/getBBox'
-import getTransform from 'universal/components/RetroReflectPhase/getTransform'
-import setElementBBox from 'universal/components/RetroReflectPhase/setElementBBox'
-import {BBox} from 'universal/types/animations'
-import requestDoubleAnimationFrame from 'universal/components/RetroReflectPhase/requestDoubleAnimationFrame'
-import {DECELERATE} from 'universal/styles/animation'
-import {ZINDEX_MODAL} from 'universal/styles/elevation'
-import {ITEM_DURATION} from 'universal/utils/multiplayerMasonry/masonryConstants'
-import hideBodyScroll from 'universal/utils/hideBodyScroll'
+import getBBox from './getBBox'
+import getTransform from './getTransform'
+import setElementBBox from './setElementBBox'
+import {BBox} from '../../types/animations'
+import requestDoubleAnimationFrame from './requestDoubleAnimationFrame'
+import {DECELERATE} from '../../styles/animation'
+import {ZINDEX_MODAL} from '../../styles/elevation'
+import {ITEM_DURATION} from '../../utils/multiplayerMasonry/masonryConstants'
+import hideBodyScroll from '../../utils/hideBodyScroll'
 
 interface Props {
   childrenLen: number

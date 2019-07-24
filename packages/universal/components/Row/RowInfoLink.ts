@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {PALETTE} from 'universal/styles/paletteV2'
+import {PALETTE} from '../../styles/paletteV2'
 import RowInfoCopy from './RowInfoCopy'
 
 const color = PALETTE.LINK_LIGHT

@@ -1,9 +1,9 @@
-import {DashAlertOverLimit_viewer} from '__generated__/DashAlertOverLimit_viewer.graphql'
+import {DashAlertOverLimit_viewer} from '../../__generated__/DashAlertOverLimit_viewer.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
-import DashAlertBar from 'universal/components/DashAlertBar'
-import DashAlertLink from 'universal/components/DashAlertLink'
+import DashAlertBar from './DashAlertBar'
+import DashAlertLink from './DashAlertLink'
 
 const MessageBlock = styled('div')({
   fontWeight: 600

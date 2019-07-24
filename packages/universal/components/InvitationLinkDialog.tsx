@@ -1,15 +1,15 @@
 import React, {useEffect} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router'
-import {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import withAtmosphere from '../decorators/withAtmosphere/withAtmosphere'
 import TeamInvitationAccept from './TeamInvitationAccept'
 import TeamInvitationErrorNotFound from './TeamInvitationErrorNotFound'
-import {InvitationLinkDialog_massInvitation} from '__generated__/InvitationLinkDialog_massInvitation.graphql'
-import useAtmosphere from 'universal/hooks/useAtmosphere'
-import useRouter from 'universal/hooks/useRouter'
+import {InvitationLinkDialog_massInvitation} from '../../__generated__/InvitationLinkDialog_massInvitation.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
+import useRouter from '../hooks/useRouter'
 import InvitationLinkErrorExpired from './InvitationLinkErrorExpired'
-import InvitationLinkAuthentication from 'universal/components/InvitationLinkAuthentication'
+import InvitationLinkAuthentication from './InvitationLinkAuthentication'
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{token: string}> {
   massInvitation: InvitationLinkDialog_massInvitation

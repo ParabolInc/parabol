@@ -1,14 +1,14 @@
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router'
-import DismissSuggestedActionMutation from 'universal/mutations/DismissSuggestedActionMutation'
+import DismissSuggestedActionMutation from '../mutations/DismissSuggestedActionMutation'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import {PALETTE} from '../styles/paletteV2'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import SuggestedActionButton from './SuggestedActionButton'
 import SuggestedActionCard from './SuggestedActionCard'
 import SuggestedActionCopy from './SuggestedActionCopy'
-import {SuggestedActionTryTheDemo_suggestedAction} from '__generated__/SuggestedActionTryTheDemo_suggestedAction.graphql'
+import {SuggestedActionTryTheDemo_suggestedAction} from '../../__generated__/SuggestedActionTryTheDemo_suggestedAction.graphql'
 
 interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
   suggestedAction: SuggestedActionTryTheDemo_suggestedAction

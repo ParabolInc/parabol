@@ -1,5 +1,5 @@
 import {useEffect} from 'react'
-import useRefState from 'universal/hooks/useRefState'
+import useRefState from './useRefState'
 
 const useInterval = (duration: number, iters: number) => {
   const [countRef, setCount] = useRefState<number>(0)

@@ -1,9 +1,9 @@
-import {ActionSidebarPhaseListItemChildren_viewer} from '__generated__/ActionSidebarPhaseListItemChildren_viewer.graphql'
+import {ActionSidebarPhaseListItemChildren_viewer} from '../../__generated__/ActionSidebarPhaseListItemChildren_viewer.graphql'
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import ActionSidebarAgendaItemsSection from 'universal/components/ActionSidebarAgendaItemsSection'
-import {useGotoStageId} from 'universal/hooks/useMeeting'
-import {NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
+import ActionSidebarAgendaItemsSection from './ActionSidebarAgendaItemsSection'
+import {useGotoStageId} from '../hooks/useMeeting'
+import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>

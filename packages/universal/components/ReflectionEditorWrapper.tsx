@@ -1,21 +1,21 @@
 import {DraftHandleValue, Editor, EditorState, getDefaultKeyBinding} from 'draft-js'
 import React, {PureComponent, Ref, Suspense} from 'react'
-import 'universal/components/TaskEditor/Draft.css'
-import withKeyboardShortcuts from 'universal/components/TaskEditor/withKeyboardShortcuts'
-import withMarkdown from 'universal/components/TaskEditor/withMarkdown'
-import appTheme from 'universal/styles/theme/appTheme'
-import {textTags} from 'universal/utils/constants'
-import entitizeText from 'universal/utils/draftjs/entitizeText'
+import './TaskEditor/Draft.css'
+import withKeyboardShortcuts from './TaskEditor/withKeyboardShortcuts'
+import withMarkdown from './TaskEditor/withMarkdown'
+import appTheme from '../styles/theme/appTheme'
+import {textTags} from '../utils/constants'
+import entitizeText from '../utils/draftjs/entitizeText'
 import styled from '@emotion/styled'
 import {
   cardContentFontSize,
   cardContentLineHeight,
   reflectionCardMaxHeight
-} from 'universal/styles/cards'
-import withEmojis from 'universal/components/TaskEditor/withEmojis'
-import isRichDraft from 'universal/utils/draftjs/isRichDraft'
-import lazyPreload from 'universal/utils/lazyPreload'
-import isAndroid from 'universal/utils/draftjs/isAndroid'
+} from '../styles/cards'
+import withEmojis from './TaskEditor/withEmojis'
+import isRichDraft from '../utils/draftjs/isRichDraft'
+import lazyPreload from '../utils/lazyPreload'
+import isAndroid from '../utils/draftjs/isAndroid'
 
 interface Props {
   ariaLabel: string

@@ -1,7 +1,7 @@
 import React, {Component, Ref} from 'react'
-import {Subtract} from 'universal/types/generics'
-import getDisplayName from 'universal/utils/getDisplayName'
-import getGraphQLError from 'universal/utils/relay/getGraphQLError'
+import {Subtract} from '../../types/generics'
+import getDisplayName from '../getDisplayName'
+import getGraphQLError from './getGraphQLError'
 
 export interface ErrorObject {
   [field: string]: string | undefined

@@ -1,6 +1,6 @@
 /* eslint-env jest */
 import {ContentState, convertToRaw} from 'draft-js'
-import truncateCard from 'universal/utils/draftjs/truncateCard'
+import truncateCard from '../truncateCard'
 
 describe('truncateCard', () => {
   test('does not truncate 0 len', async () => {

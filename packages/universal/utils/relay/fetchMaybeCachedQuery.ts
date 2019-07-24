@@ -4,7 +4,7 @@
  */
 
 import {fetchQuery, getRequest, GraphQLTaggedNode} from 'relay-runtime'
-import Atmosphere from 'universal/Atmosphere'
+import Atmosphere from '../../Atmosphere'
 
 const fetchMaybeCachedQuery = async (
   atmosphere: Atmosphere,

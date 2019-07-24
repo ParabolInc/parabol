@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import {PALETTE} from 'universal/styles/paletteV2'
-import {Layout} from 'universal/types/constEnums'
+import {PALETTE} from '../../styles/paletteV2'
+import {Layout} from '../../types/constEnums'
 
 const Row = styled('div')({
   alignItems: 'center',

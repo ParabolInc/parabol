@@ -1,9 +1,9 @@
 import React from 'react'
 import {createPaginationContainer, graphql} from 'react-relay'
-import OrgMemberRow from 'universal/modules/userDashboard/components/OrgUserRow/OrgMemberRow'
-import Panel from 'universal/components/Panel/Panel'
-import {BILLING_LEADER} from 'universal/utils/constants'
-import {OrgMembers_viewer} from '__generated__/OrgMembers_viewer.graphql'
+import OrgMemberRow from '../OrgUserRow/OrgMemberRow'
+import Panel from '../../../../components/Panel/Panel'
+import {BILLING_LEADER} from '../../../../utils/constants'
+import {OrgMembers_viewer} from '../../../../../__generated__/OrgMembers_viewer.graphql'
 
 interface Props {
   viewer: OrgMembers_viewer

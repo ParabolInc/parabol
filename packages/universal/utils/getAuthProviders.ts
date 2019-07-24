@@ -1,6 +1,6 @@
-import {getAuthProvidersQuery} from '__generated__/getAuthProvidersQuery.graphql'
+import {getAuthProvidersQuery} from '../../__generated__/getAuthProvidersQuery.graphql'
 import {fetchQuery, graphql} from 'react-relay'
-import Atmosphere from 'universal/Atmosphere'
+import Atmosphere from '../Atmosphere'
 
 const query = graphql`
   query getAuthProvidersQuery($email: ID!) {

@@ -1,4 +1,4 @@
-import {BBox, Point} from 'universal/types/animations'
+import {BBox, Point} from '../../types/animations'
 
 interface Options {
   scale?: boolean

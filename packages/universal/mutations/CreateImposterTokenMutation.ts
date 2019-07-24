@@ -1,8 +1,8 @@
 import {commitMutation, graphql} from 'react-relay'
-import signout from 'universal/containers/Signout/signout'
-import getGraphQLError from 'universal/utils/relay/getGraphQLError'
-import LoginMutation from 'universal/mutations/LoginMutation'
-import Atmosphere from 'universal/Atmosphere'
+import signout from '../containers/Signout/signout'
+import getGraphQLError from '../utils/relay/getGraphQLError'
+import LoginMutation from './LoginMutation'
+import Atmosphere from '../Atmosphere'
 
 graphql`
   fragment CreateImposterTokenMutation_agendaItem on CreateImposterTokenPayload {

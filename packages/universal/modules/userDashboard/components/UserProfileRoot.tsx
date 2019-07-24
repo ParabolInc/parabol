@@ -1,12 +1,12 @@
 import React from 'react'
 import {graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
+import QueryRenderer from '../../../components/QueryRenderer/QueryRenderer'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import NotificationSubscription from 'universal/subscriptions/NotificationSubscription'
-import {cacheConfig} from 'universal/utils/constants'
+} from '../../../decorators/withAtmosphere/withAtmosphere'
+import NotificationSubscription from '../../../subscriptions/NotificationSubscription'
+import {cacheConfig} from '../../../utils/constants'
 import {LoaderSize} from '../../../types/constEnums'
 import renderQuery from '../../../utils/relay/renderQuery'
 import UserProfile from './UserProfile'

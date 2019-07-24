@@ -1,9 +1,9 @@
 import React, {forwardRef} from 'react'
-import HelpMenuContent from 'universal/components/MeetingHelp/HelpMenuContent'
-import HelpMenuCopy from 'universal/components/MeetingHelp/HelpMenuCopy'
-import HelpMenuLink from 'universal/components/MeetingHelp/HelpMenuLink'
-import useSegmentTrack from 'universal/hooks/useSegmentTrack'
-import {NewMeetingPhaseTypeEnum, SegmentClientEventEnum} from 'universal/types/graphql'
+import HelpMenuContent from './HelpMenuContent'
+import HelpMenuCopy from './HelpMenuCopy'
+import HelpMenuLink from './HelpMenuLink'
+import useSegmentTrack from '../../hooks/useSegmentTrack'
+import {NewMeetingPhaseTypeEnum, SegmentClientEventEnum} from '../../types/graphql'
 
 interface Props {}
 

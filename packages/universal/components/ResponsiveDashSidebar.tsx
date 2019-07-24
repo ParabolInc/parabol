@@ -1,11 +1,11 @@
-import useBreakpoint from 'universal/hooks/useBreakpoint'
+import useBreakpoint from '../hooks/useBreakpoint'
 import React, {ReactNode} from 'react'
-import SwipeableDashSidebar from 'universal/components/SwipeableDashSidebar'
-import StaticSidebar from 'universal/components/StaticSidebar'
-import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
-import elevation, {desktopSidebarShadow} from 'universal/styles/elevation'
+import SwipeableDashSidebar from './SwipeableDashSidebar'
+import StaticSidebar from './StaticSidebar'
+import {DASH_SIDEBAR} from './Dashboard/DashSidebar'
+import elevation, {desktopSidebarShadow} from '../styles/elevation'
 import styled from '@emotion/styled'
-import {DECELERATE} from 'universal/styles/animation'
+import {DECELERATE} from '../styles/animation'
 
 interface Props {
   children: ReactNode

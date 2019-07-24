@@ -2,10 +2,10 @@ import GraphiQL from 'graphiql'
 import 'graphiql/graphiql.css'
 import React, {useRef, useState} from 'react'
 import styled from '@emotion/styled'
-import logoMarkPrimary from 'universal/styles/theme/images/brand/parabol-lockup-h-dark.svg'
-import useAtmosphere from 'universal/hooks/useAtmosphere'
-import useAuthRoute from 'universal/hooks/useAuthRoute'
-import {AuthTokenRole} from 'universal/types/graphql'
+import logoMarkPrimary from '../../../../styles/theme/images/brand/parabol-lockup-h-dark.svg'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useAuthRoute from '../../../../hooks/useAuthRoute'
+import {AuthTokenRole} from '../../../../types/graphql'
 
 const GQL = styled('div')({
   margin: 0,

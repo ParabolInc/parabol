@@ -1,5 +1,5 @@
 import {ConnectionHandler, ViewerHandler} from 'relay-runtime'
-import ContentTextHandler from 'universal/utils/relay/ContentFilterHandler'
+import ContentTextHandler from './ContentFilterHandler'
 
 const handlerProvider = (handle) => {
   switch (handle) {

@@ -1,12 +1,12 @@
-import {NewTeamOrgPicker_organizations} from '__generated__/NewTeamOrgPicker_organizations.graphql'
+import {NewTeamOrgPicker_organizations} from '../../../../__generated__/NewTeamOrgPicker_organizations.graphql'
 import React, {useEffect, useMemo} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import DropdownMenuToggle from 'universal/components/DropdownMenuToggle'
-import TagPro from 'universal/components/Tag/TagPro'
-import {MenuPosition} from 'universal/hooks/useCoords'
-import useMenu from 'universal/hooks/useMenu'
-import {PRO} from 'universal/utils/constants'
-import lazyPreload from 'universal/utils/lazyPreload'
+import DropdownMenuToggle from '../../../components/DropdownMenuToggle'
+import TagPro from '../../../components/Tag/TagPro'
+import {MenuPosition} from '../../../hooks/useCoords'
+import useMenu from '../../../hooks/useMenu'
+import {PRO} from '../../../utils/constants'
+import lazyPreload from '../../../utils/lazyPreload'
 
 interface Props {
   disabled: boolean

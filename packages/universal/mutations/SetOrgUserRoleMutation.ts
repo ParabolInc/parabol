@@ -1,10 +1,10 @@
 import {commitMutation, graphql} from 'react-relay'
-import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
-import handleAddOrganization from 'universal/mutations/handlers/handleAddOrganization'
-import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications'
-import getInProxy from 'universal/utils/relay/getInProxy'
-import {OnNextHandler} from 'universal/types/relayMutations'
-import {SetOrgUserRoleMutationAdded_organization} from '__generated__/SetOrgUserRoleMutationAdded_organization.graphql'
+import handleAddNotifications from './handlers/handleAddNotifications'
+import handleAddOrganization from './handlers/handleAddOrganization'
+import handleRemoveNotifications from './handlers/handleRemoveNotifications'
+import getInProxy from '../utils/relay/getInProxy'
+import {OnNextHandler} from '../types/relayMutations'
+import {SetOrgUserRoleMutationAdded_organization} from '../../__generated__/SetOrgUserRoleMutationAdded_organization.graphql'
 
 graphql`
   fragment SetOrgUserRoleMutationAdded_organization on SetOrgUserRoleAddedPayload {

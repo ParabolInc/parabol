@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {Layout} from 'universal/types/constEnums'
+import {Layout} from '../../types/constEnums'
 
 const RowInfo = styled('div')({
   display: 'flex',

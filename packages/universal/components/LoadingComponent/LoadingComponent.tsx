@@ -1,9 +1,9 @@
 import React, {forwardRef, useEffect} from 'react'
 import styled from '@emotion/styled'
-import {LoadingDelayRef} from 'universal/hooks/useLoadingDelay'
-import Spinner from 'universal/modules/spinner/components/Spinner/Spinner'
-import {PALETTE} from 'universal/styles/paletteV2'
-import {LoaderSize, Times} from 'universal/types/constEnums'
+import {LoadingDelayRef} from '../../hooks/useLoadingDelay'
+import Spinner from '../../modules/spinner/components/Spinner/Spinner'
+import {PALETTE} from '../../styles/paletteV2'
+import {LoaderSize, Times} from '../../types/constEnums'
 import useTimeout from '../../hooks/useTimeout'
 
 interface WrapperProps {

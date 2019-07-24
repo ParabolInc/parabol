@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import MenuItemComponentAvatar from 'universal/components/MenuItemComponentAvatar'
-import {ICON_SIZE} from 'universal/styles/typographyV2'
+import MenuItemComponentAvatar from './MenuItemComponentAvatar'
+import {ICON_SIZE} from '../styles/typographyV2'
 
 const SuggestedIntegrationMenuItemAvatar = styled(MenuItemComponentAvatar)({
   '& svg': {

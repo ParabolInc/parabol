@@ -1,8 +1,8 @@
-import useAtmosphere from 'universal/hooks/useAtmosphere'
-import useRefState from 'universal/hooks/useRefState'
+import useAtmosphere from './useAtmosphere'
+import useRefState from './useRefState'
 import {Disposable, SelectorData} from 'relay-runtime'
 import {useEffect, useRef} from 'react'
-import useDeepEqual from 'universal/hooks/useDeepEqual'
+import useDeepEqual from './useDeepEqual'
 
 const useLocalQuery = <TQuery extends {response: any; variables: any}>(
   query: any,

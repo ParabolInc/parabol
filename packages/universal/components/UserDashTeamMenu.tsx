@@ -1,11 +1,11 @@
 import React from 'react'
 import {connect, DispatchProp} from 'react-redux'
-import DropdownMenuLabel from 'universal/components/DropdownMenuLabel'
-import Menu from 'universal/components/Menu'
-import MenuItem from 'universal/components/MenuItem'
-import {MenuProps} from 'universal/hooks/useMenu'
-import {filterTeam} from 'universal/modules/userDashboard/ducks/userDashDuck'
-import {ITeam} from 'universal/types/graphql'
+import DropdownMenuLabel from './DropdownMenuLabel'
+import Menu from './Menu'
+import MenuItem from './MenuItem'
+import {MenuProps} from '../hooks/useMenu'
+import {filterTeam} from '../modules/userDashboard/ducks/userDashDuck'
+import {ITeam} from '../types/graphql'
 
 interface Props extends DispatchProp {
   menuProps: MenuProps

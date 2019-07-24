@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/browser'
 import React, {Component, ErrorInfo, ReactNode} from 'react'
-import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent'
+import ErrorComponent from './ErrorComponent/ErrorComponent'
 
 interface Props {
   fallback?: (error: Error) => ReactNode

@@ -1,6 +1,6 @@
 import {useEffect} from 'react'
-import {AtmosphereEvents} from 'universal/Atmosphere'
-import useAtmosphere from 'universal/hooks/useAtmosphere'
+import {AtmosphereEvents} from '../Atmosphere'
+import useAtmosphere from './useAtmosphere'
 
 const useAtmosphereListener = <T extends keyof AtmosphereEvents, V extends AtmosphereEvents[T]>(
   eventName: T,

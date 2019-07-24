@@ -2,8 +2,8 @@ import Oy from 'oy-vey'
 import React from 'react'
 import UpcomingInvoiceEmail, {
   UpcomingInvoiceEmailProps
-} from 'universal/modules/email/components/UpcomingInvoiceEmail'
-import {headCSS} from 'universal/styles/email'
+} from './UpcomingInvoiceEmail'
+import {headCSS} from '../../../styles/email'
 
 const subject = 'Your monthly summary'
 

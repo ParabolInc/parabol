@@ -1,6 +1,6 @@
-import brand from 'universal/styles/theme/brand'
-import appTheme from 'universal/styles/theme/appTheme'
-import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants'
+import brand from './brand'
+import appTheme from './appTheme'
+import {ACTIVE, STUCK, DONE, FUTURE} from '../../utils/constants'
 
 const stateColor = {
   done: '#7C5FB0', // variant of primary purple, TODO: needs approximate generated palette value

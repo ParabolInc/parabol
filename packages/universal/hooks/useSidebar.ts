@@ -1,8 +1,8 @@
 import {useCallback} from 'react'
-import useHotkey from 'universal/hooks/useHotkey'
+import useHotkey from './useHotkey'
 import useRefState from './useRefState'
-import useBreakpoint from 'universal/hooks/useBreakpoint'
-import {DASH_SIDEBAR} from 'universal/components/Dashboard/DashSidebar'
+import useBreakpoint from './useBreakpoint'
+import {DASH_SIDEBAR} from '../components/Dashboard/DashSidebar'
 
 const useSidebar = () => {
   const isDesktop = useBreakpoint(DASH_SIDEBAR.BREAKPOINT)

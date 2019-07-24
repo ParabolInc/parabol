@@ -1,18 +1,18 @@
-import {NewMeetingAvatarMenu_newMeeting} from '__generated__/NewMeetingAvatarMenu_newMeeting.graphql'
-import {NewMeetingAvatarMenu_teamMember} from '__generated__/NewMeetingAvatarMenu_teamMember.graphql'
+import {NewMeetingAvatarMenu_newMeeting} from '../../../../__generated__/NewMeetingAvatarMenu_newMeeting.graphql'
+import {NewMeetingAvatarMenu_teamMember} from '../../../../__generated__/NewMeetingAvatarMenu_teamMember.graphql'
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import DropdownMenuLabel from 'universal/components/DropdownMenuLabel'
-import MenuItem from 'universal/components/MenuItem'
-import Menu from 'universal/components/Menu'
+import DropdownMenuLabel from '../../../components/DropdownMenuLabel'
+import MenuItem from '../../../components/MenuItem'
+import Menu from '../../../components/Menu'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {MenuProps} from 'universal/hooks/useMenu'
-import PromoteNewMeetingFacilitatorMutation from 'universal/mutations/PromoteNewMeetingFacilitatorMutation'
-import {LOBBY} from 'universal/utils/constants'
-import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
-import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
+} from '../../../decorators/withAtmosphere/withAtmosphere'
+import {MenuProps} from '../../../hooks/useMenu'
+import PromoteNewMeetingFacilitatorMutation from '../../../mutations/PromoteNewMeetingFacilitatorMutation'
+import {LOBBY} from '../../../utils/constants'
+import {phaseLabelLookup} from '../../../utils/meetings/lookups'
+import UNSTARTED_MEETING from '../../../utils/meetings/unstartedMeeting'
 
 interface Props extends WithAtmosphereProps {
   newMeeting: NewMeetingAvatarMenu_newMeeting

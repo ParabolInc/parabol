@@ -1,12 +1,12 @@
 import React, {cloneElement, Component, ComponentElement} from 'react'
 import {findDOMNode} from 'react-dom'
-import {BBox} from 'universal/types/animations'
-import ChildrenCache from 'universal/components/RetroReflectPhase/ChildrenCache'
-import ParentCache from 'universal/components/RetroReflectPhase/ParentCache'
+import {BBox} from '../../types/animations'
+import ChildrenCache from './ChildrenCache'
+import ParentCache from './ParentCache'
 import {
   CARD_PADDING,
   REFLECTION_CARD_WIDTH
-} from 'universal/utils/multiplayerMasonry/masonryConstants'
+} from '../../utils/multiplayerMasonry/masonryConstants'
 
 interface Props {
   getFirst (): BBox | null

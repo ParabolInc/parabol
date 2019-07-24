@@ -1,6 +1,6 @@
-import pluralizeHandler from 'universal/mutations/handlers/pluralizeHandler'
-import addNodeToArray from 'universal/utils/relay/addNodeToArray'
-import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
+import pluralizeHandler from './pluralizeHandler'
+import addNodeToArray from '../../utils/relay/addNodeToArray'
+import fromTeamMemberId from '../../utils/relay/fromTeamMemberId'
 
 const handleAddTeamMember = (teamMember, store) => {
   const {teamId} = fromTeamMemberId(teamMember.getValue('id'))

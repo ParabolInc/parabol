@@ -1,10 +1,10 @@
 import {commitMutation, graphql} from 'react-relay'
-import handleUpdateStageSort from 'universal/mutations/handlers/handleUpdateStageSort'
-import {DISCUSS} from 'universal/utils/constants'
-import getInProxy from 'universal/utils/relay/getInProxy'
-import {IDragDiscussionTopicOnMutationArguments} from 'universal/types/graphql'
-import Atmosphere from 'universal/Atmosphere'
-import {DragDiscussionTopicMutation as IDragDiscussionTopicMutation} from '__generated__/DragDiscussionTopicMutation.graphql'
+import handleUpdateStageSort from './handlers/handleUpdateStageSort'
+import {DISCUSS} from '../utils/constants'
+import getInProxy from '../utils/relay/getInProxy'
+import {IDragDiscussionTopicOnMutationArguments} from '../types/graphql'
+import Atmosphere from '../Atmosphere'
+import {DragDiscussionTopicMutation as IDragDiscussionTopicMutation} from '../../__generated__/DragDiscussionTopicMutation.graphql'
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 
 graphql`

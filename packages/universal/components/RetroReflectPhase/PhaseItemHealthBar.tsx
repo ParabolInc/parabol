@@ -1,9 +1,9 @@
 import React, {Component} from 'react'
 import styled from '@emotion/styled';
 import { keyframes } from '@emotion/core';
-import {DECELERATE} from 'universal/styles/animation'
-import plural from 'universal/utils/plural'
-import appTheme from 'universal/styles/theme/appTheme'
+import {DECELERATE} from '../../styles/animation'
+import plural from '../../utils/plural'
+import appTheme from '../../styles/theme/appTheme'
 interface Props {
   editorCount: number
 }

@@ -1,13 +1,13 @@
 import React from 'react'
 import styled from '@emotion/styled'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import Menu from 'universal/components/Menu'
-import MenuItem from 'universal/components/MenuItem'
-import MenuItemIcon from 'universal/components/MenuItemIcon'
-import MenuItemLabel from 'universal/components/MenuItemLabel'
-import {MenuProps} from 'universal/hooks/useMenu'
-import {ACTION, RETROSPECTIVE} from 'universal/utils/constants'
-import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
+import Menu from '../../../../components/Menu'
+import MenuItem from '../../../../components/MenuItem'
+import MenuItemIcon from '../../../../components/MenuItemIcon'
+import MenuItemLabel from '../../../../components/MenuItemLabel'
+import {MenuProps} from '../../../../hooks/useMenu'
+import {ACTION, RETROSPECTIVE} from '../../../../utils/constants'
+import {meetingTypeToSlug} from '../../../../utils/meetings/lookups'
 
 interface Props extends RouteComponentProps<{}> {
   menuProps: MenuProps

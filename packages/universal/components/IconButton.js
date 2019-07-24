@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import styled from '@emotion/styled'
-import LinkButton from 'universal/components/LinkButton'
-import Icon from 'universal/components/Icon'
-import {MD_ICONS_SIZE_18, MD_ICONS_SIZE_24} from 'universal/styles/icons'
+import LinkButton from './LinkButton'
+import Icon from './Icon'
+import {MD_ICONS_SIZE_18, MD_ICONS_SIZE_24} from '../styles/icons'
 
 const StyledButton = styled(LinkButton)({outline: 0})
 

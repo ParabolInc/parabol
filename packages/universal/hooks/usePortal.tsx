@@ -1,8 +1,8 @@
 import React, {ReactElement, useCallback, useEffect, useRef} from 'react'
 import {createPortal} from 'react-dom'
-import requestDoubleAnimationFrame from 'universal/components/RetroReflectPhase/requestDoubleAnimationFrame'
-import hideBodyScroll from 'universal/utils/hideBodyScroll'
-import useRefState from 'universal/hooks/useRefState'
+import requestDoubleAnimationFrame from '../components/RetroReflectPhase/requestDoubleAnimationFrame'
+import hideBodyScroll from '../utils/hideBodyScroll'
+import useRefState from './useRefState'
 
 export const enum PortalStatus {
   Mounted, // node appended to DOM

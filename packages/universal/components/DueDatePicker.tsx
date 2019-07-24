@@ -1,18 +1,18 @@
 import React from 'react'
 import DayPicker from 'react-day-picker'
-import 'universal/styles/daypicker.css'
+import '../styles/daypicker.css'
 import {DayModifiers} from 'react-day-picker/types/common'
-import Menu from 'universal/components/Menu'
-import {MenuProps} from 'universal/hooks/useMenu'
-import UpdateTaskDueDateMutation from 'universal/mutations/UpdateTaskDueDateMutation'
+import Menu from './Menu'
+import {MenuProps} from '../hooks/useMenu'
+import UpdateTaskDueDateMutation from '../mutations/UpdateTaskDueDateMutation'
 import withAtmosphere, {
   WithAtmosphereProps
-} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+} from '../decorators/withAtmosphere/withAtmosphere'
+import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {DueDatePicker_task} from '__generated__/DueDatePicker_task.graphql'
+import {DueDatePicker_task} from '../../__generated__/DueDatePicker_task.graphql'
 import styled from '@emotion/styled'
-import ui from 'universal/styles/ui'
+import ui from '../styles/ui'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   menuProps: MenuProps

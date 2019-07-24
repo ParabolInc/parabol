@@ -1,4 +1,4 @@
-import findNodeInConn from 'universal/utils/relay/findNodeInConn'
+import findNodeInConn from './findNodeInConn'
 
 /*
  * Given that a nodeId only exists in 1 of many connections

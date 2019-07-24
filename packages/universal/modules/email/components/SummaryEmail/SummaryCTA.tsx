@@ -1,7 +1,7 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
-import CreateAccountSection from 'universal/modules/email/components/CreateAccountSection/CreateAccountSection'
-import {emailPrimaryButtonStyle, emailRuleStyle} from 'universal/styles/email'
+import CreateAccountSection from '../CreateAccountSection/CreateAccountSection'
+import {emailPrimaryButtonStyle, emailRuleStyle} from '../../../../styles/email'
 
 type SummaryReferrer = 'email' | 'meeting' | 'history'
 

@@ -1,14 +1,14 @@
-import {useMeetingLocalStateTeam} from '__generated__/useMeetingLocalStateTeam.graphql'
+import {useMeetingLocalStateTeam} from '../../__generated__/useMeetingLocalStateTeam.graphql'
 import {Dispatch, SetStateAction, useEffect, useRef, useState} from 'react'
 import {graphql} from 'react-relay'
-import useAtmosphere from 'universal/hooks/useAtmosphere'
-import useRouter from 'universal/hooks/useRouter'
-import findKeyByValue from 'universal/utils/findKeyByValue'
-import findStageById from 'universal/utils/meetings/findStageById'
-import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl'
-import getMeetingPathParams from 'universal/utils/meetings/getMeetingPathParams'
-import {meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups'
-import updateLocalStage from 'universal/utils/relay/updateLocalStage'
+import useAtmosphere from './useAtmosphere'
+import useRouter from './useRouter'
+import findKeyByValue from '../utils/findKeyByValue'
+import findStageById from '../utils/meetings/findStageById'
+import fromStageIdToUrl from '../utils/meetings/fromStageIdToUrl'
+import getMeetingPathParams from '../utils/meetings/getMeetingPathParams'
+import {meetingTypeToSlug, phaseTypeToSlug} from '../utils/meetings/lookups'
+import updateLocalStage from '../utils/relay/updateLocalStage'
 
 const useInitialSafeRoute = (
   setSafeRoute: Dispatch<SetStateAction<boolean>>,

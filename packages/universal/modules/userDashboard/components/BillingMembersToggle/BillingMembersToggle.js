@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import {BILLING_PAGE, MEMBERS_PAGE} from 'universal/utils/constants'
-import ToggleNav from 'universal/components/ToggleNav/ToggleNav'
+import {BILLING_PAGE, MEMBERS_PAGE} from '../../../../utils/constants'
+import ToggleNav from '../../../../components/ToggleNav/ToggleNav'
 import {matchPath, withRouter} from 'react-router-dom'
 
 const BillingMembersToggle = (props) => {

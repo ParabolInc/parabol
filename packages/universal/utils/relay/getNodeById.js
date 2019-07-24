@@ -1,4 +1,4 @@
-import filterNodesInConn from 'universal/utils/relay/filterNodesInConn'
+import filterNodesInConn from './filterNodesInConn'
 
 const getNodeById = (nodeId, conn) =>
   filterNodesInConn(conn, (node) => node.getValue('id') === nodeId)[0]

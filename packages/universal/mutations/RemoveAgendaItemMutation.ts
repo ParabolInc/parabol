@@ -1,10 +1,10 @@
 import {commitMutation, graphql} from 'react-relay'
-import Atmosphere from 'universal/Atmosphere'
-import handleRemoveAgendaItems from 'universal/mutations/handlers/handleRemoveAgendaItems'
-import {IRemoveAgendaItemOnMutationArguments} from 'universal/types/graphql'
-import {LocalHandlers} from 'universal/types/relayMutations'
-import getInProxy from 'universal/utils/relay/getInProxy'
-import {RemoveAgendaItemMutation as TRemoveAgendaItemMutation} from '__generated__/RemoveAgendaItemMutation.graphql'
+import Atmosphere from '../Atmosphere'
+import handleRemoveAgendaItems from './handlers/handleRemoveAgendaItems'
+import {IRemoveAgendaItemOnMutationArguments} from '../types/graphql'
+import {LocalHandlers} from '../types/relayMutations'
+import getInProxy from '../utils/relay/getInProxy'
+import {RemoveAgendaItemMutation as TRemoveAgendaItemMutation} from '../../__generated__/RemoveAgendaItemMutation.graphql'
 
 graphql`
   fragment RemoveAgendaItemMutation_team on RemoveAgendaItemPayload {

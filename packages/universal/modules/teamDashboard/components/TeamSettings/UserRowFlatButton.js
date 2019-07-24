@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import appTheme from 'universal/styles/theme/theme'
+import appTheme from '../../../../styles/theme/theme'
 
 const UserRowFlatButton = styled('div')({
   alignSelf: 'center',

@@ -1,7 +1,7 @@
 import React, {lazy} from 'react'
 import {Route} from 'react-router'
 import {Switch} from 'react-router-dom'
-import userDashReducer from 'universal/modules/userDashboard/ducks/userDashDuck'
+import userDashReducer from '../../ducks/userDashDuck'
 import withReducer from '../../../../decorators/withReducer/withReducer'
 
 const Organizations = lazy(() =>

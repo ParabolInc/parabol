@@ -1,14 +1,14 @@
 import React, {forwardRef, Ref, RefObject} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import styled from '@emotion/styled'
-import ReflectionGroupTitleEditor from 'universal/components/ReflectionGroup/ReflectionGroupTitleEditor'
-import {GROUP, VOTE} from 'universal/utils/constants'
-import ReflectionGroupVoting from 'universal/components/ReflectionGroupVoting'
-import Tag from 'universal/components/Tag/Tag'
-import {REFLECTION_CARD_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
-import {ReflectionGroupHeader_reflectionGroup} from '__generated__/ReflectionGroupHeader_reflectionGroup.graphql'
-import {ReflectionGroupHeader_meeting} from '__generated__/ReflectionGroupHeader_meeting.graphql'
-import plural from 'universal/utils/plural'
+import ReflectionGroupTitleEditor from './ReflectionGroup/ReflectionGroupTitleEditor'
+import {GROUP, VOTE} from '../utils/constants'
+import ReflectionGroupVoting from './ReflectionGroupVoting'
+import Tag from './Tag/Tag'
+import {REFLECTION_CARD_WIDTH} from '../utils/multiplayerMasonry/masonryConstants'
+import {ReflectionGroupHeader_reflectionGroup} from '../../__generated__/ReflectionGroupHeader_reflectionGroup.graphql'
+import {ReflectionGroupHeader_meeting} from '../../__generated__/ReflectionGroupHeader_meeting.graphql'
+import plural from '../utils/plural'
 
 interface Props {
   meeting: ReflectionGroupHeader_meeting

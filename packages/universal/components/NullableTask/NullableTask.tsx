@@ -1,10 +1,10 @@
 import {convertFromRaw} from 'draft-js'
 import React, {useEffect, useMemo} from 'react'
-import NullCard from 'universal/components/NullCard/NullCard'
-import OutcomeCardContainer from 'universal/modules/outcomeCard/containers/OutcomeCard/OutcomeCardContainer'
+import NullCard from '../NullCard/NullCard'
+import OutcomeCardContainer from '../../modules/outcomeCard/containers/OutcomeCard/OutcomeCardContainer'
 import {createFragmentContainer, graphql} from 'react-relay'
-import useAtmosphere from 'universal/hooks/useAtmosphere'
-import {NullableTask_task} from '__generated__/NullableTask_task.graphql'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import {NullableTask_task} from '../../../__generated__/NullableTask_task.graphql'
 
 interface Props {
   area: string

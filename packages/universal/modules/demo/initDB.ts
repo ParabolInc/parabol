@@ -1,5 +1,5 @@
-import {CHECKIN, DISCUSS, GROUP, PRO, REFLECT, RETROSPECTIVE, VOTE} from 'universal/utils/constants'
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
+import {CHECKIN, DISCUSS, GROUP, PRO, REFLECT, RETROSPECTIVE, VOTE} from '../../utils/constants'
+import toTeamMemberId from '../../utils/relay/toTeamMemberId'
 import {
   IJiraRemoteProject,
   IRetroReflection,
@@ -12,8 +12,8 @@ import {
   SlackNotificationEventEnum,
   TaskServiceEnum
 } from '../../types/graphql'
-import getDemoAvatar from 'universal/utils/getDemoAvatar'
-import demoUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
+import getDemoAvatar from '../../utils/getDemoAvatar'
+import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
 
 export const demoMeetingId = 'demoMeeting'
 export const demoViewerId = 'demoUser'

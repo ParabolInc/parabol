@@ -1,8 +1,8 @@
 import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
-import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
-import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
+import appTheme from '../styles/theme/appTheme'
+import ui from '../styles/ui'
+import {phaseLabelLookup} from '../utils/meetings/lookups'
 
 const NavListItem = styled('li')({
   fontWeight: 600,

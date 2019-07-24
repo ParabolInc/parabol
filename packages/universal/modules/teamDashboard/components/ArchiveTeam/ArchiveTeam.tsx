@@ -1,7 +1,7 @@
 import React from 'react'
-import LinkButton from 'universal/components/LinkButton'
-import IconLabel from 'universal/components/IconLabel'
-import Type from 'universal/components/Type/Type'
+import LinkButton from '../../../../components/LinkButton'
+import IconLabel from '../../../../components/IconLabel'
+import Type from '../../../../components/Type/Type'
 
 import ArchiveTeamForm from './ArchiveTeamForm'
 

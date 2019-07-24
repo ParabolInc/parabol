@@ -1,8 +1,8 @@
-import {TimelineSuggestedAction_viewer} from '__generated__/TimelineSuggestedAction_viewer.graphql'
+import {TimelineSuggestedAction_viewer} from '../../__generated__/TimelineSuggestedAction_viewer.graphql'
 import React, {lazy} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
-import DelayUnmount from 'universal/components/DelayUnmount'
+import DelayUnmount from './DelayUnmount'
 
 interface Props {
   viewer: TimelineSuggestedAction_viewer
