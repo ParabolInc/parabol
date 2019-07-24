@@ -1,4 +1,4 @@
-import getDotenv from '../../client/utils/dotenv'
+import getDotenv from '../../server/utils/dotenv'
 import migrate from 'migrate-rethinkdb'
 import {parse} from 'url'
 

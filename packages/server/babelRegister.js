@@ -26,7 +26,7 @@ require('@babel/register')({
         root: ['./packages']
       }
     ],
-    [pluginRelay, {artifactDirectory: './packages/__generated__'}]
+    [pluginRelay, {artifactDirectory: './packages/client/__generated__'}]
   ],
   presets: [
     [

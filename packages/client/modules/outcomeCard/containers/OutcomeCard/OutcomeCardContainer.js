@@ -1,5 +1,5 @@
 import {convertToRaw, EditorState} from 'draft-js'
-import {Set} from '../../../../../immutable'
+import {Set} from 'immutable'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import {createFragmentContainer} from 'react-relay'

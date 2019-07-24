@@ -5,6 +5,6 @@ module.exports = {
     // example of how to alias
     // 'relay-runtime': '@mattkrick/relay-runtime'
   },
-  modules: [path.join(__dirname, '../packages'), 'node_modules'],
+  modules: [path.join(__dirname, '..', '..'), 'node_modules'],
   extensions: ['.wasm', '.mjs', '.js', '.json', '.ts', '.tsx', '.graphql', '.d.ts']
 }

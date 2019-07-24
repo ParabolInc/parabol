@@ -1,14 +1,14 @@
-require('../packages/server/babelRegister')
+require('..//babelRegister')
 const resolve = require('./webpackResolve')
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
-const getWebpackPublicPath = require('../packages/server/utils/getWebpackPublicPath')
+const getWebpackPublicPath = require('../../server/utils/getWebpackPublicPath')
 const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 const S3Plugin = require('webpack-s3-plugin')
 const {getS3BasePath} = require('./utils/getS3BasePath')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
-const getDotenv = require('../packages/client/utils/dotenv')
+const getDotenv = require('../utils/dotenv')
 const pluginDynamicImport = require('@babel/plugin-syntax-dynamic-import')
 const presetEnv = require('@babel/preset-env')
 const presetFlow = require('@babel/preset-flow')
@@ -23,8 +23,8 @@ const {InjectManifest} = require('workbox-webpack-plugin')
 
 getDotenv.default()
 
-const CLIENT_ROOT = path.join(__dirname, '..')
-const PROJECT_ROOT = path.join(CLIENT_ROOT, '..', '..')
+const PROJECT_ROOT = path.join(__dirname, '..', '..', '..')
+const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
 const publicPath = getWebpackPublicPath.default()
 const buildPath = path.join(PROJECT_ROOT, 'build')
 
@@ -148,10 +148,10 @@ module.exports = {
       filename: '[name]_[hash].js.map',
       append: `\n//# sourceMappingURL=${publicPath}[url]`
     }),
-    new InjectManifest({
-      swSrc: path.join(CLIENT_ROOT, 'sw.ts'),
-      importWorkboxFrom: 'disabled'
-    }),
+    // new InjectManifest({
+    //   swSrc: path.join(CLIENT_ROOT, 'sw.ts'),
+    //   importWorkboxFrom: 'disabled'
+    // }),
     ...extraPlugins
   ],
   module: {

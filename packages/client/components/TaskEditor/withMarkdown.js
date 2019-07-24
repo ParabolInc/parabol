@@ -1,5 +1,5 @@
 import {EditorState, Modifier} from 'draft-js'
-import {List, Map, OrderedSet} from '../../../immutable'
+import {List, Map, OrderedSet} from 'immutable'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import getAnchorLocation from './getAnchorLocation'

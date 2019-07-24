@@ -1,7 +1,5 @@
 import {GraphQLList, GraphQLObjectType} from 'graphql'
-import SetOrgUserRolePayload, {
-  setOrgUserRoleFields
-} from './SetOrgUserRolePayload'
+import SetOrgUserRolePayload, {setOrgUserRoleFields} from './SetOrgUserRolePayload'
 import {makeResolveNotificationsForViewer} from '../resolvers'
 import Notification from './Notification'
 

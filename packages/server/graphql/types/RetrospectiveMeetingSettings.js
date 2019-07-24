@@ -1,8 +1,6 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import CustomPhaseItem from './CustomPhaseItem'
-import TeamMeetingSettings, {
-  teamMeetingSettingsFields
-} from './TeamMeetingSettings'
+import TeamMeetingSettings, {teamMeetingSettingsFields} from './TeamMeetingSettings'
 import {RETRO_PHASE_ITEM} from '../../../client/utils/constants'
 import ReflectTemplate from './ReflectTemplate'
 

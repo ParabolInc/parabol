@@ -7,7 +7,13 @@ import {getUserId, isUserInOrg} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import shortid from 'shortid'
-import {NEW_AUTH_TOKEN, NOTIFICATION, PERSONAL, TEAM, UPDATED} from '../../../client/utils/constants'
+import {
+  NEW_AUTH_TOKEN,
+  NOTIFICATION,
+  PERSONAL,
+  TEAM,
+  UPDATED
+} from '../../../client/utils/constants'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import addTeamValidation from './helpers/addTeamValidation'
 import rateLimit from '../rateLimit'

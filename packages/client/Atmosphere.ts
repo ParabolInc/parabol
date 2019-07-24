@@ -3,7 +3,7 @@ import GQLTrebuchetClient, {
   OperationPayload
 } from '@mattkrick/graphql-trebuchet-client'
 import getTrebuchet, {SocketTrebuchet, SSETrebuchet} from '@mattkrick/trebuchet-client'
-import {InviteToTeamMutation_notification} from '../__generated__/InviteToTeamMutation_notification.graphql'
+import {InviteToTeamMutation_notification} from './__generated__/InviteToTeamMutation_notification.graphql'
 import EventEmitter from 'eventemitter3'
 import jwtDecode from 'jwt-decode'
 import {requestSubscription} from 'react-relay'
@@ -30,7 +30,7 @@ import {MasonryDragEndPayload} from './components/PhaseItemMasonry'
 import {IAuthToken} from './types/graphql'
 import {Snack, SnackbarRemoveFn} from './components/Snackbar'
 
-// import sleep from 'universal/utils/sleep'
+// import sleep from './/utils/sleep'
 
 const defaultErrorHandler = (err: any) => {
   console.error('Captured error:', err)
@@ -252,7 +252,7 @@ export default class Atmosphere extends Environment {
     variables: Variables,
     // _cacheConfig?: CacheConfig
   ): Promise<ObservableFromValue<GraphQLResponse>> => {
-    // await sleep(500)
+    // await sleep(1000)
     if (!__PRODUCTION__ && request.id) {
       const queryMap = await import('../server/graphql/queryMap.json')
       const query = queryMap[request.id]

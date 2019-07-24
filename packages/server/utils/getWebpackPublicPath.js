@@ -1,7 +1,7 @@
 import path from 'path'
 import protocolRelativeUrl from './protocolRelativeUrl'
 import {APP_WEBPACK_PUBLIC_PATH_DEFAULT} from '../../client/utils/constants'
-import getDotenv from '../../client/utils/dotenv'
+import getDotenv from '../../server/utils/dotenv'
 
 // Import .env and expand variables:
 getDotenv()

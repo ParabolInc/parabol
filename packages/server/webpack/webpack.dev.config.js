@@ -3,12 +3,13 @@ const path = require('path')
 const webpack = require('webpack')
 const pluginDynamicImport = require('@babel/plugin-syntax-dynamic-import').default
 const pluginRelay = require('babel-plugin-relay')
-const vendors = require('../dll/vendors')
+const vendors = require('./dll/vendors')
 const pluginInlineImport = require('babel-plugin-inline-import').default
 // const {InjectManifest} = require('workbox-webpack-plugin')
 // const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
-const CLIENT_ROOT = path.join(__dirname, '..')
-const PROJECT_ROOT = path.join(CLIENT_ROOT, '..', '..')
+
+const PROJECT_ROOT = path.join(__dirname, '..', '..', '..')
+const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
 
 const babelLoader = {
   loader: 'babel-loader',

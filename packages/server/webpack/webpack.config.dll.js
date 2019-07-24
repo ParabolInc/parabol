@@ -111,11 +111,11 @@ module.exports = {
   },
   output: {
     filename: '[name].dll.js',
-    path: path.join(__dirname, '../dll'),
+    path: path.join(__dirname, 'dll'),
     library: '[name]'
   },
   plugins: [
-    new webpack.DllPlugin({name: '[name]', path: path.join(__dirname, '../dll', '[name].json')}) // eslint-disable-line no-new
+    new webpack.DllPlugin({name: '[name]', path: path.join(__dirname, 'dll', '[name].json')}) // eslint-disable-line no-new
   ],
   module: {
     rules: [

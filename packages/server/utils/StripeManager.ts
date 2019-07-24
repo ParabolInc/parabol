@@ -1,4 +1,4 @@
-import getDotenv from '../../client/utils/dotenv'
+import getDotenv from '../../server/utils/dotenv'
 import Stripe from 'stripe'
 // import {toEpochSeconds} from 'server/utils/epochTime'
 

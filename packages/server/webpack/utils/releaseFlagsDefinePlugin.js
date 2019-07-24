@@ -5,8 +5,8 @@
  */
 
 import webpack from 'webpack'
-import releaseFlags from '../../packages/client/releaseFlags'
 
+const releaseFlags = {} // TODO grab from grpahql when needed
 export default new webpack.DefinePlugin(
   Object.entries(releaseFlags).reduce(
     (acc, [featName, featVal]) => ({

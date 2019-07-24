@@ -1,7 +1,5 @@
 import {GraphQLObjectType} from 'graphql'
-import TeamMeetingSettings, {
-  teamMeetingSettingsFields
-} from './TeamMeetingSettings'
+import TeamMeetingSettings, {teamMeetingSettingsFields} from './TeamMeetingSettings'
 
 const ActionMeetingSettings = new GraphQLObjectType({
   name: 'ActionMeetingSettings',

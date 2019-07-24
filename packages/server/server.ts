@@ -11,7 +11,7 @@ import {clientSecret as secretKey} from './utils/auth0Helpers'
 import connectionHandler from './socketHandlers/wssConnectionHandler'
 import httpGraphQLHandler from './graphql/httpGraphQLHandler'
 import stripeWebhookHandler from './billing/stripeWebhookHandler'
-import getDotenv from '../client/utils/dotenv'
+import getDotenv from '../server/utils/dotenv'
 import sendICS from './sendICS'
 import handleGitHubWebhooks from './integrations/handleGitHubWebhooks'
 import DataLoaderWarehouse from 'dataloader-warehouse'
@@ -27,6 +27,7 @@ import ms from 'ms'
 import rateLimit from 'express-rate-limit'
 import demoEntityHandler from './demoEntityHandler'
 import * as Integrations from '@sentry/integrations'
+import path from 'path'
 
 declare global {
   namespace NodeJS {
@@ -72,7 +73,7 @@ Sentry.init({
 })
 // HMR
 if (!PROD) {
-  const config = require('../../webpack/webpack.dev.config')
+  const config = require('./webpack/webpack.dev.config')
   const hotClient = require('webpack-hot-client')
   const webpack = require('webpack')
   const compiler = webpack(config)
@@ -128,7 +129,7 @@ app.use('/static', express.static('build'))
 if (PROD) {
   app.use(compression())
 } else {
-  app.use('/static', express.static('dll'))
+  app.use('/static', express.static(path.join(__dirname, './webpack/dll')))
 }
 
 // HTTP GraphQL endpoint

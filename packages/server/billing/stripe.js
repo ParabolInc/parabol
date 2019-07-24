@@ -1,7 +1,7 @@
 /* Deprecated, use StripeManager */
 
 import initStripe from 'stripe'
-import getDotenv from '../../client/utils/dotenv'
+import getDotenv from '../../server/utils/dotenv'
 import {usedMethods, usedResources} from './constants'
 
 const tryCatchWrapper = (target) => async (...args) => {

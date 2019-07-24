@@ -6,7 +6,8 @@ const crypto = require('crypto')
 const path = require('path')
 const scriptName = path.basename(__filename)
 
-const CACHE_HASH_FN = 'dll/yarn.lock.md5'
+const DLL_ROOT = path.join(__dirname, 'dll')
+const CACHE_HASH_FN = path.join(DLL_ROOT, 'yarn.lock.md5')
 
 let cacheHash
 try {
@@ -25,8 +26,8 @@ if (hash !== cacheHash) {
   webpack(config, () => {
     console.log(`${scriptName}: DLL created`)
   })
-  if (!fs.existsSync('dll')) {
-    fs.mkdirSync('dll')
+  if (!fs.existsSync(DLL_ROOT)) {
+    fs.mkdirSync(DLL_ROOT)
   }
   fs.writeFileSync(CACHE_HASH_FN, hash)
 } else {
