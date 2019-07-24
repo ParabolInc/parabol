@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import getGroupMatrix from '../getGroupMatrix'
+import getGroupMatrix from 'client/utils/autoGroup/getGroupMatrix'
 
 describe('groupReflections', () => {
   test('handles an empty matrix', async () => {

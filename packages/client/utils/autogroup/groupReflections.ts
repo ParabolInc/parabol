@@ -1,6 +1,6 @@
 import getAllLemmasFromReflections from './getAllLemmasFromReflections'
 import computeDistanceMatrix from './computeDistanceMatrix'
-import getGroupMatrix from '../../../server/graphql/mutations/helpers/autoGroup/getGroupMatrix'
+import getGroupMatrix from '../autoGroup/getGroupMatrix'
 import getTitleFromComputedGroup from './getTitleFromComputedGroup'
 import {IRetroReflection} from '../../types/graphql'
 

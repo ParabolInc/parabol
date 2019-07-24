@@ -13,6 +13,7 @@ const pluginInlineImport = require('babel-plugin-inline-import').default
 // .tsx required for email SSR
 const extensions = ['.js', '.ts', '.tsx', '.graphql']
 require('@babel/register')({
+  ignore: [/node_modules/],
   extensions,
   plugins: [
     pluginInlineImport,
@@ -26,7 +27,7 @@ require('@babel/register')({
         root: ['./packages']
       }
     ],
-    [pluginRelay, {artifactDirectory: './packages/client/__generated__'}]
+    [pluginRelay, {artifactDirectory: '../client/__generated__'}]
   ],
   presets: [
     [

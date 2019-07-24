@@ -8,6 +8,7 @@ const scriptName = path.basename(__filename)
 
 const DLL_ROOT = path.join(__dirname, 'dll')
 const CACHE_HASH_FN = path.join(DLL_ROOT, 'yarn.lock.md5')
+const PROJECT_ROOT = path.join(__dirname, '../../../')
 
 let cacheHash
 try {
@@ -16,7 +17,7 @@ try {
   cacheHash = ''
 }
 
-const lockfile = fs.readFileSync('yarn.lock', 'utf8')
+const lockfile = fs.readFileSync(path.join(PROJECT_ROOT, 'yarn.lock'), 'utf8')
 
 const hash = crypto
   .createHash('md5')

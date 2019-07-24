@@ -11,7 +11,6 @@ import path from 'path'
 export default function getDotenv () {
   const name = process.env.NODE_ENV === 'test' ? '.env.test' : '.env'
   const myEnv = dotenv.config({
-    debug: true,
     path: path.join(__dirname, '..', name)
   })
   dotenvExpand(myEnv)
