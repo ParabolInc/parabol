@@ -3,6 +3,7 @@ import shortid from 'shortid'
 import {IAuthToken} from '../../client/types/graphql'
 import RateLimiter from '../graphql/RateLimiter'
 import WebSocketContext from '../wrtc/signalServer/WebSocketContext'
+import {WebSocket} from '@clusterws/cws'
 
 export interface UserWebSocket extends WebSocket {
   context?: WebSocketContext

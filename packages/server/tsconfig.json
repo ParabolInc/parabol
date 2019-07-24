@@ -2,12 +2,11 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "composite": true,
-    "noEmitOnError": false,
     "lib": [
-      "esnext", "dom"
+      "esnext"
     ],
     "types": [
-      "node", "cypress"
+      "node"
     ],
     "target": "esnext",
     "module": "es2015",

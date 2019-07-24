@@ -1,52 +1,16 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "baseUrl": ".",
-    "esModuleInterop": true,
-    "importHelpers": true,
-    "jsx": "react",
-    "lib": [
-      "es2017",
-      "dom"
-    ],
-    "module": "esNext",
-    "moduleResolution": "node",
-    "noImplicitAny": false,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "outDir": "dist/lib",
-    "paths": {
-
-//      example of how to alias
-//      "relay-runtime": ["node_modules/@mattkrick/relay-runtime"],
-       "*": [
-         "packages/*",
-         "stories/*"
-       ]
-    },
-    "removeComments": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "target": "es2017",
-    "strict": true,
+    "composite": true,
+    "lib": ["esnext", "dom"],
+    "target": "esnext",
+    "module": "commonjs",
     "sourceMap": true,
-    "typeRoots": [
-      "node_modules/@types",
-      "packages/types"
-    ],
-    "traceResolution": false
+    "paths": {
+      "*": [
+        "*" // resolve all absolute imports as imports relative to the package
+      ]
+    }
   },
-  "include": [
-    "packages",
-    "stories",
-    "cypress"
-  ],
-  "awesomeTypescriptLoaderOptions": {
-    "reportFiles": [
-      "packages/**/*.{ts,tsx}"
-//      "stories/**/*.{ts,tsx}"
-    ]
-  }
+  "references": []
 }

@@ -17,6 +17,7 @@
     "build-storybook": "build-storybook"
   },
   "devDependencies": {
+    "@types/relay-runtime": "https://github.com/mattkrick/relay-runtime-strict-types/tarball/c78b4d9268174c7b8226acd0ceb4dc10207dba3d",
     "@types/react-dom": "16.8.4",
     "@storybook/addon-actions": "^5.1.9",
     "@storybook/addon-info": "^5.1.9",

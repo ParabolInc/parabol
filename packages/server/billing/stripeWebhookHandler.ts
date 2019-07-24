@@ -1,5 +1,5 @@
 import schema from '../graphql/rootSchema'
-import graphql from '../graphql/graphql'
+import graphql, { GQLContext } from '../graphql/graphql'
 import stripe from './stripe'
 import RethinkDataLoader from '../utils/RethinkDataLoader'
 import sendToSentry from '../utils/sendToSentry'

@@ -2,13 +2,13 @@ import React, {Component, ReactNode} from 'react'
 import {DragDropContextProvider} from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 import styled from '@emotion/styled';
-import globalStyles from '../styles/theme/globalStyles'
 import {BrowserRouter as Router} from 'react-router-dom'
 
 import RelayStub from './RelayStub'
-import appTheme from '../styles/theme/appTheme'
-import AtmosphereProvider from '../components/AtmosphereProvider/AtmosphereProvider'
 import { css, Global } from '@emotion/core'
+import globalStyles from '../../styles/theme/globalStyles'
+import AtmosphereProvider from '../../components/AtmosphereProvider/AtmosphereProvider'
+import appTheme from '../../styles/theme/appTheme'
 
 const FullPageWrapper = styled('div')({
   backgroundColor: appTheme.palette.light,

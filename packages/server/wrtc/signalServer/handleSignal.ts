@@ -9,6 +9,7 @@ import handlePubInit from './handlePubInit'
 import handlePubKickOut from './handlePubKickOut'
 import handlePublishToClient from './handlePublishToClient'
 import WebSocketContext from './WebSocketContext'
+import {WebSocket} from '@clusterws/cws'
 
 export interface UWebSocket extends WebSocket {
   context: WebSocketContext
