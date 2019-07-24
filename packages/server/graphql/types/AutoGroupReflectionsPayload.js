@@ -1,9 +1,9 @@
 import {GraphQLList, GraphQLObjectType} from 'graphql'
-import {makeResolve, resolveNewMeeting} from 'server/graphql/resolvers'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
-import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup'
-import RetroReflection from 'server/graphql/types/RetroReflection'
-import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting'
+import {makeResolve, resolveNewMeeting} from '../resolvers'
+import StandardMutationError from './StandardMutationError'
+import RetroReflectionGroup from './RetroReflectionGroup'
+import RetroReflection from './RetroReflection'
+import RetrospectiveMeeting from './RetrospectiveMeeting'
 
 const AutoGroupReflectionsPayload = new GraphQLObjectType({
   name: 'AutoGroupReflectionsPayload',

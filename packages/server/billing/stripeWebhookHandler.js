@@ -1,8 +1,8 @@
-import schema from 'server/graphql/rootSchema'
-import graphql from 'server/graphql/graphql'
-import stripe from 'server/billing/stripe'
-import RethinkDataLoader from 'server/utils/RethinkDataLoader'
-import sendToSentry from 'server/utils/sendToSentry'
+import schema from '../graphql/rootSchema'
+import graphql from '../graphql/graphql'
+import stripe from './stripe'
+import RethinkDataLoader from '../utils/RethinkDataLoader'
+import sendToSentry from '../utils/sendToSentry'
 
 const eventLookup = {
   invoice: {

@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import adjustUserCount from 'server/billing/helpers/adjustUserCount'
-import getRethink from 'server/database/rethinkDriver'
-import removeTeamMember from 'server/graphql/mutations/helpers/removeTeamMember'
-import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload'
-import {auth0ManagementClient} from 'server/utils/auth0Helpers'
-import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
-import publish from 'server/utils/publish'
-import {REMOVE_USER} from 'server/utils/serverConstants'
+import adjustUserCount from '../../billing/helpers/adjustUserCount'
+import getRethink from '../../database/rethinkDriver'
+import removeTeamMember from './helpers/removeTeamMember'
+import RemoveOrgUserPayload from '../types/RemoveOrgUserPayload'
+import {auth0ManagementClient} from '../../utils/auth0Helpers'
+import {getUserId, isUserBillingLeader} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import {REMOVE_USER} from '../../utils/serverConstants'
 import {
   NEW_AUTH_TOKEN,
   NOTIFICATION,
@@ -14,8 +14,8 @@ import {
   TASK,
   TEAM,
   UPDATED
-} from 'universal/utils/constants'
-import standardError from 'server/utils/standardError'
+} from '../../../client/utils/constants'
+import standardError from '../../utils/standardError'
 
 const removeOrgUser = {
   type: RemoveOrgUserPayload,

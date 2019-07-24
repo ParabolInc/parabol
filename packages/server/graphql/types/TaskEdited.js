@@ -1,7 +1,7 @@
 import {GraphQLBoolean, GraphQLObjectType} from 'graphql'
-import {resolveTask} from 'server/graphql/resolvers'
-import Task from 'server/graphql/types/Task'
-import User from 'server/graphql/types/User'
+import {resolveTask} from '../resolvers'
+import Task from './Task'
+import User from './User'
 
 const TaskEdited = new GraphQLObjectType({
   name: 'TaskEdited',

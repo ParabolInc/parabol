@@ -1,5 +1,5 @@
 import {GraphQLEnumType} from 'graphql'
-import {RETRO_PHASE_ITEM} from 'universal/utils/constants'
+import {RETRO_PHASE_ITEM} from '../../../client/utils/constants'
 
 const CustomPhaseItemTypeEnum = new GraphQLEnumType({
   name: 'CustomPhaseItemTypeEnum',

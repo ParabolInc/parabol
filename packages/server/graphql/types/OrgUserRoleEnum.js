@@ -1,5 +1,5 @@
 import {GraphQLEnumType} from 'graphql'
-import {BILLING_LEADER} from 'universal/utils/constants'
+import {BILLING_LEADER} from '../../../client/utils/constants'
 
 const OrgUserRole = new GraphQLEnumType({
   name: 'OrgUserRole',

@@ -1,8 +1,8 @@
 import {GraphQLBoolean, GraphQLObjectType} from 'graphql'
-import {resolveTask} from 'server/graphql/resolvers'
-import Task from 'server/graphql/types/Task'
-import User from 'server/graphql/types/User'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
+import {resolveTask} from '../resolvers'
+import Task from './Task'
+import User from './User'
+import StandardMutationError from './StandardMutationError'
 
 const EditTaskPayload = new GraphQLObjectType({
   name: 'EditTaskPayload',

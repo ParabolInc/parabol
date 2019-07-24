@@ -1,7 +1,7 @@
-import templates from 'server/email/templates'
-import makeAppLink from 'server/utils/makeAppLink'
+import templates from './email/templates'
+import makeAppLink from './utils/makeAppLink'
 import DataLoaderWarehouse from 'dataloader-warehouse'
-import RethinkDataLoader from 'server/utils/RethinkDataLoader'
+import RethinkDataLoader from './utils/RethinkDataLoader'
 
 const ORG_MEMBERS_LINK = makeAppLink('me/organizations/tzsqFnuzh/members')
 

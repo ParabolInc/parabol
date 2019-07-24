@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLObjectType, GraphQLFloat, GraphQLNonNull} from 'graphql'
-import NewMeetingStage, {newMeetingStageFields} from 'server/graphql/types/NewMeetingStage'
-import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup'
-import {makeResolve} from 'server/graphql/resolvers'
+import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
+import RetroReflectionGroup from './RetroReflectionGroup'
+import {makeResolve} from '../resolvers'
 
 const RetroDiscussStage = new GraphQLObjectType({
   name: 'RetroDiscussStage',

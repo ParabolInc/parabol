@@ -1,5 +1,5 @@
 import {verify} from 'jsonwebtoken'
-import {clientSecret as auth0ClientSecret} from 'server/utils/auth0Helpers'
+import {clientSecret as auth0ClientSecret} from '../utils/auth0Helpers'
 
 const SSEPingHandler = (sseClients) => (req, res) => {
   const connectionId = req.headers['x-correlation-id']

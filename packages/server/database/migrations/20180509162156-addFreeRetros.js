@@ -1,4 +1,4 @@
-import {PRO} from 'universal/utils/constants'
+import {PRO} from '../../../client/utils/constants'
 
 exports.up = async (r) => {
   try {

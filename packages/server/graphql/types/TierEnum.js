@@ -1,5 +1,5 @@
 import {GraphQLEnumType} from 'graphql'
-import {ENTERPRISE, PERSONAL, PRO} from 'universal/utils/constants'
+import {ENTERPRISE, PERSONAL, PRO} from '../../../client/utils/constants'
 
 const TierEnum = new GraphQLEnumType({
   name: 'TierEnum',

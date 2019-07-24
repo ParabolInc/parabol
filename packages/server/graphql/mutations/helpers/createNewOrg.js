@@ -1,5 +1,5 @@
-import getRethink from 'server/database/rethinkDriver'
-import {BILLING_LEADER, PERSONAL} from 'universal/utils/constants'
+import getRethink from '../../../database/rethinkDriver'
+import {BILLING_LEADER, PERSONAL} from '../../../../client/utils/constants'
 import shortid from 'shortid'
 
 export default async function createNewOrg (orgId, orgName, leaderUserId) {

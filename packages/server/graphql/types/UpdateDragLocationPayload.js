@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import Coords2D from 'server/graphql/types/Coords2D'
-import {updateDragLocationFields} from 'server/graphql/types/UpdateDragLocationInput'
+import Coords2D from './Coords2D'
+import {updateDragLocationFields} from './UpdateDragLocationInput'
 
 const UpdateDragLocationPayload = new GraphQLObjectType({
   name: 'UpdateDragLocationPayload',

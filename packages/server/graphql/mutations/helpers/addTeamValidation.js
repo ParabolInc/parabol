@@ -1,5 +1,5 @@
-import legitify from 'universal/validation/legitify'
-import {makeTeamNameSchema, requiredId} from 'universal/validation/templates'
+import legitify from '../../../../client/validation/legitify'
+import {makeTeamNameSchema, requiredId} from '../../../../client/validation/templates'
 
 export default function addTeamValidation (teamNames) {
   return legitify({

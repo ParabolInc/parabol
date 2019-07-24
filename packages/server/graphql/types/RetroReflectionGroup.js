@@ -8,14 +8,14 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
-import RetroReflection from 'server/graphql/types/RetroReflection'
-import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting'
-import Team from 'server/graphql/types/Team'
-import {resolveForSU} from 'server/graphql/resolvers'
-import RetroPhaseItem from 'server/graphql/types/RetroPhaseItem'
-import {getUserId} from 'server/utils/authorization'
-import Task from 'server/graphql/types/Task'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
+import RetroReflection from './RetroReflection'
+import RetrospectiveMeeting from './RetrospectiveMeeting'
+import Team from './Team'
+import {resolveForSU} from '../resolvers'
+import RetroPhaseItem from './RetroPhaseItem'
+import {getUserId} from '../../utils/authorization'
+import Task from './Task'
 
 const RetroReflectionGroup = new GraphQLObjectType({
   name: 'RetroReflectionGroup',

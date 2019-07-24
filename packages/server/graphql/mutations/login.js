@@ -1,25 +1,25 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {verify} from 'jsonwebtoken'
-import getRethink from 'server/database/rethinkDriver'
-import LoginPayload from 'server/graphql/types/LoginPayload'
+import getRethink from '../../database/rethinkDriver'
+import LoginPayload from '../types/LoginPayload'
 import {
   auth0ManagementClient,
   clientId as auth0ClientId,
   clientSecret as auth0ClientSecret
-} from 'server/utils/auth0Helpers'
-import {getUserId} from 'server/utils/authorization'
-import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent'
-import makeAuthTokenObj from 'server/utils/makeAuthTokenObj'
-import encodeAuthTokenObj from 'server/utils/encodeAuthTokenObj'
-import ensureDate from 'universal/utils/ensureDate'
+} from '../../utils/auth0Helpers'
+import {getUserId} from '../../utils/authorization'
+import {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
+import makeAuthTokenObj from '../../utils/makeAuthTokenObj'
+import encodeAuthTokenObj from '../../utils/encodeAuthTokenObj'
+import ensureDate from '../../../client/utils/ensureDate'
 import shortid from 'shortid'
-import {JOINED_PARABOL} from 'server/graphql/types/TimelineEventTypeEnum'
-import segmentIo from 'server/utils/segmentIo'
-import sleep from 'universal/utils/sleep'
-import createNewOrg from 'server/graphql/mutations/helpers/createNewOrg'
-import createTeamAndLeader from 'server/graphql/mutations/helpers/createTeamAndLeader'
-import addSeedTasks from 'server/graphql/mutations/helpers/addSeedTasks'
-import standardError from 'server/utils/standardError'
+import {JOINED_PARABOL} from '../types/TimelineEventTypeEnum'
+import segmentIo from '../../utils/segmentIo'
+import sleep from '../../../client/utils/sleep'
+import createNewOrg from './helpers/createNewOrg'
+import createTeamAndLeader from './helpers/createTeamAndLeader'
+import addSeedTasks from './helpers/addSeedTasks'
+import standardError from '../../utils/standardError'
 
 const handleSegment = async (userId, previousId) => {
   if (previousId) {

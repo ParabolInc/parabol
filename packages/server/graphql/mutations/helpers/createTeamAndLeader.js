@@ -1,5 +1,5 @@
-import getRethink from 'server/database/rethinkDriver'
-import {auth0ManagementClient} from 'server/utils/auth0Helpers'
+import getRethink from '../../../database/rethinkDriver'
+import {auth0ManagementClient} from '../../../utils/auth0Helpers'
 import {
   ACTION,
   AGENDA_ITEMS,
@@ -15,14 +15,14 @@ import {
   REFLECT,
   UPDATES,
   VOTE
-} from 'universal/utils/constants'
-import insertNewTeamMember from 'server/safeMutations/insertNewTeamMember'
+} from '../../../../client/utils/constants'
+import insertNewTeamMember from '../../../safeMutations/insertNewTeamMember'
 import shortid from 'shortid'
-import makeRetroTemplates from 'server/graphql/mutations/helpers/makeRetroTemplates'
-import adjustUserCount from 'server/billing/helpers/adjustUserCount'
-import {ADD_USER} from 'server/utils/serverConstants'
-import addTeamIdToTMS from 'server/safeMutations/addTeamIdToTMS'
-import {CREATED_TEAM} from 'server/graphql/types/TimelineEventTypeEnum'
+import makeRetroTemplates from './makeRetroTemplates'
+import adjustUserCount from '../../../billing/helpers/adjustUserCount'
+import {ADD_USER} from '../../../utils/serverConstants'
+import addTeamIdToTMS from '../../../safeMutations/addTeamIdToTMS'
+import {CREATED_TEAM} from '../../types/TimelineEventTypeEnum'
 
 // used for addorg, addTeam
 export default async function createTeamAndLeader (userId, newTeam) {

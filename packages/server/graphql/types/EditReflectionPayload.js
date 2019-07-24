@@ -1,5 +1,5 @@
 import {GraphQLBoolean, GraphQLID, GraphQLObjectType} from 'graphql'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
+import StandardMutationError from './StandardMutationError'
 
 const EditReflectionPayload = new GraphQLObjectType({
   name: 'EditReflectionPayload',

@@ -1,7 +1,7 @@
 import shortid from 'shortid'
-import {DISCUSS} from 'universal/utils/constants'
-import makeDiscussionStage from 'universal/utils/makeDiscussionStage'
-import mapGroupsToStages from 'universal/utils/makeGroupsToStages'
+import {DISCUSS} from '../../../../client/utils/constants'
+import makeDiscussionStage from '../../../../client/utils/makeDiscussionStage'
+import mapGroupsToStages from '../../../../client/utils/makeGroupsToStages'
 
 const addDiscussionTopics = async (meeting, dataLoader) => {
   const {id: meetingId, phases} = meeting

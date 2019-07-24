@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
-import NewMeetingPhaseTypeEnum from 'server/graphql/types/NewMeetingPhaseTypeEnum'
-import Team from 'server/graphql/types/Team'
-import {resolveTeam} from 'server/graphql/resolvers'
-import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum'
-import {ACTION, RETROSPECTIVE} from 'universal/utils/constants'
-import RetrospectiveMeetingSettings from 'server/graphql/types/RetrospectiveMeetingSettings'
-import ActionMeetingSettings from 'server/graphql/types/ActionMeetingSettings'
+import NewMeetingPhaseTypeEnum from './NewMeetingPhaseTypeEnum'
+import Team from './Team'
+import {resolveTeam} from '../resolvers'
+import MeetingTypeEnum from './MeetingTypeEnum'
+import {ACTION, RETROSPECTIVE} from '../../../client/utils/constants'
+import RetrospectiveMeetingSettings from './RetrospectiveMeetingSettings'
+import ActionMeetingSettings from './ActionMeetingSettings'
 
 export const teamMeetingSettingsFields = () => ({
   id: {

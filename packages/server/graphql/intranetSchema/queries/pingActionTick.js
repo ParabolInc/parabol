@@ -1,5 +1,5 @@
 import {GraphQLString} from 'graphql'
-import {requireSU} from 'server/utils/authorization'
+import {requireSU} from '../../../utils/authorization'
 
 const pingActionTick = {
   type: GraphQLString,

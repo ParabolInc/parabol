@@ -1,16 +1,16 @@
 /* eslint-env jest */
 import DynamicSerializer from 'dynamic-serializer'
-import MockReq from 'server/__mocks__/MockReq'
-import MockRes from 'server/__mocks__/MockRes'
-import MockDB from 'server/__tests__/setup/MockDB'
-import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize'
-import stripe from 'server/billing/stripe'
-import stripeWebhookHandler from 'server/billing/stripeWebhookHandler'
+import MockReq from '../../../__mocks__/MockReq'
+import MockRes from '../../../__mocks__/MockRes'
+import MockDB from '../../../__tests__/setup/MockDB'
+import fetchAndSerialize from '../../../__tests__/utils/fetchAndSerialize'
+import stripe from '../../../billing/stripe'
+import stripeWebhookHandler from '../../../billing/stripeWebhookHandler'
 import DataLoaderWarehouse from 'dataloader-warehouse'
-import getRethink from 'server/database/rethinkDriver'
-import invoiceItemCreatedEvent from 'server/graphql/mutations/__tests__/mockStripeEvents/invoiceItemCreatedEvent'
+import getRethink from '../../../database/rethinkDriver'
+import invoiceItemCreatedEvent from './mockStripeEvents/invoiceItemCreatedEvent'
 import shortid from 'shortid'
-import {PRO} from 'universal/utils/constants'
+import {PRO} from '../../../../client/utils/constants'
 
 console.error = jest.fn()
 

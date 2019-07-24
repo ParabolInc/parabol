@@ -1,5 +1,5 @@
-import dataFieldsToSerialize from 'server/__tests__/utils/dataFieldsToSerialize'
-import * as getPubSub from 'server/utils/getPubSub'
+import dataFieldsToSerialize from '../__tests__/utils/dataFieldsToSerialize'
+import * as getPubSub from '../utils/getPubSub'
 
 const fieldsToSerialize = {
   invitation: [...dataFieldsToSerialize],

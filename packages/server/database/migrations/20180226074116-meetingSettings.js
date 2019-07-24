@@ -11,7 +11,7 @@ import {
   SUMMARY,
   UPDATES,
   VOTE
-} from 'universal/utils/constants'
+} from '../../../client/utils/constants'
 import shortid from 'shortid'
 
 exports.up = async (r) => {

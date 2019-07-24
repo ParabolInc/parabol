@@ -1,8 +1,8 @@
 import {GraphQLBoolean, GraphQLList, GraphQLNonNull} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import {requireSU} from 'server/utils/authorization'
-import {PRO} from 'universal/utils/constants'
-import Organization from 'server/graphql/types/Organization'
+import getRethink from '../../database/rethinkDriver'
+import {requireSU} from '../../utils/authorization'
+import {PRO} from '../../../client/utils/constants'
+import Organization from '../types/Organization'
 
 export default {
   type: new GraphQLList(new GraphQLNonNull(Organization)),

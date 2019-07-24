@@ -1,8 +1,8 @@
 import {GraphQLInt} from 'graphql'
-import adjustUserCount from 'server/billing/helpers/adjustUserCount'
-import getRethink from 'server/database/rethinkDriver'
-import {requireSU} from 'server/utils/authorization'
-import {AUTO_PAUSE_THRESH, AUTO_PAUSE_USER} from 'server/utils/serverConstants'
+import adjustUserCount from '../../../billing/helpers/adjustUserCount'
+import getRethink from '../../../database/rethinkDriver'
+import {requireSU} from '../../../utils/authorization'
+import {AUTO_PAUSE_THRESH, AUTO_PAUSE_USER} from '../../../utils/serverConstants'
 
 const autopauseUsers = {
   type: GraphQLInt,

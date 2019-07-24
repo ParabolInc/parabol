@@ -4,12 +4,12 @@ import {
   resolveMeetingMember,
   resolveNewMeeting,
   resolveUnlockedStages
-} from 'server/graphql/resolvers'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
-import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup'
-import RetrospectiveMeetingMember from 'server/graphql/types/RetrospectiveMeetingMember'
-import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting'
-import NewMeetingStage from 'server/graphql/types/NewMeetingStage'
+} from '../resolvers'
+import StandardMutationError from './StandardMutationError'
+import RetroReflectionGroup from './RetroReflectionGroup'
+import RetrospectiveMeetingMember from './RetrospectiveMeetingMember'
+import RetrospectiveMeeting from './RetrospectiveMeeting'
+import NewMeetingStage from './NewMeetingStage'
 
 const VoteForReflectionGroupPayload = new GraphQLObjectType({
   name: 'VoteForReflectionGroupPayload',

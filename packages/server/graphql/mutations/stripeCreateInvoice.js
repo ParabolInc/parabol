@@ -1,7 +1,7 @@
-import fetchAllLines from 'server/billing/helpers/fetchAllLines'
-import generateInvoice from 'server/billing/helpers/generateInvoice'
-import stripe from 'server/billing/stripe'
-import resolvePromiseObj from 'universal/utils/resolvePromiseObj'
+import fetchAllLines from '../../billing/helpers/fetchAllLines'
+import generateInvoice from '../../billing/helpers/generateInvoice'
+import stripe from '../../billing/stripe'
+import resolvePromiseObj from '../../../client/utils/resolvePromiseObj'
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 
 export default {

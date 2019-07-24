@@ -1,6 +1,6 @@
 import {GraphQLObjectType} from 'graphql'
-import {resolveTeam} from 'server/graphql/resolvers'
-import Team from 'server/graphql/types/Team'
+import {resolveTeam} from '../resolvers'
+import Team from './Team'
 
 const UpdateMeetingPayload = new GraphQLObjectType({
   name: 'UpdateMeetingPayload',

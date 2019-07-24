@@ -1,13 +1,13 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import {getUserId, isTeamMember} from 'server/utils/authorization'
+import getRethink from '../../database/rethinkDriver'
+import {getUserId, isTeamMember} from '../../utils/authorization'
 import shortid from 'shortid'
-import publish from 'server/utils/publish'
-import {GROUP, TEAM} from 'universal/utils/constants'
-import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
-import CreateReflectionGroupPayload from 'server/graphql/types/CreateReflectionGroupPayload'
-import makeRetroGroupTitle from 'universal/utils/autogroup/makeRetroGroupTitle'
-import standardError from 'server/utils/standardError'
+import publish from '../../utils/publish'
+import {GROUP, TEAM} from '../../../client/utils/constants'
+import isPhaseComplete from '../../../client/utils/meetings/isPhaseComplete'
+import CreateReflectionGroupPayload from '../types/CreateReflectionGroupPayload'
+import makeRetroGroupTitle from '../../../client/utils/autogroup/makeRetroGroupTitle'
+import standardError from '../../utils/standardError'
 
 export default {
   type: CreateReflectionGroupPayload,

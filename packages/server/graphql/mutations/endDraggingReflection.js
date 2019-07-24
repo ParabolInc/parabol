@@ -1,16 +1,16 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import EndDraggingReflectionPayload from 'server/graphql/types/EndDraggingReflectionPayload'
-import {getUserId, isTeamMember} from 'server/utils/authorization'
-import publish from 'server/utils/publish'
-import {GROUP, TEAM} from 'universal/utils/constants'
-import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
+import EndDraggingReflectionPayload from '../types/EndDraggingReflectionPayload'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import {GROUP, TEAM} from '../../../client/utils/constants'
+import isPhaseComplete from '../../../client/utils/meetings/isPhaseComplete'
 import DragReflectionDropTargetTypeEnum, {
   REFLECTION_GRID,
   REFLECTION_GROUP
-} from 'server/graphql/mutations/DragReflectionDropTargetTypeEnum'
-import addReflectionToGroup from 'server/graphql/mutations/helpers/updateReflectionLocation/addReflectionToGroup'
-import removeReflectionFromGroup from 'server/graphql/mutations/helpers/updateReflectionLocation/removeReflectionFromGroup'
-import standardError from 'server/utils/standardError'
+} from './DragReflectionDropTargetTypeEnum'
+import addReflectionToGroup from './helpers/updateReflectionLocation/addReflectionToGroup'
+import removeReflectionFromGroup from './helpers/updateReflectionLocation/removeReflectionFromGroup'
+import standardError from '../../utils/standardError'
 
 export default {
   description: 'Broadcast that the viewer stopped dragging a reflection',

@@ -1,7 +1,7 @@
-import getRethink from 'server/database/rethinkDriver'
+import getRethink from '../../../database/rethinkDriver'
 import shortid from 'shortid'
-import {ASSIGNEE, MENTIONEE, TASK_INVOLVES} from 'universal/utils/constants'
-import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap'
+import {ASSIGNEE, MENTIONEE, TASK_INVOLVES} from '../../../../client/utils/constants'
+import getTypeFromEntityMap from '../../../../client/utils/draftjs/getTypeFromEntityMap'
 
 const publishChangeNotifications = async (task, oldTask, changeUserId, usersToIgnore) => {
   const r = getRethink()

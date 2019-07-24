@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import TeamMember from 'server/graphql/types/TeamMember'
-import {getUserId, isTeamMember} from 'server/utils/authorization'
+import getRethink from '../../database/rethinkDriver'
+import TeamMember from '../types/TeamMember'
+import {getUserId, isTeamMember} from '../../utils/authorization'
 
 export default {
   type: TeamMember,

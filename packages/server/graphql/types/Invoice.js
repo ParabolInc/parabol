@@ -6,15 +6,15 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import connectionDefinitions from 'server/graphql/connectionDefinitions'
-import CreditCard from 'server/graphql/types/CreditCard'
-import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType'
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
-import GraphQLURLType from 'server/graphql/types/GraphQLURLType'
-import InvoiceChargeNextMonth from 'server/graphql/types/InvoiceChargeNextMonth'
-import InvoiceLineItem from 'server/graphql/types/InvoiceLineItem'
-import InvoiceStatusEnum from 'server/graphql/types/InvoiceStatusEnum'
-import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor'
+import connectionDefinitions from '../connectionDefinitions'
+import CreditCard from './CreditCard'
+import GraphQLEmailType from './GraphQLEmailType'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
+import GraphQLURLType from './GraphQLURLType'
+import InvoiceChargeNextMonth from './InvoiceChargeNextMonth'
+import InvoiceLineItem from './InvoiceLineItem'
+import InvoiceStatusEnum from './InvoiceStatusEnum'
+import PageInfoDateCursor from './PageInfoDateCursor'
 
 /* Each invoice has 3 levels.
  * L1 is a the invoice itself: how much to pay.

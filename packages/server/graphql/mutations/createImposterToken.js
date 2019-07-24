@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import CreateImposterTokenPayload from 'server/graphql/types/CreateImposterTokenPayload'
-import {getUserId, requireSU} from 'server/utils/authorization'
-import standardError from 'server/utils/standardError'
+import CreateImposterTokenPayload from '../types/CreateImposterTokenPayload'
+import {getUserId, requireSU} from '../../utils/authorization'
+import standardError from '../../utils/standardError'
 
 const createImposterToken = {
   type: CreateImposterTokenPayload,

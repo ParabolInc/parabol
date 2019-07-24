@@ -1,5 +1,5 @@
-import {GITHUB_ENDPOINT} from 'universal/utils/constants'
-import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions'
+import {GITHUB_ENDPOINT} from '../../client/utils/constants'
+import makeGitHubPostOptions from '../../client/utils/makeGitHubPostOptions'
 import fetch from 'node-fetch'
 
 // repo collaborators isn't part of github v4 yet, so we'll need to check that using v3

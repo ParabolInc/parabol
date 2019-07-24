@@ -1,13 +1,13 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {forwardConnectionArgs} from 'graphql-relay'
-import getRethink from 'server/database/rethinkDriver'
-import makeUpcomingInvoice from 'server/graphql/queries/helpers/makeUpcomingInvoice'
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
-import {InvoiceConnection} from 'server/graphql/types/Invoice'
-import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
-import {UPCOMING} from 'universal/utils/constants'
-import resolvePromiseObj from 'universal/utils/resolvePromiseObj'
-import standardError from 'server/utils/standardError'
+import getRethink from '../../database/rethinkDriver'
+import makeUpcomingInvoice from './helpers/makeUpcomingInvoice'
+import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
+import {InvoiceConnection} from '../types/Invoice'
+import {getUserId, isUserBillingLeader} from '../../utils/authorization'
+import {UPCOMING} from '../../../client/utils/constants'
+import resolvePromiseObj from '../../../client/utils/resolvePromiseObj'
+import standardError from '../../utils/standardError'
 
 export default {
   type: InvoiceConnection,

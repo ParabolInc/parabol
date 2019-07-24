@@ -1,6 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
-import stripe from 'server/billing/stripe'
-import getRethink from 'server/database/rethinkDriver'
+import stripe from '../../billing/stripe'
+import getRethink from '../../database/rethinkDriver'
 
 export default {
   name: 'StripeUpdateInvoiceItem',

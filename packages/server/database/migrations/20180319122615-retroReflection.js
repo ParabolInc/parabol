@@ -7,7 +7,7 @@ import {
   RETROSPECTIVE,
   SUMMARY,
   VOTE
-} from 'universal/utils/constants'
+} from '../../../client/utils/constants'
 
 exports.up = async (r) => {
   try {

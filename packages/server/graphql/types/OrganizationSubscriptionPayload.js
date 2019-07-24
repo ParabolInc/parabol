@@ -1,12 +1,12 @@
-import graphQLSubscriptionType from 'server/graphql/graphQLSubscriptionType'
-import AddOrgPayload from 'server/graphql/types/AddOrgPayload'
-import SetOrgUserRoleAddedPayload from 'server/graphql/types/SetOrgUserRoleAddedPayload'
-import SetOrgUserRoleRemovedPayload from 'server/graphql/types/SetOrgUserRoleRemovedPayload'
-import UpdateOrgPayload from 'server/graphql/types/UpdateOrgPayload'
-import UpgradeToProPayload from 'server/graphql/types/UpgradeToProPayload'
-import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload'
-import UpdateCreditCardPayload from 'server/graphql/types/UpdateCreditCardPayload'
-import DowngradeToPersonalPayload from 'server/graphql/types/DowngradeToPersonalPayload'
+import graphQLSubscriptionType from '../graphQLSubscriptionType'
+import AddOrgPayload from './AddOrgPayload'
+import SetOrgUserRoleAddedPayload from './SetOrgUserRoleAddedPayload'
+import SetOrgUserRoleRemovedPayload from './SetOrgUserRoleRemovedPayload'
+import UpdateOrgPayload from './UpdateOrgPayload'
+import UpgradeToProPayload from './UpgradeToProPayload'
+import RemoveOrgUserPayload from './RemoveOrgUserPayload'
+import UpdateCreditCardPayload from './UpdateCreditCardPayload'
+import DowngradeToPersonalPayload from './DowngradeToPersonalPayload'
 
 const types = [
   AddOrgPayload,

@@ -1,10 +1,10 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLString} from 'graphql'
-import CreatePicturePutUrlPayload from 'server/graphql/types/CreatePicturePutUrlPayload'
-import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
-import getS3PutUrl from 'server/utils/getS3PutUrl'
-import validateAvatarUpload from 'server/utils/validateAvatarUpload'
+import CreatePicturePutUrlPayload from '../types/CreatePicturePutUrlPayload'
+import {getUserId, isUserBillingLeader} from '../../utils/authorization'
+import getS3PutUrl from '../../utils/getS3PutUrl'
+import validateAvatarUpload from '../../utils/validateAvatarUpload'
 import shortid from 'shortid'
-import standardError from 'server/utils/standardError'
+import standardError from '../../utils/standardError'
 
 const createOrgPicturePutUrl = {
   type: CreatePicturePutUrlPayload,

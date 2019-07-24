@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql'
-import {makeResolve} from 'server/graphql/resolvers'
-import Coords2D from 'server/graphql/types/Coords2D'
-import User from 'server/graphql/types/User'
+import {makeResolve} from '../resolvers'
+import Coords2D from './Coords2D'
+import User from './User'
 
 const DragContext = new GraphQLObjectType({
   name: 'DragContext',

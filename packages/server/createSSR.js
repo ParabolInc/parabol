@@ -1,6 +1,6 @@
 import makeSegmentSnippet from '@segment/snippet'
-import dehydrate from 'server/utils/dehydrate'
-import getWebpackPublicPath from 'server/utils/getWebpackPublicPath'
+import dehydrate from './utils/dehydrate'
+import getWebpackPublicPath from './utils/getWebpackPublicPath'
 import fs from 'fs'
 import path from 'path'
 

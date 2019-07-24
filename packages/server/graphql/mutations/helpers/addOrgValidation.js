@@ -1,5 +1,5 @@
-import legitify from 'universal/validation/legitify'
-import {orgName, teamName} from 'universal/validation/templates'
+import legitify from '../../../../client/validation/legitify'
+import {orgName, teamName} from '../../../../client/validation/templates'
 
 export default function addOrgValidation () {
   return legitify({

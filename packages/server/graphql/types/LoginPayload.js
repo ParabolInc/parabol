@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql'
-import {resolveUser} from 'server/graphql/resolvers'
-import User from 'server/graphql/types/User'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
+import {resolveUser} from '../resolvers'
+import User from './User'
+import StandardMutationError from './StandardMutationError'
 
 const LoginPayload = new GraphQLObjectType({
   name: 'LoginPayload',

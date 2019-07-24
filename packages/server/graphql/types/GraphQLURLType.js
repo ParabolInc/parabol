@@ -1,6 +1,6 @@
 import {GraphQLScalarType} from 'graphql'
 import {Kind} from 'graphql/language'
-import {urlRegex} from 'universal/validation/regex'
+import {urlRegex} from '../../../client/validation/regex'
 
 const GraphQLURLType = new GraphQLScalarType({
   name: 'URL',

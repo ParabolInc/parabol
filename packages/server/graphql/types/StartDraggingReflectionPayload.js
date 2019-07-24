@@ -1,9 +1,9 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql'
-import {makeResolve, resolveNewMeeting} from 'server/graphql/resolvers'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
-import RetroReflection from 'server/graphql/types/RetroReflection'
-import DragContext from 'server/graphql/types/DragContext'
-import NewMeeting from 'server/graphql/types/NewMeeting'
+import {makeResolve, resolveNewMeeting} from '../resolvers'
+import StandardMutationError from './StandardMutationError'
+import RetroReflection from './RetroReflection'
+import DragContext from './DragContext'
+import NewMeeting from './NewMeeting'
 
 const StartDraggingReflectionPayload = new GraphQLObjectType({
   name: 'StartDraggingReflectionPayload',

@@ -1,9 +1,9 @@
 import {GraphQLObjectType} from 'graphql'
-import {resolveNewMeeting} from 'server/graphql/resolvers'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
-import NewMeeting from 'server/graphql/types/NewMeeting'
-import RetroDiscussStage from 'server/graphql/types/RetroDiscussStage'
-import {DISCUSS} from 'universal/utils/constants'
+import {resolveNewMeeting} from '../resolvers'
+import StandardMutationError from './StandardMutationError'
+import NewMeeting from './NewMeeting'
+import RetroDiscussStage from './RetroDiscussStage'
+import {DISCUSS} from '../../../client/utils/constants'
 
 const DragDiscussionTopicPayload = new GraphQLObjectType({
   name: 'DragDiscussionTopicPayload',

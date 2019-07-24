@@ -1,9 +1,9 @@
-import makeRetroGroupTitle from 'universal/utils/autogroup/makeRetroGroupTitle'
-import getRethink from 'server/database/rethinkDriver'
-import makeReflectionGroup from 'server/graphql/mutations/helpers/updateReflectionLocation/makeReflectionGroup'
-import updateGroupTitle from 'server/graphql/mutations/helpers/updateReflectionLocation/updateGroupTitle'
-import {getUserId} from 'server/utils/authorization'
-import standardError from 'server/utils/standardError'
+import makeRetroGroupTitle from '../../../../../client/utils/autogroup/makeRetroGroupTitle'
+import getRethink from '../../../../database/rethinkDriver'
+import makeReflectionGroup from './makeReflectionGroup'
+import updateGroupTitle from './updateGroupTitle'
+import {getUserId} from '../../../../utils/authorization'
+import standardError from '../../../../utils/standardError'
 
 const removeReflectionFromGroup = async (reflectionId, {authToken, dataLoader}) => {
   const r = getRethink()

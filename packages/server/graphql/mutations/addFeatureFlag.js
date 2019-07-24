@@ -1,11 +1,11 @@
-import getRethink from 'server/database/rethinkDriver'
+import getRethink from '../../database/rethinkDriver'
 import {GraphQLNonNull, GraphQLString} from 'graphql'
-import {getUserId, requireSU} from 'server/utils/authorization'
-import UserFlagEnum from 'server/graphql/types/UserFlagEnum'
-import {NOTIFICATION} from 'universal/utils/constants'
-import publish from 'server/utils/publish'
-import AddFeatureFlagPayload from 'server/graphql/types/AddFeatureFlagPayload'
-import standardError from 'server/utils/standardError'
+import {getUserId, requireSU} from '../../utils/authorization'
+import UserFlagEnum from '../types/UserFlagEnum'
+import {NOTIFICATION} from '../../../client/utils/constants'
+import publish from '../../utils/publish'
+import AddFeatureFlagPayload from '../types/AddFeatureFlagPayload'
+import standardError from '../../utils/standardError'
 
 export default {
   type: AddFeatureFlagPayload,

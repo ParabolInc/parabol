@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import Organization from 'server/graphql/types/Organization'
-import {getUserId} from 'server/utils/authorization'
+import Organization from '../types/Organization'
+import {getUserId} from '../../utils/authorization'
 
 export default {
   type: Organization,

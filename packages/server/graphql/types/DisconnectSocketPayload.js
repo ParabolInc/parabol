@@ -1,5 +1,5 @@
 import {GraphQLObjectType} from 'graphql'
-import User from 'server/graphql/types/User'
+import User from './User'
 
 const DisconnectSocketPayload = new GraphQLObjectType({
   name: 'DisconnectSocketPayload',

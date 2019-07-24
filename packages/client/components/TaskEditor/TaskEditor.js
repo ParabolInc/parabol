@@ -24,7 +24,7 @@ const RootEditor = styled('div')(({noText}) => ({
 
 const AndroidEditorFallback = lazyPreload(() =>
   import(
-    /* webpackChunkName: 'AndroidEditorFallback' */ 'universal/components/AndroidEditorFallback'
+    /* webpackChunkName: 'AndroidEditorFallback' */ '../../../client/components/AndroidEditorFallback'
   )
 )
 

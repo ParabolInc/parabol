@@ -4,7 +4,7 @@ import {
   INACTIVITY_ADJUSTMENTS,
   OTHER_ADJUSTMENTS,
   REMOVED_USERS
-} from 'universal/utils/constants'
+} from '../../../client/utils/constants'
 
 const InvoiceLineItemEnum = new GraphQLEnumType({
   name: 'InvoiceLineItemEnum',

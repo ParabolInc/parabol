@@ -1,6 +1,6 @@
 import {GraphQLObjectType} from 'graphql'
-import GraphQLURLType from 'server/graphql/types/GraphQLURLType'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
+import GraphQLURLType from './GraphQLURLType'
+import StandardMutationError from './StandardMutationError'
 
 const CreatePicturePutUrlPayload = new GraphQLObjectType({
   name: 'CreatePicturePutUrlPayload',

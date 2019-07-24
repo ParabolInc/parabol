@@ -25,7 +25,7 @@ const LoadableEditorLinkChanger = Loadable({
   loader: () =>
     import(
       /* webpackChunkName: 'EditorLinkChanger' */
-      'universal/components/EditorLinkChanger/EditorLinkChanger'
+      '../../../client/components/EditorLinkChanger/EditorLinkChanger'
     ),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
@@ -38,7 +38,7 @@ const LoadableEditorLinkViewer = Loadable({
   loader: () =>
     import(
       /* webpackChunkName: 'EditorLinkViewer' */
-      'universal/components/EditorLinkViewer/EditorLinkViewer'
+      '../../../client/components/EditorLinkViewer/EditorLinkViewer'
     ),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />

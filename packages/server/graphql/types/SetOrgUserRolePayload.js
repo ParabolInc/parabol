@@ -1,10 +1,10 @@
 import {GraphQLInterfaceType} from 'graphql'
-import {resolveOrganization} from 'server/graphql/resolvers'
-import Organization from 'server/graphql/types/Organization'
-import SetOrgUserRoleAddedPayload from 'server/graphql/types/SetOrgUserRoleAddedPayload'
-import SetOrgUserRoleRemovedPayload from 'server/graphql/types/SetOrgUserRoleRemovedPayload'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
-import OrganizationUser from 'server/graphql/types/OrganizationUser'
+import {resolveOrganization} from '../resolvers'
+import Organization from './Organization'
+import SetOrgUserRoleAddedPayload from './SetOrgUserRoleAddedPayload'
+import SetOrgUserRoleRemovedPayload from './SetOrgUserRoleRemovedPayload'
+import StandardMutationError from './StandardMutationError'
+import OrganizationUser from './OrganizationUser'
 
 export const setOrgUserRoleFields = {
   error: {

@@ -1,7 +1,7 @@
 import {GraphQLObjectType} from 'graphql'
-import {resolveNewMeeting} from 'server/graphql/resolvers'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
-import NewMeeting from 'server/graphql/types/NewMeeting'
+import {resolveNewMeeting} from '../resolvers'
+import StandardMutationError from './StandardMutationError'
+import NewMeeting from './NewMeeting'
 
 const UpdateNewCheckInQuestionPayload = new GraphQLObjectType({
   name: 'UpdateNewCheckInQuestionPayload',

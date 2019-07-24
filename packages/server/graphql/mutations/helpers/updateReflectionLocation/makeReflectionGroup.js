@@ -1,4 +1,4 @@
-import getRethink from 'server/database/rethinkDriver'
+import getRethink from '../../../../database/rethinkDriver'
 import * as shortid from 'shortid'
 
 const makeReflectionGroup = async (meetingId, retroPhaseItemId, sortOrder) => {

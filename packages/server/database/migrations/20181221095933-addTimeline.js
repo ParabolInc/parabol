@@ -3,7 +3,7 @@ import {
   COMPLETED_ACTION_MEETING,
   COMPLETED_RETRO_MEETING,
   JOINED_PARABOL
-} from 'server/graphql/types/TimelineEventTypeEnum'
+} from '../../graphql/types/TimelineEventTypeEnum'
 
 exports.up = async (r) => {
   try {

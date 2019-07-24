@@ -1,6 +1,6 @@
 import {GraphQLObjectType} from 'graphql'
-import {resolveTask} from 'server/graphql/resolvers'
-import Task from 'server/graphql/types/Task'
+import {resolveTask} from '../resolvers'
+import Task from './Task'
 
 const TaskRemoved = new GraphQLObjectType({
   name: 'TaskRemoved',

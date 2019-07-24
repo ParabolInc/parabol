@@ -1,5 +1,5 @@
-import stripe from 'server/billing/stripe'
-import getRethink from 'server/database/rethinkDriver'
+import stripe from '../stripe'
+import getRethink from '../../database/rethinkDriver'
 
 export default async function terminateSubscription (orgId) {
   const r = getRethink()

@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import {getUserId, isTeamMember} from 'server/utils/authorization'
-import publish from 'server/utils/publish'
-import {CHECKIN, TEAM} from 'universal/utils/constants'
-import normalizeRawDraftJS from 'universal/validation/normalizeRawDraftJS'
-import UpdateNewCheckInQuestionPayload from 'server/graphql/types/UpdateNewCheckInQuestionPayload'
-import standardError from 'server/utils/standardError'
+import getRethink from '../../database/rethinkDriver'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import {CHECKIN, TEAM} from '../../../client/utils/constants'
+import normalizeRawDraftJS from '../../../client/validation/normalizeRawDraftJS'
+import UpdateNewCheckInQuestionPayload from '../types/UpdateNewCheckInQuestionPayload'
+import standardError from '../../utils/standardError'
 
 export default {
   type: UpdateNewCheckInQuestionPayload,

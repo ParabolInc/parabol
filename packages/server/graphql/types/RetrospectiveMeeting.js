@@ -6,15 +6,15 @@ import {
   GraphQLNonNull,
   GraphQLObjectType
 } from 'graphql'
-import NewMeeting, {newMeetingFields} from 'server/graphql/types/NewMeeting'
-import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup'
-import {resolveForSU} from 'server/graphql/resolvers'
-import RetrospectiveMeetingSettings from 'server/graphql/types/RetrospectiveMeetingSettings'
-import {RETROSPECTIVE} from 'universal/utils/constants'
-import Task from 'server/graphql/types/Task'
-import {getUserId} from 'server/utils/authorization'
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
-import RetrospectiveMeetingMember from 'server/graphql/types/RetrospectiveMeetingMember'
+import NewMeeting, {newMeetingFields} from './NewMeeting'
+import RetroReflectionGroup from './RetroReflectionGroup'
+import {resolveForSU} from '../resolvers'
+import RetrospectiveMeetingSettings from './RetrospectiveMeetingSettings'
+import {RETROSPECTIVE} from '../../../client/utils/constants'
+import Task from './Task'
+import {getUserId} from '../../utils/authorization'
+import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
+import RetrospectiveMeetingMember from './RetrospectiveMeetingMember'
 
 const ReflectionGroupSortEnum = new GraphQLEnumType({
   name: 'ReflectionGroupSortEnum',

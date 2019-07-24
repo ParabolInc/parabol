@@ -1,5 +1,5 @@
 import {GraphQLEnumType} from 'graphql'
-import {ASSIGNEE, MENTIONEE} from 'universal/utils/constants'
+import {ASSIGNEE, MENTIONEE} from '../../../client/utils/constants'
 
 const TaskInvolvementType = new GraphQLEnumType({
   name: 'TaskInvolvementType',

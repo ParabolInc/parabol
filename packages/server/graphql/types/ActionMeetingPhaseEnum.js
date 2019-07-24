@@ -7,7 +7,7 @@ import {
   LOBBY,
   SUMMARY,
   UPDATES
-} from 'universal/utils/constants'
+} from '../../../client/utils/constants'
 
 const ActionMeetingPhaseEnum = new GraphQLEnumType({
   name: 'ActionMeetingPhaseEnum',

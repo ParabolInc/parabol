@@ -1,8 +1,8 @@
-import {__anHourAgo} from 'server/__tests__/setup/mockTimes'
-import testUsers from 'server/__tests__/setup/testUsers'
-import notificationTemplate from 'server/__tests__/utils/notificationTemplate'
-import getRethink from 'server/database/rethinkDriver'
-import {ADD_USER} from 'server/utils/serverConstants'
+import {__anHourAgo} from './mockTimes'
+import testUsers from './testUsers'
+import notificationTemplate from '../utils/notificationTemplate'
+import getRethink from '../../database/rethinkDriver'
+import {ADD_USER} from '../../utils/serverConstants'
 import shortid from 'shortid'
 import {
   ACTIVE,
@@ -12,11 +12,11 @@ import {
   LOBBY,
   PERSONAL,
   PRO
-} from 'universal/utils/constants'
-import getWeekOfYear from 'universal/utils/getWeekOfYear'
-import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting'
+} from '../../../client/utils/constants'
+import getWeekOfYear from '../../../client/utils/getWeekOfYear'
+import {makeCheckinGreeting, makeCheckinQuestion} from '../../../client/utils/makeCheckinGreeting'
 import convertToRichText from './convertToRichText'
-import creditCardByToken from 'server/__tests__/utils/creditCardByToken'
+import creditCardByToken from '../utils/creditCardByToken'
 
 const meetingTask = ({id, content, status, teamMemberId}) => ({
   id,

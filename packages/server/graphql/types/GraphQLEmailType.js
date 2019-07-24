@@ -1,6 +1,6 @@
 import {GraphQLScalarType} from 'graphql'
 import {Kind} from 'graphql/language'
-import {emailRegex} from 'universal/validation/regex'
+import {emailRegex} from '../../../client/validation/regex'
 
 const GraphQLEmailType = new GraphQLScalarType({
   name: 'Email',

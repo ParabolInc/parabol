@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
-import TaskStatusEnum from 'server/graphql/types/TaskStatusEnum'
+import TaskStatusEnum from './TaskStatusEnum'
 
 const MeetingTask = new GraphQLObjectType({
   name: 'MeetingTask',

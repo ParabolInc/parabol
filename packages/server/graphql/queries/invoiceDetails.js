@@ -1,10 +1,10 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import generateUpcomingInvoice from 'server/billing/helpers/generateUpcomingInvoice'
-import getRethink from 'server/database/rethinkDriver'
-import Invoice from 'server/graphql/types/Invoice'
-import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
-import {UPCOMING_INVOICE_TIME_VALID} from 'server/utils/serverConstants'
-import standardError from 'server/utils/standardError'
+import generateUpcomingInvoice from '../../billing/helpers/generateUpcomingInvoice'
+import getRethink from '../../database/rethinkDriver'
+import Invoice from '../types/Invoice'
+import {getUserId, isUserBillingLeader} from '../../utils/authorization'
+import {UPCOMING_INVOICE_TIME_VALID} from '../../utils/serverConstants'
+import standardError from '../../utils/standardError'
 
 export default {
   type: Invoice,

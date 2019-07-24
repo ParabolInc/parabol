@@ -1,15 +1,15 @@
 /* eslint-env jest */
 import DynamicSerializer from 'dynamic-serializer'
 import MockDate from 'mockdate'
-import socket from 'server/__mocks__/socket'
-import makeDataLoader from 'server/__tests__/setup/makeDataLoader'
-import mockAuthToken from 'server/__tests__/setup/mockAuthToken'
-import MockDB from 'server/__tests__/setup/MockDB'
-import {__now} from 'server/__tests__/setup/mockTimes'
-import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize'
-import getRethink from 'server/database/rethinkDriver'
-import addOrg from 'server/graphql/mutations/addOrg'
-import {auth0ManagementClient} from 'server/utils/auth0Helpers'
+import socket from '../../../__mocks__/socket'
+import makeDataLoader from '../../../__tests__/setup/makeDataLoader'
+import mockAuthToken from '../../../__tests__/setup/mockAuthToken'
+import MockDB from '../../../__tests__/setup/MockDB'
+import {__now} from '../../../__tests__/setup/mockTimes'
+import fetchAndSerialize from '../../../__tests__/utils/fetchAndSerialize'
+import getRethink from '../../../database/rethinkDriver'
+import addOrg from '../addOrg'
+import {auth0ManagementClient} from '../../../utils/auth0Helpers'
 
 MockDate.set(__now)
 console.error = jest.fn()

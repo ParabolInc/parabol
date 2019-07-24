@@ -1,8 +1,8 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {resolveNotification, resolveOrganization} from 'server/graphql/resolvers'
-import NotifyPaymentRejected from 'server/graphql/types/NotifyPaymentRejected'
-import Organization from 'server/graphql/types/Organization'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
+import {resolveNotification, resolveOrganization} from '../resolvers'
+import NotifyPaymentRejected from './NotifyPaymentRejected'
+import Organization from './Organization'
+import StandardMutationError from './StandardMutationError'
 
 const StripeFailPaymentPayload = new GraphQLObjectType({
   name: 'StripeFailPaymentPayload',

@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import Organization from 'server/graphql/types/Organization'
+import Organization from './Organization'
 
 const SuProOrgInfo = new GraphQLObjectType({
   name: 'SuProOrgInfo',

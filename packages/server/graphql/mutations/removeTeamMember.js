@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import removeTeamMember from 'server/graphql/mutations/helpers/removeTeamMember'
-import RemoveTeamMemberPayload from 'server/graphql/types/RemoveTeamMemberPayload'
-import {auth0ManagementClient} from 'server/utils/auth0Helpers'
-import {getUserId, isTeamLead} from 'server/utils/authorization'
-import publish from 'server/utils/publish'
-import {NEW_AUTH_TOKEN, TASK, TEAM, UPDATED} from 'universal/utils/constants'
-import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
-import standardError from 'server/utils/standardError'
+import removeTeamMember from './helpers/removeTeamMember'
+import RemoveTeamMemberPayload from '../types/RemoveTeamMemberPayload'
+import {auth0ManagementClient} from '../../utils/auth0Helpers'
+import {getUserId, isTeamLead} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import {NEW_AUTH_TOKEN, TASK, TEAM, UPDATED} from '../../../client/utils/constants'
+import fromTeamMemberId from '../../../client/utils/relay/fromTeamMemberId'
+import standardError from '../../utils/standardError'
 
 export default {
   type: RemoveTeamMemberPayload,

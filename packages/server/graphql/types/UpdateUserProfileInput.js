@@ -1,5 +1,5 @@
 import {GraphQLInputObjectType, GraphQLString} from 'graphql'
-import GraphQLURLType from 'server/graphql/types/GraphQLURLType'
+import GraphQLURLType from './GraphQLURLType'
 
 const UpdateUserProfileInput = new GraphQLInputObjectType({
   name: 'UpdateUserProfileInput',

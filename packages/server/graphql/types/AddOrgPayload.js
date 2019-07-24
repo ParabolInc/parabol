@@ -1,7 +1,7 @@
 import {GraphQLObjectType} from 'graphql'
-import {resolveOrganization} from 'server/graphql/resolvers'
-import {addTeamFields} from 'server/graphql/types/AddTeamPayload'
-import Organization from 'server/graphql/types/Organization'
+import {resolveOrganization} from '../resolvers'
+import {addTeamFields} from './AddTeamPayload'
+import Organization from './Organization'
 
 const AddOrgPayload = new GraphQLObjectType({
   name: 'AddOrgPayload',

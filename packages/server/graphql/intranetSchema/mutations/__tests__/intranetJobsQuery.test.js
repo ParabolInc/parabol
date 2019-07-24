@@ -1,10 +1,10 @@
 /* eslint-env jest */
-import mockAuthToken from 'server/__tests__/setup/mockAuthToken'
-import MockDB from 'server/__tests__/setup/MockDB'
-import {__anHourAgo, __now, __overADayAgo} from 'server/__tests__/setup/mockTimes'
-import getRethink from 'server/database/rethinkDriver'
-import {sendBatchEmail} from 'server/email/sendEmail'
-import sendBatchNotificationEmails from 'server/graphql/intranetSchema/mutations/sendBatchNotificationEmails'
+import mockAuthToken from '../../../../__tests__/setup/mockAuthToken'
+import MockDB from '../../../../__tests__/setup/MockDB'
+import {__anHourAgo, __now, __overADayAgo} from '../../../../__tests__/setup/mockTimes'
+import getRethink from '../../../../database/rethinkDriver'
+import {sendBatchEmail} from '../../../../email/sendEmail'
+import sendBatchNotificationEmails from '../sendBatchNotificationEmails'
 
 // Manage side-effects
 console.error = jest.fn()

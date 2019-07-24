@@ -1,9 +1,9 @@
 /* eslint-env jest */
-import mockAuthToken from 'server/__tests__/setup/mockAuthToken'
-import MockDB from 'server/__tests__/setup/MockDB'
-import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow'
-import suUserCount from 'server/graphql/queries/suUserCount'
-import {PERSONAL, PRO} from 'universal/utils/constants'
+import mockAuthToken from '../../../__tests__/setup/mockAuthToken'
+import MockDB from '../../../__tests__/setup/MockDB'
+import expectAsyncToThrow from '../../../__tests__/utils/expectAsyncToThrow'
+import suUserCount from '../suUserCount'
+import {PERSONAL, PRO} from '../../../../client/utils/constants'
 import shortid from 'shortid'
 
 console.error = jest.fn()

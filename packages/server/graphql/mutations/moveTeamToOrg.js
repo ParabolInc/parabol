@@ -1,10 +1,10 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
-import adjustUserCount from 'server/billing/helpers/adjustUserCount'
-import getRethink from 'server/database/rethinkDriver'
-import {getUserId, isSuperUser} from 'server/utils/authorization'
-import {ADD_USER, AUTO_PAUSE_USER} from 'server/utils/serverConstants'
-import {BILLING_LEADER} from 'universal/utils/constants'
-import standardError from 'server/utils/standardError'
+import adjustUserCount from '../../billing/helpers/adjustUserCount'
+import getRethink from '../../database/rethinkDriver'
+import {getUserId, isSuperUser} from '../../utils/authorization'
+import {ADD_USER, AUTO_PAUSE_USER} from '../../utils/serverConstants'
+import {BILLING_LEADER} from '../../../client/utils/constants'
+import standardError from '../../utils/standardError'
 
 export default {
   type: GraphQLString,

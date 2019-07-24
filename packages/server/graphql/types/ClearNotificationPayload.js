@@ -1,6 +1,6 @@
 import {GraphQLObjectType} from 'graphql'
-import Notification from 'server/graphql/types/Notification'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
+import Notification from './Notification'
+import StandardMutationError from './StandardMutationError'
 
 const ClearNotificationPayload = new GraphQLObjectType({
   name: 'ClearNotificationPayload',

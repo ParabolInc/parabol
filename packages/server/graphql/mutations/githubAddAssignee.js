@@ -1,10 +1,10 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import ms from 'ms'
-import getRethink from 'server/database/rethinkDriver'
-import getPubSub from 'server/utils/getPubSub'
-import {DONE, GITHUB} from 'universal/utils/constants'
-import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap'
-import removeAllRangesForEntity from 'universal/utils/draftjs/removeAllRangesForEntity'
+import getRethink from '../../database/rethinkDriver'
+import getPubSub from '../../utils/getPubSub'
+import {DONE, GITHUB} from '../../../client/utils/constants'
+import getTagsFromEntityMap from '../../../client/utils/draftjs/getTagsFromEntityMap'
+import removeAllRangesForEntity from '../../../client/utils/draftjs/removeAllRangesForEntity'
 
 export default {
   name: 'GitHubAddAssignee',

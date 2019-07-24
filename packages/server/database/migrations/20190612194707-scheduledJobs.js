@@ -1,4 +1,4 @@
-import SlackNotification from 'server/database/types/SlackNotification'
+import SlackNotification from '../types/SlackNotification'
 
 exports.up = async (r) => {
   try {

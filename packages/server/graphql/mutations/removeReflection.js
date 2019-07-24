@@ -1,13 +1,13 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import {getUserId, isTeamMember} from 'server/utils/authorization'
-import publish from 'server/utils/publish'
-import {GROUP, REFLECT, TEAM} from 'universal/utils/constants'
-import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
-import RemoveReflectionPayload from 'server/graphql/types/RemoveReflectionPayload'
-import removeEmptyReflectionGroup from 'server/graphql/mutations/helpers/removeEmptyReflectionGroup'
-import unlockAllStagesForPhase from 'universal/utils/unlockAllStagesForPhase'
-import standardError from 'server/utils/standardError'
+import getRethink from '../../database/rethinkDriver'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import {GROUP, REFLECT, TEAM} from '../../../client/utils/constants'
+import isPhaseComplete from '../../../client/utils/meetings/isPhaseComplete'
+import RemoveReflectionPayload from '../types/RemoveReflectionPayload'
+import removeEmptyReflectionGroup from './helpers/removeEmptyReflectionGroup'
+import unlockAllStagesForPhase from '../../../client/utils/unlockAllStagesForPhase'
+import standardError from '../../utils/standardError'
 
 export default {
   type: RemoveReflectionPayload,

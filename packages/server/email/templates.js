@@ -1,6 +1,6 @@
-import notificationSummary from 'universal/modules/email/components/NotificationSummary/index'
-import teamInvite from 'universal/modules/email/containers/TeamInvite/index'
-import UpcomingInvoiceEmailTemplate from 'universal/modules/email/components/UpcomingInvoiceEmailTemplate'
+import notificationSummary from '../../client/modules/email/components/NotificationSummary/index'
+import teamInvite from '../../client/modules/email/containers/TeamInvite/index'
+import UpcomingInvoiceEmailTemplate from '../../client/modules/email/components/UpcomingInvoiceEmailTemplate'
 
 export default {
   notificationSummary,

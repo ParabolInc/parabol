@@ -1,9 +1,9 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {resolveNewMeeting} from 'server/graphql/resolvers'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
-import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting'
-import ReflectPhase from 'server/graphql/types/ReflectPhase'
-import {REFLECT} from 'universal/utils/constants'
+import {resolveNewMeeting} from '../resolvers'
+import StandardMutationError from './StandardMutationError'
+import RetrospectiveMeeting from './RetrospectiveMeeting'
+import ReflectPhase from './ReflectPhase'
+import {REFLECT} from '../../../client/utils/constants'
 
 const SetPhaseFocusPayload = new GraphQLObjectType({
   name: 'SetPhaseFocusPayload',

@@ -1,10 +1,10 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import CustomPhaseItem from 'server/graphql/types/CustomPhaseItem'
+import CustomPhaseItem from './CustomPhaseItem'
 import TeamMeetingSettings, {
   teamMeetingSettingsFields
-} from 'server/graphql/types/TeamMeetingSettings'
-import {RETRO_PHASE_ITEM} from 'universal/utils/constants'
-import ReflectTemplate from 'server/graphql/types/ReflectTemplate'
+} from './TeamMeetingSettings'
+import {RETRO_PHASE_ITEM} from '../../../client/utils/constants'
+import ReflectTemplate from './ReflectTemplate'
 
 const RetrospectiveMeetingSettings = new GraphQLObjectType({
   name: 'RetrospectiveMeetingSettings',

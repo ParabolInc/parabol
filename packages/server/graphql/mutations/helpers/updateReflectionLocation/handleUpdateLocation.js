@@ -1,5 +1,5 @@
-import addReflectionToGroup from 'server/graphql/mutations/helpers/updateReflectionLocation/addReflectionToGroup'
-import removeReflectionFromGroup from 'server/graphql/mutations/helpers/updateReflectionLocation/removeReflectionFromGroup'
+import addReflectionToGroup from './addReflectionToGroup'
+import removeReflectionFromGroup from './removeReflectionFromGroup'
 // import moveReflectionGroup from 'server/graphql/mutations/helpers/updateReflectionLocation/moveReflectionGroup'
 
 const handleUpdatedLocation = (reflectionId, reflectionGroupId, context) => {

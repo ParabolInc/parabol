@@ -1,10 +1,10 @@
 import {GraphQLBoolean, GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
-import {RETRO_PHASE_ITEM} from 'universal/utils/constants'
-import RetroPhaseItem from 'server/graphql/types/RetroPhaseItem'
-import CustomPhaseItemTypeEnum from 'server/graphql/types/CustomPhaseItemTypeEnum'
-import Team from 'server/graphql/types/Team'
-import {resolveTeam} from 'server/graphql/resolvers'
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
+import {RETRO_PHASE_ITEM} from '../../../client/utils/constants'
+import RetroPhaseItem from './RetroPhaseItem'
+import CustomPhaseItemTypeEnum from './CustomPhaseItemTypeEnum'
+import Team from './Team'
+import {resolveTeam} from '../resolvers'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
 
 export const customPhaseItemFields = () => ({
   id: {

@@ -3,8 +3,8 @@
 // import MockDB from '../__tests__/setup/MockDB';
 // import fieldsToSerialize from 'server/__tests__/utils/fieldsToSerialize';
 // import fs from 'fs';
-import StripeManager from 'server/utils/StripeManager'
-import getRethink from 'server/database/rethinkDriver'
+import StripeManager from '../utils/StripeManager'
+import getRethink from '../database/rethinkDriver'
 
 const manuallyStartSub = async (orgId) => {
   const r = getRethink()

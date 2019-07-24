@@ -1,7 +1,7 @@
 import {forwardConnectionArgs} from 'graphql-relay'
-import getRethink from 'server/database/rethinkDriver'
-import {NotificationConnection} from 'server/graphql/types/Notification'
-import {getUserId} from 'server/utils/authorization'
+import getRethink from '../../database/rethinkDriver'
+import {NotificationConnection} from '../types/Notification'
+import {getUserId} from '../../utils/authorization'
 
 export default {
   type: NotificationConnection,

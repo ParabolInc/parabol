@@ -1,5 +1,5 @@
-import getRethink from 'server/database/rethinkDriver'
-import {BILLING_LEADER, PERSONAL, PRO, ENTERPRISE} from 'universal/utils/constants'
+import getRethink from '../../../database/rethinkDriver'
+import {BILLING_LEADER, PERSONAL, PRO, ENTERPRISE} from '../../../../client/utils/constants'
 
 // breaking this out into its own helper so it can be used directly to
 // populate segment traits

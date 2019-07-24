@@ -1,5 +1,5 @@
 import {GraphQLEnumType} from 'graphql'
-import {FAILED, PAID, PENDING, UPCOMING} from 'universal/utils/constants'
+import {FAILED, PAID, PENDING, UPCOMING} from '../../../client/utils/constants'
 
 const InvoiceStatusEnum = new GraphQLEnumType({
   name: 'InvoiceStatusEnum',

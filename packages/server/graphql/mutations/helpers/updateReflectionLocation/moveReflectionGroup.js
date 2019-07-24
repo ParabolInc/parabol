@@ -1,8 +1,8 @@
-import {getUserId, isTeamMember} from 'server/utils/authorization'
-import getRethink from 'server/database/rethinkDriver'
-import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
-import {GROUP} from 'universal/utils/constants'
-import standardError from 'server/utils/standardError'
+import {getUserId, isTeamMember} from '../../../../utils/authorization'
+import getRethink from '../../../../database/rethinkDriver'
+import isPhaseComplete from '../../../../../client/utils/meetings/isPhaseComplete'
+import {GROUP} from '../../../../../client/utils/constants'
+import standardError from '../../../../utils/standardError'
 
 const moveReflectionGroup = async (reflectionGroupId, sortOrder, {authToken, dataLoader}) => {
   const r = getRethink()

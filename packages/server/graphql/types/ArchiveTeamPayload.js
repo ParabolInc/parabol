@@ -3,11 +3,11 @@ import {
   makeResolveNotificationsForViewer,
   resolveNotificationForViewer,
   resolveTeam
-} from 'server/graphql/resolvers'
-import NotifyTeamArchived from 'server/graphql/types/NotifyTeamArchived'
-import Team from 'server/graphql/types/Team'
-import TeamNotification from 'server/graphql/types/TeamNotification'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
+} from '../resolvers'
+import NotifyTeamArchived from './NotifyTeamArchived'
+import Team from './Team'
+import TeamNotification from './TeamNotification'
+import StandardMutationError from './StandardMutationError'
 
 const ArchiveTeamPayload = new GraphQLObjectType({
   name: 'ArchiveTeamPayload',

@@ -1,4 +1,4 @@
-import BullQueue from 'bull'
+import BullQueue from '../../bull'
 import Redis from 'ioredis'
 import getDotenv from '../../client/utils/dotenv'
 

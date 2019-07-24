@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import DeleteTaskPayload from 'server/graphql/types/DeleteTaskPayload'
-import {getUserId, isTeamMember} from 'server/utils/authorization'
-import publish from 'server/utils/publish'
-import {NOTIFICATION, TASK, TASK_INVOLVES} from 'universal/utils/constants'
-import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap'
-import standardError from 'server/utils/standardError'
+import getRethink from '../../database/rethinkDriver'
+import DeleteTaskPayload from '../types/DeleteTaskPayload'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import {NOTIFICATION, TASK, TASK_INVOLVES} from '../../../client/utils/constants'
+import getTypeFromEntityMap from '../../../client/utils/draftjs/getTypeFromEntityMap'
+import standardError from '../../utils/standardError'
 
 export default {
   type: DeleteTaskPayload,

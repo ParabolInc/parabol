@@ -1,5 +1,5 @@
-import {requiredId, url} from 'universal/validation/templates'
-import legitify from 'universal/validation/legitify'
+import {requiredId, url} from '../../../../client/validation/templates'
+import legitify from '../../../../client/validation/legitify'
 
 export default function updateOrgValidation () {
   return legitify({

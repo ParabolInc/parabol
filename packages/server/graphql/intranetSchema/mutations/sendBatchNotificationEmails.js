@@ -1,8 +1,8 @@
 import {GraphQLList, GraphQLString} from 'graphql'
 import ms from 'ms'
-import getRethink from 'server/database/rethinkDriver'
-import {sendBatchEmail} from 'server/email/sendEmail'
-import {requireSU} from 'server/utils/authorization'
+import getRethink from '../../../database/rethinkDriver'
+import {sendBatchEmail} from '../../../email/sendEmail'
+import {requireSU} from '../../../utils/authorization'
 
 const sendBatchNotificationEmails = {
   type: new GraphQLList(GraphQLString),

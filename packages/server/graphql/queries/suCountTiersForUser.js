@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import UserTiersCount from 'server/graphql/types/UserTiersCount'
-import {requireSU} from 'server/utils/authorization'
-import countTiersForUserId from 'server/graphql/queries/helpers/countTiersForUserId'
+import UserTiersCount from '../types/UserTiersCount'
+import {requireSU} from '../../utils/authorization'
+import countTiersForUserId from './helpers/countTiersForUserId'
 
 export default {
   type: UserTiersCount,

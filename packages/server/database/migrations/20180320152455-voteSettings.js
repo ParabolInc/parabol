@@ -1,4 +1,4 @@
-import {RETROSPECTIVE} from 'universal/utils/constants'
+import {RETROSPECTIVE} from '../../../client/utils/constants'
 
 exports.up = async (r) => {
   try {

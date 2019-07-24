@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import getGroupMatrix from 'server/graphql/mutations/helpers/autoGroup/getGroupMatrix'
+import getGroupMatrix from '../getGroupMatrix'
 
 describe('groupReflections', () => {
   test('handles an empty matrix', async () => {

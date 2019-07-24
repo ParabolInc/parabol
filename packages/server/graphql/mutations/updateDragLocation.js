@@ -1,9 +1,9 @@
 import {GraphQLBoolean, GraphQLNonNull} from 'graphql'
-import UpdateDragLocationInput from 'server/graphql/types/UpdateDragLocationInput'
-import UpdateDragLocationPayload from 'server/graphql/types/UpdateDragLocationPayload'
-import publish from 'server/utils/publish'
-import {TEAM} from 'universal/utils/constants'
-import {getUserId} from 'server/utils/authorization'
+import UpdateDragLocationInput from '../types/UpdateDragLocationInput'
+import UpdateDragLocationPayload from '../types/UpdateDragLocationPayload'
+import publish from '../../utils/publish'
+import {TEAM} from '../../../client/utils/constants'
+import {getUserId} from '../../utils/authorization'
 
 const updateDragLocation = {
   description:

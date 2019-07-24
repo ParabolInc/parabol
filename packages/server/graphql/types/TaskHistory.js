@@ -1,7 +1,7 @@
 import {GraphQLObjectType, GraphQLNonNull, GraphQLID, GraphQLString, GraphQLEnumType} from 'graphql'
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
-import {USER_DASH, TEAM_DASH, MEETING} from 'universal/utils/constants'
-import TaskStatusEnum from 'server/graphql/types/TaskStatusEnum'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
+import {USER_DASH, TEAM_DASH, MEETING} from '../../../client/utils/constants'
+import TaskStatusEnum from './TaskStatusEnum'
 
 export const ChangeModule = new GraphQLEnumType({
   name: 'ChangeModule',

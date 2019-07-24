@@ -1,16 +1,16 @@
 /* eslint-env jest */
 import DynamicSerializer from 'dynamic-serializer'
-import MockRes from 'server/__mocks__/MockRes'
-import MockDB from 'server/__tests__/setup/MockDB'
-import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize'
-import stripe from 'server/billing/stripe'
-import stripeWebhookHandler from 'server/billing/stripeWebhookHandler'
+import MockRes from '../../../__mocks__/MockRes'
+import MockDB from '../../../__tests__/setup/MockDB'
+import fetchAndSerialize from '../../../__tests__/utils/fetchAndSerialize'
+import stripe from '../../../billing/stripe'
+import stripeWebhookHandler from '../../../billing/stripeWebhookHandler'
 import DataLoaderWarehouse from 'dataloader-warehouse'
-import getRethink from 'server/database/rethinkDriver'
-import customerSourceUpdatedEvent from 'server/graphql/mutations/__tests__/mockStripeEvents/customerSourceUpdatedEvent'
+import getRethink from '../../../database/rethinkDriver'
+import customerSourceUpdatedEvent from './mockStripeEvents/customerSourceUpdatedEvent'
 import shortid from 'shortid'
-import {PRO} from 'universal/utils/constants'
-import MockReq from 'server/__mocks__/MockReq'
+import {PRO} from '../../../../client/utils/constants'
+import MockReq from '../../../__mocks__/MockReq'
 
 console.error = jest.fn()
 

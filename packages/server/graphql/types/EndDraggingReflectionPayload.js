@@ -1,10 +1,10 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql'
-import {makeResolve, resolveNewMeeting} from 'server/graphql/resolvers'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
-import RetroReflection from 'server/graphql/types/RetroReflection'
-import DragReflectionDropTargetTypeEnum from 'server/graphql/mutations/DragReflectionDropTargetTypeEnum'
-import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup'
-import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting'
+import {makeResolve, resolveNewMeeting} from '../resolvers'
+import StandardMutationError from './StandardMutationError'
+import RetroReflection from './RetroReflection'
+import DragReflectionDropTargetTypeEnum from '../mutations/DragReflectionDropTargetTypeEnum'
+import RetroReflectionGroup from './RetroReflectionGroup'
+import RetrospectiveMeeting from './RetrospectiveMeeting'
 
 const EndDraggingReflectionPayload = new GraphQLObjectType({
   name: 'EndDraggingReflectionPayload',

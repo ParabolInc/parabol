@@ -1,4 +1,4 @@
-import {CHECKIN, DISCUSS, GROUP, REFLECT, RETROSPECTIVE, VOTE} from 'universal/utils/constants'
+import {CHECKIN, DISCUSS, GROUP, REFLECT, RETROSPECTIVE, VOTE} from '../../../client/utils/constants'
 
 exports.up = async (r) => {
   try {

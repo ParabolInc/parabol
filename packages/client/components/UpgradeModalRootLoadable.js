@@ -12,7 +12,7 @@ const UpgradeModalRootLoadable = Loadable({
   loader: () =>
     import(
       /* webpackChunkName: 'UpgradeModalRoot' */
-      'universal/components/UpgradeModalRoot'
+      '../../client/components/UpgradeModalRoot'
     ),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />

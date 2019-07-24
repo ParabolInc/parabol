@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {getUserId, isTeamMember} from 'server/utils/authorization'
-import publish from 'server/utils/publish'
-import {TASK} from 'universal/utils/constants'
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
-import isValidDate from 'universal/utils/isValidDate'
-import getRethink from 'server/database/rethinkDriver'
-import UpdateTaskDueDatePayload from 'server/graphql/types/UpdateTaskDueDatePayload'
-import standardError from 'server/utils/standardError'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import {TASK} from '../../../client/utils/constants'
+import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
+import isValidDate from '../../../client/utils/isValidDate'
+import getRethink from '../../database/rethinkDriver'
+import UpdateTaskDueDatePayload from '../types/UpdateTaskDueDatePayload'
+import standardError from '../../utils/standardError'
 
 export default {
   type: UpdateTaskDueDatePayload,

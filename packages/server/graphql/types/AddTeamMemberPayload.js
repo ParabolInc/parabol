@@ -1,5 +1,5 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import TeamMember from 'server/graphql/types/TeamMember'
+import TeamMember from './TeamMember'
 
 const AddTeamMemberPayload = new GraphQLObjectType({
   name: 'AddTeamMemberPayload',

@@ -1,4 +1,4 @@
-import {PERSONAL, PRO} from 'universal/utils/constants'
+import {PERSONAL, PRO} from '../../../client/utils/constants'
 
 exports.up = async (r) => {
   await r({

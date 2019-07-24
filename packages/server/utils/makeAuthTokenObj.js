@@ -4,8 +4,8 @@
  */
 import {clientId} from './auth0Helpers'
 import {JWT_LIFESPAN} from './serverConstants'
-import {toEpochSeconds} from 'server/utils/epochTime'
-import makeAppLink from 'server/utils/makeAppLink'
+import {toEpochSeconds} from './epochTime'
+import makeAppLink from './makeAppLink'
 
 /**
  * Takes a JWT auth token payload, modifies the `tms` (teams) field with the

@@ -1,16 +1,16 @@
 /* eslint-env jest */
-import getRethink from 'server/database/rethinkDriver'
-import mockAuthToken from 'server/__tests__/setup/mockAuthToken'
+import getRethink from '../../../database/rethinkDriver'
+import mockAuthToken from '../../../__tests__/setup/mockAuthToken'
 import MockDate from 'mockdate'
-import {__aMinuteAgo, __anHourAgo, __now} from 'server/__tests__/setup/mockTimes'
-import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize'
+import {__aMinuteAgo, __anHourAgo, __now} from '../../../__tests__/setup/mockTimes'
+import fetchAndSerialize from '../../../__tests__/utils/fetchAndSerialize'
 import DynamicSerializer from 'dynamic-serializer'
-import MockDB from 'server/__tests__/setup/MockDB'
-import socket from 'server/__mocks__/socket'
-import {DONE} from 'universal/utils/constants'
-import convertToRichText from 'server/__tests__/setup/convertToRichText'
-import updateTask from 'server/graphql/mutations/updateTask'
-import makeDataLoader from 'server/__tests__/setup/makeDataLoader'
+import MockDB from '../../../__tests__/setup/MockDB'
+import socket from '../../../__mocks__/socket'
+import {DONE} from '../../../../client/utils/constants'
+import convertToRichText from '../../../__tests__/setup/convertToRichText'
+import updateTask from '../updateTask'
+import makeDataLoader from '../../../__tests__/setup/makeDataLoader'
 
 MockDate.set(__now)
 console.error = jest.fn()

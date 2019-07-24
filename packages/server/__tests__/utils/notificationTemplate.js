@@ -1,11 +1,11 @@
 import MockDate from 'mockdate'
-import {__now} from 'server/__tests__/setup/mockTimes'
+import {__now} from '../setup/mockTimes'
 import {
   BILLING_LEADER,
   PAYMENT_REJECTED,
   PROMOTE_TO_BILLING_LEADER,
   TEAM_ARCHIVED
-} from 'universal/utils/constants'
+} from '../../../client/utils/constants'
 
 MockDate.set(__now)
 const now = new Date()

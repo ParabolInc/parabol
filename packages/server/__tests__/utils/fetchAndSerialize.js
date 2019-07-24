@@ -1,4 +1,4 @@
-import fieldsToSerialize from 'server/__tests__/utils/fieldsToSerialize'
+import fieldsToSerialize from './fieldsToSerialize'
 
 const unsortables = new Set(['invitation'])
 export default async function fetchAndSerialize (promiseObj, dynamicSerializer) {

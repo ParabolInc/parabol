@@ -1,11 +1,11 @@
 import {GraphQLNonNull} from 'graphql'
-import CreateUserPicturePutUrlPayload from 'server/graphql/types/CreateUserPicturePutUrlPayload'
-import {getUserId, isAuthenticated} from 'server/utils/authorization'
-import getS3PutUrl from 'server/utils/getS3PutUrl'
-import validateAvatarUpload from 'server/utils/validateAvatarUpload'
+import CreateUserPicturePutUrlPayload from '../types/CreateUserPicturePutUrlPayload'
+import {getUserId, isAuthenticated} from '../../utils/authorization'
+import getS3PutUrl from '../../utils/getS3PutUrl'
+import validateAvatarUpload from '../../utils/validateAvatarUpload'
 import shortid from 'shortid'
-import standardError from 'server/utils/standardError'
-import ImageMetadataInput from 'server/graphql/types/ImageMetadataInput'
+import standardError from '../../utils/standardError'
+import ImageMetadataInput from '../types/ImageMetadataInput'
 
 const createUserPicturePutUrl = {
   type: CreateUserPicturePutUrlPayload,

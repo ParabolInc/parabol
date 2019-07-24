@@ -5,7 +5,7 @@ import {
   PAUSE_USER,
   REMOVE_USER,
   UNPAUSE_USER
-} from 'server/utils/serverConstants'
+} from '../../utils/serverConstants'
 
 const InvoiceItemHookEnum = new GraphQLEnumType({
   name: 'InvoiceItemHookEnum',

@@ -1,5 +1,5 @@
 import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import InvoiceItemHookEnum from 'server/graphql/types/InvoiceItemHookEnum'
+import InvoiceItemHookEnum from './InvoiceItemHookEnum'
 
 const InvoiceItemHook = new GraphQLObjectType({
   name: 'InvoiceItemHook',

@@ -1,8 +1,8 @@
 import {GraphQLNonNull} from 'graphql'
-import makeSubscribeIter from 'server/graphql/makeSubscribeIter'
-import OrganizationSubscriptionPayload from 'server/graphql/types/OrganizationSubscriptionPayload'
-import {getUserId} from 'server/utils/authorization'
-import {BILLING_LEADER, ORGANIZATION} from 'universal/utils/constants'
+import makeSubscribeIter from '../makeSubscribeIter'
+import OrganizationSubscriptionPayload from '../types/OrganizationSubscriptionPayload'
+import {getUserId} from '../../utils/authorization'
+import {BILLING_LEADER, ORGANIZATION} from '../../../client/utils/constants'
 
 export default {
   type: new GraphQLNonNull(OrganizationSubscriptionPayload),

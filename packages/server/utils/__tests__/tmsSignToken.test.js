@@ -1,7 +1,7 @@
 /* eslint-env jest */
 import {decode} from 'jsonwebtoken'
 
-import {clientId} from 'server/utils/auth0Helpers'
+import {clientId} from '../auth0Helpers'
 import tmsSignToken from '../tmsSignToken'
 
 describe('tmsSignToken', () => {

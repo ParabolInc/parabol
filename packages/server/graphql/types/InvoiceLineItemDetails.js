@@ -1,6 +1,6 @@
 import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType'
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
+import GraphQLEmailType from './GraphQLEmailType'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
 
 const InvoiceLineItemDetails = new GraphQLObjectType({
   name: 'InvoiceLineItemDetails',

@@ -1,5 +1,5 @@
 import jwtDecode from 'jwt-decode'
-import sendNewAuthToken from 'server/socketHelpers/sendNewAuthToken'
+import sendNewAuthToken from '../socketHelpers/sendNewAuthToken'
 
 const setSocketAuth = (connectionContext, authTokenStr) => {
   let newAuthToken

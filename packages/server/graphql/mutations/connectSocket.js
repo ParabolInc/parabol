@@ -1,11 +1,11 @@
-import adjustUserCount from 'server/billing/helpers/adjustUserCount'
-import getRethink from 'server/database/rethinkDriver'
-import User from 'server/graphql/types/User'
-import {getUserId} from 'server/utils/authorization'
-import publish from 'server/utils/publish'
-import {UNPAUSE_USER} from 'server/utils/serverConstants'
-import {NOTIFICATION} from 'universal/utils/constants'
-import sendSegmentEvent from 'server/utils/sendSegmentEvent'
+import adjustUserCount from '../../billing/helpers/adjustUserCount'
+import getRethink from '../../database/rethinkDriver'
+import User from '../types/User'
+import {getUserId} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import {UNPAUSE_USER} from '../../utils/serverConstants'
+import {NOTIFICATION} from '../../../client/utils/constants'
+import sendSegmentEvent from '../../utils/sendSegmentEvent'
 
 export default {
   name: 'ConnectSocket',

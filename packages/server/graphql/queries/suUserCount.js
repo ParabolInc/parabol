@@ -1,8 +1,8 @@
 import {GraphQLBoolean, GraphQLInt, GraphQLString} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import {requireSU} from 'server/utils/authorization'
-import OrgTierEnum from 'server/graphql/types/OrgTierEnum'
-import {PRO} from 'universal/utils/constants'
+import getRethink from '../../database/rethinkDriver'
+import {requireSU} from '../../utils/authorization'
+import OrgTierEnum from '../types/OrgTierEnum'
+import {PRO} from '../../../client/utils/constants'
 
 export default {
   type: GraphQLInt,

@@ -1,10 +1,10 @@
 import {GraphQLFloat, GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import DragDiscussionTopicPayload from 'server/graphql/types/DragDiscussionTopicPayload'
-import {getUserId, isTeamMember} from 'server/utils/authorization'
-import publish from 'server/utils/publish'
-import {DISCUSS, TEAM} from 'universal/utils/constants'
-import standardError from 'server/utils/standardError'
+import getRethink from '../../database/rethinkDriver'
+import DragDiscussionTopicPayload from '../types/DragDiscussionTopicPayload'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import {DISCUSS, TEAM} from '../../../client/utils/constants'
+import standardError from '../../utils/standardError'
 
 export default {
   description: 'Changes the priority of the discussion topics',

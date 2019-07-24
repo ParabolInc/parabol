@@ -1,9 +1,9 @@
-import RethinkDataLoader from 'server/utils/RethinkDataLoader'
-import graphql from 'server/graphql/graphql'
-import IntranetSchema from 'server/graphql/intranetSchema/intranetSchema'
-import sanitizeGraphQLErrors from 'server/utils/sanitizeGraphQLErrors'
-import sendToSentry from 'server/utils/sendToSentry'
-import {getUserId} from 'server/utils/authorization'
+import RethinkDataLoader from '../utils/RethinkDataLoader'
+import graphql from './graphql'
+import IntranetSchema from './intranetSchema/intranetSchema'
+import sanitizeGraphQLErrors from '../utils/sanitizeGraphQLErrors'
+import sendToSentry from '../utils/sendToSentry'
+import {getUserId} from '../utils/authorization'
 
 const intranetHttpGraphQLHandler = (sharedDataLoader) => async (req, res) => {
   const {query, variables} = req.body

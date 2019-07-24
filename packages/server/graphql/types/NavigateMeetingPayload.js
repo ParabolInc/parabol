@@ -1,10 +1,10 @@
 import {GraphQLObjectType, GraphQLList, GraphQLNonNull} from 'graphql'
-import NewMeeting from 'server/graphql/types/NewMeeting'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
-import {resolveNewMeeting, resolveUnlockedStages} from 'server/graphql/resolvers'
-import findStageById from 'universal/utils/meetings/findStageById'
-import NewMeetingStage from 'server/graphql/types/NewMeetingStage'
-import PhaseCompletePayload from 'server/graphql/types/PhaseCompletePayload'
+import NewMeeting from './NewMeeting'
+import StandardMutationError from './StandardMutationError'
+import {resolveNewMeeting, resolveUnlockedStages} from '../resolvers'
+import findStageById from '../../../client/utils/meetings/findStageById'
+import NewMeetingStage from './NewMeetingStage'
+import PhaseCompletePayload from './PhaseCompletePayload'
 
 const NavigateMeetingPayload = new GraphQLObjectType({
   name: 'NavigateMeetingPayload',

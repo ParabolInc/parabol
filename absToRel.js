@@ -49,6 +49,7 @@ const makeChangePathToRelativeIfNeeded = (currentModuleDirectoryPath, isDependen
 
     const diskPath = getDiskPathFromImportPath(importedModulePath)
     const relativePath = path.relative(currentModuleDirectoryPath, diskPath).replace(/\\/g, '/')
+    // const rp = relativePath.replace('universal', 'client')
     return relativePath.startsWith('../') ? relativePath : `./${relativePath}`
   }
 }

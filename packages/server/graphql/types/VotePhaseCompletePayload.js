@@ -1,6 +1,6 @@
 import {GraphQLObjectType} from 'graphql'
-import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting'
-import {resolveNewMeeting} from 'server/graphql/resolvers'
+import RetrospectiveMeeting from './RetrospectiveMeeting'
+import {resolveNewMeeting} from '../resolvers'
 
 const VotePhaseCompletePayload = new GraphQLObjectType({
   name: 'VotePhaseCompletePayload',

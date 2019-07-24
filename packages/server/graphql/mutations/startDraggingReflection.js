@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import StartDraggingReflectionPayload from 'server/graphql/types/StartDraggingReflectionPayload'
-import {getUserId, isTeamMember} from 'server/utils/authorization'
-import publish from 'server/utils/publish'
-import {GROUP, TEAM} from 'universal/utils/constants'
-import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
-import Coords2DInput from 'server/graphql/types/Coords2DInput'
+import StartDraggingReflectionPayload from '../types/StartDraggingReflectionPayload'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import {GROUP, TEAM} from '../../../client/utils/constants'
+import isPhaseComplete from '../../../client/utils/meetings/isPhaseComplete'
+import Coords2DInput from '../types/Coords2DInput'
 import * as shortid from 'shortid'
-import standardError from 'server/utils/standardError'
+import standardError from '../../utils/standardError'
 
 export default {
   description: 'Broadcast that the viewer started dragging a reflection',

@@ -1,8 +1,8 @@
 import {GraphQLObjectType} from 'graphql'
-import {makeResolve, resolveTeam} from 'server/graphql/resolvers'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
-import Team from 'server/graphql/types/Team'
-import TeamMember from 'server/graphql/types/TeamMember'
+import {makeResolve, resolveTeam} from '../resolvers'
+import StandardMutationError from './StandardMutationError'
+import Team from './Team'
+import TeamMember from './TeamMember'
 
 const PromoteToTeamLeadPayload = new GraphQLObjectType({
   name: 'PromoteToTeamLeadPayload',

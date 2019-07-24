@@ -1,9 +1,9 @@
-import makeRetroGroupTitle from 'universal/utils/autogroup/makeRetroGroupTitle'
-import getRethink from 'server/database/rethinkDriver'
-import updateGroupTitle from 'server/graphql/mutations/helpers/updateReflectionLocation/updateGroupTitle'
-import dndNoise from 'universal/utils/dndNoise'
-import standardError from 'server/utils/standardError'
-import {getUserId} from 'server/utils/authorization'
+import makeRetroGroupTitle from '../../../../../client/utils/autogroup/makeRetroGroupTitle'
+import getRethink from '../../../../database/rethinkDriver'
+import updateGroupTitle from './updateGroupTitle'
+import dndNoise from '../../../../../client/utils/dndNoise'
+import standardError from '../../../../utils/standardError'
+import {getUserId} from '../../../../utils/authorization'
 
 const addReflectionToGroup = async (reflectionId, reflectionGroupId, {authToken, dataLoader}) => {
   const r = getRethink()

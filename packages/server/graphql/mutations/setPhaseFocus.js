@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import {getUserId} from 'server/utils/authorization'
-import SetPhaseFocusPayload from 'server/graphql/types/SetPhaseFocusPayload'
-import publish from 'server/utils/publish'
-import {REFLECT, TEAM} from 'universal/utils/constants'
-import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
-import standardError from 'server/utils/standardError'
+import getRethink from '../../database/rethinkDriver'
+import {getUserId} from '../../utils/authorization'
+import SetPhaseFocusPayload from '../types/SetPhaseFocusPayload'
+import publish from '../../utils/publish'
+import {REFLECT, TEAM} from '../../../client/utils/constants'
+import isPhaseComplete from '../../../client/utils/meetings/isPhaseComplete'
+import standardError from '../../utils/standardError'
 
 const setPhaseFocus = {
   type: SetPhaseFocusPayload,

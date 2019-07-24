@@ -1,5 +1,5 @@
-import makeAppLink from 'server/utils/makeAppLink'
-import signPayload from 'server/utils/signPayload'
+import makeAppLink from './makeAppLink'
+import signPayload from './signPayload'
 
 const makeGitHubWebhookParams = (publickKey, events) => ({
   name: 'web',

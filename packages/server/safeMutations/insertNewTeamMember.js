@@ -1,5 +1,5 @@
-import getRethink from 'server/database/rethinkDriver'
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
+import getRethink from '../database/rethinkDriver'
+import toTeamMemberId from '../../client/utils/relay/toTeamMemberId'
 
 const insertNewTeamMember = (userId, teamId, options = {}) => {
   const r = getRethink()

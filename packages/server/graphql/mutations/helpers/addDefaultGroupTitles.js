@@ -1,7 +1,7 @@
-import getRethink from 'server/database/rethinkDriver'
-import promiseAllPartial from 'universal/utils/promiseAllPartial'
-import updateGroupTitle from 'server/graphql/mutations/helpers/updateReflectionLocation/updateGroupTitle'
-import makeRetroGroupTitle from 'universal/utils/autogroup/makeRetroGroupTitle'
+import getRethink from '../../../database/rethinkDriver'
+import promiseAllPartial from '../../../../client/utils/promiseAllPartial'
+import updateGroupTitle from './updateReflectionLocation/updateGroupTitle'
+import makeRetroGroupTitle from '../../../../client/utils/autogroup/makeRetroGroupTitle'
 
 const getTitleFromReflection = async (reflection) => {
   const {reflectionGroupId} = reflection

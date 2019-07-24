@@ -1,4 +1,4 @@
-import sendRaw from 'server/socketHelpers/sendRaw'
+import sendRaw from './sendRaw'
 
 const sendMessage = (transport, type, payload, opId) => {
   const message = {type}

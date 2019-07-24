@@ -1,15 +1,15 @@
-import getRethink from 'server/database/rethinkDriver'
+import getRethink from '../../database/rethinkDriver'
 import {
   ADD_USER,
   AUTO_PAUSE_USER,
   PAUSE_USER,
   REMOVE_USER,
   UNPAUSE_USER
-} from 'server/utils/serverConstants'
-import stripe from 'server/billing/stripe'
+} from '../../utils/serverConstants'
+import stripe from '../stripe'
 import shortid from 'shortid'
-import {toEpochSeconds} from 'server/utils/epochTime'
-import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent'
+import {toEpochSeconds} from '../../utils/epochTime'
+import {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
 
 const changePause = (inactive) => (orgIds, userId) => {
   const r = getRethink()

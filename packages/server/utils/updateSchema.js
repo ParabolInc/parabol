@@ -1,7 +1,7 @@
 import fs from 'fs'
 import {graphql, printSchema, introspectionQuery} from 'graphql'
 import path from 'path'
-import schema from 'server/graphql/rootSchema'
+import schema from '../graphql/rootSchema'
 
 const buildDir = path.join(process.cwd(), 'build')
 const schemaPath = './schema.graphql'

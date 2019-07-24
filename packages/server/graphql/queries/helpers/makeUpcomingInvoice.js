@@ -1,7 +1,7 @@
-import {UPCOMING} from 'universal/utils/constants'
-import stripe from 'server/billing/stripe'
-import {fromEpochSeconds} from 'server/utils/epochTime'
-import getUpcomingInvoiceId from 'server/utils/getUpcomingInvoiceId'
+import {UPCOMING} from '../../../../client/utils/constants'
+import stripe from '../../../billing/stripe'
+import {fromEpochSeconds} from '../../../utils/epochTime'
+import getUpcomingInvoiceId from '../../../utils/getUpcomingInvoiceId'
 
 export default async function makeUpcomingInvoice (orgId, stripeId, stripeSubscriptionId) {
   if (!stripeId || !stripeSubscriptionId) return undefined

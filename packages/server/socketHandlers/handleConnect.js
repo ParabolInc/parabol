@@ -1,9 +1,9 @@
-import {REFRESH_JWT_AFTER} from 'server/utils/serverConstants'
-import sendNewAuthToken from 'server/socketHelpers/sendNewAuthToken'
-import wsGraphQLHandler from 'server/socketHandlers/wsGraphQLHandler'
-import makeAuthTokenObj from 'server/utils/makeAuthTokenObj'
-import {fromEpochSeconds} from 'server/utils/epochTime'
-import handleDisconnect from 'server/socketHandlers/handleDisconnect'
+import {REFRESH_JWT_AFTER} from '../utils/serverConstants'
+import sendNewAuthToken from '../socketHelpers/sendNewAuthToken'
+import wsGraphQLHandler from './wsGraphQLHandler'
+import makeAuthTokenObj from '../utils/makeAuthTokenObj'
+import {fromEpochSeconds} from '../utils/epochTime'
+import handleDisconnect from './handleDisconnect'
 
 const isTmsValid = (tmsFromDB = [], tmsFromToken = []) => {
   if (tmsFromDB.length !== tmsFromToken.length) return false

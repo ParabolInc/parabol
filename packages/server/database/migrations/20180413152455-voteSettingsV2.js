@@ -2,7 +2,7 @@ import {
   RETROSPECTIVE,
   RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT,
   RETROSPECTIVE_TOTAL_VOTES_DEFAULT
-} from 'universal/utils/constants'
+} from '../../../client/utils/constants'
 
 // the first voteSettings did not take (possible merge conflict?) trying again
 exports.up = async (r) => {

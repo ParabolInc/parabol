@@ -19,7 +19,7 @@ const LoadableEditorSuggestions = Loadable({
   loader: () =>
     import(
       /* webpackChunkName: 'EditorSuggestions' */
-      'universal/components/EditorSuggestions/EditorSuggestions'
+      '../../../client/components/EditorSuggestions/EditorSuggestions'
     ),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
@@ -32,7 +32,7 @@ const LoadableMentionableUsersRoot = Loadable({
   loader: () =>
     import(
       /* webpackChunkName: 'SuggestMentionableUsersRoot' */
-      'universal/components/SuggestMentionableUsersRoot'
+      '../../../client/components/SuggestMentionableUsersRoot'
     ),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />

@@ -1,10 +1,10 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import ClearNotificationPayload from 'server/graphql/types/ClearNotificationPayload'
-import {getUserId} from 'server/utils/authorization'
-import publish from 'server/utils/publish'
-import {NOTIFICATION} from 'universal/utils/constants'
-import standardError from 'server/utils/standardError'
+import getRethink from '../../database/rethinkDriver'
+import ClearNotificationPayload from '../types/ClearNotificationPayload'
+import {getUserId} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import {NOTIFICATION} from '../../../client/utils/constants'
+import standardError from '../../utils/standardError'
 
 export default {
   type: ClearNotificationPayload,

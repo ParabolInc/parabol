@@ -1,7 +1,7 @@
 import {GraphQLObjectType} from 'graphql'
-import Team from 'server/graphql/types/Team'
-import {resolveTeam} from 'server/graphql/resolvers'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
+import Team from './Team'
+import {resolveTeam} from '../resolvers'
+import StandardMutationError from './StandardMutationError'
 
 const UpdateTeamNamePayload = new GraphQLObjectType({
   name: 'UpdateTeamNamePayload',

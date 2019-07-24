@@ -1,5 +1,5 @@
 import {GraphQLBoolean, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
 
 const PageInfoDateCursor = new GraphQLObjectType({
   name: 'PageInfoDateCursor',

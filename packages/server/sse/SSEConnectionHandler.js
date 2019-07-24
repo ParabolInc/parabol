@@ -1,11 +1,11 @@
 import url from 'url'
-import {WS_KEEP_ALIVE} from 'universal/utils/constants'
+import {WS_KEEP_ALIVE} from '../../client/utils/constants'
 import {verify} from 'jsonwebtoken'
-import {clientSecret as auth0ClientSecret} from 'server/utils/auth0Helpers'
-import ConnectionContext from 'server/socketHelpers/ConnectionContext'
-import handleConnect from 'server/socketHandlers/handleConnect'
-import handleDisconnect from 'server/socketHandlers/handleDisconnect'
-import keepAlive from 'server/socketHelpers/keepAlive'
+import {clientSecret as auth0ClientSecret} from '../utils/auth0Helpers'
+import ConnectionContext from '../socketHelpers/ConnectionContext'
+import handleConnect from '../socketHandlers/handleConnect'
+import handleDisconnect from '../socketHandlers/handleDisconnect'
+import keepAlive from '../socketHelpers/keepAlive'
 
 const APP_VERSION = process.env.npm_package_version
 const SSEConnectionHandler = (sharedDataLoader, rateLimiter, sseClients) => (req, res) => {

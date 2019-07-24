@@ -1,8 +1,8 @@
 import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLObjectType, GraphQLString} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import GraphQLURLType from 'server/graphql/types/GraphQLURLType'
-import MeetingTask from 'server/graphql/types/MeetingTask'
-import TeamMember from 'server/graphql/types/TeamMember'
+import getRethink from '../../database/rethinkDriver'
+import GraphQLURLType from './GraphQLURLType'
+import MeetingTask from './MeetingTask'
+import TeamMember from './TeamMember'
 
 const MeetingInvitee = new GraphQLObjectType({
   name: 'MeetingInvitee',

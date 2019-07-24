@@ -1,7 +1,7 @@
 import {GraphQLNonNull, GraphQLList, GraphQLObjectType} from 'graphql'
-import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup'
-import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting'
-import {resolveNewMeeting} from 'server/graphql/resolvers'
+import RetroReflectionGroup from './RetroReflectionGroup'
+import RetrospectiveMeeting from './RetrospectiveMeeting'
+import {resolveNewMeeting} from '../resolvers'
 
 const GroupPhaseCompletePayload = new GraphQLObjectType({
   name: 'GroupPhaseCompletePayload',

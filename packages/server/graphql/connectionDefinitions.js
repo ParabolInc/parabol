@@ -1,6 +1,6 @@
 // pulled straight from graphql-relay-js because of the stupid instanceof bug
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
-import PageInfo from 'server/graphql/types/PageInfo'
+import PageInfo from './types/PageInfo'
 
 function resolveMaybeThunk (thingOrThunk) {
   return typeof thingOrThunk === 'function' ? thingOrThunk() : thingOrThunk

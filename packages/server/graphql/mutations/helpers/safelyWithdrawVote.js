@@ -1,7 +1,7 @@
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
-import getRethink from 'server/database/rethinkDriver'
-import standardError from 'server/utils/standardError'
-import {getUserId} from 'server/utils/authorization'
+import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
+import getRethink from '../../../database/rethinkDriver'
+import standardError from '../../../utils/standardError'
+import {getUserId} from '../../../utils/authorization'
 
 const safelyWithdrawVote = async (authToken, meetingId, userId, reflectionGroupId) => {
   const meetingMemberId = toTeamMemberId(meetingId, userId)

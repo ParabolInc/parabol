@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql'
-import {resolveUser} from 'server/graphql/resolvers'
-import User from 'server/graphql/types/User'
-import tmsSignToken from 'server/utils/tmsSignToken'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
+import {resolveUser} from '../resolvers'
+import User from './User'
+import tmsSignToken from '../../utils/tmsSignToken'
+import StandardMutationError from './StandardMutationError'
 
 const CreateImposterTokenPayload = new GraphQLObjectType({
   name: 'CreateImposterTokenPayload',

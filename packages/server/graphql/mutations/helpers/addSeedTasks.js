@@ -1,9 +1,9 @@
 import shortid from 'shortid'
-import getRethink from 'server/database/rethinkDriver'
-import {ACTIVE} from 'server/../universal/utils/constants'
-import convertToTaskContent from 'universal/utils/draftjs/convertToTaskContent'
-import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap'
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
+import getRethink from '../../../database/rethinkDriver'
+import {ACTIVE} from '../../../../client/utils/constants'
+import convertToTaskContent from '../../../../client/utils/draftjs/convertToTaskContent'
+import getTagsFromEntityMap from '../../../../client/utils/draftjs/getTagsFromEntityMap'
+import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 
 const SEED_TASKS = [
   {

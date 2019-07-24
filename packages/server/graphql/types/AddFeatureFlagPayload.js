@@ -1,7 +1,7 @@
 import {GraphQLObjectType, GraphQLList, GraphQLString} from 'graphql'
-import {resolveUser} from 'server/graphql/resolvers'
-import User from 'server/graphql/types/User'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
+import {resolveUser} from '../resolvers'
+import User from './User'
+import StandardMutationError from './StandardMutationError'
 
 const AddFeatureFlagPayload = new GraphQLObjectType({
   name: 'AddFeatureFlagPayload',

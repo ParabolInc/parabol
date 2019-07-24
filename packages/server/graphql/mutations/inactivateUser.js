@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import adjustUserCount from 'server/billing/helpers/adjustUserCount'
-import getRethink from 'server/database/rethinkDriver'
-import {getUserId, isOrgLeaderOfUser} from 'server/utils/authorization'
-import {toEpochSeconds} from 'server/utils/epochTime'
-import {MAX_MONTHLY_PAUSES, PAUSE_USER} from 'server/utils/serverConstants'
-import {PERSONAL} from 'universal/utils/constants'
-import InactivateUserPayload from 'server/graphql/types/InactivateUserPayload'
-import standardError from 'server/utils/standardError'
+import adjustUserCount from '../../billing/helpers/adjustUserCount'
+import getRethink from '../../database/rethinkDriver'
+import {getUserId, isOrgLeaderOfUser} from '../../utils/authorization'
+import {toEpochSeconds} from '../../utils/epochTime'
+import {MAX_MONTHLY_PAUSES, PAUSE_USER} from '../../utils/serverConstants'
+import {PERSONAL} from '../../../client/utils/constants'
+import InactivateUserPayload from '../types/InactivateUserPayload'
+import standardError from '../../utils/standardError'
 
 export default {
   type: InactivateUserPayload,

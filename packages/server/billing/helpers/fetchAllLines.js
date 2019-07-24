@@ -1,4 +1,4 @@
-import stripe from 'server/billing/stripe'
+import stripe from '../stripe'
 
 export default async function fetchAllLines (invoiceId, customerId) {
   const stripeLineItems = []

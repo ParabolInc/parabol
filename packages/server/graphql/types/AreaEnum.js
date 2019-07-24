@@ -1,5 +1,5 @@
 import {GraphQLEnumType} from 'graphql'
-import {MEETING, TEAM_DASH, USER_DASH} from 'universal/utils/constants'
+import {MEETING, TEAM_DASH, USER_DASH} from '../../../client/utils/constants'
 
 const AreaEnum = new GraphQLEnumType({
   name: 'AreaEnum',

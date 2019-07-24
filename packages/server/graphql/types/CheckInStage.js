@@ -1,8 +1,8 @@
 import {GraphQLObjectType} from 'graphql'
-import NewMeetingStage, {newMeetingStageFields} from 'server/graphql/types/NewMeetingStage'
+import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
 import NewMeetingTeamMemberStage, {
   newMeetingTeamMemberStageFields
-} from 'server/graphql/types/NewMeetingTeamMemberStage'
+} from './NewMeetingTeamMemberStage'
 
 const CheckInStage = new GraphQLObjectType({
   name: 'CheckInStage',

@@ -12,7 +12,7 @@ const GetRetroAccessLoadable = Loadable({
   loader: () =>
     import(
       /* webpackChunkName: 'GetRetroAccess' */
-      'universal/components/GetRetroAccess'
+      '../../client/components/GetRetroAccess'
     ),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />

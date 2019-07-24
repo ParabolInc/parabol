@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import {getUserId, isTeamMember} from 'server/utils/authorization'
-import UpdateReflectionContentPayload from 'server/graphql/types/UpdateReflectionContentPayload'
-import normalizeRawDraftJS from 'universal/validation/normalizeRawDraftJS'
-import publish from 'server/utils/publish'
-import {REFLECT, TEAM} from 'universal/utils/constants'
-import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
-import standardError from 'server/utils/standardError'
+import getRethink from '../../database/rethinkDriver'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import UpdateReflectionContentPayload from '../types/UpdateReflectionContentPayload'
+import normalizeRawDraftJS from '../../../client/validation/normalizeRawDraftJS'
+import publish from '../../utils/publish'
+import {REFLECT, TEAM} from '../../../client/utils/constants'
+import isPhaseComplete from '../../../client/utils/meetings/isPhaseComplete'
+import standardError from '../../utils/standardError'
 
 export default {
   type: UpdateReflectionContentPayload,

@@ -1,8 +1,8 @@
 import {GraphQLList, GraphQLObjectType} from 'graphql'
-import Organization from 'server/graphql/types/Organization'
-import {resolveOrganization, resolveTeams} from 'server/graphql/resolvers'
-import Team from 'server/graphql/types/Team'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
+import Organization from './Organization'
+import {resolveOrganization, resolveTeams} from '../resolvers'
+import Team from './Team'
+import StandardMutationError from './StandardMutationError'
 
 const UpdateCreditCardPayload = new GraphQLObjectType({
   name: 'UpdateCreditCardPayload',

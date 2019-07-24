@@ -1,7 +1,7 @@
 import {GraphQLObjectType} from 'graphql'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
-import User from 'server/graphql/types/User'
-import {resolveUser} from 'server/graphql/resolvers'
+import StandardMutationError from './StandardMutationError'
+import User from './User'
+import {resolveUser} from '../resolvers'
 
 const InactivateUserPayload = new GraphQLObjectType({
   name: 'InactivateUserPayload',

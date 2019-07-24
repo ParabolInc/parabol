@@ -1,9 +1,9 @@
-import fetchAllLines from 'server/billing/helpers/fetchAllLines'
-import generateInvoice from 'server/billing/helpers/generateInvoice'
-import stripe from 'server/billing/stripe'
-import getRethink from 'server/database/rethinkDriver'
-import resolvePromiseObj from 'universal/utils/resolvePromiseObj'
-import getUpcomingInvoiceId from 'server/utils/getUpcomingInvoiceId'
+import fetchAllLines from './fetchAllLines'
+import generateInvoice from './generateInvoice'
+import stripe from '../stripe'
+import getRethink from '../../database/rethinkDriver'
+import resolvePromiseObj from '../../../client/utils/resolvePromiseObj'
+import getUpcomingInvoiceId from '../../utils/getUpcomingInvoiceId'
 
 const generateUpcomingInvoice = async (orgId) => {
   const r = getRethink()

@@ -1,10 +1,10 @@
-import MeetingMember from 'server/database/types/MeetingMember'
-import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
-import CheckInPhase from 'server/database/types/CheckInPhase'
-import UpdatesPhase from 'server/database/types/UpdatesPhase'
-import GenericMeetingPhase from 'server/database/types/GenericMeetingPhase'
-import AgendaItemsPhase from 'server/database/types/AgendaItemsPhase'
-import Meeting from 'server/database/types/Meeting'
+import MeetingMember from '../types/MeetingMember'
+import fromTeamMemberId from '../../../client/utils/relay/fromTeamMemberId'
+import CheckInPhase from '../types/CheckInPhase'
+import UpdatesPhase from '../types/UpdatesPhase'
+import GenericMeetingPhase from '../types/GenericMeetingPhase'
+import AgendaItemsPhase from '../types/AgendaItemsPhase'
+import Meeting from '../types/Meeting'
 
 /* Migrate the old Action "Meeting" type into a "NewMeeting" type and sets an isLegacy flag on the Meeting */
 

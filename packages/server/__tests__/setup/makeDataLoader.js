@@ -1,4 +1,4 @@
-import RethinkDataLoader from 'server/utils/RethinkDataLoader'
+import RethinkDataLoader from '../../utils/RethinkDataLoader'
 import DataLoaderWarehouse from 'dataloader-warehouse'
 
 const makeDataLoader = (authToken) => {

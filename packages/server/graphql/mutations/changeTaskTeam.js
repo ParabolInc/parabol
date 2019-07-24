@@ -1,13 +1,13 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import ChangeTaskTeamPayload from 'server/graphql/types/ChangeTaskTeamPayload'
-import {getUserId, isTeamMember} from 'server/utils/authorization'
+import getRethink from '../../database/rethinkDriver'
+import ChangeTaskTeamPayload from '../types/ChangeTaskTeamPayload'
+import {getUserId, isTeamMember} from '../../utils/authorization'
 import shortid from 'shortid'
-import removeEntityKeepText from 'universal/utils/draftjs/removeEntityKeepText'
-import {TASK, TASK_INVOLVES} from 'universal/utils/constants'
-import publish from 'server/utils/publish'
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
-import standardError from 'server/utils/standardError'
+import removeEntityKeepText from '../../../client/utils/draftjs/removeEntityKeepText'
+import {TASK, TASK_INVOLVES} from '../../../client/utils/constants'
+import publish from '../../utils/publish'
+import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
+import standardError from '../../utils/standardError'
 
 export default {
   type: ChangeTaskTeamPayload,

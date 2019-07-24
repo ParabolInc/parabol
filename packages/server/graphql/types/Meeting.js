@@ -6,11 +6,11 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
-import MeetingInvitee from 'server/graphql/types/MeetingInvitee'
-import MeetingTask from 'server/graphql/types/MeetingTask'
-import TeamMember from 'server/graphql/types/TeamMember'
+import getRethink from '../../database/rethinkDriver'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
+import MeetingInvitee from './MeetingInvitee'
+import MeetingTask from './MeetingTask'
+import TeamMember from './TeamMember'
 
 const Meeting = new GraphQLObjectType({
   name: 'Meeting',

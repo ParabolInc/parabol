@@ -28,7 +28,7 @@ const LoadableSuggestMentionableUsers = Loadable({
   loader: () =>
     import(
       /* webpackChunkName: 'SuggestMentionableUsers' */
-      'universal/components/SuggestMentionableUsers'
+      '../../client/components/SuggestMentionableUsers'
     ),
   loading,
   delay: HUMAN_ADDICTION_THRESH,

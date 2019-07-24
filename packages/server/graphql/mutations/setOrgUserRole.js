@@ -1,17 +1,17 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import SetOrgUserRolePayload from 'server/graphql/types/SetOrgUserRolePayload'
-import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
-import publish from 'server/utils/publish'
+import getRethink from '../../database/rethinkDriver'
+import SetOrgUserRolePayload from '../types/SetOrgUserRolePayload'
+import {getUserId, isUserBillingLeader} from '../../utils/authorization'
+import publish from '../../utils/publish'
 import shortid from 'shortid'
 import {
   BILLING_LEADER,
   billingLeaderTypes,
   ORGANIZATION,
   PROMOTE_TO_BILLING_LEADER
-} from 'universal/utils/constants'
-import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent'
-import standardError from 'server/utils/standardError'
+} from '../../../client/utils/constants'
+import {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
+import standardError from '../../utils/standardError'
 
 export default {
   type: SetOrgUserRolePayload,

@@ -1,9 +1,9 @@
 /* eslint-env jest */
-import mockAuthToken from 'server/__tests__/setup/mockAuthToken'
-import MockDB from 'server/__tests__/setup/MockDB'
-import expectAsyncToThrow from 'server/__tests__/utils/expectAsyncToThrow'
-import suOrgCount from 'server/graphql/queries/suOrgCount'
-import {PERSONAL, PRO} from 'universal/utils/constants'
+import mockAuthToken from '../../../__tests__/setup/mockAuthToken'
+import MockDB from '../../../__tests__/setup/MockDB'
+import expectAsyncToThrow from '../../../__tests__/utils/expectAsyncToThrow'
+import suOrgCount from '../suOrgCount'
+import {PERSONAL, PRO} from '../../../../client/utils/constants'
 
 console.error = jest.fn()
 

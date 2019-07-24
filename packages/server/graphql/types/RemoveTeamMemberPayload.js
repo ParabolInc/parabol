@@ -5,15 +5,15 @@ import {
   resolveTeam,
   resolveTeamMember,
   resolveUser
-} from 'server/graphql/resolvers'
-import Notification from 'server/graphql/types/Notification'
-import NotifyKickedOut from 'server/graphql/types/NotifyKickedOut'
-import Task from 'server/graphql/types/Task'
-import Team from 'server/graphql/types/Team'
-import TeamMember from 'server/graphql/types/TeamMember'
-import User from 'server/graphql/types/User'
-import {getUserId} from 'server/utils/authorization'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
+} from '../resolvers'
+import Notification from './Notification'
+import NotifyKickedOut from './NotifyKickedOut'
+import Task from './Task'
+import Team from './Team'
+import TeamMember from './TeamMember'
+import User from './User'
+import {getUserId} from '../../utils/authorization'
+import StandardMutationError from './StandardMutationError'
 
 const RemoveTeamMemberPayload = new GraphQLObjectType({
   name: 'RemoveTeamMemberPayload',

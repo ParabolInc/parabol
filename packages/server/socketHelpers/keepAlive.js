@@ -1,5 +1,5 @@
-import handleDisconnect from 'server/socketHandlers/handleDisconnect'
-import sendRaw from 'server/socketHelpers/sendRaw'
+import handleDisconnect from '../socketHandlers/handleDisconnect'
+import sendRaw from './sendRaw'
 import {Events} from '@mattkrick/trebuchet-client'
 
 const keepAlive = (connectionContext, timeout) => {

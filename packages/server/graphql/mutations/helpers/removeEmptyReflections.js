@@ -1,5 +1,5 @@
-import getRethink from 'server/database/rethinkDriver'
-import extractTextFromDraftString from 'universal/utils/draftjs/extractTextFromDraftString'
+import getRethink from '../../../database/rethinkDriver'
+import extractTextFromDraftString from '../../../../client/utils/draftjs/extractTextFromDraftString'
 
 const removeEmptyReflections = async (meeting) => {
   const r = getRethink()

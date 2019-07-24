@@ -8,17 +8,17 @@ import {
   GraphQLString
 } from 'graphql'
 import {forwardConnectionArgs} from 'graphql-relay'
-import CreditCard from 'server/graphql/types/CreditCard'
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
-import GraphQLURLType from 'server/graphql/types/GraphQLURLType'
-import OrgUserCount from 'server/graphql/types/OrgUserCount'
-import TierEnum from 'server/graphql/types/TierEnum'
-import User from 'server/graphql/types/User'
-import {BILLING_LEADER} from 'universal/utils/constants'
-import {resolveForBillingLeaders} from 'server/graphql/resolvers'
-import Team from 'server/graphql/types/Team'
-import {OrganizationUserConnection} from 'server/graphql/types/OrganizationUser'
-import {getUserId, isSuperUser, isUserBillingLeader} from 'server/utils/authorization'
+import CreditCard from './CreditCard'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
+import GraphQLURLType from './GraphQLURLType'
+import OrgUserCount from './OrgUserCount'
+import TierEnum from './TierEnum'
+import User from './User'
+import {BILLING_LEADER} from '../../../client/utils/constants'
+import {resolveForBillingLeaders} from '../resolvers'
+import Team from './Team'
+import {OrganizationUserConnection} from './OrganizationUser'
+import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
 
 const Organization = new GraphQLObjectType({
   name: 'Organization',

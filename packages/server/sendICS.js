@@ -1,4 +1,4 @@
-import {createICS} from 'universal/utils/makeCalendarInvites'
+import {createICS} from '../client/utils/makeCalendarInvites'
 
 export default async function sendICS (req, res) {
   const {teamName, createdAt, meetingUrl} = req.query

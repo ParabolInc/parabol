@@ -1,5 +1,5 @@
 import {GraphQLEnumType} from 'graphql'
-import {GITHUB, SLACK} from 'universal/utils/constants'
+import {GITHUB, SLACK} from '../../../client/utils/constants'
 
 const IntegrationServiceEnum = new GraphQLEnumType({
   name: 'IntegrationServiceEnum',

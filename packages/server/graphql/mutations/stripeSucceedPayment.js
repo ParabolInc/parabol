@@ -1,7 +1,7 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
-import stripe from 'server/billing/stripe'
-import getRethink from 'server/database/rethinkDriver'
-import {PAID} from 'universal/utils/constants'
+import stripe from '../../billing/stripe'
+import getRethink from '../../database/rethinkDriver'
+import {PAID} from '../../../client/utils/constants'
 
 export default {
   name: 'StripeSucceedPayment',

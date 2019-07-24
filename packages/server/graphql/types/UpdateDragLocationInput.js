@@ -1,5 +1,5 @@
 import {GraphQLFloat, GraphQLID, GraphQLInputObjectType, GraphQLNonNull} from 'graphql'
-import Coords2DInput from 'server/graphql/types/Coords2DInput'
+import Coords2DInput from './Coords2DInput'
 
 export const updateDragLocationFields = () => ({
   clientHeight: {

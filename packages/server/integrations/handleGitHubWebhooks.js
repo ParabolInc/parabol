@@ -1,8 +1,8 @@
-import graphql from 'server/graphql/graphql'
+import graphql from '../graphql/graphql'
 import secureCompare from 'secure-compare'
-import schema from 'server/graphql/rootSchema'
-import signPayload from 'server/utils/signPayload'
-import sendToSentry from 'server/utils/sendToSentry'
+import schema from '../graphql/rootSchema'
+import signPayload from '../utils/signPayload'
+import sendToSentry from '../utils/sendToSentry'
 
 const getPublicKey = ({repository: {id}}) => String(id)
 

@@ -1,5 +1,5 @@
 import {GraphQLEnumType} from 'graphql'
-import {REFLECTION_CARD} from 'universal/utils/constants'
+import {REFLECTION_CARD} from '../../../client/utils/constants'
 
 const DraggableTypeEnum = new GraphQLEnumType({
   name: 'DraggableTypeEnum',
