@@ -3,7 +3,7 @@ import handleAddOrganization from './handlers/handleAddOrganization'
 import handleAddTeams from './handlers/handleAddTeams'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 import {OnNextHandler} from '../types/relayMutations'
-import {AddOrgMutation_organization} from '../../__generated__/AddOrgMutation_organization.graphql'
+import {AddOrgMutation_organization} from '../__generated__/AddOrgMutation_organization.graphql'
 
 graphql`
   fragment AddOrgMutation_organization on AddOrgPayload {

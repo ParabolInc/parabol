@@ -1,4 +1,4 @@
-import {AddNewReflectTemplate_reflectTemplates} from '../../../../__generated__/AddNewReflectTemplate_reflectTemplates.graphql'
+import {AddNewReflectTemplate_reflectTemplates} from '../../../__generated__/AddNewReflectTemplate_reflectTemplates.graphql'
 import React, {Component} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'

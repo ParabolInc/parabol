@@ -1,4 +1,4 @@
-import {TimelineEventTeamCreated_timelineEvent} from '../../__generated__/TimelineEventTeamCreated_timelineEvent.graphql'
+import {TimelineEventTeamCreated_timelineEvent} from '../__generated__/TimelineEventTeamCreated_timelineEvent.graphql'
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import StyledLink from './StyledLink'

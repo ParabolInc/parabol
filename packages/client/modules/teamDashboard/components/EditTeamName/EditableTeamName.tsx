@@ -1,4 +1,4 @@
-import {EditableTeamName_team} from '../../../../../__generated__/EditableTeamName_team.graphql'
+import {EditableTeamName_team} from '../../../../__generated__/EditableTeamName_team.graphql'
 import React, {Component} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'

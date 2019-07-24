@@ -1,4 +1,4 @@
-import {TaskFooterIntegrateMenuRoot_task} from '../../__generated__/TaskFooterIntegrateMenuRoot_task.graphql'
+import {TaskFooterIntegrateMenuRoot_task} from '../__generated__/TaskFooterIntegrateMenuRoot_task.graphql'
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import QueryRenderer from './QueryRenderer/QueryRenderer'

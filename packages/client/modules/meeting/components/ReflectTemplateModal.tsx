@@ -1,4 +1,4 @@
-import {ReflectTemplateModal_retroMeetingSettings} from '../../../../__generated__/ReflectTemplateModal_retroMeetingSettings.graphql'
+import {ReflectTemplateModal_retroMeetingSettings} from '../../../__generated__/ReflectTemplateModal_retroMeetingSettings.graphql'
 import memoize from 'micro-memoize'
 import React, {Component} from 'react'
 import styled from '@emotion/styled'

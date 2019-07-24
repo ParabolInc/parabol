@@ -6,7 +6,7 @@ import {TASK} from '../../utils/constants'
 import {DragSource as dragSource, DropTarget as dropTarget} from 'react-dnd'
 import {getEmptyImage} from 'react-dnd-html5-backend'
 import TaskDragLayer from './TaskDragLayer'
-import {DraggableTask_task} from '../../../__generated__/DraggableTask_task.graphql'
+import {DraggableTask_task} from '../../__generated__/DraggableTask_task.graphql'
 
 const importantTaskProps = ['content', 'status', 'assignee', 'sortOrder', 'integration']
 

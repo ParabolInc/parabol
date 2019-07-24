@@ -1,4 +1,4 @@
-import {AgendaList_team} from '../../../../../__generated__/AgendaList_team.graphql'
+import {AgendaList_team} from '../../../../__generated__/AgendaList_team.graphql'
 import React, {useCallback, useMemo} from 'react'
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
 // import SexyScrollbar from 'universal/components/Dashboard/SexyScrollbar'

@@ -1,7 +1,7 @@
 import {
   LoginMutation as TLoginMutation,
   LoginMutationVariables
-} from '../../__generated__/LoginMutation.graphql'
+} from '../__generated__/LoginMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import SendClientSegmentEventMutation from './SendClientSegmentEventMutation'

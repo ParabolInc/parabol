@@ -1,4 +1,4 @@
-import {AnalyticsPageRootQueryResponse} from '../../__generated__/AnalyticsPageRootQuery.graphql'
+import {AnalyticsPageRootQueryResponse} from '../__generated__/AnalyticsPageRootQuery.graphql'
 import {Component} from 'react'
 import makeHref from '../utils/makeHref'
 

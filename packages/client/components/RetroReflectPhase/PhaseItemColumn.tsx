@@ -1,4 +1,4 @@
-import {PhaseItemColumn_meeting} from '../../../__generated__/PhaseItemColumn_meeting.graphql'
+import {PhaseItemColumn_meeting} from '../../__generated__/PhaseItemColumn_meeting.graphql'
 import memoize from 'micro-memoize'
 /**
  * Renders a column for a particular "type" of reflection

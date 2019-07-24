@@ -8,7 +8,7 @@ import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationP
 import SuggestedActionButton from './SuggestedActionButton'
 import SuggestedActionCard from './SuggestedActionCard'
 import SuggestedActionCopy from './SuggestedActionCopy'
-import {SuggestedActionTryTheDemo_suggestedAction} from '../../__generated__/SuggestedActionTryTheDemo_suggestedAction.graphql'
+import {SuggestedActionTryTheDemo_suggestedAction} from '../__generated__/SuggestedActionTryTheDemo_suggestedAction.graphql'
 
 interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
   suggestedAction: SuggestedActionTryTheDemo_suggestedAction

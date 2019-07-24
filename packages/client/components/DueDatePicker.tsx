@@ -10,7 +10,7 @@ import withAtmosphere, {
 } from '../decorators/withAtmosphere/withAtmosphere'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {DueDatePicker_task} from '../../__generated__/DueDatePicker_task.graphql'
+import {DueDatePicker_task} from '../__generated__/DueDatePicker_task.graphql'
 import styled from '@emotion/styled'
 import ui from '../styles/ui'
 

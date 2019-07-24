@@ -1,4 +1,4 @@
-import {RemoveGitHubAuthMutation as TRemoveGitHubAuthMutation} from '../../__generated__/RemoveGitHubAuthMutation.graphql'
+import {RemoveGitHubAuthMutation as TRemoveGitHubAuthMutation} from '../__generated__/RemoveGitHubAuthMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'

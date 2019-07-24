@@ -22,7 +22,7 @@ import {graphql} from 'react-relay'
 import {meetingTypeToLabel, meetingTypeToSlug} from '../utils/meetings/lookups'
 import {OnNextContext, OnNextHandler, UpdaterHandler} from '../types/relayMutations'
 import {GraphQLSubscriptionConfig, RecordSourceSelectorProxy} from 'relay-runtime'
-import {NotificationSubscriptionResponse} from '../../__generated__/NotificationSubscription.graphql'
+import {NotificationSubscriptionResponse} from '../__generated__/NotificationSubscription.graphql'
 import Atmosphere from '../Atmosphere'
 
 const subscription = graphql`

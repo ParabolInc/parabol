@@ -1,6 +1,6 @@
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {StageTimerModalEditTimeLimit_stage} from '../../__generated__/StageTimerModalEditTimeLimit_stage.graphql'
+import {StageTimerModalEditTimeLimit_stage} from '../__generated__/StageTimerModalEditTimeLimit_stage.graphql'
 import styled from '@emotion/styled'
 import StageTimerModalTimeLimit from './StageTimerModalTimeLimit'
 import Icon from './Icon'

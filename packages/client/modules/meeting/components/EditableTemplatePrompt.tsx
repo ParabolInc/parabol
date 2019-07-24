@@ -1,4 +1,4 @@
-import {EditableTemplatePrompt_prompts} from '../../../../__generated__/EditableTemplatePrompt_prompts.graphql'
+import {EditableTemplatePrompt_prompts} from '../../../__generated__/EditableTemplatePrompt_prompts.graphql'
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import EditableText from '../../../components/EditableText'

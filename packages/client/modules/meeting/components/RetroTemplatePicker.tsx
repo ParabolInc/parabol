@@ -1,4 +1,4 @@
-import {RetroTemplatePicker_settings} from '../../../../__generated__/RetroTemplatePicker_settings.graphql'
+import {RetroTemplatePicker_settings} from '../../../__generated__/RetroTemplatePicker_settings.graphql'
 import React, {useMemo} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import DropdownMenuToggle from '../../../components/DropdownMenuToggle'

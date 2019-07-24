@@ -1,5 +1,5 @@
-import {RetroLobby_meetingSettings} from '../../__generated__/RetroLobby_meetingSettings.graphql'
-import {RetroLobby_team} from '../../__generated__/RetroLobby_team.graphql'
+import {RetroLobby_meetingSettings} from '../__generated__/RetroLobby_meetingSettings.graphql'
+import {RetroLobby_team} from '../__generated__/RetroLobby_team.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'

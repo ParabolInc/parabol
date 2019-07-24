@@ -1,4 +1,4 @@
-import {useMeetingLocalStateTeam} from '../../__generated__/useMeetingLocalStateTeam.graphql'
+import {useMeetingLocalStateTeam} from '../__generated__/useMeetingLocalStateTeam.graphql'
 import {Dispatch, SetStateAction, useEffect, useRef, useState} from 'react'
 import {graphql} from 'react-relay'
 import useAtmosphere from './useAtmosphere'

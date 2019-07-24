@@ -1,7 +1,7 @@
 import React, {lazy} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import DelayUnmount from './DelayUnmount'
-import {TimelineEvent_timelineEvent} from '../../__generated__/TimelineEvent_timelineEvent.graphql'
+import {TimelineEvent_timelineEvent} from '../__generated__/TimelineEvent_timelineEvent.graphql'
 
 interface Props {
   timelineEvent: TimelineEvent_timelineEvent

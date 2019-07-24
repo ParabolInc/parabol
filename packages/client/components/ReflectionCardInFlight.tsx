@@ -1,4 +1,4 @@
-import {ReflectionCardInFlight_reflection} from '../../__generated__/ReflectionCardInFlight_reflection.graphql'
+import {ReflectionCardInFlight_reflection} from '../__generated__/ReflectionCardInFlight_reflection.graphql'
 import {convertFromRaw, EditorState} from 'draft-js'
 import React from 'react'
 import styled from '@emotion/styled'

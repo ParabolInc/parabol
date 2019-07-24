@@ -1,5 +1,5 @@
-import {TaskFooterUserAssigneeMenu_task} from '../../../../../__generated__/TaskFooterUserAssigneeMenu_task.graphql'
-import {TaskFooterUserAssigneeMenu_viewer} from '../../../../../__generated__/TaskFooterUserAssigneeMenu_viewer.graphql'
+import {TaskFooterUserAssigneeMenu_task} from '../../../../__generated__/TaskFooterUserAssigneeMenu_task.graphql'
+import {TaskFooterUserAssigneeMenu_viewer} from '../../../../__generated__/TaskFooterUserAssigneeMenu_viewer.graphql'
 import React, {useMemo} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import DropdownMenuLabel from '../../../../components/DropdownMenuLabel'

@@ -11,7 +11,7 @@ import TeamInvitationErrorExpired from './TeamInvitationErrorExpired'
 import TeamInvitationErrorNotFound from './TeamInvitationErrorNotFound'
 import TeamInvitationGoogleCreateAccount from './TeamInvitationGoogleCreateAccount'
 import TeamInvitationGoogleSignin from './TeamInvitationGoogleSignin'
-import {TeamInvitationDialog_verifiedInvitation} from '../../__generated__/TeamInvitationDialog_verifiedInvitation.graphql'
+import {TeamInvitationDialog_verifiedInvitation} from '../__generated__/TeamInvitationDialog_verifiedInvitation.graphql'
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{token: string}> {
   verifiedInvitation: TeamInvitationDialog_verifiedInvitation

@@ -15,9 +15,9 @@ import {
   SharedUpdater,
   StandardMutation
 } from '../types/relayMutations'
-import {CreateTaskMutation as TCreateTaskMutation} from '../../__generated__/CreateTaskMutation.graphql'
-import {CreateTaskMutation_task} from '../../__generated__/CreateTaskMutation_task.graphql'
-import {CreateTaskMutation_notification} from '../../__generated__/CreateTaskMutation_notification.graphql'
+import {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
+import {CreateTaskMutation_task} from '../__generated__/CreateTaskMutation_task.graphql'
+import {CreateTaskMutation_notification} from '../__generated__/CreateTaskMutation_notification.graphql'
 
 graphql`
   fragment CreateTaskMutation_task on CreateTaskPayload {

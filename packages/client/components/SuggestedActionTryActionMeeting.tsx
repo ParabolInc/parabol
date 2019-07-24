@@ -1,4 +1,4 @@
-import {SuggestedActionTryActionMeeting_suggestedAction} from '../../__generated__/SuggestedActionTryActionMeeting_suggestedAction.graphql'
+import {SuggestedActionTryActionMeeting_suggestedAction} from '../__generated__/SuggestedActionTryActionMeeting_suggestedAction.graphql'
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router'

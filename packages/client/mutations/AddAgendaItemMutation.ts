@@ -5,7 +5,7 @@ import {IAddAgendaItemOnMutationArguments} from '../types/graphql'
 import {LocalHandlers} from '../types/relayMutations'
 import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import {AddAgendaItemMutation as TAddAgendaItemMutation} from '../../__generated__/AddAgendaItemMutation.graphql'
+import {AddAgendaItemMutation as TAddAgendaItemMutation} from '../__generated__/AddAgendaItemMutation.graphql'
 
 graphql`
   fragment AddAgendaItemMutation_team on AddAgendaItemPayload {

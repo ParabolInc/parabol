@@ -16,7 +16,7 @@ import MeetingPhaseHeading from '../modules/meeting/components/MeetingPhaseHeadi
 import handleRightArrow from '../utils/handleRightArrow'
 import lazyPreload from '../utils/lazyPreload'
 import EndMeetingButton from './EndMeetingButton'
-import {ActionMeetingAgendaItems_team} from '../../__generated__/ActionMeetingAgendaItems_team.graphql'
+import {ActionMeetingAgendaItems_team} from '../__generated__/ActionMeetingAgendaItems_team.graphql'
 import Avatar from './Avatar/Avatar'
 import MeetingAgendaCards from '../modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
 import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'

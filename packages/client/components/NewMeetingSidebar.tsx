@@ -11,7 +11,7 @@ import {PALETTE} from '../styles/paletteV2'
 import {MeetingTypeEnum} from '../types/graphql'
 import {meetingTypeToLabel} from '../utils/meetings/lookups'
 import isDemoRoute from '../utils/isDemoRoute'
-import {NewMeetingSidebar_viewer} from '../../__generated__/NewMeetingSidebar_viewer.graphql'
+import {NewMeetingSidebar_viewer} from '../__generated__/NewMeetingSidebar_viewer.graphql'
 
 const SidebarHeader = styled('div')({
   alignItems: 'center',

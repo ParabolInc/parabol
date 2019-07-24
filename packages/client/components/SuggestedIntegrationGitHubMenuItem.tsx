@@ -1,4 +1,4 @@
-import {SuggestedIntegrationGitHubMenuItem_suggestedIntegration} from '../../__generated__/SuggestedIntegrationGitHubMenuItem_suggestedIntegration.graphql'
+import {SuggestedIntegrationGitHubMenuItem_suggestedIntegration} from '../__generated__/SuggestedIntegrationGitHubMenuItem_suggestedIntegration.graphql'
 import React, {forwardRef} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import GitHubSVG from './GitHubSVG'

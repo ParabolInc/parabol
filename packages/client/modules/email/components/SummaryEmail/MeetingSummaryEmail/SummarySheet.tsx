@@ -15,7 +15,7 @@ import ContactUsFooter from './ContactUsFooter'
 import LogoFooter from './LogoFooter'
 import CreateAccountSection from '../../CreateAccountSection/CreateAccountSection'
 import RetroTopics from './RetroTopics'
-import {SummarySheet_meeting} from '../../../../../../__generated__/SummarySheet_meeting.graphql'
+import {SummarySheet_meeting} from '../../../../../__generated__/SummarySheet_meeting.graphql'
 
 interface Props {
   emailCSVUrl: string

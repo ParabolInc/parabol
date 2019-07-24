@@ -6,7 +6,7 @@ import {LoaderSize} from '../../../../types/constEnums'
 import {cacheConfig} from '../../../../utils/constants'
 import renderQuery from '../../../../utils/relay/renderQuery'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {OrgBillingRoot_organization} from '../../../../../__generated__/OrgBillingRoot_organization.graphql'
+import {OrgBillingRoot_organization} from '../../../../__generated__/OrgBillingRoot_organization.graphql'
 
 const query = graphql`
   query OrgBillingRootQuery($orgId: ID!, $first: Int!, $after: DateTime) {

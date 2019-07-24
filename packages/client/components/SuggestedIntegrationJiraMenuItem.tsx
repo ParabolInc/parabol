@@ -1,4 +1,4 @@
-import {SuggestedIntegrationJiraMenuItem_suggestedIntegration} from '../../__generated__/SuggestedIntegrationJiraMenuItem_suggestedIntegration.graphql'
+import {SuggestedIntegrationJiraMenuItem_suggestedIntegration} from '../__generated__/SuggestedIntegrationJiraMenuItem_suggestedIntegration.graphql'
 import React, {forwardRef} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import JiraSVG from './JiraSVG'

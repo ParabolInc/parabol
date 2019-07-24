@@ -8,7 +8,7 @@ import {
 import useEmailItemGrid from '../../../../../hooks/useEmailItemGrid'
 import EmailReflectionCard from './EmailReflectionCard'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {RetroTopic_topic} from '../../../../../../__generated__/RetroTopic_topic.graphql'
+import {RetroTopic_topic} from '../../../../../__generated__/RetroTopic_topic.graphql'
 
 const topicThemeHeading = {
   color: PALETTE_TEXT_MAIN,

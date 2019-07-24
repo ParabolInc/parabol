@@ -1,4 +1,4 @@
-import {ActionSidebarAgendaItemsSection_viewer} from '../../__generated__/ActionSidebarAgendaItemsSection_viewer.graphql'
+import {ActionSidebarAgendaItemsSection_viewer} from '../__generated__/ActionSidebarAgendaItemsSection_viewer.graphql'
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import LabelHeading from './LabelHeading/LabelHeading'

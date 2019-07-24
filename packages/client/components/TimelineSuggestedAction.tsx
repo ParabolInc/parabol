@@ -1,4 +1,4 @@
-import {TimelineSuggestedAction_viewer} from '../../__generated__/TimelineSuggestedAction_viewer.graphql'
+import {TimelineSuggestedAction_viewer} from '../__generated__/TimelineSuggestedAction_viewer.graphql'
 import React, {lazy} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'

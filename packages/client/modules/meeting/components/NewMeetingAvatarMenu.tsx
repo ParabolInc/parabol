@@ -1,5 +1,5 @@
-import {NewMeetingAvatarMenu_newMeeting} from '../../../../__generated__/NewMeetingAvatarMenu_newMeeting.graphql'
-import {NewMeetingAvatarMenu_teamMember} from '../../../../__generated__/NewMeetingAvatarMenu_teamMember.graphql'
+import {NewMeetingAvatarMenu_newMeeting} from '../../../__generated__/NewMeetingAvatarMenu_newMeeting.graphql'
+import {NewMeetingAvatarMenu_teamMember} from '../../../__generated__/NewMeetingAvatarMenu_teamMember.graphql'
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import DropdownMenuLabel from '../../../components/DropdownMenuLabel'

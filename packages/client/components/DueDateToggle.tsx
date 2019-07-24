@@ -1,4 +1,4 @@
-import {DueDateToggle_task} from '../../__generated__/DueDateToggle_task.graphql'
+import {DueDateToggle_task} from '../__generated__/DueDateToggle_task.graphql'
 import ms from 'ms'
 import React from 'react'
 import styled from '@emotion/styled'

@@ -1,4 +1,4 @@
-import {DashAlertMeeting_viewer} from '../../__generated__/DashAlertMeeting_viewer.graphql'
+import {DashAlertMeeting_viewer} from '../__generated__/DashAlertMeeting_viewer.graphql'
 import React, {useMemo} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'

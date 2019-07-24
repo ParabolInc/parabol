@@ -1,6 +1,6 @@
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {TaskSummarySection_tasks} from '../../../../../../__generated__/TaskSummarySection_tasks.graphql'
+import {TaskSummarySection_tasks} from '../../../../../__generated__/TaskSummarySection_tasks.graphql'
 import useEmailItemGrid from '../../../../../hooks/useEmailItemGrid'
 import EmailTaskCard from './EmailTaskCard'
 import {

@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {StageTimerModal_stage} from '../../__generated__/StageTimerModal_stage.graphql'
+import {StageTimerModal_stage} from '../__generated__/StageTimerModal_stage.graphql'
 import {MenuProps} from '../hooks/useMenu'
 import Tab from './Tab/Tab'
 import Tabs from './Tabs/Tabs'
@@ -11,7 +11,7 @@ import StageTimerModalTimeLimit from './StageTimerModalTimeLimit'
 import StageTimerModalEditTimeLimit from './StageTimerModalEditTimeLimit'
 import StageTimerModalEndTime from './StageTimerModalEndTime'
 import StageTimerModalEditTimeEnd from './StageTimerModalEditTimeEnd'
-import {StageTimerModal_facilitator} from '../../__generated__/StageTimerModal_facilitator.graphql'
+import {StageTimerModal_facilitator} from '../__generated__/StageTimerModal_facilitator.graphql'
 import {PALETTE} from '../styles/paletteV2'
 
 const WIDTH = 224

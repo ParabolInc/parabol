@@ -1,6 +1,6 @@
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {StageTimerModalEditTimeEnd_stage} from '../../__generated__/StageTimerModalEditTimeEnd_stage.graphql'
+import {StageTimerModalEditTimeEnd_stage} from '../__generated__/StageTimerModalEditTimeEnd_stage.graphql'
 import styled from '@emotion/styled'
 import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
@@ -9,7 +9,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import MenuItemHR from './MenuItemHR'
 import StageTimerModalEndTime from './StageTimerModalEndTime'
-import {StageTimerModalEditTimeEnd_facilitator} from '../../__generated__/StageTimerModalEditTimeEnd_facilitator.graphql'
+import {StageTimerModalEditTimeEnd_facilitator} from '../__generated__/StageTimerModalEditTimeEnd_facilitator.graphql'
 import {PALETTE} from '../styles/paletteV2'
 
 interface Props {

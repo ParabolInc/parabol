@@ -6,7 +6,7 @@ import {MenuProps} from '../../../hooks/useMenu'
 import TaskFooterUserAssigneeMenu from './OutcomeCardAssignMenu/TaskFooterUserAssigneeMenu'
 import {cacheConfig} from '../../../utils/constants'
 import renderQuery from '../../../utils/relay/renderQuery'
-import {TaskFooterUserAssigneeMenuRoot_task} from '../../../../__generated__/TaskFooterUserAssigneeMenuRoot_task.graphql'
+import {TaskFooterUserAssigneeMenuRoot_task} from '../../../__generated__/TaskFooterUserAssigneeMenuRoot_task.graphql'
 
 const query = graphql`
   query TaskFooterUserAssigneeMenuRootQuery($teamId: ID!) {

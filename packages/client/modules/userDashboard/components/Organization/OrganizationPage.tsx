@@ -1,4 +1,4 @@
-import {OrganizationPage_organization} from '../../../../../__generated__/OrganizationPage_organization.graphql'
+import {OrganizationPage_organization} from '../../../../__generated__/OrganizationPage_organization.graphql'
 import React, {lazy, Suspense} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {Route, RouteComponentProps, Switch, withRouter} from 'react-router'

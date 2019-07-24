@@ -1,4 +1,4 @@
-import {ActionMeetingLobby_team} from '../../__generated__/ActionMeetingLobby_team.graphql'
+import {ActionMeetingLobby_team} from '../__generated__/ActionMeetingLobby_team.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'

@@ -1,4 +1,4 @@
-import {DashAlertOverLimit_viewer} from '../../__generated__/DashAlertOverLimit_viewer.graphql'
+import {DashAlertOverLimit_viewer} from '../__generated__/DashAlertOverLimit_viewer.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'

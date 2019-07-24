@@ -1,4 +1,4 @@
-import {NewMeetingCheckInMutation as TNewMeetingCheckInMutation} from '../../__generated__/NewMeetingCheckInMutation.graphql'
+import {NewMeetingCheckInMutation as TNewMeetingCheckInMutation} from '../__generated__/NewMeetingCheckInMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import Atmosphere from '../Atmosphere'
 import {INewMeetingCheckInOnMutationArguments} from '../types/graphql'

@@ -12,7 +12,7 @@ import {createFragmentContainer, graphql} from 'react-relay'
 import InlineEstimatedCost from '../../../../components/InlineEstimatedCost'
 import UpgradeModalRootLoadable from '../../../../components/UpgradeModalRootLoadable'
 import LoadableModal from '../../../../components/LoadableModal'
-import {OrgPlanSqueeze_organization} from '../../../../../__generated__/OrgPlanSqueeze_organization.graphql'
+import {OrgPlanSqueeze_organization} from '../../../../__generated__/OrgPlanSqueeze_organization.graphql'
 import {TierEnum} from '../../../../types/graphql'
 
 const personalGradient = makeGradient(ui.palette.mid, ui.palette.midGray)

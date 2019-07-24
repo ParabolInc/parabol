@@ -7,7 +7,7 @@ import {
   PALETTE_TEXT_MAIN
 } from './constants'
 import RetroTopic from './RetroTopic'
-import {RetroTopics_meeting} from '../../../../../../__generated__/RetroTopics_meeting.graphql'
+import {RetroTopics_meeting} from '../../../../../__generated__/RetroTopics_meeting.graphql'
 import EmailBorderBottom from './EmailBorderBottom'
 
 const sectionHeading = {

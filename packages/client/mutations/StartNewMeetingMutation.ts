@@ -1,4 +1,4 @@
-import {StartNewMeetingMutation as TStartNewMeetingMutation} from '../../__generated__/StartNewMeetingMutation.graphql'
+import {StartNewMeetingMutation as TStartNewMeetingMutation} from '../__generated__/StartNewMeetingMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import Atmosphere from '../Atmosphere'
 import {IStartNewMeetingOnMutationArguments} from '../types/graphql'

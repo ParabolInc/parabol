@@ -1,5 +1,5 @@
-import {RetroTemplateListMenu_retroMeetingSettings} from '../../../../__generated__/RetroTemplateListMenu_retroMeetingSettings.graphql'
-import {RetroTemplatePicker_settings} from '../../../../__generated__/RetroTemplatePicker_settings.graphql'
+import {RetroTemplateListMenu_retroMeetingSettings} from '../../../__generated__/RetroTemplateListMenu_retroMeetingSettings.graphql'
+import {RetroTemplatePicker_settings} from '../../../__generated__/RetroTemplatePicker_settings.graphql'
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import Menu from '../../../components/Menu'

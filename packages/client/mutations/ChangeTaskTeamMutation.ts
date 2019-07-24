@@ -8,7 +8,7 @@ import Atmosphere from '../Atmosphere'
 import {IChangeTaskTeamOnMutationArguments, ITask, ITeam} from '../types/graphql'
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import getBaseRecord from '../utils/relay/getBaseRecord'
-import {ChangeTaskTeamMutation as TChangeTaskTeamMutation} from '../../__generated__/ChangeTaskTeamMutation.graphql'
+import {ChangeTaskTeamMutation as TChangeTaskTeamMutation} from '../__generated__/ChangeTaskTeamMutation.graphql'
 import {LocalHandlers} from '../types/relayMutations'
 
 graphql`

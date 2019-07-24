@@ -1,4 +1,4 @@
-import {CreateGitHubIssueMutation as TCreateGitHubIssueMutation} from '../../__generated__/CreateGitHubIssueMutation.graphql'
+import {CreateGitHubIssueMutation as TCreateGitHubIssueMutation} from '../__generated__/CreateGitHubIssueMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import Atmosphere from '../Atmosphere'
 import {ICreateGitHubIssueOnMutationArguments, TaskServiceEnum} from '../types/graphql'

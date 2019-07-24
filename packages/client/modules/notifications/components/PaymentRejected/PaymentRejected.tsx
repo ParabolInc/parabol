@@ -6,7 +6,7 @@ import Row from '../../../../components/Row/Row'
 import IconAvatar from '../../../../components/IconAvatar/IconAvatar'
 import RaisedButton from '../../../../components/RaisedButton'
 import useRouter from '../../../../hooks/useRouter'
-import {PaymentRejected_notification} from '../../../../../__generated__/PaymentRejected_notification.graphql'
+import {PaymentRejected_notification} from '../../../../__generated__/PaymentRejected_notification.graphql'
 import NotificationMessage from '../NotificationMessage'
 
 const StyledButton = styled(RaisedButton)({...ui.buttonBlockStyles})

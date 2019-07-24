@@ -1,4 +1,4 @@
-import {PhaseItemColumn_meeting} from '../../../__generated__/PhaseItemColumn_meeting.graphql'
+import {PhaseItemColumn_meeting} from '../../__generated__/PhaseItemColumn_meeting.graphql'
 import React, {Component} from 'react'
 import styled from '@emotion/styled'
 import ReflectionCard from '../ReflectionCard/ReflectionCard'

@@ -1,4 +1,4 @@
-import {TimelinePriorityTasks_viewer} from '../../__generated__/TimelinePriorityTasks_viewer.graphql'
+import {TimelinePriorityTasks_viewer} from '../__generated__/TimelinePriorityTasks_viewer.graphql'
 import memoize from 'micro-memoize'
 import React, {Component} from 'react'
 import styled from '@emotion/styled'

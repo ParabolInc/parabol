@@ -1,4 +1,4 @@
-import {ViewerNotOnTeam_viewer} from '../../__generated__/ViewerNotOnTeam_viewer.graphql'
+import {ViewerNotOnTeam_viewer} from '../__generated__/ViewerNotOnTeam_viewer.graphql'
 import React, {useCallback, useEffect} from 'react'
 import Helmet from 'react-helmet'
 import {createFragmentContainer, graphql} from 'react-relay'

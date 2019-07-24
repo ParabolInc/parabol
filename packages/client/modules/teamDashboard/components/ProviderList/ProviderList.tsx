@@ -1,4 +1,4 @@
-import {ProviderList_viewer} from '../../../../../__generated__/ProviderList_viewer.graphql'
+import {ProviderList_viewer} from '../../../../__generated__/ProviderList_viewer.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'

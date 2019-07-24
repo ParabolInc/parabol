@@ -1,4 +1,4 @@
-import {UpgradeModal_viewer} from '../../__generated__/UpgradeModal_viewer.graphql'
+import {UpgradeModal_viewer} from '../__generated__/UpgradeModal_viewer.graphql'
 import React from 'react'
 import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
 import UpgradeSqueeze from './UpgradeSqueeze'

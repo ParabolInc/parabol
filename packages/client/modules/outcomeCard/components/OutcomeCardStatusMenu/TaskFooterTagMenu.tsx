@@ -1,4 +1,4 @@
-import {TaskFooterTagMenu_task} from '../../../../../__generated__/TaskFooterTagMenu_task.graphql'
+import {TaskFooterTagMenu_task} from '../../../../__generated__/TaskFooterTagMenu_task.graphql'
 import {EditorState} from 'draft-js'
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'

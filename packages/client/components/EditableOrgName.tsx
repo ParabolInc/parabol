@@ -8,7 +8,7 @@ import withAtmosphere, {
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import UpdateOrgMutation from '../mutations/UpdateOrgMutation'
 import Legitity from '../validation/Legitity'
-import {EditableOrgName_organization} from '../../__generated__/EditableOrgName_organization.graphql'
+import {EditableOrgName_organization} from '../__generated__/EditableOrgName_organization.graphql'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   organization: EditableOrgName_organization

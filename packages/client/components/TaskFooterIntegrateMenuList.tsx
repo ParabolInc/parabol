@@ -1,5 +1,5 @@
-import {TaskFooterIntegrateMenuList_suggestedIntegrations} from '../../__generated__/TaskFooterIntegrateMenuList_suggestedIntegrations.graphql'
-import {TaskFooterIntegrateMenuList_task} from '../../__generated__/TaskFooterIntegrateMenuList_task.graphql'
+import {TaskFooterIntegrateMenuList_suggestedIntegrations} from '../__generated__/TaskFooterIntegrateMenuList_suggestedIntegrations.graphql'
+import {TaskFooterIntegrateMenuList_task} from '../__generated__/TaskFooterIntegrateMenuList_task.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'

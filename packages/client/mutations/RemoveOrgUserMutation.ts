@@ -13,7 +13,7 @@ import {setLocalStageAndPhase} from '../utils/relay/updateLocalStage'
 import findStageById from '../utils/meetings/findStageById'
 import onExOrgRoute from '../utils/onExOrgRoute'
 import {OnNextHandler} from '../types/relayMutations'
-import {RemoveOrgUserMutation_notification} from '../../__generated__/RemoveOrgUserMutation_notification.graphql'
+import {RemoveOrgUserMutation_notification} from '../__generated__/RemoveOrgUserMutation_notification.graphql'
 
 graphql`
   fragment RemoveOrgUserMutation_organization on RemoveOrgUserPayload {

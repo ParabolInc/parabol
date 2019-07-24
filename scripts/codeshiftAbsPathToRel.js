@@ -1,3 +1,5 @@
+// USAGE:  jscodeshift --rootDirs ./packages -t ./codeshiftAbsPathToRel.js ./packages --packageDir . --extensions=tsx,ts,js --parser=tsx
+
 const {existsSync} = require('fs')
 const {_builtinLibs} = require('repl') // List of Node.js built in modules.
 const path = require('path')
@@ -41,17 +43,8 @@ const makeGetDiskPathFromImportPath = (rootDirs) => {
 }
 
 const makeChangePathToRelativeIfNeeded = (currentModuleDirectoryPath, isDependency, rootDirs) => {
-  // const getDiskPathFromImportPath = makeGetDiskPathFromImportPath(rootDirs)
+  const getDiskPathFromImportPath = makeGetDiskPathFromImportPath(rootDirs)
   return (importedModulePath) => {
-    if (importedModulePath.includes('__generated__') && importedModulePath.endsWith('.graphql')) {
-      const fileName = importedModulePath.slice(importedModulePath.lastIndexOf('/') + 1)
-      const diskPath = path.join(__dirname, 'packages', 'client', '__generated__', fileName)
-      const relativePath = path.relative(currentModuleDirectoryPath, diskPath).replace(/\\/g, '/')
-      // const rp = relativePath.replace('universal', 'client')
-      return relativePath.startsWith('../') ? relativePath : `./${relativePath}`
-    }
-    return importedModulePath
-
     if (isRelative(importedModulePath) || isDependency(importedModulePath)) {
       return importedModulePath
     }

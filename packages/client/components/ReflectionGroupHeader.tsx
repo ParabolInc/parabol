@@ -6,8 +6,8 @@ import {GROUP, VOTE} from '../utils/constants'
 import ReflectionGroupVoting from './ReflectionGroupVoting'
 import Tag from './Tag/Tag'
 import {REFLECTION_CARD_WIDTH} from '../utils/multiplayerMasonry/masonryConstants'
-import {ReflectionGroupHeader_reflectionGroup} from '../../__generated__/ReflectionGroupHeader_reflectionGroup.graphql'
-import {ReflectionGroupHeader_meeting} from '../../__generated__/ReflectionGroupHeader_meeting.graphql'
+import {ReflectionGroupHeader_reflectionGroup} from '../__generated__/ReflectionGroupHeader_reflectionGroup.graphql'
+import {ReflectionGroupHeader_meeting} from '../__generated__/ReflectionGroupHeader_meeting.graphql'
 import plural from '../utils/plural'
 
 interface Props {

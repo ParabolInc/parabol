@@ -1,4 +1,4 @@
-import {TeamInvitationErrorExpired_verifiedInvitation} from '../../__generated__/TeamInvitationErrorExpired_verifiedInvitation.graphql'
+import {TeamInvitationErrorExpired_verifiedInvitation} from '../__generated__/TeamInvitationErrorExpired_verifiedInvitation.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {PALETTE} from '../styles/paletteV2'

@@ -6,7 +6,7 @@ import {MenuProps} from '../hooks/useMenu'
 import {filterTeamMember} from '../modules/teamDashboard/ducks/teamDashDuck'
 import {connect, DispatchProp} from 'react-redux'
 import DropdownMenuLabel from './DropdownMenuLabel'
-import {TeamDashTeamMemberMenu_team} from '../../__generated__/TeamDashTeamMemberMenu_team.graphql'
+import {TeamDashTeamMemberMenu_team} from '../__generated__/TeamDashTeamMemberMenu_team.graphql'
 
 interface Props extends DispatchProp {
   menuProps: MenuProps

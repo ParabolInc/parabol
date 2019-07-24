@@ -1,4 +1,4 @@
-import {TimelineEventJoinedParabol_timelineEvent} from '../../__generated__/TimelineEventJoinedParabol_timelineEvent.graphql'
+import {TimelineEventJoinedParabol_timelineEvent} from '../__generated__/TimelineEventJoinedParabol_timelineEvent.graphql'
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import StyledLink from './StyledLink'

@@ -1,4 +1,4 @@
-import {RetroSidebarDiscussSection_viewer} from '../../__generated__/RetroSidebarDiscussSection_viewer.graphql'
+import {RetroSidebarDiscussSection_viewer} from '../__generated__/RetroSidebarDiscussSection_viewer.graphql'
 import React from 'react'
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
 import styled from '@emotion/styled'

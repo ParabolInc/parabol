@@ -1,5 +1,5 @@
-import {NewMeetingCheckInPrompt_team} from '../../../../../__generated__/NewMeetingCheckInPrompt_team.graphql'
-import {NewMeetingCheckInPrompt_teamMember} from '../../../../../__generated__/NewMeetingCheckInPrompt_teamMember.graphql'
+import {NewMeetingCheckInPrompt_team} from '../../../../__generated__/NewMeetingCheckInPrompt_team.graphql'
+import {NewMeetingCheckInPrompt_teamMember} from '../../../../__generated__/NewMeetingCheckInPrompt_teamMember.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'

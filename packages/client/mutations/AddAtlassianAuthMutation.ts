@@ -1,4 +1,4 @@
-import {AddAtlassianAuthMutation as TAddAtlassianAuthMutation} from '../../__generated__/AddAtlassianAuthMutation.graphql'
+import {AddAtlassianAuthMutation as TAddAtlassianAuthMutation} from '../__generated__/AddAtlassianAuthMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import {IAddAtlassianAuthOnMutationArguments} from '../types/graphql'

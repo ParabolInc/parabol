@@ -1,4 +1,4 @@
-import {RetroDiscussPhase_team} from '../../__generated__/RetroDiscussPhase_team.graphql'
+import {RetroDiscussPhase_team} from '../__generated__/RetroDiscussPhase_team.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'

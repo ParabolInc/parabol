@@ -4,7 +4,7 @@ import handleAddOrganization from './handlers/handleAddOrganization'
 import handleRemoveNotifications from './handlers/handleRemoveNotifications'
 import getInProxy from '../utils/relay/getInProxy'
 import {OnNextHandler} from '../types/relayMutations'
-import {SetOrgUserRoleMutationAdded_organization} from '../../__generated__/SetOrgUserRoleMutationAdded_organization.graphql'
+import {SetOrgUserRoleMutationAdded_organization} from '../__generated__/SetOrgUserRoleMutationAdded_organization.graphql'
 
 graphql`
   fragment SetOrgUserRoleMutationAdded_organization on SetOrgUserRoleAddedPayload {

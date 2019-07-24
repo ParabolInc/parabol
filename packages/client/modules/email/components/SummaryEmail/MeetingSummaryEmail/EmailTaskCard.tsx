@@ -4,7 +4,7 @@ import editorDecorators from '../../../../../components/TaskEditor/decorators'
 import labels from '../../../../../styles/theme/labels'
 import ui from '../../../../../styles/ui'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {EmailTaskCard_task} from '../../../../../../__generated__/EmailTaskCard_task.graphql'
+import {EmailTaskCard_task} from '../../../../../__generated__/EmailTaskCard_task.graphql'
 import {
   FONT_FAMILY,
   PALETTE_TEXT_MAIN

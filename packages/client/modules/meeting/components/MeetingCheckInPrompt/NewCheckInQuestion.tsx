@@ -14,7 +14,7 @@ import UpdateNewCheckInQuestionMutation from '../../../../mutations/UpdateNewChe
 import {convertFromRaw, convertToRaw, EditorState, SelectionState} from 'draft-js'
 import Icon from '../../../../components/Icon'
 import {MD_ICONS_SIZE_18} from '../../../../styles/icons'
-import {NewCheckInQuestion_team} from '../../../../../__generated__/NewCheckInQuestion_team.graphql'
+import {NewCheckInQuestion_team} from '../../../../__generated__/NewCheckInQuestion_team.graphql'
 
 const CogIcon = styled(Icon)<{isEditing: boolean}>(({isEditing}) => ({
   color: ui.colorText,

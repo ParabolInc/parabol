@@ -1,6 +1,6 @@
 import React, {Suspense} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {NotificationRow_notification} from '../../../../../__generated__/NotificationRow_notification.graphql'
+import {NotificationRow_notification} from '../../../../__generated__/NotificationRow_notification.graphql'
 import {NotificationEnum} from '../../../../types/graphql'
 import lazyPreload from '../../../../utils/lazyPreload'
 import {ValueOf} from '../../../../types/generics'

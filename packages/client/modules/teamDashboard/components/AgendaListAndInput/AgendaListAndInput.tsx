@@ -1,4 +1,4 @@
-import {AgendaListAndInput_team} from '../../../../../__generated__/AgendaListAndInput_team.graphql'
+import {AgendaListAndInput_team} from '../../../../__generated__/AgendaListAndInput_team.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'

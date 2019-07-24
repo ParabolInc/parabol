@@ -1,4 +1,4 @@
-import {DashSidebar_viewer} from '../../../__generated__/DashSidebar_viewer.graphql'
+import {DashSidebar_viewer} from '../../__generated__/DashSidebar_viewer.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'

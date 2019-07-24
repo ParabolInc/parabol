@@ -1,4 +1,4 @@
-import {RetroGroupPhase_team} from '../../__generated__/RetroGroupPhase_team.graphql'
+import {RetroGroupPhase_team} from '../__generated__/RetroGroupPhase_team.graphql'
 import ms from 'ms'
 /**
  * Renders the UI for the reflection phase of the retrospective meeting

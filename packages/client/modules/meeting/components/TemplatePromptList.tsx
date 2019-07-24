@@ -1,4 +1,4 @@
-import {TemplatePromptList_prompts} from '../../../../__generated__/TemplatePromptList_prompts.graphql'
+import {TemplatePromptList_prompts} from '../../../__generated__/TemplatePromptList_prompts.graphql'
 import React, {Component} from 'react'
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
 import styled from '@emotion/styled'

@@ -1,4 +1,4 @@
-import {ExportToCSVQuery} from '../../../../../__generated__/ExportToCSVQuery.graphql'
+import {ExportToCSVQuery} from '../../../../__generated__/ExportToCSVQuery.graphql'
 import Parser from 'json2csv/lib/JSON2CSVParser' // only grab the sync parser
 import React, {Component} from 'react'
 import {fetchQuery, graphql} from 'react-relay'

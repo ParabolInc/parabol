@@ -1,4 +1,4 @@
-import {ActionSidebarPhaseListItemChildren_viewer} from '../../__generated__/ActionSidebarPhaseListItemChildren_viewer.graphql'
+import {ActionSidebarPhaseListItemChildren_viewer} from '../__generated__/ActionSidebarPhaseListItemChildren_viewer.graphql'
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import ActionSidebarAgendaItemsSection from './ActionSidebarAgendaItemsSection'

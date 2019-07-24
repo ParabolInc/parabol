@@ -4,7 +4,7 @@ import Atmosphere from '../Atmosphere'
 import {
   UpdateOrgMutation as TUpdateOrgMutation,
   UpdateOrgMutationVariables
-} from '../../__generated__/UpdateOrgMutation.graphql'
+} from '../__generated__/UpdateOrgMutation.graphql'
 import {LocalHandlers} from '../types/relayMutations'
 graphql`
   fragment UpdateOrgMutation_organization on UpdateOrgPayload {

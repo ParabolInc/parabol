@@ -1,4 +1,4 @@
-import {TemplatePromptItem_prompt} from '../../../../__generated__/TemplatePromptItem_prompt.graphql'
+import {TemplatePromptItem_prompt} from '../../../__generated__/TemplatePromptItem_prompt.graphql'
 import React, {Component} from 'react'
 import {DraggableProvided} from 'react-beautiful-dnd'
 import styled from '@emotion/styled'

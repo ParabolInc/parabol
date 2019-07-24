@@ -1,5 +1,5 @@
-import {NewMeetingAvatar_newMeeting} from '../../../../../__generated__/NewMeetingAvatar_newMeeting.graphql'
-import {NewMeetingAvatar_teamMember} from '../../../../../__generated__/NewMeetingAvatar_teamMember.graphql'
+import {NewMeetingAvatar_newMeeting} from '../../../../__generated__/NewMeetingAvatar_newMeeting.graphql'
+import {NewMeetingAvatar_teamMember} from '../../../../__generated__/NewMeetingAvatar_teamMember.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'

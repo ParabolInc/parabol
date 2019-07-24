@@ -3,7 +3,7 @@ import {createPaginationContainer, graphql} from 'react-relay'
 import OrgMemberRow from '../OrgUserRow/OrgMemberRow'
 import Panel from '../../../../components/Panel/Panel'
 import {BILLING_LEADER} from '../../../../utils/constants'
-import {OrgMembers_viewer} from '../../../../../__generated__/OrgMembers_viewer.graphql'
+import {OrgMembers_viewer} from '../../../../__generated__/OrgMembers_viewer.graphql'
 
 interface Props {
   viewer: OrgMembers_viewer

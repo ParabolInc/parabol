@@ -1,4 +1,4 @@
-import {NewTeamOrgPicker_organizations} from '../../../../__generated__/NewTeamOrgPicker_organizations.graphql'
+import {NewTeamOrgPicker_organizations} from '../../../__generated__/NewTeamOrgPicker_organizations.graphql'
 import React, {useEffect, useMemo} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import DropdownMenuToggle from '../../../components/DropdownMenuToggle'

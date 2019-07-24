@@ -1,5 +1,5 @@
-import {InviteToTeamMutation as TInviteToTeamMutation} from '../../__generated__/InviteToTeamMutation.graphql'
-import {InviteToTeamMutation_notification} from '../../__generated__/InviteToTeamMutation_notification.graphql'
+import {InviteToTeamMutation as TInviteToTeamMutation} from '../__generated__/InviteToTeamMutation.graphql'
+import {InviteToTeamMutation_notification} from '../__generated__/InviteToTeamMutation_notification.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import {matchPath} from 'react-router'
 import {Disposable} from 'relay-runtime'

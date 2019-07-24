@@ -1,4 +1,4 @@
-import {RetroMeeting_viewer} from '../../__generated__/RetroMeeting_viewer.graphql'
+import {RetroMeeting_viewer} from '../__generated__/RetroMeeting_viewer.graphql'
 import React, {ReactElement} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {ValueOf} from '../types/generics'

@@ -1,4 +1,4 @@
-import {TimelineEventCompletedRetroMeeting_timelineEvent} from '../../__generated__/TimelineEventCompletedRetroMeeting_timelineEvent.graphql'
+import {TimelineEventCompletedRetroMeeting_timelineEvent} from '../__generated__/TimelineEventCompletedRetroMeeting_timelineEvent.graphql'
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import StyledLink from './StyledLink'

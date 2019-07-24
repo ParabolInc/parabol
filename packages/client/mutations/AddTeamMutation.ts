@@ -4,7 +4,7 @@ import createProxyRecord from '../utils/relay/createProxyRecord'
 import getGraphQLError from '../utils/relay/getGraphQLError'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 import {OnNextHandler} from '../types/relayMutations'
-import {AddTeamMutation_team} from '../../__generated__/AddTeamMutation_team.graphql'
+import {AddTeamMutation_team} from '../__generated__/AddTeamMutation_team.graphql'
 
 graphql`
   fragment AddTeamMutation_team on AddTeamPayload {

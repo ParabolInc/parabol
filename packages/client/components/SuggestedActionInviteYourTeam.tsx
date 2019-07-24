@@ -1,4 +1,4 @@
-import {SuggestedActionInviteYourTeam_suggestedAction} from '../../__generated__/SuggestedActionInviteYourTeam_suggestedAction.graphql'
+import {SuggestedActionInviteYourTeam_suggestedAction} from '../__generated__/SuggestedActionInviteYourTeam_suggestedAction.graphql'
 import React, {lazy} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'

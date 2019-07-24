@@ -1,4 +1,4 @@
-import {TeamContainer_viewer} from '../../../../../__generated__/TeamContainer_viewer.graphql'
+import {TeamContainer_viewer} from '../../../../__generated__/TeamContainer_viewer.graphql'
 import React, {lazy, Suspense, useEffect} from 'react'
 import {connect} from 'react-redux'
 import {createFragmentContainer, graphql} from 'react-relay'

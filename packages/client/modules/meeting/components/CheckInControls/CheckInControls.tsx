@@ -1,4 +1,4 @@
-import {CheckInControls_teamMember} from '../../../../../__generated__/CheckInControls_teamMember.graphql'
+import {CheckInControls_teamMember} from '../../../../__generated__/CheckInControls_teamMember.graphql'
 import React, {useCallback, useRef} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'

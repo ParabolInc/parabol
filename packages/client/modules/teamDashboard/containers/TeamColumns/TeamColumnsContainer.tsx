@@ -1,4 +1,4 @@
-import {TeamColumnsContainer_viewer} from '../../../../../__generated__/TeamColumnsContainer_viewer.graphql'
+import {TeamColumnsContainer_viewer} from '../../../../__generated__/TeamColumnsContainer_viewer.graphql'
 import React, {useMemo} from 'react'
 import {connect} from 'react-redux'
 import {createFragmentContainer, graphql} from 'react-relay'

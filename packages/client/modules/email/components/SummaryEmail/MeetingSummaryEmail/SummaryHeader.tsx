@@ -4,7 +4,7 @@ import {FONT_FAMILY, PALETTE_TEXT_LIGHT, PALETTE_TEXT_MAIN} from './constants'
 import {meetingTypeToLabel} from '../../../../../utils/meetings/lookups'
 import makeDateString from '../../../../../utils/makeDateString'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {SummaryHeader_meeting} from '../../../../../../__generated__/SummaryHeader_meeting.graphql'
+import {SummaryHeader_meeting} from '../../../../../__generated__/SummaryHeader_meeting.graphql'
 
 const meetingSummaryLabel = {
   color: PALETTE_TEXT_LIGHT,

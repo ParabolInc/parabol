@@ -3,7 +3,7 @@ import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {PALETTE} from '../../../styles/paletteV2'
-import {ActionMeetingUpdatesPromptTeamHelpText_currentTeamMember} from '../../../../__generated__/ActionMeetingUpdatesPromptTeamHelpText_currentTeamMember.graphql'
+import {ActionMeetingUpdatesPromptTeamHelpText_currentTeamMember} from '../../../__generated__/ActionMeetingUpdatesPromptTeamHelpText_currentTeamMember.graphql'
 
 const AgendaControl = styled('span')({
   color: PALETTE.TEXT_RED,

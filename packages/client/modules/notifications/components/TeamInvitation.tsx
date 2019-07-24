@@ -1,4 +1,4 @@
-import {TeamInvitation_notification} from '../../../../__generated__/TeamInvitation_notification.graphql'
+import {TeamInvitation_notification} from '../../../__generated__/TeamInvitation_notification.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'

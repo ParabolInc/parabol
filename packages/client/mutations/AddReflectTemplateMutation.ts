@@ -6,7 +6,7 @@ import {IAddReflectTemplateOnMutationArguments} from '../types/graphql'
 import {CompletedHandler, ErrorHandler, SharedUpdater} from '../types/relayMutations'
 import getCachedRecord from '../utils/relay/getCachedRecord'
 import handleAddReflectTemplate from './handlers/handleAddReflectTemplate'
-import {AddReflectTemplateMutation_team} from '../../__generated__/AddReflectTemplateMutation_team.graphql'
+import {AddReflectTemplateMutation_team} from '../__generated__/AddReflectTemplateMutation_team.graphql'
 
 graphql`
   fragment AddReflectTemplateMutation_team on AddReflectTemplatePayload {

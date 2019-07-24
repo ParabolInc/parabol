@@ -1,4 +1,4 @@
-import {TaskFooterTeamAssignee_task} from '../../../../../__generated__/TaskFooterTeamAssignee_task.graphql'
+import {TaskFooterTeamAssignee_task} from '../../../../__generated__/TaskFooterTeamAssignee_task.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'

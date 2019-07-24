@@ -1,4 +1,4 @@
-import {useAllIntegrationsQueryResponse} from '../../__generated__/useAllIntegrationsQuery.graphql'
+import {useAllIntegrationsQueryResponse} from '../__generated__/useAllIntegrationsQuery.graphql'
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {graphql} from 'react-relay'
 import Atmosphere from '../Atmosphere'

@@ -6,7 +6,7 @@ import Row from '../../../components/Row/Row'
 import IconAvatar from '../../../components/IconAvatar/IconAvatar'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
-import {KickedOut_notification} from '../../../../__generated__/KickedOut_notification.graphql'
+import {KickedOut_notification} from '../../../__generated__/KickedOut_notification.graphql'
 import NotificationErrorMessage from './NotificationErrorMessage'
 import NotificationMessage from './NotificationMessage'
 

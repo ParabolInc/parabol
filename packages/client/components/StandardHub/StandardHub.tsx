@@ -14,7 +14,7 @@ import {APP_BAR_HEIGHT} from '../../styles/appbars'
 import useMenu from '../../hooks/useMenu'
 import {MenuPosition} from '../../hooks/useCoords'
 import lazyPreload from '../../utils/lazyPreload'
-import {StandardHub_viewer} from '../../../__generated__/StandardHub_viewer.graphql'
+import {StandardHub_viewer} from '../../__generated__/StandardHub_viewer.graphql'
 import {ClassNames} from '@emotion/core'
 
 const StandardHubRoot = styled('div')({

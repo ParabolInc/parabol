@@ -1,4 +1,4 @@
-import {MeetingStageTimeLimitEnd_notification} from '../../../../__generated__/MeetingStageTimeLimitEnd_notification.graphql'
+import {MeetingStageTimeLimitEnd_notification} from '../../../__generated__/MeetingStageTimeLimitEnd_notification.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'

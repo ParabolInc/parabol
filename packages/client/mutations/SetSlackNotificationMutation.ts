@@ -4,7 +4,7 @@ import {LocalHandlers} from '../types/relayMutations'
 import {
   SetSlackNotificationMutation as TSetSlackNotificationMutation,
   SetSlackNotificationMutationVariables
-} from '../../__generated__/SetSlackNotificationMutation.graphql'
+} from '../__generated__/SetSlackNotificationMutation.graphql'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
 
 graphql`

@@ -1,8 +1,8 @@
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import styled from '@emotion/styled'
-import {ReflectionGroupVoting_meeting} from '../../__generated__/ReflectionGroupVoting_meeting.graphql'
-import {ReflectionGroupVoting_reflectionGroup} from '../../__generated__/ReflectionGroupVoting_reflectionGroup.graphql'
+import {ReflectionGroupVoting_meeting} from '../__generated__/ReflectionGroupVoting_meeting.graphql'
+import {ReflectionGroupVoting_reflectionGroup} from '../__generated__/ReflectionGroupVoting_reflectionGroup.graphql'
 import withAtmosphere, {
   WithAtmosphereProps
 } from '../decorators/withAtmosphere/withAtmosphere'

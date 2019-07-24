@@ -1,4 +1,4 @@
-import {TeamInvitationErrorAccepted_verifiedInvitation} from '../../__generated__/TeamInvitationErrorAccepted_verifiedInvitation.graphql'
+import {TeamInvitationErrorAccepted_verifiedInvitation} from '../__generated__/TeamInvitationErrorAccepted_verifiedInvitation.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import Helmet from 'react-helmet'

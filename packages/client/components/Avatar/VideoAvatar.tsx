@@ -1,4 +1,4 @@
-import {VideoAvatar_teamMember} from '../../../__generated__/VideoAvatar_teamMember.graphql'
+import {VideoAvatar_teamMember} from '../../__generated__/VideoAvatar_teamMember.graphql'
 import React, {forwardRef, Ref, useEffect, useRef} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'

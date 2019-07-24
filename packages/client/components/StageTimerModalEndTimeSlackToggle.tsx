@@ -9,7 +9,7 @@ import useMutationProps from '../hooks/useMutationProps'
 import Checkbox from './Checkbox'
 import NotificationErrorMessage from '../modules/notifications/components/NotificationErrorMessage'
 import SetSlackNotificationMutation from '../mutations/SetSlackNotificationMutation'
-import {StageTimerModalEndTimeSlackToggle_facilitator} from '../../__generated__/StageTimerModalEndTimeSlackToggle_facilitator.graphql'
+import {StageTimerModalEndTimeSlackToggle_facilitator} from '../__generated__/StageTimerModalEndTimeSlackToggle_facilitator.graphql'
 import {ICON_SIZE} from '../styles/typographyV2'
 import PlainButton from './PlainButton/PlainButton'
 

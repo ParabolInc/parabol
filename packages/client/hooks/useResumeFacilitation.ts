@@ -2,7 +2,7 @@ import {graphql} from 'react-relay'
 import useAtmosphere from './useAtmosphere'
 import {useEffect} from 'react'
 import PromoteNewMeetingFacilitatorMutation from '../mutations/PromoteNewMeetingFacilitatorMutation'
-import {useResumeFacilitationTeam} from '../../__generated__/useResumeFacilitationTeam.graphql'
+import {useResumeFacilitationTeam} from '../__generated__/useResumeFacilitationTeam.graphql'
 
 graphql`
   fragment useResumeFacilitationTeam on Team {

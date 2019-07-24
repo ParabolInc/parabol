@@ -9,7 +9,7 @@ import {MEETING} from '../../../../utils/constants'
 import useHotkey from '../../../../hooks/useHotkey'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {MeetingAgendaCards_tasks} from '../../../../../__generated__/MeetingAgendaCards_tasks.graphql'
+import {MeetingAgendaCards_tasks} from '../../../../__generated__/MeetingAgendaCards_tasks.graphql'
 import {TaskStatusEnum} from '../../../../types/graphql'
 
 const makePlaceholders = (

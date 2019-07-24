@@ -1,4 +1,4 @@
-import {ActionMeetingSidebar_viewer} from '../../__generated__/ActionMeetingSidebar_viewer.graphql'
+import {ActionMeetingSidebar_viewer} from '../__generated__/ActionMeetingSidebar_viewer.graphql'
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import NewMeetingSidebarPhaseListItem from './NewMeetingSidebarPhaseListItem'

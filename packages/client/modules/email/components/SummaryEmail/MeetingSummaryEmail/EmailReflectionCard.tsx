@@ -8,7 +8,7 @@ import {
 } from './constants'
 import {createFragmentContainer, graphql} from 'react-relay'
 import editorDecorators from '../../../../../components/TaskEditor/decorators'
-import {EmailReflectionCard_reflection} from '../../../../../../__generated__/EmailReflectionCard_reflection.graphql'
+import {EmailReflectionCard_reflection} from '../../../../../__generated__/EmailReflectionCard_reflection.graphql'
 
 interface Props {
   reflection: EmailReflectionCard_reflection

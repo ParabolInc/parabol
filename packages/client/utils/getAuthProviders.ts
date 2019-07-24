@@ -1,4 +1,4 @@
-import {getAuthProvidersQuery} from '../../__generated__/getAuthProvidersQuery.graphql'
+import {getAuthProvidersQuery} from '../__generated__/getAuthProvidersQuery.graphql'
 import {fetchQuery, graphql} from 'react-relay'
 import Atmosphere from '../Atmosphere'
 

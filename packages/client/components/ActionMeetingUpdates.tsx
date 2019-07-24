@@ -1,4 +1,4 @@
-import {ActionMeetingUpdates_team} from '../../__generated__/ActionMeetingUpdates_team.graphql'
+import {ActionMeetingUpdates_team} from '../__generated__/ActionMeetingUpdates_team.graphql'
 import ms from 'ms'
 import React, {useMemo} from 'react'
 import styled from '@emotion/styled'

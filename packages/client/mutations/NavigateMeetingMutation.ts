@@ -1,8 +1,8 @@
 import {
   NavigateMeetingMutation as TNavigateMeetingMutation,
   NavigateMeetingMutationVariables
-} from '../../__generated__/NavigateMeetingMutation.graphql'
-import {NavigateMeetingMutation_team} from '../../__generated__/NavigateMeetingMutation_team.graphql'
+} from '../__generated__/NavigateMeetingMutation.graphql'
+import {NavigateMeetingMutation_team} from '../__generated__/NavigateMeetingMutation_team.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import handleRemoveReflectionGroups from './handlers/handleRemoveReflectionGroups'

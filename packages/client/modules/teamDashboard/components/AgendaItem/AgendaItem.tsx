@@ -1,4 +1,4 @@
-import {AgendaItem_agendaItem} from '../../../../../__generated__/AgendaItem_agendaItem.graphql'
+import {AgendaItem_agendaItem} from '../../../../__generated__/AgendaItem_agendaItem.graphql'
 import React, {useEffect, useRef} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
@@ -13,7 +13,7 @@ import {meetingSidebarGutter} from '../../../../styles/meeting'
 import {requestIdleCallback} from '../../../../utils/requestIdleCallback'
 import UNSTARTED_MEETING from '../../../../utils/meetings/unstartedMeeting'
 import findStageById from '../../../../utils/meetings/findStageById'
-import {AgendaItem_newMeeting} from '../../../../../__generated__/AgendaItem_newMeeting.graphql'
+import {AgendaItem_newMeeting} from '../../../../__generated__/AgendaItem_newMeeting.graphql'
 
 const DeleteIconButton = styled(IconButton)<{agendaLength: number; disabled: boolean}>(
   ({agendaLength, disabled}) => ({

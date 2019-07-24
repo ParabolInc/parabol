@@ -4,8 +4,8 @@ import {LocalHandlers, OnNextHandler} from '../types/relayMutations'
 import {
   PushInvitationMutation as TPushInvitationMutation,
   PushInvitationMutationVariables
-} from '../../__generated__/PushInvitationMutation.graphql'
-import {PushInvitationMutation_team} from '../../__generated__/PushInvitationMutation_team.graphql'
+} from '../__generated__/PushInvitationMutation.graphql'
+import {PushInvitationMutation_team} from '../__generated__/PushInvitationMutation_team.graphql'
 import InviteToTeamMutation from './InviteToTeamMutation'
 import DenyPushInvitationMutation from './DenyPushInvitationMutation'
 

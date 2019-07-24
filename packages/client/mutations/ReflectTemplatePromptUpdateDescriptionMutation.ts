@@ -1,4 +1,4 @@
-import {ReflectTemplatePromptUpdateDescriptionMutation as TReflectTemplatePromptUpdateDescriptionMutation} from '../../__generated__/ReflectTemplatePromptUpdateDescriptionMutation.graphql'
+import {ReflectTemplatePromptUpdateDescriptionMutation as TReflectTemplatePromptUpdateDescriptionMutation} from '../__generated__/ReflectTemplatePromptUpdateDescriptionMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'

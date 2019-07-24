@@ -1,4 +1,4 @@
-import {NewTeamOrgDropdown_organizations} from '../../__generated__/NewTeamOrgDropdown_organizations.graphql'
+import {NewTeamOrgDropdown_organizations} from '../__generated__/NewTeamOrgDropdown_organizations.graphql'
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import DropdownMenuItemLabel from './DropdownMenuItemLabel'

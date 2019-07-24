@@ -10,7 +10,7 @@ import appTheme from '../../styles/theme/appTheme'
 import NewTeamForm from './components/NewTeamForm/NewTeamForm'
 import {DASH_SIDEBAR} from '../../components/Dashboard/DashSidebar'
 import useBreakpoint from '../../hooks/useBreakpoint'
-import {NewTeam_viewer} from '../../../__generated__/NewTeam_viewer.graphql'
+import {NewTeam_viewer} from '../../__generated__/NewTeam_viewer.graphql'
 
 const NewTeamLayout = styled('div')({
   alignItems: 'center',

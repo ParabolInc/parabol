@@ -4,7 +4,7 @@ import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedAction
 import Atmosphere from '../Atmosphere'
 import {IEndNewMeetingOnMutationArguments} from '../types/graphql'
 import {LocalHandlers} from '../types/relayMutations'
-import {EndNewMeetingMutation as TEndNewMeetingMutation} from '../../__generated__/EndNewMeetingMutation.graphql'
+import {EndNewMeetingMutation as TEndNewMeetingMutation} from '../__generated__/EndNewMeetingMutation.graphql'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
 
 graphql`

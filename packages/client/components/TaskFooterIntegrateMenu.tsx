@@ -1,5 +1,5 @@
-import {TaskFooterIntegrateMenu_task} from '../../__generated__/TaskFooterIntegrateMenu_task.graphql'
-import {TaskFooterIntegrateMenu_viewer} from '../../__generated__/TaskFooterIntegrateMenu_viewer.graphql'
+import {TaskFooterIntegrateMenu_task} from '../__generated__/TaskFooterIntegrateMenu_task.graphql'
+import {TaskFooterIntegrateMenu_viewer} from '../__generated__/TaskFooterIntegrateMenu_viewer.graphql'
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import TaskFooterIntegrateMenuList from './TaskFooterIntegrateMenuList'

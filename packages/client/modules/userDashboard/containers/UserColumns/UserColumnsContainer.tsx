@@ -3,7 +3,7 @@ import {connect} from 'react-redux'
 import {createFragmentContainer, graphql} from 'react-relay'
 import TaskColumns from '../../../../components/TaskColumns/TaskColumns'
 import getTaskById from '../../../../utils/getTaskById'
-import {UserColumnsContainer_viewer} from '../../../../../__generated__/UserColumnsContainer_viewer.graphql'
+import {UserColumnsContainer_viewer} from '../../../../__generated__/UserColumnsContainer_viewer.graphql'
 import {AreaEnum} from '../../../../types/graphql'
 
 const mapStateToProps = (state) => {

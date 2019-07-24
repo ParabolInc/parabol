@@ -1,4 +1,4 @@
-import {MyDashboardTimeline_viewer} from '../../__generated__/MyDashboardTimeline_viewer.graphql'
+import {MyDashboardTimeline_viewer} from '../__generated__/MyDashboardTimeline_viewer.graphql'
 import React, {Suspense} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'

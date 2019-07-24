@@ -1,4 +1,4 @@
-import {GitHubProviderRow_viewer} from '../../../../../__generated__/GitHubProviderRow_viewer.graphql'
+import {GitHubProviderRow_viewer} from '../../../../__generated__/GitHubProviderRow_viewer.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'

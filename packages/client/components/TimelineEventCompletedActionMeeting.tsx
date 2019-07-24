@@ -1,4 +1,4 @@
-import {TimelineEventCompletedActionMeeting_timelineEvent} from '../../__generated__/TimelineEventCompletedActionMeeting_timelineEvent.graphql'
+import {TimelineEventCompletedActionMeeting_timelineEvent} from '../__generated__/TimelineEventCompletedActionMeeting_timelineEvent.graphql'
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps} from 'react-router'

@@ -1,7 +1,7 @@
 import {
   DismissNewFeatureMutation as TDismissNewFeatureMutation,
   DismissNewFeatureMutationVariables
-} from '../../__generated__/DismissNewFeatureMutation.graphql'
+} from '../__generated__/DismissNewFeatureMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import {LocalHandlers} from '../types/relayMutations'

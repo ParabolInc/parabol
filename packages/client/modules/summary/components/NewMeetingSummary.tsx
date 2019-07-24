@@ -1,4 +1,4 @@
-import {NewMeetingSummary_viewer} from '../../../../__generated__/NewMeetingSummary_viewer.graphql'
+import {NewMeetingSummary_viewer} from '../../../__generated__/NewMeetingSummary_viewer.graphql'
 import React, {useEffect} from 'react'
 import Helmet from 'react-helmet'
 import {createFragmentContainer, graphql} from 'react-relay'

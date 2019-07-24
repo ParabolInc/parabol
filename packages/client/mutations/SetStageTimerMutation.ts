@@ -2,7 +2,7 @@ import {commitMutation, graphql} from 'react-relay'
 import Atmosphere from '../Atmosphere'
 import {ISetStageTimerOnMutationArguments} from '../types/graphql'
 import {LocalHandlers} from '../types/relayMutations'
-import {SetStageTimerMutation as TSetStageTimerMutation} from '../../__generated__/SetStageTimerMutation.graphql'
+import {SetStageTimerMutation as TSetStageTimerMutation} from '../__generated__/SetStageTimerMutation.graphql'
 
 graphql`
   fragment SetStageTimerMutation_team on SetStageTimerPayload {

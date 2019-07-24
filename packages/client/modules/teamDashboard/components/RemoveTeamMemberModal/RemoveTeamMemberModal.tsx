@@ -1,4 +1,4 @@
-import {RemoveTeamMemberModal_teamMember} from '../../../../../__generated__/RemoveTeamMemberModal_teamMember.graphql'
+import {RemoveTeamMemberModal_teamMember} from '../../../../__generated__/RemoveTeamMemberModal_teamMember.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'

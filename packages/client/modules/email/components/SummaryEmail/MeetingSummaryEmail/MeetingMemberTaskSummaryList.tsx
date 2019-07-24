@@ -1,5 +1,5 @@
 import React from 'react'
-import {MeetingMemberTaskSummaryList_meetingMember} from '../../../../../../__generated__/MeetingMemberTaskSummaryList_meetingMember.graphql'
+import {MeetingMemberTaskSummaryList_meetingMember} from '../../../../../__generated__/MeetingMemberTaskSummaryList_meetingMember.graphql'
 import plural from '../../../../../utils/plural'
 import {createFragmentContainer, graphql} from 'react-relay'
 import TaskSummarySection from './TaskSummarySection'

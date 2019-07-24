@@ -1,5 +1,5 @@
-import {ReflectionGroupTitleEditor_meeting} from '../../../__generated__/ReflectionGroupTitleEditor_meeting.graphql'
-import {ReflectionGroupTitleEditor_reflectionGroup} from '../../../__generated__/ReflectionGroupTitleEditor_reflectionGroup.graphql'
+import {ReflectionGroupTitleEditor_meeting} from '../../__generated__/ReflectionGroupTitleEditor_meeting.graphql'
+import {ReflectionGroupTitleEditor_reflectionGroup} from '../../__generated__/ReflectionGroupTitleEditor_reflectionGroup.graphql'
 /**
  * Edits the name of a reflection group.
  *

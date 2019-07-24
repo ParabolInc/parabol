@@ -8,7 +8,7 @@ import styled from '@emotion/styled'
 import SnackbarMessage from './SnackbarMessage'
 import {graphql} from 'react-relay'
 import useLocalQuery from '../hooks/useLocalQuery'
-import {SnackbarQuery} from '../../__generated__/SnackbarQuery.graphql'
+import {SnackbarQuery} from '../__generated__/SnackbarQuery.graphql'
 
 const MAX_SNACKS = 1
 

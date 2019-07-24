@@ -1,4 +1,4 @@
-import {TaskFooterTagMenuStatusItem_task} from '../../../../../__generated__/TaskFooterTagMenuStatusItem_task.graphql'
+import {TaskFooterTagMenuStatusItem_task} from '../../../../__generated__/TaskFooterTagMenuStatusItem_task.graphql'
 import React, {forwardRef} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import MenuItem from '../../../../components/MenuItem'

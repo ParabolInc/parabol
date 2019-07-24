@@ -1,4 +1,4 @@
-import {ActionMeeting_viewer} from '../../__generated__/ActionMeeting_viewer.graphql'
+import {ActionMeeting_viewer} from '../__generated__/ActionMeeting_viewer.graphql'
 import React, {ReactElement, useEffect} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {ValueOf} from '../types/generics'

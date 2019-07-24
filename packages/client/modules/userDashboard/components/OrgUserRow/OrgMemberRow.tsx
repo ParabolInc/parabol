@@ -1,5 +1,5 @@
-import {OrgMemberRow_organization} from '../../../../../__generated__/OrgMemberRow_organization.graphql'
-import {OrgMemberRow_organizationUser} from '../../../../../__generated__/OrgMemberRow_organizationUser.graphql'
+import {OrgMemberRow_organization} from '../../../../__generated__/OrgMemberRow_organization.graphql'
+import {OrgMemberRow_organizationUser} from '../../../../__generated__/OrgMemberRow_organizationUser.graphql'
 import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'

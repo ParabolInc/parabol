@@ -1,4 +1,4 @@
-import {TaskFooter_task} from '../../../../../__generated__/TaskFooter_task.graphql'
+import {TaskFooter_task} from '../../../../__generated__/TaskFooter_task.graphql'
 import {EditorState} from 'draft-js'
 import React from 'react'
 import styled from '@emotion/styled'

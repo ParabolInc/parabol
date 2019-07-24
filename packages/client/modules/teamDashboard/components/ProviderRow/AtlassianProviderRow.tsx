@@ -1,4 +1,4 @@
-import {AtlassianProviderRow_viewer} from '../../../../../__generated__/AtlassianProviderRow_viewer.graphql'
+import {AtlassianProviderRow_viewer} from '../../../../__generated__/AtlassianProviderRow_viewer.graphql'
 import jwtDecode from 'jwt-decode'
 import React, {useEffect} from 'react'
 import styled from '@emotion/styled';

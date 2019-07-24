@@ -5,7 +5,7 @@ import getInProxy from '../utils/relay/getInProxy'
 import {CompletedHandler, ErrorHandler, SharedUpdater} from '../types/relayMutations'
 import handleRemoveReflectTemplatePrompt from './handlers/handleRemoveReflectTemplatePrompt'
 import {IRemoveReflectTemplatePromptOnMutationArguments} from '../types/graphql'
-import {RemoveReflectTemplatePromptMutation_team} from '../../__generated__/RemoveReflectTemplatePromptMutation_team.graphql'
+import {RemoveReflectTemplatePromptMutation_team} from '../__generated__/RemoveReflectTemplatePromptMutation_team.graphql'
 
 graphql`
   fragment RemoveReflectTemplatePromptMutation_team on RemoveReflectTemplatePromptPayload {

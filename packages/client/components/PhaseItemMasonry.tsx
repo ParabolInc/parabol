@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import {jsx} from '@emotion/core'
-import {PhaseItemMasonry_meeting} from '../../__generated__/PhaseItemMasonry_meeting.graphql'
+import {PhaseItemMasonry_meeting} from '../__generated__/PhaseItemMasonry_meeting.graphql'
 import React from 'react'
 import {
   ConnectDropTarget,

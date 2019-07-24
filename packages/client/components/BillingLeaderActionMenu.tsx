@@ -1,5 +1,5 @@
-import {BillingLeaderActionMenu_organization} from '../../__generated__/BillingLeaderActionMenu_organization.graphql'
-import {BillingLeaderActionMenu_organizationUser} from '../../__generated__/BillingLeaderActionMenu_organizationUser.graphql'
+import {BillingLeaderActionMenu_organization} from '../__generated__/BillingLeaderActionMenu_organization.graphql'
+import {BillingLeaderActionMenu_organizationUser} from '../__generated__/BillingLeaderActionMenu_organizationUser.graphql'
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import Menu from './Menu'

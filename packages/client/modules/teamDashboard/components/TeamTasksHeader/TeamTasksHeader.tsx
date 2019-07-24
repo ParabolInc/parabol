@@ -1,4 +1,4 @@
-import {TeamTasksHeader_team} from '../../../../../__generated__/TeamTasksHeader_team.graphql'
+import {TeamTasksHeader_team} from '../../../../__generated__/TeamTasksHeader_team.graphql'
 import React from 'react'
 import styled from '@emotion/styled';
 import {createFragmentContainer, graphql} from 'react-relay'

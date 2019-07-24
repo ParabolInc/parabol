@@ -1,4 +1,4 @@
-import {DraggableReflectionCard_reflection} from '../../../__generated__/DraggableReflectionCard_reflection.graphql'
+import {DraggableReflectionCard_reflection} from '../../__generated__/DraggableReflectionCard_reflection.graphql'
 /**
  * A drag-and-drop enabled reflection card.
  *

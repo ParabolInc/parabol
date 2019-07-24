@@ -1,4 +1,4 @@
-import {TimelineEventCard_timelineEvent} from '../../__generated__/TimelineEventCard_timelineEvent.graphql'
+import {TimelineEventCard_timelineEvent} from '../__generated__/TimelineEventCard_timelineEvent.graphql'
 import React, {Component, ReactNode} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'

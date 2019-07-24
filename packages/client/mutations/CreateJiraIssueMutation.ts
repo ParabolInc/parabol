@@ -4,7 +4,7 @@ import makeSuggestedIntegrationId from '../utils/makeSuggestedIntegrationId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import Atmosphere from '../Atmosphere'
 import {LocalHandlers} from '../types/relayMutations'
-import {CreateJiraIssueMutation as TCreateJiraIssueMutation} from '../../__generated__/CreateJiraIssueMutation.graphql'
+import {CreateJiraIssueMutation as TCreateJiraIssueMutation} from '../__generated__/CreateJiraIssueMutation.graphql'
 
 graphql`
   fragment CreateJiraIssueMutation_task on CreateJiraIssuePayload {

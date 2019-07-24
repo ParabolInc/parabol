@@ -9,7 +9,7 @@ import dndNoise from '../../../../utils/dndNoise'
 import getNextSortOrder from '../../../../utils/getNextSortOrder'
 import fromTeamMemberId from '../../../../utils/relay/fromTeamMemberId'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {TaskColumnAddTask_tasks} from '../../../../../__generated__/TaskColumnAddTask_tasks.graphql'
+import {TaskColumnAddTask_tasks} from '../../../../__generated__/TaskColumnAddTask_tasks.graphql'
 
 interface Props {
   area: AreaEnum

@@ -1,4 +1,4 @@
-import {TimelineFeedList_viewer} from '../../__generated__/TimelineFeedList_viewer.graphql'
+import {TimelineFeedList_viewer} from '../__generated__/TimelineFeedList_viewer.graphql'
 import React, {Component} from 'react'
 import {createPaginationContainer, graphql, RelayPaginationProp} from 'react-relay'
 import TimelineEvent from './TimelineEvent'

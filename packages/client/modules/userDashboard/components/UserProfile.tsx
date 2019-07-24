@@ -18,7 +18,7 @@ import withAtmosphere, {
 } from '../../../decorators/withAtmosphere/withAtmosphere'
 import withForm, {WithFormProps} from '../../../utils/relay/withForm'
 import Legitity from '../../../validation/Legitity'
-import {UserProfile_viewer} from '../../../../__generated__/UserProfile_viewer.graphql'
+import {UserProfile_viewer} from '../../../__generated__/UserProfile_viewer.graphql'
 import {Layout} from '../../../types/constEnums'
 import {PALETTE} from '../../../styles/paletteV2'
 import NotificationErrorMessage from '../../notifications/components/NotificationErrorMessage'

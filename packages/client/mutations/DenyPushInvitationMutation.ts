@@ -4,8 +4,8 @@ import {LocalHandlers, OnNextHandler} from '../types/relayMutations'
 import {
   DenyPushInvitationMutation as TDenyPushInvitationMutation,
   DenyPushInvitationMutationVariables
-} from '../../__generated__/DenyPushInvitationMutation.graphql'
-import {DenyPushInvitationMutation_team} from '../../__generated__/DenyPushInvitationMutation_team.graphql'
+} from '../__generated__/DenyPushInvitationMutation.graphql'
+import {DenyPushInvitationMutation_team} from '../__generated__/DenyPushInvitationMutation_team.graphql'
 
 graphql`
   fragment DenyPushInvitationMutation_team on DenyPushInvitationPayload {

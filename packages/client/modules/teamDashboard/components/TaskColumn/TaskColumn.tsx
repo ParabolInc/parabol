@@ -15,7 +15,7 @@ import {AreaEnum, ITask, TaskStatusEnum} from '../../../../types/graphql'
 import {TEAM_DASH, USER_DASH} from '../../../../utils/constants'
 import TaskColumnDropZone from './TaskColumnDropZone'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {TaskColumn_tasks} from '../../../../../__generated__/TaskColumn_tasks.graphql'
+import {TaskColumn_tasks} from '../../../../__generated__/TaskColumn_tasks.graphql'
 
 const Column = styled('div')({
   display: 'flex',

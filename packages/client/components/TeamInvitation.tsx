@@ -1,6 +1,6 @@
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {TeamInvitation_verifiedInvitation} from '../../__generated__/TeamInvitation_verifiedInvitation.graphql'
+import {TeamInvitation_verifiedInvitation} from '../__generated__/TeamInvitation_verifiedInvitation.graphql'
 import TeamInvitationDialog from './TeamInvitationDialog'
 import TeamInvitationWrapper from './TeamInvitationWrapper'
 import TeamInvitationMeetingAbstract from './TeamInvitationMeetingAbstract'

@@ -1,4 +1,4 @@
-import {TeamInvitationEmailCreateAccount_verifiedInvitation} from '../../__generated__/TeamInvitationEmailCreateAccount_verifiedInvitation.graphql'
+import {TeamInvitationEmailCreateAccount_verifiedInvitation} from '../__generated__/TeamInvitationEmailCreateAccount_verifiedInvitation.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import Helmet from 'react-helmet'

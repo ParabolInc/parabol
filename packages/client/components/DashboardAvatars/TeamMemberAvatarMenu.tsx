@@ -1,4 +1,4 @@
-import {TeamMemberAvatarMenu_teamMember} from '../../../__generated__/TeamMemberAvatarMenu_teamMember.graphql'
+import {TeamMemberAvatarMenu_teamMember} from '../../__generated__/TeamMemberAvatarMenu_teamMember.graphql'
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import DropdownMenuLabel from '../DropdownMenuLabel'

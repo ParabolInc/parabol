@@ -5,7 +5,7 @@ import createProxyRecord from '../utils/relay/createProxyRecord'
 import {CompletedHandler, ErrorHandler, SharedUpdater} from '../types/relayMutations'
 import handleAddReflectTemplatePrompt from './handlers/handleAddReflectTemplatePrompt'
 import {IAddReflectTemplatePromptOnMutationArguments} from '../types/graphql'
-import {AddReflectTemplatePromptMutation_team} from '../../__generated__/AddReflectTemplatePromptMutation_team.graphql'
+import {AddReflectTemplatePromptMutation_team} from '../__generated__/AddReflectTemplatePromptMutation_team.graphql'
 
 interface Context {
   promptCount: number

@@ -1,5 +1,5 @@
-import {ReflectionGroup_meeting} from '../../../__generated__/ReflectionGroup_meeting.graphql'
-import {ReflectionGroup_reflectionGroup} from '../../../__generated__/ReflectionGroup_reflectionGroup.graphql'
+import {ReflectionGroup_meeting} from '../../__generated__/ReflectionGroup_meeting.graphql'
+import {ReflectionGroup_reflectionGroup} from '../../__generated__/ReflectionGroup_reflectionGroup.graphql'
 import React, {Component} from 'react'
 import {ConnectDropTarget, DropTarget, DropTargetConnector, DropTargetMonitor, DropTargetSpec} from 'react-dnd'
 import styled from '@emotion/styled'

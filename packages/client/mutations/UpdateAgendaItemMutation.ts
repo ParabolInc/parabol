@@ -10,7 +10,7 @@ import {
 } from '../types/graphql'
 import {LocalHandlers} from '../types/relayMutations'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
-import {UpdateAgendaItemMutation as TUpdateAgendaItemMutation} from '../../__generated__/UpdateAgendaItemMutation.graphql'
+import {UpdateAgendaItemMutation as TUpdateAgendaItemMutation} from '../__generated__/UpdateAgendaItemMutation.graphql'
 
 graphql`
   fragment UpdateAgendaItemMutation_team on UpdateAgendaItemPayload {

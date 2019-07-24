@@ -6,7 +6,7 @@ import {
   PALETTE_TEXT_LIGHT,
   PALETTE_TEXT_MAIN
 } from './constants'
-import {SummaryAvatarHeader_meetingMember} from '../../../../../../__generated__/SummaryAvatarHeader_meetingMember.graphql'
+import {SummaryAvatarHeader_meetingMember} from '../../../../../__generated__/SummaryAvatarHeader_meetingMember.graphql'
 
 const presentLabelStyle = (isCheckedIn: boolean) => ({
   color: isCheckedIn ? PALETTE_TEXT_GREEN : PALETTE_TEXT_LIGHT,

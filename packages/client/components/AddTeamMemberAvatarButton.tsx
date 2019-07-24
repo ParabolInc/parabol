@@ -1,5 +1,5 @@
-import {AddTeamMemberAvatarButton_team} from '../../__generated__/AddTeamMemberAvatarButton_team.graphql'
-import {AddTeamMemberAvatarButton_teamMembers} from '../../__generated__/AddTeamMemberAvatarButton_teamMembers.graphql'
+import {AddTeamMemberAvatarButton_team} from '../__generated__/AddTeamMemberAvatarButton_team.graphql'
+import {AddTeamMemberAvatarButton_teamMembers} from '../__generated__/AddTeamMemberAvatarButton_teamMembers.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'

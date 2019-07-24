@@ -4,7 +4,7 @@ import {DISCUSS} from '../utils/constants'
 import getInProxy from '../utils/relay/getInProxy'
 import {IDragDiscussionTopicOnMutationArguments} from '../types/graphql'
 import Atmosphere from '../Atmosphere'
-import {DragDiscussionTopicMutation as IDragDiscussionTopicMutation} from '../../__generated__/DragDiscussionTopicMutation.graphql'
+import {DragDiscussionTopicMutation as IDragDiscussionTopicMutation} from '../__generated__/DragDiscussionTopicMutation.graphql'
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 
 graphql`

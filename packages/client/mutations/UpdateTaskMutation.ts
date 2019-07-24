@@ -14,8 +14,8 @@ import {
   SharedUpdater,
   StandardMutation
 } from '../types/relayMutations'
-import {UpdateTaskMutation_task} from '../../__generated__/UpdateTaskMutation_task.graphql'
-import {UpdateTaskMutation as TUpdateTaskMutation} from '../../__generated__/UpdateTaskMutation.graphql'
+import {UpdateTaskMutation_task} from '../__generated__/UpdateTaskMutation_task.graphql'
+import {UpdateTaskMutation as TUpdateTaskMutation} from '../__generated__/UpdateTaskMutation.graphql'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
 
 graphql`

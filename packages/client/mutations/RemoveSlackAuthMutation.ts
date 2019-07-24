@@ -1,4 +1,4 @@
-import {RemoveSlackAuthMutation as TRemoveSlackAuthMutation} from '../../__generated__/RemoveSlackAuthMutation.graphql'
+import {RemoveSlackAuthMutation as TRemoveSlackAuthMutation} from '../__generated__/RemoveSlackAuthMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'

@@ -4,7 +4,7 @@ import NullCard from '../NullCard/NullCard'
 import OutcomeCardContainer from '../../modules/outcomeCard/containers/OutcomeCard/OutcomeCardContainer'
 import {createFragmentContainer, graphql} from 'react-relay'
 import useAtmosphere from '../../hooks/useAtmosphere'
-import {NullableTask_task} from '../../../__generated__/NullableTask_task.graphql'
+import {NullableTask_task} from '../../__generated__/NullableTask_task.graphql'
 
 interface Props {
   area: string

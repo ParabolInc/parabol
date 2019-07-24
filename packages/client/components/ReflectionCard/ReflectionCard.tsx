@@ -1,4 +1,4 @@
-import {ReflectionCard_reflection} from '../../../__generated__/ReflectionCard_reflection.graphql'
+import {ReflectionCard_reflection} from '../../__generated__/ReflectionCard_reflection.graphql'
 import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
 import React, {Component} from 'react'
 import styled from '@emotion/styled'

@@ -1,4 +1,4 @@
-import {TaskIntegrationLink_integration} from '../../__generated__/TaskIntegrationLink_integration.graphql'
+import {TaskIntegrationLink_integration} from '../__generated__/TaskIntegrationLink_integration.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'

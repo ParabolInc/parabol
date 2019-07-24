@@ -1,4 +1,4 @@
-import {RetroSidebarPhaseListItemChildren_viewer} from '../../__generated__/RetroSidebarPhaseListItemChildren_viewer.graphql'
+import {RetroSidebarPhaseListItemChildren_viewer} from '../__generated__/RetroSidebarPhaseListItemChildren_viewer.graphql'
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import RetroSidebarDiscussSection from './RetroSidebarDiscussSection'

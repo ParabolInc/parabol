@@ -1,4 +1,4 @@
-import {ActionMeetingFirstCall_team} from '../../__generated__/ActionMeetingFirstCall_team.graphql'
+import {ActionMeetingFirstCall_team} from '../__generated__/ActionMeetingFirstCall_team.graphql'
 import ms from 'ms'
 import React from 'react'
 import styled from '@emotion/styled'

@@ -1,8 +1,8 @@
 import {
   ArchiveTeamMutation as TArchiveTeamMutation,
   ArchiveTeamMutationVariables
-} from '../../__generated__/ArchiveTeamMutation.graphql'
-import {ArchiveTeamMutation_team} from '../../__generated__/ArchiveTeamMutation_team.graphql'
+} from '../__generated__/ArchiveTeamMutation.graphql'
+import {ArchiveTeamMutation_team} from '../__generated__/ArchiveTeamMutation_team.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import ClearNotificationMutation from './ClearNotificationMutation'

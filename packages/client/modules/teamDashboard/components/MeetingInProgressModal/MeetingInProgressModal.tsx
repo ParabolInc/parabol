@@ -9,7 +9,7 @@ import PrimaryButton from '../../../../components/PrimaryButton'
 import IconLabel from '../../../../components/IconLabel'
 import styled from '@emotion/styled'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {MeetingInProgressModal_team} from '../../../../../__generated__/MeetingInProgressModal_team.graphql'
+import {MeetingInProgressModal_team} from '../../../../__generated__/MeetingInProgressModal_team.graphql'
 
 const StyledButton = styled(PrimaryButton)({
   margin: '1.5rem auto 0'
