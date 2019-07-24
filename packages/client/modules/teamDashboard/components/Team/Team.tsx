@@ -1,4 +1,4 @@
-import {Team_team} from '../../../../../__generated__/Team_team.graphql'
+import {Team_team} from '../../../../__generated__/Team_team.graphql'
 import React, {Component, lazy, Suspense} from 'react'
 import styled from '@emotion/styled'
 import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
