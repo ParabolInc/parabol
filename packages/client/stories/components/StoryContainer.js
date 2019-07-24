@@ -12,8 +12,8 @@ import styled, {css, injectGlobal} from 'react-emotion'
 import {Provider} from 'react-redux'
 import {combineReducers, createStore} from 'redux'
 
-import appTheme from 'universal/styles/theme/appTheme'
-import globalStyles from 'universal/styles/theme/globalStyles'
+import appTheme from '../styles/theme/appTheme'
+import globalStyles from '../styles/theme/globalStyles'
 
 import '../../static/css/font-awesome.css'
 import RelayStub from './RelayStub'

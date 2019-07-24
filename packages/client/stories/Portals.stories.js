@@ -7,7 +7,7 @@ import React from 'react'
 import {storiesOf} from '@storybook/react'
 import RetroBackground from './components/RetroBackground'
 import StoryContainer from './components/StoryContainer'
-import ReflectHelpMenu from 'universal/components/MeetingHelp/ReflectHelpMenu'
+import ReflectHelpMenu from '../components/MeetingHelp/ReflectHelpMenu'
 
 storiesOf('Loadable Help Dialog', module).add('toggle the help dialog', () => (
   <RetroBackground>

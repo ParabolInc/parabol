@@ -7,14 +7,14 @@ import {storiesOf} from '@storybook/react'
 import RetroBackground from './components/RetroBackground'
 import StoryContainer from './components/StoryContainer'
 
-import FlatButton from 'universal/components/FlatButton'
-import LinkButton from 'universal/components/LinkButton'
-import OutlinedButton from 'universal/components/OutlinedButton'
-import PrimaryButton from 'universal/components/PrimaryButton'
-import RaisedButton from 'universal/components/RaisedButton'
-import IconLabel from 'universal/components/IconLabel'
+import FlatButton from '../components/FlatButton'
+import LinkButton from '../components/LinkButton'
+import OutlinedButton from '../components/OutlinedButton'
+import PrimaryButton from '../components/PrimaryButton'
+import RaisedButton from '../components/RaisedButton'
+import IconLabel from '../components/IconLabel'
 
-import LoadingView from 'universal/components/LoadingView/LoadingView'
+import LoadingView from '../components/LoadingView/LoadingView'
 
 const handleDemoClick = () => console.log('demo click handler!')
 

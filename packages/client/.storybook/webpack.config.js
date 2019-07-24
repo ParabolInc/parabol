@@ -1,6 +1,6 @@
 // Storybook has its own config. We extend it with our own config.
 // Be sure to verify that this works if changing the dev config!
-const devConfig = require('../packages/client/webpack/webpack.dev.config')
+const devConfig = require('../../server/webpack/webpack.dev.config')
 module.exports = (baseConfig, configType) => {
   baseConfig.plugins.push(devConfig.plugins[1]) // define plugin
   baseConfig.module.rules.push(...devConfig.module.rules) // all rules used in dev

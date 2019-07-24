@@ -1,7 +1,7 @@
 import {withKnobs} from '@storybook/addon-knobs'
 import {storiesOf} from '@storybook/react'
 import React from 'react'
-import ReflectTemplateModal from '../packages/client/modules/meeting/components/ReflectTemplateModal'
+import ReflectTemplateModal from '../modules/meeting/components/ReflectTemplateModal'
 import StoryProvider from './components/StoryProvider'
 
 const retroMeetingSettings = {

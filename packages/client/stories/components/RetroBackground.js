@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 
-import appTheme from 'universal/styles/theme/appTheme'
+import appTheme from '../styles/theme/appTheme'
 
 const RetroBackground = styled('div')({
   backgroundColor: appTheme.palette.light,

@@ -3,13 +3,13 @@ import React from 'react'
 // import {action} from '@storybook/addon-actions';
 import {storiesOf} from '@storybook/react'
 
-import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
-import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
-import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy'
+import MeetingControlBar from '../modules/meeting/components/MeetingControlBar/MeetingControlBar'
+import MeetingPhaseHeading from '../modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
+import MeetingCopy from '../modules/meeting/components/MeetingCopy/MeetingCopy'
 
 import RetroBackground from './components/RetroBackground'
 import StoryContainer from './components/StoryContainer'
-import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
+import LabelHeading from '../components/LabelHeading/LabelHeading'
 
 storiesOf('Meeting Components', module)
   .add('Social Check-In Heading', () => (

@@ -8,7 +8,7 @@ import shortid from 'shortid'
 import {action} from '@storybook/addon-actions'
 import {storiesOf} from '@storybook/react'
 
-import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGroup'
+import ReflectionGroup from '../components/ReflectionGroup/ReflectionGroup'
 
 import Grid from './components/Grid'
 import RetroBackground from './components/RetroBackground'
