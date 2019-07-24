@@ -7,7 +7,7 @@ import rateLimit from '../rateLimit'
 import DenyPushInvitationPayload from '../types/DenyPushInvitationPayload'
 import PushInvitation from '../../database/types/PushInvitation'
 import publish from '../../utils/publish'
-import {TEAM} from '../../../universal/utils/constants'
+import {TEAM} from '../../../client/utils/constants'
 
 export default {
   type: DenyPushInvitationPayload,

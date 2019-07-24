@@ -1,5 +1,5 @@
 import shortid from 'shortid'
-import {BILLING_LEADER, TRIAL_EXPIRES_SOON} from '../../../universal/utils/constants'
+import {BILLING_LEADER, TRIAL_EXPIRES_SOON} from '../../../client/utils/constants'
 import stripe from '../../billing/stripe'
 import {fromEpochSeconds} from '../../utils/epochTime'
 import ms from 'ms'

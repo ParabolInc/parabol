@@ -11,7 +11,7 @@ import {
 import SuggestedIntegrationQueryPayload from '../types/SuggestedIntegrationQueryPayload'
 import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
-import {ISuggestedIntegrationsOnUserArguments, IUser} from '../../../universal/types/graphql'
+import {ISuggestedIntegrationsOnUserArguments, IUser} from '../../../client/types/graphql'
 
 export default {
   description: 'The integrations that the user would probably like to use',

@@ -1,6 +1,6 @@
 import getRethink from '../../../../database/rethinkDriver'
 import {sendEmailContent} from '../../../../email/sendEmail'
-import newMeetingSummaryEmailCreator from '../../../../../universal/modules/email/components/SummaryEmail/newMeetingSummaryEmailCreator'
+import newMeetingSummaryEmailCreator from '../../../../../client/modules/email/components/SummaryEmail/newMeetingSummaryEmailCreator'
 import Meeting from '../../../../database/types/Meeting'
 import {GQLContext} from '../../../graphql'
 

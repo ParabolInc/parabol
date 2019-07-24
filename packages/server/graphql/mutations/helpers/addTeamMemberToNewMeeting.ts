@@ -1,5 +1,5 @@
 import createMeetingMembers from './createMeetingMembers'
-import {CHECKIN, UPDATES} from '../../../../universal/utils/constants'
+import {CHECKIN, UPDATES} from '../../../../client/utils/constants'
 import getRethink from '../../../database/rethinkDriver'
 import CheckInStage from '../../../database/types/CheckInStage'
 import UpdatesStage from '../../../database/types/UpdatesStage'

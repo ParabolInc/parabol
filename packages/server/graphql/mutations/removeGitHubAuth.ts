@@ -4,7 +4,7 @@ import RemoveGitHubAuthPayload from '../types/RemoveGitHubAuthPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GITHUB, TEAM} from '../../../universal/utils/constants'
+import {GITHUB, TEAM} from '../../../client/utils/constants'
 
 export default {
   name: 'RemoveGitHubAuth',

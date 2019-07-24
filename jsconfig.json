@@ -6,9 +6,8 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": "./",
     "paths": {
-      "universal/*": ["src/universal/*"],
-      "server/*": ["src/server/*"],
-      "client/*": ["src/client/*"]
+      "server/*": ["packages/server/*"],
+      "client/*": ["packages/client/*"]
     }
   },
   "include": [

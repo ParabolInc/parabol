@@ -1,7 +1,7 @@
 import {parse} from 'url'
 import readCert from './readCert'
 import flag from 'node-env-flag'
-import getDotenv from '../../universal/utils/dotenv'
+import getDotenv from '../../client/utils/dotenv'
 
 // Import .env and expand variables:
 getDotenv()

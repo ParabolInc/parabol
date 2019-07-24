@@ -1,4 +1,4 @@
-import getDotenv from '../../universal/utils/dotenv'
+import getDotenv from '../../client/utils/dotenv'
 import {RedisPubSub} from 'graphql-redis-subscriptions'
 
 getDotenv()

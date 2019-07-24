@@ -5,13 +5,13 @@ import getRethink from '../../database/rethinkDriver'
 import SlackManager from '../../utils/SlackManager'
 import standardError from '../../utils/standardError'
 import publish from '../../utils/publish'
-import {TEAM} from '../../../universal/utils/constants'
+import {TEAM} from '../../../client/utils/constants'
 import {GQLContext} from '../graphql'
 import SlackNotification, {
   slackNotificationEventTypeLookup
 } from '../../database/types/SlackNotification'
 import SlackNotificationEventEnum from '../types/SlackNotificationEventEnum'
-import {ISetSlackNotificationOnMutationArguments} from '../../../universal/types/graphql'
+import {ISetSlackNotificationOnMutationArguments} from '../../../client/types/graphql'
 
 export default {
   name: 'SetSlackNotification',

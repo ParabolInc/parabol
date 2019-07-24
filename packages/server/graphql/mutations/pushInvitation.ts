@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import publish from '../../utils/publish'
-import {TEAM} from '../../../universal/utils/constants'
+import {TEAM} from '../../../client/utils/constants'
 import {getUserId, isAuthenticated} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'

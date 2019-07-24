@@ -1,6 +1,6 @@
 import BullQueue from 'bull'
 import Redis from 'ioredis'
-import getDotenv from '../../universal/utils/dotenv'
+import getDotenv from '../../client/utils/dotenv'
 
 getDotenv()
 

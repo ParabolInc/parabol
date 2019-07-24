@@ -1,5 +1,5 @@
 import publish, {SubOptions} from '../../../utils/publish'
-import {TEAM} from '../../../../universal/utils/constants'
+import {TEAM} from '../../../../client/utils/constants'
 import getRethink from '../../../database/rethinkDriver'
 import PromoteNewMeetingFacilitatorPayload from '../../types/PromoteNewMeetingFacilitatorPayload'
 

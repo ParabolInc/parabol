@@ -3,7 +3,7 @@ import rateLimit from '../rateLimit'
 import MassInvitationPayload from '../types/MassInvitationPayload'
 import {verifyMassInviteToken} from '../../utils/massInviteToken'
 import {GQLContext} from '../graphql'
-import toTeamMemberId from '../../../universal/utils/relay/toTeamMemberId'
+import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 
 export default {
   type: MassInvitationPayload,

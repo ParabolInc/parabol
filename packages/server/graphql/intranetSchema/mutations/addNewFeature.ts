@@ -3,7 +3,7 @@ import getRethink from '../../../database/rethinkDriver'
 import {requireSU} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import shortid from 'shortid'
-import {NOTIFICATION} from '../../../../universal/utils/constants'
+import {NOTIFICATION} from '../../../../client/utils/constants'
 import AddNewFeaturePayload from '../../types/addNewFeaturePayload'
 
 const addNewFeature = {

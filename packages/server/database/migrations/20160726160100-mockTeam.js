@@ -1,4 +1,4 @@
-import {LOBBY} from '../../../universal/utils/constants'
+import {LOBBY} from '../../../client/utils/constants'
 
 /* eslint-disable max-len */
 exports.up = async (r) => {

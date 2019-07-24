@@ -18,7 +18,7 @@ import {
   UPDATES,
   VOTE,
   AGENDA_ITEMS
-} from '../../../universal/utils/constants'
+} from '../../../client/utils/constants'
 import CheckInStage from './CheckInStage'
 import GenericMeetingStage from './GenericMeetingStage'
 import RetroDiscussStage from './RetroDiscussStage'

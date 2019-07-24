@@ -23,8 +23,8 @@ import TeamMember from './TeamMember'
 import TierEnum from './TierEnum'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
-import {ITeam} from '../../../universal/types/graphql'
-import toTeamMemberId from '../../../universal/utils/relay/toTeamMemberId'
+import {ITeam} from '../../../client/types/graphql'
+import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import {signMassInviteToken} from '../../utils/massInviteToken'
 
 const Team = new GraphQLObjectType<ITeam, GQLContext>({

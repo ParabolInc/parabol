@@ -17,7 +17,7 @@ import {
   REFLECT,
   UPDATES,
   VOTE
-} from '../../../../universal/utils/constants'
+} from '../../../../client/utils/constants'
 
 const primePhases = (phases: GenericMeetingPhase[]) => {
   const [firstPhase, secondPhase] = phases

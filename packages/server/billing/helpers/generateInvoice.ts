@@ -11,7 +11,7 @@ import {
   PAID,
   PENDING,
   UPCOMING
-} from '../../../universal/utils/constants'
+} from '../../../client/utils/constants'
 
 // type type = 'pauseUser' | 'unpauseUser' | 'autoPauseUser' | 'addUser' | 'removeUser'
 interface InvoicesByStartTime {

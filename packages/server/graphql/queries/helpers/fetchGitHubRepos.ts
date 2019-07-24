@@ -1,9 +1,9 @@
 import getRethink from '../../../database/rethinkDriver'
 import GitHubManager from '../../../utils/GitHubManager'
-import {Omit} from '../../../../universal/types/generics'
-import {ISuggestedIntegrationGitHub} from '../../../../universal/types/graphql'
-import {GITHUB} from '../../../../universal/utils/constants'
-import {GetReposQueryData} from '../../../../universal/utils/githubQueries/getRepos.graphql'
+import {Omit} from '../../../../client/types/generics'
+import {ISuggestedIntegrationGitHub} from '../../../../client/types/graphql'
+import {GITHUB} from '../../../../client/utils/constants'
+import {GetReposQueryData} from '../../../../client/utils/githubQueries/getRepos.graphql'
 
 const getUniqueRepos = (
   orgs: (GetReposQueryData.ViewerOrganizationsNodes | null)[],

@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import publish from '../../utils/publish'
-import {TEAM} from '../../../universal/utils/constants'
+import {TEAM} from '../../../client/utils/constants'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import PromoteNewMeetingFacilitatorPayload from '../types/PromoteNewMeetingFacilitatorPayload'
 import standardError from '../../utils/standardError'

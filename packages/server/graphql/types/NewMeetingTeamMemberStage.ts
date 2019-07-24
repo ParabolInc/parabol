@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
-import {CHECKIN, UPDATES} from '../../../universal/utils/constants'
+import {CHECKIN, UPDATES} from '../../../client/utils/constants'
 import CheckInStage from './CheckInStage'
 import {resolveTeamMember} from '../resolvers'
 import TeamMember from './TeamMember'

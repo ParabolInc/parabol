@@ -17,7 +17,7 @@ import {TaskConnection} from './Task'
 import Team from './Team'
 import User from './User'
 import {getUserId} from '../../utils/authorization'
-import toTeamMemberId from '../../../universal/utils/relay/toTeamMemberId'
+import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import SlackAuth from './SlackAuth'
 import SlackNotification from './SlackNotification'
 

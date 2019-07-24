@@ -8,8 +8,8 @@ import AtlassianManager from '../../utils/AtlassianManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {ICreateJiraIssueOnMutationArguments} from '../../../universal/types/graphql'
-import {TASK} from '../../../universal/utils/constants'
+import {ICreateJiraIssueOnMutationArguments} from '../../../client/types/graphql'
+import {TASK} from '../../../client/utils/constants'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
 
 export default {

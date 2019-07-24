@@ -5,9 +5,9 @@ import getRethink from '../../database/rethinkDriver'
 import StripeFailPaymentPayload from '../types/StripeFailPaymentPayload'
 import publish from '../../utils/publish'
 import shortid from 'shortid'
-import {BILLING_LEADER, FAILED, NOTIFICATION, PAYMENT_REJECTED} from '../../../universal/utils/constants'
+import {BILLING_LEADER, FAILED, NOTIFICATION, PAYMENT_REJECTED} from '../../../client/utils/constants'
 import StripeManager from '../../utils/StripeManager'
-import {IOrganization} from '../../../universal/types/graphql'
+import {IOrganization} from '../../../client/types/graphql'
 
 export default {
   name: 'StripeFailPayment',

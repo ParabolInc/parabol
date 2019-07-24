@@ -1,6 +1,6 @@
 import UpdatesStage from './UpdatesStage'
 import GenericMeetingPhase from './GenericMeetingPhase'
-import {UPDATES} from '../../../universal/utils/constants'
+import {UPDATES} from '../../../client/utils/constants'
 
 interface TeamMember {
   id: string

@@ -1,9 +1,9 @@
 import {storiesOf} from '@storybook/react'
 import React from 'react'
-import {TimelineFeedItems} from '../packages/universal/components/MyDashboardTimeline'
-import TimelineEventCompletedRetroMeeting from '../packages/universal/components/TimelineEventCompletedRetroMeeting'
-import TimelineEventJoinedParabol from '../packages/universal/components/TimelineEventJoinedParabol'
-import TimelineEventTeamCreated from '../packages/universal/components/TimelineEventTeamCreated'
+import {TimelineFeedItems} from '../packages/client/components/MyDashboardTimeline'
+import TimelineEventCompletedRetroMeeting from '../packages/client/components/TimelineEventCompletedRetroMeeting'
+import TimelineEventJoinedParabol from '../packages/client/components/TimelineEventJoinedParabol'
+import TimelineEventTeamCreated from '../packages/client/components/TimelineEventTeamCreated'
 import StoryProvider from './components/StoryProvider'
 
 const baseEvent = {

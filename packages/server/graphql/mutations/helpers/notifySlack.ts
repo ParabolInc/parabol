@@ -4,16 +4,16 @@ import {
   meetingTypeToLabel,
   meetingTypeToSlug,
   phaseLabelLookup
-} from '../../../../universal/utils/meetings/lookups'
+} from '../../../../client/utils/meetings/lookups'
 import {MeetingType} from '../../../database/types/Meeting'
 import {DataLoaderWorker} from '../../graphql'
 import SlackNotification, {SlackNotificationEvent} from '../../../database/types/SlackNotification'
 import SlackManager from '../../../utils/SlackManager'
-import findStageById from '../../../../universal/utils/meetings/findStageById'
-import {Unpromise} from '../../../../universal/types/generics'
+import findStageById from '../../../../client/utils/meetings/findStageById'
+import {Unpromise} from '../../../../client/types/generics'
 import ms from 'ms'
-import formatTime from '../../../../universal/utils/date/formatTime'
-import formatWeekday from '../../../../universal/utils/date/formatWeekday'
+import formatTime from '../../../../client/utils/date/formatTime'
+import formatWeekday from '../../../../client/utils/date/formatWeekday'
 
 const getSlackDetails = async (
   event: SlackNotificationEvent,

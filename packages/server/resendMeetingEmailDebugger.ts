@@ -1,6 +1,6 @@
 import RateLimiter from './graphql/RateLimiter'
 import RethinkDataLoader from './utils/RethinkDataLoader'
-import newMeetingSummaryEmailCreator from '../universal/modules/email/components/SummaryEmail/newMeetingSummaryEmailCreator'
+import newMeetingSummaryEmailCreator from '../client/modules/email/components/SummaryEmail/newMeetingSummaryEmailCreator'
 import {sendEmailContent} from './email/sendEmail'
 import DataLoaderWarehouse from 'dataloader-warehouse'
 import jwtDecode from 'jwt-decode'

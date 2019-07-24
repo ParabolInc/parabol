@@ -5,7 +5,7 @@
  */
 
 import webpack from 'webpack'
-import releaseFlags from '../../packages/universal/releaseFlags'
+import releaseFlags from '../../packages/client/releaseFlags'
 
 export default new webpack.DefinePlugin(
   Object.entries(releaseFlags).reduce(

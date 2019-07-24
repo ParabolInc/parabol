@@ -5,9 +5,9 @@ import ActionMeetingSettings from './ActionMeetingSettings'
 import NewMeeting, {newMeetingFields} from './NewMeeting'
 import Task from './Task'
 import {getUserId} from '../../utils/authorization'
-import {IActionMeeting} from '../../../universal/types/graphql'
-import {RETROSPECTIVE} from '../../../universal/utils/constants'
-import toTeamMemberId from '../../../universal/utils/relay/toTeamMemberId'
+import {IActionMeeting} from '../../../client/types/graphql'
+import {RETROSPECTIVE} from '../../../client/utils/constants'
+import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 
 const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
   name: 'ActionMeeting',

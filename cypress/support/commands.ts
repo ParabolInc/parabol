@@ -24,7 +24,7 @@
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
-import {APP_TOKEN_KEY} from '../../packages/universal/utils/constants'
+import {APP_TOKEN_KEY} from '../../packages/client/utils/constants'
 import {toEpochSeconds} from '../../packages/server/utils/epochTime'
 import {JWT_LIFESPAN} from '../../packages/server/utils/serverConstants'
 import {sign} from 'jsonwebtoken'

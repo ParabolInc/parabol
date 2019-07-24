@@ -3,7 +3,7 @@ import getRethink from '../../database/rethinkDriver'
 import SelectRetroTemplatePayload from '../types/SelectRetroTemplatePayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {RETROSPECTIVE, TEAM} from '../../../universal/utils/constants'
+import {RETROSPECTIVE, TEAM} from '../../../client/utils/constants'
 import standardError from '../../utils/standardError'
 
 const selectRetroTemplate = {

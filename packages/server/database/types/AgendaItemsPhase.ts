@@ -1,5 +1,5 @@
 import AgendaItemsStage from './AgendaItemsStage'
-import {AGENDA_ITEMS} from '../../../universal/utils/constants'
+import {AGENDA_ITEMS} from '../../../client/utils/constants'
 import GenericMeetingPhase from './GenericMeetingPhase'
 
 export default class AgendaItemsPhase extends GenericMeetingPhase {

@@ -1,8 +1,8 @@
 import shortid from 'shortid';
 import {deletedReturnVal, getDoc, updateFromOptions} from './utils';
-import {toEpochSeconds} from 'server/utils/epochTime';
-import {ACTION_MONTHLY} from 'server/utils/serverConstants';
-import {MONTHLY_PRICE} from 'universal/utils/constants';
+import {toEpochSeconds} from '../../packages/server/utils/epochTime';
+import {ACTION_MONTHLY} from '../../packages/server/utils/serverConstants';
+import {MONTHLY_PRICE} from '../../packages/client/utils/constants';
 import ms from 'ms';
 
 const defaultSubscriptionPlan = {

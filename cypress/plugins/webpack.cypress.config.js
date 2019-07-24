@@ -12,7 +12,7 @@ module.exports = {
           path.join(__dirname, '..'),
           path.join(__dirname, '..', '..', 'src', 'server', 'utils'),
           // used for universal constants
-          path.join(__dirname, '..', '..', 'src', 'universal', 'utils')
+          path.join(__dirname, '..', '..', 'src', 'client', 'utils')
         ],
         use: {
           loader: '@sucrase/webpack-loader',

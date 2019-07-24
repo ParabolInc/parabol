@@ -5,7 +5,7 @@ import DowngradeToPersonalPayload from '../types/DowngradeToPersonalPayload'
 import {getUserId, isUserBillingLeader, isSuperUser} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import sendSegmentEvent, {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
-import {ORGANIZATION, PERSONAL, TEAM} from '../../../universal/utils/constants'
+import {ORGANIZATION, PERSONAL, TEAM} from '../../../client/utils/constants'
 import standardError from '../../utils/standardError'
 
 export default {

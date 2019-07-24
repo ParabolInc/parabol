@@ -9,8 +9,8 @@ import GitHubManager from '../../utils/GitHubManager'
 import publish from '../../utils/publish'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import standardError from '../../utils/standardError'
-import {ICreateGitHubIssueOnMutationArguments} from '../../../universal/types/graphql'
-import {GITHUB, TASK} from '../../../universal/utils/constants'
+import {ICreateGitHubIssueOnMutationArguments} from '../../../client/types/graphql'
+import {GITHUB, TASK} from '../../../client/utils/constants'
 
 export default {
   name: 'CreateGitHubIssue',

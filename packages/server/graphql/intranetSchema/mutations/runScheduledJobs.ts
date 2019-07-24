@@ -6,7 +6,7 @@ import ScheduledJobMeetingStageTimeLimit from '../../../database/types/Scheduled
 import SlackManager from '../../../utils/SlackManager'
 import makeAppLink from '../../../utils/makeAppLink'
 import Meeting from '../../../database/types/Meeting'
-import {meetingTypeToSlug} from '../../../../universal/utils/meetings/lookups'
+import {meetingTypeToSlug} from '../../../../client/utils/meetings/lookups'
 import publish from '../../../utils/publish'
 import MeetingStageTimeLimitPayload from '../../types/MeetingStageTimeLimitPayload'
 import NotificationMeetingStageTimeLimitEnd from '../../../database/types/NotificationMeetingStageTimeLimitEnd'

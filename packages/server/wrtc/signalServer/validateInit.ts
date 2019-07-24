@@ -1,4 +1,4 @@
-import {IAuthToken} from '../../../universal/types/graphql'
+import {IAuthToken} from '../../../client/types/graphql'
 import closeWRTC from './closeWRTC'
 import {UWebSocket} from './handleSignal'
 import sendSignal from './sendSignal'

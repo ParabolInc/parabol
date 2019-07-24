@@ -24,8 +24,8 @@ import {
   ITeamMeetingSettings,
   ITeamMember,
   IUser
-} from '../../universal/types/graphql'
-import promiseAllPartial from '../../universal/utils/promiseAllPartial'
+} from '../../client/types/graphql'
+import promiseAllPartial from '../../client/utils/promiseAllPartial'
 import MeetingMember from '../database/types/MeetingMember'
 import SlackAuth from '../database/types/SlackAuth'
 import SlackNotification from '../database/types/SlackNotification'

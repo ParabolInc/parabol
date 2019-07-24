@@ -2,7 +2,7 @@ import {GraphQLNonNull} from 'graphql'
 import makeSubscribeIter from '../makeSubscribeIter'
 import TeamSubscriptionPayload from '../types/TeamSubscriptionPayload'
 import {getUserId, isAuthenticated} from '../../utils/authorization'
-import {TEAM} from '../../../universal/utils/constants'
+import {TEAM} from '../../../client/utils/constants'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 

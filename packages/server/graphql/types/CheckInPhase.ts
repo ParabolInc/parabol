@@ -2,7 +2,7 @@ import {GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'gra
 import CheckInStage from './CheckInStage'
 import MeetingGreeting from './MeetingGreeting'
 import NewMeetingPhase, {newMeetingPhaseFields} from './NewMeetingPhase'
-import {ICheckInPhase} from '../../../universal/types/graphql'
+import {ICheckInPhase} from '../../../client/types/graphql'
 
 const CheckInPhase = new GraphQLObjectType({
   name: 'CheckInPhase',

@@ -3,7 +3,7 @@ import {GQLContext} from '../graphql'
 import fetchAllIntegrations from './helpers/fetchAllIntegrations'
 import SuggestedIntegration from '../types/SuggestedIntegration'
 import {getUserId} from '../../utils/authorization'
-import {ISuggestedIntegrationsOnUserArguments, IUser} from '../../../universal/types/graphql'
+import {ISuggestedIntegrationsOnUserArguments, IUser} from '../../../client/types/graphql'
 
 export default {
   description: 'All the integrations that the user could possibly use',

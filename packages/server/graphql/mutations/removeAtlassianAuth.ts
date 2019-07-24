@@ -4,7 +4,7 @@ import RemoveAtlassianAuthPayload from '../types/RemoveAtlassianAuthPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {TEAM} from '../../../universal/utils/constants'
+import {TEAM} from '../../../client/utils/constants'
 
 export default {
   name: 'RemoveAtlassianAuth',

@@ -12,7 +12,7 @@ import {
   NOTIFICATION,
   RETROSPECTIVE,
   TEAM
-} from '../../../universal/utils/constants'
+} from '../../../client/utils/constants'
 import EndNewMeetingPayload from '../types/EndNewMeetingPayload'
 import {endSlackMeeting} from './helpers/notifySlack'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
@@ -26,10 +26,10 @@ import standardError from '../../utils/standardError'
 import Meeting, {MeetingType} from '../../database/types/Meeting'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import archiveTasksForDB from '../../safeMutations/archiveTasksForDB'
-import {ITask} from '../../../universal/types/graphql'
-import findStageById from '../../../universal/utils/meetings/findStageById'
+import {ITask} from '../../../client/types/graphql'
+import findStageById from '../../../client/utils/meetings/findStageById'
 import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
-import {meetingTypeToLabel} from '../../../universal/utils/meetings/lookups'
+import {meetingTypeToLabel} from '../../../client/utils/meetings/lookups'
 
 const timelineEventLookup = {
   [RETROSPECTIVE]: COMPLETED_RETRO_MEETING,

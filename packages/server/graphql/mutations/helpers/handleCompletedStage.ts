@@ -1,4 +1,4 @@
-import {GROUP, REFLECT, RETROSPECTIVE, VOTE} from '../../../../universal/utils/constants'
+import {GROUP, REFLECT, RETROSPECTIVE, VOTE} from '../../../../client/utils/constants'
 import addEntitiesToReflections from './addEntitiesToReflections'
 import addDiscussionTopics from './addDiscussionTopics'
 import addDefaultGroupTitles from './addDefaultGroupTitles'

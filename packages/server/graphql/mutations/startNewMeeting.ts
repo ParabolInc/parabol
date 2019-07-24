@@ -11,8 +11,8 @@ import StartNewMeetingPayload from '../types/StartNewMeetingPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {IStartNewMeetingOnMutationArguments} from '../../../universal/types/graphql'
-import {TEAM} from '../../../universal/utils/constants'
+import {IStartNewMeetingOnMutationArguments} from '../../../client/types/graphql'
+import {TEAM} from '../../../client/utils/constants'
 
 export default {
   type: StartNewMeetingPayload,

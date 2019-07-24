@@ -17,7 +17,7 @@ import {
   REFLECT,
   UPDATES,
   VOTE
-} from '../../../universal/utils/constants'
+} from '../../../client/utils/constants'
 
 export const newMeetingPhaseFields = () => ({
   id: {

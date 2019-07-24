@@ -1,4 +1,4 @@
-import chunkArray from '../../universal/utils/chunkArray'
+import chunkArray from '../../client/utils/chunkArray'
 import createEmbeddedImages from './createEmbeddedImages'
 import {getMailgunApiConfig, getMailgunOptions} from './getMailgunConfig'
 import mailgun from './mailgunDriver'

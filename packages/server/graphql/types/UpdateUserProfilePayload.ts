@@ -3,7 +3,7 @@ import User from './User'
 import {resolveUser} from '../resolvers'
 import TeamMember from './TeamMember'
 import StandardMutationError from './StandardMutationError'
-import toTeamMemberId from '../../../universal/utils/relay/toTeamMemberId'
+import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import {GQLContext} from '../graphql'
 
 const UpdateUserProfilePayload = new GraphQLObjectType<any, GQLContext, any>({

@@ -1,6 +1,6 @@
 import DataLoaderWarehouse from 'dataloader-warehouse'
 import shortid from 'shortid'
-import {IAuthToken} from '../../universal/types/graphql'
+import {IAuthToken} from '../../client/types/graphql'
 import RateLimiter from '../graphql/RateLimiter'
 import WebSocketContext from '../wrtc/signalServer/WebSocketContext'
 

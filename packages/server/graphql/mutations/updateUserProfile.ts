@@ -3,15 +3,15 @@ import getRethink from '../../database/rethinkDriver'
 import UpdateUserProfileInput from '../types/UpdateUserProfileInput'
 import UpdateUserProfilePayload from '../types/UpdateUserProfilePayload'
 import {getUserId, isAuthenticated} from '../../utils/authorization'
-import makeUserServerSchema from '../../../universal/validation/makeUserServerSchema'
+import makeUserServerSchema from '../../../client/validation/makeUserServerSchema'
 import publish from '../../utils/publish'
-import {TEAM} from '../../../universal/utils/constants'
+import {TEAM} from '../../../client/utils/constants'
 import {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
 import {JSDOM} from 'jsdom'
 import sanitizeSVG from '@mattkrick/sanitize-svg'
 import fetch from 'node-fetch'
 import standardError from '../../utils/standardError'
-import linkify from '../../../universal/utils/linkify'
+import linkify from '../../../client/utils/linkify'
 
 const updateUserProfile = {
   type: UpdateUserProfilePayload,

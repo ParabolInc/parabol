@@ -5,7 +5,7 @@ import insertNewTeamMember from './insertNewTeamMember'
 import {auth0ManagementClient} from '../utils/auth0Helpers'
 import {ADD_USER} from '../utils/serverConstants'
 import shortid from 'shortid'
-import {TEAM_INVITATION} from '../../universal/utils/constants'
+import {TEAM_INVITATION} from '../../client/utils/constants'
 import getNewTeamLeadUserId from '../safeQueries/getNewTeamLeadUserId'
 import addTeamIdToTMS from './addTeamIdToTMS'
 
