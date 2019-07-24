@@ -14,25 +14,25 @@ import HTML5Backend from 'react-dnd-html5-backend'
 import Snackbar from '../Snackbar'
 
 const AuthenticationPage = lazy(() =>
-  import(/* webpackChunkName: 'AuthenticationPage' */ 'universal/components/AuthenticationPage')
+  import(/* webpackChunkName: 'AuthenticationPage' */ '../AuthenticationPage')
 )
 const DemoMeeting = lazy(() =>
-  import(/* webpackChunkName: 'DemoMeeting' */ 'universal/components/DemoMeeting')
+  import(/* webpackChunkName: 'DemoMeeting' */ '../DemoMeeting')
 )
 const DemoSummary = lazy(() =>
-  import(/* webpackChunkName: 'DemoSummary' */ 'universal/components/DemoSummary')
+  import(/* webpackChunkName: 'DemoSummary' */ '../DemoSummary')
 )
 const AuthProvider = lazy(() =>
-  import(/* webpackChunkName: 'AuthProvider' */ 'universal/components/AuthProvider')
+  import(/* webpackChunkName: 'AuthProvider' */ '../AuthProvider')
 )
 const OauthRedirect = lazy(() =>
-  import(/* webpackChunkName: 'GoogleOAuthProvider' */ 'universal/components/OAuthRedirect')
+  import(/* webpackChunkName: 'GoogleOAuthProvider' */ '../OAuthRedirect')
 )
 const TeamInvitation = lazy(() =>
-  import(/* webpackChunkName: 'TeamInvitationRoot' */ 'universal/components/TeamInvitationRoot')
+  import(/* webpackChunkName: 'TeamInvitationRoot' */ '../TeamInvitationRoot')
 )
 const InvitationLink = lazy(() =>
-  import(/* webpackChunkName: 'InvitationLinkRoot' */ 'universal/components/InvitationLinkRoot')
+  import(/* webpackChunkName: 'InvitationLinkRoot' */ '../InvitationLinkRoot')
 )
 
 const ActionStyles = styled('div')({

@@ -10,22 +10,22 @@ interface Props {
 const lookup = {
   TimelineEventJoinedParabol: lazy(() =>
     import(
-      /* webpackChunkName: 'TimelineEventJoinedParabol' */ 'universal/components/TimelineEventJoinedParabol'
+      /* webpackChunkName: 'TimelineEventJoinedParabol' */ './TimelineEventJoinedParabol'
     )
   ),
   TimelineEventTeamCreated: lazy(() =>
     import(
-      /* webpackChunkName: 'TimelineEventTeamCreated' */ 'universal/components/TimelineEventTeamCreated'
+      /* webpackChunkName: 'TimelineEventTeamCreated' */ './TimelineEventTeamCreated'
     )
   ),
   TimelineEventCompletedRetroMeeting: lazy(() =>
     import(
-      /* webpackChunkName: 'TimelineEventCompletedRetroMeeting' */ 'universal/components/TimelineEventCompletedRetroMeeting'
+      /* webpackChunkName: 'TimelineEventCompletedRetroMeeting' */ './TimelineEventCompletedRetroMeeting'
     )
   ),
   TimelineEventCompletedActionMeeting: lazy(() =>
     import(
-      /* webpackChunkName: 'TimelineEventCompletedActionMeeting' */ 'universal/components/TimelineEventCompletedActionMeeting'
+      /* webpackChunkName: 'TimelineEventCompletedActionMeeting' */ './TimelineEventCompletedActionMeeting'
     )
   )
 }

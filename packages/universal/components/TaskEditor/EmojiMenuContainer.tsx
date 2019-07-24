@@ -15,7 +15,7 @@ interface Props {
 }
 
 const EmojiMenu = lazyPreload(() =>
-  import(/* webpackChunkName: 'EmojiMenu' */ 'universal/components/EmojiMenu')
+  import(/* webpackChunkName: 'EmojiMenu' */ '../EmojiMenu')
 )
 
 const EmojiMenuContainer = (props: Props) => {

@@ -97,7 +97,7 @@ const NotificationIcon = styled(Icon)({
 })
 
 const StandardHubUserMenu = lazyPreload(() =>
-  import(/* webpackChunkName: 'StandardHubUserMenu' */ 'universal/components/StandardHubUserMenu')
+  import(/* webpackChunkName: 'StandardHubUserMenu' */ '../StandardHubUserMenu')
 )
 
 interface Props {

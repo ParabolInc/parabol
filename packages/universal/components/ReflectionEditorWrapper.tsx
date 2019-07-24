@@ -70,7 +70,7 @@ const EditorStyles = styled('div')(({useFallback, userSelect}: any) => ({
 
 const AndroidEditorFallback = lazyPreload(() =>
   import(
-    /* webpackChunkName: 'AndroidEditorFallback' */ 'universal/components/AndroidEditorFallback'
+    /* webpackChunkName: 'AndroidEditorFallback' */ './AndroidEditorFallback'
   )
 )
 

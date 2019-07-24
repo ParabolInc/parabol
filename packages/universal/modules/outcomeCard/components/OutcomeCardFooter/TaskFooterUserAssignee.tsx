@@ -78,7 +78,7 @@ interface Props {
 }
 
 const TaskFooterUserAssigneeMenuRoot = lazyPreload(() =>
-  import(/* webpackChunkName: 'TaskFooterUserAssigneeMenuRoot' */ 'universal/modules/outcomeCard/components/TaskFooterUserAssigneeMenuRoot')
+  import(/* webpackChunkName: 'TaskFooterUserAssigneeMenuRoot' */ '../TaskFooterUserAssigneeMenuRoot')
 )
 
 const TaskFooterUserAssignee = (props: Props) => {

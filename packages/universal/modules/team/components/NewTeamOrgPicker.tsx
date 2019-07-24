@@ -19,7 +19,7 @@ const NO_ORGS = 'No organizations available'
 
 const NewTeamOrgDropdown = lazyPreload(() =>
   import(/* webpackChunkName: 'NewTeamOrgDropdown' */
-  'universal/components/NewTeamOrgDropdown')
+  '../../../components/NewTeamOrgDropdown')
 )
 
 const NewTeamOrgPicker = (props: Props) => {

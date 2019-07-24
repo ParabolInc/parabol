@@ -36,7 +36,7 @@ const orgLinkStyles = {
 
 const TeamDashTeamMemberMenu = lazyPreload(() =>
   import(/* webpackChunkName: 'TeamDashTeamMemberMenu' */
-  'universal/components/TeamDashTeamMemberMenu')
+  '../../../../components/TeamDashTeamMemberMenu')
 )
 
 interface Props extends RouteComponentProps<{}> {

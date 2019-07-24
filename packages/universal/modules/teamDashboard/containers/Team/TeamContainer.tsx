@@ -25,13 +25,13 @@ const mapStateToProps = (_state, props) => {
 }
 
 const AgendaTasks = lazy(() =>
-  import(/* webpackChunkName: 'AgendaAndTasksRoot' */ 'universal/modules/teamDashboard/components/AgendaAndTasksRoot')
+  import(/* webpackChunkName: 'AgendaAndTasksRoot' */ '../../components/AgendaAndTasksRoot')
 )
 const TeamSettings = lazy(() =>
-  import(/* webpackChunkName: 'TeamSettingsWrapper' */ 'universal/modules/teamDashboard/components/TeamSettingsWrapper/TeamSettingsWrapper')
+  import(/* webpackChunkName: 'TeamSettingsWrapper' */ '../../components/TeamSettingsWrapper/TeamSettingsWrapper')
 )
 const ArchivedTasks = lazy(() =>
-  import(/* webpackChunkName: 'TeamArchiveRoot' */ 'universal/modules/teamDashboard/containers/TeamArchive/TeamArchiveRoot')
+  import(/* webpackChunkName: 'TeamArchiveRoot' */ '../TeamArchive/TeamArchiveRoot')
 )
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {

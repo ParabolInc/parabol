@@ -21,7 +21,7 @@ interface Props {
 
 const SlackChannelDropdown = lazyPreload(() =>
   import(/* webpackChunkName: 'SlackChannelDropdown' */
-  'universal/components/SlackChannelDropdown')
+  '../../../../components/SlackChannelDropdown')
 )
 
 enum ChannelState {

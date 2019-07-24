@@ -5,10 +5,10 @@ import {matchPath, RouteComponentProps, Switch, withRouter} from 'react-router-d
 import TeamSettingsToggleNav from '../TeamSettingsToggleNav/TeamSettingsToggleNav'
 
 const TeamSettings = lazy(() =>
-  import(/* webpackChunkName: 'TeamSettingsRoot' */ 'universal/modules/teamDashboard/components/TeamSettingsRoot')
+  import(/* webpackChunkName: 'TeamSettingsRoot' */ '../TeamSettingsRoot')
 )
 const TeamIntegrationsRoot = lazy(() =>
-  import(/* webpackChunkName: 'TeamIntegrationsRoot' */ 'universal/modules/teamDashboard/containers/TeamIntegrationsRoot/TeamIntegrationsRoot')
+  import(/* webpackChunkName: 'TeamIntegrationsRoot' */ '../../containers/TeamIntegrationsRoot/TeamIntegrationsRoot')
 )
 
 interface Props extends RouteComponentProps<{teamId: string}> {}

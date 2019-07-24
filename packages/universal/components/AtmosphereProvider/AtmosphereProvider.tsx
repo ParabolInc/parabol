@@ -25,7 +25,7 @@ class AtmosphereProvider extends Component<Props> {
   }
 
   async loadDemo () {
-    const LocalAtmosphere = await import(/* webpackChunkName: 'LocalAtmosphere' */ 'universal/modules/demo/LocalAtmosphere')
+    const LocalAtmosphere = await import(/* webpackChunkName: 'LocalAtmosphere' */ '../../modules/demo/LocalAtmosphere')
       .then((mod) => mod.default)
       .catch()
     this.atmosphere = new LocalAtmosphere()

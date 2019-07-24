@@ -64,7 +64,7 @@ const buttonLabel = `Start ${meetingLabel} Meeting`
 
 const ActionMeetingLobbyHelpMenu = lazyPreload(() =>
   import(
-    /*WebpackChunkName: ActionMeetingLobbyHelpMenu*/ 'universal/components/MeetingHelp/ActionMeetingLobbyHelpMenu'
+    /*WebpackChunkName: ActionMeetingLobbyHelpMenu*/ './MeetingHelp/ActionMeetingLobbyHelpMenu'
   )
 )
 

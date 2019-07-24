@@ -22,24 +22,24 @@ interface Props {
 
 const phaseLookup = {
   [NewMeetingPhaseTypeEnum.checkin]: lazyPreload(() =>
-    import(/* webpackChunkName: 'NewMeetingCheckIn' */ 'universal/components/NewMeetingCheckIn')
+    import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
   [NewMeetingPhaseTypeEnum.reflect]: lazyPreload(() =>
     import(
-      /* webpackChunkName: 'RetroReflectPhase' */ 'universal/components/RetroReflectPhase/RetroReflectPhase'
+      /* webpackChunkName: 'RetroReflectPhase' */ './RetroReflectPhase/RetroReflectPhase'
     )
   ),
   [NewMeetingPhaseTypeEnum.group]: lazyPreload(() =>
-    import(/* webpackChunkName: 'RetroGroupPhase' */ 'universal/components/RetroGroupPhase')
+    import(/* webpackChunkName: 'RetroGroupPhase' */ './RetroGroupPhase')
   ),
   [NewMeetingPhaseTypeEnum.vote]: lazyPreload(() =>
-    import(/* webpackChunkName: 'RetroVotePhase' */ 'universal/components/RetroVotePhase')
+    import(/* webpackChunkName: 'RetroVotePhase' */ './RetroVotePhase')
   ),
   [NewMeetingPhaseTypeEnum.discuss]: lazyPreload(() =>
-    import(/* webpackChunkName: 'RetroDiscussPhase' */ 'universal/components/RetroDiscussPhase')
+    import(/* webpackChunkName: 'RetroDiscussPhase' */ './RetroDiscussPhase')
   ),
   [NewMeetingPhaseTypeEnum.lobby]: lazyPreload(() =>
-    import(/* webpackChunkName: 'NewMeetingLobby' */ 'universal/components/RetroLobby')
+    import(/* webpackChunkName: 'NewMeetingLobby' */ './RetroLobby')
   )
 }
 

@@ -3,7 +3,7 @@ import withHotkey from 'react-hotkey-hoc'
 import LoadableFreeModal from '../../components/LoadableFreeModal'
 
 const EditorHelpModal = lazy(() =>
-  import(/* webpackChunkName: 'EditorHelpModal' */ 'universal/components/EditorHelpModal/EditorHelpModal')
+  import(/* webpackChunkName: 'EditorHelpModal' */ '../../components/EditorHelpModal/EditorHelpModal')
 )
 
 interface Props {

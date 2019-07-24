@@ -37,13 +37,13 @@ const TeamMemberAvatarMenu = lazyPreload(() =>
 )
 
 const PromoteTeamMemberModal = lazyPreload(() =>
-  import(/* webpackChunkName: 'PromoteTeamMemberModal' */ 'universal/modules/teamDashboard/components/PromoteTeamMemberModal/PromoteTeamMemberModal')
+  import(/* webpackChunkName: 'PromoteTeamMemberModal' */ '../../modules/teamDashboard/components/PromoteTeamMemberModal/PromoteTeamMemberModal')
 )
 const RemoveTeamMemberModal = lazyPreload(() =>
-  import(/* webpackChunkName: 'RemoveTeamMemberModal' */ 'universal/modules/teamDashboard/components/RemoveTeamMemberModal/RemoveTeamMemberModal')
+  import(/* webpackChunkName: 'RemoveTeamMemberModal' */ '../../modules/teamDashboard/components/RemoveTeamMemberModal/RemoveTeamMemberModal')
 )
 const LeaveTeamModal = lazyPreload(() =>
-  import(/* webpackChunkName: 'LeaveTeamModal' */ 'universal/modules/teamDashboard/components/LeaveTeamModal/LeaveTeamModal')
+  import(/* webpackChunkName: 'LeaveTeamModal' */ '../../modules/teamDashboard/components/LeaveTeamModal/LeaveTeamModal')
 )
 
 const DashboardAvatar = (props: Props) => {

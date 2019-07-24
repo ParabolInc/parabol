@@ -57,7 +57,7 @@ const MeetingInProgressModal = lazy(() =>
   import(/* webpackChunkName: 'MeetingInProgressModal' */ '../MeetingInProgressModal/MeetingInProgressModal')
 )
 const UnpaidTeamModalRoot = lazy(() =>
-  import(/* webpackChunkName: 'UnpaidTeamModalRoot' */ 'universal/modules/teamDashboard/containers/UnpaidTeamModal/UnpaidTeamModalRoot')
+  import(/* webpackChunkName: 'UnpaidTeamModalRoot' */ '../../containers/UnpaidTeamModal/UnpaidTeamModalRoot')
 )
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {

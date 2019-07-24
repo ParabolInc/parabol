@@ -5,19 +5,19 @@ import userDashReducer from '../../ducks/userDashDuck'
 import withReducer from '../../../../decorators/withReducer/withReducer'
 
 const Organizations = lazy(() =>
-  import(/* webpackChunkName: 'OrganizationsRoot' */ 'universal/modules/userDashboard/containers/Organizations/OrganizationsRoot')
+  import(/* webpackChunkName: 'OrganizationsRoot' */ '../../containers/Organizations/OrganizationsRoot')
 )
 const Organization = lazy(() =>
-  import(/* webpackChunkName: 'OrganizationRoot' */ 'universal/modules/userDashboard/containers/Organization/OrganizationRoot')
+  import(/* webpackChunkName: 'OrganizationRoot' */ '../../containers/Organization/OrganizationRoot')
 )
 const UserDashMain = lazy(() =>
-  import(/* webpackChunkName: 'UserDashMain' */ 'universal/modules/userDashboard/components/UserDashMain/UserDashMain')
+  import(/* webpackChunkName: 'UserDashMain' */ '../UserDashMain/UserDashMain')
 )
 const UserProfile = lazy(() =>
-  import(/* webpackChunkName: 'UserProfileRoot' */ 'universal/modules/userDashboard/components/UserProfileRoot')
+  import(/* webpackChunkName: 'UserProfileRoot' */ '../UserProfileRoot')
 )
 const Notifications = lazy(() =>
-  import(/* webpackChunkName: 'NotificationsContainer' */ 'universal/modules/notifications/components/Notifications/Notifications')
+  import(/* webpackChunkName: 'NotificationsContainer' */ '../../../notifications/components/Notifications/Notifications')
 )
 
 interface Props {

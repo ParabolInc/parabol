@@ -120,7 +120,7 @@ const getDateInfo = (dueDate) => {
 const DueDatePicker = lazyPreload(() =>
   import(
     /* webpackChunkName: 'DueDatePicker' */
-    'universal/components/DueDatePicker'
+    './DueDatePicker'
   )
 )
 

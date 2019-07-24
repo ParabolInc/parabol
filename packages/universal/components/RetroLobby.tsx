@@ -71,7 +71,7 @@ const TemplatePickerBlock = styled('div')({
 
 const RetroLobbyHelpMenu = lazyPreload(() =>
   import(
-    /* webpackChunkName: 'RetroLobbyHelpMenu' */ 'universal/components/MeetingHelp/RetroLobbyHelpMenu'
+    /* webpackChunkName: 'RetroLobbyHelpMenu' */ './MeetingHelp/RetroLobbyHelpMenu'
   )
 )
 

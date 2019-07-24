@@ -53,43 +53,6 @@ const makeChangePathToRelativeIfNeeded = (currentModuleDirectoryPath, isDependen
   }
 }
 
-const sortImportsAlphabetically = (imports) => {
-  imports.sort((a, b) => a.path.localeCompare(b.path))
-}
-
-const sortImportDeclarations = (importDeclarations, changePathToRelativeIfNeeded) => {
-  let lastEndOfImportLine
-  const importGroups = []
-  importDeclarations.forEach((path) => {
-    const node = path.value
-
-    const isFirstImport = lastEndOfImportLine === undefined
-    const isNewImportBlock = !isFirstImport && lastEndOfImportLine < node.loc.start.line - 1
-    if (isFirstImport || isNewImportBlock) {
-      importGroups.push([])
-    }
-    lastEndOfImportLine = node.loc.end.line
-
-    const currentImportPath = node.source.value
-    const newImportPath = changePathToRelativeIfNeeded(currentImportPath)
-
-    importGroups[importGroups.length - 1].push({
-      path: newImportPath,
-      specifiers: node.specifiers
-    })
-  })
-  importGroups.forEach(sortImportsAlphabetically)
-  const flattenedImports = [].concat.apply([], importGroups)
-  return flattenedImports
-}
-
-const replaceBySortedImportDeclarations = (j, importDeclarations, sortedImportDeclarations) => {
-  return importDeclarations.forEach((path, index) => {
-    const newImport = sortedImportDeclarations[index]
-    j(path).replaceWith(j.importDeclaration(newImport.specifiers, j.literal(newImport.path)))
-  })
-}
-
 module.exports = (fileInfo, api, options) => {
   const currentModuleDirectoryPath = path.dirname(path.resolve(fileInfo.path))
   const isDependency = makeIsDependency(options.packageDir)
@@ -104,6 +67,13 @@ module.exports = (fileInfo, api, options) => {
   const root = j(fileInfo.source)
   root.find(j.ImportDeclaration).forEach((node) => {
     node.value.source.value = changePathToRelativeIfNeeded(node.value.source.value)
+  })
+
+  root.find(j.CallExpression).forEach((node) => {
+    const {callee} = node.value
+    if (callee.type === 'Import') {
+      node.value.arguments[0].value = changePathToRelativeIfNeeded(node.value.arguments[0].value)
+    }
   })
 
   return root.toSource({

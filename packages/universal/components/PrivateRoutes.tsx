@@ -3,40 +3,40 @@ import {Route, Switch} from 'react-router'
 import useAuthRoute from '../hooks/useAuthRoute'
 
 const Invoice = lazy(() =>
-  import(/* webpackChunkName: 'InvoiceRoot' */ 'universal/modules/invoice/containers/InvoiceRoot')
+  import(/* webpackChunkName: 'InvoiceRoot' */ '../modules/invoice/containers/InvoiceRoot')
 )
 const NewMeetingSummary = lazy(() =>
   import(
-    /* webpackChunkName: 'NewMeetingSummaryRoot' */ 'universal/modules/summary/components/NewMeetingSummaryRoot'
+    /* webpackChunkName: 'NewMeetingSummaryRoot' */ '../modules/summary/components/NewMeetingSummaryRoot'
   )
 )
 const Graphql = lazy(() =>
   import(
-    /* webpackChunkName: 'GraphqlContainer' */ 'universal/modules/admin/containers/Graphql/GraphqlContainer'
+    /* webpackChunkName: 'GraphqlContainer' */ '../modules/admin/containers/Graphql/GraphqlContainer'
   )
 )
 const Impersonate = lazy(() =>
   import(
-    /* webpackChunkName: 'ImpersonateContainer' */ 'universal/modules/admin/containers/Impersonate/ImpersonateContainer'
+    /* webpackChunkName: 'ImpersonateContainer' */ '../modules/admin/containers/Impersonate/ImpersonateContainer'
   )
 )
 const Signout = lazy(() =>
-  import(/* webpackChunkName: 'SignoutContainer' */ 'universal/containers/Signout/SignoutContainer')
+  import(/* webpackChunkName: 'SignoutContainer' */ '../containers/Signout/SignoutContainer')
 )
 const NotFound = lazy(() =>
-  import(/* webpackChunkName: 'NotFound' */ 'universal/components/NotFound/NotFound')
+  import(/* webpackChunkName: 'NotFound' */ './NotFound/NotFound')
 )
 const DashboardRoot = lazy(() =>
-  import(/* webpackChunkName: 'DashboardRoot' */ 'universal/components/DashboardRoot')
+  import(/* webpackChunkName: 'DashboardRoot' */ './DashboardRoot')
 )
 const ActionMeetingRoot = lazy(() =>
-  import(/* webpackChunkName: 'ActionMeetingRoot' */ 'universal/components/ActionMeetingRoot')
+  import(/* webpackChunkName: 'ActionMeetingRoot' */ './ActionMeetingRoot')
 )
 const RetroRoot = lazy(() =>
-  import(/* webpackChunkName: 'RetroRoot' */ 'universal/components/RetroRoot/RetroRoot')
+  import(/* webpackChunkName: 'RetroRoot' */ './RetroRoot/RetroRoot')
 )
 const ViewerNotOnTeamRoot = lazy(() =>
-  import(/* webpackChunkName: 'ViewerNotOnTeamRoot' */ 'universal/components/ViewerNotOnTeamRoot')
+  import(/* webpackChunkName: 'ViewerNotOnTeamRoot' */ './ViewerNotOnTeamRoot')
 )
 
 const PrivateRoutes = () => {

@@ -7,7 +7,7 @@ import lazyPreload from '../../../../utils/lazyPreload'
 import {MenuMutationProps} from '../../../../hooks/useMutationProps'
 
 const TaskFooterIntegrateMenuRoot = lazyPreload(() =>
-  import(/* webpackChunkName: 'TaskFooterIntegrateMenuRoot' */ 'universal/components/TaskFooterIntegrateMenuRoot')
+  import(/* webpackChunkName: 'TaskFooterIntegrateMenuRoot' */ '../../../../components/TaskFooterIntegrateMenuRoot')
 )
 
 interface Props {

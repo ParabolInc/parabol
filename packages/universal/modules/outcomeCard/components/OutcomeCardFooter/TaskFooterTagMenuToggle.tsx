@@ -18,7 +18,7 @@ interface Props {
 }
 
 const TaskFooterTagMenu = lazyPreload(() =>
-  import(/* webpackChunkName: 'TaskFooterTagMenu' */ 'universal/modules/outcomeCard/components/OutcomeCardStatusMenu/TaskFooterTagMenu')
+  import(/* webpackChunkName: 'TaskFooterTagMenu' */ '../OutcomeCardStatusMenu/TaskFooterTagMenu')
 )
 
 const TaskFooterTagMenuToggle = (props: Props) => {

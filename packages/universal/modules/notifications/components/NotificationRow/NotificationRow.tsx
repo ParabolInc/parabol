@@ -7,25 +7,25 @@ import {ValueOf} from '../../../../types/generics'
 
 const typePicker = {
   [NotificationEnum.KICKED_OUT]: lazyPreload(() =>
-    import(/* webpackChunkName: 'KickedOut' */ 'universal/modules/notifications/components/KickedOut')
+    import(/* webpackChunkName: 'KickedOut' */ '../KickedOut')
   ),
   [NotificationEnum.PAYMENT_REJECTED]: lazyPreload(() =>
-    import(/* webpackChunkName: 'PaymentRejected' */ 'universal/modules/notifications/components/PaymentRejected/PaymentRejected')
+    import(/* webpackChunkName: 'PaymentRejected' */ '../PaymentRejected/PaymentRejected')
   ),
   [NotificationEnum.TASK_INVOLVES]: lazyPreload(() =>
-    import(/* webpackChunkName: 'TaskInvolves' */ 'universal/modules/notifications/components/TaskInvolves')
+    import(/* webpackChunkName: 'TaskInvolves' */ '../TaskInvolves')
   ),
   [NotificationEnum.PROMOTE_TO_BILLING_LEADER]: lazyPreload(() =>
-    import(/* webpackChunkName: 'PromoteToBillingLeader' */ 'universal/modules/notifications/components/PromoteToBillingLeader/PromoteToBillingLeader')
+    import(/* webpackChunkName: 'PromoteToBillingLeader' */ '../PromoteToBillingLeader/PromoteToBillingLeader')
   ),
   [NotificationEnum.TEAM_ARCHIVED]: lazyPreload(() =>
-    import(/* webpackChunkName: 'TeamArchived' */ 'universal/modules/notifications/components/TeamArchived/TeamArchived')
+    import(/* webpackChunkName: 'TeamArchived' */ '../TeamArchived/TeamArchived')
   ),
   [NotificationEnum.TEAM_INVITATION]: lazyPreload(() =>
-    import(/* webpackChunkName: 'TeamInvitation' */ 'universal/modules/notifications/components/TeamInvitation')
+    import(/* webpackChunkName: 'TeamInvitation' */ '../TeamInvitation')
   ),
   [NotificationEnum.MEETING_STAGE_TIME_LIMIT_END]: lazyPreload(() =>
-    import(/* webpackChunkName: 'MeetingStageTimeLimitEnd' */ 'universal/modules/notifications/components/MeetingStageTimeLimitEnd')
+    import(/* webpackChunkName: 'MeetingStageTimeLimitEnd' */ '../MeetingStageTimeLimitEnd')
   )
 }
 

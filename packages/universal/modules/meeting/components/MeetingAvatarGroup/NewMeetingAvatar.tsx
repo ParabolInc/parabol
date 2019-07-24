@@ -102,7 +102,7 @@ interface Props extends WithAtmosphereProps {
 
 const NewMeetingAvatarMenu = lazyPreload(() =>
   import(/* webpackChunkName: 'NewMeetingAvatarMenu' */
-  'universal/modules/meeting/components/NewMeetingAvatarMenu')
+  '../NewMeetingAvatarMenu')
 )
 
 const NewMeetingAvatar = (props: Props) => {

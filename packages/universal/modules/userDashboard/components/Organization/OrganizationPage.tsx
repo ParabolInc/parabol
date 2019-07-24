@@ -12,13 +12,13 @@ interface Props extends RouteComponentProps<{orgId: string}> {
 }
 
 const OrgPlanSqueeze = lazy(() =>
-  import(/* webpackChunkName: 'OrgPlanSqueeze' */ 'universal/modules/userDashboard/components/OrgPlanSqueeze/OrgPlanSqueeze')
+  import(/* webpackChunkName: 'OrgPlanSqueeze' */ '../OrgPlanSqueeze/OrgPlanSqueeze')
 )
 const OrgBilling = lazy(() =>
-  import(/* webpackChunkName: 'OrgBillingRoot' */ 'universal/modules/userDashboard/containers/OrgBilling/OrgBillingRoot')
+  import(/* webpackChunkName: 'OrgBillingRoot' */ '../../containers/OrgBilling/OrgBillingRoot')
 )
 const OrgMembers = lazy(() =>
-  import(/* webpackChunkName: 'OrgMembersRoot' */ 'universal/modules/userDashboard/containers/OrgMembers/OrgMembersRoot')
+  import(/* webpackChunkName: 'OrgMembersRoot' */ '../../containers/OrgMembers/OrgMembersRoot')
 )
 
 const OrganizationPage = (props: Props) => {

@@ -70,7 +70,7 @@ const StyledButton = styled(SecondaryButton)({
 })
 
 const UserAvatarInput = lazy(() =>
-  import(/* webpackChunkName: 'UserAvatarInput' */ 'universal/components/UserAvatarInput')
+  import(/* webpackChunkName: 'UserAvatarInput' */ '../../../components/UserAvatarInput')
 )
 
 interface Props extends WithAtmosphereProps, WithMutationProps, WithFormProps {

@@ -10,7 +10,7 @@ import useMenu from '../../../../hooks/useMenu'
 
 const UserDashTeamMenu = lazyPreload(() =>
   import(/* webpackChunkName: 'UserDashTeamMenu' */
-  'universal/components/UserDashTeamMenu')
+  '../../../../components/UserDashTeamMenu')
 )
 
 interface Props {

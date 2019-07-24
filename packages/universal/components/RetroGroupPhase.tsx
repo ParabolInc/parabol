@@ -53,11 +53,11 @@ const BottomControlSpacer = styled('div')({
 })
 
 const GroupHelpMenu = lazyPreload(async () =>
-  import(/* webpackChunkName: 'GroupHelpMenu' */ 'universal/components/MeetingHelp/GroupHelpMenu')
+  import(/* webpackChunkName: 'GroupHelpMenu' */ './MeetingHelp/GroupHelpMenu')
 )
 const DemoGroupHelpMenu = lazyPreload(async () =>
   import(
-    /* webpackChunkName: 'DemoGroupHelpMenu' */ 'universal/components/MeetingHelp/DemoGroupHelpMenu'
+    /* webpackChunkName: 'DemoGroupHelpMenu' */ './MeetingHelp/DemoGroupHelpMenu'
   )
 )
 

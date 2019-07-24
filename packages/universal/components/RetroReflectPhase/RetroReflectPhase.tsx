@@ -55,10 +55,10 @@ interface Props extends RetroMeetingPhaseProps {
 }
 
 const ReflectHelpMenu = lazyPreload(async () =>
-  import(/* webpackChunkName: 'ReflectHelpMenu' */ 'universal/components/MeetingHelp/ReflectHelpMenu')
+  import(/* webpackChunkName: 'ReflectHelpMenu' */ '../MeetingHelp/ReflectHelpMenu')
 )
 const DemoReflectHelpMenu = lazyPreload(async () =>
-  import(/* webpackChunkName: 'DemoReflectHelpMenu' */ 'universal/components/MeetingHelp/DemoReflectHelpMenu')
+  import(/* webpackChunkName: 'DemoReflectHelpMenu' */ '../MeetingHelp/DemoReflectHelpMenu')
 )
 
 const RetroReflectPhase = (props: Props) => {

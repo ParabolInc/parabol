@@ -59,7 +59,7 @@ const CheckInWrapper = styled('div')({
 
 const CheckInHelpMenu = lazyPreload(async () =>
   import(
-    /* webpackChunkName: 'CheckInHelpMenu' */ 'universal/components/MeetingHelp/CheckInHelpMenu'
+    /* webpackChunkName: 'CheckInHelpMenu' */ './MeetingHelp/CheckInHelpMenu'
   )
 )
 

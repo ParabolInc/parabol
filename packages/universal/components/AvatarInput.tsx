@@ -21,7 +21,7 @@ interface Props {
 }
 
 const Confetti = lazy(() =>
-  import(/* webpackChunkName: 'Confetti' */ 'universal/components/Confetti')
+  import(/* webpackChunkName: 'Confetti' */ './Confetti')
 )
 
 class AvatarInput extends Component<Props> {

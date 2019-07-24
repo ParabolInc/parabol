@@ -54,7 +54,7 @@ const OrgNameBlock = styled('div')({
 })
 
 const OrgAvatarInput = lazy(() =>
-  import(/* webpackChunkName: 'OrgAvatarInput' */ 'universal/components/OrgAvatarInput')
+  import(/* webpackChunkName: 'OrgAvatarInput' */ '../../../../components/OrgAvatarInput')
 )
 
 interface Props extends RouteComponentProps<{}> {

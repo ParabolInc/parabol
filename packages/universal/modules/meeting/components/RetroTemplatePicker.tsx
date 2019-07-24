@@ -13,12 +13,12 @@ interface Props {
 
 const RetroTemplateListMenu = lazyPreload(() =>
   import(/* webpackChunkName: 'RetroTemplateListMenu' */
-  'universal/modules/meeting/components/RetroTemplateListMenu')
+  './RetroTemplateListMenu')
 )
 
 const ReflectTemplateModal = lazyPreload(() =>
   import(/* webpackChunkName: 'ReflectTemplateModal' */
-  'universal/modules/meeting/components/ReflectTemplateModal')
+  './ReflectTemplateModal')
 )
 
 const RetroTemplatePicker = (props: Props) => {

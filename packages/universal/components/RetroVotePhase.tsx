@@ -131,11 +131,11 @@ const BottomControlSpacer = styled('div')({
 })
 
 const VoteHelpMenu = lazyPreload(async () =>
-  import(/* webpackChunkName: 'VoteHelpMenu' */ 'universal/components/MeetingHelp/VoteHelpMenu')
+  import(/* webpackChunkName: 'VoteHelpMenu' */ './MeetingHelp/VoteHelpMenu')
 )
 const DemoVoteHelpMenu = lazyPreload(async () =>
   import(
-    /* webpackChunkName: 'DemoVoteHelpMenu' */ 'universal/components/MeetingHelp/DemoVoteHelpMenu'
+    /* webpackChunkName: 'DemoVoteHelpMenu' */ './MeetingHelp/DemoVoteHelpMenu'
   )
 )
 

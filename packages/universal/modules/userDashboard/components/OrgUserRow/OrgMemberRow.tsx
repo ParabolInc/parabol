@@ -63,15 +63,15 @@ const MenuButton = forwardRef((props: FlatButtonProps, ref: Ref<HTMLButtonElemen
 ))
 
 const LeaveOrgModal = lazyPreload(() =>
-  import(/* webpackChunkName: 'LeaveOrgModal' */ 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal')
+  import(/* webpackChunkName: 'LeaveOrgModal' */ '../LeaveOrgModal/LeaveOrgModal')
 )
 
 const BillingLeaderActionMenu = lazyPreload(() =>
-  import(/* webpackChunkName: 'BillingLeaderActionMenu' */ 'universal/components/BillingLeaderActionMenu')
+  import(/* webpackChunkName: 'BillingLeaderActionMenu' */ '../../../../components/BillingLeaderActionMenu')
 )
 
 const RemoveFromOrgModal = lazyPreload(() =>
-  import(/* webpackChunkName: 'RemoveFromOrgModal' */ 'universal/modules/userDashboard/components/RemoveFromOrgModal/RemoveFromOrgModal')
+  import(/* webpackChunkName: 'RemoveFromOrgModal' */ '../RemoveFromOrgModal/RemoveFromOrgModal')
 )
 
 const OrgMemberRow = (props: Props) => {

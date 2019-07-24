@@ -15,7 +15,7 @@ interface Props {
 }
 
 const StageTimerModal = lazyPreload(async () =>
-  import(/* webpackChunkName: 'StageTimerModal' */ 'universal/components/StageTimerModal')
+  import(/* webpackChunkName: 'StageTimerModal' */ './StageTimerModal')
 )
 
 const IconLabel = styled(BottomNavIconLabel)({

@@ -19,22 +19,22 @@ interface Props {
 
 const phaseLookup = {
   [NewMeetingPhaseTypeEnum.checkin]: lazyPreload(() =>
-    import(/* webpackChunkName: 'NewMeetingCheckIn' */ 'universal/components/NewMeetingCheckIn')
+    import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
   [NewMeetingPhaseTypeEnum.updates]: lazyPreload(() =>
-    import(/* webpackChunkName: 'ActionMeetingUpdates' */ 'universal/components/ActionMeetingUpdates')
+    import(/* webpackChunkName: 'ActionMeetingUpdates' */ './ActionMeetingUpdates')
   ),
   [NewMeetingPhaseTypeEnum.firstcall]: lazyPreload(() =>
-    import(/* webpackChunkName: 'ActionMeetingFirstCall' */ 'universal/components/ActionMeetingFirstCall')
+    import(/* webpackChunkName: 'ActionMeetingFirstCall' */ './ActionMeetingFirstCall')
   ),
   [NewMeetingPhaseTypeEnum.agendaitems]: lazyPreload(() =>
-    import(/* webpackChunkName: 'ActionMeetingAgendaItems' */ 'universal/components/ActionMeetingAgendaItems')
+    import(/* webpackChunkName: 'ActionMeetingAgendaItems' */ './ActionMeetingAgendaItems')
   ),
   [NewMeetingPhaseTypeEnum.lastcall]: lazyPreload(() =>
-    import(/* webpackChunkName: 'ActionMeetingLastCall' */ 'universal/components/ActionMeetingLastCall')
+    import(/* webpackChunkName: 'ActionMeetingLastCall' */ './ActionMeetingLastCall')
   ),
   [NewMeetingPhaseTypeEnum.lobby]: lazyPreload(() =>
-    import(/* webpackChunkName: 'ActionMeetingLobby' */ 'universal/components/ActionMeetingLobby')
+    import(/* webpackChunkName: 'ActionMeetingLobby' */ './ActionMeetingLobby')
   )
 }
 

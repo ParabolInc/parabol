@@ -136,12 +136,12 @@ const StyledBottomBar = styled(MeetingControlBar)({
 
 const DiscussHelpMenu = lazyPreload(async () =>
   import(
-    /* webpackChunkName: 'DiscussHelpMenu' */ 'universal/components/MeetingHelp/DiscussHelpMenu'
+    /* webpackChunkName: 'DiscussHelpMenu' */ './MeetingHelp/DiscussHelpMenu'
   )
 )
 const DemoDiscussHelpMenu = lazyPreload(async () =>
   import(
-    /* webpackChunkName: 'DemoDiscussHelpMenu' */ 'universal/components/MeetingHelp/DemoDiscussHelpMenu'
+    /* webpackChunkName: 'DemoDiscussHelpMenu' */ './MeetingHelp/DemoDiscussHelpMenu'
   )
 )
 
