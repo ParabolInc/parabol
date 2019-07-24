@@ -37,7 +37,7 @@ const useSwarm = (roomId) => {
       disposable.current && disposable.current()
       disposable.current = null
     }
-  }, [roomId])
+  }, [atmosphere, roomId])
   return state
 }
 

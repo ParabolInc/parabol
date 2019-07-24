@@ -47,10 +47,11 @@ const LoadingComponent = forwardRef((props: Props, ref: any) => {
     if (loadingDelayRef) {
       loadingDelayRef.current.start = Date.now()
     }
+    const loadingDelay = loadingDelayRef && loadingDelayRef.current
     return () => {
-      if (loadingDelayRef) {
-        loadingDelayRef.current.stop = Date.now()
-        loadingDelayRef.current.forceUpdate()
+      if (loadingDelay) {
+        loadingDelay.stop = Date.now()
+        loadingDelay.forceUpdate()
       }
     }
   }, [])

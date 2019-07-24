@@ -1,5 +1,5 @@
 import React, {useCallback, useMemo, useReducer} from 'react'
-import Legitity from '../../validation/Legitity'
+import Legitity from '../validation/Legitity'
 
 interface FieldInputDict {
   [name: string]: {
@@ -107,7 +107,7 @@ const useForm = (fieldInputDict: FieldInputDict, deps: any[] = []) => {
       dispatch({type: 'setError', name, error: res.error})
       return res
     },
-    [...deps, state]
+    [...deps, state] // eslint-disable-line react-hooks/exhaustive-deps
   )
 
   const setDirty = useCallback(
@@ -118,7 +118,7 @@ const useForm = (fieldInputDict: FieldInputDict, deps: any[] = []) => {
       }
       dispatch({type: 'setDirty', name})
     },
-    [...deps, state]
+    [...deps, state] // eslint-disable-line react-hooks/exhaustive-deps
   )
 
   const onChange = useCallback(
@@ -128,7 +128,7 @@ const useForm = (fieldInputDict: FieldInputDict, deps: any[] = []) => {
       dispatch({type: 'setValue', name, value})
       validate(name)
     },
-    [...deps]
+    [...deps] // eslint-disable-line react-hooks/exhaustive-deps
   )
 
   return {setDirtyField: setDirty, onChange, validateField: validate, fields: state}

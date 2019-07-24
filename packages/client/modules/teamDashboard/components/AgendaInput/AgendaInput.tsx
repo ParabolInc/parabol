@@ -16,7 +16,7 @@ import appTheme from '../../../../styles/theme/appTheme'
 import ui from '../../../../styles/ui'
 import getNextSortOrder from '../../../../utils/getNextSortOrder'
 import toTeamMemberId from '../../../../utils/relay/toTeamMemberId'
-import useForm from '../../../../utils/relay/useForm'
+import useForm from '../../../../hooks/useForm'
 
 const AgendaInputBlock = styled('div')({
   padding: `${meetingSidebarGutter} 0`,

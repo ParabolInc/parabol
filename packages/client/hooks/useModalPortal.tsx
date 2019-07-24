@@ -94,7 +94,7 @@ const useModalPortal = (
     return () => {
       isMounted = false
     }
-  }, [portalStatus])
+  }, [portalStatus, setPortalStatus])
   return (reactEl) => {
     return portal(
       <ModalBlock ref={targetRef as any}>

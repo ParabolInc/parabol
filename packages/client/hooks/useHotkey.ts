@@ -11,8 +11,9 @@ const useHotkey = (
   useEffect(() => {
     bindingsRef.current.push(keys)
     Mousetrap.bind(keys, callback, action)
+    const bindings = bindingsRef.current
     return () => {
-      bindingsRef.current.forEach((key) => {
+      bindings.forEach((key) => {
         Mousetrap.unbind(key)
       })
     }

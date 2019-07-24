@@ -7,7 +7,7 @@ const useTimeout = (duration: number) => {
       setTimedOut(true)
     }, duration)
     return () => clearTimeout(timer)
-  }, [])
+  }, [duration])
   return timedOut
 }
 

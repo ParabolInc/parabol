@@ -18,7 +18,7 @@ import {MenuProps} from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {TaskServiceEnum} from '../types/graphql'
-import useForm from '../utils/relay/useForm'
+import useForm from '../hooks/useForm'
 import {MenuMutationProps} from '../hooks/useMutationProps'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 

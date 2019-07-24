@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import AtlassianClientManager, {
   AccessibleResource,
   JiraProject
@@ -24,16 +24,16 @@ const getProjectName = (projectName, sites, cloudId) => {
 }
 
 const useJiraProjects = (accessToken: string, sites: AccessibleResource[]) => {
-  let isMounted = true
   window.clearTimeout(container.clear as number)
-  const manager = new AtlassianClientManager(accessToken || '')
   const [projects, setProjects] = useState<MenuItem[]>(container.projects)
   const [status, setStatus] = useState(container.status)
+  const isMountedRef = useRef(true)
   useEffect(() => {
     const fetchProjects = async () => {
       const cloudIds = sites.map(({id}) => id)
+      const manager = new AtlassianClientManager(accessToken || '')
       await manager.getProjects(cloudIds, (err, res) => {
-        if (!isMounted) return
+        if (!isMountedRef.current) return
         if (err) {
           console.error(err)
           container.status = 'error'
@@ -54,11 +54,11 @@ const useJiraProjects = (accessToken: string, sites: AccessibleResource[]) => {
       setStatus('loaded')
     }
 
-    if (isMounted && container.projects.length === 0 && sites.length > 0) {
+    if (isMountedRef.current && container.projects.length === 0 && sites.length > 0) {
       fetchProjects().catch()
     }
     return () => {
-      isMounted = false
+      isMountedRef.current = false
       container.clear = window.setTimeout(() => {
         container.projects.length = 0
         container.status = 'loading'

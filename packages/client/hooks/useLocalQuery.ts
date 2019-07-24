@@ -24,8 +24,9 @@ const useLocalQuery = <TQuery extends {response: any; variables: any}>(
         setData(newSnapshot.data || null)
       })
     )
+    const disposables = disposablesRef.current
     return () => {
-      disposablesRef.current.forEach((disposable) => disposable.dispose())
+      disposables.forEach((disposable) => disposable.dispose())
     }
   }, [query, variables])
   return dataRef.current

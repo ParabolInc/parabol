@@ -1,26 +1,26 @@
-import {useEffect, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import AtlassianClientManager, {
   AccessibleResource,
   AtlassianError
 } from '../utils/AtlassianClientManager'
 
 const useAtlassianSites = (accessToken?: string) => {
-  let isMounted = true
-  const manager = new AtlassianClientManager(accessToken || '')
+  const isMountedRef = useRef(true)
   const [sites, setSites] = useState<AccessibleResource[]>([])
   const [status, setStatus] = useState<null | 'loading' | 'loaded' | 'error'>(null)
   useEffect(() => {
+    const manager = new AtlassianClientManager(accessToken || '')
     const fetchSites = async () => {
       let res: AtlassianError | AccessibleResource[]
       try {
         res = await manager.getAccessibleResources()
       } catch (e) {
-        if (isMounted) {
+        if (isMountedRef.current) {
           setStatus('error')
         }
         return
       }
-      if (isMounted) {
+      if (isMountedRef.current) {
         if (Array.isArray(res)) {
           setStatus('loaded')
           setSites(res)
@@ -30,12 +30,12 @@ const useAtlassianSites = (accessToken?: string) => {
       }
     }
 
-    if (accessToken && isMounted) {
+    if (accessToken && isMountedRef.current) {
       setStatus('loading')
       fetchSites().catch()
     }
     return () => {
-      isMounted = false
+      isMountedRef.current = false
     }
   }, [accessToken])
   return {sites, status}
