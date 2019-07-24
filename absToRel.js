@@ -41,11 +41,10 @@ const makeGetDiskPathFromImportPath = (rootDirs) => {
 }
 
 const makeChangePathToRelativeIfNeeded = (currentModuleDirectoryPath, isDependency, rootDirs) => {
-
   // const getDiskPathFromImportPath = makeGetDiskPathFromImportPath(rootDirs)
   return (importedModulePath) => {
     if (importedModulePath.includes('__generated__') && importedModulePath.endsWith('.graphql')) {
-      const fileName = importedModulePath.slice(importedModulePath.lastIndexOf('/') +1)
+      const fileName = importedModulePath.slice(importedModulePath.lastIndexOf('/') + 1)
       const diskPath = path.join(__dirname, 'packages', 'client', '__generated__', fileName)
       const relativePath = path.relative(currentModuleDirectoryPath, diskPath).replace(/\\/g, '/')
       // const rp = relativePath.replace('universal', 'client')
