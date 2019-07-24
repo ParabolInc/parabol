@@ -1,5 +1,5 @@
-require('../../packages/server/babelRegister')
-const resolve = require('../../packages/client/webpack/webpackResolve')
+require('../../server/babelRegister')
+const resolve = require('../../client/webpack/webpackResolve')
 const path = require('path')
 
 module.exports = {
