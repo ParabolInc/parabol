@@ -1,5 +1,5 @@
 import shortid from 'shortid'
-import {RETRO_PHASE_ITEM} from 'universal/utils/constants'
+import {RETRO_PHASE_ITEM} from '../../../../universal/utils/constants'
 
 export class Prompt {
   id: string

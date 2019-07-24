@@ -1,11 +1,11 @@
-import {GROUP, REFLECT, RETROSPECTIVE, VOTE} from 'universal/utils/constants'
-import addEntitiesToReflections from 'server/graphql/mutations/helpers/addEntitiesToReflections'
-import addDiscussionTopics from 'server/graphql/mutations/helpers/addDiscussionTopics'
-import addDefaultGroupTitles from 'server/graphql/mutations/helpers/addDefaultGroupTitles'
-import removeEmptyReflections from 'server/graphql/mutations/helpers/removeEmptyReflections'
-import Meeting from 'server/database/types/Meeting'
-import {DataLoaderWorker} from 'server/graphql/graphql'
-import GenericMeetingStage from 'server/database/types/GenericMeetingStage'
+import {GROUP, REFLECT, RETROSPECTIVE, VOTE} from '../../../../universal/utils/constants'
+import addEntitiesToReflections from './addEntitiesToReflections'
+import addDiscussionTopics from './addDiscussionTopics'
+import addDefaultGroupTitles from './addDefaultGroupTitles'
+import removeEmptyReflections from './removeEmptyReflections'
+import Meeting from '../../../database/types/Meeting'
+import {DataLoaderWorker} from '../../graphql'
+import GenericMeetingStage from '../../../database/types/GenericMeetingStage'
 
 /*
  * handle side effects when a stage is completed

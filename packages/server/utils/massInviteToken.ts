@@ -1,4 +1,4 @@
-import {fromEpochSeconds, toEpochSeconds} from 'server/utils/epochTime'
+import {fromEpochSeconds, toEpochSeconds} from './epochTime'
 import {sign, verify} from 'jsonwebtoken'
 import ms from 'ms'
 

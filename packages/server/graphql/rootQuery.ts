@@ -1,11 +1,11 @@
 import {GraphQLList, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
-import User from 'server/graphql/types/User'
-import {getUserId} from 'server/utils/authorization'
-import verifiedInvitation from 'server/graphql/queries/verifiedInvitation'
-import rateLimit from 'server/graphql/rateLimit'
-import getRethink from 'server/database/rethinkDriver'
-import massInvitation from 'server/graphql/queries/massInvitation'
-import {GQLContext} from 'server/graphql/graphql'
+import User from './types/User'
+import {getUserId} from '../utils/authorization'
+import verifiedInvitation from './queries/verifiedInvitation'
+import rateLimit from './rateLimit'
+import getRethink from '../database/rethinkDriver'
+import massInvitation from './queries/massInvitation'
+import {GQLContext} from './graphql'
 
 export default new GraphQLObjectType<any, GQLContext>({
   name: 'Query',

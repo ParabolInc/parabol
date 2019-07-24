@@ -1,7 +1,7 @@
 import {GraphQLObjectType} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
-import {GITHUB} from 'universal/utils/constants'
+import getRethink from '../../database/rethinkDriver'
+import StandardMutationError from './StandardMutationError'
+import {GITHUB} from '../../../universal/utils/constants'
 import GitHubAuth from './GitHubAuth'
 import User from './User'
 

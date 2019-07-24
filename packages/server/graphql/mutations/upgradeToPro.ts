@@ -1,13 +1,13 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import UpgradeToProPayload from 'server/graphql/types/UpgradeToProPayload'
-import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
-import publish from 'server/utils/publish'
-import sendSegmentEvent, {sendSegmentIdentify} from 'server/utils/sendSegmentEvent'
-import {ORGANIZATION, TEAM} from 'universal/utils/constants'
-import standardError from 'server/utils/standardError'
-import upgradeToPro from 'server/graphql/mutations/helpers/upgradeToPro'
-import {GQLContext} from 'server/graphql/graphql'
+import getRethink from '../../database/rethinkDriver'
+import UpgradeToProPayload from '../types/UpgradeToProPayload'
+import {getUserId, isUserBillingLeader} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import sendSegmentEvent, {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
+import {ORGANIZATION, TEAM} from '../../../universal/utils/constants'
+import standardError from '../../utils/standardError'
+import upgradeToPro from './helpers/upgradeToPro'
+import {GQLContext} from '../graphql'
 
 export default {
   type: UpgradeToProPayload,

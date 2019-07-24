@@ -1,13 +1,13 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import {getUserId, isTeamMember} from 'server/utils/authorization'
-import standardError from 'server/utils/standardError'
-import {GQLContext} from 'server/graphql/graphql'
-import rateLimit from 'server/graphql/rateLimit'
-import DenyPushInvitationPayload from 'server/graphql/types/DenyPushInvitationPayload'
-import PushInvitation from 'server/database/types/PushInvitation'
-import publish from 'server/utils/publish'
-import {TEAM} from 'universal/utils/constants'
+import getRethink from '../../database/rethinkDriver'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
+import rateLimit from '../rateLimit'
+import DenyPushInvitationPayload from '../types/DenyPushInvitationPayload'
+import PushInvitation from '../../database/types/PushInvitation'
+import publish from '../../utils/publish'
+import {TEAM} from '../../../universal/utils/constants'
 
 export default {
   type: DenyPushInvitationPayload,

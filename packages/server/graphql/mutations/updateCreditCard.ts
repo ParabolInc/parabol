@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import UpdateCreditCardPayload from 'server/graphql/types/UpdateCreditCardPayload'
-import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
-import publish from 'server/utils/publish'
-import {ORGANIZATION, TEAM} from 'universal/utils/constants'
-import standardError from 'server/utils/standardError'
-import upgradeToPro from 'server/graphql/mutations/helpers/upgradeToPro'
-import {GQLContext} from 'server/graphql/graphql'
+import UpdateCreditCardPayload from '../types/UpdateCreditCardPayload'
+import {getUserId, isUserBillingLeader} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import {ORGANIZATION, TEAM} from '../../../universal/utils/constants'
+import standardError from '../../utils/standardError'
+import upgradeToPro from './helpers/upgradeToPro'
+import {GQLContext} from '../graphql'
 
 export default {
   type: UpdateCreditCardPayload,

@@ -1,6 +1,6 @@
-import {GQLContext} from 'server/graphql/graphql'
+import {GQLContext} from '../graphql/graphql'
 import {Environment, FetchFunction, Network, RecordSource, Store} from 'relay-runtime'
-import ssrGraphQL from 'server/graphql/ssrGraphQL'
+import ssrGraphQL from '../graphql/ssrGraphQL'
 import {ExecutionResult} from 'graphql'
 
 const noop = (): any => {

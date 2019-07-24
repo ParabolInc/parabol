@@ -1,17 +1,17 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import ms from 'ms'
-import {GQLContext} from 'server/graphql/graphql'
-import fetchAllIntegrations from 'server/graphql/queries/helpers/fetchAllIntegrations'
+import {GQLContext} from '../graphql'
+import fetchAllIntegrations from './helpers/fetchAllIntegrations'
 import {
   getPermsByTaskService,
   getTeamIntegrationsByUserId,
   IntegrationByUserId,
   useOnlyUserIntegrations
-} from 'server/graphql/queries/helpers/suggestedIntegrationHelpers'
-import SuggestedIntegrationQueryPayload from 'server/graphql/types/SuggestedIntegrationQueryPayload'
-import {getUserId} from 'server/utils/authorization'
-import standardError from 'server/utils/standardError'
-import {ISuggestedIntegrationsOnUserArguments, IUser} from 'universal/types/graphql'
+} from './helpers/suggestedIntegrationHelpers'
+import SuggestedIntegrationQueryPayload from '../types/SuggestedIntegrationQueryPayload'
+import {getUserId} from '../../utils/authorization'
+import standardError from '../../utils/standardError'
+import {ISuggestedIntegrationsOnUserArguments, IUser} from '../../../universal/types/graphql'
 
 export default {
   description: 'The integrations that the user would probably like to use',

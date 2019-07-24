@@ -1,9 +1,9 @@
-import getRethink from 'server/database/rethinkDriver'
-import StripeManager from 'server/utils/StripeManager'
-import {fromEpochSeconds} from 'server/utils/epochTime'
-import {PRO} from 'universal/utils/constants'
-import getCCFromCustomer from 'server/graphql/mutations/helpers/getCCFromCustomer'
-import {IOrganization} from 'universal/types/graphql'
+import getRethink from '../../../database/rethinkDriver'
+import StripeManager from '../../../utils/StripeManager'
+import {fromEpochSeconds} from '../../../utils/epochTime'
+import {PRO} from '../../../../universal/utils/constants'
+import getCCFromCustomer from './getCCFromCustomer'
+import {IOrganization} from '../../../../universal/types/graphql'
 
 const upgradeToPro = async (orgId: string, source: string) => {
   const r = getRethink()

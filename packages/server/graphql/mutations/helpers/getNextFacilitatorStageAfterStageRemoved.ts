@@ -1,7 +1,7 @@
-import GenericMeetingPhase from 'server/database/types/GenericMeetingPhase'
-import findStageById from 'universal/utils/meetings/findStageById'
-import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
-import findStageBeforeId from 'universal/utils/meetings/findStageBeforeId'
+import GenericMeetingPhase from '../../../database/types/GenericMeetingPhase'
+import findStageById from '../../../../universal/utils/meetings/findStageById'
+import findStageAfterId from '../../../../universal/utils/meetings/findStageAfterId'
+import findStageBeforeId from '../../../../universal/utils/meetings/findStageBeforeId'
 
 const getNextFacilitatorStageAfterStageRemoved = (
   facilitatorStageId: string,

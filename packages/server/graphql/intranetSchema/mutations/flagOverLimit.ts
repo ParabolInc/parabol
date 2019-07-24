@@ -1,8 +1,8 @@
 import {GraphQLNonNull, GraphQLString} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import {GQLContext} from 'server/graphql/graphql'
-import FlagOverLimitPayload from 'server/graphql/types/FlagOverLimitPayload'
-import {requireSU} from 'server/utils/authorization'
+import getRethink from '../../../database/rethinkDriver'
+import {GQLContext} from '../../graphql'
+import FlagOverLimitPayload from '../../types/FlagOverLimitPayload'
+import {requireSU} from '../../../utils/authorization'
 
 const flagOverLimit = {
   type: FlagOverLimitPayload,

@@ -1,6 +1,6 @@
 import {ReactElement} from 'react'
 import ReactDOMServer from 'react-dom/server'
-import ServerEnvironment from 'server/email/ServerEnvironment'
+import ServerEnvironment from './ServerEnvironment'
 
 const renderSSRElement = async (element: ReactElement, environment: ServerEnvironment) => {
   // initiate data requests

@@ -1,7 +1,7 @@
-import {IAuthToken} from 'universal/types/graphql'
-import {BILLING_LEADER, PERSONAL} from 'universal/utils/constants'
+import {IAuthToken} from '../../universal/types/graphql'
+import {BILLING_LEADER, PERSONAL} from '../../universal/utils/constants'
 import getRethink from '../database/rethinkDriver'
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
+import toTeamMemberId from '../../universal/utils/relay/toTeamMemberId'
 
 export const getUserId = (authToken: any) => {
   return authToken && typeof authToken === 'object' ? (authToken.sub as string) : ''

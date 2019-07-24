@@ -1,9 +1,9 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import JiraRemoteProject from 'server/graphql/types/JiraRemoteProject'
+import JiraRemoteProject from './JiraRemoteProject'
 import SuggestedIntegration, {
   suggestedIntegrationFields
-} from 'server/graphql/types/SuggestedIntegration'
-import {getUserId} from 'server/utils/authorization'
+} from './SuggestedIntegration'
+import {getUserId} from '../../utils/authorization'
 
 const SuggestedIntegrationJira = new GraphQLObjectType({
   name: 'SuggestedIntegrationJira',

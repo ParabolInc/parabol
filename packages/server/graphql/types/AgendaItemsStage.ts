@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import NewMeetingStage, {newMeetingStageFields} from 'server/graphql/types/NewMeetingStage'
+import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
 import AgendaItem from './AgendaItem'
-import {IAgendaItemsStage} from 'universal/types/graphql'
-import {GQLContext} from 'server/graphql/graphql'
+import {IAgendaItemsStage} from '../../../universal/types/graphql'
+import {GQLContext} from '../graphql'
 
 const AgendaItemsStage = new GraphQLObjectType<IAgendaItemsStage, GQLContext>({
   name: 'AgendaItemsStage',

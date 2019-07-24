@@ -1,7 +1,7 @@
 import ms from 'ms'
-import getRethink from 'server/database/rethinkDriver'
-import {DataLoaderWorker} from 'server/graphql/graphql'
-import makeSuggestedIntegrationId from 'universal/utils/makeSuggestedIntegrationId'
+import getRethink from '../../../database/rethinkDriver'
+import {DataLoaderWorker} from '../../graphql'
+import makeSuggestedIntegrationId from '../../../../universal/utils/makeSuggestedIntegrationId'
 
 export interface IntegrationByUserId {
   id: string

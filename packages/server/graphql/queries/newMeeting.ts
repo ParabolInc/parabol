@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import NewMeeting from 'server/graphql/types/NewMeeting'
+import NewMeeting from '../types/NewMeeting'
 import {getUserId, isPastOrPresentTeamMember, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 

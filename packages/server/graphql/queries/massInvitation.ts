@@ -1,9 +1,9 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import rateLimit from 'server/graphql/rateLimit'
-import MassInvitationPayload from 'server/graphql/types/MassInvitationPayload'
-import {verifyMassInviteToken} from 'server/utils/massInviteToken'
-import {GQLContext} from 'server/graphql/graphql'
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
+import rateLimit from '../rateLimit'
+import MassInvitationPayload from '../types/MassInvitationPayload'
+import {verifyMassInviteToken} from '../../utils/massInviteToken'
+import {GQLContext} from '../graphql'
+import toTeamMemberId from '../../../universal/utils/relay/toTeamMemberId'
 
 export default {
   type: MassInvitationPayload,

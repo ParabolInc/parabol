@@ -1,7 +1,7 @@
 import shortid from 'shortid'
-import dndNoise from 'universal/utils/dndNoise'
-import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap'
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
+import dndNoise from '../../../universal/utils/dndNoise'
+import getTagsFromEntityMap from '../../../universal/utils/draftjs/getTagsFromEntityMap'
+import toTeamMemberId from '../../../universal/utils/relay/toTeamMemberId'
 
 export type TaskStatus = 'active' | 'stuck' | 'done' | 'future'
 export type TaskTag = 'private' | 'archived'

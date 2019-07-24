@@ -1,7 +1,7 @@
-import CheckInStage from 'server/database/types/CheckInStage'
-import {CHECKIN} from 'universal/utils/constants'
-import convertToTaskContent from 'universal/utils/draftjs/convertToTaskContent'
-import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting'
+import CheckInStage from './CheckInStage'
+import {CHECKIN} from '../../../universal/utils/constants'
+import convertToTaskContent from '../../../universal/utils/draftjs/convertToTaskContent'
+import {makeCheckinGreeting, makeCheckinQuestion} from '../../../universal/utils/makeCheckinGreeting'
 import GenericMeetingPhase from './GenericMeetingPhase'
 
 interface TeamMember {

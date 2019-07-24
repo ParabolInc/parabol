@@ -1,4 +1,4 @@
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
+import toTeamMemberId from '../../../universal/utils/relay/toTeamMemberId'
 
 export default class MeetingMember {
   id: string

@@ -1,9 +1,9 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {GQLContext} from 'server/graphql/graphql'
-import MeetingMember, {meetingMemberFields} from 'server/graphql/types/MeetingMember'
-import Task from 'server/graphql/types/Task'
-import {IActionMeetingMember} from 'universal/types/graphql'
-import getRethink from 'server/database/rethinkDriver'
+import {GQLContext} from '../graphql'
+import MeetingMember, {meetingMemberFields} from './MeetingMember'
+import Task from './Task'
+import {IActionMeetingMember} from '../../../universal/types/graphql'
+import getRethink from '../../database/rethinkDriver'
 
 const ActionMeetingMember = new GraphQLObjectType<IActionMeetingMember, GQLContext>({
   name: 'ActionMeetingMember',

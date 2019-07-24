@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification'
-import TeamNotification from 'server/graphql/types/TeamNotification'
+import Notification, {notificationInterfaceFields} from './Notification'
+import TeamNotification from './TeamNotification'
 import NewMeeting from './NewMeeting'
-import {GQLContext} from 'server/graphql/graphql'
+import {GQLContext} from '../graphql'
 
 const NotificationMeetingStageTimeLimitEnd = new GraphQLObjectType<any, GQLContext, any>({
   name: 'NotificationMeetingStageTimeLimitEnd',

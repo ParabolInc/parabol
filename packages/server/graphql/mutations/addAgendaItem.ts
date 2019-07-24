@@ -1,14 +1,14 @@
 import {GraphQLNonNull} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import AddAgendaItemPayload from 'server/graphql/types/AddAgendaItemPayload'
-import CreateAgendaItemInput from 'server/graphql/types/CreateAgendaItemInput'
-import publish from 'server/utils/publish'
+import getRethink from '../../database/rethinkDriver'
+import AddAgendaItemPayload from '../types/AddAgendaItemPayload'
+import CreateAgendaItemInput from '../types/CreateAgendaItemInput'
+import publish from '../../utils/publish'
 import shortid from 'shortid'
-import {TEAM} from 'universal/utils/constants'
-import makeAgendaItemSchema from 'universal/validation/makeAgendaItemSchema'
-import {getUserId, isTeamMember} from 'server/utils/authorization'
-import standardError from 'server/utils/standardError'
-import addAgendaItemToNewMeeting from 'server/graphql/mutations/helpers/addAgendaItemToNewMeeting'
+import {TEAM} from '../../../universal/utils/constants'
+import makeAgendaItemSchema from '../../../universal/validation/makeAgendaItemSchema'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import standardError from '../../utils/standardError'
+import addAgendaItemToNewMeeting from './helpers/addAgendaItemToNewMeeting'
 
 export default {
   type: AddAgendaItemPayload,

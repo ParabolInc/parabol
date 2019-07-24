@@ -1,6 +1,6 @@
 import {GraphQLObjectType} from 'graphql'
-import NewMeetingStage, {newMeetingStageFields} from 'server/graphql/types/NewMeetingStage'
-import {GQLContext} from 'server/graphql/graphql'
+import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
+import {GQLContext} from '../graphql'
 
 const GenericMeetingStage = new GraphQLObjectType<any, GQLContext, any>({
   name: 'GenericMeetingStage',

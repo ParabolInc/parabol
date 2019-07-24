@@ -1,12 +1,12 @@
 import {GraphQLBoolean, GraphQLNonNull} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import {DataLoaderWorker} from 'server/graphql/graphql'
-import SegmentClientEventEnum from 'server/graphql/types/SegmentClientEventEnum'
-import SegmentEventTrackOptions from 'server/graphql/types/SegmentEventTrackOptions'
-import {getUserId, isTeamMember, isUserBillingLeader} from 'server/utils/authorization'
-import sendSegmentEvent from 'server/utils/sendSegmentEvent'
-import standardError from 'server/utils/standardError'
-import {ISegmentEventTrackOnMutationArguments} from 'universal/types/graphql'
+import getRethink from '../../database/rethinkDriver'
+import {DataLoaderWorker} from '../graphql'
+import SegmentClientEventEnum from '../types/SegmentClientEventEnum'
+import SegmentEventTrackOptions from '../types/SegmentEventTrackOptions'
+import {getUserId, isTeamMember, isUserBillingLeader} from '../../utils/authorization'
+import sendSegmentEvent from '../../utils/sendSegmentEvent'
+import standardError from '../../utils/standardError'
+import {ISegmentEventTrackOnMutationArguments} from '../../../universal/types/graphql'
 
 const extraOptionsCreator = {
   HelpMenuOpen: async (viewerId: string, _dataLoader: DataLoaderWorker, _options: object) => {

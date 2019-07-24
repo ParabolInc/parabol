@@ -1,7 +1,7 @@
-import stripe from 'server/billing/stripe'
-import getRethink from 'server/database/rethinkDriver'
-import {fromEpochSeconds} from 'server/utils/epochTime'
-import {AUTO_PAUSE_USER, PAUSE_USER, UNPAUSE_USER} from 'server/utils/serverConstants'
+import stripe from '../stripe'
+import getRethink from '../../database/rethinkDriver'
+import {fromEpochSeconds} from '../../utils/epochTime'
+import {AUTO_PAUSE_USER, PAUSE_USER, UNPAUSE_USER} from '../../utils/serverConstants'
 import shortid from 'shortid'
 import Stripe from 'stripe'
 import {
@@ -11,7 +11,7 @@ import {
   PAID,
   PENDING,
   UPCOMING
-} from 'universal/utils/constants'
+} from '../../../universal/utils/constants'
 
 // type type = 'pauseUser' | 'unpauseUser' | 'autoPauseUser' | 'addUser' | 'removeUser'
 interface InvoicesByStartTime {

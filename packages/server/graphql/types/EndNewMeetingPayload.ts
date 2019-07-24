@@ -1,12 +1,12 @@
 import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {resolveNewMeeting} from 'server/graphql/resolvers'
-import Team from 'server/graphql/types/Team'
-import Task from 'server/graphql/types/Task'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
-import NewMeeting from 'server/graphql/types/NewMeeting'
-import {GQLContext} from 'server/graphql/graphql'
-import {getUserId} from 'server/utils/authorization'
-import isTaskPrivate from 'universal/utils/isTaskPrivate'
+import {resolveNewMeeting} from '../resolvers'
+import Team from './Team'
+import Task from './Task'
+import StandardMutationError from './StandardMutationError'
+import NewMeeting from './NewMeeting'
+import {GQLContext} from '../graphql'
+import {getUserId} from '../../utils/authorization'
+import isTaskPrivate from '../../../universal/utils/isTaskPrivate'
 
 const EndNewMeetingPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'EndNewMeetingPayload',

@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {resolveTeam} from 'server/graphql/resolvers'
-import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
-import Team from 'server/graphql/types/Team'
+import {resolveTeam} from '../resolvers'
+import GraphQLEmailType from './GraphQLEmailType'
+import StandardMutationError from './StandardMutationError'
+import Team from './Team'
 import NotificationTeamInvitation from './NotificationTeamInvitation'
 
 const InviteToTeamPayload = new GraphQLObjectType({

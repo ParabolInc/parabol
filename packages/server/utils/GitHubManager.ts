@@ -1,6 +1,6 @@
 import fetch from 'node-fetch'
 import {stringify} from 'querystring'
-import GitHubClientManager from 'universal/utils/GitHubClientManager'
+import GitHubClientManager from '../../universal/utils/GitHubClientManager'
 
 interface OAuth2Response {
   access_token: string

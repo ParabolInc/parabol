@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql'
-import AgendaItem from 'server/graphql/types/AgendaItem'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
-import NewMeeting from 'server/graphql/types/NewMeeting'
+import AgendaItem from './AgendaItem'
+import StandardMutationError from './StandardMutationError'
+import NewMeeting from './NewMeeting'
 
 const RemoveAgendaItemPayload = new GraphQLObjectType({
   name: 'RemoveAgendaItemPayload',

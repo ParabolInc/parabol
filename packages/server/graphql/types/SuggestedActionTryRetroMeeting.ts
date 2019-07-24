@@ -1,7 +1,7 @@
 import {GraphQLNonNull, GraphQLObjectType, GraphQLID} from 'graphql'
 import SuggestedAction, {suggestedActionInterfaceFields} from './SuggestedAction'
 import Team from './Team'
-import {resolveTeam} from 'server/graphql/resolvers'
+import {resolveTeam} from '../resolvers'
 
 const SuggestedActionTryRetroMeeting = new GraphQLObjectType({
   name: 'SuggestedActionTryRetroMeeting',

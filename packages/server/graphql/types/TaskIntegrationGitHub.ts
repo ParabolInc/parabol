@@ -1,5 +1,5 @@
 import {GraphQLInt, GraphQLObjectType, GraphQLString} from 'graphql'
-import TaskIntegration, {taskIntegrationFields} from 'server/graphql/types/TaskIntegration'
+import TaskIntegration, {taskIntegrationFields} from './TaskIntegration'
 
 const TaskIntegrationGitHub = new GraphQLObjectType({
   name: 'TaskIntegrationGitHub',

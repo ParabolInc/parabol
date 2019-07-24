@@ -1,9 +1,9 @@
-import chunkArray from 'universal/utils/chunkArray'
+import chunkArray from '../../universal/utils/chunkArray'
 import createEmbeddedImages from './createEmbeddedImages'
 import {getMailgunApiConfig, getMailgunOptions} from './getMailgunConfig'
 import mailgun from './mailgunDriver'
 import templates from './templates'
-import sendToSentry from 'server/utils/sendToSentry'
+import sendToSentry from '../utils/sendToSentry'
 
 // See https://documentation.mailgun.com/en/latest/user_manual.html#batch-sending
 const MAILGUN_MAX_BATCH_SIZE = 1000

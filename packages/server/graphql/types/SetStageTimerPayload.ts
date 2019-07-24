@@ -1,8 +1,8 @@
 import {GraphQLObjectType} from 'graphql'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
-import {GQLContext} from 'server/graphql/graphql'
-import NewMeetingStage from 'server/graphql/types/NewMeetingStage'
-import findStageById from 'universal/utils/meetings/findStageById'
+import StandardMutationError from './StandardMutationError'
+import {GQLContext} from '../graphql'
+import NewMeetingStage from './NewMeetingStage'
+import findStageById from '../../../universal/utils/meetings/findStageById'
 
 const SetStageTimerPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'SetStageTimerPayload',

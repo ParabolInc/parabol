@@ -1,5 +1,5 @@
-import {getUserId} from 'server/utils/authorization'
-import standardError from 'server/utils/standardError'
+import {getUserId} from '../utils/authorization'
+import standardError from '../utils/standardError'
 import {
   GraphQLFieldResolver,
   GraphQLNonNull,
@@ -7,7 +7,7 @@ import {
   GraphQLOutputType,
   GraphQLResolveInfo
 } from 'graphql'
-import {GQLContext} from 'server/graphql/graphql'
+import {GQLContext} from './graphql'
 
 interface Options {
   perMinute: number

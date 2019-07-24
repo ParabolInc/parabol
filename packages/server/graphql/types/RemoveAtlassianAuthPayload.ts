@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
+import StandardMutationError from './StandardMutationError'
 import User from './User'
 
 const RemoveAtlassianAuthPayload = new GraphQLObjectType({

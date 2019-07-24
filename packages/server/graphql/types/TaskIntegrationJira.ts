@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import TaskIntegration, {taskIntegrationFields} from 'server/graphql/types/TaskIntegration'
+import TaskIntegration, {taskIntegrationFields} from './TaskIntegration'
 
 const TaskIntegrationJira = new GraphQLObjectType({
   name: 'TaskIntegrationJira',

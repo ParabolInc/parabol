@@ -1,7 +1,7 @@
 import {GraphQLObjectType} from 'graphql'
 import User from './User'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
-import {resolveUser} from 'server/graphql/resolvers'
+import StandardMutationError from './StandardMutationError'
+import {resolveUser} from '../resolvers'
 
 const FlagOverLimitPayload = new GraphQLObjectType({
   name: 'FlagOverLimitPayload',

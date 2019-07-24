@@ -1,13 +1,13 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import fetchAllLines from 'server/billing/helpers/fetchAllLines'
-import terminateSubscription from 'server/billing/helpers/terminateSubscription'
-import getRethink from 'server/database/rethinkDriver'
-import StripeFailPaymentPayload from 'server/graphql/types/StripeFailPaymentPayload'
-import publish from 'server/utils/publish'
+import fetchAllLines from '../../billing/helpers/fetchAllLines'
+import terminateSubscription from '../../billing/helpers/terminateSubscription'
+import getRethink from '../../database/rethinkDriver'
+import StripeFailPaymentPayload from '../types/StripeFailPaymentPayload'
+import publish from '../../utils/publish'
 import shortid from 'shortid'
-import {BILLING_LEADER, FAILED, NOTIFICATION, PAYMENT_REJECTED} from 'universal/utils/constants'
-import StripeManager from 'server/utils/StripeManager'
-import {IOrganization} from 'universal/types/graphql'
+import {BILLING_LEADER, FAILED, NOTIFICATION, PAYMENT_REJECTED} from '../../../universal/utils/constants'
+import StripeManager from '../../utils/StripeManager'
+import {IOrganization} from '../../../universal/types/graphql'
 
 export default {
   name: 'StripeFailPayment',

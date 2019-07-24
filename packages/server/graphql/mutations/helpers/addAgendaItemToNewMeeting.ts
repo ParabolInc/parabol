@@ -1,9 +1,9 @@
-import {AGENDA_ITEMS} from 'universal/utils/constants'
-import getRethink from 'server/database/rethinkDriver'
-import {DataLoaderWorker} from 'server/graphql/graphql'
-import Meeting from 'server/database/types/Meeting'
-import AgendaItemsPhase from 'server/database/types/AgendaItemsPhase'
-import AgendaItemsStage from 'server/database/types/AgendaItemsStage'
+import {AGENDA_ITEMS} from '../../../../universal/utils/constants'
+import getRethink from '../../../database/rethinkDriver'
+import {DataLoaderWorker} from '../../graphql'
+import Meeting from '../../../database/types/Meeting'
+import AgendaItemsPhase from '../../../database/types/AgendaItemsPhase'
+import AgendaItemsStage from '../../../database/types/AgendaItemsStage'
 
 /*
  * NewMeetings have a predefined set of stages, we need to add the new agenda item manually

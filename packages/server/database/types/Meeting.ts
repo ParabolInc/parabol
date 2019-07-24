@@ -1,4 +1,4 @@
-import GenericMeetingPhase from 'server/database/types/GenericMeetingPhase'
+import GenericMeetingPhase from './GenericMeetingPhase'
 import shortid from 'shortid'
 
 interface Input {

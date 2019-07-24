@@ -7,15 +7,15 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import {resolveForSU} from 'server/graphql/resolvers'
-import DragContext from 'server/graphql/types/DragContext'
-import GoogleAnalyzedEntity from 'server/graphql/types/GoogleAnalyzedEntity'
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
-import RetroPhaseItem from 'server/graphql/types/RetroPhaseItem'
-import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup'
-import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting'
-import {getUserId} from 'server/utils/authorization'
-import {GQLContext} from 'server/graphql/graphql'
+import {resolveForSU} from '../resolvers'
+import DragContext from './DragContext'
+import GoogleAnalyzedEntity from './GoogleAnalyzedEntity'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
+import RetroPhaseItem from './RetroPhaseItem'
+import RetroReflectionGroup from './RetroReflectionGroup'
+import RetrospectiveMeeting from './RetrospectiveMeeting'
+import {getUserId} from '../../utils/authorization'
+import {GQLContext} from '../graphql'
 
 const RetroReflection = new GraphQLObjectType<any, GQLContext>({
   name: 'RetroReflection',

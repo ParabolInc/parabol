@@ -1,6 +1,6 @@
-import makeGitHubWebhookParams from 'server/utils/makeGitHubWebhookParams'
-import {GITHUB_ENDPOINT} from 'universal/utils/constants'
-import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions'
+import makeGitHubWebhookParams from '../utils/makeGitHubWebhookParams'
+import {GITHUB_ENDPOINT} from '../../universal/utils/constants'
+import makeGitHubPostOptions from '../../universal/utils/makeGitHubPostOptions'
 import fetch from 'node-fetch'
 
 export const createRepoWebhook = async (accessToken, nameWithOwner, publicKey) => {

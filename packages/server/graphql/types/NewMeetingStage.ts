@@ -6,8 +6,8 @@ import {
   GraphQLInterfaceType,
   GraphQLNonNull
 } from 'graphql'
-import NewMeeting from 'server/graphql/types/NewMeeting'
-import NewMeetingPhaseTypeEnum from 'server/graphql/types/NewMeetingPhaseTypeEnum'
+import NewMeeting from './NewMeeting'
+import NewMeetingPhaseTypeEnum from './NewMeetingPhaseTypeEnum'
 import {
   CHECKIN,
   DISCUSS,
@@ -18,14 +18,14 @@ import {
   UPDATES,
   VOTE,
   AGENDA_ITEMS
-} from 'universal/utils/constants'
-import CheckInStage from 'server/graphql/types/CheckInStage'
-import GenericMeetingStage from 'server/graphql/types/GenericMeetingStage'
-import RetroDiscussStage from 'server/graphql/types/RetroDiscussStage'
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
-import NewMeetingPhase from 'server/graphql/types/NewMeetingPhase'
-import UpdatesStage from 'server/graphql/types/UpdatesStage'
-import AgendaItemsStage from 'server/graphql/types/AgendaItemsStage'
+} from '../../../universal/utils/constants'
+import CheckInStage from './CheckInStage'
+import GenericMeetingStage from './GenericMeetingStage'
+import RetroDiscussStage from './RetroDiscussStage'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
+import NewMeetingPhase from './NewMeetingPhase'
+import UpdatesStage from './UpdatesStage'
+import AgendaItemsStage from './AgendaItemsStage'
 
 /*
  * Each meeting has many phases.

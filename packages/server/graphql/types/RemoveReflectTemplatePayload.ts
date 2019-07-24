@@ -1,6 +1,6 @@
 import {GraphQLObjectType} from 'graphql'
-import RetrospectiveMeetingSettings from 'server/graphql/types/RetrospectiveMeetingSettings'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
+import RetrospectiveMeetingSettings from './RetrospectiveMeetingSettings'
+import StandardMutationError from './StandardMutationError'
 import ReflectTemplate from './ReflectTemplate'
 
 const RemoveReflectTemplatePayload = new GraphQLObjectType({

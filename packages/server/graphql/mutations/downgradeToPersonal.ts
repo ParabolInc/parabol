@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import stripe from 'server/billing/stripe'
-import getRethink from 'server/database/rethinkDriver'
-import DowngradeToPersonalPayload from 'server/graphql/types/DowngradeToPersonalPayload'
-import {getUserId, isUserBillingLeader, isSuperUser} from 'server/utils/authorization'
-import publish from 'server/utils/publish'
-import sendSegmentEvent, {sendSegmentIdentify} from 'server/utils/sendSegmentEvent'
-import {ORGANIZATION, PERSONAL, TEAM} from 'universal/utils/constants'
+import stripe from '../../billing/stripe'
+import getRethink from '../../database/rethinkDriver'
+import DowngradeToPersonalPayload from '../types/DowngradeToPersonalPayload'
+import {getUserId, isUserBillingLeader, isSuperUser} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import sendSegmentEvent, {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
+import {ORGANIZATION, PERSONAL, TEAM} from '../../../universal/utils/constants'
 import standardError from '../../utils/standardError'
 
 export default {

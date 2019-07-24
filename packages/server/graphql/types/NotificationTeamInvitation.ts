@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {resolveTeam} from 'server/graphql/resolvers'
-import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification'
-import Team from 'server/graphql/types/Team'
-import TeamNotification from 'server/graphql/types/TeamNotification'
+import {resolveTeam} from '../resolvers'
+import Notification, {notificationInterfaceFields} from './Notification'
+import Team from './Team'
+import TeamNotification from './TeamNotification'
 import TeamInvitation from './TeamInvitation'
 
 const NotificationTeamInvitation = new GraphQLObjectType({

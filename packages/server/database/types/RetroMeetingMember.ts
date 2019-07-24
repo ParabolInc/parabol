@@ -1,4 +1,4 @@
-import MeetingMember from 'server/database/types/MeetingMember'
+import MeetingMember from './MeetingMember'
 
 export default class RetroMeetingMember extends MeetingMember {
   constructor (

@@ -1,12 +1,12 @@
-import getRethink from 'server/database/rethinkDriver'
-import AgendaItemsPhase from 'server/database/types/AgendaItemsPhase'
-import CheckInPhase from 'server/database/types/CheckInPhase'
-import DiscussPhase from 'server/database/types/DiscussPhase'
-import GenericMeetingPhase from 'server/database/types/GenericMeetingPhase'
-import {MeetingType} from 'server/database/types/Meeting'
-import ReflectPhase from 'server/database/types/ReflectPhase'
-import UpdatesPhase from 'server/database/types/UpdatesPhase'
-import {DataLoaderWorker} from 'server/graphql/graphql'
+import getRethink from '../../../database/rethinkDriver'
+import AgendaItemsPhase from '../../../database/types/AgendaItemsPhase'
+import CheckInPhase from '../../../database/types/CheckInPhase'
+import DiscussPhase from '../../../database/types/DiscussPhase'
+import GenericMeetingPhase from '../../../database/types/GenericMeetingPhase'
+import {MeetingType} from '../../../database/types/Meeting'
+import ReflectPhase from '../../../database/types/ReflectPhase'
+import UpdatesPhase from '../../../database/types/UpdatesPhase'
+import {DataLoaderWorker} from '../../graphql'
 import {
   AGENDA_ITEMS,
   CHECKIN,
@@ -17,7 +17,7 @@ import {
   REFLECT,
   UPDATES,
   VOTE
-} from 'universal/utils/constants'
+} from '../../../../universal/utils/constants'
 
 const primePhases = (phases: GenericMeetingPhase[]) => {
   const [firstPhase, secondPhase] = phases

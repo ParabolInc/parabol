@@ -1,8 +1,8 @@
 import {GraphQLInt, GraphQLNonNull, GraphQLList, GraphQLObjectType} from 'graphql'
-import {GQLContext} from 'server/graphql/graphql'
-import MeetingMember, {meetingMemberFields} from 'server/graphql/types/MeetingMember'
-import Task from 'server/graphql/types/Task'
-import {IRetrospectiveMeetingMember} from 'universal/types/graphql'
+import {GQLContext} from '../graphql'
+import MeetingMember, {meetingMemberFields} from './MeetingMember'
+import Task from './Task'
+import {IRetrospectiveMeetingMember} from '../../../universal/types/graphql'
 
 const RetrospectiveMeetingMember = new GraphQLObjectType<IRetrospectiveMeetingMember, GQLContext>({
   name: 'RetrospectiveMeetingMember',

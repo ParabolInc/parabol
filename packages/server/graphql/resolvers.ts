@@ -1,7 +1,7 @@
-import {getUserId, isSuperUser, isUserBillingLeader} from 'server/utils/authorization'
-import nullIfEmpty from 'universal/utils/nullIfEmpty'
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
-import findStageById from 'universal/utils/meetings/findStageById'
+import {getUserId, isSuperUser, isUserBillingLeader} from '../utils/authorization'
+import nullIfEmpty from '../../universal/utils/nullIfEmpty'
+import toTeamMemberId from '../../universal/utils/relay/toTeamMemberId'
+import findStageById from '../../universal/utils/meetings/findStageById'
 
 export const resolveAgendaItem = ({agendaItemId, agendaItem}, _args, {dataLoader}) => {
   return agendaItemId ? dataLoader.get('agendaItems').load(agendaItemId) : agendaItem

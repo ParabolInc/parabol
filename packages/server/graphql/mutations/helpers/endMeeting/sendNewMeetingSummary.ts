@@ -1,8 +1,8 @@
-import getRethink from 'server/database/rethinkDriver'
-import {sendEmailContent} from 'server/email/sendEmail'
-import newMeetingSummaryEmailCreator from 'universal/modules/email/components/SummaryEmail/newMeetingSummaryEmailCreator'
-import Meeting from 'server/database/types/Meeting'
-import {GQLContext} from 'server/graphql/graphql'
+import getRethink from '../../../../database/rethinkDriver'
+import {sendEmailContent} from '../../../../email/sendEmail'
+import newMeetingSummaryEmailCreator from '../../../../../universal/modules/email/components/SummaryEmail/newMeetingSummaryEmailCreator'
+import Meeting from '../../../../database/types/Meeting'
+import {GQLContext} from '../../../graphql'
 
 export default async function sendNewMeetingSummary (newMeeting: Meeting, context: GQLContext) {
   const {id: meetingId, summarySentAt} = newMeeting

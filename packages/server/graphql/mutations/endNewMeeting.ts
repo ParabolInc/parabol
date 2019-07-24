@@ -1,8 +1,8 @@
-import sendSegmentEvent, {sendSegmentIdentify} from 'server/utils/sendSegmentEvent'
+import sendSegmentEvent, {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import {getUserId, isTeamMember} from 'server/utils/authorization'
-import publish from 'server/utils/publish'
+import getRethink from '../../database/rethinkDriver'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
 import {
   ACTION,
   AGENDA_ITEMS,
@@ -12,24 +12,24 @@ import {
   NOTIFICATION,
   RETROSPECTIVE,
   TEAM
-} from 'universal/utils/constants'
-import EndNewMeetingPayload from 'server/graphql/types/EndNewMeetingPayload'
-import {endSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack'
-import sendNewMeetingSummary from 'server/graphql/mutations/helpers/endMeeting/sendNewMeetingSummary'
+} from '../../../universal/utils/constants'
+import EndNewMeetingPayload from '../types/EndNewMeetingPayload'
+import {endSlackMeeting} from './helpers/notifySlack'
+import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import shortid from 'shortid'
 import {
   COMPLETED_ACTION_MEETING,
   COMPLETED_RETRO_MEETING
-} from 'server/graphql/types/TimelineEventTypeEnum'
-import removeSuggestedAction from 'server/safeMutations/removeSuggestedAction'
-import standardError from 'server/utils/standardError'
-import Meeting, {MeetingType} from 'server/database/types/Meeting'
-import {DataLoaderWorker, GQLContext} from 'server/graphql/graphql'
-import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB'
-import {ITask} from 'universal/types/graphql'
-import findStageById from 'universal/utils/meetings/findStageById'
-import GenericMeetingPhase from 'server/database/types/GenericMeetingPhase'
-import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
+} from '../types/TimelineEventTypeEnum'
+import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
+import standardError from '../../utils/standardError'
+import Meeting, {MeetingType} from '../../database/types/Meeting'
+import {DataLoaderWorker, GQLContext} from '../graphql'
+import archiveTasksForDB from '../../safeMutations/archiveTasksForDB'
+import {ITask} from '../../../universal/types/graphql'
+import findStageById from '../../../universal/utils/meetings/findStageById'
+import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
+import {meetingTypeToLabel} from '../../../universal/utils/meetings/lookups'
 
 const timelineEventLookup = {
   [RETROSPECTIVE]: COMPLETED_RETRO_MEETING,

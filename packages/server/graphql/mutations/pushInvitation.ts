@@ -1,14 +1,14 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import publish from 'server/utils/publish'
-import {TEAM} from 'universal/utils/constants'
-import {getUserId, isAuthenticated} from 'server/utils/authorization'
-import standardError from 'server/utils/standardError'
-import {GQLContext} from 'server/graphql/graphql'
-import rateLimit from 'server/graphql/rateLimit'
+import getRethink from '../../database/rethinkDriver'
+import publish from '../../utils/publish'
+import {TEAM} from '../../../universal/utils/constants'
+import {getUserId, isAuthenticated} from '../../utils/authorization'
+import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
+import rateLimit from '../rateLimit'
 import ms from 'ms'
-import PushInvitationPayload from 'server/graphql/types/PushInvitationPayload'
-import PushInvitation from 'server/database/types/PushInvitation'
+import PushInvitationPayload from '../types/PushInvitationPayload'
+import PushInvitation from '../../database/types/PushInvitation'
 
 const MAX_GLOBAL_DENIALS = 3
 const GLOBAL_DENIAL_TIME = ms('30d')

@@ -1,6 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
-import JiraRemoteAvatarUrls from 'server/graphql/types/JiraRemoteAvatarUrls'
-import JiraRemoteProjectCategory from 'server/graphql/types/JiraRemoteProjectCategory'
+import JiraRemoteAvatarUrls from './JiraRemoteAvatarUrls'
+import JiraRemoteProjectCategory from './JiraRemoteProjectCategory'
 
 const JiraRemoteProject = new GraphQLObjectType({
   name: 'JiraRemoteProject',

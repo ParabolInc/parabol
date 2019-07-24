@@ -1,6 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
-import {getUserId} from 'server/utils/authorization'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
+import {getUserId} from '../../utils/authorization'
 
 const GitHubAuth = new GraphQLObjectType({
   name: 'GitHubAuth',

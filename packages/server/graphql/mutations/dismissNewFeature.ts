@@ -1,6 +1,6 @@
 import {GraphQLNonNull} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import {getUserId} from 'server/utils/authorization'
+import getRethink from '../../database/rethinkDriver'
+import {getUserId} from '../../utils/authorization'
 import DismissNewFeaturePayload from '../types/DismissNewFeaturePayload'
 
 export default {

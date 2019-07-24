@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
-import SuggestedIntegrationGitHub from 'server/graphql/types/SuggestedIntegrationGitHub'
-import SuggestedIntegrationJira from 'server/graphql/types/SuggestedIntegrationJira'
-import TaskServiceEnum from 'server/graphql/types/TaskServiceEnum'
+import SuggestedIntegrationGitHub from './SuggestedIntegrationGitHub'
+import SuggestedIntegrationJira from './SuggestedIntegrationJira'
+import TaskServiceEnum from './TaskServiceEnum'
 
 export const suggestedIntegrationFields = () => ({
   id: {

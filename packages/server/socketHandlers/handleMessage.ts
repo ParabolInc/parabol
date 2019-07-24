@@ -1,7 +1,7 @@
 import {ClientMessageTypes} from '@mattkrick/graphql-trebuchet-client'
 import {Data, Events} from '@mattkrick/trebuchet-client'
-import handleDisconnect from 'server/socketHandlers/handleDisconnect'
-import sendMessage from 'server/socketHelpers/sendMessage'
+import handleDisconnect from './handleDisconnect'
+import sendMessage from '../socketHelpers/sendMessage'
 import handleGraphQLTrebuchetRequest from '../graphql/handleGraphQLTrebuchetRequest'
 import isQueryAllowed from '../graphql/isQueryAllowed'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
@@ -9,7 +9,7 @@ import {getUserId} from '../utils/authorization'
 import sendToSentry from '../utils/sendToSentry'
 import handleSignal, {UWebSocket} from '../wrtc/signalServer/handleSignal'
 import validateInit from '../wrtc/signalServer/validateInit'
-import getQueryString from 'server/graphql/getQueryString'
+import getQueryString from '../graphql/getQueryString'
 
 const {GQL_ERROR} = ClientMessageTypes
 

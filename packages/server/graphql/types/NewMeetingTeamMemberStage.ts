@@ -1,9 +1,9 @@
 import {GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
-import {CHECKIN, UPDATES} from 'universal/utils/constants'
-import CheckInStage from 'server/graphql/types/CheckInStage'
-import {resolveTeamMember} from 'server/graphql/resolvers'
-import TeamMember from 'server/graphql/types/TeamMember'
-import UpdatesStage from 'server/graphql/types/UpdatesStage'
+import {CHECKIN, UPDATES} from '../../../universal/utils/constants'
+import CheckInStage from './CheckInStage'
+import {resolveTeamMember} from '../resolvers'
+import TeamMember from './TeamMember'
+import UpdatesStage from './UpdatesStage'
 
 export const newMeetingTeamMemberStageFields = () => ({
   teamMemberId: {

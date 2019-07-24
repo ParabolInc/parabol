@@ -1,11 +1,11 @@
 import {GraphQLBoolean, GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
-import ActionMeetingMember from 'server/graphql/types/ActionMeetingMember'
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
-import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum'
-import {ACTION, RETROSPECTIVE} from 'universal/utils/constants'
-import RetrospectiveMeetingMember from 'server/graphql/types/RetrospectiveMeetingMember'
-import {resolveUser} from 'server/graphql/resolvers'
-import User from 'server/graphql/types/User'
+import ActionMeetingMember from './ActionMeetingMember'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
+import MeetingTypeEnum from './MeetingTypeEnum'
+import {ACTION, RETROSPECTIVE} from '../../../universal/utils/constants'
+import RetrospectiveMeetingMember from './RetrospectiveMeetingMember'
+import {resolveUser} from '../resolvers'
+import User from './User'
 
 export const meetingMemberFields = () => ({
   id: {

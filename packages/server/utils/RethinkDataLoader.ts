@@ -1,10 +1,10 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
-import getRethink from 'server/database/rethinkDriver'
-import Meeting from 'server/database/types/Meeting'
-import AtlassianManager from 'server/utils/AtlassianManager'
-import {getUserId} from 'server/utils/authorization'
-import sendToSentry from 'server/utils/sendToSentry'
+import getRethink from '../database/rethinkDriver'
+import Meeting from '../database/types/Meeting'
+import AtlassianManager from './AtlassianManager'
+import {getUserId} from './authorization'
+import sendToSentry from './sendToSentry'
 import {
   IAgendaItem,
   IAtlassianAuth,
@@ -24,11 +24,11 @@ import {
   ITeamMeetingSettings,
   ITeamMember,
   IUser
-} from 'universal/types/graphql'
-import promiseAllPartial from 'universal/utils/promiseAllPartial'
-import MeetingMember from 'server/database/types/MeetingMember'
-import SlackAuth from 'server/database/types/SlackAuth'
-import SlackNotification from 'server/database/types/SlackNotification'
+} from '../../universal/types/graphql'
+import promiseAllPartial from '../../universal/utils/promiseAllPartial'
+import MeetingMember from '../database/types/MeetingMember'
+import SlackAuth from '../database/types/SlackAuth'
+import SlackNotification from '../database/types/SlackNotification'
 
 interface JiraRemoteProjectKey {
   accessToken: string

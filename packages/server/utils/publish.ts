@@ -1,4 +1,4 @@
-import getPubSub from 'server/utils/getPubSub'
+import getPubSub from './getPubSub'
 import {GraphQLObjectType} from 'graphql'
 
 type Topic = 'team' | 'organization' | 'notification' | 'newAuthToken' | 'task'

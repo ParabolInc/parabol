@@ -6,10 +6,10 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import {GQLContext} from 'server/graphql/graphql'
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
-import TeamMember from 'server/graphql/types/TeamMember'
-import {IAgendaItem} from 'universal/types/graphql'
+import {GQLContext} from '../graphql'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
+import TeamMember from './TeamMember'
+import {IAgendaItem} from '../../../universal/types/graphql'
 
 const AgendaItem = new GraphQLObjectType<IAgendaItem, GQLContext>({
   name: 'AgendaItem',

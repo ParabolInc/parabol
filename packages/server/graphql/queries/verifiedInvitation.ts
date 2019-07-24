@@ -1,8 +1,8 @@
 import dns, {MxRecord} from 'dns'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import rateLimit from 'server/graphql/rateLimit'
-import VerifiedInvitationPayload from 'server/graphql/types/VerifiedInvitationPayload'
-import getRethink from 'server/database/rethinkDriver'
+import rateLimit from '../rateLimit'
+import VerifiedInvitationPayload from '../types/VerifiedInvitationPayload'
+import getRethink from '../../database/rethinkDriver'
 import promisify from 'es6-promisify'
 
 const resolveMx = promisify(dns.resolveMx, dns)

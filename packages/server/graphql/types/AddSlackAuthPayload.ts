@@ -1,8 +1,8 @@
 import {GraphQLObjectType} from 'graphql'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
+import StandardMutationError from './StandardMutationError'
 import SlackAuth from './SlackAuth'
 import User from './User'
-import {GQLContext} from 'server/graphql/graphql'
+import {GQLContext} from '../graphql'
 
 const AddSlackAuthPayload = new GraphQLObjectType({
   name: 'AddSlackAuthPayload',

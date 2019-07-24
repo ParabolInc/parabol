@@ -1,5 +1,5 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import NotificationMeetingStageTimeLimitEnd from 'server/graphql/types/NotificationMeetingStageTimeLimitEnd'
+import NotificationMeetingStageTimeLimitEnd from './NotificationMeetingStageTimeLimitEnd'
 
 const MeetingStageTimeLimitPayload = new GraphQLObjectType({
   name: 'MeetingStageTimeLimitPayload',

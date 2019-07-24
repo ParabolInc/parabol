@@ -1,9 +1,9 @@
 import {GraphQLObjectType} from 'graphql'
-import newAuthToken from 'server/graphql/subscriptions/newAuthToken'
-import notificationSubscription from 'server/graphql/subscriptions/notificationSubscription'
-import organizationSubscription from 'server/graphql/subscriptions/organizationSubscription'
-import taskSubscription from 'server/graphql/subscriptions/taskSubscription'
-import teamSubscription from 'server/graphql/subscriptions/teamSubscription'
+import newAuthToken from './subscriptions/newAuthToken'
+import notificationSubscription from './subscriptions/notificationSubscription'
+import organizationSubscription from './subscriptions/organizationSubscription'
+import taskSubscription from './subscriptions/taskSubscription'
+import teamSubscription from './subscriptions/teamSubscription'
 
 export default new GraphQLObjectType({
   name: 'Subscription',

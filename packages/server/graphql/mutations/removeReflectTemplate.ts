@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import {getUserId, isTeamMember} from 'server/utils/authorization'
-import publish from 'server/utils/publish'
-import {RETROSPECTIVE, TEAM} from 'universal/utils/constants'
+import getRethink from '../../database/rethinkDriver'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import {RETROSPECTIVE, TEAM} from '../../../universal/utils/constants'
 import standardError from '../../utils/standardError'
 import RemoveReflectTemplatePayload from '../types/RemoveReflectTemplatePayload'
 

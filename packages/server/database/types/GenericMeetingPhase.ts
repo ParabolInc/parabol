@@ -1,4 +1,4 @@
-import GenericMeetingStage from 'server/database/types/GenericMeetingStage'
+import GenericMeetingStage from './GenericMeetingStage'
 import shortid from 'shortid'
 
 export default class GenericMeetingPhase {

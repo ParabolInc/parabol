@@ -1,5 +1,5 @@
 import fetch from 'node-fetch'
-import AtlassianClientManager from 'universal/utils/AtlassianClientManager'
+import AtlassianClientManager from '../../universal/utils/AtlassianClientManager'
 import makeAppLink from './makeAppLink'
 
 interface AuthQueryParams {

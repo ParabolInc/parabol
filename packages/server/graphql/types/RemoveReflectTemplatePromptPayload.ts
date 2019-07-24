@@ -1,5 +1,5 @@
 import {GraphQLObjectType} from 'graphql'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
+import StandardMutationError from './StandardMutationError'
 import ReflectTemplate from './ReflectTemplate'
 
 const RemoveReflectTemplatePromptPayload = new GraphQLObjectType({

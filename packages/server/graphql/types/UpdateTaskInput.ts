@@ -5,7 +5,7 @@ import {
   GraphQLString,
   GraphQLNonNull
 } from 'graphql'
-import TaskStatusEnum from 'server/graphql/types/TaskStatusEnum'
+import TaskStatusEnum from './TaskStatusEnum'
 
 const UpdateTaskInput = new GraphQLInputObjectType({
   name: 'UpdateTaskInput',

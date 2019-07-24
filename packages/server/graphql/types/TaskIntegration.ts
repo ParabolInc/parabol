@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
-import TaskIntegrationGitHub from 'server/graphql/types/TaskIntegrationGitHub'
-import TaskIntegrationJira from 'server/graphql/types/TaskIntegrationJira'
-import TaskServiceEnum from 'server/graphql/types/TaskServiceEnum'
+import TaskIntegrationGitHub from './TaskIntegrationGitHub'
+import TaskIntegrationJira from './TaskIntegrationJira'
+import TaskServiceEnum from './TaskServiceEnum'
 
 export const taskIntegrationFields = () => ({
   id: {

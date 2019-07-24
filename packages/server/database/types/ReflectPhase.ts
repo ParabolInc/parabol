@@ -1,6 +1,6 @@
-import GenericMeetingPhase from 'server/database/types/GenericMeetingPhase'
-import GenericMeetingStage from 'server/database/types/GenericMeetingStage'
-import {REFLECT} from 'universal/utils/constants'
+import GenericMeetingPhase from './GenericMeetingPhase'
+import GenericMeetingStage from './GenericMeetingStage'
+import {REFLECT} from '../../../universal/utils/constants'
 
 export default class ReflectPhase extends GenericMeetingPhase {
   stages: GenericMeetingStage[]

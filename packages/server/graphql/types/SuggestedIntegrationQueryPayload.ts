@@ -1,6 +1,6 @@
 import {GraphQLBoolean, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import SuggestedIntegration from 'server/graphql/types/SuggestedIntegration'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
+import SuggestedIntegration from './SuggestedIntegration'
+import StandardMutationError from './StandardMutationError'
 
 const SuggestedIntegrationQueryPayload = new GraphQLObjectType({
   name: 'SuggestedIntegrationQueryPayload',

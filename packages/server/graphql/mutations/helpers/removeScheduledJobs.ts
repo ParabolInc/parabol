@@ -1,4 +1,4 @@
-import getRethink from 'server/database/rethinkDriver'
+import getRethink from '../../../database/rethinkDriver'
 
 const removeScheduledJobs = (runAt: Date, filter: {[key: string]: any}) => {
   const r = getRethink()

@@ -6,16 +6,16 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import connectionDefinitions from 'server/graphql/connectionDefinitions'
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
-import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor'
-import TaskEditorDetails from 'server/graphql/types/TaskEditorDetails'
-import TaskStatusEnum from 'server/graphql/types/TaskStatusEnum'
-import Team from 'server/graphql/types/Team'
-import TaskIntegration from 'server/graphql/types/TaskIntegration'
-import AgendaItem from 'server/graphql/types/AgendaItem'
-import TeamMember from 'server/graphql/types/TeamMember'
-import {GQLContext} from 'server/graphql/graphql'
+import connectionDefinitions from '../connectionDefinitions'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
+import PageInfoDateCursor from './PageInfoDateCursor'
+import TaskEditorDetails from './TaskEditorDetails'
+import TaskStatusEnum from './TaskStatusEnum'
+import Team from './Team'
+import TaskIntegration from './TaskIntegration'
+import AgendaItem from './AgendaItem'
+import TeamMember from './TeamMember'
+import {GQLContext} from '../graphql'
 
 const Task = new GraphQLObjectType<any, GQLContext, any>({
   name: 'Task',

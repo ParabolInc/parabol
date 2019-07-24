@@ -1,12 +1,12 @@
-import getEntitiesFromText from 'server/graphql/mutations/helpers/autoGroup/getEntitiesFromText'
-import getRethink from 'server/database/rethinkDriver'
-import extractTextFromDraftString from 'universal/utils/draftjs/extractTextFromDraftString'
-import promiseAllPartial from 'universal/utils/promiseAllPartial'
-import sanitizeAnalyzedEntitiesResponse from 'server/graphql/mutations/helpers/autoGroup/sanitizeAnalyzedEntititesResponse'
-import promiseAllObj from 'universal/utils/promiseAllObj'
-import getSyntaxFromText from 'server/graphql/mutations/helpers/autoGroup/getSyntaxFromText'
-import addLemmaToEntities from 'server/graphql/mutations/helpers/autoGroup/addLemmaToEntities'
-import sendToSentry from 'server/utils/sendToSentry'
+import getEntitiesFromText from './autoGroup/getEntitiesFromText'
+import getRethink from '../../../database/rethinkDriver'
+import extractTextFromDraftString from '../../../../universal/utils/draftjs/extractTextFromDraftString'
+import promiseAllPartial from '../../../../universal/utils/promiseAllPartial'
+import sanitizeAnalyzedEntitiesResponse from './autoGroup/sanitizeAnalyzedEntititesResponse'
+import promiseAllObj from '../../../../universal/utils/promiseAllObj'
+import getSyntaxFromText from './autoGroup/getSyntaxFromText'
+import addLemmaToEntities from './autoGroup/addLemmaToEntities'
+import sendToSentry from '../../../utils/sendToSentry'
 
 const catchHandler = (e: Error) => {
   const re = /the language \S+ is not supported/i

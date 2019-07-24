@@ -1,4 +1,4 @@
-import {DataLoaderWorker} from 'server/graphql/graphql'
+import {DataLoaderWorker} from '../../graphql'
 
 const getUsersToIgnore = async (
   meetingId: string | undefined | null,

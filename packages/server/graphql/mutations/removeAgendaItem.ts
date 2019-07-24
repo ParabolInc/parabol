@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import RemoveAgendaItemPayload from 'server/graphql/types/RemoveAgendaItemPayload'
-import publish from 'server/utils/publish'
-import {TEAM} from 'universal/utils/constants'
-import {getUserId, isTeamMember} from 'server/utils/authorization'
-import standardError from 'server/utils/standardError'
-import removeStagesFromNewMeeting from 'server/graphql/mutations/helpers/removeStagesFromNewMeeting'
-import AgendaItemsStage from 'server/database/types/AgendaItemsStage'
+import getRethink from '../../database/rethinkDriver'
+import RemoveAgendaItemPayload from '../types/RemoveAgendaItemPayload'
+import publish from '../../utils/publish'
+import {TEAM} from '../../../universal/utils/constants'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import standardError from '../../utils/standardError'
+import removeStagesFromNewMeeting from './helpers/removeStagesFromNewMeeting'
+import AgendaItemsStage from '../../database/types/AgendaItemsStage'
 
 export default {
   type: RemoveAgendaItemPayload,

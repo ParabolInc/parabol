@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting'
+import RetrospectiveMeeting from './RetrospectiveMeeting'
 import Team from './Team'
 import TimelineEvent, {timelineEventInterfaceFields} from './TimelineEvent'
 import {COMPLETED_RETRO_MEETING} from './TimelineEventTypeEnum'

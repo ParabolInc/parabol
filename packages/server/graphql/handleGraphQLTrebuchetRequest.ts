@@ -3,9 +3,9 @@ import {
   OutgoingMessage,
   ServerMessageTypes
 } from '@mattkrick/graphql-trebuchet-client'
-import wsGraphQLHandler from 'server/socketHandlers/wsGraphQLHandler'
-import handleSubscribe from 'server/socketHandlers/handleSubscribe'
-import relayUnsubscribe from 'server/utils/relayUnsubscribe'
+import wsGraphQLHandler from '../socketHandlers/wsGraphQLHandler'
+import handleSubscribe from '../socketHandlers/handleSubscribe'
+import relayUnsubscribe from '../utils/relayUnsubscribe'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 
 interface Options {

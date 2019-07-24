@@ -1,8 +1,8 @@
-import getRethink from 'server/database/rethinkDriver'
-import countTiersForUserId from 'server/graphql/queries/helpers/countTiersForUserId'
-import segmentIo from 'server/utils/segmentIo'
-import {ISegmentEventTrackOptions, TierEnum} from 'universal/types/graphql'
-import resolvePromiseObj from 'universal/utils/resolvePromiseObj'
+import getRethink from '../database/rethinkDriver'
+import countTiersForUserId from '../graphql/queries/helpers/countTiersForUserId'
+import segmentIo from './segmentIo'
+import {ISegmentEventTrackOptions, TierEnum} from '../../universal/types/graphql'
+import resolvePromiseObj from '../../universal/utils/resolvePromiseObj'
 import {ENTERPRISE, PERSONAL, PRO} from '../../universal/utils/constants'
 
 const PERSONAL_TIER_MAX_TEAMS = 2

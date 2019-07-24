@@ -1,9 +1,9 @@
-import addLemmaToEntities from 'server/graphql/mutations/helpers/autoGroup/addLemmaToEntities'
-import getEntitiesFromText from 'server/graphql/mutations/helpers/autoGroup/getEntitiesFromText'
-import getSyntaxFromText from 'server/graphql/mutations/helpers/autoGroup/getSyntaxFromText'
-import sanitizeAnalyzedEntitiesResponse from 'server/graphql/mutations/helpers/autoGroup/sanitizeAnalyzedEntititesResponse'
-import promiseAllObj from 'universal/utils/promiseAllObj'
-import promiseAllPartial from 'universal/utils/promiseAllPartial'
+import addLemmaToEntities from './graphql/mutations/helpers/autoGroup/addLemmaToEntities'
+import getEntitiesFromText from './graphql/mutations/helpers/autoGroup/getEntitiesFromText'
+import getSyntaxFromText from './graphql/mutations/helpers/autoGroup/getSyntaxFromText'
+import sanitizeAnalyzedEntitiesResponse from './graphql/mutations/helpers/autoGroup/sanitizeAnalyzedEntititesResponse'
+import promiseAllObj from '../universal/utils/promiseAllObj'
+import promiseAllPartial from '../universal/utils/promiseAllPartial'
 import sendToSentry from './utils/sendToSentry'
 
 const catchHandler = (e: Error) => {

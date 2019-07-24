@@ -1,10 +1,10 @@
 import {GraphQLInt} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import {requireSU} from 'server/utils/authorization'
-import sendSegmentEvent from 'server/utils/sendSegmentEvent'
-import {OLD_MEETING_AGE} from 'server/utils/serverConstants'
-import endNewMeeting from 'server/graphql/mutations/endNewMeeting'
-import {GQLContext} from 'server/graphql/graphql'
+import getRethink from '../../../database/rethinkDriver'
+import {requireSU} from '../../../utils/authorization'
+import sendSegmentEvent from '../../../utils/sendSegmentEvent'
+import {OLD_MEETING_AGE} from '../../../utils/serverConstants'
+import endNewMeeting from '../../mutations/endNewMeeting'
+import {GQLContext} from '../../graphql'
 
 const endOldMeetings = {
   type: GraphQLInt,

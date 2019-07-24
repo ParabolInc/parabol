@@ -1,14 +1,14 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import AddSlackAuthPayload from 'server/graphql/types/AddSlackAuthPayload'
-import {getUserId, isTeamMember} from 'server/utils/authorization'
+import AddSlackAuthPayload from '../types/AddSlackAuthPayload'
+import {getUserId, isTeamMember} from '../../utils/authorization'
 import getRethink from '../../database/rethinkDriver'
 import SlackManager from '../../utils/SlackManager'
 import standardError from '../../utils/standardError'
-import publish from 'server/utils/publish'
-import {TEAM} from 'universal/utils/constants'
-import {GQLContext} from 'server/graphql/graphql'
-import SlackNotification, {SlackNotificationEvent} from 'server/database/types/SlackNotification'
-import SlackAuth from 'server/database/types/SlackAuth'
+import publish from '../../utils/publish'
+import {TEAM} from '../../../universal/utils/constants'
+import {GQLContext} from '../graphql'
+import SlackNotification, {SlackNotificationEvent} from '../../database/types/SlackNotification'
+import SlackAuth from '../../database/types/SlackAuth'
 
 const upsertNotifications = async (
   viewerId: string,

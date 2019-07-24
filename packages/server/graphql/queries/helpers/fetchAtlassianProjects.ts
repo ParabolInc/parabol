@@ -1,9 +1,9 @@
-import {DataLoaderWorker} from 'server/graphql/graphql'
-import AtlassianManager from 'server/utils/AtlassianManager'
-import {Omit} from 'universal/types/generics'
-import {ISuggestedIntegrationJira} from 'universal/types/graphql'
-import makeJiraProjectName from 'universal/utils/makeJiraProjectName'
-import makeSuggestedIntegrationId from 'universal/utils/makeSuggestedIntegrationId'
+import {DataLoaderWorker} from '../../graphql'
+import AtlassianManager from '../../../utils/AtlassianManager'
+import {Omit} from '../../../../universal/types/generics'
+import {ISuggestedIntegrationJira} from '../../../../universal/types/graphql'
+import makeJiraProjectName from '../../../../universal/utils/makeJiraProjectName'
+import makeSuggestedIntegrationId from '../../../../universal/utils/makeSuggestedIntegrationId'
 
 const fetchAtlassianProjects = async (dataLoader: DataLoaderWorker, teamId, userId) => {
   const [accessToken, auths] = await Promise.all([

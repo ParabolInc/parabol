@@ -1,4 +1,4 @@
-import getRethink from 'server/database/rethinkDriver'
+import getRethink from '../database/rethinkDriver'
 
 const addTeamIdToTMS = (userId, teamId) => {
   const r = getRethink()

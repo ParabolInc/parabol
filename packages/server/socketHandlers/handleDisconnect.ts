@@ -1,9 +1,9 @@
-import relayUnsubscribeAll from 'server/utils/relayUnsubscribeAll'
-import wsGraphQLHandler from 'server/socketHandlers/wsGraphQLHandler'
-import closeTransport from 'server/socketHelpers/closeTransport'
-import closeWRTC from 'server/wrtc/signalServer/closeWRTC'
-import ConnectionContext from 'server/socketHelpers/ConnectionContext'
-import {UWebSocket} from 'server/wrtc/signalServer/handleSignal'
+import relayUnsubscribeAll from '../utils/relayUnsubscribeAll'
+import wsGraphQLHandler from './wsGraphQLHandler'
+import closeTransport from '../socketHelpers/closeTransport'
+import closeWRTC from '../wrtc/signalServer/closeWRTC'
+import ConnectionContext from '../socketHelpers/ConnectionContext'
+import {UWebSocket} from '../wrtc/signalServer/handleSignal'
 
 interface Options {
   exitCode?: number

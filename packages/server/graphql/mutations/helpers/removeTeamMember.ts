@@ -1,12 +1,12 @@
-import getRethink from 'server/database/rethinkDriver'
-import {DataLoaderWorker} from 'server/graphql/graphql'
-import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB'
+import getRethink from '../../../database/rethinkDriver'
+import {DataLoaderWorker} from '../../graphql'
+import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
 import shortid from 'shortid'
-import {KICKED_OUT} from 'universal/utils/constants'
-import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
-import removeStagesFromNewMeeting from 'server/graphql/mutations/helpers/removeStagesFromNewMeeting'
-import CheckInStage from 'server/database/types/CheckInStage'
-import UpdatesStage from 'server/database/types/UpdatesStage'
+import {KICKED_OUT} from '../../../../universal/utils/constants'
+import fromTeamMemberId from '../../../../universal/utils/relay/fromTeamMemberId'
+import removeStagesFromNewMeeting from './removeStagesFromNewMeeting'
+import CheckInStage from '../../../database/types/CheckInStage'
+import UpdatesStage from '../../../database/types/UpdatesStage'
 
 interface Options {
   isKickout: boolean

@@ -1,10 +1,10 @@
-import createMeetingMembers from 'server/graphql/mutations/helpers/createMeetingMembers'
-import {CHECKIN, UPDATES} from 'universal/utils/constants'
-import getRethink from 'server/database/rethinkDriver'
-import CheckInStage from 'server/database/types/CheckInStage'
-import UpdatesStage from 'server/database/types/UpdatesStage'
-import CheckInPhase from 'server/database/types/CheckInPhase'
-import UpdatesPhase from 'server/database/types/UpdatesPhase'
+import createMeetingMembers from './createMeetingMembers'
+import {CHECKIN, UPDATES} from '../../../../universal/utils/constants'
+import getRethink from '../../../database/rethinkDriver'
+import CheckInStage from '../../../database/types/CheckInStage'
+import UpdatesStage from '../../../database/types/UpdatesStage'
+import CheckInPhase from '../../../database/types/CheckInPhase'
+import UpdatesPhase from '../../../database/types/UpdatesPhase'
 
 /*
  * NewMeetings have a predefined set of stages, we need to add the new team member manually

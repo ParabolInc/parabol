@@ -1,10 +1,10 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
-import OrgUserRoleEnum from 'server/graphql/types/OrgUserRoleEnum'
-import User from 'server/graphql/types/User'
-import Organization from 'server/graphql/types/Organization'
-import {resolveOrganization, resolveUser} from 'server/graphql/resolvers'
-import connectionDefinitions from 'server/graphql/connectionDefinitions'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
+import OrgUserRoleEnum from './OrgUserRoleEnum'
+import User from './User'
+import Organization from './Organization'
+import {resolveOrganization, resolveUser} from '../resolvers'
+import connectionDefinitions from '../connectionDefinitions'
 
 const OrganizationUser = new GraphQLObjectType({
   name: 'OrganizationUser',

@@ -1,9 +1,9 @@
 import {GraphQLString, GraphQLID, GraphQLBoolean, GraphQLObjectType} from 'graphql'
 import TeamInvitation from './TeamInvitation'
-import {resolveUser} from 'server/graphql/resolvers'
-import User from 'server/graphql/types/User'
+import {resolveUser} from '../resolvers'
+import User from './User'
 import TeamInvitationErrorEnum from './TeamInvitationErrorEnum'
-import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum'
+import MeetingTypeEnum from './MeetingTypeEnum'
 
 const VerifiedInvitationPayload = new GraphQLObjectType({
   name: 'VerifiedInvitationPayload',

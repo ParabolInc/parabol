@@ -1,5 +1,5 @@
 import {GraphQLObjectType} from 'graphql'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
+import StandardMutationError from './StandardMutationError'
 import RetroPhaseItem from './RetroPhaseItem'
 
 const MoveReflectTemplatePromptPayload = new GraphQLObjectType({

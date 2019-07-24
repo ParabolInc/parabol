@@ -5,8 +5,8 @@ import {parse} from 'graphql/language/parser'
 import Maybe from 'graphql/tsutils/Maybe'
 import {validateSchema} from 'graphql/type/validate'
 import {validate} from 'graphql/validation/validate'
-import ConnectionContext from 'server/socketHelpers/ConnectionContext'
-import RethinkDataLoader from 'server/utils/RethinkDataLoader'
+import ConnectionContext from '../socketHelpers/ConnectionContext'
+import RethinkDataLoader from '../utils/RethinkDataLoader'
 
 // Avoid needless parsing & validating for the 300 hottest operations
 interface DocumentCache {

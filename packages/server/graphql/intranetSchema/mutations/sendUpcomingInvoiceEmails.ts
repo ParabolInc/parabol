@@ -1,12 +1,12 @@
 import {GraphQLList, GraphQLString} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import sendEmailPromise from 'server/email/sendEmail'
-import {requireSU} from 'server/utils/authorization'
-import {UPCOMING_INVOICE_EMAIL_WARNING} from 'server/utils/serverConstants'
-import {BILLING_LEADER, PRO} from 'universal/utils/constants'
-import {months} from 'universal/utils/makeDateString'
-import makeAppLink from 'server/utils/makeAppLink'
-import {UpcomingInvoiceEmailProps} from 'universal/modules/email/components/UpcomingInvoiceEmail'
+import getRethink from '../../../database/rethinkDriver'
+import sendEmailPromise from '../../../email/sendEmail'
+import {requireSU} from '../../../utils/authorization'
+import {UPCOMING_INVOICE_EMAIL_WARNING} from '../../../utils/serverConstants'
+import {BILLING_LEADER, PRO} from '../../../../universal/utils/constants'
+import {months} from '../../../../universal/utils/makeDateString'
+import makeAppLink from '../../../utils/makeAppLink'
+import {UpcomingInvoiceEmailProps} from '../../../../universal/modules/email/components/UpcomingInvoiceEmail'
 
 interface Details extends UpcomingInvoiceEmailProps {
   emailStr: string

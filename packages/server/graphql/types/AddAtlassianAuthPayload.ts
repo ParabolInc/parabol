@@ -1,5 +1,5 @@
 import {GraphQLObjectType} from 'graphql'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
+import StandardMutationError from './StandardMutationError'
 import {getUserId} from '../../utils/authorization'
 import AtlassianAuth from './AtlassianAuth'
 import User from './User'

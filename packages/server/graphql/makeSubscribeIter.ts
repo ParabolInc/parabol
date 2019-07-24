@@ -1,5 +1,5 @@
-import getPubSub from 'server/utils/getPubSub'
-import {DataLoaderWorker} from 'server/graphql/graphql'
+import getPubSub from '../utils/getPubSub'
+import {DataLoaderWorker} from './graphql'
 
 const defaultFilterFn = () => true
 

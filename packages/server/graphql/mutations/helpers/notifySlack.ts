@@ -1,19 +1,19 @@
-import getRethink from 'server/database/rethinkDriver'
-import makeAppLink from 'server/utils/makeAppLink'
+import getRethink from '../../../database/rethinkDriver'
+import makeAppLink from '../../../utils/makeAppLink'
 import {
   meetingTypeToLabel,
   meetingTypeToSlug,
   phaseLabelLookup
-} from 'universal/utils/meetings/lookups'
-import {MeetingType} from 'server/database/types/Meeting'
-import {DataLoaderWorker} from 'server/graphql/graphql'
-import SlackNotification, {SlackNotificationEvent} from 'server/database/types/SlackNotification'
-import SlackManager from 'server/utils/SlackManager'
-import findStageById from 'universal/utils/meetings/findStageById'
-import {Unpromise} from 'universal/types/generics'
+} from '../../../../universal/utils/meetings/lookups'
+import {MeetingType} from '../../../database/types/Meeting'
+import {DataLoaderWorker} from '../../graphql'
+import SlackNotification, {SlackNotificationEvent} from '../../../database/types/SlackNotification'
+import SlackManager from '../../../utils/SlackManager'
+import findStageById from '../../../../universal/utils/meetings/findStageById'
+import {Unpromise} from '../../../../universal/types/generics'
 import ms from 'ms'
-import formatTime from 'universal/utils/date/formatTime'
-import formatWeekday from 'universal/utils/date/formatWeekday'
+import formatTime from '../../../../universal/utils/date/formatTime'
+import formatWeekday from '../../../../universal/utils/date/formatWeekday'
 
 const getSlackDetails = async (
   event: SlackNotificationEvent,

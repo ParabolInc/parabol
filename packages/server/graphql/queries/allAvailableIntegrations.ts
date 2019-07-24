@@ -1,9 +1,9 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
-import {GQLContext} from 'server/graphql/graphql'
-import fetchAllIntegrations from 'server/graphql/queries/helpers/fetchAllIntegrations'
-import SuggestedIntegration from 'server/graphql/types/SuggestedIntegration'
-import {getUserId} from 'server/utils/authorization'
-import {ISuggestedIntegrationsOnUserArguments, IUser} from 'universal/types/graphql'
+import {GQLContext} from '../graphql'
+import fetchAllIntegrations from './helpers/fetchAllIntegrations'
+import SuggestedIntegration from '../types/SuggestedIntegration'
+import {getUserId} from '../../utils/authorization'
+import {ISuggestedIntegrationsOnUserArguments, IUser} from '../../../universal/types/graphql'
 
 export default {
   description: 'All the integrations that the user could possibly use',

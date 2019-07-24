@@ -1,7 +1,7 @@
 import fetch from 'node-fetch'
 import {stringify} from 'querystring'
-import SlackClientManager from 'universal/utils/SlackClientManager'
-import makeAppLink from 'server/utils/makeAppLink'
+import SlackClientManager from '../../universal/utils/SlackClientManager'
+import makeAppLink from './makeAppLink'
 
 interface IncomingWebhook {
   url: string

@@ -1,17 +1,17 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
-import SetSlackNotificationPayload from 'server/graphql/types/SetSlackNotificationPayload'
-import {getUserId, isTeamMember} from 'server/utils/authorization'
+import SetSlackNotificationPayload from '../types/SetSlackNotificationPayload'
+import {getUserId, isTeamMember} from '../../utils/authorization'
 import getRethink from '../../database/rethinkDriver'
 import SlackManager from '../../utils/SlackManager'
 import standardError from '../../utils/standardError'
-import publish from 'server/utils/publish'
-import {TEAM} from 'universal/utils/constants'
-import {GQLContext} from 'server/graphql/graphql'
+import publish from '../../utils/publish'
+import {TEAM} from '../../../universal/utils/constants'
+import {GQLContext} from '../graphql'
 import SlackNotification, {
   slackNotificationEventTypeLookup
-} from 'server/database/types/SlackNotification'
-import SlackNotificationEventEnum from 'server/graphql/types/SlackNotificationEventEnum'
-import {ISetSlackNotificationOnMutationArguments} from 'universal/types/graphql'
+} from '../../database/types/SlackNotification'
+import SlackNotificationEventEnum from '../types/SlackNotificationEventEnum'
+import {ISetSlackNotificationOnMutationArguments} from '../../../universal/types/graphql'
 
 export default {
   name: 'SetSlackNotification',

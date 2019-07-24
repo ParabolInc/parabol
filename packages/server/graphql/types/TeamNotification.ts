@@ -1,9 +1,9 @@
 import {GraphQLID, GraphQLInterfaceType} from 'graphql'
-import NotificationEnum from 'server/graphql/types/NotificationEnum'
-import NotifyKickedOut from 'server/graphql/types/NotifyKickedOut'
-import NotifyTaskInvolves from 'server/graphql/types/NotifyTaskInvolves'
-import NotifyTeamArchived from 'server/graphql/types/NotifyTeamArchived'
-import NotificationTeamInvitation from 'server/graphql/types/NotificationTeamInvitation'
+import NotificationEnum from './NotificationEnum'
+import NotifyKickedOut from './NotifyKickedOut'
+import NotifyTaskInvolves from './NotifyTaskInvolves'
+import NotifyTeamArchived from './NotifyTeamArchived'
+import NotificationTeamInvitation from './NotificationTeamInvitation'
 
 const TeamNotification = new GraphQLInterfaceType({
   name: 'TeamNotification',

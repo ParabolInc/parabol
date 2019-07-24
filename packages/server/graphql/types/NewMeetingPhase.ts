@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
-import AgendaItemsPhase from 'server/graphql/types/AgendaItemsPhase'
-import CheckInPhase from 'server/graphql/types/CheckInPhase'
-import DiscussPhase from 'server/graphql/types/DiscussPhase'
-import GenericMeetingPhase from 'server/graphql/types/GenericMeetingPhase'
-import NewMeetingPhaseTypeEnum from 'server/graphql/types/NewMeetingPhaseTypeEnum'
-import NewMeetingStage from 'server/graphql/types/NewMeetingStage'
-import ReflectPhase from 'server/graphql/types/ReflectPhase'
-import UpdatesPhase from 'server/graphql/types/UpdatesPhase'
+import AgendaItemsPhase from './AgendaItemsPhase'
+import CheckInPhase from './CheckInPhase'
+import DiscussPhase from './DiscussPhase'
+import GenericMeetingPhase from './GenericMeetingPhase'
+import NewMeetingPhaseTypeEnum from './NewMeetingPhaseTypeEnum'
+import NewMeetingStage from './NewMeetingStage'
+import ReflectPhase from './ReflectPhase'
+import UpdatesPhase from './UpdatesPhase'
 import {
   AGENDA_ITEMS,
   CHECKIN,
@@ -17,7 +17,7 @@ import {
   REFLECT,
   UPDATES,
   VOTE
-} from 'universal/utils/constants'
+} from '../../../universal/utils/constants'
 
 export const newMeetingPhaseFields = () => ({
   id: {

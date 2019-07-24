@@ -3,7 +3,7 @@ import {getUserId} from '../utils/authorization'
 import sendToSentry from '../utils/sendToSentry'
 import handleGraphQLTrebuchetRequest from './handleGraphQLTrebuchetRequest'
 import isQueryAllowed from './isQueryAllowed'
-import getQueryString from 'server/graphql/getQueryString'
+import getQueryString from './getQueryString'
 
 const SSE_PROBLEM_USERS = [] as string[]
 export default (sharedDataLoader, rateLimiter, sseClients) => async (

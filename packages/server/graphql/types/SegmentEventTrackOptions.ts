@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLInputObjectType} from 'graphql'
-import NewMeetingPhaseTypeEnum from 'server/graphql/types/NewMeetingPhaseTypeEnum'
+import NewMeetingPhaseTypeEnum from './NewMeetingPhaseTypeEnum'
 
 const SegmentEventTrackOptions = new GraphQLInputObjectType({
   name: 'SegmentEventTrackOptions',

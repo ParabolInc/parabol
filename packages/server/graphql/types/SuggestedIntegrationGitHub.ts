@@ -1,7 +1,7 @@
 import {GraphQLNonNull, GraphQLObjectType, GraphQLID} from 'graphql'
 import SuggestedIntegration, {
   suggestedIntegrationFields
-} from 'server/graphql/types/SuggestedIntegration'
+} from './SuggestedIntegration'
 
 const SuggestedIntegrationGitHub = new GraphQLObjectType({
   name: 'SuggestedIntegrationGitHub',

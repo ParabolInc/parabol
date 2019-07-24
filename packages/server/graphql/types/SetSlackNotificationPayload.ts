@@ -1,8 +1,8 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
+import StandardMutationError from './StandardMutationError'
 import User from './User'
-import SlackNotification from 'server/graphql/types/SlackNotification'
-import {GQLContext} from 'server/graphql/graphql'
+import SlackNotification from './SlackNotification'
+import {GQLContext} from '../graphql'
 
 const SetSlackNotificationPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'SetSlackNotificationPayload',

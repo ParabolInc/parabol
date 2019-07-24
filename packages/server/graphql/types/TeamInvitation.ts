@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType'
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
-import User from 'server/graphql/types/User'
+import GraphQLEmailType from './GraphQLEmailType'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
+import User from './User'
 
 const TeamInvitation = new GraphQLObjectType({
   name: 'TeamInvitation',

@@ -1,7 +1,7 @@
-import publish, {SubOptions} from 'server/utils/publish'
-import {TEAM} from 'universal/utils/constants'
-import getRethink from 'server/database/rethinkDriver'
-import PromoteNewMeetingFacilitatorPayload from 'server/graphql/types/PromoteNewMeetingFacilitatorPayload'
+import publish, {SubOptions} from '../../../utils/publish'
+import {TEAM} from '../../../../universal/utils/constants'
+import getRethink from '../../../database/rethinkDriver'
+import PromoteNewMeetingFacilitatorPayload from '../../types/PromoteNewMeetingFacilitatorPayload'
 
 const promoteFirstTeamMember = async (
   meetingId: string,

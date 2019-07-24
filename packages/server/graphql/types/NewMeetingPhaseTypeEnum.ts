@@ -10,7 +10,7 @@ import {
   REFLECT,
   UPDATES,
   VOTE
-} from 'universal/utils/constants'
+} from '../../../universal/utils/constants'
 
 const NewMeetingPhaseTypeEnum = new GraphQLEnumType({
   name: 'NewMeetingPhaseTypeEnum',

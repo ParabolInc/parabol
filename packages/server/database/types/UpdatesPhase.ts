@@ -1,6 +1,6 @@
-import UpdatesStage from 'server/database/types/UpdatesStage'
-import GenericMeetingPhase from 'server/database/types/GenericMeetingPhase'
-import {UPDATES} from 'universal/utils/constants'
+import UpdatesStage from './UpdatesStage'
+import GenericMeetingPhase from './GenericMeetingPhase'
+import {UPDATES} from '../../../universal/utils/constants'
 
 interface TeamMember {
   id: string

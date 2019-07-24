@@ -1,6 +1,6 @@
-import schema from 'server/graphql/rootSchema'
+import schema from './rootSchema'
 import graphql, {GQLContext} from './graphql'
-import getQueryString from 'server/graphql/getQueryString'
+import getQueryString from './getQueryString'
 
 const ssrGraphQL = async (documentId: string, variables: object, context: GQLContext) => {
   const query = await getQueryString(documentId)

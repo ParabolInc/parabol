@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import Team from './Team'
 import TimelineEvent, {timelineEventInterfaceFields} from './TimelineEvent'
 import {COMPLETED_ACTION_MEETING} from './TimelineEventTypeEnum'
-import ActionMeeting from 'server/graphql/types/ActionMeeting'
+import ActionMeeting from './ActionMeeting'
 
 const TimelineEventCompletedActionMeeting = new GraphQLObjectType<any>({
   name: 'TimelineEventCompletedActionMeeting',

@@ -1,10 +1,10 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import Team from 'server/graphql/types/Team'
-import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification'
-import Task from 'server/graphql/types/Task'
-import TaskInvolvementType from 'server/graphql/types/TaskInvolvementType'
-import TeamMember from 'server/graphql/types/TeamMember'
-import TeamNotification from 'server/graphql/types/TeamNotification'
+import Team from './Team'
+import Notification, {notificationInterfaceFields} from './Notification'
+import Task from './Task'
+import TaskInvolvementType from './TaskInvolvementType'
+import TeamMember from './TeamMember'
+import TeamNotification from './TeamNotification'
 
 const NotifyTaskInvolves = new GraphQLObjectType({
   name: 'NotifyTaskInvolves',

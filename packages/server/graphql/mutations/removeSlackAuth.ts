@@ -1,10 +1,10 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import RemoveSlackAuthPayload from 'server/graphql/types/RemoveSlackAuthPayload'
-import {getUserId, isTeamMember} from 'server/utils/authorization'
-import publish from 'server/utils/publish'
-import standardError from 'server/utils/standardError'
-import {TEAM} from 'universal/utils/constants'
+import getRethink from '../../database/rethinkDriver'
+import RemoveSlackAuthPayload from '../types/RemoveSlackAuthPayload'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import standardError from '../../utils/standardError'
+import {TEAM} from '../../../universal/utils/constants'
 
 export default {
   name: 'RemoveSlackAuth',

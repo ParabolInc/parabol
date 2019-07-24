@@ -6,8 +6,8 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
-import RetroPhaseItem from 'server/graphql/types/RetroPhaseItem'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
+import RetroPhaseItem from './RetroPhaseItem'
 
 const ReflectTemplate = new GraphQLObjectType({
   name: 'ReflectTemplate',

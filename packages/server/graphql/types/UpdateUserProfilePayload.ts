@@ -1,10 +1,10 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import User from 'server/graphql/types/User'
-import {resolveUser} from 'server/graphql/resolvers'
-import TeamMember from 'server/graphql/types/TeamMember'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
-import {GQLContext} from 'server/graphql/graphql'
+import User from './User'
+import {resolveUser} from '../resolvers'
+import TeamMember from './TeamMember'
+import StandardMutationError from './StandardMutationError'
+import toTeamMemberId from '../../../universal/utils/relay/toTeamMemberId'
+import {GQLContext} from '../graphql'
 
 const UpdateUserProfilePayload = new GraphQLObjectType<any, GQLContext, any>({
   name: 'UpdateUserProfilePayload',

@@ -1,10 +1,10 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import publish from 'server/utils/publish'
-import {TEAM} from 'universal/utils/constants'
-import {getUserId, isTeamMember} from 'server/utils/authorization'
-import PromoteNewMeetingFacilitatorPayload from 'server/graphql/types/PromoteNewMeetingFacilitatorPayload'
-import standardError from 'server/utils/standardError'
+import getRethink from '../../database/rethinkDriver'
+import publish from '../../utils/publish'
+import {TEAM} from '../../../universal/utils/constants'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import PromoteNewMeetingFacilitatorPayload from '../types/PromoteNewMeetingFacilitatorPayload'
+import standardError from '../../utils/standardError'
 
 export default {
   type: PromoteNewMeetingFacilitatorPayload,

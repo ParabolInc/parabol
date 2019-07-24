@@ -1,9 +1,9 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {resolveTeam, resolveTeamMember} from 'server/graphql/resolvers'
-import StandardMutationError from 'server/graphql/types/StandardMutationError'
-import Team from 'server/graphql/types/Team'
-import TeamMember from 'server/graphql/types/TeamMember'
-import User from 'server/graphql/types/User'
+import {resolveTeam, resolveTeamMember} from '../resolvers'
+import StandardMutationError from './StandardMutationError'
+import Team from './Team'
+import TeamMember from './TeamMember'
+import User from './User'
 
 const AcceptTeamInvitationPayload = new GraphQLObjectType({
   name: 'AcceptTeamInvitationPayload',

@@ -1,4 +1,4 @@
-import {isSuperUser} from 'server/utils/authorization'
+import {isSuperUser} from '../utils/authorization'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 
 const PROD = process.env.NODE_ENV === 'production'

@@ -1,13 +1,13 @@
 import {GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {GQLContext} from 'server/graphql/graphql'
-import ActionMeetingMember from 'server/graphql/types/ActionMeetingMember'
-import ActionMeetingSettings from 'server/graphql/types/ActionMeetingSettings'
-import NewMeeting, {newMeetingFields} from 'server/graphql/types/NewMeeting'
-import Task from 'server/graphql/types/Task'
-import {getUserId} from 'server/utils/authorization'
-import {IActionMeeting} from 'universal/types/graphql'
-import {RETROSPECTIVE} from 'universal/utils/constants'
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
+import {GQLContext} from '../graphql'
+import ActionMeetingMember from './ActionMeetingMember'
+import ActionMeetingSettings from './ActionMeetingSettings'
+import NewMeeting, {newMeetingFields} from './NewMeeting'
+import Task from './Task'
+import {getUserId} from '../../utils/authorization'
+import {IActionMeeting} from '../../../universal/types/graphql'
+import {RETROSPECTIVE} from '../../../universal/utils/constants'
+import toTeamMemberId from '../../../universal/utils/relay/toTeamMemberId'
 
 const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
   name: 'ActionMeeting',

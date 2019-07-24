@@ -1,6 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
-import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification'
-import Team from 'server/graphql/types/Team'
+import Notification, {notificationInterfaceFields} from './Notification'
+import Team from './Team'
 
 const NotifyKickedOut = new GraphQLObjectType({
   name: 'NotifyKickedOut',

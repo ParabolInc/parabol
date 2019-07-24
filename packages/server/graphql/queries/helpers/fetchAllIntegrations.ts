@@ -1,6 +1,6 @@
-import {DataLoaderWorker} from 'server/graphql/graphql'
-import fetchAtlassianProjects from 'server/graphql/queries/helpers/fetchAtlassianProjects'
-import fetchGitHubRepos from 'server/graphql/queries/helpers/fetchGitHubRepos'
+import {DataLoaderWorker} from '../../graphql'
+import fetchAtlassianProjects from './fetchAtlassianProjects'
+import fetchGitHubRepos from './fetchGitHubRepos'
 
 const fetchAllIntegrations = async (
   dataLoader: DataLoaderWorker,

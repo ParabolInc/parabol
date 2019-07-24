@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLInt, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
-import connectionDefinitions from 'server/graphql/connectionDefinitions'
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
-import Organization from 'server/graphql/types/Organization'
-import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor'
-import Team from 'server/graphql/types/Team'
-import TimelineEventTypeEnum from 'server/graphql/types/TimelineEventTypeEnum'
-import User from 'server/graphql/types/User'
+import connectionDefinitions from '../connectionDefinitions'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
+import Organization from './Organization'
+import PageInfoDateCursor from './PageInfoDateCursor'
+import Team from './Team'
+import TimelineEventTypeEnum from './TimelineEventTypeEnum'
+import User from './User'
 
 export const timelineEventInterfaceFields = () => ({
   id: {
