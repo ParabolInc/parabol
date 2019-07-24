@@ -1,6 +1,6 @@
 import dotenv from 'dotenv'
 import dotenvExpand from 'dotenv-expand'
-
+import path from 'path'
 /*
  * getDotenv()
  * processes .env file (if it exists). Sets process.env[VARS] as a
@@ -9,12 +9,10 @@ import dotenvExpand from 'dotenv-expand'
  * Returns true.
  */
 export default function getDotenv () {
-  const myConfig = {silent: true}
-  if (process.env.NODE_ENV === 'test') {
-    myConfig.path = '.env.test'
-  }
-  const myEnv = dotenv.config(myConfig)
+  const name = process.env.NODE_ENV === 'test' ? '.env.test' : '.env'
+  const myEnv = dotenv.config({
+    debug: true,
+    path: path.join(__dirname, '..', name)
+  })
   dotenvExpand(myEnv)
-
-  return true
 }

@@ -15,7 +15,6 @@ import {combineReducers, createStore} from 'redux'
 import appTheme from '../styles/theme/appTheme'
 import globalStyles from '../styles/theme/globalStyles'
 
-import '../../static/css/font-awesome.css'
 import RelayStub from './RelayStub'
 
 type Props = {

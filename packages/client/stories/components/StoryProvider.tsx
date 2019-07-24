@@ -5,7 +5,6 @@ import styled from '@emotion/styled';
 import globalStyles from '../styles/theme/globalStyles'
 import {BrowserRouter as Router} from 'react-router-dom'
 
-import '../../static/css/font-awesome.css'
 import RelayStub from './RelayStub'
 import appTheme from '../styles/theme/appTheme'
 import AtmosphereProvider from '../components/AtmosphereProvider/AtmosphereProvider'
