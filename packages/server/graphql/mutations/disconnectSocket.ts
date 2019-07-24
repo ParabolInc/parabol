@@ -14,7 +14,7 @@ export default {
   name: 'DisconnectSocket',
   description: 'a server-side mutation called when a client disconnects',
   type: DisconnectSocketPayload,
-  resolve: async (_source, _args, {authToken, dataLoader, socketId}: GQLContext) => {
+  resolve: async (_source, _args, {authToken, socketId}: GQLContext) => {
     // Note: no server secret means a client could call this themselves & appear disconnected when they aren't!
     const r = getRethink()
 
@@ -53,8 +53,7 @@ export default {
           .coerceTo('array')
           .default([])
       })
-      const operationId = dataLoader.share()
-      const subOptions = {mutatorId: socketId, operationId}
+      const subOptions = {mutatorId: socketId}
       listeningUserIds.forEach((onlineUserId) => {
         publish(NOTIFICATION, onlineUserId, DisconnectSocketPayload, data, subOptions)
       })

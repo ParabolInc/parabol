@@ -3,6 +3,7 @@ import graphql from '../graphql/graphql'
 import stripe from './stripe'
 import RethinkDataLoader from '../utils/RethinkDataLoader'
 import sendToSentry from '../utils/sendToSentry'
+import DataLoaderWarehouse from 'dataloader-warehouse'
 
 const eventLookup = {
   invoice: {
@@ -78,7 +79,7 @@ const verifyBody = (req) => {
   }
 }
 
-const stripeWebhookHandler = (sharedDataLoader) => async (req, res) => {
+const stripeWebhookHandler = (sharedDataLoader: DataLoaderWarehouse) => async (req, res) => {
   res.sendStatus(200)
 
   const verifiedBody = verifyBody(req)
@@ -102,8 +103,12 @@ const stripeWebhookHandler = (sharedDataLoader) => async (req, res) => {
   const {getVars, query} = actionHandler
   const variables = getVars(payload)
   const dataLoader = sharedDataLoader.add(new RethinkDataLoader())
-  const context = {serverSecret: process.env.AUTH0_CLIENT_SECRET, dataLoader}
+  const context = ({
+    dataLoader,
+    serverSecret: process.env.AUTH0_CLIENT_SECRET
+  } as unknown) as GQLContext
   const result = await graphql(schema, query, {}, context, variables)
+  dataLoader.dispose()
   if (result.errors) {
     sendToSentry(result.errors[0], {tags: {query, variables}})
   }

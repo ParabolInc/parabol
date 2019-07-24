@@ -1,8 +1,8 @@
-import graphql from '../graphql/graphql'
+import graphql, {GQLContext} from 'server/graphql/graphql'
 import secureCompare from 'secure-compare'
-import schema from '../graphql/rootSchema'
-import signPayload from '../utils/signPayload'
-import sendToSentry from '../utils/sendToSentry'
+import schema from 'server/graphql/rootSchema'
+import signPayload from 'server/utils/signPayload'
+import sendToSentry from 'server/utils/sendToSentry'
 
 const getPublicKey = ({repository: {id}}) => String(id)
 
@@ -31,33 +31,34 @@ const eventLookup = {
   pull_request_review: {},
 
   organization: {
-    _getPublickKey: ({organization: {id}}) => String(id),
-    member_added: {
-      getVars: ({
-        membership: {
-          user: {login: userName}
-        },
-        organization: {login: orgName}
-      }) => ({userName, orgName}),
-      query: `
-        mutation GitHubAddMember($userName: ID! $orgName: ID!) {
-          githubAddMember(userName: $userName, orgName: $orgName)
-        }
-      `
-    },
-    member_removed: {
-      getVars: ({
-        membership: {
-          user: {login: userName}
-        },
-        organization: {login: orgName}
-      }) => ({userName, orgName}),
-      query: `
-        mutation GitHubRemoveMember($userName: ID! $orgName: ID!) {
-          githubRemoveMember(userName: $userName, orgName: $orgName)
-        }
-      `
-    }
+    _getPublickKey: ({organization: {id}}) => String(id)
+    // REMOVED SINCE WE'RE NOT HANDLING THESE RIGHT NOW
+    // member_added: {
+    //   getVars: ({
+    //     membership: {
+    //       user: {login: userName}
+    //     },
+    //     organization: {login: orgName}
+    //   }) => ({userName, orgName}),
+    //   query: `
+    //     mutation GitHubAddMember($userName: ID! $orgName: ID!) {
+    //       githubAddMember(userName: $userName, orgName: $orgName)
+    //     }
+    //   `
+    // },
+    // member_removed: {
+    //   getVars: ({
+    //     membership: {
+    //       user: {login: userName}
+    //     },
+    //     organization: {login: orgName}
+    //   }) => ({userName, orgName}),
+    //   query: `
+    //     mutation GitHubRemoveMember($userName: ID! $orgName: ID!) {
+    //       githubRemoveMember(userName: $userName, orgName: $orgName)
+    //     }
+    //   `
+    // }
   },
   repository: {}
 }
@@ -83,7 +84,7 @@ export default async (req, res) => {
 
   const {getVars, query} = actionHandler
   const variables = getVars(body)
-  const context = {serverSecret: process.env.AUTH0_CLIENT_SECRET}
+  const context = ({serverSecret: process.env.AUTH0_CLIENT_SECRET} as unknown) as GQLContext
   const result = await graphql(schema, query, {}, context, variables)
   if (result.errors) {
     sendToSentry(result.errors[0], {tags: {query, variables}})

@@ -78,16 +78,12 @@ import reflectTemplatePromptUpdateDescription from './mutations/reflectTemplateP
 import addGitHubAuth from './mutations/addGitHubAuth'
 import removeGitHubAuth from './mutations/removeGitHubAuth'
 import removeSlackAuth from './mutations/removeSlackAuth'
-import {GQLContext} from './graphql'
+import {GQLContext, InternalContext} from './graphql'
 import addSlackAuth from './mutations/addSlackAuth'
 import setSlackNotification from './mutations/setSlackNotification'
 import setStageTimer from './mutations/setStageTimer'
 import pushInvitation from './mutations/pushInvitation'
 import denyPushInvitation from './mutations/denyPushInvitation'
-
-interface InternalContext {
-  serverSecret: string
-}
 
 interface Context extends InternalContext, GQLContext {}
 

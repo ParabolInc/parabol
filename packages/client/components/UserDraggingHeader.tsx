@@ -17,7 +17,7 @@ const Header = styled('div')({
 })
 
 interface Props {
-  user: UserDraggingHeader_user
+  user: UserDraggingHeader_user | null
 }
 
 const UserDraggingHeader = (props: Props) => {

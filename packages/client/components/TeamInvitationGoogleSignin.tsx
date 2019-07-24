@@ -8,7 +8,7 @@ import {RouteComponentProps, withRouter} from 'react-router'
 import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
 import LoginMutation from '../mutations/LoginMutation'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
-import auth0Authorize from '../utils/auth0Authorize'
+import Auth0ClientManager from '../utils/Auth0ClientManager'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import InvitationCenteredCopy from './InvitationCenteredCopy'
 import InviteDialog from './InviteDialog'
@@ -46,9 +46,10 @@ class TeamInvitationGoogleSignin extends Component<Props> {
     if (!user) return
     const {email} = user
     submitMutation()
+    const manager = new Auth0ClientManager()
     let res
     try {
-      res = await auth0Authorize(email)
+      res = await manager.loginWithGoogle(email)
     } catch (e) {
       onError(e)
       Sentry.captureException(e)

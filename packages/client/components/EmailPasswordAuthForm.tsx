@@ -7,8 +7,6 @@ import RaisedButton from './RaisedButton'
 import withAtmosphere, {
   WithAtmosphereProps
 } from '../decorators/withAtmosphere/withAtmosphere'
-import auth0CreateAccountWithEmail from '../utils/auth0CreateAccountWithEmail'
-import auth0LoginWithEmail from '../utils/auth0LoginWithEmail'
 import {CREATE_ACCOUNT_BUTTON_LABEL, SIGNIN_LABEL} from '../utils/constants'
 import getAuthProviders from '../utils/getAuthProviders'
 import {emailRegex} from '../validation/regex'
@@ -17,6 +15,7 @@ import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationP
 import Legitity from '../validation/Legitity'
 import EmailInputField from './EmailInputField'
 import PasswordInputField from './PasswordInputField'
+import Auth0ClientManager from '../utils/Auth0ClientManager'
 
 interface Props
   extends WithAtmosphereProps,
@@ -58,38 +57,37 @@ export class EmailPasswordAuthFormBase extends Component<Props> {
     this.props.setDirtyField(e.target.name)
   }
 
-  tryLogin = async (email: string, password: string, handleError?: () => void) => {
+  tryLogin = async (email: string, password: string, error?: string) => {
     const {atmosphere, onCompleted, onError} = this.props
-    try {
-      await auth0LoginWithEmail(email, password)
+    const manager = new Auth0ClientManager()
+    const errorResult = await manager.login(email, password)
+    if (!errorResult) {
       onCompleted()
-    } catch (e) {
-      onError(e.error_description || e.description || e.message)
-      // use the handler's error message, if any
-      handleError && handleError()
-      if (e.code === 'access_denied') {
-        const authProviders = await getAuthProviders(atmosphere, email)
-        if (authProviders.length === 1 && authProviders[0] === 'google-oauth2') {
-          onError('Sign in with Google above')
-        }
+      return
+    }
+    onError(error || errorResult.error_description)
+    if (errorResult.error === 'access_denied') {
+      const authProviders = await getAuthProviders(atmosphere, email)
+      if (authProviders.length === 1 && authProviders[0] === 'google-oauth2') {
+        onError('Sign in with Google above')
       }
     }
   }
 
   trySignUp = async (email, password) => {
     const {onError} = this.props
-    try {
-      await auth0CreateAccountWithEmail(email, password)
-    } catch (e) {
-      const handleError = () => {
-        onError(e.error_description || e.description || e.message)
-      }
-      if (e.code === 'user_exists') {
+    const manager = new Auth0ClientManager()
+    const res = await manager.signup(email, password)
+    if ('code' in res) {
+      const {code, description} = res
+      if (code === 'user_exists') {
         // if they're trying to sign up & the user exists, see if the password is a match.
         // they may have just forgotten that they had an account
-        await this.tryLogin(email, password, handleError)
+        await this.tryLogin(email, password, description)
       } else {
-        handleError()
+        // sentry will pick this up
+        console.error(res)
+        onError(description)
       }
       return
     }

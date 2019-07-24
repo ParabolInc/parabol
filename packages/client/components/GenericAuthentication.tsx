@@ -17,13 +17,13 @@ import {
   SIGNIN_SLUG
 } from '../utils/constants'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
-import auth0Authorize from '../utils/auth0Authorize'
 import getAnonymousId from '../utils/getAnonymousId'
 import AuthPrivacyFooter from './AuthPrivacyFooter'
 import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
 import DialogTitle from './DialogTitle'
 import ResetPasswordPage from './ResetPasswordPage/ResetPasswordPage'
 import AuthenticationDialog from './AuthenticationDialog'
+import Auth0ClientManager from '../utils/Auth0ClientManager'
 
 export type AuthPageSlug = 'create-account' | 'signin' | 'reset-password'
 
@@ -110,9 +110,10 @@ class GenericAuthentication extends Component<Props, State> {
       invitationToken
     } = this.props
     submitMutation()
+    const manager = new Auth0ClientManager()
     let res
     try {
-      res = await auth0Authorize()
+      res = await manager.loginWithGoogle()
     } catch (e) {
       onError(e)
       Sentry.captureException(e)

@@ -2,8 +2,8 @@ import React, {Component} from 'react'
 import styled from '@emotion/styled'
 import PlainButton from './PlainButton/PlainButton'
 import {PALETTE} from '../styles/paletteV2'
-import auth0ChangePassword from '../utils/auth0ChangePassword'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
+import Auth0ClientManager from '../utils/Auth0ClientManager'
 
 interface Props extends WithMutationProps {
   email: string
@@ -28,20 +28,13 @@ class ForgotPasswordOneClick extends Component<Props> {
     isSent: false
   }
   onClick = async () => {
-    const {email, submitMutation, submitting, onError, onCompleted} = this.props
+    const {email, submitMutation, submitting, onCompleted} = this.props
     if (submitting) return
     submitMutation()
-    try {
-      // res is just a string saying they've sent an email
-      await auth0ChangePassword(email)
-    } catch (e) {
-      onError(e)
-      return
-    }
+    const manager = new Auth0ClientManager()
+    await manager.changePassword(email)
     onCompleted()
-    this.setState({
-      isSent: true
-    })
+    this.setState({isSent: true})
   }
 
   render () {
