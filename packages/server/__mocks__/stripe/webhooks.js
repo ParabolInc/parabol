@@ -1,5 +1,5 @@
 export default {
-  constructEvent(body) {
+  constructEvent (body) {
     return body;
   }
 };

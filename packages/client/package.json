@@ -14,11 +14,10 @@
   },
   "scripts": {
     "storybook": "start-storybook -p 6006 -c .storybook",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "lint": "eslint --fix ./**/*.{ts,tsx,js}"
   },
   "devDependencies": {
-    "@types/relay-runtime": "https://github.com/mattkrick/relay-runtime-strict-types/tarball/c78b4d9268174c7b8226acd0ceb4dc10207dba3d",
-    "@types/react-dom": "16.8.4",
     "@storybook/addon-actions": "^5.1.9",
     "@storybook/addon-info": "^5.1.9",
     "@storybook/addon-knobs": "^5.1.9",
@@ -31,10 +30,12 @@
     "@types/mousetrap": "^1.6.2",
     "@types/ms": "^0.7.30",
     "@types/react-beautiful-dnd": "^11.0.2",
+    "@types/react-dom": "16.8.4",
     "@types/react-redux": "^7.0.1",
     "@types/react-relay": "^5.0.0",
     "@types/react-router": "^5.0.3",
     "@types/react-router-dom": "^4.3.2",
+    "@types/relay-runtime": "https://github.com/mattkrick/relay-runtime-strict-types/tarball/c78b4d9268174c7b8226acd0ceb4dc10207dba3d",
     "@types/segment-analytics": "^0.0.31",
     "@types/shortid": "^0.0.29",
     "@typescript-eslint/eslint-plugin": "^1.13.0",
@@ -44,6 +45,8 @@
     "eslint-plugin-emotion": "^10.0.14",
     "eslint-plugin-prettier": "^3.1.0",
     "eslint-plugin-react": "^7.14.2",
+    "eslint-plugin-react-hooks": "^1.6.1",
+    "expect": "^24.8.0",
     "flow-bin": "^0.103.0",
     "husky": "^3.0.1",
     "jest": "^24.8.0",
@@ -53,8 +56,7 @@
     "relay-compiler": "5.0.0",
     "relay-compiler-language-typescript": "https://github.com/mattkrick/relay-compiler-language-typescript/tarball/0b93ff31546894afcba4f6e7bb73ac737f83cc18",
     "strict-event-emitter-types": "^2.0.0",
-    "typescript": "^3.5.2",
-    "expect": "^24.8.0"
+    "typescript": "^3.5.2"
   },
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
