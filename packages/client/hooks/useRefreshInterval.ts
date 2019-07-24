@@ -8,7 +8,7 @@ const useRefreshInterval = (ms: number) => {
     return () => {
       window.clearInterval(interval)
     }
-  }, [])
+  }, [forceUpdate, ms])
 }
 
 export default useRefreshInterval

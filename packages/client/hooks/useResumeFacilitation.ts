@@ -15,8 +15,8 @@ graphql`
 `
 const useResumeFacilitation = (team: useResumeFacilitationTeam | null) => {
   const atmosphere = useAtmosphere()
-  const {viewerId} = atmosphere
   useEffect(() => {
+    const {viewerId} = atmosphere
     if (!team) return
     const {newMeeting} = team
     if (!newMeeting) return
@@ -24,7 +24,7 @@ const useResumeFacilitation = (team: useResumeFacilitationTeam | null) => {
     if (defaultFacilitatorUserId === viewerId && facilitatorUserId !== viewerId) {
       PromoteNewMeetingFacilitatorMutation(atmosphere, {facilitatorUserId: viewerId, meetingId})
     }
-  }, [team])
+  }, [atmosphere, team])
 }
 
 export default useResumeFacilitation

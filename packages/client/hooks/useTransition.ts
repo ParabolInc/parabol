@@ -1,5 +1,6 @@
-import {useCallback, useMemo, useRef} from 'react'
+import {useMemo, useRef} from 'react'
 import useForceUpdate from './useForceUpdate'
+import useEventCallback from './useEventCallback'
 
 // const getValidChildren = (children: ReactNode) => {
 //   const validChildren = [] as ReactElement<any>[]
@@ -28,7 +29,7 @@ const useTransition = <T extends {key: string}>(children: T[]) => {
   const previousTransitionChildrenRef = useRef<TransitionChild<T>[]>([])
   const forceUpdate = useForceUpdate()
 
-  const transitionEndFactory = useCallback(
+  const transitionEndFactory = useEventCallback(
     (key: string) => () => {
       const idx = previousTransitionChildrenRef.current.findIndex(
         (tChild) => tChild.child.key === key
@@ -51,11 +52,9 @@ const useTransition = <T extends {key: string}>(children: T[]) => {
         ]
         forceUpdate()
       }
-    },
-    []
-  )
+    })
 
-  const beginTransition = useCallback((key: string) => {
+  const beginTransition = useEventCallback((key: string) => {
     requestAnimationFrame(() => {
       const tChildIdx = previousTransitionChildrenRef.current.findIndex(
         ({child}) => child.key === key
@@ -71,7 +70,7 @@ const useTransition = <T extends {key: string}>(children: T[]) => {
         forceUpdate()
       }
     })
-  }, [])
+  })
 
   return useMemo(() => {
     const currentTChildren = [] as TransitionChild<T>[]
@@ -111,7 +110,7 @@ const useTransition = <T extends {key: string}>(children: T[]) => {
       previousTransitionChildrenRef.current = currentTChildren
     }
     return previousTransitionChildrenRef.current
-  }, [children, previousTransitionChildrenRef.current])
+  }, [beginTransition, children, previousTransitionChildrenRef.current /* eslint-disable-line react-hooks/exhaustive-deps */])
 }
 
 export default useTransition

@@ -1,4 +1,5 @@
-import {useCallback, useEffect, useRef, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
+import useEventCallback from './useEventCallback'
 
 const useTimeoutWithReset = (duration: number, resetDuration: number = duration) => {
   const [timedOut, setTimedOut] = useState(false)
@@ -15,14 +16,14 @@ const useTimeoutWithReset = (duration: number, resetDuration: number = duration)
     }
   }, [duration])
 
-  const reset = useCallback(() => {
+  const reset = useEventCallback(() => {
     setTimedOut(false)
     resetTimerRef.current = window.setTimeout(() => {
       if (isMountedRef.current) {
         setTimedOut(true)
       }
     }, resetDuration)
-  }, [])
+  })
 
   return [timedOut, reset] as [boolean, () => void]
 }

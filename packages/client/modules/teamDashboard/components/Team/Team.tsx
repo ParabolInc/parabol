@@ -17,7 +17,7 @@ import withAtmosphere, {
 import EditableTeamName from '../EditTeamName/EditableTeamName'
 import TeamCallsToAction from '../TeamCallsToAction/TeamCallsToAction'
 import {PALETTE} from '../../../../styles/paletteV2'
-// import DebugButton from 'universal/modules/userDashboard/components/UserDashMain/DebugButton'
+// import DebugButton from '../../../userDashboard/components/UserDashMain/DebugButton'
 
 const TeamViewNavBlock = styled('div')({
   display: 'flex',
