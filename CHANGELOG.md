@@ -19,6 +19,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ## Fixed
 * Login bug for safari users (#3038)
+* Calendar Schedule CTA in Action Meeting Summary (#3042)
 
 ## Removed
 * auth0-js (#3038)
