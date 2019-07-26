@@ -16,7 +16,8 @@ import dndNoise from 'universal/utils/dndNoise'
 const AgendaListRoot = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  overflow: 'auto',
+  // commenting out because of react-beatiful-dnd warning
+  // overflow: 'auto',
   height: '100%', // trickle down height for overflow
   width: '100%'
 })
