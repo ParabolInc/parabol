@@ -44,11 +44,10 @@ const TaskSummarySection = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  TaskSummarySection,
-  graphql`
+export default createFragmentContainer(TaskSummarySection, {
+  tasks: graphql`
     fragment TaskSummarySection_tasks on Task @relay(plural: true) {
       ...EmailTaskCard_task
     }
   `
-)
+})

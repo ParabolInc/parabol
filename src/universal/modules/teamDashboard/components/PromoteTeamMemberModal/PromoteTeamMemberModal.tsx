@@ -54,12 +54,11 @@ const PromoteTeamMemberModal = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  withMutationProps(withAtmosphere(PromoteTeamMemberModal)),
-  graphql`
+export default createFragmentContainer(withMutationProps(withAtmosphere(PromoteTeamMemberModal)), {
+  teamMember: graphql`
     fragment PromoteTeamMemberModal_teamMember on TeamMember {
       teamMemberId: id
       preferredName
     }
   `
-)
+})

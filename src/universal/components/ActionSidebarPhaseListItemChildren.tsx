@@ -26,9 +26,8 @@ const ActionSidebarPhaseListItemChildren = (props: Props) => {
   return null
 }
 
-export default createFragmentContainer(
-  ActionSidebarPhaseListItemChildren,
-  graphql`
+export default createFragmentContainer(ActionSidebarPhaseListItemChildren, {
+  viewer: graphql`
     fragment ActionSidebarPhaseListItemChildren_viewer on User {
       team(teamId: $teamId) {
         newMeeting {
@@ -40,4 +39,4 @@ export default createFragmentContainer(
       ...ActionSidebarAgendaItemsSection_viewer
     }
   `
-)
+})

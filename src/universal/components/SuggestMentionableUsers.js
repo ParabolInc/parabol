@@ -82,9 +82,8 @@ SuggestMentionableUsers.propTypes = {
   viewer: PropTypes.object.isRequired
 }
 
-export default createFragmentContainer(
-  withAtmosphere(SuggestMentionableUsers),
-  graphql`
+export default createFragmentContainer(withAtmosphere(SuggestMentionableUsers), {
+  viewer: graphql`
     fragment SuggestMentionableUsers_viewer on User {
       team(teamId: $teamId) {
         teamMembers(sortBy: "preferredName") {
@@ -95,4 +94,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

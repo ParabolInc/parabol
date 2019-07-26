@@ -46,12 +46,11 @@ const RemoveTeamMemberModal = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  withAtmosphere(RemoveTeamMemberModal),
-  graphql`
+export default createFragmentContainer(withAtmosphere(RemoveTeamMemberModal), {
+  teamMember: graphql`
     fragment RemoveTeamMemberModal_teamMember on TeamMember {
       teamMemberId: id
       preferredName
     }
   `
-)
+})

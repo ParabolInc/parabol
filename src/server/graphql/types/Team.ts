@@ -43,10 +43,11 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       type: GraphQLID,
       description: 'The userId that created the team. Non-null at v2.22.0+'
     },
-    // isActive: {
-    //   type: GraphQLBoolean,
-    //   description: 'true if the team is active, false if it is in the archive'
-    // },
+    isOnboardTeam: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'true if the team was created when the account was created, else false',
+      resovle: ({isOnboardTeam}) => !!isOnboardTeam
+    },
     massInviteToken: {
       type: GraphQLID,
       description:

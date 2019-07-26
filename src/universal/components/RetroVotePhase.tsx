@@ -224,12 +224,13 @@ const RetroVotePhase = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  withAtmosphere(RetroVotePhase),
-  graphql`
+export default createFragmentContainer(withAtmosphere(RetroVotePhase), {
+  meetingSettings: graphql`
     fragment RetroVotePhase_meetingSettings on RetrospectiveMeetingSettings {
       totalVotes
     }
+  `,
+  team: graphql`
     fragment RetroVotePhase_team on Team {
       ...StageTimerControl_team
       isMeetingSidebarCollapsed
@@ -265,4 +266,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

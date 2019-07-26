@@ -36,9 +36,8 @@ class SuggestedActionTryRetroMeeting extends Component<Props> {
   }
 }
 
-export default createFragmentContainer(
-  withRouter(SuggestedActionTryRetroMeeting),
-  graphql`
+export default createFragmentContainer(withRouter(SuggestedActionTryRetroMeeting), {
+  suggestedAction: graphql`
     fragment SuggestedActionTryRetroMeeting_suggestedAction on SuggestedActionTryRetroMeeting {
       id
       team {
@@ -47,4 +46,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

@@ -5,7 +5,6 @@ import {Link} from 'react-router-dom'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import LogoBlock from 'universal/components/LogoBlock/LogoBlock'
 import MeetingSidebarLabelBlock from 'universal/components/MeetingSidebarLabelBlock'
-import ScrollableBlock from 'universal/components/ScrollableBlock'
 import SidebarToggle from 'universal/components/SidebarToggle'
 import {meetingSidebarWidth} from 'universal/styles/meeting'
 import {PALETTE} from 'universal/styles/paletteV2'
@@ -71,15 +70,14 @@ const NewMeetingSidebar = (props: Props) => {
       <MeetingSidebarLabelBlock>
         <LabelHeading>{`${meetingLabel} Meeting`}</LabelHeading>
       </MeetingSidebarLabelBlock>
-      <ScrollableBlock>{children}</ScrollableBlock>
+      {children}
       <LogoBlock variant='primary' onClick={handleMenuClick} />
     </SidebarParent>
   )
 }
 
-export default createFragmentContainer(
-  NewMeetingSidebar,
-  graphql`
+export default createFragmentContainer(NewMeetingSidebar, {
+  viewer: graphql`
     fragment NewMeetingSidebar_viewer on User {
       team(teamId: $teamId) {
         id
@@ -87,4 +85,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

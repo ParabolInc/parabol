@@ -58,9 +58,8 @@ const RetroTemplatePicker = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  RetroTemplatePicker,
-  graphql`
+export default createFragmentContainer(RetroTemplatePicker, {
+  settings: graphql`
     fragment RetroTemplatePicker_settings on RetrospectiveMeetingSettings {
       ...ReflectTemplateModal_retroMeetingSettings
       ...RetroTemplateListMenu_retroMeetingSettings
@@ -72,4 +71,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

@@ -127,9 +127,11 @@ graphql`
 
 export default createFragmentContainer(
   withAtmosphere(withMutationProps(withRouter(GitHubProviderRow))),
-  graphql`
-    fragment GitHubProviderRow_viewer on User {
-      ...GitHubProviderRowViewer @relay(mask: false)
-    }
-  `
+  {
+    viewer: graphql`
+      fragment GitHubProviderRow_viewer on User {
+        ...GitHubProviderRowViewer @relay(mask: false)
+      }
+    `
+  }
 )

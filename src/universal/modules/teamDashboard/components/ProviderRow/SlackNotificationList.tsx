@@ -131,9 +131,8 @@ const SlackNotificationList = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  SlackNotificationList,
-  graphql`
+export default createFragmentContainer(SlackNotificationList, {
+  viewer: graphql`
     fragment SlackNotificationList_viewer on User {
       ...SlackNotificationRow_viewer
       teamMember(teamId: $teamId) {
@@ -152,4 +151,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

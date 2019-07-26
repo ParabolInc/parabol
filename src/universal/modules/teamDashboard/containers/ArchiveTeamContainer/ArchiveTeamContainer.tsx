@@ -42,12 +42,11 @@ class ArchiveTeamContainer extends Component<Props, State> {
   }
 }
 
-export default createFragmentContainer(
-  ArchiveTeamContainer,
-  graphql`
+export default createFragmentContainer(ArchiveTeamContainer, {
+  team: graphql`
     fragment ArchiveTeamContainer_team on Team {
       id
       name
     }
   `
-)
+})

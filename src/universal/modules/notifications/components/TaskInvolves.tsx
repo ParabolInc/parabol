@@ -58,7 +58,7 @@ const TaskInvolves = (props: Props) => {
   const {notification} = props
   const {id: notificationId, task, team, involvement, changeAuthor} = notification
   const {content, status, tags, assignee} = task
-  const {changeAuthorName} = changeAuthor
+  const {preferredName: changeAuthorName} = changeAuthor
   const {name: teamName, id: teamId} = team
   const action = involvementWord[involvement]
   const [editorStateRef, setEditorState] = useRefState<EditorState>(() =>
@@ -155,13 +155,12 @@ const TaskInvolves = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  TaskInvolves,
-  graphql`
+export default createFragmentContainer(TaskInvolves, {
+  notification: graphql`
     fragment TaskInvolves_notification on NotifyTaskInvolves {
       id
       changeAuthor {
-        changeAuthorName: preferredName
+        preferredName
       }
       involvement
       team {
@@ -169,6 +168,7 @@ export default createFragmentContainer(
         name
       }
       task {
+        id
         content
         status
         tags
@@ -181,4 +181,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

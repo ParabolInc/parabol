@@ -195,9 +195,8 @@ class ReflectionCard extends Component<Props, State> {
 }
 
 // export default withAtmosphere(ReflectionCard)
-export default createFragmentContainer(
-  withAtmosphere(withMutationProps(ReflectionCard)),
-  graphql`
+export default createFragmentContainer(withAtmosphere(withMutationProps(ReflectionCard)), {
+  reflection: graphql`
     fragment ReflectionCard_reflection on RetroReflection {
       reflectionId: id
       reflectionGroupId
@@ -208,4 +207,4 @@ export default createFragmentContainer(
       sortOrder
     }
   `
-)
+})

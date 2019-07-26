@@ -538,7 +538,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       let dragCoords = initialCoords
       const reflection = this.db.reflections.find((reflection) => reflection.id === reflectionId)!
       if (userId !== demoViewerId) {
-        if (reflection.isHumanTouched) return
+        if (reflection.isHumanTouched || !(this.atmosphere as any).getMasonry) return
         const {itemCache} = (this.atmosphere as any).getMasonry()
         const cachedItem = itemCache[reflectionId]
         const bbox = (cachedItem.el as HTMLDivElement).getBoundingClientRect()
@@ -967,7 +967,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         teamId: demoTeamId,
         assigneeId,
         sortOrder,
-        userId: null
+        userId: null as null | string
       }
       const task = this.db.tasks.find((task) => task.id === updatedTask.id)
       // if the human deleted the task, exit fast

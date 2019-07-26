@@ -75,9 +75,8 @@ const SummaryHeader = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  SummaryHeader,
-  graphql`
+export default createFragmentContainer(SummaryHeader, {
+  meeting: graphql`
     fragment SummaryHeader_meeting on NewMeeting {
       createdAt
       meetingNumber
@@ -87,4 +86,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

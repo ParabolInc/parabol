@@ -47,9 +47,8 @@ const DashNavList = (props: Props) => {
 //   </SexyScrollbar>
 // )
 
-export default createFragmentContainer(
-  DashNavList,
-  graphql`
+export default createFragmentContainer(DashNavList, {
+  viewer: graphql`
     fragment DashNavList_viewer on User {
       teams {
         id
@@ -57,4 +56,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

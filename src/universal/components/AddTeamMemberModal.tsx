@@ -49,7 +49,9 @@ const ErrorMessage = styled(StyledError)({
 
 const ShareableLink = styled('div')({
   display: 'flex',
-  justifyContent: 'center'
+  justifyContent: 'center',
+  // padding (18+8) addresses hanging icon at mobile widths
+  padding: '0 26px'
 })
 
 class AddTeamMemberModal extends Component<Props, State> {
@@ -177,16 +179,16 @@ class AddTeamMemberModal extends Component<Props, State> {
   }
 }
 
-export default createFragmentContainer(
-  withAtmosphere(withMutationProps(AddTeamMemberModal)),
-  graphql`
+export default createFragmentContainer(withAtmosphere(withMutationProps(AddTeamMemberModal)), {
+  team: graphql`
     fragment AddTeamMemberModal_team on Team {
       id
       massInviteToken
     }
-
+  `,
+  teamMembers: graphql`
     fragment AddTeamMemberModal_teamMembers on TeamMember @relay(plural: true) {
       email
     }
   `
-)
+})

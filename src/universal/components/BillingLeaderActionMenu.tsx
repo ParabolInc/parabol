@@ -73,13 +73,13 @@ const BillingLeaderActionMenu = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  withMutationProps(withAtmosphere(BillingLeaderActionMenu)),
-  graphql`
+export default createFragmentContainer(withMutationProps(withAtmosphere(BillingLeaderActionMenu)), {
+  organization: graphql`
     fragment BillingLeaderActionMenu_organization on Organization {
       orgId: id
     }
-
+  `,
+  organizationUser: graphql`
     fragment BillingLeaderActionMenu_organizationUser on OrganizationUser {
       role
       newUserUntil
@@ -88,4 +88,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

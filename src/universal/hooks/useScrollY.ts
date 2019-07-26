@@ -8,7 +8,7 @@ const useScrollY = () => {
     }
     window.addEventListener('scroll', handler, {passive: true})
     return () => window.removeEventListener('scroll', handler)
-  })
+  }, [])
   return scrollY
 }
 

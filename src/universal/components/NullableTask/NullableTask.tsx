@@ -57,9 +57,8 @@ const NullableTask = React.memo((props: Props) => {
   )
 }, propsAreEqual)
 
-export default createFragmentContainer(
-  NullableTask,
-  graphql`
+export default createFragmentContainer(NullableTask, {
+  task: graphql`
     fragment NullableTask_task on Task {
       content
       createdBy
@@ -72,4 +71,4 @@ export default createFragmentContainer(
       ...OutcomeCardContainer_task
     }
   `
-)
+})

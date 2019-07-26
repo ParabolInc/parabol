@@ -86,6 +86,7 @@ class TemplatePromptList extends Component<Props> {
                       </Draggable>
                     )
                   })}
+                  {provided.placeholder}
                 </div>
               )
             }}
@@ -96,9 +97,8 @@ class TemplatePromptList extends Component<Props> {
   }
 }
 
-export default createFragmentContainer(
-  withAtmosphere(withMutationProps(TemplatePromptList)),
-  graphql`
+export default createFragmentContainer(withAtmosphere(withMutationProps(TemplatePromptList)), {
+  prompts: graphql`
     fragment TemplatePromptList_prompts on RetroPhaseItem @relay(plural: true) {
       id
       sortOrder
@@ -107,4 +107,4 @@ export default createFragmentContainer(
       ...EditableTemplatePrompt_prompts
     }
   `
-)
+})

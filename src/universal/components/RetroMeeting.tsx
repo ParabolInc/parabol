@@ -154,9 +154,8 @@ graphql`
   }
 `
 
-export default createFragmentContainer(
-  RetroMeeting,
-  graphql`
+export default createFragmentContainer(RetroMeeting, {
+  viewer: graphql`
     fragment RetroMeeting_viewer on User {
       ...RetroMeetingSidebar_viewer
       featureFlags {
@@ -172,4 +171,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

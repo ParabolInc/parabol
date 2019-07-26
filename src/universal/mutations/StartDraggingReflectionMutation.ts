@@ -140,11 +140,10 @@ export const startDraggingReflectionTeamUpdater = (
   if (isViewerConflictLoser) {
     const name = getInProxy(reflection, 'dragContext', 'dragUser', 'preferredName')
     // ideally this wouldn't be in the updater, but i don't wanna touch it because it's finicky MK
-    atmosphere.eventEmitter.emit('addToast', {
-      level: 'info',
+    atmosphere.eventEmitter.emit('addSnackbar', {
+      key: `reflectionIntercepted`,
       autoDismiss: 5,
-      title: 'Interception!',
-      message: `${name} stole that reflection right from under your nose!`
+      message: `Too slow! ${name} stole that reflection right from under your nose!`
     })
     if (atmosphere.getMasonry) {
       const {itemCache} = atmosphere.getMasonry()

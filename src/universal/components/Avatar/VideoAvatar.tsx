@@ -96,9 +96,8 @@ const VideoAvatar = forwardRef((props: Props, ref: Ref<HTMLElement>) => {
   )
 })
 
-export default createFragmentContainer(
-  VideoAvatar,
-  graphql`
+export default createFragmentContainer(VideoAvatar, {
+  teamMember: graphql`
     fragment VideoAvatar_teamMember on TeamMember {
       meetingMember {
         isCheckedIn
@@ -109,4 +108,4 @@ export default createFragmentContainer(
       userId
     }
   `
-)
+})

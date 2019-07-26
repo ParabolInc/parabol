@@ -138,9 +138,8 @@ OutcomeCard.propTypes = {
   toggleMenuState: PropTypes.func.isRequired
 }
 
-export default createFragmentContainer(
-  OutcomeCard,
-  graphql`
+export default createFragmentContainer(OutcomeCard, {
+  task: graphql`
     fragment OutcomeCard_task on Task {
       taskId: id
       integration {
@@ -158,4 +157,4 @@ export default createFragmentContainer(
       ...TaskFooter_task
     }
   `
-)
+})

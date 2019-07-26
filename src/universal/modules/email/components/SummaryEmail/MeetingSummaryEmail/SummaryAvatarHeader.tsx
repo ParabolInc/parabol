@@ -62,9 +62,8 @@ const SummaryAvatarHeader = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  SummaryAvatarHeader,
-  graphql`
+export default createFragmentContainer(SummaryAvatarHeader, {
+  meetingMember: graphql`
     fragment SummaryAvatarHeader_meetingMember on MeetingMember {
       isCheckedIn
       user {
@@ -73,4 +72,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

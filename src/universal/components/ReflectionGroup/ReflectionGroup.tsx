@@ -417,33 +417,36 @@ export default createFragmentContainer<PassedProps>(
   (DropTarget as any)(REFLECTION_CARD, reflectionDropSpec, reflectionDropCollect)(
     withAtmosphere(withMutationProps(ReflectionGroup))
   ),
-  graphql`
-    fragment ReflectionGroup_meeting on RetrospectiveMeeting {
-      meetingId: id
-      ...ReflectionGroupHeader_meeting
-      localPhase {
-        phaseType
+  {
+    meeting: graphql`
+      fragment ReflectionGroup_meeting on RetrospectiveMeeting {
+        meetingId: id
+        ...ReflectionGroupHeader_meeting
+        localPhase {
+          phaseType
+        }
+        localStage {
+          isComplete
+        }
+        isViewerDragInProgress
       }
-      localStage {
-        isComplete
-      }
-      isViewerDragInProgress
-    }
-
-    fragment ReflectionGroup_reflectionGroup on RetroReflectionGroup {
-      ...ReflectionGroupHeader_reflectionGroup
-      retroPhaseItemId
-      reflectionGroupId: id
-      sortOrder
-      titleIsUserDefined
-      reflections {
-        id
+    `,
+    reflectionGroup: graphql`
+      fragment ReflectionGroup_reflectionGroup on RetroReflectionGroup {
+        ...ReflectionGroupHeader_reflectionGroup
         retroPhaseItemId
+        reflectionGroupId: id
         sortOrder
-        ...DraggableReflectionCard_reflection
-        ...ReflectionCard_reflection
+        titleIsUserDefined
+        reflections {
+          id
+          retroPhaseItemId
+          sortOrder
+          ...DraggableReflectionCard_reflection
+          ...ReflectionCard_reflection
+        }
+        isExpanded
       }
-      isExpanded
-    }
-  `
+    `
+  }
 )

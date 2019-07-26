@@ -63,32 +63,34 @@ const TeamColumnsContainer = (props: Props) => {
 
 export default createFragmentContainer(
   withAtmosphere(connect(mapStateToProps)(TeamColumnsContainer)),
-  graphql`
-    fragment TeamColumnsContainer_viewer on User {
-      team(teamId: $teamId) {
-        contentFilter
-        teamMembers(sortBy: "preferredName") {
-          id
-          picture
-          preferredName
-        }
-        tasks(first: 1000) @connection(key: "TeamColumnsContainer_tasks") {
-          edges {
-            node {
-              ...TaskColumns_tasks
-              # grab these so we can sort correctly
-              id
-              content @__clientField(handle: "contentText")
-              contentText
-              status
-              sortOrder
-              assignee {
+  {
+    viewer: graphql`
+      fragment TeamColumnsContainer_viewer on User {
+        team(teamId: $teamId) {
+          contentFilter
+          teamMembers(sortBy: "preferredName") {
+            id
+            picture
+            preferredName
+          }
+          tasks(first: 1000) @connection(key: "TeamColumnsContainer_tasks") {
+            edges {
+              node {
+                ...TaskColumns_tasks
+                # grab these so we can sort correctly
                 id
+                content @__clientField(handle: "contentText")
+                contentText
+                status
+                sortOrder
+                assignee {
+                  id
+                }
               }
             }
           }
         }
       }
-    }
-  `
+    `
+  }
 )

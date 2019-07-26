@@ -38,11 +38,10 @@ const DashAlertOverLimit = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  DashAlertOverLimit,
-  graphql`
+export default createFragmentContainer(DashAlertOverLimit, {
+  viewer: graphql`
     fragment DashAlertOverLimit_viewer on User {
       overLimitCopy
     }
   `
-)
+})

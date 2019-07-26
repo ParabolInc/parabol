@@ -133,9 +133,8 @@ graphql`
   }
 `
 
-export default createFragmentContainer(
-  ActionMeetingUpdates,
-  graphql`
+export default createFragmentContainer(ActionMeetingUpdates, {
+  team: graphql`
     fragment ActionMeetingUpdates_team on Team {
       ...ActionMeetingUpdatesPrompt_team
       id
@@ -179,4 +178,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

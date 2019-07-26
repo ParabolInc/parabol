@@ -57,9 +57,8 @@ const OrganizationPage = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  withRouter(OrganizationPage),
-  graphql`
+export default createFragmentContainer(withRouter(OrganizationPage), {
+  organization: graphql`
     fragment OrganizationPage_organization on Organization {
       ...OrgPlanSqueeze_organization
       ...OrgBillingRoot_organization
@@ -68,4 +67,4 @@ export default createFragmentContainer(
       tier
     }
   `
-)
+})

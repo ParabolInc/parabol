@@ -43,13 +43,12 @@ const SuggestedIntegrationJiraMenuItem = forwardRef((props: Props, ref: any) => 
   )
 })
 
-export default createFragmentContainer(
-  SuggestedIntegrationJiraMenuItem,
-  graphql`
+export default createFragmentContainer(SuggestedIntegrationJiraMenuItem, {
+  suggestedIntegration: graphql`
     fragment SuggestedIntegrationJiraMenuItem_suggestedIntegration on SuggestedIntegrationJira {
       cloudId
       projectKey
       projectName
     }
   `
-)
+})

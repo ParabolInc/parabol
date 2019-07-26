@@ -82,9 +82,8 @@ class EditableTeamName extends Component<Props> {
   }
 }
 
-export default createFragmentContainer(
-  withAtmosphere(withMutationProps(EditableTeamName)),
-  graphql`
+export default createFragmentContainer(withAtmosphere(withMutationProps(EditableTeamName)), {
+  team: graphql`
     fragment EditableTeamName_team on Team {
       teamId: id
       teamName: name
@@ -96,4 +95,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

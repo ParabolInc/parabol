@@ -81,9 +81,8 @@ graphql`
   }
 `
 
-export default createFragmentContainer(
-  TaskFooterIntegrateMenu,
-  graphql`
+export default createFragmentContainer(TaskFooterIntegrateMenu, {
+  viewer: graphql`
     fragment TaskFooterIntegrateMenu_viewer on User {
       id
       userOnTeam(userId: $userId) {
@@ -93,10 +92,12 @@ export default createFragmentContainer(
         ...TaskFooterIntegrateMenuViewerGitHubAuth @relay(mask: false)
       }
     }
+  `,
+  task: graphql`
     fragment TaskFooterIntegrateMenu_task on Task {
       ...TaskFooterIntegrateMenuList_task
       teamId
       userId
     }
   `
-)
+})

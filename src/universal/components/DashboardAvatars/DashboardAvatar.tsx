@@ -92,9 +92,8 @@ const DashboardAvatar = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  DashboardAvatar,
-  graphql`
+export default createFragmentContainer(DashboardAvatar, {
+  teamMember: graphql`
     fragment DashboardAvatar_teamMember on TeamMember {
       ...TeamMemberAvatarMenu_teamMember
       ...LeaveTeamModal_teamMember
@@ -108,4 +107,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

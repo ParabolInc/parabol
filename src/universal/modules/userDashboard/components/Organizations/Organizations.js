@@ -46,9 +46,8 @@ Organizations.propTypes = {
   history: PropTypes.object
 }
 
-export default createFragmentContainer(
-  withRouter(Organizations),
-  graphql`
+export default createFragmentContainer(withRouter(Organizations), {
+  viewer: graphql`
     fragment Organizations_viewer on User {
       organizations {
         id
@@ -63,4 +62,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

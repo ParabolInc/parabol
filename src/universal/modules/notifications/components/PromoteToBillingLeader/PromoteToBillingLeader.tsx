@@ -77,9 +77,8 @@ const PromoteToBillingLeader = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  PromoteToBillingLeader,
-  graphql`
+export default createFragmentContainer(PromoteToBillingLeader, {
+  notification: graphql`
     fragment PromoteToBillingLeader_notification on NotifyPromoteToOrgLeader {
       id
       organization {
@@ -88,4 +87,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

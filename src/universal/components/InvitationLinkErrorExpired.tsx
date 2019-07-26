@@ -34,12 +34,11 @@ const InvitationLinkErrorExpired = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  InvitationLinkErrorExpired,
-  graphql`
+export default createFragmentContainer(InvitationLinkErrorExpired, {
+  massInvitation: graphql`
     fragment InvitationLinkErrorExpired_massInvitation on MassInvitationPayload {
       teamName
       inviterName
     }
   `
-)
+})

@@ -123,13 +123,12 @@ const ActionMeetingLobby = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  ActionMeetingLobby,
-  graphql`
+export default createFragmentContainer(ActionMeetingLobby, {
+  team: graphql`
     fragment ActionMeetingLobby_team on Team {
       id
       name
       isMeetingSidebarCollapsed
     }
   `
-)
+})

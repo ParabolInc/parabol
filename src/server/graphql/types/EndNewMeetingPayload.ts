@@ -1,15 +1,14 @@
 import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {resolveNewMeeting, resolveTeam} from 'server/graphql/resolvers'
+import {resolveNewMeeting} from 'server/graphql/resolvers'
 import Team from 'server/graphql/types/Team'
 import Task from 'server/graphql/types/Task'
 import StandardMutationError from 'server/graphql/types/StandardMutationError'
 import NewMeeting from 'server/graphql/types/NewMeeting'
-import {IEndNewMeetingPayload} from 'universal/types/graphql'
 import {GQLContext} from 'server/graphql/graphql'
 import {getUserId} from 'server/utils/authorization'
 import isTaskPrivate from 'universal/utils/isTaskPrivate'
 
-const EndNewMeetingPayload = new GraphQLObjectType<IEndNewMeetingPayload, GQLContext>({
+const EndNewMeetingPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'EndNewMeetingPayload',
   fields: () => ({
     error: {
@@ -21,7 +20,9 @@ const EndNewMeetingPayload = new GraphQLObjectType<IEndNewMeetingPayload, GQLCon
     },
     team: {
       type: Team,
-      resolve: resolveTeam
+      resolve: ({teamId}, _args, {dataLoader}) => {
+        return dataLoader.get('teams').load(teamId)
+      }
     },
     meeting: {
       type: NewMeeting,

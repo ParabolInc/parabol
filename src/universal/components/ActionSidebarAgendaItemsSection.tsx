@@ -1,6 +1,5 @@
 import {ActionSidebarAgendaItemsSection_viewer} from '__generated__/ActionSidebarAgendaItemsSection_viewer.graphql'
 import React from 'react'
-import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import MeetingSidebarLabelBlock from 'universal/components/MeetingSidebarLabelBlock'
@@ -8,17 +7,13 @@ import {useGotoStageId} from 'universal/hooks/useMeeting'
 import AgendaListAndInput from 'universal/modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput'
 import {NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
+import MeetingSidebarPhaseItemChild from 'universal/components/MeetingSidebarPhaseItemChild'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
   handleMenuClick: () => void
   viewer: ActionSidebarAgendaItemsSection_viewer
 }
-
-const SidebarPhaseItemChild = styled('div')({
-  display: 'flex',
-  flexDirection: 'column'
-})
 
 const ActionSidebarAgendaItemsSection = (props: Props) => {
   const {
@@ -35,16 +30,17 @@ const ActionSidebarAgendaItemsSection = (props: Props) => {
     handleMenuClick()
   }
   return (
-    <SidebarPhaseItemChild>
+    <MeetingSidebarPhaseItemChild>
       <MeetingSidebarLabelBlock>
         <LabelHeading>{'Agenda Topics'}</LabelHeading>
       </MeetingSidebarLabelBlock>
       <AgendaListAndInput
+        isMeeting
         gotoStageId={handleClick}
         isDisabled={phaseType === NewMeetingPhaseTypeEnum.checkin}
         team={team!}
       />
-    </SidebarPhaseItemChild>
+    </MeetingSidebarPhaseItemChild>
   )
 }
 
@@ -61,9 +57,8 @@ graphql`
   }
 `
 
-export default createFragmentContainer(
-  ActionSidebarAgendaItemsSection,
-  graphql`
+export default createFragmentContainer(ActionSidebarAgendaItemsSection, {
+  viewer: graphql`
     fragment ActionSidebarAgendaItemsSection_viewer on User {
       team(teamId: $teamId) {
         ...AgendaListAndInput_team
@@ -86,4 +81,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

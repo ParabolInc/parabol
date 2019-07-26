@@ -1,6 +1,5 @@
 import {ActionMeetingSidebar_viewer} from '__generated__/ActionMeetingSidebar_viewer.graphql'
 import React from 'react'
-import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import NewMeetingSidebarPhaseListItem from 'universal/components/NewMeetingSidebarPhaseListItem'
 import ActionSidebarPhaseListItemChildren from 'universal/components/ActionSidebarPhaseListItemChildren'
@@ -10,6 +9,7 @@ import getSidebarItemStage from 'universal/utils/getSidebarItemStage'
 import findStageById from 'universal/utils/meetings/findStageById'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
 import NewMeetingSidebar from './NewMeetingSidebar'
+import MeetingNavList from 'universal/components/MeetingNavList'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -17,12 +17,6 @@ interface Props {
   toggleSidebar: () => void
   viewer: ActionMeetingSidebar_viewer
 }
-
-const NavList = styled('ul')({
-  listStyle: 'none',
-  margin: 0,
-  padding: 0
-})
 
 const blackList: string[] = [NewMeetingPhaseTypeEnum.firstcall, NewMeetingPhaseTypeEnum.lastcall]
 
@@ -44,7 +38,7 @@ const ActionMeetingSidebar = (props: Props) => {
       toggleSidebar={toggleSidebar}
       viewer={viewer}
     >
-      <NavList>
+      <MeetingNavList>
         {phaseTypes
           .filter((phaseType) => !blackList.includes(phaseType))
           .map((phaseType, idx) => {
@@ -82,14 +76,13 @@ const ActionMeetingSidebar = (props: Props) => {
               </NewMeetingSidebarPhaseListItem>
             )
           })}
-      </NavList>
+      </MeetingNavList>
     </NewMeetingSidebar>
   )
 }
 
-export default createFragmentContainer(
-  ActionMeetingSidebar,
-  graphql`
+export default createFragmentContainer(ActionMeetingSidebar, {
+  viewer: graphql`
     fragment ActionMeetingSidebar_viewer on User {
       ...ActionSidebarPhaseListItemChildren_viewer
       ...NewMeetingSidebar_viewer
@@ -120,4 +113,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

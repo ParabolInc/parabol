@@ -1,10 +1,11 @@
 import React, {Component} from 'react'
-import {graphql, QueryRenderer} from 'react-relay'
+import {graphql} from 'react-relay'
 import {RouteComponentProps} from 'react-router'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import TeamInvitation from './TeamInvitation'
+import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{token: string}> {}
 

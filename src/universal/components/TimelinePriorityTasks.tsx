@@ -109,9 +109,8 @@ class TimelinePriorityTasks extends Component<Props> {
   }
 }
 
-export default createFragmentContainer(
-  withAtmosphere(TimelinePriorityTasks),
-  graphql`
+export default createFragmentContainer(withAtmosphere(TimelinePriorityTasks), {
+  viewer: graphql`
     fragment TimelinePriorityTasks_viewer on User {
       tasks(first: 1000) @connection(key: "UserColumnsContainer_tasks") {
         __typename
@@ -131,4 +130,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

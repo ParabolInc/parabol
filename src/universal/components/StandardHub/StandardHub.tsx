@@ -149,9 +149,8 @@ const StandardHub = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  StandardHub,
-  graphql`
+export default createFragmentContainer(StandardHub, {
+  viewer: graphql`
     fragment StandardHub_viewer on User {
       picture
       preferredName
@@ -165,4 +164,4 @@ export default createFragmentContainer(
       ...StandardHubUserMenu_viewer
     }
   `
-)
+})

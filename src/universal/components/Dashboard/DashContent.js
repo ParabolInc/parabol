@@ -32,7 +32,8 @@ const styleThunk = () => ({
     display: 'flex !important',
     flex: 1,
     flexDirection: 'column',
-    overflowY: 'auto',
+    // commenting out because of react-beatiful-dnd warning
+    // overflowY: 'auto',
     width: '100%'
   },
 

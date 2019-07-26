@@ -49,9 +49,8 @@ const MyDashboardTimeline = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  MyDashboardTimeline,
-  graphql`
+export default createFragmentContainer(MyDashboardTimeline, {
+  viewer: graphql`
     fragment MyDashboardTimeline_viewer on User {
       id
       ...TimelineSuggestedAction_viewer
@@ -59,4 +58,4 @@ export default createFragmentContainer(
       ...TimelineRightDrawer_viewer
     }
   `
-)
+})

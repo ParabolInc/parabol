@@ -1,4 +1,3 @@
-import {$$asyncIterator} from 'iterall'
 import getPubSub from 'server/utils/getPubSub'
 import {DataLoaderWorker} from 'server/graphql/graphql'
 
@@ -46,7 +45,7 @@ const makeSubscribeIter = (channelName: string | string[], options: Options) => 
     throw (error) {
       return asyncIterator.throw!(error)
     },
-    [$$asyncIterator] () {
+    [Symbol.asyncIterator] () {
       return this
     }
   }

@@ -75,12 +75,11 @@ class EditableOrgName extends Component<Props> {
   }
 }
 
-export default createFragmentContainer(
-  withAtmosphere(withMutationProps(EditableOrgName)),
-  graphql`
+export default createFragmentContainer(withAtmosphere(withMutationProps(EditableOrgName)), {
+  organization: graphql`
     fragment EditableOrgName_organization on Organization {
       id
       name
     }
   `
-)
+})

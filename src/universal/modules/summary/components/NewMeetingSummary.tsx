@@ -57,9 +57,8 @@ const NewMeetingSummary = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  NewMeetingSummary,
-  graphql`
+export default createFragmentContainer(NewMeetingSummary, {
+  viewer: graphql`
     fragment NewMeetingSummary_viewer on User {
       newMeeting(meetingId: $meetingId) {
         ...MeetingSummaryEmail_meeting
@@ -73,4 +72,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

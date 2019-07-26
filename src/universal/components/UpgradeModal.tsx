@@ -56,9 +56,8 @@ class UpgradeModal extends React.Component<Props, State> {
   }
 }
 
-export default createFragmentContainer(
-  withAtmosphere(UpgradeModal),
-  graphql`
+export default createFragmentContainer(withAtmosphere(UpgradeModal), {
+  viewer: graphql`
     fragment UpgradeModal_viewer on User {
       organization(orgId: $orgId) {
         orgId: id
@@ -66,4 +65,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

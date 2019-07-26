@@ -158,12 +158,11 @@ const DashSidebar = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  DashSidebar,
-  graphql`
+export default createFragmentContainer(DashSidebar, {
+  viewer: graphql`
     fragment DashSidebar_viewer on User {
       ...StandardHub_viewer
       ...DashNavList_viewer
     }
   `
-)
+})

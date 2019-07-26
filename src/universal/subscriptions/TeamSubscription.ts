@@ -45,6 +45,8 @@ import {addAgendaItemUpdater} from 'universal/mutations/AddAgendaItemMutation'
 import {removeAgendaItemUpdater} from 'universal/mutations/RemoveAgendaItemMutation'
 import {updateAgendaItemUpdater} from 'universal/mutations/UpdateAgendaItemMutation'
 import {graphql} from 'react-relay'
+import {pushInvitationTeamOnNext} from 'universal/mutations/PushInvitationMutation'
+import {denyPushInvitationTeamOnNext} from 'universal/mutations/DenyPushInvitationMutation'
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -57,6 +59,7 @@ const subscription = graphql`
       ...ArchiveTeamMutation_team @relay(mask: false)
       ...AutoGroupReflectionsMutation_team @relay(mask: false)
       ...CreateReflectionMutation_team @relay(mask: false)
+      ...DenyPushInvitationMutation_team @relay(mask: false)
       ...DragDiscussionTopicMutation_team @relay(mask: false)
       ...EditReflectionMutation_team @relay(mask: false)
       ...EndDraggingReflectionMutation_team @relay(mask: false)
@@ -66,6 +69,7 @@ const subscription = graphql`
       ...NewMeetingCheckInMutation_team @relay(mask: false)
       ...PromoteNewMeetingFacilitatorMutation_team @relay(mask: false)
       ...PromoteToTeamLeadMutation_team @relay(mask: false)
+      ...PushInvitationMutation_team @relay(mask: false)
       ...RemoveReflectionMutation_team @relay(mask: false)
       ...RemoveReflectTemplateMutation_team @relay(mask: false)
       ...RemoveReflectTemplatePromptMutation_team @relay(mask: false)
@@ -97,12 +101,14 @@ const onNextHandlers = {
   AcceptTeamInvitationPayload: acceptTeamInvitationTeamOnNext,
   AutoGroupReflectionsPayload: autoGroupReflectionsTeamOnNext,
   ArchiveTeamPayload: archiveTeamTeamOnNext,
+  DenyPushInvitationPayload: denyPushInvitationTeamOnNext,
   EndNewMeetingPayload: endNewMeetingTeamOnNext,
   StartNewMeetingPayload: startNewMeetingTeamOnNext,
   PromoteNewMeetingFacilitatorPayload: promoteNewMeetingFacilitatorTeamOnNext,
   RemoveOrgUserPayload: removeOrgUserTeamOnNext,
   EndDraggingReflectionPayload: endDraggingReflectionTeamOnNext,
-  RemoveTeamMemberPayload: removeTeamMemberTeamOnNext
+  RemoveTeamMemberPayload: removeTeamMemberTeamOnNext,
+  PushInvitationPayload: pushInvitationTeamOnNext
 }
 
 const TeamSubscription = (atmosphere, _queryVariables, subParams) => {

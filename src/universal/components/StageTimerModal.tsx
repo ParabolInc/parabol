@@ -104,13 +104,14 @@ const StageTimerModal = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  StageTimerModal,
-  graphql`
+export default createFragmentContainer(StageTimerModal, {
+  facilitator: graphql`
     fragment StageTimerModal_facilitator on TeamMember {
       ...StageTimerModalEndTime_facilitator
       ...StageTimerModalEditTimeEnd_facilitator
     }
+  `,
+  stage: graphql`
     fragment StageTimerModal_stage on NewMeetingStage {
       ...StageTimerModalTimeLimit_stage
       ...StageTimerModalEditTimeLimit_stage
@@ -120,4 +121,4 @@ export default createFragmentContainer(
       suggestedTimeLimit
     }
   `
-)
+})

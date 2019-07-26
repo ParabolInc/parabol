@@ -43,9 +43,8 @@ const SuggestedActionInviteYourTeam = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  SuggestedActionInviteYourTeam,
-  graphql`
+export default createFragmentContainer(SuggestedActionInviteYourTeam, {
+  suggestedAction: graphql`
     fragment SuggestedActionInviteYourTeam_suggestedAction on SuggestedActionInviteYourTeam {
       id
       team {
@@ -57,4 +56,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

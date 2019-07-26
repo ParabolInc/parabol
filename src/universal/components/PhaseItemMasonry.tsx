@@ -30,7 +30,7 @@ import updateColumnHeight from 'universal/utils/multiplayerMasonry/updateColumnH
 import isTempId from 'universal/utils/relay/isTempId'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import Atmosphere from '../Atmosphere'
-import ResizeObserverPolyfill from 'universal/components/MasonryCSSGrid'
+import ResizeObserverPolyfill from 'resize-observer-polyfill'
 
 const ResizeObserver = window.ResizeObserver || ResizeObserverPolyfill
 
@@ -360,30 +360,32 @@ export default createFragmentContainer<PassedProps>(
       )
     )
   ),
-  graphql`
-    fragment PhaseItemMasonry_meeting on RetrospectiveMeeting {
-      ...ReflectionGroup_meeting
-      meetingId: id
-      reflectionGroups {
-        ...ReflectionGroup_reflectionGroup
-        reflectionGroupId: id
-        meetingId
-        sortOrder
-        retroPhaseItemId
-        reflections {
-          reflectionId: id
-          retroPhaseItemId
+  {
+    meeting: graphql`
+      fragment PhaseItemMasonry_meeting on RetrospectiveMeeting {
+        ...ReflectionGroup_meeting
+        meetingId: id
+        reflectionGroups {
+          ...ReflectionGroup_reflectionGroup
+          reflectionGroupId: id
+          meetingId
           sortOrder
-          dragContext {
-            dragId: id
+          retroPhaseItemId
+          reflections {
+            reflectionId: id
+            retroPhaseItemId
+            sortOrder
+            dragContext {
+              dragId: id
+            }
           }
         }
+        reflectionsInFlight {
+          id
+          ...ReflectionCardInFlight_reflection
+        }
+        teamId
       }
-      reflectionsInFlight {
-        id
-        ...ReflectionCardInFlight_reflection
-      }
-      teamId
-    }
-  `
+    `
+  }
 )

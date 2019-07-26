@@ -1,5 +1,5 @@
 import {ExportToCSVQuery} from '__generated__/ExportToCSVQuery.graphql'
-import * as Json2csv from 'json2csv'
+import Parser from 'json2csv/lib/JSON2CSVParser' // only grab the sync parser
 import React, {Component} from 'react'
 import {fetchQuery, graphql} from 'react-relay'
 import withAtmosphere, {
@@ -183,7 +183,7 @@ class ExportToCSV extends Component<Props> {
     const {endedAt, team, meetingType} = newMeeting
     const {name: teamName} = team
     const label = meetingType[0].toUpperCase() + meetingType.slice(1)
-    const parser = new Json2csv.Parser()
+    const parser = new Parser()
     const csv = parser.parse(rows)
     const date = new Date(endedAt)
     const numDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`

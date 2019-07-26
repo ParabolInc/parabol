@@ -59,9 +59,8 @@ const Dashboard = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  Dashboard,
-  graphql`
+export default createFragmentContainer(Dashboard, {
+  viewer: graphql`
     fragment Dashboard_viewer on User {
       ...DashAlert_viewer
       notifications(first: 100) @connection(key: "DashboardWrapper_notifications") {
@@ -78,4 +77,4 @@ export default createFragmentContainer(
       ...DashSidebar_viewer
     }
   `
-)
+})

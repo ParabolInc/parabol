@@ -33,12 +33,11 @@ class DiscussPhaseReflectionGrid extends Component<Props> {
   }
 }
 
-export default createFragmentContainer(
-  DiscussPhaseReflectionGrid,
-  graphql`
+export default createFragmentContainer(DiscussPhaseReflectionGrid, {
+  reflections: graphql`
     fragment DiscussPhaseReflectionGrid_reflections on RetroReflection @relay(plural: true) {
       id
       ...ReflectionCard_reflection
     }
   `
-)
+})

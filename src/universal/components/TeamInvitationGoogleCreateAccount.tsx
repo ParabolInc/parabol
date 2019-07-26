@@ -8,7 +8,6 @@ import {RouteComponentProps, withRouter} from 'react-router'
 import LoginMutation from 'universal/mutations/LoginMutation'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import {PALETTE} from '../styles/paletteV2'
-import auth0Authorize from '../utils/auth0Authorize'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import EmailPasswordAuthForm from './EmailPasswordAuthForm'
 import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
@@ -21,6 +20,7 @@ import PlainButton from 'universal/components/PlainButton/PlainButton'
 import HorizontalSeparator from 'universal/components/HorizontalSeparator/HorizontalSeparator'
 import AuthPrivacyFooter from 'universal/components/AuthPrivacyFooter'
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
+import Auth0ClientManager from 'universal/utils/Auth0ClientManager'
 
 interface Props
   extends WithAtmosphereProps,
@@ -77,9 +77,10 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
     if (!teamInvitation) return
     const {email} = teamInvitation
     submitMutation()
+    const manager = new Auth0ClientManager()
     let res
     try {
-      res = await auth0Authorize(email)
+      res = await manager.loginWithGoogle(email)
     } catch (e) {
       onError(e)
       Sentry.captureException(e)
@@ -142,13 +143,15 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
 
 export default createFragmentContainer(
   withAtmosphere(withMutationProps(withRouter(TeamInvitationGoogleCreateAccount))),
-  graphql`
-    fragment TeamInvitationGoogleCreateAccount_verifiedInvitation on VerifiedInvitationPayload {
-      meetingType
-      teamInvitation {
-        email
+  {
+    verifiedInvitation: graphql`
+      fragment TeamInvitationGoogleCreateAccount_verifiedInvitation on VerifiedInvitationPayload {
+        meetingType
+        teamInvitation {
+          email
+        }
+        teamName
       }
-      teamName
-    }
-  `
+    `
+  }
 )

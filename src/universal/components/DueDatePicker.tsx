@@ -79,12 +79,11 @@ class DueDatePicker extends React.Component<Props> {
   }
 }
 
-export default createFragmentContainer(
-  withAtmosphere(withMutationProps(DueDatePicker)),
-  graphql`
+export default createFragmentContainer(withAtmosphere(withMutationProps(DueDatePicker)), {
+  task: graphql`
     fragment DueDatePicker_task on Task {
       taskId: id
       dueDate
     }
   `
-)
+})

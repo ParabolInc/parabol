@@ -1,18 +1,16 @@
 import {AcceptTeamInvitationMutation_team} from '__generated__/AcceptTeamInvitationMutation_team.graphql'
 import {commitMutation, graphql} from 'react-relay'
-import {Disposable, RecordProxy} from 'relay-runtime'
+import {RecordProxy} from 'relay-runtime'
 import handleAddTeamMembers from 'universal/mutations/handlers/handleAddTeamMembers'
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications'
 import getGraphQLError from 'universal/utils/relay/getGraphQLError'
 import getInProxy from 'universal/utils/relay/getInProxy'
-import {LocalHandlers} from '../types/relayMutations'
-import {
-  AcceptTeamInvitationMutation as TAcceptTeamInvitationMutation,
-  AcceptTeamInvitationMutationVariables
-} from '__generated__/AcceptTeamInvitationMutation.graphql'
+import {LocalHandlers, OnNextHandler, StandardMutation} from '../types/relayMutations'
+import {AcceptTeamInvitationMutation as TAcceptTeamInvitationMutation} from '__generated__/AcceptTeamInvitationMutation.graphql'
 import handleAddTeams from 'universal/mutations/handlers/handleAddTeams'
 import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 import getValidRedirectParam from 'universal/utils/getValidRedirectParam'
+import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
 
 graphql`
   fragment AcceptTeamInvitationMutation_team on AcceptTeamInvitationPayload {
@@ -89,26 +87,31 @@ export const acceptTeamInvitationTeamUpdater = (payload: RecordProxy, {store}) =
   handleAddTeamMembers(teamMember, store)
 }
 
-export const acceptTeamInvitationTeamOnNext = (
-  payload: AcceptTeamInvitationMutation_team,
+export const acceptTeamInvitationTeamOnNext: OnNextHandler<AcceptTeamInvitationMutation_team> = (
+  payload,
   {atmosphere}
 ) => {
-  const teamName = payload.team && payload.team.name
-  const preferredName = payload.teamMember && payload.teamMember.preferredName
-  if (!preferredName) return
-  atmosphere.eventEmitter.emit('addToast', {
-    level: 'info',
-    autoDismiss: 10,
-    title: 'Ahoy, a new crewmate!',
+  const {team, teamMember} = payload
+  if (!team || !teamMember) return
+  const {name: teamName} = team
+  const {id: teamMemberId, preferredName} = teamMember
+  const {teamId, userId} = fromTeamMemberId(teamMemberId)
+  atmosphere.eventEmitter.emit(
+    'removeSnackbar',
+    (snack) => snack.key === `pushInvitation:${teamId}:${userId}`
+  )
+  atmosphere.eventEmitter.emit('addSnackbar', {
+    autoDismiss: 5,
+    key: `acceptTeamInvitation:${teamMemberId}`,
     message: `${preferredName} just joined team ${teamName}`
   })
 }
 
-const AcceptTeamInvitationMutation = (
+const AcceptTeamInvitationMutation: StandardMutation<TAcceptTeamInvitationMutation> = (
   atmosphere,
-  variables: AcceptTeamInvitationMutationVariables,
-  {history, onCompleted, onError}: LocalHandlers
-): Disposable => {
+  variables,
+  {history, onCompleted, onError}: LocalHandlers = {}
+) => {
   return commitMutation<TAcceptTeamInvitationMutation>(atmosphere, {
     mutation,
     variables,
@@ -130,12 +133,10 @@ const AcceptTeamInvitationMutation = (
       atmosphere.setAuthToken(authToken)
       if (!team) return
       const {id: teamId, name: teamName, newMeeting} = team
-      atmosphere.eventEmitter.emit('addToast', {
-        level: 'info',
-        autoDismiss: 10,
-        title: 'Congratulations!',
-        message: `You’ve been added to team ${teamName}`,
-        action: {label: 'Great!'}
+      atmosphere.eventEmitter.emit('addSnackbar', {
+        key: `addedToTeam:${teamId}`,
+        autoDismiss: 5,
+        message: `Congratulations! You’ve been added to team ${teamName}`
       })
       const redirectTo = getValidRedirectParam()
       if (history) {

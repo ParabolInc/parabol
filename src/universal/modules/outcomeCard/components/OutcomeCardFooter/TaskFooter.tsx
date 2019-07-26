@@ -126,9 +126,8 @@ const TaskFooter = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  withMutationProps(TaskFooter),
-  graphql`
+export default createFragmentContainer(withMutationProps(TaskFooter), {
+  task: graphql`
     fragment TaskFooter_task on Task {
       id
       content
@@ -145,4 +144,4 @@ export default createFragmentContainer(
       ...TaskFooterIntegrateMenuRoot_task
     }
   `
-)
+})

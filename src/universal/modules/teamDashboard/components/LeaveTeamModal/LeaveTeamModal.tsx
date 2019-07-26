@@ -49,11 +49,10 @@ const LeaveTeamModal = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  withAtmosphere(withRouter(LeaveTeamModal)),
-  graphql`
+export default createFragmentContainer(withAtmosphere(withRouter(LeaveTeamModal)), {
+  teamMember: graphql`
     fragment LeaveTeamModal_teamMember on TeamMember {
       teamMemberId: id
     }
   `
-)
+})

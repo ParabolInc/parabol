@@ -8,16 +8,16 @@ import AgendaList from 'universal/modules/teamDashboard/components/AgendaList/Ag
 import {meetingSidebarGutter} from 'universal/styles/meeting'
 
 const RootStyles = styled('div')(
-  ({disabled, isDashboard}: {isDashboard: boolean; disabled: boolean}) => ({
+  ({disabled, isMeeting}: {isMeeting: boolean | undefined; disabled: boolean}) => ({
     display: 'flex',
     flexDirection: 'column',
-    flex: 1,
-    paddingTop: isDashboard ? 0 : meetingSidebarGutter,
+    paddingTop: isMeeting ? meetingSidebarGutter : 0,
     position: 'relative',
     width: '100%',
     cursor: disabled ? 'not-allowed' : undefined,
     filter: disabled ? 'blur(3px)' : undefined,
-    pointerEvents: disabled ? 'none' : undefined
+    pointerEvents: disabled ? 'none' : undefined,
+    height: isMeeting ? '100%' : undefined // 100% is required due to the flex logo in the meeting sidebar
   })
 )
 
@@ -25,22 +25,21 @@ interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
   isDisabled?: boolean
   team: AgendaListAndInput_team
+  isMeeting?: boolean
 }
 
 const AgendaListAndInput = (props: Props) => {
-  const {gotoStageId, isDisabled, team} = props
-  const {newMeeting} = team
+  const {gotoStageId, isDisabled, team, isMeeting} = props
   return (
-    <RootStyles isDashboard={!newMeeting} disabled={!!isDisabled}>
+    <RootStyles disabled={!!isDisabled} isMeeting={isMeeting}>
       <AgendaList gotoStageId={gotoStageId} team={team} />
       <AgendaInput disabled={!!isDisabled} team={team} />
     </RootStyles>
   )
 }
 
-export default createFragmentContainer(
-  AgendaListAndInput,
-  graphql`
+export default createFragmentContainer(AgendaListAndInput, {
+  team: graphql`
     fragment AgendaListAndInput_team on Team {
       ...AgendaInput_team
       ...AgendaList_team
@@ -56,4 +55,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

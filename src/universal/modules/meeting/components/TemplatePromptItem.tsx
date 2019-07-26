@@ -143,11 +143,13 @@ class TemplatePromptItem extends Component<Props, State> {
 
 export default createFragmentContainer<PassedProps>(
   withAtmosphere(withMutationProps(TemplatePromptItem)),
-  graphql`
-    fragment TemplatePromptItem_prompt on RetroPhaseItem {
-      id
-      question
-      description
-    }
-  `
+  {
+    prompt: graphql`
+      fragment TemplatePromptItem_prompt on RetroPhaseItem {
+        id
+        question
+        description
+      }
+    `
+  }
 )

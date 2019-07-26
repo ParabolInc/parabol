@@ -147,12 +147,11 @@ const DueDateToggle = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  DueDateToggle,
-  graphql`
+export default createFragmentContainer(DueDateToggle, {
+  task: graphql`
     fragment DueDateToggle_task on Task {
       dueDate
       ...DueDatePicker_task
     }
   `
-)
+})

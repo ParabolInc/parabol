@@ -1,6 +1,6 @@
 import React, {lazy} from 'react'
 import {Route, Switch} from 'react-router'
-import requireAuth from 'universal/decorators/requireAuth/requireAuth'
+import useAuthRoute from 'universal/hooks/useAuthRoute'
 
 const Invoice = lazy(() =>
   import(/* webpackChunkName: 'InvoiceRoot' */ 'universal/modules/invoice/containers/InvoiceRoot')
@@ -34,6 +34,7 @@ const ViewerNotOnTeamRoot = lazy(() =>
 )
 
 const PrivateRoutes = () => {
+  useAuthRoute()
   return (
     <Switch>
       <Route path='(/me|/newteam|/team)' component={DashboardRoot} />
@@ -53,4 +54,4 @@ const PrivateRoutes = () => {
   )
 }
 
-export default requireAuth(PrivateRoutes)
+export default PrivateRoutes

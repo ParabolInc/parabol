@@ -41,9 +41,8 @@ const KickedOut = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  KickedOut,
-  graphql`
+export default createFragmentContainer(KickedOut, {
+  notification: graphql`
     fragment KickedOut_notification on NotifyKickedOut {
       notificationId: id
       team {
@@ -52,4 +51,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

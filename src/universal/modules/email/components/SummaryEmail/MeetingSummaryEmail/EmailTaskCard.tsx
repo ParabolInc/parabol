@@ -94,12 +94,11 @@ const EmailTaskCard = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  EmailTaskCard,
-  graphql`
+export default createFragmentContainer(EmailTaskCard, {
+  task: graphql`
     fragment EmailTaskCard_task on Task {
       content
       status
     }
   `
-)
+})

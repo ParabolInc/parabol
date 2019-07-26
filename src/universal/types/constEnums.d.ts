@@ -11,7 +11,8 @@ export const enum LoaderSize {
 
 export const enum ZIndex {
   MODAL = 400 /*should be 24, https://github.com/ParabolInc/action/issues/2772 */,
-  SIDEBAR = 200
+  SIDEBAR = 200,
+  SNACKBAR = 200
 }
 // equal to utils/constants
 export const enum MeetingTypes {
@@ -52,6 +53,7 @@ export const enum Radius {
   FIELD = 2,
   DIALOG = 8,
   MENU = 4,
+  SNACKBAR = 4,
   TOOLTIP = 2
 }
 

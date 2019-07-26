@@ -100,20 +100,20 @@ const OrgMemberRow = (props: Props) => {
     if (!inactive) {
       submitMutation()
       const handleError = (error) => {
-        atmosphere.eventEmitter.emit('addToast', {
-          level: 'error',
-          title: 'Oh no',
+        atmosphere.eventEmitter.emit('addSnackbar', {
+          autoDismiss: 5,
+          key: 'pauseUserError',
           message: error || 'Cannot pause user'
         })
         onError(error)
       }
       InactivateUserMutation(atmosphere, userId, handleError, onCompleted)
     } else {
-      atmosphere.eventEmitter.emit('addToast', {
-        title: 'We’ve got you covered!',
+      atmosphere.eventEmitter.emit('addSnackbar', {
+        autoDismiss: 5,
+        key: 'unpauseUserError',
         message:
-          'We’ll reactivate that user the next time they log in so you don’t pay a penny too much',
-        level: 'info'
+          'We’ll reactivate that user the next time they log in so you don’t pay a penny too much'
       })
     }
   }
@@ -199,16 +199,16 @@ const OrgMemberRow = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  withAtmosphere(withMutationProps(OrgMemberRow)),
-  graphql`
+export default createFragmentContainer(withAtmosphere(withMutationProps(OrgMemberRow)), {
+  organization: graphql`
     fragment OrgMemberRow_organization on Organization {
       isViewerBillingLeader: isBillingLeader
       orgId: id
       tier
       ...BillingLeaderActionMenu_organization
     }
-
+  `,
+  organizationUser: graphql`
     fragment OrgMemberRow_organizationUser on OrganizationUser {
       user {
         userId: id
@@ -222,4 +222,4 @@ export default createFragmentContainer(
       ...BillingLeaderActionMenu_organizationUser
     }
   `
-)
+})

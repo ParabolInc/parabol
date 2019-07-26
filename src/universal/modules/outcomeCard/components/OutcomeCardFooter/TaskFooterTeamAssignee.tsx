@@ -66,9 +66,8 @@ const TaskFooterTeamAssignee = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  TaskFooterTeamAssignee,
-  graphql`
+export default createFragmentContainer(TaskFooterTeamAssignee, {
+  task: graphql`
     fragment TaskFooterTeamAssignee_task on Task {
       ...TaskFooterTeamAssigneeMenu_task
       team {
@@ -76,4 +75,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

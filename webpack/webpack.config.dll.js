@@ -5,7 +5,7 @@ module.exports = {
   mode: 'development',
   entry: {
     vendors: [
-      '@babel/polyfill',
+      // '@babel/polyfill',
       // '@clusterws/cws',
       // '@google-cloud/language',
       '@mattkrick/graphql-trebuchet-client',
@@ -37,7 +37,7 @@ module.exports = {
       'enzyme-adapter-react-16',
       'es6-promisify',
       'eventemitter3',
-      'expect',
+      // 'expect',
       // 'express',
       // 'express-jwt',
       // 'express-rate-limit',
@@ -80,7 +80,6 @@ module.exports = {
       'react-helmet',
       'react-hot-loader',
       'react-hotkey-hoc',
-      'react-lifecycles-compat',
       'react-loadable',
       'react-notification-system',
       'react-redux',

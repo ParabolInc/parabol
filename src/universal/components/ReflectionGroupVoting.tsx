@@ -15,7 +15,6 @@ import appTheme from 'universal/styles/theme/appTheme'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 import getGraphQLError from 'universal/utils/relay/getGraphQLError'
-import handleOnCompletedToastError from 'universal/mutations/handlers/handleOnCompletedToastError'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   isExpanded: boolean
@@ -60,7 +59,13 @@ class ReflectionGroupVoting extends Component<Props> {
     const handleCompleted = (res, errors) => {
       onCompleted()
       const error = getGraphQLError(res, errors)
-      error && handleOnCompletedToastError(error, atmosphere)
+      if (error) {
+        atmosphere.eventEmitter.emit('addSnackbar', {
+          key: 'voteError',
+          message: error,
+          autoDismiss: 5
+        })
+      }
     }
     const sendVote = () =>
       VoteForReflectionGroupMutation(
@@ -89,7 +94,13 @@ class ReflectionGroupVoting extends Component<Props> {
     const handleCompleted = (res, errors) => {
       onCompleted()
       const error = getGraphQLError(res, errors)
-      error && handleOnCompletedToastError(error, atmosphere)
+      if (error) {
+        atmosphere.eventEmitter.emit('addSnackbar', {
+          key: 'unvoteError',
+          message: error,
+          autoDismiss: 5
+        })
+      }
     }
     submitMutation()
     VoteForReflectionGroupMutation(
@@ -131,9 +142,8 @@ class ReflectionGroupVoting extends Component<Props> {
   }
 }
 
-export default createFragmentContainer(
-  withMutationProps(withAtmosphere(ReflectionGroupVoting)),
-  graphql`
+export default createFragmentContainer(withMutationProps(withAtmosphere(ReflectionGroupVoting)), {
+  meeting: graphql`
     fragment ReflectionGroupVoting_meeting on RetrospectiveMeeting {
       meetingId: id
       viewerMeetingMember {
@@ -147,10 +157,11 @@ export default createFragmentContainer(
         totalVotes
       }
     }
-
+  `,
+  reflectionGroup: graphql`
     fragment ReflectionGroupVoting_reflectionGroup on RetroReflectionGroup {
       reflectionGroupId: id
       viewerVoteCount
     }
   `
-)
+})

@@ -18,7 +18,7 @@ const areEqual = require('fbjs/lib/areEqual')
 
 // const {deepFreeze} = require('relay-runtime');
 
-type ClassicEnvironment = any
+import type {FetchPolicy} from './ReactRelayTypes'
 import type {
   CacheConfig,
   GraphQLTaggedNode,
@@ -28,7 +28,6 @@ import type {
   Snapshot,
   Variables
 } from 'relay-runtime'
-
 type RetryCallbacks = {
   handleDataChange:
     | null
@@ -39,12 +38,11 @@ type RetryCallbacks = {
   handleRetryAfterError: null | ((error: Error) => void)
 }
 
-export type RenderProps = {
+export type RenderProps<T> = {|
   error: ?Error,
-  props: ?Object,
+  props: ?T,
   retry: ?() => void
-}
-
+|}
 /**
  * React may double-fire the constructor, and we call 'fetch' in the
  * constructor. If a request is already in flight from a previous call to the
@@ -52,35 +50,29 @@ export type RenderProps = {
  */
 const requestCache = {}
 
-const NETWORK_ONLY = 'NETWORK_ONLY'
-const STORE_THEN_NETWORK = 'STORE_THEN_NETWORK'
-const DataFromEnum = {
-  NETWORK_ONLY,
-  STORE_THEN_NETWORK
-}
-type DataFrom = $Keys<typeof DataFromEnum>
-type CompatEnvironment = IEnvironment | ClassicEnvironment
-export type Props = {
-  cacheConfig?: ?CacheConfig,
-  dataFrom?: DataFrom,
-  environment: CompatEnvironment,
-  query: ?GraphQLTaggedNode,
-  render: (renderProps: RenderProps) => React.Node,
-  variables: Variables
-}
+const STORE_AND_NETWORK = 'store-and-network'
 
-type State = {
+export type Props = {|
+  cacheConfig?: ?CacheConfig,
+  fetchPolicy?: FetchPolicy,
+  environment: IEnvironment,
+  query: ?GraphQLTaggedNode,
+  render: (renderProps: RenderProps<Object>) => React.Node,
+  variables: Variables
+|}
+
+type State = {|
   error: Error | null,
-  prevPropsEnvironment: CompatEnvironment,
+  prevPropsEnvironment: IEnvironment,
   prevPropsVariables: Variables,
   prevQuery: ?GraphQLTaggedNode,
   queryFetcher: ReactRelayQueryFetcher,
   relayContext: RelayContext,
-  renderProps: RenderProps,
+  renderProps: RenderProps<Object>,
   retryCallbacks: RetryCallbacks,
   requestCacheKey: ?string,
   snapshot: Snapshot | null
-}
+|}
 
 /**
  * @public
@@ -112,10 +104,7 @@ class ReactRelayQueryRenderer extends React.Component<Props, State> {
     if (props.query) {
       const {query} = props
 
-      // $FlowFixMe TODO t16225453 QueryRenderer works with old+new environment.
-      const genericEnvironment = (props.environment: IEnvironment)
-
-      const {getRequest} = genericEnvironment.unstable_internal
+      const {getRequest} = props.environment.unstable_internal
       const request = getRequest(query)
       requestCacheKey = getRequestCacheKey(request.params, props.variables)
       queryFetcher = requestCache[requestCacheKey]
@@ -156,9 +145,7 @@ class ReactRelayQueryRenderer extends React.Component<Props, State> {
 
       let queryFetcher
       if (query) {
-        // $FlowFixMe TODO t16225453 QueryRenderer works with old+new environment.
-        const genericEnvironment = (nextProps.environment: IEnvironment)
-        const {getRequest} = genericEnvironment.unstable_internal
+        const {getRequest} = nextProps.environment.unstable_internal
         const request = getRequest(query)
         const requestCacheKey = getRequestCacheKey(request.params, nextProps.variables)
         queryFetcher = requestCache[requestCacheKey]
@@ -206,7 +193,12 @@ class ReactRelayQueryRenderer extends React.Component<Props, State> {
           return null
         }
         return {
-          renderProps: getRenderProps(error, snapshot, queryFetcher, retryCallbacks),
+          renderProps: getRenderProps(
+            error,
+            snapshot,
+            prevState.queryFetcher,
+            prevState.retryCallbacks
+          ),
           snapshot,
           requestCacheKey: null
         }
@@ -264,7 +256,7 @@ class ReactRelayQueryRenderer extends React.Component<Props, State> {
     )
   }
 
-  render() {
+  render(): React.Element<typeof ReactRelayContext.Provider> {
     const {renderProps, relayContext} = this.state
     // Note that the root fragment results in `renderProps.props` is already
     // frozen by the store; this call is to freeze the renderProps object and
@@ -287,7 +279,7 @@ function getContext(environment: IEnvironment, variables: Variables): RelayConte
     variables
   }
 }
-function getLoadingRenderProps(): RenderProps {
+function getLoadingRenderProps(): RenderProps<Object> {
   return {
     error: null,
     props: null, // `props: null` indicates that the data is being fetched (i.e. loading)
@@ -295,7 +287,7 @@ function getLoadingRenderProps(): RenderProps {
   }
 }
 
-function getEmptyRenderProps(): RenderProps {
+function getEmptyRenderProps(): RenderProps<Object> {
   return {
     error: null,
     props: {}, // `props: {}` indicates no data available
@@ -308,9 +300,9 @@ function getRenderProps(
   snapshot: ?Snapshot,
   queryFetcher: ReactRelayQueryFetcher,
   retryCallbacks: RetryCallbacks
-): RenderProps {
+): RenderProps<Object> {
   return {
-    error: error || null,
+    error: error ? error : null,
     props: snapshot ? snapshot.data : null,
     retry: () => {
       const syncSnapshot = queryFetcher.retry()
@@ -340,7 +332,6 @@ function fetchQueryAndComputeStateFromProps(
   requestCacheKey: ?string
 ): $Shape<State> {
   const {environment, query, variables} = props
-  // $FlowFixMe TODO t16225453 QueryRenderer works with old+new environment.
   const genericEnvironment = (environment: IEnvironment)
   if (query) {
     const {createOperationDescriptor, getRequest} = genericEnvironment.unstable_internal
@@ -386,7 +377,7 @@ function fetchQueryAndComputeStateFromProps(
     try {
       const ttl = props.cacheConfig && props.cacheConfig.ttl
       const storeSnapshot =
-        props.dataFrom === STORE_THEN_NETWORK || !!ttl
+        props.fetchPolicy === STORE_AND_NETWORK || !!ttl
           ? queryFetcher.lookupInStore(genericEnvironment, operation)
           : null
 
@@ -403,7 +394,6 @@ function fetchQueryAndComputeStateFromProps(
         !skipFetch &&
         queryFetcher.fetch({
           cacheConfig: props.cacheConfig,
-          dataFrom: props.dataFrom,
           environment: genericEnvironment,
           onDataChange: retryCallbacks.handleDataChange,
           operation

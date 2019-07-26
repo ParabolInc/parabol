@@ -33,9 +33,8 @@ const RetroSidebarPhaseListItemChildren = (props: Props) => {
   return null
 }
 
-export default createFragmentContainer(
-  RetroSidebarPhaseListItemChildren,
-  graphql`
+export default createFragmentContainer(RetroSidebarPhaseListItemChildren, {
+  viewer: graphql`
     fragment RetroSidebarPhaseListItemChildren_viewer on User {
       team(teamId: $teamId) {
         newMeeting {
@@ -47,4 +46,4 @@ export default createFragmentContainer(
       ...RetroSidebarDiscussSection_viewer
     }
   `
-)
+})

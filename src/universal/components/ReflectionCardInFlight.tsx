@@ -208,7 +208,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     return (
       <ModalBlock style={style} onTransitionEnd={isClosing ? this.removeCardInFlight : undefined}>
         <ReflectionCardRoot isClosing={isClosing} shadow={cardRaisedShadow}>
-          {!isViewerDragging && <UserDraggingHeader user={dragUser} />}
+          {!isViewerDragging && <UserDraggingHeader user={dragUser!} />}
           <ReflectionEditorWrapper editorState={this.editorState} readOnly />
           <ReflectionFooter>{question}</ReflectionFooter>
         </ReflectionCardRoot>
@@ -217,9 +217,8 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
   }
 }
 
-export default createFragmentContainer(
-  withAtmosphere(ReflectionCardInFlight),
-  graphql`
+export default createFragmentContainer(withAtmosphere(ReflectionCardInFlight), {
+  reflection: graphql`
     fragment ReflectionCardInFlight_reflection on RetroReflection {
       meetingId
       reflectionId: id
@@ -251,4 +250,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

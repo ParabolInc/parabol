@@ -54,9 +54,8 @@ const DashAlertMeeting = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  DashAlertMeeting,
-  graphql`
+export default createFragmentContainer(DashAlertMeeting, {
+  viewer: graphql`
     fragment DashAlertMeeting_viewer on User {
       teams {
         id
@@ -69,4 +68,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

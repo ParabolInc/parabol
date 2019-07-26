@@ -238,9 +238,8 @@ class PhaseItemColumn extends Component<Props> {
 
 // <PhaseItemHealthBar editorCount={editorIds ? editorIds.length : 0} />
 
-export default createFragmentContainer(
-  withAtmosphere(withMutationProps(PhaseItemColumn)),
-  graphql`
+export default createFragmentContainer(withAtmosphere(withMutationProps(PhaseItemColumn)), {
+  meeting: graphql`
     fragment PhaseItemColumn_meeting on RetrospectiveMeeting {
       facilitatorUserId
       meetingId: id
@@ -280,4 +279,4 @@ export default createFragmentContainer(
       }
     }
   `
-)
+})

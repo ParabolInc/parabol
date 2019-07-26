@@ -33,12 +33,11 @@ const OrgBillingRoot = ({organization}: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  OrgBillingRoot,
-  graphql`
+export default createFragmentContainer(OrgBillingRoot, {
+  organization: graphql`
     fragment OrgBillingRoot_organization on Organization {
       ...OrgBilling_organization
       id
     }
   `
-)
+})

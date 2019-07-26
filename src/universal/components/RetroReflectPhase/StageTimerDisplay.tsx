@@ -38,13 +38,12 @@ const StageTimerDisplay = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  StageTimerDisplay,
-  graphql`
+export default createFragmentContainer(StageTimerDisplay, {
+  stage: graphql`
     fragment StageTimerDisplay_stage on NewMeetingStage {
       isComplete
       scheduledEndTime
       timeRemaining
     }
   `
-)
+})

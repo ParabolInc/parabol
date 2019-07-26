@@ -146,19 +146,20 @@ graphql`
   }
 `
 
-export default createFragmentContainer(
-  TaskFooterIntegrateMenu,
-  graphql`
+export default createFragmentContainer(TaskFooterIntegrateMenu, {
+  suggestedIntegrations: graphql`
     fragment TaskFooterIntegrateMenuList_suggestedIntegrations on SuggestedIntegrationQueryPayload {
       hasMore
       items {
         ...TaskFooterIntegrateMenuListItem @relay(mask: false)
       }
     }
+  `,
+  task: graphql`
     fragment TaskFooterIntegrateMenuList_task on Task {
       id
       teamId
       userId
     }
   `
-)
+})

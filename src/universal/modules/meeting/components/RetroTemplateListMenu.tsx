@@ -12,6 +12,7 @@ import {MenuProps} from 'universal/hooks/useMenu'
 import useModal from 'universal/hooks/useModal'
 import SelectRetroTemplateMutation from 'universal/mutations/SelectRetroTemplateMutation'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import styled from 'react-emotion'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   menuProps: MenuProps
@@ -20,6 +21,10 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
   templates: RetroTemplatePicker_settings['reflectTemplates']
   toggleModal: ReturnType<typeof useModal>['togglePortal']
 }
+
+const ListMenu = styled(Menu)({
+  maxHeight: 230 // extra 6 pixels to prevent scroll with 6 templates
+})
 
 const RetroTemplateListMenu = (props: Props) => {
   const {
@@ -47,7 +52,7 @@ const RetroTemplateListMenu = (props: Props) => {
     )
   }
   return (
-    <Menu
+    <ListMenu
       ariaLabel={'Select a template or create your own!'}
       {...menuProps}
       defaultActiveIdx={defaultActiveIdx}
@@ -58,16 +63,15 @@ const RetroTemplateListMenu = (props: Props) => {
       })}
       <MenuItemHR key={'HR1'} />
       <MenuItem label='Customize...' onClick={toggleModal} />
-    </Menu>
+    </ListMenu>
   )
 }
 
-export default createFragmentContainer(
-  withAtmosphere(withMutationProps(RetroTemplateListMenu)),
-  graphql`
+export default createFragmentContainer(withAtmosphere(withMutationProps(RetroTemplateListMenu)), {
+  retroMeetingSettings: graphql`
     fragment RetroTemplateListMenu_retroMeetingSettings on RetrospectiveMeetingSettings {
       selectedTemplateId
       teamId
     }
   `
-)
+})
