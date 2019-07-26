@@ -1,5 +1,5 @@
 import {AtlassianProviderRow_viewer} from '__generated__/AtlassianProviderRow_viewer.graphql'
-import {decode} from 'jsonwebtoken'
+import jwtDecode from 'jwt-decode'
 import React, {useEffect} from 'react'
 import styled, {keyframes} from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
@@ -50,7 +50,7 @@ interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentPr
 const useFreshToken = (accessToken: string | undefined, retry: () => void) => {
   useEffect(() => {
     if (!accessToken) return
-    const decodedToken = decode(accessToken) as IAuthToken | null
+    const decodedToken = jwtDecode(accessToken) as IAuthToken | null
     const delay = (decodedToken && decodedToken.exp * 1000 - Date.now()) || -1
     if (delay <= 0) return
     const cancel = window.setTimeout(() => {

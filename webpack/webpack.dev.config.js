@@ -5,6 +5,7 @@ const pluginDynamicImport = require('@babel/plugin-syntax-dynamic-import').defau
 const pluginRelay = require('babel-plugin-relay')
 const vendors = require('../dll/vendors')
 const pluginInlineImport = require('babel-plugin-inline-import').default
+// const {InjectManifest, GenerateSW} = require('workbox-webpack-plugin').default
 // const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 const babelLoader = {
@@ -36,7 +37,6 @@ module.exports = {
   plugins: [
     // reliably produces errors on rebuild, disabled for now
     // new HardSourceWebpackPlugin(),
-    new webpack.NamedModulesPlugin(),
     new webpack.DefinePlugin({
       __CLIENT__: true,
       __PRODUCTION__: false,
@@ -46,6 +46,10 @@ module.exports = {
     new webpack.DllReferencePlugin({
       manifest: vendors
     })
+    // new GenerateSW(),
+    // new InjectManifest({
+    //   swSrc: './src/client/sw.ts'
+    // })
   ],
   module: {
     rules: [
@@ -96,7 +100,7 @@ module.exports = {
           {
             loader: 'url-loader',
             options: {
-              limit: 8192
+              limit: 4096
             }
           }
         ]

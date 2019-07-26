@@ -955,6 +955,11 @@ export interface ITeam {
   createdBy: string | null
 
   /**
+   * true if the team was created when the account was created, else false
+   */
+  isOnboardTeam: boolean
+
+  /**
    * a user-specific token that allows anyone who uses it within 24 hours to join the team
    */
   massInviteToken: string | null

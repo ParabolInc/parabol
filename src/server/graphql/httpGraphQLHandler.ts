@@ -11,7 +11,7 @@ export default (sharedDataLoader, rateLimiter, sseClients) => async (
   res: e.Response
 ) => {
   const connectionId = req.headers['x-correlation-id']
-  const authToken = req.user || {}
+  const authToken = (req as any).user || {}
   const connectionContext = connectionId
     ? sseClients[connectionId as string]
     : {sharedDataLoader, rateLimiter, authToken}

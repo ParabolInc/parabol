@@ -1,6 +1,5 @@
 import {AnalyticsPageRootQueryResponse} from '__generated__/AnalyticsPageRootQuery.graphql'
 import {Component} from 'react'
-import reactLifecyclesCompat from 'react-lifecycles-compat'
 import makeHref from 'universal/utils/makeHref'
 
 import AnalyticsJS = SegmentAnalytics.AnalyticsJS
@@ -57,7 +56,5 @@ class AnalyticsPage extends Component<Props, State> {
     return null
   }
 }
-
-reactLifecyclesCompat(AnalyticsPage)
 
 export default AnalyticsPage

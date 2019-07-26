@@ -1,6 +1,5 @@
 import {RetroMeetingSidebar_viewer} from '__generated__/RetroMeetingSidebar_viewer.graphql'
 import React from 'react'
-import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import NewMeetingSidebarPhaseListItem from 'universal/components/NewMeetingSidebarPhaseListItem'
 import RetroSidebarPhaseListItemChildren from 'universal/components/RetroSidebarPhaseListItemChildren'
@@ -10,6 +9,7 @@ import getSidebarItemStage from 'universal/utils/getSidebarItemStage'
 import findStageById from 'universal/utils/meetings/findStageById'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
 import NewMeetingSidebar from './NewMeetingSidebar'
+import MeetingNavList from 'universal/components/MeetingNavList'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -17,12 +17,6 @@ interface Props {
   toggleSidebar: () => void
   viewer: RetroMeetingSidebar_viewer
 }
-
-const NavList = styled('ul')({
-  listStyle: 'none',
-  margin: 0,
-  padding: 0
-})
 
 const RetroMeetingSidebar = (props: Props) => {
   const {gotoStageId, handleMenuClick, toggleSidebar, viewer} = props
@@ -42,7 +36,7 @@ const RetroMeetingSidebar = (props: Props) => {
       toggleSidebar={toggleSidebar}
       viewer={viewer}
     >
-      <NavList>
+      <MeetingNavList>
         {phaseTypes.map((phaseType, idx) => {
           const itemStage = getSidebarItemStage(phaseType, phases, facilitatorStageId)
           const {id: itemStageId = '', isNavigable = false, isNavigableByFacilitator = false} =
@@ -72,7 +66,7 @@ const RetroMeetingSidebar = (props: Props) => {
             </NewMeetingSidebarPhaseListItem>
           )
         })}
-      </NavList>
+      </MeetingNavList>
     </NewMeetingSidebar>
   )
 }

@@ -86,6 +86,7 @@ class TemplatePromptList extends Component<Props> {
                       </Draggable>
                     )
                   })}
+                  {provided.placeholder}
                 </div>
               )
             }}

@@ -24,17 +24,13 @@ import dndNoise from 'universal/utils/dndNoise'
 import plural from 'universal/utils/plural'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
 
 interface Props extends WithAtmosphereProps {
   gotoStageId: ReturnType<typeof useGotoStageId>
   handleMenuClick: () => void
   viewer: RetroSidebarDiscussSection_viewer
 }
-
-const SidebarPhaseItemChild = styled('div')({
-  display: 'flex',
-  flexDirection: 'column'
-})
 
 const VoteTally = styled('div')(
   ({isUnsyncedFacilitatorStage}: {isUnsyncedFacilitatorStage: boolean | null}) => ({
@@ -60,6 +56,11 @@ const VoteIcon = styled(Icon)({
 const DraggableMeetingSubnavItem = styled('div')(({isDragging}: {isDragging: boolean}) => ({
   boxShadow: isDragging ? navItemRaised : undefined
 }))
+
+const ScrollWrapper = styled('div')({
+  overflow: 'auto',
+  height: '100%'
+})
 
 const RetroSidebarDiscussSection = (props: Props) => {
   const {
@@ -113,7 +114,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
   }
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <SidebarPhaseItemChild>
+      <MeetingSidebarPhaseItemChild>
         <MeetingSidebarLabelBlock>
           <LabelHeading>
             {plural(stages.length, `${RETRO_VOTED_LABEL} ${RETRO_TOPIC_LABEL}`)}
@@ -122,7 +123,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
         <Droppable droppableId={DISCUSSION_TOPIC}>
           {(provided) => {
             return (
-              <div ref={provided.innerRef}>
+              <ScrollWrapper innerRef={provided.innerRef}>
                 {stages.map((stage, idx) => {
                   const {reflectionGroup} = stage
                   if (!reflectionGroup) return null
@@ -163,11 +164,12 @@ const RetroSidebarDiscussSection = (props: Props) => {
                     </Draggable>
                   )
                 })}
-              </div>
+                {provided.placeholder}
+              </ScrollWrapper>
             )
           }}
         </Droppable>
-      </SidebarPhaseItemChild>
+      </MeetingSidebarPhaseItemChild>
     </DragDropContext>
   )
 }

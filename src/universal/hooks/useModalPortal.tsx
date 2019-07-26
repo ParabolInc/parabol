@@ -1,10 +1,10 @@
-import React, {ReactElement, ReactPortal, Ref, Suspense} from 'react'
+import React, {ReactElement, ReactPortal, Ref, Suspense, useEffect} from 'react'
 import styled from 'react-emotion'
 import ErrorBoundary from 'universal/components/ErrorBoundary'
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
 import ModalError from 'universal/components/ModalError'
 import {LoadingDelayRef} from 'universal/hooks/useLoadingDelay'
-import {PortalStatus} from 'universal/hooks/usePortal'
+import usePortal, {PortalStatus} from 'universal/hooks/usePortal'
 import {DECELERATE} from 'universal/styles/animation'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {Duration, ZIndex} from 'universal/types/constEnums'
@@ -37,19 +37,22 @@ const backdropStyles = {
 }
 
 const modalStyles = {
+  [PortalStatus.Mounted]: {
+    opacity: 0,
+    transform: 'translateY(32px)'
+  },
   [PortalStatus.Entering]: {
     opacity: 1,
     transform: 'translateY(0)',
     transition: `all ${Duration.MODAL_OPEN}ms ${DECELERATE}`
   },
+  [PortalStatus.Entered]: {
+    // wipe transform so it plays nicely with react-beautiful-dnd
+  },
   [PortalStatus.Exiting]: {
     opacity: 0,
     transform: 'translateY(-32px)',
     transition: `all ${Duration.PORTAL_CLOSE}ms ${DECELERATE}`
-  },
-  [PortalStatus.Mounted]: {
-    opacity: 0,
-    transform: 'translateY(32px)'
   }
 }
 const Backdrop = styled('div')(
@@ -74,10 +77,24 @@ const useModalPortal = (
   portal: (el: ReactElement) => ReactPortal | null,
   targetRef: Ref<HTMLDivElement>,
   portalStatus: PortalStatus,
+  setPortalStatus: ReturnType<typeof usePortal>['setPortalStatus'],
   loadingDelayRef: LoadingDelayRef,
   closePortal: () => void,
   background: string | undefined
 ) => {
+  useEffect(() => {
+    let isMounted = true
+    if (portalStatus === PortalStatus.Entering) {
+      setTimeout(() => {
+        if (isMounted) {
+          setPortalStatus(PortalStatus.Entered)
+        }
+      }, Duration.MODAL_OPEN)
+    }
+    return () => {
+      isMounted = false
+    }
+  }, [portalStatus])
   return (reactEl) => {
     return portal(
       <ModalBlock innerRef={targetRef}>

@@ -86,7 +86,8 @@ const AgendaMain = styled('div')(({hideAgenda}) => ({
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
-  overflow: 'auto',
+  // commenting out because of react-beatiful-dnd warning
+  // overflow: 'auto',
   position: 'absolute',
   right: 0,
   top: 0,
@@ -98,7 +99,8 @@ const AgendaMain = styled('div')(({hideAgenda}) => ({
 
 const AgendaContent = styled('div')({
   display: 'flex',
-  flex: 1,
+  overflow: 'hidden',
+  height: '100%',
   flexDirection: 'column',
   width: '100%'
 })

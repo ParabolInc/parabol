@@ -1,20 +1,18 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
 import styled from 'react-emotion'
-import {meetingBottomBarHeight} from 'universal/styles/meeting'
 import appTheme from 'universal/styles/theme/appTheme'
 import logoMarkPrimary from 'universal/styles/theme/images/brand/mark-primary.svg'
 import logoMarkWhite from 'universal/styles/theme/images/brand/mark-white.svg'
 
 const RootBlock = styled('div')(({variant}: {variant: 'primary' | 'white'}) => ({
-  alignItems: 'center',
+  alignItems: 'flex-end',
   borderTop: variant === 'primary' ? `.0625rem solid ${appTheme.palette.mid10a}` : undefined,
   boxSizing: 'content-box',
   display: 'flex',
-  height: meetingBottomBarHeight,
+  padding: 8,
   justifyContent: 'center',
-  userSelect: 'none',
-  width: '100%'
+  userSelect: 'none'
 }))
 
 const Anchor = styled(Link)({
