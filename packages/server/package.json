@@ -42,9 +42,9 @@
     "relay": "yarn build:relay --watch --watchman true",
     "update-schema": "node utils/updateSchema.babel.js && yarn tsgen",
     "postversion": "git push --follow-tags",
-    "tsgen": "gql2ts ../../build/schema.json -e $(pwd)/../client/types/config.js -o ../client/types/graphql.d.ts && prettier --write '../client/types/graphql.d.ts'",
-    "tsgen:gh": "gql2ts utils/githubSchema.json -e $(pwd)/../client/types/configGH.js -o packages/client/types/githubGraphql.d.ts && prettier --write 'packages/client/types/githubGraphql.d.ts'",
-    "tsgen:ghQuery": "graphql-typescript-definitions --schema-types-path . && prettier --write 'packages/client/utils/githubQueries/**/*.d.ts' "
+    "tsgen": "gql2ts ../../build/schema.json -e $(pwd)/../client/types/config.js -o ../client/types/graphql.d.ts && eslint --fix '../client/types/graphql.d.ts'",
+    "tsgen:gh": "gql2ts utils/githubSchema.json -e $(pwd)/../client/types/configGH.js -o packages/client/types/githubGraphql.d.ts && eslint --fix 'packages/client/types/githubGraphql.d.ts'",
+    "tsgen:ghQuery": "graphql-typescript-definitions --schema-types-path . && eslint --fix 'packages/client/utils/githubQueries/**/*.d.ts' "
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
@@ -108,6 +108,7 @@
     "mocha": "^5.2.0",
     "mockdate": "^2.0.1",
     "piping": "^1.0.0-rc.4",
+    "prettier": "^1.18.2",
     "relay-compiler": "5.0.0",
     "relay-compiler-language-typescript": "https://github.com/mattkrick/relay-compiler-language-typescript/tarball/0b93ff31546894afcba4f6e7bb73ac737f83cc18",
     "script-ext-html-webpack-plugin": "^2.0.1",
@@ -116,7 +117,7 @@
     "terser-webpack-plugin": "^1.2.2",
     "typescript": "^3.5.2",
     "url-loader": "^2.1.0",
-    "webpack": "^4.29.3",
+    "webpack": "^4.38.0",
     "webpack-bundle-analyzer": "^3.0.3",
     "webpack-cli": "^3.2.3",
     "webpack-dev-middleware": "^3.5.2",
