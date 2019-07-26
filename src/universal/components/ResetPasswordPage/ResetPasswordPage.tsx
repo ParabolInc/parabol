@@ -10,12 +10,12 @@ import PrimaryButton from 'universal/components/PrimaryButton'
 import appTheme from 'universal/styles/theme/appTheme'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import {emailRegex} from 'universal/validation/regex'
-import auth0ChangePassword from 'universal/utils/auth0ChangePassword'
 import Legitity from 'universal/validation/Legitity'
 import AuthenticationDialog from '../AuthenticationDialog'
 import {GotoAuathPage} from 'universal/components/GenericAuthentication'
 import DialogTitle from 'universal/components/DialogTitle'
 import {PALETTE} from 'universal/styles/paletteV2'
+import Auth0ClientManager from 'universal/utils/Auth0ClientManager'
 
 type State = {
   isSent: boolean
@@ -113,20 +113,14 @@ class ResetPasswordPage extends Component<Props, State> {
 
   onSubmit = async (e) => {
     e.preventDefault()
-    const {submitMutation, submitting, onError, onCompleted} = this.props
+    const {submitMutation, submitting, onCompleted} = this.props
     const {email} = this.state
     if (submitting) return
     submitMutation()
-    try {
-      await auth0ChangePassword(email)
-    } catch (e) {
-      onError(e)
-      return
-    }
+    const manager = new Auth0ClientManager()
+    await manager.changePassword(email)
     onCompleted()
-    this.setState({
-      isSent: true
-    })
+    this.setState({isSent: true})
   }
 
   resetState = () => {
