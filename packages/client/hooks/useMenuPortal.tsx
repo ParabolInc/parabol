@@ -41,7 +41,7 @@ const useMenuPortal = (
     return () => {
       isMounted = false
     }
-  }, [portalStatus])
+  }, [portalStatus, setPortalStatus])
   return (reactEl) => {
     return portal(
       <MenuBlock ref={targetRef} style={{...coords}}>

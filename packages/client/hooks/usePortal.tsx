@@ -3,6 +3,7 @@ import {createPortal} from 'react-dom'
 import requestDoubleAnimationFrame from '../components/RetroReflectPhase/requestDoubleAnimationFrame'
 import hideBodyScroll from '../utils/hideBodyScroll'
 import useRefState from './useRefState'
+import useEventCallback from 'packages/client/hooks/useEventCallback'
 
 export const enum PortalStatus {
   Mounted, // node appended to DOM
@@ -36,7 +37,7 @@ const usePortal = (options: UsePortalOptions = {}) => {
   const showBodyScroll = useRef<() => void>()
   const [portalStatusRef, setPortalStatus] = useRefState(PortalStatus.Exited)
 
-  const terminatePortal = useCallback(() => {
+  const terminatePortal = useEventCallback(() => {
     if (!portalRef.current) return
     document.removeEventListener('keydown', handleKeydown)
     document.removeEventListener('mousedown', handleDocumentClick)
@@ -50,17 +51,17 @@ const usePortal = (options: UsePortalOptions = {}) => {
     portalRef.current = undefined
     showBodyScroll.current && showBodyScroll.current()
     timeoutRef.current = null
-  }, [])
+  })
 
   // terminate on unmount
-  useEffect(() => terminatePortal, [])
+  useEffect(() => terminatePortal, [terminatePortal])
 
-  const terminateAfterTransition = useCallback(() => {
+  const terminateAfterTransition = useEventCallback(() => {
     // setTimeout because the portal should terminate only after all other transitionend events had time to fire
     timeoutRef.current = setTimeout(terminatePortal)
-  }, [])
+  })
 
-  const closePortal = useCallback(() => {
+  const closePortal = useEventCallback(() => {
     if (portalStatusRef.current >= PortalStatus.Exiting) return
     document.removeEventListener('keydown', handleKeydown)
     document.removeEventListener('mousedown', handleDocumentClick)
@@ -71,9 +72,9 @@ const usePortal = (options: UsePortalOptions = {}) => {
     setPortalStatus(PortalStatus.Exiting)
     // important! this should be last in case the onClose also tries to close the portal (see EmojiMenu)
     options.onClose && options.onClose()
-  }, [])
+  })
 
-  const handleKeydown = useCallback((e: KeyboardEvent) => {
+  const handleKeydown = useEventCallback((e: KeyboardEvent) => {
     if (e.key === 'Escape') {
       if (originRef.current) {
         // give focus back to the thing that opened it
@@ -81,9 +82,9 @@ const usePortal = (options: UsePortalOptions = {}) => {
       }
       closePortal()
     }
-  }, [])
+  })
 
-  const handleDocumentClick = useCallback((e: MouseEvent | TouchEvent) => {
+  const handleDocumentClick = useEventCallback((e: MouseEvent | TouchEvent) => {
     if (!portalRef.current) return
     const target = e.target as Node
     if (!portalRef.current.contains(target)) {
@@ -92,9 +93,9 @@ const usePortal = (options: UsePortalOptions = {}) => {
         closePortal()
       }
     }
-  }, [])
+  })
 
-  const openPortal = useCallback((e?: React.MouseEvent | React.TouchEvent) => {
+  const openPortal = useEventCallback((e?: React.MouseEvent | React.TouchEvent) => {
     const {current: portalStatus} = portalStatusRef
     if (portalStatus <= PortalStatus.Entered) return
 
@@ -129,18 +130,18 @@ const usePortal = (options: UsePortalOptions = {}) => {
       }
       options.onOpen && options.onOpen(portalRef.current)
     }
-  }, [])
+  })
 
-  const togglePortal = useCallback((e?: React.MouseEvent | React.TouchEvent) => {
+  const togglePortal = useEventCallback((e?: React.MouseEvent | React.TouchEvent) => {
     portalRef.current ? closePortal() : openPortal(e)
-  }, [])
+  })
 
   const portal = useCallback((reactEl: ReactElement) => {
     const targetEl = portalRef.current
     return !targetEl || portalStatusRef.current === PortalStatus.Exited
       ? null
       : createPortal(reactEl, targetEl)
-  }, [])
+  }, [portalRef, portalStatusRef])
 
   return {
     openPortal,

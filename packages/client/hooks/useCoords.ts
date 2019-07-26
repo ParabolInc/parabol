@@ -194,7 +194,7 @@ const useCoords = <T extends HTMLElement = HTMLButtonElement, P extends HTMLElem
       const coordState = getNextCoords(targetBBox, originBBox, preferredMenuPosition)
       setCoords(coordState)
     }
-  }, [options.originCoords])
+  }, [currentTargetRef, setCoords, options.originCoords, preferredMenuPosition])
 
   useResizeObserver(currentTargetRef, () => {
     const targetBBox = getBBox(currentTargetRef)!

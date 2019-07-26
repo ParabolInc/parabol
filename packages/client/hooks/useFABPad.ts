@@ -5,15 +5,15 @@ import useAtmosphere from './useAtmosphere'
 
 const useFABPad = (ref: RefObject<HTMLElement>) => {
   const atmosphere = useAtmosphere()
-
+  const el = ref.current
   useEffect(() => {
-    const bbox = getBBox(ref.current)
+    const bbox = getBBox(el)
     const topOfFAB = bbox ? window.innerHeight - bbox.top : 48
     commitLocalUpdate(atmosphere, (store) => {
       const viewer = store.getRoot().getLinkedRecord('viewer')!
       viewer.setValue(topOfFAB, 'topOfFAB')
     })
-  }, [ref.current])
+  }, [el])
 }
 
 export default useFABPad

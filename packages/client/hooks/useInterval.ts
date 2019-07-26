@@ -14,7 +14,7 @@ const useInterval = (duration: number, iters: number) => {
     return () => {
       window.clearInterval(interval)
     }
-  }, [])
+  }, [countRef, duration, iters, setCount])
   return countRef.current
 }
 

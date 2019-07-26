@@ -35,7 +35,7 @@ const useMenu = <T extends HTMLElement = HTMLButtonElement>(preferredMenuPositio
     if (options.loadingWidth) return options.loadingWidth
     const bbox = getBBox(originRef.current)
     return Math.max(40, bbox ? bbox.width : 40)
-  }, [originRef.current])
+  }, [originRef.current /* eslint-disable-line react-hooks/exhaustive-deps */])
   const {loadingDelay, loadingDelayRef} = useLoadingDelay()
   const menuPortal = useMenuPortal(
     portal,

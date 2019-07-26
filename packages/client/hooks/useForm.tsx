@@ -89,7 +89,7 @@ const useForm = (fieldInputDict: FieldInputDict, deps: any[] = []) => {
           },
           {} as FieldState
         ),
-      []
+      [/* eslint-disable-line react-hooks/exhaustive-deps */]
     )
   )
 

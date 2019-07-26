@@ -106,7 +106,7 @@ const useInitialSafeRoute = (
     // legit URL!
     updateLocalStage(atmosphere, meetingId, stage.id)
     setSafeRoute(true)
-  }, [])
+  }, [/* eslint-disable-line react-hooks/exhaustive-deps */])
 }
 
 const useUpdatedSafeRoute = (
