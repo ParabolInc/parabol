@@ -95,7 +95,10 @@ export default class RethinkDataLoader {
   dataLoaderOptions: DataLoader.Options<any, any>
   authToken: null | IAuthToken
 
-  constructor (authToken, dataLoaderOptions = {}) {
+  constructor (
+    authToken: IAuthToken | null = null,
+    dataLoaderOptions: DataLoader.Options<any, any> = {}
+  ) {
     this.authToken = authToken
     this.dataLoaderOptions = dataLoaderOptions
   }
