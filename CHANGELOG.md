@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v3.17.0 2019-Jul-26
+
+## Added
+* Segment events for team invites (#3040)
+* Segment events for meeting timer (#3039)
+
+## Changed
+* Toasts to snackbar (#3026)
+* Upgraded Relay to fork of v5 (#3014)
+* Upgraded react-beautiful-dnd to v11 (#3041)
+* Upgraded a bunch of smaller deps (#3041)
+
+## Fixed
+* Login bug for safari users (#3038)
+
+## Removed
+* auth0-js (#3038)
+* iterall, known mem leak, but unsure if affects us (#3023)
+
 ## v3.16.2 2019-Jul-15
 
 ### Changed
