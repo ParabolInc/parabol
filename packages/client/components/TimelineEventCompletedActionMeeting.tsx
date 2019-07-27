@@ -1,6 +1,7 @@
 import {TimelineEventCompletedActionMeeting_timelineEvent} from '../__generated__/TimelineEventCompletedActionMeeting_timelineEvent.graphql'
 import React, {Component} from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {RouteComponentProps} from 'react-router'
 import StyledLink from './StyledLink'
 import plural from '../utils/plural'

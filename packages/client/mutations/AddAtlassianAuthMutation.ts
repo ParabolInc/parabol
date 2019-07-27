@@ -1,5 +1,6 @@
 import {AddAtlassianAuthMutation as TAddAtlassianAuthMutation} from '../__generated__/AddAtlassianAuthMutation.graphql'
-import {commitMutation, graphql} from 'react-relay'
+import {commitMutation} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {Disposable} from 'relay-runtime'
 import {IAddAtlassianAuthOnMutationArguments} from '../types/graphql'
 import {LocalHandlers} from '../types/relayMutations'

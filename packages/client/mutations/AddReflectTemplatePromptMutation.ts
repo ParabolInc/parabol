@@ -1,4 +1,5 @@
-import {commitMutation, graphql} from 'react-relay'
+import {commitMutation} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {Disposable} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
 import createProxyRecord from '../utils/relay/createProxyRecord'

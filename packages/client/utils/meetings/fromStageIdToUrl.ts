@@ -1,4 +1,4 @@
-import {graphql} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
 import findStageById from './findStageById'
 import getMeetingPathParams from './getMeetingPathParams'

@@ -1,6 +1,7 @@
 import React from 'react'
 import {RETROSPECTIVE} from '../../../../../utils/constants'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {MeetingMembersWithoutTasks_meeting} from '../../../../../__generated__/MeetingMembersWithoutTasks_meeting.graphql'
 import SummaryAvatarHeader from './SummaryAvatarHeader'
 import useEmailItemGrid from '../../../../../hooks/useEmailItemGrid'

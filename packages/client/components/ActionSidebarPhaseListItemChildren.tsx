@@ -1,6 +1,7 @@
 import {ActionSidebarPhaseListItemChildren_viewer} from '../__generated__/ActionSidebarPhaseListItemChildren_viewer.graphql'
 import React from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import ActionSidebarAgendaItemsSection from './ActionSidebarAgendaItemsSection'
 import {useGotoStageId} from '../hooks/useMeeting'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'

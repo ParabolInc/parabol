@@ -1,6 +1,7 @@
 import {NewTeamOrgPicker_organizations} from '../../../__generated__/NewTeamOrgPicker_organizations.graphql'
 import React, {useEffect, useMemo} from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import DropdownMenuToggle from '../../../components/DropdownMenuToggle'
 import TagPro from '../../../components/Tag/TagPro'
 import {MenuPosition} from '../../../hooks/useCoords'

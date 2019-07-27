@@ -1,6 +1,7 @@
 import {DashAlert_viewer} from '../__generated__/DashAlert_viewer.graphql'
 import React from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import DashAlertMeeting from './DashAlertMeeting'
 import DashAlertOverLimit from './DashAlertOverLimit'
 

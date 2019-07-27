@@ -1,4 +1,5 @@
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import DashNavItem from './DashNavItem'
 import React from 'react'
 import appTheme from '../../styles/theme/appTheme'

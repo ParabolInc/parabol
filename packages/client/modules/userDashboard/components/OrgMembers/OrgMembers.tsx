@@ -1,5 +1,6 @@
 import React from 'react'
-import {createPaginationContainer, graphql} from 'react-relay'
+import {createPaginationContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import OrgMemberRow from '../OrgUserRow/OrgMemberRow'
 import Panel from '../../../../components/Panel/Panel'
 import {BILLING_LEADER} from '../../../../utils/constants'

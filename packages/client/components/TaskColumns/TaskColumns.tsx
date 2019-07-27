@@ -6,7 +6,8 @@ import ui from '../../styles/ui'
 import {AreaEnum} from '../../types/graphql'
 import {columnArray, MEETING, meetingColumnArray} from '../../utils/constants'
 import makeTasksByStatus from '../../utils/makeTasksByStatus'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {TaskColumns_tasks} from '../../__generated__/TaskColumns_tasks.graphql'
 
 const RootBlock = styled('div')({

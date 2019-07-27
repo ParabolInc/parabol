@@ -2,7 +2,8 @@ import {ReflectionCardInFlight_reflection} from '../__generated__/ReflectionCard
 import {convertFromRaw, EditorState} from 'draft-js'
 import React from 'react'
 import styled from '@emotion/styled'
-import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {Coords} from '../types/animations'
 import {
   MasonryChildrenCache,

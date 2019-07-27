@@ -11,7 +11,8 @@ import {
   DropTargetSpec
 } from 'react-dnd'
 import withScrolling from 'react-dnd-scrollzone'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {BBox, Coords} from '../types/animations'
 import Modal from './Modal'
 import ReflectionCardInFlight from './ReflectionCardInFlight'

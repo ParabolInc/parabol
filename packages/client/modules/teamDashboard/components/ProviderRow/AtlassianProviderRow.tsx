@@ -3,7 +3,8 @@ import jwtDecode from 'jwt-decode'
 import React, {useEffect} from 'react'
 import styled from '@emotion/styled';
 import { keyframes } from '@emotion/core';
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import FlatButton from '../../../../components/FlatButton'
 import Icon from '../../../../components/Icon'

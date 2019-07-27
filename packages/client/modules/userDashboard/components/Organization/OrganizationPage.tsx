@@ -1,6 +1,7 @@
 import {OrganizationPage_organization} from '../../../../__generated__/OrganizationPage_organization.graphql'
 import React, {lazy, Suspense} from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {Route, RouteComponentProps, Switch, withRouter} from 'react-router'
 import {BILLING_PAGE, MEMBERS_PAGE} from '../../../../utils/constants'
 import LoadingComponent from '../../../../components/LoadingComponent/LoadingComponent'

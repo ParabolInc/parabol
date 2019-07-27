@@ -2,7 +2,8 @@
  * Updates a reflection's content for the retrospective meeting.
  *
  */
-import {commitMutation, graphql} from 'react-relay'
+import {commitMutation} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
 import {LocalHandlers} from '../types/relayMutations'
 import {IUpdateReflectionContentOnMutationArguments} from '../types/graphql'

@@ -1,5 +1,6 @@
 import {RemoveSlackAuthMutation as TRemoveSlackAuthMutation} from '../__generated__/RemoveSlackAuthMutation.graphql'
-import {commitMutation, graphql} from 'react-relay'
+import {commitMutation} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {Disposable} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
 import {IRemoveSlackAuthOnMutationArguments} from '../types/graphql'

@@ -2,7 +2,8 @@ import {
   LoginMutation as TLoginMutation,
   LoginMutationVariables
 } from '../__generated__/LoginMutation.graphql'
-import {commitMutation, graphql} from 'react-relay'
+import {commitMutation} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {Disposable} from 'relay-runtime'
 import SendClientSegmentEventMutation from './SendClientSegmentEventMutation'
 import {SegmentClientEventEnum} from '../types/graphql'

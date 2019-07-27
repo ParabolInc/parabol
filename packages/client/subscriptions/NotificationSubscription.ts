@@ -18,7 +18,7 @@ import {
 } from '../mutations/InviteToTeamMutation'
 import {acceptTeamInvitationNotificationUpdater} from '../mutations/AcceptTeamInvitationMutation'
 import {endNewMeetingNotificationUpdater} from '../mutations/EndNewMeetingMutation'
-import {graphql} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {meetingTypeToLabel, meetingTypeToSlug} from '../utils/meetings/lookups'
 import {OnNextContext, OnNextHandler, UpdaterHandler} from '../types/relayMutations'
 import {GraphQLSubscriptionConfig, RecordSourceSelectorProxy} from 'relay-runtime'

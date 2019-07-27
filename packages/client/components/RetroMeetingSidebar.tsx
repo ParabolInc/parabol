@@ -1,6 +1,7 @@
 import {RetroMeetingSidebar_viewer} from '../__generated__/RetroMeetingSidebar_viewer.graphql'
 import React from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import NewMeetingSidebarPhaseListItem from './NewMeetingSidebarPhaseListItem'
 import RetroSidebarPhaseListItemChildren from './RetroSidebarPhaseListItemChildren'
 import {useGotoStageId} from '../hooks/useMeeting'

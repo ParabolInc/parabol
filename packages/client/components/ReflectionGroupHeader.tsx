@@ -1,5 +1,6 @@
 import React, {forwardRef, Ref, RefObject} from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
 import ReflectionGroupTitleEditor from './ReflectionGroup/ReflectionGroupTitleEditor'
 import {GROUP, VOTE} from '../utils/constants'

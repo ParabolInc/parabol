@@ -2,7 +2,8 @@ import {NewMeetingCheckInGreeting_checkInGreeting} from '../../../__generated__/
 import {NewMeetingCheckInGreeting_teamMember} from '../../../__generated__/NewMeetingCheckInGreeting_teamMember.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 
 const GreetingBlock = styled('div')({
   fontSize: '1.5rem',

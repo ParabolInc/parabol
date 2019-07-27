@@ -1,5 +1,6 @@
 import {RemoveGitHubAuthMutation as TRemoveGitHubAuthMutation} from '../__generated__/RemoveGitHubAuthMutation.graphql'
-import {commitMutation, graphql} from 'react-relay'
+import {commitMutation} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {Disposable} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
 import {IRemoveGitHubAuthOnMutationArguments} from '../types/graphql'

@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import React from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import ui from '../../../../styles/ui'
 import Row from '../../../../components/Row/Row'
 import IconAvatar from '../../../../components/IconAvatar/IconAvatar'

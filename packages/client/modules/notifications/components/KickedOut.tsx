@@ -1,5 +1,6 @@
 import React from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import AcknowledgeButton from './AcknowledgeButton/AcknowledgeButton'
 import ClearNotificationMutation from '../../../mutations/ClearNotificationMutation'
 import Row from '../../../components/Row/Row'

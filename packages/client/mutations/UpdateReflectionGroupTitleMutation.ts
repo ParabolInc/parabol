@@ -2,7 +2,8 @@
  * Updates a reflection's title for the retrospective meeting.
  *
  */
-import {commitMutation, graphql} from 'react-relay'
+import {commitMutation} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
 import {IUpdateReflectionGroupTitleOnMutationArguments} from '../types/graphql'
 import Atmosphere from '../Atmosphere'

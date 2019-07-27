@@ -2,7 +2,8 @@ import {
   DismissSuggestedActionMutation as TDismissSuggestedActionMutation,
   DismissSuggestedActionMutationVariables
 } from '../__generated__/DismissSuggestedActionMutation.graphql'
-import {commitMutation, graphql} from 'react-relay'
+import {commitMutation} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {Disposable} from 'relay-runtime'
 import {LocalHandlers} from '../types/relayMutations'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'

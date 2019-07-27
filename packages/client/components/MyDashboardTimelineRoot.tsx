@@ -1,5 +1,5 @@
 import React from 'react'
-import {graphql} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import MyDashboardTimeline from './MyDashboardTimeline'
 import QueryRenderer from './QueryRenderer/QueryRenderer'
 import withAtmosphere, {

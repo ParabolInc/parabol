@@ -14,7 +14,8 @@ import ui from '../../../../styles/ui'
 import {AreaEnum, ITask, TaskStatusEnum} from '../../../../types/graphql'
 import {TEAM_DASH, USER_DASH} from '../../../../utils/constants'
 import TaskColumnDropZone from './TaskColumnDropZone'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {TaskColumn_tasks} from '../../../../__generated__/TaskColumn_tasks.graphql'
 
 const Column = styled('div')({

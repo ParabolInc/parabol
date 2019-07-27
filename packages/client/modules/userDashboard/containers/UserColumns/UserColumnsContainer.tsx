@@ -1,6 +1,7 @@
 import React, {useMemo} from 'react'
 import {connect} from 'react-redux'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import TaskColumns from '../../../../components/TaskColumns/TaskColumns'
 import getTaskById from '../../../../utils/getTaskById'
 import {UserColumnsContainer_viewer} from '../../../../__generated__/UserColumnsContainer_viewer.graphql'

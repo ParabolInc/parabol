@@ -44,7 +44,7 @@ import {
 import {addAgendaItemUpdater} from '../mutations/AddAgendaItemMutation'
 import {removeAgendaItemUpdater} from '../mutations/RemoveAgendaItemMutation'
 import {updateAgendaItemUpdater} from '../mutations/UpdateAgendaItemMutation'
-import {graphql} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {pushInvitationTeamOnNext} from '../mutations/PushInvitationMutation'
 import {denyPushInvitationTeamOnNext} from '../mutations/DenyPushInvitationMutation'
 

@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import EditorInputWrapper from '../../../../components/EditorInputWrapper'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
 import editorDecorators from '../../../../components/TaskEditor/decorators'

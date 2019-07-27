@@ -2,7 +2,8 @@
  * Removes a reflection for the retrospective meeting.
  *
  */
-import {commitMutation, graphql} from 'react-relay'
+import {commitMutation} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import getInProxy from '../utils/relay/getInProxy'
 import handleRemoveReflectionGroups from './handlers/handleRemoveReflectionGroups'
 import {IRemoveReflectionOnMutationArguments} from '../types/graphql'

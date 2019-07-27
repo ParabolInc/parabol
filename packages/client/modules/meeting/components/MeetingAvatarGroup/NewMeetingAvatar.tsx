@@ -2,7 +2,8 @@ import {NewMeetingAvatar_newMeeting} from '../../../../__generated__/NewMeetingA
 import {NewMeetingAvatar_teamMember} from '../../../../__generated__/NewMeetingAvatar_teamMember.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import VideoAvatar from '../../../../components/Avatar/VideoAvatar'
 import withAtmosphere, {
   WithAtmosphereProps

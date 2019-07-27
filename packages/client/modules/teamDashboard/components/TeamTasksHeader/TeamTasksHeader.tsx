@@ -1,7 +1,8 @@
 import {TeamTasksHeader_team} from '../../../../__generated__/TeamTasksHeader_team.graphql'
 import React from 'react'
 import styled from '@emotion/styled';
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {NavLink, RouteComponentProps, withRouter} from 'react-router-dom'
 import DashHeading from '../../../../components/Dashboard/DashHeading'
 import DashSectionControl from '../../../../components/Dashboard/DashSectionControl'

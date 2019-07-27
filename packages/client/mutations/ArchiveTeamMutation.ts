@@ -3,7 +3,8 @@ import {
   ArchiveTeamMutationVariables
 } from '../__generated__/ArchiveTeamMutation.graphql'
 import {ArchiveTeamMutation_team} from '../__generated__/ArchiveTeamMutation_team.graphql'
-import {commitMutation, graphql} from 'react-relay'
+import {commitMutation} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {Disposable} from 'relay-runtime'
 import ClearNotificationMutation from './ClearNotificationMutation'
 import handleAddNotifications from './handlers/handleAddNotifications'

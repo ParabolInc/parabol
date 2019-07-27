@@ -1,5 +1,6 @@
 import {StartNewMeetingMutation as TStartNewMeetingMutation} from '../__generated__/StartNewMeetingMutation.graphql'
-import {commitMutation, graphql} from 'react-relay'
+import {commitMutation} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import Atmosphere from '../Atmosphere'
 import {IStartNewMeetingOnMutationArguments} from '../types/graphql'
 import {LocalHandlers} from '../types/relayMutations'

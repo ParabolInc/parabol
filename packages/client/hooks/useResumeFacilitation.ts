@@ -1,4 +1,4 @@
-import {graphql} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import useAtmosphere from './useAtmosphere'
 import {useEffect} from 'react'
 import PromoteNewMeetingFacilitatorMutation from '../mutations/PromoteNewMeetingFacilitatorMutation'

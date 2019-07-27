@@ -1,5 +1,6 @@
 import React, {useState} from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {StageTimerModal_stage} from '../__generated__/StageTimerModal_stage.graphql'
 import {MenuProps} from '../hooks/useMenu'
 import Tab from './Tab/Tab'

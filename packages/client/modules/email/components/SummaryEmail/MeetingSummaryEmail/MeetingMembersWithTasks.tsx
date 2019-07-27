@@ -1,5 +1,6 @@
 import React from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import MeetingMemberTaskSummaryList from './MeetingMemberTaskSummaryList'
 import {MeetingMembersWithTasks_meeting} from '../../../../../__generated__/MeetingMembersWithTasks_meeting.graphql'
 import EmailBorderBottom from './EmailBorderBottom'

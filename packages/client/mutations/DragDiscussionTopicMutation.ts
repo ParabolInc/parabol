@@ -1,4 +1,5 @@
-import {commitMutation, graphql} from 'react-relay'
+import {commitMutation} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import handleUpdateStageSort from './handlers/handleUpdateStageSort'
 import {DISCUSS} from '../utils/constants'
 import getInProxy from '../utils/relay/getInProxy'

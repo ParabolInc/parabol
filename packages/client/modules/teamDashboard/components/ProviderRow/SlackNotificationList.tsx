@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {SlackNotificationEventEnum, SlackNotificationEventTypeEnum} from '../../../../types/graphql'
 import SlackNotificationRow from './SlackNotificationRow'
 import {SlackNotificationList_viewer} from '../../../../__generated__/SlackNotificationList_viewer.graphql'

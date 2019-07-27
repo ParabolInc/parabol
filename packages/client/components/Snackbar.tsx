@@ -6,7 +6,7 @@ import useTransition from '../hooks/useTransition'
 import shortid from 'shortid'
 import styled from '@emotion/styled'
 import SnackbarMessage from './SnackbarMessage'
-import {graphql} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import useLocalQuery from '../hooks/useLocalQuery'
 import {SnackbarQuery} from '../__generated__/SnackbarQuery.graphql'
 

@@ -1,4 +1,5 @@
-import {commitMutation, graphql} from 'react-relay'
+import {commitMutation} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import Atmosphere from '../Atmosphere'
 import handleAddAgendaItems from './handlers/handleAddAgendaItems'
 import {IAddAgendaItemOnMutationArguments} from '../types/graphql'

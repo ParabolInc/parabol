@@ -1,5 +1,6 @@
 import React from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import LinkButton from '../../components/LinkButton'
 import IconLabel from '../../components/IconLabel'
 import {PRICING_LINK} from '../../utils/externalLinks'

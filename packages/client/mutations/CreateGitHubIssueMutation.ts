@@ -1,5 +1,6 @@
 import {CreateGitHubIssueMutation as TCreateGitHubIssueMutation} from '../__generated__/CreateGitHubIssueMutation.graphql'
-import {commitMutation, graphql} from 'react-relay'
+import {commitMutation} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import Atmosphere from '../Atmosphere'
 import {ICreateGitHubIssueOnMutationArguments, TaskServiceEnum} from '../types/graphql'
 import {LocalHandlers} from '../types/relayMutations'

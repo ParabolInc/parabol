@@ -1,5 +1,6 @@
 import React from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {StageTimerModalEditTimeEnd_stage} from '../__generated__/StageTimerModalEditTimeEnd_stage.graphql'
 import styled from '@emotion/styled'
 import Icon from './Icon'

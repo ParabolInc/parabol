@@ -1,5 +1,6 @@
 import {AcceptTeamInvitationMutation_team} from '../__generated__/AcceptTeamInvitationMutation_team.graphql'
-import {commitMutation, graphql} from 'react-relay'
+import {commitMutation} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {RecordProxy} from 'relay-runtime'
 import handleAddTeamMembers from './handlers/handleAddTeamMembers'
 import handleRemoveNotifications from './handlers/handleRemoveNotifications'

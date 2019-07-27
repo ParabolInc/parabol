@@ -1,7 +1,8 @@
 import React from 'react'
 import ViewInBrowserHeader from './ViewInBrowserHeader'
 import SummarySheet from './SummarySheet'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 
 const parentStyles = {
   WebkitTextSizeAdjust: '100%',

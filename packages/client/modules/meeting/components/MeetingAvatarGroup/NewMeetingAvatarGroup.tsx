@@ -1,7 +1,8 @@
 import {NewMeetingAvatarGroup_team} from '../../../../__generated__/NewMeetingAvatarGroup_team.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import AddTeamMemberAvatarButton from '../../../../components/AddTeamMemberAvatarButton'
 import withAtmosphere, {
   WithAtmosphereProps

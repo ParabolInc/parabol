@@ -1,6 +1,7 @@
 import {SuggestedIntegrationGitHubMenuItem_suggestedIntegration} from '../__generated__/SuggestedIntegrationGitHubMenuItem_suggestedIntegration.graphql'
 import React, {forwardRef} from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import GitHubSVG from './GitHubSVG'
 import MenuItem from './MenuItem'
 import MenuItemLabel from './MenuItemLabel'

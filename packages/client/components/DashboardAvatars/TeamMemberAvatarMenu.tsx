@@ -1,6 +1,7 @@
 import {TeamMemberAvatarMenu_teamMember} from '../../__generated__/TeamMemberAvatarMenu_teamMember.graphql'
 import React from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import DropdownMenuLabel from '../DropdownMenuLabel'
 import Menu from '../Menu'
 import MenuItem from '../MenuItem'

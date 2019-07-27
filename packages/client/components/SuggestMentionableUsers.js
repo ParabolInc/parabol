@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import stringScore from 'string-score'
 import AsyncEditorSuggestions from './AsyncEditorSuggestions'
 import MentionUser from './MentionUser/MentionUser'

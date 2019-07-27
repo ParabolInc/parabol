@@ -1,7 +1,8 @@
 import {TimelineSuggestedAction_viewer} from '../__generated__/TimelineSuggestedAction_viewer.graphql'
 import React, {lazy} from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import DelayUnmount from './DelayUnmount'
 
 interface Props {

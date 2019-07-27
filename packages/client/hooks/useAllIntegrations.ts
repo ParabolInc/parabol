@@ -1,6 +1,6 @@
 import {useAllIntegrationsQueryResponse} from '../__generated__/useAllIntegrationsQuery.graphql'
 import {useEffect, useMemo, useRef, useState} from 'react'
-import {graphql} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import Atmosphere from '../Atmosphere'
 import useFilteredItems from './useFilteredItems'
 import fetchMaybeCachedQuery from '../utils/relay/fetchMaybeCachedQuery'

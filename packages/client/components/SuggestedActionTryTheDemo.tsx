@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {RouteComponentProps, withRouter} from 'react-router'
 import DismissSuggestedActionMutation from '../mutations/DismissSuggestedActionMutation'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'

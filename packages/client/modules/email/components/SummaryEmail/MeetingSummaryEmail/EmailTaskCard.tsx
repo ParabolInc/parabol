@@ -3,7 +3,8 @@ import React, {useMemo, useRef} from 'react'
 import editorDecorators from '../../../../../components/TaskEditor/decorators'
 import labels from '../../../../../styles/theme/labels'
 import ui from '../../../../../styles/ui'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {EmailTaskCard_task} from '../../../../../__generated__/EmailTaskCard_task.graphql'
 import {
   FONT_FAMILY,

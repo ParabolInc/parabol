@@ -8,7 +8,8 @@ import {
 import makeActionStats from './makeActionStats'
 import makeRetroStats from './makeRetroStats'
 import {ACTION, RETROSPECTIVE} from '../../../../../utils/constants'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {QuickStats_meeting} from '../../../../../__generated__/QuickStats_meeting.graphql'
 
 const statLabel = (idx, len) =>

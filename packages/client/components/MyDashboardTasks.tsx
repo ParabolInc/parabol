@@ -1,5 +1,6 @@
 import React from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import UserColumnsContainer from '../modules/userDashboard/containers/UserColumns/UserColumnsContainer'
 import UserTasksHeaderContainer from '../modules/userDashboard/containers/UserTasksHeader/UserTasksHeaderContainer'
 import {MyDashboardTasks_viewer} from '../__generated__/MyDashboardTasks_viewer.graphql'

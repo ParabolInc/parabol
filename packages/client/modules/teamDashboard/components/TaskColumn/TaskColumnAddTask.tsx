@@ -8,7 +8,8 @@ import {AreaEnum, ITeam, TaskStatusEnum} from '../../../../types/graphql'
 import dndNoise from '../../../../utils/dndNoise'
 import getNextSortOrder from '../../../../utils/getNextSortOrder'
 import fromTeamMemberId from '../../../../utils/relay/fromTeamMemberId'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {TaskColumnAddTask_tasks} from '../../../../__generated__/TaskColumnAddTask_tasks.graphql'
 
 interface Props {

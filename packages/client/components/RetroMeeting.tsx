@@ -1,6 +1,7 @@
 import {RetroMeeting_viewer} from '../__generated__/RetroMeeting_viewer.graphql'
 import React, {ReactElement} from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {ValueOf} from '../types/generics'
 import MeetingArea from './MeetingArea'
 import MeetingStyles from './MeetingStyles'

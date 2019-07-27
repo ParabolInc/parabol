@@ -1,6 +1,7 @@
 import React, {Component, ReactElement} from 'react'
 import {findDOMNode} from 'react-dom'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import NullableTask from '../../components/NullableTask/NullableTask'
 import {TASK} from '../../utils/constants'
 import {DragSource as dragSource, DropTarget as dropTarget} from 'react-dnd'

@@ -1,4 +1,5 @@
-import {commitMutation, graphql} from 'react-relay'
+import {commitMutation} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
 import handleRemoveNotifications from './handlers/handleRemoveNotifications'

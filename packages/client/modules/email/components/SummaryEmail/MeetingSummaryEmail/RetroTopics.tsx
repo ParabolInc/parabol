@@ -1,7 +1,8 @@
 import React from 'react'
 import plural from '../../../../../utils/plural'
 import {RETRO_TOPIC_LABEL, RETRO_VOTED_LABEL} from '../../../../../utils/constants'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {
   FONT_FAMILY,
   PALETTE_TEXT_MAIN

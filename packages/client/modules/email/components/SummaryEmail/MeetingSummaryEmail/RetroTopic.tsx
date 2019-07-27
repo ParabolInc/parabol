@@ -7,7 +7,8 @@ import {
 } from './constants'
 import useEmailItemGrid from '../../../../../hooks/useEmailItemGrid'
 import EmailReflectionCard from './EmailReflectionCard'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {RetroTopic_topic} from '../../../../../__generated__/RetroTopic_topic.graphql'
 
 const topicThemeHeading = {

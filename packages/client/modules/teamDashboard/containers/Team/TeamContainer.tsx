@@ -1,7 +1,8 @@
 import {TeamContainer_viewer} from '../../../../__generated__/TeamContainer_viewer.graphql'
 import React, {lazy, Suspense, useEffect} from 'react'
 import {connect} from 'react-redux'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {Route, RouteComponentProps, withRouter} from 'react-router'
 import {matchPath, Switch} from 'react-router-dom'
 import withAtmosphere, {

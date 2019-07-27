@@ -1,5 +1,6 @@
 import React, {Suspense} from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {NotificationRow_notification} from '../../../../__generated__/NotificationRow_notification.graphql'
 import {NotificationEnum} from '../../../../types/graphql'
 import lazyPreload from '../../../../utils/lazyPreload'

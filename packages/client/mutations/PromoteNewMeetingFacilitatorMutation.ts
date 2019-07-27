@@ -1,5 +1,6 @@
 import {PromoteNewMeetingFacilitatorMutation_team} from '../__generated__/PromoteNewMeetingFacilitatorMutation_team.graphql'
-import {commitMutation, graphql} from 'react-relay'
+import {commitMutation} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {Disposable} from 'relay-runtime'
 import {OnNextHandler, StandardMutation} from '../types/relayMutations'
 import {PromoteNewMeetingFacilitatorMutation as TPromoteNewMeetingFacilitatorMutation} from '../__generated__/PromoteNewMeetingFacilitatorMutation.graphql'

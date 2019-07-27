@@ -1,6 +1,7 @@
 import SecondaryButton from './SecondaryButton'
 import React, {useState} from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
 import {StageTimerModalEndTime_stage} from '../__generated__/StageTimerModalEndTime_stage.graphql'
 import ms from 'ms'

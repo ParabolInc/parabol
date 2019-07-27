@@ -1,6 +1,7 @@
 import {ActionMeetingSidebar_viewer} from '../__generated__/ActionMeetingSidebar_viewer.graphql'
 import React from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import NewMeetingSidebarPhaseListItem from './NewMeetingSidebarPhaseListItem'
 import ActionSidebarPhaseListItemChildren from './ActionSidebarPhaseListItemChildren'
 import {useGotoStageId} from '../hooks/useMeeting'

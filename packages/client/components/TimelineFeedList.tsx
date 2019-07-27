@@ -1,6 +1,7 @@
 import {TimelineFeedList_viewer} from '../__generated__/TimelineFeedList_viewer.graphql'
 import React, {Component} from 'react'
-import {createPaginationContainer, graphql, RelayPaginationProp} from 'react-relay'
+import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import TimelineEvent from './TimelineEvent'
 import 'intersection-observer'
 

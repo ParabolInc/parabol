@@ -1,5 +1,6 @@
 import {AddGitHubAuthMutation as TAddGitHubAuthMutation} from '../__generated__/AddGitHubAuthMutation.graphql'
-import {commitMutation, graphql} from 'react-relay'
+import {commitMutation} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {Disposable} from 'relay-runtime'
 import {IAddGitHubAuthOnMutationArguments} from '../types/graphql'
 import {LocalHandlers} from '../types/relayMutations'

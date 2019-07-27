@@ -1,4 +1,5 @@
-import {commitMutation, graphql} from 'react-relay'
+import {commitMutation} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import getMeetingPathParams from '../utils/meetings/getMeetingPathParams'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 import Atmosphere from '../Atmosphere'

@@ -1,5 +1,6 @@
 import {getAuthProvidersQuery} from '../__generated__/getAuthProvidersQuery.graphql'
-import {fetchQuery, graphql} from 'react-relay'
+import {fetchQuery} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import Atmosphere from '../Atmosphere'
 
 const query = graphql`

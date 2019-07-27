@@ -1,6 +1,6 @@
 import {useMeetingLocalStateTeam} from '../__generated__/useMeetingLocalStateTeam.graphql'
 import {Dispatch, SetStateAction, useEffect, useRef, useState} from 'react'
-import {graphql} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import useAtmosphere from './useAtmosphere'
 import useRouter from './useRouter'
 import findKeyByValue from '../utils/findKeyByValue'

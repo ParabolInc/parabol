@@ -1,6 +1,7 @@
 import {ActionSidebarAgendaItemsSection_viewer} from '../__generated__/ActionSidebarAgendaItemsSection_viewer.graphql'
 import React from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import LabelHeading from './LabelHeading/LabelHeading'
 import MeetingSidebarLabelBlock from './MeetingSidebarLabelBlock'
 import {useGotoStageId} from '../hooks/useMeeting'

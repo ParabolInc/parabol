@@ -1,6 +1,7 @@
 import {convertFromRaw, Editor, EditorState} from 'draft-js'
 import React, {useEffect} from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import OutcomeCardStatusIndicator
   from '../../outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
 import editorDecorators from '../../../components/TaskEditor/decorators'

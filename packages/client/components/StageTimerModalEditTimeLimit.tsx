@@ -1,5 +1,6 @@
 import React from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {StageTimerModalEditTimeLimit_stage} from '../__generated__/StageTimerModalEditTimeLimit_stage.graphql'
 import styled from '@emotion/styled'
 import StageTimerModalTimeLimit from './StageTimerModalTimeLimit'

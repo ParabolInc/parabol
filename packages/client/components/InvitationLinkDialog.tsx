@@ -1,5 +1,6 @@
 import React, {useEffect} from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {RouteComponentProps, withRouter} from 'react-router'
 import {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import withAtmosphere from '../decorators/withAtmosphere/withAtmosphere'

@@ -6,7 +6,8 @@ import {
   PALETTE_TEXT_LIGHT,
   PALETTE_TEXT_MAIN
 } from './constants'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import editorDecorators from '../../../../../components/TaskEditor/decorators'
 import {EmailReflectionCard_reflection} from '../../../../../__generated__/EmailReflectionCard_reflection.graphql'
 

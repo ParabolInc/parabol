@@ -1,4 +1,5 @@
-import {commitMutation, graphql} from 'react-relay'
+import {commitMutation} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import signout from '../containers/Signout/signout'
 import getGraphQLError from '../utils/relay/getGraphQLError'
 import LoginMutation from './LoginMutation'

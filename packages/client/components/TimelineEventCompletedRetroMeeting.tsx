@@ -1,6 +1,7 @@
 import {TimelineEventCompletedRetroMeeting_timelineEvent} from '../__generated__/TimelineEventCompletedRetroMeeting_timelineEvent.graphql'
 import React, {Component} from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import StyledLink from './StyledLink'
 import plural from '../utils/plural'
 import relativeDate from '../utils/date/relativeDate'

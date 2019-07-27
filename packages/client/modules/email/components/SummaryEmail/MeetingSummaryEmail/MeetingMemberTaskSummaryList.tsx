@@ -1,7 +1,8 @@
 import React from 'react'
 import {MeetingMemberTaskSummaryList_meetingMember} from '../../../../../__generated__/MeetingMemberTaskSummaryList_meetingMember.graphql'
 import plural from '../../../../../utils/plural'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import TaskSummarySection from './TaskSummarySection'
 import SummaryAvatarHeader from './SummaryAvatarHeader'
 

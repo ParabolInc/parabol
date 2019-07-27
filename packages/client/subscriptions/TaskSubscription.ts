@@ -4,7 +4,7 @@ import {editTaskTaskUpdater} from '../mutations/EditTaskMutation'
 import {updateTaskTaskOnNext, updateTaskTaskUpdater} from '../mutations/UpdateTaskMutation'
 import {removeOrgUserTaskUpdater} from '../mutations/RemoveOrgUserMutation'
 import {changeTaskTeamTaskUpdater} from '../mutations/ChangeTaskTeamMutation'
-import {graphql} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {RecordSourceSelectorProxy} from 'relay-runtime'
 
 const subscription = graphql`

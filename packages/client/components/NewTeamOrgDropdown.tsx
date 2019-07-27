@@ -1,6 +1,7 @@
 import {NewTeamOrgDropdown_organizations} from '../__generated__/NewTeamOrgDropdown_organizations.graphql'
 import React from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import DropdownMenuItemLabel from './DropdownMenuItemLabel'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import Menu from './Menu'

@@ -1,6 +1,7 @@
 import {UpgradeModal_viewer} from '../__generated__/UpgradeModal_viewer.graphql'
 import React from 'react'
-import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import UpgradeSqueeze from './UpgradeSqueeze'
 import UpgradeSuccess from './UpgradeSuccess'
 import withAtmosphere, {

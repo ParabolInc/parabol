@@ -1,6 +1,7 @@
 import {SuggestedActionCreateNewTeam_suggestedAction} from '../__generated__/SuggestedActionCreateNewTeam_suggestedAction.graphql'
 import React, {Component} from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {RouteComponentProps, withRouter} from 'react-router'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import {PALETTE} from '../styles/paletteV2'

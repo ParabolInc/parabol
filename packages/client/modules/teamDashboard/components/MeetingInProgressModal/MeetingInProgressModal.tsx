@@ -8,7 +8,8 @@ import DialogContent from '../../../../components/DialogContent'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import IconLabel from '../../../../components/IconLabel'
 import styled from '@emotion/styled'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {MeetingInProgressModal_team} from '../../../../__generated__/MeetingInProgressModal_team.graphql'
 
 const StyledButton = styled(PrimaryButton)({

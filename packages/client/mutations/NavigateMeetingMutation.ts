@@ -3,7 +3,8 @@ import {
   NavigateMeetingMutationVariables
 } from '../__generated__/NavigateMeetingMutation.graphql'
 import {NavigateMeetingMutation_team} from '../__generated__/NavigateMeetingMutation_team.graphql'
-import {commitMutation, graphql} from 'react-relay'
+import {commitMutation} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import handleRemoveReflectionGroups from './handlers/handleRemoveReflectionGroups'
 import {VOTE} from '../utils/constants'

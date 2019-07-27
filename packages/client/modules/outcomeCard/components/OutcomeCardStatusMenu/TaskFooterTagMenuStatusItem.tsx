@@ -1,6 +1,7 @@
 import {TaskFooterTagMenuStatusItem_task} from '../../../../__generated__/TaskFooterTagMenuStatusItem_task.graphql'
 import React, {forwardRef} from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import MenuItem from '../../../../components/MenuItem'
 import MenuItemDot from '../../../../components/MenuItemDot'
 import MenuItemLabel from '../../../../components/MenuItemLabel'

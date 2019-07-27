@@ -1,6 +1,7 @@
 import React from 'react'
 import appTheme from '../styles/theme/appTheme'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
 import Tag from './Tag/Tag'
 import {UserDraggingHeader_user} from '../__generated__/UserDraggingHeader_user.graphql'

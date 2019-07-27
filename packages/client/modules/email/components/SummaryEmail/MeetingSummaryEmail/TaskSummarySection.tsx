@@ -1,5 +1,6 @@
 import React from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {TaskSummarySection_tasks} from '../../../../../__generated__/TaskSummarySection_tasks.graphql'
 import useEmailItemGrid from '../../../../../hooks/useEmailItemGrid'
 import EmailTaskCard from './EmailTaskCard'

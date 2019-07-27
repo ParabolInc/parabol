@@ -1,5 +1,6 @@
 import React from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {InvitationLink_massInvitation} from '../__generated__/InvitationLink_massInvitation.graphql'
 import TeamInvitationMeetingAbstract from './TeamInvitationMeetingAbstract'
 import InvitationLinkDialog from './InvitationLinkDialog'

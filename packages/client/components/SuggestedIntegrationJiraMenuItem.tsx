@@ -1,6 +1,7 @@
 import {SuggestedIntegrationJiraMenuItem_suggestedIntegration} from '../__generated__/SuggestedIntegrationJiraMenuItem_suggestedIntegration.graphql'
 import React, {forwardRef} from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import JiraSVG from './JiraSVG'
 import MenuItem from './MenuItem'
 import MenuItemLabel from './MenuItemLabel'

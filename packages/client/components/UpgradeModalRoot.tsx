@@ -1,5 +1,5 @@
 import React from 'react'
-import {graphql} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import LoadableLoading from './LoadableLoading'
 import QueryRenderer from './QueryRenderer/QueryRenderer'

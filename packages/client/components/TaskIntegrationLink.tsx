@@ -1,7 +1,8 @@
 import {TaskIntegrationLink_integration} from '../__generated__/TaskIntegrationLink_integration.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import ui from '../styles/ui'
 import {TaskServiceEnum} from '../types/graphql'
 

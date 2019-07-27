@@ -1,7 +1,8 @@
 import {DashAlertOverLimit_viewer} from '../__generated__/DashAlertOverLimit_viewer.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import DashAlertBar from './DashAlertBar'
 import DashAlertLink from './DashAlertLink'
 

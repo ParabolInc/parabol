@@ -2,7 +2,8 @@
  * Creates a reflection for the retrospective meeting.
  *
  */
-import {commitMutation, graphql} from 'react-relay'
+import {commitMutation} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {Disposable} from 'relay-runtime'
 import {CompletedHandler, ErrorHandler} from '../types/relayMutations'
 import handleAddReflectionGroups from './handlers/handleAddReflectionGroups'

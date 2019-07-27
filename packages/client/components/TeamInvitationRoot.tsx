@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {graphql} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {RouteComponentProps} from 'react-router'
 import withAtmosphere, {
   WithAtmosphereProps

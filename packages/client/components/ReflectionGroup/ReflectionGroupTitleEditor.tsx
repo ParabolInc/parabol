@@ -6,7 +6,8 @@ import {ReflectionGroupTitleEditor_reflectionGroup} from '../../__generated__/Re
  */
 import React, {Component, RefObject} from 'react'
 import styled from '@emotion/styled'
-import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import StyledError from '../StyledError'
 import withAtmosphere, {
   WithAtmosphereProps

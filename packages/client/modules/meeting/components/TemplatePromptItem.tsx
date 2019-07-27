@@ -2,7 +2,8 @@ import {TemplatePromptItem_prompt} from '../../../__generated__/TemplatePromptIt
 import React, {Component} from 'react'
 import {DraggableProvided} from 'react-beautiful-dnd'
 import styled from '@emotion/styled'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import Icon from '../../../components/Icon'
 import withAtmosphere, {
   WithAtmosphereProps

@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
-import {createPaginationContainer, graphql, RelayPaginationProp} from 'react-relay'
+import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import SecondaryButton from '../../../../components/SecondaryButton'
 import Panel from '../../../../components/Panel/Panel'
 import InvoiceRow from '../InvoiceRow/InvoiceRow'
