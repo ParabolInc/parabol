@@ -9,6 +9,7 @@ import {PALETTE} from '../styles/paletteV2'
 import hideBodyScroll from '../utils/hideBodyScroll'
 import PlainButton from './PlainButton/PlainButton'
 import {navDrawerShadow} from '../styles/elevation'
+import useEventCallback from 'packages/client/hooks/useEventCallback'
 
 const PEEK_WIDTH = 20
 
@@ -117,30 +118,26 @@ const SwipeableDashSidebar = (props: Props) => {
     return () => {
       window.clearTimeout(swipe.peekTimeout)
     }
-  }, [])
+  }, [/* eslint-disable-line react-hooks/exhaustive-deps*/])
+
+  const hideSidebar = useCallback(() => {
+    setX(0)
+    swipe.showBodyScroll && swipe.showBodyScroll()
+  }, [setX])
+
+  const showSidebar = useCallback(() => {
+    setX(DASH_SIDEBAR.WIDTH)
+    swipe.showBodyScroll = hideBodyScroll()
+  }, [setX])
 
   useEffect(() => {
     if (isOpen !== swipe.isOpen) {
       swipe.isOpen = isOpen
       isOpen ? showSidebar() : hideSidebar()
     }
-  }, [isOpen])
+  }, [isOpen, hideSidebar, showSidebar])
 
-  const hideSidebar = useCallback(() => {
-    setX(0)
-    swipe.showBodyScroll && swipe.showBodyScroll()
-  }, [])
-
-  const showSidebar = useCallback(() => {
-    setX(DASH_SIDEBAR.WIDTH)
-    swipe.showBodyScroll = hideBodyScroll()
-  }, [])
-
-  const closeSidebar = useCallback(() => {
-    onToggle()
-  }, [])
-
-  const onMouseUp = useCallback((e: MouseEvent | TouchEvent) => {
+  const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
     window.clearTimeout(swipe.peekTimeout)
     const eventType = isTouch(e) ? 'touchmove' : 'mousemove'
     document.removeEventListener(eventType, onMouseMove)
@@ -169,9 +166,9 @@ const SwipeableDashSidebar = (props: Props) => {
     swipe.isSwipe = null
     swipe.speed = 0
     // })
-  }, [])
+  })
 
-  const onMouseMove = useCallback((e: MouseEvent | TouchEvent) => {
+  const onMouseMove = useEventCallback((e: MouseEvent | TouchEvent) => {
     const event = isTouch(e) ? e.touches[0] : e
     const {clientX, clientY} = event
     if (swipe.isSwipe === null) {
@@ -190,9 +187,9 @@ const SwipeableDashSidebar = (props: Props) => {
     const nextX = Math.min(DASH_SIDEBAR.WIDTH, Math.max(minWidth, xRef.current + movementX))
     updateSpeed(clientX)
     setX(nextX)
-  }, [])
+  })
 
-  const onMouseDown = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+  const onMouseDown = useEventCallback((e: React.MouseEvent | React.TouchEvent) => {
     if (swipe.downCaptured) return
     const {current: x} = xRef
     if (x !== 0 && x !== DASH_SIDEBAR.WIDTH) return
@@ -219,12 +216,12 @@ const SwipeableDashSidebar = (props: Props) => {
         setX(PEEK_WIDTH)
       }, 100)
     }
-  }, [])
+  })
 
   const {current: x} = xRef
   return portal(
     <SidebarAndScrim>
-      <Scrim x={x} onClick={closeSidebar} />
+      <Scrim x={x} onClick={onToggle} />
       <SidebarAndHandle x={x} onMouseDown={onMouseDown} onTouchStart={onMouseDown}>
         <Sidebar x={x}>{children}</Sidebar>
         <SwipeHandle />

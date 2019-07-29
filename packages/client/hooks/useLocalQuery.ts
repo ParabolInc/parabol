@@ -28,7 +28,7 @@ const useLocalQuery = <TQuery extends {response: any; variables: any}>(
     return () => {
       disposables.forEach((disposable) => disposable.dispose())
     }
-  }, [query, variables])
+  }, [atmosphere, setData, query, variables])
   return dataRef.current
 }
 

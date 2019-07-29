@@ -41,18 +41,15 @@ export const useDemoMeeting = () => {
         forceUpdate()
       })
     }
-  }, [])
+  }, [atmosphere, forceUpdate])
 }
 
 export const useEndMeetingHotkey = (meetingId: string) => {
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
-  const endMeeting = useCallback(
-    handleHotkey(() => {
-      EndNewMeetingMutation(atmosphere, {meetingId}, {history})
-    }),
-    []
-  )
+  const endMeeting = handleHotkey(() => {
+    EndNewMeetingMutation(atmosphere, {meetingId}, {history})
+  })
   useHotkey('i c a n t h a c k i t', endMeeting)
 }
 
@@ -113,7 +110,7 @@ export const useGotoStageId = (team: Team | null) => {
         NavigateMeetingMutation(atmosphere, variables)
       }
     },
-    [team]
+    [team, atmosphere]
   )
 }
 
@@ -201,7 +198,7 @@ export const useToggleSidebar = (teamId: string) => {
       const val = team.getValue('isMeetingSidebarCollapsed')
       team.setValue(!val, 'isMeetingSidebarCollapsed')
     })
-  }, [teamId])
+  }, [atmosphere, teamId])
 }
 
 const useHandleMenuClick = (teamId: string, isDesktop: boolean) => {
@@ -216,7 +213,7 @@ const useHandleMenuClick = (teamId: string, isDesktop: boolean) => {
         team.setValue(true, 'isMeetingSidebarCollapsed')
       }
     })
-  }, [teamId, isDesktop])
+  }, [atmosphere, teamId, isDesktop])
 }
 
 const useMobileSidebarDefaultClosed = (
@@ -227,7 +224,7 @@ const useMobileSidebarDefaultClosed = (
     if (!isDesktop) {
       toggleSidebar()
     }
-  }, [])
+  }, [toggleSidebar])
 }
 
 export const DEFAULT_TEAM = {

@@ -1,23 +1,23 @@
 import Mousetrap from 'mousetrap'
-import {useEffect, useRef} from 'react'
+import {useEffect} from 'react'
+import useEventCallback from 'packages/client/hooks/useEventCallback'
+import useDeepEqual from 'packages/client/hooks/useDeepEqual'
 
 type Binding = string | string[]
 const useHotkey = (
-  keys: Binding,
+  inKeys: Binding,
   callback: (e: ExtendedKeyboardEvent, combo: string) => any,
   action?: string
 ) => {
-  const bindingsRef = useRef<Binding[]>([])
+  const cb = useEventCallback(callback)
+  const keyArr = Array.isArray(inKeys) ? inKeys : [inKeys]
+  const keys = useDeepEqual(keyArr)
   useEffect(() => {
-    bindingsRef.current.push(keys)
-    Mousetrap.bind(keys, callback, action)
-    const bindings = bindingsRef.current
+    Mousetrap.bind(keys, cb, action)
     return () => {
-      bindings.forEach((key) => {
-        Mousetrap.unbind(key)
-      })
+      Mousetrap.unbind(keys)
     }
-  }, [])
+  }, [keys, cb, action])
 }
 
 export default useHotkey

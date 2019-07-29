@@ -1,10 +1,12 @@
-import {useEffect, useState} from 'react'
+import {useState} from 'react'
+import {useLayoutEffect} from 'node_modules/@types/react'
 
 const useBreakpoint = (breakpoint: number) => {
-  const query = `(min-width: ${breakpoint}px)`
-  const mql = window.matchMedia(query)
-  const [match, setMatch] = useState(mql.matches)
-  useEffect(() => {
+  const [match, setMatch] = useState(true)
+  useLayoutEffect(() => {
+    const query = `(min-width: ${breakpoint}px)`
+    const mql = window.matchMedia(query)
+    setMatch(mql.matches)
     const updateMatch = () => setMatch(mql.matches)
     if (!mql.addEventListener) {
       // fallback for safari https://developer.mozilla.org/en-US/docs/Web/API/MediaQueryList#Browser_compatibility
@@ -18,7 +20,7 @@ const useBreakpoint = (breakpoint: number) => {
         mql.removeEventListener('change', updateMatch)
       }
     }
-  }, [])
+  }, [breakpoint])
 
   return match
 }
