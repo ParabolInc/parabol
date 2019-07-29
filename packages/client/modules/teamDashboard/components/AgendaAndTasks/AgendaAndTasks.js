@@ -8,6 +8,7 @@ import TeamColumnsContainer from '../../containers/TeamColumns/TeamColumnsContai
 import TeamTasksHeaderContainer from '../../containers/TeamTasksHeader/TeamTasksHeaderContainer'
 import ui from '../../../../styles/ui'
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import {desktopSidebarShadow, navDrawerShadow} from '../../../../styles/elevation'
 
 const RootBlock = styled('div')({

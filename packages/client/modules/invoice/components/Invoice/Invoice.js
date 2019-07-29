@@ -25,6 +25,7 @@ import {
   REMOVED_USERS,
   INACTIVITY_ADJUSTMENTS
 } from '../../../../utils/constants'
+import graphql from 'babel-plugin-relay/macro'
 import {createFragmentContainer} from 'react-relay'
 
 const descriptionMaker = {

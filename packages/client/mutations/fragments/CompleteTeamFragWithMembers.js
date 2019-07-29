@@ -1,3 +1,4 @@
+import graphql from 'babel-plugin-relay/macro'
 graphql`
   fragment CompleteTeamFragWithMembers on Team {
     ...CompleteTeamFrag @relay(mask: false)

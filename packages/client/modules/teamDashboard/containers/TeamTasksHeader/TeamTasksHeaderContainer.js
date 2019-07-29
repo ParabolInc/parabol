@@ -3,6 +3,7 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {createFragmentContainer} from 'react-relay'
 import TeamTasksHeader from '../../components/TeamTasksHeader/TeamTasksHeader'
+import graphql from 'babel-plugin-relay/macro'
 import {filterTeamMember} from '../../ducks/teamDashDuck'
 
 const mapStateToProps = (state) => {

@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import withAtmosphere from '../../../../decorators/withAtmosphere/withAtmosphere'
+import graphql from 'babel-plugin-relay/macro'
 import DashSearchControl from '../../../../components/Dashboard/DashSearchControl'
 
 class UserDashSearch extends Component {

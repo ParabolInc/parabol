@@ -1,3 +1,4 @@
+import graphql from 'babel-plugin-relay/macro'
 graphql`
   fragment CompleteReflectionFrag on RetroReflection {
     id

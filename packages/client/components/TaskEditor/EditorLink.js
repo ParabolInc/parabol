@@ -7,7 +7,7 @@ const baseStyle = {
 }
 
 const EditorLink = (getEditorState) =>
-  class InnerEditorLink extends Component {
+  (class InnerEditorLink extends Component {
     static propTypes = {
       children: PropTypes.any,
       contentState: PropTypes.object.isRequired,
@@ -57,6 +57,6 @@ const EditorLink = (getEditorState) =>
         </span>
       )
     }
-  }
+  })
 
 export default EditorLink

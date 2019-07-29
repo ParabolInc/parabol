@@ -2390,6 +2390,14 @@
     "@types/istanbul-lib-coverage" "*"
     "@types/istanbul-lib-report" "*"
 
+"@types/jscodeshift@^0.6.2":
+  version "0.6.2"
+  resolved "https://registry.yarnpkg.com/@types/jscodeshift/-/jscodeshift-0.6.2.tgz#94679b3a0c1374c6129aecb72f8a41a7a3d29cbf"
+  integrity sha512-Kz1HigivLTw2xndmVG6f8hVvRF6NO6336m5V7SsWy+S9eE2mRh9x5CRqhxpEiv6fD5apZTkXMl3mWwz2YcosaA==
+  dependencies:
+    ast-types "0.12.1"
+    recast "0.17.2"
+
 "@types/json-schema@^7.0.3":
   version "7.0.3"
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.3.tgz#bdfd69d61e464dcc81b25159c270d75a73c1a636"
@@ -3268,6 +3276,11 @@ ast-types@0.11.7, ast-types@^0.11.5:
   version "0.11.7"
   resolved "https://registry.yarnpkg.com/ast-types/-/ast-types-0.11.7.tgz#f318bf44e339db6a320be0009ded64ec1471f46c"
   integrity sha512-2mP3TwtkY/aTv5X3ZsMpNAbOnyoC/aMJwJSoaELPkHId0nSQgFcnU4dRW3isxiz7+zBexk0ym3WNVjMiQBnJSw==
+
+ast-types@0.12.1:
+  version "0.12.1"
+  resolved "https://registry.yarnpkg.com/ast-types/-/ast-types-0.12.1.tgz#55d3737a8a68e1ccde131067005ce7ee3dd42b99"
+  integrity sha512-H2izJAyT2xwew4TxShpmxe6f9R5hHgJQy1QloLiUC2yrJMtyraBWNJL7903rpeCY9keNUipORR/zIUC2XcYKng==
 
 ast-types@0.12.4:
   version "0.12.4"
@@ -13295,6 +13308,16 @@ realpath-native@^1.1.0:
   integrity sha512-wlgPA6cCIIg9gKz0fgAPjnzh4yR/LnXovwuo9hvyGvx3h8nX4+/iLZplfUWasXpqD8BdnGnP5njOFjkUwPzvjA==
   dependencies:
     util.promisify "^1.0.0"
+
+recast@0.17.2:
+  version "0.17.2"
+  resolved "https://registry.yarnpkg.com/recast/-/recast-0.17.2.tgz#f18f18cf20bf3fad4522621a7f9c2ada37276814"
+  integrity sha512-YHFvn4rBXl8eIjALjUiOV/AP3xFpyGNGNHDw9mAncAWuIdgnBKjbZQ9+P3VlsKcNaNapRVFlTEX1dvDRlYwyxg==
+  dependencies:
+    ast-types "0.12.1"
+    esprima "~4.0.0"
+    private "~0.1.5"
+    source-map "~0.6.1"
 
 recast@^0.14.7:
   version "0.14.7"

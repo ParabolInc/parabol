@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import {connect} from 'react-redux'
 import UserTasksHeader from '../../components/UserTasksHeader/UserTasksHeader'
+import graphql from 'babel-plugin-relay/macro'
 import {createFragmentContainer} from 'react-relay'
 
 const mapStateToProps = (state) => {

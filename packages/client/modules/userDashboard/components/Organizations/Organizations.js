@@ -9,6 +9,7 @@ import {withRouter} from 'react-router-dom'
 import LinkButton from '../../../../components/LinkButton'
 import IconLabel from '../../../../components/IconLabel'
 import Panel from '../../../../components/Panel/Panel'
+import graphql from 'babel-plugin-relay/macro'
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
 
 const Organizations = (props) => {

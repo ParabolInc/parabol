@@ -11,6 +11,7 @@ import {
 } from '../styles/ui'
 import Loadable from 'react-loadable'
 import LoadableLoading from './LoadableLoading'
+import graphql from 'babel-plugin-relay/macro'
 import RelayLoadableTransitionGroup from './RelayLoadableTransitionGroup'
 
 const query = graphql`

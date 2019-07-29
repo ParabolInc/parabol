@@ -1,3 +1,4 @@
+import graphql from 'babel-plugin-relay/macro'
 graphql`
   fragment CompleteOrganizationFrag on Organization {
     id

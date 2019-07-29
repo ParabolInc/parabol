@@ -2,7 +2,6 @@ import {TeamTasksHeader_team} from '../../../../__generated__/TeamTasksHeader_te
 import React from 'react'
 import styled from '@emotion/styled';
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
 import {NavLink, RouteComponentProps, withRouter} from 'react-router-dom'
 import DashHeading from '../../../../components/Dashboard/DashHeading'
 import DashSectionControl from '../../../../components/Dashboard/DashSectionControl'
@@ -17,6 +16,7 @@ import useMenu from '../../../../hooks/useMenu'
 import appTheme from '../../../../styles/theme/appTheme'
 import ui from '../../../../styles/ui'
 import lazyPreload from '../../../../utils/lazyPreload'
+import graphql from 'babel-plugin-relay/macro'
 import {ClassNames} from '@emotion/core'
 
 const OrgInfoBlock = styled('div')({
