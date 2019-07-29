@@ -1,5 +1,5 @@
 import {AgendaInput_team} from '../../../../__generated__/AgendaInput_team.graphql'
-import React, {useCallback, useRef} from 'react'
+import React, {useRef} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
@@ -87,13 +87,13 @@ interface Props {
 
 const AgendaInput = (props: Props) => {
   const inputRef = useRef<HTMLInputElement>(null)
-  const focusInput = useCallback((e?: React.KeyboardEvent | ExtendedKeyboardEvent) => {
+  const focusInput = (e?: React.KeyboardEvent | ExtendedKeyboardEvent) => {
     e && e.preventDefault()
     if (inputRef.current) {
       inputRef.current.focus()
       inputRef.current.scrollIntoViewIfNeeded()
     }
-  }, [])
+  }
   useHotkey('+', focusInput)
   const {fields, onChange} = useForm({
     newItem: {

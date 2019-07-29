@@ -224,7 +224,7 @@ const useMobileSidebarDefaultClosed = (
     if (!isDesktop) {
       toggleSidebar()
     }
-  }, [toggleSidebar])
+  }, [isDesktop, toggleSidebar])
 }
 
 export const DEFAULT_TEAM = {

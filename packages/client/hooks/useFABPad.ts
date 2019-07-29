@@ -13,7 +13,7 @@ const useFABPad = (ref: RefObject<HTMLElement>) => {
       const viewer = store.getRoot().getLinkedRecord('viewer')!
       viewer.setValue(topOfFAB, 'topOfFAB')
     })
-  }, [el])
+  }, [atmosphere, el])
 }
 
 export default useFABPad

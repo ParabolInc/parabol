@@ -57,14 +57,14 @@ const useAllIntegrations = (
     return () => {
       isMountedRef.current = false
     }
-  }, [query])
+  }, [atmosphere, hasMore, status, teamId, userId, query])
 
   const dupedItems = useFilteredItems(query, fetchedItems)
   const allItems = useMemo(() => {
     const idSet = new Set(suggestedItems.map((item) => item.id))
     const uniqueItems = dupedItems.filter((item) => !idSet.has(item.id))
     return [...suggestedItems, ...uniqueItems]
-  }, [atmosphere, hasMore, status, teamId, userId, suggestedItems, dupedItems])
+  }, [suggestedItems, dupedItems])
   return {allItems, status}
 }
 
