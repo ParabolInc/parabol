@@ -9,7 +9,7 @@ import {PALETTE} from '../styles/paletteV2'
 import hideBodyScroll from '../utils/hideBodyScroll'
 import PlainButton from './PlainButton/PlainButton'
 import {navDrawerShadow} from '../styles/elevation'
-import useEventCallback from 'packages/client/hooks/useEventCallback'
+import useEventCallback from 'hooks/useEventCallback'
 
 const PEEK_WIDTH = 20
 

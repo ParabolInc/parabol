@@ -1,5 +1,4 @@
-import {useState} from 'react'
-import {useLayoutEffect} from 'node_modules/@types/react'
+import {useLayoutEffect, useState} from 'react'
 
 const useBreakpoint = (breakpoint: number) => {
   const [match, setMatch] = useState(true)

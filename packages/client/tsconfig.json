@@ -6,6 +6,7 @@
     "target": "esnext",
     "module": "commonjs",
     "sourceMap": true,
+    "baseUrl": ".",
     "paths": {
       "*": [
         "*" // resolve all absolute imports as imports relative to the package
