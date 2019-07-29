@@ -25,8 +25,8 @@ const taskTypeStyle = {
 
 const TaskSummarySection = (props: Props) => {
   const {label, tasks} = props
+  const grid = useEmailItemGrid(tasks || [], 3, 2)
   if (!tasks || !tasks.length) return null
-  const grid = useEmailItemGrid(tasks, 3, 2)
   return (
     <>
       <tr>

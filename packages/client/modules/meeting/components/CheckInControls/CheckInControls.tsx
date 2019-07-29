@@ -13,6 +13,7 @@ import useTimeout from '../../../../hooks/useTimeout'
 import NewMeetingCheckInMutation from '../../../../mutations/NewMeetingCheckInMutation'
 import handleRightArrow from '../../../../utils/handleRightArrow'
 import {DASH_SIDEBAR} from '../../../../components/Dashboard/DashSidebar'
+import useEventCallback from '../../../../hooks/useEventCallback'
 
 const ButtonBlock = styled('div')({
   display: 'flex'
@@ -31,23 +32,23 @@ const CheckInControls = (props: Props) => {
   const handleGotoNextRef = useRef(handleGotoNext)
   teamMemberRef.current = teamMember
   handleGotoNextRef.current = handleGotoNext
-  const handleOnClickPresent = useCallback(() => {
+  const handleOnClickPresent = useEventCallback(() => {
     const {userId, meetingMember} = teamMemberRef.current
     const {isCheckedIn, meetingId} = meetingMember!
     if (!isCheckedIn) {
       NewMeetingCheckInMutation(atmosphere, {meetingId, userId, isCheckedIn: true})
     }
     handleGotoNextRef.current && handleGotoNextRef.current.gotoNext()
-  }, [])
+  })
 
-  const handleOnClickAbsent = useCallback(() => {
+  const handleOnClickAbsent = useEventCallback(() => {
     const {userId, meetingMember} = teamMemberRef.current
     const {isCheckedIn, meetingId} = meetingMember!
     if (isCheckedIn !== false) {
       NewMeetingCheckInMutation(atmosphere, {meetingId, userId, isCheckedIn: false})
     }
     handleGotoNextRef.current && handleGotoNextRef.current.gotoNext()
-  }, [])
+  })
 
   useHotkey('h', handleOnClickPresent)
   useHotkey('n', handleOnClickAbsent)

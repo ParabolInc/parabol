@@ -1,5 +1,5 @@
 import {AgendaList_team} from '../../../../__generated__/AgendaList_team.graphql'
-import React, {useCallback, useMemo} from 'react'
+import React, {useMemo} from 'react'
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
 // import SexyScrollbar from 'universal/components/Dashboard/SexyScrollbar'
 import styled from '@emotion/styled'
@@ -13,6 +13,7 @@ import UpdateAgendaItemMutation from '../../../../mutations/UpdateAgendaItemMuta
 import {navItemRaised} from '../../../../styles/elevation'
 import {AGENDA_ITEM, SORT_STEP} from '../../../../utils/constants'
 import dndNoise from '../../../../utils/dndNoise'
+import useEventCallback from '../../../../hooks/useEventCallback'
 
 const AgendaListRoot = styled('div')({
   display: 'flex',
@@ -41,7 +42,7 @@ const AgendaList = (props: Props) => {
       : agendaItems
   }, [contentFilter, agendaItems])
 
-  const onDragEnd = useCallback(
+  const onDragEnd = useEventCallback(
     (result) => {
       const {source, destination} = result
       if (
@@ -69,9 +70,7 @@ const AgendaList = (props: Props) => {
       UpdateAgendaItemMutation(atmosphere, {
         updatedAgendaItem: {id: sourceItem.id, sortOrder}
       })
-    },
-    [filteredAgendaItems]
-  )
+    })
 
   if (filteredAgendaItems.length === 0) {
     return <AgendaListEmptyState isDashboard={!newMeeting} />

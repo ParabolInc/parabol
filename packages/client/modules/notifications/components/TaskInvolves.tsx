@@ -97,7 +97,7 @@ const TaskInvolves = (props: Props) => {
   )
   useEffect(() => {
     setEditorState(makeEditorState(content, () => editorStateRef.current))
-  }, [content])
+  }, [content, editorStateRef, setEditorState])
   const {error, submitMutation, onCompleted, onError, submitting} = useMutationProps()
   const atmosphere = useAtmosphere()
   const {history} = useRouter()

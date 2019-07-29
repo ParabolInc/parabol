@@ -49,7 +49,7 @@ const TeamColumnsContainer = (props: Props) => {
       ...node,
       teamMembers
     }))
-  }, [teamMemberFilterId, tasks, contentFilter])
+  }, [contentFilter, tasks.edges, teamMemberFilterId, teamMembers])
 
   return (
     <TaskColumns

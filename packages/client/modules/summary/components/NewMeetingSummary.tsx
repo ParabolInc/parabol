@@ -26,7 +26,7 @@ const NewMeetingSummary = (props: Props) => {
     if (!newMeeting) {
       history.replace('/me')
     }
-  }, [newMeeting])
+  }, [history, newMeeting])
   if (!newMeeting) {
     return null
   }

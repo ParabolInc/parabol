@@ -26,14 +26,13 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
   const {assignee, id: taskId} = task
   const {id: assigneeId, userId} = assignee
   const {team} = viewer
-  if (!team) return null
-  const {teamMembers} = team
-  teamMembers.filter((teamMember) => teamMember.id !== assigneeId)
+  const {teamMembers} = team || {teamMembers: []}
   const assignees = useMemo(
     () => teamMembers.filter((teamMember) => teamMember.id !== assigneeId),
     [assigneeId, teamMembers]
   )
   const atmosphere = useAtmosphere()
+  if (!team) return null
   const handleTaskUpdate = (newAssignee) => () => {
     if (userId !== newAssignee.userId) {
       UpdateTaskMutation(atmosphere, {updatedTask: {id: taskId, userId: newAssignee.userId}, area})

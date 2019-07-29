@@ -43,11 +43,11 @@ const MeetingMembersWithoutTasks = (props: Props) => {
         ((member.doneTasks && member.doneTasks.length) || 0) ===
       0
   )
-  if (membersWithoutTasks.length === 0) return null
   membersWithoutTasks.sort((a, b) =>
     a.user.preferredName.toLowerCase() < b.user.preferredName.toLowerCase() ? -1 : 1
   )
-  const grid = useEmailItemGrid(membersWithoutTasks, 4)
+  const grid = useEmailItemGrid(membersWithoutTasks || [], 4)
+  if (membersWithoutTasks.length === 0) return null
   return (
     <>
       <tr>

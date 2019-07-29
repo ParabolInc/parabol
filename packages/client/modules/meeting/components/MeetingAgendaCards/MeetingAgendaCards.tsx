@@ -12,6 +12,7 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {MeetingAgendaCards_tasks} from '../../../../__generated__/MeetingAgendaCards_tasks.graphql'
 import {TaskStatusEnum} from '../../../../types/graphql'
+import useEventCallback from '../../../../hooks/useEventCallback'
 
 const makePlaceholders = (
   length: number,
@@ -41,7 +42,7 @@ const MeetingAgendaCards = (props: Props) => {
   const atmosphere = useAtmosphere()
   const propsRef = useRef(props)
   propsRef.current = props
-  const handleAddTask = useCallback(() => {
+  const handleAddTask = useEventCallback(() => {
     const {viewerId} = atmosphere
     const {tasks, agendaId, meetingId, reflectionGroupId, teamId} = propsRef.current
     const maybeLastTask = tasks[tasks.length - 1]
@@ -55,7 +56,7 @@ const MeetingAgendaCards = (props: Props) => {
       teamId
     }
     CreateTaskMutation(atmosphere, {newTask})
-  }, [])
+  })
   useHotkey('t', handleAddTask)
   return (
     <MasonryCSSGrid gap={16} colWidth={meetingGridMinWidth} maxCols={maxCols} items={tasks}>

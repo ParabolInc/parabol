@@ -72,7 +72,7 @@ const Organization = (props: Props) => {
     if (!organization) {
       history.replace('/me')
     }
-  }, [organization])
+  }, [history, organization])
   if (!organization) return <div />
   const {orgId, createdAt, isBillingLeader, name: orgName, picture: orgAvatar, tier} = organization
   const pictureOrDefault = orgAvatar || defaultOrgAvatar

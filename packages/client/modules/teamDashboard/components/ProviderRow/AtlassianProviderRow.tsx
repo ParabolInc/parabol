@@ -61,7 +61,7 @@ const useFreshToken = (accessToken: string | undefined, retry: () => void) => {
     return () => {
       window.clearTimeout(cancel)
     }
-  }, [accessToken])
+  }, [accessToken, retry])
 }
 
 const MenuButton = styled(FlatButton)({

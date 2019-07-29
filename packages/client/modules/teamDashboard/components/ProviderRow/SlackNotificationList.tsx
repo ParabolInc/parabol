@@ -4,7 +4,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {SlackNotificationEventEnum, SlackNotificationEventTypeEnum} from '../../../../types/graphql'
 import SlackNotificationRow from './SlackNotificationRow'
 import {SlackNotificationList_viewer} from '../../../../__generated__/SlackNotificationList_viewer.graphql'
-import React, {useCallback} from 'react'
+import React from 'react'
 import {SlackChannelDropdownOnClick} from '../../../../components/SlackChannelDropdown'
 import LabelHeading from '../../../../components/LabelHeading/LabelHeading'
 import SlackChannelPicker from './SlackChannelPicker'
@@ -15,6 +15,7 @@ import useSlackChannels from '../../../../hooks/useSlackChannels'
 import StyledError from '../../../../components/StyledError'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {Layout} from '../../../../types/constEnums'
+import useEventCallback from '../../../../hooks/useEventCallback'
 
 const SlackNotificationListStyles = styled('div')({
   borderTop: `1px solid ${PALETTE.BORDER_LIGHTER}`,
@@ -58,7 +59,7 @@ const SlackNotificationList = (props: Props) => {
   const localPrivateChannelId = localPrivateChannel && localPrivateChannel.id
   const {isActive, defaultTeamChannelId} = slackAuth!
 
-  const changeTeamChannel: SlackChannelDropdownOnClick = useCallback(
+  const changeTeamChannel: SlackChannelDropdownOnClick = useEventCallback(
     (slackChannelId) => () => {
       // only change the active events
       const slackNotificationEvents = slackNotifications
@@ -83,9 +84,7 @@ const SlackNotificationList = (props: Props) => {
           onCompleted
         }
       )
-    },
-    [slackNotifications, defaultTeamChannelId]
-  )
+    })
 
   return (
     <SlackNotificationListStyles>
