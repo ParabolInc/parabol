@@ -83,7 +83,7 @@
     "@types/jsonwebtoken": "^8.3.0",
     "@types/mousetrap": "^1.6.2",
     "@types/ms": "^0.7.30",
-    "@types/react": "^16.8.22",
+    "@types/react": "16.8.23",
     "@types/react-beautiful-dnd": "^11.0.2",
     "@types/react-dom": "^16.8.4",
     "@types/react-notification-system": "^0.2.39",
@@ -135,7 +135,7 @@
     "msgpack-lite": "^0.1.26",
     "piping": "^1.0.0-rc.4",
     "prettier": "^1.16.4",
-    "relay-compiler": "5.0.0",
+    "relay-compiler": "https://github.com/mattkrick/relay/tarball/afed4d72c613515b15d8fc0bb2bfd34e928589b1",
     "relay-compiler-language-typescript": "https://github.com/mattkrick/relay-compiler-language-typescript/tarball/0b93ff31546894afcba4f6e7bb73ac737f83cc18",
     "script-ext-html-webpack-plugin": "^2.0.1",
     "snazzy": "^8.0.0",
@@ -158,7 +158,6 @@
     "workbox-webpack-plugin": "5.0.0-alpha.1"
   },
   "dependencies": {
-    "@babel/polyfill": "^7.0.0",
     "@clusterws/cws": "^0.15.0",
     "@google-cloud/language": "^3.2.3",
     "@mattkrick/fast-rtc-swarm": "^0.3.3",
@@ -179,6 +178,7 @@
     "cheerio": "^0.22.0",
     "compression": "^1.7.0",
     "compute-cosine-similarity": "^1.0.0",
+    "core-js": "^3.1.4",
     "cors": "^2.8.4",
     "dataloader": "^1.4.0",
     "dataloader-warehouse": "^0.5.0",
@@ -196,7 +196,7 @@
     "express": "^4.15.4",
     "express-jwt": "^5.3.1",
     "express-rate-limit": "^5.0.0",
-    "fbjs": "^0.8.14",
+    "fbjs": "1.0.0",
     "flatted": "^2.0.1",
     "graphiql": "^0.13.2",
     "graphql": "^14.4.2",
@@ -247,6 +247,7 @@
     "react-transition-group": "https://github.com/mattkrick/react-transition-group/tarball/d2dac2cb5de9a7757c6e430b2b90f200c34d5369",
     "react-virtualized": "^9.18.5",
     "redux": "^4.0.1",
+    "regenerator-runtime": "^0.13.3",
     "relay-linear-publish-queue": "^0.1.2",
     "relay-runtime": "https://github.com/mattkrick/relay/tarball/dbd07bab510551e0c421aad70e5b57bb86520d32",
     "resize-observer-polyfill": "^1.5.0",
@@ -290,10 +291,11 @@
   "resolutions": {
     "hoist-non-react-statics": "^3.3.0",
     "@types/relay-runtime": "https://github.com/mattkrick/relay-runtime-strict-types/tarball/c78b4d9268174c7b8226acd0ceb4dc10207dba3d",
-    "@types/react": "16.8.22",
+    "@types/react": "16.8.23",
     "@types/react-dom": "16.8.4",
     "relay-runtime": "https://github.com/mattkrick/relay/tarball/dbd07bab510551e0c421aad70e5b57bb86520d32",
     "graphql": "14.4.2",
+    "relay-compiler": "https://github.com/mattkrick/relay/tarball/afed4d72c613515b15d8fc0bb2bfd34e928589b1",
     "immutable": "3.8.2"
   },
   "standard": {

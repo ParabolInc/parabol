@@ -43,9 +43,6 @@
     "stories",
     "cypress"
   ],
-  "exclude": [
-    "src/__generated__/*.ts"
-  ],
   "awesomeTypescriptLoaderOptions": {
     "reportFiles": [
       "src/**/*.{ts,tsx}",
