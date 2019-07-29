@@ -3,7 +3,7 @@ import React, {Component} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import EditingStatus from '../../components/EditingStatus/EditingStatus'
 import getRefreshPeriod from '../../utils/getRefreshPeriod'
-
+import graphql from 'babel-plugin-relay/macro'
 class EditingStatusContainer extends Component {
   static propTypes = {
     cardIsActive: PropTypes.bool,

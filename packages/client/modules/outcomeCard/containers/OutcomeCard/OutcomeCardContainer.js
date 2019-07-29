@@ -12,6 +12,7 @@ import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
 import mergeServerContent from '../../../../utils/mergeServerContent'
 import isAndroid from '../../../../utils/draftjs/isAndroid'
 import convertToTaskContent from '../../../../utils/draftjs/convertToTaskContent'
+import graphql from 'babel-plugin-relay/macro'
 
 class OutcomeCardContainer extends Component {
   constructor (props) {

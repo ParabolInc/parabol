@@ -29,6 +29,7 @@
     "@types/json2csv": "^4.4.0",
     "@types/mousetrap": "^1.6.2",
     "@types/ms": "^0.7.30",
+    "@types/react": "16.8.23",
     "@types/react-beautiful-dnd": "^11.0.2",
     "@types/react-dom": "16.8.4",
     "@types/react-redux": "^7.0.1",
@@ -40,6 +41,8 @@
     "@types/shortid": "^0.0.29",
     "@typescript-eslint/eslint-plugin": "^1.13.0",
     "@typescript-eslint/parser": "^1.13.0",
+    "babel-plugin-macros": "^2.6.1",
+    "babel-plugin-relay": "^5.0.0",
     "eslint": "^6.1.0",
     "eslint-config-prettier": "^6.0.0",
     "eslint-plugin-emotion": "^10.0.14",
@@ -48,18 +51,18 @@
     "eslint-plugin-react-hooks": "^1.6.1",
     "expect": "^24.8.0",
     "flow-bin": "^0.103.0",
+    "graphql": "^14.4.2",
     "husky": "^3.0.1",
     "jest": "^24.8.0",
     "jest-junit-reporter": "^1.0.1",
     "jscodeshift": "^0.6.4",
     "lint-staged": "^9.2.0",
-    "relay-compiler": "5.0.0",
+    "relay-compiler": "https://github.com/mattkrick/relay/tarball/afed4d72c613515b15d8fc0bb2bfd34e928589b1",
     "relay-compiler-language-typescript": "https://github.com/mattkrick/relay-compiler-language-typescript/tarball/0b93ff31546894afcba4f6e7bb73ac737f83cc18",
     "strict-event-emitter-types": "^2.0.0",
     "typescript": "^3.5.2"
   },
   "dependencies": {
-    "@babel/polyfill": "^7.0.0",
     "@emotion/core": "^10.0.14",
     "@emotion/styled": "^10.0.14",
     "@mattkrick/fast-rtc-swarm": "^0.3.3",
@@ -68,6 +71,7 @@
     "@mattkrick/trebuchet-client": "^0.1.2",
     "@sentry/browser": "^5.5.0",
     "aphrodite-local-styles": "0.6.2",
+    "core-js": "^3.1.4",
     "draft-js": "https://github.com/mattkrick/draft-js/tarball/559a21968370c4944511657817d601a6c4ade0f6",
     "email-addresses": "^3.0.1",
     "eventemitter3": "^4.0.0",
@@ -108,6 +112,7 @@
     "react-transition-group": "https://github.com/mattkrick/react-transition-group/tarball/d2dac2cb5de9a7757c6e430b2b90f200c34d5369",
     "react-virtualized": "^9.18.5",
     "redux": "^4.0.1",
+    "regenerator-runtime": "^0.13.3",
     "relay-linear-publish-queue": "^0.1.2",
     "relay-runtime": "https://github.com/mattkrick/relay/tarball/dbd07bab510551e0c421aad70e5b57bb86520d32",
     "resize-observer-polyfill": "^1.5.0",
@@ -146,6 +151,7 @@
     "@types/react": "16.8.23",
     "@types/react-dom": "16.8.4",
     "relay-runtime": "https://github.com/mattkrick/relay/tarball/dbd07bab510551e0c421aad70e5b57bb86520d32",
-    "immutable": "3.8.2"
+    "immutable": "3.8.2",
+    "relay-compiler": "https://github.com/mattkrick/relay/tarball/afed4d72c613515b15d8fc0bb2bfd34e928589b1"
   }
 }

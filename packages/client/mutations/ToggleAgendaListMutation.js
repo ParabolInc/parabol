@@ -1,6 +1,6 @@
 import {commitMutation} from 'react-relay'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
-
+import graphql from 'babel-plugin-relay/macro'
 const mutation = graphql`
   mutation ToggleAgendaListMutation($teamId: ID!) {
     toggleAgendaList(teamId: $teamId) {

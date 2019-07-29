@@ -15,6 +15,7 @@ import isTaskPrivate from '../../../../utils/isTaskPrivate'
 import isTempId from '../../../../utils/relay/isTempId'
 import cardRootStyles from '../../../../styles/helpers/cardRootStyles'
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 
 const RootCard = styled('div')(({cardHasHover, cardHasFocus, hasDragStyles}) => ({
   ...cardRootStyles,

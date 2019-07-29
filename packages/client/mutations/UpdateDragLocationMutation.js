@@ -2,7 +2,7 @@ import getInProxy from '../utils/relay/getInProxy'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {REFLECTION_WIDTH} from '../utils/multiplayerMasonry/masonryConstants'
 import {getRequest} from 'relay-runtime'
-
+import graphql from 'babel-plugin-relay/macro'
 graphql`
   fragment UpdateDragLocationMutation_team on UpdateDragLocationPayload {
     coords {

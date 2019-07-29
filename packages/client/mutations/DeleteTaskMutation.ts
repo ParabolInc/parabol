@@ -3,6 +3,7 @@ import handleRemoveNotifications from './handlers/handleRemoveNotifications'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
 import getInProxy from '../utils/relay/getInProxy'
 import isTempId from '../utils/relay/isTempId'
+import graphql from 'babel-plugin-relay/macro'
 
 graphql`
   fragment DeleteTaskMutation_task on DeleteTaskPayload {

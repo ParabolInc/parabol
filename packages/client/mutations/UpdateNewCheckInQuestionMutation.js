@@ -1,5 +1,5 @@
 import {commitMutation} from 'react-relay'
-
+import graphql from 'babel-plugin-relay/macro'
 graphql`
   fragment UpdateNewCheckInQuestionMutation_team on UpdateNewCheckInQuestionPayload {
     meeting {

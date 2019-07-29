@@ -2,6 +2,7 @@ import {commitMutation} from 'react-relay'
 import handleEditTask from './handlers/handleEditTask'
 import getOptimisticTaskEditor from '../utils/relay/getOptimisticTaskEditor'
 import isTempId from '../utils/relay/isTempId'
+import graphql from 'babel-plugin-relay/macro'
 
 graphql`
   fragment EditTaskMutation_task on EditTaskPayload {

@@ -1,6 +1,7 @@
 import {useMeetingTeam} from '../__generated__/useMeetingTeam.graphql'
 import {useCallback, useEffect, useRef} from 'react'
-import {commitLocalUpdate} from 'react-relayimport graphql from 'babel-plugin-relay/macro'
+import {commitLocalUpdate} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import {Omit} from '../types/generics'
 import useAtmosphere from './useAtmosphere'
 import useDocumentTitle from './useDocumentTitle'

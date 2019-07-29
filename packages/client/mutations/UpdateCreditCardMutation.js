@@ -1,5 +1,5 @@
 import {commitMutation} from 'react-relay'
-
+import graphql from 'babel-plugin-relay/macro'
 graphql`
   fragment UpdateCreditCardMutation_organization on UpdateCreditCardPayload {
     organization {

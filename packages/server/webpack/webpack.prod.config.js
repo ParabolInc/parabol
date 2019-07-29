@@ -15,7 +15,7 @@ const presetFlow = require('@babel/preset-flow')
 const presetReact = require('@babel/preset-react')
 const pluginObjectRestSpread = require('@babel/plugin-proposal-object-rest-spread')
 const pluginClassProps = require('@babel/plugin-proposal-class-properties')
-const pluginRelay = require('babel-plugin-relay')
+const pluginMacros = require('babel-plugin-macros')
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const pluginInlineImport = require('babel-plugin-inline-import').default
@@ -59,11 +59,15 @@ const babelConfig = {
     cacheDirectory: true,
     babelrc: false,
     plugins: [
+      [pluginMacros, {
+        relay: {
+          artifactDirectory: path.join(CLIENT_ROOT, '__generated__')
+        },
+      }],
       pluginInlineImport,
       pluginObjectRestSpread,
       pluginClassProps,
       pluginDynamicImport,
-      [pluginRelay, {artifactDirectory: path.join(CLIENT_ROOT, '__generated__')}]
     ],
     presets: [
       [

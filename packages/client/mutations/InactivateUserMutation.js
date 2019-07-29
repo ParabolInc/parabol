@@ -1,5 +1,5 @@
 import {commitMutation} from 'react-relay'
-
+import graphql from 'babel-plugin-relay/macro'
 const mutation = graphql`
   mutation InactivateUserMutation($userId: ID!) {
     inactivateUser(userId: $userId) {

@@ -8,6 +8,7 @@ import {
   removeOrgUserOrganizationOnNext,
   removeOrgUserOrganizationUpdater
 } from '../mutations/RemoveOrgUserMutation'
+import graphql from 'babel-plugin-relay/macro'
 
 const subscription = graphql`
   subscription OrganizationSubscription {

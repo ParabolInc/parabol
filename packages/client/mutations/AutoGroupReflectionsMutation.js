@@ -2,6 +2,7 @@ import {commitMutation} from 'react-relay'
 import getBaseRecord from '../utils/relay/getBaseRecord'
 import {moveReflectionLocation} from './EndDraggingReflectionMutation'
 import initializeGrid from '../utils/multiplayerMasonry/initializeGrid'
+import graphql from 'babel-plugin-relay/macro'
 
 graphql`
   fragment AutoGroupReflectionsMutation_team on AutoGroupReflectionsPayload {

@@ -8,6 +8,7 @@ import withAtmosphere from '../../decorators/withAtmosphere/withAtmosphere'
 import DueDateToggle from '../DueDateToggle'
 import styled from '@emotion/styled'
 import relativeDate from '../../utils/date/relativeDate'
+import graphql from 'babel-plugin-relay/macro'
 
 const StatusHeader = styled('div')({
   alignItems: 'center',

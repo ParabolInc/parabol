@@ -2,11 +2,11 @@ const resolve = require('./webpackResolve')
 const path = require('path')
 const webpack = require('webpack')
 const pluginDynamicImport = require('@babel/plugin-syntax-dynamic-import').default
-const pluginRelay = require('babel-plugin-relay')
 const vendors = require('./dll/vendors')
 const pluginInlineImport = require('babel-plugin-inline-import').default
 // const {InjectManifest} = require('workbox-webpack-plugin')
 // const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
+const pluginMacros = require('babel-plugin-macros')
 
 const PROJECT_ROOT = path.join(__dirname, '..', '..', '..')
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
@@ -17,9 +17,13 @@ const babelLoader = {
     cacheDirectory: true,
     babelrc: false,
     plugins: [
+      [pluginMacros, {
+        relay: {
+          artifactDirectory: path.join(CLIENT_ROOT, '__generated__')
+        },
+      }],
       pluginInlineImport,
       pluginDynamicImport,
-      [pluginRelay, {artifactDirectory: path.join(CLIENT_ROOT, '__generated__')}]
     ]
   }
 }
