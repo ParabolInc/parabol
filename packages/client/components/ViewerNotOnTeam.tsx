@@ -1,5 +1,5 @@
 import {ViewerNotOnTeam_viewer} from '../__generated__/ViewerNotOnTeam_viewer.graphql'
-import React, {useCallback, useEffect} from 'react'
+import React, {useEffect} from 'react'
 import Helmet from 'react-helmet'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'

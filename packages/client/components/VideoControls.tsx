@@ -1,4 +1,4 @@
-import React, {lazy, useEffect, useState} from 'react'
+import React, {lazy, useState} from 'react'
 import styled from '@emotion/styled'
 import withHotkey from 'react-hotkey-hoc'
 import LoadableFreeModal from './LoadableFreeModal'
