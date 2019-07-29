@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import styled from '@emotion/styled';
 import { keyframes } from '@emotion/core';
-import {DECELERATE} from '../../styles/animation'
+import {DECELERATE, fadeIn} from '../../styles/animation'
 import appTheme from '../../styles/theme/appTheme'
 import elevation from '../../styles/elevation'
 import {
@@ -32,17 +32,6 @@ const OFFSET = CHIT_MARGIN * 2 + CHIT_WIDTH
 const PROGRESS_WIDTH = REFLECTION_WIDTH
 const PROGRESS_MARGIN = 2
 
-const fadeIn = keyframes`
-  0% {
-    opacity: 0;
-    transform: scale(0);
-  }
-	100% {
-	  opacity: 1;
-	  transform: scale(1);
-	}
-`
-
 // easiest way to debug this is to just print it to a string
 // we need 4 things to fake a circle:
 // pos at 0%, % when pos is at progress width, % when pos is back at 0, and pos at 100%
@@ -63,7 +52,7 @@ const shiftColor = (idx) => keyframes`
 `
 
 const Chit = styled('div')({
-  animation: `${fadeIn} 300ms ${DECELERATE}`,
+  animation: `${fadeIn.toString()} 300ms ${DECELERATE}`,
   backgroundColor: '#fff',
   borderRadius: '2px',
   boxShadow: elevation[1],
@@ -80,7 +69,7 @@ const ActiveChitMask = styled('div')({
 })
 
 const ActiveChit = styled('div')<{idx: number}>(({idx}) => ({
-  animation: `${shiftColor(idx)} 2000ms linear infinite`,
+  animation: `${shiftColor(idx).toString()} 2000ms linear infinite`,
   background: `linear-gradient(90deg, ${purpleLightened} 0%, ${orange} 33%, ${teal} 66%, ${purpleLightened} 100%)`,
   height: CHIT_HEIGHT,
   width: PROGRESS_WIDTH

@@ -39,7 +39,7 @@ const shiftColor = keyframes`
 `
 
 const Bar = styled('div')({
-  animation: `${shiftColor} 2000ms linear infinite`,
+  animation: `${shiftColor.toString()} 2000ms linear infinite`,
   background: `linear-gradient(90deg, ${purpleLightened} 0%, ${orange} 40%, ${teal} 75%, ${purpleLightened} 100%)`,
   borderRadius: '8px',
   height: '100%',

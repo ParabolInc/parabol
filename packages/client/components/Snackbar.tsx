@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useLayoutEffect, useRef} from 'react'
+import React, {useEffect, useLayoutEffect, useRef} from 'react'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useRefState from '../hooks/useRefState'
 import usePortal from '../hooks/usePortal'

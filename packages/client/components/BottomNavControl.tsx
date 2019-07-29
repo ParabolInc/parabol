@@ -26,7 +26,7 @@ interface Props extends FlatButtonProps {
 }
 
 const BottomNavControl = styled(FlatButton)<Props>(({isBouncing}) => ({
-  animation: isBouncing ? `${BounceKeyframes} 2s infinite` : undefined,
+  animation: isBouncing ? `${BounceKeyframes.toString()} 2s infinite` : undefined,
   border: 0,
   borderRadius: 0,
   height: 56,

@@ -38,12 +38,12 @@ export const deleteTaskTaskUpdater = (payload, store, viewerId) => {
   handleRemoveTasks(taskId, store, viewerId)
 }
 
-export const deleteTaskNotificationUpdater = (payload, store, viewerId) => {
+export const deleteTaskNotificationUpdater = (payload, store) => {
   const notificationId = getInProxy(payload, 'involvementNotification', 'id')
-  handleRemoveNotifications(notificationId, store, viewerId)
+  handleRemoveNotifications(notificationId, store)
 }
 
-const DeleteTaskMutation = (environment, taskId, teamId, onError, onCompleted) => {
+const DeleteTaskMutation = (environment, taskId, _teamId, onError?, onCompleted?) => {
   if (isTempId(taskId)) return undefined
   const {viewerId} = environment
   return commitMutation(environment, {
@@ -52,7 +52,7 @@ const DeleteTaskMutation = (environment, taskId, teamId, onError, onCompleted) =
     updater: (store) => {
       const payload = store.getRootField('deleteTask')
       if (!payload) return
-      deleteTaskNotificationUpdater(payload, store, viewerId)
+      deleteTaskNotificationUpdater(payload, store)
       deleteTaskTaskUpdater(payload, store, viewerId)
     },
     optimisticUpdater: (store) => {

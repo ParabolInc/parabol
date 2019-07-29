@@ -1,9 +1,8 @@
-import {keyframes} from '@emotion/core'
 import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
 import {Omit} from '../types/generics'
 import {PortalStatus} from '../hooks/usePortal'
-import {DECELERATE} from '../styles/animation'
+import {DECELERATE, fadeUp} from '../styles/animation'
 import {Duration} from '../types/constEnums'
 
 declare global {
@@ -11,17 +10,6 @@ declare global {
     scrollIntoViewIfNeeded: () => void
   }
 }
-
-const fadeUp = keyframes`
-  0% {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-	100% {
-	  opacity: 1;
-	  transform: translateY(0);
-	}
-`
 
 export const menuItemAnimation = (idx: number, itemsToAnimate: number, isDropdown?: boolean) => {
   const itemDuration = Duration.MENU_OPEN / 3
@@ -31,7 +19,7 @@ export const menuItemAnimation = (idx: number, itemsToAnimate: number, isDropdow
     const variableDelay = timeRemaining * (idx / itemsToAnimate)
     const totalDelay = fixedDelay + variableDelay
     // last item finishes animating in at Duration.MENU_OPEN + itemDuration
-    return `${fadeUp} ${itemDuration}ms ${DECELERATE} ${totalDelay}ms forwards`
+    return `${fadeUp.toString()} ${itemDuration}ms ${DECELERATE} ${totalDelay}ms forwards`
   } else {
     // based on the decelerate curve with an 8px left margin, we can begin animating after about 75% complete
     // const Duration.MENU_OPEN_MAX
@@ -41,7 +29,7 @@ export const menuItemAnimation = (idx: number, itemsToAnimate: number, isDropdow
     const timeRemaining = Duration.MENU_OPEN_MAX - fixedDelay
     const variableDelay = idx * (timeRemaining / itemsToAnimate)
     const totalDelay = fixedDelay + variableDelay
-    return `${fadeUp} ${itemDuration}ms ${DECELERATE} ${totalDelay}ms forwards`
+    return `${fadeUp.toString()} ${itemDuration}ms ${DECELERATE} ${totalDelay}ms forwards`
   }
 }
 

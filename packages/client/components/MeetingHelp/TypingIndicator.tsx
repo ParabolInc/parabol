@@ -49,7 +49,7 @@ const TypingIndicatorBubble = styled('div')(() => ({
   margin: '12px',
   position: 'relative',
   top: '-8px',
-  animation: `2s ${BulgeKeyframes} infinite ease-out`
+  animation: `2s ${BulgeKeyframes.toString()} infinite ease-out`
 }))
 
 const BlinkyThoughtDot = styled('span')<{n: number}>(({n}) => ({
@@ -61,7 +61,7 @@ const BlinkyThoughtDot = styled('span')<{n: number}>(({n}) => ({
   display: 'block',
   'border-radius': '50%',
   opacity: 0.4,
-  animation: `1s ${BlinkKeyframes} infinite ${n * 0.3333}s`
+  animation: `1s ${BlinkKeyframes.toString()} infinite ${n * 0.3333}s`
 }))
 
 // TODO: remove `any` when React refreshes their TS types:

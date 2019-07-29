@@ -1,12 +1,11 @@
 import React, {Component, ReactNode} from 'react'
 import styled from '@emotion/styled'
-import {keyframes} from '@emotion/core'
 import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
 import DismissSuggestedActionMutation from '../mutations/DismissSuggestedActionMutation'
 import {buttonShadow, cardShadow} from '../styles/elevation'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
-import {DECELERATE} from '../styles/animation'
+import {DECELERATE, fadeIn} from '../styles/animation'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
@@ -19,19 +18,8 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
   suggestedActionId: string
 }
 
-const fadeIn = keyframes`
-  0% {
-    opacity: 0;
-    transform: scale(0);
-  }
-	100% {
-	  opacity: 1;
-	  transform: scale(1);
-	}
-`
-
 const Surface = styled('div')({
-  animation: `${fadeIn} 300ms ${DECELERATE}`,
+  animation: `${fadeIn.toString()} 300ms ${DECELERATE}`,
   alignItems: 'center',
   background: '#fff',
   borderRadius: 4,

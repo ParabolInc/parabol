@@ -196,7 +196,6 @@ const onNextHandlers = {
 }
 
 const NotificationSubscription = (atmosphere: Atmosphere, _queryVariables, subParams) => {
-  const {viewerId} = atmosphere
   return {
     subscription,
     variables: {},
@@ -227,7 +226,7 @@ const NotificationSubscription = (atmosphere: Atmosphere, _queryVariables, subPa
           createTaskNotificationUpdater(payload as any, context)
           break
         case 'DeleteTaskPayload':
-          deleteTaskNotificationUpdater(payload, store, viewerId)
+          deleteTaskNotificationUpdater(payload, store)
           break
         case 'DisconnectSocketPayload':
           disconnectSocketNotificationUpdater(payload, store)

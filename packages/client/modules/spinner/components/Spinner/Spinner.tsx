@@ -65,7 +65,7 @@ const SVG = styled('svg')<Pick<Props, 'delay' | 'width'>>(({delay, width}) => ({
   animationDelay: `${delay}ms`,
   animationDuration: DURATION,
   animationIterationCount: 'infinite',
-  animationName: keyframesRotate,
+  animationName: keyframesRotate.toString(),
   animationTimingFunction: 'cubic-bezier(.8, 0, .1, 1)',
   width
 }))
@@ -74,7 +74,7 @@ const Path = styled('path')<Pick<Props, 'delay' | 'fill'>>(({delay, fill}) => ({
   animationDelay: `${delay}ms`,
   animationDuration: DURATION,
   animationIterationCount: 'infinite',
-  animationName: keyframesOpacity,
+  animationName: keyframesOpacity.toString(),
   animationFillMode: 'forwards',
   animationTimingFunction: 'ease-in-out',
   fill,

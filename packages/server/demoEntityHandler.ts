@@ -3,7 +3,7 @@ import getEntitiesFromText from './graphql/mutations/helpers/autoGroup/getEntiti
 import getSyntaxFromText from './graphql/mutations/helpers/autoGroup/getSyntaxFromText'
 import sanitizeAnalyzedEntitiesResponse from './graphql/mutations/helpers/autoGroup/sanitizeAnalyzedEntititesResponse'
 import promiseAllObj from '../client/utils/promiseAllObj'
-import promiseAllPartial from '../client/utils/promiseAllPartial'
+import promiseAllPartial from 'parabol-client/utils/promiseAllPartial'
 import sendToSentry from './utils/sendToSentry'
 
 const catchHandler = (e: Error) => {

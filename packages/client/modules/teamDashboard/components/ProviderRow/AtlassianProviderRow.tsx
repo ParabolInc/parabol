@@ -2,7 +2,6 @@ import {AtlassianProviderRow_viewer} from '../../../../__generated__/AtlassianPr
 import jwtDecode from 'jwt-decode'
 import React, {useEffect} from 'react'
 import styled from '@emotion/styled';
-import { keyframes } from '@emotion/core';
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
@@ -20,7 +19,7 @@ import withAtmosphere, {
 import useAtlassianSites from '../../../../hooks/useAtlassianSites'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import {DECELERATE} from '../../../../styles/animation'
+import {DECELERATE, fadeIn} from '../../../../styles/animation'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {Providers} from '../../../../types/constEnums'
@@ -87,20 +86,8 @@ const ListAndMenu = styled('div')({
 
 const SiteList = styled('div')({})
 
-const fadeIn = keyframes`
-  0% {
-    opacity: 0;
-    transform: scale(0);
-  }
-	100% {
-	  opacity: 1;
-	  transform: scale(1);
-	}
-`
-
 const SiteAvatar = styled('img')<{idx: number}>(({idx}) => ({
-  animation: `${fadeIn} 300ms ${DECELERATE} ${idx * 50}ms forwards`,
-  animationName: fadeIn,
+  animationName: fadeIn.toString(),
   animationDuration: '300ms',
   animationTimingFunction: DECELERATE,
   animationDelay: `${idx * 100}ms`,
