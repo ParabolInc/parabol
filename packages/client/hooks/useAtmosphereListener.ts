@@ -12,7 +12,7 @@ const useAtmosphereListener = <T extends keyof AtmosphereEvents, V extends Atmos
     return () => {
       atmosphere.eventEmitter.off(eventName, callback)
     }
-  }, [])
+  }, [atmosphere.eventEmitter])
 }
 
 export default useAtmosphereListener

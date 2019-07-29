@@ -64,7 +64,7 @@ const useAllIntegrations = (
     const idSet = new Set(suggestedItems.map((item) => item.id))
     const uniqueItems = dupedItems.filter((item) => !idSet.has(item.id))
     return [...suggestedItems, ...uniqueItems]
-  }, [suggestedItems, dupedItems])
+  }, [atmosphere, hasMore, status, teamId, userId, suggestedItems, dupedItems])
   return {allItems, status}
 }
 

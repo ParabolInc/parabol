@@ -2,6 +2,7 @@ import useAtmosphere from './useAtmosphere'
 import useRouter from './useRouter'
 import {useEffect} from 'react'
 import {AuthTokenRole} from '../types/graphql'
+import useDeepEqual from './useDeepEqual'
 
 interface Options {
   role?: AuthTokenRole
@@ -20,9 +21,10 @@ const unauthenticatedDefault = {
   key: 'unauthenticated'
 }
 
-const useAuthRoute = (options: Options = {}) => {
+const useAuthRoute = (inOptions: Options = {}) => {
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
+  const options = useDeepEqual(inOptions)
   useEffect(() => {
     const {authObj} = atmosphere
     const {role, silent} = options
@@ -42,7 +44,7 @@ const useAuthRoute = (options: Options = {}) => {
         search: `?redirectTo=${encodeURIComponent(window.location.pathname)}`
       })
     }
-  }, [])
+  }, [atmosphere, history, options])
 }
 
 export default useAuthRoute
