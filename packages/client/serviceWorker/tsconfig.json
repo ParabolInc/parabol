@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "composite": true,
+//    "composite": true,
     "lib": ["esnext", "webworker"],
     "target": "esnext",
     "module": "commonjs",
@@ -12,5 +12,5 @@
       ]
     }
   },
-  "references": [{"path":  "../"}]
+//  "references": [{"path":  "../"}]
 }

@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "composite": true,
+//    "composite": true,
     "lib": [
       "esnext"
     ],
@@ -11,6 +11,7 @@
     "target": "esnext",
     "module": "es2015",
     "sourceMap": true,
+    "baseUrl": ".",
     "paths": {
       "*": [
         "*"
@@ -18,9 +19,9 @@
       ]
     }
   },
-  "references": [
-    {
-      "path": "../client"
-    }
-  ]
+//  "references": [
+//    {
+//      "path": "../client"
+//    }
+//  ]
 }

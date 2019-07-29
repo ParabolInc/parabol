@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "composite": true,
+//    "composite": true,
     "lib": ["esnext", "dom"],
     "target": "esnext",
     "module": "commonjs",
@@ -13,5 +13,6 @@
       ]
     }
   },
-  "references": []
+  "exclude": ["serviceWorker"]
+//  "references": []
 }

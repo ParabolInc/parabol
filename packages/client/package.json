@@ -144,14 +144,5 @@
     ],
     "testRegex": "/__tests__/.*.test\\.jsx?$",
     "testResultsProcessor": "./packages/server/__tests__/teardown"
-  },
-  "resolutions": {
-    "hoist-non-react-statics": "^3.3.0",
-    "@types/relay-runtime": "https://github.com/mattkrick/relay-runtime-strict-types/tarball/c78b4d9268174c7b8226acd0ceb4dc10207dba3d",
-    "@types/react": "16.8.23",
-    "@types/react-dom": "16.8.4",
-    "relay-runtime": "https://github.com/mattkrick/relay/tarball/dbd07bab510551e0c421aad70e5b57bb86520d32",
-    "immutable": "3.8.2",
-    "relay-compiler": "https://github.com/mattkrick/relay/tarball/afed4d72c613515b15d8fc0bb2bfd34e928589b1"
   }
 }
