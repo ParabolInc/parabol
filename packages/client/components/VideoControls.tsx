@@ -7,6 +7,7 @@ import {StreamUI} from '../hooks/useSwarm'
 import MediaSwarm from '../utils/swarm/MediaSwarm'
 import AudioToggle from './AudioToggle'
 import VideoToggle from './VideoToggle'
+import useHotkey from '../hooks/useHotkey'
 
 interface Props {
   allowVideo: boolean
@@ -35,7 +36,6 @@ const WebcamPermissionsModal = lazy(() =>
 
 const VideoControls = (props: Props) => {
   const {allowVideo, localStreamUI, swarm} = props
-  if (!swarm) return null
   const [showVideoButton, setShowVideoButton] = useState(allowVideo)
   const [deviceStatus, setDeviceStatus] = useState<PushPermissionState>('granted')
   const [isPermModalOpen, setIsPermModalOpen] = useState<boolean>(false)
@@ -44,12 +44,9 @@ const VideoControls = (props: Props) => {
     setIsPermModalOpen(false)
   }
 
-  useEffect(() => {
-    const {bindHotkey} = props
-    bindHotkey('l o o k a t m e', () => {
-      setShowVideoButton(true)
-    })
-  }, [])
+  useHotkey('l o o k a t m e', () => {
+    setShowVideoButton(true)
+  })
 
   const addVideo = async () => {
     const descriptors = ['camera', 'microphone'] as PermissionName[]
@@ -64,7 +61,7 @@ const VideoControls = (props: Props) => {
       setIsPermModalOpen(true)
     }
     try {
-      await swarm.broadcastWebcam()
+      await swarm!.broadcastWebcam()
     } catch (e) {
       setDeviceStatus('denied')
       setIsPermModalOpen(true)
@@ -76,7 +73,6 @@ const VideoControls = (props: Props) => {
       return
     }
   }
-
   if (!showVideoButton || !swarm) return null
 
   if (!localStreamUI) {

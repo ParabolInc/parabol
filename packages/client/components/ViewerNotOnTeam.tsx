@@ -16,6 +16,7 @@ import TeamInvitationWrapper from './TeamInvitationWrapper'
 import useRouter from '../hooks/useRouter'
 import getValidRedirectParam from '../utils/getValidRedirectParam'
 import PushInvitationMutation from '../mutations/PushInvitationMutation'
+import useEventCallback from '../hooks/useEventCallback'
 
 interface Props {
   teamId: string
@@ -29,13 +30,13 @@ const ViewerNotOnTeam = (props: Props) => {
   const {authObj} = atmosphere
   const {history} = useRouter()
 
-  const handler = useCallback((invitation) => {
+  const handler = useEventCallback((invitation) => {
     const {
       invitation: {token: invitationToken},
       id: notificationId
     } = invitation
     AcceptTeamInvitationMutation(atmosphere, {invitationToken, notificationId}, {history})
-  }, [])
+  })
 
   useEffect(() => {
     if (teamInvitation) {
@@ -54,7 +55,7 @@ const ViewerNotOnTeam = (props: Props) => {
       }
     }
     return undefined
-  }, [])
+  }, [/* eslint-disable-line react-hooks/exhaustive-deps*/])
 
   if (teamInvitation) {
     return null

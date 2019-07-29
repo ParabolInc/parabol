@@ -41,7 +41,7 @@ const NullableTask = React.memo((props: Props) => {
     return () => {
       isMounted = false
     }
-  }, [])
+  }, [/* eslint-disable-line react-hooks/exhaustive-deps*/])
 
   const showOutcome = contentState.hasText() || createdBy === atmosphere.viewerId
   return showOutcome ? (

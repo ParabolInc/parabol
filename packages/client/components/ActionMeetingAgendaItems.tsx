@@ -103,7 +103,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
   const {id: localStageId, agendaItemId} = localStage
   useEffect(() => {
     resetMinTimeComplete()
-  }, [agendaItemId])
+  }, [agendaItemId, resetMinTimeComplete])
 
   const agendaTasks = useMemo(() => {
     return tasks.edges

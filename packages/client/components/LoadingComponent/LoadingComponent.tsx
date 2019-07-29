@@ -54,7 +54,7 @@ const LoadingComponent = forwardRef((props: Props, ref: any) => {
         loadingDelay.forceUpdate()
       }
     }
-  }, [])
+  }, [loadingDelayRef])
   if (showAfter && !minDelay) return null
   return (
     <LoadingWrapper ref={ref} height={height} width={width}>

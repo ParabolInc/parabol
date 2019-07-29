@@ -25,7 +25,7 @@ const MeetingHelpToggle = (props: Props) => {
     if (demoPauseOpen && isDemoRoute()) {
       togglePortal()
     }
-  }, [demoPauseOpen])
+  }, [demoPauseOpen, togglePortal])
   useFABPad(originRef)
   return (
     <>

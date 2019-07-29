@@ -9,6 +9,7 @@ import SnackbarMessage from './SnackbarMessage'
 import graphql from 'babel-plugin-relay/macro'
 import useLocalQuery from '../hooks/useLocalQuery'
 import {SnackbarQuery} from '../__generated__/SnackbarQuery.graphql'
+import useEventCallback from '../hooks/useEventCallback'
 
 const MAX_SNACKS = 1
 
@@ -66,20 +67,20 @@ const Snackbar = React.memo(() => {
 
   transitionChildrenRef.current = transitionChildren
 
-  const filterSnacks = useCallback((removeFn: SnackbarRemoveFn) => {
+  const filterSnacks = useEventCallback((removeFn: SnackbarRemoveFn) => {
     const filterFn = (snack: Snack) => !removeFn(snack)
     snackQueueRef.current = snackQueueRef.current.filter(filterFn)
     const nextSnacks = snacksRef.current.filter(filterFn)
     if (nextSnacks.length !== snacksRef.current.length) {
       setActiveSnacks(nextSnacks)
     }
-  }, [])
+  })
 
-  const dismissSnack = useCallback((snackToDismiss: Snack) => {
+  const dismissSnack = useEventCallback((snackToDismiss: Snack) => {
     filterSnacks((snack: Snack) => snack === snackToDismiss)
-  }, [])
+  })
 
-  const showSnack = useCallback((snack: Snack) => {
+  const showSnack = useEventCallback((snack: Snack) => {
     setActiveSnacks([...snacksRef.current, snack])
     if (snack.autoDismiss !== 0) {
       setTimeout(() => {
@@ -90,7 +91,7 @@ const Snackbar = React.memo(() => {
         }
       }, snack.autoDismiss * 1000)
     }
-  }, [])
+  })
 
   const onMouseEnter = (snack: Snack) => () => {
     setHoveredSnack(snack)
@@ -124,7 +125,7 @@ const Snackbar = React.memo(() => {
       atmosphere.eventEmitter.off('addSnackbar', handleAdd)
       atmosphere.eventEmitter.off('removeSnackbar', filterSnacks)
     }
-  }, [])
+  }, [atmosphere.eventEmitter, filterSnacks, showSnack, snacksRef])
 
   // handle portal
   useLayoutEffect(() => {
@@ -133,14 +134,14 @@ const Snackbar = React.memo(() => {
     } else {
       openPortal()
     }
-  }, [transitionChildren])
+  }, [openPortal, terminatePortal, transitionChildren])
 
   // handle queue
   useEffect(() => {
     if (snackQueueRef.current.length > 0 && transitionChildren.length < MAX_SNACKS) {
       showSnack(snackQueueRef.current.shift()!)
     }
-  }, [transitionChildren])
+  }, [showSnack, transitionChildren])
 
   return portal(
     <Modal topOfFAB={topOfFAB}>

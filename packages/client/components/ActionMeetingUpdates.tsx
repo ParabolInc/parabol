@@ -71,6 +71,11 @@ const ActionMeetingUpdates = (props: Props) => {
   const {facilitatorUserId, id: meetingId, localStage, phases} = newMeeting!
   const {id: localStageId, teamMember} = localStage!
   const {userId} = teamMember!
+  const teamMemberTasks = useMemo(() => {
+    return tasks.edges
+      .map(({node}) => node)
+      .filter((task) => task.userId === userId && !isTaskPrivate(task.tags))
+  }, [tasks, userId])
   const stageRes = findStageAfterId(phases, localStageId)
   if (!stageRes) return null
   const {phase: nextPhase, stage: nextStage} = stageRes
@@ -78,11 +83,7 @@ const ActionMeetingUpdates = (props: Props) => {
     nextPhase.phaseType === NewMeetingPhaseTypeEnum.updates
       ? (nextStage as IUpdatesStage).teamMember.preferredName
       : phaseLabelLookup[nextPhase.phaseType]
-  const teamMemberTasks = useMemo(() => {
-    return tasks.edges
-      .map(({node}) => node)
-      .filter((task) => task.userId === userId && !isTaskPrivate(task.tags))
-  }, [tasks, userId])
+
   const isFacilitating = facilitatorUserId === viewerId
   return (
     <MeetingContent>

@@ -23,7 +23,7 @@ const InvitationLinkDialog = (props: Props) => {
   const {token} = params
   useEffect(() => {
     window.localStorage.setItem('invitationToken', token)
-  }, [])
+  }, [token])
   const {massInvitation} = props
   const {errorType, teamId, teamName} = massInvitation
   switch (errorType) {

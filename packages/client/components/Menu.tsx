@@ -68,7 +68,7 @@ const Menu = forwardRef((props: Props, ref: any) => {
         menuRef.current && menuRef.current.focus()
       }
     }
-  }, resetActiveOnChanges || [])
+  }, resetActiveOnChanges || [/* eslint-disable-line react-hooks/exhaustive-deps*/])
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
@@ -118,7 +118,7 @@ const Menu = forwardRef((props: Props, ref: any) => {
       }
       setActiveIdx(nextIdx)
     },
-    [activeIdx, children]
+    [activeIdx]
   )
 
   const makeSmartChildren = useCallback(
@@ -149,7 +149,7 @@ const Menu = forwardRef((props: Props, ref: any) => {
         )
       })
     },
-    [activeIdx, children]
+    [activeIdx, setSafeIdx, closePortal, isDropdown, portalStatus]
   )
 
   const handleKeyDown = useCallback(
@@ -170,7 +170,7 @@ const Menu = forwardRef((props: Props, ref: any) => {
       }
       return e.defaultPrevented
     },
-    [activeIdx, children, tabReturns]
+    [activeIdx, tabReturns, closePortal, setSafeIdx]
   )
 
   return (
