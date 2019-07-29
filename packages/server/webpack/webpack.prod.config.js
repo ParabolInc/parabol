@@ -174,7 +174,9 @@ module.exports = {
           {
             loader: 'awesome-typescript-loader',
             options: {
-              errorsAsWarnings: true
+              configFileName: path.join(CLIENT_ROOT, 'tsconfig.json'),
+              errorsAsWarnings: true,
+              transpileOnly: true,
             }
           }
         ]

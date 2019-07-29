@@ -3,24 +3,27 @@ import dehydrate from './utils/dehydrate'
 import getWebpackPublicPath from './utils/getWebpackPublicPath'
 import fs from 'fs'
 import path from 'path'
+import {RequestHandler} from 'express'
 
 let finalHTML
 
+export const getClientKeys = () => {
+  const webpackPublicPath = getWebpackPublicPath()
+
+  return {
+    atlassian: process.env.ATLASSIAN_CLIENT_ID,
+    auth0: process.env.AUTH0_CLIENT_ID,
+    auth0Domain: process.env.AUTH0_DOMAIN,
+    cdn: webpackPublicPath,
+    github: process.env.GITHUB_CLIENT_ID,
+    sentry: process.env.SENTRY_DSN,
+    slack: process.env.SLACK_CLIENT_ID,
+    stripe: process.env.STRIPE_PUBLISHABLE_KEY
+  }
+}
 const getHTML = () => {
   if (!finalHTML) {
-    const webpackPublicPath = getWebpackPublicPath()
-
-    const clientIds = {
-      atlassian: process.env.ATLASSIAN_CLIENT_ID,
-      auth0: process.env.AUTH0_CLIENT_ID,
-      auth0Domain: process.env.AUTH0_DOMAIN,
-      cdn: webpackPublicPath,
-      github: process.env.GITHUB_CLIENT_ID,
-      sentry: process.env.SENTRY_DSN,
-      slack: process.env.SLACK_CLIENT_ID,
-      stripe: process.env.STRIPE_PUBLISHABLE_KEY
-    }
-
+    const clientIds = getClientKeys()
     const segKey = process.env.SEGMENT_WRITE_KEY
     const segmentSnippet =
       segKey &&
@@ -52,6 +55,8 @@ const getHTML = () => {
   return finalHTML
 }
 
-export default function createSSR (req, res) {
+const createSSR: RequestHandler = (_req, res) => {
   res.send(getHTML())
 }
+
+export default createSSR

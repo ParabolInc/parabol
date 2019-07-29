@@ -3,8 +3,11 @@
   "compilerOptions": {
 //    "composite": true,
     "lib": ["esnext", "dom"],
+    "types": [
+      "node"
+    ],
     "target": "esnext",
-    "module": "commonjs",
+    "module": "esnext",
     "sourceMap": true,
     "baseUrl": ".",
     "paths": {

@@ -42,6 +42,8 @@ interface StripeRequest extends express.Request {
 }
 
 const APP_VERSION = process.env.npm_package_version
+const PROJECT_ROOT = path.join(__dirname, '..', '..')
+
 // Import .env and expand variables:
 getDotenv()
 
@@ -123,9 +125,9 @@ app.use(
 )
 
 app.use(cors({origin: true, credentials: true}))
-app.use('/static', express.static('static'))
-app.use(favicon(`${__dirname}/../../static/favicon.ico`))
-app.use('/static', express.static('build'))
+app.use('/static', express.static(path.join(PROJECT_ROOT, 'static')))
+app.use('/static', express.static(path.join(PROJECT_ROOT, 'build')))
+app.use(favicon(path.join(PROJECT_ROOT, 'static', 'favicon.ico')))
 if (PROD) {
   app.use(compression())
 } else {

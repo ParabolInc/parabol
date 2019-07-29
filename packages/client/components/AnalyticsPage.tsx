@@ -1,12 +1,12 @@
+/// <reference types="@types/segment-analytics" />
+
 import {AnalyticsPageRootQueryResponse} from '../__generated__/AnalyticsPageRootQuery.graphql'
 import {Component} from 'react'
 import makeHref from '../utils/makeHref'
 
-import AnalyticsJS = SegmentAnalytics.AnalyticsJS
-
 declare global {
   interface Window {
-    analytics?: AnalyticsJS
+    analytics?: SegmentAnalytics.AnalyticsJS
   }
 }
 
