@@ -7,31 +7,31 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ## vNext
 
-## Fixed
+### Fixed
 * Timer snackbar z-index (#3050)
 
 ## v3.17.2 2019-Jul-30
 
-## Fixed
+### Fixed
 * Agenda list cannot be scrolled (#3070)
 
 ## v3.17.0 2019-Jul-26
 
-## Added
+### Added
 * Segment events for team invites (#3040)
 * Segment events for meeting timer (#3039)
 
-## Changed
+### Changed
 * Toasts to snackbar (#3026)
 * Upgraded Relay to fork of v5 (#3014)
 * Upgraded react-beautiful-dnd to v11 (#3041)
 * Upgraded a bunch of smaller deps (#3041)
 
-## Fixed
+### Fixed
 * Login bug for safari users (#3038)
 * Calendar Schedule CTA in Action Meeting Summary (#3042)
 
-## Removed
+### Removed
 * auth0-js (#3038)
 * iterall, known mem leak, but unsure if affects us (#3023)
 
