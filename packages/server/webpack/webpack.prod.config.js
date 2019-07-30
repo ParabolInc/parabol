@@ -59,15 +59,17 @@ const babelConfig = {
     cacheDirectory: true,
     babelrc: false,
     plugins: [
-      [pluginMacros, {
+      [
+        pluginMacros, {
         relay: {
           artifactDirectory: path.join(CLIENT_ROOT, '__generated__')
-        },
-      }],
+        }
+      }
+      ],
       pluginInlineImport,
       pluginObjectRestSpread,
       pluginClassProps,
-      pluginDynamicImport,
+      pluginDynamicImport
     ],
     presets: [
       [
@@ -97,8 +99,8 @@ module.exports = {
   output: {
     path: buildPath,
     publicPath,
-    filename: '[name]_[hash].js',
-    chunkFilename: '[name]_[chunkhash].js'
+    filename: '[name]_[contenthash].js',
+    chunkFilename: '[name]_[contenthash].js'
   },
   resolve,
   optimization: {
@@ -156,7 +158,8 @@ module.exports = {
       swSrc: 'sw.js',
       entry: path.join(PROJECT_ROOT, 'packages', 'client', 'serviceWorker', 'sw.ts'),
       swDest: 'sw.js',
-      importWorkboxFrom: 'disabled'
+      importWorkboxFrom: 'disabled',
+      exclude: [/GraphqlContainer/],
     }),
     ...extraPlugins
   ],
@@ -178,6 +181,8 @@ module.exports = {
             options: {
               configFileName: path.join(CLIENT_ROOT, 'tsconfig.json'),
               errorsAsWarnings: true,
+              // the configFileName is for client, so all serviceWorker checks will fail
+              silent: true
             }
           }
         ]

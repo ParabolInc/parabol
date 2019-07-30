@@ -60,7 +60,7 @@ const putInCache = async (req: RequestInfo, res: Response) => {
 const onFetch = async (event: FetchEvent) => {
   const {request} = event
   const {url} = request
-  const isCacheable = url.match(/.(js|css|mjs|png|svg|gif|jpg|jpeg|ico|eot|ttf|wav|mp3|woff|woff2|otf|foodxy)$/)
+  const isCacheable = url.match(/.(js|css|mjs|png|svg|gif|jpg|jpeg|ico|eot|ttf|wav|mp3|woff|woff2|otf)$/)
   if (isCacheable) {
     const cachedRes = await caches.match(request)
     if (cachedRes) {
