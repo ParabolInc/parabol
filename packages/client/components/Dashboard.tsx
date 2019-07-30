@@ -30,7 +30,7 @@ interface Props {
 const DashLayout = styled('div')({
   display: 'flex',
   minHeight: '100vh',
-  overflow: 'auto'
+  // overflow: 'auto', removed because react-beautiful-dnd only supports 1 scrolling parent
 })
 
 const DashPanel = styled('div')({

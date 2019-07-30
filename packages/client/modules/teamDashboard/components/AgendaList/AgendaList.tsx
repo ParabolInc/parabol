@@ -18,6 +18,8 @@ import useEventCallback from '../../../../hooks/useEventCallback'
 const AgendaListRoot = styled('div')({
   display: 'flex',
   flexDirection: 'column',
+  // react-beautiful-dnd only supports scrolling on a single parent
+  // this is necessary here for scrolling a long list of items
   overflow: 'auto',
   height: '100%', // trickle down height for overflow
   width: '100%'
