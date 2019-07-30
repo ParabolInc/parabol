@@ -32,8 +32,7 @@ const styleThunk = () => ({
     display: 'flex !important',
     flex: 1,
     flexDirection: 'column',
-    // commenting out because of react-beatiful-dnd warning
-    // overflowY: 'auto',
+    // overflow: 'auto', removed because react-beautiful-dnd only supports 1 scrolling parent
     width: '100%'
   },
 
