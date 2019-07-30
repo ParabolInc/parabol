@@ -73,6 +73,15 @@ Sentry.init({
     })
   ]
 })
+
+app.use('/static', express.static(path.join(PROJECT_ROOT, 'build'), {
+  setHeaders: (res, path) => {
+    if (path.endsWith('sw.js')) {
+      res.setHeader('service-worker-allowed', '/')
+    }
+  }
+}))
+
 // HMR
 if (!PROD) {
   const config = require('./webpack/webpack.dev.config')
@@ -87,6 +96,7 @@ if (!PROD) {
       noInfo: true,
       quiet: true,
       publicPath: config.output.publicPath,
+      // writeToDisk: true, // required for developing serviceWorkers
       stats: {
         assets: false,
         builtAt: false,
@@ -126,7 +136,6 @@ app.use(
 
 app.use(cors({origin: true, credentials: true}))
 app.use('/static', express.static(path.join(PROJECT_ROOT, 'static')))
-app.use('/static', express.static(path.join(PROJECT_ROOT, 'build')))
 app.use(favicon(path.join(PROJECT_ROOT, 'static', 'favicon.ico')))
 if (PROD) {
   app.use(compression())

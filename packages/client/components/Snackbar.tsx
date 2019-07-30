@@ -25,14 +25,14 @@ const Modal = styled('div')<{topOfFAB: number | undefined | null}>(({topOfFAB}) 
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
-  height: '100%',
+  height: '100vh',
   justifyContent: 'flex-end',
   left: 0,
   padding: 8,
   paddingBottom: topOfFAB || 8,
   position: 'absolute',
   top: 0,
-  width: '100%',
+  width: '100vw',
   pointerEvents: 'none',
   zIndex: 1 // hack to hide task cards since draft-editor has a z-index of 1, it'll shine through if this isn't present
 }))

@@ -17,7 +17,7 @@ const AuthenticationPage = (props: Props) => {
   if (authObj) {
     const nextUrl = getValidRedirectParam() || '/me'
     // always replace otherwise they could get stuck in a back-button loop
-    history.replace(nextUrl)
+    setTimeout(() => history.replace(nextUrl))
     return null
   }
   const gotoPage: GotoAuathPage = (page, search?) => {

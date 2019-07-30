@@ -4,7 +4,6 @@ const webpack = require('webpack')
 const pluginDynamicImport = require('@babel/plugin-syntax-dynamic-import').default
 const vendors = require('./dll/vendors')
 const pluginInlineImport = require('babel-plugin-inline-import').default
-// const {InjectManifest} = require('workbox-webpack-plugin')
 // const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 const pluginMacros = require('babel-plugin-macros')
 
@@ -36,11 +35,20 @@ module.exports = {
   },
   output: {
     path: path.join(PROJECT_ROOT, 'build'),
-    filename: '[name].js',
-    chunkFilename: '[name].chunk.js',
-    publicPath: '/static/'
+    publicPath: '/static/',
+    filename: '[name]_[hash].js',
+    chunkFilename: '[name]_[chunkhash].js'
   },
   resolve,
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+      // OK to be above 6 because we serve these via http2
+      maxAsyncRequests: 20,
+      maxInitialRequests: 20,
+      minSize: 4096
+    }
+  },
   plugins: [
     // reliably produces errors on rebuild, disabled for now
     // new HardSourceWebpackPlugin(),
@@ -53,9 +61,6 @@ module.exports = {
     new webpack.DllReferencePlugin({
       manifest: vendors
     })
-    // new InjectManifest({
-    //   swSrc: path.join(__dirname, '../packages/client/sw.ts')
-    // })
   ],
   module: {
     rules: [

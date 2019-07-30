@@ -125,7 +125,7 @@
     "webpack-hot-client": "^4.1.1",
     "webpack-hot-middleware": "^2.22.2",
     "webpack-s3-plugin": "^1.0.0-rc.0",
-    "workbox-webpack-plugin": "^4.3.1"
+    "wrkbx": "^4.3.1-1"
   },
   "dependencies": {
     "@clusterws/cws": "^0.15.0",

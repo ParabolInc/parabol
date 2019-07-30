@@ -1,6 +1,5 @@
 import {applyMiddleware, compose, createStore} from 'redux'
 import makeReducer from './redux/makeReducer'
-import {APP_VERSION_KEY} from './utils/constants'
 
 export default (initialState) => {
   let store
@@ -25,6 +24,5 @@ export default (initialState) => {
       )
     )
   }
-  window.localStorage.setItem(APP_VERSION_KEY, __APP_VERSION__) // eslint-disable-line no-undef
   return store
 }

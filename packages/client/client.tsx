@@ -25,6 +25,11 @@ if ((module as any).hot) {
   })
 }
 
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', async () => {
+    navigator.serviceWorker.register('/static/sw.js', {scope: '/'}).catch(console.error)
+  })
+}
 // if ('serviceWorker' in navigator) {
 //   window.addEventListener('load', () => {
 //     navigator.serviceWorker.register('./sw.js').then(registration => {

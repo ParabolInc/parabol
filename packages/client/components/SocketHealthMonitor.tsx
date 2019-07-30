@@ -1,20 +1,25 @@
 import GQLTrebuchetClient from '@mattkrick/graphql-trebuchet-client'
 import {Component} from 'react'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../decorators/withAtmosphere/withAtmosphere'
-import {APP_VERSION_KEY} from '../utils/constants'
+import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import {commitLocalUpdate} from 'react-relay'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import ms from 'ms'
 
-interface Props extends WithAtmosphereProps {}
+interface Props extends WithAtmosphereProps {
+}
+
+const upgradeServiceWorker = async () => {
+  if ('serviceWorker' in navigator) {
+    const registration = await navigator.serviceWorker.getRegistration()
+    registration && registration.update().catch()
+  }
+}
 
 class SocketHealthMonitor extends Component<Props> {
   recentDisconnects = [] as number[]
   firewallMessageSent = false
 
-  componentDidMount () {
+  componentDidMount() {
     const {atmosphere} = this.props
     atmosphere.eventEmitter.once('newSubscriptionClient', () => {
       const {transport} = atmosphere
@@ -23,6 +28,31 @@ class SocketHealthMonitor extends Component<Props> {
       trebuchet.on('disconnected' as any, this.onDisconnected)
       trebuchet.on('data' as any, this.onData)
       this.setConnectedStatus(true)
+    })
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('controllerchange', this.onServiceWorkerChange)
+    }
+  }
+
+  componentWillUnmount() {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.removeEventListener('controllerchange', this.onServiceWorkerChange)
+    }
+  }
+
+  onServiceWorkerChange = () => {
+    console.log('controller change')
+    const {atmosphere} = this.props
+    atmosphere.eventEmitter.emit('addSnackbar', {
+      key: 'newVersion',
+      autoDismiss: 0,
+      message: 'A new version of Parabol is available',
+      action: {
+        label: 'Refresh to upgrade',
+        callback: () => {
+          window.location.reload()
+        }
+      }
     })
   }
 
@@ -44,20 +74,8 @@ class SocketHealthMonitor extends Component<Props> {
     // hacky but that way we don't have to double parse huge json payloads
     if (!payload.startsWith('{"version":')) return
     const obj = JSON.parse(payload)
-    const {atmosphere} = this.props
-    const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY)
-    if (obj.version !== versionInStorage) {
-      atmosphere.eventEmitter.emit('addSnackbar', {
-        key: 'newVersion',
-        autoDismiss: 0,
-        message: 'A new version of Parabol is available',
-        action: {
-          label: 'Refresh to upgrade',
-          callback: () => {
-            window.location.reload()
-          }
-        }
-      })
+    if (obj.version !== __APP_VERSION__) {
+      upgradeServiceWorker().catch(console.error)
     }
   }
 
@@ -90,7 +108,7 @@ class SocketHealthMonitor extends Component<Props> {
     })
   }
 
-  render () {
+  render() {
     return null
   }
 }

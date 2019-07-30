@@ -30,7 +30,7 @@ const boxShadowLocal = `${boxShadowBase} ${borderLocal}`
 const Item = styled('div')({
   marginLeft: 12,
   position: 'relative',
-  '&:first-child': {
+  'div:first-of-type': {
     marginLeft: 0
   }
 })

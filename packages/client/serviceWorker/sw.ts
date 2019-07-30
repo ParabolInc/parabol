@@ -1,13 +1,83 @@
-
 // This file must have worker types, but not DOM types.
 // The global should be that of a service worker.
 
 // This fixes `self`'s type.
-declare var self: ServiceWorkerGlobalScope;
-export {};
+declare var self: ServiceWorkerGlobalScope
 
-console.log(self.clients);
+declare global {
+  interface ServiceWorkerGlobalScope {
+    __precacheManifest: {
+      url: string,
+      revision?: string
+    }[]
+  }
+}
 
-self.addEventListener('fetch', (event) => {
-  console.log(event.request);
-});
+const STATIC_CACHE = `parabol-static-${__APP_VERSION__}`
+const DYNAMIC_CACHE = `parabol-dynamic-${__APP_VERSION__}`
+const cacheList = [STATIC_CACHE, DYNAMIC_CACHE]
+
+const waitUntil = (cb: (e: ExtendableEvent) => void) => (e: ExtendableEvent) => {
+  e.waitUntil(cb(e))
+}
+
+const onInstall = async (event: ExtendableEvent) => {
+  await self.skipWaiting()
+  const urls = self.__precacheManifest.map(({url}) => url)
+  const cacheNames = await caches.keys()
+  const oldStaticCacheName = cacheNames.find((cacheName) => cacheName.startsWith('parabol-static'))
+  const newCache = await caches.open(STATIC_CACHE)
+
+  // if this is their first service worker, fetch it all
+  if (!oldStaticCacheName) {
+    console.log('Installing service worker')
+    return newCache.addAll(urls)
+  }
+
+  // if they already have some assets, forward them over to the new cache & fetch the rest
+  const oldStaticCache = await caches.open(oldStaticCacheName)
+  const cachedResponses = await Promise.all(urls.map((url) => oldStaticCache.match(url)))
+  const newUrls = urls.filter((url, idx) => !cachedResponses[idx])
+  console.log(`Installing ${urls.length} modules (${newUrls.length} new)`)
+  await Promise.all(cachedResponses.map((res: Response | undefined, idx) => {
+    if (!res) return
+    newCache.put(urls[idx], res)
+  }))
+  return newCache.addAll(newUrls)
+}
+
+const onActivate = async (event: ExtendableEvent) => {
+  await self.clients.claim()
+  const cacheNames = await caches.keys()
+  return Promise.all(cacheNames.map((cacheName) => cacheList.includes(cacheName) ? undefined : caches.delete(cacheName)))
+}
+
+const putInCache = async (req: RequestInfo, res: Response) => {
+  const cache = await caches.open(DYNAMIC_CACHE)
+  return cache.put(req, res)
+}
+
+const onFetch = async (event: FetchEvent) => {
+  const {request} = event
+  const {url} = request
+  const isCacheable = url.match(/.(js|css|mjs|png|svg|gif|jpg|jpeg|ico|eot|ttf|wav|mp3|woff|woff2|otf|foodxy)$/)
+  if (isCacheable) {
+    const cachedRes = await caches.match(request)
+    if (cachedRes) {
+      // all our assets are hashed, so if the hash matches, it's valid
+      return cachedRes
+    }
+    const networkRes = await fetch(request)
+    // cloning here because I'm not sure if we must clone before reading the body
+    putInCache(request, networkRes.clone()).catch(console.error)
+    return networkRes
+  }
+  return fetch(request)
+}
+
+self.oninstall = waitUntil(onInstall)
+self.onactivate = waitUntil(onActivate)
+self.onfetch = (e: FetchEvent) => {
+  e.respondWith(onFetch(e))
+}
+export {}

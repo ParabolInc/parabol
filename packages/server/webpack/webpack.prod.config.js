@@ -19,7 +19,7 @@ const pluginMacros = require('babel-plugin-macros')
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const pluginInlineImport = require('babel-plugin-inline-import').default
-const {InjectManifest} = require('workbox-webpack-plugin')
+const {InjectManifest} = require('wrkbx')
 
 getDotenv.default()
 
@@ -152,10 +152,12 @@ module.exports = {
       filename: '[name]_[hash].js.map',
       append: `\n//# sourceMappingURL=${publicPath}[url]`
     }),
-    // new InjectManifest({
-    //   swSrc: path.join(CLIENT_ROOT, 'sw.ts'),
-    //   importWorkboxFrom: 'disabled'
-    // }),
+    new InjectManifest({
+      swSrc: 'sw.js',
+      entry: path.join(PROJECT_ROOT, 'packages', 'client', 'serviceWorker', 'sw.ts'),
+      swDest: 'sw.js',
+      importWorkboxFrom: 'disabled'
+    }),
     ...extraPlugins
   ],
   module: {
@@ -176,7 +178,6 @@ module.exports = {
             options: {
               configFileName: path.join(CLIENT_ROOT, 'tsconfig.json'),
               errorsAsWarnings: true,
-              transpileOnly: true,
             }
           }
         ]
