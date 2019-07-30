@@ -16,8 +16,10 @@ import dndNoise from 'universal/utils/dndNoise'
 const AgendaListRoot = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  // commenting out because of react-beatiful-dnd warning
-  // overflow: 'auto',
+  // react-beautiful-dnd only supports scrolling
+  // on the immediate parent, which is the case here,
+  // and necessary for scrolling a long list of items
+  overflow: 'auto',
   height: '100%', // trickle down height for overflow
   width: '100%'
 })

@@ -86,8 +86,7 @@ const AgendaMain = styled('div')(({hideAgenda}) => ({
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
-  // commenting out because of react-beatiful-dnd warning
-  // overflow: 'auto',
+  // overflow: 'auto', removed because react-beautiful-dnd only supports 1 scrolling parent
   position: 'absolute',
   right: 0,
   top: 0,
