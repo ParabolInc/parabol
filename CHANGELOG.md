@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## v3.17.1 2019-Jul-30
+## v3.17.2 2019-Jul-30
 
 ## Fixed
 * Agenda list cannot be scrolled (#3070)
