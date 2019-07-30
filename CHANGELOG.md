@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## vNext
+
+## Fixed
+* Timer snackbar z-index (#3050)
+
 ## v3.17.2 2019-Jul-30
 
 ## Fixed
