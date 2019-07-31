@@ -6,6 +6,7 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {NullableTask_task} from '../../__generated__/NullableTask_task.graphql'
+import makeEmptyStr from '../../utils/draftjs/makeEmptyStr'
 
 interface Props {
   area: string
@@ -29,7 +30,11 @@ const NullableTask = React.memo((props: Props) => {
   const {content, createdBy, assignee} = task
   const {preferredName} = assignee
   const contentState = useMemo(() => {
-    return convertFromRaw(JSON.parse(content))
+    try {
+      return convertFromRaw(JSON.parse(content))
+    } catch(e) {
+      return convertFromRaw(JSON.parse(makeEmptyStr()))
+    }
   }, [content])
 
   const atmosphere = useAtmosphere()
