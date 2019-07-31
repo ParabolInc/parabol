@@ -13,7 +13,7 @@ const DisplayRow = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   // dont' want stuff to move when it turns on
-  minHeight: 32
+  minHeight: 36
 })
 
 const StageTimerDisplay = (props: Props) => {
