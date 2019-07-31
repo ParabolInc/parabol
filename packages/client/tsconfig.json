@@ -1,0 +1,21 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+//    "composite": true,
+    "lib": ["esnext", "dom"],
+    "types": [
+      "node"
+    ],
+    "target": "esnext",
+    "module": "esnext",
+    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "*": [
+        "*" // resolve all absolute imports as imports relative to the package
+      ]
+    }
+  },
+  "exclude": ["serviceWorker"]
+//  "references": []
+}
