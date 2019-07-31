@@ -32,14 +32,11 @@ const getHTML = () => {
         apiKey: segKey
       })
     const prod = process.env.NODE_ENV
-    const fontAwesomeUrl = prod
-      ? 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'
-      : '/static/css/font-awesome.css'
 
     const htmlFile = prod ? '../../build/index.html' : './template.html'
     const html = fs.readFileSync(path.join(__dirname, htmlFile), 'utf8')
     const extraHead = `
- <link rel="stylesheet" type="text/css" href=${fontAwesomeUrl} />
+ <link rel="stylesheet" type="text/css" href='/static/css/font-awesome.css' />
  <script>${dehydrate('__ACTION__', clientIds)}</script>
  `
     const devBody = prod

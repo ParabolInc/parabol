@@ -159,7 +159,7 @@ module.exports = {
       entry: path.join(PROJECT_ROOT, 'packages', 'client', 'serviceWorker', 'sw.ts'),
       swDest: 'sw.js',
       importWorkboxFrom: 'disabled',
-      exclude: [/GraphqlContainer/],
+      exclude: [/GraphqlContainer/, /\.map$/, /^manifest.*\.js$/, /index.html$/],
     }),
     ...extraPlugins
   ],
