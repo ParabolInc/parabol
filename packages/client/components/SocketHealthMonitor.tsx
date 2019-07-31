@@ -18,7 +18,7 @@ const upgradeServiceWorker = async () => {
 class SocketHealthMonitor extends Component<Props> {
   recentDisconnects = [] as number[]
   firewallMessageSent = false
-
+  isFirstServiceWorker = true
   componentDidMount() {
     const {atmosphere} = this.props
     atmosphere.eventEmitter.once('newSubscriptionClient', () => {
@@ -30,6 +30,7 @@ class SocketHealthMonitor extends Component<Props> {
       this.setConnectedStatus(true)
     })
     if ('serviceWorker' in navigator) {
+      this.setFirstServiceWorker().catch()
       navigator.serviceWorker.addEventListener('controllerchange', this.onServiceWorkerChange)
     }
   }
@@ -40,8 +41,16 @@ class SocketHealthMonitor extends Component<Props> {
     }
   }
 
+  async setFirstServiceWorker() {
+    const registration = await navigator.serviceWorker.getRegistration()
+    this.isFirstServiceWorker = !registration
+  }
+
   onServiceWorkerChange = () => {
-    console.log('controller change')
+    if (this.isFirstServiceWorker) {
+      this.isFirstServiceWorker = false
+      return
+    }
     const {atmosphere} = this.props
     atmosphere.eventEmitter.emit('addSnackbar', {
       key: 'newVersion',
