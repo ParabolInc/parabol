@@ -10,7 +10,6 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
-import ErrorBoundary from './ErrorBoundary'
 import MeetingContent from './MeetingContent'
 import MeetingContentHeader from './MeetingContentHeader'
 import MeetingPhaseWrapper from './MeetingPhaseWrapper'
@@ -19,9 +18,7 @@ import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
 import StyledError from './StyledError'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import useTimeoutWithReset from '../hooks/useTimeoutWithReset'
 import MeetingControlBar from '../modules/meeting/components/MeetingControlBar/MeetingControlBar'
 import AutoGroupReflectionsMutation from '../mutations/AutoGroupReflectionsMutation'
@@ -36,6 +33,8 @@ import EndMeetingButton from './EndMeetingButton'
 import PhaseItemMasonry from './PhaseItemMasonry'
 import StageTimerDisplay from './RetroReflectPhase/StageTimerDisplay'
 import StageTimerControl from './StageTimerControl'
+import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
+import PhaseWrapper from './PhaseWrapper'
 
 interface Props extends RetroMeetingPhaseProps, WithMutationProps, WithAtmosphereProps {
   team: RetroGroupPhase_team
@@ -59,7 +58,7 @@ const GroupHelpMenu = lazyPreload(async () =>
 const DemoGroupHelpMenu = lazyPreload(async () =>
   import(
     /* webpackChunkName: 'DemoGroupHelpMenu' */ './MeetingHelp/DemoGroupHelpMenu'
-  )
+    )
 )
 
 const RetroGroupPhase = (props: Props) => {
@@ -95,58 +94,59 @@ const RetroGroupPhase = (props: Props) => {
   const canAutoGroup = !isDemoRoute() && (!nextAutoGroupThreshold || nextAutoGroupThreshold < 1)
   return (
     <MeetingContent>
-      <MeetingContentHeader
-        avatarGroup={avatarGroup}
-        isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
-        toggleSidebar={toggleSidebar}
-      >
-        <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.group]}</PhaseHeaderTitle>
-        <PhaseHeaderDescription>{'Drag cards to group by common topics'}</PhaseHeaderDescription>
-      </MeetingContentHeader>
-      <ErrorBoundary>
-        <StageTimerDisplay stage={localStage!} />
-        {error && <StyledError>{error}</StyledError>}
-        <MeetingPhaseWrapper>
-          <PhaseItemMasonry meeting={newMeeting} resetActivityTimeout={resetActivityTimeout} />
-        </MeetingPhaseWrapper>
-        {isFacilitating && (
-          <StyledBottomBar>
-            {isComplete ? (
-              <BottomControlSpacer />
-            ) : (
-              <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
-            )}
-            <CenteredControlBlock>
-              <BottomNavControl
-                isBouncing={isDemoStageComplete || (!isAsync && !isComplete && isReadyToVote)}
-                onClick={() => gotoNext()}
-                onKeyDown={handleRightArrow(() => gotoNext())}
-                ref={gotoNextRef}
-              >
-                <BottomNavIconLabel
-                  icon='arrow_forward'
-                  iconColor='warm'
-                  label={`Next: ${nextPhaseLabel}`}
-                />
-              </BottomNavControl>
-              {canAutoGroup && !isComplete && (
-                <BottomNavControl onClick={autoGroup} waiting={submitting}>
-                  <BottomNavIconLabel
-                    icon='photo_filter'
-                    iconColor='midGray'
-                    label={'Auto Group'}
-                  />
-                </BottomNavControl>
-              )}
-            </CenteredControlBlock>
-            <EndMeetingButton meetingId={meetingId} />
-          </StyledBottomBar>
-        )}
+      <MeetingHeaderAndPhase>
+        <MeetingContentHeader
+          avatarGroup={avatarGroup}
+          isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
+          toggleSidebar={toggleSidebar}
+        >
+          <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.group]}</PhaseHeaderTitle>
+          <PhaseHeaderDescription>{'Drag cards to group by common topics'}</PhaseHeaderDescription>
+        </MeetingContentHeader>
+        <PhaseWrapper>
+          <StageTimerDisplay stage={localStage!} />
+          {error && <StyledError>{error}</StyledError>}
+          <MeetingPhaseWrapper>
+            <PhaseItemMasonry meeting={newMeeting} resetActivityTimeout={resetActivityTimeout} />
+          </MeetingPhaseWrapper>
+        </PhaseWrapper>
         <MeetingHelpToggle
-          floatAboveBottomBar={isFacilitating}
           menu={isDemoRoute() ? <DemoGroupHelpMenu /> : <GroupHelpMenu />}
         />
-      </ErrorBoundary>
+      </MeetingHeaderAndPhase>
+      {isFacilitating && (
+        <StyledBottomBar>
+          {isComplete ? (
+            <BottomControlSpacer />
+          ) : (
+            <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
+          )}
+          <CenteredControlBlock>
+            <BottomNavControl
+              isBouncing={isDemoStageComplete || (!isAsync && !isComplete && isReadyToVote)}
+              onClick={() => gotoNext()}
+              onKeyDown={handleRightArrow(() => gotoNext())}
+              ref={gotoNextRef}
+            >
+              <BottomNavIconLabel
+                icon='arrow_forward'
+                iconColor='warm'
+                label={`Next: ${nextPhaseLabel}`}
+              />
+            </BottomNavControl>
+            {canAutoGroup && !isComplete && (
+              <BottomNavControl onClick={autoGroup} waiting={submitting}>
+                <BottomNavIconLabel
+                  icon='photo_filter'
+                  iconColor='midGray'
+                  label={'Auto Group'}
+                />
+              </BottomNavControl>
+            )}
+          </CenteredControlBlock>
+          <EndMeetingButton meetingId={meetingId} />
+        </StyledBottomBar>
+      )}
     </MeetingContent>
   )
 }

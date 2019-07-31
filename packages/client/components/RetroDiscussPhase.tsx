@@ -1,12 +1,9 @@
 import {RetroDiscussPhase_team} from '../__generated__/RetroDiscussPhase_team.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
 import DiscussPhaseReflectionGrid from './DiscussPhaseReflectionGrid'
-import ErrorBoundary from './ErrorBoundary'
 import Icon from './Icon'
 import LabelHeading from './LabelHeading/LabelHeading'
 import MeetingContent from './MeetingContent'
@@ -17,9 +14,7 @@ import PhaseHeaderTitle from './PhaseHeaderTitle'
 import Overflow from './Overflow'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
 import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import MeetingAgendaCards from '../modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
 import MeetingControlBar from '../modules/meeting/components/MeetingControlBar/MeetingControlBar'
 import {MD_ICONS_SIZE_18} from '../styles/icons'
@@ -36,6 +31,10 @@ import EndMeetingButton from './EndMeetingButton'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import StageTimerDisplay from './RetroReflectPhase/StageTimerDisplay'
 import StageTimerControl from './StageTimerControl'
+import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
+import PhaseWrapper from './PhaseWrapper'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 
 interface Props extends WithAtmosphereProps, RetroMeetingPhaseProps {
   team: RetroDiscussPhase_team
@@ -98,7 +97,7 @@ const VoteIcon = styled(Icon)({
   marginRight: '.125rem'
 })
 
-const PhaseWrapper = styled('div')({
+const DiscussPhaseWrapper = styled('div')({
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
@@ -138,12 +137,12 @@ const StyledBottomBar = styled(MeetingControlBar)({
 const DiscussHelpMenu = lazyPreload(async () =>
   import(
     /* webpackChunkName: 'DiscussHelpMenu' */ './MeetingHelp/DiscussHelpMenu'
-  )
+    )
 )
 const DemoDiscussHelpMenu = lazyPreload(async () =>
   import(
     /* webpackChunkName: 'DemoDiscussHelpMenu' */ './MeetingHelp/DemoDiscussHelpMenu'
-  )
+    )
 )
 
 const RetroDiscussPhase = (props: Props) => {
@@ -161,86 +160,86 @@ const RetroDiscussPhase = (props: Props) => {
   const nextStageRes = findStageAfterId(phases, localStageId)
   return (
     <MeetingContent>
-      <MeetingContentHeader
-        avatarGroup={avatarGroup}
-        isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
-        toggleSidebar={toggleSidebar}
-      >
-        <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.discuss]}</PhaseHeaderTitle>
-        <PhaseHeaderDescription>
-          {'Create takeaway task cards to capture next steps'}
-        </PhaseHeaderDescription>
-      </MeetingContentHeader>
-      <ErrorBoundary>
-        <StageTimerDisplay stage={localStage} />
+      <MeetingHeaderAndPhase>
+        <MeetingContentHeader
+          avatarGroup={avatarGroup}
+          isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
+          toggleSidebar={toggleSidebar}
+        >
+          <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.discuss]}</PhaseHeaderTitle>
+          <PhaseHeaderDescription>
+            {'Create takeaway task cards to capture next steps'}
+          </PhaseHeaderDescription>
+        </MeetingContentHeader>
         <PhaseWrapper>
-          <HeaderContainer>
-            <DiscussHeader>
-              <TopicHeading>{`“${title}”`}</TopicHeading>
-              <VoteMeta>
-                <VoteIcon>{meetingVoteIcon}</VoteIcon>
-                {voteCount}
-              </VoteMeta>
-            </DiscussHeader>
-          </HeaderContainer>
-          <ColumnsContainer>
-            <Column>
-              <LabelContainer>
-                <LabelHeading>
-                  {reflections.length} {plural(reflections.length, 'Reflection')}
-                </LabelHeading>
-              </LabelContainer>
-              <Overflow>
-                <ColumnInner>
-                  <DiscussPhaseReflectionGrid reflections={reflections} />
-                </ColumnInner>
-              </Overflow>
-            </Column>
-            <TaskColumn>
-              <LabelContainer>
-                <LabelHeading>Takeaway Tasks</LabelHeading>
-              </LabelContainer>
-              <Overflow>
-                <ColumnInner>
-                  <TaskCardBlock>
-                    <MeetingAgendaCards
-                      meetingId={meetingId}
-                      reflectionGroupId={reflectionGroupId}
-                      tasks={tasks}
-                      teamId={teamId}
-                    />
-                  </TaskCardBlock>
-                </ColumnInner>
-              </Overflow>
-            </TaskColumn>
-          </ColumnsContainer>
+          <StageTimerDisplay stage={localStage} />
+          <DiscussPhaseWrapper>
+            <HeaderContainer>
+              <DiscussHeader>
+                <TopicHeading>{`“${title}”`}</TopicHeading>
+                <VoteMeta>
+                  <VoteIcon>{meetingVoteIcon}</VoteIcon>
+                  {voteCount}
+                </VoteMeta>
+              </DiscussHeader>
+            </HeaderContainer>
+            <ColumnsContainer>
+              <Column>
+                <LabelContainer>
+                  <LabelHeading>
+                    {reflections.length} {plural(reflections.length, 'Reflection')}
+                  </LabelHeading>
+                </LabelContainer>
+                <Overflow>
+                  <ColumnInner>
+                    <DiscussPhaseReflectionGrid reflections={reflections} />
+                  </ColumnInner>
+                </Overflow>
+              </Column>
+              <TaskColumn>
+                <LabelContainer>
+                  <LabelHeading>Takeaway Tasks</LabelHeading>
+                </LabelContainer>
+                <Overflow>
+                  <ColumnInner>
+                    <TaskCardBlock>
+                      <MeetingAgendaCards
+                        meetingId={meetingId}
+                        reflectionGroupId={reflectionGroupId}
+                        tasks={tasks}
+                        teamId={teamId}
+                      />
+                    </TaskCardBlock>
+                  </ColumnInner>
+                </Overflow>
+              </TaskColumn>
+            </ColumnsContainer>
+          </DiscussPhaseWrapper>
         </PhaseWrapper>
-        {isFacilitating && (
-          <StyledBottomBar>
-            <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
-            {nextStageRes && (
-              <React.Fragment>
-                <BottomNavControl
-                  isBouncing={isDemoStageComplete}
-                  onClick={() => gotoNext()}
-                  ref={gotoNextRef}
-                  onKeyDown={handleRightArrow(() => gotoNext())}
-                >
-                  <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={'Next Topic'} />
-                </BottomNavControl>
-              </React.Fragment>
-            )}
-            <EndMeetingButton meetingId={meetingId} />
-            {!nextStageRes && <BottomControlSpacer />}
-          </StyledBottomBar>
-        )}
         <MeetingHelpToggle
-          floatAboveBottomBar={isFacilitating}
           menu={isDemoRoute() ? <DemoDiscussHelpMenu /> : <DiscussHelpMenu />}
         />
-
         <EditorHelpModalContainer />
-      </ErrorBoundary>
+      </MeetingHeaderAndPhase>
+      {isFacilitating && (
+        <StyledBottomBar>
+          <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
+          {nextStageRes && (
+            <React.Fragment>
+              <BottomNavControl
+                isBouncing={isDemoStageComplete}
+                onClick={() => gotoNext()}
+                ref={gotoNextRef}
+                onKeyDown={handleRightArrow(() => gotoNext())}
+              >
+                <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={'Next Topic'} />
+              </BottomNavControl>
+            </React.Fragment>
+          )}
+          <EndMeetingButton meetingId={meetingId} />
+          {!nextStageRes && <BottomControlSpacer />}
+        </StyledBottomBar>
+      )}
     </MeetingContent>
   )
 }

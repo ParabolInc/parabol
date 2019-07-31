@@ -21,7 +21,8 @@ const Gauge = styled('div')<{isTimeUp: boolean}>(({isTimeUp}) => ({
   padding: 8,
   textAlign: 'center',
   transition: `background 1s ${DECELERATE}`,
-  userSelect: 'none'
+  userSelect: 'none',
+  zIndex: 8 // same as boxShadown elevation (required to show timbebox in reflect phase)
 }))
 
 const StageTimerDisplayGauge = (props: Props) => {

@@ -5,7 +5,6 @@ import {breakpoints, minWidthMediaQueries} from './breakpoints'
 export const meetingGridGap = '1.25rem'
 export const meetingGridMaxWidth = '20rem'
 export const meetingGridMinWidth = 256
-export const meetingHelpWithBottomBar = '4.75rem'
 export const meetingSidebarBreakpoint = breakpoints[1]
 export const meetingSidebarMediaQuery = minWidthMediaQueries[1]
 export const meetingTopBarMediaQuery = minWidthMediaQueries[2]

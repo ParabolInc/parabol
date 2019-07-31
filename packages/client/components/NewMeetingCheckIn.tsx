@@ -3,7 +3,6 @@ import React, {ReactElement} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import ErrorBoundary from './ErrorBoundary'
 import Icon from './Icon'
 import MeetingContent from './MeetingContent'
 import MeetingContentHeader from './MeetingContentHeader'
@@ -22,6 +21,8 @@ import lazyPreload from '../utils/lazyPreload'
 import findStageAfterId from '../utils/meetings/findStageAfterId'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import EndMeetingButton from './EndMeetingButton'
+import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
+import PhaseWrapper from './PhaseWrapper'
 
 const CheckIn = styled('div')({
   display: 'flex',
@@ -48,14 +49,6 @@ const StyledIcon = styled(Icon)({
   display: 'block',
   margin: '0 auto 4px',
   width: ICON_SIZE.MD24
-})
-
-const CheckInWrapper = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  height: '100%'
 })
 
 const CheckInHelpMenu = lazyPreload(async () =>
@@ -93,6 +86,7 @@ const NewMeetingCheckIn = (props: Props) => {
   const isMyMeetingSection = userId === viewerId
   return (
     <MeetingContent>
+      <MeetingHeaderAndPhase>
       <MeetingContentHeader
         avatarGroup={avatarGroup}
         isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
@@ -100,8 +94,7 @@ const NewMeetingCheckIn = (props: Props) => {
       >
         <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.checkin]}</PhaseHeaderTitle>
       </MeetingContentHeader>
-      <ErrorBoundary>
-        <CheckInWrapper>
+        <PhaseWrapper>
           <NewMeetingCheckInPrompt team={team} teamMember={teamMember} />
           <CheckIn>
             {isMyMeetingSection && (
@@ -113,19 +106,18 @@ const NewMeetingCheckIn = (props: Props) => {
               </Hint>
             )}
           </CheckIn>
-        </CheckInWrapper>
-        {isFacilitating && (
-          <StyledBottomBar>
-            <BottomControlSpacer />
-            <CheckInControls handleGotoNext={handleGotoNext} teamMember={teamMember} />
-            <EndMeetingButton meetingId={meetingId} />
-          </StyledBottomBar>
-        )}
+        </PhaseWrapper>
         <MeetingHelpToggle
-          floatAboveBottomBar={isFacilitating}
           menu={<CheckInHelpMenu meetingType={meetingType} />}
         />
-      </ErrorBoundary>
+      </MeetingHeaderAndPhase>
+      {isFacilitating && (
+        <StyledBottomBar>
+          <BottomControlSpacer />
+          <CheckInControls handleGotoNext={handleGotoNext} teamMember={teamMember} />
+          <EndMeetingButton meetingId={meetingId} />
+        </StyledBottomBar>
+      )}
     </MeetingContent>
   )
 }

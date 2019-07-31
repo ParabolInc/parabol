@@ -5,7 +5,6 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
-import ErrorBoundary from './ErrorBoundary'
 import Icon from './Icon'
 import LabelHeading from './LabelHeading/LabelHeading'
 import MeetingContent from './MeetingContent'
@@ -16,9 +15,7 @@ import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
 import ScrollableBlock from './ScrollableBlock'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import MeetingControlBar from '../modules/meeting/components/MeetingControlBar/MeetingControlBar'
 import {minWidthMediaQueries} from '../styles/breakpoints'
 import {MD_ICONS_SIZE_18} from '../styles/icons'
@@ -37,6 +34,8 @@ import PhaseItemMasonry from './PhaseItemMasonry'
 import {RetroVotePhase_meetingSettings} from '../__generated__/RetroVotePhase_meetingSettings.graphql'
 import StageTimerControl from './StageTimerControl'
 import StageTimerDisplay from './RetroReflectPhase/StageTimerDisplay'
+import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
+import PhaseWrapper from './PhaseWrapper'
 
 interface Props extends WithAtmosphereProps, RetroMeetingPhaseProps {
   meetingSettings: RetroVotePhase_meetingSettings
@@ -137,7 +136,7 @@ const VoteHelpMenu = lazyPreload(async () =>
 const DemoVoteHelpMenu = lazyPreload(async () =>
   import(
     /* webpackChunkName: 'DemoVoteHelpMenu' */ './MeetingHelp/DemoVoteHelpMenu'
-  )
+    )
 )
 
 const RetroVotePhase = (props: Props) => {
@@ -163,66 +162,67 @@ const RetroVotePhase = (props: Props) => {
   const checkMarks = [...Array(totalVotes).keys()]
   return (
     <MeetingContent>
-      <MeetingContentHeader
-        avatarGroup={avatarGroup}
-        isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
-        toggleSidebar={toggleSidebar}
-      >
-        <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.vote]}</PhaseHeaderTitle>
-        <PhaseHeaderDescription>{'Vote on the topics you want to discuss'}</PhaseHeaderDescription>
-      </MeetingContentHeader>
-      <ErrorBoundary>
-        <VoteMeta>
-          <StyledMetaBlock>
-            <Label>{'My Votes Remaining'}</Label>
-            <MyVotesCountLabel>{myVotesRemaining}</MyVotesCountLabel>
-            <CheckMarkRow>
-              {checkMarks.map((idx) => (
-                <CheckIcon key={idx} isDark={idx < myVotesRemaining}>
-                  {meetingVoteIcon}
-                </CheckIcon>
-              ))}
-            </CheckMarkRow>
-          </StyledMetaBlock>
-          <MetaBlock>
-            <Label>{'Team Votes Remaining'}</Label>
-            <TeamVotesCountLabel>{teamVotesRemaining}</TeamVotesCountLabel>
-          </MetaBlock>
-        </VoteMeta>
-        <StageTimerDisplay stage={localStage} />
-        <ScrollableBlock>
-          <MeetingPhaseWrapper>
-            <PhaseItemMasonry meeting={newMeeting} />
-          </MeetingPhaseWrapper>
-        </ScrollableBlock>
-        {isFacilitating && (
-          <StyledBottomBar>
-            {isComplete ? (
-              <BottomControlSpacer />
-            ) : (
-              <StageTimerControl defaultTimeLimit={3} meetingId={meetingId} team={team} />
-            )}
-            <BottomNavControl
-              isBouncing={teamVotesRemaining === 0}
-              disabled={!discussStage.isNavigableByFacilitator}
-              onClick={() => gotoNext()}
-              onKeyDown={handleRightArrow(() => gotoNext())}
-              ref={gotoNextRef}
-            >
-              <BottomNavIconLabel
-                icon='arrow_forward'
-                iconColor='warm'
-                label={`Next: ${nextPhaseLabel}`}
-              />
-            </BottomNavControl>
-            <EndMeetingButton meetingId={meetingId} />
-          </StyledBottomBar>
-        )}
+      <MeetingHeaderAndPhase>
+        <MeetingContentHeader
+          avatarGroup={avatarGroup}
+          isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
+          toggleSidebar={toggleSidebar}
+        >
+          <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.vote]}</PhaseHeaderTitle>
+          <PhaseHeaderDescription>{'Vote on the topics you want to discuss'}</PhaseHeaderDescription>
+        </MeetingContentHeader>
+        <PhaseWrapper>
+          <VoteMeta>
+            <StyledMetaBlock>
+              <Label>{'My Votes Remaining'}</Label>
+              <MyVotesCountLabel>{myVotesRemaining}</MyVotesCountLabel>
+              <CheckMarkRow>
+                {checkMarks.map((idx) => (
+                  <CheckIcon key={idx} isDark={idx < myVotesRemaining}>
+                    {meetingVoteIcon}
+                  </CheckIcon>
+                ))}
+              </CheckMarkRow>
+            </StyledMetaBlock>
+            <MetaBlock>
+              <Label>{'Team Votes Remaining'}</Label>
+              <TeamVotesCountLabel>{teamVotesRemaining}</TeamVotesCountLabel>
+            </MetaBlock>
+          </VoteMeta>
+          <StageTimerDisplay stage={localStage} />
+          <ScrollableBlock>
+            <MeetingPhaseWrapper>
+              <PhaseItemMasonry meeting={newMeeting} />
+            </MeetingPhaseWrapper>
+          </ScrollableBlock>
+        </PhaseWrapper>
         <MeetingHelpToggle
-          floatAboveBottomBar={isFacilitating}
           menu={isDemoRoute() ? <DemoVoteHelpMenu /> : <VoteHelpMenu />}
         />
-      </ErrorBoundary>
+      </MeetingHeaderAndPhase>
+      {isFacilitating && (
+        <StyledBottomBar>
+          {isComplete ? (
+            <BottomControlSpacer />
+          ) : (
+            <StageTimerControl defaultTimeLimit={3} meetingId={meetingId} team={team} />
+          )}
+          <BottomNavControl
+            isBouncing={teamVotesRemaining === 0}
+            disabled={!discussStage.isNavigableByFacilitator}
+            onClick={() => gotoNext()}
+            onKeyDown={handleRightArrow(() => gotoNext())}
+            ref={gotoNextRef}
+          >
+            <BottomNavIconLabel
+              icon='arrow_forward'
+              iconColor='warm'
+              label={`Next: ${nextPhaseLabel}`}
+            />
+          </BottomNavControl>
+          <EndMeetingButton meetingId={meetingId} />
+        </StyledBottomBar>
+      )}
     </MeetingContent>
   )
 }

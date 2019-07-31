@@ -6,7 +6,6 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import BottomNavControl from '../BottomNavControl'
 import BottomNavIconLabel from '../BottomNavIconLabel'
-import ErrorBoundary from '../ErrorBoundary'
 import MeetingContent from '../MeetingContent'
 import MeetingContentHeader from '../MeetingContentHeader'
 import MeetingPhaseWrapper from '../MeetingPhaseWrapper'
@@ -29,6 +28,8 @@ import {REFLECTION_WIDTH} from '../../utils/multiplayerMasonry/masonryConstants'
 import EndMeetingButton from '../EndMeetingButton'
 import StageTimerControl from '../StageTimerControl'
 import StageTimerDisplay from './StageTimerDisplay'
+import MeetingHeaderAndPhase from '../MeetingHeaderAndPhase'
+import PhaseWrapper from '../PhaseWrapper'
 
 const minWidth = REFLECTION_WIDTH + 32
 
@@ -89,62 +90,63 @@ const RetroReflectPhase = (props: Props) => {
     ) === 0
   return (
     <MeetingContent>
-      <MeetingContentHeader
-        avatarGroup={avatarGroup}
-        isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
-        toggleSidebar={toggleSidebar}
-      >
-        <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.reflect]}</PhaseHeaderTitle>
-        <PhaseHeaderDescription>
-          {'Add anonymous reflections for each prompt'}
-        </PhaseHeaderDescription>
-      </MeetingContentHeader>
-      <ErrorBoundary>
-        <StageTimerDisplay stage={localStage!} />
-        <StyledOverflow>
-          <StyledWrapper phaseItemCount={reflectPrompts.length} ref={phaseRef}>
-            {reflectPrompts.map((prompt, idx) => (
-              <PhaseItemColumn
-                key={prompt.id}
-                meeting={newMeeting}
-                retroPhaseItemId={prompt.id}
-                question={prompt.question}
-                editorIds={prompt.editorIds}
-                description={prompt.description}
-                idx={idx}
-                phaseRef={phaseRef}
-              />
-            ))}
-          </StyledWrapper>
-        </StyledOverflow>
-        {isFacilitating && (
-          <StyledBottomBar>
-            {isComplete ? (
-              <BottomControlSpacer />
-            ) : (
-              <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
-            )}
-            <BottomNavControl
-              isBouncing={isDemoStageComplete || isReadyToGroup}
-              disabled={isEmpty}
-              onClick={() => gotoNext()}
-              onKeyDown={handleRightArrow(() => gotoNext())}
-              ref={gotoNextRef}
-            >
-              <BottomNavIconLabel
-                icon='arrow_forward'
-                iconColor='warm'
-                label={`Next: ${nextPhaseLabel}`}
-              />
-            </BottomNavControl>
-            <EndMeetingButton meetingId={meetingId} />
-          </StyledBottomBar>
-        )}
-        <MeetingHelpToggle
-          floatAboveBottomBar={isFacilitating}
-          menu={isDemoRoute() ? <DemoReflectHelpMenu /> : <ReflectHelpMenu />}
-        />
-      </ErrorBoundary>
+      <MeetingHeaderAndPhase>
+        <MeetingContentHeader
+          avatarGroup={avatarGroup}
+          isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
+          toggleSidebar={toggleSidebar}
+        >
+          <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.reflect]}</PhaseHeaderTitle>
+          <PhaseHeaderDescription>
+            {'Add anonymous reflections for each prompt'}
+          </PhaseHeaderDescription>
+        </MeetingContentHeader>
+          <PhaseWrapper>
+            <StageTimerDisplay stage={localStage!} />
+            <StyledOverflow>
+              <StyledWrapper phaseItemCount={reflectPrompts.length} ref={phaseRef}>
+                {reflectPrompts.map((prompt, idx) => (
+                  <PhaseItemColumn
+                    key={prompt.id}
+                    meeting={newMeeting}
+                    retroPhaseItemId={prompt.id}
+                    question={prompt.question}
+                    editorIds={prompt.editorIds}
+                    description={prompt.description}
+                    idx={idx}
+                    phaseRef={phaseRef}
+                  />
+                ))}
+              </StyledWrapper>
+            </StyledOverflow>
+          </PhaseWrapper>
+          <MeetingHelpToggle
+            menu={isDemoRoute() ? <DemoReflectHelpMenu /> : <ReflectHelpMenu />}
+          />
+      </MeetingHeaderAndPhase>
+      {isFacilitating && (
+        <StyledBottomBar>
+          {isComplete ? (
+            <BottomControlSpacer />
+          ) : (
+            <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
+          )}
+          <BottomNavControl
+            isBouncing={isDemoStageComplete || isReadyToGroup}
+            disabled={isEmpty}
+            onClick={() => gotoNext()}
+            onKeyDown={handleRightArrow(() => gotoNext())}
+            ref={gotoNextRef}
+          >
+            <BottomNavIconLabel
+              icon='arrow_forward'
+              iconColor='warm'
+              label={`Next: ${nextPhaseLabel}`}
+            />
+          </BottomNavControl>
+          <EndMeetingButton meetingId={meetingId} />
+        </StyledBottomBar>
+      )}
     </MeetingContent>
   )
 }

@@ -33,6 +33,7 @@ const ColumnWrapper = styled('div')({
 
 const ColumnHighlight = styled('div')<{isFocused: boolean}>(({isFocused}) => ({
   backgroundColor: isFocused ? PALETTE.BACKGROUND_MAIN_DARKENED : undefined,
+  borderRadius: 2,
   height: '100%',
   maxWidth: 416,
   maxHeight: 608,

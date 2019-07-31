@@ -8,7 +8,6 @@ import {ActionMeetingPhaseProps} from './ActionMeeting'
 import ActionMeetingUpdatesPrompt from './ActionMeetingUpdatesPrompt'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
-import ErrorBoundary from './ErrorBoundary'
 import MeetingContent from './MeetingContent'
 import MeetingContentHeader from './MeetingContentHeader'
 import MeetingPhaseWrapper from './MeetingPhaseWrapper'
@@ -26,6 +25,8 @@ import {phaseLabelLookup} from '../utils/meetings/lookups'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
 import EndMeetingButton from './EndMeetingButton'
 import findStageAfterId from '../utils/meetings/findStageAfterId'
+import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
+import PhaseWrapper from './PhaseWrapper'
 
 const BottomControlSpacer = styled('div')({
   minWidth: '6rem'
@@ -87,6 +88,7 @@ const ActionMeetingUpdates = (props: Props) => {
   const isFacilitating = facilitatorUserId === viewerId
   return (
     <MeetingContent>
+      <MeetingHeaderAndPhase>
       <MeetingContentHeader
         avatarGroup={avatarGroup}
         isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
@@ -94,7 +96,7 @@ const ActionMeetingUpdates = (props: Props) => {
       >
         <ActionMeetingUpdatesPrompt team={team} />
       </MeetingContentHeader>
-      <ErrorBoundary>
+      <PhaseWrapper>
         <StyledColumnsWrapper>
           <InnerColumnsWrapper>
             <TaskColumns
@@ -107,6 +109,9 @@ const ActionMeetingUpdates = (props: Props) => {
             />
           </InnerColumnsWrapper>
         </StyledColumnsWrapper>
+      </PhaseWrapper>
+        <MeetingHelpToggle menu={<UpdatesHelpMenu />} />
+      </MeetingHeaderAndPhase>
         {isFacilitating && (
           <StyledBottomBar>
             <BottomControlSpacer />
@@ -121,8 +126,6 @@ const ActionMeetingUpdates = (props: Props) => {
             <EndMeetingButton meetingId={meetingId} />
           </StyledBottomBar>
         )}
-      </ErrorBoundary>
-      <MeetingHelpToggle floatAboveBottomBar={isFacilitating} menu={<UpdatesHelpMenu />} />
     </MeetingContent>
   )
 }

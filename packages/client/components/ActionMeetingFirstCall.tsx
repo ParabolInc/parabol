@@ -7,7 +7,6 @@ import graphql from 'babel-plugin-relay/macro'
 import {ActionMeetingPhaseProps} from './ActionMeeting'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
-import ErrorBoundary from './ErrorBoundary'
 import MeetingContent from './MeetingContent'
 import MeetingContentHeader from './MeetingContentHeader'
 import MeetingHelpToggle from './MenuHelpToggle'
@@ -23,6 +22,8 @@ import handleRightArrow from '../utils/handleRightArrow'
 import lazyPreload from '../utils/lazyPreload'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import EndMeetingButton from './EndMeetingButton'
+import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
+import PhaseWrapper from './PhaseWrapper'
 
 const BottomControlSpacer = styled('div')({
   minWidth: '6rem'
@@ -39,7 +40,7 @@ interface Props extends ActionMeetingPhaseProps {
 const ActionMeetingFirstCallHelpMenu = lazyPreload(async () =>
   import(
     /* webpackChunkName: 'ActionMeetingFirstCallHelpMenu' */ './MeetingHelp/ActionMeetingFirstCallHelpMenu'
-  )
+    )
 )
 
 const FirstCallWrapper = styled('div')({
@@ -63,42 +64,43 @@ const ActionMeetingFirstCall = (props: Props) => {
   const phaseName = phaseLabelLookup[AGENDA_ITEMS]
   return (
     <MeetingContent>
-      <MeetingContentHeader
-        avatarGroup={avatarGroup}
-        isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
-        toggleSidebar={toggleSidebar}
-      />
-      <ErrorBoundary>
-        <FirstCallWrapper>
-          <MeetingPhaseHeading>{'Now, what do you need?'}</MeetingPhaseHeading>
+      <MeetingHeaderAndPhase>
+        <MeetingContentHeader
+          avatarGroup={avatarGroup}
+          isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
+          toggleSidebar={toggleSidebar}
+        />
+        <PhaseWrapper>
+          <FirstCallWrapper>
+            <MeetingPhaseHeading>{'Now, what do you need?'}</MeetingPhaseHeading>
 
-          <MeetingCopy>{`Time to add your ${AGENDA_ITEM_LABEL}s to the list.`}</MeetingCopy>
-          <AgendaShortcutHint />
-          {!isFacilitating && (
-            <MeetingFacilitationHint>
-              {'Waiting for'} <b>{preferredName}</b> {`to start the ${phaseName}`}
-            </MeetingFacilitationHint>
-          )}
-        </FirstCallWrapper>
-        {isFacilitating && (
-          <StyledBottomBar>
-            <BottomControlSpacer />
-            <BottomNavControl
-              isBouncing={minTimeComplete}
-              onClick={() => gotoNext()}
-              onKeyDown={handleRightArrow(() => gotoNext())}
-              ref={gotoNextRef}
-            >
-              <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={phaseName} />
-            </BottomNavControl>
-            <EndMeetingButton meetingId={meetingId} />
-          </StyledBottomBar>
-        )}
-      </ErrorBoundary>
-      <MeetingHelpToggle
-        floatAboveBottomBar={isFacilitating}
-        menu={<ActionMeetingFirstCallHelpMenu />}
-      />
+            <MeetingCopy>{`Time to add your ${AGENDA_ITEM_LABEL}s to the list.`}</MeetingCopy>
+            <AgendaShortcutHint />
+            {!isFacilitating && (
+              <MeetingFacilitationHint>
+                {'Waiting for'} <b>{preferredName}</b> {`to start the ${phaseName}`}
+              </MeetingFacilitationHint>
+            )}
+          </FirstCallWrapper>
+        </PhaseWrapper>
+        <MeetingHelpToggle
+          menu={<ActionMeetingFirstCallHelpMenu />}
+        />
+      </MeetingHeaderAndPhase>
+      {isFacilitating && (
+        <StyledBottomBar>
+          <BottomControlSpacer />
+          <BottomNavControl
+            isBouncing={minTimeComplete}
+            onClick={() => gotoNext()}
+            onKeyDown={handleRightArrow(() => gotoNext())}
+            ref={gotoNextRef}
+          >
+            <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={phaseName} />
+          </BottomNavControl>
+          <EndMeetingButton meetingId={meetingId} />
+        </StyledBottomBar>
+      )}
     </MeetingContent>
   )
 }
