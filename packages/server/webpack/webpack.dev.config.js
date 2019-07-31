@@ -35,20 +35,11 @@ module.exports = {
   },
   output: {
     path: path.join(PROJECT_ROOT, 'build'),
-    publicPath: '/static/',
-    filename: '[name]_[hash].js',
-    chunkFilename: '[name]_[chunkhash].js'
+    filename: '[name].js',
+    chunkFilename: '[name].chunk.js',
+    publicPath: '/static/'
   },
   resolve,
-  optimization: {
-    splitChunks: {
-      chunks: 'all',
-      // OK to be above 6 because we serve these via http2
-      maxAsyncRequests: 20,
-      maxInitialRequests: 20,
-      minSize: 4096
-    }
-  },
   plugins: [
     // reliably produces errors on rebuild, disabled for now
     // new HardSourceWebpackPlugin(),

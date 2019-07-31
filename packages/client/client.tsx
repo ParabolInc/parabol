@@ -25,7 +25,7 @@ if ((module as any).hot) {
   })
 }
 
-if ('serviceWorker' in navigator) {
+if (__PRODUCTION__ && 'serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     navigator.serviceWorker.register('/static/sw.js', {scope: '/'}).catch(console.error)
   })

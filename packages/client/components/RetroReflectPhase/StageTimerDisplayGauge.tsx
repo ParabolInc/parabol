@@ -21,7 +21,8 @@ const Gauge = styled('div')<{isTimeUp: boolean}>(({isTimeUp}) => ({
   padding: 8,
   textAlign: 'center',
   transition: `background 1s ${DECELERATE}`,
-  userSelect: 'none'
+  userSelect: 'none',
+  zIndex: 600 // MD snackbar elevation * 100 to leave room for conflicts
 }))
 
 const StageTimerDisplayGauge = (props: Props) => {
