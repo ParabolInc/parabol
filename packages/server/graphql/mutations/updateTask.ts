@@ -15,6 +15,7 @@ import {IUpdateTaskOnMutationArguments} from '../../../client/types/graphql'
 import {GQLContext} from '../graphql'
 import {validateTaskUserId} from './createTask'
 import Task from '../../database/types/Task'
+import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 
 const DEBOUNCE_TIME = ms('5m')
 
@@ -51,6 +52,7 @@ export default {
       sortOrder,
       content
     } = updatedTask
+    const validContent = normalizeRawDraftJS(content)
     const task = await r.table('Task').get(taskId)
     if (!task) return standardError(new Error('Task not found'), {userId: viewerId})
     const {teamId, userId} = task
@@ -75,7 +77,7 @@ export default {
       userId: nextUserId,
       status: status || task.status,
       sortOrder: sortOrder || task.sortOrder,
-      content: content || task.content,
+      content: content ? validContent : task.content,
       updatedAt: isSortOrderUpdate ? task.updatedAt : now
     })
 
@@ -83,7 +85,7 @@ export default {
     if (!isSortOrderUpdate) {
       // if this is anything but a sort update, log it to history
       const mergeDoc = {
-        content,
+        content: nextTask.content,
         taskId,
         status,
         assigneeId: nextTask.assigneeId,
