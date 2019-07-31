@@ -1,16 +1,4 @@
 import path from 'path'
-const pluginMacros = require('babel-plugin-macros')
-require('@babel/register')({
-  ignore: [/node_modules/],
-  extensions: ['.js', '.ts', '.tsx', '.graphql'],
-  plugins: [
-    [pluginMacros, {
-      relay: {
-        artifactDirectory: path.join('../client', '__generated__')
-      },
-    }],
-  ]
-})
 import express from 'express'
 import compression from 'compression'
 import cors from 'cors'

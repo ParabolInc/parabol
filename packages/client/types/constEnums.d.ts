@@ -3,7 +3,7 @@ export const enum Times {
   MAX_WAIT_TIME = 5000
 }
 
-const enum Breakpoint {
+export const enum Breakpoint {
   SIDEBAR_LEFT = 800,
   MEETING_FACILITATOR_BAR = 480
 }
