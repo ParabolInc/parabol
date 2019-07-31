@@ -8,6 +8,7 @@ import {DragSource as dragSource, DropTarget as dropTarget} from 'react-dnd'
 import {getEmptyImage} from 'react-dnd-html5-backend'
 import TaskDragLayer from './TaskDragLayer'
 import {DraggableTask_task} from '../../__generated__/DraggableTask_task.graphql'
+import ErrorBoundary from '../../components/ErrorBoundary'
 
 const importantTaskProps = ['content', 'status', 'assignee', 'sortOrder', 'integration']
 
@@ -48,9 +49,11 @@ class DraggableTask extends Component<Props> {
       connectDragSource(
         <div style={{marginBottom: '.625rem'}}>
           {isDragging && <TaskDragLayer task={task} />}
+          <ErrorBoundary>
           <div style={{opacity: isDragging ? 0.5 : 1}}>
             <NullableTask area={area} task={task} isDragging={isDragging} />
           </div>
+          </ErrorBoundary>
         </div>
       )
     )
