@@ -30,3 +30,22 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/static/sw.js', {scope: '/'}).catch(console.error)
   })
 }
+
+// window.addEventListener('beforeinstallprompt', (e) => {
+//   // Stash the event so it can be triggered later.
+//   console.log("ready to install")
+//   // call e.prompt() somewhere
+//   e.userChoice
+//     .then((choiceResult) => {
+//       if (choiceResult.outcome === 'accepted') {
+//         console.log('User accepted the A2HS prompt');
+//       } else {
+//         console.log('User dismissed the A2HS prompt');
+//       }
+//       e = null;
+//     });
+// });
+//
+// window.addEventListener('appinstalled', (evt) => {
+//   console.log('a2hs installed');
+// });
