@@ -20,7 +20,7 @@ import {RetroMeetingPhaseProps} from './RetroMeeting'
 import StyledError from './StyledError'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import useTimeoutWithReset from '../hooks/useTimeoutWithReset'
-import MeetingControlBar from '../modules/meeting/components/MeetingControlBar/MeetingControlBar'
+import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
 import AutoGroupReflectionsMutation from '../mutations/AutoGroupReflectionsMutation'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {VOTE} from '../utils/constants'
@@ -39,10 +39,6 @@ import PhaseWrapper from './PhaseWrapper'
 interface Props extends RetroMeetingPhaseProps, WithMutationProps, WithAtmosphereProps {
   team: RetroGroupPhase_team
 }
-
-const StyledBottomBar = styled(MeetingControlBar)({
-  justifyContent: 'space-between'
-})
 
 const CenteredControlBlock = styled('div')({
   display: 'flex'
@@ -115,7 +111,7 @@ const RetroGroupPhase = (props: Props) => {
         />
       </MeetingHeaderAndPhase>
       {isFacilitating && (
-        <StyledBottomBar>
+        <MeetingFacilitatorBar>
           {isComplete ? (
             <BottomControlSpacer />
           ) : (
@@ -145,7 +141,7 @@ const RetroGroupPhase = (props: Props) => {
             )}
           </CenteredControlBlock>
           <EndMeetingButton meetingId={meetingId} />
-        </StyledBottomBar>
+        </MeetingFacilitatorBar>
       )}
     </MeetingContent>
   )

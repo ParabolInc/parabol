@@ -10,7 +10,7 @@ import MeetingContent from './MeetingContent'
 import MeetingContentHeader from './MeetingContentHeader'
 import MeetingHelpToggle from './MenuHelpToggle'
 import useAtmosphere from '../hooks/useAtmosphere'
-import MeetingControlBar from '../modules/meeting/components/MeetingControlBar/MeetingControlBar'
+import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
 import MeetingCopy from '../modules/meeting/components/MeetingCopy/MeetingCopy'
 import MeetingPhaseHeading from '../modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
 import handleRightArrow from '../utils/handleRightArrow'
@@ -28,10 +28,6 @@ import PhaseWrapper from './PhaseWrapper'
 
 const BottomControlSpacer = styled('div')({
   minWidth: '6rem'
-})
-
-const StyledBottomBar = styled(MeetingControlBar)({
-  justifyContent: 'space-between'
 })
 
 interface Props extends ActionMeetingPhaseProps {
@@ -149,7 +145,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
         />
       </MeetingHeaderAndPhase>
       {isFacilitating && (
-        <StyledBottomBar>
+        <MeetingFacilitatorBar>
           <BottomControlSpacer />
           <BottomNavControl
             isBouncing={minTimeComplete}
@@ -160,7 +156,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
             <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={label} />
           </BottomNavControl>
           <EndMeetingButton meetingId={meetingId} />
-        </StyledBottomBar>
+        </MeetingFacilitatorBar>
       )}
     </MeetingContent>
   )

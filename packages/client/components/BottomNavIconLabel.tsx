@@ -1,7 +1,6 @@
 import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
 import Icon from './Icon'
-import {meetingBottomBarHeight} from '../styles/meeting'
 import ui from '../styles/ui'
 
 interface Props {
@@ -15,8 +14,7 @@ const Inner = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
-  height: meetingBottomBarHeight,
-  padding: '.5rem .75rem .25rem'
+  padding: 8
 })
 
 const StyledIcon = styled(Icon)<{iconColor?: string}>(({iconColor}) => ({

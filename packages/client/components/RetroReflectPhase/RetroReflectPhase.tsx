@@ -1,6 +1,6 @@
 import {RetroReflectPhase_team} from '../../__generated__/RetroReflectPhase_team.graphql'
 import ms from 'ms'
-import React, {useRef} from 'react'
+import React, {useRef, useState} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
@@ -17,7 +17,7 @@ import {RetroMeetingPhaseProps} from '../RetroMeeting'
 import PhaseItemColumn from './PhaseItemColumn'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useTimeout from '../../hooks/useTimeout'
-import MeetingControlBar from '../../modules/meeting/components/MeetingControlBar/MeetingControlBar'
+import MeetingFacilitatorBar from '../../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
 import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
 import {GROUP} from '../../utils/constants'
 import handleRightArrow from '../../utils/handleRightArrow'
@@ -30,22 +30,13 @@ import StageTimerControl from '../StageTimerControl'
 import StageTimerDisplay from './StageTimerDisplay'
 import MeetingHeaderAndPhase from '../MeetingHeaderAndPhase'
 import PhaseWrapper from '../PhaseWrapper'
+import SwipeableViews from 'react-swipeable-views'
+import useBreakpoint from '../../hooks/useBreakpoint'
 
-const minWidth = REFLECTION_WIDTH + 32
+// const minWidth = REFLECTION_WIDTH + 32
 
-const StyledOverflow = styled(Overflow)({
-  // using position helps with overflow of columns for small screens
-  position: 'relative'
-})
+const StyledWrapper = styled(MeetingPhaseWrapper)({
 
-const StyledWrapper = styled(MeetingPhaseWrapper)<{phaseItemCount: number}>(({phaseItemCount}) => ({
-  minWidth: phaseItemCount * minWidth,
-  // using position helps with overflow of columns for small screens
-  position: 'absolute'
-}))
-
-const StyledBottomBar = styled(MeetingControlBar)({
-  justifyContent: 'space-between'
 })
 
 const BottomControlSpacer = styled('div')({
@@ -88,6 +79,9 @@ const RetroReflectPhase = (props: Props) => {
       (sum, prompt) => sum + (prompt.editorIds ? prompt.editorIds.length : 0),
       0
     ) === 0
+  const [activeIdx, setActiveIdx] = useState(0)
+  const isDesktop = useBreakpoint(REFLECTION_WIDTH * 2 + 32)
+  console.log('isDes', isDesktop)
   return (
     <MeetingContent>
       <MeetingHeaderAndPhase>
@@ -103,29 +97,49 @@ const RetroReflectPhase = (props: Props) => {
         </MeetingContentHeader>
           <PhaseWrapper>
             <StageTimerDisplay stage={localStage!} />
-            <StyledOverflow>
               <StyledWrapper phaseItemCount={reflectPrompts.length} ref={phaseRef}>
-                {reflectPrompts.map((prompt, idx) => (
-                  <PhaseItemColumn
-                    key={prompt.id}
-                    meeting={newMeeting}
-                    retroPhaseItemId={prompt.id}
-                    question={prompt.question}
-                    editorIds={prompt.editorIds}
-                    description={prompt.description}
-                    idx={idx}
-                    phaseRef={phaseRef}
-                  />
-                ))}
+                {isDesktop ?
+                  reflectPrompts.map((prompt, idx) => (
+                      <PhaseItemColumn
+                        key={prompt.id}
+                        meeting={newMeeting}
+                        retroPhaseItemId={prompt.id}
+                        question={prompt.question}
+                        editorIds={prompt.editorIds}
+                        description={prompt.description}
+                        idx={idx}
+                        phaseRef={phaseRef}
+                      />
+                    )) :
+                  <SwipeableViews
+                    enableMouseEvents
+                    index={activeIdx}
+                    onChangeIndex={(idx) => setActiveIdx(idx)}
+                    containerStyle={{height: '100%'}}
+                    style={{height: '100%'}}
+                  >
+                    {reflectPrompts.map((prompt, idx) => (
+                      <PhaseItemColumn
+                        key={prompt.id}
+                        meeting={newMeeting}
+                        retroPhaseItemId={prompt.id}
+                        question={prompt.question}
+                        editorIds={prompt.editorIds}
+                        description={prompt.description}
+                        idx={idx}
+                        phaseRef={phaseRef}
+                      />
+                    ))}
+                  </SwipeableViews>
+                }
               </StyledWrapper>
-            </StyledOverflow>
           </PhaseWrapper>
           <MeetingHelpToggle
             menu={isDemoRoute() ? <DemoReflectHelpMenu /> : <ReflectHelpMenu />}
           />
       </MeetingHeaderAndPhase>
       {isFacilitating && (
-        <StyledBottomBar>
+        <MeetingFacilitatorBar>
           {isComplete ? (
             <BottomControlSpacer />
           ) : (
@@ -145,7 +159,7 @@ const RetroReflectPhase = (props: Props) => {
             />
           </BottomNavControl>
           <EndMeetingButton meetingId={meetingId} />
-        </StyledBottomBar>
+        </MeetingFacilitatorBar>
       )}
     </MeetingContent>
   )

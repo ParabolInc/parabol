@@ -1,5 +1,5 @@
 import {CheckInControls_teamMember} from '../../../../__generated__/CheckInControls_teamMember.graphql'
-import React, {useRef} from 'react'
+import React, {Ref, useRef} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
@@ -12,16 +12,21 @@ import useHotkey from '../../../../hooks/useHotkey'
 import useTimeout from '../../../../hooks/useTimeout'
 import NewMeetingCheckInMutation from '../../../../mutations/NewMeetingCheckInMutation'
 import handleRightArrow from '../../../../utils/handleRightArrow'
-import {DASH_SIDEBAR} from '../../../../components/Dashboard/DashSidebar'
 import useEventCallback from '../../../../hooks/useEventCallback'
+import {END_MEETING_BUTTON} from '../../../../components/EndMeetingButton'
+import {Breakpoint} from '../../../../types/constEnums'
 
 const ButtonBlock = styled('div')({
-  display: 'flex'
+  display: 'flex',
+  flex: 1,
+  justifyContent: 'center',
+  marginLeft: END_MEETING_BUTTON.WIDTH // width of end meeting button,
 })
 
 interface Props {
   handleGotoNext: ReturnType<typeof useGotoNext>
   teamMember: CheckInControls_teamMember
+  endMeetingButtonRef: Ref<HTMLButtonElement>
 }
 
 const CheckInControls = (props: Props) => {
@@ -53,11 +58,12 @@ const CheckInControls = (props: Props) => {
   useHotkey('h', handleOnClickPresent)
   useHotkey('n', handleOnClickAbsent)
   const isReadyForNext = useTimeout(30000)
-  const isSmallerBreakpoint = !useBreakpoint(DASH_SIDEBAR.BREAKPOINT)
-  const nextLabel = isSmallerBreakpoint ? 'Here' : `${preferredName} is Here`
-  const skipLabel = isSmallerBreakpoint ? 'Not Here' : `${preferredName} is Not Here`
+  const isMobile = !useBreakpoint(Breakpoint.MEETING_FACILITATOR_BAR)
+  const nextLabel = isMobile ? 'Here' : `${preferredName} is Here`
+  const skipLabel = isMobile ? 'Not Here' : `${preferredName} is Not Here`
+  const Wrapper = isMobile ? React.Fragment : ButtonBlock
   return (
-    <ButtonBlock>
+    <Wrapper>
       <BottomNavControl
         isBouncing={isReadyForNext}
         aria-label={`Mark ${preferredName} as “here” and move on`}
@@ -74,7 +80,7 @@ const CheckInControls = (props: Props) => {
       >
         <BottomNavIconLabel icon='remove_circle' iconColor='red' label={skipLabel} />
       </BottomNavControl>
-    </ButtonBlock>
+    </Wrapper>
   )
 }
 

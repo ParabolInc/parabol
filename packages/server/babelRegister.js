@@ -34,17 +34,17 @@ require('@babel/register')({
       }
     ],
   ],
-  presets: [
-    [
-      presetEnv,
-      {
-        targets: {
-          node: 'current'
-        }
-      }
-    ],
-    presetFlow,
-    presetReact,
-    presetTypescript
-  ]
+  // presets: [
+  //   [
+  //     presetEnv,
+  //     {
+  //       targets: {
+  //         node: 'current'
+  //       }
+  //     }
+  //   ],
+  //   presetFlow,
+  //   presetReact,
+  //   presetTypescript
+  // ]
 })

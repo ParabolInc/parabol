@@ -15,7 +15,7 @@ import MeetingHelpToggle from './MenuHelpToggle'
 import TaskColumns from './TaskColumns/TaskColumns'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useTimeout from '../hooks/useTimeout'
-import MeetingControlBar from '../modules/meeting/components/MeetingControlBar/MeetingControlBar'
+import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
 import {AreaEnum, IUpdatesStage, NewMeetingPhaseTypeEnum} from '../types/graphql'
 import getTaskById from '../utils/getTaskById'
 import handleRightArrow from '../utils/handleRightArrow'
@@ -30,10 +30,6 @@ import PhaseWrapper from './PhaseWrapper'
 
 const BottomControlSpacer = styled('div')({
   minWidth: '6rem'
-})
-
-const StyledBottomBar = styled(MeetingControlBar)({
-  justifyContent: 'space-between'
 })
 
 const StyledColumnsWrapper = styled(MeetingPhaseWrapper)({
@@ -113,7 +109,7 @@ const ActionMeetingUpdates = (props: Props) => {
         <MeetingHelpToggle menu={<UpdatesHelpMenu />} />
       </MeetingHeaderAndPhase>
         {isFacilitating && (
-          <StyledBottomBar>
+          <MeetingFacilitatorBar>
             <BottomControlSpacer />
             <BottomNavControl
               isBouncing={minTimeComplete}
@@ -124,7 +120,7 @@ const ActionMeetingUpdates = (props: Props) => {
               <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={`Next: ${label}`} />
             </BottomNavControl>
             <EndMeetingButton meetingId={meetingId} />
-          </StyledBottomBar>
+          </MeetingFacilitatorBar>
         )}
     </MeetingContent>
   )

@@ -12,7 +12,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import {useGotoNext} from '../hooks/useMeeting'
 import CheckInControls from '../modules/meeting/components/CheckInControls/CheckInControls'
 import NewMeetingCheckInPrompt from '../modules/meeting/components/MeetingCheckInPrompt/NewMeetingCheckInPrompt'
-import MeetingControlBar from '../modules/meeting/components/MeetingControlBar/MeetingControlBar'
+import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
 import MeetingFacilitationHint from '../modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
@@ -34,14 +34,6 @@ const CheckIn = styled('div')({
 
 const Hint = styled('div')({
   marginTop: 16
-})
-
-const BottomControlSpacer = styled('div')({
-  minWidth: 96
-})
-
-const StyledBottomBar = styled(MeetingControlBar)({
-  justifyContent: 'space-between'
 })
 
 const StyledIcon = styled(Icon)({
@@ -112,11 +104,10 @@ const NewMeetingCheckIn = (props: Props) => {
         />
       </MeetingHeaderAndPhase>
       {isFacilitating && (
-        <StyledBottomBar>
-          <BottomControlSpacer />
+        <MeetingFacilitatorBar>
           <CheckInControls handleGotoNext={handleGotoNext} teamMember={teamMember} />
           <EndMeetingButton meetingId={meetingId} />
-        </StyledBottomBar>
+        </MeetingFacilitatorBar>
       )}
     </MeetingContent>
   )

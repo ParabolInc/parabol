@@ -29,8 +29,7 @@ const BottomNavControl = styled(FlatButton)<Props>(({isBouncing}) => ({
   animation: isBouncing ? `${BounceKeyframes.toString()} 2s infinite` : undefined,
   border: 0,
   borderRadius: 0,
-  height: 56,
-  minWidth: '6rem',
+  minWidth: 48,
   padding: 0,
   transformOrigin: 'center bottom'
 }))

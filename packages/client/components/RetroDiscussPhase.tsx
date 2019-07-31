@@ -16,7 +16,7 @@ import {RetroMeetingPhaseProps} from './RetroMeeting'
 import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import MeetingAgendaCards from '../modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
-import MeetingControlBar from '../modules/meeting/components/MeetingControlBar/MeetingControlBar'
+import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
 import {MD_ICONS_SIZE_18} from '../styles/icons'
 import {meetingVoteIcon} from '../styles/meeting'
 import appTheme from '../styles/theme/appTheme'
@@ -130,10 +130,6 @@ const BottomControlSpacer = styled('div')({
   minWidth: 96
 })
 
-const StyledBottomBar = styled(MeetingControlBar)({
-  justifyContent: 'space-between'
-})
-
 const DiscussHelpMenu = lazyPreload(async () =>
   import(
     /* webpackChunkName: 'DiscussHelpMenu' */ './MeetingHelp/DiscussHelpMenu'
@@ -222,7 +218,7 @@ const RetroDiscussPhase = (props: Props) => {
         <EditorHelpModalContainer />
       </MeetingHeaderAndPhase>
       {isFacilitating && (
-        <StyledBottomBar>
+        <MeetingFacilitatorBar>
           <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
           {nextStageRes && (
             <React.Fragment>
@@ -238,7 +234,7 @@ const RetroDiscussPhase = (props: Props) => {
           )}
           <EndMeetingButton meetingId={meetingId} />
           {!nextStageRes && <BottomControlSpacer />}
-        </StyledBottomBar>
+        </MeetingFacilitatorBar>
       )}
     </MeetingContent>
   )

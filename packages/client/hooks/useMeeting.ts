@@ -25,8 +25,8 @@ import updateLocalStage from '../utils/relay/updateLocalStage'
 import {useMeetingLocalStateTeam} from '../__generated__/useMeetingLocalStateTeam.graphql'
 import useRouter from './useRouter'
 import useBreakpoint from './useBreakpoint'
-import {DASH_SIDEBAR} from '../components/Dashboard/DashSidebar'
 import useResumeFacilitation from './useResumeFacilitation'
+import {Breakpoint} from '../types/constEnums'
 
 type Team = Omit<useMeetingTeam, ' $refType'>
 
@@ -258,7 +258,7 @@ const useMeeting = (meetingType: MeetingTypeEnum, team: Team | null) => {
   useDemoMeeting()
   useDocumentTitle(`${meetingTypeToLabel[meetingType]} Meeting | ${teamName}`)
   const teamId = team ? team.id : ''
-  const isDesktop = useBreakpoint(DASH_SIDEBAR.BREAKPOINT)
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const toggleSidebar = useToggleSidebar(teamId)
   const handleMenuClick = useHandleMenuClick(teamId, isDesktop)
   useMobileSidebarDefaultClosed(isDesktop, toggleSidebar)

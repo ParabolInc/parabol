@@ -16,7 +16,7 @@ import PhaseHeaderTitle from './PhaseHeaderTitle'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
 import ScrollableBlock from './ScrollableBlock'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
-import MeetingControlBar from '../modules/meeting/components/MeetingControlBar/MeetingControlBar'
+import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
 import {minWidthMediaQueries} from '../styles/breakpoints'
 import {MD_ICONS_SIZE_18} from '../styles/icons'
 import {meetingVoteIcon} from '../styles/meeting'
@@ -122,10 +122,6 @@ const TeamVotesCountLabel = styled(VoteCountLabel)({
   minWidth: '1.25rem'
 })
 
-const StyledBottomBar = styled(MeetingControlBar)({
-  justifyContent: 'space-between'
-})
-
 const BottomControlSpacer = styled('div')({
   minWidth: 96
 })
@@ -201,7 +197,7 @@ const RetroVotePhase = (props: Props) => {
         />
       </MeetingHeaderAndPhase>
       {isFacilitating && (
-        <StyledBottomBar>
+        <MeetingFacilitatorBar>
           {isComplete ? (
             <BottomControlSpacer />
           ) : (
@@ -221,7 +217,7 @@ const RetroVotePhase = (props: Props) => {
             />
           </BottomNavControl>
           <EndMeetingButton meetingId={meetingId} />
-        </StyledBottomBar>
+        </MeetingFacilitatorBar>
       )}
     </MeetingContent>
   )

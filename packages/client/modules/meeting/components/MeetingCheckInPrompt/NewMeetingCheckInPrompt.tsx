@@ -9,7 +9,7 @@ import NewCheckInQuestion from './NewCheckInQuestion'
 import NewMeetingCheckInGreeting from '../NewMeetingCheckInGreeting'
 import defaultUserAvatar from '../../../../styles/theme/images/avatar-user.svg'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
-import {DASH_SIDEBAR} from '../../../../components/Dashboard/DashSidebar'
+import {Breakpoint} from '../../../../types/constEnums'
 
 const PromptBlock = styled('div')({
   alignItems: 'center',
@@ -35,7 +35,7 @@ interface Props {
 const NewMeetingCheckinPrompt = (props: Props) => {
   const {team, teamMember} = props
   const {newMeeting} = team
-  const isLargeViewport = useBreakpoint(DASH_SIDEBAR.BREAKPOINT)
+  const isLargeViewport = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   if (!newMeeting) return null
   const {picture} = teamMember
   const checkInGreeting = newMeeting.localPhase.checkInGreeting!

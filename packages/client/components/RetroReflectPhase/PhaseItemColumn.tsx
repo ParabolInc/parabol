@@ -22,20 +22,22 @@ import getNextSortOrder from '../../utils/getNextSortOrder'
 import withMutationProps, {WithMutationProps} from '../../utils/relay/withMutationProps'
 import {PALETTE} from '../../styles/paletteV2'
 import {ICON_SIZE} from '../../styles/typographyV2'
+import {REFLECTION_WIDTH} from '../../utils/multiplayerMasonry/masonryConstants'
 
 const ColumnWrapper = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
   flex: 1,
-  justifyContent: 'flex-start'
+  justifyContent: 'flex-start',
+  height: '100%'
 })
 
 const ColumnHighlight = styled('div')<{isFocused: boolean}>(({isFocused}) => ({
   backgroundColor: isFocused ? PALETTE.BACKGROUND_MAIN_DARKENED : undefined,
   borderRadius: 2,
   height: '100%',
-  maxWidth: 416,
+  maxWidth: REFLECTION_WIDTH + 80,
   maxHeight: 608,
   padding: 16,
   transition: `background 150ms ${DECELERATE}`,

@@ -13,7 +13,7 @@ import MeetingHelpToggle from './MenuHelpToggle'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useTimeout from '../hooks/useTimeout'
 import AgendaShortcutHint from '../modules/meeting/components/AgendaShortcutHint/AgendaShortcutHint'
-import MeetingControlBar from '../modules/meeting/components/MeetingControlBar/MeetingControlBar'
+import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
 import MeetingCopy from '../modules/meeting/components/MeetingCopy/MeetingCopy'
 import MeetingFacilitationHint from '../modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint'
 import MeetingPhaseHeading from '../modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
@@ -27,10 +27,6 @@ import PhaseWrapper from './PhaseWrapper'
 
 const BottomControlSpacer = styled('div')({
   minWidth: '6rem'
-})
-
-const StyledBottomBar = styled(MeetingControlBar)({
-  justifyContent: 'space-between'
 })
 
 interface Props extends ActionMeetingPhaseProps {
@@ -88,7 +84,7 @@ const ActionMeetingFirstCall = (props: Props) => {
         />
       </MeetingHeaderAndPhase>
       {isFacilitating && (
-        <StyledBottomBar>
+        <MeetingFacilitatorBar>
           <BottomControlSpacer />
           <BottomNavControl
             isBouncing={minTimeComplete}
@@ -99,7 +95,7 @@ const ActionMeetingFirstCall = (props: Props) => {
             <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={phaseName} />
           </BottomNavControl>
           <EndMeetingButton meetingId={meetingId} />
-        </StyledBottomBar>
+        </MeetingFacilitatorBar>
       )}
     </MeetingContent>
   )

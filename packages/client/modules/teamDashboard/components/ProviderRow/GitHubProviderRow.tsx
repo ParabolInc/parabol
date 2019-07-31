@@ -13,18 +13,15 @@ import ProviderCard from '../../../../components/ProviderCard'
 import ProviderActions from '../../../../components/ProviderActions'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
-import {Providers} from '../../../../types/constEnums'
+import {Breakpoint, Providers} from '../../../../types/constEnums'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 import {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import GitHubClientManager from '../../../../utils/GitHubClientManager'
-import {DASH_SIDEBAR} from '../../../../components/Dashboard/DashSidebar'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 
 const StyledButton = styled(FlatButton)({
@@ -85,7 +82,7 @@ const GitHubProviderRow = (props: Props) => {
     GitHubClientManager.openOAuth(atmosphere, teamId, mutationProps)
   }
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
-  const isDesktop = useBreakpoint(DASH_SIDEBAR.BREAKPOINT)
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   return (
     <ProviderCard>
       <GitHubProviderLogo />

@@ -124,6 +124,7 @@
     "webpack-dev-server": "^3.1.4",
     "webpack-hot-client": "^4.1.1",
     "webpack-hot-middleware": "^2.22.2",
+    "webpack-node-externals": "^1.7.2",
     "webpack-s3-plugin": "^1.0.0-rc.0",
     "wrkbx": "^4.3.1-1"
   },
