@@ -5,10 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## vNext
+## v3.18.0 2019-Aug-01
 
-### Fixed
+## Added
+* Repo refactored to a mono repo, clearly dividing the server and client
+* Added a service worker
+
+## Fixed
 * Timer snackbar z-index (#3050)
+* fix theme color (address bar on mobile)
 
 ## v3.17.2 2019-Jul-30
 
