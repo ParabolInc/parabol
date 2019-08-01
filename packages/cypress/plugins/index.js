@@ -10,7 +10,7 @@ module.exports = (on, config) => {
     webpackOptions,
     watchOptions: {}
   }
-  const envFile = path.join(__dirname, '..', process.env.CI ? '.env' : '.env.test')
+  const envFile = path.join(__dirname, '..', '.env')
   config.env = dotenv.config({path: envFile}).parsed
   on('file:preprocessor', wp(options))
   const dbOptions = {source: 'cypress', target: 'test'}
