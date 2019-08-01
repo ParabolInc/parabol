@@ -76,10 +76,10 @@ jobs:
               sudo python get-pip.py
               sudo pip install rethinkdb==2.3.0
               rethinkdb-restore --force packages/cypress/fixtures/rdb_test.tar.gz
-              yarn db:migrate-testing
-              yarn build
-              yarn postdeploy
-              yarn test:cypress
+              yarn workspace parabol-server db:migrate-testing
+              yarn workspace parabol-server build
+              yarn workspace parabol-server postdeploy
+              yarn workspace parabol-server test:cypress
             fi
       - deploy:
           name: Possible deployment build
@@ -98,14 +98,14 @@ jobs:
             fi
             if [ -n "${GITHUB_REMOTE}" ]; then
               cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV ./packages/server/.env
-              cp $DEVOPS_WORKDIR/keys/.googlecloudkey.$DEPLOY_ENV.json ./.googlecloudkey.json
-              npm run build:deploy &&
+              cp $DEVOPS_WORKDIR/keys/.googlecloudkey.$DEPLOY_ENV.json ./packages/server/.googlecloudkey.json
+              yarn workspace parabol-server build:deploy &&
               export ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
               git config --global user.name "Parabol CircleCI"
               git config --global user.email "admin+circleci@parabol.co"
-              git add .googlecloudkey.json build -f
-              git add src/server/graphql/queryMap.json build -f
-              git add src/__generated__ build -f
+              git add ./packages/server/.googlecloudkey.json build -f
+              git add ./packages/server/graphql/queryMap.json build -f
+              git add ./packages/client/__generated__ build -f
               git commit -m "build $ACTION_VERSION"
             fi
       - deploy:

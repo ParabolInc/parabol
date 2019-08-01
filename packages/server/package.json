@@ -161,7 +161,7 @@
     "jsonwebtoken": "^8.5.0",
     "mailcomposer": "^4.0.1",
     "mailgun-js": "^0.13.1",
-    "migrate-rethinkdb": "^1.5.0",
+    "migrate-rethinkdb": "^1.6.0",
     "mime-types": "^2.1.16",
     "ms": "^2.0.0",
     "node-env-flag": "0.1.0",
