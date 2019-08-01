@@ -1,0 +1,300 @@
+
+{
+  "header": {
+    "event": "Allocation failed - JavaScript heap out of memory",
+    "trigger": "FatalError",
+    "filename": "report.20190729.142425.12174.0.001.json",
+    "dumpEventTime": "2019-07-29T14:24:25Z",
+    "dumpEventTimeStamp": "1564435465456",
+    "processId": 12174,
+    "cwd": "/home/matt/code/action2",
+    "commandLine": [
+      "/usr/local/bin/node",
+      "/home/matt/.local/share/JetBrains/Toolbox/apps/WebStorm/ch-0/192.5728.87/plugins/JavaScriptLanguage/jsLanguageServicesImpl/js-language-service.js",
+      "-id=1564434750820",
+      "-debug-name=typescript"
+    ],
+    "nodejsVersion": "v11.14.0",
+    "glibcVersionRuntime": "2.27",
+    "glibcVersionCompiler": "2.12",
+    "wordSize": 64,
+    "arch": "x64",
+    "platform": "linux",
+    "componentVersions": {
+      "node": "11.14.0",
+      "v8": "7.0.276.38-node.18",
+      "uv": "1.27.0",
+      "zlib": "1.2.11",
+      "brotli": "1.0.7",
+      "ares": "1.15.0",
+      "modules": "67",
+      "nghttp2": "1.37.0",
+      "napi": "4",
+      "llhttp": "1.1.1",
+      "http_parser": "2.8.0",
+      "openssl": "1.1.1b",
+      "cldr": "34.0",
+      "icu": "63.1",
+      "tz": "2018e",
+      "unicode": "11.0"
+    },
+    "release": {
+      "name": "node",
+      "headersUrl": "https://nodejs.org/download/release/v11.14.0/node-v11.14.0-headers.tar.gz",
+      "sourceUrl": "https://nodejs.org/download/release/v11.14.0/node-v11.14.0.tar.gz"
+    },
+    "osName": "Linux",
+    "osRelease": "4.15.0-54-generic",
+    "osVersion": "#58-Ubuntu SMP Mon Jun 24 10:55:24 UTC 2019",
+    "osMachine": "x86_64",
+    "host": "deep-learn"
+  },
+  "javascriptStack": {
+    "message": "No stack.",
+    "stack": [
+      "Unavailable."
+    ]
+  },
+  "nativeStack": [
+    {
+      "pc": "0x0000000000a6e18d",
+      "symbol": "report::TriggerNodeReport(v8::Isolate*, node::Environment*, char const*, char const*, std::string const&, v8::Local<v8::String>) [/usr/local/bin/node]"
+    },
+    {
+      "pc": "0x000000000095c8a3",
+      "symbol": "node::OnFatalError(char const*, char const*) [/usr/local/bin/node]"
+    },
+    {
+      "pc": "0x0000000000b3b77e",
+      "symbol": "v8::Utils::ReportOOMFailure(v8::internal::Isolate*, char const*, bool) [/usr/local/bin/node]"
+    },
+    {
+      "pc": "0x0000000000b3b9b4",
+      "symbol": "v8::internal::V8::FatalProcessOutOfMemory(v8::internal::Isolate*, char const*, bool) [/usr/local/bin/node]"
+    },
+    {
+      "pc": "0x0000000000f3b002",
+      "symbol": " [/usr/local/bin/node]"
+    },
+    {
+      "pc": "0x0000000000f3b108",
+      "symbol": "v8::internal::Heap::CheckIneffectiveMarkCompact(unsigned long, double) [/usr/local/bin/node]"
+    },
+    {
+      "pc": "0x0000000000f47828",
+      "symbol": "v8::internal::Heap::PerformGarbageCollection(v8::internal::GarbageCollector, v8::GCCallbackFlags) [/usr/local/bin/node]"
+    },
+    {
+      "pc": "0x0000000000f4833b",
+      "symbol": "v8::internal::Heap::CollectGarbage(v8::internal::AllocationSpace, v8::internal::GarbageCollectionReason, v8::GCCallbackFlags) [/usr/local/bin/node]"
+    },
+    {
+      "pc": "0x0000000000f4b071",
+      "symbol": "v8::internal::Heap::AllocateRawWithRetryOrFail(int, v8::internal::AllocationSpace, v8::internal::AllocationAlignment) [/usr/local/bin/node]"
+    },
+    {
+      "pc": "0x0000000000f152a4",
+      "symbol": "v8::internal::Factory::NewFillerObject(int, bool, v8::internal::AllocationSpace) [/usr/local/bin/node]"
+    },
+    {
+      "pc": "0x00000000011cb5ae",
+      "symbol": "v8::internal::Runtime_AllocateInNewSpace(int, v8::internal::Object**, v8::internal::Isolate*) [/usr/local/bin/node]"
+    },
+    {
+      "pc": "0x000007997bb4fc5d",
+      "symbol": ""
+    }
+  ],
+  "javascriptHeap": {
+    "totalMemory": 1512906752,
+    "totalCommittedMemory": 1508915168,
+    "usedMemory": 1420870896,
+    "availableMemory": 30049480,
+    "memoryLimit": 1526909922,
+    "heapSpaces": {
+      "read_only_space": {
+        "memorySize": 524288,
+        "committedMemory": 42224,
+        "capacity": 515584,
+        "used": 33520,
+        "available": 482064
+      },
+      "new_space": {
+        "memorySize": 33554432,
+        "committedMemory": 31491656,
+        "capacity": 16498688,
+        "used": 1233136,
+        "available": 15265552
+      },
+      "old_space": {
+        "memorySize": 1367543808,
+        "committedMemory": 1366798760,
+        "capacity": 1312462360,
+        "used": 1311971696,
+        "available": 490664
+      },
+      "code_space": {
+        "memorySize": 6291456,
+        "committedMemory": 6050496,
+        "capacity": 5165856,
+        "used": 5165856,
+        "available": 0
+      },
+      "map_space": {
+        "memorySize": 1585152,
+        "committedMemory": 1124416,
+        "capacity": 734320,
+        "used": 734320,
+        "available": 0
+      },
+      "large_object_space": {
+        "memorySize": 103407616,
+        "committedMemory": 103407616,
+        "capacity": 115543568,
+        "used": 101732368,
+        "available": 13811200
+      },
+      "new_large_object_space": {
+        "memorySize": 0,
+        "committedMemory": 0,
+        "capacity": 0,
+        "used": 0,
+        "available": 0
+      }
+    }
+  },
+  "resourceUsage": {
+    "userCpuSeconds": 253.589,
+    "kernelCpuSeconds": 5.32546,
+    "cpuConsumptionPercent": 36.2625,
+    "maxRss": 10138980352,
+    "pageFaults": {
+      "IORequired": 0,
+      "IONotRequired": 1488543
+    },
+    "fsActivity": {
+      "reads": 1448,
+      "writes": 40
+    }
+  },
+  "uvthreadResourceUsage": {
+    "userCpuSeconds": 152.528,
+    "kernelCpuSeconds": 2.98848,
+    "cpuConsumptionPercent": 21.7811,
+    "fsActivity": {
+      "reads": 1448,
+      "writes": 40
+    }
+  },
+  "libuv": [
+  ],
+  "environmentVariables": {
+    "PATH": "/usr/local/cuda-10.0/bin:/home/matt/bin:/home/matt/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/lib/jvm/java-8-oracle/bin:/usr/lib/jvm/java-8-oracle/db/bin:/usr/lib/jvm/java-8-oracle/jre/bin",
+    "XAUTHORITY": "/run/user/1000/gdm/Xauthority",
+    "XMODIFIERS": "@im=ibus",
+    "XDG_DATA_DIRS": "/home/matt/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share/:/usr/share/ubuntu:/home/matt/.local/share/flatpak/exports/share/:/var/lib/flatpak/exports/share/:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop:/var/lib/snapd/desktop",
+    "GDMSESSION": "ubuntu",
+    "MANDATORY_PATH": "/usr/share/gconf/ubuntu.mandatory.path",
+    "TEXTDOMAINDIR": "/usr/share/locale/",
+    "GTK_IM_MODULE": "ibus",
+    "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus",
+    "DEFAULTS_PATH": "/usr/share/gconf/ubuntu.default.path",
+    "XDG_CURRENT_DESKTOP": "ubuntu:GNOME",
+    "SSH_AGENT_PID": "2385",
+    "QT4_IM_MODULE": "xim",
+    "SESSION_MANAGER": "local/deep-learn:@/tmp/.ICE-unix/2278,unix/deep-learn:/tmp/.ICE-unix/2278",
+    "USERNAME": "matt",
+    "LOGNAME": "matt",
+    "PWD": "/home/matt/code/action2",
+    "DERBY_HOME": "/usr/lib/jvm/java-8-oracle/db",
+    "IM_CONFIG_PHASE": "2",
+    "GJS_DEBUG_TOPICS": "JS ERROR;JS LOG",
+    "SHELL": "/bin/bash",
+    "GIO_LAUNCHED_DESKTOP_FILE": "/home/matt/.local/share/applications/jetbrains-webstorm.desktop",
+    "GTK2_MODULES": "overlay-scrollbar",
+    "J2SDKDIR": "/usr/lib/jvm/java-8-oracle",
+    "OLDPWD": "/home/matt/.local/share/JetBrains/Toolbox/apps/WebStorm/ch-0/192.5728.87/bin",
+    "GNOME_DESKTOP_SESSION_ID": "this-is-deprecated",
+    "GTK_MODULES": "gail:atk-bridge",
+    "J2REDIR": "/usr/lib/jvm/java-8-oracle/jre",
+    "CLUTTER_IM_MODULE": "xim",
+    "TEXTDOMAIN": "im-config",
+    "XDG_SESSION_DESKTOP": "ubuntu",
+    "SHLVL": "0",
+    "QT_IM_MODULE": "ibus",
+    "JAVA_HOME": "/usr/lib/jvm/java-8-oracle",
+    "XDG_CONFIG_DIRS": "/etc/xdg/xdg-ubuntu:/etc/xdg",
+    "LANG": "en_US.UTF-8",
+    "XDG_SESSION_ID": "2",
+    "XDG_SESSION_TYPE": "x11",
+    "DISPLAY": ":1",
+    "GPG_AGENT_INFO": "/run/user/1000/gnupg/S.gpg-agent:0:1",
+    "DESKTOP_SESSION": "ubuntu",
+    "USER": "matt",
+    "XDG_MENU_PREFIX": "gnome-",
+    "GIO_LAUNCHED_DESKTOP_FILE_PID": "31949",
+    "QT_ACCESSIBILITY": "1",
+    "WINDOWPATH": "2",
+    "GJS_DEBUG_OUTPUT": "stderr",
+    "SSH_AUTH_SOCK": "/run/user/1000/keyring/ssh",
+    "XDG_SEAT": "seat0",
+    "QT_QPA_PLATFORMTHEME": "appmenu-qt5",
+    "GNOME_SHELL_SESSION_MODE": "ubuntu",
+    "XDG_VTNR": "2",
+    "XDG_RUNTIME_DIR": "/run/user/1000",
+    "HOME": "/home/matt"
+  },
+  "userLimits": {
+    "core_file_size_blocks": {
+      "soft": 0,
+      "hard": "unlimited"
+    },
+    "data_seg_size_kbytes": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "file_size_blocks": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "max_locked_memory_bytes": {
+      "soft": 16777216,
+      "hard": 16777216
+    },
+    "max_memory_size_kbytes": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "open_files": {
+      "soft": 1048576,
+      "hard": 1048576
+    },
+    "stack_size_bytes": {
+      "soft": 8388608,
+      "hard": "unlimited"
+    },
+    "cpu_time_seconds": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "max_user_processes": {
+      "soft": 128137,
+      "hard": 128137
+    },
+    "virtual_memory_kbytes": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    }
+  },
+  "sharedObjects": [
+    "linux-vdso.so.1",
+    "/lib/x86_64-linux-gnu/libdl.so.2",
+    "/lib/x86_64-linux-gnu/librt.so.1",
+    "/usr/lib/x86_64-linux-gnu/libstdc++.so.6",
+    "/lib/x86_64-linux-gnu/libm.so.6",
+    "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+    "/lib/x86_64-linux-gnu/libpthread.so.0",
+    "/lib/x86_64-linux-gnu/libc.so.6",
+    "/lib64/ld-linux-x86-64.so.2"
+  ]
+}

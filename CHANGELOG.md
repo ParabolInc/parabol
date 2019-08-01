@@ -5,28 +5,38 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## v3.17.2 2019-Jul-30
+## v3.18.0 2019-Aug-01
+
+## Added
+* Repo refactored to a mono repo, clearly dividing the server and client
+* Added a service worker
 
 ## Fixed
+* Timer snackbar z-index (#3050)
+* fix theme color (address bar on mobile)
+
+## v3.17.2 2019-Jul-30
+
+### Fixed
 * Agenda list cannot be scrolled (#3070)
 
 ## v3.17.0 2019-Jul-26
 
-## Added
+### Added
 * Segment events for team invites (#3040)
 * Segment events for meeting timer (#3039)
 
-## Changed
+### Changed
 * Toasts to snackbar (#3026)
 * Upgraded Relay to fork of v5 (#3014)
 * Upgraded react-beautiful-dnd to v11 (#3041)
 * Upgraded a bunch of smaller deps (#3041)
 
-## Fixed
+### Fixed
 * Login bug for safari users (#3038)
 * Calendar Schedule CTA in Action Meeting Summary (#3042)
 
-## Removed
+### Removed
 * auth0-js (#3038)
 * iterall, known mem leak, but unsure if affects us (#3023)
 

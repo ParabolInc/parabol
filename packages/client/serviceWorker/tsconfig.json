@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+//    "composite": true,
+    "lib": ["esnext", "webworker"],
+    "target": "esnext",
+    "module": "commonjs",
+    "sourceMap": true,
+    "paths": {
+      "*": [
+        "*" // resolve all absolute imports as imports relative to the client package
+      ]
+    }
+  },
+//  "references": [{"path":  "../"}]
+}
