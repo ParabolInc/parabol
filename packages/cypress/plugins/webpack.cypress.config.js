@@ -1,19 +1,16 @@
 require('../../server/babelRegister')
-const resolve = require('../../client/webpack/webpackResolve')
 const path = require('path')
 
+const PACKAGES_ROOT = path.join(__dirname, '..', '..')
 module.exports = {
-  resolve,
+  resolve: {
+    extensions: ['.wasm', '.mjs', '.js', '.json', '.ts', '.tsx', '.graphql', '.d.ts'],
+  },
   module: {
     rules: [
       {
         test: /\.tsx?$/,
-        include: [
-          path.join(__dirname, '..'),
-          path.join(__dirname, '..', '..', 'src', 'server', 'utils'),
-          // used for universal constants
-          path.join(__dirname, '..', '..', 'src', 'client', 'utils')
-        ],
+        include: [PACKAGES_ROOT],
         use: {
           loader: '@sucrase/webpack-loader',
           options: {

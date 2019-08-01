@@ -14,8 +14,9 @@
   },
   "main": "index.js",
   "scripts": {
+    "start": "yarn workspace parabol-server start",
     "test": "start-server-and-test start http://localhost:3000 cy:run",
-    "cy:run": "cypress run --record --key $CYPRESS_SECRET"
+    "cy:run": "cypress run"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
@@ -55,7 +56,8 @@
   },
   "dependencies": {
     "dotenv": "8.0.0",
-    "dotenv-expand": "5.1.0"
+    "dotenv-expand": "5.1.0",
+    "parabol-client": "^3.18.0-alpha.0"
   },
   "engines": {
     "node": "11.14.0",
