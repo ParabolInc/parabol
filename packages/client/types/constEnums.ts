@@ -68,3 +68,10 @@ export const enum DASH_TIMELINE {
   MIN_PADDING = 16,
   TIMELINE_DRAWER_WIDTH = 336
 }
+
+export const enum SubscriptionChannel {
+  TEAM = 'team',
+  NEW_AUTH_TOKEN = 'newAuthToken',
+  NOTIFICATION = 'notification',
+  ORGANIZATION = 'organization',
+}

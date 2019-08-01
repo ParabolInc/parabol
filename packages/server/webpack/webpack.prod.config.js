@@ -181,8 +181,7 @@ module.exports = {
             options: {
               configFileName: path.join(CLIENT_ROOT, 'tsconfig.json'),
               errorsAsWarnings: true,
-              // the configFileName is for client, so all serviceWorker checks will fail
-              silent: true
+              reportFiles: ['!**/sw.ts']
             }
           }
         ]
@@ -215,3 +214,4 @@ module.exports = {
     ]
   }
 }
+
