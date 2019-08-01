@@ -55,7 +55,7 @@ interface Props extends ActionMeetingPhaseProps {
 const UpdatesHelpMenu = lazyPreload(async () =>
   import(
     /* webpackChunkName: 'UpdatesHelpMenu' */ './MeetingHelp/UpdatesHelpMenu'
-  )
+    )
 )
 
 const ActionMeetingUpdates = (props: Props) => {
@@ -85,43 +85,41 @@ const ActionMeetingUpdates = (props: Props) => {
   return (
     <MeetingContent>
       <MeetingHeaderAndPhase>
-      <MeetingContentHeader
-        avatarGroup={avatarGroup}
-        isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
-        toggleSidebar={toggleSidebar}
-      >
-        <ActionMeetingUpdatesPrompt team={team} />
-      </MeetingContentHeader>
-      <PhaseWrapper>
-        <StyledColumnsWrapper>
-          <InnerColumnsWrapper>
-            <TaskColumns
-              area={AreaEnum.meeting}
-              getTaskById={getTaskById(teamMemberTasks)}
-              isMyMeetingSection={userId === viewerId}
-              meetingId={meetingId}
-              myTeamMemberId={toTeamMemberId(teamId, viewerId)}
-              tasks={teamMemberTasks}
-            />
-          </InnerColumnsWrapper>
-        </StyledColumnsWrapper>
-      </PhaseWrapper>
+        <MeetingContentHeader
+          avatarGroup={avatarGroup}
+          isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
+          toggleSidebar={toggleSidebar}
+        >
+          <ActionMeetingUpdatesPrompt team={team} />
+        </MeetingContentHeader>
+        <PhaseWrapper>
+          <StyledColumnsWrapper>
+            <InnerColumnsWrapper>
+              <TaskColumns
+                area={AreaEnum.meeting}
+                getTaskById={getTaskById(teamMemberTasks)}
+                isMyMeetingSection={userId === viewerId}
+                meetingId={meetingId}
+                myTeamMemberId={toTeamMemberId(teamId, viewerId)}
+                tasks={teamMemberTasks}
+              />
+            </InnerColumnsWrapper>
+          </StyledColumnsWrapper>
+        </PhaseWrapper>
         <MeetingHelpToggle menu={<UpdatesHelpMenu />} />
       </MeetingHeaderAndPhase>
-        {isFacilitating && (
-          <MeetingFacilitatorBar>
-            <BottomControlSpacer />
-            <BottomNavControl
-              isBouncing={minTimeComplete}
-              onClick={() => gotoNext()}
-              onKeyDown={handleRightArrow(() => gotoNext())}
-              ref={gotoNextRef}
-            >
-              <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={`Next: ${label}`} />
-            </BottomNavControl>
-            <EndMeetingButton meetingId={meetingId} />
-          </MeetingFacilitatorBar>
-        )}
+      <MeetingFacilitatorBar isFacilitating={isFacilitating}>
+        <BottomControlSpacer />
+        <BottomNavControl
+          isBouncing={minTimeComplete}
+          onClick={() => gotoNext()}
+          onKeyDown={handleRightArrow(() => gotoNext())}
+          ref={gotoNextRef}
+        >
+          <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={`Next: ${label}`} />
+        </BottomNavControl>
+        <EndMeetingButton meetingId={meetingId} />
+      </MeetingFacilitatorBar>
     </MeetingContent>
   )
 }

@@ -83,20 +83,18 @@ const ActionMeetingFirstCall = (props: Props) => {
           menu={<ActionMeetingFirstCallHelpMenu />}
         />
       </MeetingHeaderAndPhase>
-      {isFacilitating && (
-        <MeetingFacilitatorBar>
-          <BottomControlSpacer />
-          <BottomNavControl
-            isBouncing={minTimeComplete}
-            onClick={() => gotoNext()}
-            onKeyDown={handleRightArrow(() => gotoNext())}
-            ref={gotoNextRef}
-          >
-            <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={phaseName} />
-          </BottomNavControl>
-          <EndMeetingButton meetingId={meetingId} />
-        </MeetingFacilitatorBar>
-      )}
+      <MeetingFacilitatorBar isFacilitating={isFacilitating}>
+        <BottomControlSpacer />
+        <BottomNavControl
+          isBouncing={minTimeComplete}
+          onClick={() => gotoNext()}
+          onKeyDown={handleRightArrow(() => gotoNext())}
+          ref={gotoNextRef}
+        >
+          <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={phaseName} />
+        </BottomNavControl>
+        <EndMeetingButton meetingId={meetingId} />
+      </MeetingFacilitatorBar>
     </MeetingContent>
   )
 }

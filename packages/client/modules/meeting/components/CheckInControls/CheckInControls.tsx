@@ -1,5 +1,5 @@
 import {CheckInControls_teamMember} from '../../../../__generated__/CheckInControls_teamMember.graphql'
-import React, {Ref, useRef} from 'react'
+import React, {useRef} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'

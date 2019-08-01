@@ -110,39 +110,37 @@ const RetroGroupPhase = (props: Props) => {
           menu={isDemoRoute() ? <DemoGroupHelpMenu /> : <GroupHelpMenu />}
         />
       </MeetingHeaderAndPhase>
-      {isFacilitating && (
-        <MeetingFacilitatorBar>
-          {isComplete ? (
-            <BottomControlSpacer />
-          ) : (
-            <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
-          )}
-          <CenteredControlBlock>
-            <BottomNavControl
-              isBouncing={isDemoStageComplete || (!isAsync && !isComplete && isReadyToVote)}
-              onClick={() => gotoNext()}
-              onKeyDown={handleRightArrow(() => gotoNext())}
-              ref={gotoNextRef}
-            >
+      <MeetingFacilitatorBar isFacilitating={isFacilitating}>
+        {isComplete ? (
+          <BottomControlSpacer />
+        ) : (
+          <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
+        )}
+        <CenteredControlBlock>
+          <BottomNavControl
+            isBouncing={isDemoStageComplete || (!isAsync && !isComplete && isReadyToVote)}
+            onClick={() => gotoNext()}
+            onKeyDown={handleRightArrow(() => gotoNext())}
+            ref={gotoNextRef}
+          >
+            <BottomNavIconLabel
+              icon='arrow_forward'
+              iconColor='warm'
+              label={`Next: ${nextPhaseLabel}`}
+            />
+          </BottomNavControl>
+          {canAutoGroup && !isComplete && (
+            <BottomNavControl onClick={autoGroup} waiting={submitting}>
               <BottomNavIconLabel
-                icon='arrow_forward'
-                iconColor='warm'
-                label={`Next: ${nextPhaseLabel}`}
+                icon='photo_filter'
+                iconColor='midGray'
+                label={'Auto Group'}
               />
             </BottomNavControl>
-            {canAutoGroup && !isComplete && (
-              <BottomNavControl onClick={autoGroup} waiting={submitting}>
-                <BottomNavIconLabel
-                  icon='photo_filter'
-                  iconColor='midGray'
-                  label={'Auto Group'}
-                />
-              </BottomNavControl>
-            )}
-          </CenteredControlBlock>
-          <EndMeetingButton meetingId={meetingId} />
-        </MeetingFacilitatorBar>
-      )}
+          )}
+        </CenteredControlBlock>
+        <EndMeetingButton meetingId={meetingId} />
+      </MeetingFacilitatorBar>
     </MeetingContent>
   )
 }

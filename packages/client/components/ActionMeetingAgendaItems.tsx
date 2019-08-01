@@ -119,45 +119,43 @@ const ActionMeetingAgendaItems = (props: Props) => {
           toggleSidebar={toggleSidebar}
         />
         <PhaseWrapper>
-            <AgendaVerbatim>
-              <Avatar picture={picture} size={64} />
-              <StyledHeading>{content}</StyledHeading>
-            </AgendaVerbatim>
-            <StyledCopy>{`${preferredName}, what do you need?`}</StyledCopy>
-            <TaskCardBlock>
-              <Inner>
-                <Inception>
-                  <MeetingAgendaCards
-                    agendaId={agendaItem.id}
-                    maxCols={4}
-                    meetingId={meetingId}
-                    showPlaceholders
-                    tasks={agendaTasks}
-                    teamId={team.id}
-                  />
-                </Inception>
-              </Inner>
-            </TaskCardBlock>
-            <EditorHelpModalContainer />
+          <AgendaVerbatim>
+            <Avatar picture={picture} size={64} />
+            <StyledHeading>{content}</StyledHeading>
+          </AgendaVerbatim>
+          <StyledCopy>{`${preferredName}, what do you need?`}</StyledCopy>
+          <TaskCardBlock>
+            <Inner>
+              <Inception>
+                <MeetingAgendaCards
+                  agendaId={agendaItem.id}
+                  maxCols={4}
+                  meetingId={meetingId}
+                  showPlaceholders
+                  tasks={agendaTasks}
+                  teamId={team.id}
+                />
+              </Inception>
+            </Inner>
+          </TaskCardBlock>
+          <EditorHelpModalContainer />
         </PhaseWrapper>
         <MeetingHelpToggle
           menu={<ActionMeetingAgendaItemsHelpMenu />}
         />
       </MeetingHeaderAndPhase>
-      {isFacilitating && (
-        <MeetingFacilitatorBar>
-          <BottomControlSpacer />
-          <BottomNavControl
-            isBouncing={minTimeComplete}
-            onClick={() => gotoNext()}
-            ref={gotoNextRef}
-            onKeyDown={handleRightArrow(() => gotoNext())}
-          >
-            <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={label} />
-          </BottomNavControl>
-          <EndMeetingButton meetingId={meetingId} />
-        </MeetingFacilitatorBar>
-      )}
+      <MeetingFacilitatorBar isFacilitating={isFacilitating}>
+        <BottomControlSpacer />
+        <BottomNavControl
+          isBouncing={minTimeComplete}
+          onClick={() => gotoNext()}
+          ref={gotoNextRef}
+          onKeyDown={handleRightArrow(() => gotoNext())}
+        >
+          <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={label} />
+        </BottomNavControl>
+        <EndMeetingButton meetingId={meetingId} />
+      </MeetingFacilitatorBar>
     </MeetingContent>
   )
 }

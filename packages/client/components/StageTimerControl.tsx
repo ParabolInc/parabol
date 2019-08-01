@@ -8,6 +8,7 @@ import {MenuPosition} from '../hooks/useCoords'
 import lazyPreload from '../utils/lazyPreload'
 import {StageTimerControl_team} from '../__generated__/StageTimerControl_team.graphql'
 import styled from '@emotion/styled'
+import {ElementWidth} from '../types/constEnums'
 
 interface Props {
   defaultTimeLimit: number
@@ -22,6 +23,10 @@ const StageTimerModal = lazyPreload(async () =>
 const IconLabel = styled(BottomNavIconLabel)({
   // required to keep an 8px left padding for the modal
   minWidth: 80
+})
+
+const TimerButton = styled(BottomNavControl)({
+  width: ElementWidth.END_MEETING_BUTTON
 })
 
 const StageTimerControl = (props: Props) => {
@@ -39,9 +44,9 @@ const StageTimerControl = (props: Props) => {
   if (isComplete) return null
   return (
     <>
-      <BottomNavControl onMouseEnter={StageTimerModal.preload} onClick={togglePortal}>
+      <TimerButton onMouseEnter={StageTimerModal.preload} onClick={togglePortal}>
         <IconLabel ref={originRef} icon={icon} iconColor={color} label={'Timer'} />
-      </BottomNavControl>
+      </TimerButton>
       {menuPortal(
         <StageTimerModal
           defaultToAsync={connectedMemberCount <= 1}

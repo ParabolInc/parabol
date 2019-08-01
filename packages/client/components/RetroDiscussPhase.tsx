@@ -217,8 +217,7 @@ const RetroDiscussPhase = (props: Props) => {
         />
         <EditorHelpModalContainer />
       </MeetingHeaderAndPhase>
-      {isFacilitating && (
-        <MeetingFacilitatorBar>
+        <MeetingFacilitatorBar isFacilitating={isFacilitating}>
           <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
           {nextStageRes && (
             <React.Fragment>
@@ -235,7 +234,6 @@ const RetroDiscussPhase = (props: Props) => {
           <EndMeetingButton meetingId={meetingId} />
           {!nextStageRes && <BottomControlSpacer />}
         </MeetingFacilitatorBar>
-      )}
     </MeetingContent>
   )
 }

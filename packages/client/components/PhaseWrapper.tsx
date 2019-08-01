@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {ReactNode} from 'react'
+import {forwardRef, ReactNode} from 'react'
 import ErrorBoundary from './ErrorBoundary'
 import React from 'react'
 
@@ -15,14 +15,14 @@ interface Props {
   children: ReactNode
 }
 
-const PhaseWrapper = (props: Props) => {
+const PhaseWrapper = forwardRef((props: Props, ref: any) => {
   const {children} = props
   return (
     <ErrorBoundary>
-      <PhaseWrapperStyles>
+      <PhaseWrapperStyles ref={ref}>
         {children}
       </PhaseWrapperStyles>
     </ErrorBoundary>
   )
-}
+})
 export default PhaseWrapper

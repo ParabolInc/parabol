@@ -196,29 +196,27 @@ const RetroVotePhase = (props: Props) => {
           menu={isDemoRoute() ? <DemoVoteHelpMenu /> : <VoteHelpMenu />}
         />
       </MeetingHeaderAndPhase>
-      {isFacilitating && (
-        <MeetingFacilitatorBar>
-          {isComplete ? (
-            <BottomControlSpacer />
-          ) : (
-            <StageTimerControl defaultTimeLimit={3} meetingId={meetingId} team={team} />
-          )}
-          <BottomNavControl
-            isBouncing={teamVotesRemaining === 0}
-            disabled={!discussStage.isNavigableByFacilitator}
-            onClick={() => gotoNext()}
-            onKeyDown={handleRightArrow(() => gotoNext())}
-            ref={gotoNextRef}
-          >
-            <BottomNavIconLabel
-              icon='arrow_forward'
-              iconColor='warm'
-              label={`Next: ${nextPhaseLabel}`}
-            />
-          </BottomNavControl>
-          <EndMeetingButton meetingId={meetingId} />
-        </MeetingFacilitatorBar>
-      )}
+      <MeetingFacilitatorBar isFacilitating={isFacilitating}>
+        {isComplete ? (
+          <BottomControlSpacer />
+        ) : (
+          <StageTimerControl defaultTimeLimit={3} meetingId={meetingId} team={team} />
+        )}
+        <BottomNavControl
+          isBouncing={teamVotesRemaining === 0}
+          disabled={!discussStage.isNavigableByFacilitator}
+          onClick={() => gotoNext()}
+          onKeyDown={handleRightArrow(() => gotoNext())}
+          ref={gotoNextRef}
+        >
+          <BottomNavIconLabel
+            icon='arrow_forward'
+            iconColor='warm'
+            label={`Next: ${nextPhaseLabel}`}
+          />
+        </BottomNavControl>
+        <EndMeetingButton meetingId={meetingId} />
+      </MeetingFacilitatorBar>
     </MeetingContent>
   )
 }
