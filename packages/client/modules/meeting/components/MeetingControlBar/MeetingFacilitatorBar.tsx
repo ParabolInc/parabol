@@ -2,8 +2,9 @@ import styled from '@emotion/styled'
 import {bottomBarShadow, desktopBarShadow} from '../../../../styles/elevation'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {Breakpoint} from '../../../../types/constEnums'
+import React, {ReactNode} from 'react'
 
-const MeetingFacilitatorBar = styled('div')({
+const MeetingFacilitatorBarStyles = styled('div')({
   alignItems: 'center',
   backgroundColor: '#fff',
   boxShadow: bottomBarShadow,
@@ -24,4 +25,18 @@ const MeetingFacilitatorBar = styled('div')({
   }
 })
 
+interface Props {
+  isFacilitating: boolean
+  children: ReactNode
+}
+
+const MeetingFacilitatorBar = (props: Props) => {
+  const {isFacilitating, children} = props
+  if (!isFacilitating) return null
+  return (
+    <MeetingFacilitatorBarStyles>
+      {children}
+    </MeetingFacilitatorBarStyles>
+  )
+}
 export default MeetingFacilitatorBar

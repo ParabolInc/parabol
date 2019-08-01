@@ -7,17 +7,14 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useRouter from '../hooks/useRouter'
 import useMutationProps from '../hooks/useMutationProps'
 import styled from '@emotion/styled'
+import {ElementWidth} from '../types/constEnums'
 
 interface Props {
   meetingId: string
 }
 
-export const enum END_MEETING_BUTTON {
-  WIDTH = 88
-}
-
 const EndMeetingButtonStyles = styled(BottomNavControl)({
-  width: END_MEETING_BUTTON.WIDTH
+  width: ElementWidth.END_MEETING_BUTTON
 })
 
 const EndMeetingButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {

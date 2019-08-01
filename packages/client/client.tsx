@@ -8,6 +8,7 @@ import './scrollIntoViewIfNeeded'
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
 import * as Sentry from '@sentry/browser'
+import 'types/constEnums'
 
 const dsn = window.__ACTION__.sentry
 if (dsn) {

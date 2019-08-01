@@ -14,7 +14,7 @@ const Inner = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
-  padding: 8
+  padding: '8px 8px 4px'
 })
 
 const StyledIcon = styled(Icon)<{iconColor?: string}>(({iconColor}) => ({

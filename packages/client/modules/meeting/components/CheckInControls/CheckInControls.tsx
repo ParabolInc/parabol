@@ -13,20 +13,22 @@ import useTimeout from '../../../../hooks/useTimeout'
 import NewMeetingCheckInMutation from '../../../../mutations/NewMeetingCheckInMutation'
 import handleRightArrow from '../../../../utils/handleRightArrow'
 import useEventCallback from '../../../../hooks/useEventCallback'
-import {END_MEETING_BUTTON} from '../../../../components/EndMeetingButton'
-import {Breakpoint} from '../../../../types/constEnums'
+import {Breakpoint, ElementWidth} from '../../../../types/constEnums'
 
 const ButtonBlock = styled('div')({
   display: 'flex',
   flex: 1,
   justifyContent: 'center',
-  marginLeft: END_MEETING_BUTTON.WIDTH // width of end meeting button,
+  marginLeft: ElementWidth.END_MEETING_BUTTON
 })
+
+const NotHereButton = styled(BottomNavControl)<{isMobile: boolean}>(({isMobile}) => ({
+  width: isMobile ? ElementWidth.END_MEETING_BUTTON : undefined
+}))
 
 interface Props {
   handleGotoNext: ReturnType<typeof useGotoNext>
   teamMember: CheckInControls_teamMember
-  endMeetingButtonRef: Ref<HTMLButtonElement>
 }
 
 const CheckInControls = (props: Props) => {
@@ -64,6 +66,14 @@ const CheckInControls = (props: Props) => {
   const Wrapper = isMobile ? React.Fragment : ButtonBlock
   return (
     <Wrapper>
+      <NotHereButton
+        isMobile={isMobile}
+        aria-label={`Mark ${preferredName} as “not here” and move on`}
+        size='medium'
+        onClick={handleOnClickAbsent}
+      >
+        <BottomNavIconLabel icon='remove_circle' iconColor='red' label={skipLabel} />
+      </NotHereButton>
       <BottomNavControl
         isBouncing={isReadyForNext}
         aria-label={`Mark ${preferredName} as “here” and move on`}
@@ -73,13 +83,7 @@ const CheckInControls = (props: Props) => {
       >
         <BottomNavIconLabel icon='check_circle' iconColor='green' label={nextLabel} />
       </BottomNavControl>
-      <BottomNavControl
-        aria-label={`Mark ${preferredName} as “not here” and move on`}
-        size='medium'
-        onClick={handleOnClickAbsent}
-      >
-        <BottomNavIconLabel icon='remove_circle' iconColor='red' label={skipLabel} />
-      </BottomNavControl>
+
     </Wrapper>
   )
 }

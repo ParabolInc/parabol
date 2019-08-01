@@ -46,7 +46,7 @@ const StyledIcon = styled(Icon)({
 const CheckInHelpMenu = lazyPreload(async () =>
   import(
     /* webpackChunkName: 'CheckInHelpMenu' */ './MeetingHelp/CheckInHelpMenu'
-  )
+    )
 )
 
 interface Props {
@@ -79,13 +79,13 @@ const NewMeetingCheckIn = (props: Props) => {
   return (
     <MeetingContent>
       <MeetingHeaderAndPhase>
-      <MeetingContentHeader
-        avatarGroup={avatarGroup}
-        isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
-        toggleSidebar={toggleSidebar}
-      >
-        <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.checkin]}</PhaseHeaderTitle>
-      </MeetingContentHeader>
+        <MeetingContentHeader
+          avatarGroup={avatarGroup}
+          isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
+          toggleSidebar={toggleSidebar}
+        >
+          <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.checkin]}</PhaseHeaderTitle>
+        </MeetingContentHeader>
         <PhaseWrapper>
           <NewMeetingCheckInPrompt team={team} teamMember={teamMember} />
           <CheckIn>
@@ -103,12 +103,10 @@ const NewMeetingCheckIn = (props: Props) => {
           menu={<CheckInHelpMenu meetingType={meetingType} />}
         />
       </MeetingHeaderAndPhase>
-      {isFacilitating && (
-        <MeetingFacilitatorBar>
-          <CheckInControls handleGotoNext={handleGotoNext} teamMember={teamMember} />
-          <EndMeetingButton meetingId={meetingId} />
-        </MeetingFacilitatorBar>
-      )}
+      <MeetingFacilitatorBar isFacilitating={isFacilitating}>
+        <CheckInControls handleGotoNext={handleGotoNext} teamMember={teamMember} />
+        <EndMeetingButton meetingId={meetingId} />
+      </MeetingFacilitatorBar>
     </MeetingContent>
   )
 }

@@ -75,3 +75,7 @@ export const enum SubscriptionChannel {
   NOTIFICATION = 'notification',
   ORGANIZATION = 'organization',
 }
+
+export const enum ElementWidth {
+  END_MEETING_BUTTON = 88
+}
