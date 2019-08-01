@@ -10,7 +10,7 @@ jobs:
           TERM: xterm
     environment:
       CODECOV_TOKEN: "ebdd735e-579a-4afd-85fc-f53907544c31"
-      DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
+      DEVOPS_REPO: "git@github.com:ParabolInc/action-devos.git"
       DEVOPS_WORKDIR: "~/action-devops"
       GITHUB_REMOTE_DEVELOPMENT: "dokku@action-dev-nyc1-01.parabol.co:web"
       GITHUB_REMOTE_PRODUCTION: "dokku@action-production.parabol.co:web"
@@ -75,7 +75,7 @@ jobs:
               curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
               sudo python get-pip.py
               sudo pip install rethinkdb==2.3.0
-              rethinkdb-restore --force cypress/fixtures/rdb_test.tar.gz
+              rethinkdb-restore --force packages/cypress/fixtures/rdb_test.tar.gz
               yarn db:migrate-testing
               yarn build
               yarn postdeploy
