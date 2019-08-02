@@ -100,7 +100,8 @@ module.exports = {
     path: buildPath,
     publicPath,
     filename: '[name]_[contenthash].js',
-    chunkFilename: '[name]_[contenthash].js'
+    chunkFilename: '[name]_[contenthash].js',
+    crossOriginLoading: 'anonymous'
   },
   resolve,
   optimization: {
