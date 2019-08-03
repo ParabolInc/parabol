@@ -60,7 +60,7 @@
     "parabol-client": "^3.18.0-alpha.0"
   },
   "engines": {
-    "node": "11.14.0",
+    "node": "12.7.0",
     "yarn": "^1.15.2"
   },
   "lint-staged": {
