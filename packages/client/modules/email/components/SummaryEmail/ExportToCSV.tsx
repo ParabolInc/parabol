@@ -207,7 +207,7 @@ class ExportToCSV extends Component<Props> {
         <tr>
           <td align='center' style={iconLinkLabel} width='100%'>
             <AnchorIfEmail isEmail={referrer === 'email'} href={emailCSVUrl} title={label}>
-              <img alt={label} src={`${emailDir}cloud_download.png`} style={imageStyle} />
+              <img crossOrigin='' alt={label} src={`${emailDir}cloud_download.png`} style={imageStyle} />
               <span style={labelStyle}>{label}</span>
             </AnchorIfEmail>
           </td>

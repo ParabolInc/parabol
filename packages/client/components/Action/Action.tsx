@@ -1,7 +1,6 @@
 import React, {lazy, memo, Suspense} from 'react'
 import styled from '@emotion/styled'
 import {Route, Switch} from 'react-router'
-import AnalyticsPageRoot from '../AnalyticsPageRoot'
 import SocketHealthMonitor from '../SocketHealthMonitor'
 import {CREATE_ACCOUNT_SLUG, SIGNIN_SLUG} from '../../utils/constants'
 import {PALETTE} from '../../styles/paletteV2'
@@ -13,6 +12,9 @@ import {DragDropContext as dragDropContext} from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 import Snackbar from '../Snackbar'
 
+const AnalyticsPage = lazy(() =>
+  import(/* webpackChunkName: 'AnalyticsPage' */ '../AnalyticsPage')
+)
 const AuthenticationPage = lazy(() =>
   import(/* webpackChunkName: 'AuthenticationPage' */ '../AuthenticationPage')
 )
@@ -50,8 +52,8 @@ const Action = memo(() => {
       <ErrorBoundary>
         <Snackbar />
         <SocketHealthMonitor />
-        <AnalyticsPageRoot />
         <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.WHOLE_PAGE} />}>
+          <AnalyticsPage />
           <Switch>
             <Route exact path='/' render={(p) => <AuthenticationPage {...p} page={'signin'} />} />
             <Route

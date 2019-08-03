@@ -82,6 +82,7 @@
     "babel-plugin-relay": "^5.0.0",
     "clean-webpack-plugin": "^3.0.0",
     "codecov": "^3.5.0",
+    "copy-webpack-plugin": "^5.0.4",
     "cross-env": "^5.1.6",
     "css-loader": "^3.1.0",
     "dynamic-serializer": "^0.2.1",
@@ -98,6 +99,7 @@
     "graphql-typescript-definitions": "^0.17.1",
     "hard-source-webpack-plugin": "^0.13.1",
     "html-webpack-plugin": "^3.2.0",
+    "html-webpack-tags-plugin": "^2.0.13",
     "husky": "^3.0.1",
     "ignore-loader": "^0.1.2",
     "jest": "^24.8.0",
@@ -133,7 +135,6 @@
     "@google-cloud/language": "^3.2.3",
     "@mattkrick/sanitize-svg": "^0.2.1",
     "@mattkrick/trebuchet-client": "^0.1.2",
-    "@segment/snippet": "^4.0.1",
     "@sentry/integrations": "^5.5.0",
     "@sentry/node": "^5.5.0",
     "analytics-node": "^3.0.0",
@@ -178,7 +179,7 @@
   },
   "engines": {
     "node": "11.14.0",
-    "yarn": "1.15.2"
+    "yarn": "^1.15.2"
   },
   "lint-staged": {
     "*.{js,ts,tsx}": [

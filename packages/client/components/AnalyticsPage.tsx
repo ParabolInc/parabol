@@ -1,60 +1,44 @@
 /// <reference types="@types/segment-analytics" />
 
-import {AnalyticsPageRootQueryResponse} from '../__generated__/AnalyticsPageRootQuery.graphql'
-import {Component} from 'react'
+import {useEffect, useRef} from 'react'
 import makeHref from '../utils/makeHref'
+import * as Sentry from '@sentry/browser'
+import useScript from '../hooks/useScript'
 
 declare global {
   interface Window {
-    analytics?: SegmentAnalytics.AnalyticsJS
+    analytics: SegmentAnalytics.AnalyticsJS
   }
 }
 
-interface Props {
-  location: any
-  viewer: AnalyticsPageRootQueryResponse['viewer'] | null
-}
-interface State {
-  viewer: AnalyticsPageRootQueryResponse['viewer'] | null
+const dsn = window.__ACTION__.sentry
+if (dsn) {
+  Sentry.init({dsn})
 }
 
-class AnalyticsPage extends Component<Props, State> {
-  static page (prevPath) {
+const AnalyticsPage = () => {
+  const key = window.__ACTION__.segment
+  if (!key) return null // development use
+  /* eslint-disable */
+  const {pathname} = location
+  const pathnameRef = useRef(pathname)
+  const [isSegmentLoaded] = useScript(`https://cdn.segment.com/analytics.js/v1/${key}/analytics.min.js`)
+  useEffect(() => {
+    if (!isSegmentLoaded) return
+    const prevPathname = pathnameRef.current
+    pathnameRef.current = pathname
     // helmet sets titles async, so we have to wait awhile until it updates
     setTimeout(() => {
-      if (typeof window.analytics === 'undefined') {
-        return
-      }
       const title = document.title || ''
       // This is the magic. Ignore everything after hitting the pipe
       const [pageName] = title.split(' | ')
       window.analytics.page(pageName, {
-        referrer: makeHref(prevPath),
+        referrer: makeHref(prevPathname),
         title
       })
     }, 300)
-  }
-
-  state = {
-    viewer: null
-  }
-
-  componentDidUpdate (prevProps) {
-    const {
-      location: {pathname: nextPath}
-    } = this.props
-    const {
-      location: {pathname: prevPath}
-    } = prevProps
-
-    if (prevPath !== nextPath) {
-      AnalyticsPage.page(prevPath)
-    }
-  }
-
-  render () {
-    return null
-  }
+  }, [isSegmentLoaded, pathname])
+  return null
 }
 
 export default AnalyticsPage

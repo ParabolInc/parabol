@@ -32,10 +32,6 @@
     "relay-runtime": "https://github.com/mattkrick/relay/tarball/dbd07bab510551e0c421aad70e5b57bb86520d32",
     "immutable": "3.8.2"
   },
-  "engines": {
-    "node": "11.14.0",
-    "yarn": "1.15.2"
-  },
   "devDependencies": {
     "@types/jscodeshift": "^0.6.2",
     "lerna": "^3.16.4"

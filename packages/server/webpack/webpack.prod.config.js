@@ -20,13 +20,15 @@ const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const pluginInlineImport = require('babel-plugin-inline-import').default
 const {InjectManifest} = require('wrkbx')
+const CopyPlugin = require('copy-webpack-plugin')
+const TagsPlugin = require('html-webpack-tags-plugin')
 
 getDotenv.default()
 
 const PROJECT_ROOT = path.join(__dirname, '..', '..', '..')
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
-const publicPath = getWebpackPublicPath.default()
 const buildPath = path.join(PROJECT_ROOT, 'build')
+const publicPath = getWebpackPublicPath.default()
 
 // babel-plugin-relay requires a prod BABEL_ENV to remove hash checking logic. Probably a bug in the package.
 process.env.BABEL_ENV = 'production'
@@ -132,16 +134,43 @@ module.exports = {
     }
   },
   plugins: [
+    new CopyPlugin([
+      {
+        from: path.join(PROJECT_ROOT, 'static', 'manifest.json'),
+        to: buildPath
+      }
+    ]),
     // new GenerateSW(),
     new HtmlWebpackPlugin({
       filename: 'index.html',
-      template: path.join(PROJECT_ROOT, 'packages', 'server', 'template.html')
+      template: path.join(PROJECT_ROOT, 'packages', 'server', 'template.html'),
+      title: 'Free Online Retrospectives | Parabol',
+      favicon: path.join(PROJECT_ROOT, 'static', 'favicon.ico')
+
+    }),
+    new TagsPlugin({
+      links: [
+        {
+          path: 'manifest.json',
+          attributes: {
+            rel: 'manifest',
+            crossorigin: '',
+          }
+        }
+      ]
     }),
     new ScriptExtHtmlWebpackPlugin({
       custom: {
         test: /\.js$/,
         attribute: 'onerror',
         value: 'fallback(this)'
+      }
+    }),
+    new ScriptExtHtmlWebpackPlugin({
+      custom: {
+        test: /\.js$/,
+        attribute: 'crossorigin',
+        value: ''
       }
     }),
     new CleanWebpackPlugin(),
@@ -160,7 +189,7 @@ module.exports = {
       entry: path.join(PROJECT_ROOT, 'packages', 'client', 'serviceWorker', 'sw.ts'),
       swDest: 'sw.js',
       importWorkboxFrom: 'disabled',
-      exclude: [/GraphqlContainer/, /\.map$/, /^manifest.*\.js$/, /index.html$/],
+      exclude: [/GraphqlContainer/, /\.map$/, /^manifest.*\.js$/, /index.html$/]
     }),
     ...extraPlugins
   ],

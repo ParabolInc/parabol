@@ -14,8 +14,6 @@ import PrimaryButton from '../components/PrimaryButton'
 import RaisedButton from '../components/RaisedButton'
 import IconLabel from '../components/IconLabel'
 
-import LoadingView from '../components/LoadingView/LoadingView'
-
 const handleDemoClick = () => console.log('demo click handler!')
 
 storiesOf('Misc. UI Components', module)
@@ -40,10 +38,5 @@ storiesOf('Misc. UI Components', module)
           </div>
         )}
       />
-    </RetroBackground>
-  ))
-  .add('Loading view', () => (
-    <RetroBackground>
-      <StoryContainer render={() => <LoadingView />} />
     </RetroBackground>
   ))
