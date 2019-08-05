@@ -159,7 +159,6 @@ const TaskInvolves = (props: Props) => {
             {assignee && (
               <Owner>
                 <OwnerAvatar
-                  crossOrigin=''
                   alt='Avatar'
                   src={assignee.picture}
                 />

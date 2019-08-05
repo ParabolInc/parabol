@@ -151,7 +151,6 @@ const AtlassianProviderRow = (props: Props) => {
               sites.map((site, idx) => (
                 <SiteAvatar
                   key={site.id}
-                  crossOrigin=''
                   width={24}
                   height={24}
                   src={site.avatarUrl}

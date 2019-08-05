@@ -46,7 +46,7 @@ const SummaryAvatarHeader = (props: Props) => {
     <>
       <tr>
         <td align='center' style={avatarCell}>
-          <img crossOrigin='' height='80' src={rasterPicture} style={avatarStyles} width='80' />
+          <img height='80' src={rasterPicture} style={avatarStyles} width='80' />
         </td>
       </tr>
       <tr>

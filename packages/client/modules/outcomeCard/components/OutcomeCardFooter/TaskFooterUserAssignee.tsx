@@ -98,7 +98,7 @@ const TaskFooterUserAssignee = (props: Props) => {
         ref={originRef}
       >
         <Avatar cardIsActive={cardIsActive}>
-          <AvatarImage crossOrigin='' alt={assignee.preferredName} src={assignee.picture || avatarUser} />
+          <AvatarImage alt={assignee.preferredName} src={assignee.picture || avatarUser} />
         </Avatar>
         <AvatarLabel>{assignee.preferredName}</AvatarLabel>
       </AvatarButton>
