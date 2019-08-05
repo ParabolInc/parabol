@@ -145,9 +145,6 @@ export const ORGANIZATION = 'organization'
 // export const AGENDA_ITEM = 'agendaItem'; // conflict
 export const TEAM = 'team'
 
-/* WebSocket keep alive interval */
-export const WS_KEEP_ALIVE = 10000
-
 /* Relay Subscription Event Types */
 export const UPDATED = 'updated'
 

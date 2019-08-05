@@ -21,8 +21,9 @@ const PasswordInputField = (props: Props) => {
   const {autoFocus, dirty, error, onChange, onBlur, value} = props
   return (
     <React.Fragment>
-      <Label for={'password'}>Password</Label>
+      <Label>Password</Label>
       <UnderlineInput
+        ariaLabel={'Password'}
         autoFocus={autoFocus}
         error={dirty ? (error as string) : undefined}
         name='password'

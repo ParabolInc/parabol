@@ -21,8 +21,9 @@ const EmailInputField = (props: Props) => {
   const {autoFocus, dirty, error, onChange, onBlur, value} = props
   return (
     <React.Fragment>
-      <Label for={'email'}>Email</Label>
+      <Label>Email</Label>
       <UnderlineInput
+        ariaLabel={'Email'}
         autoFocus={autoFocus}
         error={dirty ? (error as string) : undefined}
         name='email'

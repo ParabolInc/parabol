@@ -1,5 +1,4 @@
 import url from 'url'
-import {WS_KEEP_ALIVE} from '../../client/utils/constants'
 import {verify} from 'jsonwebtoken'
 import {clientSecret as auth0ClientSecret} from '../utils/auth0Helpers'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
@@ -12,7 +11,7 @@ const SSEConnectionHandler = (sharedDataLoader, rateLimiter, sseClients) => (req
   const {query} = url.parse(req.url, true)
   let authToken
   try {
-    authToken = verify(query.token, Buffer.from(auth0ClientSecret, 'base64'))
+    authToken = verify(query.token as string, Buffer.from(auth0ClientSecret, 'base64'))
   } catch (e) {
     res.sendStatus(404)
     return
@@ -35,7 +34,7 @@ const SSEConnectionHandler = (sharedDataLoader, rateLimiter, sseClients) => (req
   res.write(`data: ${APP_VERSION}\n\n`)
   res.flush()
   handleConnect(connectionContext)
-  keepAlive(connectionContext, WS_KEEP_ALIVE)
+  keepAlive(connectionContext)
   res.on('close', () => {
     handleDisconnect(connectionContext)
     delete sseClients[connectionContext.id]
