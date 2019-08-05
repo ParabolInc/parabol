@@ -89,7 +89,7 @@ const VideoAvatar = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
   const showVideo = streamUI ? streamUI.hasVideo : false
   return (
     <AvatarStyle ref={ref} onClick={onClick} onMouseEnter={onMouseEnter}>
-      <Picture src={picture} isHidden={showVideo} />
+      <Picture crossOrigin='' src={picture} isHidden={showVideo} />
       <Video ref={videoRef} isHidden={!showVideo} autoPlay muted={isSelf} />
       <BadgeBlock>
         <BadgeBlockInner>

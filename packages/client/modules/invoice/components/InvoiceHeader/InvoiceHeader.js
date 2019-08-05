@@ -13,6 +13,7 @@ const InvoiceHeader = (props) => {
     <div className={css(styles.header)}>
       <div className={css(styles.logoPanel)}>
         <img
+          crossOrigin=''
           alt={`Logo for ${orgName}`}
           className={css(styles.picture)}
           src={picture || defaultOrgAvatar}

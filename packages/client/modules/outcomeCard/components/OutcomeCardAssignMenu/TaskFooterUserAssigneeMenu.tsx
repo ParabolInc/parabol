@@ -48,7 +48,7 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
             key={assignee.id}
             label={
               <MenuItemLabel>
-                <MenuAvatar alt={assignee.preferredName} src={assignee.picture || avatarUser} />
+                <MenuAvatar crossOrigin='' alt={assignee.preferredName} src={assignee.picture || avatarUser} />
                 {assignee.preferredName}
               </MenuItemLabel>
             }

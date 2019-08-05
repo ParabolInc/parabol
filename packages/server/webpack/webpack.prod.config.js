@@ -155,13 +155,6 @@ module.exports = {
             rel: 'shortcut icon',
             crossorigin: '',
           }
-        },
-        {
-          path: `/static/manifest.json`,
-          attributes: {
-            rel: 'manifest',
-            crossorigin: '',
-          }
         }
       ]
     }),
@@ -185,7 +178,7 @@ module.exports = {
       __PRODUCTION__: true,
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
       'process.env.NODE_ENV': JSON.stringify('production'),
-      '__STATIC_IMAGES__': JSON.stringify(`https://${process.env.AWS_S3_BUCKET}`)
+      '__STATIC_IMAGES__': JSON.stringify(`https://${process.env.AWS_S3_BUCKET}/static`)
     }),
     new webpack.SourceMapDevToolPlugin({
       filename: '[name]_[hash].js.map',
