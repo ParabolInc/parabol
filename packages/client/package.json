@@ -68,7 +68,7 @@
     "@mattkrick/fast-rtc-swarm": "^0.3.3",
     "@mattkrick/graphql-trebuchet-client": "^0.1.3",
     "@mattkrick/sanitize-svg": "^0.2.1",
-    "@mattkrick/trebuchet-client": "^0.1.2",
+    "@mattkrick/trebuchet-client": "^0.2.0",
     "@sentry/browser": "^5.5.0",
     "aphrodite-local-styles": "0.6.2",
     "core-js": "^3.1.4",

@@ -2242,6 +2242,15 @@
     backo2 "^1.0.2"
     eventemitter3 "^3.1.0"
 
+"@mattkrick/trebuchet-client@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@mattkrick/trebuchet-client/-/trebuchet-client-0.2.0.tgz#663f840dc251d680fff894a04928a3b29354c702"
+  integrity sha512-aZcxplwV+AyUsjo62obbz3vrvOOyMQQXOsUVR+iAdeRyxC7gYX1shwpO8UiLFgUNbZoPFnfzv0Rj9wSVZLp85g==
+  dependencies:
+    "@mattkrick/fast-rtc-peer" "^0.0.6"
+    backo2 "^1.0.2"
+    eventemitter3 "^3.1.0"
+
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@mrmlnc/readdir-enhanced/-/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"
