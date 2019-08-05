@@ -29,7 +29,7 @@ interface Props {
   cardTypeIcon: string
 }
 
-const CCDir =  __PRODUCTION__ ? `${window.__ACTION__.cdn}creditCards` : '/static/images/creditCards'
+const CCDir =  `${__STATIC_IMAGES__}/creditCards`
 
 const CreditCardIcon = (props: Props) => {
   const {cardTypeIcon} = props

@@ -145,13 +145,19 @@ module.exports = {
       filename: 'index.html',
       template: path.join(PROJECT_ROOT, 'packages', 'server', 'template.html'),
       title: 'Free Online Retrospectives | Parabol',
-      favicon: path.join(PROJECT_ROOT, 'static', 'favicon.ico')
 
     }),
     new TagsPlugin({
       links: [
         {
-          path: 'manifest.json',
+          path: `https://${process.env.AWS_S3_BUCKET}/static/favicon.ico`,
+          attributes: {
+            rel: 'shortcut icon',
+            crossorigin: '',
+          }
+        },
+        {
+          path: `/static/manifest.json`,
           attributes: {
             rel: 'manifest',
             crossorigin: '',
@@ -178,7 +184,8 @@ module.exports = {
       __CLIENT__: true,
       __PRODUCTION__: true,
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
-      'process.env.NODE_ENV': JSON.stringify('production')
+      'process.env.NODE_ENV': JSON.stringify('production'),
+      '__STATIC_IMAGES__': JSON.stringify(`https://${process.env.AWS_S3_BUCKET}`)
     }),
     new webpack.SourceMapDevToolPlugin({
       filename: '[name]_[hash].js.map',
