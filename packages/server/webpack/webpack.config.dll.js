@@ -41,7 +41,6 @@ module.exports = {
       'react-dnd-scrollzone',
       'react-dom',
       'react-dom-confetti',
-      'react-fontawesome',
       'react-helmet',
       'react-hotkey-hoc',
       'react-loadable',

@@ -3,19 +3,20 @@ import React from 'react'
 import appTheme from '../../styles/theme/appTheme'
 import srOnly from '../../styles/helpers/srOnly'
 import styled from '@emotion/styled'
-import StyledFontAwesome from '../StyledFontAwesome'
+import Icon from 'components/Icon'
+import {MD_ICONS_SIZE_18} from 'styles/icons'
 
 const checkInStatus = {
   null: {
-    icon: 'circle',
+    icon: 'brightness_1',
     statusName: ''
   },
   true: {
-    icon: 'check-circle',
+    icon: 'check_circle',
     statusName: ' & present'
   },
   false: {
-    icon: 'minus-circle',
+    icon: 'remove_circle',
     statusName: ' & absent'
   }
 }
@@ -52,8 +53,9 @@ const Badge = styled('div')({
   }
 })
 
-const BadgeIcon = styled(StyledFontAwesome)(({isConnected}) => ({
+const BadgeIcon = styled(Icon)(({isConnected}) => ({
   color: isConnected ? appTheme.brand.secondary.green : appTheme.palette.dark50l,
+  fontSize: MD_ICONS_SIZE_18,
   height: '1em',
   lineHeight: '1em',
   position: 'relative',
@@ -74,7 +76,7 @@ const AvatarBadge = (props) => {
   const description = `${connection}, ${checkIn}`
   return (
     <Badge>
-      <BadgeIcon isConnected={isConnected} name={icon} title={title} />
+      <BadgeIcon isConnected={isConnected} title={title}>{icon}</BadgeIcon>
       <Description>{description}</Description>
     </Badge>
   )

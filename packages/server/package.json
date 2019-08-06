@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "3.17.0",
+  "version": "3.18.0-alpha.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/action"
@@ -62,6 +62,7 @@
     "@sentry/webpack-plugin": "^1.7.0",
     "@sucrase/webpack-loader": "^2.0.0",
     "@types/auth0-js": "^8.11.11",
+    "@types/dotenv": "^6.1.1",
     "@types/express": "^4.16.1",
     "@types/graphql": "^14.2.2",
     "@types/ioredis": "^4.0.10",
@@ -81,6 +82,7 @@
     "babel-plugin-relay": "^5.0.0",
     "clean-webpack-plugin": "^3.0.0",
     "codecov": "^3.5.0",
+    "copy-webpack-plugin": "^5.0.4",
     "cross-env": "^5.1.6",
     "css-loader": "^3.1.0",
     "dynamic-serializer": "^0.2.1",
@@ -97,6 +99,7 @@
     "graphql-typescript-definitions": "^0.17.1",
     "hard-source-webpack-plugin": "^0.13.1",
     "html-webpack-plugin": "^3.2.0",
+    "html-webpack-tags-plugin": "^2.0.13",
     "husky": "^3.0.1",
     "ignore-loader": "^0.1.2",
     "jest": "^24.8.0",
@@ -132,7 +135,6 @@
     "@google-cloud/language": "^3.2.3",
     "@mattkrick/sanitize-svg": "^0.2.1",
     "@mattkrick/trebuchet-client": "^0.1.2",
-    "@segment/snippet": "^4.0.1",
     "@sentry/integrations": "^5.5.0",
     "@sentry/node": "^5.5.0",
     "analytics-node": "^3.0.0",
@@ -161,12 +163,12 @@
     "jsonwebtoken": "^8.5.0",
     "mailcomposer": "^4.0.1",
     "mailgun-js": "^0.13.1",
-    "migrate-rethinkdb": "^1.5.0",
+    "migrate-rethinkdb": "^1.6.2",
     "mime-types": "^2.1.16",
     "ms": "^2.0.0",
     "node-env-flag": "0.1.0",
     "node-fetch": "^2.6.0",
-    "parabol-client": "^3.17.0",
+    "parabol-client": "^3.18.0-alpha.0",
     "rethinkdbdash": "^2.3.31",
     "secure-compare": "^3.0.1",
     "serve-favicon": "^2.4.3",
@@ -176,8 +178,8 @@
     "ts-node": "^8.3.0"
   },
   "engines": {
-    "node": "11.14.0",
-    "yarn": "1.15.2"
+    "node": "12.7.0",
+    "yarn": "^1.15.2"
   },
   "lint-staged": {
     "*.{js,ts,tsx}": [

@@ -19,6 +19,7 @@ const Header = () => {
         <tr>
           <td align='left' style={cellStyle}>
             <img
+              crossOrigin=''
               alt='Parabol, Inc. Logo'
               height={40}
               src={`${emailDir}email-header-branding-color@3x.png`}

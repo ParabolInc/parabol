@@ -20,13 +20,15 @@ const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const pluginInlineImport = require('babel-plugin-inline-import').default
 const {InjectManifest} = require('wrkbx')
+const CopyPlugin = require('copy-webpack-plugin')
+const TagsPlugin = require('html-webpack-tags-plugin')
 
 getDotenv.default()
 
 const PROJECT_ROOT = path.join(__dirname, '..', '..', '..')
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
-const publicPath = getWebpackPublicPath.default()
 const buildPath = path.join(PROJECT_ROOT, 'build')
+const publicPath = getWebpackPublicPath.default()
 
 // babel-plugin-relay requires a prod BABEL_ENV to remove hash checking logic. Probably a bug in the package.
 process.env.BABEL_ENV = 'production'
@@ -100,7 +102,8 @@ module.exports = {
     path: buildPath,
     publicPath,
     filename: '[name]_[contenthash].js',
-    chunkFilename: '[name]_[contenthash].js'
+    chunkFilename: '[name]_[contenthash].js',
+    crossOriginLoading: 'anonymous'
   },
   resolve,
   optimization: {
@@ -131,10 +134,29 @@ module.exports = {
     }
   },
   plugins: [
+    new CopyPlugin([
+      {
+        from: path.join(PROJECT_ROOT, 'static', 'manifest.json'),
+        to: buildPath
+      }
+    ]),
     // new GenerateSW(),
     new HtmlWebpackPlugin({
       filename: 'index.html',
-      template: path.join(PROJECT_ROOT, 'packages', 'server', 'template.html')
+      template: path.join(PROJECT_ROOT, 'packages', 'server', 'template.html'),
+      title: 'Free Online Retrospectives | Parabol',
+
+    }),
+    new TagsPlugin({
+      links: [
+        {
+          path: `https://${process.env.AWS_S3_BUCKET}/static/favicon.ico`,
+          attributes: {
+            rel: 'shortcut icon',
+            crossorigin: '',
+          }
+        }
+      ]
     }),
     new ScriptExtHtmlWebpackPlugin({
       custom: {
@@ -143,12 +165,20 @@ module.exports = {
         value: 'fallback(this)'
       }
     }),
+    new ScriptExtHtmlWebpackPlugin({
+      custom: {
+        test: /\.js$/,
+        attribute: 'crossorigin',
+        value: ''
+      }
+    }),
     new CleanWebpackPlugin(),
     new webpack.DefinePlugin({
       __CLIENT__: true,
       __PRODUCTION__: true,
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
-      'process.env.NODE_ENV': JSON.stringify('production')
+      'process.env.NODE_ENV': JSON.stringify('production'),
+      '__STATIC_IMAGES__': JSON.stringify(`https://${process.env.AWS_S3_BUCKET}/static`)
     }),
     new webpack.SourceMapDevToolPlugin({
       filename: '[name]_[hash].js.map',
@@ -159,7 +189,7 @@ module.exports = {
       entry: path.join(PROJECT_ROOT, 'packages', 'client', 'serviceWorker', 'sw.ts'),
       swDest: 'sw.js',
       importWorkboxFrom: 'disabled',
-      exclude: [/GraphqlContainer/, /\.map$/, /^manifest.*\.js$/, /index.html$/],
+      exclude: [/GraphqlContainer/, /\.map$/, /^manifest.*\.js$/, /index.html$/]
     }),
     ...extraPlugins
   ],

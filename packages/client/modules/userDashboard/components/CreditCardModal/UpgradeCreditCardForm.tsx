@@ -4,28 +4,19 @@ import {normalizeExpiry, normalizeNumeric} from './normalizers'
 import styled from '@emotion/styled'
 import ui from '../../../../styles/ui'
 import appTheme from '../../../../styles/theme/appTheme'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import withAsync from 'react-async-hoc'
 import * as Sentry from '@sentry/browser'
 import UpgradeToProMutation from '../../../../mutations/UpgradeToProMutation'
 import UpdateCreditCardMutation from '../../../../mutations/UpdateCreditCardMutation'
 import UpgradeCreditCardFormField from '../../../../components/UpgradeCreditCardFormField'
-import {
-  cardTypeLookup,
-  CCValidationErrors,
-  stripeFieldLookup
-} from '../../../../utils/creditCardLookup'
-import withMutationProps, {
-  ErrorObject,
-  WithMutationProps
-} from '../../../../utils/relay/withMutationProps'
+import {cardTypeLookup, CCValidationErrors, stripeFieldLookup} from '../../../../utils/creditCardLookup'
+import withMutationProps, {ErrorObject, WithMutationProps} from '../../../../utils/relay/withMutationProps'
 import PrimaryButton from '../../../../components/PrimaryButton'
-import StyledFontAwesome from '../../../../components/StyledFontAwesome'
 import Icon from '../../../../components/Icon'
-import {ICON_SIZE_FA_2X, MD_ICONS_SIZE_18} from '../../../../styles/icons'
+import {MD_ICONS_SIZE_18} from '../../../../styles/icons'
 import {typeScale} from '../../../../styles/theme/typography'
+import CreditCardIcon from '../../../../components/CreditCardIcon'
 
 const inputBorder = '.0625rem solid transparent'
 const borderBottom = '.125rem solid transparent'
@@ -57,20 +48,6 @@ const Subheading = styled('div')({
   fontSize: typeScale[3],
   justifyContent: 'center',
   lineHeight: typeScale[6]
-})
-
-const CreditCardIcon = styled(StyledFontAwesome)({
-  alignItems: 'center',
-  backgroundColor: appTheme.palette.mid70l,
-  borderRadius: '100%',
-  color: ui.palette.white,
-  display: 'flex',
-  fontSize: ICON_SIZE_FA_2X,
-  height: '4rem',
-  justifyContent: 'center',
-  margin: '0 0 .5rem',
-  textAlign: 'center',
-  width: '4rem'
 })
 
 const CardInputs = styled('div')({
@@ -130,6 +107,7 @@ interface CreateTokenInput {
   exp_year: number | string
   cvc: number | string
 }
+
 interface CreateTokenRes {
   error: {param: keyof CreateTokenInput}
   id: string
@@ -160,9 +138,11 @@ declare global {
   }
 }
 
+
+
 class UpgradeCreditCardForm extends React.Component<Props, State> {
   state = {
-    cardTypeIcon: 'credit-card',
+    cardTypeIcon: 'credit_card',
     creditCardNumber: '',
     cvc: '',
     expiry: ''
@@ -299,13 +279,13 @@ class UpgradeCreditCardForm extends React.Component<Props, State> {
     }
   }
 
-  render () {
+  render() {
     const {isUpdate, dirty, error, submitting} = this.props
     const {cardTypeIcon, creditCardNumber, expiry, cvc} = this.state
     const actionLabel = isUpdate ? 'Update Credit Card' : 'Upgrade to Pro'
     return (
       <ModalBody>
-        <CreditCardIcon name={cardTypeIcon} />
+        <CreditCardIcon cardTypeIcon={cardTypeIcon}/>
         <Heading>{actionLabel}</Heading>
         <Subheading>
           <LockIcon>lock</LockIcon>

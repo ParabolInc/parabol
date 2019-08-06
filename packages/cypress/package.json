@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "3.17.0",
+  "version": "3.18.0-alpha.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/action"
@@ -14,8 +14,9 @@
   },
   "main": "index.js",
   "scripts": {
+    "start": "yarn workspace parabol-server start",
     "test": "start-server-and-test start http://localhost:3000 cy:run",
-    "cy:run": "cypress run --record --key $CYPRESS_SECRET"
+    "cy:run": "cypress run"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
@@ -55,11 +56,12 @@
   },
   "dependencies": {
     "dotenv": "8.0.0",
-    "dotenv-expand": "5.1.0"
+    "dotenv-expand": "5.1.0",
+    "parabol-client": "^3.18.0-alpha.0"
   },
   "engines": {
-    "node": "11.14.0",
-    "yarn": "1.15.2"
+    "node": "12.7.0",
+    "yarn": "^1.15.2"
   },
   "lint-staged": {
     "*.js": [

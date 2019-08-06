@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "3.16.2",
+  "version": "3.17.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/action"
@@ -31,10 +31,6 @@
     "relay-compiler": "https://github.com/mattkrick/relay/tarball/afed4d72c613515b15d8fc0bb2bfd34e928589b1",
     "relay-runtime": "https://github.com/mattkrick/relay/tarball/dbd07bab510551e0c421aad70e5b57bb86520d32",
     "immutable": "3.8.2"
-  },
-  "engines": {
-    "node": "11.14.0",
-    "yarn": "1.15.2"
   },
   "devDependencies": {
     "@types/jscodeshift": "^0.6.2",

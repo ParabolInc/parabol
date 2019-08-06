@@ -22,7 +22,7 @@ const LogoFooter = () => {
     <>
       <tr>
         <td align='center' style={logoStyle}>
-          <img src={`${emailDir}mark-color@3x.png`} height='28' width='31' />
+          <img crossOrigin='' src={`${emailDir}mark-color@3x.png`} height='28' width='31' />
         </td>
       </tr>
       <tr>

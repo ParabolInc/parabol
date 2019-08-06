@@ -52,7 +52,7 @@ const RetroTopic = (props: Props) => {
       </tr>
       <tr>
         <td align='center' style={votesBlock}>
-          <img height='18' src={src} width='18' style={imageStyle} />
+          <img crossOrigin='' height='18' src={src} width='18' style={imageStyle} />
           <span style={voteCountStyle}>{voteCount}</span>
         </td>
       </tr>

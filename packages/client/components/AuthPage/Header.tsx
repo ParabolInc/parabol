@@ -28,7 +28,7 @@ export default () => (
   <HeaderContainer>
     <HeaderBrand>
       <Link to='/' title='Parabol Home'>
-        <img src={parabolLogo} alt='' />
+        <img crossOrigin='' src={parabolLogo} alt='' />
       </Link>
     </HeaderBrand>
   </HeaderContainer>

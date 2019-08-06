@@ -68,13 +68,16 @@ const OwnerAvatar = styled('img')({
   width: 24
 })
 const ButtonGroup = styled('div')({
-
+  display: 'flex'
 })
 const WiderButton = styled('div')({
   marginLeft: 16,
   minWidth: 132
 })
-const MessageText = styled('div')({})
+const MessageText = styled('div')({
+  display: 'flex',
+  whiteSpace: 'pre-wrap'
+})
 
 const makeEditorState = (content, getEditorState) => {
   const contentState = convertFromRaw(JSON.parse(content))

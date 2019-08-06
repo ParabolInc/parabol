@@ -4,8 +4,8 @@
   "repository": "https://github.com/ParabolInc/action",
   "scripts": {
     "dokku": {
-      "predeploy": "npm run db:migrate",
-      "postdeploy": "npm run postdeploy"
+      "predeploy": "yarn workspace parabol-server db:migrate",
+      "postdeploy": "yarn workspace parabol-server postdeploy"
     }
   }
 }

@@ -19,7 +19,7 @@ const InvoiceFooter = (props) => {
           <b>{'billing@parabol.co'}</b>
         </a>
       </div>
-      <img alt='Logo for Parabol' className={css(styles.lockup)} src={lockup} />
+      <img crossOrigin='' alt='Logo for Parabol' className={css(styles.lockup)} src={lockup} />
       <div className={css(styles.finePrint)}>
         {'Parabol, Inc.'}
         <br />
