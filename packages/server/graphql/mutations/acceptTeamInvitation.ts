@@ -12,7 +12,7 @@ import standardError from '../../utils/standardError'
 import AcceptTeamInvitationPayload from '../types/AcceptTeamInvitationPayload'
 import TeamInvitation from '../../database/types/TeamInvitation'
 import {verifyMassInviteToken} from '../../utils/massInviteToken'
-import sendSegmentEvent from 'server/utils/sendSegmentEvent'
+import sendSegmentEvent from '../../utils/sendSegmentEvent'
 
 export default {
   type: new GraphQLNonNull(AcceptTeamInvitationPayload),
