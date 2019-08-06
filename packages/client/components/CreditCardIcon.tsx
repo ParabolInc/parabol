@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
-import React, {useEffect, useState} from 'react'
-import SVG from './SVG'
+import React from 'react'
 import {PALETTE} from '../styles/paletteV2'
 import Icon from './Icon'
+import useSVG from '../hooks/useSVG'
 
 const Background = styled('div')({
   display: 'flex',
@@ -20,10 +20,10 @@ const FallbackIcon = styled(Icon)({
   fontSize: 40
 })
 
-const SVGStyles = styled(SVG)<{isReady: boolean}>(({isReady}) => ({
-  width: isReady ? 40 : 0,
+const SVGStyles = styled('div')({
+  width: 40,
   height: 40
-}))
+})
 
 interface Props {
   cardTypeIcon: string
@@ -33,24 +33,15 @@ const CCDir =  `${__STATIC_IMAGES__}/creditCards`
 
 const CreditCardIcon = (props: Props) => {
   const {cardTypeIcon} = props
-  const [isReady, setIsReady] = useState(false)
   const isFallback = cardTypeIcon === 'credit_card'
-  useEffect(() => {
-    if (isFallback) {
-      setIsReady(false)
-    }
-  }, [isFallback])
-
-  const setLayout = (svgEl: SVGElement) => {
+  const {svg, svgRef} = useSVG(isFallback ? '' : `${CCDir}/${cardTypeIcon}.svg`, (svgEl: SVGElement) => {
     const path = svgEl.firstChild as SVGPathElement
     path.setAttribute('fill', 'white')
-    setIsReady(true)
-  }
+  })
 
   return (
     <Background>
-      {isFallback || !isReady ? <FallbackIcon>credit_card</FallbackIcon> : null}
-      {!isFallback && <SVGStyles isReady={isReady} src={`${CCDir}/${cardTypeIcon}.svg`} setLayout={setLayout} />}
+      {isFallback || !svg ? <FallbackIcon>credit_card</FallbackIcon> : <SVGStyles ref={svgRef} dangerouslySetInnerHTML={{__html: svg}}/>}
     </Background>
 
 
