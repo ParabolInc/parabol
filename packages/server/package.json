@@ -177,10 +177,6 @@
     "stripe": "^4.24.0",
     "ts-node": "^8.3.0"
   },
-  "engines": {
-    "node": "12.7.0",
-    "yarn": "^1.15.2"
-  },
   "lint-staged": {
     "*.{js,ts,tsx}": [
       "eslint --fix",
