@@ -15,6 +15,7 @@ import standardError from '../../utils/standardError'
 import InviteToTeamPayload from '../types/InviteToTeamPayload'
 import {TEAM_INVITATION_LIFESPAN} from '../../utils/serverConstants'
 import TeamInvitation from '../../database/types/TeamInvitation'
+import sendSegmentEvent from 'server/utils/sendSegmentEvent'
 
 const randomBytes = promisify(crypto.randomBytes, crypto)
 
@@ -143,7 +144,10 @@ export default {
         }
         publish(NOTIFICATION, userId, InviteToTeamPayload, subscriberData, subOptions)
       })
-
+      sendSegmentEvent('Invite Email Sent', viewerId, {
+        teamId,
+        invitees: successfulInvitees
+      }).catch()
       return data
     }
   )
