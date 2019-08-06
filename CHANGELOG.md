@@ -5,15 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## v3.18.0 2019-Aug-01
+## v3.18.0 2019-Aug-05
 
 ## Added
 * Repo refactored to a mono repo, clearly dividing the server and client
-* Added a service worker
+* Added a service worker, manages local cache of files: Parabol should be much
+  snappier after it loads!
+* Helpers to load cross-site SVG and Javascript files
 
 ## Fixed
 * Timer snackbar z-index (#3050)
 * fix theme color (address bar on mobile)
+
+## Removed
+* We no longer depend on Fontawesome
 
 ## v3.17.2 2019-Jul-30
 
