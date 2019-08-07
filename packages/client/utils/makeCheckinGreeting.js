@@ -78,7 +78,19 @@ const questions = [
   'What’s got your attention today, and why?',
   'What was your favorite recent book or article, and what did it inspire?',
   'Heard any good tips lately?',
-  'What emoji best represents you today, and why?'
+  'What emoji best represents you today, and why?',
+  'If you were going to be frozen tomorrow for a one-way 1000-year interstellar voyage, what would you most want to communicate (and to whom) before you leave?',
+  'What’s the most important thing to remember daily that you haven’t been able to?',
+  'What help could you most use that you haven’t asked for?',
+  'What is your one piece of advice to everyone here?',
+  'What was the last thing you fell in love with?',
+  'When was the last time you felt unbounded optimism?',
+  'Who was the last person you felt inspired by?',
+  'What simple thing still blows your mind?',
+  'What sparked your curiosity in whatever you’re most curious about now?',
+  'If you could know the absolute and total truth to one question, what question would you ask?',
+  'Which question can you ask to find out the most about a person?',
+  'What color best describes your personality today?'
 ]
 
 export const makeCheckinGreeting = (meetingCount, seedId = '') => {
