@@ -35,18 +35,19 @@ import StageTimerDisplay from './RetroReflectPhase/StageTimerDisplay'
 import StageTimerControl from './StageTimerControl'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import PhaseWrapper from './PhaseWrapper'
+import {ElementWidth} from '../types/constEnums'
 
 interface Props extends RetroMeetingPhaseProps, WithMutationProps, WithAtmosphereProps {
   team: RetroGroupPhase_team
 }
 
-const CenteredControlBlock = styled('div')({
-  display: 'flex'
-})
+const CenteredControlBlock = styled(BottomNavControl)<{isComplete: boolean | undefined}>(({isComplete}) => ({
+  display: 'flex',
+  flex: 1,
+  justifyContent: 'space-evenly',
+  marginLeft: isComplete ? ElementWidth.END_MEETING_BUTTON : undefined
+}))
 
-const BottomControlSpacer = styled('div')({
-  minWidth: 96
-})
 
 const GroupHelpMenu = lazyPreload(async () =>
   import(/* webpackChunkName: 'GroupHelpMenu' */ './MeetingHelp/GroupHelpMenu')
@@ -87,7 +88,7 @@ const RetroGroupPhase = (props: Props) => {
     const groupingThreshold = nextAutoGroupThreshold || 0.5
     AutoGroupReflectionsMutation(atmosphere, {meetingId, groupingThreshold}, onError, onCompleted)
   }
-  const canAutoGroup = !isDemoRoute() && (!nextAutoGroupThreshold || nextAutoGroupThreshold < 1)
+  const canAutoGroup = !isDemoRoute() && (!nextAutoGroupThreshold || nextAutoGroupThreshold < 1) && !isComplete
   return (
     <MeetingContent>
       <MeetingHeaderAndPhase>
@@ -111,12 +112,17 @@ const RetroGroupPhase = (props: Props) => {
         />
       </MeetingHeaderAndPhase>
       <MeetingFacilitatorBar isFacilitating={isFacilitating}>
-        {isComplete ? (
-          <BottomControlSpacer />
-        ) : (
-          <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
-        )}
-        <CenteredControlBlock>
+        {!isComplete && <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />}
+        <CenteredControlBlock isComplete={isComplete}>
+          {canAutoGroup  && (
+            <BottomNavControl onClick={autoGroup} waiting={submitting}>
+              <BottomNavIconLabel
+                icon='photo_filter'
+                iconColor='midGray'
+                label={'Auto Group'}
+              />
+            </BottomNavControl>
+          )}
           <BottomNavControl
             isBouncing={isDemoStageComplete || (!isAsync && !isComplete && isReadyToVote)}
             onClick={() => gotoNext()}
@@ -129,15 +135,6 @@ const RetroGroupPhase = (props: Props) => {
               label={`Next: ${nextPhaseLabel}`}
             />
           </BottomNavControl>
-          {canAutoGroup && !isComplete && (
-            <BottomNavControl onClick={autoGroup} waiting={submitting}>
-              <BottomNavIconLabel
-                icon='photo_filter'
-                iconColor='midGray'
-                label={'Auto Group'}
-              />
-            </BottomNavControl>
-          )}
         </CenteredControlBlock>
         <EndMeetingButton meetingId={meetingId} />
       </MeetingFacilitatorBar>

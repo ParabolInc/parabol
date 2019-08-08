@@ -24,9 +24,9 @@ import updateReflectionsInModal from '../../utils/multiplayerMasonry/updateRefle
 import withMutationProps, {WithMutationProps} from '../../utils/relay/withMutationProps'
 import {MasonryChildrenCache, MasonryItemCache, MasonryParentCache, SetChildRef, SetItemRef} from '../PhaseItemMasonry'
 import {DragReflectionDropTargetTypeEnum} from '../../types/graphql'
-import {cardStackPerspectiveY} from '../../styles/cards'
 import updateColumnHeight from '../../utils/multiplayerMasonry/updateColumnHeight'
 import {ClassNames} from '@emotion/core'
+import {ReflectionStackPerspective} from '../../types/constEnums'
 
 interface PassedProps {
   meeting: ReflectionGroup_meeting
@@ -84,7 +84,7 @@ const GroupStyle = styled('div')<GroupProps>(
   },
   ({gutterN}) =>
     gutterN && {
-      paddingBottom: CARD_PADDING + gutterN * cardStackPerspectiveY
+      paddingBottom: CARD_PADDING + gutterN * ReflectionStackPerspective.Y
     },
   ({isModal}) =>
     isModal && {
