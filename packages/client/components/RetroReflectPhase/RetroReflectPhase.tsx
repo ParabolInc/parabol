@@ -32,9 +32,9 @@ import ReflectWrapperDesktop from './ReflectWrapperDesktop'
 import ReflectWrapperMobile from './ReflectionWrapperMobile'
 import {Breakpoint, ElementWidth} from '../../types/constEnums'
 
-const MoveForwardButton = styled(BottomNavControl)<{isComplete: boolean}>(({isComplete}) => ({
-  flex: 1,
-  marginLeft: isComplete ? ElementWidth.END_MEETING_BUTTON : undefined
+const CenterControlBlock = styled('div')<{isComplete: boolean}>(({isComplete}) => ({
+  margin: '0 auto',
+  paddingLeft: isComplete ? ElementWidth.END_MEETING_BUTTON : undefined
 }))
 
 interface Props extends RetroMeetingPhaseProps {
@@ -113,20 +113,21 @@ const RetroReflectPhase = (props: Props) => {
       </MeetingHeaderAndPhase>
       <MeetingFacilitatorBar isFacilitating={isFacilitating}>
         {!isComplete && <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />}
-        <MoveForwardButton
-          isComplete={isComplete}
-          isBouncing={isDemoStageComplete || isReadyToGroup}
-          disabled={isEmpty}
-          onClick={() => gotoNext()}
-          onKeyDown={handleRightArrow(() => gotoNext())}
-          ref={gotoNextRef}
-        >
-          <BottomNavIconLabel
-            icon='arrow_forward'
-            iconColor='warm'
-            label={`Next: ${nextPhaseLabel}`}
-          />
-        </MoveForwardButton>
+        <CenterControlBlock isComplete={isComplete}>
+          <BottomNavControl
+            isBouncing={isDemoStageComplete || isReadyToGroup}
+            disabled={isEmpty}
+            onClick={() => gotoNext()}
+            onKeyDown={handleRightArrow(() => gotoNext())}
+            ref={gotoNextRef}
+          >
+            <BottomNavIconLabel
+              icon='arrow_forward'
+              iconColor='warm'
+              label={`Next: ${nextPhaseLabel}`}
+            />
+          </BottomNavControl>
+        </CenterControlBlock>
         <EndMeetingButton meetingId={meetingId} />
       </MeetingFacilitatorBar>
     </MeetingContent>

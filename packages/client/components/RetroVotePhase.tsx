@@ -43,9 +43,9 @@ interface Props extends WithAtmosphereProps, RetroMeetingPhaseProps {
   team: RetroVotePhase_team
 }
 
-const MoveForwardButton = styled(BottomNavControl)<{isComplete: boolean}>(({isComplete}) => ({
-  flex: 1,
-  marginLeft: isComplete ? ElementWidth.END_MEETING_BUTTON : undefined
+const CenterControlBlock = styled('div')<{isComplete: boolean}>(({isComplete}) => ({
+  margin: '0 auto',
+  paddingLeft: isComplete ? ElementWidth.END_MEETING_BUTTON : undefined
 }))
 
 const votePhaseBreakpoint = minWidthMediaQueries[1]
@@ -200,20 +200,21 @@ const RetroVotePhase = (props: Props) => {
       </MeetingHeaderAndPhase>
       <MeetingFacilitatorBar isFacilitating={isFacilitating}>
         {!isComplete && <StageTimerControl defaultTimeLimit={3} meetingId={meetingId} team={team} />}
-        <MoveForwardButton
-          isComplete={isComplete}
-          isBouncing={teamVotesRemaining === 0}
-          disabled={!discussStage.isNavigableByFacilitator}
-          onClick={() => gotoNext()}
-          onKeyDown={handleRightArrow(() => gotoNext())}
-          ref={gotoNextRef}
-        >
-          <BottomNavIconLabel
-            icon='arrow_forward'
-            iconColor='warm'
-            label={`Next: ${nextPhaseLabel}`}
-          />
-        </MoveForwardButton>
+        <CenterControlBlock isComplete={isComplete}>
+          <BottomNavControl
+            isBouncing={teamVotesRemaining === 0}
+            disabled={!discussStage.isNavigableByFacilitator}
+            onClick={() => gotoNext()}
+            onKeyDown={handleRightArrow(() => gotoNext())}
+            ref={gotoNextRef}
+          >
+            <BottomNavIconLabel
+              icon='arrow_forward'
+              iconColor='warm'
+              label={`Next: ${nextPhaseLabel}`}
+            />
+          </BottomNavControl>
+        </CenterControlBlock>
         <EndMeetingButton meetingId={meetingId} />
       </MeetingFacilitatorBar>
     </MeetingContent>

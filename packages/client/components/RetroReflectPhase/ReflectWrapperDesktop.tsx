@@ -11,6 +11,7 @@ const DesktopWrapper = styled('div')({
 
 const Inner = styled('div')({
   display: 'flex',
+  margin: '0 auto'
 })
 
 interface Props {

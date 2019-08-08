@@ -35,6 +35,7 @@ import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import PhaseWrapper from './PhaseWrapper'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {ElementWidth} from '../types/constEnums'
 
 interface Props extends WithAtmosphereProps, RetroMeetingPhaseProps {
   team: RetroDiscussPhase_team
@@ -128,8 +129,13 @@ const TaskCardBlock = styled('div')({
 })
 
 const BottomControlSpacer = styled('div')({
-  minWidth: 96
+  minWidth: 90
 })
+
+const CenterControlBlock = styled('div')<{isComplete: boolean}>(({isComplete}) => ({
+  margin: '0 auto',
+  paddingLeft: isComplete ? ElementWidth.END_MEETING_BUTTON : undefined
+}))
 
 const DiscussHelpMenu = lazyPreload(async () =>
   import(
@@ -150,6 +156,7 @@ const RetroDiscussPhase = (props: Props) => {
   const {gotoNext, ref: gotoNextRef} = handleGotoNext
   const {facilitatorUserId, localStage, meetingId, phases} = newMeeting
   const {localStageId, reflectionGroup} = localStage
+  const isComplete = localStage ? localStage.isComplete : false
   // reflection group will be null until the server overwrites the placeholder.
   if (!reflectionGroup) return null
   const {reflectionGroupId, tasks, title, reflections, voteCount} = reflectionGroup
@@ -221,7 +228,7 @@ const RetroDiscussPhase = (props: Props) => {
         <MeetingFacilitatorBar isFacilitating={isFacilitating}>
           <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
           {nextStageRes && (
-            <React.Fragment>
+            <CenterControlBlock isComplete={isComplete}>
               <BottomNavControl
                 isBouncing={isDemoStageComplete}
                 onClick={() => gotoNext()}
@@ -230,7 +237,7 @@ const RetroDiscussPhase = (props: Props) => {
               >
                 <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={'Next Topic'} />
               </BottomNavControl>
-            </React.Fragment>
+            </CenterControlBlock>
           )}
           <EndMeetingButton meetingId={meetingId} />
           {!nextStageRes && <BottomControlSpacer />}
@@ -269,6 +276,7 @@ export default createFragmentContainer(withAtmosphere(RetroDiscussPhase), {
         }
         localStage {
           ...StageTimerDisplay_stage
+          isComplete
           localStageId: id
           ... on RetroDiscussStage {
             reflectionGroup {

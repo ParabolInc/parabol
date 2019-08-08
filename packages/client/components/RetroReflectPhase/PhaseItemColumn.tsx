@@ -37,7 +37,7 @@ const ColumnHighlight = styled('div')<{isFocused: boolean, isDesktop: boolean}>(
   borderRadius: isDesktop ? 2 : 8,
   height: '100%',
   maxHeight: 608,
-  padding: isDesktop ? 16 : '16px 8px',
+  padding: isDesktop ? '16px 24px' : '16px 8px',
   transition: `background 150ms ${DECELERATE}`,
   width: '100%'
 }))
