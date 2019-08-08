@@ -19,7 +19,8 @@ import {cardShadow} from '../../styles/elevation'
 import isTempId from '../../utils/relay/isTempId'
 import withMutationProps, {WithMutationProps} from '../../utils/relay/withMutationProps'
 import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
-import {cardBackgroundColor, cardBorderRadius, reflectionCardWidth} from '../../styles/cards'
+import {cardBackgroundColor, cardBorderRadius} from '../../styles/cards'
+import {ElementWidth} from '../../types/constEnums'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   handleChange?: () => void
@@ -52,7 +53,7 @@ export const ReflectionCardRoot = styled('div')<ReflectionCardRootProps>(
     maxWidth: '100%',
     position: 'relative',
     transition: `box-shadow 2000ms ${DECELERATE}`,
-    width: reflectionCardWidth
+    width: ElementWidth.REFLECTION_CARD
   },
   ({isClosing, shadow}) =>
     shadow !== null && {

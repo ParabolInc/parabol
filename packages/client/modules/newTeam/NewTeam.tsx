@@ -9,9 +9,9 @@ import ui from '../../styles/ui'
 import {cardShadow} from '../../styles/elevation'
 import appTheme from '../../styles/theme/appTheme'
 import NewTeamForm from './components/NewTeamForm/NewTeamForm'
-import {DASH_SIDEBAR} from '../../components/Dashboard/DashSidebar'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import {NewTeam_viewer} from '../../__generated__/NewTeam_viewer.graphql'
+import {Breakpoint} from '../../types/constEnums'
 
 const NewTeamLayout = styled('div')({
   alignItems: 'center',
@@ -70,7 +70,7 @@ interface Props {
 const NewTeam = (props: Props) => {
   const {defaultOrgId, viewer} = props
   const {organizations} = viewer
-  const isDesktop = useBreakpoint(DASH_SIDEBAR.BREAKPOINT)
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   return (
     <NewTeamLayout>
       <NewTeamInner>

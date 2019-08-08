@@ -2,39 +2,25 @@ import React, {forwardRef, ReactNode, Ref, useState} from 'react'
 import styled from '@emotion/styled'
 import ui from '../styles/ui'
 import PlainButton, {PlainButtonProps} from './PlainButton/PlainButton'
-import elevation from '../styles/elevation'
-
-const isValidElevation = (elevation) => elevation >= 0 && elevation <= 24
-
-const getPressedElevation = (elevation1, elevation2) => {
-  const offset = Math.floor(Math.abs(elevation1 - elevation2) / 2)
-  const hovered = Math.max(elevation1, elevation2)
-  const pressedElevation = hovered ? hovered - offset : 0
-  return elevation[pressedElevation]
-}
-
-const getBoxShadow = (disabled, pressedDown, desiredElevation, otherElevation) => {
-  if (disabled || !isValidElevation(desiredElevation)) return undefined
-  if (pressedDown) return getPressedElevation(desiredElevation, otherElevation)
-  return elevation[desiredElevation]
-}
+import {Elevation} from '../styles/elevation'
 
 interface Root {
   disabled: boolean
-  elevationResting: number | undefined
-  elevationHovered: number | undefined
+  elevationResting: Elevation | undefined
+  elevationHovered: Elevation | undefined
+  elevationPressed: Elevation | undefined
   pressedDown: boolean
   size: 'small' | 'medium' | 'large'
 }
 
 const ButtonRoot = styled(PlainButton)<Root>(
-  ({disabled, elevationResting, elevationHovered, pressedDown, size}) => {
+  ({disabled, elevationResting, elevationHovered, elevationPressed, pressedDown, size}) => {
     return {
       // size is easy to override, it adds: fontSize, lineHeight, padding
       ...ui.buttonSizeStyles[size],
       alignItems: 'center',
       border: '.0625rem solid transparent',
-      boxShadow: getBoxShadow(disabled, pressedDown, elevationResting, elevationHovered),
+      boxShadow:  disabled ? undefined : pressedDown ? elevationPressed : elevationResting,
       display: 'flex',
       flexShrink: 0,
       justifyContent: 'center',
@@ -43,7 +29,7 @@ const ButtonRoot = styled(PlainButton)<Root>(
       userSelect: 'none',
       whiteSpace: 'nowrap',
       ':hover,:focus,:active': {
-        boxShadow: getBoxShadow(disabled, pressedDown, elevationHovered, elevationResting),
+        boxShadow:  disabled ? undefined : pressedDown ? elevationPressed : elevationHovered,
         outline: pressedDown && 0
       }
     }
@@ -55,8 +41,9 @@ export interface BaseButtonProps extends PlainButtonProps {
   size?: 'small' | 'medium' | 'large'
   children?: ReactNode
   className?: string
-  elevationHovered?: number
-  elevationResting?: number
+  elevationHovered?: Elevation
+  elevationResting?: Elevation
+  elevationPressed?: Elevation
   onClick?: React.MouseEventHandler
   onMouseDown?: React.MouseEventHandler
   onMouseEnter?: React.MouseEventHandler
@@ -73,6 +60,7 @@ const BaseButton = forwardRef((props: BaseButtonProps, ref: Ref<HTMLButtonElemen
     disabled,
     elevationHovered,
     elevationResting,
+    elevationPressed,
     onClick,
     onMouseEnter,
     style,
@@ -112,6 +100,7 @@ const BaseButton = forwardRef((props: BaseButtonProps, ref: Ref<HTMLButtonElemen
       disabled={hasDisabledStyles}
       elevationHovered={elevationHovered}
       elevationResting={elevationResting}
+      elevationPressed={elevationPressed}
       ref={ref}
       onClick={onClick}
       onMouseDown={handleMouseDown}

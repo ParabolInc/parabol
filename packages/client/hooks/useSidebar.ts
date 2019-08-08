@@ -2,10 +2,10 @@ import {useCallback} from 'react'
 import useHotkey from './useHotkey'
 import useRefState from './useRefState'
 import useBreakpoint from './useBreakpoint'
-import {DASH_SIDEBAR} from '../components/Dashboard/DashSidebar'
+import {Breakpoint} from '../types/constEnums'
 
 const useSidebar = () => {
-  const isDesktop = useBreakpoint(DASH_SIDEBAR.BREAKPOINT)
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const [isOpen, setIsOpen] = useRefState(isDesktop)
   const open = useCallback(() => {
     setIsOpen(true)

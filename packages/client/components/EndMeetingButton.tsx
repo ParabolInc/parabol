@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {forwardRef, Ref} from 'react'
 import EndNewMeetingMutation from '../mutations/EndNewMeetingMutation'
 import isDemoRoute from '../utils/isDemoRoute'
 import BottomNavControl from './BottomNavControl'
@@ -6,12 +6,18 @@ import BottomNavIconLabel from './BottomNavIconLabel'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useRouter from '../hooks/useRouter'
 import useMutationProps from '../hooks/useMutationProps'
+import styled from '@emotion/styled'
+import {ElementWidth} from '../types/constEnums'
 
 interface Props {
   meetingId: string
 }
 
-const EndMeetingButton = (props: Props) => {
+const EndMeetingButtonStyles = styled(BottomNavControl)({
+  width: ElementWidth.END_MEETING_BUTTON
+})
+
+const EndMeetingButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
   const {meetingId} = props
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
@@ -25,10 +31,10 @@ const EndMeetingButton = (props: Props) => {
 
   const label = isDemoRoute() ? 'End Demo' : 'End Meeting'
   return (
-    <BottomNavControl onClick={endMeeting} waiting={submitting}>
+    <EndMeetingButtonStyles onClick={endMeeting} waiting={submitting} ref={ref}>
       <BottomNavIconLabel icon='flag' iconColor='blue' label={label} />
-    </BottomNavControl>
+    </EndMeetingButtonStyles>
   )
-}
+})
 
 export default EndMeetingButton

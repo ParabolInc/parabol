@@ -1,13 +1,10 @@
 import React, {Component} from 'react'
-import styled from '@emotion/styled';
-import { keyframes } from '@emotion/core';
+import styled from '@emotion/styled'
+import {keyframes} from '@emotion/core'
 import {DECELERATE, fadeIn} from '../../styles/animation'
 import appTheme from '../../styles/theme/appTheme'
-import elevation from '../../styles/elevation'
-import {
-  REFLECTION_CARD_WIDTH,
-  REFLECTION_WIDTH
-} from '../../utils/multiplayerMasonry/masonryConstants'
+import {Elevation} from '../../styles/elevation'
+import {REFLECTION_CARD_WIDTH, REFLECTION_WIDTH} from '../../utils/multiplayerMasonry/masonryConstants'
 import plural from '../../utils/plural'
 import TinyLabel from '../TinyLabel'
 
@@ -55,7 +52,7 @@ const Chit = styled('div')({
   animation: `${fadeIn.toString()} 300ms ${DECELERATE}`,
   backgroundColor: '#fff',
   borderRadius: '2px',
-  boxShadow: elevation[1],
+  boxShadow: Elevation.Z1,
   height: CHIT_HEIGHT,
   width: CHIT_WIDTH
 })
@@ -74,6 +71,12 @@ const ActiveChit = styled('div')<{idx: number}>(({idx}) => ({
   height: CHIT_HEIGHT,
   width: PROGRESS_WIDTH
 }))
+
+const ChitWrap = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  flexShrink: 0
+})
 
 const ChitArea = styled('div')({
   display: 'grid',
@@ -106,7 +109,7 @@ class PhaseItemChits extends Component<Props> {
     const chits = [...Array(chitCount).keys()]
     const activeChits = [...Array(editorCount).keys()]
     return (
-      <div>
+      <ChitWrap>
         <ChitAreaLabel>{getStatus(count, editorCount)}</ChitAreaLabel>
         <ChitArea>
           {chits.map((idx) => (
@@ -121,7 +124,7 @@ class PhaseItemChits extends Component<Props> {
             </Chit>
           ))}
         </ChitArea>
-      </div>
+      </ChitWrap>
     )
   }
 }

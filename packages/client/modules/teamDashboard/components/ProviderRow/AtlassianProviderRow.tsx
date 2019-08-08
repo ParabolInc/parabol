@@ -1,7 +1,7 @@
 import {AtlassianProviderRow_viewer} from '../../../../__generated__/AtlassianProviderRow_viewer.graphql'
 import jwtDecode from 'jwt-decode'
 import React, {useEffect} from 'react'
-import styled from '@emotion/styled';
+import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
@@ -13,22 +13,19 @@ import ProviderCard from '../../../../components/ProviderCard'
 import ProviderActions from '../../../../components/ProviderActions'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import useAtlassianSites from '../../../../hooks/useAtlassianSites'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import {DECELERATE, fadeIn} from '../../../../styles/animation'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
-import {Providers} from '../../../../types/constEnums'
+import {Breakpoint, Providers} from '../../../../types/constEnums'
 import {IAuthToken} from '../../../../types/graphql'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 import AtlassianProviderLogo from '../../../../AtlassianProviderLogo'
 import {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import AtlassianClientManager from '../../../../utils/AtlassianClientManager'
-import {DASH_SIDEBAR} from '../../../../components/Dashboard/DashSidebar'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 
 const StyledButton = styled(FlatButton)({
@@ -129,7 +126,7 @@ const AtlassianProviderRow = (props: Props) => {
 
   const {sites, status} = useAtlassianSites(accessToken)
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
-  const isDesktop = useBreakpoint(DASH_SIDEBAR.BREAKPOINT)
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   return (
     <ProviderCard>
       <AtlassianProviderLogo />
@@ -148,16 +145,16 @@ const AtlassianProviderRow = (props: Props) => {
         <ListAndMenu>
           <SiteList>
             {status === 'loaded' &&
-              sites.map((site, idx) => (
-                <SiteAvatar
-                  key={site.id}
-                  width={24}
-                  height={24}
-                  src={site.avatarUrl}
-                  title={site.name}
-                  idx={sites.length - idx}
-                />
-              ))}
+            sites.map((site, idx) => (
+              <SiteAvatar
+                key={site.id}
+                width={24}
+                height={24}
+                src={site.avatarUrl}
+                title={site.name}
+                idx={sites.length - idx}
+              />
+            ))}
             {status === 'loading' && (
               <LoadingComponent spinnerSize={24} height={24} showAfter={0} />
             )}

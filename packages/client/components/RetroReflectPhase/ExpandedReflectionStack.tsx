@@ -1,135 +1,121 @@
 import {PhaseItemColumn_meeting} from '../../__generated__/PhaseItemColumn_meeting.graphql'
-import React, {Component} from 'react'
+import React, {Ref, useMemo} from 'react'
 import styled from '@emotion/styled'
-import ResizeObserverPolyfill from 'resize-observer-polyfill'
-import Modal from '../Modal'
 import ReflectionCard from '../ReflectionCard/ReflectionCard'
-import FLIPGrid from './FLIPGrid'
-import FLIPModal from './FLIPModal'
 import getBBox from './getBBox'
-import {cardShadow} from '../../styles/elevation'
+import {ZINDEX_MODAL} from '../../styles/elevation'
+import {PALETTE} from '../../styles/paletteV2'
+import {BBox} from '../../types/animations'
+import {RefCallbackInstance} from '../../types/generics'
+import {ElementWidth, ZIndex} from '../../types/constEnums'
+
+const PortalBlock = styled('div')({
+  height: '100%',
+  left: 0,
+  position: 'absolute',
+  top: 0,
+  width: '100%',
+  zIndex: ZIndex.MODAL
+})
+
+const Scrim = styled('div')({
+  position: 'fixed',
+  height: '100%',
+  width: '100%'
+})
+
+const PhaseArea = styled('div')<{phaseBBox: BBox}>(({phaseBBox}) => ({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  position: 'absolute',
+  zIndex: ZINDEX_MODAL,
+  // use phaseBBox to center in the phase, not the screen (ignores left nav & fac nav bar)
+  top: phaseBBox.top,
+  left: phaseBBox.left,
+  width: phaseBBox.width,
+  height: phaseBBox.height
+}))
+
+const ModalArea = styled('div')({
+  borderRadius: 4,
+  display: 'flex',
+  maxHeight: '100%',
+  position: 'relative',
+})
+
+const BackgroundBlock = styled('div')({
+  position: 'absolute',
+  background: PALETTE.BACKGROUND_BACKDROP,
+  borderRadius: 4,
+  height: '100%',
+  width: '100%',
+  zIndex: -1 // keep scrollbar visible
+})
+
+const ScrollBlock = styled('div')({
+  width: 'min-content',
+  display: 'flex',
+  flexWrap: 'wrap',
+  overflowY: 'auto',
+  overflowX: 'hidden',
+  padding: ElementWidth.REFLECTION_CARD_PADDING
+})
 
 interface Props {
-  collapse (): void
-
-  isExpanded: boolean
+  closePortal: () => void
   phaseRef: React.RefObject<HTMLDivElement>
-  stackRef: React.RefObject<HTMLDivElement>
-  firstReflectionRef: React.RefObject<HTMLDivElement>
   reflectionStack: readonly PhaseItemColumn_meeting['reflectionGroups'][0]['reflections'][0][]
   meetingId: string
   phaseItemId: string
   readOnly: boolean
-}
-
-interface State {
-  isClosing: boolean
+  scrollRef: Ref<HTMLDivElement>
+  bgRef: Ref<HTMLDivElement>
+  setItemsRef: (idx: number) => (c: RefCallbackInstance) => void
 }
 
 const ModalReflectionWrapper = styled('div')({
-  boxShadow: cardShadow,
-  display: 'inline-flex',
-  position: 'absolute'
+  padding: 8
 })
 
-const ResizeObserver = (window as any).ResizeObserver || ResizeObserverPolyfill
-class ExpandedReflectionStack extends Component<Props, State> {
-  state = {
-    isClosing: false
+const ExpandedReflectionStack = (props: Props) => {
+  const {reflectionStack, readOnly, phaseItemId, meetingId, phaseRef, scrollRef, setItemsRef, bgRef, closePortal} = props
+  const phaseBBox = useMemo(() => {
+    return getBBox(phaseRef.current)
+  }, [phaseRef.current])
+  if (!phaseBBox) return null
+  const closeOnEdge = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) closePortal()
   }
-  resizeObserver = new ResizeObserver((entries) => {
-    for (const entry of entries) {
-      this.handleResize(entry.target.id)
-    }
-  })
-
-  gridRef = React.createRef<FLIPGrid>()
-  getModalFirst = () => getBBox(this.props.stackRef.current)
-  getParentBBox = () => getBBox(this.props.phaseRef.current)
-  getChildrenFirst = () => getBBox(this.props.firstReflectionRef.current)
-
-  componentDidMount () {
-    window.addEventListener('resize', this.handleWindowResize)
-  }
-
-  handleWindowResize = () => {
-    if (!this.gridRef.current) return
-    this.gridRef.current.handleWindowResize()
-  }
-
-  handleResize = (id) => {
-    if (!this.gridRef.current) return
-    this.gridRef.current.checkForResize(id)
-  }
-
-  handleClose = () => {
-    this.setState({
-      isClosing: true
-    })
-  }
-
-  finishClose = () => {
-    this.setState({
-      isClosing: false
-    })
-    this.props.collapse()
-  }
-
-  componentWillUnmount () {
-    this.props.collapse()
-    window.removeEventListener('resize', this.handleWindowResize)
-    this.resizeObserver.disconnect()
-  }
-
-  setItemRef = (c) => {
-    if (c) {
-      this.resizeObserver.observe(c)
-    }
-  }
-
-  render () {
-    const {isExpanded, reflectionStack, meetingId, phaseItemId, readOnly} = this.props
-    const {isClosing} = this.state
-    return (
-      <Modal clickToClose escToClose isOpen={isExpanded} onClose={this.handleClose}>
-        <FLIPModal
-          getFirst={this.getModalFirst}
-          getParentBBox={this.getParentBBox}
-          childrenLen={reflectionStack.length}
-          isClosing={isClosing}
-          close={this.finishClose}
-        >
-          {(setBBox) => (
-            <FLIPGrid
-              ref={this.gridRef}
-              getFirst={this.getChildrenFirst}
-              getParentBBox={this.getParentBBox}
-              setBBox={setBBox}
-              isClosing={isClosing}
-            >
-              {reflectionStack.map((reflection, idx) => {
-                return (
-                  <ModalReflectionWrapper
-                    key={reflection.id}
-                    style={{zIndex: idx + 1}}
-                    ref={this.setItemRef}
-                    id={reflection.id}
-                  >
-                    <ReflectionCard
-                      meetingId={meetingId}
-                      reflection={reflection}
-                      phaseItemId={phaseItemId}
-                      readOnly={isClosing || readOnly}
-                    />
-                  </ModalReflectionWrapper>
-                )
-              })}
-            </FLIPGrid>
-          )}
-        </FLIPModal>
-      </Modal>
-    )
-  }
+  return (
+    <PortalBlock>
+    <PhaseArea phaseBBox={phaseBBox!}>
+      <Scrim onClick={closePortal} />
+      <ModalArea>
+        <ScrollBlock ref={scrollRef} onClick={closeOnEdge}>
+          {reflectionStack.map((reflection, idx) => {
+            return (
+              <ModalReflectionWrapper
+                key={reflection.id}
+                style={{zIndex: reflectionStack.length - idx - 1}}
+                id={reflection.id}
+                ref={setItemsRef(idx)}
+              >
+                <ReflectionCard
+                  meetingId={meetingId}
+                  reflection={reflection}
+                  phaseItemId={phaseItemId}
+                  readOnly={readOnly}
+                />
+              </ModalReflectionWrapper>
+            )
+          })}
+        </ScrollBlock>
+        <BackgroundBlock ref={bgRef} />
+      </ModalArea>
+    </PhaseArea>
+    </PortalBlock>
+  )
 }
 
 export default ExpandedReflectionStack

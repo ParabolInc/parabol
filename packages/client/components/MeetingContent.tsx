@@ -4,6 +4,9 @@ const MeetingContent = styled('div')({
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
+  // important! don't let the phase area (eg reflection columns) overflow.
+  // instead, put sub components in overflow containers
+  overflow: 'hidden',
   width: '100%'
 })
 

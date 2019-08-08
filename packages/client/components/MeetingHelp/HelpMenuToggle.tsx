@@ -2,21 +2,19 @@ import IconLabel from '../IconLabel'
 import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
 import FloatingActionButton from '../FloatingActionButton'
-import {meetingHelpWithBottomBar} from '../../styles/meeting'
 
-const StyledButton = styled(FloatingActionButton)<Props>(({floatAboveBottomBar}) => ({
-  bottom: floatAboveBottomBar ? meetingHelpWithBottomBar : '1.25rem',
-  height: '2rem',
+const StyledButton = styled(FloatingActionButton)({
+  bottom: 20,
+  height: 32,
   paddingLeft: 0,
   paddingRight: 0,
-  position: 'fixed',
-  right: '1.25rem',
-  width: '2rem',
+  position: 'absolute',
+  right: 20,
+  width: 32,
   zIndex: 200
-}))
+})
 
 interface Props {
-  floatAboveBottomBar: boolean
   onClick: () => void
   onMouseEnter: () => void
 }

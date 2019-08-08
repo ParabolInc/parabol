@@ -5,7 +5,7 @@ import Stripe from 'stripe'
 getDotenv()
 
 export default class StripeManager {
-  static PARABOL_PRO_MONTHLY = 'parabol-pro-monthly' // $12/seat/mo
+  static PARABOL_PRO_600 = 'parabol-pro-600' // $6/seat/mo
   stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
   async createCustomer (orgId: string, source: string) {
@@ -28,7 +28,7 @@ export default class StripeManager {
       },
       items: [
         {
-          plan: StripeManager.PARABOL_PRO_MONTHLY,
+          plan: StripeManager.PARABOL_PRO_600,
           quantity
         }
       ]

@@ -40,10 +40,6 @@ const QuestionBlock = styled('div')({
   fontWeight: 300
 })
 
-const EditorBlock = styled('div')({
-  minWidth: '20rem'
-})
-
 const getCheckInQuestion = (props) => {
   const {
     team: {newMeeting}
@@ -149,7 +145,7 @@ class NewCheckInQuestion extends Component<Props, State> {
         isOpen={isEditing || !isFacilitating ? false : undefined}
       >
         <QuestionBlock>
-          <EditorBlock>
+          {/* cannot set min width because iPhone 5 has a width of 320*/}
             <EditorInputWrapper
               editorState={editorState}
               setEditorState={this.setEditorState}
@@ -159,7 +155,6 @@ class NewCheckInQuestion extends Component<Props, State> {
                 this.editorRef = c
               }}
             />
-          </EditorBlock>
           {isFacilitating && (
             <PlainButton aria-label={tip} onClick={this.selectAllQuestion}>
               <CogIcon isEditing={isEditing}>settings</CogIcon>

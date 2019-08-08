@@ -3,7 +3,6 @@ import React, {ReactElement} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {ValueOf} from '../types/generics'
-import MeetingArea from './MeetingArea'
 import MeetingStyles from './MeetingStyles'
 import RetroMeetingSidebar from './RetroMeetingSidebar'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -28,7 +27,7 @@ const phaseLookup = {
   [NewMeetingPhaseTypeEnum.reflect]: lazyPreload(() =>
     import(
       /* webpackChunkName: 'RetroReflectPhase' */ './RetroReflectPhase/RetroReflectPhase'
-    )
+      )
   ),
   [NewMeetingPhaseTypeEnum.group]: lazyPreload(() =>
     import(/* webpackChunkName: 'RetroGroupPhase' */ './RetroGroupPhase')
@@ -89,24 +88,22 @@ const RetroMeeting = (props: Props) => {
           viewer={viewer}
         />
       </ResponsiveDashSidebar>
-      <MeetingArea>
-        <Phase
-          handleGotoNext={handleGotoNext}
-          meetingSettings={meetingSettings}
-          team={team}
-          isDemoStageComplete={isDemoStageComplete}
-          toggleSidebar={toggleSidebar}
-          avatarGroup={
-            <NewMeetingAvatarGroup
-              allowVideo={allowVideo}
-              swarm={swarm}
-              gotoStageId={gotoStageId}
-              team={team}
-              camStreams={streams.cam}
-            />
-          }
-        />
-      </MeetingArea>
+      <Phase
+        handleGotoNext={handleGotoNext}
+        meetingSettings={meetingSettings}
+        team={team}
+        isDemoStageComplete={isDemoStageComplete}
+        toggleSidebar={toggleSidebar}
+        avatarGroup={
+          <NewMeetingAvatarGroup
+            allowVideo={allowVideo}
+            swarm={swarm}
+            gotoStageId={gotoStageId}
+            team={team}
+            camStreams={streams.cam}
+          />
+        }
+      />
       <RejoinFacilitatorButton
         inSync={localStage ? localStage.id === facilitatorStageId : true}
         onClick={() => gotoStageId(facilitatorStageId)}

@@ -3,7 +3,6 @@ import React, {ReactElement} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import ErrorBoundary from './ErrorBoundary'
 import Icon from './Icon'
 import MeetingContent from './MeetingContent'
 import MeetingContentHeader from './MeetingContentHeader'
@@ -13,7 +12,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import {useGotoNext} from '../hooks/useMeeting'
 import CheckInControls from '../modules/meeting/components/CheckInControls/CheckInControls'
 import NewMeetingCheckInPrompt from '../modules/meeting/components/MeetingCheckInPrompt/NewMeetingCheckInPrompt'
-import MeetingControlBar from '../modules/meeting/components/MeetingControlBar/MeetingControlBar'
+import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
 import MeetingFacilitationHint from '../modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
@@ -22,6 +21,8 @@ import lazyPreload from '../utils/lazyPreload'
 import findStageAfterId from '../utils/meetings/findStageAfterId'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import EndMeetingButton from './EndMeetingButton'
+import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
+import PhaseWrapper from './PhaseWrapper'
 
 const CheckIn = styled('div')({
   display: 'flex',
@@ -35,14 +36,6 @@ const Hint = styled('div')({
   marginTop: 16
 })
 
-const BottomControlSpacer = styled('div')({
-  minWidth: 96
-})
-
-const StyledBottomBar = styled(MeetingControlBar)({
-  justifyContent: 'space-between'
-})
-
 const StyledIcon = styled(Icon)({
   color: PALETTE.TEXT_LIGHT,
   display: 'block',
@@ -50,18 +43,10 @@ const StyledIcon = styled(Icon)({
   width: ICON_SIZE.MD24
 })
 
-const CheckInWrapper = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  height: '100%'
-})
-
 const CheckInHelpMenu = lazyPreload(async () =>
   import(
     /* webpackChunkName: 'CheckInHelpMenu' */ './MeetingHelp/CheckInHelpMenu'
-  )
+    )
 )
 
 interface Props {
@@ -93,15 +78,15 @@ const NewMeetingCheckIn = (props: Props) => {
   const isMyMeetingSection = userId === viewerId
   return (
     <MeetingContent>
-      <MeetingContentHeader
-        avatarGroup={avatarGroup}
-        isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
-        toggleSidebar={toggleSidebar}
-      >
-        <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.checkin]}</PhaseHeaderTitle>
-      </MeetingContentHeader>
-      <ErrorBoundary>
-        <CheckInWrapper>
+      <MeetingHeaderAndPhase>
+        <MeetingContentHeader
+          avatarGroup={avatarGroup}
+          isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
+          toggleSidebar={toggleSidebar}
+        >
+          <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.checkin]}</PhaseHeaderTitle>
+        </MeetingContentHeader>
+        <PhaseWrapper>
           <NewMeetingCheckInPrompt team={team} teamMember={teamMember} />
           <CheckIn>
             {isMyMeetingSection && (
@@ -113,19 +98,15 @@ const NewMeetingCheckIn = (props: Props) => {
               </Hint>
             )}
           </CheckIn>
-        </CheckInWrapper>
-        {isFacilitating && (
-          <StyledBottomBar>
-            <BottomControlSpacer />
-            <CheckInControls handleGotoNext={handleGotoNext} teamMember={teamMember} />
-            <EndMeetingButton meetingId={meetingId} />
-          </StyledBottomBar>
-        )}
+        </PhaseWrapper>
         <MeetingHelpToggle
-          floatAboveBottomBar={isFacilitating}
           menu={<CheckInHelpMenu meetingType={meetingType} />}
         />
-      </ErrorBoundary>
+      </MeetingHeaderAndPhase>
+      <MeetingFacilitatorBar isFacilitating={isFacilitating}>
+        <CheckInControls handleGotoNext={handleGotoNext} teamMember={teamMember} />
+        <EndMeetingButton meetingId={meetingId} />
+      </MeetingFacilitatorBar>
     </MeetingContent>
   )
 }

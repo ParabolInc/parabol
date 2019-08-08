@@ -2,6 +2,7 @@ import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
 import ui from '../styles/ui'
 import BaseButton, {BaseButtonProps} from './BaseButton'
+import {Elevation} from '../styles/elevation'
 
 const StyledBaseButton = styled(BaseButton)<{palette?: string}>(({palette = 'gray'}) => {
   const backgroundColor = ui.palette[palette]
@@ -20,13 +21,14 @@ export interface RaisedButtonProps extends BaseButtonProps {
 }
 
 const RaisedButton = forwardRef((props: RaisedButtonProps, ref: Ref<HTMLButtonElement>) => {
-  const {children, className, elevationHovered, elevationResting} = props
+  const {children, className, elevationPressed, elevationHovered, elevationResting} = props
   return (
     <StyledBaseButton
       {...props}
       className={className}
-      elevationHovered={elevationHovered || 8}
-      elevationResting={elevationResting || 2}
+      elevationHovered={elevationHovered || Elevation.Z8}
+      elevationResting={elevationResting || Elevation.Z2}
+      elevationPressed={elevationPressed || Elevation.Z5}
       ref={ref}
     >
       {children}

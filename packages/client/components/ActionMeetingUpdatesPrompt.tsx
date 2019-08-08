@@ -47,7 +47,7 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
   if (!currentTeamMember) return null
   const {isSelf: isMyMeetingSection, meetingMember, picture, preferredName} = currentTeamMember
   const {isCheckedIn} = meetingMember!
-  const prefix = isCheckedIn ? `${preferredName},` : ''
+  const prefix = isCheckedIn ? `${preferredName}, ` : ''
   const taskCount = tasks.edges.length
   return (
     <StyledPrompt>
