@@ -16,6 +16,7 @@ import {TEAM_INVITATION_LIFESPAN} from '../../utils/serverConstants'
 import TeamInvitation from '../../database/types/TeamInvitation'
 import {NotificationEnum, SuggestedActionTypeEnum} from 'parabol-client/types/graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import sendSegmentEvent from '../../utils/sendSegmentEvent'
 
 const randomBytes = promisify(crypto.randomBytes, crypto)
 
@@ -143,7 +144,10 @@ export default {
         }
         publish(SubscriptionChannel.NOTIFICATION, userId, InviteToTeamPayload, subscriberData, subOptions)
       })
-
+      sendSegmentEvent('Invite Email Sent', viewerId, {
+        teamId,
+        invitees: successfulInvitees
+      }).catch()
       return data
     }
   )

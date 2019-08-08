@@ -61,13 +61,15 @@ const SummarySheet = (props: Props) => {
         <MeetingMembersWithTasks meeting={meeting} />
         <MeetingMembersWithoutTasks meeting={meeting} />
         <RetroTopics imageSource={referrer === 'email' ? 'static' : 'local'} meeting={meeting} />
-        <SummaryEmailScheduleCalendar
-          isDemo={isDemo}
-          createdAt={createdAt}
-          meetingUrl={meetingUrl}
-          meetingNumber={meetingNumber}
-          teamName={teamName}
-        />
+        {meetingType === ACTION && (
+          <SummaryEmailScheduleCalendar
+            isDemo={isDemo}
+            createdAt={createdAt}
+            meetingUrl={meetingUrl}
+            meetingNumber={meetingNumber}
+            teamName={teamName}
+          />
+        )}
         <ContactUsFooter
           isDemo={isDemo}
           hasLearningLink={meetingType === ACTION}
