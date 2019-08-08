@@ -63,6 +63,7 @@ const RetroReflectPhase = (props: Props) => {
   const isComplete = localStage ? localStage.isComplete : false
   const isAsync = localStage ? localStage.isAsync : false
   const reflectPrompts = localPhase!.reflectPrompts!
+  const focusedPhaseItemId = localPhase!.focusedPhaseItemId
   const isFacilitating = facilitatorUserId === viewerId
   const nextPhaseLabel = phaseLabelLookup[GROUP]
   const isEmpty = !reflectionGroups || reflectionGroups.length === 0
@@ -91,7 +92,7 @@ const RetroReflectPhase = (props: Props) => {
         </MeetingContentHeader>
         <PhaseWrapper >
           <StageTimerDisplay stage={localStage!} />
-          <ColumnWrapper setActiveIdx={setActiveIdx} activeIdx={activeIdx}>
+          <ColumnWrapper setActiveIdx={setActiveIdx} activeIdx={activeIdx} focusedIdx={reflectPrompts.findIndex(({id}) => id === focusedPhaseItemId)}>
             {reflectPrompts.map((prompt, idx) => (
               <PhaseItemColumn
                 key={prompt.id}
@@ -134,6 +135,7 @@ const RetroReflectPhase = (props: Props) => {
 
 graphql`
   fragment RetroReflectPhase_phase on ReflectPhase {
+    focusedPhaseItemId
     reflectPrompts {
       id
       question
