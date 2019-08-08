@@ -87,7 +87,7 @@ const NameInput = styled('input')<{isExpanded: boolean; readOnly: boolean}>(
     // need to use a content editable if we wanna animate this since input el forces width
     // card width is set at REFLECTION_WIDTH, so this can be a PX, too
     textAlign: 'left',
-    width: 196,
+    width: 172,
     transition: 'all 200ms'
   })
 )

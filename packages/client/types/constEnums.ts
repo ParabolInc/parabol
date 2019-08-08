@@ -39,7 +39,7 @@ export const enum Duration {
 
 export const enum ElementWidth {
   END_MEETING_BUTTON = 88,
-  REFLECTION_CARD = 320,
+  REFLECTION_CARD = 296,
   REFLECTION_CARD_PADDED = 336,
   REFLECTION_CARD_PADDING = 8
 }

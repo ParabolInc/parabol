@@ -3,7 +3,6 @@ import {breakpoints, minWidthMediaQueries} from './breakpoints'
 // shared style constants for components in the meeting context
 
 export const meetingGridGap = '1.25rem'
-export const meetingGridMaxWidth = '20rem'
 export const meetingGridMinWidth = 256
 export const meetingSidebarBreakpoint = breakpoints[1]
 export const meetingSidebarMediaQuery = minWidthMediaQueries[1]
