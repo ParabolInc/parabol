@@ -10,14 +10,15 @@ import sendToSentry from '../utils/sendToSentry'
 import handleSignal, {UWebSocket} from '../wrtc/signalServer/handleSignal'
 import validateInit from '../wrtc/signalServer/validateInit'
 import getQueryString from '../graphql/getQueryString'
+import keepAlive from '../socketHelpers/keepAlive'
 
 const {GQL_ERROR} = ClientMessageTypes
 
 const handleMessage = (connectionContext: ConnectionContext) => async (message: Data) => {
   const {socket} = connectionContext
+  keepAlive(connectionContext)
   // catch raw, non-graphql protocol messages here
   if (message === Events.KEEP_ALIVE) {
-    connectionContext.isAlive = true
     return
   }
 

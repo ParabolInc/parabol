@@ -12,11 +12,11 @@ export const CCValidationErrors = {
 }
 
 export const cardTypeLookup = {
-  Visa: 'cc-visa',
-  MasterCard: 'cc-mastercard',
-  'American Express': 'cc-amex',
-  Discover: 'cc-discover',
-  'Diners Club': 'cc-diners-club',
-  JCB: 'cc-jcb',
-  Unknown: 'credit-card'
+  Visa: 'cc-visa-brands',
+  MasterCard: 'cc-mastercard-brands',
+  'American Express': 'cc-amex-brands',
+  Discover: 'cc-discover-brands',
+  'Diners Club': 'cc-diners-club-brands',
+  JCB: 'cc-jcb-brands',
+  Unknown: 'credit_card'
 }

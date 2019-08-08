@@ -5,10 +5,27 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## vNext
+## v4.0.0 2019-Aug-05
+
+### Added
+* New repo, new major version: now a Parabol is a monorepo!
+   * The client now has its own (much shorter) `package.json`
+   * The client, server, testing suite, and service worker now all get their
+     own tsconfig which means we can do much faster typechecking on incremental
+     builds
+   * We now use sucrase instead of babel to build the server, which means faster
+     server startup (almost 75% faster!)
+   * We can share `const enum` values across the client and server
+* Added a service worker to manage the local cachng of files: Parabol is much
+  snappier after it loads!
+* Helpers to load cross-site SVG and Javascript files
 
 ### Fixed
 * Timer snackbar z-index (#3050)
+* fix theme color (address bar on mobile)
+
+### Removed
+* We no longer depend on Fontawesome
 
 ## v3.17.2 2019-Jul-30
 

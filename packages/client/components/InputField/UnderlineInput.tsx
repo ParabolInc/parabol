@@ -30,6 +30,7 @@ const ErrorMessage = styled(StyledError)({
 })
 
 interface Props {
+  ariaLabel: string
   autoFocus?: boolean
   disabled?: boolean
   error: string | undefined
@@ -43,6 +44,7 @@ interface Props {
 
 const UnderlineInput = forwardRef((props: Props, ref: Ref<HTMLInputElement>) => {
   const {
+    ariaLabel,
     autoFocus,
     disabled,
     error,
@@ -56,6 +58,7 @@ const UnderlineInput = forwardRef((props: Props, ref: Ref<HTMLInputElement>) => 
   return (
     <React.Fragment>
       <Input
+        aria-label={ariaLabel}
         autoFocus={autoFocus}
         disabled={Boolean(disabled)}
         ref={ref}

@@ -4,7 +4,6 @@ import handleMessage from './handleMessage'
 import url from 'url'
 import {clientSecret as auth0ClientSecret} from '../utils/auth0Helpers'
 import {verify} from 'jsonwebtoken'
-import {WS_KEEP_ALIVE} from '../../client/utils/constants'
 import handleConnect from './handleConnect'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import {TREBUCHET_WS} from '@mattkrick/trebuchet-client'
@@ -23,7 +22,7 @@ export default function connectionHandler (sharedDataLoader, rateLimiter) {
     const {query} = url.parse(req.url, true)
     let authToken
     try {
-      authToken = verify(query.token, Buffer.from(auth0ClientSecret, 'base64'))
+      authToken = verify(query.token as string, Buffer.from(auth0ClientSecret, 'base64'))
     } catch (e) {
       // internal error (bad auth)
       socket.close(1011)
@@ -37,7 +36,7 @@ export default function connectionHandler (sharedDataLoader, rateLimiter) {
     )
     socket.send(JSON.stringify({version: APP_VERSION}))
     handleConnect(connectionContext)
-    keepAlive(connectionContext, WS_KEEP_ALIVE)
+    keepAlive(connectionContext)
     socket.on('message', handleMessage(connectionContext))
     socket.on('close', handleDisconnect(connectionContext))
   }

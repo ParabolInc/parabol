@@ -57,13 +57,13 @@ const onFetch = async (event: FetchEvent) => {
   const {url} = request
   const isCacheable = url.match(/.(js|css|mjs|png|svg|gif|jpg|jpeg|ico|eot|ttf|wav|mp3|woff|woff2|otf)$/)
   if (isCacheable) {
-    const cachedRes = await caches.match(request)
+    const cachedRes = await caches.match(request.url)
     // all our assets are hashed, so if the hash matches, it's valid
     if (cachedRes) return cachedRes
     const networkRes = await fetch(request)
     const cache = await caches.open(DYNAMIC_CACHE)
     // cloning here because I'm not sure if we must clone before reading the body
-    cache.put(request, networkRes.clone()).catch(console.error)
+    cache.put(request.url, networkRes.clone()).catch(console.error)
     return networkRes
   } else if (request.destination === 'document') {
     // dynamic because index.html isn't hashed (and the server returns an html with keys)

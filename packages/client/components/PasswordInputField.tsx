@@ -23,6 +23,7 @@ const PasswordInputField = (props: Props) => {
     <React.Fragment>
       <Label>Password</Label>
       <UnderlineInput
+        ariaLabel={'Password'}
         autoFocus={autoFocus}
         error={dirty ? (error as string) : undefined}
         name='password'

@@ -45,7 +45,7 @@ const GraphqlContainer = () => {
     <GQL>
       <GraphiQL fetcher={fetcher} ref={graphiql}>
         <GraphiQL.Logo>
-          <img alt='Parabol' src={logoMarkPrimary} />
+          <img crossOrigin='' alt='Parabol' src={logoMarkPrimary} />
         </GraphiQL.Logo>
         <GraphiQL.Toolbar>
           <GraphiQL.ToolbarButton

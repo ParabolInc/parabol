@@ -86,6 +86,7 @@ const SummaryEmailScheduleCalendar = (props: Props) => {
                   target='_blank'
                 >
                   <img
+                    crossOrigin=''
                     style={iconLinkIcon}
                     src={`${emailDir}google@3x.png`}
                     height={iconSize}
@@ -102,6 +103,7 @@ const SummaryEmailScheduleCalendar = (props: Props) => {
                   target='_blank'
                 >
                   <img
+                    crossOrigin=''
                     style={iconLinkIcon}
                     src={`${emailDir}event_available@3x.png`}
                     height={iconSize}

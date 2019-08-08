@@ -2,7 +2,10 @@ import handleDisconnect from '../socketHandlers/handleDisconnect'
 import sendRaw from './sendRaw'
 import {Events} from '@mattkrick/trebuchet-client'
 
-const keepAlive = (connectionContext, timeout) => {
+const WS_KEEP_ALIVE = 10000
+const keepAlive = (connectionContext) => {
+  connectionContext.isAlive = true
+  clearInterval(connectionContext.cancelKeepAlive)
   connectionContext.cancelKeepAlive = setInterval(() => {
     const {socket} = connectionContext
     if (connectionContext.isAlive === false) {
@@ -12,7 +15,7 @@ const keepAlive = (connectionContext, timeout) => {
       // TODO record time sent so when we get a message we can calc latency
       sendRaw(socket, Events.KEEP_ALIVE)
     }
-  }, timeout)
+  }, WS_KEEP_ALIVE)
 }
 
 export default keepAlive

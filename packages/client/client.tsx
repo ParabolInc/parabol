@@ -7,12 +7,7 @@ import './scrollIntoViewIfNeeded'
 // do this here so useBuiltIns can replace it with only the polyfills required to hit browser targets
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
-import * as Sentry from '@sentry/browser'
 
-const dsn = window.__ACTION__.sentry
-if (dsn) {
-  Sentry.init({dsn})
-}
 
 const initialState = {}
 export const store = makeStore(initialState)

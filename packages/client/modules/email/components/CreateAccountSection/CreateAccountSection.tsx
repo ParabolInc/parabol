@@ -78,7 +78,7 @@ const makeFeatureRow = (featureIconFile, featureCopy, idx) => {
   return (
     <tr key={`feature${idx}`}>
       <td style={featureIconCellStyle} width={iconSize}>
-        <img height={iconSize} src={src} style={featureIconStyle} width={iconSize} />
+        <img crossOrigin='' height={iconSize} src={src} style={featureIconStyle} width={iconSize} />
       </td>
       <td style={featureCopyCellStyle} width={labelWidth}>
         {featureCopy}
