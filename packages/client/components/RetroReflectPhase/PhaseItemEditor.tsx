@@ -1,4 +1,4 @@
-import {convertToRaw, EditorState} from 'draft-js'
+import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
 import React, {RefObject, useEffect, useRef, useState} from 'react'
 import {ReflectionCardRoot} from '../ReflectionCard/ReflectionCard'
 import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
@@ -14,7 +14,7 @@ import {ReflectColumnCardInFlight} from './PhaseItemColumn'
 import {Elevation} from '../../styles/elevation'
 import usePortal from '../../hooks/usePortal'
 
-const FLIGHT_TIME = 1100
+const FLIGHT_TIME = 500
 const CardInFlightStyles = styled(ReflectionCardRoot)<{transform: string, isStart: boolean}>(({isStart, transform}) => ({
   boxShadow: isStart ? Elevation.Z8 : Elevation.Z0,
   position: 'absolute',
@@ -50,27 +50,9 @@ const PhaseItemEditor = (props: Props) => {
     }
   }, [idleTimerIdRef])
 
-  const handleKeyDownFallback = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key !== 'Enter' || e.shiftKey) return
-    e.preventDefault()
-    const {value} = e.currentTarget
-    if (!value) return
-    submitMutation()
+  const handleSubmit = (content) => {
     const input = {
-      content: convertToTaskContent(value),
-      retroPhaseItemId,
-      sortOrder: nextSortOrder()
-    }
-    CreateReflectionMutation(atmosphere, {input}, {meetingId}, onError, onCompleted)
-    setEditorState(EditorState.moveFocusToEnd(EditorState.createEmpty()))
-  }
-
-  const handleSubmit = () => {
-    if (submitting) return
-    const content = editorState.getCurrentContent()
-    if (!content.hasText()) return
-    const input = {
-      content: JSON.stringify(convertToRaw(content)),
+      content,
       retroPhaseItemId,
       sortOrder: nextSortOrder()
     }
@@ -79,8 +61,8 @@ const PhaseItemEditor = (props: Props) => {
     const {top, left} = getBBox(phaseEditorRef.current)!
     const cardInFlight = {
       transform: `translate(${left}px,${top}px)`,
-      editorState: EditorState.createWithContent(editorState.getCurrentContent()),
-      key: input.content,
+      editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(content))),
+      key: content,
       isStart: true
     }
     const idx = cardsInFlight.length
@@ -95,10 +77,25 @@ const PhaseItemEditor = (props: Props) => {
         isStart: false,
         transform: `translate(${left}px,${top}px)`,
       }, ...cardsInFlight.slice(idx + 1)])
-      setTimeout(removeCardInFlight(input.content), FLIGHT_TIME)
+      setTimeout(removeCardInFlight(content), FLIGHT_TIME)
     })
     // move focus to end is very important! otherwise ghost chars appear
     setEditorState(EditorState.moveFocusToEnd(EditorState.createEmpty()))
+  }
+
+  const handleKeyDownFallback = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key !== 'Enter' || e.shiftKey) return
+    e.preventDefault()
+    const {value} = e.currentTarget
+    if (!value) return
+    handleSubmit(convertToTaskContent(value))
+  }
+
+  const handleKeydown = () => {
+    if (submitting) return
+    const content = editorState.getCurrentContent()
+    if (!content.hasText()) return
+    handleSubmit(JSON.stringify(convertToRaw(content)))
   }
 
   const ensureNotEditing = () => {
@@ -123,7 +120,7 @@ const PhaseItemEditor = (props: Props) => {
 
   const handleReturn = (e: React.KeyboardEvent) => {
     if (e.shiftKey) return 'not-handled'
-    handleSubmit()
+    handleKeydown()
     return 'handled'
   }
 

@@ -102,6 +102,7 @@ const RetroReflectPhase = (props: Props) => {
                 description={prompt.description}
                 idx={idx}
                 phaseRef={phaseRef}
+                isDesktop={isDesktop}
               />))}
           </ColumnWrapper>
         </PhaseWrapper>

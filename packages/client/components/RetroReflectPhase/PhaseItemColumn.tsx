@@ -17,24 +17,25 @@ import {DECELERATE} from '../../styles/animation'
 import getNextSortOrder from '../../utils/getNextSortOrder'
 import {PALETTE} from '../../styles/paletteV2'
 import {ICON_SIZE} from '../../styles/typographyV2'
-import {REFLECTION_WIDTH} from '../../utils/multiplayerMasonry/masonryConstants'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {EditorState} from 'draft-js'
+import {ElementWidth} from '../../types/constEnums'
 
-const ColumnWrapper = styled('div')({
+const ColumnWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
   flex: 1,
   justifyContent: 'flex-start',
-  height: '100%'
-})
-
-const ColumnHighlight = styled('div')<{isFocused: boolean}>(({isFocused}) => ({
-  backgroundColor: isFocused ? PALETTE.BACKGROUND_MAIN_DARKENED : undefined,
-  borderRadius: 2,
   height: '100%',
-  maxWidth: REFLECTION_WIDTH + 80,
+  border: isDesktop ? undefined : `1px solid ${PALETTE.BORDER_LIGHT}`,
+  borderRadius: 8
+}))
+
+const ColumnHighlight = styled('div')<{isFocused: boolean, isDesktop: boolean}>(({isDesktop, isFocused}) => ({
+  backgroundColor: isDesktop ? isFocused ? PALETTE.BACKGROUND_MAIN_DARKENED : undefined : isFocused ? PALETTE.BACKGROUND_REFLECTION_FOCUSED : PALETTE.BACKGROUND_REFLECTION,
+  borderRadius: isDesktop ? 2 : 8,
+  height: '100%',
   maxHeight: 608,
   padding: 16,
   transition: `background 150ms ${DECELERATE}`,
@@ -47,7 +48,7 @@ const ColumnContent = styled('div')({
   height: '100%',
   justifyContent: 'space-between',
   margin: '0 auto',
-  width: '100%'
+  width: ElementWidth.REFLECTION_CARD
 })
 
 const HeaderAndEditor = styled('div')({
@@ -100,7 +101,8 @@ const EditorAndStatus = styled('div')<EditorAndStatusProps>(({isPhaseComplete}) 
 }))
 
 const ChitSection = styled('div')({
-  flex: 0.3
+  flex: 0.3,
+  minHeight: 96
 })
 
 const originAnchor = {
@@ -122,6 +124,7 @@ export interface ReflectColumnCardInFlight {
 
 interface Props {
   idx: number
+  isDesktop: boolean
   description: string | null
   editorIds: readonly string[] | null
   meeting: PhaseItemColumn_meeting
@@ -131,7 +134,7 @@ interface Props {
 }
 
 const PhaseItemColumn = (props: Props) => {
-  const {retroPhaseItemId, description, editorIds, idx, meeting, phaseRef, question} = props
+  const {retroPhaseItemId, description, editorIds, idx, meeting, phaseRef, question, isDesktop} = props
   const {meetingId, facilitatorUserId, localPhase, localStage, reflectionGroups} = meeting
   const {phaseId, focusedPhaseItemId} = localPhase
   const {isComplete} = localStage
@@ -178,8 +181,8 @@ const PhaseItemColumn = (props: Props) => {
   }, [columnStack])
 
   return (
-    <ColumnWrapper>
-      <ColumnHighlight isFocused={isFocused}>
+    <ColumnWrapper isDesktop={isDesktop}>
+      <ColumnHighlight isDesktop={isDesktop} isFocused={isFocused}>
         <ColumnContent>
           <HeaderAndEditor>
             <PromptHeader

@@ -7,14 +7,10 @@ const DesktopWrapper = styled('div')({
   // if the viewport is wide enough for 2+ columns, let them scroll
   overflowX: 'auto',
   width: '100%',
-  padding: '0 16px'
 })
 
 const Inner = styled('div')({
-  padding: '0 16px',
   display: 'flex',
-  height: '100%',
-  width: '100%'
 })
 
 interface Props {
