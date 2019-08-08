@@ -102,7 +102,8 @@ const DiscussPhaseWrapper = styled('div')({
   flex: 1,
   flexDirection: 'column',
   overflow: 'hidden',
-  paddingTop: 16
+  paddingTop: 16,
+  width: '100%'
 })
 
 const Column = styled('div')({

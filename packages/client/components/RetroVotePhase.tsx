@@ -36,11 +36,17 @@ import StageTimerControl from './StageTimerControl'
 import StageTimerDisplay from './RetroReflectPhase/StageTimerDisplay'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import PhaseWrapper from './PhaseWrapper'
+import {ElementWidth} from '../types/constEnums'
 
 interface Props extends WithAtmosphereProps, RetroMeetingPhaseProps {
   meetingSettings: RetroVotePhase_meetingSettings
   team: RetroVotePhase_team
 }
+
+const MoveForwardButton = styled(BottomNavControl)<{isComplete: boolean}>(({isComplete}) => ({
+  flex: 1,
+  marginLeft: isComplete ? ElementWidth.END_MEETING_BUTTON : undefined
+}))
 
 const votePhaseBreakpoint = minWidthMediaQueries[1]
 
@@ -122,10 +128,6 @@ const TeamVotesCountLabel = styled(VoteCountLabel)({
   minWidth: '1.25rem'
 })
 
-const BottomControlSpacer = styled('div')({
-  minWidth: 96
-})
-
 const VoteHelpMenu = lazyPreload(async () =>
   import(/* webpackChunkName: 'VoteHelpMenu' */ './MeetingHelp/VoteHelpMenu')
 )
@@ -197,12 +199,9 @@ const RetroVotePhase = (props: Props) => {
         />
       </MeetingHeaderAndPhase>
       <MeetingFacilitatorBar isFacilitating={isFacilitating}>
-        {isComplete ? (
-          <BottomControlSpacer />
-        ) : (
-          <StageTimerControl defaultTimeLimit={3} meetingId={meetingId} team={team} />
-        )}
-        <BottomNavControl
+        {!isComplete && <StageTimerControl defaultTimeLimit={3} meetingId={meetingId} team={team} />}
+        <MoveForwardButton
+          isComplete={isComplete}
           isBouncing={teamVotesRemaining === 0}
           disabled={!discussStage.isNavigableByFacilitator}
           onClick={() => gotoNext()}
@@ -214,7 +213,7 @@ const RetroVotePhase = (props: Props) => {
             iconColor='warm'
             label={`Next: ${nextPhaseLabel}`}
           />
-        </BottomNavControl>
+        </MoveForwardButton>
         <EndMeetingButton meetingId={meetingId} />
       </MeetingFacilitatorBar>
     </MeetingContent>

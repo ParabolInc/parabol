@@ -41,7 +41,7 @@ interface Props extends RetroMeetingPhaseProps, WithMutationProps, WithAtmospher
   team: RetroGroupPhase_team
 }
 
-const CenteredControlBlock = styled(BottomNavControl)<{isComplete: boolean | undefined}>(({isComplete}) => ({
+const CenteredControlBlock = styled('div')<{isComplete: boolean | undefined}>(({isComplete}) => ({
   display: 'flex',
   flex: 1,
   justifyContent: 'space-evenly',
