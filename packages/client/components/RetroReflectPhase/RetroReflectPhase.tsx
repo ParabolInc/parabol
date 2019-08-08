@@ -77,7 +77,7 @@ const RetroReflectPhase = (props: Props) => {
     ) === 0
   const ColumnWrapper = isDesktop ? ReflectWrapperDesktop : ReflectWrapperMobile
   return (
-    <MeetingContent>
+    <MeetingContent ref={phaseRef}>
       <MeetingHeaderAndPhase>
         <MeetingContentHeader
           avatarGroup={avatarGroup}
@@ -89,7 +89,7 @@ const RetroReflectPhase = (props: Props) => {
             {'Add anonymous reflections for each prompt'}
           </PhaseHeaderDescription>
         </MeetingContentHeader>
-        <PhaseWrapper ref={phaseRef}>
+        <PhaseWrapper >
           <StageTimerDisplay stage={localStage!} />
           <ColumnWrapper setActiveIdx={setActiveIdx} activeIdx={activeIdx}>
             {reflectPrompts.map((prompt, idx) => (

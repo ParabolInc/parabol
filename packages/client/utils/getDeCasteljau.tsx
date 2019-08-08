@@ -2,6 +2,7 @@
  * returns a subset of a bezier curve from (u, 1),
  * where u is how much of the curve has been completed
  * https://stackoverflow.com/questions/25722680/can-i-make-a-half-bezier-from-full-bezier
+ * e.g. getDeCasteljau(1 - duration / ANIMATION_DURATION, EASING)
  * */
 const getDeCasteljau = (u: number, startingCurve: string) => {
   // get everything between the parens

@@ -10,12 +10,12 @@ import styled from '@emotion/styled'
 import {
   cardContentFontSize,
   cardContentLineHeight,
-  reflectionCardMaxHeight
 } from '../styles/cards'
 import withEmojis from './TaskEditor/withEmojis'
 import isRichDraft from '../utils/draftjs/isRichDraft'
 import lazyPreload from '../utils/lazyPreload'
 import isAndroid from '../utils/draftjs/isAndroid'
+import {ElementHeight} from '../types/constEnums'
 
 interface Props {
   ariaLabel: string
@@ -60,7 +60,7 @@ const EditorStyles = styled('div')(({useFallback, userSelect}: any) => ({
   color: appTheme.palette.dark,
   fontSize: cardContentFontSize,
   lineHeight: useFallback ? '14px' : cardContentLineHeight,
-  maxHeight: reflectionCardMaxHeight,
+  maxHeight: ElementHeight.REFLECTION_CARD_MAX,
   minHeight: '1rem',
   overflow: 'auto',
   position: 'relative',

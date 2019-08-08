@@ -1,4 +1,3 @@
-// https://github.com/material-components/material-components-web/blob/4844330e7836d9dc97798b47594ff0dbaac51227/packages/mdc-animation/_variables.scss
 
 // Timing function to decelerate
 import {keyframes} from '@emotion/core'

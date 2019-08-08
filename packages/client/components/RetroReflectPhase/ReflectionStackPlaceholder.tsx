@@ -1,8 +1,8 @@
 import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
-import {cardBorderRadius, reflectionCardMaxHeight, reflectionCardWidth} from '../../styles/cards'
-import {typeScale} from '../../styles/theme/typography'
+import {cardBorderRadius} from '../../styles/cards'
 import {PALETTE} from '../../styles/paletteV2'
+import {ElementHeight, ElementWidth} from '../../types/constEnums'
 
 interface Props {
   idx: number
@@ -15,14 +15,14 @@ const PlaceholderCard = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   margin: '2rem 0',
-  minHeight: reflectionCardMaxHeight,
-  width: reflectionCardWidth
+  minHeight: ElementHeight.REFLECTION_CARD_MAX,
+  width: ElementWidth.REFLECTION_CARD
 })
 
 const Tip = styled('div')({
   color: PALETTE.TEXT_LIGHT,
-  fontSize: typeScale[2],
-  padding: '1rem',
+  fontSize: 13,
+  padding: 16,
   textAlign: 'center',
   userSelect: 'none'
 })
@@ -41,8 +41,8 @@ const ReflectionStackPlaceholder = forwardRef((props: Props, ref: Ref<HTMLDivEle
   const {idx} = props
   const tip = placeholders[(seed + idx) % placeholders.length]
   return (
-    <PlaceholderCard>
-      <Tip ref={ref}>{tip}</Tip>
+    <PlaceholderCard ref={ref}>
+      <Tip >{tip}</Tip>
     </PlaceholderCard>
   )
 })

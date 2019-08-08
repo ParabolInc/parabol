@@ -1,3 +1,17 @@
+// https://github.com/material-components/material-components-web/blob/4844330e7836d9dc97798b47594ff0dbaac51227/packages/mdc-animation/_variables.scss
+export const enum BezierCurve {
+  DECELERATE = 'cubic-bezier(0, 0, .2, 1)',
+
+// Timing function to quickly accelerate and slowly decelerate
+  STANDARD_CURVE = 'cubic-bezier(.4, 0, .2, 1)',
+
+// Timing function to accelerate
+  ACCELERATE = 'cubic-bezier(.4, 0, 1, 1)',
+
+// Timing function to quickly accelerate and decelerate
+  SHARP_CURVE = 'cubic-bezier(.4, 0, .6, 1)',
+}
+
 export const enum Breakpoint {
   SIDEBAR_LEFT = 800,
   MEETING_FACILITATOR_BAR = 480,
@@ -28,6 +42,10 @@ export const enum ElementWidth {
   REFLECTION_CARD = 320,
   REFLECTION_CARD_PADDED = 336,
   REFLECTION_CARD_PADDING = 8
+}
+
+export const enum ElementHeight {
+  REFLECTION_CARD_MAX = 104  // 4 lines (20px each) + (2 * 12px) vertical gutter
 }
 
 // https://material.io/design/layout/spacing-methods.html
@@ -68,6 +86,10 @@ export const enum Radius {
   TOOLTIP = 2
 }
 
+export const enum ReflectionStackPerspective {
+  X = 8,
+  Y = 6
+}
 export const enum SubscriptionChannel {
   TEAM = 'team',
   NEW_AUTH_TOKEN = 'newAuthToken',
@@ -77,7 +99,11 @@ export const enum SubscriptionChannel {
 
 export const enum Times {
   HUMAN_ADDICTION_THRESH = 300,
-  MAX_WAIT_TIME = 5000
+  MAX_WAIT_TIME = 5000,
+  REFLECTION_DEAL_CARD_INIT_DELAY= 100,
+  REFLECTION_DEAL_CARD_MIN_DELAY = 30,
+  REFLECTION_DEAL_CARD_DURATION = 300,
+  REFLECTION_DEAL_TOTAL_DURATION = 500,
 }
 
 export const enum ZIndex {

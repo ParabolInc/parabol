@@ -1,23 +1,13 @@
 import {PhaseItemColumn_meeting} from '../../__generated__/PhaseItemColumn_meeting.graphql'
-import React, {Component} from 'react'
+import React, {RefObject, useRef} from 'react'
 import styled from '@emotion/styled'
 import ReflectionCard from '../ReflectionCard/ReflectionCard'
 import ExpandedReflectionStack from './ExpandedReflectionStack'
-import getBBox from './getBBox'
-import getTransform from './getTransform'
 import ReflectionStackPlaceholder from './ReflectionStackPlaceholder'
-import {STANDARD_CURVE} from '../../styles/animation'
-import {
-  cardBackgroundColor,
-  cardBorderRadius,
-  cardStackPerspectiveX,
-  cardStackPerspectiveY,
-  reflectionCardMaxHeight,
-  reflectionCardWidth
-} from '../../styles/cards'
+import {cardBackgroundColor, cardBorderRadius} from '../../styles/cards'
 import {cardShadow} from '../../styles/elevation'
-import getDeCasteljau from '../../utils/getDeCasteljau'
-import isTempId from '../../utils/relay/isTempId'
+import {ElementHeight, ReflectionStackPerspective} from '../../types/constEnums'
+import useExpandedReflections from '../../hooks/useExpandedReflections'
 
 interface Props {
   idx: number
@@ -27,20 +17,16 @@ interface Props {
   phaseRef: React.RefObject<HTMLDivElement>
   readOnly: boolean
   reflectionStack: readonly PhaseItemColumn_meeting['reflectionGroups'][0]['reflections'][0][]
+  stackTopRef: RefObject<HTMLDivElement>
 }
 
-interface State {
-  isExpanded: boolean
-}
-
-const CardStack = styled('div')<{isVisible: boolean}>(({isVisible}) => ({
+const CardStack = styled('div')({
   alignItems: 'flex-start',
   display: 'flex',
-  justifyContent: 'center',
-  margin: '2rem 0',
-  minHeight: reflectionCardMaxHeight,
-  visibility: !isVisible ? 'hidden' : undefined
-}))
+  flex: 1,
+  minHeight: ElementHeight.REFLECTION_CARD_MAX,
+  justifyContent: 'center'
+})
 
 const CenteredCardStack = styled('div')({
   position: 'relative'
@@ -64,7 +50,6 @@ const CARD_IN_STACK = {
   overflow: 'hidden',
   position: 'absolute',
   pointerEvents: 'none',
-  zIndex: 1,
   // hides partially overflown top lines of text
   '&::before': {
     ...HIDE_LINES_HACK_STYLES,
@@ -86,158 +71,60 @@ const CARD_IN_STACK = {
   }
 }
 
-const ReflectionWrapper = styled('div')<{count: number; idx: number}>(
-  ({count, idx}): any => {
-    switch (count - idx) {
-      case 1:
-        return {
-          cursor: 'pointer',
-          position: 'relative',
-          zIndex: 2
-        }
-      case 2:
-        return {
-          ...CARD_IN_STACK,
-          bottom: -cardStackPerspectiveY,
-          left: cardStackPerspectiveX,
-          right: cardStackPerspectiveX,
-          top: cardStackPerspectiveY,
-          '& > div > div': {
-            transform: 'scale(.95)',
-            transformOrigin: 'left',
-            width: reflectionCardWidth
-          }
-        }
-      case 3:
-        return {
-          ...CARD_IN_STACK,
-          bottom: -(cardStackPerspectiveY * 2),
-          left: cardStackPerspectiveX * 2,
-          right: cardStackPerspectiveX * 2,
-          top: cardStackPerspectiveY * 2
-        }
-      default:
-        return {}
+const ReflectionWrapper = styled('div')<{idx: number}>(
+  ({idx}): any => {
+    if (idx === 0) return {
+      cursor: 'pointer',
+      position: 'relative',
+      zIndex: 2
+    }
+    const multiple = Math.min(idx, 2)
+    return {
+      ...CARD_IN_STACK,
+      bottom: -ReflectionStackPerspective.Y * multiple,
+      left: ReflectionStackPerspective.X * multiple,
+      right: ReflectionStackPerspective.X * multiple,
+      top: ReflectionStackPerspective.Y * multiple,
+      zIndex: 2 - multiple
     }
   }
 )
 
-const ANIMATION_DURATION = 300
-const EASING = STANDARD_CURVE
-
-class ReflectionStack extends Component<Props, State> {
-  state = {
-    isExpanded: false
+const ReflectionStack = (props: Props) => {
+  const {phaseRef, idx, meetingId, phaseItemId, readOnly, reflectionStack, stackTopRef} = props
+  const stackRef = useRef<HTMLDivElement>(null)
+  const {setItemsRef, scrollRef, bgRef, portal, collapse, expand} = useExpandedReflections(stackRef, reflectionStack.length)
+  if (reflectionStack.length === 0) {
+    return <ReflectionStackPlaceholder idx={idx} ref={stackTopRef} />
   }
-
-  animationStart: number = 0
-  stackRef = React.createRef<HTMLDivElement>()
-  placeholderRef = React.createRef<HTMLDivElement>()
-  firstReflectionRef = React.createRef<HTMLDivElement>()
-
-  getSnapshotBeforeUpdate (prevProps: Props) {
-    const oldTop = prevProps.reflectionStack[prevProps.reflectionStack.length - 1]
-    const newTop = this.props.reflectionStack[this.props.reflectionStack.length - 1]
-    const start = this.firstReflectionRef.current || this.placeholderRef.current
-    if (
-      !start ||
-      !this.props.phaseEditorRef.current ||
-      (oldTop && oldTop.id) === (newTop && newTop.id)
-    ) {
-      return null
-    }
-    const duration = ANIMATION_DURATION - (performance.now() - this.animationStart)
-    if (duration <= 0) {
-      return isTempId(newTop && newTop.id) ? {duration: ANIMATION_DURATION, easing: EASING} : null
-    }
-    // an animation is already in progress!
-    return {
-      startCoords: start.getBoundingClientRect(),
-      duration,
-      easing: getDeCasteljau(1 - duration / ANIMATION_DURATION, EASING)
-    }
-  }
-
-  componentDidUpdate (_prevProps, _prevState, snapshot) {
-    if (this.firstReflectionRef.current && snapshot) {
-      const first = snapshot.startCoords || getBBox(this.props.phaseEditorRef.current)
-      this.animateFromEditor(
-        this.firstReflectionRef.current,
-        first,
-        snapshot.duration,
-        snapshot.easing
-      )
-    }
-  }
-
-  animateFromEditor (firstReflectionDiv: HTMLDivElement, first, duration, easing) {
-    const last = getBBox(firstReflectionDiv) || getBBox(this.placeholderRef.current)
-    if (!first || !last) return
-    firstReflectionDiv.style.transform = getTransform(first, last)
-    this.animationStart = performance.now() // must occur before rAF because gSBU could occur again in the demo
-    requestAnimationFrame(() => {
-      firstReflectionDiv.style.transition = `transform ${duration}ms ${easing}`
-      firstReflectionDiv.style.transform = null
-    })
-  }
-
-  expand = () => {
-    if (this.props.reflectionStack.length <= 1) return
-    this.setState({isExpanded: true})
-  }
-
-  collapse = () => {
-    this.setState({
-      isExpanded: false
-    })
-  }
-
-  render () {
-    const {idx, reflectionStack, phaseItemId, phaseRef, meetingId, readOnly} = this.props
-    const {isExpanded} = this.state
-    if (reflectionStack.length === 0) {
-      return <ReflectionStackPlaceholder idx={idx} ref={this.placeholderRef} />
-    }
-    const maxStack = reflectionStack.slice(Math.max(0, reflectionStack.length - 3))
-    return (
-      <React.Fragment>
-        <ExpandedReflectionStack
-          collapse={this.collapse}
-          isExpanded={isExpanded}
-          phaseRef={phaseRef}
-          stackRef={this.stackRef}
-          reflectionStack={reflectionStack}
-          meetingId={meetingId}
-          phaseItemId={phaseItemId}
-          firstReflectionRef={this.firstReflectionRef}
-          readOnly={readOnly}
-        />
-        <CardStack onClick={this.expand} isVisible={!isExpanded} ref={this.stackRef}>
+  return (
+    <React.Fragment>
+      {portal(<ExpandedReflectionStack
+        phaseRef={phaseRef}
+        reflectionStack={reflectionStack}
+        meetingId={meetingId}
+        phaseItemId={phaseItemId}
+        readOnly={readOnly}
+        scrollRef={scrollRef}
+        bgRef={bgRef}
+        setItemsRef={setItemsRef}
+        closePortal={collapse}
+      />)}
+      <div>
+        <CardStack onClick={expand} ref={stackRef}>
           <CenteredCardStack>
-            {maxStack.length === 1 && (
-              <div ref={this.firstReflectionRef}>
-                <ReflectionCard
-                  meetingId={meetingId}
-                  reflection={maxStack[0]}
-                  phaseItemId={phaseItemId}
-                  readOnly={readOnly}
-                />
-              </div>
-            )}
-            {maxStack.length > 1 &&
-              maxStack.map((reflection, idx) => {
+            {reflectionStack.map((reflection, idx) => {
                 return (
                   <ReflectionWrapper
                     key={reflection.id}
                     idx={idx}
-                    count={maxStack.length}
-                    ref={idx === maxStack.length - 1 ? this.firstReflectionRef : undefined}
+                    ref={idx === 0 ? stackTopRef : undefined}
                   >
                     <ReflectionCard
                       meetingId={meetingId}
                       reflection={reflection}
                       phaseItemId={phaseItemId}
-                      readOnly
+                      readOnly={reflectionStack.length > 1 || readOnly}
                       userSelect='none'
                     />
                   </ReflectionWrapper>
@@ -245,9 +132,9 @@ class ReflectionStack extends Component<Props, State> {
               })}
           </CenteredCardStack>
         </CardStack>
-      </React.Fragment>
-    )
-  }
+      </div>
+    </React.Fragment>
+  )
 }
 
 export default ReflectionStack
