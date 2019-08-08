@@ -26,7 +26,7 @@ import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import PhaseWrapper from './PhaseWrapper'
 
 const BottomControlSpacer = styled('div')({
-  minWidth: '6rem'
+  minWidth: 90
 })
 
 interface Props extends ActionMeetingPhaseProps {

@@ -227,6 +227,7 @@ const RetroDiscussPhase = (props: Props) => {
       </MeetingHeaderAndPhase>
         <MeetingFacilitatorBar isFacilitating={isFacilitating}>
           <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
+          {!nextStageRes && isComplete && <BottomControlSpacer />}
           {nextStageRes && (
             <CenterControlBlock isComplete={isComplete}>
               <BottomNavControl

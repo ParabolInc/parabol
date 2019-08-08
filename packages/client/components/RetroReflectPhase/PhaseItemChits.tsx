@@ -72,6 +72,12 @@ const ActiveChit = styled('div')<{idx: number}>(({idx}) => ({
   width: PROGRESS_WIDTH
 }))
 
+const ChitWrap = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  flexShrink: 0
+})
+
 const ChitArea = styled('div')({
   display: 'grid',
   gridGap: CHIT_GUTTER,
@@ -103,7 +109,7 @@ class PhaseItemChits extends Component<Props> {
     const chits = [...Array(chitCount).keys()]
     const activeChits = [...Array(editorCount).keys()]
     return (
-      <div>
+      <ChitWrap>
         <ChitAreaLabel>{getStatus(count, editorCount)}</ChitAreaLabel>
         <ChitArea>
           {chits.map((idx) => (
@@ -118,7 +124,7 @@ class PhaseItemChits extends Component<Props> {
             </Chit>
           ))}
         </ChitArea>
-      </div>
+      </ChitWrap>
     )
   }
 }
