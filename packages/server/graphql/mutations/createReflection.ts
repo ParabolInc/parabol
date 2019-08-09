@@ -70,13 +70,13 @@ export default {
       retroPhaseItemId,
       sortOrder,
     })
-    const contentText = extractTextFromDraftString(normalizedContent)
-    const entities = await getReflectionEntities(contentText)
+    const plaintextContent = extractTextFromDraftString(normalizedContent)
+    const entities = await getReflectionEntities(plaintextContent)
 
     const reflection = new Reflection({
       creatorId: viewerId,
       content: normalizedContent,
-      contentText,
+      plaintextContent,
       entities,
       meetingId,
       retroPhaseItemId,

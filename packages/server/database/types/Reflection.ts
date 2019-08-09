@@ -7,7 +7,7 @@ interface Input {
   createdAt?: Date
   creatorId: string
   content: string
-  contentText?: string // the plaintext version of content
+  plaintextContent?: string // the plaintext version of content
   entities: GoogleAnalyzedEntity[]
   meetingId: string
   reflectionGroupId?: string
@@ -22,7 +22,7 @@ export default class Reflection {
   createdAt: Date
   creatorId: string
   content: string
-  contentText: string
+  plaintextContent: string
   entities: GoogleAnalyzedEntity[]
   isActive: boolean
   meetingId: string
@@ -31,13 +31,13 @@ export default class Reflection {
   sortOrder: number
   updatedAt: Date
   constructor(input: Input) {
-    const {content, contentText, createdAt, creatorId, entities, id, meetingId, reflectionGroupId, retroPhaseItemId, sortOrder, updatedAt} = input
+    const {content, plaintextContent, createdAt, creatorId, entities, id, meetingId, reflectionGroupId, retroPhaseItemId, sortOrder, updatedAt} = input
     const now = new Date()
     this.id = id || shortid.generate()
     this.createdAt = createdAt || now
     this.creatorId = creatorId
     this.content = content
-    this.contentText = contentText || extractTextFromDraftString(content)
+    this.plaintextContent = plaintextContent || extractTextFromDraftString(content)
     this.entities = entities
     this.isActive = true
     this.meetingId = meetingId
