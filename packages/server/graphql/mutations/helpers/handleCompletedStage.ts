@@ -1,5 +1,4 @@
 import {GROUP, REFLECT, RETROSPECTIVE, VOTE} from '../../../../client/utils/constants'
-import addEntitiesToReflections from './addEntitiesToReflections'
 import addDiscussionTopics from './addDiscussionTopics'
 import addDefaultGroupTitles from './addDefaultGroupTitles'
 import removeEmptyReflections from './removeEmptyReflections'
@@ -20,7 +19,6 @@ const handleCompletedRetrospectiveStage = async (
   if (stage.phaseType === REFLECT) {
     const data = await removeEmptyReflections(meeting)
     // wait for the response from google
-    await addEntitiesToReflections(meeting.id)
     return {[REFLECT]: data}
   } else if (stage.phaseType === GROUP) {
     const data = await addDefaultGroupTitles(meeting)

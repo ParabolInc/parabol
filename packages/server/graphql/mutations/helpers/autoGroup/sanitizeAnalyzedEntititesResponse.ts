@@ -1,10 +1,13 @@
-const sanitizeAnalyzedEntitiesResponse = (response) => {
-  if (!response) return null
-  const [firstResponse] = response
+import {GoogleAnalyzeEntitiesResponse} from './getEntitiesFromText'
+
+
+const sanitizeAnalyzedEntitiesResponse = (responses: GoogleAnalyzeEntitiesResponse) => {
+  if (!responses) return null
+  const [firstResponse] = responses
   if (!firstResponse) return null
   const {entities} = firstResponse
   if (!Array.isArray(entities)) return null
-  const validEntities = {}
+  const validEntities = {} as {[lowerCaseName: string]: number}
   for (let ii = 0; ii < entities.length; ii++) {
     const entity = entities[ii]
     const {name, salience} = entity

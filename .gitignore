@@ -3,7 +3,7 @@
 *.log
 .DS_Store
 .awcache/
-.googlecloudkey.json
+packages/server/.googlecloudkey.json
 .history/
 .idea/
 build/

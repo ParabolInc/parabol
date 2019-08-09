@@ -1,9 +1,20 @@
 import language from '@google-cloud/language/src/index'
 
-const getEntitiesFromText = async (contextText) => {
+export interface GoogleAnalyzedSyntaxItem {
+  tokens: {
+    lemma: string
+    text: {
+      content: string
+    }
+  }[]
+}
+
+export type GoogleAnalyzeSyntaxResponse = GoogleAnalyzedSyntaxItem[] | null
+
+const getEntitiesFromText = async (content: string): Promise<GoogleAnalyzeSyntaxResponse> => {
   const client = new language.LanguageServiceClient()
   const document = {
-    content: contextText,
+    content,
     type: 'PLAIN_TEXT'
   }
   return client.analyzeSyntax({document})

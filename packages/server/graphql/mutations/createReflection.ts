@@ -1,15 +1,19 @@
 import {GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
-import shortid from 'shortid'
 import CreateReflectionPayload from '../types/CreateReflectionPayload'
 import normalizeRawDraftJS from '../../../client/validation/normalizeRawDraftJS'
 import publish from '../../utils/publish'
-import {GROUP, REFLECT, TEAM} from '../../../client/utils/constants'
 import isPhaseComplete from '../../../client/utils/meetings/isPhaseComplete'
 import CreateReflectionInput from '../types/CreateReflectionInput'
 import unlockAllStagesForPhase from '../../../client/utils/unlockAllStagesForPhase'
 import standardError from '../../utils/standardError'
+import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import Reflection from '../../database/types/Reflection'
+import ReflectionGroup from '../../database/types/ReflectionGroup'
+import getReflectionEntities from './helpers/getReflectionEntities'
+import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 
 export default {
   type: CreateReflectionPayload,
@@ -20,7 +24,7 @@ export default {
     }
   },
   async resolve (
-    source,
+    _source,
     {
       input: {content, retroPhaseItemId, sortOrder}
     },
@@ -53,7 +57,7 @@ export default {
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases} = meeting
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
-    if (isPhaseComplete(REFLECT, phases)) {
+    if (isPhaseComplete(NewMeetingPhaseTypeEnum.reflect, phases)) {
       return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
     }
 
@@ -61,30 +65,25 @@ export default {
     const normalizedContent = normalizeRawDraftJS(content)
 
     // RESOLUTION
-    const reflectionGroupId = shortid.generate()
-    const reflection = {
-      id: shortid.generate(),
-      createdAt: now,
-      creatorId: viewerId,
-      content: normalizedContent,
-      isActive: true,
-      meetingId,
-      reflectionGroupId,
-      retroPhaseItemId,
-      sortOrder: 0,
-      updatedAt: now
-    }
-
-    const reflectionGroup = {
-      id: reflectionGroupId,
-      createdAt: now,
-      isActive: true,
+    const reflectionGroup = new ReflectionGroup({
       meetingId,
       retroPhaseItemId,
       sortOrder,
-      updatedAt: now,
-      voterIds: []
-    }
+    })
+    const contentText = extractTextFromDraftString(normalizedContent)
+    const entities = await getReflectionEntities(contentText)
+
+    const reflection = new Reflection({
+      creatorId: viewerId,
+      content: normalizedContent,
+      contentText,
+      entities,
+      meetingId,
+      retroPhaseItemId,
+      reflectionGroupId: reflectionGroup.id,
+      updatedAt: now
+    })
+
     await r({
       group: r.table('RetroReflectionGroup').insert(reflectionGroup),
       reflection: r.table('RetroReflection').insert(reflection)
@@ -92,7 +91,7 @@ export default {
     const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
     let unlockedStageIds
     if (reflections.length === 1) {
-      unlockedStageIds = unlockAllStagesForPhase(phases, GROUP, true)
+      unlockedStageIds = unlockAllStagesForPhase(phases, NewMeetingPhaseTypeEnum.group, true)
       await r
         .table('NewMeeting')
         .get(meetingId)
@@ -103,10 +102,10 @@ export default {
     const data = {
       meetingId,
       reflectionId: reflection.id,
-      reflectionGroupId,
+      reflectionGroupId: reflectionGroup.id,
       unlockedStageIds
     }
-    publish(TEAM, teamId, CreateReflectionPayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, CreateReflectionPayload, data, subOptions)
     return data
   }
 }
