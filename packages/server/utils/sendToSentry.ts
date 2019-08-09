@@ -16,7 +16,7 @@ const sendToSentry = async (error: Error, options: SentryOptions = {}): void => 
     console.error(error)
   }
   const r = getRethink()
-  const {userId, tags} = options
+  const {userId} = options
   let user
   if (userId) {
     user = await r
@@ -27,11 +27,11 @@ const sendToSentry = async (error: Error, options: SentryOptions = {}): void => 
   }
   Sentry.withScope((scope) => {
     user && scope.setUser(user)
-    if (tags) {
-      Object.keys(tags).forEach((tag) => {
-        scope.setTag(tag, tags[tag])
-      })
-    }
+    // if (tags) {
+    //   Object.keys(tags).forEach((tag) => {
+    //     scope.setTag(tag, tags[tag])
+    //   })
+    // }
     Sentry.captureException(error)
   })
 }
