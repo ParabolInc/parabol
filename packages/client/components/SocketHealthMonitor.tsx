@@ -71,7 +71,7 @@ class SocketHealthMonitor extends Component<Props> {
       const root = store.getRoot()
       const viewer = root.getLinkedRecord('viewer')
       if (!viewer) {
-        const tempViewer = createProxyRecord(store, 'User', {id: atmosphere.viewerId, isConnected})
+        const tempViewer = createProxyRecord(store, 'User', {isConnected})
         root.setLinkedRecord(tempViewer, 'viewer')
       } else {
         viewer.setValue(isConnected, 'isConnected')
