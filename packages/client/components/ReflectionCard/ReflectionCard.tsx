@@ -65,6 +65,10 @@ class ReflectionCard extends Component<Props, State> {
   static getDerivedStateFromProps (nextProps: Props, prevState: State): Partial<State> | null {
     const {reflection} = nextProps
     const {content} = reflection
+    if (!content) {
+      // https://sentry.io/organizations/parabol/issues/1143712241/events/a9a26413a96e478180e699294e230f79/?project=107196
+      console.error('No content', content, JSON.stringify(reflection))
+    }
     if (content === prevState.content) return null
     const contentState = convertFromRaw(JSON.parse(content))
     // const DEBUG_TEXT = `id: ${reflectionId} | GroupId: ${reflectionGroupId}`
