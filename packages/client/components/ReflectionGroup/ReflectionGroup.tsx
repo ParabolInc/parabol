@@ -327,6 +327,8 @@ class ReflectionGroup extends Component<Props, State> {
     let gutterN = 0
     if (reflections.length === 2) gutterN = 1
     if (reflections.length >= 3) gutterN = 2
+    // https://sentry.io/organizations/parabol/issues/1142279831/events/283135ff79ec49ec99851b0246943c24/?project=107196
+    if (!firstReflection) return null
     return (
       <>
         <GroupStyle

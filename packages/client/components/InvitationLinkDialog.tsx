@@ -25,6 +25,10 @@ const InvitationLinkDialog = (props: Props) => {
     window.localStorage.setItem('invitationToken', token)
   }, [token])
   const {massInvitation} = props
+  if (!massInvitation) {
+    // rate limit reached or other server error
+    return <TeamInvitationErrorNotFound isMassInvite />
+  }
   const {errorType, teamId, teamName} = massInvitation
   switch (errorType) {
     case 'notFound':
