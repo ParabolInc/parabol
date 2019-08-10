@@ -44,7 +44,8 @@
     "postversion": "git push --follow-tags",
     "tsgen": "gql2ts ../../build/schema.json -e $(pwd)/../client/types/config.js -o ../client/types/graphql.ts && eslint --fix '../client/types/graphql.ts'",
     "tsgen:gh": "gql2ts utils/githubSchema.json -e $(pwd)/../client/types/configGH.js -o packages/client/types/githubGraphql.d.ts && eslint --fix 'packages/client/types/githubGraphql.d.ts'",
-    "tsgen:ghQuery": "graphql-typescript-definitions --schema-types-path . && eslint --fix 'packages/client/utils/githubQueries/**/*.d.ts' "
+    "tsgen:ghQuery": "graphql-typescript-definitions --schema-types-path . && eslint --fix 'packages/client/utils/githubQueries/**/*.d.ts' ",
+    "typecheck": "tsc --noEmit -W"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
