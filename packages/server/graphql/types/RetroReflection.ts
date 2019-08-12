@@ -29,7 +29,7 @@ const RetroReflection = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLID,
       description:
         'The ID of the group that the autogrouper assigned the reflection. Error rate = Sum(autoId != Id) / autoId.count()',
-      resolve: resolveForSU('autoGroupThreshold')
+      resolve: resolveForSU('autoReflectionGroupId')
     },
     createdAt: {
       type: GraphQLISO8601Type,

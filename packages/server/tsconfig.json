@@ -16,9 +16,9 @@
     "paths": {
       "*": [
         // resolve all absolute imports as imports relative to the package,
-        "*",
-        // also try looking in the client package
-        "../client/*"
+        "*"
+        // also try looking in the client package (this makes for incorrect imports, don't do this)
+//        "../client/*"
       ]
     }
   }

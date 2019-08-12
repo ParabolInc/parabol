@@ -4,9 +4,13 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import UpdateReflectionContentPayload from '../types/UpdateReflectionContentPayload'
 import normalizeRawDraftJS from '../../../client/validation/normalizeRawDraftJS'
 import publish from '../../utils/publish'
-import {REFLECT, TEAM} from '../../../client/utils/constants'
 import isPhaseComplete from '../../../client/utils/meetings/isPhaseComplete'
 import standardError from '../../utils/standardError'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
+import Reflection from '../../database/types/Reflection'
+import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
+import getReflectionEntities from './helpers/getReflectionEntities'
 
 export default {
   type: UpdateReflectionContentPayload,
@@ -20,7 +24,7 @@ export default {
       description: 'A stringified draft-js document containing thoughts'
     }
   },
-  async resolve (source, {reflectionId, content}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(_source, {reflectionId, content}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const now = new Date()
@@ -28,7 +32,7 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const reflection = await r.table('RetroReflection').get(reflectionId)
+    const reflection = await r.table('RetroReflection').get(reflectionId) as Reflection | null
     if (!reflection) {
       return standardError(new Error('Reflection not found'), {userId: viewerId})
     }
@@ -39,7 +43,7 @@ export default {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
-    if (isPhaseComplete(REFLECT, phases)) {
+    if (isPhaseComplete(NewMeetingPhaseTypeEnum.reflect, phases)) {
       return standardError(new Error('Meeting phase already ended'), {userId: viewerId})
     }
     if (creatorId !== viewerId) {
@@ -48,6 +52,9 @@ export default {
 
     // VALIDATION
     const normalizedContent = normalizeRawDraftJS(content)
+    const plaintextContent = extractTextFromDraftString(normalizedContent)
+    const isVeryDifferent = Math.abs(plaintextContent.length - reflection.plaintextContent.length) > 2
+    const entities = isVeryDifferent ? await getReflectionEntities(plaintextContent) : reflection.entities
 
     // RESOLUTION
     await r
@@ -55,11 +62,13 @@ export default {
       .get(reflectionId)
       .update({
         content: normalizedContent,
+        entities,
+        plaintextContent,
         updatedAt: now
       })
 
     const data = {meetingId, reflectionId}
-    publish(TEAM, teamId, UpdateReflectionContentPayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, UpdateReflectionContentPayload, data, subOptions)
     return data
   }
 }
