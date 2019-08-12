@@ -72,9 +72,7 @@ class ReflectionGroupVoting extends Component<Props> {
       VoteForReflectionGroupMutation(
         atmosphere,
         {reflectionGroupId},
-        {meetingId},
-        onError,
-        handleCompleted
+        {onError, onCompleted: handleCompleted, meetingId}
       )
     if (!isCheckedIn) {
       const {viewerId: userId} = atmosphere
@@ -98,7 +96,7 @@ class ReflectionGroupVoting extends Component<Props> {
       if (error) {
         atmosphere.eventEmitter.emit('addSnackbar', {
           key: 'unvoteError',
-          message: error,
+          message: typeof error === 'string' ? error : error.message,
           autoDismiss: 5
         })
       }
@@ -107,9 +105,7 @@ class ReflectionGroupVoting extends Component<Props> {
     VoteForReflectionGroupMutation(
       atmosphere,
       {isUnvote: true, reflectionGroupId},
-      {meetingId},
-      onError,
-      handleCompleted
+      {onError, onCompleted: handleCompleted, meetingId},
     )
   }
 

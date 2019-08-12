@@ -21,7 +21,7 @@ const EndNewMeetingPayload = new GraphQLObjectType<any, GQLContext>({
     team: {
       type: Team,
       resolve: ({teamId}, _args, {dataLoader}) => {
-        return dataLoader.get('teams').load(teamId)
+        return teamId ? dataLoader.get('teams').load(teamId) : null
       }
     },
     meeting: {

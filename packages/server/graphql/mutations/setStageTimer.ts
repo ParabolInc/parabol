@@ -2,7 +2,6 @@ import {GraphQLFloat, GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import SetStageTimerPayload from '../types/SetStageTimerPayload'
 import publish from '../../utils/publish'
-import {TEAM} from '../../../client/utils/constants'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
@@ -12,6 +11,7 @@ import ScheduledJobMeetingStageTimeLimit from '../../database/types/ScheduledJob
 import removeScheduledJobs from './helpers/removeScheduledJobs'
 import {notifySlackTimeLimitStart} from './helpers/notifySlack'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const BAD_CLOCK_THRESH = 2000
 const AVG_PING = 150
@@ -37,7 +37,7 @@ export default {
   },
   async resolve (
     _source,
-    {meetingId, scheduledEndTime: newScheduledEndTime, timeRemaining},
+    {meetingId, scheduledEndTime: newScheduledEndTime, timeRemaining}: {scheduledEndTime: Date | null, meetingId: string, timeRemaining: number | null},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = getRethink()
@@ -77,10 +77,10 @@ export default {
     if (newScheduledEndTime) {
       if (timeRemaining) {
         stage.isAsync = false
-        const actualTimeRemaining = newScheduledEndTime - now.getTime()
+        const actualTimeRemaining = newScheduledEndTime.getTime() - now.getTime()
         const badClientClock = Math.abs(timeRemaining - actualTimeRemaining) > BAD_CLOCK_THRESH
         stage.scheduledEndTime = badClientClock
-          ? now + timeRemaining - AVG_PING
+          ? new Date(now.getTime() + timeRemaining - AVG_PING)
           : newScheduledEndTime
       } else {
         stage.isAsync = true
@@ -122,7 +122,7 @@ export default {
     const stoppedOrStarted = newScheduledEndTime ? 'Meeting Timer Started' : 'Meeting Timer Stopped'
     const eventName =
       scheduledEndTime && newScheduledEndTime ? 'Meeting Timer Updated' : stoppedOrStarted
-    publish(TEAM, teamId, SetStageTimerPayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, SetStageTimerPayload, data, subOptions)
     sendSegmentEvent(eventName, viewerId, segmentOptions).catch()
     return data
   }

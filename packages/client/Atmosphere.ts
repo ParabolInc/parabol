@@ -184,6 +184,7 @@ export default class Atmosphere extends Environment {
     const {name, id: documentId} = operation
     const subKey = Atmosphere.getKey(name, variables)
     await this.upgradeTransport()
+    if (!(this.transport as GQLTrebuchetClient).subscribe) return
     if (!__PRODUCTION__) {
       const queryMap = await import('../server/graphql/queryMap.json')
       const query = queryMap[documentId!]
@@ -214,7 +215,15 @@ export default class Atmosphere extends Environment {
   async promiseToUpgrade () {
     const trebuchets = [this.trySockets, this.trySSE]
     const trebuchet = await getTrebuchet(trebuchets)
-    if (!trebuchet) throw new Error('Cannot connect!')
+    if (!trebuchet) {
+      this.eventEmitter.emit('addSnackbar', {
+        autoDismiss: 0,
+        key: 'cannotConnect',
+        message: 'Cannot establish connection. Behind a firewall? Reach out for support: love@parabol.co'
+      })
+      console.error('Cannot connect!')
+      return
+    }
     this.transport = new GQLTrebuchetClient(trebuchet)
     this.addAuthTokenSubscriber()
     this.eventEmitter.emit('newSubscriptionClient')

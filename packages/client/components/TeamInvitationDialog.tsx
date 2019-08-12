@@ -32,6 +32,10 @@ class TeamInvitationDialog extends Component<Props> {
     const {atmosphere, verifiedInvitation, match} = this.props
     const {params} = match
     const {token} = params
+    if (!verifiedInvitation) {
+      // rate limit reached
+      return <TeamInvitationErrorNotFound />
+    }
     const {errorType, isGoogle, user, teamInvitation} = verifiedInvitation
     switch (errorType) {
       case 'notFound':

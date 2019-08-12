@@ -16,6 +16,7 @@ const joinSwarm = async (
   if (!atmosphere.upgradeTransport) return
   await atmosphere.upgradeTransport()
   const {trebuchet} = atmosphere.transport as GQLTrebuchetClient
+  if (!trebuchet) return
   const swarm = new MediaSwarm({
     userId: atmosphere.viewerId,
     // disabling warmup while behind a feature flag
