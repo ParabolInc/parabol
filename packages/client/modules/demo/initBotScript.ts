@@ -241,7 +241,7 @@ const initBotScript = () => {
       },
       {
         op: 'UpdateDragLocationMutation',
-        delay: 0,
+        delay: 300,
         botId: 'bot1',
         variables: {
           input: {
@@ -251,13 +251,24 @@ const initBotScript = () => {
             sourceId: 'botRef3',
             teamId: demoTeamId,
             targetId: 'botGroup1',
-            targetOffset: {x: 80, y: 100}
+            targetOffset: {x: 10, y: 20}
           }
         }
       },
       {
-        op: 'StartDraggingReflectionMutation',
+        op: 'EndDraggingReflectionMutation',
         delay: 100,
+        botId: 'bot1',
+        variables: {
+          reflectionId: 'botRef3',
+          dropTargetType: DragReflectionDropTargetTypeEnum.REFLECTION_GROUP,
+          dropTargetId: 'botGroup1',
+          dragId: 'botDrag1'
+        }
+      },
+      {
+        op: 'StartDraggingReflectionMutation',
+        delay: 1500,
         botId: 'bot2',
         variables: {
           dragId: 'botDrag2',
@@ -269,102 +280,8 @@ const initBotScript = () => {
         }
       },
       {
-        op: 'UpdateDragLocationMutation',
-        delay: 0,
-        botId: 'bot2',
-        variables: {
-          input: {
-            clientHeight: window.innerHeight,
-            clientWidth: window.innerWidth,
-            coords: {x: 1, y: 1},
-            sourceId: 'botRef4',
-            teamId: demoTeamId,
-            targetId: 'botGroup1',
-            targetOffset: {x: -50, y: -50}
-          }
-        }
-      },
-      {
-        op: 'UpdateDragLocationMutation',
-        delay: 1000,
-        botId: 'bot1',
-        variables: {
-          input: {
-            clientHeight: window.innerHeight,
-            clientWidth: window.innerWidth,
-            coords: {x: 1, y: 1},
-            sourceId: 'botRef3',
-            teamId: demoTeamId,
-            targetId: 'botGroup1',
-            targetOffset: {x: 20, y: -40}
-          }
-        }
-      },
-      {
-        op: 'EndDraggingReflectionMutation',
-        delay: 1000,
-        botId: 'bot1',
-        variables: {
-          reflectionId: 'botRef3',
-          dropTargetType: DragReflectionDropTargetTypeEnum.REFLECTION_GROUP,
-          dropTargetId: 'botGroup1',
-          dragId: 'botDrag1'
-        }
-      },
-      {
-        op: 'EndDraggingReflectionMutation',
-        delay: 1000,
-        botId: 'bot2',
-        variables: {
-          reflectionId: 'botRef4',
-          dropTargetType: DragReflectionDropTargetTypeEnum.REFLECTION_GROUP,
-          dropTargetId: 'botGroup1',
-          dragId: 'botDrag2'
-        }
-      },
-      {
         op: 'StartDraggingReflectionMutation',
-        delay: 100,
-        botId: 'bot1',
-        variables: {
-          dragId: 'botDrag3',
-          reflectionId: 'botRef7',
-          initialCoords: {
-            x: 1,
-            y: 1
-          }
-        }
-      },
-      {
-        op: 'UpdateDragLocationMutation',
-        delay: 0,
-        botId: 'bot1',
-        variables: {
-          input: {
-            clientHeight: window.innerHeight,
-            clientWidth: window.innerWidth,
-            coords: {x: 1, y: 1},
-            sourceId: 'botRef7',
-            teamId: demoTeamId,
-            targetId: 'botGroup8',
-            targetOffset: {x: 100, y: -10}
-          }
-        }
-      },
-      {
-        op: 'EndDraggingReflectionMutation',
-        delay: 1000,
-        botId: 'bot1',
-        variables: {
-          reflectionId: 'botRef7',
-          dropTargetType: DragReflectionDropTargetTypeEnum.REFLECTION_GROUP,
-          dropTargetId: 'botGroup8',
-          dragId: 'botDrag3'
-        }
-      },
-      {
-        op: 'StartDraggingReflectionMutation',
-        delay: 100,
+        delay: 500,
         botId: 'bot2',
         variables: {
           dragId: 'botDrag4',
@@ -377,7 +294,7 @@ const initBotScript = () => {
       },
       {
         op: 'UpdateDragLocationMutation',
-        delay: 0,
+        delay: 400,
         botId: 'bot2',
         variables: {
           input: {
@@ -387,37 +304,88 @@ const initBotScript = () => {
             sourceId: 'botRef5',
             teamId: demoTeamId,
             targetId: 'botGroup8',
-            targetOffset: {x: 10, y: -10}
+            targetOffset: {x: -100, y: -100}
           }
         }
       },
       {
         op: 'UpdateDragLocationMutation',
-        delay: 1500,
+        delay: 300,
         botId: 'bot2',
         variables: {
           input: {
             clientHeight: window.innerHeight,
             clientWidth: window.innerWidth,
             coords: {x: 1, y: 1},
-            sourceId: 'botRef5',
+            sourceId: 'botRef4',
             teamId: demoTeamId,
             targetId: 'botGroup1',
-            targetOffset: {x: 10, y: -10}
+            targetOffset: {x: -10, y: -10}
           }
         }
       },
       {
         op: 'EndDraggingReflectionMutation',
-        delay: 2000,
+        delay: 800,
         botId: 'bot2',
         variables: {
           reflectionId: 'botRef5',
           dropTargetType: DragReflectionDropTargetTypeEnum.REFLECTION_GROUP,
-          dropTargetId: 'botGroup1',
+          dropTargetId: 'botGroup8',
           dragId: 'botDrag4'
         }
-      }
+      },
+      {
+        op: 'EndDraggingReflectionMutation',
+        delay: 500,
+        botId: 'bot2',
+        variables: {
+          reflectionId: 'botRef4',
+          dropTargetType: DragReflectionDropTargetTypeEnum.REFLECTION_GROUP,
+          dropTargetId: 'botGroup1',
+          dragId: 'botDrag2'
+        }
+      },
+      {
+        op: 'StartDraggingReflectionMutation',
+        delay: 1500,
+        botId: 'bot1',
+        variables: {
+          dragId: 'botDrag3',
+          reflectionId: 'botRef7',
+          initialCoords: {
+            x: 1,
+            y: 1
+          }
+        }
+      },
+      {
+        op: 'UpdateDragLocationMutation',
+        delay: 700,
+        botId: 'bot1',
+        variables: {
+          input: {
+            clientHeight: window.innerHeight,
+            clientWidth: window.innerWidth,
+            coords: {x: 1, y: 1},
+            sourceId: 'botRef7',
+            teamId: demoTeamId,
+            targetId: 'botGroup8',
+            targetOffset: {x: 20, y: -40}
+          }
+        }
+      },
+      {
+        op: 'EndDraggingReflectionMutation',
+        delay: 500,
+        botId: 'bot1',
+        variables: {
+          reflectionId: 'botRef7',
+          dropTargetType: DragReflectionDropTargetTypeEnum.REFLECTION_GROUP,
+          dropTargetId: 'botGroup8',
+          dragId: 'botDrag3'
+        }
+      },
     ],
     voteStage: [
       {
@@ -514,4 +482,4 @@ const initBotScript = () => {
   }
 }
 
-export default initBotScript
+  export default initBotScript
