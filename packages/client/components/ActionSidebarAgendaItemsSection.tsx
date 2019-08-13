@@ -9,6 +9,11 @@ import AgendaListAndInput from '../modules/teamDashboard/components/AgendaListAn
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import UNSTARTED_MEETING from '../utils/meetings/unstartedMeeting'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
+import styled from '@emotion/styled'
+
+const StyledLabelBlock = styled(MeetingSidebarLabelBlock)({
+  marginTop: 16
+})
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -32,11 +37,10 @@ const ActionSidebarAgendaItemsSection = (props: Props) => {
   }
   return (
     <MeetingSidebarPhaseItemChild>
-      <MeetingSidebarLabelBlock>
+      <StyledLabelBlock>
         <LabelHeading>{'Agenda Topics'}</LabelHeading>
-      </MeetingSidebarLabelBlock>
+      </StyledLabelBlock>
       <AgendaListAndInput
-        isMeeting
         gotoStageId={handleClick}
         isDisabled={phaseType === NewMeetingPhaseTypeEnum.checkin}
         team={team!}

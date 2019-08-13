@@ -17,6 +17,7 @@ import {NewMeetingSidebar_viewer} from '../__generated__/NewMeetingSidebar_viewe
 const SidebarHeader = styled('div')({
   alignItems: 'center',
   display: 'flex',
+  paddingBottom: 16,
   position: 'relative'
 })
 
@@ -39,12 +40,21 @@ const SidebarParent = styled('div')({
 const TeamDashboardLink = styled(Link)({
   fontSize: 20,
   fontWeight: 600,
+  lineHeight: '24px',
   paddingLeft: 16,
   wordBreak: 'break-word',
   ':hover': {
     color: PALETTE.TEXT_PURPLE,
     cursor: 'pointer'
   }
+})
+
+const SidebarNavBlock = styled('div')({
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  overflow: 'auto',
+  width: '100%'
 })
 
 interface Props {
@@ -68,10 +78,12 @@ const NewMeetingSidebar = (props: Props) => {
         <StyledToggle onClick={toggleSidebar} />
         <TeamDashboardLink to={teamLink}>{teamName}</TeamDashboardLink>
       </SidebarHeader>
-      <MeetingSidebarLabelBlock>
-        <LabelHeading>{`${meetingLabel} Meeting`}</LabelHeading>
-      </MeetingSidebarLabelBlock>
-      {children}
+      <SidebarNavBlock>
+        <MeetingSidebarLabelBlock>
+          <LabelHeading>{`${meetingLabel} Meeting`}</LabelHeading>
+        </MeetingSidebarLabelBlock>
+        {children}
+      </SidebarNavBlock>
       <LogoBlock variant='primary' onClick={handleMenuClick} />
     </SidebarParent>
   )

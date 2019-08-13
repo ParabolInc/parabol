@@ -99,7 +99,7 @@ const AgendaMain = styled('div')(({hideAgenda}) => ({
 
 const AgendaContent = styled('div')({
   display: 'flex',
-  overflow: 'hidden',
+  overflow: 'auto',
   height: '100%',
   flexDirection: 'column',
   width: '100%'

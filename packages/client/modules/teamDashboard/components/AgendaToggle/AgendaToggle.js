@@ -13,7 +13,7 @@ import IconLabel from '../../../../components/IconLabel'
 const RootBlock = styled('div')({
   alignItems: 'flex-end',
   display: 'flex',
-  padding: `1rem ${ui.dashGutterSmall}`,
+  padding: `16px ${ui.dashGutterSmall} 5px`,
   width: '100%',
 
   [ui.dashBreakpoint]: {

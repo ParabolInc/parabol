@@ -3,8 +3,8 @@ import {meetingSidebarGutterInner} from '../styles/meeting'
 import styled from '@emotion/styled'
 
 const MeetingSidebarLabelBlock = styled('div')({
-  borderTop: `.0625rem solid ${ui.palette.light}`,
-  margin: `1.25rem 0 0 ${meetingSidebarGutterInner}`,
+  borderTop: `1px solid ${ui.palette.light}`,
+  margin: `0 0 0 ${meetingSidebarGutterInner}`,
   padding: '1rem 0'
 })
 
