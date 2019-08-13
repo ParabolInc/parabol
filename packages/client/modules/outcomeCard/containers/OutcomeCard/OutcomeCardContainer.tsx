@@ -1,5 +1,5 @@
 import {ContentState, convertToRaw, EditorState} from 'draft-js'
-import React, {useEffect, useMemo, useRef, useState} from 'react'
+import React, {useEffect, useMemo, useRef, useState, memo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import editorDecorators from '../../../../components/TaskEditor/decorators'
 import OutcomeCard from '../../components/OutcomeCard/OutcomeCard'
@@ -24,7 +24,7 @@ interface Props {
   task: OutcomeCardContainer_task
 }
 
-const OutcomeCardContainer = (props: Props) => {
+const OutcomeCardContainer = memo((props: Props) => {
   const {contentState, isDragging, task, area, hasDragStyles, isAgenda} = props
   const {id: taskId, editors, team} = task
   const {id: teamId} = team
@@ -32,13 +32,12 @@ const OutcomeCardContainer = (props: Props) => {
   const {viewerId} = atmosphere
   const [isTaskHovered, setIsTaskHovered] = useState(false)
   const editorRef = useRef<HTMLTextAreaElement>(null)
-  const wasDraggingRef = useRef(isDragging)
   const [editorStateRef, setEditorStateRef] = useRefState<EditorState>(() => EditorState.createWithContent(contentState, editorDecorators(() => editorStateRef.current)))
   const {removeTaskChild, addTaskChild, useTaskChild} = useTaskChildFocus(taskId)
 
   const isTaskFocused = useMemo(() => {
     return !!editors.find((editor) => editor.userId === viewerId)
-  }, [editors])
+  }, [editors, viewerId])
 
   const handleCardUpdateFallback = () => {
     const editorEl = editorRef.current
@@ -78,7 +77,7 @@ const OutcomeCardContainer = (props: Props) => {
     }
   }
 
-  const setEditorState = (newEditorState: EditorState) => {
+  const setEditorState = useCallback((newEditorState: EditorState) => {
     const editorState = editorStateRef.current
     if (!editorState) return
     const isFocused = newEditorState.getSelection().getHasFocus()
@@ -86,7 +85,7 @@ const OutcomeCardContainer = (props: Props) => {
       handleCardUpdate()
     }
     setEditorStateRef(newEditorState)
-  }
+  })
 
   useEffect(() => {
     const editorState = editorStateRef.current
@@ -94,14 +93,7 @@ const OutcomeCardContainer = (props: Props) => {
     const newContentState = mergeServerContent(editorState, contentState)
     const newEditorState = EditorState.push(editorState, newContentState, 'insert-characters')
     setEditorState(newEditorState)
-  }, [contentState])
-
-  useEffect(() => {
-    if (wasDraggingRef.current !== isDragging) {
-      wasDraggingRef.current = isDragging
-      handleCardUpdate()
-    }
-  }, [isDragging, wasDraggingRef])
+  }, [contentState, editorStateRef, setEditorState])
 
   return (
     <div
@@ -127,7 +119,7 @@ const OutcomeCardContainer = (props: Props) => {
       />
     </div>
   )
-}
+})
 
 export default createFragmentContainer(OutcomeCardContainer, {
   task: graphql`

@@ -3,7 +3,6 @@ import {createFragmentContainer} from 'react-relay'
 import TaskEditor from '../../../../components/TaskEditor/TaskEditor'
 import TaskIntegrationLink from '../../../../components/TaskIntegrationLink'
 import TaskWatermark from '../../../../components/TaskWatermark'
-import EditingStatusContainer from '../../../../containers/EditingStatus/EditingStatusContainer'
 import TaskFooter from '../OutcomeCardFooter/TaskFooter'
 import OutcomeCardStatusIndicator from '../OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
 import labels from '../../../../styles/theme/labels'
@@ -19,6 +18,7 @@ import {AreaEnum, TaskServiceEnum} from '../../../../types/graphql'
 import {EditorState} from 'draft-js'
 import {OutcomeCard_task} from '__generated__/OutcomeCard_task.graphql'
 import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
+import EditingStatus from 'components/EditingStatus/EditingStatus';
 
 const RootCard = styled('div')<{isTaskHovered: boolean, isTaskFocused: boolean, hasDragStyles: boolean}>(({isTaskHovered, isTaskFocused, hasDragStyles}) => ({
   ...cardRootStyles,
@@ -99,7 +99,7 @@ const OutcomeCard = (props: Props) => {
             {isPrivate && <OutcomeCardStatusIndicator status='private' />}
             {isArchived && <OutcomeCardStatusIndicator status='archived' />}
           </StatusIndicatorBlock>
-          <EditingStatusContainer
+          <EditingStatus
             isTaskHovered={isTaskHovered}
             task={task}
             useTaskChild={useTaskChild}
@@ -143,7 +143,7 @@ export default createFragmentContainer(OutcomeCard, {
       }
       # grab userId to ensure sorting on connections works
       userId
-      ...EditingStatusContainer_task
+      ...EditingStatus_task
       ...TaskFooter_task
     }
   `
