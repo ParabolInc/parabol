@@ -546,7 +546,7 @@ export interface ITask {
   /**
    * a list of users currently editing the task (fed by a subscription, so queries return null)
    */
-  editors: (ITaskEditorDetails | null)[] | null;
+  editors: ITaskEditorDetails[];
   integration: TaskIntegration | null;
 
   /**

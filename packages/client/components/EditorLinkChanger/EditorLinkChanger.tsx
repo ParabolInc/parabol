@@ -1,5 +1,5 @@
 import {EditorState, SelectionState} from 'draft-js'
-import React, {Component, RefObject} from 'react'
+import React, {RefObject} from 'react'
 import styled from '@emotion/styled'
 import RaisedButton from '../RaisedButton'
 import ui from '../../styles/ui'
@@ -8,25 +8,7 @@ import linkify from '../../utils/linkify'
 import withForm, {WithFormProps} from '../../utils/relay/withForm'
 import Legitity from '../../validation/Legitity'
 import BasicInput from '../InputField/BasicInput'
-
-interface Props extends WithFormProps {
-  editorState: EditorState
-  editorRef: HTMLInputElement
-
-  innerRef: RefObject<HTMLDivElement>
-
-  link: string | null
-
-  removeModal (allowFocus: boolean): void
-
-  selectionState: SelectionState
-
-  setEditorState (editorState: EditorState): void
-
-  text: string | null
-
-  trackEditingComponent (componentName: string, isTracking: boolean): void
-}
+import {UseTaskChild} from '../../hooks/useTaskChildFocus'
 
 const ModalBoundary = styled('div')({
   color: ui.palette.dark,
@@ -55,32 +37,44 @@ const ButtonBlock = styled('div')({
   justifyContent: 'flex-end'
 })
 
-class EditorLinkChanger extends Component<Props> {
-  componentWillMount () {
-    const {trackEditingComponent} = this.props
-    if (trackEditingComponent) {
-      trackEditingComponent('editor-link-changer', true)
-    }
-  }
+interface Props extends WithFormProps {
+  editorState: EditorState
+  editorRef: RefObject<HTMLTextAreaElement>
 
-  componentWillUnmount () {
-    const {trackEditingComponent} = this.props
-    if (trackEditingComponent) {
-      trackEditingComponent('editor-link-changer', false)
-    }
-  }
+  innerRef: RefObject<HTMLDivElement>
 
-  onSubmit = (e: React.FormEvent) => {
+  link: string | null
+
+  removeModal(allowFocus: boolean): void
+
+  selectionState: SelectionState
+
+  setEditorState(editorState: EditorState): void
+
+  text: string | null
+
+  useTaskChild: UseTaskChild
+}
+
+const EditorLinkChanger = (props: Props) => {
+  const {
+    editorState,
+    editorRef,
+    removeModal,
+    selectionState,
+    setEditorState,
+    setDirtyField,
+    validateField,
+    link,
+    fields,
+    innerRef,
+    onChange,
+    text,
+    useTaskChild
+  } = props
+  useTaskChild('editor-link-changer')
+  const onSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    const {
-      editorState,
-      editorRef,
-      removeModal,
-      selectionState,
-      setEditorState,
-      setDirtyField,
-      validateField
-    } = this.props
     setDirtyField()
     const {link: linkRes, text: textRes} = validateField()
     if (linkRes.error || textRes.error) return
@@ -93,60 +87,57 @@ class EditorLinkChanger extends Component<Props> {
       keepSelection: true
     })
     setEditorState(nextEditorState)
-    setTimeout(() => editorRef.focus(), 0)
+    setTimeout(() => editorRef.current && editorRef.current.focus(), 0)
   }
 
-  handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {
+  const handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {
     if (!e.currentTarget.contains(e.relatedTarget as any)) {
-      this.props.removeModal(true)
-    }
-  }
-
-  handleKeyDown = (e) => {
-    if (e.key === 'Escape') {
-      const {editorRef, removeModal} = this.props
       removeModal(true)
-      setTimeout(() => editorRef.focus(), 0)
     }
   }
 
-  render () {
-    const {link, fields, innerRef, onChange, text} = this.props
-    const hasError = !!(fields.text.error || fields.link.error)
-    const label = text ? 'Update' : 'Add'
-    return (
-      <ModalBoundary
-        onBlur={this.handleBlur}
-        onKeyDown={this.handleKeyDown}
-        tabIndex={-1}
-        ref={innerRef}
-      >
-        <form onSubmit={this.onSubmit}>
-          {text !== null && (
-            <TextBlock>
-              <InputLabel>{'Text'}</InputLabel>
-              <BasicInput {...fields.text} onChange={onChange} autoFocus name='text' />
-            </TextBlock>
-          )}
-          <TextBlock>
-            <InputLabel>{'Link'}</InputLabel>
-            <BasicInput
-              {...fields.link}
-              autoFocus={link === null && text !== ''}
-              onChange={onChange}
-              name='link'
-              spellCheck={false}
-            />
-          </TextBlock>
-          <ButtonBlock>
-            <RaisedButton disabled={hasError} onClick={this.onSubmit} palette='mid'>
-              {label}
-            </RaisedButton>
-          </ButtonBlock>
-        </form>
-      </ModalBoundary>
-    )
+  const handleKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      removeModal(true)
+      setTimeout(() => editorRef.current && editorRef.current.focus(), 0)
+    }
   }
+
+  const hasError = !!(fields.text.error || fields.link.error)
+  const label = text ? 'Update' : 'Add'
+  return (
+    <ModalBoundary
+      onBlur={handleBlur}
+      onKeyDown={handleKeyDown}
+      tabIndex={-1}
+      ref={innerRef}
+    >
+      <form onSubmit={onSubmit}>
+        {text !== null && (
+          <TextBlock>
+            <InputLabel>{'Text'}</InputLabel>
+            <BasicInput {...fields.text} onChange={onChange} autoFocus name='text' />
+          </TextBlock>
+        )}
+        <TextBlock>
+          <InputLabel>{'Link'}</InputLabel>
+          <BasicInput
+            {...fields.link}
+            value={fields.link.value === null ? '' : fields.link.value}
+            autoFocus={link === null && text !== ''}
+            onChange={onChange}
+            name='link'
+            spellCheck={false}
+          />
+        </TextBlock>
+        <ButtonBlock>
+          <RaisedButton disabled={hasError} onClick={onSubmit} palette='mid'>
+            {label}
+          </RaisedButton>
+        </ButtonBlock>
+      </form>
+    </ModalBoundary>
+  )
 }
 
 const form = withForm({

@@ -7,9 +7,10 @@ import graphql from 'babel-plugin-relay/macro'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {NullableTask_task} from '../../__generated__/NullableTask_task.graphql'
 import makeEmptyStr from '../../utils/draftjs/makeEmptyStr'
+import {AreaEnum} from '../../types/graphql'
 
 interface Props {
-  area: string
+  area: AreaEnum
   hasDragStyles?: boolean
   isAgenda?: boolean
   isDragging?: boolean

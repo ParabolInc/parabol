@@ -31,10 +31,8 @@ const ResizeObserver = window.ResizeObserver || ResizeObserverPolyfill
 class MasonryCSSGrid extends Component<Props> {
   itemRefs: ItemRefs = {}
   gridRef = React.createRef<HTMLDivElement>()
-  resizeObserver = new ResizeObserver((entries) => {
-    for (const entry of entries) {
-      this.setSpan(entry.target.parentElement)
-    }
+  resizeObserver = new ResizeObserver(() => {
+    this.setSpans()
   })
 
   componentDidMount () {

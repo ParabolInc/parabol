@@ -32,7 +32,7 @@ export const editTaskTaskUpdater = (payload, store) => {
   handleEditTask(payload, store)
 }
 
-const EditTaskMutation = (environment, taskId, isEditing, onCompleted, onError) => {
+const EditTaskMutation = (environment, taskId, isEditing, onCompleted?, onError?) => {
   if (isTempId(taskId)) return undefined
   const {viewerId} = environment
   return commitMutation(environment, {

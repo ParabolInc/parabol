@@ -6,6 +6,7 @@ import {MenuProps} from '../../../hooks/useMenu'
 import TaskFooterTeamAssigneeMenu from './OutcomeCardAssignMenu/TaskFooterTeamAssigneeMenu'
 import {cacheConfig} from '../../../utils/constants'
 import renderQuery from '../../../utils/relay/renderQuery'
+import {UseTaskChild} from '../../../hooks/useTaskChildFocus'
 
 const query = graphql`
   query TaskFooterTeamAssigneeMenuRootQuery {
@@ -18,11 +19,13 @@ const query = graphql`
 interface Props {
   menuProps: MenuProps
   task: any
+  useTaskChild: UseTaskChild
 }
 
 const TaskFooterTeamAssigneeMenuRoot = (props: Props) => {
-  const {menuProps, task} = props
+  const {menuProps, task, useTaskChild} = props
   const atmosphere = useAtmosphere()
+  useTaskChild('teamAssignee')
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}

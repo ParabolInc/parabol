@@ -1,14 +1,16 @@
-import PropTypes from 'prop-types'
-import React from 'react'
+import React, {ReactNode} from 'react'
 import appTheme from '../../styles/theme/appTheme'
 import ui from '../../styles/ui'
 import Ellipsis from '../Ellipsis/Ellipsis'
 import {createFragmentContainer} from 'react-relay'
-import withAtmosphere from '../../decorators/withAtmosphere/withAtmosphere'
 import DueDateToggle from '../DueDateToggle'
 import styled from '@emotion/styled'
 import relativeDate from '../../utils/date/relativeDate'
 import graphql from 'babel-plugin-relay/macro'
+import {EditingStatus_task} from '__generated__/EditingStatus_task.graphql'
+import {TimestampType} from 'containers/EditingStatus/EditingStatusContainer'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import {UseTaskChild} from '../../hooks/useTaskChildFocus'
 
 const StatusHeader = styled('div')({
   alignItems: 'center',
@@ -23,12 +25,12 @@ const StatusHeader = styled('div')({
   textAlign: 'left'
 })
 
-const EditingText = styled('span')(({isEditing}) => ({
+const EditingText = styled('span')<{isEditing: boolean}>(({isEditing}) => ({
   cursor: isEditing ? 'default' : 'pointer'
 }))
 
 const makeEditingStatus = (editors, isEditing, timestamp, timestampType) => {
-  let editingStatus = null
+  let editingStatus: ReactNode = null
   const timestampLabel = timestampType === 'createdAt' ? 'Created ' : 'Updated '
 
   if (editors.length === 0) {
@@ -77,17 +79,27 @@ const makeEditingStatus = (editors, isEditing, timestamp, timestampType) => {
   return editingStatus
 }
 
-const EditingStatus = (props) => {
+interface Props {
+  handleClick: () => void
+  isTaskHovered: boolean
+  task: EditingStatus_task
+  timestamp: string
+  timestampType: TimestampType
+  useTaskChild: UseTaskChild
+}
+
+const EditingStatus = (props: Props) => {
   const {
-    atmosphere: {viewerId},
-    cardIsActive,
     handleClick,
+    isTaskHovered,
     task,
     timestamp,
     timestampType,
-    toggleMenuState
+    useTaskChild
   } = props
   const {editors} = task
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
   const otherEditors = editors.filter((editor) => editor.userId !== viewerId)
   const isEditing = editors.length > otherEditors.length
   const title = isEditing ? 'Editing…' : 'Tap to toggle Created/Updated'
@@ -96,23 +108,12 @@ const EditingStatus = (props) => {
       <EditingText isEditing={isEditing} onClick={handleClick} title={title}>
         {makeEditingStatus(otherEditors, isEditing, timestamp, timestampType)}
       </EditingText>
-      <DueDateToggle cardIsActive={cardIsActive} task={task} toggleMenuState={toggleMenuState} />
+      <DueDateToggle cardIsActive={isEditing || isTaskHovered} task={task} useTaskChild={useTaskChild} />
     </StatusHeader>
   )
 }
 
-EditingStatus.propTypes = {
-  atmosphere: PropTypes.object.isRequired,
-  cardIsActive: PropTypes.bool,
-  handleClick: PropTypes.func,
-  task: PropTypes.object.isRequired,
-  timestamp: PropTypes.string.isRequired,
-  timestampType: PropTypes.string,
-  toggleMenuState: PropTypes.func.isRequired,
-  styles: PropTypes.object
-}
-
-export default createFragmentContainer(withAtmosphere(EditingStatus), {
+export default createFragmentContainer(EditingStatus, {
   task: graphql`
     fragment EditingStatus_task on Task {
       editors {

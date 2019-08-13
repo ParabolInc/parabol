@@ -5,6 +5,7 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import lazyPreload from '../../../../utils/lazyPreload'
 import {MenuMutationProps} from '../../../../hooks/useMutationProps'
+import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 
 const TaskFooterIntegrateMenuRoot = lazyPreload(() =>
   import(/* webpackChunkName: 'TaskFooterIntegrateMenuRoot' */ '../../../../components/TaskFooterIntegrateMenuRoot')
@@ -13,17 +14,15 @@ const TaskFooterIntegrateMenuRoot = lazyPreload(() =>
 interface Props {
   mutationProps: MenuMutationProps
   task: any
-  toggleMenuState: () => void
+  useTaskChild: UseTaskChild
 }
 
 const TaskFooterIntegrateToggle = (props: Props) => {
-  const {mutationProps, task, toggleMenuState} = props
+  const {mutationProps, task, useTaskChild} = props
   const {togglePortal, originRef, menuPortal, menuProps, loadingWidth, loadingDelay} = useMenu(
     MenuPosition.UPPER_RIGHT,
     {
       loadingWidth: 200,
-      onOpen: toggleMenuState,
-      onClose: toggleMenuState
     }
   )
   return (
@@ -42,6 +41,7 @@ const TaskFooterIntegrateToggle = (props: Props) => {
           loadingWidth={loadingWidth}
           mutationProps={mutationProps}
           task={task}
+          useTaskChild={useTaskChild}
         />
       )}
     </>

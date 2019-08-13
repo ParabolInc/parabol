@@ -11,6 +11,7 @@ import avatarUser from '../../../../styles/theme/images/avatar-user.svg'
 import appTheme from '../../../../styles/theme/theme'
 import ui from '../../../../styles/ui'
 import lazyPreload from '../../../../utils/lazyPreload'
+import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 
 const label = {
   ...textOverflow,
@@ -75,7 +76,7 @@ interface Props {
   canAssign: boolean
   cardIsActive: boolean
   task: TaskFooterUserAssignee_task
-  toggleMenuState: () => void
+  useTaskChild: UseTaskChild
 }
 
 const TaskFooterUserAssigneeMenuRoot = lazyPreload(() =>
@@ -83,12 +84,9 @@ const TaskFooterUserAssigneeMenuRoot = lazyPreload(() =>
 )
 
 const TaskFooterUserAssignee = (props: Props) => {
-  const {area, canAssign, cardIsActive, task, toggleMenuState} = props
+  const {area, canAssign, cardIsActive, task, useTaskChild} = props
   const {assignee} = task
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT, {
-    onOpen: toggleMenuState,
-    onClose: toggleMenuState
-  })
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT)
   return (
     <>
       <AvatarButton
@@ -102,7 +100,7 @@ const TaskFooterUserAssignee = (props: Props) => {
         </Avatar>
         <AvatarLabel>{assignee.preferredName}</AvatarLabel>
       </AvatarButton>
-      {menuPortal(<TaskFooterUserAssigneeMenuRoot menuProps={menuProps} task={task} area={area} />)}
+      {menuPortal(<TaskFooterUserAssigneeMenuRoot menuProps={menuProps} task={task} area={area} useTaskChild={useTaskChild} />)}
     </>
   )
 }

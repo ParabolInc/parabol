@@ -102,7 +102,6 @@ const withLinks = (ComposedComponent) => {
       renderModal: PropTypes.func,
       // could be readOnly, so not strictly required
       setEditorState: PropTypes.func,
-      trackEditingComponent: PropTypes.func
     }
 
     constructor (props) {
@@ -293,8 +292,8 @@ const withLinks = (ComposedComponent) => {
     renderChangerModal = () => {
       const {linkChangerData} = this.state
       const {text, link, selectionState} = linkChangerData
-      const {editorState, setEditorState, trackEditingComponent, editorRef} = this.props
-      const coords = getDraftCoords(editorRef)
+      const {editorState, setEditorState, editorRef, useTaskChild} = this.props
+      const coords = getDraftCoords()
       // in this case, coords can be good, then bad as soon as the changer takes focus
       // so, the container must handle bad then good as well as good then bad
       this.cachedCoords = coords || this.cachedCoords
@@ -320,8 +319,8 @@ const withLinks = (ComposedComponent) => {
             text,
             link,
             initialValues: {text, link},
-            editorRef: editorRef || this.editorRef,
-            trackEditingComponent
+            editorRef,
+            useTaskChild,
           }}
           targetAnchor={targetAnchor}
           marginFromOrigin={ui.draftModalMargin}
@@ -335,9 +334,9 @@ const withLinks = (ComposedComponent) => {
 
     renderViewerModal = () => {
       const {linkViewerData} = this.state
-      const {editorRef, editorState, setEditorState} = this.props
+      const {editorState, setEditorState} = this.props
 
-      const coords = getDraftCoords(editorRef)
+      const coords = getDraftCoords()
       if (!coords) {
         setTimeout(() => {
           this.forceUpdate()

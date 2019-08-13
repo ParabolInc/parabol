@@ -54,7 +54,6 @@ const targetAnchor = {
 const withSuggestions = (ComposedComponent) => {
   class WithSuggestions extends Component {
     static propTypes = {
-      editorRef: PropTypes.any,
       editorState: PropTypes.object.isRequired,
       handleReturn: PropTypes.func,
       handleChange: PropTypes.func,
@@ -202,8 +201,8 @@ const withSuggestions = (ComposedComponent) => {
 
     renderModal = () => {
       const {active, triggerWord, suggestions, suggestionType} = this.state
-      const {editorRef, editorState, setEditorState, teamId} = this.props
-      const coords = getDraftCoords(editorRef)
+      const {editorState, setEditorState, teamId} = this.props
+      const coords = getDraftCoords()
       if (!coords) {
         setTimeout(() => {
           this.forceUpdate()

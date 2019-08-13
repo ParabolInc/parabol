@@ -1,5 +1,5 @@
 import {EditorState} from 'draft-js'
-import React, {Ref, useEffect, useState} from 'react'
+import React, {RefObject, useEffect, useState} from 'react'
 import styled from '@emotion/styled'
 import TextArea from 'react-textarea-autosize'
 import {cardContentFontSize, cardContentLineHeight} from '../styles/cards'
@@ -7,11 +7,11 @@ import {cardContentFontSize, cardContentLineHeight} from '../styles/cards'
 interface Props {
   className?: string
   editorState: EditorState
-  onBlur: (e: React.FocusEvent) => void
-  onFocus: (e: React.FocusEvent) => void
+  onBlur?: (e: React.FocusEvent) => void
+  onFocus?: (e: React.FocusEvent) => void
   onKeyDown: (e: React.KeyboardEvent) => void
   placeholder: string
-  setEditorRef: Ref<HTMLTextAreaElement>
+  editorRef: RefObject<HTMLTextAreaElement>
   onChange?: () => void
 }
 
@@ -27,7 +27,7 @@ const TextAreaStyles = styled(TextArea)({
 })
 
 const AndroidEditorFallback = (props: Props) => {
-  const {className, editorState, onBlur, onFocus, onKeyDown, placeholder, setEditorRef} = props
+  const {className, editorState, onBlur, onFocus, onKeyDown, placeholder, editorRef} = props
   const [value, setValue] = useState('')
   const [height, setHeight] = useState<number | undefined>(44)
 
@@ -46,7 +46,7 @@ const AndroidEditorFallback = (props: Props) => {
       className={className}
       onHeightChange={(height) => setHeight(height)}
       style={{height}}
-      inputRef={setEditorRef}
+      inputRef={editorRef}
       spellCheck
       placeholder={placeholder}
       value={value}

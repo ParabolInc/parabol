@@ -9,11 +9,12 @@ import {getEmptyImage} from 'react-dnd-html5-backend'
 import TaskDragLayer from './TaskDragLayer'
 import {DraggableTask_task} from '../../__generated__/DraggableTask_task.graphql'
 import ErrorBoundary from '../../components/ErrorBoundary'
+import {AreaEnum} from '../../types/graphql'
 
 const importantTaskProps = ['content', 'status', 'assignee', 'sortOrder', 'integration']
 
 interface Props {
-  area: string
+  area: AreaEnum
   connectDragSource: (reactEl: ReactElement<{}>) => ReactElement<{}>
   connectDragPreview: (reactEl: HTMLImageElement) => void
   connectDropTarget: (reactEl: ReactElement<{}>) => ReactElement<{}>

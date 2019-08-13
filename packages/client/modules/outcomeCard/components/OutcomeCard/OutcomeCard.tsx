@@ -1,5 +1,4 @@
-import PropTypes from 'prop-types'
-import React from 'react'
+import React, {RefObject} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import TaskEditor from '../../../../components/TaskEditor/TaskEditor'
 import TaskIntegrationLink from '../../../../components/TaskIntegrationLink'
@@ -9,15 +8,19 @@ import TaskFooter from '../OutcomeCardFooter/TaskFooter'
 import OutcomeCardStatusIndicator from '../OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
 import labels from '../../../../styles/theme/labels'
 import ui from '../../../../styles/ui'
-import {cardHoverShadow, cardFocusShadow, cardShadow} from '../../../../styles/elevation'
+import {cardFocusShadow, cardHoverShadow, cardShadow} from '../../../../styles/elevation'
 import isTaskArchived from '../../../../utils/isTaskArchived'
 import isTaskPrivate from '../../../../utils/isTaskPrivate'
 import isTempId from '../../../../utils/relay/isTempId'
 import cardRootStyles from '../../../../styles/helpers/cardRootStyles'
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import {AreaEnum, TaskServiceEnum} from '../../../../types/graphql'
+import {EditorState} from 'draft-js'
+import {OutcomeCard_task} from '__generated__/OutcomeCard_task.graphql'
+import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 
-const RootCard = styled('div')(({cardHasHover, cardHasFocus, hasDragStyles}) => ({
+const RootCard = styled('div')<{isTaskHovered: boolean, isTaskFocused: boolean, hasDragStyles: boolean}>(({isTaskHovered, isTaskFocused, hasDragStyles}) => ({
   ...cardRootStyles,
   borderTop: 0,
   outline: 'none',
@@ -26,9 +29,9 @@ const RootCard = styled('div')(({cardHasHover, cardHasFocus, hasDragStyles}) => 
   // hover before focus, it matters
   boxShadow: hasDragStyles
     ? 'none'
-    : cardHasFocus
+    : isTaskFocused
       ? cardFocusShadow
-      : cardHasHover
+      : isTaskHovered
         ? cardHoverShadow
         : cardShadow
 }))
@@ -46,39 +49,48 @@ const StatusIndicatorBlock = styled('div')({
   paddingLeft: ui.cardPaddingBase
 })
 
-const OutcomeCard = (props) => {
+interface Props {
+  area: AreaEnum
+  isTaskFocused: boolean
+  isTaskHovered: boolean
+  editorRef: RefObject<HTMLTextAreaElement>
+  editorState: EditorState
+  isAgenda: boolean
+  isDragging: boolean
+  hasDragStyles: boolean
+  task: OutcomeCard_task
+  setEditorState: (newEditorState: EditorState) => void
+  useTaskChild: UseTaskChild
+}
+
+const OutcomeCard = (props: Props) => {
   const {
     area,
-    cardHasFocus,
-    cardHasHover,
-    cardHasMenuOpen,
+    isTaskFocused,
+    isTaskHovered,
     editorRef,
     editorState,
     isAgenda,
     isDragging,
-    isEditing,
     hasDragStyles,
     task,
-    setEditorRef,
     setEditorState,
-    trackEditingComponent,
-    toggleMenuState
+    useTaskChild
   } = props
   const isPrivate = isTaskPrivate(task.tags)
   const isArchived = isTaskArchived(task.tags)
   const {status, team} = task
   const {teamId} = team
   const {integration, taskId} = task
-  const {service} = integration || {}
+  const service = integration ? integration.service as TaskServiceEnum : undefined
   const statusTitle = `Card status: ${labels.taskStatus[status].label}`
   const privateTitle = ', marked as #private'
   const archivedTitle = ', set as #archived'
   const statusIndicatorTitle = `${statusTitle}${isPrivate ? privateTitle : ''}${
     isArchived ? archivedTitle : ''
   }`
-  const cardIsActive = cardHasFocus || cardHasHover || cardHasMenuOpen
   return (
-    <RootCard cardHasHover={cardHasHover} cardHasFocus={cardHasFocus} hasDragStyles={hasDragStyles}>
+    <RootCard isTaskHovered={isTaskHovered} isTaskFocused={isTaskFocused} hasDragStyles={hasDragStyles}>
       <TaskWatermark service={service} />
       <ContentBlock>
         <CardTopMeta>
@@ -88,55 +100,32 @@ const OutcomeCard = (props) => {
             {isArchived && <OutcomeCardStatusIndicator status='archived' />}
           </StatusIndicatorBlock>
           <EditingStatusContainer
-            cardIsActive={cardIsActive}
-            isEditing={isEditing}
+            isTaskHovered={isTaskHovered}
             task={task}
-            toggleMenuState={toggleMenuState}
+            useTaskChild={useTaskChild}
           />
         </CardTopMeta>
         <TaskEditor
           editorRef={editorRef}
           editorState={editorState}
           readOnly={Boolean(isTempId(taskId) || isArchived || isDragging || service)}
-          setEditorRef={setEditorRef}
           setEditorState={setEditorState}
-          trackEditingComponent={trackEditingComponent}
           teamId={teamId}
           team={team}
+          useTaskChild={useTaskChild}
         />
         <TaskIntegrationLink integration={integration || null} />
         <TaskFooter
           area={area}
-          cardIsActive={cardIsActive}
+          cardIsActive={isTaskFocused || isTaskHovered}
           editorState={editorState}
           isAgenda={isAgenda}
-          isPrivate={isPrivate}
           task={task}
-          toggleMenuState={toggleMenuState}
+          useTaskChild={useTaskChild}
         />
       </ContentBlock>
     </RootCard>
   )
-}
-
-OutcomeCard.propTypes = {
-  area: PropTypes.string,
-  editorRef: PropTypes.any,
-  editorState: PropTypes.object,
-  cardHasHover: PropTypes.bool,
-  cardHasFocus: PropTypes.bool,
-  cardHasMenuOpen: PropTypes.bool,
-  cardHasIntegration: PropTypes.bool,
-  hasDragStyles: PropTypes.bool,
-  isAgenda: PropTypes.bool,
-  isDragging: PropTypes.bool,
-  isEditing: PropTypes.bool,
-  task: PropTypes.object.isRequired,
-  setEditorRef: PropTypes.func.isRequired,
-  setEditorState: PropTypes.func,
-  trackEditingComponent: PropTypes.func,
-  teamMembers: PropTypes.array,
-  toggleMenuState: PropTypes.func.isRequired
 }
 
 export default createFragmentContainer(OutcomeCard, {

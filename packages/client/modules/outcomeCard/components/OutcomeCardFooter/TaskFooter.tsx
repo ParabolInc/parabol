@@ -17,6 +17,7 @@ import removeContentTag from '../../../../utils/draftjs/removeContentTag'
 import isTaskArchived from '../../../../utils/isTaskArchived'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 import {AreaEnum} from '../../../../types/graphql'
+import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 
 const Footer = styled('div')({
   display: 'flex',
@@ -51,7 +52,7 @@ interface Props extends WithMutationProps {
   editorState: EditorState
   isAgenda: boolean
   task: TaskFooter_task
-  toggleMenuState: () => void
+  useTaskChild: UseTaskChild
 }
 
 const TaskFooter = (props: Props) => {
@@ -66,7 +67,7 @@ const TaskFooter = (props: Props) => {
     submitMutation,
     submitting,
     task,
-    toggleMenuState
+    useTaskChild
   } = props
   const mutationProps = {onError, onCompleted, submitMutation, submitting}
   const atmosphere = useAtmosphere()
@@ -82,7 +83,7 @@ const TaskFooter = (props: Props) => {
             <TaskFooterTeamAssignee
               canAssign={canAssign}
               task={task}
-              toggleMenuState={toggleMenuState}
+              useTaskChild={useTaskChild}
             />
           ) : (
             <TaskFooterUserAssignee
@@ -90,7 +91,7 @@ const TaskFooter = (props: Props) => {
               canAssign={canAssign}
               cardIsActive={cardIsActive}
               task={task}
-              toggleMenuState={toggleMenuState}
+              useTaskChild={useTaskChild}
             />
           )}
         </AvatarBlock>
@@ -101,7 +102,7 @@ const TaskFooter = (props: Props) => {
             <TaskFooterIntegrateToggle
               mutationProps={mutationProps}
               task={task}
-              toggleMenuState={toggleMenuState}
+              useTaskChild={useTaskChild}
             />
           )}
           {isArchived ? (
@@ -116,7 +117,7 @@ const TaskFooter = (props: Props) => {
               editorState={editorState}
               isAgenda={isAgenda}
               task={task}
-              toggleMenuState={toggleMenuState}
+              useTaskChild={useTaskChild}
               mutationProps={mutationProps}
             />
           )}
