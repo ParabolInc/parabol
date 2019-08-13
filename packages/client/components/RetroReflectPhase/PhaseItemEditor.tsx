@@ -38,7 +38,7 @@ interface Props {
 const PhaseItemEditor = (props: Props) => {
   const {meetingId, nextSortOrder, phaseEditorRef, retroPhaseItemId, stackTopRef, cardsInFlight, setCardsInFlight} = props
   const atmosphere = useAtmosphere()
-  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
+  const {onCompleted, onError, submitMutation} = useMutationProps()
   const [editorState, setEditorState] = useState(EditorState.createEmpty)
   const [isEditing, setIsEditing] = useState(false)
   const idleTimerIdRef = useRef<number>()
@@ -92,7 +92,7 @@ const PhaseItemEditor = (props: Props) => {
   }
 
   const handleKeydown = () => {
-    if (submitting) return
+    // do not throttle based on submitting or they can't submit very quickly
     const content = editorState.getCurrentContent()
     if (!content.hasText()) return
     handleSubmit(JSON.stringify(convertToRaw(content)))

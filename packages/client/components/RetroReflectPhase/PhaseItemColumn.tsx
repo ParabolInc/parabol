@@ -68,6 +68,8 @@ const Description = styled('div')({
   fontStyle: 'italic',
   fontWeight: 400,
   lineHeight: '20px',
+  // tall enough for 3 lines so columns looks the same
+  minHeight: 60,
   marginTop: 8
 })
 
