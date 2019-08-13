@@ -20,7 +20,7 @@ const WatermarkBlock = styled('div')({
   top: 0,
   verticalAlign: 'middle',
   opacity: 0.2,
-  zIndex: 398,
+  zIndex: 1,
   '& svg': {
     height: 120,
     width: 120,
