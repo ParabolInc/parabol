@@ -63,6 +63,10 @@ const ScrollWrapper = styled('div')({
   height: '100%'
 })
 
+const StyledLabelBlock = styled(MeetingSidebarLabelBlock)({
+  marginTop: 16
+})
+
 const RetroSidebarDiscussSection = (props: Props) => {
   const {
     atmosphere,
@@ -116,11 +120,11 @@ const RetroSidebarDiscussSection = (props: Props) => {
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <MeetingSidebarPhaseItemChild>
-        <MeetingSidebarLabelBlock>
+        <StyledLabelBlock>
           <LabelHeading>
             {plural(stages.length, `${RETRO_VOTED_LABEL} ${RETRO_TOPIC_LABEL}`)}
           </LabelHeading>
-        </MeetingSidebarLabelBlock>
+        </StyledLabelBlock>
         <Droppable droppableId={DISCUSSION_TOPIC}>
           {(provided) => {
             return (
