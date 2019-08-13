@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useRef, useState} from 'react'
 import relativeDate from '../../utils/date/relativeDate'
 import Ellipsis from '../Ellipsis/Ellipsis'
 import getRefreshPeriod from '../../utils/getRefreshPeriod'
@@ -12,7 +12,7 @@ interface Props {
 }
 
 const useTimeFrom = (timestamp: string) => {
-  const makeTimeFrom = useCallback(() => relativeDate(timestamp, {smallDiff: 'just now'}))
+  const makeTimeFrom = useCallback(() => relativeDate(timestamp, {smallDiff: 'just now'}), [timestamp])
   const [timeFrom, setTimeFrom] = useState(makeTimeFrom)
   const timeoutRef = useRef<number | undefined>()
   useEffect(() => {
