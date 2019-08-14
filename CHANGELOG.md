@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v4.0.1 2019-Aug-09
+
+## Fixed
+* Temporarily remove tags from sentry to see if it caused mem leak
+
 ## v4.0.0 2019-Aug-05
 
 ### Added
