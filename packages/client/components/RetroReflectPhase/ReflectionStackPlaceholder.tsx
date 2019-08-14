@@ -14,7 +14,6 @@ const PlaceholderCard = styled('div')({
   borderRadius: cardBorderRadius,
   display: 'flex',
   justifyContent: 'center',
-  margin: '2rem 0',
   minHeight: ElementHeight.REFLECTION_CARD_MAX,
   width: ElementWidth.REFLECTION_CARD
 })

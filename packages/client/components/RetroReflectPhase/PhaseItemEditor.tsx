@@ -1,5 +1,5 @@
 import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
-import React, {RefObject, useEffect, useRef, useState} from 'react'
+import React, {MutableRefObject, RefObject, useEffect, useRef, useState} from 'react'
 import {ReflectionCardRoot} from '../ReflectionCard/ReflectionCard'
 import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
 import CreateReflectionMutation from '../../mutations/CreateReflectionMutation'
@@ -25,7 +25,7 @@ const CardInFlightStyles = styled(ReflectionCardRoot)<{transform: string, isStar
 }))
 
 interface Props {
-  cardsInFlight: readonly ReflectColumnCardInFlight[]
+  cardsInFlightRef: MutableRefObject<ReflectColumnCardInFlight[]>
   setCardsInFlight: (cards: ReflectColumnCardInFlight[]) => void
   meetingId: string
   nextSortOrder: () => number
@@ -36,7 +36,7 @@ interface Props {
 
 
 const PhaseItemEditor = (props: Props) => {
-  const {meetingId, nextSortOrder, phaseEditorRef, retroPhaseItemId, stackTopRef, cardsInFlight, setCardsInFlight} = props
+  const {meetingId, nextSortOrder, phaseEditorRef, retroPhaseItemId, stackTopRef, cardsInFlightRef, setCardsInFlight} = props
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation} = useMutationProps()
   const [editorState, setEditorState] = useState(EditorState.createEmpty)
@@ -65,18 +65,18 @@ const PhaseItemEditor = (props: Props) => {
       key: content,
       isStart: true
     }
-    const idx = cardsInFlight.length
     openPortal()
-    setCardsInFlight([...cardsInFlight, cardInFlight])
+    setCardsInFlight([...cardsInFlightRef.current, cardInFlight])
     requestAnimationFrame(() => {
       const stackBBox = getBBox(stackTopRef.current)
       if (!stackBBox) return
       const {left, top} = stackBBox
-      setCardsInFlight([...cardsInFlight.slice(0, idx), {
+      const idx = cardsInFlightRef.current.findIndex((card) => card.key == content)
+      setCardsInFlight([...cardsInFlightRef.current.slice(0, idx), {
         ...cardInFlight,
         isStart: false,
         transform: `translate(${left}px,${top}px)`,
-      }, ...cardsInFlight.slice(idx + 1)])
+      }, ...cardsInFlightRef.current.slice(idx + 1)])
       setTimeout(removeCardInFlight(content), FLIGHT_TIME)
     })
     // move focus to end is very important! otherwise ghost chars appear
@@ -125,9 +125,9 @@ const PhaseItemEditor = (props: Props) => {
   }
 
   const removeCardInFlight = (content: string) => () => {
-    const idx = cardsInFlight.findIndex((card) => card.key === content)
+    const idx = cardsInFlightRef.current.findIndex((card) => card.key === content)
     if (idx === -1) return
-    const nextCardsInFlight = [...cardsInFlight.slice(0, idx), ...cardsInFlight.slice(idx + 1)]
+    const nextCardsInFlight = [...cardsInFlightRef.current.slice(0, idx), ...cardsInFlightRef.current.slice(idx + 1)]
     if (nextCardsInFlight.length === 0) terminatePortal()
     setCardsInFlight(nextCardsInFlight)
   }
@@ -148,7 +148,7 @@ const PhaseItemEditor = (props: Props) => {
         />
       </ReflectionCardRoot>
       {portal(<>
-          {cardsInFlight.map((card) => {
+          {cardsInFlightRef.current.map((card) => {
             return (
               <CardInFlightStyles key={card.key} transform={card.transform} isStart={card.isStart}
                                   onTransitionEnd={removeCardInFlight(card.key)}>
