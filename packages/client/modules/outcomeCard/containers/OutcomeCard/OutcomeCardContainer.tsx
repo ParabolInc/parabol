@@ -90,7 +90,7 @@ const OutcomeCardContainer = memo((props: Props) => {
     if (!editorState || editorState.getCurrentContent() === contentState) return
     const newContentState = mergeServerContent(editorState, contentState)
     const newEditorState = EditorState.push(editorState, newContentState, 'insert-characters')
-    setEditorState(newEditorState)
+    setEditorStateRef(newEditorState)
   }, [contentState, editorStateRef, setEditorState])
 
   return (

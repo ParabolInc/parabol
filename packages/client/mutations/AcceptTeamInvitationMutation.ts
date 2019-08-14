@@ -74,11 +74,10 @@ const mutation = graphql`
 
 export const acceptTeamInvitationNotificationUpdater = (
   payload: RecordProxy<any>,
-  {atmosphere, store}
+  {store}
 ) => {
-  const {viewerId} = atmosphere
   const team = payload.getLinkedRecord('team')
-  handleAddTeams(team, store, viewerId)
+  handleAddTeams(team, store)
   const notificationIds = getInProxy(payload, 'removedNotificationIds')
   handleRemoveNotifications(notificationIds, store)
 }
@@ -119,7 +118,7 @@ const AcceptTeamInvitationMutation: StandardMutation<TAcceptTeamInvitationMutati
     updater: (store) => {
       const payload = store.getRootField('acceptTeamInvitation')
       if (!payload) return
-      acceptTeamInvitationNotificationUpdater(payload, {atmosphere, store})
+      acceptTeamInvitationNotificationUpdater(payload, {store})
     },
     onError,
     onCompleted: (data, errors) => {
