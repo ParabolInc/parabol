@@ -11,8 +11,7 @@ import DraggableTask from '../containers/TaskCard/DraggableTask'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {TaskStatusEnum} from '../types/graphql'
-import getTaskById from '../utils/getTaskById'
+import {AreaEnum, TaskStatusEnum} from '../types/graphql'
 import Icon from './Icon'
 import TimelineNoTasks from './TimelineNoTasks'
 
@@ -96,13 +95,12 @@ class TimelinePriorityTasks extends Component<Props> {
           <ActiveIcon>whatshot</ActiveIcon>
           Active Tasks
         </PriorityTasksHeader>
-        {activeTasks.map((task) => (
+        {activeTasks.map((task, idx) => (
           <DraggableTask
             key={task.id}
-            area={USER_DASH}
-            getTaskById={getTaskById(activeTasks)}
+            area={AreaEnum.userDash}
             task={task}
-            insert={(draggedTask, before) => this.insertTask(draggedTask, task, before)}
+            idx={idx}
           />
         ))}
       </TaskList>

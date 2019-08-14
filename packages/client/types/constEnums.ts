@@ -26,6 +26,11 @@ export const enum DashTimeline {
   TIMELINE_DRAWER_WIDTH = 336
 }
 
+export const enum DroppableType {
+  TASK = 'task',
+  TASK_COLUMN = 'taskColumn',
+  KANBAN = 'kanban'
+}
 export const enum Duration {
   MENU_OPEN = 150,
   MENU_OPEN_MAX = 188,

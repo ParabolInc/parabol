@@ -72,7 +72,7 @@ const Inner = styled('div')({
    behavior for task columns overflow in small viewports TA */
 const InnerOverflow = styled('div')({
   display: 'flex',
-  overflow: 'auto',
+  overflowX: 'auto',
   position: 'absolute',
   top: 0,
   right: 0,

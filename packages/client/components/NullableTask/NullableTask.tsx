@@ -7,27 +7,18 @@ import graphql from 'babel-plugin-relay/macro'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {NullableTask_task} from '../../__generated__/NullableTask_task.graphql'
 import makeEmptyStr from '../../utils/draftjs/makeEmptyStr'
-import {AreaEnum} from '../../types/graphql'
+import {AreaEnum, TaskStatusEnum} from '../../types/graphql'
 
 interface Props {
   area: AreaEnum
-  hasDragStyles?: boolean
   isAgenda?: boolean
-  isDragging?: boolean
-  isPreview?: boolean
+  isDraggingOver?: TaskStatusEnum
   measure?: () => void
   task: NullableTask_task
 }
 
-const propsAreEqual = (prevProps: Props, nextProps: Props) => {
-  const {isPreview, task} = nextProps
-  return isPreview
-    ? task.status === prevProps.task.status && task.content === prevProps.task.content
-    : false
-}
-
-const NullableTask = React.memo((props: Props) => {
-  const {area, hasDragStyles, isAgenda, task, isDragging} = props
+const NullableTask = (props: Props) => {
+  const {area, isAgenda, task, isDraggingOver} = props
   const {content, createdBy, assignee} = task
   const {preferredName} = assignee
   const contentState = useMemo(() => {
@@ -54,15 +45,14 @@ const NullableTask = React.memo((props: Props) => {
     <OutcomeCardContainer
       area={area}
       contentState={contentState}
-      hasDragStyles={hasDragStyles}
-      isDragging={isDragging}
+      isDraggingOver={isDraggingOver}
       isAgenda={isAgenda}
       task={task}
     />
   ) : (
     <NullCard preferredName={preferredName} />
   )
-}, propsAreEqual)
+}
 
 export default createFragmentContainer(NullableTask, {
   task: graphql`

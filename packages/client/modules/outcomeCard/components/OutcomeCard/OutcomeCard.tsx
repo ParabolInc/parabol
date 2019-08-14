@@ -1,4 +1,4 @@
-import React, {RefObject} from 'react'
+import React, {memo, RefObject} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import TaskEditor from '../../../../components/TaskEditor/TaskEditor'
 import TaskIntegrationLink from '../../../../components/TaskIntegrationLink'
@@ -7,28 +7,28 @@ import TaskFooter from '../OutcomeCardFooter/TaskFooter'
 import OutcomeCardStatusIndicator from '../OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
 import labels from '../../../../styles/theme/labels'
 import ui from '../../../../styles/ui'
-import {cardFocusShadow, cardHoverShadow, cardShadow} from '../../../../styles/elevation'
+import {cardFocusShadow, cardHoverShadow, cardShadow, Elevation} from '../../../../styles/elevation'
 import isTaskArchived from '../../../../utils/isTaskArchived'
 import isTaskPrivate from '../../../../utils/isTaskPrivate'
 import isTempId from '../../../../utils/relay/isTempId'
 import cardRootStyles from '../../../../styles/helpers/cardRootStyles'
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {AreaEnum, TaskServiceEnum} from '../../../../types/graphql'
+import {AreaEnum, TaskServiceEnum, TaskStatusEnum} from '../../../../types/graphql'
 import {EditorState} from 'draft-js'
 import {OutcomeCard_task} from '__generated__/OutcomeCard_task.graphql'
 import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
-import EditingStatus from 'components/EditingStatus/EditingStatus';
+import EditingStatus from 'components/EditingStatus/EditingStatus'
 
-const RootCard = styled('div')<{isTaskHovered: boolean, isTaskFocused: boolean, hasDragStyles: boolean}>(({isTaskHovered, isTaskFocused, hasDragStyles}) => ({
+const RootCard = styled('div')<{isTaskHovered: boolean, isTaskFocused: boolean, isDragging: boolean}>(({isTaskHovered, isTaskFocused, isDragging}) => ({
   ...cardRootStyles,
   borderTop: 0,
   outline: 'none',
   padding: `${ui.cardPaddingBase} 0 0`,
   transition: `box-shadow 100ms ease-in`,
   // hover before focus, it matters
-  boxShadow: hasDragStyles
-    ? 'none'
+  boxShadow: isDragging
+    ? Elevation.CARD_DRAGGING
     : isTaskFocused
       ? cardFocusShadow
       : isTaskHovered
@@ -56,14 +56,13 @@ interface Props {
   editorRef: RefObject<HTMLTextAreaElement>
   editorState: EditorState
   isAgenda: boolean
-  isDragging: boolean
-  hasDragStyles: boolean
+  isDraggingOver: TaskStatusEnum | undefined
   task: OutcomeCard_task
   setEditorState: (newEditorState: EditorState) => void
   useTaskChild: UseTaskChild
 }
 
-const OutcomeCard = (props: Props) => {
+const OutcomeCard = memo((props: Props) => {
   const {
     area,
     isTaskFocused,
@@ -71,8 +70,7 @@ const OutcomeCard = (props: Props) => {
     editorRef,
     editorState,
     isAgenda,
-    isDragging,
-    hasDragStyles,
+    isDraggingOver,
     task,
     setEditorState,
     useTaskChild
@@ -90,12 +88,12 @@ const OutcomeCard = (props: Props) => {
     isArchived ? archivedTitle : ''
   }`
   return (
-    <RootCard isTaskHovered={isTaskHovered} isTaskFocused={isTaskFocused} hasDragStyles={hasDragStyles}>
+    <RootCard isTaskHovered={isTaskHovered} isTaskFocused={isTaskFocused} isDragging={!!isDraggingOver}>
       <TaskWatermark service={service} />
       <ContentBlock>
         <CardTopMeta>
           <StatusIndicatorBlock title={statusIndicatorTitle}>
-            <OutcomeCardStatusIndicator status={status} />
+            <OutcomeCardStatusIndicator status={isDraggingOver || status} />
             {isPrivate && <OutcomeCardStatusIndicator status='private' />}
             {isArchived && <OutcomeCardStatusIndicator status='archived' />}
           </StatusIndicatorBlock>
@@ -108,7 +106,7 @@ const OutcomeCard = (props: Props) => {
         <TaskEditor
           editorRef={editorRef}
           editorState={editorState}
-          readOnly={Boolean(isTempId(taskId) || isArchived || isDragging || service)}
+          readOnly={Boolean(isTempId(taskId) || isArchived || isDraggingOver || service)}
           setEditorState={setEditorState}
           teamId={teamId}
           team={team}
@@ -126,7 +124,7 @@ const OutcomeCard = (props: Props) => {
       </ContentBlock>
     </RootCard>
   )
-}
+})
 
 export default createFragmentContainer(OutcomeCard, {
   task: graphql`

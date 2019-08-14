@@ -9,7 +9,7 @@ import mergeServerContent from '../../../../utils/mergeServerContent'
 import isAndroid from '../../../../utils/draftjs/isAndroid'
 import convertToTaskContent from '../../../../utils/draftjs/convertToTaskContent'
 import graphql from 'babel-plugin-relay/macro'
-import {AreaEnum} from '../../../../types/graphql'
+import {AreaEnum, TaskStatusEnum} from '../../../../types/graphql'
 import {OutcomeCardContainer_task} from '__generated__/OutcomeCardContainer_task.graphql'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useRefState from '../../../../hooks/useRefState'
@@ -19,48 +19,45 @@ import useEventCallback from '../../../../hooks/useEventCallback'
 interface Props {
   area: AreaEnum
   contentState: ContentState,
-  hasDragStyles: boolean | undefined,
   isAgenda: boolean | undefined,
-  isDragging: boolean | undefined,
+  isDraggingOver: TaskStatusEnum | undefined,
   task: OutcomeCardContainer_task
 }
 
 const OutcomeCardContainer = memo((props: Props) => {
-  const {contentState, isDragging, task, area, hasDragStyles, isAgenda} = props
+  const {contentState, isDraggingOver, task, area, isAgenda} = props
   const {id: taskId, editors, team} = task
   const {id: teamId} = team
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const [isTaskHovered, setIsTaskHovered] = useState(false)
   const editorRef = useRef<HTMLTextAreaElement>(null)
-  const [editorStateRef, setEditorStateRef] = useRefState<EditorState>(() => EditorState.createWithContent(contentState, editorDecorators(() => editorStateRef.current)))
+  const [editorStateRef, setEditorStateRef] = useRefState<EditorState>(() => {
+    return EditorState.createWithContent(contentState, editorDecorators(() => editorStateRef.current))
+  })
   const {removeTaskChild, addTaskChild, useTaskChild} = useTaskChildFocus(taskId)
 
   const isTaskFocused = useMemo(() => {
     return !!editors.find((editor) => editor.userId === viewerId)
   }, [editors, viewerId])
 
-  const handleCardUpdateFallback = () => {
-    const editorEl = editorRef.current
-    if (!editorEl || editorEl.type !== 'textarea') return
-    const {value} = editorEl
-    if (!value) {
-      DeleteTaskMutation(atmosphere, taskId, teamId)
-    } else {
-      const initialContentState = editorStateRef.current.getCurrentContent()
-      const initialText = initialContentState.getPlainText()
-      if (initialText === value) return
-      const updatedTask = {
-        id: taskId,
-        content: convertToTaskContent(value)
-      }
-      UpdateTaskMutation(atmosphere, {updatedTask, area})
-    }
-  }
-
   const handleCardUpdate = () => {
     if (isAndroid) {
-      handleCardUpdateFallback()
+      const editorEl = editorRef.current
+      if (!editorEl || editorEl.type !== 'textarea') return
+      const {value} = editorEl
+      if (!value) {
+        DeleteTaskMutation(atmosphere, taskId, teamId)
+      } else {
+        const initialContentState = editorStateRef.current.getCurrentContent()
+        const initialText = initialContentState.getPlainText()
+        if (initialText === value) return
+        const updatedTask = {
+          id: taskId,
+          content: convertToTaskContent(value)
+        }
+        UpdateTaskMutation(atmosphere, {updatedTask, area})
+      }
       return
     }
     const nextContentState = editorStateRef.current.getCurrentContent()
@@ -111,9 +108,8 @@ const OutcomeCardContainer = memo((props: Props) => {
         editorState={editorStateRef.current}
         isTaskFocused={isTaskFocused}
         isTaskHovered={isTaskHovered}
-        hasDragStyles={!!hasDragStyles}
         isAgenda={!!isAgenda}
-        isDragging={!!isDragging}
+        isDraggingOver={isDraggingOver}
         task={task}
         setEditorState={setEditorState}
         useTaskChild={useTaskChild}

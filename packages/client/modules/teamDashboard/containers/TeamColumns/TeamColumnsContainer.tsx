@@ -6,7 +6,6 @@ import graphql from 'babel-plugin-relay/macro'
 import TaskColumns from '../../../../components/TaskColumns/TaskColumns'
 import withAtmosphere from '../../../../decorators/withAtmosphere/withAtmosphere'
 import toTeamMemberId from '../../../../utils/relay/toTeamMemberId'
-import getTaskById from '../../../../utils/getTaskById'
 import {AreaEnum} from '../../../../types/graphql'
 
 const mapStateToProps = (state, props) => {
@@ -53,7 +52,6 @@ const TeamColumnsContainer = (props: Props) => {
 
   return (
     <TaskColumns
-      getTaskById={getTaskById(filteredTasks)}
       myTeamMemberId={myTeamMemberId}
       tasks={filteredTasks}
       teamMemberFilterId={teamMemberFilterId}
