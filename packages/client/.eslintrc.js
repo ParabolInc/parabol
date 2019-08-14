@@ -1,10 +1,7 @@
 module.exports = {
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint', 'emotion', 'react', 'react-hooks'],
-  extends: [
-    'plugin:react/recommended',
-    '../../.eslintrc.js'
-  ],
+  extends: ['plugin:react/recommended', '../../.eslintrc.js'],
   parserOptions: {
     project: './tsconfig.json',
     ecmaVersion: 2018,
@@ -19,8 +16,8 @@ module.exports = {
     'emotion/no-vanilla': 'error',
     'emotion/import-from-emotion': 'error',
     'emotion/styled-import': 'error',
-    "react-hooks/rules-of-hooks": "warn", // Checks rules of Hooks
-    "react-hooks/exhaustive-deps": "warn" // Checks effect dependencies
+    'react-hooks/rules-of-hooks': 'warn' // Checks rules of Hooks
+    // "react-hooks/exhaustive-deps": "warn" // Checks effect dependencies, buggy so don't use with --fix
   },
   settings: {
     react: {

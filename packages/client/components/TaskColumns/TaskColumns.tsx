@@ -72,12 +72,13 @@ const TaskColumns = (props: Props) => {
 
       let sortOrder
       if (destination.index === 0) {
-        sortOrder = dndNoise()
-      } else if (destination.index === destinationTasks.length) {
-        sortOrder = destinationTasks[destinationTasks.length-1].sortOrder - SORT_STEP + dndNoise()
+        sortOrder = (isSameColumn ? destinationTasks[0].sortOrder + SORT_STEP : 0) + dndNoise()
+      } else if (isSameColumn && destination.index === destinationTasks.length -1 || !isSameColumn && destination.index === destinationTasks.length) {
+        sortOrder = destinationTasks[destinationTasks.length - 1].sortOrder - SORT_STEP + dndNoise()
       } else {
+        const offset = !isSameColumn || source.index > destination.index ? -1 : 1
         sortOrder =
-          (destinationTasks[destination.index -1].sortOrder + destinationTasks[destination.index].sortOrder) / 2 +
+          (destinationTasks[destination.index + offset].sortOrder + destinationTasks[destination.index].sortOrder) / 2 +
           dndNoise()
       }
       const updatedTask = {id: draggableId, sortOrder}
@@ -89,21 +90,21 @@ const TaskColumns = (props: Props) => {
   return (
     <RootBlock>
       <DragDropContext onDragEnd={onDragEnd}>
-            <ColumnsBlock>
-              {lanes.map((status) => (
-                <TaskColumn
-                  key={status}
-                  area={area}
-                  isMyMeetingSection={isMyMeetingSection}
-                  meetingId={meetingId}
-                  myTeamMemberId={myTeamMemberId}
-                  teamMemberFilterId={teamMemberFilterId}
-                  tasks={groupedTasks[status]}
-                  status={status}
-                  teams={teams}
-                />
-              ))}
-            </ColumnsBlock>
+        <ColumnsBlock>
+          {lanes.map((status) => (
+            <TaskColumn
+              key={status}
+              area={area}
+              isMyMeetingSection={isMyMeetingSection}
+              meetingId={meetingId}
+              myTeamMemberId={myTeamMemberId}
+              teamMemberFilterId={teamMemberFilterId}
+              tasks={groupedTasks[status]}
+              status={status}
+              teams={teams}
+            />
+          ))}
+        </ColumnsBlock>
         <EditorHelpModalContainer />
       </DragDropContext>
     </RootBlock>
