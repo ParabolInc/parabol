@@ -8,7 +8,10 @@ const NavListItem = styled('li')({
   fontWeight: 600,
   lineHeight: '2.5rem',
   display: 'flex',
-  flexDirection: 'column'
+  flexDirection: 'column',
+  // hack to work around broken flexbox
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=927066
+  minHeight: 40
 })
 
 const NavItemBullet = styled('span')<{isFacilitatorPhaseGroup: boolean}>(

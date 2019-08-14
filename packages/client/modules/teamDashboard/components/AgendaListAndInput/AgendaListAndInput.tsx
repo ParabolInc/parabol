@@ -15,6 +15,7 @@ const RootStyles = styled('div')<{isMeeting: boolean | undefined; disabled: bool
     paddingTop: isMeeting ? meetingSidebarGutter : 0,
     position: 'relative',
     width: '100%',
+    minHeight: 0, // required for FF68
     cursor: disabled ? 'not-allowed' : undefined,
     filter: disabled ? 'blur(3px)' : undefined,
     pointerEvents: disabled ? 'none' : undefined,
