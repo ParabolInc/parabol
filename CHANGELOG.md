@@ -5,9 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v4.1.0 2019-Aug-14
+
+### Added
+* Mobile-first reflect phase (#3087)
+* New check-in questions (#3086)
+* Task columns now use `react-beautiful-dnd`
+
+### Changed
+* Adds the lemma to the reflection when it is created/updated instead of when the reflect phase is complete (#3092)
+* The Pro tier is now $6 per user per month
+
+### Fixed
+* Many, many meeting bug fixes
+* Fixed issues with tasks
+* Fixed group demo animations & discuss overflow (#3097)
+* Fixed another agenda scrolling regression
+
 ## v4.0.1 2019-Aug-09
 
-## Fixed
+### Fixed
 * Temporarily remove tags from sentry to see if it caused mem leak
 
 ## v4.0.0 2019-Aug-05
@@ -27,7 +44,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Fixed
 * Timer snackbar z-index (#3050)
-* fix theme color (address bar on mobile)
+* Fix theme color (address bar on mobile)
 
 ### Removed
 * We no longer depend on Fontawesome
