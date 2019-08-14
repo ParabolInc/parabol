@@ -19,7 +19,11 @@ const useTaskChildFocus = (taskId: string) => {
   const [activeEditingComponentsRef, setActiveEditingComponents] = useRefState(() => Set())
   const lastIsEditingRef = useRef(false)
   const queueTimerRef = useRef<number | undefined>()
-
+  useEffect(() => {
+    return () => {
+      window.clearTimeout(queueTimerRef.current)
+    }
+  }, [])
   const queueEdit = () => {
     window.clearTimeout(queueTimerRef.current)
     queueTimerRef.current = window.setTimeout(() => {
