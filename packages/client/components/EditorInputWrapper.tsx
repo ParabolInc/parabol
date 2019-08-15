@@ -1,42 +1,39 @@
-import {css} from 'aphrodite-local-styles/no-important'
-import {Editor, EditorState, getDefaultKeyBinding} from 'draft-js'
-import PropTypes from 'prop-types'
-import React, {Component} from 'react'
+import {DraftHandleValue, Editor, EditorState, getDefaultKeyBinding} from 'draft-js'
+import React, {Component, RefObject} from 'react'
 import './TaskEditor/Draft.css'
 import withKeyboardShortcuts from './TaskEditor/withKeyboardShortcuts'
 import withMarkdown from './TaskEditor/withMarkdown'
-import appTheme from '../styles/theme/appTheme'
-import withStyles from '../styles/withStyles'
 import {textTags} from '../utils/constants'
 import entitizeText from '../utils/draftjs/entitizeText'
 
-class EditorInputWrapper extends Component {
-  static propTypes = {
-    ariaLabel: PropTypes.string,
-    editorState: PropTypes.object.isRequired,
-    handleBeforeInput: PropTypes.func,
-    handleChange: PropTypes.func,
-    handleKeyCommand: PropTypes.func,
-    handleReturn: PropTypes.func,
-    keyBindingFn: PropTypes.func,
-    placeholder: PropTypes.string,
-    onBlur: PropTypes.func,
-    onFocus: PropTypes.func,
-    readOnly: PropTypes.bool,
-    setEditorState: PropTypes.func,
-    innerRef: PropTypes.func,
-    styles: PropTypes.object
-  }
+interface Props {
+  ariaLabel: string
+  editorRef: RefObject<HTMLTextAreaElement>,
+  editorState: EditorState,
+  setEditorState: (newEditorState: EditorState) => void,
+  handleBeforeInput: (char: string) => DraftHandleValue
+  handleChange: (editorState: EditorState) => void
+  handleKeyCommand: (command: string) => DraftHandleValue
+  handleReturn: (e: React.KeyboardEvent) => DraftHandleValue
+  readOnly: boolean,
+  onBlur: (e: React.FocusEvent) => void
+  placeholder: string
+  innerRef: RefObject<any>
+  keyBindingFn: (e: React.KeyboardEvent) => string
+  styles: React.CSSProperties
+}
 
+
+class EditorInputWrapper extends Component<Props> {
+  entityPasteStart?: {anchorOffset: number; anchorKey: string} = undefined
   blockStyleFn = (contentBlock) => {
-    const {styles} = this.props
     const type = contentBlock.getType()
     if (type === 'blockquote') {
-      return css(styles.editorBlockquote)
+      return 'draft-blockquote'
     } else if (type === 'code-block') {
-      return css(styles.codeBlock)
+      return 'draft-codeblock'
     }
-    return undefined
+    return ''
   }
 
   handleChange = (editorState) => {
@@ -61,14 +58,14 @@ class EditorInputWrapper extends Component {
   }
 
   handleReturn = (e) => {
-    const {handleReturn} = this.props
+    const {handleReturn, innerRef} = this.props
     if (handleReturn) {
       return handleReturn(e)
     }
-    if (e.shiftKey || !this.editorRef) {
+    if (e.shiftKey || !innerRef.current) {
       return 'not-handled'
     }
-    this.editorRef.blur()
+    innerRef.current.blur()
     return 'handled'
   }
 
@@ -77,7 +74,7 @@ class EditorInputWrapper extends Component {
     if (handleKeyCommand) {
       return handleKeyCommand(command)
     }
-    return undefined
+    return 'not-handled'
   }
 
   keyBindingFn = (e) => {
@@ -96,7 +93,7 @@ class EditorInputWrapper extends Component {
     if (handleBeforeInput) {
       return handleBeforeInput(char)
     }
-    return undefined
+    return 'not-handled'
   }
 
   handlePastedText = (text) => {
@@ -112,7 +109,7 @@ class EditorInputWrapper extends Component {
         }
       }
     }
-    return 'not-handled'
+    return 'not-handled' as 'not-handled'
   }
 
   render () {
@@ -132,35 +129,10 @@ class EditorInputWrapper extends Component {
         onChange={this.handleChange}
         placeholder={placeholder}
         readOnly={readOnly}
-        ref={(c) => {
-          if (innerRef) {
-            innerRef(c)
-          }
-          this.editorRef = c
-        }}
+        ref={innerRef}
       />
     )
   }
 }
 
-const styleThunk = () => ({
-  editorBlockquote: {
-    fontStyle: 'italic',
-    borderLeft: `.25rem ${appTheme.palette.mid40a} solid`,
-    margin: '.5rem 0',
-    padding: '0 .5rem'
-  },
-
-  codeBlock: {
-    backgroundColor: appTheme.palette.light,
-    borderLeft: `.125rem ${appTheme.palette.mid40a} solid`,
-    borderRadius: '.0625rem',
-    fontFamily: appTheme.typography.monospace,
-    fontSize: appTheme.typography.s2,
-    lineHeight: appTheme.typography.s6,
-    margin: '0',
-    padding: '0 .5rem'
-  }
-})
-
-export default withMarkdown(withKeyboardShortcuts(withStyles(styleThunk)(EditorInputWrapper)))
+export default withMarkdown(withKeyboardShortcuts(EditorInputWrapper))

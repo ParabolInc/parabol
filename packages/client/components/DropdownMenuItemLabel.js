@@ -4,8 +4,8 @@ import ui from '../styles/ui'
 
 const DropdownMenuItemLabel = styled('span')({
   ...textOverflow,
-  fontSize: ui.menuItemFontSize,
-  lineHeight: ui.menuItemHeight,
+  fontSize: 15,
+  lineHeight: '32px',
   padding: `0 16px`
 })
 

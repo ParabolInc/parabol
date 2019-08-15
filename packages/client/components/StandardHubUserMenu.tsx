@@ -17,8 +17,8 @@ import {PALETTE} from '../styles/paletteV2'
 
 const UpgradeCTA = styled('span')({
   color: PALETTE.TEXT_BLUE,
-  fontSize: ui.menuItemFontSize,
-  lineHeight: ui.menuItemHeight,
+  fontSize: 15,
+  lineHeight: '32px',
   marginRight: '2rem'
 })
 

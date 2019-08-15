@@ -57,6 +57,7 @@ interface State {
 }
 
 class NewCheckInQuestion extends Component<Props, State> {
+  editorRef = React.createRef<any>()
   constructor (props) {
     super(props)
     const checkInQuestion = getCheckInQuestion(props)
@@ -105,10 +106,8 @@ class NewCheckInQuestion extends Component<Props, State> {
     })
   }
 
-  editorRef: any
-
   selectAllQuestion = () => {
-    this.editorRef.focus()
+    this.editorRef.current && this.editorRef.current.focus()
     const {editorState} = this.state
     const selection = editorState.getSelection()
     const contentState = editorState.getCurrentContent()
@@ -151,9 +150,7 @@ class NewCheckInQuestion extends Component<Props, State> {
               setEditorState={this.setEditorState}
               readOnly={!isFacilitating}
               placehodler='e.g. How are you?'
-              innerRef={(c) => {
-                this.editorRef = c
-              }}
+              ref={this.editorRef}
             />
           {isFacilitating && (
             <PlainButton aria-label={tip} onClick={this.selectAllQuestion}>
