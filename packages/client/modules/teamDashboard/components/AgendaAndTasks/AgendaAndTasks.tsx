@@ -15,7 +15,6 @@ import {RightSidebar} from '../../../../types/constEnums'
 const RootBlock = styled('div')({
   display: 'flex',
   height: '100%',
-  minWidth: ui.taskColumnsMinWidth,
   width: '100%',
   '@media screen and (min-width: 1200px)': {
     minWidth: 0
@@ -26,7 +25,8 @@ const TasksMain = styled('div')({
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
-  height: '100%'
+  height: '100%',
+  overflow: 'auto'
 })
 
 const dashTeamBreakpointUp = '@media (min-width: 123.25rem)'
@@ -67,7 +67,8 @@ const AgendaMain = styled('div')<{hideAgenda: boolean | null}>(({hideAgenda}) =>
   maxWidth: RightSidebar.WIDTH,
   '@media screen and (min-width: 800px)': {
     boxShadow: hideAgenda ? 'none' : desktopSidebarShadow
-  }
+  },
+  zIndex: 2 // make sure shadow is above cards
 }))
 
 const AgendaContent = styled('div')({

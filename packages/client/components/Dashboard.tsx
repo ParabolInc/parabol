@@ -37,7 +37,9 @@ const DashPanel = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   flex: 1,
-  height: '100%'
+  height: '100%',
+  // any overflows should not include the width of the left nav
+  overflow: 'hidden',
 })
 
 const DashMain = styled('div')({
@@ -45,6 +47,7 @@ const DashMain = styled('div')({
   flex: 1,
   flexDirection: 'column',
   height: '100%',
+  minHeight: 0,
   position: 'relative'
 })
 

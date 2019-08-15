@@ -173,7 +173,7 @@ const PhaseItemColumn = (props: Props) => {
         !cardsInFlightRef.current.find((card) => card.key === group.reflections[0].content)
     )
     return groups
-  }, [reflectionGroups, retroPhaseItemId, cardsInFlightRef])
+  }, [reflectionGroups, retroPhaseItemId, cardsInFlightRef.current])
 
 
   const reflectionStack = useMemo(() => {
