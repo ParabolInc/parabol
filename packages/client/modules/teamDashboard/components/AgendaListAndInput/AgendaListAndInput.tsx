@@ -24,7 +24,7 @@ const RootStyles = styled('div')<{isMeeting: boolean | undefined; disabled: bool
 )
 
 interface Props {
-  gotoStageId: ReturnType<typeof useGotoStageId> | undefined
+  gotoStageId?: ReturnType<typeof useGotoStageId>
   isDisabled?: boolean
   team: AgendaListAndInput_team
   isMeeting?: boolean

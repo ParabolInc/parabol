@@ -18,12 +18,14 @@ import UpdateTaskMutation from '../../mutations/UpdateTaskMutation'
 const RootBlock = styled('div')({
   display: 'flex',
   flex: '1',
+  height: '100%',
   width: '100%'
 })
 
 const ColumnsBlock = styled('div')({
   display: 'flex',
   flex: '1',
+  height: '100%',
   margin: '0 auto',
   maxWidth: ui.taskColumnsMaxWidth,
   minWidth: ui.taskColumnsMinWidth,
@@ -72,7 +74,8 @@ const TaskColumns = (props: Props) => {
 
       let sortOrder
       if (destination.index === 0) {
-        sortOrder = (isSameColumn ? destinationTasks[0].sortOrder + SORT_STEP : 0) + dndNoise()
+        const firstTask = destinationTasks[0]
+        sortOrder = (firstTask ? firstTask.sortOrder + SORT_STEP : 0) + dndNoise()
       } else if (isSameColumn && destination.index === destinationTasks.length -1 || !isSameColumn && destination.index === destinationTasks.length) {
         sortOrder = destinationTasks[destinationTasks.length - 1].sortOrder - SORT_STEP + dndNoise()
       } else {

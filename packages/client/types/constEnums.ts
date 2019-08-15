@@ -95,6 +95,11 @@ export const enum ReflectionStackPerspective {
   X = 8,
   Y = 6
 }
+
+export const enum RightSidebar {
+  WIDTH = 240
+}
+
 export const enum SubscriptionChannel {
   TEAM = 'team',
   NEW_AUTH_TOKEN = 'newAuthToken',

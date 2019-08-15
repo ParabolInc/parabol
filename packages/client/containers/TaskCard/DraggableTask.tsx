@@ -8,7 +8,7 @@ import styled from '@emotion/styled'
 import {Draggable, DraggableProvided, DraggableStateSnapshot} from 'react-beautiful-dnd'
 
 const DraggableStyles = styled('div')({
-  padding: 8
+  padding: `6px 12px`
 })
 
 interface Props {
@@ -20,7 +20,7 @@ interface Props {
 const DraggableTask = (props: Props) => {
   const {area, idx, task} = props
   return (
-    <Draggable draggableId={task.id} index={idx}>
+    <Draggable draggableId={task.id} index={idx} disableInteractiveElementBlocking={false}>
       {(
         dragProvided: DraggableProvided,
         dragSnapshot: DraggableStateSnapshot

@@ -27,7 +27,7 @@ const Alert = styled('div')<{scrollY: number}>(
       alignSelf: 'center',
       borderRadius: '4em',
       width: 'auto',
-      zIndex: 1
+      zIndex: 2 // must be at least 2 so text from cards don't show through
     }
 )
 

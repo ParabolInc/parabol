@@ -63,7 +63,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
   isBroadcasting = false
   innerWidth = window.innerWidth
   innerHeight = window.innerHeight
-  scrollX = window.scrollX
+  scrollX = window.scrollX // will always be 0 since root is wrapped in an overflow: auto
   cachedTargetId: string | undefined
   cursorOffset: Coords | undefined
   constructor (props) {

@@ -691,7 +691,7 @@ export interface ITeamMember {
   /**
    * hide the agenda list on the dashboard
    */
-  hideAgenda: boolean | null;
+  hideAgenda: boolean;
 
   /**
    * The user email

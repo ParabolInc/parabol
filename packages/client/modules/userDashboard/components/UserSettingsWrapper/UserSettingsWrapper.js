@@ -3,7 +3,6 @@ import React from 'react'
 import SettingsHeader from '../SettingsHeader/SettingsHeader'
 import styled from '@emotion/styled'
 import ui from '../../../../styles/ui'
-import DashMain from '../../../../components/Dashboard/DashMain'
 import DashHeader from '../../../../components/Dashboard/DashHeader'
 import DashContent from '../../../../components/Dashboard/DashContent'
 
@@ -16,17 +15,21 @@ const SettingsContentBlock = styled('div')({
   width: '100%'
 })
 
+const Content = styled(DashContent)({
+  padding: '0 16px'
+})
+
 const UserSettingsWrapper = (props) => {
   const {children} = props
   return (
-    <DashMain>
+    <>
       <DashHeader>
         <SettingsHeader />
       </DashHeader>
-      <DashContent padding='0 16px'>
+      <Content>
         <SettingsContentBlock>{children}</SettingsContentBlock>
-      </DashContent>
-    </DashMain>
+      </Content>
+    </>
   )
 }
 

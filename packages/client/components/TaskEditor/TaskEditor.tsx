@@ -14,7 +14,8 @@ import lazyPreload from '../../utils/lazyPreload'
 import isRichDraft from '../../utils/draftjs/isRichDraft'
 import isAndroid from '../../utils/draftjs/isAndroid'
 
-const RootEditor = styled('div')<{noText: boolean}>(({noText}) => ({
+const RootEditor = styled('div')<{noText: boolean, readOnly: boolean}>(({noText, readOnly}) => ({
+  cursor: readOnly ? undefined : 'text',
   fontSize: ui.cardContentFontSize,
   lineHeight: ui.cardContentLineHeight,
   padding: `0 ${ui.cardPaddingBase}`,
@@ -176,7 +177,7 @@ class TaskEditor extends Component<Props> {
     const useFallback = isAndroid && !readOnly
     const showFallback = useFallback && !isRichDraft(editorState)
     return (
-      <RootEditor noText={noText}>
+      <RootEditor noText={noText} readOnly={readOnly}>
         {showFallback ? (
           <Suspense fallback={<div />}>
             <TaskEditorFallback
