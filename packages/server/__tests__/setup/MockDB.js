@@ -6,7 +6,6 @@ import {ADD_USER} from '../../utils/serverConstants'
 import shortid from 'shortid'
 import {
   ACTIVE,
-  ADDED_USERS,
   BILLING_LEADER,
   CHECKIN,
   LOBBY,
@@ -26,7 +25,7 @@ const meetingTask = ({id, content, status, teamMemberId}) => ({
 })
 
 class MockDB {
-  constructor () {
+  constructor() {
     this.db = {
       agendaItem: [],
       invoice: [],
@@ -55,14 +54,14 @@ class MockDB {
     })
   }
 
-  closeout (table, doc) {
+  closeout(table, doc) {
     this.db[table] = this.db[table] || []
     this.db[table].push(doc)
     this.context[table] = doc
     return this
   }
 
-  init (template = {}) {
+  init(template = {}) {
     const orgId = shortid.generate()
     // underscore for a static seed based on the first char
     const teamId = `_${shortid.generate()}`
@@ -105,7 +104,7 @@ class MockDB {
     return this
   }
 
-  newAgendaItem (overrides = {}) {
+  newAgendaItem(overrides = {}) {
     const teamMemberId = this.context.teamMember.id
     const [userId, teamId] = teamMemberId.split('::')
     const table = this.db.agendaItem
@@ -124,7 +123,7 @@ class MockDB {
     })
   }
 
-  newInvoice (overrides = {}) {
+  newInvoice(overrides = {}) {
     const {id: orgId, name: orgName, picture} = this.context.organization
     const addedUsersLineId = shortid.generate()
     return this.closeout('invoice', {
@@ -155,7 +154,7 @@ class MockDB {
             }
           ],
           quantity: 1,
-          type: ADDED_USERS
+          type: 'ADDED_USERS'
         }
       ],
       nextMonthCharges: 1000,
@@ -170,7 +169,7 @@ class MockDB {
     })
   }
 
-  newInvoiceItemHook (overrides = {}) {
+  newInvoiceItemHook(overrides = {}) {
     return this.closeout('invoiceItemHook', {
       id: shortid.generate(),
       type: ADD_USER,
@@ -181,7 +180,7 @@ class MockDB {
     })
   }
 
-  newMeeting (overrides, template = {}) {
+  newMeeting(overrides, template = {}) {
     const {inProgress, activeFacilitatorIdx = 0} = template
     const meetingId = shortid.generate()
     const teamId = this.context.team.id
@@ -254,7 +253,7 @@ class MockDB {
     return this.closeout('meeting', baseMeeting)
   }
 
-  newNotification (overrides = {}, template = {}) {
+  newNotification(overrides = {}, template = {}) {
     return this.closeout('notification', {
       id: `${template.type}|${shortid.generate()}`,
       startAt: new Date(__anHourAgo + this.db.notification.length),
@@ -265,7 +264,7 @@ class MockDB {
     })
   }
 
-  newOrg (overrides = {}) {
+  newOrg(overrides = {}) {
     const anHourAgo = new Date(__anHourAgo)
     const {id = shortid.generate()} = this.context.organizaton || {}
     const newOverrides = {...overrides}
@@ -289,12 +288,12 @@ class MockDB {
       name: 'The Averagers, Inc.',
       orgUsers: this.context.user
         ? [
-          {
-            id: this.context.user.id,
-            role: BILLING_LEADER,
-            inactive: false
-          }
-        ]
+            {
+              id: this.context.user.id,
+              role: BILLING_LEADER,
+              inactive: false
+            }
+          ]
         : [],
       updatedAt: anHourAgo,
       periodStart: anHourAgo,
@@ -302,7 +301,7 @@ class MockDB {
     })
   }
 
-  newTask (overrides = {}) {
+  newTask(overrides = {}) {
     const teamMemberId = this.context.teamMember.id
     const [userId] = teamMemberId.split('::')
     const teamId = this.context.team.id
@@ -323,7 +322,7 @@ class MockDB {
     })
   }
 
-  newTaskHistory (overrides = {}) {
+  newTaskHistory(overrides = {}) {
     const {
       task: {id, content, assigneeId, status, updatedAt}
     } = this.context
@@ -338,7 +337,7 @@ class MockDB {
     })
   }
 
-  newTeam (overrides = {}) {
+  newTeam(overrides = {}) {
     const id = shortid.generate()
     const orgId = shortid.generate()
     return this.closeout('team', {
@@ -358,7 +357,7 @@ class MockDB {
     })
   }
 
-  newTeamMember (overrides = {}) {
+  newTeamMember(overrides = {}) {
     return this.closeout('teamMember', {
       id: `${this.context.user.id}::${this.context.team.id}`,
       isLead: false,
@@ -373,7 +372,7 @@ class MockDB {
     })
   }
 
-  newUser (overrides = {}) {
+  newUser(overrides = {}) {
     const anHourAgo = new Date(__anHourAgo)
     const {id: orgId = shortid.generate()} = this.context.organization || {}
     const {id: teamId = shortid.generate()} = this.context.team || {}
@@ -402,7 +401,7 @@ class MockDB {
     })
   }
 
-  async run () {
+  async run() {
     const r = getRethink()
     const tables = Object.keys(this.db).map((name) => name[0].toUpperCase() + name.substr(1))
     const docsToInsert = Object.values(this.db)
@@ -418,7 +417,7 @@ class MockDB {
   }
 
   // sugar so we don't have to call run all the time
-  then (resolve, reject) {
+  then(resolve, reject) {
     return this.run().then(resolve, reject)
   }
 }

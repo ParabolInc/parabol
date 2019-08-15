@@ -13,9 +13,17 @@ export const enum BezierCurve {
 }
 
 export const enum Breakpoint {
+  INVOICE = 512,
+  INVOICE_LABEL = 384,
   SIDEBAR_LEFT = 800,
   MEETING_FACILITATOR_BAR = 480,
   SINGLE_REFLECTION_COLUMN = 704, // (ReflectionWith + 16) * 2
+}
+
+export const enum ContactInfo {
+  TELEPHONE = '612-227-5673',
+  EMAIL_BILLING = 'billing@parabol.co',
+  EMAIL_LOVE = 'love@parabol.co'
 }
 
 // TODO refactor into ElementWidth
@@ -31,6 +39,7 @@ export const enum DroppableType {
   TASK_COLUMN = 'taskColumn',
   KANBAN = 'kanban'
 }
+
 export const enum Duration {
   MENU_OPEN = 150,
   MENU_OPEN_MAX = 188,
@@ -110,7 +119,7 @@ export const enum SubscriptionChannel {
 export const enum Times {
   HUMAN_ADDICTION_THRESH = 300,
   MAX_WAIT_TIME = 5000,
-  REFLECTION_DEAL_CARD_INIT_DELAY= 100,
+  REFLECTION_DEAL_CARD_INIT_DELAY = 100,
   REFLECTION_DEAL_CARD_MIN_DELAY = 30,
   REFLECTION_DEAL_CARD_DURATION = 300,
   REFLECTION_DEAL_TOTAL_DURATION = 500,

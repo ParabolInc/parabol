@@ -5,7 +5,6 @@ import makeDateString from '../../../../utils/makeDateString'
 import makeMonthString from '../../../../utils/makeMonthString'
 import {Link} from 'react-router-dom'
 import invoiceLineFormat from '../../../invoice/helpers/invoiceLineFormat'
-import {PAID, PENDING, UPCOMING} from '../../../../utils/constants'
 import styled from '@emotion/styled'
 import Row from '../../../../components/Row/Row'
 import RowInfo from '../../../../components/Row/RowInfo'
@@ -14,6 +13,7 @@ import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
 import Tag from '../../../../components/Tag/Tag'
 import Icon from '../../../../components/Icon'
 import {PALETTE} from '../../../../styles/paletteV2'
+import {InvoiceStatusEnum} from '../../../../types/graphql'
 
 const FileIcon = styled(Icon)({
   alignItems: 'center',
@@ -25,7 +25,7 @@ const FileIcon = styled(Icon)({
 })
 
 const InvoiceAmount = styled('span')({
-  fontSize: appTheme.typography.s6,
+  fontSize: 24,
   color: ui.palette.dark
 })
 
@@ -71,7 +71,7 @@ const InvoiceRow = (props: Props) => {
     hasCard,
     invoice: {id: invoiceId, amountDue, endAt, paidAt, status}
   } = props
-  const isEstimate = status === UPCOMING
+  const isEstimate = status === InvoiceStatusEnum.UPCOMING
   return (
     <Row>
       <InvoiceAvatar isEstimate={isEstimate}>
@@ -94,21 +94,21 @@ const InvoiceRow = (props: Props) => {
             </StyledLink>
           </div>
           <InfoRowRight>
-            {status === UPCOMING && (
+            {status === InvoiceStatusEnum.UPCOMING && (
               <StyledDate styledToPay>
                 {hasCard
                   ? `card will be charged on ${makeDateString(endAt)}`
                   : `Make sure to add billing info before ${makeDateString(endAt)}!`}
               </StyledDate>
             )}
-            {status === PAID && (
+            {status === InvoiceStatusEnum.PAID && (
               <StyledDate styledPaid>
                 {'Paid on '}
                 {makeDateString(paidAt)}
               </StyledDate>
             )}
-            {status !== PAID && status !== UPCOMING && (
-              <StyledDate styledPaid={status === PENDING}>
+            {status !== InvoiceStatusEnum.PAID && status !== InvoiceStatusEnum.UPCOMING && (
+              <StyledDate styledPaid={status === InvoiceStatusEnum.PENDING}>
                 {'Status: '}
                 {status}
               </StyledDate>

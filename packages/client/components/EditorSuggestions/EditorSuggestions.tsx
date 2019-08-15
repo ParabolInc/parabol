@@ -36,7 +36,7 @@ const EditorSuggestions = (props: Props) => {
         return (
           // eslint-disable-next-line
           <div key={idx} onMouseDown={dontTellDraft} onClick={handleSelect(idx)}>
-            <SuggestionItem active={active === idx} {...suggestion} />
+            <SuggestionItem active={active === idx} {...suggestion as any} />
           </div>
         )
       })}

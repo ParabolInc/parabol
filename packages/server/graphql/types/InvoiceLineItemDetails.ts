@@ -15,7 +15,7 @@ const InvoiceLineItemDetails = new GraphQLObjectType({
       description: 'The amount for the line item (in USD)'
     },
     email: {
-      type: GraphQLEmailType,
+      type: new GraphQLNonNull(GraphQLEmailType),
       description: 'The email affected by this line item change'
     },
     endAt: {

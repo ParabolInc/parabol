@@ -24,7 +24,7 @@ const ModalHeaderIcon = styled('div')({
 })
 
 const ModalHeaderTitle = styled('div')({
-  fontSize: appTheme.typography.s5,
+  fontSize: 20,
   marginLeft: '1rem'
 })
 

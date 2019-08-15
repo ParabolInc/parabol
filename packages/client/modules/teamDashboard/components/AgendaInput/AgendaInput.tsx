@@ -27,7 +27,7 @@ const AgendaInputBlock = styled('div')({
 const InputForm = styled('form')<{disabled: boolean}>(({disabled}) => ({
   backgroundColor: 'transparent',
   color: appTheme.palette.cool,
-  fontSize: appTheme.typography.s3,
+  fontSize: 14,
   padding: `0 ${meetingSidebarGutter}`,
   position: 'relative',
   width: '100%',
@@ -47,7 +47,7 @@ const InputField = styled('input')<{disabled: boolean}>(
     color: appTheme.palette.warm,
     cursor: 'not-allowed',
     display: 'block',
-    fontSize: appTheme.typography.s3,
+    fontSize: 14,
     fontWeight: 400,
     lineHeight: '1.5rem',
     margin: 0,

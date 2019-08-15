@@ -23,7 +23,7 @@ const OrgInfoBlock = styled('div')({
   alignItems: 'center',
   display: 'flex',
   fontSize: appTheme.typography.s2,
-  lineHeight: appTheme.typography.s5,
+  lineHeight: '20px',
   marginTop: '.125rem'
 })
 

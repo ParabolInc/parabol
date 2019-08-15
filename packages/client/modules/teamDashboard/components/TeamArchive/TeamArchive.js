@@ -24,12 +24,12 @@ const getColumnCount = () => {
 }
 
 class TeamArchive extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.columnCount = getColumnCount()
   }
 
-  componentWillUpdate (nextProps) {
+  componentWillUpdate(nextProps) {
     const {
       viewer: {
         archivedTasks: {edges: oldEdges}
@@ -43,13 +43,13 @@ class TeamArchive extends Component {
     this.invalidateOnAddRemove(oldEdges, edges)
   }
 
-  getGridIndex (index) {
+  getGridIndex(index) {
     const rowIndex = Math.floor(index / this.columnCount)
     const columnIndex = index % this.columnCount
     return {rowIndex, columnIndex}
   }
 
-  getIndex (columnIndex, rowIndex) {
+  getIndex(columnIndex, rowIndex) {
     return this.columnCount * rowIndex + columnIndex
   }
 
@@ -76,7 +76,7 @@ class TeamArchive extends Component {
     fixedWidth: true
   })
 
-  invalidateOnAddRemove (oldEdges, edges) {
+  invalidateOnAddRemove(oldEdges, edges) {
     if (
       edges !== oldEdges &&
       edges.length !== oldEdges.length &&
@@ -153,7 +153,7 @@ class TeamArchive extends Component {
     })
   }
 
-  render () {
+  render() {
     const {styles, team, teamId, viewer} = this.props
     if (!team) return null
     const {teamName} = team
@@ -284,7 +284,7 @@ const styleThunk = () => ({
     backgroundColor: '#fff',
     border: `.0625rem solid ${appTheme.palette.mid30l}`,
     borderRadius: '.25rem',
-    fontSize: appTheme.typography.s3,
+    fontSize: 14,
     display: 'inline-block',
     margin: ui.dashGutterSmall,
     padding: '1rem',
@@ -334,16 +334,16 @@ export default createPaginationContainer(
   },
   {
     direction: 'forward',
-    getConnectionFromProps (props) {
+    getConnectionFromProps(props) {
       return props.viewer && props.viewer.archivedTasks
     },
-    getFragmentVariables (prevVars, totalCount) {
+    getFragmentVariables(prevVars, totalCount) {
       return {
         ...prevVars,
         first: totalCount
       }
     },
-    getVariables (props, {count, cursor}, fragmentVariables) {
+    getVariables(props, {count, cursor}, fragmentVariables) {
       return {
         ...fragmentVariables,
         first: count,

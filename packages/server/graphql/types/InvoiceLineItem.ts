@@ -27,9 +27,10 @@ const InvoiceLineItem = new GraphQLObjectType({
       description: 'A description of the charge. Only present if we have no idea what the charge is'
     },
     details: {
-      type: new GraphQLList(new GraphQLNonNull(InvoiceLineItemDetails)),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(InvoiceLineItemDetails))),
       description:
-        'Array of user activity line items that roll up to total activity (add/leave/pause/unpause)'
+        'Array of user activity line items that roll up to total activity (add/leave/pause/unpause)',
+      resolve: ({details}) => details || []
     },
     quantity: {
       type: GraphQLInt,
@@ -37,7 +38,7 @@ const InvoiceLineItem = new GraphQLObjectType({
         'The total number of days that all org users have been inactive during the billing cycle'
     },
     type: {
-      type: InvoiceLineItemEnum,
+      type: new GraphQLNonNull(InvoiceLineItemEnum),
       description: 'The line item type for a monthly billing invoice'
     }
   })

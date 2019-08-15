@@ -70,7 +70,7 @@ const ItemOrderLabel = styled('div')({
 
 const ItemLabel = styled('div')<{isComplete: boolean}>(({isComplete}) => ({
   color: 'inherit',
-  fontSize: appTheme.typography.s3,
+  fontSize: 14,
   flex: 1,
   lineHeight,
   textDecoration: isComplete ? 'line-through' : undefined,

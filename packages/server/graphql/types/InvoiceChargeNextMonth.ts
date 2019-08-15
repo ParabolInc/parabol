@@ -10,16 +10,16 @@ const InvoiceChargeNextMonth = new GraphQLObjectType({
       description: 'The amount for the line item (in USD)'
     },
     nextPeriodEnd: {
-      type: GraphQLISO8601Type,
+      type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The datetime the next period will end'
     },
     quantity: {
-      type: GraphQLInt,
+      type: new GraphQLNonNull(GraphQLInt),
       description:
         'The total number of days that all org users have been inactive during the billing cycle'
     },
     unitPrice: {
-      type: GraphQLFloat,
+      type: new GraphQLNonNull(GraphQLFloat),
       description: 'The per-seat monthly price of the subscription (in dollars)'
     }
   })

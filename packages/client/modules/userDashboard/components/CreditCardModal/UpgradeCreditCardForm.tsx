@@ -23,7 +23,7 @@ const borderBottom = '.125rem solid transparent'
 
 const LockIcon = styled(Icon)({
   fontSize: MD_ICONS_SIZE_18,
-  lineHeight: appTheme.typography.s5,
+  lineHeight: '20px',
   marginRight: '.2em'
 })
 
@@ -279,7 +279,7 @@ class UpgradeCreditCardForm extends React.Component<Props, State> {
     }
   }
 
-  render() {
+  render () {
     const {isUpdate, dirty, error, submitting} = this.props
     const {cardTypeIcon, creditCardNumber, expiry, cvc} = this.state
     const actionLabel = isUpdate ? 'Update Credit Card' : 'Upgrade to Pro'

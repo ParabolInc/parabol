@@ -72,7 +72,7 @@ const NavMain = styled('div')({
 const NavLabel = styled('div')({
   color: 'rgba(255, 255, 255, .5)',
   cursor: 'default',
-  fontSize: appTheme.typography.s1,
+  fontSize: 12,
   fontWeight: 600,
   marginLeft: '2.1875rem',
   padding: '1.25rem 0',

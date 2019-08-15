@@ -14,7 +14,7 @@ export default {
       description: 'The id of the invoice'
     }
   },
-  async resolve (source, {invoiceId}, {authToken, dataLoader}) {
+  async resolve (_source, {invoiceId}, {authToken, dataLoader}) {
     const r = getRethink()
     const now = new Date()
 

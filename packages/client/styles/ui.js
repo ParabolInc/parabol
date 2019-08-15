@@ -307,19 +307,6 @@ const ui = {
   iconSize,
   iconExternalLink,
 
-  // Invoice
-  // ---------------------------------------------------------------------------
-  invoiceBorderColor: appTheme.palette.mid40l,
-  invoiceBorderColorLighter: appTheme.palette.mid20l,
-  invoiceBreakpoint: '@media (min-width: 32rem)',
-  invoiceItemBaseStyles: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    width: '100%'
-  },
-  invoicePanelGutterSmall: '.75rem',
-  invoicePanelGutterLarge: '1.25rem',
-
   // Label Headings
   // ---------------------------------------------------------------------------
   labelHeadingColor: midGray,

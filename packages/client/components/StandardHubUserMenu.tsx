@@ -11,7 +11,6 @@ import MenuItemHR from './MenuItemHR'
 import MenuItemIcon from './MenuItemIcon'
 import MenuItemLabel from './MenuItemLabel'
 import {MenuProps} from '../hooks/useMenu'
-import ui from '../styles/ui'
 import {PERSONAL, PRO_LABEL, SIGNOUT_LABEL, SIGNOUT_SLUG} from '../utils/constants'
 import {PALETTE} from '../styles/paletteV2'
 

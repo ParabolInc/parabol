@@ -5,9 +5,9 @@ import makeUpcomingInvoice from './helpers/makeUpcomingInvoice'
 import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import {InvoiceConnection} from '../types/Invoice'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'
-import {UPCOMING} from '../../../client/utils/constants'
 import resolvePromiseObj from '../../../client/utils/resolvePromiseObj'
 import standardError from '../../utils/standardError'
+import {InvoiceStatusEnum} from 'parabol-client/types/graphql'
 
 export default {
   type: InvoiceConnection,
@@ -22,7 +22,7 @@ export default {
       description: 'The id of the organization'
     }
   },
-  async resolve (source, {orgId, first, after}, {authToken, dataLoader}) {
+  async resolve (_source, {orgId, first, after}, {authToken, dataLoader}) {
     const r = getRethink()
 
     // AUTH
@@ -48,7 +48,7 @@ export default {
         })
         .filter((invoice) =>
           invoice('status')
-            .ne(UPCOMING)
+            .ne(InvoiceStatusEnum.UPCOMING)
             .and(invoice('total').ne(0))
         )
         // it's possible that stripe gives the same startAt to 2 invoices (the first $5 charge & the next)

@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 import styled from '@emotion/styled'
 import ui from '../../styles/ui'
@@ -51,7 +50,7 @@ const tagTheme = {
   }
 }
 
-const TagRoot = styled('div')(({colorPalette}) => ({
+const TagRoot = styled('div')<{colorPalette: keyof typeof tagTheme}>(({colorPalette}) => ({
   backgroundColor: tagTheme[colorPalette].backgroundColor,
   borderRadius: '4em',
   color: tagTheme[colorPalette].color,
@@ -67,19 +66,19 @@ const TagRoot = styled('div')(({colorPalette}) => ({
   verticalAlign: 'middle'
 }))
 
-const Tag = (props) => {
+interface Props {
+  className?: string
+  colorPalette?: keyof typeof tagTheme
+  label: string
+}
+
+const Tag = (props: Props) => {
   const {className, colorPalette, label} = props
   return (
     <TagRoot className={className} colorPalette={colorPalette || 'midGray'}>
       {label}
     </TagRoot>
   )
-}
-
-Tag.propTypes = {
-  className: PropTypes.string,
-  colorPalette: PropTypes.oneOf(Object.keys(tagTheme)),
-  label: PropTypes.string
 }
 
 export default Tag

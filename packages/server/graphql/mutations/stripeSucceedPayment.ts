@@ -1,7 +1,7 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import stripe from '../../billing/stripe'
 import getRethink from '../../database/rethinkDriver'
-import {PAID} from '../../../client/utils/constants'
+import {InvoiceStatusEnum} from 'parabol-client/types/graphql'
 
 export default {
   name: 'StripeSucceedPayment',
@@ -13,7 +13,7 @@ export default {
       description: 'The stripe invoice ID'
     }
   },
-  resolve: async (source, {invoiceId}, {serverSecret}) => {
+  resolve: async (_source, {invoiceId}, {serverSecret}) => {
     const r = getRethink()
     const now = new Date()
 
@@ -35,7 +35,7 @@ export default {
           `Payment cannot succeed. Org ${orgId} does not exist for invoice ${invoiceId}`
         )
       }
-      return false
+      return
     }
     const {creditCard} = org
 
@@ -46,7 +46,7 @@ export default {
       .update({
         creditCard,
         paidAt: now,
-        status: PAID
+        status: InvoiceStatusEnum.PAID
       })
   }
 }
