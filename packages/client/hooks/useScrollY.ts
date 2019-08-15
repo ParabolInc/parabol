@@ -1,13 +1,15 @@
 import {useEffect, useState} from 'react'
 
+const root = document.getElementById('root')!
+
 const useScrollY = () => {
-  const [scrollY, setScrollY] = useState(window.scrollY)
+  const [scrollY, setScrollY] = useState(root.scrollTop)
   useEffect(() => {
     const handler = () => {
-      setScrollY(window.scrollY)
+      setScrollY(root.scrollTop)
     }
-    window.addEventListener('scroll', handler, {passive: true})
-    return () => window.removeEventListener('scroll', handler)
+    root.addEventListener('scroll', handler, {passive: true})
+    return () => root.removeEventListener('scroll', handler)
   }, [])
   return scrollY
 }

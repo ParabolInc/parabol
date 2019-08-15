@@ -64,6 +64,7 @@ const DiscussHeader = styled('div')({
 const ColumnsContainer = styled('div')({
   display: 'flex',
   flex: 1,
+  height: '100%',
   margin: '0 auto',
   maxWidth,
   overflowX: 'auto',
@@ -111,6 +112,8 @@ const Column = styled('div')({
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
+  height: '100%',
+  overflow: 'auto',
   width: '100%'
 })
 
@@ -119,12 +122,8 @@ const TaskColumn = styled(Column)({
 })
 
 const ColumnInner = styled('div')({
+  height: '100%',
   padding: '.625rem 1.25rem 1.25rem',
-  width: '100%'
-})
-
-const TaskCardBlock = styled('div')({
-  margin: '0 auto',
   width: '100%'
 })
 
@@ -204,18 +203,14 @@ const RetroDiscussPhase = (props: Props) => {
                 <LabelContainer>
                   <LabelHeading>Takeaway Tasks</LabelHeading>
                 </LabelContainer>
-                <Overflow>
                   <ColumnInner>
-                    <TaskCardBlock>
                       <MeetingAgendaCards
                         meetingId={meetingId}
                         reflectionGroupId={reflectionGroupId}
                         tasks={tasks}
                         teamId={teamId}
                       />
-                    </TaskCardBlock>
                   </ColumnInner>
-                </Overflow>
               </TaskColumn>
             </ColumnsContainer>
           </DiscussPhaseWrapper>
