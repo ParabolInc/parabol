@@ -64,7 +64,8 @@ const RetroMeeting = (props: Props) => {
     handleGotoNext,
     gotoStageId,
     safeRoute,
-    handleMenuClick
+    handleMenuClick,
+    demoPortal
   } = useMeeting(MeetingTypeEnum.retrospective, team)
   const atmosphere = useAtmosphere()
   if (!team || !safeRoute) return null
@@ -80,6 +81,7 @@ const RetroMeeting = (props: Props) => {
   const Phase = phaseLookup[localPhaseType] as PhaseComponent
   return (
     <MeetingStyles>
+      {demoPortal()}
       <ResponsiveDashSidebar isOpen={!isMeetingSidebarCollapsed} onToggle={toggleSidebar}>
         <RetroMeetingSidebar
           gotoStageId={gotoStageId}

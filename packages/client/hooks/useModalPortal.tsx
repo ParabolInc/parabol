@@ -79,7 +79,7 @@ const useModalPortal = (
   portalStatus: PortalStatus,
   setPortalStatus: ReturnType<typeof usePortal>['setPortalStatus'],
   loadingDelayRef: LoadingDelayRef,
-  closePortal: () => void,
+  closePortal: undefined | (() => void),
   background: string | undefined
 ) => {
   useEffect(() => {

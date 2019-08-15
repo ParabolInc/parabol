@@ -7,6 +7,8 @@ import useMenu from '../hooks/useMenu'
 import useTimeout from '../hooks/useTimeout'
 import isDemoRoute from '../utils/isDemoRoute'
 import useFABPad from '../hooks/useFABPad'
+import useAtmosphere from '../hooks/useAtmosphere'
+import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
 
 interface Props {
   menu: ReactNode
@@ -19,10 +21,20 @@ const TallMenu = styled(Menu)({
 const MeetingHelpToggle = (props: Props) => {
   const {menu} = props
   const {menuProps, menuPortal, originRef, togglePortal} = useMenu(MenuPosition.LOWER_RIGHT)
+  const atmosphere = useAtmosphere()
   const demoPauseOpen = useTimeout(1000)
   useEffect(() => {
     if (demoPauseOpen && isDemoRoute()) {
-      togglePortal()
+      const {clientGraphQLServer} = atmosphere as unknown as LocalAtmosphere
+      const {isNew} = clientGraphQLServer
+      if (!isNew) {
+        togglePortal()
+      } else {
+        // wait for the startBot event to occur
+        clientGraphQLServer.once('startDemo', () => {
+          togglePortal()
+        })
+      }
     }
   }, [demoPauseOpen, togglePortal])
   useFABPad(originRef)

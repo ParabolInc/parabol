@@ -47,6 +47,7 @@ interface DemoEvents {
   task: Payload
   team: Payload
   botsFinished: void
+  startDemo: void
 }
 
 interface GQLDemoEmitter {new (): StrictEventEmitter<EventEmitter, DemoEvents>}
@@ -57,7 +58,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   getTempId = (prefix) => `${prefix}${this.db._tempID++}`
   pendingBotTimeout: number | undefined
   pendingBotAction?: (() => any[]) | undefined
-
+  isNew = true
   constructor (atmosphere: LocalAtmosphere) {
     super()
     this.atmosphere = atmosphere
@@ -71,6 +72,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     // const isStale = true
     const isStale = !validDB || new Date(validDB._updatedAt).getTime() < Date.now() - ms('5m')
     this.db = isStale ? initDB(initBotScript()) : validDB
+    if (!isStale) {
+      this.isNew = false
+    }
   }
 
   getUnlockedStages (stageIds: string[]) {
@@ -189,7 +193,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
     },
     RetroRootQuery: () => {
-      this.startBot()
       return {
         viewer: {
           ...this.db.users[0],

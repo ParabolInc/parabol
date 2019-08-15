@@ -6,10 +6,11 @@ import usePortal, {UsePortalOptions} from './usePortal'
 interface Options extends UsePortalOptions {
   background?: string
   loadingWidth?: number
+  noClose?: boolean
 }
 
 const useModal = (options: Options = {}) => {
-  const {background, onOpen, onClose} = options
+  const {background, onOpen, onClose, noClose} = options
   const targetRef = useRef<HTMLDivElement>(null)
   const {portal, closePortal, togglePortal, portalStatus, setPortalStatus} = usePortal({
     onOpen,
@@ -22,7 +23,7 @@ const useModal = (options: Options = {}) => {
     portalStatus,
     setPortalStatus,
     loadingDelayRef,
-    closePortal,
+    noClose ? undefined : closePortal,
     background
   )
   return {togglePortal, modalPortal, closePortal, loadingDelay}

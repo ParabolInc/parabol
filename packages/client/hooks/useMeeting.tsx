@@ -1,5 +1,5 @@
 import {useMeetingTeam} from '../__generated__/useMeetingTeam.graphql'
-import {useCallback, useEffect, useRef} from 'react'
+import React, {useCallback, useEffect, useRef} from 'react'
 import {commitLocalUpdate} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {Omit} from '../types/generics'
@@ -27,12 +27,21 @@ import useRouter from './useRouter'
 import useBreakpoint from './useBreakpoint'
 import useResumeFacilitation from './useResumeFacilitation'
 import {Breakpoint} from '../types/constEnums'
+import useModal from './useModal'
+import lazyPreload from '../utils/lazyPreload'
+import isDemoRoute from 'utils/isDemoRoute';
 
 type Team = Omit<useMeetingTeam, ' $refType'>
+
+
+const BeginDemoModal = lazyPreload(() =>
+  import(/* webpackChunkName: 'BeginDemoModal' */ '../components/BeginDemoModal')
+)
 
 export const useDemoMeeting = () => {
   const atmosphere = useAtmosphere()
   const forceUpdate = useForceUpdate()
+  const {modalPortal, closePortal, togglePortal} = useModal({noClose: true})
   useEffect(() => {
     const {clientGraphQLServer} = (atmosphere as unknown) as LocalAtmosphere
     if (clientGraphQLServer) {
@@ -40,8 +49,12 @@ export const useDemoMeeting = () => {
         // for the demo, we're essentially using the isBotFinished() prop as state
         forceUpdate()
       })
+      if (clientGraphQLServer.isNew) {
+        togglePortal()
+      }
     }
   }, [atmosphere, forceUpdate])
+  return () => modalPortal(<BeginDemoModal closePortal={closePortal} />)
 }
 
 export const useEndMeetingHotkey = (meetingId: string) => {
@@ -255,7 +268,8 @@ const useMeeting = (meetingType: MeetingTypeEnum, team: Team | null) => {
   useEndMeetingHotkey(meetingId)
   useGotoNextHotkey(handleGotoNext.gotoNext)
   useGotoPrevHotkey(team, gotoStageId)
-  useDemoMeeting()
+  // save a few cycles
+  const demoPortal = isDemoRoute() ? useDemoMeeting() : () => null // eslint-disable-line
   useDocumentTitle(`${meetingTypeToLabel[meetingType]} Meeting | ${teamName}`)
   const teamId = team ? team.id : ''
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
@@ -264,6 +278,7 @@ const useMeeting = (meetingType: MeetingTypeEnum, team: Team | null) => {
   useMobileSidebarDefaultClosed(isDesktop, toggleSidebar)
   const {streams, swarm} = useSwarm(teamId)
   return {
+    demoPortal,
     handleGotoNext,
     gotoStageId,
     safeRoute,
