@@ -13,7 +13,6 @@ module.exports = {
       '@mattkrick/sanitize-svg',
       '@mattkrick/trebuchet-client',
       '@sentry/browser',
-      'aphrodite-local-styles',
       'draft-js',
       'email-addresses',
       'eventemitter3',

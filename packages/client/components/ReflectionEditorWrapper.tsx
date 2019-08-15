@@ -48,7 +48,7 @@ const codeBlock = {
   backgroundColor: appTheme.palette.mid10a,
   color: appTheme.palette.warm,
   fontFamily: appTheme.typography.monospace,
-  fontSize: appTheme.typography.s2,
+  fontSize: 13,
   lineHeight: appTheme.typography.s6,
   margin: '0',
   padding: '0 .5rem'
@@ -172,7 +172,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     }
   }
 
-  render() {
+  render () {
     const {
       ariaLabel,
       editorRef,

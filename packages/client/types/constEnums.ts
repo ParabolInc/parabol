@@ -13,6 +13,7 @@ export const enum BezierCurve {
 }
 
 export const enum Breakpoint {
+  DASHBOARD_FULL = 1600,
   INVOICE = 512,
   INVOICE_LABEL = 384,
   SIDEBAR_LEFT = 800,
@@ -76,6 +77,9 @@ export const enum LoaderSize {
   PANEL = 200
 }
 
+export const enum MathEnum {
+  MAX_INT = 2147483647
+}
 // equal to utils/constants
 export const enum MeetingTypes {
   ACTION = 'action',

@@ -6,7 +6,7 @@ import Icon from '../Icon'
 import {MD_ICONS_SIZE_18} from '../../styles/icons'
 
 const Content = styled('div')({
-  fontSize: appTheme.typography.s2,
+  fontSize: 13,
   lineHeight: '1.5',
   position: 'relative',
   padding: '.75rem 1rem',

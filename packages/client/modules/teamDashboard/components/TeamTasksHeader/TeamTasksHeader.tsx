@@ -1,6 +1,6 @@
 import {TeamTasksHeader_team} from '../../../../__generated__/TeamTasksHeader_team.graphql'
 import React from 'react'
-import styled from '@emotion/styled';
+import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import {NavLink, RouteComponentProps, withRouter} from 'react-router-dom'
 import DashHeading from '../../../../components/Dashboard/DashHeading'
@@ -13,7 +13,6 @@ import DashNavControl from '../../../../components/DashNavControl/DashNavControl
 import LabelHeading from '../../../../components/LabelHeading/LabelHeading'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import appTheme from '../../../../styles/theme/appTheme'
 import ui from '../../../../styles/ui'
 import lazyPreload from '../../../../utils/lazyPreload'
 import graphql from 'babel-plugin-relay/macro'
@@ -22,7 +21,7 @@ import {ClassNames} from '@emotion/core'
 const OrgInfoBlock = styled('div')({
   alignItems: 'center',
   display: 'flex',
-  fontSize: appTheme.typography.s2,
+  fontSize: 13,
   lineHeight: '20px',
   marginTop: '.125rem'
 })

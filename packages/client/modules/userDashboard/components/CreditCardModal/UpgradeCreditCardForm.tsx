@@ -3,7 +3,6 @@ import formError from '../../../../styles/helpers/formError'
 import {normalizeExpiry, normalizeNumeric} from './normalizers'
 import styled from '@emotion/styled'
 import ui from '../../../../styles/ui'
-import appTheme from '../../../../styles/theme/appTheme'
 import withAtmosphere, {WithAtmosphereProps} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import withAsync from 'react-async-hoc'
 import * as Sentry from '@sentry/browser'
@@ -79,7 +78,7 @@ const CardCvc = styled('div')({
 const ErrorMsg = styled('div')({
   ...formError,
   marginTop: '1rem',
-  fontSize: appTheme.typography.s2
+  fontSize: 13
 })
 
 const ButtonGroup = styled('div')({

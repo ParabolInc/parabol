@@ -123,7 +123,7 @@ const TaskFooter = (props: Props) => {
           )}
         </ButtonGroup>
       </Footer>
-      {error && <OutcomeCardMessage onClose={() => onError()} message={error} />}
+      {error && <OutcomeCardMessage onClose={() => onError()} message={typeof error === 'string' ? error : error.message as string} />}
     </React.Fragment>
   )
 }

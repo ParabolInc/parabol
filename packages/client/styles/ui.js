@@ -13,7 +13,7 @@ import makeShadowColor from './helpers/makeShadowColor'
 
 // Breakpoints
 // #deprecated use breakpoints.js instead of ui.breakpoint object (TA)
-const BREAKPOINT_WIDER = '@media (min-width: 100rem)'
+const BREAKPOINT_WIDER = '@media (min-width: 100rem)' // Breakpoints.Dashboard
 
 // Control sizes (used by buttons and fields)
 const CONTROL_SIZE_SMALL = 'small'

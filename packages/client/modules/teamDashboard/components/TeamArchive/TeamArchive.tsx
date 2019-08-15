@@ -1,17 +1,18 @@
-import {css} from 'aphrodite-local-styles/no-important'
-import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import {createPaginationContainer} from 'react-relay'
+import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {AutoSizer, CellMeasurer, CellMeasurerCache, Grid, InfiniteLoader} from 'react-virtualized'
 import NullableTask from '../../../../components/NullableTask/NullableTask'
 import Helmet from 'react-helmet'
 import TeamArchiveHeader from '../TeamArchiveHeader/TeamArchiveHeader'
 import getRallyLink from '../../../userDashboard/helpers/getRallyLink'
-import appTheme from '../../../../styles/theme/theme'
 import ui from '../../../../styles/ui'
-import withStyles from '../../../../styles/withStyles'
-import {MAX_INT, TEAM_DASH} from '../../../../utils/constants'
+import {TeamArchive_viewer} from '__generated__/TeamArchive_viewer.graphql'
+import {AreaEnum} from '../../../../types/graphql'
+import {TeamArchive_team} from '__generated__/TeamArchive_team.graphql'
+import styled from '@emotion/styled'
+import {Breakpoint, MathEnum} from '../../../../types/constEnums'
+import {PALETTE} from '../../../../styles/paletteV2'
 
 const CARD_WIDTH = 256 + 32 // account for box model and horizontal padding
 const GRID_PADDING = 16
@@ -23,18 +24,89 @@ const getColumnCount = () => {
   return Math.floor((innerWidth - NAV_WIDTH - GRID_PADDING) / CARD_WIDTH)
 }
 
-class TeamArchive extends Component {
+const Root = styled('div')({
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  // hide the window scrollbar, the cardGrid scrollbar will mimic the window scrollbar
+  overflow: 'hidden',
+  width: '100%'
+})
+
+const Header = styled('div')({
+  padding: `0 0 0 20px`,
+
+  [`@media (min-width: ${Breakpoint.DASHBOARD_FULL})`]: {
+    paddingLeft: 32
+  }
+})
+
+const Border = styled('div')({
+  borderTop: `.0625rem solid ${PALETTE.BORDER_LIGHTER}`,
+  height: 1,
+  width: '100%'
+})
+
+const Body = styled('div')({
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  justifyContent: 'flex-start',
+  paddingLeft: '12',
+  position: 'relative',
+
+  [`@media (min-width: ${Breakpoint.DASHBOARD_FULL})`]: {
+    paddingLeft: 24
+  }
+})
+const CardGrid = styled('div')({
+  border: 0,
+  display: 'flex',
+  // grow to the largest height possible
+  flex: 1,
+  outline: 0,
+  width: '100%'
+})
+
+const EmptyMsg = styled('div')({
+  backgroundColor: '#fff',
+  border: `1px solid ${PALETTE.BORDER_LIGHT}`,
+  borderRadius: 4,
+  fontSize: 14,
+  display: 'inline-block',
+  margin: 20,
+  padding: 16,
+
+  [`@media (min-width: ${Breakpoint.DASHBOARD_FULL})`]: {
+    margin: 32
+  }
+})
+
+const LinkSpan = styled('div')({
+  color: PALETTE.BACKGROUND_TEAL
+})
+
+interface Props {
+  relay: RelayPaginationProp
+  viewer: TeamArchive_viewer
+  teamId: string
+  team: TeamArchive_team
+}
+
+class TeamArchive extends Component<Props> {
+  columnCount: number
+  _onRowsRendered: any
+  gridRef: any
+
   constructor(props) {
     super(props)
     this.columnCount = getColumnCount()
   }
 
   componentWillUpdate(nextProps) {
-    const {
-      viewer: {
-        archivedTasks: {edges: oldEdges}
-      }
-    } = this.props
+    const {viewer} = this.props
+    const {archivedTasks} = viewer
+    const {edges: oldEdges} = archivedTasks!
     const {
       viewer: {
         archivedTasks: {edges}
@@ -54,11 +126,9 @@ class TeamArchive extends Component {
   }
 
   isRowLoaded = ({index}) => {
-    const {
-      viewer: {
-        archivedTasks: {edges}
-      }
-    } = this.props
+    const {viewer} = this.props
+    const {archivedTasks} = viewer
+    const {edges} = archivedTasks!
     return index < edges.length
   }
 
@@ -108,12 +178,9 @@ class TeamArchive extends Component {
 
   rowRenderer = ({columnIndex, parent, rowIndex, key, style}) => {
     // TODO render a very inexpensive lo-fi card while scrolling. We should reuse that cheap card for drags, too
-    const {
-      viewer: {
-        archivedTasks: {edges}
-      },
-      userId
-    } = this.props
+    const {viewer} = this.props
+    const {archivedTasks} = viewer
+    const {edges} = archivedTasks!
     const index = this.getIndex(columnIndex, rowIndex)
     if (!this.isRowLoaded({index})) return undefined
     const task = edges[index].node
@@ -134,9 +201,8 @@ class TeamArchive extends Component {
             >
               <NullableTask
                 key={key}
-                area={TEAM_DASH}
+                area={AreaEnum.teamDash}
                 measure={measure}
-                myUserId={userId}
                 task={task}
               />
             </div>
@@ -154,26 +220,26 @@ class TeamArchive extends Component {
   }
 
   render() {
-    const {styles, team, teamId, viewer} = this.props
+    const {team, teamId, viewer} = this.props
     if (!team) return null
     const {teamName} = team
     const {archivedTasks} = viewer
-    const {edges} = archivedTasks
+    const {edges} = archivedTasks!
     return (
-      <div className={css(styles.root)}>
+      <Root>
         <Helmet title={`Team Archive | ${teamName}`} />
-        <div className={css(styles.header)}>
+        <Header>
           <TeamArchiveHeader teamId={teamId} />
-          <div className={css(styles.border)} />
-        </div>
+          <Border />
+        </Header>
 
-        <div className={css(styles.body)}>
+        <Body>
           {edges.length ? (
-            <div className={css(styles.cardGrid)}>
+            <CardGrid>
               <InfiniteLoader
                 isRowLoaded={this.isRowLoaded}
                 loadMoreRows={this.loadMore}
-                rowCount={MAX_INT}
+                rowCount={MathEnum.MAX_INT}
               >
                 {({onRowsRendered, registerChild}) => {
                   this._onRowsRendered = onRowsRendered
@@ -208,109 +274,31 @@ class TeamArchive extends Component {
                   )
                 }}
               </InfiniteLoader>
-            </div>
+            </CardGrid>
           ) : (
-            <div className={css(styles.emptyMsg)}>
+            <EmptyMsg>
               <span>
                 {'🤓'}
                 {' Hi there! There are zero archived tasks. '}
                 {'Nothing to see here. How about a fun rally video? '}
-                <span className={css(styles.link)}>{getRallyLink()}!</span>
+                <LinkSpan>{getRallyLink()}!</LinkSpan>
               </span>
-            </div>
+            </EmptyMsg>
           )}
-        </div>
-      </div>
+        </Body>
+      </Root>
     )
   }
 }
 
-TeamArchive.propTypes = {
-  relay: PropTypes.object.isRequired,
-  styles: PropTypes.object,
-  team: PropTypes.object,
-  teamId: PropTypes.string,
-  userId: PropTypes.string.isRequired,
-  viewer: PropTypes.object.isRequired
-}
-
-const styleThunk = () => ({
-  root: {
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'column',
-    // hide the window scrollbar, the cardGrid scrollbar will mimic the window scrollbar
-    overflow: 'hidden',
-    width: '100%'
-  },
-
-  header: {
-    padding: `0 0 0 ${ui.dashGutterSmall}`,
-
-    [ui.dashBreakpoint]: {
-      paddingLeft: ui.dashGutterLarge
-    }
-  },
-
-  border: {
-    borderTop: `.0625rem solid ${ui.dashBorderColor}`,
-    height: '.0625rem',
-    width: '100%'
-  },
-
-  body: {
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    paddingLeft: '.75rem',
-    position: 'relative',
-
-    [ui.dashBreakpoint]: {
-      paddingLeft: '1.5rem'
-    }
-  },
-
-  cardGrid: {
-    border: 0,
-    display: 'flex',
-    // grow to the largest height possible
-    flex: 1,
-    outline: 0,
-    width: '100%'
-  },
-
-  emptyMsg: {
-    backgroundColor: '#fff',
-    border: `.0625rem solid ${appTheme.palette.mid30l}`,
-    borderRadius: '.25rem',
-    fontSize: 14,
-    display: 'inline-block',
-    margin: ui.dashGutterSmall,
-    padding: '1rem',
-
-    [ui.dashBreakpoint]: {
-      margin: ui.dashGutterLarge
-    }
-  },
-
-  link: {
-    color: appTheme.palette.cool
-  },
-
-  archiveSqueezeBlock: {
-    padding: '1rem',
-    width: '100%'
-  }
-})
 
 export default createPaginationContainer(
-  withStyles(styleThunk)(TeamArchive),
+  TeamArchive,
   {
     viewer: graphql`
       fragment TeamArchive_viewer on User {
         archivedTasks(first: $first, teamId: $teamId, after: $after)
-          @connection(key: "TeamArchive_archivedTasks") {
+        @connection(key: "TeamArchive_archivedTasks") {
           edges {
             cursor
             node {
@@ -343,7 +331,7 @@ export default createPaginationContainer(
         first: totalCount
       }
     },
-    getVariables(props, {count, cursor}, fragmentVariables) {
+    getVariables(_props, {count, cursor}, fragmentVariables) {
       return {
         ...fragmentVariables,
         first: count,
