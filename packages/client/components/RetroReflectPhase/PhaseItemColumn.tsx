@@ -53,7 +53,8 @@ const ColumnContent = styled('div')({
 })
 
 const HeaderAndEditor = styled('div')({
-  flex: 0.3
+  flex: 0.3,
+  paddingBottom: 16
 })
 
 const Prompt = styled('div')({
