@@ -3,12 +3,12 @@
   "name": "Parabol",
   "icons": [
     {
-      "src": "https://action-files.parabol.co/static/mark-cropped-192-white.png",
+      "src": "https://action-files.parabol.co/static/mark-cropped-192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "https://action-files.parabol.co/static/mark-cropped-512-white.png",
+      "src": "https://action-files.parabol.co/static/mark-cropped-512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
