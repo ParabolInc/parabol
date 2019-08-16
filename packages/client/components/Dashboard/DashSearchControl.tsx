@@ -24,10 +24,11 @@ const DashSearchInput = styled('input')({
   display: 'block',
   border: 0,
   fontSize: '.875rem',
+  lineHeight: '32px',
   maxWidth: '13rem',
   outline: 'none',
   padding: 0,
-  width: '100%',
+  width: 'fit-content',
   '&:focus,:active': {
     ...makePlaceholderStyles(ui.placeholderColorFocusActive)
   }
