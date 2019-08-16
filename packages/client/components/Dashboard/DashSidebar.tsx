@@ -17,7 +17,6 @@ import DashNavItem from './DashNavItem'
 import {ClassNames} from '@emotion/core'
 
 export const enum DASH_SIDEBAR {
-  BREAKPOINT = 800,
   WIDTH = 240
 }
 

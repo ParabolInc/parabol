@@ -67,6 +67,7 @@ const PromoteNewMeetingFacilitatorMutation: StandardMutation<
       const meeting = store.get(meetingId)
       if (!meeting) return
       meeting.setValue(facilitatorUserId, 'facilitatorUserId')
+      meeting.setValue(facilitatorUserId, 'defaultFacilitatorUserId')
     },
     onCompleted: (res) => {
       const payload = res.promoteNewMeetingFacilitator

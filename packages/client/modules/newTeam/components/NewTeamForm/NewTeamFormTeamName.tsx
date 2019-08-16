@@ -4,11 +4,11 @@ import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
 import BasicInput from '../../../../components/InputField/BasicInput'
 import {NewTeamFieldBlock} from './NewTeamForm'
 import NewTeamFormBlock from './NewTeamFormBlock'
-import {DASH_SIDEBAR} from '../../../../components/Dashboard/DashSidebar'
+import {Breakpoint} from '../../../../types/constEnums'
 
 const FormBlockInline = styled(NewTeamFormBlock)({
   marginTop: 16,
-  [`@media screen and (min-width: ${DASH_SIDEBAR.BREAKPOINT}px)`]: {
+  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
     marginTop: 48
   }
 })

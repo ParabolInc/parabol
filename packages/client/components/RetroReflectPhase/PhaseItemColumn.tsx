@@ -1,10 +1,9 @@
 import {PhaseItemColumn_meeting} from '../../__generated__/PhaseItemColumn_meeting.graphql'
-import memoize from 'micro-memoize'
 /**
  * Renders a column for a particular "type" of reflection
  * (e.g. positive or negative) during the Reflect phase of the retro meeting.
  */
-import React, {Component} from 'react'
+import React, {useEffect, useMemo, useRef} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
@@ -13,30 +12,33 @@ import PhaseItemChits from './PhaseItemChits'
 import PhaseItemEditor from './PhaseItemEditor'
 import ReflectionStack from './ReflectionStack'
 import Tooltip from '../Tooltip/Tooltip'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../decorators/withAtmosphere/withAtmosphere'
 import SetPhaseFocusMutation from '../../mutations/SetPhaseFocusMutation'
 import {DECELERATE} from '../../styles/animation'
 import getNextSortOrder from '../../utils/getNextSortOrder'
-import withMutationProps, {WithMutationProps} from '../../utils/relay/withMutationProps'
 import {PALETTE} from '../../styles/paletteV2'
 import {ICON_SIZE} from '../../styles/typographyV2'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import {EditorState} from 'draft-js'
+import {ElementWidth} from '../../types/constEnums'
+import useRefState from '../../hooks/useRefState'
 
-const ColumnWrapper = styled('div')({
+const ColumnWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
   flex: 1,
-  justifyContent: 'flex-start'
-})
-
-const ColumnHighlight = styled('div')<{isFocused: boolean}>(({isFocused}) => ({
-  backgroundColor: isFocused ? PALETTE.BACKGROUND_MAIN_DARKENED : undefined,
+  justifyContent: 'flex-start',
   height: '100%',
-  maxWidth: 416,
+  border: isDesktop ? undefined : `1px solid ${PALETTE.BORDER_LIGHT}`,
+  borderRadius: 8
+}))
+
+const ColumnHighlight = styled('div')<{isFocused: boolean, isDesktop: boolean}>(({isDesktop, isFocused}) => ({
+  backgroundColor: isDesktop ? isFocused ? PALETTE.BACKGROUND_MAIN_DARKENED : undefined : isFocused ? PALETTE.BACKGROUND_REFLECTION_FOCUSED : PALETTE.BACKGROUND_REFLECTION,
+  borderRadius: isDesktop ? 2 : 8,
+  height: '100%',
   maxHeight: 608,
-  padding: 16,
+  padding: isDesktop ? '16px 24px' : '16px 8px',
   transition: `background 150ms ${DECELERATE}`,
   width: '100%'
 }))
@@ -47,12 +49,12 @@ const ColumnContent = styled('div')({
   height: '100%',
   justifyContent: 'space-between',
   margin: '0 auto',
-  maxWidth: 320,
-  width: '100%'
+  width: ElementWidth.REFLECTION_CARD
 })
 
 const HeaderAndEditor = styled('div')({
-  flex: 0.3
+  flex: 0.3,
+  paddingBottom: 16
 })
 
 const Prompt = styled('div')({
@@ -68,6 +70,8 @@ const Description = styled('div')({
   fontStyle: 'italic',
   fontWeight: 400,
   lineHeight: '20px',
+  // tall enough for 3 lines so columns looks the same
+  minHeight: 60,
   marginTop: 8
 })
 
@@ -101,7 +105,8 @@ const EditorAndStatus = styled('div')<EditorAndStatusProps>(({isPhaseComplete}) 
 }))
 
 const ChitSection = styled('div')({
-  flex: 0.3
+  flex: 0.3,
+  minHeight: 96
 })
 
 const originAnchor = {
@@ -114,8 +119,16 @@ const targetAnchor = {
   horizontal: 'center'
 }
 
-interface Props extends WithAtmosphereProps, WithMutationProps {
+export interface ReflectColumnCardInFlight {
+  key: string
+  editorState: EditorState
+  transform: string
+  isStart: boolean
+}
+
+interface Props {
   idx: number
+  isDesktop: boolean
   description: string | null
   editorIds: readonly string[] | null
   meeting: PhaseItemColumn_meeting
@@ -124,32 +137,25 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
   question: string
 }
 
-class PhaseItemColumn extends Component<Props> {
-  hasFocused: boolean = false
-  phaseEditorRef = React.createRef<HTMLDivElement>()
-  makeColumnStack = memoize(
-    (reflectionGroups: PhaseItemColumn_meeting['reflectionGroups'], retroPhaseItemId: string) =>
-      reflectionGroups.filter(
-        (group) => group.retroPhaseItemId === retroPhaseItemId && group.reflections.length > 0
-      )
-  )
-  makeViewerStack = memoize((columnStack) =>
-    columnStack
-      .filter((group) => group.reflections[0].isViewerCreator)
-      .sort((a, b) => (a.sortOrder > b.sortOrder ? 1 : -1))
-      .map((group) => group.reflections[0])
-  )
+const PhaseItemColumn = (props: Props) => {
+  const {retroPhaseItemId, description, editorIds, idx, meeting, phaseRef, question, isDesktop} = props
+  const {meetingId, facilitatorUserId, localPhase, localStage, reflectionGroups} = meeting
+  const {phaseId, focusedPhaseItemId} = localPhase
+  const {isComplete} = localStage
 
-  setColumnFocus = () => {
-    const {atmosphere, meeting, retroPhaseItemId} = this.props
-    const {
-      meetingId,
-      facilitatorUserId,
-      localPhase: {phaseId, focusedPhaseItemId},
-      localStage: {isComplete}
-    } = meeting
-    const {viewerId} = atmosphere
-    const isFacilitator = viewerId === facilitatorUserId
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
+
+  const hasFocusedRef = useRef(false)
+  const phaseEditorRef = useRef<HTMLDivElement>(null)
+  const stackTopRef = useRef<HTMLDivElement>(null)
+  const [cardsInFlightRef, setCardsInFlight] = useRefState<ReflectColumnCardInFlight[]>([])
+  const isFacilitator = viewerId === facilitatorUserId
+  useEffect(() => {
+    hasFocusedRef.current = true
+  }, [focusedPhaseItemId])
+
+  const setColumnFocus = () => {
     if (!isFacilitator || isComplete) return
     const variables = {
       meetingId,
@@ -158,88 +164,84 @@ class PhaseItemColumn extends Component<Props> {
     SetPhaseFocusMutation(atmosphere, variables, {phaseId})
   }
 
-  nextSortOrder = () => getNextSortOrder(this.props.meeting.reflectionGroups)
+  const nextSortOrder = () => getNextSortOrder(reflectionGroups)
 
-  render () {
-    const {
-      atmosphere: {viewerId},
-      description,
-      editorIds,
-      idx,
-      meeting,
-      phaseRef,
-      question,
-      retroPhaseItemId
-    } = this.props
-    const {
-      facilitatorUserId,
-      meetingId,
-      localPhase: {focusedPhaseItemId},
-      localStage: {isComplete},
-      reflectionGroups
-    } = meeting
-    this.hasFocused = this.hasFocused || !!focusedPhaseItemId
-    const isFocused = focusedPhaseItemId === retroPhaseItemId
-    const columnStack = this.makeColumnStack(reflectionGroups, retroPhaseItemId)
-    const reflectionStack = this.makeViewerStack(columnStack)
-    const isViewerFacilitator = viewerId === facilitatorUserId
-    return (
-      <ColumnWrapper>
-        <ColumnHighlight isFocused={isFocused}>
-          <ColumnContent>
-            <HeaderAndEditor>
-              <PromptHeader
-                isClickable={isViewerFacilitator && !isComplete}
-                onClick={this.setColumnFocus}
-              >
-                <FocusArrow isFocused={isFocused}>forward</FocusArrow>
-                <Tooltip
-                  delay={200}
-                  maxHeight={40}
-                  maxWidth={500}
-                  originAnchor={originAnchor}
-                  targetAnchor={targetAnchor}
-                  tip={<div>Tap to highlight prompt for everybody</div>}
-                  isDisabled={this.hasFocused || isFocused || !isViewerFacilitator || !!isComplete}
-                >
-                  <Prompt>{question}</Prompt>
-                </Tooltip>
-                <Description>{description}</Description>
-              </PromptHeader>
-              <EditorAndStatus isPhaseComplete={!!isComplete}>
-                <PhaseItemEditor
-                  phaseEditorRef={this.phaseEditorRef}
-                  meetingId={meetingId}
-                  nextSortOrder={this.nextSortOrder}
-                  retroPhaseItemId={retroPhaseItemId}
-                />
-              </EditorAndStatus>
-            </HeaderAndEditor>
-            <ReflectionStack
-              reflectionStack={reflectionStack}
-              readOnly={!!isComplete}
-              idx={idx}
-              phaseEditorRef={this.phaseEditorRef}
-              phaseItemId={retroPhaseItemId}
-              phaseRef={phaseRef}
-              meetingId={meetingId}
-            />
-            <ChitSection>
-              <PhaseItemChits
-                count={columnStack.length - reflectionStack.length}
-                editorCount={editorIds ? editorIds.length : 0}
-              />
-            </ChitSection>
-          </ColumnContent>
-        </ColumnHighlight>
-      </ColumnWrapper>
+  const isFocused = focusedPhaseItemId === retroPhaseItemId
+
+  const columnStack = useMemo(() => {
+    const groups = reflectionGroups.filter(
+      (group) => group.retroPhaseItemId === retroPhaseItemId && group.reflections.length > 0 &&
+        !cardsInFlightRef.current.find((card) => card.key === group.reflections[0].content)
     )
-  }
+    return groups
+  }, [reflectionGroups, retroPhaseItemId, cardsInFlightRef.current])
+
+
+  const reflectionStack = useMemo(() => {
+    return columnStack
+      .filter((group) => group.reflections[0].isViewerCreator)
+      .sort((a, b) => (a.sortOrder > b.sortOrder ? -1 : 1))
+      .map((group) => group.reflections[0])
+  }, [columnStack])
+
+  return (
+    <ColumnWrapper isDesktop={isDesktop}>
+      <ColumnHighlight isDesktop={isDesktop} isFocused={isFocused}>
+        <ColumnContent>
+          <HeaderAndEditor>
+            <PromptHeader
+              isClickable={isFacilitator && !isComplete}
+              onClick={setColumnFocus}
+            >
+              <FocusArrow isFocused={isFocused}>forward</FocusArrow>
+              <Tooltip
+                delay={200}
+                maxHeight={40}
+                maxWidth={500}
+                originAnchor={originAnchor}
+                targetAnchor={targetAnchor}
+                tip={<div>Tap to highlight prompt for everybody</div>}
+                isDisabled={hasFocusedRef.current || isFocused || !isFacilitator || isComplete}
+              >
+                <Prompt>{question}</Prompt>
+              </Tooltip>
+              <Description>{description}</Description>
+            </PromptHeader>
+            <EditorAndStatus isPhaseComplete={isComplete}>
+              <PhaseItemEditor
+                cardsInFlightRef={cardsInFlightRef}
+                setCardsInFlight={setCardsInFlight}
+                phaseEditorRef={phaseEditorRef}
+                meetingId={meetingId}
+                nextSortOrder={nextSortOrder}
+                retroPhaseItemId={retroPhaseItemId}
+                stackTopRef={stackTopRef}
+              />
+            </EditorAndStatus>
+          </HeaderAndEditor>
+          <ReflectionStack
+            reflectionStack={reflectionStack}
+            readOnly={isComplete}
+            idx={idx}
+            phaseEditorRef={phaseEditorRef}
+            phaseItemId={retroPhaseItemId}
+            phaseRef={phaseRef}
+            meetingId={meetingId}
+            stackTopRef={stackTopRef}
+          />
+          <ChitSection>
+            <PhaseItemChits
+              count={columnStack.length - reflectionStack.length}
+              editorCount={editorIds ? editorIds.length : 0}
+            />
+          </ChitSection>
+        </ColumnContent>
+      </ColumnHighlight>
+    </ColumnWrapper>
+  )
 }
 
-// <PhaseItemHealthBar editorCount={editorIds ? editorIds.length : 0} />
-
-export default createFragmentContainer(withAtmosphere(withMutationProps(PhaseItemColumn)), {
+export default createFragmentContainer(PhaseItemColumn, {
   meeting: graphql`
     fragment PhaseItemColumn_meeting on RetrospectiveMeeting {
       facilitatorUserId

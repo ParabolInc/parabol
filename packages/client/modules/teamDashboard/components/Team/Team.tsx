@@ -6,7 +6,6 @@ import graphql from 'babel-plugin-relay/macro'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import DashContent from '../../../../components/Dashboard/DashContent'
 import DashHeader from '../../../../components/Dashboard/DashHeader'
-import DashMain from '../../../../components/Dashboard/DashMain'
 import DashSearchControl from '../../../../components/Dashboard/DashSearchControl'
 import DashboardAvatars from '../../../../components/DashboardAvatars/DashboardAvatars'
 import FlatButton from '../../../../components/FlatButton'
@@ -38,10 +37,6 @@ const IconButton = styled(StyledButton)({
   ':hover,:focus,:active': {
     color: PALETTE.TEXT_MAIN
   }
-})
-
-const RelativeDashMain = styled(DashMain)({
-  position: 'relative'
 })
 
 const TeamDashHeaderInner = styled('div')({
@@ -116,7 +111,7 @@ class Team extends Component<Props> {
     const hasOverlay = hasActiveMeeting || !isPaid
 
     return (
-      <RelativeDashMain>
+      <>
         <Suspense fallback={''}>
           <MeetingInProgressModal team={team} />
           {!isPaid && <UnpaidTeamModalRoot teamId={teamId} />}
@@ -156,10 +151,10 @@ class Team extends Component<Props> {
             {!isSettings && <TeamCallsToAction teamId={teamId} />}
           </TeamViewNavBlock>
         </DashHeader>
-        <DashContent hasOverlay={hasOverlay} padding='0'>
+        <DashContent hasOverlay={hasOverlay}>
           {children}
         </DashContent>
-      </RelativeDashMain>
+      </>
     )
   }
 }

@@ -10,7 +10,6 @@ import useFABPad from '../hooks/useFABPad'
 
 interface Props {
   menu: ReactNode
-  floatAboveBottomBar?: boolean
 }
 
 const TallMenu = styled(Menu)({
@@ -18,7 +17,7 @@ const TallMenu = styled(Menu)({
 })
 
 const MeetingHelpToggle = (props: Props) => {
-  const {floatAboveBottomBar, menu} = props
+  const {menu} = props
   const {menuProps, menuPortal, originRef, togglePortal} = useMenu(MenuPosition.LOWER_RIGHT)
   const demoPauseOpen = useTimeout(1000)
   useEffect(() => {
@@ -30,7 +29,6 @@ const MeetingHelpToggle = (props: Props) => {
   return (
     <>
       <HelpMenuToggle
-        floatAboveBottomBar={!!floatAboveBottomBar}
         ref={originRef}
         onClick={togglePortal}
         onMouseEnter={(menu as any).type ? (menu as any).type.preload : undefined}

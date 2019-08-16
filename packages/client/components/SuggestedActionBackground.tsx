@@ -1,11 +1,11 @@
 import React from 'react'
 import styled from '@emotion/styled'
 import patternTile from '../styles/theme/images/icon-pattern-tile.svg'
-import {DASH_TIMELINE} from '../types/constEnums'
+import {DashTimeline} from '../types/constEnums'
 
 const ROTATION = 15
 const BACKGROUND_HEIGHT = 142
-const BACKGROUND_WIDTH = DASH_TIMELINE.FEED_MAX_WIDTH
+const BACKGROUND_WIDTH = DashTimeline.FEED_MAX_WIDTH
 
 // make the pattern large enough to fill the background
 // imagine fitting a rectangle into a larger rect that is rotated 15 degrees, how big is that bigger one?

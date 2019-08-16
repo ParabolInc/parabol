@@ -6,12 +6,11 @@ import graphql from 'babel-plugin-relay/macro'
 import {ActionMeetingPhaseProps} from './ActionMeeting'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
-import ErrorBoundary from './ErrorBoundary'
 import MeetingContent from './MeetingContent'
 import MeetingContentHeader from './MeetingContentHeader'
 import MeetingHelpToggle from './MenuHelpToggle'
 import useAtmosphere from '../hooks/useAtmosphere'
-import MeetingControlBar from '../modules/meeting/components/MeetingControlBar/MeetingControlBar'
+import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
 import MeetingCopy from '../modules/meeting/components/MeetingCopy/MeetingCopy'
 import MeetingPhaseHeading from '../modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
 import handleRightArrow from '../utils/handleRightArrow'
@@ -24,13 +23,11 @@ import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/Edi
 import findStageAfterId from '../utils/meetings/findStageAfterId'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import useTimeoutWithReset from '../hooks/useTimeoutWithReset'
+import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
+import PhaseWrapper from './PhaseWrapper'
 
 const BottomControlSpacer = styled('div')({
-  minWidth: '6rem'
-})
-
-const StyledBottomBar = styled(MeetingControlBar)({
-  justifyContent: 'space-between'
+  minWidth: 90
 })
 
 interface Props extends ActionMeetingPhaseProps {
@@ -40,16 +37,8 @@ interface Props extends ActionMeetingPhaseProps {
 const ActionMeetingAgendaItemsHelpMenu = lazyPreload(async () =>
   import(
     /* webpackChunkName: 'ActionMeetingAgendaItemsHelpMenu' */ './MeetingHelp/ActionMeetingAgendaItemsHelpMenu'
-  )
+    )
 )
-
-const AgendaItemsWrapper = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  height: '100%'
-})
 
 const AgendaVerbatim = styled('div')({
   alignItems: 'center',
@@ -123,13 +112,13 @@ const ActionMeetingAgendaItems = (props: Props) => {
     nextPhase.phaseType === NewMeetingPhaseTypeEnum.lastcall ? 'Last Call' : 'Next Topic'
   return (
     <MeetingContent>
-      <MeetingContentHeader
-        avatarGroup={avatarGroup}
-        isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
-        toggleSidebar={toggleSidebar}
-      />
-      <ErrorBoundary>
-        <AgendaItemsWrapper>
+      <MeetingHeaderAndPhase>
+        <MeetingContentHeader
+          avatarGroup={avatarGroup}
+          isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
+          toggleSidebar={toggleSidebar}
+        />
+        <PhaseWrapper>
           <AgendaVerbatim>
             <Avatar picture={picture} size={64} />
             <StyledHeading>{content}</StyledHeading>
@@ -150,26 +139,23 @@ const ActionMeetingAgendaItems = (props: Props) => {
             </Inner>
           </TaskCardBlock>
           <EditorHelpModalContainer />
-        </AgendaItemsWrapper>
-        {isFacilitating && (
-          <StyledBottomBar>
-            <BottomControlSpacer />
-            <BottomNavControl
-              isBouncing={minTimeComplete}
-              onClick={() => gotoNext()}
-              ref={gotoNextRef}
-              onKeyDown={handleRightArrow(() => gotoNext())}
-            >
-              <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={label} />
-            </BottomNavControl>
-            <EndMeetingButton meetingId={meetingId} />
-          </StyledBottomBar>
-        )}
-      </ErrorBoundary>
-      <MeetingHelpToggle
-        floatAboveBottomBar={isFacilitating}
-        menu={<ActionMeetingAgendaItemsHelpMenu />}
-      />
+        </PhaseWrapper>
+        <MeetingHelpToggle
+          menu={<ActionMeetingAgendaItemsHelpMenu />}
+        />
+      </MeetingHeaderAndPhase>
+      <MeetingFacilitatorBar isFacilitating={isFacilitating}>
+        <BottomControlSpacer />
+        <BottomNavControl
+          isBouncing={minTimeComplete}
+          onClick={() => gotoNext()}
+          ref={gotoNextRef}
+          onKeyDown={handleRightArrow(() => gotoNext())}
+        >
+          <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={label} />
+        </BottomNavControl>
+        <EndMeetingButton meetingId={meetingId} />
+      </MeetingFacilitatorBar>
     </MeetingContent>
   )
 }

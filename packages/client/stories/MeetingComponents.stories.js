@@ -3,7 +3,7 @@ import React from 'react'
 // import {action} from '@storybook/addon-actions';
 import {storiesOf} from '@storybook/react'
 
-import MeetingControlBar from '../modules/meeting/components/MeetingControlBar/MeetingControlBar'
+import MeetingFacilitatorBar from 'modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
 import MeetingPhaseHeading from '../modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
 import MeetingCopy from '../modules/meeting/components/MeetingCopy/MeetingCopy'
 
@@ -98,9 +98,9 @@ storiesOf('Meeting Components', module)
         render={() => (
           <div style={{display: 'flex', flex: 1, flexDirection: 'column', flexShrink: 0}}>
             <div style={{display: 'flex', flex: 1, flexShrink: 0}}>{'Meeting Content'}</div>
-            <MeetingControlBar>
+            <MeetingFacilitatorBar>
               {'Psst. Facilitator, you can control the meeting here!'}
-            </MeetingControlBar>
+            </MeetingFacilitatorBar>
           </div>
         )}
       />

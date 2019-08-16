@@ -2,6 +2,7 @@ import React, {forwardRef} from 'react'
 import styled from '@emotion/styled'
 import BaseButton, {BaseButtonProps} from './BaseButton'
 import ui from '../styles/ui'
+import {Elevation} from 'styles/elevation'
 
 const StyledBaseButton = styled(BaseButton)((props: BaseButtonProps) => {
   const {disabled, waiting} = props
@@ -29,8 +30,9 @@ const PrimaryButton = forwardRef((props: Props, ref: any) => {
       {...props}
       ref={ref}
       className={className}
-      elevationHovered={elevationHovered || 8}
-      elevationResting={elevationResting || 2}
+      elevationHovered={elevationHovered || Elevation.Z8}
+      elevationResting={elevationResting || Elevation.Z2}
+      elevationPressed={elevationResting || Elevation.Z5}
     >
       {children}
     </StyledBaseButton>

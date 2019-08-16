@@ -3,7 +3,6 @@ import {connect} from 'react-redux'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import TaskColumns from '../../../../components/TaskColumns/TaskColumns'
-import getTaskById from '../../../../utils/getTaskById'
 import {UserColumnsContainer_viewer} from '../../../../__generated__/UserColumnsContainer_viewer.graphql'
 import {AreaEnum} from '../../../../types/graphql'
 
@@ -48,7 +47,6 @@ const UserColumnsContainer = (props: Props) => {
     return (
       <TaskColumns
         area={AreaEnum.userDash}
-        getTaskById={getTaskById(filteredTasks)}
         tasks={filteredTasks}
         teams={teams}
       />

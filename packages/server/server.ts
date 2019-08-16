@@ -1,3 +1,4 @@
+import path from 'path'
 import express from 'express'
 import compression from 'compression'
 import cors from 'cors'
@@ -27,7 +28,7 @@ import ms from 'ms'
 import rateLimit from 'express-rate-limit'
 import demoEntityHandler from './demoEntityHandler'
 import * as Integrations from '@sentry/integrations'
-import path from 'path'
+
 
 declare global {
   namespace NodeJS {

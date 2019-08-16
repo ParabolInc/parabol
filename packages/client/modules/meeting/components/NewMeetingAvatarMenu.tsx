@@ -35,7 +35,6 @@ const NewMeetingAvatarMenu = (props: Props) => {
     PromoteNewMeetingFacilitatorMutation(atmosphere, {facilitatorUserId: userId, meetingId})
   }
   const avatarIsFacilitating = teamMember.userId === facilitatorUserId
-  const handlePromote = isConnected ? promoteToFacilitator : undefined
   const phaseLabel = localPhase ? phaseLabelLookup[localPhase.phaseType] : LOBBY
   const owner = isSelf ? 'your' : `${preferredName}’s`
   return (
@@ -50,11 +49,12 @@ const NewMeetingAvatarMenu = (props: Props) => {
       )}
       {localPhase &&
         !avatarIsFacilitating &&
+        isConnected &&
         !window.location.pathname.startsWith('/retrospective-demo') && (
           <MenuItem
             key='promoteToFacilitator'
             label={`Promote ${isSelf ? 'yourself' : preferredName} to Facilitator`}
-            onClick={handlePromote}
+            onClick={promoteToFacilitator}
           />
         )}
     </Menu>

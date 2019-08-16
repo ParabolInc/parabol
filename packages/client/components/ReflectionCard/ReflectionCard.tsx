@@ -1,5 +1,5 @@
 import {ReflectionCard_reflection} from '../../__generated__/ReflectionCard_reflection.graphql'
-import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
+import {convertFromRaw, convertToRaw, Editor, EditorState} from 'draft-js'
 import React, {Component} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
@@ -19,7 +19,8 @@ import {cardShadow} from '../../styles/elevation'
 import isTempId from '../../utils/relay/isTempId'
 import withMutationProps, {WithMutationProps} from '../../utils/relay/withMutationProps'
 import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
-import {cardBackgroundColor, cardBorderRadius, reflectionCardWidth} from '../../styles/cards'
+import {cardBackgroundColor, cardBorderRadius} from '../../styles/cards'
+import {ElementWidth} from '../../types/constEnums'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   handleChange?: () => void
@@ -52,7 +53,7 @@ export const ReflectionCardRoot = styled('div')<ReflectionCardRootProps>(
     maxWidth: '100%',
     position: 'relative',
     transition: `box-shadow 2000ms ${DECELERATE}`,
-    width: reflectionCardWidth
+    width: ElementWidth.REFLECTION_CARD
   },
   ({isClosing, shadow}) =>
     shadow !== null && {
@@ -64,6 +65,10 @@ class ReflectionCard extends Component<Props, State> {
   static getDerivedStateFromProps (nextProps: Props, prevState: State): Partial<State> | null {
     const {reflection} = nextProps
     const {content} = reflection
+    if (!content) {
+      // https://sentry.io/organizations/parabol/issues/1143712241/events/a9a26413a96e478180e699294e230f79/?project=107196
+      console.error('No content', content, JSON.stringify(reflection))
+    }
     if (content === prevState.content) return null
     const contentState = convertFromRaw(JSON.parse(content))
     // const DEBUG_TEXT = `id: ${reflectionId} | GroupId: ${reflectionGroupId}`
@@ -78,7 +83,7 @@ class ReflectionCard extends Component<Props, State> {
     }
   }
 
-  editorRef!: HTMLElement
+  editorRef = React.createRef<HTMLTextAreaElement | Editor>()
 
   state = {
     content: '',
@@ -87,10 +92,6 @@ class ReflectionCard extends Component<Props, State> {
 
   setEditorState = (editorState: EditorState) => {
     this.setState({editorState})
-  }
-
-  setEditorRef = (c) => {
-    this.editorRef = c
   }
 
   handleEditorFocus = () => {
@@ -148,7 +149,7 @@ class ReflectionCard extends Component<Props, State> {
 
   handleReturn = (e) => {
     if (e.shiftKey) return 'not-handled'
-    this.editorRef.blur()
+    this.editorRef.current && this.editorRef.current.blur()
     return 'handled'
   }
 
@@ -175,7 +176,6 @@ class ReflectionCard extends Component<Props, State> {
           ariaLabel='Edit this reflection'
           editorRef={this.editorRef}
           editorState={editorState}
-          innerRef={this.setEditorRef}
           onBlur={this.handleEditorBlur}
           onFocus={this.handleEditorFocus}
           handleChange={handleChange}

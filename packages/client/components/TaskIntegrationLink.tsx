@@ -19,7 +19,7 @@ const StyledLink = styled('a')({
 })
 
 interface Props {
-  integration: TaskIntegrationLink_integration
+  integration: TaskIntegrationLink_integration | null
 }
 
 const TaskIntegrationLink = (props: Props) => {

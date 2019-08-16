@@ -14,8 +14,6 @@ import StartDraggingReflectionMutation from '../../mutations/StartDraggingReflec
 import {
   cardBackgroundColor,
   cardBorderRadius,
-  cardStackPerspectiveX,
-  cardStackPerspectiveY
 } from '../../styles/cards'
 import {cardShadow} from '../../styles/elevation'
 import {REFLECTION_CARD} from '../../utils/constants'
@@ -25,6 +23,7 @@ import {MasonryAtmosphere, MasonryDragEndPayload, SetItemRef} from '../PhaseItem
 import {MasonryDropResult} from '../ReflectionGroup/ReflectionGroup'
 import ReflectionCard from './ReflectionCard'
 import {ClassNames} from '@emotion/core'
+import {ReflectionStackPerspective} from '../../types/constEnums'
 
 interface Props extends WithAtmosphereProps {
   closeGroupModal?(): void
@@ -126,10 +125,10 @@ const topCardStyle = {
 
 const secondCardStyle = {
   ...CARD_IN_STACK,
-  bottom: -cardStackPerspectiveY,
-  left: cardStackPerspectiveX,
-  right: cardStackPerspectiveX,
-  top: cardStackPerspectiveY,
+  bottom: -ReflectionStackPerspective.Y,
+  left: ReflectionStackPerspective.X,
+  right: ReflectionStackPerspective.X,
+  top: ReflectionStackPerspective.Y,
   '& > div > div': {
     transform: 'scale(.95)',
     transformOrigin: 'left',
@@ -139,10 +138,10 @@ const secondCardStyle = {
 
 const thirdCardStyle = {
   ...CARD_IN_STACK,
-  bottom: -(cardStackPerspectiveY * 2),
-  left: cardStackPerspectiveX * 2,
-  right: cardStackPerspectiveX * 2,
-  top: cardStackPerspectiveY * 2
+  bottom: -(ReflectionStackPerspective.Y * 2),
+  left: ReflectionStackPerspective.X * 2,
+  right: ReflectionStackPerspective.X * 2,
+  top: ReflectionStackPerspective.Y * 2
 } as any
 
 const getStyleObj = (idx: number, dragContext: any, isModal: boolean) => {

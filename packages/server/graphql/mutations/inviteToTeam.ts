@@ -9,12 +9,14 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import makeAppLink from '../../utils/makeAppLink'
 import publish from '../../utils/publish'
 import shortid from 'shortid'
-import {NOTIFICATION, TEAM_INVITATION} from '../../../client/utils/constants'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import standardError from '../../utils/standardError'
 import InviteToTeamPayload from '../types/InviteToTeamPayload'
 import {TEAM_INVITATION_LIFESPAN} from '../../utils/serverConstants'
 import TeamInvitation from '../../database/types/TeamInvitation'
+import {NotificationEnum, SuggestedActionTypeEnum} from 'parabol-client/types/graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import sendSegmentEvent from '../../utils/sendSegmentEvent'
 
 const randomBytes = promisify(crypto.randomBytes, crypto)
 
@@ -82,8 +84,7 @@ export default {
       // remove suggested action, if any
       let removedSuggestedActionId
       if (isOnboardTeam) {
-        // TODO we'll need to use ts on the server instead of babel since babel doesn't support const enum
-        removedSuggestedActionId = await removeSuggestedAction(viewerId, 'inviteYourTeam' as any)
+        removedSuggestedActionId = await removeSuggestedAction(viewerId, SuggestedActionTypeEnum.inviteYourTeam)
       }
       // insert notification records
       const notificationsToInsert = [] as NotificationToInsert[]
@@ -92,7 +93,7 @@ export default {
         if (user) {
           notificationsToInsert.push({
             id: shortid.generate(),
-            type: TEAM_INVITATION,
+            type: NotificationEnum.TEAM_INVITATION,
             startAt: now,
             userIds: [user.id],
             invitationId: invitation.id,
@@ -141,9 +142,12 @@ export default {
           ...data,
           teamInvitationNotificationId
         }
-        publish(NOTIFICATION, userId, InviteToTeamPayload, subscriberData, subOptions)
+        publish(SubscriptionChannel.NOTIFICATION, userId, InviteToTeamPayload, subscriberData, subOptions)
       })
-
+      sendSegmentEvent('Invite Email Sent', viewerId, {
+        teamId,
+        invitees: successfulInvitees
+      }).catch()
       return data
     }
   )

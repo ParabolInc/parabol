@@ -11,18 +11,20 @@ interface Props {
 }
 
 const Gauge = styled('div')<{isTimeUp: boolean}>(({isTimeUp}) => ({
+  alignItems: 'flex-end',
   animation: `${fadeIn.toString()} 300ms ${DECELERATE}`,
   color: isTimeUp ? PALETTE.TEXT_MAIN : '#fff',
   background: isTimeUp ? PALETTE.BACKGROUND_YELLOW : PALETTE.BACKGROUND_GREEN,
   boxShadow: buttonRaisedShadow,
   borderRadius: 2,
+  display: 'flex',
   fontWeight: 600,
+  justifyContent: 'center',
   minWidth: 112,
   padding: 8,
-  textAlign: 'center',
   transition: `background 1s ${DECELERATE}`,
   userSelect: 'none',
-  zIndex: 600 // MD snackbar elevation * 100 to leave room for conflicts
+  zIndex: 8 // same as boxShadown elevation (required to show timbebox in reflect phase)
 }))
 
 const StageTimerDisplayGauge = (props: Props) => {

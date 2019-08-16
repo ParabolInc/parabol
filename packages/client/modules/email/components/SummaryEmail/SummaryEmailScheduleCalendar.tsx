@@ -30,7 +30,7 @@ const meetingLink = {
   textAlign: 'center'
 } as React.CSSProperties
 
-const iconSize = 28
+const iconSize = 24
 const iconLinkBlock = {
   display: 'inline-block',
   margin: '14px',
@@ -75,11 +75,8 @@ const SummaryEmailScheduleCalendar = (props: Props) => {
       <tr>
         <td align='center' style={sectionStart}>
           <div style={message}>
-            {`Way to go on your meeting!
-                        Create a 30-minute meeting at the start of each week.`}
-            <br />
             <div>
-              <span>{'Tap here to schedule:'}</span>
+              <span>{'Tap here to schedule your next meeting:'}</span>
               <br />
               <div style={iconLinkBlock}>
                 <a
@@ -91,7 +88,7 @@ const SummaryEmailScheduleCalendar = (props: Props) => {
                   <img
                     crossOrigin=''
                     style={iconLinkIcon}
-                    src={`${emailDir}google@5x.png`}
+                    src={`${emailDir}google@3x.png`}
                     height={iconSize}
                     width={iconSize}
                   />
@@ -108,7 +105,7 @@ const SummaryEmailScheduleCalendar = (props: Props) => {
                   <img
                     crossOrigin=''
                     style={iconLinkIcon}
-                    src={`${emailDir}calendar-plus-o@5x.png`}
+                    src={`${emailDir}event_available@3x.png`}
                     height={iconSize}
                     width={iconSize}
                   />

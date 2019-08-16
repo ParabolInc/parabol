@@ -27,13 +27,7 @@ import startStage_ from '../../utils/startStage_'
 import unlockAllStagesForPhase from '../../utils/unlockAllStagesForPhase'
 import unlockNextStages from '../../utils/unlockNextStages'
 import initBotScript from './initBotScript'
-import initDB, {
-  demoMeetingId,
-  demoTeamId,
-  demoViewerId,
-  GitHubProjectKeyLookup,
-  JiraProjectKeyLookup
-} from './initDB'
+import initDB, {demoMeetingId, demoTeamId, demoViewerId, GitHubProjectKeyLookup, JiraProjectKeyLookup} from './initDB'
 import LocalAtmosphere from './LocalAtmosphere'
 import ms from 'ms'
 
@@ -49,7 +43,9 @@ interface DemoEvents {
   botsFinished: void
 }
 
-interface GQLDemoEmitter {new (): StrictEventEmitter<EventEmitter, DemoEvents>}
+interface GQLDemoEmitter {
+  new(): StrictEventEmitter<EventEmitter, DemoEvents>
+}
 
 class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   atmosphere: LocalAtmosphere
@@ -123,19 +119,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       })
       mutationsToFlush.length = 0
       this.pendingBotAction = undefined
-    } else {
-      const mutationThunks = [] as (() => Promise<any>)[]
-      mutationsToFlush.forEach((mutation) => {
-        if (mutation.op === 'UpdateDragLocationMutation') return
-        const thunk = () => this.ops[mutation.op](mutation.variables, mutation.botId)
-        mutationThunks.push(thunk)
-        if (mutation.op === 'EndDraggingReflectionMutation') {
-          mutationThunks.push(async () => sleep(1010))
-        }
-      })
-      for (const thunk of mutationThunks) {
-        await thunk()
-      }
     }
   }
 
@@ -369,11 +352,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
 
       const unlockedStageIds = remainingReflections.length
         ? unlockAllStagesForPhase(
-            this.db.newMeeting.phases as any,
-            NewMeetingPhaseTypeEnum.group,
-            true,
-            false
-          )
+          this.db.newMeeting.phases as any,
+          NewMeetingPhaseTypeEnum.group,
+          true,
+          false
+        )
         : []
       const unlockedStages = this.getUnlockedStages(unlockedStageIds)
       const data = {
@@ -895,7 +878,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {voteForReflectionGroup: data}
     },
-    CreateTaskMutation: ({newTask}, userId) => {
+    CreateTaskMutation: async ({newTask}, userId) => {
       const now = new Date().toJSON()
       const teamMemberId = toTeamMemberId(demoTeamId, userId)
       const taskId = newTask.id || this.getTempId('task')
@@ -943,6 +926,12 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (userId !== demoViewerId) {
         this.emit(TASK, data)
       }
+      // a strange error occurs without sleep.
+      // To reproduce, get to the discuss phase & quickly add a task before the bots do
+      // the result is tasks == [undefined]
+      // if a sleep is added, RetroDiscussPhase component is notified, but without, only MeetingAgendaCards is notified
+      // honestly, no good idea what is going on here. don't even know if it's relay or react (or me)
+      await sleep(100)
       return {createTask: data}
     },
     EditTaskMutation: ({taskId, isEditing}, userId) => {

@@ -44,12 +44,16 @@ const popTeamCreatedToast: OnNextHandler<AddTeamMutation_team> = (
     key: `teamCreated:${teamId}`,
     message: `Team created! Here's your new team dashboard for ${teamName}`
   })
-  history && history.push(`/team/${teamId}`)
+  // dirty hack because this payload may arrive before the new auth token does (unconfirmed, i know this can occur without the correct auth token)
+  setTimeout(() => {
+    history && history.push(`/team/${teamId}`)
+  }, 100)
+
 }
 
-export const addTeamTeamUpdater = (payload, store, viewerId) => {
+export const addTeamTeamUpdater = (payload, store) => {
   const team = payload.getLinkedRecord('team')
-  handleAddTeams(team, store, viewerId)
+  handleAddTeams(team, store)
 }
 
 export const addTeamMutationNotificationUpdater = (payload, {store}) => {
@@ -58,14 +62,13 @@ export const addTeamMutationNotificationUpdater = (payload, {store}) => {
 }
 
 const AddTeamMutation = (atmosphere, variables, options, onError, onCompleted) => {
-  const {viewerId} = atmosphere
   return commitMutation(atmosphere, {
     mutation,
     variables,
     updater: (store) => {
       const payload = store.getRootField('addTeam')
       if (!payload) return
-      addTeamTeamUpdater(payload, store, viewerId)
+      addTeamTeamUpdater(payload, store)
     },
     optimisticUpdater: (store) => {
       const {newTeam} = variables
@@ -73,7 +76,7 @@ const AddTeamMutation = (atmosphere, variables, options, onError, onCompleted) =
         ...newTeam,
         isPaid: true
       })
-      handleAddTeams(team, store, viewerId)
+      handleAddTeams(team, store)
     },
     onCompleted: (res, errors) => {
       onCompleted(res, errors)

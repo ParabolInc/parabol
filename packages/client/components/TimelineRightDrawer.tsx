@@ -8,7 +8,7 @@ import TimelinePriorityTasks from './TimelinePriorityTasks'
 import {PALETTE} from '../styles/paletteV2'
 import {DASH_SIDEBAR} from './Dashboard/DashSidebar'
 import TimelineNewFeature from './TimelineNewFeature'
-import {DASH_TIMELINE} from '../types/constEnums'
+import {DashTimeline} from '../types/constEnums'
 
 interface Props {
   viewer: TimelineRightDrawer_viewer
@@ -16,15 +16,16 @@ interface Props {
 
 const MIN_WIDTH =
   DASH_SIDEBAR.WIDTH +
-  DASH_TIMELINE.FEED_MIN_WIDTH +
-  DASH_TIMELINE.TIMELINE_DRAWER_WIDTH +
-  DASH_TIMELINE.MIN_PADDING * 2
+  DashTimeline.FEED_MIN_WIDTH +
+  DashTimeline.TIMELINE_DRAWER_WIDTH +
+  DashTimeline.MIN_PADDING * 2
 
 export const RightDrawer = styled('div')({
   display: 'none',
-  minWidth: DASH_TIMELINE.TIMELINE_DRAWER_WIDTH,
-  maxWidth: DASH_TIMELINE.TIMELINE_DRAWER_WIDTH,
+  minWidth: DashTimeline.TIMELINE_DRAWER_WIDTH,
+  maxWidth: DashTimeline.TIMELINE_DRAWER_WIDTH,
   borderLeft: `1px solid ${PALETTE.BORDER_LIGHT}`,
+  height: 'fit-content',
   padding: 24,
   [`@media screen and (min-width: ${MIN_WIDTH}px)`]: {
     display: 'block'

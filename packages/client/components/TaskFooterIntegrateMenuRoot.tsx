@@ -9,6 +9,7 @@ import {MenuProps} from '../hooks/useMenu'
 import {cacheConfig} from '../utils/constants'
 import {MenuMutationProps} from '../hooks/useMutationProps'
 import renderQuery from '../utils/relay/renderQuery'
+import {UseTaskChild} from '../hooks/useTaskChildFocus'
 
 const query = graphql`
   query TaskFooterIntegrateMenuRootQuery($teamId: ID!, $userId: ID!) {
@@ -24,17 +25,20 @@ interface Props {
   loadingWidth: number
   mutationProps: MenuMutationProps
   task: TaskFooterIntegrateMenuRoot_task
+  useTaskChild: UseTaskChild
 }
 
 const TaskFooterIntegrateMenuRoot = ({
-  menuProps,
-  loadingDelay,
-  loadingWidth,
-  mutationProps,
-  task
-}: Props) => {
+                                       menuProps,
+                                       loadingDelay,
+                                       loadingWidth,
+                                       mutationProps,
+                                       task,
+                                       useTaskChild
+                                     }: Props) => {
   const {teamId, userId} = task
   const atmosphere = useAtmosphere()
+  useTaskChild('integrate')
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}

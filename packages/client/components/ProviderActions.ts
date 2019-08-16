@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
-import {Layout} from '../types/constEnums'
-import {DASH_SIDEBAR} from './Dashboard/DashSidebar'
+import {Breakpoint, Layout} from '../types/constEnums'
 
 const ProviderActions = styled('div')({
   alignItems: 'center',
@@ -11,7 +10,7 @@ const ProviderActions = styled('div')({
   paddingLeft: 8,
   maxWidth: 36,
   width: 36,
-  [`@media screen and (min-width: ${DASH_SIDEBAR.BREAKPOINT}px)`]: {
+  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
     paddingLeft: Layout.ROW_GUTTER,
     maxWidth: 160,
     width: 'auto'

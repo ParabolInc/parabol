@@ -55,7 +55,7 @@ const modalStyles = {
     transition: `all ${Duration.PORTAL_CLOSE}ms ${DECELERATE}`
   }
 }
-const Backdrop = styled('div')<{background: string; portalStatus: PortalStatus}>(
+const Scrim = styled('div')<{background: string; portalStatus: PortalStatus}>(
   ({background, portalStatus}) => ({
     background,
     height: '100%',
@@ -98,7 +98,7 @@ const useModalPortal = (
   return (reactEl) => {
     return portal(
       <ModalBlock ref={targetRef as any}>
-        <Backdrop
+        <Scrim
           onClick={closePortal}
           background={background || PALETTE.BACKGROUND_BACKDROP}
           portalStatus={portalStatus}

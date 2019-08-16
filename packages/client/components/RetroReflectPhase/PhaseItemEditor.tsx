@@ -1,163 +1,168 @@
-import {convertToRaw, EditorState} from 'draft-js'
-import React, {Component} from 'react'
+import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
+import React, {MutableRefObject, RefObject, useEffect, useRef, useState} from 'react'
 import {ReflectionCardRoot} from '../ReflectionCard/ReflectionCard'
 import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../decorators/withAtmosphere/withAtmosphere'
 import CreateReflectionMutation from '../../mutations/CreateReflectionMutation'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
-import withMutationProps, {WithMutationProps} from '../../utils/relay/withMutationProps'
 import convertToTaskContent from '../../utils/draftjs/convertToTaskContent'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import useMutationProps from '../../hooks/useMutationProps'
+import getBBox from './getBBox'
+import styled from '@emotion/styled'
+import {BezierCurve} from '../../types/constEnums'
+import {ReflectColumnCardInFlight} from './PhaseItemColumn'
+import {Elevation} from '../../styles/elevation'
+import usePortal from '../../hooks/usePortal'
 
-interface Props extends WithMutationProps, WithAtmosphereProps {
+const FLIGHT_TIME = 500
+const CardInFlightStyles = styled(ReflectionCardRoot)<{transform: string, isStart: boolean}>(({isStart, transform}) => ({
+  boxShadow: isStart ? Elevation.Z8 : Elevation.Z0,
+  position: 'absolute',
+  top: 0,
+  transform,
+  transition: `all ${FLIGHT_TIME}ms ${BezierCurve.DECELERATE}`,
+  zIndex: 10
+}))
+
+interface Props {
+  cardsInFlightRef: MutableRefObject<ReflectColumnCardInFlight[]>
+  setCardsInFlight: (cards: ReflectColumnCardInFlight[]) => void
   meetingId: string
   nextSortOrder: () => number
   phaseEditorRef: React.RefObject<HTMLDivElement>
   retroPhaseItemId: string
-  shadow?: number
+  stackTopRef: RefObject<HTMLDivElement>
 }
 
-interface State {
-  editorState?: EditorState
-  isEditing: boolean
-}
 
-class PhaseItemEditor extends Component<Props, State> {
-  idleTimerId: number | undefined
-  state = {
-    editorState: EditorState.createEmpty(),
-    isEditing: false
+const PhaseItemEditor = (props: Props) => {
+  const {meetingId, nextSortOrder, phaseEditorRef, retroPhaseItemId, stackTopRef, cardsInFlightRef, setCardsInFlight} = props
+  const atmosphere = useAtmosphere()
+  const {onCompleted, onError, submitMutation} = useMutationProps()
+  const [editorState, setEditorState] = useState(EditorState.createEmpty)
+  const [isEditing, setIsEditing] = useState(false)
+  const idleTimerIdRef = useRef<number>()
+  const {terminatePortal, openPortal, portal} = usePortal({noClose: true, id: 'phaseItemEditor'})
+
+  useEffect(() => {
+    return () => {
+      window.clearTimeout(idleTimerIdRef.current)
+    }
+  }, [idleTimerIdRef])
+
+  const handleSubmit = (content) => {
+    const input = {
+      content,
+      retroPhaseItemId,
+      sortOrder: nextSortOrder()
+    }
+    submitMutation()
+    CreateReflectionMutation(atmosphere, {input}, {meetingId}, onError, onCompleted)
+    const {top, left} = getBBox(phaseEditorRef.current)!
+    const cardInFlight = {
+      transform: `translate(${left}px,${top}px)`,
+      editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(content))),
+      key: content,
+      isStart: true
+    }
+    openPortal()
+    setCardsInFlight([...cardsInFlightRef.current, cardInFlight])
+    requestAnimationFrame(() => {
+      const stackBBox = getBBox(stackTopRef.current)
+      if (!stackBBox) return
+      const {left, top} = stackBBox
+      const idx = cardsInFlightRef.current.findIndex((card) => card.key == content)
+      setCardsInFlight([...cardsInFlightRef.current.slice(0, idx), {
+        ...cardInFlight,
+        isStart: false,
+        transform: `translate(${left}px,${top}px)`,
+      }, ...cardsInFlightRef.current.slice(idx + 1)])
+      setTimeout(removeCardInFlight(content), FLIGHT_TIME)
+    })
+    // move focus to end is very important! otherwise ghost chars appear
+    setEditorState(EditorState.moveFocusToEnd(EditorState.createEmpty()))
   }
 
-  componentWillUnmount (): void {
-    window.clearTimeout(this.idleTimerId)
-  }
-
-  handleKeyDownFallback = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDownFallback = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key !== 'Enter' || e.shiftKey) return
     e.preventDefault()
-    const {
-      atmosphere,
-      onError,
-      onCompleted,
-      meetingId,
-      nextSortOrder,
-      submitMutation,
-      retroPhaseItemId
-    } = this.props
     const {value} = e.currentTarget
     if (!value) return
-    submitMutation()
-    const input = {
-      content: convertToTaskContent(value),
-      retroPhaseItemId,
-      sortOrder: nextSortOrder()
-    }
-    CreateReflectionMutation(atmosphere, {input}, {meetingId}, onError, onCompleted)
-    const empty = EditorState.createEmpty()
-    const editorState = EditorState.moveFocusToEnd(empty)
-    this.setState({
-      editorState
-    })
+    handleSubmit(convertToTaskContent(value))
   }
-  handleSubmit () {
-    const {
-      atmosphere,
-      onError,
-      onCompleted,
-      meetingId,
-      nextSortOrder,
-      submitMutation,
-      retroPhaseItemId
-    } = this.props
-    const content = this.state.editorState.getCurrentContent()
+
+  const handleKeydown = () => {
+    // do not throttle based on submitting or they can't submit very quickly
+    const content = editorState.getCurrentContent()
     if (!content.hasText()) return
-    const input = {
-      content: JSON.stringify(convertToRaw(content)),
-      retroPhaseItemId,
-      sortOrder: nextSortOrder()
-    }
-    submitMutation()
-    CreateReflectionMutation(atmosphere, {input}, {meetingId}, onError, onCompleted)
-    const empty = EditorState.createEmpty()
-    const editorState = EditorState.moveFocusToEnd(empty)
-    this.setState({
-      editorState
-    })
+    handleSubmit(JSON.stringify(convertToRaw(content)))
   }
 
-  ensureNotEditing = () => {
-    const {atmosphere, retroPhaseItemId: phaseItemId} = this.props
-    const {isEditing} = this.state
+  const ensureNotEditing = () => {
     if (!isEditing) return
-    window.clearTimeout(this.idleTimerId)
-    this.idleTimerId = undefined
-    EditReflectionMutation(atmosphere, {isEditing: false, phaseItemId})
-    this.setState({
-      isEditing: false
-    })
+    window.clearTimeout(idleTimerIdRef.current)
+    idleTimerIdRef.current = undefined
+    EditReflectionMutation(atmosphere, {isEditing: false, phaseItemId: retroPhaseItemId})
+    setIsEditing(false)
   }
 
-  ensureEditing = () => {
-    const {atmosphere, retroPhaseItemId: phaseItemId} = this.props
-    const {isEditing} = this.state
+  const ensureEditing = () => {
     if (!isEditing) {
-      EditReflectionMutation(atmosphere, {isEditing: true, phaseItemId})
-      this.setState({
-        isEditing: true
-      })
+      EditReflectionMutation(atmosphere, {isEditing: true, phaseItemId: retroPhaseItemId})
+      setIsEditing(true)
     }
-    window.clearTimeout(this.idleTimerId)
-    this.idleTimerId = window.setTimeout(() => {
-      EditReflectionMutation(atmosphere, {isEditing: false, phaseItemId})
-      this.setState({
-        isEditing: false
-      })
+    window.clearTimeout(idleTimerIdRef.current)
+    idleTimerIdRef.current = window.setTimeout(() => {
+      EditReflectionMutation(atmosphere, {isEditing: false, phaseItemId: retroPhaseItemId})
+      setIsEditing(false)
     }, 5000)
   }
 
-  handleEditorBlur = () => {
-    this.ensureNotEditing()
-  }
-
-  keyBindingFn = () => {
-    this.ensureEditing()
-  }
-
-  handleEditorFocus = () => {
-    this.ensureEditing()
-  }
-
-  handleReturn = (e: React.KeyboardEvent) => {
+  const handleReturn = (e: React.KeyboardEvent) => {
     if (e.shiftKey) return 'not-handled'
-    this.handleSubmit()
+    handleKeydown()
     return 'handled'
   }
 
-  setEditorState = (editorState: EditorState) => {
-    this.setState({editorState})
+  const removeCardInFlight = (content: string) => () => {
+    const idx = cardsInFlightRef.current.findIndex((card) => card.key === content)
+    if (idx === -1) return
+    const nextCardsInFlight = [...cardsInFlightRef.current.slice(0, idx), ...cardsInFlightRef.current.slice(idx + 1)]
+    if (nextCardsInFlight.length === 0) terminatePortal()
+    setCardsInFlight(nextCardsInFlight)
   }
 
-  render () {
-    const {editorState} = this.state
-    const {phaseEditorRef} = this.props
-    return (
+  return (
+    <>
       <ReflectionCardRoot ref={phaseEditorRef}>
         <ReflectionEditorWrapper
           ariaLabel='Edit this reflection'
           editorState={editorState}
-          onBlur={this.handleEditorBlur}
-          onFocus={this.handleEditorFocus}
-          handleReturn={this.handleReturn}
-          handleKeyDownFallback={this.handleKeyDownFallback}
-          keyBindingFn={this.keyBindingFn}
+          onBlur={ensureNotEditing}
+          onFocus={ensureEditing}
+          handleReturn={handleReturn}
+          handleKeyDownFallback={handleKeyDownFallback}
+          keyBindingFn={ensureEditing}
           placeholder='My reflection… (press enter to add)'
-          setEditorState={this.setEditorState}
+          setEditorState={setEditorState}
         />
       </ReflectionCardRoot>
-    )
-  }
+      {portal(<>
+          {cardsInFlightRef.current.map((card) => {
+            return (
+              <CardInFlightStyles key={card.key} transform={card.transform} isStart={card.isStart}
+                                  onTransitionEnd={removeCardInFlight(card.key)}>
+                <ReflectionEditorWrapper
+                  editorState={card.editorState}
+                  readOnly
+                />
+              </CardInFlightStyles>
+            )
+          })}
+        </>
+      )}
+    </>
+  )
 }
 
-export default withAtmosphere(withMutationProps(PhaseItemEditor))
+export default PhaseItemEditor

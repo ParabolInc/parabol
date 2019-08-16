@@ -8,6 +8,7 @@ import TaskFooterUserAssigneeMenu from './OutcomeCardAssignMenu/TaskFooterUserAs
 import {cacheConfig} from '../../../utils/constants'
 import renderQuery from '../../../utils/relay/renderQuery'
 import {TaskFooterUserAssigneeMenuRoot_task} from '../../../__generated__/TaskFooterUserAssigneeMenuRoot_task.graphql'
+import {UseTaskChild} from '../../../hooks/useTaskChildFocus'
 
 const query = graphql`
   query TaskFooterUserAssigneeMenuRootQuery($teamId: ID!) {
@@ -21,12 +22,14 @@ interface Props {
   area: string
   menuProps: MenuProps
   task: TaskFooterUserAssigneeMenuRoot_task
+  useTaskChild: UseTaskChild
 }
 
 const TaskFooterUserAssigneeMenuRoot = (props: Props) => {
-  const {area, menuProps, task} = props
+  const {area, menuProps, task, useTaskChild} = props
   const {team} = task
   const {id: teamId} = team
+  useTaskChild('userAssignee')
   const atmosphere = useAtmosphere()
   return (
     <QueryRenderer

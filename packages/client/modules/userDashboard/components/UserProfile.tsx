@@ -14,16 +14,13 @@ import UpdateUserProfileMutation from '../../../mutations/UpdateUserProfileMutat
 import defaultUserAvatar from '../../../styles/theme/images/avatar-user.svg'
 import ui from '../../../styles/ui'
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../../../decorators/withAtmosphere/withAtmosphere'
 import withForm, {WithFormProps} from '../../../utils/relay/withForm'
 import Legitity from '../../../validation/Legitity'
 import {UserProfile_viewer} from '../../../__generated__/UserProfile_viewer.graphql'
-import {Layout} from '../../../types/constEnums'
+import {Breakpoint, Layout} from '../../../types/constEnums'
 import {PALETTE} from '../../../styles/paletteV2'
 import NotificationErrorMessage from '../../notifications/components/NotificationErrorMessage'
-import {DASH_SIDEBAR} from '../../../components/Dashboard/DashSidebar'
 
 const SettingsBlock = styled('div')({
   width: '100%'
@@ -36,7 +33,7 @@ const SettingsForm = styled('form')({
   flexDirection: 'column',
   padding: Layout.ROW_GUTTER,
   width: '100%',
-  [`@media screen and (min-width: ${DASH_SIDEBAR.BREAKPOINT}px)`]: {
+  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
     flexDirection: 'row'
   }
 })
@@ -50,7 +47,7 @@ const FieldBlock = styled('div')({
   flex: 1,
   minWidth: 0,
   padding: '0 0 16px',
-  [`@media screen and (min-width: ${DASH_SIDEBAR.BREAKPOINT}px)`]: {
+  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
     padding: '0 16px 0 0'
   }
 })
@@ -60,7 +57,7 @@ const ControlBlock = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   width: '100%',
-  [`@media screen and (min-width: ${DASH_SIDEBAR.BREAKPOINT}px)`]: {
+  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
     flexDirection: 'row',
     flex: 1
   }
@@ -97,7 +94,7 @@ class UserProfile extends Component<Props> {
     UpdateUserProfileMutation(atmosphere, {preferredName}, {onError, onCompleted})
   }
 
-  render () {
+  render() {
     const {fields, onChange, viewer, error} = this.props
     const {picture} = viewer
     const pictureOrDefault = picture || defaultUserAvatar

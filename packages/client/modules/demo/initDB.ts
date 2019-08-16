@@ -370,6 +370,7 @@ const initDB = (botScript) => {
       preferredName: 'You',
       email: 'demo-user@example.co',
       picture: demoUserAvatar
+      // picture: getDemoAvatar(3).picture
     },
     getDemoAvatar(1),
     getDemoAvatar(2)

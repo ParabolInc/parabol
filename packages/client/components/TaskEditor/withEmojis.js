@@ -9,7 +9,6 @@ import EmojiMenuContainer from './EmojiMenuContainer'
 const withEmojis = (ComposedComponent) => {
   class WithEmojis extends Component {
     static propTypes = {
-      editorRef: PropTypes.any,
       editorState: PropTypes.object.isRequired,
       handleChange: PropTypes.func,
       keyBindingFn: PropTypes.func,

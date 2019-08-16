@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from '@emotion/styled'
 import {typeScale} from '../styles/theme/typography'
-import elevation from '../styles/elevation'
+import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV2'
 
 const TipBlock = styled('div')({
@@ -21,7 +21,7 @@ const shortcutBlockSize = '1.25rem'
 const ShortcutBlock = styled('div')({
   backgroundColor: 'white',
   borderRadius: 4,
-  boxShadow: elevation[1],
+  boxShadow: Elevation.Z1,
   height: shortcutBlockSize,
   fontSize: typeScale[1],
   fontWeight: 600,

@@ -8,6 +8,7 @@ const handleRemoveNotifications = (
 ) => {
   if (!maybeNotificationIds) return
   const viewer = store.getRoot().getLinkedRecord('viewer')
+  if (!viewer) return
   const conn = getNotificationsConn(viewer)
   if (conn) {
     const notificationIds = ensureArray(maybeNotificationIds)

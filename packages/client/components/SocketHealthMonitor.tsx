@@ -71,7 +71,7 @@ class SocketHealthMonitor extends Component<Props> {
       const root = store.getRoot()
       const viewer = root.getLinkedRecord('viewer')
       if (!viewer) {
-        const tempViewer = createProxyRecord(store, 'User', {id: atmosphere.viewerId, isConnected})
+        const tempViewer = createProxyRecord(store, 'User', {isConnected})
         root.setLinkedRecord(tempViewer, 'viewer')
       } else {
         viewer.setValue(isConnected, 'isConnected')
@@ -79,9 +79,9 @@ class SocketHealthMonitor extends Component<Props> {
     })
   }
 
-  onData = (payload: string) => {
-    // hacky but that way we don't have to double parse huge json payloads
-    if (!payload.startsWith('{"version":')) return
+  onData = (payload: string | object) => {
+    // hacky but that way we don't have to double parse huge json payloads. SSE graphql payloads are pre-parsed
+    if (typeof payload !== 'string' || !payload.startsWith('{"version":')) return
     const obj = JSON.parse(payload)
     if (obj.version !== __APP_VERSION__) {
       upgradeServiceWorker().catch(console.error)

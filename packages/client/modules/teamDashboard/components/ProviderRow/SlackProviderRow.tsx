@@ -16,12 +16,11 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
-import {Layout, Providers} from '../../../../types/constEnums'
+import {Breakpoint, Layout, Providers} from '../../../../types/constEnums'
 import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import SlackClientManager from '../../../../utils/SlackClientManager'
 import SlackNotificationList from './SlackNotificationList'
-import {DASH_SIDEBAR} from '../../../../components/Dashboard/DashSidebar'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 
 const StyledButton = styled(FlatButton)({
@@ -96,7 +95,7 @@ const SlackProviderRow = (props: Props) => {
     SlackClientManager.openOAuth(atmosphere, teamId, mutationProps)
   }
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
-  const isDesktop = useBreakpoint(DASH_SIDEBAR.BREAKPOINT)
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   return (
     <ExtraProviderCard>
       <CardTop>

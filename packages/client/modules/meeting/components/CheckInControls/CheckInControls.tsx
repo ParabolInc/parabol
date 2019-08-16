@@ -12,12 +12,19 @@ import useHotkey from '../../../../hooks/useHotkey'
 import useTimeout from '../../../../hooks/useTimeout'
 import NewMeetingCheckInMutation from '../../../../mutations/NewMeetingCheckInMutation'
 import handleRightArrow from '../../../../utils/handleRightArrow'
-import {DASH_SIDEBAR} from '../../../../components/Dashboard/DashSidebar'
 import useEventCallback from '../../../../hooks/useEventCallback'
+import {Breakpoint, ElementWidth} from '../../../../types/constEnums'
 
 const ButtonBlock = styled('div')({
-  display: 'flex'
+  display: 'flex',
+  flex: 1,
+  justifyContent: 'center',
+  marginLeft: ElementWidth.END_MEETING_BUTTON
 })
+
+const NotHereButton = styled(BottomNavControl)<{isMobile: boolean}>(({isMobile}) => ({
+  width: isMobile ? ElementWidth.END_MEETING_BUTTON : undefined
+}))
 
 interface Props {
   handleGotoNext: ReturnType<typeof useGotoNext>
@@ -53,11 +60,20 @@ const CheckInControls = (props: Props) => {
   useHotkey('h', handleOnClickPresent)
   useHotkey('n', handleOnClickAbsent)
   const isReadyForNext = useTimeout(30000)
-  const isSmallerBreakpoint = !useBreakpoint(DASH_SIDEBAR.BREAKPOINT)
-  const nextLabel = isSmallerBreakpoint ? 'Here' : `${preferredName} is Here`
-  const skipLabel = isSmallerBreakpoint ? 'Not Here' : `${preferredName} is Not Here`
+  const isMobile = !useBreakpoint(Breakpoint.MEETING_FACILITATOR_BAR)
+  const nextLabel = isMobile ? 'Here' : `${preferredName} is Here`
+  const skipLabel = isMobile ? 'Not Here' : `${preferredName} is Not Here`
+  const Wrapper = isMobile ? React.Fragment : ButtonBlock
   return (
-    <ButtonBlock>
+    <Wrapper>
+      <NotHereButton
+        isMobile={isMobile}
+        aria-label={`Mark ${preferredName} as “not here” and move on`}
+        size='medium'
+        onClick={handleOnClickAbsent}
+      >
+        <BottomNavIconLabel icon='remove_circle' iconColor='red' label={skipLabel} />
+      </NotHereButton>
       <BottomNavControl
         isBouncing={isReadyForNext}
         aria-label={`Mark ${preferredName} as “here” and move on`}
@@ -67,14 +83,8 @@ const CheckInControls = (props: Props) => {
       >
         <BottomNavIconLabel icon='check_circle' iconColor='green' label={nextLabel} />
       </BottomNavControl>
-      <BottomNavControl
-        aria-label={`Mark ${preferredName} as “not here” and move on`}
-        size='medium'
-        onClick={handleOnClickAbsent}
-      >
-        <BottomNavIconLabel icon='remove_circle' iconColor='red' label={skipLabel} />
-      </BottomNavControl>
-    </ButtonBlock>
+
+    </Wrapper>
   )
 }
 

@@ -11,6 +11,7 @@ import {PALETTE} from '../../../../styles/paletteV2'
 import appTheme from '../../../../styles/theme/theme'
 import ui from '../../../../styles/ui'
 import lazyPreload from '../../../../utils/lazyPreload'
+import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 
 const TeamToggleButton = styled(CardButton)({
   ...textOverflow,
@@ -37,7 +38,7 @@ const TeamToggleButton = styled(CardButton)({
 interface Props {
   canAssign: boolean
   task: TaskFooterTeamAssignee_task
-  toggleMenuState: () => void
+  useTaskChild: UseTaskChild
 }
 
 const TaskFooterTeamAssigneeMenuRoot = lazyPreload(() =>
@@ -45,13 +46,10 @@ const TaskFooterTeamAssigneeMenuRoot = lazyPreload(() =>
 )
 
 const TaskFooterTeamAssignee = (props: Props) => {
-  const {canAssign, task, toggleMenuState} = props
+  const {canAssign, task, useTaskChild} = props
   const {team} = task
   const {name: teamName} = team
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT, {
-    onOpen: toggleMenuState,
-    onClose: toggleMenuState
-  })
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT)
   return (
     <>
       <TeamToggleButton
@@ -62,7 +60,7 @@ const TaskFooterTeamAssignee = (props: Props) => {
       >
         {teamName}
       </TeamToggleButton>
-      {menuPortal(<TaskFooterTeamAssigneeMenuRoot menuProps={menuProps} task={task} />)}
+      {menuPortal(<TaskFooterTeamAssigneeMenuRoot menuProps={menuProps} task={task} useTaskChild={useTaskChild} />)}
     </>
   )
 }

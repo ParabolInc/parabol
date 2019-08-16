@@ -14,6 +14,7 @@ import ui from '../styles/ui'
 import lazyPreload from '../utils/lazyPreload'
 import {shortMonths} from '../utils/makeDateString'
 import {PALETTE} from '../styles/paletteV2'
+import {UseTaskChild} from '../hooks/useTaskChildFocus'
 
 const darken = (color, amount) =>
   tinycolor(color)
@@ -95,7 +96,7 @@ const DateString = styled('span')({
 interface Props {
   cardIsActive: boolean
   task: DueDateToggle_task
-  toggleMenuState: () => void
+  useTaskChild: UseTaskChild
 }
 
 const formatDueDate = (dueDate) => {
@@ -126,12 +127,9 @@ const DueDatePicker = lazyPreload(() =>
 )
 
 const DueDateToggle = (props: Props) => {
-  const {cardIsActive, task, toggleMenuState} = props
+  const {cardIsActive, task, useTaskChild} = props
   const {dueDate} = task
-  const {menuProps, menuPortal, originRef, togglePortal} = useMenu(MenuPosition.UPPER_RIGHT, {
-    onOpen: toggleMenuState,
-    onClose: toggleMenuState
-  })
+  const {menuProps, menuPortal, originRef, togglePortal} = useMenu(MenuPosition.UPPER_RIGHT)
   return (
     <>
       <Toggle
@@ -145,7 +143,7 @@ const DueDateToggle = (props: Props) => {
         <DueDateIcon>access_time</DueDateIcon>
         {dueDate && <DateString>{formatDueDate(dueDate)}</DateString>}
       </Toggle>
-      {menuPortal(<DueDatePicker menuProps={menuProps} task={task} />)}
+      {menuPortal(<DueDatePicker menuProps={menuProps} task={task} useTaskChild={useTaskChild}/>)}
     </>
   )
 }
