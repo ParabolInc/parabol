@@ -13,6 +13,12 @@ const Input = styled('input')<{disabled: boolean}>(
   ({disabled}) => disabled && {...ui.fieldDisabled}
 )
 
+const Error = styled(StyledError)({
+  fontSize: 13,
+  textAlign: 'left',
+  width: '100%'
+})
+
 interface Props {
   autoFocus?: boolean
   disabled?: boolean
@@ -53,7 +59,7 @@ const BasicInput = forwardRef((props: Props, ref: Ref<HTMLInputElement>) => {
         type={type}
         value={value}
       />
-      {error && <StyledError>{error}</StyledError>}
+      {error && <Error>{error}</Error>}
     </React.Fragment>
   )
 })
