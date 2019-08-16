@@ -3,7 +3,7 @@ import {PhaseItemColumn_meeting} from '../../__generated__/PhaseItemColumn_meeti
  * Renders a column for a particular "type" of reflection
  * (e.g. positive or negative) during the Reflect phase of the retro meeting.
  */
-import React, {useEffect, useMemo, useRef, useState} from 'react'
+import React, {useEffect, useMemo, useRef} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
@@ -20,6 +20,7 @@ import {ICON_SIZE} from '../../styles/typographyV2'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {EditorState} from 'draft-js'
 import {ElementWidth} from '../../types/constEnums'
+import useRefState from '../../hooks/useRefState'
 
 const ColumnWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   alignItems: 'center',
@@ -52,7 +53,8 @@ const ColumnContent = styled('div')({
 })
 
 const HeaderAndEditor = styled('div')({
-  flex: 0.3
+  flex: 0.3,
+  paddingBottom: 16
 })
 
 const Prompt = styled('div')({
@@ -68,6 +70,8 @@ const Description = styled('div')({
   fontStyle: 'italic',
   fontWeight: 400,
   lineHeight: '20px',
+  // tall enough for 3 lines so columns looks the same
+  minHeight: 60,
   marginTop: 8
 })
 
@@ -145,7 +149,7 @@ const PhaseItemColumn = (props: Props) => {
   const hasFocusedRef = useRef(false)
   const phaseEditorRef = useRef<HTMLDivElement>(null)
   const stackTopRef = useRef<HTMLDivElement>(null)
-  const [cardsInFlight, setCardsInFlight] = useState<ReflectColumnCardInFlight[]>([])
+  const [cardsInFlightRef, setCardsInFlight] = useRefState<ReflectColumnCardInFlight[]>([])
   const isFacilitator = viewerId === facilitatorUserId
   useEffect(() => {
     hasFocusedRef.current = true
@@ -167,10 +171,10 @@ const PhaseItemColumn = (props: Props) => {
   const columnStack = useMemo(() => {
     const groups = reflectionGroups.filter(
       (group) => group.retroPhaseItemId === retroPhaseItemId && group.reflections.length > 0 &&
-        !cardsInFlight.find((card) => card.key === group.reflections[0].content)
+        !cardsInFlightRef.current.find((card) => card.key === group.reflections[0].content)
     )
     return groups
-  }, [reflectionGroups, retroPhaseItemId, cardsInFlight])
+  }, [reflectionGroups, retroPhaseItemId, cardsInFlightRef.current])
 
 
   const reflectionStack = useMemo(() => {
@@ -205,7 +209,7 @@ const PhaseItemColumn = (props: Props) => {
             </PromptHeader>
             <EditorAndStatus isPhaseComplete={isComplete}>
               <PhaseItemEditor
-                cardsInFlight={cardsInFlight}
+                cardsInFlightRef={cardsInFlightRef}
                 setCardsInFlight={setCardsInFlight}
                 phaseEditorRef={phaseEditorRef}
                 meetingId={meetingId}

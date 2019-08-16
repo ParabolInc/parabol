@@ -63,7 +63,7 @@ export const addOrgMutationOrganizationUpdater = (payload, store, viewerId) => {
   handleAddOrganization(organization, store, viewerId)
 
   const team = payload.getLinkedRecord('team')
-  handleAddTeams(team, store, viewerId)
+  handleAddTeams(team, store)
 }
 
 export const addOrgMutationNotificationUpdater = (payload, {store}) => {

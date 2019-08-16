@@ -26,6 +26,11 @@ export const enum DashTimeline {
   TIMELINE_DRAWER_WIDTH = 336
 }
 
+export const enum DroppableType {
+  TASK = 'task',
+  TASK_COLUMN = 'taskColumn',
+  KANBAN = 'kanban'
+}
 export const enum Duration {
   MENU_OPEN = 150,
   MENU_OPEN_MAX = 188,
@@ -40,7 +45,7 @@ export const enum Duration {
 export const enum ElementWidth {
   END_MEETING_BUTTON = 90,
   REFLECTION_CARD = 296,
-  REFLECTION_CARD_PADDED = 336,
+  REFLECTION_CARD_PADDED = 312,
   REFLECTION_CARD_PADDING = 8
 }
 
@@ -90,6 +95,11 @@ export const enum ReflectionStackPerspective {
   X = 8,
   Y = 6
 }
+
+export const enum RightSidebar {
+  WIDTH = 240
+}
+
 export const enum SubscriptionChannel {
   TEAM = 'team',
   NEW_AUTH_TOKEN = 'newAuthToken',

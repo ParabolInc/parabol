@@ -1,30 +1,37 @@
 import {TimelinePriorityTasks_viewer} from '../__generated__/TimelinePriorityTasks_viewer.graphql'
-import memoize from 'micro-memoize'
-import React, {Component} from 'react'
+import React, {useMemo} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import sortOrderBetween from '../dnd/sortOrderBetween'
-import UpdateTaskMutation from '../mutations/UpdateTaskMutation'
-import {ACTIVE, USER_DASH} from '../utils/constants'
+import {ACTIVE, SORT_STEP} from '../utils/constants'
 import DraggableTask from '../containers/TaskCard/DraggableTask'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {TaskStatusEnum} from '../types/graphql'
-import getTaskById from '../utils/getTaskById'
+import {AreaEnum, TaskStatusEnum} from '../types/graphql'
 import Icon from './Icon'
 import TimelineNoTasks from './TimelineNoTasks'
+import {DragDropContext, Droppable, DroppableProvided, DropResult} from 'react-beautiful-dnd'
+import useEventCallback from '../hooks/useEventCallback'
+import dndNoise from '../utils/dndNoise'
+import UpdateTaskMutation from '../mutations/UpdateTaskMutation'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {DroppableType} from '../types/constEnums'
 
 interface Props extends WithAtmosphereProps {
   viewer: TimelinePriorityTasks_viewer
 }
 
 const PriorityTasksHeader = styled('div')({
+  background: PALETTE.BACKGROUND_MAIN,
   color: PALETTE.TEXT_LIGHT,
   fontSize: 14,
   fontWeight: 600,
-  marginBottom: 16
+  paddingTop: 16,
+  paddingBottom: 16,
+  position: 'sticky',
+  top: 0,
+  zIndex: 2
 })
 
 const ActiveIcon = styled(Icon)({
@@ -34,80 +41,75 @@ const ActiveIcon = styled(Icon)({
 })
 
 const TaskList = styled('div')({
-  paddingTop: 32
+  paddingTop: 8
 })
 
-class TimelinePriorityTasks extends Component<Props> {
-  getActiveTasks = memoize((tasks: TimelinePriorityTasks_viewer['tasks']) => {
+const PriorityTaskBody = styled('div')({})
+
+const TimelinePriorityTasks = (props: Props) => {
+  const {viewer} = props
+  const {tasks} = viewer
+  const atmosphere = useAtmosphere()
+  const activeTasks = useMemo(() => {
     const {edges} = tasks
     const nodes = edges.map((edge) => edge.node)
     return nodes
       .filter((node) => node.status === ACTIVE)
       .sort((a, b) => (a.sortOrder < b.sortOrder ? 1 : -1))
-  })
+  }, [tasks])
 
-  taskIsInPlace = (draggedTask, targetTask, before) => {
-    const {viewer} = this.props
-    const {tasks} = viewer
-    const activeTasks = this.getActiveTasks(tasks)
-    const targetIndex = activeTasks.findIndex((p) => p.id === targetTask.id)
-    const boundingTask = activeTasks[targetIndex + (before ? -1 : 1)]
-    return Boolean(boundingTask && boundingTask.id === draggedTask.id)
-  }
+  const onDragEnd = useEventCallback(
+    (result: DropResult) => {
+      const {source, destination, draggableId} = result
+      if (!destination) return
+      if (destination.index === source.index) return
 
-  /**
-   * `draggedTask` - task being dragged-and-dropped
-   * `targetTask` - the task being "dropped on"
-   * `before` - whether the dragged task is being inserted before (true) or
-   * after (false) the target task.
-   */
-  insertTask = (draggedTask, targetTask, before) => {
-    if (this.taskIsInPlace(draggedTask, targetTask, before)) {
-      return
-    }
-    const {atmosphere, viewer} = this.props
-    const {tasks} = viewer
-    const activeTasks = this.getActiveTasks(tasks)
-    const targetIndex = activeTasks.findIndex((p) => p.id === targetTask.id)
-    // `boundingTask` is the task which sandwiches the dragged task on
-    // the opposite side of the target task.  When the target task is in
-    // the front or back of the list, this will be `undefined`.
-    const boundingTask = activeTasks[targetIndex + (before ? -1 : 1)]
-    const sortOrder = sortOrderBetween(targetTask, boundingTask, draggedTask, before)
-    const updatedTask = {id: draggedTask.id, sortOrder} as {
-      id: string
-      sortOrder: number
-      status?: TaskStatusEnum
-    }
-    if (draggedTask.status !== targetTask.status) {
-      updatedTask.status = targetTask.status
-    }
-    UpdateTaskMutation(atmosphere, {updatedTask, area: USER_DASH})
-  }
+      let sortOrder
+      if (destination.index === 0) {
+        sortOrder = dndNoise()
+      } else if (destination.index === activeTasks.length) {
+        sortOrder = activeTasks[activeTasks.length - 1].sortOrder - SORT_STEP + dndNoise()
+      } else {
+        const offset = source.index > destination.index ? -1 : 1
+        sortOrder =
+          (activeTasks[destination.index + offset].sortOrder + activeTasks[destination.index].sortOrder) / 2 +
+          dndNoise()
+      }
+      const updatedTask = {id: draggableId, sortOrder}
+      UpdateTaskMutation(atmosphere, {updatedTask, area: AreaEnum.userDash})
+    })
 
-  render () {
-    const {viewer} = this.props
-    const {tasks} = viewer
-    const activeTasks = this.getActiveTasks(tasks)
-    if (activeTasks.length === 0) return <TimelineNoTasks />
-    return (
-      <TaskList>
-        <PriorityTasksHeader>
-          <ActiveIcon>whatshot</ActiveIcon>
-          Active Tasks
-        </PriorityTasksHeader>
-        {activeTasks.map((task) => (
-          <DraggableTask
-            key={task.id}
-            area={USER_DASH}
-            getTaskById={getTaskById(activeTasks)}
-            task={task}
-            insert={(draggedTask, before) => this.insertTask(draggedTask, task, before)}
-          />
-        ))}
-      </TaskList>
-    )
-  }
+  if (activeTasks.length === 0) return <TimelineNoTasks />
+  return (
+    <DragDropContext onDragEnd={onDragEnd}>
+      <Droppable
+        droppableId={TaskStatusEnum.active}
+        type={DroppableType.TASK}
+      >
+        {(
+          dropProvided: DroppableProvided
+        ) => (
+          <TaskList>
+            <PriorityTasksHeader>
+              <ActiveIcon>whatshot</ActiveIcon>
+              Active Tasks
+            </PriorityTasksHeader>
+            <PriorityTaskBody {...dropProvided.droppableProps} ref={dropProvided.innerRef}>
+              {activeTasks.map((task, idx) => (
+                <DraggableTask
+                  key={task.id}
+                  area={AreaEnum.userDash}
+                  task={task}
+                  idx={idx}
+                />
+              ))}
+              {dropProvided.placeholder}
+            </PriorityTaskBody>
+          </TaskList>
+        )}
+      </Droppable>
+    </DragDropContext>
+  )
 }
 
 export default createFragmentContainer(withAtmosphere(TimelinePriorityTasks), {

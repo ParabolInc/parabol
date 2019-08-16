@@ -1,5 +1,5 @@
 import {ReflectionCard_reflection} from '../../__generated__/ReflectionCard_reflection.graphql'
-import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
+import {convertFromRaw, convertToRaw, Editor, EditorState} from 'draft-js'
 import React, {Component} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
@@ -83,7 +83,7 @@ class ReflectionCard extends Component<Props, State> {
     }
   }
 
-  editorRef!: HTMLElement
+  editorRef = React.createRef<HTMLTextAreaElement | Editor>()
 
   state = {
     content: '',
@@ -92,10 +92,6 @@ class ReflectionCard extends Component<Props, State> {
 
   setEditorState = (editorState: EditorState) => {
     this.setState({editorState})
-  }
-
-  setEditorRef = (c) => {
-    this.editorRef = c
   }
 
   handleEditorFocus = () => {
@@ -153,7 +149,7 @@ class ReflectionCard extends Component<Props, State> {
 
   handleReturn = (e) => {
     if (e.shiftKey) return 'not-handled'
-    this.editorRef.blur()
+    this.editorRef.current && this.editorRef.current.blur()
     return 'handled'
   }
 
@@ -180,7 +176,6 @@ class ReflectionCard extends Component<Props, State> {
           ariaLabel='Edit this reflection'
           editorRef={this.editorRef}
           editorState={editorState}
-          innerRef={this.setEditorRef}
           onBlur={this.handleEditorBlur}
           onFocus={this.handleEditorFocus}
           handleChange={handleChange}

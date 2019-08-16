@@ -39,8 +39,9 @@ const TeamMember = new GraphQLObjectType({
       description: 'Is user a team facilitator?'
     },
     hideAgenda: {
-      type: GraphQLBoolean,
-      description: 'hide the agenda list on the dashboard'
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'hide the agenda list on the dashboard',
+      resolve: ({hideAgenda}) => !!hideAgenda
     },
     /* denormalized from User */
     email: {

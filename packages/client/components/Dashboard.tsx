@@ -29,14 +29,26 @@ interface Props {
 
 const DashLayout = styled('div')({
   display: 'flex',
-  minHeight: '100vh'
+  height: '100%'
   // overflow: 'auto', removed because react-beautiful-dnd only supports 1 scrolling parent
 })
 
 const DashPanel = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  flex: 1
+  flex: 1,
+  height: '100%',
+  // any overflows should not include the width of the left nav
+  overflow: 'hidden',
+})
+
+const DashMain = styled('div')({
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  height: '100%',
+  minHeight: 0,
+  position: 'relative'
 })
 
 const Dashboard = (props: Props) => {
@@ -49,6 +61,7 @@ const Dashboard = (props: Props) => {
       </ResponsiveDashSidebar>
       <DashPanel>
         <DashAlert viewer={viewer} />
+        <DashMain>
         <Switch>
           <Route
             path='/me'
@@ -59,6 +72,7 @@ const Dashboard = (props: Props) => {
           <Route path='/team/:teamId' component={TeamRoot} />
           <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
         </Switch>
+        </DashMain>
       </DashPanel>
     </DashLayout>
   )

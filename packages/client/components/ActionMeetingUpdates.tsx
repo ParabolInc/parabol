@@ -17,7 +17,6 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useTimeout from '../hooks/useTimeout'
 import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
 import {AreaEnum, IUpdatesStage, NewMeetingPhaseTypeEnum} from '../types/graphql'
-import getTaskById from '../utils/getTaskById'
 import handleRightArrow from '../utils/handleRightArrow'
 import isTaskPrivate from '../utils/isTaskPrivate'
 import lazyPreload from '../utils/lazyPreload'
@@ -97,7 +96,6 @@ const ActionMeetingUpdates = (props: Props) => {
             <InnerColumnsWrapper>
               <TaskColumns
                 area={AreaEnum.meeting}
-                getTaskById={getTaskById(teamMemberTasks)}
                 isMyMeetingSection={userId === viewerId}
                 meetingId={meetingId}
                 myTeamMemberId={toTeamMemberId(teamId, viewerId)}

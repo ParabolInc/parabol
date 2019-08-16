@@ -5,13 +5,12 @@ import NullableTask from '../../../../components/NullableTask/NullableTask'
 import sortOrderBetween from '../../../../dnd/sortOrderBetween'
 import CreateTaskMutation from '../../../../mutations/CreateTaskMutation'
 import {meetingGridMinWidth} from '../../../../styles/meeting'
-import {MEETING} from '../../../../utils/constants'
 import useHotkey from '../../../../hooks/useHotkey'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {MeetingAgendaCards_tasks} from '../../../../__generated__/MeetingAgendaCards_tasks.graphql'
-import {TaskStatusEnum} from '../../../../types/graphql'
+import {AreaEnum, TaskStatusEnum} from '../../../../types/graphql'
 import useEventCallback from '../../../../hooks/useEventCallback'
 
 const makePlaceholders = (
@@ -38,13 +37,10 @@ interface Props {
 }
 
 const MeetingAgendaCards = (props: Props) => {
-  const {maxCols, showPlaceholders, tasks} = props
+  const {maxCols, showPlaceholders, tasks, agendaId, meetingId, reflectionGroupId, teamId} = props
   const atmosphere = useAtmosphere()
-  const propsRef = useRef(props)
-  propsRef.current = props
   const handleAddTask = useEventCallback(() => {
     const {viewerId} = atmosphere
-    const {tasks, agendaId, meetingId, reflectionGroupId, teamId} = propsRef.current
     const maybeLastTask = tasks[tasks.length - 1]
     const newTask = {
       status: TaskStatusEnum.active,
@@ -66,7 +62,7 @@ const MeetingAgendaCards = (props: Props) => {
             {tasks.map((task) => {
               return (
                 <div key={task.id} ref={setItemRef(task.id)}>
-                  <NullableTask area={MEETING} isAgenda task={task} />
+                  <NullableTask area={AreaEnum.meeting} isAgenda task={task} />
                 </div>
               )
             })}

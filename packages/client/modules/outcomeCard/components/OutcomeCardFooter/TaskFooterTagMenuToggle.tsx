@@ -7,13 +7,14 @@ import useMenu from '../../../../hooks/useMenu'
 import lazyPreload from '../../../../utils/lazyPreload'
 import {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {AreaEnum} from '../../../../types/graphql'
+import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 
 interface Props {
   area: AreaEnum
   editorState: EditorState
   isAgenda: boolean
   task: any
-  toggleMenuState: () => void
+  useTaskChild: UseTaskChild
   mutationProps: MenuMutationProps
 }
 
@@ -22,11 +23,8 @@ const TaskFooterTagMenu = lazyPreload(() =>
 )
 
 const TaskFooterTagMenuToggle = (props: Props) => {
-  const {area, editorState, isAgenda, mutationProps, task, toggleMenuState} = props
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT, {
-    onOpen: toggleMenuState,
-    onClose: toggleMenuState
-  })
+  const {area, editorState, isAgenda, mutationProps, task, useTaskChild} = props
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
 
   return (
     <>
@@ -45,6 +43,7 @@ const TaskFooterTagMenuToggle = (props: Props) => {
           menuProps={menuProps}
           task={task}
           mutationProps={mutationProps}
+          useTaskChild={useTaskChild}
         />
       )}
     </>

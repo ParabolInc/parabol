@@ -1,31 +1,28 @@
 import React, {Component} from 'react'
-import withScrolling from 'react-dnd-scrollzone'
-import styled from '@emotion/styled';
-import DraggableTask from '../../../../containers/TaskCard/DraggableTask'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../../decorators/withAtmosphere/withAtmosphere'
-import sortOrderBetween from '../../../../dnd/sortOrderBetween'
+import styled from '@emotion/styled'
+import withAtmosphere, {WithAtmosphereProps} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import TaskColumnAddTask from './TaskColumnAddTask'
-import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
 import appTheme from '../../../../styles/theme/appTheme'
 import themeLabels from '../../../../styles/theme/labels'
 import ui from '../../../../styles/ui'
-import {AreaEnum, ITask, TaskStatusEnum} from '../../../../types/graphql'
+import {AreaEnum, TaskStatusEnum} from '../../../../types/graphql'
 import {TEAM_DASH, USER_DASH} from '../../../../utils/constants'
-import TaskColumnDropZone from './TaskColumnDropZone'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {TaskColumn_tasks} from '../../../../__generated__/TaskColumn_tasks.graphql'
+import {BezierCurve, DroppableType} from '../../../../types/constEnums'
+import {Droppable, DroppableProvided, DroppableStateSnapshot} from 'react-beautiful-dnd'
+import {PALETTE} from '../../../../styles/paletteV2'
+import TaskColumnInner from './TaskColumnInner'
 
-const Column = styled('div')({
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  overflow: 'auto',
-  position: 'relative',
-  width: '25%'
-})
+const Column = styled('div')<{isDragging: boolean}>(({isDragging}) => ({
+    background: isDragging ? PALETTE.BACKGROUND_MAIN_DARKENED : undefined,
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'column',
+    position: 'relative',
+    transition: `background 300ms ${BezierCurve.DECELERATE}`,
+}))
 
 const ColumnHeader = styled('div')({
   color: appTheme.palette.dark,
@@ -41,30 +38,12 @@ const ColumnHeader = styled('div')({
 
 const ColumnBody = styled('div')({
   flex: 1,
-  position: 'relative'
-})
-
-const ColumnInner = styled('div')({
-  overflow: 'auto',
-  webkitOverflowScrolling: 'touch',
-  display: 'flex',
-  flexDirection: 'column',
   height: '100%',
-  padding: `.125rem ${ui.taskColumnPaddingInnerSmall} 0`,
-  position: 'absolute',
-  width: '100%',
-  [ui.dashBreakpoint]: {
-    paddingLeft: ui.taskColumnPaddingInnerLarge,
-    paddingRight: ui.taskColumnPaddingInnerLarge
-  },
-  '&::-webkit-scrollbar-thumb': {
-    // Define
-  }
+  overflowX: 'hidden',
+  overflowY: 'auto',
+  minHeight: 200,
+  paddingBottom: 8
 })
-
-// The `ScrollZone` component manages an overflowed block-level element,
-// scrolling its contents when another element is dragged close to its edges.
-const ScrollZone = withScrolling(ColumnInner)
 
 const StatusLabel = styled('div')({
   fontWeight: 600,
@@ -78,15 +57,14 @@ const TasksCount = styled('div')({
 
 const StatusLabelBlock = styled('div')<{userCanAdd: boolean | undefined}>(({userCanAdd}) => ({
   alignItems: 'center',
-    display: 'flex',
-    flex: 1,
-    fontSize: '1.0625rem',
-    marginLeft: userCanAdd ? 9 : 15
+  display: 'flex',
+  flex: 1,
+  fontSize: '1.0625rem',
+  marginLeft: userCanAdd ? 9 : 15
 }))
 
 interface Props extends WithAtmosphereProps {
   area: AreaEnum
-  getTaskById: (taskId: string) => Partial<ITask> | undefined | null
   isMyMeetingSection?: boolean
   meetingId?: string
   myTeamMemberId?: string
@@ -96,44 +74,10 @@ interface Props extends WithAtmosphereProps {
   teams: any[]
 }
 
-type Task = TaskColumn_tasks[0]
 class TaskColumn extends Component<Props> {
-  taskIsInPlace = (draggedTask: Task, targetTask: Task, before) => {
-    const {tasks} = this.props
-    const targetIndex = tasks.findIndex((p) => p.id === targetTask.id)
-    const boundingTask = tasks[targetIndex + (before ? -1 : 1)]
-    return Boolean(boundingTask && boundingTask.id === draggedTask.id)
-  }
-
-  /**
-   * `draggedTask` - task being dragged-and-dropped
-   * `targetTask` - the task being "dropped on"
-   * `before` - whether the dragged task is being inserted before (true) or
-   * after (false) the target task.
-   */
-  insertTask = (draggedTask: Task, targetTask: Task, before) => {
-    if (this.taskIsInPlace(draggedTask, targetTask, before)) {
-      return
-    }
-    const {area, atmosphere, tasks} = this.props
-    const targetIndex = tasks.findIndex((p) => p.id === targetTask.id)
-    // `boundingTask` is the task which sandwiches the dragged task on
-    // the opposite side of the target task.  When the target task is in
-    // the front or back of the list, this will be `undefined`.
-    const boundingTask = tasks[targetIndex + (before ? -1 : 1)]
-    const sortOrder = sortOrderBetween(targetTask, boundingTask, draggedTask, before)
-    const updatedTask = {id: draggedTask.id, sortOrder}
-    if (draggedTask.status !== targetTask.status) {
-      (updatedTask as any).status = targetTask.status
-    }
-    UpdateTaskMutation(atmosphere, {updatedTask, area})
-  }
-
   render () {
     const {
       area,
-      atmosphere,
-      getTaskById,
       isMyMeetingSection,
       meetingId,
       myTeamMemberId,
@@ -144,48 +88,39 @@ class TaskColumn extends Component<Props> {
     } = this.props
     const label = themeLabels.taskStatus[status].slug
     const userCanAdd = area === TEAM_DASH || area === USER_DASH || isMyMeetingSection
-
     return (
-      <Column>
-        <ColumnHeader>
-          <TaskColumnAddTask
-            area={area}
-            isMyMeetingSection={isMyMeetingSection}
-            status={status}
-            tasks={tasks}
-            meetingId={meetingId}
-            myTeamMemberId={myTeamMemberId}
-            teamMemberFilterId={teamMemberFilterId || ''}
-            teams={teams}
-          />
-          <StatusLabelBlock userCanAdd={userCanAdd}>
-            <StatusLabel>{label}</StatusLabel>
-            {tasks.length > 0 && <TasksCount>{tasks.length}</TasksCount>}
-          </StatusLabelBlock>
-        </ColumnHeader>
-        <ColumnBody>
-          <ScrollZone>
-            {tasks.map((task) => {
-              return (
-                <DraggableTask
-                  key={`teamCard${task.id}`}
-                  area={area}
-                  getTaskById={getTaskById}
-                  task={task}
-                  myUserId={atmosphere.userId}
-                  insert={(draggedTask: Task, before) => this.insertTask(draggedTask, task, before)}
-                />
-              )
-            })}
-            <TaskColumnDropZone
-              area={area}
-              getTaskById={getTaskById}
-              lastTask={tasks[tasks.length - 1]}
-              status={status}
-            />
-          </ScrollZone>
-        </ColumnBody>
-      </Column>
+      <Droppable
+        droppableId={status}
+        type={DroppableType.TASK}
+      >
+        {(
+          dropProvided: DroppableProvided,
+          dropSnapshot: DroppableStateSnapshot
+        ) => (
+          <Column isDragging={dropSnapshot.isDraggingOver}>
+            <ColumnHeader>
+              <TaskColumnAddTask
+                area={area}
+                isMyMeetingSection={isMyMeetingSection}
+                status={status}
+                tasks={tasks}
+                meetingId={meetingId}
+                myTeamMemberId={myTeamMemberId}
+                teamMemberFilterId={teamMemberFilterId || ''}
+                teams={teams}
+              />
+              <StatusLabelBlock userCanAdd={userCanAdd}>
+                <StatusLabel>{label}</StatusLabel>
+                {tasks.length > 0 && <TasksCount>{tasks.length}</TasksCount>}
+              </StatusLabelBlock>
+            </ColumnHeader>
+            <ColumnBody {...dropProvided.droppableProps} ref={dropProvided.innerRef}>
+              <TaskColumnInner area={area} tasks={tasks}/>
+              {dropProvided.placeholder}
+            </ColumnBody>
+          </Column>
+        )}
+      </Droppable>
     )
   }
 }
@@ -194,10 +129,8 @@ export default createFragmentContainer(withAtmosphere(TaskColumn), {
   tasks: graphql`
     fragment TaskColumn_tasks on Task @relay(plural: true) {
       ...TaskColumnAddTask_tasks
-      ...DraggableTask_task
+      ...TaskColumnInner_tasks
       id
-      sortOrder
-      status
     }
   `
 })

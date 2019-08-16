@@ -1,5 +1,5 @@
 import {DraftHandleValue, Editor, EditorState, getDefaultKeyBinding} from 'draft-js'
-import React, {PureComponent, Ref, Suspense} from 'react'
+import React, {PureComponent, RefObject, Suspense} from 'react'
 import './TaskEditor/Draft.css'
 import withKeyboardShortcuts from './TaskEditor/withKeyboardShortcuts'
 import withMarkdown from './TaskEditor/withMarkdown'
@@ -7,10 +7,7 @@ import appTheme from '../styles/theme/appTheme'
 import {textTags} from '../utils/constants'
 import entitizeText from '../utils/draftjs/entitizeText'
 import styled from '@emotion/styled'
-import {
-  cardContentFontSize,
-  cardContentLineHeight,
-} from '../styles/cards'
+import {cardContentFontSize, cardContentLineHeight} from '../styles/cards'
 import withEmojis from './TaskEditor/withEmojis'
 import isRichDraft from '../utils/draftjs/isRichDraft'
 import lazyPreload from '../utils/lazyPreload'
@@ -20,6 +17,7 @@ import {ElementHeight} from '../types/constEnums'
 interface Props {
   ariaLabel: string
   autoFocusOnEmpty: boolean
+  editorRef: RefObject<HTMLTextAreaElement>
   editorState: EditorState
   handleBeforeInput: (char: string) => DraftHandleValue
   handleChange: (editorState: EditorState) => void
@@ -71,19 +69,11 @@ const EditorStyles = styled('div')(({useFallback, userSelect}: any) => ({
 const AndroidEditorFallback = lazyPreload(() =>
   import(
     /* webpackChunkName: 'AndroidEditorFallback' */ './AndroidEditorFallback'
-  )
+    )
 )
 
 class ReflectionEditorWrapper extends PureComponent<Props> {
-  editorRef: Ref<HTMLDivElement> = null
   entityPasteStart?: {anchorOffset: number; anchorKey: string} = undefined
-  setEditorRef = (c) => {
-    const {innerRef} = this.props
-    if (innerRef) {
-      innerRef(c)
-    }
-    this.editorRef = c
-  }
 
   blockStyleFn = (contentBlock) => {
     // TODO complete emtotion migration to provider a string className
@@ -182,9 +172,10 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     }
   }
 
-  render () {
+  render() {
     const {
       ariaLabel,
+      editorRef,
       editorState,
       onBlur,
       onFocus,
@@ -206,7 +197,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
               onFocus={onFocus}
               placeholder={placeholder}
               onKeyDown={handleKeyDownFallback}
-              setEditorRef={this.setEditorRef}
+              editorRef={editorRef}
             />
           </Suspense>
         ) : (
@@ -225,7 +216,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
             onChange={this.handleChange}
             placeholder={placeholder}
             readOnly={readOnly || (useFallback && !showFallback)}
-            ref={this.setEditorRef}
+            ref={editorRef as any}
             style={{
               padding: 12,
               userSelect,

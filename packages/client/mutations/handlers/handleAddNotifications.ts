@@ -6,6 +6,7 @@ import {ConnectionHandler, RecordProxy, RecordSourceProxy} from 'relay-runtime'
 const handleAddNotification = (newNode: RecordProxy | null, store: RecordSourceProxy) => {
   if (!newNode) return
   const viewer = store.getRoot().getLinkedRecord('viewer')
+  if (!viewer) return
   const conn = getNotificationsConn(viewer)
   if (!conn) return
   const nodeId = newNode.getValue('id')

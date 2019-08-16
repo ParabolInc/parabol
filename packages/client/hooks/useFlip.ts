@@ -66,8 +66,7 @@ const useFlip = <T extends HTMLElement = HTMLDivElement>(options: Options<T>) =>
       if (isBackground) {
         style.opacity = '0'
       }
-      instance.addEventListener('transitionend', reset)
-      instance.addEventListener('transitioncancel', reset)
+      setTimeout(reset, Times.REFLECTION_DEAL_CARD_DURATION)
     }
   }
   return [lastRefCb, reverseRef.current] as [(c: T) => void, () => void]

@@ -53,7 +53,7 @@ const Task = new GraphQLObjectType<any, GQLContext, any>({
       description: 'a user-defined due date'
     },
     editors: {
-      type: new GraphQLList(TaskEditorDetails),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TaskEditorDetails))),
       description:
         'a list of users currently editing the task (fed by a subscription, so queries return null)',
       resolve: ({editors = []}) => {

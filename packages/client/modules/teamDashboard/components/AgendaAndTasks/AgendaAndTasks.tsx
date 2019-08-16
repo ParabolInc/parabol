@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import Helmet from 'react-helmet'
@@ -10,13 +9,12 @@ import ui from '../../../../styles/ui'
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {desktopSidebarShadow, navDrawerShadow} from '../../../../styles/elevation'
+import {AgendaAndTasks_viewer} from '__generated__/AgendaAndTasks_viewer.graphql'
+import {RightSidebar} from '../../../../types/constEnums'
 
 const RootBlock = styled('div')({
   display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  position: 'relative',
-  minWidth: ui.taskColumnsMinWidth,
+  height: '100%',
   width: '100%',
   '@media screen and (min-width: 1200px)': {
     minWidth: 0
@@ -26,13 +24,14 @@ const RootBlock = styled('div')({
 const TasksMain = styled('div')({
   display: 'flex',
   flex: 1,
-  flexDirection: 'column'
+  flexDirection: 'column',
+  height: '100%',
+  overflow: 'auto'
 })
 
 const dashTeamBreakpointUp = '@media (min-width: 123.25rem)'
-const TasksHeader = styled('div')(({hideAgenda}) => ({
+const TasksHeader = styled('div')({
   display: 'flex',
-  paddingRight: !hideAgenda && ui.dashAgendaWidth,
   paddingTop: '.75rem',
   justifyContent: 'flex-start',
   width: '100%',
@@ -41,26 +40,13 @@ const TasksHeader = styled('div')(({hideAgenda}) => ({
     justifyContent: 'center',
     paddingTop: 0
   }
-}))
+})
 
-const TasksContent = styled('div')(({hideAgenda}) => ({
+const TasksContent = styled('div')({
   display: 'flex',
   flex: 1,
+  height: '100%',
   margin: 0,
-  paddingRight: !hideAgenda && ui.dashAgendaWidth,
-  width: '100%',
-
-  [dashTeamBreakpointUp]: {
-    margin: '0 auto'
-  }
-}))
-
-const Inner = styled('div')({
-  display: 'flex',
-  flex: 1,
-  margin: 0,
-  maxWidth: ui.taskColumnsMaxWidth,
-  position: 'relative',
   width: '100%',
 
   [dashTeamBreakpointUp]: {
@@ -68,33 +54,21 @@ const Inner = styled('div')({
   }
 })
 
-/* InnerOverflow is a patch fix to ensure correct
-   behavior for task columns overflow in small viewports TA */
-const InnerOverflow = styled('div')({
-  display: 'flex',
-  overflow: 'auto',
-  position: 'absolute',
-  top: 0,
-  right: 0,
-  bottom: 0,
-  left: 0
-})
-
-const AgendaMain = styled('div')(({hideAgenda}) => ({
+const AgendaMain = styled('div')<{hideAgenda: boolean | null}>(({hideAgenda}) => ({
   backgroundColor: hideAgenda ? '' : ui.palette.white,
   boxShadow: hideAgenda ? 'none' : navDrawerShadow,
-  bottom: hideAgenda ? 'auto' : '0',
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
-  // overflow: 'auto', removed because react-beautiful-dnd only supports 1 scrolling parent
-  position: 'absolute',
-  right: 0,
-  top: 0,
-  width: ui.dashAgendaWidth,
+  overflow: 'hidden',
+  position: hideAgenda ? 'absolute' : undefined,
+  right: hideAgenda ? 0 : undefined,
+  minWidth: RightSidebar.WIDTH,
+  maxWidth: RightSidebar.WIDTH,
   '@media screen and (min-width: 800px)': {
     boxShadow: hideAgenda ? 'none' : desktopSidebarShadow
-  }
+  },
+  zIndex: 2 // make sure shadow is above cards
 }))
 
 const AgendaContent = styled('div')({
@@ -105,12 +79,15 @@ const AgendaContent = styled('div')({
   width: '100%'
 })
 
-const AgendaAndTasks = (props) => {
+interface Props {
+  viewer: AgendaAndTasks_viewer
+}
+
+const AgendaAndTasks = (props: Props) => {
   const {viewer} = props
-  const {
-    teamMember: {hideAgenda},
-    team
-  } = viewer
+  const team = viewer.team!
+  const teamMember = viewer.teamMember!
+  const {hideAgenda} = teamMember
   const {teamId, teamName} = team
   return (
     <RootBlock>
@@ -118,17 +95,11 @@ const AgendaAndTasks = (props) => {
 
       {/* Tasks */}
       <TasksMain>
-        <TasksHeader hideAgenda={hideAgenda}>
-          <Inner>
-            <TeamTasksHeaderContainer team={team} />
-          </Inner>
+        <TasksHeader>
+          <TeamTasksHeaderContainer team={team} />
         </TasksHeader>
-        <TasksContent hideAgenda={hideAgenda}>
-          <Inner>
-            <InnerOverflow>
-              <TeamColumnsContainer teamId={teamId} viewer={viewer} />
-            </InnerOverflow>
-          </Inner>
+        <TasksContent>
+          <TeamColumnsContainer teamId={teamId} viewer={viewer} />
         </TasksContent>
       </TasksMain>
 
@@ -137,17 +108,12 @@ const AgendaAndTasks = (props) => {
         <AgendaToggle hideAgenda={hideAgenda} teamId={teamId} />
         {!hideAgenda && (
           <AgendaContent>
-            <AgendaListAndInput agendaItemPhase={null} team={team} />
+            <AgendaListAndInput team={team!} />
           </AgendaContent>
         )}
       </AgendaMain>
     </RootBlock>
   )
-}
-
-AgendaAndTasks.propTypes = {
-  teamId: PropTypes.string,
-  viewer: PropTypes.object
 }
 
 export default createFragmentContainer(AgendaAndTasks, {

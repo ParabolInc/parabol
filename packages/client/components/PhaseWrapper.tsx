@@ -9,7 +9,8 @@ const PhaseWrapperStyles = styled('div')({
   flexDirection: 'column',
   height: '100%',
   alignItems: 'center',
-  justifyContent: 'center'
+  justifyContent: 'center',
+  minHeight: 0 // FF68 hack to allow discuss tasks to scroll & facilitatorbar to stay visible when shrinking viewpoint height
 })
 
 interface Props {

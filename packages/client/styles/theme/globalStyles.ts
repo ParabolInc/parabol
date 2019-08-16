@@ -22,6 +22,19 @@ const fontFaceDefinitions = fontLoader
   )
   .join('\n')
 
+// bg is important since we do a slide up animation we don't want the background to slide up, too
+// I dislike overflow immensely, but required to
+// 1) not have a bunch of white space below the app on mobile
+// 2) prevent a horizontal scrollbar from causing a vertical scrollbar due to the 100vh
+const root = `
+  #root {
+    background: ${PALETTE.BACKGROUND_MAIN};
+    margin: 0;
+    height: 100vh;
+    padding: 0;
+    width: 100%
+  }
+`
 const draftStyles = `
   .draft-blockquote {
     font-style: italic;
@@ -67,12 +80,14 @@ export default `
     padding: 0;
   }
 
+  ${root}
+    
   a {
     color: ${ui.linkColor};
     text-decoration: none;
   }
 
-  a:hover, a:focus {
+  a:hover; a:focus {
     color: ${ui.linkColorHover};
     text-decoration: none;
   }

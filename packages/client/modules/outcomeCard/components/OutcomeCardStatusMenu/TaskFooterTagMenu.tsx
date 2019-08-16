@@ -19,6 +19,7 @@ import removeContentTag from '../../../../utils/draftjs/removeContentTag'
 import isTaskPrivate from '../../../../utils/isTaskPrivate'
 import {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {AreaEnum} from '../../../../types/graphql'
+import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 
 const statusItems = labels.taskStatus.slugs.slice()
 
@@ -30,10 +31,12 @@ interface Props {
   isAgenda: boolean
   mutationProps: MenuMutationProps
   task: TaskFooterTagMenu_task
+  useTaskChild: UseTaskChild
 }
 
 const TaskFooterTagMenu = (props: Props) => {
-  const {area, menuProps, editorState, isAgenda, task} = props
+  const {area, menuProps, editorState, isAgenda, task, useTaskChild} = props
+  useTaskChild('tag')
   const atmosphere = useAtmosphere()
   const {id: taskId, status: taskStatus, tags, content, teamId} = task
   const isPrivate = isTaskPrivate(tags)

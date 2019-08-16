@@ -25,6 +25,7 @@ export const RightDrawer = styled('div')({
   minWidth: DashTimeline.TIMELINE_DRAWER_WIDTH,
   maxWidth: DashTimeline.TIMELINE_DRAWER_WIDTH,
   borderLeft: `1px solid ${PALETTE.BORDER_LIGHT}`,
+  height: 'fit-content',
   padding: 24,
   [`@media screen and (min-width: ${MIN_WIDTH}px)`]: {
     display: 'block'

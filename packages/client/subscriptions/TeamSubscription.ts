@@ -155,7 +155,7 @@ const TeamSubscription = (atmosphere, _queryVariables, subParams) => {
           dragDiscussionTopicTeamUpdater(payload, context)
           break
         case 'AddTeamMutationPayload':
-          addTeamTeamUpdater(payload, store, viewerId)
+          addTeamTeamUpdater(payload, store)
           break
         case 'ArchiveTeamPayload':
           archiveTeamTeamUpdater(payload, store, viewerId)
