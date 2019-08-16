@@ -26,22 +26,18 @@ interface Props {
 
 const OutcomeCardContainer = memo((props: Props) => {
   const {contentState, isDraggingOver, task, area, isAgenda} = props
-  const {id: taskId, editors, team} = task
+  const {id: taskId, team} = task
   const {id: teamId} = team
   const atmosphere = useAtmosphere()
-  const {viewerId} = atmosphere
   const [isTaskHovered, setIsTaskHovered] = useState(false)
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const [editorStateRef, setEditorStateRef] = useRefState<EditorState>(() => {
     return EditorState.createWithContent(contentState, editorDecorators(() => editorStateRef.current))
   })
-  const {removeTaskChild, addTaskChild, useTaskChild} = useTaskChildFocus(taskId)
-
-  const isTaskFocused = useMemo(() => {
-    return !!editors.find((editor) => editor.userId === viewerId)
-  }, [editors, viewerId])
+  const {removeTaskChild, addTaskChild, useTaskChild, isTaskFocused} = useTaskChildFocus(taskId)
 
   const handleCardUpdate = () => {
+    if (isTaskFocused()) return
     if (isAndroid) {
       const editorEl = editorRef.current
       if (!editorEl || editorEl.type !== 'textarea') return
@@ -75,30 +71,23 @@ const OutcomeCardContainer = memo((props: Props) => {
     }
   }
 
-  const setEditorState = useEventCallback((newEditorState: EditorState) => {
-    const editorState = editorStateRef.current
-    if (!editorState) return
-    const isFocused = newEditorState.getSelection().getHasFocus()
-    if (!isFocused) {
-      handleCardUpdate()
-    }
-    setEditorStateRef(newEditorState)
-  })
-
   useEffect(() => {
     const editorState = editorStateRef.current
     if (!editorState || editorState.getCurrentContent() === contentState) return
     const newContentState = mergeServerContent(editorState, contentState)
     const newEditorState = EditorState.push(editorState, newContentState, 'insert-characters')
     setEditorStateRef(newEditorState)
-  }, [contentState, editorStateRef, setEditorState])
+  }, [contentState, editorStateRef])
 
   return (
     <div
       tabIndex={-1}
       style={{outline: 'none'}}
       onFocus={() => addTaskChild('root')}
-      onBlur={() => removeTaskChild('root')}
+      onBlur={() => {
+        removeTaskChild('root')
+        setTimeout(handleCardUpdate)
+      }}
       onMouseEnter={() => setIsTaskHovered(true)}
       onMouseLeave={() => setIsTaskHovered(false)}
     >
@@ -106,12 +95,12 @@ const OutcomeCardContainer = memo((props: Props) => {
         area={area}
         editorRef={editorRef}
         editorState={editorStateRef.current}
-        isTaskFocused={isTaskFocused}
+        isTaskFocused={isTaskFocused()}
         isTaskHovered={isTaskHovered}
         isAgenda={!!isAgenda}
         isDraggingOver={isDraggingOver}
         task={task}
-        setEditorState={setEditorState}
+        setEditorState={setEditorStateRef}
         useTaskChild={useTaskChild}
       />
     </div>
