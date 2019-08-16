@@ -27,13 +27,7 @@ import startStage_ from '../../utils/startStage_'
 import unlockAllStagesForPhase from '../../utils/unlockAllStagesForPhase'
 import unlockNextStages from '../../utils/unlockNextStages'
 import initBotScript from './initBotScript'
-import initDB, {
-  demoMeetingId,
-  demoTeamId,
-  demoViewerId,
-  GitHubProjectKeyLookup,
-  JiraProjectKeyLookup
-} from './initDB'
+import initDB, {demoMeetingId, demoTeamId, demoViewerId, GitHubProjectKeyLookup, JiraProjectKeyLookup} from './initDB'
 import LocalAtmosphere from './LocalAtmosphere'
 import ms from 'ms'
 
@@ -49,7 +43,9 @@ interface DemoEvents {
   botsFinished: void
 }
 
-interface GQLDemoEmitter {new (): StrictEventEmitter<EventEmitter, DemoEvents>}
+interface GQLDemoEmitter {
+  new(): StrictEventEmitter<EventEmitter, DemoEvents>
+}
 
 class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   atmosphere: LocalAtmosphere
@@ -123,19 +119,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       })
       mutationsToFlush.length = 0
       this.pendingBotAction = undefined
-    } else {
-      const mutationThunks = [] as (() => Promise<any>)[]
-      mutationsToFlush.forEach((mutation) => {
-        if (mutation.op === 'UpdateDragLocationMutation') return
-        const thunk = () => this.ops[mutation.op](mutation.variables, mutation.botId)
-        mutationThunks.push(thunk)
-        if (mutation.op === 'EndDraggingReflectionMutation') {
-          mutationThunks.push(async () => sleep(1010))
-        }
-      })
-      for (const thunk of mutationThunks) {
-        await thunk()
-      }
     }
   }
 
@@ -369,11 +352,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
 
       const unlockedStageIds = remainingReflections.length
         ? unlockAllStagesForPhase(
-            this.db.newMeeting.phases as any,
-            NewMeetingPhaseTypeEnum.group,
-            true,
-            false
-          )
+          this.db.newMeeting.phases as any,
+          NewMeetingPhaseTypeEnum.group,
+          true,
+          false
+        )
         : []
       const unlockedStages = this.getUnlockedStages(unlockedStageIds)
       const data = {
