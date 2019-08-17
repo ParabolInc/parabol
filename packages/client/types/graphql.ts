@@ -5887,7 +5887,6 @@ export interface IRenameReflectTemplatePromptPayload {
 
 export interface ISubscription {
   __typename: 'Subscription';
-  newAuthToken: string | null;
   notificationSubscription: NotificationSubscriptionPayload;
   organizationSubscription: OrganizationSubscriptionPayload;
   taskSubscription: TaskSubscriptionPayload;
@@ -5909,7 +5908,8 @@ export type NotificationSubscriptionPayload =
   | IMeetingStageTimeLimitPayload
   | IRemoveOrgUserPayload
   | IStripeFailPaymentPayload
-  | IUser;
+  | IUser
+  | IAuthTokenPayload;
 
 export interface IAddNewFeaturePayload {
   __typename: 'AddNewFeaturePayload';
@@ -5970,6 +5970,18 @@ export interface INotificationMeetingStageTimeLimitEnd {
    * The meeting that had the time limit expire
    */
   meeting: NewMeeting;
+}
+
+/**
+ * An auth token provided by Parabol to the client
+ */
+export interface IAuthTokenPayload {
+  __typename: 'AuthTokenPayload';
+
+  /**
+   * The encoded JWT
+   */
+  id: string;
 }
 
 export type OrganizationSubscriptionPayload =
@@ -7225,65 +7237,6 @@ export interface ITimelineEventCompletedActionMeeting {
    * The meetingId that was completed, null if legacyMeetingId is present
    */
   meetingId: string;
-}
-
-/**
- * An auth token provided by Parabol to the client
- */
-export interface IAuthToken {
-  __typename: 'AuthToken';
-
-  /**
-   * A static ID so the location in the relay store is deterministic
-   */
-  id: string | null;
-
-  /**
-   * audience. the target API used in auth0. Parabol does not use this.
-   */
-  aud: string | null;
-
-  /**
-   * beta. 1 if enrolled in beta features. else absent
-   */
-  bet: number | null;
-
-  /**
-   * expiration. Time since unix epoch / 1000
-   */
-  exp: number;
-
-  /**
-   * issued at. Time since unix epoch / 1000
-   */
-  iat: number;
-
-  /**
-   * issuer. the url that gave them the token. useful for detecting environment
-   */
-  iss: string | null;
-
-  /**
-   * subscriber. userId
-   */
-  sub: string | null;
-
-  /**
-   * role. Any privileges associated with the account
-   */
-  rol: AuthTokenRole | null;
-
-  /**
-   * teams. a list of teamIds where the user is active
-   */
-  tms: string[];
-}
-
-/**
- * A role describing super user privileges
- */
-export const enum AuthTokenRole {
-  su = 'su'
 }
 
 /**

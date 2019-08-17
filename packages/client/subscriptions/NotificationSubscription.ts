@@ -38,6 +38,10 @@ const subscription = graphql`
       ...InviteToTeamMutation_notification @relay(mask: false)
       ...RemoveOrgUserMutation_notification @relay(mask: false)
 
+      ... on AuthTokenPayload {
+        id
+      }
+      
       # ConnectSocket
       ... on User {
         id
@@ -187,7 +191,14 @@ const addNewFeatureNotificationUpdater = (payload, {store}) => {
   viewer.setLinkedRecord(newFeature, 'newFeature')
 }
 
+const authTokenNotificationOnNext: NextHandler = (payload, {atmosphere}) => {
+  if (!payload) return
+  const {id} = payload as any
+  atmosphere.setAuthToken(id)
+}
+
 const onNextHandlers = {
+  AuthTokenPayload: authTokenNotificationOnNext,
   CreateTaskPayload: createTaskNotificationOnNext,
   InviteToTeamPayload: inviteToTeamNotificationOnNext,
   RemoveOrgUserPayload: removeOrgUserNotificationOnNext,

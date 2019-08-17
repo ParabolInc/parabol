@@ -3,12 +3,15 @@ import {ExecutionResult, parse, subscribe} from 'graphql'
 import Schema from '../graphql/rootSchema'
 import sendMessage from '../socketHelpers/sendMessage'
 import {getUserId} from '../utils/authorization'
-import maybeSendNewAuthToken from '../utils/maybeSendNewAuthToken'
 import relayUnsubscribe from '../utils/relayUnsubscribe'
 import relayUnsubscribeAll from '../utils/relayUnsubscribeAll'
 import RethinkDataLoader from '../utils/RethinkDataLoader'
 import sendToSentry from '../utils/sendToSentry'
 import {ExecutionResultDataDefault} from 'graphql/execution/execute'
+import ConnectionContext from '../socketHelpers/ConnectionContext'
+import AuthToken from '../database/types/AuthToken'
+import {IAuthTokenPayload} from 'parabol-client/types/graphql'
+import {decode} from 'jsonwebtoken'
 
 const {GQL_COMPLETE, GQL_DATA, GQL_ERROR} = ClientMessageTypes
 
@@ -41,7 +44,15 @@ interface Options {
   isResub?: boolean
 }
 
-const handleSubscribe = async (connectionContext, parsedMessage, options: Options = {}) => {
+interface ParsedMessage {
+  id: string
+  payload: {
+    query: string
+    variables: object | undefined
+  }
+}
+
+const handleSubscribe = async (connectionContext: ConnectionContext, parsedMessage: ParsedMessage, options: Options = {}) => {
   const {id: socketId, authToken, socket, sharedDataLoader} = connectionContext
   const {id: opId} = parsedMessage
   const {isResub} = options
@@ -83,12 +94,13 @@ const handleSubscribe = async (connectionContext, parsedMessage, options: Option
   for await (const payload of asyncIterator as AsyncIterableIterator<
     ExecutionResult<ExecutionResultDataDefault>
   >) {
-    const changedAuth = maybeSendNewAuthToken(connectionContext, payload)
-    if (changedAuth) {
+    const {data} = payload
+    if (data && data.notificationSubscription && data.notificationSubscription.__typename === 'AuthTokenPayload') {
+      const jwt = (data.notificationSubscription as IAuthTokenPayload).id
+      connectionContext.authToken = new AuthToken(decode(jwt) as any)
       // if auth changed, then we can't trust any of the subscriptions, so dump em all and resub for the client
       // delay it to guarantee that no matter when this is published, it is the last message on the mutation
       setTimeout(() => relayUnsubscribeAll(connectionContext, {isResub: true}), 1000)
-      return
     }
     sendMessage(socket, GQL_DATA, payload, opId)
   }

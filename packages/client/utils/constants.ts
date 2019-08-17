@@ -137,7 +137,6 @@ export const GITHUB_ENDPOINT = 'https://api.github.com/graphql'
 export const MAX_INT = 2147483647
 
 /* Relay Subscription Channels */
-export const NEW_AUTH_TOKEN = 'newAuthToken'
 export const NOTIFICATION = 'notification'
 export const ORGANIZATION = 'organization'
 // export const TASK = 'task'; // TODO refactor so it doesn't conflict with DnD

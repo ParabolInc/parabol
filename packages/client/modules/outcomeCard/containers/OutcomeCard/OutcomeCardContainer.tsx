@@ -1,5 +1,5 @@
 import {ContentState, convertToRaw, EditorState} from 'draft-js'
-import React, {memo, useEffect, useMemo, useRef, useState} from 'react'
+import React, {memo, useEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import editorDecorators from '../../../../components/TaskEditor/decorators'
 import OutcomeCard from '../../components/OutcomeCard/OutcomeCard'
@@ -14,7 +14,6 @@ import {OutcomeCardContainer_task} from '__generated__/OutcomeCardContainer_task
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useRefState from '../../../../hooks/useRefState'
 import useTaskChildFocus from '../../../../hooks/useTaskChildFocus'
-import useEventCallback from '../../../../hooks/useEventCallback'
 
 interface Props {
   area: AreaEnum
