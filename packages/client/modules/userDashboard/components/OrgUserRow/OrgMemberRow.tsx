@@ -24,10 +24,10 @@ import useMenu from '../../../../hooks/useMenu'
 import useModal from '../../../../hooks/useModal'
 import InactivateUserMutation from '../../../../mutations/InactivateUserMutation'
 import defaultUserAvatar from '../../../../styles/theme/images/avatar-user.svg'
-import {BILLING_LEADER, PERSONAL} from '../../../../utils/constants'
 import lazyPreload from '../../../../utils/lazyPreload'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 import {Layout} from '../../../../types/constEnums'
+import {OrgUserRole, TierEnum} from '../../../../types/graphql'
 
 const ActionsBlock = styled('div')({
   alignItems: 'center',
@@ -87,9 +87,9 @@ const OrgMemberRow = (props: Props) => {
   } = props
   const {orgId, isViewerBillingLeader, tier} = organization
   const {newUserUntil, user, role} = organizationUser
-  const isBillingLeader = role === BILLING_LEADER
+  const isBillingLeader = role === OrgUserRole.BILLING_LEADER
   const {email, inactive, picture, preferredName, userId} = user
-  const isPersonalTier = tier === PERSONAL
+  const isPersonalTier = tier === TierEnum.personal
   const isViewerLastBillingLeader =
     isViewerBillingLeader && isBillingLeader && billingLeaderCount === 1
   const {viewerId} = atmosphere

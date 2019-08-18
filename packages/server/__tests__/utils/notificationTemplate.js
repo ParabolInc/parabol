@@ -1,11 +1,11 @@
 import MockDate from 'mockdate'
 import {__now} from '../setup/mockTimes'
 import {
-  BILLING_LEADER,
   PAYMENT_REJECTED,
   PROMOTE_TO_BILLING_LEADER,
   TEAM_ARCHIVED
 } from '../../../client/utils/constants'
+import {OrgUserRole} from 'parabol-client/types/graphql'
 
 MockDate.set(__now)
 const now = new Date()
@@ -13,7 +13,7 @@ const now = new Date()
 const billingLeadersOnly = (users, orgId) =>
   users.reduce((list, user) => {
     const isBillingLeader = user.userOrgs.find(
-      (org) => org.id === orgId && org.role === BILLING_LEADER
+      (org) => org.id === orgId && org.role === OrgUserRole.BILLING_LEADER
     )
     if (isBillingLeader) {
       list.push(user.id)
@@ -21,7 +21,7 @@ const billingLeadersOnly = (users, orgId) =>
     return list
   }, [])
 
-export default function notificationTemplate (template) {
+export default function notificationTemplate(template) {
   const {type} = template
   if (type === PROMOTE_TO_BILLING_LEADER) {
     return {

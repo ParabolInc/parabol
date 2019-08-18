@@ -1686,7 +1686,7 @@ export interface IOrganizationUser {
  * The role of the org user
  */
 export const enum OrgUserRole {
-  billingLeader = 'billingLeader'
+  BILLING_LEADER = 'BILLING_LEADER'
 }
 
 export interface IOrgUserCount {

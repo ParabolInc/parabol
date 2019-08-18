@@ -1,6 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
-import OrgUserRoleEnum from './OrgUserRoleEnum'
+import OrgUserRole from './OrgUserRole'
 import User from './User'
 import Organization from './Organization'
 import {resolveOrganization, resolveUser} from '../resolvers'
@@ -42,7 +42,7 @@ const OrganizationUser = new GraphQLObjectType({
       description: 'if not a member, the datetime the user was removed from the org'
     },
     role: {
-      type: OrgUserRoleEnum,
+      type: OrgUserRole,
       description: 'role of the user in the org'
     },
     userId: {

@@ -3,8 +3,8 @@ import adjustUserCount from '../../billing/helpers/adjustUserCount'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isSuperUser} from '../../utils/authorization'
 import {ADD_USER, AUTO_PAUSE_USER} from '../../utils/serverConstants'
-import {BILLING_LEADER} from '../../../client/utils/constants'
 import standardError from '../../utils/standardError'
+import {OrgUserRole} from 'parabol-client/types/graphql'
 
 export default {
   type: GraphQLString,
@@ -35,7 +35,7 @@ export default {
         .filter({orgId, removedAt: null})
         .nth(0)
     })
-    const isBillingLeaderForOrg = newOrganizationUser.role === BILLING_LEADER
+    const isBillingLeaderForOrg = newOrganizationUser.role === OrgUserRole.BILLING_LEADER
     if (!isBillingLeaderForOrg && !su) {
       return standardError(new Error('Not organization leader'), {userId})
     }
@@ -45,7 +45,7 @@ export default {
       .getAll(userId, {index: 'userId'})
       .filter({orgId: currentOrgId, removedAt: null})
       .nth(0)
-    const isBillingLeaderForTeam = oldOrganizationUser.role === BILLING_LEADER
+    const isBillingLeaderForTeam = oldOrganizationUser.role === OrgUserRole.BILLING_LEADER
     if (!isBillingLeaderForTeam && !su) {
       return standardError(new Error('Not organization leader'), {userId})
     }

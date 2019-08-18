@@ -3,10 +3,10 @@ import getRethink from '../../../database/rethinkDriver'
 import sendEmailPromise from '../../../email/sendEmail'
 import {requireSU} from '../../../utils/authorization'
 import {UPCOMING_INVOICE_EMAIL_WARNING} from '../../../utils/serverConstants'
-import {BILLING_LEADER, PRO} from '../../../../client/utils/constants'
 import {months} from '../../../../client/utils/makeDateString'
 import makeAppLink from '../../../utils/makeAppLink'
 import {UpcomingInvoiceEmailProps} from '../../../../client/modules/email/components/UpcomingInvoiceEmail'
+import {OrgUserRole, TierEnum} from 'parabol-client/types/graphql'
 
 interface Details extends UpcomingInvoiceEmailProps {
   emailStr: string
@@ -54,7 +54,7 @@ const sendUpcomingInvoiceEmails = {
 
     const organizations = await r
       .table('Organization')
-      .getAll(PRO, {index: 'tier'})
+      .getAll(TierEnum.pro, {index: 'tier'})
       .filter((organization) =>
         r.and(
           organization('periodEnd')
@@ -89,7 +89,7 @@ const sendUpcomingInvoiceEmails = {
         billingLeaders: r
           .table('OrganizationUser')
           .getAll(organization('id'), {index: 'orgId'})
-          .filter({role: BILLING_LEADER, removedAt: null})
+          .filter({role: OrgUserRole.BILLING_LEADER, removedAt: null})
           .coerceTo('array')
           .merge((organizationUser) => ({
             user: r

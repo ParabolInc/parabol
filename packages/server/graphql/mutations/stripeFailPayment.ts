@@ -5,9 +5,9 @@ import getRethink from '../../database/rethinkDriver'
 import StripeFailPaymentPayload from '../types/StripeFailPaymentPayload'
 import publish from '../../utils/publish'
 import shortid from 'shortid'
-import {BILLING_LEADER, NOTIFICATION, PAYMENT_REJECTED} from '../../../client/utils/constants'
+import { NOTIFICATION, PAYMENT_REJECTED} from '../../../client/utils/constants'
 import StripeManager from '../../utils/StripeManager'
-import {InvoiceStatusEnum, IOrganization} from '../../../client/types/graphql'
+import {InvoiceStatusEnum, IOrganization, OrgUserRole} from '../../../client/types/graphql'
 
 export default {
   name: 'StripeFailPayment',
@@ -66,7 +66,7 @@ export default {
     const billingLeaderUserIds = await r
       .table('OrganizationUser')
       .getAll(orgId, {index: 'orgId'})
-      .filter({removedAt: null, role: BILLING_LEADER})('userId')
+      .filter({removedAt: null, role: OrgUserRole.BILLING_LEADER})('userId')
     const {last4, brand} = creditCard!
     // amount_due includes the old account_balance, so we can (kinda) atomically set this
     // we take out the charge for future services since we are ending service immediately
