@@ -124,8 +124,8 @@ const ReflectionStack = (props: Props) => {
                       meetingId={meetingId}
                       reflection={reflection}
                       phaseItemId={phaseItemId}
-                      readOnly={reflectionStack.length > 1 || readOnly}
-                      userSelect='none'
+                      readOnly={reflectionStack.length > 1 || readOnly || false}
+                      userSelect={reflectionStack.length === 1 ? undefined : 'none'}
                     />
                   </ReflectionWrapper>
                 )

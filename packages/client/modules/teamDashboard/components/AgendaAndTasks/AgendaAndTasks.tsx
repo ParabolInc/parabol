@@ -47,6 +47,7 @@ const TasksContent = styled('div')({
   flex: 1,
   height: '100%',
   margin: 0,
+  minHeight: 0,
   width: '100%',
 
   [dashTeamBreakpointUp]: {

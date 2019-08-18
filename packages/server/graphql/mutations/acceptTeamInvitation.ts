@@ -115,7 +115,7 @@ export default {
       const encodedAuthToken = encodeAuthToken(new AuthToken({tms, sub: viewerId}))
 
       // Send the new team member a welcome & a new token
-      publish(SubscriptionChannel.NOTIFICATION, viewerId, AuthTokenPayload, {id: encodedAuthToken})
+      publish(SubscriptionChannel.NOTIFICATION, viewerId, AuthTokenPayload, {tms})
 
       // remove the old notifications
       if (removedNotificationIds.length > 0) {
