@@ -5,7 +5,7 @@ import graphql from 'babel-plugin-relay/macro'
 import InlineEstimatedCost from './InlineEstimatedCost'
 import UpgradeBenefits from './UpgradeBenefits'
 import ui from '../styles/ui'
-import {BILLING_LEADER_LABEL, PRO_LABEL} from '../utils/constants'
+import {PRO_LABEL} from '../utils/constants'
 import {PRICING_LINK} from '../utils/externalLinks'
 import {UpgradeSqueeze_organization} from '../__generated__/UpgradeSqueeze_organization.graphql'
 import UpgradeCreditCardForm from '../modules/userDashboard/components/CreditCardModal/UpgradeCreditCardForm'
@@ -81,63 +81,14 @@ const ModalLink = styled('a')({
   }
 })
 
-const BillingLeaders = styled('div')({
-  lineHeight: 1.5,
-  textAlign: 'center',
-  width: '100%',
-  '& h3': {
-    fontSize: '1rem',
-    fontWeight: 600,
-    margin: '0 0 1rem'
-  },
-  '& a': {
-    color: ui.palette.mid,
-    display: 'block',
-    margin: '.5rem 0',
-    ':hover, :focus': {
-      textDecoration: 'underline'
-    }
-  }
-})
-
 const pricingLinkCopy = 'Learn About Plans & Invoicing'
 
 const UpgradeSqueeze = (props: Props) => {
   const {onSuccess, organization} = props
   const {
     orgId,
-    billingLeaders,
-    isBillingLeader,
     orgUserCount: {activeUserCount}
   } = organization
-  const hasManyBillingLeaders = billingLeaders.length !== 1
-  const emailTheBillingLeader = () => {
-    const [billingLeader] = billingLeaders
-    const preferredName = billingLeader.preferredName || ''
-    const email = billingLeader.email || ''
-    return (
-      <BillingLeaders>
-        <h3>
-          {`Contact your ${BILLING_LEADER_LABEL},`}
-          <br />
-          {`${preferredName}, to upgrade:`}
-        </h3>
-        <a href={`mailto:${email}`} title={`Email ${email}`}>
-          {email}
-        </a>
-      </BillingLeaders>
-    )
-  }
-  const emailAnyBillingLeader = () => (
-    <BillingLeaders>
-      <h3>{`Contact a ${BILLING_LEADER_LABEL} to upgrade:`}</h3>
-      {billingLeaders.map(({email}) => (
-        <a href={`mailto:${email}`} key={email} title={`Email ${email}`}>
-          {email}
-        </a>
-      ))}
-    </BillingLeaders>
-  )
   return (
     <ModalBoundary>
       <ModalContentPanel>
@@ -158,9 +109,7 @@ const UpgradeSqueeze = (props: Props) => {
         </ModalContent>
       </ModalContentPanel>
       <ModalActionPanel>
-        {isBillingLeader && <UpgradeCreditCardForm orgId={orgId} onSuccess={onSuccess} />}
-        {!isBillingLeader && !hasManyBillingLeaders && emailTheBillingLeader()}
-        {!isBillingLeader && hasManyBillingLeaders && emailAnyBillingLeader()}
+        {<UpgradeCreditCardForm orgId={orgId} onSuccess={onSuccess} />}
       </ModalActionPanel>
     </ModalBoundary>
   )
@@ -170,11 +119,6 @@ export default createFragmentContainer(UpgradeSqueeze, {
   organization: graphql`
     fragment UpgradeSqueeze_organization on Organization {
       orgId: id
-      isBillingLeader
-      billingLeaders {
-        email
-        preferredName
-      }
       orgUserCount {
         activeUserCount
       }

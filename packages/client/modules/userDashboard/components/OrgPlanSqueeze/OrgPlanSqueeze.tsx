@@ -2,7 +2,7 @@ import React from 'react'
 import LinkButton from '../../../../components/LinkButton'
 import IconLabel from '../../../../components/IconLabel'
 import PrimaryButton from '../../../../components/PrimaryButton'
-import {BILLING_LEADER_LABEL, PERSONAL_LABEL, PRO_LABEL} from '../../../../utils/constants'
+import {PERSONAL_LABEL, PRO_LABEL} from '../../../../utils/constants'
 import {PRICING_LINK} from '../../../../utils/externalLinks'
 import styled from '@emotion/styled'
 import ui from '../../../../styles/ui'
@@ -93,23 +93,6 @@ const CopyWithStatus = styled('div')({
   }
 })
 
-const EmailBlock = styled('div')({
-  margin: '1rem auto 0'
-})
-
-const Email = styled('a')({
-  color: ui.palette.mid,
-  cursor: 'pointer',
-  display: 'block',
-  fontWeight: 400,
-  lineHeight: '2rem',
-  margin: '0 auto .5rem',
-  ':hover, :focus': {
-    color: ui.palette.mid,
-    textDecoration: 'underline'
-  }
-})
-
 const StyledPrimaryButton = styled(PrimaryButton)({
   ...ui.buttonBlockStyles
 })
@@ -121,17 +104,14 @@ interface Props {
 const OrgPlanSqueeze = (props: Props) => {
   const {
     organization: {
-      isBillingLeader,
-      billingLeaders,
       orgUserCount: {activeUserCount},
-      orgId
+      id: orgId
     }
   } = props
   const toggle = (
     <StyledPrimaryButton size='medium'>{'Upgrade to the Pro Plan'}</StyledPrimaryButton>
   )
   const openUrl = (url) => () => window.open(url, '_blank')
-  const hasManyBillingLeaders = billingLeaders.length !== 1
 
   const billingLeaderSqueeze = (
     <TierPanelBody>
@@ -150,41 +130,6 @@ const OrgPlanSqueeze = (props: Props) => {
       <InlineEstimatedCost activeUserCount={activeUserCount} />
     </TierPanelBody>
   )
-
-  const makeEmail = (email) => (
-    <Email href={`mailto:${email}`} title={`Email ${email}`}>
-      {email}
-    </Email>
-  )
-
-  const nudgeTheBillingLeader = () => {
-    const {email, preferredName} = billingLeaders[0]
-    return (
-      <TierPanelBody>
-        <div>
-          {`Contact your ${BILLING_LEADER_LABEL},`}
-          <br />
-          <b>{preferredName}</b>
-          {', to upgrade:'}
-        </div>
-        {makeEmail(email)}
-      </TierPanelBody>
-    )
-  }
-
-  const nudgeAnyBillingLeader = () => {
-    return (
-      <TierPanelBody>
-        <div>{`Contact a ${BILLING_LEADER_LABEL} to upgrade:`}</div>
-        <EmailBlock>
-          {billingLeaders.map((billingLeader) => {
-            const {billingLeaderId, email} = billingLeader
-            return <div key={billingLeaderId}>{makeEmail(email)}</div>
-          })}
-        </EmailBlock>
-      </TierPanelBody>
-    )
-  }
 
   return (
     <OrgPlanSqueezeRoot>
@@ -206,9 +151,7 @@ const OrgPlanSqueeze = (props: Props) => {
             {'Upgrade to '}
             {PRO_LABEL}
           </TierPanelHeader>
-          {isBillingLeader && billingLeaderSqueeze}
-          {!isBillingLeader && !hasManyBillingLeaders && nudgeTheBillingLeader()}
-          {!isBillingLeader && hasManyBillingLeaders && nudgeAnyBillingLeader()}
+          {billingLeaderSqueeze}
         </TierPanel>
       </TierPanelLayout>
       {/* Learn More Link */}
@@ -224,13 +167,7 @@ const OrgPlanSqueeze = (props: Props) => {
 export default createFragmentContainer(OrgPlanSqueeze, {
   organization: graphql`
     fragment OrgPlanSqueeze_organization on Organization {
-      orgId: id
-      isBillingLeader
-      billingLeaders {
-        billingLeaderId: id
-        email
-        preferredName
-      }
+      id
       orgUserCount {
         activeUserCount
       }
