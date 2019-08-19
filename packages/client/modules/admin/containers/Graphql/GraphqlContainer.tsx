@@ -5,7 +5,7 @@ import styled from '@emotion/styled'
 import logoMarkPrimary from '../../../../styles/theme/images/brand/parabol-lockup-h-dark.svg'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useAuthRoute from '../../../../hooks/useAuthRoute'
-import {AuthTokenRole} from '../../../../types/graphql'
+import {AuthTokenRole} from '../../../../types/constEnums'
 
 const GQL = styled('div')({
   margin: 0,
@@ -21,7 +21,7 @@ const GraphqlContainer = () => {
   const [currentSchema, setCurrentSchema] = useState<SchemaType>('Public')
   const graphiql = useRef<GraphiQL>()
   const atmosphere = useAtmosphere()
-  useAuthRoute({role: AuthTokenRole.su})
+  useAuthRoute({role: AuthTokenRole.SUPER_USER})
 
   const publicFetcher = async ({query, variables}) => {
     return atmosphere.handleFetch({text: query} as any, variables)

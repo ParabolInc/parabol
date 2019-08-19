@@ -13,7 +13,6 @@ import CheckInPhase from './types/CheckInPhase'
 import RetrospectiveMeetingSettings from './types/RetrospectiveMeetingSettings'
 import ActionMeetingSettings from './types/ActionMeetingSettings'
 import RetrospectiveMeetingMember from './types/RetrospectiveMeetingMember'
-import AuthToken from './types/AuthToken'
 import SuggestedActionInviteYourTeam from './types/SuggestedActionInviteYourTeam'
 import SuggestedActionTryTheDemo from './types/SuggestedActionTryTheDemo'
 import SuggestedActionCreateNewTeam from './types/SuggestedActionCreateNewTeam'
@@ -61,7 +60,6 @@ export default new GraphQLSchema({
     TimelineEventCompletedRetroMeeting,
     TimelineEventCompletedActionMeeting,
     ActionMeetingSettings,
-    AuthToken,
     TaskIntegrationGitHub,
     TaskIntegrationJira,
     SuggestedIntegrationGitHub,

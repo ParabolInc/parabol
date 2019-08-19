@@ -8,7 +8,6 @@ import sendToSentry from './sendToSentry'
 import {
   IAgendaItem,
   IAtlassianAuth,
-  IAuthToken,
   ICustomPhaseItem,
   INewFeatureBroadcast,
   INotification,
@@ -29,6 +28,7 @@ import promiseAllPartial from '../../client/utils/promiseAllPartial'
 import MeetingMember from '../database/types/MeetingMember'
 import SlackAuth from '../database/types/SlackAuth'
 import SlackNotification from '../database/types/SlackNotification'
+import AuthToken from '../database/types/AuthToken'
 
 interface JiraRemoteProjectKey {
   accessToken: string
@@ -93,17 +93,17 @@ interface Tables {
 
 export default class RethinkDataLoader {
   dataLoaderOptions: DataLoader.Options<any, any>
-  authToken: null | IAuthToken
+  authToken: null | AuthToken
 
-  constructor (
-    authToken: IAuthToken | null = null,
+  constructor(
+    authToken: AuthToken | null = null,
     dataLoaderOptions: DataLoader.Options<any, any> = {}
   ) {
     this.authToken = authToken
     this.dataLoaderOptions = dataLoaderOptions
   }
 
-  private fkLoader<T = any> (
+  private fkLoader<T = any>(
     standardLoader: DataLoader<string, T>,
     field: string,
     fetchFn: (ids: string[]) => any[] | Promise<any[]>
@@ -118,7 +118,7 @@ export default class RethinkDataLoader {
     return new DataLoader<string, T[]>(batchFn, this.dataLoaderOptions)
   }
 
-  private pkLoader<T extends keyof Tables> (table: T) {
+  private pkLoader<T extends keyof Tables>(table: T) {
     // don't pass in a a filter here because they requested a specific ID, they know what they want
     const batchFn = async (keys) => {
       const r = getRethink()
@@ -324,7 +324,7 @@ export default class RethinkDataLoader {
           const teamAuth = userAuths.find((auth) => auth.teamId === teamId)
           if (!teamAuth || !teamAuth.refreshToken) return null
           const {accessToken: existingAccessToken, refreshToken} = teamAuth
-          const decodedToken = existingAccessToken && (decode(existingAccessToken) as IAuthToken)
+          const decodedToken = existingAccessToken && (decode(existingAccessToken) as any)
           const now = new Date()
           if (decodedToken && decodedToken.exp >= Math.floor(now.getTime() / 1000)) {
             return existingAccessToken

@@ -88,7 +88,9 @@ class ReflectionGroupVoting extends Component<Props> {
 
   unvote = () => {
     const {atmosphere, meeting, onError, onCompleted, reflectionGroup, submitMutation} = this.props
-    const {meetingId} = meeting
+    const {meetingId, localStage} = meeting
+    const {isComplete} = localStage!
+    if (isComplete) return
     const {reflectionGroupId} = reflectionGroup
     const handleCompleted = (res, errors) => {
       onCompleted()
@@ -112,11 +114,12 @@ class ReflectionGroupVoting extends Component<Props> {
   render () {
     const {meeting, reflectionGroup, isExpanded} = this.props
     const viewerVoteCount = reflectionGroup.viewerVoteCount || 0
-    const {settings, viewerMeetingMember} = meeting
+    const {localStage, settings, viewerMeetingMember} = meeting
     const {maxVotesPerGroup} = settings
     const {votesRemaining} = viewerMeetingMember
+    const {isComplete} = localStage!
     const upvotes = [...Array(viewerVoteCount).keys()]
-    const canVote = viewerVoteCount < maxVotesPerGroup && votesRemaining > 0
+    const canVote = viewerVoteCount < maxVotesPerGroup && votesRemaining > 0 && !isComplete
     return (
       <UpvoteColumn>
         <UpvoteRow>
@@ -142,6 +145,9 @@ class ReflectionGroupVoting extends Component<Props> {
 export default createFragmentContainer(withMutationProps(withAtmosphere(ReflectionGroupVoting)), {
   meeting: graphql`
     fragment ReflectionGroupVoting_meeting on RetrospectiveMeeting {
+      localStage {
+        isComplete
+      }
       meetingId: id
       viewerMeetingMember {
         isCheckedIn

@@ -1,4 +1,4 @@
-import React, {useRef} from 'react'
+import React from 'react'
 import CreateCard from '../../../../components/CreateCard/CreateCard'
 import MasonryCSSGrid from '../../../../components/MasonryCSSGrid'
 import NullableTask from '../../../../components/NullableTask/NullableTask'

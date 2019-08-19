@@ -44,11 +44,7 @@ const popTeamCreatedToast: OnNextHandler<AddTeamMutation_team> = (
     key: `teamCreated:${teamId}`,
     message: `Team created! Here's your new team dashboard for ${teamName}`
   })
-  // dirty hack because this payload may arrive before the new auth token does (unconfirmed, i know this can occur without the correct auth token)
-  setTimeout(() => {
-    history && history.push(`/team/${teamId}`)
-  }, 100)
-
+  history && history.push(`/team/${teamId}`)
 }
 
 export const addTeamTeamUpdater = (payload, store) => {

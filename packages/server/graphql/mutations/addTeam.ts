@@ -7,20 +7,15 @@ import {getUserId, isUserInOrg} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import shortid from 'shortid'
-import {
-  NEW_AUTH_TOKEN,
-  NOTIFICATION,
-  PERSONAL,
-  TEAM,
-  UPDATED
-} from '../../../client/utils/constants'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import addTeamValidation from './helpers/addTeamValidation'
 import rateLimit from '../rateLimit'
-import {MAX_FREE_TEAMS} from '../../utils/serverConstants'
 import getRethink from '../../database/rethinkDriver'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import standardError from '../../utils/standardError'
+import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
+import AuthTokenPayload from '../types/AuthTokenPayload'
+import {TierEnum} from 'parabol-client/types/graphql'
 
 export default {
   type: AddTeamPayload,
@@ -32,7 +27,7 @@ export default {
     }
   },
   resolve: rateLimit({perMinute: 4, perHour: 20})(
-    async (source, args, {authToken, dataLoader, socketId: mutatorId}) => {
+    async (_source, args, {authToken, dataLoader, socketId: mutatorId}) => {
       const operationId = dataLoader.share()
       const subOptions = {mutatorId, operationId}
       const r = getRethink()
@@ -69,10 +64,10 @@ export default {
         }
         return standardError(new Error('Failed input validation'), {userId: viewerId})
       }
-      if (orgTeams.length >= MAX_FREE_TEAMS) {
+      if (orgTeams.length >= Threshold.MAX_FREE_TEAMS) {
         const organization = await dataLoader.get('organizations').load(orgId)
         const {tier} = organization
-        if (tier === PERSONAL) {
+        if (tier === TierEnum.personal) {
           return standardError(new Error('Max free teams reached'), {userId: viewerId})
         }
       }
@@ -83,8 +78,8 @@ export default {
       await createTeamAndLeader(viewerId, {id: teamId, isOnboardTeam: true, ...newTeam})
 
       const tms = authToken.tms.concat(teamId)
-      sendSegmentEvent('New Team', viewerId, {orgId, teamId})
-      publish(NEW_AUTH_TOKEN, viewerId, UPDATED, {tms})
+      sendSegmentEvent('New Team', viewerId, {orgId, teamId}).catch()
+      publish(SubscriptionChannel.NOTIFICATION, viewerId, AuthTokenPayload, {tms})
       auth0ManagementClient.users.updateAppMetadata({id: viewerId}, {tms})
 
       const teamMemberId = toTeamMemberId(teamId, viewerId)
@@ -96,9 +91,9 @@ export default {
 
       const removedSuggestedActionId = await removeSuggestedAction(viewerId, 'createNewTeam')
       if (removedSuggestedActionId) {
-        publish(NOTIFICATION, viewerId, AddTeamPayload, {removedSuggestedActionId}, subOptions)
+        publish(SubscriptionChannel.NOTIFICATION, viewerId, AddTeamPayload, {removedSuggestedActionId}, subOptions)
       }
-      publish(TEAM, viewerId, AddTeamPayload, data, subOptions)
+      publish(SubscriptionChannel.TEAM, viewerId, AddTeamPayload, data, subOptions)
 
       return data
     }

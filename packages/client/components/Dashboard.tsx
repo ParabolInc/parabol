@@ -48,6 +48,7 @@ const DashMain = styled('div')({
   flexDirection: 'column',
   height: '100%',
   minHeight: 0,
+  overflow: 'auto',
   position: 'relative'
 })
 

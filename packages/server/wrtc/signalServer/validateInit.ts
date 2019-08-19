@@ -1,13 +1,13 @@
-import {IAuthToken} from '../../../client/types/graphql'
 import closeWRTC from './closeWRTC'
 import {UWebSocket} from './handleSignal'
 import sendSignal from './sendSignal'
 import WebSocketContext from './WebSocketContext'
+import AuthToken from '../../database/types/AuthToken'
 
 const validateInit = (
   ws: UWebSocket,
   payload: {type: string; [key: string]: any},
-  authToken: IAuthToken
+  authToken: AuthToken
 ) => {
   if (payload.type === 'init') {
     if (ws.context) {

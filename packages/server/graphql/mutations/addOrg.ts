@@ -9,11 +9,12 @@ import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import shortid from 'shortid'
-import {NEW_AUTH_TOKEN, NOTIFICATION, ORGANIZATION, UPDATED} from '../../../client/utils/constants'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import rateLimit from '../rateLimit'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import standardError from '../../utils/standardError'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import AuthTokenPayload from '../types/AuthTokenPayload'
 
 export default {
   type: AddOrgPayload,
@@ -29,7 +30,7 @@ export default {
     }
   },
   resolve: rateLimit({perMinute: 2, perHour: 8})(
-    async (source, args, {authToken, dataLoader, socketId: mutatorId}) => {
+    async (_source, args, {authToken, dataLoader, socketId: mutatorId}) => {
       const operationId = dataLoader.share()
       const subOptions = {mutatorId, operationId}
 
@@ -52,8 +53,8 @@ export default {
       await createTeamAndLeader(viewerId, {id: teamId, orgId, isOnboardTeam: false, ...newTeam})
 
       const tms = authToken.tms.concat(teamId)
-      sendSegmentEvent('New Org', viewerId, {orgId, teamId})
-      publish(NEW_AUTH_TOKEN, viewerId, UPDATED, {tms})
+      sendSegmentEvent('New Org', viewerId, {orgId, teamId}).catch()
+      publish(SubscriptionChannel.NOTIFICATION, viewerId, AuthTokenPayload, {tms})
       auth0ManagementClient.users.updateAppMetadata({id: viewerId}, {tms})
 
       const teamMemberId = toTeamMemberId(teamId, viewerId)
@@ -65,9 +66,9 @@ export default {
 
       const removedSuggestedActionId = await removeSuggestedAction(viewerId, 'createNewTeam')
       if (removedSuggestedActionId) {
-        publish(NOTIFICATION, viewerId, AddOrgPayload, {removedSuggestedActionId}, subOptions)
+        publish(SubscriptionChannel.NOTIFICATION, viewerId, AddOrgPayload, {removedSuggestedActionId}, subOptions)
       }
-      publish(ORGANIZATION, viewerId, AddOrgPayload, data, subOptions)
+      publish(SubscriptionChannel.ORGANIZATION, viewerId, AddOrgPayload, data, subOptions)
 
       return data
     }

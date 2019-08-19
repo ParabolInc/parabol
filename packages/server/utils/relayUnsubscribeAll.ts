@@ -1,11 +1,16 @@
-const relayUnsubscribeAll = (connectionContext, options = {}) => {
+import ConnectionContext, {ConnectionContextSub} from '../socketHelpers/ConnectionContext'
+
+interface Options {
+  isResub?: boolean
+}
+const relayUnsubscribeAll = (connectionContext: ConnectionContext, options: Options = {}) => {
   if (connectionContext.subs) {
     const opIds = Object.keys(connectionContext.subs)
     for (let ii = 0; ii < opIds.length; ii++) {
       const opId = opIds[ii]
-      const {asyncIterator} = connectionContext.subs[opId]
-      if (asyncIterator) {
-        asyncIterator.return()
+      const sub = connectionContext.subs[opId] as ConnectionContextSub
+      if (sub.asyncIterator) {
+        sub.asyncIterator.return!()
       }
     }
     connectionContext.subs = {}
