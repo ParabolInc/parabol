@@ -30,7 +30,8 @@ export const TimelineFeedItems = styled('div')({
 
 const FeedAndDrawer = styled('div')({
   display: 'flex',
-  height: '100%'
+  height: '100%',
+  overflow: 'auto'
 })
 
 const MyDashboardTimeline = (props: Props) => {

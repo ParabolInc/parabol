@@ -1,11 +1,14 @@
-import {REFRESH_JWT_AFTER} from '../utils/serverConstants'
-import sendNewAuthToken from '../socketHelpers/sendNewAuthToken'
 import wsGraphQLHandler from './wsGraphQLHandler'
-import makeAuthTokenObj from '../utils/makeAuthTokenObj'
 import {fromEpochSeconds} from '../utils/epochTime'
 import handleDisconnect from './handleDisconnect'
+import ConnectionContext from '../socketHelpers/ConnectionContext'
+import AuthToken from '../database/types/AuthToken'
+import sendMessage from '../socketHelpers/sendMessage'
+import {ClientMessageTypes} from '@mattkrick/graphql-trebuchet-client'
+import encodeAuthToken from '../utils/encodeAuthToken'
+import {Threshold} from 'parabol-client/types/constEnums'
 
-const isTmsValid = (tmsFromDB = [], tmsFromToken = []) => {
+const isTmsValid = (tmsFromDB: string[] = [], tmsFromToken: string[] = []) => {
   if (tmsFromDB.length !== tmsFromToken.length) return false
   for (let i = 0; i < tmsFromDB.length; i++) {
     if (tmsFromDB[i] !== tmsFromToken[i]) return false
@@ -13,17 +16,23 @@ const isTmsValid = (tmsFromDB = [], tmsFromToken = []) => {
   return true
 }
 
-const sendFreshTokenIfNeeded = (connectionContext, tmsDB) => {
-  const now = new Date()
-  const {authToken} = connectionContext
+const sendFreshTokenIfNeeded = (connectionContext: ConnectionContext, tmsDB: string[]) => {
+  const {authToken, socket} = connectionContext
   const {exp, tms} = authToken
   const tokenExpiration = fromEpochSeconds(exp)
-  const timeLeftOnToken = tokenExpiration - now
+  const timeLeftOnToken = tokenExpiration.getTime() - Date.now()
   const tmsIsValid = isTmsValid(tmsDB, tms)
-  if (timeLeftOnToken < REFRESH_JWT_AFTER || !tmsIsValid) {
-    const nextAuthToken = makeAuthTokenObj({...authToken, tms: tmsDB})
+  if (timeLeftOnToken < Threshold.REFRESH_JWT_AFTER || !tmsIsValid) {
+    const nextAuthToken = new AuthToken({...authToken, tms: tmsDB})
     connectionContext.authToken = nextAuthToken
-    sendNewAuthToken(connectionContext.socket, nextAuthToken)
+    sendMessage(socket, ClientMessageTypes.GQL_DATA, {
+      data: {
+        notificationSubscription: {
+          __typename: 'AuthTokenPayload',
+          id: encodeAuthToken(nextAuthToken)
+        }
+      }
+    })
   }
 }
 

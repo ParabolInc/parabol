@@ -4,7 +4,6 @@ import QueryRenderer from './QueryRenderer/QueryRenderer'
 import ActionMeeting from './ActionMeeting'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useRouter from '../hooks/useRouter'
-import NewAuthTokenSubscription from '../subscriptions/NewAuthTokenSubscription'
 import NotificationSubscription from '../subscriptions/NotificationSubscription'
 import OrganizationSubscription from '../subscriptions/OrganizationSubscription'
 import TaskSubscription from '../subscriptions/TaskSubscription'
@@ -22,7 +21,6 @@ const query = graphql`
 `
 
 const subscriptions = [
-  NewAuthTokenSubscription,
   NotificationSubscription,
   OrganizationSubscription,
   TaskSubscription,

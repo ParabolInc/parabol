@@ -125,6 +125,7 @@ const RetroGroupPhase = (props: Props) => {
           )}
           <BottomNavControl
             isBouncing={isDemoStageComplete || (!isAsync && !isComplete && isReadyToVote)}
+            disabled={isDemoRoute() && !isDemoStageComplete}
             onClick={() => gotoNext()}
             onKeyDown={handleRightArrow(() => gotoNext())}
             ref={gotoNextRef}

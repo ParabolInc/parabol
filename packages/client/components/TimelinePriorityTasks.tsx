@@ -23,10 +23,15 @@ interface Props extends WithAtmosphereProps {
 }
 
 const PriorityTasksHeader = styled('div')({
+  background: PALETTE.BACKGROUND_MAIN,
   color: PALETTE.TEXT_LIGHT,
   fontSize: 14,
   fontWeight: 600,
-  marginBottom: 16
+  paddingTop: 16,
+  paddingBottom: 16,
+  position: 'sticky',
+  top: 0,
+  zIndex: 2
 })
 
 const ActiveIcon = styled(Icon)({
@@ -36,7 +41,7 @@ const ActiveIcon = styled(Icon)({
 })
 
 const TaskList = styled('div')({
-  paddingTop: 32
+  paddingTop: 8
 })
 
 const PriorityTaskBody = styled('div')({})
@@ -82,7 +87,7 @@ const TimelinePriorityTasks = (props: Props) => {
         type={DroppableType.TASK}
       >
         {(
-          dropProvided: DroppableProvided,
+          dropProvided: DroppableProvided
         ) => (
           <TaskList>
             <PriorityTasksHeader>

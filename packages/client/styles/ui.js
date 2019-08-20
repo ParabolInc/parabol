@@ -375,7 +375,6 @@ const ui = {
   taskColumnPaddingInnerSmall: '10px',
   taskColumnPaddingInnerLarge: '15px',
   taskColumnsMaxWidth: '1334px', // (4 x 296 card max-width) + (5 x 30 - gutters around cols)
-  taskColumnsMinWidth: '1124px', // (4 x 256 card min-width) + (5 x 20 - gutters around cols)
 
   // Settings
   // ---------------------------------------------------------------------------

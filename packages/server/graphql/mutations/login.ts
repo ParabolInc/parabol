@@ -9,8 +9,6 @@ import {
 } from '../../utils/auth0Helpers'
 import {getUserId} from '../../utils/authorization'
 import {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
-import makeAuthTokenObj from '../../utils/makeAuthTokenObj'
-import encodeAuthTokenObj from '../../utils/encodeAuthTokenObj'
 import ensureDate from '../../../client/utils/ensureDate'
 import shortid from 'shortid'
 import {JOINED_PARABOL} from '../types/TimelineEventTypeEnum'
@@ -20,6 +18,8 @@ import createNewOrg from './helpers/createNewOrg'
 import createTeamAndLeader from './helpers/createTeamAndLeader'
 import addSeedTasks from './helpers/addSeedTasks'
 import standardError from '../../utils/standardError'
+import AuthToken from '../../database/types/AuthToken'
+import encodeAuthToken from '../../utils/encodeAuthToken'
 
 const handleSegment = async (userId, previousId) => {
   if (previousId) {
@@ -49,7 +49,7 @@ const login = {
       description: 'optional segment id created before they were a user'
     }
   },
-  async resolve (source, {auth0Token, isOrganic, segmentId}, {dataLoader}) {
+  async resolve (_source, {auth0Token, isOrganic, segmentId}, {dataLoader}) {
     const r = getRethink()
     const now = new Date()
 
@@ -84,7 +84,7 @@ const login = {
         return {
           userId: viewerId,
           // create a brand new auth token using the tms in our DB, not auth0s
-          authToken: encodeAuthTokenObj(makeAuthTokenObj({...authToken, tms: user.tms}))
+          authToken: encodeAuthToken(new AuthToken({...authToken, tms: user.tms}))
         }
       }
       // should never reach this line in production. that means our DB !== auth0 DB
@@ -166,7 +166,7 @@ const login = {
         })
       ])
       // ensure the return auth token has the correct tms, if !isOrganic, acceptTeamInvite will return its own with the proper tms
-      returnAuthToken = encodeAuthTokenObj(makeAuthTokenObj({...authToken, tms: [teamId]}))
+      returnAuthToken = encodeAuthToken(new AuthToken({...authToken, tms: [teamId]}))
       // create invite your team SA
       // it goes away when someone joins that team or team is deleted
 
@@ -200,7 +200,7 @@ const login = {
     }
 
     // no waiting necessary, it's just analytics
-    handleSegment(newUser.id, segmentId)
+    handleSegment(newUser.id, segmentId).catch()
 
     return {
       authToken: returnAuthToken,

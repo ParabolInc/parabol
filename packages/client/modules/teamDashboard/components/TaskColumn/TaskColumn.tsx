@@ -22,7 +22,6 @@ const Column = styled('div')<{isDragging: boolean}>(({isDragging}) => ({
     flexDirection: 'column',
     position: 'relative',
     transition: `background 300ms ${BezierCurve.DECELERATE}`,
-    width: '25%'
 }))
 
 const ColumnHeader = styled('div')({

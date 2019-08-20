@@ -19,11 +19,6 @@ import TeamCallsToAction from '../TeamCallsToAction/TeamCallsToAction'
 import {PALETTE} from '../../../../styles/paletteV2'
 // import DebugButton from '../../../userDashboard/components/UserDashMain/DebugButton'
 
-const TeamViewNavBlock = styled('div')({
-  display: 'flex',
-  flexWrap: 'nowrap'
-})
-
 const StyledButton = styled(FlatButton)({
   paddingLeft: '1rem',
   paddingRight: '1rem'
@@ -42,6 +37,7 @@ const IconButton = styled(StyledButton)({
 const TeamDashHeaderInner = styled('div')({
   alignItems: 'center',
   display: 'flex',
+  flexWrap: 'wrap',
   width: '100%'
 })
 
@@ -62,7 +58,7 @@ interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
 }
 
 class Team extends Component<Props> {
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     const {team: oldTeam} = this.props
     if (oldTeam && oldTeam.contentFilter) {
       if (!nextProps.team || nextProps.team.id !== oldTeam.id) {
@@ -71,13 +67,13 @@ class Team extends Component<Props> {
     }
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     if (this.props.team && this.props.team.contentFilter) {
       this.setContentFilter('')
     }
   }
 
-  setContentFilter (nextValue) {
+  setContentFilter(nextValue) {
     const {atmosphere, team} = this.props
     if (!team) return
     const {id: teamId} = team
@@ -103,7 +99,7 @@ class Team extends Component<Props> {
     history.push(`/team/${teamId}/`)
   }
 
-  render () {
+  render() {
     const {children, isSettings, team} = this.props
     if (!team) return null
     const {id: teamId, isPaid, meetingId} = team
@@ -134,22 +130,19 @@ class Team extends Component<Props> {
                 <EditableTeamName team={team} />
               </>
             ) : (
-              <DashSearchControl
-                onChange={this.updateFilter}
-                placeholder='Search Team Tasks & Agenda'
-              />
+              <>
+                <DashSearchControl
+                  onChange={this.updateFilter}
+                  placeholder='Search Tasks & Agenda'
+                />
+                <StyledButton aria-label='Team Settings' key='2' onClick={this.goToTeamSettings}>
+                  <IconLabel icon='settings' label='Team Settings' />
+                </StyledButton>
+                <DashboardAvatars team={team} />
+                <TeamCallsToAction teamId={teamId} />
+              </>
             )}
-            {/*<DebugButton />*/}
           </TeamDashHeaderInner>
-          <TeamViewNavBlock>
-            {!isSettings && (
-              <StyledButton aria-label='Team Settings' key='2' onClick={this.goToTeamSettings}>
-                <IconLabel icon='settings' label='Team Settings' />
-              </StyledButton>
-            )}
-            <DashboardAvatars team={team} />
-            {!isSettings && <TeamCallsToAction teamId={teamId} />}
-          </TeamViewNavBlock>
         </DashHeader>
         <DashContent hasOverlay={hasOverlay}>
           {children}

@@ -1,6 +1,5 @@
 import React, {lazy, Suspense} from 'react'
 import styled from '@emotion/styled'
-import Helmet from 'react-helmet'
 import {matchPath, Route, RouteComponentProps, Switch, withRouter} from 'react-router'
 import DashHeader from '../../../../components/Dashboard/DashHeader'
 import Tab from '../../../../components/Tab/Tab'
@@ -8,6 +7,7 @@ import Tabs from '../../../../components/Tabs/Tabs'
 import LoadingComponent from '../../../../components/LoadingComponent/LoadingComponent'
 import {LoaderSize} from '../../../../types/constEnums'
 import DashContent from 'components/Dashboard/DashContent'
+import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 
 const TopTabs = styled(Tabs)({
   marginTop: 12
@@ -25,9 +25,9 @@ const MyDashboardTimelineRoot = lazy(() =>
 const UserDashMain = (props: Props) => {
   const {history, match} = props
   const isTasks = !!matchPath(location.pathname, {path: `${match.url}/tasks`})
+  useDocumentTitle('My Dashboard | Parabol')
   return (
     <>
-      <Helmet title='My Dashboard | Parabol' />
       <DashHeader area='userDash'>
         <TopTabs activeIdx={isTasks ? 1 : 0}>
           <Tab label='TIMELINE' onClick={() => history.push('/me')} />

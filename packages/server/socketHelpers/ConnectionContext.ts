@@ -1,16 +1,29 @@
 import DataLoaderWarehouse from 'dataloader-warehouse'
 import shortid from 'shortid'
-import {IAuthToken} from '../../client/types/graphql'
 import RateLimiter from '../graphql/RateLimiter'
 import WebSocketContext from '../wrtc/signalServer/WebSocketContext'
 import {WebSocket} from '@clusterws/cws'
+import {ExecutionResult, ExecutionResultDataDefault} from 'graphql/execution/execute'
+import AuthToken from '../database/types/AuthToken'
 
 export interface UserWebSocket extends WebSocket {
   context?: WebSocketContext
 }
 
+interface PendingSub {
+  status: 'pending'
+}
+
+export interface ConnectionContextSub {
+  asyncIterator: AsyncIterableIterator<ExecutionResult<ExecutionResultDataDefault>>
+}
+
+interface Subs {
+  [opId: string]: PendingSub | ConnectionContextSub
+}
+
 class ConnectionContext {
-  authToken: IAuthToken
+  authToken: AuthToken
   availableResubs: any[] = []
   cancelKeepAlive: NodeJS.Timeout | null = null
   id = shortid.generate()
@@ -18,7 +31,7 @@ class ConnectionContext {
   rateLimiter: RateLimiter
   socket: UserWebSocket
   sharedDataLoader: DataLoaderWarehouse
-  subs: any = {}
+  subs: Subs = {}
   constructor (socket, authToken, sharedDataLoader, rateLimiter) {
     this.authToken = authToken
     this.rateLimiter = rateLimiter

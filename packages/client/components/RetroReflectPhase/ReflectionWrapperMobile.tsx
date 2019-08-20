@@ -20,7 +20,7 @@ const slideContainer = {
 const StepperDots = styled('div')({
   alignItems: 'center',
   display: 'flex',
-  paddingTop: 16
+  padding: '16px 0'
 })
 
 const StepperDot = styled('div')<{isLocal: boolean, isFocused: boolean}>(({isLocal, isFocused}) => ({

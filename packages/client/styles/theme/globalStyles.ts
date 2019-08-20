@@ -31,7 +31,6 @@ const root = `
     background: ${PALETTE.BACKGROUND_MAIN};
     margin: 0;
     height: 100vh;
-    overflow: auto;
     padding: 0;
     width: 100%
   }

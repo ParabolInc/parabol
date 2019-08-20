@@ -1,8 +1,8 @@
 import {useEffect, useRef} from 'react'
-import {Set} from 'immutable'
 import EditTaskMutation from '../mutations/EditTaskMutation'
 import useAtmosphere from './useAtmosphere'
 import useRefState from './useRefState'
+import useEventCallback from './useEventCallback'
 
 export type TaskChildName =
   'root'
@@ -16,7 +16,7 @@ export type UseTaskChild = (taskChildName: TaskChildName) => void
 
 const useTaskChildFocus = (taskId: string) => {
   const atmosphere = useAtmosphere()
-  const [activeEditingComponentsRef, setActiveEditingComponents] = useRefState(() => Set())
+  const [editingChildNameRef, setEditingChildName] = useRefState('')
   const lastIsEditingRef = useRef(false)
   const queueTimerRef = useRef<number | undefined>()
   useEffect(() => {
@@ -24,10 +24,15 @@ const useTaskChildFocus = (taskId: string) => {
       window.clearTimeout(queueTimerRef.current)
     }
   }, [])
+
+  const isTaskFocused = useEventCallback(() => {
+    return editingChildNameRef.current !== ''
+  })
+
   const queueEdit = () => {
     window.clearTimeout(queueTimerRef.current)
     queueTimerRef.current = window.setTimeout(() => {
-      const isEditing = !activeEditingComponentsRef.current.isEmpty()
+      const isEditing = isTaskFocused()
       if (lastIsEditingRef.current !== isEditing) {
         lastIsEditingRef.current = isEditing
         EditTaskMutation(atmosphere, taskId, isEditing)
@@ -36,11 +41,13 @@ const useTaskChildFocus = (taskId: string) => {
   }
 
   const addTaskChild = (taskChildName: TaskChildName) => {
-    setActiveEditingComponents(activeEditingComponentsRef.current.add(taskChildName))
+    setEditingChildName(taskChildName)
     queueEdit()
   }
+
   const removeTaskChild = (taskChildName: TaskChildName) => {
-    setActiveEditingComponents(activeEditingComponentsRef.current.remove(taskChildName))
+    if (editingChildNameRef.current !== taskChildName) return
+    setEditingChildName('')
     queueEdit()
   }
 
@@ -52,7 +59,8 @@ const useTaskChildFocus = (taskId: string) => {
       }
     }, [])
   }
-  return {addTaskChild, removeTaskChild, useTaskChild}
+
+  return {addTaskChild, removeTaskChild, useTaskChild, isTaskFocused}
 }
 
 export default useTaskChildFocus
