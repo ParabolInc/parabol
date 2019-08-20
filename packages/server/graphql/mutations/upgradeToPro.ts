@@ -44,7 +44,12 @@ export default {
 
     // RESOLUTION
     // if they downgrade & are re-upgrading, they'll already have a stripeId
-    await upgradeToPro(orgId, stripeToken)
+    try {
+      await upgradeToPro(orgId, stripeToken)
+    } catch (e) {
+      return standardError(e.param ? new Error(e.param) : e, {userId: viewerId})
+    }
+
     await r.table('OrganizationUser')
       .getAll(viewerId, {index: 'userId'})
       .filter({removedAt: null, orgId})

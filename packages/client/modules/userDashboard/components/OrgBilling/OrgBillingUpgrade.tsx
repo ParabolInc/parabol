@@ -1,0 +1,76 @@
+import React from 'react'
+import Panel from '../../../../components/Panel/Panel'
+import OrgBillingReassuranceQuote from './OrgBillingReassuranceQuote'
+import UpgradeBenefits from '../../../../components/UpgradeBenefits'
+import PrimaryButton from '../../../../components/PrimaryButton'
+import styled from '@emotion/styled'
+import DialogTitle from '../../../../components/DialogTitle'
+import useModal from '../../../../hooks/useModal'
+import CreditCardModal from '../CreditCardModal/CreditCardModal'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
+import {OrgBillingUpgrade_organization} from '__generated__/OrgBillingUpgrade_organization.graphql'
+import {TierEnum} from '../../../../types/graphql'
+
+const Inner = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  flexDirection: 'column',
+  padding: 24
+})
+
+const Quotes = styled(OrgBillingReassuranceQuote)({
+  paddingBottom: 16
+})
+
+const ButtonBlock = styled('div')({
+  paddingTop: 16
+})
+
+const Title = styled(DialogTitle)({
+  display: 'flex',
+  justifyContent: 'center'
+})
+
+interface Props {
+  organization: OrgBillingUpgrade_organization
+}
+
+const OrgBillingUpgrade = (props: Props) => {
+  const {organization} = props
+  const {id: orgId, tier, orgUserCount} = organization
+  const {activeUserCount} = orgUserCount
+  const {togglePortal, closePortal, modalPortal} = useModal()
+  return (
+    <>
+      {modalPortal(<CreditCardModal actionType={'upgrade'} closePortal={closePortal} orgId={orgId}
+                                    activeUserCount={activeUserCount} />)}
+      {tier === TierEnum.personal &&
+      <Panel>
+        <Title>Upgrade to Pro</Title>
+        <Inner>
+          <Quotes />
+          <UpgradeBenefits />
+          <ButtonBlock>
+            <PrimaryButton onClick={togglePortal}>{'Upgrade Now'}</PrimaryButton>
+          </ButtonBlock>
+        </Inner>
+      </Panel>
+      }
+    </>
+  )
+}
+
+export default createFragmentContainer(
+  OrgBillingUpgrade,
+  {
+    organization: graphql`
+      fragment OrgBillingUpgrade_organization on Organization {
+        id
+        tier
+        orgUserCount {
+          activeUserCount
+        }
+      }`
+  }
+)

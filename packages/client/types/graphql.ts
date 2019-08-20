@@ -1549,19 +1549,19 @@ export interface ICreditCard {
   __typename: 'CreditCard';
 
   /**
-   * The brand of the credit card, as provided by skype
+   * The brand of the credit card, as provided by stripe
    */
-  brand: string | null;
+  brand: string;
 
   /**
    * The MM/YY string of the expiration date
    */
-  expiry: string | null;
+  expiry: string;
 
   /**
    * The last 4 digits of a credit card
    */
-  last4: number | null;
+  last4: string;
 }
 
 /**

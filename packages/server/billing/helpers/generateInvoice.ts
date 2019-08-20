@@ -338,7 +338,7 @@ export default async function generateInvoice (
   const paidAt = status === InvoiceStatusEnum.PAID ? now : undefined
 
   const {organization, billingLeaderEmails} = await r({
-    organization: r.table('Organization').get('orgId'),
+    organization: r.table('Organization').get(orgId),
     billingLeaderEmails: r
       .table('OrganizationUser')
       .getAll(orgId, {index: 'orgId'})

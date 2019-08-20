@@ -1,12 +1,9 @@
-import React, {useEffect, useState} from 'react'
+import React from 'react'
 import styled from '@emotion/styled'
-import {PRO_LABEL} from '../utils/constants'
-import Confetti from './Confetti'
-import DialogTitle from './DialogTitle'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import SecondaryButton from './SecondaryButton'
 import DialogContainer from './DialogContainer'
-import rocket from '../styles/theme/images/emoji/emoji_u1f680.png'
+import wearyCat from '../styles/theme/images/emoji/emoji_u1f640.png'
 
 const Emoji = styled('img')({
   padding: 24
@@ -25,36 +22,34 @@ const Container = styled(DialogContainer)({
   alignItems: 'center'
 })
 
+const CopySpacer = styled(InvitationDialogCopy)({
+  paddingTop: 16
+})
+
 interface Props {
   closePortal: () => void
 }
 
-const UpgradeSuccess = (props: Props) => {
-  const [active, setActive] = useState(false)
-  useEffect(() => {
-    setTimeout(() => {
-      setActive(true)
-    }, 150)
-  }, [])
+const UpgradeLater = (props: Props) => {
   const {closePortal} = props
   return (
     <Container>
-      <Emoji src={rocket} />
-      <DialogTitle>{'Upgraded!'}</DialogTitle>
-      <InvitationDialogCopy>{'Your organization is'}</InvitationDialogCopy>
+      <Emoji src={wearyCat}/>
+      <InvitationDialogCopy>{'Your organization has exceeded'}</InvitationDialogCopy>
+      <InvitationDialogCopy>{'the free tier limit of '}<b>{'2 teams'}</b>{'.'}</InvitationDialogCopy>
+      <CopySpacer>
+        {'We sent you an email so'}
+      </CopySpacer>
       <InvitationDialogCopy>
-        {'now on the '}
-        <b>{PRO_LABEL}</b>
-        {' tier'}
+        {'you can upgrade later'}
       </InvitationDialogCopy>
       <ButtonBlock>
         <ModalButton size='large' onClick={closePortal}>
           {'Back to Business'}
         </ModalButton>
       </ButtonBlock>
-      <Confetti active={active} />
     </Container>
   )
 }
 
-export default UpgradeSuccess
+export default UpgradeLater

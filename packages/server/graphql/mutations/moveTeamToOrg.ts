@@ -19,7 +19,7 @@ export default {
       description: 'The ID of the organization you want to move the team to'
     }
   },
-  async resolve (source, {teamId, orgId}, {authToken}) {
+  async resolve (_source, {teamId, orgId}, {authToken}) {
     const r = getRethink()
     // AUTH
     const userId = getUserId(authToken)

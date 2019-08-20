@@ -1,5 +1,8 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {LocalHandlers, StandardMutation} from '../types/relayMutations'
+import {UpgradeToProMutation as TUpgradeToProMutation} from '../__generated__/UpgradeToProMutation.graphql'
+
 graphql`
   fragment UpgradeToProMutation_organization on UpgradeToProPayload {
     organization {
@@ -8,7 +11,7 @@ graphql`
         last4
         expiry
       }
-      #don't request tier because we set that locally to allow for the animation to play
+      tier
       periodEnd
       periodStart
       updatedAt
@@ -37,13 +40,10 @@ const mutation = graphql`
   }
 `
 
-const UpgradeToProMutation = (environment, orgId, stripeToken, onError, onCompleted) => {
-  return commitMutation(environment, {
+const UpgradeToProMutation: StandardMutation<TUpgradeToProMutation> = (atmosphere, variables, {onError, onCompleted}: LocalHandlers = {} ) => {
+  return commitMutation(atmosphere, {
     mutation,
-    variables: {
-      orgId,
-      stripeToken
-    },
+    variables,
     onCompleted,
     onError
   })

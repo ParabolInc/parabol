@@ -3,7 +3,6 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import LinkButton from '../../components/LinkButton'
 import IconLabel from '../../components/IconLabel'
-import {PRICING_LINK} from '../../utils/externalLinks'
 import styled from '@emotion/styled'
 import ui from '../../styles/ui'
 import {cardShadow} from '../../styles/elevation'
@@ -11,7 +10,7 @@ import appTheme from '../../styles/theme/appTheme'
 import NewTeamForm from './components/NewTeamForm/NewTeamForm'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import {NewTeam_viewer} from '../../__generated__/NewTeam_viewer.graphql'
-import {Breakpoint} from '../../types/constEnums'
+import {Breakpoint, ExternalLinks} from '../../types/constEnums'
 
 const NewTeamLayout = styled('div')({
   alignItems: 'center',
@@ -87,7 +86,7 @@ const NewTeam = (props: Props) => {
                 don't share your email domain. New Organizations
                 start out on the Free Personal Plan.`}
               </HelpCopy>
-              <LearnMoreLink palette='blue' onClick={() => window.open(PRICING_LINK, '_blank')}>
+              <LearnMoreLink palette='blue' onClick={() => window.open(ExternalLinks.PRICING_LINK, '_blank')}>
                 <IconLabel icon={ui.iconExternalLink} iconAfter label='Learn More' />
               </LearnMoreLink>
             </HelpBlock>

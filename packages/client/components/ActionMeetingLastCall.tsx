@@ -48,7 +48,8 @@ const ActionMeetingLastCall = (props: Props) => {
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
   const {viewerId} = atmosphere
   const {isMeetingSidebarCollapsed, newMeeting} = team
-  const {facilitator, facilitatorUserId, id: meetingId, phases} = newMeeting!
+  if (!newMeeting) return null
+  const {facilitator, facilitatorUserId, id: meetingId, phases} = newMeeting
   const agendaItemPhase = phases.find(
     (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.agendaitems
   )!
