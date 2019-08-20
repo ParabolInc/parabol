@@ -53,7 +53,8 @@ const ColumnContent = styled('div')({
 })
 
 const HeaderAndEditor = styled('div')({
-  flex: 0.3
+  flex: 0.3,
+  paddingBottom: 16
 })
 
 const Prompt = styled('div')({
@@ -173,7 +174,7 @@ const PhaseItemColumn = (props: Props) => {
         !cardsInFlightRef.current.find((card) => card.key === group.reflections[0].content)
     )
     return groups
-  }, [reflectionGroups, retroPhaseItemId, cardsInFlightRef])
+  }, [reflectionGroups, retroPhaseItemId, cardsInFlightRef.current])
 
 
   const reflectionStack = useMemo(() => {

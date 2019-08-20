@@ -12,10 +12,10 @@ interface Props {
 const MyDashboardTasks = (props: Props) => {
   const {viewer} = props
   return (
-    <React.Fragment>
+    <>
       <UserTasksHeaderContainer viewer={viewer} />
       <UserColumnsContainer viewer={viewer} />
-    </React.Fragment>
+    </>
   )
 }
 

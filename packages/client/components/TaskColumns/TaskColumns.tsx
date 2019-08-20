@@ -15,20 +15,13 @@ import dndNoise from '../../utils/dndNoise'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import UpdateTaskMutation from '../../mutations/UpdateTaskMutation'
 
-const RootBlock = styled('div')({
-  display: 'flex',
-  flex: '1',
-  height: '100%',
-  width: '100%'
-})
-
 const ColumnsBlock = styled('div')({
   display: 'flex',
   flex: '1',
   height: '100%',
   margin: '0 auto',
   maxWidth: ui.taskColumnsMaxWidth,
-  minWidth: ui.taskColumnsMinWidth,
+  overflow: 'auto',
   padding: `0 ${ui.taskColumnPaddingInnerSmall}`,
   width: '100%',
 
@@ -76,7 +69,7 @@ const TaskColumns = (props: Props) => {
       if (destination.index === 0) {
         const firstTask = destinationTasks[0]
         sortOrder = (firstTask ? firstTask.sortOrder + SORT_STEP : 0) + dndNoise()
-      } else if (isSameColumn && destination.index === destinationTasks.length -1 || !isSameColumn && destination.index === destinationTasks.length) {
+      } else if (isSameColumn && destination.index === destinationTasks.length - 1 || !isSameColumn && destination.index === destinationTasks.length) {
         sortOrder = destinationTasks[destinationTasks.length - 1].sortOrder - SORT_STEP + dndNoise()
       } else {
         const offset = !isSameColumn || source.index > destination.index ? -1 : 1
@@ -91,26 +84,24 @@ const TaskColumns = (props: Props) => {
       UpdateTaskMutation(atmosphere, {updatedTask, area})
     })
   return (
-    <RootBlock>
-      <DragDropContext onDragEnd={onDragEnd}>
-        <ColumnsBlock>
-          {lanes.map((status) => (
-            <TaskColumn
-              key={status}
-              area={area}
-              isMyMeetingSection={isMyMeetingSection}
-              meetingId={meetingId}
-              myTeamMemberId={myTeamMemberId}
-              teamMemberFilterId={teamMemberFilterId}
-              tasks={groupedTasks[status]}
-              status={status}
-              teams={teams}
-            />
-          ))}
-        </ColumnsBlock>
-        <EditorHelpModalContainer />
-      </DragDropContext>
-    </RootBlock>
+    <DragDropContext onDragEnd={onDragEnd}>
+      <ColumnsBlock>
+        {lanes.map((status) => (
+          <TaskColumn
+            key={status}
+            area={area}
+            isMyMeetingSection={isMyMeetingSection}
+            meetingId={meetingId}
+            myTeamMemberId={myTeamMemberId}
+            teamMemberFilterId={teamMemberFilterId}
+            tasks={groupedTasks[status]}
+            status={status}
+            teams={teams}
+          />
+        ))}
+      </ColumnsBlock>
+      <EditorHelpModalContainer />
+    </DragDropContext>
   )
 }
 

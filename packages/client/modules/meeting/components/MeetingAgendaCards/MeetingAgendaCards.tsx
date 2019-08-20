@@ -1,4 +1,4 @@
-import React, {useRef} from 'react'
+import React from 'react'
 import CreateCard from '../../../../components/CreateCard/CreateCard'
 import MasonryCSSGrid from '../../../../components/MasonryCSSGrid'
 import NullableTask from '../../../../components/NullableTask/NullableTask'
@@ -37,13 +37,10 @@ interface Props {
 }
 
 const MeetingAgendaCards = (props: Props) => {
-  const {maxCols, showPlaceholders, tasks} = props
+  const {maxCols, showPlaceholders, tasks, agendaId, meetingId, reflectionGroupId, teamId} = props
   const atmosphere = useAtmosphere()
-  const propsRef = useRef(props)
-  propsRef.current = props
   const handleAddTask = useEventCallback(() => {
     const {viewerId} = atmosphere
-    const {tasks, agendaId, meetingId, reflectionGroupId, teamId} = propsRef.current
     const maybeLastTask = tasks[tasks.length - 1]
     const newTask = {
       status: TaskStatusEnum.active,

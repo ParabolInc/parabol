@@ -2,7 +2,6 @@ import ms from 'ms'
 
 export const JWT_LIFESPAN = ms('30d')
 export const TEAM_INVITATION_LIFESPAN = ms('7d')
-export const REFRESH_JWT_AFTER = ms('15d')
 export const AUTO_PAUSE_THRESH = ms('30d')
 export const OLD_MEETING_AGE = ms('1d')
 export const UPCOMING_INVOICE_EMAIL_WARNING = ms('4d')

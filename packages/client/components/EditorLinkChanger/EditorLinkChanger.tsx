@@ -24,11 +24,17 @@ const TextBlock = styled('div')({
   marginBottom: '.5rem'
 })
 
+const InputBlock = styled('div')({
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column'
+})
+
 const InputLabel = styled('span')({
   display: 'block',
-  fontSize: '.9375rem',
+  fontSize: 15,
   fontWeight: 600,
-  lineHeight: '2rem',
+  lineHeight: '40px',
   marginRight: '.5rem'
 })
 
@@ -116,19 +122,23 @@ const EditorLinkChanger = (props: Props) => {
         {text !== null && (
           <TextBlock>
             <InputLabel>{'Text'}</InputLabel>
-            <BasicInput {...fields.text} onChange={onChange} autoFocus name='text' />
+            <InputBlock>
+              <BasicInput {...fields.text} onChange={onChange} autoFocus name='text' />
+            </InputBlock>
           </TextBlock>
         )}
         <TextBlock>
           <InputLabel>{'Link'}</InputLabel>
-          <BasicInput
-            {...fields.link}
-            value={fields.link.value === null ? '' : fields.link.value}
-            autoFocus={link === null && text !== ''}
-            onChange={onChange}
-            name='link'
-            spellCheck={false}
-          />
+          <InputBlock>
+            <BasicInput
+              {...fields.link}
+              value={fields.link.value === null ? '' : fields.link.value}
+              autoFocus={link === null && text !== ''}
+              onChange={onChange}
+              name='link'
+              spellCheck={false}
+            />
+          </InputBlock>
         </TextBlock>
         <ButtonBlock>
           <RaisedButton disabled={hasError} onClick={onSubmit} palette='mid'>

@@ -8,7 +8,7 @@ import DashboardAvatar from './DashboardAvatar'
 
 const AvatarsList = styled('div')({
   display: 'flex',
-  width: '100%'
+  justifyContent: 'flex-end',
 })
 
 const AvatarItem = styled('div')({

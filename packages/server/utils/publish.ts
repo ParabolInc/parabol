@@ -1,7 +1,7 @@
 import getPubSub from './getPubSub'
 import {GraphQLObjectType} from 'graphql'
 
-type Topic = 'team' | 'organization' | 'notification' | 'newAuthToken' | 'task'
+type Topic = 'team' | 'organization' | 'notification' | 'task'
 
 export interface SubOptions {
   mutatorId?: string

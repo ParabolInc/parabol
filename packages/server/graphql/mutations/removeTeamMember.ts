@@ -4,9 +4,10 @@ import RemoveTeamMemberPayload from '../types/RemoveTeamMemberPayload'
 import {auth0ManagementClient} from '../../utils/auth0Helpers'
 import {getUserId, isTeamLead} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {NEW_AUTH_TOKEN, TASK, TEAM, UPDATED} from '../../../client/utils/constants'
 import fromTeamMemberId from '../../../client/utils/relay/fromTeamMemberId'
 import standardError from '../../utils/standardError'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import AuthTokenPayload from '../types/AuthTokenPayload'
 
 export default {
   type: RemoveTeamMemberPayload,
@@ -17,7 +18,7 @@ export default {
       description: 'The teamMemberId of the person who is being removed'
     }
   },
-  async resolve (source, {teamMemberId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(_source, {teamMemberId}, {authToken, dataLoader, socketId: mutatorId}) {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
@@ -38,7 +39,7 @@ export default {
 
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const {tms} = user
-    publish(NEW_AUTH_TOKEN, userId, UPDATED, {tms})
+    publish(SubscriptionChannel.NOTIFICATION, userId, AuthTokenPayload, {tms})
     auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
 
     const taskIds = [...archivedTaskIds, ...reassignedTaskIds]
@@ -51,15 +52,15 @@ export default {
       userId
     }
     // messages to the rest of the team reporting the kick out
-    publish(TEAM, teamId, RemoveTeamMemberPayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, RemoveTeamMemberPayload, data, subOptions)
     teamMembers.forEach(({teamMemberUserId}) => {
       // don't send updated tasks to the person being kicked out
       if (teamMemberUserId === userId) return
-      publish(TASK, teamMemberUserId, RemoveTeamMemberPayload, data, subOptions)
+      publish(SubscriptionChannel.TASK, teamMemberUserId, RemoveTeamMemberPayload, data, subOptions)
     })
 
     // individualized message to the user getting kicked out
-    publish(TEAM, userId, RemoveTeamMemberPayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, userId, RemoveTeamMemberPayload, data, subOptions)
 
     return data
   }

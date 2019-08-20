@@ -6,6 +6,7 @@ const ProviderCard = styled('div')({
   borderRadius: 4,
   boxShadow: cardShadow,
   display: 'flex',
+  flexShrink: 0,
   justifyContent: 'flex-start',
   margin: '8px 0',
   padding: 16,
