@@ -7,15 +7,9 @@ import {auth0ManagementClient} from '../../utils/auth0Helpers'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {REMOVE_USER} from '../../utils/serverConstants'
-import {
-  NEW_AUTH_TOKEN,
-  NOTIFICATION,
-  ORGANIZATION,
-  TASK,
-  TEAM,
-  UPDATED
-} from '../../../client/utils/constants'
 import standardError from '../../utils/standardError'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import AuthTokenPayload from '../types/AuthTokenPayload'
 
 const removeOrgUser = {
   type: RemoveOrgUserPayload,
@@ -30,7 +24,7 @@ const removeOrgUser = {
       description: 'the org that does not want them anymore'
     }
   },
-  async resolve (source, {orgId, userId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(_source, {orgId, userId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
@@ -49,7 +43,7 @@ const removeOrgUser = {
     const teamMemberIds = await r
       .table('TeamMember')
       .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter({userId, isNotRemoved: true})('id')
+      .filter({userId, isNotRemoved: true})('id') as string[]
 
     const perTeamRes = await Promise.all(
       teamMemberIds.map((teamMemberId) => {
@@ -57,17 +51,17 @@ const removeOrgUser = {
       })
     )
 
-    const taskIds = perTeamRes.reduce((arr, res) => {
+    const taskIds = perTeamRes.reduce((arr: string[], res) => {
       arr.push(...res.archivedTaskIds, ...res.reassignedTaskIds)
       return arr
     }, [])
 
-    const removedTeamNotifications = perTeamRes.reduce((arr, res) => {
+    const removedTeamNotifications = perTeamRes.reduce((arr: any[], res) => {
       arr.push(...res.removedNotifications)
       return arr
     }, [])
 
-    const kickOutNotificationIds = perTeamRes.reduce((arr, res) => {
+    const kickOutNotificationIds = perTeamRes.reduce((arr: string[], res) => {
       arr.push(res.notificationId)
       return arr
     }, [])
@@ -121,7 +115,7 @@ const removeOrgUser = {
     }
 
     const {tms} = user
-    publish(NEW_AUTH_TOKEN, userId, UPDATED, {tms})
+    publish(SubscriptionChannel.NOTIFICATION, userId, AuthTokenPayload, {tms})
     auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
 
     const data = {
@@ -136,17 +130,17 @@ const removeOrgUser = {
       organizationUserId: organizationUser.id
     }
 
-    publish(ORGANIZATION, orgId, RemoveOrgUserPayload, data, subOptions)
-    publish(NOTIFICATION, userId, RemoveOrgUserPayload, data, subOptions)
+    publish(SubscriptionChannel.ORGANIZATION, orgId, RemoveOrgUserPayload, data, subOptions)
+    publish(SubscriptionChannel.NOTIFICATION, userId, RemoveOrgUserPayload, data, subOptions)
     teamIds.forEach((teamId) => {
       const teamData = {...data, teamFilterId: teamId}
-      publish(TEAM, teamId, RemoveOrgUserPayload, teamData, subOptions)
+      publish(SubscriptionChannel.TEAM, teamId, RemoveOrgUserPayload, teamData, subOptions)
     })
 
     const remainingTeamMembers = await dataLoader.get('teamMembersByTeamId').loadMany(teamIds)
     remainingTeamMembers.forEach((teamMember) => {
       if (teamMemberIds.includes(teamMember.id)) return
-      publish(TASK, teamMember.userId, RemoveOrgUserPayload, data, subOptions)
+      publish(SubscriptionChannel.TASK, teamMember.userId, RemoveOrgUserPayload, data, subOptions)
     })
     return data
   }

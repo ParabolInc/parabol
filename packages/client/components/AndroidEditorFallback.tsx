@@ -16,6 +16,7 @@ interface Props {
 }
 
 const TextAreaStyles = styled(TextArea)({
+  backgroundColor: 'transparent',
   border: 0,
   fontSize: cardContentFontSize,
   lineHeight: cardContentLineHeight,

@@ -6,8 +6,10 @@ import {getUserId, isTeamLead} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import shortid from 'shortid'
-import {NEW_AUTH_TOKEN, TEAM, TEAM_ARCHIVED, UPDATED} from '../../../client/utils/constants'
 import standardError from '../../utils/standardError'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {NotificationEnum} from 'parabol-client/types/graphql'
+import AuthTokenPayload from '../types/AuthTokenPayload'
 
 export default {
   type: ArchiveTeamPayload,
@@ -17,7 +19,7 @@ export default {
       description: 'The teamId to archive (or delete, if team is unused)'
     }
   },
-  async resolve (source, {teamId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(_source, {teamId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
@@ -30,7 +32,7 @@ export default {
     }
 
     // RESOLUTION
-    sendSegmentEvent('Archive Team', viewerId, {teamId})
+    sendSegmentEvent('Archive Team', viewerId, {teamId}).catch()
     const {team, users, removedTeamNotifications, removedSuggestedActionIds} = await r({
       team: r
         .table('Team')
@@ -89,7 +91,7 @@ export default {
       .map((notifiedUserId) => ({
         id: shortid.generate(),
         startAt: now,
-        type: TEAM_ARCHIVED,
+        type: NotificationEnum.TEAM_ARCHIVED,
         userIds: [notifiedUserId],
         teamId
       }))
@@ -103,12 +105,12 @@ export default {
       removedTeamNotifications,
       removedSuggestedActionIds
     }
-    publish(TEAM, teamId, ArchiveTeamPayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, ArchiveTeamPayload, data, subOptions)
 
     users.forEach((user) => {
       const {id, tms} = user
       auth0ManagementClient.users.updateAppMetadata({id}, {tms})
-      publish(NEW_AUTH_TOKEN, id, UPDATED, {tms})
+      publish(SubscriptionChannel.NOTIFICATION, id, AuthTokenPayload, {tms})
     })
 
     return data

@@ -114,12 +114,17 @@ export const enum RightSidebar {
 }
 
 export const enum SubscriptionChannel {
+  TASK = 'task',
   TEAM = 'team',
-  NEW_AUTH_TOKEN = 'newAuthToken',
   NOTIFICATION = 'notification',
   ORGANIZATION = 'organization',
 }
 
+export const enum Threshold {
+  JWT_LIFESPAN = 2592000000, // 30 days
+  REFRESH_JWT_AFTER = 1296000000, // 15 days
+  MAX_FREE_TEAMS = 10
+}
 export const enum Times {
   HUMAN_ADDICTION_THRESH = 300,
   MAX_WAIT_TIME = 5000,
@@ -133,4 +138,8 @@ export const enum ZIndex {
   MODAL = 400 /*should be 24, https://github.com/ParabolInc/action/issues/2772 */,
   SIDEBAR = 200,
   SNACKBAR = 200
+}
+
+export const enum AuthTokenRole {
+  SUPER_USER = 'su'
 }

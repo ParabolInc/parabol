@@ -386,6 +386,23 @@ const initBotScript = () => {
           dragId: 'botDrag3'
         }
       },
+      // dummy op to make the user wait until dragging is complete
+      {
+        op: 'UpdateDragLocationMutation',
+        delay: 500,
+        botId: 'bot1',
+        variables: {
+          input: {
+            clientHeight: window.innerHeight,
+            clientWidth: window.innerWidth,
+            coords: {x: 1, y: 1},
+            sourceId: 'botRef3',
+            teamId: demoTeamId,
+            targetId: 'botGroup1',
+            targetOffset: {x: 10, y: 20}
+          }
+        }
+      },
     ],
     voteStage: [
       {

@@ -2,10 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import rateLimit from '../rateLimit'
 import {getUserId, isAuthenticated} from '../../utils/authorization'
-import encodeAuthTokenObj from '../../utils/encodeAuthTokenObj'
-import makeAuthTokenObj from '../../utils/makeAuthTokenObj'
 import publish from '../../utils/publish'
-import {NEW_AUTH_TOKEN, NOTIFICATION, TEAM, UPDATED} from '../../../client/utils/constants'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import acceptTeamInvitation from '../../safeMutations/acceptTeamInvitation'
 import standardError from '../../utils/standardError'
@@ -13,6 +10,10 @@ import AcceptTeamInvitationPayload from '../types/AcceptTeamInvitationPayload'
 import TeamInvitation from '../../database/types/TeamInvitation'
 import {verifyMassInviteToken} from '../../utils/massInviteToken'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
+import AuthToken from '../../database/types/AuthToken'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import AuthTokenPayload from '../types/AuthTokenPayload'
+import encodeAuthToken from '../../utils/encodeAuthToken'
 
 export default {
   type: new GraphQLNonNull(AcceptTeamInvitationPayload),
@@ -111,22 +112,24 @@ export default {
         removedNotificationIds
       }
 
+      const encodedAuthToken = encodeAuthToken(new AuthToken({tms, sub: viewerId}))
+
       // Send the new team member a welcome & a new token
-      publish(NEW_AUTH_TOKEN, viewerId, UPDATED, {tms})
+      publish(SubscriptionChannel.NOTIFICATION, viewerId, AuthTokenPayload, {tms})
 
       // remove the old notifications
       if (removedNotificationIds.length > 0) {
-        publish(NOTIFICATION, viewerId, AcceptTeamInvitationPayload, data, subOptions)
+        publish(SubscriptionChannel.NOTIFICATION, viewerId, AcceptTeamInvitationPayload, data, subOptions)
       }
 
       // Tell the rest of the team about the new team member
-      publish(TEAM, teamId, AcceptTeamInvitationPayload, data, subOptions)
+      publish(SubscriptionChannel.TEAM, teamId, AcceptTeamInvitationPayload, data, subOptions)
 
       // Give the team lead new suggested actions
       if (teamLeadUserIdWithNewActions) {
         // the team lead just needs data about themselves. alternatively we could make an eg AcceptTeamInvitationTeamLeadPayload, but nulls are just as good
         publish(
-          NOTIFICATION,
+          SubscriptionChannel.NOTIFICATION,
           teamLeadUserIdWithNewActions,
           AcceptTeamInvitationPayload,
           {teamLeadId: teamLeadUserIdWithNewActions},
@@ -136,7 +139,7 @@ export default {
       sendSegmentEvent('Invite Accepted', viewerId, {teamId}).catch()
       return {
         ...data,
-        authToken: encodeAuthTokenObj(makeAuthTokenObj({...authToken, tms}))
+        authToken: encodedAuthToken
       }
     }
   )

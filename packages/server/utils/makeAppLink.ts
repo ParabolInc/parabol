@@ -10,7 +10,7 @@ interface Options {
   isWebhook?: boolean
 }
 
-export default function makeAppLink (location: string, options: Options = {}) {
+export default function makeAppLink (location: string = '', options: Options = {}) {
   const {qs, isWebhook} = options
   const proto = process.env.PROTO || 'http'
   const host = process.env.HOST || 'localhost'

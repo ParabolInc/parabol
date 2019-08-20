@@ -17,6 +17,7 @@ interface Props {
 
 const ButtonBlock = styled('div')({
   display: 'flex',
+  justifyContent: 'flex-end',
   minWidth: '14rem',
   paddingLeft: ui.dashGutterSmall,
 

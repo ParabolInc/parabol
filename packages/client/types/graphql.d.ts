@@ -1908,62 +1908,62 @@ export interface IInvoice {
   /**
    * A shortid for the invoice
    */
-  id: string;
+  id: string | null;
 
   /**
    * The amount the card will be charged (total + startingBalance with a min value of 0)
    */
-  amountDue: number;
+  amountDue: number | null;
 
   /**
    * The datetime the invoice was first generated
    */
-  createdAt: any;
+  createdAt: any | null;
 
   /**
    * The total amount for the invoice (in USD)
    */
-  total: number;
+  total: number | null;
 
   /**
    * The emails the invoice was sent to
    */
-  billingLeaderEmails: any[];
+  billingLeaderEmails: (any | null)[] | null;
 
   /**
    * the card used to pay the invoice
    */
-  creditCard: ICreditCard;
+  creditCard: ICreditCard | null;
 
   /**
    * The timestamp for the end of the billing cycle
    */
-  endAt: any;
+  endAt: any | null;
 
   /**
    * The date the invoice was created
    */
-  invoiceDate: any;
+  invoiceDate: any | null;
 
   /**
    * An invoice line item for previous month adjustments
    */
-  lines: IInvoiceLineItem[];
+  lines: IInvoiceLineItem[] | null;
 
   /**
    * The details that comprise the charges for next month
    */
-  nextMonthCharges: IInvoiceChargeNextMonth;
+  nextMonthCharges: IInvoiceChargeNextMonth | null;
 
   /**
    * *The organization id to charge
    */
-  orgId: string;
+  orgId: string | null;
 
   /**
    * The persisted name of the org as it was when invoiced
    */
-  orgName: string;
+  orgName: string | null;
 
   /**
    * the datetime the invoice was successfully paid
@@ -1978,17 +1978,17 @@ export interface IInvoice {
   /**
    * The timestamp for the beginning of the billing cycle
    */
-  startAt: any;
+  startAt: any | null;
 
   /**
    * The balance on the customer account (in cents)
    */
-  startingBalance: number;
+  startingBalance: number | null;
 
   /**
    * the status of the invoice. starts as pending, moves to paid or unpaid depending on if the payment succeeded
    */
-  status: InvoiceStatusEnum;
+  status: InvoiceStatusEnum | null;
 }
 
 /**
@@ -2015,7 +2015,7 @@ export interface IInvoiceLineItem {
   /**
    * Array of user activity line items that roll up to total activity (add/leave/pause/unpause)
    */
-  details: IInvoiceLineItemDetails[];
+  details: IInvoiceLineItemDetails[] | null;
 
   /**
    * The total number of days that all org users have been inactive during the billing cycle
@@ -2025,7 +2025,7 @@ export interface IInvoiceLineItem {
   /**
    * The line item type for a monthly billing invoice
    */
-  type: InvoiceLineItemEnum;
+  type: InvoiceLineItemEnum | null;
 }
 
 /**
@@ -2047,7 +2047,7 @@ export interface IInvoiceLineItemDetails {
   /**
    * The email affected by this line item change
    */
-  email: any;
+  email: any | null;
 
   /**
    * End of the event. Only present if a pause action gets matched up with an unpause action
@@ -2089,17 +2089,17 @@ export interface IInvoiceChargeNextMonth {
   /**
    * The datetime the next period will end
    */
-  nextPeriodEnd: any;
+  nextPeriodEnd: any | null;
 
   /**
    * The total number of days that all org users have been inactive during the billing cycle
    */
-  quantity: number;
+  quantity: number | null;
 
   /**
    * The per-seat monthly price of the subscription (in dollars)
    */
-  unitPrice: number;
+  unitPrice: number | null;
 }
 
 /**
@@ -5887,6 +5887,7 @@ export interface IRenameReflectTemplatePromptPayload {
 
 export interface ISubscription {
   __typename: 'Subscription';
+  newAuthToken: string | null;
   notificationSubscription: NotificationSubscriptionPayload;
   organizationSubscription: OrganizationSubscriptionPayload;
   taskSubscription: TaskSubscriptionPayload;
@@ -5908,8 +5909,7 @@ export type NotificationSubscriptionPayload =
   | IMeetingStageTimeLimitPayload
   | IRemoveOrgUserPayload
   | IStripeFailPaymentPayload
-  | IUser
-  | IAuthTokenPayload;
+  | IUser;
 
 export interface IAddNewFeaturePayload {
   __typename: 'AddNewFeaturePayload';
@@ -5970,18 +5970,6 @@ export interface INotificationMeetingStageTimeLimitEnd {
    * The meeting that had the time limit expire
    */
   meeting: NewMeeting;
-}
-
-/**
- * An auth token provided by Parabol to the client
- */
-export interface IAuthTokenPayload {
-  __typename: 'AuthTokenPayload';
-
-  /**
-   * The encoded JWT
-   */
-  id: string;
 }
 
 export type OrganizationSubscriptionPayload =
@@ -7237,6 +7225,65 @@ export interface ITimelineEventCompletedActionMeeting {
    * The meetingId that was completed, null if legacyMeetingId is present
    */
   meetingId: string;
+}
+
+/**
+ * An auth token provided by Parabol to the client
+ */
+export interface IAuthToken {
+  __typename: 'AuthToken';
+
+  /**
+   * A static ID so the location in the relay store is deterministic
+   */
+  id: string | null;
+
+  /**
+   * audience. the target API used in auth0. Parabol does not use this.
+   */
+  aud: string | null;
+
+  /**
+   * beta. 1 if enrolled in beta features. else absent
+   */
+  bet: number | null;
+
+  /**
+   * expiration. Time since unix epoch / 1000
+   */
+  exp: number;
+
+  /**
+   * issued at. Time since unix epoch / 1000
+   */
+  iat: number;
+
+  /**
+   * issuer. the url that gave them the token. useful for detecting environment
+   */
+  iss: string | null;
+
+  /**
+   * subscriber. userId
+   */
+  sub: string | null;
+
+  /**
+   * role. Any privileges associated with the account
+   */
+  rol: AuthTokenRole | null;
+
+  /**
+   * teams. a list of teamIds where the user is active
+   */
+  tms: string[];
+}
+
+/**
+ * A role describing super user privileges
+ */
+export const enum AuthTokenRole {
+  su = 'su'
 }
 
 /**

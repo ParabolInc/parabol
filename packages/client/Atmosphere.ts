@@ -1,7 +1,4 @@
-import GQLTrebuchetClient, {
-  GQLHTTPClient,
-  OperationPayload
-} from '@mattkrick/graphql-trebuchet-client'
+import GQLTrebuchetClient, {GQLHTTPClient, OperationPayload} from '@mattkrick/graphql-trebuchet-client'
 import getTrebuchet, {SocketTrebuchet, SSETrebuchet} from '@mattkrick/trebuchet-client'
 import {InviteToTeamMutation_notification} from './__generated__/InviteToTeamMutation_notification.graphql'
 import EventEmitter from 'eventemitter3'
@@ -23,12 +20,11 @@ import {
 import defaultGetDataID from 'relay-runtime/lib/defaultGetDataID'
 import StrictEventEmitter from 'strict-event-emitter-types'
 import LinearPublishQueue from 'relay-linear-publish-queue'
-import NewAuthTokenSubscription from './subscriptions/NewAuthTokenSubscription'
-import {APP_TOKEN_KEY, NEW_AUTH_TOKEN} from './utils/constants'
+import {APP_TOKEN_KEY} from './utils/constants'
 import handlerProvider from './utils/relay/handlerProvider'
 import {MasonryDragEndPayload} from './components/PhaseItemMasonry'
-import {IAuthToken} from './types/graphql'
 import {Snack, SnackbarRemoveFn} from './components/Snackbar'
+import AuthToken from 'parabol-server/database/types/AuthToken'
 
 // import sleep from './/utils/sleep'
 
@@ -88,7 +84,7 @@ export default class Atmosphere extends Environment {
 
   transport!: GQLHTTPClient | GQLTrebuchetClient
   authToken: string | null = null
-  authObj: IAuthToken | null = null
+  authObj: AuthToken | null = null
   querySubscriptions: QuerySubscription[] = []
   queryTimeouts: {
     [queryKey: string]: number
@@ -225,7 +221,6 @@ export default class Atmosphere extends Environment {
       return
     }
     this.transport = new GQLTrebuchetClient(trebuchet)
-    this.addAuthTokenSubscriber()
     this.eventEmitter.emit('newSubscriptionClient')
   }
 
@@ -235,25 +230,6 @@ export default class Atmosphere extends Environment {
       this.upgradeTransportPromise = this.promiseToUpgrade()
     }
     return this.upgradeTransportPromise
-  }
-
-  addAuthTokenSubscriber () {
-    if (!this.authToken) throw new Error('No Auth Token provided!')
-    const {params} = getRequest(NewAuthTokenSubscription().subscription)
-    const documentId = params && params.id
-    if (!documentId) throw new Error(`No documentId found for request params ${params}`)
-    const transport = this.transport as GQLTrebuchetClient
-    transport.operations[NEW_AUTH_TOKEN] = {
-      id: NEW_AUTH_TOKEN,
-      payload: {documentId},
-      observer: {
-        onNext: (payload) => {
-          this.setAuthToken(payload.authToken)
-        },
-        onCompleted: noop,
-        onError: noop
-      }
-    }
   }
 
   handleFetch = async (

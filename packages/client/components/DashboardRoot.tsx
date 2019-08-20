@@ -2,10 +2,7 @@ import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import QueryRenderer from './QueryRenderer/QueryRenderer'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../decorators/withAtmosphere/withAtmosphere'
-import NewAuthTokenSubscription from '../subscriptions/NewAuthTokenSubscription'
+import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import NotificationSubscription from '../subscriptions/NotificationSubscription'
 import OrganizationSubscription from '../subscriptions/OrganizationSubscription'
 import TaskSubscription from '../subscriptions/TaskSubscription'
@@ -22,7 +19,6 @@ const query = graphql`
 `
 
 const subscriptions = [
-  NewAuthTokenSubscription,
   NotificationSubscription,
   TaskSubscription,
   TeamSubscription,

@@ -21,7 +21,7 @@ const handleGraphQLTrebuchetRequest = async (
   connectionContext: ConnectionContext,
   options: Options = {}
 ) => {
-  const {id: opId} = data
+  const opId = data.id!
   switch (data.type) {
     case GQL_START:
       const {payload} = data

@@ -35,6 +35,7 @@ import PhaseWrapper from './PhaseWrapper'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {ElementWidth} from '../types/constEnums'
+import {PALETTE} from '../styles/paletteV2'
 
 interface Props extends WithAtmosphereProps, RetroMeetingPhaseProps {
   team: RetroDiscussPhase_team
@@ -50,8 +51,12 @@ const HeaderContainer = styled('div')({
 })
 
 const LabelContainer = styled('div')({
+  background: PALETTE.BACKGROUND_MAIN,
   margin: '0 1.25rem',
-  padding: '0 0 .625rem'
+  padding: '0 0 .625rem',
+  position: 'sticky',
+  top: 0,
+  zIndex: 2
 })
 
 const DiscussHeader = styled('div')({
@@ -112,7 +117,6 @@ const Column = styled('div')({
   flex: 1,
   flexDirection: 'column',
   height: '100%',
-  overflow: 'auto',
   width: '100%'
 })
 
