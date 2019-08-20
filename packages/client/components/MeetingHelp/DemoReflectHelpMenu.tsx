@@ -14,7 +14,7 @@ const DemoReflectHelpMenu = forwardRef((_props: Props, ref: any) => {
   if (staggerShow > permShow) permShow = staggerShow
   return (
     <HelpMenuContent closePortal={closePortal}>
-      <HelpMenuHeader>Welcome to the Parabol Retro Demo!</HelpMenuHeader>
+      <HelpMenuHeader>It Starts with Brutal Honesty</HelpMenuHeader>
       <DelayedCopy show={permShow} thresh={1}>
         The team just finished a sprint and is reflecting on how it went.
       </DelayedCopy>
