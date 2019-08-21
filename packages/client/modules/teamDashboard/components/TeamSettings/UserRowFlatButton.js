@@ -6,9 +6,9 @@ const UserRowFlatButton = styled('div')({
   color: appTheme.palette.dark,
   cursor: 'pointer',
   display: 'inline-block',
-  fontSize: appTheme.typography.s3,
+  fontSize: 14,
   fontWeight: 600,
-  lineHeight: appTheme.typography.s5,
+  lineHeight: '20px',
   marginLeft: '1.25rem',
   verticalAlign: 'middle',
 

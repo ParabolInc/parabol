@@ -30,7 +30,7 @@ const EditableAvatarEditOverlay = styled('div')(({hasPanel, size}) => ({
   cursor: 'pointer',
   display: 'flex',
   flexDirection: 'column',
-  fontSize: appTheme.typography.s3,
+  fontSize: 14,
   fontWeight: 600,
   height: size,
   justifyContent: 'center',

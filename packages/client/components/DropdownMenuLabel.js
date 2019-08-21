@@ -7,9 +7,9 @@ const DropdownMenuLabel = styled('div')(({isEmpty}) => ({
   ...textOverflow,
   borderBottom: `1px solid ${appTheme.palette.mid30l}`,
   color: ui.palette.dark,
-  fontSize: ui.menuItemFontSize,
+  fontSize: 15,
   fontWeight: 600,
-  lineHeight: ui.menuItemHeight,
+  lineHeight: '32px',
   marginBottom: isEmpty ? '-' + ui.menuGutterVertical : ui.menuGutterVertical,
   padding: `0 16px`,
   userSelect: 'none'

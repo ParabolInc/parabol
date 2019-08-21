@@ -3,7 +3,6 @@ import formError from '../../../../styles/helpers/formError'
 import {normalizeExpiry, normalizeNumeric} from './normalizers'
 import styled from '@emotion/styled'
 import ui from '../../../../styles/ui'
-import appTheme from '../../../../styles/theme/appTheme'
 import withAtmosphere, {WithAtmosphereProps} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import withAsync from 'react-async-hoc'
 import * as Sentry from '@sentry/browser'
@@ -23,7 +22,7 @@ const borderBottom = '.125rem solid transparent'
 
 const LockIcon = styled(Icon)({
   fontSize: MD_ICONS_SIZE_18,
-  lineHeight: appTheme.typography.s5,
+  lineHeight: '20px',
   marginRight: '.2em'
 })
 
@@ -79,7 +78,7 @@ const CardCvc = styled('div')({
 const ErrorMsg = styled('div')({
   ...formError,
   marginTop: '1rem',
-  fontSize: appTheme.typography.s2
+  fontSize: 13
 })
 
 const ButtonGroup = styled('div')({
@@ -279,7 +278,7 @@ class UpgradeCreditCardForm extends React.Component<Props, State> {
     }
   }
 
-  render() {
+  render () {
     const {isUpdate, dirty, error, submitting} = this.props
     const {cardTypeIcon, creditCardNumber, expiry, cvc} = this.state
     const actionLabel = isUpdate ? 'Update Credit Card' : 'Upgrade to Pro'

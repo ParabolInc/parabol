@@ -18,7 +18,7 @@ const label = {
   color: ui.colorText,
   display: 'block',
   flex: 1,
-  fontSize: appTheme.typography.s1,
+  fontSize: 12,
   fontWeight: 400,
   lineHeight: '24px',
   maxWidth: '100%',

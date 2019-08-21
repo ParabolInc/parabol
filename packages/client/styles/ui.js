@@ -13,7 +13,7 @@ import makeShadowColor from './helpers/makeShadowColor'
 
 // Breakpoints
 // #deprecated use breakpoints.js instead of ui.breakpoint object (TA)
-const BREAKPOINT_WIDER = '@media (min-width: 100rem)'
+const BREAKPOINT_WIDER = '@media (min-width: 100rem)' // Breakpoints.Dashboard
 
 // Control sizes (used by buttons and fields)
 const CONTROL_SIZE_SMALL = 'small'
@@ -168,7 +168,7 @@ const ui = {
   // ---------------------------------------------------------------------------
   // #deprecated move these values to cards.js as needed,
   // but make sure they are consistent when temporarily duped (TA)
-  cardBorderColor: appTheme.palette.mid30l,
+  cardBorderColor: appTheme.palette.mid30l, // PALETTE.BORDER_MAIN
   cardBorderRadius: borderRadiusMedium,
   cardButtonHeight: '1.5rem',
   cardContentFontSize: '.875rem',
@@ -307,19 +307,6 @@ const ui = {
   iconSize,
   iconExternalLink,
 
-  // Invoice
-  // ---------------------------------------------------------------------------
-  invoiceBorderColor: appTheme.palette.mid40l,
-  invoiceBorderColorLighter: appTheme.palette.mid20l,
-  invoiceBreakpoint: '@media (min-width: 32rem)',
-  invoiceItemBaseStyles: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    width: '100%'
-  },
-  invoicePanelGutterSmall: '.75rem',
-  invoicePanelGutterLarge: '1.25rem',
-
   // Label Headings
   // ---------------------------------------------------------------------------
   labelHeadingColor: midGray,
@@ -337,12 +324,7 @@ const ui = {
   // ---------------------------------------------------------------------------
   menuBorderRadius: borderRadiusSmall,
   menuGutterVertical: '.5rem',
-  menuItemBackgroundColorHover: appTheme.palette.light50a,
   menuItemBackgroundColorActive: appTheme.palette.light,
-  menuItemColor: appTheme.palette.dark,
-  menuItemColorHoverActive: appTheme.palette.dark50d,
-  menuItemFontSize: '.9375rem',
-  menuItemHeight: '2rem',
 
   // Modals
   // ---------------------------------------------------------------------------

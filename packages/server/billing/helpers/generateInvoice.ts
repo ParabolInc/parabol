@@ -4,14 +4,12 @@ import {fromEpochSeconds} from '../../utils/epochTime'
 import {AUTO_PAUSE_USER, PAUSE_USER, UNPAUSE_USER} from '../../utils/serverConstants'
 import shortid from 'shortid'
 import Stripe from 'stripe'
-import {
-  BILLING_LEADER,
-  FAILED,
-  OTHER_ADJUSTMENTS,
-  PAID,
-  PENDING,
-  UPCOMING
-} from '../../../client/utils/constants'
+import {BILLING_LEADER} from '../../../client/utils/constants'
+import Invoice from '../../database/types/Invoice'
+import {InvoiceLineItemEnum, InvoiceStatusEnum} from 'parabol-client/types/graphql'
+import InvoiceLineItemDetail from '../../database/types/InvoiceLineItemDetail'
+import QuantityChangeLineItem from '../../database/types/QuantityChangeLineItem'
+import InvoiceLineItemOtherAdjustments from '../../database/types/InvoiceLineItemOtherAdjustments'
 
 // type type = 'pauseUser' | 'unpauseUser' | 'autoPauseUser' | 'addUser' | 'removeUser'
 interface InvoicesByStartTime {
@@ -58,8 +56,8 @@ interface ReducedStandardPartial extends ReducedItemBase {
 }
 
 interface ReducedItem extends ReducedItemBase {
-  startAt?: Date
-  endAt?: Date
+  startAt?: Date | null
+  endAt?: Date | null
 }
 
 interface ReducedItemsByType {
@@ -67,18 +65,6 @@ interface ReducedItemsByType {
   removeUser: ReducedStandardPartial[]
   pauseUser: ReducedStandardPartial[]
   unpauseUser: ReducedUnpausePartial[]
-}
-
-interface QuantityChangeDetail extends ReducedItem {
-  parentId: string
-}
-
-interface QuantityChangeLineItem {
-  id: string
-  amount: number
-  details: QuantityChangeDetail[]
-  quantity: number
-  type: keyof DetailedLineItemDict
 }
 
 interface DetailedLineItemDict {
@@ -169,19 +155,19 @@ const makeDetailedPauseEvents = (
 
 const makeQuantityChangeLineItems = (detailedLineItems: DetailedLineItemDict) => {
   const quantityChangeLineItems: QuantityChangeLineItem[] = []
-  const lineItemTypes = Object.keys(detailedLineItems) as (keyof DetailedLineItemDict)[]
+  const lineItemTypes = Object.keys(detailedLineItems) as InvoiceLineItemEnum[]
   for (let i = 0; i < lineItemTypes.length; i++) {
     const lineItemType = lineItemTypes[i]
     const details = detailedLineItems[lineItemType] as ReducedItem[]
     if (details.length > 0) {
       const id = shortid.generate()
-      quantityChangeLineItems.push({
+      quantityChangeLineItems.push(new QuantityChangeLineItem({
         id,
         amount: details.reduce((sum, detail) => sum + detail.amount, 0),
-        details: details.map((doc) => ({...doc, parentId: id})),
+        details: details.map((doc) => new InvoiceLineItemDetail({...doc, parentId: id})),
         quantity: details.length,
-        type: lineItemType
-      })
+        type: lineItemType as InvoiceLineItemEnum
+      }))
     }
   }
   return quantityChangeLineItems
@@ -323,12 +309,10 @@ export default async function generateInvoice (
   const detailedLineItems = await makeDetailedLineItems(itemDict)
   const quantityChangeLineItems = makeQuantityChangeLineItems(detailedLineItems)
   const invoiceLineItems = [
-    ...unknownInvoiceLines.map((item) => ({
-      id: shortid.generate(),
+    ...unknownInvoiceLines.map((item) => new InvoiceLineItemOtherAdjustments({
       amount: item.amount,
       description: item.description,
-      quantity: item.quantity,
-      type: OTHER_ADJUSTMENTS
+      quantity: item.quantity
     })),
     ...quantityChangeLineItems
   ].sort((a, b) => (a.type > b.type ? 1 : -1))
@@ -348,45 +332,44 @@ export default async function generateInvoice (
   const [type] = invoiceId.split('_')
   const isUpcoming = type === 'upcoming'
 
-  let status = isUpcoming ? UPCOMING : PENDING
-  if (status === PENDING && invoice.closed === true) {
-    status = invoice.paid ? PAID : FAILED
+  let status = isUpcoming ? InvoiceStatusEnum.UPCOMING : InvoiceStatusEnum.PENDING
+  if (status === InvoiceStatusEnum.PENDING && invoice.closed === true) {
+    status = invoice.paid ? InvoiceStatusEnum.PAID : InvoiceStatusEnum.FAILED
   }
-  const paidAt = status === PAID ? now : undefined
+  const paidAt = status === InvoiceStatusEnum.PAID ? now : undefined
 
-  return r
-    .table('Organization')
-    .get(orgId)
-    .do((org) => {
-      return r.table('Invoice').insert(
-        {
-          id: invoiceId,
-          amountDue: invoice.amount_due,
-          createdAt: now,
-          total: invoice.total,
-          billingLeaderEmails: r
-            .table('OrganizationUser')
-            .getAll(orgId, {index: 'orgId'})
-            .filter({removedAt: null, role: BILLING_LEADER})
-            .coerceTo('array')('userId')
-            .do((userIds) => {
-              return r.table('User').getAll(userIds, {index: 'id'})('email')
-            })
-            .coerceTo('array'),
-          creditCard: org('creditCard').default({}),
-          endAt: fromEpochSeconds(invoice.period_end),
-          invoiceDate: fromEpochSeconds(invoice.date),
-          lines: invoiceLineItems,
-          nextMonthCharges,
-          orgId,
-          orgName: org('name').default(null),
-          paidAt,
-          picture: org('picture').default(null),
-          startAt: fromEpochSeconds(invoice.period_start),
-          startingBalance: invoice.starting_balance,
-          status
-        },
-        {conflict: 'replace', returnChanges: true}
-      )('changes')(0)('new_val')
-    })
+  const {organization, billingLeaderEmails} = await r({
+    organization: r.table('Organization').get(orgId),
+    billingLeaderEmails: r
+      .table('OrganizationUser')
+      .getAll(orgId, {index: 'orgId'})
+      .filter({removedAt: null, role: BILLING_LEADER})
+      .coerceTo('array')('userId')
+      .do((userIds) => {
+        return r.table('User').getAll(userIds, {index: 'id'})('email')
+      })
+      .coerceTo('array')
+  })
+
+  const dbInvoice = new Invoice({
+    id: invoiceId,
+    amountDue: invoice.amount_due,
+    createdAt: now,
+    total: invoice.total,
+    billingLeaderEmails,
+    creditCard: organization.creditCard,
+    endAt: fromEpochSeconds(invoice.period_end),
+    invoiceDate: fromEpochSeconds(invoice.date),
+    lines: invoiceLineItems,
+    nextMonthCharges,
+    orgId,
+    orgName: organization.name,
+    paidAt,
+    picture: organization.picture,
+    startAt: fromEpochSeconds(invoice.period_start),
+    startingBalance: invoice.starting_balance,
+    status
+  })
+
+  return r.table('Invoice').insert(dbInvoice, {conflict: 'replace', returnChanges: true})('changes')(0)('new_val')
 }

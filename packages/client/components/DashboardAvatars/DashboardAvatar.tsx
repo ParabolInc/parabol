@@ -21,7 +21,7 @@ const AvatarAndTag = styled('div')({
   flexDirection: 'column',
   alignItems: 'center'
 })
-const AvatarTag = styled(Tag)<{isLead: boolean}>(({isLead}) => ({
+const AvatarTag = styled(Tag)<{isLead?: boolean | null}>(({isLead}) => ({
   bottom: '-1.5rem',
   marginLeft: 0,
   opacity: isLead ? 1 : 0,

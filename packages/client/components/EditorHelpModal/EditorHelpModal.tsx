@@ -24,7 +24,7 @@ const ModalHeaderIcon = styled('div')({
 })
 
 const ModalHeaderTitle = styled('div')({
-  fontSize: appTheme.typography.s5,
+  fontSize: 20,
   marginLeft: '1rem'
 })
 
@@ -42,8 +42,8 @@ const CloseButton = styled(IconButton)({
 const HelpList = styled('div')<{listIndex: number}>(({listIndex}) => ({
   border: `.0625rem solid ${appTheme.palette.mid30l}`,
   color: appTheme.palette.dark50d,
-  fontSize: appTheme.typography.s2,
-  lineHeight: appTheme.typography.s4,
+  fontSize: 13,
+  lineHeight: '18x',
   margin: listIndex === 0 ? '0 auto' : '1rem auto 0',
   minWidth: 0,
   textAlign: 'left'
@@ -86,9 +86,9 @@ const HeaderLabelBlock = styled('div')({
 
 const HeaderLabel = styled('div')({
   color: ui.palette.dark,
-  fontSize: appTheme.typography.s2,
+  fontSize: 13,
   fontWeight: 600,
-  lineHeight: appTheme.typography.s4,
+  lineHeight: '18x',
   padding: '1rem .5rem .25rem',
   textAlign: 'left',
   textTransform: 'uppercase',

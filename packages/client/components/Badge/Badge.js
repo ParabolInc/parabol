@@ -11,7 +11,7 @@ const BadgeRoot = styled('div')(({colorPalette, flat}) => ({
   borderRadius: '1rem',
   boxShadow: !flat && boxShadow,
   color: ui.palette.white,
-  fontSize: appTheme.typography.s1,
+  fontSize: 12,
   fontWeight: 600,
   height: '1rem',
   lineHeight: '1rem',

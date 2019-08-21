@@ -1908,62 +1908,62 @@ export interface IInvoice {
   /**
    * A shortid for the invoice
    */
-  id: string | null;
+  id: string;
 
   /**
    * The amount the card will be charged (total + startingBalance with a min value of 0)
    */
-  amountDue: number | null;
+  amountDue: number;
 
   /**
    * The datetime the invoice was first generated
    */
-  createdAt: any | null;
+  createdAt: any;
 
   /**
    * The total amount for the invoice (in USD)
    */
-  total: number | null;
+  total: number;
 
   /**
    * The emails the invoice was sent to
    */
-  billingLeaderEmails: (any | null)[] | null;
+  billingLeaderEmails: any[];
 
   /**
    * the card used to pay the invoice
    */
-  creditCard: ICreditCard | null;
+  creditCard: ICreditCard;
 
   /**
    * The timestamp for the end of the billing cycle
    */
-  endAt: any | null;
+  endAt: any;
 
   /**
    * The date the invoice was created
    */
-  invoiceDate: any | null;
+  invoiceDate: any;
 
   /**
    * An invoice line item for previous month adjustments
    */
-  lines: IInvoiceLineItem[] | null;
+  lines: IInvoiceLineItem[];
 
   /**
    * The details that comprise the charges for next month
    */
-  nextMonthCharges: IInvoiceChargeNextMonth | null;
+  nextMonthCharges: IInvoiceChargeNextMonth;
 
   /**
    * *The organization id to charge
    */
-  orgId: string | null;
+  orgId: string;
 
   /**
    * The persisted name of the org as it was when invoiced
    */
-  orgName: string | null;
+  orgName: string;
 
   /**
    * the datetime the invoice was successfully paid
@@ -1978,17 +1978,17 @@ export interface IInvoice {
   /**
    * The timestamp for the beginning of the billing cycle
    */
-  startAt: any | null;
+  startAt: any;
 
   /**
    * The balance on the customer account (in cents)
    */
-  startingBalance: number | null;
+  startingBalance: number;
 
   /**
    * the status of the invoice. starts as pending, moves to paid or unpaid depending on if the payment succeeded
    */
-  status: InvoiceStatusEnum | null;
+  status: InvoiceStatusEnum;
 }
 
 /**
@@ -2015,7 +2015,7 @@ export interface IInvoiceLineItem {
   /**
    * Array of user activity line items that roll up to total activity (add/leave/pause/unpause)
    */
-  details: IInvoiceLineItemDetails[] | null;
+  details: IInvoiceLineItemDetails[];
 
   /**
    * The total number of days that all org users have been inactive during the billing cycle
@@ -2025,7 +2025,7 @@ export interface IInvoiceLineItem {
   /**
    * The line item type for a monthly billing invoice
    */
-  type: InvoiceLineItemEnum | null;
+  type: InvoiceLineItemEnum;
 }
 
 /**
@@ -2047,7 +2047,7 @@ export interface IInvoiceLineItemDetails {
   /**
    * The email affected by this line item change
    */
-  email: any | null;
+  email: any;
 
   /**
    * End of the event. Only present if a pause action gets matched up with an unpause action
@@ -2089,17 +2089,17 @@ export interface IInvoiceChargeNextMonth {
   /**
    * The datetime the next period will end
    */
-  nextPeriodEnd: any | null;
+  nextPeriodEnd: any;
 
   /**
    * The total number of days that all org users have been inactive during the billing cycle
    */
-  quantity: number | null;
+  quantity: number;
 
   /**
    * The per-seat monthly price of the subscription (in dollars)
    */
-  unitPrice: number | null;
+  unitPrice: number;
 }
 
 /**

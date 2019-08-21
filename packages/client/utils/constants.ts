@@ -75,8 +75,6 @@ export const TEAM_INVITATION = 'TEAM_INVITATION'
 export const TEAM_ARCHIVED = 'TEAM_ARCHIVED'
 // sent to members when a task is assigned to them or mentions them
 export const TASK_INVOLVES = 'TASK_INVOLVES'
-// sent on socket connection
-export const VERSION_INFO = 'VERSION_INFO'
 
 export const billingLeaderTypes = [PAYMENT_REJECTED]
 
@@ -96,15 +94,7 @@ export const BILLING_LEADER_LABEL = 'Billing Leader'
 /* Stripe */
 // changing this does NOT change it in stripe, it just changes the UI
 export const MONTHLY_PRICE = 6
-export const ADDED_USERS = 'ADDED_USERS'
-export const REMOVED_USERS = 'REMOVED_USERS'
-export const INACTIVITY_ADJUSTMENTS = 'INACTIVITY_ADJUSTMENTS'
-export const OTHER_ADJUSTMENTS = 'OTHER_ADJUSTMENTS'
 
-/* Invoice status variables */
-export const UPCOMING = 'UPCOMING'
-export const PENDING = 'PENDING'
-export const PAID = 'PAID'
 export const FAILED = 'FAILED'
 
 /* character limits */
@@ -139,9 +129,6 @@ export const MAX_INT = 2147483647
 /* Relay Subscription Channels */
 export const NOTIFICATION = 'notification'
 export const ORGANIZATION = 'organization'
-// export const TASK = 'task'; // TODO refactor so it doesn't conflict with DnD
-// export const MEETING = 'meeting'; // conflicts with area
-// export const AGENDA_ITEM = 'agendaItem'; // conflict
 export const TEAM = 'team'
 
 /* Relay Subscription Event Types */
@@ -164,9 +151,6 @@ export const SIGNOUT_SLUG = 'signout'
 export const CREATE_ACCOUNT_LABEL = 'Create Account'
 export const CREATE_ACCOUNT_BUTTON_LABEL = 'Create Free Account'
 export const CREATE_ACCOUNT_SLUG = 'create-account'
-
-/* Default auth0 email/password db */
-export const AUTH0_DB_CONNECTION = 'Username-Password-Authentication'
 
 /* Meeting Types */
 export const ACTION = 'action'

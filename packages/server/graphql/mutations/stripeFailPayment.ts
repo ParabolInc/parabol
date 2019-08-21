@@ -5,9 +5,9 @@ import getRethink from '../../database/rethinkDriver'
 import StripeFailPaymentPayload from '../types/StripeFailPaymentPayload'
 import publish from '../../utils/publish'
 import shortid from 'shortid'
-import {BILLING_LEADER, FAILED, NOTIFICATION, PAYMENT_REJECTED} from '../../../client/utils/constants'
+import {BILLING_LEADER, NOTIFICATION, PAYMENT_REJECTED} from '../../../client/utils/constants'
 import StripeManager from '../../utils/StripeManager'
-import {IOrganization} from '../../../client/types/graphql'
+import {InvoiceStatusEnum, IOrganization} from '../../../client/types/graphql'
 
 export default {
   name: 'StripeFailPayment',
@@ -87,7 +87,7 @@ export default {
       update: r
         .table('Invoice')
         .get(invoiceId)
-        .update({status: FAILED}),
+        .update({status: InvoiceStatusEnum.FAILED}),
       insert: r.table('Notification').insert(notification)
     })
     const data = {orgId, notificationId}

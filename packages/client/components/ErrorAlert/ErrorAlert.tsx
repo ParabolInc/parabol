@@ -8,7 +8,6 @@ import React from 'react'
 import tinycolor from 'tinycolor2'
 import styled from '@emotion/styled'
 import ui from '../../styles/ui'
-import appTheme from '../../styles/theme/appTheme'
 import Icon from '../Icon'
 import {MD_ICONS_SIZE_18} from '../../styles/icons'
 
@@ -25,7 +24,7 @@ const ErrorAlertWrapper = styled('div')({
   borderRadius: ui.borderRadiusSmall,
   display: 'flex',
   alignItems: 'center',
-  fontSize: appTheme.typography.s3,
+  fontSize: 14,
   marginBottom: '1rem',
   padding: '.5rem 1rem'
 })

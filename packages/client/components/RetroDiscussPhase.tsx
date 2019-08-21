@@ -19,7 +19,6 @@ import MeetingAgendaCards from '../modules/meeting/components/MeetingAgendaCards
 import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
 import {MD_ICONS_SIZE_18} from '../styles/icons'
 import {meetingVoteIcon} from '../styles/meeting'
-import appTheme from '../styles/theme/appTheme'
 import ui from '../styles/ui'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import lazyPreload from '../utils/lazyPreload'
@@ -78,7 +77,7 @@ const ColumnsContainer = styled('div')({
 })
 
 const TopicHeading = styled('div')({
-  fontSize: appTheme.typography.s6,
+  fontSize: 24,
   position: 'relative',
   '& > span': {
     right: '100%',
