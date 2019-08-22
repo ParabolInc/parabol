@@ -4,7 +4,6 @@ import withAtmosphere, {WithAtmosphereProps} from '../../../../decorators/withAt
 import TaskColumnAddTask from './TaskColumnAddTask'
 import appTheme from '../../../../styles/theme/appTheme'
 import themeLabels from '../../../../styles/theme/labels'
-import ui from '../../../../styles/ui'
 import {AreaEnum, TaskStatusEnum} from '../../../../types/graphql'
 import {TEAM_DASH, USER_DASH} from '../../../../utils/constants'
 import {createFragmentContainer} from 'react-relay'
@@ -28,12 +27,8 @@ const ColumnHeader = styled('div')({
   color: appTheme.palette.dark,
   display: 'flex !important',
   lineHeight: '1.5rem',
-  padding: `.625rem ${ui.taskColumnPaddingInnerSmall} .5rem`,
-  position: 'relative',
-  [ui.dashBreakpoint]: {
-    paddingLeft: ui.taskColumnPaddingInnerLarge,
-    paddingRight: ui.taskColumnPaddingInnerLarge
-  }
+  padding: 12,
+  position: 'relative'
 })
 
 const ColumnBody = styled('div')({
