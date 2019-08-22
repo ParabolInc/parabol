@@ -5,7 +5,7 @@ import styled from '@emotion/styled'
 import {PALETTE} from '../../../../styles/paletteV2'
 import Icon from '../../../../components/Icon'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
-import {Layout} from '../../../../types/constEnums'
+import {Breakpoint, Layout} from '../../../../types/constEnums'
 import graphql from 'babel-plugin-relay/macro'
 import {OrgBillingCreditCardInfo_organization} from '__generated__/OrgBillingCreditCardInfo_organization.graphql'
 import {createFragmentContainer} from 'react-relay'
@@ -21,7 +21,8 @@ const CreditCardInfo = styled('div')({
 })
 
 const CreditCardIcon = styled(Icon)({
-  fontSize: ICON_SIZE.MD18,
+  color: PALETTE.TEXT_LIGHT,
+  fontSize: ICON_SIZE.MD24,
   marginRight: 16
 })
 
@@ -47,6 +48,13 @@ const InfoAndUpdate = styled('div')({
   justifyContent: 'space-between'
 })
 
+const InfoBlocks = styled('div')({
+  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
+    alignItems: 'center',
+    display: 'flex'
+  }
+})
+
 const CreditCardModal = lazyPreload(() =>
   import(/* webpackChunkName: 'CreditCardModal' */
     '../CreditCardModal/CreditCardModal')
@@ -68,13 +76,19 @@ const OrgBillingCreditCardInfo = (props: Props) => {
       <InfoAndUpdate>
         <CreditCardInfo>
           <CreditCardIcon>credit_card</CreditCardIcon>
-          <CreditCardProvider>{brand}</CreditCardProvider>
-          <CreditCardNumber>
-            {'•••• •••• •••• '}
-            {last4}
-          </CreditCardNumber>
-          <CreditCardExpiresLabel>{'Expires'}</CreditCardExpiresLabel>
-          <span>{expiry}</span>
+          <InfoBlocks>
+            <div>
+              <CreditCardProvider>{brand}</CreditCardProvider>
+              <CreditCardNumber>
+                {'•••• •••• •••• '}
+                {last4}
+              </CreditCardNumber>
+            </div>
+            <div>
+              <CreditCardExpiresLabel>{'Expires'}</CreditCardExpiresLabel>
+              <span>{expiry}</span>
+            </div>
+          </InfoBlocks>
         </CreditCardInfo>
         <SecondaryButton onClick={togglePortal} onMouseEnter={CreditCardModal.preload}>{'Update'}</SecondaryButton>
         {modalPortal(<CreditCardModal activeUserCount={activeUserCount} orgId={orgId} actionType={'update'} closePortal={closePortal}/>)}

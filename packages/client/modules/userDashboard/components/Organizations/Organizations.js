@@ -7,7 +7,6 @@ import OrganizationRow from '../OrganizationRow/OrganizationRow'
 import UserSettingsWrapper from '../UserSettingsWrapper/UserSettingsWrapper'
 import {withRouter} from 'react-router-dom'
 import LinkButton from '../../../../components/LinkButton'
-import IconLabel from '../../../../components/IconLabel'
 import Panel from '../../../../components/Panel/Panel'
 import graphql from 'babel-plugin-relay/macro'
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
@@ -19,8 +18,8 @@ const Organizations = (props) => {
     history.push('/newteam')
   }
   const addNewOrg = () => (
-    <LinkButton aria-label='Tap to create a new organzation' onClick={gotoNewTeam}>
-      <IconLabel icon='add_circle' label='Add New Organization' />
+    <LinkButton aria-label='Tap to create a new organzation' onClick={gotoNewTeam} palette='blue'>
+      {'Add New Organization'}
     </LinkButton>
   )
 

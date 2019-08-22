@@ -16,7 +16,7 @@ const Line = styled('div')({
   borderRadius: 4,
   display: 'flex',
   fontSize: 13,
-  lineHeight: '16px',
+  lineHeight: '20px',
   marginTop: 8
 })
 
@@ -24,7 +24,7 @@ const UserBlock = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flex: 1,
-  padding: 8,
+  padding: 9,
   justifyContent: 'center',
   textAlign: 'center' // for multi-line
 })
@@ -35,7 +35,7 @@ const UnitPriceBlock = styled('div')({
   borderRight: `1px solid ${PALETTE.BORDER_GRAY}`,
   display: 'flex',
   justifyContent: 'center',
-  padding: 8
+  padding: 9
 })
 
 const TotalBlock = styled('div')({
@@ -43,7 +43,7 @@ const TotalBlock = styled('div')({
   display: 'flex',
   fontWeight: 600,
   justifyContent: 'center',
-  padding: 8
+  padding: 9
 })
 
 const CreditCardPricingLine = (props: Props) => {

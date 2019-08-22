@@ -35,11 +35,12 @@ const Error = styled('div')<{isError: boolean}>(({isError}) => ({
   color: isError ? PALETTE.ERROR_MAIN : PALETTE.TEXT_LIGHT,
   display: 'flex',
   flex: 1,
-  lineHeight: '16px',
-  minHeight: 32
+  lineHeight: '24px',
+  minHeight: 24
 }))
 
 const Message = styled('div')({
+  fontSize: 15,
   paddingLeft: 4
 })
 
