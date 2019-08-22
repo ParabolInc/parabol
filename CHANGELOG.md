@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## vNEXT
+
+### Added
+* Modal at beginning of demo
+
+### Removed
+* Aprhodite in favor of emotion
+
 ## v4.1.0 2019-Aug-14
 
 ### Added

@@ -57,6 +57,7 @@ const AmountLineSub = styled('div')({
 })
 
 const Wrap = styled('div')({
+  backgroundColor: PALETTE.BACKGROUND_MAIN,
   overflow: 'hidden'
 })
 
