@@ -37,8 +37,7 @@ export const enum DashTimeline {
 
 export const enum DroppableType {
   TASK = 'task',
-  TASK_COLUMN = 'taskColumn',
-  KANBAN = 'kanban'
+  REFLECTION = 'reflection',
 }
 
 export const enum Duration {

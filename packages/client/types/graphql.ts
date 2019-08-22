@@ -4040,12 +4040,12 @@ export interface IRetroReflectionGroup {
   /**
    * The timestamp the meeting was created
    */
-  createdAt: any | null;
+  createdAt: any;
 
   /**
    * True if the group has not been removed, else false
    */
-  isActive: boolean | null;
+  isActive: boolean;
 
   /**
    * The foreign key to link a reflection group to its meeting
@@ -4055,8 +4055,8 @@ export interface IRetroReflectionGroup {
   /**
    * The retrospective meeting this reflection was created in
    */
-  meeting: IRetrospectiveMeeting | null;
-  phaseItem: IRetroPhaseItem | null;
+  meeting: IRetrospectiveMeeting;
+  phaseItem: IRetroPhaseItem;
   reflections: IRetroReflection[];
 
   /**

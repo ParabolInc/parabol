@@ -26,11 +26,11 @@ const RetroReflectionGroup = new GraphQLObjectType({
       description: 'shortid'
     },
     createdAt: {
-      type: GraphQLISO8601Type,
+      type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The timestamp the meeting was created'
     },
     isActive: {
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'True if the group has not been removed, else false'
     },
     meetingId: {
@@ -38,15 +38,15 @@ const RetroReflectionGroup = new GraphQLObjectType({
       description: 'The foreign key to link a reflection group to its meeting'
     },
     meeting: {
-      type: RetrospectiveMeeting,
+      type: new GraphQLNonNull(RetrospectiveMeeting),
       description: 'The retrospective meeting this reflection was created in',
-      resolve: ({meetingId}, args, {dataLoader}) => {
+      resolve: ({meetingId}, _args, {dataLoader}) => {
         return dataLoader.get('newMeetings').load(meetingId)
       }
     },
     phaseItem: {
-      type: RetroPhaseItem,
-      resolve: ({retroPhaseItemId}, args, {dataLoader}) => {
+      type: new GraphQLNonNull(RetroPhaseItem),
+      resolve: ({retroPhaseItemId}, _args, {dataLoader}) => {
         return dataLoader.get('customPhaseItems').load(retroPhaseItemId)
       }
     },

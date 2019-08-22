@@ -2,15 +2,16 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import EndDraggingReflectionPayload from '../types/EndDraggingReflectionPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {GROUP, TEAM} from '../../../client/utils/constants'
 import isPhaseComplete from '../../../client/utils/meetings/isPhaseComplete'
-import DragReflectionDropTargetTypeEnum, {
-  REFLECTION_GRID,
-  REFLECTION_GROUP
-} from './DragReflectionDropTargetTypeEnum'
+import DragReflectionDropTargetTypeEnum from './DragReflectionDropTargetTypeEnum'
 import addReflectionToGroup from './helpers/updateReflectionLocation/addReflectionToGroup'
 import removeReflectionFromGroup from './helpers/updateReflectionLocation/removeReflectionFromGroup'
 import standardError from '../../utils/standardError'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {
+  DragReflectionDropTargetTypeEnum as EDragReflectionDropTargetTypeEnum,
+  NewMeetingPhaseTypeEnum
+} from 'parabol-client/types/graphql'
 
 export default {
   description: 'Broadcast that the viewer stopped dragging a reflection',
@@ -34,7 +35,7 @@ export default {
       type: GraphQLID
     }
   },
-  async resolve (source, {reflectionId, dropTargetType, dropTargetId, dragId}, context) {
+  async resolve (_source, {reflectionId, dropTargetType, dropTargetId, dragId}, context) {
     const {authToken, dataLoader, socketId: mutatorId} = context
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
@@ -53,16 +54,16 @@ export default {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
-    if (isPhaseComplete(GROUP, phases)) {
+    if (isPhaseComplete(NewMeetingPhaseTypeEnum.group, phases)) {
       return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
     }
 
     // RESOLUTION
     let newReflectionGroupId
-    if (dropTargetType === REFLECTION_GRID) {
+    if (dropTargetType === EDragReflectionDropTargetTypeEnum.REFLECTION_GRID) {
       // ungroup
       newReflectionGroupId = await removeReflectionFromGroup(reflectionId, context)
-    } else if (dropTargetType === REFLECTION_GROUP && dropTargetId) {
+    } else if (dropTargetType === EDragReflectionDropTargetTypeEnum.REFLECTION_GROUP && dropTargetId) {
       // group
       newReflectionGroupId = await addReflectionToGroup(reflectionId, dropTargetId, context)
     }
@@ -78,7 +79,7 @@ export default {
       dragId
     }
 
-    publish(TEAM, teamId, EndDraggingReflectionPayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, EndDraggingReflectionPayload, data, subOptions)
     return data
   }
 }

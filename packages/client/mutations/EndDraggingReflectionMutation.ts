@@ -120,6 +120,7 @@ const handleDragContext = (reflectionId, userId, store) => {
   if (dragContext) {
     handleDragMismatch(store, dragContext, userId)
     dragContext.setValue(true, 'isClosing')
+    reflection.setValue(null, 'dragContext')
   }
 }
 

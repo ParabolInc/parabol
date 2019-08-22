@@ -18,7 +18,6 @@ import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
 import StyledError from './StyledError'
-import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import useTimeoutWithReset from '../hooks/useTimeoutWithReset'
 import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
 import AutoGroupReflectionsMutation from '../mutations/AutoGroupReflectionsMutation'
@@ -26,18 +25,19 @@ import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {VOTE} from '../utils/constants'
 import lazyPreload from '../utils/lazyPreload'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
-import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import handleRightArrow from '../utils/handleRightArrow'
 import isDemoRoute from '../utils/isDemoRoute'
 import EndMeetingButton from './EndMeetingButton'
-import PhaseItemMasonry from './PhaseItemMasonry'
 import StageTimerDisplay from './RetroReflectPhase/StageTimerDisplay'
 import StageTimerControl from './StageTimerControl'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import PhaseWrapper from './PhaseWrapper'
 import {ElementWidth} from '../types/constEnums'
+import GroupingKanban from './GroupingKanban'
+import useAtmosphere from '../hooks/useAtmosphere'
+import useMutationProps from '../hooks/useMutationProps'
 
-interface Props extends RetroMeetingPhaseProps, WithMutationProps, WithAtmosphereProps {
+interface Props extends RetroMeetingPhaseProps {
   team: RetroGroupPhase_team
 }
 
@@ -59,24 +59,20 @@ const DemoGroupHelpMenu = lazyPreload(async () =>
 )
 
 const RetroGroupPhase = (props: Props) => {
+  const atmosphere = useAtmosphere()
+  const {onCompleted, submitMutation, error, onError, submitting} = useMutationProps()
   const [isReadyToVote, resetActivityTimeout] = useTimeoutWithReset(ms('1m'), ms('30s'))
   const {
     avatarGroup,
     toggleSidebar,
-    atmosphere,
-    error,
     handleGotoNext,
-    onError,
-    onCompleted,
-    submitting,
-    submitMutation,
     team,
     isDemoStageComplete
   } = props
   const {viewerId} = atmosphere
   const {isMeetingSidebarCollapsed, newMeeting} = team
   if (!newMeeting) return null
-  const {nextAutoGroupThreshold, facilitatorUserId, meetingId, localStage} = newMeeting
+  const {nextAutoGroupThreshold, facilitatorUserId, id: meetingId, localStage} = newMeeting
   const isComplete = localStage ? localStage.isComplete : false
   const isAsync = localStage ? localStage.isAsync : false
   const isFacilitating = facilitatorUserId === viewerId
@@ -104,7 +100,7 @@ const RetroGroupPhase = (props: Props) => {
           <StageTimerDisplay stage={localStage!} />
           {error && <StyledError>{error}</StyledError>}
           <MeetingPhaseWrapper>
-            <PhaseItemMasonry meeting={newMeeting} resetActivityTimeout={resetActivityTimeout} />
+            <GroupingKanban meeting={newMeeting} resetActivityTimeout={resetActivityTimeout} />
           </MeetingPhaseWrapper>
         </PhaseWrapper>
         <MeetingHelpToggle
@@ -114,7 +110,7 @@ const RetroGroupPhase = (props: Props) => {
       <MeetingFacilitatorBar isFacilitating={isFacilitating}>
         {!isComplete && <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />}
         <CenteredControlBlock isComplete={isComplete}>
-          {canAutoGroup  && (
+          {canAutoGroup && (
             <BottomNavControl onClick={autoGroup} waiting={submitting}>
               <BottomNavIconLabel
                 icon='photo_filter'
@@ -151,17 +147,16 @@ graphql`
   }
 `
 
-export default createFragmentContainer(withMutationProps(withAtmosphere(RetroGroupPhase)), {
+export default createFragmentContainer(RetroGroupPhase, {
   team: graphql`
     fragment RetroGroupPhase_team on Team {
       ...StageTimerControl_team
       isMeetingSidebarCollapsed
       newMeeting {
-        meetingId: id
+        id
         facilitatorUserId
-        ...PhaseItemColumn_meeting
         ... on RetrospectiveMeeting {
-          ...PhaseItemMasonry_meeting
+          ...GroupingKanban_meeting
           localStage {
             ...RetroGroupPhase_stage @relay(mask: false)
           }
@@ -171,17 +166,6 @@ export default createFragmentContainer(withMutationProps(withAtmosphere(RetroGro
             }
           }
           nextAutoGroupThreshold
-          reflectionGroups {
-            id
-            meetingId
-            sortOrder
-            retroPhaseItemId
-            reflections {
-              id
-              retroPhaseItemId
-              sortOrder
-            }
-          }
         }
       }
     }

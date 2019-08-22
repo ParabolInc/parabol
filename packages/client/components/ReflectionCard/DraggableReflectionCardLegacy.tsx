@@ -175,7 +175,7 @@ const getStyleObj = (idx: number, dragContext: any, isModal: boolean) => {
   }
 }
 
-class DraggableReflectionCard extends Component<Props> {
+class DraggableReflectionCardLegacy extends Component<Props> {
   componentDidMount () {
     const {connectDragPreview} = this.props
     connectDragPreview(getEmptyImage())
@@ -279,12 +279,12 @@ const reflectionDragCollect = (connectSource) => ({
 export default createFragmentContainer(
   withAtmosphere(
     (dragSource(REFLECTION_CARD, reflectionDragSpec, reflectionDragCollect) as any)(
-      DraggableReflectionCard
+      DraggableReflectionCardLegacy
     )
   ),
   {
     reflection: graphql`
-      fragment DraggableReflectionCard_reflection on RetroReflection {
+      fragment DraggableReflectionCardLegacy_reflection on RetroReflection {
         content
         meetingId
         reflectionId: id
