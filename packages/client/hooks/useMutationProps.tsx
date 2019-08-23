@@ -13,7 +13,7 @@ export type MenuMutationProps = Pick<
 >
 
 const getOnCompletedError = (
-  res: null | {[operationNames: string]: {error?: MutationServerError}},
+  res?: null | {[operationNames: string]: {error?: MutationServerError}},
   errors?: PayloadError[] | null
 ) => {
   const payload = res && res[Object.keys(res)[0]]
@@ -32,7 +32,7 @@ const useMutationProps = () => {
 
   const onCompleted = useCallback(
     (
-      res: null | {[operationNames: string]: {error?: MutationServerError}},
+      res?: null | {[operationNames: string]: {error?: MutationServerError}},
       errors?: PayloadError[] | null
     ) => {
       if (isMountedRef.current) {

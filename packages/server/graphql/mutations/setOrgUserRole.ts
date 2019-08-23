@@ -5,13 +5,13 @@ import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import shortid from 'shortid'
 import {
-  BILLING_LEADER,
   billingLeaderTypes,
   ORGANIZATION,
   PROMOTE_TO_BILLING_LEADER
 } from '../../../client/utils/constants'
 import {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
 import standardError from '../../utils/standardError'
+import {OrgUserRole} from 'parabol-client/types/graphql'
 
 export default {
   type: SetOrgUserRolePayload,
@@ -30,7 +30,7 @@ export default {
       description: 'the user’s new role'
     }
   },
-  async resolve (source, {orgId, userId, role}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (_source, {orgId, userId, role}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
@@ -43,7 +43,7 @@ export default {
     }
 
     // VALIDATION
-    if (role && role !== BILLING_LEADER) {
+    if (role && role !== OrgUserRole.BILLING_LEADER) {
       return standardError(new Error('Invalid role'), {userId: viewerId})
     }
     // if someone is leaving, make sure there is someone else to take their place
@@ -51,7 +51,7 @@ export default {
       const leaderCount = await r
         .table('OrganizationUser')
         .getAll(orgId, {index: 'orgId'})
-        .filter({removedAt: null, role: BILLING_LEADER})
+        .filter({removedAt: null, role: OrgUserRole.BILLING_LEADER})
         .count()
       if (leaderCount === 1) {
         return standardError(new Error('You’re the last leader, you can’t give that up'), {
@@ -74,7 +74,7 @@ export default {
       .get(organizationUserId)
       .update({role})
 
-    if (role === BILLING_LEADER) {
+    if (role === OrgUserRole.BILLING_LEADER) {
       const promotionNotificationId = shortid.generate()
       const promotionNotification = {
         id: promotionNotificationId,

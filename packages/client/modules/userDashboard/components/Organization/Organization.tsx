@@ -13,45 +13,46 @@ import LoadableModal from '../../../../components/LoadableModal'
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
 import BillingMembersToggle from '../BillingMembersToggle/BillingMembersToggle'
 import UserSettingsWrapper from '../UserSettingsWrapper/UserSettingsWrapper'
-import appTheme from '../../../../styles/theme/appTheme'
 import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
-import ui from '../../../../styles/ui'
 import {PERSONAL} from '../../../../utils/constants'
 import OrganizationDetails from './OrganizationDetails'
 import OrganizationPage from './OrganizationPage'
+import {PALETTE} from '../../../../styles/paletteV2'
 
 const AvatarAndName = styled('div')({
   alignItems: 'flex-start',
   display: 'flex',
   flexShrink: 0,
-  margin: '0 0 1rem',
+  margin: '0 auto 16px',
   width: '100%'
 })
 
 const OrgNameAndDetails = styled('div')({
-  color: appTheme.palette.mid,
+  alignItems: 'flex-start',
+  color: PALETTE.TEXT_LIGHT,
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
-  marginLeft: '1.5rem',
+  margin: 'auto 0 auto 16px',
   width: '100%'
 })
 
 const BackControlBlock = styled('div')({
-  margin: '1rem 0'
+  margin: '16px 0'
 })
 
 const AvatarBlock = styled('div')({
-  display: 'block',
-  margin: '1.5rem auto',
-  width: '6rem'
+  width: 64
 })
 
 const OrgNameBlock = styled('div')({
-  color: ui.colorText,
-  fontSize: appTheme.typography.s7,
-  lineHeight: appTheme.typography.s8,
-  placeholderColor: ui.placeholderColor
+  color: PALETTE.TEXT_MAIN,
+  fontSize: 24,
+  lineHeight: '36px',
+})
+
+const ToggleNavBlock = styled('div')({
+  margin: 0
 })
 
 const OrgAvatarInput = lazy(() =>
@@ -97,13 +98,13 @@ const Organization = (props: Props) => {
               queryVars={{picture: pictureOrDefault, orgId}}
               toggle={
                 <div>
-                  <EditableAvatar hasPanel picture={pictureOrDefault} size={96} unstyled />
+                  <EditableAvatar hasPanel picture={pictureOrDefault} size={64} unstyled />
                 </div>
               }
             />
           ) : (
             <AvatarBlock>
-              <Avatar picture={pictureOrDefault} size={96} sansRadius sansShadow />
+              <Avatar picture={pictureOrDefault} size={64} sansRadius sansShadow />
             </AvatarBlock>
           )}
           <OrgNameAndDetails>
@@ -113,9 +114,9 @@ const Organization = (props: Props) => {
               <OrgNameBlock>{orgName}</OrgNameBlock>
             )}
             <OrganizationDetails createdAt={createdAt} tier={tier} />
-            {!onlyShowMembers && <BillingMembersToggle orgId={orgId} />}
           </OrgNameAndDetails>
         </AvatarAndName>
+        {!onlyShowMembers && <ToggleNavBlock><BillingMembersToggle orgId={orgId} /></ToggleNavBlock>}
         <OrganizationPage organization={organization} />
       </SettingsWrapper>
     </UserSettingsWrapper>

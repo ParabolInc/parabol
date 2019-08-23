@@ -1,102 +1,60 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import styled from '@emotion/styled'
-import ui from '../styles/ui'
 import {PRO_LABEL} from '../utils/constants'
-import RaisedButton from './RaisedButton'
 import Confetti from './Confetti'
+import DialogTitle from './DialogTitle'
+import InvitationDialogCopy from './InvitationDialogCopy'
+import SecondaryButton from './SecondaryButton'
+import DialogContainer from './DialogContainer'
+import rocket from '../styles/theme/images/emoji/emoji_u1f680.png'
 
-const flexBase = {
-  alignItems: 'center',
-  display: 'flex',
-  justifyContent: 'center'
-}
-
-const modalCopyBase = {
-  fontSize: '.9375rem',
-  lineHeight: '2rem',
-  margin: 0
-}
-
-const ModalBoundary = styled('div')({
-  ...flexBase,
-  background: ui.palette.white,
-  borderRadius: ui.modalBorderRadius,
-  height: 374,
-  width: 700
+const Emoji = styled('img')({
+  padding: 24
 })
 
-const CenteredModalBoundary = styled(ModalBoundary)({
-  flexDirection: 'column'
+const ButtonBlock = styled('div')({
+  padding: 24
 })
 
-const ModalHeading = styled('h2')({
-  fontSize: '1.5rem',
-  fontWeight: 600,
-  lineHeight: '1.5',
-  margin: '0 0 .5rem'
+const ModalButton = styled(SecondaryButton)({
+  padding: 8,
+  width: 264
 })
 
-const Emoji = styled('div')({
-  fontSize: '4rem',
-  lineHeight: 1
-})
-
-const ModalCopy = styled('p')({...modalCopyBase})
-
-const ModalButton = styled(RaisedButton)({
-  margin: '2rem 0 0',
-  width: '22.5rem'
+const Container = styled(DialogContainer)({
+  alignItems: 'center'
 })
 
 interface Props {
-  handleClose: () => void
+  closePortal: () => void
 }
 
-interface State {
-  active: boolean
-}
-
-class UpgradeSuccess extends React.Component<Props, State> {
-  _mounted = true
-
-  constructor (props: Props) {
-    super(props)
+const UpgradeSuccess = (props: Props) => {
+  const [active, setActive] = useState(false)
+  useEffect(() => {
     setTimeout(() => {
-      this.setState({active: true})
-      setTimeout(() => {
-        if (this._mounted) {
-          this.setState({active: false})
-        }
-      }, 100)
-    })
-  }
-  state = {
-    active: false
-  }
-
-  componentWillUnmount () {
-    this._mounted = false
-  }
-
-  render () {
-    const {handleClose} = this.props
-    const {active} = this.state
-    return (
-      <CenteredModalBoundary>
-        <Emoji>{'🤗'}</Emoji>
-        <ModalHeading>{'We’re glad you’re here!'}</ModalHeading>
-        <ModalCopy>
-          {'Your organization is now on the '}
-          <b>{PRO_LABEL}</b>
-          {' tier.'}
-        </ModalCopy>
-        <ModalButton size='large' onClick={handleClose}>
-          {'Let’s Get Back to Business'}
+      setActive(true)
+    }, 150)
+  }, [])
+  const {closePortal} = props
+  return (
+    <Container>
+      <Emoji src={rocket} />
+      <DialogTitle>{'Upgraded!'}</DialogTitle>
+      <InvitationDialogCopy>{'Your organization is'}</InvitationDialogCopy>
+      <InvitationDialogCopy>
+        {'now on the '}
+        <b>{PRO_LABEL}</b>
+        {' tier'}
+      </InvitationDialogCopy>
+      <ButtonBlock>
+        <ModalButton size='large' onClick={closePortal}>
+          {'Back to Business'}
         </ModalButton>
-        <Confetti active={active} />
-      </CenteredModalBoundary>
-    )
-  }
+      </ButtonBlock>
+      <Confetti active={active} />
+    </Container>
+  )
 }
 
 export default UpgradeSuccess

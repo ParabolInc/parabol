@@ -16,13 +16,16 @@ const babelLoader = {
     cacheDirectory: true,
     babelrc: false,
     plugins: [
-      [pluginMacros, {
-        relay: {
-          artifactDirectory: path.join(CLIENT_ROOT, '__generated__')
-        },
-      }],
+      [
+        pluginMacros,
+        {
+          relay: {
+            artifactDirectory: path.join(CLIENT_ROOT, '__generated__')
+          }
+        }
+      ],
       pluginInlineImport,
-      pluginDynamicImport,
+      pluginDynamicImport
     ]
   }
 }
@@ -48,7 +51,7 @@ module.exports = {
       __PRODUCTION__: false,
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
       'process.env.NODE_ENV': JSON.stringify('development'),
-      '__STATIC_IMAGES__': JSON.stringify(`/static/images`)
+      __STATIC_IMAGES__: JSON.stringify(`/static/images`)
     }),
     new webpack.DllReferencePlugin({
       manifest: vendors
@@ -93,7 +96,7 @@ module.exports = {
         use: ['style-loader', 'css-loader']
       },
       {
-        test: /\.(png|jpg|gif|svg)$/,
+        test: /\.(png|jpg|jpeg|gif|svg)$/,
         use: [
           {
             loader: 'url-loader',

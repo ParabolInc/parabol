@@ -33,7 +33,7 @@ const DetailsToggle = styled('div')({
   cursor: 'pointer',
   fontSize: 13,
   fontWeight: 600,
-  lineHeight: 20,
+  lineHeight: '20px',
   textTransform: 'uppercase'
 })
 

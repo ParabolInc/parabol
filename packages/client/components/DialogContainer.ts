@@ -13,7 +13,7 @@ const DialogContainer = styled('div')({
   maxHeight: '90vh',
   maxWidth: 'calc(100vw - 48px)',
   minWidth: 280,
-  width: 560
+  width: 512
 })
 
 export default DialogContainer

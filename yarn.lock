@@ -3389,6 +3389,11 @@
   resolved "https://registry.yarnpkg.com/@types/string-similarity/-/string-similarity-3.0.0.tgz#12b655f1aab0156049657a4e9287caf3e6718d93"
   integrity sha512-vhHkPKxl0cudrbxr5Dog1HVgUGXtmyYP95qy1da/h5gFEzIqDMN/+SjJAS7/6DEAdeI+AJQX8zrdWXL3wP4FRA==
 
+"@types/stripe-v2@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@types/stripe-v2/-/stripe-v2-2.0.1.tgz#3c0a4e5e436291d83b2f773d712dc9dc75133de8"
+  integrity sha512-G7TAhUMuVidEcX4X1dox44wBukGcq7m90j2tEIUhywlDRgrFicIeK3oQh9WN0QomqRPEyyq3dDUyEH421uKM9g==
+
 "@types/stripe@^6.26.4":
   version "6.31.9"
   resolved "https://registry.yarnpkg.com/@types/stripe/-/stripe-6.31.9.tgz#84a3ee6f614d3d96c1acf269b006d5dd82f4d6a2"
@@ -14281,11 +14286,6 @@ react-addons-create-fragment@^15.6.2:
     fbjs "^0.8.4"
     loose-envify "^1.3.1"
     object-assign "^4.1.0"
-
-react-async-hoc@^0.4.1:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/react-async-hoc/-/react-async-hoc-0.4.1.tgz#88c35eca7c9a0f56e81ffcf277f355567a760adb"
-  integrity sha512-Vc9Oxjv+kvfnWfg1gCB95XgL9VVAthiW6YOg8mEEByevWKfc37KL44TwaIHijlbdpV81KDsVPBBRGVAxiZBZrQ==
 
 react-beautiful-dnd@^11.0.4:
   version "11.0.5"

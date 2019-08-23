@@ -16,10 +16,27 @@ import FlatButton from '../../../../components/FlatButton'
 import SecondaryButton from '../../../../components/SecondaryButton'
 import TagBlock from '../../../../components/Tag/TagBlock'
 import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
+import Icon from '../../../../components/Icon'
+import {PALETTE} from '../../../../styles/paletteV2'
+import {Breakpoint} from '../../../../types/constEnums'
+import {MenuPosition} from '../../../../hooks/useCoords'
+import useTooltip from '../../../../hooks/useTooltip'
+
+const RowInner = styled('div')({
+  display: 'block',
+  alignItems: 'center',
+  display: 'flex',
+  flex: 1
+})
 
 const OrgAvatar = styled('div')({
   cursor: 'pointer',
-  width: '2.75rem'
+  display: 'none',
+  width: '2.75rem',
+  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
+    display: 'block',
+    marginRight: 16
+  }
 })
 
 const Name = styled(RowInfoHeading)({
@@ -27,12 +44,38 @@ const Name = styled(RowInfoHeading)({
 })
 
 const StyledTagBlock = styled(TagBlock)({
-  marginLeft: '.125rem',
-  marginTop: '-.5rem'
+  display: 'block'
 })
 
 const StyledButton = styled(SecondaryButton)({
-  marginLeft: 8
+  height: 36,
+  marginLeft: 8,
+  padding: 0,
+  width: 36
+})
+
+const StyledIcon = styled(Icon)({
+  color: PALETTE.TEXT_LIGHT,
+  fontSize: 18
+})
+
+const StyledRowInfo = styled(RowInfo)({
+  paddingLeft: 0
+})
+
+const StyledFlatButton = styled(FlatButton)({
+  height: 36,
+  paddingLeft: 8,
+  paddingRight: 8,
+  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
+    paddingLeft: 16,
+    paddingRight: 16,
+  }
+})
+
+const StyledRowInfoCopy = styled(RowInfoCopy)({
+  alignItems: 'center',
+  display: 'flex'
 })
 
 const OrganizationRow = (props) => {
@@ -56,34 +99,42 @@ const OrganizationRow = (props) => {
       <b>{PRO_LABEL}</b>
     </span>
   )
+  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip(
+    MenuPosition.UPPER_CENTER
+  )
   return (
     <Row>
       <OrgAvatar onClick={onRowClick}>
         <Avatar size={44} picture={orgAvatar} />
       </OrgAvatar>
-      <RowInfo>
-        <RowInfoHeader>
-          <Name onClick={onRowClick}>
-            {name}
+      <RowInner>
+        <StyledRowInfo>
+          <RowInfoHeader>
+            <Name onClick={onRowClick}>
+              {name}
+            </Name>
             {tier === PRO && (
               <StyledTagBlock>
                 <TagPro />
               </StyledTagBlock>
             )}
-          </Name>
-        </RowInfoHeader>
-        <RowInfoCopy>
-          {`${totalUsers} ${plural(totalUsers, 'User')} (${activeUserCount} Active)`}
-        </RowInfoCopy>
-      </RowInfo>
-      <RowActions>
-        {showUpgradeCTA && (
-          <FlatButton onClick={onRowClick} palette={'blue'}>
-            {upgradeCTALabel}
-          </FlatButton>
-        )}
-        <StyledButton onClick={onRowClick}>{'Settings'}</StyledButton>
-      </RowActions>
+          </RowInfoHeader>
+          <StyledRowInfoCopy>
+            {`${totalUsers} ${plural(totalUsers, 'User')} (${activeUserCount} Active)`}
+          </StyledRowInfoCopy>
+        </StyledRowInfo>
+        <RowActions>
+          {showUpgradeCTA && (
+            <StyledFlatButton onClick={onRowClick} palette={'blue'}>
+              {upgradeCTALabel}
+            </StyledFlatButton>
+          )}
+          <StyledButton onClick={onRowClick} onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={originRef}>
+            <StyledIcon>settings</StyledIcon>
+          </StyledButton>
+          {tooltipPortal('Settings')}
+        </RowActions>
+      </RowInner>
     </Row>
   )
 }

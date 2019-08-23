@@ -1,5 +1,5 @@
 import shortid from 'shortid'
-import {BILLING_LEADER, TRIAL_EXPIRES_SOON} from '../../../client/utils/constants'
+import {TRIAL_EXPIRES_SOON} from '../../../client/utils/constants'
 import stripe from '../../billing/stripe'
 import {fromEpochSeconds} from '../../utils/epochTime'
 import ms from 'ms'
@@ -117,7 +117,7 @@ exports.up = async (r) => {
       const orgUserId = orgUserIds[j]
       orgUsers[j] = {
         id: orgUserId,
-        role: orgUserMap[orgUserId] ? BILLING_LEADER : null,
+        role: orgUserMap[orgUserId] ? 'billingLeader' : null,
         inactive: false
       }
     }
@@ -155,7 +155,7 @@ exports.up = async (r) => {
       const userOrgId = userOrgIds[j]
       userOrgs[j] = {
         id: userOrgId,
-        role: userOrgMap[userOrgId] ? BILLING_LEADER : null
+        role: userOrgMap[userOrgId] ? 'billingLeader' : null
       }
     }
     usersForDB[i] = {

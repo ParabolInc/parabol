@@ -14,11 +14,11 @@ import GraphQLURLType from './GraphQLURLType'
 import OrgUserCount from './OrgUserCount'
 import TierEnum from './TierEnum'
 import User from './User'
-import {BILLING_LEADER} from '../../../client/utils/constants'
 import {resolveForBillingLeaders} from '../resolvers'
 import Team from './Team'
 import {OrganizationUserConnection} from './OrganizationUser'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
+import {OrgUserRole} from 'parabol-client/types/graphql'
 
 const Organization = new GraphQLObjectType({
   name: 'Organization',
@@ -37,7 +37,7 @@ const Organization = new GraphQLObjectType({
     isBillingLeader: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the viewer is the billing leader for the org',
-      resolve: async ({id: orgId}, args, {authToken, dataLoader}) => {
+      resolve: async ({id: orgId}, _args, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
         return isUserBillingLeader(viewerId, orgId, dataLoader)
       }
@@ -53,7 +53,7 @@ const Organization = new GraphQLObjectType({
     teams: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Team))),
       description: 'all the teams the viewer is on in the organization',
-      resolve: async ({id: orgId}, args, {authToken, dataLoader}) => {
+      resolve: async ({id: orgId}, _args, {authToken, dataLoader}) => {
         const allTeamsOnOrg = await dataLoader.get('teamsByOrgId').load(orgId)
         return isSuperUser(authToken)
           ? allTeamsOnOrg
@@ -107,7 +107,7 @@ const Organization = new GraphQLObjectType({
         ...forwardConnectionArgs
       },
       type: new GraphQLNonNull(OrganizationUserConnection),
-      resolve: async ({id: orgId}, {first}, {dataLoader}) => {
+      resolve: async ({id: orgId}, _args, {dataLoader}) => {
         const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
         organizationUsers.sort((a, b) => (a.orgId > b.orgId ? 1 : -1))
         const edges = organizationUsers.map((node) => ({
@@ -140,10 +140,10 @@ const Organization = new GraphQLObjectType({
     billingLeaders: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(User))),
       description: 'The leaders of the org',
-      resolve: async ({id: orgId}, args, {dataLoader}) => {
+      resolve: async ({id: orgId}, _args, {dataLoader}) => {
         const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
         const billingLeaderUserIds = organizationUsers
-          .filter((organizationUser) => organizationUser.role === BILLING_LEADER)
+          .filter((organizationUser) => organizationUser.role === OrgUserRole.BILLING_LEADER)
           .map(({userId}) => userId)
         return dataLoader.get('users').loadMany(billingLeaderUserIds)
       }

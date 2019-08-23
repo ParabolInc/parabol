@@ -62,11 +62,12 @@ const babelConfig = {
     babelrc: false,
     plugins: [
       [
-        pluginMacros, {
-        relay: {
-          artifactDirectory: path.join(CLIENT_ROOT, '__generated__')
+        pluginMacros,
+        {
+          relay: {
+            artifactDirectory: path.join(CLIENT_ROOT, '__generated__')
+          }
         }
-      }
       ],
       pluginInlineImport,
       pluginObjectRestSpread,
@@ -144,8 +145,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: path.join(PROJECT_ROOT, 'packages', 'server', 'template.html'),
-      title: 'Free Online Retrospectives | Parabol',
-
+      title: 'Free Online Retrospectives | Parabol'
     }),
     new TagsPlugin({
       links: [
@@ -153,7 +153,7 @@ module.exports = {
           path: `https://${process.env.AWS_S3_BUCKET}/static/favicon.ico`,
           attributes: {
             rel: 'shortcut icon',
-            crossorigin: '',
+            crossorigin: ''
           }
         }
       ]
@@ -178,7 +178,7 @@ module.exports = {
       __PRODUCTION__: true,
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
       'process.env.NODE_ENV': JSON.stringify('production'),
-      '__STATIC_IMAGES__': JSON.stringify(`https://${process.env.AWS_S3_BUCKET}/static`)
+      __STATIC_IMAGES__: JSON.stringify(`https://${process.env.AWS_S3_BUCKET}/static`)
     }),
     new webpack.SourceMapDevToolPlugin({
       filename: '[name]_[hash].js.map',
@@ -221,7 +221,7 @@ module.exports = {
         use: ['style-loader', 'css-loader']
       },
       {
-        test: /\.(png|jpg|gif|svg)$/,
+        test: /\.(png|jpg|jpeg|gif|svg)$/,
         use: [
           {
             loader: 'url-loader',
@@ -244,4 +244,3 @@ module.exports = {
     ]
   }
 }
-

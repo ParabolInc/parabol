@@ -54,16 +54,14 @@ const TagRoot = styled('div')<{colorPalette: keyof typeof tagTheme}>(({colorPale
   backgroundColor: tagTheme[colorPalette].backgroundColor,
   borderRadius: '4em',
   color: tagTheme[colorPalette].color,
-  display: 'inline-block',
-  fontSize: '.6875rem',
+  fontSize: 11,
   fontWeight: 600,
-  height: '1rem',
-  lineHeight: '1rem',
-  marginLeft: '.75rem',
-  padding: '0 .5rem',
+  height: 16,
+  lineHeight: '16px',
+  marginLeft: 8,
+  padding: '0 8px',
   textAlign: 'center',
-  userSelect: 'none',
-  verticalAlign: 'middle'
+  userSelect: 'none'
 }))
 
 interface Props {

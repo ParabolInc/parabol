@@ -15,8 +15,7 @@ interface Props {
 }
 
 const StyledWrapper = styled(SettingsWrapper)({
-  paddingBottom: 8,
-  paddingTop: 8
+  display: 'block'
 })
 
 const ProviderList = (props: Props) => {

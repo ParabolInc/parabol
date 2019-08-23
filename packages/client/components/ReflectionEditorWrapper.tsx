@@ -49,7 +49,7 @@ const codeBlock = {
   color: appTheme.palette.warm,
   fontFamily: appTheme.typography.monospace,
   fontSize: 13,
-  lineHeight: appTheme.typography.s6,
+  lineHeight: '24px',
   margin: '0',
   padding: '0 .5rem'
 }

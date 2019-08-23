@@ -1,11 +1,11 @@
 import {GraphQLEnumType} from 'graphql'
-import {BILLING_LEADER} from '../../../client/utils/constants'
 
 const OrgUserRole = new GraphQLEnumType({
   name: 'OrgUserRole',
   description: 'The role of the org user',
   values: {
-    [BILLING_LEADER]: {}
+    // graphql only supports enum values at runtime, the value here is the text value
+    BILLING_LEADER: {}
   }
 })
 

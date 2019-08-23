@@ -1,4 +1,4 @@
-import {BILLING_LEADER, PERSONAL} from '../../client/utils/constants'
+import {OrgUserRole, TierEnum} from '../../client/types/graphql'
 import getRethink from '../database/rethinkDriver'
 import toTeamMemberId from '../../client/utils/relay/toTeamMemberId'
 import AuthToken from '../database/types/AuthToken'
@@ -61,7 +61,7 @@ export const isUserBillingLeader = async (
   if (options && options.clearCache) {
     dataLoader.get('organizationUsersByUserId').clear(userId)
   }
-  return organizationUser ? organizationUser.role === BILLING_LEADER : false
+  return organizationUser ? organizationUser.role === OrgUserRole.BILLING_LEADER : false
 }
 
 export const isUserInOrg = async (userId, orgId) => {
@@ -82,7 +82,7 @@ export const isOrgLeaderOfUser = async (authToken, userId) => {
     viewerOrgIds: r
       .table('OrganizationUser')
       .getAll(viewerId, {index: 'userId'})
-      .filter({removedAt: null, role: BILLING_LEADER})('orgId')
+      .filter({removedAt: null, role: OrgUserRole.BILLING_LEADER})('orgId')
       .coerceTo('array'),
     userOrgIds: r
       .table('OrganizationUser')
@@ -98,5 +98,5 @@ export const isOrgLeaderOfUser = async (authToken, userId) => {
 export const isPaidTier = async (teamId) => {
   const r = getRethink()
   const tier = await r.table('Team').get(teamId)('tier')
-  return tier !== PERSONAL
+  return tier !== TierEnum.personal
 }

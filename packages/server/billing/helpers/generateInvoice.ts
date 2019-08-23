@@ -4,9 +4,8 @@ import {fromEpochSeconds} from '../../utils/epochTime'
 import {AUTO_PAUSE_USER, PAUSE_USER, UNPAUSE_USER} from '../../utils/serverConstants'
 import shortid from 'shortid'
 import Stripe from 'stripe'
-import {BILLING_LEADER} from '../../../client/utils/constants'
 import Invoice from '../../database/types/Invoice'
-import {InvoiceLineItemEnum, InvoiceStatusEnum} from 'parabol-client/types/graphql'
+import {InvoiceLineItemEnum, InvoiceStatusEnum, OrgUserRole} from 'parabol-client/types/graphql'
 import InvoiceLineItemDetail from '../../database/types/InvoiceLineItemDetail'
 import QuantityChangeLineItem from '../../database/types/QuantityChangeLineItem'
 import InvoiceLineItemOtherAdjustments from '../../database/types/InvoiceLineItemOtherAdjustments'
@@ -343,7 +342,7 @@ export default async function generateInvoice (
     billingLeaderEmails: r
       .table('OrganizationUser')
       .getAll(orgId, {index: 'orgId'})
-      .filter({removedAt: null, role: BILLING_LEADER})
+      .filter({removedAt: null, role: OrgUserRole.BILLING_LEADER})
       .coerceTo('array')('userId')
       .do((userIds) => {
         return r.table('User').getAll(userIds, {index: 'id'})('email')

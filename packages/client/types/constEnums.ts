@@ -63,6 +63,10 @@ export const enum ElementHeight {
   REFLECTION_CARD_MAX = 104  // 4 lines (20px each) + (2 * 12px) vertical gutter
 }
 
+export const enum ExternalLinks {
+  PRICING_LINK = 'https://www.parabol.co/pricing/'
+}
+
 // https://material.io/design/layout/spacing-methods.html
 // NOTE: iterate on this pattern as we go (TA)
 export const enum Layout {
@@ -84,6 +88,10 @@ export const enum MathEnum {
 export const enum MeetingTypes {
   ACTION = 'action',
   RETROSPECTIVE = 'retrospective'
+}
+
+export const enum Pricing {
+  PRO_SEAT_COST = 600
 }
 
 export const enum Providers {

@@ -22,7 +22,7 @@ const AnalyticsPage = () => {
   /* eslint-disable */
   const {pathname} = location
   const pathnameRef = useRef(pathname)
-  const [isSegmentLoaded] = useScript(`https://cdn.segment.com/analytics.js/v1/${key}/analytics.min.js`)
+  const [isSegmentLoaded] = useScript(`https://cdn.segment.com/analytics.js/v1/${key}/analytics.min.js`, {crossOrigin: true})
   useEffect(() => {
     if (!isSegmentLoaded || !window.analytics) return
     const prevPathname = pathnameRef.current
