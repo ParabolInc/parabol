@@ -65,7 +65,8 @@ const GitHubLogin = styled('div')({})
 
 const ProviderName = styled('div')({
   color: PALETTE.TEXT_MAIN,
-  fontSize: 18,
+  fontSize: 16,
+  fontWeight: 600,
   lineHeight: '24px',
   alignItems: 'center',
   display: 'flex',

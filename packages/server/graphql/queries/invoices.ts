@@ -6,7 +6,6 @@ import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import {InvoiceConnection} from '../types/Invoice'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import resolvePromiseObj from '../../../client/utils/resolvePromiseObj'
-import standardError from '../../utils/standardError'
 import {InvoiceStatusEnum} from 'parabol-client/types/graphql'
 
 export default {
@@ -28,7 +27,7 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken)
     if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
-      standardError(new Error('Not organization lead'), {userId: viewerId})
+      // standardError(new Error('Not organization lead'), {userId: viewerId})
       return null
     }
 

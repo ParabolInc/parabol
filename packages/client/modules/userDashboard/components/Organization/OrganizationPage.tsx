@@ -12,9 +12,6 @@ interface Props extends RouteComponentProps<{orgId: string}> {
   organization: OrganizationPage_organization
 }
 
-const OrgPlanSqueeze = lazy(() =>
-  import(/* webpackChunkName: 'OrgPlanSqueeze' */ '../OrgPlanSqueeze/OrgPlanSqueeze')
-)
 const OrgBilling = lazy(() =>
   import(/* webpackChunkName: 'OrgBillingRoot' */ '../../containers/OrgBilling/OrgBillingRoot')
 )
@@ -26,8 +23,6 @@ const OrganizationPage = (props: Props) => {
   const {match, organization} = props
   const {isBillingLeader, tier} = organization
   const onlyShowMembers = !isBillingLeader && tier !== TierEnum.personal
-  const BillingComponent =
-    isBillingLeader && tier !== TierEnum.personal ? OrgBilling : OrgPlanSqueeze
   const {
     params: {orgId}
   } = match
@@ -40,12 +35,12 @@ const OrganizationPage = (props: Props) => {
           <Route
             exact
             path={`${match.url}`}
-            render={(p) => <BillingComponent {...p} organization={organization} />}
+            render={(p) => <OrgBilling {...p} organization={organization} />}
           />
           <Route
             exact
             path={`${match.url}/${BILLING_PAGE}`}
-            render={(p) => <BillingComponent {...p} organization={organization} />}
+            render={(p) => <OrgBilling {...p} organization={organization} />}
           />
           <Route
             exact
@@ -61,7 +56,6 @@ const OrganizationPage = (props: Props) => {
 export default createFragmentContainer(withRouter(OrganizationPage), {
   organization: graphql`
     fragment OrganizationPage_organization on Organization {
-      ...OrgPlanSqueeze_organization
       ...OrgBillingRoot_organization
       id
       isBillingLeader

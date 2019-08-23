@@ -24,10 +24,29 @@ import useMenu from '../../../../hooks/useMenu'
 import useModal from '../../../../hooks/useModal'
 import InactivateUserMutation from '../../../../mutations/InactivateUserMutation'
 import defaultUserAvatar from '../../../../styles/theme/images/avatar-user.svg'
-import {BILLING_LEADER, PERSONAL} from '../../../../utils/constants'
 import lazyPreload from '../../../../utils/lazyPreload'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
-import {Layout} from '../../../../types/constEnums'
+import {Breakpoint} from '../../../../types/constEnums'
+import {OrgUserRole, TierEnum} from '../../../../types/graphql'
+
+const AvatarBlock = styled('div')({
+  display: 'none',
+  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
+    display: 'block',
+    marginRight: 16
+  }
+})
+
+const StyledRow = styled(Row)({
+  padding: '12px 8px 12px 16px',
+  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
+    padding: '16px 8px 16px 16px'
+  }
+})
+
+const StyledRowInfo = styled(RowInfo)({
+  paddingLeft: 0
+})
 
 const ActionsBlock = styled('div')({
   alignItems: 'center',
@@ -36,12 +55,12 @@ const ActionsBlock = styled('div')({
 })
 
 const MenuToggleBlock = styled('div')({
-  marginLeft: Layout.ROW_GUTTER,
+  marginLeft: 8,
   width: '2rem'
 })
 
 const ToggleBlock = styled('div')({
-  marginLeft: Layout.ROW_GUTTER,
+  marginLeft: 8,
   width: 36
 })
 
@@ -55,6 +74,11 @@ const StyledButton = styled(FlatButton)({
   paddingLeft: 0,
   paddingRight: 0,
   width: '100%'
+})
+
+const StyledFlatButton = styled(FlatButton)({
+  paddingLeft: 16,
+  paddingRight: 16,
 })
 
 const MenuButton = forwardRef((props: FlatButtonProps, ref: Ref<HTMLButtonElement>) => (
@@ -87,9 +111,9 @@ const OrgMemberRow = (props: Props) => {
   } = props
   const {orgId, isViewerBillingLeader, tier} = organization
   const {newUserUntil, user, role} = organizationUser
-  const isBillingLeader = role === BILLING_LEADER
+  const isBillingLeader = role === OrgUserRole.BILLING_LEADER
   const {email, inactive, picture, preferredName, userId} = user
-  const isPersonalTier = tier === PERSONAL
+  const isPersonalTier = tier === TierEnum.personal
   const isViewerLastBillingLeader =
     isViewerBillingLeader && isBillingLeader && billingLeaderCount === 1
   const {viewerId} = atmosphere
@@ -119,15 +143,15 @@ const OrgMemberRow = (props: Props) => {
     }
   }
   return (
-    <Row>
-      <div>
+    <StyledRow>
+      <AvatarBlock>
         {picture ? (
           <Avatar hasBadge={false} picture={picture} size={44} />
         ) : (
           <img alt='' src={defaultUserAvatar} />
         )}
-      </div>
-      <RowInfo>
+      </AvatarBlock>
+      <StyledRowInfo>
         <RowInfoHeader>
           <RowInfoHeading>{preferredName}</RowInfoHeading>
           {isBillingLeader && <Tag colorPalette='blue' label='Billing Leader' />}
@@ -137,14 +161,14 @@ const OrgMemberRow = (props: Props) => {
         <RowInfoLink href={`mailto:${email}`} title='Send an email'>
           {email}
         </RowInfoLink>
-      </RowInfo>
+      </StyledRowInfo>
       <RowActions>
         <ActionsBlock>
           {!isBillingLeader && viewerId === userId && (
             <>
-              <FlatButton onClick={toggleLeave} onMouseEnter={LeaveOrgModal.preload}>
+              <StyledFlatButton onClick={toggleLeave} onMouseEnter={LeaveOrgModal.preload}>
                 Leave Organization
-              </FlatButton>
+              </StyledFlatButton>
             </>
           )}
           {!isPersonalTier && isViewerBillingLeader && (
@@ -196,7 +220,7 @@ const OrgMemberRow = (props: Props) => {
           )}
         </ActionsBlock>
       </RowActions>
-    </Row>
+    </StyledRow>
   )
 }
 

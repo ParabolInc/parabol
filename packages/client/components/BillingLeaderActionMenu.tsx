@@ -10,8 +10,8 @@ import withAtmosphere, {
 } from '../decorators/withAtmosphere/withAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import SetOrgUserRoleMutation from '../mutations/SetOrgUserRoleMutation'
-import {BILLING_LEADER} from '../utils/constants'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
+import {OrgUserRole} from '../types/graphql'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   menuProps: MenuProps
@@ -39,7 +39,7 @@ const BillingLeaderActionMenu = (props: Props) => {
   const {orgId} = organization
   const {viewerId} = atmosphere
   const {newUserUntil, role, user} = organizationUser
-  const isBillingLeader = role === BILLING_LEADER
+  const isBillingLeader = role === OrgUserRole.BILLING_LEADER
   const {id: userId} = user
 
   const setRole = (role: string | null = null) => () => {
@@ -56,7 +56,7 @@ const BillingLeaderActionMenu = (props: Props) => {
           <MenuItem label='Remove Billing Leader role' onClick={setRole(null)} />
         )}
         {!isBillingLeader && (
-          <MenuItem label='Promote to Billing Leader' onClick={setRole(BILLING_LEADER)} />
+          <MenuItem label='Promote to Billing Leader' onClick={setRole(OrgUserRole.BILLING_LEADER)} />
         )}
         {viewerId === userId && !isViewerLastBillingLeader && (
           <MenuItem label='Leave Organization' onClick={toggleLeave} />

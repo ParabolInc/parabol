@@ -16,8 +16,8 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
 }
 
 const EditableOrgText = styled(EditableText)({
-  fontSize: 32,
-  lineHeight: '48px'
+  fontSize: 24,
+  lineHeight: '36px'
 })
 
 class EditableOrgName extends Component<Props> {

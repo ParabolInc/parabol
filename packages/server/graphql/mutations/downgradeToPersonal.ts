@@ -51,7 +51,6 @@ export default {
         .table('Organization')
         .get(orgId)
         .update({
-          creditCard: {},
           tier: PERSONAL,
           periodEnd: now,
           stripeSubscriptionId: null,

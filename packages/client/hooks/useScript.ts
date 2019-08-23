@@ -1,7 +1,10 @@
 import {useEffect, useState} from 'react'
 
+interface Options {
+  crossOrigin?: boolean
+}
 const cachedScripts: string[] = [];
-const useScript = (src: string) => {
+const useScript = (src: string, options: Options = {}) => {
   const [state, setState] = useState({
     loaded: false,
     error: false
@@ -20,7 +23,9 @@ const useScript = (src: string) => {
         const script = document.createElement('script');
         script.src = src;
         script.async = true;
-        script.crossOrigin = ''
+        if (options.crossOrigin) {
+          script.crossOrigin = ''
+        }
         script.onload = () => {
           setState({
             loaded: true,

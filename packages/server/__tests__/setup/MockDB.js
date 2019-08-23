@@ -4,14 +4,7 @@ import notificationTemplate from '../utils/notificationTemplate'
 import getRethink from '../../database/rethinkDriver'
 import {ADD_USER} from '../../utils/serverConstants'
 import shortid from 'shortid'
-import {
-  ACTIVE,
-  BILLING_LEADER,
-  CHECKIN,
-  LOBBY,
-  PERSONAL,
-  PRO
-} from '../../../client/utils/constants'
+import {ACTIVE, CHECKIN, LOBBY, PERSONAL, PRO} from '../../../client/utils/constants'
 import getWeekOfYear from '../../../client/utils/getWeekOfYear'
 import {makeCheckinGreeting, makeCheckinQuestion} from '../../../client/utils/makeCheckinGreeting'
 import convertToRichText from './convertToRichText'
@@ -71,7 +64,7 @@ class MockDB {
       userOrgs: [
         {
           id: orgId,
-          role: idx === 0 ? BILLING_LEADER : null
+          role: idx === 0 ? 'BILLING_LEADER' : null
         }
       ]
     }))
@@ -133,7 +126,7 @@ class MockDB {
       total: 500,
       billingLeaderEmails: this.db.user
         .filter((user) =>
-          user.userOrgs.find((userOrg) => userOrg.id === orgId && userOrg.role === BILLING_LEADER)
+          user.userOrgs.find((userOrg) => userOrg.id === orgId && userOrg.role === 'BILLING_LEADER')
         )
         .map((user) => user.email),
       creditCard: this.context.organization.creditCard,
@@ -278,7 +271,7 @@ class MockDB {
       this.db.user[idx].userOrgs = this.db.user[idx].userOrgs || []
       this.db.user[idx].userOrgs.push({
         id,
-        role: this.context.user.id === user.id ? BILLING_LEADER : null
+        role: this.context.user.id === user.id ? 'BILLING_LEADER' : null
       })
     })
     return this.closeout('organization', {
@@ -290,7 +283,7 @@ class MockDB {
         ? [
             {
               id: this.context.user.id,
-              role: BILLING_LEADER,
+              role: 'BILLING_LEADER',
               inactive: false
             }
           ]

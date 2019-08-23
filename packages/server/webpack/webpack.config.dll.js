@@ -31,7 +31,6 @@ module.exports = {
       'oy-vey',
       'prop-types',
       'react',
-      'react-async-hoc',
       'react-beautiful-dnd',
       'react-copy-to-clipboard',
       'react-day-picker',

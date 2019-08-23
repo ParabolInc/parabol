@@ -1,5 +1,5 @@
 import getRethink from '../../../database/rethinkDriver'
-import {BILLING_LEADER, PERSONAL, PRO, ENTERPRISE} from '../../../../client/utils/constants'
+import {OrgUserRole, TierEnum} from 'parabol-client/types/graphql'
 
 // breaking this out into its own helper so it can be used directly to
 // populate segment traits
@@ -14,18 +14,18 @@ const countTiersForUserId = async (userId) => {
       tier: r
         .table('Organization')
         .get(organizationUser('orgId'))('tier')
-        .default(PERSONAL)
+        .default(TierEnum.personal)
     }))
   const tierPersonalCount = organizationUsers.filter(
-    (organizationUser) => organizationUser.tier === PERSONAL
+    (organizationUser) => organizationUser.tier === TierEnum.personal
   ).length
-  const tierProCount = organizationUsers.filter((organizationUser) => organizationUser.tier === PRO)
+  const tierProCount = organizationUsers.filter((organizationUser) => organizationUser.tier === TierEnum.pro)
     .length
   const tierEnterpriseCount = organizationUsers.filter(
-    (organizationUser) => organizationUser.tier === ENTERPRISE
+    (organizationUser) => organizationUser.tier === TierEnum.enterprise
   ).length
   const tierProBillingLeaderCount = organizationUsers.filter(
-    (organizationUser) => organizationUser.tier === PRO && organizationUser.role === BILLING_LEADER
+    (organizationUser) => organizationUser.tier === TierEnum.pro && organizationUser.role === OrgUserRole.BILLING_LEADER
   ).length
   return {
     tierPersonalCount,

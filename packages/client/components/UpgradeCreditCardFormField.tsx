@@ -1,63 +1,72 @@
 import React from 'react'
-import makePlaceholderStyles from '../styles/helpers/makePlaceholderStyles'
 import styled from '@emotion/styled'
-import ui from '../styles/ui'
-import appTheme from '../styles/theme/appTheme'
 import Icon from './Icon'
-import {MD_ICONS_SIZE_18} from '../styles/icons'
+import {PALETTE} from '../styles/paletteV2'
+import {ICON_SIZE} from '../styles/typographyV2'
 
 const FieldBlock = styled('div')({
-  position: 'relative'
+  alignItems: 'center',
+  border: `1px solid ${PALETTE.BORDER_GRAY}`,
+  borderRadius: 4,
+  display: 'flex'
 })
 
 interface StyleProps {
   hasError: boolean
 }
+
 const FieldIcon = styled(Icon)<StyleProps>(({hasError}) => ({
-  color: hasError ? ui.colorError : ui.hintColor,
+  color: hasError ? PALETTE.ERROR_MAIN : PALETTE.TEXT_LIGHT,
   display: 'block',
-  fontSize: MD_ICONS_SIZE_18,
-  left: '.5rem',
+  fontSize: ICON_SIZE.MD18,
   opacity: 0.5,
-  position: 'absolute',
-  textAlign: 'center',
-  top: '.6875rem'
+  paddingLeft: 8,
+  textAlign: 'center'
 }))
 
 interface Props {
   autoComplete: string
   autoFocus?: boolean
-  hasError: boolean
+  className?: string
+  error: string | undefined
+  dirty: boolean
   iconName: string
   maxLength: number
-  onChange: (e: React.ChangeEvent) => void
+  onBlur?: (e: React.FocusEvent) => void
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   placeholder: string
   value: string
+  name: string
 }
 
 const Input = styled('input')<StyleProps>(({hasError}) => ({
-  ...ui.fieldBaseStyles,
-  backgroundColor: ui.palette.white,
+  appearance: 'none',
+  backgroundColor: '#fff',
   border: 0,
-  borderRadius: 0,
+  borderRadius: 4,
   boxShadow: 'none',
-  color: appTheme.palette.dark,
+  color: PALETTE.TEXT_MAIN,
   fontSize: '.9375rem',
-  lineHeight: appTheme.typography.s6,
-  padding: `.5rem .75rem .5rem 2rem`,
-  ':focus, :active': {
-    ...makePlaceholderStyles(ui.placeholderColorFocusActive)
-  },
-  '::placeholder': hasError ? ui.fieldErrorPlaceholderColor : undefined
+  lineHeight: '24px',
+  outline: 0,
+  padding: '7px 8px', // account for top/bottom border
+  width: '100%',
+  '::placeholder': {
+    color: hasError ? PALETTE.BACKGROUND_RED : undefined
+  }
 }))
 
 const UpgradeCreditCardFormField = (props: Props) => {
   const {
     autoComplete,
     autoFocus,
-    hasError,
+    className,
+    dirty,
+    error,
     iconName,
+    name,
     maxLength,
+    onBlur,
     onChange,
     placeholder,
     value
@@ -69,16 +78,18 @@ const UpgradeCreditCardFormField = (props: Props) => {
       e.preventDefault()
     }
   }
-
+  const hasError = dirty && !!error
   return (
-    <FieldBlock>
+    <FieldBlock className={className}>
       <FieldIcon hasError={hasError}>{iconName}</FieldIcon>
       <Input
         hasError={hasError}
         autoComplete={autoComplete}
         autoFocus={autoFocus}
+        onBlur={onBlur}
         onChange={onChange}
         maxLength={maxLength}
+        name={name}
         placeholder={placeholder}
         onKeyPress={requireNumeric}
         type='text'

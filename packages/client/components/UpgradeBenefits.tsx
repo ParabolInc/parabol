@@ -19,17 +19,25 @@ const ModalCopy = styled('p')({
   margin: 0
 })
 
-const benefits = ['Unlimited Teams', 'Priority Customer Support', 'Monthly Billing']
+const BenefitsList = styled('div')({
+  display: 'flex',
+  flexDirection: 'column'
+})
+const benefits = ['Unlimited Teams', 'Priority Customer Support', 'Monthly Active User Billing']
 
 const UpgradeBenefits = () => {
-  return benefits.map((benefit, idx) => {
-    return (
-      <ModalCopy key={`modalBulletCopy-${idx + 1}`}>
-        <StyledIcon>check_circle</StyledIcon>
-        {benefit}
-      </ModalCopy>
-    )
-  })
+  return (
+    <BenefitsList>
+      {benefits.map((benefit, idx) => {
+        return (
+          <ModalCopy key={`modalBulletCopy-${idx + 1}`}>
+            <StyledIcon>check_circle</StyledIcon>
+            {benefit}
+          </ModalCopy>
+        )
+      })}
+    </BenefitsList>
+  )
 }
 
 export default UpgradeBenefits

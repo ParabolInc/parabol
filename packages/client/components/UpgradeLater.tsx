@@ -1,0 +1,55 @@
+import React from 'react'
+import styled from '@emotion/styled'
+import InvitationDialogCopy from './InvitationDialogCopy'
+import SecondaryButton from './SecondaryButton'
+import DialogContainer from './DialogContainer'
+import wearyCat from '../styles/theme/images/emoji/emoji_u1f640.png'
+
+const Emoji = styled('img')({
+  padding: 24
+})
+
+const ButtonBlock = styled('div')({
+  padding: 24
+})
+
+const ModalButton = styled(SecondaryButton)({
+  padding: 8,
+  width: 264
+})
+
+const Container = styled(DialogContainer)({
+  alignItems: 'center'
+})
+
+const CopySpacer = styled(InvitationDialogCopy)({
+  paddingTop: 16
+})
+
+interface Props {
+  closePortal: () => void
+}
+
+const UpgradeLater = (props: Props) => {
+  const {closePortal} = props
+  return (
+    <Container>
+      <Emoji src={wearyCat}/>
+      <InvitationDialogCopy>{'Your organization has exceeded'}</InvitationDialogCopy>
+      <InvitationDialogCopy>{'the free tier limit of '}<b>{'2 teams'}</b>{'.'}</InvitationDialogCopy>
+      <CopySpacer>
+        {'We’ll send you an email so'}
+      </CopySpacer>
+      <InvitationDialogCopy>
+        {'you can upgrade later'}
+      </InvitationDialogCopy>
+      <ButtonBlock>
+        <ModalButton size='large' onClick={closePortal}>
+          {'Back to Business'}
+        </ModalButton>
+      </ButtonBlock>
+    </Container>
+  )
+}
+
+export default UpgradeLater

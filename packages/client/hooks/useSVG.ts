@@ -1,6 +1,6 @@
 import {useEffect, useRef, useState} from 'react'
 
-const useSVG = (src: string, onLoad: (el: SVGElement) => void) => {
+const useSVG = (src: string, onLoad?: (el: SVGElement) => void) => {
   const [svg, setSVG] = useState<string | null>(null)
   const svgRef = useRef<any>(null)
   const isMountedRef = useRef(false)

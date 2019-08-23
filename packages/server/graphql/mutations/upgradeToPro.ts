@@ -1,13 +1,14 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import UpgradeToProPayload from '../types/UpgradeToProPayload'
-import {getUserId, isUserBillingLeader} from '../../utils/authorization'
+import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import sendSegmentEvent, {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
-import {ORGANIZATION, TEAM} from '../../../client/utils/constants'
 import standardError from '../../utils/standardError'
 import upgradeToPro from './helpers/upgradeToPro'
 import {GQLContext} from '../graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {OrgUserRole} from 'parabol-client/types/graphql'
 
 export default {
   type: UpgradeToProPayload,
@@ -33,9 +34,6 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
-      return standardError(new Error('Must be the organization leader'), {userId: viewerId})
-    }
 
     // VALIDATION
     const {stripeSubscriptionId: startingSubId} = await r.table('Organization').get(orgId)
@@ -46,19 +44,29 @@ export default {
 
     // RESOLUTION
     // if they downgrade & are re-upgrading, they'll already have a stripeId
-    await upgradeToPro(orgId, stripeToken)
+    try {
+      await upgradeToPro(orgId, stripeToken)
+    } catch (e) {
+      return standardError(e.param ? new Error(e.param) : e, {userId: viewerId})
+    }
+
+    await r.table('OrganizationUser')
+      .getAll(viewerId, {index: 'userId'})
+      .filter({removedAt: null, orgId})
+      .update({role: OrgUserRole.BILLING_LEADER})
+
     const teams = await dataLoader.get('teamsByOrgId').load(orgId)
     const teamIds = teams.map(({id}) => id)
 
     sendSegmentEvent('Upgrade to Pro', viewerId, {orgId}).catch()
     const data = {orgId, teamIds}
-    publish(ORGANIZATION, orgId, UpgradeToProPayload, data, subOptions)
+    publish(SubscriptionChannel.ORGANIZATION, orgId, UpgradeToProPayload, data, subOptions)
 
     teamIds.forEach((teamId) => {
       // I can't readily think of a clever way to use the data obj and filter in the resolver so I'll reduce here.
       // This is probably a smelly piece of code telling me I should be sending this per-viewerId or per-org
       const teamData = {orgId, teamIds: [teamId]}
-      publish(TEAM, teamId, UpgradeToProPayload, teamData, subOptions)
+      publish(SubscriptionChannel.TEAM, teamId, UpgradeToProPayload, teamData, subOptions)
     })
     // the count of this users tier stats just changed, update:
     await sendSegmentIdentify(viewerId)

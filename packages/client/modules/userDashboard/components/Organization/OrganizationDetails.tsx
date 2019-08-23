@@ -6,14 +6,15 @@ import makeDateString from '../../../../utils/makeDateString'
 import {TierEnum} from '../../../../types/graphql'
 
 const StyledTagBlock = styled(TagBlock)({
-  marginLeft: 4,
-  marginTop: -6
+  display: 'block'
 })
 
 const OrgDetails = styled('div')({
-  fontSize: 14,
-  lineHeight: '34px',
-  paddingBottom: 12
+  alignItems: 'flex-start',
+  display: 'flex',
+  flexShrink: 0,
+  fontSize: 13,
+  lineHeight: '20px'
 })
 
 interface Props {

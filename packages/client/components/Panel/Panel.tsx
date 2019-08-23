@@ -11,7 +11,7 @@ const PanelRoot = styled('div')({
   borderRadius: 4,
   fontSize: 14,
   lineHeight: '20px',
-  margin: '24px 0',
+  margin: '16px 0',
   position: 'relative',
   width: '100%'
 })
@@ -23,7 +23,7 @@ const PanelHeader = styled('div')({
 })
 
 const PanelLabel = styled(LabelHeading)({
-  padding: `12px ${Layout.ROW_GUTTER}px`,
+  padding: `8px ${Layout.ROW_GUTTER}px`,
   textTransform: 'uppercase'
 })
 
