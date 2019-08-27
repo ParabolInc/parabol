@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, ReactNode} from 'react'
 import appTheme from '../../styles/theme/appTheme'
 import ui from '../../styles/ui'
 import {createFragmentContainer} from 'react-relay'
@@ -30,7 +30,7 @@ const EditingText = styled('span')<{isEditing: boolean}>(({isEditing}) => ({
 export type TimestampType = 'createdAt' | 'updatedAt'
 
 interface Props {
-  children: ReactNote
+  children: ReactNode
   isTaskHovered: boolean
   task: EditingStatus_task
   useTaskChild: UseTaskChild
