@@ -5,13 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## vNEXT
+## v4.2.0 2019-Aug-27
 
 ### Added
 * Modal at beginning of demo
 
 ### Removed
 * Aprhodite in favor of emotion
+
+### Fixed
+* Various UI touch-ups:
+   * uniform gutters for task column header
+   * fixes ellipsis
+   * fixes due date bg color
+   * improves editing + due date block layout
+   * Organization list now a responsive layout
+
 
 ## v4.1.0 2019-Aug-14
 
