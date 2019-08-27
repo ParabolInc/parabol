@@ -40,13 +40,8 @@ const ContentBlock = styled('div')({
   position: 'relative'
 })
 
-const CardTopMeta = styled('div')({
-  paddingBottom: '.5rem'
-})
-
 const StatusIndicatorBlock = styled('div')({
-  display: 'flex',
-  paddingLeft: ui.cardPaddingBase
+  display: 'flex'
 })
 
 interface Props {
@@ -91,18 +86,17 @@ const OutcomeCard = memo((props: Props) => {
     <RootCard isTaskHovered={isTaskHovered} isTaskFocused={isTaskFocused} isDragging={!!isDraggingOver}>
       <TaskWatermark service={service} />
       <ContentBlock>
-        <CardTopMeta>
+        <EditingStatus
+          isTaskHovered={isTaskHovered}
+          task={task}
+          useTaskChild={useTaskChild}
+        >
           <StatusIndicatorBlock title={statusIndicatorTitle}>
             <OutcomeCardStatusIndicator status={isDraggingOver || status} />
             {isPrivate && <OutcomeCardStatusIndicator status='private' />}
             {isArchived && <OutcomeCardStatusIndicator status='archived' />}
           </StatusIndicatorBlock>
-          <EditingStatus
-            isTaskHovered={isTaskHovered}
-            task={task}
-            useTaskChild={useTaskChild}
-          />
-        </CardTopMeta>
+        </EditingStatus>
         <TaskEditor
           editorRef={editorRef}
           editorState={editorState}

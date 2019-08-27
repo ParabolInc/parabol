@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, ReactNode} from 'react'
 import appTheme from '../../styles/theme/appTheme'
 import ui from '../../styles/ui'
 import {createFragmentContainer} from 'react-relay'
@@ -11,7 +11,7 @@ import {UseTaskChild} from '../../hooks/useTaskChildFocus'
 import EditingStatusText from './EditingStatusText'
 
 const StatusHeader = styled('div')({
-  alignItems: 'center',
+  alignItems: 'flex-start',
   color: appTheme.palette.dark80l,
   display: 'flex',
   fontSize: '.6875rem',
@@ -19,7 +19,7 @@ const StatusHeader = styled('div')({
   justifyContent: 'space-between',
   lineHeight: '1.375rem',
   minHeight: ui.cardButtonHeight,
-  padding: `0 ${ui.cardPaddingBase}`,
+  padding: `0 ${ui.cardPaddingBase} 8px`,
   textAlign: 'left'
 })
 
@@ -30,6 +30,7 @@ const EditingText = styled('span')<{isEditing: boolean}>(({isEditing}) => ({
 export type TimestampType = 'createdAt' | 'updatedAt'
 
 interface Props {
+  children: ReactNode
   isTaskHovered: boolean
   task: EditingStatus_task
   useTaskChild: UseTaskChild
@@ -37,6 +38,7 @@ interface Props {
 
 const EditingStatus = (props: Props) => {
   const {
+    children,
     isTaskHovered,
     task,
     useTaskChild
@@ -54,9 +56,12 @@ const EditingStatus = (props: Props) => {
   const timestamp = timestampType === 'createdAt' ? createdAt : updatedAt
   return (
     <StatusHeader>
-      <EditingText isEditing={isEditing} onClick={toggleTimestamp} title={title}>
-        <EditingStatusText editors={otherEditors} isEditing={isEditing} timestamp={timestamp} timestampType={timestampType}/>
-      </EditingText>
+      <div>
+        {children}
+        <EditingText isEditing={isEditing} onClick={toggleTimestamp} title={title}>
+          <EditingStatusText editors={otherEditors} isEditing={isEditing} timestamp={timestamp} timestampType={timestampType}/>
+        </EditingText>
+      </div>
       <DueDateToggle cardIsActive={isEditing || isTaskHovered} task={task} useTaskChild={useTaskChild} />
     </StatusHeader>
   )
