@@ -10,6 +10,8 @@ import hideBodyScroll from '../utils/hideBodyScroll'
 import PlainButton from './PlainButton/PlainButton'
 import {navDrawerShadow} from '../styles/elevation'
 import useEventCallback from 'hooks/useEventCallback'
+import isReactTouch from 'utils/isReactTouch';
+import isNativeTouch from '../utils/isNativeTouch'
 
 const PEEK_WIDTH = 20
 
@@ -51,14 +53,6 @@ const Sidebar = styled('div')<StyleProps>(({x}) => ({
 const SwipeHandle = styled(PlainButton)({
   width: PEEK_WIDTH
 })
-
-const isTouch = (e: MouseEvent | TouchEvent): e is TouchEvent => {
-  return (e as any).touches !== undefined
-}
-
-const isReactTouch = (e: React.MouseEvent | React.TouchEvent): e is React.TouchEvent => {
-  return (e as any).touches !== undefined
-}
 
 const updateSpeed = (clientX: number) => {
   const movementX = swipe.lastX - clientX
@@ -139,7 +133,7 @@ const SwipeableDashSidebar = (props: Props) => {
 
   const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
     window.clearTimeout(swipe.peekTimeout)
-    const eventType = isTouch(e) ? 'touchmove' : 'mousemove'
+    const eventType = isNativeTouch(e) ? 'touchmove' : 'mousemove'
     document.removeEventListener(eventType, onMouseMove)
     const movementX = swipe.lastX - swipe.startX
     const {isOpen: nextIsOpen} = swipe
@@ -169,7 +163,7 @@ const SwipeableDashSidebar = (props: Props) => {
   })
 
   const onMouseMove = useEventCallback((e: MouseEvent | TouchEvent) => {
-    const event = isTouch(e) ? e.touches[0] : e
+    const event = isNativeTouch(e) ? e.touches[0] : e
     const {clientX, clientY} = event
     if (swipe.isSwipe === null) {
       // they don't want a peek

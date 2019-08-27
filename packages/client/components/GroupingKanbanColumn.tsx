@@ -1,32 +1,28 @@
 import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import {createFragmentContainer} from 'react-relay'
-import { GroupingKanbanColumn_reflectionGroups } from '__generated__/GroupingKanbanColumn_reflectionGroups.graphql';
-import { GroupingKanbanColumn_meeting } from '__generated__/GroupingKanbanColumn_meeting.graphql';
-import {Droppable, DroppableProvided, DroppableStateSnapshot} from 'react-beautiful-dnd'
-import {BezierCurve, DroppableType} from '../types/constEnums'
-import TaskColumnAddTask from '../modules/teamDashboard/components/TaskColumn/TaskColumnAddTask'
-import TaskColumnInner from '../modules/teamDashboard/components/TaskColumn/TaskColumnInner'
+import {GroupingKanbanColumn_reflectionGroups} from '__generated__/GroupingKanbanColumn_reflectionGroups.graphql'
+import {GroupingKanbanColumn_meeting} from '__generated__/GroupingKanbanColumn_meeting.graphql'
+import {BezierCurve} from '../types/constEnums'
 import styled from '@emotion/styled'
 import {PALETTE} from '../styles/paletteV2'
 import Icon from './Icon'
-import { GroupingKanbanColumn_prompt } from '__generated__/GroupingKanbanColumn_prompt.graphql';
-import GroupingKanbanColumnInner from './GroupingKanbanColumnInner'
+import {GroupingKanbanColumn_prompt} from '__generated__/GroupingKanbanColumn_prompt.graphql'
+import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 
 // TODO share with TaskColumn
-const Column = styled('div')<{isDragging: boolean}>(({isDragging}) => ({
-  background: isDragging ? PALETTE.BACKGROUND_MAIN_DARKENED : undefined,
+const Column = styled('div')({
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
   position: 'relative',
-  transition: `background 300ms ${BezierCurve.DECELERATE}`,
-}))
+  transition: `background 300ms ${BezierCurve.DECELERATE}`
+})
 
 const ColumnHeader = styled('div')({
   color: PALETTE.TEXT_MAIN,
   display: 'flex',
-  lineHeight: '24px',
+  lineHeight: '24px'
 })
 
 const ColumnBody = styled('div')({
@@ -47,18 +43,21 @@ interface Props {
 
 const GroupingKanbanColumn = (props: Props) => {
   const {meeting, reflectionGroups, prompt} = props
-  const {title} = prompt
+  const {title, id: promptId} = prompt
   return (
-        <Column>
-          <ColumnHeader>
-            <Icon>add</Icon>
-            {title}
-            {reflectionGroups.length || null}
-          </ColumnHeader>
-          <ColumnBody>
-            <GroupingKanbanColumnInner meeting={meeting} reflectionGroups={reflectionGroups}/>
-          </ColumnBody>
-        </Column>
+    <Column>
+      <ColumnHeader>
+        <Icon>add</Icon>
+        {title}
+        {reflectionGroups.length || null}
+      </ColumnHeader>
+      <ColumnBody>
+        {reflectionGroups.map((reflectionGroup) => {
+          return <ReflectionGroup key={reflectionGroup.id} meeting={meeting} reflectionGroup={reflectionGroup} />
+        })}
+        <div data-droppable-dropzone={promptId} />
+      </ColumnBody>
+    </Column>
   )
 }
 
@@ -66,17 +65,21 @@ export default createFragmentContainer(
   GroupingKanbanColumn,
   {
     meeting: graphql`
-    fragment GroupingKanbanColumn_meeting on RetrospectiveMeeting {
-      ...GroupingKanbanColumnInner_meeting
-    }`,
+      fragment GroupingKanbanColumn_meeting on RetrospectiveMeeting {
+        ...ReflectionGroup_meeting
+      }`,
     reflectionGroups: graphql`
-    fragment GroupingKanbanColumn_reflectionGroups on RetroReflectionGroup @relay(plural: true) {
-      ...GroupingKanbanColumnInner_reflectionGroups
-    }`,
+      fragment GroupingKanbanColumn_reflectionGroups on RetroReflectionGroup @relay(plural: true) {
+        ...ReflectionGroup_reflectionGroup
+        id
+        reflections {
+          id
+        }
+      }`,
     prompt: graphql`
-    fragment GroupingKanbanColumn_prompt on RetroPhaseItem {
-      id
-      title
-    }`
+      fragment GroupingKanbanColumn_prompt on RetroPhaseItem {
+        id
+        title
+      }`
   }
 )

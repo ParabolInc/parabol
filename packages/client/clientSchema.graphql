@@ -33,6 +33,14 @@ extend type RetroReflectionGroup {
   isExpanded: Boolean
 }
 
+extend type RetroReflection {
+  isViewerDragging: Boolean
+  isDropping: Boolean
+  dragUserId: ID
+  dragUserName: String
+  dragUserCords: Coords2D
+}
+
 extend type DragContext {
   isClosing: Boolean,
   isPendingStartDrag: Boolean,

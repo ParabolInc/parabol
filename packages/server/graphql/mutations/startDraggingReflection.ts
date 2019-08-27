@@ -4,9 +4,8 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GROUP, TEAM} from '../../../client/utils/constants'
 import isPhaseComplete from '../../../client/utils/meetings/isPhaseComplete'
-import Coords2DInput from '../types/Coords2DInput'
-import * as shortid from 'shortid'
 import standardError from '../../utils/standardError'
+import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 
 export default {
   description: 'Broadcast that the viewer started dragging a reflection',
@@ -15,13 +14,13 @@ export default {
     reflectionId: {
       type: new GraphQLNonNull(GraphQLID)
     },
-    initialCoords: {
-      type: new GraphQLNonNull(Coords2DInput)
-    }
+    // initialCoords: {
+    //   type: new GraphQLNonNull(Coords2DInput)
+    // }
   },
   async resolve (
-    source,
-    {initialCoords, reflectionId},
+    _source,
+    {reflectionId},
     {authToken, dataLoader, socketId: mutatorId}
   ) {
     const operationId = dataLoader.share()
@@ -41,7 +40,7 @@ export default {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
-    if (isPhaseComplete(GROUP, phases)) {
+    if (isPhaseComplete(NewMeetingPhaseTypeEnum.group, phases)) {
       return standardError(new Error('Meeting already completed'), {userId: viewerId})
     }
 
@@ -50,12 +49,13 @@ export default {
       teamId,
       meetingId,
       reflectionId,
-      dragContext: {
+      userId: viewerId
+      // dragContext: {
         // required so relay doesn't assign the same ID every time
-        id: shortid.generate(),
-        dragUserId: viewerId,
-        dragCoords: initialCoords
-      }
+        // id: shortid.generate(),
+        // dragUserId: viewerId,
+        // dragCoords: initialCoords
+      // }
     }
     publish(TEAM, teamId, StartDraggingReflectionPayload, data, subOptions)
     return data

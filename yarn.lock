@@ -14287,9 +14287,9 @@ react-addons-create-fragment@^15.6.2:
     loose-envify "^1.3.1"
     object-assign "^4.1.0"
 
-"react-beautiful-dnd@https://github.com/mattkrick/react-beautiful-dnd/tarball/59cf92a9f4eba5236c06fe6e1214f10786e811f7":
+"react-beautiful-dnd@https://github.com/mattkrick/react-beautiful-dnd/tarball/d9a783c8d766ad21144c9db8a774ebc68f5dd39b":
   version "11.0.5"
-  resolved "https://github.com/mattkrick/react-beautiful-dnd/tarball/59cf92a9f4eba5236c06fe6e1214f10786e811f7#b1d77586898d48950cf335a5c2091f9c70ba6fc0"
+  resolved "https://github.com/mattkrick/react-beautiful-dnd/tarball/d9a783c8d766ad21144c9db8a774ebc68f5dd39b#fdbe2932d9022d51bed8f25dedcf3827c4496ea9"
   dependencies:
     "@babel/runtime-corejs2" "^7.4.5"
     css-box-model "^1.1.2"

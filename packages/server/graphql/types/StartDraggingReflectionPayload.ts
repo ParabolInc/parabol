@@ -4,6 +4,7 @@ import StandardMutationError from './StandardMutationError'
 import RetroReflection from './RetroReflection'
 import DragContext from './DragContext'
 import NewMeeting from './NewMeeting'
+import User from './User'
 
 const StartDraggingReflectionPayload = new GraphQLObjectType({
   name: 'StartDraggingReflectionPayload',
@@ -32,6 +33,15 @@ const StartDraggingReflectionPayload = new GraphQLObjectType({
     },
     teamId: {
       type: GraphQLID
+    },
+    userId: {
+      type: GraphQLID
+    },
+    user: {
+      type: User,
+      resolve: ({userId}, _args, {dataLoader}) => {
+        return dataLoader.get('users').load(userId)
+      }
     }
   })
 })

@@ -93,6 +93,10 @@ const RetroReflection = new GraphQLObjectType<any, GQLContext>({
         return dataLoader.get('customPhaseItems').load(retroPhaseItemId)
       }
     },
+    plaintextContent: {
+      description: 'The plaintext version of content',
+      type: new GraphQLNonNull(GraphQLString)
+    },
     retroPhaseItemId: {
       type: new GraphQLNonNull(GraphQLID),
       description:

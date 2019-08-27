@@ -8,14 +8,12 @@ import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
 import ReflectionFooter from '../ReflectionFooter'
 import StyledError from '../StyledError'
 import editorDecorators from '../TaskEditor/decorators'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../../decorators/withAtmosphere/withAtmosphere'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
 import RemoveReflectionMutation from '../../mutations/RemoveReflectionMutation'
 import UpdateReflectionContentMutation from '../../mutations/UpdateReflectionContentMutation'
 import {DECELERATE} from '../../styles/animation'
-import {cardShadow} from '../../styles/elevation'
+import {Elevation} from '../../styles/elevation'
 import isTempId from '../../utils/relay/isTempId'
 import withMutationProps, {WithMutationProps} from '../../utils/relay/withMutationProps'
 import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
@@ -23,6 +21,8 @@ import {cardBackgroundColor, cardBorderRadius} from '../../styles/cards'
 import {ElementWidth} from '../../types/constEnums'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
+  isClipped?: boolean
+  className?: string
   handleChange?: () => void
   reflection: ReflectionCard_reflection
   meetingId?: string
@@ -48,17 +48,14 @@ export const ReflectionCardRoot = styled('div')<ReflectionCardRootProps>(
   {
     backgroundColor: cardBackgroundColor,
     borderRadius: cardBorderRadius,
+    boxShadow: Elevation.CARD_SHADOW,
     // display was 'inline-block' which causes layout issues (TA)
     display: 'block',
     maxWidth: '100%',
     position: 'relative',
     transition: `box-shadow 2000ms ${DECELERATE}`,
     width: ElementWidth.REFLECTION_CARD
-  },
-  ({isClosing, shadow}) =>
-    shadow !== null && {
-      boxShadow: isClosing ? cardShadow : shadow
-    }
+  }
 )
 
 class ReflectionCard extends Component<Props, State> {
@@ -156,9 +153,10 @@ class ReflectionCard extends Component<Props, State> {
   render () {
     const {
       innerRef,
+      className,
+      isClipped,
       handleChange,
       error,
-      shadow = cardShadow,
       meetingId,
       readOnly,
       reflection,
@@ -171,8 +169,9 @@ class ReflectionCard extends Component<Props, State> {
       reflectionId
     } = reflection
     return (
-      <ReflectionCardRoot shadow={shadow} ref={innerRef}>
+      <ReflectionCardRoot className={className} ref={innerRef}>
         <ReflectionEditorWrapper
+          isClipped={isClipped}
           ariaLabel='Edit this reflection'
           editorRef={this.editorRef}
           editorState={editorState}

@@ -71,7 +71,8 @@ export const enum ExternalLinks {
 export const enum Layout {
   TYPE_GRID = 4, // .5x
   LAYOUT_GRID = 8, // 1x
-  ROW_GUTTER = 16 // 2x
+  ROW_GUTTER = 16, // 2x
+  REFLECTION_CARD_PADDING_Y = 6
 }
 
 export const enum LoaderSize {
@@ -139,12 +140,14 @@ export const enum Times {
   REFLECTION_DEAL_CARD_MIN_DELAY = 30,
   REFLECTION_DEAL_CARD_DURATION = 300,
   REFLECTION_DEAL_TOTAL_DURATION = 500,
+  REFLECTION_DROP_DURATION = 2000
 }
 
 export const enum ZIndex {
   MODAL = 400 /*should be 24, https://github.com/ParabolInc/action/issues/2772 */,
   SIDEBAR = 200,
-  SNACKBAR = 200
+  SNACKBAR = 200,
+  REFLECTION_IN_FLIGHT = 500
 }
 
 export const enum AuthTokenRole {

@@ -1,4 +1,10 @@
-const safeRemoveNodeFromArray = (nodeId, parent, arrayName, options = {}) => {
+import {Variables} from 'relay-runtime'
+
+interface Options {
+  storageKeyArgs?: Variables
+}
+
+const safeRemoveNodeFromArray = (nodeId: string | null | undefined, parent, arrayName: string, options: Options = {}) => {
   if (!nodeId || !parent) return
   const {storageKeyArgs} = options
   const arr = parent.getLinkedRecords(arrayName, storageKeyArgs)

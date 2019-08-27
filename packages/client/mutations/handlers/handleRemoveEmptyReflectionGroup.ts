@@ -1,6 +1,6 @@
 import handleRemoveReflectionGroups from './handleRemoveReflectionGroups'
 
-const handleRemoveEmptyReflectionGroup = (reflectionGroupId, store) => {
+const handleRemoveEmptyReflectionGroup = (reflectionGroupId: string, store) => {
   const reflectionGroup = store.get(reflectionGroupId)
   if (!reflectionGroup) return
   const reflections = reflectionGroup.getLinkedRecords('reflections')

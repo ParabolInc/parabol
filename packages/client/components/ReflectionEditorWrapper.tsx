@@ -24,6 +24,7 @@ interface Props {
   handleKeyCommand: (command: string) => DraftHandleValue
   handleReturn: (e: React.KeyboardEvent) => DraftHandleValue
   isBlurred: boolean
+  isClipped?: boolean
   keyBindingFn: (e: React.KeyboardEvent) => string
   placeholder: string
   onBlur: () => void
@@ -54,11 +55,11 @@ const codeBlock = {
   padding: '0 .5rem'
 }
 
-const EditorStyles = styled('div')(({useFallback, userSelect}: any) => ({
+const EditorStyles = styled('div')(({useFallback, userSelect, isClipped}: any) => ({
   color: appTheme.palette.dark,
   fontSize: cardContentFontSize,
   lineHeight: useFallback ? '14px' : cardContentLineHeight,
-  maxHeight: ElementHeight.REFLECTION_CARD_MAX,
+  maxHeight: isClipped ? 44 : ElementHeight.REFLECTION_CARD_MAX,
   minHeight: '1rem',
   overflow: 'auto',
   position: 'relative',
@@ -174,6 +175,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
 
   render () {
     const {
+      isClipped,
       ariaLabel,
       editorRef,
       editorState,
@@ -188,7 +190,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     const useFallback = isAndroid && !readOnly
     const showFallback = useFallback && !isRichDraft(editorState)
     return (
-      <EditorStyles useFallback={useFallback} userSelect={userSelect}>
+      <EditorStyles useFallback={useFallback} userSelect={userSelect} isClipped={isClipped}>
         {showFallback ? (
           <Suspense fallback={<div />}>
             <AndroidEditorFallback

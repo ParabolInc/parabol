@@ -3392,7 +3392,6 @@ export interface ISetSlackNotificationOnMutationArguments {
 
 export interface IStartDraggingReflectionOnMutationArguments {
   reflectionId: string;
-  initialCoords: ICoords2DInput;
 }
 
 export interface IStartNewMeetingOnMutationArguments {
@@ -4285,6 +4284,11 @@ export interface IRetroReflection {
    */
   meeting: IRetrospectiveMeeting | null;
   phaseItem: IRetroPhaseItem;
+
+  /**
+   * The plaintext version of content
+   */
+  plaintextContent: string;
 
   /**
    * The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group.
@@ -5527,14 +5531,6 @@ export interface ISetSlackNotificationPayload {
   user: IUser | null;
 }
 
-/**
- * Coordinates used relay a location in a 2-D plane
- */
-export interface ICoords2DInput {
-  x: number;
-  y: number;
-}
-
 export interface IStartDraggingReflectionPayload {
   __typename: 'StartDraggingReflectionPayload';
   error: IStandardMutationError | null;
@@ -5548,6 +5544,8 @@ export interface IStartDraggingReflectionPayload {
   reflection: IRetroReflection | null;
   reflectionId: string | null;
   teamId: string | null;
+  userId: string | null;
+  user: IUser | null;
 }
 
 export interface IStartNewMeetingPayload {
@@ -5708,6 +5706,14 @@ export interface IUpdateDragLocationInput {
    * The offset from the targetId
    */
   targetOffset?: ICoords2DInput | null;
+}
+
+/**
+ * Coordinates used relay a location in a 2-D plane
+ */
+export interface ICoords2DInput {
+  x: number;
+  y: number;
 }
 
 export interface IUpdateReflectionContentPayload {
