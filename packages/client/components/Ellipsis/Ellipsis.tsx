@@ -24,15 +24,15 @@ const DotSpan = styled('span')<{dotNumber: number}>(({dotNumber}) => ({
 
 const GroupStyle = styled('span')({
   display: 'inline',
-  fontSize: 16
+  fontSize: 'inherit'
 })
 
 const Ellipsis = () => {
   return (
     <GroupStyle>
-      <DotSpan dotNumber={0}/>
-      <DotSpan dotNumber={1}/>
-      <DotSpan dotNumber={2}/>
+      <DotSpan dotNumber={0}>.</DotSpan>
+      <DotSpan dotNumber={1}>.</DotSpan>
+      <DotSpan dotNumber={2}>.</DotSpan>
     </GroupStyle>
   )
 }
