@@ -2,6 +2,9 @@ import {GraphQLFloat, GraphQLID, GraphQLInputObjectType, GraphQLNonNull} from 'g
 import Coords2DInput from './Coords2DInput'
 
 export const updateDragLocationFields = () => ({
+  id: {
+    type: new GraphQLNonNull(GraphQLID)
+  },
   clientHeight: {
     type: new GraphQLNonNull(GraphQLFloat)
   },

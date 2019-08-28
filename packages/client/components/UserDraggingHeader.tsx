@@ -1,45 +1,34 @@
 import React from 'react'
-import appTheme from '../styles/theme/appTheme'
-import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
 import Tag from './Tag/Tag'
-import {UserDraggingHeader_user} from '../__generated__/UserDraggingHeader_user.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import {PALETTE} from '../styles/paletteV2'
 
 const Header = styled('div')({
   bottom: '100%',
-  color: appTheme.palette.warm,
-  fontSize: '.6875rem',
-  lineHeight: '1.125rem',
+  color: PALETTE.TEXT_RED,
+  fontSize: 11,
+  lineHeight: '18px',
   position: 'absolute',
   right: 0,
   textAlign: 'end'
 })
 
 interface Props {
-  user: UserDraggingHeader_user | null
+  userId: string
+  name: string
 }
 
 const UserDraggingHeader = (props: Props) => {
-  const {user} = props
+  const {userId, name} = props
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  if (!user) return null
-  const {userId, preferredName} = user
-  const name = userId === viewerId ? 'Your ghost 👻' : preferredName
+  const label = userId === viewerId ? 'Your ghost 👻' : name
   return (
     <Header>
-      <Tag colorPalette='purple' label={name} />
+      <Tag colorPalette='purple' label={label} />
     </Header>
   )
 }
 
-export default createFragmentContainer(UserDraggingHeader, {
-  user: graphql`
-    fragment UserDraggingHeader_user on User {
-      userId: id
-      preferredName
-    }
-  `
-})
+export default UserDraggingHeader

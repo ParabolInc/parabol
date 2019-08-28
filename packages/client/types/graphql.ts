@@ -3392,6 +3392,7 @@ export interface ISetSlackNotificationOnMutationArguments {
 
 export interface IStartDraggingReflectionOnMutationArguments {
   reflectionId: string;
+  dragId: string;
 }
 
 export interface IStartNewMeetingOnMutationArguments {
@@ -5538,14 +5539,52 @@ export interface IStartDraggingReflectionPayload {
   /**
    * The proposed start/end of a drag. Subject to race conditions, it is up to the client to decide to accept or ignore
    */
-  dragContext: IDragContext | null;
+  remoteDrag: IRemoteReflectionDrag | null;
   meeting: NewMeeting | null;
   meetingId: string | null;
   reflection: IRetroReflection | null;
   reflectionId: string | null;
   teamId: string | null;
-  userId: string | null;
-  user: IUser | null;
+}
+
+/**
+ * Info associated with a current drag
+ */
+export interface IRemoteReflectionDrag {
+  __typename: 'RemoteReflectionDrag';
+  id: string;
+
+  /**
+   * The userId of the person currently dragging the reflection
+   */
+  dragUserId: string | null;
+
+  /**
+   * The name of the dragUser
+   */
+  dragUserName: string | null;
+  clientHeight: number | null;
+  clientWidth: number | null;
+
+  /**
+   * The primary key of the item being drug
+   */
+  sourceId: string;
+
+  /**
+   * The estimated destination of the item being drug
+   */
+  targetId: string | null;
+
+  /**
+   * The coordinate offset from the top left of the targetId, if provided
+   */
+  targetOffset: ICoords2D | null;
+
+  /**
+   * The coordinates relative to the client height/width necessary to simulate a drag for a subscribing user
+   */
+  coords: ICoords2D | null;
 }
 
 export interface IStartNewMeetingPayload {
@@ -5683,6 +5722,7 @@ export interface IUpdateNewCheckInQuestionPayload {
 }
 
 export interface IUpdateDragLocationInput {
+  id: string;
   clientHeight: number;
   clientWidth: number;
 
@@ -6091,24 +6131,11 @@ export type TeamSubscriptionPayload =
 
 export interface IUpdateDragLocationPayload {
   __typename: 'UpdateDragLocationPayload';
-  clientHeight: number;
-  clientWidth: number;
 
   /**
-   * The primary key of the item being drug
+   * The drag as sent from the team member
    */
-  sourceId: string;
-
-  /**
-   * The estimated destination of the item being drug
-   */
-  targetId: string | null;
-  coords: ICoords2D;
-
-  /**
-   * The offset from the targetId
-   */
-  targetOffset: ICoords2D | null;
+  remoteDrag: IRemoteReflectionDrag;
   userId: string;
 }
 

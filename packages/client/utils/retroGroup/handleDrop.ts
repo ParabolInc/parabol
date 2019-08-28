@@ -9,14 +9,6 @@ const handleDrop = (atmosphere: Atmosphere, reflectionId: string, drag: any, dro
     store.get(reflectionId)!.setValue(true, 'isDropping')
   })
 
-  setTimeout(() => {
-    commitLocalUpdate(atmosphere, (store) => {
-      store.get(reflectionId)!.setValue(false, 'isDropping')
-    })
-    document.body.removeChild(drag.clone!)
-    drag.clone = null
-  }, Times.REFLECTION_DROP_DURATION)
-
   EndDraggingReflectionMutation(atmosphere, {
     reflectionId,
     dropTargetType,

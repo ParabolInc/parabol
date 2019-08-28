@@ -2,10 +2,10 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import StartDraggingReflectionPayload from '../types/StartDraggingReflectionPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {GROUP, TEAM} from '../../../client/utils/constants'
 import isPhaseComplete from '../../../client/utils/meetings/isPhaseComplete'
 import standardError from '../../utils/standardError'
 import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   description: 'Broadcast that the viewer started dragging a reflection',
@@ -14,13 +14,13 @@ export default {
     reflectionId: {
       type: new GraphQLNonNull(GraphQLID)
     },
-    // initialCoords: {
-    //   type: new GraphQLNonNull(Coords2DInput)
-    // }
+    dragId: {
+      type: new GraphQLNonNull(GraphQLID)
+    }
   },
   async resolve (
     _source,
-    {reflectionId},
+    {dragId, reflectionId},
     {authToken, dataLoader, socketId: mutatorId}
   ) {
     const operationId = dataLoader.share()
@@ -49,15 +49,12 @@ export default {
       teamId,
       meetingId,
       reflectionId,
-      userId: viewerId
-      // dragContext: {
-        // required so relay doesn't assign the same ID every time
-        // id: shortid.generate(),
-        // dragUserId: viewerId,
-        // dragCoords: initialCoords
-      // }
+      remoteDrag: {
+        id: dragId,
+        dragUserId: viewerId,
+      }
     }
-    publish(TEAM, teamId, StartDraggingReflectionPayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, StartDraggingReflectionPayload, data, subOptions)
     return data
   }
 }

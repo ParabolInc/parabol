@@ -4,7 +4,6 @@ import React, {useMemo, useRef, useState} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import useModal from '../../hooks/useModal'
 import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
 import DraggableReflectionCard from './DraggableReflectionCard'
 import {Layout, ReflectionStackPerspective, Times} from '../../types/constEnums'
@@ -43,7 +42,7 @@ const ReflectionGroup = (props: Props) => {
   const titleInputRef = useRef(null)
   const isDraggable = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete
   const staticReflections = useMemo(() => {
-    return reflections.filter((reflection) => !reflection.isViewerDragging && !reflection.dragUserId)
+    return reflections.filter((reflection) => !reflection.isViewerDragging && !reflection.remoteDrag)
   }, [reflections])
   return (
     <>
@@ -106,7 +105,9 @@ export default createFragmentContainer(ReflectionGroup,
           retroPhaseItemId
           sortOrder
           isViewerDragging
-          dragUserId
+          remoteDrag {
+            dragUserId
+          }
         }
         isExpanded
       }

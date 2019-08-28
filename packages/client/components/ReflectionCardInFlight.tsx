@@ -235,7 +235,6 @@ export default createFragmentContainer(withAtmosphere(ReflectionCardInFlight), {
         }
         dragUser {
           id
-          ...UserDraggingHeader_user
         }
         initialCursorCoords {
           x

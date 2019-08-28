@@ -36,9 +36,7 @@ extend type RetroReflectionGroup {
 extend type RetroReflection {
   isViewerDragging: Boolean
   isDropping: Boolean
-  dragUserId: ID
-  dragUserName: String
-  dragUserCords: Coords2D
+  remoteDrag: RemoteReflectionDrag
 }
 
 extend type DragContext {

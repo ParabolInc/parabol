@@ -2,9 +2,8 @@ import {GraphQLID, GraphQLObjectType} from 'graphql'
 import {makeResolve, resolveNewMeeting} from '../resolvers'
 import StandardMutationError from './StandardMutationError'
 import RetroReflection from './RetroReflection'
-import DragContext from './DragContext'
 import NewMeeting from './NewMeeting'
-import User from './User'
+import RemoteReflectionDrag from './RemoteReflectionDrag'
 
 const StartDraggingReflectionPayload = new GraphQLObjectType({
   name: 'StartDraggingReflectionPayload',
@@ -12,8 +11,8 @@ const StartDraggingReflectionPayload = new GraphQLObjectType({
     error: {
       type: StandardMutationError
     },
-    dragContext: {
-      type: DragContext,
+    remoteDrag: {
+      type: RemoteReflectionDrag,
       description:
         'The proposed start/end of a drag. Subject to race conditions, it is up to the client to decide to accept or ignore'
     },
@@ -34,15 +33,6 @@ const StartDraggingReflectionPayload = new GraphQLObjectType({
     teamId: {
       type: GraphQLID
     },
-    userId: {
-      type: GraphQLID
-    },
-    user: {
-      type: User,
-      resolve: ({userId}, _args, {dataLoader}) => {
-        return dataLoader.get('users').load(userId)
-      }
-    }
   })
 })
 

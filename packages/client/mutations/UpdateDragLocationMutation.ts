@@ -1,21 +1,24 @@
-import getInProxy from '../utils/relay/getInProxy'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {REFLECTION_WIDTH} from '../utils/multiplayerMasonry/masonryConstants'
 import {getRequest} from 'relay-runtime'
 import graphql from 'babel-plugin-relay/macro'
+
 graphql`
   fragment UpdateDragLocationMutation_team on UpdateDragLocationPayload {
-    coords {
-      x
-      y
-    }
-    clientHeight
-    clientWidth
-    sourceId
-    targetId
-    targetOffset {
-      x
-      y
+    remoteDrag {
+      id
+      coords {
+        x
+        y
+      }
+      clientHeight
+      clientWidth
+      sourceId
+      targetId
+      targetOffset {
+        x
+        y
+      }
     }
     userId
   }
@@ -27,30 +30,26 @@ const mutation = graphql`
 `
 
 export const updateDragLocationTeamUpdater = (payload, {atmosphere, store}) => {
-  // getMasonry is false if they are not in the meeting
-  if (!atmosphere.getMasonry) return
-  const sourceId = getInProxy(payload, 'sourceId')
+  if (!payload) return
+  const sourceId = payload.getValue('sourceId')
   if (!sourceId) return
-  const {
-    childrenCache,
-    parentCache: {
-      boundingBox: {left: parentLeft, top: parentTop}
-    }
-  } = atmosphere.getMasonry()
-  const draggable = store.get(sourceId)
-  if (!draggable) return
-  const dragContext = draggable.getLinkedRecord('dragContext')
-  // ignore a message sent before/after the start/end mutations
-  if (!dragContext) return
-  const dragUserId = dragContext.getValue('dragUserId')
+  const userId = payload.getValue('userId')
+  const reflection = store.get(sourceId)
+  if (!reflection) return
+  const dragUserId = reflection.getValue('dragUserId')
   // ignore a message sent by the loser of a conflict
-  if (dragUserId !== payload.getValue('userId')) return
+  if (dragUserId !== userId) return
   const coords = payload.getLinkedRecord('coords')
   const foreignX = coords.getValue('x')
   const foreignY = coords.getValue('y')
   const clientWidth = payload.getValue('clientWidth')
   const clientHeight = payload.getValue('clientHeight')
   const targetId = payload.getValue('targetId')
+  const remoteCoords = createProxyRecord(store, 'Coords2D', {x: foreignX, y: foreignY})
+  const remoteClientDims = createProxyRecord(store, 'Coords2D', {width: clientWidth, height: clientHeight})
+  const remoteTargetOffset = createProxyRecord(store, 'Coords2D', {x: clientWidth, height: clientHeight})
+  reflection.setLinkedRecord(
+  )
   const targetChild = childrenCache[targetId]
   let localX
   let localY
