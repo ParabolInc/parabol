@@ -110,7 +110,7 @@ Authored and maintained by [Parabol](http://parabol.co).
 
 ### License
 
-Copyright (c) 2016-present, Facebook, Inc.
+Copyright (c) 2016-present, Parabol, Inc.
  
 This codebase is dual-licensed under the GNU AFFERO GENERAL PUBLIC LICENSE,
 Version 3.0 while holding, at Parabol's sole discretion, the right to create
