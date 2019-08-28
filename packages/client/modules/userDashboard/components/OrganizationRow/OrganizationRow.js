@@ -17,23 +17,29 @@ import SecondaryButton from '../../../../components/SecondaryButton'
 import TagBlock from '../../../../components/Tag/TagBlock'
 import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
 import Icon from '../../../../components/Icon'
-import {PALETTE} from '../../../../styles/paletteV2'
-import {Breakpoint} from '../../../../types/constEnums'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useTooltip from '../../../../hooks/useTooltip'
+
+// TODO: refactor this file to TS and use shared constants
+// import {PALETTE} from '../../../../styles/paletteV2'
+// import {Breakpoint} from '../../../../types/constEnums'
+
+const SIDEBAR_LEFT = 800 // TODO: Use Breakpoint.SIDEBAR_LEFT
+const PALETTE = {TEXT_LIGHT: '#82809A'}
 
 const RowInner = styled('div')({
   display: 'block',
   alignItems: 'center',
   display: 'flex',
-  flex: 1
+  flex: 1,
+  flexWrap: 'wrap'
 })
 
 const OrgAvatar = styled('div')({
   cursor: 'pointer',
   display: 'none',
   width: '2.75rem',
-  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
+  [`@media screen and (min-width: ${SIDEBAR_LEFT}px)`]: {
     display: 'block',
     marginRight: 16
   }
@@ -67,7 +73,7 @@ const StyledFlatButton = styled(FlatButton)({
   height: 36,
   paddingLeft: 8,
   paddingRight: 8,
-  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
+  [`@media screen and (min-width: ${SIDEBAR_LEFT}px)`]: {
     paddingLeft: 16,
     paddingRight: 16,
   }
