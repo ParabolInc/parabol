@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## v4.2.0 2019-Aug-27
+## v4.2.0 2019-Aug-28
 
 ### Added
 * Modal at beginning of demo
