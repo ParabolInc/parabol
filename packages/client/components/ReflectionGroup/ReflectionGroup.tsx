@@ -37,12 +37,11 @@ const ReflectionGroup = (props: Props) => {
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const {reflections, id: reflectionGroupId} = reflectionGroup
-  // const {modalPortal} = useModal()
   const [isEditingSingleCardTitle] = useState(false)
   const titleInputRef = useRef(null)
   const isDraggable = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete
   const staticReflections = useMemo(() => {
-    return reflections.filter((reflection) => !reflection.isViewerDragging && !reflection.remoteDrag)
+    return reflections.filter((reflection) => !reflection.isViewerDragging && (!reflection.remoteDrag || reflection.isDropping))
   }, [reflections])
   return (
     <>
@@ -105,6 +104,7 @@ export default createFragmentContainer(ReflectionGroup,
           retroPhaseItemId
           sortOrder
           isViewerDragging
+          isDropping
           remoteDrag {
             dragUserId
           }

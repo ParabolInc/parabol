@@ -85,6 +85,7 @@ export const startDraggingReflectionTeamUpdater = (
     const existingDragUserId = existingRemoteDrag.getValue('dragUserId')
     if (dragUserId <= existingDragUserId) {
       // new drag wins!
+      reflection.setValue(false, 'isDropping')
       reflection.setLinkedRecord(remoteDrag, 'remoteDrag')
     } else {
       // new drag loses, just ignore the start

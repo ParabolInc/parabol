@@ -1,4 +1,6 @@
-import {REFLECTION_WIDTH} from './masonryConstants'
+import {Coords} from '../../types/animations'
+import {ElementWidth} from '../../types/constEnums'
+import {TargetBBox} from '../../components/ReflectionGroup/DraggableReflectionCard'
 
 // The following improves accuracy by predicting where the cursor is headed, not where it is
 
@@ -45,56 +47,37 @@ import {REFLECTION_WIDTH} from './masonryConstants'
 const SWITCHING_COST = 50
 
 // if it's clear they aren't near a card, don't try to force a relative position
-const MAX_DIST = REFLECTION_WIDTH
+const MAX_DIST = ElementWidth.REFLECTION_CARD
 
-const getTargetReference = (
-  childrenCache,
-  parentCache,
-  cursorCoords,
-  cursorOffset,
-  prevChildId
-) => {
-  const {
-    boundingBox: {left: parentLeft, top: parentTop}
-  } = parentCache
-  const relativeX = cursorCoords.x - parentLeft
-  const relativeY = cursorCoords.y - parentTop
-  const childKeys = Object.keys(childrenCache)
-  const distances = []
-  for (let i = 0; i < childKeys.length; i++) {
-    const childKey = childKeys[i]
-    const childCache = childrenCache[childKey]
-    const {boundingBox} = childCache
-    if (boundingBox) {
-      distances[i] = 1e6
-    }
-    const centroidX = boundingBox.left + REFLECTION_WIDTH / 2
-    const centroidY = boundingBox.top + boundingBox.height / 2
-    const deltaX = centroidX - relativeX
-    const deltaY = centroidY - relativeY
+const getTargetReference = (coords: Coords, cardOffsetX: number, cardOffsetY: number, targets: TargetBBox[], prevTargetId: string) => {
+  const distances = [] as number[]
+  for (let i = 0; i < targets.length; i++) {
+    const target = targets[i]
+    distances[i] = 1e6
+    const centroidX = target.left + ElementWidth.REFLECTION_CARD / 2
+    const centroidY = target.top + target.height / 2
+    const deltaX = centroidX - coords.x
+    const deltaY = centroidY - coords.y
     // favor the existing reference to reduce jitter
-    const loyaltyDiscount = childKey === prevChildId ? SWITCHING_COST : 0
+    const loyaltyDiscount = target.targetId === prevTargetId ? SWITCHING_COST : 0
 
     // distance is from cursor to card centroid
     distances[i] = Math.sqrt(Math.abs(deltaX) ** 2 + Math.abs(deltaY) ** 2) - loyaltyDiscount
   }
   const minValue = Math.min(...distances)
 
+
   // if they were off the grid, require them to get very close to a card so we can assume they're back on the grid
-  const relativePlacementThresh = prevChildId ? MAX_DIST : MAX_DIST / 2
-  if (minValue > relativePlacementThresh) return {}
+  const relativePlacementThresh = prevTargetId ? MAX_DIST : MAX_DIST / 2
+  if (minValue > relativePlacementThresh) return {targetId: '', targetOffset: null}
   const minIdx = distances.indexOf(minValue)
-  const minChildKey = childKeys[minIdx]
-  const {
-    boundingBox: {left, top}
-  } = childrenCache[minChildKey]
+  const nextTarget = targets[minIdx]
 
   return {
-    targetId: minChildKey,
+    targetId: nextTarget.targetId,
     targetOffset: {
-      // offset is from window to top left of component
-      x: left - relativeX + cursorOffset.x,
-      y: top - relativeY + cursorOffset.y
+      x: coords.x - nextTarget.left- cardOffsetX,
+      y: coords.y - nextTarget.top - cardOffsetY
     }
   }
 }

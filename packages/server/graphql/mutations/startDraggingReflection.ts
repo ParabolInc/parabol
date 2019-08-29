@@ -54,7 +54,10 @@ export default {
         dragUserId: viewerId,
       }
     }
-    publish(SubscriptionChannel.TEAM, teamId, StartDraggingReflectionPayload, data, subOptions)
+    setTimeout(() => {
+      publish(SubscriptionChannel.TEAM, teamId, StartDraggingReflectionPayload, data, subOptions)
+    }, 2000)
+
     return data
   }
 }

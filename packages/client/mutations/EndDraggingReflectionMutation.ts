@@ -86,7 +86,6 @@ export const moveReflectionLocation = (
   reflectionGroup: RecordProxy,
   oldReflectionGroupId: string,
   store: RecordSourceSelectorProxy,
-  userId: string
 ) => {
   if (!reflection) return
   const reflectionId = reflection.getValue('id')
@@ -106,11 +105,12 @@ export const moveReflectionLocation = (
   handleAddReflectionGroupToGroups(store, reflectionGroup)
 }
 
-export const endDraggingReflectionTeamUpdater = (payload, {atmosphere, store}) => {
-  // if (!payload) return
-  // const reflection = payload.getLinkedRecord('reflection')
-  // if (!reflection) return
-  // reflection.setValue(null, 'dragUserId')
+export const endDraggingReflectionTeamUpdater = (payload, {store}) => {
+  const reflection = payload.getLinkedRecord('reflection')
+  if (!reflection) return
+  const reflectionGroup = payload.getLinkedRecord('reflectionGroup')
+  const oldReflectionGroupId = getInProxy(payload, 'oldReflectionGroup', 'id')
+  moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, store)
 }
 
 export const endDraggingReflectionTeamOnNext = (payload, context) => {
@@ -122,10 +122,8 @@ export const endDraggingReflectionTeamOnNext = (payload, context) => {
   commitLocalUpdate(atmosphere, (store) => {
     const reflectionProxy = store.get(reflectionId)
     if (!reflectionProxy) return
-    console.log('remote is dropping')
     reflectionProxy.setValue(true, 'isDropping')
   })
-  // TODO null dragUserId?
 }
 
 const EndDraggingReflectionMutation = (
@@ -143,21 +141,11 @@ const EndDraggingReflectionMutation = (
       if (!payload) return
       const reflection = payload.getLinkedRecord('reflection')
       if (!reflection) return
-      const reflectionId = reflection.getValue('id')
-      const reflectionGroup = payload.getLinkedRecord('reflectionGroup')
-      const oldReflectionGroupId = getInProxy(payload, 'oldReflectionGroup', 'id')
-      const userId = payload.getValue('userId')
-      if (atmosphere.viewerId === userId) {
-        reflection.setValue(false, 'isViewerDragging')
-      }
-      handleRemoveReflectionFromGroup(reflectionId, oldReflectionGroupId, store)
-      handleAddReflectionToGroup(reflection, store)
-      handleRemoveEmptyReflectionGroup(oldReflectionGroupId, store)
-      handleAddReflectionGroupToGroups(store, reflectionGroup)
+      reflection.setValue(false, 'isViewerDragging')
+      endDraggingReflectionTeamUpdater(payload, {store})
     },
     optimisticUpdater: (store) => {
       const nowISO = new Date().toJSON()
-      const {viewerId} = atmosphere
       const {reflectionId, dropTargetId: reflectionGroupId, dropTargetType} = variables
       const reflection = store.get(reflectionId)
       if (!reflection) return
@@ -202,7 +190,6 @@ const EndDraggingReflectionMutation = (
         reflectionGroupProxy,
         oldReflectionGroupId,
         store,
-        viewerId
       )
     }
   })

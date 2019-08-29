@@ -1,6 +1,6 @@
 import getBBox from '../../components/RetroReflectPhase/getBBox'
 import {Elevation} from '../../styles/elevation'
-import {Times} from '../../types/constEnums'
+import {BezierCurve, Times} from '../../types/constEnums'
 
 const updateClonePosition = (targetEl: HTMLDivElement, reflectionId: string) => {
   const clone = document.getElementById(`clone-${reflectionId}`)
@@ -14,7 +14,7 @@ const updateClonePosition = (targetEl: HTMLDivElement, reflectionId: string) => 
   const {style} = clone
   style.transform = `translate(${left}px,${top}px)`
   style.boxShadow = Elevation.CARD_SHADOW
-  style.transition = `box-shadow ${Times.REFLECTION_DROP_DURATION}ms, transform ${Times.REFLECTION_DROP_DURATION}ms`
+  style.transition = `box-shadow ${Times.REFLECTION_DROP_DURATION}ms ${BezierCurve.DECELERATE}, transform ${Times.REFLECTION_DROP_DURATION}ms ${BezierCurve.DECELERATE}`
 }
 
 export default updateClonePosition

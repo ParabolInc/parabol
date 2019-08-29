@@ -382,7 +382,6 @@ export default createFragmentContainer<PassedProps>(
         }
         reflectionsInFlight {
           id
-          ...ReflectionCardInFlight_reflection
         }
         teamId
       }

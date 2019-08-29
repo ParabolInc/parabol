@@ -20,7 +20,7 @@ const updateDragLocation = {
     const {teamId, ...inputData} = input
     const viewerId = getUserId(authToken)
     if (viewerId && authToken.tms.includes(teamId)) {
-      const data = {...inputData, userId: viewerId}
+      const data = {remoteDrag: inputData, userId: viewerId}
       publish(SubscriptionChannel.TEAM, teamId, UpdateDragLocationPayload, data, subOptions)
     }
   }

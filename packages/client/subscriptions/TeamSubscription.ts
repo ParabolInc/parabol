@@ -21,7 +21,6 @@ import {
   endNewMeetingTeamOnNext,
   endNewMeetingTeamUpdater
 } from '../mutations/EndNewMeetingMutation'
-import {updateDragLocationTeamUpdater} from '../mutations/UpdateDragLocationMutation'
 import {
   endDraggingReflectionTeamOnNext,
   endDraggingReflectionTeamUpdater
@@ -213,7 +212,6 @@ const TeamSubscription = (atmosphere, _queryVariables, subParams) => {
         case 'UpdateCreditCardPayload':
           break
         case 'UpdateDragLocationPayload':
-          updateDragLocationTeamUpdater(payload, context)
           break
         case 'UpdateNewCheckInQuestionPayload':
           break

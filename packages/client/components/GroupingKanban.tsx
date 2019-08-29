@@ -5,6 +5,7 @@ import {GroupingKanban_meeting} from '__generated__/GroupingKanban_meeting.graph
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import styled from '@emotion/styled'
 import GroupingKanbanColumn from './GroupingKanbanColumn'
+import PortalProvider from './AtmosphereProvider/PortalProvider'
 
 interface Props {
   meeting: GroupingKanban_meeting,
@@ -35,6 +36,7 @@ const GroupingKanban = (props: Props) => {
     return container
   }, [reflectionGroups])
   return (
+    <PortalProvider>
       <ColumnsBlock>
         {reflectPrompts.map((prompt) => (
           <GroupingKanbanColumn
@@ -45,6 +47,7 @@ const GroupingKanban = (props: Props) => {
           />
         ))}
       </ColumnsBlock>
+    </PortalProvider>
   )
 }
 

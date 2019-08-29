@@ -1,4 +1,4 @@
-import React, {RefObject, useEffect, useRef} from 'react'
+import React, {useContext, useEffect, useRef} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {DraggableReflectionCard_reflection} from '../../__generated__/DraggableReflectionCard_reflection.graphql'
@@ -18,10 +18,13 @@ import getTargetGroupId from '../../utils/retroGroup/getTargetGroupId'
 import handleDrop from '../../utils/retroGroup/handleDrop'
 import updateClonePosition from '../../utils/retroGroup/updateClonePosition'
 import cloneReflection from '../../utils/retroGroup/cloneReflection'
-import usePortal from '../../hooks/usePortal'
 import shortid from 'shortid'
 import getBBox from '../RetroReflectPhase/getBBox'
 import RemoteReflection from './RemoteReflection'
+import UpdateDragLocationMutation from '../../mutations/UpdateDragLocationMutation'
+import {BBox, Coords} from '../../types/animations'
+import getTargetReference from '../../utils/multiplayerMasonry/getTargetReference'
+import {PortalContext} from '../AtmosphereProvider/PortalProvider'
 
 const ReflectionWrapper = styled('div')<{staticIdx: number, staticReflectionCount: number, isDropping: boolean | null}>(
   ({staticIdx, staticReflectionCount, isDropping}): any => {
@@ -43,93 +46,115 @@ const ReflectionWrapper = styled('div')<{staticIdx: number, staticReflectionCoun
   }
 )
 
-
-const useStartRemoteDrag = (remoteDrag: any, openPortal: () => void, reflectionRef: RefObject<HTMLDivElement>) => {
-  const transformRef = useRef('')
+const useRemoteDrag = (reflection: DraggableReflectionCard_reflection, drag: ReflectionDragState, staticIdx: number) => {
+  const setPortal = useContext(PortalContext)
+  const {remoteDrag, isDropping} = reflection
+  const setRemoteCard = () => {
+    if (!drag.ref) return
+    const bbox = drag.ref.getBoundingClientRect()
+    const {left, top} = bbox
+    setPortal(`clone-${reflection.id}`, <RemoteReflection initialTransform={`translate(${left}px,${top}px)`}
+                                                          reflection={reflection} />)
+  }
+  // is opening
   useEffect(() => {
     if (remoteDrag) {
-      const bbox = getBBox(reflectionRef.current)
-      if (!bbox) return
-      const {top, left} = bbox
-      transformRef.current = `translate(${left}px,${top}px)`
-      openPortal()
+      setRemoteCard()
     }
   }, [remoteDrag])
-  return transformRef.current
-}
 
-interface Props {
-  isDraggable: boolean
-  meeting: DraggableReflectionCard_meeting
-  reflection: DraggableReflectionCard_reflection
-  staticIdx: number
-  staticReflections: DraggableReflectionCard_staticReflections
-}
-
-const DraggableReflectionCard = (props: Props) => {
-  const {reflection, staticIdx, staticReflections} = props
-  const {id: reflectionId, reflectionGroupId, isDropping, remoteDrag} = reflection
-  const atmosphere = useAtmosphere()
-  const ref = useRef<HTMLDivElement>(null)
-  const {portal, openPortal, closePortal, terminatePortal} = usePortal({
-    allowScroll: true,
-    noClose: true,
-    id: `clone-${reflectionId}`
-  })
-  const dragRef = useRef({
-    cardOffsetX: 0,
-    cardOffsetY: 0,
-    clone: null as null | HTMLDivElement,
-    isDrag: false,
-    ref: null as null | HTMLDivElement,
-    startX: 0,
-    startY: 0,
-    wasDropping: false
-  })
-  const {current: drag} = dragRef
-  const transform = useStartRemoteDrag(remoteDrag, openPortal, ref)
-
+  // is closing
   useEffect(() => {
-    if (ref.current && isDropping && staticIdx !== -1) {
-      updateClonePosition(ref.current, reflectionId)
+    if (isDropping && staticIdx !== -1 && remoteDrag) {
+      setRemoteCard()
     }
-  }, [isDropping, staticIdx, ref])
+  }, [isDropping, staticIdx, remoteDrag])
+}
 
+const useLocalDrag = (reflection: DraggableReflectionCard_reflection, drag: ReflectionDragState, staticIdx: number) => {
+  const {remoteDrag, isDropping, id: reflectionId} = reflection
+  useEffect(() => {
+    if (drag.ref && isDropping && staticIdx !== -1 && !remoteDrag) {
+      updateClonePosition(drag.ref, reflectionId)
+    }
+  }, [isDropping, staticIdx, drag, remoteDrag, reflectionId])
+}
+
+const useDroppingDrag = (drag: ReflectionDragState, reflection: DraggableReflectionCard_reflection) => {
+  const setPortal = useContext(PortalContext)
+  const {remoteDrag, id: reflectionId, isDropping} = reflection
+  const atmosphere = useAtmosphere()
   useEffect(() => {
     if (isDropping !== drag.wasDropping) {
       drag.wasDropping = isDropping || false
       if (isDropping) {
-        setTimeout(() => {
-          commitLocalUpdate(atmosphere, (store) => {
-            store.get(reflectionId)!
-              .setValue(false, 'isDropping')
-              .setValue(null, 'remoteDrag')
-          })
+        drag.timeout = window.setTimeout(() => {
           if (drag.clone) {
             // local
             document.body.removeChild(drag.clone!)
             drag.clone = null
           } else {
             //remote
-            terminatePortal()
+            setPortal(`clone-${reflectionId}`, null)
           }
-        }, Times.REFLECTION_DROP_DURATION)
+          commitLocalUpdate(atmosphere, (store) => {
+            store.get(reflectionId)!
+              .setValue(false, 'isDropping')
+              .setValue(null, 'remoteDrag')
+          })
+        }, remoteDrag ? Times.REFLECTION_REMOTE_DROP_DURATION : Times.REFLECTION_DROP_DURATION)
+      } else {
+        // a new drag overrode the old one
+        window.clearTimeout(drag.timeout!)
       }
     }
   }, [isDropping])
+}
 
+const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflectionCard_reflection, teamId: string, reflectionCount: number) => {
+  const atmosphere = useAtmosphere()
+  const {id: reflectionId, reflectionGroupId, isDropping} = reflection
   const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
-    const eventType = isNativeTouch(e) ? 'touchmove' : 'mousemove'
     drag.isDrag = false
+    const eventType = isNativeTouch(e) ? 'touchmove' : 'mousemove'
     document.removeEventListener(eventType, onMouseMove)
     const targetGroupId = getTargetGroupId(e)
     const targetType = targetGroupId && reflectionGroupId !== targetGroupId ?
-      DragReflectionDropTargetTypeEnum.REFLECTION_GROUP : staticReflections.length > 0 ?
+      DragReflectionDropTargetTypeEnum.REFLECTION_GROUP : !targetGroupId && reflectionCount > 0 ?
         DragReflectionDropTargetTypeEnum.REFLECTION_GRID :
         null
     handleDrop(atmosphere, reflectionId, drag, targetType, targetGroupId)
   })
 
+  const announceDragUpdate = (coords: Coords) => {
+    if (drag.isBroadcasting) return
+    drag.isBroadcasting = true
+    const {targetId, targetOffset} = getTargetReference(
+      coords,
+      drag.cardOffsetX,
+      drag.cardOffsetY,
+      drag.targets,
+      drag.prevTargetId
+    )
+    drag.prevTargetId = targetId
+    const input = {
+      id: drag.id,
+      clientHeight: window.innerHeight,
+      clientWidth: window.innerWidth,
+      coords: {
+        x: coords.x - drag.cardOffsetX,
+        y: coords.y - drag.cardOffsetY
+      },
+      sourceId: reflectionId,
+      teamId,
+      targetId,
+      targetOffset
+    }
+    UpdateDragLocationMutation(atmosphere, {input})
+    requestAnimationFrame(() => {
+      drag.isBroadcasting = false
+    })
+  }
   const onMouseMove = useEventCallback((e: MouseEvent | TouchEvent) => {
     const event = isNativeTouch(e) ? e.touches[0] : e
     const {clientX, clientY} = event
@@ -137,17 +162,29 @@ const DraggableReflectionCard = (props: Props) => {
       drag.isDrag = getIsDrag(clientX, clientY, drag.startX, drag.startY)
       if (!drag.isDrag || !drag.ref) return
       const bbox = drag.ref.getBoundingClientRect()!
-      drag.cardOffsetX = clientX - bbox.left
-      drag.cardOffsetY = clientY - bbox.top
+      // clip quick drags so the cursor is guaranteed to be inside the card
+      drag.cardOffsetX = Math.min(clientX - bbox.left, bbox.width)
+      drag.cardOffsetY = Math.min(clientY - bbox.top, bbox.height)
       drag.clone = cloneReflection(drag.ref, reflectionId)
-      StartDraggingReflectionMutation(atmosphere, {reflectionId, dragId: shortid.generate()})
+      // can improve performance by starting at the kanban instead of the doc
+      const groupEls = document.querySelectorAll('div[data-droppable]')
+      groupEls.forEach((el) => {
+        const targetId = el.getAttribute('data-droppable')!
+        const bbox = getBBox(el)!
+        drag.targets.push({
+          targetId,
+          ...bbox
+        })
+      })
+      drag.id = shortid.generate()
+      StartDraggingReflectionMutation(atmosphere, {reflectionId, dragId: drag.id})
     }
-    if (drag.clone) {
-      drag.clone.style.transform = `translate(${clientX - drag.cardOffsetX}px,${clientY - drag.cardOffsetY}px)`
-    }
+    if (!drag.clone) return
+    drag.clone.style.transform = `translate(${clientX - drag.cardOffsetX}px,${clientY - drag.cardOffsetY}px)`
+    announceDragUpdate({x: clientX, y: clientY})
   })
 
-  const onMouseDown = (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
+  return (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
     if (isDropping) return
     let event
     if (isReactTouch(e)) {
@@ -165,13 +202,59 @@ const DraggableReflectionCard = (props: Props) => {
     drag.isDrag = false
     drag.ref = e.currentTarget
   }
+}
+
+const DRAG_STATE = {
+  id: '',
+  cardOffsetX: 0,
+  cardOffsetY: 0,
+  clone: null as null | HTMLDivElement,
+  isDrag: false,
+  ref: null as null | HTMLDivElement,
+  startX: 0,
+  startY: 0,
+  wasDropping: false,
+  targets: [] as TargetBBox[],
+  prevTargetId: '',
+  isBroadcasting: false,
+  timeout: null as null | number
+}
+
+export type ReflectionDragState = typeof DRAG_STATE
+interface Props {
+  isDraggable: boolean
+  meeting: DraggableReflectionCard_meeting
+  reflection: DraggableReflectionCard_reflection
+  staticIdx: number
+  staticReflections: DraggableReflectionCard_staticReflections
+}
+
+export type TargetBBox = BBox & {targetId: string}
+
+// TODO
+// - Locally end a stale start event
+// - Handle end without start event
+// - Handle end event before start event (buffer)
+// - handle an end event that has a different dragId than the preceding start event
+// - Remote drag wins conflict with local
+
+const DraggableReflectionCard = (props: Props) => {
+  const {reflection, staticIdx, staticReflections, meeting} = props
+  const {id: reflectionId, isDropping} = reflection
+  const {teamId} = meeting
+  const dragRef = useRef({...DRAG_STATE})
+  const {current: drag} = dragRef
+  const staticReflectionCount = staticReflections.length
+  useRemoteDrag(reflection, drag, staticIdx)
+  useLocalDrag(reflection, drag, staticIdx)
+  useDroppingDrag(drag, reflection)
+  const onMouseDown = useDragAndDrop(drag, reflection, teamId, staticReflectionCount)
   return (
-    <ReflectionWrapper ref={ref} key={reflectionId}
-                       staticReflectionCount={staticReflections.length} staticIdx={staticIdx} isDropping={isDropping}
+    <ReflectionWrapper ref={(c) => drag.ref = c} key={reflectionId}
+                       staticReflectionCount={staticReflectionCount} staticIdx={staticIdx} isDropping={isDropping}
                        onMouseDown={onMouseDown}>
       <ReflectionCard readOnly userSelect='none' reflection={reflection} showOriginFooter
-                      isClipped={staticReflections.length - 1 !== staticIdx} />
-      {portal(<RemoteReflection transform={transform} reflection={reflection}/>)}
+                      isClipped={staticReflectionCount - 1 !== staticIdx} />
     </ReflectionWrapper>
   )
 }
@@ -201,6 +284,7 @@ export default createFragmentContainer(DraggableReflectionCard,
     meeting: graphql`
       fragment DraggableReflectionCard_meeting on RetrospectiveMeeting {
         id
+        teamId
       }`
   }
 )

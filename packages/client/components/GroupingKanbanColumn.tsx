@@ -43,7 +43,7 @@ interface Props {
 
 const GroupingKanbanColumn = (props: Props) => {
   const {meeting, reflectionGroups, prompt} = props
-  const {title, id: promptId} = prompt
+  const {title} = prompt
   return (
     <Column>
       <ColumnHeader>
@@ -55,7 +55,6 @@ const GroupingKanbanColumn = (props: Props) => {
         {reflectionGroups.map((reflectionGroup) => {
           return <ReflectionGroup key={reflectionGroup.id} meeting={meeting} reflectionGroup={reflectionGroup} />
         })}
-        <div data-droppable-dropzone={promptId} />
       </ColumnBody>
     </Column>
   )
