@@ -26,7 +26,10 @@ import {
   endDraggingReflectionTeamUpdater
 } from '../mutations/EndDraggingReflectionMutation'
 import {dragDiscussionTopicTeamUpdater} from '../mutations/DragDiscussionTopicMutation'
-import {startDraggingReflectionTeamUpdater} from '../mutations/StartDraggingReflectionMutation'
+import {
+  startDraggingReflectionTeamOnNext,
+  startDraggingReflectionTeamUpdater
+} from '../mutations/StartDraggingReflectionMutation'
 import {
   autoGroupReflectionsTeamOnNext,
   autoGroupReflectionsTeamUpdater
@@ -46,6 +49,7 @@ import {updateAgendaItemUpdater} from '../mutations/UpdateAgendaItemMutation'
 import graphql from 'babel-plugin-relay/macro'
 import {pushInvitationTeamOnNext} from '../mutations/PushInvitationMutation'
 import {denyPushInvitationTeamOnNext} from '../mutations/DenyPushInvitationMutation'
+import {updateDragLocationTeamOnNext} from '../mutations/UpdateDragLocationMutation'
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -106,6 +110,8 @@ const onNextHandlers = {
   PromoteNewMeetingFacilitatorPayload: promoteNewMeetingFacilitatorTeamOnNext,
   RemoveOrgUserPayload: removeOrgUserTeamOnNext,
   EndDraggingReflectionPayload: endDraggingReflectionTeamOnNext,
+  StartDraggingReflectionPayload: startDraggingReflectionTeamOnNext,
+  UpdateDragLocationPayload: updateDragLocationTeamOnNext,
   RemoveTeamMemberPayload: removeTeamMemberTeamOnNext,
   PushInvitationPayload: pushInvitationTeamOnNext
 }

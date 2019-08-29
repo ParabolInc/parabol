@@ -1,5 +1,6 @@
 import {getRequest} from 'relay-runtime'
 import graphql from 'babel-plugin-relay/macro'
+import {clearStaleDrop} from './StartDraggingReflectionMutation'
 
 graphql`
   fragment UpdateDragLocationMutation_team on UpdateDragLocationPayload {
@@ -26,6 +27,12 @@ const mutation = graphql`
     updateDragLocation(input: $input)
   }
 `
+
+export const updateDragLocationTeamOnNext = (payload, {atmosphere}) => {
+  const {remoteDrag} = payload
+  const {id: remoteDragId} = remoteDrag
+  clearStaleDrop(atmosphere, remoteDragId)
+}
 
 const UpdateDragLocationMutation = (atmosphere, variables) => {
   const {_network: network} = atmosphere
