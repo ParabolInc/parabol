@@ -233,8 +233,8 @@ export type TargetBBox = BBox & {targetId: string}
 
 // TODO
 // - Locally end a stale start event
-// - Handle end without start event
-// - Handle end event before start event (buffer)
+// -X Handle end without start event
+// -X Handle end event before start event (buffer)
 // - handle an end event that has a different dragId than the preceding start event
 // - Remote drag wins conflict with local
 

@@ -39,6 +39,11 @@ interface UpdaterOptions {
   store: RecordSourceProxy
 }
 
+export const startDraggingReflectionTeamOnNext = () => {
+  // start a timer to cancel the drop if no update is received in 5 seconds
+  // if an update is received, cancel the existing timer & start a new one stored on the drag
+}
+
 // used only by subscription
 export const startDraggingReflectionTeamUpdater = (
   payload,
@@ -63,6 +68,10 @@ export const startDraggingReflectionTeamUpdater = (
   if (!reflection) return
   const remoteDrag = payload.getLinkedRecord('remoteDrag')
   if (!remoteDrag) return
+  const remoteDragId = remoteDrag.getValue('id')
+  const ignoreDragStarts = reflection.getValue('ignoreDragStarts')
+  // if an end arrived before the start, ignore the start
+  if (ignoreDragStarts && ignoreDragStarts.includes(remoteDragId)) return
   const dragUserId = remoteDrag.getValue('dragUserId')
   const isViewerDragging = reflection.getValue('isViewerDragging')
   const existingRemoteDrag = reflection.getLinkedRecord('remoteDrag')

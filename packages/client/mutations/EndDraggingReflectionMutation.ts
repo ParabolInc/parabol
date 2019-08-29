@@ -16,7 +16,6 @@ import clientTempId from '../utils/relay/clientTempId'
 
 graphql`
   fragment EndDraggingReflectionMutation_team on EndDraggingReflectionPayload {
-    dragId
     meeting {
       id
       nextAutoGroupThreshold
@@ -46,6 +45,11 @@ graphql`
     dropTargetType
     dropTargetId
     userId
+    remoteDrag {
+      id
+      dragUserId
+      dragUserName
+    }
   }
 `
 
@@ -110,6 +114,15 @@ export const endDraggingReflectionTeamUpdater = (payload, {store}) => {
   if (!reflection) return
   const reflectionGroup = payload.getLinkedRecord('reflectionGroup')
   const oldReflectionGroupId = getInProxy(payload, 'oldReflectionGroup', 'id')
+  const existingDrag = reflection.getLinkedRecord('remoteDrag')
+  if (!existingDrag) {
+    const remoteDrag = payload.getLinkedRecord('remoteDrag')
+    const remoteDragId = remoteDrag.getValue('id')
+    const existingDragStarts = reflection.getValue('ignoreDragStarts') || []
+    const nextDragStarts = existingDragStarts.concat(remoteDragId)
+    reflection.setValue(nextDragStarts, 'ignoreDragStarts')
+    reflection.setLinkedRecord(remoteDrag, 'remoteDrag')
+  }
   moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, store)
 }
 
@@ -142,7 +155,10 @@ const EndDraggingReflectionMutation = (
       const reflection = payload.getLinkedRecord('reflection')
       if (!reflection) return
       reflection.setValue(false, 'isViewerDragging')
-      endDraggingReflectionTeamUpdater(payload, {store})
+      if (!reflection) return
+      const reflectionGroup = payload.getLinkedRecord('reflectionGroup')!
+      const oldReflectionGroupId = getInProxy(payload, 'oldReflectionGroup', 'id')
+      moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, store)
     },
     optimisticUpdater: (store) => {
       const nowISO = new Date().toJSON()

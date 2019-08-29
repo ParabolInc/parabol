@@ -37,6 +37,7 @@ extend type RetroReflection {
   isViewerDragging: Boolean
   isDropping: Boolean
   remoteDrag: RemoteReflectionDrag
+  ignoreDragStarts: [ID!]
 }
 
 extend type DragContext {

@@ -4844,6 +4844,11 @@ export interface IEndDraggingReflectionPayload {
   dragId: string | null;
 
   /**
+   * The drag as sent from the team member
+   */
+  remoteDrag: IRemoteReflectionDrag;
+
+  /**
    * the type of item the reflection was dropped on
    */
   dropTargetType: DragReflectionDropTargetTypeEnum | null;
@@ -4872,6 +4877,46 @@ export interface IEndDraggingReflectionPayload {
    * The old group the reflection was in
    */
   oldReflectionGroup: IRetroReflectionGroup | null;
+}
+
+/**
+ * Info associated with a current drag
+ */
+export interface IRemoteReflectionDrag {
+  __typename: 'RemoteReflectionDrag';
+  id: string;
+
+  /**
+   * The userId of the person currently dragging the reflection
+   */
+  dragUserId: string | null;
+
+  /**
+   * The name of the dragUser
+   */
+  dragUserName: string | null;
+  clientHeight: number | null;
+  clientWidth: number | null;
+
+  /**
+   * The primary key of the item being drug
+   */
+  sourceId: string;
+
+  /**
+   * The estimated destination of the item being drug
+   */
+  targetId: string | null;
+
+  /**
+   * The coordinate offset from the top left of the targetId, if provided
+   */
+  targetOffset: ICoords2D | null;
+
+  /**
+   * The coordinates relative to the client height/width necessary to simulate a drag for a subscribing user
+   */
+  coords: ICoords2D | null;
 }
 
 export interface IEditReflectionPayload {
@@ -5545,46 +5590,6 @@ export interface IStartDraggingReflectionPayload {
   reflection: IRetroReflection | null;
   reflectionId: string | null;
   teamId: string | null;
-}
-
-/**
- * Info associated with a current drag
- */
-export interface IRemoteReflectionDrag {
-  __typename: 'RemoteReflectionDrag';
-  id: string;
-
-  /**
-   * The userId of the person currently dragging the reflection
-   */
-  dragUserId: string | null;
-
-  /**
-   * The name of the dragUser
-   */
-  dragUserName: string | null;
-  clientHeight: number | null;
-  clientWidth: number | null;
-
-  /**
-   * The primary key of the item being drug
-   */
-  sourceId: string;
-
-  /**
-   * The estimated destination of the item being drug
-   */
-  targetId: string | null;
-
-  /**
-   * The coordinate offset from the top left of the targetId, if provided
-   */
-  targetOffset: ICoords2D | null;
-
-  /**
-   * The coordinates relative to the client height/width necessary to simulate a drag for a subscribing user
-   */
-  coords: ICoords2D | null;
 }
 
 export interface IStartNewMeetingPayload {

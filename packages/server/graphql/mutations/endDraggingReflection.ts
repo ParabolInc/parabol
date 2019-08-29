@@ -76,7 +76,10 @@ export default {
       userId: viewerId,
       dropTargetType,
       dropTargetId,
-      dragId
+      remoteDrag: {
+        id: dragId,
+        dragUserId: viewerId
+      }
     }
 
     publish(SubscriptionChannel.TEAM, teamId, EndDraggingReflectionPayload, data, subOptions)

@@ -1,10 +1,11 @@
-import {GraphQLID, GraphQLObjectType} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {makeResolve, resolveNewMeeting} from '../resolvers'
 import StandardMutationError from './StandardMutationError'
 import RetroReflection from './RetroReflection'
 import DragReflectionDropTargetTypeEnum from '../mutations/DragReflectionDropTargetTypeEnum'
 import RetroReflectionGroup from './RetroReflectionGroup'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
+import RemoteReflectionDrag from './RemoteReflectionDrag'
 
 const EndDraggingReflectionPayload = new GraphQLObjectType({
   name: 'EndDraggingReflectionPayload',
@@ -14,6 +15,10 @@ const EndDraggingReflectionPayload = new GraphQLObjectType({
     },
     dragId: {
       type: GraphQLID
+    },
+    remoteDrag: {
+      type: new GraphQLNonNull(RemoteReflectionDrag),
+      description: 'The drag as sent from the team member'
     },
     dropTargetType: {
       type: DragReflectionDropTargetTypeEnum,
