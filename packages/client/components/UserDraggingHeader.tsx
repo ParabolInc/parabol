@@ -17,15 +17,16 @@ const Header = styled('div')({
 interface Props {
   userId: string
   name: string
+  style?: React.CSSProperties
 }
 
 const UserDraggingHeader = (props: Props) => {
-  const {userId, name} = props
+  const {userId, name, style} = props
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const label = userId === viewerId ? 'Your ghost 👻' : name
   return (
-    <Header>
+    <Header style={style}>
       <Tag colorPalette='purple' label={label} />
     </Header>
   )

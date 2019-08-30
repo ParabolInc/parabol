@@ -1,5 +1,4 @@
 import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
-import Coords2D from './Coords2D'
 import {GQLContext} from '../graphql'
 
 const RemoteReflectionDrag = new GraphQLObjectType({
@@ -35,14 +34,22 @@ const RemoteReflectionDrag = new GraphQLObjectType({
       type: GraphQLID,
       description: 'The estimated destination of the item being drug'
     },
-    targetOffset: {
-      description: 'The coordinate offset from the top left of the targetId, if provided',
-      type: Coords2D
+    targetOffsetX: {
+      type: GraphQLFloat,
+      description: 'horizontal distance from the top left of the target'
     },
-    coords: {
-      description: 'The coordinates relative to the client height/width necessary to simulate a drag for a subscribing user',
-      type: Coords2D
-    }
+    targetOffsetY: {
+      type: GraphQLFloat,
+      description: 'vertical distance from the top left of the target'
+    },
+    clientX: {
+      type: GraphQLFloat,
+      description: 'the left of the source, relative to the client window'
+    },
+    clientY: {
+      type: GraphQLFloat,
+      description: 'the top of the source, relative to the client window'
+    },
   })
 })
 

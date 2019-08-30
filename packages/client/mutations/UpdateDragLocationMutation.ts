@@ -5,18 +5,14 @@ graphql`
   fragment UpdateDragLocationMutation_team on UpdateDragLocationPayload {
     remoteDrag {
       id
-      coords {
-        x
-        y
-      }
+      clientX
+      clientY
       clientHeight
       clientWidth
       sourceId
       targetId
-      targetOffset {
-        x
-        y
-      }
+      targetOffsetX
+      targetOffsetY
     }
     userId
   }

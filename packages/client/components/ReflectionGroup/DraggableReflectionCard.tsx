@@ -22,7 +22,7 @@ import shortid from 'shortid'
 import getBBox from '../RetroReflectPhase/getBBox'
 import RemoteReflection from './RemoteReflection'
 import UpdateDragLocationMutation from '../../mutations/UpdateDragLocationMutation'
-import {BBox, Coords} from '../../types/animations'
+import {BBox} from '../../types/animations'
 import getTargetReference from '../../utils/multiplayerMasonry/getTargetReference'
 import {PortalContext} from '../AtmosphereProvider/PortalProvider'
 
@@ -149,11 +149,12 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
     handleDrop(atmosphere, reflectionId, drag, targetType, targetGroupId)
   })
 
-  const announceDragUpdate = (coords: Coords) => {
+  const announceDragUpdate = (clientX: number, clientY: number) => {
     if (drag.isBroadcasting) return
     drag.isBroadcasting = true
-    const {targetId, targetOffset} = getTargetReference(
-      coords,
+    const {targetId, targetOffsetX, targetOffsetY} = getTargetReference(
+      clientX,
+      clientY,
       drag.cardOffsetX,
       drag.cardOffsetY,
       drag.targets,
@@ -163,14 +164,13 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
     const input = {
       ...windowDims,
       id: drag.id,
-      coords: {
-        x: coords.x - drag.cardOffsetX,
-        y: coords.y - drag.cardOffsetY
-      },
+      clientX: clientX - drag.cardOffsetX,
+      clientY: clientY - drag.cardOffsetY,
       sourceId: reflectionId,
       teamId,
       targetId,
-      targetOffset
+      targetOffsetX,
+      targetOffsetY
     }
     UpdateDragLocationMutation(atmosphere, {input})
     requestAnimationFrame(() => {
@@ -203,7 +203,7 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
     }
     if (!drag.clone) return
     drag.clone.style.transform = `translate(${clientX - drag.cardOffsetX}px,${clientY - drag.cardOffsetY}px)`
-    announceDragUpdate({x: clientX, y: clientY})
+    announceDragUpdate(clientX, clientY)
   })
 
   const onMouseDown = (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {

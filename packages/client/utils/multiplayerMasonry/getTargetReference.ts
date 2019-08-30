@@ -1,4 +1,3 @@
-import {Coords} from '../../types/animations'
 import {ElementWidth} from '../../types/constEnums'
 import {TargetBBox} from '../../components/ReflectionGroup/DraggableReflectionCard'
 
@@ -49,15 +48,15 @@ const SWITCHING_COST = 50
 // if it's clear they aren't near a card, don't try to force a relative position
 const MAX_DIST = ElementWidth.REFLECTION_CARD
 
-const getTargetReference = (coords: Coords, cardOffsetX: number, cardOffsetY: number, targets: TargetBBox[], prevTargetId: string) => {
+const getTargetReference = (clientX: number, clientY: number, cardOffsetX: number, cardOffsetY: number, targets: TargetBBox[], prevTargetId: string) => {
   const distances = [] as number[]
   for (let i = 0; i < targets.length; i++) {
     const target = targets[i]
     distances[i] = 1e6
     const centroidX = target.left + ElementWidth.REFLECTION_CARD / 2
     const centroidY = target.top + target.height / 2
-    const deltaX = centroidX - coords.x
-    const deltaY = centroidY - coords.y
+    const deltaX = centroidX - clientX
+    const deltaY = centroidY - clientY
     // favor the existing reference to reduce jitter
     const loyaltyDiscount = target.targetId === prevTargetId ? SWITCHING_COST : 0
 
@@ -75,10 +74,8 @@ const getTargetReference = (coords: Coords, cardOffsetX: number, cardOffsetY: nu
 
   return {
     targetId: nextTarget.targetId,
-    targetOffset: {
-      x: coords.x - nextTarget.left- cardOffsetX,
-      y: coords.y - nextTarget.top - cardOffsetY
-    }
+    targetOffsetX: clientX - nextTarget.left- cardOffsetX,
+    targetOffsetY: clientY - nextTarget.top - cardOffsetY,
   }
 }
 

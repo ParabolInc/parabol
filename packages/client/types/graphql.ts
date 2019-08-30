@@ -4909,14 +4909,24 @@ export interface IRemoteReflectionDrag {
   targetId: string | null;
 
   /**
-   * The coordinate offset from the top left of the targetId, if provided
+   * horizontal distance from the top left of the target
    */
-  targetOffset: ICoords2D | null;
+  targetOffsetX: number | null;
 
   /**
-   * The coordinates relative to the client height/width necessary to simulate a drag for a subscribing user
+   * vertical distance from the top left of the target
    */
-  coords: ICoords2D | null;
+  targetOffsetY: number | null;
+
+  /**
+   * the left of the source, relative to the client window
+   */
+  clientX: number | null;
+
+  /**
+   * the top of the source, relative to the client window
+   */
+  clientY: number | null;
 }
 
 export interface IEditReflectionPayload {

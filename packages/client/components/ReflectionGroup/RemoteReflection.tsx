@@ -34,19 +34,32 @@ const windowDims = {
   innerHeight: window.innerHeight
 }
 
-const getTransform = (remoteDrag: NonNullable<RemoteReflection_reflection['remoteDrag']>, isDropping: boolean | null, initialTransform: string) => {
-  const {targetId, clientHeight, clientWidth, coords, targetOffset} = remoteDrag
-  if (isDropping || !coords || !clientWidth || !clientHeight) return initialTransform
+const OFFSCREEN_PADDING = 16
+const getCoords = (remoteDrag: Required<NonNullable<RemoteReflection_reflection['remoteDrag']>>) => {
+  const {targetId, clientHeight, clientWidth, clientX, clientY, targetOffsetX, targetOffsetY} = remoteDrag
   const targetEl = targetId ? document.querySelector(`div[data-droppable='${targetId}']`) : null
-  if (targetEl && targetOffset) {
+  if (targetEl && targetOffsetX && targetOffsetY) {
     const targetBBox = getBBox(targetEl)!
-    const left = targetBBox.left + targetOffset.x
-    const top = targetBBox.top + targetOffset.y
-    return `translate(${left}px,${top}px)`
+    return {
+      left: targetBBox.left + targetOffsetX,
+      top: targetBBox.top + targetOffsetY
+    }
   }
-  const left = (coords.x / clientWidth) * windowDims.innerWidth
-  const top = (coords.y / clientHeight) * windowDims.innerHeight
-  return `translate(${left}px,${top}px)`
+  return {
+    left: clientX / clientWidth * windowDims.innerWidth,
+    top: clientY / clientHeight * windowDims.innerHeight
+  }
+}
+const getTransforms = (remoteDrag: NonNullable<RemoteReflection_reflection['remoteDrag']>, isDropping: boolean | null, initialTransform: string) => {
+  const {targetId, clientHeight, clientWidth, clientX, clientY, targetOffsetX, targetOffsetY} = remoteDrag
+  if (isDropping || !clientX) return {transform: initialTransform}
+  const {left, top} = getCoords(remoteDrag)
+  const headerTransformX = left > windowDims.innerWidth ? (windowDims.innerWidth - left - OFFSCREEN_PADDING) : 0
+  const headerTransformY = top > windowDims.innerHeight ? (windowDims.innerHeight - top - OFFSCREEN_PADDING) : 0
+  return {
+    transform: `translate(${left}px,${top}px)`,
+    headerTransform: `translate${headerTransformX}px,${headerTransformY}px)`
+  }
 }
 
 const RemoteReflection = (props: Props) => {
@@ -59,7 +72,7 @@ const RemoteReflection = (props: Props) => {
     return EditorState.createWithContent(contentState, editorDecorators())
   }, [content])
 
-  const transform = getTransform(remoteDrag!, isDropping, initialTransform)
+  const {transform, headerTransform} = getTransforms(remoteDrag!, isDropping, initialTransform)
   const timeoutRef = useRef(0)
   const atmosphere = useAtmosphere()
   useEffect(() => {
@@ -77,7 +90,7 @@ const RemoteReflection = (props: Props) => {
   return (
     <RemoteReflectionModal style={{transform}} isDropping={isDropping}>
       <ReflectionCardRoot>
-        <UserDraggingHeader userId={dragUserId!} name={dragUserName!} />
+        <UserDraggingHeader userId={dragUserId!} name={dragUserName!} style={{transform: headerTransform}} />
         <ReflectionEditorWrapper editorState={editorState} readOnly />
         <ReflectionFooter>{question}</ReflectionFooter>
       </ReflectionCardRoot>
@@ -98,15 +111,11 @@ export default createFragmentContainer(
           dragUserName
           clientHeight
           clientWidth
-          coords {
-            x
-            y
-          }
+          clientX
+          clientY
           targetId
-          targetOffset {
-            x
-            y
-          }
+          targetOffsetX
+          targetOffsetY
         }
         phaseItem {
           question
