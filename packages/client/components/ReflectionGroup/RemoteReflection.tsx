@@ -29,6 +29,11 @@ interface Props {
   reflection: RemoteReflection_reflection
 }
 
+const windowDims = {
+  innerWidth: window.innerWidth,
+  innerHeight: window.innerHeight
+}
+
 const getTransform = (remoteDrag: NonNullable<RemoteReflection_reflection['remoteDrag']>, isDropping: boolean | null, initialTransform: string) => {
   const {targetId, clientHeight, clientWidth, coords, targetOffset} = remoteDrag
   if (isDropping || !coords || !clientWidth || !clientHeight) return initialTransform
@@ -39,8 +44,8 @@ const getTransform = (remoteDrag: NonNullable<RemoteReflection_reflection['remot
     const top = targetBBox.top + targetOffset.y
     return `translate(${left}px,${top}px)`
   }
-  const left = (coords.x / clientWidth) * window.innerWidth
-  const top = (coords.y / clientHeight) * window.innerHeight
+  const left = (coords.x / clientWidth) * windowDims.innerWidth
+  const top = (coords.y / clientHeight) * windowDims.innerHeight
   return `translate(${left}px,${top}px)`
 }
 

@@ -254,13 +254,6 @@ interface Props {
 
 export type TargetBBox = BBox & {targetId: string}
 
-// TODO
-// -X Locally end a stale start event
-// -X Handle end without start event
-// -X Handle end event before start event (buffer)
-// - handle an end event that has a different dragId than the preceding start event
-// - Remote drag wins conflict with local
-
 const DraggableReflectionCard = (props: Props) => {
   const {reflection, staticIdx, staticReflections, meeting} = props
   const {id: reflectionId, isDropping} = reflection

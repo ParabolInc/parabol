@@ -18,7 +18,7 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve (
+  async resolve(
     _source,
     {dragId, reflectionId},
     {authToken, dataLoader, socketId: mutatorId}
@@ -51,12 +51,10 @@ export default {
       reflectionId,
       remoteDrag: {
         id: dragId,
-        dragUserId: viewerId,
+        dragUserId: viewerId
       }
     }
-    setTimeout(() => {
-      publish(SubscriptionChannel.TEAM, teamId, StartDraggingReflectionPayload, data, subOptions)
-    }, 2000)
+    publish(SubscriptionChannel.TEAM, teamId, StartDraggingReflectionPayload, data, subOptions)
 
     return data
   }

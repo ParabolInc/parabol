@@ -28,8 +28,7 @@ const ColumnHeader = styled('div')({
 const ColumnBody = styled('div')({
   flex: 1,
   height: '100%',
-  // overflowX: 'hidden',
-  // overflowY: 'auto',
+  overflowY: 'auto',
   minHeight: 200,
   paddingBottom: 8,
   width: 'fit-content'
