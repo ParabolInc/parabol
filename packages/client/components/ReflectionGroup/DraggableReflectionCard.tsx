@@ -34,17 +34,22 @@ const ReflectionWrapper = styled('div')<{staticIdx: number, staticReflectionCoun
     const scaleX = (ElementWidth.REFLECTION_CARD - ReflectionStackPerspective.X * multiple * 2) / ElementWidth.REFLECTION_CARD
     const translateY = ReflectionStackPerspective.Y * multiple
     return {
-      cursor: stackOrder === 0 && !isDropping ? 'pointer' : undefined,
+      cursor: stackOrder === 0 && !isHidden ? 'pointer' : undefined,
       position: stackOrder === 0 ? 'relative' : 'absolute',
       bottom: 0,
       left: 0,
       opacity: isHidden ? 0 : undefined,
       transform: `translateY(${translateY}px) scaleX(${scaleX})`,
       zIndex: 3 - multiple,
-      transition: isDropping ? undefined : `transform ${Times.REFLECTION_DROP_DURATION}ms`
+      transition: isHidden ? undefined : `transform ${Times.REFLECTION_DROP_DURATION}ms`
     }
   }
 )
+
+const windowDims = {
+  clientHeight: window.innerHeight,
+  clientWidth: window.innerWidth,
+}
 
 const useRemoteDrag = (reflection: DraggableReflectionCard_reflection, drag: ReflectionDragState, staticIdx: number) => {
   const setPortal = useContext(PortalContext)
@@ -71,13 +76,30 @@ const useRemoteDrag = (reflection: DraggableReflectionCard_reflection, drag: Ref
   }, [isDropping, staticIdx, remoteDrag])
 }
 
-const useLocalDrag = (reflection: DraggableReflectionCard_reflection, drag: ReflectionDragState, staticIdx: number) => {
-  const {remoteDrag, isDropping, id: reflectionId} = reflection
+const useLocalDrag = (reflection: DraggableReflectionCard_reflection, drag: ReflectionDragState, staticIdx: number, onMouseMove: any, onMouseUp: any) => {
+  const {remoteDrag, isDropping, id: reflectionId, isViewerDragging} = reflection
+  const atmosphere = useAtmosphere()
   useEffect(() => {
     if (drag.ref && isDropping && staticIdx !== -1 && !remoteDrag) {
       updateClonePosition(drag.ref, reflectionId)
     }
   }, [isDropping, staticIdx, drag, remoteDrag, reflectionId])
+  useEffect(() => {
+    if (!isViewerDragging && !isDropping && drag.clone) {
+      document.body.removeChild(drag.clone)
+      drag.clone = null
+      document.removeEventListener('touchmove', onMouseMove)
+      document.removeEventListener('mousemove', onMouseMove)
+      document.removeEventListener('touchend', onMouseUp)
+      document.removeEventListener('mouseup', onMouseUp)
+      drag.isDrag = false
+      atmosphere.eventEmitter.emit('addSnackbar', {
+        key: `reflectionInterception:${reflectionId}`,
+        autoDismiss: 5,
+        message: `Oh no! ${remoteDrag.dragUserName} stole your reflection!`,
+      })
+    }
+  }, [isViewerDragging, isDropping])
 }
 
 const useDroppingDrag = (drag: ReflectionDragState, reflection: DraggableReflectionCard_reflection) => {
@@ -111,9 +133,10 @@ const useDroppingDrag = (drag: ReflectionDragState, reflection: DraggableReflect
   }, [isDropping])
 }
 
-const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflectionCard_reflection, teamId: string, reflectionCount: number) => {
+const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflectionCard_reflection, staticIdx: number, teamId: string, reflectionCount: number) => {
   const atmosphere = useAtmosphere()
   const {id: reflectionId, reflectionGroupId, isDropping} = reflection
+
   const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
     drag.isDrag = false
     const eventType = isNativeTouch(e) ? 'touchmove' : 'mousemove'
@@ -138,9 +161,8 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
     )
     drag.prevTargetId = targetId
     const input = {
+      ...windowDims,
       id: drag.id,
-      clientHeight: window.innerHeight,
-      clientWidth: window.innerWidth,
       coords: {
         x: coords.x - drag.cardOffsetX,
         y: coords.y - drag.cardOffsetY
@@ -184,8 +206,8 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
     announceDragUpdate({x: clientX, y: clientY})
   })
 
-  return (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
-    if (isDropping) return
+  const onMouseDown = (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
+    if (isDropping || staticIdx === -1) return
     let event
     if (isReactTouch(e)) {
       document.addEventListener('touchend', onMouseUp, {once: true})
@@ -202,6 +224,7 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
     drag.isDrag = false
     drag.ref = e.currentTarget
   }
+  return {onMouseDown, onMouseMove, onMouseUp}
 }
 
 const DRAG_STATE = {
@@ -232,7 +255,7 @@ interface Props {
 export type TargetBBox = BBox & {targetId: string}
 
 // TODO
-// - Locally end a stale start event
+// -X Locally end a stale start event
 // -X Handle end without start event
 // -X Handle end event before start event (buffer)
 // - handle an end event that has a different dragId than the preceding start event
@@ -246,13 +269,13 @@ const DraggableReflectionCard = (props: Props) => {
   const {current: drag} = dragRef
   const staticReflectionCount = staticReflections.length
   useRemoteDrag(reflection, drag, staticIdx)
-  useLocalDrag(reflection, drag, staticIdx)
   useDroppingDrag(drag, reflection)
-  const onMouseDown = useDragAndDrop(drag, reflection, teamId, staticReflectionCount)
+  const {onMouseDown, onMouseUp, onMouseMove} = useDragAndDrop(drag, reflection, staticIdx, teamId, staticReflectionCount)
+  useLocalDrag(reflection, drag, staticIdx, onMouseMove, onMouseUp)
   return (
     <ReflectionWrapper ref={(c) => drag.ref = c} key={reflectionId}
                        staticReflectionCount={staticReflectionCount} staticIdx={staticIdx} isDropping={isDropping}
-                       onMouseDown={onMouseDown}>
+                       onMouseDown={onMouseDown} onTouchStart={onMouseDown}>
       <ReflectionCard readOnly userSelect='none' reflection={reflection} showOriginFooter
                       isClipped={staticReflectionCount - 1 !== staticIdx} />
     </ReflectionWrapper>
@@ -278,6 +301,7 @@ export default createFragmentContainer(DraggableReflectionCard,
         isDropping
         remoteDrag {
           dragUserId
+          dragUserName
         }
       }
     `,

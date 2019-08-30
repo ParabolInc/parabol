@@ -13,7 +13,6 @@ import {LocalHandlers} from '../types/relayMutations'
 import {IEndDraggingReflectionOnMutationArguments} from '../types/graphql'
 import Atmosphere from '../Atmosphere'
 import clientTempId from '../utils/relay/clientTempId'
-import {clearStaleDrop} from './StartDraggingReflectionMutation'
 
 graphql`
   fragment EndDraggingReflectionMutation_team on EndDraggingReflectionPayload {
@@ -129,11 +128,9 @@ export const endDraggingReflectionTeamUpdater = (payload, {store}) => {
 
 export const endDraggingReflectionTeamOnNext = (payload, context) => {
   const {atmosphere} = context
-  const {reflection, remoteDrag} = payload
+  const {reflection} = payload
   if (!reflection) return
   const {id: reflectionId} = reflection
-  const {id: remoteDragId} = remoteDrag
-  clearStaleDrop(atmosphere, remoteDragId)
   commitLocalUpdate(atmosphere, (store) => {
     const reflectionProxy = store.get(reflectionId)
     if (!reflectionProxy) return

@@ -1,5 +1,5 @@
 import {ReflectionCardRoot} from '../ReflectionCard/ReflectionCard'
-import React, {useMemo} from 'react'
+import React, {useEffect, useMemo, useRef} from 'react'
 import styled from '@emotion/styled'
 import {Elevation} from '../../styles/elevation'
 import {BezierCurve, Times, ZIndex} from '../../types/constEnums'
@@ -7,11 +7,12 @@ import UserDraggingHeader from '../UserDraggingHeader'
 import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
 import {convertFromRaw, EditorState} from 'draft-js'
 import graphql from 'babel-plugin-relay/macro'
-import {createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import editorDecorators from '../TaskEditor/decorators'
 import ReflectionFooter from '../ReflectionFooter'
 import {RemoteReflection_reflection} from '__generated__/RemoteReflection_reflection.graphql'
 import getBBox from '../RetroReflectPhase/getBBox'
+import useAtmosphere from '../../hooks/useAtmosphere'
 
 const RemoteReflectionModal = styled('div')<{isDropping: boolean | null}>(({isDropping}) => ({
   position: 'absolute',
@@ -45,7 +46,7 @@ const getTransform = (remoteDrag: NonNullable<RemoteReflection_reflection['remot
 
 const RemoteReflection = (props: Props) => {
   const {reflection, initialTransform} = props
-  const {content, remoteDrag, phaseItem, isDropping} = reflection
+  const {id: reflectionId, content, remoteDrag, phaseItem, isDropping} = reflection
   const {question} = phaseItem
   const {dragUserId, dragUserName} = remoteDrag!
   const editorState = useMemo(() => {
@@ -54,6 +55,20 @@ const RemoteReflection = (props: Props) => {
   }, [content])
 
   const transform = getTransform(remoteDrag!, isDropping, initialTransform)
+  const timeoutRef = useRef(0)
+  const atmosphere = useAtmosphere()
+  useEffect(() => {
+    timeoutRef.current = window.setTimeout(() => {
+      commitLocalUpdate(atmosphere, (store) => {
+        const reflection = store.get(reflectionId)!
+        reflection.setValue(true, 'isDropping')
+      })
+    }, Times.REFLECTION_STALE_LIMIT)
+    return () => {
+      window.clearTimeout(timeoutRef.current)
+    }
+  }, [remoteDrag])
+
   return (
     <RemoteReflectionModal style={{transform}} isDropping={isDropping}>
       <ReflectionCardRoot>
@@ -70,6 +85,7 @@ export default createFragmentContainer(
   {
     reflection: graphql`
       fragment RemoteReflection_reflection on RetroReflection {
+        id
         content
         isDropping
         remoteDrag {

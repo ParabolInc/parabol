@@ -1,4 +1,4 @@
-import {commitLocalUpdate, commitMutation} from 'react-relay'
+import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {matchPath} from 'react-router-dom'
 import {Disposable, RecordSourceProxy, RecordSourceSelectorProxy} from 'relay-runtime'
@@ -11,7 +11,6 @@ import {
 import {MeetingTypeEnum} from '../types/graphql'
 import {LocalHandlers} from '../types/relayMutations'
 import Atmosphere from '../Atmosphere'
-import {Times} from '../types/constEnums'
 
 
 graphql`
@@ -38,38 +37,6 @@ const mutation = graphql`
 interface UpdaterOptions {
   atmosphere: Atmosphere
   store: RecordSourceProxy
-}
-
-export const scheduleStaleDrop = (atmosphere: Atmosphere, reflectionId: string) => {
-  const timeout = setTimeout(() => {
-    commitLocalUpdate(atmosphere, (store) => {
-      const reflection = store.get(reflectionId)
-      if (!reflection) return
-      reflection.setValue(true, 'isDropping')
-    })
-  }, Times.REFLECTION_STALE_LIMIT)
-
-  commitLocalUpdate(atmosphere, (store) => {
-    const reflection = store.get(reflectionId)
-    if (!reflection) return
-    const remoteDrag = reflection.getLinkedRecord('remoteDrag')
-    if (!remoteDrag) return
-    remoteDrag.setValue(timeout, 'timeout')
-  })
-}
-
-export const clearStaleDrop = (atmosphere: Atmosphere, remoteDragId: string) => {
-  commitLocalUpdate(atmosphere, (store) => {
-    const remoteDrag = store.get(remoteDragId)
-    if (!remoteDrag) return
-    const timeout = remoteDrag.getValue('timeout')
-    window.clearTimeout(timeout)
-  })
-}
-
-export const startDraggingReflectionTeamOnNext = (payload, {atmosphere}) => {
-  const {reflectionId} = payload
-  scheduleStaleDrop(atmosphere, reflectionId)
 }
 
 // used only by subscription
@@ -112,7 +79,7 @@ export const startDraggingReflectionTeamUpdater = (
       reflection.setValue(false, 'isDropping')
       reflection.setLinkedRecord(remoteDrag, 'remoteDrag')
     } else {
-      // ignore the incoming drag
+      // viewer wins
       return
     }
   }

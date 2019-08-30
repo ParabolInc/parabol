@@ -33,10 +33,6 @@ extend type RetroReflectionGroup {
   isExpanded: Boolean
 }
 
-extend type RemoteReflectionDrag {
-  timeout: Int
-}
-
 extend type RetroReflection {
   isViewerDragging: Boolean
   isDropping: Boolean

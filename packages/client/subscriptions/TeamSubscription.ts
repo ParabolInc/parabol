@@ -1,35 +1,20 @@
 import {addTeamTeamUpdater} from '../mutations/AddTeamMutation'
-import {
-  archiveTeamTeamOnNext,
-  archiveTeamTeamUpdater
-} from '../mutations/ArchiveTeamMutation'
+import {archiveTeamTeamOnNext, archiveTeamTeamUpdater} from '../mutations/ArchiveTeamMutation'
 import {createReflectionTeamUpdater} from '../mutations/CreateReflectionMutation'
 import {removeReflectionTeamUpdater} from '../mutations/RemoveReflectionMutation'
-import {
-  removeTeamMemberTeamOnNext,
-  removeTeamMemberTeamUpdater
-} from '../mutations/RemoveTeamMemberMutation'
-import {
-  removeOrgUserTeamOnNext,
-  removeOrgUserTeamUpdater
-} from '../mutations/RemoveOrgUserMutation'
+import {removeTeamMemberTeamOnNext, removeTeamMemberTeamUpdater} from '../mutations/RemoveTeamMemberMutation'
+import {removeOrgUserTeamOnNext, removeOrgUserTeamUpdater} from '../mutations/RemoveOrgUserMutation'
 import {startNewMeetingTeamOnNext} from '../mutations/StartNewMeetingMutation'
 import {navigateMeetingTeamUpdater} from '../mutations/NavigateMeetingMutation'
 import {promoteNewMeetingFacilitatorTeamOnNext} from '../mutations/PromoteNewMeetingFacilitatorMutation'
 import {editReflectionTeamUpdater} from '../mutations/EditReflectionMutation'
-import {
-  endNewMeetingTeamOnNext,
-  endNewMeetingTeamUpdater
-} from '../mutations/EndNewMeetingMutation'
+import {endNewMeetingTeamOnNext, endNewMeetingTeamUpdater} from '../mutations/EndNewMeetingMutation'
 import {
   endDraggingReflectionTeamOnNext,
   endDraggingReflectionTeamUpdater
 } from '../mutations/EndDraggingReflectionMutation'
 import {dragDiscussionTopicTeamUpdater} from '../mutations/DragDiscussionTopicMutation'
-import {
-  startDraggingReflectionTeamOnNext,
-  startDraggingReflectionTeamUpdater
-} from '../mutations/StartDraggingReflectionMutation'
+import {startDraggingReflectionTeamUpdater} from '../mutations/StartDraggingReflectionMutation'
 import {
   autoGroupReflectionsTeamOnNext,
   autoGroupReflectionsTeamUpdater
@@ -49,7 +34,6 @@ import {updateAgendaItemUpdater} from '../mutations/UpdateAgendaItemMutation'
 import graphql from 'babel-plugin-relay/macro'
 import {pushInvitationTeamOnNext} from '../mutations/PushInvitationMutation'
 import {denyPushInvitationTeamOnNext} from '../mutations/DenyPushInvitationMutation'
-import {updateDragLocationTeamOnNext} from '../mutations/UpdateDragLocationMutation'
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -110,8 +94,6 @@ const onNextHandlers = {
   PromoteNewMeetingFacilitatorPayload: promoteNewMeetingFacilitatorTeamOnNext,
   RemoveOrgUserPayload: removeOrgUserTeamOnNext,
   EndDraggingReflectionPayload: endDraggingReflectionTeamOnNext,
-  StartDraggingReflectionPayload: startDraggingReflectionTeamOnNext,
-  UpdateDragLocationPayload: updateDragLocationTeamOnNext,
   RemoveTeamMemberPayload: removeTeamMemberTeamOnNext,
   PushInvitationPayload: pushInvitationTeamOnNext
 }
