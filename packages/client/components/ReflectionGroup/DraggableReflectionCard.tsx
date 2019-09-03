@@ -96,7 +96,7 @@ const useLocalDrag = (reflection: DraggableReflectionCard_reflection, drag: Refl
       atmosphere.eventEmitter.emit('addSnackbar', {
         key: `reflectionInterception:${reflectionId}`,
         autoDismiss: 5,
-        message: `Oh no! ${remoteDrag.dragUserName} stole your reflection!`,
+        message: `Oh no! ${remoteDrag!.dragUserName} stole your reflection!`,
       })
     }
   }, [isViewerDragging, isDropping])
@@ -149,12 +149,12 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
     handleDrop(atmosphere, reflectionId, drag, targetType, targetGroupId)
   })
 
-  const announceDragUpdate = (clientX: number, clientY: number) => {
+  const announceDragUpdate = (cursorX: number, cursorY: number) => {
     if (drag.isBroadcasting) return
     drag.isBroadcasting = true
     const {targetId, targetOffsetX, targetOffsetY} = getTargetReference(
-      clientX,
-      clientY,
+      cursorX,
+      cursorY,
       drag.cardOffsetX,
       drag.cardOffsetY,
       drag.targets,
@@ -164,8 +164,8 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
     const input = {
       ...windowDims,
       id: drag.id,
-      clientX: clientX - drag.cardOffsetX,
-      clientY: clientY - drag.cardOffsetY,
+      clientX: cursorX - drag.cardOffsetX,
+      clientY: cursorY - drag.cardOffsetY,
       sourceId: reflectionId,
       teamId,
       targetId,

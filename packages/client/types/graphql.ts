@@ -5755,20 +5755,26 @@ export interface IUpdateDragLocationInput {
    * The teamId to broadcast the message to
    */
   teamId: string;
-  coords: ICoords2DInput;
 
   /**
-   * The offset from the targetId
+   * horizontal distance from the top left of the target
    */
-  targetOffset?: ICoords2DInput | null;
-}
+  targetOffsetX?: number | null;
 
-/**
- * Coordinates used relay a location in a 2-D plane
- */
-export interface ICoords2DInput {
-  x: number;
-  y: number;
+  /**
+   * vertical distance from the top left of the target
+   */
+  targetOffsetY?: number | null;
+
+  /**
+   * the left of the source, relative to the client window
+   */
+  clientX?: number | null;
+
+  /**
+   * the top of the source, relative to the client window
+   */
+  clientY?: number | null;
 }
 
 export interface IUpdateReflectionContentPayload {

@@ -28,11 +28,15 @@ const GroupStyle = styled('span')({
 })
 
 const Ellipsis = () => {
+  setTimeout(() => {
+    debugger
+  }, 1000)
   return (
     <GroupStyle>
-      <DotSpan dotNumber={0}/>
-      <DotSpan dotNumber={1}/>
-      <DotSpan dotNumber={2}/>
+      woo
+      <DotSpan dotNumber={0}>.</DotSpan>
+      <DotSpan dotNumber={1}>.</DotSpan>
+      <DotSpan dotNumber={2}>.</DotSpan>
     </GroupStyle>
   )
 }
