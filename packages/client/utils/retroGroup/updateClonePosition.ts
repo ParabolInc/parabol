@@ -1,7 +1,7 @@
 import {Elevation} from '../../styles/elevation'
 import {BezierCurve, Times} from '../../types/constEnums'
 
-const getMinTop = (top: number, targetEl: HTMLElement | null) => {
+export const getMinTop = (top: number, targetEl: HTMLElement | null) => {
   if (top >= 0) return top
   let dropzone = targetEl
   while (dropzone && dropzone.hasAttribute) {

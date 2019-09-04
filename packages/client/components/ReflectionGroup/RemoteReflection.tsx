@@ -15,6 +15,7 @@ import getBBox from '../RetroReflectPhase/getBBox'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {DeepNonNullable} from '../../types/generics'
 import useForceUpdate from '../../hooks/useForceUpdate'
+import {getMinTop} from '../../utils/retroGroup/updateClonePosition'
 
 const RemoteReflectionModal = styled('div')<{isDropping?: boolean | null}>(({isDropping}) => ({
   position: 'absolute',
@@ -48,12 +49,14 @@ const windowDims = {
 const OFFSCREEN_PADDING = 16
 const getCoords = (remoteDrag: DeepNonNullable<NonNullable<RemoteReflection_reflection['remoteDrag']>>) => {
   const {targetId, clientHeight, clientWidth, clientX, clientY, targetOffsetX, targetOffsetY} = remoteDrag
-  const targetEl = targetId ? document.querySelector(`div[data-droppable='${targetId}']`) : null
+  const targetEl = targetId ? document.querySelector(`div[data-droppable='${targetId}']`) as HTMLElement : null
   if (targetEl) {
     const targetBBox = getBBox(targetEl)!
+    const minTop = getMinTop(-1, targetEl)
     return {
       left: targetBBox.left + targetOffsetX,
-      top: targetBBox.top + targetOffsetY
+      top: targetBBox.top + targetOffsetY,
+      minTop
     }
   }
   return {
@@ -62,11 +65,11 @@ const getCoords = (remoteDrag: DeepNonNullable<NonNullable<RemoteReflection_refl
   }
 }
 
-const getHeaderTransform = (ref: RefObject<HTMLDivElement>) => {
+const getHeaderTransform = (ref: RefObject<HTMLDivElement>, topPadding = 18) => {
   if (!ref.current) return {}
   const bbox = ref.current.getBoundingClientRect()
   const minLeft = -ElementWidth.REFLECTION_CARD + OFFSCREEN_PADDING * 8
-  const minTop = OFFSCREEN_PADDING + 18 // lineheight of the header
+  const minTop = OFFSCREEN_PADDING + topPadding
   const maxLeft = windowDims.innerWidth - ElementWidth.REFLECTION_CARD - OFFSCREEN_PADDING
   const maxTop = windowDims.innerHeight - OFFSCREEN_PADDING
   const headerLeft = Math.max(minLeft, Math.min(maxLeft, bbox.left))
@@ -84,9 +87,9 @@ const getHeaderTransform = (ref: RefObject<HTMLDivElement>) => {
 }
 
 const getInlineStyle = (remoteDrag: RemoteReflection_reflection['remoteDrag'], isDropping: boolean | null, style: React.CSSProperties) => {
-  if (isDropping || !remoteDrag || !remoteDrag.clientX) return style
-  const {left, top} = getCoords(remoteDrag as any)
-  return {transform: `translate(${left}px,${top}px)`}
+  if (isDropping || !remoteDrag || !remoteDrag.clientX) return {nextStyle: style}
+  const {left, top, minTop} = getCoords(remoteDrag as any)
+  return {nextStyle: {transform: `translate(${left}px,${top}px)`}, minTop}
 }
 
 const RemoteReflection = (props: Props) => {
@@ -101,8 +104,8 @@ const RemoteReflection = (props: Props) => {
     return EditorState.createWithContent(contentState, editorDecorators())
   }, [content])
   const forceUpdate = useForceUpdate()
-  const nextStyle = getInlineStyle(remoteDrag!, isDropping, style)
-  const {headerTransform, arrow} = getHeaderTransform(ref)
+  const {nextStyle, minTop} = getInlineStyle(remoteDrag!, isDropping, style)
+  const {headerTransform, arrow} = getHeaderTransform(ref, minTop)
   useEffect(() => {
     // continuously update the position if dropping animation has begun
     if (isDropping) {
