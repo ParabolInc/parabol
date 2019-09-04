@@ -47,7 +47,6 @@ interface Props {
 
 const UserDraggingHeader = (props: Props) => {
   const {arrow, userId, name, style} = props
-  console.log('arrow', arrow)
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const label = userId === viewerId ? 'Your ghost 👻' : name

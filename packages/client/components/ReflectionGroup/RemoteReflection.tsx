@@ -14,17 +14,26 @@ import {RemoteReflection_reflection} from '__generated__/RemoteReflection_reflec
 import getBBox from '../RetroReflectPhase/getBBox'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {DeepNonNullable} from '../../types/generics'
+import useForceUpdate from '../../hooks/useForceUpdate'
 
-const RemoteReflectionModal = styled('div')<{isDropping?: boolean | null, isHeader?: boolean}>(({isDropping, isHeader}) => ({
+const RemoteReflectionModal = styled('div')<{isDropping?: boolean | null}>(({isDropping}) => ({
   position: 'absolute',
   left: 0,
   top: 0,
   boxShadow: isDropping ? Elevation.CARD_SHADOW : Elevation.CARD_DRAGGING,
   pointerEvents: 'none',
-  transition: isHeader ? undefined : `all ${isDropping ? Times.REFLECTION_REMOTE_DROP_DURATION : Times.REFLECTION_DROP_DURATION}ms ${BezierCurve.DECELERATE}`,
-  width: isHeader ? ElementWidth.REFLECTION_CARD : undefined,
+  transition: `all ${isDropping ? Times.REFLECTION_REMOTE_DROP_DURATION : Times.REFLECTION_DROP_DURATION}ms ${BezierCurve.DECELERATE}`,
   zIndex: ZIndex.REFLECTION_IN_FLIGHT
 }))
+
+const HeaderModal = styled('div')({
+  position: 'absolute',
+  left: 0,
+  top: 0,
+  pointerEvents: 'none',
+  width: ElementWidth.REFLECTION_CARD,
+  zIndex: ZIndex.REFLECTION_IN_FLIGHT
+})
 
 interface Props {
   initialTransform: string
@@ -91,9 +100,15 @@ const RemoteReflection = (props: Props) => {
     const contentState = convertFromRaw(JSON.parse(content))
     return EditorState.createWithContent(contentState, editorDecorators())
   }, [content])
-
+  const forceUpdate = useForceUpdate()
   const transform = getTransforms(remoteDrag!, isDropping, initialTransform)
   const {headerTransform, arrow} = getHeaderTransform(ref)
+  useEffect(() => {
+    // continuously update the position if dropping animation has begun
+    if (isDropping) {
+      forceUpdate()
+    }
+  })
   const timeoutRef = useRef(0)
   const atmosphere = useAtmosphere()
   useEffect(() => {
@@ -118,10 +133,10 @@ const RemoteReflection = (props: Props) => {
         </ReflectionCardRoot>
       </RemoteReflectionModal>
       {headerTransform &&
-      <RemoteReflectionModal isHeader>
+      <HeaderModal>
         <UserDraggingHeader userId={dragUserId} name={dragUserName} style={{transform: headerTransform}}
                             arrow={arrow} />
-      </RemoteReflectionModal>
+      </HeaderModal>
       }
     </>
   )

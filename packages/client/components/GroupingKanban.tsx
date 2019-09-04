@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react'
+import React, {useEffect, useMemo} from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import {createFragmentContainer} from 'react-relay'
 import {GroupingKanban_meeting} from '__generated__/GroupingKanban_meeting.graphql'
@@ -6,6 +6,7 @@ import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import styled from '@emotion/styled'
 import GroupingKanbanColumn from './GroupingKanbanColumn'
 import PortalProvider from './AtmosphereProvider/PortalProvider'
+import useHideBodyScroll from '../hooks/useHideBodyScroll'
 
 interface Props {
   meeting: GroupingKanban_meeting,
@@ -17,6 +18,7 @@ const ColumnsBlock = styled('div')({
   flex: '1',
   height: '100%',
   margin: '0 auto',
+  overflow: 'auto',
   width: '100%'
 })
 
@@ -25,6 +27,7 @@ const GroupingKanban = (props: Props) => {
   const {reflectionGroups, phases} = meeting
   const reflectPhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.reflect)!
   const reflectPrompts = reflectPhase.reflectPrompts!
+  useHideBodyScroll()
   const groupsByPhaseItem = useMemo(() => {
     const container = {} as {[phaseItemId: string]: typeof reflectionGroups[0][]}
     for (let i = 0; i < reflectionGroups.length; i++) {
@@ -35,6 +38,7 @@ const GroupingKanban = (props: Props) => {
     }
     return container
   }, [reflectionGroups])
+
   return (
     <PortalProvider>
       <ColumnsBlock>
