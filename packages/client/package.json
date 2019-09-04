@@ -16,7 +16,8 @@
     "storybook": "start-storybook -p 6006 -c .storybook",
     "build-storybook": "build-storybook",
     "lint": "eslint --fix ./**/*.{ts,tsx,js}",
-    "lint-staged": "eslint --fix"
+    "lint-staged": "eslint --fix",
+    "typecheck": "tsc --noEmit -W"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^5.1.9",

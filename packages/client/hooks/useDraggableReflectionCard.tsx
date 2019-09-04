@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useState} from 'react'
 import {PortalContext} from '../components/AtmosphereProvider/PortalProvider'
 import RemoteReflection from '../components/ReflectionGroup/RemoteReflection'
 import useAtmosphere from './useAtmosphere'
-import updateClonePosition from '../utils/retroGroup/updateClonePosition'
+import updateClonePosition, {getDroppingStyles} from '../utils/retroGroup/updateClonePosition'
 import {commitLocalUpdate} from 'relay-runtime'
 import {Times} from '../types/constEnums'
 import useEventCallback from './useEventCallback'
@@ -14,12 +14,14 @@ import getTargetReference from '../utils/multiplayerMasonry/getTargetReference'
 import UpdateDragLocationMutation from '../mutations/UpdateDragLocationMutation'
 import getIsDrag from '../utils/retroGroup/getIsDrag'
 import cloneReflection from '../utils/retroGroup/cloneReflection'
-import getBBox from '../components/RetroReflectPhase/getBBox'
 import shortid from 'shortid'
 import StartDraggingReflectionMutation from '../mutations/StartDraggingReflectionMutation'
 import isReactTouch from '../utils/isReactTouch'
 import {ReflectionDragState} from '../components/ReflectionGroup/DraggableReflectionCard'
 import {DraggableReflectionCard_reflection} from '__generated__/DraggableReflectionCard_reflection.graphql'
+import maybeStartReflectionScroll from '../utils/maybeStartReflectionScroll'
+import measureDroppableReflections from '../utils/measureDroppableReflections'
+import findDropZoneInPath from '../utils/findDropZoneInPath'
 
 
 const windowDims = {
@@ -30,11 +32,11 @@ const windowDims = {
 const useRemoteDrag = (reflection: DraggableReflectionCard_reflection, drag: ReflectionDragState, staticIdx: number) => {
   const setPortal = useContext(PortalContext)
   const {remoteDrag, isDropping} = reflection
-  const setRemoteCard = () => {
+  const setRemoteCard = (isClose?: boolean) => {
     if (!drag.ref) return
     const bbox = drag.ref.getBoundingClientRect()
-    const {left, top} = bbox
-    setPortal(`clone-${reflection.id}`, <RemoteReflection initialTransform={`translate(${left}px,${top}px)`}
+    const style = getDroppingStyles(drag.ref, bbox, windowDims.clientHeight)
+    setPortal(`clone-${reflection.id}`, <RemoteReflection style={isClose ? style : {transform: style.transform}}
                                                           reflection={reflection} />)
   }
   // is opening
@@ -47,7 +49,7 @@ const useRemoteDrag = (reflection: DraggableReflectionCard_reflection, drag: Ref
   // is closing
   useEffect(() => {
     if (isDropping && staticIdx !== -1 && remoteDrag) {
-      setRemoteCard()
+      setRemoteCard(true)
     }
   }, [isDropping, staticIdx, remoteDrag])
 }
@@ -55,11 +57,15 @@ const useRemoteDrag = (reflection: DraggableReflectionCard_reflection, drag: Ref
 const useLocalDrag = (reflection: DraggableReflectionCard_reflection, drag: ReflectionDragState, staticIdx: number, onMouseMove: any, onMouseUp: any) => {
   const {remoteDrag, isDropping, id: reflectionId, isViewerDragging} = reflection
   const atmosphere = useAtmosphere()
+
+  // handle drag end
   useEffect(() => {
     if (drag.ref && isDropping && staticIdx !== -1 && !remoteDrag) {
-      updateClonePosition(drag.ref, reflectionId)
+      updateClonePosition(drag.ref, reflectionId, windowDims.clientHeight)
     }
   }, [isDropping, staticIdx, drag, remoteDrag, reflectionId])
+
+  // handle drag conflicts
   useEffect(() => {
     if (!isViewerDragging && !isDropping && drag.clone) {
       document.body.removeChild(drag.clone)
@@ -133,6 +139,8 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
     document.removeEventListener(eventType, onMouseMove)
     if (!drag.isDrag) return
     drag.isDrag = false
+    drag.targets.length = 0
+    drag.prevTargetId = ''
     const targetGroupId = getTargetGroupId(e)
     const targetType = targetGroupId && reflectionGroupId !== targetGroupId ?
       DragReflectionDropTargetTypeEnum.REFLECTION_GROUP : !targetGroupId && reflectionCount > 0 ?
@@ -169,10 +177,12 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
       drag.isBroadcasting = false
     })
   }
+
   const onMouseMove = useEventCallback((e: MouseEvent | TouchEvent) => {
     const isTouch = isNativeTouch(e)
     const {clientX, clientY} = isTouch ? (e as TouchEvent).touches[0] : e as MouseEvent
-    if (!drag.isDrag) {
+    const wasDrag = drag.isDrag
+    if (!wasDrag) {
       drag.isDrag = getIsDrag(clientX, clientY, drag.startX, drag.startY)
       if (!drag.isDrag || !drag.ref) return
       const eventName = isTouch ? 'touchend' : 'mouseup'
@@ -182,22 +192,19 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
       drag.cardOffsetX = Math.min(clientX - bbox.left, bbox.width)
       drag.cardOffsetY = Math.min(clientY - bbox.top, bbox.height)
       drag.clone = cloneReflection(drag.ref, reflectionId)
-      // can improve performance by starting at the kanban instead of the doc
-      const groupEls = document.querySelectorAll('div[data-droppable]')
-      groupEls.forEach((el) => {
-        const targetId = el.getAttribute('data-droppable')!
-        const bbox = getBBox(el)!
-        drag.targets.push({
-          targetId,
-          ...bbox
-        })
-      })
       drag.id = shortid.generate()
       StartDraggingReflectionMutation(atmosphere, {reflectionId, dragId: drag.id})
+      const dropZoneEl = findDropZoneInPath(e.composedPath())
+      if (dropZoneEl){
+        const dropZoneBBox = dropZoneEl.getBoundingClientRect()
+        drag.targets = measureDroppableReflections(dropZoneEl, dropZoneBBox)
+      }
     }
     if (!drag.clone) return
+    drag.clientY = clientY
     drag.clone.style.transform = `translate(${clientX - drag.cardOffsetX}px,${clientY - drag.cardOffsetY}px)`
     announceDragUpdate(clientX, clientY)
+    maybeStartReflectionScroll(drag, e.composedPath())
   })
 
   const onMouseDown = (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {

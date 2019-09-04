@@ -16,7 +16,7 @@ const ReflectPhase = new GraphQLObjectType({
     focusedPhaseItem: {
       type: RetroPhaseItem,
       description: 'the phase item that the facilitator wants the group to focus on',
-      resolve: ({focusedPhaseItemId}, args, {dataLoader}) => {
+      resolve: ({focusedPhaseItemId}, _args, {dataLoader}) => {
         return dataLoader.get('customPhaseItems').load(focusedPhaseItemId)
       }
     },

@@ -7,7 +7,6 @@ import ReflectionCard from '../ReflectionCard/ReflectionCard'
 import {DraggableReflectionCard_meeting} from '__generated__/DraggableReflectionCard_meeting.graphql'
 import {ElementWidth, ReflectionStackPerspective, Times} from '../../types/constEnums'
 import {DraggableReflectionCard_staticReflections} from '__generated__/DraggableReflectionCard_staticReflections.graphql'
-import {BBox} from '../../types/animations'
 import useDraggableReflectionCard from '../../hooks/useDraggableReflectionCard'
 
 const ReflectionWrapper = styled('div')<{staticIdx: number, staticReflectionCount: number, isDropping: boolean | null, readOnly: boolean}>(
@@ -31,11 +30,17 @@ const ReflectionWrapper = styled('div')<{staticIdx: number, staticReflectionCoun
   }
 )
 
+export interface DropZoneBBox {
+  height: number,
+  top: number,
+  bottom: number
+}
 
 const DRAG_STATE = {
   id: '',
   cardOffsetX: 0,
   cardOffsetY: 0,
+  clientY: 0, // used for scrollZone
   clone: null as null | HTMLDivElement,
   isDrag: false,
   ref: null as null | HTMLDivElement,
@@ -45,6 +50,9 @@ const DRAG_STATE = {
   targets: [] as TargetBBox[],
   prevTargetId: '',
   isBroadcasting: false,
+  dropZoneEl: null as null | HTMLDivElement,
+  // dropZoneId: '',
+  dropZoneBBox: null as null | DropZoneBBox,
   timeout: null as null | number
 }
 
@@ -58,7 +66,13 @@ interface Props {
   staticReflections: DraggableReflectionCard_staticReflections
 }
 
-export type TargetBBox = BBox & {targetId: string}
+export interface TargetBBox {
+  targetId: string
+  top: number
+  bottom: number
+  left: number
+  height: number
+}
 
 const DraggableReflectionCard = (props: Props) => {
   const {reflection, staticIdx, staticReflections, meeting} = props
@@ -74,7 +88,8 @@ const DraggableReflectionCard = (props: Props) => {
                        readOnly={readOnly}
                        onMouseDown={onMouseDown} onTouchStart={onMouseDown}>
       <ReflectionCard readOnly={readOnly} userSelect='none' reflection={reflection} showOriginFooter
-                      isClipped={staticReflectionCount - 1 !== staticIdx} meetingId={meetingId} setReadOnly={setReadOnly}/>
+                      isClipped={staticReflectionCount - 1 !== staticIdx} meetingId={meetingId}
+                      setReadOnly={setReadOnly} />
     </ReflectionWrapper>
   )
 }

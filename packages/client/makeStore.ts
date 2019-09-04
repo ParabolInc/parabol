@@ -13,14 +13,11 @@ export default (initialState) => {
   if (__PRODUCTION__) {
     store = createStore(reducer, initialState, compose(applyMiddleware(...middlewares)))
   } else {
-    const devtoolsExt =
-      global.__REDUX_DEVTOOLS_EXTENSION__ && global.__REDUX_DEVTOOLS_EXTENSION__({maxAge: 50})
     store = createStore(
       reducer,
       initialState,
       compose(
-        applyMiddleware(...middlewares),
-        devtoolsExt || ((f) => f)
+        applyMiddleware(...middlewares)
       )
     )
   }

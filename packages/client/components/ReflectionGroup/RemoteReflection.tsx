@@ -36,7 +36,7 @@ const HeaderModal = styled('div')({
 })
 
 interface Props {
-  initialTransform: string
+  style: React.CSSProperties
   reflection: RemoteReflection_reflection
 }
 
@@ -49,7 +49,7 @@ const OFFSCREEN_PADDING = 16
 const getCoords = (remoteDrag: DeepNonNullable<NonNullable<RemoteReflection_reflection['remoteDrag']>>) => {
   const {targetId, clientHeight, clientWidth, clientX, clientY, targetOffsetX, targetOffsetY} = remoteDrag
   const targetEl = targetId ? document.querySelector(`div[data-droppable='${targetId}']`) : null
-  if (targetEl && targetOffsetX && targetOffsetY) {
+  if (targetEl) {
     const targetBBox = getBBox(targetEl)!
     return {
       left: targetBBox.left + targetOffsetX,
@@ -83,14 +83,14 @@ const getHeaderTransform = (ref: RefObject<HTMLDivElement>) => {
   }
 }
 
-const getTransforms = (remoteDrag: RemoteReflection_reflection['remoteDrag'], isDropping: boolean | null, initialTransform: string) => {
-  if (isDropping || !remoteDrag || !remoteDrag.clientX) return initialTransform
+const getInlineStyle = (remoteDrag: RemoteReflection_reflection['remoteDrag'], isDropping: boolean | null, style: React.CSSProperties) => {
+  if (isDropping || !remoteDrag || !remoteDrag.clientX) return style
   const {left, top} = getCoords(remoteDrag as any)
-  return `translate(${left}px,${top}px)`
+  return {transform: `translate(${left}px,${top}px)`}
 }
 
 const RemoteReflection = (props: Props) => {
-  const {reflection, initialTransform} = props
+  const {reflection, style} = props
   const {id: reflectionId, content, phaseItem, isDropping} = reflection
   const remoteDrag = reflection.remoteDrag as DeepNonNullable<NonNullable<RemoteReflection_reflection['remoteDrag']>>
   const {question} = phaseItem
@@ -101,7 +101,7 @@ const RemoteReflection = (props: Props) => {
     return EditorState.createWithContent(contentState, editorDecorators())
   }, [content])
   const forceUpdate = useForceUpdate()
-  const transform = getTransforms(remoteDrag!, isDropping, initialTransform)
+  const nextStyle = getInlineStyle(remoteDrag!, isDropping, style)
   const {headerTransform, arrow} = getHeaderTransform(ref)
   useEffect(() => {
     // continuously update the position if dropping animation has begun
@@ -125,7 +125,7 @@ const RemoteReflection = (props: Props) => {
 
   return (
     <>
-      <RemoteReflectionModal ref={ref} style={{transform}} isDropping={isDropping}>
+      <RemoteReflectionModal ref={ref} style={nextStyle} isDropping={isDropping}>
         <ReflectionCardRoot>
           {!headerTransform && <UserDraggingHeader userId={dragUserId} name={dragUserName} />}
           <ReflectionEditorWrapper editorState={editorState} readOnly />

@@ -28,6 +28,7 @@ interface Props {
   reflection: ReflectionCard_reflection
   meetingId?: string
   readOnly?: boolean
+  setReadOnly?: (readOnly: boolean) => void
   shadow?: string
   showOriginFooter?: boolean
   userSelect?: 'text' | 'none'
@@ -60,7 +61,7 @@ const makeEditorState = (content, getEditorState) => {
 
 const ReflectionCard = (props: Props) => {
   const {meetingId, reflection, className, innerRef, isClipped, handleChange, readOnly, userSelect, showOriginFooter, setReadOnly} = props
-  const {id: reflectionId, content, retroPhaseItemId, phaseItem, isViewerCreator} = reflection
+  const {id: reflectionId, content, retroPhaseItemId, phaseItem, isViewerCreator, reflectionGroupId} = reflection
   const {question} = phaseItem
   const atmosphere = useAtmosphere()
   const {onCompleted, submitMutation, error, onError} = useMutationProps()
@@ -79,7 +80,7 @@ const ReflectionCard = (props: Props) => {
 
   useEffect(() => {
     if (isViewerCreator && !editorStateRef.current.getCurrentContent().hasText()) {
-      setReadOnly(false)
+      setReadOnly && setReadOnly(false)
     }
   }, [])
 
