@@ -9,6 +9,11 @@ import {PALETTE} from '../styles/paletteV2'
 import Icon from './Icon'
 import {GroupingKanbanColumn_prompt} from '__generated__/GroupingKanbanColumn_prompt.graphql'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
+import RaisedButton from './RaisedButton'
+import CreateReflectionMutation from '../mutations/CreateReflectionMutation'
+import getNextSortOrder from '../utils/getNextSortOrder'
+import useMutationProps from '../hooks/useMutationProps'
+import useAtmosphere from '../hooks/useAtmosphere'
 
 // TODO share with TaskColumn
 const Column = styled('div')({
@@ -29,9 +34,25 @@ const ColumnBody = styled('div')({
   flex: 1,
   height: '100%',
   overflowY: 'auto',
+  overflowX: 'hidden',
   minHeight: 200,
-  paddingBottom: 8,
+  padding: 8,
   width: 'fit-content'
+})
+
+const Prompt = styled('div')({
+  fontSize: 20,
+  fontStyle: 'italic',
+  fontWeight: 600,
+  lineHeight: '24px'
+})
+
+const AddReflectionButton = styled(RaisedButton)({
+  border: 0,
+  height: 24,
+  lineHeight: '24px',
+  padding: 0,
+  width: 24
 })
 
 interface Props {
@@ -42,13 +63,28 @@ interface Props {
 
 const GroupingKanbanColumn = (props: Props) => {
   const {meeting, reflectionGroups, prompt} = props
-  const {title} = prompt
+  const {question, id: promptId} = prompt
+  const {id: meetingId} = meeting
+  const {submitting, onError, error, submitMutation, onCompleted} = useMutationProps()
+  const atmosphere = useAtmosphere()
+  const onClick = () => {
+    if (submitting) return
+    const input = {
+      content: undefined,
+      retroPhaseItemId: promptId,
+      sortOrder: getNextSortOrder(reflectionGroups)
+    }
+    submitMutation()
+    CreateReflectionMutation(atmosphere, {input}, {meetingId}, onError, onCompleted)
+  }
+
   return (
     <Column>
       <ColumnHeader>
-        <Icon>add</Icon>
-        {title}
-        {reflectionGroups.length || null}
+        <AddReflectionButton aria-label={'Add a reflection'} onClick={onClick} waiting={submitting}>
+          <Icon>add</Icon>
+        </AddReflectionButton>
+        <Prompt>{question}</Prompt>
       </ColumnHeader>
       <ColumnBody>
         {reflectionGroups.map((reflectionGroup) => {
@@ -64,12 +100,14 @@ export default createFragmentContainer(
   {
     meeting: graphql`
       fragment GroupingKanbanColumn_meeting on RetrospectiveMeeting {
+        id
         ...ReflectionGroup_meeting
       }`,
     reflectionGroups: graphql`
       fragment GroupingKanbanColumn_reflectionGroups on RetroReflectionGroup @relay(plural: true) {
         ...ReflectionGroup_reflectionGroup
         id
+        sortOrder
         reflections {
           id
         }
@@ -77,6 +115,7 @@ export default createFragmentContainer(
     prompt: graphql`
       fragment GroupingKanbanColumn_prompt on RetroPhaseItem {
         id
+        question
         title
       }`
   }

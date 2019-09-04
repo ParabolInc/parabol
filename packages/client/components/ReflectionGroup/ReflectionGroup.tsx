@@ -16,7 +16,6 @@ const CardStack = styled('div')({
 const Group = styled('div')<{staticReflectionCount: number}>(({staticReflectionCount}) => ({
   position: 'relative',
   minHeight: 90,
-  background: 'lightblue',
   padding: Layout.REFLECTION_CARD_PADDING_Y,
   paddingBottom: Layout.REFLECTION_CARD_PADDING_Y + (Math.min(3, staticReflectionCount) - 1) * ReflectionStackPerspective.Y,
   transition: `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms`

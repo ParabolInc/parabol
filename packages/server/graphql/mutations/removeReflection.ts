@@ -2,12 +2,13 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {GROUP, REFLECT, TEAM} from '../../../client/utils/constants'
 import isPhaseComplete from '../../../client/utils/meetings/isPhaseComplete'
 import RemoveReflectionPayload from '../types/RemoveReflectionPayload'
 import removeEmptyReflectionGroup from './helpers/removeEmptyReflectionGroup'
 import unlockAllStagesForPhase from '../../../client/utils/unlockAllStagesForPhase'
 import standardError from '../../utils/standardError'
+import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: RemoveReflectionPayload,
@@ -17,7 +18,7 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve (source, {reflectionId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (_source, {reflectionId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const now = new Date()
@@ -39,7 +40,7 @@ export default {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
-    if (isPhaseComplete(REFLECT, phases)) {
+    if (isPhaseComplete(NewMeetingPhaseTypeEnum.group, phases)) {
       return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
     }
 
@@ -55,7 +56,7 @@ export default {
     const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
     let unlockedStageIds
     if (reflections.length === 0) {
-      unlockedStageIds = unlockAllStagesForPhase(phases, GROUP, true, false)
+      unlockedStageIds = unlockAllStagesForPhase(phases, NewMeetingPhaseTypeEnum.group, true, false)
       await r
         .table('NewMeeting')
         .get(meetingId)
@@ -64,7 +65,7 @@ export default {
         })
     }
     const data = {meetingId, reflectionId, unlockedStageIds}
-    publish(TEAM, teamId, RemoveReflectionPayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, RemoveReflectionPayload, data, subOptions)
     return data
   }
 }

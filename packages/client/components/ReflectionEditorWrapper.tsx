@@ -76,6 +76,17 @@ const AndroidEditorFallback = lazyPreload(() =>
 class ReflectionEditorWrapper extends PureComponent<Props> {
   entityPasteStart?: {anchorOffset: number; anchorKey: string} = undefined
 
+  componentDidMount() {
+    if (!this.props.editorState.getCurrentContent().hasText()) {
+      setTimeout(() => {
+        try {
+          this.props.editorRef.current && this.props.editorRef.current.focus()
+        } catch (e) {
+          // DraftEditor was unmounted before this was called
+        }
+      })
+    }
+  }
   blockStyleFn = (contentBlock) => {
     // TODO complete emtotion migration to provider a string className
     const type = contentBlock.getType()

@@ -22,7 +22,7 @@ graphql`
       teamId
     }
     reflection {
-      ...CompleteReflectionFrag @relay(mask: false)
+      ...DraggableReflectionCard_reflection @relay(mask: false)
     }
 
     reflectionGroup {
@@ -31,7 +31,7 @@ graphql`
       sortOrder
       retroPhaseItemId
       reflections {
-        ...CompleteReflectionFrag @relay(mask: false)
+        ...DraggableReflectionCard_reflection @relay(mask: false)
       }
       title
       tasks {

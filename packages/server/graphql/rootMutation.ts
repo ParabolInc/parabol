@@ -49,7 +49,6 @@ import createReflection from './mutations/createReflection'
 import updateReflectionContent from './mutations/updateReflectionContent'
 import editReflection from './mutations/editReflection'
 import removeReflection from './mutations/removeReflection'
-import createReflectionGroup from './mutations/createReflectionGroup'
 import updateReflectionGroupTitle from './mutations/updateReflectionGroupTitle'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 import newMeetingCheckIn from './mutations/newMeetingCheckIn'
@@ -108,7 +107,6 @@ export default new GraphQLObjectType<any, Context, any>({
     createJiraIssue,
     createOrgPicturePutUrl,
     createReflection,
-    createReflectionGroup,
     createTask,
     createUserPicturePutUrl,
     deleteTask,

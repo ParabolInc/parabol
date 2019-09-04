@@ -8,7 +8,6 @@ import AddReflectTemplatePromptPayload from './AddReflectTemplatePromptPayload'
 import AddTeamPayload from './AddTeamPayload'
 import ArchiveTeamPayload from './ArchiveTeamPayload'
 import AutoGroupReflectionsPayload from './AutoGroupReflectionsPayload'
-import CreateReflectionGroupPayload from './CreateReflectionGroupPayload'
 import CreateReflectionPayload from './CreateReflectionPayload'
 import DowngradeToPersonalPayload from './DowngradeToPersonalPayload'
 import DragDiscussionTopicPayload from './DragDiscussionTopicPayload'
@@ -61,7 +60,6 @@ const types = [
   ArchiveTeamPayload,
   AutoGroupReflectionsPayload,
   CreateReflectionPayload,
-  CreateReflectionGroupPayload,
   DenyPushInvitationPayload,
   DowngradeToPersonalPayload,
   DragDiscussionTopicPayload,

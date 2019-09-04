@@ -3,9 +3,10 @@ import getRethink from '../../database/rethinkDriver'
 import EditReflectionPayload from '../types/EditReflectionPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {REFLECT, TEAM} from '../../../client/utils/constants'
 import isPhaseComplete from '../../../client/utils/meetings/isPhaseComplete'
 import standardError from '../../utils/standardError'
+import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   description: 'Changes the editing state of a user for a phase item',
@@ -19,7 +20,7 @@ export default {
       type: new GraphQLNonNull(GraphQLBoolean)
     }
   },
-  async resolve (source, {phaseItemId, isEditing}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (_source, {phaseItemId, isEditing}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
@@ -42,13 +43,13 @@ export default {
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases} = meeting
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
-    if (isPhaseComplete(REFLECT, phases)) {
+    if (isPhaseComplete(NewMeetingPhaseTypeEnum.group, phases)) {
       return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
     }
 
     // RESOLUTION
     const data = {phaseItemId, editorId: mutatorId, isEditing}
-    publish(TEAM, teamId, EditReflectionPayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, EditReflectionPayload, data, subOptions)
     return data
   }
 }

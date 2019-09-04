@@ -224,7 +224,6 @@ const PhaseItemColumn = (props: Props) => {
             readOnly={isComplete}
             idx={idx}
             phaseEditorRef={phaseEditorRef}
-            phaseItemId={retroPhaseItemId}
             phaseRef={phaseRef}
             meetingId={meetingId}
             stackTopRef={stackTopRef}

@@ -67,7 +67,6 @@ interface Props {
   phaseRef: React.RefObject<HTMLDivElement>
   reflectionStack: readonly PhaseItemColumn_meeting['reflectionGroups'][0]['reflections'][0][]
   meetingId: string
-  phaseItemId: string
   readOnly: boolean
   scrollRef: Ref<HTMLDivElement>
   bgRef: Ref<HTMLDivElement>
@@ -79,7 +78,7 @@ const ModalReflectionWrapper = styled('div')({
 })
 
 const ExpandedReflectionStack = (props: Props) => {
-  const {reflectionStack, readOnly, phaseItemId, meetingId, phaseRef, scrollRef, setItemsRef, bgRef, closePortal} = props
+  const {reflectionStack, readOnly,  meetingId, phaseRef, scrollRef, setItemsRef, bgRef, closePortal} = props
   const phaseBBox = useMemo(() => {
     return getBBox(phaseRef.current)
   }, [phaseRef.current])
@@ -104,7 +103,6 @@ const ExpandedReflectionStack = (props: Props) => {
                 <ReflectionCard
                   meetingId={meetingId}
                   reflection={reflection}
-                  phaseItemId={phaseItemId}
                   readOnly={readOnly}
                 />
               </ModalReflectionWrapper>

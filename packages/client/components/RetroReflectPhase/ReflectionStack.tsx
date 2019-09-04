@@ -12,7 +12,6 @@ import useExpandedReflections from '../../hooks/useExpandedReflections'
 interface Props {
   idx: number
   meetingId: string
-  phaseItemId: string
   phaseEditorRef: React.RefObject<HTMLDivElement>
   phaseRef: React.RefObject<HTMLDivElement>
   readOnly: boolean
@@ -91,7 +90,7 @@ const ReflectionWrapper = styled('div')<{idx: number}>(
 )
 
 const ReflectionStack = (props: Props) => {
-  const {phaseRef, idx, meetingId, phaseItemId, readOnly, reflectionStack, stackTopRef} = props
+  const {phaseRef, idx, meetingId, readOnly, reflectionStack, stackTopRef} = props
   const stackRef = useRef<HTMLDivElement>(null)
   const {setItemsRef, scrollRef, bgRef, portal, collapse, expand} = useExpandedReflections(stackRef, reflectionStack.length)
   if (reflectionStack.length === 0) {
@@ -103,7 +102,6 @@ const ReflectionStack = (props: Props) => {
         phaseRef={phaseRef}
         reflectionStack={reflectionStack}
         meetingId={meetingId}
-        phaseItemId={phaseItemId}
         readOnly={readOnly}
         scrollRef={scrollRef}
         bgRef={bgRef}
@@ -123,7 +121,6 @@ const ReflectionStack = (props: Props) => {
                     <ReflectionCard
                       meetingId={meetingId}
                       reflection={reflection}
-                      phaseItemId={phaseItemId}
                       readOnly={reflectionStack.length > 1 || readOnly || false}
                       userSelect={reflectionStack.length === 1 ? undefined : 'none'}
                     />

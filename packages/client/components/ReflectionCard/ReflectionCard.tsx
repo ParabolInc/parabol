@@ -1,6 +1,6 @@
 import {ReflectionCard_reflection} from '../../__generated__/ReflectionCard_reflection.graphql'
-import {convertFromRaw, convertToRaw, Editor, EditorState} from 'draft-js'
-import React, {Component} from 'react'
+import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
+import React, {useEffect, useMemo, useRef} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
@@ -8,35 +8,30 @@ import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
 import ReflectionFooter from '../ReflectionFooter'
 import StyledError from '../StyledError'
 import editorDecorators from '../TaskEditor/decorators'
-import withAtmosphere, {WithAtmosphereProps} from '../../decorators/withAtmosphere/withAtmosphere'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
 import RemoveReflectionMutation from '../../mutations/RemoveReflectionMutation'
 import UpdateReflectionContentMutation from '../../mutations/UpdateReflectionContentMutation'
 import {DECELERATE} from '../../styles/animation'
 import {Elevation} from '../../styles/elevation'
 import isTempId from '../../utils/relay/isTempId'
-import withMutationProps, {WithMutationProps} from '../../utils/relay/withMutationProps'
 import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
 import {cardBackgroundColor, cardBorderRadius} from '../../styles/cards'
 import {ElementWidth} from '../../types/constEnums'
+import useRefState from '../../hooks/useRefState'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import useMutationProps from '../../hooks/useMutationProps'
 
-interface Props extends WithMutationProps, WithAtmosphereProps {
+interface Props {
   isClipped?: boolean
   className?: string
   handleChange?: () => void
   reflection: ReflectionCard_reflection
   meetingId?: string
-  phaseItemId?: string
   readOnly?: boolean
   shadow?: string
   showOriginFooter?: boolean
   userSelect?: 'text' | 'none'
   innerRef?: (c: HTMLDivElement | null) => void
-}
-
-interface State {
-  content: string
-  editorState: EditorState | null
 }
 
 interface ReflectionCardRootProps {
@@ -58,61 +53,38 @@ export const ReflectionCardRoot = styled('div')<ReflectionCardRootProps>(
   }
 )
 
-class ReflectionCard extends Component<Props, State> {
-  static getDerivedStateFromProps (nextProps: Props, prevState: State): Partial<State> | null {
-    const {reflection} = nextProps
-    const {content} = reflection
-    if (!content) {
-      // https://sentry.io/organizations/parabol/issues/1143712241/events/a9a26413a96e478180e699294e230f79/?project=107196
-      console.error('No content', content, JSON.stringify(reflection))
+const makeEditorState = (content, getEditorState) => {
+  const contentState = convertFromRaw(JSON.parse(content))
+  return EditorState.createWithContent(contentState, editorDecorators(getEditorState))
+}
+
+const ReflectionCard = (props: Props) => {
+  const {meetingId, reflection, className, innerRef, isClipped, handleChange, readOnly, userSelect, showOriginFooter, setReadOnly} = props
+  const {id: reflectionId, content, retroPhaseItemId, phaseItem, isViewerCreator} = reflection
+  const {question} = phaseItem
+  const atmosphere = useAtmosphere()
+  const {onCompleted, submitMutation, error, onError} = useMutationProps()
+  const editorRef = useRef<HTMLTextAreaElement>(null)
+  const [editorStateRef, setEditorState] = useRefState<EditorState>(() =>
+    makeEditorState(content, () => editorStateRef.current)
+  )
+  useEffect(() => {
+    setEditorState(makeEditorState(content, () => editorStateRef.current))
+  }, [content, editorStateRef, setEditorState])
+
+  const handleEditorFocus = () => {
+    if (isTempId(reflectionId)) return
+    EditReflectionMutation(atmosphere, {isEditing: true, phaseItemId: retroPhaseItemId})
+  }
+
+  useEffect(() => {
+    if (isViewerCreator && !editorStateRef.current.getCurrentContent().hasText()) {
+      setReadOnly(false)
     }
-    if (content === prevState.content) return null
-    const contentState = convertFromRaw(JSON.parse(content))
-    // const DEBUG_TEXT = `id: ${reflectionId} | GroupId: ${reflectionGroupId}`
-    // const contentState = ContentState.createFromText(DEBUG_TEXT)
-    const editorState = EditorState.createWithContent(
-      contentState,
-      editorDecorators(() => editorState)
-    )
-    return {
-      content,
-      editorState
-    }
-  }
+  }, [])
 
-  editorRef = React.createRef<HTMLTextAreaElement | Editor>()
-
-  state = {
-    content: '',
-    editorState: null
-  }
-
-  setEditorState = (editorState: EditorState) => {
-    this.setState({editorState})
-  }
-
-  handleEditorFocus = () => {
-    const {
-      atmosphere,
-      reflection: {reflectionId},
-      phaseItemId
-    } = this.props
-    if (isTempId(reflectionId) || !phaseItemId) return
-    EditReflectionMutation(atmosphere, {isEditing: true, phaseItemId})
-  }
-
-  handleContentUpdate = () => {
-    const {
-      atmosphere,
-      meetingId,
-      reflection: {content, reflectionId},
-      submitMutation,
-      onError,
-      onCompleted
-    } = this.props
-    const {editorState} = this.state as State
-    if (!editorState) return
-    const contentState = editorState.getCurrentContent()
+  const handleContentUpdate = () => {
+    const contentState = editorStateRef.current.getCurrentContent()
     if (contentState.hasText()) {
       const nextContent = JSON.stringify(convertToRaw(contentState))
       if (content === nextContent) return
@@ -133,73 +105,51 @@ class ReflectionCard extends Component<Props, State> {
     }
   }
 
-  handleEditorBlur = () => {
-    const {
-      atmosphere,
-      phaseItemId,
-      reflection: {reflectionId}
-    } = this.props
-    if (isTempId(reflectionId) || !phaseItemId) return
-    this.handleContentUpdate()
-    EditReflectionMutation(atmosphere, {isEditing: false, phaseItemId})
+  const handleEditorBlur = () => {
+    if (isTempId(reflectionId)) return
+    handleContentUpdate()
+    EditReflectionMutation(atmosphere, {isEditing: false, phaseItemId: retroPhaseItemId})
   }
 
-  handleReturn = (e) => {
+  const handleReturn = (e) => {
     if (e.shiftKey) return 'not-handled'
-    this.editorRef.current && this.editorRef.current.blur()
+    editorRef.current && editorRef.current.blur()
     return 'handled'
   }
 
-  render () {
-    const {
-      innerRef,
-      className,
-      isClipped,
-      handleChange,
-      error,
-      meetingId,
-      readOnly,
-      reflection,
-      showOriginFooter,
-      userSelect
-    } = this.props
-    const {editorState} = this.state
-    const {
-      phaseItem: {question},
-      reflectionId
-    } = reflection
-    return (
-      <ReflectionCardRoot className={className} ref={innerRef}>
-        <ReflectionEditorWrapper
-          isClipped={isClipped}
-          ariaLabel='Edit this reflection'
-          editorRef={this.editorRef}
-          editorState={editorState}
-          onBlur={this.handleEditorBlur}
-          onFocus={this.handleEditorFocus}
-          handleChange={handleChange}
-          handleReturn={this.handleReturn}
-          placeholder='My reflection… (press enter to add)'
-          readOnly={readOnly || isTempId(reflectionId)}
-          setEditorState={this.setEditorState}
-          userSelect={userSelect}
-        />
-        {error && <StyledError>{error}</StyledError>}
-        {showOriginFooter && <ReflectionFooter>{question}</ReflectionFooter>}
-        {!readOnly && meetingId && (
-          <ReflectionCardDeleteButton meetingId={meetingId} reflectionId={reflectionId} />
-        )}
-      </ReflectionCardRoot>
-    )
-  }
+  const isReadOnly = !isViewerCreator || readOnly || isTempId(reflectionId)
+  return (
+    <ReflectionCardRoot className={className} ref={innerRef}>
+      <ReflectionEditorWrapper
+        isClipped={isClipped}
+        ariaLabel='Edit this reflection'
+        editorRef={editorRef}
+        editorState={editorStateRef.current}
+        onBlur={handleEditorBlur}
+        onFocus={handleEditorFocus}
+        handleChange={handleChange}
+        handleReturn={handleReturn}
+        placeholder={isViewerCreator ? 'My reflection… (press enter to add)' : '*New Reflection*'}
+        readOnly={isReadOnly}
+        setEditorState={setEditorState}
+        userSelect={userSelect}
+      />
+      {error && <StyledError>{error.message}</StyledError>}
+      {showOriginFooter && <ReflectionFooter>{question}</ReflectionFooter>}
+      {!isReadOnly && meetingId && (
+        <ReflectionCardDeleteButton meetingId={meetingId} reflectionId={reflectionId} />
+      )}
+    </ReflectionCardRoot>
+  )
 }
 
-// export default withAtmosphere(ReflectionCard)
-export default createFragmentContainer(withAtmosphere(withMutationProps(ReflectionCard)), {
+export default createFragmentContainer(ReflectionCard, {
   reflection: graphql`
     fragment ReflectionCard_reflection on RetroReflection {
-      reflectionId: id
+      isViewerCreator
+      id
       reflectionGroupId
+      retroPhaseItemId
       content
       phaseItem {
         question
