@@ -16,9 +16,9 @@ const Link = styled('a')({
 
 const FooterCopy = styled('div')({
   color: PALETTE.TEXT_LIGHT,
-  fontSize: '.6875rem',
-  lineHeight: '1.5rem',
-  marginTop: '1rem',
+  fontSize: 11,
+  lineHeight: '24px',
+  marginTop: 8,
   textAlign: 'center'
 })
 

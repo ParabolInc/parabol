@@ -40,19 +40,13 @@ const color = PALETTE.LINK_BLUE
 
 const ForgotPasswordLink = styled(PlainButton)({
   color,
-  fontSize: '.6875rem',
-  lineHeight: '1.5rem',
+  fontSize: 11,
+  lineHeight: '24px',
   marginTop: 8,
   textAlign: 'center',
   ':hover,:focus,:active': {
     color
   }
-})
-
-const UseSSO = styled(PlainButton)({
-  color,
-  fontSize: 14,
-  marginTop: 16
 })
 
 const BrandedLink = styled(PlainButton)({
@@ -74,7 +68,6 @@ const DialogSubTitle = styled('div')({
 interface State {
   existingAccount: null | 'google' | 'email'
   isForgot: boolean
-  isSSO: boolean
 }
 
 const existingAccounts = {
@@ -86,7 +79,6 @@ class GenericAuthentication extends Component<Props, State> {
   state: State = {
     existingAccount: null,
     isForgot: false,
-    isSSO: false
   }
 
   componentDidMount () {
@@ -136,12 +128,6 @@ class GenericAuthentication extends Component<Props, State> {
 
   authFormRef = React.createRef<any>()
 
-  toggleSSO = () => {
-    this.setState({
-      isSSO: !this.state.isSSO
-    })
-  }
-
   onForgot = () => {
     const {gotoPage} = this.props
     const email = this.authFormRef.current && this.authFormRef.current.email.value
@@ -149,7 +135,7 @@ class GenericAuthentication extends Component<Props, State> {
   }
 
   render () {
-    const {existingAccount, isSSO} = this.state
+    const {existingAccount} = this.state
     const {submitting, error, page, teamName, gotoPage} = this.props
     if (page === 'reset-password') {
       return (
@@ -188,13 +174,11 @@ class GenericAuthentication extends Component<Props, State> {
           isSignin={!isCreate}
           fieldsRef={this.authFormRef}
           existingAccount={existingAccount === 'email'}
-          isSSO={isSSO}
         />
         {isCreate ? (
           <AuthPrivacyFooter />
         ) : (
           <>
-            <UseSSO onClick={this.toggleSSO}>{`Sign in ${isSSO ? 'without' : 'with'} SSO`}</UseSSO>
           <ForgotPasswordLink onClick={this.onForgot}>{'Forgot your password?'}</ForgotPasswordLink>
           </>
         )}

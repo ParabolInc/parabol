@@ -20,6 +20,10 @@ import {LocalStorageKey} from '../types/constEnums'
 import StyledTip from './StyledTip'
 import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
 import getTokenFromSSO from '../utils/getTokenFromSSO'
+import PlainButton from './PlainButton/PlainButton'
+import {PALETTE} from '../styles/paletteV2'
+import getSSODomainFromEmail from '../utils/getSSODomainFromEmail'
+import Atmosphere from '../Atmosphere'
 
 interface Props
   extends WithAtmosphereProps,
@@ -30,7 +34,6 @@ interface Props
   // is the primary login action (not secondary to Google Oauth)
   isPrimary?: boolean
   isSignin?: boolean
-  isSSO: boolean
   existingAccount?: boolean
   fieldsRef?: Ref<any>
 }
@@ -38,9 +41,10 @@ interface Props
 const FieldGroup = styled('div')({
   margin: '1rem 0 1rem'
 })
-const FieldBlock = styled('div')({
-  margin: '0 0 1.25rem'
-})
+const FieldBlock = styled('div')<{isSSO?: boolean}>(({isSSO}) => ({
+  margin: '0 0 1.25rem',
+  visibility: isSSO ? 'hidden' : undefined
+}))
 
 const Form = styled('form')({
   display: 'flex',
@@ -54,8 +58,37 @@ const HelpMessage = styled(StyledTip)({
   fontSize: 14
 })
 
+
+const UseSSO = styled(PlainButton)({
+  color: PALETTE.LINK_BLUE,
+  display: 'flex',
+  fontSize: 14,
+  justifyContent: 'center',
+  marginTop: 16
+})
+
+interface State {
+  isSSO: boolean,
+  pendingDomain: string | null,
+  ssoURL: string | null,
+  ssoDomain: string | null
+}
+
+const getSSOUrl = (atmosphere: Atmosphere, email: string) => {
+  const invitationToken = localStorage.getItem(LocalStorageKey.INVITATION_TOKEN)
+  const isInvited = !!invitationToken
+  return getSAMLIdP(atmosphere, {email, isInvited})
+}
+
 // exporting as a Base is a good indicator that a parent component is using this as a ref
-export class EmailPasswordAuthFormBase extends Component<Props> {
+export class EmailPasswordAuthFormBase extends Component<Props, State> {
+  state: State = {
+    isSSO: false,
+    pendingDomain: null,
+    ssoURL: null,
+    ssoDomain: null
+  }
+
   componentDidUpdate(prevProps: Props) {
     const {location, onError} = this.props
     if (prevProps.location !== location && prevProps.error) {
@@ -63,8 +96,25 @@ export class EmailPasswordAuthFormBase extends Component<Props> {
     }
   }
 
-  handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    this.props.setDirtyField(e.target.name)
+  handleBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
+    const {atmosphere, fields} = this.props
+    const {pendingDomain} = this.state
+    const {name} = e.target
+    this.props.setDirtyField(name)
+    if (name === 'email') {
+      const {value: email} = fields.email
+      const domain = getSSODomainFromEmail(email)
+      if (domain && domain !== pendingDomain) {
+        this.setState({
+          pendingDomain: domain
+        })
+        const url = await getSSOUrl(atmosphere, email)
+        this.setState({
+          ssoDomain: domain,
+          ssoURL: url
+        })
+      }
+    }
   }
 
   tryLogin = async (email: string, password: string, error?: string) => {
@@ -104,22 +154,28 @@ export class EmailPasswordAuthFormBase extends Component<Props> {
     this.tryLogin(email, password).catch()
   }
 
-  loginWithSSO = async (email) => {
+
+  /*
+  * Whenever the domain changes, we see if the domain belongs to an SSO account
+  * if they submit before the check is returned, we send another check
+  * if the domain is SSO, we redirect
+  * else, we do a standard flow
+  * */
+  tryLoginWithSSO = async (email: string) => {
     const {atmosphere, submitMutation, onError, history, onCompleted} = this.props
+    const {ssoDomain, ssoURL} = this.state
+    const domain = getSSODomainFromEmail(email)!
+    const url = domain === ssoDomain ? ssoURL : await getSSOUrl(atmosphere, email)
+    if (!url) return false
+
     submitMutation()
-    const invitationToken = localStorage.getItem(LocalStorageKey.INVITATION_TOKEN)
-    const isInvited = !!invitationToken
-    const url = await getSAMLIdP(atmosphere, {email, isInvited})
-    if (!url) {
-      onError('Email not found')
-      return
-    }
     const {token, error} = await getTokenFromSSO(url)
     if (!token) {
       onError(error || 'Error logging in')
-      return
+      return true
     }
     atmosphere.setAuthToken(token)
+    const invitationToken = localStorage.getItem(LocalStorageKey.INVITATION_TOKEN)
     if (invitationToken) {
       localStorage.removeItem(LocalStorageKey.INVITATION_TOKEN)
       AcceptTeamInvitationMutation(atmosphere, {invitationToken}, {history, onCompleted, onError})
@@ -127,21 +183,25 @@ export class EmailPasswordAuthFormBase extends Component<Props> {
       const nextUrl = getValidRedirectParam() || '/me'
       history.push(nextUrl)
     }
+    return true
+  }
+
+  toggleSSO = () => {
+    this.setState({
+      isSSO: !this.state.isSSO
+    })
   }
 
   onSubmit = async (e: React.FormEvent) => {
-    const {isSignin, submitMutation, submitting, validateField, setDirtyField, isSSO} = this.props
+    const {isSignin, submitMutation, submitting, validateField, setDirtyField} = this.props
     e.preventDefault()
     if (submitting) return
     setDirtyField()
     const {email: emailRes, password: passwordRes} = validateField()
     if (emailRes.error) return
     const email = emailRes.value as string
-    if (isSSO) {
-      await this.loginWithSSO(email)
-      return
-    }
-    if (passwordRes.error) return
+    const isSSO = await this.tryLoginWithSSO(email)
+    if (isSSO || passwordRes.error) return
     const password = passwordRes.value as string
     submitMutation()
     if (isSignin) {
@@ -152,38 +212,42 @@ export class EmailPasswordAuthFormBase extends Component<Props> {
   }
 
   render() {
-    const {error, fields, isPrimary, isSignin, isSSO, submitting, onChange, existingAccount} = this.props
+    const {error, fields, isPrimary, isSignin, submitting, onChange, existingAccount} = this.props
+    const {isSSO} = this.state
     const Button = isPrimary ? PrimaryButton : RaisedButton
     const hasEmail = !!fields.email.value
     return (
-      <Form onSubmit={this.onSubmit}>
-        {error && <ErrorAlert message={error as string} />}
-        {!error && existingAccount && (
-          <ErrorAlert message='Your account was created without Google. Sign in below' />
-        )}
-        {isSSO && submitting && <HelpMessage>Continue through the login popup</HelpMessage>}
-        <FieldGroup>
-          <FieldBlock>
-            <EmailInputField
-              autoFocus={!hasEmail}
-              {...fields.email}
-              onChange={onChange}
-              onBlur={this.handleBlur}
-            />
-          </FieldBlock>
-          {!isSSO && <FieldBlock>
-            <PasswordInputField
-              autoFocus={hasEmail}
-              {...fields.password}
-              onChange={onChange}
-              onBlur={this.handleBlur}
-            />
-          </FieldBlock>}
-        </FieldGroup>
-        <Button size='medium' disabled={false} waiting={submitting}>
-          {isSignin ? SIGNIN_LABEL : CREATE_ACCOUNT_BUTTON_LABEL}
-        </Button>
-      </Form>
+      <>
+        <Form onSubmit={this.onSubmit}>
+          {error && <ErrorAlert message={error as string} />}
+          {!error && existingAccount && (
+            <ErrorAlert message='Your account was created without Google. Sign in below' />
+          )}
+          {isSSO && submitting && <HelpMessage>Continue through the login popup</HelpMessage>}
+          <FieldGroup>
+            <FieldBlock>
+              <EmailInputField
+                autoFocus={!hasEmail}
+                {...fields.email}
+                onChange={onChange}
+                onBlur={this.handleBlur}
+              />
+            </FieldBlock>
+            <FieldBlock isSSO={isSSO}>
+              <PasswordInputField
+                autoFocus={hasEmail}
+                {...fields.password}
+                onChange={onChange}
+                onBlur={this.handleBlur}
+              />
+            </FieldBlock>
+          </FieldGroup>
+          <Button size='medium' disabled={false} waiting={submitting}>
+            {isSignin ? SIGNIN_LABEL : CREATE_ACCOUNT_BUTTON_LABEL}
+          </Button>
+        </Form>
+        <UseSSO onClick={this.toggleSSO}>{`Sign ${isSignin ? 'in' : 'up'} ${isSSO ? 'without' : 'with'} SSO`}</UseSSO>
+      </>
     )
   }
 }
