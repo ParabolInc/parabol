@@ -6,6 +6,7 @@ import {RequestHandler} from 'express'
 import sendToSentry from './sendToSentry'
 import base64url from 'base64url'
 import {SSORelayState} from '../graphql/queries/SAMLIdP'
+import getSSODomainFromEmail from 'parabol-client/utils/getSSODomainFromEmail'
 
 const serviceProvider = samlify.ServiceProvider({})
 const query = `
@@ -63,6 +64,12 @@ const consumeSAML = (intranetGraphQLHandler): RequestHandler => async (req, res)
   const {extract} = loginResponse
   const {attributes, nameID: name} = extract
   const {email} = attributes
+  const ssoDomain = getSSODomainFromEmail(email)
+  if (ssoDomain !== domain) {
+    // don't blindly trust the IdP
+    const error = `Email domain must be ${domain}`
+    res.redirect(`/saml-redirect?error=${error}`)
+  }
   const internalReq = {body: {query, variables: {email, isInvited, name}}}
   const payload = await intranetGraphQLHandler(internalReq, res)
   const {data} = payload
