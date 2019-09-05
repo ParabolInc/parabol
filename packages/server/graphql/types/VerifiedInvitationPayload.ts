@@ -25,6 +25,10 @@ const VerifiedInvitationPayload = new GraphQLObjectType({
       type: GraphQLBoolean,
       description: 'true if the mx record is hosted by google, else falsy'
     },
+    ssoURL: {
+      type: GraphQLString,
+      description: 'a string to redirect to the sso IdP, else null'
+    },
     teamInvitation: {
       type: TeamInvitation,
       description: 'The valid invitation, if any'

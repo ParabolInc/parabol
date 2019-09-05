@@ -1,4 +1,4 @@
-import {GraphQLList, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import User from './types/User'
 import {getUserId} from '../utils/authorization'
 import verifiedInvitation from './queries/verifiedInvitation'
@@ -6,6 +6,7 @@ import rateLimit from './rateLimit'
 import getRethink from '../database/rethinkDriver'
 import massInvitation from './queries/massInvitation'
 import {GQLContext} from './graphql'
+import SAMLIdP from './queries/SAMLIdP'
 
 export default new GraphQLObjectType<any, GQLContext>({
   name: 'Query',
@@ -32,6 +33,7 @@ export default new GraphQLObjectType<any, GQLContext>({
         const users = await r.table('User').getAll(email, {index: 'email'})
         return users.map((user) => user.identities[0].provider)
       })
-    }
+    },
+    SAMLIdP
   })
 })

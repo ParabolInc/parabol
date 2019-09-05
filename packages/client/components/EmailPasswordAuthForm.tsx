@@ -4,9 +4,7 @@ import {RouteComponentProps, withRouter} from 'react-router'
 import ErrorAlert from './ErrorAlert/ErrorAlert'
 import PrimaryButton from './PrimaryButton'
 import RaisedButton from './RaisedButton'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import {CREATE_ACCOUNT_BUTTON_LABEL, SIGNIN_LABEL} from '../utils/constants'
 import getAuthProviders from '../utils/getAuthProviders'
 import {emailRegex} from '../validation/regex'
@@ -16,6 +14,12 @@ import Legitity from '../validation/Legitity'
 import EmailInputField from './EmailInputField'
 import PasswordInputField from './PasswordInputField'
 import Auth0ClientManager from '../utils/Auth0ClientManager'
+import getSAMLIdP from '../utils/getSAMLIdP'
+import getValidRedirectParam from '../utils/getValidRedirectParam'
+import {LocalStorageKey} from '../types/constEnums'
+import StyledTip from './StyledTip'
+import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
+import getTokenFromSSO from '../utils/getTokenFromSSO'
 
 interface Props
   extends WithAtmosphereProps,
@@ -26,6 +30,7 @@ interface Props
   // is the primary login action (not secondary to Google Oauth)
   isPrimary?: boolean
   isSignin?: boolean
+  isSSO: boolean
   existingAccount?: boolean
   fieldsRef?: Ref<any>
 }
@@ -44,9 +49,14 @@ const Form = styled('form')({
   width: '100%'
 })
 
+const HelpMessage = styled(StyledTip)({
+  paddingTop: 8,
+  fontSize: 14
+})
+
 // exporting as a Base is a good indicator that a parent component is using this as a ref
 export class EmailPasswordAuthFormBase extends Component<Props> {
-  componentDidUpdate (prevProps: Props) {
+  componentDidUpdate(prevProps: Props) {
     const {location, onError} = this.props
     if (prevProps.location !== location && prevProps.error) {
       onError()
@@ -94,14 +104,43 @@ export class EmailPasswordAuthFormBase extends Component<Props> {
     this.tryLogin(email, password).catch()
   }
 
+  loginWithSSO = async (email) => {
+    const {atmosphere, submitMutation, onError, history, onCompleted} = this.props
+    submitMutation()
+    const invitationToken = localStorage.getItem(LocalStorageKey.INVITATION_TOKEN)
+    const isInvited = !!invitationToken
+    const url = await getSAMLIdP(atmosphere, {email, isInvited})
+    if (!url) {
+      onError('Email not found')
+      return
+    }
+    const token = await getTokenFromSSO(url)
+    if (!token) {
+      onError('Error logging in! Did you close the popup window?')
+      return
+    }
+    if (invitationToken) {
+      AcceptTeamInvitationMutation(atmosphere, {invitationToken}, {history, onCompleted, onError})
+    } else {
+      atmosphere.setAuthToken(token)
+      const nextUrl = getValidRedirectParam() || '/me'
+      history.push(nextUrl)
+    }
+  }
+
   onSubmit = async (e: React.FormEvent) => {
-    const {isSignin, submitMutation, submitting, validateField, setDirtyField} = this.props
+    const {isSignin, submitMutation, submitting, validateField, setDirtyField, isSSO} = this.props
     e.preventDefault()
     if (submitting) return
     setDirtyField()
     const {email: emailRes, password: passwordRes} = validateField()
-    if (emailRes.error || passwordRes.error) return
+    if (emailRes.error) return
     const email = emailRes.value as string
+    if (isSSO) {
+      await this.loginWithSSO(email)
+      return
+    }
+    if (passwordRes.error) return
     const password = passwordRes.value as string
     submitMutation()
     if (isSignin) {
@@ -111,8 +150,8 @@ export class EmailPasswordAuthFormBase extends Component<Props> {
     }
   }
 
-  render () {
-    const {error, fields, isPrimary, isSignin, submitting, onChange, existingAccount} = this.props
+  render() {
+    const {error, fields, isPrimary, isSignin, isSSO, submitting, onChange, existingAccount} = this.props
     const Button = isPrimary ? PrimaryButton : RaisedButton
     const hasEmail = !!fields.email.value
     return (
@@ -121,6 +160,7 @@ export class EmailPasswordAuthFormBase extends Component<Props> {
         {!error && existingAccount && (
           <ErrorAlert message='Your account was created without Google. Sign in below' />
         )}
+        {isSSO && submitting && <HelpMessage>Continue through the login popup</HelpMessage>}
         <FieldGroup>
           <FieldBlock>
             <EmailInputField
@@ -130,14 +170,14 @@ export class EmailPasswordAuthFormBase extends Component<Props> {
               onBlur={this.handleBlur}
             />
           </FieldBlock>
-          <FieldBlock>
+          {!isSSO && <FieldBlock>
             <PasswordInputField
               autoFocus={hasEmail}
               {...fields.password}
               onChange={onChange}
               onBlur={this.handleBlur}
             />
-          </FieldBlock>
+          </FieldBlock>}
         </FieldGroup>
         <Button size='medium' disabled={false} waiting={submitting}>
           {isSignin ? SIGNIN_LABEL : CREATE_ACCOUNT_BUTTON_LABEL}

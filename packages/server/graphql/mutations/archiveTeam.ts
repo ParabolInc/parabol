@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import ArchiveTeamPayload from '../types/ArchiveTeamPayload'
-import {auth0ManagementClient} from '../../utils/auth0Helpers'
+import {updateAuth0TMS} from '../../utils/auth0Helpers'
 import {getUserId, isTeamLead} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
@@ -109,7 +109,7 @@ export default {
 
     users.forEach((user) => {
       const {id, tms} = user
-      auth0ManagementClient.users.updateAppMetadata({id}, {tms})
+      updateAuth0TMS(id, tms)
       publish(SubscriptionChannel.NOTIFICATION, id, AuthTokenPayload, {tms})
     })
 

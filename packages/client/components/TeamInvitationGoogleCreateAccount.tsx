@@ -98,8 +98,10 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
     })
   }
 
-  render () {
-    const {error, submitting, verifiedInvitation} = this.props
+  render() {
+    const {error, match, submitting, verifiedInvitation} = this.props
+    const {params} = match
+    const {token: invitationToken} = params
     const {isEmailFallback} = this.state
     const {meetingType, teamInvitation, teamName} = verifiedInvitation
     if (!teamInvitation) return null
@@ -133,7 +135,7 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
             ) : (
               <UseEmailFallback onClick={this.useEmail}>Sign up without Google</UseEmailFallback>
             )}
-            {isEmailFallback && <EmailPasswordAuthForm email={email} />}
+            {isEmailFallback && <EmailPasswordAuthForm email={email} invitationToken={invitationToken} />}
           </InvitationCenteredCopy>
           <AuthPrivacyFooter />
         </StyledContent>

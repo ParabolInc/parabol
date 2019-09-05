@@ -131,6 +131,7 @@
     "wrkbx": "^4.3.1-1"
   },
   "dependencies": {
+    "@authenio/samlify-validate-with-xmllint": "^1.0.1",
     "@clusterws/cws": "^0.15.0",
     "@google-cloud/language": "^3.2.3",
     "@mattkrick/sanitize-svg": "^0.2.1",
@@ -140,6 +141,7 @@
     "analytics-node": "^3.0.0",
     "auth0": "^2.7.0",
     "aws-sdk": "^2.99.0",
+    "base64url": "^3.0.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "cheerio": "^0.22.0",
@@ -170,6 +172,7 @@
     "node-fetch": "^2.6.0",
     "parabol-client": "^4.2.0",
     "rethinkdbdash": "^2.3.31",
+    "samlify": "^2.6.1",
     "secure-compare": "^3.0.1",
     "serve-favicon": "^2.4.3",
     "shortid": "^2.2.8",

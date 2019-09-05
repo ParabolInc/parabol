@@ -26,7 +26,10 @@ const AuthProvider = lazy(() =>
   import(/* webpackChunkName: 'AuthProvider' */ '../AuthProvider')
 )
 const OauthRedirect = lazy(() =>
-  import(/* webpackChunkName: 'GoogleOAuthProvider' */ '../OAuthRedirect')
+  import(/* webpackChunkName: 'OauthRedirect' */ '../OAuthRedirect')
+)
+const SAMLRedirect = lazy(() =>
+  import(/* webpackChunkName: 'SAMLRedirect' */ '../SAMLRedirect')
 )
 const TeamInvitation = lazy(() =>
   import(/* webpackChunkName: 'TeamInvitationRoot' */ '../TeamInvitationRoot')
@@ -56,6 +59,7 @@ const Action = memo(() => {
           />
           <Route exact path={`/auth/:provider`} component={AuthProvider} />
           <Route exact path={`/oauth-redirect`} component={OauthRedirect} />
+          <Route path={`/saml-redirect/:token?`} component={SAMLRedirect}/>
           <Route
             path='/retrospective-demo/:localPhaseSlug?/:stageIdxSlug?'
             component={DemoMeeting}

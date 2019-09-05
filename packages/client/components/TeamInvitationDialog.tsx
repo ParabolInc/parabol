@@ -13,6 +13,8 @@ import TeamInvitationErrorNotFound from './TeamInvitationErrorNotFound'
 import TeamInvitationGoogleCreateAccount from './TeamInvitationGoogleCreateAccount'
 import TeamInvitationGoogleSignin from './TeamInvitationGoogleSignin'
 import {TeamInvitationDialog_verifiedInvitation} from '../__generated__/TeamInvitationDialog_verifiedInvitation.graphql'
+import {LocalStorageKey} from '../types/constEnums'
+import TeamInvitationSSO from './TeamInvitationSSO'
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{token: string}> {
   verifiedInvitation: TeamInvitationDialog_verifiedInvitation
@@ -25,7 +27,7 @@ class TeamInvitationDialog extends Component<Props> {
         params: {token}
       }
     } = this.props
-    window.localStorage.setItem('invitationToken', token)
+    window.localStorage.setItem(LocalStorageKey.INVITATION_TOKEN, token)
   }
 
   render () {
@@ -36,7 +38,7 @@ class TeamInvitationDialog extends Component<Props> {
       // rate limit reached
       return <TeamInvitationErrorNotFound />
     }
-    const {errorType, isGoogle, user, teamInvitation} = verifiedInvitation
+    const {errorType, isGoogle, user, ssoURL, teamInvitation} = verifiedInvitation
     switch (errorType) {
       case 'notFound':
         return <TeamInvitationErrorNotFound />
@@ -49,6 +51,9 @@ class TeamInvitationDialog extends Component<Props> {
     const {teamId} = teamInvitation!
     if (authToken) {
       return <TeamInvitationAccept invitationToken={token} teamId={teamId} />
+    }
+    if (ssoURL) {
+      return <TeamInvitationSSO ssoURL={ssoURL}/>
     }
     if (user) {
       return isGoogle ? (
@@ -79,6 +84,7 @@ export default createFragmentContainer(withAtmosphere(withRouter(TeamInvitationD
       }
       errorType
       isGoogle
+      ssoURL
       user {
         preferredName
       }

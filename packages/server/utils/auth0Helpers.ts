@@ -1,11 +1,12 @@
 import {ManagementClient} from 'auth0'
 import getDotenv from '../../server/utils/dotenv'
+import isAuth0User from './isAuth0User'
 
 // Import .env and expand variables:
 getDotenv()
 
 export const clientId = process.env.AUTH0_CLIENT_ID
-export const clientSecret = process.env.AUTH0_CLIENT_SECRET
+export const clientSecret = process.env.AUTH0_CLIENT_SECRET!
 export const domain = process.env.AUTH0_DOMAIN
 export const managementClientId = process.env.AUTH0_MANAGEMENT_CLIENT_ID
 export const managementClientSecret = process.env.AUTH0_MANAGEMENT_CLIENT_SECRET
@@ -16,3 +17,9 @@ export const auth0ManagementClient = new ManagementClient({
   clientSecret: managementClientSecret,
   domain: managementDomain
 })
+
+export const updateAuth0TMS = (userId: string, tms: string[]) => {
+  if (isAuth0User(userId)) {
+    auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
+  }
+}
