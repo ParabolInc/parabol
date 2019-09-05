@@ -8,6 +8,21 @@ import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
 import {PRO} from '../../../utils/constants'
 import lazyPreload from '../../../utils/lazyPreload'
+import styled from '@emotion/styled'
+
+const MenuToggleInner = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  flexWrap: 'wrap',
+  minWidth: 0
+})
+
+const MenuToggleLabel = styled('div')({
+  flex: 1,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap'
+})
 
 interface Props {
   disabled: boolean
@@ -59,10 +74,10 @@ const NewTeamOrgPicker = (props: Props) => {
         ref={originRef}
         disabled={disabled || defaultText === NO_ORGS}
         defaultText={
-          <>
-            <span>{defaultText}</span>
+          <MenuToggleInner>
+            <MenuToggleLabel>{defaultText}</MenuToggleLabel>
             {org && org.tier === PRO && <TagPro />}
-          </>
+          </MenuToggleInner>
         }
       />
       {menuPortal(
