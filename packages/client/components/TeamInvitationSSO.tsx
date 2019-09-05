@@ -26,9 +26,9 @@ const TeamInvitationSSO = (props: Props) => {
     const loginWithSAML = async () => {
       const invitationToken = localStorage.getItem(LocalStorageKey.INVITATION_TOKEN)!
       submitMutation()
-      const token = await getTokenFromSSO(ssoURL)
+      const {token, error} = await getTokenFromSSO(ssoURL)
       if (!token) {
-        onError(new Error('Error logging in! Did you close the popup window?'))
+        onError(new Error(error || 'Error logging in'))
         return
       }
       atmosphere.setAuthToken(token)

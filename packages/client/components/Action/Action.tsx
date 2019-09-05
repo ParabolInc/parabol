@@ -59,7 +59,7 @@ const Action = memo(() => {
           />
           <Route exact path={`/auth/:provider`} component={AuthProvider} />
           <Route exact path={`/oauth-redirect`} component={OauthRedirect} />
-          <Route path={`/saml-redirect/:token?`} component={SAMLRedirect}/>
+          <Route path={`/saml-redirect`} component={SAMLRedirect}/>
           <Route
             path='/retrospective-demo/:localPhaseSlug?/:stageIdxSlug?'
             component={DemoMeeting}

@@ -16,6 +16,29 @@ mutation LoginSSO($email: ID!, $isInvited: Boolean, $name: String!) {
 }
 `
 samlify.setSchemaValidator(validator)
+
+const getRelayState = (req: any) => {
+  const {RelayState} = req.body
+  let relayState = {} as SSORelayState
+  try {
+    relayState = JSON.parse(base64url.decode(RelayState))
+  } catch (e) {
+    // ignore
+  }
+  return relayState
+}
+
+const getError = (payload: any) => {
+  const {errors} = payload
+  if (errors) {
+    sendToSentry(errors[0])
+    return errors[0].message
+  }
+  const error = 'No auth token received'
+  sendToSentry(new Error(error))
+  return error
+}
+
 const consumeSAML = (intranetGraphQLHandler): RequestHandler => async (req, res) => {
   const {params} = req
   const {domain} = params
@@ -31,16 +54,11 @@ const consumeSAML = (intranetGraphQLHandler): RequestHandler => async (req, res)
   const loginResponse = await serviceProvider.parseLoginResponse(idp, 'post', req)
     .catch((e) => {
       sendToSentry(e)
-      res.redirect('/saml-redirect')
+      const error = 'Invalid response from Identity Provider. Try again.'
+      res.redirect(`/saml-redirect?error=${error}`)
     })
   if (!loginResponse) return
-  const {RelayState} = req.body
-  let relayState = {} as SSORelayState
-  try {
-    relayState = JSON.parse(base64url.decode(RelayState))
-  } catch (e) {
-    // ignore
-  }
+  const relayState = getRelayState(req)
   const {isInvited} = relayState
   const {extract} = loginResponse
   const {attributes, nameID: name} = extract
@@ -50,15 +68,11 @@ const consumeSAML = (intranetGraphQLHandler): RequestHandler => async (req, res)
   const {data} = payload
   const authToken = data && data.loginSSO && data.loginSSO.authToken || ''
   if (!authToken) {
-    const {errors} = payload
-    if (errors) {
-      const [error] = errors
-      sendToSentry(error)
-    } else {
-      sendToSentry(new Error('No auth token received'))
-    }
+    const error = getError(payload)
+    res.redirect(`/saml-redirect?error=${error}`)
+  } else {
+    res.redirect(`/saml-redirect?token=${authToken}`)
   }
-  res.redirect(`/saml-redirect/${authToken}`)
 }
 
 export default consumeSAML

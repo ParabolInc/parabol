@@ -1,15 +1,12 @@
 import {useEffect} from 'react'
-import {RouteComponentProps} from 'react-router'
 
-interface Props extends RouteComponentProps<{token?: string}> {}
-
-const SAMLRedirect = (props: Props) => {
-  const {match} = props
-  const {params} = match
-  const {token} = params
+const SAMLRedirect = () => {
   useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    const token= params.get('token')
+    const error = params.get('error')
     if (window.opener) {
-      window.opener.postMessage({code: token}, window.location.origin)
+      window.opener.postMessage({token, error}, window.location.origin)
     }
 
   }, [])

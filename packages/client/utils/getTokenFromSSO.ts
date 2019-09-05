@@ -8,25 +8,23 @@ const getTokenFromSSO = (url: string) => {
   )
 
   let closeCheckerId
-  return new Promise<string | null>((resolve, reject) => {
+  return new Promise<{token: string | null, error: string | null}>((resolve) => {
     const handler = (event) => {
       // an extension posted to the opener
       if (typeof event.data !== 'object') return
-      const {code} = event.data
-      window.clearInterval(closeCheckerId)
-      if (event.origin !== window.location.origin || typeof code !== 'string') {
-        reject(`Bad response: ${event.data}, ${event.origin}`)
-        return
-      }
+      const {token, error} = event.data
+      if (!token && !error) return
+      if (event.origin !== window.location.origin) return
 
+      window.clearInterval(closeCheckerId)
       popup && popup.close()
       window.removeEventListener('message', handler)
-      resolve(code)
+      resolve({token, error})
     }
 
     closeCheckerId = window.setInterval(() => {
       if (popup && popup.closed) {
-        resolve(null)
+        resolve({token: null, error: 'Error logging in. Did you close the popup window?'})
         window.clearInterval(closeCheckerId)
         window.removeEventListener('message', handler)
       }

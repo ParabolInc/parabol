@@ -114,15 +114,9 @@ export class EmailPasswordAuthFormBase extends Component<Props> {
       onError('Email not found')
       return
     }
-    let token
-    try {
-      token = await getTokenFromSSO(url)
-    } catch(e) {
-      onError('Error connecting to Identity Provider. Try again later')
-      return
-    }
+    const {token, error} = await getTokenFromSSO(url)
     if (!token) {
-      onError('Error logging in! Did you close the popup window?')
+      onError(error || 'Error logging in')
       return
     }
     atmosphere.setAuthToken(token)
