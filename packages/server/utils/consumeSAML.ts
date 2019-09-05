@@ -38,8 +38,8 @@ const consumeSAML = (intranetGraphQLHandler): RequestHandler => async (req, res)
   let relayState = {} as SSORelayState
   try {
     relayState = JSON.parse(base64url.decode(RelayState))
-  } catch(e) {
-    // bad state
+  } catch (e) {
+    // ignore
   }
   const {isInvited} = relayState
   const {extract} = loginResponse
@@ -47,15 +47,18 @@ const consumeSAML = (intranetGraphQLHandler): RequestHandler => async (req, res)
   const {email} = attributes
   const internalReq = {body: {query, variables: {email, isInvited, name}}}
   const payload = await intranetGraphQLHandler(internalReq, res)
-  try {
-    const {data} = payload
-    const authToken = data && data.loginSSO && data.loginSSO.authToken || ''
-    console.log('redirect', `/saml-redirect/${authToken}`)
-    res.redirect(`/saml-redirect/${authToken}`)
-  } catch(e) {
-    console.log(e)
+  const {data} = payload
+  const authToken = data && data.loginSSO && data.loginSSO.authToken || ''
+  if (!authToken) {
+    const {errors} = payload
+    if (errors) {
+      const [error] = errors
+      sendToSentry(error)
+    } else {
+      sendToSentry(new Error('No auth token received'))
+    }
   }
-
+  res.redirect(`/saml-redirect/${authToken}`)
 }
 
 export default consumeSAML

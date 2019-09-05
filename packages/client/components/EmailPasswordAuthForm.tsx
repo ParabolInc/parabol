@@ -114,15 +114,22 @@ export class EmailPasswordAuthFormBase extends Component<Props> {
       onError('Email not found')
       return
     }
-    const token = await getTokenFromSSO(url)
+    let token
+    try {
+      token = await getTokenFromSSO(url)
+    } catch(e) {
+      onError('Error connecting to Identity Provider. Try again later')
+      return
+    }
     if (!token) {
       onError('Error logging in! Did you close the popup window?')
       return
     }
+    atmosphere.setAuthToken(token)
     if (invitationToken) {
+      localStorage.removeItem(LocalStorageKey.INVITATION_TOKEN)
       AcceptTeamInvitationMutation(atmosphere, {invitationToken}, {history, onCompleted, onError})
     } else {
-      atmosphere.setAuthToken(token)
       const nextUrl = getValidRedirectParam() || '/me'
       history.push(nextUrl)
     }

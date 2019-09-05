@@ -18,7 +18,8 @@ const getSAMLURLFromEmail = async (email: string, isInvited?: boolean | null) =>
   if (relayState) {
     params.RelayState = relayState
   }
-  const suffix = stringify(params as any)
+  const suffixStr = stringify(params as any)
+  const suffix = suffixStr ? `?${suffixStr}` : ''
   return `${baseURL}${suffix}`
 }
 

@@ -42,7 +42,6 @@ const loginSSO = {
       .default(null)
     if (user) {
       sendSegmentIdentify(user.id).catch()
-      console.log('existing user login', user.id)
       return {
         authToken: encodeAuthToken(new AuthToken({sub: user.id, tms: user.tms}))
       }
@@ -56,7 +55,6 @@ const loginSSO = {
       emailVerified: true,
       lastLogin: now,
     })
-    console.log('new user', userId)
     const joinEvent = new TimelineEventJoinedParabol({userId})
     await r({
       user: r.table('User').insert(newUser),

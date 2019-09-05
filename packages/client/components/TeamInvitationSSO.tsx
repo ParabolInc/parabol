@@ -31,6 +31,7 @@ const TeamInvitationSSO = (props: Props) => {
         onError(new Error('Error logging in! Did you close the popup window?'))
         return
       }
+      atmosphere.setAuthToken(token)
       AcceptTeamInvitationMutation(atmosphere, {invitationToken}, {history, onCompleted, onError})
     }
     loginWithSAML().catch()
