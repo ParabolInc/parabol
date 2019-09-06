@@ -5,10 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## 4.3.1 2019-Sep-06
+## 4.3.2 2019-Sep-06
 
 ### Fixed
 * Service worker no longer caches HTML documents, fixes SAML login
+* Cypress credentials
 
 ## 4.3.0 2019-Sep-05
 
