@@ -2,26 +2,12 @@
 # yarn lockfile v1
 
 
-"@authenio/samlify-node-xmllint@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@authenio/samlify-node-xmllint/-/samlify-node-xmllint-1.0.1.tgz#325659eed8b561fcdc2a15e187b8f052fbb7c172"
-  integrity sha512-ULJAd1i8H4FKP7vzi3yNVNapcb+FqsHTkwja8eTQek64dtU3QwFG4AXZNYG9qIaSPLn7GqjLU2ASqCubFMEqng==
-  dependencies:
-    node-xmllint "^1.0.0"
-
 "@authenio/samlify-validate-with-xmllint@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@authenio/samlify-validate-with-xmllint/-/samlify-validate-with-xmllint-1.0.1.tgz#9fdf4e44e657e6863e32acc33bdeaff59276459a"
   integrity sha512-KoqDNsRrMKZlZifV5eYfOCw2lHHesecaQRp3eY7ImCXTlfFxtXY+zyEo+nnTLoDApRuBd54REbbaBDXDKpkfvw==
   dependencies:
     validate-with-xmllint "^1.0.2"
-
-"@authenio/samlify-xsd-schema-validator@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@authenio/samlify-xsd-schema-validator/-/samlify-xsd-schema-validator-1.0.2.tgz#ba150e1e04cce71093941c715a873f4d0b76e606"
-  integrity sha512-OkkXurt5UvjLk4ahYRT3gRm7cpL0xODfyFLdT1i2e1pdc2nmnSqikwhOhlnn9612shOMtRE1hp9aIXi5r9VbWQ==
-  dependencies:
-    "@authenio/xsd-schema-validator" "^0.7.1"
 
 "@authenio/xml-encryption@^0.11.3":
   version "0.11.3"
@@ -33,11 +19,6 @@
     node-forge "^0.7.4"
     xmldom "~0.1.15"
     xpath "0.0.27"
-
-"@authenio/xsd-schema-validator@^0.7.1":
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/@authenio/xsd-schema-validator/-/xsd-schema-validator-0.7.1.tgz#3264c1b781d5192fe46cb5207d6ce51a706eed07"
-  integrity sha512-LfxalSt34Z6V2MKBRExfDBXHwLO3PycKaI0+k4nM1ei5rLJZHqU3C/vYm+LaA1nba6cu+cVXQY8zez3R0ZKl+w==
 
 "@babel/code-frame@7.0.0":
   version "7.0.0"
@@ -12724,11 +12705,6 @@ node-rsa@^1.0.5:
   integrity sha512-9o51yfV167CtQANnuAf+5owNs7aIMsAKVLhNaKuRxihsUUnfoBMN5OTVOK/2mHSOWaWq9zZBiRM3bHORbTZqrg==
   dependencies:
     asn1 "^0.2.4"
-
-node-xmllint@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/node-xmllint/-/node-xmllint-1.0.0.tgz#f680457eb0166a3d06996f1242d34d47000fe55b"
-  integrity sha1-9oBFfrAWaj0GmW8SQtNNRwAP5Vs=
 
 nodemailer-fetch@1.6.0:
   version "1.6.0"
