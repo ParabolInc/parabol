@@ -1,5 +1,5 @@
 import getRethink from '../../../database/rethinkDriver'
-import {auth0ManagementClient} from '../../../utils/auth0Helpers'
+import {updateAuth0TMS} from '../../../utils/auth0Helpers'
 import {
   ACTION,
   AGENDA_ITEMS,
@@ -8,11 +8,10 @@ import {
   FIRST_CALL,
   GROUP,
   LAST_CALL,
-  LOBBY,
-  RETROSPECTIVE,
-  RETROSPECTIVE_TOTAL_VOTES_DEFAULT,
-  RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT,
   REFLECT,
+  RETROSPECTIVE,
+  RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT,
+  RETROSPECTIVE_TOTAL_VOTES_DEFAULT,
   UPDATES,
   VOTE
 } from '../../../../client/utils/constants'
@@ -25,7 +24,7 @@ import addTeamIdToTMS from '../../../safeMutations/addTeamIdToTMS'
 import {CREATED_TEAM} from '../../types/TimelineEventTypeEnum'
 
 // used for addorg, addTeam
-export default async function createTeamAndLeader (userId, newTeam) {
+export default async function createTeamAndLeader(userId, newTeam) {
   const r = getRethink()
   const now = new Date()
   const {id: teamId, orgId} = newTeam
@@ -33,16 +32,11 @@ export default async function createTeamAndLeader (userId, newTeam) {
   const {tier} = organization
   const verifiedTeam = {
     ...newTeam,
-    activeFacilitator: null,
     createdAt: now,
     createdBy: userId,
-    facilitatorPhase: LOBBY,
-    facilitatorPhaseItem: null,
     isArchived: false,
     isPaid: true,
     meetingId: null,
-    meetingPhase: LOBBY,
-    meetingPhaseItem: null,
     tier
   }
   const {phaseItems, templates} = makeRetroTemplates(teamId)
@@ -107,5 +101,5 @@ export default async function createTeamAndLeader (userId, newTeam) {
   }
 
   const tms = await r.table('User').get(userId)('tms')
-  auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
+  updateAuth0TMS(userId, tms)
 }

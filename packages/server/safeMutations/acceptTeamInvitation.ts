@@ -2,7 +2,7 @@ import adjustUserCount from '../billing/helpers/adjustUserCount'
 import getRethink from '../database/rethinkDriver'
 import addTeamMemberToNewMeeting from '../graphql/mutations/helpers/addTeamMemberToNewMeeting'
 import insertNewTeamMember from './insertNewTeamMember'
-import {auth0ManagementClient} from '../utils/auth0Helpers'
+import {updateAuth0TMS} from '../utils/auth0Helpers'
 import {ADD_USER} from '../utils/serverConstants'
 import shortid from 'shortid'
 import {TEAM_INVITATION} from '../../client/utils/constants'
@@ -109,7 +109,7 @@ const acceptTeamInvitation = async (
 
   // update auth0
   const tms = user.tms ? user.tms.concat(teamId) : [teamId]
-  auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
+  updateAuth0TMS(userId, tms)
 
   // if accepted to team, don't count it towards the global denial count
   await r

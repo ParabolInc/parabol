@@ -1,4 +1,4 @@
-import {CHECKIN, DISCUSS, GROUP, PRO, REFLECT, RETROSPECTIVE, VOTE} from '../../utils/constants'
+import {CHECKIN, DISCUSS, GROUP, REFLECT, RETROSPECTIVE, VOTE} from '../../utils/constants'
 import toTeamMemberId from '../../utils/relay/toTeamMemberId'
 import {
   IJiraRemoteProject,
@@ -10,7 +10,8 @@ import {
   ISuggestedIntegrationJira,
   ITask,
   SlackNotificationEventEnum,
-  TaskServiceEnum
+  TaskServiceEnum,
+  TierEnum
 } from '../../types/graphql'
 import getDemoAvatar from '../../utils/getDemoAvatar'
 import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
@@ -192,7 +193,7 @@ const initDemoOrg = () => {
   return {
     id: demoOrgId,
     name: 'Demo Organization',
-    tier: PRO
+    tier: TierEnum.pro
   }
 }
 
@@ -208,7 +209,7 @@ const initDemoTeam = (organization, teamMembers, newMeeting) => {
     name: demoTeamName,
     teamName: demoTeamName,
     orgId: demoOrgId,
-    tier: PRO,
+    tier: TierEnum.pro,
     teamId: demoTeamId,
     organization,
     meetingSettings: initMeetingSettings(),

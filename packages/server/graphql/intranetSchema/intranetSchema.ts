@@ -13,6 +13,7 @@ import user from './queries/user'
 import flagOverLimit from './mutations/flagOverLimit'
 import runScheduledJobs from './mutations/runScheduledJobs'
 import {GQLContext} from '../graphql'
+import loginSSO from './mutations/loginSSO'
 
 const query = new GraphQLObjectType<any, GQLContext, any>({
   name: 'Query',
@@ -33,6 +34,7 @@ const mutation = new GraphQLObjectType<any, GQLContext, any>({
     autopauseUsers,
     endOldMeetings,
     flagOverLimit,
+    loginSSO,
     runScheduledJobs,
     sendBatchNotificationEmails,
     sendUpcomingInvoiceEmails

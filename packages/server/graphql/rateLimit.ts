@@ -23,9 +23,9 @@ const rateLimit = <TSource = any, TContext = GQLContext, TArgs = any>({
   context: GQLContext,
   info: GraphQLResolveInfo
 ) => {
-  const {authToken, rateLimiter} = context
+  const {authToken, rateLimiter, ip} = context
   const {fieldName, returnType} = info
-  const userId = getUserId(authToken)
+  const userId = getUserId(authToken) || ip
   // when we scale horizontally & stop using sticky servers, periodically push to redis
   const {lastMinute, lastHour} = rateLimiter.log(userId, fieldName, !!perHour)
   if (lastMinute > perMinute || (lastHour && lastHour > perHour)) {

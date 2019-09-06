@@ -11,8 +11,10 @@ import MenuItemHR from './MenuItemHR'
 import MenuItemIcon from './MenuItemIcon'
 import MenuItemLabel from './MenuItemLabel'
 import {MenuProps} from '../hooks/useMenu'
-import {PERSONAL, PRO_LABEL, SIGNOUT_LABEL, SIGNOUT_SLUG} from '../utils/constants'
+import {SIGNOUT_LABEL, SIGNOUT_SLUG} from '../utils/constants'
 import {PALETTE} from '../styles/paletteV2'
+import {TierEnum} from '../types/graphql'
+import {TierLabel} from '../types/constEnums'
 
 const UpgradeCTA = styled('span')({
   color: PALETTE.TEXT_BLUE,
@@ -57,7 +59,7 @@ const StandardHubUserMenu = (props: Props) => {
     handleMenuClick()
   }
 
-  const ownedFreeOrgs = organizations.filter((org) => org.tier === PERSONAL)
+  const ownedFreeOrgs = organizations.filter((org) => org.tier === TierEnum.personal)
   const showUpgradeCTA = ownedFreeOrgs.length > 0
 
   const handleUpgradeClick = () => {
@@ -103,7 +105,7 @@ const StandardHubUserMenu = (props: Props) => {
               <MenuItemIcon icon={'star'} />
               <UpgradeCTA>
                 {'Upgrade to '}
-                <b>{PRO_LABEL}</b>
+                <b>{TierLabel.PRO}</b>
               </UpgradeCTA>
             </MenuItemLabel>
           }

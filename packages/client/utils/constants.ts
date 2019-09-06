@@ -130,11 +130,6 @@ export const TEAM = 'team'
 /* Relay Subscription Event Types */
 export const UPDATED = 'updated'
 
-/* Parabol Payment level */
-export const PERSONAL = 'personal'
-export const PRO = 'pro'
-export const ENTERPRISE = 'enterprise'
-
 /* Task Involvement Types */
 export const ASSIGNEE = 'ASSIGNEE'
 export const MENTIONEE = 'MENTIONEE'

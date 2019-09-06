@@ -40,9 +40,9 @@ const color = PALETTE.LINK_BLUE
 
 const ForgotPasswordLink = styled(PlainButton)({
   color,
-  fontSize: '.6875rem',
-  lineHeight: '1.5rem',
-  marginTop: '1rem',
+  fontSize: 11,
+  lineHeight: '24px',
+  marginTop: 8,
   textAlign: 'center',
   ':hover,:focus,:active': {
     color
@@ -78,7 +78,7 @@ const existingAccounts = {
 class GenericAuthentication extends Component<Props, State> {
   state: State = {
     existingAccount: null,
-    isForgot: false
+    isForgot: false,
   }
 
   componentDidMount () {
@@ -178,7 +178,9 @@ class GenericAuthentication extends Component<Props, State> {
         {isCreate ? (
           <AuthPrivacyFooter />
         ) : (
+          <>
           <ForgotPasswordLink onClick={this.onForgot}>{'Forgot your password?'}</ForgotPasswordLink>
+          </>
         )}
       </AuthenticationDialog>
     )

@@ -1,18 +1,22 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import Helmet from 'react-helmet'
 import EmptyOrgsCallOut from '../EmptyOrgsCallOut/EmptyOrgsCallOut'
 import OrganizationRow from '../OrganizationRow/OrganizationRow'
 import UserSettingsWrapper from '../UserSettingsWrapper/UserSettingsWrapper'
-import {withRouter} from 'react-router-dom'
 import LinkButton from '../../../../components/LinkButton'
 import Panel from '../../../../components/Panel/Panel'
 import graphql from 'babel-plugin-relay/macro'
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
+import {Organizations_viewer} from '__generated__/Organizations_viewer.graphql'
+import useRouter from '../../../../hooks/useRouter'
 
-const Organizations = (props) => {
-  const {history, viewer} = props
+interface Props {
+  viewer: Organizations_viewer
+}
+const Organizations = (props: Props) => {
+  const {history} = useRouter()
+  const {viewer} = props
   const {organizations} = viewer
   const gotoNewTeam = () => {
     history.push('/newteam')
@@ -41,15 +45,11 @@ const Organizations = (props) => {
   )
 }
 
-Organizations.propTypes = {
-  viewer: PropTypes.object,
-  history: PropTypes.object
-}
-
-export default createFragmentContainer(withRouter(Organizations), {
+export default createFragmentContainer(Organizations, {
   viewer: graphql`
     fragment Organizations_viewer on User {
       organizations {
+        ...OrganizationRow_organization
         id
         isBillingLeader
         orgUserCount {

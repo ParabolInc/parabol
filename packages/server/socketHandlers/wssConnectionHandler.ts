@@ -32,7 +32,8 @@ export default function connectionHandler (sharedDataLoader, rateLimiter) {
       socket,
       authToken,
       sharedDataLoader,
-      rateLimiter
+      rateLimiter,
+      req.ip
     )
     socket.send(JSON.stringify({version: APP_VERSION}))
     handleConnect(connectionContext)

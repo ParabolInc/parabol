@@ -1,10 +1,8 @@
-import {PRO} from '../../../client/utils/constants'
-
 exports.up = async (r) => {
   try {
     await r.table('Organization').update((org) => {
       return r.branch(
-        org('tier').eq(PRO),
+        org('tier').eq('pro'),
         {
           retroMeetingsOffered: 0,
           retroMeetingsRemaining: 0

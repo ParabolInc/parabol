@@ -11,7 +11,7 @@ import shortid from 'shortid'
 import {toEpochSeconds} from '../../utils/epochTime'
 import {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
 
-const changePause = (inactive) => (orgIds, userId) => {
+const changePause = (inactive) => (_orgIds, userId) => {
   const r = getRethink()
   return r({
     user: r
@@ -81,7 +81,11 @@ const typeLookup = {
   [UNPAUSE_USER]: changePause(false)
 }
 
-export default async function adjustUserCount (userId, orgInput, type, options = {}) {
+interface Options {
+  prorationDate?: Date
+}
+
+export default async function adjustUserCount (userId: string, orgInput: string | string[], type: keyof typeof typeLookup, options: Options = {}) {
   const r = getRethink()
   const now = new Date()
 
@@ -101,7 +105,7 @@ export default async function adjustUserCount (userId, orgInput, type, options =
         })
         .count()
     }))
-  const prorationDate = toEpochSeconds(type === REMOVE_USER ? options.prorationDate : now)
+  const prorationDate = toEpochSeconds(type === REMOVE_USER ? options.prorationDate! : now)
   const hooks = orgs.reduce((arr, org) => {
     const {stripeSubscriptionId} = org
     if (stripeSubscriptionId) {

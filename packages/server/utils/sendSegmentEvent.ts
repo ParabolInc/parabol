@@ -3,7 +3,6 @@ import countTiersForUserId from '../graphql/queries/helpers/countTiersForUserId'
 import segmentIo from './segmentIo'
 import {ISegmentEventTrackOptions, TierEnum} from '../../client/types/graphql'
 import resolvePromiseObj from '../../client/utils/resolvePromiseObj'
-import {ENTERPRISE, PERSONAL, PRO} from '../../client/utils/constants'
 
 const PERSONAL_TIER_MAX_TEAMS = 2
 
@@ -64,9 +63,9 @@ const getHubspotTraits = (userIds: string[]) => {
       })
       .do((tiers) => {
         return r.branch(
-          tiers.contains(ENTERPRISE),
-          ENTERPRISE,
-          r.branch(tiers.contains(PRO), PRO, PERSONAL)
+          tiers.contains(TierEnum.enterprise),
+          TierEnum.enterprise,
+          r.branch(tiers.contains(TierEnum.pro), TierEnum.pro, TierEnum.personal)
         )
       })
   })) as Promise<HubspotTraits[]>

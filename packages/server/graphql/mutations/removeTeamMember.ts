@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import removeTeamMember from './helpers/removeTeamMember'
 import RemoveTeamMemberPayload from '../types/RemoveTeamMemberPayload'
-import {auth0ManagementClient} from '../../utils/auth0Helpers'
+import {updateAuth0TMS} from '../../utils/auth0Helpers'
 import {getUserId, isTeamLead} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import fromTeamMemberId from '../../../client/utils/relay/fromTeamMemberId'
@@ -40,8 +40,7 @@ export default {
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const {tms} = user
     publish(SubscriptionChannel.NOTIFICATION, userId, AuthTokenPayload, {tms})
-    auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
-
+    updateAuth0TMS(userId, tms)
     const taskIds = [...archivedTaskIds, ...reassignedTaskIds]
     const data = {
       teamId,
