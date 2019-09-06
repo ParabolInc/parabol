@@ -1,7 +1,7 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
-import stripe from '../../billing/stripe'
 import getRethink from '../../database/rethinkDriver'
 import {InvoiceStatusEnum} from 'parabol-client/types/graphql'
+import StripeManager from '../../utils/StripeManager'
 
 export default {
   name: 'StripeSucceedPayment',
@@ -23,11 +23,14 @@ export default {
     }
 
     // VALIDATION
-    const {customer: customerId} = await stripe.invoices.retrieve(invoiceId)
+    const manager = new StripeManager()
+    const invoice = await manager.retrieveInvoice(invoiceId)
+    const customerId = invoice.customer as string
+
     const {
       livemode,
       metadata: {orgId}
-    } = await stripe.customers.retrieve(customerId)
+    } = await manager.retrieveCustomer(customerId)
     const org = await r.table('Organization').get(orgId)
     if (!org) {
       if (livemode) {
