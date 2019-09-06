@@ -17,13 +17,14 @@ export default async function wsGraphQLHandler (
   payload: Payload
 ) {
   const {query, variables} = payload
-  const {id: socketId, authToken, sharedDataLoader, rateLimiter} = connectionContext
+  const {id: socketId, authToken, sharedDataLoader, rateLimiter, ip} = connectionContext
   const dataLoader = sharedDataLoader.add(new RethinkDataLoader(authToken))
   const context = {
     authToken,
     socketId,
     dataLoader,
-    rateLimiter
+    rateLimiter,
+    ip
   }
   const result = await rateLimitedGraphQL(Schema, query, {}, context, variables)
   dataLoader.dispose()

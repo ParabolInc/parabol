@@ -14,7 +14,7 @@ export default (sharedDataLoader, rateLimiter, sseClients) => async (
   const authToken = (req as any).user || {}
   const connectionContext = connectionId
     ? sseClients[connectionId as string]
-    : {sharedDataLoader, rateLimiter, authToken}
+    : {sharedDataLoader, rateLimiter, authToken, ip: req.ip}
   if (!connectionContext) {
     const viewerId = getUserId(authToken)
     if (!SSE_PROBLEM_USERS.includes(viewerId)) {

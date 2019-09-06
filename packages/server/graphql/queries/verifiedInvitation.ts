@@ -32,7 +32,7 @@ export default {
       description: 'The invitation token'
     }
   },
-  resolve: rateLimit({perMinute: 10, perHour: 100})(async (_source, {token}) => {
+  resolve: rateLimit({perMinute: 60, perHour: 1800})(async (_source, {token}) => {
     const r = getRethink()
     const now = new Date()
     const teamInvitation = await r

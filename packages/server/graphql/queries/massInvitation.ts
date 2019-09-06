@@ -13,7 +13,7 @@ export default {
       description: 'The mass invitation token'
     }
   },
-  resolve: rateLimit({perMinute: 10, perHour: 100})(
+  resolve: rateLimit({perMinute: 60, perHour: 1800})(
     async (_source, {token}, {dataLoader}: GQLContext) => {
       const tokenRes = verifyMassInviteToken(token)
       if ('error' in tokenRes && tokenRes.error === 'notFound') {
