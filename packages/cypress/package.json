@@ -16,7 +16,7 @@
   "scripts": {
     "start": "yarn workspace parabol-server start",
     "test": "start-server-and-test start http://localhost:3000 cy:run",
-    "cy:run": "cypress run"
+    "cy:run": "cypress run --record --key $CYPRESS_SECRET"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
