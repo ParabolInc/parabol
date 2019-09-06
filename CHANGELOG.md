@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.3.0 2019-Sep-05
+
+### Added
+* SAML support
+
+### Fixed
+* UI touchups (Pro tag, timeline padding)
+
 ## v4.2.0 2019-Aug-28
 
 ### Added

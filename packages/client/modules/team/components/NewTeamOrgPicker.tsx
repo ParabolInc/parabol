@@ -6,8 +6,24 @@ import DropdownMenuToggle from '../../../components/DropdownMenuToggle'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
 import lazyPreload from '../../../utils/lazyPreload'
+import styled from '@emotion/styled'
 import {TierEnum} from '../../../types/graphql'
 import TierTag from '../../../components/Tag/TierTag'
+
+const MenuToggleInner = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  flexWrap: 'wrap',
+  minWidth: 0
+})
+
+const MenuToggleLabel = styled('div')({
+  flex: 1,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap'
+})
+
 
 interface Props {
   disabled: boolean
@@ -59,10 +75,10 @@ const NewTeamOrgPicker = (props: Props) => {
         ref={originRef}
         disabled={disabled || defaultText === NO_ORGS}
         defaultText={
-          <>
-            <span>{defaultText}</span>
+          <MenuToggleInner>
+            <MenuToggleLabel>{defaultText}</MenuToggleLabel>
             {org && org.tier !== TierEnum.personal && <TierTag tier={org.tier as TierEnum} />}
-          </>
+          </MenuToggleInner>
         }
       />
       {menuPortal(
