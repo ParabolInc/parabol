@@ -26,17 +26,19 @@ class ConnectionContext {
   authToken: AuthToken
   availableResubs: any[] = []
   cancelKeepAlive: NodeJS.Timeout | null = null
+  ip: string
   id = shortid.generate()
   isAlive = true
   rateLimiter: RateLimiter
   socket: UserWebSocket
   sharedDataLoader: DataLoaderWarehouse
   subs: Subs = {}
-  constructor (socket, authToken, sharedDataLoader, rateLimiter) {
+  constructor (socket, authToken, sharedDataLoader, rateLimiter, ip) {
     this.authToken = authToken
     this.rateLimiter = rateLimiter
     this.socket = socket
     this.sharedDataLoader = sharedDataLoader
+    this.ip = ip
   }
 }
 

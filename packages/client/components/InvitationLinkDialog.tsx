@@ -11,6 +11,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useRouter from '../hooks/useRouter'
 import InvitationLinkErrorExpired from './InvitationLinkErrorExpired'
 import InvitationLinkAuthentication from './InvitationLinkAuthentication'
+import {LocalStorageKey} from '../types/constEnums'
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{token: string}> {
   massInvitation: InvitationLinkDialog_massInvitation
@@ -22,7 +23,7 @@ const InvitationLinkDialog = (props: Props) => {
   const {params} = match
   const {token} = params
   useEffect(() => {
-    window.localStorage.setItem('invitationToken', token)
+    window.localStorage.setItem(LocalStorageKey.INVITATION_TOKEN, token)
   }, [token])
   const {massInvitation} = props
   if (!massInvitation) {

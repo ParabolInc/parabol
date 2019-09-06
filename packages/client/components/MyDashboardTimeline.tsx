@@ -8,6 +8,7 @@ import TimelineSuggestedAction from './TimelineSuggestedAction'
 import TimelineLoadingEvents from './TimelineLoadingEvents'
 import TimelineRightDrawer from './TimelineRightDrawer'
 import {DashTimeline} from '../types/constEnums'
+import ErrorBoundary from './ErrorBoundary'
 
 interface Props {
   viewer: MyDashboardTimeline_viewer
@@ -41,8 +42,13 @@ const MyDashboardTimeline = (props: Props) => {
       <TimelineFeed>
         <TimelineFeedItems>
           <Suspense fallback={<TimelineLoadingEvents />}>
-            <TimelineSuggestedAction viewer={viewer} />
-            <TimelineFeedList viewer={viewer} />
+            <ErrorBoundary>
+              <TimelineSuggestedAction viewer={viewer} />
+            </ErrorBoundary>
+            <ErrorBoundary>
+              <TimelineFeedList viewer={viewer} />
+            </ErrorBoundary>
+
           </Suspense>
         </TimelineFeedItems>
       </TimelineFeed>

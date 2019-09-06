@@ -6,6 +6,7 @@ getDotenv()
 
 export default class StripeManager {
   static PARABOL_PRO_600 = 'parabol-pro-600' // $6/seat/mo
+  static PARABOL_ENTERPRISE_2019Q3 = 'plan_Fifb1fmjyFfTm8'
   stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
   async createCustomer (orgId: string, source: string) {

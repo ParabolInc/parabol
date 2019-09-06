@@ -11,7 +11,6 @@ import {getUserId} from '../../utils/authorization'
 import {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
 import ensureDate from '../../../client/utils/ensureDate'
 import shortid from 'shortid'
-import {JOINED_PARABOL} from '../types/TimelineEventTypeEnum'
 import segmentIo from '../../utils/segmentIo'
 import sleep from '../../../client/utils/sleep'
 import createNewOrg from './helpers/createNewOrg'
@@ -20,6 +19,10 @@ import addSeedTasks from './helpers/addSeedTasks'
 import standardError from '../../utils/standardError'
 import AuthToken from '../../database/types/AuthToken'
 import encodeAuthToken from '../../utils/encodeAuthToken'
+import SuggestedActionTryTheDemo from '../../database/types/SuggestedActionTryTheDemo'
+import SuggestedActionCreateNewTeam from '../../database/types/SuggestedActionCreateNewTeam'
+import SuggestedActionInviteYourTeam from '../../database/types/SuggestedActionInviteYourTeam'
+import TimelineEventJoinedParabol from '../../database/types/TimelineEventJoinedParabol'
 
 const handleSegment = async (userId, previousId) => {
   if (previousId) {
@@ -49,14 +52,14 @@ const login = {
       description: 'optional segment id created before they were a user'
     }
   },
-  async resolve (_source, {auth0Token, isOrganic, segmentId}, {dataLoader}) {
+  async resolve(_source, {auth0Token, isOrganic, segmentId}, {dataLoader}) {
     const r = getRethink()
     const now = new Date()
 
     // VALIDATION
     let authToken
     try {
-      authToken = verify(auth0Token, Buffer.from(auth0ClientSecret, 'base64'), {
+      authToken = verify(auth0Token, Buffer.from(auth0ClientSecret!, 'base64'), {
         audience: auth0ClientId
       })
     } catch (e) {
@@ -128,16 +131,10 @@ const login = {
       tms: []
     }
 
+    const joinEvent = new TimelineEventJoinedParabol({userId: newUser.id})
     await r({
       user: r.table('User').insert(newUser),
-      event: r.table('TimelineEvent').insert({
-        id: shortid.generate(),
-        createdAt: now,
-        interactionCount: 0,
-        seenCount: 0,
-        type: JOINED_PARABOL,
-        userId: newUser.id
-      })
+      event: r.table('TimelineEvent').insert(joinEvent)
     })
 
     let returnAuthToken
@@ -155,15 +152,7 @@ const login = {
       await Promise.all([
         createTeamAndLeader(viewerId, validNewTeam),
         addSeedTasks(viewerId, teamId),
-        r.table('SuggestedAction').insert({
-          id: shortid.generate(),
-          createdAt: now,
-          priority: 2,
-          removedAt: null,
-          type: 'inviteYourTeam',
-          teamId,
-          userId: newUser.id
-        })
+        r.table('SuggestedAction').insert(new SuggestedActionInviteYourTeam({userId: newUser.id, teamId}))
       ])
       // ensure the return auth token has the correct tms, if !isOrganic, acceptTeamInvite will return its own with the proper tms
       returnAuthToken = encodeAuthToken(new AuthToken({...authToken, tms: [teamId]}))
@@ -178,22 +167,8 @@ const login = {
     } else {
       returnAuthToken = auth0Token
       await r.table('SuggestedAction').insert([
-        {
-          id: shortid.generate(),
-          createdAt: now,
-          priority: 1,
-          removedAt: null,
-          type: 'tryTheDemo',
-          userId: newUser.id
-        },
-        {
-          id: shortid.generate(),
-          createdAt: now,
-          priority: 4,
-          removedAt: null,
-          type: 'createNewTeam',
-          userId: newUser.id
-        }
+        new SuggestedActionTryTheDemo({userId: newUser.id}),
+        new SuggestedActionCreateNewTeam({userId: newUser.id})
       ])
       // create run a demo cta and create a team cta
       // it goes away after they click it

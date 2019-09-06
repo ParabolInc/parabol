@@ -1,13 +1,13 @@
 import shortid from 'shortid'
 import getRethink from '../../../database/rethinkDriver'
-import {ACTIVE} from '../../../../client/utils/constants'
 import convertToTaskContent from '../../../../client/utils/draftjs/convertToTaskContent'
 import getTagsFromEntityMap from '../../../../client/utils/draftjs/getTagsFromEntityMap'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
+import {TaskStatusEnum} from 'parabol-client/types/graphql'
 
 const SEED_TASKS = [
   {
-    status: ACTIVE,
+    status: TaskStatusEnum.active,
     sortOrder: 0,
     content: convertToTaskContent(
       `This is a task card. They can be created here, in a meeting, or via an integration`

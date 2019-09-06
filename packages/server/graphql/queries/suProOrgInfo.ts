@@ -1,8 +1,8 @@
 import {GraphQLBoolean, GraphQLList, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {requireSU} from '../../utils/authorization'
-import {PRO} from '../../../client/utils/constants'
 import Organization from '../types/Organization'
+import {TierEnum} from 'parabol-client/types/graphql'
 
 export default {
   type: new GraphQLList(new GraphQLNonNull(Organization)),
@@ -13,7 +13,7 @@ export default {
       description: 'should organizations without active users be included?'
     }
   },
-  async resolve (source, {includeInactive}, {authToken}) {
+  async resolve (_source, {includeInactive}, {authToken}) {
     const r = getRethink()
 
     // AUTH
@@ -22,7 +22,7 @@ export default {
     // RESOLUTION
     return r
       .table('Organization')
-      .getAll(PRO, {index: 'tier'})
+      .getAll(TierEnum.pro, {index: 'tier'})
       .merge((organization) => ({
         users: r
           .table('OrganizationUser')

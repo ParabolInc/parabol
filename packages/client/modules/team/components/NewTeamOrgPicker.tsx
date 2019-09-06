@@ -3,12 +3,12 @@ import React, {useEffect, useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import DropdownMenuToggle from '../../../components/DropdownMenuToggle'
-import TagPro from '../../../components/Tag/TagPro'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
-import {PRO} from '../../../utils/constants'
 import lazyPreload from '../../../utils/lazyPreload'
 import styled from '@emotion/styled'
+import {TierEnum} from '../../../types/graphql'
+import TierTag from '../../../components/Tag/TierTag'
 
 const MenuToggleInner = styled('div')({
   alignItems: 'center',
@@ -24,6 +24,7 @@ const MenuToggleLabel = styled('div')({
   whiteSpace: 'nowrap'
 })
 
+
 interface Props {
   disabled: boolean
   onChange: (orgId) => void
@@ -35,22 +36,22 @@ const NO_ORGS = 'No organizations available'
 
 const NewTeamOrgDropdown = lazyPreload(() =>
   import(/* webpackChunkName: 'NewTeamOrgDropdown' */
-  '../../../components/NewTeamOrgDropdown')
+    '../../../components/NewTeamOrgDropdown')
 )
 
 const NewTeamOrgPicker = (props: Props) => {
   const {disabled, onChange, organizations, orgId} = props
   const sortedOrgs = useMemo(() => {
     const orgs = organizations.slice()
-    const tierVal = (org) => (org.tier === PRO ? -1 : 1)
+    const tierVal = (org) => (org.tier === TierEnum.enterprise ? -2 :  org.tier === TierEnum.pro ? -1 : 1)
     orgs.sort((a, b) =>
       tierVal(a) < tierVal(b)
         ? -1
         : tierVal(a) > tierVal(b)
         ? 1
         : a.name.toLowerCase() < b.name.toLowerCase()
-        ? -1
-        : 1
+          ? -1
+          : 1
     )
     return orgs
   }, [organizations])
@@ -76,7 +77,7 @@ const NewTeamOrgPicker = (props: Props) => {
         defaultText={
           <MenuToggleInner>
             <MenuToggleLabel>{defaultText}</MenuToggleLabel>
-            {org && org.tier === PRO && <TagPro />}
+            {org && org.tier !== TierEnum.personal && <TierTag tier={org.tier as TierEnum} />}
           </MenuToggleInner>
         }
       />
