@@ -1,7 +1,7 @@
 import getRethink from '../database/rethinkDriver'
 import SAML from '../database/types/SAML'
 import * as samlify from 'samlify'
-import * as validator from '@authenio/samlify-validate-with-xmllint'
+import * as validator from '@authenio/samlify-node-xmllint'
 import {RequestHandler} from 'express'
 import sendToSentry from './sendToSentry'
 import base64url from 'base64url'
