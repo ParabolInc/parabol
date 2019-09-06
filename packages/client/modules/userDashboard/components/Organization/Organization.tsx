@@ -14,10 +14,10 @@ import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
 import BillingMembersToggle from '../BillingMembersToggle/BillingMembersToggle'
 import UserSettingsWrapper from '../UserSettingsWrapper/UserSettingsWrapper'
 import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
-import {PERSONAL} from '../../../../utils/constants'
 import OrganizationDetails from './OrganizationDetails'
 import OrganizationPage from './OrganizationPage'
 import {PALETTE} from '../../../../styles/paletteV2'
+import {TierEnum} from '../../../../types/graphql'
 
 const AvatarAndName = styled('div')({
   alignItems: 'flex-start',
@@ -48,7 +48,7 @@ const AvatarBlock = styled('div')({
 const OrgNameBlock = styled('div')({
   color: PALETTE.TEXT_MAIN,
   fontSize: 24,
-  lineHeight: '36px',
+  lineHeight: '36px'
 })
 
 const ToggleNavBlock = styled('div')({
@@ -77,7 +77,7 @@ const Organization = (props: Props) => {
   if (!organization) return <div />
   const {orgId, createdAt, isBillingLeader, name: orgName, picture: orgAvatar, tier} = organization
   const pictureOrDefault = orgAvatar || defaultOrgAvatar
-  const onlyShowMembers = !isBillingLeader && tier !== PERSONAL
+  const onlyShowMembers = !isBillingLeader && tier !== TierEnum.personal
 
   return (
     <UserSettingsWrapper>
@@ -113,7 +113,7 @@ const Organization = (props: Props) => {
             ) : (
               <OrgNameBlock>{orgName}</OrgNameBlock>
             )}
-            <OrganizationDetails createdAt={createdAt} tier={tier} />
+            <OrganizationDetails createdAt={createdAt} tier={tier as TierEnum} />
           </OrgNameAndDetails>
         </AvatarAndName>
         {!onlyShowMembers && <ToggleNavBlock><BillingMembersToggle orgId={orgId} /></ToggleNavBlock>}

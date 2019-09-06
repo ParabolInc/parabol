@@ -21,12 +21,12 @@ import {DECELERATE, fadeIn} from '../../../../styles/animation'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {Breakpoint, Providers} from '../../../../types/constEnums'
-import {IAuthToken} from '../../../../types/graphql'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 import AtlassianProviderLogo from '../../../../AtlassianProviderLogo'
 import {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import AtlassianClientManager from '../../../../utils/AtlassianClientManager'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
+import AuthToken from 'parabol-server/database/types/AuthToken'
 
 const StyledButton = styled(FlatButton)({
   borderColor: PALETTE.BORDER_LIGHT,
@@ -48,7 +48,7 @@ interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentPr
 const useFreshToken = (accessToken: string | undefined, retry: () => void) => {
   useEffect(() => {
     if (!accessToken) return
-    const decodedToken = jwtDecode(accessToken) as IAuthToken | null
+    const decodedToken = jwtDecode(accessToken) as AuthToken | null
     const delay = (decodedToken && decodedToken.exp * 1000 - Date.now()) || -1
     if (delay <= 0) return
     const cancel = window.setTimeout(() => {

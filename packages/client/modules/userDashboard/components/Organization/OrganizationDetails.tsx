@@ -1,9 +1,9 @@
 import React from 'react'
 import styled from '@emotion/styled'
 import TagBlock from '../../../../components/Tag/TagBlock'
-import TagPro from '../../../../components/Tag/TagPro'
 import makeDateString from '../../../../utils/makeDateString'
 import {TierEnum} from '../../../../types/graphql'
+import TierTag from '../../../../components/Tag/TierTag'
 
 const StyledTagBlock = styled(TagBlock)({
   display: 'block'
@@ -19,7 +19,7 @@ const OrgDetails = styled('div')({
 
 interface Props {
   createdAt: string
-  tier: string | null
+  tier: TierEnum
 }
 
 const OrganizationDetails = (props: Props) => {
@@ -28,9 +28,9 @@ const OrganizationDetails = (props: Props) => {
     <OrgDetails>
       {'Created '}
       {makeDateString(createdAt)}
-      {tier === TierEnum.pro && (
+      {tier !== TierEnum.personal && (
         <StyledTagBlock>
-          <TagPro />
+          <TierTag tier={tier}/>
         </StyledTagBlock>
       )}
     </OrgDetails>

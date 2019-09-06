@@ -8,14 +8,12 @@ import {RouteComponentProps, withRouter} from 'react-router-dom'
 import Panel from '../../../../components/Panel/Panel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import Row from '../../../../components/Row/Row'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import ArchiveTeamContainer from '../../containers/ArchiveTeamContainer/ArchiveTeamContainer'
 import {PALETTE} from '../../../../styles/paletteV2'
 import ui from '../../../../styles/ui'
-import {Layout} from '../../../../types/constEnums'
-import {PERSONAL, PRO_LABEL} from '../../../../utils/constants'
+import {Layout, TierLabel} from '../../../../types/constEnums'
+import {TierEnum} from '../../../../types/graphql'
 
 const TeamSettingsLayout = styled('div')({
   display: 'flex',
@@ -44,7 +42,7 @@ interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
 }
 
 class TeamSettings extends Component<Props> {
-  render () {
+  render() {
     const {
       history,
       viewer: {team}
@@ -59,12 +57,12 @@ class TeamSettings extends Component<Props> {
       <TeamSettingsLayout>
         <Helmet title={`Team Settings | ${teamName}`} />
         <PanelsLayout>
-          {tier === PERSONAL && (
+          {tier === TierEnum.personal && (
             <Panel>
               <StyledRow>
                 <div>{'This team is currently on a personal plan.'}</div>
                 <PrimaryButton onClick={() => history.push(`/me/organizations/${orgId}`)}>
-                  {`Upgrade Team to ${PRO_LABEL}`}
+                  {`Upgrade Team to ${TierLabel.PRO}`}
                 </PrimaryButton>
               </StyledRow>
             </Panel>

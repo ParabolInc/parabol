@@ -1,8 +1,8 @@
-import {GraphQLBoolean, GraphQLInt, GraphQLString} from 'graphql'
+import {GraphQLInt, GraphQLBoolean, GraphQLString} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {requireSU} from '../../utils/authorization'
-import OrgTierEnum from '../types/OrgTierEnum'
-import {PRO} from '../../../client/utils/constants'
+import {TierEnum as ETierEnum} from 'parabol-client/types/graphql'
+import TierEnum from '../types/TierEnum'
 
 export default {
   type: GraphQLInt,
@@ -17,13 +17,18 @@ export default {
       defaultValue: false,
       description: 'should organizations without active users be included?'
     },
+    minOrgSize: {
+      type: GraphQLInt,
+      defaultValue: 2,
+      description: 'the minimum number of users within the org to count it'
+    },
     tier: {
-      type: OrgTierEnum,
-      defaultValue: PRO,
+      type: TierEnum,
+      defaultValue: ETierEnum.pro,
       description: 'which tier of org shall we count?'
     }
   },
-  async resolve (source, {ignoreEmailRegex, includeInactive, tier}, {authToken}) {
+  async resolve (_source, {ignoreEmailRegex, includeInactive, minOrgSize, tier}, {authToken}) {
     const r = getRethink()
 
     // AUTH
@@ -32,12 +37,11 @@ export default {
     // RESOLUTION
     return r
       .table('Organization')
-      .getAll(tier, {index: 'tier'})('id')
-      .coerceTo('array')
-      .do((orgIds) => {
-        return r
+      .getAll(tier, {index: 'tier'})
+      .merge((organization) => ({
+        users: r
           .table('OrganizationUser')
-          .getAll(r.args(orgIds), {index: 'orgId'})
+          .getAll(organization('id'), {index: 'orgId'})
           .filter({removedAt: null})
           .eqJoin('userId', r.table('User'))
           .zip()
@@ -52,6 +56,8 @@ export default {
           )
           .filter((user) => r.branch(includeInactive, true, user('inactive').not()))
           .count()
-      })
+      }))
+      .filter((org) => org('users').ge(minOrgSize))
+      .count()
   }
 }

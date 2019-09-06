@@ -1,15 +1,11 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
-import {PERSONAL, PRO, PRO_LABEL} from '../../../../utils/constants'
-import {withRouter} from 'react-router-dom'
 import plural from '../../../../utils/plural'
 import styled from '@emotion/styled'
 import Row from '../../../../components/Row/Row'
 import Avatar from '../../../../components/Avatar/Avatar'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoHeader from '../../../../components/Row/RowInfoHeader'
-import TagPro from '../../../../components/Tag/TagPro'
 import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
 import RowActions from '../../../../components/Row/RowActions'
 import FlatButton from '../../../../components/FlatButton'
@@ -19,16 +15,16 @@ import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
 import Icon from '../../../../components/Icon'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useTooltip from '../../../../hooks/useTooltip'
-
-// TODO: refactor this file to TS and use shared constants
-// import {PALETTE} from '../../../../styles/paletteV2'
-// import {Breakpoint} from '../../../../types/constEnums'
-
-const SIDEBAR_LEFT = 800 // TODO: Use Breakpoint.SIDEBAR_LEFT
-const PALETTE = {TEXT_LIGHT: '#82809A'}
+import TierTag from '../../../../components/Tag/TierTag'
+import {TierEnum} from '../../../../types/graphql'
+import {PALETTE} from '../../../../styles/paletteV2'
+import {Breakpoint, TierLabel} from '../../../../types/constEnums'
+import useRouter from '../../../../hooks/useRouter'
+import graphql from 'babel-plugin-relay/macro'
+import {createFragmentContainer} from 'react-relay'
+import {OrganizationRow_organization} from '__generated__/OrganizationRow_organization.graphql'
 
 const RowInner = styled('div')({
-  display: 'block',
   alignItems: 'center',
   display: 'flex',
   flex: 1,
@@ -39,7 +35,7 @@ const OrgAvatar = styled('div')({
   cursor: 'pointer',
   display: 'none',
   width: '2.75rem',
-  [`@media screen and (min-width: ${SIDEBAR_LEFT}px)`]: {
+  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
     display: 'block',
     marginRight: 16
   }
@@ -73,9 +69,9 @@ const StyledFlatButton = styled(FlatButton)({
   height: 36,
   paddingLeft: 8,
   paddingRight: 8,
-  [`@media screen and (min-width: ${SIDEBAR_LEFT}px)`]: {
+  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
     paddingLeft: 16,
-    paddingRight: 16,
+    paddingRight: 16
   }
 })
 
@@ -84,25 +80,28 @@ const StyledRowInfoCopy = styled(RowInfoCopy)({
   display: 'flex'
 })
 
-const OrganizationRow = (props) => {
+interface Props {
+  organization: OrganizationRow_organization
+}
+
+const OrganizationRow = (props: Props) => {
+  const {organization} = props
+  const {history} = useRouter()
   const {
-    history,
-    organization: {
-      id: orgId,
-      name,
-      orgUserCount: {activeUserCount, inactiveUserCount},
-      picture,
-      tier
-    }
-  } = props
+    id: orgId,
+    name,
+    orgUserCount: {activeUserCount, inactiveUserCount},
+    picture,
+    tier
+  } = organization
   const orgAvatar = picture || defaultOrgAvatar
   const onRowClick = () => history.push(`/me/organizations/${orgId}`)
   const totalUsers = activeUserCount + inactiveUserCount
-  const showUpgradeCTA = tier === PERSONAL
+  const showUpgradeCTA = tier === TierEnum.personal
   const upgradeCTALabel = (
     <span>
       {'Upgrade to '}
-      <b>{PRO_LABEL}</b>
+      <b>{TierLabel.PRO}</b>
     </span>
   )
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip(
@@ -119,9 +118,9 @@ const OrganizationRow = (props) => {
             <Name onClick={onRowClick}>
               {name}
             </Name>
-            {tier === PRO && (
+            {tier !== TierEnum.personal && (
               <StyledTagBlock>
-                <TagPro />
+                <TierTag tier={tier as TierEnum} />
               </StyledTagBlock>
             )}
           </RowInfoHeader>
@@ -145,18 +144,20 @@ const OrganizationRow = (props) => {
   )
 }
 
-OrganizationRow.propTypes = {
-  history: PropTypes.object.isRequired,
-  organization: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    picture: PropTypes.string,
-    tier: PropTypes.string.isRequired,
-    orgUserCount: PropTypes.shape({
-      activeUserCount: PropTypes.number.isRequired,
-      inactiveUserCount: PropTypes.number.isRequired
-    }).isRequired
-  }).isRequired
-}
-
-export default withRouter(OrganizationRow)
+export default createFragmentContainer(
+  OrganizationRow,
+  {
+    organization: graphql`
+      fragment OrganizationRow_organization on Organization {
+        id
+        name
+        orgUserCount {
+          activeUserCount
+          inactiveUserCount
+        }
+        picture
+        tier
+      }
+    `
+  }
+)

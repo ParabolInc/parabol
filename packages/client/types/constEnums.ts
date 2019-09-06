@@ -132,6 +132,12 @@ export const enum SubscriptionChannel {
   ORGANIZATION = 'organization',
 }
 
+export const enum TierLabel {
+  PERSONAL = 'Personal',
+  PRO = 'Pro',
+  ENTERPRISE = 'Enterprise'
+}
+
 export const enum Threshold {
   JWT_LIFESPAN = 2592000000, // 30 days
   REFRESH_JWT_AFTER = 1296000000, // 15 days
