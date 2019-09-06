@@ -12,7 +12,7 @@ const intranetHttpGraphQLHandler = (sharedDataLoader: DataLoaderWarehouse, rateL
   const {query, variables} = req.body
   const authToken = (req as any).user || {}
   const dataLoader = sharedDataLoader.add(new RethinkDataLoader(authToken))
-  const context = {authToken, dataLoader, socketId: '', rateLimiter}
+  const context = {authToken, dataLoader, socketId: '', rateLimiter, ip: ''}
   const result = await graphql(IntranetSchema, query, {}, context, variables)
   dataLoader.dispose()
   if (result.errors) {

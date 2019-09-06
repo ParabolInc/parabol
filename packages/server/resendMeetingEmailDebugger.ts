@@ -18,6 +18,7 @@ const sharedDataLoader = new DataLoaderWarehouse({
 const rateLimiter = new RateLimiter()
 
 const context = {
+  ip: 'foo',
   dataLoader: sharedDataLoader.add(new RethinkDataLoader(authToken)),
   authToken,
   socketId: '123',

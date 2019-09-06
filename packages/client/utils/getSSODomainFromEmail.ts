@@ -1,6 +1,7 @@
 const getSSODomainFromEmail = (email: string) => {
-  const match = email.match(/(?<=@)[^.]+(?=\.)/)
-  return match && match[0]
+  // cypress doesn't like lookaheads like /(?<=@)[^.]+(?=\.)/
+  const match = email.match(/@(\w+)/)
+  return match && match[1]
 }
 
 export default getSSODomainFromEmail

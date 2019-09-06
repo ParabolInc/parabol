@@ -1494,7 +1494,7 @@ export interface IOrganization {
   /**
    * The level of access to features on the parabol site
    */
-  tier: TierEnum | null;
+  tier: TierEnum;
 
   /**
    * THe datetime the current billing cycle ends
