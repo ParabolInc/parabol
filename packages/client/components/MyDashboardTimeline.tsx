@@ -41,15 +41,12 @@ const MyDashboardTimeline = (props: Props) => {
     <FeedAndDrawer>
       <TimelineFeed>
         <TimelineFeedItems>
-          <Suspense fallback={<TimelineLoadingEvents />}>
-            <ErrorBoundary>
+          <ErrorBoundary>
+            <Suspense fallback={<TimelineLoadingEvents />}>
               <TimelineSuggestedAction viewer={viewer} />
-            </ErrorBoundary>
-            <ErrorBoundary>
               <TimelineFeedList viewer={viewer} />
-            </ErrorBoundary>
-
-          </Suspense>
+            </Suspense>
+          </ErrorBoundary>
         </TimelineFeedItems>
       </TimelineFeed>
       <TimelineRightDrawer viewer={viewer} />
