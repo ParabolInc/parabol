@@ -1,7 +1,6 @@
 import stripe from '../stripe'
 import getRethink from '../../database/rethinkDriver'
 import {fromEpochSeconds} from '../../utils/epochTime'
-import {AUTO_PAUSE_USER, PAUSE_USER, UNPAUSE_USER} from '../../utils/serverConstants'
 import shortid from 'shortid'
 import Stripe from 'stripe'
 import Invoice from '../../database/types/Invoice'
@@ -9,8 +8,8 @@ import {InvoiceLineItemEnum, InvoiceStatusEnum, OrgUserRole} from 'parabol-clien
 import InvoiceLineItemDetail from '../../database/types/InvoiceLineItemDetail'
 import QuantityChangeLineItem from '../../database/types/QuantityChangeLineItem'
 import InvoiceLineItemOtherAdjustments from '../../database/types/InvoiceLineItemOtherAdjustments'
+import {InvoiceItemType} from 'parabol-client/types/constEnums'
 
-// type type = 'pauseUser' | 'unpauseUser' | 'autoPauseUser' | 'addUser' | 'removeUser'
 interface InvoicesByStartTime {
   [start: string]: {
     unusedTime?: Stripe.invoices.IInvoiceLineItem
@@ -99,7 +98,7 @@ const reduceItemsByType = (typesDict: TypesDict, email: string) => {
     const startTimeDict = typesDict[type]
     const startTimes = Object.keys(startTimeDict)
     // unpausing someone ends a period, we'll use this later
-    const dateField = type === UNPAUSE_USER ? 'endAt' : 'startAt'
+    const dateField = type === InvoiceItemType.UNPAUSE_USER ? 'endAt' : 'startAt'
     for (let k = 0; k < startTimes.length; k++) {
       // for each time period
       const startTime = startTimes[k]
@@ -204,7 +203,7 @@ const addToDict = (itemDict: ItemDict, lineItem: Stripe.invoices.IInvoiceLineIte
     metadata: {userId, type},
     period: {start}
   } = lineItem
-  const safeType = type === AUTO_PAUSE_USER ? PAUSE_USER : type
+  const safeType = type === InvoiceItemType.AUTO_PAUSE_USER ? InvoiceItemType.PAUSE_USER : type
   itemDict[userId] = itemDict[userId] || {}
   itemDict[userId][safeType] = itemDict[userId][safeType] || {}
   itemDict[userId][safeType][start] = itemDict[userId][safeType][start] || {}

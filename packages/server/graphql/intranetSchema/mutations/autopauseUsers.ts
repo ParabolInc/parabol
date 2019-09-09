@@ -2,20 +2,20 @@ import {GraphQLInt} from 'graphql'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
 import {requireSU} from '../../../utils/authorization'
-import {AUTO_PAUSE_THRESH, AUTO_PAUSE_USER} from '../../../utils/serverConstants'
+import {InvoiceItemType, Threshold} from 'parabol-client/types/constEnums'
 
 const autopauseUsers = {
   type: GraphQLInt,
   description:
     'automatically pause users that have been inactive for 30 days. returns the number of users paused',
-  resolve: async (source, args, {authToken}) => {
+  resolve: async (_source, _args, {authToken}) => {
     const r = getRethink()
 
     // AUTH
     requireSU(authToken)
 
     // RESOLUTION
-    const activeThresh = new Date(Date.now() - AUTO_PAUSE_THRESH)
+    const activeThresh = new Date(Date.now() - Threshold.AUTO_PAUSE)
     const usersToPause = await r
       .table('User')
       .filter((user) => user('lastSeenAt').le(activeThresh))
@@ -33,7 +33,7 @@ const autopauseUsers = {
     await Promise.all(
       usersToPause.map((user) => {
         try {
-          return adjustUserCount(user.id, user.orgIds, AUTO_PAUSE_USER)
+          return adjustUserCount(user.id, user.orgIds, InvoiceItemType.AUTO_PAUSE_USER)
         } catch (e) {
           console.warn(`Error adjusting user count: ${e}`)
         }

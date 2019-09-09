@@ -21,11 +21,13 @@ export default class StripeManager {
 
   async createEnterpriseSubscription (customerId: string, orgId: string, quantity) {
     return this.stripe.subscriptions.create({
+      // @ts-ignore
       collection_method: 'send_invoice',
       customer: customerId,
       metadata: {
         orgId
       },
+      prorate: false,
       items: [
         {
           plan: StripeManager.PARABOL_ENTERPRISE_2019Q3,
@@ -51,6 +53,10 @@ export default class StripeManager {
         }
       ]
     })
+  }
+
+  async updateSubscriptionQuantity (stripeSubscriptionId: string, quantity: number, prorationDate?: number) {
+    return this.stripe.subscriptions.update(stripeSubscriptionId, {quantity, proration_date: prorationDate})
   }
 
   async retrieveCustomer (customerId: string) {

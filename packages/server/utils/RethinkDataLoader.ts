@@ -10,25 +10,25 @@ import {
   IAtlassianAuth,
   ICustomPhaseItem,
   INewFeatureBroadcast,
-  INotification,
   IOrganization,
-  IOrganizationUser,
   IReflectTemplate,
-  IRetroReflection,
-  IRetroReflectionGroup,
-  ISuggestedAction,
-  ITask,
   ITeam,
-  ITeamInvitation,
   ITeamMeetingSettings,
-  ITeamMember,
-  IUser
+  ITeamMember
 } from '../../client/types/graphql'
 import promiseAllPartial from '../../client/utils/promiseAllPartial'
 import MeetingMember from '../database/types/MeetingMember'
 import SlackAuth from '../database/types/SlackAuth'
 import SlackNotification from '../database/types/SlackNotification'
 import AuthToken from '../database/types/AuthToken'
+import OrganizationUser from '../database/types/OrganizationUser'
+import Reflection from '../database/types/Reflection'
+import SuggestedAction from '../database/types/SuggestedAction'
+import Task from '../database/types/Task'
+import TeamInvitation from 'database/types/TeamInvitation'
+import User from '../database/types/User'
+import ReflectionGroup from '../database/types/ReflectionGroup'
+import Notification from '../database/types/Notification'
 
 interface JiraRemoteProjectKey {
   accessToken: string
@@ -75,20 +75,20 @@ interface Tables {
   MeetingMember: MeetingMember
   NewMeeting: Meeting
   NewFeature: INewFeatureBroadcast
-  Notification: INotification
+  Notification: Notification
   Organization: IOrganization
-  OrganizationUser: IOrganizationUser
+  OrganizationUser: OrganizationUser
   ReflectTemplate: IReflectTemplate
-  RetroReflectionGroup: IRetroReflectionGroup
-  RetroReflection: IRetroReflection
+  RetroReflectionGroup: ReflectionGroup
+  RetroReflection: Reflection
   SlackAuth: SlackAuth
   SlackNotification: SlackNotification
-  SuggestedAction: ISuggestedAction
-  Task: ITask
+  SuggestedAction: SuggestedAction
+  Task: Task
   TeamMember: ITeamMember
-  TeamInvitation: ITeamInvitation
+  TeamInvitation: TeamInvitation
   Team: ITeam
-  User: IUser
+  User: User
 }
 
 export default class RethinkDataLoader {
