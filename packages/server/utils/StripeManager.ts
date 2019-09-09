@@ -9,8 +9,9 @@ export default class StripeManager {
   static PARABOL_ENTERPRISE_2019Q3 = 'plan_Fifb1fmjyFfTm8'
   stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
-  async createCustomer (orgId: string, source: string) {
+  async createCustomer (orgId: string, email: string, source?: string) {
     return this.stripe.customers.create({
+      email,
       source,
       metadata: {
         orgId
@@ -18,7 +19,23 @@ export default class StripeManager {
     })
   }
 
-  async createSubscription (customerId: string, orgId: string, quantity) {
+  async createEnterpriseSubscription (customerId: string, orgId: string, quantity) {
+    return this.stripe.subscriptions.create({
+      collection_method: 'send_invoice',
+      customer: customerId,
+      metadata: {
+        orgId
+      },
+      items: [
+        {
+          plan: StripeManager.PARABOL_ENTERPRISE_2019Q3,
+          quantity
+        }
+      ]
+    })
+  }
+
+  async createProSubscription (customerId: string, orgId: string, quantity) {
     return this.stripe.subscriptions.create({
       // USE THIS FOR TESTING A FAILING PAYMENT
       // https://stripe.com/docs/billing/testing
