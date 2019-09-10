@@ -2,19 +2,24 @@ import React from 'react'
 import invoiceLineFormat from '../../helpers/invoiceLineFormat'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {NextMonthChargesLineItem_item} from '__generated__/NextMonthChargesLineItem_item.graphql'
+import {NextPeriodChargesLineItem_item} from '__generated__/NextPeriodChargesLineItem_item.graphql'
 import plural from '../../../../utils/plural'
 import InvoiceLineItemContent from './InvoiceLineItemContent'
+import {TierEnum} from '../../../../types/graphql'
 
 interface Props {
-  item: NextMonthChargesLineItem_item
+  item: NextPeriodChargesLineItem_item
+  tier: TierEnum
 }
 
-const NextMonthChargesLineItem = (props: Props) => {
-  const {item} = props
+const NextPeriodChargesLineItem = (props: Props) => {
+  const {item, tier} = props
   const {unitPrice, quantity} = item
   const amount = invoiceLineFormat(item.amount)
-  const unitPriceString = (unitPrice / 100).toLocaleString('en-US', {
+  if (tier === TierEnum.enterprise) {
+    return <InvoiceLineItemContent description={'Parabol Enterprise'} amount={amount}/>
+  }
+  const unitPriceString = (unitPrice! / 100).toLocaleString('en-US', {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 0
@@ -24,10 +29,10 @@ const NextMonthChargesLineItem = (props: Props) => {
 }
 
 export default createFragmentContainer(
-  NextMonthChargesLineItem,
+  NextPeriodChargesLineItem,
   {
     item: graphql`
-      fragment NextMonthChargesLineItem_item on InvoiceChargeNextMonth {
+      fragment NextPeriodChargesLineItem_item on NextPeriodCharges {
         amount
         quantity
         unitPrice

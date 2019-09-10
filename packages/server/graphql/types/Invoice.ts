@@ -11,10 +11,11 @@ import CreditCard from './CreditCard'
 import GraphQLEmailType from './GraphQLEmailType'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
-import InvoiceChargeNextMonth from './InvoiceChargeNextMonth'
+import NextPeriodCharges from './NextPeriodCharges'
 import InvoiceLineItem from './InvoiceLineItem'
 import InvoiceStatusEnum from './InvoiceStatusEnum'
 import PageInfoDateCursor from './PageInfoDateCursor'
+import TierEnum from './TierEnum'
 
 /* Each invoice has 3 levels.
  * L1 is a the invoice itself: how much to pay.
@@ -29,6 +30,10 @@ const Invoice = new GraphQLObjectType({
     id: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'A shortid for the invoice'
+    },
+    tier: {
+      type: new GraphQLNonNull(TierEnum),
+      description: 'The tier this invoice pays for'
     },
     amountDue: {
       type: new GraphQLNonNull(GraphQLFloat),
@@ -48,8 +53,8 @@ const Invoice = new GraphQLObjectType({
       description: 'The emails the invoice was sent to'
     },
     creditCard: {
-      type: new GraphQLNonNull(CreditCard),
-      description: 'the card used to pay the invoice'
+      type: CreditCard,
+      description: 'the card used to pay the invoice',
     },
     endAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
@@ -63,8 +68,8 @@ const Invoice = new GraphQLObjectType({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(InvoiceLineItem))),
       description: 'An invoice line item for previous month adjustments'
     },
-    nextMonthCharges: {
-      type: new GraphQLNonNull(InvoiceChargeNextMonth),
+    nextPeriodCharges: {
+      type: new GraphQLNonNull(NextPeriodCharges),
       description: 'The details that comprise the charges for next month'
     },
     orgId: {

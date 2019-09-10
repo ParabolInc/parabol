@@ -21,12 +21,13 @@ export default class OrganizationUser {
   removedAt: Date | null
   role: OrgUserRole | null
   userId: string
+
   constructor(input: Input) {
     const {userId, id, removedAt, inactive, orgId, joinedAt, newUserUntil, role} = input
     this.id = id || shortid.generate()
     this.inactive = inactive || false
     this.joinedAt = joinedAt || new Date()
-    this.newUserUntil =newUserUntil || new Date()
+    this.newUserUntil = newUserUntil || new Date()
     this.orgId = orgId
     this.removedAt = removedAt || null
     this.role = role || null

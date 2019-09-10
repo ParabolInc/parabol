@@ -1,7 +1,7 @@
 import CreditCard from './CreditCard'
 import InvoiceLineItem from './InvoiceLineItem'
-import InvoiceChargeNextMonth from './InvoiceChargeNextMonth'
-import {InvoiceStatusEnum} from 'parabol-client/types/graphql'
+import {InvoiceStatusEnum, TierEnum} from 'parabol-client/types/graphql'
+import NextPeriodCharges from './NextPeriodCharges'
 
 interface Input {
   id: string,
@@ -13,7 +13,7 @@ interface Input {
   endAt: Date,
   invoiceDate: Date,
   lines: InvoiceLineItem[],
-  nextMonthCharges: InvoiceChargeNextMonth,
+  nextPeriodCharges: NextPeriodCharges,
   orgId: string,
   orgName?: string | null,
   paidAt?: Date | null,
@@ -21,6 +21,7 @@ interface Input {
   startAt: Date,
   startingBalance: number,
   status: InvoiceStatusEnum
+  tier: TierEnum
 }
 
 export default class Invoice {
@@ -33,7 +34,7 @@ export default class Invoice {
   endAt: Date
   invoiceDate: Date
   lines: InvoiceLineItem[]
-  nextMonthCharges: InvoiceChargeNextMonth
+  nextPeriodCharges: NextPeriodCharges
   orgId: string
   orgName: string
   paidAt: Date | null
@@ -41,9 +42,10 @@ export default class Invoice {
   startAt: Date
   startingBalance: number
   status: InvoiceStatusEnum
+  tier: TierEnum
 
   constructor (input: Input) {
-    const {id, createdAt, amountDue, billingLeaderEmails, creditCard, endAt, invoiceDate, lines, nextMonthCharges, orgId, orgName, paidAt, picture, startAt, startingBalance, status, total} = input
+    const {id, createdAt, amountDue, billingLeaderEmails, creditCard, endAt, invoiceDate, lines, nextPeriodCharges, orgId, orgName, paidAt, picture, startAt, startingBalance, status, total, tier} = input
     this.id = id
     this.createdAt = createdAt || new Date()
     this.total = total
@@ -53,7 +55,7 @@ export default class Invoice {
     this.endAt = endAt
     this.invoiceDate = invoiceDate
     this.lines = lines
-    this.nextMonthCharges = nextMonthCharges
+    this.nextPeriodCharges = nextPeriodCharges
     this.orgId = orgId
     this.orgName = orgName || 'Unknown Org'
     this.paidAt = paidAt || null
@@ -61,5 +63,6 @@ export default class Invoice {
     this.startAt = startAt
     this.startingBalance = startingBalance
     this.status = status
+    this.tier = tier
   }
 }

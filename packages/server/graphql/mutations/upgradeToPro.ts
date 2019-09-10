@@ -8,7 +8,7 @@ import standardError from '../../utils/standardError'
 import upgradeToPro from './helpers/upgradeToPro'
 import {GQLContext} from '../graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {IUser, OrgUserRole} from 'parabol-client/types/graphql'
+import {OrgUserRole} from 'parabol-client/types/graphql'
 
 export default {
   type: UpgradeToProPayload,
@@ -23,7 +23,7 @@ export default {
       description: 'The token that came back from stripe'
     }
   },
-  async resolve (
+  async resolve(
     _source,
     {orgId, stripeToken},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
@@ -44,7 +44,7 @@ export default {
 
     // RESOLUTION
     // if they downgrade & are re-upgrading, they'll already have a stripeId
-    const viewer = await dataLoader.get('users').load(viewerId) as IUser
+    const viewer = await dataLoader.get('users').load(viewerId)
     const {email} = viewer
     try {
       await upgradeToPro(orgId, stripeToken, email)
