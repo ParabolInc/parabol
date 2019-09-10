@@ -6,17 +6,19 @@
 import StripeManager from '../utils/StripeManager'
 import getRethink from '../database/rethinkDriver'
 
-const manuallyStartSub = async (orgId) => {
+const manuallyStartSub = async () => {
   const r = getRethink()
   const manager = new StripeManager()
-  const org = await r.table('Organization').get(orgId)
-  const {stripeId} = org
-  const quantity = 24
-  const subscription = await manager.createSubscription(stripeId, orgId, quantity)
-  console.log('sub', subscription.id)
+  const res = await manager.createEnterpriseSubscription('cus_', 'fooOrg', 50)
+  console.log('res', res)
+  // const org = await r.table('Organization').get(orgId)
+  // const {stripeId} = org
+  // const quantity = 24
+  // const subscription = await manager.createSubscription(stripeId, orgId, quantity)
+  // console.log('sub', subscription.id)
 }
 
-manuallyStartSub('orgId').catch(console.log)
+manuallyStartSub().catch(console.log)
 
 // stripe.subscriptions.update('sub_A9nq7dAOWGUKlD', {
 //   trial_end: ~~((Date.now() + ms('5s')) / 1000)

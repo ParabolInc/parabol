@@ -24,6 +24,7 @@ export default class StripeManager {
       // @ts-ignore
       collection_method: 'send_invoice',
       customer: customerId,
+      days_until_due: 30,
       metadata: {
         orgId
       },
