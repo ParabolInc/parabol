@@ -17,7 +17,7 @@ const NextPeriodChargesLineItem = (props: Props) => {
   const {unitPrice, quantity} = item
   const amount = invoiceLineFormat(item.amount)
   if (tier === TierEnum.enterprise) {
-    return <InvoiceLineItemContent description={'Parabol Enterprise'} amount={amount}/>
+    return <InvoiceLineItemContent description={`${quantity} Enterprise Licenses`} amount={amount}/>
   }
   const unitPriceString = (unitPrice! / 100).toLocaleString('en-US', {
     style: 'currency',

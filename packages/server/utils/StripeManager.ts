@@ -62,10 +62,13 @@ export default class StripeManager {
     return this.stripe.subscriptions.update(stripeSubscriptionId, {quantity, proration_date: prorationDate})
   }
 
+  async updateInvoice(invoiceId: string, orgId: string) {
+    return this.stripe.invoices.update(invoiceId, {metadata: {orgId}})
+  }
+
   async updateInvoiceItem(invoiceItemId: string, type: InvoiceItemType, userId: string) {
     return this.stripe.invoiceItems.update(invoiceItemId, {metadata: {type, userId}})
   }
-
 
   async retrieveCustomer(customerId: string) {
     return this.stripe.customers.retrieve(customerId)

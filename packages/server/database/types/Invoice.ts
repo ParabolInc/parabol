@@ -9,7 +9,7 @@ interface Input {
   createdAt?: Date,
   total: number,
   billingLeaderEmails: string[],
-  creditCard: CreditCard,
+  creditCard?: CreditCard,
   endAt: Date,
   invoiceDate: Date,
   lines: InvoiceLineItem[],
@@ -30,7 +30,7 @@ export default class Invoice {
   createdAt: Date
   total: number
   billingLeaderEmails: string[]
-  creditCard: CreditCard
+  creditCard?: CreditCard
   endAt: Date
   invoiceDate: Date
   lines: InvoiceLineItem[]
@@ -50,7 +50,7 @@ export default class Invoice {
     this.createdAt = createdAt || new Date()
     this.total = total
     this.billingLeaderEmails = billingLeaderEmails
-    this.creditCard = creditCard || new CreditCard()
+    this.creditCard = creditCard
     this.amountDue = amountDue
     this.endAt = endAt
     this.invoiceDate = invoiceDate

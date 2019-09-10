@@ -1,8 +1,8 @@
 import fetchAllLines from '../../billing/helpers/fetchAllLines'
 import generateInvoice from '../../billing/helpers/generateInvoice'
-import stripe from '../../billing/stripe'
 import resolvePromiseObj from '../../../client/utils/resolvePromiseObj'
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
+import StripeManager from '../../utils/StripeManager'
 
 export default {
   name: 'StripeCreateInvoice',
@@ -14,23 +14,22 @@ export default {
       description: 'The stripe invoice ID'
     }
   },
-  resolve: async (source, {invoiceId}, {serverSecret}) => {
+  resolve: async (_source, {invoiceId}, {serverSecret}) => {
     // AUTH
     if (serverSecret !== process.env.AUTH0_CLIENT_SECRET) {
       throw new Error('Don’t be rude.')
     }
 
     // RESOLUTION
+    const manager = new StripeManager()
     const stripeLineItems = await fetchAllLines(invoiceId)
-    const invoice = await stripe.invoices.retrieve(invoiceId)
+    const invoice = await manager.retrieveInvoice(invoiceId)
     const {
       metadata: {orgId}
-    } = await stripe.customers.retrieve(invoice.customer)
+    } = await manager.retrieveCustomer(invoice.customer as string)
     await resolvePromiseObj({
       newInvoice: generateInvoice(invoice, stripeLineItems, orgId, invoiceId),
-      updatedStripeMetadata: stripe.invoices.update(invoiceId, {
-        metadata: {orgId}
-      })
+      updatedStripeMetadata: manager.updateInvoice(invoiceId, orgId)
     })
     return true
   }
