@@ -84,6 +84,10 @@ const Invoice = new GraphQLObjectType({
       type: GraphQLISO8601Type,
       description: 'the datetime the invoice was successfully paid'
     },
+    payUrl: {
+      type: GraphQLString,
+      description: 'The URL to pay via stripe if payment was not collected in app'
+    },
     picture: {
       type: GraphQLURLType,
       description: 'The picture of the organization'

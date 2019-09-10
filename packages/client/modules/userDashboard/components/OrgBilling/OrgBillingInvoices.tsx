@@ -18,13 +18,12 @@ const LoadMoreButton = styled(SecondaryButton)({
 })
 
 interface Props {
-  hasCard: boolean
   viewer: OrgBillingInvoices_viewer
   relay: RelayPaginationProp
 }
 
 const OrgBillingInvoices = (props: Props) => {
-  const {hasCard, relay, viewer} = props
+  const {relay, viewer} = props
   const {invoices} = viewer
   const {hasMore, isLoading, loadMore} = relay
   const loadNext = () => {
@@ -40,7 +39,6 @@ const OrgBillingInvoices = (props: Props) => {
           <InvoiceRow
             key={`invoiceRow${invoice.id}`}
             invoice={invoice}
-            hasCard={hasCard}
           />
         ))}
         {hasMore() && (
@@ -63,12 +61,8 @@ export default createPaginationContainer(
           edges {
             cursor
             node {
+              ...InvoiceRow_invoice
               id
-              amountDue
-              endAt
-              paidAt
-              startAt
-              status
             }
           }
           pageInfo {

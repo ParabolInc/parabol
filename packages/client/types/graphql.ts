@@ -1989,6 +1989,11 @@ export interface IInvoice {
   paidAt: any | null;
 
   /**
+   * The URL to pay via stripe if payment was not collected in app
+   */
+  payUrl: string | null;
+
+  /**
    * The picture of the organization
    */
   picture: any | null;
@@ -2834,6 +2839,11 @@ export interface IMutation {
   stripeUpdateInvoiceItem: boolean | null;
 
   /**
+   * An invice has been sent from stripe, meaning it is finalized
+   */
+  stripeInvoiceFinalized: boolean | null;
+
+  /**
    * Show/hide the agenda list
    */
   toggleAgendaList: ITeamMember | null;
@@ -3468,6 +3478,13 @@ export interface IStripeUpdateInvoiceItemOnMutationArguments {
    * The stripe invoice ID
    */
   invoiceItemId: string;
+}
+
+export interface IStripeInvoiceFinalizedOnMutationArguments {
+  /**
+   * The stripe invoice ID
+   */
+  invoiceId: string;
 }
 
 export interface IToggleAgendaListOnMutationArguments {

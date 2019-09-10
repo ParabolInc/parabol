@@ -17,6 +17,7 @@ interface Input {
   orgId: string,
   orgName?: string | null,
   paidAt?: Date | null,
+  payUrl?: string | null,
   picture?: string | null,
   startAt: Date,
   startingBalance: number,
@@ -38,6 +39,7 @@ export default class Invoice {
   orgId: string
   orgName: string
   paidAt: Date | null
+  payUrl?: string
   picture: string | null
   startAt: Date
   startingBalance: number
@@ -45,7 +47,7 @@ export default class Invoice {
   tier: TierEnum
 
   constructor (input: Input) {
-    const {id, createdAt, amountDue, billingLeaderEmails, creditCard, endAt, invoiceDate, lines, nextPeriodCharges, orgId, orgName, paidAt, picture, startAt, startingBalance, status, total, tier} = input
+    const {id, createdAt, amountDue, billingLeaderEmails, creditCard, endAt, invoiceDate, lines, nextPeriodCharges, orgId, orgName, paidAt, payUrl,  picture, startAt, startingBalance, status, total, tier} = input
     this.id = id
     this.createdAt = createdAt || new Date()
     this.total = total
@@ -59,6 +61,7 @@ export default class Invoice {
     this.orgId = orgId
     this.orgName = orgName || 'Unknown Org'
     this.paidAt = paidAt || null
+    this.payUrl = payUrl || undefined
     this.picture = picture || null
     this.startAt = startAt
     this.startingBalance = startingBalance

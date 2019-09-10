@@ -148,6 +148,14 @@ const HeadingLabel = styled('div')({
   }
 })
 
+const PayURLText = styled('a')({
+  display: 'flex',
+  fontSize: 12,
+  justifyContent: 'space-between',
+  paddingTop: 8,
+  width: '100%'
+})
+
 interface Props {
   viewer: Invoice_viewer
 }
@@ -167,6 +175,7 @@ const Invoice = (props: Props) => {
     creditCard,
     lines,
     nextPeriodCharges,
+    payUrl,
     startAt,
     startingBalance,
     tier
@@ -233,6 +242,12 @@ const Invoice = (props: Props) => {
                 <b>{creditCard.last4}</b>
               </Meta>
             )}
+            {status === InvoiceStatusEnum.PENDING && payUrl && (
+              <PayURLText href={payUrl} rel='noopener noreferrer' target='_blank'>
+                <span>PAY NOW</span>
+                <span>{payUrl}</span>
+              </PayURLText>
+            )}
           </AmountSection>
         </Panel>
         <InvoiceFooter />
@@ -262,6 +277,7 @@ export default createFragmentContainer(Invoice, {
           nextPeriodEnd
           interval
         }
+        payUrl
         startingBalance
         startAt
         status

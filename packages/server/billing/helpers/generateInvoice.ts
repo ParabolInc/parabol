@@ -230,7 +230,7 @@ const makeItemDict = (stripeLineItems: Stripe.invoices.IInvoiceLineItem[]) => {
           amount,
           quantity,
           nextPeriodEnd: fromEpochSeconds(end),
-          unitPrice: lineItem.plan.amount,
+          unitPrice: lineItem.plan.amount || undefined,
           interval: lineItem.plan.interval
         })
       } else {

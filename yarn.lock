@@ -3412,10 +3412,10 @@
   resolved "https://registry.yarnpkg.com/@types/stripe-v2/-/stripe-v2-2.0.1.tgz#3c0a4e5e436291d83b2f773d712dc9dc75133de8"
   integrity sha512-G7TAhUMuVidEcX4X1dox44wBukGcq7m90j2tEIUhywlDRgrFicIeK3oQh9WN0QomqRPEyyq3dDUyEH421uKM9g==
 
-"@types/stripe@^6.26.4":
-  version "6.31.9"
-  resolved "https://registry.yarnpkg.com/@types/stripe/-/stripe-6.31.9.tgz#84a3ee6f614d3d96c1acf269b006d5dd82f4d6a2"
-  integrity sha512-BRXXTRFPie7U5JTUjD64sYvS++LVS6rmiOEoYQ//3fRaMhuO+gKVWXw4JBw1hSWCGQXZghUITFad2wzHqBX6gw==
+"@types/stripe@^6.32.0":
+  version "6.32.0"
+  resolved "https://registry.yarnpkg.com/@types/stripe/-/stripe-6.32.0.tgz#0850af2a91aff762369a26663c949f2d74fd59ec"
+  integrity sha512-5fUvpbpMoGwE2UJV+uZ1yp3IGq3ItpwFKI1f5AxSfpeb1Aq4DPPtAKGcT8JNVwolZ62Zigb6jJFGiii0kJN80g==
   dependencies:
     "@types/node" "*"
 

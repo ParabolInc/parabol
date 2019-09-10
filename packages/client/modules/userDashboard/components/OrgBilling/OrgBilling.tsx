@@ -15,12 +15,12 @@ interface Props {
 
 const OrgBilling = (props: Props) => {
   const {organization, viewer} = props
-  const {creditCard, isBillingLeader} = organization
+  const {isBillingLeader} = organization
   return (
     <div>
       <OrgBillingUpgrade organization={organization}/>
       <OrgBillingCreditCardInfo organization={organization} />
-      <OrgBillingInvoices viewer={viewer} hasCard={!!creditCard} />
+      <OrgBillingInvoices viewer={viewer} />
       <OrgBillingDangerZone isBillingLeader={isBillingLeader}/>
     </div>
   )
@@ -40,9 +40,6 @@ export default createFragmentContainer(
         ...OrgBillingUpgrade_organization
         id
         isBillingLeader
-        creditCard {
-          brand
-        }
       }
     `
   }

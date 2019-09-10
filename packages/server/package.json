@@ -138,6 +138,7 @@
     "@mattkrick/trebuchet-client": "^0.1.2",
     "@sentry/integrations": "^5.5.0",
     "@sentry/node": "^5.5.0",
+    "@types/stripe": "^6.32.0",
     "analytics-node": "^3.0.0",
     "auth0": "^2.7.0",
     "aws-sdk": "^2.99.0",

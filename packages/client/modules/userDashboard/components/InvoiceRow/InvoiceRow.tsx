@@ -10,6 +10,9 @@ import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
 import Icon from '../../../../components/Icon'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {InvoiceStatusEnum} from '../../../../types/graphql'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
+import { InvoiceRow_invoice } from '__generated__/InvoiceRow_invoice.graphql';
 
 const InvoiceAmount = styled('span')({
   color: PALETTE.TEXT_MAIN,
@@ -46,30 +49,34 @@ const LinkStyles = styled('div')({
   alignItems: 'flex-start',
   display: 'flex',
   justifyContent: 'space-between',
-  textDecoraction: 'none',
+  textDecoration: 'none',
   width: '100%'
 })
 
-const StyledLink = LinkStyles.withComponent(Link)
+const RowLink = LinkStyles.withComponent(Link)
 
 const StyledDate = styled('span')<{styledToPay?: boolean, styledPaid?: boolean}>(({styledToPay, styledPaid}) => ({
   fontSize: 13,
   color: styledToPay || styledPaid ? PALETTE.TEXT_LIGHT : PALETTE.ERROR_MAIN
 }))
 
+const PayURL = styled('a')({
+  color: PALETTE.LINK_BLUE,
+  fontWeight: 600,
+  textDecoration: 'none',
+})
+
 interface Props {
-  hasCard: boolean
-  invoice: any
+  invoice: InvoiceRow_invoice
 }
 const InvoiceRow = (props: Props) => {
   const {
-    hasCard,
-    invoice: {id: invoiceId, amountDue, endAt, paidAt, status}
+    invoice: {id: invoiceId, amountDue, creditCard, endAt, paidAt, payUrl, status}
   } = props
   const isEstimate = status === InvoiceStatusEnum.UPCOMING
   return (
     <Row>
-      <StyledLink rel='noopener noreferrer' target='_blank' to={`/invoice/${invoiceId}`}>
+      <RowLink rel='noopener noreferrer' target='_blank' to={`/invoice/${invoiceId}`}>
         <FileIcon isEstimate={isEstimate}>receipt</FileIcon>
         <InvoiceInfo>
           <InfoRow>
@@ -82,7 +89,7 @@ const InvoiceRow = (props: Props) => {
             {status === InvoiceStatusEnum.UPCOMING && (
               <StyledDate styledToPay>
                 {isEstimate && '*Current estimate. '}
-                {hasCard
+                {creditCard
                   ? `Card will be charged on ${makeDateString(endAt)}`
                   : `Make sure to add billing info before ${makeDateString(endAt)}!`}
               </StyledDate>
@@ -95,15 +102,30 @@ const InvoiceRow = (props: Props) => {
             )}
             {status !== InvoiceStatusEnum.PAID && status !== InvoiceStatusEnum.UPCOMING && (
               <StyledDate styledPaid={status === InvoiceStatusEnum.PENDING}>
-                {'Status: '}
-                {status}
+                {payUrl ? <PayURL rel='noopener noreferrer' target='_blank' href={payUrl}>{'PAY NOW'}</PayURL> : `Status: ${status}`}
               </StyledDate>
             )}
           </InfoRow>
         </InvoiceInfo>
-      </StyledLink>
+      </RowLink>
     </Row>
   )
 }
 
-export default InvoiceRow
+export default createFragmentContainer(
+  InvoiceRow,
+  {
+    invoice: graphql`
+    fragment InvoiceRow_invoice on Invoice {
+      id
+      amountDue
+      creditCard {
+        brand
+      }
+      endAt
+      paidAt
+      payUrl
+      status
+    }`
+  }
+)
