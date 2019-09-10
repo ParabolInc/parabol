@@ -38,7 +38,7 @@ const UpgradeLater = (props: Props) => {
       <InvitationDialogCopy>{'Your organization has exceeded'}</InvitationDialogCopy>
       <InvitationDialogCopy>{'the free tier limit of '}<b>{'2 teams'}</b>{'.'}</InvitationDialogCopy>
       <CopySpacer>
-        {'We sent you an email so'}
+        {'We’ll send you an email so'}
       </CopySpacer>
       <InvitationDialogCopy>
         {'you can upgrade later'}

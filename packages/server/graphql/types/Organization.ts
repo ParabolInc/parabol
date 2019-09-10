@@ -61,7 +61,7 @@ const Organization = new GraphQLObjectType({
       }
     },
     tier: {
-      type: TierEnum,
+      type: new GraphQLNonNull(TierEnum),
       description: 'The level of access to features on the parabol site'
     },
     periodEnd: {

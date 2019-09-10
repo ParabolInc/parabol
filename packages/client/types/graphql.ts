@@ -26,6 +26,7 @@ export interface IQuery {
   massInvitation: IMassInvitationPayload | null;
   verifiedInvitation: IVerifiedInvitationPayload | null;
   authProviders: string[];
+  SAMLIdP: string | null;
 }
 
 export interface IMassInvitationOnQueryArguments {
@@ -47,6 +48,18 @@ export interface IAuthProvidersOnQueryArguments {
    * the email to see if it exists as an oauth account
    */
   email: string;
+}
+
+export interface ISAMLIdPOnQueryArguments {
+  /**
+   * the email associated with a SAML login
+   */
+  email: string;
+
+  /**
+   * true if the user was invited, else false
+   */
+  isInvited?: boolean | null;
 }
 
 /**
@@ -1481,7 +1494,7 @@ export interface IOrganization {
   /**
    * The level of access to features on the parabol site
    */
-  tier: TierEnum | null;
+  tier: TierEnum;
 
   /**
    * THe datetime the current billing cycle ends
@@ -2497,6 +2510,11 @@ export interface IVerifiedInvitationPayload {
    * true if the mx record is hosted by google, else falsy
    */
   isGoogle: boolean | null;
+
+  /**
+   * a string to redirect to the sso IdP, else null
+   */
+  ssoURL: string | null;
 
   /**
    * The valid invitation, if any

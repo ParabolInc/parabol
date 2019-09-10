@@ -8,6 +8,8 @@ import styled from '@emotion/styled'
 import {Draggable, DraggableProvided, DraggableStateSnapshot} from 'react-beautiful-dnd'
 
 const DraggableStyles = styled('div')({
+  // sometimes the default blue fuzzies show up around the containing div
+  outline: 'none',
   padding: `6px 12px`
 })
 

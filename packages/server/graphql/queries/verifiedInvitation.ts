@@ -4,6 +4,7 @@ import rateLimit from '../rateLimit'
 import VerifiedInvitationPayload from '../types/VerifiedInvitationPayload'
 import getRethink from '../../database/rethinkDriver'
 import promisify from 'es6-promisify'
+import getSAMLURLFromEmail from '../../utils/getSAMLURLFromEmail'
 
 const resolveMx = promisify(dns.resolveMx, dns)
 
@@ -31,7 +32,7 @@ export default {
       description: 'The invitation token'
     }
   },
-  resolve: rateLimit({perMinute: 10, perHour: 100})(async (_source, {token}) => {
+  resolve: rateLimit({perMinute: 60, perHour: 1800})(async (_source, {token}) => {
     const r = getRethink()
     const now = new Date()
     const teamInvitation = await r
@@ -74,8 +75,10 @@ export default {
       .nth(0)
       .default(null)
     const userId = viewer ? viewer.id : null
+    const ssoURL = await getSAMLURLFromEmail(email, true)
     const isGoogle = await getIsGoogleProvider(viewer, email)
     return {
+      ssoURL,
       teamName: team.name,
       meetingType,
       inviterName: inviter.preferredName,

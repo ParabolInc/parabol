@@ -10,7 +10,6 @@ import Icon from './Icon'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {MD_ICONS_SIZE_18} from '../styles/icons'
-import ui from '../styles/ui'
 import lazyPreload from '../utils/lazyPreload'
 import {shortMonths} from '../utils/makeDateString'
 import {PALETTE} from '../styles/paletteV2'
@@ -46,13 +45,13 @@ const Toggle = styled(CardButton)<StyleProps>(
   ({cardIsActive}) => ({
     opacity: cardIsActive ? 0.5 : 0,
     ':hover, :focus': {
-      backgroundColor: ui.palette.gray,
+      backgroundColor: dueDateBg,
       opacity: cardIsActive ? 1 : 0
     }
   }),
   ({dueDate}) =>
     dueDate && {
-      backgroundColor: ui.dueDateBg,
+      backgroundColor: dueDateBg,
       color: dueDateColor,
       fontSize: 'inherit',
       height: '1.375rem',

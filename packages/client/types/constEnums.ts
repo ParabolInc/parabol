@@ -81,6 +81,10 @@ export const enum LoaderSize {
   PANEL = 200
 }
 
+export const enum LocalStorageKey {
+  INVITATION_TOKEN = 'invitationToken'
+}
+
 export const enum MathEnum {
   MAX_INT = 2147483647
 }
@@ -126,6 +130,12 @@ export const enum SubscriptionChannel {
   TEAM = 'team',
   NOTIFICATION = 'notification',
   ORGANIZATION = 'organization',
+}
+
+export const enum TierLabel {
+  PERSONAL = 'Personal',
+  PRO = 'Pro',
+  ENTERPRISE = 'Enterprise'
 }
 
 export const enum Threshold {

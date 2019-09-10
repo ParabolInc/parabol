@@ -28,7 +28,7 @@ import ms from 'ms'
 import rateLimit from 'express-rate-limit'
 import demoEntityHandler from './demoEntityHandler'
 import * as Integrations from '@sentry/integrations'
-
+import consumeSAML from './utils/consumeSAML'
 
 declare global {
   namespace NodeJS {
@@ -134,7 +134,7 @@ app.use(
     }
   })
 )
-
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors({origin: true, credentials: true}))
 app.use('/static', express.static(path.join(PROJECT_ROOT, 'static')))
 app.use(favicon(path.join(PROJECT_ROOT, 'static', 'favicon.ico')))
@@ -157,7 +157,7 @@ app.post(
 )
 
 // HTTP Intranet GraphQL endpoint:
-const intranetGraphQLHandler = intranetHttpGraphQLHandler(sharedDataLoader)
+const intranetGraphQLHandler = intranetHttpGraphQLHandler(sharedDataLoader, rateLimiter, true)
 app.post(
   '/intranet-graphql',
   jwt({
@@ -191,6 +191,8 @@ const demoEntityLimiter = rateLimit({
   max: 20
 })
 app.post('/get-demo-entities', demoEntityLimiter, demoEntityHandler)
+
+app.post('/saml/:domain', consumeSAML(intranetHttpGraphQLHandler(sharedDataLoader, rateLimiter)))
 
 // return web app
 app.get('*', createSSR)

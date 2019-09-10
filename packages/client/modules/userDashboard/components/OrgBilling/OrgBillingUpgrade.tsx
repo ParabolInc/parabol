@@ -13,10 +13,9 @@ import {OrgBillingUpgrade_organization} from '__generated__/OrgBillingUpgrade_or
 import {TierEnum} from '../../../../types/graphql'
 
 const Inner = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  padding: 24
+  margin: '0 auto',
+  maxWidth: 312,
+  padding: '20px 24px 24px',
 })
 
 const Quotes = styled(OrgBillingReassuranceQuote)({
@@ -28,8 +27,14 @@ const ButtonBlock = styled('div')({
 })
 
 const Title = styled(DialogTitle)({
-  display: 'flex',
-  justifyContent: 'center'
+  padding: '0 0 12px'
+})
+
+const StyledPrimaryButton = styled(PrimaryButton)({
+  display: 'block',
+  fontSize: 15,
+  height: 40,
+  width: '100%'
 })
 
 interface Props {
@@ -47,12 +52,12 @@ const OrgBillingUpgrade = (props: Props) => {
                                     activeUserCount={activeUserCount} />)}
       {tier === TierEnum.personal &&
       <Panel>
-        <Title>Upgrade to Pro</Title>
         <Inner>
+          <Title>Upgrade to Pro</Title>
           <Quotes />
           <UpgradeBenefits />
           <ButtonBlock>
-            <PrimaryButton onClick={togglePortal}>{'Upgrade Now'}</PrimaryButton>
+            <StyledPrimaryButton onClick={togglePortal}>{'Upgrade Now'}</StyledPrimaryButton>
           </ButtonBlock>
         </Inner>
       </Panel>

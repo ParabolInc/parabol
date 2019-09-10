@@ -5,6 +5,37 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.3.2 2019-Sep-06
+
+### Fixed
+* Service worker no longer caches HTML documents, fixes SAML login
+* Cypress credentials
+
+## 4.3.0 2019-Sep-05
+
+### Added
+* SAML support
+
+### Fixed
+* UI touchups (Pro tag, timeline padding)
+
+## v4.2.0 2019-Aug-28
+
+### Added
+* Modal at beginning of demo
+
+### Removed
+* Aprhodite in favor of emotion
+
+### Fixed
+* Various UI touch-ups:
+   * uniform gutters for task column header
+   * fixes ellipsis
+   * fixes due date bg color
+   * improves editing + due date block layout
+   * Organization list now a responsive layout
+
+
 ## v4.1.0 2019-Aug-14
 
 ### Added

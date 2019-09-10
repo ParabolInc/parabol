@@ -1,9 +1,8 @@
 import getRethink from '../../../database/rethinkDriver'
 import StripeManager from '../../../utils/StripeManager'
 import {fromEpochSeconds} from '../../../utils/epochTime'
-import {PRO} from '../../../../client/utils/constants'
 import getCCFromCustomer from './getCCFromCustomer'
-import {IOrganization} from '../../../../client/types/graphql'
+import {IOrganization, TierEnum} from '../../../../client/types/graphql'
 
 const upgradeToPro = async (orgId: string, source: string) => {
   const r = getRethink()
@@ -41,7 +40,7 @@ const upgradeToPro = async (orgId: string, source: string) => {
       .update({
         ...subscriptionFields,
         creditCard: getCCFromCustomer(customer),
-        tier: PRO,
+        tier: TierEnum.pro,
         stripeId: customer.id,
         updatedAt: now
       }),
@@ -50,7 +49,7 @@ const upgradeToPro = async (orgId: string, source: string) => {
       .getAll(orgId, {index: 'orgId'})
       .update({
         isPaid: true,
-        tier: PRO,
+        tier: TierEnum.pro,
         updatedAt: now
       })
   })

@@ -4,9 +4,9 @@ import getRethink from '../../database/rethinkDriver'
 import {getUserId, isOrgLeaderOfUser} from '../../utils/authorization'
 import {toEpochSeconds} from '../../utils/epochTime'
 import {MAX_MONTHLY_PAUSES, PAUSE_USER} from '../../utils/serverConstants'
-import {PERSONAL} from '../../../client/utils/constants'
 import InactivateUserPayload from '../types/InactivateUserPayload'
 import standardError from '../../utils/standardError'
+import {TierEnum} from 'parabol-client/types/graphql'
 
 export default {
   type: InactivateUserPayload,
@@ -17,7 +17,7 @@ export default {
       description: 'the user to pause'
     }
   },
-  async resolve (source, {userId}, {authToken}) {
+  async resolve (_source, {userId}, {authToken}) {
     const r = getRethink()
     const viewerId = getUserId(authToken)
     // AUTH
@@ -46,7 +46,8 @@ export default {
 
     const hookPromises = orgs.map((orgDoc) => {
       const {periodStart, periodEnd, stripeSubscriptionId, tier} = orgDoc
-      if (tier === PERSONAL) return undefined
+      // TODO see if this is OK for enterprise
+      if (tier === TierEnum.personal) return undefined
       const periodStartInSeconds = toEpochSeconds(periodStart)
       const periodEndInSeconds = toEpochSeconds(periodEnd)
       return r
@@ -62,10 +63,10 @@ export default {
         .count()
         .run()
     })
-    const pausesByOrg = await Promise.all(hookPromises)
+    const pausesByOrg = await Promise.all(hookPromises) as number[]
     const triggeredPauses = Math.max(...pausesByOrg)
     if (triggeredPauses >= MAX_MONTHLY_PAUSES) {
-      return standardError(new Error('Max monthly pauses excheeded for this user'), {
+      return standardError(new Error('Max monthly pauses exceeded for this user'), {
         userId: viewerId
       })
     }

@@ -5,8 +5,9 @@ import DowngradeToPersonalPayload from '../types/DowngradeToPersonalPayload'
 import {getUserId, isUserBillingLeader, isSuperUser} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import sendSegmentEvent, {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
-import {ORGANIZATION, PERSONAL, TEAM} from '../../../client/utils/constants'
+import {ORGANIZATION, TEAM} from '../../../client/utils/constants'
 import standardError from '../../utils/standardError'
+import {TierEnum} from 'parabol-client/types/graphql'
 
 export default {
   type: DowngradeToPersonalPayload,
@@ -34,7 +35,7 @@ export default {
     // VALIDATION
     const {stripeSubscriptionId, tier} = await r.table('Organization').get(orgId)
 
-    if (tier === PERSONAL) {
+    if (tier === TierEnum.personal) {
       return standardError(new Error('Already on free tier'), {userId: viewerId})
     }
 
@@ -51,7 +52,7 @@ export default {
         .table('Organization')
         .get(orgId)
         .update({
-          tier: PERSONAL,
+          tier: TierEnum.personal,
           periodEnd: now,
           stripeSubscriptionId: null,
           updatedAt: now
@@ -61,7 +62,7 @@ export default {
         .getAll(orgId, {index: 'orgId'})
         .update(
           {
-            tier: PERSONAL,
+            tier: TierEnum.personal,
             isPaid: true,
             updatedAt: now
           },

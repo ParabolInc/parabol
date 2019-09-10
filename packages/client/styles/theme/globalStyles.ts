@@ -42,7 +42,7 @@ const draftStyles = `
     margin 8px 0;
     padding 0 8px;
   }
-  
+
   .draft-codeblock {
     background-color: ${PALETTE.BACKGROUND_MAIN};
     border-left: 2px #49327266 solid;
@@ -81,7 +81,7 @@ export default `
   }
 
   ${root}
-    
+
   a {
     color: ${ui.linkColor};
     text-decoration: none;
@@ -151,7 +151,7 @@ export default `
       display: none !important;
     }
   }
-  
+
   ${draftStyles}
 
   ${placeholderStyles}

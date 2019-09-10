@@ -24,7 +24,7 @@ const DotSpan = styled('span')<{dotNumber: number}>(({dotNumber}) => ({
 
 const GroupStyle = styled('span')({
   display: 'inline',
-  fontSize: 16
+  fontSize: 'inherit'
 })
 
 const Ellipsis = () => {

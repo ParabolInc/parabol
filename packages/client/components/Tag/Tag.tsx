@@ -1,7 +1,9 @@
-import React, { ReactNode } from 'react'
+// deprecated, refactor & use
+import React from 'react'
 import styled from '@emotion/styled'
 import ui from '../../styles/ui'
 import appTheme from '../../styles/theme/theme'
+import BaseTag from './BaseTag'
 
 const tagTheme = {
   cool: {
@@ -50,26 +52,15 @@ const tagTheme = {
   }
 }
 
-const TagRoot = styled('div')<{colorPalette: keyof typeof tagTheme}>(({colorPalette}) => ({
+const TagRoot = styled(BaseTag)<{colorPalette: keyof typeof tagTheme}>(({colorPalette}) => ({
   backgroundColor: tagTheme[colorPalette].backgroundColor,
-  borderRadius: 16,
   color: tagTheme[colorPalette].color,
-  display: 'inline-block',
-  fontSize: 11,
-  fontWeight: 600,
-  height: 16,
-  lineHeight: '16px',
-  marginLeft: 12,
-  padding: '0 8px',
-  textAlign: 'center',
-  userSelect: 'none',
-  verticalAlign: 'middle'
 }))
 
 interface Props {
   className?: string
   colorPalette?: keyof typeof tagTheme
-  label: ReactNode
+  label: string
 }
 
 const Tag = (props: Props) => {

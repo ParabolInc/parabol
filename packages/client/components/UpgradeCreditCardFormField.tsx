@@ -49,7 +49,7 @@ const Input = styled('input')<StyleProps>(({hasError}) => ({
   fontSize: '.9375rem',
   lineHeight: '24px',
   outline: 0,
-  padding: 8,
+  padding: '7px 8px', // account for top/bottom border
   width: '100%',
   '::placeholder': {
     color: hasError ? PALETTE.BACKGROUND_RED : undefined

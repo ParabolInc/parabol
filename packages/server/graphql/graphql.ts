@@ -17,7 +17,7 @@ let documentCache: DocumentCache = {}
 const MAX_CACHE_SIZE = 300
 
 export type DataLoaderWorker = WarehouseWorker<RethinkDataLoader>
-export type GQLContext = Pick<ConnectionContext, 'authToken' | 'rateLimiter'> & {
+export type GQLContext = Pick<ConnectionContext, 'authToken' | 'rateLimiter' | 'ip'> & {
   socketId: string
   dataLoader: DataLoaderWorker
 }

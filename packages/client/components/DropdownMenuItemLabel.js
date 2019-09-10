@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
-import textOverflow from '../styles/helpers/textOverflow'
-import ui from '../styles/ui'
 
 const DropdownMenuItemLabel = styled('span')({
-  ...textOverflow,
+  alignItems: 'center',
+  display: 'flex',
   fontSize: 15,
   lineHeight: '32px',
-  padding: `0 16px`
+  padding: `0 16px`,
+  width: '100%'
 })
 
 export default DropdownMenuItemLabel

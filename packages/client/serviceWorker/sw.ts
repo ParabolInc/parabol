@@ -65,16 +65,16 @@ const onFetch = async (event: FetchEvent) => {
     // cloning here because I'm not sure if we must clone before reading the body
     cache.put(request.url, networkRes.clone()).catch(console.error)
     return networkRes
-  } else if (request.destination === 'document') {
-    // dynamic because index.html isn't hashed (and the server returns an html with keys)
-    const dynamicCache = await caches.open(DYNAMIC_CACHE)
-    const cachedRes = await dynamicCache.match('/')
-    if (cachedRes) return cachedRes
-    const networkRes = await fetch(request)
-    const cache = await caches.open(DYNAMIC_CACHE)
-    // cloning here because I'm not sure if we must clone before reading the body
-    cache.put('/', networkRes.clone()).catch(console.error)
-    return networkRes
+  // } else if (request.destination === 'document') {
+  //   // dynamic because index.html isn't hashed (and the server returns an html with keys)
+  //   const dynamicCache = await caches.open(DYNAMIC_CACHE)
+  //   const cachedRes = await dynamicCache.match('/')
+  //   if (cachedRes) return cachedRes
+  //   const networkRes = await fetch(request)
+  //   const cache = await caches.open(DYNAMIC_CACHE)
+  //   // cloning here because I'm not sure if we must clone before reading the body
+  //   cache.put('/', networkRes.clone()).catch(console.error)
+  //   return networkRes
   }
   return fetch(request)
 }

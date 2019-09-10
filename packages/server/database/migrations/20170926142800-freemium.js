@@ -1,4 +1,3 @@
-import {PERSONAL, PRO} from '../../../client/utils/constants'
 
 exports.up = async (r) => {
   await r({
@@ -18,13 +17,13 @@ exports.up = async (r) => {
         r
           .table('Organization')
           .get(org('id'))
-          .replace((row) => row.merge({tier: PERSONAL}).without('stripeId', 'stripeSubscriptionId'))
+          .replace((row) => row.merge({tier: 'personal'}).without('stripeId', 'stripeSubscriptionId'))
           .do(() => {
             return r
               .table('Team')
               .getAll(org('id'), {index: 'orgId'})
               .update({
-                tier: PERSONAL,
+                tier: 'personal',
                 isPaid: true
               })
           }),
@@ -33,14 +32,14 @@ exports.up = async (r) => {
           .table('Organization')
           .get(org('id'))
           .update({
-            tier: PRO
+            tier: 'pro'
           })
           .do(() => {
             return r
               .table('Team')
               .getAll(org('id'), {index: 'orgId'})
               .update({
-                tier: PRO
+                tier: 'pro'
               })
           })
       )

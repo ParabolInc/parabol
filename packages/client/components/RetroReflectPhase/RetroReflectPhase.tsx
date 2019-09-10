@@ -115,7 +115,7 @@ const RetroReflectPhase = (props: Props) => {
         {!isComplete && <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />}
         <CenterControlBlock isComplete={isComplete}>
           <BottomNavControl
-            isBouncing={isDemoStageComplete || isReadyToGroup}
+            isBouncing={!isEmpty && (isDemoStageComplete || isReadyToGroup)}
             disabled={isEmpty}
             onClick={() => gotoNext()}
             onKeyDown={handleRightArrow(() => gotoNext())}
