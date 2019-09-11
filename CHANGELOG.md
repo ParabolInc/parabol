@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.4.1 2019-Sep-11
+
+### Fixed
+* IdP-initiated login flow
+
 ## 4.4.0 2019-Sep-11
 
 ### Added
