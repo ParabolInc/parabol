@@ -36,7 +36,7 @@
     "postcommit": "git update-index --again",
     "postdeploy": "node utils/postDeploy.babel.js",
     "precommit": "lint-staged",
-    "lint": "eslint --fix ./**/*.{ts,tsx,js}",
+    "lint": "eslint --fix ./../**/*.{ts,tsx,js}",
     "test": "jest --bail --coverage --ci --runInBand && codecov",
     "test:dev": "jest --runInBand --watch",
     "relay": "yarn build:relay --watch --watchman true",
