@@ -6,8 +6,9 @@ import requestDoubleAnimationFrame from '../components/RetroReflectPhase/request
 
 interface Options <T>{
   isBackground?: boolean
-  firstRef: MutableRefObject<T | null>,
-  padding: number
+  firstRef?: MutableRefObject<T | null>,
+  offsetLeft?: number
+  offsetTop?: number
 }
 
 const getScale = (first: Dims, last: Dims) => {
@@ -16,18 +17,18 @@ const getScale = (first: Dims, last: Dims) => {
   return {scaleX, scaleY}
 }
 
-const getTranslate = <T extends HTMLElement = HTMLDivElement>(first: Point, parent: Point, lastEl: T, padding: number) => {
-  const translateX = first.left - parent.left - lastEl.offsetLeft - padding
-  const translateY = first.top - parent.top - lastEl.offsetTop - padding
+const getTranslate = <T extends HTMLElement = HTMLDivElement>(first: Point, parent: Point, lastEl: T, offsetLeft: number, offsetTop: number) => {
+  const translateX = first.left - parent.left - lastEl.offsetLeft - offsetLeft
+  const translateY = first.top - parent.top - lastEl.offsetTop - offsetTop
   return {translateX, translateY}
 }
 
 const useFlip = <T extends HTMLElement = HTMLDivElement>(options: Options<T>) => {
-  const {isBackground, firstRef, padding = 0} = options
+  const {isBackground, firstRef, offsetLeft = 0, offsetTop = 0} = options
   const isAnimatedRef = useRef(false)
   const reverseRef = useRef(() => {})
   const lastRefCb = (instance: T) => {
-    if (!instance || isAnimatedRef.current || !firstRef.current) {
+    if (!instance || isAnimatedRef.current || !firstRef || !firstRef.current) {
       return
     }
     const firstBBox = getBBox(firstRef.current!)
@@ -35,7 +36,7 @@ const useFlip = <T extends HTMLElement = HTMLDivElement>(options: Options<T>) =>
     const {style, offsetParent} = instance
     const parentBBox = getBBox(offsetParent)
     if (!firstBBox || !lastBBox || !parentBBox) return
-    const {translateX, translateY} = getTranslate(firstBBox, parentBBox, instance, padding)
+    const {translateX, translateY} = getTranslate(firstBBox, parentBBox, instance, offsetLeft, offsetTop)
     isAnimatedRef.current = true
     if (isBackground) {
       const {scaleX, scaleY} = getScale(firstBBox, lastBBox)

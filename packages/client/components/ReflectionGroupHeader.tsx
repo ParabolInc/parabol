@@ -10,15 +10,17 @@ import {REFLECTION_CARD_WIDTH} from '../utils/multiplayerMasonry/masonryConstant
 import {ReflectionGroupHeader_reflectionGroup} from '../__generated__/ReflectionGroupHeader_reflectionGroup.graphql'
 import {ReflectionGroupHeader_meeting} from '../__generated__/ReflectionGroupHeader_meeting.graphql'
 import plural from '../utils/plural'
+import {PortalStatus} from '../hooks/usePortal'
 
 interface Props {
   meeting: ReflectionGroupHeader_meeting
   reflectionGroup: ReflectionGroupHeader_reflectionGroup
   isExpanded?: boolean
+  portalStatus: PortalStatus
   titleInputRef: RefObject<HTMLInputElement>
 }
 
-const GroupHeader = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
+const GroupHeader = styled('div')<{isExpanded: boolean, portalStatus: PortalStatus}>(({isExpanded, portalStatus}) => ({
   alignItems: 'center',
   display: 'flex',
   flexShrink: 1,
@@ -27,9 +29,9 @@ const GroupHeader = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
   margin: isExpanded ? '0 16px' : undefined,
   maxWidth: REFLECTION_CARD_WIDTH,
   minHeight: 32,
+  opacity: !isExpanded && portalStatus !== PortalStatus.Exited ? 0 : undefined,
   padding: 8,
-  paddingTop: isExpanded ? 16 : 0,
-  paddingBottom: isExpanded ? 0 : 8,
+  paddingBottom: 0,
   position: 'relative',
   width: '100%'
 }))
@@ -37,7 +39,7 @@ const GroupHeader = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
 const StyledTag = styled(Tag)({marginRight: 4})
 
 const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
-  const {meeting, reflectionGroup, titleInputRef} = props
+  const {meeting, reflectionGroup, titleInputRef, portalStatus} = props
   const isExpanded = !!props.isExpanded
   const {
     localStage,
@@ -46,9 +48,9 @@ const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>
   const {reflections} = reflectionGroup
   const canEdit = phaseType === GROUP && !localStage.isComplete
   return (
-    <GroupHeader isExpanded={isExpanded} ref={ref}>
+    <GroupHeader portalStatus={portalStatus} isExpanded={isExpanded} ref={ref}>
       <ReflectionGroupTitleEditor
-        isExpanded={isExpanded}
+        isExpanded={isExpanded && portalStatus !== PortalStatus.Exiting}
         reflectionGroup={reflectionGroup}
         meeting={meeting}
         readOnly={!canEdit}
@@ -56,7 +58,7 @@ const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>
       />
       {phaseType === GROUP && (
         <StyledTag
-          colorPalette={isExpanded ? 'white' : 'midGray'}
+          colorPalette={portalStatus === PortalStatus.Exited || portalStatus === PortalStatus.Exiting ? 'midGray' : 'white'}
           label={`${reflections.length} ${plural(reflections.length, 'Card')}`}
         />
       )}

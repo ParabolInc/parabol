@@ -225,7 +225,7 @@ const PhaseItemColumn = (props: Props) => {
             idx={idx}
             phaseEditorRef={phaseEditorRef}
             phaseRef={phaseRef}
-            meetingId={meetingId}
+            meeting={meeting}
             stackTopRef={stackTopRef}
           />
           <ChitSection>
@@ -243,6 +243,7 @@ const PhaseItemColumn = (props: Props) => {
 export default createFragmentContainer(PhaseItemColumn, {
   meeting: graphql`
     fragment PhaseItemColumn_meeting on RetrospectiveMeeting {
+      ...ReflectionStack_meeting
       facilitatorUserId
       meetingId: id
       localPhase {
@@ -272,6 +273,8 @@ export default createFragmentContainer(PhaseItemColumn, {
         sortOrder
         reflections {
           ...ReflectionCard_reflection
+          ...DraggableReflectionCard_reflection
+          ...DraggableReflectionCard_staticReflections
           content
           id
           isEditing

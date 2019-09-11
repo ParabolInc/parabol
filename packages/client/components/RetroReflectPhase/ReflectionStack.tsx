@@ -4,14 +4,14 @@ import styled from '@emotion/styled'
 import ReflectionCard from '../ReflectionCard/ReflectionCard'
 import ExpandedReflectionStack from './ExpandedReflectionStack'
 import ReflectionStackPlaceholder from './ReflectionStackPlaceholder'
-import {cardBackgroundColor, cardBorderRadius} from '../../styles/cards'
-import {cardShadow} from '../../styles/elevation'
-import {ElementHeight, ElementWidth, ReflectionStackPerspective, Times} from '../../types/constEnums'
+import {ElementHeight, ElementWidth, ReflectionStackPerspective} from '../../types/constEnums'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 
 interface Props {
   idx: number
-  meetingId: string
+  meeting: any
   phaseEditorRef: React.RefObject<HTMLDivElement>
   phaseRef: React.RefObject<HTMLDivElement>
   readOnly: boolean
@@ -43,15 +43,16 @@ const ReflectionWrapper = styled('div')<{idx: number}>(
       left: 0,
       outline: 0,
       transform: `translateY(${translateY}px) scaleX(${scaleX})`,
-      zIndex: 3 - multiple,
+      zIndex: 3 - multiple
     }
   }
 )
 
 const ReflectionStack = (props: Props) => {
-  const {phaseRef, idx, meetingId, readOnly, reflectionStack, stackTopRef} = props
+  const {phaseRef, idx, meeting, readOnly, reflectionStack, stackTopRef} = props
   const stackRef = useRef<HTMLDivElement>(null)
   const {setItemsRef, scrollRef, bgRef, portal, collapse, expand} = useExpandedReflections(stackRef, reflectionStack.length)
+  const {id: meetingId} = meeting
   if (reflectionStack.length === 0) {
     return <ReflectionStackPlaceholder idx={idx} ref={stackTopRef} />
   }
@@ -60,7 +61,7 @@ const ReflectionStack = (props: Props) => {
       {portal(<ExpandedReflectionStack
         phaseRef={phaseRef}
         reflectionStack={reflectionStack}
-        meetingId={meetingId}
+        meeting={meeting}
         readOnly={readOnly}
         scrollRef={scrollRef}
         bgRef={bgRef}
@@ -71,22 +72,22 @@ const ReflectionStack = (props: Props) => {
         <CardStack onClick={expand} ref={stackRef}>
           <CenteredCardStack>
             {reflectionStack.map((reflection, idx) => {
-                return (
-                  <ReflectionWrapper
-                    key={reflection.id}
-                    idx={idx}
-                    ref={idx === 0 ? stackTopRef : undefined}
-                  >
-                    <ReflectionCard
-                      meetingId={meetingId}
-                      reflection={reflection}
-                      readOnly={reflectionStack.length > 1 || readOnly || false}
-                      userSelect={reflectionStack.length === 1 ? undefined : 'none'}
-                      isClipped={idx !== 0}
-                    />
-                  </ReflectionWrapper>
-                )
-              })}
+              return (
+                <ReflectionWrapper
+                  key={reflection.id}
+                  idx={idx}
+                  ref={idx === 0 ? stackTopRef : undefined}
+                >
+                  <ReflectionCard
+                    meetingId={meetingId}
+                    reflection={reflection}
+                    readOnly={reflectionStack.length > 1 || readOnly || false}
+                    userSelect={reflectionStack.length === 1 ? undefined : 'none'}
+                    isClipped={idx !== 0}
+                  />
+                </ReflectionWrapper>
+              )
+            })}
           </CenteredCardStack>
         </CardStack>
       </div>
@@ -94,4 +95,13 @@ const ReflectionStack = (props: Props) => {
   )
 }
 
-export default ReflectionStack
+export default createFragmentContainer(
+  ReflectionStack,
+  {
+    meeting: graphql`
+      fragment ReflectionStack_meeting on RetrospectiveMeeting {
+        ...DraggableReflectionCard_meeting
+        id
+      }`
+  }
+)

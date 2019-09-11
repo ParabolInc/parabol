@@ -1,3 +1,5 @@
+import {Variables} from 'relay-runtime'
+
 const getDescendingIdx = (newName, arr, sortValue) => {
   let nextIdx
   for (nextIdx = 0; nextIdx < arr.length; nextIdx++) {
@@ -20,7 +22,11 @@ const getAscendingIdx = (newName, arr, sortValue) => {
   return nextIdx
 }
 
-const addNodeToArray = (newNode, parent, arrayName, sortValue, options = {}) => {
+interface Options {
+  descending?: boolean
+  storageKeyArgs?: Variables
+}
+const addNodeToArray = (newNode, parent, arrayName, sortValue, options: Options = {}) => {
   if (!newNode || !parent) return
   const {descending, storageKeyArgs} = options
   // create an empty array so we don't have to make sure all of our mutations are bullet proof.

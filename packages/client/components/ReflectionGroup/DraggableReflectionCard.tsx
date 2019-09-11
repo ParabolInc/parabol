@@ -3,9 +3,10 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {DraggableReflectionCard_reflection} from '../../__generated__/DraggableReflectionCard_reflection.graphql'
 import ReflectionCard from '../ReflectionCard/ReflectionCard'
-import {DraggableReflectionCard_meeting} from '__generated__/DraggableReflectionCard_meeting.graphql'
-import {DraggableReflectionCard_staticReflections} from '__generated__/DraggableReflectionCard_staticReflections.graphql'
+import {DraggableReflectionCard_meeting} from '../../__generated__/DraggableReflectionCard_meeting.graphql'
+import {DraggableReflectionCard_staticReflections} from '../../__generated__/DraggableReflectionCard_staticReflections.graphql'
 import useDraggableReflectionCard from '../../hooks/useDraggableReflectionCard'
+import styled from '@emotion/styled'
 
 export interface DropZoneBBox {
   height: number,
@@ -33,11 +34,16 @@ const DRAG_STATE = {
   timeout: null as null | number
 }
 
+const DragWrapper = styled('div')<{isDraggable: boolean}>(({isDraggable}) => ({
+  cursor: isDraggable ? 'grab' : undefined
+}))
+
 export type ReflectionDragState = typeof DRAG_STATE
 
 interface Props {
   isDraggable: boolean
   meeting: DraggableReflectionCard_meeting
+  readOnly?: boolean
   reflection: DraggableReflectionCard_reflection
   staticIdx: number
   staticReflections: DraggableReflectionCard_staticReflections
@@ -52,17 +58,18 @@ export interface TargetBBox {
 }
 
 const DraggableReflectionCard = (props: Props) => {
-  const {reflection, staticIdx, staticReflections, meeting} = props
+  const {reflection, staticIdx, staticReflections, meeting, isDraggable, readOnly} = props
   const {id: meetingId, teamId} = meeting
   const dragRef = useRef({...DRAG_STATE})
   const {current: drag} = dragRef
   const staticReflectionCount = staticReflections.length
   const {onMouseDown} = useDraggableReflectionCard(reflection, drag, staticIdx, teamId, staticReflectionCount)
+  const handleDrag = isDraggable ? onMouseDown : undefined
   return (
-    <div ref={(c) => drag.ref = c} onMouseDown={onMouseDown} onTouchStart={onMouseDown}>
-      <ReflectionCard userSelect='none' reflection={reflection} showOriginFooter
-                      isClipped={staticIdx !== 0} meetingId={meetingId} />
-    </div>
+    <DragWrapper ref={(c) => drag.ref = c} onMouseDown={handleDrag} onTouchStart={handleDrag} isDraggable={isDraggable}>
+      <ReflectionCard userSelect='none' reflection={reflection}
+                      isClipped={staticIdx !== 0} meetingId={meetingId} readOnly={readOnly}/>
+    </DragWrapper>
   )
 }
 
