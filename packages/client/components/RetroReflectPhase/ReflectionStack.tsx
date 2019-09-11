@@ -6,7 +6,7 @@ import ExpandedReflectionStack from './ExpandedReflectionStack'
 import ReflectionStackPlaceholder from './ReflectionStackPlaceholder'
 import {cardBackgroundColor, cardBorderRadius} from '../../styles/cards'
 import {cardShadow} from '../../styles/elevation'
-import {ElementHeight, ReflectionStackPerspective} from '../../types/constEnums'
+import {ElementHeight, ElementWidth, ReflectionStackPerspective, Times} from '../../types/constEnums'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
 
 interface Props {
@@ -31,60 +31,19 @@ const CenteredCardStack = styled('div')({
   position: 'relative'
 })
 
-const HIDE_LINES_HACK_STYLES = {
-  background: cardBackgroundColor,
-  content: '""',
-  height: 12,
-  left: 0,
-  position: 'absolute',
-  right: 0,
-  zIndex: 200
-}
-
-const CARD_IN_STACK = {
-  backgroundColor: cardBackgroundColor,
-  borderRadius: cardBorderRadius,
-  boxShadow: cardShadow,
-  cursor: 'pointer',
-  overflow: 'hidden',
-  position: 'absolute',
-  pointerEvents: 'none',
-  // hides partially overflown top lines of text
-  '&::before': {
-    ...HIDE_LINES_HACK_STYLES,
-    top: 0
-  },
-  // hides partially overflown bottom lines of text
-  '&::after': {
-    ...HIDE_LINES_HACK_STYLES,
-    bottom: 0
-  },
-  '& > div': {
-    bottom: 0,
-    boxShadow: 'none',
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    zIndex: 100
-  }
-}
-
 const ReflectionWrapper = styled('div')<{idx: number}>(
   ({idx}): any => {
-    if (idx === 0) return {
-      cursor: 'pointer',
-      position: 'relative',
-      zIndex: 2
-    }
     const multiple = Math.min(idx, 2)
+    const scaleX = (ElementWidth.REFLECTION_CARD - ReflectionStackPerspective.X * multiple * 2) / ElementWidth.REFLECTION_CARD
+    const translateY = ReflectionStackPerspective.Y * multiple
     return {
-      ...CARD_IN_STACK,
-      bottom: -ReflectionStackPerspective.Y * multiple,
-      left: ReflectionStackPerspective.X * multiple,
-      right: ReflectionStackPerspective.X * multiple,
-      top: ReflectionStackPerspective.Y * multiple,
-      zIndex: 2 - multiple
+      cursor: 'pointer',
+      position: idx === 0 ? 'relative' : 'absolute',
+      bottom: 0,
+      left: 0,
+      outline: 0,
+      transform: `translateY(${translateY}px) scaleX(${scaleX})`,
+      zIndex: 3 - multiple,
     }
   }
 )
@@ -123,6 +82,7 @@ const ReflectionStack = (props: Props) => {
                       reflection={reflection}
                       readOnly={reflectionStack.length > 1 || readOnly || false}
                       userSelect={reflectionStack.length === 1 ? undefined : 'none'}
+                      isClipped={idx !== 0}
                     />
                   </ReflectionWrapper>
                 )

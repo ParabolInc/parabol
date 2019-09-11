@@ -4,7 +4,7 @@ import ms from 'ms'
  * Renders the UI for the reflection phase of the retrospective meeting
  *
  */
-import React from 'react'
+import React, {useRef} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
@@ -60,6 +60,7 @@ const DemoGroupHelpMenu = lazyPreload(async () =>
 
 const RetroGroupPhase = (props: Props) => {
   const atmosphere = useAtmosphere()
+  const phaseRef = useRef<HTMLDivElement>(null)
   const {onCompleted, submitMutation, error, onError, submitting} = useMutationProps()
   const [isReadyToVote, resetActivityTimeout] = useTimeoutWithReset(ms('1m'), ms('30s'))
   const {
@@ -86,7 +87,7 @@ const RetroGroupPhase = (props: Props) => {
   }
   const canAutoGroup = !isDemoRoute() && (!nextAutoGroupThreshold || nextAutoGroupThreshold < 1) && !isComplete
   return (
-    <MeetingContent>
+    <MeetingContent ref={phaseRef}>
       <MeetingHeaderAndPhase>
         <MeetingContentHeader
           avatarGroup={avatarGroup}
@@ -100,7 +101,7 @@ const RetroGroupPhase = (props: Props) => {
           <StageTimerDisplay stage={localStage!} />
           {error && <StyledError>{error}</StyledError>}
           <MeetingPhaseWrapper>
-            <GroupingKanban meeting={newMeeting} resetActivityTimeout={resetActivityTimeout} />
+            <GroupingKanban meeting={newMeeting} phaseRef={phaseRef} resetActivityTimeout={resetActivityTimeout} />
           </MeetingPhaseWrapper>
         </PhaseWrapper>
         <MeetingHelpToggle

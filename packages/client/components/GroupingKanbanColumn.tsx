@@ -1,4 +1,4 @@
-import React, {useRef} from 'react'
+import React, {RefObject, useRef} from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import {createFragmentContainer} from 'react-relay'
 import {GroupingKanbanColumn_reflectionGroups} from '__generated__/GroupingKanbanColumn_reflectionGroups.graphql'
@@ -57,12 +57,13 @@ const AddReflectionButton = styled(RaisedButton)({
 
 interface Props {
   meeting: GroupingKanbanColumn_meeting
+  phaseRef: RefObject<HTMLDivElement>
   prompt: GroupingKanbanColumn_prompt
   reflectionGroups: GroupingKanbanColumn_reflectionGroups
 }
 
 const GroupingKanbanColumn = (props: Props) => {
-  const {meeting, reflectionGroups, prompt} = props
+  const {meeting, reflectionGroups, phaseRef, prompt} = props
   const {question, id: promptId} = prompt
   const {id: meetingId} = meeting
   const {submitting, onError, error, submitMutation, onCompleted} = useMutationProps()
@@ -88,7 +89,7 @@ const GroupingKanbanColumn = (props: Props) => {
       </ColumnHeader>
       <ColumnBody data-dropzone={promptId}>
         {reflectionGroups.map((reflectionGroup) => {
-          return <ReflectionGroup key={reflectionGroup.id} meeting={meeting} reflectionGroup={reflectionGroup} />
+          return <ReflectionGroup key={reflectionGroup.id} meeting={meeting} phaseRef={phaseRef} reflectionGroup={reflectionGroup} />
         })}
       </ColumnBody>
     </Column>

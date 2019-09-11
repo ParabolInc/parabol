@@ -7,6 +7,7 @@ import {MutableRefObject, useEffect} from 'react'
 const useExpandedReflections = (firstRef: MutableRefObject<any>, count: number) => {
   const [bgRef, bgReverse] = useFlip({isBackground: true, firstRef, padding: ElementWidth.REFLECTION_CARD_PADDING * 2})
   const [scrollRef, scrollReverse] = useFlip({firstRef, padding: ElementWidth.REFLECTION_CARD_PADDING * 2})
+  // const [headerRef, headerReverse] = useFlip()
   const [setItemsRef, itemsReverse] = useFlipDeal(count)
   const {terminatePortal, openPortal, portal} = usePortal()
   const collapse = () => {

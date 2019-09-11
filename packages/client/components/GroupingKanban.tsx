@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo} from 'react'
+import React, {RefObject, useEffect, useMemo} from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import {createFragmentContainer} from 'react-relay'
 import {GroupingKanban_meeting} from '__generated__/GroupingKanban_meeting.graphql'
@@ -10,6 +10,7 @@ import useHideBodyScroll from '../hooks/useHideBodyScroll'
 
 interface Props {
   meeting: GroupingKanban_meeting,
+  phaseRef: RefObject<HTMLDivElement>
   resetActivityTimeout: () => void
 }
 
@@ -23,7 +24,7 @@ const ColumnsBlock = styled('div')({
 })
 
 const GroupingKanban = (props: Props) => {
-  const {meeting} = props
+  const {meeting, phaseRef} = props
   const {reflectionGroups, phases} = meeting
   const reflectPhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.reflect)!
   const reflectPrompts = reflectPhase.reflectPrompts!
@@ -46,6 +47,7 @@ const GroupingKanban = (props: Props) => {
           <GroupingKanbanColumn
             key={prompt.id}
             meeting={meeting}
+            phaseRef={phaseRef}
             prompt={prompt}
             reflectionGroups={groupsByPhaseItem[prompt.id] || []}
           />

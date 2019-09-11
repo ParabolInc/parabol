@@ -8,6 +8,7 @@ import {PALETTE} from '../../styles/paletteV2'
 import {BBox} from '../../types/animations'
 import {RefCallbackInstance} from '../../types/generics'
 import {ElementWidth, ZIndex} from '../../types/constEnums'
+import DraggableReflectionCard from '../ReflectionGroup/DraggableReflectionCard'
 
 const PortalBlock = styled('div')({
   height: '100%',
@@ -40,13 +41,14 @@ const PhaseArea = styled('div')<{phaseBBox: BBox}>(({phaseBBox}) => ({
 const ModalArea = styled('div')({
   borderRadius: 4,
   display: 'flex',
+  flexDirection: 'column',
   maxHeight: '100%',
   position: 'relative',
 })
 
 const BackgroundBlock = styled('div')({
   position: 'absolute',
-  background: PALETTE.BACKGROUND_BACKDROP,
+  background: PALETTE.BACKGROUND_REFLECTION_STACK,
   borderRadius: 4,
   height: '100%',
   width: '100%',
@@ -65,12 +67,13 @@ const ScrollBlock = styled('div')({
 interface Props {
   closePortal: () => void
   phaseRef: React.RefObject<HTMLDivElement>
-  reflectionStack: readonly PhaseItemColumn_meeting['reflectionGroups'][0]['reflections'][0][]
+  reflectionStack: readonly any[]
   meetingId: string
   readOnly: boolean
   scrollRef: Ref<HTMLDivElement>
   bgRef: Ref<HTMLDivElement>
   setItemsRef: (idx: number) => (c: RefCallbackInstance) => void
+  showOriginFooter?: boolean
 }
 
 const ModalReflectionWrapper = styled('div')({
@@ -78,7 +81,7 @@ const ModalReflectionWrapper = styled('div')({
 })
 
 const ExpandedReflectionStack = (props: Props) => {
-  const {reflectionStack, readOnly,  meetingId, phaseRef, scrollRef, setItemsRef, bgRef, closePortal} = props
+  const {header, reflectionStack, readOnly,  meetingId, phaseRef, scrollRef, setItemsRef, bgRef, closePortal, showOriginFooter, reflections, meeting} = props
   const phaseBBox = useMemo(() => {
     return getBBox(phaseRef.current)
   }, [phaseRef.current])
@@ -91,6 +94,7 @@ const ExpandedReflectionStack = (props: Props) => {
     <PhaseArea phaseBBox={phaseBBox!}>
       <Scrim onClick={closePortal} />
       <ModalArea>
+        {header}
         <ScrollBlock ref={scrollRef} onClick={closeOnEdge}>
           {reflectionStack.map((reflection, idx) => {
             return (
@@ -100,10 +104,15 @@ const ExpandedReflectionStack = (props: Props) => {
                 id={reflection.id}
                 ref={setItemsRef(idx)}
               >
-                <ReflectionCard
-                  meetingId={meetingId}
+                <DraggableReflectionCard
+                  isDraggable
+                  meeting={meeting}
+                  // meetingId={meetingId}
                   reflection={reflection}
-                  readOnly={readOnly}
+                  staticIdx={reflections ? reflectionStack.indexOf(reflection) : idx}
+                  staticReflections={reflectionStack}
+                  // readOnly={readOnly}
+                  // showOriginFooter={showOriginFooter}
                 />
               </ModalReflectionWrapper>
             )

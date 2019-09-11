@@ -18,18 +18,21 @@ interface Props {
   titleInputRef: RefObject<HTMLInputElement>
 }
 
-const GroupHeader = styled('div')({
+const GroupHeader = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
   alignItems: 'center',
   display: 'flex',
   flexShrink: 1,
   fontSize: 14,
   justifyContent: 'space-between',
+  margin: isExpanded ? '0 16px' : undefined,
   maxWidth: REFLECTION_CARD_WIDTH,
   minHeight: 32,
-  padding: '0 8px 8px 12px',
+  padding: 8,
+  paddingTop: isExpanded ? 16 : 0,
+  paddingBottom: isExpanded ? 0 : 8,
   position: 'relative',
   width: '100%'
-})
+}))
 
 const StyledTag = styled(Tag)({marginRight: 4})
 
@@ -43,7 +46,7 @@ const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>
   const {reflections} = reflectionGroup
   const canEdit = phaseType === GROUP && !localStage.isComplete
   return (
-    <GroupHeader ref={ref}>
+    <GroupHeader isExpanded={isExpanded} ref={ref}>
       <ReflectionGroupTitleEditor
         isExpanded={isExpanded}
         reflectionGroup={reflectionGroup}

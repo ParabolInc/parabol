@@ -231,7 +231,7 @@ const usePlaceholder = (reflection: DraggableReflectionCard_reflection, drag: Re
         style.height = ''
         style.transition = ''
       }
-      if (staticIdx === 0) {
+      if (staticReflectionCount === 1) {
         // the card has created a new group, grow a space for it
         style.height = '0'
         style.transition = `height ${Times.REFLECTION_DROP_DURATION}ms`

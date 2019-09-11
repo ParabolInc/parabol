@@ -75,6 +75,7 @@ const AndroidEditorFallback = lazyPreload(() =>
 
 class ReflectionEditorWrapper extends PureComponent<Props> {
   entityPasteStart?: {anchorOffset: number; anchorKey: string} = undefined
+  styleRef = React.createRef<HTMLDivElement>()
 
   componentDidMount() {
     if (!this.props.editorState.getCurrentContent().hasText()) {
@@ -85,6 +86,13 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
           // DraftEditor was unmounted before this was called
         }
       })
+    }
+    if (this.props.isClipped) {
+      const el = this.styleRef.current
+      if (el) {
+        el.scrollTop = el.scrollHeight
+      }
+
     }
   }
   blockStyleFn = (contentBlock) => {
@@ -184,7 +192,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     }
   }
 
-  render () {
+  render() {
     const {
       isClipped,
       ariaLabel,
@@ -201,7 +209,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     const useFallback = isAndroid && !readOnly
     const showFallback = useFallback && !isRichDraft(editorState)
     return (
-      <EditorStyles useFallback={useFallback} userSelect={userSelect} isClipped={isClipped}>
+      <EditorStyles useFallback={useFallback} userSelect={userSelect} isClipped={isClipped} ref={this.styleRef}>
         {showFallback ? (
           <Suspense fallback={<div />}>
             <AndroidEditorFallback

@@ -58,7 +58,7 @@ const RetroReflectionGroup = new GraphQLObjectType({
         const filteredReflections = reflections.filter(
           (reflection) => reflection.reflectionGroupId === reflectionGroupId
         )
-        filteredReflections.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
+        filteredReflections.sort((a, b) => (a.sortOrder < b.sortOrder ? 1 : -1))
         return filteredReflections
       }
     },

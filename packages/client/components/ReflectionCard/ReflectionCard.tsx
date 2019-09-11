@@ -61,7 +61,7 @@ const makeEditorState = (content, getEditorState) => {
 
 const ReflectionCard = (props: Props) => {
   const {meetingId, reflection, className, innerRef, isClipped, handleChange, userSelect, showOriginFooter} = props
-  const {id: reflectionId, content, retroPhaseItemId, phaseItem, isViewerCreator, reflectionGroupId, isEditing} = reflection
+  const {id: reflectionId, content, retroPhaseItemId, phaseItem, isViewerCreator, reflectionGroupId, isEditing, sortOrder} = reflection
   const {question} = phaseItem
   const atmosphere = useAtmosphere()
   const {onCompleted, submitMutation, error, onError} = useMutationProps()
@@ -140,7 +140,7 @@ const ReflectionCard = (props: Props) => {
         userSelect={userSelect}
       />
       {error && <StyledError>{error.message}</StyledError>}
-      {showOriginFooter && <ReflectionFooter>{question}</ReflectionFooter>}
+      {showOriginFooter && <ReflectionFooter>{sortOrder}</ReflectionFooter>}
       {!readOnly && meetingId && (
         <ReflectionCardDeleteButton meetingId={meetingId} reflectionId={reflectionId} />
       )}
