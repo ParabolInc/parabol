@@ -1924,6 +1924,11 @@ export interface IInvoice {
   id: string;
 
   /**
+   * The tier this invoice pays for
+   */
+  tier: TierEnum;
+
+  /**
    * The amount the card will be charged (total + startingBalance with a min value of 0)
    */
   amountDue: number;
@@ -1946,7 +1951,7 @@ export interface IInvoice {
   /**
    * the card used to pay the invoice
    */
-  creditCard: ICreditCard;
+  creditCard: ICreditCard | null;
 
   /**
    * The timestamp for the end of the billing cycle
@@ -1966,7 +1971,7 @@ export interface IInvoice {
   /**
    * The details that comprise the charges for next month
    */
-  nextMonthCharges: IInvoiceChargeNextMonth;
+  nextPeriodCharges: INextPeriodCharges;
 
   /**
    * *The organization id to charge
@@ -1982,6 +1987,11 @@ export interface IInvoice {
    * the datetime the invoice was successfully paid
    */
   paidAt: any | null;
+
+  /**
+   * The URL to pay via stripe if payment was not collected in app
+   */
+  payUrl: string | null;
 
   /**
    * The picture of the organization
@@ -2091,8 +2101,8 @@ export const enum InvoiceLineItemEnum {
 /**
  * A single line item for the charges for next month
  */
-export interface IInvoiceChargeNextMonth {
-  __typename: 'InvoiceChargeNextMonth';
+export interface INextPeriodCharges {
+  __typename: 'NextPeriodCharges';
 
   /**
    * The amount for the line item (in USD)
@@ -2110,9 +2120,14 @@ export interface IInvoiceChargeNextMonth {
   quantity: number;
 
   /**
-   * The per-seat monthly price of the subscription (in dollars)
+   * The per-seat monthly price of the subscription (in dollars), null if invoice is not per-seat
    */
-  unitPrice: number;
+  unitPrice: number | null;
+
+  /**
+   * "year" if enterprise, else "month" for pro
+   */
+  interval: string | null;
 }
 
 /**
@@ -2824,6 +2839,11 @@ export interface IMutation {
   stripeUpdateInvoiceItem: boolean | null;
 
   /**
+   * An invice has been sent from stripe, meaning it is finalized
+   */
+  stripeInvoiceFinalized: boolean | null;
+
+  /**
    * Show/hide the agenda list
    */
   toggleAgendaList: ITeamMember | null;
@@ -3458,6 +3478,13 @@ export interface IStripeUpdateInvoiceItemOnMutationArguments {
    * The stripe invoice ID
    */
   invoiceItemId: string;
+}
+
+export interface IStripeInvoiceFinalizedOnMutationArguments {
+  /**
+   * The stripe invoice ID
+   */
+  invoiceId: string;
 }
 
 export interface IToggleAgendaListOnMutationArguments {

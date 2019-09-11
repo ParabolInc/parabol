@@ -23,7 +23,7 @@ export default {
       description: 'The token that came back from stripe'
     }
   },
-  async resolve (
+  async resolve(
     _source,
     {orgId, stripeToken},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
@@ -44,8 +44,10 @@ export default {
 
     // RESOLUTION
     // if they downgrade & are re-upgrading, they'll already have a stripeId
+    const viewer = await dataLoader.get('users').load(viewerId)
+    const {email} = viewer
     try {
-      await upgradeToPro(orgId, stripeToken)
+      await upgradeToPro(orgId, stripeToken, email)
     } catch (e) {
       return standardError(e.param ? new Error(e.param) : e, {userId: viewerId})
     }

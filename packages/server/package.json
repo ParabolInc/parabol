@@ -71,7 +71,7 @@
     "@types/serve-favicon": "^2.2.30",
     "@types/shortid": "^0.0.29",
     "@types/string-similarity": "^3.0.0",
-    "@types/stripe": "^6.26.4",
+    "@types/stripe": "^6.32.0",
     "@typescript-eslint/eslint-plugin": "^1.13.0",
     "@typescript-eslint/parser": "^1.13.0",
     "awesome-typescript-loader": "^5.2.0",

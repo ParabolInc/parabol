@@ -19,9 +19,9 @@ import insertNewTeamMember from '../../../safeMutations/insertNewTeamMember'
 import shortid from 'shortid'
 import makeRetroTemplates from './makeRetroTemplates'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
-import {ADD_USER} from '../../../utils/serverConstants'
 import addTeamIdToTMS from '../../../safeMutations/addTeamIdToTMS'
 import {CREATED_TEAM} from '../../types/TimelineEventTypeEnum'
+import {InvoiceItemType} from 'parabol-client/types/constEnums'
 
 // used for addorg, addTeam
 export default async function createTeamAndLeader(userId, newTeam) {
@@ -97,7 +97,7 @@ export default async function createTeamAndLeader(userId, newTeam) {
 
   const {organizationUser} = res
   if (!organizationUser) {
-    await adjustUserCount(userId, orgId, ADD_USER)
+    await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER)
   }
 
   const tms = await r.table('User').get(userId)('tms')

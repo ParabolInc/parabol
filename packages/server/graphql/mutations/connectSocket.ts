@@ -3,15 +3,14 @@ import getRethink from '../../database/rethinkDriver'
 import User from '../types/User'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {UNPAUSE_USER} from '../../utils/serverConstants'
-import {NOTIFICATION} from '../../../client/utils/constants'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
+import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   name: 'ConnectSocket',
   description: 'a server-side mutation called when a client connects',
   type: User,
-  resolve: async (source, args, {authToken, dataLoader, socketId}) => {
+  resolve: async (_source, _args, {authToken, dataLoader, socketId}) => {
     const r = getRethink()
     const now = new Date()
 
@@ -48,7 +47,7 @@ export default {
         .table('OrganizationUser')
         .getAll(userId, {index: 'userId'})
         .filter({removedAt: null, inactive: true})('orgId')
-      adjustUserCount(userId, orgIds, UNPAUSE_USER)
+      adjustUserCount(userId, orgIds, InvoiceItemType.UNPAUSE_USER).catch(console.log)
       // TODO: re-identify
     }
 
@@ -63,7 +62,7 @@ export default {
 
       // Tell everyone this user is now online
       listeningUserIds.forEach((onlineUserId) => {
-        publish(NOTIFICATION, onlineUserId, User, user, subOptions)
+        publish(SubscriptionChannel.NOTIFICATION, onlineUserId, User, user, subOptions)
       })
     }
 
@@ -71,7 +70,7 @@ export default {
       connectedSockets,
       socketId,
       tms
-    })
+    }).catch()
     return user
   }
 }

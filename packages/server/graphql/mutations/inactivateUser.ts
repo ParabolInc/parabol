@@ -3,10 +3,10 @@ import adjustUserCount from '../../billing/helpers/adjustUserCount'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isOrgLeaderOfUser} from '../../utils/authorization'
 import {toEpochSeconds} from '../../utils/epochTime'
-import {MAX_MONTHLY_PAUSES, PAUSE_USER} from '../../utils/serverConstants'
 import InactivateUserPayload from '../types/InactivateUserPayload'
 import standardError from '../../utils/standardError'
 import {TierEnum} from 'parabol-client/types/graphql'
+import {InvoiceItemType, Threshold} from 'parabol-client/types/constEnums'
 
 export default {
   type: InactivateUserPayload,
@@ -57,7 +57,7 @@ export default {
         })
         .filter({
           stripeSubscriptionId,
-          type: PAUSE_USER,
+          type: InvoiceItemType.PAUSE_USER,
           userId
         })
         .count()
@@ -65,7 +65,7 @@ export default {
     })
     const pausesByOrg = await Promise.all(hookPromises) as number[]
     const triggeredPauses = Math.max(...pausesByOrg)
-    if (triggeredPauses >= MAX_MONTHLY_PAUSES) {
+    if (triggeredPauses >= Threshold.MAX_MONTHLY_PAUSES) {
       return standardError(new Error('Max monthly pauses exceeded for this user'), {
         userId: viewerId
       })
@@ -75,7 +75,7 @@ export default {
 
     // RESOLUTION
     const orgIds = orgs.map((org) => org.id)
-    await adjustUserCount(userId, orgIds, PAUSE_USER)
+    await adjustUserCount(userId, orgIds, InvoiceItemType.PAUSE_USER)
 
     // TODO wire up subscription
     return {userId}

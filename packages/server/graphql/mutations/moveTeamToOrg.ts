@@ -2,9 +2,9 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import adjustUserCount from '../../billing/helpers/adjustUserCount'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isSuperUser} from '../../utils/authorization'
-import {ADD_USER, AUTO_PAUSE_USER} from '../../utils/serverConstants'
 import standardError from '../../utils/standardError'
 import {OrgUserRole} from 'parabol-client/types/graphql'
+import {InvoiceItemType} from 'parabol-client/types/constEnums'
 
 export default {
   type: GraphQLString,
@@ -85,7 +85,7 @@ export default {
     })
 
     newToOrgUserIds.map((newUserId) => {
-      return adjustUserCount(newUserId, orgId, ADD_USER)
+      return adjustUserCount(newUserId, orgId, InvoiceItemType.ADD_USER)
     })
     const inactiveUserIds = await r
       .table('User')
@@ -93,7 +93,7 @@ export default {
       .filter({inactive: true})('id')
 
     inactiveUserIds.map((newInactiveUserId) => {
-      return adjustUserCount(newInactiveUserId, orgId, AUTO_PAUSE_USER)
+      return adjustUserCount(newInactiveUserId, orgId, InvoiceItemType.AUTO_PAUSE_USER)
     })
 
     const inactiveAdded = inactiveUserIds.length
