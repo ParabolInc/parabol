@@ -1,4 +1,4 @@
-import React, {useRef} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {DraggableReflectionCard_reflection} from '../../__generated__/DraggableReflectionCard_reflection.graphql'
@@ -110,6 +110,7 @@ export default createFragmentContainer(DraggableReflectionCard,
         reflectionGroupId
         retroPhaseItemId
         isViewerDragging
+        isViewerCreator
         isDropping
         remoteDrag {
           dragUserId

@@ -45,17 +45,20 @@ const useFlip = <T extends HTMLElement = HTMLDivElement>(options: Options<T>) =>
       style.transform = transformToStart
       style.transformOrigin = '0 0'
     } else {
+      style.overflow = 'hidden'
       style.transform = `translate(${translateX}px,${translateY}px)`
     }
     requestDoubleAnimationFrame(() => {
       style.opacity = ''
       style.transform = ''
       style.transition = `all ${Times.REFLECTION_DEAL_TOTAL_DURATION}ms ${BezierCurve.DECELERATE}`
+      style.overflow = ''
     })
     const cachedTransform = style.transform
     reverseRef.current = () => {
       const reset = () => {
         isAnimatedRef.current = false
+        style.overflow = ''
         if (firstRef.current) {
           firstRef.current.style.visibility = ''
         }
@@ -63,6 +66,7 @@ const useFlip = <T extends HTMLElement = HTMLDivElement>(options: Options<T>) =>
       style.transition = `all ${Times.REFLECTION_DEAL_CARD_DURATION}ms ${BezierCurve.DECELERATE}`
       style.transform = cachedTransform
       style.transformOrigin = '0 0'
+      style.overflow = 'hidden'
       if (isBackground) {
         style.opacity = '0'
       }

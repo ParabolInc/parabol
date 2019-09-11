@@ -1,4 +1,4 @@
-import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {makeResolve, resolveNewMeeting, resolveUnlockedStages} from '../resolvers'
 import StandardMutationError from './StandardMutationError'
 import NewMeeting from './NewMeeting'
@@ -15,6 +15,9 @@ const CreateReflectionPayload = new GraphQLObjectType({
     meeting: {
       type: NewMeeting,
       resolve: resolveNewMeeting
+    },
+    reflectionId: {
+      type: GraphQLID,
     },
     reflection: {
       type: RetroReflection,

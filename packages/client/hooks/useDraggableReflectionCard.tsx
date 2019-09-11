@@ -121,7 +121,7 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
   const [readOnly, setReadOnly] = useState(true)
 
   const onClick = () => {
-    if (reflection.isDropping) return
+    if (reflection.isDropping || !reflection.isViewerCreator) return
     // setTimeout(() => {
     setReadOnly(false)
     // })
@@ -182,6 +182,7 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
     const isTouch = isNativeTouch(e)
     const {clientX, clientY} = isTouch ? (e as TouchEvent).touches[0] : e as MouseEvent
     const wasDrag = drag.isDrag
+    const path = e.composedPath()
     if (!wasDrag) {
       drag.isDrag = getIsDrag(clientX, clientY, drag.startX, drag.startY)
       if (!drag.isDrag || !drag.ref) return
@@ -194,17 +195,20 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
       drag.clone = cloneReflection(drag.ref, reflectionId)
       drag.id = shortid.generate()
       StartDraggingReflectionMutation(atmosphere, {reflectionId, dragId: drag.id})
-      const dropZoneEl = findDropZoneInPath(e.composedPath())
-      if (dropZoneEl){
-        const dropZoneBBox = dropZoneEl.getBoundingClientRect()
-        drag.targets = measureDroppableReflections(dropZoneEl, dropZoneBBox)
-      }
     }
     if (!drag.clone) return
     drag.clientY = clientY
     drag.clone.style.transform = `translate(${clientX - drag.cardOffsetX}px,${clientY - drag.cardOffsetY}px)`
+    const dropZoneEl = findDropZoneInPath(path)
+    if (dropZoneEl !== drag.dropZoneEl) {
+      drag.dropZoneEl = dropZoneEl
+      if (dropZoneEl) {
+        drag.dropZoneBBox = dropZoneEl.getBoundingClientRect()
+        drag.targets = measureDroppableReflections(dropZoneEl, drag.dropZoneBBox)
+        maybeStartReflectionScroll(drag)
+      }
+    }
     announceDragUpdate(clientX, clientY)
-    maybeStartReflectionScroll(drag, e.composedPath())
   })
 
   const onMouseDown = (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
@@ -223,9 +227,44 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
   return {onMouseDown, onMouseMove, onMouseUp, onClick, onBlur, readOnly, setReadOnly}
 }
 
+const usePlaceholder = (reflection: DraggableReflectionCard_reflection, drag: ReflectionDragState, staticIdx: number, staticReflectionCount: number) => {
+  useEffect(() => {
+    const {ref} = drag
+    const {style, scrollHeight} = ref!
+    if (staticIdx === -1) {
+      // the card has been picked up
+      if (staticReflectionCount > 0) return
+      // the card is the only one in the group, shrink the group!
+      style.height = scrollHeight + 'px'
+      style.transition = `height ${Times.REFLECTION_DROP_DURATION}ms`
+      requestAnimationFrame(() => {
+        style.height = '0'
+      })
+    } else if (reflection.isDropping) {
+      const reset = () => {
+        style.height = ''
+        style.transition = ''
+      }
+      if (staticIdx === 0) {
+        // the card has created a new group, grow a space for it
+        style.height = '0'
+        style.transition = `height ${Times.REFLECTION_DROP_DURATION}ms`
+        requestAnimationFrame(() => {
+          style.height = scrollHeight + 'px'
+          setTimeout(reset, Times.REFLECTION_DROP_DURATION)
+        })
+      } else {
+        // the card landed on an existing group
+        reset()
+      }
+    }
+  }, [staticIdx === -1])
+}
+
 const useDraggableReflectionCard = (reflection: DraggableReflectionCard_reflection, drag: ReflectionDragState, staticIdx: number, teamId: string, staticReflectionCount: number) => {
   useRemoteDrag(reflection, drag, staticIdx)
   useDroppingDrag(drag, reflection)
+  usePlaceholder(reflection, drag, staticIdx, staticReflectionCount)
   const {onMouseDown, onMouseUp, onMouseMove, readOnly, onBlur, onClick, setReadOnly} = useDragAndDrop(drag, reflection, staticIdx, teamId, staticReflectionCount)
   useLocalDrag(reflection, drag, staticIdx, onMouseMove, onMouseUp)
   return {onMouseDown, readOnly, onBlur, onClick, setReadOnly}

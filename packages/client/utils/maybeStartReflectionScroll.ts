@@ -1,6 +1,5 @@
 import {ReflectionDragState} from '../components/ReflectionGroup/DraggableReflectionCard'
 import measureDroppableReflections from './measureDroppableReflections'
-import findDropZoneInPath from './findDropZoneInPath'
 
 const SCROLL_MULTIPLIER = 25
 const scheduleScroll = (drag: ReflectionDragState, initialDropZoneEl: HTMLDivElement) => {
@@ -32,27 +31,11 @@ const scheduleScroll = (drag: ReflectionDragState, initialDropZoneEl: HTMLDivEle
 }
 
 
-const maybeStartReflectionScroll = (drag: ReflectionDragState, path: EventTarget[]) => {
-  const dropZoneEl = findDropZoneInPath(path)
-
-  // if the cursor isn't hovering a dropZoneEl, don't scroll
-  if (!dropZoneEl) {
-    drag.dropZoneEl = null
-    drag.dropZoneBBox = null
-    return
-  }
-
-  // if it's a new dropzone, measure it & see if it can scroll
-  if (dropZoneEl !== drag.dropZoneEl) {
-    // set up dropZone
-    drag.dropZoneEl = dropZoneEl
-    // if the cursor is close to the top & not at the top or close to but not at bottom
-    drag.dropZoneBBox = dropZoneEl.getBoundingClientRect()
-    // if the dropZoneEl has no scroll bars, don't scroll
-    const {scrollHeight, clientHeight} = dropZoneEl
-    if (scrollHeight <= clientHeight) return
-    scheduleScroll(drag, dropZoneEl)
-  }
+const maybeStartReflectionScroll = (drag: ReflectionDragState) => {
+  const dropZoneEl = drag.dropZoneEl!
+  const {scrollHeight, clientHeight} = dropZoneEl
+  if (scrollHeight <= clientHeight) return
+  scheduleScroll(drag, dropZoneEl)
 }
 
 export default maybeStartReflectionScroll

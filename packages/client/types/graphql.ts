@@ -2608,11 +2608,6 @@ export interface IMutation {
   createReflection: ICreateReflectionPayload | null;
 
   /**
-   * Create a new reflection group
-   */
-  createReflectionGroup: ICreateReflectionGroupPayload | null;
-
-  /**
    * Create a new task, triggering a CreateCard for other viewers
    */
   createTask: ICreateTaskPayload | null;
@@ -3082,15 +3077,6 @@ export interface ICreateOrgPicturePutUrlOnMutationArguments {
 
 export interface ICreateReflectionOnMutationArguments {
   input: ICreateReflectionInput;
-}
-
-export interface ICreateReflectionGroupOnMutationArguments {
-  meetingId: string;
-
-  /**
-   * An array of 1 or 2 reflections that make up the group. The first card in the array will be used to determine sort order
-   */
-  reflectionIds: string[];
 }
 
 export interface ICreateTaskOnMutationArguments {
@@ -4588,6 +4574,7 @@ export interface ICreateReflectionPayload {
   __typename: 'CreateReflectionPayload';
   error: IStandardMutationError | null;
   meeting: NewMeeting | null;
+  reflectionId: string | null;
   reflection: IRetroReflection | null;
 
   /**
@@ -4599,13 +4586,6 @@ export interface ICreateReflectionPayload {
    * The stages that were unlocked by navigating
    */
   unlockedStages: NewMeetingStage[] | null;
-}
-
-export interface ICreateReflectionGroupPayload {
-  __typename: 'CreateReflectionGroupPayload';
-  error: IStandardMutationError | null;
-  meeting: NewMeeting | null;
-  reflectionGroup: IRetroReflectionGroup | null;
 }
 
 export interface ICreateTaskInput {
@@ -6125,7 +6105,6 @@ export type TeamSubscriptionPayload =
   | IArchiveTeamPayload
   | IAutoGroupReflectionsPayload
   | ICreateReflectionPayload
-  | ICreateReflectionGroupPayload
   | IDenyPushInvitationPayload
   | IDowngradeToPersonalPayload
   | IDragDiscussionTopicPayload

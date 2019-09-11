@@ -8,6 +8,8 @@ import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
 import DraggableReflectionCard from './DraggableReflectionCard'
 import {Layout, ReflectionStackPerspective, Times} from '../../types/constEnums'
 import ReflectionGroupHeader from '../ReflectionGroupHeader'
+import ExpandedReflectionStack from '../RetroReflectPhase/ExpandedReflectionStack'
+import useExpandedReflections from '../../hooks/useExpandedReflections'
 
 const CardStack = styled('div')({
   position: 'relative'
@@ -15,15 +17,11 @@ const CardStack = styled('div')({
 
 const Group = styled('div')<{staticReflectionCount: number}>(({staticReflectionCount}) => ({
   position: 'relative',
-  minHeight: 90,
   padding: Layout.REFLECTION_CARD_PADDING_Y,
-  paddingBottom: Layout.REFLECTION_CARD_PADDING_Y + (Math.min(3, staticReflectionCount) - 1) * ReflectionStackPerspective.Y,
+  paddingTop: staticReflectionCount === 0 ? 0 : undefined,
+  paddingBottom: staticReflectionCount === 0 ? 0 : Layout.REFLECTION_CARD_PADDING_Y + (Math.min(3, staticReflectionCount) - 1) * ReflectionStackPerspective.Y,
   transition: `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms`
 }))
-
-const CenteredCardStack = styled('div')({
-  position: 'relative'
-})
 
 interface Props {
   meeting: ReflectionGroup_meeting
@@ -32,7 +30,7 @@ interface Props {
 
 const ReflectionGroup = (props: Props) => {
   const {meeting, reflectionGroup} = props
-  const {localPhase, localStage} = meeting
+  const {id: meetingId, localPhase, localStage} = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const {reflections, id: reflectionGroupId} = reflectionGroup
@@ -42,9 +40,23 @@ const ReflectionGroup = (props: Props) => {
   const staticReflections = useMemo(() => {
     return reflections.filter((reflection) => !reflection.isViewerDragging && (!reflection.remoteDrag || reflection.isDropping))
   }, [reflections])
+  const stackRef = useRef<HTMLDivElement>(null)
+  const {setItemsRef, scrollRef, bgRef, portal, collapse, expand} = useExpandedReflections(stackRef, reflections.length)
+  const phaseRef = useRef(null)
   return (
     <>
-      <Group staticReflectionCount={staticReflections.length} data-droppable={reflectionGroupId}>
+      {portal(<ExpandedReflectionStack
+        phaseRef={phaseRef}
+        reflectionStack={reflections}
+        meetingId={meetingId}
+        readOnly={false}
+        scrollRef={scrollRef}
+        bgRef={bgRef}
+        setItemsRef={setItemsRef}
+        closePortal={collapse}
+      />)}
+      <Group staticReflectionCount={staticReflections.length} data-droppable={reflectionGroupId} ref={stackRef}
+             onClick={() => console.log('click')}>
         <ReflectionGroupHeader
           meeting={meeting}
           reflectionGroup={reflectionGroup}
@@ -52,20 +64,18 @@ const ReflectionGroup = (props: Props) => {
           titleInputRef={titleInputRef}
         />
         <CardStack>
-          <CenteredCardStack>
-            {reflections.map((reflection) => {
-              return (
-                <DraggableReflectionCard
-                  key={reflection.id}
-                  staticIdx={staticReflections.indexOf(reflection)}
-                  isDraggable={isDraggable}
-                  meeting={meeting}
-                  reflection={reflection}
-                  staticReflections={staticReflections}
-                />
-              )
-            })}
-          </CenteredCardStack>
+          {reflections.map((reflection) => {
+            return (
+              <DraggableReflectionCard
+                key={reflection.id}
+                staticIdx={staticReflections.indexOf(reflection)}
+                isDraggable={isDraggable}
+                meeting={meeting}
+                reflection={reflection}
+                staticReflections={staticReflections}
+              />
+            )
+          })}
         </CardStack>
       </Group>
     </>

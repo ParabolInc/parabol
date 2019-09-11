@@ -16,7 +16,7 @@ module.exports = {
     'emotion/no-vanilla': 'error',
     'emotion/import-from-emotion': 'error',
     'emotion/styled-import': 'error',
-    "react-hooks/exhaustive-deps": "error", // Checks effect dependencies, buggy so don't use with --fix
+    // "react-hooks/exhaustive-deps": "error", // Checks effect dependencies, buggy so don't use with --fix
     'react-hooks/rules-of-hooks': 'warn' // Checks rules of Hooks
   },
   settings: {
