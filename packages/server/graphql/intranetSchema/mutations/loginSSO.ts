@@ -13,7 +13,6 @@ import createNewOrg from '../../mutations/helpers/createNewOrg'
 import createTeamAndLeader from '../../mutations/helpers/createTeamAndLeader'
 import addSeedTasks from '../../mutations/helpers/addSeedTasks'
 import SuggestedActionInviteYourTeam from '../../../database/types/SuggestedActionInviteYourTeam'
-import {requireSU} from '../../../utils/authorization'
 
 
 const loginSSO = {
@@ -33,11 +32,9 @@ const loginSSO = {
       description: 'true if this is part of an invitation'
     }
   },
-  async resolve (_source, {email, name, isInvited}, {authToken}) {
+  async resolve (_source, {email, name, isInvited}) {
     const r = getRethink()
     const now = new Date()
-
-    requireSU(authToken)
 
     const user = await r.table('User')
       .getAll(email, {index: 'email'})
