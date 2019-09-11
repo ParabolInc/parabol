@@ -1,10 +1,10 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import Tag from './Tag/Tag'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {PALETTE} from '../styles/paletteV2'
 import Icon from './Icon'
 import {keyframes} from '@emotion/core'
+import BaseTag from './Tag/BaseTag'
 
 
 const keyframesOpacity = keyframes`
@@ -37,7 +37,13 @@ const Arrow = styled(Icon)({
   verticalAlign: 'text-bottom'
 })
 
+const Tag = styled(BaseTag)({
+  backgroundColor: PALETTE.PRIMARY_LIGHT,
+  color: '#fff'
+})
+
 export type RemoteReflectionArrow = 'arrow_downward' | 'arrow_upward' | 'arrow_back' | 'arrow_forward'
+
 interface Props {
   arrow?: RemoteReflectionArrow
   userId: string
@@ -53,13 +59,11 @@ const UserDraggingHeader = (props: Props) => {
   const arrowEl = <Arrow>{arrow}</Arrow>
   return (
     <Header style={style}>
-      <Tag colorPalette='purple' label={
-        <>
-          {(arrow === 'arrow_downward' || arrow === 'arrow_upward') && arrowEl}
-          {label}
-          {arrow && arrowEl}
-        </>
-      } />
+      <Tag>
+        {(arrow === 'arrow_downward' || arrow === 'arrow_upward') && arrowEl}
+        {label}
+        {arrow && arrowEl}
+      </Tag>
     </Header>
   )
 }

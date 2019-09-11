@@ -1,8 +1,8 @@
 import {ReflectionCard_reflection} from '../../__generated__/ReflectionCard_reflection.graphql'
 import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
-import React, {useEffect, useMemo, useRef} from 'react'
+import React, {useEffect, useRef} from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
 import ReflectionFooter from '../ReflectionFooter'
@@ -60,8 +60,8 @@ const makeEditorState = (content, getEditorState) => {
 }
 
 const ReflectionCard = (props: Props) => {
-  const {meetingId, reflection, className, innerRef, isClipped, handleChange, readOnly, userSelect, showOriginFooter, setReadOnly} = props
-  const {id: reflectionId, content, retroPhaseItemId, phaseItem, isViewerCreator, reflectionGroupId} = reflection
+  const {meetingId, reflection, className, innerRef, isClipped, handleChange, userSelect, showOriginFooter} = props
+  const {id: reflectionId, content, retroPhaseItemId, phaseItem, isViewerCreator, reflectionGroupId, isEditing} = reflection
   const {question} = phaseItem
   const atmosphere = useAtmosphere()
   const {onCompleted, submitMutation, error, onError} = useMutationProps()
@@ -80,7 +80,11 @@ const ReflectionCard = (props: Props) => {
 
   useEffect(() => {
     if (isViewerCreator && !editorStateRef.current.getCurrentContent().hasText()) {
-      setReadOnly && setReadOnly(false)
+      commitLocalUpdate(atmosphere, (store) => {
+        const reflection = store.get(reflectionId)
+        if (!reflection) return
+        reflection.setValue(true, 'isEditing')
+      })
     }
   }, [])
 
@@ -118,7 +122,7 @@ const ReflectionCard = (props: Props) => {
     return 'handled'
   }
 
-  const isReadOnly = !isViewerCreator || readOnly || isTempId(reflectionId)
+  const readOnly = !isViewerCreator || !isEditing || isTempId(reflectionId)
   return (
     <ReflectionCardRoot className={className} ref={innerRef}>
       <ReflectionEditorWrapper
@@ -131,13 +135,13 @@ const ReflectionCard = (props: Props) => {
         handleChange={handleChange}
         handleReturn={handleReturn}
         placeholder={isViewerCreator ? 'My reflection… (press enter to add)' : '*New Reflection*'}
-        readOnly={isReadOnly}
+        readOnly={readOnly}
         setEditorState={setEditorState}
         userSelect={userSelect}
       />
       {error && <StyledError>{error.message}</StyledError>}
       {showOriginFooter && <ReflectionFooter>{question}</ReflectionFooter>}
-      {!isReadOnly && meetingId && (
+      {!readOnly && meetingId && (
         <ReflectionCardDeleteButton meetingId={meetingId} reflectionId={reflectionId} />
       )}
     </ReflectionCardRoot>
@@ -149,6 +153,7 @@ export default createFragmentContainer(ReflectionCard, {
     fragment ReflectionCard_reflection on RetroReflection {
       isViewerCreator
       id
+      isEditing
       reflectionGroupId
       retroPhaseItemId
       content

@@ -72,6 +72,7 @@ export default createFragmentContainer(
         }
         reflectionGroups {
           ...GroupingKanbanColumn_reflectionGroups
+          id
           retroPhaseItemId
         }
       }`

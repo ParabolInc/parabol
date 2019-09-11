@@ -9,15 +9,15 @@ import {ElementWidth, ReflectionStackPerspective, Times} from '../../types/const
 import {DraggableReflectionCard_staticReflections} from '__generated__/DraggableReflectionCard_staticReflections.graphql'
 import useDraggableReflectionCard from '../../hooks/useDraggableReflectionCard'
 
-const ReflectionWrapper = styled('div')<{staticIdx: number, staticReflectionCount: number, isDropping: boolean | null, readOnly: boolean}>(
-  ({staticIdx, staticReflectionCount, isDropping, readOnly}): any => {
+const ReflectionWrapper = styled('div')<{staticIdx: number, staticReflectionCount: number, isDropping: boolean | null, isEditing: boolean}>(
+  ({staticIdx, staticReflectionCount, isDropping, isEditing}): any => {
     const stackOrder = staticReflectionCount - staticIdx - 1
     const isHidden = staticIdx === -1 || isDropping
     const multiple = Math.min(stackOrder, 2)
     const scaleX = (ElementWidth.REFLECTION_CARD - ReflectionStackPerspective.X * multiple * 2) / ElementWidth.REFLECTION_CARD
     const translateY = ReflectionStackPerspective.Y * multiple
     return {
-      cursor: stackOrder === 0 && !isHidden && readOnly ? 'grab' : undefined,
+      cursor: stackOrder === 0 && !isHidden && !isEditing ? 'grab' : undefined,
       position: stackOrder === 0 ? 'relative' : 'absolute',
       bottom: 0,
       left: 0,
@@ -76,20 +76,18 @@ export interface TargetBBox {
 
 const DraggableReflectionCard = (props: Props) => {
   const {reflection, staticIdx, staticReflections, meeting} = props
-  const {id: reflectionId, isDropping} = reflection
+  const {id: reflectionId, isDropping, isEditing} = reflection
   const {id: meetingId, teamId} = meeting
   const dragRef = useRef({...DRAG_STATE})
   const {current: drag} = dragRef
   const staticReflectionCount = staticReflections.length
-  const {onMouseDown, onClick, onBlur, readOnly, setReadOnly} = useDraggableReflectionCard(reflection, drag, staticIdx, teamId, staticReflectionCount)
+  const {onMouseDown} = useDraggableReflectionCard(reflection, drag, staticIdx, teamId, staticReflectionCount)
   return (
-    <ReflectionWrapper tabIndex={-1} onBlur={onBlur} onClick={onClick} ref={(c) => drag.ref = c} key={reflectionId}
+    <ReflectionWrapper tabIndex={-1} ref={(c) => drag.ref = c} key={reflectionId}
                        staticReflectionCount={staticReflectionCount} staticIdx={staticIdx} isDropping={isDropping}
-                       readOnly={readOnly}
-                       onMouseDown={onMouseDown} onTouchStart={onMouseDown}>
-      <ReflectionCard readOnly={readOnly} userSelect='none' reflection={reflection} showOriginFooter
-                      isClipped={staticReflectionCount - 1 !== staticIdx} meetingId={meetingId}
-                      setReadOnly={setReadOnly} />
+                       isEditing={isEditing} onMouseDown={onMouseDown} onTouchStart={onMouseDown}>
+      <ReflectionCard userSelect='none' reflection={reflection} showOriginFooter
+                      isClipped={staticReflectionCount - 1 !== staticIdx} meetingId={meetingId} />
     </ReflectionWrapper>
   )
 }
@@ -107,6 +105,7 @@ export default createFragmentContainer(DraggableReflectionCard,
         ...ReflectionCard_reflection
         ...RemoteReflection_reflection
         id
+        isEditing
         reflectionGroupId
         retroPhaseItemId
         isViewerDragging

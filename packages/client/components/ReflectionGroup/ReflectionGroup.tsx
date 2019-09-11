@@ -2,7 +2,7 @@ import {ReflectionGroup_meeting} from '../../__generated__/ReflectionGroup_meeti
 import {ReflectionGroup_reflectionGroup} from '../../__generated__/ReflectionGroup_reflectionGroup.graphql'
 import React, {useMemo, useRef, useState} from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
 import DraggableReflectionCard from './DraggableReflectionCard'
@@ -10,6 +10,8 @@ import {Layout, ReflectionStackPerspective, Times} from '../../types/constEnums'
 import ReflectionGroupHeader from '../ReflectionGroupHeader'
 import ExpandedReflectionStack from '../RetroReflectPhase/ExpandedReflectionStack'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
+import {GROUP} from '../../utils/constants'
+import useAtmosphere from '../../hooks/useAtmosphere'
 
 const CardStack = styled('div')({
   position: 'relative'
@@ -33,8 +35,7 @@ const ReflectionGroup = (props: Props) => {
   const {id: meetingId, localPhase, localStage} = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
-  const {reflections, id: reflectionGroupId} = reflectionGroup
-  const [isEditingSingleCardTitle] = useState(false)
+  const {reflections, id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
   const titleInputRef = useRef(null)
   const isDraggable = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete
   const staticReflections = useMemo(() => {
@@ -43,6 +44,37 @@ const ReflectionGroup = (props: Props) => {
   const stackRef = useRef<HTMLDivElement>(null)
   const {setItemsRef, scrollRef, bgRef, portal, collapse, expand} = useExpandedReflections(stackRef, reflections.length)
   const phaseRef = useRef(null)
+  const atmosphere = useAtmosphere()
+  const [isEditing, thisSetIsEditing] = useState(false)
+
+  const setIsEditing = (isEditing: boolean) => {
+    thisSetIsEditing(isEditing)
+    const [firstReflection] = staticReflections
+    const {id: firstReflectionId} = firstReflection
+    commitLocalUpdate(atmosphere, (store) => {
+      const reflection = store.get(firstReflectionId)!
+      reflection.setValue(isEditing, 'isEditing')
+    })
+  }
+
+  const onClick = () => {
+    if (isEditing) return
+    const wasDrag = staticReflections.some((reflection) => reflection.isDropping)
+    if (wasDrag) return
+    if (reflections.length === 1) {
+      setIsEditing(true)
+      const watchForClick = (e) => {
+        const isClickOnGroup = e.composedPath().find((el) => el === stackRef.current)
+        if (!isClickOnGroup) {
+          document.removeEventListener('click', watchForClick)
+          setIsEditing(false)
+        }
+      }
+      document.addEventListener('click', watchForClick)
+    }
+  }
+
+  const showHeader = phaseType !== GROUP || titleIsUserDefined || reflections.length > 1 || isEditing
   return (
     <>
       {portal(<ExpandedReflectionStack
@@ -55,20 +87,19 @@ const ReflectionGroup = (props: Props) => {
         setItemsRef={setItemsRef}
         closePortal={collapse}
       />)}
-      <Group staticReflectionCount={staticReflections.length} data-droppable={reflectionGroupId} ref={stackRef}
-             onClick={() => console.log('click')}>
-        <ReflectionGroupHeader
+      <Group staticReflectionCount={staticReflections.length} data-droppable={reflectionGroupId} ref={stackRef}>
+        {showHeader && <ReflectionGroupHeader
           meeting={meeting}
           reflectionGroup={reflectionGroup}
-          isEditingSingleCardTitle={isEditingSingleCardTitle}
           titleInputRef={titleInputRef}
-        />
-        <CardStack>
+        />}
+        <CardStack onClick={onClick}>
           {reflections.map((reflection) => {
+            const staticIdx = staticReflections.indexOf(reflection)
             return (
               <DraggableReflectionCard
                 key={reflection.id}
-                staticIdx={staticReflections.indexOf(reflection)}
+                staticIdx={staticIdx}
                 isDraggable={isDraggable}
                 meeting={meeting}
                 reflection={reflection}

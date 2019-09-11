@@ -15,7 +15,6 @@ interface Props {
   meeting: ReflectionGroupHeader_meeting
   reflectionGroup: ReflectionGroupHeader_reflectionGroup
   isExpanded?: boolean
-  isEditingSingleCardTitle?: boolean
   titleInputRef: RefObject<HTMLInputElement>
 }
 
@@ -35,17 +34,14 @@ const GroupHeader = styled('div')({
 const StyledTag = styled(Tag)({marginRight: 4})
 
 const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
-  const {meeting, reflectionGroup, isEditingSingleCardTitle, titleInputRef} = props
+  const {meeting, reflectionGroup, titleInputRef} = props
   const isExpanded = !!props.isExpanded
   const {
     localStage,
     localPhase: {phaseType}
   } = meeting
-  const {reflections, titleIsUserDefined} = reflectionGroup
+  const {reflections} = reflectionGroup
   const canEdit = phaseType === GROUP && !localStage.isComplete
-  const showHeader =
-    reflections.length > 1 || phaseType !== GROUP || titleIsUserDefined || isEditingSingleCardTitle
-  if (!showHeader) return null
   return (
     <GroupHeader ref={ref}>
       <ReflectionGroupTitleEditor
@@ -92,7 +88,6 @@ export default createFragmentContainer(ReflectionGroupHeader, {
       reflections {
         id
       }
-      titleIsUserDefined
     }
   `
 })

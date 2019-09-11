@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react'
+import React, {useContext, useEffect} from 'react'
 import {PortalContext} from '../components/AtmosphereProvider/PortalProvider'
 import RemoteReflection from '../components/ReflectionGroup/RemoteReflection'
 import useAtmosphere from './useAtmosphere'
@@ -118,21 +118,7 @@ const useDroppingDrag = (drag: ReflectionDragState, reflection: DraggableReflect
 const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflectionCard_reflection, staticIdx: number, teamId: string, reflectionCount: number) => {
   const atmosphere = useAtmosphere()
 
-  const [readOnly, setReadOnly] = useState(true)
-
-  const onClick = () => {
-    if (reflection.isDropping || !reflection.isViewerCreator) return
-    // setTimeout(() => {
-    setReadOnly(false)
-    // })
-  }
-
-  const onBlur = (e) => {
-    if (e.currentTarget.contains(e.relatedTarget)) return
-    setReadOnly(true)
-  }
-
-  const {id: reflectionId, reflectionGroupId, isDropping} = reflection
+  const {id: reflectionId, reflectionGroupId, isDropping, isEditing} = reflection
 
   const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
     const eventType = isNativeTouch(e) ? 'touchmove' : 'mousemove'
@@ -212,7 +198,7 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
   })
 
   const onMouseDown = (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
-    if (isDropping || staticIdx === -1 || !readOnly) return
+    if (isDropping || staticIdx === -1 || isEditing) return
     const isTouch = isReactTouch(e)
     const moveName = isTouch ? 'touchmove' : 'mousemove'
     const endName = isTouch ? 'touchend' : 'mouseup'
@@ -224,7 +210,7 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
     drag.isDrag = false
   }
 
-  return {onMouseDown, onMouseMove, onMouseUp, onClick, onBlur, readOnly, setReadOnly}
+  return {onMouseDown, onMouseMove, onMouseUp}
 }
 
 const usePlaceholder = (reflection: DraggableReflectionCard_reflection, drag: ReflectionDragState, staticIdx: number, staticReflectionCount: number) => {
@@ -265,9 +251,9 @@ const useDraggableReflectionCard = (reflection: DraggableReflectionCard_reflecti
   useRemoteDrag(reflection, drag, staticIdx)
   useDroppingDrag(drag, reflection)
   usePlaceholder(reflection, drag, staticIdx, staticReflectionCount)
-  const {onMouseDown, onMouseUp, onMouseMove, readOnly, onBlur, onClick, setReadOnly} = useDragAndDrop(drag, reflection, staticIdx, teamId, staticReflectionCount)
+  const {onMouseDown, onMouseUp, onMouseMove} = useDragAndDrop(drag, reflection, staticIdx, teamId, staticReflectionCount)
   useLocalDrag(reflection, drag, staticIdx, onMouseMove, onMouseUp)
-  return {onMouseDown, readOnly, onBlur, onClick, setReadOnly}
+  return {onMouseDown}
 }
 
 export default useDraggableReflectionCard
