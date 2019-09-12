@@ -124,6 +124,7 @@ export default {
         .table('Team')
         .getAll(orgId, {index: 'orgId'})
         .update({
+          isPaid: true,
           tier: TierEnum.enterprise,
           updatedAt: now
         })

@@ -7,10 +7,6 @@ interface Input {
   tms: string[]
   rol?: 'su'
   bet?: 1
-  iat?: number
-  iss?: string
-  exp?: number
-  aud?: string
 }
 
 export default class AuthToken {
@@ -23,14 +19,15 @@ export default class AuthToken {
   exp: number
   aud: string
   constructor(input: Input) {
-    const {bet, rol, sub, tms, iat, iss, exp, aud} = input
+    const {bet, rol, sub, tms} = input
     const now = new Date()
     this.sub = sub
     this.tms = tms
-    this.iat = iat || toEpochSeconds(now)
-    this.aud = aud || process.env.AUTH0_CLIENT_ID as string
-    this.iss = iss || makeAppLink()
-    this.exp = exp || toEpochSeconds(now.getTime() + Threshold.JWT_LIFESPAN)
+    this.iat = toEpochSeconds(now)
+    this.aud = process.env.AUTH0_CLIENT_ID as string
+    this.iss = makeAppLink()
+    this.exp = toEpochSeconds(now.getTime() + Threshold.JWT_LIFESPAN)
+
     if (bet) {
       this.bet = bet
     }
