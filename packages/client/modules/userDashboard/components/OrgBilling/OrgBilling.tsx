@@ -15,12 +15,12 @@ interface Props {
 
 const OrgBilling = (props: Props) => {
   const {organization, viewer} = props
-  const {isBillingLeader, stripeSubscriptionId} = organization
+  const {isBillingLeader} = organization
   return (
     <div>
       <OrgBillingUpgrade organization={organization}/>
       <OrgBillingCreditCardInfo organization={organization} />
-      <OrgBillingInvoices viewer={viewer} hasCard={!!stripeSubscriptionId} />
+      <OrgBillingInvoices viewer={viewer} />
       <OrgBillingDangerZone isBillingLeader={isBillingLeader}/>
     </div>
   )
@@ -39,7 +39,6 @@ export default createFragmentContainer(
         ...OrgBillingCreditCardInfo_organization
         ...OrgBillingUpgrade_organization
         id
-        stripeSubscriptionId
         isBillingLeader
       }
     `

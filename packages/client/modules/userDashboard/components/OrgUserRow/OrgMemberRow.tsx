@@ -113,7 +113,7 @@ const OrgMemberRow = (props: Props) => {
   const {newUserUntil, user, role} = organizationUser
   const isBillingLeader = role === OrgUserRole.BILLING_LEADER
   const {email, inactive, picture, preferredName, userId} = user
-  const isPersonalTier = tier === TierEnum.personal
+  const isProTier = tier === TierEnum.pro
   const isViewerLastBillingLeader =
     isViewerBillingLeader && isBillingLeader && billingLeaderCount === 1
   const {viewerId} = atmosphere
@@ -121,7 +121,7 @@ const OrgMemberRow = (props: Props) => {
   const {togglePortal: toggleLeave, modalPortal: leaveModal} = useModal()
   const {togglePortal: toggleRemove, modalPortal: removeModal} = useModal()
   const toggleHandler = () => {
-    if (isPersonalTier) return
+    if (!isProTier) return
     if (!inactive) {
       submitMutation()
       const handleError = (error) => {
@@ -171,9 +171,9 @@ const OrgMemberRow = (props: Props) => {
               </StyledFlatButton>
             </>
           )}
-          {!isPersonalTier && isViewerBillingLeader && (
+          {isProTier && isViewerBillingLeader && (
             <ToggleBlock>
-              <Toggle active={!inactive} disabled={isPersonalTier} onClick={toggleHandler} />
+              <Toggle active={!inactive} disabled={!isProTier} onClick={toggleHandler} />
             </ToggleBlock>
           )}
           {isViewerLastBillingLeader && userId === viewerId && (

@@ -1,16 +1,16 @@
-import stripe from '../stripe'
 import getRethink from '../../database/rethinkDriver'
 import {fromEpochSeconds} from '../../utils/epochTime'
-import {AUTO_PAUSE_USER, PAUSE_USER, UNPAUSE_USER} from '../../utils/serverConstants'
 import shortid from 'shortid'
 import Stripe from 'stripe'
 import Invoice from '../../database/types/Invoice'
-import {InvoiceLineItemEnum, InvoiceStatusEnum, OrgUserRole} from 'parabol-client/types/graphql'
+import {InvoiceLineItemEnum, InvoiceStatusEnum, OrgUserRole, TierEnum} from 'parabol-client/types/graphql'
 import InvoiceLineItemDetail from '../../database/types/InvoiceLineItemDetail'
 import QuantityChangeLineItem from '../../database/types/QuantityChangeLineItem'
 import InvoiceLineItemOtherAdjustments from '../../database/types/InvoiceLineItemOtherAdjustments'
+import {InvoiceItemType} from 'parabol-client/types/constEnums'
+import StripeManager from '../../utils/StripeManager'
+import NextPeriodCharges from '../../database/types/NextPeriodCharges'
 
-// type type = 'pauseUser' | 'unpauseUser' | 'autoPauseUser' | 'addUser' | 'removeUser'
 interface InvoicesByStartTime {
   [start: string]: {
     unusedTime?: Stripe.invoices.IInvoiceLineItem
@@ -27,13 +27,6 @@ interface TypesDict {
 
 interface ItemDict {
   [userId: string]: TypesDict
-}
-
-interface NextMonthCharges {
-  amount: number
-  quantity: number
-  nextPeriodEnd: Date
-  unitPrice: number
 }
 
 interface EmailLookup {
@@ -99,7 +92,7 @@ const reduceItemsByType = (typesDict: TypesDict, email: string) => {
     const startTimeDict = typesDict[type]
     const startTimes = Object.keys(startTimeDict)
     // unpausing someone ends a period, we'll use this later
-    const dateField = type === UNPAUSE_USER ? 'endAt' : 'startAt'
+    const dateField = type === InvoiceItemType.UNPAUSE_USER ? 'endAt' : 'startAt'
     for (let k = 0; k < startTimes.length; k++) {
       // for each time period
       const startTime = startTimes[k]
@@ -204,7 +197,7 @@ const addToDict = (itemDict: ItemDict, lineItem: Stripe.invoices.IInvoiceLineIte
     metadata: {userId, type},
     period: {start}
   } = lineItem
-  const safeType = type === AUTO_PAUSE_USER ? PAUSE_USER : type
+  const safeType = type === InvoiceItemType.AUTO_PAUSE_USER ? InvoiceItemType.PAUSE_USER : type
   itemDict[userId] = itemDict[userId] || {}
   itemDict[userId][safeType] = itemDict[userId][safeType] || {}
   itemDict[userId][safeType][start] = itemDict[userId][safeType][start] || {}
@@ -218,7 +211,7 @@ const addToDict = (itemDict: ItemDict, lineItem: Stripe.invoices.IInvoiceLineIte
 const makeItemDict = (stripeLineItems: Stripe.invoices.IInvoiceLineItem[]) => {
   const itemDict = {} as ItemDict
   const unknownLineItems = [] as Stripe.invoices.IInvoiceLineItem[]
-  let nextMonthCharges!: NextMonthCharges
+  let nextPeriodCharges!: NextPeriodCharges
   for (let i = 0; i < stripeLineItems.length; i++) {
     const lineItem = stripeLineItems[i]
     const {
@@ -231,14 +224,19 @@ const makeItemDict = (stripeLineItems: Stripe.invoices.IInvoiceLineItem[]) => {
     // This has apparently changed in the new API (cannot be null). we need to fix this if we upgrade to the latest stripe API
     const description = lineItem.description as string | null
     if (description === null && proration === false) {
-      // this must be the next month's charge
-      nextMonthCharges = {
-        // id: shortid.generate(),
-        amount,
-        // type: NEXT_MONTH_CHARGES,
-        quantity,
-        nextPeriodEnd: fromEpochSeconds(end),
-        unitPrice: lineItem.plan.amount
+      if (!nextPeriodCharges) {
+        // this must be the next month's charge
+        nextPeriodCharges = new NextPeriodCharges({
+          amount,
+          quantity,
+          nextPeriodEnd: fromEpochSeconds(end),
+          unitPrice: lineItem.plan.amount || undefined,
+          interval: lineItem.plan.interval
+        })
+      } else {
+        //merge the quantity & price line for enterprise
+        nextPeriodCharges.amount = nextPeriodCharges.amount || amount
+        nextPeriodCharges.quantity = nextPeriodCharges.quantity || quantity
       }
     } else if (!metadata.type) {
       unknownLineItems.push(lineItem)
@@ -247,7 +245,7 @@ const makeItemDict = (stripeLineItems: Stripe.invoices.IInvoiceLineItem[]) => {
       addToDict(itemDict, lineItem)
     }
   }
-  return {itemDict, nextMonthCharges, unknownLineItems}
+  return {itemDict, nextPeriodCharges, unknownLineItems}
 }
 
 const maybeReduceUnknowns = async (
@@ -257,6 +255,7 @@ const maybeReduceUnknowns = async (
 ) => {
   const r = getRethink()
   const unknowns = [] as Stripe.invoices.IInvoiceLineItem[]
+  const manager = new StripeManager()
   for (let i = 0; i < unknownLineItems.length; i++) {
     const unknownLineItem = unknownLineItems[i]
     // this could be inefficient but if all goes as planned, we'll never use this function
@@ -270,12 +269,7 @@ const maybeReduceUnknowns = async (
     if (hook) {
       const {type, userId} = hook
       // push it back to stripe for posterity
-      stripe.invoiceItems.update(unknownLineItem.id, {
-        metadata: {
-          type,
-          userId
-        }
-      })
+      manager.updateInvoiceItem(unknownLineItem.id, type, userId).catch()
       // mutate the original line item
       unknownLineItem.metadata = {
         type,
@@ -289,7 +283,7 @@ const maybeReduceUnknowns = async (
   return unknowns
 }
 
-export default async function generateInvoice (
+export default async function generateInvoice(
   invoice: Stripe.invoices.IInvoice,
   stripeLineItems: Stripe.invoices.IInvoiceLineItem[],
   orgId: string,
@@ -298,7 +292,7 @@ export default async function generateInvoice (
   const r = getRethink()
   const now = new Date()
 
-  const {itemDict, nextMonthCharges, unknownLineItems} = makeItemDict(stripeLineItems)
+  const {itemDict, nextPeriodCharges, unknownLineItems} = makeItemDict(stripeLineItems)
   // technically, invoice.created could be called before invoiceitem.created is if there is a network hiccup. mutates itemDict!
   const unknownInvoiceLines = await maybeReduceUnknowns(
     unknownLineItems,
@@ -318,7 +312,7 @@ export default async function generateInvoice (
 
   // sanity check
   const calculatedTotal =
-    invoiceLineItems.reduce((sum, {amount}) => sum + amount, 0) + nextMonthCharges.amount
+    invoiceLineItems.reduce((sum, {amount}) => sum + amount, 0) + nextPeriodCharges.amount
   if (calculatedTotal !== invoice.total) {
     console.warn(
       'Calculated invoice does not match stripe invoice',
@@ -360,14 +354,15 @@ export default async function generateInvoice (
     endAt: fromEpochSeconds(invoice.period_end),
     invoiceDate: fromEpochSeconds(invoice.date),
     lines: invoiceLineItems,
-    nextMonthCharges,
+    nextPeriodCharges,
     orgId,
     orgName: organization.name,
     paidAt,
     picture: organization.picture,
     startAt: fromEpochSeconds(invoice.period_start),
     startingBalance: invoice.starting_balance,
-    status
+    status,
+    tier: nextPeriodCharges.interval === 'year' ? TierEnum.enterprise : TierEnum.pro
   })
 
   return r.table('Invoice').insert(dbInvoice, {conflict: 'replace', returnChanges: true})('changes')(0)('new_val')

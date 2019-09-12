@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.4.2 2019-Sep-12
+
+### Added
+* Support moving multiple teams to a single org & archiving empty orgs
+
+### Fixed
+* Clean up legacy tables in DB
+* Corrected JWT expiry
+
+## 4.4.1 2019-Sep-11
+
+### Fixed
+* IdP-initiated login flow
+
+## 4.4.0 2019-Sep-11
+
+### Added
+* Added enterprise invoicing (#3158)
+
 ## 4.3.2 2019-Sep-06
 
 ### Fixed

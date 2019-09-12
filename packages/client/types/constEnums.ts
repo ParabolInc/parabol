@@ -66,6 +66,14 @@ export const enum ExternalLinks {
   PRICING_LINK = 'https://www.parabol.co/pricing/'
 }
 
+export const enum InvoiceItemType {
+  ADD_USER = 'addUser',
+  PAUSE_USER = 'pauseUser',
+  AUTO_PAUSE_USER = 'autoPauseUser',
+  REMOVE_USER = 'removeUser',
+  UNPAUSE_USER = 'unpauseUser',
+}
+
 // https://material.io/design/layout/spacing-methods.html
 // NOTE: iterate on this pattern as we go (TA)
 export const enum Layout {
@@ -139,9 +147,11 @@ export const enum TierLabel {
 }
 
 export const enum Threshold {
+  AUTO_PAUSE = 2592000000, // 30 days
   JWT_LIFESPAN = 2592000000, // 30 days
   REFRESH_JWT_AFTER = 1296000000, // 15 days
-  MAX_FREE_TEAMS = 10
+  MAX_FREE_TEAMS = 10,
+  MAX_MONTHLY_PAUSES = 4
 }
 export const enum Times {
   HUMAN_ADDICTION_THRESH = 300,
