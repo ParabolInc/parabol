@@ -1,8 +1,10 @@
-import fetchAllLines from '../../billing/helpers/fetchAllLines'
-import generateInvoice from '../../billing/helpers/generateInvoice'
-import resolvePromiseObj from '../../../client/utils/resolvePromiseObj'
+import fetchAllLines from '../../../billing/helpers/fetchAllLines'
+import generateInvoice from '../../../billing/helpers/generateInvoice'
+import resolvePromiseObj from '../../../../client/utils/resolvePromiseObj'
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
-import StripeManager from '../../utils/StripeManager'
+import StripeManager from '../../../utils/StripeManager'
+import {isSuperUser} from '../../../utils/authorization'
+import {InternalContext} from '../../graphql'
 
 export default {
   name: 'StripeCreateInvoice',
@@ -14,9 +16,9 @@ export default {
       description: 'The stripe invoice ID'
     }
   },
-  resolve: async (_source, {invoiceId}, {serverSecret}) => {
+  resolve: async (_source, {invoiceId}, {authToken}: InternalContext) => {
     // AUTH
-    if (serverSecret !== process.env.AUTH0_CLIENT_SECRET) {
+    if (!isSuperUser(authToken)) {
       throw new Error('Don’t be rude.')
     }
 
