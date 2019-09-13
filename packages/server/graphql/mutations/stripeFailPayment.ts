@@ -57,10 +57,10 @@ export default {
 
     // RESOLUTION
     const stripeLineItems = await fetchAllLines(invoiceId)
-    const nextMonthCharges = stripeLineItems.find(
+    const nextPeriodCharges = stripeLineItems.find(
       (line) => line.description === null && line.proration === false
     )
-    const nextMonthAmount = (nextMonthCharges && nextMonthCharges.amount) || 0
+    const nextPeriodAmount = (nextPeriodCharges && nextPeriodCharges.amount) || 0
 
     await terminateSubscription(orgId)
     const billingLeaderUserIds = await r
@@ -70,7 +70,7 @@ export default {
     const {last4, brand} = creditCard!
     // amount_due includes the old account_balance, so we can (kinda) atomically set this
     // we take out the charge for future services since we are ending service immediately
-    await manager.updateAccountBalance(customerId, amountDue - nextMonthAmount)
+    await manager.updateAccountBalance(customerId, amountDue - nextPeriodAmount)
 
     const notificationId = shortid.generate()
     const notification = {

@@ -34,6 +34,13 @@ const eventLookup = {
           stripeSucceedPayment(invoiceId: $invoiceId)
         }
       `
+    },
+    finalized: {
+      getVars: ({id: invoiceId}) => ({invoiceId}),
+      query: `
+      mutation StripeInvoiceFinalized($invoiceId: ID!) {
+        stripeInvoiceFinalized(invoiceId: $invoiceId)
+      }`
     }
   },
   invoiceitem: {

@@ -1,28 +1,14 @@
 import getRethink from '../../../database/rethinkDriver'
-import shortid from 'shortid'
 import {OrgUserRole, TierEnum} from 'parabol-client/types/graphql'
+import Organization from '../../../database/types/Organization'
+import OrganizationUser from '../../../database/types/OrganizationUser'
 
-export default async function createNewOrg (orgId, orgName, leaderUserId) {
+export default async function createNewOrg (orgId: string, orgName: string, leaderUserId: string) {
   const r = getRethink()
-  const now = new Date()
+  const org = new Organization({id: orgId, tier: TierEnum.personal, name: orgName})
+  const orgUser = new OrganizationUser({orgId, userId: leaderUserId, role: OrgUserRole.BILLING_LEADER})
   return r({
-    org: r.table('Organization').insert({
-      id: orgId,
-      creditCard: {},
-      createdAt: now,
-      name: orgName,
-      tier: TierEnum.personal,
-      updatedAt: now
-    }),
-    organizationUser: r.table('OrganizationUser').insert({
-      id: shortid.generate(),
-      inactive: false,
-      joinedAt: now,
-      newUserUntil: now,
-      orgId,
-      removedAt: null,
-      role: OrgUserRole.BILLING_LEADER,
-      userId: leaderUserId
-    })
+    org: r.table('Organization').insert(org),
+    organizationUser: r.table('OrganizationUser').insert(orgUser)
   })
 }

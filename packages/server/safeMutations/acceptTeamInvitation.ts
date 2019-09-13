@@ -3,11 +3,12 @@ import getRethink from '../database/rethinkDriver'
 import addTeamMemberToNewMeeting from '../graphql/mutations/helpers/addTeamMemberToNewMeeting'
 import insertNewTeamMember from './insertNewTeamMember'
 import {updateAuth0TMS} from '../utils/auth0Helpers'
-import {ADD_USER} from '../utils/serverConstants'
 import shortid from 'shortid'
 import {TEAM_INVITATION} from '../../client/utils/constants'
 import getNewTeamLeadUserId from '../safeQueries/getNewTeamLeadUserId'
 import addTeamIdToTMS from './addTeamIdToTMS'
+import {InvoiceItemType} from 'parabol-client/types/constEnums'
+import SuggestedActionCreateNewTeam from '../database/types/SuggestedActionCreateNewTeam'
 
 const handleFirstAcceptedInvitation = async (team): Promise<string | null> => {
   const r = getRethink()
@@ -26,14 +27,7 @@ const handleFirstAcceptedInvitation = async (team): Promise<string | null> => {
         type: 'tryRetroMeeting',
         userId: newTeamLeadUserId
       },
-      {
-        id: shortid.generate(),
-        createdAt: now,
-        priority: 4,
-        removedAt: null,
-        type: 'createNewTeam',
-        userId: newTeamLeadUserId
-      },
+      new SuggestedActionCreateNewTeam({userId: newTeamLeadUserId}),
       {
         id: shortid.generate(),
         createdAt: now,
@@ -98,7 +92,7 @@ const acceptTeamInvitation = async (
   })
   if (!userInOrg) {
     try {
-      await adjustUserCount(userId, orgId, ADD_USER)
+      await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER)
     } catch (e) {
       console.log(e)
     }

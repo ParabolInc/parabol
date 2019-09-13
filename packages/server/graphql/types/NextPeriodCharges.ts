@@ -1,8 +1,8 @@
-import {GraphQLFloat, GraphQLInt, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLFloat, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 
-const InvoiceChargeNextMonth = new GraphQLObjectType({
-  name: 'InvoiceChargeNextMonth',
+const NextPeriodCharges = new GraphQLObjectType({
+  name: 'NextPeriodCharges',
   description: 'A single line item for the charges for next month',
   fields: () => ({
     amount: {
@@ -19,10 +19,14 @@ const InvoiceChargeNextMonth = new GraphQLObjectType({
         'The total number of days that all org users have been inactive during the billing cycle'
     },
     unitPrice: {
-      type: new GraphQLNonNull(GraphQLFloat),
-      description: 'The per-seat monthly price of the subscription (in dollars)'
+      type: GraphQLFloat,
+      description: 'The per-seat monthly price of the subscription (in dollars), null if invoice is not per-seat'
+    },
+    interval: {
+      type: GraphQLString,
+      description: '"year" if enterprise, else "month" for pro'
     }
   })
 })
 
-export default InvoiceChargeNextMonth
+export default NextPeriodCharges

@@ -10,8 +10,8 @@ const mutation = graphql`
   }
 `
 
-const InactivateUserMutation = (environment, userId, onError, onCompleted) => {
-  return commitMutation(environment, {
+const InactivateUserMutation = (atmosphere, userId, onError, onCompleted) => {
+  return commitMutation(atmosphere, {
     mutation,
     variables: {userId},
     optimisticUpdater: (store) => {

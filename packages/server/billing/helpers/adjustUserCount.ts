@@ -1,15 +1,11 @@
 import getRethink from '../../database/rethinkDriver'
-import {
-  ADD_USER,
-  AUTO_PAUSE_USER,
-  PAUSE_USER,
-  REMOVE_USER,
-  UNPAUSE_USER
-} from '../../utils/serverConstants'
-import stripe from '../stripe'
-import shortid from 'shortid'
 import {toEpochSeconds} from '../../utils/epochTime'
 import {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
+import InvoiceItemHook from '../../database/types/InvoiceItemHook'
+import {InvoiceItemType} from 'parabol-client/types/constEnums'
+import StripeManager from '../../utils/StripeManager'
+import {IOrganization, TierEnum} from 'parabol-client/types/graphql'
+import OrganizationUser from '../../database/types/OrganizationUser'
 
 const changePause = (inactive) => (_orgIds, userId) => {
   const r = getRethink()
@@ -44,20 +40,11 @@ const addUser = async (orgIds, userId) => {
       (organizationUser) => organizationUser.orgId === orgId
     )
     const organization = organizations.find((organization) => organization.id === orgId)
-    return {
-      id: shortid.generate(),
-      inactive: false,
-      joinedAt: new Date(),
-      // continue the grace period from before, if any OR set to the end of the invoice OR (if it is a free account) no grace period
-      newUserUntil:
-        (oldOrganizationUser && oldOrganizationUser.newUserUntil) ||
-        organization.periodEnd ||
-        new Date(),
-      orgId,
-      removedAt: null,
-      role: null,
-      userId
-    }
+    // continue the grace period from before, if any OR set to the end of the invoice OR (if it is a free account) no grace period
+    const newUserUntil = (oldOrganizationUser && oldOrganizationUser.newUserUntil) ||
+      organization.periodEnd ||
+      new Date()
+    return new OrganizationUser({orgId, userId, newUserUntil})
   })
   return r.table('OrganizationUser').insert(docs)
 }
@@ -74,18 +61,23 @@ const deleteUser = (orgIds, userId) => {
 }
 
 const typeLookup = {
-  [ADD_USER]: addUser,
-  [AUTO_PAUSE_USER]: changePause(true),
-  [PAUSE_USER]: changePause(true),
-  [REMOVE_USER]: deleteUser,
-  [UNPAUSE_USER]: changePause(false)
+  [InvoiceItemType.ADD_USER]: addUser,
+  [InvoiceItemType.AUTO_PAUSE_USER]: changePause(true),
+  [InvoiceItemType.PAUSE_USER]: changePause(true),
+  [InvoiceItemType.REMOVE_USER]: deleteUser,
+  [InvoiceItemType.UNPAUSE_USER]: changePause(false)
 }
 
 interface Options {
   prorationDate?: Date
 }
 
-export default async function adjustUserCount (userId: string, orgInput: string | string[], type: keyof typeof typeLookup, options: Options = {}) {
+interface OrgWithQty extends IOrganization {
+  quantity: number
+  stripeSubscriptionId: string
+}
+
+export default async function adjustUserCount(userId: string, orgInput: string | string[], type: InvoiceItemType, options: Options = {}) {
   const r = getRethink()
   const now = new Date()
 
@@ -95,6 +87,7 @@ export default async function adjustUserCount (userId: string, orgInput: string 
   const orgs = await r
     .table('Organization')
     .getAll(r.args(orgIds), {index: 'id'})
+    .filter((org) => org('stripeSubscriptionId').default(null).ne(null))
     .merge((organization) => ({
       quantity: r
         .table('OrganizationUser')
@@ -104,37 +97,20 @@ export default async function adjustUserCount (userId: string, orgInput: string 
           removedAt: null
         })
         .count()
-    }))
-  const prorationDate = toEpochSeconds(type === REMOVE_USER ? options.prorationDate! : now)
-  const hooks = orgs.reduce((arr, org) => {
-    const {stripeSubscriptionId} = org
-    if (stripeSubscriptionId) {
-      arr.push({
-        id: shortid.generate(),
-        stripeSubscriptionId: org.stripeSubscriptionId,
-        prorationDate,
-        type,
-        userId
-      })
-    }
-    return arr
-  }, [])
+    })) as OrgWithQty[]
+
+  const prorationDate = toEpochSeconds(type === InvoiceItemType.REMOVE_USER ? options.prorationDate! : now)
+  const hooks = orgs.map((org) => {
+    return new InvoiceItemHook({stripeSubscriptionId: org.stripeSubscriptionId, prorationDate, type, userId})
+  })
   // wait here to make sure the webhook finds what it's looking for
   await r.table('InvoiceItemHook').insert(hooks)
-  const stripePromises = orgs.reduce((arr, org) => {
-    const {quantity, stripeSubscriptionId} = org
-    if (stripeSubscriptionId) {
-      arr.push(
-        stripe.subscriptions.update(stripeSubscriptionId, {
-          proration_date: prorationDate,
-          quantity
-        })
-      )
-    }
-    return arr
-  }, [])
-
-  await Promise.all(stripePromises)
+  const manager = new StripeManager()
+  await Promise.all(orgs.map((org) => {
+    const {stripeSubscriptionId, quantity, tier} = org
+    const proProrationDate = tier === TierEnum.enterprise ? undefined : prorationDate
+    return manager.updateSubscriptionQuantity(stripeSubscriptionId, quantity, proProrationDate)
+  }))
   // publish any changes to user traits (like tier counts) to segment:
   await sendSegmentIdentify(userId)
 }

@@ -1,0 +1,53 @@
+import getRethink from '../database/rethinkDriver'
+
+const safeArchiveTeam = (teamId: string) => {
+  const r = getRethink()
+  const now = new Date()
+
+  return r({
+    team: r
+      .table('Team')
+      .get(teamId)
+      .update({isArchived: true}, {returnChanges: true})('changes')(0)('new_val')
+      .default(null),
+    users: r
+      .table('TeamMember')
+      .getAll(teamId, {index: 'teamId'})
+      .filter({isNotRemoved: true})('userId')
+      .coerceTo('array')
+      .do((userIds) => {
+        return r
+          .table('User')
+          .getAll(r.args(userIds), {index: 'id'})
+          .update((user) => ({tms: user('tms').difference([teamId])}), {
+            returnChanges: true
+          })('changes')('new_val')
+          .default([])
+      }),
+    invitations: r
+      .table('TeamInvitation')
+      .getAll(teamId, {index: 'teamId'})
+      .filter({acceptedAt: null})
+      .update((invitation) => ({
+        expiresAt: r.min([invitation('expiresAt'), now])
+      })),
+    removedTeamNotifications: r
+      .table('Notification')
+      // TODO index
+      .filter({teamId})
+      .delete({returnChanges: true})('changes')('new_val')
+      .default([]),
+    removedSuggestedActionIds: r
+      .table('SuggestedAction')
+      .filter({teamId})
+      .update(
+        {
+          removedAt: now
+        },
+        {returnChanges: true}
+      )('changes')('new_val')('id')
+      .default([])
+  })
+}
+
+export default safeArchiveTeam

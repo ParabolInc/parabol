@@ -35,7 +35,8 @@ export default {
     }
 
     // RESOLUTION
-    await upgradeToPro(orgId, stripeToken)
+    const viewer = await dataLoader.get('users').load(viewerId)
+    await upgradeToPro(orgId, stripeToken, viewer.email)
     const teams = await dataLoader.get('teamsByOrgId').load(orgId)
     const teamIds = teams.map(({id}) => id)
     const data = {teamIds, orgId}
