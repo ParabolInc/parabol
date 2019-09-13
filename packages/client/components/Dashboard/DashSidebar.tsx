@@ -4,14 +4,14 @@ import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {NavLink} from 'react-router-dom'
-import tinycolor from 'tinycolor2'
 import DashNavList from '../DashNavList/DashNavList'
 import Icon from '../Icon'
 import LogoBlock from '../LogoBlock/LogoBlock'
 import StandardHub from '../StandardHub/StandardHub'
 import makeHoverFocus from '../../styles/helpers/makeHoverFocus'
 import {MD_ICONS_SIZE_18} from '../../styles/icons'
-import appTheme from '../../styles/theme/appTheme'
+import {PALETTE} from '../../styles/paletteV2'
+import {NavSidebar} from '../../types/constEnums'
 import ui from '../../styles/ui'
 import DashNavItem from './DashNavItem'
 import {ClassNames} from '@emotion/core'
@@ -25,15 +25,14 @@ interface Props {
   viewer: DashSidebar_viewer | null
 }
 
-const textColor = tinycolor.mix(appTheme.palette.mid10l, '#fff', 50).toHexString()
 const linkBaseStyles = {
-  color: textColor,
+  color: '#fff',
   textDecoration: 'none'
 }
 
 const DashSidebarStyles = styled('div')({
-  backgroundColor: ui.dashSidebarBackgroundColor,
-  color: textColor,
+  backgroundColor: PALETTE.BACKGROUND_PRIMARY,
+  color: '#fff',
   display: 'flex',
   flexDirection: 'column',
   height: '100vh',
@@ -44,8 +43,8 @@ const DashSidebarStyles = styled('div')({
 })
 
 const MyDashboard = styled('div')({
-  borderBottom: ui.dashMenuBorder,
-  marginBottom: '1rem'
+  borderBottom: `1px solid ${PALETTE.BORDER_NAV_DARK}`,
+  marginBottom: 16
 })
 
 const NavBlock = styled('div')({
@@ -82,7 +81,7 @@ const NavLabel = styled('div')({
 const addTeamStyles = {
   ...linkBaseStyles,
   alignItems: 'center',
-  borderLeft: `${ui.navMenuLeftBorderWidth} solid transparent`,
+  borderLeft: `${NavSidebar.LEFT_BORDER_WIDTH} solid transparent`,
   cursor: 'pointer',
   display: 'flex',
   margin: '.75rem 0 0',
@@ -94,18 +93,18 @@ const addTeamStyles = {
 
   ...makeHoverFocus({
     ...linkBaseStyles,
-    backgroundColor: ui.navMenuDarkBackgroundColorHover,
+    backgroundColor: PALETTE.BACKGROUND_NAV_DARK_HOVER,
     opacity: 1
   })
 }
 
 const disabledAddTeamStyles = {
-  backgroundColor: ui.navMenuDarkBackgroundColorActive,
+  backgroundColor: PALETTE.BACKGROUND_NAV_DARK_ACTIVE,
   cursor: 'default',
   opacity: 1,
 
   ...makeHoverFocus({
-    backgroundColor: ui.navMenuDarkBackgroundColorActive,
+    backgroundColor: PALETTE.BACKGROUND_NAV_DARK_ACTIVE,
     opacity: 1
   })
 }
@@ -116,8 +115,8 @@ const AddTeamIcon = styled(Icon)({
 })
 
 const AddTeamLabel = styled('div')({
-  fontSize: ui.navMenuFontSize,
-  lineHeight: ui.navMenuLineHeight
+  fontSize: NavSidebar.FONT_SIZE,
+  lineHeight: NavSidebar.LINE_HEIGHT
 })
 
 const DashSidebar = (props: Props) => {

@@ -105,17 +105,8 @@ export const MAX_WAIT_TIME = 5000
 const filterBlur = 'blur(1.5px)'
 
 // Theme Gradients TODO: theme-able?
-const gradientPurple = makeGradient(purpleLightened, purple)
 const gradientWarm = makeGradient(red, rose)
-const gradientWarmDarkened = makeGradient(tinycolor(red).darken(3), tinycolor(rose).darken(3))
-const gradientWarmLightened = makeGradient(
-  tinycolor(red)
-    .desaturate()
-    .lighten(),
-  tinycolor(rose)
-    .desaturate()
-    .lighten()
-)
+// linear-gradient(to right,#ED4C56 0,#ED4C86 100%)
 
 // Icons
 const iconSize = '14px' // FontAwesome base
@@ -206,7 +197,6 @@ const ui = {
   dashBreakpoint: BREAKPOINT_WIDER,
   dashGutterSmall: '1.25rem',
   dashGutterLarge: '2rem',
-  dashMenuBorder: '.0625rem solid #5A4580', // variant of primary purple TODO: theme-able?
 
   dashControlFontColor: COLOR_TEXT_GRAY,
   dashControlHeight: '1.25rem',
@@ -292,10 +282,7 @@ const ui = {
 
   // Gradients
   // ---------------------------------------------------------------------------
-  gradientPurple,
   gradientWarm,
-  gradientWarmDarkened,
-  gradientWarmLightened,
 
   // Hints
   // ---------------------------------------------------------------------------
@@ -330,17 +317,6 @@ const ui = {
   // ---------------------------------------------------------------------------
   modalBackdropBackgroundColor: makeShadowColor('.3'),
   modalBorderRadius: borderRadiusLarge,
-
-  // Nav
-  // ---------------------------------------------------------------------------
-
-  navMenuDarkBackgroundColorActive: appTheme.palette.mid80d,
-  navMenuDarkBackgroundColorHover: appTheme.palette.mid90d,
-  navMenuLightBackgroundColorActive: appTheme.palette.light90l,
-  navMenuLightBackgroundColorHover: appTheme.palette.light50l,
-  navMenuFontSize: '15px',
-  navMenuLineHeight: '20px',
-  navMenuLeftBorderWidth: '3px',
 
   // Nav Topics (team agenda, retro discuss)
   // ---------------------------------------------------------------------------

@@ -1,10 +1,8 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 import styled from '@emotion/styled'
 import Avatar from '../Avatar/Avatar'
-import ui from '../../styles/ui'
 import {panelShadow} from '../../styles/elevation'
-import appTheme from '../../styles/theme/appTheme'
+import {PALETTE} from '../../styles/paletteV2'
 import Icon from '../Icon'
 
 const borderRadius = '50%'
@@ -12,9 +10,9 @@ const borderRadiusPanel = 4
 const panelPadding = 8
 const panelPaddingHorizontal = panelPadding * 2
 
-const EditableAvatarRoot = styled('div')(({hasPanel, size}) => ({
-  backgroundColor: hasPanel && ui.palette.white,
-  boxShadow: hasPanel && panelShadow,
+const EditableAvatarRoot = styled('div')<Pick<Props, 'hasPanel' | 'size'>>(({hasPanel, size}) => ({
+  backgroundColor: hasPanel ? '#fff' : undefined,
+  boxShadow: hasPanel ? panelShadow : undefined,
   borderRadius: hasPanel ? borderRadiusPanel : borderRadius,
   height: size,
   padding: hasPanel ? panelPadding : '',
@@ -22,9 +20,9 @@ const EditableAvatarRoot = styled('div')(({hasPanel, size}) => ({
   width: size
 }))
 
-const EditableAvatarEditOverlay = styled('div')(({hasPanel, size}) => ({
+const EditableAvatarEditOverlay = styled('div')<Pick<Props, 'hasPanel' | 'size'>>(({hasPanel, size}) => ({
   alignItems: 'center',
-  backgroundColor: appTheme.palette.dark,
+  backgroundColor: PALETTE.BACKGROUND_DARK_OPAQUE,
   borderRadius: hasPanel ? borderRadiusPanel : borderRadius,
   color: 'white',
   cursor: 'pointer',
@@ -47,14 +45,23 @@ const EditableAvatarEditOverlay = styled('div')(({hasPanel, size}) => ({
   }
 }))
 
-const EditableAvatarImgBlock = styled('div')(({hasPanel, size}) => ({
+const EditableAvatarImgBlock = styled('div')<Pick<Props, 'hasPanel' | 'size'>>(({hasPanel, size}) => ({
   height: hasPanel ? size - panelPaddingHorizontal : size,
   position: 'relative',
   width: hasPanel ? size - panelPaddingHorizontal : size,
   zIndex: 100
 }))
 
-const EditableAvatar = (props) => {
+interface Props {
+  hasPanel?: boolean
+  onClick: () => void
+  picture: string
+  size: number
+  type: string
+  unstyled?: boolean
+}
+
+const EditableAvatar = (props: Props) => {
   const {hasPanel, onClick, picture, size, unstyled} = props
   const avatarSize = hasPanel ? size - panelPaddingHorizontal : size
   return (
@@ -68,15 +75,6 @@ const EditableAvatar = (props) => {
       </EditableAvatarImgBlock>
     </EditableAvatarRoot>
   )
-}
-
-EditableAvatar.propTypes = {
-  hasPanel: PropTypes.bool,
-  onClick: PropTypes.func,
-  picture: PropTypes.string,
-  size: PropTypes.number,
-  type: PropTypes.oneOf(['user', 'team', 'organization']),
-  unstyled: PropTypes.bool
 }
 
 export default EditableAvatar

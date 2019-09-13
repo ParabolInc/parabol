@@ -39,7 +39,7 @@ interface Props
 }
 
 const FieldGroup = styled('div')({
-  margin: '1rem 0 1rem'
+  margin: '16px 0'
 })
 const FieldBlock = styled('div')<{isSSO?: boolean}>(({isSSO}) => ({
   margin: '0 0 1.25rem',

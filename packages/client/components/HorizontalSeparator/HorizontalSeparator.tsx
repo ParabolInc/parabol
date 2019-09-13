@@ -25,7 +25,7 @@ const SeparatorContainer = styled('div')<{margin: string | number | undefined}>(
 }))
 
 const separatorLineStyles = {
-  borderBottom: `0.0625rem solid ${appTheme.palette.mid50a}`,
+  borderBottom: `1px solid ${appTheme.palette.mid50a}`,
   margin: 'auto',
   opacity: 0.25,
   flex: 1

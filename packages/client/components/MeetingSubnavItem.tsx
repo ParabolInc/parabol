@@ -1,8 +1,9 @@
 import React from 'react'
 import styled from '@emotion/styled'
 import {meetingSidebarGutterInner} from '../styles/meeting'
-import appTheme from '../styles/theme/appTheme'
 import ui from '../styles/ui'
+import {PALETTE} from '../styles/paletteV2'
+import {NavSidebar} from '../types/constEnums'
 
 const lineHeight = ui.navTopicLineHeight
 
@@ -18,11 +19,11 @@ interface ItemRootProps {
 const ItemRoot = styled('div')<ItemRootProps>(
   ({isActive, isComplete, isDisabled, isDragging, onClick}) => ({
     backgroundColor: isActive
-      ? ui.navMenuLightBackgroundColorActive
+      ? PALETTE.BACKGROUND_NAV_LIGHT_ACTIVE
       : isDragging
-      ? appTheme.palette.light50l
+      ? PALETTE.BACKGROUND_NAV_LIGHT_HOVER
       : '#fff',
-    boxShadow: isActive ? `inset ${ui.navMenuLeftBorderWidth} 0 0 ${ui.palette.mid}` : undefined,
+    boxShadow: isActive ? `inset ${NavSidebar.LEFT_BORDER_WIDTH} 0 0 ${ui.palette.mid}` : undefined,
     color: onClick ? ui.colorLink : ui.colorText,
     display: 'flex',
     fontSize: 14,
@@ -34,7 +35,7 @@ const ItemRoot = styled('div')<ItemRootProps>(
     userSelect: 'none',
     width: '100%',
     '&:hover': {
-      backgroundColor: onClick && !isActive ? appTheme.palette.light50l : undefined,
+      backgroundColor: onClick && !isActive ? PALETTE.BACKGROUND_NAV_LIGHT_HOVER : undefined,
       cursor: !isActive && onClick ? 'pointer' : undefined,
       opacity: !isDisabled ? 1 : undefined
     }

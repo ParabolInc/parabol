@@ -1,6 +1,7 @@
 import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
 import ui from '../styles/ui'
+import {PALETTE} from '../styles/paletteV2'
 import BaseButton, {BaseButtonProps} from './BaseButton'
 
 export interface FlatButtonProps extends BaseButtonProps{
@@ -18,7 +19,7 @@ const FlatButton = styled(BaseButton)<FlatButtonProps>((props) => {
   const {palette = 'dark', disabled, waiting} = props
   const backgroundColorOnHover = ui.buttonLightThemes.includes(palette)
     ? 'rgba(0, 0, 0, .15)'
-    : ui.palette.light
+    : PALETTE.BACKGROUND_MAIN
   const visuallyDisabled = disabled || waiting
   return {
     backgroundColor: 'transparent',

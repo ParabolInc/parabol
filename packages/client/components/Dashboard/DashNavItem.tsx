@@ -5,6 +5,7 @@ import {NavLink} from 'react-router-dom'
 import styled from '@emotion/styled';
 import Icon from '../Icon'
 import {MD_ICONS_SIZE_18} from '../../styles/icons'
+import {PALETTE} from '../../styles/paletteV2'
 import {NavSidebar} from '../../types/constEnums'
 import {ClassNames} from '@emotion/core'
 
@@ -29,7 +30,7 @@ const navLinkcss = {
   userSelect: 'none' as 'none',
   width: '100%',
   ':hover,:focus': {
-    backgroundColor: ui.navMenuDarkBackgroundColorHover,
+    backgroundColor: PALETTE.BACKGROUND_NAV_DARK_HOVER,
     color: 'inherit',
     cursor: 'pointer',
     textDecoration: 'none'
@@ -37,12 +38,12 @@ const navLinkcss = {
 }
 
 const activeNavLinkcss = {
-  backgroundColor: ui.navMenuDarkBackgroundColorActive,
+  backgroundColor: PALETTE.BACKGROUND_NAV_DARK_ACTIVE,
   borderColor: '#fff !important',
   cursor: 'default',
   textDecoration: 'none',
   ':hover': {
-    backgroundColor: ui.navMenuDarkBackgroundColorActive,
+    backgroundColor: PALETTE.BACKGROUND_NAV_DARK_ACTIVE,
     color: 'inherit',
     cursor: 'pointer',
     textDecoration: 'none'

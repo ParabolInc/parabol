@@ -1,5 +1,6 @@
 export const enum PALETTE {
   BACKGROUND_MAIN = '#F1F0FA',
+  BACKGROUND_PRIMARY = '#493272',
   BACKGROUND_PRIMARY_10 = '#4932721A',
   BACKGROUND_PRIMARY_20 = '#49327233',
   BACKGROUND_PRIMARY_30 = '#4932724D',
@@ -21,12 +22,17 @@ export const enum PALETTE {
   BACKGROUND_GREEN = '#61BF8B',
   BACKGROUND_GRAY = '#82809A',
   BACKGROUND_TOGGLE_ACTIVE = '#4932721A',
-  BORDER_LIGHTER = '#DFDFE5',
-  BORDER_LIGHT = '#C1C0CD',
+  BACKGROUND_NAV_DARK_ACTIVE = '#3a285b',
+  BACKGROUND_NAV_DARK_HOVER = '#422d67',
+  BACKGROUND_NAV_LIGHT_ACTIVE = '#f2f2fb',
+  BACKGROUND_NAV_LIGHT_HOVER = '#f8f8fd',
+  BORDER_LIGHTER = '#DFDFE5', // gray 25% over white
+  BORDER_LIGHT = '#C9C2D5', // primary 30% over white // was '#C1C0CD', // gray 50% over white
   BORDER_GRAY_65 = '#82809AA6',
   BORDER_GRAY = '#82809A80',
   BORDER_DARK = '#b6adc7',
   BORDER_MAIN = '#493272',
+  BORDER_NAV_DARK = '#5A4580',
   BORDER_BLUE = '#329AE5',
   BORDER_BLUE_LIGHT = '#99CDF2',
   BORDER_INVOICE_SECTION = '#DBD6E3',
@@ -35,6 +41,9 @@ export const enum PALETTE {
   CONTROL_MAIN_BACKGROUND = '#49327261',
   CONTROL_LIGHT = '#FFFFFF',
   CONTROL_LIGHT_BACKGROUND = '#9D9CA8',
+  GRADIENT_WARM = 'linear-gradient(to right, #ED4C56 0, #ED4C86 100%)', // red to rose
+  GRADIENT_WARM_DARKENED = 'linear-gradient(to right, #EC3E49 0, #EC3E7d 100%)',
+  GRADIENT_WARM_LIGHTENED = 'linear-gradient(to right, #EA8288 0, #EA82A7 100%)',
   ERROR_MAIN = '#ED4C56',
   LINK_BLUE = '#329AE5',
   LINK_MAIN = '#444258',
@@ -61,3 +70,18 @@ export const enum PALETTE {
   TEXT_TOGGLE_ACTIVE = '#332350',
   TEXT_INVOICE_LABEL = '#A2A1AC'
 }
+
+// export const enum PaletteOptions {
+//   // cool = '#55C0CF',
+//   warm = '#FD6157',
+//   // dark = '#444258',
+//   mid = '#493272',
+//   // light = '#F1F0FA',
+//   white = '#FFFFFF',
+//   gray = '#F1F0FA',
+//   midGray = '#82809A',
+//   // green = '#61BF8B',
+//   red = '#ED4C56',
+//   // yellow = '#FFCC63',
+//   blue = '#329AE5'
+// }

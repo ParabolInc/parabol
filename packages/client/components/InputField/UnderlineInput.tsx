@@ -7,7 +7,7 @@ import {FONT_FAMILY} from '../../styles/typographyV2'
 const Input = styled('input')({
   appearance: 'none',
   borderWidth: 0,
-  borderBottom: `0.0625rem solid ${PALETTE.BORDER_LIGHT}`,
+  borderBottom: `1px solid ${PALETTE.BORDER_LIGHT}`,
   borderRadius: 0,
   boxShadow: 'none',
   color: PALETTE.TEXT_MAIN,

@@ -4,13 +4,12 @@ import graphql from 'babel-plugin-relay/macro'
 import {NavLink} from 'react-router-dom'
 import Avatar from '../Avatar/Avatar'
 import Badge from '../Badge/Badge'
-import appTheme from '../../styles/theme/appTheme'
 import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
-import ui from '../../styles/ui'
 import styled from '@emotion/styled';
 import textOverflow from '../../styles/helpers/textOverflow'
 import Icon from '../Icon'
 import {MD_ICONS_SIZE_18} from '../../styles/icons'
+import {PALETTE} from '../../styles/paletteV2'
 import {APP_BAR_HEIGHT} from '../../styles/appbars'
 import useMenu from '../../hooks/useMenu'
 import {MenuPosition} from '../../hooks/useCoords'
@@ -20,10 +19,10 @@ import {ClassNames} from '@emotion/core'
 
 const StandardHubRoot = styled('div')({
   alignItems: 'center',
-  borderBottom: ui.dashMenuBorder,
+  borderBottom: `1px solid ${PALETTE.BORDER_NAV_DARK}`,
   display: 'flex',
   minHeight: APP_BAR_HEIGHT + 1, // add border
-  padding: '.5625rem 1rem',
+  padding: '9px 16px',
   width: '100%'
 })
 
@@ -52,7 +51,7 @@ const PreferredName = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flex: 1,
-  fontSize: appTheme.typography.sBase,
+  fontSize: 16,
   fontWeight: 600,
   maxWidth: '9rem',
   padding: '0 .25rem 0 1rem',
@@ -61,7 +60,7 @@ const PreferredName = styled('div')({
 
 const notificationsStyles = {
   alignItems: 'center',
-  backgroundColor: ui.dashSidebarBackgroundColor,
+  backgroundColor: PALETTE.BACKGROUND_PRIMARY,
   borderRadius: '2rem',
   display: 'flex',
   height: 32,
@@ -70,25 +69,25 @@ const notificationsStyles = {
   transition: `background-color 100ms ease-in`,
   width: 32,
   '&:hover,:focus': {
-    backgroundColor: ui.navMenuDarkBackgroundColorHover
+    backgroundColor: PALETTE.BACKGROUND_NAV_DARK_HOVER
   }
 }
 
 const notificationsWithBadge = {
-  backgroundColor: ui.navMenuDarkBackgroundColorHover
+  backgroundColor: PALETTE.BACKGROUND_NAV_DARK_HOVER
 }
 
 const notificationsActive = {
-  backgroundColor: ui.navMenuDarkBackgroundColorActive,
+  backgroundColor: PALETTE.BACKGROUND_NAV_DARK_ACTIVE,
   '&:hover,:focus': {
-    backgroundColor: ui.navMenuDarkBackgroundColorActive
+    backgroundColor: PALETTE.BACKGROUND_NAV_DARK_ACTIVE
   }
 }
 
 const BadgeBlock = styled('div')({
-  bottom: '-.375rem',
+  bottom: '-6px',
   position: 'absolute',
-  right: '-.375rem'
+  right: '-6px'
 })
 
 const NotificationIcon = styled(Icon)({

@@ -1,12 +1,11 @@
 import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
-import appTheme from '../styles/theme/appTheme'
-import ui from '../styles/ui'
+import {PALETTE} from '../styles/paletteV2'
+import {NavSidebar} from '../types/constEnums'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 
 const NavListItem = styled('li')({
   fontWeight: 600,
-  lineHeight: '2.5rem',
   display: 'flex',
   flexDirection: 'column',
   // hack to work around broken flexbox
@@ -14,39 +13,39 @@ const NavListItem = styled('li')({
   minHeight: 40
 })
 
-const NavItemBullet = styled('span')<{isFacilitatorPhaseGroup: boolean}>(
+const NavItemBullet = styled('span')<Pick<Props, 'isFacilitatorPhaseGroup'>>(
   {
-    backgroundColor: appTheme.palette.mid,
+    backgroundColor: PALETTE.BACKGROUND_PRIMARY,
     borderRadius: '100%',
-    color: ui.palette.white,
-    display: 'inline-block',
-    fontSize: '.6875rem',
+    color: '#fff',
+    display: 'block',
+    fontSize: 11,
     fontWeight: 600,
-    height: '1.5rem',
-    lineHeight: '1.5rem',
-    marginLeft: '1.3125rem',
-    marginRight: '.75rem',
+    height: 24,
+    lineHeight: '24px',
+    marginLeft: 21,
+    marginRight: 12,
     textAlign: 'center',
     verticalAlign: 'middle',
-    width: '1.5rem'
+    width: 24
   },
   ({isFacilitatorPhaseGroup}) => ({
-    backgroundImage: isFacilitatorPhaseGroup && ui.gradientWarm
+    backgroundImage: isFacilitatorPhaseGroup ? PALETTE.GRADIENT_WARM : undefined
   })
 )
 
 const NavItemLabel = styled('span')({
   display: 'inline-block',
-  fontSize: ui.navMenuFontSize,
+  fontSize: NavSidebar.FONT_SIZE,
   verticalAlign: 'middle'
 })
 
 const navListItemLinkActive = {
-  backgroundColor: ui.navMenuLightBackgroundColorActive,
-  borderLeftColor: ui.palette.mid,
-  color: appTheme.palette.dark,
+  backgroundColor: PALETTE.BACKGROUND_NAV_LIGHT_ACTIVE,
+  borderLeftColor: PALETTE.BORDER_MAIN,
+  color: PALETTE.TEXT_MAIN,
   ':hover,:focus': {
-    backgroundColor: ui.navMenuLightBackgroundColorActive
+    backgroundColor: PALETTE.BACKGROUND_NAV_LIGHT_ACTIVE
   }
 }
 
@@ -64,13 +63,17 @@ interface LinkProps {
 
 const NavListItemLink = styled('div')<LinkProps>(
   {
-    borderLeft: `${ui.navMenuLeftBorderWidth} solid transparent`,
-    color: ui.colorText,
+    alignItems: 'center',
+    borderLeft: `${NavSidebar.LEFT_BORDER_WIDTH} solid transparent`,
+    color: PALETTE.TEXT_MAIN,
     cursor: 'pointer',
+    display: 'flex',
+    flexShrink: 0,
+    minHeight: 40,
     textDecoration: 'none',
     userSelect: 'none',
     ':hover,:focus': {
-      backgroundColor: ui.navMenuLightBackgroundColorHover
+      backgroundColor: PALETTE.BACKGROUND_NAV_LIGHT_HOVER
     }
   },
   ({isDisabled}) => isDisabled && navListItemLinkDisabled,
