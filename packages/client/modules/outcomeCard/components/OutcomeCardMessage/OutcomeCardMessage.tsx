@@ -5,7 +5,7 @@ import {PALETTE} from '../../../../styles/paletteV2'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 
 const Message = styled('div')({
-  padding: `0 15px 15px`
+  padding: '0 16px 16px'
 })
 
 const textShadow = '0 1px rgba(0, 0, 0, .15)'

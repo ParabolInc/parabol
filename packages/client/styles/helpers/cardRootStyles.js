@@ -1,10 +1,10 @@
-import ui from '../ui'
 import {cardShadow} from '../elevation'
+import {cardBorderRadius} from '../cards'
 
 const cardRootStyles = {
-  backgroundColor: ui.palette.white,
+  backgroundColor: '#fff',
   border: 0,
-  borderRadius: ui.cardBorderRadius,
+  borderRadius: cardBorderRadius,
   boxShadow: cardShadow,
   minWidth: 256,
   maxWidth: 296,

@@ -4,7 +4,7 @@ import styled from '@emotion/styled'
 import {PALETTE} from '../../../../styles/paletteV2'
 
 const Hint = styled('div')({
-  color: PALETTE.TEXT_LIGHT,
+  color: PALETTE.TEXT_GRAY,
   display: 'inline-block',
   fontSize: 13,
   lineHeight: '20px',

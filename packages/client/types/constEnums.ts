@@ -21,6 +21,15 @@ export const enum Breakpoint {
   SINGLE_REFLECTION_COLUMN = 704, // (ReflectionWith + 16) * 2
 }
 
+export const enum Cards {
+  BACKGROUND_COLOR = '#fff',
+  BORDER_RADIUS = 4,
+  BUTTON_HEIGHT = 24,
+  FONT_SIZE = 14,
+  LINE_HEIGHT = '20px',
+  PADDING = '16px'
+}
+
 export const enum ContactInfo {
   TELEPHONE = '612-227-5673',
   EMAIL_BILLING = 'billing@parabol.co',
@@ -92,6 +101,12 @@ export const enum MathEnum {
 export const enum MeetingTypes {
   ACTION = 'action',
   RETROSPECTIVE = 'retrospective'
+}
+
+export const enum NavSidebar {
+  FONT_SIZE = 15,
+  LEFT_BORDER_WIDTH = '3px',
+  LINE_HEIGHT = '20px'
 }
 
 export const enum Pricing {

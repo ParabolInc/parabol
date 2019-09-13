@@ -18,7 +18,7 @@ const Container = styled(DialogContainer)({
 })
 
 const Info = styled(Icon)({
-  color: PALETTE.TEXT_LIGHT,
+  color: PALETTE.TEXT_GRAY,
   fontSize: ICON_SIZE.MD18,
   paddingLeft: 8
 })

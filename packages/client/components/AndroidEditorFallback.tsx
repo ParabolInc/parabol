@@ -2,7 +2,7 @@ import {EditorState} from 'draft-js'
 import React, {RefObject, useEffect, useState} from 'react'
 import styled from '@emotion/styled'
 import TextArea from 'react-textarea-autosize'
-import {cardContentFontSize, cardContentLineHeight} from '../styles/cards'
+import {Cards} from '../types/constEnums'
 
 interface Props {
   className?: string
@@ -18,8 +18,8 @@ interface Props {
 const TextAreaStyles = styled(TextArea)({
   backgroundColor: 'transparent',
   border: 0,
-  fontSize: cardContentFontSize,
-  lineHeight: cardContentLineHeight,
+  fontSize: Cards.FONT_SIZE,
+  lineHeight: Cards.LINE_HEIGHT,
   overflow: 'hidden',
   outline: 0,
   padding: 12,

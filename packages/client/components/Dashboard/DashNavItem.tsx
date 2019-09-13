@@ -1,9 +1,11 @@
 import React from 'react'
 import ui from '../../styles/ui'
+// import {PALETTE} from '../../styles/paletteV2'
 import {NavLink} from 'react-router-dom'
 import styled from '@emotion/styled';
 import Icon from '../Icon'
 import {MD_ICONS_SIZE_18} from '../../styles/icons'
+import {NavSidebar} from '../../types/constEnums'
 import {ClassNames} from '@emotion/core'
 
 const StyledIcon = styled(Icon)({
@@ -15,13 +17,13 @@ const StyledIcon = styled(Icon)({
 })
 
 const navLinkcss = {
-  borderLeft: '.1875rem solid transparent',
+  borderLeft: `${NavSidebar.LEFT_BORDER_WIDTH} solid transparent`,
   color: 'inherit',
   display: 'flex',
   alignItems: 'center',
-  fontSize: ui.navMenuFontSize,
+  fontSize: NavSidebar.FONT_SIZE,
   fontWeight: 600,
-  lineHeight: ui.navMenuLineHeight,
+  lineHeight: NavSidebar.LINE_HEIGHT,
   padding: '10px 8px 10px 32px',
   transition: `background-color 100ms ease-in`,
   userSelect: 'none' as 'none',
@@ -36,7 +38,7 @@ const navLinkcss = {
 
 const activeNavLinkcss = {
   backgroundColor: ui.navMenuDarkBackgroundColorActive,
-  borderColor: `${ui.palette.white} !important`,
+  borderColor: '#fff !important',
   cursor: 'default',
   textDecoration: 'none',
   ':hover': {

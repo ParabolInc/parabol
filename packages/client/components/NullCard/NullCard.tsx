@@ -1,8 +1,8 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 import CreateCardRootStyles from '../CreateCard/CreateCardRootStyles'
 import styled from '@emotion/styled'
-import ui from '../../styles/ui'
+import {PALETTE} from '../../styles/paletteV2'
+import {Cards} from '../../types/constEnums'
 import Ellipsis from '../Ellipsis/Ellipsis'
 
 const CardBlock = styled('div')({
@@ -11,26 +11,26 @@ const CardBlock = styled('div')({
 })
 
 const AddingHint = styled('div')({
-  color: ui.hintColor,
-  fontSize: ui.cardContentFontSize,
+  color: PALETTE.TEXT_GRAY,
+  fontSize: Cards.FONT_SIZE,
   textAlign: 'center'
 })
 
-const NullCard = (props) => {
+interface Props {
+  preferredName: string
+}
+
+const NullCard = (props: Props) => {
   const {preferredName} = props
   return (
     <CardBlock>
-      <AddingHint align='center' scale='s3' colorPalette='dark'>
+      <AddingHint>
         {preferredName}
         {' is adding a Task'}
         <Ellipsis />
       </AddingHint>
     </CardBlock>
   )
-}
-
-NullCard.propTypes = {
-  preferredName: PropTypes.string
 }
 
 export default NullCard

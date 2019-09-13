@@ -16,7 +16,7 @@ interface StyleProps {
 }
 
 const FieldIcon = styled(Icon)<StyleProps>(({hasError}) => ({
-  color: hasError ? PALETTE.ERROR_MAIN : PALETTE.TEXT_LIGHT,
+  color: hasError ? PALETTE.ERROR_MAIN : PALETTE.TEXT_GRAY,
   display: 'block',
   fontSize: ICON_SIZE.MD18,
   opacity: 0.5,

@@ -6,7 +6,7 @@ import {PALETTE} from '../styles/paletteV2'
 
 const TipBlock = styled('div')({
   alignItems: 'center',
-  color: PALETTE.TEXT_LIGHT,
+  color: PALETTE.TEXT_GRAY,
   display: 'flex',
   fontSize: typeScale[1],
   lineHeight: typeScale[7]

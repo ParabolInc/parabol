@@ -2,11 +2,11 @@ import React from 'react'
 import {MeetingSummaryReferrer} from './MeetingSummaryEmail'
 import {
   FONT_FAMILY,
-  PALETTE_TEXT_LIGHT
+  PALETTE_TEXT_GRAY
 } from './constants'
 
 const bannerLink = {
-  color: `${PALETTE_TEXT_LIGHT} !important`,
+  color: `${PALETTE_TEXT_GRAY} !important`,
   cursor: 'pointer',
   fontFamily: FONT_FAMILY,
   fontSize: '11px',

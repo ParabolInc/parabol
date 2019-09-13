@@ -40,7 +40,7 @@ const TemplateSidebar = styled('div')({
 })
 
 const Label = styled('div')({
-  color: PALETTE.TEXT_LIGHT,
+  color: PALETTE.TEXT_GRAY,
   borderBottom: `.0625rem solid ${PALETTE.BORDER_LIGHT}`,
   fontSize: typeScale[1],
   fontWeight: 600,

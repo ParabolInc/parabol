@@ -145,7 +145,7 @@ const StandardHub = (props: Props) => {
               <NotificationIcon>notifications</NotificationIcon>
               {notificationsCount > 0 && (
                 <BadgeBlock>
-                  <Badge value={notificationsCount} />
+                  <Badge>{notificationsCount}</Badge>
                 </BadgeBlock>
               )}
             </NavLink>

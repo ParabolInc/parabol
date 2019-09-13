@@ -6,8 +6,8 @@ const CreateCardRootStyles = {
   border: 0,
   display: 'flex !important',
   justifyContent: 'center',
-  minHeight: '7.625rem',
-  padding: '.6875rem 1.25rem .5rem'
+  minHeight: 120,
+  padding: 16
 }
 
 export default CreateCardRootStyles

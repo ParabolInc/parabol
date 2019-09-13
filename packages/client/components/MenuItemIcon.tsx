@@ -10,7 +10,7 @@ interface Props {
 }
 
 const StyledIcon = styled(Icon)<{iconColor?: string}>(({iconColor}) => ({
-  color: iconColor || PALETTE.TEXT_LIGHT,
+  color: iconColor || PALETTE.TEXT_GRAY,
   fontSize: ICON_SIZE.MD18,
   marginRight: 8
 }))

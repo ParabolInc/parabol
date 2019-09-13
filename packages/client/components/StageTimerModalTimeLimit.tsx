@@ -43,7 +43,7 @@ const SetLimit = styled('div')({
 })
 
 const StyledIcon = styled(Icon)({
-  color: PALETTE.TEXT_LIGHT
+  color: PALETTE.TEXT_GRAY
 })
 
 const StyledButton = styled(SecondaryButton)({

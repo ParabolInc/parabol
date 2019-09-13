@@ -23,7 +23,7 @@ const Toggle = styled(DropdownMenuToggle)({
 })
 
 const StyledIcon = styled(Icon)({
-  color: PALETTE.TEXT_LIGHT
+  color: PALETTE.TEXT_GRAY
 })
 
 const NEXT_YEAR = new Date(Date.now() + ms('1y'))

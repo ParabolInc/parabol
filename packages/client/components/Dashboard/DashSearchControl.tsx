@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import makePlaceholderStyles from '../../styles/helpers/makePlaceholderStyles'
 import ui from '../../styles/ui'
-import appTheme from '../../styles/theme/appTheme'
+import {PALETTE} from '../../styles/paletteV2'
 import styled from '@emotion/styled'
 import Icon from '../Icon'
 import {MD_ICONS_SIZE_18} from '../../styles/icons'
@@ -14,18 +14,18 @@ const DashSearch = styled('div')({
 })
 
 const DashSearchIcon = styled(Icon)({
-  color: appTheme.palette.dark60l,
+  color: PALETTE.TEXT_GRAY,
   fontSize: MD_ICONS_SIZE_18,
-  marginRight: '.5rem'
+  marginRight: 8
 })
 
 const DashSearchInput = styled('input')({
   appearance: 'none',
   display: 'block',
   border: 0,
-  fontSize: '.875rem',
+  fontSize: 14,
   lineHeight: '32px',
-  maxWidth: '13rem',
+  maxWidth: 208,
   outline: 'none',
   padding: 0,
   width: 'fit-content',

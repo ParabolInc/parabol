@@ -31,7 +31,7 @@ const NewFeature = styled('div')({
 })
 
 const CancelIcon = styled(Icon)({
-  color: PALETTE.TEXT_LIGHT,
+  color: PALETTE.TEXT_GRAY,
   cursor: 'pointer',
   fontSize: ICON_SIZE.MD18,
   position: 'absolute',

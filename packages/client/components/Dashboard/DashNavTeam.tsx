@@ -2,14 +2,14 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import DashNavItem from './DashNavItem'
 import React from 'react'
-import appTheme from '../../styles/theme/appTheme'
+import {PALETTE} from '../../styles/paletteV2'
 import styled from '@emotion/styled'
 import Icon from '../Icon'
 import {MD_ICONS_SIZE_18} from '../../styles/icons'
 import {DashNavTeam_team} from '../../__generated__/DashNavTeam_team.graphql'
 
 const WarningIcon = styled(Icon)({
-  color: appTheme.palette.light,
+  color: PALETTE.TEXT_LIGHT,
   fontSize: MD_ICONS_SIZE_18,
   position: 'absolute',
   left: '.625rem'

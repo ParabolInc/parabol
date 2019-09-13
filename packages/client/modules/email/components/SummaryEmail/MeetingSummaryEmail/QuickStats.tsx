@@ -2,7 +2,7 @@ import React from 'react'
 import {
   FONT_FAMILY,
   PALETTE_BACKGROUND_MAIN,
-  PALETTE_TEXT_LIGHT,
+  PALETTE_TEXT_GRAY,
   PALETTE_TEXT_MAIN
 } from './constants'
 import makeActionStats from './makeActionStats'
@@ -28,7 +28,7 @@ const descriptionLabel = (idx, len) =>
     fontFamily: FONT_FAMILY,
     borderBottomLeftRadius: idx === 0 ? 4 : 0,
     borderBottomRightRadius: idx === len - 1 ? 4 : 0,
-    color: PALETTE_TEXT_LIGHT,
+    color: PALETTE_TEXT_GRAY,
     fontSize: 10,
     fontWeight: 600,
     paddingBottom: 12,

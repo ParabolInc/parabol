@@ -17,7 +17,7 @@ declare module 'react' {
 
 export const FONT_FAMILY =
   '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif'
-export const PALETTE_TEXT_LIGHT = '#82809A'
+export const PALETTE_TEXT_GRAY = '#82809A'
 export const PALETTE_TEXT_MAIN = '#444258'
 export const PALETTE_TEXT_GREEN = '#61BF8B'
 export const PALETTE_BACKGROUND_MAIN = '#F1F0FA'

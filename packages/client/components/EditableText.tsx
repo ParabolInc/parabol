@@ -21,7 +21,7 @@ const StaticBlock = styled('div')({
 })
 
 const Placeholder = styled('div')({
-  color: PALETTE.TEXT_LIGHT
+  color: PALETTE.TEXT_GRAY
 })
 
 const StaticValue = styled('div')({
@@ -34,7 +34,7 @@ const Error = styled('div')({
 })
 
 const StyledIcon = styled(Icon)({
-  color: PALETTE.TEXT_LIGHT,
+  color: PALETTE.TEXT_GRAY,
   fontSize: MD_ICONS_SIZE_18,
   marginLeft: '.5rem'
 })

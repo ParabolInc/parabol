@@ -1,6 +1,6 @@
 import emailDir from '../../../emailDir'
 import React from 'react'
-import {FONT_FAMILY, PALETTE_TEXT_LIGHT, PALETTE_TEXT_MAIN} from './constants'
+import {FONT_FAMILY, PALETTE_TEXT_GRAY, PALETTE_TEXT_MAIN} from './constants'
 import {meetingTypeToLabel} from '../../../../../utils/meetings/lookups'
 import makeDateString from '../../../../../utils/makeDateString'
 import {createFragmentContainer} from 'react-relay'
@@ -8,7 +8,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {SummaryHeader_meeting} from '../../../../../__generated__/SummaryHeader_meeting.graphql'
 
 const meetingSummaryLabel = {
-  color: PALETTE_TEXT_LIGHT,
+  color: PALETTE_TEXT_GRAY,
   fontFamily: FONT_FAMILY,
   textTransform: 'uppercase',
   fontSize: '12px',
@@ -26,7 +26,7 @@ const teamNameLabel = {
 } as React.CSSProperties
 
 const dateLabel = {
-  color: PALETTE_TEXT_LIGHT,
+  color: PALETTE_TEXT_GRAY,
   fontFamily: FONT_FAMILY,
   fontSize: '15px',
   fontWeight: 400,

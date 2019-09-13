@@ -22,7 +22,7 @@ const CopyLabel = styled('div')({
 })
 
 const CopyBlock = styled('div')({
-  color: PALETTE.TEXT_LIGHT,
+  color: PALETTE.TEXT_GRAY,
   position: 'relative',
   '&:hover': {
     color: PALETTE.TEXT_MAIN,

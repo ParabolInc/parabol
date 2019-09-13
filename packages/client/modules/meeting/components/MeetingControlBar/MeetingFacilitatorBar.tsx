@@ -9,7 +9,7 @@ const MeetingFacilitatorBarStyles = styled('div')({
   backgroundColor: '#fff',
   boxShadow: bottomBarShadow,
   boxSizing: 'content-box',
-  color: PALETTE.TEXT_LIGHT,
+  color: PALETTE.TEXT_GRAY,
   display: 'flex',
   flexWrap: 'nowrap',
   fontSize: 13,

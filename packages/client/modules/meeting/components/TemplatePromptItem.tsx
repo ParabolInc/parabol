@@ -49,7 +49,7 @@ const PromptItem = styled('li')<StyledProps>(({isHover, isDragging}) => ({
 }))
 
 const RemovePromptIcon = styled(Icon)<StyledProps>(({isHover}) => ({
-  color: PALETTE.TEXT_LIGHT,
+  color: PALETTE.TEXT_GRAY,
   cursor: 'pointer',
   display: 'block',
   fontSize: MD_ICONS_SIZE_18,

@@ -57,7 +57,7 @@ const StyledButton = styled(SecondaryButton)({
 })
 
 const StyledIcon = styled(Icon)({
-  color: PALETTE.TEXT_LIGHT,
+  color: PALETTE.TEXT_GRAY,
   fontSize: 18
 })
 

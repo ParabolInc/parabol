@@ -16,7 +16,7 @@ import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 const TeamToggleButton = styled(CardButton)({
   ...textOverflow,
   borderRadius: ui.borderRadiusSmall,
-  color: PALETTE.TEXT_LIGHT,
+  color: PALETTE.TEXT_GRAY,
   display: 'block',
   fontSize: 12,
   fontWeight: 400,

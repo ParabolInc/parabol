@@ -62,7 +62,7 @@ const BUTTON_SIZE_LARGE = CONTROL_SIZE_LARGE
 
 // Color (default for text)
 const COLOR_TEXT = appTheme.brand.primary.darkGray
-const COLOR_TEXT_LIGHT = appTheme.brand.primary.midGray
+const COLOR_TEXT_GRAY = appTheme.brand.primary.midGray
 const COLOR_ERROR = red
 
 // Color palette
@@ -170,10 +170,10 @@ const ui = {
   // but make sure they are consistent when temporarily duped (TA)
   cardBorderColor: appTheme.palette.mid30l, // PALETTE.BORDER_MAIN
   cardBorderRadius: borderRadiusMedium,
-  cardButtonHeight: '1.5rem',
-  cardContentFontSize: '.875rem',
-  cardContentLineHeight: '1.25rem',
-  cardPaddingBase: '.9375rem',
+  cardButtonHeight: '24px',
+  cardContentFontSize: '14px',
+  cardContentLineHeight: '20px',
+  cardPaddingBase: '16px',
 
   // Card Controls (tapping these makes cards)
   // ---------------------------------------------------------------------------
@@ -208,7 +208,7 @@ const ui = {
   dashGutterLarge: '2rem',
   dashMenuBorder: '.0625rem solid #5A4580', // variant of primary purple TODO: theme-able?
 
-  dashControlFontColor: COLOR_TEXT_LIGHT,
+  dashControlFontColor: COLOR_TEXT_GRAY,
   dashControlHeight: '1.25rem',
 
   dashSidebarBackgroundColor: appTheme.palette.mid,
@@ -299,7 +299,7 @@ const ui = {
 
   // Hints
   // ---------------------------------------------------------------------------
-  hintColor: COLOR_TEXT_LIGHT,
+  hintColor: COLOR_TEXT_GRAY,
   hintFontSize: appTheme.typography.s2,
 
   // Icons
@@ -338,9 +338,9 @@ const ui = {
   navMenuDarkBackgroundColorHover: appTheme.palette.mid90d,
   navMenuLightBackgroundColorActive: appTheme.palette.light90l,
   navMenuLightBackgroundColorHover: appTheme.palette.light50l,
-  navMenuFontSize: '.9375rem',
-  navMenuLineHeight: '1.25rem',
-  navMenuLeftBorderWidth: '.1875rem',
+  navMenuFontSize: '15px',
+  navMenuLineHeight: '20px',
+  navMenuLeftBorderWidth: '3px',
 
   // Nav Topics (team agenda, retro discuss)
   // ---------------------------------------------------------------------------
