@@ -3238,7 +3238,7 @@ export interface IMoveTeamToOrgOnMutationArguments {
   /**
    * The teamId that you want to move
    */
-  teamId: string;
+  teamIds: string[];
 
   /**
    * The ID of the organization you want to move the team to

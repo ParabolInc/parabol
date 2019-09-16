@@ -30,8 +30,8 @@ const GroupHeader = styled('div')<{isExpanded: boolean, portalStatus: PortalStat
   maxWidth: REFLECTION_CARD_WIDTH,
   minHeight: 32,
   opacity: !isExpanded && portalStatus !== PortalStatus.Exited ? 0 : undefined,
-  padding: 8,
-  paddingBottom: 0,
+  paddingLeft: 8,
+  paddingRight: 8,
   position: 'relative',
   width: '100%'
 }))

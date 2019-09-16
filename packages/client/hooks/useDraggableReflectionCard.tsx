@@ -100,6 +100,11 @@ const useDroppingDrag = (drag: ReflectionDragState, reflection: DraggableReflect
           } else {
             //remote
             setPortal(`clone-${reflectionId}`, null)
+            // shouldn't be necessary, but do it to prevent sticky cards
+            const el = document.getElementById(`clone-${reflectionId}`)
+            if (el) {
+              el.parentElement!.removeChild(el)
+            }
           }
           commitLocalUpdate(atmosphere, (store) => {
             store.get(reflectionId)!
