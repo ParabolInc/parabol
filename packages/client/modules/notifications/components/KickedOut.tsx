@@ -28,7 +28,7 @@ const KickedOut = (props: Props) => {
   return (
     <>
       <Row>
-        <IconAvatar icon='group' size='small' />
+        <IconAvatar>group</IconAvatar>
         <NotificationMessage>
           {'You have been removed from the '}
           <b>{teamName}</b>

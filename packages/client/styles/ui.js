@@ -166,10 +166,6 @@ const ui = {
   cardContentLineHeight: '20px',
   cardPaddingBase: '16px',
 
-  // Card Controls (tapping these makes cards)
-  // ---------------------------------------------------------------------------
-  cardControlBackgroundColor: appTheme.palette.mid10a,
-
   // Color (default for text)
   // ---------------------------------------------------------------------------
   colorError: COLOR_ERROR,
@@ -297,9 +293,9 @@ const ui = {
   // Label Headings
   // ---------------------------------------------------------------------------
   labelHeadingColor: midGray,
-  labelHeadingFontSize: '.75rem',
+  labelHeadingFontSize: '12px',
   labelHeadingFontWeight: TYPE_SEMIBOLD,
-  labelHeadingLineHeight: '1rem',
+  labelHeadingLineHeight: '16px',
   labelHeadingLetterSpacing: '.03em',
 
   // Link

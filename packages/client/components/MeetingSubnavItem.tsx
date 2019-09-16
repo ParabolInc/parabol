@@ -1,11 +1,10 @@
 import React from 'react'
 import styled from '@emotion/styled'
 import {meetingSidebarGutterInner} from '../styles/meeting'
-import ui from '../styles/ui'
 import {PALETTE} from '../styles/paletteV2'
 import {NavSidebar} from '../types/constEnums'
 
-const lineHeight = ui.navTopicLineHeight
+const lineHeight = NavSidebar.SUB_LINE_HEIGHT
 
 interface ItemRootProps {
   isActive: boolean
@@ -23,8 +22,8 @@ const ItemRoot = styled('div')<ItemRootProps>(
       : isDragging
       ? PALETTE.BACKGROUND_NAV_LIGHT_HOVER
       : '#fff',
-    boxShadow: isActive ? `inset ${NavSidebar.LEFT_BORDER_WIDTH} 0 0 ${ui.palette.mid}` : undefined,
-    color: onClick ? ui.colorLink : ui.colorText,
+    boxShadow: isActive ? `inset ${NavSidebar.LEFT_BORDER_WIDTH} 0 0 ${PALETTE.BORDER_MAIN}` : undefined,
+    color: PALETTE.TEXT_MAIN,
     display: 'flex',
     fontSize: 14,
     fontWeight: 400,
@@ -42,10 +41,10 @@ const ItemRoot = styled('div')<ItemRootProps>(
   }),
   ({isUnsyncedFacilitatorStage}) =>
     isUnsyncedFacilitatorStage && {
-      color: ui.palette.warm,
+      color: PALETTE.TEXT_PINK,
       opacity: 1,
       '&::after': {
-        backgroundColor: ui.palette.warm,
+        backgroundColor: PALETTE.TEXT_PINK,
         borderRadius: '100%',
         content: '""',
         display: 'block',

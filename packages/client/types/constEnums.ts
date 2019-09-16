@@ -21,8 +21,8 @@ export const enum Breakpoint {
   SINGLE_REFLECTION_COLUMN = 704, // (ReflectionWith + 16) * 2
 }
 
-export const enum Cards {
-  BACKGROUND_COLOR = '#fff',
+export const enum Card {
+  BACKGROUND_COLOR = '#FFFFFF',
   BORDER_RADIUS = 4,
   BUTTON_HEIGHT = 24,
   FONT_SIZE = 14,
@@ -114,7 +114,8 @@ export const enum MeetingTypes {
 export const enum NavSidebar {
   FONT_SIZE = 15,
   LEFT_BORDER_WIDTH = '3px',
-  LINE_HEIGHT = '20px'
+  LINE_HEIGHT = '20px',
+  SUB_LINE_HEIGHT = '24px'
 }
 
 export const enum Pricing {

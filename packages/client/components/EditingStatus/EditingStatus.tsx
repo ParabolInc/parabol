@@ -1,6 +1,6 @@
 import React, {useState, ReactNode} from 'react'
 import {PALETTE} from '../../styles/paletteV2'
-import {Cards} from '../../types/constEnums'
+import {Card} from '../../types/constEnums'
 import {createFragmentContainer} from 'react-relay'
 import DueDateToggle from '../DueDateToggle'
 import styled from '@emotion/styled'
@@ -18,8 +18,8 @@ const StatusHeader = styled('div')({
   fontWeight: 400,
   justifyContent: 'space-between',
   lineHeight: '20px',
-  minHeight: Cards.BUTTON_HEIGHT,
-  padding: `0 ${Cards.PADDING} 8px`,
+  minHeight: Card.BUTTON_HEIGHT,
+  padding: `0 ${Card.PADDING} 8px`,
   textAlign: 'left'
 })
 

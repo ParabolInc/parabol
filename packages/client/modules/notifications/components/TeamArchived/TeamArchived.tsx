@@ -31,7 +31,7 @@ const TeamArchived = (props: Props) => {
   return (
     <>
       <Row>
-        <IconAvatar icon='archive' size='small' />
+        <IconAvatar>archive</IconAvatar>
         <NotificationMessage>
           {'The team '}
           <b>{teamName}</b>

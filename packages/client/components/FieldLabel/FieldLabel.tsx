@@ -1,9 +1,9 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 import ui from '../../styles/ui'
 import styled from '@emotion/styled'
+import LabelHeading from '../LabelHeading/LabelHeading'
 
-const FieldLabelStyles = styled('label')(({customStyles, fieldSize, indent, inline}) => {
+const FieldLabelStyles = styled(LabelHeading)<Pick<Props, 'customStyles' | 'fieldSize' | 'indent' | 'inline'>>(({customStyles, fieldSize, indent, inline}) => {
   const size = fieldSize || ui.buttonSizeOptions[1]
   const paddingLeft = fieldSize && indent ? ui.controlBlockPaddingHorizontal[size] : 0
   const inlineSizeStyles = ui.fieldSizeStyles[size]
@@ -14,12 +14,7 @@ const FieldLabelStyles = styled('label')(({customStyles, fieldSize, indent, inli
   }
   const useInlineStyles = fieldSize && inline && inlineStyles
   return {
-    color: ui.labelHeadingColor,
     display: 'block',
-    fontSize: ui.labelHeadingFontSize,
-    fontWeight: ui.labelHeadingFontWeight,
-    lineHeight: ui.labelHeadingLineHeight,
-    letterSpacing: ui.labelHeadingLetterSpacing,
     padding: 0,
     textTransform: 'none',
     // 1. Line up controls when inline
@@ -31,10 +26,22 @@ const FieldLabelStyles = styled('label')(({customStyles, fieldSize, indent, inli
   }
 })
 
-const FieldLabel = (props) => {
+const FieldLabelBlock = FieldLabelStyles.withComponent('label')
+
+interface Props {
+  customStyles: object
+  fieldSize: string
+  htmlFor: string
+  indent: boolean
+  inline: boolean
+  label: string
+  styles: object
+}
+
+const FieldLabel = (props: Props) => {
   const {customStyles, fieldSize, indent, inline, htmlFor, label} = props
   return (
-    <FieldLabelStyles
+    <FieldLabelBlock
       customStyles={customStyles}
       fieldSize={fieldSize}
       indent={indent}
@@ -42,18 +49,18 @@ const FieldLabel = (props) => {
       htmlFor={htmlFor}
     >
       {label}
-    </FieldLabelStyles>
+    </FieldLabelBlock>
   )
 }
 
-FieldLabel.propTypes = {
-  customStyles: PropTypes.object,
-  fieldSize: PropTypes.oneOf(ui.fieldSizeOptions),
-  htmlFor: PropTypes.string,
-  indent: PropTypes.bool,
-  inline: PropTypes.bool,
-  label: PropTypes.string,
-  styles: PropTypes.object
-}
+// FieldLabel.propTypes = {
+//   customStyles: PropTypes.object,
+//   fieldSize: PropTypes.oneOf(ui.fieldSizeOptions),
+//   htmlFor: PropTypes.string,
+//   indent: PropTypes.bool,
+//   inline: PropTypes.bool,
+//   label: PropTypes.string,
+//   styles: PropTypes.object
+// }
 
 export default FieldLabel

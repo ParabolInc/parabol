@@ -1,31 +1,35 @@
+import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
-import appTheme from '../../styles/theme/appTheme'
-import ui from '../../styles/ui'
-import React from 'react'
+import {PALETTE} from '../../styles/paletteV2'
 import Icon from '../Icon'
 import {MD_ICONS_SIZE_18} from '../../styles/icons'
 
 const Content = styled('div')({
   fontSize: 13,
-  lineHeight: '1.5',
+  lineHeight: 1.5384615385,
   position: 'relative',
-  padding: '.75rem 1rem',
-  width: '17rem'
+  padding: '12px 16px',
+  width: 272
 })
 
 const MenuClose = styled(Icon)({
-  color: ui.palette.midGray,
+  color: PALETTE.TEXT_GRAY,
   cursor: 'pointer',
   fontSize: MD_ICONS_SIZE_18,
   position: 'absolute',
-  right: '.25rem',
-  top: '-.25rem',
+  right: 4,
+  top: -4,
   '&:hover': {
-    opacity: '.5'
+    opacity: .5
   }
 })
 
-const HelpMenuContent = (props) => {
+interface Props {
+  children: ReactNode
+  closePortal: () => void
+}
+
+const HelpMenuContent = (props: Props) => {
   const {children, closePortal} = props
   return (
     <Content>

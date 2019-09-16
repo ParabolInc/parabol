@@ -1,13 +1,13 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
 import styled from '@emotion/styled'
-import appTheme from '../../styles/theme/appTheme'
+import {PALETTE} from '../../styles/paletteV2'
 import logoMarkPrimary from '../../styles/theme/images/brand/mark-primary.svg'
 import logoMarkWhite from '../../styles/theme/images/brand/mark-white.svg'
 
 const RootBlock = styled('div')<{variant: 'primary' | 'white'}>(({variant}) => ({
   alignItems: 'flex-end',
-  borderTop: variant === 'primary' ? `.0625rem solid ${appTheme.palette.mid10a}` : undefined,
+  borderTop: variant === 'primary' ? `1px solid ${PALETTE.BACKGROUND_PRIMARY_10}` : undefined,
   boxSizing: 'content-box',
   display: 'flex',
   padding: 8,

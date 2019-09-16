@@ -2,7 +2,7 @@ import React from 'react'
 import CreateCardRootStyles from '../CreateCard/CreateCardRootStyles'
 import styled from '@emotion/styled'
 import {PALETTE} from '../../styles/paletteV2'
-import {Cards} from '../../types/constEnums'
+import {Card} from '../../types/constEnums'
 import Ellipsis from '../Ellipsis/Ellipsis'
 
 const CardBlock = styled('div')({
@@ -12,7 +12,7 @@ const CardBlock = styled('div')({
 
 const AddingHint = styled('div')({
   color: PALETTE.TEXT_GRAY,
-  fontSize: Cards.FONT_SIZE,
+  fontSize: Card.FONT_SIZE,
   textAlign: 'center'
 })
 

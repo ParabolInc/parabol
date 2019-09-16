@@ -3,13 +3,14 @@ import React from 'react'
 import styled from '@emotion/styled'
 import ui from '../../styles/ui'
 import appTheme from '../../styles/theme/theme'
+// import {PALETTE} from '../../styles/paletteV2'
 import BaseTag from './BaseTag'
 
 const tagTheme = {
-  cool: {
-    backgroundColor: ui.palette.cool,
-    color: ui.palette.white
-  },
+  // cool: {
+  //   backgroundColor: ui.palette.cool,
+  //   color: ui.palette.white
+  // },
 
   gray: {
     backgroundColor: ui.palette.light,

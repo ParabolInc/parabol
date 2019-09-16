@@ -1,12 +1,13 @@
 import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
 import ui from '../styles/ui'
+import {PALETTE} from '../styles/paletteV2'
 import BaseButton, {BaseButtonProps} from './BaseButton'
 import {Elevation} from '../styles/elevation'
 
 const StyledBaseButton = styled(BaseButton)<{palette?: string}>(({palette = 'gray'}) => {
   const backgroundColor = ui.palette[palette]
-  const color = ui.buttonLightThemes.includes(palette) ? ui.palette.dark : ui.palette.white
+  const color = ui.buttonLightThemes.includes(palette) ? PALETTE.TEXT_MAIN : '#FFFFFF'
   return {
     backgroundColor,
     borderRadius: ui.buttonBorderRadius,

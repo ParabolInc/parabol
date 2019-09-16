@@ -6,7 +6,7 @@ import TaskWatermark from '../../../../components/TaskWatermark'
 import TaskFooter from '../OutcomeCardFooter/TaskFooter'
 import OutcomeCardStatusIndicator from '../OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
 import labels from '../../../../styles/theme/labels'
-import {Cards} from '../../../../types/constEnums'
+import {Card} from '../../../../types/constEnums'
 import {cardFocusShadow, cardHoverShadow, cardShadow, Elevation} from '../../../../styles/elevation'
 import isTaskArchived from '../../../../utils/isTaskArchived'
 import isTaskPrivate from '../../../../utils/isTaskPrivate'
@@ -24,7 +24,7 @@ const RootCard = styled('div')<{isTaskHovered: boolean, isTaskFocused: boolean, 
   ...cardRootStyles,
   borderTop: 0,
   outline: 'none',
-  padding: `${Cards.PADDING} 0 0`,
+  padding: `${Card.PADDING} 0 0`,
   transition: `box-shadow 100ms ease-in`,
   // hover before focus, it matters
   boxShadow: isDragging

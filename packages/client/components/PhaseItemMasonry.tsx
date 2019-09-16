@@ -19,7 +19,7 @@ import ReflectionCardInFlight from './ReflectionCardInFlight'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import getBBox from './RetroReflectPhase/getBBox'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
-import appTheme from '../styles/theme/appTheme'
+import {PALETTE} from '../styles/paletteV2'
 import {DragReflectionDropTargetTypeEnum} from '../types/graphql'
 import {REFLECTION_CARD} from '../utils/constants'
 import handleDropOnGrid from '../utils/multiplayerMasonry/handleDropOnGrid'
@@ -295,7 +295,7 @@ class PhaseItemMasonry extends React.Component<Props> {
     return connectDropTarget(
       <div
         ref={this.setParentRef}
-        style={{...gridStyle, backgroundColor: canDrop && appTheme.palette.light70l}}
+        style={{...gridStyle, backgroundColor: canDrop && PALETTE.BACKGROUND_MAIN_70}}
       >
         {reflectionGroups.map((reflectionGroup) => {
           const {reflectionGroupId} = reflectionGroup

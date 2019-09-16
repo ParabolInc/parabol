@@ -17,7 +17,7 @@ import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/Edi
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import MeetingAgendaCards from '../modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
 import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
-import {MD_ICONS_SIZE_18} from '../styles/icons'
+import {ICON_SIZE} from '../styles/typographyV2'
 import {meetingVoteIcon} from '../styles/meeting'
 import ui from '../styles/ui'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
@@ -87,9 +87,9 @@ const TopicHeading = styled('div')({
 
 const VoteMeta = styled('div')({
   alignItems: 'center',
-  backgroundColor: ui.palette.midGray,
+  backgroundColor: PALETTE.BACKGROUND_GRAY,
   borderRadius: '5em',
-  color: ui.palette.white,
+  color: '#FFFFFF',
   display: 'flex',
   fontSize: ui.iconSize,
   fontWeight: 600,
@@ -98,8 +98,8 @@ const VoteMeta = styled('div')({
 })
 
 const VoteIcon = styled(Icon)({
-  color: ui.palette.white,
-  fontSize: MD_ICONS_SIZE_18,
+  color: '#FFFFFF',
+  fontSize: ICON_SIZE.MD18,
   marginRight: '.125rem'
 })
 
@@ -121,7 +121,7 @@ const Column = styled('div')({
 })
 
 const TaskColumn = styled(Column)({
-  borderLeft: '.0625rem solid rgba(0, 0, 0, .05)'
+  borderLeft: '1px solid rgba(0, 0, 0, .05)'
 })
 
 const ColumnInner = styled('div')({

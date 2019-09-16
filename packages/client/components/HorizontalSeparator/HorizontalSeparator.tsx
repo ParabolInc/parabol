@@ -6,39 +6,32 @@
 
 import React, {Fragment} from 'react'
 import styled from '@emotion/styled'
+import {PALETTE} from '../../styles/paletteV2'
+import LabelHeading from '../LabelHeading/LabelHeading'
 
-import ui from '../../styles/ui'
-import appTheme from '../../styles/theme/appTheme'
-
-const SeparatorContainer = styled('div')<{margin: string | number | undefined}>(({margin}) => ({
-  color: ui.labelHeadingColor,
+const SeparatorContainer = styled(LabelHeading)<{margin: string | number | undefined}>(({margin}) => ({
   display: 'flex',
-  fontSize: '.6875rem',
-  fontWeight: ui.labelHeadingFontWeight,
-  lineHeight: ui.labelHeadingLineHeight,
-  letterSpacing: ui.labelHeadingLetterSpacing,
+  fontSize: 11,
   margin,
   maxWidth: '100%',
-  padding: '1rem 0',
-  textTransform: 'uppercase',
+  padding: '16px 0',
   width: '100%'
 }))
 
 const separatorLineStyles = {
-  borderBottom: `1px solid ${appTheme.palette.mid50a}`,
-  margin: 'auto',
-  opacity: 0.25,
-  flex: 1
+  borderBottom: `1px solid ${PALETTE.BORDER_LIGHTER}`,
+  flex: 1,
+  margin: 'auto'
 }
 
 const LeftSeparator = styled('div')({
   ...separatorLineStyles,
-  marginRight: '0.5rem'
+  marginRight: 8
 })
 
 const RightSeparator = styled('div')({
   ...separatorLineStyles,
-  marginLeft: '0.5rem'
+  marginLeft: 8
 })
 
 const FullSeparator = styled('div')({

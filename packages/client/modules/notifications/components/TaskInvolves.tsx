@@ -122,10 +122,7 @@ const TaskInvolves = (props: Props) => {
   return (
     <>
       <Row>
-        <IconAvatar
-          icon={involvement === MENTIONEE ? 'chat_bubble' : 'assignment_ind'}
-          size='small'
-        />
+        <IconAvatar>{involvement === MENTIONEE ? 'chat_bubble' : 'assignment_ind'}</IconAvatar>
         <NotificationMessage>
           <MessageText>
             <b>{changeAuthorName}</b>

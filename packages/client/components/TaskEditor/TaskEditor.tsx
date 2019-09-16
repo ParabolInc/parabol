@@ -1,7 +1,7 @@
 import {DraftHandleValue, Editor, EditorState, getDefaultKeyBinding} from 'draft-js'
 import React, {Component, RefObject, Suspense} from 'react'
 import withMarkdown from './withMarkdown'
-import {Cards} from '../../types/constEnums'
+import {Card} from '../../types/constEnums'
 import {textTags} from '../../utils/constants'
 import entitizeText from '../../utils/draftjs/entitizeText'
 import './Draft.css'
@@ -16,9 +16,9 @@ import isAndroid from '../../utils/draftjs/isAndroid'
 
 const RootEditor = styled('div')<{noText: boolean, readOnly: boolean}>(({noText, readOnly}) => ({
   cursor: readOnly ? undefined : 'text',
-  fontSize: Cards.FONT_SIZE,
-  lineHeight: Cards.LINE_HEIGHT,
-  padding: `0 ${Cards.PADDING}`,
+  fontSize: Card.FONT_SIZE,
+  lineHeight: Card.LINE_HEIGHT,
+  padding: `0 ${Card.PADDING}`,
   height: noText ? '2.75rem' : undefined // Use this if the placeholder wraps
 }))
 

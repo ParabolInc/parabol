@@ -4,15 +4,15 @@ import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {PALETTE} from '../styles/paletteV2'
-import {Cards} from '../types/constEnums'
+import {Card} from '../types/constEnums'
 import {TaskServiceEnum} from '../types/graphql'
 
 const StyledLink = styled('a')({
   color: PALETTE.TEXT_MAIN,
   display: 'block',
-  fontSize: Cards.FONT_SIZE,
+  fontSize: Card.FONT_SIZE,
   lineHeight: '1.25rem',
-  padding: `0 ${Cards.PADDING}`,
+  padding: `0 ${Card.PADDING}`,
   textDecoration: 'underline',
   '&:hover,:focus': {
     textDecoration: 'underline'

@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
-import ui from '../../styles/ui'
+import {PALETTE} from '../../styles/paletteV2'
 
 const LabelHeading = styled('div')({
-  color: ui.labelHeadingColor,
-  fontSize: ui.labelHeadingFontSize,
-  fontWeight: ui.labelHeadingFontWeight,
-  letterSpacing: ui.labelHeadingLetterSpacing,
-  lineHeight: ui.labelHeadingLineHeight,
+  color: PALETTE.TEXT_GRAY,
+  fontSize: 12,
+  fontWeight: 600,
+  letterSpacing: '.03em',
+  lineHeight: '16px',
   textTransform: 'uppercase',
   userSelect: 'none'
 })
