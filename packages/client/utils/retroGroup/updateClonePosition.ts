@@ -43,6 +43,13 @@ const updateClonePosition = (targetEl: HTMLDivElement, reflectionId: string, max
   style.boxShadow = Elevation.CARD_SHADOW
   style.opacity = String(opacity)
   style.transition = transition
+  setTimeout(() => {
+    // when an expanded group auto-collapses when the count falls to 1, we'll need to recalculate height after collapse
+    const bbox = targetEl.getBoundingClientRect()
+    const {transform} = getDroppingStyles(targetEl, bbox, maxTop)
+    style.transform = transform
+    style.transition = style.transition.replace(String(Times.REFLECTION_DROP_DURATION), String(Times.REFLECTION_DROP_DURATION - Times.REFLECTION_COLLAPSE_DURATION))
+  }, Times.REFLECTION_COLLAPSE_DURATION)
 }
 
 export default updateClonePosition

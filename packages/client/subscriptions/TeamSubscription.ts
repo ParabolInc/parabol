@@ -15,10 +15,6 @@ import {
 } from '../mutations/EndDraggingReflectionMutation'
 import {dragDiscussionTopicTeamUpdater} from '../mutations/DragDiscussionTopicMutation'
 import {startDraggingReflectionTeamUpdater} from '../mutations/StartDraggingReflectionMutation'
-import {
-  autoGroupReflectionsTeamOnNext,
-  autoGroupReflectionsTeamUpdater
-} from '../mutations/AutoGroupReflectionsMutation'
 import {addReflectTemplateTeamUpdater} from '../mutations/AddReflectTemplateMutation'
 import {removeReflectTemplateTeamUpdater} from '../mutations/RemoveReflectTemplateMutation'
 import {addReflectTemplatePromptTeamUpdater} from '../mutations/AddReflectTemplatePromptMutation'
@@ -44,7 +40,6 @@ const subscription = graphql`
       ...AddReflectTemplatePromptMutation_team @relay(mask: false)
       ...AddTeamMutation_team @relay(mask: false)
       ...ArchiveTeamMutation_team @relay(mask: false)
-      ...AutoGroupReflectionsMutation_team @relay(mask: false)
       ...CreateReflectionMutation_team @relay(mask: false)
       ...DenyPushInvitationMutation_team @relay(mask: false)
       ...DragDiscussionTopicMutation_team @relay(mask: false)
@@ -86,7 +81,6 @@ const subscription = graphql`
 
 const onNextHandlers = {
   AcceptTeamInvitationPayload: acceptTeamInvitationTeamOnNext,
-  AutoGroupReflectionsPayload: autoGroupReflectionsTeamOnNext,
   ArchiveTeamPayload: archiveTeamTeamOnNext,
   DenyPushInvitationPayload: denyPushInvitationTeamOnNext,
   EndNewMeetingPayload: endNewMeetingTeamOnNext,
@@ -126,9 +120,6 @@ const TeamSubscription = (atmosphere, _queryVariables, subParams) => {
           break
         case 'AddReflectTemplatePromptPayload':
           addReflectTemplatePromptTeamUpdater(payload, context)
-          break
-        case 'AutoGroupReflectionsPayload':
-          autoGroupReflectionsTeamUpdater(payload, context)
           break
         case 'CreateGitHubIssuePayload':
           break

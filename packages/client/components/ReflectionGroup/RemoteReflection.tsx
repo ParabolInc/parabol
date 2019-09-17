@@ -9,7 +9,6 @@ import {convertFromRaw, EditorState} from 'draft-js'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import editorDecorators from '../TaskEditor/decorators'
-import ReflectionFooter from '../ReflectionFooter'
 import {RemoteReflection_reflection} from '../../__generated__/RemoteReflection_reflection.graphql'
 import getBBox from '../RetroReflectPhase/getBBox'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -94,9 +93,8 @@ const getInlineStyle = (remoteDrag: RemoteReflection_reflection['remoteDrag'], i
 
 const RemoteReflection = (props: Props) => {
   const {reflection, style} = props
-  const {id: reflectionId, content, phaseItem, isDropping} = reflection
+  const {id: reflectionId, content, isDropping} = reflection
   const remoteDrag = reflection.remoteDrag as DeepNonNullable<NonNullable<RemoteReflection_reflection['remoteDrag']>>
-  const {question} = phaseItem
   const {dragUserId, dragUserName} = remoteDrag
   const ref = useRef<HTMLDivElement>(null)
   const editorState = useMemo(() => {
@@ -132,7 +130,6 @@ const RemoteReflection = (props: Props) => {
         <ReflectionCardRoot>
           {!headerTransform && <UserDraggingHeader userId={dragUserId} name={dragUserName} />}
           <ReflectionEditorWrapper editorState={editorState} readOnly />
-          <ReflectionFooter>{question}</ReflectionFooter>
         </ReflectionCardRoot>
       </RemoteReflectionModal>
       {headerTransform &&
@@ -163,9 +160,6 @@ export default createFragmentContainer(
           targetId
           targetOffsetX
           targetOffsetY
-        }
-        phaseItem {
-          question
         }
       }`
   }

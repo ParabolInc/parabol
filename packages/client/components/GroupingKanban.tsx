@@ -1,4 +1,4 @@
-import React, {RefObject, useEffect, useMemo} from 'react'
+import React, {RefObject, useMemo, useState} from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import {createFragmentContainer} from 'react-relay'
 import {GroupingKanban_meeting} from '__generated__/GroupingKanban_meeting.graphql'
@@ -7,24 +7,35 @@ import styled from '@emotion/styled'
 import GroupingKanbanColumn from './GroupingKanbanColumn'
 import PortalProvider from './AtmosphereProvider/PortalProvider'
 import useHideBodyScroll from '../hooks/useHideBodyScroll'
+import ReflectWrapperDesktop from './RetroReflectPhase/ReflectWrapperDesktop'
+import ReflectWrapperMobile from './RetroReflectPhase/ReflectionWrapperMobile'
+import useBreakpoint from '../hooks/useBreakpoint'
+import {Breakpoint, Times} from '../types/constEnums'
+import useThrottledEvent from '../hooks/useThrottledEvent'
 
 interface Props {
   meeting: GroupingKanban_meeting,
   phaseRef: RefObject<HTMLDivElement>
-  resetActivityTimeout: () => void
+  resetActivityTimeout?: () => void
 }
 
 const ColumnsBlock = styled('div')({
   display: 'flex',
   flex: '1',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
   height: '100%',
   margin: '0 auto',
+  maxHeight: 608,
   overflow: 'auto',
   width: '100%'
 })
 
+export type SwipeColumn = (offset: number) => void
+
 const GroupingKanban = (props: Props) => {
-  const {meeting, phaseRef} = props
+  const {meeting, phaseRef, resetActivityTimeout} = props
   const {reflectionGroups, phases} = meeting
   const reflectPhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.reflect)!
   const reflectPrompts = reflectPhase.reflectPrompts!
@@ -37,21 +48,35 @@ const GroupingKanban = (props: Props) => {
       container[retroPhaseItemId] = container[retroPhaseItemId] || []
       container[retroPhaseItemId].push(group)
     }
+    // anytime the groups change, reset the timeout. OK if it's not perfect
+    resetActivityTimeout && resetActivityTimeout()
     return container
   }, [reflectionGroups])
-
+  const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
+  const [activeIdx, setActiveIdx] = useState(0)
+  const ColumnWrapper = isDesktop ? ReflectWrapperDesktop : ReflectWrapperMobile
+  const isViewerDragging = useMemo(() => {
+    return isDesktop ? false : !!reflectionGroups.find((group) => group.reflections.find((reflection) => reflection.isViewerDragging))
+  }, [isDesktop, reflectionGroups])
+  const swipeColumn: SwipeColumn = useThrottledEvent((offset: number) => {
+    const nextIdx = Math.min(reflectPrompts.length - 1, Math.max(0, activeIdx + offset))
+    setActiveIdx(nextIdx)
+  }, Times.REFLECTION_COLUMN_SWIPE_THRESH)
   return (
     <PortalProvider>
       <ColumnsBlock>
-        {reflectPrompts.map((prompt) => (
-          <GroupingKanbanColumn
-            key={prompt.id}
-            meeting={meeting}
-            phaseRef={phaseRef}
-            prompt={prompt}
-            reflectionGroups={groupsByPhaseItem[prompt.id] || []}
-          />
-        ))}
+        <ColumnWrapper setActiveIdx={setActiveIdx} activeIdx={activeIdx} disabled={isViewerDragging}>
+          {reflectPrompts.map((prompt) => (
+            <GroupingKanbanColumn
+              key={prompt.id}
+              meeting={meeting}
+              phaseRef={phaseRef}
+              prompt={prompt}
+              reflectionGroups={groupsByPhaseItem[prompt.id] || []}
+              swipeColumn={swipeColumn}
+            />
+          ))}
+        </ColumnWrapper>
       </ColumnsBlock>
     </PortalProvider>
   )
@@ -76,6 +101,9 @@ export default createFragmentContainer(
           ...GroupingKanbanColumn_reflectionGroups
           id
           retroPhaseItemId
+          reflections {
+            isViewerDragging
+          }
         }
       }`
   }

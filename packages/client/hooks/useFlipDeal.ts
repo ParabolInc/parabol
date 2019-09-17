@@ -7,7 +7,6 @@ const CARD_SPACING = 54
 const useFlipDeal = (count: number) => {
   const isAnimatingRef = useRef(false)
   const lastListItemsRef = useRef([] as RefCallbackInstance[])
-  const reverseRefs = useRef([] as (() => void)[])
   const ref = (idx: number) => (c: RefCallbackInstance) => {
     lastListItemsRef.current[idx] = c
     if (isAnimatingRef.current || !c) return
@@ -26,15 +25,19 @@ const useFlipDeal = (count: number) => {
           lastReflection.style.transition = cachedTransition
           lastReflection.style.transform = ''
         })
-        reverseRefs.current.push(() => {
-          lastReflection.style.transition = `transform ${Times.REFLECTION_DEAL_CARD_DURATION}ms ${BezierCurve.STANDARD_CURVE}`
-          lastReflection.style.transform = cachedTransform
-        })
       }
     }
   }
-  const reverse = () => {
-    reverseRefs.current.forEach((fn) => fn())
+  const reverse = (count: number) => {
+    for (let i = 0; i < count; i++) {
+      const lastReflection = lastListItemsRef.current[i]
+      if (!lastReflection) return
+      const hiddenPenalty = i >= 3 ? ReflectionStackPerspective.Y : 0
+      lastReflection.style.transition = `transform ${Times.REFLECTION_DEAL_CARD_DURATION}ms ${BezierCurve.STANDARD_CURVE}`
+      requestAnimationFrame(() => {
+        lastReflection.style.transform = `translateY(${-(CARD_SPACING + hiddenPenalty) * i}px)`
+      })
+    }
     isAnimatingRef.current = false
   }
   return [ref, reverse] as [typeof ref, typeof reverse]

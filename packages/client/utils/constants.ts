@@ -148,7 +148,6 @@ export const ACTION = 'action'
 export const RETROSPECTIVE = 'retrospective'
 
 /* Retro DnD types */
-export const REFLECTION_CARD = 'REFLECTION_CARD'
 export const DISCUSSION_TOPIC = 'DISCUSSION_TOPIC'
 
 /* Retro constants */

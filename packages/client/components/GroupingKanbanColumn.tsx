@@ -14,12 +14,16 @@ import CreateReflectionMutation from '../mutations/CreateReflectionMutation'
 import getNextSortOrder from '../utils/getNextSortOrder'
 import useMutationProps from '../hooks/useMutationProps'
 import useAtmosphere from '../hooks/useAtmosphere'
+import {SwipeColumn} from './GroupingKanban'
+import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 
 // TODO share with TaskColumn
 const Column = styled('div')({
+  alignItems: 'center',
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
+  height: '100%',
   position: 'relative',
   transition: `background 300ms ${BezierCurve.DECELERATE}`
 })
@@ -60,13 +64,15 @@ interface Props {
   phaseRef: RefObject<HTMLDivElement>
   prompt: GroupingKanbanColumn_prompt
   reflectionGroups: GroupingKanbanColumn_reflectionGroups
+  swipeColumn: SwipeColumn
 }
 
 const GroupingKanbanColumn = (props: Props) => {
-  const {meeting, reflectionGroups, phaseRef, prompt} = props
+  const {meeting, reflectionGroups, phaseRef, prompt, swipeColumn} = props
   const {question, id: promptId} = prompt
-  const {id: meetingId} = meeting
-  const {submitting, onError, error, submitMutation, onCompleted} = useMutationProps()
+  const {id: meetingId, localStage} = meeting
+  const {isComplete, phaseType} = localStage
+  const {submitting, onError, submitMutation, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
   const onClick = () => {
     if (submitting) return
@@ -79,17 +85,20 @@ const GroupingKanbanColumn = (props: Props) => {
     CreateReflectionMutation(atmosphere, {input}, {meetingId}, onError, onCompleted)
   }
   const ref = useRef<HTMLDivElement>(null)
+  const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete
   return (
     <Column ref={ref}>
       <ColumnHeader>
-        <AddReflectionButton aria-label={'Add a reflection'} onClick={onClick} waiting={submitting}>
+        {canAdd && <AddReflectionButton aria-label={'Add a reflection'} onClick={onClick} waiting={submitting}>
           <Icon>add</Icon>
-        </AddReflectionButton>
+        </AddReflectionButton>}
         <Prompt>{question}</Prompt>
       </ColumnHeader>
       <ColumnBody data-dropzone={promptId}>
-        {reflectionGroups.map((reflectionGroup) => {
-          return <ReflectionGroup key={reflectionGroup.id} meeting={meeting} phaseRef={phaseRef} reflectionGroup={reflectionGroup} />
+        {reflectionGroups
+          .filter((group) => group.reflections.length > 0)
+          .map((reflectionGroup) => {
+          return <ReflectionGroup key={reflectionGroup.id} meeting={meeting} phaseRef={phaseRef} reflectionGroup={reflectionGroup} swipeColumn={swipeColumn}/>
         })}
       </ColumnBody>
     </Column>
@@ -101,8 +110,18 @@ export default createFragmentContainer(
   {
     meeting: graphql`
       fragment GroupingKanbanColumn_meeting on RetrospectiveMeeting {
-        id
         ...ReflectionGroup_meeting
+        id
+        localStage {
+          isComplete
+          phaseType
+        }
+        phases {
+          stages {
+            isComplete
+            phaseType
+          }
+        }
       }`,
     reflectionGroups: graphql`
       fragment GroupingKanbanColumn_reflectionGroups on RetroReflectionGroup @relay(plural: true) {

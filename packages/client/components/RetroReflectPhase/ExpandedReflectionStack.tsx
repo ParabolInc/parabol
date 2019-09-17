@@ -67,12 +67,13 @@ interface Props {
   header?: ReactNode
   phaseRef: React.RefObject<HTMLDivElement>
   readOnly?: boolean
-  reflectionStack: readonly any[]
-  reflections?: readonly any[]
+  staticReflections: readonly any[]
+  reflections: readonly any[]
   meeting: any
   scrollRef: Ref<HTMLDivElement>
   bgRef: Ref<HTMLDivElement>
   setItemsRef: (idx: number) => (c: RefCallbackInstance) => void
+  isDraggable?: boolean
 }
 
 const ModalReflectionWrapper = styled('div')({
@@ -80,7 +81,7 @@ const ModalReflectionWrapper = styled('div')({
 })
 
 const ExpandedReflectionStack = (props: Props) => {
-  const {header, reflectionStack, readOnly, phaseRef, scrollRef, setItemsRef, bgRef, closePortal, reflections, meeting} = props
+  const {header, isDraggable, staticReflections, readOnly, phaseRef, scrollRef, setItemsRef, bgRef, closePortal, reflections, meeting} = props
   const phaseBBox = useMemo(() => {
     return getBBox(phaseRef.current)
   }, [phaseRef.current])
@@ -95,11 +96,15 @@ const ExpandedReflectionStack = (props: Props) => {
         <ModalArea>
           {header}
           <ScrollBlock ref={scrollRef} onClick={closeOnEdge}>
-            {reflectionStack.map((reflection, idx) => {
+            {reflections.map((reflection, idx) => {
+              const staticIdx = reflections ? staticReflections.indexOf(reflection) : idx
+              if (staticIdx === -1) {
+                return null
+              }
               return (
                 <ModalReflectionWrapper
                   key={reflection.id}
-                  style={{zIndex: reflectionStack.length - idx - 1}}
+                  style={{zIndex: staticReflections.length - staticIdx - 1}}
                   id={reflection.id}
                   ref={setItemsRef(idx)}
                 >
@@ -107,8 +112,8 @@ const ExpandedReflectionStack = (props: Props) => {
                     isDraggable
                     meeting={meeting}
                     reflection={reflection}
-                    staticIdx={reflections ? reflectionStack.indexOf(reflection) : idx}
-                    staticReflections={reflectionStack}
+                    staticIdx={staticIdx}
+                    staticReflections={staticReflections}
                     readOnly={readOnly}
                   />
                 </ModalReflectionWrapper>

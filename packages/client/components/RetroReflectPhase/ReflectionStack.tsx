@@ -51,7 +51,7 @@ const ReflectionWrapper = styled('div')<{idx: number}>(
 const ReflectionStack = (props: Props) => {
   const {phaseRef, idx, meeting, readOnly, reflectionStack, stackTopRef} = props
   const stackRef = useRef<HTMLDivElement>(null)
-  const {setItemsRef, scrollRef, bgRef, portal, collapse, expand} = useExpandedReflections(stackRef, reflectionStack.length)
+  const {setItemsRef, scrollRef, bgRef, portal, collapse, expand} = useExpandedReflections(stackRef, stackRef, reflectionStack.length)
   const {id: meetingId} = meeting
   if (reflectionStack.length === 0) {
     return <ReflectionStackPlaceholder idx={idx} ref={stackTopRef} />
@@ -60,7 +60,8 @@ const ReflectionStack = (props: Props) => {
     <React.Fragment>
       {portal(<ExpandedReflectionStack
         phaseRef={phaseRef}
-        reflectionStack={reflectionStack}
+        staticReflections={reflectionStack}
+        reflections={reflectionStack}
         meeting={meeting}
         readOnly={readOnly}
         scrollRef={scrollRef}

@@ -6,11 +6,11 @@ import ReflectionGroupTitleEditor from './ReflectionGroup/ReflectionGroupTitleEd
 import {GROUP, VOTE} from '../utils/constants'
 import ReflectionGroupVoting from './ReflectionGroupVoting'
 import Tag from './Tag/Tag'
-import {REFLECTION_CARD_WIDTH} from '../utils/multiplayerMasonry/masonryConstants'
 import {ReflectionGroupHeader_reflectionGroup} from '../__generated__/ReflectionGroupHeader_reflectionGroup.graphql'
 import {ReflectionGroupHeader_meeting} from '../__generated__/ReflectionGroupHeader_meeting.graphql'
 import plural from '../utils/plural'
 import {PortalStatus} from '../hooks/usePortal'
+import {ElementWidth} from '../types/constEnums'
 
 interface Props {
   meeting: ReflectionGroupHeader_meeting
@@ -27,11 +27,11 @@ const GroupHeader = styled('div')<{isExpanded: boolean, portalStatus: PortalStat
   fontSize: 14,
   justifyContent: 'space-between',
   margin: isExpanded ? '0 16px' : undefined,
-  maxWidth: REFLECTION_CARD_WIDTH,
+  maxWidth: ElementWidth.REFLECTION_CARD,
   minHeight: 32,
   opacity: !isExpanded && portalStatus !== PortalStatus.Exited ? 0 : undefined,
-  padding: 8,
-  paddingBottom: 0,
+  paddingLeft: 8,
+  paddingRight: 8,
   position: 'relative',
   width: '100%'
 }))
@@ -64,7 +64,7 @@ const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>
       )}
       {phaseType === VOTE && (
         <ReflectionGroupVoting
-          isExpanded={isExpanded}
+          isExpanded={isExpanded && portalStatus !== PortalStatus.Exiting}
           reflectionGroup={reflectionGroup}
           meeting={meeting}
         />

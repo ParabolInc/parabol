@@ -17,10 +17,8 @@ import MeetingHelpToggle from './MenuHelpToggle'
 import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
-import StyledError from './StyledError'
 import useTimeoutWithReset from '../hooks/useTimeoutWithReset'
 import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
-import AutoGroupReflectionsMutation from '../mutations/AutoGroupReflectionsMutation'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {VOTE} from '../utils/constants'
 import lazyPreload from '../utils/lazyPreload'
@@ -35,7 +33,6 @@ import PhaseWrapper from './PhaseWrapper'
 import {ElementWidth} from '../types/constEnums'
 import GroupingKanban from './GroupingKanban'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useMutationProps from '../hooks/useMutationProps'
 
 interface Props extends RetroMeetingPhaseProps {
   team: RetroGroupPhase_team
@@ -61,7 +58,7 @@ const DemoGroupHelpMenu = lazyPreload(async () =>
 const RetroGroupPhase = (props: Props) => {
   const atmosphere = useAtmosphere()
   const phaseRef = useRef<HTMLDivElement>(null)
-  const {onCompleted, submitMutation, error, onError, submitting} = useMutationProps()
+  // const {onCompleted, submitMutation, error, onError, submitting} = useMutationProps()
   const [isReadyToVote, resetActivityTimeout] = useTimeoutWithReset(ms('1m'), ms('30s'))
   const {
     avatarGroup,
@@ -73,19 +70,19 @@ const RetroGroupPhase = (props: Props) => {
   const {viewerId} = atmosphere
   const {isMeetingSidebarCollapsed, newMeeting} = team
   if (!newMeeting) return null
-  const {nextAutoGroupThreshold, facilitatorUserId, id: meetingId, localStage} = newMeeting
+  const {facilitatorUserId, id: meetingId, localStage} = newMeeting
   const isComplete = localStage ? localStage.isComplete : false
   const isAsync = localStage ? localStage.isAsync : false
   const isFacilitating = facilitatorUserId === viewerId
   const nextPhaseLabel = phaseLabelLookup[VOTE]
   const {gotoNext, ref: gotoNextRef} = handleGotoNext
-  const autoGroup = () => {
-    if (submitting) return
-    submitMutation()
-    const groupingThreshold = nextAutoGroupThreshold || 0.5
-    AutoGroupReflectionsMutation(atmosphere, {meetingId, groupingThreshold}, onError, onCompleted)
-  }
-  const canAutoGroup = !isDemoRoute() && (!nextAutoGroupThreshold || nextAutoGroupThreshold < 1) && !isComplete
+  // const autoGroup = () => {
+  //   if (submitting) return
+  //   submitMutation()
+  //   const groupingThreshold = nextAutoGroupThreshold || 0.5
+  //   AutoGroupReflectionsMutation(atmosphere, {meetingId, groupingThreshold}, onError, onCompleted)
+  // }
+  // const canAutoGroup = !isDemoRoute() && (!nextAutoGroupThreshold || nextAutoGroupThreshold < 1) && !isComplete
   return (
     <MeetingContent ref={phaseRef}>
       <MeetingHeaderAndPhase>
@@ -99,7 +96,7 @@ const RetroGroupPhase = (props: Props) => {
         </MeetingContentHeader>
         <PhaseWrapper>
           <StageTimerDisplay stage={localStage!} />
-          {error && <StyledError>{error}</StyledError>}
+          {/*{error && <StyledError>{error}</StyledError>}*/}
           <MeetingPhaseWrapper>
             <GroupingKanban meeting={newMeeting} phaseRef={phaseRef} resetActivityTimeout={resetActivityTimeout} />
           </MeetingPhaseWrapper>
@@ -111,15 +108,15 @@ const RetroGroupPhase = (props: Props) => {
       <MeetingFacilitatorBar isFacilitating={isFacilitating}>
         {!isComplete && <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />}
         <CenteredControlBlock isComplete={isComplete}>
-          {canAutoGroup && (
-            <BottomNavControl onClick={autoGroup} waiting={submitting}>
-              <BottomNavIconLabel
-                icon='photo_filter'
-                iconColor='midGray'
-                label={'Auto Group'}
-              />
-            </BottomNavControl>
-          )}
+          {/*{canAutoGroup && (*/}
+          {/*  <BottomNavControl onClick={autoGroup} waiting={submitting}>*/}
+          {/*    <BottomNavIconLabel*/}
+          {/*      icon='photo_filter'*/}
+          {/*      iconColor='midGray'*/}
+          {/*      label={'Auto Group'}*/}
+          {/*    />*/}
+          {/*  </BottomNavControl>*/}
+          {/*)}*/}
           <BottomNavControl
             isBouncing={isDemoStageComplete || (!isAsync && !isComplete && isReadyToVote)}
             disabled={isDemoRoute() && !isDemoStageComplete}

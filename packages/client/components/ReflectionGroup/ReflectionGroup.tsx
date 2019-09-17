@@ -6,23 +6,26 @@ import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
 import DraggableReflectionCard from './DraggableReflectionCard'
-import {ElementWidth, Layout, ReflectionStackPerspective, Times} from '../../types/constEnums'
+import {ElementWidth, ReflectionStackPerspective, Times} from '../../types/constEnums'
 import ReflectionGroupHeader from '../ReflectionGroupHeader'
 import ExpandedReflectionStack from '../RetroReflectPhase/ExpandedReflectionStack'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
 import {GROUP} from '../../utils/constants'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import {SwipeColumn} from '../GroupingKanban'
 
 const CardStack = styled('div')({
-  paddingTop: 8,
   position: 'relative'
 })
 
+export const getCardStackPadding = (count: number) => {
+  return Math.max(0, Math.min(3, count) - 1) * ReflectionStackPerspective.Y
+}
+
 const Group = styled('div')<{staticReflectionCount: number}>(({staticReflectionCount}) => ({
   position: 'relative',
-  padding: Layout.REFLECTION_CARD_PADDING_Y,
-  paddingTop: staticReflectionCount === 0 ? 0 : undefined,
-  paddingBottom: staticReflectionCount === 0 ? 0 : Layout.REFLECTION_CARD_PADDING_Y + (Math.min(3, staticReflectionCount) - 1) * ReflectionStackPerspective.Y,
+  paddingTop: ElementWidth.REFLECTION_CARD_PADDING,
+  paddingBottom: ElementWidth.REFLECTION_CARD_PADDING + getCardStackPadding(staticReflectionCount),
   transition: `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms`
 }))
 
@@ -49,10 +52,12 @@ interface Props {
   phaseRef: RefObject<HTMLDivElement>
   meeting: ReflectionGroup_meeting
   reflectionGroup: ReflectionGroup_reflectionGroup
+  swipeColumn: SwipeColumn
 }
 
 const ReflectionGroup = (props: Props) => {
-  const {meeting, phaseRef, reflectionGroup} = props
+  const {meeting, phaseRef, reflectionGroup, swipeColumn} = props
+  const groupRef = useRef<HTMLDivElement>(null)
   const {localPhase, localStage} = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
@@ -63,10 +68,11 @@ const ReflectionGroup = (props: Props) => {
     return reflections.filter((reflection) => !reflection.isViewerDragging && (!reflection.remoteDrag || reflection.isDropping))
   }, [reflections])
   const stackRef = useRef<HTMLDivElement>(null)
-  const {setItemsRef, scrollRef, bgRef, modalHeaderRef, portal, portalStatus, collapse, expand} = useExpandedReflections(stackRef, reflections.length, headerRef)
+  const {setItemsRef, scrollRef, bgRef, modalHeaderRef, portal, portalStatus, collapse, expand} = useExpandedReflections(groupRef, stackRef, reflections.length, headerRef)
   const atmosphere = useAtmosphere()
   const [isEditing, thisSetIsEditing] = useState(false)
-  const isGroupDraggable = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete && !isEditing
+  const isDragPhase = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete
+  const isGroupDraggable =  isDragPhase && !isEditing
   const setIsEditing = (isEditing: boolean) => {
     thisSetIsEditing(isEditing)
     const [firstReflection] = staticReflections
@@ -82,9 +88,10 @@ const ReflectionGroup = (props: Props) => {
     const wasDrag = staticReflections.some((reflection) => reflection.isDropping)
     if (wasDrag) return
     if (reflections.length === 1) {
+      if (!isDragPhase) return
       setIsEditing(true)
       const watchForClick = (e) => {
-        const isClickOnGroup = e.composedPath().find((el) => el === stackRef.current)
+        const isClickOnGroup = e.composedPath().find((el) => el === groupRef.current)
         if (!isClickOnGroup) {
           document.removeEventListener('click', watchForClick)
           setIsEditing(false)
@@ -109,7 +116,7 @@ const ReflectionGroup = (props: Props) => {
           titleInputRef={titleInputRef}
         />}
         phaseRef={phaseRef}
-        reflectionStack={staticReflections}
+        staticReflections={staticReflections}
         reflections={reflections}
         readOnly={false}
         scrollRef={scrollRef}
@@ -118,7 +125,7 @@ const ReflectionGroup = (props: Props) => {
         closePortal={collapse}
         meeting={meeting}
       />)}
-      <Group staticReflectionCount={staticReflections.length} data-droppable={reflectionGroupId}>
+      <Group data-droppable={reflectionGroupId} ref={groupRef} staticReflectionCount={staticReflections.length}>
         {showHeader && <ReflectionGroupHeader
           ref={headerRef}
           meeting={meeting}
@@ -132,7 +139,8 @@ const ReflectionGroup = (props: Props) => {
             const {id: reflectionId, isDropping} = reflection
             const isDraggable = isGroupDraggable && !isDropping && staticIdx === 0
             return (
-              <ReflectionWrapper key={reflectionId} groupCount={reflections.length} staticIdx={staticIdx} isDropping={isDropping}>
+              <ReflectionWrapper key={reflectionId} groupCount={reflections.length} staticIdx={staticIdx}
+                                 isDropping={isDropping}>
                 <DraggableReflectionCard
                   key={reflection.id}
                   staticIdx={staticIdx}
@@ -140,6 +148,7 @@ const ReflectionGroup = (props: Props) => {
                   meeting={meeting}
                   reflection={reflection}
                   staticReflections={staticReflections}
+                  swipeColumn={swipeColumn}
                 />
               </ReflectionWrapper>
             )
