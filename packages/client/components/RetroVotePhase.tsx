@@ -1,5 +1,5 @@
 import {RetroVotePhase_team} from '../__generated__/RetroVotePhase_team.graphql'
-import React from 'react'
+import React, {useRef} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
@@ -36,6 +36,7 @@ import StageTimerDisplay from './RetroReflectPhase/StageTimerDisplay'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import PhaseWrapper from './PhaseWrapper'
 import {ElementWidth} from '../types/constEnums'
+import GroupingKanban from './GroupingKanban'
 
 interface Props extends WithAtmosphereProps, RetroMeetingPhaseProps {
   meetingSettings: RetroVotePhase_meetingSettings
@@ -146,19 +147,20 @@ const RetroVotePhase = (props: Props) => {
     team
   } = props
   const {isMeetingSidebarCollapsed, newMeeting} = team
+  const phaseRef = useRef<HTMLDivElement>(null)
   if (!newMeeting) return null
   const {gotoNext, ref: gotoNextRef} = handleGotoNext
-  const {facilitatorUserId, meetingId, phases, viewerMeetingMember, localStage} = newMeeting
+  const {facilitatorUserId, id: meetingId, phases, viewerMeetingMember, localStage} = newMeeting
   const isComplete = localStage ? localStage.isComplete : false
-  const teamVotesRemaining = newMeeting.teamVotesRemaining || 0
-  const myVotesRemaining = viewerMeetingMember.myVotesRemaining || 0
+  const teamVotesRemaining = newMeeting.votesRemaining || 0
+  const myVotesRemaining = viewerMeetingMember.votesRemaining || 0
   const isFacilitating = facilitatorUserId === viewerId
   const discussPhase = phases.find((phase) => phase.phaseType === DISCUSS)!
   const discussStage = discussPhase.stages![0]
   const nextPhaseLabel = phaseLabelLookup[DISCUSS]
   const checkMarks = [...Array(totalVotes).keys()]
   return (
-    <MeetingContent>
+    <MeetingContent ref={phaseRef}>
       <MeetingHeaderAndPhase>
         <MeetingContentHeader
           avatarGroup={avatarGroup}
@@ -189,7 +191,7 @@ const RetroVotePhase = (props: Props) => {
           <StageTimerDisplay stage={localStage} />
           <ScrollableBlock>
             <MeetingPhaseWrapper>
-              {/*<PhaseItemMasonry meeting={newMeeting} />*/}
+              <GroupingKanban meeting={newMeeting} phaseRef={phaseRef} />
             </MeetingPhaseWrapper>
           </ScrollableBlock>
         </PhaseWrapper>
@@ -231,8 +233,8 @@ export default createFragmentContainer(withAtmosphere(RetroVotePhase), {
       ...StageTimerControl_team
       isMeetingSidebarCollapsed
       newMeeting {
-        ...PhaseItemColumn_meeting
-        meetingId: id
+        ...GroupingKanban_meeting
+        id
         facilitatorUserId
         localStage {
           ...StageTimerDisplay_stage
@@ -252,11 +254,11 @@ export default createFragmentContainer(withAtmosphere(RetroVotePhase), {
         }
         viewerMeetingMember {
           ... on RetrospectiveMeetingMember {
-            myVotesRemaining: votesRemaining
+            votesRemaining
           }
         }
         ... on RetrospectiveMeeting {
-          teamVotesRemaining: votesRemaining
+          votesRemaining
         }
       }
     }

@@ -71,7 +71,8 @@ const ReflectionGroup = (props: Props) => {
   const {setItemsRef, scrollRef, bgRef, modalHeaderRef, portal, portalStatus, collapse, expand} = useExpandedReflections(groupRef, stackRef, reflections.length, headerRef)
   const atmosphere = useAtmosphere()
   const [isEditing, thisSetIsEditing] = useState(false)
-  const isGroupDraggable = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete && !isEditing
+  const isDragPhase = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete
+  const isGroupDraggable =  isDragPhase && !isEditing
   const setIsEditing = (isEditing: boolean) => {
     thisSetIsEditing(isEditing)
     const [firstReflection] = staticReflections
@@ -87,6 +88,7 @@ const ReflectionGroup = (props: Props) => {
     const wasDrag = staticReflections.some((reflection) => reflection.isDropping)
     if (wasDrag) return
     if (reflections.length === 1) {
+      if (!isDragPhase) return
       setIsEditing(true)
       const watchForClick = (e) => {
         const isClickOnGroup = e.composedPath().find((el) => el === groupRef.current)
@@ -113,7 +115,6 @@ const ReflectionGroup = (props: Props) => {
           reflectionGroup={reflectionGroup}
           titleInputRef={titleInputRef}
         />}
-        isDraggable
         phaseRef={phaseRef}
         staticReflections={staticReflections}
         reflections={reflections}

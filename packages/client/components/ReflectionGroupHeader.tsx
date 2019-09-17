@@ -64,7 +64,7 @@ const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>
       )}
       {phaseType === VOTE && (
         <ReflectionGroupVoting
-          isExpanded={isExpanded}
+          isExpanded={isExpanded && portalStatus !== PortalStatus.Exiting}
           reflectionGroup={reflectionGroup}
           meeting={meeting}
         />

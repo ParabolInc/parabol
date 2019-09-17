@@ -8,6 +8,7 @@ import {DraggableReflectionCard_staticReflections} from '../../__generated__/Dra
 import useDraggableReflectionCard from '../../hooks/useDraggableReflectionCard'
 import styled from '@emotion/styled'
 import {SwipeColumn} from '../GroupingKanban'
+import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
 
 export interface DropZoneBBox {
   height: number,
@@ -61,14 +62,17 @@ export interface TargetBBox {
 
 const DraggableReflectionCard = (props: Props) => {
   const {reflection, staticIdx, staticReflections, meeting, isDraggable, readOnly, swipeColumn} = props
-  const {id: meetingId, teamId} = meeting
+  const {id: meetingId, teamId, localStage} = meeting
+  const {isComplete, phaseType} = localStage
   const dragRef = useRef({...DRAG_STATE})
   const {current: drag} = dragRef
   const staticReflectionCount = staticReflections.length
   const {onMouseDown} = useDraggableReflectionCard(reflection, drag, staticIdx, teamId, staticReflectionCount, swipeColumn)
-  const handleDrag = isDraggable ? onMouseDown : undefined
+  const isDragPhase = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete
+  const canDrag = isDraggable && isDragPhase
+  const handleDrag = canDrag ? onMouseDown : undefined
   return (
-    <DragWrapper ref={(c) => drag.ref = c} onMouseDown={handleDrag} onTouchStart={handleDrag} isDraggable={isDraggable}>
+    <DragWrapper ref={(c) => drag.ref = c} onMouseDown={handleDrag} onTouchStart={handleDrag} isDraggable={canDrag}>
       <ReflectionCard userSelect='none' reflection={reflection}
                       isClipped={staticIdx !== 0} meetingId={meetingId} readOnly={readOnly}/>
     </DragWrapper>
@@ -104,6 +108,16 @@ export default createFragmentContainer(DraggableReflectionCard,
       fragment DraggableReflectionCard_meeting on RetrospectiveMeeting {
         id
         teamId
+        localStage {
+          isComplete
+          phaseType
+        }
+        phases {
+          stages {
+            isComplete
+            phaseType
+          }
+        }
       }`
   }
 )

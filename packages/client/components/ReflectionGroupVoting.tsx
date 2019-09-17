@@ -130,7 +130,7 @@ class ReflectionGroupVoting extends Component<Props> {
           ))}
           {canVote && (
             <UpvoteIcon
-              color={isExpanded ? ui.palette.dark : appTheme.brand.primary.midGray}
+              color={isExpanded ? '#fff' : appTheme.brand.primary.midGray}
               onClick={this.vote}
             >
               {meetingVoteIcon}

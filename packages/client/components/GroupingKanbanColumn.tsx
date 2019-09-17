@@ -15,6 +15,7 @@ import getNextSortOrder from '../utils/getNextSortOrder'
 import useMutationProps from '../hooks/useMutationProps'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {SwipeColumn} from './GroupingKanban'
+import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 
 // TODO share with TaskColumn
 const Column = styled('div')({
@@ -70,7 +71,7 @@ const GroupingKanbanColumn = (props: Props) => {
   const {meeting, reflectionGroups, phaseRef, prompt, swipeColumn} = props
   const {question, id: promptId} = prompt
   const {id: meetingId, localStage} = meeting
-  const {isComplete} = localStage
+  const {isComplete, phaseType} = localStage
   const {submitting, onError, submitMutation, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
   const onClick = () => {
@@ -84,10 +85,11 @@ const GroupingKanbanColumn = (props: Props) => {
     CreateReflectionMutation(atmosphere, {input}, {meetingId}, onError, onCompleted)
   }
   const ref = useRef<HTMLDivElement>(null)
+  const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete
   return (
     <Column ref={ref}>
       <ColumnHeader>
-        {!isComplete && <AddReflectionButton aria-label={'Add a reflection'} onClick={onClick} waiting={submitting}>
+        {canAdd && <AddReflectionButton aria-label={'Add a reflection'} onClick={onClick} waiting={submitting}>
           <Icon>add</Icon>
         </AddReflectionButton>}
         <Prompt>{question}</Prompt>
@@ -112,10 +114,12 @@ export default createFragmentContainer(
         id
         localStage {
           isComplete
+          phaseType
         }
         phases {
           stages {
             isComplete
+            phaseType
           }
         }
       }`,

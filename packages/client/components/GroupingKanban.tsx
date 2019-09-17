@@ -16,7 +16,7 @@ import useThrottledEvent from '../hooks/useThrottledEvent'
 interface Props {
   meeting: GroupingKanban_meeting,
   phaseRef: RefObject<HTMLDivElement>
-  resetActivityTimeout: () => void
+  resetActivityTimeout?: () => void
 }
 
 const ColumnsBlock = styled('div')({
@@ -35,7 +35,7 @@ const ColumnsBlock = styled('div')({
 export type SwipeColumn = (offset: number) => void
 
 const GroupingKanban = (props: Props) => {
-  const {meeting, phaseRef} = props
+  const {meeting, phaseRef, resetActivityTimeout} = props
   const {reflectionGroups, phases} = meeting
   const reflectPhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.reflect)!
   const reflectPrompts = reflectPhase.reflectPrompts!
@@ -48,6 +48,8 @@ const GroupingKanban = (props: Props) => {
       container[retroPhaseItemId] = container[retroPhaseItemId] || []
       container[retroPhaseItemId].push(group)
     }
+    // anytime the groups change, reset the timeout. OK if it's not perfect
+    resetActivityTimeout && resetActivityTimeout()
     return container
   }, [reflectionGroups])
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
