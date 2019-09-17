@@ -109,7 +109,7 @@ const ExpandedReflectionStack = (props: Props) => {
                   ref={setItemsRef(idx)}
                 >
                   <DraggableReflectionCard
-                    isDraggable={isDraggable}
+                    isDraggable
                     meeting={meeting}
                     reflection={reflection}
                     staticIdx={staticIdx}
