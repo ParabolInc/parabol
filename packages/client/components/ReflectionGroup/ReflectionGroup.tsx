@@ -113,6 +113,7 @@ const ReflectionGroup = (props: Props) => {
           reflectionGroup={reflectionGroup}
           titleInputRef={titleInputRef}
         />}
+        isDraggable
         phaseRef={phaseRef}
         staticReflections={staticReflections}
         reflections={reflections}

@@ -73,6 +73,7 @@ interface Props {
   scrollRef: Ref<HTMLDivElement>
   bgRef: Ref<HTMLDivElement>
   setItemsRef: (idx: number) => (c: RefCallbackInstance) => void
+  isDraggable?: boolean
 }
 
 const ModalReflectionWrapper = styled('div')({
@@ -80,7 +81,7 @@ const ModalReflectionWrapper = styled('div')({
 })
 
 const ExpandedReflectionStack = (props: Props) => {
-  const {header, staticReflections, readOnly, phaseRef, scrollRef, setItemsRef, bgRef, closePortal, reflections, meeting} = props
+  const {header, isDraggable, staticReflections, readOnly, phaseRef, scrollRef, setItemsRef, bgRef, closePortal, reflections, meeting} = props
   const phaseBBox = useMemo(() => {
     return getBBox(phaseRef.current)
   }, [phaseRef.current])
@@ -108,7 +109,7 @@ const ExpandedReflectionStack = (props: Props) => {
                   ref={setItemsRef(idx)}
                 >
                   <DraggableReflectionCard
-                    isDraggable
+                    isDraggable={isDraggable}
                     meeting={meeting}
                     reflection={reflection}
                     staticIdx={staticIdx}

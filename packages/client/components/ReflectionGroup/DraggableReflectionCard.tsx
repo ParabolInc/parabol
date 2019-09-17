@@ -35,14 +35,14 @@ const DRAG_STATE = {
   timeout: null as null | number
 }
 
-const DragWrapper = styled('div')<{isDraggable: boolean}>(({isDraggable}) => ({
+const DragWrapper = styled('div')<{isDraggable: boolean | undefined}>(({isDraggable}) => ({
   cursor: isDraggable ? 'grab' : undefined
 }))
 
 export type ReflectionDragState = typeof DRAG_STATE
 
 interface Props {
-  isDraggable: boolean
+  isDraggable?: boolean
   meeting: DraggableReflectionCard_meeting
   readOnly?: boolean
   reflection: DraggableReflectionCard_reflection
