@@ -156,6 +156,24 @@ export const enum SubscriptionChannel {
   ORGANIZATION = 'organization',
 }
 
+export const enum TaskStatus {
+  DONE = 'done',
+  ACTIVE = 'active',
+  STUCK = 'stuck',
+  FUTURE = 'future',
+  ARCHIVED = 'archived',
+  PRIVATE = 'private'
+}
+
+export const enum TaskStatusLabel {
+  DONE = 'Done',
+  ACTIVE = 'Active',
+  STUCK = 'Stuck',
+  FUTURE = 'Future',
+  ARCHIVED = 'Archived',
+  PRIVATE = 'Private'
+}
+
 export const enum TierLabel {
   PERSONAL = 'Personal',
   PRO = 'Pro',

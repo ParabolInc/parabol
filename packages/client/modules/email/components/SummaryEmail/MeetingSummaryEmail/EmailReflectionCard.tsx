@@ -16,7 +16,7 @@ interface Props {
 }
 
 const contentStyle = {
-  backgroundColor: '#ffffff',
+  backgroundColor: '#FFFFFF',
   borderColor: ui.cardBorderColor,
   borderRadius: '4px',
   borderStyle: 'solid',

@@ -47,7 +47,7 @@ const editorBlockquote = {
 }
 
 const codeBlock = {
-  backgroundColor: PALETTE.BACKGROUND_PRIMARY_10,
+  backgroundColor: PALETTE.BACKGROUND_PRIMARY_10A,
   color: PALETTE.TEXT_RED,
   fontFamily: appTheme.typography.monospace,
   fontSize: 13,

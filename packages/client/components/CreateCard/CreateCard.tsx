@@ -29,8 +29,8 @@ const ControlHint = styled('div')({
 
 const CreateCardBlock = styled('div')<{hasControls: boolean | undefined}>(({hasControls}) => ({
   ...CreateCardRootStyles,
-  backgroundColor: hasControls ? PALETTE.BACKGROUND_PRIMARY_10 : 'transparent',
-  border: hasControls ? undefined : `1px dashed ${PALETTE.BORDER_GRAY_65}`,
+  backgroundColor: hasControls ? PALETTE.BACKGROUND_PRIMARY_10A : 'transparent',
+  border: hasControls ? undefined : `1px dashed ${PALETTE.BORDER_GRAY_65A}`,
   borderTop: hasControls ? 0 : undefined,
   transition: hasControls ? 'background-color 100ms ease-in, box-shadow 100ms ease-in' : undefined,
   boxShadow: 'none',

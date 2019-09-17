@@ -31,7 +31,7 @@ const Text = styled('div')({
 
 const MessageStyles = styled('div')<{status: TransitionStatus}>(({status}) => ({
   alignItems: 'center',
-  background: PALETTE.BACKGROUND_DARK_OPAQUE,
+  background: PALETTE.BACKGROUND_DARK,
   borderRadius: Radius.SNACKBAR,
   boxShadow: snackbarShadow,
   display: 'flex',

@@ -15,7 +15,7 @@ const Header = styled('div')({
 
 const LogoPanel = styled('div')({
   backgroundColor: '#FFFFFF',
-  border: `1px solid ${PALETTE.BORDER_DARK}`,
+  border: `1px solid ${PALETTE.BORDER_MAIN_40}`,
   borderRadius: 8,
   height: 64,
   padding: 8,

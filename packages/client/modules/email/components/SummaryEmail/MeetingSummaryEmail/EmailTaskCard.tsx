@@ -1,8 +1,9 @@
 import {convertFromRaw, Editor, EditorState} from 'draft-js'
 import React, {useMemo, useRef} from 'react'
 import editorDecorators from '../../../../../components/TaskEditor/decorators'
-import labels from '../../../../../styles/theme/labels'
 import ui from '../../../../../styles/ui'
+import {PALETTE} from '../../../../../styles/paletteV2'
+import {TaskStatus} from '../../../../../types/constEnums'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {EmailTaskCard_task} from '../../../../../__generated__/EmailTaskCard_task.graphql'
@@ -15,8 +16,15 @@ interface Props {
   task: EmailTaskCard_task
 }
 
+const taskStatusColors = {
+  [TaskStatus.DONE]: PALETTE.STATUS_DONE,
+  [TaskStatus.ACTIVE]: PALETTE.STATUS_ACTIVE,
+  [TaskStatus.STUCK]: PALETTE.STATUS_STUCK,
+  [TaskStatus.FUTURE]: PALETTE.STATUS_FUTURE
+}
+
 const contentStyle = {
-  backgroundColor: '#ffffff',
+  backgroundColor: '#FFFFFF',
   borderColor: ui.cardBorderColor,
   borderRadius: '4px',
   borderStyle: 'solid',
@@ -36,7 +44,7 @@ const contentStyle = {
 } as React.CSSProperties
 
 const statusStyle = (status: string) => ({
-  backgroundColor: labels.taskStatus[status].color,
+  backgroundColor: taskStatusColors[status],
   borderRadius: '4px',
   width: 30
 })

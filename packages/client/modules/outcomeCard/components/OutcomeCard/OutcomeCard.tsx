@@ -5,8 +5,7 @@ import TaskIntegrationLink from '../../../../components/TaskIntegrationLink'
 import TaskWatermark from '../../../../components/TaskWatermark'
 import TaskFooter from '../OutcomeCardFooter/TaskFooter'
 import OutcomeCardStatusIndicator from '../OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
-import labels from '../../../../styles/theme/labels'
-import {Card} from '../../../../types/constEnums'
+import {Card, TaskStatus, TaskStatusLabel} from '../../../../types/constEnums'
 import {cardFocusShadow, cardHoverShadow, cardShadow, Elevation} from '../../../../styles/elevation'
 import isTaskArchived from '../../../../utils/isTaskArchived'
 import isTaskPrivate from '../../../../utils/isTaskPrivate'
@@ -57,6 +56,13 @@ interface Props {
   useTaskChild: UseTaskChild
 }
 
+const taskStatusLabels = {
+  [TaskStatus.DONE]: TaskStatusLabel.DONE,
+  [TaskStatus.ACTIVE]: TaskStatusLabel.ACTIVE,
+  [TaskStatus.STUCK]: TaskStatusLabel.STUCK,
+  [TaskStatus.FUTURE]: TaskStatusLabel.FUTURE,
+}
+
 const OutcomeCard = memo((props: Props) => {
   const {
     area,
@@ -76,7 +82,7 @@ const OutcomeCard = memo((props: Props) => {
   const {teamId} = team
   const {integration, taskId} = task
   const service = integration ? integration.service as TaskServiceEnum : undefined
-  const statusTitle = `Card status: ${labels.taskStatus[status].label}`
+  const statusTitle = `Card status: ${taskStatusLabels[status]}`
   const privateTitle = ', marked as #private'
   const archivedTitle = ', set as #archived'
   const statusIndicatorTitle = `${statusTitle}${isPrivate ? privateTitle : ''}${

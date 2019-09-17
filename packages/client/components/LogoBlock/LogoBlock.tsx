@@ -7,7 +7,7 @@ import logoMarkWhite from '../../styles/theme/images/brand/mark-white.svg'
 
 const RootBlock = styled('div')<{variant: 'primary' | 'white'}>(({variant}) => ({
   alignItems: 'flex-end',
-  borderTop: variant === 'primary' ? `1px solid ${PALETTE.BACKGROUND_PRIMARY_10}` : undefined,
+  borderTop: variant === 'primary' ? `1px solid ${PALETTE.BACKGROUND_PRIMARY_10A}` : undefined,
   boxSizing: 'content-box',
   display: 'flex',
   padding: 8,

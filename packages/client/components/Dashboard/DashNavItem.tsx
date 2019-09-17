@@ -1,6 +1,4 @@
 import React from 'react'
-import ui from '../../styles/ui'
-// import {PALETTE} from '../../styles/paletteV2'
 import {NavLink} from 'react-router-dom'
 import styled from '@emotion/styled';
 import Icon from '../Icon'
@@ -39,7 +37,7 @@ const navLinkcss = {
 
 const activeNavLinkcss = {
   backgroundColor: PALETTE.BACKGROUND_NAV_DARK_ACTIVE,
-  borderColor: '#fff !important',
+  borderColor: '#FFFFFF !important',
   cursor: 'default',
   textDecoration: 'none',
   ':hover': {

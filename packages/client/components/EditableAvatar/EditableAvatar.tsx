@@ -22,7 +22,7 @@ const EditableAvatarRoot = styled('div')<Pick<Props, 'hasPanel' | 'size'>>(({has
 
 const EditableAvatarEditOverlay = styled('div')<Pick<Props, 'hasPanel' | 'size'>>(({hasPanel, size}) => ({
   alignItems: 'center',
-  backgroundColor: PALETTE.BACKGROUND_DARK_OPAQUE,
+  backgroundColor: PALETTE.BACKGROUND_DARK,
   borderRadius: hasPanel ? borderRadiusPanel : borderRadius,
   color: 'white',
   cursor: 'pointer',
