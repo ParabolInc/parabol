@@ -17,7 +17,7 @@ const NavItemBullet = styled('span')<Pick<Props, 'isFacilitatorPhaseGroup'>>(
   {
     backgroundColor: PALETTE.BACKGROUND_PRIMARY,
     borderRadius: '100%',
-    color: '#fff',
+    color: '#FFFFFF',
     display: 'block',
     fontSize: 11,
     fontWeight: 600,

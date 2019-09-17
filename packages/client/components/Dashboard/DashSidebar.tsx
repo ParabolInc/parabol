@@ -26,13 +26,13 @@ interface Props {
 }
 
 const linkBaseStyles = {
-  color: '#fff',
+  color: '#FFFFFF',
   textDecoration: 'none'
 }
 
 const DashSidebarStyles = styled('div')({
   backgroundColor: PALETTE.BACKGROUND_PRIMARY,
-  color: '#fff',
+  color: '#FFFFFF',
   display: 'flex',
   flexDirection: 'column',
   height: '100vh',

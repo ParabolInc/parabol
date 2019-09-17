@@ -8,7 +8,7 @@ const IconAvatarRoot = styled('div')({
   alignItems: 'center',
   backgroundColor: PALETTE.BACKGROUND_PRIMARY_70,
   borderRadius: '100%',
-  color: '#fff',
+  color: '#FFFFFF',
   display: 'flex',
   fontSize: MD_ICONS_SIZE_18,
   height: 32,

@@ -6,7 +6,7 @@ import {APP_BAR_HEIGHT} from '../../styles/appbars'
 
 const RootBlock = styled('div')(({hasOverlay}) => ({
   alignItems: 'center',
-  backgroundColor: '#fff',
+  backgroundColor: '#FFFFFF',
   borderBottom: `1px solid ${ui.dashBorderColor}`,
   display: 'flex',
   filter: hasOverlay && ui.filterBlur,

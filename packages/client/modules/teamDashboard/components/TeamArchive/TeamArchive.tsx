@@ -69,7 +69,7 @@ const CardGrid = styled('div')({
 })
 
 const EmptyMsg = styled('div')({
-  backgroundColor: '#fff',
+  backgroundColor: '#FFFFFF',
   border: `1px solid ${PALETTE.BORDER_LIGHT}`,
   borderRadius: 4,
   fontSize: 14,

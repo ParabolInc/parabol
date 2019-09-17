@@ -5,7 +5,7 @@ const Badge = styled('div')({
   backgroundColor: PALETTE.BACKGROUND_RED,
   borderRadius: 16,
   boxShadow: '1px 1px 2px rgba(0, 0, 0, .5)',
-  color: '#fff',
+  color: '#FFFFFF',
   fontSize: 12,
   fontWeight: 600,
   height: 16,

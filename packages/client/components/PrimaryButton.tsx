@@ -11,7 +11,7 @@ const StyledBaseButton = styled(BaseButton)((props: BaseButtonProps) => {
   return {
     backgroundImage: visuallyDisabled ? PALETTE.GRADIENT_WARM_LIGHTENED : PALETTE.GRADIENT_WARM,
     borderRadius: Radius.BUTTON_PILL,
-    color: '#fff',
+    color: '#FFFFFF',
     fontWeight: 600,
     opacity: visuallyDisabled ? 1 : undefined,
     outline: 0,

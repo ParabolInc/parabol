@@ -4,7 +4,7 @@ import WebcamDeniedPermissions from './WebcamDeniedPermissions'
 import WebcamPromptPermissions from './WebcamPromptPermissions'
 
 const ModalBoundary = styled('div')({
-  background: '#fff',
+  background: '#FFFFFF',
   borderRadius: '8px',
   display: 'flex',
   flexDirection: 'column',

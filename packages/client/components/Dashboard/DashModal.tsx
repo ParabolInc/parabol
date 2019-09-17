@@ -34,7 +34,7 @@ const Backdrop = styled('div')({
 const Modal = styled('div')({
   animationIterationCount: 1,
   animation: `${animateIn} 200ms ${DECELERATE}`,
-  background: '#fff',
+  background: '#FFFFFF',
   borderRadius: ui.modalBorderRadius,
   boxShadow: modalShadow,
   overflow: 'hidden',

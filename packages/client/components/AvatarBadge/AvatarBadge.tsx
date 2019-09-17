@@ -30,7 +30,7 @@ const Badge = styled('div')({
   width: 16,
 
   '::before': {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: '100%',
     content: '""',
     height: 16,

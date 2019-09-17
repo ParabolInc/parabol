@@ -11,7 +11,7 @@ import parabolLogo from '../../styles/theme/images/brand/logo.svg'
 const HeaderContainer = styled('div')({
   alignItems: 'center',
   backgroundColor: PALETTE.PRIMARY_MAIN,
-  color: '#fff',
+  color: '#FFFFFF',
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'center',

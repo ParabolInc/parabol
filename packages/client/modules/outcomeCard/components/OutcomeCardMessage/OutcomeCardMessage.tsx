@@ -12,7 +12,7 @@ const textShadow = '0 1px rgba(0, 0, 0, .15)'
 const Inner = styled('div')<{onClose: boolean}>(({onClose}) => ({
   backgroundColor: PALETTE.ERROR_MAIN,
   borderRadius: 2,
-  color: '#fff',
+  color: '#FFFFFF',
   display: 'block',
   fontWeight: 600,
   fontSize: 13,
@@ -38,7 +38,7 @@ const MessageClose = styled('div')({
 })
 
 const MessageCloseIcon = styled(Icon)({
-  color: '#fff',
+  color: '#FFFFFF',
   fontSize: ICON_SIZE.MD18
 })
 

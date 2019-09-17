@@ -24,7 +24,7 @@ const Space = styled('div')({
 })
 
 const Text = styled('div')({
-  color: '#fff',
+  color: '#FFFFFF',
   fontSize: 14,
   padding: '6px 8px'
 })

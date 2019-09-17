@@ -14,7 +14,7 @@ const MenuBlock = styled('div')(({maxWidth}) => ({
 }))
 
 const MenuContents = styled('div')(({maxHeight}) => ({
-  backgroundColor: '#fff',
+  backgroundColor: '#FFFFFF',
   borderRadius: ui.menuBorderRadius,
   boxShadow: menuShadow,
   maxHeight,

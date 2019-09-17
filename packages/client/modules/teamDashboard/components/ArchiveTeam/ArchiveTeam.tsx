@@ -2,8 +2,9 @@ import React from 'react'
 import LinkButton from '../../../../components/LinkButton'
 import IconLabel from '../../../../components/IconLabel'
 import Type from '../../../../components/Type/Type'
-
 import ArchiveTeamForm from './ArchiveTeamForm'
+import styled from '@emotion/styled'
+import {PALETTE} from '../../../../styles/paletteV2'
 
 interface Props {
   teamName: string
@@ -12,6 +13,12 @@ interface Props {
   handleClick: () => any
   showConfirmationField: boolean
 }
+
+const Hint = styled('div')({
+  color: PALETTE.TEXT_GRAY,
+  fontSize: 13,
+  marginTop: 8
+})
 
 const ArchiveTeam = ({
   handleClick,
@@ -30,9 +37,9 @@ const ArchiveTeam = ({
         >
           <IconLabel icon='remove_circle' label='Delete Team' />
         </LinkButton>
-        <Type width='auto' marginTop='.5rem' scale='s2'>
+        <Hint>
           <b>Note</b>: {'This can’t be undone.'}
-        </Type>
+        </Hint>
       </div>
     ) : (
       <ArchiveTeamForm handleFormBlur={handleFormBlur} teamName={teamName} teamId={teamId} />

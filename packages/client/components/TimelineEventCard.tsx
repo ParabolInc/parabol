@@ -19,7 +19,7 @@ interface Props {
 }
 
 const Surface = styled('div')({
-  background: '#fff',
+  background: '#FFFFFF',
   borderRadius: 4,
   boxShadow: cardShadow,
   display: 'flex',
@@ -42,7 +42,7 @@ const EventIcon = styled(Icon)({
   background: PALETTE.TEXT_GRAY,
   borderRadius: '100%',
   boxShadow: buttonShadow,
-  color: '#fff',
+  color: '#FFFFFF',
   display: 'block',
   fontSize: ICON_SIZE.MD24,
   height: 40,

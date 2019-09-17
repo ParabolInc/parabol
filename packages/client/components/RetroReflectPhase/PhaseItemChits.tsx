@@ -50,7 +50,7 @@ const shiftColor = (idx) => keyframes`
 
 const Chit = styled('div')({
   animation: `${fadeIn.toString()} 300ms ${DECELERATE}`,
-  backgroundColor: '#fff',
+  backgroundColor: '#FFFFFF',
   borderRadius: '2px',
   boxShadow: Elevation.Z1,
   height: CHIT_HEIGHT,

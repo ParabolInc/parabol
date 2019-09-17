@@ -2,7 +2,7 @@ import {cardShadow} from '../elevation'
 import {cardBorderRadius} from '../cards'
 
 const cardRootStyles = {
-  backgroundColor: '#fff',
+  backgroundColor: '#FFFFFF',
   border: 0,
   borderRadius: cardBorderRadius,
   boxShadow: cardShadow,

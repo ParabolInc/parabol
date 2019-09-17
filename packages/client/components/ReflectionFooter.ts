@@ -5,7 +5,7 @@ import ui from '../styles/ui'
 const ReflectionFooter = styled('div')({
   ...textOverflow,
   alignItems: 'flex-start',
-  background: '#fff',
+  background: '#FFFFFF',
   borderRadius: ui.cardBorderRadius,
   color: ui.hintColor,
   fontSize: ui.hintFontSize,

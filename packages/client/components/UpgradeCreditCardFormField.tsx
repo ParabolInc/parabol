@@ -41,7 +41,7 @@ interface Props {
 
 const Input = styled('input')<StyleProps>(({hasError}) => ({
   appearance: 'none',
-  backgroundColor: '#fff',
+  backgroundColor: '#FFFFFF',
   border: 0,
   borderRadius: 4,
   boxShadow: 'none',

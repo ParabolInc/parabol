@@ -11,7 +11,7 @@ const panelPadding = 8
 const panelPaddingHorizontal = panelPadding * 2
 
 const EditableAvatarRoot = styled('div')<Pick<Props, 'hasPanel' | 'size'>>(({hasPanel, size}) => ({
-  backgroundColor: hasPanel ? '#fff' : undefined,
+  backgroundColor: hasPanel ? '#FFFFFF' : undefined,
   boxShadow: hasPanel ? panelShadow : undefined,
   borderRadius: hasPanel ? borderRadiusPanel : borderRadius,
   height: size,

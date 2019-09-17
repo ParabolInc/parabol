@@ -30,7 +30,7 @@ const Item = styled('div')<{isActive: boolean, isFirst: boolean, isLast: boolean
   borderBottomRightRadius: isLast ? 2 : undefined,
   borderTopRightRadius: isLast ? 2 : undefined,
   borderLeftWidth: isFirst ? 1 : 0,
-  color: isActive ? '#fff' : PALETTE.TEXT_PURPLE,
+  color: isActive ? '#FFFFFF' : PALETTE.TEXT_PURPLE,
   cursor: isActive ? 'default' : 'pointer',
   display: 'flex',
   flex: 1,
@@ -42,7 +42,7 @@ const Item = styled('div')<{isActive: boolean, isFirst: boolean, isLast: boolean
   textDecoration: 'none',
   ':hover,:focus': {
     backgroundColor: isActive ? PALETTE.CONTROL_MAIN : PALETTE.BACKGROUND_TOGGLE_ACTIVE,
-    color: isActive ? '#fff' : PALETTE.TEXT_TOGGLE_ACTIVE,
+    color: isActive ? '#FFFFFF' : PALETTE.TEXT_TOGGLE_ACTIVE,
     textDecoration: 'none'
   }
 }))

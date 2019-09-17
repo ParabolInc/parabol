@@ -66,7 +66,7 @@ const COLOR_TEXT_GRAY = appTheme.brand.primary.midGray
 const COLOR_ERROR = red
 
 // Color palette
-const white = '#fff'
+const white = '#FFFFFF'
 const gray = appTheme.palette.light
 const PALETTE_VALUES = {
   cool,
@@ -232,7 +232,7 @@ const ui = {
     },
     // primary: used by agenda topic input
     primary: {
-      backgroundColor: '#fff',
+      backgroundColor: '#FFFFFF',
       borderColor: 'transparent',
       color: COLOR_TEXT,
       focusBorderColor: appTheme.palette.warm70l,
@@ -242,7 +242,7 @@ const ui = {
     },
     // white: used for dropdowns
     white: {
-      backgroundColor: '#fff',
+      backgroundColor: '#FFFFFF',
       borderColor: appTheme.palette.mid40l,
       color: appTheme.palette.dark,
       focusBorderColor: appTheme.palette.mid80l,

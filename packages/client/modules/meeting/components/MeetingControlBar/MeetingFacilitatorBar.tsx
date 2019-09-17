@@ -6,7 +6,7 @@ import React, {ReactNode} from 'react'
 
 const MeetingFacilitatorBarStyles = styled('div')({
   alignItems: 'center',
-  backgroundColor: '#fff',
+  backgroundColor: '#FFFFFF',
   boxShadow: bottomBarShadow,
   boxSizing: 'content-box',
   color: PALETTE.TEXT_GRAY,

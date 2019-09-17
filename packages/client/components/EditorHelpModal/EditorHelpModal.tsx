@@ -51,7 +51,7 @@ const HelpList = styled('div')<{listIndex: number}>(({listIndex}) => ({
 
 const HelpRow = styled('div')<{shortcutIndex: number}>(({shortcutIndex}) => ({
   alignItems: 'center',
-  backgroundColor: shortcutIndex % 2 ? '#fff' : PALETTE.BACKGROUND_MAIN,
+  backgroundColor: shortcutIndex % 2 ? '#FFFFFF' : PALETTE.BACKGROUND_MAIN,
   display: 'flex',
   padding: '4px 0'
 }))
@@ -178,7 +178,7 @@ const blockShortcuts = [
 const shortcutLists = [typeShortcuts, mentionShortcuts, blockShortcuts]
 
 const ModalBoundary = styled('div')({
-  background: '#fff',
+  background: '#FFFFFF',
   borderRadius: Radius.DIALOG,
   display: 'flex',
   flexDirection: 'column',
