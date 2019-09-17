@@ -17,9 +17,11 @@ import useAtmosphere from '../hooks/useAtmosphere'
 
 // TODO share with TaskColumn
 const Column = styled('div')({
+  alignItems: 'center',
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
+  height: '100%',
   position: 'relative',
   transition: `background 300ms ${BezierCurve.DECELERATE}`
 })

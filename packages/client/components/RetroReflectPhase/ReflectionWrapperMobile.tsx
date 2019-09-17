@@ -12,7 +12,7 @@ interface Props {
 }
 
 const containerStyle = {height: '100%'}
-const innerStyle = {width: '100%', padding: '0 16px'}
+const innerStyle = {width: '100%', padding: '0 16px', height: '100%'}
 const slideContainer = {
   padding: '0 4px'
 }

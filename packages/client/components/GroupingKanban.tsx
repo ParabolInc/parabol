@@ -1,4 +1,4 @@
-import React, {RefObject, useEffect, useMemo} from 'react'
+import React, {RefObject, useMemo, useState} from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import {createFragmentContainer} from 'react-relay'
 import {GroupingKanban_meeting} from '__generated__/GroupingKanban_meeting.graphql'
@@ -7,6 +7,10 @@ import styled from '@emotion/styled'
 import GroupingKanbanColumn from './GroupingKanbanColumn'
 import PortalProvider from './AtmosphereProvider/PortalProvider'
 import useHideBodyScroll from '../hooks/useHideBodyScroll'
+import ReflectWrapperDesktop from './RetroReflectPhase/ReflectWrapperDesktop'
+import ReflectWrapperMobile from './RetroReflectPhase/ReflectionWrapperMobile'
+import useBreakpoint from '../hooks/useBreakpoint'
+import {Breakpoint} from '../types/constEnums'
 
 interface Props {
   meeting: GroupingKanban_meeting,
@@ -17,8 +21,12 @@ interface Props {
 const ColumnsBlock = styled('div')({
   display: 'flex',
   flex: '1',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
   height: '100%',
   margin: '0 auto',
+  maxHeight: 608,
   overflow: 'auto',
   width: '100%'
 })
@@ -39,19 +47,23 @@ const GroupingKanban = (props: Props) => {
     }
     return container
   }, [reflectionGroups])
-
+  const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
+  const [activeIdx, setActiveIdx] = useState(0)
+  const ColumnWrapper = isDesktop ? ReflectWrapperDesktop : ReflectWrapperMobile
   return (
     <PortalProvider>
       <ColumnsBlock>
-        {reflectPrompts.map((prompt) => (
-          <GroupingKanbanColumn
-            key={prompt.id}
-            meeting={meeting}
-            phaseRef={phaseRef}
-            prompt={prompt}
-            reflectionGroups={groupsByPhaseItem[prompt.id] || []}
-          />
-        ))}
+        <ColumnWrapper setActiveIdx={setActiveIdx} activeIdx={activeIdx}>
+          {reflectPrompts.map((prompt) => (
+            <GroupingKanbanColumn
+              key={prompt.id}
+              meeting={meeting}
+              phaseRef={phaseRef}
+              prompt={prompt}
+              reflectionGroups={groupsByPhaseItem[prompt.id] || []}
+            />
+          ))}
+        </ColumnWrapper>
       </ColumnsBlock>
     </PortalProvider>
   )
