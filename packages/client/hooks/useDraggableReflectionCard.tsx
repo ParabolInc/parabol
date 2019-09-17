@@ -127,8 +127,11 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
   const {id: reflectionId, reflectionGroupId, isDropping, isEditing} = reflection
 
   const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
-    const eventType = isNativeTouch(e) ? 'touchmove' : 'mousemove'
-    document.removeEventListener(eventType, onMouseMove)
+    if (isNativeTouch(e)) {
+      e.target!.removeEventListener('touchmove', onMouseMove)
+    } else {
+      document.removeEventListener('mousemove', onMouseMove)
+    }
     if (!drag.isDrag) return
     drag.isDrag = false
     drag.targets.length = 0
@@ -215,10 +218,14 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
   const onMouseDown = (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
     if (isDropping || staticIdx === -1 || isEditing) return
     const isTouch = isReactTouch(e)
-    const moveName = isTouch ? 'touchmove' : 'mousemove'
-    const endName = isTouch ? 'touchend' : 'mouseup'
-    document.addEventListener(moveName, onMouseMove)
-    document.addEventListener(endName, onMouseUp)
+    if (isTouch) {
+      // https://stackoverflow.com/questions/33298828/touch-move-event-dont-fire-after-touch-start-target-is-removed
+      e.target.addEventListener('touchmove', onMouseMove)
+      e.target.addEventListener('touchend', onMouseUp)
+    } else {
+      document.addEventListener('mousemove', onMouseMove)
+      document.addEventListener('mouseup', onMouseUp)
+    }
     const {clientX, clientY} = isTouch ? (e as React.TouchEvent<HTMLDivElement>).touches[0] : e as React.MouseEvent<HTMLDivElement>
     drag.startX = clientX
     drag.startY = clientY
