@@ -10,7 +10,8 @@ import useHideBodyScroll from '../hooks/useHideBodyScroll'
 import ReflectWrapperDesktop from './RetroReflectPhase/ReflectWrapperDesktop'
 import ReflectWrapperMobile from './RetroReflectPhase/ReflectionWrapperMobile'
 import useBreakpoint from '../hooks/useBreakpoint'
-import {Breakpoint} from '../types/constEnums'
+import {Breakpoint, Times} from '../types/constEnums'
+import useThrottledEvent from '../hooks/useThrottledEvent'
 
 interface Props {
   meeting: GroupingKanban_meeting,
@@ -31,6 +32,8 @@ const ColumnsBlock = styled('div')({
   width: '100%'
 })
 
+export type SwipeColumn = (offset: number) => void
+
 const GroupingKanban = (props: Props) => {
   const {meeting, phaseRef} = props
   const {reflectionGroups, phases} = meeting
@@ -50,10 +53,17 @@ const GroupingKanban = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const [activeIdx, setActiveIdx] = useState(0)
   const ColumnWrapper = isDesktop ? ReflectWrapperDesktop : ReflectWrapperMobile
+  const isViewerDragging = useMemo(() => {
+    return isDesktop ? false : !!reflectionGroups.find((group) => group.reflections.find((reflection) => reflection.isViewerDragging))
+  }, [isDesktop, reflectionGroups])
+  const swipeColumn: SwipeColumn = useThrottledEvent((offset: number) => {
+    const nextIdx = Math.min(reflectPrompts.length - 1, Math.max(0, activeIdx + offset))
+    setActiveIdx(nextIdx)
+  }, Times.REFLECTION_COLUMN_SWIPE_THRESH)
   return (
     <PortalProvider>
       <ColumnsBlock>
-        <ColumnWrapper setActiveIdx={setActiveIdx} activeIdx={activeIdx}>
+        <ColumnWrapper setActiveIdx={setActiveIdx} activeIdx={activeIdx} disabled={isViewerDragging}>
           {reflectPrompts.map((prompt) => (
             <GroupingKanbanColumn
               key={prompt.id}
@@ -61,6 +71,7 @@ const GroupingKanban = (props: Props) => {
               phaseRef={phaseRef}
               prompt={prompt}
               reflectionGroups={groupsByPhaseItem[prompt.id] || []}
+              swipeColumn={swipeColumn}
             />
           ))}
         </ColumnWrapper>
@@ -88,6 +99,9 @@ export default createFragmentContainer(
           ...GroupingKanbanColumn_reflectionGroups
           id
           retroPhaseItemId
+          reflections {
+            isViewerDragging
+          }
         }
       }`
   }

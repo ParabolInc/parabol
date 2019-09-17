@@ -6,12 +6,13 @@ import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
 import DraggableReflectionCard from './DraggableReflectionCard'
-import {ElementWidth, Layout, ReflectionStackPerspective, Times} from '../../types/constEnums'
+import {ElementWidth, ReflectionStackPerspective, Times} from '../../types/constEnums'
 import ReflectionGroupHeader from '../ReflectionGroupHeader'
 import ExpandedReflectionStack from '../RetroReflectPhase/ExpandedReflectionStack'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
 import {GROUP} from '../../utils/constants'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import {SwipeColumn} from '../GroupingKanban'
 
 const CardStack = styled('div')({
   position: 'relative'
@@ -51,10 +52,11 @@ interface Props {
   phaseRef: RefObject<HTMLDivElement>
   meeting: ReflectionGroup_meeting
   reflectionGroup: ReflectionGroup_reflectionGroup
+  swipeColumn: SwipeColumn
 }
 
 const ReflectionGroup = (props: Props) => {
-  const {meeting, phaseRef, reflectionGroup} = props
+  const {meeting, phaseRef, reflectionGroup, swipeColumn} = props
   const groupRef = useRef<HTMLDivElement>(null)
   const {localPhase, localStage} = meeting
   const {phaseType} = localPhase
@@ -144,6 +146,7 @@ const ReflectionGroup = (props: Props) => {
                   meeting={meeting}
                   reflection={reflection}
                   staticReflections={staticReflections}
+                  swipeColumn={swipeColumn}
                 />
               </ReflectionWrapper>
             )

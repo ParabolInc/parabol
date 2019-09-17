@@ -1,7 +1,7 @@
 const getTargetGroupId = (e: MouseEvent | TouchEvent) => {
   if ((e as TouchEvent).touches) {
     const touch = (e as TouchEvent).changedTouches.item(0)
-    if (!touch) return
+    if (!touch) return null
     let childEl = document.elementFromPoint(touch.pageX, touch.pageY)
     while (childEl && childEl.hasAttribute) {
       const reflectionGroupId = childEl.getAttribute('data-droppable')

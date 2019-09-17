@@ -7,6 +7,7 @@ import {DraggableReflectionCard_meeting} from '../../__generated__/DraggableRefl
 import {DraggableReflectionCard_staticReflections} from '../../__generated__/DraggableReflectionCard_staticReflections.graphql'
 import useDraggableReflectionCard from '../../hooks/useDraggableReflectionCard'
 import styled from '@emotion/styled'
+import {SwipeColumn} from '../GroupingKanban'
 
 export interface DropZoneBBox {
   height: number,
@@ -47,6 +48,7 @@ interface Props {
   reflection: DraggableReflectionCard_reflection
   staticIdx: number
   staticReflections: DraggableReflectionCard_staticReflections
+  swipeColumn?: SwipeColumn
 }
 
 export interface TargetBBox {
@@ -58,12 +60,12 @@ export interface TargetBBox {
 }
 
 const DraggableReflectionCard = (props: Props) => {
-  const {reflection, staticIdx, staticReflections, meeting, isDraggable, readOnly} = props
+  const {reflection, staticIdx, staticReflections, meeting, isDraggable, readOnly, swipeColumn} = props
   const {id: meetingId, teamId} = meeting
   const dragRef = useRef({...DRAG_STATE})
   const {current: drag} = dragRef
   const staticReflectionCount = staticReflections.length
-  const {onMouseDown} = useDraggableReflectionCard(reflection, drag, staticIdx, teamId, staticReflectionCount)
+  const {onMouseDown} = useDraggableReflectionCard(reflection, drag, staticIdx, teamId, staticReflectionCount, swipeColumn)
   const handleDrag = isDraggable ? onMouseDown : undefined
   return (
     <DragWrapper ref={(c) => drag.ref = c} onMouseDown={handleDrag} onTouchStart={handleDrag} isDraggable={isDraggable}>

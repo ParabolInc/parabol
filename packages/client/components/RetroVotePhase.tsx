@@ -30,7 +30,6 @@ import {phaseLabelLookup} from '../utils/meetings/lookups'
 import handleRightArrow from '../utils/handleRightArrow'
 import isDemoRoute from '../utils/isDemoRoute'
 import EndMeetingButton from './EndMeetingButton'
-import PhaseItemMasonry from './PhaseItemMasonry'
 import {RetroVotePhase_meetingSettings} from '../__generated__/RetroVotePhase_meetingSettings.graphql'
 import StageTimerControl from './StageTimerControl'
 import StageTimerDisplay from './RetroReflectPhase/StageTimerDisplay'
@@ -190,7 +189,7 @@ const RetroVotePhase = (props: Props) => {
           <StageTimerDisplay stage={localStage} />
           <ScrollableBlock>
             <MeetingPhaseWrapper>
-              <PhaseItemMasonry meeting={newMeeting} />
+              {/*<PhaseItemMasonry meeting={newMeeting} />*/}
             </MeetingPhaseWrapper>
           </ScrollableBlock>
         </PhaseWrapper>
@@ -258,7 +257,6 @@ export default createFragmentContainer(withAtmosphere(RetroVotePhase), {
         }
         ... on RetrospectiveMeeting {
           teamVotesRemaining: votesRemaining
-          ...PhaseItemMasonry_meeting
         }
       }
     }

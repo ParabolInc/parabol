@@ -22,6 +22,7 @@ import {DraggableReflectionCard_reflection} from '../__generated__/DraggableRefl
 import maybeStartReflectionScroll from '../utils/maybeStartReflectionScroll'
 import measureDroppableReflections from '../utils/measureDroppableReflections'
 import findDropZoneInPath from '../utils/findDropZoneInPath'
+import {SwipeColumn} from '../components/GroupingKanban'
 
 
 const windowDims = {
@@ -120,7 +121,7 @@ const useDroppingDrag = (drag: ReflectionDragState, reflection: DraggableReflect
   }, [isDropping])
 }
 
-const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflectionCard_reflection, staticIdx: number, teamId: string, reflectionCount: number) => {
+const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflectionCard_reflection, staticIdx: number, teamId: string, reflectionCount: number, swipeColumn?: SwipeColumn) => {
   const atmosphere = useAtmosphere()
 
   const {id: reflectionId, reflectionGroupId, isDropping, isEditing} = reflection
@@ -199,6 +200,15 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
         maybeStartReflectionScroll(drag)
       }
     }
+    if (isTouch && swipeColumn) {
+      const {clientX} = (e as TouchEvent).touches[0]
+      const minThresh = windowDims.clientWidth * .1
+       if (clientX <= minThresh) {
+         swipeColumn(-1)
+       } else if (clientX >= windowDims.clientWidth - minThresh) {
+         swipeColumn(1)
+       }
+    }
     announceDragUpdate(clientX, clientY)
   })
 
@@ -252,11 +262,11 @@ const usePlaceholder = (reflection: DraggableReflectionCard_reflection, drag: Re
   }, [staticIdx === -1])
 }
 
-const useDraggableReflectionCard = (reflection: DraggableReflectionCard_reflection, drag: ReflectionDragState, staticIdx: number, teamId: string, staticReflectionCount: number) => {
+const useDraggableReflectionCard = (reflection: DraggableReflectionCard_reflection, drag: ReflectionDragState, staticIdx: number, teamId: string, staticReflectionCount: number, swipeColumn?: SwipeColumn) => {
   useRemoteDrag(reflection, drag, staticIdx)
   useDroppingDrag(drag, reflection)
   usePlaceholder(reflection, drag, staticIdx, staticReflectionCount)
-  const {onMouseDown, onMouseUp, onMouseMove} = useDragAndDrop(drag, reflection, staticIdx, teamId, staticReflectionCount)
+  const {onMouseDown, onMouseUp, onMouseMove} = useDragAndDrop(drag, reflection, staticIdx, teamId, staticReflectionCount, swipeColumn)
   useLocalDrag(reflection, drag, staticIdx, onMouseMove, onMouseUp)
   return {onMouseDown}
 }
