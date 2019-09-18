@@ -60,7 +60,7 @@ const RetroReflection = new GraphQLObjectType<any, GQLContext>({
     },
     isViewerCreator: {
       description: 'true if the viewer (userId) is the creator of the retro reflection, else false',
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({creatorId}, _args, {authToken}) => {
         const viewerId = getUserId(authToken)
         return viewerId === creatorId

@@ -4294,7 +4294,7 @@ export interface IRetroReflection {
   /**
    * true if the viewer (userId) is the creator of the retro reflection, else false
    */
-  isViewerCreator: boolean | null;
+  isViewerCreator: boolean;
 
   /**
    * The stringified draft-js content

@@ -8,13 +8,13 @@ import {ElementHeight, ElementWidth, ReflectionStackPerspective} from '../../typ
 import useExpandedReflections from '../../hooks/useExpandedReflections'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import { ReflectionStack_meeting } from '__generated__/ReflectionStack_meeting.graphql';
 
 interface Props {
   idx: number
-  meeting: any
+  meeting: ReflectionStack_meeting
   phaseEditorRef: React.RefObject<HTMLDivElement>
   phaseRef: React.RefObject<HTMLDivElement>
-  readOnly: boolean
   reflectionStack: readonly PhaseItemColumn_meeting['reflectionGroups'][0]['reflections'][0][]
   stackTopRef: RefObject<HTMLDivElement>
 }
@@ -49,10 +49,9 @@ const ReflectionWrapper = styled('div')<{idx: number}>(
 )
 
 const ReflectionStack = (props: Props) => {
-  const {phaseRef, idx, meeting, readOnly, reflectionStack, stackTopRef} = props
+  const {phaseRef, idx, meeting, reflectionStack, stackTopRef} = props
   const stackRef = useRef<HTMLDivElement>(null)
   const {setItemsRef, scrollRef, bgRef, portal, collapse, expand} = useExpandedReflections(stackRef, stackRef, reflectionStack.length)
-  const {id: meetingId} = meeting
   if (reflectionStack.length === 0) {
     return <ReflectionStackPlaceholder idx={idx} ref={stackTopRef} />
   }
@@ -63,7 +62,6 @@ const ReflectionStack = (props: Props) => {
         staticReflections={reflectionStack}
         reflections={reflectionStack}
         meeting={meeting}
-        readOnly={readOnly}
         scrollRef={scrollRef}
         bgRef={bgRef}
         setItemsRef={setItemsRef}
@@ -80,10 +78,9 @@ const ReflectionStack = (props: Props) => {
                   ref={idx === 0 ? stackTopRef : undefined}
                 >
                   <ReflectionCard
-                    meetingId={meetingId}
+                    meeting={meeting}
                     reflection={reflection}
-                    readOnly={reflectionStack.length > 1 || readOnly || false}
-                    userSelect={reflectionStack.length === 1 ? undefined : 'none'}
+                    stackCount={reflectionStack.length}
                     isClipped={idx !== 0}
                   />
                 </ReflectionWrapper>
@@ -102,6 +99,7 @@ export default createFragmentContainer(
     meeting: graphql`
       fragment ReflectionStack_meeting on RetrospectiveMeeting {
         ...DraggableReflectionCard_meeting
+        ...ReflectionCard_meeting
         id
       }`
   }

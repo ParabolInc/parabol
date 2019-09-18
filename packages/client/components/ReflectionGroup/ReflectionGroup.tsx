@@ -72,7 +72,6 @@ const ReflectionGroup = (props: Props) => {
   const atmosphere = useAtmosphere()
   const [isEditing, thisSetIsEditing] = useState(false)
   const isDragPhase = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete
-  const isGroupDraggable =  isDragPhase && !isEditing
   const setIsEditing = (isEditing: boolean) => {
     thisSetIsEditing(isEditing)
     const [firstReflection] = staticReflections
@@ -118,12 +117,12 @@ const ReflectionGroup = (props: Props) => {
         phaseRef={phaseRef}
         staticReflections={staticReflections}
         reflections={reflections}
-        readOnly={false}
         scrollRef={scrollRef}
         bgRef={bgRef}
         setItemsRef={setItemsRef}
         closePortal={collapse}
         meeting={meeting}
+        reflectionGroupId={reflectionGroupId}
       />)}
       <Group data-droppable={reflectionGroupId} ref={groupRef} staticReflectionCount={staticReflections.length}>
         {showHeader && <ReflectionGroupHeader
@@ -137,14 +136,13 @@ const ReflectionGroup = (props: Props) => {
           {reflections.map((reflection) => {
             const staticIdx = staticReflections.indexOf(reflection)
             const {id: reflectionId, isDropping} = reflection
-            const isDraggable = isGroupDraggable && !isDropping && staticIdx === 0
             return (
               <ReflectionWrapper key={reflectionId} groupCount={reflections.length} staticIdx={staticIdx}
                                  isDropping={isDropping}>
                 <DraggableReflectionCard
                   key={reflection.id}
                   staticIdx={staticIdx}
-                  isDraggable={isDraggable}
+                  isDraggable={staticIdx === 0}
                   meeting={meeting}
                   reflection={reflection}
                   staticReflections={staticReflections}
