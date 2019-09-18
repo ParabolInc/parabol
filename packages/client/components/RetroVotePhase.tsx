@@ -86,7 +86,7 @@ const Label = styled(LabelHeading)({
 })
 
 const CheckIcon = styled(Icon)<{isDark: boolean | undefined | null}>(({isDark}) => ({
-  color: PALETTE.TEXT_PINK,
+  color: PALETTE.TEXT_BLUE,
   display: 'block',
   fontSize: ICON_SIZE.MD18,
   opacity: isDark ? 1 : 0.2,
@@ -101,7 +101,7 @@ const CheckMarkRow = styled('div')({
 })
 
 const VoteCountLabel = styled('div')({
-  color: PALETTE.TEXT_PINK,
+  color: PALETTE.TEXT_BLUE,
   fontFamily: FONT_FAMILY.MONOSPACE,
   fontSize: 14,
   fontWeight: 600,

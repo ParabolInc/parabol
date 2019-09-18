@@ -92,6 +92,7 @@ export const enum PALETTE {
   TEXT_RED_DARK = '#C94149', // mix with 15% black
   TEXT_PURPLE = '#493272',
   TEXT_BLUE = '#329AE5',
+  TEXT_BLUE_LIGHTER = '#59BAFF',
   TEXT_BLUE_DARK = '#2B83C3', // mix with 15% black
   TEXT_TOGGLE_ACTIVE = '#332350',
   TEXT_INVOICE_LABEL = '#A2A1AC',

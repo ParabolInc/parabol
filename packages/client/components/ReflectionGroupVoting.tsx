@@ -123,13 +123,13 @@ class ReflectionGroupVoting extends Component<Props> {
       <UpvoteColumn>
         <UpvoteRow>
           {upvotes.map((idx) => (
-            <UpvoteIcon key={idx} color={PALETTE.TEXT_PINK} onClick={this.unvote}>
+            <UpvoteIcon key={idx} color={isExpanded ? PALETTE.TEXT_BLUE_LIGHTER : PALETTE.TEXT_BLUE} onClick={this.unvote}>
               {meetingVoteIcon}
             </UpvoteIcon>
           ))}
           {canVote && (
             <UpvoteIcon
-              color={isExpanded ? '#FFFFFF' : PALETTE.TEXT_GRAY}
+              color={isExpanded ? 'rgba(255, 255, 255, .65)' : PALETTE.TEXT_GRAY}
               onClick={this.vote}
             >
               {meetingVoteIcon}
