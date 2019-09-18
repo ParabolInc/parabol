@@ -155,7 +155,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
   }
 
   keyBindingFn = (e) => {
-    const {keyBindingFn} = this.props
+    const {keyBindingFn, renderModal} = this.props
     if (keyBindingFn) {
       const result = keyBindingFn(e)
       if (result) {
@@ -164,7 +164,12 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     }
     if (e.key === 'Escape') {
       e.preventDefault()
-      this.removeModal()
+      if (renderModal) {
+        this.removeModal()
+      } else {
+        const el = this.props.editorRef.current
+        el && el.blur()
+      }
       return null
     }
     return getDefaultKeyBinding(e)
