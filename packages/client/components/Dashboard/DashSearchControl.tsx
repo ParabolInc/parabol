@@ -5,7 +5,7 @@ import ui from '../../styles/ui'
 import {PALETTE} from '../../styles/paletteV2'
 import styled from '@emotion/styled'
 import Icon from '../Icon'
-import {MD_ICONS_SIZE_18} from '../../styles/icons'
+import {ICON_SIZE} from '../../styles/typographyV2'
 
 const DashSearch = styled('div')({
   alignItems: 'center',
@@ -15,7 +15,7 @@ const DashSearch = styled('div')({
 
 const DashSearchIcon = styled(Icon)({
   color: PALETTE.TEXT_GRAY,
-  fontSize: MD_ICONS_SIZE_18,
+  fontSize: ICON_SIZE.MD18,
   marginRight: 8
 })
 

@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import styled from '@emotion/styled'
 import Icon from './Icon'
-import {MD_ICONS_SIZE_18} from '../styles/icons'
+import {ICON_SIZE} from '../styles/typographyV2'
 import {PALETTE} from '../styles/paletteV2'
 import appTheme from '../styles/theme/appTheme'
 import Legitity from '../validation/Legitity'
@@ -35,7 +35,7 @@ const Error = styled('div')({
 
 const StyledIcon = styled(Icon)({
   color: PALETTE.TEXT_GRAY,
-  fontSize: MD_ICONS_SIZE_18,
+  fontSize: ICON_SIZE.MD18,
   marginLeft: '.5rem'
 })
 

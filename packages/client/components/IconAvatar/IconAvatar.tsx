@@ -2,7 +2,7 @@ import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
 import {PALETTE} from '../../styles/paletteV2'
 import Icon from '../Icon'
-import {MD_ICONS_SIZE_18} from '../../styles/icons'
+import {ICON_SIZE} from '../../styles/typographyV2'
 
 const IconAvatarRoot = styled('div')({
   alignItems: 'center',
@@ -10,7 +10,7 @@ const IconAvatarRoot = styled('div')({
   borderRadius: '100%',
   color: '#FFFFFF',
   display: 'flex',
-  fontSize: MD_ICONS_SIZE_18,
+  fontSize: ICON_SIZE.MD18,
   height: 32,
   justifyContent: 'center',
   textAlign: 'center',

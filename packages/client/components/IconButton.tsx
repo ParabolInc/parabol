@@ -1,30 +1,30 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 import styled from '@emotion/styled'
 import LinkButton from './LinkButton'
 import Icon from './Icon'
-import {MD_ICONS_SIZE_18, MD_ICONS_SIZE_24} from '../styles/icons'
+import {ICON_SIZE} from '../styles/typographyV2'
 
 const StyledButton = styled(LinkButton)({outline: 0})
 
-const StyledIcon = styled(Icon)(({iconLarge}) => ({
+const StyledIcon = styled(Icon)<{iconLarge?: boolean}>(({iconLarge}) => ({
   color: 'inherit',
   display: 'block',
-  fontSize: iconLarge ? MD_ICONS_SIZE_24 : MD_ICONS_SIZE_18
+  fontSize: iconLarge ? ICON_SIZE.MD24 : ICON_SIZE.MD18
 }))
 
-const IconButton = (props) => {
+interface Props {
+  icon: string
+  iconLarge?: boolean
+  palette: string
+}
+
+const IconButton = (props: Props) => {
   const {icon, iconLarge} = props
   return (
     <StyledButton {...props} type='button'>
       <StyledIcon iconLarge={iconLarge}>{icon}</StyledIcon>
     </StyledButton>
   )
-}
-
-IconButton.propTypes = {
-  icon: PropTypes.string,
-  iconLarge: PropTypes.bool
 }
 
 export default IconButton

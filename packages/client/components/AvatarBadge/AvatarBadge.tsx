@@ -3,7 +3,7 @@ import {PALETTE} from '../../styles/paletteV2'
 import srOnly from '../../styles/helpers/srOnly'
 import styled from '@emotion/styled'
 import Icon from 'components/Icon'
-import {MD_ICONS_SIZE_18} from 'styles/icons'
+import {ICON_SIZE} from 'styles/typographyV2'
 
 const checkInStatus = [
   {
@@ -56,7 +56,7 @@ const Badge = styled('div')({
 
 const BadgeIcon = styled(Icon)<Pick<Props, 'isConnected'>>(({isConnected}) => ({
   color: isConnected ? PALETTE.TEXT_GREEN : PALETTE.TEXT_GRAY,
-  fontSize: MD_ICONS_SIZE_18,
+  fontSize: ICON_SIZE.MD18,
   height: '1em',
   left: '-1px',
   top: '-1px',

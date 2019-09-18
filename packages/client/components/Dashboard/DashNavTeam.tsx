@@ -5,12 +5,12 @@ import React from 'react'
 import {PALETTE} from '../../styles/paletteV2'
 import styled from '@emotion/styled'
 import Icon from '../Icon'
-import {MD_ICONS_SIZE_18} from '../../styles/icons'
+import {ICON_SIZE} from '../../styles/typographyV2'
 import {DashNavTeam_team} from '../../__generated__/DashNavTeam_team.graphql'
 
 const WarningIcon = styled(Icon)({
   color: PALETTE.TEXT_LIGHT,
-  fontSize: MD_ICONS_SIZE_18,
+  fontSize: ICON_SIZE.MD18,
   position: 'absolute',
   left: '.625rem'
 })

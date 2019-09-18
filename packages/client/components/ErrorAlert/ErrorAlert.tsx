@@ -9,7 +9,7 @@ import tinycolor from 'tinycolor2'
 import styled from '@emotion/styled'
 import ui from '../../styles/ui'
 import Icon from '../Icon'
-import {MD_ICONS_SIZE_18} from '../../styles/icons'
+import {ICON_SIZE} from '../../styles/typographyV2'
 
 interface Props {
   message: string
@@ -30,7 +30,7 @@ const ErrorAlertWrapper = styled('div')({
 })
 
 const SpacedIcon = styled(Icon)({
-  fontSize: MD_ICONS_SIZE_18,
+  fontSize: ICON_SIZE.MD18,
   marginRight: '.5rem'
 })
 

@@ -9,7 +9,7 @@ import CardButton from './CardButton'
 import Icon from './Icon'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
-import {MD_ICONS_SIZE_18} from '../styles/icons'
+import {ICON_SIZE} from '../styles/typographyV2'
 import lazyPreload from '../utils/lazyPreload'
 import {shortMonths} from '../utils/makeDateString'
 import {PALETTE} from '../styles/paletteV2'
@@ -85,7 +85,7 @@ const Toggle = styled(CardButton)<StyleProps>(
 )
 
 const DueDateIcon = styled(Icon)({
-  fontSize: MD_ICONS_SIZE_18
+  fontSize: ICON_SIZE.MD18
 })
 
 const DateString = styled('span')({

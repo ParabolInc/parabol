@@ -1,9 +1,8 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
 import ui from '../styles/ui'
 import Icon from './Icon'
-import {MD_ICONS_SIZE_18, MD_ICONS_SIZE_24} from '../styles/icons'
+import {ICON_SIZE} from '../styles/typographyV2'
 
 const LabelBlock = styled('div')({
   alignItems: 'center',
@@ -11,8 +10,8 @@ const LabelBlock = styled('div')({
   justifyContent: 'center'
 })
 
-const Label = styled('div')(({iconAfter, iconLarge}) => {
-  const gutter = iconLarge ? '.75em' : '.5em'
+const Label = styled('div')<Pick<Props, 'iconAfter' | 'iconLarge'>>(({iconAfter, iconLarge}) => {
+  const gutter = iconLarge ? '12px' : '8px'
   return {
     color: 'inherit',
     fontSize: 'inherit',
@@ -22,14 +21,22 @@ const Label = styled('div')(({iconAfter, iconLarge}) => {
   }
 })
 
-const StyledIcon = styled(Icon)(({iconAfter, iconColor, iconLarge}) => ({
+const StyledIcon = styled(Icon)<Pick<Props, 'iconAfter' | 'iconColor' | 'iconLarge'>>(({iconAfter, iconColor, iconLarge}) => ({
   color: iconColor ? ui.palette[iconColor] : 'inherit',
   display: 'block',
-  fontSize: iconLarge ? MD_ICONS_SIZE_24 : MD_ICONS_SIZE_18,
-  order: iconAfter && 2
+  fontSize: iconLarge ? ICON_SIZE.MD24 : ICON_SIZE.MD18,
+  order: iconAfter ? 2 : undefined
 }))
 
-const IconLabel = (props) => {
+interface Props {
+  icon: string
+  iconAfter?: boolean
+  iconColor?: string
+  iconLarge?: boolean
+  label?: ReactNode
+}
+
+const IconLabel = (props: Props) => {
   const {icon, label} = props
   return (
     <LabelBlock>
@@ -37,14 +44,6 @@ const IconLabel = (props) => {
       {label && <Label {...props}>{label}</Label>}
     </LabelBlock>
   )
-}
-
-IconLabel.propTypes = {
-  icon: PropTypes.string,
-  iconAfter: PropTypes.bool,
-  iconColor: PropTypes.any,
-  iconLarge: PropTypes.bool,
-  label: PropTypes.any
 }
 
 export default IconLabel

@@ -194,9 +194,6 @@ const ui = {
   dashGutterSmall: '1.25rem',
   dashGutterLarge: '2rem',
 
-  dashControlFontColor: COLOR_TEXT_GRAY,
-  dashControlHeight: '1.25rem',
-
   dashSidebarBackgroundColor: appTheme.palette.mid,
   // TODO replace with DIMS.DASH_SIDEBAR_WIDTH
   dashSidebarWidth: '15rem',
@@ -279,11 +276,6 @@ const ui = {
   // Gradients
   // ---------------------------------------------------------------------------
   gradientWarm,
-
-  // Hints
-  // ---------------------------------------------------------------------------
-  hintColor: COLOR_TEXT_GRAY,
-  hintFontSize: appTheme.typography.s2,
 
   // Icons
   // ---------------------------------------------------------------------------

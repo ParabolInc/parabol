@@ -2,14 +2,14 @@ import React from 'react'
 import {NavLink} from 'react-router-dom'
 import styled from '@emotion/styled';
 import Icon from '../Icon'
-import {MD_ICONS_SIZE_18} from '../../styles/icons'
+import {ICON_SIZE} from '../../styles/typographyV2'
 import {PALETTE} from '../../styles/paletteV2'
 import {NavSidebar} from '../../types/constEnums'
 import {ClassNames} from '@emotion/core'
 
 const StyledIcon = styled(Icon)({
   display: 'block',
-  fontSize: MD_ICONS_SIZE_18,
+  fontSize: ICON_SIZE.MD18,
   marginRight: 8,
   opacity: 0.5,
   textAlign: 'left'
