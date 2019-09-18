@@ -16,7 +16,7 @@
     "storybook": "start-storybook -p 6006 -c .storybook",
     "build-storybook": "build-storybook",
     "lint": "eslint --fix ./**/*.{ts,tsx,js}",
-    "lint-staged": "eslint --fix"
+    "precommit": "lint-staged"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^5.1.9",
@@ -54,7 +54,6 @@
     "expect": "^24.8.0",
     "flow-bin": "^0.103.0",
     "graphql": "^14.4.2",
-    "husky": "^3.0.1",
     "jest": "^24.8.0",
     "jest-junit-reporter": "^1.0.1",
     "jscodeshift": "^0.6.4",
@@ -122,6 +121,12 @@
     "tlds": "^1.192.0",
     "tslib": "^1.10.0",
     "unicode-substring": "^1.0.0"
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx}": [
+      "eslint --fix",
+      "git add"
+    ]
   },
   "jest": {
     "modulePaths": [

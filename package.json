@@ -38,6 +38,13 @@
   },
   "devDependencies": {
     "@types/jscodeshift": "^0.6.2",
+    "husky": "^3.0.1",
     "lerna": "^3.16.4"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lerna run --concurrency 1 --stream precommit",
+      "post-commit": "git update-index --again"
+    }
   }
 }

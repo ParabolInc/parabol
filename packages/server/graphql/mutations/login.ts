@@ -53,7 +53,8 @@ const login = {
       description: 'optional segment id created before they were a user'
     }
   },
-  async resolve(_source, {auth0Token, isOrganic, segmentId}, {dataLoader}) {
+
+  async resolve (_source, {auth0Token, isOrganic, segmentId}, {dataLoader}) {
     const r = getRethink()
     const now = new Date()
 
