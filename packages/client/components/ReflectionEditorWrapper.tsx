@@ -60,7 +60,7 @@ const EditorStyles = styled('div')(({useFallback, userSelect, isClipped}: any) =
   fontSize: cardContentFontSize,
   lineHeight: useFallback ? '14px' : cardContentLineHeight,
   maxHeight: isClipped ? 44 : ElementHeight.REFLECTION_CARD_MAX,
-  minHeight: '1rem',
+  minHeight: 16,
   overflow: 'auto',
   position: 'relative',
   userSelect,
@@ -95,6 +95,15 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
 
     }
   }
+
+  componentDidUpdate(prevProps: Readonly<Props>) {
+    // make sure the text isn't visible when it's clipped
+    if (prevProps.isClipped !== this.props.isClipped) {
+      const el = this.styleRef.current!
+      el.scrollTop = this.props.isClipped ? el.scrollHeight : 0
+    }
+  }
+
   blockStyleFn = (contentBlock) => {
     // TODO complete emtotion migration to provider a string className
     const type = contentBlock.getType()

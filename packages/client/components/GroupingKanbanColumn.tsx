@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {createFragmentContainer} from 'react-relay'
 import {GroupingKanbanColumn_reflectionGroups} from '__generated__/GroupingKanbanColumn_reflectionGroups.graphql'
 import {GroupingKanbanColumn_meeting} from '__generated__/GroupingKanbanColumn_meeting.graphql'
-import {BezierCurve} from '../types/constEnums'
+import {BezierCurve, DragAttribute} from '../types/constEnums'
 import styled from '@emotion/styled'
 import {PALETTE} from '../styles/paletteV2'
 import Icon from './Icon'
@@ -94,7 +94,7 @@ const GroupingKanbanColumn = (props: Props) => {
         </AddReflectionButton>}
         <Prompt>{question}</Prompt>
       </ColumnHeader>
-      <ColumnBody data-dropzone={promptId}>
+      <ColumnBody {...{[DragAttribute.DROPZONE]: promptId}}>
         {reflectionGroups
           .filter((group) => {
             // group may be undefined because relay could GC before useMemo in the Kanban recomputes >:-(

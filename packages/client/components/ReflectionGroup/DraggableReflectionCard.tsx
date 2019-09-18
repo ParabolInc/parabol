@@ -43,6 +43,7 @@ const DragWrapper = styled('div')<{isDraggable: boolean | undefined}>(({isDragga
 export type ReflectionDragState = typeof DRAG_STATE
 
 interface Props {
+  isClipped?: boolean
   isDraggable?: boolean
   meeting: DraggableReflectionCard_meeting
   reflection: DraggableReflectionCard_reflection
@@ -60,7 +61,7 @@ export interface TargetBBox {
 }
 
 const DraggableReflectionCard = (props: Props) => {
-  const {reflection, staticIdx, staticReflections, meeting, isDraggable, swipeColumn} = props
+  const {isClipped, reflection, staticIdx, staticReflections, meeting, isDraggable, swipeColumn} = props
   const {teamId, localStage} = meeting
   const {isComplete, phaseType} = localStage
   const {isDropping, isEditing} = reflection
@@ -73,7 +74,7 @@ const DraggableReflectionCard = (props: Props) => {
   const handleDrag = canDrag ? onMouseDown : undefined
   return (
     <DragWrapper ref={(c) => drag.ref = c} onMouseDown={handleDrag} onTouchStart={handleDrag} isDraggable={canDrag}>
-      <ReflectionCard reflection={reflection} isClipped={staticIdx !== 0} meeting={meeting} />
+      <ReflectionCard reflection={reflection} isClipped={isClipped} meeting={meeting} />
     </DragWrapper>
   )
 }

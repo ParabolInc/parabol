@@ -3,6 +3,7 @@ import React, {RefObject, useEffect, useState} from 'react'
 import styled from '@emotion/styled'
 import TextArea from 'react-textarea-autosize'
 import {cardContentFontSize, cardContentLineHeight} from '../styles/cards'
+import {PALETTE} from '../styles/paletteV2'
 
 interface Props {
   className?: string
@@ -17,7 +18,9 @@ interface Props {
 
 const TextAreaStyles = styled(TextArea)({
   backgroundColor: 'transparent',
+  color: PALETTE.TEXT_MAIN,
   border: 0,
+  display: 'block',
   fontSize: cardContentFontSize,
   lineHeight: cardContentLineHeight,
   overflow: 'hidden',

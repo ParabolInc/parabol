@@ -1,11 +1,11 @@
 import {Elevation} from '../../styles/elevation'
-import {BezierCurve, Times} from '../../types/constEnums'
+import {BezierCurve, DragAttribute, Times} from '../../types/constEnums'
 
 export const getMinTop = (top: number, targetEl: HTMLElement | null) => {
   if (top >= 0) return top
   let dropzone = targetEl
   while (dropzone && dropzone.hasAttribute) {
-    if (dropzone.hasAttribute('data-dropzone')) return dropzone.getBoundingClientRect().top
+    if (dropzone.hasAttribute(DragAttribute.DROPZONE)) return dropzone.getBoundingClientRect().top
     dropzone = dropzone.parentElement
   }
   return top
