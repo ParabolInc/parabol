@@ -21,7 +21,7 @@ import {ReflectionDragState} from '../components/ReflectionGroup/DraggableReflec
 import {DraggableReflectionCard_reflection} from '../__generated__/DraggableReflectionCard_reflection.graphql'
 import maybeStartReflectionScroll from '../utils/maybeStartReflectionScroll'
 import measureDroppableReflections from '../utils/measureDroppableReflections'
-import findDropZoneInPath from '../utils/findDropZoneInPath'
+import findDropZoneFromEvent from '../utils/findDropZoneFromEvent'
 import {SwipeColumn} from '../components/GroupingKanban'
 
 
@@ -184,7 +184,6 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
     const isTouch = isNativeTouch(e)
     const {clientX, clientY} = isTouch ? (e as TouchEvent).touches[0] : e as MouseEvent
     const wasDrag = drag.isDrag
-    const path = e.composedPath()
     if (!wasDrag) {
       drag.isDrag = getIsDrag(clientX, clientY, drag.startX, drag.startY)
       if (!drag.isDrag || !drag.ref) return
@@ -201,7 +200,7 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
     if (!drag.clone) return
     drag.clientY = clientY
     drag.clone.style.transform = `translate(${clientX - drag.cardOffsetX}px,${clientY - drag.cardOffsetY}px)`
-    const dropZoneEl = findDropZoneInPath(path)
+    const dropZoneEl = findDropZoneFromEvent(e)
     if (dropZoneEl !== drag.dropZoneEl) {
       drag.dropZoneEl = dropZoneEl
       if (dropZoneEl) {

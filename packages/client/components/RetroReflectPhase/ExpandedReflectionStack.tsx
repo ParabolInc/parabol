@@ -5,7 +5,7 @@ import {ZINDEX_MODAL} from '../../styles/elevation'
 import {PALETTE} from '../../styles/paletteV2'
 import {BBox} from '../../types/animations'
 import {RefCallbackInstance} from '../../types/generics'
-import {ElementWidth, ZIndex} from '../../types/constEnums'
+import {DragAttribute, ElementWidth, ZIndex} from '../../types/constEnums'
 import ExpandedReflection from './ExpandedReflection'
 
 const PortalBlock = styled('div')({
@@ -89,7 +89,7 @@ const ExpandedReflectionStack = (props: Props) => {
     <PortalBlock>
       <PhaseArea phaseBBox={phaseBBox!}>
         <Scrim onClick={closePortal} />
-        <ModalArea data-droppable={reflectionGroupId}>
+        <ModalArea {...{[DragAttribute.DROPPABLE]: reflectionGroupId}}>
           {header}
           <ScrollBlock ref={scrollRef} onClick={closeOnEdge}>
             {reflections.map((reflection, idx) => {

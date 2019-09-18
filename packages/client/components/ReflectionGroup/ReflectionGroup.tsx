@@ -6,7 +6,7 @@ import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
 import DraggableReflectionCard from './DraggableReflectionCard'
-import {ElementWidth, ReflectionStackPerspective, Times} from '../../types/constEnums'
+import {DragAttribute, ElementWidth, ReflectionStackPerspective, Times} from '../../types/constEnums'
 import ReflectionGroupHeader from '../ReflectionGroupHeader'
 import ExpandedReflectionStack from '../RetroReflectPhase/ExpandedReflectionStack'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
@@ -131,7 +131,7 @@ const ReflectionGroup = (props: Props) => {
         meeting={meeting}
         reflectionGroupId={reflectionGroupId}
       />)}
-      <Group data-droppable={reflectionGroupId} ref={groupRef} staticReflectionCount={staticReflections.length}>
+      <Group {...{[DragAttribute.DROPPABLE]: reflectionGroupId}} ref={groupRef} staticReflectionCount={staticReflections.length}>
         {showHeader && <ReflectionGroupHeader
           ref={headerRef}
           meeting={meeting}
@@ -149,6 +149,7 @@ const ReflectionGroup = (props: Props) => {
                 <DraggableReflectionCard
                   key={reflection.id}
                   staticIdx={staticIdx}
+                  isClipped={staticIdx !== 0}
                   isDraggable={staticIdx === 0}
                   meeting={meeting}
                   reflection={reflection}

@@ -48,6 +48,11 @@ export const enum DashTimeline {
   TIMELINE_DRAWER_WIDTH = 336
 }
 
+export const enum DragAttribute {
+  DROPPABLE = 'data-droppable',
+  DROPZONE = 'data-dropzone'
+}
+
 export const enum DroppableType {
   TASK = 'task',
   REFLECTION = 'reflection',

@@ -8,15 +8,18 @@ export const setLocalStageAndPhase = (
   stageId: string
 ) => {
   const meetingProxy = store.get(meetingId)
-  if (!meetingProxy) return
+  const stage = store.get(stageId)
+  if (!meetingProxy || !stage) return
   const facilitatorPhaseProxy = meetingProxy
     .getLinkedRecords('phases')!
     .find(
       (phase) =>
         !!phase!.getLinkedRecords('stages')!.find((stage) => stage!.getValue('id') === stageId)
-    )!
+    )
+
+  if (!facilitatorPhaseProxy) return
   meetingProxy
-    .setLinkedRecord(store.get(stageId), 'localStage')
+    .setLinkedRecord(stage, 'localStage')
     .setLinkedRecord(facilitatorPhaseProxy, 'localPhase')
 }
 

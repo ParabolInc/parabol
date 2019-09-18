@@ -26,7 +26,7 @@ import convertToTaskContent from '../../utils/draftjs/convertToTaskContent'
 interface Props {
   isClipped?: boolean
   reflection: ReflectionCard_reflection
-  meeting?: ReflectionCard_meeting
+  meeting: ReflectionCard_meeting | null
   stackCount?: number
 }
 
@@ -175,11 +175,14 @@ const ReflectionCard = (props: Props) => {
   }
 
   const handleKeyDownFallback = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key !== 'Enter' || e.shiftKey) return
-    e.preventDefault()
-    const {value} = e.currentTarget
-    if (!value) return
-    editorRef.current && editorRef.current.blur()
+    if (e.key === 'Escape') {
+      editorRef.current && editorRef.current.blur()
+    } else if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      const {value} = e.currentTarget
+      if (!value) return
+      editorRef.current && editorRef.current.blur()
+    }
   }
 
   const readOnly = getReadOnly(reflection, phaseType as NewMeetingPhaseTypeEnum, stackCount)

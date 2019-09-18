@@ -2,7 +2,7 @@ import {ReflectionCardRoot} from '../ReflectionCard/ReflectionCard'
 import React, {RefObject, useEffect, useMemo, useRef} from 'react'
 import styled from '@emotion/styled'
 import {Elevation} from '../../styles/elevation'
-import {BezierCurve, ElementWidth, Times, ZIndex} from '../../types/constEnums'
+import {BezierCurve, DragAttribute, ElementWidth, Times, ZIndex} from '../../types/constEnums'
 import UserDraggingHeader, {RemoteReflectionArrow} from '../UserDraggingHeader'
 import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
 import {convertFromRaw, EditorState} from 'draft-js'
@@ -48,7 +48,7 @@ const windowDims = {
 const OFFSCREEN_PADDING = 16
 const getCoords = (remoteDrag: DeepNonNullable<NonNullable<RemoteReflection_reflection['remoteDrag']>>) => {
   const {targetId, clientHeight, clientWidth, clientX, clientY, targetOffsetX, targetOffsetY} = remoteDrag
-  const targetEl = targetId ? document.querySelector(`div[data-droppable='${targetId}']`) as HTMLElement : null
+  const targetEl = targetId ? document.querySelector(`div[${DragAttribute.DROPPABLE}='${targetId}']`) as HTMLElement : null
   if (targetEl) {
     const targetBBox = getBBox(targetEl)!
     const minTop = getMinTop(-1, targetEl)
