@@ -8,12 +8,11 @@ import {FONT_FAMILY} from '../styles/typographyV2'
 import {textTags} from '../utils/constants'
 import entitizeText from '../utils/draftjs/entitizeText'
 import styled from '@emotion/styled'
-import {cardContentFontSize, cardContentLineHeight} from '../styles/cards'
 import withEmojis from './TaskEditor/withEmojis'
 import isRichDraft from '../utils/draftjs/isRichDraft'
 import lazyPreload from '../utils/lazyPreload'
 import isAndroid from '../utils/draftjs/isAndroid'
-import {ElementHeight} from '../types/constEnums'
+import {Card, ElementHeight} from '../types/constEnums'
 
 interface Props {
   ariaLabel: string
@@ -58,8 +57,8 @@ const codeBlock = {
 
 const EditorStyles = styled('div')(({useFallback, userSelect, isClipped}: any) => ({
   color: PALETTE.TEXT_MAIN,
-  fontSize: cardContentFontSize,
-  lineHeight: useFallback ? '14px' : cardContentLineHeight,
+  fontSize: Card.FONT_SIZE,
+  lineHeight: useFallback ? '14px' : Card.LINE_HEIGHT,
   maxHeight: isClipped ? 44 : ElementHeight.REFLECTION_CARD_MAX,
   minHeight: 16,
   overflow: 'auto',

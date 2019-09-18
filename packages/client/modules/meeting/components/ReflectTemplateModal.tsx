@@ -12,7 +12,7 @@ import TextOverflow from '../../../components/TextOverflow'
 import withAtmosphere, {
   WithAtmosphereProps
 } from '../../../decorators/withAtmosphere/withAtmosphere'
-import ui from '../../../styles/ui'
+import {Radius} from '../../../types/constEnums'
 import AddNewReflectTemplate from './AddNewReflectTemplate'
 import AddTemplatePrompt from './AddTemplatePrompt'
 import EditableTemplateName from './EditableTemplateName'
@@ -35,7 +35,7 @@ const TemplateSidebar = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   backgroundColor: PALETTE.BACKGROUND_MAIN,
-  borderRadius: `${ui.modalBorderRadius} 0 0 ${ui.modalBorderRadius}`,
+  borderRadius: `${Radius.DIALOG} 0 0 ${Radius.DIALOG}`,
   width: 200
 })
 

@@ -1,10 +1,10 @@
 import {cardShadow} from '../elevation'
-import {cardBorderRadius} from '../cards'
+import {Card} from '../../types/constEnums'
 
 const cardRootStyles = {
   backgroundColor: '#FFFFFF',
   border: 0,
-  borderRadius: cardBorderRadius,
+  borderRadius: Card.BORDER_RADIUS,
   boxShadow: cardShadow,
   minWidth: 256,
   maxWidth: 296,

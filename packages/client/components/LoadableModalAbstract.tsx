@@ -2,7 +2,7 @@ import React, {Component, ComponentType, Suspense} from 'react'
 import styled from '@emotion/styled'
 import AnimatedFade from './AnimatedFade'
 import Modal from './Modal'
-import ui from '../styles/ui'
+import {PALETTE} from '../styles/paletteV2'
 import {modalShadow} from '../styles/elevation'
 import {WithAnimatedPortalProps} from '../decorators/withAnimatedPortal'
 
@@ -62,7 +62,7 @@ class LoadableModalAbstract extends Component<LoadableModalAbstractProps, State>
           <AnimatedFade appear duration={200} slide={0} in={!isClosing} onExited={terminatePortal}>
             <Backdrop
               onClick={closePortal}
-              background={background || ui.modalBackdropBackgroundColor}
+              background={background || PALETTE.BACKGROUND_BACKDROP}
             />
           </AnimatedFade>
           <AnimatedFade appear duration={200} slide={32} in={!isClosing} onExited={terminatePortal}>

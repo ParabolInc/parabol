@@ -1,5 +1,4 @@
 const typography = {
-  // TODO: refactor appTheme
   // #deprecated use fontFamily and fontSize constants instead of typography
 
   // Font stacks

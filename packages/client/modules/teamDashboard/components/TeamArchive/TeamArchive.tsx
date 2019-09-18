@@ -6,22 +6,20 @@ import NullableTask from '../../../../components/NullableTask/NullableTask'
 import Helmet from 'react-helmet'
 import TeamArchiveHeader from '../TeamArchiveHeader/TeamArchiveHeader'
 import getRallyLink from '../../../userDashboard/helpers/getRallyLink'
-import ui from '../../../../styles/ui'
 import {TeamArchive_viewer} from '__generated__/TeamArchive_viewer.graphql'
 import {AreaEnum} from '../../../../types/graphql'
 import {TeamArchive_team} from '__generated__/TeamArchive_team.graphql'
 import styled from '@emotion/styled'
-import {Breakpoint, MathEnum} from '../../../../types/constEnums'
+import {Breakpoint, MathEnum, NavSidebar} from '../../../../types/constEnums'
 import {PALETTE} from '../../../../styles/paletteV2'
 
 const CARD_WIDTH = 256 + 32 // account for box model and horizontal padding
 const GRID_PADDING = 16
-const NAV_WIDTH = parseInt(ui.dashSidebarWidth, 10) * 16
 
 const getColumnCount = () => {
   if (typeof window === 'undefined') return 4
   const {innerWidth} = window
-  return Math.floor((innerWidth - NAV_WIDTH - GRID_PADDING) / CARD_WIDTH)
+  return Math.floor((innerWidth - NavSidebar.WIDTH - GRID_PADDING) / CARD_WIDTH)
 }
 
 const Root = styled('div')({

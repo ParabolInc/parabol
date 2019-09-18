@@ -1,8 +1,9 @@
 import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
 import {modalShadow} from '../../styles/elevation'
-import ui from '../../styles/ui'
+import {PALETTE} from '../../styles/paletteV2'
 import {DECELERATE} from '../../styles/animation'
+import {Radius} from '../../types/constEnums'
 
 const animateIn = {
   '0%': {
@@ -17,7 +18,7 @@ const animateIn = {
 
 const Backdrop = styled('div')({
   alignItems: 'center',
-  background: ui.modalBackdropBackgroundColor,
+  background: PALETTE.BACKGROUND_BACKDROP,
   bottom: 0,
   display: 'flex !important',
   flex: 1,
@@ -35,7 +36,7 @@ const Modal = styled('div')({
   animationIterationCount: 1,
   animation: `${animateIn} 200ms ${DECELERATE}`,
   background: '#FFFFFF',
-  borderRadius: ui.modalBorderRadius,
+  borderRadius: Radius.DIALOG,
   boxShadow: modalShadow,
   overflow: 'hidden',
   padding: '1.25rem',

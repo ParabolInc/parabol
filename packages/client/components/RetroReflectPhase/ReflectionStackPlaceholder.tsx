@@ -1,8 +1,7 @@
 import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
-import {cardBorderRadius} from '../../styles/cards'
 import {PALETTE} from '../../styles/paletteV2'
-import {ElementHeight, ElementWidth} from '../../types/constEnums'
+import {Card, ElementHeight, ElementWidth} from '../../types/constEnums'
 
 interface Props {
   idx: number
@@ -11,7 +10,7 @@ interface Props {
 const PlaceholderCard = styled('div')({
   alignItems: 'center',
   border: `1px lightgray dashed`,
-  borderRadius: cardBorderRadius,
+  borderRadius: Card.BORDER_RADIUS,
   display: 'flex',
   justifyContent: 'center',
   minHeight: ElementHeight.REFLECTION_CARD_MAX,

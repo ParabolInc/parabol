@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
 import {PALETTE} from '../styles/paletteV2'
 import BaseButton from './BaseButton'
-import {cardContentLineHeight} from '../styles/cards'
+import {Card} from '../types/constEnums'
 
-const buttonSize = 24
+const buttonSize = Card.BUTTON_HEIGHT
 
 const CardButton = styled(BaseButton)({
   alignItems: 'center',
@@ -12,7 +12,7 @@ const CardButton = styled(BaseButton)({
   display: 'flex',
   height: buttonSize,
   justifyContent: 'center',
-  lineHeight: cardContentLineHeight,
+  lineHeight: Card.LINE_HEIGHT,
   minWidth: buttonSize,
   opacity: .5,
   outline: 0,

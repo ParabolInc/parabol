@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import makePlaceholderStyles from '../../styles/helpers/makePlaceholderStyles'
-import ui from '../../styles/ui'
 import {PALETTE} from '../../styles/paletteV2'
 import styled from '@emotion/styled'
 import Icon from '../Icon'
@@ -30,7 +29,7 @@ const DashSearchInput = styled('input')({
   padding: 0,
   width: 'fit-content',
   '&:focus,:active': {
-    ...makePlaceholderStyles(ui.placeholderColorFocusActive)
+    ...makePlaceholderStyles(PALETTE.PLACEHOLDER_FOCUS_ACTIVE)
   }
 })
 

@@ -1,6 +1,7 @@
-import appTheme from './theme/appTheme'
-import makeGradient from './helpers/makeGradient'
-import makeShadowColor from './helpers/makeShadowColor'
+// deprecated, use types/constEnums or similar
+// todo: refactor layout, buttons, fields
+
+import typography from './theme/typography'
 
 // Reusable constants for UI object
 // -----------------------------------------------------------------------------
@@ -31,50 +32,13 @@ const CONTROL_LARGE_BLOCK_PADDING_HORIZONTAL = '1rem'
 const CONTROL_LARGE_PADDING_VERTICAL = '.6875rem'
 const CONTROL_LARGE_BLOCK_PADDING_VERTICAL = '.75rem'
 
-// Colors
-const {cool, warm, dark, mid, light} = appTheme.palette
-const {midGray} = appTheme.brand.primary
-const {blue, red, rose, green, yellow} = appTheme.brand.secondary
-
-// Border radius ratio: powers of 2
-// Small border radius for controls (inputs, buttons, etcs.)
-const borderRadiusSmall = '.125rem' // 2px
-// Medium border radius for grouped components (cards, panels, etc.)
-const borderRadiusMedium = '.25rem' // 4px
-// Large border radius for larger components (modals, pages, etc.)
-const borderRadiusLarge = '.5rem' // 8px
-
 // Buttons
 const BUTTON_SIZE_SMALL = CONTROL_SIZE_SMALL
 const BUTTON_SIZE_MEDIUM = CONTROL_SIZE_MEDIUM
 const BUTTON_SIZE_LARGE = CONTROL_SIZE_LARGE
 
-// Color (default for text)
-const COLOR_TEXT = appTheme.brand.primary.darkGray
-const COLOR_ERROR = red
-
-// Color palette
-const white = '#FFFFFF'
-const gray = appTheme.palette.light
-const PALETTE_VALUES = {
-  cool,
-  warm,
-  dark,
-  mid,
-  light,
-  white,
-  gray,
-  midGray,
-  green,
-  red,
-  yellow,
-  blue
-}
-
 // Fields
 const FIELD_PADDING_HORIZONTAL = '.75rem'
-const FIELD_PLACEHOLDER_COLOR = appTheme.palette.dark60a
-const FIELD_PLACEHOLDER_COLOR_FOCUS_ACTIVE = appTheme.palette.dark30a
 const FIELD_SIZE_SMALL = CONTROL_SIZE_SMALL
 const FIELD_SIZE_MEDIUM = CONTROL_SIZE_MEDIUM
 const FIELD_SIZE_LARGE = CONTROL_SIZE_LARGE
@@ -87,23 +51,10 @@ export const DEFAULT_MENU_WIDTH = '10rem'
 // The goal is to respond to input, but avoid responding with a spinner because that increases perceived wait time
 export const HUMAN_ADDICTION_THRESH = 300
 export const MAX_WAIT_TIME = 5000
-// Filter
-const filterBlur = 'blur(1.5px)'
-
-// Theme Gradients TODO: theme-able?
-const gradientWarm = makeGradient(red, rose)
-// linear-gradient(to right,#ED4C56 0,#ED4C86 100%)
 
 // -----------------------------------------------------------------------------
 
 const ui = {
-  // Base settings
-  // ---------------------------------------------------------------------------
-  borderRadiusSmall,
-  borderRadiusLarge,
-  palette: PALETTE_VALUES,
-  filterBlur,
-
   // Buttons
   // ---------------------------------------------------------------------------
   buttonBlockStyles: {
@@ -131,22 +82,6 @@ const ui = {
     }
   },
 
-  // Cards
-  // ---------------------------------------------------------------------------
-  // #deprecated move these values to cards.js as needed,
-  // but make sure they are consistent when temporarily duped (TA)
-  cardBorderColor: appTheme.palette.mid30l, // PALETTE.BORDER_MAIN
-  cardBorderRadius: borderRadiusMedium,
-  cardButtonHeight: '24px',
-  cardContentFontSize: '14px',
-  cardContentLineHeight: '20px',
-  cardPaddingBase: '16px',
-
-  // Color (default for text)
-  // ---------------------------------------------------------------------------
-  colorError: COLOR_ERROR,
-  colorText: COLOR_TEXT,
-
   // Controls
   // ---------------------------------------------------------------------------
   controlBlockPaddingHorizontal: {
@@ -161,27 +96,15 @@ const ui = {
     [CONTROL_SIZE_LARGE]: CONTROL_LARGE_BLOCK_PADDING_VERTICAL
   },
 
-  // Dashboards
-  // ---------------------------------------------------------------------------
-  dashAgendaWidth: '15rem',
-  dashBorderColor: appTheme.palette.light90d,
-  dashGutterSmall: '1.25rem',
-  dashGutterLarge: '2rem',
-
-  dashSidebarBackgroundColor: appTheme.palette.mid,
-  // TODO replace with DIMS.DASH_SIDEBAR_WIDTH
-  dashSidebarWidth: '15rem',
-  draftModalMargin: 32,
-
   // Fields
   // ---------------------------------------------------------------------------
   fieldBaseStyles: {
     appearance: 'none',
     border: '.0625rem solid transparent',
-    borderRadius: borderRadiusSmall,
+    borderRadius: 2,
     display: 'block',
-    fontFamily: appTheme.typography.sansSerif,
-    fontSize: appTheme.typography.sBase,
+    fontFamily: typography.sansSerif,
+    fontSize: typography.sBase,
     lineHeight: '1.5em',
     margin: '0',
     outline: 0,
@@ -210,54 +133,11 @@ const ui = {
       padding: `${CONTROL_LARGE_PADDING_VERTICAL} ${CONTROL_LARGE_PADDING_HORIZONTAL}`
     }
   },
-  fieldLabelGutter: '.5rem',
-  fieldErrorPlaceholderColor: appTheme.palette.warm90a,
-
-  // Gradients
-  // ---------------------------------------------------------------------------
-  gradientWarm,
-
-  // Link
-  // ---------------------------------------------------------------------------
-  linkColor: COLOR_TEXT,
-  linkColorHover: appTheme.palette.mid,
-
-  // Menus
-  // ---------------------------------------------------------------------------
-  menuBorderRadius: borderRadiusSmall,
-  menuGutterVertical: '.5rem',
-  menuItemBackgroundColorActive: appTheme.palette.light,
-
-  // Modals
-  // ---------------------------------------------------------------------------
-  modalBackdropBackgroundColor: makeShadowColor('.3'),
-  modalBorderRadius: borderRadiusLarge,
-
-  // Nav Topics (team agenda, retro discuss)
-  // ---------------------------------------------------------------------------
-
-  navTopicLineHeight: '1.5rem',
-
-  // Placeholders
-  // ---------------------------------------------------------------------------
-  placeholderColor: FIELD_PLACEHOLDER_COLOR,
-  placeholderColorFocusActive: FIELD_PLACEHOLDER_COLOR_FOCUS_ACTIVE,
-
-  // Task columns
-  // ---------------------------------------------------------------------------
-  taskColumnPaddingInnerSmall: '10px',
-  taskColumnPaddingInnerLarge: '15px',
-  taskColumnsMaxWidth: '1334px', // (4 x 296 card max-width) + (5 x 30 - gutters around cols)
 
   // Settings
   // ---------------------------------------------------------------------------
   settingsPanelMaxWidth: '48rem',
-  settingsPanelMaxWidthNarrow: '40.25rem',
-
-  // Shadows
-  scrollableBackgroundColor: appTheme.palette.mid10a,
-  scrollableBottomShadow: `0 -.125rem .5rem ${makeShadowColor('.4')}`,
-  scrollableTopShadow: `0 .125rem .5rem ${makeShadowColor('.4')}`
+  settingsPanelMaxWidthNarrow: '40.25rem'
 }
 
 export default ui

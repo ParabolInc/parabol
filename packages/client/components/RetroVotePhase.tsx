@@ -14,7 +14,6 @@ import MeetingHelpToggle from './MenuHelpToggle'
 import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
-import ScrollableBlock from './ScrollableBlock'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
 import {minWidthMediaQueries} from '../styles/breakpoints'
@@ -187,11 +186,9 @@ const RetroVotePhase = (props: Props) => {
             </MetaBlock>
           </VoteMeta>
           <StageTimerDisplay stage={localStage} />
-          <ScrollableBlock>
-            <MeetingPhaseWrapper>
-              <GroupingKanban meeting={newMeeting} phaseRef={phaseRef} />
-            </MeetingPhaseWrapper>
-          </ScrollableBlock>
+          <MeetingPhaseWrapper>
+            <GroupingKanban meeting={newMeeting} phaseRef={phaseRef} />
+          </MeetingPhaseWrapper>
         </PhaseWrapper>
         <MeetingHelpToggle
           menu={isDemoRoute() ? <DemoVoteHelpMenu /> : <VoteHelpMenu />}

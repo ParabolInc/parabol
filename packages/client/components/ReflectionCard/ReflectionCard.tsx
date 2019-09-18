@@ -14,8 +14,7 @@ import {DECELERATE} from '../../styles/animation'
 import {Elevation} from '../../styles/elevation'
 import isTempId from '../../utils/relay/isTempId'
 import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
-import {cardBackgroundColor, cardBorderRadius} from '../../styles/cards'
-import {ElementWidth} from '../../types/constEnums'
+import {Card, ElementWidth} from '../../types/constEnums'
 import useRefState from '../../hooks/useRefState'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
@@ -31,24 +30,36 @@ interface Props {
   stackCount?: number
 }
 
-interface ReflectionCardRootProps {
-  isClosing?: boolean | null
-  shadow?: string | null
-}
+// interface ReflectionCardRootProps {
+//   isClosing?: boolean | null
+//   shadow?: string | null
+// }
 
-export const ReflectionCardRoot = styled('div')<ReflectionCardRootProps>(
-  {
-    backgroundColor: cardBackgroundColor,
-    borderRadius: cardBorderRadius,
-    boxShadow: Elevation.CARD_SHADOW,
-    // display was 'inline-block' which causes layout issues (TA)
-    display: 'block',
-    maxWidth: '100%',
-    position: 'relative',
-    transition: `box-shadow 2000ms ${DECELERATE}`,
-    width: ElementWidth.REFLECTION_CARD
-  }
-)
+// export const ReflectionCardRoot = styled('div')<ReflectionCardRootProps>(
+//   {
+//     backgroundColor: Card.BACKGROUND_COLOR,
+//     borderRadius: Card.BORDER_RADIUS,
+//     boxShadow: Elevation.CARD_SHADOW,
+//     // display was 'inline-block' which causes layout issues (TA)
+//     display: 'block',
+//     maxWidth: '100%',
+//     position: 'relative',
+//     transition: `box-shadow 2000ms ${DECELERATE}`,
+//     width: ElementWidth.REFLECTION_CARD
+//   }
+// )
+
+export const ReflectionCardRoot = styled('div')({
+  backgroundColor: Card.BACKGROUND_COLOR,
+  borderRadius: Card.BORDER_RADIUS,
+  boxShadow: Elevation.CARD_SHADOW,
+  // display was 'inline-block' which causes layout issues (TA)
+  display: 'block',
+  maxWidth: '100%',
+  position: 'relative',
+  transition: `box-shadow 2000ms ${DECELERATE}`,
+  width: ElementWidth.REFLECTION_CARD
+})
 
 const getReadOnly = (reflection: {id: string, isViewerCreator: boolean | null, isEditing: boolean | null}, phaseType: NewMeetingPhaseTypeEnum, stackCount: number | undefined) => {
   const {isViewerCreator, isEditing, id} = reflection

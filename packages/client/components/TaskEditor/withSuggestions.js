@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import getWordAt from './getWordAt'
 import resolvers from './resolvers'
-import ui, {
+import {
   DEFAULT_MENU_HEIGHT,
   DEFAULT_MENU_WIDTH,
   HUMAN_ADDICTION_THRESH,
@@ -225,7 +225,7 @@ const withSuggestions = (ComposedComponent) => {
               teamId
             }}
             targetAnchor={targetAnchor}
-            marginFromOrigin={ui.draftModalMargin}
+            marginFromOrigin={32}
             originCoords={coords}
           />
         )
@@ -246,7 +246,7 @@ const withSuggestions = (ComposedComponent) => {
             removeModal: this.removeModal
           }}
           targetAnchor={targetAnchor}
-          marginFromOrigin={ui.draftModalMargin}
+          marginFromOrigin={32}
           originCoords={coords}
         />
       )
