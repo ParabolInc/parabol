@@ -23,6 +23,7 @@ import SuggestedActionTryTheDemo from '../../database/types/SuggestedActionTryTh
 import SuggestedActionCreateNewTeam from '../../database/types/SuggestedActionCreateNewTeam'
 import SuggestedActionInviteYourTeam from '../../database/types/SuggestedActionInviteYourTeam'
 import TimelineEventJoinedParabol from '../../database/types/TimelineEventJoinedParabol'
+import User from '../../database/types/User'
 
 const handleSegment = async (userId, previousId) => {
   if (previousId) {
@@ -67,30 +68,28 @@ const login = {
     }
     const viewerId = getUserId(authToken)
 
+    const existingUser = await dataLoader.get('users').load(viewerId) as User | null
+
     // RESOLUTION
-    if (authToken.tms) {
-      const user = await dataLoader.get('users').load(viewerId)
+    if (existingUser){
       // LOGIN
-      if (user) {
-        /*
-         * The segment docs are inconsistent, and warn against sending
-         * identify() on each log in. However, calling identify is the
-         * only way to synchronize changing user properties with certain
-         * services (such as Hubspot). After checking with support
-         * and combing the forums, it turns out sending identify()
-         * on each login is just fine.
-         *
-         * See also: https://community.segment.com/t/631m9s/identify-per-signup-or-signin
-         * Note: no longer awaiting the identify call since it's getting pretty expensive
-         */
-        sendSegmentIdentify(user.id).catch()
-        return {
-          userId: viewerId,
-          // create a brand new auth token using the tms in our DB, not auth0s
-          authToken: encodeAuthToken(new AuthToken({...authToken, tms: user.tms}))
-        }
+      /*
+       * The segment docs are inconsistent, and warn against sending
+       * identify() on each log in. However, calling identify is the
+       * only way to synchronize changing user properties with certain
+       * services (such as Hubspot). After checking with support
+       * and combing the forums, it turns out sending identify()
+       * on each login is just fine.
+       *
+       * See also: https://community.segment.com/t/631m9s/identify-per-signup-or-signin
+       * Note: no longer awaiting the identify call since it's getting pretty expensive
+       */
+      sendSegmentIdentify(viewerId).catch()
+      return {
+        userId: viewerId,
+        // create a brand new auth token using the tms in our DB, not auth0s
+        authToken: encodeAuthToken(new AuthToken({...authToken, tms: existingUser.tms}))
       }
-      // should never reach this line in production. that means our DB !== auth0 DB
     }
 
     let userInfo
@@ -103,13 +102,13 @@ const login = {
     }
 
     // make sure we don't create 2 users with the same email!
-    const existingUser = await r
+    const existingUserWithSameEmail = await r
       .table('User')
       .getAll(userInfo.email, {index: 'email'})
       .nth(0)
       .default(null)
-    if (existingUser) {
-      return standardError(new Error(`user_exists_${existingUser.identities[0].provider}`))
+    if (existingUserWithSameEmail) {
+      return standardError(new Error(`user_exists_${existingUserWithSameEmail.identities[0].provider}`))
     }
     const preferredName =
       userInfo.nickname.length === 1 ? userInfo.nickname.repeat(2) : userInfo.nickname

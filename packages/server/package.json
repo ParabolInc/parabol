@@ -33,9 +33,7 @@
     "db:migrate-down-all": "node database/migrate.babel.js down --all",
     "db:migrate-create": "cd database && migrate-rethinkdb create",
     "debug:stripe": "node billing/debug.babel.js",
-    "postcommit": "git update-index --again",
     "postdeploy": "node utils/postDeploy.babel.js",
-    "precommit": "lint-staged",
     "lint": "eslint --fix ./**/*.{ts,tsx,js}",
     "test": "jest --bail --coverage --ci --runInBand && codecov",
     "test:dev": "jest --runInBand --watch",
@@ -179,6 +177,12 @@
     "string-similarity": "^3.0.0",
     "stripe": "^4.24.0",
     "ts-node": "^8.3.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "post-commit": "git update-index --again"
+    }
   },
   "lint-staged": {
     "*.{js,ts,tsx}": [
