@@ -221,7 +221,6 @@ const PhaseItemColumn = (props: Props) => {
           </HeaderAndEditor>
           <ReflectionStack
             reflectionStack={reflectionStack}
-            readOnly={isComplete}
             idx={idx}
             phaseEditorRef={phaseEditorRef}
             phaseRef={phaseRef}

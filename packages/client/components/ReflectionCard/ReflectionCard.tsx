@@ -5,7 +5,6 @@ import styled from '@emotion/styled'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
-import ReflectionFooter from '../ReflectionFooter'
 import StyledError from '../StyledError'
 import editorDecorators from '../TaskEditor/decorators'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
@@ -20,19 +19,16 @@ import {ElementWidth} from '../../types/constEnums'
 import useRefState from '../../hooks/useRefState'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
+import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
+import {ReflectionCard_meeting} from '__generated__/ReflectionCard_meeting.graphql'
+import isAndroid from '../../utils/draftjs/isAndroid'
+import convertToTaskContent from '../../utils/draftjs/convertToTaskContent'
 
 interface Props {
   isClipped?: boolean
-  className?: string
-  handleChange?: () => void
   reflection: ReflectionCard_reflection
-  meetingId?: string
-  readOnly?: boolean
-  setReadOnly?: (readOnly: boolean) => void
-  shadow?: string
-  showOriginFooter?: boolean
-  userSelect?: 'text' | 'none'
-  innerRef?: (c: HTMLDivElement | null) => void
+  meeting?: ReflectionCard_meeting
+  stackCount?: number
 }
 
 interface ReflectionCardRootProps {
@@ -54,15 +50,24 @@ export const ReflectionCardRoot = styled('div')<ReflectionCardRootProps>(
   }
 )
 
+const getReadOnly = (reflection: {id: string, isViewerCreator: boolean | null, isEditing: boolean | null}, phaseType: NewMeetingPhaseTypeEnum, stackCount: number | undefined) => {
+  const {isViewerCreator, isEditing, id} = reflection
+  if (!isViewerCreator || isTempId(id)) return true
+  if (phaseType === NewMeetingPhaseTypeEnum.reflect) return (stackCount && stackCount > 1)
+  if (phaseType === NewMeetingPhaseTypeEnum.group && isEditing) return false
+  return true
+}
+
 const makeEditorState = (content, getEditorState) => {
   const contentState = convertFromRaw(JSON.parse(content))
   return EditorState.createWithContent(contentState, editorDecorators(getEditorState))
 }
 
 const ReflectionCard = (props: Props) => {
-  const {meetingId, reflection, className, innerRef, isClipped, handleChange, userSelect, showOriginFooter} = props
-  const {id: reflectionId, content, retroPhaseItemId, phaseItem, isViewerCreator, isEditing} = reflection
-  const {question} = phaseItem
+  const {meeting, reflection, isClipped, stackCount} = props
+  const phaseType = meeting ? meeting.localPhase.phaseType : null
+  const meetingId = meeting ? meeting.id : null
+  const {id: reflectionId, content, retroPhaseItemId, isViewerCreator} = reflection
   const atmosphere = useAtmosphere()
   const {onCompleted, submitMutation, error, onError} = useMutationProps()
   const editorRef = useRef<HTMLTextAreaElement>(null)
@@ -89,6 +94,36 @@ const ReflectionCard = (props: Props) => {
   }, [])
 
   const handleContentUpdate = () => {
+    if (isAndroid) {
+      const editorEl = editorRef.current
+      if (!editorEl || editorEl.type !== 'textarea') return
+      const {value} = editorEl
+      if (!value) {
+        RemoveReflectionMutation(
+          atmosphere,
+          {reflectionId},
+          {meetingId: meetingId!},
+          onError,
+          onCompleted
+        )
+      } else {
+        const initialContentState = editorStateRef.current.getCurrentContent()
+        const initialText = initialContentState.getPlainText()
+        if (initialText === value) return
+        submitMutation()
+        UpdateReflectionContentMutation(
+          atmosphere,
+          {content: convertToTaskContent(value), reflectionId},
+          {onError, onCompleted}
+        )
+        commitLocalUpdate(atmosphere, (store) => {
+          const reflection = store.get(reflectionId)
+          if (!reflection) return
+          reflection.setValue(false, 'isEditing')
+        })
+      }
+      return
+    }
     const contentState = editorStateRef.current.getCurrentContent()
     if (contentState.hasText()) {
       const nextContent = JSON.stringify(convertToRaw(contentState))
@@ -99,7 +134,13 @@ const ReflectionCard = (props: Props) => {
         {content: nextContent, reflectionId},
         {onError, onCompleted}
       )
+      commitLocalUpdate(atmosphere, (store) => {
+        const reflection = store.get(reflectionId)
+        if (!reflection) return
+        reflection.setValue(false, 'isEditing')
+      })
     } else {
+      submitMutation()
       RemoveReflectionMutation(
         atmosphere,
         {reflectionId},
@@ -122,9 +163,18 @@ const ReflectionCard = (props: Props) => {
     return 'handled'
   }
 
-  const readOnly = !isViewerCreator || !isEditing || isTempId(reflectionId)
+  const handleKeyDownFallback = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key !== 'Enter' || e.shiftKey) return
+    e.preventDefault()
+    const {value} = e.currentTarget
+    if (!value) return
+    editorRef.current && editorRef.current.blur()
+  }
+
+  const readOnly = getReadOnly(reflection, phaseType as NewMeetingPhaseTypeEnum, stackCount)
+  const userSelect = readOnly ? phaseType === NewMeetingPhaseTypeEnum.discuss ? 'text' : 'none' : undefined
   return (
-    <ReflectionCardRoot className={className} ref={innerRef}>
+    <ReflectionCardRoot>
       <ReflectionEditorWrapper
         isClipped={isClipped}
         ariaLabel='Edit this reflection'
@@ -132,15 +182,14 @@ const ReflectionCard = (props: Props) => {
         editorState={editorStateRef.current}
         onBlur={handleEditorBlur}
         onFocus={handleEditorFocus}
-        handleChange={handleChange}
         handleReturn={handleReturn}
+        handleKeyDownFallback={handleKeyDownFallback}
         placeholder={isViewerCreator ? 'My reflection… (press enter to add)' : '*New Reflection*'}
         readOnly={readOnly}
         setEditorState={setEditorState}
         userSelect={userSelect}
       />
       {error && <StyledError>{error.message}</StyledError>}
-      {showOriginFooter && <ReflectionFooter>{question}</ReflectionFooter>}
       {!readOnly && meetingId && (
         <ReflectionCardDeleteButton meetingId={meetingId} reflectionId={reflectionId} />
       )}
@@ -157,10 +206,17 @@ export default createFragmentContainer(ReflectionCard, {
       reflectionGroupId
       retroPhaseItemId
       content
-      phaseItem {
-        question
-      }
       sortOrder
     }
-  `
+  `,
+  meeting: graphql`
+    fragment ReflectionCard_meeting on RetrospectiveMeeting {
+      id
+      localPhase {
+        phaseType
+      }
+      phases {
+        phaseType
+      }
+    }`
 })

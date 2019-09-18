@@ -96,7 +96,10 @@ const GroupingKanbanColumn = (props: Props) => {
       </ColumnHeader>
       <ColumnBody data-dropzone={promptId}>
         {reflectionGroups
-          .filter((group) => group.reflections.length > 0)
+          .filter((group) => {
+            // group may be undefined because relay could GC before useMemo in the Kanban recomputes >:-(
+            return group && group.reflections.length > 0
+          })
           .map((reflectionGroup) => {
           return <ReflectionGroup key={reflectionGroup.id} meeting={meeting} phaseRef={phaseRef} reflectionGroup={reflectionGroup} swipeColumn={swipeColumn}/>
         })}

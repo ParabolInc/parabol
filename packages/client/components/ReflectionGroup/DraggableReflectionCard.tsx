@@ -45,7 +45,6 @@ export type ReflectionDragState = typeof DRAG_STATE
 interface Props {
   isDraggable?: boolean
   meeting: DraggableReflectionCard_meeting
-  readOnly?: boolean
   reflection: DraggableReflectionCard_reflection
   staticIdx: number
   staticReflections: DraggableReflectionCard_staticReflections
@@ -61,20 +60,20 @@ export interface TargetBBox {
 }
 
 const DraggableReflectionCard = (props: Props) => {
-  const {reflection, staticIdx, staticReflections, meeting, isDraggable, readOnly, swipeColumn} = props
-  const {id: meetingId, teamId, localStage} = meeting
+  const {reflection, staticIdx, staticReflections, meeting, isDraggable, swipeColumn} = props
+  const {teamId, localStage} = meeting
   const {isComplete, phaseType} = localStage
+  const {isDropping, isEditing} = reflection
   const dragRef = useRef({...DRAG_STATE})
   const {current: drag} = dragRef
   const staticReflectionCount = staticReflections.length
   const {onMouseDown} = useDraggableReflectionCard(reflection, drag, staticIdx, teamId, staticReflectionCount, swipeColumn)
   const isDragPhase = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete
-  const canDrag = isDraggable && isDragPhase
+  const canDrag = isDraggable && isDragPhase && !isEditing && !isDropping
   const handleDrag = canDrag ? onMouseDown : undefined
   return (
     <DragWrapper ref={(c) => drag.ref = c} onMouseDown={handleDrag} onTouchStart={handleDrag} isDraggable={canDrag}>
-      <ReflectionCard userSelect='none' reflection={reflection}
-                      isClipped={staticIdx !== 0} meetingId={meetingId} readOnly={readOnly}/>
+      <ReflectionCard reflection={reflection} isClipped={staticIdx !== 0} meeting={meeting} />
     </DragWrapper>
   )
 }
@@ -106,6 +105,7 @@ export default createFragmentContainer(DraggableReflectionCard,
     `,
     meeting: graphql`
       fragment DraggableReflectionCard_meeting on RetrospectiveMeeting {
+        ...ReflectionCard_meeting
         id
         teamId
         localStage {

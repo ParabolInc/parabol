@@ -6,7 +6,7 @@ import {PALETTE} from '../../styles/paletteV2'
 import {BBox} from '../../types/animations'
 import {RefCallbackInstance} from '../../types/generics'
 import {ElementWidth, ZIndex} from '../../types/constEnums'
-import DraggableReflectionCard from '../ReflectionGroup/DraggableReflectionCard'
+import ExpandedReflection from './ExpandedReflection'
 
 const PortalBlock = styled('div')({
   height: '100%',
@@ -66,22 +66,18 @@ interface Props {
   closePortal: () => void
   header?: ReactNode
   phaseRef: React.RefObject<HTMLDivElement>
-  readOnly?: boolean
   staticReflections: readonly any[]
   reflections: readonly any[]
   meeting: any
   scrollRef: Ref<HTMLDivElement>
   bgRef: Ref<HTMLDivElement>
   setItemsRef: (idx: number) => (c: RefCallbackInstance) => void
-  isDraggable?: boolean
+  reflectionGroupId?: string
 }
 
-const ModalReflectionWrapper = styled('div')({
-  padding: 8
-})
 
 const ExpandedReflectionStack = (props: Props) => {
-  const {header, isDraggable, staticReflections, readOnly, phaseRef, scrollRef, setItemsRef, bgRef, closePortal, reflections, meeting} = props
+  const {header, staticReflections, phaseRef, scrollRef, setItemsRef, bgRef, closePortal, reflections, reflectionGroupId, meeting} = props
   const phaseBBox = useMemo(() => {
     return getBBox(phaseRef.current)
   }, [phaseRef.current])
@@ -93,31 +89,11 @@ const ExpandedReflectionStack = (props: Props) => {
     <PortalBlock>
       <PhaseArea phaseBBox={phaseBBox!}>
         <Scrim onClick={closePortal} />
-        <ModalArea>
+        <ModalArea data-droppable={reflectionGroupId}>
           {header}
           <ScrollBlock ref={scrollRef} onClick={closeOnEdge}>
             {reflections.map((reflection, idx) => {
-              const staticIdx = reflections ? staticReflections.indexOf(reflection) : idx
-              if (staticIdx === -1) {
-                return null
-              }
-              return (
-                <ModalReflectionWrapper
-                  key={reflection.id}
-                  style={{zIndex: staticReflections.length - staticIdx - 1}}
-                  id={reflection.id}
-                  ref={setItemsRef(idx)}
-                >
-                  <DraggableReflectionCard
-                    isDraggable
-                    meeting={meeting}
-                    reflection={reflection}
-                    staticIdx={staticIdx}
-                    staticReflections={staticReflections}
-                    readOnly={readOnly}
-                  />
-                </ModalReflectionWrapper>
-              )
+              return <ExpandedReflection key={reflection.id} reflection={reflection} meeting={meeting} idx={idx} setItemsRef={setItemsRef} staticReflections={staticReflections}/>
             })}
           </ScrollBlock>
           <BackgroundBlock ref={bgRef} />

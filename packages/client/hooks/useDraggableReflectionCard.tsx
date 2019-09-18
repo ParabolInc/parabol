@@ -1,5 +1,5 @@
 import React, {useContext, useEffect} from 'react'
-import {PortalContext} from '../components/AtmosphereProvider/PortalProvider'
+import {PortalContext, SetPortal} from '../components/AtmosphereProvider/PortalProvider'
 import RemoteReflection from '../components/ReflectionGroup/RemoteReflection'
 import useAtmosphere from './useAtmosphere'
 import updateClonePosition, {getDroppingStyles} from '../utils/retroGroup/updateClonePosition'
@@ -71,9 +71,10 @@ const useLocalDrag = (reflection: DraggableReflectionCard_reflection, drag: Refl
     if (!isViewerDragging && !isDropping && drag.clone) {
       document.body.removeChild(drag.clone)
       drag.clone = null
-      document.removeEventListener('touchmove', onMouseMove)
+      const el = drag.ref!
+      el.removeEventListener('touchmove', onMouseMove)
+      el.removeEventListener('touchend', onMouseUp)
       document.removeEventListener('mousemove', onMouseMove)
-      document.removeEventListener('touchend', onMouseUp)
       document.removeEventListener('mouseup', onMouseUp)
       drag.isDrag = false
       atmosphere.eventEmitter.emit('addSnackbar', {
@@ -83,6 +84,15 @@ const useLocalDrag = (reflection: DraggableReflectionCard_reflection, drag: Refl
       })
     }
   }, [isViewerDragging, isDropping])
+}
+
+const removeClone = (reflectionId: string, setPortal: SetPortal) => {
+  setPortal(`clone-${reflectionId}`, null)
+  // shouldn't always be necessary, but do it to prevent sticky cards
+  const el = document.getElementById(`clone-${reflectionId}`)
+  if (el) {
+    el.parentElement!.removeChild(el)
+  }
 }
 
 const useDroppingDrag = (drag: ReflectionDragState, reflection: DraggableReflectionCard_reflection) => {
@@ -100,12 +110,7 @@ const useDroppingDrag = (drag: ReflectionDragState, reflection: DraggableReflect
             drag.clone = null
           } else {
             //remote
-            setPortal(`clone-${reflectionId}`, null)
-            // shouldn't be necessary, but do it to prevent sticky cards
-            const el = document.getElementById(`clone-${reflectionId}`)
-            if (el) {
-              el.parentElement!.removeChild(el)
-            }
+            removeClone(reflectionId, setPortal)
           }
           commitLocalUpdate(atmosphere, (store) => {
             store.get(reflectionId)!
@@ -127,8 +132,8 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
   const {id: reflectionId, reflectionGroupId, isDropping, isEditing} = reflection
 
   const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
-    if (isNativeTouch(e)) {
-      e.target!.removeEventListener('touchmove', onMouseMove)
+    if (isNativeTouch(e) && drag.ref) {
+      drag.ref.removeEventListener('touchmove', onMouseMove)
     } else {
       document.removeEventListener('mousemove', onMouseMove)
     }
@@ -174,6 +179,8 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
   }
 
   const onMouseMove = useEventCallback((e: MouseEvent | TouchEvent) => {
+    // required to prevent address bar scrolling & other strange browser things on mobile view
+    e.preventDefault()
     const isTouch = isNativeTouch(e)
     const {clientX, clientY} = isTouch ? (e as TouchEvent).touches[0] : e as MouseEvent
     const wasDrag = drag.isDrag
@@ -218,10 +225,10 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
   const onMouseDown = (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
     if (isDropping || staticIdx === -1 || isEditing) return
     const isTouch = isReactTouch(e)
-    if (isTouch) {
+    if (isTouch && drag.ref) {
       // https://stackoverflow.com/questions/33298828/touch-move-event-dont-fire-after-touch-start-target-is-removed
-      e.target.addEventListener('touchmove', onMouseMove)
-      e.target.addEventListener('touchend', onMouseUp)
+      drag.ref.addEventListener('touchmove', onMouseMove)
+      drag.ref.addEventListener('touchend', onMouseUp)
     } else {
       document.addEventListener('mousemove', onMouseMove)
       document.addEventListener('mouseup', onMouseUp)
