@@ -1,6 +1,6 @@
 import {ReflectionGroup_meeting} from '../../__generated__/ReflectionGroup_meeting.graphql'
 import {ReflectionGroup_reflectionGroup} from '../../__generated__/ReflectionGroup_reflectionGroup.graphql'
-import React, {RefObject, useMemo, useRef, useState} from 'react'
+import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import styled from '@emotion/styled'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
@@ -13,6 +13,7 @@ import useExpandedReflections from '../../hooks/useExpandedReflections'
 import {GROUP} from '../../utils/constants'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {SwipeColumn} from '../GroupingKanban'
+import useEventCallback from '../../hooks/useEventCallback'
 
 const CardStack = styled('div')({
   position: 'relative'
@@ -82,6 +83,13 @@ const ReflectionGroup = (props: Props) => {
     })
   }
 
+  const watchForClick = useEventCallback((e) => {
+    const isClickOnGroup = e.composedPath().find((el) => el === groupRef.current)
+    if (!isClickOnGroup) {
+      document.removeEventListener('click', watchForClick)
+      setIsEditing(false)
+    }
+  })
   const onClick = () => {
     if (isEditing) return
     const wasDrag = staticReflections.some((reflection) => reflection.isDropping)
@@ -89,18 +97,17 @@ const ReflectionGroup = (props: Props) => {
     if (reflections.length === 1) {
       if (!isDragPhase) return
       setIsEditing(true)
-      const watchForClick = (e) => {
-        const isClickOnGroup = e.composedPath().find((el) => el === groupRef.current)
-        if (!isClickOnGroup) {
-          document.removeEventListener('click', watchForClick)
-          setIsEditing(false)
-        }
-      }
       document.addEventListener('click', watchForClick)
     } else {
       expand()
     }
   }
+
+  useEffect(() => {
+    return () => {
+      document.removeEventListener('click', watchForClick)
+    }
+  }, [])
 
   const showHeader = phaseType !== GROUP || titleIsUserDefined || reflections.length > 1 || isEditing
   return (

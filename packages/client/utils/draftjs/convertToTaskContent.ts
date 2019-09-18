@@ -1,13 +1,13 @@
 import {ContentState, convertToRaw} from 'draft-js'
 import entitizeText from './entitizeText'
 
-const removeSpaces = (str) =>
+const removeSpaces = (str: string) =>
   str
     .split(/\s/)
     .filter((s) => s.length)
     .join(' ')
 
-const convertToProjetContent = (spacedText) => {
+const convertToTaskContent = (spacedText: string) => {
   const text = removeSpaces(spacedText)
   const contentState = ContentState.createFromText(text)
   const selectionState = contentState.getSelectionAfter().merge({
@@ -22,4 +22,4 @@ const convertToProjetContent = (spacedText) => {
   return JSON.stringify(raw)
 }
 
-export default convertToProjetContent
+export default convertToTaskContent

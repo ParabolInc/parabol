@@ -21,6 +21,8 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
 import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
 import {ReflectionCard_meeting} from '__generated__/ReflectionCard_meeting.graphql'
+import isAndroid from '../../utils/draftjs/isAndroid'
+import convertToTaskContent from '../../utils/draftjs/convertToTaskContent'
 
 interface Props {
   isClipped?: boolean
@@ -92,6 +94,36 @@ const ReflectionCard = (props: Props) => {
   }, [])
 
   const handleContentUpdate = () => {
+    if (isAndroid) {
+      const editorEl = editorRef.current
+      if (!editorEl || editorEl.type !== 'textarea') return
+      const {value} = editorEl
+      if (!value) {
+        RemoveReflectionMutation(
+          atmosphere,
+          {reflectionId},
+          {meetingId: meetingId!},
+          onError,
+          onCompleted
+        )
+      } else {
+        const initialContentState = editorStateRef.current.getCurrentContent()
+        const initialText = initialContentState.getPlainText()
+        if (initialText === value) return
+        submitMutation()
+        UpdateReflectionContentMutation(
+          atmosphere,
+          {content: convertToTaskContent(value), reflectionId},
+          {onError, onCompleted}
+        )
+        commitLocalUpdate(atmosphere, (store) => {
+          const reflection = store.get(reflectionId)
+          if (!reflection) return
+          reflection.setValue(false, 'isEditing')
+        })
+      }
+      return
+    }
     const contentState = editorStateRef.current.getCurrentContent()
     if (contentState.hasText()) {
       const nextContent = JSON.stringify(convertToRaw(contentState))
@@ -102,7 +134,13 @@ const ReflectionCard = (props: Props) => {
         {content: nextContent, reflectionId},
         {onError, onCompleted}
       )
+      commitLocalUpdate(atmosphere, (store) => {
+        const reflection = store.get(reflectionId)
+        if (!reflection) return
+        reflection.setValue(false, 'isEditing')
+      })
     } else {
+      submitMutation()
       RemoveReflectionMutation(
         atmosphere,
         {reflectionId},
@@ -125,6 +163,14 @@ const ReflectionCard = (props: Props) => {
     return 'handled'
   }
 
+  const handleKeyDownFallback = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key !== 'Enter' || e.shiftKey) return
+    e.preventDefault()
+    const {value} = e.currentTarget
+    if (!value) return
+    editorRef.current && editorRef.current.blur()
+  }
+
   const readOnly = getReadOnly(reflection, phaseType as NewMeetingPhaseTypeEnum, stackCount)
   const userSelect = readOnly ? phaseType === NewMeetingPhaseTypeEnum.discuss ? 'text' : 'none' : undefined
   return (
@@ -137,6 +183,7 @@ const ReflectionCard = (props: Props) => {
         onBlur={handleEditorBlur}
         onFocus={handleEditorFocus}
         handleReturn={handleReturn}
+        handleKeyDownFallback={handleKeyDownFallback}
         placeholder={isViewerCreator ? 'My reflection… (press enter to add)' : '*New Reflection*'}
         readOnly={readOnly}
         setEditorState={setEditorState}

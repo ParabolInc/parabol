@@ -1,5 +1,5 @@
 import React, {useContext, useEffect} from 'react'
-import {PortalContext} from '../components/AtmosphereProvider/PortalProvider'
+import {PortalContext, SetPortal} from '../components/AtmosphereProvider/PortalProvider'
 import RemoteReflection from '../components/ReflectionGroup/RemoteReflection'
 import useAtmosphere from './useAtmosphere'
 import updateClonePosition, {getDroppingStyles} from '../utils/retroGroup/updateClonePosition'
@@ -86,6 +86,15 @@ const useLocalDrag = (reflection: DraggableReflectionCard_reflection, drag: Refl
   }, [isViewerDragging, isDropping])
 }
 
+const removeClone = (reflectionId: string, setPortal: SetPortal) => {
+  setPortal(`clone-${reflectionId}`, null)
+  // shouldn't always be necessary, but do it to prevent sticky cards
+  const el = document.getElementById(`clone-${reflectionId}`)
+  if (el) {
+    el.parentElement!.removeChild(el)
+  }
+}
+
 const useDroppingDrag = (drag: ReflectionDragState, reflection: DraggableReflectionCard_reflection) => {
   const setPortal = useContext(PortalContext)
   const {remoteDrag, id: reflectionId, isDropping} = reflection
@@ -101,12 +110,7 @@ const useDroppingDrag = (drag: ReflectionDragState, reflection: DraggableReflect
             drag.clone = null
           } else {
             //remote
-            setPortal(`clone-${reflectionId}`, null)
-            // shouldn't be necessary, but do it to prevent sticky cards
-            const el = document.getElementById(`clone-${reflectionId}`)
-            if (el) {
-              el.parentElement!.removeChild(el)
-            }
+            removeClone(reflectionId, setPortal)
           }
           commitLocalUpdate(atmosphere, (store) => {
             store.get(reflectionId)!
