@@ -41,7 +41,7 @@ const TeamCallsToActionMenu = (props: Props) => {
       <MenuItem
         label={
           <MenuItemLabel>
-            <MenuItemIcon icon={'change_history'} />
+            <MenuItemIcon>change_history</MenuItemIcon>
             {'Start Action Meeting'}
           </MenuItemLabel>
         }
@@ -50,7 +50,7 @@ const TeamCallsToActionMenu = (props: Props) => {
       <MenuItem
         label={
           <MenuItemLabel>
-            <MenuItemIcon icon={'history'} />
+            <MenuItemIcon>history</MenuItemIcon>
             {'Start Retro Meeting'}
           </MenuItemLabel>
         }

@@ -1,3 +1,7 @@
+export const enum AppBar {
+  HEIGHT = 56
+}
+
 // https://github.com/material-components/material-components-web/blob/4844330e7836d9dc97798b47594ff0dbaac51227/packages/mdc-animation/_variables.scss
 export const enum BezierCurve {
   DECELERATE = 'cubic-bezier(0, 0, .2, 1)',
@@ -13,7 +17,7 @@ export const enum BezierCurve {
 }
 
 export const enum Breakpoint {
-  DASHBOARD_FULL = 1600,
+  DASHBOARD_WIDE = 1600,
   INVOICE = 512,
   INVOICE_LABEL = 384,
   SIDEBAR_LEFT = 800,
@@ -60,6 +64,15 @@ export const enum Duration {
   TOOLTIP_CLOSE = 75
 }
 
+export const enum Filter {
+  BENEATH_DIALOG = 'blur(1.5px)'
+}
+
+export const enum Gutters {
+  DASH_GUTTER_SMALL = '20px',
+  DASH_GUTTER_LARGE = '32px'
+}
+
 export const enum ElementWidth {
   END_MEETING_BUTTON = 90,
   REFLECTION_CARD = 296,
@@ -89,6 +102,7 @@ export const enum Layout {
   TYPE_GRID = 4, // .5x
   LAYOUT_GRID = 8, // 1x
   ROW_GUTTER = 16, // 2x
+  TASK_COLUMNS_MAX_WIDTH = '1334px', // (4 x 296 card max-width) + (5 x 30 - gutters around cols)
 }
 
 export const enum LoaderSize {

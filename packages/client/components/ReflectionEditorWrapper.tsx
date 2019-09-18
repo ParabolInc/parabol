@@ -3,8 +3,8 @@ import React, {PureComponent, RefObject, Suspense} from 'react'
 import './TaskEditor/Draft.css'
 import withKeyboardShortcuts from './TaskEditor/withKeyboardShortcuts'
 import withMarkdown from './TaskEditor/withMarkdown'
-import appTheme from '../styles/theme/appTheme'
 import {PALETTE} from '../styles/paletteV2'
+import {FONT_FAMILY} from '../styles/typographyV2'
 import {textTags} from '../utils/constants'
 import entitizeText from '../utils/draftjs/entitizeText'
 import styled from '@emotion/styled'
@@ -49,7 +49,7 @@ const editorBlockquote = {
 const codeBlock = {
   backgroundColor: PALETTE.BACKGROUND_PRIMARY_10A,
   color: PALETTE.TEXT_RED,
-  fontFamily: appTheme.typography.monospace,
+  fontFamily: FONT_FAMILY.MONOSPACE,
   fontSize: 13,
   lineHeight: '24px',
   margin: '0',

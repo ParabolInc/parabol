@@ -8,8 +8,8 @@ import IconLabel from '../../../../components/IconLabel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import ui from '../../../../styles/ui'
 import lazyPreload from '../../../../utils/lazyPreload'
+import {Breakpoint, Gutters} from '../../../../types/constEnums'
 
 interface Props {
   teamId: string
@@ -18,12 +18,12 @@ interface Props {
 const ButtonBlock = styled('div')({
   display: 'flex',
   justifyContent: 'flex-end',
-  minWidth: '14rem',
-  paddingLeft: ui.dashGutterSmall,
+  minWidth: 224,
+  paddingLeft: Gutters.DASH_GUTTER_SMALL,
 
-  [ui.dashBreakpoint]: {
-    minWidth: '13rem',
-    paddingLeft: ui.dashGutterLarge
+  [`@media (min-width: ${Breakpoint.DASHBOARD_WIDE})`]: {
+    minWidth: 208,
+    paddingLeft: Gutters.DASH_GUTTER_LARGE
   }
 })
 

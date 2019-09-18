@@ -1,7 +1,6 @@
 import React from 'react'
 import LinkButton from '../../../../components/LinkButton'
 import IconLabel from '../../../../components/IconLabel'
-import Type from '../../../../components/Type/Type'
 import ArchiveTeamForm from './ArchiveTeamForm'
 import styled from '@emotion/styled'
 import {PALETTE} from '../../../../styles/paletteV2'

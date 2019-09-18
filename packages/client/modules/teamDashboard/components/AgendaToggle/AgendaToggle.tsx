@@ -1,9 +1,9 @@
-import PropTypes from 'prop-types'
 import React from 'react'
-import withAtmosphere from '../../../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import ToggleAgendaListMutation from '../../../../mutations/ToggleAgendaListMutation'
-import ui from '../../../../styles/ui'
-import withMutationProps from '../../../../utils/relay/withMutationProps'
+import {Breakpoint, Gutters} from '../../../../types/constEnums'
+import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
+import {CompletedHandler, ErrorHandler} from '../../../../types/relayMutations'
 import styled from '@emotion/styled'
 import {AGENDA_ITEM_LABEL} from '../../../../utils/constants'
 import OutlinedButton from '../../../../components/OutlinedButton'
@@ -13,15 +13,22 @@ import IconLabel from '../../../../components/IconLabel'
 const RootBlock = styled('div')({
   alignItems: 'flex-end',
   display: 'flex',
-  padding: `1rem ${ui.dashGutterSmall}`,
+  padding: `16px ${Gutters.DASH_GUTTER_SMALL}`,
   width: '100%',
 
-  [ui.dashBreakpoint]: {
-    padding: `1rem ${ui.dashGutterLarge}`
+  [`@media (min-width: ${Breakpoint.DASHBOARD_WIDE})`]: {
+    padding: `16px ${Gutters.DASH_GUTTER_SMALL}`
   }
 })
 
-const AgendaToggle = (props) => {
+interface Props extends WithMutationProps, WithAtmosphereProps {
+  hideAgenda?: boolean
+  onCompleted: CompletedHandler
+  onError: ErrorHandler
+  teamId: string
+}
+
+const AgendaToggle = (props: Props) => {
   const {atmosphere, hideAgenda, submitMutation, submitting, onError, onCompleted, teamId} = props
   const toggleHide = () => {
     if (!submitting) {
@@ -43,16 +50,6 @@ const AgendaToggle = (props) => {
       </ToggleButton>
     </RootBlock>
   )
-}
-
-AgendaToggle.propTypes = {
-  atmosphere: PropTypes.object.isRequired,
-  hideAgenda: PropTypes.bool,
-  onCompleted: PropTypes.func.isRequired,
-  onError: PropTypes.func.isRequired,
-  submitMutation: PropTypes.func.isRequired,
-  submitting: PropTypes.bool,
-  teamId: PropTypes.string
 }
 
 export default withMutationProps(withAtmosphere(AgendaToggle))

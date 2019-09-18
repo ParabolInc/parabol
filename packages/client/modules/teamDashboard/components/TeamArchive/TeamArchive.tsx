@@ -36,7 +36,7 @@ const Root = styled('div')({
 const Header = styled('div')({
   padding: `0 0 0 20px`,
 
-  [`@media (min-width: ${Breakpoint.DASHBOARD_FULL})`]: {
+  [`@media (min-width: ${Breakpoint.DASHBOARD_WIDE})`]: {
     paddingLeft: 32
   }
 })
@@ -55,7 +55,7 @@ const Body = styled('div')({
   paddingLeft: '12',
   position: 'relative',
 
-  [`@media (min-width: ${Breakpoint.DASHBOARD_FULL})`]: {
+  [`@media (min-width: ${Breakpoint.DASHBOARD_WIDE})`]: {
     paddingLeft: 24
   }
 })
@@ -77,7 +77,7 @@ const EmptyMsg = styled('div')({
   margin: 20,
   padding: 16,
 
-  [`@media (min-width: ${Breakpoint.DASHBOARD_FULL})`]: {
+  [`@media (min-width: ${Breakpoint.DASHBOARD_WIDE})`]: {
     margin: 32
   }
 })

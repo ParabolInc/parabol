@@ -75,7 +75,7 @@ const TemplateItem = styled('li')<{isActive: boolean}>(({isActive}) => ({
 const TemplateHeader = styled('div')({
   alignItems: 'center',
   display: 'flex',
-  margin: '1rem 0',
+  margin: '16px 0',
   paddingLeft: contentPaddingLeft,
   paddingRight: '2rem',
   width: '100%'

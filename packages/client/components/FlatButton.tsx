@@ -1,8 +1,15 @@
 import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
-import ui from '../styles/ui'
 import {PALETTE} from '../styles/paletteV2'
+import {Radius} from '../types/constEnums'
 import BaseButton, {BaseButtonProps} from './BaseButton'
+
+const paletteColors = {
+  warm: PALETTE.TEXT_ORANGE,
+  mid: PALETTE.TEXT_PURPLE,
+  dark: PALETTE.TEXT_MAIN,
+  blue: PALETTE.TEXT_BLUE,
+}
 
 export interface FlatButtonProps extends BaseButtonProps{
   size?: 'small' | 'medium' | 'large'
@@ -10,24 +17,21 @@ export interface FlatButtonProps extends BaseButtonProps{
   disabled?: boolean
   onClick?: (e: React.MouseEvent) => void
   onKeyDown?: (e: React.KeyboardEvent) => void
-  palette?: 'warm' | 'mid' | 'dark' | 'blue'
+  palette?: keyof typeof paletteColors
   style?: object
   waiting?: boolean
 }
 
 const FlatButton = styled(BaseButton)<FlatButtonProps>((props) => {
   const {palette = 'dark', disabled, waiting} = props
-  const backgroundColorOnHover = ui.buttonLightThemes.includes(palette)
-    ? 'rgba(0, 0, 0, .15)'
-    : PALETTE.BACKGROUND_MAIN
   const visuallyDisabled = disabled || waiting
   return {
     backgroundColor: 'transparent',
-    borderRadius: ui.buttonBorderRadius,
-    color: ui.palette[palette],
+    borderRadius: Radius.BUTTON_PILL,
+    color: paletteColors[palette],
     outline: 0,
     ':hover,:focus,:active': {
-      backgroundColor: !visuallyDisabled && backgroundColorOnHover,
+      backgroundColor: !visuallyDisabled ? PALETTE.BACKGROUND_MAIN : undefined,
       boxShadow: 'none'
     }
   }

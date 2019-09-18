@@ -1,6 +1,5 @@
 import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
-import ui from '../styles/ui'
 import Icon from './Icon'
 import {ICON_SIZE} from '../styles/typographyV2'
 
@@ -21,8 +20,8 @@ const Label = styled('div')<Pick<Props, 'iconAfter' | 'iconLarge'>>(({iconAfter,
   }
 })
 
-const StyledIcon = styled(Icon)<Pick<Props, 'iconAfter' | 'iconColor' | 'iconLarge'>>(({iconAfter, iconColor, iconLarge}) => ({
-  color: iconColor ? ui.palette[iconColor] : 'inherit',
+const StyledIcon = styled(Icon)<Pick<Props, 'iconAfter' | 'iconLarge'>>(({iconAfter, iconLarge}) => ({
+  color: 'inherit',
   display: 'block',
   fontSize: iconLarge ? ICON_SIZE.MD24 : ICON_SIZE.MD18,
   order: iconAfter ? 2 : undefined
@@ -31,7 +30,6 @@ const StyledIcon = styled(Icon)<Pick<Props, 'iconAfter' | 'iconColor' | 'iconLar
 interface Props {
   icon: string
   iconAfter?: boolean
-  iconColor?: string
   iconLarge?: boolean
   label?: ReactNode
 }

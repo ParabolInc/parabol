@@ -18,11 +18,9 @@ const TagBlock = styled('div')({
 
 const lookup = {
   [InvoiceStatusEnum.PENDING]: {
-    colorPalette: 'gray' as 'gray',
     label: 'Payment Processing'
   },
   [InvoiceStatusEnum.UPCOMING]: {
-    colorPalette: 'light' as 'light',
     label: 'Current Estimation'
   }
 }
@@ -33,10 +31,10 @@ interface Props {
 const InvoiceTag = (props: Props) => {
   const {status} = props
   if (status !== InvoiceStatusEnum.UPCOMING && status !== InvoiceStatusEnum.PENDING) return null
-  const {colorPalette, label} = lookup[status]
+  const {label} = lookup[status]
   return (
     <TagBlock >
-      <Tag colorPalette={colorPalette} label={label} />
+      <Tag colorPalette='gray' label={label} />
     </TagBlock>
   )
 }

@@ -1,20 +1,21 @@
-import PropTypes from 'prop-types'
-import React, {Component} from 'react'
-import ui from '../../styles/ui'
+import {ContentState} from 'draft-js'
+import React, {Component, ReactNode} from 'react'
+import {PALETTE} from '../../styles/paletteV2'
 
 const baseStyle = {
-  color: ui.colorText // TODO: theme-able?
+  color: PALETTE.TEXT_MAIN
+}
+
+interface Props {
+  children: ReactNode
+  contentState: ContentState
+  entityKey: string
+  offsetkey: string
+  styles: object
 }
 
 const EditorLink = (getEditorState) =>
-  (class InnerEditorLink extends Component {
-    static propTypes = {
-      children: PropTypes.any,
-      contentState: PropTypes.object.isRequired,
-      entityKey: PropTypes.string,
-      offsetkey: PropTypes.string,
-      styles: PropTypes.object
-    }
+  (class InnerEditorLink extends Component<Props> {
 
     state = {hasFocus: false}
 

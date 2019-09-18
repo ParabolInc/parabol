@@ -16,6 +16,10 @@ import {PALETTE} from '../styles/paletteV2'
 import {TierEnum} from '../types/graphql'
 import {TierLabel} from '../types/constEnums'
 
+const UpgradeIcon = styled(MenuItemIcon)({
+  color: PALETTE.TEXT_BLUE
+})
+
 const UpgradeCTA = styled('span')({
   color: PALETTE.TEXT_BLUE,
   fontSize: 15,
@@ -73,7 +77,7 @@ const StandardHubUserMenu = (props: Props) => {
       <MenuItem
         label={
           <MenuItemLabel>
-            <MenuItemIcon icon={'account_box'} />
+            <MenuItemIcon>account_box</MenuItemIcon>
             {'Profile'}
           </MenuItemLabel>
         }
@@ -82,7 +86,7 @@ const StandardHubUserMenu = (props: Props) => {
       <MenuItem
         label={
           <MenuItemLabel>
-            <MenuItemIcon icon={'account_balance'} />
+            <MenuItemIcon>account_balance</MenuItemIcon>
             {'Organizations'}
           </MenuItemLabel>
         }
@@ -91,7 +95,7 @@ const StandardHubUserMenu = (props: Props) => {
       <MenuItem
         label={
           <MenuItemLabel>
-            <MenuItemIcon icon={'notifications'} />
+            <MenuItemIcon>notifications</MenuItemIcon>
             {'Notifications'}
           </MenuItemLabel>
         }
@@ -102,7 +106,7 @@ const StandardHubUserMenu = (props: Props) => {
         <MenuItem
           label={
             <MenuItemLabel>
-              <MenuItemIcon icon={'star'} />
+              <UpgradeIcon>star</UpgradeIcon>
               <UpgradeCTA>
                 {'Upgrade to '}
                 <b>{TierLabel.PRO}</b>
@@ -116,7 +120,7 @@ const StandardHubUserMenu = (props: Props) => {
       <MenuItem
         label={
           <MenuItemLabel>
-            <MenuItemIcon icon={'exit_to_app'} />
+            <MenuItemIcon>exit_to_app</MenuItemIcon>
             {SIGNOUT_LABEL}
           </MenuItemLabel>
         }

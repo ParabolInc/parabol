@@ -13,7 +13,7 @@ const Input = styled('input')({
   color: PALETTE.TEXT_MAIN,
   display: 'block',
   fontFamily: FONT_FAMILY.SANS_SERIF,
-  fontSize: '.875rem',
+  fontSize: 14,
   lineHeight: '1.375rem',
   margin: 0,
   outline: 0,

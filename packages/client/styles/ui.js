@@ -1,19 +1,9 @@
-// -----------------------------------------------------------------------------
-// ui.js
-// -----------------------------------------------------------------------------
-
-import tinycolor from 'tinycolor2'
 import appTheme from './theme/appTheme'
 import makeGradient from './helpers/makeGradient'
-import makePlaceholderStyles from './helpers/makePlaceholderStyles'
 import makeShadowColor from './helpers/makeShadowColor'
 
 // Reusable constants for UI object
 // -----------------------------------------------------------------------------
-
-// Breakpoints
-// #deprecated use breakpoints.js instead of ui.breakpoint object (TA)
-const BREAKPOINT_WIDER = '@media (min-width: 100rem)' // Breakpoints.Dashboard
 
 // Control sizes (used by buttons and fields)
 const CONTROL_SIZE_SMALL = 'small'
@@ -43,9 +33,8 @@ const CONTROL_LARGE_BLOCK_PADDING_VERTICAL = '.75rem'
 
 // Colors
 const {cool, warm, dark, mid, light} = appTheme.palette
-const {purple, purpleLightened, midGray} = appTheme.brand.primary
+const {midGray} = appTheme.brand.primary
 const {blue, red, rose, green, yellow} = appTheme.brand.secondary
-const backgroundColor = appTheme.brand.primary.silver
 
 // Border radius ratio: powers of 2
 // Small border radius for controls (inputs, buttons, etcs.)
@@ -62,7 +51,6 @@ const BUTTON_SIZE_LARGE = CONTROL_SIZE_LARGE
 
 // Color (default for text)
 const COLOR_TEXT = appTheme.brand.primary.darkGray
-const COLOR_TEXT_GRAY = appTheme.brand.primary.midGray
 const COLOR_ERROR = red
 
 // Color palette
@@ -84,8 +72,6 @@ const PALETTE_VALUES = {
 }
 
 // Fields
-const FIELD_BOX_SHADOW = 'none' // 'inset 0 .0625rem .0625rem 0 rgba(0, 0, 0, .1)'
-const FIELD_BOX_SHADOW_FOCUS = 'none' // '0 .0625rem .0625rem 0 rgba(0, 0, 0, .1)'
 const FIELD_PADDING_HORIZONTAL = '.75rem'
 const FIELD_PLACEHOLDER_COLOR = appTheme.palette.dark60a
 const FIELD_PLACEHOLDER_COLOR_FOCUS_ACTIVE = appTheme.palette.dark30a
@@ -108,19 +94,11 @@ const filterBlur = 'blur(1.5px)'
 const gradientWarm = makeGradient(red, rose)
 // linear-gradient(to right,#ED4C56 0,#ED4C86 100%)
 
-// Icons
-const iconSize = '14px' // FontAwesome base
-const iconExternalLink = 'open_in_new'
-
-// Type
-const TYPE_SEMIBOLD = 600
-
 // -----------------------------------------------------------------------------
 
 const ui = {
   // Base settings
   // ---------------------------------------------------------------------------
-  backgroundColor,
   borderRadiusSmall,
   borderRadiusLarge,
   palette: PALETTE_VALUES,
@@ -128,8 +106,6 @@ const ui = {
 
   // Buttons
   // ---------------------------------------------------------------------------
-  buttonBorderRadius: '5em',
-  buttonLightThemes: ['white', 'light', 'gray'],
   buttonBlockStyles: {
     display: 'block',
     paddingLeft: '.5em',
@@ -188,9 +164,7 @@ const ui = {
   // Dashboards
   // ---------------------------------------------------------------------------
   dashAgendaWidth: '15rem',
-  dashBackgroundColor: backgroundColor,
   dashBorderColor: appTheme.palette.light90d,
-  dashBreakpoint: BREAKPOINT_WIDER,
   dashGutterSmall: '1.25rem',
   dashGutterLarge: '2rem',
 
@@ -205,7 +179,6 @@ const ui = {
     appearance: 'none',
     border: '.0625rem solid transparent',
     borderRadius: borderRadiusSmall,
-    boxShadow: FIELD_BOX_SHADOW,
     display: 'block',
     fontFamily: appTheme.typography.sansSerif,
     fontSize: appTheme.typography.sBase,
@@ -214,39 +187,6 @@ const ui = {
     outline: 0,
     padding: `.25em ${FIELD_PADDING_HORIZONTAL}`,
     width: '100%'
-  },
-  fieldFocusBoxShadow: FIELD_BOX_SHADOW_FOCUS,
-  fieldColorPalettes: {
-    // gray: input and textarea default style
-    gray: {
-      backgroundColor: appTheme.palette.light,
-      borderColor: appTheme.palette.mid40l,
-      color: appTheme.palette.dark80d,
-      focusBorderColor: appTheme.palette.mid80l,
-      placeholder: makePlaceholderStyles(FIELD_PLACEHOLDER_COLOR),
-      placeholderColorFocusActive: makePlaceholderStyles(FIELD_PLACEHOLDER_COLOR_FOCUS_ACTIVE),
-      selection: appTheme.palette.mid20l
-    },
-    // primary: used by agenda topic input
-    primary: {
-      backgroundColor: '#FFFFFF',
-      borderColor: 'transparent',
-      color: COLOR_TEXT,
-      focusBorderColor: appTheme.palette.warm70l,
-      placeholder: makePlaceholderStyles(appTheme.palette.warm),
-      placeholderColorFocusActive: makePlaceholderStyles(appTheme.palette.warm50l),
-      selection: appTheme.palette.warm20l
-    },
-    // white: used for dropdowns
-    white: {
-      backgroundColor: '#FFFFFF',
-      borderColor: appTheme.palette.mid40l,
-      color: appTheme.palette.dark,
-      focusBorderColor: appTheme.palette.mid80l,
-      placeholder: makePlaceholderStyles(FIELD_PLACEHOLDER_COLOR),
-      placeholderColorFocusActive: makePlaceholderStyles(FIELD_PLACEHOLDER_COLOR_FOCUS_ACTIVE),
-      selection: appTheme.palette.mid20l
-    }
   },
   fieldDisabled: {
     cursor: 'not-allowed',
@@ -276,19 +216,6 @@ const ui = {
   // Gradients
   // ---------------------------------------------------------------------------
   gradientWarm,
-
-  // Icons
-  // ---------------------------------------------------------------------------
-  iconSize,
-  iconExternalLink,
-
-  // Label Headings
-  // ---------------------------------------------------------------------------
-  labelHeadingColor: midGray,
-  labelHeadingFontSize: '12px',
-  labelHeadingFontWeight: TYPE_SEMIBOLD,
-  labelHeadingLineHeight: '16px',
-  labelHeadingLetterSpacing: '.03em',
 
   // Link
   // ---------------------------------------------------------------------------

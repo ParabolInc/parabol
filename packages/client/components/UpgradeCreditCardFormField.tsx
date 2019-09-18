@@ -52,7 +52,7 @@ const Input = styled('input')<StyleProps>(({hasError}) => ({
   padding: '7px 8px', // account for top/bottom border
   width: '100%',
   '::placeholder': {
-    color: hasError ? PALETTE.BACKGROUND_RED : undefined
+    color: hasError ? PALETTE.BACKGROUND_ORANGE : undefined
   }
 }))
 

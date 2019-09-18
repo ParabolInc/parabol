@@ -91,7 +91,7 @@ const VoteMeta = styled('div')({
   borderRadius: '5em',
   color: '#FFFFFF',
   display: 'flex',
-  fontSize: ui.iconSize,
+  fontSize: ICON_SIZE.MD18,
   fontWeight: 600,
   margin: '.125rem 0 0 1rem',
   padding: '.125rem .75rem'

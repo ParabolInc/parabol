@@ -10,7 +10,7 @@ const PhaseHeaderDescription = styled('h2')({
 
   [meetingTopBarMediaQuery]: {
     display: 'block',
-    fontSize: '.875rem'
+    fontSize: 14
   }
 })
 

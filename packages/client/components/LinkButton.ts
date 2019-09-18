@@ -1,16 +1,36 @@
 import styled from '@emotion/styled'
-import tinycolor from 'tinycolor2'
-import ui from '../styles/ui'
+import {PALETTE} from '../styles/paletteV2'
 import BaseButton, {BaseButtonProps} from './BaseButton'
 
+const paletteColors = {
+  blue: PALETTE.TEXT_BLUE,
+  dark: PALETTE.TEXT_MAIN,
+  gray: PALETTE.TEXT_LIGHT,
+  midGray: PALETTE.TEXT_GRAY,
+  red: PALETTE.TEXT_RED,
+  warm: PALETTE.TEXT_ORANGE,
+  white: '#FFFFFF'
+}
+
+// mix palete color with 15% black
+const hoverColors = {
+  blue: PALETTE.TEXT_BLUE_DARK,
+  dark: PALETTE.TEXT_MAIN_DARK,
+  gray: PALETTE.TEXT_LIGHT_DARK,
+  midGray: PALETTE.TEXT_GRAY_DARK,
+  red: PALETTE.TEXT_RED_DARK,
+  warm: PALETTE.TEXT_ORANGE_DARK,
+  white: '#D9D9D9'
+}
+
 interface Props extends BaseButtonProps {
-  palette: string
+  palette?: keyof typeof paletteColors
 }
 
 const LinkButton = styled(BaseButton)<Props>((props) => {
   const {palette = 'dark', disabled, waiting} = props
-  const color = ui.palette[palette]
-  const hoverColor = tinycolor.mix(color, '#000', 15).toHexString()
+  const color = paletteColors[palette]
+  const hoverColor = hoverColors[palette]
   const visuallyDisabled = disabled || waiting
   return {
     backgroundColor: 'transparent',
