@@ -1,6 +1,5 @@
-import {GROUP, REFLECT, RETROSPECTIVE, VOTE} from '../../../../client/utils/constants'
+import {REFLECT, RETROSPECTIVE, VOTE} from '../../../../client/utils/constants'
 import addDiscussionTopics from './addDiscussionTopics'
-import addDefaultGroupTitles from './addDefaultGroupTitles'
 import removeEmptyReflections from './removeEmptyReflections'
 import Meeting from '../../../database/types/Meeting'
 import {DataLoaderWorker} from '../../graphql'
@@ -19,9 +18,6 @@ const handleCompletedRetrospectiveStage = async (
   if (stage.phaseType === REFLECT) {
     const data = await removeEmptyReflections(meeting)
     return {[REFLECT]: data}
-  } else if (stage.phaseType === GROUP) {
-    const data = await addDefaultGroupTitles(meeting)
-    return {[GROUP]: data}
   } else if (stage.phaseType === VOTE) {
     // mutates the meeting discuss phase.stages array
     const data = await addDiscussionTopics(meeting, dataLoader)

@@ -1,22 +1,24 @@
 import getRethink from '../../../../database/rethinkDriver'
 
-const updateGroupTitle = (reflectionGroupId, smartTitle, title) => {
+const updateSmartGroupTitle = (reflectionGroupId: string, smartTitle: string) => {
   const r = getRethink()
   const now = new Date()
   return r
     .table('RetroReflectionGroup')
     .get(reflectionGroupId)
+    .update({
+      smartTitle,
+      updatedAt: now
+    })
     .update((g) => ({
       smartTitle,
       title: r.branch(
-        g('titleIsUserDefined')
-          .eq(true)
-          .default(false),
+        g('smartTitle').eq(g('title')),
+        smartTitle,
         g('title'),
-        title
       ),
       updatedAt: now
     }))
 }
 
-export default updateGroupTitle
+export default updateSmartGroupTitle

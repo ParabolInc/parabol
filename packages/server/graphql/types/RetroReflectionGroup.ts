@@ -98,8 +98,11 @@ const RetroReflectionGroup = new GraphQLObjectType({
       description: 'The title of the grouping of the retrospective reflections'
     },
     titleIsUserDefined: {
-      type: GraphQLBoolean,
-      description: 'true if a user wrote the title, else false'
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'true if a user wrote the title, else false',
+      resolve: ({title, smartTitle}) => {
+        return title ? title !== smartTitle : false
+      }
     },
     updatedAt: {
       type: GraphQLISO8601Type,

@@ -3,8 +3,9 @@
  * Uses the most salient entities to create a 40-character theme to summarize the content of the reflections
  */
 
-import {IGoogleAnalyzedEntity, IRetroReflection} from '../../types/graphql'
 import extractTextFromDraftString from '../draftjs/extractTextFromDraftString'
+import GoogleAnalyzedEntity from 'parabol-server/database/types/GoogleAnalyzedEntity'
+import Reflection from 'parabol-server/database/types/Reflection'
 
 const SALIENT_THRESHOLD = 0.6
 const MIN_ENTITIES = 2
@@ -12,7 +13,7 @@ const MAX_CHARS = 30
 const MIN_SALIENCE = 0.1
 
 type DistanceArray = number[]
-const getNameFromLemma = (lemma: string, reflectionEntities: IGoogleAnalyzedEntity[][]) => {
+const getNameFromLemma = (lemma: string, reflectionEntities: GoogleAnalyzedEntity[][]) => {
   const names = new Set<string>()
   reflectionEntities.forEach((entities) => {
     entities.forEach((entity) => {
@@ -29,8 +30,8 @@ const getNameFromLemma = (lemma: string, reflectionEntities: IGoogleAnalyzedEnti
 const getTitleFromComputedGroup = (
   uniqueLemmaArr: string[],
   group: DistanceArray[],
-  reflectionEntities: IGoogleAnalyzedEntity[][],
-  reflections: IRetroReflection[]
+  reflectionEntities: GoogleAnalyzedEntity[][],
+  reflections: Reflection[]
 ) => {
   const sumArr = new Array(uniqueLemmaArr.length).fill(0)
   group.forEach((reflectionDistanceArr) => {

@@ -1,7 +1,7 @@
-import makeRetroGroupTitle from '../../../../../client/utils/autogroup/makeRetroGroupTitle'
+import getGroupSmartTitle from 'parabol-client/utils/autogroup/getGroupSmartTitle'
 import getRethink from '../../../../database/rethinkDriver'
 import makeReflectionGroup from './makeReflectionGroup'
-import updateGroupTitle from './updateGroupTitle'
+import updateSmartGroupTitle from './updateSmartGroupTitle'
 import {getUserId} from '../../../../utils/authorization'
 import standardError from '../../../../utils/standardError'
 
@@ -38,14 +38,14 @@ const removeReflectionFromGroup = async (reflectionId, {authToken, dataLoader}) 
     .getAll(oldReflectionGroupId, {index: 'reflectionGroupId'})
     .filter({isActive: true})
 
-  const {smartTitle: nextGroupSmartTitle, title: nextGroupTitle} = makeRetroGroupTitle([reflection])
-  await updateGroupTitle(reflectionGroupId, nextGroupSmartTitle, nextGroupTitle)
+  const nextTitle = getGroupSmartTitle([reflection])
+  await updateSmartGroupTitle(reflectionGroupId, nextTitle)
 
   if (oldReflections.length > 0) {
-    const {smartTitle: oldGroupSmartTitle, title: oldGroupTitle} = makeRetroGroupTitle(
+    const oldTitle = getGroupSmartTitle(
       oldReflections
     )
-    await updateGroupTitle(oldReflectionGroupId, oldGroupSmartTitle, oldGroupTitle)
+    await updateSmartGroupTitle(oldReflectionGroupId, oldTitle)
   } else {
     await r
       .table('RetroReflectionGroup')

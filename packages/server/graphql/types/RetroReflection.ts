@@ -8,7 +8,6 @@ import {
   GraphQLString
 } from 'graphql'
 import {resolveForSU} from '../resolvers'
-import DragContext from './DragContext'
 import GoogleAnalyzedEntity from './GoogleAnalyzedEntity'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import RetroPhaseItem from './RetroPhaseItem'
@@ -40,11 +39,6 @@ const RetroReflection = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLID,
       resolve: resolveForSU('creatorId')
     },
-    dragContext: {
-      description:
-        'all the info associated with the drag state, if this reflection is currently being dragged',
-      type: DragContext
-    },
     editorIds: {
       description: 'an array of all the socketIds that are currently editing the reflection',
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
@@ -53,10 +47,6 @@ const RetroReflection = new GraphQLObjectType<any, GQLContext>({
     isActive: {
       type: GraphQLBoolean,
       description: 'True if the reflection was not removed, else false'
-    },
-    isEditing: {
-      description: 'true if the reflection is being edited, else false',
-      type: GraphQLBoolean
     },
     isViewerCreator: {
       description: 'true if the viewer (userId) is the creator of the retro reflection, else false',
