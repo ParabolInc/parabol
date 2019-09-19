@@ -16,7 +16,7 @@ const Inner = styled('div')<{onClose: boolean}>(({onClose}) => ({
   display: 'block',
   fontWeight: 600,
   fontSize: 13,
-  lineHeight: '18x',
+  lineHeight: '18px',
   padding: 15,
   position: 'relative',
   textShadow,

@@ -24,7 +24,7 @@ const ShortcutBlock = styled('div')({
   height: shortcutBlockSize,
   fontSize: 12,
   fontWeight: 600,
-  lineHeight: shortcutBlockSize,
+  lineHeight: '20px',
   margin: '0 .5em',
   textAlign: 'center',
   width: shortcutBlockSize

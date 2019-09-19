@@ -30,7 +30,7 @@ const ModalHeaderTitle = styled('div')({
 
 const CloseButton = styled(IconButton)({
   height: 24,
-  lineHeight: 24,
+  lineHeight: '24px',
   opacity: 0.75,
   padding: 0,
   position: 'absolute',
@@ -43,7 +43,7 @@ const HelpList = styled('div')<{listIndex: number}>(({listIndex}) => ({
   border: `1px solid ${PALETTE.BORDER_LIGHT}`,
   color: PALETTE.TEXT_MAIN,
   fontSize: 13,
-  lineHeight: '18x',
+  lineHeight: '18px',
   margin: listIndex === 0 ? '0 auto' : '16px auto 0',
   minWidth: 0,
   textAlign: 'left'
