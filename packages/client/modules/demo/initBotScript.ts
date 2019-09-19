@@ -232,11 +232,7 @@ const initBotScript = () => {
         botId: 'bot1',
         variables: {
           dragId: 'botDrag1',
-          reflectionId: 'botRef3',
-          initialCoords: {
-            x: 1,
-            y: 1
-          }
+          reflectionId: 'botRef3'
         }
       },
       {
@@ -245,13 +241,16 @@ const initBotScript = () => {
         botId: 'bot1',
         variables: {
           input: {
+            id: 'botDrag1',
+            clientX: 1,
+            clientY: 1,
             clientHeight: window.innerHeight,
             clientWidth: window.innerWidth,
-            coords: {x: 1, y: 1},
             sourceId: 'botRef3',
-            teamId: demoTeamId,
             targetId: 'botGroup1',
-            targetOffset: {x: 10, y: 20}
+            teamId: demoTeamId,
+            targetOffsetX: 10,
+            targetOffsetY: 20
           }
         }
       },
@@ -272,11 +271,7 @@ const initBotScript = () => {
         botId: 'bot2',
         variables: {
           dragId: 'botDrag2',
-          reflectionId: 'botRef4',
-          initialCoords: {
-            x: 1,
-            y: 1
-          }
+          reflectionId: 'botRef4'
         }
       },
       {
@@ -285,11 +280,7 @@ const initBotScript = () => {
         botId: 'bot2',
         variables: {
           dragId: 'botDrag4',
-          reflectionId: 'botRef5',
-          initialCoords: {
-            x: 1,
-            y: 1
-          }
+          reflectionId: 'botRef5'
         }
       },
       {
@@ -298,13 +289,16 @@ const initBotScript = () => {
         botId: 'bot2',
         variables: {
           input: {
+            id: 'botDrag4',
             clientHeight: window.innerHeight,
             clientWidth: window.innerWidth,
-            coords: {x: 1, y: 1},
+            clientX: 1,
+            clientY: 1,
             sourceId: 'botRef5',
             teamId: demoTeamId,
             targetId: 'botGroup8',
-            targetOffset: {x: -100, y: -100}
+            targetOffsetX: -1,
+            targetOffsetY: -100
           }
         }
       },
@@ -314,13 +308,16 @@ const initBotScript = () => {
         botId: 'bot2',
         variables: {
           input: {
+            id: 'botDrag4',
             clientHeight: window.innerHeight,
             clientWidth: window.innerWidth,
-            coords: {x: 1, y: 1},
+            clientX: 1,
+            clientY: 1,
             sourceId: 'botRef4',
             teamId: demoTeamId,
             targetId: 'botGroup1',
-            targetOffset: {x: -10, y: -10}
+            targetOffsetX: -1,
+            targetOffsetY: -10
           }
         }
       },
@@ -352,11 +349,7 @@ const initBotScript = () => {
         botId: 'bot1',
         variables: {
           dragId: 'botDrag3',
-          reflectionId: 'botRef7',
-          initialCoords: {
-            x: 1,
-            y: 1
-          }
+          reflectionId: 'botRef7'
         }
       },
       {
@@ -365,13 +358,16 @@ const initBotScript = () => {
         botId: 'bot1',
         variables: {
           input: {
+            id: 'botDrag3',
             clientHeight: window.innerHeight,
             clientWidth: window.innerWidth,
-            coords: {x: 1, y: 1},
+            clientX: 1,
+            clientY: 1,
             sourceId: 'botRef7',
             teamId: demoTeamId,
             targetId: 'botGroup8',
-            targetOffset: {x: 20, y: -40}
+            targetOffsetX: 20,
+            targetOffsetY: -40
           }
         }
       },
@@ -393,16 +389,19 @@ const initBotScript = () => {
         botId: 'bot1',
         variables: {
           input: {
+            id: 'botDrag3',
             clientHeight: window.innerHeight,
             clientWidth: window.innerWidth,
-            coords: {x: 1, y: 1},
+            clientX: 1,
+            clientY: 1,
             sourceId: 'botRef3',
             teamId: demoTeamId,
             targetId: 'botGroup1',
-            targetOffset: {x: 10, y: 20}
+            targetOffsetX: 10,
+            targetOffsetY: 20
           }
         }
-      },
+      }
     ],
     voteStage: [
       {
@@ -499,4 +498,4 @@ const initBotScript = () => {
   }
 }
 
-  export default initBotScript
+export default initBotScript

@@ -6,10 +6,6 @@ const updateSmartGroupTitle = (reflectionGroupId: string, smartTitle: string) =>
   return r
     .table('RetroReflectionGroup')
     .get(reflectionGroupId)
-    .update({
-      smartTitle,
-      updatedAt: now
-    })
     .update((g) => ({
       smartTitle,
       title: r.branch(

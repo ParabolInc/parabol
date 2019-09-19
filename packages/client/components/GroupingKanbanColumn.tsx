@@ -139,7 +139,6 @@ export default createFragmentContainer(
       fragment GroupingKanbanColumn_prompt on RetroPhaseItem {
         id
         question
-        title
       }`
   }
 )

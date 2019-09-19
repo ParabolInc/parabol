@@ -122,7 +122,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
       onCompleted,
       onError,
       meeting: {reflectionGroups},
-      reflectionGroup: {reflectionGroupId}
+      reflectionGroup: {id: reflectionGroupId}
     } = this.props
     const title = e.target.value
     commitLocalUpdate(atmosphere, (store) => {
@@ -162,7 +162,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
       onCompleted,
       onError,
       meeting: {reflectionGroups},
-      reflectionGroup: {reflectionGroupId, title}
+      reflectionGroup: {id: reflectionGroupId, title}
     } = this.props
     if (submitting || title === this.initialTitle || !title) return
     this.initialTitle = title
@@ -224,7 +224,7 @@ export default createFragmentContainer(
   {
     reflectionGroup: graphql`
       fragment ReflectionGroupTitleEditor_reflectionGroup on RetroReflectionGroup {
-        reflectionGroupId: id
+        id
         title
       }
     `,

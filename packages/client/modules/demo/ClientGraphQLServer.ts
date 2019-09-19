@@ -5,7 +5,7 @@ import StrictEventEmitter from 'strict-event-emitter-types'
 import handleCompletedDemoStage from './handleCompletedDemoStage'
 import {
   DragReflectionDropTargetTypeEnum,
-  IDiscussPhase,
+  IDiscussPhase, IGoogleAnalyzedEntity,
   INewMeetingStage,
   IReflectPhase,
   IRetroReflection,
@@ -35,6 +35,7 @@ import Reflection from 'parabol-server/database/types/Reflection'
 import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraftString'
 import entityLookup from './entityLookup'
 import getDemoEntities from './getDemoEntities'
+import stringSimilarity from 'string-similarity'
 
 export type DemoReflection = Omit<IRetroReflection, 'autoReflectionGroupId' | 'team'> & {
   creatorId: string
@@ -280,11 +281,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const reflectionGroupId = groupId || this.getTempId('refGroup')
       const reflectionId = id || this.getTempId('ref')
       const plaintextContent = extractTextFromDraftString(content)
-      let entities = []
+      let entities = [] as IGoogleAnalyzedEntity[]
       if (userId !== demoViewerId) {
         entities = entityLookup[reflectionId].entities
       } else if (plaintextContent && plaintextContent.length > 2) {
-        entities = await getDemoEntities([plaintextContent])
+        entities = await getDemoEntities(plaintextContent)
       }
 
       const reflection = {
@@ -410,10 +411,26 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {removeReflection: data}
     },
-    UpdateReflectionContentMutation: ({reflectionId, content}, userId) => {
+    UpdateReflectionContentMutation: async ({reflectionId, content}, userId) => {
       const reflection = this.db.reflections.find((reflection) => reflection.id === reflectionId)!
       reflection.content = content
       reflection.updatedAt = new Date().toJSON()
+      const plaintextContent = extractTextFromDraftString(content)
+      const isVeryDifferent =  stringSimilarity.compareTwoStrings(plaintextContent, reflection.plaintextContent) < 0.9
+      const entities = isVeryDifferent ? await getDemoEntities(plaintextContent) : reflection.entities
+      reflection.plaintextContent = plaintextContent
+      reflection.entities = entities
+
+      const reflectionsInGroup = this.db.reflections.filter(({reflectionGroupId}) => reflectionGroupId === reflection.reflectionGroupId)
+      const newTitle = getGroupSmartTitle(reflectionsInGroup)
+      const reflectionGroup = this.db.reflectionGroups.find((group) => group.id === reflection.reflectionGroupId)
+      if (reflectionGroup) {
+        const titleIsUserDefined = reflectionGroup.smartTitle !== reflectionGroup.title
+        reflectionGroup.smartTitle = newTitle
+        if (!titleIsUserDefined) {
+          reflectionGroup.title = newTitle
+        }
+      }
       const data = {
         error: null,
         meeting: this.db.newMeeting,
@@ -556,29 +573,24 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {setStageTimer: data}
     },
-    StartDraggingReflectionMutation: ({reflectionId, initialCoords, dragId}, userId) => {
-      let dragCoords = initialCoords
+    StartDraggingReflectionMutation: ({reflectionId, dragId}, userId) => {
       const reflection = this.db.reflections.find((reflection) => reflection.id === reflectionId)!
       if (userId !== demoViewerId) {
-        if (reflection.isHumanTouched || !(this.atmosphere as any).getMasonry) return
-        const {itemCache} = (this.atmosphere as any).getMasonry()
-        const cachedItem = itemCache[reflectionId]
-        const bbox = (cachedItem.el as HTMLDivElement).getBoundingClientRect()
-        dragCoords = {x: bbox.left, y: bbox.top}
+        if (reflection.isHumanTouched) return
       } else {
         reflection.isHumanTouched = true
       }
+      const user = this.db.users.find((user) => user.id === userId)
       const data = {
         error: null,
         teamId: demoTeamId,
         meetingId: demoMeetingId,
         reflectionId,
         reflection,
-        dragContext: {
-          id: dragId || this.getTempId('drag'),
+        remoteDrag: {
+          id: dragId,
           dragUserId: userId,
-          dragUser: this.db.users.find((user) => user.id === userId),
-          dragCoords
+          dragUserName: user ? user.preferredName : 'A Ghost'
         },
         __typename: 'StartDraggingReflectionPayload'
       }
@@ -719,6 +731,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           failedDrop = true
         }
       }
+      const user = this.db.users.find((user) => user.id === userId)
       const data = {
         __typename: 'EndDraggingReflectionPayload',
         meetingId: demoMeetingId,
@@ -734,7 +747,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         userId,
         dropTargetType: failedDrop ? null : dropTargetType,
         dropTargetId: failedDrop ? null : dropTargetId,
-        dragId
+        remoteDrag: {
+          id: dragId,
+          dragUserId: userId,
+          dragUserName: user ? user.preferredName : 'A Ghost'
+        }
       }
 
       if (userId !== demoViewerId) {
@@ -744,7 +761,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     },
     UpdateDragLocationMutation: ({input}, userId) => {
       const {teamId, ...inputData} = input
-      const data = {...inputData, userId, __typename: 'UpdateDragLocationPayload'}
+      const data = {remoteDrag: inputData, userId, __typename: 'UpdateDragLocationPayload'}
       if (userId !== demoViewerId) {
         const {sourceId} = inputData
         const reflection = this.db.reflections.find((reflection) => reflection.id === sourceId)
