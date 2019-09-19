@@ -13,7 +13,7 @@
     "url": "https://github.com/ParabolInc/action/issues"
   },
   "scripts": {
-    "start": "cross-env NODE_ENV=production pm2 start --no-daemon",
+    "start": "cross-env NODE_ENV=production pm2-runtime start pm2.config.js",
     "start:tunnel": "export $(grep ^ULTRAHOOK_API_KEY .env | tr -d '\"') && ultrahook -k $ULTRAHOOK_API_KEY dev 3000",
     "start:memwatch": "NODE_ENV=production MEMWATCH=true node --expose-gc --inspect --trace-warnings server.babel.js",
     "quickstart": "yarn db:migrate && yarn bs",
