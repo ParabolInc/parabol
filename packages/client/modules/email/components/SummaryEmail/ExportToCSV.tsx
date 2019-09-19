@@ -9,7 +9,7 @@ import withAtmosphere, {
 import extractTextFromDraftString from '../../../../utils/draftjs/extractTextFromDraftString'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 import emailDir from '../../emailDir'
-import {PALETTE} from '../../../../../styles/paletteV2'
+import {PALETTE} from '../../../../styles/paletteV2'
 import AnchorIfEmail from './MeetingSummaryEmail/AnchorIfEmail'
 import EmailBorderBottom from './MeetingSummaryEmail/EmailBorderBottom'
 import {MeetingSummaryReferrer} from './MeetingSummaryEmail/MeetingSummaryEmail'
