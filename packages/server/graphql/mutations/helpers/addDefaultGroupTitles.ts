@@ -1,12 +1,12 @@
 import getRethink from '../../../database/rethinkDriver'
 import promiseAllPartial from '../../../../client/utils/promiseAllPartial'
-import updateGroupTitle from './updateReflectionLocation/updateGroupTitle'
-import makeRetroGroupTitle from '../../../../client/utils/autogroup/makeRetroGroupTitle'
+import updateSmartGroupTitle from './updateReflectionLocation/updateSmartGroupTitle'
+import getGroupSmartTitle from 'parabol-client/utils/autogroup/getGroupSmartTitle'
 
 const getTitleFromReflection = async (reflection) => {
   const {reflectionGroupId} = reflection
-  const {smartTitle, title} = makeRetroGroupTitle([reflection])
-  return updateGroupTitle(reflectionGroupId, smartTitle, title)
+  const smartTitle = getGroupSmartTitle([reflection])
+  return updateSmartGroupTitle(reflectionGroupId, smartTitle)
 }
 
 const addDefaultGroupTitles = async (meeting) => {

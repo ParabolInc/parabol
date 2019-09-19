@@ -70,7 +70,6 @@ export default {
       .get(reflectionGroupId)
       .update({
         title: normalizedTitle,
-        titleIsUserDefined: true,
         updatedAt: now
       })
 

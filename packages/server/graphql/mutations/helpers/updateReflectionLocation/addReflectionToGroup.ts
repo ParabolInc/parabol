@@ -1,6 +1,6 @@
-import makeRetroGroupTitle from '../../../../../client/utils/autogroup/makeRetroGroupTitle'
+import getGroupSmartTitle from 'parabol-client/utils/autogroup/getGroupSmartTitle'
 import getRethink from '../../../../database/rethinkDriver'
-import updateGroupTitle from './updateGroupTitle'
+import updateSmartGroupTitle from './updateSmartGroupTitle'
 import dndNoise from '../../../../../client/utils/dndNoise'
 import standardError from '../../../../utils/standardError'
 import {getUserId} from '../../../../utils/authorization'
@@ -54,16 +54,16 @@ const addReflectionToGroup = async (reflectionId, reflectionGroupId, {authToken,
         .coerceTo('array')
     })
 
-    const {smartTitle: nextGroupSmartTitle, title: nextGroupTitle} = makeRetroGroupTitle(
+    const nextTitle = getGroupSmartTitle(
       nextReflections
     )
-    await updateGroupTitle(reflectionGroupId, nextGroupSmartTitle, nextGroupTitle)
+    await updateSmartGroupTitle(reflectionGroupId, nextTitle)
 
     if (oldReflections.length > 0) {
-      const {smartTitle: oldGroupSmartTitle, title: oldGroupTitle} = makeRetroGroupTitle(
+      const oldTitle = getGroupSmartTitle(
         oldReflections
       )
-      await updateGroupTitle(oldReflectionGroupId, oldGroupSmartTitle, oldGroupTitle)
+      await updateSmartGroupTitle(oldReflectionGroupId, oldTitle)
     } else {
       await r
         .table('RetroReflectionGroup')

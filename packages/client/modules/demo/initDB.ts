@@ -2,8 +2,6 @@ import {CHECKIN, DISCUSS, GROUP, REFLECT, RETROSPECTIVE, VOTE} from '../../utils
 import toTeamMemberId from '../../utils/relay/toTeamMemberId'
 import {
   IJiraRemoteProject,
-  IRetroReflection,
-  IRetroReflectionGroup,
   IRetrospectiveMeeting,
   IRetrospectiveMeetingSettings,
   ISuggestedIntegrationGitHub,
@@ -15,6 +13,9 @@ import {
 } from '../../types/graphql'
 import getDemoAvatar from '../../utils/getDemoAvatar'
 import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
+import DemoReflection from './types/DemoReflection'
+import DemoReflectionGroup from './types/DemoReflectionGroup'
+import DemoTask from './types/DemoTask'
 
 export const demoMeetingId = 'demoMeeting'
 export const demoViewerId = 'demoUser'
@@ -400,9 +401,9 @@ const initDB = (botScript) => {
     meetingMembers,
     newMeeting,
     organization: org,
-    reflections: [] as Partial<IRetroReflection & {isHumanTouched: boolean}>[],
-    reflectionGroups: newMeeting.reflectionGroups as Partial<IRetroReflectionGroup>[],
-    tasks: [] as Partial<ITask>[],
+    reflections: [] as DemoReflection[],
+    reflectionGroups: newMeeting.reflectionGroups as any as DemoReflectionGroup[],
+    tasks: [] as DemoTask[],
     team,
     teamMembers,
     users,
