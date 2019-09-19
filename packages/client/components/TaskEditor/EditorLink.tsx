@@ -11,7 +11,6 @@ interface Props {
   contentState: ContentState
   entityKey: string
   offsetkey: string
-  styles: object
 }
 
 const EditorLink = (getEditorState) =>

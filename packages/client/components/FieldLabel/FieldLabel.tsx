@@ -35,7 +35,6 @@ interface Props {
   indent: boolean
   inline: boolean
   label: string
-  styles: object
 }
 
 const FieldLabel = (props: Props) => {
@@ -52,15 +51,5 @@ const FieldLabel = (props: Props) => {
     </FieldLabelBlock>
   )
 }
-
-// FieldLabel.propTypes = {
-//   customStyles: PropTypes.object,
-//   fieldSize: PropTypes.oneOf(ui.fieldSizeOptions),
-//   htmlFor: PropTypes.string,
-//   indent: PropTypes.bool,
-//   inline: PropTypes.bool,
-//   label: PropTypes.string,
-//   styles: PropTypes.object
-// }
 
 export default FieldLabel

@@ -2,13 +2,13 @@ import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
 import CopyLink from '../../../../components/CopyLink'
 import Icon from '../../../../components/Icon'
-import {MD_ICONS_SIZE_18} from '../../../../styles/icons'
+import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {PALETTE} from '../../../../styles/paletteV2'
 
 const CopyIcon = styled(Icon)({
   color: 'inherit',
   display: 'block',
-  fontSize: MD_ICONS_SIZE_18,
+  fontSize: ICON_SIZE.MD18,
   marginTop: '-.5625rem',
   marginRight: '.5rem',
   position: 'absolute',

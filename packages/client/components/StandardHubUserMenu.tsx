@@ -17,11 +17,11 @@ import {TierEnum} from '../types/graphql'
 import {TierLabel} from '../types/constEnums'
 
 const UpgradeIcon = styled(MenuItemIcon)({
-  color: PALETTE.TEXT_BLUE
+  color: PALETTE.EMPHASIS_COOL
 })
 
 const UpgradeCTA = styled('span')({
-  color: PALETTE.TEXT_BLUE,
+  color: PALETTE.EMPHASIS_COOL,
   fontSize: 15,
   lineHeight: '32px',
   marginRight: '2rem'

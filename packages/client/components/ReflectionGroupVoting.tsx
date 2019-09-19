@@ -123,7 +123,7 @@ class ReflectionGroupVoting extends Component<Props> {
       <UpvoteColumn>
         <UpvoteRow>
           {upvotes.map((idx) => (
-            <UpvoteIcon key={idx} color={isExpanded ? PALETTE.TEXT_BLUE_LIGHTER : PALETTE.TEXT_BLUE} onClick={this.unvote}>
+            <UpvoteIcon key={idx} color={isExpanded ? PALETTE.EMPHASIS_COOL_LIGHTER : PALETTE.EMPHASIS_COOL} onClick={this.unvote}>
               {meetingVoteIcon}
             </UpvoteIcon>
           ))}

@@ -1,10 +1,7 @@
 import {convertFromRaw, Editor, EditorState} from 'draft-js'
 import React, {useMemo, useRef} from 'react'
 import {PALETTE} from '../../../../../styles/paletteV2'
-import {
-  FONT_FAMILY,
-  PALETTE_TEXT_GRAY,
-} from './constants'
+import {FONT_FAMILY} from '../../../../../styles/typographyV2'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import editorDecorators from '../../../../../components/TaskEditor/decorators'
@@ -22,7 +19,7 @@ const contentStyle = {
   borderWidth: '1px',
   boxSizing: 'content-box',
   color: PALETTE.TEXT_MAIN,
-  fontFamily: FONT_FAMILY,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: '14px',
   minHeight: '88px',
   lineHeight: '20px',
@@ -36,8 +33,8 @@ const contentStyle = {
 } as React.CSSProperties
 
 const reflectionCardFooter = {
-  color: PALETTE_TEXT_GRAY,
-  fontFamily: FONT_FAMILY,
+  color: PALETTE.TEXT_GRAY,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 11,
   paddingLeft: 4
 }

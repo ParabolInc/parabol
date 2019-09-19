@@ -4,7 +4,7 @@ import Icon from './Icon'
 import {PALETTE} from '../styles/paletteV2'
 
 const paletteColors = {
-  warm: PALETTE.TEXT_PINK,
+  warm: PALETTE.EMPHASIS_WARM,
   midGray: PALETTE.TEXT_GRAY,
   red: PALETTE.TEXT_RED,
   green: PALETTE.TEXT_GREEN,

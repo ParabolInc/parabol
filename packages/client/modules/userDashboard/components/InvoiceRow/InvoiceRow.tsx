@@ -21,7 +21,7 @@ const InvoiceAmount = styled('span')({
 })
 
 const FileIcon = styled(Icon)<{isEstimate: boolean}>(({isEstimate}) => ({
-  color: isEstimate ? PALETTE.TEXT_BLUE : PALETTE.TEXT_GRAY
+  color: isEstimate ? PALETTE.EMPHASIS_COOL : PALETTE.TEXT_GRAY
 }))
 
 const InvoiceInfo = styled(RowInfo)({

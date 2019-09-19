@@ -25,7 +25,7 @@ const StepperDots = styled('div')({
 })
 
 const StepperDot = styled('div')<{isLocal: boolean, isFocused: boolean}>(({isLocal, isFocused}) => ({
-  backgroundColor: isLocal ? PALETTE.CONTROL_MAIN : isFocused ? PALETTE.TEXT_PINK : PALETTE.TEXT_GRAY,
+  backgroundColor: isLocal ? PALETTE.CONTROL_MAIN : isFocused ? PALETTE.EMPHASIS_WARM : PALETTE.TEXT_GRAY,
   borderRadius: '50%',
   margin: '0 2px',
   height: 8,

@@ -14,7 +14,7 @@ import styled from '@emotion/styled'
 import UpdateNewCheckInQuestionMutation from '../../../../mutations/UpdateNewCheckInQuestionMutation'
 import {convertFromRaw, convertToRaw, EditorState, SelectionState} from 'draft-js'
 import Icon from '../../../../components/Icon'
-import {MD_ICONS_SIZE_18} from '../../../../styles/icons'
+import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {NewCheckInQuestion_team} from '../../../../__generated__/NewCheckInQuestion_team.graphql'
 
 const CogIcon = styled(Icon)<{isEditing: boolean}>(({isEditing}) => ({
@@ -22,7 +22,7 @@ const CogIcon = styled(Icon)<{isEditing: boolean}>(({isEditing}) => ({
   cursor: 'pointer',
   display: 'block',
   height: 24,
-  fontSize: MD_ICONS_SIZE_18,
+  fontSize: ICON_SIZE.MD18,
   marginLeft: 8,
   paddingTop: 3,
   textAlign: 'center',

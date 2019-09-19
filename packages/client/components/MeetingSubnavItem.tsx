@@ -41,10 +41,10 @@ const ItemRoot = styled('div')<ItemRootProps>(
   }),
   ({isUnsyncedFacilitatorStage}) =>
     isUnsyncedFacilitatorStage && {
-      color: PALETTE.TEXT_PINK,
+      color: PALETTE.EMPHASIS_WARM,
       opacity: 1,
       '&::after': {
-        backgroundColor: PALETTE.TEXT_PINK,
+        backgroundColor: PALETTE.EMPHASIS_WARM,
         borderRadius: '100%',
         content: '""',
         display: 'block',

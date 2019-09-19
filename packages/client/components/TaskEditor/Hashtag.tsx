@@ -8,9 +8,8 @@ const style = {
 }
 
 interface Props {
-  children: ReactNode,
-  offsetkey: string,
-  styles: object
+  children: ReactNode
+  offsetkey: string
 }
 
 const Hashtag = (props: Props) => {

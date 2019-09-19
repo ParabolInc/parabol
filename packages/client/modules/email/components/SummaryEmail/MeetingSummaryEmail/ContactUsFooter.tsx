@@ -1,29 +1,26 @@
 import React from 'react'
 import {MEETING_NAME} from '../../../../../utils/constants'
-import {
-  FONT_FAMILY,
-  PALETTE_BACKGROUND_RED,
-  PALETTE_TEXT_MAIN
-} from './constants'
+import {PALETTE} from '../../../../../styles/paletteV2'
+import {FONT_FAMILY} from '../../../../../styles/typographyV2'
 
 const promptStyle = {
-  color: PALETTE_TEXT_MAIN,
-  fontFamily: FONT_FAMILY,
+  color: PALETTE.TEXT_MAIN,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 24,
   fontWeight: 600,
   paddingTop: 24
 }
 
 const linkStyle = {
-  color: PALETTE_BACKGROUND_RED,
-  fontFamily: FONT_FAMILY,
+  color: PALETTE.EMPHASIS_WARM,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
   fontWeight: 600,
   textDecoration: 'none'
 }
 
 const textStyle = {
-  color: PALETTE_TEXT_MAIN,
-  fontFamily: FONT_FAMILY,
+  color: PALETTE.TEXT_MAIN,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
   paddingTop: 4
 }
 

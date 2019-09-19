@@ -8,7 +8,7 @@ import RemoveReflectTemplateMutation from '../../../mutations/RemoveReflectTempl
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import {PALETTE} from '../../../styles/paletteV2'
 import Icon from '../../../components/Icon'
-import {MD_ICONS_SIZE_18} from '../../../styles/icons'
+import {ICON_SIZE} from '../../../styles/typographyV2'
 
 const Button = styled(FlatButton)<{canDelete: boolean}>(({canDelete}) => ({
   alignItems: 'center',
@@ -22,7 +22,7 @@ const Button = styled(FlatButton)<{canDelete: boolean}>(({canDelete}) => ({
 }))
 
 const DeleteIcon = styled(Icon)({
-  fontSize: MD_ICONS_SIZE_18
+  fontSize: ICON_SIZE.MD18
 })
 
 interface Props extends WithAtmosphereProps, WithMutationProps {

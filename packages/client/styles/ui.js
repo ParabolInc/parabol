@@ -1,8 +1,6 @@
 // deprecated, use types/constEnums or similar
 // todo: refactor layout, buttons, fields
 
-import typography from './theme/typography'
-
 // Reusable constants for UI object
 // -----------------------------------------------------------------------------
 
@@ -100,11 +98,11 @@ const ui = {
   // ---------------------------------------------------------------------------
   fieldBaseStyles: {
     appearance: 'none',
-    border: '.0625rem solid transparent',
+    border: '1px solid transparent',
     borderRadius: 2,
     display: 'block',
-    fontFamily: typography.sansSerif,
-    fontSize: typography.sBase,
+    fontFamily: '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif',
+    fontSize: 16,
     lineHeight: '1.5em',
     margin: '0',
     outline: 0,

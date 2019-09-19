@@ -20,25 +20,26 @@ interface Props extends WithMutationProps, WithAtmosphereProps {
 }
 
 const DeleteButton = styled(PlainButton)({
-  backgroundColor: 'transparent',
+  backgroundColor: '#FFFFFF99',
   border: 0,
+  borderRadius: '100%',
   height: ICON_SIZE.MD18,
   lineHeight: ICON_SIZE.MD18,
   padding: 0,
   position: 'absolute',
-  right: '-.5625rem',
-  top: '-.5625rem',
+  right: -9,
+  top: -9,
   width: ICON_SIZE.MD18
 })
-
+// Background shows through the transparent X of the icon
 const Background = styled('div')({
   backgroundColor: '#FFFFFF',
   borderRadius: '100%',
-  height: '.625rem',
-  left: '.25rem',
+  height: 10,
+  left: 4,
   position: 'absolute',
-  top: '.25rem',
-  width: '.625rem',
+  top: 4,
+  width: 10,
   zIndex: 100
 })
 

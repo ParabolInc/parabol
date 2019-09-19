@@ -19,7 +19,7 @@ import {Card} from '../../types/constEnums'
 import {RETRO_TOPIC_LABEL} from '../../utils/constants'
 import withMutationProps, {WithMutationProps} from '../../utils/relay/withMutationProps'
 import Icon from '../Icon'
-import {MD_ICONS_SIZE_18} from '../../styles/icons'
+import {ICON_SIZE} from '../../styles/typographyV2'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   isExpanded: boolean
@@ -48,7 +48,7 @@ const InputWithIconWrap = styled('div')({
 const PencilIcon = styled(Icon)<{isExpanded?: boolean}>(({isExpanded}) => ({
   color: isExpanded ? '#FFFFFF' : PALETTE.TEXT_GRAY,
   display: 'block',
-  fontSize: MD_ICONS_SIZE_18,
+  fontSize: ICON_SIZE.MD18,
   opacity: 0.5,
   marginLeft: '0.25rem',
   textAlign: 'center',

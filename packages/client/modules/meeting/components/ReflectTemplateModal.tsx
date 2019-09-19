@@ -5,7 +5,6 @@ import styled from '@emotion/styled'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {PALETTE} from '../../../styles/paletteV2'
-import {typeScale} from '../../../styles/theme/typography'
 import DialogContainer from '../../../components/DialogContainer'
 import Overflow from '../../../components/Overflow'
 import TextOverflow from '../../../components/TextOverflow'
@@ -42,7 +41,7 @@ const TemplateSidebar = styled('div')({
 const Label = styled('div')({
   color: PALETTE.TEXT_GRAY,
   borderBottom: `.0625rem solid ${PALETTE.BORDER_LIGHT}`,
-  fontSize: typeScale[1],
+  fontSize: 12,
   fontWeight: 600,
   lineHeight: '1.5',
   padding: '.75rem 1rem',
@@ -67,7 +66,7 @@ const TemplateItem = styled('li')<{isActive: boolean}>(({isActive}) => ({
   backgroundColor: isActive ? PALETTE.BACKGROUND_MAIN_DARKENED : undefined,
   borderRadius: '.125rem',
   cursor: 'pointer',
-  fontSize: typeScale[3],
+  fontSize: 14,
   lineHeight: '1.375rem',
   padding: '.3125rem .5rem'
 }))

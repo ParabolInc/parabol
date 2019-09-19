@@ -9,7 +9,7 @@ import withAtmosphere, {
 import extractTextFromDraftString from '../../../../utils/draftjs/extractTextFromDraftString'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 import emailDir from '../../emailDir'
-import {PALETTE_TEXT_MAIN} from './MeetingSummaryEmail/constants'
+import {PALETTE} from '../../../../../styles/paletteV2'
 import AnchorIfEmail from './MeetingSummaryEmail/AnchorIfEmail'
 import EmailBorderBottom from './MeetingSummaryEmail/EmailBorderBottom'
 import {MeetingSummaryReferrer} from './MeetingSummaryEmail/MeetingSummaryEmail'
@@ -80,7 +80,7 @@ interface CSVActionRow {
 const label = 'Export to CSV'
 
 const iconLinkLabel = {
-  color: PALETTE_TEXT_MAIN,
+  color: PALETTE.TEXT_MAIN,
   fontSize: '13px',
   paddingTop: 32
 }

@@ -2,7 +2,7 @@ import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
 import {PALETTE} from '../../styles/paletteV2'
 import Icon from '../Icon'
-import {MD_ICONS_SIZE_18} from '../../styles/icons'
+import {ICON_SIZE} from '../../styles/typographyV2'
 
 const Content = styled('div')({
   fontSize: 13,
@@ -15,7 +15,7 @@ const Content = styled('div')({
 const MenuClose = styled(Icon)({
   color: PALETTE.TEXT_GRAY,
   cursor: 'pointer',
-  fontSize: MD_ICONS_SIZE_18,
+  fontSize: ICON_SIZE.MD18,
   position: 'absolute',
   right: 4,
   top: -4,

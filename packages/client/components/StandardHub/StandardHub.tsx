@@ -8,7 +8,7 @@ import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import styled from '@emotion/styled';
 import textOverflow from '../../styles/helpers/textOverflow'
 import Icon from '../Icon'
-import {MD_ICONS_SIZE_18} from '../../styles/icons'
+import {ICON_SIZE} from '../../styles/typographyV2'
 import {PALETTE} from '../../styles/paletteV2'
 import {APP_BAR_HEIGHT} from '../../styles/appbars'
 import useMenu from '../../hooks/useMenu'
@@ -91,7 +91,7 @@ const BadgeBlock = styled('div')({
 })
 
 const NotificationIcon = styled(Icon)({
-  fontSize: MD_ICONS_SIZE_18,
+  fontSize: ICON_SIZE.MD18,
   lineHeight: 'inherit',
   color: 'white'
 })

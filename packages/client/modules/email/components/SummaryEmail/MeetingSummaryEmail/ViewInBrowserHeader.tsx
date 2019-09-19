@@ -1,14 +1,12 @@
 import React from 'react'
 import {MeetingSummaryReferrer} from './MeetingSummaryEmail'
-import {
-  FONT_FAMILY,
-  PALETTE_TEXT_GRAY
-} from './constants'
+import {PALETTE} from '../../../../../styles/paletteV2'
+import {FONT_FAMILY} from '../../../../../styles/typographyV2'
 
 const bannerLink = {
-  color: `${PALETTE_TEXT_GRAY} !important`,
+  color: `${PALETTE.TEXT_GRAY} !important`,
   cursor: 'pointer',
-  fontFamily: FONT_FAMILY,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: '11px',
   fontWeight: 400,
   paddingBottom: 16,

@@ -1,6 +1,6 @@
 import React from 'react'
 import Icon from '../Icon'
-import {MD_ICONS_SIZE_18} from '../../styles/icons'
+import {ICON_SIZE} from '../../styles/typographyV2'
 import styled from '@emotion/styled'
 import {PALETTE} from '../../styles/paletteV2'
 
@@ -10,8 +10,8 @@ import {PALETTE} from '../../styles/paletteV2'
 //  • Add disabled styles (TA)
 
 const iconStyles = {
-  fontSize: MD_ICONS_SIZE_18,
-  lineHeight: MD_ICONS_SIZE_18,
+  fontSize: ICON_SIZE.MD18,
+  lineHeight: ICON_SIZE.MD18,
   marginRight: '.25rem',
   verticalAlign: 'middle'
 }

@@ -1,12 +1,12 @@
 import {convertFromRaw, Editor, EditorState} from 'draft-js'
 import React, {useMemo, useRef} from 'react'
 import editorDecorators from '../../../../../components/TaskEditor/decorators'
-import {PALETTE} from '../../../../../styles/paletteV2'
 import {TaskStatus} from '../../../../../types/constEnums'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {EmailTaskCard_task} from '../../../../../__generated__/EmailTaskCard_task.graphql'
-import {FONT_FAMILY} from './constants'
+import {PALETTE} from '../../../../../styles/paletteV2'
+import {FONT_FAMILY} from '../../../../../styles/typographyV2'
 
 interface Props {
   task: EmailTaskCard_task
@@ -27,7 +27,7 @@ const contentStyle = {
   borderWidth: '1px',
   boxSizing: 'content-box',
   color: PALETTE.TEXT_MAIN,
-  fontFamily: FONT_FAMILY,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: '14px',
   minHeight: '88px',
   lineHeight: '20px',

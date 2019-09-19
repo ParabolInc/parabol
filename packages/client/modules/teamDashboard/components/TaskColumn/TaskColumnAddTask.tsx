@@ -10,7 +10,7 @@ import fromTeamMemberId from '../../../../utils/relay/fromTeamMemberId'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {TaskColumnAddTask_tasks} from '../../../../__generated__/TaskColumnAddTask_tasks.graphql'
-import {TaskStatus, TaskStatusLabel} from '../../../../types/constEnums'
+import taskStatusLabels from '../../../../utils/taskStatusLabels'
 
 interface Props {
   area: AreaEnum
@@ -21,13 +21,6 @@ interface Props {
   myTeamMemberId?: string
   teamMemberFilterId: string
   teams: readonly Pick<ITeam, 'id' | 'name'>[]
-}
-
-const taskStatusLabels = {
-  [TaskStatus.DONE]: TaskStatusLabel.DONE,
-  [TaskStatus.ACTIVE]: TaskStatusLabel.ACTIVE,
-  [TaskStatus.STUCK]: TaskStatusLabel.STUCK,
-  [TaskStatus.FUTURE]: TaskStatusLabel.FUTURE,
 }
 
 const TaskColumnAddTask = (props: Props) => {

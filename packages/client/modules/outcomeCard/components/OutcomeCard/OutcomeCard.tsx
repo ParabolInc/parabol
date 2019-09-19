@@ -5,10 +5,11 @@ import TaskIntegrationLink from '../../../../components/TaskIntegrationLink'
 import TaskWatermark from '../../../../components/TaskWatermark'
 import TaskFooter from '../OutcomeCardFooter/TaskFooter'
 import OutcomeCardStatusIndicator from '../OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
-import {Card, TaskStatus, TaskStatusLabel} from '../../../../types/constEnums'
+import {Card} from '../../../../types/constEnums'
 import {cardFocusShadow, cardHoverShadow, cardShadow, Elevation} from '../../../../styles/elevation'
 import isTaskArchived from '../../../../utils/isTaskArchived'
 import isTaskPrivate from '../../../../utils/isTaskPrivate'
+import taskStatusLabels from '../../../../utils/taskStatusLabels'
 import isTempId from '../../../../utils/relay/isTempId'
 import cardRootStyles from '../../../../styles/helpers/cardRootStyles'
 import styled from '@emotion/styled'
@@ -54,13 +55,6 @@ interface Props {
   task: OutcomeCard_task
   setEditorState: (newEditorState: EditorState) => void
   useTaskChild: UseTaskChild
-}
-
-const taskStatusLabels = {
-  [TaskStatus.DONE]: TaskStatusLabel.DONE,
-  [TaskStatus.ACTIVE]: TaskStatusLabel.ACTIVE,
-  [TaskStatus.STUCK]: TaskStatusLabel.STUCK,
-  [TaskStatus.FUTURE]: TaskStatusLabel.FUTURE,
 }
 
 const OutcomeCard = memo((props: Props) => {

@@ -39,7 +39,7 @@ interface Props extends WithAtmosphereProps {
 const VoteTally = styled('div')<{isUnsyncedFacilitatorStage: boolean | null}>(
   ({isUnsyncedFacilitatorStage}) => ({
     alignItems: 'center',
-    color: isUnsyncedFacilitatorStage ? PALETTE.TEXT_PINK : PALETTE.TEXT_GRAY,
+    color: isUnsyncedFacilitatorStage ? PALETTE.EMPHASIS_WARM : PALETTE.TEXT_GRAY,
     display: 'flex',
     fontSize: ICON_SIZE.MD18,
     fontWeight: 600,

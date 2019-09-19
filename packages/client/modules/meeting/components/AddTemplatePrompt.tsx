@@ -4,7 +4,6 @@ import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import LinkButton from '../../../components/LinkButton'
-import {typeScale} from '../../../styles/theme/typography'
 import dndNoise from '../../../utils/dndNoise'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -12,12 +11,12 @@ import withAtmosphere, {
 import AddReflectTemplatePromptMutation from '../../../mutations/AddReflectTemplatePromptMutation'
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import Icon from '../../../components/Icon'
-import {MD_ICONS_SIZE_18} from '../../../styles/icons'
+import {ICON_SIZE} from '../../../styles/typographyV2'
 
 const AddPromptLink = styled(LinkButton)({
   alignItems: 'center',
   display: 'flex',
-  fontSize: typeScale[5],
+  fontSize: 18,
   margin: 0,
   marginBottom: 16,
   outline: 'none'
@@ -25,10 +24,10 @@ const AddPromptLink = styled(LinkButton)({
 
 const AddPromptLinkPlus = styled(Icon)({
   display: 'block',
-  fontSize: MD_ICONS_SIZE_18,
-  lineHeight: MD_ICONS_SIZE_18,
-  margin: '0 .5rem 0 1.375rem',
-  width: MD_ICONS_SIZE_18
+  fontSize: ICON_SIZE.MD18,
+  lineHeight: ICON_SIZE.MD18,
+  margin: '0 8px 0 22px',
+  width: ICON_SIZE.MD18
 })
 
 interface Props extends WithAtmosphereProps, WithMutationProps {

@@ -6,7 +6,7 @@ import useMenu from '../../../../hooks/useMenu'
 import CreateTaskMutation from '../../../../mutations/CreateTaskMutation'
 import {ITeam, TaskStatusEnum} from '../../../../types/graphql'
 import lazyPreload from '../../../../utils/lazyPreload'
-import {TaskStatus, TaskStatusLabel} from 'types/constEnums'
+import taskStatusLabels from '../../../../utils/taskStatusLabels'
 
 interface Props {
   status: TaskStatusEnum
@@ -18,13 +18,6 @@ const SelectTeamDropdown = lazyPreload(() =>
   import(/* webpackChunkName: 'SelectTeamDropdown' */
   '../../../../components/SelectTeamDropdown')
 )
-
-const taskStatusLabels = {
-  [TaskStatus.DONE]: TaskStatusLabel.DONE,
-  [TaskStatus.ACTIVE]: TaskStatusLabel.ACTIVE,
-  [TaskStatus.STUCK]: TaskStatusLabel.STUCK,
-  [TaskStatus.FUTURE]: TaskStatusLabel.FUTURE,
-}
 
 const TaskColumnAddTaskSelectTeam = (props: Props) => {
   const {sortOrder, status, teams} = props

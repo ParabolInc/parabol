@@ -7,10 +7,11 @@ import {TEAM_DASH, USER_DASH} from '../../../../utils/constants'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {TaskColumn_tasks} from '../../../../__generated__/TaskColumn_tasks.graphql'
-import {BezierCurve, DroppableType, TaskStatus, TaskStatusLabel} from '../../../../types/constEnums'
+import {BezierCurve, DroppableType} from '../../../../types/constEnums'
 import {Droppable, DroppableProvided, DroppableStateSnapshot} from 'react-beautiful-dnd'
 import {PALETTE} from '../../../../styles/paletteV2'
 import TaskColumnInner from './TaskColumnInner'
+import taskStatusLabels from '../../../../utils/taskStatusLabels'
 
 const Column = styled('div')<{isDragging: boolean}>(({isDragging}) => ({
     background: isDragging ? PALETTE.BACKGROUND_MAIN_DARKENED : undefined,
@@ -65,13 +66,6 @@ interface Props extends WithAtmosphereProps {
   status: TaskStatusEnum
   teamMemberFilterId?: string
   teams: any[]
-}
-
-const taskStatusLabels = {
-  [TaskStatus.DONE]: TaskStatusLabel.DONE,
-  [TaskStatus.ACTIVE]: TaskStatusLabel.ACTIVE,
-  [TaskStatus.STUCK]: TaskStatusLabel.STUCK,
-  [TaskStatus.FUTURE]: TaskStatusLabel.FUTURE,
 }
 
 class TaskColumn extends Component<Props> {

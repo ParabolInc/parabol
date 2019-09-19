@@ -1,8 +1,8 @@
 import React from 'react'
-import {PALETTE_BORDER_LIGHT} from './constants'
+import {PALETTE} from '../../../../../styles/paletteV2'
 
 const borderStyles = {
-  borderBottom: `1px solid ${PALETTE_BORDER_LIGHT}`,
+  borderBottom: `1px solid ${PALETTE.BORDER_LIGHT}`,
   paddingBottom: 24
 } as React.CSSProperties
 

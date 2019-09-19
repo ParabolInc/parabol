@@ -10,9 +10,8 @@ import withAtmosphere, {
 } from '../../../decorators/withAtmosphere/withAtmosphere'
 import EditableTemplateDescription from './EditableTemplateDescription'
 import RemoveReflectTemplatePromptMutation from '../../../mutations/RemoveReflectTemplatePromptMutation'
-import {MD_ICONS_SIZE_18} from '../../../styles/icons'
+import {ICON_SIZE} from '../../../styles/typographyV2'
 import {PALETTE} from '../../../styles/paletteV2'
-import {typeScale} from '../../../styles/theme/typography'
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import EditableTemplatePrompt from './EditableTemplatePrompt'
 
@@ -43,7 +42,7 @@ const PromptItem = styled('li')<StyledProps>(({isHover, isDragging}) => ({
   backgroundColor: isHover || isDragging ? PALETTE.BACKGROUND_MAIN_LIGHTENED : undefined,
   borderRadius: '.125rem',
   display: 'flex',
-  fontSize: typeScale[5],
+  fontSize: 18,
   lineHeight,
   padding: '0 .6875rem 0 1rem'
 }))
@@ -52,7 +51,7 @@ const RemovePromptIcon = styled(Icon)<StyledProps>(({isHover}) => ({
   color: PALETTE.TEXT_GRAY,
   cursor: 'pointer',
   display: 'block',
-  fontSize: MD_ICONS_SIZE_18,
+  fontSize: ICON_SIZE.MD18,
   lineHeight,
   marginLeft: 'auto',
   opacity: isHover ? 1 : 0
