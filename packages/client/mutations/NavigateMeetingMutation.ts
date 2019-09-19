@@ -32,13 +32,6 @@ graphql`
       reflect {
         emptyReflectionGroupIds
       }
-      group {
-        meeting {
-          reflectionGroups {
-            ...CompleteReflectionGroupFrag @relay(mask: false)
-          }
-        }
-      }
       vote {
         meeting {
           phases {

@@ -101,7 +101,7 @@ const RetroReflectionGroup = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if a user wrote the title, else false',
       resolve: ({title, smartTitle}) => {
-        return title !== smartTitle
+        return title ? title !== smartTitle : false
       }
     },
     updatedAt: {

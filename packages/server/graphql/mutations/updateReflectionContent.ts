@@ -11,6 +11,9 @@ import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import Reflection from '../../database/types/Reflection'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import getReflectionEntities from './helpers/getReflectionEntities'
+import {GQLContext} from '../graphql'
+import getGroupSmartTitle from 'parabol-client/utils/autogroup/getGroupSmartTitle'
+import updateSmartGroupTitle from './helpers/updateReflectionLocation/updateSmartGroupTitle'
 
 export default {
   type: UpdateReflectionContentPayload,
@@ -24,7 +27,7 @@ export default {
       description: 'A stringified draft-js document containing thoughts'
     }
   },
-  async resolve(_source, {reflectionId, content}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(_source, {reflectionId, content}, {authToken, dataLoader, socketId: mutatorId}: GQLContext) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const now = new Date()
@@ -36,7 +39,7 @@ export default {
     if (!reflection) {
       return standardError(new Error('Reflection not found'), {userId: viewerId})
     }
-    const {creatorId, meetingId} = reflection
+    const {creatorId, meetingId, reflectionGroupId} = reflection
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     const {endedAt, phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
@@ -66,6 +69,13 @@ export default {
         plaintextContent,
         updatedAt: now
       })
+
+    const reflectionsInGroup = await r.table('Reflection')
+      .getAll(reflectionGroupId, {index: 'reflectionGroupId'})
+      .filter({isActive: true})
+
+    const newTitle = getGroupSmartTitle(reflectionsInGroup)
+    await updateSmartGroupTitle(reflectionGroupId, newTitle)
 
     const data = {meetingId, reflectionId}
     publish(SubscriptionChannel.TEAM, teamId, UpdateReflectionContentPayload, data, subOptions)

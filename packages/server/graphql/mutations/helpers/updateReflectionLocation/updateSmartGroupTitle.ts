@@ -10,6 +10,15 @@ const updateSmartGroupTitle = (reflectionGroupId: string, smartTitle: string) =>
       smartTitle,
       updatedAt: now
     })
+    .update((g) => ({
+      smartTitle,
+      title: r.branch(
+        g('smartTitle').eq(g('title')),
+        smartTitle,
+        g('title'),
+      ),
+      updatedAt: now
+    }))
 }
 
 export default updateSmartGroupTitle
