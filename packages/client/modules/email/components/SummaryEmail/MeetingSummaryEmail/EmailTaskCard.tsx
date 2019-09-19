@@ -1,22 +1,15 @@
 import {convertFromRaw, Editor, EditorState} from 'draft-js'
 import React, {useMemo, useRef} from 'react'
 import editorDecorators from '../../../../../components/TaskEditor/decorators'
-import {TaskStatus} from '../../../../../types/constEnums'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {EmailTaskCard_task} from '../../../../../__generated__/EmailTaskCard_task.graphql'
 import {PALETTE} from '../../../../../styles/paletteV2'
 import {FONT_FAMILY} from '../../../../../styles/typographyV2'
+import {taskStatusColors} from '../../../../../utils/taskStatus'
 
 interface Props {
   task: EmailTaskCard_task
-}
-
-const taskStatusColors = {
-  [TaskStatus.DONE]: PALETTE.STATUS_DONE,
-  [TaskStatus.ACTIVE]: PALETTE.STATUS_ACTIVE,
-  [TaskStatus.STUCK]: PALETTE.STATUS_STUCK,
-  [TaskStatus.FUTURE]: PALETTE.STATUS_FUTURE
 }
 
 const contentStyle = {

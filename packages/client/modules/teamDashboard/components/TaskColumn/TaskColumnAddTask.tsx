@@ -10,7 +10,7 @@ import fromTeamMemberId from '../../../../utils/relay/fromTeamMemberId'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {TaskColumnAddTask_tasks} from '../../../../__generated__/TaskColumnAddTask_tasks.graphql'
-import taskStatusLabels from '../../../../utils/taskStatusLabels'
+import {taskStatusLabels} from '../../../../utils/taskStatus'
 
 interface Props {
   area: AreaEnum

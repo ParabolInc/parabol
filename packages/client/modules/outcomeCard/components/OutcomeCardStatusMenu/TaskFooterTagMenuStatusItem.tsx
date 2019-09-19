@@ -7,24 +7,13 @@ import MenuItemDot from '../../../../components/MenuItemDot'
 import MenuItemLabel from '../../../../components/MenuItemLabel'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
-import {PALETTE} from '../../../../styles/paletteV2'
-import {TaskStatus} from '../../../../types/constEnums'
 import {AreaEnum, TaskStatusEnum} from '../../../../types/graphql'
-import taskStatusLabels from '../../../../utils/taskStatusLabels'
+import {taskStatusColors, taskStatusLabels} from '../../../../utils/taskStatus'
 
 interface Props {
   area: AreaEnum
   status: TaskStatusEnum
   task: TaskFooterTagMenuStatusItem_task
-}
-
-const taskStatusColors = {
-  [TaskStatus.DONE]: PALETTE.STATUS_DONE,
-  [TaskStatus.ACTIVE]: PALETTE.STATUS_ACTIVE,
-  [TaskStatus.STUCK]: PALETTE.STATUS_STUCK,
-  [TaskStatus.FUTURE]: PALETTE.STATUS_FUTURE,
-  [TaskStatus.ARCHIVED]: PALETTE.STATUS_ARCHIVED,
-  [TaskStatus.PRIVATE]: PALETTE.STATUS_PRIVATE
 }
 
 const TaskFooterTagMenuStatusItem = forwardRef((props: Props, ref) => {

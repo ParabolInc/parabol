@@ -11,7 +11,7 @@ import {BezierCurve, DroppableType} from '../../../../types/constEnums'
 import {Droppable, DroppableProvided, DroppableStateSnapshot} from 'react-beautiful-dnd'
 import {PALETTE} from '../../../../styles/paletteV2'
 import TaskColumnInner from './TaskColumnInner'
-import taskStatusLabels from '../../../../utils/taskStatusLabels'
+import {taskStatusLabels} from '../../../../utils/taskStatus'
 
 const Column = styled('div')<{isDragging: boolean}>(({isDragging}) => ({
     background: isDragging ? PALETTE.BACKGROUND_MAIN_DARKENED : undefined,

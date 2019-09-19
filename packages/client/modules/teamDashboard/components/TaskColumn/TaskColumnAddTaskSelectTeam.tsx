@@ -6,7 +6,7 @@ import useMenu from '../../../../hooks/useMenu'
 import CreateTaskMutation from '../../../../mutations/CreateTaskMutation'
 import {ITeam, TaskStatusEnum} from '../../../../types/graphql'
 import lazyPreload from '../../../../utils/lazyPreload'
-import taskStatusLabels from '../../../../utils/taskStatusLabels'
+import {taskStatusLabels} from '../../../../utils/taskStatus'
 
 interface Props {
   status: TaskStatusEnum
