@@ -15,6 +15,7 @@ import RetroReflectionGroup from './RetroReflectionGroup'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
+import Team from './Team'
 
 const RetroReflection = new GraphQLObjectType<any, GQLContext>({
   name: 'RetroReflection',
@@ -45,8 +46,9 @@ const RetroReflection = new GraphQLObjectType<any, GQLContext>({
       resolve: () => []
     },
     isActive: {
-      type: GraphQLBoolean,
-      description: 'True if the reflection was not removed, else false'
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'True if the reflection was not removed, else false',
+      resolve: ({isActive}) => !!isActive
     },
     isViewerCreator: {
       description: 'true if the viewer (userId) is the creator of the retro reflection, else false',
@@ -71,7 +73,7 @@ const RetroReflection = new GraphQLObjectType<any, GQLContext>({
       description: 'The foreign key to link a reflection to its meeting'
     },
     meeting: {
-      type: RetrospectiveMeeting,
+      type: new GraphQLNonNull(RetrospectiveMeeting),
       description: 'The retrospective meeting this reflection was created in',
       resolve: ({meetingId}, _args, {dataLoader}) => {
         return dataLoader.get('newMeetings').load(meetingId)
@@ -93,7 +95,7 @@ const RetroReflection = new GraphQLObjectType<any, GQLContext>({
         'The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group.'
     },
     reflectionGroupId: {
-      type: GraphQLID,
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The foreign key to link a reflection to its group'
     },
     retroReflectionGroup: {
@@ -108,7 +110,7 @@ const RetroReflection = new GraphQLObjectType<any, GQLContext>({
       description: 'The sort order of the reflection in the group (increments starting from 0)'
     },
     team: {
-      type: RetrospectiveMeeting,
+      type: new GraphQLNonNull(Team),
       description: 'The team that is running the meeting that contains this reflection',
       resolve: async ({meetingId}, _args, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').load(meetingId)

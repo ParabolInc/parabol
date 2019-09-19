@@ -8,6 +8,9 @@ import {
   IDiscussPhase,
   INewMeetingStage,
   IReflectPhase,
+  IRetroReflection,
+  IRetroReflectionGroup,
+  ITask,
   NewMeetingPhase,
   NewMeetingPhaseTypeEnum
 } from '../../types/graphql'
@@ -29,9 +32,22 @@ import initDB, {demoMeetingId, demoTeamId, demoViewerId, GitHubProjectKeyLookup,
 import LocalAtmosphere from './LocalAtmosphere'
 import ms from 'ms'
 import Reflection from 'parabol-server/database/types/Reflection'
-import DemoReflection from './types/DemoReflection'
-import DemoReflectionGroup from './types/DemoReflectionGroup'
-import DemoTask from './types/DemoTask'
+import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraftString'
+import entityLookup from './entityLookup'
+import getDemoEntities from './getDemoEntities'
+
+export type DemoReflection = Omit<IRetroReflection, 'autoReflectionGroupId' | 'team'> & {
+  creatorId: string
+  reflectionId: string
+  isHumanTouched: boolean
+}
+
+export type DemoReflectionGroup = Omit<IRetroReflectionGroup, 'team' | 'reflections'> & {
+  reflectionGroupId: string
+  reflections: DemoReflection[]
+}
+
+export type DemoTask = Omit<ITask, 'agendaItem'>
 
 interface Payload {
   __typename: string
@@ -254,32 +270,60 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {createJiraIssue: data}
     },
-    CreateReflectionMutation: (
+    CreateReflectionMutation: async (
       {input: {content, retroPhaseItemId, sortOrder, id, groupId}},
-      userId
+      userId: string
     ) => {
       const now = new Date().toJSON()
       const reflectPhase = this.db.newMeeting.phases![1] as IReflectPhase
       const phaseItem = reflectPhase.reflectPrompts.find((prompt) => prompt.id === retroPhaseItemId)
       const reflectionGroupId = groupId || this.getTempId('refGroup')
       const reflectionId = id || this.getTempId('ref')
-      const reflection = new DemoReflection({
+      const plaintextContent = extractTextFromDraftString(content)
+      let entities = []
+      if (userId !== demoViewerId) {
+        entities = entityLookup[reflectionId].entities
+      } else if (plaintextContent && plaintextContent.length > 2) {
+        entities = await getDemoEntities([plaintextContent])
+      }
+
+      const reflection = {
+        __typename: 'RetroReflection',
         id: reflectionId,
-        createdAt: now as any,
+        isHumanTouched: false,
+        reflectionId,
+        createdAt: now,
         creatorId: userId,
         content,
-        entities: [],
+        plaintextContent,
+        dragContext: null,
+        editorIds: [],
+        isActive: true,
+        isEditing: null,
+        isViewerCreator: userId === demoViewerId,
+        entities,
         meetingId: demoMeetingId,
+        meeting: this.db.newMeeting,
         phaseItem,
         reflectionGroupId,
         retroPhaseItemId,
         sortOrder: 0,
-        updatedAt: now as any
-      })
+        updatedAt: now,
+        retroReflectionGroup: undefined as any
+      } as DemoReflection
 
-      const reflectionGroup = new DemoReflectionGroup({
+      const smartTitle = getGroupSmartTitle([reflection])
+
+      const reflectionGroup = {
+        __typename: 'RetroReflectionGroup',
         id: reflectionGroupId,
-        createdAt: now as any,
+        reflectionGroupId,
+        smartTitle,
+        title: smartTitle,
+        voteCount: 0,
+        viewerVoteCount: 0,
+        createdAt: now,
+        isActive: true,
         meetingId: demoMeetingId,
         meeting: this.db.newMeeting,
         phaseItem,
@@ -287,9 +331,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         reflections: [reflection],
         sortOrder,
         tasks: [],
-        updatedAt: now as any,
+        titleIsUserDefined: false,
+        updatedAt: now,
         voterIds: []
-      })
+      } as DemoReflectionGroup
 
       reflection.retroReflectionGroup = reflectionGroup as any
       this.db.reflectionGroups.push(reflectionGroup)
@@ -974,20 +1019,19 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           newMeetingMember.tasks.push(task as any)
         }
       }
-      const nextTask = new DemoTask({
-        ...task,
+      Object.assign(task, {
         agendaId: taskUpdates.agendaId || task.agendaId,
         content: taskUpdates.content || task.content,
         status: taskUpdates.status || task.status,
+        tags: taskUpdates.tags || task.tags,
         teamId: taskUpdates.teamId || task.teamId,
+        assigneeId: taskUpdates.assigneeId || task.assigneeId,
         assignee: taskUpdates.assigneeId
           ? this.db.teamMembers.find((teamMember) => teamMember.id === taskUpdates.assigneeId)
           : task.assignee,
         sortOrder: taskUpdates.sortOrder || task.sortOrder,
         userId: taskUpdates.userId || task.userId
       })
-      // keep the object the same
-      Object.assign(task, nextTask)
 
       const data = {
         __typename: 'UpdateTaskPayload',

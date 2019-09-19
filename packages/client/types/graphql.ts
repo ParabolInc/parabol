@@ -4123,7 +4123,7 @@ export interface IRetroReflectionGroup {
   /**
    * true if a user wrote the title, else false
    */
-  titleIsUserDefined: boolean | null;
+  titleIsUserDefined: boolean;
 
   /**
    * The timestamp the meeting was updated at
@@ -4272,11 +4272,6 @@ export interface IRetroReflection {
   creatorId: string | null;
 
   /**
-   * all the info associated with the drag state, if this reflection is currently being dragged
-   */
-  dragContext: IDragContext | null;
-
-  /**
    * an array of all the socketIds that are currently editing the reflection
    */
   editorIds: string[];
@@ -4284,12 +4279,7 @@ export interface IRetroReflection {
   /**
    * True if the reflection was not removed, else false
    */
-  isActive: boolean | null;
-
-  /**
-   * true if the reflection is being edited, else false
-   */
-  isEditing: boolean | null;
+  isActive: boolean;
 
   /**
    * true if the viewer (userId) is the creator of the retro reflection, else false
@@ -4314,7 +4304,7 @@ export interface IRetroReflection {
   /**
    * The retrospective meeting this reflection was created in
    */
-  meeting: IRetrospectiveMeeting | null;
+  meeting: IRetrospectiveMeeting;
   phaseItem: IRetroPhaseItem;
 
   /**
@@ -4330,7 +4320,7 @@ export interface IRetroReflection {
   /**
    * The foreign key to link a reflection to its group
    */
-  reflectionGroupId: string | null;
+  reflectionGroupId: string;
 
   /**
    * The group the reflection belongs to, if any
@@ -4345,44 +4335,12 @@ export interface IRetroReflection {
   /**
    * The team that is running the meeting that contains this reflection
    */
-  team: IRetrospectiveMeeting | null;
+  team: ITeam;
 
   /**
    * The timestamp the meeting was updated. Used to determine how long it took to write a reflection
    */
   updatedAt: any | null;
-}
-
-/**
- * Info associated with a current drag
- */
-export interface IDragContext {
-  __typename: 'DragContext';
-  id: string | null;
-
-  /**
-   * The userId of the person currently dragging the reflection
-   */
-  dragUserId: string | null;
-
-  /**
-   * The user that is currently dragging the reflection
-   */
-  dragUser: IUser | null;
-
-  /**
-   * The coordinates necessary to simulate a drag for a subscribing user
-   */
-  dragCoords: ICoords2D | null;
-}
-
-/**
- * Coordinates used relay a location in a 2-D plane
- */
-export interface ICoords2D {
-  __typename: 'Coords2D';
-  x: number;
-  y: number;
 }
 
 export interface IGoogleAnalyzedEntity {

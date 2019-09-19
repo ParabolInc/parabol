@@ -13,9 +13,7 @@ import {
 } from '../../types/graphql'
 import getDemoAvatar from '../../utils/getDemoAvatar'
 import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
-import DemoReflection from './types/DemoReflection'
-import DemoReflectionGroup from './types/DemoReflectionGroup'
-import DemoTask from './types/DemoTask'
+import {DemoReflection, DemoReflectionGroup, DemoTask} from './ClientGraphQLServer'
 
 export const demoMeetingId = 'demoMeeting'
 export const demoViewerId = 'demoUser'
