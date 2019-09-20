@@ -1,8 +1,8 @@
-import graphql, {GQLContext} from '../graphql/graphql'
 import secureCompare from 'secure-compare'
-import schema from '../graphql/rootSchema'
 import signPayload from '../utils/signPayload'
-import sendToSentry from '../utils/sendToSentry'
+import {RequestHandler} from 'express'
+import ServerAuthToken from '../database/types/ServerAuthToken'
+import privateGraphQLEndpoint from '../graphql/privateGraphQLEndpoint'
 
 const getPublicKey = ({repository: {id}}) => String(id)
 
@@ -63,12 +63,12 @@ const eventLookup = {
   repository: {}
 }
 
-export default async (req, res) => {
+const githubWebhookHandler: RequestHandler =  async (req, res) => {
   res.sendStatus(200)
   const event = req.get('X-GitHub-Event')
   const hexDigest = req.get('X-Hub-Signature')
   const {body} = req
-  const eventHandler = eventLookup[event]
+  const eventHandler = eventLookup[event!]
   if (!body || !hexDigest || !eventHandler) return
 
   const actionHandler = eventHandler[body.action]
@@ -84,9 +84,8 @@ export default async (req, res) => {
 
   const {getVars, query} = actionHandler
   const variables = getVars(body)
-  const context = ({serverSecret: process.env.AUTH0_CLIENT_SECRET} as unknown) as GQLContext
-  const result = await graphql(schema, query, {}, context, variables)
-  if (result.errors) {
-    sendToSentry(result.errors[0], {tags: {query, variables}})
-  }
+  const serverAuthToken = new ServerAuthToken()
+  await privateGraphQLEndpoint(query, variables, serverAuthToken)
 }
+
+export default githubWebhookHandler

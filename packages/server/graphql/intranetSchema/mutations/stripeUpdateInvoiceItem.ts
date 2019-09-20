@@ -1,6 +1,8 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
-import stripe from '../../billing/stripe'
-import getRethink from '../../database/rethinkDriver'
+import {InternalContext} from '../../graphql'
+import {isSuperUser} from '../../../utils/authorization'
+import getRethink from '../../../database/rethinkDriver'
+import StripeManager from '../../../utils/StripeManager'
 
 export default {
   name: 'StripeUpdateInvoiceItem',
@@ -12,15 +14,16 @@ export default {
       description: 'The stripe invoice ID'
     }
   },
-  resolve: async (source, {invoiceItemId}, {serverSecret}) => {
+  resolve: async (_source, {invoiceItemId}, {authToken}: InternalContext) => {
     const r = getRethink()
 
     // AUTH
-    if (serverSecret !== process.env.AUTH0_CLIENT_SECRET) {
+    if (!isSuperUser(authToken)) {
       throw new Error('Don’t be rude.')
     }
 
-    const invoiceItem = await stripe.invoiceItems.retrieve(invoiceItemId)
+    const manager = new StripeManager()
+    const invoiceItem = await manager.retrieveInvoiceItem(invoiceItemId)
     const {
       subscription,
       period: {start}
@@ -35,12 +38,7 @@ export default {
     if (!hook) return false
 
     const {type, userId} = hook
-    await stripe.invoiceItems.update(invoiceItemId, {
-      metadata: {
-        type,
-        userId
-      }
-    })
+    await manager.updateInvoiceItem(invoiceItemId, type, userId)
     return true
   }
 }

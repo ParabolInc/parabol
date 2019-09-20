@@ -155,7 +155,7 @@ const OrgMemberRow = (props: Props) => {
         <RowInfoHeader>
           <RowInfoHeading>{preferredName}</RowInfoHeading>
           {isBillingLeader && <Tag colorPalette='blue' label='Billing Leader' />}
-          {inactive && !isViewerBillingLeader && <Tag colorPalette='midGray' label='Inactive' />}
+          {inactive && !isBillingLeader && <Tag colorPalette='midGray' label='Inactive' />}
           {new Date(newUserUntil) > new Date() && <Tag colorPalette='yellow' label='New' />}
         </RowInfoHeader>
         <RowInfoLink href={`mailto:${email}`} title='Send an email'>
