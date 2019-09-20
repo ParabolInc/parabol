@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "4.4.1",
+  "version": "4.4.3",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/action"
@@ -16,7 +16,8 @@
   "scripts": {
     "start": "yarn workspace parabol-server start",
     "test": "start-server-and-test start http://localhost:3000 cy:run",
-    "cy:run": "cypress run --record --key $CYPRESS_SECRET"
+    "cy:run": "cypress run --record --key $CYPRESS_SECRET",
+    "precommit": "lint-staged"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
@@ -45,7 +46,6 @@
     "eslint-plugin-emotion": "^10.0.14",
     "eslint-plugin-prettier": "^3.1.0",
     "eslint-plugin-react": "^7.14.2",
-    "husky": "^3.0.1",
     "lint-staged": "^9.2.0",
     "start-server-and-test": "^1.7.11",
     "sucrase": "^3.10.1",
@@ -57,14 +57,10 @@
   "dependencies": {
     "dotenv": "8.0.0",
     "dotenv-expand": "5.1.0",
-    "parabol-client": "^4.4.1"
+    "parabol-client": "^4.4.3"
   },
   "lint-staged": {
-    "*.js": [
-      "prettier --write",
-      "git add"
-    ],
-    "*.{ts,tsx}": [
+    "*.{js,ts,tsx}": [
       "eslint --fix",
       "git add"
     ]
