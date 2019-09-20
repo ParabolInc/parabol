@@ -7,6 +7,8 @@ import sendToSentry from './sendToSentry'
 import base64url from 'base64url'
 import {SSORelayState} from '../graphql/queries/SAMLIdP'
 import getSSODomainFromEmail from 'parabol-client/utils/getSSODomainFromEmail'
+import ServerAuthToken from '../database/types/ServerAuthToken'
+import privateGraphQLEndpoint from '../graphql/privateGraphQLEndpoint'
 
 const serviceProvider = samlify.ServiceProvider({})
 const query = `
@@ -40,7 +42,7 @@ const getError = (payload: any) => {
   return error
 }
 
-const consumeSAML = (intranetGraphQLHandler): RequestHandler => async (req, res) => {
+const consumeSAML: RequestHandler = async (req, res) => {
   const {params} = req
   const {domain} = params
   if (!domain) return
@@ -70,8 +72,9 @@ const consumeSAML = (intranetGraphQLHandler): RequestHandler => async (req, res)
     const error = `Email domain must be ${domain}`
     res.redirect(`/saml-redirect?error=${error}`)
   }
-  const internalReq = {body: {query, variables: {email, isInvited, name}}}
-  const payload = await intranetGraphQLHandler(internalReq, res)
+  const serverAuthToken = new ServerAuthToken()
+  const variables = {email, isInvited, name}
+  const payload = await privateGraphQLEndpoint(query, variables, serverAuthToken)
   const {data} = payload
   const authToken = data && data.loginSSO && data.loginSSO.authToken || ''
   if (!authToken) {

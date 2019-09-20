@@ -1,9 +1,7 @@
-import schema from '../graphql/rootSchema'
-import graphql, { GQLContext } from '../graphql/graphql'
 import stripe from './stripe'
-import RethinkDataLoader from '../utils/RethinkDataLoader'
-import sendToSentry from '../utils/sendToSentry'
-import DataLoaderWarehouse from 'dataloader-warehouse'
+import privateGraphQLEndpoint from '../graphql/privateGraphQLEndpoint'
+import ServerAuthToken from '../database/types/ServerAuthToken'
+import {RequestHandler} from 'express'
 
 const eventLookup = {
   invoice: {
@@ -86,7 +84,7 @@ const verifyBody = (req) => {
   }
 }
 
-const stripeWebhookHandler = (sharedDataLoader: DataLoaderWarehouse) => async (req, res) => {
+const stripeWebhookHandler: RequestHandler = async (req, res) => {
   res.sendStatus(200)
 
   const verifiedBody = verifyBody(req)
@@ -109,16 +107,8 @@ const stripeWebhookHandler = (sharedDataLoader: DataLoaderWarehouse) => async (r
 
   const {getVars, query} = actionHandler
   const variables = getVars(payload)
-  const dataLoader = sharedDataLoader.add(new RethinkDataLoader())
-  const context = ({
-    dataLoader,
-    serverSecret: process.env.AUTH0_CLIENT_SECRET
-  } as unknown) as GQLContext
-  const result = await graphql(schema, query, {}, context, variables)
-  dataLoader.dispose()
-  if (result.errors) {
-    sendToSentry(result.errors[0], {tags: {query, variables}})
-  }
+  const serverAuthToken = new ServerAuthToken()
+  await privateGraphQLEndpoint(query, variables, serverAuthToken)
 }
 
 export default stripeWebhookHandler

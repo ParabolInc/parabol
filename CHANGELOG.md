@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.4.3 2019-Sep-18
+
+### Fixed
+* False positive for "Login with Google" when tms does not exist on auth0 token
+
 ## 4.4.2 2019-Sep-12
 
 ### Added
