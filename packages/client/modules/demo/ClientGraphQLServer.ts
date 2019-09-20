@@ -688,6 +688,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
             updatedAt: now
           })
           reflectionGroup.reflections!.push(reflection as any)
+          reflectionGroup.reflections.sort((a, b) => (a.sortOrder < b.sortOrder ? 1 : -1))
           oldReflections.splice(
             oldReflections.findIndex((reflection) => reflection === reflection),
             1
