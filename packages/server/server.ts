@@ -29,6 +29,7 @@ import rateLimit from 'express-rate-limit'
 import demoEntityHandler from './demoEntityHandler'
 // import * as Integrations from '@sentry/integrations'
 import consumeSAML from './utils/consumeSAML'
+import './monitorMemory'
 
 declare global {
   namespace NodeJS {
