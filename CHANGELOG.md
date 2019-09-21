@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.5.1 2019-Sep-20
+
+### Removed
+* Test removing Sentry to verify memleak
+
+## 4.5.0 2019-Sep-19
+
+### Changed
+* Moved webhook GraphQL handlers to the private schema
+
+### Fixed
+* Billing leaders now see inactivity tag on Org Member view
+
 ## 4.4.3 2019-Sep-18
 
 ### Fixed

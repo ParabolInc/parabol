@@ -2397,8 +2397,8 @@ export type Notification =
   | INotifyTaskInvolves
   | INotificationTeamInvitation
   | INotifyKickedOut
-  | INotifyPaymentRejected
   | INotificationMeetingStageTimeLimitEnd
+  | INotifyPaymentRejected
   | INotifyPromoteToOrgLeader;
 
 export interface INotification {
@@ -2683,11 +2683,6 @@ export interface IMutation {
   editTask: IEditTaskPayload | null;
 
   /**
-   * Receive a webhook from github saying an assignee was added
-   */
-  githubAddAssignee: boolean | null;
-
-  /**
    * pauses the subscription for a single user
    */
   inactivateUser: IInactivateUserPayload | null;
@@ -2807,36 +2802,6 @@ export interface IMutation {
    * Start a new meeting
    */
   startNewMeeting: IStartNewMeetingPayload | null;
-
-  /**
-   * When stripe tells us an invoice is ready, create a pretty version
-   */
-  stripeCreateInvoice: boolean | null;
-
-  /**
-   * When stripe tells us an invoice payment failed, update it in our DB
-   */
-  stripeFailPayment: IStripeFailPaymentPayload | null;
-
-  /**
-   * When stripe tells us an invoice payment was successful, update it in our DB
-   */
-  stripeSucceedPayment: boolean | null;
-
-  /**
-   * When stripe tells us a credit card was updated, update the details in our own DB
-   */
-  stripeUpdateCreditCard: boolean | null;
-
-  /**
-   * When a new invoiceitem is sent from stripe, tag it with metadata
-   */
-  stripeUpdateInvoiceItem: boolean | null;
-
-  /**
-   * An invice has been sent from stripe, meaning it is finalized
-   */
-  stripeInvoiceFinalized: boolean | null;
 
   /**
    * Show/hide the agenda list
@@ -3195,23 +3160,6 @@ export interface IEditTaskOnMutationArguments {
   isEditing: boolean;
 }
 
-export interface IGithubAddAssigneeOnMutationArguments {
-  /**
-   * The github issue id
-   */
-  integrationId: string;
-
-  /**
-   * The github login for the new assignee
-   */
-  assigneeLogin: string;
-
-  /**
-   * The repo name and owner
-   */
-  nameWithOwner: string;
-}
-
 export interface IInactivateUserOnMutationArguments {
   /**
    * the user to pause
@@ -3429,48 +3377,6 @@ export interface IStartNewMeetingOnMutationArguments {
    * The base type of the meeting (action, retro, etc)
    */
   meetingType: MeetingTypeEnum;
-}
-
-export interface IStripeCreateInvoiceOnMutationArguments {
-  /**
-   * The stripe invoice ID
-   */
-  invoiceId: string;
-}
-
-export interface IStripeFailPaymentOnMutationArguments {
-  /**
-   * The stripe invoice ID
-   */
-  invoiceId: string;
-}
-
-export interface IStripeSucceedPaymentOnMutationArguments {
-  /**
-   * The stripe invoice ID
-   */
-  invoiceId: string;
-}
-
-export interface IStripeUpdateCreditCardOnMutationArguments {
-  /**
-   * The stripe customer ID, or stripeId
-   */
-  customerId: string;
-}
-
-export interface IStripeUpdateInvoiceItemOnMutationArguments {
-  /**
-   * The stripe invoice ID
-   */
-  invoiceItemId: string;
-}
-
-export interface IStripeInvoiceFinalizedOnMutationArguments {
-  /**
-   * The stripe invoice ID
-   */
-  invoiceId: string;
 }
 
 export interface IToggleAgendaListOnMutationArguments {
@@ -5592,51 +5498,6 @@ export interface IStartNewMeetingPayload {
   meeting: NewMeeting | null;
 }
 
-export interface IStripeFailPaymentPayload {
-  __typename: 'StripeFailPaymentPayload';
-  error: IStandardMutationError | null;
-  organization: IOrganization | null;
-
-  /**
-   * The notification to billing leaders stating the payment was rejected
-   */
-  notification: INotifyPaymentRejected;
-}
-
-/**
- * A notification sent to a user when their payment has been rejected
- */
-export interface INotifyPaymentRejected {
-  __typename: 'NotifyPaymentRejected';
-  organization: IOrganization;
-
-  /**
-   * A shortid for the notification
-   */
-  id: string;
-
-  /**
-   * true if the notification has been archived, else false (or null)
-   */
-  isArchived: boolean | null;
-
-  /**
-   * *The unique organization ID for this notification. Can be blank for targeted notifications
-   */
-  orgId: string | null;
-
-  /**
-   * The datetime to activate the notification & send it to the client
-   */
-  startAt: any;
-  type: NotificationEnum;
-
-  /**
-   * *The userId that should see this notification
-   */
-  userIds: string[];
-}
-
 export interface IUpdateAgendaItemInput {
   /**
    * The unique agenda item ID, composed of a teamId::shortid
@@ -6020,6 +5881,51 @@ export interface INotificationMeetingStageTimeLimitEnd {
    * The meeting that had the time limit expire
    */
   meeting: NewMeeting;
+}
+
+export interface IStripeFailPaymentPayload {
+  __typename: 'StripeFailPaymentPayload';
+  error: IStandardMutationError | null;
+  organization: IOrganization | null;
+
+  /**
+   * The notification to billing leaders stating the payment was rejected
+   */
+  notification: INotifyPaymentRejected;
+}
+
+/**
+ * A notification sent to a user when their payment has been rejected
+ */
+export interface INotifyPaymentRejected {
+  __typename: 'NotifyPaymentRejected';
+  organization: IOrganization;
+
+  /**
+   * A shortid for the notification
+   */
+  id: string;
+
+  /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null;
+
+  /**
+   * *The unique organization ID for this notification. Can be blank for targeted notifications
+   */
+  orgId: string | null;
+
+  /**
+   * The datetime to activate the notification & send it to the client
+   */
+  startAt: any;
+  type: NotificationEnum;
+
+  /**
+   * *The userId that should see this notification
+   */
+  userIds: string[];
 }
 
 /**
