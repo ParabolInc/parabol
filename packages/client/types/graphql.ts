@@ -4,13 +4,13 @@
 
 export interface IGraphQLResponseRoot {
   data?: IQuery | IMutation | ISubscription;
-  errors?: IGraphQLResponseError[];
+  errors?: Array<IGraphQLResponseError>;
 }
 
 export interface IGraphQLResponseError {
   /** Required for all errors */
   message: string;
-  locations?: IGraphQLResponseErrorLocation[];
+  locations?: Array<IGraphQLResponseErrorLocation>;
   /** 7.2.2 says 'GraphQL servers may provide additional entries to error' */
   [propName: string]: any;
 }
@@ -25,7 +25,7 @@ export interface IQuery {
   viewer: IUser | null;
   massInvitation: IMassInvitationPayload | null;
   verifiedInvitation: IVerifiedInvitationPayload | null;
-  authProviders: string[];
+  authProviders: Array<string>;
   SAMLIdP: string | null;
 }
 
@@ -76,7 +76,7 @@ export interface IUser {
   /**
    * All the integrations that the user could possibly use
    */
-  allAvailableIntegrations: SuggestedIntegration[];
+  allAvailableIntegrations: Array<SuggestedIntegration>;
   archivedTasks: ITaskConnection | null;
   archivedTasksCount: number | null;
 
@@ -88,7 +88,7 @@ export interface IUser {
   /**
    * Array of identifier + ip pairs
    */
-  blockedFor: (IBlockedUserType | null)[] | null;
+  blockedFor: Array<IBlockedUserType | null> | null;
 
   /**
    * The timestamp of the user was cached
@@ -103,7 +103,7 @@ export interface IUser {
   /**
    * The socketIds that the user is currently connected with
    */
-  connectedSockets: (string | null)[] | null;
+  connectedSockets: Array<string | null> | null;
 
   /**
    * The timestamp the user was created
@@ -134,7 +134,7 @@ export interface IUser {
    * An array of objects with information about the user's identities.
    *       More than one will exists in case accounts are linked
    */
-  identities: (IAuthIdentityType | null)[] | null;
+  identities: Array<IAuthIdentityType | null> | null;
 
   /**
    * true if the user is not currently being billed for service. removed on every websocket handshake
@@ -166,7 +166,7 @@ export interface IUser {
   /**
    * the most important actions for the user to perform
    */
-  suggestedActions: SuggestedAction[];
+  suggestedActions: Array<SuggestedAction>;
 
   /**
    * The timeline of important events for the viewer
@@ -231,12 +231,12 @@ export interface IUser {
   /**
    * A single user that is connected to a single organization
    */
-  organizationUsers: IOrganizationUser[];
+  organizationUsers: Array<IOrganizationUser>;
 
   /**
    * Get the list of all organizations a user belongs to
    */
-  organizations: IOrganization[];
+  organizations: Array<IOrganization>;
 
   /**
    * a string with message stating that the user is over the free tier limit, else null
@@ -262,7 +262,7 @@ export interface IUser {
   /**
    * all the teams the user is on that the viewer can see.
    */
-  teams: ITeam[];
+  teams: Array<ITeam>;
 
   /**
    * The team member associated with this user
@@ -272,7 +272,7 @@ export interface IUser {
   /**
    * all the teams the user is a part of that the viewer can see
    */
-  tms: string[];
+  tms: Array<string>;
 
   /**
    * The timestamp the user was last updated
@@ -472,7 +472,7 @@ export interface ITaskConnection {
   /**
    * A list of edges.
    */
-  edges: ITaskEdge[];
+  edges: Array<ITaskEdge>;
 }
 
 /**
@@ -559,7 +559,7 @@ export interface ITask {
   /**
    * a list of users currently editing the task (fed by a subscription, so queries return null)
    */
-  editors: ITaskEditorDetails[];
+  editors: Array<ITaskEditorDetails>;
   integration: TaskIntegration | null;
 
   /**
@@ -590,7 +590,7 @@ export interface ITask {
   /**
    * The tags associated with the task
    */
-  tags: string[];
+  tags: Array<string>;
 
   /**
    * The id of the team (indexed). Needed for subscribing to archived tasks
@@ -749,7 +749,7 @@ export interface ITeamMember {
   /**
    * A list of events and the slack channels they get posted to
    */
-  slackNotifications: ISlackNotification[];
+  slackNotifications: Array<ISlackNotification>;
 
   /**
    * Tasks owned by the team member
@@ -997,13 +997,13 @@ export interface ITeam {
   /**
    * Arbitrary tags that the team uses
    */
-  tags: (string | null)[] | null;
+  tags: Array<string | null> | null;
 
   /**
    * The datetime the team was last updated
    */
   updatedAt: any | null;
-  customPhaseItems: (CustomPhaseItem | null)[] | null;
+  customPhaseItems: Array<CustomPhaseItem | null> | null;
 
   /**
    * The unique Id of the active meeting
@@ -1013,7 +1013,7 @@ export interface ITeam {
   /**
    * The outstanding invitations to join the team
    */
-  teamInvitations: ITeamInvitation[] | null;
+  teamInvitations: Array<ITeamInvitation> | null;
 
   /**
    * true if the viewer is the team lead, else false
@@ -1028,7 +1028,7 @@ export interface ITeam {
   /**
    * a list of meetings that are currently in progress
    */
-  activeMeetings: NewMeeting[];
+  activeMeetings: Array<NewMeeting>;
 
   /**
    * The new meeting in progress, if any
@@ -1044,7 +1044,7 @@ export interface ITeam {
   /**
    * The agenda items for the upcoming or current meeting
    */
-  agendaItems: IAgendaItem[];
+  agendaItems: Array<IAgendaItem>;
 
   /**
    * All of the tasks for this team
@@ -1054,7 +1054,7 @@ export interface ITeam {
   /**
    * All the team members actively associated with the team
    */
-  teamMembers: ITeamMember[];
+  teamMembers: Array<ITeamMember>;
 
   /**
    * true if the team has been archived
@@ -1203,7 +1203,7 @@ export interface ITeamMeetingSettings {
   /**
    * The broad phase types that will be addressed during the meeting
    */
-  phaseTypes: NewMeetingPhaseTypeEnum[];
+  phaseTypes: Array<NewMeetingPhaseTypeEnum>;
 
   /**
    * FK
@@ -1281,7 +1281,7 @@ export interface INewMeeting {
   /**
    * The team members that were active during the time of the meeting
    */
-  meetingMembers: MeetingMember[];
+  meetingMembers: Array<MeetingMember>;
 
   /**
    * The auto-incrementing meeting number for the team
@@ -1292,7 +1292,7 @@ export interface INewMeeting {
   /**
    * The phases the meeting will go through, including all phase-specific state
    */
-  phases: NewMeetingPhase[];
+  phases: Array<NewMeetingPhase>;
 
   /**
    * The time the meeting summary was emailed to the team
@@ -1341,7 +1341,7 @@ export interface INewMeetingPhase {
    * The type of phase
    */
   phaseType: NewMeetingPhaseTypeEnum;
-  stages: NewMeetingStage[];
+  stages: Array<NewMeetingStage>;
 }
 
 /**
@@ -1489,7 +1489,7 @@ export interface IOrganization {
   /**
    * all the teams the viewer is on in the organization
    */
-  teams: ITeam[];
+  teams: Array<ITeam>;
 
   /**
    * The level of access to features on the parabol site
@@ -1547,7 +1547,7 @@ export interface IOrganization {
   /**
    * The leaders of the org
    */
-  billingLeaders: IUser[];
+  billingLeaders: Array<IUser>;
 }
 
 export interface IOrganizationUsersOnOrganizationArguments {
@@ -1591,7 +1591,7 @@ export interface IOrganizationUserConnection {
   /**
    * A list of edges.
    */
-  edges: IOrganizationUserEdge[];
+  edges: Array<IOrganizationUserEdge>;
 }
 
 /**
@@ -1777,7 +1777,7 @@ export interface IAtlassianAuth {
   /**
    * The atlassian cloud IDs that the user has granted
    */
-  cloudIds: string[];
+  cloudIds: Array<string>;
 
   /**
    * The timestamp the provider was created
@@ -1946,7 +1946,7 @@ export interface IInvoice {
   /**
    * The emails the invoice was sent to
    */
-  billingLeaderEmails: any[];
+  billingLeaderEmails: Array<any>;
 
   /**
    * the card used to pay the invoice
@@ -1966,7 +1966,7 @@ export interface IInvoice {
   /**
    * An invoice line item for previous month adjustments
    */
-  lines: IInvoiceLineItem[];
+  lines: Array<IInvoiceLineItem>;
 
   /**
    * The details that comprise the charges for next month
@@ -2038,7 +2038,7 @@ export interface IInvoiceLineItem {
   /**
    * Array of user activity line items that roll up to total activity (add/leave/pause/unpause)
    */
-  details: IInvoiceLineItemDetails[];
+  details: Array<IInvoiceLineItemDetails>;
 
   /**
    * The total number of days that all org users have been inactive during the billing cycle
@@ -2154,7 +2154,7 @@ export interface IInvoiceConnection {
   /**
    * A list of edges.
    */
-  edges: IInvoiceEdge[];
+  edges: Array<IInvoiceEdge>;
 }
 
 /**
@@ -2247,7 +2247,7 @@ export interface ITimelineEventConnection {
   /**
    * A list of edges.
    */
-  edges: ITimelineEventEdge[];
+  edges: Array<ITimelineEventEdge>;
 }
 
 /**
@@ -2376,7 +2376,7 @@ export interface INotificationConnection {
   /**
    * A list of edges.
    */
-  edges: INotificationEdge[];
+  edges: Array<INotificationEdge>;
 }
 
 /**
@@ -2428,7 +2428,7 @@ export interface INotification {
   /**
    * *The userId that should see this notification
    */
-  userIds: string[];
+  userIds: Array<string>;
 }
 
 /**
@@ -2460,7 +2460,7 @@ export interface ISuggestedIntegrationQueryPayload {
   /**
    * All the integrations that are likely to be integrated
    */
-  items: SuggestedIntegration[] | null;
+  items: Array<SuggestedIntegration> | null;
 }
 
 export interface IStandardMutationError {
@@ -3172,7 +3172,7 @@ export interface IInviteToTeamOnMutationArguments {
    * The id of the inviting team
    */
   teamId: string;
-  invitees: any[];
+  invitees: Array<any>;
 }
 
 export interface IEndNewMeetingOnMutationArguments {
@@ -3186,7 +3186,7 @@ export interface IMoveTeamToOrgOnMutationArguments {
   /**
    * The teamId that you want to move
    */
-  teamIds: string[];
+  teamIds: Array<string>;
 
   /**
    * The ID of the organization you want to move the team to
@@ -3358,7 +3358,7 @@ export interface ISetStageTimerOnMutationArguments {
 
 export interface ISetSlackNotificationOnMutationArguments {
   slackChannelId?: string | null;
-  slackNotificationEvents: SlackNotificationEventEnum[];
+  slackNotificationEvents: Array<SlackNotificationEventEnum>;
   teamId: string;
 }
 
@@ -3574,7 +3574,7 @@ export interface IAcceptTeamInvitationPayload {
   /**
    * The invite notifications that are no longer necessary
    */
-  removedNotificationIds: string[] | null;
+  removedNotificationIds: Array<string> | null;
 
   /**
    * For payloads going to the team leader that got new suggested actions
@@ -3662,7 +3662,7 @@ export interface IAddFeatureFlagPayload {
   /**
    * the users given the super power
    */
-  users: (IUser | null)[] | null;
+  users: Array<IUser | null> | null;
 
   /**
    * A human-readable result
@@ -3739,12 +3739,12 @@ export interface IArchiveTeamPayload {
    * A notification explaining that the team was archived and removed from view
    */
   notification: INotifyTeamArchived | null;
-  removedTeamNotifications: (TeamNotification | null)[] | null;
+  removedTeamNotifications: Array<TeamNotification | null> | null;
 
   /**
    * all the suggested actions that never happened
    */
-  removedSuggestedActionIds: (string | null)[] | null;
+  removedSuggestedActionIds: Array<string | null> | null;
 }
 
 /**
@@ -3778,7 +3778,7 @@ export interface INotifyTeamArchived {
   /**
    * *The userId that should see this notification
    */
-  userIds: string[];
+  userIds: Array<string>;
 }
 
 export type TeamNotification =
@@ -3796,9 +3796,9 @@ export interface IAutoGroupReflectionsPayload {
   __typename: 'AutoGroupReflectionsPayload';
   error: IStandardMutationError | null;
   meeting: IRetrospectiveMeeting | null;
-  reflections: (IRetroReflection | null)[] | null;
-  reflectionGroups: (IRetroReflectionGroup | null)[] | null;
-  removedReflectionGroups: (IRetroReflectionGroup | null)[] | null;
+  reflections: Array<IRetroReflection | null> | null;
+  reflectionGroups: Array<IRetroReflectionGroup | null> | null;
+  removedReflectionGroups: Array<IRetroReflectionGroup | null> | null;
 }
 
 /**
@@ -3845,7 +3845,7 @@ export interface IRetrospectiveMeeting {
   /**
    * The team members that were active during the time of the meeting
    */
-  meetingMembers: IRetrospectiveMeetingMember[];
+  meetingMembers: Array<IRetrospectiveMeetingMember>;
 
   /**
    * The auto-incrementing meeting number for the team
@@ -3856,7 +3856,7 @@ export interface IRetrospectiveMeeting {
   /**
    * The phases the meeting will go through, including all phase-specific state
    */
-  phases: NewMeetingPhase[];
+  phases: Array<NewMeetingPhase>;
 
   /**
    * The time the meeting summary was emailed to the team
@@ -3896,7 +3896,7 @@ export interface IRetrospectiveMeeting {
   /**
    * The grouped reflections
    */
-  reflectionGroups: IRetroReflectionGroup[];
+  reflectionGroups: Array<IRetroReflectionGroup>;
 
   /**
    * The settings that govern the retrospective meeting
@@ -3911,7 +3911,7 @@ export interface IRetrospectiveMeeting {
   /**
    * The tasks created within the meeting
    */
-  tasks: ITask[];
+  tasks: Array<ITask>;
 
   /**
    * The sum total of the votes remaining for the meeting members that are present in the meeting
@@ -3952,7 +3952,7 @@ export interface IRetrospectiveMeetingMember {
   /**
    * The tasks assigned to members during the meeting
    */
-  tasks: ITask[];
+  tasks: Array<ITask>;
   votesRemaining: number;
 }
 
@@ -3994,7 +3994,7 @@ export interface IRetroReflectionGroup {
    */
   meeting: IRetrospectiveMeeting;
   phaseItem: IRetroPhaseItem;
-  reflections: IRetroReflection[];
+  reflections: Array<IRetroReflection>;
 
   /**
    * The foreign key to link a reflection group to its phaseItem. Immutable.
@@ -4014,7 +4014,7 @@ export interface IRetroReflectionGroup {
   /**
    * The tasks created for this group in the discussion phase
    */
-  tasks: ITask[];
+  tasks: Array<ITask>;
 
   /**
    * The team that is running the retro
@@ -4039,7 +4039,7 @@ export interface IRetroReflectionGroup {
   /**
    * A list of voterIds (userIds). Not available to team to preserve anonymity
    */
-  voterIds: string[];
+  voterIds: Array<string>;
 
   /**
    * The number of votes this group has received
@@ -4142,7 +4142,7 @@ export interface IReflectTemplate {
   /**
    * The prompts that are part of this template
    */
-  prompts: IRetroPhaseItem[];
+  prompts: Array<IRetroPhaseItem>;
 
   /**
    * *Foreign key. The team this template belongs to
@@ -4180,7 +4180,7 @@ export interface IRetroReflection {
   /**
    * an array of all the socketIds that are currently editing the reflection
    */
-  editorIds: string[];
+  editorIds: Array<string>;
 
   /**
    * True if the reflection was not removed, else false
@@ -4200,7 +4200,7 @@ export interface IRetroReflection {
   /**
    * The entities (i.e. nouns) parsed from the content and their respective salience
    */
-  entities: IGoogleAnalyzedEntity[];
+  entities: Array<IGoogleAnalyzedEntity>;
 
   /**
    * The foreign key to link a reflection to its meeting
@@ -4283,7 +4283,7 @@ export interface IRetrospectiveMeetingSettings {
   /**
    * The broad phase types that will be addressed during the meeting
    */
-  phaseTypes: NewMeetingPhaseTypeEnum[];
+  phaseTypes: Array<NewMeetingPhaseTypeEnum>;
 
   /**
    * FK
@@ -4298,7 +4298,7 @@ export interface IRetrospectiveMeetingSettings {
   /**
    * the team-specific questions to ask during a retro
    */
-  phaseItems: CustomPhaseItem[] | null;
+  phaseItems: Array<CustomPhaseItem> | null;
 
   /**
    * The total number of votes each team member receives for the voting phase
@@ -4318,7 +4318,7 @@ export interface IRetrospectiveMeetingSettings {
   /**
    * The list of templates used to start a retrospective
    */
-  reflectTemplates: IReflectTemplate[];
+  reflectTemplates: Array<IReflectTemplate>;
 }
 
 export interface IChangeTaskTeamPayload {
@@ -4363,7 +4363,7 @@ export interface INotifyTaskInvolves {
   /**
    * *The userId that should see this notification
    */
-  userIds: string[];
+  userIds: Array<string>;
 
   /**
    * How the user is affiliated with the task
@@ -4476,7 +4476,7 @@ export interface ICreateReflectionPayload {
   /**
    * The stages that were unlocked by navigating
    */
-  unlockedStages: NewMeetingStage[] | null;
+  unlockedStages: Array<NewMeetingStage> | null;
 }
 
 export interface ICreateTaskInput {
@@ -4607,7 +4607,7 @@ export interface IDowngradeToPersonalPayload {
   /**
    * The updated teams under the org
    */
-  teams: (ITeam | null)[] | null;
+  teams: Array<ITeam | null> | null;
 }
 
 export interface IDragDiscussionTopicPayload {
@@ -4868,7 +4868,7 @@ export interface IInviteToTeamPayload {
   /**
    * A list of email addresses the invitations were sent to
    */
-  invitees: any[] | null;
+  invitees: Array<any> | null;
 
   /**
    * the notification ID if this payload is sent to a subscriber, else null
@@ -4932,7 +4932,7 @@ export interface INotificationTeamInvitation {
   /**
    * *The userId that should see this notification
    */
-  userIds: string[];
+  userIds: Array<string>;
 }
 
 export interface IEndNewMeetingPayload {
@@ -4950,12 +4950,12 @@ export interface IEndNewMeetingPayload {
    * The ID of the suggestion to try a retro meeting, if tried
    */
   removedSuggestedActionId: string | null;
-  updatedTaskIds: string[] | null;
+  updatedTaskIds: Array<string> | null;
 
   /**
    * Any tasks that were updated during the meeting
    */
-  updatedTasks: ITask[];
+  updatedTasks: Array<ITask>;
 }
 
 export interface INavigateMeetingPayload {
@@ -4981,7 +4981,7 @@ export interface INavigateMeetingPayload {
   /**
    * The stages that were unlocked by navigating
    */
-  unlockedStages: NewMeetingStage[] | null;
+  unlockedStages: Array<NewMeetingStage> | null;
 }
 
 export interface IPhaseCompletePayload {
@@ -5009,7 +5009,7 @@ export interface IReflectPhaseCompletePayload {
   /**
    * a list of empty reflection groups to remove
    */
-  emptyReflectionGroupIds: (string | null)[] | null;
+  emptyReflectionGroupIds: Array<string | null> | null;
 }
 
 export interface IGroupPhaseCompletePayload {
@@ -5023,7 +5023,7 @@ export interface IGroupPhaseCompletePayload {
   /**
    * a list of updated reflection groups
    */
-  reflectionGroups: (IRetroReflectionGroup | null)[] | null;
+  reflectionGroups: Array<IRetroReflectionGroup | null> | null;
 }
 
 export interface IVotePhaseCompletePayload {
@@ -5134,17 +5134,17 @@ export interface IRemoveOrgUserPayload {
   /**
    * The teams the user was removed from
    */
-  teams: (ITeam | null)[] | null;
+  teams: Array<ITeam | null> | null;
 
   /**
    * The teamMembers removed
    */
-  teamMembers: (ITeamMember | null)[] | null;
+  teamMembers: Array<ITeamMember | null> | null;
 
   /**
    * The tasks that were archived or reassigned
    */
-  updatedTasks: (ITask | null)[] | null;
+  updatedTasks: Array<ITask | null> | null;
 
   /**
    * The user removed from the organization
@@ -5154,17 +5154,17 @@ export interface IRemoveOrgUserPayload {
   /**
    * The notifications relating to a team the user was removed from
    */
-  removedTeamNotifications: (Notification | null)[] | null;
+  removedTeamNotifications: Array<Notification | null> | null;
 
   /**
    * The notifications that are no longer relevant to the removed org user
    */
-  removedOrgNotifications: (Notification | null)[] | null;
+  removedOrgNotifications: Array<Notification | null> | null;
 
   /**
    * The notifications for each team the user was kicked out of
    */
-  kickOutNotifications: (INotifyKickedOut | null)[] | null;
+  kickOutNotifications: Array<INotifyKickedOut | null> | null;
 
   /**
    * The organization member that got removed
@@ -5203,7 +5203,7 @@ export interface INotifyKickedOut {
   /**
    * *The userId that should see this notification
    */
-  userIds: string[];
+  userIds: Array<string>;
 
   /**
    * true if kicked out, false if leaving by choice
@@ -5235,7 +5235,7 @@ export interface IRemoveReflectionPayload {
   /**
    * The stages that were unlocked by navigating
    */
-  unlockedStages: NewMeetingStage[] | null;
+  unlockedStages: Array<NewMeetingStage> | null;
 }
 
 export interface IRemoveSlackAuthPayload {
@@ -5271,7 +5271,7 @@ export interface IRemoveTeamMemberPayload {
   /**
    * The tasks that got reassigned
    */
-  updatedTasks: (ITask | null)[] | null;
+  updatedTasks: Array<ITask | null> | null;
 
   /**
    * The user removed from the team
@@ -5281,7 +5281,7 @@ export interface IRemoveTeamMemberPayload {
   /**
    * Any notifications pertaining to the team that are no longer relevant
    */
-  removedNotifications: (Notification | null)[] | null;
+  removedNotifications: Array<Notification | null> | null;
 
   /**
    * A notification if you were kicked out by the team leader
@@ -5344,7 +5344,7 @@ export interface IReflectPhase {
    * The type of phase
    */
   phaseType: NewMeetingPhaseTypeEnum;
-  stages: IGenericMeetingStage[];
+  stages: Array<IGenericMeetingStage>;
 
   /**
    * foreign key. use focusedPhaseItem
@@ -5364,7 +5364,7 @@ export interface IReflectPhase {
   /**
    * The prompts used during the reflect phase
    */
-  reflectPrompts: IRetroPhaseItem[];
+  reflectPrompts: Array<IRetroPhaseItem>;
   teamId: string;
 }
 
@@ -5468,7 +5468,7 @@ export interface ISetStageTimerPayload {
 export interface ISetSlackNotificationPayload {
   __typename: 'SetSlackNotificationPayload';
   error: IStandardMutationError | null;
-  slackNotifications: ISlackNotification[] | null;
+  slackNotifications: Array<ISlackNotification> | null;
 
   /**
    * The user with updated slack notifications
@@ -5544,7 +5544,7 @@ export interface IUpdateCreditCardPayload {
   /**
    * The teams that are now paid up
    */
-  teamsUpdated: (ITeam | null)[] | null;
+  teamsUpdated: Array<ITeam | null> | null;
 }
 
 export interface IUpdateOrgInput {
@@ -5706,7 +5706,7 @@ export interface IUpdateUserProfilePayload {
   /**
    * The updated team member
    */
-  teamMembers: ITeamMember[] | null;
+  teamMembers: Array<ITeamMember> | null;
 }
 
 export interface IVoteForReflectionGroupPayload {
@@ -5719,7 +5719,7 @@ export interface IVoteForReflectionGroupPayload {
   /**
    * The stages that were locked or unlocked by having at least 1 vote
    */
-  unlockedStages: NewMeetingStage[] | null;
+  unlockedStages: Array<NewMeetingStage> | null;
 }
 
 export interface ILoginPayload {
@@ -5749,7 +5749,7 @@ export interface IUpgradeToProPayload {
   /**
    * The updated teams under the org
    */
-  teams: (ITeam | null)[] | null;
+  teams: Array<ITeam | null> | null;
 }
 
 export interface IAddReflectTemplatePayload {
@@ -5870,7 +5870,7 @@ export interface INotificationMeetingStageTimeLimitEnd {
   /**
    * *The userId that should see this notification
    */
-  userIds: string[];
+  userIds: Array<string>;
 
   /**
    * FK
@@ -5925,7 +5925,7 @@ export interface INotifyPaymentRejected {
   /**
    * *The userId that should see this notification
    */
-  userIds: string[];
+  userIds: Array<string>;
 }
 
 /**
@@ -5959,7 +5959,7 @@ export interface ISetOrgUserRoleAddedPayload {
   /**
    * If promoted, notify them and give them all other admin notifications
    */
-  notificationsAdded: (Notification | null)[] | null;
+  notificationsAdded: Array<Notification | null> | null;
 }
 
 export interface ISetOrgUserRoleRemovedPayload {
@@ -5971,7 +5971,7 @@ export interface ISetOrgUserRoleRemovedPayload {
   /**
    * If demoted, notify them and remove all other admin notifications
    */
-  notificationsRemoved: (Notification | null)[] | null;
+  notificationsRemoved: Array<Notification | null> | null;
 }
 
 export type TaskSubscriptionPayload =
@@ -6064,7 +6064,7 @@ export interface ICheckInPhase {
    * The type of phase
    */
   phaseType: NewMeetingPhaseTypeEnum;
-  stages: ICheckInStage[];
+  stages: Array<ICheckInStage>;
 
   /**
    * The checkIn greeting (fun language)
@@ -6226,7 +6226,7 @@ export interface IDiscussPhase {
    * The type of phase
    */
   phaseType: NewMeetingPhaseTypeEnum;
-  stages: IRetroDiscussStage[];
+  stages: Array<IRetroDiscussStage>;
 }
 
 /**
@@ -6245,7 +6245,7 @@ export interface IUpdatesPhase {
    * The type of phase
    */
   phaseType: NewMeetingPhaseTypeEnum;
-  stages: IUpdatesStage[];
+  stages: Array<IUpdatesStage>;
 }
 
 /**
@@ -6361,7 +6361,7 @@ export interface IAgendaItemsPhase {
    * The type of phase
    */
   phaseType: NewMeetingPhaseTypeEnum;
-  stages: IAgendaItemsStage[];
+  stages: Array<IAgendaItemsStage>;
 }
 
 /**
@@ -6473,7 +6473,7 @@ export interface IGenericMeetingPhase {
    * The type of phase
    */
   phaseType: NewMeetingPhaseTypeEnum;
-  stages: IGenericMeetingStage[];
+  stages: Array<IGenericMeetingStage>;
 }
 
 /**
@@ -6507,7 +6507,7 @@ export interface INotifyPromoteToOrgLeader {
   /**
    * *The userId that should see this notification
    */
-  userIds: string[];
+  userIds: Array<string>;
 }
 
 /**
@@ -6554,7 +6554,7 @@ export interface IActionMeeting {
   /**
    * The team members that were active during the time of the meeting
    */
-  meetingMembers: IActionMeetingMember[];
+  meetingMembers: Array<IActionMeetingMember>;
 
   /**
    * The auto-incrementing meeting number for the team
@@ -6565,7 +6565,7 @@ export interface IActionMeeting {
   /**
    * The phases the meeting will go through, including all phase-specific state
    */
-  phases: NewMeetingPhase[];
+  phases: Array<NewMeetingPhase>;
 
   /**
    * The time the meeting summary was emailed to the team
@@ -6605,7 +6605,7 @@ export interface IActionMeeting {
   /**
    * The tasks created within the meeting
    */
-  tasks: ITask[];
+  tasks: Array<ITask>;
 }
 
 /**
@@ -6637,12 +6637,12 @@ export interface IActionMeetingMember {
   /**
    * The tasks marked as done in the meeting
    */
-  doneTasks: ITask[];
+  doneTasks: Array<ITask>;
 
   /**
    * The tasks assigned to members during the meeting
    */
-  tasks: ITask[];
+  tasks: Array<ITask>;
 }
 
 /**
@@ -6660,7 +6660,7 @@ export interface IActionMeetingSettings {
   /**
    * The broad phase types that will be addressed during the meeting
    */
-  phaseTypes: NewMeetingPhaseTypeEnum[];
+  phaseTypes: Array<NewMeetingPhaseTypeEnum>;
 
   /**
    * FK

@@ -5,7 +5,7 @@ import cors from 'cors'
 import bodyParser from 'body-parser'
 import jwt from 'express-jwt'
 import favicon from 'serve-favicon'
-// import * as Sentry from '@sentry/node'
+import * as Sentry from '@sentry/node'
 import createSSR from './createSSR'
 import emailSSR from './emailSSR'
 import {clientSecret as secretKey} from './utils/auth0Helpers'
@@ -27,7 +27,7 @@ import SSEPingHandler from './sse/SSEPingHandler'
 import ms from 'ms'
 import rateLimit from 'express-rate-limit'
 import demoEntityHandler from './demoEntityHandler'
-// import * as Integrations from '@sentry/integrations'
+import * as Integrations from '@sentry/integrations'
 import consumeSAML from './utils/consumeSAML'
 
 declare global {
@@ -63,17 +63,17 @@ const sharedDataLoader = new DataLoaderWarehouse({
 const rateLimiter = new RateLimiter()
 // keep a hash table of connection contexts
 const sseClients = {}
-// Sentry.init({
-//   environment: process.env.NODE_ENV,
-//   dsn: process.env.SENTRY_DSN,
-//   release: APP_VERSION,
-//   ignoreErrors: ['429 Too Many Requests', /language \S+ is not supported/],
-//   integrations: [
-//     new Integrations.RewriteFrames({
-//       root: global.__rootdir__
-//     })
-//   ]
-// })
+Sentry.init({
+  environment: process.env.NODE_ENV,
+  dsn: process.env.SENTRY_DSN,
+  release: APP_VERSION,
+  ignoreErrors: ['429 Too Many Requests', /language \S+ is not supported/],
+  integrations: [
+    new Integrations.RewriteFrames({
+      root: global.__rootdir__
+    })
+  ]
+})
 
 app.use('/static', express.static(path.join(PROJECT_ROOT, 'build'), {
   setHeaders: (res, path) => {
@@ -119,9 +119,9 @@ if (!PROD) {
       }
     })
   )
-// } else {
+} else {
   // sentry.io request handler capture middleware, must be first:
-  // app.use(Sentry.Handlers.requestHandler())
+  app.use(Sentry.Handlers.requestHandler())
 }
 
 // setup middleware

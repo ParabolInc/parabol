@@ -174,7 +174,9 @@
     "shortid": "^2.2.8",
     "string-similarity": "^3.0.0",
     "stripe": "^4.24.0",
-    "ts-node": "^8.3.0"
+    "ts-node": "^8.3.0",
+    "@sentry/integrations": "^5.5.0",
+    "@sentry/node": "^5.5.0"
   },
   "lint-staged": {
     "*.{js,ts,tsx}": [
