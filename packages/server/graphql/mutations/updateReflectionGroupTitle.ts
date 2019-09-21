@@ -10,7 +10,6 @@ import isPhaseComplete from '../../../client/utils/meetings/isPhaseComplete'
 import standardError from '../../utils/standardError'
 import {IUpdateReflectionGroupTitleOnMutationArguments} from '../../../client/types/graphql'
 import {GQLContext} from '../graphql'
-import updateSmartGroupTitle from './helpers/updateReflectionLocation/updateSmartGroupTitle'
 
 export default {
   type: UpdateReflectionGroupTitlePayload,
@@ -65,7 +64,12 @@ export default {
     }
 
     // RESOLUTION
-    await updateSmartGroupTitle(reflectionGroupId, normalizedTitle)
+    await r
+      .table('RetroReflectionGroup')
+      .get(reflectionGroupId)
+      .update({
+        title: normalizedTitle
+      })
 
     if (smartTitle && smartTitle === oldTitle) {
       // let's see how smart those smart titles really are. A high similarity means very helpful. Not calling this mutation means perfect!
