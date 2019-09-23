@@ -1,4 +1,3 @@
-import cloudKey from './.googlecloudkey.json'
 import {sign} from 'jsonwebtoken'
 import fetch from 'node-fetch'
 
@@ -49,6 +48,12 @@ interface GoogleError {
   status: string
 }
 
+interface CloudKey {
+  client_email: string
+  private_key_id: string
+  private_key: string
+}
+
 export type GoogleErrorResponse = [{
   error: GoogleError
 }]
@@ -56,8 +61,9 @@ export type GoogleErrorResponse = [{
 export default class GoogleLanguageManager {
   static GOOGLE_EXPIRY = 3600
   jwt!: string
-
-  constructor () {
+  cloudKey: CloudKey
+  constructor (cloudKey: CloudKey) {
+    this.cloudKey = cloudKey
     const timeout = (GoogleLanguageManager.GOOGLE_EXPIRY - 100) * 1000
     this.refreshJWT()
     setInterval(() => {
@@ -66,7 +72,7 @@ export default class GoogleLanguageManager {
   }
 
   refreshJWT () {
-    const {client_email, private_key_id, private_key} = cloudKey
+    const {client_email, private_key_id, private_key} = this.cloudKey
     this.jwt = sign({}, private_key, {
       algorithm: 'RS256',
       audience: 'https://language.googleapis.com/',
