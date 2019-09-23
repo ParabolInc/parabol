@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.5.2 2019-Sep-23
+
+## Added 
+* Dumpy to dump stack heap info when SIGPIPE received
+
+## Fixed
+* make start meeting more transactional to avoid duplicate start meetings
+
 ## 4.5.1 2019-Sep-20
 
 ### Removed
