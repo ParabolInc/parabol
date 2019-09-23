@@ -29,6 +29,7 @@ import rateLimit from 'express-rate-limit'
 import demoEntityHandler from './demoEntityHandler'
 // import * as Integrations from '@sentry/integrations'
 import consumeSAML from './utils/consumeSAML'
+import dumpy from './dumpy'
 
 declare global {
   namespace NodeJS {
@@ -45,6 +46,7 @@ interface StripeRequest extends express.Request {
 const APP_VERSION = process.env.npm_package_version
 const PROJECT_ROOT = path.join(__dirname, '..', '..')
 
+dumpy({path: PROJECT_ROOT})
 // Import .env and expand variables:
 getDotenv()
 
