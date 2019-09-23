@@ -60,6 +60,7 @@ const MeetingAgendaCards = (props: Props) => {
         return (
           <React.Fragment>
             {tasks.map((task) => {
+              if (!task) return null
               return (
                 <div key={task.id} ref={setItemRef(task.id)}>
                   <NullableTask area={AreaEnum.meeting} isAgenda task={task} />
