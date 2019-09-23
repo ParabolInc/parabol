@@ -4185,11 +4185,7 @@ export interface IRetroReflection {
   /**
    * True if the reflection was not removed, else false
    */
-<<<<<<< HEAD
-  isActive: boolean | null;
-=======
   isActive: boolean;
->>>>>>> beautiful-grouping
 
   /**
    * true if the viewer (userId) is the creator of the retro reflection, else false
