@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.5.3 2019-Sep-23
+
+## Removed
+* Google language client (source of memory leak since v3.16.0)
+
 ## 4.5.2 2019-Sep-23
 
 ## Added 
