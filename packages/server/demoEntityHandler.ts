@@ -5,6 +5,8 @@ import sanitizeAnalyzedEntitiesResponse from './graphql/mutations/helpers/autoGr
 import promiseAllObj from '../client/utils/promiseAllObj'
 import promiseAllPartial from 'parabol-client/utils/promiseAllPartial'
 import sendToSentry from './utils/sendToSentry'
+import {RequestHandler} from 'express'
+import GoogleAnalyzedEntity from './database/types/GoogleAnalyzedEntity'
 
 const catchHandler = (e: Error) => {
   const re = /language \S+ is not supported/
@@ -14,7 +16,7 @@ const catchHandler = (e: Error) => {
   return null
 }
 
-const demoEntityHandler = async (req, res) => {
+const demoEntityHandler: RequestHandler = async (req, res) => {
   if (!req.body || !Array.isArray(req.body.texts)) {
     res.sendStatus(404)
     return
@@ -34,7 +36,7 @@ const demoEntityHandler = async (req, res) => {
   const sanitizedReflectionResponses = reflectionResponses.map(sanitizeAnalyzedEntitiesResponse)
   const responsesWithLemma = sanitizedReflectionResponses.map((response, idx) =>
     addLemmaToEntities(response, reflectionSyntax[idx])
-  )
+  ) as GoogleAnalyzedEntity[][]
   res.send(JSON.stringify(responsesWithLemma))
 }
 

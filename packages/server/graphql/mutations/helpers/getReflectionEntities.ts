@@ -12,6 +12,7 @@ const catchHandler = (e: Error) => {
 }
 
 const getReflectionEntities = async (plaintextContent: string) => {
+  if (!plaintextContent) return []
   const res = await Promise.all([
     getEntitiesFromText(plaintextContent),
     getSyntaxFromText(plaintextContent)

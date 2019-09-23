@@ -1,7 +1,9 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
-import stripe from '../../billing/stripe'
-import getRethink from '../../database/rethinkDriver'
-import getCCFromCustomer from './helpers/getCCFromCustomer'
+import {InternalContext} from '../../graphql'
+import {isSuperUser} from '../../../utils/authorization'
+import getRethink from '../../../database/rethinkDriver'
+import getCCFromCustomer from '../../mutations/helpers/getCCFromCustomer'
+import StripeManager from '../../../utils/StripeManager'
 
 export default {
   name: 'StripeUpdateCreditCard',
@@ -13,13 +15,14 @@ export default {
       description: 'The stripe customer ID, or stripeId'
     }
   },
-  resolve: async (source, {customerId}, {serverSecret}) => {
+  resolve: async (_source, {customerId}, {authToken}: InternalContext) => {
     // AUTH
-    if (serverSecret !== process.env.AUTH0_CLIENT_SECRET) {
+    if (!isSuperUser(authToken)) {
       throw new Error('Don’t be rude.')
     }
     const r = getRethink()
-    const customer = await stripe.customers.retrieve(customerId)
+    const manager = new StripeManager()
+    const customer = await manager.retrieveCustomer(customerId)
     const creditCard = getCCFromCustomer(customer)
     const {
       metadata: {orgId}

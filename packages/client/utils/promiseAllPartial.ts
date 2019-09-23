@@ -10,7 +10,7 @@ type CatchHandler = (e: Error) => NotVoid
 
 const defaultCatchHandler: CatchHandler = () => null
 
-const promiseAllPartial = async (promiseArr, catchHandler: CatchHandler = defaultCatchHandler) => {
+const promiseAllPartial = async (promiseArr: Promise<any>[], catchHandler: CatchHandler = defaultCatchHandler) => {
   const arr: any[] = []
   for (let ii = 0; ii < promiseArr.length; ii++) {
     const promise = promiseArr[ii]

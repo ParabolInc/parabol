@@ -37,10 +37,8 @@ const TimelineRightDrawer = (props: Props) => {
   return (
     <RightDrawer>
       <ErrorBoundary>
-        <>
-          <TimelineNewFeature viewer={viewer} />
-          <TimelinePriorityTasks viewer={viewer} />
-        </>
+        <TimelineNewFeature viewer={viewer} />
+        <TimelinePriorityTasks viewer={viewer} />
       </ErrorBoundary>
     </RightDrawer>
   )

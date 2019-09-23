@@ -1,10 +1,11 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import ms from 'ms'
-import getRethink from '../../database/rethinkDriver'
-import getPubSub from '../../utils/getPubSub'
-import {DONE, GITHUB} from '../../../client/utils/constants'
-import getTagsFromEntityMap from '../../../client/utils/draftjs/getTagsFromEntityMap'
-import removeAllRangesForEntity from '../../../client/utils/draftjs/removeAllRangesForEntity'
+import getRethink from '../../../database/rethinkDriver'
+import getPubSub from '../../../utils/getPubSub'
+import {DONE, GITHUB} from 'parabol-client/utils/constants'
+import getTagsFromEntityMap from 'parabol-client/utils/draftjs/getTagsFromEntityMap'
+import removeAllRangesForEntity from '../../../../client/utils/draftjs/removeAllRangesForEntity'
+import {isSuperUser} from '../../../utils/authorization'
 
 export default {
   name: 'GitHubAddAssignee',
@@ -24,11 +25,12 @@ export default {
       description: 'The repo name and owner'
     }
   },
-  resolve: async (source, {integrationId, assigneeLogin, nameWithOwner}, {serverSecret}) => {
+  resolve: async (_source, {integrationId, assigneeLogin, nameWithOwner}, {authToken}) => {
     const r = getRethink()
     const now = new Date()
+
     // AUTH
-    if (serverSecret !== process.env.AUTH0_CLIENT_SECRET) {
+    if (!isSuperUser(authToken)) {
       throw new Error('Don’t be rude.')
     }
 
@@ -75,10 +77,12 @@ export default {
       const teamMemberId = `${userId}::${teamId}`
       const updateObj = {
         teamMemberId,
-        updatedAt: now
+        updatedAt: now,
+        content: undefined,
+        tags: undefined as undefined | string[]
       }
       // see if they unassigned someone before assigning a new person. not perfect, but probably close
-      if (tags.includes('archived') && (status !== DONE || updatedAt > now - ms('5m'))) {
+      if (tags.includes('archived') && (status !== DONE || updatedAt > now.getTime() - ms('5m'))) {
         const eqFn = (data) => data.value === 'archived'
         const nextContent = removeAllRangesForEntity(content, 'TAG', eqFn)
         if (nextContent) {

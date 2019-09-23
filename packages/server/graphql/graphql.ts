@@ -7,6 +7,7 @@ import {validateSchema} from 'graphql/type/validate'
 import {validate} from 'graphql/validation/validate'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import RethinkDataLoader from '../utils/RethinkDataLoader'
+import AuthToken from '../database/types/AuthToken'
 
 // Avoid needless parsing & validating for the 300 hottest operations
 interface DocumentCache {
@@ -23,7 +24,8 @@ export type GQLContext = Pick<ConnectionContext, 'authToken' | 'rateLimiter' | '
 }
 
 export interface InternalContext {
-  serverSecret: string
+  dataLoader: DataLoaderWorker
+  authToken: AuthToken
 }
 
 // type Unpromise<T> = T extends Promise<infer U> ? U : T

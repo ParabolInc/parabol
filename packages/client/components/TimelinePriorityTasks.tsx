@@ -56,7 +56,8 @@ const TimelinePriorityTasks = (props: Props) => {
     return nodes
       .filter((node) => node.status === ACTIVE)
       .sort((a, b) => (a.sortOrder < b.sortOrder ? 1 : -1))
-  }, [tasks])
+    // try checking for length in case relay is screwing up & not invalidating (repro: sometimes cypress fails)
+  }, [tasks, tasks.edges.length])
 
   const onDragEnd = useEventCallback(
     (result: DropResult) => {

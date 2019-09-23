@@ -1,6 +1,8 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from '../../database/rethinkDriver'
-import StripeManager from '../../utils/StripeManager'
+import getRethink from '../../../database/rethinkDriver'
+import StripeManager from '../../../utils/StripeManager'
+import {isSuperUser} from '../../../utils/authorization'
+import {InternalContext} from '../../graphql'
 
 export default {
   name: 'StripeInvoiceFinalized',
@@ -12,12 +14,12 @@ export default {
       description: 'The stripe invoice ID'
     }
   },
-  resolve: async (_source, {invoiceId}, {serverSecret}) => {
+  resolve: async (_source, {invoiceId}, {authToken}: InternalContext) => {
     const r = getRethink()
     const now = new Date()
 
     // AUTH
-    if (serverSecret !== process.env.AUTH0_CLIENT_SECRET) {
+    if (!isSuperUser(authToken)) {
       throw new Error('Don’t be rude.')
     }
 

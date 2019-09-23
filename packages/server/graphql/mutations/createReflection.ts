@@ -82,9 +82,11 @@ export default {
       updatedAt: now
     })
 
+    const smartTitle = getGroupSmartTitle([reflection])
     const reflectionGroup = new ReflectionGroup({
       id: reflectionGroupId,
-      smartTitle: getGroupSmartTitle([reflection]),
+      smartTitle,
+      title: smartTitle,
       meetingId,
       retroPhaseItemId,
       sortOrder,

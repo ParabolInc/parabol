@@ -62,7 +62,7 @@ const ReflectionGroup = (props: Props) => {
   const {localPhase, localStage} = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
-  const {reflections, id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
+  const {reflections, id: reflectionGroupId, titleIsUserDefined, title} = reflectionGroup
   const titleInputRef = useRef(null)
   const headerRef = useRef<HTMLDivElement>(null)
   const staticReflections = useMemo(() => {
@@ -109,6 +109,7 @@ const ReflectionGroup = (props: Props) => {
     }
   }, [])
 
+  console.log('title', title)
   const showHeader = phaseType !== GROUP || titleIsUserDefined || reflections.length > 1 || isEditing
   return (
     <>
@@ -188,6 +189,7 @@ export default createFragmentContainer(ReflectionGroup,
         id
         sortOrder
         titleIsUserDefined
+        title
         reflections {
           ...DraggableReflectionCard_reflection
           ...DraggableReflectionCard_staticReflections

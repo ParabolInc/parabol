@@ -14,7 +14,7 @@ import httpGraphQLHandler from './graphql/httpGraphQLHandler'
 import stripeWebhookHandler from './billing/stripeWebhookHandler'
 import getDotenv from '../server/utils/dotenv'
 import sendICS from './sendICS'
-import handleGitHubWebhooks from './integrations/handleGitHubWebhooks'
+import githubWebhookHandler from './integrations/githubWebhookHandler'
 import DataLoaderWarehouse from 'dataloader-warehouse'
 import {WebSocketServer} from '@clusterws/cws'
 import http from 'http'
@@ -157,15 +157,13 @@ app.post(
 )
 
 // HTTP Intranet GraphQL endpoint:
-const intranetGraphQLHandler = intranetHttpGraphQLHandler(sharedDataLoader, rateLimiter, true)
 app.post(
   '/intranet-graphql',
   jwt({
     secret: Buffer.from(secretKey, 'base64'),
     credentialsRequired: true
   }),
-  intranetGraphQLHandler
-)
+  intranetHttpGraphQLHandler)
 
 // server-side rendering for emails
 if (!PROD) {
@@ -174,9 +172,9 @@ if (!PROD) {
 app.get('/email/createics', sendICS)
 
 // stripe webhooks
-app.post('/stripe', stripeWebhookHandler(sharedDataLoader))
+app.post('/stripe', stripeWebhookHandler)
 
-app.post('/webhooks/github', handleGitHubWebhooks)
+app.post('/webhooks/github', githubWebhookHandler)
 
 // app.post('/rtc-fallback', WRTCFallbackHandler(sharedDataLoader, rateLimiter))
 
@@ -192,7 +190,7 @@ const demoEntityLimiter = rateLimit({
 })
 app.post('/get-demo-entities', demoEntityLimiter, demoEntityHandler)
 
-app.post('/saml/:domain', consumeSAML(intranetHttpGraphQLHandler(sharedDataLoader, rateLimiter)))
+app.post('/saml/:domain', consumeSAML)
 
 // return web app
 app.get('*', createSSR)

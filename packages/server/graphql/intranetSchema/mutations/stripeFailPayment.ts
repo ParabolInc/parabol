@@ -1,13 +1,15 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import fetchAllLines from '../../billing/helpers/fetchAllLines'
-import terminateSubscription from '../../billing/helpers/terminateSubscription'
-import getRethink from '../../database/rethinkDriver'
-import StripeFailPaymentPayload from '../types/StripeFailPaymentPayload'
-import publish from '../../utils/publish'
+import fetchAllLines from '../../../billing/helpers/fetchAllLines'
+import terminateSubscription from '../../../billing/helpers/terminateSubscription'
+import getRethink from '../../../database/rethinkDriver'
+import StripeFailPaymentPayload from '../../types/StripeFailPaymentPayload'
+import publish from '../../../utils/publish'
 import shortid from 'shortid'
-import { NOTIFICATION, PAYMENT_REJECTED} from '../../../client/utils/constants'
-import StripeManager from '../../utils/StripeManager'
-import {InvoiceStatusEnum, IOrganization, OrgUserRole} from '../../../client/types/graphql'
+import { NOTIFICATION, PAYMENT_REJECTED} from 'parabol-client/utils/constants'
+import StripeManager from '../../../utils/StripeManager'
+import {InvoiceStatusEnum, IOrganization, OrgUserRole} from 'parabol-client/types/graphql'
+import {isSuperUser} from '../../../utils/authorization'
+import {InternalContext} from '../../graphql'
 
 export default {
   name: 'StripeFailPayment',
@@ -19,9 +21,9 @@ export default {
       description: 'The stripe invoice ID'
     }
   },
-  resolve: async (_source, {invoiceId}, {serverSecret}) => {
+  resolve: async (_source, {invoiceId}, {authToken}: InternalContext) => {
     // AUTH
-    if (serverSecret !== process.env.AUTH0_CLIENT_SECRET) {
+    if (!isSuperUser(authToken)) {
       throw new Error('Don’t be rude.')
     }
 

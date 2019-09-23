@@ -54,7 +54,7 @@ class ReflectionGroupVoting extends Component<Props> {
       meetingId,
       viewerMeetingMember: {isCheckedIn}
     } = meeting
-    const {reflectionGroupId} = reflectionGroup
+    const {id: reflectionGroupId} = reflectionGroup
     submitMutation()
     const handleCompleted = (res, errors) => {
       onCompleted()
@@ -90,7 +90,7 @@ class ReflectionGroupVoting extends Component<Props> {
     const {meetingId, localStage} = meeting
     const {isComplete} = localStage!
     if (isComplete) return
-    const {reflectionGroupId} = reflectionGroup
+    const {id: reflectionGroupId} = reflectionGroup
     const handleCompleted = (res, errors) => {
       onCompleted()
       const error = getGraphQLError(res, errors)
@@ -162,7 +162,7 @@ export default createFragmentContainer(withMutationProps(withAtmosphere(Reflecti
   `,
   reflectionGroup: graphql`
     fragment ReflectionGroupVoting_reflectionGroup on RetroReflectionGroup {
-      reflectionGroupId: id
+      id
       viewerVoteCount
     }
   `

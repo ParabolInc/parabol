@@ -66,9 +66,10 @@ const getTitleFromComputedGroup = (
   if (titleArr.length === 0) {
     const [firstReflection] = reflections
     const text = extractTextFromDraftString(firstReflection.content)
-    const maxStr = text.slice(0, MAX_CHARS)
+    const maxStr = text.trim().slice(0, MAX_CHARS)
     const lastSpace = maxStr.lastIndexOf(' ')
-    return lastSpace === -1 ? maxStr : maxStr.slice(0, lastSpace).trim()
+    const wordsOrMax = lastSpace === -1 ? maxStr : maxStr.slice(0, lastSpace).trim()
+    return wordsOrMax || 'New Topic' // New Topic should never occur unless str value is falsy
   }
   return titleArr.join(' ')
 }
