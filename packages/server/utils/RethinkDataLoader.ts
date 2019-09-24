@@ -29,6 +29,7 @@ import TeamInvitation from '../database/types/TeamInvitation'
 import User from '../database/types/User'
 import ReflectionGroup from '../database/types/ReflectionGroup'
 import Notification from '../database/types/Notification'
+import Organization from 'database/types/Organization';
 
 interface JiraRemoteProjectKey {
   accessToken: string
@@ -76,7 +77,7 @@ interface Tables {
   NewMeeting: Meeting
   NewFeature: INewFeatureBroadcast
   Notification: Notification
-  Organization: IOrganization
+  Organization: Organization
   OrganizationUser: OrganizationUser
   ReflectTemplate: IReflectTemplate
   RetroReflectionGroup: ReflectionGroup
