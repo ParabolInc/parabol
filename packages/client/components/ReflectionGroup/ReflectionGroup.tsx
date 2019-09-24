@@ -110,7 +110,6 @@ const ReflectionGroup = (props: Props) => {
     }
   }, [])
 
-  console.log('title', title)
   const showHeader = phaseType !== GROUP || titleIsUserDefined || reflections.length > 1 || isEditing
   return (
     <>

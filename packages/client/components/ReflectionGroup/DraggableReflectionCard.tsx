@@ -73,8 +73,6 @@ const DraggableReflectionCard = (props: Props) => {
   const isDragPhase = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete
   const canDrag = isDraggable && isDragPhase && !isEditing && !isDropping
   const handleDrag = canDrag ? onMouseDown : undefined
-  console.log(groupQuestion, 'groupQuestion')
-  console.log(question, 'question')
   const showFooter = Boolean(groupQuestion && groupQuestion !== question)
   return (
     <DragWrapper ref={(c) => drag.ref = c} onMouseDown={handleDrag} onTouchStart={handleDrag} isDraggable={canDrag}>
