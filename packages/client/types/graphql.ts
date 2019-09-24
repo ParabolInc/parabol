@@ -2713,6 +2713,11 @@ export interface IMutation {
   newMeetingCheckIn: INewMeetingCheckInPayload | null;
 
   /**
+   * Increment the count of times the org has clicked pay later
+   */
+  payLater: IPayLaterPayload;
+
+  /**
    * Request to be invited to a team in real time
    */
   pushInvitation: IPushInvitationPayload | null;
@@ -3226,6 +3231,13 @@ export interface INewMeetingCheckInOnMutationArguments {
    * true if the member is present, false if absent, null if undecided
    */
   isCheckedIn?: boolean | null;
+}
+
+export interface IPayLaterOnMutationArguments {
+  /**
+   * the org that has clicked pay later
+   */
+  orgId: string;
 }
 
 export interface IPushInvitationOnMutationArguments {
@@ -5040,6 +5052,11 @@ export interface INewMeetingCheckInPayload {
   error: IStandardMutationError | null;
   meetingMember: MeetingMember | null;
   meeting: NewMeeting | null;
+}
+
+export interface IPayLaterPayload {
+  __typename: 'PayLaterPayload';
+  error: IStandardMutationError | null;
 }
 
 export interface IPushInvitationPayload {
