@@ -136,6 +136,7 @@ export const enum NavSidebar {
   FONT_SIZE = 15,
   LEFT_BORDER_WIDTH = '3px',
   LINE_HEIGHT = '20px',
+  SUB_FONT_SIZE = 14,
   SUB_LINE_HEIGHT = '24px',
   WIDTH = 240
 }

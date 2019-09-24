@@ -40,7 +40,8 @@ const ModalArea = styled('div')({
   borderRadius: 4,
   display: 'flex',
   flexDirection: 'column',
-  maxHeight: '100%',
+  // maxHeight: '100%',
+  maxHeight: 'calc(100vh - 32px)',
   position: 'relative'
 })
 

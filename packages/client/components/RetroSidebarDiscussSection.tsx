@@ -41,7 +41,7 @@ const VoteTally = styled('div')<{isUnsyncedFacilitatorStage: boolean | null}>(
     alignItems: 'center',
     color: isUnsyncedFacilitatorStage ? PALETTE.EMPHASIS_WARM : PALETTE.TEXT_GRAY,
     display: 'flex',
-    fontSize: ICON_SIZE.MD18,
+    fontSize: NavSidebar.SUB_FONT_SIZE,
     fontWeight: 600,
     height: lineHeight,
     lineHeight,

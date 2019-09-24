@@ -30,7 +30,7 @@ const ColumnWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   flex: 1,
   // justifyContent: 'flex-start',
   justifyContent: 'flex-start',
-  minHeight: '100%',
+  minHeight: isDesktop ? undefined : '100%',
   // border: isDesktop ? undefined : `1px solid ${PALETTE.BORDER_LIGHT}`,
   // borderRadius: 8,
   margin: isDesktop ? '16px 8px' : undefined
@@ -41,11 +41,14 @@ const ColumnHighlight = styled('div')<{isFocused: boolean, isDesktop: boolean}>(
   backgroundColor: isFocused ? PALETTE.BACKGROUND_REFLECTION_FOCUSED : PALETTE.BACKGROUND_REFLECTION,
   // borderRadius: isDesktop ? 2 : 8,
   borderRadius: 8,
+  boxShadow: isFocused ? `inset 0 0 0 3px ${PALETTE.BORDER_FACILITATOR_FOCUS}` : undefined,
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
-  height: '100%',
-  maxHeight: 608,
+  flexShrink: 0,
+  height: isDesktop ? undefined : '100%',
+  maxHeight: isDesktop ? 600 : undefined,
+  // minHeight: isDesktop ? 600 : 480,
   // minHeight: '100%',
   padding: isDesktop ? '12px 12px 6px' : '12px 8px',
   transition: `background 150ms ${DECELERATE}`,
@@ -68,7 +71,7 @@ const HeaderAndEditor = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 
 const EditorSection = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   // flex: isDesktop ? 0.2 : undefined,
-  margin: isDesktop ? undefined : '0 0 12px'
+  margin: '0 0 12px'
   // order: !isDesktop ? 4 : undefined
 }))
 
@@ -90,7 +93,7 @@ const FocusArrow = styled(Icon)<{isFocused: boolean}>(({isFocused}) => ({
   display: 'block',
   fontSize: ICON_SIZE.MD24,
   height: ICON_SIZE.MD24,
-  left: -18,
+  left: -8,
   lineHeight: 1,
   opacity: isFocused ? 1 : 0,
   position: 'absolute',
@@ -204,7 +207,7 @@ const PhaseItemColumn = (props: Props) => {
               isClickable={isFacilitator && !isComplete}
               onClick={setColumnFocus}
             >
-              <FocusArrow isFocused={isFocused}>forward</FocusArrow>
+              <FocusArrow isFocused={isFocused}>arrow_forward</FocusArrow>
               <Tooltip
                 delay={200}
                 maxHeight={40}

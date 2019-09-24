@@ -14,10 +14,10 @@ const PlaceholderCard = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   margin: '0 0 12px',
-  // minHeight: ElementHeight.REFLECTION_CARD_MAX,
   width: ElementWidth.REFLECTION_CARD,
   [`@media screen and (min-width: ${Breakpoint.SINGLE_REFLECTION_COLUMN}px)`]: {
-    minHeight: ElementHeight.REFLECTION_CARD_MAX
+    minHeight: ElementHeight.REFLECTION_CARD_MAX,
+    margin: '0 0 24px'
   }
 })
 

@@ -26,7 +26,7 @@ const GroupHeader = styled('div')<{isExpanded: boolean, portalStatus: PortalStat
   flexShrink: 1,
   fontSize: 14,
   justifyContent: 'space-between',
-  margin: isExpanded ? '0 16px' : undefined,
+  margin: isExpanded ? '0 12px' : undefined,
   maxWidth: ElementWidth.REFLECTION_CARD,
   minHeight: 32,
   opacity: !isExpanded && portalStatus !== PortalStatus.Exited ? 0 : undefined,
