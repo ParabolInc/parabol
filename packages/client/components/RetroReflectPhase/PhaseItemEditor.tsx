@@ -138,6 +138,7 @@ const PhaseItemEditor = (props: Props) => {
     <>
       <ReflectionCardRoot ref={phaseEditorRef}>
         <ReflectionEditorWrapper
+          isPhaseItemEditor
           ariaLabel='Edit this reflection'
           editorState={editorState}
           editorRef={editorRef}
