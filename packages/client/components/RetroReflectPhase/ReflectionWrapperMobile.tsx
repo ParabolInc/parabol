@@ -14,14 +14,16 @@ interface Props {
 
 const containerStyle = {height: '100%'}
 const innerStyle = {width: '100%', padding: '0 16px', height: '100%'}
+// const innerStyle = {width: '100%', padding: '0', height: '100%'}
 const slideContainer = {
-  padding: '0 4px'
+  padding: '8px 4px 0'
+  // padding: '8px 0 0'
 }
 
 const StepperDots = styled('div')({
   alignItems: 'center',
   display: 'flex',
-  padding: '16px 0'
+  padding: '8px 0'
 })
 
 const StepperDot = styled('div')<{isLocal: boolean, isFocused: boolean}>(({isLocal, isFocused}) => ({
@@ -50,11 +52,11 @@ const ReflectWrapperMobile = (props: Props) => {
         {children}
       </SwipeableViews>
       <StepperDots>
-        <Icon onClick={() => setActiveIdx(Math.max(0, activeIdx - 1))}>navigate_before</Icon>
+        {/* <Icon onClick={() => setActiveIdx(Math.max(0, activeIdx - 1))}>navigate_before</Icon> */}
         {childArr.map((_, idx) => {
           return <StepperDot key={idx} isLocal={idx === activeIdx} isFocused={idx === focusedIdx} onClick={() => setActiveIdx(idx)} />
         })}
-        <Icon onClick={() => setActiveIdx(Math.min(childArr.length -1, activeIdx + 1))}>navigate_next</Icon>
+        {/* <Icon onClick={() => setActiveIdx(Math.min(childArr.length -1, activeIdx + 1))}>navigate_next</Icon> */}
       </StepperDots>
     </>
   )

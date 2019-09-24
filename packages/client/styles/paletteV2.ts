@@ -35,7 +35,7 @@ export const enum PALETTE {
   BORDER_DASH_LIGHT = '#D9D8E1',
   BORDER_LIGHTER = '#DFDFE5', // gray 25% over white
   BORDER_LIGHT = '#C9C2D5', // primary 30% over white // was '#C1C0CD', // gray 50% over white
-  BORDER_GRAY_65A = '#82809AA6',
+  BORDER_PLACEHOLDER = '#82809AA6', // alpha 65%
   BORDER_GRAY = '#82809A80',
   BORDER_MAIN = '#493272',
   BORDER_MAIN_30 = '#C8C2D5',

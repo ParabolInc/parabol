@@ -4,9 +4,10 @@ import styled from '@emotion/styled'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {commitLocalUpdate} from 'relay-runtime'
 import {RefCallbackInstance} from '../../types/generics'
+import {ElementWidth} from '../../types/constEnums'
 
 const ModalReflectionWrapper = styled('div')({
-  padding: 8
+  padding: ElementWidth.REFLECTION_CARD_PADDING
 })
 
 interface Props {
@@ -15,11 +16,12 @@ interface Props {
   meeting: any
   setItemsRef: (idx: number) => (c: RefCallbackInstance) => void
   staticReflections: readonly any[]
+  groupQuestion?: string
 }
 
 // this isEditing logic is a little verbose, could use a rewrite
 const ExpandedReflection = (props: Props) => {
-  const {reflection, meeting, setItemsRef, idx, staticReflections} = props
+  const {groupQuestion, reflection, meeting, setItemsRef, idx, staticReflections} = props
   const {id: reflectionId} = reflection
   const staticIdx = staticReflections.indexOf(reflection)
   const atmosphere = useAtmosphere()
@@ -62,6 +64,7 @@ const ExpandedReflection = (props: Props) => {
       onClick={setIsEditing(reflection.id)}
     >
       <DraggableReflectionCard
+        groupQuestion={groupQuestion}
         isDraggable
         meeting={meeting}
         reflection={reflection}

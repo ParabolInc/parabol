@@ -19,12 +19,15 @@ import {ReflectionCard_meeting} from '__generated__/ReflectionCard_meeting.graph
 import isAndroid from '../../utils/draftjs/isAndroid'
 import convertToTaskContent from '../../utils/draftjs/convertToTaskContent'
 import ReflectionCardRoot from './ReflectionCardRoot'
+import ReflectionCardFooter from './ReflectionCardFooter'
 
 interface Props {
+  groupQuestion?: string
   isClipped?: boolean
   reflection: ReflectionCard_reflection
   meeting: ReflectionCard_meeting | null
   stackCount?: number
+  showOriginFooter?: boolean
 }
 
 const getReadOnly = (reflection: {id: string, isViewerCreator: boolean | null, isEditing: boolean | null}, phaseType: NewMeetingPhaseTypeEnum, stackCount: number | undefined) => {
@@ -41,7 +44,8 @@ const makeEditorState = (content, getEditorState) => {
 }
 
 const ReflectionCard = (props: Props) => {
-  const {meeting, reflection, isClipped, stackCount} = props
+  const {showOriginFooter, meeting, reflection, isClipped, stackCount} = props
+  const {phaseItem: {question}} = reflection
   const phaseType = meeting ? meeting.localPhase.phaseType : null
   const meetingId = meeting ? meeting.id : null
   const {id: reflectionId, content, retroPhaseItemId, isViewerCreator} = reflection
@@ -173,6 +177,7 @@ const ReflectionCard = (props: Props) => {
       {!readOnly && meetingId && (
         <ReflectionCardDeleteButton meetingId={meetingId} reflectionId={reflectionId} />
       )}
+      {showOriginFooter && !isClipped && <ReflectionCardFooter>{question}</ReflectionCardFooter>}
     </ReflectionCardRoot>
   )
 }
@@ -186,6 +191,9 @@ export default createFragmentContainer(ReflectionCard, {
       reflectionGroupId
       retroPhaseItemId
       content
+      phaseItem {
+        question
+      }
       sortOrder
     }
   `,

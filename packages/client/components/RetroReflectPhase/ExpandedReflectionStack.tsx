@@ -73,11 +73,12 @@ interface Props {
   bgRef: Ref<HTMLDivElement>
   setItemsRef: (idx: number) => (c: RefCallbackInstance) => void
   reflectionGroupId?: string
+  groupQuestion?: string
 }
 
 
 const ExpandedReflectionStack = (props: Props) => {
-  const {header, staticReflections, phaseRef, scrollRef, setItemsRef, bgRef, closePortal, reflections, reflectionGroupId, meeting} = props
+  const {groupQuestion, header, staticReflections, phaseRef, scrollRef, setItemsRef, bgRef, closePortal, reflections, reflectionGroupId, meeting} = props
   const phaseBBox = useMemo(() => {
     return getBBox(phaseRef.current)
   }, [phaseRef.current])
@@ -93,7 +94,7 @@ const ExpandedReflectionStack = (props: Props) => {
           {header}
           <ScrollBlock ref={scrollRef} onClick={closeOnEdge}>
             {reflections.map((reflection, idx) => {
-              return <ExpandedReflection key={reflection.id} reflection={reflection} meeting={meeting} idx={idx} setItemsRef={setItemsRef} staticReflections={staticReflections}/>
+              return <ExpandedReflection groupQuestion={groupQuestion} key={reflection.id} reflection={reflection} meeting={meeting} idx={idx} setItemsRef={setItemsRef} staticReflections={staticReflections}/>
             })}
           </ScrollBlock>
           <BackgroundBlock ref={bgRef} />

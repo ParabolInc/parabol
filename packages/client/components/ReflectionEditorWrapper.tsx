@@ -12,7 +12,7 @@ import withEmojis from './TaskEditor/withEmojis'
 import isRichDraft from '../utils/draftjs/isRichDraft'
 import lazyPreload from '../utils/lazyPreload'
 import isAndroid from '../utils/draftjs/isAndroid'
-import {Card, ElementHeight} from '../types/constEnums'
+import {Card, ElementHeight, Gutters} from '../types/constEnums'
 
 interface Props {
   ariaLabel: string
@@ -77,7 +77,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
   entityPasteStart?: {anchorOffset: number; anchorKey: string} = undefined
   styleRef = React.createRef<HTMLDivElement>()
 
-  componentDidMount() {
+  componentDidMount () {
     if (!this.props.editorState.getCurrentContent().hasText()) {
       setTimeout(() => {
         try {
@@ -96,7 +96,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     }
   }
 
-  componentDidUpdate(prevProps: Readonly<Props>) {
+  componentDidUpdate (prevProps: Readonly<Props>) {
     // make sure the text isn't visible when it's clipped
     if (prevProps.isClipped !== this.props.isClipped) {
       const el = this.styleRef.current!
@@ -206,7 +206,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     }
   }
 
-  render() {
+  render () {
     const {
       isClipped,
       ariaLabel,
@@ -253,7 +253,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
             readOnly={readOnly || (useFallback && !showFallback)}
             ref={editorRef as any}
             style={{
-              padding: 12,
+              padding: `${Gutters.REFLECTION_INNER_GUTTER_VERTICAL} ${Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL}`,
               userSelect,
               WebkitUserSelect: userSelect
             }}

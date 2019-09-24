@@ -1,7 +1,7 @@
 import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
 import {PALETTE} from '../../styles/paletteV2'
-import {Card, ElementHeight, ElementWidth} from '../../types/constEnums'
+import {Breakpoint, Card, ElementHeight, ElementWidth} from '../../types/constEnums'
 
 interface Props {
   idx: number
@@ -9,12 +9,16 @@ interface Props {
 
 const PlaceholderCard = styled('div')({
   alignItems: 'center',
-  border: `1px lightgray dashed`,
+  border: `1px ${PALETTE.BORDER_PLACEHOLDER} dashed`,
   borderRadius: Card.BORDER_RADIUS,
   display: 'flex',
   justifyContent: 'center',
-  minHeight: ElementHeight.REFLECTION_CARD_MAX,
-  width: ElementWidth.REFLECTION_CARD
+  margin: '0 0 12px',
+  // minHeight: ElementHeight.REFLECTION_CARD_MAX,
+  width: ElementWidth.REFLECTION_CARD,
+  [`@media screen and (min-width: ${Breakpoint.SINGLE_REFLECTION_COLUMN}px)`]: {
+    minHeight: ElementHeight.REFLECTION_CARD_MAX
+  }
 })
 
 const Tip = styled('div')({

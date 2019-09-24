@@ -11,6 +11,7 @@ import Icon from '../Icon'
 import PhaseItemChits from './PhaseItemChits'
 import PhaseItemEditor from './PhaseItemEditor'
 import ReflectionStack from './ReflectionStack'
+import RetroPrompt from '../RetroPrompt'
 import Tooltip from '../Tooltip/Tooltip'
 import SetPhaseFocusMutation from '../../mutations/SetPhaseFocusMutation'
 import {DECELERATE} from '../../styles/animation'
@@ -27,53 +28,62 @@ const ColumnWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
   flexDirection: 'column',
   flex: 1,
+  // justifyContent: 'flex-start',
   justifyContent: 'flex-start',
-  height: '100%',
-  border: isDesktop ? undefined : `1px solid ${PALETTE.BORDER_LIGHT}`,
-  borderRadius: 8
+  minHeight: '100%',
+  // border: isDesktop ? undefined : `1px solid ${PALETTE.BORDER_LIGHT}`,
+  // borderRadius: 8,
+  margin: isDesktop ? '16px 8px' : undefined
 }))
 
 const ColumnHighlight = styled('div')<{isFocused: boolean, isDesktop: boolean}>(({isDesktop, isFocused}) => ({
-  backgroundColor: isDesktop ? isFocused ? PALETTE.BACKGROUND_MAIN_DARKENED : undefined : isFocused ? PALETTE.BACKGROUND_REFLECTION_FOCUSED : PALETTE.BACKGROUND_REFLECTION,
-  borderRadius: isDesktop ? 2 : 8,
+  // backgroundColor: isDesktop ? isFocused ? PALETTE.BACKGROUND_MAIN_DARKENED : undefined : isFocused ? PALETTE.BACKGROUND_REFLECTION_FOCUSED : PALETTE.BACKGROUND_REFLECTION,
+  backgroundColor: isFocused ? PALETTE.BACKGROUND_REFLECTION_FOCUSED : PALETTE.BACKGROUND_REFLECTION,
+  // borderRadius: isDesktop ? 2 : 8,
+  borderRadius: 8,
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
   height: '100%',
   maxHeight: 608,
-  padding: isDesktop ? '16px 24px' : '16px 8px',
+  // minHeight: '100%',
+  padding: isDesktop ? '12px 12px 6px' : '12px 8px',
   transition: `background 150ms ${DECELERATE}`,
   width: '100%'
 }))
 
-const ColumnContent = styled('div')({
+const ColumnContent = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
+  flex: 1,
   flexDirection: 'column',
   height: '100%',
-  justifyContent: 'space-between',
+  justifyContent: isDesktop ? 'space-between' : 'space-between',
   margin: '0 auto',
   width: ElementWidth.REFLECTION_CARD
-})
+}))
 
-const HeaderAndEditor = styled('div')({
-  flex: 0.3,
-  paddingBottom: 16
-})
+const HeaderAndEditor = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+  flex: isDesktop ? 0.3 : undefined
+}))
 
-const Prompt = styled('div')({
-  fontSize: 20,
-  fontStyle: 'italic',
-  fontWeight: 600,
-  lineHeight: '24px'
-})
+const EditorSection = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+  // flex: isDesktop ? 0.2 : undefined,
+  margin: isDesktop ? undefined : '0 0 12px'
+  // order: !isDesktop ? 4 : undefined
+}))
 
-const Description = styled('div')({
+const ReflectionStackSection = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+  flex: isDesktop ? 0.3 : undefined
+  // order: !isDesktop ? 3 : undefined
+}))
+
+const Description = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   color: PALETTE.TEXT_MAIN,
-  fontSize: 13,
+  fontSize: 12,
   fontStyle: 'italic',
   fontWeight: 400,
-  lineHeight: '20px',
-  // tall enough for 3 lines so columns looks the same
-  minHeight: 60,
-  marginTop: 8
-})
+  lineHeight: '16px'
+}))
 
 const FocusArrow = styled(Icon)<{isFocused: boolean}>(({isFocused}) => ({
   color: PALETTE.EMPHASIS_WARM,
@@ -90,7 +100,7 @@ const FocusArrow = styled(Icon)<{isFocused: boolean}>(({isFocused}) => ({
 
 const PromptHeader = styled('div')<{isClickable: boolean}>(({isClickable}) => ({
   cursor: isClickable ? 'pointer' : undefined,
-  padding: '0 0 16px 12px',
+  padding: '0 0 12px 16px',
   position: 'relative',
   userSelect: 'none',
   width: '100%'
@@ -104,10 +114,11 @@ const EditorAndStatus = styled('div')<EditorAndStatusProps>(({isPhaseComplete}) 
   visibility: isPhaseComplete ? 'hidden' : undefined
 }))
 
-const ChitSection = styled('div')({
-  flex: 0.3,
-  minHeight: 96
-})
+const ChitSection = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+  flex: isDesktop ? 0.3 : undefined,
+  margin: !isDesktop ? '0 0 12px' : undefined,
+  minHeight: isDesktop ? 96 : undefined
+}))
 
 const originAnchor = {
   vertical: 'top',
@@ -187,8 +198,8 @@ const PhaseItemColumn = (props: Props) => {
   return (
     <ColumnWrapper isDesktop={isDesktop}>
       <ColumnHighlight isDesktop={isDesktop} isFocused={isFocused}>
-        <ColumnContent>
-          <HeaderAndEditor>
+        <ColumnContent isDesktop={isDesktop}>
+          <HeaderAndEditor isDesktop={isDesktop}>
             <PromptHeader
               isClickable={isFacilitator && !isComplete}
               onClick={setColumnFocus}
@@ -203,31 +214,35 @@ const PhaseItemColumn = (props: Props) => {
                 tip={<div>Tap to highlight prompt for everybody</div>}
                 isDisabled={hasFocusedRef.current || isFocused || !isFacilitator || isComplete}
               >
-                <Prompt>{question}</Prompt>
+                <RetroPrompt>{question}</RetroPrompt>
               </Tooltip>
-              <Description>{description}</Description>
+              <Description isDesktop={isDesktop}>{description}</Description>
             </PromptHeader>
-            <EditorAndStatus isPhaseComplete={isComplete}>
-              <PhaseItemEditor
-                cardsInFlightRef={cardsInFlightRef}
-                setCardsInFlight={setCardsInFlight}
-                phaseEditorRef={phaseEditorRef}
-                meetingId={meetingId}
-                nextSortOrder={nextSortOrder}
-                retroPhaseItemId={retroPhaseItemId}
-                stackTopRef={stackTopRef}
-              />
-            </EditorAndStatus>
+            <EditorSection isDesktop={isDesktop}>
+              <EditorAndStatus isPhaseComplete={isComplete}>
+                <PhaseItemEditor
+                  cardsInFlightRef={cardsInFlightRef}
+                  setCardsInFlight={setCardsInFlight}
+                  phaseEditorRef={phaseEditorRef}
+                  meetingId={meetingId}
+                  nextSortOrder={nextSortOrder}
+                  retroPhaseItemId={retroPhaseItemId}
+                  stackTopRef={stackTopRef}
+                />
+              </EditorAndStatus>
+            </EditorSection>
           </HeaderAndEditor>
-          <ReflectionStack
-            reflectionStack={reflectionStack}
-            idx={idx}
-            phaseEditorRef={phaseEditorRef}
-            phaseRef={phaseRef}
-            meeting={meeting}
-            stackTopRef={stackTopRef}
-          />
-          <ChitSection>
+          <ReflectionStackSection isDesktop={isDesktop}>
+            <ReflectionStack
+              reflectionStack={reflectionStack}
+              idx={idx}
+              phaseEditorRef={phaseEditorRef}
+              phaseRef={phaseRef}
+              meeting={meeting}
+              stackTopRef={stackTopRef}
+            />
+          </ReflectionStackSection>
+          <ChitSection isDesktop={isDesktop}>
             <PhaseItemChits
               count={columnStack.length - reflectionStack.length}
               editorCount={editorIds ? editorIds.length : 0}

@@ -50,6 +50,7 @@ const ReflectionWrapper = styled('div')<{staticIdx: number, isDropping: boolean 
 )
 
 interface Props {
+  groupQuestion: string
   phaseRef: RefObject<HTMLDivElement>
   meeting: ReflectionGroup_meeting
   reflectionGroup: ReflectionGroup_reflectionGroup
@@ -57,7 +58,7 @@ interface Props {
 }
 
 const ReflectionGroup = (props: Props) => {
-  const {meeting, phaseRef, reflectionGroup, swipeColumn} = props
+  const {groupQuestion, meeting, phaseRef, reflectionGroup, swipeColumn} = props
   const groupRef = useRef<HTMLDivElement>(null)
   const {localPhase, localStage} = meeting
   const {phaseType} = localPhase
@@ -131,6 +132,7 @@ const ReflectionGroup = (props: Props) => {
         closePortal={collapse}
         meeting={meeting}
         reflectionGroupId={reflectionGroupId}
+        groupQuestion={groupQuestion}
       />)}
       <Group {...{[DragAttribute.DROPPABLE]: reflectionGroupId}} ref={groupRef} staticReflectionCount={staticReflections.length}>
         {showHeader && <ReflectionGroupHeader
@@ -148,6 +150,7 @@ const ReflectionGroup = (props: Props) => {
               <ReflectionWrapper key={reflectionId} groupCount={reflections.length} staticIdx={staticIdx}
                                  isDropping={isDropping}>
                 <DraggableReflectionCard
+                  groupQuestion={groupQuestion}
                   key={reflection.id}
                   staticIdx={staticIdx}
                   isClipped={staticIdx !== 0}

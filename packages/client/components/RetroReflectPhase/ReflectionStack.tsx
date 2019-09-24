@@ -4,7 +4,7 @@ import styled from '@emotion/styled'
 import ReflectionCard from '../ReflectionCard/ReflectionCard'
 import ExpandedReflectionStack from './ExpandedReflectionStack'
 import ReflectionStackPlaceholder from './ReflectionStackPlaceholder'
-import {ElementHeight, ElementWidth, ReflectionStackPerspective} from '../../types/constEnums'
+import {Breakpoint, ElementHeight, ElementWidth, ReflectionStackPerspective} from '../../types/constEnums'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
@@ -23,8 +23,12 @@ const CardStack = styled('div')({
   alignItems: 'flex-start',
   display: 'flex',
   flex: 1,
-  minHeight: ElementHeight.REFLECTION_CARD_MAX,
-  justifyContent: 'center'
+  margin: '0 0 24px',
+  // minHeight: ElementHeight.REFLECTION_CARD_MAX,
+  justifyContent: 'center',
+  [`@media screen and (min-width: ${Breakpoint.SINGLE_REFLECTION_COLUMN}px)`]: {
+    minHeight: ElementHeight.REFLECTION_CARD_MAX
+  }
 })
 
 const CenteredCardStack = styled('div')({

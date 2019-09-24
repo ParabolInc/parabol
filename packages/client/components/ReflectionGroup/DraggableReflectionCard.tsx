@@ -43,6 +43,7 @@ const DragWrapper = styled('div')<{isDraggable: boolean | undefined}>(({isDragga
 export type ReflectionDragState = typeof DRAG_STATE
 
 interface Props {
+  groupQuestion?: string
   isClipped?: boolean
   isDraggable?: boolean
   meeting: DraggableReflectionCard_meeting
@@ -61,10 +62,10 @@ export interface TargetBBox {
 }
 
 const DraggableReflectionCard = (props: Props) => {
-  const {isClipped, reflection, staticIdx, staticReflections, meeting, isDraggable, swipeColumn} = props
+  const {groupQuestion, isClipped, reflection, staticIdx, staticReflections, meeting, isDraggable, swipeColumn} = props
   const {teamId, localStage} = meeting
   const {isComplete, phaseType} = localStage
-  const {isDropping, isEditing} = reflection
+  const {phaseItem: {question}, isDropping, isEditing} = reflection
   const dragRef = useRef({...DRAG_STATE})
   const {current: drag} = dragRef
   const staticReflectionCount = staticReflections.length
@@ -72,9 +73,12 @@ const DraggableReflectionCard = (props: Props) => {
   const isDragPhase = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete
   const canDrag = isDraggable && isDragPhase && !isEditing && !isDropping
   const handleDrag = canDrag ? onMouseDown : undefined
+  console.log(groupQuestion, 'groupQuestion')
+  console.log(question, 'question')
+  const showFooter = Boolean(groupQuestion && groupQuestion !== question)
   return (
     <DragWrapper ref={(c) => drag.ref = c} onMouseDown={handleDrag} onTouchStart={handleDrag} isDraggable={canDrag}>
-      <ReflectionCard reflection={reflection} isClipped={isClipped} meeting={meeting} />
+      <ReflectionCard showOriginFooter={showFooter} reflection={reflection} isClipped={isClipped} meeting={meeting} />
     </DragWrapper>
   )
 }
@@ -98,6 +102,9 @@ export default createFragmentContainer(DraggableReflectionCard,
         isViewerDragging
         isViewerCreator
         isDropping
+        phaseItem {
+          question
+        }
         remoteDrag {
           dragUserId
           dragUserName
