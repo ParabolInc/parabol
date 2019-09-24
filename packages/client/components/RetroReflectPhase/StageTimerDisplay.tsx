@@ -14,7 +14,7 @@ interface Props {
 const DisplayRow = styled('div')<{isDesktop}>(({isDesktop}) => ({
   display: 'flex',
   justifyContent: 'center',
-  // dont' want stuff to move when it turns on
+  // desktop: dont' want stuff to move when it turns on
   minHeight: isDesktop ? 36 : undefined
 }))
 

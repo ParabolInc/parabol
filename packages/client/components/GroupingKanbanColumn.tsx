@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {createFragmentContainer} from 'react-relay'
 import {GroupingKanbanColumn_reflectionGroups} from '__generated__/GroupingKanbanColumn_reflectionGroups.graphql'
 import {GroupingKanbanColumn_meeting} from '__generated__/GroupingKanbanColumn_meeting.graphql'
-import {BezierCurve, DragAttribute, Gutters} from '../types/constEnums'
+import {BezierCurve, DragAttribute, ElementWidth, Gutters} from '../types/constEnums'
 import styled from '@emotion/styled'
 import {PALETTE} from '../styles/paletteV2'
 import Icon from './Icon'
@@ -39,9 +39,8 @@ const ColumnHeader = styled('div')({
   justifyContent: 'space-between',
   lineHeight: '24px',
   margin: '0 auto',
-  maxWidth: 296,
-  // padding: `12px ${Gutters.COLUMN_GUTTER} 0 28px`,
-  padding: `12px 0 0 16px`,
+  maxWidth: ElementWidth.REFLECTION_CARD_PADDED,
+  padding: `12px 0 0 ${Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL}`,
   width: '100%'
 })
 

@@ -89,11 +89,12 @@ export const enum Filter {
 }
 
 export const enum Gutters {
+  COLUMN_INNER_GUTTER = '12px',
   DASH_GUTTER_SMALL = '20px',
   DASH_GUTTER_LARGE = '32px',
   REFLECTION_INNER_GUTTER_HORIZONTAL = '16px',
   REFLECTION_INNER_GUTTER_VERTICAL = '12px',
-  COLUMN_GUTTER = '12px'
+  ROW_INNER_GUTTER = '12px'
 }
 
 export const enum InvoiceItemType {

@@ -20,7 +20,7 @@ import {PALETTE} from '../../styles/paletteV2'
 import {ICON_SIZE} from '../../styles/typographyV2'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {EditorState} from 'draft-js'
-import {ElementWidth} from '../../types/constEnums'
+import {ElementWidth, Gutters} from '../../types/constEnums'
 import useRefState from '../../hooks/useRefState'
 
 const ColumnWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
@@ -28,18 +28,13 @@ const ColumnWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
   flexDirection: 'column',
   flex: 1,
-  // justifyContent: 'flex-start',
   justifyContent: 'flex-start',
-  minHeight: isDesktop ? undefined : '100%',
-  // border: isDesktop ? undefined : `1px solid ${PALETTE.BORDER_LIGHT}`,
-  // borderRadius: 8,
-  margin: isDesktop ? '16px 8px' : undefined
+  margin: isDesktop ? '16px 8px' : undefined,
+  minHeight: isDesktop ? undefined : '100%'
 }))
 
 const ColumnHighlight = styled('div')<{isFocused: boolean, isDesktop: boolean}>(({isDesktop, isFocused}) => ({
-  // backgroundColor: isDesktop ? isFocused ? PALETTE.BACKGROUND_MAIN_DARKENED : undefined : isFocused ? PALETTE.BACKGROUND_REFLECTION_FOCUSED : PALETTE.BACKGROUND_REFLECTION,
   backgroundColor: isFocused ? PALETTE.BACKGROUND_REFLECTION_FOCUSED : PALETTE.BACKGROUND_REFLECTION,
-  // borderRadius: isDesktop ? 2 : 8,
   borderRadius: 8,
   boxShadow: isFocused ? `inset 0 0 0 3px ${PALETTE.BORDER_FACILITATOR_FOCUS}` : undefined,
   display: 'flex',
@@ -48,9 +43,7 @@ const ColumnHighlight = styled('div')<{isFocused: boolean, isDesktop: boolean}>(
   flexShrink: 0,
   height: isDesktop ? undefined : '100%',
   maxHeight: isDesktop ? 600 : undefined,
-  // minHeight: isDesktop ? 600 : 480,
-  // minHeight: '100%',
-  padding: isDesktop ? '12px 12px 6px' : '12px 8px',
+  padding: `${Gutters.ROW_INNER_GUTTER} ${Gutters.COLUMN_INNER_GUTTER}`,
   transition: `background 150ms ${DECELERATE}`,
   width: '100%'
 }))
@@ -69,24 +62,21 @@ const HeaderAndEditor = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   flex: isDesktop ? 0.3 : undefined
 }))
 
-const EditorSection = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
-  // flex: isDesktop ? 0.2 : undefined,
-  margin: '0 0 12px'
-  // order: !isDesktop ? 4 : undefined
-}))
+const EditorSection = styled('div')({
+  margin: `0 0 ${Gutters.ROW_INNER_GUTTER}`
+})
 
 const ReflectionStackSection = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   flex: isDesktop ? 0.3 : undefined
-  // order: !isDesktop ? 3 : undefined
 }))
 
-const Description = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+const Description = styled('div')({
   color: PALETTE.TEXT_MAIN,
   fontSize: 12,
   fontStyle: 'italic',
   fontWeight: 400,
   lineHeight: '16px'
-}))
+})
 
 const FocusArrow = styled(Icon)<{isFocused: boolean}>(({isFocused}) => ({
   color: PALETTE.EMPHASIS_WARM,
@@ -103,7 +93,7 @@ const FocusArrow = styled(Icon)<{isFocused: boolean}>(({isFocused}) => ({
 
 const PromptHeader = styled('div')<{isClickable: boolean}>(({isClickable}) => ({
   cursor: isClickable ? 'pointer' : undefined,
-  padding: '0 0 12px 16px',
+  padding: `0 0 ${Gutters.ROW_INNER_GUTTER} ${Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL}`,
   position: 'relative',
   userSelect: 'none',
   width: '100%'
@@ -119,7 +109,7 @@ const EditorAndStatus = styled('div')<EditorAndStatusProps>(({isPhaseComplete}) 
 
 const ChitSection = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   flex: isDesktop ? 0.3 : undefined,
-  margin: !isDesktop ? '0 0 12px' : undefined,
+  margin: isDesktop ? undefined : `0 0 ${Gutters.ROW_INNER_GUTTER}`,
   minHeight: isDesktop ? 96 : undefined
 }))
 

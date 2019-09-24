@@ -20,16 +20,15 @@ interface Props {
 }
 
 const ColumnsBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+  alignItems: 'center',
   display: 'flex',
   flex: '1',
   flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
   height: '100%',
-  margin: isDesktop ? '0 auto' : '0 auto',
-  padding: isDesktop ? '16px 0' : undefined,
-  // maxHeight: 608,
+  justifyContent: 'center',
+  margin: '0 auto',
   overflow: 'auto',
+  padding: isDesktop ? '16px 0' : undefined,
   width: '100%'
 }))
 

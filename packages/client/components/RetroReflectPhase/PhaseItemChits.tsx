@@ -81,7 +81,6 @@ const ChitArea = styled('div')({
 
 const ChitAreaLabel = styled(TinyLabel)({
   margin: '0 0 1em'
-  // paddingLeft: 16
 })
 
 const getStatus = (count: number, editorCount: number) => {

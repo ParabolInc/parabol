@@ -23,8 +23,7 @@ const CardStack = styled('div')({
   alignItems: 'flex-start',
   display: 'flex',
   flex: 1,
-  margin: '0 0 24px',
-  // minHeight: ElementHeight.REFLECTION_CARD_MAX,
+  margin: '0 0 24px', // stacked cards + row gutter = 6 + 6 + 12 = 24
   justifyContent: 'center',
   [`@media screen and (min-width: ${Breakpoint.SINGLE_REFLECTION_COLUMN}px)`]: {
     minHeight: ElementHeight.REFLECTION_CARD_MAX

@@ -50,7 +50,7 @@ const ReflectionWrapper = styled('div')<{staticIdx: number, isDropping: boolean 
 )
 
 interface Props {
-  groupQuestion: string
+  groupQuestion?: string
   phaseRef: RefObject<HTMLDivElement>
   meeting: ReflectionGroup_meeting
   reflectionGroup: ReflectionGroup_reflectionGroup

@@ -26,13 +26,13 @@ const GroupHeader = styled('div')<{isExpanded: boolean, portalStatus: PortalStat
   flexShrink: 1,
   fontSize: 14,
   justifyContent: 'space-between',
-  margin: isExpanded ? '0 12px' : undefined,
+  margin: isExpanded ? `0 ${Gutters.COLUMN_INNER_GUTTER}` : undefined,
   maxWidth: ElementWidth.REFLECTION_CARD,
   minHeight: 32,
   opacity: !isExpanded && portalStatus !== PortalStatus.Exited ? 0 : undefined,
   paddingLeft: Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL,
   paddingRight: 8,
-  paddingTop: isExpanded ? 12 : undefined,
+  paddingTop: isExpanded ? Gutters.ROW_INNER_GUTTER : undefined,
   position: 'relative',
   width: '100%'
 }))
