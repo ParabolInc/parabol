@@ -12,7 +12,7 @@ interface Options extends UsePortalOptions {
 const useModal = (options: Options = {}) => {
   const {background, onOpen, onClose, noClose} = options
   const targetRef = useRef<HTMLDivElement>(null)
-  const {portal, closePortal, togglePortal, portalStatus, setPortalStatus} = usePortal({
+  const {portal, closePortal, openPortal, togglePortal, portalStatus, setPortalStatus} = usePortal({
     onOpen,
     onClose
   })
@@ -26,7 +26,7 @@ const useModal = (options: Options = {}) => {
     noClose ? undefined : closePortal,
     background
   )
-  return {togglePortal, modalPortal, closePortal, loadingDelay}
+  return {togglePortal, modalPortal, closePortal, loadingDelay, openPortal}
 }
 
 export default useModal

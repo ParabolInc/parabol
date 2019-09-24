@@ -21,14 +21,6 @@ export interface ClientRetrospectiveMeeting extends IRetrospectiveMeeting {
   reflectionsInFlight: IRetroReflection[]
 }
 
-export interface ClientDragContext extends IDragContext {
-  isClosing: boolean
-  isPendingStartDrag: boolean
-  isViewerDragging: boolean
-  initialCursorCoords: ICoords2D
-  initialComponentCoords: ICoords2D
-}
-
 export interface ClientRetroPhaseItem extends IRetroPhaseItem {
   editorIds: string[]
 }

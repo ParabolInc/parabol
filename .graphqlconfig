@@ -1,7 +1,7 @@
 {
   "projects": {
     "Parabol": {
-      "schemaPath": "./build/schema.graphql",
+      "schemaPath": "./schema.graphql",
       "name": "Parabol GraphQL Schema",
       "includes": [
         "*"

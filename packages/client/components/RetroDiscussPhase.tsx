@@ -36,6 +36,7 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {ElementWidth} from '../types/constEnums'
 import {PALETTE} from '../styles/paletteV2'
+import DiscussPhaseSqueeze from './DiscussPhaseSqueeze'
 
 interface Props extends WithAtmosphereProps, RetroMeetingPhaseProps {
   team: RetroDiscussPhase_team
@@ -153,19 +154,20 @@ const DemoDiscussHelpMenu = lazyPreload(async () =>
 const RetroDiscussPhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, atmosphere, handleGotoNext, team, isDemoStageComplete} = props
   const {viewerId} = atmosphere
-  const {isMeetingSidebarCollapsed, newMeeting, teamId} = team
+  const {isMeetingSidebarCollapsed, newMeeting, id: teamId, organization} = team
   if (!newMeeting) return null
   const {gotoNext, ref: gotoNextRef} = handleGotoNext
-  const {facilitatorUserId, localStage, meetingId, phases} = newMeeting
-  const {localStageId, reflectionGroup} = localStage
+  const {id: meetingId, facilitatorUserId, localStage, phases} = newMeeting
+  const {id: localStageId, reflectionGroup} = localStage
   const isComplete = localStage ? localStage.isComplete : false
   // reflection group will be null until the server overwrites the placeholder.
   if (!reflectionGroup) return null
-  const {reflectionGroupId, tasks, title, reflections, voteCount} = reflectionGroup
+  const {id: reflectionGroupId, tasks, title, reflections, voteCount} = reflectionGroup
   const isFacilitating = facilitatorUserId === viewerId
   const nextStageRes = findStageAfterId(phases, localStageId)
   return (
     <MeetingContent>
+      <DiscussPhaseSqueeze isFacilitating={isFacilitating} organization={organization}/>
       <MeetingHeaderAndPhase>
         <MeetingContentHeader
           avatarGroup={avatarGroup}
@@ -249,10 +251,13 @@ export default createFragmentContainer(withAtmosphere(RetroDiscussPhase), {
   team: graphql`
     fragment RetroDiscussPhase_team on Team {
       ...StageTimerControl_team
+      organization {
+        ...DiscussPhaseSqueeze_organization
+      }
       isMeetingSidebarCollapsed
-      teamId: id
+      id
       newMeeting {
-        meetingId: id
+        id
         facilitatorUserId
         phases {
           stages {
@@ -276,10 +281,10 @@ export default createFragmentContainer(withAtmosphere(RetroDiscussPhase), {
         localStage {
           ...StageTimerDisplay_stage
           isComplete
-          localStageId: id
+          id
           ... on RetroDiscussStage {
             reflectionGroup {
-              reflectionGroupId: id
+              id
               title
               voteCount
               reflections {

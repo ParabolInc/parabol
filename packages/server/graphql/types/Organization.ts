@@ -84,6 +84,11 @@ const Organization = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLInt),
       description: 'Number of retro meetings that can be run (if not pro)'
     },
+    showConversionModal: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'true if should show the org the conversion modal, else false',
+      resolve: ({showConversionModal}) => !!showConversionModal
+    },
     stripeId: {
       type: GraphQLID,
       description: 'The customerId from stripe',

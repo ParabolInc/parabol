@@ -27,20 +27,24 @@ interface Props {
   actionType: CreditCardModalActionType
   activeUserCount?: number
   closePortal: () => void
+  handlePayLater?: () => void
+  handlePayNow?: () => void
   orgId: string
 }
 
 type Status = 'success' | 'later' | 'init'
 
 const CreditCardModal = (props: Props) => {
-  const {actionType, activeUserCount, closePortal, orgId} = props
+  const {actionType, activeUserCount, closePortal, orgId, handlePayLater, handlePayNow} = props
   const [status, setStatus] = useState<Status>('init')
   const onSuccess = actionType === 'update' ? closePortal : () => {
     setStatus('success')
+    handlePayNow && handlePayNow()
   }
   const onLater = (e: React.FormEvent) => {
     e.preventDefault()
     setStatus('later')
+    handlePayLater && handlePayLater()
   }
 
   if (status === 'success') return <UpgradeSuccess closePortal={closePortal} />

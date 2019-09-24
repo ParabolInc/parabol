@@ -1519,6 +1519,11 @@ export interface IOrganization {
   retroMeetingsRemaining: number;
 
   /**
+   * true if should show the org the conversion modal, else false
+   */
+  showConversionModal: boolean;
+
+  /**
    * The customerId from stripe
    */
   stripeId: string | null;

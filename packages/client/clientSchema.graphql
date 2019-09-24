@@ -41,14 +41,6 @@ extend type RetroReflection {
   isEditing: Boolean
 }
 
-extend type DragContext {
-  isClosing: Boolean,
-  isPendingStartDrag: Boolean,
-  isViewerDragging: Boolean,
-  initialCursorCoords: Coords2D,
-  initialComponentCoords: Coords2D
-}
-
 extend type RetroPhaseItem {
   editorIds: [ID!]
 }
