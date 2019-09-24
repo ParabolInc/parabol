@@ -209,9 +209,9 @@ const PhaseItemColumn = (props: Props) => {
               >
                 <RetroPrompt>{question}</RetroPrompt>
               </Tooltip>
-              <Description isDesktop={isDesktop}>{description}</Description>
+              <Description>{description}</Description>
             </PromptHeader>
-            <EditorSection isDesktop={isDesktop}>
+            <EditorSection>
               <EditorAndStatus isPhaseComplete={isComplete}>
                 <PhaseItemEditor
                   cardsInFlightRef={cardsInFlightRef}
