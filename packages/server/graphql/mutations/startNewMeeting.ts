@@ -12,7 +12,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {IStartNewMeetingOnMutationArguments} from '../../../client/types/graphql'
-import {TEAM} from '../../../client/utils/constants'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: StartNewMeetingPayload,
@@ -43,6 +43,7 @@ export default {
     }
 
     // VALIDATION
+    // Not strictly required since we do this below, but cheap enough to prevent extra work
     const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
     const syncMeetingInProgress = activeMeetings.find((meeting) => !meeting.isAsync)
     if (syncMeetingInProgress) {
@@ -71,18 +72,29 @@ export default {
     })
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(meeting.teamId)
     const meetingMembers = await createMeetingMembers(meeting, teamMembers, dataLoader)
+    await r.table('NewMeeting').insert(meeting)
+
+    // Possibly rollback if mutation triggered more than once
+    dataLoader.get('activeMeetingsByTeamId').clear(teamId)
+    const newActiveMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
+    const otherActiveMeeting = newActiveMeetings.find(({isAsync, id}) => !isAsync && id !== meeting.id)
+    if (otherActiveMeeting) {
+      await r.table('NewMeeting').delete(meeting.id)
+      return standardError(new Error('Meeting already started'), {userId: viewerId})
+    }
+
+    // Single meeting guaranteed
     await r({
       team: r
         .table('Team')
         .get(teamId)
         .update({meetingId: meeting.id}),
-      meeting: r.table('NewMeeting').insert(meeting),
       members: r.table('MeetingMember').insert(meetingMembers)
     })
 
     startSlackMeeting(teamId, dataLoader, meetingType).catch(console.log)
     const data = {teamId, meetingId: meeting.id}
-    publish(TEAM, teamId, StartNewMeetingPayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, StartNewMeetingPayload, data, subOptions)
     return data
   }
 }
