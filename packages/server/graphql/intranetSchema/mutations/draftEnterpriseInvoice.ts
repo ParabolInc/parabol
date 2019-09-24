@@ -53,7 +53,7 @@ export default {
       description: 'Email address of billing leader, if different from the org billing leader'
     }
   },
-  async resolve(
+  async resolve (
     _source,
     {orgId, quantity, email},
     {authToken, dataLoader}: GQLContext
@@ -125,6 +125,7 @@ export default {
         .getAll(orgId, {index: 'orgId'})
         .update({
           isPaid: true,
+          showConversionModal: false,
           tier: TierEnum.enterprise,
           updatedAt: now
         })

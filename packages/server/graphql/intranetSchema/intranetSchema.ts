@@ -22,6 +22,7 @@ import stripeSucceedPayment from './mutations/stripeSucceedPayment'
 import stripeInvoiceFinalized from './mutations/stripeInvoiceFinalized'
 import stripeUpdateCreditCard from './mutations/stripeUpdateCreditCard'
 import stripeUpdateInvoiceItem from './mutations/stripeUpdateInvoiceItem'
+import flagConversionModal from './mutations/flagConversionModal'
 
 const query = new GraphQLObjectType<any, GQLContext, any>({
   name: 'Query',
@@ -42,6 +43,7 @@ const mutation = new GraphQLObjectType<any, GQLContext, any>({
     autopauseUsers,
     draftEnterpriseInvoice,
     endOldMeetings,
+    flagConversionModal,
     flagOverLimit,
     githubAddAssignee,
     loginSSO,

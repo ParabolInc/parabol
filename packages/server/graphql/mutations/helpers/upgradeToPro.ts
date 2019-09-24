@@ -41,6 +41,7 @@ const upgradeToPro = async (orgId: string, source: string, email: string) => {
         ...subscriptionFields,
         creditCard: getCCFromCustomer(customer),
         tier: TierEnum.pro,
+        showConversionModal: false,
         stripeId: customer.id,
         updatedAt: now
       }),
