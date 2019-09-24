@@ -1,7 +1,6 @@
-import {GraphQLObjectType} from 'graphql'
+import {GraphQLList, GraphQLObjectType} from 'graphql'
 import User from './User'
 import StandardMutationError from './StandardMutationError'
-import {resolveUser} from '../resolvers'
 
 const FlagOverLimitPayload = new GraphQLObjectType({
   name: 'FlagOverLimitPayload',
@@ -9,10 +8,12 @@ const FlagOverLimitPayload = new GraphQLObjectType({
     error: {
       type: StandardMutationError
     },
-    user: {
-      type: User,
-      description: 'the user with the limit added or removed',
-      resolve: resolveUser
+    users: {
+      type: new GraphQLList(User),
+      description: 'the users with the limit added or removed',
+      resolve: ({userIds}, _args, {dataLoader}) => {
+        return dataLoader.get('users').loadMany(userIds)
+      }
     }
   })
 })
