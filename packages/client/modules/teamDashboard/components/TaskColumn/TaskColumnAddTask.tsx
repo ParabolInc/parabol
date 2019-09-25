@@ -3,7 +3,6 @@ import AddTaskButton from '../../../../components/AddTaskButton/AddTaskButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import TaskColumnAddTaskSelectTeam from './TaskColumnAddTaskSelectTeam'
 import CreateTaskMutation from '../../../../mutations/CreateTaskMutation'
-import themeLabels from '../../../../styles/theme/labels'
 import {AreaEnum, ITeam, TaskStatusEnum} from '../../../../types/graphql'
 import dndNoise from '../../../../utils/dndNoise'
 import getNextSortOrder from '../../../../utils/getNextSortOrder'
@@ -11,6 +10,7 @@ import fromTeamMemberId from '../../../../utils/relay/fromTeamMemberId'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {TaskColumnAddTask_tasks} from '../../../../__generated__/TaskColumnAddTask_tasks.graphql'
+import {taskStatusLabels} from '../../../../utils/taskStatus'
 
 interface Props {
   area: AreaEnum
@@ -35,7 +35,7 @@ const TaskColumnAddTask = (props: Props) => {
     teams
   } = props
   const atmosphere = useAtmosphere()
-  const label = themeLabels.taskStatus[status].slug
+  const label = taskStatusLabels[status]
   const sortOrder = getNextSortOrder(tasks, dndNoise())
   if (area === AreaEnum.teamDash || isMyMeetingSection) {
     const {userId, teamId} = fromTeamMemberId(teamMemberFilterId || myTeamMemberId!)

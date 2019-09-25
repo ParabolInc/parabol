@@ -1,6 +1,6 @@
 import React, {useState, ReactNode} from 'react'
-import appTheme from '../../styles/theme/appTheme'
-import ui from '../../styles/ui'
+import {PALETTE} from '../../styles/paletteV2'
+import {Card} from '../../types/constEnums'
 import {createFragmentContainer} from 'react-relay'
 import DueDateToggle from '../DueDateToggle'
 import styled from '@emotion/styled'
@@ -12,14 +12,14 @@ import EditingStatusText from './EditingStatusText'
 
 const StatusHeader = styled('div')({
   alignItems: 'flex-start',
-  color: appTheme.palette.dark80l,
+  color: PALETTE.TEXT_GRAY,
   display: 'flex',
-  fontSize: '.6875rem',
+  fontSize: 11,
   fontWeight: 400,
   justifyContent: 'space-between',
-  lineHeight: '1.375rem',
-  minHeight: ui.cardButtonHeight,
-  padding: `0 ${ui.cardPaddingBase} 8px`,
+  lineHeight: '20px',
+  minHeight: Card.BUTTON_HEIGHT,
+  padding: `0 ${Card.PADDING} 8px`,
   textAlign: 'left'
 })
 

@@ -5,7 +5,7 @@ import getAnchorLocation from './getAnchorLocation'
 import getSelectionLink from './getSelectionLink'
 import getSelectionText from './getSelectionText'
 import getWordAt from './getWordAt'
-import ui, {
+import {
   DEFAULT_MENU_HEIGHT,
   DEFAULT_MENU_WIDTH,
   HUMAN_ADDICTION_THRESH,
@@ -323,7 +323,7 @@ const withLinks = (ComposedComponent) => {
             useTaskChild,
           }}
           targetAnchor={targetAnchor}
-          marginFromOrigin={ui.draftModalMargin}
+          marginFromOrigin={32}
           originCoords={this.cachedCoords}
           top={this.top}
           left={this.left}
@@ -359,7 +359,7 @@ const withLinks = (ComposedComponent) => {
             addHyperlink: this.addHyperlink
           }}
           targetAnchor={targetAnchor}
-          marginFromOrigin={ui.draftModalMargin}
+          marginFromOrigin={32}
           originCoords={coords}
           top={this.top}
           left={this.left}

@@ -29,7 +29,7 @@ const AvatarAndName = styled('div')({
 
 const OrgNameAndDetails = styled('div')({
   alignItems: 'flex-start',
-  color: PALETTE.TEXT_LIGHT,
+  color: PALETTE.TEXT_GRAY,
   display: 'flex',
   flex: 1,
   flexDirection: 'column',

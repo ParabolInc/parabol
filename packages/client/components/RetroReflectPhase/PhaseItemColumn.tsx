@@ -76,7 +76,7 @@ const Description = styled('div')({
 })
 
 const FocusArrow = styled(Icon)<{isFocused: boolean}>(({isFocused}) => ({
-  color: PALETTE.TEXT_PINK,
+  color: PALETTE.EMPHASIS_WARM,
   display: 'block',
   fontSize: ICON_SIZE.MD24,
   height: ICON_SIZE.MD24,

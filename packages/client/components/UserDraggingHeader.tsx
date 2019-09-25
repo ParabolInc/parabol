@@ -39,7 +39,7 @@ const Arrow = styled(Icon)({
 
 const Tag = styled(BaseTag)({
   backgroundColor: PALETTE.PRIMARY_LIGHT,
-  color: '#fff'
+  color: '#FFFFFF'
 })
 
 export type RemoteReflectionArrow = 'arrow_downward' | 'arrow_upward' | 'arrow_back' | 'arrow_forward'

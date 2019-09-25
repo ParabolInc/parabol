@@ -1,9 +1,7 @@
 import emailDir from '../../../emailDir'
 import React from 'react'
-import {
-  FONT_FAMILY,
-  PALETTE_TEXT_MAIN
-} from './constants'
+import {PALETTE} from '../../../../../styles/paletteV2'
+import {FONT_FAMILY} from '../../../../../styles/typographyV2'
 
 interface Props {
   emailCSVUrl: string
@@ -12,8 +10,8 @@ interface Props {
 const label = 'Export to CSV'
 
 const iconLinkLabel = {
-  color: PALETTE_TEXT_MAIN,
-  fontFamily: FONT_FAMILY,
+  color: PALETTE.TEXT_MAIN,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: '13px',
   paddingTop: 32
 }

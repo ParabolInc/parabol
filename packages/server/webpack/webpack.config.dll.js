@@ -57,7 +57,6 @@ module.exports = {
       'shortid',
       'string-score',
       'tayden-clusterfck',
-      'tinycolor2',
       'tlds',
       'tslib',
       'unicode-substring'

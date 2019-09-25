@@ -28,7 +28,7 @@ export default {
       description: 'A stringified draft-js document containing thoughts'
     }
   },
-  async resolve(_source, {reflectionId, content}, {authToken, dataLoader, socketId: mutatorId}: GQLContext) {
+  async resolve (_source, {reflectionId, content}, {authToken, dataLoader, socketId: mutatorId}: GQLContext) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const now = new Date()

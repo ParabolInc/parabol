@@ -13,7 +13,7 @@ import {MenuProps} from '../../../../hooks/useMenu'
 import TaskFooterTagMenuStatusItem from './TaskFooterTagMenuStatusItem'
 import DeleteTaskMutation from '../../../../mutations/DeleteTaskMutation'
 import {PALETTE} from '../../../../styles/paletteV2'
-import labels from '../../../../styles/theme/labels'
+import {TaskStatus} from '../../../../types/constEnums'
 import addContentTag from '../../../../utils/draftjs/addContentTag'
 import removeContentTag from '../../../../utils/draftjs/removeContentTag'
 import isTaskPrivate from '../../../../utils/isTaskPrivate'
@@ -21,7 +21,12 @@ import {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {AreaEnum} from '../../../../types/graphql'
 import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 
-const statusItems = labels.taskStatus.slugs.slice()
+const statusItems = [
+  TaskStatus.DONE,
+  TaskStatus.ACTIVE,
+  TaskStatus.STUCK,
+  TaskStatus.FUTURE
+]
 
 interface Props {
   area: AreaEnum

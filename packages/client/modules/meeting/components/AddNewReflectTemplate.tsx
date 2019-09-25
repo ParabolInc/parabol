@@ -10,13 +10,12 @@ import withAtmosphere, {
 import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import {PALETTE} from '../../../styles/paletteV2'
-import {typeScale} from '../../../styles/theme/typography'
 
 const Error = styled('span')({
   color: PALETTE.ERROR_MAIN,
   display: 'block',
-  fontSize: typeScale[1],
-  margin: '0 0 .5rem'
+  fontSize: 12,
+  margin: '0 0 8px'
 })
 
 const Button = styled(RaisedButton)({

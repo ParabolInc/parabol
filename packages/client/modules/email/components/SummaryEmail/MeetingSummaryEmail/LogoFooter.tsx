@@ -1,17 +1,15 @@
 import React from 'react'
 import emailDir from '../../../emailDir'
-import {
-  FONT_FAMILY,
-  PALETTE_TEXT_MAIN
-} from './constants'
+import {PALETTE} from '../../../../../styles/paletteV2'
+import {FONT_FAMILY} from '../../../../../styles/typographyV2'
 
 const logoStyle = {
   paddingTop: 64
 }
 
 const taglineStyle = {
-  color: PALETTE_TEXT_MAIN,
-  fontFamily: FONT_FAMILY,
+  color: PALETTE.TEXT_MAIN,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 13,
   paddingTop: 8,
   paddingBottom: 32

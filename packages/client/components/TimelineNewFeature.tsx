@@ -20,7 +20,7 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
 
 const NewFeature = styled('div')({
   animation: `${fadeIn.toString()} 300ms ${DECELERATE}`,
-  background: '#fff',
+  background: '#FFFFFF',
   borderRadius: 4,
   boxShadow: cardShadow,
   display: 'flex',
@@ -31,7 +31,7 @@ const NewFeature = styled('div')({
 })
 
 const CancelIcon = styled(Icon)({
-  color: PALETTE.TEXT_LIGHT,
+  color: PALETTE.TEXT_GRAY,
   cursor: 'pointer',
   fontSize: ICON_SIZE.MD18,
   position: 'absolute',

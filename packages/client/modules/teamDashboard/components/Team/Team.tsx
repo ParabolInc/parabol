@@ -25,7 +25,7 @@ const StyledButton = styled(FlatButton)({
 })
 
 const IconButton = styled(StyledButton)({
-  color: PALETTE.TEXT_LIGHT,
+  color: PALETTE.TEXT_GRAY,
   marginRight: 16,
   padding: '3px 0',
   width: 32,

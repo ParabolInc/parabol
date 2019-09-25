@@ -14,7 +14,6 @@ import {useGotoStageId} from '../hooks/useMeeting'
 import DragDiscussionTopicMutation from '../mutations/DragDiscussionTopicMutation'
 import {navItemRaised} from '../styles/elevation'
 import {meetingVoteIcon} from '../styles/meeting'
-import ui from '../styles/ui'
 import {
   DISCUSSION_TOPIC,
   RETRO_TOPIC_LABEL,
@@ -24,8 +23,12 @@ import {
 import dndNoise from '../utils/dndNoise'
 import plural from '../utils/plural'
 import Icon from './Icon'
-import {MD_ICONS_SIZE_18} from '../styles/icons'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
+import {NavSidebar} from '../types/constEnums'
+import {ICON_SIZE} from '../styles/typographyV2'
+import {PALETTE} from '../styles/paletteV2'
+
+const lineHeight = NavSidebar.SUB_LINE_HEIGHT
 
 interface Props extends WithAtmosphereProps {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -36,22 +39,22 @@ interface Props extends WithAtmosphereProps {
 const VoteTally = styled('div')<{isUnsyncedFacilitatorStage: boolean | null}>(
   ({isUnsyncedFacilitatorStage}) => ({
     alignItems: 'center',
-    color: isUnsyncedFacilitatorStage ? ui.palette.warm : ui.palette.midGray,
+    color: isUnsyncedFacilitatorStage ? PALETTE.EMPHASIS_WARM : PALETTE.TEXT_GRAY,
     display: 'flex',
-    fontSize: ui.iconSize,
+    fontSize: ICON_SIZE.MD18,
     fontWeight: 600,
-    height: ui.navTopicLineHeight,
-    lineHeight: ui.navTopicLineHeight,
-    marginRight: '0.5rem'
+    height: lineHeight,
+    lineHeight,
+    marginRight: 8
   })
 )
 
 const VoteIcon = styled(Icon)({
   color: 'inherit',
-  fontSize: MD_ICONS_SIZE_18,
-  height: ui.navTopicLineHeight,
-  lineHeight: ui.navTopicLineHeight,
-  marginRight: '.125rem'
+  fontSize: ICON_SIZE.MD18,
+  height: lineHeight,
+  lineHeight,
+  marginRight: 2
 })
 
 const DraggableMeetingSubnavItem = styled('div')<{isDragging: boolean}>(({isDragging}) => ({

@@ -88,7 +88,7 @@ const Name = styled('div')({
 })
 
 const Title = styled('div')({
-  color: PALETTE.TEXT_LIGHT,
+  color: PALETTE.TEXT_GRAY,
   fontSize: 13
 })
 

@@ -1,6 +1,6 @@
 import React from 'react'
 import Icon from '../Icon'
-import {MD_ICONS_SIZE_18} from '../../styles/icons'
+import {ICON_SIZE} from '../../styles/typographyV2'
 import styled from '@emotion/styled'
 import {PALETTE} from '../../styles/paletteV2'
 
@@ -10,8 +10,8 @@ import {PALETTE} from '../../styles/paletteV2'
 //  • Add disabled styles (TA)
 
 const iconStyles = {
-  fontSize: MD_ICONS_SIZE_18,
-  lineHeight: MD_ICONS_SIZE_18,
+  fontSize: ICON_SIZE.MD18,
+  lineHeight: ICON_SIZE.MD18,
   marginRight: '.25rem',
   verticalAlign: 'middle'
 }
@@ -30,7 +30,7 @@ const Item = styled('div')<{isActive: boolean, isFirst: boolean, isLast: boolean
   borderBottomRightRadius: isLast ? 2 : undefined,
   borderTopRightRadius: isLast ? 2 : undefined,
   borderLeftWidth: isFirst ? 1 : 0,
-  color: isActive ? '#fff' : PALETTE.TEXT_PURPLE,
+  color: isActive ? '#FFFFFF' : PALETTE.TEXT_PURPLE,
   cursor: isActive ? 'default' : 'pointer',
   display: 'flex',
   flex: 1,
@@ -42,7 +42,7 @@ const Item = styled('div')<{isActive: boolean, isFirst: boolean, isLast: boolean
   textDecoration: 'none',
   ':hover,:focus': {
     backgroundColor: isActive ? PALETTE.CONTROL_MAIN : PALETTE.BACKGROUND_TOGGLE_ACTIVE,
-    color: isActive ? '#fff' : PALETTE.TEXT_TOGGLE_ACTIVE,
+    color: isActive ? '#FFFFFF' : PALETTE.TEXT_TOGGLE_ACTIVE,
     textDecoration: 'none'
   }
 }))

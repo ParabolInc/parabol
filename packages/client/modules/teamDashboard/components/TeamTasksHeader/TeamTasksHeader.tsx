@@ -3,7 +3,6 @@ import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import {NavLink, RouteComponentProps, withRouter} from 'react-router-dom'
-import DashHeading from '../../../../components/Dashboard/DashHeading'
 import DashSectionControl from '../../../../components/Dashboard/DashSectionControl'
 import DashSectionControls from '../../../../components/Dashboard/DashSectionControls'
 import DashSectionHeader from '../../../../components/Dashboard/DashSectionHeader'
@@ -13,7 +12,8 @@ import DashNavControl from '../../../../components/DashNavControl/DashNavControl
 import LabelHeading from '../../../../components/LabelHeading/LabelHeading'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import ui from '../../../../styles/ui'
+import {PALETTE} from '../../../../styles/paletteV2'
+import {Breakpoint} from '../../../../types/constEnums'
 import lazyPreload from '../../../../utils/lazyPreload'
 import graphql from 'babel-plugin-relay/macro'
 import {ClassNames} from '@emotion/core'
@@ -26,11 +26,21 @@ const OrgInfoBlock = styled('div')({
   marginTop: '.125rem'
 })
 
+const DashHeading = styled('div')({
+  color: PALETTE.TEXT_MAIN,
+  fontSize: 24,
+  fontWeight: 600,
+  lineHeight: '1.25',
+  [`@media (min-width: ${Breakpoint.DASHBOARD_WIDE})`]: {
+    fontSize: 34
+  }
+})
+
 const orgLinkStyles = {
-  color: ui.linkColor,
+  color: PALETTE.TEXT_GRAY,
   cursor: 'pointer',
   ':hover, :focus': {
-    color: ui.linkColorHover
+    color: PALETTE.TEXT_BLUE
   }
 }
 

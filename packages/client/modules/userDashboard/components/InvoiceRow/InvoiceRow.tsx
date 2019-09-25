@@ -21,7 +21,7 @@ const InvoiceAmount = styled('span')({
 })
 
 const FileIcon = styled(Icon)<{isEstimate: boolean}>(({isEstimate}) => ({
-  color: isEstimate ? PALETTE.TEXT_BLUE : PALETTE.TEXT_LIGHT
+  color: isEstimate ? PALETTE.EMPHASIS_COOL : PALETTE.TEXT_GRAY
 }))
 
 const InvoiceInfo = styled(RowInfo)({
@@ -57,7 +57,7 @@ const RowLink = LinkStyles.withComponent(Link)
 
 const StyledDate = styled('span')<{styledToPay?: boolean, styledPaid?: boolean}>(({styledToPay, styledPaid}) => ({
   fontSize: 13,
-  color: styledToPay || styledPaid ? PALETTE.TEXT_LIGHT : PALETTE.ERROR_MAIN
+  color: styledToPay || styledPaid ? PALETTE.TEXT_GRAY : PALETTE.ERROR_MAIN
 }))
 
 const PayURL = styled('a')({

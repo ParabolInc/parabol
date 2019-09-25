@@ -8,14 +8,13 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import textOverflow from '../../../../styles/helpers/textOverflow'
 import avatarUser from '../../../../styles/theme/images/avatar-user.svg'
-import appTheme from '../../../../styles/theme/theme'
-import ui from '../../../../styles/ui'
+import {PALETTE} from '../../../../styles/paletteV2'
 import lazyPreload from '../../../../utils/lazyPreload'
 import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 
 const label = {
   ...textOverflow,
-  color: ui.colorText,
+  color: PALETTE.TEXT_MAIN,
   display: 'block',
   flex: 1,
   fontSize: 12,
@@ -39,23 +38,23 @@ const AvatarButton = styled(BaseButton)({
     boxShadow: 'none'
   },
   ':hover > div,:focus > div': {
-    borderColor: appTheme.palette.dark,
-    color: appTheme.palette.dark10d
+    borderColor: PALETTE.BORDER_DARK,
+    color: PALETTE.TEXT_MAIN_HOVER
   }
 })
 
 const Avatar = styled('div')<{cardIsActive: boolean}>(({cardIsActive}) => ({
   backgroundColor: 'transparent',
-  border: '.0625rem solid transparent',
-  borderColor: cardIsActive && appTheme.palette.mid50l,
+  border: '1px solid transparent',
+  borderColor: cardIsActive && PALETTE.BORDER_MAIN_50,
   borderRadius: '100%',
-  height: '1.75rem',
-  marginLeft: '-.125rem',
-  marginRight: '.25rem',
-  padding: '.0625rem',
+  height: 28,
+  marginLeft: -2,
+  marginRight: 4,
+  padding: 1,
   position: 'relative',
-  top: '-.125rem',
-  width: '1.75rem'
+  top: -2,
+  width: 28
 }))
 
 const AvatarImage = styled('img')({

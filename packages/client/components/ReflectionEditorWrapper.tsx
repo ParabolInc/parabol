@@ -3,16 +3,16 @@ import React, {PureComponent, RefObject, Suspense} from 'react'
 import './TaskEditor/Draft.css'
 import withKeyboardShortcuts from './TaskEditor/withKeyboardShortcuts'
 import withMarkdown from './TaskEditor/withMarkdown'
-import appTheme from '../styles/theme/appTheme'
+import {PALETTE} from '../styles/paletteV2'
+import {FONT_FAMILY} from '../styles/typographyV2'
 import {textTags} from '../utils/constants'
 import entitizeText from '../utils/draftjs/entitizeText'
 import styled from '@emotion/styled'
-import {cardContentFontSize, cardContentLineHeight} from '../styles/cards'
 import withEmojis from './TaskEditor/withEmojis'
 import isRichDraft from '../utils/draftjs/isRichDraft'
 import lazyPreload from '../utils/lazyPreload'
 import isAndroid from '../utils/draftjs/isAndroid'
-import {ElementHeight} from '../types/constEnums'
+import {Card, ElementHeight} from '../types/constEnums'
 
 interface Props {
   ariaLabel: string
@@ -41,25 +41,25 @@ interface Props {
 
 const editorBlockquote = {
   fontStyle: 'italic',
-  borderLeft: `.25rem ${appTheme.palette.mid40a} solid`,
-  margin: '1rem 0',
-  padding: '0 .5rem'
+  borderLeft: `4px ${PALETTE.BORDER_MAIN_40} solid`,
+  margin: '16px 0',
+  padding: '0 8px'
 }
 
 const codeBlock = {
-  backgroundColor: appTheme.palette.mid10a,
-  color: appTheme.palette.warm,
-  fontFamily: appTheme.typography.monospace,
+  backgroundColor: PALETTE.BACKGROUND_PRIMARY_10A,
+  color: PALETTE.TEXT_RED,
+  fontFamily: FONT_FAMILY.MONOSPACE,
   fontSize: 13,
   lineHeight: '24px',
   margin: '0',
-  padding: '0 .5rem'
+  padding: '0 8px'
 }
 
 const EditorStyles = styled('div')(({useFallback, userSelect, isClipped}: any) => ({
-  color: appTheme.palette.dark,
-  fontSize: cardContentFontSize,
-  lineHeight: useFallback ? '14px' : cardContentLineHeight,
+  color: PALETTE.TEXT_MAIN,
+  fontSize: Card.FONT_SIZE,
+  lineHeight: useFallback ? '14px' : Card.LINE_HEIGHT,
   maxHeight: isClipped ? 44 : ElementHeight.REFLECTION_CARD_MAX,
   minHeight: 16,
   overflow: 'auto',

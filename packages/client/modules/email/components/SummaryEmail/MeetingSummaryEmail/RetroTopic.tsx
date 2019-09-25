@@ -1,10 +1,7 @@
 import React from 'react'
-import {MD_ICONS_SIZE_18} from '../../../../../styles/icons'
 import emailDir from '../../../emailDir'
-import {
-  FONT_FAMILY,
-  PALETTE_TEXT_MAIN
-} from './constants'
+import {PALETTE} from '../../../../../styles/paletteV2'
+import {FONT_FAMILY, ICON_SIZE} from '../../../../../styles/typographyV2'
 import useEmailItemGrid from '../../../../../hooks/useEmailItemGrid'
 import EmailReflectionCard from './EmailReflectionCard'
 import {createFragmentContainer} from 'react-relay'
@@ -12,8 +9,8 @@ import graphql from 'babel-plugin-relay/macro'
 import {RetroTopic_topic} from '../../../../../__generated__/RetroTopic_topic.graphql'
 
 const topicThemeHeading = {
-  color: PALETTE_TEXT_MAIN,
-  fontFamily: FONT_FAMILY,
+  color: PALETTE.TEXT_MAIN,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 16,
   fontWeight: 600,
   paddingTop: 16
@@ -22,7 +19,7 @@ const topicThemeHeading = {
 const votesBlock = {
   fontSize: 14,
   fontWeight: 600,
-  lineHeight: MD_ICONS_SIZE_18
+  lineHeight: ICON_SIZE.MD18
 }
 
 const voteCountStyle = {

@@ -1,3 +1,7 @@
+export const enum AppBar {
+  HEIGHT = 56
+}
+
 // https://github.com/material-components/material-components-web/blob/4844330e7836d9dc97798b47594ff0dbaac51227/packages/mdc-animation/_variables.scss
 export const enum BezierCurve {
   DECELERATE = 'cubic-bezier(0, 0, .2, 1)',
@@ -13,12 +17,21 @@ export const enum BezierCurve {
 }
 
 export const enum Breakpoint {
-  DASHBOARD_FULL = 1600,
+  DASHBOARD_WIDE = 1600,
   INVOICE = 512,
   INVOICE_LABEL = 384,
   SIDEBAR_LEFT = 800,
   MEETING_FACILITATOR_BAR = 480,
   SINGLE_REFLECTION_COLUMN = 704, // (ReflectionWith + 16) * 2
+}
+
+export const enum Card {
+  BACKGROUND_COLOR = '#FFFFFF',
+  BORDER_RADIUS = 4,
+  BUTTON_HEIGHT = 24,
+  FONT_SIZE = 14,
+  LINE_HEIGHT = '20px',
+  PADDING = '16px'
 }
 
 export const enum ContactInfo {
@@ -56,6 +69,15 @@ export const enum Duration {
   TOOLTIP_CLOSE = 75
 }
 
+export const enum Filter {
+  BENEATH_DIALOG = 'blur(1.5px)'
+}
+
+export const enum Gutters {
+  DASH_GUTTER_SMALL = '20px',
+  DASH_GUTTER_LARGE = '32px'
+}
+
 export const enum ElementWidth {
   END_MEETING_BUTTON = 90,
   REFLECTION_CARD = 296,
@@ -85,6 +107,7 @@ export const enum Layout {
   TYPE_GRID = 4, // .5x
   LAYOUT_GRID = 8, // 1x
   ROW_GUTTER = 16, // 2x
+  TASK_COLUMNS_MAX_WIDTH = '1334px', // (4 x 296 card max-width) + (5 x 30 - gutters around cols)
 }
 
 export const enum LoaderSize {
@@ -106,6 +129,14 @@ export const enum MeetingTypes {
   RETROSPECTIVE = 'retrospective'
 }
 
+export const enum NavSidebar {
+  FONT_SIZE = 15,
+  LEFT_BORDER_WIDTH = '3px',
+  LINE_HEIGHT = '20px',
+  SUB_LINE_HEIGHT = '24px',
+  WIDTH = 240
+}
+
 export const enum Pricing {
   PRO_SEAT_COST = 600
 }
@@ -121,6 +152,7 @@ export const enum Providers {
 
 // Use power of 2 for cheap sense of scale (e.g. 2, 4, 8)
 export const enum Radius {
+  BUTTON_PILL = '10em',
   FIELD = 2,
   DIALOG = 8,
   MENU = 4,
@@ -142,6 +174,24 @@ export const enum SubscriptionChannel {
   TEAM = 'team',
   NOTIFICATION = 'notification',
   ORGANIZATION = 'organization',
+}
+
+export const enum TaskStatus {
+  DONE = 'done',
+  ACTIVE = 'active',
+  STUCK = 'stuck',
+  FUTURE = 'future',
+  ARCHIVED = 'archived',
+  PRIVATE = 'private'
+}
+
+export const enum TaskStatusLabel {
+  DONE = 'Done',
+  ACTIVE = 'Active',
+  STUCK = 'Stuck',
+  FUTURE = 'Future',
+  ARCHIVED = 'Archived',
+  PRIVATE = 'Private'
 }
 
 export const enum TierLabel {

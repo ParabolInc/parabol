@@ -1,4 +1,4 @@
-import {ReflectionCardRoot} from '../ReflectionCard/ReflectionCard'
+import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
 import React, {RefObject, useEffect, useMemo, useRef} from 'react'
 import styled from '@emotion/styled'
 import {Elevation} from '../../styles/elevation'

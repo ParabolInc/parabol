@@ -9,10 +9,10 @@ import withAtmosphere, {
   WithAtmosphereProps
 } from '../../decorators/withAtmosphere/withAtmosphere'
 import RemoveReflectionMutation from '../../mutations/RemoveReflectionMutation'
-import ui from '../../styles/ui'
 import withMutationProps, {WithMutationProps} from '../../utils/relay/withMutationProps'
 import Icon from '../Icon'
-import {MD_ICONS_SIZE_18} from '../../styles/icons'
+import {PALETTE} from '../../styles/paletteV2'
+import {ICON_SIZE} from '../../styles/typographyV2'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   meetingId: string
@@ -20,32 +20,33 @@ interface Props extends WithMutationProps, WithAtmosphereProps {
 }
 
 const DeleteButton = styled(PlainButton)({
-  backgroundColor: 'transparent',
+  backgroundColor: '#FFFFFF99',
   border: 0,
-  height: MD_ICONS_SIZE_18,
-  lineHeight: MD_ICONS_SIZE_18,
+  borderRadius: '100%',
+  height: ICON_SIZE.MD18,
+  lineHeight: ICON_SIZE.MD18,
   padding: 0,
   position: 'absolute',
-  right: '-.5625rem',
-  top: '-.5625rem',
-  width: MD_ICONS_SIZE_18
+  right: -9,
+  top: -9,
+  width: ICON_SIZE.MD18
 })
-
+// Background shows through the transparent X of the icon
 const Background = styled('div')({
-  backgroundColor: ui.palette.white,
+  backgroundColor: '#FFFFFF',
   borderRadius: '100%',
-  height: '.625rem',
-  left: '.25rem',
+  height: 10,
+  left: 4,
   position: 'absolute',
-  top: '.25rem',
-  width: '.625rem',
+  top: 4,
+  width: 10,
   zIndex: 100
 })
 
 const StyledIcon = styled(Icon)({
-  color: ui.palette.warm,
+  color: PALETTE.TEXT_GRAY,
   display: 'block',
-  fontSize: MD_ICONS_SIZE_18,
+  fontSize: ICON_SIZE.MD18,
   position: 'relative',
   textAlign: 'center',
   zIndex: 200
