@@ -5,7 +5,7 @@ export interface ReflectionGroupInput {
   createdAt?: Date
   meetingId: string
   retroPhaseItemId: string
-  sortOrder: number
+  sortOrder?: number
   updatedAt?: Date
   voterIds?: string[]
   title?: string
@@ -23,7 +23,7 @@ export default class ReflectionGroup {
   voterIds: string[]
   title: string | null
   smartTitle: string | null
-  constructor(input: ReflectionGroupInput) {
+  constructor (input: ReflectionGroupInput) {
     const {createdAt, id, meetingId, retroPhaseItemId, sortOrder, updatedAt, voterIds, smartTitle, title} = input
     const now = new Date()
     this.id = id || shortid.generate()
@@ -31,7 +31,7 @@ export default class ReflectionGroup {
     this.isActive = true
     this.meetingId = meetingId
     this.retroPhaseItemId = retroPhaseItemId
-    this.sortOrder = sortOrder
+    this.sortOrder = sortOrder || 0
     this.updatedAt = updatedAt || now
     this.voterIds = voterIds || []
     this.smartTitle = smartTitle || null
