@@ -25,6 +25,7 @@ interface Props {
   handleReturn: (e: React.KeyboardEvent) => DraftHandleValue
   isBlurred: boolean
   isClipped?: boolean
+  isPhaseItemEditor?: boolean
   keyBindingFn: (e: React.KeyboardEvent) => string
   placeholder: string
   onBlur: () => void
@@ -78,7 +79,9 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
   styleRef = React.createRef<HTMLDivElement>()
 
   componentDidMount () {
-    if (!this.props.editorState.getCurrentContent().hasText()) {
+    const {editorState, isClipped, isPhaseItemEditor} = this.props
+    if (isPhaseItemEditor) return
+    if (!editorState.getCurrentContent().hasText()) {
       setTimeout(() => {
         try {
           this.props.editorRef.current && this.props.editorRef.current.focus()
@@ -87,7 +90,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
         }
       })
     }
-    if (this.props.isClipped) {
+    if (isClipped) {
       const el = this.styleRef.current
       if (el) {
         el.scrollTop = el.scrollHeight

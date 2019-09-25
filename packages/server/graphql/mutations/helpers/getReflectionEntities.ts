@@ -1,25 +1,36 @@
-import getEntitiesFromText from './autoGroup/getEntitiesFromText'
 import sanitizeAnalyzedEntitiesResponse from './autoGroup/sanitizeAnalyzedEntititesResponse'
-import getSyntaxFromText from './autoGroup/getSyntaxFromText'
 import addLemmaToEntities from './autoGroup/addLemmaToEntities'
 import sendToSentry from '../../../utils/sendToSentry'
+import getGoogleLanguageManager from '../../../getGoogleLanguageManager'
+import {GoogleErrorResponse} from '../../../GoogleLanguageManager'
 
-const catchHandler = (e: Error) => {
-  const re = /the language \S+ is not supported/i
-  if (!re.test(e.message)) {
-    sendToSentry(new Error(`Grouping Error: Google NLP: ${e.message}`))
+const manageErrorResponse = <T>(res: T) => {
+  if (Array.isArray(res)) {
+    const [firstError] = res
+    if (firstError) {
+      const {error} = firstError
+      if (error) {
+        const {message} = error
+        const re = /language \S+ is not supported/
+        if (!re.test(message)) {
+          sendToSentry(new Error(`Grouping Error: Google NLP: ${message}`))
+        }
+      }
+    }
+    return null
   }
+  return res as T extends GoogleErrorResponse ? never : T
 }
 
 const getReflectionEntities = async (plaintextContent: string) => {
   if (!plaintextContent) return []
+  const manager = getGoogleLanguageManager()
   const res = await Promise.all([
-    getEntitiesFromText(plaintextContent),
-    getSyntaxFromText(plaintextContent)
-  ]).catch(catchHandler)
-
-  if (!res) return []
-  const [reflectionResponse, reflectionSyntax] = res
+    manager.analyzeEntities(plaintextContent),
+    manager.analyzeSyntax(plaintextContent)
+  ])
+  const reflectionResponse = manageErrorResponse(res[0])
+  const reflectionSyntax = manageErrorResponse(res[1])
   // for each entity, look in the tokens array to first the first word of the entity
   // for each word in the entity, make sure that the next token points to it, else continue, return entity starting index
   // take the lemma of the last word and recompute the entity based on that lemma

@@ -38,7 +38,8 @@ const ReflectWrapperMobile = (props: Props) => {
   return (
     <>
       <SwipeableViews
-        // required! repro: swipe on a stack where length === 1. caused by the delete button.
+        // ignoreNativeScroll required! repro: swipe on a stack where length === 1. caused by the delete button.
+        ignoreNativeScroll
         enableMouseEvents
         disabled={disabled}
         index={activeIdx}
