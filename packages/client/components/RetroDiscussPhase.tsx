@@ -157,8 +157,7 @@ const RetroDiscussPhase = (props: Props) => {
   const {isMeetingSidebarCollapsed, newMeeting, id: teamId, organization} = team
   if (!newMeeting) return null
   const {gotoNext, ref: gotoNextRef} = handleGotoNext
-  const {id: meetingId, facilitator, facilitatorUserId, localStage, phases} = newMeeting
-  const {preferredName: facilitatorName} = facilitator
+  const {id: meetingId, facilitatorUserId, localStage, phases} = newMeeting
   const {id: localStageId, reflectionGroup} = localStage
   const isComplete = localStage ? localStage.isComplete : false
   // reflection group will be null until the server overwrites the placeholder.
@@ -168,7 +167,7 @@ const RetroDiscussPhase = (props: Props) => {
   const nextStageRes = findStageAfterId(phases, localStageId)
   return (
     <MeetingContent>
-      <DiscussPhaseSqueeze isFacilitating={isFacilitating} organization={organization} facilitatorName={facilitatorName}/>
+      <DiscussPhaseSqueeze meeting={newMeeting} organization={organization}/>
       <MeetingHeaderAndPhase>
         <MeetingContentHeader
           avatarGroup={avatarGroup}
@@ -258,11 +257,9 @@ export default createFragmentContainer(withAtmosphere(RetroDiscussPhase), {
       isMeetingSidebarCollapsed
       id
       newMeeting {
+        ...DiscussPhaseSqueeze_meeting
         id
         facilitatorUserId
-        facilitator {
-          preferredName
-        }
         phases {
           stages {
             ...StageTimerDisplay_stage

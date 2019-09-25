@@ -10,6 +10,8 @@ import Icon from '../../../../components/Icon'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {ExternalLinks} from '../../../../types/constEnums'
+import PayLaterMutation from '../../../../mutations/PayLaterMutation'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
 
 export type CreditCardModalActionType = 'update' | 'upgrade' | 'squeeze'
 
@@ -27,28 +29,31 @@ interface Props {
   actionType: CreditCardModalActionType
   activeUserCount?: number
   closePortal: () => void
-  handlePayLater?: () => void
-  handlePayNow?: () => void
   orgId: string
+  meetingId?: string
 }
 
 type Status = 'success' | 'later' | 'init'
 
 const CreditCardModal = (props: Props) => {
-  const {actionType, activeUserCount, closePortal, orgId, handlePayLater, handlePayNow} = props
+  const {actionType, activeUserCount, closePortal, orgId, meetingId} = props
   const [status, setStatus] = useState<Status>('init')
+  const atmosphere = useAtmosphere()
   const onSuccess = actionType === 'update' ? closePortal : () => {
     setStatus('success')
-    handlePayNow && handlePayNow()
   }
   const onLater = (e: React.FormEvent) => {
     e.preventDefault()
     setStatus('later')
-    handlePayLater && handlePayLater()
+  }
+
+  const closeLater = () => {
+    closePortal()
+    PayLaterMutation(atmosphere, {meetingId: meetingId!})
   }
 
   if (status === 'success') return <UpgradeSuccess closePortal={closePortal} />
-  if (status === 'later') return <UpgradeLater closePortal={closePortal} />
+  if (status === 'later') return <UpgradeLater closePortal={closeLater} />
 
   return (
     <Container>

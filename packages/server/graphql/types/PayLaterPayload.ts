@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLList, GraphQLObjectType} from 'graphql'
+import {GraphQLID, GraphQLObjectType} from 'graphql'
 import StandardMutationError from './StandardMutationError'
 import NewMeeting from './NewMeeting'
 import {GQLContext} from '../graphql'
@@ -9,15 +9,15 @@ const PayLaterPayload = new GraphQLObjectType({
     error: {
       type: StandardMutationError
     },
-    meetingIds: {
-      type: GraphQLList(GraphQLID),
+    meetingId: {
+      type: GraphQLID,
       description: 'the ids of the meetings that were showing conversion modals'
     },
-    meetings: {
+    meeting: {
       type: NewMeeting,
       description: 'the meetings that were showing conversion modals',
-      resolve: ({meetingIds}, _args, {dataLoader}: GQLContext) => {
-        return dataLoader.get('newMeetings').loadMany(meetingIds)
+      resolve: ({meetingId}, _args, {dataLoader}: GQLContext) => {
+        return dataLoader.get('newMeetings').load(meetingId)
       }
     }
   })

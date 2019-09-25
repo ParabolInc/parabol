@@ -15,6 +15,9 @@ const hideConversionModal = async (orgId: string, dataLoader: DataLoaderWorker) 
     const activeMeetingsByTeamId = await dataLoader.get('activeMeetingsByTeamId').loadMany(teamIds)
     if (activeMeetingsByTeamId.length > 0) {
       const activeMeetings = activeMeetingsByTeamId.flat()
+      activeMeetings.forEach((meeting) => {
+        meeting.showConversionModal = false
+      })
       const meetingIds = activeMeetings.map(({id}) => id)
       await r.table('NewMeeting')
         .getAll(r.args(meetingIds))

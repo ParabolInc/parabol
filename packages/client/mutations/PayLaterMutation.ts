@@ -1,23 +1,36 @@
 import graphql from 'babel-plugin-relay/macro'
-import {getRequest} from 'relay-runtime'
-import Atmosphere from '../Atmosphere'
+import {commitMutation} from 'relay-runtime'
+import {StandardMutation} from '../types/relayMutations'
+import {PayLaterMutation as TPayLaterMutation} from '../__generated__/PayLaterMutation.graphql'
+
+graphql`
+  fragment PayLaterMutation_organization on PayLaterPayload {
+    meeting {
+      showConversionModal
+    }
+  }
+`
 
 const mutation = graphql`
-  mutation PayLaterMutation($orgId: ID!) {
-    payLater(orgId: $orgId) {
+  mutation PayLaterMutation($meetingId: ID!) {
+    payLater(meetingId: $meetingId) {
+      ...PayLaterMutation_organization @relay(mask: false)
       error {
         message
-      }
-      meetings {
-        showConversionModal
       }
     }
   }
 `
 
-const PayLaterMutation = (atmosphere: Atmosphere, variables: {orgId: string}) => {
-  const {_network: network} = atmosphere
-  network.execute(getRequest(mutation).params, variables, {force: true})
+const PayLaterMutation: StandardMutation<TPayLaterMutation> = (
+  atmosphere,
+  variables
+) => {
+  return commitMutation<TPayLaterMutation>(atmosphere, {
+    mutation,
+    variables,
+  })
 }
+
 
 export default PayLaterMutation

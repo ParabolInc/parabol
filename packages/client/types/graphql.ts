@@ -3247,7 +3247,7 @@ export interface IPayLaterOnMutationArguments {
   /**
    * the org that has clicked pay later
    */
-  orgId: string;
+  meetingId: string;
 }
 
 export interface IPushInvitationOnMutationArguments {
@@ -5076,12 +5076,12 @@ export interface IPayLaterPayload {
   /**
    * the ids of the meetings that were showing conversion modals
    */
-  meetingIds: (string | null)[] | null;
+  meetingId: string | null;
 
   /**
    * the meetings that were showing conversion modals
    */
-  meetings: NewMeeting | null;
+  meeting: NewMeeting | null;
 }
 
 export interface IPushInvitationPayload {
@@ -5796,12 +5796,12 @@ export interface IUpgradeToProPayload {
   /**
    * the ids of the meetings that were showing conversion modals
    */
-  meetingIds: (string | null)[] | null;
+  meetingIds: string[] | null;
 
   /**
    * the meetings that were showing conversion modals
    */
-  meetings: NewMeeting | null;
+  meetings: NewMeeting[] | null;
 }
 
 export interface IAddReflectTemplatePayload {

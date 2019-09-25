@@ -17,6 +17,7 @@ const subscription = graphql`
     organizationSubscription {
       __typename
       ...AddOrgMutation_organization @relay(mask: false)
+      ...PayLaterMutation_organization @relay(mask: false)
       ...SetOrgUserRoleMutationAdded_organization @relay(mask: false)
       ...SetOrgUserRoleMutationRemoved_organization @relay(mask: false)
       ...UpdateCreditCardMutation_organization @relay(mask: false)

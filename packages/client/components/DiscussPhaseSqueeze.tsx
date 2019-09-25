@@ -1,38 +1,29 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect} from 'react'
 import useModal from '../hooks/useModal'
 import CreditCardModal from '../modules/userDashboard/components/CreditCardModal/CreditCardModal'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {DiscussPhaseSqueeze_organization} from '__generated__/DiscussPhaseSqueeze_organization.graphql'
-import PayLaterMutation from '../mutations/PayLaterMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
 import WaitingForFacilitatorToPay from './WaitingForFacilitatorToPay'
 import {PALETTE} from '../styles/paletteV2'
+import {DiscussPhaseSqueeze_meeting} from '__generated__/DiscussPhaseSqueeze_meeting.graphql'
 
 interface Props {
-  isFacilitating: boolean
-  facilitatorName: string
+  meeting: DiscussPhaseSqueeze_meeting
   organization: DiscussPhaseSqueeze_organization
 }
 
 const DiscussPhaseSqueeze = (props: Props) => {
-  const {isFacilitating, organization, facilitatorName} = props
-  const {id: orgId, orgUserCount, showConversionModal} = organization
-  const {activeUserCount} = orgUserCount
-  const [showLocalModal, setShowLocalModal] = useState(true)
-  const showModal = showConversionModal && showLocalModal
+  const {organization, meeting} = props
+  const {id: meetingId, facilitatorUserId, facilitator, showConversionModal} = meeting
+  const {id: orgId, orgUserCount} = organization
+  const {preferredName: facilitatorName} = facilitator
   const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
+  const isFacilitating = viewerId === facilitatorUserId
+  const {activeUserCount} = orgUserCount
   const {modalPortal, closePortal, openPortal} = useModal({noClose: true, background: PALETTE.BACKGROUND_FORCED_BACKDROP})
-
-  const handlePayLater = () => {
-    PayLaterMutation(atmosphere, {orgId})
-    setShowLocalModal(false)
-  }
-
-  const handlePayNow = () => {
-    setShowLocalModal(false)
-  }
-
 
   useEffect(() => {
     if (showConversionModal) {
@@ -40,13 +31,11 @@ const DiscussPhaseSqueeze = (props: Props) => {
     } else {
       closePortal()
     }
-  }, [showModal])
+  }, [showConversionModal])
 
   if (isFacilitating) {
     return modalPortal(<CreditCardModal activeUserCount={activeUserCount} orgId={orgId} actionType={'squeeze'}
-                                        handlePayLater={handlePayLater}
-                                        handlePayNow={handlePayNow}
-                                        closePortal={closePortal} />)
+                                        closePortal={closePortal} meetingId={meetingId}/>)
   }
   return modalPortal(<WaitingForFacilitatorToPay facilitatorName={facilitatorName}/>)
 }
@@ -57,10 +46,18 @@ export default createFragmentContainer(
     organization: graphql`
       fragment DiscussPhaseSqueeze_organization on Organization {
         id
-        showConversionModal
         orgUserCount {
           activeUserCount
         }
+      }`,
+    meeting: graphql`
+      fragment DiscussPhaseSqueeze_meeting on RetrospectiveMeeting {
+        id
+        facilitatorUserId
+        facilitator {
+          preferredName
+        }
+        showConversionModal
       }`
   }
 )
