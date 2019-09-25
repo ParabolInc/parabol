@@ -1295,6 +1295,11 @@ export interface INewMeeting {
   phases: NewMeetingPhase[];
 
   /**
+   * true if should show the org the conversion modal, else false
+   */
+  showConversionModal: boolean;
+
+  /**
    * The time the meeting summary was emailed to the team
    */
   summarySentAt: any | null;
@@ -1517,6 +1522,11 @@ export interface IOrganization {
    * @deprecated "Unlimited retros for all!"
    */
   retroMeetingsRemaining: number;
+
+  /**
+   * true if should show the org the conversion modal, else false
+   */
+  showConversionModal: boolean;
 
   /**
    * The customerId from stripe
@@ -2713,6 +2723,11 @@ export interface IMutation {
   newMeetingCheckIn: INewMeetingCheckInPayload | null;
 
   /**
+   * Increment the count of times the org has clicked pay later
+   */
+  payLater: IPayLaterPayload;
+
+  /**
    * Request to be invited to a team in real time
    */
   pushInvitation: IPushInvitationPayload | null;
@@ -3226,6 +3241,13 @@ export interface INewMeetingCheckInOnMutationArguments {
    * true if the member is present, false if absent, null if undecided
    */
   isCheckedIn?: boolean | null;
+}
+
+export interface IPayLaterOnMutationArguments {
+  /**
+   * the org that has clicked pay later
+   */
+  meetingId: string;
 }
 
 export interface IPushInvitationOnMutationArguments {
@@ -3857,6 +3879,11 @@ export interface IRetrospectiveMeeting {
    * The phases the meeting will go through, including all phase-specific state
    */
   phases: NewMeetingPhase[];
+
+  /**
+   * true if should show the org the conversion modal, else false
+   */
+  showConversionModal: boolean;
 
   /**
    * The time the meeting summary was emailed to the team
@@ -5042,6 +5069,21 @@ export interface INewMeetingCheckInPayload {
   meeting: NewMeeting | null;
 }
 
+export interface IPayLaterPayload {
+  __typename: 'PayLaterPayload';
+  error: IStandardMutationError | null;
+
+  /**
+   * the ids of the meetings that were showing conversion modals
+   */
+  meetingId: string | null;
+
+  /**
+   * the meetings that were showing conversion modals
+   */
+  meeting: NewMeeting | null;
+}
+
 export interface IPushInvitationPayload {
   __typename: 'PushInvitationPayload';
   error: IStandardMutationError | null;
@@ -5750,6 +5792,16 @@ export interface IUpgradeToProPayload {
    * The updated teams under the org
    */
   teams: (ITeam | null)[] | null;
+
+  /**
+   * the ids of the meetings that were showing conversion modals
+   */
+  meetingIds: string[] | null;
+
+  /**
+   * the meetings that were showing conversion modals
+   */
+  meetings: NewMeeting[] | null;
 }
 
 export interface IAddReflectTemplatePayload {
@@ -5943,6 +5995,7 @@ export interface IAuthTokenPayload {
 export type OrganizationSubscriptionPayload =
   | IAddOrgPayload
   | IDowngradeToPersonalPayload
+  | IPayLaterPayload
   | IRemoveOrgUserPayload
   | ISetOrgUserRoleAddedPayload
   | ISetOrgUserRoleRemovedPayload
@@ -6566,6 +6619,11 @@ export interface IActionMeeting {
    * The phases the meeting will go through, including all phase-specific state
    */
   phases: NewMeetingPhase[];
+
+  /**
+   * true if should show the org the conversion modal, else false
+   */
+  showConversionModal: boolean;
 
   /**
    * The time the meeting summary was emailed to the team

@@ -9,12 +9,15 @@ import {
   removeOrgUserOrganizationUpdater
 } from '../mutations/RemoveOrgUserMutation'
 import graphql from 'babel-plugin-relay/macro'
+import Atmosphere from '../Atmosphere'
+import {Variables} from 'relay-runtime'
 
 const subscription = graphql`
   subscription OrganizationSubscription {
     organizationSubscription {
       __typename
       ...AddOrgMutation_organization @relay(mask: false)
+      ...PayLaterMutation_organization @relay(mask: false)
       ...SetOrgUserRoleMutationAdded_organization @relay(mask: false)
       ...SetOrgUserRoleMutationRemoved_organization @relay(mask: false)
       ...UpdateCreditCardMutation_organization @relay(mask: false)
@@ -30,7 +33,14 @@ const onNextHandlers = {
   SetOrgUserRoleAddedPayload: setOrgUserRoleAddedOrganizationOnNext
 }
 
-const OrganizationSubscription = (atmosphere, queryVariables, subParams) => {
+const updateHandlers = {
+  AddOrgPayload: addOrgMutationOrganizationUpdater,
+  SetOrgUserRoleAddedPayload: setOrgUserRoleAddedOrganizationUpdater,
+  SetOrgUserRoleRemovedPayload: setOrgUserRoleRemovedOrganizationUpdater,
+  RemoveOrgUserPayload: removeOrgUserOrganizationUpdater
+}
+
+const OrganizationSubscription = (atmosphere: Atmosphere, _queryVariables: Variables, subParams: Variables) => {
   const {viewerId} = atmosphere
   return {
     subscription,
@@ -39,25 +49,9 @@ const OrganizationSubscription = (atmosphere, queryVariables, subParams) => {
       const payload = store.getRootField('organizationSubscription')
       if (!payload) return
       const type = payload.getValue('__typename')
-      switch (type) {
-        case 'AddOrgPayload':
-          addOrgMutationOrganizationUpdater(payload, store, viewerId)
-          break
-        case 'SetOrgUserRoleAddedPayload':
-          setOrgUserRoleAddedOrganizationUpdater(payload, store, viewerId)
-          break
-        case 'SetOrgUserRoleRemovedPayload':
-          setOrgUserRoleRemovedOrganizationUpdater(payload, store, viewerId)
-          break
-        case 'RemoveOrgUserPayload':
-          removeOrgUserOrganizationUpdater(payload, store, viewerId)
-          break
-        case 'UpdateCreditCardPayload':
-          break
-        case 'UpdateOrgPayload':
-          break
-        default:
-          console.error('OrganizationSubscription case fail', type)
+      const handler = updateHandlers[type]
+      if (handler) {
+        handler(payload, store, viewerId)
       }
     },
     onNext: ({organizationSubscription}) => {

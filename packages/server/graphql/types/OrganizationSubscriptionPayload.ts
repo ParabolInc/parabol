@@ -7,10 +7,12 @@ import UpgradeToProPayload from './UpgradeToProPayload'
 import RemoveOrgUserPayload from './RemoveOrgUserPayload'
 import UpdateCreditCardPayload from './UpdateCreditCardPayload'
 import DowngradeToPersonalPayload from './DowngradeToPersonalPayload'
+import PayLaterPayload from './PayLaterPayload'
 
 const types = [
   AddOrgPayload,
   DowngradeToPersonalPayload,
+  PayLaterPayload,
   RemoveOrgUserPayload,
   SetOrgUserRoleAddedPayload,
   SetOrgUserRoleRemovedPayload,

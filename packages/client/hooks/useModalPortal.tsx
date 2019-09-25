@@ -55,12 +55,13 @@ const modalStyles = {
     transition: `all ${Duration.PORTAL_CLOSE}ms ${DECELERATE}`
   }
 }
-const Scrim = styled('div')<{background: string; portalStatus: PortalStatus}>(
-  ({background, portalStatus}) => ({
+const Scrim = styled('div')<{background: string; portalStatus: PortalStatus, backdropFilter?: string}>(
+  ({background, backdropFilter, portalStatus}) => ({
     background,
     height: '100%',
     position: 'fixed',
     width: '100%',
+    backdropFilter,
     ...backdropStyles[portalStatus]
   })
 )
@@ -80,7 +81,8 @@ const useModalPortal = (
   setPortalStatus: ReturnType<typeof usePortal>['setPortalStatus'],
   loadingDelayRef: LoadingDelayRef,
   closePortal: undefined | (() => void),
-  background: string | undefined
+  background: string | undefined,
+  backdropFilter?: string | undefined
 ) => {
   useEffect(() => {
     let isMounted = true
@@ -101,6 +103,7 @@ const useModalPortal = (
         <Scrim
           onClick={closePortal}
           background={background || PALETTE.BACKGROUND_BACKDROP}
+          backdropFilter={backdropFilter}
           portalStatus={portalStatus}
         />
         <ErrorBoundary

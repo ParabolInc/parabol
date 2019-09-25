@@ -2,7 +2,6 @@ import {GraphQLNonNull} from 'graphql'
 import makeSubscribeIter from '../makeSubscribeIter'
 import OrganizationSubscriptionPayload from '../types/OrganizationSubscriptionPayload'
 import {getUserId} from '../../utils/authorization'
-import {OrgUserRole} from 'parabol-client/types/graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
@@ -12,7 +11,6 @@ export default {
     const viewerId = getUserId(authToken)
     const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(viewerId)
     const orgIds = organizationUsers
-      .filter((organizationUser) => organizationUser.role === OrgUserRole.BILLING_LEADER)
       .map(({orgId}) => orgId)
 
     // RESOLUTION
