@@ -8,7 +8,6 @@ import {
   GraphQLString
 } from 'graphql'
 import {resolveForSU} from '../resolvers'
-import DragContext from './DragContext'
 import GoogleAnalyzedEntity from './GoogleAnalyzedEntity'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import RetroPhaseItem from './RetroPhaseItem'
@@ -16,6 +15,7 @@ import RetroReflectionGroup from './RetroReflectionGroup'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
+import Team from './Team'
 
 const RetroReflection = new GraphQLObjectType<any, GQLContext>({
   name: 'RetroReflection',
@@ -40,27 +40,19 @@ const RetroReflection = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLID,
       resolve: resolveForSU('creatorId')
     },
-    dragContext: {
-      description:
-        'all the info associated with the drag state, if this reflection is currently being dragged',
-      type: DragContext
-    },
     editorIds: {
       description: 'an array of all the socketIds that are currently editing the reflection',
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
       resolve: () => []
     },
     isActive: {
-      type: GraphQLBoolean,
-      description: 'True if the reflection was not removed, else false'
-    },
-    isEditing: {
-      description: 'true if the reflection is being edited, else false',
-      type: GraphQLBoolean
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'True if the reflection was not removed, else false',
+      resolve: ({isActive}) => !!isActive
     },
     isViewerCreator: {
       description: 'true if the viewer (userId) is the creator of the retro reflection, else false',
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({creatorId}, _args, {authToken}) => {
         const viewerId = getUserId(authToken)
         return viewerId === creatorId
@@ -81,7 +73,7 @@ const RetroReflection = new GraphQLObjectType<any, GQLContext>({
       description: 'The foreign key to link a reflection to its meeting'
     },
     meeting: {
-      type: RetrospectiveMeeting,
+      type: new GraphQLNonNull(RetrospectiveMeeting),
       description: 'The retrospective meeting this reflection was created in',
       resolve: ({meetingId}, _args, {dataLoader}) => {
         return dataLoader.get('newMeetings').load(meetingId)
@@ -93,13 +85,17 @@ const RetroReflection = new GraphQLObjectType<any, GQLContext>({
         return dataLoader.get('customPhaseItems').load(retroPhaseItemId)
       }
     },
+    plaintextContent: {
+      description: 'The plaintext version of content',
+      type: new GraphQLNonNull(GraphQLString)
+    },
     retroPhaseItemId: {
       type: new GraphQLNonNull(GraphQLID),
       description:
         'The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group.'
     },
     reflectionGroupId: {
-      type: GraphQLID,
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The foreign key to link a reflection to its group'
     },
     retroReflectionGroup: {
@@ -114,7 +110,7 @@ const RetroReflection = new GraphQLObjectType<any, GQLContext>({
       description: 'The sort order of the reflection in the group (increments starting from 0)'
     },
     team: {
-      type: RetrospectiveMeeting,
+      type: new GraphQLNonNull(Team),
       description: 'The team that is running the meeting that contains this reflection',
       resolve: async ({meetingId}, _args, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').load(meetingId)

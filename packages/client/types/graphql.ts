@@ -2623,11 +2623,6 @@ export interface IMutation {
   createReflection: ICreateReflectionPayload | null;
 
   /**
-   * Create a new reflection group
-   */
-  createReflectionGroup: ICreateReflectionGroupPayload | null;
-
-  /**
    * Create a new task, triggering a CreateCard for other viewers
    */
   createTask: ICreateTaskPayload | null;
@@ -3069,15 +3064,6 @@ export interface ICreateReflectionOnMutationArguments {
   input: ICreateReflectionInput;
 }
 
-export interface ICreateReflectionGroupOnMutationArguments {
-  meetingId: string;
-
-  /**
-   * An array of 1 or 2 reflections that make up the group. The first card in the array will be used to determine sort order
-   */
-  reflectionIds: string[];
-}
-
 export interface ICreateTaskOnMutationArguments {
   /**
    * The new task including an id, status, and type, and teamMemberId
@@ -3378,7 +3364,7 @@ export interface ISetSlackNotificationOnMutationArguments {
 
 export interface IStartDraggingReflectionOnMutationArguments {
   reflectionId: string;
-  initialCoords: ICoords2DInput;
+  dragId: string;
 }
 
 export interface IStartNewMeetingOnMutationArguments {
@@ -3991,12 +3977,12 @@ export interface IRetroReflectionGroup {
   /**
    * The timestamp the meeting was created
    */
-  createdAt: any | null;
+  createdAt: any;
 
   /**
    * True if the group has not been removed, else false
    */
-  isActive: boolean | null;
+  isActive: boolean;
 
   /**
    * The foreign key to link a reflection group to its meeting
@@ -4006,8 +3992,8 @@ export interface IRetroReflectionGroup {
   /**
    * The retrospective meeting this reflection was created in
    */
-  meeting: IRetrospectiveMeeting | null;
-  phaseItem: IRetroPhaseItem | null;
+  meeting: IRetrospectiveMeeting;
+  phaseItem: IRetroPhaseItem;
   reflections: IRetroReflection[];
 
   /**
@@ -4043,7 +4029,7 @@ export interface IRetroReflectionGroup {
   /**
    * true if a user wrote the title, else false
    */
-  titleIsUserDefined: boolean | null;
+  titleIsUserDefined: boolean;
 
   /**
    * The timestamp the meeting was updated at
@@ -4192,11 +4178,6 @@ export interface IRetroReflection {
   creatorId: string | null;
 
   /**
-   * all the info associated with the drag state, if this reflection is currently being dragged
-   */
-  dragContext: IDragContext | null;
-
-  /**
    * an array of all the socketIds that are currently editing the reflection
    */
   editorIds: string[];
@@ -4204,17 +4185,12 @@ export interface IRetroReflection {
   /**
    * True if the reflection was not removed, else false
    */
-  isActive: boolean | null;
-
-  /**
-   * true if the reflection is being edited, else false
-   */
-  isEditing: boolean | null;
+  isActive: boolean;
 
   /**
    * true if the viewer (userId) is the creator of the retro reflection, else false
    */
-  isViewerCreator: boolean | null;
+  isViewerCreator: boolean;
 
   /**
    * The stringified draft-js content
@@ -4234,8 +4210,13 @@ export interface IRetroReflection {
   /**
    * The retrospective meeting this reflection was created in
    */
-  meeting: IRetrospectiveMeeting | null;
+  meeting: IRetrospectiveMeeting;
   phaseItem: IRetroPhaseItem;
+
+  /**
+   * The plaintext version of content
+   */
+  plaintextContent: string;
 
   /**
    * The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group.
@@ -4245,7 +4226,7 @@ export interface IRetroReflection {
   /**
    * The foreign key to link a reflection to its group
    */
-  reflectionGroupId: string | null;
+  reflectionGroupId: string;
 
   /**
    * The group the reflection belongs to, if any
@@ -4260,44 +4241,12 @@ export interface IRetroReflection {
   /**
    * The team that is running the meeting that contains this reflection
    */
-  team: IRetrospectiveMeeting | null;
+  team: ITeam;
 
   /**
    * The timestamp the meeting was updated. Used to determine how long it took to write a reflection
    */
   updatedAt: any | null;
-}
-
-/**
- * Info associated with a current drag
- */
-export interface IDragContext {
-  __typename: 'DragContext';
-  id: string | null;
-
-  /**
-   * The userId of the person currently dragging the reflection
-   */
-  dragUserId: string | null;
-
-  /**
-   * The user that is currently dragging the reflection
-   */
-  dragUser: IUser | null;
-
-  /**
-   * The coordinates necessary to simulate a drag for a subscribing user
-   */
-  dragCoords: ICoords2D | null;
-}
-
-/**
- * Coordinates used relay a location in a 2-D plane
- */
-export interface ICoords2D {
-  __typename: 'Coords2D';
-  x: number;
-  y: number;
 }
 
 export interface IGoogleAnalyzedEntity {
@@ -4516,6 +4465,7 @@ export interface ICreateReflectionPayload {
   __typename: 'CreateReflectionPayload';
   error: IStandardMutationError | null;
   meeting: NewMeeting | null;
+  reflectionId: string | null;
   reflection: IRetroReflection | null;
 
   /**
@@ -4527,13 +4477,6 @@ export interface ICreateReflectionPayload {
    * The stages that were unlocked by navigating
    */
   unlockedStages: NewMeetingStage[] | null;
-}
-
-export interface ICreateReflectionGroupPayload {
-  __typename: 'CreateReflectionGroupPayload';
-  error: IStandardMutationError | null;
-  meeting: NewMeeting | null;
-  reflectionGroup: IRetroReflectionGroup | null;
 }
 
 export interface ICreateTaskInput {
@@ -4790,6 +4733,11 @@ export interface IEndDraggingReflectionPayload {
   dragId: string | null;
 
   /**
+   * The drag as sent from the team member
+   */
+  remoteDrag: IRemoteReflectionDrag;
+
+  /**
    * the type of item the reflection was dropped on
    */
   dropTargetType: DragReflectionDropTargetTypeEnum | null;
@@ -4818,6 +4766,56 @@ export interface IEndDraggingReflectionPayload {
    * The old group the reflection was in
    */
   oldReflectionGroup: IRetroReflectionGroup | null;
+}
+
+/**
+ * Info associated with a current drag
+ */
+export interface IRemoteReflectionDrag {
+  __typename: 'RemoteReflectionDrag';
+  id: string;
+
+  /**
+   * The userId of the person currently dragging the reflection
+   */
+  dragUserId: string | null;
+
+  /**
+   * The name of the dragUser
+   */
+  dragUserName: string | null;
+  clientHeight: number | null;
+  clientWidth: number | null;
+
+  /**
+   * The primary key of the item being drug
+   */
+  sourceId: string;
+
+  /**
+   * The estimated destination of the item being drug
+   */
+  targetId: string | null;
+
+  /**
+   * horizontal distance from the top left of the target
+   */
+  targetOffsetX: number | null;
+
+  /**
+   * vertical distance from the top left of the target
+   */
+  targetOffsetY: number | null;
+
+  /**
+   * the left of the source, relative to the client window
+   */
+  clientX: number | null;
+
+  /**
+   * the top of the source, relative to the client window
+   */
+  clientY: number | null;
 }
 
 export interface IEditReflectionPayload {
@@ -5478,14 +5476,6 @@ export interface ISetSlackNotificationPayload {
   user: IUser | null;
 }
 
-/**
- * Coordinates used relay a location in a 2-D plane
- */
-export interface ICoords2DInput {
-  x: number;
-  y: number;
-}
-
 export interface IStartDraggingReflectionPayload {
   __typename: 'StartDraggingReflectionPayload';
   error: IStandardMutationError | null;
@@ -5493,7 +5483,7 @@ export interface IStartDraggingReflectionPayload {
   /**
    * The proposed start/end of a drag. Subject to race conditions, it is up to the client to decide to accept or ignore
    */
-  dragContext: IDragContext | null;
+  remoteDrag: IRemoteReflectionDrag | null;
   meeting: NewMeeting | null;
   meetingId: string | null;
   reflection: IRetroReflection | null;
@@ -5591,6 +5581,7 @@ export interface IUpdateNewCheckInQuestionPayload {
 }
 
 export interface IUpdateDragLocationInput {
+  id: string;
   clientHeight: number;
   clientWidth: number;
 
@@ -5608,12 +5599,26 @@ export interface IUpdateDragLocationInput {
    * The teamId to broadcast the message to
    */
   teamId: string;
-  coords: ICoords2DInput;
 
   /**
-   * The offset from the targetId
+   * horizontal distance from the top left of the target
    */
-  targetOffset?: ICoords2DInput | null;
+  targetOffsetX?: number | null;
+
+  /**
+   * vertical distance from the top left of the target
+   */
+  targetOffsetY?: number | null;
+
+  /**
+   * the left of the source, relative to the client window
+   */
+  clientX?: number | null;
+
+  /**
+   * the top of the source, relative to the client window
+   */
+  clientY?: number | null;
 }
 
 export interface IUpdateReflectionContentPayload {
@@ -5991,7 +5996,6 @@ export type TeamSubscriptionPayload =
   | IArchiveTeamPayload
   | IAutoGroupReflectionsPayload
   | ICreateReflectionPayload
-  | ICreateReflectionGroupPayload
   | IDenyPushInvitationPayload
   | IDowngradeToPersonalPayload
   | IDragDiscussionTopicPayload
@@ -6036,24 +6040,11 @@ export type TeamSubscriptionPayload =
 
 export interface IUpdateDragLocationPayload {
   __typename: 'UpdateDragLocationPayload';
-  clientHeight: number;
-  clientWidth: number;
 
   /**
-   * The primary key of the item being drug
+   * The drag as sent from the team member
    */
-  sourceId: string;
-
-  /**
-   * The estimated destination of the item being drug
-   */
-  targetId: string | null;
-  coords: ICoords2D;
-
-  /**
-   * The offset from the targetId
-   */
-  targetOffset: ICoords2D | null;
+  remoteDrag: IRemoteReflectionDrag;
   userId: string;
 }
 

@@ -11,7 +11,7 @@ export default class StripeManager {
   static PARABOL_ENTERPRISE_2019Q3 = 'plan_Fifb1fmjyFfTm8'
   stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
-  async createCustomer(orgId: string, email: string, source?: string) {
+  async createCustomer (orgId: string, email: string, source?: string) {
     return this.stripe.customers.create({
       email,
       source,
@@ -21,7 +21,7 @@ export default class StripeManager {
     })
   }
 
-  async createEnterpriseSubscription(customerId: string, orgId: string, quantity) {
+  async createEnterpriseSubscription (customerId: string, orgId: string, quantity) {
     return this.stripe.subscriptions.create({
       // @ts-ignore
       collection_method: 'send_invoice',
@@ -40,7 +40,7 @@ export default class StripeManager {
     })
   }
 
-  async createProSubscription(customerId: string, orgId: string, quantity) {
+  async createProSubscription (customerId: string, orgId: string, quantity) {
     return this.stripe.subscriptions.create({
       // USE THIS FOR TESTING A FAILING PAYMENT
       // https://stripe.com/docs/billing/testing
@@ -58,45 +58,45 @@ export default class StripeManager {
     })
   }
 
-  async updateSubscriptionQuantity(stripeSubscriptionId: string, quantity: number, prorationDate?: number) {
+  async updateSubscriptionQuantity (stripeSubscriptionId: string, quantity: number, prorationDate?: number) {
     return this.stripe.subscriptions.update(stripeSubscriptionId, {quantity, proration_date: prorationDate})
   }
 
-  async updateInvoice(invoiceId: string, orgId: string) {
+  async updateInvoice (invoiceId: string, orgId: string) {
     return this.stripe.invoices.update(invoiceId, {metadata: {orgId}})
   }
 
-  async updateInvoiceItem(invoiceItemId: string, type: InvoiceItemType, userId: string) {
+  async updateInvoiceItem (invoiceItemId: string, type: InvoiceItemType, userId: string) {
     return this.stripe.invoiceItems.update(invoiceItemId, {metadata: {type, userId}})
   }
 
-  async retrieveCustomer(customerId: string) {
+  async retrieveCustomer (customerId: string) {
     return this.stripe.customers.retrieve(customerId)
   }
 
-  async retrieveInvoice(invoiceId: string) {
+  async retrieveInvoice (invoiceId: string) {
     return this.stripe.invoices.retrieve(invoiceId)
   }
 
-  async retrieveInvoiceItem(invoiceItemId: string) {
+  async retrieveInvoiceItem (invoiceItemId: string) {
     return this.stripe.invoiceItems.retrieve(invoiceItemId)
   }
 
-  async retrieveInvoiceLines(invoiceId: string, options: IInvoiceLineItemRetrievalOptions) {
+  async retrieveInvoiceLines (invoiceId: string, options: IInvoiceLineItemRetrievalOptions) {
     return this.stripe.invoices.retrieveLines(invoiceId, options)
   }
 
-  async retrieveUpcomingInvoice(stripeId: string, stripeSubscriptionId: string) {
+  async retrieveUpcomingInvoice (stripeId: string, stripeSubscriptionId: string) {
     return this.stripe.invoices.retrieveUpcoming(stripeId, {
       subscription: stripeSubscriptionId
     })
   }
 
-  async updateAccountBalance(customerId: string, newBalance: number) {
+  async updateAccountBalance (customerId: string, newBalance: number) {
     return this.stripe.customers.update(customerId, {account_balance: newBalance})
   }
 
-  async updatePayment(customerId: string, source: string) {
+  async updatePayment (customerId: string, source: string) {
     return this.stripe.customers.update(customerId, {source})
   }
 }

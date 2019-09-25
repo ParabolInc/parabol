@@ -19,12 +19,7 @@ class DiscussPhaseReflectionGrid extends Component<Props> {
           return reflections.map((reflection) => {
             return (
               <div key={reflection.id} ref={setItemRef(reflection.id)}>
-                <ReflectionCard
-                  reflection={reflection}
-                  readOnly
-                  userSelect='text'
-                  showOriginFooter
-                />
+                <ReflectionCard reflection={reflection} meeting={null}/>
               </div>
             )
           })

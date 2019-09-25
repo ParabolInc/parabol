@@ -17,6 +17,9 @@ graphql`
     reflection {
       id
       content
+      retroReflectionGroup {
+        title
+      }
     }
   }
 `

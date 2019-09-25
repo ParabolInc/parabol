@@ -2,7 +2,7 @@ import shortid from 'shortid'
 import GoogleAnalyzedEntity from './GoogleAnalyzedEntity'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 
-interface Input {
+export interface ReflectionInput {
   id?: string
   createdAt?: Date
   creatorId: string
@@ -30,7 +30,7 @@ export default class Reflection {
   retroPhaseItemId: string
   sortOrder: number
   updatedAt: Date
-  constructor(input: Input) {
+  constructor(input: ReflectionInput) {
     const {content, plaintextContent, createdAt, creatorId, entities, id, meetingId, reflectionGroupId, retroPhaseItemId, sortOrder, updatedAt} = input
     const now = new Date()
     this.id = id || shortid.generate()

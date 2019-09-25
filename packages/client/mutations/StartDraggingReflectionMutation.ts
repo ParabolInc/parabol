@@ -2,213 +2,134 @@ import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {matchPath} from 'react-router-dom'
 import {Disposable, RecordSourceProxy, RecordSourceSelectorProxy} from 'relay-runtime'
-import {RETROSPECTIVE} from '../utils/constants'
 import {meetingTypeToSlug} from '../utils/meetings/lookups'
-import addNodeToArray from '../utils/relay/addNodeToArray'
-import createProxyRecord from '../utils/relay/createProxyRecord'
-import getInProxy from '../utils/relay/getInProxy'
 import {
   StartDraggingReflectionMutation as TStartDraggingReflectionMutation,
+  StartDraggingReflectionMutationResponse,
   StartDraggingReflectionMutationVariables
 } from '../__generated__/StartDraggingReflectionMutation.graphql'
-import {Coords} from '../types/animations'
-import {MasonryAtmosphere} from '../components/PhaseItemMasonry'
-import {CompletedHandler, ErrorHandler} from '../types/relayMutations'
+import {MeetingTypeEnum} from '../types/graphql'
+import {LocalHandlers} from '../types/relayMutations'
+import Atmosphere from '../Atmosphere'
 
-interface Context {
-  initialCursorCoords: Coords
-  meetingId: string
-}
 
 graphql`
   fragment StartDraggingReflectionMutation_team on StartDraggingReflectionPayload {
     meetingId
     reflectionId
-    dragContext {
-      id
-      dragCoords {
-        x
-        y
-      }
-      dragUserId
-      dragUser {
-        id
-        preferredName
-      }
-    }
     teamId
+    remoteDrag {
+      id
+      dragUserId
+      dragUserName
+    }
   }
 `
 
 const mutation = graphql`
-  mutation StartDraggingReflectionMutation($initialCoords: Coords2DInput!, $reflectionId: ID!) {
-    startDraggingReflection(initialCoords: $initialCoords, reflectionId: $reflectionId) {
+  mutation StartDraggingReflectionMutation($reflectionId: ID!, $dragId: ID!) {
+    startDraggingReflection(reflectionId: $reflectionId, dragId: $dragId) {
       ...StartDraggingReflectionMutation_team @relay(mask: false)
     }
   }
 `
 
 interface UpdaterOptions {
-  atmosphere: MasonryAtmosphere
+  atmosphere: Atmosphere
   store: RecordSourceProxy
 }
 
-const setInFlight = (store, meetingId, reflection) => {
-  const meeting = store.get(meetingId)
-  if (!meeting) return
-  addNodeToArray(reflection, meeting, 'reflectionsInFlight', 'id')
-}
-
+// used only by subscription
 export const startDraggingReflectionTeamUpdater = (
   payload,
   {atmosphere, store}: UpdaterOptions
 ) => {
+  const teamId = payload.getValue('teamId')
   const {pathname} = window.location
-  const slug = meetingTypeToSlug[RETROSPECTIVE]
-  const meetingRoute = matchPath<{teamId: string}>(pathname, {path: `/${slug}/:teamId`})
+  const slug = meetingTypeToSlug[MeetingTypeEnum.retrospective]
+  const meetingRoute = matchPath(pathname, {path: `/${slug}/${teamId}`})
+  const isDemoRoute = matchPath(pathname, {path: `/retrospective-demo`})
   /*
    * Avoid adding reflectionsInFlight on clients that are not in the meeting because
    * we can't call the endDrag handler to remove them because
    * that needs the full context of the grid
    */
-  if (
-    !matchPath(pathname, {path: `/retrospective-demo`}) &&
-    (!meetingRoute || meetingRoute.params.teamId !== payload.getValue('teamId'))
-  ) {
-    return undefined
+  if (!isDemoRoute && !meetingRoute) {
+    return
   }
   const {viewerId} = atmosphere
-  const reflectionId = payload.getValue('reflectionId') as string
+  const reflectionId = payload.getValue('reflectionId')
   const reflection = store.get(reflectionId)
-  if (!reflection) return undefined
-  const existingDragContext = reflection.getLinkedRecord('dragContext')
-  const dragContext = payload.getLinkedRecord('dragContext')
-  const dragUserId = dragContext.getValue('dragUserId')
-  const isViewerDragging = dragContext.getValue('isViewerDragging')
-  const existingDragUserId = getInProxy(existingDragContext, 'dragUserId')
+  if (!reflection) return
+  const remoteDrag = payload.getLinkedRecord('remoteDrag')
+  if (!remoteDrag) return
+  const remoteDragId = remoteDrag.getValue('id')
+  const ignoreDragStarts = reflection.getValue('ignoreDragStarts')
+  // if an end arrived before the start, ignore the start
+  if (ignoreDragStarts && ignoreDragStarts.includes(remoteDragId)) return
+  const dragUserId = remoteDrag.getValue('dragUserId')
+  const isViewerDragging = reflection.getValue('isViewerDragging')
+  const existingRemoteDrag = reflection.getLinkedRecord('remoteDrag')
 
-  // REMOVED beccause this broke a quick start, end, start, end.
-  // could not reproduce the previous start, start, end, end bug, so I assume that this isn't necessary
-  // const dragId = dragContext.getValue('id')
-  // const existingDragId = getInProxy(existingDragContext, 'id')
-  // if (
-  //   // HERE THERE BE DRAGONS. need a smart way to handle start,end,start,end vs start,start,end,end
-  //   existingDragContext &&
-  //   existingDragUserId === dragUserId &&
-  //   // same user in 2 tabs, tab 1 drops on a card, picks it very quickly
-  //   dragUserId !== viewerId &&
-  //   dragId !== existingDragId &&
-  //   !isLocal
-  // ) {
-  //   // special case when a team member picks up the card twice before dropping it once
-  //   // we'll want to reply this startDrag when the first endDrag returns
-  //   atmosphere.startDragQueue = atmosphere.startDragQueue || []
-  //   atmosphere.startDragQueue.push(() => {
-  //     commitLocalUpdate(atmosphere, (store) => {
-  //       startDraggingReflectionTeamUpdater(payload, {
-  //         atmosphere,
-  //         store,
-  //         isLocal: true
-  //       })
-  //     })
-  //   })
-  // }
-
-  // when conflicts arise, give the win to the person with the smaller userId
-  const acceptIncoming = !existingDragUserId || existingDragUserId >= dragUserId
-  let isViewerConflictLoser = false
-  if (acceptIncoming) {
-    reflection.setLinkedRecord(dragContext, 'dragContext')
-    const nextDragContext = reflection.getLinkedRecord('dragContext')
-    if (!nextDragContext) return
-    nextDragContext.setValue(isViewerDragging, 'isViewerDragging')
-    nextDragContext.setValue(false, 'isClosing')
-    nextDragContext.setValue(false, 'isPendingStartDrag')
-    const meetingId = payload.getValue('meetingId')
-    setInFlight(store, meetingId, reflection)
-    // isViewerDragging is necessary in case 1 viewer has 2 tabs open
-    if (existingDragUserId === viewerId && isViewerDragging) {
-      // TODO support multi-client actors, don't relay on viewerId
-      nextDragContext.setValue(null, 'initialCursorCoords')
-      nextDragContext.setValue(null, 'initialComponentCoords')
-      isViewerConflictLoser = true
-    }
-  } else if (isViewerDragging) {
-    // the return payload is for the viewer, but the rightful dragger came first
-    isViewerConflictLoser = true
-  }
-
-  if (isViewerConflictLoser) {
-    const name = getInProxy(reflection, 'dragContext', 'dragUser', 'preferredName')
-    // ideally this wouldn't be in the updater, but i don't wanna touch it because it's finicky MK
-    atmosphere.eventEmitter.emit('addSnackbar', {
-      key: `reflectionIntercepted`,
-      autoDismiss: 5,
-      message: `Too slow! ${name} stole that reflection right from under your nose!`
-    })
-    if (atmosphere.getMasonry) {
-      const {itemCache} = atmosphere.getMasonry()
-      // setTimeout required because otherwise it will call the endDrag handler before isViewerDragging is set to false
-      setTimeout(() => {
-        const cachedItem = itemCache[reflectionId]
-        cachedItem && cachedItem.el && cachedItem.el.dispatchEvent(new Event('dragend'))
-      })
+  // if I'm dragging & i get a message saying someone else is, whoever has the lower userId wins
+  if (isViewerDragging) {
+    if (dragUserId <= viewerId) {
+      // if the viewer lost, cancel their drag
+      reflection.setValue(false, 'isViewerDragging')
+      reflection.setValue(false, 'isDropping')
+      reflection.setLinkedRecord(remoteDrag, 'remoteDrag')
+    } else {
+      // viewer wins
+      return
     }
   }
-  return acceptIncoming
-}
-const setInitialCoords = (store, dragContext, initialCoords, initialCursorCoords) => {
-  const initialCursorCoordsProxy = createProxyRecord(store, 'Coords2D', initialCursorCoords)
-  const initialComponentCoordsProxy = createProxyRecord(store, 'Coords2D', initialCoords)
-  dragContext.setLinkedRecord(initialComponentCoordsProxy, 'initialComponentCoords')
-  dragContext.setLinkedRecord(initialCursorCoordsProxy, 'initialCursorCoords')
+
+  // if someone else is dragging & I get a message saying another is too, treat it the same
+  if (existingRemoteDrag) {
+    const existingDragUserId = existingRemoteDrag.getValue('dragUserId')
+    if (dragUserId <= existingDragUserId) {
+      // new drag wins!
+      reflection.setValue(false, 'isDropping')
+      reflection.setLinkedRecord(remoteDrag, 'remoteDrag')
+    } else {
+      // new drag loses, just ignore the start
+      return
+    }
+  } else {
+    reflection.setLinkedRecord(remoteDrag, 'remoteDrag')
+  }
 }
 
 const StartDraggingReflectionMutation = (
-  atmosphere: MasonryAtmosphere,
+  atmosphere: Atmosphere,
   variables: StartDraggingReflectionMutationVariables,
-  context: Context,
-  onError?: ErrorHandler,
-  onCompleted?: CompletedHandler
+  {onError, onCompleted}: LocalHandlers = {}
 ): Disposable => {
   return commitMutation<TStartDraggingReflectionMutation>(atmosphere, {
     mutation,
     variables,
-    onCompleted,
     onError,
-    updater: (store: RecordSourceSelectorProxy<any>) => {
-      const {initialCursorCoords} = context
+    onCompleted,
+    updater: (store: RecordSourceSelectorProxy<StartDraggingReflectionMutationResponse>) => {
+      const {viewerId} = atmosphere
       const payload = store.getRootField('startDraggingReflection')
       if (!payload) return
-      payload.getLinkedRecord('dragContext')!.setValue(true, 'isViewerDragging')
-      const acceptIncoming = startDraggingReflectionTeamUpdater(payload, {
-        atmosphere,
-        store
-      })
-      if (!acceptIncoming) return
-      const reflection = store.get(payload.getValue('reflectionId'))
-      if (!reflection) return
-      const dragContext = reflection.getLinkedRecord('dragContext')
-      if (!dragContext) return
-      setInitialCoords(store, dragContext, variables.initialCoords, initialCursorCoords)
-      dragContext.setValue(null, 'dragCoords')
-    },
-    optimisticUpdater: (store) => {
-      const {viewerId} = atmosphere
-      const {reflectionId, initialCoords} = variables
-      const {initialCursorCoords, meetingId} = context
+      const reflectionId = payload.getValue('reflectionId')!
       const reflection = store.get(reflectionId)
       if (!reflection) return
-      const dragContext = createProxyRecord(store, 'DragContext', {
-        dragUserId: viewerId,
-        isViewerDragging: true,
-        isClosing: false,
-        isPendingStartDrag: true
-      })
-      dragContext.setLinkedRecord(store.getRoot().getLinkedRecord('viewer'), 'dragUser')
-      setInitialCoords(store, dragContext, initialCoords, initialCursorCoords)
-      reflection.setLinkedRecord(dragContext, 'dragContext')
-      setInFlight(store, meetingId, reflection)
+      const remoteDrag = reflection.getLinkedRecord('remoteDrag')
+      if (remoteDrag) {
+        // if there's an existing drag & it's by someone with a smaller ID, the viewer lost the conflict
+        const remoteDragUserId = remoteDrag.getValue('dragUserId')
+        if (remoteDragUserId <= viewerId) return
+      }
+      reflection.setValue(true, 'isViewerDragging')
+    },
+    optimisticUpdater: (store) => {
+      const {reflectionId} = variables
+      const reflection = store.get(reflectionId)
+      if (!reflection) return
+      reflection.setValue(true, 'isViewerDragging')
     }
   })
 }

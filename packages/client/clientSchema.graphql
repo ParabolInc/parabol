@@ -33,6 +33,14 @@ extend type RetroReflectionGroup {
   isExpanded: Boolean
 }
 
+extend type RetroReflection {
+  isViewerDragging: Boolean
+  isDropping: Boolean
+  remoteDrag: RemoteReflectionDrag
+  ignoreDragStarts: [ID!]
+  isEditing: Boolean
+}
+
 extend type DragContext {
   isClosing: Boolean,
   isPendingStartDrag: Boolean,

@@ -1,45 +1,71 @@
 import React from 'react'
-import appTheme from '../styles/theme/appTheme'
-import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
-import Tag from './Tag/Tag'
-import {UserDraggingHeader_user} from '../__generated__/UserDraggingHeader_user.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import {PALETTE} from '../styles/paletteV2'
+import Icon from './Icon'
+import {keyframes} from '@emotion/core'
+import BaseTag from './Tag/BaseTag'
+
+
+const keyframesOpacity = keyframes`
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.33;
+  }
+}`
 
 const Header = styled('div')({
   bottom: '100%',
-  color: appTheme.palette.warm,
-  fontSize: '.6875rem',
-  lineHeight: '1.125rem',
+  color: PALETTE.TEXT_RED,
+  fontSize: 11,
+  lineHeight: '18px',
   position: 'absolute',
   right: 0,
   textAlign: 'end'
 })
 
+const Arrow = styled(Icon)({
+  animationDuration: '800ms',
+  animationIterationCount: 'infinite',
+  animationName: keyframesOpacity.toString(),
+  height: 11,
+  width: 11,
+  fontSize: 11,
+  fontWeight: 600,
+  verticalAlign: 'text-bottom'
+})
+
+const Tag = styled(BaseTag)({
+  backgroundColor: PALETTE.PRIMARY_LIGHT,
+  color: '#fff'
+})
+
+export type RemoteReflectionArrow = 'arrow_downward' | 'arrow_upward' | 'arrow_back' | 'arrow_forward'
+
 interface Props {
-  user: UserDraggingHeader_user | null
+  arrow?: RemoteReflectionArrow
+  userId: string
+  name: string
+  style?: React.CSSProperties
 }
 
 const UserDraggingHeader = (props: Props) => {
-  const {user} = props
+  const {arrow, userId, name, style} = props
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  if (!user) return null
-  const {userId, preferredName} = user
-  const name = userId === viewerId ? 'Your ghost 👻' : preferredName
+  const label = userId === viewerId ? 'Your ghost 👻' : name
+  const arrowEl = <Arrow>{arrow}</Arrow>
   return (
-    <Header>
-      <Tag colorPalette='purple' label={name} />
+    <Header style={style}>
+      <Tag>
+        {(arrow === 'arrow_downward' || arrow === 'arrow_upward') && arrowEl}
+        {label}
+        {arrow && arrowEl}
+      </Tag>
     </Header>
   )
 }
 
-export default createFragmentContainer(UserDraggingHeader, {
-  user: graphql`
-    fragment UserDraggingHeader_user on User {
-      userId: id
-      preferredName
-    }
-  `
-})
+export default UserDraggingHeader

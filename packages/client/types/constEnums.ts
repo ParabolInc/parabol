@@ -35,10 +35,14 @@ export const enum DashTimeline {
   TIMELINE_DRAWER_WIDTH = 336
 }
 
+export const enum DragAttribute {
+  DROPPABLE = 'data-droppable',
+  DROPZONE = 'data-dropzone'
+}
+
 export const enum DroppableType {
   TASK = 'task',
-  TASK_COLUMN = 'taskColumn',
-  KANBAN = 'kanban'
+  REFLECTION = 'reflection',
 }
 
 export const enum Duration {
@@ -80,7 +84,7 @@ export const enum InvoiceItemType {
 export const enum Layout {
   TYPE_GRID = 4, // .5x
   LAYOUT_GRID = 8, // 1x
-  ROW_GUTTER = 16 // 2x
+  ROW_GUTTER = 16, // 2x
 }
 
 export const enum LoaderSize {
@@ -160,12 +164,18 @@ export const enum Times {
   REFLECTION_DEAL_CARD_MIN_DELAY = 30,
   REFLECTION_DEAL_CARD_DURATION = 300,
   REFLECTION_DEAL_TOTAL_DURATION = 500,
+  REFLECTION_COLLAPSE_DURATION = 300,
+  REFLECTION_DROP_DURATION = 1000,
+  REFLECTION_REMOTE_DROP_DURATION = 2000,
+  REFLECTION_STALE_LIMIT = 5000,
+  REFLECTION_COLUMN_SWIPE_THRESH = 600
 }
 
 export const enum ZIndex {
   MODAL = 400 /*should be 24, https://github.com/ParabolInc/action/issues/2772 */,
   SIDEBAR = 200,
-  SNACKBAR = 200
+  SNACKBAR = 200,
+  REFLECTION_IN_FLIGHT = 500
 }
 
 export const enum AuthTokenRole {

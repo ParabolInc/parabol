@@ -23,6 +23,7 @@ const manageErrorResponse = <T>(res: T) => {
 }
 
 const getReflectionEntities = async (plaintextContent: string) => {
+  if (!plaintextContent) return []
   const manager = getGoogleLanguageManager()
   const res = await Promise.all([
     manager.analyzeEntities(plaintextContent),

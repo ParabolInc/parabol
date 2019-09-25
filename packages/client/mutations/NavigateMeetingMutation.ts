@@ -10,20 +10,12 @@ import handleRemoveReflectionGroups from './handlers/handleRemoveReflectionGroup
 import {VOTE} from '../utils/constants'
 import isInterruptingChickenPhase from '../utils/isInterruptingChickenPhase'
 import isViewerTyping from '../utils/isViewerTyping'
-import clientTempId from '../utils/relay/clientTempId'
-import createProxyRecord from '../utils/relay/createProxyRecord'
 import getBaseRecord from '../utils/relay/getBaseRecord'
 import getInProxy from '../utils/relay/getInProxy'
 import {setLocalStageAndPhase} from '../utils/relay/updateLocalStage'
-import {DeepNullable, DeepPartial} from '../types/generics'
 import Atmosphere from '../Atmosphere'
 import {ClientRetroPhaseItem, ClientRetrospectiveMeeting} from '../types/clientSchema'
-import {
-  IReflectPhase,
-  IRetroDiscussStage,
-  IRetrospectiveMeeting,
-  NewMeetingPhaseTypeEnum
-} from '../types/graphql'
+import {IReflectPhase} from '../types/graphql'
 import safeProxy from '../utils/relay/safeProxy'
 
 graphql`
@@ -39,13 +31,6 @@ graphql`
     phaseComplete {
       reflect {
         emptyReflectionGroupIds
-      }
-      group {
-        meeting {
-          reflectionGroups {
-            ...CompleteReflectionGroupFrag @relay(mask: false)
-          }
-        }
       }
       vote {
         meeting {
@@ -99,39 +84,6 @@ const mutation = graphql`
     }
   }
 `
-
-const optimisticallyCreateRetroTopics = (
-  store: RecordSourceSelectorProxy,
-  discussPhase: RecordProxy | null,
-  meetingId: string
-) => {
-  if (!discussPhase || discussPhase.getLinkedRecords('stages')!.length > 1) {
-    return
-  }
-  const meeting = store.get<DeepNullable<IRetrospectiveMeeting>>(meetingId)
-  if (!meeting) return
-  const reflectionGroups = meeting.getLinkedRecords('reflectionGroups')
-  if (!reflectionGroups) return
-  const topReflectionGroups = reflectionGroups.filter((group) => group.getValue('voteCount')! > 0)
-  topReflectionGroups.sort((a, b) => (a.getValue('voteCount')! < b.getValue('voteCount')! ? 1 : -1))
-  const discussStages = topReflectionGroups.map((reflectionGroup) => {
-    const reflectionGroupId = reflectionGroup.getValue('id')
-    const proxyStage = createProxyRecord<DeepPartial<IRetroDiscussStage>>(
-      store,
-      'RetroDiscussStage',
-      {
-        id: clientTempId(),
-        meetingId,
-        isComplete: false,
-        phaseType: NewMeetingPhaseTypeEnum.discuss,
-        reflectionGroupId
-      }
-    )
-    proxyStage.setLinkedRecord(reflectionGroup as any, 'reflectionGroup')
-    return proxyStage
-  })
-  discussPhase.setLinkedRecords(discussStages, 'stages')
-}
 
 export const navigateMeetingTeamUpdater = (
   payload: RecordProxy<NavigateMeetingMutation_team>,
@@ -208,8 +160,9 @@ const NavigateMeetingMutation = (
           stage.setValue(true, 'isComplete')
           const phaseType = stage.getValue('phaseType')
           if (phaseType === VOTE) {
-            const discussPhase = phases[ii + 1]
-            optimisticallyCreateRetroTopics(store as any, discussPhase, meetingId)
+            // optimistically creating an array of temporary stages is difficult because they can become undefined
+            // easier to just wait for the return value before advancing
+            meeting.setValue(completedStageId, 'facilitatorStageId')
           }
         }
       }

@@ -22,8 +22,13 @@ graphql`
       meetingId
       sortOrder
       retroPhaseItemId
+      ...ReflectionGroupHeader_reflectionGroup @relay(mask: false)
+      ...ReflectionGroupVoting_reflectionGroup @relay(mask: false)
+      ...ReflectionGroup_reflectionGroup @relay(mask: false)
+      ...ReflectionGroupTitleEditor_reflectionGroup @relay(mask: false)
+      ...GroupingKanbanColumn_reflectionGroups @relay(mask: false)
       reflections {
-        ...CompleteReflectionFrag @relay(mask: false)
+        ...DraggableReflectionCard_reflection @relay(mask: false)
       }
       tasks {
         id

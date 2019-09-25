@@ -24,6 +24,8 @@ interface Props {
   handleKeyCommand: (command: string) => DraftHandleValue
   handleReturn: (e: React.KeyboardEvent) => DraftHandleValue
   isBlurred: boolean
+  isClipped?: boolean
+  isPhaseItemEditor?: boolean
   keyBindingFn: (e: React.KeyboardEvent) => string
   placeholder: string
   onBlur: () => void
@@ -54,12 +56,12 @@ const codeBlock = {
   padding: '0 .5rem'
 }
 
-const EditorStyles = styled('div')(({useFallback, userSelect}: any) => ({
+const EditorStyles = styled('div')(({useFallback, userSelect, isClipped}: any) => ({
   color: appTheme.palette.dark,
   fontSize: cardContentFontSize,
   lineHeight: useFallback ? '14px' : cardContentLineHeight,
-  maxHeight: ElementHeight.REFLECTION_CARD_MAX,
-  minHeight: '1rem',
+  maxHeight: isClipped ? 44 : ElementHeight.REFLECTION_CARD_MAX,
+  minHeight: 16,
   overflow: 'auto',
   position: 'relative',
   userSelect,
@@ -74,6 +76,36 @@ const AndroidEditorFallback = lazyPreload(() =>
 
 class ReflectionEditorWrapper extends PureComponent<Props> {
   entityPasteStart?: {anchorOffset: number; anchorKey: string} = undefined
+  styleRef = React.createRef<HTMLDivElement>()
+
+  componentDidMount () {
+    const {editorState, isClipped, isPhaseItemEditor} = this.props
+    if (isPhaseItemEditor) return
+    if (!editorState.getCurrentContent().hasText()) {
+      setTimeout(() => {
+        try {
+          this.props.editorRef.current && this.props.editorRef.current.focus()
+        } catch (e) {
+          // DraftEditor was unmounted before this was called
+        }
+      })
+    }
+    if (isClipped) {
+      const el = this.styleRef.current
+      if (el) {
+        el.scrollTop = el.scrollHeight
+      }
+
+    }
+  }
+
+  componentDidUpdate (prevProps: Readonly<Props>) {
+    // make sure the text isn't visible when it's clipped
+    if (prevProps.isClipped !== this.props.isClipped) {
+      const el = this.styleRef.current!
+      el.scrollTop = this.props.isClipped ? el.scrollHeight : 0
+    }
+  }
 
   blockStyleFn = (contentBlock) => {
     // TODO complete emtotion migration to provider a string className
@@ -126,7 +158,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
   }
 
   keyBindingFn = (e) => {
-    const {keyBindingFn} = this.props
+    const {keyBindingFn, renderModal} = this.props
     if (keyBindingFn) {
       const result = keyBindingFn(e)
       if (result) {
@@ -135,7 +167,12 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     }
     if (e.key === 'Escape') {
       e.preventDefault()
-      this.removeModal()
+      if (renderModal) {
+        this.removeModal()
+      } else {
+        const el = this.props.editorRef.current
+        el && el.blur()
+      }
       return null
     }
     return getDefaultKeyBinding(e)
@@ -174,6 +211,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
 
   render () {
     const {
+      isClipped,
       ariaLabel,
       editorRef,
       editorState,
@@ -188,7 +226,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     const useFallback = isAndroid && !readOnly
     const showFallback = useFallback && !isRichDraft(editorState)
     return (
-      <EditorStyles useFallback={useFallback} userSelect={userSelect}>
+      <EditorStyles useFallback={useFallback} userSelect={userSelect} isClipped={isClipped} ref={this.styleRef}>
         {showFallback ? (
           <Suspense fallback={<div />}>
             <AndroidEditorFallback

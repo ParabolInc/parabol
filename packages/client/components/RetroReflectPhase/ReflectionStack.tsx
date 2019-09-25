@@ -4,18 +4,17 @@ import styled from '@emotion/styled'
 import ReflectionCard from '../ReflectionCard/ReflectionCard'
 import ExpandedReflectionStack from './ExpandedReflectionStack'
 import ReflectionStackPlaceholder from './ReflectionStackPlaceholder'
-import {cardBackgroundColor, cardBorderRadius} from '../../styles/cards'
-import {cardShadow} from '../../styles/elevation'
-import {ElementHeight, ReflectionStackPerspective} from '../../types/constEnums'
+import {ElementHeight, ElementWidth, ReflectionStackPerspective} from '../../types/constEnums'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
+import { ReflectionStack_meeting } from '__generated__/ReflectionStack_meeting.graphql';
 
 interface Props {
   idx: number
-  meetingId: string
-  phaseItemId: string
+  meeting: ReflectionStack_meeting
   phaseEditorRef: React.RefObject<HTMLDivElement>
   phaseRef: React.RefObject<HTMLDivElement>
-  readOnly: boolean
   reflectionStack: readonly PhaseItemColumn_meeting['reflectionGroups'][0]['reflections'][0][]
   stackTopRef: RefObject<HTMLDivElement>
 }
@@ -32,68 +31,27 @@ const CenteredCardStack = styled('div')({
   position: 'relative'
 })
 
-const HIDE_LINES_HACK_STYLES = {
-  background: cardBackgroundColor,
-  content: '""',
-  height: 12,
-  left: 0,
-  position: 'absolute',
-  right: 0,
-  zIndex: 200
-}
-
-const CARD_IN_STACK = {
-  backgroundColor: cardBackgroundColor,
-  borderRadius: cardBorderRadius,
-  boxShadow: cardShadow,
-  cursor: 'pointer',
-  overflow: 'hidden',
-  position: 'absolute',
-  pointerEvents: 'none',
-  // hides partially overflown top lines of text
-  '&::before': {
-    ...HIDE_LINES_HACK_STYLES,
-    top: 0
-  },
-  // hides partially overflown bottom lines of text
-  '&::after': {
-    ...HIDE_LINES_HACK_STYLES,
-    bottom: 0
-  },
-  '& > div': {
-    bottom: 0,
-    boxShadow: 'none',
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    zIndex: 100
-  }
-}
-
 const ReflectionWrapper = styled('div')<{idx: number}>(
   ({idx}): any => {
-    if (idx === 0) return {
-      cursor: 'pointer',
-      position: 'relative',
-      zIndex: 2
-    }
     const multiple = Math.min(idx, 2)
+    const scaleX = (ElementWidth.REFLECTION_CARD - ReflectionStackPerspective.X * multiple * 2) / ElementWidth.REFLECTION_CARD
+    const translateY = ReflectionStackPerspective.Y * multiple
     return {
-      ...CARD_IN_STACK,
-      bottom: -ReflectionStackPerspective.Y * multiple,
-      left: ReflectionStackPerspective.X * multiple,
-      right: ReflectionStackPerspective.X * multiple,
-      top: ReflectionStackPerspective.Y * multiple,
-      zIndex: 2 - multiple
+      cursor: 'pointer',
+      position: idx === 0 ? 'relative' : 'absolute',
+      bottom: 0,
+      left: 0,
+      outline: 0,
+      transform: `translateY(${translateY}px) scaleX(${scaleX})`,
+      zIndex: 3 - multiple
     }
   }
 )
 
 const ReflectionStack = (props: Props) => {
-  const {phaseRef, idx, meetingId, phaseItemId, readOnly, reflectionStack, stackTopRef} = props
+  const {phaseRef, idx, meeting, reflectionStack, stackTopRef} = props
   const stackRef = useRef<HTMLDivElement>(null)
-  const {setItemsRef, scrollRef, bgRef, portal, collapse, expand} = useExpandedReflections(stackRef, reflectionStack.length)
+  const {setItemsRef, scrollRef, bgRef, portal, collapse, expand} = useExpandedReflections(stackRef, stackRef, reflectionStack.length)
   if (reflectionStack.length === 0) {
     return <ReflectionStackPlaceholder idx={idx} ref={stackTopRef} />
   }
@@ -101,10 +59,9 @@ const ReflectionStack = (props: Props) => {
     <React.Fragment>
       {portal(<ExpandedReflectionStack
         phaseRef={phaseRef}
-        reflectionStack={reflectionStack}
-        meetingId={meetingId}
-        phaseItemId={phaseItemId}
-        readOnly={readOnly}
+        staticReflections={reflectionStack}
+        reflections={reflectionStack}
+        meeting={meeting}
         scrollRef={scrollRef}
         bgRef={bgRef}
         setItemsRef={setItemsRef}
@@ -114,22 +71,21 @@ const ReflectionStack = (props: Props) => {
         <CardStack onClick={expand} ref={stackRef}>
           <CenteredCardStack>
             {reflectionStack.map((reflection, idx) => {
-                return (
-                  <ReflectionWrapper
-                    key={reflection.id}
-                    idx={idx}
-                    ref={idx === 0 ? stackTopRef : undefined}
-                  >
-                    <ReflectionCard
-                      meetingId={meetingId}
-                      reflection={reflection}
-                      phaseItemId={phaseItemId}
-                      readOnly={reflectionStack.length > 1 || readOnly || false}
-                      userSelect={reflectionStack.length === 1 ? undefined : 'none'}
-                    />
-                  </ReflectionWrapper>
-                )
-              })}
+              return (
+                <ReflectionWrapper
+                  key={reflection.id}
+                  idx={idx}
+                  ref={idx === 0 ? stackTopRef : undefined}
+                >
+                  <ReflectionCard
+                    meeting={meeting}
+                    reflection={reflection}
+                    stackCount={reflectionStack.length}
+                    isClipped={idx !== 0}
+                  />
+                </ReflectionWrapper>
+              )
+            })}
           </CenteredCardStack>
         </CardStack>
       </div>
@@ -137,4 +93,14 @@ const ReflectionStack = (props: Props) => {
   )
 }
 
-export default ReflectionStack
+export default createFragmentContainer(
+  ReflectionStack,
+  {
+    meeting: graphql`
+      fragment ReflectionStack_meeting on RetrospectiveMeeting {
+        ...DraggableReflectionCard_meeting
+        ...ReflectionCard_meeting
+        id
+      }`
+  }
+)

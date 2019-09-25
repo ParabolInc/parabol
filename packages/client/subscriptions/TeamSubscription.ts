@@ -1,37 +1,20 @@
 import {addTeamTeamUpdater} from '../mutations/AddTeamMutation'
-import {
-  archiveTeamTeamOnNext,
-  archiveTeamTeamUpdater
-} from '../mutations/ArchiveTeamMutation'
+import {archiveTeamTeamOnNext, archiveTeamTeamUpdater} from '../mutations/ArchiveTeamMutation'
 import {createReflectionTeamUpdater} from '../mutations/CreateReflectionMutation'
 import {removeReflectionTeamUpdater} from '../mutations/RemoveReflectionMutation'
-import {
-  removeTeamMemberTeamOnNext,
-  removeTeamMemberTeamUpdater
-} from '../mutations/RemoveTeamMemberMutation'
-import {
-  removeOrgUserTeamOnNext,
-  removeOrgUserTeamUpdater
-} from '../mutations/RemoveOrgUserMutation'
+import {removeTeamMemberTeamOnNext, removeTeamMemberTeamUpdater} from '../mutations/RemoveTeamMemberMutation'
+import {removeOrgUserTeamOnNext, removeOrgUserTeamUpdater} from '../mutations/RemoveOrgUserMutation'
 import {startNewMeetingTeamOnNext} from '../mutations/StartNewMeetingMutation'
 import {navigateMeetingTeamUpdater} from '../mutations/NavigateMeetingMutation'
 import {promoteNewMeetingFacilitatorTeamOnNext} from '../mutations/PromoteNewMeetingFacilitatorMutation'
 import {editReflectionTeamUpdater} from '../mutations/EditReflectionMutation'
-import {
-  endNewMeetingTeamOnNext,
-  endNewMeetingTeamUpdater
-} from '../mutations/EndNewMeetingMutation'
-import {updateDragLocationTeamUpdater} from '../mutations/UpdateDragLocationMutation'
+import {endNewMeetingTeamOnNext, endNewMeetingTeamUpdater} from '../mutations/EndNewMeetingMutation'
 import {
   endDraggingReflectionTeamOnNext,
   endDraggingReflectionTeamUpdater
 } from '../mutations/EndDraggingReflectionMutation'
 import {dragDiscussionTopicTeamUpdater} from '../mutations/DragDiscussionTopicMutation'
 import {startDraggingReflectionTeamUpdater} from '../mutations/StartDraggingReflectionMutation'
-import {
-  autoGroupReflectionsTeamOnNext,
-  autoGroupReflectionsTeamUpdater
-} from '../mutations/AutoGroupReflectionsMutation'
 import {addReflectTemplateTeamUpdater} from '../mutations/AddReflectTemplateMutation'
 import {removeReflectTemplateTeamUpdater} from '../mutations/RemoveReflectTemplateMutation'
 import {addReflectTemplatePromptTeamUpdater} from '../mutations/AddReflectTemplatePromptMutation'
@@ -57,7 +40,6 @@ const subscription = graphql`
       ...AddReflectTemplatePromptMutation_team @relay(mask: false)
       ...AddTeamMutation_team @relay(mask: false)
       ...ArchiveTeamMutation_team @relay(mask: false)
-      ...AutoGroupReflectionsMutation_team @relay(mask: false)
       ...CreateReflectionMutation_team @relay(mask: false)
       ...DenyPushInvitationMutation_team @relay(mask: false)
       ...DragDiscussionTopicMutation_team @relay(mask: false)
@@ -99,7 +81,6 @@ const subscription = graphql`
 
 const onNextHandlers = {
   AcceptTeamInvitationPayload: acceptTeamInvitationTeamOnNext,
-  AutoGroupReflectionsPayload: autoGroupReflectionsTeamOnNext,
   ArchiveTeamPayload: archiveTeamTeamOnNext,
   DenyPushInvitationPayload: denyPushInvitationTeamOnNext,
   EndNewMeetingPayload: endNewMeetingTeamOnNext,
@@ -139,9 +120,6 @@ const TeamSubscription = (atmosphere, _queryVariables, subParams) => {
           break
         case 'AddReflectTemplatePromptPayload':
           addReflectTemplatePromptTeamUpdater(payload, context)
-          break
-        case 'AutoGroupReflectionsPayload':
-          autoGroupReflectionsTeamUpdater(payload, context)
           break
         case 'CreateGitHubIssuePayload':
           break
@@ -213,7 +191,6 @@ const TeamSubscription = (atmosphere, _queryVariables, subParams) => {
         case 'UpdateCreditCardPayload':
           break
         case 'UpdateDragLocationPayload':
-          updateDragLocationTeamUpdater(payload, context)
           break
         case 'UpdateNewCheckInQuestionPayload':
           break

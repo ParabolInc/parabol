@@ -5,14 +5,15 @@ import {PALETTE} from '../../styles/paletteV2'
 import Icon from '../Icon'
 
 interface Props {
-  children: ReactNode
   activeIdx: number
+  children: ReactNode
+  disabled?: boolean
   setActiveIdx: (number) => void
-  focusedIdx: number
+  focusedIdx?: number
 }
 
 const containerStyle = {height: '100%'}
-const innerStyle = {width: '100%', padding: '0 16px'}
+const innerStyle = {width: '100%', padding: '0 16px', height: '100%'}
 const slideContainer = {
   padding: '0 4px'
 }
@@ -32,14 +33,15 @@ const StepperDot = styled('div')<{isLocal: boolean, isFocused: boolean}>(({isLoc
 }))
 
 const ReflectWrapperMobile = (props: Props) => {
-  const {children, activeIdx, setActiveIdx, focusedIdx} = props
+  const {children, activeIdx, setActiveIdx, focusedIdx, disabled} = props
   const childArr = Children.toArray(children)
   return (
     <>
       <SwipeableViews
-        // required! repro: swipe on a stack where length === 1. caused by the delete button.
+        // ignoreNativeScroll required! repro: swipe on a stack where length === 1. caused by the delete button.
         ignoreNativeScroll
         enableMouseEvents
+        disabled={disabled}
         index={activeIdx}
         onChangeIndex={(idx) => setActiveIdx(idx)}
         containerStyle={containerStyle}

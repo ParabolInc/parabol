@@ -132,12 +132,16 @@ const PhaseItemEditor = (props: Props) => {
     setCardsInFlight(nextCardsInFlight)
   }
 
+  const editorRef = useRef<HTMLTextAreaElement>(null)
+
   return (
     <>
       <ReflectionCardRoot ref={phaseEditorRef}>
         <ReflectionEditorWrapper
+          isPhaseItemEditor
           ariaLabel='Edit this reflection'
           editorState={editorState}
+          editorRef={editorRef}
           onBlur={ensureNotEditing}
           onFocus={ensureEditing}
           handleReturn={handleReturn}

@@ -5,16 +5,17 @@ import StrictEventEmitter from 'strict-event-emitter-types'
 import handleCompletedDemoStage from './handleCompletedDemoStage'
 import {
   DragReflectionDropTargetTypeEnum,
-  IDiscussPhase,
+  IDiscussPhase, IGoogleAnalyzedEntity,
   INewMeetingStage,
   IReflectPhase,
   IRetroReflection,
   IRetroReflectionGroup,
+  ITask,
   NewMeetingPhase,
   NewMeetingPhaseTypeEnum
 } from '../../types/graphql'
 import groupReflections from '../../utils/autogroup/groupReflections'
-import makeRetroGroupTitle from '../../utils/autogroup/makeRetroGroupTitle'
+import getGroupSmartTitle from '../../utils/autogroup/getGroupSmartTitle'
 import {DISCUSS, GROUP, REFLECT, TASK, TEAM, VOTE} from '../../utils/constants'
 import dndNoise from '../../utils/dndNoise'
 import getTagsFromEntityMap from '../../utils/draftjs/getTagsFromEntityMap'
@@ -30,6 +31,24 @@ import initBotScript from './initBotScript'
 import initDB, {demoMeetingId, demoTeamId, demoViewerId, GitHubProjectKeyLookup, JiraProjectKeyLookup} from './initDB'
 import LocalAtmosphere from './LocalAtmosphere'
 import ms from 'ms'
+import Reflection from 'parabol-server/database/types/Reflection'
+import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraftString'
+import entityLookup from './entityLookup'
+import getDemoEntities from './getDemoEntities'
+import stringSimilarity from 'string-similarity'
+
+export type DemoReflection = Omit<IRetroReflection, 'autoReflectionGroupId' | 'team'> & {
+  creatorId: string
+  reflectionId: string
+  isHumanTouched: boolean
+}
+
+export type DemoReflectionGroup = Omit<IRetroReflectionGroup, 'team' | 'reflections'> & {
+  reflectionGroupId: string
+  reflections: DemoReflection[]
+}
+
+export type DemoTask = Omit<ITask, 'agendaItem'>
 
 interface Payload {
   __typename: string
@@ -252,40 +271,56 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {createJiraIssue: data}
     },
-    CreateReflectionMutation: (
+    CreateReflectionMutation: async (
       {input: {content, retroPhaseItemId, sortOrder, id, groupId}},
-      userId
+      userId: string
     ) => {
       const now = new Date().toJSON()
       const reflectPhase = this.db.newMeeting.phases![1] as IReflectPhase
       const phaseItem = reflectPhase.reflectPrompts.find((prompt) => prompt.id === retroPhaseItemId)
       const reflectionGroupId = groupId || this.getTempId('refGroup')
       const reflectionId = id || this.getTempId('ref')
+      const plaintextContent = extractTextFromDraftString(content)
+      let entities = [] as IGoogleAnalyzedEntity[]
+      if (userId !== demoViewerId) {
+        entities = entityLookup[reflectionId].entities
+      } else if (plaintextContent && plaintextContent.length > 2) {
+        entities = await getDemoEntities(plaintextContent)
+      }
+
       const reflection = {
         __typename: 'RetroReflection',
         id: reflectionId,
+        isHumanTouched: false,
         reflectionId,
         createdAt: now,
         creatorId: userId,
         content,
+        plaintextContent,
         dragContext: null,
         editorIds: [],
         isActive: true,
         isEditing: null,
         isViewerCreator: userId === demoViewerId,
+        entities,
         meetingId: demoMeetingId,
+        meeting: this.db.newMeeting,
         phaseItem,
         reflectionGroupId,
         retroPhaseItemId,
         sortOrder: 0,
-        updatedAt: now
-      } as Partial<IRetroReflection & {isHumanTouched: boolean}>
+        updatedAt: now,
+        retroReflectionGroup: undefined as any
+      } as DemoReflection
+
+      const smartTitle = getGroupSmartTitle([reflection])
 
       const reflectionGroup = {
         __typename: 'RetroReflectionGroup',
         id: reflectionGroupId,
         reflectionGroupId,
-        title: null,
+        smartTitle,
+        title: smartTitle,
         voteCount: 0,
         viewerVoteCount: 0,
         createdAt: now,
@@ -300,7 +335,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         titleIsUserDefined: false,
         updatedAt: now,
         voterIds: []
-      } as Partial<IRetroReflectionGroup>
+      } as DemoReflectionGroup
 
       reflection.retroReflectionGroup = reflectionGroup as any
       this.db.reflectionGroups.push(reflectionGroup)
@@ -376,10 +411,26 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {removeReflection: data}
     },
-    UpdateReflectionContentMutation: ({reflectionId, content}, userId) => {
+    UpdateReflectionContentMutation: async ({reflectionId, content}, userId) => {
       const reflection = this.db.reflections.find((reflection) => reflection.id === reflectionId)!
       reflection.content = content
       reflection.updatedAt = new Date().toJSON()
+      const plaintextContent = extractTextFromDraftString(content)
+      const isVeryDifferent =  stringSimilarity.compareTwoStrings(plaintextContent, reflection.plaintextContent) < 0.9
+      const entities = isVeryDifferent ? await getDemoEntities(plaintextContent) : reflection.entities
+      reflection.plaintextContent = plaintextContent
+      reflection.entities = entities
+
+      const reflectionsInGroup = this.db.reflections.filter(({reflectionGroupId}) => reflectionGroupId === reflection.reflectionGroupId)
+      const newTitle = getGroupSmartTitle(reflectionsInGroup)
+      const reflectionGroup = this.db.reflectionGroups.find((group) => group.id === reflection.reflectionGroupId)
+      if (reflectionGroup) {
+        const titleIsUserDefined = reflectionGroup.smartTitle !== reflectionGroup.title
+        reflectionGroup.smartTitle = newTitle
+        if (!titleIsUserDefined) {
+          reflectionGroup.title = newTitle
+        }
+      }
       const data = {
         error: null,
         meeting: this.db.newMeeting,
@@ -522,29 +573,24 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {setStageTimer: data}
     },
-    StartDraggingReflectionMutation: ({reflectionId, initialCoords, dragId}, userId) => {
-      let dragCoords = initialCoords
+    StartDraggingReflectionMutation: ({reflectionId, dragId}, userId) => {
       const reflection = this.db.reflections.find((reflection) => reflection.id === reflectionId)!
       if (userId !== demoViewerId) {
-        if (reflection.isHumanTouched || !(this.atmosphere as any).getMasonry) return
-        const {itemCache} = (this.atmosphere as any).getMasonry()
-        const cachedItem = itemCache[reflectionId]
-        const bbox = (cachedItem.el as HTMLDivElement).getBoundingClientRect()
-        dragCoords = {x: bbox.left, y: bbox.top}
+        if (reflection.isHumanTouched) return
       } else {
         reflection.isHumanTouched = true
       }
+      const user = this.db.users.find((user) => user.id === userId)
       const data = {
         error: null,
         teamId: demoTeamId,
         meetingId: demoMeetingId,
         reflectionId,
         reflection,
-        dragContext: {
-          id: dragId || this.getTempId('drag'),
+        remoteDrag: {
+          id: dragId,
           dragUserId: userId,
-          dragUser: this.db.users.find((user) => user.id === userId),
-          dragCoords
+          dragUserName: user ? user.preferredName : 'A Ghost'
         },
         __typename: 'StartDraggingReflectionPayload'
       }
@@ -601,18 +647,19 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           updatedAt: now
         })
         this.db.newMeeting.nextAutoGroupThreshold = null
-        const {smartTitle: nextGroupSmartTitle, title: nextGroupTitle} = makeRetroGroupTitle([
-          reflection as IRetroReflection
+        const nextTitle = getGroupSmartTitle([
+          reflection as Reflection
         ])
-        newReflectionGroup.smartTitle = nextGroupSmartTitle
-        newReflectionGroup.title = nextGroupTitle
+        newReflectionGroup.smartTitle = nextTitle
+        newReflectionGroup.title = nextTitle
         if (oldReflections.length > 0) {
-          const {smartTitle: oldGroupSmartTitle, title: oldGroupTitle} = makeRetroGroupTitle(
+          const oldTitle = getGroupSmartTitle(
             oldReflections
           )
-          oldReflectionGroup.smartTitle = oldGroupSmartTitle
-          if (!oldReflectionGroup.titleIsUserDefined) {
-            oldReflectionGroup.title = oldGroupTitle
+          const titleIsUserDefined = oldReflectionGroup.smartTitle !== oldReflectionGroup.title
+          oldReflectionGroup.smartTitle = oldTitle
+          if (!titleIsUserDefined) {
+            oldReflectionGroup.title = oldTitle
           }
         } else {
           const meetingGroups = this.db.newMeeting.reflectionGroups!
@@ -641,35 +688,38 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
             updatedAt: now
           })
           reflectionGroup.reflections!.push(reflection as any)
+          reflectionGroup.reflections.sort((a, b) => (a.sortOrder < b.sortOrder ? 1 : -1))
           oldReflections.splice(
             oldReflections.findIndex((reflection) => reflection === reflection),
             1
           )
           if (oldReflectionGroupId !== newReflectionGroupId) {
-            const reflections = this.db.reflections as IRetroReflection[]
+            const reflections = this.db.reflections
             const nextReflections = reflections.filter(
               (reflection) => reflection.reflectionGroupId === newReflectionGroupId
             )
             const oldReflections = reflections.filter(
               (reflection) => reflection.reflectionGroupId === oldReflectionGroupId
             )
-            const {smartTitle: nextGroupSmartTitle, title: nextGroupTitle} = makeRetroGroupTitle(
+            const nextTitle = getGroupSmartTitle(
               nextReflections
             )
-            reflectionGroup.smartTitle = nextGroupSmartTitle
-            if (!reflectionGroup.titleIsUserDefined) {
-              reflectionGroup.title = nextGroupTitle
+            const titleIsUserDefined = reflectionGroup.smartTitle !== reflectionGroup.title
+            reflectionGroup.smartTitle = nextTitle
+            if (!titleIsUserDefined) {
+              reflectionGroup.title = nextTitle
             }
             const oldReflectionGroup = this.db.reflectionGroups.find(
               (group) => group.id === oldReflectionGroupId
             )!
             if (oldReflections.length > 0) {
-              const {smartTitle: oldGroupSmartTitle, title: oldGroupTitle} = makeRetroGroupTitle(
+              const oldTitle = getGroupSmartTitle(
                 oldReflections
               )
-              oldReflectionGroup.smartTitle = oldGroupSmartTitle
-              if (!oldReflectionGroup.titleIsUserDefined) {
-                oldReflectionGroup.title = oldGroupTitle
+              const titleIsUserDefined = oldReflectionGroup.smartTitle !== oldReflectionGroup.title
+              oldReflectionGroup.smartTitle = oldTitle
+              if (!titleIsUserDefined) {
+                oldReflectionGroup.title = oldTitle
               }
             } else {
               const meetingGroups = this.db.newMeeting.reflectionGroups!
@@ -682,6 +732,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           failedDrop = true
         }
       }
+      const user = this.db.users.find((user) => user.id === userId)
       const data = {
         __typename: 'EndDraggingReflectionPayload',
         meetingId: demoMeetingId,
@@ -697,7 +748,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         userId,
         dropTargetType: failedDrop ? null : dropTargetType,
         dropTargetId: failedDrop ? null : dropTargetId,
-        dragId
+        remoteDrag: {
+          id: dragId,
+          dragUserId: userId,
+          dragUserName: user ? user.preferredName : 'A Ghost'
+        }
       }
 
       if (userId !== demoViewerId) {
@@ -707,7 +762,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     },
     UpdateDragLocationMutation: ({input}, userId) => {
       const {teamId, ...inputData} = input
-      const data = {...inputData, userId, __typename: 'UpdateDragLocationPayload'}
+      const data = {remoteDrag: inputData, userId, __typename: 'UpdateDragLocationPayload'}
       if (userId !== demoViewerId) {
         const {sourceId} = inputData
         const reflection = this.db.reflections.find((reflection) => reflection.id === sourceId)
