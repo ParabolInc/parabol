@@ -3,7 +3,7 @@ import React, {Component} from 'react'
 import styled from '@emotion/styled'
 import Avatar from './Avatar/Avatar'
 import AvatarInput from './AvatarInput'
-import Type from './Type/Type'
+import DialogTitle from './DialogTitle'
 import withAtmosphere, {
   WithAtmosphereProps
 } from '../decorators/withAtmosphere/withAtmosphere'
@@ -31,10 +31,14 @@ const flexBase = {
 const ModalBoundary = styled('div')({
   ...flexBase,
   flexDirection: 'column',
-  background: '#fff',
+  background: '#FFFFFF',
   borderRadius: 8,
   height: 374,
   width: 700
+})
+
+const StyledDialogTitle = styled(DialogTitle)({
+  textAlign: 'center'
 })
 
 class OrgAvatarInput extends Component<Props> {
@@ -83,9 +87,9 @@ class OrgAvatarInput extends Component<Props> {
     const {picture, dirty, error} = this.props
     return (
       <ModalBoundary>
-        <Type align='center' bold scale='s6' colorPalette='mid'>
+        <StyledDialogTitle>
           {'Upload a New Photo'}
-        </Type>
+        </StyledDialogTitle>
         <AvatarBlock>
           <Avatar picture={picture} size={96} />
         </AvatarBlock>

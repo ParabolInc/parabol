@@ -9,35 +9,33 @@ import Tooltip from '../../../../components/Tooltip/Tooltip'
 import withAtmosphere, {
   WithAtmosphereProps
 } from '../../../../decorators/withAtmosphere/withAtmosphere'
-import ui from '../../../../styles/ui'
+import {PALETTE} from '../../../../styles/paletteV2'
 import styled from '@emotion/styled'
 import UpdateNewCheckInQuestionMutation from '../../../../mutations/UpdateNewCheckInQuestionMutation'
 import {convertFromRaw, convertToRaw, EditorState, SelectionState} from 'draft-js'
 import Icon from '../../../../components/Icon'
-import {MD_ICONS_SIZE_18} from '../../../../styles/icons'
+import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {NewCheckInQuestion_team} from '../../../../__generated__/NewCheckInQuestion_team.graphql'
 
 const CogIcon = styled(Icon)<{isEditing: boolean}>(({isEditing}) => ({
-  color: ui.colorText,
+  color: PALETTE.TEXT_MAIN,
+  cursor: 'pointer',
   display: 'block',
-  height: '1.5rem',
-  fontSize: MD_ICONS_SIZE_18,
-  verticalAlign: 'middle',
-  marginLeft: '0.5rem',
-  paddingTop: '.1875rem',
+  height: 24,
+  fontSize: ICON_SIZE.MD18,
+  marginLeft: 8,
+  paddingTop: 3,
   textAlign: 'center',
-  width: '1.25rem',
   visibility: isEditing ? 'hidden' : 'visible',
-  cursor: 'pointer'
+  width: 24
 }))
 
 const QuestionBlock = styled('div')({
   alignContent: 'center',
   display: 'flex',
-  fontSize: '1.5rem',
-  lineHeight: '1.25',
-  padding: `${ui.cardPaddingBase} 0 ${ui.cardPaddingBase} 0`,
-  fontWeight: 300
+  fontSize: 24,
+  lineHeight: 1.25,
+  padding: '16px 0'
 })
 
 const getCheckInQuestion = (props) => {

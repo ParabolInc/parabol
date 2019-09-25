@@ -13,7 +13,7 @@ interface Props {
 const Gauge = styled('div')<{isTimeUp: boolean}>(({isTimeUp}) => ({
   alignItems: 'flex-end',
   animation: `${fadeIn.toString()} 300ms ${DECELERATE}`,
-  color: isTimeUp ? PALETTE.TEXT_MAIN : '#fff',
+  color: isTimeUp ? PALETTE.TEXT_MAIN : '#FFFFFF',
   background: isTimeUp ? PALETTE.BACKGROUND_YELLOW : PALETTE.BACKGROUND_GREEN,
   boxShadow: buttonRaisedShadow,
   borderRadius: 2,

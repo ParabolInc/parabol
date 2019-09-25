@@ -76,8 +76,8 @@ const InvoiceStyles = styled('div')({
 })
 
 const Panel = styled('div')({
-  backgroundColor: '#fff',
-  border: `1px solid ${PALETTE.BORDER_DARK}`,
+  backgroundColor: '#FFFFFF',
+  border: `1px solid ${PALETTE.BORDER_MAIN_40}`,
   borderRadius: 8,
   margin: `16px 0`,
   padding: `12px 0 12px 12px`,
@@ -137,7 +137,7 @@ const HeadingLabel = styled('div')({
     backgroundColor: PALETTE.BORDER_INVOICE_LABEL,
     border: `1px solid ${PALETTE.BORDER_INVOICE_LABEL}`,
     borderRadius: '4em',
-    color: '#fff',
+    color: '#FFFFFF',
     display: 'inline-block',
     fontSize: 12,
     marginBottom: 0,

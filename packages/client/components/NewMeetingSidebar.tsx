@@ -25,7 +25,7 @@ const StyledToggle = styled(SidebarToggle)({
 })
 
 const SidebarParent = styled('div')({
-  backgroundColor: '#fff',
+  backgroundColor: '#FFFFFF',
   display: 'flex',
   flex: 1,
   flexDirection: 'column',

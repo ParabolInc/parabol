@@ -115,7 +115,7 @@ class UserProfile extends Component<Props> {
               />
               <InfoBlock>
                 <FieldLabel
-                  customStyles={{paddingBottom: ui.fieldLabelGutter}}
+                  customStyles={{paddingBottom: 8}}
                   label='Name'
                   fieldSize='medium'
                   indent

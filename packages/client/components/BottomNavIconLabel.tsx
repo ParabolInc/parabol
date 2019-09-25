@@ -1,12 +1,20 @@
 import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
 import Icon from './Icon'
-import ui from '../styles/ui'
+import {PALETTE} from '../styles/paletteV2'
+
+const paletteColors = {
+  warm: PALETTE.EMPHASIS_WARM,
+  midGray: PALETTE.TEXT_GRAY,
+  red: PALETTE.TEXT_RED,
+  green: PALETTE.TEXT_GREEN,
+  blue: PALETTE.TEXT_BLUE,
+}
 
 interface Props {
   className?: string
   icon: string | undefined
-  iconColor: string | undefined
+  iconColor?: keyof typeof paletteColors
   label: any | undefined
 }
 
@@ -18,7 +26,7 @@ const Inner = styled('div')({
 })
 
 const StyledIcon = styled(Icon)<{iconColor?: string}>(({iconColor}) => ({
-  color: iconColor ? ui.palette[iconColor] : 'inherit'
+  color: iconColor ? paletteColors[iconColor] : 'inherit'
 }))
 
 const Label = styled('div')({

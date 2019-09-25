@@ -1,17 +1,13 @@
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {
-  FONT_FAMILY,
-  PALETTE_TEXT_GREEN,
-  PALETTE_TEXT_LIGHT,
-  PALETTE_TEXT_MAIN
-} from './constants'
+import {PALETTE} from '../../../../../styles/paletteV2'
+import {FONT_FAMILY} from '../../../../../styles/typographyV2'
 import {SummaryAvatarHeader_meetingMember} from '../../../../../__generated__/SummaryAvatarHeader_meetingMember.graphql'
 
 const presentLabelStyle = (isCheckedIn: boolean) => ({
-  color: isCheckedIn ? PALETTE_TEXT_GREEN : PALETTE_TEXT_LIGHT,
-  fontFamily: FONT_FAMILY,
+  color: isCheckedIn ? PALETTE.TEXT_GREEN : PALETTE.TEXT_GRAY,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: '14px',
   fontStyle: 'italic',
   fontWeight: 600,
@@ -28,8 +24,8 @@ const avatarStyles = {
 }
 
 const nameStyle = {
-  color: PALETTE_TEXT_MAIN,
-  fontFamily: FONT_FAMILY,
+  color: PALETTE.TEXT_MAIN,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: '20px',
   paddingTop: 4
 }

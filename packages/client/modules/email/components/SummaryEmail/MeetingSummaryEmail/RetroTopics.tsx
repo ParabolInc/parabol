@@ -3,17 +3,15 @@ import plural from '../../../../../utils/plural'
 import {RETRO_TOPIC_LABEL, RETRO_VOTED_LABEL} from '../../../../../utils/constants'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {
-  FONT_FAMILY,
-  PALETTE_TEXT_MAIN
-} from './constants'
+import {PALETTE} from '../../../../../styles/paletteV2'
+import {FONT_FAMILY} from '../../../../../styles/typographyV2'
 import RetroTopic from './RetroTopic'
 import {RetroTopics_meeting} from '../../../../../__generated__/RetroTopics_meeting.graphql'
 import EmailBorderBottom from './EmailBorderBottom'
 
 const sectionHeading = {
-  color: PALETTE_TEXT_MAIN,
-  fontFamily: FONT_FAMILY,
+  color: PALETTE.TEXT_MAIN,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 24,
   fontWeight: 600,
   paddingTop: 24

@@ -29,12 +29,12 @@ const BadgeBlock = styled('div')({
 })
 
 const BadgeBlockInner = styled('div')({
-  height: '14px',
+  height: 16,
   left: '50%',
   position: 'absolute',
   top: '50%',
   transform: 'translate(-50%, -50%)',
-  width: '14px'
+  width: 16
 })
 
 interface Props {

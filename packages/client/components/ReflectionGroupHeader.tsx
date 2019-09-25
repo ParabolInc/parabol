@@ -10,7 +10,7 @@ import {ReflectionGroupHeader_reflectionGroup} from '../__generated__/Reflection
 import {ReflectionGroupHeader_meeting} from '../__generated__/ReflectionGroupHeader_meeting.graphql'
 import plural from '../utils/plural'
 import {PortalStatus} from '../hooks/usePortal'
-import {ElementWidth} from '../types/constEnums'
+import {ElementWidth, Gutters} from '../types/constEnums'
 
 interface Props {
   meeting: ReflectionGroupHeader_meeting
@@ -26,12 +26,13 @@ const GroupHeader = styled('div')<{isExpanded: boolean, portalStatus: PortalStat
   flexShrink: 1,
   fontSize: 14,
   justifyContent: 'space-between',
-  margin: isExpanded ? '0 16px' : undefined,
+  margin: isExpanded ? `0 ${Gutters.COLUMN_INNER_GUTTER}` : undefined,
   maxWidth: ElementWidth.REFLECTION_CARD,
   minHeight: 32,
   opacity: !isExpanded && portalStatus !== PortalStatus.Exited ? 0 : undefined,
-  paddingLeft: 8,
+  paddingLeft: Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL,
   paddingRight: 8,
+  paddingTop: isExpanded ? Gutters.ROW_INNER_GUTTER : undefined,
   position: 'relative',
   width: '100%'
 }))

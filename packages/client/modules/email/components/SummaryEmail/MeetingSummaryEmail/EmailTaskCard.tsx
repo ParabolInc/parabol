@@ -1,29 +1,26 @@
 import {convertFromRaw, Editor, EditorState} from 'draft-js'
 import React, {useMemo, useRef} from 'react'
 import editorDecorators from '../../../../../components/TaskEditor/decorators'
-import labels from '../../../../../styles/theme/labels'
-import ui from '../../../../../styles/ui'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {EmailTaskCard_task} from '../../../../../__generated__/EmailTaskCard_task.graphql'
-import {
-  FONT_FAMILY,
-  PALETTE_TEXT_MAIN
-} from './constants'
+import {PALETTE} from '../../../../../styles/paletteV2'
+import {FONT_FAMILY} from '../../../../../styles/typographyV2'
+import {taskStatusColors} from '../../../../../utils/taskStatus'
 
 interface Props {
   task: EmailTaskCard_task
 }
 
 const contentStyle = {
-  backgroundColor: '#ffffff',
-  borderColor: ui.cardBorderColor,
+  backgroundColor: '#FFFFFF',
+  borderColor: PALETTE.BORDER_LIGHT,
   borderRadius: '4px',
   borderStyle: 'solid',
   borderWidth: '1px',
   boxSizing: 'content-box',
-  color: PALETTE_TEXT_MAIN,
-  fontFamily: FONT_FAMILY,
+  color: PALETTE.TEXT_MAIN,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: '14px',
   minHeight: '88px',
   lineHeight: '20px',
@@ -36,7 +33,7 @@ const contentStyle = {
 } as React.CSSProperties
 
 const statusStyle = (status: string) => ({
-  backgroundColor: labels.taskStatus[status].color,
+  backgroundColor: taskStatusColors[status],
   borderRadius: '4px',
   width: 30
 })

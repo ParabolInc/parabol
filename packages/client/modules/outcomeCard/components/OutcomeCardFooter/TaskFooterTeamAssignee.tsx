@@ -8,15 +8,14 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import textOverflow from '../../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../../styles/paletteV2'
-import appTheme from '../../../../styles/theme/theme'
-import ui from '../../../../styles/ui'
+import {Radius} from '../../../../types/constEnums'
 import lazyPreload from '../../../../utils/lazyPreload'
 import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 
 const TeamToggleButton = styled(CardButton)({
   ...textOverflow,
-  borderRadius: ui.borderRadiusSmall,
-  color: PALETTE.TEXT_LIGHT,
+  borderRadius: Radius.BUTTON_PILL,
+  color: PALETTE.TEXT_GRAY,
   display: 'block',
   fontSize: 12,
   fontWeight: 400,
@@ -26,11 +25,10 @@ const TeamToggleButton = styled(CardButton)({
   maxWidth: '100%',
   outline: 0,
   opacity: 1,
-  padding: '0 .5rem',
+  padding: '0 8px',
   textAlign: 'left',
   ':hover, :focus': {
-    borderColor: appTheme.palette.mid50l,
-    color: ui.palette.dark,
+    color: PALETTE.TEXT_MAIN,
     opacity: 1
   }
 })

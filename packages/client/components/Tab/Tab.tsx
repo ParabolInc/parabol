@@ -13,10 +13,10 @@ interface Props {
 const TabStyle = styled(PlainButton)<{isActive: boolean; isClickable: boolean}>(
   ({isActive, isClickable}) => ({
     alignItems: 'center',
-    color: isActive ? PALETTE.PRIMARY_MAIN : PALETTE.TEXT_LIGHT,
+    color: isActive ? PALETTE.PRIMARY_MAIN : PALETTE.TEXT_GRAY,
     cursor: isClickable ? 'pointer' : 'default',
     display: 'flex',
-    fontSize: '.875rem',
+    fontSize: 14,
     justifyContent: 'center',
     outline: 0,
     lineHeight: '1.25rem',

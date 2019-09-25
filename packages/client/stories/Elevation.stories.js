@@ -9,7 +9,6 @@ import RetroBackground from './components/RetroBackground'
 import StoryContainer from './components/StoryContainer'
 import styled from '@emotion/styled'
 import elevation from '../styles/elevation'
-import ui from '../styles/ui'
 
 const demoCardSize = '8rem'
 const gridGap = '2.5rem'
@@ -25,7 +24,7 @@ const Elevation = styled('div')(({depth, index}) => ({
   backgroundColor: 'white',
   boxShadow: `${depth}`,
   borderRadius: '.125rem',
-  color: ui.palette.midGray,
+  color: '#82809A',
   height: demoCardSize,
   padding: '1rem',
   width: demoCardSize,

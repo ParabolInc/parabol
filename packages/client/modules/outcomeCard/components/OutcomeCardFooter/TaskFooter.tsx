@@ -17,13 +17,14 @@ import removeContentTag from '../../../../utils/draftjs/removeContentTag'
 import isTaskArchived from '../../../../utils/isTaskArchived'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 import {AreaEnum} from '../../../../types/graphql'
+import {Card} from '../../../../types/constEnums'
 import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 
 const Footer = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
   maxWidth: '100%',
-  padding: `12px 15px 15px`
+  padding: `12px ${Card.PADDING} ${Card.PADDING}`
 })
 
 const ButtonGroup = styled('div')<{cardIsActive: boolean}>(({cardIsActive}) => ({

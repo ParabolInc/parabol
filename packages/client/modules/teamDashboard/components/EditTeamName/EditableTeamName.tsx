@@ -10,14 +10,14 @@ import withAtmosphere, {
 import UpdateTeamNameMutation from '../../../../mutations/UpdateTeamNameMutation'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 import teamNameValidation from '../../../../validation/teamNameValidation'
-import appTheme from '../../../../styles/theme/appTheme'
+import {FONT_FAMILY} from '../../../../styles/typographyV2'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   team: EditableTeamName_team
 }
 
 const InheritedStyles = styled('div')({
-  fontFamily: appTheme.typography.sansSerif,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 20,
   fontWeight: 600,
   lineHeight: 1.5

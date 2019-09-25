@@ -1,6 +1,6 @@
 import React from 'react'
-import appTheme from '../../styles/theme/appTheme'
-import ui from '../../styles/ui'
+import {PALETTE} from '../../styles/paletteV2'
+import {Card} from '../../types/constEnums'
 import {cardHoverShadow} from '../../styles/elevation'
 import CreateCardRootStyles from './CreateCardRootStyles'
 import styled from '@emotion/styled'
@@ -8,37 +8,36 @@ import styled from '@emotion/styled'
 const ControlBlock = styled('div')({
   alignContent: 'center',
   alignSelf: 'stretch',
-  color: appTheme.palette.mid,
+  color: PALETTE.LINK_BLUE,
   display: 'flex',
   flexDirection: 'column',
+  fontSize: Card.FONT_SIZE,
   justifyContent: 'center',
-  lineHeight: '1.5',
+  lineHeight: Card.LINE_HEIGHT,
   textAlign: 'center',
   userSelect: 'none',
   width: '100%'
 })
 
 const ControlLabel = styled('div')({
-  fontSize: ui.cardContentFontSize,
   fontWeight: 600
 })
 
 const ControlHint = styled('div')({
-  fontSize: 13,
-  opacity: 0.7
+  color: PALETTE.TEXT_GRAY
 })
 
-const Card = styled('div')<{hasControls: boolean | undefined}>(({hasControls}) => ({
+const CreateCardBlock = styled('div')<{hasControls: boolean | undefined}>(({hasControls}) => ({
   ...CreateCardRootStyles,
-  backgroundColor: hasControls ? ui.cardControlBackgroundColor : 'transparent',
-  border: `.0625rem dashed ${appTheme.palette.mid30l}`,
+  backgroundColor: hasControls ? PALETTE.BACKGROUND_PRIMARY_10A : 'transparent',
+  border: hasControls ? undefined : `1px dashed ${PALETTE.BORDER_PLACEHOLDER}`,
   borderTop: hasControls ? 0 : undefined,
   transition: hasControls ? 'background-color 100ms ease-in, box-shadow 100ms ease-in' : undefined,
   boxShadow: 'none',
   paddingLeft: 0,
   paddingRight: 0,
   '&:hover': hasControls ? {
-    backgroundColor: ui.palette.white,
+    backgroundColor: Card.BACKGROUND_COLOR,
     boxShadow: cardHoverShadow,
     cursor: 'pointer'
   } : undefined
@@ -52,7 +51,7 @@ interface Props {
 const CreateCard = (props: Props) => {
   const {handleAddTask, hasControls} = props
   return (
-    <Card hasControls={hasControls}>
+    <CreateCardBlock hasControls={hasControls}>
       {hasControls && (
         <ControlBlock onClick={handleAddTask} title='Add a Task (just press “t”)'>
           <ControlLabel>
@@ -67,7 +66,7 @@ const CreateCard = (props: Props) => {
           </ControlHint>
         </ControlBlock>
       )}
-    </Card>
+    </CreateCardBlock>
   )
 }
 

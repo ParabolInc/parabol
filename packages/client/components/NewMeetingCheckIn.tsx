@@ -37,7 +37,7 @@ const Hint = styled('div')({
 })
 
 const StyledIcon = styled(Icon)({
-  color: PALETTE.TEXT_LIGHT,
+  color: PALETTE.TEXT_GRAY,
   display: 'block',
   margin: '0 auto 4px',
   width: ICON_SIZE.MD24

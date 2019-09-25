@@ -3,13 +3,14 @@ import graphql from 'babel-plugin-relay/macro'
 import {createFragmentContainer} from 'react-relay'
 import {GroupingKanbanColumn_reflectionGroups} from '__generated__/GroupingKanbanColumn_reflectionGroups.graphql'
 import {GroupingKanbanColumn_meeting} from '__generated__/GroupingKanbanColumn_meeting.graphql'
-import {BezierCurve, DragAttribute} from '../types/constEnums'
+import {BezierCurve, DragAttribute, ElementWidth, Gutters} from '../types/constEnums'
 import styled from '@emotion/styled'
 import {PALETTE} from '../styles/paletteV2'
 import Icon from './Icon'
 import {GroupingKanbanColumn_prompt} from '__generated__/GroupingKanbanColumn_prompt.graphql'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
-import RaisedButton from './RaisedButton'
+import FlatButton from './FlatButton'
+import RetroPrompt from './RetroPrompt'
 import CreateReflectionMutation from '../mutations/CreateReflectionMutation'
 import getNextSortOrder from '../utils/getNextSortOrder'
 import useMutationProps from '../hooks/useMutationProps'
@@ -18,40 +19,46 @@ import {SwipeColumn} from './GroupingKanban'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 
 // TODO share with TaskColumn
-const Column = styled('div')({
+const Column = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   alignItems: 'center',
+  background: PALETTE.BACKGROUND_REFLECTION,
+  borderRadius: 8,
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
   height: '100%',
+  margin: isDesktop ? '0 8px' : undefined,
+  minWidth: isDesktop ? 320 : undefined,
   position: 'relative',
   transition: `background 300ms ${BezierCurve.DECELERATE}`
-})
+}))
 
 const ColumnHeader = styled('div')({
   color: PALETTE.TEXT_MAIN,
   display: 'flex',
-  lineHeight: '24px'
+  justifyContent: 'space-between',
+  lineHeight: '24px',
+  margin: '0 auto',
+  maxWidth: ElementWidth.REFLECTION_CARD_PADDED,
+  padding: `12px 0 0 ${Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL}`,
+  width: '100%'
 })
 
-const ColumnBody = styled('div')({
+const ColumnBody = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   flex: 1,
   height: '100%',
   overflowY: 'auto',
   overflowX: 'hidden',
   minHeight: 200,
-  padding: 8,
+  padding: isDesktop ? '6px 12px' : '6px 8px',
   width: 'fit-content'
+}))
+
+const Prompt = styled(RetroPrompt)({
+  marginRight: 8
 })
 
-const Prompt = styled('div')({
-  fontSize: 20,
-  fontStyle: 'italic',
-  fontWeight: 600,
-  lineHeight: '24px'
-})
-
-const AddReflectionButton = styled(RaisedButton)({
+const AddReflectionButton = styled(FlatButton)({
   border: 0,
   height: 24,
   lineHeight: '24px',
@@ -60,6 +67,7 @@ const AddReflectionButton = styled(RaisedButton)({
 })
 
 interface Props {
+  isDesktop: boolean
   meeting: GroupingKanbanColumn_meeting
   phaseRef: RefObject<HTMLDivElement>
   prompt: GroupingKanbanColumn_prompt
@@ -68,7 +76,7 @@ interface Props {
 }
 
 const GroupingKanbanColumn = (props: Props) => {
-  const {meeting, reflectionGroups, phaseRef, prompt, swipeColumn} = props
+  const {isDesktop, meeting, reflectionGroups, phaseRef, prompt, swipeColumn} = props
   const {question, id: promptId} = prompt
   const {id: meetingId, localStage} = meeting
   const {isComplete, phaseType} = localStage
@@ -87,21 +95,21 @@ const GroupingKanbanColumn = (props: Props) => {
   const ref = useRef<HTMLDivElement>(null)
   const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete
   return (
-    <Column ref={ref}>
+    <Column isDesktop={isDesktop} ref={ref}>
       <ColumnHeader>
-        {canAdd && <AddReflectionButton aria-label={'Add a reflection'} onClick={onClick} waiting={submitting}>
+        <Prompt>{question}</Prompt>
+        {canAdd && <AddReflectionButton aria-label={'Add a reflection'} onClick={onClick} palette={'white'} waiting={submitting}>
           <Icon>add</Icon>
         </AddReflectionButton>}
-        <Prompt>{question}</Prompt>
       </ColumnHeader>
-      <ColumnBody {...{[DragAttribute.DROPZONE]: promptId}}>
+      <ColumnBody isDesktop={isDesktop} {...{[DragAttribute.DROPZONE]: promptId}}>
         {reflectionGroups
           .filter((group) => {
             // group may be undefined because relay could GC before useMemo in the Kanban recomputes >:-(
             return group && group.reflections.length > 0
           })
           .map((reflectionGroup) => {
-          return <ReflectionGroup key={reflectionGroup.id} meeting={meeting} phaseRef={phaseRef} reflectionGroup={reflectionGroup} swipeColumn={swipeColumn}/>
+          return <ReflectionGroup groupQuestion={question} key={reflectionGroup.id} meeting={meeting} phaseRef={phaseRef} reflectionGroup={reflectionGroup} swipeColumn={swipeColumn}/>
         })}
       </ColumnBody>
     </Column>

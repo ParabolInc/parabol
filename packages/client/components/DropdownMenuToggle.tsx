@@ -7,7 +7,7 @@ import ui from '../styles/ui'
 import {PALETTE} from '../styles/paletteV2'
 
 const DropdownIcon = styled(Icon)({
-  color: PALETTE.TEXT_LIGHT,
+  color: PALETTE.TEXT_GRAY,
   marginLeft: 8
 })
 

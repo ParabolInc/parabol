@@ -14,7 +14,7 @@ const NarrowMenu = styled(Menu)({
 })
 
 const Label = styled('div')({
-  color: PALETTE.TEXT_LIGHT,
+  color: PALETTE.TEXT_GRAY,
   fontSize: 14,
   fontStyle: 'italic',
   padding: 8,

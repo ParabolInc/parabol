@@ -2,7 +2,7 @@ import React, {useMemo} from 'react'
 import styled from '@emotion/styled'
 import EditorHelpModalContainer from '../../containers/EditorHelpModalContainer/EditorHelpModalContainer'
 import TaskColumn from '../../modules/teamDashboard/components/TaskColumn/TaskColumn'
-import ui from '../../styles/ui'
+import {Breakpoint, Layout} from '../../types/constEnums'
 import {AreaEnum} from '../../types/graphql'
 import {columnArray, MEETING, meetingColumnArray, SORT_STEP} from '../../utils/constants'
 import makeTasksByStatus from '../../utils/makeTasksByStatus'
@@ -20,14 +20,14 @@ const ColumnsBlock = styled('div')({
   flex: '1',
   height: '100%',
   margin: '0 auto',
-  maxWidth: ui.taskColumnsMaxWidth,
+  maxWidth: Layout.TASK_COLUMNS_MAX_WIDTH,
   overflow: 'auto',
-  padding: `0 ${ui.taskColumnPaddingInnerSmall}`,
+  padding: `0 10px`,
   width: '100%',
 
-  [ui.dashBreakpoint]: {
-    paddingLeft: ui.taskColumnPaddingInnerLarge,
-    paddingRight: ui.taskColumnPaddingInnerLarge
+  [`@media (min-width: ${Breakpoint.DASHBOARD_WIDE})`]: {
+    paddingLeft: 15,
+    paddingRight: 15
   }
 })
 

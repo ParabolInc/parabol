@@ -1,21 +1,21 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import ui from '../styles/ui'
 import Icon from './Icon'
-import {MD_ICONS_SIZE_18} from '../styles/icons'
+import {ICON_SIZE} from '../styles/typographyV2'
+import {PALETTE} from '../styles/paletteV2'
 
 const StyledIcon = styled(Icon)({
-  color: ui.palette.green,
-  fontSize: MD_ICONS_SIZE_18,
-  marginRight: '.5rem',
+  color: PALETTE.TEXT_GREEN,
+  fontSize: ICON_SIZE.MD18,
+  marginRight: 8,
   opacity: 1
 })
 
 const ModalCopy = styled('p')({
   alignItems: 'center',
   display: 'flex',
-  fontSize: '.9375rem',
-  lineHeight: '2rem',
+  fontSize: 15,
+  lineHeight: '32px',
   margin: 0
 })
 
