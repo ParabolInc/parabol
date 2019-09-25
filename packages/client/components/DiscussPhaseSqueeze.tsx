@@ -28,10 +28,10 @@ const DiscussPhaseSqueeze = (props: Props) => {
   useEffect(() => {
     if (showConversionModal) {
       openPortal()
-    } else {
+    } else if (!isFacilitating) {
       closePortal()
     }
-  }, [showConversionModal])
+  }, [showConversionModal, isFacilitating])
 
   if (isFacilitating) {
     return modalPortal(<CreditCardModal activeUserCount={activeUserCount} orgId={orgId} actionType={'squeeze'}
