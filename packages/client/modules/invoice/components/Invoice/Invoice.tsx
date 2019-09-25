@@ -70,7 +70,7 @@ const InvoiceStyles = styled('div')({
   padding: 16,
 
   [`@media (min-width: ${Breakpoint.INVOICE}px)`]: {
-    margin: '2rem auto',
+    margin: '32px auto 48px',
     padding: 32
   }
 })
