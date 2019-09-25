@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "4.5.3",
+  "version": "4.6.0-alpha.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/action"
@@ -133,6 +133,8 @@
     "@clusterws/cws": "^0.15.0",
     "@mattkrick/sanitize-svg": "^0.2.1",
     "@mattkrick/trebuchet-client": "^0.1.2",
+    "@sentry/integrations": "^5.5.0",
+    "@sentry/node": "^5.5.0",
     "analytics-node": "^3.0.0",
     "auth0": "^2.7.0",
     "aws-sdk": "^2.99.0",
@@ -165,7 +167,7 @@
     "ms": "^2.0.0",
     "node-env-flag": "0.1.0",
     "node-fetch": "^2.6.0",
-    "parabol-client": "^4.5.3",
+    "parabol-client": "^4.6.0-alpha.0",
     "rethinkdbdash": "^2.3.31",
     "samlify": "^2.6.1",
     "secure-compare": "^3.0.1",
@@ -173,8 +175,6 @@
     "shortid": "^2.2.8",
     "string-similarity": "^3.0.0",
     "stripe": "^4.24.0",
-    "@sentry/integrations": "^5.5.0",
-    "@sentry/node": "^5.5.0",
     "ts-node": "^8.3.0",
     "v8-profiler-next": "^1.1.1"
   },
