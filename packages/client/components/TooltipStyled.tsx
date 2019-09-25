@@ -5,7 +5,7 @@ import {PALETTE} from '../styles/paletteV2'
 
 const TooltipStyled = styled('div')({
   color: '#FFF',
-  backgroundColor: PALETTE.BACKGROUND_DARK,
+  backgroundColor: PALETTE.BACKGROUND_DARK_90A,
   borderRadius: Radius.TOOLTIP,
   fontSize: 11,
   fontWeight: 600,

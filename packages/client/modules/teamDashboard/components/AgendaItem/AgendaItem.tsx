@@ -9,7 +9,7 @@ import MeetingSubnavItem from '../../../../components/MeetingSubnavItem'
 import {useGotoStageId} from '../../../../hooks/useMeeting'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import RemoveAgendaItemMutation from '../../../../mutations/RemoveAgendaItemMutation'
-import {MD_ICONS_SIZE_18} from '../../../../styles/icons'
+import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {meetingSidebarGutter} from '../../../../styles/meeting'
 import {requestIdleCallback} from '../../../../utils/requestIdleCallback'
 import UNSTARTED_MEETING from '../../../../utils/meetings/unstartedMeeting'
@@ -21,7 +21,7 @@ const DeleteIconButton = styled(IconButton)<{agendaLength: number; disabled: boo
     display: 'block',
     // we can make the position of the del (x) more centered when there’s a low number of agenda items
     left: agendaLength < 10 ? '.8125rem' : meetingSidebarGutter,
-    lineHeight: MD_ICONS_SIZE_18,
+    lineHeight: ICON_SIZE.MD18,
     opacity: 0,
     position: 'absolute',
     top: '.6875rem',

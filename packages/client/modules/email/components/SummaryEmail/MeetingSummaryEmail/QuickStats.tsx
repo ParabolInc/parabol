@@ -1,21 +1,17 @@
 import React from 'react'
-import {
-  FONT_FAMILY,
-  PALETTE_BACKGROUND_MAIN,
-  PALETTE_TEXT_LIGHT,
-  PALETTE_TEXT_MAIN
-} from './constants'
 import makeActionStats from './makeActionStats'
 import makeRetroStats from './makeRetroStats'
 import {ACTION, RETROSPECTIVE} from '../../../../../utils/constants'
+import {PALETTE} from '../../../../../styles/paletteV2'
+import {FONT_FAMILY} from '../../../../../styles/typographyV2'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {QuickStats_meeting} from '../../../../../__generated__/QuickStats_meeting.graphql'
 
 const statLabel = (idx, len) =>
   ({
-    color: PALETTE_TEXT_MAIN,
-    fontFamily: FONT_FAMILY,
+    color: PALETTE.TEXT_MAIN,
+    fontFamily: FONT_FAMILY.SANS_SERIF,
     borderTopLeftRadius: idx === 0 ? 4 : 0,
     borderTopRightRadius: idx === len - 1 ? 4 : 0,
     fontSize: 36,
@@ -25,10 +21,10 @@ const statLabel = (idx, len) =>
 
 const descriptionLabel = (idx, len) =>
   ({
-    fontFamily: FONT_FAMILY,
+    fontFamily: FONT_FAMILY.SANS_SERIF,
     borderBottomLeftRadius: idx === 0 ? 4 : 0,
     borderBottomRightRadius: idx === len - 1 ? 4 : 0,
-    color: PALETTE_TEXT_LIGHT,
+    color: PALETTE.TEXT_GRAY,
     fontSize: 10,
     fontWeight: 600,
     paddingBottom: 12,
@@ -65,7 +61,7 @@ const QuickStats = (props: Props) => {
                 key={stat.label}
                 width='25%'
                 align='center'
-                bgcolor={PALETTE_BACKGROUND_MAIN}
+                bgcolor={PALETTE.BACKGROUND_MAIN}
                 style={statLabel(idx, stats.length)}
               >
                 {stat.value}
@@ -80,7 +76,7 @@ const QuickStats = (props: Props) => {
                 key={stat.label}
                 width='25%'
                 align='center'
-                bgcolor={PALETTE_BACKGROUND_MAIN}
+                bgcolor={PALETTE.BACKGROUND_MAIN}
                 style={descriptionLabel(idx, stats.length)}
               >
                 {stat.label}

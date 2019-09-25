@@ -4,10 +4,8 @@ import graphql from 'babel-plugin-relay/macro'
 import {TaskSummarySection_tasks} from '../../../../../__generated__/TaskSummarySection_tasks.graphql'
 import useEmailItemGrid from '../../../../../hooks/useEmailItemGrid'
 import EmailTaskCard from './EmailTaskCard'
-import {
-  FONT_FAMILY,
-  PALETTE_TEXT_MAIN
-} from './constants'
+import {PALETTE} from '../../../../../styles/paletteV2'
+import {FONT_FAMILY} from '../../../../../styles/typographyV2'
 
 interface Props {
   label: string
@@ -15,8 +13,8 @@ interface Props {
 }
 
 const taskTypeStyle = {
-  color: PALETTE_TEXT_MAIN,
-  fontFamily: FONT_FAMILY,
+  color: PALETTE.TEXT_MAIN,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 14,
   fontWeight: 600,
   paddingBottom: 16,

@@ -21,7 +21,7 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
 const Surface = styled('div')({
   animation: `${fadeIn.toString()} 300ms ${DECELERATE}`,
   alignItems: 'center',
-  background: '#fff',
+  background: '#FFFFFF',
   borderRadius: 4,
   boxShadow: cardShadow,
   display: 'flex',

@@ -47,7 +47,7 @@ const MenuBackground = styled('div')<BackgroundProps>(
     portalStatus,
     isDropdown
   }) => ({
-    background: '#fff',
+    background: '#FFFFFF',
     borderRadius: Radius.MENU,
     boxShadow: menuShadow,
     height: '100%',

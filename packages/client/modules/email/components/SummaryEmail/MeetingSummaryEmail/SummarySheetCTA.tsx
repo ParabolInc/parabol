@@ -1,10 +1,7 @@
 import {MeetingSummaryReferrer} from './MeetingSummaryEmail'
 import React from 'react'
-import {
-  FONT_FAMILY,
-  PALETTE_BACKGROUND_GRADIENT,
-  PALETTE_BACKGROUND_RED
-} from './constants'
+import {PALETTE} from '../../../../../styles/paletteV2'
+import {FONT_FAMILY} from '../../../../../styles/typographyV2'
 import {buttonShadow} from '../../../../../styles/elevation'
 import AnchorIfEmail from './AnchorIfEmail'
 
@@ -17,13 +14,13 @@ interface Props {
 const teamDashLabel = 'Go to Team Dashboard'
 
 const primaryButtonStyle = {
-  backgroundColor: PALETTE_BACKGROUND_RED,
-  backgroundImage: PALETTE_BACKGROUND_GRADIENT,
+  backgroundColor: PALETTE.BACKGROUND_ORANGE,
+  backgroundImage: PALETTE.GRADIENT_WARM,
   borderRadius: 32,
   boxShadow: buttonShadow,
   color: '#FFFFFF',
   cursor: 'pointer',
-  fontFamily: FONT_FAMILY,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 14,
   fontWeight: 600,
   padding: '9px 20px',

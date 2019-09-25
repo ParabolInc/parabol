@@ -1,5 +1,5 @@
 import React from 'react'
-import appTheme from '../../../../styles/theme/appTheme'
+import {PALETTE} from '../../../../styles/paletteV2'
 import {emailFontFamily, emailPrimaryButtonStyle, emailTableBase} from '../../../../styles/email'
 import emailDir from '../../emailDir'
 import EmailBorderBottom from '../SummaryEmail/MeetingSummaryEmail/EmailBorderBottom'
@@ -10,7 +10,7 @@ const tableStyle = {
 } as React.CSSProperties
 
 const textStyle = {
-  color: appTheme.palette.dark,
+  color: PALETTE.TEXT_MAIN,
   fontFamily: emailFontFamily
 } as React.CSSProperties
 const headingStyle = {

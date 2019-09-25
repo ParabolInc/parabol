@@ -90,7 +90,7 @@ const AbstractSidebarNavItemBullet = styled('div')({
 })
 
 const AbstractSidebarNavItemLabel = styled('div')({
-  backgroundColor: PALETTE.TEXT_LIGHT,
+  backgroundColor: PALETTE.TEXT_GRAY,
   borderRadius: 14,
   height: 14,
   width: 120

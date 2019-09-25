@@ -21,7 +21,7 @@ const MenuItemStyles = styled('div')<{isActive: boolean; isDisabled: boolean | u
   ({isActive, isDisabled}) => ({
     alignItems: 'center',
     backgroundColor: isActive ? PALETTE.BACKGROUND_MAIN : undefined,
-    color: isDisabled ? PALETTE.TEXT_LIGHT : PALETTE.TEXT_MAIN,
+    color: isDisabled ? PALETTE.TEXT_GRAY : PALETTE.TEXT_MAIN,
     cursor: isDisabled ? 'not-allowed' : 'pointer',
     display: 'flex',
     '&:hover,:focus': {

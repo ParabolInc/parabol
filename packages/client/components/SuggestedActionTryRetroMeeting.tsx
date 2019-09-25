@@ -26,7 +26,7 @@ class SuggestedActionTryRetroMeeting extends Component<Props> {
     const {name: teamName} = team
     return (
       <SuggestedActionCard
-        backgroundColor={PALETTE.BACKGROUND_RED}
+        backgroundColor={PALETTE.BACKGROUND_ORANGE}
         iconName='history'
         suggestedActionId={suggestedActionId}
       >

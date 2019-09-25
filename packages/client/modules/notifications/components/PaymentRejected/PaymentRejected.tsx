@@ -31,7 +31,7 @@ const PaymentRejected = (props: Props) => {
   }
   return (
     <Row>
-      <IconAvatar icon='credit_card' size='small' />
+      <IconAvatar>credit_card</IconAvatar>
       <NotificationMessage>
         {'Your '}
         <b>{brand}</b>

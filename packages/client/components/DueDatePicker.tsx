@@ -9,7 +9,7 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {DueDatePicker_task} from '../__generated__/DueDatePicker_task.graphql'
 import styled from '@emotion/styled'
-import ui from '../styles/ui'
+import {PALETTE} from '../styles/paletteV2'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import {UseTaskChild} from '../hooks/useTaskChildFocus'
@@ -25,15 +25,15 @@ const TallMenu = styled(Menu)({
 })
 
 const PickerTitle = styled('div')({
-  fontSize: '.875rem',
+  fontSize: 14,
   textAlign: 'center',
   userSelect: 'none',
   width: '100%'
 })
 
 const Hint = styled('div')({
-  fontSize: '.6875rem',
-  color: ui.hintFontColor,
+  fontSize: 11,
+  color: PALETTE.TEXT_GRAY,
   textAlign: 'center'
 })
 

@@ -57,7 +57,7 @@ const PromoteToBillingLeader = (props: Props) => {
   return (
     <>
       <Row>
-        <IconAvatar icon='account_balance' size='small' />
+        <IconAvatar>account_balance</IconAvatar>
         <NotificationMessage>
           {'You are now a '}
           <b>

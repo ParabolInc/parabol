@@ -19,18 +19,18 @@ interface Props {
   resetActivityTimeout?: () => void
 }
 
-const ColumnsBlock = styled('div')({
+const ColumnsBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+  alignItems: 'center',
   display: 'flex',
   flex: '1',
   flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
   height: '100%',
+  justifyContent: 'center',
   margin: '0 auto',
-  maxHeight: 608,
   overflow: 'auto',
+  padding: isDesktop ? '16px 0' : undefined,
   width: '100%'
-})
+}))
 
 export type SwipeColumn = (offset: number) => void
 
@@ -64,10 +64,11 @@ const GroupingKanban = (props: Props) => {
   }, Times.REFLECTION_COLUMN_SWIPE_THRESH)
   return (
     <PortalProvider>
-      <ColumnsBlock>
+      <ColumnsBlock isDesktop={isDesktop}>
         <ColumnWrapper setActiveIdx={setActiveIdx} activeIdx={activeIdx} disabled={isViewerDragging}>
           {reflectPrompts.map((prompt) => (
             <GroupingKanbanColumn
+              isDesktop={isDesktop}
               key={prompt.id}
               meeting={meeting}
               phaseRef={phaseRef}

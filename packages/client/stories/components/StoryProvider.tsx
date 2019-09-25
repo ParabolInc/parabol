@@ -8,15 +8,14 @@ import RelayStub from './RelayStub'
 import { css, Global } from '@emotion/core'
 import globalStyles from '../../styles/theme/globalStyles'
 import AtmosphereProvider from '../../components/AtmosphereProvider/AtmosphereProvider'
-import appTheme from '../../styles/theme/appTheme'
 
 const FullPageWrapper = styled('div')({
-  backgroundColor: appTheme.palette.light,
+  backgroundColor: '#F1F0FA',
   display: 'flex',
   flexDirection: 'column',
   flexShrink: 0,
   height: '100vh',
-  padding: '1rem',
+  padding: 16,
   width: '100vw'
 })
 

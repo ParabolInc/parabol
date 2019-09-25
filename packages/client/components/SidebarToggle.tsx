@@ -8,7 +8,7 @@ const StyledButton = styled(IconButton)({
   height: 24,
   padding: 0,
   ':hover,:focus,:active': {
-    color: PALETTE.TEXT_LIGHT
+    color: PALETTE.TEXT_GRAY
   }
 })
 

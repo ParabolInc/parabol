@@ -46,7 +46,7 @@ const MeetingStageTimeLimitEnd = (props: Props) => {
   return (
     <>
       <Row>
-        <IconAvatar icon='group' size='small' />
+        <IconAvatar>group</IconAvatar>
         <NotificationMessage>
           {'Your '}
           <b>{meetingLabel}</b>

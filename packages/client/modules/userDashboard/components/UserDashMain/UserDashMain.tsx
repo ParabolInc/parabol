@@ -28,7 +28,7 @@ const UserDashMain = (props: Props) => {
   useDocumentTitle('My Dashboard | Parabol')
   return (
     <>
-      <DashHeader area='userDash'>
+      <DashHeader>
         <TopTabs activeIdx={isTasks ? 1 : 0}>
           <Tab label='TIMELINE' onClick={() => history.push('/me')} />
           <Tab label='TASKS' onClick={() => history.push('/me/tasks')} />

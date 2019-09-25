@@ -1,6 +1,6 @@
 import React from 'react'
 import DOMConfetti from 'react-dom-confetti'
-import appTheme from '../styles/theme/appTheme'
+import {PALETTE} from '../styles/paletteV2'
 
 // spread should hit the top left & top right of the screen assuming the start is at the centroid (req'd to look good for mobile)
 const spread = 180 - Math.atan(window.innerHeight / window.innerWidth) / Math.PI * 180 * 2
@@ -11,12 +11,16 @@ const confettiConfig = {
   elementCount: 250,
   decay: 0.88,
   colors: [
-    ...Object.values(appTheme.brand.secondary),
-    appTheme.brand.primary.purple,
-    appTheme.brand.primary.Lightened,
-    appTheme.brand.primary.purpleDarkened,
-    appTheme.brand.primary.orange,
-    appTheme.brand.primary.teal
+    PALETTE.BACKGROUND_BLUE,
+    PALETTE.BACKGROUND_RED,
+    PALETTE.BACKGROUND_PINK,
+    PALETTE.BACKGROUND_GREEN,
+    PALETTE.BACKGROUND_YELLOW,
+    PALETTE.PRIMARY_MAIN,
+    PALETTE.PRIMARY_LIGHT,
+    PALETTE.PRIMARY_DARK,
+    PALETTE.BACKGROUND_ORANGE,
+    PALETTE.BACKGROUND_TEAL
   ]
 }
 
@@ -26,7 +30,7 @@ interface Props {
 
 const Confetti = (props: Props) => {
   const {active} = props
-  return <DOMConfetti active={active} config={confettiConfig} />
+  return <DOMConfetti active={active} config={confettiConfig as object} />
 }
 
 export default Confetti

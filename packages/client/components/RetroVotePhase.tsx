@@ -14,15 +14,12 @@ import MeetingHelpToggle from './MenuHelpToggle'
 import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
-import ScrollableBlock from './ScrollableBlock'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
 import {minWidthMediaQueries} from '../styles/breakpoints'
-import {MD_ICONS_SIZE_18} from '../styles/icons'
 import {meetingVoteIcon} from '../styles/meeting'
 import {PALETTE} from '../styles/paletteV2'
-import {fontFamily, typeScale} from '../styles/theme/typography'
-import ui from '../styles/ui'
+import {FONT_FAMILY, ICON_SIZE} from '../styles/typographyV2'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {DISCUSS} from '../utils/constants'
 import lazyPreload from '../utils/lazyPreload'
@@ -78,20 +75,20 @@ const StyledMetaBlock = styled(MetaBlock)({
 })
 
 const Label = styled(LabelHeading)({
-  fontSize: typeScale[0],
+  fontSize: 11,
   marginRight: '.5rem',
   whiteSpace: 'nowrap',
   [votePhaseBreakpoint]: {
-    fontSize: typeScale[1],
+    fontSize: 12,
     marginRight: '.75rem',
     paddingTop: '.125rem'
   }
 })
 
 const CheckIcon = styled(Icon)<{isDark: boolean | undefined | null}>(({isDark}) => ({
-  color: ui.palette.warm,
+  color: PALETTE.EMPHASIS_COOL,
   display: 'block',
-  fontSize: MD_ICONS_SIZE_18,
+  fontSize: ICON_SIZE.MD18,
   opacity: isDark ? 1 : 0.2,
   marginRight: '.25rem'
 }))
@@ -104,15 +101,15 @@ const CheckMarkRow = styled('div')({
 })
 
 const VoteCountLabel = styled('div')({
-  color: ui.palette.warm,
-  fontFamily: fontFamily.monospace,
-  fontSize: typeScale[3],
+  color: PALETTE.EMPHASIS_COOL,
+  fontFamily: FONT_FAMILY.MONOSPACE,
+  fontSize: 14,
   fontWeight: 600,
   lineHeight: '1.5',
   margin: 0,
   padding: 0,
   [votePhaseBreakpoint]: {
-    fontSize: typeScale[4]
+    fontSize: 16
   }
 })
 
@@ -189,11 +186,9 @@ const RetroVotePhase = (props: Props) => {
             </MetaBlock>
           </VoteMeta>
           <StageTimerDisplay stage={localStage} />
-          <ScrollableBlock>
-            <MeetingPhaseWrapper>
-              <GroupingKanban meeting={newMeeting} phaseRef={phaseRef} />
-            </MeetingPhaseWrapper>
-          </ScrollableBlock>
+          <MeetingPhaseWrapper>
+            <GroupingKanban meeting={newMeeting} phaseRef={phaseRef} />
+          </MeetingPhaseWrapper>
         </PhaseWrapper>
         <MeetingHelpToggle
           menu={isDemoRoute() ? <DemoVoteHelpMenu /> : <VoteHelpMenu />}

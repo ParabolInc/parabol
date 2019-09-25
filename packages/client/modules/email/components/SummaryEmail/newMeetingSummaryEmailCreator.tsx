@@ -5,7 +5,7 @@ import {meetingTypeToLabel} from '../../../../utils/meetings/lookups'
 import {headCSS} from '../../../../styles/email'
 import {GQLContext} from '../../../../../server/graphql/graphql'
 import emailTemplate from './MeetingSummaryEmail/EmailTemplate'
-import {PALETTE_BACKGROUND_MAIN} from './MeetingSummaryEmail/constants'
+import {PALETTE} from '../../../../styles/paletteV2'
 import MeetingSummaryEmailRootSSR from '../../../summary/components/MeetingSummaryEmailRootSSR'
 import renderSSRElement from '../../../../../server/email/renderSSRElement'
 import ServerEnvironment from '../../../../../server/email/ServerEnvironment'
@@ -35,7 +35,7 @@ const newMeetingSummaryEmailCreator = async (props: Props) => {
     headCSS,
     title: subject,
     previewText: subject,
-    bgColor: PALETTE_BACKGROUND_MAIN
+    bgColor: PALETTE.BACKGROUND_MAIN
   })
 
   return {

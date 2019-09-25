@@ -24,14 +24,14 @@ const Space = styled('div')({
 })
 
 const Text = styled('div')({
-  color: '#fff',
+  color: '#FFFFFF',
   fontSize: 14,
   padding: '6px 8px'
 })
 
 const MessageStyles = styled('div')<{status: TransitionStatus}>(({status}) => ({
   alignItems: 'center',
-  background: PALETTE.BACKGROUND_DARK_OPAQUE,
+  background: PALETTE.BACKGROUND_DARK,
   borderRadius: Radius.SNACKBAR,
   boxShadow: snackbarShadow,
   display: 'flex',

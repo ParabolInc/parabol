@@ -6,14 +6,12 @@ import {MeetingMembersWithoutTasks_meeting} from '../../../../../__generated__/M
 import SummaryAvatarHeader from './SummaryAvatarHeader'
 import useEmailItemGrid from '../../../../../hooks/useEmailItemGrid'
 import EmailBorderBottom from './EmailBorderBottom'
-import {
-  FONT_FAMILY,
-  PALETTE_TEXT_MAIN
-} from './constants'
+import {PALETTE} from '../../../../../styles/paletteV2'
+import {FONT_FAMILY} from '../../../../../styles/typographyV2'
 
 const headerStyle = {
-  color: PALETTE_TEXT_MAIN,
-  fontFamily: FONT_FAMILY,
+  color: PALETTE.TEXT_MAIN,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 18,
   fontWeight: 600,
   paddingBottom: 24,

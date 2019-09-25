@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import styled from '@emotion/styled'
 import {keyframes} from '@emotion/core'
 import {DECELERATE, fadeIn} from '../../styles/animation'
-import appTheme from '../../styles/theme/appTheme'
+import {PALETTE} from '../../styles/paletteV2'
 import {Elevation} from '../../styles/elevation'
 import plural from '../../utils/plural'
 import TinyLabel from '../TinyLabel'
@@ -13,18 +13,12 @@ interface Props {
   editorCount: number
 }
 
-const {
-  brand: {
-    primary: {purpleLightened, orange, teal}
-  }
-} = appTheme
-
 const CHIT_MARGIN = 4
 const CHIT_GUTTER = 8
 const CHITS_PER_ROW = 8
 const MAX_ROWS = 4
 const CHIT_WIDTH = (ElementWidth.REFLECTION_CARD_PADDED - CHIT_GUTTER * (CHITS_PER_ROW - 1)) / CHITS_PER_ROW
-const CHIT_HEIGHT = 17
+const CHIT_HEIGHT = 16
 const OFFSET = CHIT_MARGIN * 2 + CHIT_WIDTH
 const PROGRESS_WIDTH = ElementWidth.REFLECTION_CARD
 const PROGRESS_MARGIN = 2
@@ -50,15 +44,15 @@ const shiftColor = (idx) => keyframes`
 
 const Chit = styled('div')({
   animation: `${fadeIn.toString()} 300ms ${DECELERATE}`,
-  backgroundColor: '#fff',
-  borderRadius: '2px',
+  backgroundColor: '#FFFFFF',
+  borderRadius: 2,
   boxShadow: Elevation.Z1,
   height: CHIT_HEIGHT,
   width: CHIT_WIDTH
 })
 
 const ActiveChitMask = styled('div')({
-  borderRadius: '2px',
+  borderRadius: 2,
   height: CHIT_HEIGHT - PROGRESS_MARGIN * 2,
   margin: PROGRESS_MARGIN,
   overflow: 'hidden',
@@ -67,7 +61,7 @@ const ActiveChitMask = styled('div')({
 
 const ActiveChit = styled('div')<{idx: number}>(({idx}) => ({
   animation: `${shiftColor(idx).toString()} 2000ms linear infinite`,
-  background: `linear-gradient(90deg, ${purpleLightened} 0%, ${orange} 33%, ${teal} 66%, ${purpleLightened} 100%)`,
+  background: `linear-gradient(90deg, ${PALETTE.PRIMARY_LIGHT} 0%, ${PALETTE.BACKGROUND_ORANGE} 33%, ${PALETTE.BACKGROUND_TEAL} 66%, ${PALETTE.PRIMARY_LIGHT} 100%)`,
   height: CHIT_HEIGHT,
   width: PROGRESS_WIDTH
 }))

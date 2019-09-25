@@ -21,7 +21,7 @@ const CreditCardInfo = styled('div')({
 })
 
 const CreditCardIcon = styled(Icon)({
-  color: PALETTE.TEXT_LIGHT,
+  color: PALETTE.TEXT_GRAY,
   fontSize: ICON_SIZE.MD24,
   marginRight: 16
 })

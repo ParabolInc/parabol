@@ -4,9 +4,8 @@ import graphql from 'babel-plugin-relay/macro'
 import LinkButton from '../../components/LinkButton'
 import IconLabel from '../../components/IconLabel'
 import styled from '@emotion/styled'
-import ui from '../../styles/ui'
 import {cardShadow} from '../../styles/elevation'
-import appTheme from '../../styles/theme/appTheme'
+import {PALETTE} from '../../styles/paletteV2'
 import NewTeamForm from './components/NewTeamForm/NewTeamForm'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import {NewTeam_viewer} from '../../__generated__/NewTeam_viewer.graphql'
@@ -14,7 +13,7 @@ import {Breakpoint, ExternalLinks} from '../../types/constEnums'
 
 const NewTeamLayout = styled('div')({
   alignItems: 'center',
-  backgroundColor: ui.backgroundColor,
+  backgroundColor: PALETTE.BACKGROUND_MAIN,
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
@@ -30,17 +29,17 @@ const NewTeamInner = styled('div')({
 })
 
 const HelpLayout = styled('div')({
-  paddingTop: '6.75rem'
+  paddingTop: 108
 })
 
 const HelpBlock = styled('div')({
-  backgroundColor: 'white',
+  backgroundColor: '#FFFFFF',
   borderRadius: 4,
   boxShadow: cardShadow,
-  color: appTheme.palette.dark,
-  margin: '1rem 0',
+  color: PALETTE.TEXT_MAIN,
+  margin: '16px 0',
   padding: 16,
-  width: '17rem'
+  width: 272
 })
 
 const HelpHeading = styled('div')({
@@ -53,11 +52,11 @@ const HelpHeading = styled('div')({
 const HelpCopy = styled('div')({
   fontSize: 12,
   lineHeight: 1.5,
-  margin: '.5rem 0'
+  margin: '8px 0'
 })
 
 const LearnMoreLink = styled(LinkButton)({
-  height: '2rem',
+  height: 32,
   margin: '0 auto'
 })
 
@@ -87,7 +86,7 @@ const NewTeam = (props: Props) => {
                 start out on the Free Personal Plan.`}
               </HelpCopy>
               <LearnMoreLink palette='blue' onClick={() => window.open(ExternalLinks.PRICING_LINK, '_blank')}>
-                <IconLabel icon={ui.iconExternalLink} iconAfter label='Learn More' />
+                <IconLabel icon='open_in_new' iconAfter label='Learn More' />
               </LearnMoreLink>
             </HelpBlock>
           </HelpLayout>
