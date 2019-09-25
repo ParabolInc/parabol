@@ -192,7 +192,11 @@ const initDemoOrg = () => {
   return {
     id: demoOrgId,
     name: 'Demo Organization',
-    tier: TierEnum.pro
+    tier: TierEnum.pro,
+    orgUserCount: {
+      activeUserCount: 5,
+      inactiveUserCount: 0
+    }
   }
 }
 
