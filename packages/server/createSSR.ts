@@ -1,5 +1,6 @@
 import dehydrate from './utils/dehydrate'
 import getWebpackPublicPath from './utils/getWebpackPublicPath'
+import {makeHeadGtmHtml, makeBodyGtmHtml} from './utils/googleTagManager'
 import fs from 'fs'
 import path from 'path'
 import {RequestHandler} from 'express'
@@ -34,6 +35,8 @@ const getHTML = () => {
       : '<script src="/static/vendors.dll.js"></script><script src="/static/app.js"></script>'
 
     finalHTML = html
+      .replace('<head>', `<head>${makeHeadGtmHtml()}`)
+      .replace('<body>', `<body>${makeBodyGtmHtml()}`)
       .replace('</head>', `${extraHead}</head>`)
       .replace('</body>', `${devBody}</body>`)
   }
