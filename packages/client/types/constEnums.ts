@@ -69,20 +69,11 @@ export const enum Duration {
   TOOLTIP_CLOSE = 75
 }
 
-export const enum Filter {
-  BENEATH_DIALOG = 'blur(1.5px)'
-}
-
-export const enum Gutters {
-  DASH_GUTTER_SMALL = '20px',
-  DASH_GUTTER_LARGE = '32px'
-}
-
 export const enum ElementWidth {
   END_MEETING_BUTTON = 90,
   REFLECTION_CARD = 296,
-  REFLECTION_CARD_PADDED = 312,
-  REFLECTION_CARD_PADDING = 8
+  REFLECTION_CARD_PADDED = 296,
+  REFLECTION_CARD_PADDING = 6
 }
 
 export const enum ElementHeight {
@@ -91,6 +82,19 @@ export const enum ElementHeight {
 
 export const enum ExternalLinks {
   PRICING_LINK = 'https://www.parabol.co/pricing/'
+}
+
+export const enum Filter {
+  BENEATH_DIALOG = 'blur(1.5px)'
+}
+
+export const enum Gutters {
+  COLUMN_INNER_GUTTER = '12px',
+  DASH_GUTTER_SMALL = '20px',
+  DASH_GUTTER_LARGE = '32px',
+  REFLECTION_INNER_GUTTER_HORIZONTAL = '16px',
+  REFLECTION_INNER_GUTTER_VERTICAL = '12px',
+  ROW_INNER_GUTTER = '12px'
 }
 
 export const enum InvoiceItemType {
@@ -133,6 +137,7 @@ export const enum NavSidebar {
   FONT_SIZE = 15,
   LEFT_BORDER_WIDTH = '3px',
   LINE_HEIGHT = '20px',
+  SUB_FONT_SIZE = 14,
   SUB_LINE_HEIGHT = '24px',
   WIDTH = 240
 }

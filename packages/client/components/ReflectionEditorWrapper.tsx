@@ -12,7 +12,7 @@ import withEmojis from './TaskEditor/withEmojis'
 import isRichDraft from '../utils/draftjs/isRichDraft'
 import lazyPreload from '../utils/lazyPreload'
 import isAndroid from '../utils/draftjs/isAndroid'
-import {Card, ElementHeight} from '../types/constEnums'
+import {Card, ElementHeight, Gutters} from '../types/constEnums'
 
 interface Props {
   ariaLabel: string
@@ -256,7 +256,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
             readOnly={readOnly || (useFallback && !showFallback)}
             ref={editorRef as any}
             style={{
-              padding: 12,
+              padding: `${Gutters.REFLECTION_INNER_GUTTER_VERTICAL} ${Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL}`,
               userSelect,
               WebkitUserSelect: userSelect
             }}

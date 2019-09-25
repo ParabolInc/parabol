@@ -18,7 +18,7 @@ const CHIT_GUTTER = 8
 const CHITS_PER_ROW = 8
 const MAX_ROWS = 4
 const CHIT_WIDTH = (ElementWidth.REFLECTION_CARD_PADDED - CHIT_GUTTER * (CHITS_PER_ROW - 1)) / CHITS_PER_ROW
-const CHIT_HEIGHT = 17
+const CHIT_HEIGHT = 16
 const OFFSET = CHIT_MARGIN * 2 + CHIT_WIDTH
 const PROGRESS_WIDTH = ElementWidth.REFLECTION_CARD
 const PROGRESS_MARGIN = 2
@@ -45,14 +45,14 @@ const shiftColor = (idx) => keyframes`
 const Chit = styled('div')({
   animation: `${fadeIn.toString()} 300ms ${DECELERATE}`,
   backgroundColor: '#FFFFFF',
-  borderRadius: '2px',
+  borderRadius: 2,
   boxShadow: Elevation.Z1,
   height: CHIT_HEIGHT,
   width: CHIT_WIDTH
 })
 
 const ActiveChitMask = styled('div')({
-  borderRadius: '2px',
+  borderRadius: 2,
   height: CHIT_HEIGHT - PROGRESS_MARGIN * 2,
   margin: PROGRESS_MARGIN,
   overflow: 'hidden',

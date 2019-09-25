@@ -83,7 +83,7 @@ const FacilitatorTag = styled('div')({
   color: PALETTE.TEXT_MAIN,
   fontSize: 11,
   fontWeight: 600,
-  marginTop: 8,
+  marginTop: 4,
   lineHeight: '16px',
   padding: '0 8px',
   position: 'absolute',
