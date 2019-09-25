@@ -8,6 +8,9 @@ const mutation = graphql`
       error {
         message
       }
+      meetings {
+        showConversionModal
+      }
     }
   }
 `

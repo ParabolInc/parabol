@@ -6,6 +6,7 @@ import {requireSU} from '../../../utils/authorization'
 import DraftEnterpriseInvoicePayload from '../types/DraftEnterpriseInvoicePayload'
 import StripeManager from '../../../utils/StripeManager'
 import {fromEpochSeconds} from '../../../utils/epochTime'
+import hideConversionModal from '../../mutations/helpers/hideConversionModal'
 
 const getBillingLeaderUser = async (email: string | null, orgId: string, dataLoader: DataLoaderWorker) => {
   const r = getRethink()
@@ -125,11 +126,11 @@ export default {
         .getAll(orgId, {index: 'orgId'})
         .update({
           isPaid: true,
-          showConversionModal: false,
           tier: TierEnum.enterprise,
           updatedAt: now
         })
     })
+    await hideConversionModal(orgId, dataLoader)
     dataLoader.get('organizations').clear(orgId)
     return {orgId}
   }

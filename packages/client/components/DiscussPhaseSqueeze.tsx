@@ -7,20 +7,22 @@ import {DiscussPhaseSqueeze_organization} from '__generated__/DiscussPhaseSqueez
 import PayLaterMutation from '../mutations/PayLaterMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
 import WaitingForFacilitatorToPay from './WaitingForFacilitatorToPay'
+import {PALETTE} from '../styles/paletteV2'
 
 interface Props {
   isFacilitating: boolean
+  facilitatorName: string
   organization: DiscussPhaseSqueeze_organization
 }
 
 const DiscussPhaseSqueeze = (props: Props) => {
-  const {isFacilitating, organization} = props
+  const {isFacilitating, organization, facilitatorName} = props
   const {id: orgId, orgUserCount, showConversionModal} = organization
   const {activeUserCount} = orgUserCount
   const [showLocalModal, setShowLocalModal] = useState(true)
   const showModal = showConversionModal && showLocalModal
   const atmosphere = useAtmosphere()
-  const {modalPortal, closePortal, openPortal} = useModal()
+  const {modalPortal, closePortal, openPortal} = useModal({noClose: true, background: PALETTE.BACKGROUND_FORCED_BACKDROP})
 
   const handlePayLater = () => {
     PayLaterMutation(atmosphere, {orgId})
@@ -46,7 +48,7 @@ const DiscussPhaseSqueeze = (props: Props) => {
                                         handlePayNow={handlePayNow}
                                         closePortal={closePortal} />)
   }
-  return modalPortal(<WaitingForFacilitatorToPay />)
+  return modalPortal(<WaitingForFacilitatorToPay facilitatorName={facilitatorName}/>)
 }
 
 export default createFragmentContainer(

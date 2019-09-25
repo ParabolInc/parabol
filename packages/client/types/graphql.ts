@@ -1295,6 +1295,11 @@ export interface INewMeeting {
   phases: NewMeetingPhase[];
 
   /**
+   * true if should show the org the conversion modal, else false
+   */
+  showConversionModal: boolean;
+
+  /**
    * The time the meeting summary was emailed to the team
    */
   summarySentAt: any | null;
@@ -3876,6 +3881,11 @@ export interface IRetrospectiveMeeting {
   phases: NewMeetingPhase[];
 
   /**
+   * true if should show the org the conversion modal, else false
+   */
+  showConversionModal: boolean;
+
+  /**
    * The time the meeting summary was emailed to the team
    */
   summarySentAt: any | null;
@@ -5062,6 +5072,16 @@ export interface INewMeetingCheckInPayload {
 export interface IPayLaterPayload {
   __typename: 'PayLaterPayload';
   error: IStandardMutationError | null;
+
+  /**
+   * the ids of the meetings that were showing conversion modals
+   */
+  meetingIds: (string | null)[] | null;
+
+  /**
+   * the meetings that were showing conversion modals
+   */
+  meetings: NewMeeting | null;
 }
 
 export interface IPushInvitationPayload {
@@ -5772,6 +5792,16 @@ export interface IUpgradeToProPayload {
    * The updated teams under the org
    */
   teams: (ITeam | null)[] | null;
+
+  /**
+   * the ids of the meetings that were showing conversion modals
+   */
+  meetingIds: (string | null)[] | null;
+
+  /**
+   * the meetings that were showing conversion modals
+   */
+  meetings: NewMeeting | null;
 }
 
 export interface IAddReflectTemplatePayload {
@@ -5965,6 +5995,7 @@ export interface IAuthTokenPayload {
 export type OrganizationSubscriptionPayload =
   | IAddOrgPayload
   | IDowngradeToPersonalPayload
+  | IPayLaterPayload
   | IRemoveOrgUserPayload
   | ISetOrgUserRoleAddedPayload
   | ISetOrgUserRoleRemovedPayload
@@ -6588,6 +6619,11 @@ export interface IActionMeeting {
    * The phases the meeting will go through, including all phase-specific state
    */
   phases: NewMeetingPhase[];
+
+  /**
+   * true if should show the org the conversion modal, else false
+   */
+  showConversionModal: boolean;
 
   /**
    * The time the meeting summary was emailed to the team

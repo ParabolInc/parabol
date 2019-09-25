@@ -24,7 +24,8 @@ const useModal = (options: Options = {}) => {
     setPortalStatus,
     loadingDelayRef,
     noClose ? undefined : closePortal,
-    background
+    background,
+    'blur(2px)'
   )
   return {togglePortal, modalPortal, closePortal, loadingDelay, openPortal}
 }

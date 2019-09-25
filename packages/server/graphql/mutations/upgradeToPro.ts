@@ -9,6 +9,7 @@ import upgradeToPro from './helpers/upgradeToPro'
 import {GQLContext} from '../graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {OrgUserRole} from 'parabol-client/types/graphql'
+import hideConversionModal from './helpers/hideConversionModal'
 
 export default {
   type: UpgradeToProPayload,
@@ -23,7 +24,7 @@ export default {
       description: 'The token that came back from stripe'
     }
   },
-  async resolve(
+  async resolve (
     _source,
     {orgId, stripeToken},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
@@ -52,6 +53,9 @@ export default {
       return standardError(e.param ? new Error(e.param) : e, {userId: viewerId})
     }
 
+    const activeMeetings = await hideConversionModal(orgId, dataLoader)
+    const meetingIds = activeMeetings.map(({id}) => id)
+
     await r.table('OrganizationUser')
       .getAll(viewerId, {index: 'userId'})
       .filter({removedAt: null, orgId})
@@ -61,7 +65,7 @@ export default {
     const teamIds = teams.map(({id}) => id)
 
     sendSegmentEvent('Upgrade to Pro', viewerId, {orgId}).catch()
-    const data = {orgId, teamIds}
+    const data = {orgId, teamIds, meetingIds}
     publish(SubscriptionChannel.ORGANIZATION, orgId, UpgradeToProPayload, data, subOptions)
 
     teamIds.forEach((teamId) => {

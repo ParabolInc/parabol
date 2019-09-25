@@ -12,14 +12,25 @@ const HelpIcon = styled(Icon)({
 })
 
 const Container = styled(DialogContainer)({
-  alignItems: 'center'
+  alignItems: 'center',
+  paddingBottom: 24,
+  userSelect: 'none'
 })
 
-const WaitingForFacilitatorToPay = () => {
+interface Props {
+  facilitatorName: string
+}
+
+const WaitingForFacilitatorToPay = (props: Props) => {
+  const {facilitatorName} = props
   return (
     <Container>
       <HelpIcon>live_help</HelpIcon>
-      <InvitationDialogCopy>{'Waiting for the facilitator to continue'}<Ellipsis />
+      <InvitationDialogCopy>
+        {'Waiting for '}
+        <b>{facilitatorName}</b>
+        {' to continue'}
+        <Ellipsis />
       </InvitationDialogCopy>
     </Container>
   )

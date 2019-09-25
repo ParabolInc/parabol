@@ -16,6 +16,9 @@ graphql`
       periodStart
       updatedAt
     }
+    meetings {
+      showConversionModal
+    }
   }
 `
 

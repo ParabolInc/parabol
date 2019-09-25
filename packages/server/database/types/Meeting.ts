@@ -7,6 +7,7 @@ interface Input {
   meetingCount: number
   phases: GenericMeetingPhase[]
   facilitatorUserId: string
+  showConversionModal?: boolean
 }
 
 export type MeetingType = 'action' | 'retrospective'
@@ -26,9 +27,10 @@ export default class Meeting {
   teamId: string
   meetingType: MeetingType
   phases: GenericMeetingPhase[]
+  showConversionModal?: boolean
 
   constructor (input: Input) {
-    const {teamId, facilitatorUserId, meetingCount, meetingType, phases} = input
+    const {teamId, facilitatorUserId, meetingCount, meetingType, phases, showConversionModal} = input
     this.defaultFacilitatorUserId = facilitatorUserId
     this.facilitatorStageId = phases[0].stages[0].id
     this.facilitatorUserId = facilitatorUserId
@@ -37,5 +39,6 @@ export default class Meeting {
     this.meetingType = meetingType
     this.phases = phases
     this.teamId = teamId
+    this.showConversionModal = showConversionModal
   }
 }
