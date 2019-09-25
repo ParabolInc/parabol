@@ -7,7 +7,6 @@ import styled from '@emotion/styled'
 import EmailInputField from '../EmailInputField'
 import PlainButton from '../PlainButton/PlainButton'
 import PrimaryButton from '../PrimaryButton'
-import appTheme from '../../styles/theme/appTheme'
 import withMutationProps, {WithMutationProps} from '../../utils/relay/withMutationProps'
 import {emailRegex} from '../../validation/regex'
 import Auth0ClientManager from '../../utils/Auth0ClientManager'
@@ -33,9 +32,9 @@ const Form = styled('form')({
 })
 
 const P = styled('p')({
-  fontSize: '.875rem',
+  fontSize: 14,
   lineHeight: 1.5,
-  margin: '1rem 0',
+  margin: '16px 0',
   textAlign: 'center'
 })
 
@@ -46,15 +45,15 @@ const Container = styled('div')({
 })
 
 const LinkButton = styled(PlainButton)({
-  color: appTheme.brand.secondary.blue,
+  color: PALETTE.LINK_BLUE,
   ':hover': {
-    color: appTheme.brand.secondary.blue,
+    color: PALETTE.LINK_BLUE,
     textDecoration: 'underline'
   }
 })
 
 const SubmitButton = styled(PrimaryButton)({
-  marginTop: '1rem'
+  marginTop: 16
 })
 
 const BrandedLink = styled(PlainButton)({

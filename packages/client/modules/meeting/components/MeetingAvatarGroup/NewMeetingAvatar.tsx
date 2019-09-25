@@ -10,8 +10,6 @@ import withAtmosphere, {
 } from '../../../../decorators/withAtmosphere/withAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import appTheme from '../../../../styles/theme/appTheme'
-import ui from '../../../../styles/ui'
 import {NewMeetingTeamMemberStage} from '../../../../types/graphql'
 import {CHECKIN, UPDATES} from '../../../../utils/constants'
 import lazyPreload from '../../../../utils/lazyPreload'
@@ -20,10 +18,11 @@ import ErrorBoundary from '../../../../components/ErrorBoundary'
 import {StreamUI} from '../../../../hooks/useSwarm'
 import MediaSwarm from '../../../../utils/swarm/MediaSwarm'
 import {meetingAvatarMediaQueries} from '../../../../styles/meeting'
+import {PALETTE} from '../../../../styles/paletteV2'
 
-const borderActive = ui.palette.yellow
-const borderLocal = appTheme.palette.mid30l
-const boxShadowBase = '0 0 0 .125rem #fff, 0 0 0 .25rem'
+const borderActive = PALETTE.BORDER_ACTIVE
+const borderLocal = PALETTE.BORDER_LIGHT
+const boxShadowBase = '0 0 0 2px #FFFFFF, 0 0 0 4px'
 const boxShadowWarm = `${boxShadowBase} ${borderActive}`
 const boxShadowLocal = `${boxShadowBase} ${borderLocal}`
 
@@ -79,12 +78,12 @@ const AvatarBlock = styled('div')<AvatarBlockProps>(
 )
 
 const FacilitatorTag = styled('div')({
-  backgroundColor: ui.palette.white,
+  backgroundColor: '#FFFFFF',
   borderRadius: '4em',
-  color: ui.palette.dark,
+  color: PALETTE.TEXT_MAIN,
   fontSize: 11,
   fontWeight: 600,
-  marginTop: 8,
+  marginTop: 4,
   lineHeight: '16px',
   padding: '0 8px',
   position: 'absolute',

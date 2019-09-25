@@ -5,7 +5,7 @@ import {PALETTE} from '../styles/paletteV2'
 import relativeDate from '../utils/date/relativeDate'
 
 const StyledSpan = styled('span')({
-  color: PALETTE.TEXT_LIGHT,
+  color: PALETTE.TEXT_GRAY,
   fontSize: 11,
   lineHeight: '1rem',
   paddingTop: 4

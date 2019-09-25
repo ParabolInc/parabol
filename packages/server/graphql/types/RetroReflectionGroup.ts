@@ -52,13 +52,13 @@ const RetroReflectionGroup = new GraphQLObjectType({
     },
     reflections: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroReflection))),
-      resolve: async ({id: reflectionGroupId, meetingId}, args, {dataLoader}) => {
+      resolve: async ({id: reflectionGroupId, meetingId}, _args, {dataLoader}) => {
         // use meetingId so we only hit the DB once instead of once per group
         const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
         const filteredReflections = reflections.filter(
           (reflection) => reflection.reflectionGroupId === reflectionGroupId
         )
-        filteredReflections.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
+        filteredReflections.sort((a, b) => (a.sortOrder < b.sortOrder ? 1 : -1))
         return filteredReflections
       }
     },
@@ -78,7 +78,7 @@ const RetroReflectionGroup = new GraphQLObjectType({
     tasks: {
       type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(Task))),
       description: 'The tasks created for this group in the discussion phase',
-      resolve: async ({id: reflectionGroupId, meetingId}, args, {dataLoader}) => {
+      resolve: async ({id: reflectionGroupId, meetingId}, _args, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const {teamId} = meeting
         const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
@@ -88,7 +88,7 @@ const RetroReflectionGroup = new GraphQLObjectType({
     team: {
       type: Team,
       description: 'The team that is running the retro',
-      resolve: async ({meetingId}, args, {dataLoader}) => {
+      resolve: async ({meetingId}, _args, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         return dataLoader.get('teams').load(meeting.teamId)
       }
@@ -98,8 +98,11 @@ const RetroReflectionGroup = new GraphQLObjectType({
       description: 'The title of the grouping of the retrospective reflections'
     },
     titleIsUserDefined: {
-      type: GraphQLBoolean,
-      description: 'true if a user wrote the title, else false'
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'true if a user wrote the title, else false',
+      resolve: ({title, smartTitle}) => {
+        return title ? title !== smartTitle : false
+      }
     },
     updatedAt: {
       type: GraphQLISO8601Type,
@@ -120,7 +123,7 @@ const RetroReflectionGroup = new GraphQLObjectType({
     viewerVoteCount: {
       type: GraphQLInt,
       description: 'The number of votes the viewer has given this group',
-      resolve: ({voterIds}, args, {authToken}) => {
+      resolve: ({voterIds}, _args, {authToken}) => {
         const viewerId = getUserId(authToken)
         return voterIds
           ? voterIds.reduce((sum, voterId) => (voterId === viewerId ? sum + 1 : sum), 0)

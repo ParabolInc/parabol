@@ -25,21 +25,22 @@ interface Props {
 
 const Line = styled('div')({
   alignItems: 'center',
-  color: PALETTE.TEXT_LIGHT,
+  color: PALETTE.TEXT_GRAY,
   display: 'flex',
   padding: '8px 24px',
 })
 
 const Error = styled('div')<{isError: boolean}>(({isError}) => ({
   alignItems: 'center',
-  color: isError ? PALETTE.ERROR_MAIN : PALETTE.TEXT_LIGHT,
+  color: isError ? PALETTE.ERROR_MAIN : PALETTE.TEXT_GRAY,
   display: 'flex',
   flex: 1,
-  lineHeight: '16px',
-  minHeight: 32
+  lineHeight: '24px',
+  minHeight: 24
 }))
 
 const Message = styled('div')({
+  fontSize: 15,
   paddingLeft: 4
 })
 

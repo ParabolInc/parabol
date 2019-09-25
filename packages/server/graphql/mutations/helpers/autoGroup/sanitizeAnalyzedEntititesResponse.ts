@@ -1,11 +1,9 @@
-import {GoogleAnalyzeEntitiesResponse} from './getEntitiesFromText'
+import {GoogleAnalyzedEntities} from '../../../../GoogleLanguageManager'
 
 
-const sanitizeAnalyzedEntitiesResponse = (responses: GoogleAnalyzeEntitiesResponse) => {
-  if (!responses) return null
-  const [firstResponse] = responses
-  if (!firstResponse) return null
-  const {entities} = firstResponse
+const sanitizeAnalyzedEntitiesResponse = (response: GoogleAnalyzedEntities | null) => {
+  if (!response) return null
+  const {entities} = response
   if (!Array.isArray(entities)) return null
   const validEntities = {} as {[lowerCaseName: string]: number}
   for (let ii = 0; ii < entities.length; ii++) {

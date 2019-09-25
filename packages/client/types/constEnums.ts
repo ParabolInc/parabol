@@ -1,3 +1,7 @@
+export const enum AppBar {
+  HEIGHT = 56
+}
+
 // https://github.com/material-components/material-components-web/blob/4844330e7836d9dc97798b47594ff0dbaac51227/packages/mdc-animation/_variables.scss
 export const enum BezierCurve {
   DECELERATE = 'cubic-bezier(0, 0, .2, 1)',
@@ -13,12 +17,21 @@ export const enum BezierCurve {
 }
 
 export const enum Breakpoint {
-  DASHBOARD_FULL = 1600,
+  DASHBOARD_WIDE = 1600,
   INVOICE = 512,
   INVOICE_LABEL = 384,
   SIDEBAR_LEFT = 800,
   MEETING_FACILITATOR_BAR = 480,
   SINGLE_REFLECTION_COLUMN = 704, // (ReflectionWith + 16) * 2
+}
+
+export const enum Card {
+  BACKGROUND_COLOR = '#FFFFFF',
+  BORDER_RADIUS = 4,
+  BUTTON_HEIGHT = 24,
+  FONT_SIZE = 14,
+  LINE_HEIGHT = '20px',
+  PADDING = '16px'
 }
 
 export const enum ContactInfo {
@@ -33,6 +46,11 @@ export const enum DashTimeline {
   FEED_MIN_WIDTH = 288,
   MIN_PADDING = 16,
   TIMELINE_DRAWER_WIDTH = 336
+}
+
+export const enum DragAttribute {
+  DROPPABLE = 'data-droppable',
+  DROPZONE = 'data-dropzone'
 }
 
 export const enum DroppableType {
@@ -54,8 +72,8 @@ export const enum Duration {
 export const enum ElementWidth {
   END_MEETING_BUTTON = 90,
   REFLECTION_CARD = 296,
-  REFLECTION_CARD_PADDED = 312,
-  REFLECTION_CARD_PADDING = 8
+  REFLECTION_CARD_PADDED = 296,
+  REFLECTION_CARD_PADDING = 6
 }
 
 export const enum ElementHeight {
@@ -66,19 +84,44 @@ export const enum ExternalLinks {
   PRICING_LINK = 'https://www.parabol.co/pricing/'
 }
 
+export const enum Filter {
+  BENEATH_DIALOG = 'blur(1.5px)'
+}
+
+export const enum Gutters {
+  COLUMN_INNER_GUTTER = '12px',
+  DASH_GUTTER_SMALL = '20px',
+  DASH_GUTTER_LARGE = '32px',
+  REFLECTION_INNER_GUTTER_HORIZONTAL = '16px',
+  REFLECTION_INNER_GUTTER_VERTICAL = '12px',
+  ROW_INNER_GUTTER = '12px'
+}
+
+export const enum InvoiceItemType {
+  ADD_USER = 'addUser',
+  PAUSE_USER = 'pauseUser',
+  AUTO_PAUSE_USER = 'autoPauseUser',
+  REMOVE_USER = 'removeUser',
+  UNPAUSE_USER = 'unpauseUser',
+}
+
 // https://material.io/design/layout/spacing-methods.html
 // NOTE: iterate on this pattern as we go (TA)
 export const enum Layout {
   TYPE_GRID = 4, // .5x
   LAYOUT_GRID = 8, // 1x
   ROW_GUTTER = 16, // 2x
-  REFLECTION_CARD_PADDING_Y = 6
+  TASK_COLUMNS_MAX_WIDTH = '1334px', // (4 x 296 card max-width) + (5 x 30 - gutters around cols)
 }
 
 export const enum LoaderSize {
   MAIN = 40,
   WHOLE_PAGE = 400,
   PANEL = 200
+}
+
+export const enum LocalStorageKey {
+  INVITATION_TOKEN = 'invitationToken'
 }
 
 export const enum MathEnum {
@@ -88,6 +131,15 @@ export const enum MathEnum {
 export const enum MeetingTypes {
   ACTION = 'action',
   RETROSPECTIVE = 'retrospective'
+}
+
+export const enum NavSidebar {
+  FONT_SIZE = 15,
+  LEFT_BORDER_WIDTH = '3px',
+  LINE_HEIGHT = '20px',
+  SUB_FONT_SIZE = 14,
+  SUB_LINE_HEIGHT = '24px',
+  WIDTH = 240
 }
 
 export const enum Pricing {
@@ -105,6 +157,7 @@ export const enum Providers {
 
 // Use power of 2 for cheap sense of scale (e.g. 2, 4, 8)
 export const enum Radius {
+  BUTTON_PILL = '10em',
   FIELD = 2,
   DIALOG = 8,
   MENU = 4,
@@ -128,10 +181,36 @@ export const enum SubscriptionChannel {
   ORGANIZATION = 'organization',
 }
 
+export const enum TaskStatus {
+  DONE = 'done',
+  ACTIVE = 'active',
+  STUCK = 'stuck',
+  FUTURE = 'future',
+  ARCHIVED = 'archived',
+  PRIVATE = 'private'
+}
+
+export const enum TaskStatusLabel {
+  DONE = 'Done',
+  ACTIVE = 'Active',
+  STUCK = 'Stuck',
+  FUTURE = 'Future',
+  ARCHIVED = 'Archived',
+  PRIVATE = 'Private'
+}
+
+export const enum TierLabel {
+  PERSONAL = 'Personal',
+  PRO = 'Pro',
+  ENTERPRISE = 'Enterprise'
+}
+
 export const enum Threshold {
+  AUTO_PAUSE = 2592000000, // 30 days
   JWT_LIFESPAN = 2592000000, // 30 days
   REFRESH_JWT_AFTER = 1296000000, // 15 days
-  MAX_FREE_TEAMS = 10
+  MAX_FREE_TEAMS = 10,
+  MAX_MONTHLY_PAUSES = 4
 }
 export const enum Times {
   HUMAN_ADDICTION_THRESH = 300,
@@ -140,9 +219,11 @@ export const enum Times {
   REFLECTION_DEAL_CARD_MIN_DELAY = 30,
   REFLECTION_DEAL_CARD_DURATION = 300,
   REFLECTION_DEAL_TOTAL_DURATION = 500,
+  REFLECTION_COLLAPSE_DURATION = 300,
   REFLECTION_DROP_DURATION = 1000,
   REFLECTION_REMOTE_DROP_DURATION = 2000,
-  REFLECTION_STALE_LIMIT = 5000
+  REFLECTION_STALE_LIMIT = 5000,
+  REFLECTION_COLUMN_SWIPE_THRESH = 600
 }
 
 export const enum ZIndex {

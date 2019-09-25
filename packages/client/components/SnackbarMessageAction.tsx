@@ -11,7 +11,7 @@ interface Props {
 
 const Action = styled(PlainButton)({
   borderRadius: 2,
-  color: PALETTE.TEXT_PINK,
+  color: PALETTE.EMPHASIS_WARM,
   fontSize: 14,
   fontWeight: 600,
   marginLeft: 8,

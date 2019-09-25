@@ -16,7 +16,7 @@ interface StyleProps {
 }
 
 const FieldIcon = styled(Icon)<StyleProps>(({hasError}) => ({
-  color: hasError ? PALETTE.ERROR_MAIN : PALETTE.TEXT_LIGHT,
+  color: hasError ? PALETTE.ERROR_MAIN : PALETTE.TEXT_GRAY,
   display: 'block',
   fontSize: ICON_SIZE.MD18,
   opacity: 0.5,
@@ -41,7 +41,7 @@ interface Props {
 
 const Input = styled('input')<StyleProps>(({hasError}) => ({
   appearance: 'none',
-  backgroundColor: '#fff',
+  backgroundColor: '#FFFFFF',
   border: 0,
   borderRadius: 4,
   boxShadow: 'none',
@@ -49,10 +49,10 @@ const Input = styled('input')<StyleProps>(({hasError}) => ({
   fontSize: '.9375rem',
   lineHeight: '24px',
   outline: 0,
-  padding: 8,
+  padding: '7px 8px', // account for top/bottom border
   width: '100%',
   '::placeholder': {
-    color: hasError ? PALETTE.BACKGROUND_RED : undefined
+    color: hasError ? PALETTE.BACKGROUND_ORANGE : undefined
   }
 }))
 

@@ -1,18 +1,16 @@
 // styles/email.js
 
-import ui from './ui'
-import appTheme from './theme/appTheme'
 import {buttonShadow} from './elevation'
 
-export const emailBackgroundColor = ui.palette.light
+export const emailBackgroundColor = '#F1F0FA'
 export const emailBodyColor = '#FFFFFF'
 export const emailFontFamily =
   '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif'
 export const emailFontSize = '16px'
 
 export const emailPrimaryButtonStyle = {
-  backgroundColor: ui.palette.warm,
-  backgroundImage: ui.gradientWarm,
+  backgroundColor: '#FD6157',
+  backgroundImage: 'linear-gradient(to right, #ED4C56 0, #ED4C86 100%)',
   borderRadius: '4em',
   boxShadow: buttonShadow,
   color: '#FFFFFF',
@@ -30,7 +28,7 @@ export const emailPrimaryButtonStyle = {
 }
 
 export const emailCopyStyle = {
-  color: ui.palette.dark,
+  color: '#444258',
   fontFamily: emailFontFamily,
   fontSize: '16px',
   fontWeight: 400,
@@ -43,7 +41,7 @@ export const emailCopyStyle = {
 export const emailLineHeight = 1.5
 
 export const emailLinkStyle = {
-  color: ui.palette.blue,
+  color: '#329AE5',
   fontFamily: emailFontFamily,
   fontWeight: 600,
   textDecoration: 'none'
@@ -52,10 +50,10 @@ export const emailLinkStyle = {
 export const emailInnerMaxWidth = 536
 export const emailMaxWidth = 600
 
-export const emailRuleColor = appTheme.palette.mid20l
+export const emailRuleColor = '#DBD6E3'
 export const emailRuleHeight = '1px'
 export const emailRuleStyle = {
-  backgroundColor: appTheme.palette.mid20l,
+  backgroundColor: '#DBD6E3',
   border: '0px',
   height: '1px',
   margin: '0 auto'
@@ -70,8 +68,8 @@ export const emailTableBase = {
   width: '100%'
 }
 
-export const emailTextColor = ui.palette.dark
-export const emailTextColorLight = ui.palette.midGray
+export const emailTextColor = '#444258'
+export const emailTextColorLight = '#82809A'
 
 export const headCSS = `
   @media only screen and (max-width: 620px) {

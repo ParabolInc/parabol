@@ -1,5 +1,4 @@
 import React from 'react'
-import ui from '../styles/ui'
 import {menuShadow} from '../styles/elevation'
 import AnimatedFade from './AnimatedFade'
 import styled from '@emotion/styled'
@@ -14,14 +13,14 @@ const MenuBlock = styled('div')(({maxWidth}) => ({
 }))
 
 const MenuContents = styled('div')(({maxHeight}) => ({
-  backgroundColor: '#fff',
-  borderRadius: ui.menuBorderRadius,
+  backgroundColor: '#FFFFFF',
+  borderRadius: 4,
   boxShadow: menuShadow,
   maxHeight,
   outline: 0,
   overflowY: 'auto',
-  paddingBottom: ui.menuGutterVertical,
-  paddingTop: ui.menuGutterVertical,
+  paddingBottom: 8,
+  paddingTop: 8,
   textAlign: 'left',
   width: '100%'
 }))

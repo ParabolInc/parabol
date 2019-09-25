@@ -56,7 +56,7 @@ const TasksContent = styled('div')({
 })
 
 const AgendaMain = styled('div')<{hideAgenda: boolean | null}>(({hideAgenda}) => ({
-  backgroundColor: hideAgenda ? '' : ui.palette.white,
+  backgroundColor: hideAgenda ? '' : '#FFFFFF',
   boxShadow: hideAgenda ? 'none' : navDrawerShadow,
   display: 'flex',
   flex: 1,

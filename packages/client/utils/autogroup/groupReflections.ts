@@ -2,12 +2,12 @@ import getAllLemmasFromReflections from './getAllLemmasFromReflections'
 import computeDistanceMatrix from './computeDistanceMatrix'
 import getGroupMatrix from '../autoGroup/getGroupMatrix'
 import getTitleFromComputedGroup from './getTitleFromComputedGroup'
-import {IRetroReflection} from '../../types/graphql'
+import Reflection from 'parabol-server/database/types/Reflection'
 
 /*
  * Read each reflection, parse the content for entities (i.e. nouns), group the reflections based on common themes
  */
-const groupReflections = (reflections: IRetroReflection[], groupingThreshold: number) => {
+const groupReflections = (reflections: Reflection[], groupingThreshold: number) => {
   const allReflectionEntities = reflections.map(({entities}) => entities)
   const oldReflectionGroupIds = reflections.map(({reflectionGroupId}) => reflectionGroupId)
 
@@ -20,7 +20,7 @@ const groupReflections = (reflections: IRetroReflection[], groupingThreshold: nu
     groupingThreshold
   )
   // replace the arrays with reflections
-  const updatedReflections = [] as IRetroReflection[]
+  const updatedReflections = [] as Reflection[]
   const updatedGroups = groupedArrays.map((group) => {
     // look up the reflection by its vector, put them all in the same group
     let reflectionGroupId = ''

@@ -11,11 +11,17 @@ import MenuItemHR from './MenuItemHR'
 import MenuItemIcon from './MenuItemIcon'
 import MenuItemLabel from './MenuItemLabel'
 import {MenuProps} from '../hooks/useMenu'
-import {PERSONAL, PRO_LABEL, SIGNOUT_LABEL, SIGNOUT_SLUG} from '../utils/constants'
+import {SIGNOUT_LABEL, SIGNOUT_SLUG} from '../utils/constants'
 import {PALETTE} from '../styles/paletteV2'
+import {TierEnum} from '../types/graphql'
+import {TierLabel} from '../types/constEnums'
+
+const UpgradeIcon = styled(MenuItemIcon)({
+  color: PALETTE.EMPHASIS_COOL
+})
 
 const UpgradeCTA = styled('span')({
-  color: PALETTE.TEXT_BLUE,
+  color: PALETTE.EMPHASIS_COOL,
   fontSize: 15,
   lineHeight: '32px',
   marginRight: '2rem'
@@ -57,7 +63,7 @@ const StandardHubUserMenu = (props: Props) => {
     handleMenuClick()
   }
 
-  const ownedFreeOrgs = organizations.filter((org) => org.tier === PERSONAL)
+  const ownedFreeOrgs = organizations.filter((org) => org.tier === TierEnum.personal)
   const showUpgradeCTA = ownedFreeOrgs.length > 0
 
   const handleUpgradeClick = () => {
@@ -71,7 +77,7 @@ const StandardHubUserMenu = (props: Props) => {
       <MenuItem
         label={
           <MenuItemLabel>
-            <MenuItemIcon icon={'account_box'} />
+            <MenuItemIcon>account_box</MenuItemIcon>
             {'Profile'}
           </MenuItemLabel>
         }
@@ -80,7 +86,7 @@ const StandardHubUserMenu = (props: Props) => {
       <MenuItem
         label={
           <MenuItemLabel>
-            <MenuItemIcon icon={'account_balance'} />
+            <MenuItemIcon>account_balance</MenuItemIcon>
             {'Organizations'}
           </MenuItemLabel>
         }
@@ -89,7 +95,7 @@ const StandardHubUserMenu = (props: Props) => {
       <MenuItem
         label={
           <MenuItemLabel>
-            <MenuItemIcon icon={'notifications'} />
+            <MenuItemIcon>notifications</MenuItemIcon>
             {'Notifications'}
           </MenuItemLabel>
         }
@@ -100,10 +106,10 @@ const StandardHubUserMenu = (props: Props) => {
         <MenuItem
           label={
             <MenuItemLabel>
-              <MenuItemIcon icon={'star'} />
+              <UpgradeIcon>star</UpgradeIcon>
               <UpgradeCTA>
                 {'Upgrade to '}
-                <b>{PRO_LABEL}</b>
+                <b>{TierLabel.PRO}</b>
               </UpgradeCTA>
             </MenuItemLabel>
           }
@@ -114,7 +120,7 @@ const StandardHubUserMenu = (props: Props) => {
       <MenuItem
         label={
           <MenuItemLabel>
-            <MenuItemIcon icon={'exit_to_app'} />
+            <MenuItemIcon>exit_to_app</MenuItemIcon>
             {SIGNOUT_LABEL}
           </MenuItemLabel>
         }

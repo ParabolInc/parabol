@@ -26,6 +26,7 @@ export interface IQuery {
   massInvitation: IMassInvitationPayload | null;
   verifiedInvitation: IVerifiedInvitationPayload | null;
   authProviders: string[];
+  SAMLIdP: string | null;
 }
 
 export interface IMassInvitationOnQueryArguments {
@@ -47,6 +48,18 @@ export interface IAuthProvidersOnQueryArguments {
    * the email to see if it exists as an oauth account
    */
   email: string;
+}
+
+export interface ISAMLIdPOnQueryArguments {
+  /**
+   * the email associated with a SAML login
+   */
+  email: string;
+
+  /**
+   * true if the user was invited, else false
+   */
+  isInvited?: boolean | null;
 }
 
 /**
@@ -1481,7 +1494,7 @@ export interface IOrganization {
   /**
    * The level of access to features on the parabol site
    */
-  tier: TierEnum | null;
+  tier: TierEnum;
 
   /**
    * THe datetime the current billing cycle ends
@@ -1911,6 +1924,11 @@ export interface IInvoice {
   id: string;
 
   /**
+   * The tier this invoice pays for
+   */
+  tier: TierEnum;
+
+  /**
    * The amount the card will be charged (total + startingBalance with a min value of 0)
    */
   amountDue: number;
@@ -1933,7 +1951,7 @@ export interface IInvoice {
   /**
    * the card used to pay the invoice
    */
-  creditCard: ICreditCard;
+  creditCard: ICreditCard | null;
 
   /**
    * The timestamp for the end of the billing cycle
@@ -1953,7 +1971,7 @@ export interface IInvoice {
   /**
    * The details that comprise the charges for next month
    */
-  nextMonthCharges: IInvoiceChargeNextMonth;
+  nextPeriodCharges: INextPeriodCharges;
 
   /**
    * *The organization id to charge
@@ -1969,6 +1987,11 @@ export interface IInvoice {
    * the datetime the invoice was successfully paid
    */
   paidAt: any | null;
+
+  /**
+   * The URL to pay via stripe if payment was not collected in app
+   */
+  payUrl: string | null;
 
   /**
    * The picture of the organization
@@ -2078,8 +2101,8 @@ export const enum InvoiceLineItemEnum {
 /**
  * A single line item for the charges for next month
  */
-export interface IInvoiceChargeNextMonth {
-  __typename: 'InvoiceChargeNextMonth';
+export interface INextPeriodCharges {
+  __typename: 'NextPeriodCharges';
 
   /**
    * The amount for the line item (in USD)
@@ -2097,9 +2120,14 @@ export interface IInvoiceChargeNextMonth {
   quantity: number;
 
   /**
-   * The per-seat monthly price of the subscription (in dollars)
+   * The per-seat monthly price of the subscription (in dollars), null if invoice is not per-seat
    */
-  unitPrice: number;
+  unitPrice: number | null;
+
+  /**
+   * "year" if enterprise, else "month" for pro
+   */
+  interval: string | null;
 }
 
 /**
@@ -2369,8 +2397,8 @@ export type Notification =
   | INotifyTaskInvolves
   | INotificationTeamInvitation
   | INotifyKickedOut
-  | INotifyPaymentRejected
   | INotificationMeetingStageTimeLimitEnd
+  | INotifyPaymentRejected
   | INotifyPromoteToOrgLeader;
 
 export interface INotification {
@@ -2499,6 +2527,11 @@ export interface IVerifiedInvitationPayload {
   isGoogle: boolean | null;
 
   /**
+   * a string to redirect to the sso IdP, else null
+   */
+  ssoURL: string | null;
+
+  /**
    * The valid invitation, if any
    */
   teamInvitation: ITeamInvitation | null;
@@ -2590,11 +2623,6 @@ export interface IMutation {
   createReflection: ICreateReflectionPayload | null;
 
   /**
-   * Create a new reflection group
-   */
-  createReflectionGroup: ICreateReflectionGroupPayload | null;
-
-  /**
    * Create a new task, triggering a CreateCard for other viewers
    */
   createTask: ICreateTaskPayload | null;
@@ -2653,11 +2681,6 @@ export interface IMutation {
    * Announce to everyone that you are editing a task
    */
   editTask: IEditTaskPayload | null;
-
-  /**
-   * Receive a webhook from github saying an assignee was added
-   */
-  githubAddAssignee: boolean | null;
 
   /**
    * pauses the subscription for a single user
@@ -2779,31 +2802,6 @@ export interface IMutation {
    * Start a new meeting
    */
   startNewMeeting: IStartNewMeetingPayload | null;
-
-  /**
-   * When stripe tells us an invoice is ready, create a pretty version
-   */
-  stripeCreateInvoice: boolean | null;
-
-  /**
-   * When stripe tells us an invoice payment failed, update it in our DB
-   */
-  stripeFailPayment: IStripeFailPaymentPayload | null;
-
-  /**
-   * When stripe tells us an invoice payment was successful, update it in our DB
-   */
-  stripeSucceedPayment: boolean | null;
-
-  /**
-   * When stripe tells us a credit card was updated, update the details in our own DB
-   */
-  stripeUpdateCreditCard: boolean | null;
-
-  /**
-   * When a new invoiceitem is sent from stripe, tag it with metadata
-   */
-  stripeUpdateInvoiceItem: boolean | null;
 
   /**
    * Show/hide the agenda list
@@ -3066,15 +3064,6 @@ export interface ICreateReflectionOnMutationArguments {
   input: ICreateReflectionInput;
 }
 
-export interface ICreateReflectionGroupOnMutationArguments {
-  meetingId: string;
-
-  /**
-   * An array of 1 or 2 reflections that make up the group. The first card in the array will be used to determine sort order
-   */
-  reflectionIds: string[];
-}
-
 export interface ICreateTaskOnMutationArguments {
   /**
    * The new task including an id, status, and type, and teamMemberId
@@ -3171,23 +3160,6 @@ export interface IEditTaskOnMutationArguments {
   isEditing: boolean;
 }
 
-export interface IGithubAddAssigneeOnMutationArguments {
-  /**
-   * The github issue id
-   */
-  integrationId: string;
-
-  /**
-   * The github login for the new assignee
-   */
-  assigneeLogin: string;
-
-  /**
-   * The repo name and owner
-   */
-  nameWithOwner: string;
-}
-
 export interface IInactivateUserOnMutationArguments {
   /**
    * the user to pause
@@ -3214,7 +3186,7 @@ export interface IMoveTeamToOrgOnMutationArguments {
   /**
    * The teamId that you want to move
    */
-  teamId: string;
+  teamIds: string[];
 
   /**
    * The ID of the organization you want to move the team to
@@ -3405,41 +3377,6 @@ export interface IStartNewMeetingOnMutationArguments {
    * The base type of the meeting (action, retro, etc)
    */
   meetingType: MeetingTypeEnum;
-}
-
-export interface IStripeCreateInvoiceOnMutationArguments {
-  /**
-   * The stripe invoice ID
-   */
-  invoiceId: string;
-}
-
-export interface IStripeFailPaymentOnMutationArguments {
-  /**
-   * The stripe invoice ID
-   */
-  invoiceId: string;
-}
-
-export interface IStripeSucceedPaymentOnMutationArguments {
-  /**
-   * The stripe invoice ID
-   */
-  invoiceId: string;
-}
-
-export interface IStripeUpdateCreditCardOnMutationArguments {
-  /**
-   * The stripe customer ID, or stripeId
-   */
-  customerId: string;
-}
-
-export interface IStripeUpdateInvoiceItemOnMutationArguments {
-  /**
-   * The stripe invoice ID
-   */
-  invoiceItemId: string;
 }
 
 export interface IToggleAgendaListOnMutationArguments {
@@ -4092,7 +4029,7 @@ export interface IRetroReflectionGroup {
   /**
    * true if a user wrote the title, else false
    */
-  titleIsUserDefined: boolean | null;
+  titleIsUserDefined: boolean;
 
   /**
    * The timestamp the meeting was updated at
@@ -4241,11 +4178,6 @@ export interface IRetroReflection {
   creatorId: string | null;
 
   /**
-   * all the info associated with the drag state, if this reflection is currently being dragged
-   */
-  dragContext: IDragContext | null;
-
-  /**
    * an array of all the socketIds that are currently editing the reflection
    */
   editorIds: string[];
@@ -4253,17 +4185,12 @@ export interface IRetroReflection {
   /**
    * True if the reflection was not removed, else false
    */
-  isActive: boolean | null;
-
-  /**
-   * true if the reflection is being edited, else false
-   */
-  isEditing: boolean | null;
+  isActive: boolean;
 
   /**
    * true if the viewer (userId) is the creator of the retro reflection, else false
    */
-  isViewerCreator: boolean | null;
+  isViewerCreator: boolean;
 
   /**
    * The stringified draft-js content
@@ -4283,7 +4210,7 @@ export interface IRetroReflection {
   /**
    * The retrospective meeting this reflection was created in
    */
-  meeting: IRetrospectiveMeeting | null;
+  meeting: IRetrospectiveMeeting;
   phaseItem: IRetroPhaseItem;
 
   /**
@@ -4299,7 +4226,7 @@ export interface IRetroReflection {
   /**
    * The foreign key to link a reflection to its group
    */
-  reflectionGroupId: string | null;
+  reflectionGroupId: string;
 
   /**
    * The group the reflection belongs to, if any
@@ -4314,44 +4241,12 @@ export interface IRetroReflection {
   /**
    * The team that is running the meeting that contains this reflection
    */
-  team: IRetrospectiveMeeting | null;
+  team: ITeam;
 
   /**
    * The timestamp the meeting was updated. Used to determine how long it took to write a reflection
    */
   updatedAt: any | null;
-}
-
-/**
- * Info associated with a current drag
- */
-export interface IDragContext {
-  __typename: 'DragContext';
-  id: string | null;
-
-  /**
-   * The userId of the person currently dragging the reflection
-   */
-  dragUserId: string | null;
-
-  /**
-   * The user that is currently dragging the reflection
-   */
-  dragUser: IUser | null;
-
-  /**
-   * The coordinates necessary to simulate a drag for a subscribing user
-   */
-  dragCoords: ICoords2D | null;
-}
-
-/**
- * Coordinates used relay a location in a 2-D plane
- */
-export interface ICoords2D {
-  __typename: 'Coords2D';
-  x: number;
-  y: number;
 }
 
 export interface IGoogleAnalyzedEntity {
@@ -4570,6 +4465,7 @@ export interface ICreateReflectionPayload {
   __typename: 'CreateReflectionPayload';
   error: IStandardMutationError | null;
   meeting: NewMeeting | null;
+  reflectionId: string | null;
   reflection: IRetroReflection | null;
 
   /**
@@ -4581,13 +4477,6 @@ export interface ICreateReflectionPayload {
    * The stages that were unlocked by navigating
    */
   unlockedStages: NewMeetingStage[] | null;
-}
-
-export interface ICreateReflectionGroupPayload {
-  __typename: 'CreateReflectionGroupPayload';
-  error: IStandardMutationError | null;
-  meeting: NewMeeting | null;
-  reflectionGroup: IRetroReflectionGroup | null;
 }
 
 export interface ICreateTaskInput {
@@ -5609,51 +5498,6 @@ export interface IStartNewMeetingPayload {
   meeting: NewMeeting | null;
 }
 
-export interface IStripeFailPaymentPayload {
-  __typename: 'StripeFailPaymentPayload';
-  error: IStandardMutationError | null;
-  organization: IOrganization | null;
-
-  /**
-   * The notification to billing leaders stating the payment was rejected
-   */
-  notification: INotifyPaymentRejected;
-}
-
-/**
- * A notification sent to a user when their payment has been rejected
- */
-export interface INotifyPaymentRejected {
-  __typename: 'NotifyPaymentRejected';
-  organization: IOrganization;
-
-  /**
-   * A shortid for the notification
-   */
-  id: string;
-
-  /**
-   * true if the notification has been archived, else false (or null)
-   */
-  isArchived: boolean | null;
-
-  /**
-   * *The unique organization ID for this notification. Can be blank for targeted notifications
-   */
-  orgId: string | null;
-
-  /**
-   * The datetime to activate the notification & send it to the client
-   */
-  startAt: any;
-  type: NotificationEnum;
-
-  /**
-   * *The userId that should see this notification
-   */
-  userIds: string[];
-}
-
 export interface IUpdateAgendaItemInput {
   /**
    * The unique agenda item ID, composed of a teamId::shortid
@@ -5755,20 +5599,26 @@ export interface IUpdateDragLocationInput {
    * The teamId to broadcast the message to
    */
   teamId: string;
-  coords: ICoords2DInput;
 
   /**
-   * The offset from the targetId
+   * horizontal distance from the top left of the target
    */
-  targetOffset?: ICoords2DInput | null;
-}
+  targetOffsetX?: number | null;
 
-/**
- * Coordinates used relay a location in a 2-D plane
- */
-export interface ICoords2DInput {
-  x: number;
-  y: number;
+  /**
+   * vertical distance from the top left of the target
+   */
+  targetOffsetY?: number | null;
+
+  /**
+   * the left of the source, relative to the client window
+   */
+  clientX?: number | null;
+
+  /**
+   * the top of the source, relative to the client window
+   */
+  clientY?: number | null;
 }
 
 export interface IUpdateReflectionContentPayload {
@@ -6033,6 +5883,51 @@ export interface INotificationMeetingStageTimeLimitEnd {
   meeting: NewMeeting;
 }
 
+export interface IStripeFailPaymentPayload {
+  __typename: 'StripeFailPaymentPayload';
+  error: IStandardMutationError | null;
+  organization: IOrganization | null;
+
+  /**
+   * The notification to billing leaders stating the payment was rejected
+   */
+  notification: INotifyPaymentRejected;
+}
+
+/**
+ * A notification sent to a user when their payment has been rejected
+ */
+export interface INotifyPaymentRejected {
+  __typename: 'NotifyPaymentRejected';
+  organization: IOrganization;
+
+  /**
+   * A shortid for the notification
+   */
+  id: string;
+
+  /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null;
+
+  /**
+   * *The unique organization ID for this notification. Can be blank for targeted notifications
+   */
+  orgId: string | null;
+
+  /**
+   * The datetime to activate the notification & send it to the client
+   */
+  startAt: any;
+  type: NotificationEnum;
+
+  /**
+   * *The userId that should see this notification
+   */
+  userIds: string[];
+}
+
 /**
  * An auth token provided by Parabol to the client
  */
@@ -6101,7 +5996,6 @@ export type TeamSubscriptionPayload =
   | IArchiveTeamPayload
   | IAutoGroupReflectionsPayload
   | ICreateReflectionPayload
-  | ICreateReflectionGroupPayload
   | IDenyPushInvitationPayload
   | IDowngradeToPersonalPayload
   | IDragDiscussionTopicPayload

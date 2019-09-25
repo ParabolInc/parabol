@@ -16,6 +16,21 @@ export type DeepNullable<T> = {
     ? readonly DeepNullable<U>[] | null
     : DeepNullable<T[P]> | null
 }
+
+export type DeepNonNullable<T> = T extends (...args: any[]) => any
+  ? T
+  : T extends any[]
+    ? DeepNonNullableArray<T[number]>
+    : T extends object
+      ? DeepNonNullableObject<T>
+      : T;
+
+interface DeepNonNullableArray<T> extends Array<DeepNonNullable<NonNullable<T>>> {}
+
+type DeepNonNullableObject<T> = {
+  [P in keyof T]-?: DeepNonNullable<NonNullable<T[P]>>
+};
+
 // export type DeepNullableObject<T> = {
 //   [P in keyof T]: T[P] extends Array<infer U>
 //     ? Array<DeepNullable<U>> | null

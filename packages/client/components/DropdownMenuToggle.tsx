@@ -7,7 +7,8 @@ import ui from '../styles/ui'
 import {PALETTE} from '../styles/paletteV2'
 
 const DropdownIcon = styled(Icon)({
-  color: PALETTE.TEXT_LIGHT
+  color: PALETTE.TEXT_GRAY,
+  marginLeft: 8
 })
 
 const DropdownBlock = styled('div')({
@@ -41,8 +42,9 @@ const InputBlock = styled('div')<InputStyleProps>(
 )
 
 const Value = styled('span')({
-  display: 'block',
-  flex: 1
+  display: 'flex',
+  flex: 1,
+  minWidth: 0
 })
 
 interface Props {

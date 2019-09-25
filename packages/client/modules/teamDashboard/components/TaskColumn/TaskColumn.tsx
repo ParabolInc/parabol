@@ -2,9 +2,6 @@ import React, {Component} from 'react'
 import styled from '@emotion/styled'
 import withAtmosphere, {WithAtmosphereProps} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import TaskColumnAddTask from './TaskColumnAddTask'
-import appTheme from '../../../../styles/theme/appTheme'
-import themeLabels from '../../../../styles/theme/labels'
-import ui from '../../../../styles/ui'
 import {AreaEnum, TaskStatusEnum} from '../../../../types/graphql'
 import {TEAM_DASH, USER_DASH} from '../../../../utils/constants'
 import {createFragmentContainer} from 'react-relay'
@@ -14,6 +11,7 @@ import {BezierCurve, DroppableType} from '../../../../types/constEnums'
 import {Droppable, DroppableProvided, DroppableStateSnapshot} from 'react-beautiful-dnd'
 import {PALETTE} from '../../../../styles/paletteV2'
 import TaskColumnInner from './TaskColumnInner'
+import {taskStatusLabels} from '../../../../utils/taskStatus'
 
 const Column = styled('div')<{isDragging: boolean}>(({isDragging}) => ({
     background: isDragging ? PALETTE.BACKGROUND_MAIN_DARKENED : undefined,
@@ -25,15 +23,11 @@ const Column = styled('div')<{isDragging: boolean}>(({isDragging}) => ({
 }))
 
 const ColumnHeader = styled('div')({
-  color: appTheme.palette.dark,
+  color: PALETTE.TEXT_MAIN,
   display: 'flex !important',
-  lineHeight: '1.5rem',
-  padding: `.625rem ${ui.taskColumnPaddingInnerSmall} .5rem`,
-  position: 'relative',
-  [ui.dashBreakpoint]: {
-    paddingLeft: ui.taskColumnPaddingInnerLarge,
-    paddingRight: ui.taskColumnPaddingInnerLarge
-  }
+  lineHeight: '24px',
+  padding: 12,
+  position: 'relative'
 })
 
 const ColumnBody = styled('div')({
@@ -51,16 +45,16 @@ const StatusLabel = styled('div')({
 })
 
 const TasksCount = styled('div')({
-  color: appTheme.palette.dark40a,
-  marginLeft: '.5rem'
+  color: PALETTE.TEXT_MAIN_40A,
+  marginLeft: 8
 })
 
 const StatusLabelBlock = styled('div')<{userCanAdd: boolean | undefined}>(({userCanAdd}) => ({
   alignItems: 'center',
   display: 'flex',
   flex: 1,
-  fontSize: '1.0625rem',
-  marginLeft: userCanAdd ? 9 : 15
+  fontSize: 16,
+  marginLeft: userCanAdd ? 8 : 16
 }))
 
 interface Props extends WithAtmosphereProps {
@@ -86,7 +80,7 @@ class TaskColumn extends Component<Props> {
       tasks,
       teams
     } = this.props
-    const label = themeLabels.taskStatus[status].slug
+    const label = taskStatusLabels[status]
     const userCanAdd = area === TEAM_DASH || area === USER_DASH || isMyMeetingSection
     return (
       <Droppable

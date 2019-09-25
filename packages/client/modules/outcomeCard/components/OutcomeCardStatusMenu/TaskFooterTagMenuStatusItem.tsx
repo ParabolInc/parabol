@@ -7,8 +7,8 @@ import MenuItemDot from '../../../../components/MenuItemDot'
 import MenuItemLabel from '../../../../components/MenuItemLabel'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
-import labels from '../../../../styles/theme/labels'
 import {AreaEnum, TaskStatusEnum} from '../../../../types/graphql'
+import {taskStatusColors, taskStatusLabels} from '../../../../utils/taskStatus'
 
 interface Props {
   area: AreaEnum
@@ -19,7 +19,8 @@ interface Props {
 const TaskFooterTagMenuStatusItem = forwardRef((props: Props, ref) => {
   const {area, status, task} = props
   const atmosphere = useAtmosphere()
-  const {color, label} = labels.taskStatus[status]
+  const color = taskStatusColors[status]
+  const label = taskStatusLabels[status]
   const handleTaskUpdateFactory = () => {
     if (status === task.status) {
       return

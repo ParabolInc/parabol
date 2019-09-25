@@ -1,11 +1,9 @@
 import {makePlaceholderStylesString} from '../helpers/makePlaceholderStyles'
-import appTheme from './appTheme'
 import fontLoader from './fontLoader'
-import ui from '../ui'
 import {FONT_FAMILY} from '../typographyV2'
 import {PALETTE} from '../paletteV2'
 
-const placeholderStyles = makePlaceholderStylesString(ui.placeholderColor)
+const placeholderStyles = makePlaceholderStylesString(PALETTE.TEXT_GRAY)
 
 const fontFaceDefinitions = fontLoader
   .map(
@@ -38,14 +36,14 @@ const root = `
 const draftStyles = `
   .draft-blockquote {
     font-style: italic;
-    border-left: 2px #49327266 solid;
+    border-left: 2px ${PALETTE.BORDER_MAIN_40} solid;
     margin 8px 0;
     padding 0 8px;
   }
-  
+
   .draft-codeblock {
     background-color: ${PALETTE.BACKGROUND_MAIN};
-    border-left: 2px #49327266 solid;
+    border-left: 2px ${PALETTE.BORDER_MAIN_40} solid;
     border-radius: 1px;
     font-family: ${FONT_FAMILY.MONOSPACE};
     font-size: 13px;
@@ -69,8 +67,8 @@ export default `
   }
 
   body {
-    color: ${ui.colorText};
-    font-family: ${appTheme.typography.sansSerif};
+    color: ${PALETTE.TEXT_MAIN};
+    font-family: ${FONT_FAMILY.SANS_SERIF};
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
     font-size: 16px;
@@ -81,25 +79,25 @@ export default `
   }
 
   ${root}
-    
+
   a {
-    color: ${ui.linkColor};
+    color: ${PALETTE.TEXT_MAIN};
     text-decoration: none;
   }
 
   a:hover; a:focus {
-    color: ${ui.linkColorHover};
+    color: ${PALETTE.TEXT_PURPLE};
     text-decoration: none;
   }
 
   input {
-    font-family: ${appTheme.typography.sansSerif};
+    font-family: ${FONT_FAMILY.SANS_SERIF};
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
   }
 
   textarea {
-    font-family: ${appTheme.typography.sansSerif};
+    font-family: ${FONT_FAMILY.SANS_SERIF};
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
   }
@@ -151,7 +149,7 @@ export default `
       display: none !important;
     }
   }
-  
+
   ${draftStyles}
 
   ${placeholderStyles}

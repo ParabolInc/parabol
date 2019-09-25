@@ -9,12 +9,11 @@ import withAtmosphere, {
 } from '../decorators/withAtmosphere/withAtmosphere'
 import VoteForReflectionGroupMutation from '../mutations/VoteForReflectionGroupMutation'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
-import ui from '../styles/ui'
 import {meetingVoteIcon} from '../styles/meeting'
 import NewMeetingCheckInMutation from '../mutations/NewMeetingCheckInMutation'
-import appTheme from '../styles/theme/appTheme'
+import {PALETTE} from '../styles/paletteV2'
+import {ICON_SIZE} from '../styles/typographyV2'
 import Icon from './Icon'
-import {MD_ICONS_SIZE_18} from '../styles/icons'
 import getGraphQLError from '../utils/relay/getGraphQLError'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
@@ -31,7 +30,7 @@ const UpvoteRow = styled('div')({
 const UpvoteIcon = styled(Icon)<{color: string}>(({color}) => ({
   color,
   cursor: 'pointer',
-  fontSize: MD_ICONS_SIZE_18,
+  fontSize: ICON_SIZE.MD18,
   height: 24,
   lineHeight: '24px',
   marginLeft: 8,
@@ -55,7 +54,7 @@ class ReflectionGroupVoting extends Component<Props> {
       meetingId,
       viewerMeetingMember: {isCheckedIn}
     } = meeting
-    const {reflectionGroupId} = reflectionGroup
+    const {id: reflectionGroupId} = reflectionGroup
     submitMutation()
     const handleCompleted = (res, errors) => {
       onCompleted()
@@ -91,7 +90,7 @@ class ReflectionGroupVoting extends Component<Props> {
     const {meetingId, localStage} = meeting
     const {isComplete} = localStage!
     if (isComplete) return
-    const {reflectionGroupId} = reflectionGroup
+    const {id: reflectionGroupId} = reflectionGroup
     const handleCompleted = (res, errors) => {
       onCompleted()
       const error = getGraphQLError(res, errors)
@@ -124,13 +123,13 @@ class ReflectionGroupVoting extends Component<Props> {
       <UpvoteColumn>
         <UpvoteRow>
           {upvotes.map((idx) => (
-            <UpvoteIcon key={idx} color={ui.palette.warm} onClick={this.unvote}>
+            <UpvoteIcon key={idx} color={isExpanded ? PALETTE.EMPHASIS_COOL_LIGHTER : PALETTE.EMPHASIS_COOL} onClick={this.unvote}>
               {meetingVoteIcon}
             </UpvoteIcon>
           ))}
           {canVote && (
             <UpvoteIcon
-              color={isExpanded ? ui.palette.dark : appTheme.brand.primary.midGray}
+              color={isExpanded ? 'rgba(255, 255, 255, .65)' : PALETTE.TEXT_GRAY}
               onClick={this.vote}
             >
               {meetingVoteIcon}
@@ -163,7 +162,7 @@ export default createFragmentContainer(withMutationProps(withAtmosphere(Reflecti
   `,
   reflectionGroup: graphql`
     fragment ReflectionGroupVoting_reflectionGroup on RetroReflectionGroup {
-      reflectionGroupId: id
+      id
       viewerVoteCount
     }
   `

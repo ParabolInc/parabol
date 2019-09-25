@@ -14,7 +14,7 @@ import httpGraphQLHandler from './graphql/httpGraphQLHandler'
 import stripeWebhookHandler from './billing/stripeWebhookHandler'
 import getDotenv from '../server/utils/dotenv'
 import sendICS from './sendICS'
-import handleGitHubWebhooks from './integrations/handleGitHubWebhooks'
+import githubWebhookHandler from './integrations/githubWebhookHandler'
 import DataLoaderWarehouse from 'dataloader-warehouse'
 import {WebSocketServer} from '@clusterws/cws'
 import http from 'http'
@@ -28,7 +28,8 @@ import ms from 'ms'
 import rateLimit from 'express-rate-limit'
 import demoEntityHandler from './demoEntityHandler'
 import * as Integrations from '@sentry/integrations'
-
+import consumeSAML from './utils/consumeSAML'
+import dumpy from './dumpy'
 
 declare global {
   namespace NodeJS {
@@ -45,6 +46,7 @@ interface StripeRequest extends express.Request {
 const APP_VERSION = process.env.npm_package_version
 const PROJECT_ROOT = path.join(__dirname, '..', '..')
 
+dumpy({path: PROJECT_ROOT})
 // Import .env and expand variables:
 getDotenv()
 
@@ -134,7 +136,7 @@ app.use(
     }
   })
 )
-
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors({origin: true, credentials: true}))
 app.use('/static', express.static(path.join(PROJECT_ROOT, 'static')))
 app.use(favicon(path.join(PROJECT_ROOT, 'static', 'favicon.ico')))
@@ -157,15 +159,13 @@ app.post(
 )
 
 // HTTP Intranet GraphQL endpoint:
-const intranetGraphQLHandler = intranetHttpGraphQLHandler(sharedDataLoader)
 app.post(
   '/intranet-graphql',
   jwt({
     secret: Buffer.from(secretKey, 'base64'),
     credentialsRequired: true
   }),
-  intranetGraphQLHandler
-)
+  intranetHttpGraphQLHandler)
 
 // server-side rendering for emails
 if (!PROD) {
@@ -174,9 +174,9 @@ if (!PROD) {
 app.get('/email/createics', sendICS)
 
 // stripe webhooks
-app.post('/stripe', stripeWebhookHandler(sharedDataLoader))
+app.post('/stripe', stripeWebhookHandler)
 
-app.post('/webhooks/github', handleGitHubWebhooks)
+app.post('/webhooks/github', githubWebhookHandler)
 
 // app.post('/rtc-fallback', WRTCFallbackHandler(sharedDataLoader, rateLimiter))
 
@@ -191,6 +191,8 @@ const demoEntityLimiter = rateLimit({
   max: 20
 })
 app.post('/get-demo-entities', demoEntityLimiter, demoEntityHandler)
+
+app.post('/saml/:domain', consumeSAML)
 
 // return web app
 app.get('*', createSSR)

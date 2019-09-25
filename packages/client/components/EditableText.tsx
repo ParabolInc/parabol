@@ -1,16 +1,15 @@
 import React, {Component} from 'react'
 import styled from '@emotion/styled'
 import Icon from './Icon'
-import {MD_ICONS_SIZE_18} from '../styles/icons'
+import {FONT_FAMILY, ICON_SIZE} from '../styles/typographyV2'
 import {PALETTE} from '../styles/paletteV2'
-import appTheme from '../styles/theme/appTheme'
 import Legitity from '../validation/Legitity'
 
 const StaticBlock = styled('div')({
   alignItems: 'center',
   cursor: 'pointer',
   display: 'flex',
-  fontFamily: appTheme.typography.sansSerif,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 'inherit',
   fontWeight: 'inherit',
   lineHeight: 'inherit',
@@ -21,7 +20,7 @@ const StaticBlock = styled('div')({
 })
 
 const Placeholder = styled('div')({
-  color: PALETTE.TEXT_LIGHT
+  color: PALETTE.TEXT_GRAY
 })
 
 const StaticValue = styled('div')({
@@ -30,13 +29,13 @@ const StaticValue = styled('div')({
 
 const Error = styled('div')({
   color: PALETTE.ERROR_MAIN,
-  fontSize: '.85rem'
+  fontSize: 14
 })
 
 const StyledIcon = styled(Icon)({
-  color: PALETTE.TEXT_LIGHT,
-  fontSize: MD_ICONS_SIZE_18,
-  marginLeft: '.5rem'
+  color: PALETTE.TEXT_GRAY,
+  fontSize: ICON_SIZE.MD18,
+  marginLeft: 8
 })
 
 const Input = styled('input')({

@@ -1,6 +1,5 @@
 import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
-import Badge from '../Badge/Badge'
 import LabelHeading from '../LabelHeading/LabelHeading'
 import {panelShadow} from '../../styles/elevation'
 import {Layout} from '../../types/constEnums'
@@ -11,7 +10,7 @@ const PanelRoot = styled('div')({
   borderRadius: 4,
   fontSize: 14,
   lineHeight: '20px',
-  margin: '24px 0',
+  margin: '16px 0',
   position: 'relative',
   width: '100%'
 })
@@ -23,7 +22,7 @@ const PanelHeader = styled('div')({
 })
 
 const PanelLabel = styled(LabelHeading)({
-  padding: `12px ${Layout.ROW_GUTTER}px`,
+  padding: `8px ${Layout.ROW_GUTTER}px`,
   textTransform: 'uppercase'
 })
 
@@ -42,7 +41,6 @@ const PanelBody = styled('div')({
 })
 
 interface Props {
-  badgeCount?: number
   children: ReactNode
   className?: string
   controls?: any
@@ -50,14 +48,13 @@ interface Props {
 }
 
 const Panel = (props: Props) => {
-  const {badgeCount, children, className, controls, label} = props
+  const {children, className, controls, label} = props
 
   return (
     <PanelRoot className={className}>
       {label && (
         <PanelHeader>
           <PanelLabel>{label}</PanelLabel>
-          {badgeCount && <Badge colorPalette='midGray' value={badgeCount} />}
           <PanelControls>{controls}</PanelControls>
         </PanelHeader>
       )}

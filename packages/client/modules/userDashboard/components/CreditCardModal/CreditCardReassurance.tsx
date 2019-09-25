@@ -5,7 +5,7 @@ import styled from '@emotion/styled'
 import MenuItemHR from '../../../../components/MenuItemHR'
 
 const Quote = styled(OrgBillingReassuranceQuote)({
-  padding: '16px 24px'
+  padding: '12px 24px 16px'
 })
 
 const HR = styled(MenuItemHR)({

@@ -5,31 +5,33 @@
 import React from 'react'
 import styled from '@emotion/styled'
 import {Link} from 'react-router-dom'
-
-import ui from '../../styles/ui'
-import appTheme from '../../styles/theme/appTheme'
+import {PALETTE} from '../../styles/paletteV2'
 import parabolLogo from '../../styles/theme/images/brand/logo.svg'
 
 const HeaderContainer = styled('div')({
   alignItems: 'center',
-  backgroundColor: appTheme.brand.primary.purple,
-  color: ui.palette.white,
+  backgroundColor: PALETTE.PRIMARY_MAIN,
+  color: '#FFFFFF',
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'center',
+  minHeight: 56,
   width: '100%'
 })
 
-const HeaderBrand = styled('div')({
-  padding: '0.8rem 1rem 0.6rem'
+const HeaderBrand = styled(Link)({
+  display: 'block',
+  padding: 8
+})
+
+const Img = styled('img')({
+  display: 'block'
 })
 
 export default () => (
   <HeaderContainer>
-    <HeaderBrand>
-      <Link to='/' title='Parabol Home'>
-        <img crossOrigin='' src={parabolLogo} alt='' />
-      </Link>
+    <HeaderBrand to='/' title='Parabol Home'>
+      <Img crossOrigin='' src={parabolLogo} alt='' />
     </HeaderBrand>
   </HeaderContainer>
 )

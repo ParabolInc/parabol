@@ -11,6 +11,10 @@ import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import Reflection from '../../database/types/Reflection'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import getReflectionEntities from './helpers/getReflectionEntities'
+import {GQLContext} from '../graphql'
+import getGroupSmartTitle from 'parabol-client/utils/autogroup/getGroupSmartTitle'
+import updateSmartGroupTitle from './helpers/updateReflectionLocation/updateSmartGroupTitle'
+import stringSimilarity from 'string-similarity'
 
 export default {
   type: UpdateReflectionContentPayload,
@@ -24,7 +28,7 @@ export default {
       description: 'A stringified draft-js document containing thoughts'
     }
   },
-  async resolve(_source, {reflectionId, content}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (_source, {reflectionId, content}, {authToken, dataLoader, socketId: mutatorId}: GQLContext) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const now = new Date()
@@ -36,14 +40,14 @@ export default {
     if (!reflection) {
       return standardError(new Error('Reflection not found'), {userId: viewerId})
     }
-    const {creatorId, meetingId} = reflection
+    const {creatorId, meetingId, reflectionGroupId} = reflection
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     const {endedAt, phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
-    if (isPhaseComplete(NewMeetingPhaseTypeEnum.reflect, phases)) {
+    if (isPhaseComplete(NewMeetingPhaseTypeEnum.group, phases)) {
       return standardError(new Error('Meeting phase already ended'), {userId: viewerId})
     }
     if (creatorId !== viewerId) {
@@ -52,11 +56,11 @@ export default {
 
     // VALIDATION
     const normalizedContent = normalizeRawDraftJS(content)
-    const plaintextContent = extractTextFromDraftString(normalizedContent)
-    const isVeryDifferent = Math.abs(plaintextContent.length - reflection.plaintextContent.length) > 2
-    const entities = isVeryDifferent ? await getReflectionEntities(plaintextContent) : reflection.entities
 
     // RESOLUTION
+    const plaintextContent = extractTextFromDraftString(normalizedContent)
+    const isVeryDifferent =  stringSimilarity.compareTwoStrings(plaintextContent, reflection.plaintextContent) < 0.9
+    const entities = isVeryDifferent ? await getReflectionEntities(plaintextContent) : reflection.entities
     await r
       .table('RetroReflection')
       .get(reflectionId)
@@ -66,6 +70,13 @@ export default {
         plaintextContent,
         updatedAt: now
       })
+
+    const reflectionsInGroup = await r.table('RetroReflection')
+      .getAll(reflectionGroupId, {index: 'reflectionGroupId'})
+      .filter({isActive: true}) as Reflection[]
+
+    const newTitle = getGroupSmartTitle(reflectionsInGroup)
+    await updateSmartGroupTitle(reflectionGroupId, newTitle)
 
     const data = {meetingId, reflectionId}
     publish(SubscriptionChannel.TEAM, teamId, UpdateReflectionContentPayload, data, subOptions)

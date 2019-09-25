@@ -1,5 +1,5 @@
 import {RetroVotePhase_team} from '../__generated__/RetroVotePhase_team.graphql'
-import React from 'react'
+import React, {useRef} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
@@ -14,15 +14,12 @@ import MeetingHelpToggle from './MenuHelpToggle'
 import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
-import ScrollableBlock from './ScrollableBlock'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
 import {minWidthMediaQueries} from '../styles/breakpoints'
-import {MD_ICONS_SIZE_18} from '../styles/icons'
 import {meetingVoteIcon} from '../styles/meeting'
 import {PALETTE} from '../styles/paletteV2'
-import {fontFamily, typeScale} from '../styles/theme/typography'
-import ui from '../styles/ui'
+import {FONT_FAMILY, ICON_SIZE} from '../styles/typographyV2'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {DISCUSS} from '../utils/constants'
 import lazyPreload from '../utils/lazyPreload'
@@ -30,13 +27,13 @@ import {phaseLabelLookup} from '../utils/meetings/lookups'
 import handleRightArrow from '../utils/handleRightArrow'
 import isDemoRoute from '../utils/isDemoRoute'
 import EndMeetingButton from './EndMeetingButton'
-import PhaseItemMasonry from './PhaseItemMasonry'
 import {RetroVotePhase_meetingSettings} from '../__generated__/RetroVotePhase_meetingSettings.graphql'
 import StageTimerControl from './StageTimerControl'
 import StageTimerDisplay from './RetroReflectPhase/StageTimerDisplay'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import PhaseWrapper from './PhaseWrapper'
 import {ElementWidth} from '../types/constEnums'
+import GroupingKanban from './GroupingKanban'
 
 interface Props extends WithAtmosphereProps, RetroMeetingPhaseProps {
   meetingSettings: RetroVotePhase_meetingSettings
@@ -78,20 +75,20 @@ const StyledMetaBlock = styled(MetaBlock)({
 })
 
 const Label = styled(LabelHeading)({
-  fontSize: typeScale[0],
+  fontSize: 11,
   marginRight: '.5rem',
   whiteSpace: 'nowrap',
   [votePhaseBreakpoint]: {
-    fontSize: typeScale[1],
+    fontSize: 12,
     marginRight: '.75rem',
     paddingTop: '.125rem'
   }
 })
 
 const CheckIcon = styled(Icon)<{isDark: boolean | undefined | null}>(({isDark}) => ({
-  color: ui.palette.warm,
+  color: PALETTE.EMPHASIS_COOL,
   display: 'block',
-  fontSize: MD_ICONS_SIZE_18,
+  fontSize: ICON_SIZE.MD18,
   opacity: isDark ? 1 : 0.2,
   marginRight: '.25rem'
 }))
@@ -104,15 +101,15 @@ const CheckMarkRow = styled('div')({
 })
 
 const VoteCountLabel = styled('div')({
-  color: ui.palette.warm,
-  fontFamily: fontFamily.monospace,
-  fontSize: typeScale[3],
+  color: PALETTE.EMPHASIS_COOL,
+  fontFamily: FONT_FAMILY.MONOSPACE,
+  fontSize: 14,
   fontWeight: 600,
   lineHeight: '1.5',
   margin: 0,
   padding: 0,
   [votePhaseBreakpoint]: {
-    fontSize: typeScale[4]
+    fontSize: 16
   }
 })
 
@@ -147,19 +144,20 @@ const RetroVotePhase = (props: Props) => {
     team
   } = props
   const {isMeetingSidebarCollapsed, newMeeting} = team
+  const phaseRef = useRef<HTMLDivElement>(null)
   if (!newMeeting) return null
   const {gotoNext, ref: gotoNextRef} = handleGotoNext
-  const {facilitatorUserId, meetingId, phases, viewerMeetingMember, localStage} = newMeeting
+  const {facilitatorUserId, id: meetingId, phases, viewerMeetingMember, localStage} = newMeeting
   const isComplete = localStage ? localStage.isComplete : false
-  const teamVotesRemaining = newMeeting.teamVotesRemaining || 0
-  const myVotesRemaining = viewerMeetingMember.myVotesRemaining || 0
+  const teamVotesRemaining = newMeeting.votesRemaining || 0
+  const myVotesRemaining = viewerMeetingMember.votesRemaining || 0
   const isFacilitating = facilitatorUserId === viewerId
   const discussPhase = phases.find((phase) => phase.phaseType === DISCUSS)!
   const discussStage = discussPhase.stages![0]
   const nextPhaseLabel = phaseLabelLookup[DISCUSS]
   const checkMarks = [...Array(totalVotes).keys()]
   return (
-    <MeetingContent>
+    <MeetingContent ref={phaseRef}>
       <MeetingHeaderAndPhase>
         <MeetingContentHeader
           avatarGroup={avatarGroup}
@@ -188,11 +186,9 @@ const RetroVotePhase = (props: Props) => {
             </MetaBlock>
           </VoteMeta>
           <StageTimerDisplay stage={localStage} />
-          <ScrollableBlock>
-            <MeetingPhaseWrapper>
-              <PhaseItemMasonry meeting={newMeeting} />
-            </MeetingPhaseWrapper>
-          </ScrollableBlock>
+          <MeetingPhaseWrapper>
+            <GroupingKanban meeting={newMeeting} phaseRef={phaseRef} />
+          </MeetingPhaseWrapper>
         </PhaseWrapper>
         <MeetingHelpToggle
           menu={isDemoRoute() ? <DemoVoteHelpMenu /> : <VoteHelpMenu />}
@@ -232,8 +228,8 @@ export default createFragmentContainer(withAtmosphere(RetroVotePhase), {
       ...StageTimerControl_team
       isMeetingSidebarCollapsed
       newMeeting {
-        ...PhaseItemColumn_meeting
-        meetingId: id
+        ...GroupingKanban_meeting
+        id
         facilitatorUserId
         localStage {
           ...StageTimerDisplay_stage
@@ -253,12 +249,11 @@ export default createFragmentContainer(withAtmosphere(RetroVotePhase), {
         }
         viewerMeetingMember {
           ... on RetrospectiveMeetingMember {
-            myVotesRemaining: votesRemaining
+            votesRemaining
           }
         }
         ... on RetrospectiveMeeting {
-          teamVotesRemaining: votesRemaining
-          ...PhaseItemMasonry_meeting
+          votesRemaining
         }
       }
     }

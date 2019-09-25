@@ -8,7 +8,7 @@ const ProviderCard = styled('div')({
   display: 'flex',
   flexShrink: 0,
   justifyContent: 'flex-start',
-  margin: '8px 0',
+  margin: '16px 0',
   padding: 16,
   position: 'relative',
   width: '100%'

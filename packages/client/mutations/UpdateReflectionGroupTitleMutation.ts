@@ -13,6 +13,7 @@ graphql`
   fragment UpdateReflectionGroupTitleMutation_team on UpdateReflectionGroupTitlePayload {
     reflectionGroup {
       title
+      titleIsUserDefined
     }
   }
 `

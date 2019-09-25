@@ -1,6 +1,6 @@
-import React, {useState} from 'react'
-import appTheme from '../../styles/theme/appTheme'
-import ui from '../../styles/ui'
+import React, {useState, ReactNode} from 'react'
+import {PALETTE} from '../../styles/paletteV2'
+import {Card} from '../../types/constEnums'
 import {createFragmentContainer} from 'react-relay'
 import DueDateToggle from '../DueDateToggle'
 import styled from '@emotion/styled'
@@ -11,15 +11,15 @@ import {UseTaskChild} from '../../hooks/useTaskChildFocus'
 import EditingStatusText from './EditingStatusText'
 
 const StatusHeader = styled('div')({
-  alignItems: 'center',
-  color: appTheme.palette.dark80l,
+  alignItems: 'flex-start',
+  color: PALETTE.TEXT_GRAY,
   display: 'flex',
-  fontSize: '.6875rem',
+  fontSize: 11,
   fontWeight: 400,
   justifyContent: 'space-between',
-  lineHeight: '1.375rem',
-  minHeight: ui.cardButtonHeight,
-  padding: `0 ${ui.cardPaddingBase}`,
+  lineHeight: '20px',
+  minHeight: Card.BUTTON_HEIGHT,
+  padding: `0 ${Card.PADDING} 8px`,
   textAlign: 'left'
 })
 
@@ -30,6 +30,7 @@ const EditingText = styled('span')<{isEditing: boolean}>(({isEditing}) => ({
 export type TimestampType = 'createdAt' | 'updatedAt'
 
 interface Props {
+  children: ReactNode
   isTaskHovered: boolean
   task: EditingStatus_task
   useTaskChild: UseTaskChild
@@ -37,6 +38,7 @@ interface Props {
 
 const EditingStatus = (props: Props) => {
   const {
+    children,
     isTaskHovered,
     task,
     useTaskChild
@@ -54,9 +56,12 @@ const EditingStatus = (props: Props) => {
   const timestamp = timestampType === 'createdAt' ? createdAt : updatedAt
   return (
     <StatusHeader>
-      <EditingText isEditing={isEditing} onClick={toggleTimestamp} title={title}>
-        <EditingStatusText editors={otherEditors} isEditing={isEditing} timestamp={timestamp} timestampType={timestampType}/>
-      </EditingText>
+      <div>
+        {children}
+        <EditingText isEditing={isEditing} onClick={toggleTimestamp} title={title}>
+          <EditingStatusText editors={otherEditors} isEditing={isEditing} timestamp={timestamp} timestampType={timestampType}/>
+        </EditingText>
+      </div>
       <DueDateToggle cardIsActive={isEditing || isTaskHovered} task={task} useTaskChild={useTaskChild} />
     </StatusHeader>
   )

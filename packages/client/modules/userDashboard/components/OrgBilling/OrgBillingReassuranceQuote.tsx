@@ -30,12 +30,23 @@ const quotes = [
 const Quote = styled('div')({
   display: 'flex',
   flexDirection: 'column',
+  fontSize: 16,
   lineHeight: '20px'
 })
 
 const Text = styled('div')({
   fontStyle: 'italic',
-  maxWidth: 280
+  maxWidth: 280,
+  padding: '0 0 12px',
+  position: 'relative'
+})
+
+const HangQuote = styled('div')({
+  position: 'absolute',
+  left: '-2em',
+  textAlign: 'right',
+  top: 0,
+  width: '2em'
 })
 
 const Signature = styled('div')({
@@ -43,10 +54,26 @@ const Signature = styled('div')({
   display: 'flex'
 })
 
-const Picture = styled('img')({
+const PictureBlock = styled('div')({
   height: 48,
-  width: 48,
-  borderRadius: '100%'
+  position: 'relative',
+  '&::after': {
+    borderRadius: '100%',
+    boxShadow: 'inset 0 0 0 1px rgba(0, 0, 0, .25)',
+    content: '""',
+    height: 48,
+    left: 0,
+    position: 'absolute',
+    top: 0,
+    width: 48,
+    zIndex: 200
+  }
+})
+
+const Picture = styled('img')({
+  borderRadius: '100%',
+  height: 48,
+  width: 48
 })
 
 const NameAndTitle = styled('div')({
@@ -61,7 +88,7 @@ const Name = styled('div')({
 })
 
 const Title = styled('div')({
-  color: PALETTE.TEXT_LIGHT,
+  color: PALETTE.TEXT_GRAY,
   fontSize: 13
 })
 
@@ -75,9 +102,13 @@ const OrgBillingReassuranceQuote = (props: Props) => {
   const {text, picture, name, title} = quotes[quoteNumber]
   return (
     <Quote className={className}>
-      <Text>“{text}”</Text>
+      <Text>
+        <HangQuote>“</HangQuote>{text}”
+      </Text>
       <Signature>
-        <Picture src={picture}/>
+        <PictureBlock>
+          <Picture src={picture}/>
+        </PictureBlock>
         <NameAndTitle>
           <Name>{name}</Name>
           <Title>{title}</Title>

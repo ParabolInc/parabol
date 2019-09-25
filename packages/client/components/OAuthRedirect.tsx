@@ -3,6 +3,7 @@ import {RouteComponentProps, withRouter} from 'react-router'
 import LoginMutation from '../mutations/LoginMutation'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import getAnonymousId from '../utils/getAnonymousId'
+import {LocalStorageKey} from '../types/constEnums'
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {}
 
@@ -16,8 +17,8 @@ class OAuthRedirect extends Component<Props> {
     const search = window.location.hash.slice(1)
     const params = new URLSearchParams(search)
     const storedState = window.localStorage.getItem('auth0State')
-    const invitationToken = window.localStorage.getItem('invitationToken')
-    window.localStorage.removeItem('invitationToken')
+    const invitationToken = window.localStorage.getItem(LocalStorageKey.INVITATION_TOKEN)
+    window.localStorage.removeItem(LocalStorageKey.INVITATION_TOKEN)
     window.localStorage.removeItem('auth0State')
     const state = params.get('state')
     const code = params.get('id_token')

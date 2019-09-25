@@ -1,6 +1,6 @@
 import shortid from 'shortid'
 
-interface Input {
+export interface ReflectionGroupInput {
   id?: string
   createdAt?: Date
   meetingId: string
@@ -8,6 +8,8 @@ interface Input {
   sortOrder: number
   updatedAt?: Date
   voterIds?: string[]
+  title?: string
+  smartTitle?: string
 }
 
 export default class ReflectionGroup {
@@ -19,8 +21,10 @@ export default class ReflectionGroup {
   sortOrder: number
   updatedAt: Date
   voterIds: string[]
-  constructor(input: Input) {
-    const {createdAt, id, meetingId, retroPhaseItemId, sortOrder, updatedAt, voterIds} = input
+  title: string | null
+  smartTitle: string | null
+  constructor(input: ReflectionGroupInput) {
+    const {createdAt, id, meetingId, retroPhaseItemId, sortOrder, updatedAt, voterIds, smartTitle, title} = input
     const now = new Date()
     this.id = id || shortid.generate()
     this.createdAt = createdAt || now
@@ -30,5 +34,7 @@ export default class ReflectionGroup {
     this.sortOrder = sortOrder
     this.updatedAt = updatedAt || now
     this.voterIds = voterIds || []
+    this.smartTitle = smartTitle || null
+    this.title = title || null
   }
 }

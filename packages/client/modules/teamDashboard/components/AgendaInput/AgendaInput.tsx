@@ -13,7 +13,7 @@ import AddAgendaItemMutation from '../../../../mutations/AddAgendaItemMutation'
 import makeFieldColorPalette from '../../../../styles/helpers/makeFieldColorPalette'
 import makePlaceholderStyles from '../../../../styles/helpers/makePlaceholderStyles'
 import {meetingSidebarGutter} from '../../../../styles/meeting'
-import appTheme from '../../../../styles/theme/appTheme'
+import {PALETTE} from '../../../../styles/paletteV2'
 import ui from '../../../../styles/ui'
 import getNextSortOrder from '../../../../utils/getNextSortOrder'
 import toTeamMemberId from '../../../../utils/relay/toTeamMemberId'
@@ -26,37 +26,34 @@ const AgendaInputBlock = styled('div')({
 
 const InputForm = styled('form')<{disabled: boolean}>(({disabled}) => ({
   backgroundColor: 'transparent',
-  color: appTheme.palette.cool,
   fontSize: 14,
   padding: `0 ${meetingSidebarGutter}`,
   position: 'relative',
   width: '100%',
-  // zIndex: 100,
   ':hover': {
     backgroundColor: disabled ? 'transparent' : undefined
   }
 }))
 
-const inputPlaceholderStyles = makePlaceholderStyles(appTheme.palette.warm)
+const inputPlaceholderStyles = makePlaceholderStyles(PALETTE.TEXT_ORANGE)
 
 const InputField = styled('input')<{disabled: boolean}>(
   {
     ...ui.fieldBaseStyles,
     ...ui.fieldSizeStyles.medium,
     boxShadow: 'none',
-    color: appTheme.palette.warm,
+    color: PALETTE.TEXT_ORANGE,
     cursor: 'not-allowed',
     display: 'block',
     fontSize: 14,
     fontWeight: 400,
-    lineHeight: '1.5rem',
+    lineHeight: '24px',
     margin: 0,
     outline: 'none',
-    padding: '.5rem .5rem .5rem 3rem',
+    padding: '8px 8px 8px 48px',
     position: 'relative',
-    textIndent: '.1875rem',
+    textIndent: '3px',
     width: '100%',
-    // zIndex: 200,
     ...makeFieldColorPalette('primary', false),
     ...inputPlaceholderStyles
   },
@@ -71,13 +68,13 @@ const InputField = styled('input')<{disabled: boolean}>(
 )
 
 const StyledIcon = styled(Icon)({
-  color: appTheme.palette.warm70l,
+  color: PALETTE.TEXT_ORANGE,
   display: 'block',
-  left: '1.625rem',
+  left: 26,
+  opacity: .7,
   pointerEvents: 'none',
   position: 'absolute',
-  top: '.5625rem'
-  // zIndex: 200
+  top: 9
 })
 
 interface Props {

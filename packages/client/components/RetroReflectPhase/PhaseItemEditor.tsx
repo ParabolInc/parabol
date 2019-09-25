@@ -1,6 +1,6 @@
 import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
 import React, {MutableRefObject, RefObject, useEffect, useRef, useState} from 'react'
-import {ReflectionCardRoot} from '../ReflectionCard/ReflectionCard'
+import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
 import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
 import CreateReflectionMutation from '../../mutations/CreateReflectionMutation'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
@@ -132,12 +132,16 @@ const PhaseItemEditor = (props: Props) => {
     setCardsInFlight(nextCardsInFlight)
   }
 
+  const editorRef = useRef<HTMLTextAreaElement>(null)
+
   return (
     <>
       <ReflectionCardRoot ref={phaseEditorRef}>
         <ReflectionEditorWrapper
+          isPhaseItemEditor
           ariaLabel='Edit this reflection'
           editorState={editorState}
+          editorRef={editorRef}
           onBlur={ensureNotEditing}
           onFocus={ensureEditing}
           handleReturn={handleReturn}

@@ -38,6 +38,7 @@ extend type RetroReflection {
   isDropping: Boolean
   remoteDrag: RemoteReflectionDrag
   ignoreDragStarts: [ID!]
+  isEditing: Boolean
 }
 
 extend type DragContext {

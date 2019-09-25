@@ -15,8 +15,8 @@ import {PALETTE} from '../../../../styles/paletteV2'
 import {Breakpoint} from '../../../../types/constEnums'
 import InvoiceFailedStamp from './InvoiceFailedStamp'
 import InvoiceTag from './InvoiceTag'
-import {InvoiceStatusEnum} from '../../../../types/graphql'
-import NextMonthChargesLineItem from '../InvoiceLineItem/NextMonthChargesLineItem'
+import {InvoiceStatusEnum, TierEnum} from '../../../../types/graphql'
+import NextPeriodChargesLineItem from '../InvoiceLineItem/NextPeriodChargesLineItem'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 
 
@@ -57,6 +57,7 @@ const AmountLineSub = styled('div')({
 })
 
 const Wrap = styled('div')({
+  backgroundColor: PALETTE.BACKGROUND_MAIN,
   overflow: 'hidden'
 })
 
@@ -75,8 +76,8 @@ const InvoiceStyles = styled('div')({
 })
 
 const Panel = styled('div')({
-  backgroundColor: '#fff',
-  border: `1px solid ${PALETTE.BORDER_DARK}`,
+  backgroundColor: '#FFFFFF',
+  border: `1px solid ${PALETTE.BORDER_MAIN_40}`,
   borderRadius: 8,
   margin: `16px 0`,
   padding: `12px 0 12px 12px`,
@@ -116,7 +117,7 @@ const Heading = styled('div')({
   fontSize: 18,
   fontWeight: 600,
   lineHeight: '24px',
-
+  paddingBottom: 8,
   [`@media (min-width: ${Breakpoint.INVOICE}px)`]: {
     fontSize: 24
   }
@@ -136,7 +137,7 @@ const HeadingLabel = styled('div')({
     backgroundColor: PALETTE.BORDER_INVOICE_LABEL,
     border: `1px solid ${PALETTE.BORDER_INVOICE_LABEL}`,
     borderRadius: '4em',
-    color: '#fff',
+    color: '#FFFFFF',
     display: 'inline-block',
     fontSize: 12,
     marginBottom: 0,
@@ -145,6 +146,14 @@ const HeadingLabel = styled('div')({
     textTransform: 'uppercase',
     verticalAlign: 'middle'
   }
+})
+
+const PayURLText = styled('a')({
+  display: 'flex',
+  fontSize: 12,
+  justifyContent: 'space-between',
+  paddingTop: 8,
+  width: '100%'
 })
 
 interface Props {
@@ -165,16 +174,16 @@ const Invoice = (props: Props) => {
     total,
     creditCard,
     lines,
-    nextMonthCharges,
+    nextPeriodCharges,
+    payUrl,
     startAt,
-    startingBalance
+    startingBalance,
+    tier
   } = invoiceDetails
   const status = invoiceDetails.status as InvoiceStatusEnum
-  const {nextPeriodEnd} = nextMonthCharges!
-  const {brand, last4} = creditCard!
+  const {interval, nextPeriodEnd} = nextPeriodCharges!
   const chargeDates = `${makeDateString(startAt)} to ${makeDateString(endAt)}`
   const nextChargesDates = `${makeDateString(endAt)} to ${makeDateString(nextPeriodEnd)}`
-
   return (
     <Wrap>
       <InvoiceStyles>
@@ -186,10 +195,10 @@ const Invoice = (props: Props) => {
           <Subject>{subject}</Subject>
 
           <SectionHeader>
-            <Heading>{'Next month’s usage'}</Heading>
+            <Heading>{`Next ${interval}’s usage`}</Heading>
             <Meta>{nextChargesDates}</Meta>
           </SectionHeader>
-          <NextMonthChargesLineItem item={nextMonthCharges} />
+          <NextPeriodChargesLineItem tier={tier as TierEnum} item={nextPeriodCharges} />
 
           {lines.length > 0 && (
             <>
@@ -225,13 +234,19 @@ const Invoice = (props: Props) => {
               <div>{'Amount due'}</div>
               <div>{invoiceLineFormat(amountDue)}</div>
             </AmountLine>
-            {brand && (
+            {creditCard && (
               <Meta isError={status === InvoiceStatusEnum.FAILED}>
                 {chargeStatus[status]}
                 {' to '}
-                <b>{brand}</b> {'ending in '}
-                <b>{last4}</b>
+                <b>{creditCard.brand}</b> {'ending in '}
+                <b>{creditCard.last4}</b>
               </Meta>
+            )}
+            {status === InvoiceStatusEnum.PENDING && payUrl && (
+              <PayURLText href={payUrl} rel='noopener noreferrer' target='_blank'>
+                <span>PAY NOW</span>
+                <span>{payUrl}</span>
+              </PayURLText>
             )}
           </AmountSection>
         </Panel>
@@ -257,13 +272,16 @@ export default createFragmentContainer(Invoice, {
           ...InvoiceLineItem_item
           id
         }
-        nextMonthCharges {
-          ...NextMonthChargesLineItem_item
+        nextPeriodCharges {
+          ...NextPeriodChargesLineItem_item
           nextPeriodEnd
+          interval
         }
+        payUrl
         startingBalance
         startAt
         status
+        tier
         total
       }
     }

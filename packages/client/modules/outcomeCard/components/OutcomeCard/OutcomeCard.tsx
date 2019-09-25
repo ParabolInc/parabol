@@ -5,11 +5,11 @@ import TaskIntegrationLink from '../../../../components/TaskIntegrationLink'
 import TaskWatermark from '../../../../components/TaskWatermark'
 import TaskFooter from '../OutcomeCardFooter/TaskFooter'
 import OutcomeCardStatusIndicator from '../OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
-import labels from '../../../../styles/theme/labels'
-import ui from '../../../../styles/ui'
+import {Card} from '../../../../types/constEnums'
 import {cardFocusShadow, cardHoverShadow, cardShadow, Elevation} from '../../../../styles/elevation'
 import isTaskArchived from '../../../../utils/isTaskArchived'
 import isTaskPrivate from '../../../../utils/isTaskPrivate'
+import {taskStatusLabels} from '../../../../utils/taskStatus'
 import isTempId from '../../../../utils/relay/isTempId'
 import cardRootStyles from '../../../../styles/helpers/cardRootStyles'
 import styled from '@emotion/styled'
@@ -24,7 +24,7 @@ const RootCard = styled('div')<{isTaskHovered: boolean, isTaskFocused: boolean, 
   ...cardRootStyles,
   borderTop: 0,
   outline: 'none',
-  padding: `${ui.cardPaddingBase} 0 0`,
+  padding: `${Card.PADDING} 0 0`,
   transition: `box-shadow 100ms ease-in`,
   // hover before focus, it matters
   boxShadow: isDragging
@@ -40,13 +40,8 @@ const ContentBlock = styled('div')({
   position: 'relative'
 })
 
-const CardTopMeta = styled('div')({
-  paddingBottom: '.5rem'
-})
-
 const StatusIndicatorBlock = styled('div')({
-  display: 'flex',
-  paddingLeft: ui.cardPaddingBase
+  display: 'flex'
 })
 
 interface Props {
@@ -81,7 +76,7 @@ const OutcomeCard = memo((props: Props) => {
   const {teamId} = team
   const {integration, taskId} = task
   const service = integration ? integration.service as TaskServiceEnum : undefined
-  const statusTitle = `Card status: ${labels.taskStatus[status].label}`
+  const statusTitle = `Card status: ${taskStatusLabels[status]}`
   const privateTitle = ', marked as #private'
   const archivedTitle = ', set as #archived'
   const statusIndicatorTitle = `${statusTitle}${isPrivate ? privateTitle : ''}${
@@ -91,18 +86,17 @@ const OutcomeCard = memo((props: Props) => {
     <RootCard isTaskHovered={isTaskHovered} isTaskFocused={isTaskFocused} isDragging={!!isDraggingOver}>
       <TaskWatermark service={service} />
       <ContentBlock>
-        <CardTopMeta>
+        <EditingStatus
+          isTaskHovered={isTaskHovered}
+          task={task}
+          useTaskChild={useTaskChild}
+        >
           <StatusIndicatorBlock title={statusIndicatorTitle}>
             <OutcomeCardStatusIndicator status={isDraggingOver || status} />
             {isPrivate && <OutcomeCardStatusIndicator status='private' />}
             {isArchived && <OutcomeCardStatusIndicator status='archived' />}
           </StatusIndicatorBlock>
-          <EditingStatus
-            isTaskHovered={isTaskHovered}
-            task={task}
-            useTaskChild={useTaskChild}
-          />
-        </CardTopMeta>
+        </EditingStatus>
         <TaskEditor
           editorRef={editorRef}
           editorState={editorState}

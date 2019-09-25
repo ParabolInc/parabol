@@ -3,15 +3,15 @@ import React from 'react'
 import styled from '@emotion/styled'
 import IconButton from '../IconButton'
 import IconLabel from '../IconLabel'
-import appTheme from '../../styles/theme/appTheme'
-import ui from '../../styles/ui'
+import {PALETTE} from '../../styles/paletteV2'
+import {Radius} from '../../types/constEnums'
 
 const isOSX = UserAgent.isPlatform('Mac OS X')
 const modKey = isOSX ? '⌘' : 'ctrl'
 
 const ModalHeader = styled('div')({
   alignItems: 'center',
-  color: ui.palette.mid,
+  color: PALETTE.TEXT_MAIN,
   display: 'flex',
   justifyContent: 'center',
   lineHeight: 1.5,
@@ -25,74 +25,74 @@ const ModalHeaderIcon = styled('div')({
 
 const ModalHeaderTitle = styled('div')({
   fontSize: 20,
-  marginLeft: '1rem'
+  marginLeft: 16
 })
 
 const CloseButton = styled(IconButton)({
-  height: 28,
-  lineHeight: 28,
+  height: 24,
+  lineHeight: '24px',
   opacity: 0.75,
   padding: 0,
   position: 'absolute',
-  right: '.125rem',
-  top: 0,
-  width: 28
+  right: 4,
+  top: 4,
+  width: 24
 })
 
 const HelpList = styled('div')<{listIndex: number}>(({listIndex}) => ({
-  border: `.0625rem solid ${appTheme.palette.mid30l}`,
-  color: appTheme.palette.dark50d,
+  border: `1px solid ${PALETTE.BORDER_LIGHT}`,
+  color: PALETTE.TEXT_MAIN,
   fontSize: 13,
-  lineHeight: '18x',
-  margin: listIndex === 0 ? '0 auto' : '1rem auto 0',
+  lineHeight: '18px',
+  margin: listIndex === 0 ? '0 auto' : '16px auto 0',
   minWidth: 0,
   textAlign: 'left'
 }))
 
 const HelpRow = styled('div')<{shortcutIndex: number}>(({shortcutIndex}) => ({
   alignItems: 'center',
-  backgroundColor: shortcutIndex % 2 ? ui.palette.white : appTheme.palette.mid10l,
+  backgroundColor: shortcutIndex % 2 ? '#FFFFFF' : PALETTE.BACKGROUND_MAIN,
   display: 'flex',
-  padding: '.25rem 0'
+  padding: '4px 0'
 }))
 
 const Icon = styled('div')({
-  padding: '0 .5rem 0 1rem',
+  padding: '0 8px 0 16px',
   textAlign: 'center',
-  width: '2.75rem'
+  width: 44
 })
 
 const Label = styled('div')({
-  padding: '0 .5rem',
-  width: '7.5rem'
+  padding: '0 8px',
+  width: 120
 })
 
 const Keyboard = styled('div')({
-  padding: '0 .5rem',
-  width: '12rem'
+  padding: '0 8px',
+  width: 192
 })
 
 const Markdown = styled('div')({
-  padding: '0 .5rem',
-  width: '12rem'
+  padding: '0 8px',
+  width: 192
 })
 
 const HeaderLabelBlock = styled('div')({
   display: 'flex',
   justifyContent: 'flex-end',
-  padding: '.0625rem',
+  padding: 1,
   width: '100%'
 })
 
 const HeaderLabel = styled('div')({
-  color: ui.palette.dark,
+  color: PALETTE.TEXT_MAIN,
   fontSize: 13,
   fontWeight: 600,
-  lineHeight: '18x',
-  padding: '1rem .5rem .25rem',
+  lineHeight: '18px',
+  padding: '16px 8px 4px',
   textAlign: 'left',
   textTransform: 'uppercase',
-  width: '12rem'
+  width: 192
 })
 
 const typeShortcuts = [
@@ -178,8 +178,8 @@ const blockShortcuts = [
 const shortcutLists = [typeShortcuts, mentionShortcuts, blockShortcuts]
 
 const ModalBoundary = styled('div')({
-  background: ui.palette.white,
-  borderRadius: ui.modalBorderRadius,
+  background: '#FFFFFF',
+  borderRadius: Radius.DIALOG,
   display: 'flex',
   flexDirection: 'column',
   height: 480,

@@ -5,6 +5,87 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.5.3 2019-Sep-23
+
+## Removed
+* Google language client (source of memory leak since v3.16.0)
+
+## 4.5.2 2019-Sep-23
+
+## Added 
+* Dumpy to dump stack heap info when SIGPIPE received
+
+## Fixed
+* make start meeting more transactional to avoid duplicate start meetings
+
+## 4.5.1 2019-Sep-20
+
+### Removed
+* Test removing Sentry to verify memleak
+
+## 4.5.0 2019-Sep-19
+
+### Changed
+* Moved webhook GraphQL handlers to the private schema
+
+### Fixed
+* Billing leaders now see inactivity tag on Org Member view
+
+## 4.4.3 2019-Sep-18
+
+### Fixed
+* False positive for "Login with Google" when tms does not exist on auth0 token
+
+## 4.4.2 2019-Sep-12
+
+### Added
+* Support moving multiple teams to a single org & archiving empty orgs
+
+### Fixed
+* Clean up legacy tables in DB
+* Corrected JWT expiry
+
+## 4.4.1 2019-Sep-11
+
+### Fixed
+* IdP-initiated login flow
+
+## 4.4.0 2019-Sep-11
+
+### Added
+* Added enterprise invoicing (#3158)
+
+## 4.3.2 2019-Sep-06
+
+### Fixed
+* Service worker no longer caches HTML documents, fixes SAML login
+* Cypress credentials
+
+## 4.3.0 2019-Sep-05
+
+### Added
+* SAML support
+
+### Fixed
+* UI touchups (Pro tag, timeline padding)
+
+## v4.2.0 2019-Aug-28
+
+### Added
+* Modal at beginning of demo
+
+### Removed
+* Aprhodite in favor of emotion
+
+### Fixed
+* Various UI touch-ups:
+   * uniform gutters for task column header
+   * fixes ellipsis
+   * fixes due date bg color
+   * improves editing + due date block layout
+   * Organization list now a responsive layout
+
+
 ## v4.1.0 2019-Aug-14
 
 ### Added

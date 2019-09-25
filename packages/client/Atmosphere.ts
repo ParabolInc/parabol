@@ -22,7 +22,6 @@ import StrictEventEmitter from 'strict-event-emitter-types'
 import LinearPublishQueue from 'relay-linear-publish-queue'
 import {APP_TOKEN_KEY} from './utils/constants'
 import handlerProvider from './utils/relay/handlerProvider'
-import {MasonryDragEndPayload} from './components/PhaseItemMasonry'
 import {Snack, SnackbarRemoveFn} from './components/Snackbar'
 import AuthToken from 'parabol-server/database/types/AuthToken'
 
@@ -66,7 +65,6 @@ const noop = (): any => {
 export interface AtmosphereEvents {
   addSnackbar: (snack: Snack) => void
   removeSnackbar: (filterFn: SnackbarRemoveFn) => void
-  endDraggingReflection: (payload: MasonryDragEndPayload) => void
   focusAgendaInput: () => void
   inviteToTeam: (
     notification: NonNullable<InviteToTeamMutation_notification['teamInvitationNotification']>

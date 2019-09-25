@@ -6,9 +6,9 @@ import DropdownMenuItemLabel from './DropdownMenuItemLabel'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
-import TagPro from './Tag/TagPro'
 import {MenuProps} from '../hooks/useMenu'
-import {PRO} from '../utils/constants'
+import {TierEnum} from '../types/graphql'
+import TierTag from './Tag/TierTag'
 
 interface Props {
   menuProps: MenuProps
@@ -27,17 +27,18 @@ const NewTeamOrgDropdown = (props: Props) => {
     >
       <DropdownMenuLabel>Select Organization:</DropdownMenuLabel>
       {organizations.map((anOrg) => {
+        const {id, tier, name} = anOrg
         return (
           <MenuItem
-            key={anOrg.id}
+            key={id}
             label={
               <DropdownMenuItemLabel>
-                <span>{anOrg.name}</span>
-                {anOrg.tier === PRO && <TagPro />}
+                <span>{name}</span>
+                {tier !== TierEnum.personal && <TierTag tier={tier as TierEnum} />}
               </DropdownMenuItemLabel>
             }
             onClick={() => {
-              onChange(anOrg.id)
+              onChange(id)
             }}
           />
         )

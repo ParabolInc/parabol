@@ -13,12 +13,13 @@ import withAtmosphere, {
   WithAtmosphereProps
 } from '../../decorators/withAtmosphere/withAtmosphere'
 import UpdateReflectionGroupTitleMutation from '../../mutations/UpdateReflectionGroupTitleMutation'
-import appTheme from '../../styles/theme/appTheme'
+import {PALETTE} from '../../styles/paletteV2'
 import ui from '../../styles/ui'
+import {Card} from '../../types/constEnums'
 import {RETRO_TOPIC_LABEL} from '../../utils/constants'
 import withMutationProps, {WithMutationProps} from '../../utils/relay/withMutationProps'
 import Icon from '../Icon'
-import {MD_ICONS_SIZE_18} from '../../styles/icons'
+import {ICON_SIZE} from '../../styles/typographyV2'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   isExpanded: boolean
@@ -28,8 +29,8 @@ interface Props extends WithMutationProps, WithAtmosphereProps {
   titleInputRef: RefObject<HTMLInputElement>
 }
 
-const fontSize = appTheme.typography.s3
-const lineHeight = appTheme.typography.s5
+const fontSize = Card.FONT_SIZE
+const lineHeight = Card.LINE_HEIGHT
 
 const underlineStyles = {
   backgroundColor: 'transparent',
@@ -45,9 +46,9 @@ const InputWithIconWrap = styled('div')({
 })
 
 const PencilIcon = styled(Icon)<{isExpanded?: boolean}>(({isExpanded}) => ({
-  color: isExpanded ? '#fff' : ui.hintColor,
+  color: isExpanded ? '#FFFFFF' : PALETTE.TEXT_GRAY,
   display: 'block',
-  fontSize: MD_ICONS_SIZE_18,
+  fontSize: ICON_SIZE.MD18,
   opacity: 0.5,
   marginLeft: '0.25rem',
   textAlign: 'center',
@@ -78,7 +79,7 @@ const NameInput = styled('input')<{isExpanded: boolean; readOnly: boolean}>(
     ...ui.fieldSizeStyles.small,
     border: 0,
     boxShadow: 'none',
-    color: isExpanded ? '#fff' : appTheme.palette.dark,
+    color: isExpanded ? '#FFFFFF' : PALETTE.TEXT_MAIN,
     cursor: readOnly ? 'default' : 'text',
     fontSize,
     fontWeight: 600,
@@ -122,7 +123,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
       onCompleted,
       onError,
       meeting: {reflectionGroups},
-      reflectionGroup: {reflectionGroupId}
+      reflectionGroup: {id: reflectionGroupId}
     } = this.props
     const title = e.target.value
     commitLocalUpdate(atmosphere, (store) => {
@@ -162,7 +163,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
       onCompleted,
       onError,
       meeting: {reflectionGroups},
-      reflectionGroup: {reflectionGroupId, title}
+      reflectionGroup: {id: reflectionGroupId, title}
     } = this.props
     if (submitting || title === this.initialTitle || !title) return
     this.initialTitle = title
@@ -224,7 +225,7 @@ export default createFragmentContainer(
   {
     reflectionGroup: graphql`
       fragment ReflectionGroupTitleEditor_reflectionGroup on RetroReflectionGroup {
-        reflectionGroupId: id
+        id
         title
       }
     `,

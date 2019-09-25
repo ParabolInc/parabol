@@ -3,12 +3,11 @@ import adjustUserCount from '../../billing/helpers/adjustUserCount'
 import getRethink from '../../database/rethinkDriver'
 import removeTeamMember from './helpers/removeTeamMember'
 import RemoveOrgUserPayload from '../types/RemoveOrgUserPayload'
-import {auth0ManagementClient} from '../../utils/auth0Helpers'
+import {updateAuth0TMS} from '../../utils/auth0Helpers'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {REMOVE_USER} from '../../utils/serverConstants'
 import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import AuthTokenPayload from '../types/AuthTokenPayload'
 
 const removeOrgUser = {
@@ -109,15 +108,14 @@ const removeOrgUser = {
     const {joinedAt, newUserUntil} = organizationUser
     const prorationDate = newUserUntil >= now ? new Date(joinedAt) : now
     try {
-      await adjustUserCount(userId, orgId, REMOVE_USER, {prorationDate})
+      await adjustUserCount(userId, orgId, InvoiceItemType.REMOVE_USER, {prorationDate})
     } catch (e) {
       console.log(e)
     }
 
     const {tms} = user
     publish(SubscriptionChannel.NOTIFICATION, userId, AuthTokenPayload, {tms})
-    auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
-
+    updateAuth0TMS(userId, tms)
     const data = {
       orgId,
       kickOutNotificationIds,

@@ -11,7 +11,6 @@ import deleteTask from './mutations/deleteTask'
 import disconnectSocket from './mutations/disconnectSocket'
 import downgradeToPersonal from './mutations/downgradeToPersonal'
 import editTask from './mutations/editTask'
-import githubAddAssignee from './mutations/githubAddAssignee'
 import inactivateUser from './mutations/inactivateUser'
 import navigateMeeting from './mutations/navigateMeeting'
 import promoteNewMeetingFacilitator from './mutations/promoteNewMeetingFacilitator'
@@ -21,11 +20,6 @@ import removeTeamMember from './mutations/removeTeamMember'
 import segmentEventTrack from './mutations/segmentEventTrack'
 import setOrgUserRole from './mutations/setOrgUserRole'
 import startNewMeeting from './mutations/startNewMeeting'
-import stripeCreateInvoice from './mutations/stripeCreateInvoice'
-import stripeFailPayment from './mutations/stripeFailPayment'
-import stripeSucceedPayment from './mutations/stripeSucceedPayment'
-import stripeUpdateCreditCard from './mutations/stripeUpdateCreditCard'
-import stripeUpdateInvoiceItem from './mutations/stripeUpdateInvoiceItem'
 import toggleAgendaList from './mutations/toggleAgendaList'
 import updateAgendaItem from './mutations/updateAgendaItem'
 import updateCreditCard from './mutations/updateCreditCard'
@@ -49,7 +43,6 @@ import createReflection from './mutations/createReflection'
 import updateReflectionContent from './mutations/updateReflectionContent'
 import editReflection from './mutations/editReflection'
 import removeReflection from './mutations/removeReflection'
-import createReflectionGroup from './mutations/createReflectionGroup'
 import updateReflectionGroupTitle from './mutations/updateReflectionGroupTitle'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 import newMeetingCheckIn from './mutations/newMeetingCheckIn'
@@ -108,7 +101,6 @@ export default new GraphQLObjectType<any, Context, any>({
     createJiraIssue,
     createOrgPicturePutUrl,
     createReflection,
-    createReflectionGroup,
     createTask,
     createUserPicturePutUrl,
     deleteTask,
@@ -121,7 +113,6 @@ export default new GraphQLObjectType<any, Context, any>({
     endDraggingReflection,
     editReflection,
     editTask,
-    githubAddAssignee,
     inactivateUser,
     inviteToTeam,
     endNewMeeting,
@@ -147,11 +138,6 @@ export default new GraphQLObjectType<any, Context, any>({
     setSlackNotification,
     startDraggingReflection,
     startNewMeeting,
-    stripeCreateInvoice,
-    stripeFailPayment,
-    stripeSucceedPayment,
-    stripeUpdateCreditCard,
-    stripeUpdateInvoiceItem,
     toggleAgendaList,
     updateAgendaItem,
     updateCreditCard,

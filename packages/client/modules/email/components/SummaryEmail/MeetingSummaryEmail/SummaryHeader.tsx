@@ -1,6 +1,7 @@
 import emailDir from '../../../emailDir'
 import React from 'react'
-import {FONT_FAMILY, PALETTE_TEXT_LIGHT, PALETTE_TEXT_MAIN} from './constants'
+import {PALETTE} from '../../../../../styles/paletteV2'
+import {FONT_FAMILY} from '../../../../../styles/typographyV2'
 import {meetingTypeToLabel} from '../../../../../utils/meetings/lookups'
 import makeDateString from '../../../../../utils/makeDateString'
 import {createFragmentContainer} from 'react-relay'
@@ -8,8 +9,8 @@ import graphql from 'babel-plugin-relay/macro'
 import {SummaryHeader_meeting} from '../../../../../__generated__/SummaryHeader_meeting.graphql'
 
 const meetingSummaryLabel = {
-  color: PALETTE_TEXT_LIGHT,
-  fontFamily: FONT_FAMILY,
+  color: PALETTE.TEXT_GRAY,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
   textTransform: 'uppercase',
   fontSize: '12px',
   fontWeight: 600,
@@ -18,16 +19,16 @@ const meetingSummaryLabel = {
 } as React.CSSProperties
 
 const teamNameLabel = {
-  color: PALETTE_TEXT_MAIN,
-  fontFamily: FONT_FAMILY,
+  color: PALETTE.TEXT_MAIN,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 36,
   fontWeight: 600,
   paddingTop: 16
 } as React.CSSProperties
 
 const dateLabel = {
-  color: PALETTE_TEXT_LIGHT,
-  fontFamily: FONT_FAMILY,
+  color: PALETTE.TEXT_GRAY,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: '15px',
   fontWeight: 400,
   paddingTop: 8

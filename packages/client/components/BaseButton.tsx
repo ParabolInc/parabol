@@ -19,7 +19,7 @@ const ButtonRoot = styled(PlainButton)<Root>(
       // size is easy to override, it adds: fontSize, lineHeight, padding
       ...ui.buttonSizeStyles[size],
       alignItems: 'center',
-      border: '.0625rem solid transparent',
+      border: '1px solid transparent',
       boxShadow:  disabled ? undefined : pressedDown ? elevationPressed : elevationResting,
       display: 'flex',
       flexShrink: 0,

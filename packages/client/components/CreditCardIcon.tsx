@@ -18,7 +18,7 @@ const SVGStyles = styled('div')({
   animationDuration: '300ms',
   animationTimingFunction: BezierCurve.DECELERATE,
   width: 36,
-  height: 32,
+  height: 24,
   opacity: 1,
 })
 

@@ -6,7 +6,7 @@ import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 export type TaskStatus = 'active' | 'stuck' | 'done' | 'future'
 export type TaskTag = 'private' | 'archived'
 
-interface Input {
+export interface TaskInput {
   id?: string
   agendaId?: string | null
   content: string
@@ -39,7 +39,7 @@ export default class Task {
   updatedAt: Date
   userId: string
 
-  constructor (input: Input) {
+  constructor (input: TaskInput) {
     const {
       id,
       userId,

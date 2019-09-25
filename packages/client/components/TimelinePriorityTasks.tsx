@@ -24,7 +24,7 @@ interface Props extends WithAtmosphereProps {
 
 const PriorityTasksHeader = styled('div')({
   background: PALETTE.BACKGROUND_MAIN,
-  color: PALETTE.TEXT_LIGHT,
+  color: PALETTE.TEXT_GRAY,
   fontSize: 14,
   fontWeight: 600,
   paddingTop: 16,
@@ -56,7 +56,8 @@ const TimelinePriorityTasks = (props: Props) => {
     return nodes
       .filter((node) => node.status === ACTIVE)
       .sort((a, b) => (a.sortOrder < b.sortOrder ? 1 : -1))
-  }, [tasks])
+    // try checking for length in case relay is screwing up & not invalidating (repro: sometimes cypress fails)
+  }, [tasks, tasks.edges.length])
 
   const onDragEnd = useEventCallback(
     (result: DropResult) => {

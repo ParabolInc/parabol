@@ -11,6 +11,7 @@ import Icon from '../Icon'
 import PhaseItemChits from './PhaseItemChits'
 import PhaseItemEditor from './PhaseItemEditor'
 import ReflectionStack from './ReflectionStack'
+import RetroPrompt from '../RetroPrompt'
 import Tooltip from '../Tooltip/Tooltip'
 import SetPhaseFocusMutation from '../../mutations/SetPhaseFocusMutation'
 import {DECELERATE} from '../../styles/animation'
@@ -19,7 +20,7 @@ import {PALETTE} from '../../styles/paletteV2'
 import {ICON_SIZE} from '../../styles/typographyV2'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {EditorState} from 'draft-js'
-import {ElementWidth} from '../../types/constEnums'
+import {ElementWidth, Gutters} from '../../types/constEnums'
 import useRefState from '../../hooks/useRefState'
 
 const ColumnWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
@@ -28,59 +29,61 @@ const ColumnWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   flexDirection: 'column',
   flex: 1,
   justifyContent: 'flex-start',
-  height: '100%',
-  border: isDesktop ? undefined : `1px solid ${PALETTE.BORDER_LIGHT}`,
-  borderRadius: 8
+  margin: isDesktop ? '16px 8px' : undefined,
+  minHeight: isDesktop ? undefined : '100%'
 }))
 
 const ColumnHighlight = styled('div')<{isFocused: boolean, isDesktop: boolean}>(({isDesktop, isFocused}) => ({
-  backgroundColor: isDesktop ? isFocused ? PALETTE.BACKGROUND_MAIN_DARKENED : undefined : isFocused ? PALETTE.BACKGROUND_REFLECTION_FOCUSED : PALETTE.BACKGROUND_REFLECTION,
-  borderRadius: isDesktop ? 2 : 8,
-  height: '100%',
-  maxHeight: 608,
-  padding: isDesktop ? '16px 24px' : '16px 8px',
+  backgroundColor: isFocused ? PALETTE.BACKGROUND_REFLECTION_FOCUSED : PALETTE.BACKGROUND_REFLECTION,
+  borderRadius: 8,
+  boxShadow: isFocused ? `inset 0 0 0 3px ${PALETTE.BORDER_FACILITATOR_FOCUS}` : undefined,
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  flexShrink: 0,
+  height: isDesktop ? undefined : '100%',
+  maxHeight: isDesktop ? 600 : undefined,
+  padding: `${Gutters.ROW_INNER_GUTTER} ${Gutters.COLUMN_INNER_GUTTER}`,
   transition: `background 150ms ${DECELERATE}`,
   width: '100%'
 }))
 
-const ColumnContent = styled('div')({
+const ColumnContent = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
+  flex: 1,
   flexDirection: 'column',
   height: '100%',
-  justifyContent: 'space-between',
+  justifyContent: isDesktop ? 'space-between' : 'space-between',
   margin: '0 auto',
   width: ElementWidth.REFLECTION_CARD
+}))
+
+const HeaderAndEditor = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+  flex: isDesktop ? 0.3 : undefined
+}))
+
+const EditorSection = styled('div')({
+  margin: `0 0 ${Gutters.ROW_INNER_GUTTER}`
 })
 
-const HeaderAndEditor = styled('div')({
-  flex: 0.3,
-  paddingBottom: 16
-})
-
-const Prompt = styled('div')({
-  fontSize: 20,
-  fontStyle: 'italic',
-  fontWeight: 600,
-  lineHeight: '24px'
-})
+const ReflectionStackSection = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+  flex: isDesktop ? 0.3 : undefined
+}))
 
 const Description = styled('div')({
   color: PALETTE.TEXT_MAIN,
-  fontSize: 13,
+  fontSize: 12,
   fontStyle: 'italic',
   fontWeight: 400,
-  lineHeight: '20px',
-  // tall enough for 3 lines so columns looks the same
-  minHeight: 60,
-  marginTop: 8
+  lineHeight: '16px'
 })
 
 const FocusArrow = styled(Icon)<{isFocused: boolean}>(({isFocused}) => ({
-  color: PALETTE.TEXT_PINK,
+  color: PALETTE.EMPHASIS_WARM,
   display: 'block',
   fontSize: ICON_SIZE.MD24,
   height: ICON_SIZE.MD24,
-  left: -18,
+  left: -8,
   lineHeight: 1,
   opacity: isFocused ? 1 : 0,
   position: 'absolute',
@@ -90,7 +93,7 @@ const FocusArrow = styled(Icon)<{isFocused: boolean}>(({isFocused}) => ({
 
 const PromptHeader = styled('div')<{isClickable: boolean}>(({isClickable}) => ({
   cursor: isClickable ? 'pointer' : undefined,
-  padding: '0 0 16px 12px',
+  padding: `0 0 ${Gutters.ROW_INNER_GUTTER} ${Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL}`,
   position: 'relative',
   userSelect: 'none',
   width: '100%'
@@ -104,10 +107,11 @@ const EditorAndStatus = styled('div')<EditorAndStatusProps>(({isPhaseComplete}) 
   visibility: isPhaseComplete ? 'hidden' : undefined
 }))
 
-const ChitSection = styled('div')({
-  flex: 0.3,
-  minHeight: 96
-})
+const ChitSection = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+  flex: isDesktop ? 0.3 : undefined,
+  margin: isDesktop ? undefined : `0 0 ${Gutters.ROW_INNER_GUTTER}`,
+  minHeight: isDesktop ? 96 : undefined
+}))
 
 const originAnchor = {
   vertical: 'top',
@@ -187,13 +191,13 @@ const PhaseItemColumn = (props: Props) => {
   return (
     <ColumnWrapper isDesktop={isDesktop}>
       <ColumnHighlight isDesktop={isDesktop} isFocused={isFocused}>
-        <ColumnContent>
-          <HeaderAndEditor>
+        <ColumnContent isDesktop={isDesktop}>
+          <HeaderAndEditor isDesktop={isDesktop}>
             <PromptHeader
               isClickable={isFacilitator && !isComplete}
               onClick={setColumnFocus}
             >
-              <FocusArrow isFocused={isFocused}>forward</FocusArrow>
+              <FocusArrow isFocused={isFocused}>arrow_forward</FocusArrow>
               <Tooltip
                 delay={200}
                 maxHeight={40}
@@ -203,33 +207,35 @@ const PhaseItemColumn = (props: Props) => {
                 tip={<div>Tap to highlight prompt for everybody</div>}
                 isDisabled={hasFocusedRef.current || isFocused || !isFacilitator || isComplete}
               >
-                <Prompt>{question}</Prompt>
+                <RetroPrompt>{question}</RetroPrompt>
               </Tooltip>
               <Description>{description}</Description>
             </PromptHeader>
-            <EditorAndStatus isPhaseComplete={isComplete}>
-              <PhaseItemEditor
-                cardsInFlightRef={cardsInFlightRef}
-                setCardsInFlight={setCardsInFlight}
-                phaseEditorRef={phaseEditorRef}
-                meetingId={meetingId}
-                nextSortOrder={nextSortOrder}
-                retroPhaseItemId={retroPhaseItemId}
-                stackTopRef={stackTopRef}
-              />
-            </EditorAndStatus>
+            <EditorSection>
+              <EditorAndStatus isPhaseComplete={isComplete}>
+                <PhaseItemEditor
+                  cardsInFlightRef={cardsInFlightRef}
+                  setCardsInFlight={setCardsInFlight}
+                  phaseEditorRef={phaseEditorRef}
+                  meetingId={meetingId}
+                  nextSortOrder={nextSortOrder}
+                  retroPhaseItemId={retroPhaseItemId}
+                  stackTopRef={stackTopRef}
+                />
+              </EditorAndStatus>
+            </EditorSection>
           </HeaderAndEditor>
-          <ReflectionStack
-            reflectionStack={reflectionStack}
-            readOnly={isComplete}
-            idx={idx}
-            phaseEditorRef={phaseEditorRef}
-            phaseItemId={retroPhaseItemId}
-            phaseRef={phaseRef}
-            meetingId={meetingId}
-            stackTopRef={stackTopRef}
-          />
-          <ChitSection>
+          <ReflectionStackSection isDesktop={isDesktop}>
+            <ReflectionStack
+              reflectionStack={reflectionStack}
+              idx={idx}
+              phaseEditorRef={phaseEditorRef}
+              phaseRef={phaseRef}
+              meeting={meeting}
+              stackTopRef={stackTopRef}
+            />
+          </ReflectionStackSection>
+          <ChitSection isDesktop={isDesktop}>
             <PhaseItemChits
               count={columnStack.length - reflectionStack.length}
               editorCount={editorIds ? editorIds.length : 0}
@@ -244,6 +250,7 @@ const PhaseItemColumn = (props: Props) => {
 export default createFragmentContainer(PhaseItemColumn, {
   meeting: graphql`
     fragment PhaseItemColumn_meeting on RetrospectiveMeeting {
+      ...ReflectionStack_meeting
       facilitatorUserId
       meetingId: id
       localPhase {
@@ -273,6 +280,8 @@ export default createFragmentContainer(PhaseItemColumn, {
         sortOrder
         reflections {
           ...ReflectionCard_reflection
+          ...DraggableReflectionCard_reflection
+          ...DraggableReflectionCard_staticReflections
           content
           id
           isEditing

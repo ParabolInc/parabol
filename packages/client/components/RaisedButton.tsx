@@ -1,15 +1,27 @@
 import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
-import ui from '../styles/ui'
+import {PALETTE} from '../styles/paletteV2'
+import {Radius} from '../types/constEnums'
 import BaseButton, {BaseButtonProps} from './BaseButton'
 import {Elevation} from '../styles/elevation'
 
+const paletteColors = {
+  gray: PALETTE.TEXT_LIGHT,
+  warm: PALETTE.TEXT_ORANGE,
+  mid: PALETTE.TEXT_PURPLE,
+  dark: PALETTE.TEXT_MAIN,
+  blue: PALETTE.TEXT_BLUE,
+  white: '#FFFFFF'
+}
+
+const buttonLightThemes = ['white', 'gray']
+
 const StyledBaseButton = styled(BaseButton)<{palette?: string}>(({palette = 'gray'}) => {
-  const backgroundColor = ui.palette[palette]
-  const color = ui.buttonLightThemes.includes(palette) ? ui.palette.dark : ui.palette.white
+  const backgroundColor = paletteColors[palette]
+  const color = buttonLightThemes.includes(palette) ? PALETTE.TEXT_MAIN : '#FFFFFF'
   return {
     backgroundColor,
-    borderRadius: ui.buttonBorderRadius,
+    borderRadius: Radius.BUTTON_PILL,
     color,
     fontWeight: 600,
     outline: 0
@@ -17,7 +29,7 @@ const StyledBaseButton = styled(BaseButton)<{palette?: string}>(({palette = 'gra
 })
 
 export interface RaisedButtonProps extends BaseButtonProps {
-  palette?: string
+  palette?: keyof typeof paletteColors
 }
 
 const RaisedButton = forwardRef((props: RaisedButtonProps, ref: Ref<HTMLButtonElement>) => {

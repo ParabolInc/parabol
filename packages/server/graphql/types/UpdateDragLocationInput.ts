@@ -1,41 +1,45 @@
 import {GraphQLFloat, GraphQLID, GraphQLInputObjectType, GraphQLNonNull} from 'graphql'
-import Coords2DInput from './Coords2DInput'
-
-export const updateDragLocationFields = () => ({
-  id: {
-    type: new GraphQLNonNull(GraphQLID)
-  },
-  clientHeight: {
-    type: new GraphQLNonNull(GraphQLFloat)
-  },
-  clientWidth: {
-    type: new GraphQLNonNull(GraphQLFloat)
-  },
-  sourceId: {
-    type: new GraphQLNonNull(GraphQLID),
-    description: 'The primary key of the item being drug'
-  },
-  targetId: {
-    type: GraphQLID,
-    description: 'The estimated destination of the item being drug'
-  }
-})
 
 const UpdateDragLocationInput = new GraphQLInputObjectType({
   name: 'UpdateDragLocationInput',
   fields: () => ({
-    ...updateDragLocationFields(),
+    id: {
+      type: new GraphQLNonNull(GraphQLID)
+    },
+    clientHeight: {
+      type: new GraphQLNonNull(GraphQLFloat)
+    },
+    clientWidth: {
+      type: new GraphQLNonNull(GraphQLFloat)
+    },
+    sourceId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The primary key of the item being drug'
+    },
+    targetId: {
+      type: GraphQLID,
+      description: 'The estimated destination of the item being drug'
+    },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The teamId to broadcast the message to'
     },
-    coords: {
-      type: new GraphQLNonNull(Coords2DInput)
+    targetOffsetX: {
+      type: GraphQLFloat,
+      description: 'horizontal distance from the top left of the target'
     },
-    targetOffset: {
-      type: Coords2DInput,
-      description: 'The offset from the targetId'
-    }
+    targetOffsetY: {
+      type: GraphQLFloat,
+      description: 'vertical distance from the top left of the target'
+    },
+    clientX: {
+      type: GraphQLFloat,
+      description: 'the left of the source, relative to the client window'
+    },
+    clientY: {
+      type: GraphQLFloat,
+      description: 'the top of the source, relative to the client window'
+    },
   })
 })
 

@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
-import {MD_ICONS_SIZE_24} from '../styles/icons'
+import {ICON_SIZE} from '../styles/typographyV2'
 
 const Icon = styled('i')({
   fontFamily: 'Material Icons',
   fontWeight: 'normal',
   fontStyle: 'normal',
   // Preferred icon size (24px)
-  fontSize: MD_ICONS_SIZE_24,
+  fontSize: ICON_SIZE.MD24,
   display: 'inline-block',
   lineHeight: 1,
   textTransform: 'none',

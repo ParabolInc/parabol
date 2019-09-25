@@ -14,6 +14,8 @@ import Reflection from '../../database/types/Reflection'
 import ReflectionGroup from '../../database/types/ReflectionGroup'
 import getReflectionEntities from './helpers/getReflectionEntities'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
+import shortid from 'shortid'
+import getGroupSmartTitle from 'parabol-client/utils/autogroup/getGroupSmartTitle'
 
 export default {
   type: CreateReflectionPayload,
@@ -57,7 +59,7 @@ export default {
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases} = meeting
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
-    if (isPhaseComplete(NewMeetingPhaseTypeEnum.reflect, phases)) {
+    if (isPhaseComplete(NewMeetingPhaseTypeEnum.group, phases)) {
       return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
     }
 
@@ -65,13 +67,9 @@ export default {
     const normalizedContent = normalizeRawDraftJS(content)
 
     // RESOLUTION
-    const reflectionGroup = new ReflectionGroup({
-      meetingId,
-      retroPhaseItemId,
-      sortOrder,
-    })
     const plaintextContent = extractTextFromDraftString(normalizedContent)
     const entities = await getReflectionEntities(plaintextContent)
+    const reflectionGroupId = shortid.generate()
 
     const reflection = new Reflection({
       creatorId: viewerId,
@@ -80,8 +78,18 @@ export default {
       entities,
       meetingId,
       retroPhaseItemId,
-      reflectionGroupId: reflectionGroup.id,
+      reflectionGroupId,
       updatedAt: now
+    })
+
+    const smartTitle = getGroupSmartTitle([reflection])
+    const reflectionGroup = new ReflectionGroup({
+      id: reflectionGroupId,
+      smartTitle,
+      title: smartTitle,
+      meetingId,
+      retroPhaseItemId,
+      sortOrder,
     })
 
     await r({
@@ -102,7 +110,7 @@ export default {
     const data = {
       meetingId,
       reflectionId: reflection.id,
-      reflectionGroupId: reflectionGroup.id,
+      reflectionGroupId: reflectionGroupId,
       unlockedStageIds
     }
     publish(SubscriptionChannel.TEAM, teamId, CreateReflectionPayload, data, subOptions)

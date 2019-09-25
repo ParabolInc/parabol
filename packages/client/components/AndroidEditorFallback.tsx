@@ -2,7 +2,8 @@ import {EditorState} from 'draft-js'
 import React, {RefObject, useEffect, useState} from 'react'
 import styled from '@emotion/styled'
 import TextArea from 'react-textarea-autosize'
-import {cardContentFontSize, cardContentLineHeight} from '../styles/cards'
+import {Card, Gutters} from '../types/constEnums'
+import {PALETTE} from '../styles/paletteV2'
 
 interface Props {
   className?: string
@@ -18,11 +19,13 @@ interface Props {
 const TextAreaStyles = styled(TextArea)({
   backgroundColor: 'transparent',
   border: 0,
-  fontSize: cardContentFontSize,
-  lineHeight: cardContentLineHeight,
+  color: PALETTE.TEXT_MAIN,
+  display: 'block',
+  fontSize: Card.FONT_SIZE,
+  lineHeight: Card.LINE_HEIGHT,
   overflow: 'hidden',
   outline: 0,
-  padding: 12,
+  padding: `${Gutters.REFLECTION_INNER_GUTTER_VERTICAL} ${Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL}`,
   resize: 'none',
   width: '100%'
 })

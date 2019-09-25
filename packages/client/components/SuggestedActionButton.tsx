@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
 import PrimaryButton from './PrimaryButton'
 
@@ -13,13 +13,13 @@ interface Props {
   onClick?: () => void
 }
 
-const SuggestedActionButton = (props: Props) => {
+const SuggestedActionButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
   const {children, onClick} = props
   return (
-    <ActionButton aria-label={children} size='medium' onClick={onClick}>
+    <ActionButton ref={ref} aria-label={children} size='medium' onClick={onClick}>
       {children}
     </ActionButton>
   )
-}
+})
 
 export default SuggestedActionButton

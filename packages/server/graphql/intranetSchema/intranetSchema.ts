@@ -13,6 +13,15 @@ import user from './queries/user'
 import flagOverLimit from './mutations/flagOverLimit'
 import runScheduledJobs from './mutations/runScheduledJobs'
 import {GQLContext} from '../graphql'
+import loginSSO from './mutations/loginSSO'
+import draftEnterpriseInvoice from './mutations/draftEnterpriseInvoice'
+import githubAddAssignee from './mutations/githubAddAssignee'
+import stripeCreateInvoice from './mutations/stripeCreateInvoice'
+import stripeFailPayment from './mutations/stripeFailPayment'
+import stripeSucceedPayment from './mutations/stripeSucceedPayment'
+import stripeInvoiceFinalized from './mutations/stripeInvoiceFinalized'
+import stripeUpdateCreditCard from './mutations/stripeUpdateCreditCard'
+import stripeUpdateInvoiceItem from './mutations/stripeUpdateInvoiceItem'
 
 const query = new GraphQLObjectType<any, GQLContext, any>({
   name: 'Query',
@@ -31,11 +40,20 @@ const mutation = new GraphQLObjectType<any, GQLContext, any>({
   fields: () => ({
     addNewFeature,
     autopauseUsers,
+    draftEnterpriseInvoice,
     endOldMeetings,
     flagOverLimit,
+    githubAddAssignee,
+    loginSSO,
     runScheduledJobs,
     sendBatchNotificationEmails,
-    sendUpcomingInvoiceEmails
+    sendUpcomingInvoiceEmails,
+    stripeCreateInvoice,
+    stripeFailPayment,
+    stripeSucceedPayment,
+    stripeUpdateCreditCard,
+    stripeUpdateInvoiceItem,
+    stripeInvoiceFinalized,
   })
 })
 

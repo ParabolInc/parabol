@@ -4,22 +4,15 @@ import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import tinycolor from 'tinycolor2'
 import CardButton from './CardButton'
 import Icon from './Icon'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
-import {MD_ICONS_SIZE_18} from '../styles/icons'
-import ui from '../styles/ui'
+import {ICON_SIZE} from '../styles/typographyV2'
 import lazyPreload from '../utils/lazyPreload'
 import {shortMonths} from '../utils/makeDateString'
 import {PALETTE} from '../styles/paletteV2'
 import {UseTaskChild} from '../hooks/useTaskChildFocus'
-
-const darken = (color, amount) =>
-  tinycolor(color)
-    .darken(amount)
-    .toString()
 
 interface StyleProps {
   cardIsActive: boolean
@@ -28,12 +21,20 @@ interface StyleProps {
   isPastDue?: boolean
 }
 
-const dueDateBg = PALETTE.BACKGROUND_MAIN
-const dueDateColor = '#65637A'
-const dueDatePastBg = '#FFE2E2'
-const dueDatePastColor = PALETTE.ERROR_MAIN
-const dueDateSoonBg = '#FFF0D1'
-const dueDateSoonColor = '#F28934'
+const DUE_DATE_BG = PALETTE.BACKGROUND_MAIN
+const DUE_DATE_BG_HOVER = '#DCD9F2'
+const DUE_DATE_COLOR = '#65637A'
+const DUE_DATE_COLOR_HOVER = '#575569'
+
+const DUE_DATE_PAST_BG = '#FFE2E2'
+const DUE_DATE_PAST_BG_HOVER = '#FFB4B4'
+const DUE_DATE_PAST_COLOR = PALETTE.ERROR_MAIN
+const DUE_DATE_PAST_COLOR_HOVER = '#E9222F'
+
+const DUE_DATE_SOON_BG = '#FFF0D1'
+const DUE_DATE_SOON_BG_HOVER = '#FFE1A3'
+const DUE_DATE_SOON_COLOR = '#F28934'
+const DUE_DATE_SOON_COLOR_HOVER = '#E9710F'
 
 const Toggle = styled(CardButton)<StyleProps>(
   {
@@ -46,51 +47,51 @@ const Toggle = styled(CardButton)<StyleProps>(
   ({cardIsActive}) => ({
     opacity: cardIsActive ? 0.5 : 0,
     ':hover, :focus': {
-      backgroundColor: ui.palette.gray,
+      backgroundColor: DUE_DATE_BG,
       opacity: cardIsActive ? 1 : 0
     }
   }),
   ({dueDate}) =>
     dueDate && {
-      backgroundColor: ui.dueDateBg,
-      color: dueDateColor,
+      backgroundColor: DUE_DATE_BG,
+      color: DUE_DATE_COLOR,
       fontSize: 'inherit',
-      height: '1.375rem',
-      lineHeight: '1rem',
+      height: 24,
+      lineHeight: '1em',
       opacity: 1,
-      padding: '0 .25rem 0 .0625rem',
+      padding: '0 4px 0 1px',
       ':hover,:focus': {
-        backgroundColor: darken(dueDateBg, 6),
-        color: darken(dueDateColor, 6),
+        backgroundColor: DUE_DATE_BG_HOVER,
+        color: DUE_DATE_COLOR_HOVER,
         opacity: 1
       }
     },
   ({isDueSoon}) =>
     isDueSoon && {
-      backgroundColor: dueDateSoonBg,
-      color: dueDateSoonColor,
+      backgroundColor: DUE_DATE_SOON_BG,
+      color: DUE_DATE_SOON_COLOR,
       ':hover,:focus': {
-        backgroundColor: darken(dueDateSoonBg, 9),
-        color: darken(dueDateSoonColor, 9)
+        backgroundColor: DUE_DATE_SOON_BG_HOVER,
+        color: DUE_DATE_SOON_COLOR_HOVER
       }
     },
   ({isPastDue}) =>
     isPastDue && {
-      backgroundColor: dueDatePastBg,
-      color: dueDatePastColor,
+      backgroundColor: DUE_DATE_PAST_BG,
+      color: DUE_DATE_PAST_COLOR,
       ':hover,:focus': {
-        backgroundColor: darken(dueDatePastBg, 9),
-        color: darken(dueDatePastColor, 9)
+        backgroundColor: DUE_DATE_PAST_BG_HOVER,
+        color: DUE_DATE_PAST_COLOR_HOVER
       }
     }
 )
 
 const DueDateIcon = styled(Icon)({
-  fontSize: MD_ICONS_SIZE_18
+  fontSize: ICON_SIZE.MD18
 })
 
 const DateString = styled('span')({
-  marginLeft: '0.125rem'
+  marginLeft: 2
 })
 
 interface Props {

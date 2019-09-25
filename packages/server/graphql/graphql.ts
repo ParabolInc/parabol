@@ -7,6 +7,7 @@ import {validateSchema} from 'graphql/type/validate'
 import {validate} from 'graphql/validation/validate'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import RethinkDataLoader from '../utils/RethinkDataLoader'
+import AuthToken from '../database/types/AuthToken'
 
 // Avoid needless parsing & validating for the 300 hottest operations
 interface DocumentCache {
@@ -17,13 +18,14 @@ let documentCache: DocumentCache = {}
 const MAX_CACHE_SIZE = 300
 
 export type DataLoaderWorker = WarehouseWorker<RethinkDataLoader>
-export type GQLContext = Pick<ConnectionContext, 'authToken' | 'rateLimiter'> & {
+export type GQLContext = Pick<ConnectionContext, 'authToken' | 'rateLimiter' | 'ip'> & {
   socketId: string
   dataLoader: DataLoaderWorker
 }
 
 export interface InternalContext {
-  serverSecret: string
+  dataLoader: DataLoaderWorker
+  authToken: AuthToken
 }
 
 // type Unpromise<T> = T extends Promise<infer U> ? U : T

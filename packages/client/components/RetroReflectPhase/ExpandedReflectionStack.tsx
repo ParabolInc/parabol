@@ -1,13 +1,12 @@
-import {PhaseItemColumn_meeting} from '../../__generated__/PhaseItemColumn_meeting.graphql'
-import React, {Ref, useMemo} from 'react'
+import React, {ReactNode, Ref, useMemo} from 'react'
 import styled from '@emotion/styled'
-import ReflectionCard from '../ReflectionCard/ReflectionCard'
 import getBBox from './getBBox'
 import {ZINDEX_MODAL} from '../../styles/elevation'
 import {PALETTE} from '../../styles/paletteV2'
 import {BBox} from '../../types/animations'
 import {RefCallbackInstance} from '../../types/generics'
-import {ElementWidth, ZIndex} from '../../types/constEnums'
+import {DragAttribute, ElementWidth, ZIndex} from '../../types/constEnums'
+import ExpandedReflection from './ExpandedReflection'
 
 const PortalBlock = styled('div')({
   height: '100%',
@@ -40,13 +39,14 @@ const PhaseArea = styled('div')<{phaseBBox: BBox}>(({phaseBBox}) => ({
 const ModalArea = styled('div')({
   borderRadius: 4,
   display: 'flex',
-  maxHeight: '100%',
-  position: 'relative',
+  flexDirection: 'column',
+  maxHeight: 'calc(100vh - 32px)',
+  position: 'relative'
 })
 
 const BackgroundBlock = styled('div')({
   position: 'absolute',
-  background: PALETTE.BACKGROUND_BACKDROP,
+  background: PALETTE.BACKGROUND_REFLECTION_STACK,
   borderRadius: 4,
   height: '100%',
   width: '100%',
@@ -64,22 +64,21 @@ const ScrollBlock = styled('div')({
 
 interface Props {
   closePortal: () => void
+  header?: ReactNode
   phaseRef: React.RefObject<HTMLDivElement>
-  reflectionStack: readonly PhaseItemColumn_meeting['reflectionGroups'][0]['reflections'][0][]
-  meetingId: string
-  phaseItemId: string
-  readOnly: boolean
+  staticReflections: readonly any[]
+  reflections: readonly any[]
+  meeting: any
   scrollRef: Ref<HTMLDivElement>
   bgRef: Ref<HTMLDivElement>
   setItemsRef: (idx: number) => (c: RefCallbackInstance) => void
+  reflectionGroupId?: string
+  groupQuestion?: string
 }
 
-const ModalReflectionWrapper = styled('div')({
-  padding: 8
-})
 
 const ExpandedReflectionStack = (props: Props) => {
-  const {reflectionStack, readOnly, phaseItemId, meetingId, phaseRef, scrollRef, setItemsRef, bgRef, closePortal} = props
+  const {groupQuestion, header, staticReflections, phaseRef, scrollRef, setItemsRef, bgRef, closePortal, reflections, reflectionGroupId, meeting} = props
   const phaseBBox = useMemo(() => {
     return getBBox(phaseRef.current)
   }, [phaseRef.current])
@@ -89,31 +88,18 @@ const ExpandedReflectionStack = (props: Props) => {
   }
   return (
     <PortalBlock>
-    <PhaseArea phaseBBox={phaseBBox!}>
-      <Scrim onClick={closePortal} />
-      <ModalArea>
-        <ScrollBlock ref={scrollRef} onClick={closeOnEdge}>
-          {reflectionStack.map((reflection, idx) => {
-            return (
-              <ModalReflectionWrapper
-                key={reflection.id}
-                style={{zIndex: reflectionStack.length - idx - 1}}
-                id={reflection.id}
-                ref={setItemsRef(idx)}
-              >
-                <ReflectionCard
-                  meetingId={meetingId}
-                  reflection={reflection}
-                  phaseItemId={phaseItemId}
-                  readOnly={readOnly}
-                />
-              </ModalReflectionWrapper>
-            )
-          })}
-        </ScrollBlock>
-        <BackgroundBlock ref={bgRef} />
-      </ModalArea>
-    </PhaseArea>
+      <PhaseArea phaseBBox={phaseBBox!}>
+        <Scrim onClick={closePortal} />
+        <ModalArea {...{[DragAttribute.DROPPABLE]: reflectionGroupId}}>
+          {header}
+          <ScrollBlock ref={scrollRef} onClick={closeOnEdge}>
+            {reflections.map((reflection, idx) => {
+              return <ExpandedReflection groupQuestion={groupQuestion} key={reflection.id} reflection={reflection} meeting={meeting} idx={idx} setItemsRef={setItemsRef} staticReflections={staticReflections}/>
+            })}
+          </ScrollBlock>
+          <BackgroundBlock ref={bgRef} />
+        </ModalArea>
+      </PhaseArea>
     </PortalBlock>
   )
 }

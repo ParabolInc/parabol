@@ -2,7 +2,7 @@ import {EditorState, SelectionState} from 'draft-js'
 import React, {RefObject} from 'react'
 import styled from '@emotion/styled'
 import RaisedButton from '../RaisedButton'
-import ui from '../../styles/ui'
+import {PALETTE} from '../../styles/paletteV2'
 import completeEntity from '../../utils/draftjs/completeEnitity'
 import linkify from '../../utils/linkify'
 import withForm, {WithFormProps} from '../../utils/relay/withForm'
@@ -11,7 +11,7 @@ import BasicInput from '../InputField/BasicInput'
 import {UseTaskChild} from '../../hooks/useTaskChildFocus'
 
 const ModalBoundary = styled('div')({
-  color: ui.palette.dark,
+  color: PALETTE.TEXT_MAIN,
   padding: '.5rem .5rem .5rem 1rem',
   minWidth: '20rem',
   outline: 0

@@ -30,7 +30,6 @@ export default {
   ) {
     const r = getRethink()
     const operationId = dataLoader.share()
-    const now = new Date()
     const subOptions = {operationId, mutatorId}
 
     // AUTH
@@ -69,9 +68,7 @@ export default {
       .table('RetroReflectionGroup')
       .get(reflectionGroupId)
       .update({
-        title: normalizedTitle,
-        titleIsUserDefined: true,
-        updatedAt: now
+        title: normalizedTitle
       })
 
     if (smartTitle && smartTitle === oldTitle) {

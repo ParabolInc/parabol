@@ -5,33 +5,29 @@
  *
  */
 import React from 'react'
-import tinycolor from 'tinycolor2'
 import styled from '@emotion/styled'
-import ui from '../../styles/ui'
+import {PALETTE} from '../../styles/paletteV2'
+import {Radius} from '../../types/constEnums'
 import Icon from '../Icon'
-import {MD_ICONS_SIZE_18} from '../../styles/icons'
+import {ICON_SIZE} from '../../styles/typographyV2'
 
 interface Props {
   message: string
 }
 
-const backgroundColor = tinycolor(ui.colorError)
-  .setAlpha(0.2)
-  .toRgbString()
-
 const ErrorAlertWrapper = styled('div')({
-  backgroundColor,
-  borderRadius: ui.borderRadiusSmall,
+  backgroundColor: PALETTE.BACKGROUND_ERROR_20A,
+  borderRadius: Radius.TOOLTIP,
   display: 'flex',
   alignItems: 'center',
   fontSize: 14,
-  marginBottom: '1rem',
-  padding: '.5rem 1rem'
+  marginBottom: 16,
+  padding: '8px 16px'
 })
 
 const SpacedIcon = styled(Icon)({
-  fontSize: MD_ICONS_SIZE_18,
-  marginRight: '.5rem'
+  fontSize: ICON_SIZE.MD18,
+  marginRight: 8
 })
 
 const ErrorAlert = ({message}: Props) => {

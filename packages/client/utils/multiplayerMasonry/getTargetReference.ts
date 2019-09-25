@@ -48,15 +48,15 @@ const SWITCHING_COST = 50
 // if it's clear they aren't near a card, don't try to force a relative position
 const MAX_DIST = ElementWidth.REFLECTION_CARD
 
-const getTargetReference = (clientX: number, clientY: number, cardOffsetX: number, cardOffsetY: number, targets: TargetBBox[], prevTargetId: string) => {
+const getTargetReference = (cursorX: number, cursorY: number, cardOffsetX: number, cardOffsetY: number, targets: TargetBBox[], prevTargetId: string) => {
   const distances = [] as number[]
   for (let i = 0; i < targets.length; i++) {
     const target = targets[i]
     distances[i] = 1e6
     const centroidX = target.left + ElementWidth.REFLECTION_CARD / 2
     const centroidY = target.top + target.height / 2
-    const deltaX = centroidX - clientX
-    const deltaY = centroidY - clientY
+    const deltaX = centroidX - cursorX
+    const deltaY = centroidY - cursorY
     // favor the existing reference to reduce jitter
     const loyaltyDiscount = target.targetId === prevTargetId ? SWITCHING_COST : 0
 
@@ -74,8 +74,8 @@ const getTargetReference = (clientX: number, clientY: number, cardOffsetX: numbe
 
   return {
     targetId: nextTarget.targetId,
-    targetOffsetX: clientX - nextTarget.left- cardOffsetX,
-    targetOffsetY: clientY - nextTarget.top - cardOffsetY,
+    targetOffsetX: cursorX - nextTarget.left- cardOffsetX,
+    targetOffsetY: cursorY - nextTarget.top - cardOffsetY,
   }
 }
 

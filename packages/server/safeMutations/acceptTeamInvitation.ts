@@ -2,12 +2,13 @@ import adjustUserCount from '../billing/helpers/adjustUserCount'
 import getRethink from '../database/rethinkDriver'
 import addTeamMemberToNewMeeting from '../graphql/mutations/helpers/addTeamMemberToNewMeeting'
 import insertNewTeamMember from './insertNewTeamMember'
-import {auth0ManagementClient} from '../utils/auth0Helpers'
-import {ADD_USER} from '../utils/serverConstants'
+import {updateAuth0TMS} from '../utils/auth0Helpers'
 import shortid from 'shortid'
 import {TEAM_INVITATION} from '../../client/utils/constants'
 import getNewTeamLeadUserId from '../safeQueries/getNewTeamLeadUserId'
 import addTeamIdToTMS from './addTeamIdToTMS'
+import {InvoiceItemType} from 'parabol-client/types/constEnums'
+import SuggestedActionCreateNewTeam from '../database/types/SuggestedActionCreateNewTeam'
 
 const handleFirstAcceptedInvitation = async (team): Promise<string | null> => {
   const r = getRethink()
@@ -26,14 +27,7 @@ const handleFirstAcceptedInvitation = async (team): Promise<string | null> => {
         type: 'tryRetroMeeting',
         userId: newTeamLeadUserId
       },
-      {
-        id: shortid.generate(),
-        createdAt: now,
-        priority: 4,
-        removedAt: null,
-        type: 'createNewTeam',
-        userId: newTeamLeadUserId
-      },
+      new SuggestedActionCreateNewTeam({userId: newTeamLeadUserId}),
       {
         id: shortid.generate(),
         createdAt: now,
@@ -98,7 +92,7 @@ const acceptTeamInvitation = async (
   })
   if (!userInOrg) {
     try {
-      await adjustUserCount(userId, orgId, ADD_USER)
+      await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER)
     } catch (e) {
       console.log(e)
     }
@@ -109,7 +103,7 @@ const acceptTeamInvitation = async (
 
   // update auth0
   const tms = user.tms ? user.tms.concat(teamId) : [teamId]
-  auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
+  updateAuth0TMS(userId, tms)
 
   // if accepted to team, don't count it towards the global denial count
   await r

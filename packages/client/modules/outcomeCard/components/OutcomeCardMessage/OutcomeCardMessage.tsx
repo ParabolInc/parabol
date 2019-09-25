@@ -5,18 +5,18 @@ import {PALETTE} from '../../../../styles/paletteV2'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 
 const Message = styled('div')({
-  padding: `0 15px 15px`
+  padding: '0 16px 16px'
 })
 
 const textShadow = '0 1px rgba(0, 0, 0, .15)'
 const Inner = styled('div')<{onClose: boolean}>(({onClose}) => ({
   backgroundColor: PALETTE.ERROR_MAIN,
   borderRadius: 2,
-  color: '#fff',
+  color: '#FFFFFF',
   display: 'block',
   fontWeight: 600,
   fontSize: 13,
-  lineHeight: '18x',
+  lineHeight: '18px',
   padding: 15,
   position: 'relative',
   textShadow,
@@ -38,7 +38,7 @@ const MessageClose = styled('div')({
 })
 
 const MessageCloseIcon = styled(Icon)({
-  color: '#fff',
+  color: '#FFFFFF',
   fontSize: ICON_SIZE.MD18
 })
 

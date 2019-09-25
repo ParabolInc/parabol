@@ -1,7 +1,7 @@
 import {ContentBlock, DraftHandleValue, Editor, EditorProps, EditorState, getDefaultKeyBinding} from 'draft-js'
 import React, {RefObject, Suspense, useEffect, useRef} from 'react'
 import withMarkdown from './withMarkdown'
-import ui from '../../styles/ui'
+import {Card} from '../../types/constEnums'
 import {textTags} from '../../utils/constants'
 import entitizeText from '../../utils/draftjs/entitizeText'
 import './Draft.css'
@@ -18,9 +18,9 @@ import useMarkdown from '../../hooks/useMarkdown'
 
 const RootEditor = styled('div')<{noText: boolean, readOnly: boolean}>(({noText, readOnly}) => ({
   cursor: readOnly ? undefined : 'text',
-  fontSize: ui.cardContentFontSize,
-  lineHeight: ui.cardContentLineHeight,
-  padding: `0 ${ui.cardPaddingBase}`,
+  fontSize: Card.FONT_SIZE,
+  lineHeight: Card.LINE_HEIGHT,
+  padding: `0 ${Card.PADDING}`,
   height: noText ? '2.75rem' : undefined // Use this if the placeholder wraps
 }))
 

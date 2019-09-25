@@ -5,7 +5,7 @@ const handleAddReflectionToGroup = (reflectionProxy: RecordProxy, store: RecordS
   if (!reflectionProxy) return
   const reflectionGroupId = reflectionProxy.getValue('reflectionGroupId')
   const reflectionGroupProxy = store.get(reflectionGroupId)
-  addNodeToArray(reflectionProxy, reflectionGroupProxy, 'reflections', 'sortOrder')
+  addNodeToArray(reflectionProxy, reflectionGroupProxy, 'reflections', 'sortOrder', {descending: true})
 }
 
 export default handleAddReflectionToGroup

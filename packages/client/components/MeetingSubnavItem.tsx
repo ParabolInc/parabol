@@ -1,10 +1,10 @@
 import React from 'react'
 import styled from '@emotion/styled'
 import {meetingSidebarGutterInner} from '../styles/meeting'
-import appTheme from '../styles/theme/appTheme'
-import ui from '../styles/ui'
+import {PALETTE} from '../styles/paletteV2'
+import {NavSidebar} from '../types/constEnums'
 
-const lineHeight = ui.navTopicLineHeight
+const lineHeight = NavSidebar.SUB_LINE_HEIGHT
 
 interface ItemRootProps {
   isActive: boolean
@@ -18,12 +18,12 @@ interface ItemRootProps {
 const ItemRoot = styled('div')<ItemRootProps>(
   ({isActive, isComplete, isDisabled, isDragging, onClick}) => ({
     backgroundColor: isActive
-      ? ui.navMenuLightBackgroundColorActive
+      ? PALETTE.BACKGROUND_NAV_LIGHT_ACTIVE
       : isDragging
-      ? appTheme.palette.light50l
-      : '#fff',
-    boxShadow: isActive ? `inset ${ui.navMenuLeftBorderWidth} 0 0 ${ui.palette.mid}` : undefined,
-    color: onClick ? ui.colorLink : ui.colorText,
+      ? PALETTE.BACKGROUND_NAV_LIGHT_HOVER
+      : '#FFFFFF',
+    boxShadow: isActive ? `inset ${NavSidebar.LEFT_BORDER_WIDTH} 0 0 ${PALETTE.BORDER_MAIN}` : undefined,
+    color: PALETTE.TEXT_MAIN,
     display: 'flex',
     fontSize: 14,
     fontWeight: 400,
@@ -34,17 +34,17 @@ const ItemRoot = styled('div')<ItemRootProps>(
     userSelect: 'none',
     width: '100%',
     '&:hover': {
-      backgroundColor: onClick && !isActive ? appTheme.palette.light50l : undefined,
+      backgroundColor: onClick && !isActive ? PALETTE.BACKGROUND_NAV_LIGHT_HOVER : undefined,
       cursor: !isActive && onClick ? 'pointer' : undefined,
       opacity: !isDisabled ? 1 : undefined
     }
   }),
   ({isUnsyncedFacilitatorStage}) =>
     isUnsyncedFacilitatorStage && {
-      color: ui.palette.warm,
+      color: PALETTE.EMPHASIS_WARM,
       opacity: 1,
       '&::after': {
-        backgroundColor: ui.palette.warm,
+        backgroundColor: PALETTE.EMPHASIS_WARM,
         borderRadius: '100%',
         content: '""',
         display: 'block',
@@ -70,7 +70,7 @@ const ItemOrderLabel = styled('div')({
 
 const ItemLabel = styled('div')<{isComplete: boolean}>(({isComplete}) => ({
   color: 'inherit',
-  fontSize: 14,
+  fontSize: NavSidebar.SUB_FONT_SIZE,
   flex: 1,
   lineHeight,
   textDecoration: isComplete ? 'line-through' : undefined,
