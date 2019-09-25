@@ -37,7 +37,6 @@
     "immutable": "3.8.2"
   },
   "devDependencies": {
-    "parabol-server": "^4.4.2",
     "@types/jscodeshift": "^0.6.2",
     "husky": "^3.0.1",
     "lerna": "^3.16.4"
