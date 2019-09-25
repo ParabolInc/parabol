@@ -5,12 +5,13 @@ import styled from '@emotion/styled'
 import ReflectionGroupTitleEditor from './ReflectionGroup/ReflectionGroupTitleEditor'
 import {GROUP, VOTE} from '../utils/constants'
 import ReflectionGroupVoting from './ReflectionGroupVoting'
-import Tag from './Tag/Tag'
+import BaseTag from './Tag/BaseTag'
 import {ReflectionGroupHeader_reflectionGroup} from '../__generated__/ReflectionGroupHeader_reflectionGroup.graphql'
 import {ReflectionGroupHeader_meeting} from '../__generated__/ReflectionGroupHeader_meeting.graphql'
 import plural from '../utils/plural'
 import {PortalStatus} from '../hooks/usePortal'
 import {ElementWidth, Gutters} from '../types/constEnums'
+import {PALETTE} from '../styles/paletteV2'
 
 interface Props {
   meeting: ReflectionGroupHeader_meeting
@@ -37,7 +38,12 @@ const GroupHeader = styled('div')<{isExpanded: boolean, portalStatus: PortalStat
   width: '100%'
 }))
 
-const StyledTag = styled(Tag)({marginRight: 4})
+// const StyledTag = styled(Tag)({marginRight: 4})
+const StyledTag = styled(BaseTag)<{dialogClosed: boolean}>(({dialogClosed}) => ({
+  backgroundColor: dialogClosed ? '#FFFFFF' : PALETTE.BACKGROUND_GRAY,
+  color: dialogClosed ? PALETTE.TEXT_MAIN : '#FFFFFF',
+  marginRight: 4
+}))
 
 const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
   const {meeting, reflectionGroup, titleInputRef, portalStatus} = props
@@ -59,9 +65,8 @@ const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>
       />
       {phaseType === GROUP && (
         <StyledTag
-          colorPalette={portalStatus === PortalStatus.Exited || portalStatus === PortalStatus.Exiting ? 'midGray' : 'white'}
-          label={`${reflections.length} ${plural(reflections.length, 'Card')}`}
-        />
+          dialogClosed={portalStatus === PortalStatus.Exited || portalStatus === PortalStatus.Exiting}
+        >{`${reflections.length} ${plural(reflections.length, 'Card')}`}</StyledTag>
       )}
       {phaseType === VOTE && (
         <ReflectionGroupVoting

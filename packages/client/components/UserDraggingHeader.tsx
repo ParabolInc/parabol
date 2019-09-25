@@ -37,8 +37,8 @@ const Arrow = styled(Icon)({
   verticalAlign: 'text-bottom'
 })
 
-const Tag = styled(BaseTag)({
-  backgroundColor: PALETTE.PRIMARY_LIGHT,
+const StyledTag = styled(BaseTag)({
+  backgroundColor: PALETTE.TAG_USER_DRAGGING,
   color: '#FFFFFF'
 })
 
@@ -59,11 +59,11 @@ const UserDraggingHeader = (props: Props) => {
   const arrowEl = <Arrow>{arrow}</Arrow>
   return (
     <Header style={style}>
-      <Tag>
+      <StyledTag>
         {(arrow === 'arrow_downward' || arrow === 'arrow_upward') && arrowEl}
         {label}
         {arrow && arrowEl}
-      </Tag>
+      </StyledTag>
     </Header>
   )
 }

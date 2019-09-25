@@ -13,7 +13,9 @@ import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoHeader from '../../../../components/Row/RowInfoHeader'
 import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
 import RowInfoLink from '../../../../components/Row/RowInfoLink'
-import Tag from '../../../../components/Tag/Tag'
+import NewTag from '../../../../components/Tag/NewTag'
+import RoleTag from '../../../../components/Tag/RoleTag'
+import InactiveTag from '../../../../components/Tag/InactiveTag'
 import Toggle from '../../../../components/Toggle/Toggle'
 import Tooltip from '../../../../components/Tooltip/Tooltip'
 import withAtmosphere, {
@@ -154,9 +156,9 @@ const OrgMemberRow = (props: Props) => {
       <StyledRowInfo>
         <RowInfoHeader>
           <RowInfoHeading>{preferredName}</RowInfoHeading>
-          {isBillingLeader && <Tag colorPalette='blue' label='Billing Leader' />}
-          {inactive && !isBillingLeader && <Tag colorPalette='midGray' label='Inactive' />}
-          {new Date(newUserUntil) > new Date() && <Tag colorPalette='yellow' label='New' />}
+          {isBillingLeader && <RoleTag>{'Billing Leader'}</RoleTag>}
+          {inactive && !isBillingLeader && <InactiveTag>{'Inactive'}</InactiveTag>}
+          {new Date(newUserUntil) > new Date() && <NewTag>{'New'}</NewTag>}
         </RowInfoHeader>
         <RowInfoLink href={`mailto:${email}`} title='Send an email'>
           {email}

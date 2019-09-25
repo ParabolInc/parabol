@@ -4,7 +4,7 @@ import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import Avatar from '../Avatar/Avatar'
-import Tag from '../Tag/Tag'
+import RoleTag from '../Tag/RoleTag'
 import {MenuPosition} from '../../hooks/useCoords'
 import useMenu from '../../hooks/useMenu'
 import useModal from '../../hooks/useModal'
@@ -21,7 +21,7 @@ const AvatarAndTag = styled('div')({
   flexDirection: 'column',
   alignItems: 'center'
 })
-const AvatarTag = styled(Tag)<{isLead?: boolean | null}>(({isLead}) => ({
+const AvatarTag = styled(RoleTag)<{isLead?: boolean | null}>(({isLead}) => ({
   bottom: '-1.5rem',
   marginLeft: 0,
   opacity: isLead ? 1 : 0,
@@ -75,7 +75,7 @@ const DashboardAvatar = (props: Props) => {
         onClick={togglePortal}
         size={32}
       />
-      <AvatarTag colorPalette='blue' label='Team Lead' isLead={isLead} />
+      <AvatarTag isLead={isLead}>{'Team Lead'}</AvatarTag>
       {menuPortal(
         <TeamMemberAvatarMenu
           menuProps={menuProps}

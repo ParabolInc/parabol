@@ -21,7 +21,7 @@ const ProTag = styled(BaseTag)({
 })
 
 const EnterpriseTag = styled(BaseTag)({
-  backgroundColor: PALETTE.BACKGROUND_PRIMARY,
+  backgroundColor: PALETTE.BACKGROUND_BLUE,
   color: '#FFFFFF'
 })
 
