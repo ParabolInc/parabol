@@ -178,7 +178,8 @@ const Invoice = (props: Props) => {
   const {interval, nextPeriodEnd} = nextPeriodCharges!
   const chargeDates = `${makeDateString(startAt)} to ${makeDateString(endAt)}`
   const nextChargesDates = `${makeDateString(endAt)} to ${makeDateString(nextPeriodEnd)}`
-  const discountedAmount = coupon ? `-${coupon.amount_off && invoiceLineFormat(coupon.amount_off) || coupon.percent_off && invoicePercentToDiscountedAmount(amountDue, coupon.percent_off)}` : ''
+  const amountOff = coupon && (coupon.amount_off || (1 - coupon.percent_off! / 100) * amountDue)
+  const discountedAmount = amountOff && invoiceLineFormat(-amountOff)
   return (
     <Wrap>
       <InvoiceStyles>
