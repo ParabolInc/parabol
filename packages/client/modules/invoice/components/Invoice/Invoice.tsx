@@ -4,7 +4,9 @@ import InvoiceFooter from '../InvoiceFooter/InvoiceFooter'
 import makeMonthString from '../../../../utils/makeMonthString'
 import makeDateString from '../../../../utils/makeDateString'
 import InvoiceLineItem from '../InvoiceLineItem/InvoiceLineItem'
+import InvoiceLineItemContent from '../InvoiceLineItem/InvoiceLineItemContent'
 import invoiceLineFormat from '../../helpers/invoiceLineFormat'
+import invoicePercentFormat from '../../helpers/invoicePercentFormat'
 import {Elevation} from '../../../../styles/elevation'
 import graphql from 'babel-plugin-relay/macro'
 import {createFragmentContainer} from 'react-relay'
@@ -18,7 +20,6 @@ import InvoiceTag from './InvoiceTag'
 import {InvoiceStatusEnum, TierEnum} from '../../../../types/graphql'
 import NextPeriodChargesLineItem from '../InvoiceLineItem/NextPeriodChargesLineItem'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
-
 
 const chargeStatus = {
   [InvoiceStatusEnum.PAID]: 'Charged',
@@ -156,14 +157,6 @@ const PayURLText = styled('a')({
   width: '100%'
 })
 
-const Discount = styled('div')({
-  backgroundColor: PALETTE.BACKGROUND_HIGHLIGHT,
-  borderRadius: 4,
-  fontSize: 14,
-  margin: '0 0 16px',
-  padding: '8px 16px'
-})
-
 interface Props {
   viewer: Invoice_viewer
 }
@@ -193,6 +186,8 @@ const Invoice = (props: Props) => {
   const {interval, nextPeriodEnd} = nextPeriodCharges!
   const chargeDates = `${makeDateString(startAt)} to ${makeDateString(endAt)}`
   const nextChargesDates = `${makeDateString(endAt)} to ${makeDateString(nextPeriodEnd)}`
+  const discountAmount = discount ? `-${discount.amount_off && invoiceLineFormat(discount.amount_off) || discount.percent_off && invoicePercentFormat(amountDue, discount.percent_off)}` : ''
+  console.log(total, 'total')
   return (
     <Wrap>
       <InvoiceStyles>
@@ -225,7 +220,13 @@ const Invoice = (props: Props) => {
               {lines.map((item) => <InvoiceLineItem key={item.id} item={item} />)}
             </>
           )}
-
+          {discount &&
+            <InvoiceLineItemContent
+              description={`Coupon: “${discount.name}”`}
+              amount={discountAmount}
+              addEmphasis
+            />
+          }
           <AmountSection>
             {startingBalance !== 0 && (
               <div>
@@ -239,14 +240,6 @@ const Invoice = (props: Props) => {
                 </AmountLineSub>
               </div>
             )}
-            {discount &&
-              <Discount>
-                {'The coupon '}<b>{discount.name}</b>{' has been applied for '}
-                {discount.amount_off && <b>{`${invoiceLineFormat(discount.amount_off)} off`}</b>}
-                {discount.percent_off && <b>{`${discount.percent_off}% off`}</b>}
-                {'.'}
-              </Discount>
-            }
             <AmountLine>
               <div>{'Amount due'}</div>
               <div>{invoiceLineFormat(amountDue)}</div>

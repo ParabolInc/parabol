@@ -345,6 +345,7 @@ export default async function generateInvoice (
   })
 
   const coupon = invoice.discount && invoice.discount.coupon || null
+  console.log(invoice.subtotal, 'invoice.subtotal')
 
   const dbInvoice = new Invoice({
     id: invoiceId,

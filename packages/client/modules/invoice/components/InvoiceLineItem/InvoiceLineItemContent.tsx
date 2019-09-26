@@ -11,19 +11,20 @@ const Item = styled('div')({
 })
 
 
-const ItemContent = styled('div')({
+const ItemContent = styled('div')<{addEmphasis: boolean | undefined}>(({addEmphasis}) => ({
+  color: addEmphasis ? PALETTE.EMPHASIS_WARM : PALETTE.TEXT_MAIN,
   display: 'flex',
-  justifyContent: 'space-between',
-  width: '100%',
   fontSize: 16,
+  fontWeight: addEmphasis ? 600 : 400,
+  justifyContent: 'space-between',
   lineHeight: '24px',
   paddingRight: 12,
+  width: '100%',
 
   [`@media (min-width: ${Breakpoint.INVOICE}px)`]: {
-    fontSize: 20,
     paddingRight: 20
   }
-})
+}))
 
 const Fill = styled('div')({
   flex: 1,
@@ -34,13 +35,14 @@ interface Props {
   description: string
   amount: string
   children?: ReactNode
+  addEmphasis?: boolean
 }
 
 const InvoiceLineItemContent = (props: Props) => {
-  const {description, amount, children} = props
+  const {description, amount, children, addEmphasis} = props
   return (
     <Item>
-      <ItemContent>
+      <ItemContent addEmphasis={addEmphasis}>
         <Fill>{description}</Fill>
         <div>{amount}</div>
       </ItemContent>
