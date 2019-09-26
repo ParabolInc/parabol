@@ -13,7 +13,7 @@ import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoHeader from '../../../../components/Row/RowInfoHeader'
 import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
 import RowInfoLink from '../../../../components/Row/RowInfoLink'
-import NewTag from '../../../../components/Tag/NewTag'
+import EmphasisTag from '../../../../components/Tag/EmphasisTag'
 import RoleTag from '../../../../components/Tag/RoleTag'
 import InactiveTag from '../../../../components/Tag/InactiveTag'
 import Toggle from '../../../../components/Toggle/Toggle'
@@ -158,7 +158,7 @@ const OrgMemberRow = (props: Props) => {
           <RowInfoHeading>{preferredName}</RowInfoHeading>
           {isBillingLeader && <RoleTag>{'Billing Leader'}</RoleTag>}
           {inactive && !isBillingLeader && <InactiveTag>{'Inactive'}</InactiveTag>}
-          {new Date(newUserUntil) > new Date() && <NewTag>{'New'}</NewTag>}
+          {new Date(newUserUntil) > new Date() && <EmphasisTag>{'New'}</EmphasisTag>}
         </RowInfoHeader>
         <RowInfoLink href={`mailto:${email}`} title='Send an email'>
           {email}

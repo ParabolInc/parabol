@@ -17,6 +17,7 @@ import {PALETTE} from '../../../../styles/paletteV2'
 import {Breakpoint} from '../../../../types/constEnums'
 import InvoiceFailedStamp from './InvoiceFailedStamp'
 import InvoiceTag from './InvoiceTag'
+import EmphasisTag from '../../../../components/Tag/EmphasisTag'
 import {InvoiceStatusEnum, TierEnum} from '../../../../types/graphql'
 import NextPeriodChargesLineItem from '../InvoiceLineItem/NextPeriodChargesLineItem'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
@@ -115,12 +116,18 @@ const SectionHeader = styled('div')({
 })
 
 const Heading = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
   fontSize: 18,
   fontWeight: 600,
+  justifyContent: 'space-between',
   lineHeight: '24px',
   paddingBottom: 8,
+  paddingRight: 12,
   [`@media (min-width: ${Breakpoint.INVOICE}px)`]: {
-    fontSize: 24
+    fontSize: 24,
+    justifyContent: 'flex-start',
+    paddingRight: 20
   }
 })
 
@@ -128,26 +135,6 @@ const Meta = styled('div')<{isError?: boolean}>(({isError}) => ({
   color: isError ? PALETTE.ERROR_MAIN : undefined,
   fontSize: 14
 }))
-
-const HeadingLabel = styled('div')({
-  display: 'block',
-  fontSize: 14,
-  lineHeight: '16px',
-
-  [`@media (min-width: ${Breakpoint.INVOICE_LABEL}px)`]: {
-    backgroundColor: PALETTE.BORDER_INVOICE_LABEL,
-    border: `1px solid ${PALETTE.BORDER_INVOICE_LABEL}`,
-    borderRadius: '4em',
-    color: '#FFFFFF',
-    display: 'inline-block',
-    fontSize: 12,
-    marginBottom: 0,
-    marginLeft: 8,
-    padding: '1px 7px',
-    textTransform: 'uppercase',
-    verticalAlign: 'middle'
-  }
-})
 
 const PayURLText = styled('a')({
   display: 'flex',
@@ -213,11 +200,7 @@ const Invoice = (props: Props) => {
               <SectionHeader>
                 <Heading>
                   {'Last month’s adjustments'}
-                  <InvoiceAsterisk />
-                  <HeadingLabel>
-                    <InvoiceAsterisk />
-                    {'Prorated'}
-                  </HeadingLabel>
+                  <EmphasisTag>{'Prorated'}</EmphasisTag>
                 </Heading>
                 <Meta>{chargeDates}</Meta>
               </SectionHeader>
