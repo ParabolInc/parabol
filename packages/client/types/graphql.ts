@@ -1949,6 +1949,11 @@ export interface IInvoice {
   createdAt: any;
 
   /**
+   * The discount information from Stripe, if any discount applied
+   */
+  discount: IDiscount | null;
+
+  /**
    * The total amount for the invoice (in USD)
    */
   total: number;
@@ -2022,6 +2027,38 @@ export interface IInvoice {
    * the status of the invoice. starts as pending, moves to paid or unpaid depending on if the payment succeeded
    */
   status: InvoiceStatusEnum;
+}
+
+/**
+ * The discount from Stripe, if any
+ */
+export interface IDiscount {
+  __typename: 'Discount';
+
+  /**
+   * The ID of the discount coupon from Stripe
+   */
+  id: string;
+
+  /**
+   * The amount off the invoice, if any
+   */
+  amount_off: string | null;
+
+  /**
+   * The name of the discount coupon from Stripe
+   */
+  name: string;
+
+  /**
+   * The percent off the invoice, if any
+   */
+  percent_off: number | null;
+
+  /**
+   * The discount coupon is valid or not
+   */
+  valid: boolean;
 }
 
 /**

@@ -1,4 +1,5 @@
 import CreditCard from './CreditCard'
+import Discount from './Discount'
 import InvoiceLineItem from './InvoiceLineItem'
 import {InvoiceStatusEnum, TierEnum} from 'parabol-client/types/graphql'
 import NextPeriodCharges from './NextPeriodCharges'
@@ -7,6 +8,7 @@ interface Input {
   id: string,
   amountDue: number,
   createdAt?: Date,
+  discount?: Discount | null,
   total: number,
   billingLeaderEmails: string[],
   creditCard?: CreditCard,
@@ -29,6 +31,7 @@ export default class Invoice {
   id: string
   amountDue: number
   createdAt: Date
+  discount?: Discount | null
   total: number
   billingLeaderEmails: string[]
   creditCard?: CreditCard
@@ -47,13 +50,14 @@ export default class Invoice {
   tier: TierEnum
 
   constructor (input: Input) {
-    const {id, createdAt, amountDue, billingLeaderEmails, creditCard, endAt, invoiceDate, lines, nextPeriodCharges, orgId, orgName, paidAt, payUrl,  picture, startAt, startingBalance, status, total, tier} = input
+    const {id, amountDue, createdAt, discount, billingLeaderEmails, creditCard, endAt, invoiceDate, lines, nextPeriodCharges, orgId, orgName, paidAt, payUrl,  picture, startAt, startingBalance, status, total, tier} = input
     this.id = id
+    this.amountDue = amountDue
     this.createdAt = createdAt || new Date()
+    this.discount = discount
     this.total = total
     this.billingLeaderEmails = billingLeaderEmails
     this.creditCard = creditCard
-    this.amountDue = amountDue
     this.endAt = endAt
     this.invoiceDate = invoiceDate
     this.lines = lines

@@ -283,7 +283,7 @@ const maybeReduceUnknowns = async (
   return unknowns
 }
 
-export default async function generateInvoice(
+export default async function generateInvoice (
   invoice: Stripe.invoices.IInvoice,
   stripeLineItems: Stripe.invoices.IInvoiceLineItem[],
   orgId: string,
@@ -344,10 +344,13 @@ export default async function generateInvoice(
       .coerceTo('array')
   })
 
+  const coupon = invoice.discount && invoice.discount.coupon || null
+
   const dbInvoice = new Invoice({
     id: invoiceId,
     amountDue: invoice.amount_due,
     createdAt: now,
+    discount: coupon,
     total: invoice.total,
     billingLeaderEmails,
     creditCard: organization.creditCard,

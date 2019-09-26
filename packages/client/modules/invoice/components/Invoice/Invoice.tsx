@@ -156,6 +156,14 @@ const PayURLText = styled('a')({
   width: '100%'
 })
 
+const Discount = styled('div')({
+  backgroundColor: PALETTE.BACKGROUND_HIGHLIGHT,
+  borderRadius: 4,
+  fontSize: 14,
+  margin: '0 0 16px',
+  padding: '8px 16px'
+})
+
 interface Props {
   viewer: Invoice_viewer
 }
@@ -173,6 +181,7 @@ const Invoice = (props: Props) => {
     amountDue,
     total,
     creditCard,
+    discount,
     lines,
     nextPeriodCharges,
     payUrl,
@@ -230,6 +239,9 @@ const Invoice = (props: Props) => {
                 </AmountLineSub>
               </div>
             )}
+            {discount &&
+              <Discount>{'The discount '}<b>{discount.name}</b>{' has been applied.'}</Discount>
+            }
             <AmountLine>
               <div>{'Amount due'}</div>
               <div>{invoiceLineFormat(amountDue)}</div>
@@ -266,6 +278,9 @@ export default createFragmentContainer(Invoice, {
         creditCard {
           brand
           last4
+        }
+        discount {
+          name
         }
         endAt
         lines {
