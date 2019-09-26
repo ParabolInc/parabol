@@ -1949,9 +1949,9 @@ export interface IInvoice {
   createdAt: any;
 
   /**
-   * The discount information from Stripe, if any discount applied
+   * The discount coupon information from Stripe, if any discount applied
    */
-  discount: IDiscount | null;
+  coupon: ICoupon | null;
 
   /**
    * The total amount for the invoice (in USD)
@@ -2030,10 +2030,10 @@ export interface IInvoice {
 }
 
 /**
- * The discount from Stripe, if any
+ * The discount coupon from Stripe, if any
  */
-export interface IDiscount {
-  __typename: 'Discount';
+export interface ICoupon {
+  __typename: 'Coupon';
 
   /**
    * The ID of the discount coupon from Stripe

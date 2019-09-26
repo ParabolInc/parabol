@@ -157,7 +157,7 @@ const PayURLText = styled('a')({
   width: '100%'
 })
 
-const DiscountEmphasis = styled('span')({
+const CouponEmphasis = styled('span')({
   color: PALETTE.EMPHASIS_WARM,
   fontWeight: 600
 })
@@ -179,7 +179,7 @@ const Invoice = (props: Props) => {
     amountDue,
     total,
     creditCard,
-    discount,
+    coupon,
     lines,
     nextPeriodCharges,
     payUrl,
@@ -191,7 +191,7 @@ const Invoice = (props: Props) => {
   const {interval, nextPeriodEnd} = nextPeriodCharges!
   const chargeDates = `${makeDateString(startAt)} to ${makeDateString(endAt)}`
   const nextChargesDates = `${makeDateString(endAt)} to ${makeDateString(nextPeriodEnd)}`
-  const discountAmount = discount ? `-${discount.amount_off && invoiceLineFormat(discount.amount_off) || discount.percent_off && invoicePercentToDiscountedAmount(amountDue, discount.percent_off)}` : ''
+  const discountedAmount = coupon ? `-${coupon.amount_off && invoiceLineFormat(coupon.amount_off) || coupon.percent_off && invoicePercentToDiscountedAmount(amountDue, coupon.percent_off)}` : ''
   return (
     <Wrap>
       <InvoiceStyles>
@@ -224,10 +224,10 @@ const Invoice = (props: Props) => {
               {lines.map((item) => <InvoiceLineItem key={item.id} item={item} />)}
             </>
           )}
-          {discount &&
+          {coupon &&
             <InvoiceLineItemContent
-              description={<DiscountEmphasis>{`Coupon: “${discount.name}”`}</DiscountEmphasis>}
-              amount={<DiscountEmphasis>{discountAmount}</DiscountEmphasis>}
+              description={<CouponEmphasis>{`Coupon: “${coupon.name}”`}</CouponEmphasis>}
+              amount={<CouponEmphasis>{discountedAmount}</CouponEmphasis>}
             />
           }
           <AmountSection>
@@ -280,7 +280,7 @@ export default createFragmentContainer(Invoice, {
           brand
           last4
         }
-        discount {
+        coupon {
           amount_off
           name
           percent_off

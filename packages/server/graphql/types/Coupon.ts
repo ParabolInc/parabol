@@ -1,8 +1,8 @@
 import {GraphQLNonNull, GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLBoolean} from 'graphql'
 
-const Discount = new GraphQLObjectType({
-  name: 'Discount',
-  description: 'The discount from Stripe, if any',
+const Coupon = new GraphQLObjectType({
+  name: 'Coupon',
+  description: 'The discount coupon from Stripe, if any',
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLString),
@@ -27,4 +27,4 @@ const Discount = new GraphQLObjectType({
   })
 })
 
-export default Discount
+export default Coupon

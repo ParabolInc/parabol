@@ -345,13 +345,12 @@ export default async function generateInvoice (
   })
 
   const coupon = invoice.discount && invoice.discount.coupon || null
-  console.log(invoice.subtotal, 'invoice.subtotal')
 
   const dbInvoice = new Invoice({
     id: invoiceId,
     amountDue: invoice.amount_due,
     createdAt: now,
-    discount: coupon,
+    coupon,
     total: invoice.total,
     billingLeaderEmails,
     creditCard: organization.creditCard,
