@@ -33,15 +33,13 @@ const GroupHeader = styled('div')<{isExpanded: boolean, portalStatus: PortalStat
   opacity: !isExpanded && portalStatus !== PortalStatus.Exited ? 0 : undefined,
   paddingLeft: Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL,
   paddingRight: 8,
-  paddingTop: isExpanded ? Gutters.ROW_INNER_GUTTER : undefined,
   position: 'relative',
   width: '100%'
 }))
 
-// const StyledTag = styled(Tag)({marginRight: 4})
 const StyledTag = styled(BaseTag)<{dialogClosed: boolean}>(({dialogClosed}) => ({
-  backgroundColor: dialogClosed ? '#FFFFFF' : PALETTE.BACKGROUND_GRAY,
-  color: dialogClosed ? PALETTE.TEXT_MAIN : '#FFFFFF',
+  backgroundColor: dialogClosed ? PALETTE.BACKGROUND_GRAY : '#FFFFFF',
+  color: dialogClosed ? '#FFFFFF' : PALETTE.TEXT_MAIN,
   marginRight: 4
 }))
 
