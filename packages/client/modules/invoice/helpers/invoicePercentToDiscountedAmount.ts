@@ -1,6 +1,4 @@
-export default function invoicePercentFormat (amountDue: number, percentOff: number) {
-  console.log(amountDue, 'amountDue')
-  console.log(percentOff, 'percentOff')
+export default function invoicePercentToDiscountedAmount (amountDue: number, percentOff: number) {
   const percentRemaining = 100 - percentOff
   const preDiscountedTotal = amountDue / (percentRemaining / 100)
   const discountedAmount = preDiscountedTotal - amountDue

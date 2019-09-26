@@ -6,7 +6,7 @@ import makeDateString from '../../../../utils/makeDateString'
 import InvoiceLineItem from '../InvoiceLineItem/InvoiceLineItem'
 import InvoiceLineItemContent from '../InvoiceLineItem/InvoiceLineItemContent'
 import invoiceLineFormat from '../../helpers/invoiceLineFormat'
-import invoicePercentFormat from '../../helpers/invoicePercentFormat'
+import invoicePercentToDiscountedAmount from '../../helpers/invoicePercentToDiscountedAmount'
 import {Elevation} from '../../../../styles/elevation'
 import graphql from 'babel-plugin-relay/macro'
 import {createFragmentContainer} from 'react-relay'
@@ -157,6 +157,11 @@ const PayURLText = styled('a')({
   width: '100%'
 })
 
+const DiscountEmphasis = styled('span')({
+  color: PALETTE.EMPHASIS_WARM,
+  fontWeight: 600
+})
+
 interface Props {
   viewer: Invoice_viewer
 }
@@ -186,8 +191,7 @@ const Invoice = (props: Props) => {
   const {interval, nextPeriodEnd} = nextPeriodCharges!
   const chargeDates = `${makeDateString(startAt)} to ${makeDateString(endAt)}`
   const nextChargesDates = `${makeDateString(endAt)} to ${makeDateString(nextPeriodEnd)}`
-  const discountAmount = discount ? `-${discount.amount_off && invoiceLineFormat(discount.amount_off) || discount.percent_off && invoicePercentFormat(amountDue, discount.percent_off)}` : ''
-  console.log(total, 'total')
+  const discountAmount = discount ? `-${discount.amount_off && invoiceLineFormat(discount.amount_off) || discount.percent_off && invoicePercentToDiscountedAmount(amountDue, discount.percent_off)}` : ''
   return (
     <Wrap>
       <InvoiceStyles>
@@ -222,9 +226,8 @@ const Invoice = (props: Props) => {
           )}
           {discount &&
             <InvoiceLineItemContent
-              description={`Coupon: “${discount.name}”`}
-              amount={discountAmount}
-              addEmphasis
+              description={<DiscountEmphasis>{`Coupon: “${discount.name}”`}</DiscountEmphasis>}
+              amount={<DiscountEmphasis>{discountAmount}</DiscountEmphasis>}
             />
           }
           <AmountSection>
