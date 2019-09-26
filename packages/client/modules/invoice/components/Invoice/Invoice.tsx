@@ -240,7 +240,12 @@ const Invoice = (props: Props) => {
               </div>
             )}
             {discount &&
-              <Discount>{'The discount '}<b>{discount.name}</b>{' has been applied.'}</Discount>
+              <Discount>
+                {'The coupon '}<b>{discount.name}</b>{' has been applied for '}
+                {discount.amount_off && <b>{`${invoiceLineFormat(discount.amount_off)} off`}</b>}
+                {discount.percent_off && <b>{`${discount.percent_off}% off`}</b>}
+                {'.'}
+              </Discount>
             }
             <AmountLine>
               <div>{'Amount due'}</div>
@@ -280,7 +285,9 @@ export default createFragmentContainer(Invoice, {
           last4
         }
         discount {
+          amount_off
           name
+          percent_off
         }
         endAt
         lines {

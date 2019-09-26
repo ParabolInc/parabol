@@ -9,7 +9,7 @@ const Discount = new GraphQLObjectType({
       description: 'The ID of the discount coupon from Stripe'
     },
     amount_off: {
-      type: GraphQLString,
+      type: GraphQLInt,
       description: 'The amount off the invoice, if any'
     },
     name: {

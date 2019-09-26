@@ -2043,7 +2043,7 @@ export interface IDiscount {
   /**
    * The amount off the invoice, if any
    */
-  amount_off: string | null;
+  amount_off: number | null;
 
   /**
    * The name of the discount coupon from Stripe
