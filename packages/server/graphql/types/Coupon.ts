@@ -8,7 +8,7 @@ const Coupon = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString),
       description: 'The ID of the discount coupon from Stripe'
     },
-    amount_off: {
+    amountOff: {
       type: GraphQLInt,
       description: 'The amount off the invoice, if any'
     },
@@ -16,13 +16,9 @@ const Coupon = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the discount coupon from Stripe'
     },
-    percent_off: {
+    percentOff: {
       type: GraphQLInt,
       description: 'The percent off the invoice, if any'
-    },
-    valid: {
-      type: new GraphQLNonNull(GraphQLBoolean),
-      description: 'The discount coupon is valid or not'
     }
   })
 })

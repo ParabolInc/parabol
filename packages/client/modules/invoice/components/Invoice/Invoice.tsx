@@ -11,7 +11,6 @@ import {Elevation} from '../../../../styles/elevation'
 import graphql from 'babel-plugin-relay/macro'
 import {createFragmentContainer} from 'react-relay'
 import {Invoice_viewer} from '__generated__/Invoice_viewer.graphql'
-import InvoiceAsterisk from './InvoiceAsterisk'
 import styled from '@emotion/styled'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {Breakpoint} from '../../../../types/constEnums'
@@ -178,7 +177,7 @@ const Invoice = (props: Props) => {
   const {interval, nextPeriodEnd} = nextPeriodCharges!
   const chargeDates = `${makeDateString(startAt)} to ${makeDateString(endAt)}`
   const nextChargesDates = `${makeDateString(endAt)} to ${makeDateString(nextPeriodEnd)}`
-  const discountedAmount = coupon ? `-${coupon.amount_off && invoiceLineFormat(coupon.amount_off) || coupon.percent_off && invoicePercentToDiscountedAmount(amountDue, coupon.percent_off)}` : ''
+  const discountedAmount = coupon ? `-${coupon.amountOff && invoiceLineFormat(coupon.amountOff) || coupon.percentOff && invoicePercentToDiscountedAmount(nextPeriodCharges.amount, coupon.percentOff)}` : ''
   return (
     <Wrap>
       <InvoiceStyles>
@@ -195,6 +194,19 @@ const Invoice = (props: Props) => {
           </SectionHeader>
           <NextPeriodChargesLineItem tier={tier as TierEnum} item={nextPeriodCharges} />
 
+          {/*
+            Re: coupon
+            Percent-off amounts are based on the nextPeriodCharges,
+            so the line item makes more sense close to the starting amount.
+            Also, coupons are not part of “Last month’s adjustments”
+          */}
+          {coupon &&
+            <InvoiceLineItemContent
+              description={<CouponEmphasis>{`Coupon: “${coupon.name}”`}</CouponEmphasis>}
+              amount={<CouponEmphasis>{discountedAmount}</CouponEmphasis>}
+            />
+          }
+
           {lines.length > 0 && (
             <>
               <SectionHeader>
@@ -207,12 +219,6 @@ const Invoice = (props: Props) => {
               {lines.map((item) => <InvoiceLineItem key={item.id} item={item} />)}
             </>
           )}
-          {coupon &&
-            <InvoiceLineItemContent
-              description={<CouponEmphasis>{`Coupon: “${coupon.name}”`}</CouponEmphasis>}
-              amount={<CouponEmphasis>{discountedAmount}</CouponEmphasis>}
-            />
-          }
           <AmountSection>
             {startingBalance !== 0 && (
               <div>
@@ -264,9 +270,9 @@ export default createFragmentContainer(Invoice, {
           last4
         }
         coupon {
-          amount_off
+          amountOff
           name
-          percent_off
+          percentOff
         }
         endAt
         lines {
@@ -277,6 +283,7 @@ export default createFragmentContainer(Invoice, {
           ...NextPeriodChargesLineItem_item
           nextPeriodEnd
           interval
+          amount
         }
         payUrl
         startingBalance

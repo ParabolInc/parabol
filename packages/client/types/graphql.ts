@@ -2043,7 +2043,7 @@ export interface ICoupon {
   /**
    * The amount off the invoice, if any
    */
-  amount_off: number | null;
+  amountOff: number | null;
 
   /**
    * The name of the discount coupon from Stripe
@@ -2053,12 +2053,7 @@ export interface ICoupon {
   /**
    * The percent off the invoice, if any
    */
-  percent_off: number | null;
-
-  /**
-   * The discount coupon is valid or not
-   */
-  valid: boolean;
+  percentOff: number | null;
 }
 
 /**
