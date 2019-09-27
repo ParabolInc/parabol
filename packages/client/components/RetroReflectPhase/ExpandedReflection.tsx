@@ -16,12 +16,11 @@ interface Props {
   meeting: any
   setItemsRef: (idx: number) => (c: RefCallbackInstance) => void
   staticReflections: readonly any[]
-  groupQuestion?: string
 }
 
 // this isEditing logic is a little verbose, could use a rewrite
 const ExpandedReflection = (props: Props) => {
-  const {groupQuestion, reflection, meeting, setItemsRef, idx, staticReflections} = props
+  const {reflection, meeting, setItemsRef, idx, staticReflections} = props
   const {id: reflectionId} = reflection
   const staticIdx = staticReflections.indexOf(reflection)
   const atmosphere = useAtmosphere()
@@ -64,7 +63,6 @@ const ExpandedReflection = (props: Props) => {
       onClick={setIsEditing(reflection.id)}
     >
       <DraggableReflectionCard
-        groupQuestion={groupQuestion}
         isDraggable
         meeting={meeting}
         reflection={reflection}

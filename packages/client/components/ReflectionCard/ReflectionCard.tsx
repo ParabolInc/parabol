@@ -22,7 +22,6 @@ import ReflectionCardRoot from './ReflectionCardRoot'
 import ReflectionCardFooter from './ReflectionCardFooter'
 
 interface Props {
-  groupQuestion?: string
   isClipped?: boolean
   reflection: ReflectionCard_reflection
   meeting: ReflectionCard_meeting | null

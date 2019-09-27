@@ -109,7 +109,7 @@ const GroupingKanbanColumn = (props: Props) => {
             return group && group.reflections.length > 0
           })
           .map((reflectionGroup) => {
-          return <ReflectionGroup groupQuestion={question} key={reflectionGroup.id} meeting={meeting} phaseRef={phaseRef} reflectionGroup={reflectionGroup} swipeColumn={swipeColumn}/>
+          return <ReflectionGroup key={reflectionGroup.id} meeting={meeting} phaseRef={phaseRef} reflectionGroup={reflectionGroup} swipeColumn={swipeColumn}/>
         })}
       </ColumnBody>
     </Column>
