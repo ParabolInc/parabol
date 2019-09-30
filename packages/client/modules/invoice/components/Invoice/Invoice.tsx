@@ -173,10 +173,10 @@ const Invoice = (props: Props) => {
     tier
   } = invoiceDetails
   const status = invoiceDetails.status as InvoiceStatusEnum
-  const {interval, nextPeriodEnd} = nextPeriodCharges!
+  const {amount, interval, nextPeriodEnd} = nextPeriodCharges!
   const chargeDates = `${makeDateString(startAt)} to ${makeDateString(endAt)}`
   const nextChargesDates = `${makeDateString(endAt)} to ${makeDateString(nextPeriodEnd)}`
-  const amountOff = coupon && (coupon.amountOff || coupon.percentOff! / 100 * amountDue)
+  const amountOff = coupon && (coupon.amountOff || coupon.percentOff! / 100 * amount)
   const discountedAmount = amountOff && invoiceLineFormat(-amountOff)
   return (
     <Wrap>
