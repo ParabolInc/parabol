@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+
+## 4.6.0 2019-Sep-25
+
+## Added 
+* New retrospective grouping experience:
+   * Preserves columns while grouping
+   * Group across columns
+   * Add and edit new items during grouping phase
+   * Works on mobile
+* New conversion squeeze modal which is turned on by an admin mutation
+
+## Removed
+* Refactor of the way our color palette is defined and used in the app
+
 ## 4.5.3 2019-Sep-23
 
 ## Removed
