@@ -1,4 +1,6 @@
-const getSelectionLink = (editorState, selection) => {
+import {EditorState, SelectionState} from 'draft-js'
+
+const getSelectionLink = (editorState: EditorState, selection: SelectionState) => {
   const startKey = selection.getStartKey()
   const endKey = selection.getEndKey()
   const currentContent = editorState.getCurrentContent()
@@ -12,7 +14,7 @@ const getSelectionLink = (editorState, selection) => {
     const endChar = currentKey === endKey ? selection.getEndOffset() : charList.size - 1
     const subset = charList.slice(startChar, endChar)
     const lastLinkChar = subset.findLast((value) => {
-      return value.getEntity() && currentContent.getEntity(value.getEntity()).getType() === 'LINK'
+      return value && value.getEntity() && currentContent.getEntity(value.getEntity()).getType() === 'LINK' || false
     })
     if (lastLinkChar) {
       return currentContent.getEntity(lastLinkChar.getEntity()).getData().href

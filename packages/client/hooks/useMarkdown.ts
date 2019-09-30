@@ -1,4 +1,4 @@
-import Draft, {
+import {
   ContentBlock,
   ContentState,
   DraftEditorCommand,
@@ -8,13 +8,12 @@ import Draft, {
   SelectionState
 } from 'draft-js'
 import {List, Map, OrderedSet} from 'immutable'
-import PropTypes from 'prop-types'
-import {Component, useRef} from 'react'
+import {useRef} from 'react'
 import getAnchorLocation from '../components/TaskEditor/getAnchorLocation'
 import addSpace from '../utils/draftjs/addSpace'
 import splitBlock from '../utils/draftjs/splitBlock'
 import linkify from '../utils/linkify'
-import DraftEditorProps = Draft.Component.Base.DraftEditorProps
+import {SetEditorState} from '../types/draft'
 
 const inlineMatchers = {
   CODE: {regex: /`([^`]+)`/, matchIdx: 1},
@@ -28,7 +27,7 @@ const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/
 
 const CODE_FENCE = '```'
 
-const styles = Object.keys(inlineMatchers) as Array<keyof typeof inlineMatchers>
+const styles = Object.keys(inlineMatchers) as (keyof typeof inlineMatchers)[]
 
 const extractStyle = (editorState: EditorState, getNextState: () => EditorState, style: keyof typeof inlineMatchers, blockKey: string, extractedStyles: typeof styles) => {
   const {regex, matchIdx} = inlineMatchers[style]
@@ -103,8 +102,8 @@ const extractMarkdownStyles = (editorState: EditorState, getNextState: () => Edi
   return undefined
 }
 
-type Handlers = Pick<EditorProps, 'handleKeyCommand' | 'keyBindingFn' | 'handleBeforeInput' | 'onChange'>
-const useMarkdown = (editorState: EditorState, setEditorState: (editorState: EditorState) => void, {handleKeyCommand, keyBindingFn, handleBeforeInput, onChange}: Handlers) => {
+type Handlers = Pick<EditorProps, 'handleKeyCommand' | 'keyBindingFn' | 'handleBeforeInput'> & {onChange?: EditorProps['onChange']}
+const useMarkdown = (editorState: EditorState, setEditorState: SetEditorState, {handleKeyCommand, keyBindingFn, handleBeforeInput, onChange}: Handlers) => {
   const undoMarkdownRef = useRef<undefined | boolean>(false)
 
   const getMaybeCodeBlockState = (editorState: EditorState) => {
@@ -170,7 +169,7 @@ const useMarkdown = (editorState: EditorState, setEditorState: (editorState: Edi
     return getMaybeCodeBlockState(editorState)
   }
 
-  const getMaybeBlockquote = (editorState: EditorState, command: DraftEditorCommand) => {
+  const getMaybeBlockquote = (editorState: EditorState, command: DraftEditorCommand | 'space') => {
     const initialContentState = editorState.getCurrentContent()
     const initialSelectionState = editorState.getSelection()
     const currentBlockKey = initialSelectionState.getAnchorKey()
@@ -210,7 +209,7 @@ const useMarkdown = (editorState: EditorState, setEditorState: (editorState: Edi
     return EditorState.push(startingEditorState, styledContent, 'change-block-type')
   }
 
-  const getMaybeLink = (editorState: EditorState, command: DraftEditorCommand) => {
+  const getMaybeLink = (editorState: EditorState, command: DraftEditorCommand | 'space') => {
     const initialContentState = editorState.getCurrentContent()
     const selectionState = editorState.getSelection()
     const currentBlockKey = selectionState.getAnchorKey()
@@ -253,7 +252,7 @@ const useMarkdown = (editorState: EditorState, setEditorState: (editorState: Edi
     return EditorState.push(preSplitES, adjustedSelectionContent, 'apply-entity')
   }
 
-  const nextHandleKeyCommand = (command: DraftEditorCommand) => {
+  const nextHandleKeyCommand: EditorProps['handleKeyCommand'] = (command: DraftEditorCommand) => {
     if (handleKeyCommand) {
       // @ts-ignore
       const result = handleKeyCommand(command)
@@ -279,20 +278,20 @@ const useMarkdown = (editorState: EditorState, setEditorState: (editorState: Edi
       undoMarkdownRef.current = undefined
       return 'handled'
     }
-    return undefined
+    return 'not-handled'
   }
 
-  const nextKeyBindingFn = (e) => {
+  const nextKeyBindingFn: EditorProps['keyBindingFn'] = (e) => {
     if (keyBindingFn) {
       const result = keyBindingFn(e)
       if (result) {
         return result
       }
     }
-    return undefined
+    return null
   }
 
-  const nextHandleBeforeInput = (char) => {
+  const nextHandleBeforeInput: EditorProps['handleBeforeInput'] = (char) => {
     if (handleBeforeInput) {
       // @ts-ignore
       const result = handleBeforeInput(char)
@@ -312,10 +311,10 @@ const useMarkdown = (editorState: EditorState, setEditorState: (editorState: Edi
         return 'handled'
       }
     }
-    return undefined
+    return 'not-handled'
   }
 
-  const nextOnChange = (editorState: EditorState) => {
+  const nextOnChange: EditorProps['onChange'] = (editorState: EditorState) => {
     if (onChange) {
       onChange(editorState)
     }

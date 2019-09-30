@@ -1,22 +1,25 @@
-import {ContentBlock, DraftHandleValue, Editor, EditorProps, EditorState, getDefaultKeyBinding} from 'draft-js'
+import {
+  ContentBlock,
+  DraftEditorCommand,
+  DraftHandleValue,
+  Editor,
+  EditorProps,
+  EditorState,
+  getDefaultKeyBinding
+} from 'draft-js'
 import React, {RefObject, Suspense, useEffect, useRef} from 'react'
-import withMarkdown from './withMarkdown'
 import {Card} from '../../types/constEnums'
 import {textTags} from '../../utils/constants'
 import entitizeText from '../../utils/draftjs/entitizeText'
 import './Draft.css'
-import withKeyboardShortcuts from './withKeyboardShortcuts'
-import withLinks from './withLinks'
-import withSuggestions from './withSuggestions'
-import withEmojis from './withEmojis'
 import styled from '@emotion/styled'
 import lazyPreload from '../../utils/lazyPreload'
 import isRichDraft from '../../utils/draftjs/isRichDraft'
 import isAndroid from '../../utils/draftjs/isAndroid'
-import useKeyboardShortcuts from '../../hooks/useKeyboardShortcuts'
-import useMarkdown from '../../hooks/useMarkdown'
+import {UseTaskChild} from '../../hooks/useTaskChildFocus'
+import useTaskPlugins from './useTaskPlugins'
 
-const RootEditor = styled('div')<{noText: boolean, readOnly: boolean}>(({noText, readOnly}) => ({
+const RootEditor = styled('div')<{noText: boolean, readOnly: boolean | undefined}>(({noText, readOnly}) => ({
   cursor: readOnly ? undefined : 'text',
   fontSize: Card.FONT_SIZE,
   lineHeight: Card.LINE_HEIGHT,
@@ -34,14 +37,14 @@ const TaskEditorFallback = styled(AndroidEditorFallback)({
   padding: 0
 })
 
-type DraftProps = Pick<EditorProps, 'editorState' | 'handleBeforeInput' | 'onChange' | 'handleKeyCommand' | 'handleReturn' | 'keyBindingFn' | 'readOnly'>
+type DraftProps = Pick<EditorProps, 'editorState' | 'handleBeforeInput' | 'handleKeyCommand' | 'handleReturn' | 'keyBindingFn' | 'readOnly'>
+
 interface Props extends DraftProps {
   editorRef: RefObject<HTMLTextAreaElement>,
-  handleChange: EditorProps['onChange'] // TODO refactor
   setEditorState: (newEditorState: EditorState) => void,
-  removeModal?: () => void
-  renderModal?: () => null
   styles: React.CSSProperties
+  teamId: string
+  useTaskChild: UseTaskChild
 }
 
 const blockStyleFn = (contentBlock: ContentBlock) => {
@@ -55,10 +58,9 @@ const blockStyleFn = (contentBlock: ContentBlock) => {
 }
 
 const TaskEditor = (props: Props) => {
-  const {editorRef, editorState, readOnly, removeModal, renderModal, setEditorState, handleChange, handleReturn, handleKeyCommand, keyBindingFn, handleBeforeInput} = props
+  const {editorRef, editorState, readOnly, setEditorState} = props
   const entityPasteStartRef = useRef<{anchorOffset: number, anchorKey: string} | undefined>()
-  const ks = useKeyboardShortcuts(editorState, setEditorState, {handleKeyCommand, keyBindingFn})
-  const md = useMarkdown(editorState, setEditorState, {handleKeyCommand, handleBeforeInput, keyBindingFn, onChange: handleChange, ...ks})
+  const {removeModal, renderModal, handleChange, handleBeforeInput, handleKeyCommand, keyBindingFn, handleReturn} = useTaskPlugins({...props})
 
   useEffect(() => {
     if (!editorState.getCurrentContent().hasText()) {
@@ -67,7 +69,7 @@ const TaskEditor = (props: Props) => {
   }, [])
 
   const onRemoveModal = () => {
-    if (renderModal && removeModal) {
+    if (removeModal) {
       removeModal()
     }
   }
@@ -97,7 +99,7 @@ const TaskEditor = (props: Props) => {
 
   const onReturn = (e) => {
     if (handleReturn) {
-      return handleReturn(e)
+      return handleReturn(e, editorState)
     }
     if (!e.shiftKey && !renderModal) {
       editorRef.current && editorRef.current.blur()
@@ -112,9 +114,9 @@ const TaskEditor = (props: Props) => {
     editorRef.current && editorRef.current.blur()
   }
 
-  const onKeyCommand = (command) => {
+  const nextKeyCommand = (command: DraftEditorCommand) => {
     if (handleKeyCommand) {
-      return handleKeyCommand(command)
+      return handleKeyCommand(command, editorState, Date.now())
     }
     return 'not-handled'
   }
@@ -134,9 +136,9 @@ const TaskEditor = (props: Props) => {
     return getDefaultKeyBinding(e)
   }
 
-  const onBeforeInput = (char) => {
+  const onBeforeInput = (char: string) => {
     if (handleBeforeInput) {
-      return handleBeforeInput(char)
+      return handleBeforeInput(char, editorState, Date.now())
     }
     return 'not-handled'
   }
@@ -178,7 +180,7 @@ const TaskEditor = (props: Props) => {
           blockStyleFn={blockStyleFn}
           editorState={editorState}
           handleBeforeInput={onBeforeInput}
-          handleKeyCommand={onKeyCommand}
+          handleKeyCommand={nextKeyCommand}
           handlePastedText={onPastedText}
           handleReturn={onReturn}
           keyBindingFn={onKeyBindingFn}
@@ -193,6 +195,4 @@ const TaskEditor = (props: Props) => {
   )
 }
 
-export default withSuggestions(
-  withEmojis(withLinks(withMarkdown(TaskEditor)))
-)
+export default TaskEditor

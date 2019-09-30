@@ -1,11 +1,13 @@
 import {DraftEditorCommand, EditorProps, EditorState, KeyBindingUtil, RichUtils} from 'draft-js'
+import {SetEditorState} from '../types/draft'
 
 const {hasCommandModifier} = KeyBindingUtil
-const useKeyboardShortcuts = (editorState: EditorState, setEditorState: (editorState: EditorState) => void, {handleKeyCommand, keyBindingFn}: {handleKeyCommand?: EditorProps['handleKeyCommand'], keyBindingFn?: EditorProps['keyBindingFn']}) => {
-  const nextHandleKeyCommand = (command: DraftEditorCommand) => {
+
+type Handlers = Pick<EditorProps, 'handleKeyCommand' | 'keyBindingFn'>
+const useKeyboardShortcuts = (editorState: EditorState, setEditorState: SetEditorState, {handleKeyCommand, keyBindingFn}: Handlers) => {
+  const nextHandleKeyCommand: Handlers['handleKeyCommand'] = (command: DraftEditorCommand) => {
     if (handleKeyCommand) {
-      // @ts-ignore
-      const result = handleKeyCommand(command)
+      const result = handleKeyCommand(command, editorState, Date.now())
       // @ts-ignore
       if (result === 'handled' || result === true) {
         return result
@@ -25,7 +27,7 @@ const useKeyboardShortcuts = (editorState: EditorState, setEditorState: (editorS
     return 'not-handled'
   }
 
-  const nextKeyBindingFn = (e) => {
+  const nextKeyBindingFn: Handlers['keyBindingFn'] = (e) => {
     if (keyBindingFn) {
       const result = keyBindingFn(e)
       if (result) {
@@ -35,7 +37,7 @@ const useKeyboardShortcuts = (editorState: EditorState, setEditorState: (editorS
     if (hasCommandModifier(e) && e.shiftKey && e.key === 'x') {
       return 'strikethrough'
     }
-    return undefined
+    return null
   }
 
   return {
