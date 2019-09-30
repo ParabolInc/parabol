@@ -1,6 +1,5 @@
 import dehydrate from './utils/dehydrate'
 import getWebpackPublicPath from './utils/getWebpackPublicPath'
-import {makeHeadGtmHtml, makeBodyGtmHtml} from './utils/googleTagManager'
 import fs from 'fs'
 import path from 'path'
 import {RequestHandler} from 'express'
@@ -16,6 +15,7 @@ export const getClientKeys = () => {
     auth0Domain: process.env.AUTH0_DOMAIN,
     cdn: webpackPublicPath,
     github: process.env.GITHUB_CLIENT_ID,
+    googleTagManagerId: process.env.GOOGLE_TAG_MANAGER_CONTAINER_ID,
     segment: process.env.SEGMENT_WRITE_KEY,
     sentry: process.env.SENTRY_DSN,
     slack: process.env.SLACK_CLIENT_ID,
@@ -35,9 +35,7 @@ const getHTML = () => {
       : '<script src="/static/vendors.dll.js"></script><script src="/static/app.js"></script>'
 
     finalHTML = html
-      .replace('<head>', `<head>${makeHeadGtmHtml()}`)
-      .replace('<body>', `<body>${makeBodyGtmHtml()}`)
-      .replace('</head>', `${extraHead}</head>`)
+      .replace('<head>', `<head>${extraHead}`)
       .replace('</body>', `${devBody}</body>`)
   }
   return finalHTML
