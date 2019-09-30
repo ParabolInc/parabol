@@ -344,7 +344,14 @@ export default async function generateInvoice (
       .coerceTo('array')
   })
 
-  const coupon = invoice.discount && invoice.discount.coupon || null
+  const couponDetails = invoice.discount && invoice.discount.coupon || null
+
+  const coupon = couponDetails && {
+    id: couponDetails.id,
+    amountOff: couponDetails.amount_off,
+    name: couponDetails.name,
+    percentOff: couponDetails.percent_off
+  } || null
 
   const dbInvoice = new Invoice({
     id: invoiceId,
