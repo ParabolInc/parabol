@@ -6,7 +6,6 @@ import makeDateString from '../../../../utils/makeDateString'
 import InvoiceLineItem from '../InvoiceLineItem/InvoiceLineItem'
 import InvoiceLineItemContent from '../InvoiceLineItem/InvoiceLineItemContent'
 import invoiceLineFormat from '../../helpers/invoiceLineFormat'
-import invoicePercentToDiscountedAmount from '../../helpers/invoicePercentToDiscountedAmount'
 import {Elevation} from '../../../../styles/elevation'
 import graphql from 'babel-plugin-relay/macro'
 import {createFragmentContainer} from 'react-relay'
@@ -174,10 +173,11 @@ const Invoice = (props: Props) => {
     tier
   } = invoiceDetails
   const status = invoiceDetails.status as InvoiceStatusEnum
-  const {interval, nextPeriodEnd} = nextPeriodCharges!
+  const {amount, interval, nextPeriodEnd} = nextPeriodCharges!
   const chargeDates = `${makeDateString(startAt)} to ${makeDateString(endAt)}`
   const nextChargesDates = `${makeDateString(endAt)} to ${makeDateString(nextPeriodEnd)}`
-  const discountedAmount = coupon ? `-${coupon.amountOff && invoiceLineFormat(coupon.amountOff) || coupon.percentOff && invoicePercentToDiscountedAmount(nextPeriodCharges.amount, coupon.percentOff)}` : ''
+  const amountOff = coupon && (coupon.amountOff || coupon.percentOff! / 100 * amount)
+  const discountedAmount = amountOff && invoiceLineFormat(-amountOff)
   return (
     <Wrap>
       <InvoiceStyles>
