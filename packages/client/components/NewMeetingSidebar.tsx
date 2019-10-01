@@ -7,6 +7,7 @@ import LabelHeading from './LabelHeading/LabelHeading'
 import LogoBlock from './LogoBlock/LogoBlock'
 import MeetingSidebarLabelBlock from './MeetingSidebarLabelBlock'
 import SidebarToggle from './SidebarToggle'
+import AssignFacilitator from './AssignFacilitator'
 import {meetingSidebarWidth} from '../styles/meeting'
 import {PALETTE} from '../styles/paletteV2'
 import {MeetingTypeEnum} from '../types/graphql'
@@ -59,7 +60,7 @@ const NewMeetingSidebar = (props: Props) => {
   const {children, handleMenuClick, meetingType, toggleSidebar, viewer} = props
   const {team} = viewer
   if (!team) return null
-  const {id: teamId, name: teamName} = team
+  const {id: teamId, name: teamName, newMeeting} = team
   const meetingLabel = meetingTypeToLabel[meetingType]
   const teamLink = isDemoRoute() ? '/create-account' : `/team/${teamId}`
   return (
@@ -68,6 +69,7 @@ const NewMeetingSidebar = (props: Props) => {
         <StyledToggle onClick={toggleSidebar} />
         <TeamDashboardLink to={teamLink}>{teamName}</TeamDashboardLink>
       </SidebarHeader>
+      <AssignFacilitator team={team} newMeeting={newMeeting} />
       <MeetingSidebarLabelBlock>
         <LabelHeading>{`${meetingLabel} Meeting`}</LabelHeading>
       </MeetingSidebarLabelBlock>
@@ -81,8 +83,12 @@ export default createFragmentContainer(NewMeetingSidebar, {
   viewer: graphql`
     fragment NewMeetingSidebar_viewer on User {
       team(teamId: $teamId) {
+        ...AssignFacilitator_team
         id
         name
+        newMeeting {
+          ...AssignFacilitator_newMeeting
+        }
       }
     }
   `
