@@ -16,4 +16,5 @@ jobs:
         stale-issue-message: 'Stale issue'
         stale-issue-label: 'stale'
         days-before-stale: 180
-        exempt-issue-label: 'discussion'
+        days-before-close: 1825
+        exempt-issue-label: 'Help Wanted'
