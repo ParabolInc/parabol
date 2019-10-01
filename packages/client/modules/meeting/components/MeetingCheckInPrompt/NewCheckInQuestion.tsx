@@ -1,21 +1,20 @@
-import React, {Component} from 'react'
+import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import EditorInputWrapper from '../../../../components/EditorInputWrapper'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
-import editorDecorators from '../../../../components/TaskEditor/decorators'
 import '../../../../components/TaskEditor/Draft.css'
 import Tooltip from '../../../../components/Tooltip/Tooltip'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import {PALETTE} from '../../../../styles/paletteV2'
 import styled from '@emotion/styled'
 import UpdateNewCheckInQuestionMutation from '../../../../mutations/UpdateNewCheckInQuestionMutation'
-import {convertFromRaw, convertToRaw, EditorState, SelectionState} from 'draft-js'
+import {convertToRaw, EditorState, SelectionState} from 'draft-js'
 import Icon from '../../../../components/Icon'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {NewCheckInQuestion_team} from '../../../../__generated__/NewCheckInQuestion_team.graphql'
+import useEditorState from '../../../../hooks/useEditorState'
+import {ICheckInPhase} from '../../../../types/graphql'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
 
 const CogIcon = styled(Icon)<{isEditing: boolean}>(({isEditing}) => ({
   color: PALETTE.TEXT_MAIN,
@@ -38,75 +37,37 @@ const QuestionBlock = styled('div')({
   padding: '16px 0'
 })
 
-const getCheckInQuestion = (props) => {
-  const {
-    team: {newMeeting}
-  } = props
-  if (!newMeeting) return ''
-  return newMeeting.localPhase.checkInQuestion
-}
-
-interface Props extends WithAtmosphereProps {
+interface Props{
   team: NewCheckInQuestion_team
 }
 
-interface State {
-  editorState: EditorState
-}
+const NewCheckInQuestion = (props: Props) => {
+  const editorRef = useRef<HTMLTextAreaElement>()
+  const atmosphere = useAtmosphere()
+  const {team} = props
+  const {newMeeting} = team
+  if (!newMeeting) return null
+  const {id: meetingId, localPhase, facilitatorUserId} = newMeeting
+  const {checkInQuestion} = localPhase as ICheckInPhase
+  const [editorState, setEditorState] = useEditorState(checkInQuestion)
 
-class NewCheckInQuestion extends Component<Props, State> {
-  editorRef = React.createRef<any>()
-  constructor (props) {
-    super(props)
-    const checkInQuestion = getCheckInQuestion(props)
-    const contentState = convertFromRaw(JSON.parse(checkInQuestion))
-    this.state = {
-      editorState: EditorState.createWithContent(
-        contentState,
-        editorDecorators(this.getEditorState)
-      )
-    }
-  }
-
-  componentWillReceiveProps (nextProps) {
-    const checkInQuestion = getCheckInQuestion(nextProps)
-    const oldCheckInQuestion = getCheckInQuestion(this.props)
-    if (checkInQuestion !== oldCheckInQuestion) {
-      const contentState = convertFromRaw(JSON.parse(checkInQuestion))
-      this.setState({
-        editorState: EditorState.createWithContent(
-          contentState,
-          editorDecorators(this.getEditorState)
-        )
-      })
-    }
-  }
-
-  getEditorState = () => this.state.editorState
-
-  setEditorState = (editorState) => {
-    const wasFocused = this.state.editorState.getSelection().getHasFocus()
-    const isFocused = editorState.getSelection().getHasFocus()
+  const updateQuestion = (nextEditorState: EditorState) => {
+    const wasFocused = editorState.getSelection().getHasFocus()
+    const isFocused = nextEditorState.getSelection().getHasFocus()
+    console.log('isWas', isFocused, wasFocused)
     if (wasFocused && !isFocused) {
-      const {atmosphere, team} = this.props
-      const {newMeeting} = team
-      const {id: meetingId} = newMeeting!
-      const checkInQuestion = JSON.stringify(convertToRaw(editorState.getCurrentContent()))
-      const oldValue = getCheckInQuestion(this.props)
-      if (oldValue === checkInQuestion) return
+      const nextCheckInQuestion = JSON.stringify(convertToRaw(nextEditorState.getCurrentContent()))
+      if (nextCheckInQuestion === checkInQuestion) return
       UpdateNewCheckInQuestionMutation(atmosphere, {
         meetingId,
-        checkInQuestion
+        checkInQuestion: nextCheckInQuestion
       })
     }
-    this.setState({
-      editorState
-    })
+    setEditorState(nextEditorState)
   }
 
-  selectAllQuestion = () => {
-    this.editorRef.current && this.editorRef.current.focus()
-    const {editorState} = this.state
+  const selectAllQuestion = () => {
+    editorRef.current && editorRef.current.focus()
     const selection = editorState.getSelection()
     const contentState = editorState.getCurrentContent()
     const fullSelection = (selection as any).merge({
@@ -116,52 +77,44 @@ class NewCheckInQuestion extends Component<Props, State> {
       focusOffset: contentState.getLastBlock().getLength()
     }) as SelectionState
     const nextEditorState = EditorState.forceSelection(editorState, fullSelection)
-    this.setEditorState(nextEditorState)
+    setEditorState(nextEditorState)
   }
 
-  render () {
-    const {
-      atmosphere,
-      team: {newMeeting}
-    } = this.props
-    if (!newMeeting) return null
-    const {facilitatorUserId} = newMeeting
-    const {editorState} = this.state
-    const isEditing = editorState.getSelection().getHasFocus()
-    const {viewerId} = atmosphere
-    const isFacilitating = facilitatorUserId === viewerId
-    const tip = 'Tap to customize the Social Check-in question.'
-    return (
-      <Tooltip
-        delay={300}
-        tip={<div>{tip}</div>}
-        originAnchor={{vertical: 'bottom', horizontal: 'center'}}
-        targetAnchor={{vertical: 'top', horizontal: 'center'}}
-        hideOnFocus
-        maxHeight={40}
-        isOpen={isEditing || !isFacilitating ? false : undefined}
-      >
-        <QuestionBlock>
-          {/* cannot set min width because iPhone 5 has a width of 320*/}
-            <EditorInputWrapper
-              editorState={editorState}
-              setEditorState={this.setEditorState}
-              readOnly={!isFacilitating}
-              placehodler='e.g. How are you?'
-              ref={this.editorRef}
-            />
-          {isFacilitating && (
-            <PlainButton aria-label={tip} onClick={this.selectAllQuestion}>
-              <CogIcon isEditing={isEditing}>settings</CogIcon>
-            </PlainButton>
-          )}
-        </QuestionBlock>
-      </Tooltip>
-    )
-  }
+  const isEditing = editorState.getSelection().getHasFocus()
+  const {viewerId} = atmosphere
+  const isFacilitating = facilitatorUserId === viewerId
+  const tip = 'Tap to customize the Social Check-in question.'
+  return (
+    <Tooltip
+      delay={300}
+      tip={<div>{tip}</div>}
+      originAnchor={{vertical: 'bottom', horizontal: 'center'}}
+      targetAnchor={{vertical: 'top', horizontal: 'center'}}
+      hideOnFocus
+      maxHeight={40}
+      isOpen={isEditing || !isFacilitating ? false : undefined}
+    >
+      <QuestionBlock>
+        {/* cannot set min width because iPhone 5 has a width of 320*/}
+        <EditorInputWrapper
+          ariaLabel={'Edit the check in question'}
+          editorState={editorState}
+          setEditorState={updateQuestion}
+          readOnly={!isFacilitating}
+          placeholder='e.g. How are you?'
+          editorRef={editorRef}
+        />
+        {isFacilitating && (
+          <PlainButton aria-label={tip} onClick={selectAllQuestion}>
+            <CogIcon isEditing={isEditing}>settings</CogIcon>
+          </PlainButton>
+        )}
+      </QuestionBlock>
+    </Tooltip>
+  )
 }
 
-export default createFragmentContainer(withAtmosphere(NewCheckInQuestion), {
+export default createFragmentContainer(NewCheckInQuestion, {
   team: graphql`
     fragment NewCheckInQuestion_team on Team {
       id

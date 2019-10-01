@@ -1,5 +1,5 @@
 import EditorLink from './EditorLink'
-import {CompositeDecorator} from 'draft-js'
+import {CompositeDecorator, EditorState} from 'draft-js'
 import Hashtag from './Hashtag'
 import Mention from './Mention'
 import TruncatedEllipsis from './TruncatedEllipsis'
@@ -11,7 +11,7 @@ const findEntity = (entityType) => (contentBlock, callback, contentState) => {
   }, callback)
 }
 
-const decorators = (getEditorState, setEditorState) =>
+const decorators = (getEditorState: () => EditorState, setEditorState?: (editorState: EditorState) => void) =>
   new CompositeDecorator([
     {
       strategy: findEntity('LINK'),

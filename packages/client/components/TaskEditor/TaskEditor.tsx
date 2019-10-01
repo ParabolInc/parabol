@@ -1,12 +1,4 @@
-import {
-  ContentBlock,
-  DraftEditorCommand,
-  DraftHandleValue,
-  Editor,
-  EditorProps,
-  EditorState,
-  getDefaultKeyBinding
-} from 'draft-js'
+import {DraftEditorCommand, DraftHandleValue, Editor, EditorProps, EditorState, getDefaultKeyBinding} from 'draft-js'
 import React, {RefObject, Suspense, useEffect, useRef} from 'react'
 import {Card} from '../../types/constEnums'
 import {textTags} from '../../utils/constants'
@@ -18,6 +10,7 @@ import isRichDraft from '../../utils/draftjs/isRichDraft'
 import isAndroid from '../../utils/draftjs/isAndroid'
 import {UseTaskChild} from '../../hooks/useTaskChildFocus'
 import useTaskPlugins from './useTaskPlugins'
+import blockStyleFn from './blockStyleFn'
 
 const RootEditor = styled('div')<{noText: boolean, readOnly: boolean | undefined}>(({noText, readOnly}) => ({
   cursor: readOnly ? undefined : 'text',
@@ -47,16 +40,6 @@ interface Props extends DraftProps {
   useTaskChild: UseTaskChild
 }
 
-const blockStyleFn = (contentBlock: ContentBlock) => {
-  const type = contentBlock.getType()
-  if (type === 'blockquote') {
-    return 'draft-blockquote'
-  } else if (type === 'code-block') {
-    return 'draft-codeblock'
-  }
-  return ''
-}
-
 const TaskEditor = (props: Props) => {
   const {editorRef, editorState, readOnly, setEditorState} = props
   const entityPasteStartRef = useRef<{anchorOffset: number, anchorKey: string} | undefined>()
@@ -74,7 +57,7 @@ const TaskEditor = (props: Props) => {
     }
   }
 
-  const onChange = (editorState) => {
+  const onChange = (editorState: EditorState) => {
     const {current: entityPasteStart} = entityPasteStartRef
     if (entityPasteStart) {
       const {anchorOffset, anchorKey} = entityPasteStart
