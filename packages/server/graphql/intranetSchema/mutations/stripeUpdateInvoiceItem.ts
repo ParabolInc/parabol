@@ -3,6 +3,21 @@ import {InternalContext} from '../../graphql'
 import {isSuperUser} from '../../../utils/authorization'
 import getRethink from '../../../database/rethinkDriver'
 import StripeManager from '../../../utils/StripeManager'
+import InvoiceItemHook from '../../../database/types/InvoiceItemHook'
+
+const MAX_STRIPE_DELAY = 3 // seconds
+
+const getBestHook = (possibleHooks: InvoiceItemHook[], hookQuantity: number) => {
+  if (possibleHooks.length === 1) return possibleHooks[0]
+  for (let i =0 ; i < possibleHooks.length; i++) {
+    const curHook = possibleHooks[i]
+    const {quantity} = curHook
+    // if 2 hooks occurred at the same second, try grabbing the one with the accurate quantity
+    if (quantity === hookQuantity) return curHook
+  }
+  console.log('imperfect invoice item hook selected', possibleHooks[0])
+  return possibleHooks[0]
+}
 
 export default {
   name: 'StripeUpdateInvoiceItem',
@@ -26,17 +41,26 @@ export default {
     const invoiceItem = await manager.retrieveInvoiceItem(invoiceItemId)
     const {
       subscription,
-      period: {start}
+      period: {start},
+      quantity,
+      amount
     } = invoiceItem
-    const hook = await r
+
+    const possibleHooks = await r
       .table('InvoiceItemHook')
-      .getAll(start, {index: 'prorationDate'})
+      .between(start - MAX_STRIPE_DELAY, start, {index: 'prorationDate', rightBound: 'closed'})
       .filter({stripeSubscriptionId: subscription})
-      .nth(0)
-      .default(null)
+      .orderBy(r.desc('prorationDate'))
 
-    if (!hook) return false
+    if (possibleHooks.length === 0) {
+      console.log('No hook found for', invoiceItemId)
+      return false
+    }
 
+    // if amount < 0, then the line item is a refund for unused time. else, it is a charge for remaining time
+    // the InvoiceItemHook.quantity is for the remaining time
+    const hookQty = amount < 0 ? quantity - 1 : quantity
+    const hook = getBestHook(possibleHooks, hookQty)
     const {type, userId} = hook
     await manager.updateInvoiceItem(invoiceItemId, type, userId)
     return true
