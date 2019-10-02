@@ -5,10 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.7.0 2019-Oct-02
+
+### Added
+* Adds Google Tag Manager to SSR (PR #3215)
 
 ## 4.6.0 2019-Sep-25
 
-## Added 
+### Added
 * New retrospective grouping experience:
    * Preserves columns while grouping
    * Group across columns
@@ -16,20 +20,20 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
    * Works on mobile
 * New conversion squeeze modal which is turned on by an admin mutation
 
-## Removed
+### Removed
 * Refactor of the way our color palette is defined and used in the app
 
 ## 4.5.3 2019-Sep-23
 
-## Removed
+### Removed
 * Google language client (source of memory leak since v3.16.0)
 
 ## 4.5.2 2019-Sep-23
 
-## Added 
+### Added
 * Dumpy to dump stack heap info when SIGPIPE received
 
-## Fixed
+### Fixed
 * make start meeting more transactional to avoid duplicate start meetings
 
 ## 4.5.1 2019-Sep-20
