@@ -19,7 +19,6 @@ import MeetingAgendaCards from '../modules/meeting/components/MeetingAgendaCards
 import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {meetingVoteIcon} from '../styles/meeting'
-import ui from '../styles/ui'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import lazyPreload from '../utils/lazyPreload'
 import findStageAfterId from '../utils/meetings/findStageAfterId'

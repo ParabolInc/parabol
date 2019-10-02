@@ -38,7 +38,7 @@ const fieldPalettes = {
 export default function makeFieldColorPalette (
   colorPalette,
   hasPseudoClassStyles = true,
-  customStyles
+  customStyles = {}
 ) {
   const defaultCustomStyles = {
     base: {},

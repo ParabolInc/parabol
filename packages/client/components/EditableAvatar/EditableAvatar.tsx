@@ -54,10 +54,9 @@ const EditableAvatarImgBlock = styled('div')<Pick<Props, 'hasPanel' | 'size'>>((
 
 interface Props {
   hasPanel?: boolean
-  onClick: () => void
+  onClick?: () => void
   picture: string
   size: number
-  type: string
   unstyled?: boolean
 }
 

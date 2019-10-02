@@ -1,6 +1,5 @@
 import {EditorState} from 'draft-js'
 import React, {Ref, useEffect} from 'react'
-import {BBox} from '../../types/animations'
 import {MenuPosition} from '../../hooks/useCoords'
 import useMenu from '../../hooks/useMenu'
 import lazyPreload from '../../utils/lazyPreload'

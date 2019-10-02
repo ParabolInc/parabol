@@ -46,7 +46,7 @@ const ReflectionCard = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onCompleted, submitMutation, error, onError} = useMutationProps()
   const editorRef = useRef<HTMLTextAreaElement>(null)
-  const [editorState] = useEditorState(content)
+  const [editorState, setEditorState] = useEditorState(content)
 
   const handleEditorFocus = () => {
     if (isTempId(reflectionId)) return

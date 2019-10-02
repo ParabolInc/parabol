@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import LinkButton from './LinkButton'
+import LinkButton, {LinkButtonProps} from './LinkButton'
 import Icon from './Icon'
 import {ICON_SIZE} from '../styles/typographyV2'
 
@@ -12,10 +12,9 @@ const StyledIcon = styled(Icon)<{iconLarge?: boolean}>(({iconLarge}) => ({
   fontSize: iconLarge ? ICON_SIZE.MD24 : ICON_SIZE.MD18
 }))
 
-interface Props {
+interface Props extends LinkButtonProps {
   icon: string
   iconLarge?: boolean
-  palette: string
 }
 
 const IconButton = (props: Props) => {

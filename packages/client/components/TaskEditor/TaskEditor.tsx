@@ -35,7 +35,6 @@ type DraftProps = Pick<EditorProps, 'editorState' | 'handleBeforeInput' | 'handl
 interface Props extends DraftProps {
   editorRef: RefObject<HTMLTextAreaElement>,
   setEditorState: (newEditorState: EditorState) => void,
-  styles: React.CSSProperties
   teamId: string
   useTaskChild: UseTaskChild
 }
