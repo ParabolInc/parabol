@@ -1,9 +1,9 @@
 import getGroupSmartTitle from 'parabol-client/utils/autogroup/getGroupSmartTitle'
 import getRethink from '../../../../database/rethinkDriver'
-import makeReflectionGroup from './makeReflectionGroup'
 import updateSmartGroupTitle from './updateSmartGroupTitle'
 import {getUserId} from '../../../../utils/authorization'
 import standardError from '../../../../utils/standardError'
+import ReflectionGroup from '../../../../database/types/ReflectionGroup'
 
 const removeReflectionFromGroup = async (reflectionId, {authToken, dataLoader}) => {
   const r = getRethink()
@@ -15,7 +15,8 @@ const removeReflectionFromGroup = async (reflectionId, {authToken, dataLoader}) 
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
 
   // RESOLUTION
-  const reflectionGroup = await makeReflectionGroup(meetingId, retroPhaseItemId, 0)
+  const reflectionGroup = new ReflectionGroup({meetingId, retroPhaseItemId})
+  await r.table('RetroReflectionGroup').insert(reflectionGroup)
   const {id: reflectionGroupId} = reflectionGroup
   await r({
     reflection: r

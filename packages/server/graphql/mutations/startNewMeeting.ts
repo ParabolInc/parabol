@@ -13,6 +13,7 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {IStartNewMeetingOnMutationArguments} from '../../../client/types/graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import Organization from '../../database/types/Organization'
 
 export default {
   type: StartNewMeetingPayload,
@@ -63,11 +64,16 @@ export default {
     } catch (e) {
       return standardError(new Error('Could not start meeting'), {userId: viewerId})
     }
+    const organization = await r.table('Team').get(teamId)('orgId')
+      .do((orgId) => r.table('Organization').get(orgId)) as Organization
+
+    const {showConversionModal} = organization
     const meeting = new Meeting({
       teamId,
       meetingType,
       meetingCount,
       phases,
+      showConversionModal,
       facilitatorUserId: viewerId
     })
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(meeting.teamId)

@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLInt, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
+import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
 import {GQLContext} from '../graphql'
 import ActionMeeting from './ActionMeeting'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -70,6 +70,11 @@ export const newMeetingFields = () => ({
         meetingId
       }))
     }
+  },
+  showConversionModal: {
+    type: new GraphQLNonNull(GraphQLBoolean),
+    description: 'true if should show the org the conversion modal, else false',
+    resolve: ({showConversionModal}) => !!showConversionModal
   },
   summarySentAt: {
     type: GraphQLISO8601Type,

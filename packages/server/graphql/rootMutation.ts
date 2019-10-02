@@ -77,6 +77,7 @@ import setSlackNotification from './mutations/setSlackNotification'
 import setStageTimer from './mutations/setStageTimer'
 import pushInvitation from './mutations/pushInvitation'
 import denyPushInvitation from './mutations/denyPushInvitation'
+import payLater from './mutations/payLater'
 
 interface Context extends InternalContext, GQLContext {}
 
@@ -119,6 +120,7 @@ export default new GraphQLObjectType<any, Context, any>({
     moveTeamToOrg,
     navigateMeeting,
     newMeetingCheckIn,
+    payLater,
     pushInvitation,
     promoteNewMeetingFacilitator,
     promoteToTeamLead,
