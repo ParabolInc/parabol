@@ -11,6 +11,7 @@ import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {PortalStatus} from '../hooks/usePortal'
 import lazyPreload from '../utils/lazyPreload'
+import isDemoRoute from '../utils/isDemoRoute'
 import {PALETTE} from '../styles/paletteV2'
 import Icon from './Icon'
 
@@ -19,17 +20,17 @@ const AssignFacilitatorBlock = styled('div')({
   padding: 8
 })
 
-const AssignFacilitatorToggle = styled('div')<{isActive: boolean}>(({isActive}) => ({
+const AssignFacilitatorToggle = styled('div')<{isActive: boolean, isReadOnly: boolean}>(({isActive, isReadOnly}) => ({
   alignItems: 'center',
   border: '1px solid transparent',
   borderColor: isActive ? PALETTE.BORDER_GRAY : undefined,
   borderRadius: 4,
   display: 'flex',
   color: isActive ? PALETTE.TEXT_MAIN : PALETTE.TEXT_GRAY,
-  cursor: 'pointer',
+  cursor: isReadOnly ? undefined : 'pointer',
   padding: '4px 8px',
   '&:hover': {
-    borderColor: PALETTE.BORDER_GRAY,
+    borderColor: isReadOnly ? undefined : PALETTE.BORDER_GRAY,
     color: PALETTE.TEXT_MAIN
   }
 }))
@@ -70,8 +71,7 @@ const Avatar = styled('img')({
 })
 
 interface Props extends WithAtmosphereProps {
-  isReadOnly?: boolean
-  newMeeting?: AssignFacilitator_newMeeting
+  newMeeting?: AssignFacilitator_newMeeting | null
   team: AssignFacilitator_team
 }
 
@@ -90,12 +90,18 @@ const AssignFacilitator = (props: Props) => {
     [facilitatorUserId, teamMembers]
   )
   const {togglePortal, menuProps, menuPortal, originRef, portalStatus} = useMenu<HTMLDivElement>(MenuPosition.UPPER_RIGHT)
+  const isReadOnly = isDemoRoute() || teamMembers.length === 1
+  const handleTogglePortal = () => {
+    if (isReadOnly) return
+    togglePortal()
+  }
   return (
     <AssignFacilitatorBlock>
       <AssignFacilitatorToggle
         isActive={portalStatus === PortalStatus.Entering || portalStatus === PortalStatus.Entered}
+        isReadOnly={isReadOnly}
         onMouseEnter={AssignFacilitatorMenuRoot.preload}
-        onClick={togglePortal}
+        onClick={handleTogglePortal}
         ref={originRef}
       >
         <AvatarBlock isConnected={currentFacilitator!.user.isConnected}>
@@ -105,7 +111,7 @@ const AssignFacilitator = (props: Props) => {
           <Label>Faciltator</Label>
           <Subtext>{currentFacilitator!.preferredName}</Subtext>
         </div>
-        <StyledIcon>keyboard_arrow_down</StyledIcon>
+        {!isReadOnly && <StyledIcon>keyboard_arrow_down</StyledIcon>}
       </AssignFacilitatorToggle>
       {menuPortal(<AssignFacilitatorMenuRoot menuProps={menuProps} team={team} newMeeting={newMeeting} />)}
     </AssignFacilitatorBlock>
