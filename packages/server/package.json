@@ -167,7 +167,7 @@
     "ms": "^2.0.0",
     "node-env-flag": "0.1.0",
     "node-fetch": "^2.6.0",
-    "parabol-client": "^4.6.0",
+    "parabol-client": "^4.7.0-alpha.0",
     "rethinkdbdash": "^2.3.31",
     "samlify": "^2.6.1",
     "secure-compare": "^3.0.1",
