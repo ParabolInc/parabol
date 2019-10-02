@@ -3,9 +3,7 @@ import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {Link} from 'react-router-dom'
-import LabelHeading from './LabelHeading/LabelHeading'
 import LogoBlock from './LogoBlock/LogoBlock'
-import MeetingSidebarLabelBlock from './MeetingSidebarLabelBlock'
 import SidebarToggle from './SidebarToggle'
 import AssignFacilitator from './AssignFacilitator'
 import {meetingSidebarWidth} from '../styles/meeting'
@@ -17,12 +15,16 @@ import {NewMeetingSidebar_viewer} from '../__generated__/NewMeetingSidebar_viewe
 
 const SidebarHeader = styled('div')({
   alignItems: 'center',
+  borderBottom: `1px solid ${PALETTE.BORDER_LIGHTER}`,
   display: 'flex',
+  marginBottom: 8,
+  padding: 16,
+  paddingRight: 8,
   position: 'relative'
 })
 
 const StyledToggle = styled(SidebarToggle)({
-  paddingLeft: 24
+  paddingRight: 16
 })
 
 const SidebarParent = styled('div')({
@@ -33,17 +35,24 @@ const SidebarParent = styled('div')({
   height: '100vh',
   maxWidth: meetingSidebarWidth,
   minWidth: meetingSidebarWidth,
-  paddingTop: 16,
   userSelect: 'none'
 })
 
-const TeamDashboardLink = styled(Link)({
+const MeetingName = styled('div')({
   fontSize: 20,
   fontWeight: 600,
-  paddingLeft: 16,
+  lineHeight: '24px'
+})
+
+const TeamDashboardLink = styled(Link)({
+  color: PALETTE.LINK_BLUE,
+  fontSize: 13,
+  fontWeight: 400,
+  lineHeight: '16px',
+  marginTop: 3,
   wordBreak: 'break-word',
-  ':hover': {
-    color: PALETTE.TEXT_PURPLE,
+  '&:hover': {
+    color: PALETTE.LINK_BLUE,
     cursor: 'pointer'
   }
 })
@@ -67,12 +76,12 @@ const NewMeetingSidebar = (props: Props) => {
     <SidebarParent>
       <SidebarHeader>
         <StyledToggle onClick={toggleSidebar} />
-        <TeamDashboardLink to={teamLink}>{teamName}</TeamDashboardLink>
+        <div>
+          <MeetingName>{`${meetingLabel} Meeting`}</MeetingName>
+          <TeamDashboardLink to={teamLink}>{'Team: '}{teamName}</TeamDashboardLink>
+        </div>
       </SidebarHeader>
       <AssignFacilitator team={team} newMeeting={newMeeting} />
-      <MeetingSidebarLabelBlock>
-        <LabelHeading>{`${meetingLabel} Meeting`}</LabelHeading>
-      </MeetingSidebarLabelBlock>
       {children}
       <LogoBlock variant='primary' onClick={handleMenuClick} />
     </SidebarParent>

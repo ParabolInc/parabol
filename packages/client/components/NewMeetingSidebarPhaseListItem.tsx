@@ -8,14 +8,16 @@ const NavListItem = styled('li')({
   fontWeight: 600,
   display: 'flex',
   flexDirection: 'column',
+  margin: '0 8px',
   // hack to work around broken flexbox
   // https://bugs.chromium.org/p/chromium/issues/detail?id=927066
   minHeight: 40
 })
 
-const NavItemBullet = styled('span')<Pick<Props, 'isFacilitatorPhaseGroup'>>(
+const NavItemBullet = styled('span')<{isFacilitatorPhaseGroup: boolean}>(
   {
     backgroundColor: PALETTE.BACKGROUND_PRIMARY,
+    // backgroundColor: PALETTE.BACKGROUND_GRAY,
     borderRadius: '100%',
     color: '#FFFFFF',
     display: 'block',
@@ -23,8 +25,8 @@ const NavItemBullet = styled('span')<Pick<Props, 'isFacilitatorPhaseGroup'>>(
     fontWeight: 600,
     height: 24,
     lineHeight: '24px',
-    marginLeft: 21,
-    marginRight: 12,
+    marginLeft: 8,
+    marginRight: 16,
     textAlign: 'center',
     verticalAlign: 'middle',
     width: 24
@@ -43,6 +45,7 @@ const NavItemLabel = styled('span')({
 const navListItemLinkActive = {
   backgroundColor: PALETTE.BACKGROUND_NAV_LIGHT_ACTIVE,
   borderLeftColor: PALETTE.BORDER_MAIN,
+  borderRadius: 4,
   color: PALETTE.TEXT_MAIN,
   ':hover,:focus': {
     backgroundColor: PALETTE.BACKGROUND_NAV_LIGHT_ACTIVE
@@ -64,7 +67,7 @@ interface LinkProps {
 const NavListItemLink = styled('div')<LinkProps>(
   {
     alignItems: 'center',
-    borderLeft: `${NavSidebar.LEFT_BORDER_WIDTH} solid transparent`,
+    borderRadius: 4,
     color: PALETTE.TEXT_MAIN,
     cursor: 'pointer',
     display: 'flex',

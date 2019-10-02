@@ -4,8 +4,6 @@ import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import LabelHeading from './LabelHeading/LabelHeading'
-import MeetingSidebarLabelBlock from './MeetingSidebarLabelBlock'
 import MeetingSubnavItem from './MeetingSubnavItem'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -16,12 +14,9 @@ import {navItemRaised} from '../styles/elevation'
 import {meetingVoteIcon} from '../styles/meeting'
 import {
   DISCUSSION_TOPIC,
-  RETRO_TOPIC_LABEL,
-  RETRO_VOTED_LABEL,
   SORT_STEP
 } from '../utils/constants'
 import dndNoise from '../utils/dndNoise'
-import plural from '../utils/plural'
 import Icon from './Icon'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
 import {NavSidebar} from '../types/constEnums'
@@ -119,11 +114,6 @@ const RetroSidebarDiscussSection = (props: Props) => {
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <MeetingSidebarPhaseItemChild>
-        <MeetingSidebarLabelBlock>
-          <LabelHeading>
-            {plural(stages.length, `${RETRO_VOTED_LABEL} ${RETRO_TOPIC_LABEL}`)}
-          </LabelHeading>
-        </MeetingSidebarLabelBlock>
         <Droppable droppableId={DISCUSSION_TOPIC}>
           {(provided) => {
             return (
