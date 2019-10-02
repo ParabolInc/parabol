@@ -40,7 +40,7 @@ const EditableAvatarEditOverlay = styled('div')<Pick<Props, 'hasPanel' | 'size'>
   zIndex: 200,
 
   '&:hover': {
-    opacity: '.75',
+    opacity: .75,
     transition: 'opacity .2s ease-in'
   }
 }))

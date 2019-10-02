@@ -71,7 +71,7 @@ const Description = styled('div')({
 })
 
 interface Props {
-  isCheckedIn: boolean
+  isCheckedIn: boolean | null | undefined
   isConnected: boolean
 }
 
