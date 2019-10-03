@@ -1,51 +1,49 @@
-import {DraftHandleValue, Editor, EditorState, getDefaultKeyBinding} from 'draft-js'
-import React, {Component, RefObject} from 'react'
+import {DraftEditorCommand, DraftHandleValue, Editor, EditorProps, EditorState, getDefaultKeyBinding} from 'draft-js'
+import React, {MutableRefObject, useRef} from 'react'
 import './TaskEditor/Draft.css'
-import withKeyboardShortcuts from './TaskEditor/withKeyboardShortcuts'
-import withMarkdown from './TaskEditor/withMarkdown'
 import {textTags} from '../utils/constants'
 import entitizeText from '../utils/draftjs/entitizeText'
+import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts'
+import useMarkdown from '../hooks/useMarkdown'
+import blockStyleFn from './TaskEditor/blockStyleFn'
+import {SetEditorState} from '../types/draft'
 
-interface Props {
+type Handlers = Pick<EditorProps, 'handleBeforeInput' | 'handleKeyCommand' | 'handleReturn' | 'keyBindingFn'>
+
+interface Props extends Handlers {
   ariaLabel: string
-  editorRef: RefObject<HTMLTextAreaElement>,
+  editorRef: MutableRefObject<HTMLTextAreaElement | undefined>,
   editorState: EditorState,
-  setEditorState: (newEditorState: EditorState) => void,
-  handleBeforeInput: (char: string) => DraftHandleValue
-  handleChange: (editorState: EditorState) => void
-  handleKeyCommand: (command: string) => DraftHandleValue
-  handleReturn: (e: React.KeyboardEvent) => DraftHandleValue
+  setEditorState: SetEditorState,
   readOnly: boolean,
-  onBlur: (e: React.FocusEvent) => void
   placeholder: string
-  innerRef: RefObject<any>
-  keyBindingFn: (e: React.KeyboardEvent) => string
-  styles: React.CSSProperties
 }
 
+interface EntityPasteOffset {
+  anchorOffset: number
+  anchorKey: string
+}
 
-class EditorInputWrapper extends Component<Props> {
-  entityPasteStart?: {anchorOffset: number; anchorKey: string} = undefined
-  blockStyleFn = (contentBlock) => {
-    const type = contentBlock.getType()
-    if (type === 'blockquote') {
-      return 'draft-blockquote'
-    } else if (type === 'code-block') {
-      return 'draft-codeblock'
-    }
-    return ''
-  }
+const EditorInputWrapper = (props: Props) => {
+  const {ariaLabel, setEditorState, editorState, editorRef, handleReturn, placeholder, readOnly} = props
+  const entityPasteStartRef = useRef<EntityPasteOffset | undefined>(undefined)
+  const ks = useKeyboardShortcuts(editorState, setEditorState, {handleKeyCommand: props.handleKeyCommand, keyBindingFn: props.keyBindingFn})
+  const {handleBeforeInput, handleKeyCommand, keyBindingFn, onChange: handleChange} = useMarkdown(editorState, setEditorState, {
+    handleKeyCommand: ks.handleKeyCommand,
+    keyBindingFn: ks.keyBindingFn,
+    handleBeforeInput: props.handleBeforeInput,
+  })
 
-  handleChange = (editorState) => {
-    const {handleChange, setEditorState} = this.props
-    if (this.entityPasteStart) {
-      const {anchorOffset, anchorKey} = this.entityPasteStart
+  const onChange = (editorState: EditorState) => {
+    const {current: entityPasteStart} = entityPasteStartRef
+    if (entityPasteStart) {
+      const {anchorOffset, anchorKey} = entityPasteStart
       const selectionState = editorState.getSelection().merge({
         anchorOffset,
         anchorKey
       })
       const contentState = entitizeText(editorState.getCurrentContent(), selectionState)
-      this.entityPasteStart = undefined
+      entityPasteStartRef.current = undefined
       if (contentState) {
         setEditorState(EditorState.push(editorState, contentState, 'apply-entity'))
         return
@@ -57,28 +55,25 @@ class EditorInputWrapper extends Component<Props> {
     setEditorState(editorState)
   }
 
-  handleReturn = (e) => {
-    const {handleReturn, innerRef} = this.props
+  const onReturn = (e) => {
     if (handleReturn) {
-      return handleReturn(e)
+      return handleReturn(e, editorState)
     }
-    if (e.shiftKey || !innerRef.current) {
+    if (e.shiftKey || !editorRef.current) {
       return 'not-handled'
     }
-    innerRef.current.blur()
+    editorRef.current.blur()
     return 'handled'
   }
 
-  handleKeyCommand = (command) => {
-    const {handleKeyCommand} = this.props
+  const nextKeyCommand = (command: DraftEditorCommand) => {
     if (handleKeyCommand) {
-      return handleKeyCommand(command)
+      return handleKeyCommand(command, editorState, Date.now())
     }
     return 'not-handled'
   }
 
-  keyBindingFn = (e) => {
-    const {keyBindingFn} = this.props
+  const onKeyBindingFn = (e) => {
     if (keyBindingFn) {
       const result = keyBindingFn(e)
       if (result) {
@@ -88,51 +83,46 @@ class EditorInputWrapper extends Component<Props> {
     return getDefaultKeyBinding(e)
   }
 
-  handleBeforeInput = (char) => {
-    const {handleBeforeInput} = this.props
+  const onBeforeInput = (char: string) => {
     if (handleBeforeInput) {
-      return handleBeforeInput(char)
+      return handleBeforeInput(char, editorState, Date.now())
     }
     return 'not-handled'
   }
 
-  handlePastedText = (text) => {
+  const onPastedText = (text): DraftHandleValue => {
     if (text) {
       for (let i = 0; i < textTags.length; i++) {
         const tag = textTags[i]
         if (text.indexOf(tag) !== -1) {
-          const selection = this.props.editorState.getSelection()
-          this.entityPasteStart = {
+          const selection = editorState.getSelection()
+          entityPasteStartRef.current = {
             anchorOffset: selection.getAnchorOffset(),
             anchorKey: selection.getAnchorKey()
           }
         }
       }
     }
-    return 'not-handled' as 'not-handled'
+    return 'not-handled'
   }
 
-  render () {
-    const {ariaLabel, editorState, onBlur, placeholder, readOnly, innerRef} = this.props
-    return (
-      <Editor
-        spellCheck
-        ariaLabel={ariaLabel}
-        blockStyleFn={this.blockStyleFn}
-        editorState={editorState}
-        handleBeforeInput={this.handleBeforeInput}
-        handleKeyCommand={this.handleKeyCommand}
-        handlePastedText={this.handlePastedText}
-        handleReturn={this.handleReturn}
-        keyBindingFn={this.keyBindingFn}
-        onBlur={onBlur}
-        onChange={this.handleChange}
-        placeholder={placeholder}
-        readOnly={readOnly}
-        ref={innerRef}
-      />
-    )
-  }
+  return (
+    <Editor
+      spellCheck
+      ariaLabel={ariaLabel}
+      blockStyleFn={blockStyleFn}
+      editorState={editorState}
+      handleBeforeInput={onBeforeInput}
+      handleKeyCommand={nextKeyCommand}
+      handlePastedText={onPastedText}
+      handleReturn={onReturn}
+      keyBindingFn={onKeyBindingFn}
+      onChange={onChange}
+      placeholder={placeholder}
+      readOnly={readOnly}
+      ref={editorRef as any}
+    />
+  )
 }
 
-export default withMarkdown(withKeyboardShortcuts(EditorInputWrapper))
+export default EditorInputWrapper

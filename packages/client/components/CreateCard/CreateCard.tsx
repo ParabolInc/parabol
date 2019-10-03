@@ -37,7 +37,7 @@ const CreateCardBlock = styled('div')<{hasControls: boolean | undefined}>(({hasC
   paddingLeft: 0,
   paddingRight: 0,
   '&:hover': hasControls ? {
-    backgroundColor: Card.BACKGROUND_COLOR,
+    background: Card.BACKGROUND_COLOR,
     boxShadow: cardHoverShadow,
     cursor: 'pointer'
   } : undefined

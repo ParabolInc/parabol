@@ -62,7 +62,7 @@ const ReflectionGroup = (props: Props) => {
   const {localPhase, localStage} = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
-  const {reflections, id: reflectionGroupId, titleIsUserDefined, title} = reflectionGroup
+  const {reflections, id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
   const titleInputRef = useRef(null)
   const headerRef = useRef<HTMLDivElement>(null)
   const staticReflections = useMemo(() => {

@@ -1,4 +1,4 @@
-import {ContentState} from 'draft-js'
+import {ContentState, EditorState} from 'draft-js'
 import React, {Component, ReactNode} from 'react'
 
 interface Props {
@@ -8,12 +8,12 @@ interface Props {
   children: ReactNode
 }
 
-const TruncatedEllipsis = (setEditorState) =>
+const TruncatedEllipsis = (setEditorState?: (editorState: EditorState) => void) =>
   (class TruncatedEllipsisClass extends Component<Props> {
     onClick = () => {
       const {contentState, entityKey} = this.props
       const {value} = contentState.getEntity(entityKey).getData()
-      setEditorState(value)
+      setEditorState && setEditorState(value)
     }
 
     render () {

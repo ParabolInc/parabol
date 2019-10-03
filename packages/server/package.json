@@ -132,7 +132,7 @@
     "@authenio/samlify-node-xmllint": "^1.0.1",
     "@clusterws/cws": "^0.15.0",
     "@mattkrick/sanitize-svg": "^0.2.1",
-    "@mattkrick/trebuchet-client": "^0.1.2",
+    "@mattkrick/trebuchet-client": "^0.2.0",
     "@sentry/integrations": "^5.5.0",
     "@sentry/node": "^5.5.0",
     "analytics-node": "^3.0.0",

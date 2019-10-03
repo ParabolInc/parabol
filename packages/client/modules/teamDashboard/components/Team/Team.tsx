@@ -58,7 +58,7 @@ interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
 }
 
 class Team extends Component<Props> {
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {team: oldTeam} = this.props
     if (oldTeam && oldTeam.contentFilter) {
       if (!nextProps.team || nextProps.team.id !== oldTeam.id) {
@@ -67,13 +67,13 @@ class Team extends Component<Props> {
     }
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     if (this.props.team && this.props.team.contentFilter) {
       this.setContentFilter('')
     }
   }
 
-  setContentFilter(nextValue) {
+  setContentFilter (nextValue) {
     const {atmosphere, team} = this.props
     if (!team) return
     const {id: teamId} = team
@@ -99,7 +99,7 @@ class Team extends Component<Props> {
     history.push(`/team/${teamId}/`)
   }
 
-  render() {
+  render () {
     const {children, isSettings, team} = this.props
     if (!team) return null
     const {id: teamId, isPaid, meetingId} = team
@@ -113,7 +113,6 @@ class Team extends Component<Props> {
           {!isPaid && <UnpaidTeamModalRoot teamId={teamId} />}
         </Suspense>
         <DashHeader
-          area={isSettings ? 'teamSettings' : 'teamDash'}
           hasOverlay={hasOverlay}
           key={`team${isSettings ? 'Dash' : 'Settings'}Header`}
         >

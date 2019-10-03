@@ -103,7 +103,6 @@ const OutcomeCard = memo((props: Props) => {
           readOnly={Boolean(isTempId(taskId) || isArchived || isDraggingOver || service)}
           setEditorState={setEditorState}
           teamId={teamId}
-          team={team}
           useTaskChild={useTaskChild}
         />
         <TaskIntegrationLink integration={integration || null} />

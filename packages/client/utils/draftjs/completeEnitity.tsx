@@ -1,4 +1,4 @@
-import {EditorState, Modifier} from 'draft-js'
+import {ContentState, EditorState, Modifier, SelectionState} from 'draft-js'
 import getAnchorLocation from '../../components/TaskEditor/getAnchorLocation'
 import getWordAt from '../../components/TaskEditor/getWordAt'
 
@@ -21,7 +21,7 @@ const operationTypes = {
   }
 }
 
-const getExpandedSelectionState = (editorState) => {
+const getExpandedSelectionState = (editorState: EditorState) => {
   const selectionState = editorState.getSelection()
   if (selectionState.isCollapsed()) {
     const {block, anchorOffset} = getAnchorLocation(editorState)
@@ -29,20 +29,20 @@ const getExpandedSelectionState = (editorState) => {
     return selectionState.merge({
       anchorOffset: begin,
       focusOffset: end
-    })
+    }) as SelectionState
   }
-  return selectionState
+  return selectionState as SelectionState
 }
 
-export const makeContentWithEntity = (contentState, selectionState, mention, entityKey) => {
+export const makeContentWithEntity = (contentState: ContentState, selectionState: SelectionState, mention: string, entityKey: string) => {
   if (!mention) {
     // anchorKey && focusKey should be different here (used for EditorLinkChanger)
     return Modifier.applyEntity(contentState, selectionState, entityKey)
   }
-  return Modifier.replaceText(contentState, selectionState, mention, null, entityKey)
+  return Modifier.replaceText(contentState, selectionState, mention, undefined, entityKey)
 }
 
-export const autoCompleteEmoji = (editorState, emoji) => {
+export const autoCompleteEmoji = (editorState: EditorState, emoji: string) => {
   const contentState = editorState.getCurrentContent()
   const expandedSelectionState = getExpandedSelectionState(editorState)
 
@@ -58,11 +58,14 @@ export const autoCompleteEmoji = (editorState, emoji) => {
   const finalContent = nextContentState.merge({
     selectionAfter: collapsedSelectionState
     // selectionBefore: collapsedSelectionState,
-  })
-  return EditorState.push(editorState, finalContent, 'remove-characters')
+  }) as ContentState
+  return EditorState.push(editorState, finalContent, 'remove-characters' as any)
 }
 
-const completeEntity = (editorState, entityName, entityData, mention, options = {}) => {
+interface Options {
+  keepSelection?: boolean
+}
+const completeEntity = (editorState: EditorState, entityName: string, entityData: any, mention: string, options: Options = {}) => {
   const {keepSelection} = options
   const {editorChangeType, entityType} = operationTypes[entityName]
   const contentState = editorState.getCurrentContent()
@@ -87,7 +90,7 @@ const completeEntity = (editorState, entityName, entityData, mention, options = 
   })
   const finalContent = contentWithEntity.merge({
     selectionAfter: collapsedSelectionState
-  })
+  }) as ContentState
   return EditorState.push(editorState, finalContent, editorChangeType)
 }
 

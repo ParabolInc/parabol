@@ -1,20 +1,18 @@
-import {DraftHandleValue, Editor, EditorState, getDefaultKeyBinding} from 'draft-js'
-import React, {Component, RefObject, Suspense} from 'react'
-import withMarkdown from './withMarkdown'
+import {DraftEditorCommand, DraftHandleValue, Editor, EditorProps, EditorState, getDefaultKeyBinding} from 'draft-js'
+import React, {RefObject, Suspense, useEffect, useRef} from 'react'
 import {Card} from '../../types/constEnums'
 import {textTags} from '../../utils/constants'
 import entitizeText from '../../utils/draftjs/entitizeText'
 import './Draft.css'
-import withKeyboardShortcuts from './withKeyboardShortcuts'
-import withLinks from './withLinks'
-import withSuggestions from './withSuggestions'
-import withEmojis from './withEmojis'
 import styled from '@emotion/styled'
 import lazyPreload from '../../utils/lazyPreload'
 import isRichDraft from '../../utils/draftjs/isRichDraft'
 import isAndroid from '../../utils/draftjs/isAndroid'
+import {UseTaskChild} from '../../hooks/useTaskChildFocus'
+import useTaskPlugins from './useTaskPlugins'
+import blockStyleFn from './blockStyleFn'
 
-const RootEditor = styled('div')<{noText: boolean, readOnly: boolean}>(({noText, readOnly}) => ({
+const RootEditor = styled('div')<{noText: boolean, readOnly: boolean | undefined}>(({noText, readOnly}) => ({
   cursor: readOnly ? undefined : 'text',
   fontSize: Card.FONT_SIZE,
   lineHeight: Card.LINE_HEIGHT,
@@ -25,88 +23,65 @@ const RootEditor = styled('div')<{noText: boolean, readOnly: boolean}>(({noText,
 const AndroidEditorFallback = lazyPreload(() =>
   import(
     /* webpackChunkName: 'AndroidEditorFallback' */ '../../../client/components/AndroidEditorFallback'
-  )
+    )
 )
 
 const TaskEditorFallback = styled(AndroidEditorFallback)({
   padding: 0
 })
 
-interface Props {
+type DraftProps = Pick<EditorProps, 'editorState' | 'handleBeforeInput' | 'handleKeyCommand' | 'handleReturn' | 'keyBindingFn' | 'readOnly'>
+
+interface Props extends DraftProps {
   editorRef: RefObject<HTMLTextAreaElement>,
-  editorState: EditorState,
   setEditorState: (newEditorState: EditorState) => void,
-  handleBeforeInput: (char: string) => DraftHandleValue
-  handleChange: (editorState: EditorState) => void
-  handleKeyCommand: (command: string) => DraftHandleValue
-  handleReturn: (e: React.KeyboardEvent) => DraftHandleValue
-  readOnly: boolean,
-  keyBindingFn: (e: React.KeyboardEvent) => string
-  removeModal?: () => void
-  renderModal?: () => null
-  styles: React.CSSProperties
+  teamId: string
+  useTaskChild: UseTaskChild
 }
 
-class TaskEditor extends Component<Props> {
-  entityPasteStart: {anchorOffset: number, anchorKey: string} | undefined
-  componentDidMount () {
-    const {editorRef, editorState} = this.props
+const TaskEditor = (props: Props) => {
+  const {editorRef, editorState, readOnly, setEditorState} = props
+  const entityPasteStartRef = useRef<{anchorOffset: number, anchorKey: string} | undefined>()
+  const {removeModal, renderModal, handleChange, handleBeforeInput, handleKeyCommand, keyBindingFn, handleReturn} = useTaskPlugins({...props})
+
+  useEffect(() => {
     if (!editorState.getCurrentContent().hasText()) {
-      setTimeout(() => {
-        // don't pull it from this.props above because react will mutate this.props to our advantage
-        try {
-          editorRef.current && editorRef.current.focus()
-        } catch (e) {
-          // DraftEditor was unmounted before this was called
-        }
-      })
+      editorRef.current && editorRef.current.focus()
     }
-  }
+  }, [])
 
-  blockStyleFn = (contentBlock) => {
-    const type = contentBlock.getType()
-    if (type === 'blockquote') {
-      return 'draft-blockquote'
-    } else if (type === 'code-block') {
-      return 'draft-codeblock'
-    }
-    return ''
-  }
-
-  removeModal = () => {
-    const {removeModal, renderModal} = this.props
-    if (renderModal && removeModal) {
+  const onRemoveModal = () => {
+    if (removeModal) {
       removeModal()
     }
   }
 
-  handleChange = (editorState) => {
-    const {setEditorState, handleChange} = this.props
-    if (this.entityPasteStart) {
-      const {anchorOffset, anchorKey} = this.entityPasteStart
+  const onChange = (editorState: EditorState) => {
+    const {current: entityPasteStart} = entityPasteStartRef
+    if (entityPasteStart) {
+      const {anchorOffset, anchorKey} = entityPasteStart
       const selectionState = editorState.getSelection().merge({
         anchorOffset,
         anchorKey
       })
       const contentState = entitizeText(editorState.getCurrentContent(), selectionState)
-      this.entityPasteStart = undefined
+      entityPasteStartRef.current = undefined
       if (contentState) {
         setEditorState(EditorState.push(editorState, contentState, 'apply-entity'))
         return
       }
     }
     if (!editorState.getSelection().getHasFocus()) {
-      this.removeModal()
+      onRemoveModal()
     } else if (handleChange) {
       handleChange(editorState)
     }
     setEditorState(editorState)
   }
 
-  handleReturn = (e) => {
-    const {editorRef, handleReturn, renderModal} = this.props
+  const onReturn = (e) => {
     if (handleReturn) {
-      return handleReturn(e)
+      return handleReturn(e, editorState)
     }
     if (!e.shiftKey && !renderModal) {
       editorRef.current && editorRef.current.blur()
@@ -115,23 +90,20 @@ class TaskEditor extends Component<Props> {
     return 'not-handled'
   }
 
-  handleKeyDownFallback = (e) => {
+  const onKeyDownFallback = (e) => {
     if (e.key !== 'Enter' || e.shiftKey) return
     e.preventDefault()
-    const {editorRef} = this.props
     editorRef.current && editorRef.current.blur()
   }
 
-  handleKeyCommand = (command) => {
-    const {handleKeyCommand} = this.props
+  const nextKeyCommand = (command: DraftEditorCommand) => {
     if (handleKeyCommand) {
-      return handleKeyCommand(command)
+      return handleKeyCommand(command, editorState, Date.now())
     }
     return 'not-handled'
   }
 
-  keyBindingFn = (e) => {
-    const {keyBindingFn} = this.props
+  const onKeyBindingFn = (e) => {
     if (keyBindingFn) {
       const result = keyBindingFn(e)
       if (result) {
@@ -140,27 +112,26 @@ class TaskEditor extends Component<Props> {
     }
     if (e.key === 'Escape') {
       e.preventDefault()
-      this.removeModal()
+      onRemoveModal()
       return 'not-handled'
     }
     return getDefaultKeyBinding(e)
   }
 
-  handleBeforeInput = (char) => {
-    const {handleBeforeInput} = this.props
+  const onBeforeInput = (char: string) => {
     if (handleBeforeInput) {
-      return handleBeforeInput(char)
+      return handleBeforeInput(char, editorState, Date.now())
     }
     return 'not-handled'
   }
 
-  handlePastedText = (text): DraftHandleValue => {
+  const onPastedText = (text): DraftHandleValue => {
     if (text) {
       for (let i = 0; i < textTags.length; i++) {
         const tag = textTags[i]
         if (text.indexOf(tag) !== -1) {
-          const selection = this.props.editorState.getSelection()
-          this.entityPasteStart = {
+          const selection = editorState.getSelection()
+          entityPasteStartRef.current = {
             anchorOffset: selection.getAnchorOffset(),
             anchorKey: selection.getAnchorKey()
           }
@@ -170,45 +141,40 @@ class TaskEditor extends Component<Props> {
     return 'not-handled'
   }
 
-  render () {
-    const {editorState, readOnly, renderModal, editorRef} = this.props
-    const noText = !editorState.getCurrentContent().hasText()
-    const placeholder = 'Describe what “Done” looks like'
-    const useFallback = isAndroid && !readOnly
-    const showFallback = useFallback && !isRichDraft(editorState)
-    return (
-      <RootEditor noText={noText} readOnly={readOnly}>
-        {showFallback ? (
-          <Suspense fallback={<div />}>
-            <TaskEditorFallback
-              editorState={editorState}
-              placeholder={placeholder}
-              onKeyDown={this.handleKeyDownFallback}
-              editorRef={editorRef}
-            />
-          </Suspense>
-        ) : (
-          <Editor
-            spellCheck
-            blockStyleFn={this.blockStyleFn}
+  const noText = !editorState.getCurrentContent().hasText()
+  const placeholder = 'Describe what “Done” looks like'
+  const useFallback = isAndroid && !readOnly
+  const showFallback = useFallback && !isRichDraft(editorState)
+  return (
+    <RootEditor noText={noText} readOnly={readOnly}>
+      {showFallback ? (
+        <Suspense fallback={<div/>}>
+          <TaskEditorFallback
             editorState={editorState}
-            handleBeforeInput={this.handleBeforeInput}
-            handleKeyCommand={this.handleKeyCommand}
-            handlePastedText={this.handlePastedText}
-            handleReturn={this.handleReturn}
-            keyBindingFn={this.keyBindingFn}
-            onChange={this.handleChange}
             placeholder={placeholder}
-            readOnly={readOnly || (useFallback && !showFallback)}
-            ref={editorRef as any}
+            onKeyDown={onKeyDownFallback}
+            editorRef={editorRef}
           />
-        )}
-        {renderModal && renderModal()}
-      </RootEditor>
-    )
-  }
+        </Suspense>
+      ) : (
+        <Editor
+          spellCheck
+          blockStyleFn={blockStyleFn}
+          editorState={editorState}
+          handleBeforeInput={onBeforeInput}
+          handleKeyCommand={nextKeyCommand}
+          handlePastedText={onPastedText}
+          handleReturn={onReturn}
+          keyBindingFn={onKeyBindingFn}
+          onChange={onChange}
+          placeholder={placeholder}
+          readOnly={readOnly || (useFallback && !showFallback)}
+          ref={editorRef as any}
+        />
+      )}
+      {renderModal && renderModal()}
+    </RootEditor>
+  )
 }
 
-export default withSuggestions(
-  withEmojis(withLinks(withMarkdown(withKeyboardShortcuts(TaskEditor))))
-)
+export default TaskEditor

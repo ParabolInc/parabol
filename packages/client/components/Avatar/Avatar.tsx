@@ -72,7 +72,7 @@ const Avatar = forwardRef((props: Props, ref: any) => {
       {hasBadge && (
         <BadgeBlock>
           <BadgeBlockInner>
-            <AvatarBadge isCheckedIn={isCheckedIn} isConnected={isConnected} />
+            <AvatarBadge isCheckedIn={isCheckedIn} isConnected={isConnected || false} />
           </BadgeBlockInner>
         </BadgeBlock>
       )}

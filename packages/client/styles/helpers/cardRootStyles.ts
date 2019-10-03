@@ -8,7 +8,7 @@ const cardRootStyles = {
   boxShadow: cardShadow,
   minWidth: 256,
   maxWidth: 296,
-  position: 'relative',
+  position: 'relative' as 'relative',
   width: '100%'
 }
 

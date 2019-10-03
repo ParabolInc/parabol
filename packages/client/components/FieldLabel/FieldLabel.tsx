@@ -29,11 +29,11 @@ const FieldLabelStyles = styled(LabelHeading)<Pick<Props, 'customStyles' | 'fiel
 const FieldLabelBlock = FieldLabelStyles.withComponent('label')
 
 interface Props {
-  customStyles: object
+  customStyles?: object
   fieldSize: string
-  htmlFor: string
+  htmlFor?: string
   indent: boolean
-  inline: boolean
+  inline?: boolean
   label: string
 }
 
