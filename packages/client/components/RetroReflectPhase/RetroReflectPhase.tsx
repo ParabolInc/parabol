@@ -60,9 +60,10 @@ const RetroReflectPhase = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   if (!newMeeting) return null
   const {facilitatorUserId, localPhase, id: meetingId, reflectionGroups, localStage} = newMeeting
-  const isComplete = localStage ? localStage.isComplete : false
-  const isAsync = localStage ? localStage.isAsync : false
-  const reflectPrompts = localPhase!.reflectPrompts!
+  if (!localStage || !localPhase || !localPhase.reflectPrompts) return null
+  const {isComplete, isAsync} = localStage
+  const reflectPrompts = localPhase!.reflectPrompts
+
   const focusedPhaseItemId = localPhase!.focusedPhaseItemId
   const isFacilitating = facilitatorUserId === viewerId
   const nextPhaseLabel = phaseLabelLookup[GROUP]
