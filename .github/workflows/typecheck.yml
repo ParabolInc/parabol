@@ -1,0 +1,20 @@
+name: Typecheck
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js 
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+    - name: Typecheck
+      run: |
+        npm install
+        npm run typecheck
+      env:
+        CI: true
