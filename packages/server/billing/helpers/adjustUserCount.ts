@@ -77,9 +77,8 @@ interface OrgWithQty extends IOrganization {
   stripeSubscriptionId: string
 }
 
-export default async function adjustUserCount(userId: string, orgInput: string | string[], type: InvoiceItemType, options: Options = {}) {
+export default async function adjustUserCount (userId: string, orgInput: string | string[], type: InvoiceItemType, options: Options = {}) {
   const r = getRethink()
-  const now = new Date()
 
   const orgIds = Array.isArray(orgInput) ? orgInput : [orgInput]
   const dbAction = typeLookup[type]
@@ -99,9 +98,10 @@ export default async function adjustUserCount(userId: string, orgInput: string |
         .count()
     })) as OrgWithQty[]
 
+  const now = new Date()
   const prorationDate = toEpochSeconds(type === InvoiceItemType.REMOVE_USER ? options.prorationDate! : now)
   const hooks = orgs.map((org) => {
-    return new InvoiceItemHook({stripeSubscriptionId: org.stripeSubscriptionId, prorationDate, type, userId})
+    return new InvoiceItemHook({stripeSubscriptionId: org.stripeSubscriptionId, prorationDate, type, userId, quantity: org.quantity})
   })
   // wait here to make sure the webhook finds what it's looking for
   await r.table('InvoiceItemHook').insert(hooks)
