@@ -1,4 +1,4 @@
-import {auth0ManagementClient} from '../../utils/auth0Helpers'
+import getAuth0ManagementClient from '../../utils/getAuth0ManagementClient'
 
 exports.up = async (r) => {
   const changes = await r
@@ -51,7 +51,7 @@ exports.up = async (r) => {
 
   const userIds = Object.keys(smallestTMSperUser)
   await userIds.map((userId) => {
-    return auth0ManagementClient.users.updateAppMetadata(
+    return getAuth0ManagementClient().users.updateAppMetadata(
       {id: userId},
       {tms: smallestTMSperUser[userId]}
     )
