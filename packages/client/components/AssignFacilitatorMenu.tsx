@@ -20,8 +20,7 @@ interface Props {
 const AssignFacilitatorMenu = (props: Props) => {
   const {menuProps, team} = props
   const {newMeeting} = team
-  if (!newMeeting) return null
-  const {facilitatorUserId, id: meetingId} = newMeeting
+  const {facilitatorUserId, id: meetingId} = newMeeting!
   const {teamMembers} = team || {teamMembers: []}
   const assignees = useMemo(
     () => teamMembers
