@@ -1,13 +1,12 @@
 import {EditorState} from 'draft-js'
 import React, {Ref, useEffect} from 'react'
-import {BBox} from '../../types/animations'
 import {MenuPosition} from '../../hooks/useCoords'
 import useMenu from '../../hooks/useMenu'
 import lazyPreload from '../../utils/lazyPreload'
 
 interface Props {
-  originCoords: BBox
-  menuItemClickFactory: (emoji: string, editorState: EditorState | null) => () => void
+  originCoords: ClientRect
+  menuItemClickFactory: (emoji: string, editorState: EditorState) => (e: React.MouseEvent) => void
   query: string
   menuRef: Ref<any>
   editorState: EditorState

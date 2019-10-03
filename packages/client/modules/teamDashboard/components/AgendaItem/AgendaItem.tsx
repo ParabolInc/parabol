@@ -16,7 +16,7 @@ import UNSTARTED_MEETING from '../../../../utils/meetings/unstartedMeeting'
 import findStageById from '../../../../utils/meetings/findStageById'
 import {AgendaItem_newMeeting} from '../../../../__generated__/AgendaItem_newMeeting.graphql'
 
-const DeleteIconButton = styled(IconButton)<{agendaLength: number; disabled: boolean}>(
+const DeleteIconButton = styled(IconButton)<{agendaLength: number; disabled?: boolean}>(
   ({agendaLength, disabled}) => ({
     display: 'block',
     // we can make the position of the del (x) more centered when there’s a low number of agenda items

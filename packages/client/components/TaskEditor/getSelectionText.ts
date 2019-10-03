@@ -1,4 +1,6 @@
-const getSelectionText = (editorState, selection) => {
+import {EditorState, SelectionState} from 'draft-js'
+
+const getSelectionText = (editorState: EditorState, selection: SelectionState) => {
   const anchorKey = selection.getAnchorKey()
   const focusKey = selection.getFocusKey()
   if (anchorKey !== focusKey) {

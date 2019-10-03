@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "4.6.0",
+  "version": "4.7.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/action"
@@ -17,7 +17,7 @@
     "build-storybook": "build-storybook",
     "lint": "eslint --fix ./**/*.{ts,tsx,js}",
     "precommit": "lint-staged",
-    "typecheck": "tsc --noEmit -W"
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^5.1.9",

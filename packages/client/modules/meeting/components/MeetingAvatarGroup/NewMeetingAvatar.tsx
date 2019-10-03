@@ -5,6 +5,7 @@ import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import VideoAvatar from '../../../../components/Avatar/VideoAvatar'
+import BaseTag from '../../../../components/Tag/BaseTag'
 import withAtmosphere, {
   WithAtmosphereProps
 } from '../../../../decorators/withAtmosphere/withAtmosphere'
@@ -77,15 +78,11 @@ const AvatarBlock = styled('div')<AvatarBlockProps>(
   }
 )
 
-const FacilitatorTag = styled('div')({
+const FacilitatorTag = styled(BaseTag)({
   backgroundColor: '#FFFFFF',
-  borderRadius: '4em',
   color: PALETTE.TEXT_MAIN,
-  fontSize: 11,
-  fontWeight: 600,
+  marginLeft: 0,
   marginTop: 4,
-  lineHeight: '16px',
-  padding: '0 8px',
   position: 'absolute',
   right: '50%',
   transform: 'translateX(50%)'

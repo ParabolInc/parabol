@@ -1,10 +1,9 @@
-import {convertFromRaw, Editor, EditorState} from 'draft-js'
-import React, {useEffect} from 'react'
+import {Editor} from 'draft-js'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import OutcomeCardStatusIndicator
   from '../../outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
-import editorDecorators from '../../../components/TaskEditor/decorators'
 import ClearNotificationMutation from '../../../mutations/ClearNotificationMutation'
 import {ASSIGNEE, MENTIONEE} from '../../../utils/constants'
 import styled from '@emotion/styled'
@@ -13,13 +12,13 @@ import IconAvatar from '../../../components/IconAvatar/IconAvatar'
 import RaisedButton from '../../../components/RaisedButton'
 import AcknowledgeButton from './AcknowledgeButton/AcknowledgeButton'
 import {TaskInvolves_notification} from '../../../__generated__/TaskInvolves_notification.graphql'
-import useRefState from '../../../hooks/useRefState'
 import useMutationProps from '../../../hooks/useMutationProps'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useRouter from '../../../hooks/useRouter'
 import NotificationErrorMessage from './NotificationErrorMessage'
 import NotificationMessage from './NotificationMessage'
 import {PALETTE} from '../../../styles/paletteV2'
+import useEditorState from '../../../hooks/useEditorState'
 
 const involvementWord = {
   [ASSIGNEE]: 'assigned',
@@ -79,11 +78,6 @@ const MessageText = styled('div')({
   whiteSpace: 'pre-wrap'
 })
 
-const makeEditorState = (content, getEditorState) => {
-  const contentState = convertFromRaw(JSON.parse(content))
-  return EditorState.createWithContent(contentState, editorDecorators(getEditorState))
-}
-
 interface Props {
   notification: TaskInvolves_notification
 }
@@ -95,12 +89,7 @@ const TaskInvolves = (props: Props) => {
   const {preferredName: changeAuthorName} = changeAuthor
   const {name: teamName, id: teamId} = team
   const action = involvementWord[involvement]
-  const [editorStateRef, setEditorState] = useRefState<EditorState>(() =>
-    makeEditorState(content, () => editorStateRef.current)
-  )
-  useEffect(() => {
-    setEditorState(makeEditorState(content, () => editorStateRef.current))
-  }, [content, editorStateRef, setEditorState])
+  const [editorState] = useEditorState(content)
   const {error, submitMutation, onCompleted, onError, submitting} = useMutationProps()
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
@@ -148,7 +137,7 @@ const TaskInvolves = (props: Props) => {
             </IndicatorsBlock>
             <Editor
               readOnly
-              editorState={editorStateRef.current}
+              editorState={editorState}
               onChange={() => {
                 /*noop*/
               }}

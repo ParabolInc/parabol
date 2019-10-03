@@ -55,14 +55,14 @@ const TaskFooterTagMenu = (props: Props) => {
       {statusItems
         .filter((status) => status !== taskStatus)
         .map((status) => (
-          <TaskFooterTagMenuStatusItem key={status} area={area} status={status} task={task} />
+          <TaskFooterTagMenuStatusItem key={status} area={area} status={status as any} task={task}/>
         ))}
-      <MenuItemHR key='HR1' />
+      <MenuItemHR key='HR1'/>
       <MenuItem
         key='private'
         label={
           <MenuItemLabel>
-            <MenuItemDot color={PALETTE.STATUS_PRIVATE} />
+            <MenuItemDot color={PALETTE.STATUS_PRIVATE}/>
             <span>
               {isPrivate ? 'Remove ' : 'Set as '}
               <b>{'#private'}</b>
@@ -76,7 +76,7 @@ const TaskFooterTagMenu = (props: Props) => {
           key='delete'
           label={
             <MenuItemLabel>
-              <MenuItemDot color={PALETTE.ERROR_MAIN} />
+              <MenuItemDot color={PALETTE.ERROR_MAIN}/>
               {'Delete this Task'}
             </MenuItemLabel>
           }
@@ -87,7 +87,7 @@ const TaskFooterTagMenu = (props: Props) => {
           key='archive'
           label={
             <MenuItemLabel>
-              <MenuItemDot color={PALETTE.STATUS_ARCHIVED} />
+              <MenuItemDot color={PALETTE.STATUS_ARCHIVED}/>
               <span>
                 {'Set as '}
                 <b>{'#archived'}</b>
@@ -105,13 +105,13 @@ const TaskFooterTagMenu = (props: Props) => {
 
 export default createFragmentContainer(TaskFooterTagMenu, {
   task: graphql`
-    fragment TaskFooterTagMenu_task on Task {
-      ...TaskFooterTagMenuStatusItem_task
-      id
-      content
-      status
-      tags
-      teamId
-    }
+      fragment TaskFooterTagMenu_task on Task {
+          ...TaskFooterTagMenuStatusItem_task
+          id
+          content
+          status
+          tags
+          teamId
+      }
   `
 })

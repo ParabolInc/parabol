@@ -23,11 +23,11 @@ const hoverColors = {
   white: '#D9D9D9'
 }
 
-interface Props extends BaseButtonProps {
+export interface LinkButtonProps extends BaseButtonProps {
   palette?: keyof typeof paletteColors
 }
 
-const LinkButton = styled(BaseButton)<Props>((props) => {
+const LinkButton = styled(BaseButton)<LinkButtonProps>((props) => {
   const {palette = 'dark', disabled, waiting} = props
   const color = paletteColors[palette]
   const hoverColor = hoverColors[palette]

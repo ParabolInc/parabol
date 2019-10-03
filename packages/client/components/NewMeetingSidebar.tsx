@@ -81,7 +81,7 @@ const NewMeetingSidebar = (props: Props) => {
           <TeamDashboardLink to={teamLink}>{'Team: '}{teamName}</TeamDashboardLink>
         </div>
       </SidebarHeader>
-      <AssignFacilitator team={team} newMeeting={newMeeting} />
+      {newMeeting && <AssignFacilitator team={team} />}
       {children}
       <LogoBlock variant='primary' onClick={handleMenuClick} />
     </SidebarParent>
@@ -96,7 +96,7 @@ export default createFragmentContainer(NewMeetingSidebar, {
         id
         name
         newMeeting {
-          ...AssignFacilitator_newMeeting
+          id
         }
       }
     }
