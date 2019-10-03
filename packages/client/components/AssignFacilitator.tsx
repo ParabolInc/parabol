@@ -78,8 +78,7 @@ const AssignFacilitatorMenu = lazyPreload(() =>
 const AssignFacilitator = (props: Props) => {
   const {team} = props
   const {newMeeting, teamMembers} = team
-  if (!newMeeting) return null
-  const {facilitator} = newMeeting
+  const {facilitator} = newMeeting!
   const {picture, preferredName, user: {isConnected}} = facilitator
   const {togglePortal, menuProps, menuPortal, originRef, portalStatus} = useMenu<HTMLDivElement>(MenuPosition.UPPER_RIGHT, {
     isDropdown: true
