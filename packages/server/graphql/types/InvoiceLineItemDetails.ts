@@ -16,7 +16,9 @@ const InvoiceLineItemDetails = new GraphQLObjectType({
     },
     email: {
       type: new GraphQLNonNull(GraphQLEmailType),
-      description: 'The email affected by this line item change'
+      description: 'The email affected by this line item change',
+      // the request could come before the hook fires
+      resolve: ({email}) => email || '*New User*'
     },
     endAt: {
       type: GraphQLISO8601Type,

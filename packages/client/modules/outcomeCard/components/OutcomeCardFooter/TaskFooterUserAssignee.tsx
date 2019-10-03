@@ -46,7 +46,7 @@ const AvatarButton = styled(BaseButton)({
 const Avatar = styled('div')<{cardIsActive: boolean}>(({cardIsActive}) => ({
   backgroundColor: 'transparent',
   border: '1px solid transparent',
-  borderColor: cardIsActive && PALETTE.BORDER_MAIN_50,
+  borderColor: cardIsActive ? PALETTE.BORDER_MAIN_50 : undefined,
   borderRadius: '100%',
   height: 28,
   marginLeft: -2,

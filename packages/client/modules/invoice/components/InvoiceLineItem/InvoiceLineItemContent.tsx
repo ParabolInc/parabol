@@ -10,17 +10,15 @@ const Item = styled('div')({
   paddingTop: 10
 })
 
-
 const ItemContent = styled('div')({
   display: 'flex',
-  justifyContent: 'space-between',
-  width: '100%',
   fontSize: 16,
+  justifyContent: 'space-between',
   lineHeight: '24px',
   paddingRight: 12,
+  width: '100%',
 
   [`@media (min-width: ${Breakpoint.INVOICE}px)`]: {
-    fontSize: 20,
     paddingRight: 20
   }
 })
@@ -30,9 +28,13 @@ const Fill = styled('div')({
   paddingRight: 16
 })
 
+const Amount = styled('div')({
+  fontVariantNumeric: 'tabular-nums'
+})
+
 interface Props {
-  description: string
-  amount: string
+  description: ReactNode
+  amount: ReactNode
   children?: ReactNode
 }
 
@@ -42,7 +44,7 @@ const InvoiceLineItemContent = (props: Props) => {
     <Item>
       <ItemContent>
         <Fill>{description}</Fill>
-        <div>{amount}</div>
+        <Amount>{amount}</Amount>
       </ItemContent>
       {children}
     </Item>

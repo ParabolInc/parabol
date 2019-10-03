@@ -98,7 +98,7 @@ const GroupingKanbanColumn = (props: Props) => {
     <Column isDesktop={isDesktop} ref={ref}>
       <ColumnHeader>
         <Prompt>{question}</Prompt>
-        {canAdd && <AddReflectionButton aria-label={'Add a reflection'} onClick={onClick} palette={'white'} waiting={submitting}>
+        {canAdd && <AddReflectionButton aria-label={'Add a reflection'} onClick={onClick} waiting={submitting}>
           <Icon>add</Icon>
         </AddReflectionButton>}
       </ColumnHeader>
@@ -109,7 +109,7 @@ const GroupingKanbanColumn = (props: Props) => {
             return group && group.reflections.length > 0
           })
           .map((reflectionGroup) => {
-          return <ReflectionGroup groupQuestion={question} key={reflectionGroup.id} meeting={meeting} phaseRef={phaseRef} reflectionGroup={reflectionGroup} swipeColumn={swipeColumn}/>
+          return <ReflectionGroup key={reflectionGroup.id} meeting={meeting} phaseRef={phaseRef} reflectionGroup={reflectionGroup} swipeColumn={swipeColumn}/>
         })}
       </ColumnBody>
     </Column>

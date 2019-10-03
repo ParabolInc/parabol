@@ -8,6 +8,7 @@ import {
 } from 'graphql'
 import connectionDefinitions from '../connectionDefinitions'
 import CreditCard from './CreditCard'
+import Coupon from './Coupon'
 import GraphQLEmailType from './GraphQLEmailType'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
@@ -43,6 +44,10 @@ const Invoice = new GraphQLObjectType({
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The datetime the invoice was first generated'
+    },
+    coupon: {
+      type: Coupon,
+      description: 'The discount coupon information from Stripe, if any discount applied'
     },
     total: {
       type: new GraphQLNonNull(GraphQLFloat),

@@ -1,17 +1,15 @@
 import {ReflectionCard_reflection} from '../../__generated__/ReflectionCard_reflection.graphql'
-import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
+import {convertToRaw} from 'draft-js'
 import React, {useEffect, useRef} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
 import StyledError from '../StyledError'
-import editorDecorators from '../TaskEditor/decorators'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
 import RemoveReflectionMutation from '../../mutations/RemoveReflectionMutation'
 import UpdateReflectionContentMutation from '../../mutations/UpdateReflectionContentMutation'
 import isTempId from '../../utils/relay/isTempId'
 import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
-import useRefState from '../../hooks/useRefState'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
 import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
@@ -20,9 +18,9 @@ import isAndroid from '../../utils/draftjs/isAndroid'
 import convertToTaskContent from '../../utils/draftjs/convertToTaskContent'
 import ReflectionCardRoot from './ReflectionCardRoot'
 import ReflectionCardFooter from './ReflectionCardFooter'
+import useEditorState from '../../hooks/useEditorState'
 
 interface Props {
-  groupQuestion?: string
   isClipped?: boolean
   reflection: ReflectionCard_reflection
   meeting: ReflectionCard_meeting | null
@@ -38,11 +36,6 @@ const getReadOnly = (reflection: {id: string, isViewerCreator: boolean | null, i
   return true
 }
 
-const makeEditorState = (content, getEditorState) => {
-  const contentState = convertFromRaw(JSON.parse(content))
-  return EditorState.createWithContent(contentState, editorDecorators(getEditorState))
-}
-
 const ReflectionCard = (props: Props) => {
   const {showOriginFooter, meeting, reflection, isClipped, stackCount} = props
   const {phaseItem: {question}} = reflection
@@ -52,12 +45,7 @@ const ReflectionCard = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onCompleted, submitMutation, error, onError} = useMutationProps()
   const editorRef = useRef<HTMLTextAreaElement>(null)
-  const [editorStateRef, setEditorState] = useRefState<EditorState>(() =>
-    makeEditorState(content, () => editorStateRef.current)
-  )
-  useEffect(() => {
-    setEditorState(makeEditorState(content, () => editorStateRef.current))
-  }, [content, editorStateRef, setEditorState])
+  const [editorState, setEditorState] = useEditorState(content)
 
   const handleEditorFocus = () => {
     if (isTempId(reflectionId)) return
@@ -65,7 +53,7 @@ const ReflectionCard = (props: Props) => {
   }
 
   useEffect(() => {
-    if (isViewerCreator && !editorStateRef.current.getCurrentContent().hasText()) {
+    if (isViewerCreator && !editorState.getCurrentContent().hasText()) {
       commitLocalUpdate(atmosphere, (store) => {
         const reflection = store.get(reflectionId)
         if (!reflection) return
@@ -88,7 +76,7 @@ const ReflectionCard = (props: Props) => {
           onCompleted
         )
       } else {
-        const initialContentState = editorStateRef.current.getCurrentContent()
+        const initialContentState = editorState.getCurrentContent()
         const initialText = initialContentState.getPlainText()
         if (initialText === value) return
         submitMutation()
@@ -105,7 +93,7 @@ const ReflectionCard = (props: Props) => {
       }
       return
     }
-    const contentState = editorStateRef.current.getCurrentContent()
+    const contentState = editorState.getCurrentContent()
     if (contentState.hasText()) {
       const nextContent = JSON.stringify(convertToRaw(contentState))
       if (content === nextContent) return
@@ -163,7 +151,7 @@ const ReflectionCard = (props: Props) => {
         isClipped={isClipped}
         ariaLabel='Edit this reflection'
         editorRef={editorRef}
-        editorState={editorStateRef.current}
+        editorState={editorState}
         onBlur={handleEditorBlur}
         onFocus={handleEditorFocus}
         handleReturn={handleReturn}

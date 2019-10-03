@@ -4,7 +4,7 @@ import {Elevation} from '../../styles/elevation'
 import {Card, ElementWidth} from '../../types/constEnums'
 
 const ReflectionCardRoot = styled('div')({
-  backgroundColor: Card.BACKGROUND_COLOR,
+  background: Card.BACKGROUND_COLOR,
   borderRadius: Card.BORDER_RADIUS,
   boxShadow: Elevation.CARD_SHADOW,
   // display was 'inline-block' which causes layout issues (TA)

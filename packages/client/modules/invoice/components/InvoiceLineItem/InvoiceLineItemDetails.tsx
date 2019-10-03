@@ -29,7 +29,7 @@ const Details = styled('div')({
 })
 
 const DetailsToggle = styled('div')({
-  color: PALETTE.BACKGROUND_TEAL,
+  color: PALETTE.EMPHASIS_COOL,
   cursor: 'pointer',
   fontSize: 13,
   fontWeight: 600,

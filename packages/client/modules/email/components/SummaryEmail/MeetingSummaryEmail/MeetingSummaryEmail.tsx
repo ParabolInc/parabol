@@ -4,6 +4,21 @@ import SummarySheet from './SummarySheet'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 
+declare module 'react' {
+  interface TdHTMLAttributes<T> {
+    height?: string | number
+    width?: string | number
+    bgcolor?: string
+    valign?: string
+  }
+  interface TableHTMLAttributes<T> {
+    align?: 'center' | 'left' | 'right'
+    bgcolor?: string
+    height?: string | number
+    width?: string | number
+  }
+}
+
 const parentStyles = {
   WebkitTextSizeAdjust: '100%',
   msTextSizeAdjust: '100%',

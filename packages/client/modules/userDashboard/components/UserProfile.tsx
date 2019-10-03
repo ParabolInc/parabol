@@ -12,7 +12,6 @@ import SecondaryButton from '../../../components/SecondaryButton'
 import UserSettingsWrapper from './UserSettingsWrapper/UserSettingsWrapper'
 import UpdateUserProfileMutation from '../../../mutations/UpdateUserProfileMutation'
 import defaultUserAvatar from '../../../styles/theme/images/avatar-user.svg'
-import ui from '../../../styles/ui'
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import withAtmosphere, {WithAtmosphereProps} from '../../../decorators/withAtmosphere/withAtmosphere'
 import withForm, {WithFormProps} from '../../../utils/relay/withForm'
@@ -94,7 +93,7 @@ class UserProfile extends Component<Props> {
     UpdateUserProfileMutation(atmosphere, {preferredName}, {onError, onCompleted})
   }
 
-  render() {
+  render () {
     const {fields, onChange, viewer, error} = this.props
     const {picture} = viewer
     const pictureOrDefault = picture || defaultUserAvatar

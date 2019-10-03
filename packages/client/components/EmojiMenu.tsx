@@ -14,7 +14,7 @@ interface EmojiSuggestion {
 interface Props {
   menuProps: MenuProps
   editorState: EditorState
-  menuItemClickFactory: (emoji: string, editorState: EditorState | null) => () => void
+  menuItemClickFactory: (emoji: string, editorState: EditorState) => (e: React.MouseEvent) => void
   menuRef: Ref<any>
   query: string
 }
@@ -80,7 +80,7 @@ class EmojiMenu extends Component<Props, State> {
           <MenuItem
             key={value}
             label={`${emoji} ${value}`}
-            onClick={menuItemClickFactory(emoji, focusedEditorState)}
+            onClick={menuItemClickFactory(emoji, focusedEditorState!)}
           />
         ))}
       </Menu>

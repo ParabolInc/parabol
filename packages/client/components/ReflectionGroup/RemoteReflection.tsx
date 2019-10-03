@@ -1,20 +1,19 @@
 import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
-import React, {RefObject, useEffect, useMemo, useRef} from 'react'
+import React, {RefObject, useEffect, useRef} from 'react'
 import styled from '@emotion/styled'
 import {Elevation} from '../../styles/elevation'
 import {BezierCurve, DragAttribute, ElementWidth, Times, ZIndex} from '../../types/constEnums'
 import UserDraggingHeader, {RemoteReflectionArrow} from '../UserDraggingHeader'
 import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
-import {convertFromRaw, EditorState} from 'draft-js'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import editorDecorators from '../TaskEditor/decorators'
 import {RemoteReflection_reflection} from '../../__generated__/RemoteReflection_reflection.graphql'
 import getBBox from '../RetroReflectPhase/getBBox'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {DeepNonNullable} from '../../types/generics'
 import useForceUpdate from '../../hooks/useForceUpdate'
 import {getMinTop} from '../../utils/retroGroup/updateClonePosition'
+import useEditorState from '../../hooks/useEditorState'
 
 const RemoteReflectionModal = styled('div')<{isDropping?: boolean | null}>(({isDropping}) => ({
   position: 'absolute',
@@ -97,10 +96,8 @@ const RemoteReflection = (props: Props) => {
   const remoteDrag = reflection.remoteDrag as DeepNonNullable<NonNullable<RemoteReflection_reflection['remoteDrag']>>
   const {dragUserId, dragUserName} = remoteDrag
   const ref = useRef<HTMLDivElement>(null)
-  const editorState = useMemo(() => {
-    const contentState = convertFromRaw(JSON.parse(content))
-    return EditorState.createWithContent(contentState, editorDecorators())
-  }, [content])
+
+  const [editorState] = useEditorState(content)
   const forceUpdate = useForceUpdate()
   const {nextStyle, minTop} = getInlineStyle(remoteDrag!, isDropping, style)
   const {headerTransform, arrow} = getHeaderTransform(ref, minTop)
