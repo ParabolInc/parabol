@@ -26,7 +26,7 @@
     "build": "yarn workspace parabol-server build",
     "build:relay": "yarn workspace parabol-server build:relay",
     "dev": "yarn workspace parabol-server relay & yarn workspace parabol-server dev",
-    "typecheck": "yarn workspace parabol-client typecheck"
+    "typecheck": "lerna run --parallel typecheck"
   },
   "resolutions": {
     "hoist-non-react-statics": "^3.3.0",
