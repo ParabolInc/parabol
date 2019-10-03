@@ -1,5 +1,4 @@
-import {AssignFacilitatorMenu_newMeeting} from '../__generated__/AssignFacilitatorMenu_newMeeting.graphql'
-import {AssignFacilitatorMenu_viewer} from '../__generated__/AssignFacilitatorMenu_viewer.graphql'
+import {AssignFacilitatorMenu_team} from '../__generated__/AssignFacilitatorMenu_team.graphql'
 import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
@@ -9,30 +8,28 @@ import MenuAvatar from '../components/MenuAvatar'
 import MenuItem from '../components/MenuItem'
 import MenuItemLabel from '../components/MenuItemLabel'
 import useAtmosphere from '../hooks/useAtmosphere'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../decorators/withAtmosphere/withAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import PromoteNewMeetingFacilitatorMutation from '../mutations/PromoteNewMeetingFacilitatorMutation'
 import avatarUser from '../styles/theme/images/avatar-user.svg'
 
-interface Props extends WithAtmosphereProps {
+interface Props {
   menuProps: MenuProps
-  viewer: AssignFacilitatorMenu_viewer
-  newMeeting: AssignFacilitatorMenu_newMeeting
+  team: AssignFacilitatorMenu_team
 }
 
 const AssignFacilitatorMenu = (props: Props) => {
-  const {menuProps, viewer, newMeeting} = props
-  const {team} = viewer
+  const {menuProps, team} = props
+  const {newMeeting} = team
+  if (!newMeeting) return null
+  const {facilitatorUserId, id: meetingId} = newMeeting
   const {teamMembers} = team || {teamMembers: []}
-  const {facilitatorUserId, meetingId} = newMeeting
   const assignees = useMemo(
-    () => teamMembers.filter((teamMember) => teamMember.userId !== facilitatorUserId),
+    () => teamMembers
+      .filter((teamMember) => teamMember.userId !== facilitatorUserId)
+      .sort((a,b) => (a.preferredName > b.preferredName) ? 1 : ((b.preferredName > a.preferredName) ? -1 : 0)),
     [facilitatorUserId, teamMembers]
   )
   const atmosphere = useAtmosphere()
-  if (!team) return null
   const promoteToFacilitator = (newAssignee) => () => {
     PromoteNewMeetingFacilitatorMutation(atmosphere, {facilitatorUserId: newAssignee.userId, meetingId})
   }
@@ -57,24 +54,20 @@ const AssignFacilitatorMenu = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withAtmosphere(AssignFacilitatorMenu), {
-  viewer: graphql`
-    fragment AssignFacilitatorMenu_viewer on User {
-      team(teamId: $teamId) {
-        teamId: id
-        teamMembers(sortBy: "preferredName") {
-          id
-          picture
-          preferredName
-          userId
-        }
+export default createFragmentContainer(AssignFacilitatorMenu, {
+  team: graphql`
+    fragment AssignFacilitatorMenu_team on Team {
+      id
+      newMeeting {
+        id
+        facilitatorUserId
+      }
+      teamMembers(sortBy: "checkInOrder") {
+        id
+        picture
+        preferredName
+        userId
       }
     }
   `,
-  newMeeting: graphql`
-    fragment AssignFacilitatorMenu_newMeeting on NewMeeting {
-      meetingId: id
-      facilitatorUserId
-    }
-  `
 })

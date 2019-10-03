@@ -60,7 +60,7 @@ const NewMeetingSidebar = (props: Props) => {
   const {children, handleMenuClick, meetingType, toggleSidebar, viewer} = props
   const {team} = viewer
   if (!team) return null
-  const {id: teamId, name: teamName, newMeeting} = team
+  const {id: teamId, name: teamName} = team
   const meetingLabel = meetingTypeToLabel[meetingType]
   const teamLink = isDemoRoute() ? '/create-account' : `/team/${teamId}`
   return (
@@ -69,7 +69,7 @@ const NewMeetingSidebar = (props: Props) => {
         <StyledToggle onClick={toggleSidebar} />
         <TeamDashboardLink to={teamLink}>{teamName}</TeamDashboardLink>
       </SidebarHeader>
-      <AssignFacilitator team={team} newMeeting={newMeeting} />
+      <AssignFacilitator team={team} />
       <MeetingSidebarLabelBlock>
         <LabelHeading>{`${meetingLabel} Meeting`}</LabelHeading>
       </MeetingSidebarLabelBlock>
@@ -86,9 +86,6 @@ export default createFragmentContainer(NewMeetingSidebar, {
         ...AssignFacilitator_team
         id
         name
-        newMeeting {
-          ...AssignFacilitator_newMeeting
-        }
       }
     }
   `

@@ -1,12 +1,8 @@
-import React, {useMemo} from 'react'
+import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {AssignFacilitator_newMeeting} from '../__generated__/AssignFacilitator_newMeeting.graphql'
 import {AssignFacilitator_team} from '../__generated__/AssignFacilitator_team.graphql'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../decorators/withAtmosphere/withAtmosphere'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {PortalStatus} from '../hooks/usePortal'
@@ -70,72 +66,66 @@ const Avatar = styled('img')({
   width: 26
 })
 
-interface Props extends WithAtmosphereProps {
-  newMeeting?: AssignFacilitator_newMeeting | null
+interface Props {
   team: AssignFacilitator_team
 }
 
-const AssignFacilitatorMenuRoot = lazyPreload(() =>
-  import(/* webpackChunkName: 'AssignFacilitatorMenuRoot' */
-  './AssignFacilitatorMenuRoot')
+const AssignFacilitatorMenu = lazyPreload(() =>
+  import(/* webpackChunkName: 'AssignFacilitatorMenu' */
+  './AssignFacilitatorMenu')
 )
 
 const AssignFacilitator = (props: Props) => {
-  const {newMeeting, team} = props
+  const {team} = props
+  const {newMeeting, teamMembers} = team
   if (!newMeeting) return null
-  const {teamMembers} = team
-  const {facilitatorUserId} = newMeeting
-  const currentFacilitator = useMemo(
-    () => teamMembers.find((teamMember) => teamMember.userId === facilitatorUserId),
-    [facilitatorUserId, teamMembers]
-  )
-  const {togglePortal, menuProps, menuPortal, originRef, portalStatus} = useMenu<HTMLDivElement>(MenuPosition.UPPER_RIGHT)
+  const {facilitator} = newMeeting
+  const {picture, preferredName, user: {isConnected}} = facilitator
+  const {togglePortal, menuProps, menuPortal, originRef, portalStatus} = useMenu<HTMLDivElement>(MenuPosition.UPPER_RIGHT, {
+    isDropdown: true
+  })
   const isReadOnly = isDemoRoute() || teamMembers.length === 1
-  const handleTogglePortal = () => {
-    if (isReadOnly) return
-    togglePortal()
-  }
+  const handleOnMouseEnter = () => !isReadOnly && AssignFacilitatorMenu.preload()
+  const handleOnClick = () => !isReadOnly && togglePortal()
   return (
     <AssignFacilitatorBlock>
       <AssignFacilitatorToggle
         isActive={portalStatus === PortalStatus.Entering || portalStatus === PortalStatus.Entered}
         isReadOnly={isReadOnly}
-        onMouseEnter={AssignFacilitatorMenuRoot.preload}
-        onClick={handleTogglePortal}
+        onClick={handleOnClick}
+        onMouseEnter={handleOnMouseEnter}
         ref={originRef}
       >
-        <AvatarBlock isConnected={currentFacilitator!.user.isConnected}>
-          <Avatar alt='' src={currentFacilitator!.picture} />
+        <AvatarBlock isConnected={isConnected}>
+          <Avatar alt='' src={picture} />
         </AvatarBlock>
         <div>
           <Label>Faciltator</Label>
-          <Subtext>{currentFacilitator!.preferredName}</Subtext>
+          <Subtext>{preferredName}</Subtext>
         </div>
         {!isReadOnly && <StyledIcon>keyboard_arrow_down</StyledIcon>}
       </AssignFacilitatorToggle>
-      {menuPortal(<AssignFacilitatorMenuRoot menuProps={menuProps} team={team} newMeeting={newMeeting} />)}
+      {menuPortal(<AssignFacilitatorMenu menuProps={menuProps} team={team} />)}
     </AssignFacilitatorBlock>
   )
 }
 
-export default createFragmentContainer(withAtmosphere(AssignFacilitator), {
+export default createFragmentContainer(AssignFacilitator, {
   team: graphql`
     fragment AssignFacilitator_team on Team {
-      ...AssignFacilitatorMenuRoot_team
+      ...AssignFacilitatorMenu_team
       teamMembers(sortBy: "checkInOrder") {
-        picture
-        preferredName
-        user {
-          isConnected
-        }
-        userId
+        id
       }
-    }
-  `,
-  newMeeting: graphql`
-    fragment AssignFacilitator_newMeeting on NewMeeting {
-      ...AssignFacilitatorMenuRoot_newMeeting
-      facilitatorUserId
+      newMeeting {
+        facilitator {
+          picture
+          preferredName
+          user {
+            isConnected
+          }
+        }
+      }
     }
   `
 })
