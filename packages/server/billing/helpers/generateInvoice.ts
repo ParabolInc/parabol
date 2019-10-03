@@ -10,6 +10,7 @@ import InvoiceLineItemOtherAdjustments from '../../database/types/InvoiceLineIte
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import StripeManager from '../../utils/StripeManager'
 import NextPeriodCharges from '../../database/types/NextPeriodCharges'
+import Coupon from '../../database/types/Coupon'
 
 interface InvoicesByStartTime {
   [start: string]: {
@@ -346,12 +347,12 @@ export default async function generateInvoice (
 
   const couponDetails = invoice.discount && invoice.discount.coupon || null
 
-  const coupon = couponDetails && {
+  const coupon = couponDetails && new Coupon({
     id: couponDetails.id,
     amountOff: couponDetails.amount_off,
     name: couponDetails.name,
     percentOff: couponDetails.percent_off
-  } || null
+  }) || null
 
   const dbInvoice = new Invoice({
     id: invoiceId,
