@@ -6,6 +6,7 @@ import {PALETTE} from '../../styles/paletteV2'
 import BaseTag from './BaseTag'
 
 interface Props {
+  className?: string
   tier: TierEnum | null
 }
 
@@ -25,10 +26,10 @@ const EnterpriseTag = styled(BaseTag)({
 })
 
 const TierTag = (props: Props) => {
-  const {tier} = props
-  if (tier === TierEnum.personal) return <PersonalTag>{TierLabel.PERSONAL}</PersonalTag>
-  if (tier === TierEnum.pro) return <ProTag>{TierLabel.PRO}</ProTag>
-  if (tier === TierEnum.enterprise) return <EnterpriseTag>{TierLabel.ENTERPRISE}</EnterpriseTag>
+  const {className, tier} = props
+  if (tier === TierEnum.personal) return <PersonalTag className={className}>{TierLabel.PERSONAL}</PersonalTag>
+  if (tier === TierEnum.pro) return <ProTag className={className}>{TierLabel.PRO}</ProTag>
+  if (tier === TierEnum.enterprise) return <EnterpriseTag className={className}>{TierLabel.ENTERPRISE}</EnterpriseTag>
   return null
 }
 export default TierTag

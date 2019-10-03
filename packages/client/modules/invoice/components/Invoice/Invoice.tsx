@@ -4,21 +4,21 @@ import InvoiceFooter from '../InvoiceFooter/InvoiceFooter'
 import makeMonthString from '../../../../utils/makeMonthString'
 import makeDateString from '../../../../utils/makeDateString'
 import InvoiceLineItem from '../InvoiceLineItem/InvoiceLineItem'
+import InvoiceLineItemContent from '../InvoiceLineItem/InvoiceLineItemContent'
 import invoiceLineFormat from '../../helpers/invoiceLineFormat'
 import {Elevation} from '../../../../styles/elevation'
 import graphql from 'babel-plugin-relay/macro'
 import {createFragmentContainer} from 'react-relay'
 import {Invoice_viewer} from '__generated__/Invoice_viewer.graphql'
-import InvoiceAsterisk from './InvoiceAsterisk'
 import styled from '@emotion/styled'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {Breakpoint} from '../../../../types/constEnums'
 import InvoiceFailedStamp from './InvoiceFailedStamp'
 import InvoiceTag from './InvoiceTag'
+import EmphasisTag from '../../../../components/Tag/EmphasisTag'
 import {InvoiceStatusEnum, TierEnum} from '../../../../types/graphql'
 import NextPeriodChargesLineItem from '../InvoiceLineItem/NextPeriodChargesLineItem'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
-
 
 const chargeStatus = {
   [InvoiceStatusEnum.PAID]: 'Charged',
@@ -70,7 +70,7 @@ const InvoiceStyles = styled('div')({
   padding: 16,
 
   [`@media (min-width: ${Breakpoint.INVOICE}px)`]: {
-    margin: '2rem auto',
+    margin: '32px auto 48px',
     padding: 32
   }
 })
@@ -114,12 +114,18 @@ const SectionHeader = styled('div')({
 })
 
 const Heading = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
   fontSize: 18,
   fontWeight: 600,
+  justifyContent: 'space-between',
   lineHeight: '24px',
   paddingBottom: 8,
+  paddingRight: 12,
   [`@media (min-width: ${Breakpoint.INVOICE}px)`]: {
-    fontSize: 24
+    fontSize: 24,
+    justifyContent: 'flex-start',
+    paddingRight: 20
   }
 })
 
@@ -128,32 +134,17 @@ const Meta = styled('div')<{isError?: boolean}>(({isError}) => ({
   fontSize: 14
 }))
 
-const HeadingLabel = styled('div')({
-  display: 'block',
-  fontSize: 14,
-  lineHeight: '16px',
-
-  [`@media (min-width: ${Breakpoint.INVOICE_LABEL}px)`]: {
-    backgroundColor: PALETTE.BORDER_INVOICE_LABEL,
-    border: `1px solid ${PALETTE.BORDER_INVOICE_LABEL}`,
-    borderRadius: '4em',
-    color: '#FFFFFF',
-    display: 'inline-block',
-    fontSize: 12,
-    marginBottom: 0,
-    marginLeft: 8,
-    padding: '1px 7px',
-    textTransform: 'uppercase',
-    verticalAlign: 'middle'
-  }
-})
-
 const PayURLText = styled('a')({
   display: 'flex',
   fontSize: 12,
   justifyContent: 'space-between',
   paddingTop: 8,
   width: '100%'
+})
+
+const CouponEmphasis = styled('span')({
+  color: PALETTE.EMPHASIS_WARM,
+  fontWeight: 600
 })
 
 interface Props {
@@ -173,6 +164,7 @@ const Invoice = (props: Props) => {
     amountDue,
     total,
     creditCard,
+    coupon,
     lines,
     nextPeriodCharges,
     payUrl,
@@ -181,9 +173,11 @@ const Invoice = (props: Props) => {
     tier
   } = invoiceDetails
   const status = invoiceDetails.status as InvoiceStatusEnum
-  const {interval, nextPeriodEnd} = nextPeriodCharges!
+  const {amount, interval, nextPeriodEnd} = nextPeriodCharges!
   const chargeDates = `${makeDateString(startAt)} to ${makeDateString(endAt)}`
   const nextChargesDates = `${makeDateString(endAt)} to ${makeDateString(nextPeriodEnd)}`
+  const amountOff = coupon && (coupon.amountOff || coupon.percentOff! / 100 * amount)
+  const discountedAmount = amountOff && invoiceLineFormat(-amountOff)
   return (
     <Wrap>
       <InvoiceStyles>
@@ -200,23 +194,31 @@ const Invoice = (props: Props) => {
           </SectionHeader>
           <NextPeriodChargesLineItem tier={tier as TierEnum} item={nextPeriodCharges} />
 
+          {/*
+            Re: coupon
+            Percent-off amounts are based on the nextPeriodCharges,
+            so the line item makes more sense close to the starting amount.
+            Also, coupons are not part of “Last month’s adjustments”
+          */}
+          {coupon &&
+            <InvoiceLineItemContent
+              description={<CouponEmphasis>{`Coupon: “${coupon.name}”`}</CouponEmphasis>}
+              amount={<CouponEmphasis>{discountedAmount}</CouponEmphasis>}
+            />
+          }
+
           {lines.length > 0 && (
             <>
               <SectionHeader>
                 <Heading>
                   {'Last month’s adjustments'}
-                  <InvoiceAsterisk />
-                  <HeadingLabel>
-                    <InvoiceAsterisk />
-                    {'Prorated'}
-                  </HeadingLabel>
+                  <EmphasisTag>{'Prorated'}</EmphasisTag>
                 </Heading>
                 <Meta>{chargeDates}</Meta>
               </SectionHeader>
               {lines.map((item) => <InvoiceLineItem key={item.id} item={item} />)}
             </>
           )}
-
           <AmountSection>
             {startingBalance !== 0 && (
               <div>
@@ -267,6 +269,11 @@ export default createFragmentContainer(Invoice, {
           brand
           last4
         }
+        coupon {
+          amountOff
+          name
+          percentOff
+        }
         endAt
         lines {
           ...InvoiceLineItem_item
@@ -276,6 +283,7 @@ export default createFragmentContainer(Invoice, {
           ...NextPeriodChargesLineItem_item
           nextPeriodEnd
           interval
+          amount
         }
         payUrl
         startingBalance

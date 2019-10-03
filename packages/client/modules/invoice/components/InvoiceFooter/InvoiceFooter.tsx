@@ -1,5 +1,5 @@
 import React from 'react'
-import lockup from '../../../../styles/theme/images/brand/parabol-lockup-v-dark.svg'
+import parabolMark from '../../../../styles/theme/images/brand/mark-primary.svg'
 import styled from '@emotion/styled'
 import {ContactInfo} from '../../../../types/constEnums'
 
@@ -20,14 +20,14 @@ const Copy = styled('div')({
 
 const Lockup = styled('img')({
   display: 'block',
-  margin: '1.5rem auto 0',
-  opacity: 0.5
+  margin: '48px auto 16px',
+  width: 64
 })
 
 const FinePrint = styled('div')({
   fontSize: 12,
   lineHeight: '1.5',
-  margin: '1rem auto 0'
+  margin: '16px auto 0'
 })
 
 const InvoiceFooter = () => {
@@ -42,7 +42,7 @@ const InvoiceFooter = () => {
           <b>{ContactInfo.EMAIL_BILLING}</b>
         </a>
       </Copy>
-      <Lockup crossOrigin='' alt='Logo for Parabol' src={lockup} />
+      <Lockup crossOrigin='' alt='Logo for Parabol' src={parabolMark} />
       <FinePrint>
         {'Parabol, Inc.'}
         <br />

@@ -6,6 +6,8 @@ import {createFragmentContainer} from 'react-relay'
 import {InvoiceHeader_invoice} from '__generated__/InvoiceHeader_invoice.graphql'
 import styled from '@emotion/styled'
 import {PALETTE} from '../../../../styles/paletteV2'
+import {TierEnum} from '../../../../types/graphql'
+import TierTag from '../../../../components/Tag/TierTag'
 
 const Header = styled('div')({
   alignItems: 'center',
@@ -33,8 +35,11 @@ const Picture = styled('img')({
 })
 
 const Info = styled('div')({
+  justifyContent: 'flex-start',
+  display: 'flex',
   flex: 1,
-  marginLeft: '1.25rem'
+  flexDirection: 'column',
+  marginLeft: 20
 })
 
 const OrgName = styled('div')({
@@ -51,13 +56,17 @@ const Email = styled('div')({
   lineHeight: '20px'
 })
 
+const StyledTierTag = styled(TierTag)({
+  margin: '0 auto 0 0'
+})
+
 interface Props {
   invoice: InvoiceHeader_invoice
 }
 
 const InvoiceHeader = (props: Props) => {
   const {invoice} = props
-  const {orgName, billingLeaderEmails, picture} = invoice
+  const {orgName, billingLeaderEmails, picture, tier} = invoice
   return (
     <Header>
       <LogoPanel>
@@ -68,6 +77,7 @@ const InvoiceHeader = (props: Props) => {
       </LogoPanel>
       <Info>
         <OrgName>{orgName}</OrgName>
+        {tier !== TierEnum.personal && <StyledTierTag tier={tier as TierEnum} />}
         {billingLeaderEmails.map((email) => (
           <Email key={`email${email}`}>
             {email}
@@ -86,6 +96,7 @@ export default createFragmentContainer(
         orgName
         billingLeaderEmails
         picture
+        tier
       }`
   }
 )
