@@ -17,7 +17,7 @@
     "build-storybook": "build-storybook",
     "lint": "eslint --fix ./**/*.{ts,tsx,js}",
     "precommit": "lint-staged",
-    "typecheck": "tsc --noEmit -W"
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^5.1.9",

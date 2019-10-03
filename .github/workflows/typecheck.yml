@@ -14,7 +14,7 @@ jobs:
         node-version: 12.x
     - name: Typecheck
       run: |
-        npm install
-        npm run typecheck
+        yarn
+        yarn typecheck
       env:
         CI: true
