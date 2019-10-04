@@ -32,7 +32,7 @@ const makeMailgunApiData = (recipients: string | string[], template: string, pro
   }
 }
 
-const maybeMailgun = (fn, mailgunApiData) => {
+const maybeMailgun = (fn, mailgunApiData: ReturnType<typeof makeMailgunApiData>) => {
   if (!getMailgunApiConfig().apiKey) {
     const {from, to, subject, body} = mailgunApiData
     console.warn(`mailgun: no API key, so not sending the following:
@@ -48,7 +48,9 @@ const maybeMailgun = (fn, mailgunApiData) => {
       return fn(mailgun)
     }
   } catch (error) {
+    const {to, subject} = mailgunApiData
     console.warn(error)
+    console.warn(to, subject)
   }
   return false
 }

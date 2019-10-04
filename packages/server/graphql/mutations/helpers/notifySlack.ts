@@ -14,6 +14,7 @@ import {Unpromise} from '../../../../client/types/generics'
 import ms from 'ms'
 import formatTime from '../../../../client/utils/date/formatTime'
 import formatWeekday from '../../../../client/utils/date/formatWeekday'
+import sendToSentry from '../../../utils/sendToSentry'
 
 const getSlackDetails = async (
   event: SlackNotificationEvent,
@@ -68,6 +69,7 @@ const notifySlack = async (
           })
       } else if (error === 'not_in_channel' || error === 'invalid_auth') {
         console.log('Slack Channel Notification Error:', error)
+        sendToSentry(new Error(`Slack Channel Notification Error: ${teamId}, ${channelId}, ${auth.id}`))
       }
     }
   }
