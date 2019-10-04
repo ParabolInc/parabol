@@ -21,14 +21,14 @@ const ItemRoot = styled('div')<ItemRootProps>(
       : isDragging
       ? PALETTE.BACKGROUND_NAV_LIGHT_HOVER
       : '#FFFFFF',
-    borderRadius: 4,
+    borderRadius: '0 4px 4px 0',
     color: PALETTE.TEXT_MAIN,
     display: 'flex',
     fontSize: 14,
     fontWeight: 400,
-    minHeight: '2.5rem',
+    minHeight: 40,
     opacity: !isActive && isComplete ? 0.5 : undefined,
-    padding: '.5rem 0',
+    padding: '8px 0',
     position: 'relative',
     userSelect: 'none',
     width: '100%',
@@ -64,7 +64,7 @@ const ItemOrderLabel = styled('div')({
   opacity: 0.5,
   paddingRight: 16,
   textAlign: 'right',
-  width: 48
+  width: 56
 })
 
 const ItemLabel = styled('div')<{isComplete: boolean}>(({isComplete}) => ({
