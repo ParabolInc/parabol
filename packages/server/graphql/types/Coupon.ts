@@ -1,4 +1,4 @@
-import {GraphQLNonNull, GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLBoolean} from 'graphql'
+import {GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 
 const Coupon = new GraphQLObjectType({
   name: 'Coupon',

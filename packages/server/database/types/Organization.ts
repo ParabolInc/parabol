@@ -20,6 +20,8 @@ export default class Organization {
   name: string
   payLaterClickCount: number
   showConversionModal?: boolean
+  stripeId?: string
+  stripeSubscriptionId?: string
   tier: TierEnum
   updatedAt: Date
   constructor (input: Input) {
