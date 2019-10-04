@@ -20,6 +20,7 @@ interface Props {
 }
 
 const blackList: string[] = [NewMeetingPhaseTypeEnum.firstcall, NewMeetingPhaseTypeEnum.lastcall]
+const collapsiblePhases: string[] = [NewMeetingPhaseTypeEnum.checkin, NewMeetingPhaseTypeEnum.updates]
 
 const ActionMeetingSidebar = (props: Props) => {
   const {gotoStageId, handleMenuClick, toggleSidebar, viewer} = props
@@ -54,6 +55,7 @@ const ActionMeetingSidebar = (props: Props) => {
             return (
               <NewMeetingSidebarPhaseListItem
                 key={phaseType}
+                isCollapsible={collapsiblePhases.includes(phaseType)}
                 phaseType={phaseType}
                 listPrefix={String(idx + 1)}
                 isActive={
@@ -61,6 +63,8 @@ const ActionMeetingSidebar = (props: Props) => {
                     ? blackList.includes(localPhaseType)
                     : localPhaseType === phaseType
                 }
+                // isActive={localPhaseType === phaseType}
+                // isActive={false}
                 isFacilitatorPhaseGroup={
                   facilitatorPhaseType === phaseType ||
                   (phaseType === NewMeetingPhaseTypeEnum.agendaitems &&

@@ -100,7 +100,7 @@ const AgendaItem = (props: Props) => {
         }
         isDisabled={isViewerFacilitator ? !isNavigableByFacilitator : !isNavigable}
         onClick={gotoStageId && agendaItemStage ? () => gotoStageId(stageId) : undefined}
-        orderLabel={`${idx + 1}.`}
+        // orderLabel={`${idx + 1}.`}
         isActive={isLocalStage}
         isComplete={isComplete}
         isDragging={isDragging}

@@ -3,8 +3,10 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import ActionSidebarAgendaItemsSection from './ActionSidebarAgendaItemsSection'
+import MeetingSidebarTeamMemberStageItems from './MeetingSidebarTeamMemberStageItems'
 import {useGotoStageId} from '../hooks/useMeeting'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
+// import UNSTARTED_MEETING from '../utils/meetings/unstartedMeeting'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -15,9 +17,20 @@ interface Props {
 
 const ActionSidebarPhaseListItemChildren = (props: Props) => {
   const {gotoStageId, handleMenuClick, phaseType, viewer} = props
+  const {team} = viewer
+  const {newMeeting} = team!
+  // const meeting = newMeeting || UNSTARTED_MEETING
   if (phaseType === NewMeetingPhaseTypeEnum.agendaitems) {
     return (
       <ActionSidebarAgendaItemsSection
+        gotoStageId={gotoStageId}
+        handleMenuClick={handleMenuClick}
+        viewer={viewer}
+      />
+    )
+  } else if (newMeeting && newMeeting.localPhase.phaseType === phaseType) {
+    return (
+      <MeetingSidebarTeamMemberStageItems
         gotoStageId={gotoStageId}
         handleMenuClick={handleMenuClick}
         viewer={viewer}
@@ -38,6 +51,7 @@ export default createFragmentContainer(ActionSidebarPhaseListItemChildren, {
         }
       }
       ...ActionSidebarAgendaItemsSection_viewer
+      ...MeetingSidebarTeamMemberStageItems_viewer
     }
   `
 })

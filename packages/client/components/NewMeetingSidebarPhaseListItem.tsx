@@ -47,6 +47,7 @@ const navListItemLinkActive = {
   borderLeftColor: PALETTE.BORDER_MAIN,
   borderRadius: '0 4px 4px 0',
   color: PALETTE.TEXT_MAIN,
+  cursor: 'default',
   ':hover,:focus': {
     backgroundColor: PALETTE.BACKGROUND_NAV_LIGHT_ACTIVE
   }
@@ -60,6 +61,7 @@ const navListItemLinkDisabled = {
 }
 
 interface LinkProps {
+  isCollapsible?: boolean | undefined
   isDisabled: boolean
   isActive: boolean
 }
@@ -76,11 +78,20 @@ const NavListItemLink = styled('div')<LinkProps>(
     textDecoration: 'none',
     userSelect: 'none',
     ':hover,:focus': {
-      backgroundColor: PALETTE.BACKGROUND_NAV_LIGHT_HOVER
+      backgroundColor: PALETTE.BACKGROUND_NAV_LIGHT_HOVER,
+      cursor: 'pointer'
     }
   },
   ({isDisabled}) => isDisabled && navListItemLinkDisabled,
-  ({isActive}) => isActive && navListItemLinkActive
+  ({isActive}) => isActive && navListItemLinkActive,
+  ({isCollapsible, isActive}) => isCollapsible && isActive && {
+    backgroundColor: 'transparent',
+    cursor: 'default',
+    ':hover,:focus': {
+      backgroundColor: 'transparent',
+      cursor: 'default'
+    }
+  }
 )
 
 interface Props {
@@ -88,16 +99,18 @@ interface Props {
   handleClick?: () => void
   phaseType: string
   listPrefix: string
+  isCollapsible?: boolean | undefined
   isActive: boolean
   isFacilitatorPhaseGroup: boolean
 }
 
 const NewMeetingSidebarPhaseListItem = (props: Props) => {
-  const {children, handleClick, phaseType, listPrefix, isActive, isFacilitatorPhaseGroup} = props
+  const {children, handleClick, phaseType, listPrefix, isActive, isCollapsible, isFacilitatorPhaseGroup} = props
   const label = phaseLabelLookup[phaseType]
   return (
     <NavListItem>
       <NavListItemLink
+        isCollapsible={isCollapsible}
         isDisabled={!handleClick}
         isActive={isActive}
         onClick={handleClick}

@@ -92,7 +92,7 @@ interface Props {
   label: string
   metaContent: any
   onClick: ((e: React.MouseEvent) => void) | undefined
-  orderLabel: string
+  orderLabel?: string
 }
 
 const MeetingSubnavItem = (props: Props) => {
