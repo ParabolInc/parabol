@@ -3,7 +3,6 @@ import {verify} from 'jsonwebtoken'
 import getRethink from '../../database/rethinkDriver'
 import LoginPayload from '../types/LoginPayload'
 import {
-  auth0ManagementClient,
   clientId as auth0ClientId,
   clientSecret as auth0ClientSecret
 } from '../../utils/auth0Helpers'
@@ -24,6 +23,7 @@ import SuggestedActionCreateNewTeam from '../../database/types/SuggestedActionCr
 import SuggestedActionInviteYourTeam from '../../database/types/SuggestedActionInviteYourTeam'
 import TimelineEventJoinedParabol from '../../database/types/TimelineEventJoinedParabol'
 import User from '../../database/types/User'
+import getAuth0ManagementClient from '../../utils/getAuth0ManagementClient'
 
 const handleSegment = async (userId, previousId) => {
   if (previousId) {
@@ -95,7 +95,7 @@ const login = {
 
     let userInfo
     try {
-      userInfo = await auth0ManagementClient.getUser({
+      userInfo = await getAuth0ManagementClient().getUser({
         id: authToken.sub
       })
     } catch (e) {
