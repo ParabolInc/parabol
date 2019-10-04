@@ -2,8 +2,6 @@ import {ActionSidebarAgendaItemsSection_viewer} from '../__generated__/ActionSid
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import LabelHeading from './LabelHeading/LabelHeading'
-import MeetingSidebarLabelBlock from './MeetingSidebarLabelBlock'
 import {useGotoStageId} from '../hooks/useMeeting'
 import AgendaListAndInput from '../modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
@@ -32,9 +30,6 @@ const ActionSidebarAgendaItemsSection = (props: Props) => {
   }
   return (
     <MeetingSidebarPhaseItemChild>
-      <MeetingSidebarLabelBlock>
-        <LabelHeading>{'Agenda Topics'}</LabelHeading>
-      </MeetingSidebarLabelBlock>
       <AgendaListAndInput
         isMeeting
         gotoStageId={handleClick}

@@ -33,7 +33,7 @@ export const meetingTypeToSlug = {
 }
 
 export const meetingTypeToLabel = {
-  [RETROSPECTIVE]: 'Retrospective' as 'Retrospective',
+  [RETROSPECTIVE]: 'Retro' as 'Retro',
   [ACTION]: 'Action' as 'Action'
 }
 

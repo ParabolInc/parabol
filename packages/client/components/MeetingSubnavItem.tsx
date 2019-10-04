@@ -1,6 +1,5 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import {meetingSidebarGutterInner} from '../styles/meeting'
 import {PALETTE} from '../styles/paletteV2'
 import {NavSidebar} from '../types/constEnums'
 
@@ -22,14 +21,14 @@ const ItemRoot = styled('div')<ItemRootProps>(
       : isDragging
       ? PALETTE.BACKGROUND_NAV_LIGHT_HOVER
       : '#FFFFFF',
-    boxShadow: isActive ? `inset ${NavSidebar.LEFT_BORDER_WIDTH} 0 0 ${PALETTE.BORDER_MAIN}` : undefined,
+    borderRadius: '0 4px 4px 0',
     color: PALETTE.TEXT_MAIN,
     display: 'flex',
     fontSize: 14,
     fontWeight: 400,
-    minHeight: '2.5rem',
+    minHeight: 40,
     opacity: !isActive && isComplete ? 0.5 : undefined,
-    padding: '.5rem 0',
+    padding: '8px 0',
     position: 'relative',
     userSelect: 'none',
     width: '100%',
@@ -42,20 +41,20 @@ const ItemRoot = styled('div')<ItemRootProps>(
   ({isUnsyncedFacilitatorStage}) =>
     isUnsyncedFacilitatorStage && {
       color: PALETTE.EMPHASIS_WARM,
-      opacity: 1,
-      '&::after': {
-        backgroundColor: PALETTE.EMPHASIS_WARM,
-        borderRadius: '100%',
-        content: '""',
-        display: 'block',
-        left: '.875rem',
-        marginTop: '-.1875rem',
-        position: 'absolute',
-        height: '.375rem',
-        top: '50%',
-        transition: 'opacity .1s ease-in',
-        width: '.375rem'
-      }
+      opacity: 1
+      // '&::after': {
+      //   backgroundColor: PALETTE.EMPHASIS_WARM,
+      //   borderRadius: '100%',
+      //   content: '""',
+      //   display: 'block',
+      //   left: '.875rem',
+      //   marginTop: '-.1875rem',
+      //   position: 'absolute',
+      //   height: '.375rem',
+      //   top: '50%',
+      //   transition: 'opacity .1s ease-in',
+      //   width: '.375rem'
+      // }
     }
 )
 
@@ -63,9 +62,9 @@ const ItemOrderLabel = styled('div')({
   height: lineHeight,
   lineHeight,
   opacity: 0.5,
-  paddingRight: '.75rem',
+  paddingRight: 16,
   textAlign: 'right',
-  width: meetingSidebarGutterInner
+  width: 56
 })
 
 const ItemLabel = styled('div')<{isComplete: boolean}>(({isComplete}) => ({
