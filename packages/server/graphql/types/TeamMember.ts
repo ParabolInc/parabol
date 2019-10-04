@@ -20,8 +20,9 @@ import {getUserId} from '../../utils/authorization'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import SlackAuth from './SlackAuth'
 import SlackNotification from './SlackNotification'
+import {GQLContext} from '../graphql'
 
-const TeamMember = new GraphQLObjectType({
+const TeamMember = new GraphQLObjectType<any, GQLContext, any>({
   name: 'TeamMember',
   description: 'A member of a team',
   fields: () => ({
