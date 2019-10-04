@@ -24,8 +24,8 @@ const AssignFacilitatorMenu = (props: Props) => {
   const {teamMembers} = team || {teamMembers: []}
   const assignees = useMemo(
     () => teamMembers
-    .filter((teamMember) => teamMember.userId !== facilitatorUserId)
-    .sort((a,b) => a.preferredName.toLowerCase() < b.preferredName.toLowerCase() ? -1 : 1),
+      .filter((teamMember) => teamMember.userId !== facilitatorUserId)
+      .sort((a,b) => a.preferredName.toLowerCase() < b.preferredName.toLowerCase() ? -1 : 1),
     [facilitatorUserId, teamMembers]
   )
   const atmosphere = useAtmosphere()
