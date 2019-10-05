@@ -75,7 +75,7 @@ const DashboardAvatar = (props: Props) => {
         onClick={togglePortal}
         size={32}
       />
-      <AvatarTag isLead={isLead}>{'Team Lead'}</AvatarTag>
+      <AvatarTag isLead={isLead}>{'Team Admin'}</AvatarTag>
       {menuPortal(
         <TeamMemberAvatarMenu
           menuProps={menuProps}
