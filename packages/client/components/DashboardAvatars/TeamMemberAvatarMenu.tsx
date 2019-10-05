@@ -48,7 +48,7 @@ const TeamMemberAvatarMenu = (props: Props) => {
           <MenuItem
             key='promote'
             onClick={togglePromote}
-            label={<MenuItemLabel>Promote {preferredName} to Team Lead</MenuItemLabel>}
+            label={<MenuItemLabel>Promote {preferredName} to Team Admin</MenuItemLabel>}
           />
         )}
         {isViewerLead && !isSelf && (
