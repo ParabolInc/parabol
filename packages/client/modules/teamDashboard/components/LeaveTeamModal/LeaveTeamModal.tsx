@@ -41,7 +41,7 @@ const LeaveTeamModal = (props: Props) => {
       <DialogContent>
         {'This will remove you from the team.'}
         <br />
-        {'All of your tasks will be given to the team lead.'}
+        {'All of your tasks will be given to the team admin.'}
         <StyledButton size='medium' onClick={handleClick}>
           <IconLabel icon='arrow_forward' iconAfter label='Leave the team' />
         </StyledButton>
