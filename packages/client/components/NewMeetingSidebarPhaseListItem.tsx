@@ -2,7 +2,8 @@ import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
 import {PALETTE} from '../styles/paletteV2'
 import {NavSidebar} from '../types/constEnums'
-import {phaseLabelLookup} from '../utils/meetings/lookups'
+import {phaseIconLookup, phaseLabelLookup} from '../utils/meetings/lookups'
+import Icon from './Icon'
 
 const NavListItem = styled('li')({
   fontWeight: 600,
@@ -33,6 +34,16 @@ const NavItemBullet = styled('span')<{isFacilitatorPhaseGroup: boolean}>(
   },
   ({isFacilitatorPhaseGroup}) => ({
     backgroundImage: isFacilitatorPhaseGroup ? PALETTE.GRADIENT_WARM : undefined
+  })
+)
+
+const NavItemIcon = styled(Icon)<{isUnsyncedFacilitatorPhase: boolean}>(
+  {
+    color: PALETTE.TEXT_GRAY,
+    margin: '0 16px'
+  },
+  ({isUnsyncedFacilitatorPhase}) => ({
+    color: isUnsyncedFacilitatorPhase ? PALETTE.EMPHASIS_WARM : undefined
   })
 )
 
@@ -83,18 +94,27 @@ const NavListItemLink = styled('div')<LinkProps>(
   ({isActive}) => isActive && navListItemLinkActive
 )
 
+const Meta = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  marginLeft: 'auto'
+})
+
 interface Props {
   children: ReactNode
   handleClick?: () => void
   phaseType: string
   listPrefix: string
+  meta?: ReactNode
   isActive: boolean
-  isFacilitatorPhaseGroup: boolean
+  isFacilitatorPhaseGroup?: boolean
+  isUnsyncedFacilitatorPhase: boolean
 }
 
 const NewMeetingSidebarPhaseListItem = (props: Props) => {
-  const {children, handleClick, phaseType, listPrefix, isActive, isFacilitatorPhaseGroup} = props
+  const {children, handleClick, phaseType, listPrefix, meta, isActive, isFacilitatorPhaseGroup, isUnsyncedFacilitatorPhase} = props
   const label = phaseLabelLookup[phaseType]
+  const icon = phaseIconLookup[phaseType]
   return (
     <NavListItem>
       <NavListItemLink
@@ -103,10 +123,16 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
         onClick={handleClick}
         title={label}
       >
-        <NavItemBullet isFacilitatorPhaseGroup={isFacilitatorPhaseGroup}>
+        {/* <NavItemBullet isFacilitatorPhaseGroup={isFacilitatorPhaseGroup}>
           {listPrefix}
-        </NavItemBullet>
+        </NavItemBullet> */}
+        <NavItemIcon isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase}>
+          {icon}
+        </NavItemIcon>
         <NavItemLabel>{label}</NavItemLabel>
+        {meta &&
+          <Meta>{meta}</Meta>
+        }
       </NavListItemLink>
       {children}
     </NavListItem>

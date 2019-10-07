@@ -42,19 +42,6 @@ const ItemRoot = styled('div')<ItemRootProps>(
     isUnsyncedFacilitatorStage && {
       color: PALETTE.EMPHASIS_WARM,
       opacity: 1
-      // '&::after': {
-      //   backgroundColor: PALETTE.EMPHASIS_WARM,
-      //   borderRadius: '100%',
-      //   content: '""',
-      //   display: 'block',
-      //   left: '.875rem',
-      //   marginTop: '-.1875rem',
-      //   position: 'absolute',
-      //   height: '.375rem',
-      //   top: '50%',
-      //   transition: 'opacity .1s ease-in',
-      //   width: '.375rem'
-      // }
     }
 )
 
@@ -92,7 +79,7 @@ interface Props {
   label: string
   metaContent: any
   onClick: ((e: React.MouseEvent) => void) | undefined
-  orderLabel: string
+  orderLabel?: string
 }
 
 const MeetingSubnavItem = (props: Props) => {

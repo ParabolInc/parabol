@@ -8,9 +8,13 @@ import {useGotoStageId} from '../hooks/useMeeting'
 import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from '../types/graphql'
 import getSidebarItemStage from '../utils/getSidebarItemStage'
 import findStageById from '../utils/meetings/findStageById'
+import isPhaseComplete from '../utils/meetings/isPhaseComplete'
 import UNSTARTED_MEETING from '../utils/meetings/unstartedMeeting'
 import NewMeetingSidebar from './NewMeetingSidebar'
 import MeetingNavList from './MeetingNavList'
+import styled from '@emotion/styled'
+import {PALETTE} from '../styles/paletteV2'
+import Badge from './Badge/Badge'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -18,6 +22,14 @@ interface Props {
   toggleSidebar: () => void
   viewer: RetroMeetingSidebar_viewer
 }
+
+const StyledBadge = styled(Badge)({
+  backgroundColor: PALETTE.BACKGROUND_GRAY,
+  boxShadow: 'none',
+  marginRight: 8,
+  minWidth: 24,
+  textShadow: 'none'
+})
 
 const RetroMeetingSidebar = (props: Props) => {
   const {gotoStageId, handleMenuClick, toggleSidebar, viewer} = props
@@ -30,6 +42,7 @@ const RetroMeetingSidebar = (props: Props) => {
   const facilitatorStageRes = findStageById(phases, facilitatorStageId)
   const facilitatorPhaseType = facilitatorStageRes ? facilitatorStageRes.phase.phaseType : ''
   const isViewerFacilitator = facilitatorUserId === viewerId
+  const isUnsyncedFacilitatorPhase = facilitatorPhaseType !== localPhaseType
   return (
     <NewMeetingSidebar
       handleMenuClick={handleMenuClick}
@@ -47,6 +60,17 @@ const RetroMeetingSidebar = (props: Props) => {
             gotoStageId(itemStageId).catch()
             handleMenuClick()
           }
+          const discussPhase = phases.find((phase) => {
+            return phase.phaseType === NewMeetingPhaseTypeEnum.discuss
+          })
+          const showDiscussSection = newMeeting && isPhaseComplete(NewMeetingPhaseTypeEnum.vote, phases)
+          const phaseCount = phaseType === NewMeetingPhaseTypeEnum.discuss
+            && newMeeting
+            && showDiscussSection
+            // && newMeeting.localPhase
+            // && newMeeting.localPhase.phaseType === phaseType
+            ? <StyledBadge>{discussPhase.stages.length}</StyledBadge>
+            : undefined
           return (
             <NewMeetingSidebarPhaseListItem
               key={phaseType}
@@ -55,8 +79,10 @@ const RetroMeetingSidebar = (props: Props) => {
               isActive={
                 phaseType === NewMeetingPhaseTypeEnum.discuss ? false : localPhaseType === phaseType
               }
-              isFacilitatorPhaseGroup={facilitatorPhaseType === phaseType}
+              // isFacilitatorPhaseGroup={facilitatorPhaseType === phaseType}
+              isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase && phaseType === facilitatorPhaseType}
               handleClick={canNavigate ? handleClick : undefined}
+              meta={phaseCount}
             >
               <RetroSidebarPhaseListItemChildren
                 gotoStageId={gotoStageId}

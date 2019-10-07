@@ -146,7 +146,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
                               label={title!}
                               metaContent={voteMeta}
                               onClick={() => handleClick(stage.id)}
-                              orderLabel={`${idx + 1}.`}
+                              // orderLabel={`${idx + 1}.`}
                               isActive={localStage.id === stage.id}
                               isComplete={stage.isComplete}
                               isDisabled={!stage.isNavigable}

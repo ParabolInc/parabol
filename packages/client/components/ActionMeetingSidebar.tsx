@@ -11,6 +11,10 @@ import findStageById from '../utils/meetings/findStageById'
 import UNSTARTED_MEETING from '../utils/meetings/unstartedMeeting'
 import NewMeetingSidebar from './NewMeetingSidebar'
 import MeetingNavList from './MeetingNavList'
+import styled from '@emotion/styled'
+import {PALETTE} from '../styles/paletteV2'
+import Badge from './Badge/Badge'
+import {NavSidebar} from '../types/constEnums'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -19,12 +23,29 @@ interface Props {
   viewer: ActionMeetingSidebar_viewer
 }
 
+const PhaseCount = styled('div')({
+  color: PALETTE.TEXT_GRAY,
+  fontSize: NavSidebar.FONT_SIZE,
+  fontWeight: 400,
+  marginRight: 8,
+  minWidth: 24,
+  textAlign: 'center'
+})
+
+const StyledBadge = styled(Badge)({
+  backgroundColor: PALETTE.BACKGROUND_GRAY,
+  boxShadow: 'none',
+  marginRight: 8,
+  minWidth: 24,
+  textShadow: 'none'
+})
+
 const blackList: string[] = [NewMeetingPhaseTypeEnum.firstcall, NewMeetingPhaseTypeEnum.lastcall]
 
 const ActionMeetingSidebar = (props: Props) => {
   const {gotoStageId, handleMenuClick, toggleSidebar, viewer} = props
   const {id: viewerId, team} = viewer
-  const {meetingSettings, newMeeting} = team!
+  const {meetingSettings, newMeeting, agendaItems} = team!
   const {phaseTypes} = meetingSettings
   const {facilitatorUserId, facilitatorStageId, localPhase, phases} =
     newMeeting || UNSTARTED_MEETING
@@ -32,6 +53,7 @@ const ActionMeetingSidebar = (props: Props) => {
   const facilitatorStageRes = findStageById(phases, facilitatorStageId)
   const facilitatorPhaseType = facilitatorStageRes ? facilitatorStageRes.phase.phaseType : ''
   const isViewerFacilitator = facilitatorUserId === viewerId
+  const isUnsyncedFacilitatorPhase = facilitatorPhaseType !== localPhaseType
   return (
     <NewMeetingSidebar
       handleMenuClick={handleMenuClick}
@@ -51,6 +73,9 @@ const ActionMeetingSidebar = (props: Props) => {
               gotoStageId(itemStageId).catch()
               handleMenuClick()
             }
+            const phaseCount = phaseType === NewMeetingPhaseTypeEnum.agendaitems && agendaItems
+              ? <StyledBadge>{agendaItems.length}</StyledBadge>
+              : undefined
             return (
               <NewMeetingSidebarPhaseListItem
                 key={phaseType}
@@ -61,12 +86,14 @@ const ActionMeetingSidebar = (props: Props) => {
                     ? blackList.includes(localPhaseType)
                     : localPhaseType === phaseType
                 }
-                isFacilitatorPhaseGroup={
-                  facilitatorPhaseType === phaseType ||
-                  (phaseType === NewMeetingPhaseTypeEnum.agendaitems &&
-                    blackList.includes(facilitatorPhaseType))
-                }
+                // isFacilitatorPhaseGroup={
+                //   facilitatorPhaseType === phaseType ||
+                //   (phaseType === NewMeetingPhaseTypeEnum.agendaitems &&
+                //     blackList.includes(facilitatorPhaseType))
+                // }
+                isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase && phaseType === facilitatorPhaseType}
                 handleClick={canNavigate ? handleClick : undefined}
+                meta={phaseCount}
               >
                 <ActionSidebarPhaseListItemChildren
                   gotoStageId={gotoStageId}
@@ -93,6 +120,9 @@ export default createFragmentContainer(ActionMeetingSidebar, {
         id
         meetingSettings(meetingType: action) {
           phaseTypes
+        }
+        agendaItems {
+          id
         }
         newMeeting {
           meetingId: id

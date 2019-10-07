@@ -10,17 +10,16 @@ import {useGotoStageId} from '../../../../hooks/useMeeting'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import RemoveAgendaItemMutation from '../../../../mutations/RemoveAgendaItemMutation'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
-import {meetingSidebarGutter} from '../../../../styles/meeting'
 import {requestIdleCallback} from '../../../../utils/requestIdleCallback'
 import UNSTARTED_MEETING from '../../../../utils/meetings/unstartedMeeting'
 import findStageById from '../../../../utils/meetings/findStageById'
 import {AgendaItem_newMeeting} from '../../../../__generated__/AgendaItem_newMeeting.graphql'
 
-const DeleteIconButton = styled(IconButton)<{agendaLength: number; disabled?: boolean}>(
-  ({agendaLength, disabled}) => ({
+const DeleteIconButton = styled(IconButton)<{disabled?: boolean}>(
+  ({disabled}) => ({
     display: 'block',
     // we can make the position of the del (x) more centered when there’s a low number of agenda items
-    left: agendaLength < 10 ? '.8125rem' : meetingSidebarGutter,
+    left: 19,
     lineHeight: ICON_SIZE.MD18,
     opacity: 0,
     position: 'absolute',
@@ -44,7 +43,6 @@ const AgendaItemStyles = styled('div')(({}) => ({
 
 interface Props {
   agendaItem: AgendaItem_agendaItem
-  agendaLength: number
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
   idx: number
   isDragging: boolean
@@ -52,7 +50,7 @@ interface Props {
 }
 
 const AgendaItem = (props: Props) => {
-  const {agendaItem, agendaLength, gotoStageId, isDragging, idx, newMeeting} = props
+  const {agendaItem, gotoStageId, isDragging, idx, newMeeting} = props
   const {facilitatorUserId, facilitatorStageId, phases, localStage} =
     newMeeting || UNSTARTED_MEETING
   const localStageId = (localStage && localStage.id) || ''
@@ -68,7 +66,7 @@ const AgendaItem = (props: Props) => {
   const isLocalStage = localStageId === stageId
   const isFacilitatorStage = facilitatorStageId === stageId
   const {picture} = teamMember
-  const isUnsyncedFacilitatorStage = isFacilitatorStage !== isLocalStage
+  const isUnsyncedFacilitatorStage = isFacilitatorStage !== isLocalStage && !isLocalStage
   const ref = useRef<HTMLDivElement>(null)
   useEffect(() => {
     if (isFacilitatorStage) {
@@ -89,6 +87,8 @@ const AgendaItem = (props: Props) => {
   const handleRemove = () => {
     RemoveAgendaItemMutation(atmosphere, {agendaItemId})
   }
+  // const orderLabel = `${idx + 1}.`
+  // const orderLabel = newMeeting ? undefined : `${idx + 1}.`
   return (
     <AgendaItemStyles title={content}>
       <MeetingSubnavItem
@@ -100,7 +100,7 @@ const AgendaItem = (props: Props) => {
         }
         isDisabled={isViewerFacilitator ? !isNavigableByFacilitator : !isNavigable}
         onClick={gotoStageId && agendaItemStage ? () => gotoStageId(stageId) : undefined}
-        orderLabel={`${idx + 1}.`}
+        // orderLabel={orderLabel}
         isActive={isLocalStage}
         isComplete={isComplete}
         isDragging={isDragging}
@@ -108,10 +108,9 @@ const AgendaItem = (props: Props) => {
       />
       <DeleteIconButton
         aria-label={'Remove this agenda topic'}
-        agendaLength={agendaLength}
         icon='cancel'
         onClick={handleRemove}
-        palette='warm'
+        palette='midGray'
       />
     </AgendaItemStyles>
   )

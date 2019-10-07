@@ -6,11 +6,11 @@ import {Link} from 'react-router-dom'
 import LogoBlock from './LogoBlock/LogoBlock'
 import SidebarToggle from './SidebarToggle'
 import AssignFacilitator from './AssignFacilitator'
-import {meetingSidebarWidth} from '../styles/meeting'
 import {PALETTE} from '../styles/paletteV2'
 import {MeetingTypeEnum} from '../types/graphql'
 import {meetingTypeToLabel} from '../utils/meetings/lookups'
 import isDemoRoute from '../utils/isDemoRoute'
+import {NavSidebar} from '../types/constEnums'
 import {NewMeetingSidebar_viewer} from '../__generated__/NewMeetingSidebar_viewer.graphql'
 
 const SidebarHeader = styled('div')({
@@ -33,8 +33,8 @@ const SidebarParent = styled('div')({
   flex: 1,
   flexDirection: 'column',
   height: '100vh',
-  maxWidth: meetingSidebarWidth,
-  minWidth: meetingSidebarWidth,
+  maxWidth: NavSidebar.WIDTH,
+  minWidth: NavSidebar.WIDTH,
   userSelect: 'none'
 })
 

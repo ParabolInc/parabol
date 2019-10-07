@@ -19,7 +19,7 @@ const RejoinFacilitatorButton = (props: Props) => {
   const {inSync, onClick} = props
   if (inSync) return null
   return (
-    <RejoinButton onClick={onClick} palette='warm'>
+    <RejoinButton onClick={onClick} palette='pink'>
       <IconLabel icon='person_pin_circle' label='Rejoin Facilitator' />
     </RejoinButton>
   )

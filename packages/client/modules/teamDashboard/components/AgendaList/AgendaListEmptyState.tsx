@@ -9,23 +9,24 @@ interface Props {
 const EmptyBlock = styled('div')({
   alignItems: 'flex-start',
   display: 'flex',
-  padding: 8,
-  paddingTop: 0
+  padding: '0 8px'
 })
 
 const EmptyEmoji = styled('div')({
   fontSize: 18,
-  minWidth: '2rem',
-  paddingLeft: '1.375rem'
+  minWidth: 32,
+  paddingLeft: 8,
+  textAlign: 'center'
 })
 
 const EmptyMessage = styled('div')({
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.TEXT_GRAY,
   flex: 1,
   fontSize: 13,
-  lineHeight: '1.5',
-  paddingLeft: '.5rem',
-  paddingTop: '.25rem'
+  fontWeight: 400,
+  lineHeight: '20px',
+  paddingLeft: 16,
+  paddingTop: 4
 })
 
 const AgendaListEmptyState = (props: Props) => {
