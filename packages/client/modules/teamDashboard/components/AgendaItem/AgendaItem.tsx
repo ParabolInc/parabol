@@ -87,8 +87,6 @@ const AgendaItem = (props: Props) => {
   const handleRemove = () => {
     RemoveAgendaItemMutation(atmosphere, {agendaItemId})
   }
-  // const orderLabel = `${idx + 1}.`
-  // const orderLabel = newMeeting ? undefined : `${idx + 1}.`
   return (
     <AgendaItemStyles title={content}>
       <MeetingSubnavItem
@@ -100,7 +98,6 @@ const AgendaItem = (props: Props) => {
         }
         isDisabled={isViewerFacilitator ? !isNavigableByFacilitator : !isNavigable}
         onClick={gotoStageId && agendaItemStage ? () => gotoStageId(stageId) : undefined}
-        // orderLabel={orderLabel}
         isActive={isLocalStage}
         isComplete={isComplete}
         isDragging={isDragging}

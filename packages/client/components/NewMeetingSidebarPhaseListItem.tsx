@@ -15,28 +15,6 @@ const NavListItem = styled('li')({
   minHeight: 40
 })
 
-const NavItemBullet = styled('span')<{isFacilitatorPhaseGroup: boolean}>(
-  {
-    backgroundColor: PALETTE.BACKGROUND_PRIMARY,
-    // backgroundColor: PALETTE.BACKGROUND_GRAY,
-    borderRadius: '100%',
-    color: '#FFFFFF',
-    display: 'block',
-    fontSize: 11,
-    fontWeight: 600,
-    height: 24,
-    lineHeight: '24px',
-    marginLeft: 16,
-    marginRight: 16,
-    textAlign: 'center',
-    verticalAlign: 'middle',
-    width: 24
-  },
-  ({isFacilitatorPhaseGroup}) => ({
-    backgroundImage: isFacilitatorPhaseGroup ? PALETTE.GRADIENT_WARM : undefined
-  })
-)
-
 const NavItemIcon = styled(Icon)<{isUnsyncedFacilitatorPhase: boolean}>(
   {
     color: PALETTE.TEXT_GRAY,
@@ -104,15 +82,13 @@ interface Props {
   children: ReactNode
   handleClick?: () => void
   phaseType: string
-  listPrefix: string
   meta?: ReactNode
   isActive: boolean
-  isFacilitatorPhaseGroup?: boolean
   isUnsyncedFacilitatorPhase: boolean
 }
 
 const NewMeetingSidebarPhaseListItem = (props: Props) => {
-  const {children, handleClick, phaseType, listPrefix, meta, isActive, isFacilitatorPhaseGroup, isUnsyncedFacilitatorPhase} = props
+  const {children, handleClick, phaseType, meta, isActive, isUnsyncedFacilitatorPhase} = props
   const label = phaseLabelLookup[phaseType]
   const icon = phaseIconLookup[phaseType]
   return (
@@ -123,9 +99,6 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
         onClick={handleClick}
         title={label}
       >
-        {/* <NavItemBullet isFacilitatorPhaseGroup={isFacilitatorPhaseGroup}>
-          {listPrefix}
-        </NavItemBullet> */}
         <NavItemIcon isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase}>
           {icon}
         </NavItemIcon>

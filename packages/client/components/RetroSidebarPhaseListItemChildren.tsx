@@ -24,8 +24,6 @@ const RetroSidebarPhaseListItemChildren = (props: Props) => {
     phaseType === NewMeetingPhaseTypeEnum.discuss &&
     newMeeting &&
     showDiscussSection
-    // newMeeting.localPhase &&
-    // newMeeting.localPhase.phaseType === phaseType
   ) {
     return (
       <RetroSidebarDiscussSection

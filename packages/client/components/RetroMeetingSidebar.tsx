@@ -51,7 +51,7 @@ const RetroMeetingSidebar = (props: Props) => {
       viewer={viewer}
     >
       <MeetingNavList>
-        {phaseTypes.map((phaseType, idx) => {
+        {phaseTypes.map((phaseType) => {
           const itemStage = getSidebarItemStage(phaseType, phases, facilitatorStageId)
           const {id: itemStageId = '', isNavigable = false, isNavigableByFacilitator = false} =
             itemStage || {}
@@ -67,6 +67,7 @@ const RetroMeetingSidebar = (props: Props) => {
           const phaseCount = phaseType === NewMeetingPhaseTypeEnum.discuss
             && newMeeting
             && showDiscussSection
+            // TODO: show Discuss stage nav at all times once Discuss phase has been reached
             // && newMeeting.localPhase
             // && newMeeting.localPhase.phaseType === phaseType
             ? <StyledBadge>{discussPhase.stages.length}</StyledBadge>
@@ -75,11 +76,9 @@ const RetroMeetingSidebar = (props: Props) => {
             <NewMeetingSidebarPhaseListItem
               key={phaseType}
               phaseType={phaseType}
-              listPrefix={String(idx + 1)}
               isActive={
                 phaseType === NewMeetingPhaseTypeEnum.discuss ? false : localPhaseType === phaseType
               }
-              // isFacilitatorPhaseGroup={facilitatorPhaseType === phaseType}
               isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase && phaseType === facilitatorPhaseType}
               handleClick={canNavigate ? handleClick : undefined}
               meta={phaseCount}

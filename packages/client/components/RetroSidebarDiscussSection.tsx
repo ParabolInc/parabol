@@ -71,6 +71,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
   const {newMeeting} = team!
   if (!newMeeting) return null
   const {localPhase, localStage, facilitatorStageId, id: meetingId} = newMeeting
+  // TODO: show Discuss stage nav at all times once Discuss phase has been reached
   if (!localPhase || !localPhase.stages || !localStage) return null
   const {stages} = localPhase
   const {id: localStageId} = localStage
@@ -146,7 +147,6 @@ const RetroSidebarDiscussSection = (props: Props) => {
                               label={title!}
                               metaContent={voteMeta}
                               onClick={() => handleClick(stage.id)}
-                              // orderLabel={`${idx + 1}.`}
                               isActive={localStage.id === stage.id}
                               isComplete={stage.isComplete}
                               isDisabled={!stage.isNavigable}

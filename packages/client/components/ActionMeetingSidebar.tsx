@@ -14,7 +14,6 @@ import MeetingNavList from './MeetingNavList'
 import styled from '@emotion/styled'
 import {PALETTE} from '../styles/paletteV2'
 import Badge from './Badge/Badge'
-import {NavSidebar} from '../types/constEnums'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -22,15 +21,6 @@ interface Props {
   toggleSidebar: () => void
   viewer: ActionMeetingSidebar_viewer
 }
-
-const PhaseCount = styled('div')({
-  color: PALETTE.TEXT_GRAY,
-  fontSize: NavSidebar.FONT_SIZE,
-  fontWeight: 400,
-  marginRight: 8,
-  minWidth: 24,
-  textAlign: 'center'
-})
 
 const StyledBadge = styled(Badge)({
   backgroundColor: PALETTE.BACKGROUND_GRAY,
@@ -64,7 +54,7 @@ const ActionMeetingSidebar = (props: Props) => {
       <MeetingNavList>
         {phaseTypes
           .filter((phaseType) => !blackList.includes(phaseType))
-          .map((phaseType, idx) => {
+          .map((phaseType) => {
             const itemStage = getSidebarItemStage(phaseType, phases, facilitatorStageId)
             const {id: itemStageId = '', isNavigable = false, isNavigableByFacilitator = false} =
               itemStage || {}
@@ -80,17 +70,11 @@ const ActionMeetingSidebar = (props: Props) => {
               <NewMeetingSidebarPhaseListItem
                 key={phaseType}
                 phaseType={phaseType}
-                listPrefix={String(idx + 1)}
                 isActive={
                   phaseType === NewMeetingPhaseTypeEnum.agendaitems
                     ? blackList.includes(localPhaseType)
                     : localPhaseType === phaseType
                 }
-                // isFacilitatorPhaseGroup={
-                //   facilitatorPhaseType === phaseType ||
-                //   (phaseType === NewMeetingPhaseTypeEnum.agendaitems &&
-                //     blackList.includes(facilitatorPhaseType))
-                // }
                 isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase && phaseType === facilitatorPhaseType}
                 handleClick={canNavigate ? handleClick : undefined}
                 meta={phaseCount}
