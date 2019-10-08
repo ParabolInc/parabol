@@ -20,18 +20,18 @@ const MeetingContentHeaderStyles = styled('div')({
   width: '100%'
 })
 
-const HeadingBlock = styled('div')({
+const HeadingBlock = styled('div')<{isMeetingSidebarCollapsed: boolean}>(({isMeetingSidebarCollapsed}) => ({
   alignItems: 'center',
   display: 'flex',
+  paddingLeft: isMeetingSidebarCollapsed ? undefined : 8,
   minHeight: 32,
-  paddingLeft: 8,
   [localHeaderBreakpoint]: {
     flex: 1
   },
   [meetingTopBarMediaQuery]: {
     alignItems: 'flex-start'
   }
-})
+}))
 
 const PrimaryActionBlock = styled('div')({
   order: 2,
@@ -67,6 +67,7 @@ const ChildrenBlock = styled('div')({
 })
 
 const Toggle = styled(SidebarToggle)({
+  margin: '4px 0',
   paddingRight: 16
 })
 
@@ -82,7 +83,7 @@ const MeetingContentHeader = (props: Props) => {
   const showButton = isDemoRoute() && !hasToken()
   return (
     <MeetingContentHeaderStyles>
-      <HeadingBlock>
+      <HeadingBlock isMeetingSidebarCollapsed={isMeetingSidebarCollapsed}>
         {isMeetingSidebarCollapsed ? <Toggle onClick={toggleSidebar} /> : null}
         <ChildrenBlock>{children}</ChildrenBlock>
       </HeadingBlock>

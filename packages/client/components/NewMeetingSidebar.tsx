@@ -14,7 +14,7 @@ import {NavSidebar} from '../types/constEnums'
 import {NewMeetingSidebar_viewer} from '../__generated__/NewMeetingSidebar_viewer.graphql'
 
 const SidebarHeader = styled('div')({
-  alignItems: 'center',
+  alignItems: 'flex-start',
   borderBottom: `1px solid ${PALETTE.BORDER_LIGHTER}`,
   display: 'flex',
   marginBottom: 8,
@@ -46,10 +46,11 @@ const MeetingName = styled('div')({
 
 const TeamDashboardLink = styled(Link)({
   color: PALETTE.LINK_BLUE,
+  display: 'block',
   fontSize: 13,
   fontWeight: 400,
   lineHeight: '16px',
-  marginTop: 3,
+  marginTop: 4,
   wordBreak: 'break-word',
   '&:hover': {
     color: PALETTE.LINK_BLUE,

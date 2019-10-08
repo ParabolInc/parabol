@@ -67,9 +67,6 @@ const RetroMeetingSidebar = (props: Props) => {
           const phaseCount = phaseType === NewMeetingPhaseTypeEnum.discuss
             && newMeeting
             && showDiscussSection
-            // TODO: show Discuss stage nav at all times once Discuss phase has been reached
-            // && newMeeting.localPhase
-            // && newMeeting.localPhase.phaseType === phaseType
             ? <StyledBadge>{discussPhase.stages.length}</StyledBadge>
             : undefined
           return (
