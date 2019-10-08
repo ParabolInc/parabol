@@ -28,7 +28,8 @@ const ActionSidebarPhaseListItemChildren = (props: Props) => {
         viewer={viewer}
       />
     )
-  } else if (newMeeting && newMeeting.localPhase.phaseType === phaseType) {
+  // }
+  } else if (newMeeting && newMeeting.localPhase && newMeeting.localPhase.phaseType === phaseType) {
     return (
       <MeetingSidebarTeamMemberStageItems
         gotoStageId={gotoStageId}

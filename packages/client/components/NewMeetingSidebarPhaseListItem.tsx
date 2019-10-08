@@ -38,7 +38,7 @@ const navListItemLinkActive = {
   color: PALETTE.TEXT_MAIN,
   cursor: 'default',
   ':hover,:focus': {
-    backgroundColor: PALETTE.BACKGROUND_NAV_LIGHT_ACTIVE
+    backgroundColor: PALETTE.BACKGROUND_NAV_LIGHT_HOVER
   }
 }
 
@@ -50,9 +50,11 @@ const navListItemLinkDisabled = {
 }
 
 interface LinkProps {
-  isCollapsible?: boolean | undefined
-  isDisabled: boolean
   isActive: boolean
+  isCollapsible?: boolean
+  isDisabled: boolean
+  isFacilitatorPhase: boolean
+  isUnsyncedFacilitatorStage?: boolean
 }
 
 const NavListItemLink = styled('div')<LinkProps>(
@@ -67,20 +69,26 @@ const NavListItemLink = styled('div')<LinkProps>(
     textDecoration: 'none',
     userSelect: 'none',
     ':hover,:focus': {
-      backgroundColor: PALETTE.BACKGROUND_NAV_LIGHT_HOVER,
-      cursor: 'pointer'
+      backgroundColor: PALETTE.BACKGROUND_NAV_LIGHT_HOVER
     }
   },
   ({isDisabled}) => isDisabled && navListItemLinkDisabled,
   ({isActive}) => isActive && navListItemLinkActive,
   ({isCollapsible, isActive}) => isCollapsible && isActive && {
     backgroundColor: 'transparent',
-    cursor: 'default',
     ':hover,:focus': {
-      backgroundColor: 'transparent',
-      cursor: 'default'
+      cursor: 'pointer'
     }
-  }
+  },
+  ({isCollapsible, isFacilitatorPhase, isUnsyncedFacilitatorStage}) =>
+    isCollapsible && isFacilitatorPhase && !isUnsyncedFacilitatorStage && {
+      backgroundColor: 'transparent',
+      cursor: 'default',
+      ':hover,:focus': {
+        backgroundColor: 'transparent',
+        cursor: 'default'
+      }
+    }
 )
 
 const Meta = styled('div')({
@@ -96,19 +104,23 @@ interface Props {
   meta?: ReactNode
   isActive: boolean
   isCollapsible?: boolean
+  isFacilitatorPhase: boolean
   isUnsyncedFacilitatorPhase: boolean
+  isUnsyncedFacilitatorStage?: boolean
 }
 
 const NewMeetingSidebarPhaseListItem = (props: Props) => {
-  const {children, handleClick, phaseType, meta, isActive, isCollapsible, isUnsyncedFacilitatorPhase} = props
+  const {children, handleClick, phaseType, meta, isActive, isCollapsible, isFacilitatorPhase, isUnsyncedFacilitatorPhase, isUnsyncedFacilitatorStage} = props
   const label = phaseLabelLookup[phaseType]
   const icon = phaseIconLookup[phaseType]
   return (
     <NavListItem>
       <NavListItemLink
+        isActive={isActive}
         isCollapsible={isCollapsible}
         isDisabled={!handleClick}
-        isActive={isActive}
+        isFacilitatorPhase={isFacilitatorPhase}
+        isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
         onClick={handleClick}
         title={label}
       >

@@ -3,15 +3,14 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {useGotoStageId} from '../hooks/useMeeting'
-// import UNSTARTED_MEETING from '../utils/meetings/unstartedMeeting'
+import useAtmosphere from '../hooks/useAtmosphere'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
-// import TeamMemberStageItem from './TeamMemberStageItem'
 import MeetingSubnavItem from '../components/MeetingSubnavItem'
 import Avatar from '../components/Avatar/Avatar'
 import styled from '@emotion/styled'
 
 const AvatarBlock = styled('div')({
-  width: '2rem'
+  width: 32
 })
 
 interface Props {
@@ -26,55 +25,41 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
     handleMenuClick,
     viewer: {team}
   } = props
-  const {teamMembers, newMeeting} = team!
-  const {localPhase, localStage} = newMeeting!
-  // const agendaItemStageRes = findStageById(phases, agendaItemId, 'agendaItemId')
+  const {newMeeting} = team!
+  const {facilitatorStageId, facilitatorUserId, localPhase, localStage} = newMeeting!
   const localStageId = (localStage && localStage.id) || ''
-  // const isLocalStage = localStageId === stageId
-
-  console.dir(newMeeting.localPhase, 'newMeeting.localPhase')
-
   const gotoStage = (teamMemberId) => () => {
-    const teamMemberStage =
-      localPhase && localPhase.stages.find((stage) => stage.teamMemberId === teamMemberId)
+    const teamMemberStage = localPhase && localPhase.stages.find((stage) => stage.teamMemberId === teamMemberId)
     const teamMemberStageId = (teamMemberStage && teamMemberStage.id) || ''
     gotoStageId(teamMemberStageId).catch()
     handleMenuClick()
   }
-
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
+  const isViewerFacilitator = viewerId === facilitatorUserId
   return (
     <MeetingSidebarPhaseItemChild>
-      {localPhase.stages.map((stage, idx) => {
-        // <TeamMemberStageItem
-        //   key={teamMember.id}
-        //   gotoStage={gotoStage(teamMember.id)}
-        //   newMeeting={newMeeting}
-        //   teamMember={teamMember}
-        // />
-
-
-        // <div
-        //   key={teamMember.id}
-        //   onClick={gotoStage(teamMember.id)}
-        // >{teamMember.preferredName}</div>
-        const {id, isComplete, teamMemberId, teamMember: {picture, preferredName}} = stage
-
+      {localPhase.stages.map((stage) => {
+        const {id: stageId, isComplete, teamMemberId, teamMember, isNavigableByFacilitator, isNavigable} = stage
+        const {picture, preferredName} = teamMember!
+        const isLocalStage = localStageId === stageId
+        const isFacilitatorStage = facilitatorStageId === stageId
+        const isUnsyncedFacilitatorStage = isFacilitatorStage !== isLocalStage && !isLocalStage
         return (
           <MeetingSubnavItem
-            key={id}
+            key={stageId}
             label={preferredName}
             metaContent={
               <AvatarBlock>
                 <Avatar hasBadge={false} picture={picture} size={24} />
               </AvatarBlock>
             }
-            // isDisabled={isViewerFacilitator ? !isNavigableByFacilitator : !isNavigable}
+            isDisabled={isViewerFacilitator ? !isNavigableByFacilitator : !isNavigable}
             onClick={gotoStage(teamMemberId)}
-            // orderLabel={`${idx + 1}.`}
-            isActive={localStageId === id}
+            isActive={localStageId === stageId}
             isComplete={isComplete}
             isDragging={false}
-            // isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
+            isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
           />
         )
       })}
@@ -89,6 +74,9 @@ graphql`
     stages {
       id
       isComplete
+      isComplete
+      isNavigable
+      isNavigableByFacilitator
       ... on NewMeetingTeamMemberStage {
         teamMemberId
         teamMember {
@@ -110,6 +98,8 @@ export default createFragmentContainer(MeetingSidebarTeamMemberStageItems, {
           preferredName
         }
         newMeeting {
+          facilitatorStageId
+          facilitatorUserId
           id
           localPhase {
           ...MeetingSidebarTeamMemberStageItems_phase @relay(mask: false)
