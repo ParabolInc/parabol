@@ -100,7 +100,7 @@ interface Props {
 }
 
 const NewMeetingSidebarPhaseListItem = (props: Props) => {
-  const {children, handleClick, phaseType, meta, isActive, isUnsyncedFacilitatorPhase} = props
+  const {children, handleClick, phaseType, meta, isActive, isCollapsible, isUnsyncedFacilitatorPhase} = props
   const label = phaseLabelLookup[phaseType]
   const icon = phaseIconLookup[phaseType]
   return (
