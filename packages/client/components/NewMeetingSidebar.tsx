@@ -6,15 +6,15 @@ import {Link} from 'react-router-dom'
 import LogoBlock from './LogoBlock/LogoBlock'
 import SidebarToggle from './SidebarToggle'
 import AssignFacilitator from './AssignFacilitator'
-import {meetingSidebarWidth} from '../styles/meeting'
 import {PALETTE} from '../styles/paletteV2'
 import {MeetingTypeEnum} from '../types/graphql'
 import {meetingTypeToLabel} from '../utils/meetings/lookups'
 import isDemoRoute from '../utils/isDemoRoute'
+import {NavSidebar} from '../types/constEnums'
 import {NewMeetingSidebar_viewer} from '../__generated__/NewMeetingSidebar_viewer.graphql'
 
 const SidebarHeader = styled('div')({
-  alignItems: 'center',
+  alignItems: 'flex-start',
   borderBottom: `1px solid ${PALETTE.BORDER_LIGHTER}`,
   display: 'flex',
   marginBottom: 8,
@@ -33,8 +33,8 @@ const SidebarParent = styled('div')({
   flex: 1,
   flexDirection: 'column',
   height: '100vh',
-  maxWidth: meetingSidebarWidth,
-  minWidth: meetingSidebarWidth,
+  maxWidth: NavSidebar.WIDTH,
+  minWidth: NavSidebar.WIDTH,
   userSelect: 'none'
 })
 
@@ -46,10 +46,11 @@ const MeetingName = styled('div')({
 
 const TeamDashboardLink = styled(Link)({
   color: PALETTE.LINK_BLUE,
+  display: 'block',
   fontSize: 13,
   fontWeight: 400,
   lineHeight: '16px',
-  marginTop: 3,
+  marginTop: 4,
   wordBreak: 'break-word',
   '&:hover': {
     color: PALETTE.LINK_BLUE,

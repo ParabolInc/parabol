@@ -42,36 +42,15 @@ const ItemRoot = styled('div')<ItemRootProps>(
     isUnsyncedFacilitatorStage && {
       color: PALETTE.EMPHASIS_WARM,
       opacity: 1
-      // '&::after': {
-      //   backgroundColor: PALETTE.EMPHASIS_WARM,
-      //   borderRadius: '100%',
-      //   content: '""',
-      //   display: 'block',
-      //   left: '.875rem',
-      //   marginTop: '-.1875rem',
-      //   position: 'absolute',
-      //   height: '.375rem',
-      //   top: '50%',
-      //   transition: 'opacity .1s ease-in',
-      //   width: '.375rem'
-      // }
     }
 )
-
-const ItemOrderLabel = styled('div')({
-  height: lineHeight,
-  lineHeight,
-  opacity: 0.5,
-  paddingRight: 16,
-  textAlign: 'right',
-  width: 56
-})
 
 const ItemLabel = styled('div')<{isComplete: boolean}>(({isComplete}) => ({
   color: 'inherit',
   fontSize: NavSidebar.SUB_FONT_SIZE,
   flex: 1,
   lineHeight,
+  paddingLeft: 56,
   textDecoration: isComplete ? 'line-through' : undefined,
   wordBreak: 'break-word'
 }))
@@ -80,7 +59,7 @@ const ItemMeta = styled('div')({
   alignContent: 'center',
   display: 'flex',
   height: lineHeight,
-  paddingLeft: '.25rem'
+  paddingLeft: 4
 })
 
 interface Props {
@@ -92,7 +71,6 @@ interface Props {
   label: string
   metaContent: any
   onClick: ((e: React.MouseEvent) => void) | undefined
-  orderLabel?: string
 }
 
 const MeetingSubnavItem = (props: Props) => {
@@ -104,8 +82,7 @@ const MeetingSubnavItem = (props: Props) => {
     isUnsyncedFacilitatorStage,
     label,
     metaContent,
-    onClick,
-    orderLabel
+    onClick
   } = props
 
   return (
@@ -117,7 +94,6 @@ const MeetingSubnavItem = (props: Props) => {
       isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
       onClick={!isDisabled ? onClick : undefined}
     >
-      <ItemOrderLabel>{orderLabel}</ItemOrderLabel>
       <ItemLabel isComplete={isComplete}>{label}</ItemLabel>
       <ItemMeta>{metaContent}</ItemMeta>
     </ItemRoot>

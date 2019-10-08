@@ -98,7 +98,6 @@ const AgendaList = (props: Props) => {
                           <AgendaItem
                             key={item.id}
                             agendaItem={item}
-                            agendaLength={filteredAgendaItems.length}
                             gotoStageId={gotoStageId}
                             idx={agendaItems.findIndex((agendaItem) => agendaItem === item)}
                             isDragging={dragSnapshot.isDragging}

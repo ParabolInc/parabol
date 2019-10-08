@@ -10,6 +10,5 @@ export const meetingTopBarMediaQuery = minWidthMediaQueries[2]
 export const meetingAvatarMediaQueries = [minWidthMediaQueries[2], minWidthMediaQueries[4]]
 export const meetingSidebarGutter = '8px'
 export const meetingSidebarGutterInner = '60px'
-export const meetingSidebarWidth = '240px'
 export const meetingSplashGutter = '72px'
 export const meetingVoteIcon = 'thumb_up'

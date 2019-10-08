@@ -2,7 +2,8 @@ import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
 import {PALETTE} from '../styles/paletteV2'
 import {NavSidebar} from '../types/constEnums'
-import {phaseLabelLookup} from '../utils/meetings/lookups'
+import {phaseIconLookup, phaseLabelLookup} from '../utils/meetings/lookups'
+import Icon from './Icon'
 
 const NavListItem = styled('li')({
   fontWeight: 600,
@@ -14,25 +15,13 @@ const NavListItem = styled('li')({
   minHeight: 40
 })
 
-const NavItemBullet = styled('span')<{isFacilitatorPhaseGroup: boolean}>(
+const NavItemIcon = styled(Icon)<{isUnsyncedFacilitatorPhase: boolean}>(
   {
-    backgroundColor: PALETTE.BACKGROUND_PRIMARY,
-    // backgroundColor: PALETTE.BACKGROUND_GRAY,
-    borderRadius: '100%',
-    color: '#FFFFFF',
-    display: 'block',
-    fontSize: 11,
-    fontWeight: 600,
-    height: 24,
-    lineHeight: '24px',
-    marginLeft: 16,
-    marginRight: 16,
-    textAlign: 'center',
-    verticalAlign: 'middle',
-    width: 24
+    color: PALETTE.TEXT_GRAY,
+    margin: '0 16px'
   },
-  ({isFacilitatorPhaseGroup}) => ({
-    backgroundImage: isFacilitatorPhaseGroup ? PALETTE.GRADIENT_WARM : undefined
+  ({isUnsyncedFacilitatorPhase}) => ({
+    color: isUnsyncedFacilitatorPhase ? PALETTE.EMPHASIS_WARM : undefined
   })
 )
 
@@ -94,19 +83,26 @@ const NavListItemLink = styled('div')<LinkProps>(
   }
 )
 
+const Meta = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  marginLeft: 'auto'
+})
+
 interface Props {
   children: ReactNode
   handleClick?: () => void
   phaseType: string
-  listPrefix: string
-  isCollapsible?: boolean | undefined
+  meta?: ReactNode
   isActive: boolean
-  isFacilitatorPhaseGroup: boolean
+  isCollapsible?: boolean
+  isUnsyncedFacilitatorPhase: boolean
 }
 
 const NewMeetingSidebarPhaseListItem = (props: Props) => {
-  const {children, handleClick, phaseType, listPrefix, isActive, isCollapsible, isFacilitatorPhaseGroup} = props
+  const {children, handleClick, phaseType, meta, isActive, isUnsyncedFacilitatorPhase} = props
   const label = phaseLabelLookup[phaseType]
+  const icon = phaseIconLookup[phaseType]
   return (
     <NavListItem>
       <NavListItemLink
@@ -116,10 +112,13 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
         onClick={handleClick}
         title={label}
       >
-        <NavItemBullet isFacilitatorPhaseGroup={isFacilitatorPhaseGroup}>
-          {listPrefix}
-        </NavItemBullet>
+        <NavItemIcon isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase}>
+          {icon}
+        </NavItemIcon>
         <NavItemLabel>{label}</NavItemLabel>
+        {meta &&
+          <Meta>{meta}</Meta>
+        }
       </NavListItemLink>
       {children}
     </NavListItem>

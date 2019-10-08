@@ -15,7 +15,7 @@ const AssignFacilitatorBlock = styled('div')({
   borderBottom: `1px solid ${PALETTE.BORDER_LIGHTER}`,
   fontWeight: 700,
   marginBottom: 8,
-  padding: '0 7px 8px'
+  padding: '0 8px 8px'
 })
 
 const AssignFacilitatorToggle = styled('div')<{isActive: boolean, isReadOnly: boolean}>(({isActive, isReadOnly}) => ({
@@ -26,7 +26,7 @@ const AssignFacilitatorToggle = styled('div')<{isActive: boolean, isReadOnly: bo
   display: 'flex',
   color: isActive ? PALETTE.TEXT_MAIN : PALETTE.TEXT_GRAY,
   cursor: isReadOnly ? undefined : 'pointer',
-  padding: '4px 8px 4px 5px',
+  padding: '4px 7px 4px 4px',
   '&:hover': {
     borderColor: isReadOnly ? undefined : PALETTE.BORDER_GRAY,
     color: PALETTE.TEXT_MAIN

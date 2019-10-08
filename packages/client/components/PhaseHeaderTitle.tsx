@@ -6,7 +6,9 @@ const PhaseHeaderTitle = styled('h1')({
   lineHeight: '1.5',
   margin: 0,
   [meetingTopBarMediaQuery]: {
-    fontSize: 20
+    fontSize: 20,
+    lineHeight: '24px',
+    marginTop: 4
   }
 })
 

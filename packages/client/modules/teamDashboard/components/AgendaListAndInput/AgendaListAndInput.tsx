@@ -12,6 +12,7 @@ const RootStyles = styled('div')<{isMeeting: boolean | undefined; disabled: bool
   ({disabled, isMeeting}) => ({
     display: 'flex',
     flexDirection: 'column',
+    paddingRight: isMeeting ? 0 : 8,
     paddingTop: isMeeting ? meetingSidebarGutter : 0,
     position: 'relative',
     width: '100%',

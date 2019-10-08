@@ -27,6 +27,18 @@ export const phaseLabelLookup = {
   [LAST_CALL]: 'Last Call'
 }
 
+export const phaseIconLookup = {
+  [CHECKIN]: 'group',
+  [REFLECT]: 'edit',
+  [GROUP]: 'group_work',
+  [VOTE]: 'thumbs_up_down',
+  [DISCUSS]: 'comment',
+  [UPDATES]: 'update',
+  [FIRST_CALL]: 'comment',
+  [AGENDA_ITEMS]: 'comment',
+  [LAST_CALL]: 'comment'
+}
+
 export const meetingTypeToSlug = {
   [RETROSPECTIVE]: 'retro' as 'retro',
   [ACTION]: 'meeting' as 'meeting'

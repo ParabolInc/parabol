@@ -11,6 +11,9 @@ import findStageById from '../utils/meetings/findStageById'
 import UNSTARTED_MEETING from '../utils/meetings/unstartedMeeting'
 import NewMeetingSidebar from './NewMeetingSidebar'
 import MeetingNavList from './MeetingNavList'
+import styled from '@emotion/styled'
+import {PALETTE} from '../styles/paletteV2'
+import Badge from './Badge/Badge'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -19,13 +22,21 @@ interface Props {
   viewer: ActionMeetingSidebar_viewer
 }
 
+const StyledBadge = styled(Badge)({
+  backgroundColor: PALETTE.BACKGROUND_GRAY,
+  boxShadow: 'none',
+  marginRight: 8,
+  minWidth: 24,
+  textShadow: 'none'
+})
+
 const blackList: string[] = [NewMeetingPhaseTypeEnum.firstcall, NewMeetingPhaseTypeEnum.lastcall]
 const collapsiblePhases: string[] = [NewMeetingPhaseTypeEnum.checkin, NewMeetingPhaseTypeEnum.updates]
 
 const ActionMeetingSidebar = (props: Props) => {
   const {gotoStageId, handleMenuClick, toggleSidebar, viewer} = props
   const {id: viewerId, team} = viewer
-  const {meetingSettings, newMeeting} = team!
+  const {meetingSettings, newMeeting, agendaItems} = team!
   const {phaseTypes} = meetingSettings
   const {facilitatorUserId, facilitatorStageId, localPhase, phases} =
     newMeeting || UNSTARTED_MEETING
@@ -33,6 +44,7 @@ const ActionMeetingSidebar = (props: Props) => {
   const facilitatorStageRes = findStageById(phases, facilitatorStageId)
   const facilitatorPhaseType = facilitatorStageRes ? facilitatorStageRes.phase.phaseType : ''
   const isViewerFacilitator = facilitatorUserId === viewerId
+  const isUnsyncedFacilitatorPhase = facilitatorPhaseType !== localPhaseType
   return (
     <NewMeetingSidebar
       handleMenuClick={handleMenuClick}
@@ -43,7 +55,7 @@ const ActionMeetingSidebar = (props: Props) => {
       <MeetingNavList>
         {phaseTypes
           .filter((phaseType) => !blackList.includes(phaseType))
-          .map((phaseType, idx) => {
+          .map((phaseType) => {
             const itemStage = getSidebarItemStage(phaseType, phases, facilitatorStageId)
             const {id: itemStageId = '', isNavigable = false, isNavigableByFacilitator = false} =
               itemStage || {}
@@ -52,25 +64,22 @@ const ActionMeetingSidebar = (props: Props) => {
               gotoStageId(itemStageId).catch()
               handleMenuClick()
             }
+            const phaseCount = phaseType === NewMeetingPhaseTypeEnum.agendaitems && agendaItems
+              ? <StyledBadge>{agendaItems.length}</StyledBadge>
+              : undefined
             return (
               <NewMeetingSidebarPhaseListItem
                 key={phaseType}
                 isCollapsible={collapsiblePhases.includes(phaseType)}
                 phaseType={phaseType}
-                listPrefix={String(idx + 1)}
                 isActive={
                   phaseType === NewMeetingPhaseTypeEnum.agendaitems
                     ? blackList.includes(localPhaseType)
                     : localPhaseType === phaseType
                 }
-                // isActive={localPhaseType === phaseType}
-                // isActive={false}
-                isFacilitatorPhaseGroup={
-                  facilitatorPhaseType === phaseType ||
-                  (phaseType === NewMeetingPhaseTypeEnum.agendaitems &&
-                    blackList.includes(facilitatorPhaseType))
-                }
+                isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase && phaseType === facilitatorPhaseType}
                 handleClick={canNavigate ? handleClick : undefined}
+                meta={phaseCount}
               >
                 <ActionSidebarPhaseListItemChildren
                   gotoStageId={gotoStageId}
@@ -97,6 +106,9 @@ export default createFragmentContainer(ActionMeetingSidebar, {
         id
         meetingSettings(meetingType: action) {
           phaseTypes
+        }
+        agendaItems {
+          id
         }
         newMeeting {
           meetingId: id

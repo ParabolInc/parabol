@@ -8,6 +8,7 @@ import {Elevation} from '../styles/elevation'
 const paletteColors = {
   gray: PALETTE.TEXT_LIGHT,
   warm: PALETTE.TEXT_ORANGE,
+  pink: PALETTE.EMPHASIS_WARM,
   mid: PALETTE.TEXT_PURPLE,
   dark: PALETTE.TEXT_MAIN,
   blue: PALETTE.TEXT_BLUE,

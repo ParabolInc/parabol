@@ -54,7 +54,6 @@ const NewCheckInQuestion = (props: Props) => {
   const updateQuestion = (nextEditorState: EditorState) => {
     const wasFocused = editorState.getSelection().getHasFocus()
     const isFocused = nextEditorState.getSelection().getHasFocus()
-    console.log('isWas', isFocused, wasFocused)
     if (wasFocused && !isFocused) {
       const nextCheckInQuestion = JSON.stringify(convertToRaw(nextEditorState.getCurrentContent()))
       if (nextCheckInQuestion === checkInQuestion) return

@@ -22,6 +22,7 @@ import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
 import {NavSidebar} from '../types/constEnums'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {PALETTE} from '../styles/paletteV2'
+import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 
 const lineHeight = NavSidebar.SUB_LINE_HEIGHT
 
@@ -70,9 +71,9 @@ const RetroSidebarDiscussSection = (props: Props) => {
   } = props
   const {newMeeting} = team!
   if (!newMeeting) return null
-  const {localPhase, localStage, facilitatorStageId, id: meetingId} = newMeeting
-  if (!localPhase || !localPhase.stages || !localStage) return null
-  const {stages} = localPhase
+  const {localStage, facilitatorStageId, id: meetingId, phases} = newMeeting
+  const discussPhase = phases.find(({phaseType}) => phaseType === NewMeetingPhaseTypeEnum.discuss)!
+  const {stages} = discussPhase
   const {id: localStageId} = localStage
   const inSync = localStageId === facilitatorStageId
 
@@ -146,7 +147,6 @@ const RetroSidebarDiscussSection = (props: Props) => {
                               label={title!}
                               metaContent={voteMeta}
                               onClick={() => handleClick(stage.id)}
-                              orderLabel={`${idx + 1}.`}
                               isActive={localStage.id === stage.id}
                               isComplete={stage.isComplete}
                               isDisabled={!stage.isNavigable}
@@ -170,6 +170,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
 
 graphql`
   fragment RetroSidebarDiscussSectionDiscussPhase on DiscussPhase {
+    phaseType
     stages {
       id
       isComplete
@@ -200,8 +201,8 @@ export default createFragmentContainer(withAtmosphere(RetroSidebarDiscussSection
             phases {
               ...RetroSidebarDiscussSectionDiscussPhase @relay(mask: false)
             }
-            localPhase {
-              ...RetroSidebarDiscussSectionDiscussPhase @relay(mask: false)
+            localStage {
+              id
             }
           }
         }
