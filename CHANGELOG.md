@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.7.1 2019-Oct-08
+
+### Removed
+* SIGPIPE listener for dumpy
+
 ## 4.7.0 2019-Oct-02
 
 ### Added
