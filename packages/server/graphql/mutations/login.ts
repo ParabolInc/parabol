@@ -93,6 +93,7 @@ const login = {
       }
     }
 
+    dataLoader.get('users').clear(viewerId)
     let userInfo
     try {
       userInfo = await getAuth0ManagementClient().getUser({
