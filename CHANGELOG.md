@@ -1,14 +1,32 @@
-# Change Log
+# Parabol Change Log
 
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## 4.7.1 2019-Oct-08
+## 4.8.0 2019-Oct-09
 
-### Removed
-* SIGPIPE listener for dumpy
+### Added
+* New meeting sidebar
+   * New mobile-friend control to appoint facilitator
+   * Shows each meeting stage, and its completion status, more clearly
+* Show discounts on invoices, other invoice calculaton and display improvements
+* Adds better logging for console errors
+* We now typecheck client & server in parallel
+* Lazy make auth0 manager
+
+### Fixes
+* Hopefully fixes #3120, summary unable to be scrolled until refreshed
+* Fix #3194, this.editorRef.current.focus is not a function
+* Fix #3195, cannot read property 'findIndex' of undefined
+* Fix #3196, TypeError: t is undefined
+* Fix #3198, TypeError: Cannot read property 'firstElementChild' of undefined
+* Fix #3229, add tolerance to matching up Stripe invoice data
+* Clear dataloader cache for new account logins
+
+### Removes
+* Dump memory on SIGPIPE; code used to track down memory leaks
 
 ## 4.7.0 2019-Oct-02
 
