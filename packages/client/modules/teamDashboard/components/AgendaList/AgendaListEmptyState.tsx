@@ -9,14 +9,7 @@ interface Props {
 const EmptyBlock = styled('div')({
   alignItems: 'flex-start',
   display: 'flex',
-  padding: '0 8px'
-})
-
-const EmptyEmoji = styled('div')({
-  fontSize: 18,
-  minWidth: 32,
-  paddingLeft: 8,
-  textAlign: 'center'
+  padding: '8px 8px 0 56px'
 })
 
 const EmptyMessage = styled('div')({
@@ -25,7 +18,6 @@ const EmptyMessage = styled('div')({
   fontSize: 13,
   fontWeight: 400,
   lineHeight: '20px',
-  paddingLeft: 16,
   paddingTop: 4
 })
 
@@ -34,7 +26,6 @@ const AgendaListEmptyState = (props: Props) => {
   const meetingContext = isDashboard ? 'next meeting' : 'meeting'
   return (
     <EmptyBlock>
-      <EmptyEmoji>🤓</EmptyEmoji>
       <EmptyMessage>
         {`Pssst. Add topics for your ${meetingContext}! Use a phrase like “`}
         <b>

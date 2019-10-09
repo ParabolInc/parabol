@@ -20,15 +20,20 @@ const AssignFacilitatorBlock = styled('div')({
 
 const AssignFacilitatorToggle = styled('div')<{isActive: boolean, isReadOnly: boolean}>(({isActive, isReadOnly}) => ({
   alignItems: 'center',
-  border: '1px solid transparent',
-  borderColor: isActive ? PALETTE.BORDER_GRAY : undefined,
-  borderRadius: 4,
-  display: 'flex',
-  color: isActive ? PALETTE.TEXT_MAIN : PALETTE.TEXT_GRAY,
   cursor: isReadOnly ? undefined : 'pointer',
-  padding: '4px 7px 4px 4px',
-  '&:hover': {
-    borderColor: isReadOnly ? undefined : PALETTE.BORDER_GRAY,
+  display: 'flex',
+  // padding compensates for 8px grid, hanging elements
+  // icons and other decorators can be on a 4px grid, anyway, per MD spec
+  // total height = 40px like nav elements, and AssignFacilitatorBlock and SidebarHeader (NewMeetingSidebar.tsx) add 8px gutter
+  padding: '2px 4px',
+  // StyledIcon when toggle isActive or not
+  '& > i': {
+    backgroundColor: isActive ? PALETTE.BACKGROUND_MAIN : undefined,
+    color: isActive ? PALETTE.TEXT_MAIN : PALETTE.TEXT_GRAY
+  },
+  // StyledIcon when toggle hovered
+  '&:hover > i': {
+    backgroundColor: PALETTE.BACKGROUND_MAIN,
     color: PALETTE.TEXT_MAIN
   }
 }))
@@ -48,8 +53,12 @@ const Subtext = styled('div')({
 })
 
 const StyledIcon = styled(Icon)({
-  color: 'inherit',
-  marginLeft: 'auto'
+  borderRadius: 32,
+  height: 32,
+  lineHeight: '32px',
+  marginLeft: 'auto',
+  textAlign: 'center',
+  width: 32
 })
 
 const AvatarBlock = styled('div')<{isConnected: boolean | null}>(({isConnected}) => ({
@@ -57,6 +66,7 @@ const AvatarBlock = styled('div')<{isConnected: boolean | null}>(({isConnected})
   borderColor: isConnected ? PALETTE.TEXT_GREEN : PALETTE.TEXT_GRAY,
   borderRadius: 30,
   height: 30,
+  marginLeft: 1,
   marginRight: 13,
   width: 30
 }))

@@ -12,9 +12,6 @@ import isPhaseComplete from '../utils/meetings/isPhaseComplete'
 import UNSTARTED_MEETING from '../utils/meetings/unstartedMeeting'
 import NewMeetingSidebar from './NewMeetingSidebar'
 import MeetingNavList from './MeetingNavList'
-import styled from '@emotion/styled'
-import {PALETTE} from '../styles/paletteV2'
-import Badge from './Badge/Badge'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -22,14 +19,6 @@ interface Props {
   toggleSidebar: () => void
   viewer: RetroMeetingSidebar_viewer
 }
-
-const StyledBadge = styled(Badge)({
-  backgroundColor: PALETTE.BACKGROUND_GRAY,
-  boxShadow: 'none',
-  marginRight: 8,
-  minWidth: 24,
-  textShadow: 'none'
-})
 
 const collapsiblePhases: string[] = [NewMeetingPhaseTypeEnum.checkin, NewMeetingPhaseTypeEnum.discuss]
 
@@ -70,12 +59,11 @@ const RetroMeetingSidebar = (props: Props) => {
           const phaseCount = phaseType === NewMeetingPhaseTypeEnum.discuss
             && newMeeting
             && showDiscussSection
-            ? <StyledBadge>{discussPhase.stages.length}</StyledBadge>
+            ? discussPhase.stages.length
             : undefined
           return (
             <NewMeetingSidebarPhaseListItem
-              key={phaseType}
-              phaseType={phaseType}
+              handleClick={canNavigate ? handleClick : undefined}
               isActive={
                 phaseType === NewMeetingPhaseTypeEnum.discuss ? false : localPhaseType === phaseType
               }
@@ -83,8 +71,9 @@ const RetroMeetingSidebar = (props: Props) => {
               isFacilitatorPhase={phaseType === facilitatorPhaseType}
               isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase && phaseType === facilitatorPhaseType}
               isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
-              handleClick={canNavigate ? handleClick : undefined}
-              meta={phaseCount}
+              key={phaseType}
+              phaseCount={phaseCount}
+              phaseType={phaseType}
             >
               <RetroSidebarPhaseListItemChildren
                 gotoStageId={gotoStageId}

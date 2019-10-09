@@ -12,7 +12,6 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import AddAgendaItemMutation from '../../../../mutations/AddAgendaItemMutation'
 import makeFieldColorPalette from '../../../../styles/helpers/makeFieldColorPalette'
 import makePlaceholderStyles from '../../../../styles/helpers/makePlaceholderStyles'
-import {meetingSidebarGutter} from '../../../../styles/meeting'
 import {PALETTE} from '../../../../styles/paletteV2'
 import ui from '../../../../styles/ui'
 import getNextSortOrder from '../../../../utils/getNextSortOrder'
@@ -20,14 +19,14 @@ import toTeamMemberId from '../../../../utils/relay/toTeamMemberId'
 import useForm from '../../../../hooks/useForm'
 
 const AgendaInputBlock = styled('div')({
-  padding: `${meetingSidebarGutter} 0`,
+  padding: `8px 0`,
   position: 'relative'
 })
 
 const InputForm = styled('form')<{disabled: boolean}>(({disabled}) => ({
   backgroundColor: 'transparent',
   fontSize: 14,
-  padding: `0 0 0 ${meetingSidebarGutter}`,
+  padding: `0 0 0 8px`,
   position: 'relative',
   width: '100%',
   ':hover': {

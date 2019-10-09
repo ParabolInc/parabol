@@ -19,7 +19,7 @@ class SocketHealthMonitor extends Component<Props> {
   recentDisconnects = [] as number[]
   firewallMessageSent = false
   isFirstServiceWorker = true
-  componentDidMount() {
+  componentDidMount () {
     const {atmosphere} = this.props
     atmosphere.eventEmitter.once('newSubscriptionClient', () => {
       const {transport} = atmosphere
@@ -35,13 +35,13 @@ class SocketHealthMonitor extends Component<Props> {
     }
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.removeEventListener('controllerchange', this.onServiceWorkerChange)
     }
   }
 
-  async setFirstServiceWorker() {
+  async setFirstServiceWorker () {
     const registration = await navigator.serviceWorker.getRegistration()
     this.isFirstServiceWorker = !registration
   }
@@ -117,7 +117,7 @@ class SocketHealthMonitor extends Component<Props> {
     })
   }
 
-  render() {
+  render () {
     return null
   }
 }

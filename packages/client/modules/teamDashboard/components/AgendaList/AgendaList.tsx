@@ -26,6 +26,7 @@ const AgendaListRoot = styled('div')({
 })
 
 const DraggableAgendaItem = styled('div')<{isDragging: boolean}>(({isDragging}) => ({
+  borderRadius: '0 4px 4px 0',
   boxShadow: isDragging ? navItemRaised : undefined
 }))
 

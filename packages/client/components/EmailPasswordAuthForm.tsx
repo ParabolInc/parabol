@@ -89,7 +89,7 @@ export class EmailPasswordAuthFormBase extends Component<Props, State> {
     ssoDomain: null
   }
 
-  componentDidUpdate(prevProps: Props) {
+  componentDidUpdate (prevProps: Props) {
     const {location, onError} = this.props
     if (prevProps.location !== location && prevProps.error) {
       onError()
@@ -211,7 +211,7 @@ export class EmailPasswordAuthFormBase extends Component<Props, State> {
     }
   }
 
-  render() {
+  render () {
     const {error, fields, isPrimary, isSignin, submitting, onChange, existingAccount} = this.props
     const {isSSO} = this.state
     const Button = isPrimary ? PrimaryButton : RaisedButton

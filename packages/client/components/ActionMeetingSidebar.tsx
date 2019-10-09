@@ -11,9 +11,6 @@ import findStageById from '../utils/meetings/findStageById'
 import UNSTARTED_MEETING from '../utils/meetings/unstartedMeeting'
 import NewMeetingSidebar from './NewMeetingSidebar'
 import MeetingNavList from './MeetingNavList'
-import styled from '@emotion/styled'
-import {PALETTE} from '../styles/paletteV2'
-import Badge from './Badge/Badge'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -21,14 +18,6 @@ interface Props {
   toggleSidebar: () => void
   viewer: ActionMeetingSidebar_viewer
 }
-
-const StyledBadge = styled(Badge)({
-  backgroundColor: PALETTE.BACKGROUND_GRAY,
-  boxShadow: 'none',
-  marginRight: 8,
-  minWidth: 24,
-  textShadow: 'none'
-})
 
 const blackList: string[] = [NewMeetingPhaseTypeEnum.firstcall, NewMeetingPhaseTypeEnum.lastcall]
 const collapsiblePhases: string[] = [NewMeetingPhaseTypeEnum.checkin, NewMeetingPhaseTypeEnum.updates, NewMeetingPhaseTypeEnum.agendaitems]
@@ -65,24 +54,22 @@ const ActionMeetingSidebar = (props: Props) => {
               gotoStageId(itemStageId).catch()
               handleMenuClick()
             }
-            const phaseCount = phaseType === NewMeetingPhaseTypeEnum.agendaitems && agendaItems
-              ? <StyledBadge>{agendaItems.length}</StyledBadge>
-              : undefined
+            const phaseCount = phaseType === NewMeetingPhaseTypeEnum.agendaitems && agendaItems ? agendaItems.length : undefined
             return (
               <NewMeetingSidebarPhaseListItem
-                key={phaseType}
-                isCollapsible={collapsiblePhases.includes(phaseType)}
-                phaseType={phaseType}
+                handleClick={canNavigate ? handleClick : undefined}
                 isActive={
                   phaseType === NewMeetingPhaseTypeEnum.agendaitems
-                    ? blackList.includes(localPhaseType)
-                    : localPhaseType === phaseType
+                  ? blackList.includes(localPhaseType)
+                  : localPhaseType === phaseType
                 }
+                isCollapsible={collapsiblePhases.includes(phaseType)}
                 isFacilitatorPhase={phaseType === facilitatorPhaseType}
                 isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase && phaseType === facilitatorPhaseType}
                 isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
-                handleClick={canNavigate ? handleClick : undefined}
-                meta={phaseCount}
+                key={phaseType}
+                phaseCount={phaseCount}
+                phaseType={phaseType}
               >
                 <ActionSidebarPhaseListItemChildren
                   gotoStageId={gotoStageId}
