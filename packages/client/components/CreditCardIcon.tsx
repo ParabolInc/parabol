@@ -19,21 +19,21 @@ const SVGStyles = styled('div')({
   animationTimingFunction: BezierCurve.DECELERATE,
   width: 36,
   height: 24,
-  opacity: 1,
+  opacity: 1
 })
 
 interface Props {
   cardTypeIcon: string
 }
 
-const CCDir =  `${__STATIC_IMAGES__}/creditCards`
+const CCDir = `${__STATIC_IMAGES__}/creditCards`
 
 const CreditCardIcon = (props: Props) => {
   const {cardTypeIcon} = props
   const isFallback = cardTypeIcon === 'credit_card'
   const {svg, svgRef} = useSVG(isFallback ? '' : `${CCDir}/${cardTypeIcon}.svg`)
   if (!svg) return null
-  return <SVGStyles ref={svgRef} dangerouslySetInnerHTML={{__html: svg}}/>
+  return <SVGStyles ref={svgRef} dangerouslySetInnerHTML={{__html: svg}} />
 }
 
 export default CreditCardIcon
