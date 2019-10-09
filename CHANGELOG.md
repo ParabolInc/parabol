@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+
+## 4.8.1 2019-Oct-09
+
+### Removes
+* dumpy, the memory leak debugging tool, from starting on startup
+
 ## 4.8.0 2019-Oct-09
 
 ### Added
@@ -24,9 +30,6 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 * Fix #3198, TypeError: Cannot read property 'firstElementChild' of undefined
 * Fix #3229, add tolerance to matching up Stripe invoice data
 * Clear dataloader cache for new account logins
-
-### Removes
-* Dump memory on SIGPIPE; code used to track down memory leaks
 
 ## 4.7.0 2019-Oct-02
 
