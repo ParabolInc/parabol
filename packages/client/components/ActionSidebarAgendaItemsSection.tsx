@@ -2,12 +2,9 @@ import {ActionSidebarAgendaItemsSection_viewer} from '../__generated__/ActionSid
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import LabelHeading from './LabelHeading/LabelHeading'
-import MeetingSidebarLabelBlock from './MeetingSidebarLabelBlock'
 import {useGotoStageId} from '../hooks/useMeeting'
 import AgendaListAndInput from '../modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
-import UNSTARTED_MEETING from '../utils/meetings/unstartedMeeting'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
 
 interface Props {
@@ -23,22 +20,20 @@ const ActionSidebarAgendaItemsSection = (props: Props) => {
     viewer: {team}
   } = props
   const {newMeeting} = team!
-  const {localPhase} = newMeeting || UNSTARTED_MEETING
-  const phaseType = localPhase ? localPhase.phaseType : null
-
   const handleClick = async (stageId: string) => {
     gotoStageId(stageId).catch()
     handleMenuClick()
   }
+  // show agenda (no blur) at all times if the updates phase isNavigable
+  // facilitator can click on updates nav item before completing all check-in stages
+  const updatesPhase = newMeeting && newMeeting.phases!.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.updates)!
+  const isUpdatesNavigable = updatesPhase && updatesPhase.stages![0].isNavigable
   return (
     <MeetingSidebarPhaseItemChild>
-      <MeetingSidebarLabelBlock>
-        <LabelHeading>{'Agenda Topics'}</LabelHeading>
-      </MeetingSidebarLabelBlock>
       <AgendaListAndInput
         isMeeting
         gotoStageId={handleClick}
-        isDisabled={phaseType === NewMeetingPhaseTypeEnum.checkin}
+        isDisabled={Boolean(newMeeting && !isUpdatesNavigable)}
         team={team!}
       />
     </MeetingSidebarPhaseItemChild>
@@ -48,6 +43,13 @@ const ActionSidebarAgendaItemsSection = (props: Props) => {
 graphql`
   fragment ActionSidebarAgendaItemsSectionAgendaItemPhase on NewMeetingPhase {
     phaseType
+    ... on UpdatesPhase {
+      stages {
+        id
+        isComplete
+        isNavigable
+      }
+    }
     ... on AgendaItemsPhase {
       stages {
         id

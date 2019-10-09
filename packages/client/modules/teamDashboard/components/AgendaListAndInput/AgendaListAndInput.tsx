@@ -6,13 +6,13 @@ import graphql from 'babel-plugin-relay/macro'
 import {useGotoStageId} from '../../../../hooks/useMeeting'
 import AgendaInput from '../AgendaInput/AgendaInput'
 import AgendaList from '../AgendaList/AgendaList'
-import {meetingSidebarGutter} from '../../../../styles/meeting'
 
 const RootStyles = styled('div')<{isMeeting: boolean | undefined; disabled: boolean}>(
   ({disabled, isMeeting}) => ({
     display: 'flex',
     flexDirection: 'column',
-    paddingTop: isMeeting ? meetingSidebarGutter : 0,
+    paddingRight: isMeeting ? 0 : 8,
+    paddingTop: 0,
     position: 'relative',
     width: '100%',
     minHeight: 0, // required for FF68
