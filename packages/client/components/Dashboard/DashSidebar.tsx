@@ -15,10 +15,6 @@ import {NavSidebar} from '../../types/constEnums'
 import DashNavItem from './DashNavItem'
 import {ClassNames} from '@emotion/core'
 
-export const enum DASH_SIDEBAR {
-  WIDTH = 240
-}
-
 interface Props {
   handleMenuClick: () => void
   viewer: DashSidebar_viewer | null
@@ -35,8 +31,8 @@ const DashSidebarStyles = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   height: '100vh',
-  maxWidth: DASH_SIDEBAR.WIDTH,
-  minWidth: DASH_SIDEBAR.WIDTH,
+  maxWidth: NavSidebar.WIDTH,
+  minWidth: NavSidebar.WIDTH,
   overflow: 'hidden',
   userSelect: 'none'
 })

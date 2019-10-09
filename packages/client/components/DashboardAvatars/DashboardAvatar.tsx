@@ -57,6 +57,9 @@ const DashboardAvatar = (props: Props) => {
   const {isViewerLead, teamMember} = props
   const {isLead, picture} = teamMember
   const {user} = teamMember
+  if (!user) {
+    throw new Error(`User Avatar unavailable. ${JSON.stringify(teamMember)}`)
+  }
   const {isConnected} = user
   const {togglePortal, originRef, menuProps, menuPortal} = useMenu(MenuPosition.UPPER_RIGHT)
   const {

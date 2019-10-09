@@ -4,6 +4,7 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import RetroSidebarDiscussSection from './RetroSidebarDiscussSection'
 import {useGotoStageId} from '../hooks/useMeeting'
+import isPhaseComplete from '../utils/meetings/isPhaseComplete'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 
 interface Props {
@@ -16,13 +17,10 @@ interface Props {
 const RetroSidebarPhaseListItemChildren = (props: Props) => {
   const {gotoStageId, handleMenuClick, phaseType, viewer} = props
   const {team} = viewer
-  const {newMeeting} = team!
-  if (
-    phaseType === NewMeetingPhaseTypeEnum.discuss &&
-    newMeeting &&
-    newMeeting.localPhase &&
-    newMeeting.localPhase.phaseType === phaseType
-  ) {
+  const newMeeting = team && team.newMeeting
+  const phases = newMeeting && newMeeting.phases
+  const showDiscussSection = phases && isPhaseComplete(NewMeetingPhaseTypeEnum.vote, phases)
+  if (phaseType === NewMeetingPhaseTypeEnum.discuss && newMeeting && showDiscussSection) {
     return (
       <RetroSidebarDiscussSection
         gotoStageId={gotoStageId}
@@ -41,6 +39,12 @@ export default createFragmentContainer(RetroSidebarPhaseListItemChildren, {
         newMeeting {
           localPhase {
             phaseType
+          }
+          phases {
+            phaseType
+            stages {
+              isComplete
+            }
           }
         }
       }

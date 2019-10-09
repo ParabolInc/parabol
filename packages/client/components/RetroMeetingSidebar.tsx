@@ -8,6 +8,7 @@ import {useGotoStageId} from '../hooks/useMeeting'
 import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from '../types/graphql'
 import getSidebarItemStage from '../utils/getSidebarItemStage'
 import findStageById from '../utils/meetings/findStageById'
+import isPhaseComplete from '../utils/meetings/isPhaseComplete'
 import UNSTARTED_MEETING from '../utils/meetings/unstartedMeeting'
 import NewMeetingSidebar from './NewMeetingSidebar'
 import MeetingNavList from './MeetingNavList'
@@ -30,6 +31,7 @@ const RetroMeetingSidebar = (props: Props) => {
   const facilitatorStageRes = findStageById(phases, facilitatorStageId)
   const facilitatorPhaseType = facilitatorStageRes ? facilitatorStageRes.phase.phaseType : ''
   const isViewerFacilitator = facilitatorUserId === viewerId
+  const isUnsyncedFacilitatorPhase = facilitatorPhaseType !== localPhaseType
   return (
     <NewMeetingSidebar
       handleMenuClick={handleMenuClick}
@@ -38,7 +40,7 @@ const RetroMeetingSidebar = (props: Props) => {
       viewer={viewer}
     >
       <MeetingNavList>
-        {phaseTypes.map((phaseType, idx) => {
+        {phaseTypes.map((phaseType) => {
           const itemStage = getSidebarItemStage(phaseType, phases, facilitatorStageId)
           const {id: itemStageId = '', isNavigable = false, isNavigableByFacilitator = false} =
             itemStage || {}
@@ -47,16 +49,27 @@ const RetroMeetingSidebar = (props: Props) => {
             gotoStageId(itemStageId).catch()
             handleMenuClick()
           }
+          const discussPhase = phases.find((phase) => {
+            return phase.phaseType === NewMeetingPhaseTypeEnum.discuss
+          })
+          const showDiscussSection =
+            newMeeting && isPhaseComplete(NewMeetingPhaseTypeEnum.vote, phases)
+          const phaseCount =
+            phaseType === NewMeetingPhaseTypeEnum.discuss && newMeeting && showDiscussSection
+              ? discussPhase.stages.length
+              : undefined
           return (
             <NewMeetingSidebarPhaseListItem
               key={phaseType}
-              phaseType={phaseType}
-              listPrefix={String(idx + 1)}
+              handleClick={canNavigate ? handleClick : undefined}
               isActive={
                 phaseType === NewMeetingPhaseTypeEnum.discuss ? false : localPhaseType === phaseType
               }
-              isFacilitatorPhaseGroup={facilitatorPhaseType === phaseType}
-              handleClick={canNavigate ? handleClick : undefined}
+              isUnsyncedFacilitatorPhase={
+                isUnsyncedFacilitatorPhase && phaseType === facilitatorPhaseType
+              }
+              phaseCount={phaseCount}
+              phaseType={phaseType}
             >
               <RetroSidebarPhaseListItemChildren
                 gotoStageId={gotoStageId}

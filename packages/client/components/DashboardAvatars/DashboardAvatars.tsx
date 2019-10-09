@@ -5,6 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import AddTeamMemberAvatarButton from '../AddTeamMemberAvatarButton'
 import DashboardAvatar from './DashboardAvatar'
+import ErrorBoundary from '../ErrorBoundary'
 
 const AvatarsList = styled('div')({
   display: 'flex',
@@ -28,7 +29,9 @@ const DashboardAvatars = (props: Props) => {
       {teamMembers.map((teamMember) => {
         return (
           <AvatarItem key={`dbAvatar${teamMember.id}`}>
-            <DashboardAvatar isViewerLead={isViewerLead} teamMember={teamMember} />
+            <ErrorBoundary>
+              <DashboardAvatar isViewerLead={isViewerLead} teamMember={teamMember} />
+            </ErrorBoundary>
           </AvatarItem>
         )
       })}

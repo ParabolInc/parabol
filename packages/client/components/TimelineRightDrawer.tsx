@@ -6,16 +6,15 @@ import graphql from 'babel-plugin-relay/macro'
 import ErrorBoundary from './ErrorBoundary'
 import TimelinePriorityTasks from './TimelinePriorityTasks'
 import {PALETTE} from '../styles/paletteV2'
-import {DASH_SIDEBAR} from './Dashboard/DashSidebar'
 import TimelineNewFeature from './TimelineNewFeature'
-import {DashTimeline} from '../types/constEnums'
+import {DashTimeline, NavSidebar} from '../types/constEnums'
 
 interface Props {
   viewer: TimelineRightDrawer_viewer
 }
 
 const MIN_WIDTH =
-  DASH_SIDEBAR.WIDTH +
+  NavSidebar.WIDTH +
   DashTimeline.FEED_MIN_WIDTH +
   DashTimeline.TIMELINE_DRAWER_WIDTH +
   DashTimeline.MIN_PADDING * 2

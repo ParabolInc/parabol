@@ -2,35 +2,27 @@ import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
 import {PALETTE} from '../styles/paletteV2'
 import {NavSidebar} from '../types/constEnums'
-import {phaseLabelLookup} from '../utils/meetings/lookups'
+import {phaseIconLookup, phaseLabelLookup} from '../utils/meetings/lookups'
+import Icon from './Icon'
+import Badge from './Badge/Badge'
 
 const NavListItem = styled('li')({
   fontWeight: 600,
   display: 'flex',
   flexDirection: 'column',
+  margin: '0 8px 0 0',
   // hack to work around broken flexbox
   // https://bugs.chromium.org/p/chromium/issues/detail?id=927066
   minHeight: 40
 })
 
-const NavItemBullet = styled('span')<Pick<Props, 'isFacilitatorPhaseGroup'>>(
+const NavItemIcon = styled(Icon)<{isUnsyncedFacilitatorPhase: boolean}>(
   {
-    backgroundColor: PALETTE.BACKGROUND_PRIMARY,
-    borderRadius: '100%',
-    color: '#FFFFFF',
-    display: 'block',
-    fontSize: 11,
-    fontWeight: 600,
-    height: 24,
-    lineHeight: '24px',
-    marginLeft: 21,
-    marginRight: 12,
-    textAlign: 'center',
-    verticalAlign: 'middle',
-    width: 24
+    color: PALETTE.TEXT_GRAY,
+    margin: '0 16px'
   },
-  ({isFacilitatorPhaseGroup}) => ({
-    backgroundImage: isFacilitatorPhaseGroup ? PALETTE.GRADIENT_WARM : undefined
+  ({isUnsyncedFacilitatorPhase}) => ({
+    color: isUnsyncedFacilitatorPhase ? PALETTE.EMPHASIS_WARM : undefined
   })
 )
 
@@ -43,6 +35,7 @@ const NavItemLabel = styled('span')({
 const navListItemLinkActive = {
   backgroundColor: PALETTE.BACKGROUND_NAV_LIGHT_ACTIVE,
   borderLeftColor: PALETTE.BORDER_MAIN,
+  borderRadius: '0 4px 4px 0',
   color: PALETTE.TEXT_MAIN,
   ':hover,:focus': {
     backgroundColor: PALETTE.BACKGROUND_NAV_LIGHT_ACTIVE
@@ -64,7 +57,7 @@ interface LinkProps {
 const NavListItemLink = styled('div')<LinkProps>(
   {
     alignItems: 'center',
-    borderLeft: `${NavSidebar.LEFT_BORDER_WIDTH} solid transparent`,
+    borderRadius: '0 4px 4px 0',
     color: PALETTE.TEXT_MAIN,
     cursor: 'pointer',
     display: 'flex',
@@ -80,18 +73,34 @@ const NavListItemLink = styled('div')<LinkProps>(
   ({isActive}) => isActive && navListItemLinkActive
 )
 
+const PhaseCountBlock = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  marginLeft: 'auto'
+})
+
+const StyledBadge = styled(Badge)({
+  backgroundColor: PALETTE.BACKGROUND_GRAY,
+  boxShadow: 'none',
+  marginRight: 8,
+  minWidth: 24,
+  textShadow: 'none'
+})
+
 interface Props {
   children: ReactNode
   handleClick?: () => void
-  phaseType: string
-  listPrefix: string
   isActive: boolean
-  isFacilitatorPhaseGroup: boolean
+  isUnsyncedFacilitatorPhase: boolean
+  phaseCount: number | null | undefined
+  phaseType: string
 }
 
 const NewMeetingSidebarPhaseListItem = (props: Props) => {
-  const {children, handleClick, phaseType, listPrefix, isActive, isFacilitatorPhaseGroup} = props
+  const {children, handleClick, isActive, isUnsyncedFacilitatorPhase, phaseType, phaseCount} = props
   const label = phaseLabelLookup[phaseType]
+  const icon = phaseIconLookup[phaseType]
+  const showPhaseCount = Boolean(phaseCount || phaseCount === 0)
   return (
     <NavListItem>
       <NavListItemLink
@@ -100,10 +109,13 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
         onClick={handleClick}
         title={label}
       >
-        <NavItemBullet isFacilitatorPhaseGroup={isFacilitatorPhaseGroup}>
-          {listPrefix}
-        </NavItemBullet>
+        <NavItemIcon isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase}>{icon}</NavItemIcon>
         <NavItemLabel>{label}</NavItemLabel>
+        {showPhaseCount && (
+          <PhaseCountBlock>
+            <StyledBadge>{phaseCount}</StyledBadge>
+          </PhaseCountBlock>
+        )}
       </NavListItemLink>
       {children}
     </NavListItem>
