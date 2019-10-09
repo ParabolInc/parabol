@@ -15,7 +15,7 @@
   "scripts": {
     "storybook": "start-storybook -p 6006 -c .storybook",
     "build-storybook": "build-storybook",
-    "lint": "eslint --fix ./**/*.{ts,tsx,js}",
+    "lint": "eslint --fix ./**/*.{ts,tsx}",
     "precommit": "git add . && lint-staged",
     "typecheck": "tsc --noEmit"
   },

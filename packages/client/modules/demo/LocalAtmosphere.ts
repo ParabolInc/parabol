@@ -30,7 +30,7 @@ export default class LocalAtmosphere extends Environment {
       store,
       handlerProvider,
       publishQueue: new LinearPublishQueue(store, handlerProvider, defaultGetDataID)
-    })
+    } as any)
     // @ts-ignore
     this._network = Network.create(this.fetchLocal, this.subscribeLocal)
   }
