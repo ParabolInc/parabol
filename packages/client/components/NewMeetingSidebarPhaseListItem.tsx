@@ -4,6 +4,7 @@ import {PALETTE} from '../styles/paletteV2'
 import {NavSidebar} from '../types/constEnums'
 import {phaseIconLookup, phaseLabelLookup} from '../utils/meetings/lookups'
 import Icon from './Icon'
+import Badge from './Badge/Badge'
 
 const NavListItem = styled('li')({
   fontWeight: 600,
@@ -72,25 +73,34 @@ const NavListItemLink = styled('div')<LinkProps>(
   ({isActive}) => isActive && navListItemLinkActive
 )
 
-const Meta = styled('div')({
+const PhaseCountBlock = styled('div')({
   alignItems: 'center',
   display: 'flex',
   marginLeft: 'auto'
 })
 
+const StyledBadge = styled(Badge)({
+  backgroundColor: PALETTE.BACKGROUND_GRAY,
+  boxShadow: 'none',
+  marginRight: 8,
+  minWidth: 24,
+  textShadow: 'none'
+})
+
 interface Props {
   children: ReactNode
   handleClick?: () => void
-  phaseType: string
-  meta?: ReactNode
   isActive: boolean
   isUnsyncedFacilitatorPhase: boolean
+  phaseCount: number | null | undefined
+  phaseType: string
 }
 
 const NewMeetingSidebarPhaseListItem = (props: Props) => {
-  const {children, handleClick, phaseType, meta, isActive, isUnsyncedFacilitatorPhase} = props
+  const {children, handleClick, isActive, isUnsyncedFacilitatorPhase, phaseType, phaseCount} = props
   const label = phaseLabelLookup[phaseType]
   const icon = phaseIconLookup[phaseType]
+  const showPhaseCount = Boolean(phaseCount || phaseCount === 0)
   return (
     <NavListItem>
       <NavListItemLink
@@ -103,8 +113,10 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
           {icon}
         </NavItemIcon>
         <NavItemLabel>{label}</NavItemLabel>
-        {meta &&
-          <Meta>{meta}</Meta>
+        {showPhaseCount &&
+          <PhaseCountBlock>
+            <StyledBadge>{phaseCount}</StyledBadge>
+          </PhaseCountBlock>
         }
       </NavListItemLink>
       {children}

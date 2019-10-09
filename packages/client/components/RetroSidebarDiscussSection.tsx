@@ -72,8 +72,11 @@ const RetroSidebarDiscussSection = (props: Props) => {
   const {newMeeting} = team!
   if (!newMeeting) return null
   const {localStage, facilitatorStageId, id: meetingId, phases} = newMeeting
-  const discussPhase = phases.find(({phaseType}) => phaseType === NewMeetingPhaseTypeEnum.discuss)!
-  const {stages} = discussPhase
+  const discussPhase = phases!.find(({phaseType}) => phaseType === NewMeetingPhaseTypeEnum.discuss)!
+  // assert that the discuss phase and its stages are non-null
+  // since we render this component when the vote phase is complete
+  // see: RetroSidebarPhaseListItemChildren.tsx
+  const {stages} = discussPhase!
   const {id: localStageId} = localStage
   const inSync = localStageId === facilitatorStageId
 
@@ -89,18 +92,18 @@ const RetroSidebarDiscussSection = (props: Props) => {
       return
     }
 
-    const sourceTopic = stages[source.index]
-    const destinationTopic = stages[destination.index]
+    const sourceTopic = stages![source.index]
+    const destinationTopic = stages![destination.index]
 
     let sortOrder
     if (destination.index === 0) {
       sortOrder = destinationTopic.sortOrder - SORT_STEP + dndNoise()
-    } else if (destination.index === stages.length - 1) {
+    } else if (destination.index === stages!.length - 1) {
       sortOrder = destinationTopic.sortOrder + SORT_STEP + dndNoise()
     } else {
       const offset = source.index > destination.index ? -1 : 1
       sortOrder =
-        (stages[destination.index + offset].sortOrder + destinationTopic.sortOrder) / 2 + dndNoise()
+        (stages![destination.index + offset].sortOrder + destinationTopic.sortOrder) / 2 + dndNoise()
     }
 
     const {id: stageId} = sourceTopic
@@ -119,7 +122,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
           {(provided) => {
             return (
               <ScrollWrapper ref={provided.innerRef}>
-                {stages.map((stage, idx) => {
+                {stages!.map((stage, idx) => {
                   const {reflectionGroup} = stage
                   if (!reflectionGroup) return null
                   const {title, voteCount} = reflectionGroup

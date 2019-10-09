@@ -50,7 +50,7 @@ interface Props {
 }
 
 const AgendaItem = (props: Props) => {
-  const {agendaItem, gotoStageId, isDragging, idx, newMeeting} = props
+  const {agendaItem, gotoStageId, isDragging, newMeeting} = props
   const {facilitatorUserId, facilitatorStageId, phases, localStage} =
     newMeeting || UNSTARTED_MEETING
   const localStageId = (localStage && localStage.id) || ''
