@@ -3,7 +3,6 @@ exports.up = async (r) => {
     await Promise.all(
       [
         r.tableDrop('Meeting'),
-        r.tableDrop('AtlassianProject'),
         r.tableDrop('Outcome')
       ])
   } catch (e) {
@@ -16,7 +15,6 @@ exports.down = async (r) => {
     await Promise.all(
       [
         r.tableCreate('Meeting'),
-        r.tableCreate('AtlassianProject'),
         r.tableCreate('Outcome')
       ])
   } catch (e) {
