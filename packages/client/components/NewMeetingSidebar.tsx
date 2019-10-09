@@ -5,7 +5,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {Link} from 'react-router-dom'
 import LogoBlock from './LogoBlock/LogoBlock'
 import SidebarToggle from './SidebarToggle'
-import AssignFacilitator from './AssignFacilitator'
+import Facilitator from './Facilitator'
 import {PALETTE} from '../styles/paletteV2'
 import {MeetingTypeEnum} from '../types/graphql'
 import {meetingTypeToLabel} from '../utils/meetings/lookups'
@@ -82,7 +82,7 @@ const NewMeetingSidebar = (props: Props) => {
           <TeamDashboardLink to={teamLink}>{'Team: '}{teamName}</TeamDashboardLink>
         </div>
       </SidebarHeader>
-      {newMeeting && <AssignFacilitator team={team} />}
+      {newMeeting && <Facilitator viewer={viewer} />}
       {children}
       <LogoBlock variant='primary' onClick={handleMenuClick} />
     </SidebarParent>
@@ -92,8 +92,8 @@ const NewMeetingSidebar = (props: Props) => {
 export default createFragmentContainer(NewMeetingSidebar, {
   viewer: graphql`
     fragment NewMeetingSidebar_viewer on User {
+      ...Facilitator_viewer
       team(teamId: $teamId) {
-        ...AssignFacilitator_team
         id
         name
         newMeeting {
