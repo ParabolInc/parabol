@@ -35,7 +35,7 @@
     "debug:stripe": "node billing/debug.babel.js",
     "postdeploy": "node utils/postDeploy.babel.js",
     "precommit": "lint-staged",
-    "lint": "eslint --fix ./../**/*.{ts,tsx,js}",
+    "lint": "eslint --fix ./**/*.ts",
     "test": "jest --bail --coverage --ci --runInBand && codecov",
     "test:dev": "jest --runInBand --watch",
     "relay": "yarn build:relay --watch --watchman true",

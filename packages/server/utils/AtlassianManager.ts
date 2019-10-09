@@ -21,7 +21,7 @@ interface OAuth2Response {
 }
 
 class AtlassianManager extends AtlassianClientManager {
-  static async init (code: string) {
+  static async init(code: string) {
     return AtlassianManager.fetchToken({
       grant_type: 'authorization_code',
       code,
@@ -29,14 +29,14 @@ class AtlassianManager extends AtlassianClientManager {
     })
   }
 
-  static async refresh (refreshToken: string) {
+  static async refresh(refreshToken: string) {
     return AtlassianManager.fetchToken({
       grant_type: 'refresh_token',
       refresh_token: refreshToken
     })
   }
 
-  static async fetchToken (partialQueryParams: AuthQueryParams | RefreshQueryParams) {
+  static async fetchToken(partialQueryParams: AuthQueryParams | RefreshQueryParams) {
     const queryParams = {
       ...partialQueryParams,
       client_id: process.env.ATLASSIAN_CLIENT_ID,
@@ -70,7 +70,7 @@ class AtlassianManager extends AtlassianClientManager {
     return new AtlassianManager(accessToken, refreshToken)
   }
 
-  constructor (accessToken: string, refreshToken?: string) {
+  constructor(accessToken: string, refreshToken?: string) {
     super(accessToken, {fetch, refreshToken})
   }
 }

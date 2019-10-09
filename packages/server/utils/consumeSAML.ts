@@ -47,19 +47,19 @@ const consumeSAML: RequestHandler = async (req, res) => {
   const {domain} = params
   if (!domain) return
   const r = getRethink()
-  const doc = await r.table('SAML')
+  const doc = (await r
+    .table('SAML')
     .getAll(domain, {index: 'domain'})
     .nth(0)
-    .default(null) as SAML | null
+    .default(null)) as SAML | null
   if (!doc) return
   const {metadata} = doc
   const idp = samlify.IdentityProvider({metadata})
-  const loginResponse = await serviceProvider.parseLoginResponse(idp, 'post', req)
-    .catch((e) => {
-      sendToSentry(e)
-      const error = 'Invalid response from Identity Provider. Try again.'
-      res.redirect(`/saml-redirect?error=${error}`)
-    })
+  const loginResponse = await serviceProvider.parseLoginResponse(idp, 'post', req).catch((e) => {
+    sendToSentry(e)
+    const error = 'Invalid response from Identity Provider. Try again.'
+    res.redirect(`/saml-redirect?error=${error}`)
+  })
   if (!loginResponse) return
   const relayState = getRelayState(req)
   const {isInvited} = relayState
@@ -76,7 +76,7 @@ const consumeSAML: RequestHandler = async (req, res) => {
   const variables = {email, isInvited, name}
   const payload = await privateGraphQLEndpoint(query, variables, serverAuthToken)
   const {data} = payload
-  const authToken = data && data.loginSSO && data.loginSSO.authToken || ''
+  const authToken = (data && data.loginSSO && data.loginSSO.authToken) || ''
   if (!authToken) {
     const error = getError(payload)
     res.redirect(`/saml-redirect?error=${error}`)
