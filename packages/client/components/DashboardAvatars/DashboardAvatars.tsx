@@ -5,10 +5,11 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import AddTeamMemberAvatarButton from '../AddTeamMemberAvatarButton'
 import DashboardAvatar from './DashboardAvatar'
+import ErrorBoundary from '../ErrorBoundary'
 
 const AvatarsList = styled('div')({
   display: 'flex',
-  justifyContent: 'flex-end',
+  justifyContent: 'flex-end'
 })
 
 const AvatarItem = styled('div')({
@@ -28,26 +29,28 @@ const DashboardAvatars = (props: Props) => {
       {teamMembers.map((teamMember) => {
         return (
           <AvatarItem key={`dbAvatar${teamMember.id}`}>
-            <DashboardAvatar isViewerLead={isViewerLead} teamMember={teamMember} />
+            <ErrorBoundary>
+              <DashboardAvatar isViewerLead={isViewerLead} teamMember={teamMember}/>
+            </ErrorBoundary>
           </AvatarItem>
         )
       })}
-      <AddTeamMemberAvatarButton team={team} teamMembers={teamMembers} />
+      <AddTeamMemberAvatarButton team={team} teamMembers={teamMembers}/>
     </AvatarsList>
   )
 }
 
 export default createFragmentContainer(DashboardAvatars, {
   team: graphql`
-    fragment DashboardAvatars_team on Team {
-      id
-      isLead
-      ...AddTeamMemberAvatarButton_team
-      teamMembers(sortBy: "preferredName") {
-        ...AddTeamMemberAvatarButton_teamMembers
-        ...DashboardAvatar_teamMember
-        id
+      fragment DashboardAvatars_team on Team {
+          id
+          isLead
+          ...AddTeamMemberAvatarButton_team
+          teamMembers(sortBy: "preferredName") {
+              ...AddTeamMemberAvatarButton_teamMembers
+              ...DashboardAvatar_teamMember
+              id
+          }
       }
-    }
   `
 })
