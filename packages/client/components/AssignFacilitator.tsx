@@ -16,20 +16,22 @@ const AssignFacilitatorBlock = styled('div')({
   padding: 8
 })
 
-const AssignFacilitatorToggle = styled('div')<{isActive: boolean, isReadOnly: boolean}>(({isActive, isReadOnly}) => ({
-  alignItems: 'center',
-  border: '1px solid transparent',
-  borderColor: isActive ? PALETTE.BORDER_GRAY : undefined,
-  borderRadius: 4,
-  display: 'flex',
-  color: isActive ? PALETTE.TEXT_MAIN : PALETTE.TEXT_GRAY,
-  cursor: isReadOnly ? undefined : 'pointer',
-  padding: '4px 8px',
-  '&:hover': {
-    borderColor: isReadOnly ? undefined : PALETTE.BORDER_GRAY,
-    color: PALETTE.TEXT_MAIN
-  }
-}))
+const AssignFacilitatorToggle = styled('div')<{isActive: boolean; isReadOnly: boolean}>(
+  ({isActive, isReadOnly}) => ({
+    alignItems: 'center',
+    border: '1px solid transparent',
+    borderColor: isActive ? PALETTE.BORDER_GRAY : undefined,
+    borderRadius: 4,
+    display: 'flex',
+    color: isActive ? PALETTE.TEXT_MAIN : PALETTE.TEXT_GRAY,
+    cursor: isReadOnly ? undefined : 'pointer',
+    padding: '4px 8px',
+    '&:hover': {
+      borderColor: isReadOnly ? undefined : PALETTE.BORDER_GRAY,
+      color: PALETTE.TEXT_MAIN
+    }
+  })
+)
 
 const Label = styled('div')({
   color: PALETTE.TEXT_MAIN,
@@ -71,18 +73,27 @@ interface Props {
 }
 
 const AssignFacilitatorMenu = lazyPreload(() =>
-  import(/* webpackChunkName: 'AssignFacilitatorMenu' */
-  './AssignFacilitatorMenu')
+  import(
+    /* webpackChunkName: 'AssignFacilitatorMenu' */
+    './AssignFacilitatorMenu'
+  )
 )
 
 const AssignFacilitator = (props: Props) => {
   const {team} = props
   const {newMeeting, teamMembers} = team
   const {facilitator} = newMeeting!
-  const {picture, preferredName, user: {isConnected}} = facilitator
-  const {togglePortal, menuProps, menuPortal, originRef, portalStatus} = useMenu<HTMLDivElement>(MenuPosition.UPPER_RIGHT, {
-    isDropdown: true
-  })
+  const {
+    picture,
+    preferredName,
+    user: {isConnected}
+  } = facilitator
+  const {togglePortal, menuProps, menuPortal, originRef, portalStatus} = useMenu<HTMLDivElement>(
+    MenuPosition.UPPER_RIGHT,
+    {
+      isDropdown: true
+    }
+  )
   const isReadOnly = isDemoRoute() || teamMembers.length === 1
   const handleOnMouseEnter = () => !isReadOnly && AssignFacilitatorMenu.preload()
   const handleOnClick = () => !isReadOnly && togglePortal()

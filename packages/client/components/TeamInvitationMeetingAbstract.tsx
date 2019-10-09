@@ -132,7 +132,7 @@ const NavItem = () => (
   </AbstractSidebarNavItem>
 )
 
-function TeamInvitationMeetingAbstract (props: Props) {
+function TeamInvitationMeetingAbstract(props: Props) {
   const {children} = props
   return (
     <PageContainer>

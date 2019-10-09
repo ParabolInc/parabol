@@ -85,7 +85,10 @@ const NewTeam = (props: Props) => {
                 don't share your email domain. New Organizations
                 start out on the Free Personal Plan.`}
               </HelpCopy>
-              <LearnMoreLink palette='blue' onClick={() => window.open(ExternalLinks.PRICING_LINK, '_blank')}>
+              <LearnMoreLink
+                palette='blue'
+                onClick={() => window.open(ExternalLinks.PRICING_LINK, '_blank')}
+              >
                 <IconLabel icon='open_in_new' iconAfter label='Learn More' />
               </LearnMoreLink>
             </HelpBlock>

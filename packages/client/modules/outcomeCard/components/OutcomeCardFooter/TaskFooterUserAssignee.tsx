@@ -79,7 +79,9 @@ interface Props {
 }
 
 const TaskFooterUserAssigneeMenuRoot = lazyPreload(() =>
-  import(/* webpackChunkName: 'TaskFooterUserAssigneeMenuRoot' */ '../TaskFooterUserAssigneeMenuRoot')
+  import(
+    /* webpackChunkName: 'TaskFooterUserAssigneeMenuRoot' */ '../TaskFooterUserAssigneeMenuRoot'
+  )
 )
 
 const TaskFooterUserAssignee = (props: Props) => {
@@ -99,7 +101,14 @@ const TaskFooterUserAssignee = (props: Props) => {
         </Avatar>
         <AvatarLabel>{assignee.preferredName}</AvatarLabel>
       </AvatarButton>
-      {menuPortal(<TaskFooterUserAssigneeMenuRoot menuProps={menuProps} task={task} area={area} useTaskChild={useTaskChild} />)}
+      {menuPortal(
+        <TaskFooterUserAssigneeMenuRoot
+          menuProps={menuProps}
+          task={task}
+          area={area}
+          useTaskChild={useTaskChild}
+        />
+      )}
     </>
   )
 }

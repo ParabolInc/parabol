@@ -7,7 +7,7 @@ declare var self: ServiceWorkerGlobalScope
 declare global {
   interface ServiceWorkerGlobalScope {
     __precacheManifest: {
-      url: string,
+      url: string
       revision?: string
     }[]
   }
@@ -39,23 +39,31 @@ const onInstall = async (event: ExtendableEvent) => {
   const cachedResponses = await Promise.all(urls.map((url) => oldStaticCache.match(url)))
   const newUrls = urls.filter((url, idx) => !cachedResponses[idx])
   console.log(`Installing ${urls.length} modules (${newUrls.length} new)`)
-  await Promise.all(cachedResponses.map((res: Response | undefined, idx) => {
-    if (!res) return
-    newCache.put(urls[idx], res)
-  }))
+  await Promise.all(
+    cachedResponses.map((res: Response | undefined, idx) => {
+      if (!res) return
+      newCache.put(urls[idx], res)
+    })
+  )
   return newCache.addAll(newUrls)
 }
 
 const onActivate = async (event: ExtendableEvent) => {
   await self.clients.claim()
   const cacheNames = await caches.keys()
-  return Promise.all(cacheNames.map((cacheName) => cacheList.includes(cacheName) ? undefined : caches.delete(cacheName)))
+  return Promise.all(
+    cacheNames.map((cacheName) =>
+      cacheList.includes(cacheName) ? undefined : caches.delete(cacheName)
+    )
+  )
 }
 
 const onFetch = async (event: FetchEvent) => {
   const {request} = event
   const {url} = request
-  const isCacheable = url.startsWith('http') && url.match(/.(js|css|mjs|png|svg|gif|jpg|jpeg|ico|eot|ttf|wav|mp3|woff|woff2|otf)$/)
+  const isCacheable =
+    url.startsWith('http') &&
+    url.match(/.(js|css|mjs|png|svg|gif|jpg|jpeg|ico|eot|ttf|wav|mp3|woff|woff2|otf)$/)
   if (isCacheable) {
     const cachedRes = await caches.match(request.url)
     // all our assets are hashed, so if the hash matches, it's valid
@@ -65,16 +73,16 @@ const onFetch = async (event: FetchEvent) => {
     // cloning here because I'm not sure if we must clone before reading the body
     cache.put(request.url, networkRes.clone()).catch(console.error)
     return networkRes
-  // } else if (request.destination === 'document') {
-  //   // dynamic because index.html isn't hashed (and the server returns an html with keys)
-  //   const dynamicCache = await caches.open(DYNAMIC_CACHE)
-  //   const cachedRes = await dynamicCache.match('/')
-  //   if (cachedRes) return cachedRes
-  //   const networkRes = await fetch(request)
-  //   const cache = await caches.open(DYNAMIC_CACHE)
-  //   // cloning here because I'm not sure if we must clone before reading the body
-  //   cache.put('/', networkRes.clone()).catch(console.error)
-  //   return networkRes
+    // } else if (request.destination === 'document') {
+    //   // dynamic because index.html isn't hashed (and the server returns an html with keys)
+    //   const dynamicCache = await caches.open(DYNAMIC_CACHE)
+    //   const cachedRes = await dynamicCache.match('/')
+    //   if (cachedRes) return cachedRes
+    //   const networkRes = await fetch(request)
+    //   const cache = await caches.open(DYNAMIC_CACHE)
+    //   // cloning here because I'm not sure if we must clone before reading the body
+    //   cache.put('/', networkRes.clone()).catch(console.error)
+    //   return networkRes
   }
   return fetch(request)
 }

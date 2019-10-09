@@ -49,16 +49,7 @@ interface Props {
 }
 
 const Avatar = forwardRef((props: Props, ref: any) => {
-  const {
-    hasBadge,
-    isCheckedIn,
-    isConnected,
-    onClick,
-    picture,
-    sansRadius,
-    sansShadow,
-    size
-  } = props
+  const {hasBadge, isCheckedIn, isConnected, onClick, picture, sansRadius, sansShadow, size} = props
 
   return (
     <ImageBlock

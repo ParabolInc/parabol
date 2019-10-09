@@ -37,7 +37,11 @@ const mutation = graphql`
   }
 `
 
-const VoteForReflectionGroupMutation = (atmosphere: Atmosphere, variables: IVoteForReflectionGroupOnMutationArguments, {onError, onCompleted, meetingId}: LocalHandlers & {meetingId: string}) => {
+const VoteForReflectionGroupMutation = (
+  atmosphere: Atmosphere,
+  variables: IVoteForReflectionGroupOnMutationArguments,
+  {onError, onCompleted, meetingId}: LocalHandlers & {meetingId: string}
+) => {
   return commitMutation(atmosphere, {
     mutation,
     variables,

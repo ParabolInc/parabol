@@ -55,7 +55,7 @@ export const createTaskTaskUpdater: SharedUpdater<CreateTaskMutation_task> = (pa
   const content = task.getValue('content')
   const rawContent = JSON.parse(content)
   const {blocks} = rawContent
-  const isEditing = blocks.length === 0 || blocks.length === 1 && blocks[0].text === ''
+  const isEditing = blocks.length === 0 || (blocks.length === 1 && blocks[0].text === '')
   const editorPayload = getOptimisticTaskEditor(store, userId, taskId, isEditing)
   handleEditTask(editorPayload, store)
   handleUpsertTasks(task, store)

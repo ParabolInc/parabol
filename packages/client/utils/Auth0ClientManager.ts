@@ -32,7 +32,7 @@ export default class Auth0ClientManager {
   clientId: string
   fetch: typeof fetch
 
-  constructor (
+  constructor(
     domain: string = window.__ACTION__.auth0Domain,
     clientId: string = window.__ACTION__.auth0
   ) {
@@ -41,7 +41,12 @@ export default class Auth0ClientManager {
     this.fetch = window.fetch.bind(window)
   }
 
-  async post<T> (url: string, payload: object, initOptions: RequestInit = {}, ignoreResult?: boolean): Promise<T> {
+  async post<T>(
+    url: string,
+    payload: object,
+    initOptions: RequestInit = {},
+    ignoreResult?: boolean
+  ): Promise<T> {
     const res = await this.fetch(url, {
       method: 'POST',
       headers: {
@@ -53,7 +58,7 @@ export default class Auth0ClientManager {
     return ignoreResult ? undefined : res.json()
   }
 
-  signup (email: string, password: string) {
+  signup(email: string, password: string) {
     return this.post<SignupResponse | SignupErrorResponse>(
       `https://${this.domain}/dbconnections/signup`,
       {
@@ -65,7 +70,7 @@ export default class Auth0ClientManager {
     )
   }
 
-  async login (email: string, password: string) {
+  async login(email: string, password: string) {
     const res = await this.post<LoginResponse | ErrorResponse>(
       `https://${this.domain}/co/authenticate`,
       {
@@ -101,7 +106,7 @@ export default class Auth0ClientManager {
     return res
   }
 
-  async loginWithGoogle (email?: string): Promise<{idToken: string} | null> {
+  async loginWithGoogle(email?: string): Promise<{idToken: string} | null> {
     const state = Math.random()
       .toString(36)
       .substring(5)
@@ -151,11 +156,16 @@ export default class Auth0ClientManager {
     })
   }
 
-  changePassword (email: string) {
-    return this.post<undefined>(`https://${this.domain}/dbconnections/change_password`, {
-      client_id: this.clientId,
-      email,
-      connection: Auth0ClientManager.CONNECTION
-    }, undefined, true)
+  changePassword(email: string) {
+    return this.post<undefined>(
+      `https://${this.domain}/dbconnections/change_password`,
+      {
+        client_id: this.clientId,
+        email,
+        connection: Auth0ClientManager.CONNECTION
+      },
+      undefined,
+      true
+    )
   }
 }

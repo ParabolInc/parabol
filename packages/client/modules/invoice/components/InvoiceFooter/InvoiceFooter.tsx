@@ -52,7 +52,10 @@ const InvoiceFooter = () => {
         <br />
         {'United States'}
         <br />
-        <a href={`tel:${ContactInfo.TELEPHONE.replace('-', '')}`} title={`Call us: ${ContactInfo.TELEPHONE}`}>
+        <a
+          href={`tel:${ContactInfo.TELEPHONE.replace('-', '')}`}
+          title={`Call us: ${ContactInfo.TELEPHONE}`}
+        >
           {ContactInfo.TELEPHONE}
         </a>
         <br />

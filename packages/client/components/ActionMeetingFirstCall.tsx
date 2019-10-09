@@ -36,7 +36,7 @@ interface Props extends ActionMeetingPhaseProps {
 const ActionMeetingFirstCallHelpMenu = lazyPreload(async () =>
   import(
     /* webpackChunkName: 'ActionMeetingFirstCallHelpMenu' */ './MeetingHelp/ActionMeetingFirstCallHelpMenu'
-    )
+  )
 )
 
 const FirstCallWrapper = styled('div')({
@@ -79,9 +79,7 @@ const ActionMeetingFirstCall = (props: Props) => {
             )}
           </FirstCallWrapper>
         </PhaseWrapper>
-        <MeetingHelpToggle
-          menu={<ActionMeetingFirstCallHelpMenu />}
-        />
+        <MeetingHelpToggle menu={<ActionMeetingFirstCallHelpMenu />} />
       </MeetingHeaderAndPhase>
       <MeetingFacilitatorBar isFacilitating={isFacilitating}>
         <BottomControlSpacer />

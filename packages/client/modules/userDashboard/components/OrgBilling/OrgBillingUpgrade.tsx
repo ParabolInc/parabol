@@ -15,7 +15,7 @@ import {TierEnum} from '../../../../types/graphql'
 const Inner = styled('div')({
   margin: '0 auto',
   maxWidth: 312,
-  padding: '20px 24px 24px',
+  padding: '20px 24px 24px'
 })
 
 const Quotes = styled(OrgBillingReassuranceQuote)({
@@ -48,34 +48,38 @@ const OrgBillingUpgrade = (props: Props) => {
   const {togglePortal, closePortal, modalPortal} = useModal()
   return (
     <>
-      {modalPortal(<CreditCardModal actionType={'upgrade'} closePortal={closePortal} orgId={orgId}
-                                    activeUserCount={activeUserCount} />)}
-      {tier === TierEnum.personal &&
-      <Panel>
-        <Inner>
-          <Title>Upgrade to Pro</Title>
-          <Quotes />
-          <UpgradeBenefits />
-          <ButtonBlock>
-            <StyledPrimaryButton onClick={togglePortal}>{'Upgrade Now'}</StyledPrimaryButton>
-          </ButtonBlock>
-        </Inner>
-      </Panel>
-      }
+      {modalPortal(
+        <CreditCardModal
+          actionType={'upgrade'}
+          closePortal={closePortal}
+          orgId={orgId}
+          activeUserCount={activeUserCount}
+        />
+      )}
+      {tier === TierEnum.personal && (
+        <Panel>
+          <Inner>
+            <Title>Upgrade to Pro</Title>
+            <Quotes />
+            <UpgradeBenefits />
+            <ButtonBlock>
+              <StyledPrimaryButton onClick={togglePortal}>{'Upgrade Now'}</StyledPrimaryButton>
+            </ButtonBlock>
+          </Inner>
+        </Panel>
+      )}
     </>
   )
 }
 
-export default createFragmentContainer(
-  OrgBillingUpgrade,
-  {
-    organization: graphql`
-      fragment OrgBillingUpgrade_organization on Organization {
-        id
-        tier
-        orgUserCount {
-          activeUserCount
-        }
-      }`
-  }
-)
+export default createFragmentContainer(OrgBillingUpgrade, {
+  organization: graphql`
+    fragment OrgBillingUpgrade_organization on Organization {
+      id
+      tier
+      orgUserCount {
+        activeUserCount
+      }
+    }
+  `
+})

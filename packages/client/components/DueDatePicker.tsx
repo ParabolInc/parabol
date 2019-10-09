@@ -38,11 +38,7 @@ const Hint = styled('div')({
 })
 
 const DueDatePicker = (props: Props) => {
-  const {
-    menuProps,
-    task,
-    useTaskChild
-  } = props
+  const {menuProps, task, useTaskChild} = props
   const {id: taskId, dueDate} = task
   useTaskChild('dueDate')
   const atmosphere = useAtmosphere()

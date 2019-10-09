@@ -37,7 +37,7 @@ interface Options {
   showDay?: boolean
 }
 
-export default function makeDateString (
+export default function makeDateString(
   datetime: Date | string | number | undefined | null,
   options: Options = {}
 ) {

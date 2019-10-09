@@ -36,8 +36,7 @@ const CardExpiry = styled(UpgradeCreditCardFormField)({
   marginRight: 8
 })
 
-const CardCvc = styled(UpgradeCreditCardFormField)({
-})
+const CardCvc = styled(UpgradeCreditCardFormField)({})
 
 const ButtonGroup = styled('div')({
   display: 'flex',
@@ -47,7 +46,7 @@ const ButtonGroup = styled('div')({
 })
 
 const UpgradeButton = styled(PrimaryButton)({
-  flexGrow: 1,
+  flexGrow: 1
 })
 
 const UpgradeLaterButton = styled(PlainButton)({
@@ -101,13 +100,11 @@ const CreditCardForm = (props: Props) => {
     }
   })
 
-
   useEffect(() => {
     if (isStripeLoaded) {
       stripeClientManager.init()
     }
   }, [isStripeLoaded])
-
 
   const handleError = (param: string, fallback = 'Invalid details') => {
     const inputField = paramToInputLookup[param]
@@ -123,7 +120,12 @@ const CreditCardForm = (props: Props) => {
     if (submitting) return
     setDirtyField()
     validateField()
-    if (Object.keys(fields).map((name) => fields[name].error).filter(Boolean).length !== 0) return
+    if (
+      Object.keys(fields)
+        .map((name) => fields[name].error)
+        .filter(Boolean).length !== 0
+    )
+      return
     submitMutation()
     const [expMonth, expYear] = fields.expiry.value.split('/')
     const {error, id: stripeToken} = await stripeClientManager.createToken({
@@ -141,7 +143,7 @@ const CreditCardForm = (props: Props) => {
       const [mutationName] = Object.keys(data)
       const {error} = data[mutationName]
       onCompleted()
-      if (error ) {
+      if (error) {
         handleError(error.message, error.message)
         return
       }
@@ -153,14 +155,21 @@ const CreditCardForm = (props: Props) => {
     if (actionType === 'update') {
       UpdateCreditCardMutation(atmosphere, orgId, stripeToken, onError, handleCompleted)
     } else {
-      UpgradeToProMutation(atmosphere, {orgId, stripeToken}, {onError, onCompleted: handleCompleted})
+      UpgradeToProMutation(
+        atmosphere,
+        {orgId, stripeToken},
+        {onError, onCompleted: handleCompleted}
+      )
     }
   }
 
   return (
     <>
-      <CreditCardErrorLine stripeClientManager={stripeClientManager} fields={fields as any}
-                           serverError={error ? error.message : undefined} />
+      <CreditCardErrorLine
+        stripeClientManager={stripeClientManager}
+        fields={fields as any}
+        serverError={error ? error.message : undefined}
+      />
       <Form onSubmit={handleSubmit}>
         <CreditCardNumber
           {...fields.creditCardNumber}
@@ -197,9 +206,9 @@ const CreditCardForm = (props: Props) => {
         </CardDetails>
         <CreditCardPricingLine activeUserCount={activeUserCount} actionType={actionType} />
         <ButtonGroup>
-          {actionType === 'squeeze' &&
+          {actionType === 'squeeze' && (
             <UpgradeLaterButton onClick={onLater}>Upgrade Later</UpgradeLaterButton>
-          }
+          )}
           <UpgradeButton size='medium' onClick={handleSubmit} waiting={submitting} type={'submit'}>
             {CTALabel[actionType]}
           </UpgradeButton>

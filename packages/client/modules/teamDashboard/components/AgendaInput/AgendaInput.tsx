@@ -71,7 +71,7 @@ const StyledIcon = styled(Icon)({
   color: PALETTE.TEXT_ORANGE,
   display: 'block',
   left: 26,
-  opacity: .7,
+  opacity: 0.7,
   pointerEvents: 'none',
   position: 'absolute',
   top: 9

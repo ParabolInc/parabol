@@ -11,7 +11,7 @@ const getDemoEntities = async (text: string) => {
     body: JSON.stringify({texts: [text]})
   })
   if (res.status === 200) {
-    const resJSON = await res.json() as Response
+    const resJSON = (await res.json()) as Response
     return resJSON[0] || []
   }
   return []

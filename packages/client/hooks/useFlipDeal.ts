@@ -12,7 +12,13 @@ const useFlipDeal = (count: number) => {
     if (isAnimatingRef.current || !c) return
     if (idx === count - 1) {
       isAnimatingRef.current = true
-      const variableDelay = Math.max(Times.REFLECTION_DEAL_CARD_MIN_DELAY, (Times.REFLECTION_DEAL_TOTAL_DURATION - Times.REFLECTION_DEAL_CARD_DURATION - Times.REFLECTION_DEAL_CARD_INIT_DELAY) / (count - 1))
+      const variableDelay = Math.max(
+        Times.REFLECTION_DEAL_CARD_MIN_DELAY,
+        (Times.REFLECTION_DEAL_TOTAL_DURATION -
+          Times.REFLECTION_DEAL_CARD_DURATION -
+          Times.REFLECTION_DEAL_CARD_INIT_DELAY) /
+          (count - 1)
+      )
       for (let i = 0; i < count; i++) {
         const delay = Times.REFLECTION_DEAL_CARD_INIT_DELAY + variableDelay * (count - i - 1)
         const lastReflection = lastListItemsRef.current[i]

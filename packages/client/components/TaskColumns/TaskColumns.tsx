@@ -57,32 +57,36 @@ const TaskColumns = (props: Props) => {
   }, [tasks])
   const lanes = area === MEETING ? meetingColumnArray : columnArray
 
-  const onDragEnd = useEventCallback(
-    (result: DropResult) => {
-      const {source, destination, draggableId} = result
-      if (!destination) return
-      const isSameColumn = destination.droppableId === source.droppableId
-      if (isSameColumn && destination.index === source.index) return
-      const destinationTasks = groupedTasks[destination.droppableId]
+  const onDragEnd = useEventCallback((result: DropResult) => {
+    const {source, destination, draggableId} = result
+    if (!destination) return
+    const isSameColumn = destination.droppableId === source.droppableId
+    if (isSameColumn && destination.index === source.index) return
+    const destinationTasks = groupedTasks[destination.droppableId]
 
-      let sortOrder
-      if (destination.index === 0) {
-        const firstTask = destinationTasks[0]
-        sortOrder = (firstTask ? firstTask.sortOrder + SORT_STEP : 0) + dndNoise()
-      } else if (isSameColumn && destination.index === destinationTasks.length - 1 || !isSameColumn && destination.index === destinationTasks.length) {
-        sortOrder = destinationTasks[destinationTasks.length - 1].sortOrder - SORT_STEP + dndNoise()
-      } else {
-        const offset = !isSameColumn || source.index > destination.index ? -1 : 1
-        sortOrder =
-          (destinationTasks[destination.index + offset].sortOrder + destinationTasks[destination.index].sortOrder) / 2 +
-          dndNoise()
-      }
-      const updatedTask = {id: draggableId, sortOrder}
-      if (!isSameColumn) {
-        (updatedTask as any).status = destination.droppableId
-      }
-      UpdateTaskMutation(atmosphere, {updatedTask, area})
-    })
+    let sortOrder
+    if (destination.index === 0) {
+      const firstTask = destinationTasks[0]
+      sortOrder = (firstTask ? firstTask.sortOrder + SORT_STEP : 0) + dndNoise()
+    } else if (
+      (isSameColumn && destination.index === destinationTasks.length - 1) ||
+      (!isSameColumn && destination.index === destinationTasks.length)
+    ) {
+      sortOrder = destinationTasks[destinationTasks.length - 1].sortOrder - SORT_STEP + dndNoise()
+    } else {
+      const offset = !isSameColumn || source.index > destination.index ? -1 : 1
+      sortOrder =
+        (destinationTasks[destination.index + offset].sortOrder +
+          destinationTasks[destination.index].sortOrder) /
+          2 +
+        dndNoise()
+    }
+    const updatedTask = {id: draggableId, sortOrder}
+    if (!isSameColumn) {
+      ;(updatedTask as any).status = destination.droppableId
+    }
+    UpdateTaskMutation(atmosphere, {updatedTask, area})
+  })
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <ColumnsBlock>

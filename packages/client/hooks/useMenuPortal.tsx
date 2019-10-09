@@ -17,7 +17,6 @@ const MenuBlock = styled('div')({
   zIndex: ZIndex.MODAL
 })
 
-
 const useMenuPortal = (
   portal: (el: ReactElement) => ReactPortal | null,
   targetRef: (el: HTMLDivElement | null) => void,

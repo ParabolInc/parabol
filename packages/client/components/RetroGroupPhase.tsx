@@ -45,14 +45,11 @@ const CenteredControlBlock = styled('div')<{isComplete: boolean | undefined}>(({
   marginLeft: isComplete ? ElementWidth.END_MEETING_BUTTON : undefined
 }))
 
-
 const GroupHelpMenu = lazyPreload(async () =>
   import(/* webpackChunkName: 'GroupHelpMenu' */ './MeetingHelp/GroupHelpMenu')
 )
 const DemoGroupHelpMenu = lazyPreload(async () =>
-  import(
-    /* webpackChunkName: 'DemoGroupHelpMenu' */ './MeetingHelp/DemoGroupHelpMenu'
-    )
+  import(/* webpackChunkName: 'DemoGroupHelpMenu' */ './MeetingHelp/DemoGroupHelpMenu')
 )
 
 const RetroGroupPhase = (props: Props) => {
@@ -60,13 +57,7 @@ const RetroGroupPhase = (props: Props) => {
   const phaseRef = useRef<HTMLDivElement>(null)
   // const {onCompleted, submitMutation, error, onError, submitting} = useMutationProps()
   const [isReadyToVote, resetActivityTimeout] = useTimeoutWithReset(ms('1m'), ms('30s'))
-  const {
-    avatarGroup,
-    toggleSidebar,
-    handleGotoNext,
-    team,
-    isDemoStageComplete
-  } = props
+  const {avatarGroup, toggleSidebar, handleGotoNext, team, isDemoStageComplete} = props
   const {viewerId} = atmosphere
   const {isMeetingSidebarCollapsed, newMeeting} = team
   if (!newMeeting) return null
@@ -98,15 +89,19 @@ const RetroGroupPhase = (props: Props) => {
           <StageTimerDisplay stage={localStage!} />
           {/*{error && <StyledError>{error}</StyledError>}*/}
           <MeetingPhaseWrapper>
-            <GroupingKanban meeting={newMeeting} phaseRef={phaseRef} resetActivityTimeout={resetActivityTimeout} />
+            <GroupingKanban
+              meeting={newMeeting}
+              phaseRef={phaseRef}
+              resetActivityTimeout={resetActivityTimeout}
+            />
           </MeetingPhaseWrapper>
         </PhaseWrapper>
-        <MeetingHelpToggle
-          menu={isDemoRoute() ? <DemoGroupHelpMenu /> : <GroupHelpMenu />}
-        />
+        <MeetingHelpToggle menu={isDemoRoute() ? <DemoGroupHelpMenu /> : <GroupHelpMenu />} />
       </MeetingHeaderAndPhase>
       <MeetingFacilitatorBar isFacilitating={isFacilitating}>
-        {!isComplete && <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />}
+        {!isComplete && (
+          <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
+        )}
         <CenteredControlBlock isComplete={isComplete}>
           {/*{canAutoGroup && (*/}
           {/*  <BottomNavControl onClick={autoGroup} waiting={submitting}>*/}

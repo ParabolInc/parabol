@@ -37,7 +37,7 @@ class EditableTemplatePrompt extends Component<Props> {
     RenameReflectTemplatePromptMutation(atmosphere, {promptId, question}, {}, onError, onCompleted)
   }
 
-  legitify (value: string) {
+  legitify(value: string) {
     const {promptId, prompts} = this.props
     return new Legitity(value)
       .trim()
@@ -62,7 +62,7 @@ class EditableTemplatePrompt extends Component<Props> {
     return res
   }
 
-  render () {
+  render() {
     const {error, isHover, question, isEditingDescription} = this.props
     return (
       <EditableText

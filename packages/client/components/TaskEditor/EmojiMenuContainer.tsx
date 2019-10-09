@@ -13,9 +13,7 @@ interface Props {
   removeModal: () => void
 }
 
-const EmojiMenu = lazyPreload(() =>
-  import(/* webpackChunkName: 'EmojiMenu' */ '../EmojiMenu')
-)
+const EmojiMenu = lazyPreload(() => import(/* webpackChunkName: 'EmojiMenu' */ '../EmojiMenu'))
 
 const EmojiMenuContainer = (props: Props) => {
   const {originCoords, removeModal, menuItemClickFactory, query, menuRef, editorState} = props

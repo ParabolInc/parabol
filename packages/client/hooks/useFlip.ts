@@ -6,7 +6,7 @@ import requestDoubleAnimationFrame from '../components/RetroReflectPhase/request
 interface Options<T> {
   isBackground?: boolean
   isGroup?: boolean
-  firstRef?: MutableRefObject<T | null>,
+  firstRef?: MutableRefObject<T | null>
   offsetLeft?: number
   offsetTop?: number
 }
@@ -17,7 +17,13 @@ const getScale = (first: Dims, last: Dims) => {
   return {scaleX, scaleY}
 }
 
-const getTranslate = <T extends HTMLElement = HTMLDivElement>(first: Point, parent: Point, lastEl: T, offsetLeft: number = 0, offsetTop: number = 0) => {
+const getTranslate = <T extends HTMLElement = HTMLDivElement>(
+  first: Point,
+  parent: Point,
+  lastEl: T,
+  offsetLeft: number = 0,
+  offsetTop: number = 0
+) => {
   const translateX = first.left - parent.left - lastEl.offsetLeft - offsetLeft
   const translateY = first.top - parent.top - lastEl.offsetTop - offsetTop
   return {translateX, translateY}
@@ -37,7 +43,13 @@ const useFlip = <T extends HTMLElement = HTMLDivElement>(options: Options<T>) =>
     const {style, offsetParent} = instance
     const parentBBox = offsetParent!.getBoundingClientRect()
     if (!firstBBox || !lastBBox || !parentBBox) return
-    const {translateX, translateY} = getTranslate(firstBBox, parentBBox, instance, offsetLeft, offsetTop)
+    const {translateX, translateY} = getTranslate(
+      firstBBox,
+      parentBBox,
+      instance,
+      offsetLeft,
+      offsetTop
+    )
     isAnimatedRef.current = true
     if (isBackground) {
       const {scaleX, scaleY} = getScale(firstBBox, lastBBox)
@@ -81,9 +93,18 @@ const useFlip = <T extends HTMLElement = HTMLDivElement>(options: Options<T>) =>
       const parentBBox = offsetParent.getBoundingClientRect()
       const lastBBox = instance.getBoundingClientRect()
       const groupOffset = isGroup ? ElementWidth.REFLECTION_CARD_PADDING : 0
-      const {translateX, translateY} = getTranslate(firstBBox, parentBBox, instance, offsetLeft, offsetTop - groupOffset)
+      const {translateX, translateY} = getTranslate(
+        firstBBox,
+        parentBBox,
+        instance,
+        offsetLeft,
+        offsetTop - groupOffset
+      )
       if (isBackground) {
-        const {scaleX, scaleY} = getScale({height: firstRef.current.scrollHeight, width: firstBBox.width}, lastBBox)
+        const {scaleX, scaleY} = getScale(
+          {height: firstRef.current.scrollHeight, width: firstBBox.width},
+          lastBBox
+        )
         style.transform = `translate(${translateX}px,${translateY}px)scale(${scaleX},${scaleY})`
       } else {
         style.transform = `translate(${translateX}px,${translateY}px)`

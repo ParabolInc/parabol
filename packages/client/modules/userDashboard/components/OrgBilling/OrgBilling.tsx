@@ -18,29 +18,26 @@ const OrgBilling = (props: Props) => {
   const {isBillingLeader} = organization
   return (
     <div>
-      <OrgBillingUpgrade organization={organization}/>
+      <OrgBillingUpgrade organization={organization} />
       <OrgBillingCreditCardInfo organization={organization} />
       <OrgBillingInvoices viewer={viewer} />
-      <OrgBillingDangerZone isBillingLeader={isBillingLeader}/>
+      <OrgBillingDangerZone isBillingLeader={isBillingLeader} />
     </div>
   )
 }
 
-export default createFragmentContainer(
-  OrgBilling,
-  {
-    viewer: graphql`
-      fragment OrgBilling_viewer on User {
-        ...OrgBillingInvoices_viewer
-      }
-    `,
-    organization: graphql`
-      fragment OrgBilling_organization on Organization {
-        ...OrgBillingCreditCardInfo_organization
-        ...OrgBillingUpgrade_organization
-        id
-        isBillingLeader
-      }
-    `
-  }
-)
+export default createFragmentContainer(OrgBilling, {
+  viewer: graphql`
+    fragment OrgBilling_viewer on User {
+      ...OrgBillingInvoices_viewer
+    }
+  `,
+  organization: graphql`
+    fragment OrgBilling_organization on Organization {
+      ...OrgBillingCreditCardInfo_organization
+      ...OrgBillingUpgrade_organization
+      id
+      isBillingLeader
+    }
+  `
+})

@@ -48,9 +48,9 @@ const removeEntityKeepText = (rawContent, eqFn) => {
       removedEntities.length === 0
         ? rawContent
         : {
-          blocks: updateBlockEntityRanges(blocks, updatedKeyMap),
-          entityMap: nextEntityMap
-        },
+            blocks: updateBlockEntityRanges(blocks, updatedKeyMap),
+            entityMap: nextEntityMap
+          },
     removedEntities
   }
 }

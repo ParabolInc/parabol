@@ -127,11 +127,11 @@ class AddTeamMemberModal extends Component<Props, State> {
     InviteToTeamMutation(atmosphere, {teamId, invitees}, {onError, onCompleted: handleCompleted})
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     this._mounted = false
   }
 
-  render () {
+  render() {
     const {closePortal, error, submitting, team} = this.props
     const {invitees, successfulInvitations, rawInvitees} = this.state
     const {massInviteToken} = team

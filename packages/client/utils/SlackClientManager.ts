@@ -221,15 +221,13 @@ type ConversationType = 'public_channel' | 'private_channel' | 'im' | 'mpim'
 
 class SlackClientManager {
   static SCOPE = 'identify,bot,incoming-webhook,channels:read,chat:write:bot'
-  static openOAuth (atmosphere: Atmosphere, teamId: string, mutationProps: MenuMutationProps) {
+  static openOAuth(atmosphere: Atmosphere, teamId: string, mutationProps: MenuMutationProps) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const providerState = Math.random()
       .toString(36)
       .substring(5)
     const redirect = makeHref('/auth/slack')
-    const uri = `https://slack.com/oauth/authorize?client_id=${window.__ACTION__.slack}&scope=${
-      SlackClientManager.SCOPE
-    }&state=${providerState}&redirect_uri=${redirect}`
+    const uri = `https://slack.com/oauth/authorize?client_id=${window.__ACTION__.slack}&scope=${SlackClientManager.SCOPE}&state=${providerState}&redirect_uri=${redirect}`
     const popup = window.open(
       uri,
       'OAuth',
@@ -257,12 +255,12 @@ class SlackClientManager {
   timeout = 5000
   headers: any
 
-  constructor (token: string, options: SlackClientManagerOptions = {}) {
+  constructor(token: string, options: SlackClientManagerOptions = {}) {
     this.token = token
     this.fetch = options.fetch || window.fetch.bind(window)
   }
 
-  async get<T> (url: string): Promise<T | ErrorResponse> {
+  async get<T>(url: string): Promise<T | ErrorResponse> {
     const record = this.cache[url]
     if (!record) {
       const res = await this.fetch(encodeURI(url))
@@ -282,19 +280,19 @@ class SlackClientManager {
     return this.cache[url].result
   }
 
-  getConversationInfo (slackChannelId: string) {
+  getConversationInfo(slackChannelId: string) {
     return this.get<ConversationInfoResponse>(
       `https://slack.com/api/conversations.info?token=${this.token}&channel=${slackChannelId}`
     )
   }
 
-  getChannelInfo (channelId: string) {
+  getChannelInfo(channelId: string) {
     return this.get<ChannelInfoResponse>(
       `https://slack.com/api/channels.info?token=${this.token}&channel=${channelId}`
     )
   }
 
-  getChannelList () {
+  getChannelList() {
     return this.get<ChannelListResponse>(
       `https://slack.com/api/channels.list?token=${this.token}&exclude_archived=1`
     )
@@ -307,38 +305,32 @@ class SlackClientManager {
   //     }&channel=${channelId}&oldest=${oldest}`)
   // }
 
-  getConversationList (types: ConversationType[] = ['public_channel']) {
+  getConversationList(types: ConversationType[] = ['public_channel']) {
     const typeStr = types.join(',')
     return this.get<ConversationListResponse>(
-      `https://slack.com/api/conversations.list?token=${
-        this.token
-      }&exclude_archived=1&types=${typeStr}`
+      `https://slack.com/api/conversations.list?token=${this.token}&exclude_archived=1&types=${typeStr}`
     )
   }
 
-  getUserInfo (userId: string) {
+  getUserInfo(userId: string) {
     return this.get<UserInfoResponse>(
       `https://slack.com/api/users.info?token=${this.token}&user=${userId}`
     )
   }
 
-  postMessage (channelId: string, text: string) {
+  postMessage(channelId: string, text: string) {
     return this.get<PostMessageResponse>(
-      `https://slack.com/api/chat.postMessage?token=${
-        this.token
-      }&channel=${channelId}&text=${text}&unfurl_links=true`
+      `https://slack.com/api/chat.postMessage?token=${this.token}&channel=${channelId}&text=${text}&unfurl_links=true`
     )
   }
 
-  updateMessage (channelId: string, text: string, ts: string) {
+  updateMessage(channelId: string, text: string, ts: string) {
     return this.get<UpdateMessageResponse>(
-      `https://slack.com/api/chat.update?token=${
-        this.token
-      }&channel=${channelId}&text=${text}&ts=${ts}`
+      `https://slack.com/api/chat.update?token=${this.token}&channel=${channelId}&text=${text}&ts=${ts}`
     )
   }
 
-  openIM (slackUserId: string) {
+  openIM(slackUserId: string) {
     return this.get<IMOpenResponse>(
       `https://slack.com/api/im.open?token=${this.token}&user=${slackUserId}`
     )

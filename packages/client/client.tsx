@@ -8,13 +8,12 @@ import './scrollIntoViewIfNeeded'
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
 
-
 const initialState = {}
 export const store = makeStore(initialState)
 render(<Root store={store} />, document.getElementById('root'))
 
 if ((module as any).hot) {
-  (module as any).hot.accept('./Root', () => {
+  ;(module as any).hot.accept('./Root', () => {
     const Root = require('./Root').default
     render(<Root store={store} />, document.getElementById('root'))
   })

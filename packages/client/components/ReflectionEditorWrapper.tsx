@@ -69,16 +69,14 @@ const EditorStyles = styled('div')(({useFallback, userSelect, isClipped}: any) =
 })) as any
 
 const AndroidEditorFallback = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'AndroidEditorFallback' */ './AndroidEditorFallback'
-    )
+  import(/* webpackChunkName: 'AndroidEditorFallback' */ './AndroidEditorFallback')
 )
 
 class ReflectionEditorWrapper extends PureComponent<Props> {
   entityPasteStart?: {anchorOffset: number; anchorKey: string} = undefined
   styleRef = React.createRef<HTMLDivElement>()
 
-  componentDidMount () {
+  componentDidMount() {
     const {editorState, isClipped, isPhaseItemEditor} = this.props
     if (isPhaseItemEditor) return
     if (!editorState.getCurrentContent().hasText()) {
@@ -95,11 +93,10 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
       if (el) {
         el.scrollTop = el.scrollHeight
       }
-
     }
   }
 
-  componentDidUpdate (prevProps: Readonly<Props>) {
+  componentDidUpdate(prevProps: Readonly<Props>) {
     // make sure the text isn't visible when it's clipped
     if (prevProps.isClipped !== this.props.isClipped) {
       const el = this.styleRef.current!
@@ -209,7 +206,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     }
   }
 
-  render () {
+  render() {
     const {
       isClipped,
       ariaLabel,
@@ -226,7 +223,12 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     const useFallback = isAndroid && !readOnly
     const showFallback = useFallback && !isRichDraft(editorState)
     return (
-      <EditorStyles useFallback={useFallback} userSelect={userSelect} isClipped={isClipped} ref={this.styleRef}>
+      <EditorStyles
+        useFallback={useFallback}
+        userSelect={userSelect}
+        isClipped={isClipped}
+        ref={this.styleRef}
+      >
         {showFallback ? (
           <Suspense fallback={<div />}>
             <AndroidEditorFallback

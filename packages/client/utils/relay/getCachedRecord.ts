@@ -14,17 +14,17 @@ interface Record {
  * */
 
 // overloading the function because return type is guaranteed based on options
-function getCachedRecord (
+function getCachedRecord(
   store: any,
   filterFn: FilterFn,
   options?: {isPlural: false} & Options
 ): Record
-function getCachedRecord (
+function getCachedRecord(
   store: any,
   filterFn: FilterFn,
   options: {isPlural: true} & Options
 ): Record[]
-function getCachedRecord (
+function getCachedRecord(
   store: any,
   filterFn: FilterFn,
   options: Options = {isPlural: false}

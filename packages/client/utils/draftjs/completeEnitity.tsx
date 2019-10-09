@@ -34,7 +34,12 @@ const getExpandedSelectionState = (editorState: EditorState) => {
   return selectionState as SelectionState
 }
 
-export const makeContentWithEntity = (contentState: ContentState, selectionState: SelectionState, mention: string, entityKey: string) => {
+export const makeContentWithEntity = (
+  contentState: ContentState,
+  selectionState: SelectionState,
+  mention: string,
+  entityKey: string
+) => {
   if (!mention) {
     // anchorKey && focusKey should be different here (used for EditorLinkChanger)
     return Modifier.applyEntity(contentState, selectionState, entityKey)
@@ -65,7 +70,13 @@ export const autoCompleteEmoji = (editorState: EditorState, emoji: string) => {
 interface Options {
   keepSelection?: boolean
 }
-const completeEntity = (editorState: EditorState, entityName: string, entityData: any, mention: string, options: Options = {}) => {
+const completeEntity = (
+  editorState: EditorState,
+  entityName: string,
+  entityData: any,
+  mention: string,
+  options: Options = {}
+) => {
   const {keepSelection} = options
   const {editorChangeType, entityType} = operationTypes[entityName]
   const contentState = editorState.getCurrentContent()

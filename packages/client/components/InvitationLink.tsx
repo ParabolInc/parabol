@@ -9,7 +9,7 @@ interface Props {
   massInvitation: InvitationLink_massInvitation
 }
 
-function InvitationLink (props: Props) {
+function InvitationLink(props: Props) {
   const {massInvitation} = props
   // the meeting background is prettier than the plain one, so let's always use it
   return (

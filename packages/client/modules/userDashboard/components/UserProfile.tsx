@@ -13,7 +13,9 @@ import UserSettingsWrapper from './UserSettingsWrapper/UserSettingsWrapper'
 import UpdateUserProfileMutation from '../../../mutations/UpdateUserProfileMutation'
 import defaultUserAvatar from '../../../styles/theme/images/avatar-user.svg'
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
-import withAtmosphere, {WithAtmosphereProps} from '../../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from '../../../decorators/withAtmosphere/withAtmosphere'
 import withForm, {WithFormProps} from '../../../utils/relay/withForm'
 import Legitity from '../../../validation/Legitity'
 import {UserProfile_viewer} from '../../../__generated__/UserProfile_viewer.graphql'
@@ -93,7 +95,7 @@ class UserProfile extends Component<Props> {
     UpdateUserProfileMutation(atmosphere, {preferredName}, {onError, onCompleted})
   }
 
-  render () {
+  render() {
     const {fields, onChange, viewer, error} = this.props
     const {picture} = viewer
     const pictureOrDefault = picture || defaultUserAvatar

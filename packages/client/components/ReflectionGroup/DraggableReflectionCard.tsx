@@ -11,8 +11,8 @@ import {SwipeColumn} from '../GroupingKanban'
 import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
 
 export interface DropZoneBBox {
-  height: number,
-  top: number,
+  height: number
+  top: number
   bottom: number
 }
 
@@ -61,64 +61,83 @@ export interface TargetBBox {
 }
 
 const DraggableReflectionCard = (props: Props) => {
-  const {isClipped, reflection, staticIdx, staticReflections, meeting, isDraggable, swipeColumn} = props
+  const {
+    isClipped,
+    reflection,
+    staticIdx,
+    staticReflections,
+    meeting,
+    isDraggable,
+    swipeColumn
+  } = props
   const {teamId, localStage} = meeting
   const {isComplete, phaseType} = localStage
   const {isDropping, isEditing} = reflection
   const dragRef = useRef({...DRAG_STATE})
   const {current: drag} = dragRef
   const staticReflectionCount = staticReflections.length
-  const {onMouseDown} = useDraggableReflectionCard(reflection, drag, staticIdx, teamId, staticReflectionCount, swipeColumn)
+  const {onMouseDown} = useDraggableReflectionCard(
+    reflection,
+    drag,
+    staticIdx,
+    teamId,
+    staticReflectionCount,
+    swipeColumn
+  )
   const isDragPhase = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete
   const canDrag = isDraggable && isDragPhase && !isEditing && !isDropping
   const handleDrag = canDrag ? onMouseDown : undefined
   return (
-    <DragWrapper ref={(c) => drag.ref = c} onMouseDown={handleDrag} onTouchStart={handleDrag} isDraggable={canDrag}>
+    <DragWrapper
+      ref={(c) => (drag.ref = c)}
+      onMouseDown={handleDrag}
+      onTouchStart={handleDrag}
+      isDraggable={canDrag}
+    >
       <ReflectionCard reflection={reflection} isClipped={isClipped} meeting={meeting} />
     </DragWrapper>
   )
 }
 
-export default createFragmentContainer(DraggableReflectionCard,
-  {
-    staticReflections: graphql`
-      fragment DraggableReflectionCard_staticReflections on RetroReflection @relay(plural: true) {
-        id
-        reflectionGroupId
+export default createFragmentContainer(DraggableReflectionCard, {
+  staticReflections: graphql`
+    fragment DraggableReflectionCard_staticReflections on RetroReflection @relay(plural: true) {
+      id
+      reflectionGroupId
+    }
+  `,
+  reflection: graphql`
+    fragment DraggableReflectionCard_reflection on RetroReflection {
+      ...ReflectionCard_reflection
+      ...RemoteReflection_reflection
+      id
+      isEditing
+      reflectionGroupId
+      retroPhaseItemId
+      isViewerDragging
+      isViewerCreator
+      isDropping
+      remoteDrag {
+        dragUserId
+        dragUserName
       }
-    `,
-    reflection: graphql`
-      fragment DraggableReflectionCard_reflection on RetroReflection {
-        ...ReflectionCard_reflection
-        ...RemoteReflection_reflection
-        id
-        isEditing
-        reflectionGroupId
-        retroPhaseItemId
-        isViewerDragging
-        isViewerCreator
-        isDropping
-        remoteDrag {
-          dragUserId
-          dragUserName
-        }
+    }
+  `,
+  meeting: graphql`
+    fragment DraggableReflectionCard_meeting on RetrospectiveMeeting {
+      ...ReflectionCard_meeting
+      id
+      teamId
+      localStage {
+        isComplete
+        phaseType
       }
-    `,
-    meeting: graphql`
-      fragment DraggableReflectionCard_meeting on RetrospectiveMeeting {
-        ...ReflectionCard_meeting
-        id
-        teamId
-        localStage {
+      phases {
+        stages {
           isComplete
           phaseType
         }
-        phases {
-          stages {
-            isComplete
-            phaseType
-          }
-        }
-      }`
-  }
-)
+      }
+    }
+  `
+})

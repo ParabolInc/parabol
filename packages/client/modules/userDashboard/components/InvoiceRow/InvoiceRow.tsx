@@ -12,7 +12,7 @@ import {PALETTE} from '../../../../styles/paletteV2'
 import {InvoiceStatusEnum} from '../../../../types/graphql'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import { InvoiceRow_invoice } from '__generated__/InvoiceRow_invoice.graphql';
+import {InvoiceRow_invoice} from '__generated__/InvoiceRow_invoice.graphql'
 
 const InvoiceAmount = styled('span')({
   color: PALETTE.TEXT_MAIN,
@@ -55,15 +55,17 @@ const LinkStyles = styled('div')({
 
 const RowLink = LinkStyles.withComponent(Link)
 
-const StyledDate = styled('span')<{styledToPay?: boolean, styledPaid?: boolean}>(({styledToPay, styledPaid}) => ({
-  fontSize: 13,
-  color: styledToPay || styledPaid ? PALETTE.TEXT_GRAY : PALETTE.ERROR_MAIN
-}))
+const StyledDate = styled('span')<{styledToPay?: boolean; styledPaid?: boolean}>(
+  ({styledToPay, styledPaid}) => ({
+    fontSize: 13,
+    color: styledToPay || styledPaid ? PALETTE.TEXT_GRAY : PALETTE.ERROR_MAIN
+  })
+)
 
 const PayURL = styled('a')({
   color: PALETTE.LINK_BLUE,
   fontWeight: 600,
-  textDecoration: 'none',
+  textDecoration: 'none'
 })
 
 interface Props {
@@ -82,7 +84,10 @@ const InvoiceRow = (props: Props) => {
           <InfoRow>
             <InvoiceTitle>{makeMonthString(endAt)}</InvoiceTitle>
             <InfoRowRight>
-              <InvoiceAmount>{isEstimate && '*'}{invoiceLineFormat(amountDue)}</InvoiceAmount>
+              <InvoiceAmount>
+                {isEstimate && '*'}
+                {invoiceLineFormat(amountDue)}
+              </InvoiceAmount>
             </InfoRowRight>
           </InfoRow>
           <InfoRow>
@@ -102,7 +107,13 @@ const InvoiceRow = (props: Props) => {
             )}
             {status !== InvoiceStatusEnum.PAID && status !== InvoiceStatusEnum.UPCOMING && (
               <StyledDate styledPaid={status === InvoiceStatusEnum.PENDING}>
-                {payUrl ? <PayURL rel='noopener noreferrer' target='_blank' href={payUrl}>{'PAY NOW'}</PayURL> : `Status: ${status}`}
+                {payUrl ? (
+                  <PayURL rel='noopener noreferrer' target='_blank' href={payUrl}>
+                    {'PAY NOW'}
+                  </PayURL>
+                ) : (
+                  `Status: ${status}`
+                )}
               </StyledDate>
             )}
           </InfoRow>
@@ -112,10 +123,8 @@ const InvoiceRow = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  InvoiceRow,
-  {
-    invoice: graphql`
+export default createFragmentContainer(InvoiceRow, {
+  invoice: graphql`
     fragment InvoiceRow_invoice on Invoice {
       id
       amountDue
@@ -126,6 +135,6 @@ export default createFragmentContainer(
       paidAt
       payUrl
       status
-    }`
-  }
-)
+    }
+  `
+})

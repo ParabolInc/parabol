@@ -6,7 +6,6 @@ import Icon from './Icon'
 import {keyframes} from '@emotion/core'
 import BaseTag from './Tag/BaseTag'
 
-
 const keyframesOpacity = keyframes`
   0% {
     opacity: 1;
@@ -42,7 +41,11 @@ const StyledTag = styled(BaseTag)({
   color: '#FFFFFF'
 })
 
-export type RemoteReflectionArrow = 'arrow_downward' | 'arrow_upward' | 'arrow_back' | 'arrow_forward'
+export type RemoteReflectionArrow =
+  | 'arrow_downward'
+  | 'arrow_upward'
+  | 'arrow_back'
+  | 'arrow_forward'
 
 interface Props {
   arrow?: RemoteReflectionArrow

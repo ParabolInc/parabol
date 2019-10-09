@@ -23,34 +23,37 @@ const DraggableTask = (props: Props) => {
   const {area, idx, task} = props
   return (
     <Draggable draggableId={task.id} index={idx} disableInteractiveElementBlocking={false}>
-      {(
-        dragProvided: DraggableProvided,
-        dragSnapshot: DraggableStateSnapshot
-      ) => (
-        <DraggableStyles ref={dragProvided.innerRef} {...dragProvided.draggableProps} {...dragProvided.dragHandleProps}>
-          <NullableTask area={area} task={task} isDraggingOver={dragSnapshot.draggingOver as TaskStatusEnum} />
+      {(dragProvided: DraggableProvided, dragSnapshot: DraggableStateSnapshot) => (
+        <DraggableStyles
+          ref={dragProvided.innerRef}
+          {...dragProvided.draggableProps}
+          {...dragProvided.dragHandleProps}
+        >
+          <NullableTask
+            area={area}
+            task={task}
+            isDraggingOver={dragSnapshot.draggingOver as TaskStatusEnum}
+          />
         </DraggableStyles>
       )}
     </Draggable>
   )
 }
 
-export default createFragmentContainer(DraggableTask,
-  {
-    task: graphql`
-      fragment DraggableTask_task on Task {
-        id
-        content
-        integration {
-          service
-        }
-        status
-        sortOrder
-        assignee {
-          id
-        }
-        ...NullableTask_task
+export default createFragmentContainer(DraggableTask, {
+  task: graphql`
+    fragment DraggableTask_task on Task {
+      id
+      content
+      integration {
+        service
       }
-    `
-  }
-)
+      status
+      sortOrder
+      assignee {
+        id
+      }
+      ...NullableTask_task
+    }
+  `
+})

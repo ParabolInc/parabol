@@ -43,32 +43,32 @@ interface Props {
 }
 
 const EditorLinkViewer = (props: Props) => {
-    const {href, addHyperlink, innerRef, editorState, removeModal, setEditorState} = props
+  const {href, addHyperlink, innerRef, editorState, removeModal, setEditorState} = props
 
-    const handleRemove = () => {
-      setEditorState(removeLink(editorState))
-      removeModal()
-    }
+  const handleRemove = () => {
+    setEditorState(removeLink(editorState))
+    removeModal()
+  }
 
-    const changeLink = () => {
-      addHyperlink()
-    }
+  const changeLink = () => {
+    addHyperlink()
+  }
 
-    return (
-      <MenuStyles onMouseDown={dontTellDraft} ref={innerRef}>
-        <UrlSpan>
-          <LinkText href={href} rel='noopener noreferrer' target='_blank'>
-            {href}
-          </LinkText>
-        </UrlSpan>
-        <FlatButton onClick={changeLink} palette='mid'>
-          {'Change'}
-        </FlatButton>
-        <FlatButton onClick={handleRemove} palette='mid'>
-          {'Remove'}
-        </FlatButton>
-      </MenuStyles>
-    )
+  return (
+    <MenuStyles onMouseDown={dontTellDraft} ref={innerRef}>
+      <UrlSpan>
+        <LinkText href={href} rel='noopener noreferrer' target='_blank'>
+          {href}
+        </LinkText>
+      </UrlSpan>
+      <FlatButton onClick={changeLink} palette='mid'>
+        {'Change'}
+      </FlatButton>
+      <FlatButton onClick={handleRemove} palette='mid'>
+        {'Remove'}
+      </FlatButton>
+    </MenuStyles>
+  )
 }
 
 export default EditorLinkViewer

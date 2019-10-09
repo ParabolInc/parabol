@@ -25,17 +25,17 @@ const LI = styled('li')({
 class AddTeamMemberModalSuccess extends Component<Props> {
   exitTimeoutId: number | undefined
 
-  componentDidMount () {
+  componentDidMount() {
     this.exitTimeoutId = window.setTimeout(() => {
       this.props.closePortal()
     }, 5000)
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     clearTimeout(this.exitTimeoutId)
   }
 
-  render () {
+  render() {
     const {successfulInvitations} = this.props
     return (
       <StyledDialogContainer>

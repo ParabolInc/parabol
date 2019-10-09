@@ -36,8 +36,8 @@ const TeamColumnsContainer = (props: Props) => {
     const nodes = tasks.edges.map(({node}) => node)
     const contentFilteredNodes = contentFilter
       ? nodes.filter((task) => {
-        return task.contentText && task.contentText.match(contentFilterRegex)
-      })
+          return task.contentText && task.contentText.match(contentFilterRegex)
+        })
       : nodes
 
     const teamMemberFilteredNodes = teamMemberFilterId

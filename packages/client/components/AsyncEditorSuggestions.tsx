@@ -22,14 +22,14 @@ const AsyncEditorSuggestions = (props: Props) => {
   return (
     <SuggestionStyles>
       {suggestions &&
-      suggestions.map((suggestion, idx) => {
-        return (
-          // eslint-disable-next-line
+        suggestions.map((suggestion, idx) => {
+          return (
+            // eslint-disable-next-line
           <div key={idx} onMouseDown={dontTellDraft} onClick={handleSelect(idx)}>
-            <SuggestionItem active={activeIdx === idx} {...suggestion} />
-          </div>
-        )
-      })}
+              <SuggestionItem active={activeIdx === idx} {...suggestion} />
+            </div>
+          )
+        })}
     </SuggestionStyles>
   )
 }

@@ -22,7 +22,7 @@ const linkStyle = {
 
 const notificationPageUrl = makeAppLink('me/notifications')
 
-export default function NotificationSummaryEmail () {
+export default function NotificationSummaryEmail() {
   return (
     <Layout maxWidth={544}>
       <EmailBlock innerMaxWidth={innerMaxWidth}>

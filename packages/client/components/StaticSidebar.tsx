@@ -6,7 +6,7 @@ import {DECELERATE} from '../styles/animation'
 const DURATION = 200
 
 interface StyleProps {
-isOpen: boolean
+  isOpen: boolean
 }
 const Placeholder = styled('div')<StyleProps>(({isOpen}) => ({
   minWidth: isOpen ? DASH_SIDEBAR.WIDTH : 0,

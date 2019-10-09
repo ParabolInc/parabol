@@ -7,19 +7,12 @@ import graphql from 'babel-plugin-relay/macro'
 import LabelHeading from './LabelHeading/LabelHeading'
 import MeetingSidebarLabelBlock from './MeetingSidebarLabelBlock'
 import MeetingSubnavItem from './MeetingSubnavItem'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import {useGotoStageId} from '../hooks/useMeeting'
 import DragDiscussionTopicMutation from '../mutations/DragDiscussionTopicMutation'
 import {navItemRaised} from '../styles/elevation'
 import {meetingVoteIcon} from '../styles/meeting'
-import {
-  DISCUSSION_TOPIC,
-  RETRO_TOPIC_LABEL,
-  RETRO_VOTED_LABEL,
-  SORT_STEP
-} from '../utils/constants'
+import {DISCUSSION_TOPIC, RETRO_TOPIC_LABEL, RETRO_VOTED_LABEL, SORT_STEP} from '../utils/constants'
 import dndNoise from '../utils/dndNoise'
 import plural from '../utils/plural'
 import Icon from './Icon'

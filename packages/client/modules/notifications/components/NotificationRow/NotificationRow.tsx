@@ -17,7 +17,9 @@ const typePicker = {
     import(/* webpackChunkName: 'TaskInvolves' */ '../TaskInvolves')
   ),
   [NotificationEnum.PROMOTE_TO_BILLING_LEADER]: lazyPreload(() =>
-    import(/* webpackChunkName: 'PromoteToBillingLeader' */ '../PromoteToBillingLeader/PromoteToBillingLeader')
+    import(
+      /* webpackChunkName: 'PromoteToBillingLeader' */ '../PromoteToBillingLeader/PromoteToBillingLeader'
+    )
   ),
   [NotificationEnum.TEAM_ARCHIVED]: lazyPreload(() =>
     import(/* webpackChunkName: 'TeamArchived' */ '../TeamArchived/TeamArchived')

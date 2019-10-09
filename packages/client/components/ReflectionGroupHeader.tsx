@@ -21,21 +21,23 @@ interface Props {
   titleInputRef: RefObject<HTMLInputElement>
 }
 
-const GroupHeader = styled('div')<{isExpanded: boolean, portalStatus: PortalStatus}>(({isExpanded, portalStatus}) => ({
-  alignItems: 'center',
-  display: 'flex',
-  flexShrink: 1,
-  fontSize: 14,
-  justifyContent: 'space-between',
-  margin: isExpanded ? `0 ${Gutters.COLUMN_INNER_GUTTER}` : undefined,
-  maxWidth: ElementWidth.REFLECTION_CARD,
-  minHeight: 32,
-  opacity: !isExpanded && portalStatus !== PortalStatus.Exited ? 0 : undefined,
-  paddingLeft: Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL,
-  paddingRight: 8,
-  position: 'relative',
-  width: '100%'
-}))
+const GroupHeader = styled('div')<{isExpanded: boolean; portalStatus: PortalStatus}>(
+  ({isExpanded, portalStatus}) => ({
+    alignItems: 'center',
+    display: 'flex',
+    flexShrink: 1,
+    fontSize: 14,
+    justifyContent: 'space-between',
+    margin: isExpanded ? `0 ${Gutters.COLUMN_INNER_GUTTER}` : undefined,
+    maxWidth: ElementWidth.REFLECTION_CARD,
+    minHeight: 32,
+    opacity: !isExpanded && portalStatus !== PortalStatus.Exited ? 0 : undefined,
+    paddingLeft: Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL,
+    paddingRight: 8,
+    position: 'relative',
+    width: '100%'
+  })
+)
 
 const StyledTag = styled(BaseTag)<{dialogClosed: boolean}>(({dialogClosed}) => ({
   backgroundColor: dialogClosed ? PALETTE.BACKGROUND_GRAY : '#FFFFFF',
@@ -63,7 +65,9 @@ const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>
       />
       {phaseType === GROUP && (
         <StyledTag
-          dialogClosed={portalStatus === PortalStatus.Exited || portalStatus === PortalStatus.Exiting}
+          dialogClosed={
+            portalStatus === PortalStatus.Exited || portalStatus === PortalStatus.Exiting
+          }
         >{`${reflections.length} ${plural(reflections.length, 'Card')}`}</StyledTag>
       )}
       {phaseType === VOTE && (

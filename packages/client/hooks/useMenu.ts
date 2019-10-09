@@ -16,14 +16,17 @@ export interface MenuProps {
   isDropdown: boolean
 }
 
-const useMenu = <T extends HTMLElement = HTMLButtonElement>(preferredMenuPosition: MenuPosition, options: Options = {}) => {
+const useMenu = <T extends HTMLElement = HTMLButtonElement>(
+  preferredMenuPosition: MenuPosition,
+  options: Options = {}
+) => {
   const {onOpen, onClose, id, parentId, originCoords} = options
   const isDropdown = !!options.isDropdown
   const {targetRef, originRef, coords, menuPosition} = useCoords<T>(preferredMenuPosition, {
     originCoords
   })
   if (originCoords) {
-    (originRef as any).current = {getBoundingClientRect: () => originCoords} as RectElement
+    ;(originRef as any).current = {getBoundingClientRect: () => originCoords} as RectElement
   }
   const {portal, closePortal, togglePortal, portalStatus, setPortalStatus} = usePortal({
     id,

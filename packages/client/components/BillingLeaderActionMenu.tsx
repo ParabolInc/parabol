@@ -5,9 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import SetOrgUserRoleMutation from '../mutations/SetOrgUserRoleMutation'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
@@ -56,7 +54,10 @@ const BillingLeaderActionMenu = (props: Props) => {
           <MenuItem label='Remove Billing Leader role' onClick={setRole(null)} />
         )}
         {!isBillingLeader && (
-          <MenuItem label='Promote to Billing Leader' onClick={setRole(OrgUserRole.BILLING_LEADER)} />
+          <MenuItem
+            label='Promote to Billing Leader'
+            onClick={setRole(OrgUserRole.BILLING_LEADER)}
+          />
         )}
         {viewerId === userId && !isViewerLastBillingLeader && (
           <MenuItem label='Leave Organization' onClick={toggleLeave} />

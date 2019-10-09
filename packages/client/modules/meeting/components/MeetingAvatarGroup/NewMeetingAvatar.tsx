@@ -98,8 +98,10 @@ interface Props extends WithAtmosphereProps {
 }
 
 const NewMeetingAvatarMenu = lazyPreload(() =>
-  import(/* webpackChunkName: 'NewMeetingAvatarMenu' */
-  '../NewMeetingAvatarMenu')
+  import(
+    /* webpackChunkName: 'NewMeetingAvatarMenu' */
+    '../NewMeetingAvatarMenu'
+  )
 )
 
 const NewMeetingAvatar = (props: Props) => {
@@ -111,7 +113,9 @@ const NewMeetingAvatar = (props: Props) => {
   const {teamMemberId, userId} = teamMember
   const avatarIsFacilitating = userId === facilitatorUserId
   const handleNavigate = canNavigate ? gotoStage : undefined
-  const {togglePortal, menuProps, menuPortal, originRef} = useMenu<HTMLDivElement>(MenuPosition.UPPER_RIGHT)
+  const {togglePortal, menuProps, menuPortal, originRef} = useMenu<HTMLDivElement>(
+    MenuPosition.UPPER_RIGHT
+  )
   return (
     <ErrorBoundary>
       <Item>

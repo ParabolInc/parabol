@@ -23,14 +23,20 @@ const StepperDots = styled('div')({
   padding: '8px 0'
 })
 
-const StepperDot = styled('div')<{isLocal: boolean, isFocused: boolean}>(({isLocal, isFocused}) => ({
-  backgroundColor: isLocal ? PALETTE.CONTROL_MAIN : isFocused ? PALETTE.EMPHASIS_WARM : PALETTE.TEXT_GRAY,
-  borderRadius: '50%',
-  height: 8,
-  margin: '0 2px',
-  opacity: isLocal ? undefined : isFocused ? undefined : .35,
-  width: 8
-}))
+const StepperDot = styled('div')<{isLocal: boolean; isFocused: boolean}>(
+  ({isLocal, isFocused}) => ({
+    backgroundColor: isLocal
+      ? PALETTE.CONTROL_MAIN
+      : isFocused
+      ? PALETTE.EMPHASIS_WARM
+      : PALETTE.TEXT_GRAY,
+    borderRadius: '50%',
+    height: 8,
+    margin: '0 2px',
+    opacity: isLocal ? undefined : isFocused ? undefined : 0.35,
+    width: 8
+  })
+)
 
 const ReflectWrapperMobile = (props: Props) => {
   const {children, activeIdx, setActiveIdx, focusedIdx, disabled} = props
@@ -52,7 +58,14 @@ const ReflectWrapperMobile = (props: Props) => {
       </SwipeableViews>
       <StepperDots>
         {childArr.map((_, idx) => {
-          return <StepperDot key={idx} isLocal={idx === activeIdx} isFocused={idx === focusedIdx} onClick={() => setActiveIdx(idx)} />
+          return (
+            <StepperDot
+              key={idx}
+              isLocal={idx === activeIdx}
+              isFocused={idx === focusedIdx}
+              onClick={() => setActiveIdx(idx)}
+            />
+          )
         })}
       </StepperDots>
     </>

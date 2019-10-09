@@ -14,7 +14,12 @@ const shrinkGroupOnExpand = (groupEl: HTMLDivElement) => {
   })
 }
 
-const useExpandedReflections = (groupRef: MutableRefObject<any>, stackRef: RefObject<HTMLDivElement>, count: number, headerRef?: RefObject<HTMLDivElement>) => {
+const useExpandedReflections = (
+  groupRef: MutableRefObject<any>,
+  stackRef: RefObject<HTMLDivElement>,
+  count: number,
+  headerRef?: RefObject<HTMLDivElement>
+) => {
   const offsetLeft = ElementWidth.REFLECTION_CARD_PADDING * 2
   const offsetTop = ElementWidth.REFLECTION_CARD_PADDING * 2
   const isGroup = !!headerRef
@@ -61,7 +66,17 @@ const useExpandedReflections = (groupRef: MutableRefObject<any>, stackRef: RefOb
       collapse()
     }
   }, [count])
-  return {bgRef, scrollRef, setItemsRef, modalHeaderRef, headerRef, portal, portalStatus, collapse, expand}
+  return {
+    bgRef,
+    scrollRef,
+    setItemsRef,
+    modalHeaderRef,
+    headerRef,
+    portal,
+    portalStatus,
+    collapse,
+    expand
+  }
 }
 
 export default useExpandedReflections

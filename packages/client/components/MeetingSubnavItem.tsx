@@ -22,7 +22,9 @@ const ItemRoot = styled('div')<ItemRootProps>(
       : isDragging
       ? PALETTE.BACKGROUND_NAV_LIGHT_HOVER
       : '#FFFFFF',
-    boxShadow: isActive ? `inset ${NavSidebar.LEFT_BORDER_WIDTH} 0 0 ${PALETTE.BORDER_MAIN}` : undefined,
+    boxShadow: isActive
+      ? `inset ${NavSidebar.LEFT_BORDER_WIDTH} 0 0 ${PALETTE.BORDER_MAIN}`
+      : undefined,
     color: PALETTE.TEXT_MAIN,
     display: 'flex',
     fontSize: 14,

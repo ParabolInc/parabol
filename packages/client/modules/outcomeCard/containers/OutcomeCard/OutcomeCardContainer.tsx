@@ -17,9 +17,9 @@ import useTaskChildFocus from '../../../../hooks/useTaskChildFocus'
 
 interface Props {
   area: AreaEnum
-  contentState: ContentState,
-  isAgenda: boolean | undefined,
-  isDraggingOver: TaskStatusEnum | undefined,
+  contentState: ContentState
+  isAgenda: boolean | undefined
+  isDraggingOver: TaskStatusEnum | undefined
   task: OutcomeCardContainer_task
 }
 
@@ -31,7 +31,10 @@ const OutcomeCardContainer = memo((props: Props) => {
   const [isTaskHovered, setIsTaskHovered] = useState(false)
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const [editorStateRef, setEditorStateRef] = useRefState<EditorState>(() => {
-    return EditorState.createWithContent(contentState, editorDecorators(() => editorStateRef.current))
+    return EditorState.createWithContent(
+      contentState,
+      editorDecorators(() => editorStateRef.current)
+    )
   })
   const {removeTaskChild, addTaskChild, useTaskChild, isTaskFocused} = useTaskChildFocus(taskId)
 

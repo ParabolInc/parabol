@@ -59,37 +59,33 @@ const TimelinePriorityTasks = (props: Props) => {
     // try checking for length in case relay is screwing up & not invalidating (repro: sometimes cypress fails)
   }, [tasks, tasks.edges.length])
 
-  const onDragEnd = useEventCallback(
-    (result: DropResult) => {
-      const {source, destination, draggableId} = result
-      if (!destination) return
-      if (destination.index === source.index) return
+  const onDragEnd = useEventCallback((result: DropResult) => {
+    const {source, destination, draggableId} = result
+    if (!destination) return
+    if (destination.index === source.index) return
 
-      let sortOrder
-      if (destination.index === 0) {
-        sortOrder = dndNoise()
-      } else if (destination.index === activeTasks.length) {
-        sortOrder = activeTasks[activeTasks.length - 1].sortOrder - SORT_STEP + dndNoise()
-      } else {
-        const offset = source.index > destination.index ? -1 : 1
-        sortOrder =
-          (activeTasks[destination.index + offset].sortOrder + activeTasks[destination.index].sortOrder) / 2 +
-          dndNoise()
-      }
-      const updatedTask = {id: draggableId, sortOrder}
-      UpdateTaskMutation(atmosphere, {updatedTask, area: AreaEnum.userDash})
-    })
+    let sortOrder
+    if (destination.index === 0) {
+      sortOrder = dndNoise()
+    } else if (destination.index === activeTasks.length) {
+      sortOrder = activeTasks[activeTasks.length - 1].sortOrder - SORT_STEP + dndNoise()
+    } else {
+      const offset = source.index > destination.index ? -1 : 1
+      sortOrder =
+        (activeTasks[destination.index + offset].sortOrder +
+          activeTasks[destination.index].sortOrder) /
+          2 +
+        dndNoise()
+    }
+    const updatedTask = {id: draggableId, sortOrder}
+    UpdateTaskMutation(atmosphere, {updatedTask, area: AreaEnum.userDash})
+  })
 
   if (activeTasks.length === 0) return <TimelineNoTasks />
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable
-        droppableId={TaskStatusEnum.active}
-        type={DroppableType.TASK}
-      >
-        {(
-          dropProvided: DroppableProvided
-        ) => (
+      <Droppable droppableId={TaskStatusEnum.active} type={DroppableType.TASK}>
+        {(dropProvided: DroppableProvided) => (
           <TaskList>
             <PriorityTasksHeader>
               <ActiveIcon>whatshot</ActiveIcon>
@@ -97,12 +93,7 @@ const TimelinePriorityTasks = (props: Props) => {
             </PriorityTasksHeader>
             <PriorityTaskBody {...dropProvided.droppableProps} ref={dropProvided.innerRef}>
               {activeTasks.map((task, idx) => (
-                <DraggableTask
-                  key={task.id}
-                  area={AreaEnum.userDash}
-                  task={task}
-                  idx={idx}
-                />
+                <DraggableTask key={task.id} area={AreaEnum.userDash} task={task} idx={idx} />
               ))}
               {dropProvided.placeholder}
             </PriorityTaskBody>

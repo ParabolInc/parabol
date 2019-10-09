@@ -24,7 +24,6 @@ const DashAlertOverLimit = (props: Props) => {
   const emailStr = extractedEmails ? extractedEmails[0] : null
   const [prefix, suffix] = emailStr ? overLimitCopy.split(emailStr) : [overLimitCopy, '']
 
-
   return (
     <DashAlertBar>
       <MessageBlock>{prefix}</MessageBlock>

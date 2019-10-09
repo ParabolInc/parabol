@@ -35,7 +35,7 @@ interface Props {
 
 const BeginDemoModal = (props: Props) => {
   const {closePortal} = props
-  const atmosphere = useAtmosphere() as unknown as LocalAtmosphere
+  const atmosphere = (useAtmosphere() as unknown) as LocalAtmosphere
   const {clientGraphQLServer} = atmosphere
   const {startBot} = clientGraphQLServer
   const onClick = () => {
@@ -48,9 +48,13 @@ const BeginDemoModal = (props: Props) => {
   return (
     <StyledDialogContainer>
       <StyledIcon>chat</StyledIcon>
-      <StyledCopy>Try Parabol for yourself by holding a 2-minute retrospective meeting with our simulated
-        colleagues</StyledCopy>
-      <PrimaryButton onClick={onClick} size='medium'>Start Demo</PrimaryButton>
+      <StyledCopy>
+        Try Parabol for yourself by holding a 2-minute retrospective meeting with our simulated
+        colleagues
+      </StyledCopy>
+      <PrimaryButton onClick={onClick} size='medium'>
+        Start Demo
+      </PrimaryButton>
     </StyledDialogContainer>
   )
 }

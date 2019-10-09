@@ -10,7 +10,7 @@ interface Sortable {
  * Computes the sort order of a task to be sandwiched between
  * `target` and `bounding`.
  */
-export default function sortOrderBetween (
+export default function sortOrderBetween(
   target: Sortable | undefined | null,
   bounding: Sortable | undefined | null,
   toInsert: Sortable | undefined | null,

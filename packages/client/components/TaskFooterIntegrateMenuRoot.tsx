@@ -29,13 +29,13 @@ interface Props {
 }
 
 const TaskFooterIntegrateMenuRoot = ({
-                                       menuProps,
-                                       loadingDelay,
-                                       loadingWidth,
-                                       mutationProps,
-                                       task,
-                                       useTaskChild
-                                     }: Props) => {
+  menuProps,
+  loadingDelay,
+  loadingWidth,
+  mutationProps,
+  task,
+  useTaskChild
+}: Props) => {
   const {teamId, userId} = task
   const atmosphere = useAtmosphere()
   useTaskChild('integrate')

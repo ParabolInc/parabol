@@ -17,7 +17,7 @@ class RelayLoadableTransitionGroup extends Component {
   }
   state = {pastDelay: false}
 
-  componentDidMount () {
+  componentDidMount() {
     this.delayTimer = setTimeout(() => {
       this.setState({
         pastDelay: true
@@ -25,7 +25,7 @@ class RelayLoadableTransitionGroup extends Component {
     }, HUMAN_ADDICTION_THRESH)
   }
 
-  render () {
+  render() {
     const {loading: Loading, extraProps, LoadableComponent, readyState} = this.props
     const {pastDelay} = this.state
     const {error, props} = readyState

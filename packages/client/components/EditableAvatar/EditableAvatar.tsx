@@ -20,37 +20,41 @@ const EditableAvatarRoot = styled('div')<Pick<Props, 'hasPanel' | 'size'>>(({has
   width: size
 }))
 
-const EditableAvatarEditOverlay = styled('div')<Pick<Props, 'hasPanel' | 'size'>>(({hasPanel, size}) => ({
-  alignItems: 'center',
-  backgroundColor: PALETTE.BACKGROUND_DARK,
-  borderRadius: hasPanel ? borderRadiusPanel : borderRadius,
-  color: 'white',
-  cursor: 'pointer',
-  display: 'flex',
-  flexDirection: 'column',
-  fontSize: 14,
-  fontWeight: 600,
-  height: size,
-  justifyContent: 'center',
-  left: 0,
-  opacity: 0,
-  position: 'absolute',
-  top: 0,
-  width: size,
-  zIndex: 200,
+const EditableAvatarEditOverlay = styled('div')<Pick<Props, 'hasPanel' | 'size'>>(
+  ({hasPanel, size}) => ({
+    alignItems: 'center',
+    backgroundColor: PALETTE.BACKGROUND_DARK,
+    borderRadius: hasPanel ? borderRadiusPanel : borderRadius,
+    color: 'white',
+    cursor: 'pointer',
+    display: 'flex',
+    flexDirection: 'column',
+    fontSize: 14,
+    fontWeight: 600,
+    height: size,
+    justifyContent: 'center',
+    left: 0,
+    opacity: 0,
+    position: 'absolute',
+    top: 0,
+    width: size,
+    zIndex: 200,
 
-  '&:hover': {
-    opacity: .75,
-    transition: 'opacity .2s ease-in'
-  }
-}))
+    '&:hover': {
+      opacity: 0.75,
+      transition: 'opacity .2s ease-in'
+    }
+  })
+)
 
-const EditableAvatarImgBlock = styled('div')<Pick<Props, 'hasPanel' | 'size'>>(({hasPanel, size}) => ({
-  height: hasPanel ? size - panelPaddingHorizontal : size,
-  position: 'relative',
-  width: hasPanel ? size - panelPaddingHorizontal : size,
-  zIndex: 100
-}))
+const EditableAvatarImgBlock = styled('div')<Pick<Props, 'hasPanel' | 'size'>>(
+  ({hasPanel, size}) => ({
+    height: hasPanel ? size - panelPaddingHorizontal : size,
+    position: 'relative',
+    width: hasPanel ? size - panelPaddingHorizontal : size,
+    zIndex: 100
+  })
+)
 
 interface Props {
   hasPanel?: boolean

@@ -11,7 +11,7 @@ const thresholds = {
   inf: Infinity
 }
 // For 2m20s returns 40s, for 4h15m returns 45m etc.
-export default function getRefreshPeriod (maybeTime) {
+export default function getRefreshPeriod(maybeTime) {
   const time = ensureDate(maybeTime)
   const msElapsed = Date.now() - time.getTime() || 0
   const threshKeys = Object.keys(thresholds)

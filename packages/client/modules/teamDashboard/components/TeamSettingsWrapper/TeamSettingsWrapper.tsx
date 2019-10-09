@@ -8,7 +8,9 @@ const TeamSettings = lazy(() =>
   import(/* webpackChunkName: 'TeamSettingsRoot' */ '../TeamSettingsRoot')
 )
 const TeamIntegrationsRoot = lazy(() =>
-  import(/* webpackChunkName: 'TeamIntegrationsRoot' */ '../../containers/TeamIntegrationsRoot/TeamIntegrationsRoot')
+  import(
+    /* webpackChunkName: 'TeamIntegrationsRoot' */ '../../containers/TeamIntegrationsRoot/TeamIntegrationsRoot'
+  )
 )
 
 interface Props extends RouteComponentProps<{teamId: string}> {}

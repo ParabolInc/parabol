@@ -2,8 +2,7 @@ import {Editor} from 'draft-js'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import OutcomeCardStatusIndicator
-  from '../../outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
+import OutcomeCardStatusIndicator from '../../outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
 import ClearNotificationMutation from '../../../mutations/ClearNotificationMutation'
 import {ASSIGNEE, MENTIONEE} from '../../../utils/constants'
 import styled from '@emotion/styled'
@@ -121,10 +120,7 @@ const TaskInvolves = (props: Props) => {
             </b>
             {involvement === MENTIONEE ? ' in' : ''}
             <span>{' a task for '}</span>
-            <MessageVar
-              onClick={gotoBoard}
-              title={`Go to ${teamName}’s Board`}
-            >
+            <MessageVar onClick={gotoBoard} title={`Go to ${teamName}’s Board`}>
               {teamName}
             </MessageVar>
             <span>{':'}</span>
@@ -144,11 +140,8 @@ const TaskInvolves = (props: Props) => {
             />
             {assignee && (
               <Owner>
-                <OwnerAvatar
-                  alt='Avatar'
-                  src={assignee.picture}
-                />
-                <OwnerName >{assignee.preferredName}</OwnerName>
+                <OwnerAvatar alt='Avatar' src={assignee.picture} />
+                <OwnerName>{assignee.preferredName}</OwnerName>
               </Owner>
             )}
           </TaskListView>

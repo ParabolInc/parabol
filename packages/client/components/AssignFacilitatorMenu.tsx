@@ -23,14 +23,18 @@ const AssignFacilitatorMenu = (props: Props) => {
   const {facilitatorUserId, id: meetingId} = newMeeting!
   const {teamMembers} = team || {teamMembers: []}
   const assignees = useMemo(
-    () => teamMembers
-      .filter((teamMember) => teamMember.userId !== facilitatorUserId)
-      .sort((a,b) => a.preferredName.toLowerCase() < b.preferredName.toLowerCase() ? -1 : 1),
+    () =>
+      teamMembers
+        .filter((teamMember) => teamMember.userId !== facilitatorUserId)
+        .sort((a, b) => (a.preferredName.toLowerCase() < b.preferredName.toLowerCase() ? -1 : 1)),
     [facilitatorUserId, teamMembers]
   )
   const atmosphere = useAtmosphere()
   const promoteToFacilitator = (newAssignee) => () => {
-    PromoteNewMeetingFacilitatorMutation(atmosphere, {facilitatorUserId: newAssignee.userId, meetingId})
+    PromoteNewMeetingFacilitatorMutation(atmosphere, {
+      facilitatorUserId: newAssignee.userId,
+      meetingId
+    })
   }
   return (
     <Menu ariaLabel={'Promote to Facilitator'} {...menuProps}>
@@ -68,5 +72,5 @@ export default createFragmentContainer(AssignFacilitatorMenu, {
         userId
       }
     }
-  `,
+  `
 })
