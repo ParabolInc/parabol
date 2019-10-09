@@ -20,18 +20,21 @@ interface Props {
   viewer: RetroMeetingSidebar_viewer
 }
 
+const collapsiblePhases: string[] = [NewMeetingPhaseTypeEnum.checkin, NewMeetingPhaseTypeEnum.discuss]
+
 const RetroMeetingSidebar = (props: Props) => {
   const {gotoStageId, handleMenuClick, toggleSidebar, viewer} = props
   const {id: viewerId, team} = viewer
   const {meetingSettings, newMeeting} = team!
   const {phaseTypes} = meetingSettings
-  const {facilitatorUserId, facilitatorStageId, localPhase, phases} =
+  const {facilitatorUserId, facilitatorStageId, localPhase, localStage, phases} =
     newMeeting || UNSTARTED_MEETING
   const localPhaseType = localPhase ? localPhase.phaseType : ''
   const facilitatorStageRes = findStageById(phases, facilitatorStageId)
   const facilitatorPhaseType = facilitatorStageRes ? facilitatorStageRes.phase.phaseType : ''
   const isViewerFacilitator = facilitatorUserId === viewerId
   const isUnsyncedFacilitatorPhase = facilitatorPhaseType !== localPhaseType
+  const isUnsyncedFacilitatorStage = localStage ? localStage.id !== facilitatorStageId : undefined
   return (
     <NewMeetingSidebar
       handleMenuClick={handleMenuClick}
@@ -60,12 +63,15 @@ const RetroMeetingSidebar = (props: Props) => {
             : undefined
           return (
             <NewMeetingSidebarPhaseListItem
-              key={phaseType}
               handleClick={canNavigate ? handleClick : undefined}
               isActive={
                 phaseType === NewMeetingPhaseTypeEnum.discuss ? false : localPhaseType === phaseType
               }
+              isCollapsible={collapsiblePhases.includes(phaseType)}
+              isFacilitatorPhase={phaseType === facilitatorPhaseType}
               isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase && phaseType === facilitatorPhaseType}
+              isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
+              key={phaseType}
               phaseCount={phaseCount}
               phaseType={phaseType}
             >
@@ -101,6 +107,9 @@ export default createFragmentContainer(RetroMeetingSidebar, {
           facilitatorStageId
           localPhase {
             phaseType
+          }
+          localStage {
+            id
           }
           phases {
             phaseType
