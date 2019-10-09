@@ -6,7 +6,6 @@ import ActionSidebarAgendaItemsSection from './ActionSidebarAgendaItemsSection'
 import MeetingSidebarTeamMemberStageItems from './MeetingSidebarTeamMemberStageItems'
 import {useGotoStageId} from '../hooks/useMeeting'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
-// import UNSTARTED_MEETING from '../utils/meetings/unstartedMeeting'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -19,7 +18,6 @@ const ActionSidebarPhaseListItemChildren = (props: Props) => {
   const {gotoStageId, handleMenuClick, phaseType, viewer} = props
   const {team} = viewer
   const {newMeeting} = team!
-  // const meeting = newMeeting || UNSTARTED_MEETING
   if (phaseType === NewMeetingPhaseTypeEnum.agendaitems) {
     return (
       <ActionSidebarAgendaItemsSection
@@ -51,8 +49,8 @@ export default createFragmentContainer(ActionSidebarPhaseListItemChildren, {
           }
         }
       }
-      ...ActionSidebarAgendaItemsSection_viewer
       ...MeetingSidebarTeamMemberStageItems_viewer
+      ...ActionSidebarAgendaItemsSection_viewer
     }
   `
 })

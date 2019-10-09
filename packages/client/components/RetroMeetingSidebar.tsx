@@ -31,6 +31,8 @@ const StyledBadge = styled(Badge)({
   textShadow: 'none'
 })
 
+const collapsiblePhases: string[] = [NewMeetingPhaseTypeEnum.checkin, NewMeetingPhaseTypeEnum.discuss]
+
 const RetroMeetingSidebar = (props: Props) => {
   const {gotoStageId, handleMenuClick, toggleSidebar, viewer} = props
   const {id: viewerId, team} = viewer
@@ -77,6 +79,7 @@ const RetroMeetingSidebar = (props: Props) => {
               isActive={
                 phaseType === NewMeetingPhaseTypeEnum.discuss ? false : localPhaseType === phaseType
               }
+              isCollapsible={collapsiblePhases.includes(phaseType)}
               isFacilitatorPhase={phaseType === facilitatorPhaseType}
               isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase && phaseType === facilitatorPhaseType}
               isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}

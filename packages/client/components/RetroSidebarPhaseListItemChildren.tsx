@@ -2,6 +2,7 @@ import {RetroSidebarPhaseListItemChildren_viewer} from '../__generated__/RetroSi
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import MeetingSidebarTeamMemberStageItems from './MeetingSidebarTeamMemberStageItems'
 import RetroSidebarDiscussSection from './RetroSidebarDiscussSection'
 import {useGotoStageId} from '../hooks/useMeeting'
 import isPhaseComplete from '../utils/meetings/isPhaseComplete'
@@ -19,12 +20,18 @@ const RetroSidebarPhaseListItemChildren = (props: Props) => {
   const {team} = viewer
   const newMeeting = team && team.newMeeting
   const phases = newMeeting && newMeeting.phases
+  const showCheckInSection = newMeeting && newMeeting.localPhase && newMeeting.localPhase.phaseType === phaseType
   const showDiscussSection = phases && isPhaseComplete(NewMeetingPhaseTypeEnum.vote, phases)
-  if (
-    phaseType === NewMeetingPhaseTypeEnum.discuss &&
-    newMeeting &&
-    showDiscussSection
-  ) {
+  if (phaseType === NewMeetingPhaseTypeEnum.checkin && showCheckInSection) {
+    return (
+      <MeetingSidebarTeamMemberStageItems
+        gotoStageId={gotoStageId}
+        handleMenuClick={handleMenuClick}
+        viewer={viewer}
+      />
+    )
+  }
+  if (phaseType === NewMeetingPhaseTypeEnum.discuss && showDiscussSection) {
     return (
       <RetroSidebarDiscussSection
         gotoStageId={gotoStageId}
@@ -52,6 +59,7 @@ export default createFragmentContainer(RetroSidebarPhaseListItemChildren, {
           }
         }
       }
+      ...MeetingSidebarTeamMemberStageItems_viewer
       ...RetroSidebarDiscussSection_viewer
     }
   `
