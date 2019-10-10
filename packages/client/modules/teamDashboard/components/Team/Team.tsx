@@ -45,11 +45,6 @@ const BackIcon = styled(Icon)({
   color: 'inherit'
 })
 
-const MeetingInProgressModal = lazy(() =>
-  import(
-    /* webpackChunkName: 'MeetingInProgressModal' */ '../MeetingInProgressModal/MeetingInProgressModal'
-  )
-)
 const UnpaidTeamModalRoot = lazy(() =>
   import(
     /* webpackChunkName: 'UnpaidTeamModalRoot' */ '../../containers/UnpaidTeamModal/UnpaidTeamModalRoot'
@@ -106,16 +101,12 @@ class Team extends Component<Props> {
   render() {
     const {children, isSettings, team} = this.props
     if (!team) return null
-    const {id: teamId, isPaid, meetingId} = team
-    const hasActiveMeeting = Boolean(meetingId)
-    const hasOverlay = hasActiveMeeting || !isPaid
+    const {id: teamId, isPaid} = team
+    const hasOverlay = !isPaid
 
     return (
       <>
-        <Suspense fallback={''}>
-          <MeetingInProgressModal team={team} />
-          {!isPaid && <UnpaidTeamModalRoot teamId={teamId} />}
-        </Suspense>
+        <Suspense fallback={''}>{!isPaid && <UnpaidTeamModalRoot teamId={teamId} />}</Suspense>
         <DashHeader hasOverlay={hasOverlay} key={`team${isSettings ? 'Dash' : 'Settings'}Header`}>
           <TeamDashHeaderInner>
             {isSettings ? (
@@ -139,7 +130,7 @@ class Team extends Component<Props> {
                   <IconLabel icon='settings' label='Team Settings' />
                 </StyledButton>
                 <DashboardAvatars team={team} />
-                <TeamCallsToAction teamId={teamId} />
+                <TeamCallsToAction team={team} />
               </>
             )}
           </TeamDashHeaderInner>
@@ -156,8 +147,7 @@ export default createFragmentContainer(withAtmosphere(withRouter(Team)), {
       contentFilter
       id
       isPaid
-      meetingId
-      ...MeetingInProgressModal_team
+      ...TeamCallsToAction_team
       ...DashboardAvatars_team
       ...EditableTeamName_team
     }
