@@ -14,8 +14,7 @@ interface Props {
 }
 
 const EditorLink = (getEditorState) =>
-  (class InnerEditorLink extends Component<Props> {
-
+  class InnerEditorLink extends Component<Props> {
     state = {hasFocus: false}
 
     onClick = (e) => {
@@ -38,7 +37,7 @@ const EditorLink = (getEditorState) =>
       }
     }
 
-    render () {
+    render() {
       const {offsetkey, children} = this.props
       const {hasFocus} = this.state
       const style = {
@@ -57,6 +56,6 @@ const EditorLink = (getEditorState) =>
         </span>
       )
     }
-  })
+  }
 
 export default EditorLink

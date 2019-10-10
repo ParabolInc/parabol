@@ -30,7 +30,6 @@ const scheduleScroll = (drag: ReflectionDragState, initialDropZoneEl: HTMLDivEle
   scroll(isChange)
 }
 
-
 const maybeStartReflectionScroll = (drag: ReflectionDragState) => {
   const dropZoneEl = drag.dropZoneEl!
   const {scrollHeight, clientHeight} = dropZoneEl

@@ -56,8 +56,10 @@ const InfoBlocks = styled('div')({
 })
 
 const CreditCardModal = lazyPreload(() =>
-  import(/* webpackChunkName: 'CreditCardModal' */
-    '../CreditCardModal/CreditCardModal')
+  import(
+    /* webpackChunkName: 'CreditCardModal' */
+    '../CreditCardModal/CreditCardModal'
+  )
 )
 
 interface Props {
@@ -90,17 +92,24 @@ const OrgBillingCreditCardInfo = (props: Props) => {
             </div>
           </InfoBlocks>
         </CreditCardInfo>
-        <SecondaryButton onClick={togglePortal} onMouseEnter={CreditCardModal.preload}>{'Update'}</SecondaryButton>
-        {modalPortal(<CreditCardModal activeUserCount={activeUserCount} orgId={orgId} actionType={'update'} closePortal={closePortal}/>)}
+        <SecondaryButton onClick={togglePortal} onMouseEnter={CreditCardModal.preload}>
+          {'Update'}
+        </SecondaryButton>
+        {modalPortal(
+          <CreditCardModal
+            activeUserCount={activeUserCount}
+            orgId={orgId}
+            actionType={'update'}
+            closePortal={closePortal}
+          />
+        )}
       </InfoAndUpdate>
     </Panel>
   )
 }
 
-export default createFragmentContainer(
-  OrgBillingCreditCardInfo,
-  {
-    organization: graphql`
+export default createFragmentContainer(OrgBillingCreditCardInfo, {
+  organization: graphql`
     fragment OrgBillingCreditCardInfo_organization on Organization {
       id
       orgUserCount {
@@ -112,6 +121,6 @@ export default createFragmentContainer(
         expiry
         last4
       }
-    }`
-  }
-)
+    }
+  `
+})

@@ -25,7 +25,13 @@ const SSEConnectionHandler = (sharedDataLoader, rateLimiter, sseClients) => (req
     'X-Accel-Buffering': 'no'
   })
   res.socket.setNoDelay() // disable Nagle algorithm
-  const connectionContext = new ConnectionContext(res, authToken, sharedDataLoader, rateLimiter, req.ip)
+  const connectionContext = new ConnectionContext(
+    res,
+    authToken,
+    sharedDataLoader,
+    rateLimiter,
+    req.ip
+  )
   sseClients[connectionContext.id] = connectionContext
   res.write(`event: id\n`)
   res.write(`retry: 1000\n`)

@@ -83,7 +83,6 @@ const CheckInControls = (props: Props) => {
       >
         <BottomNavIconLabel icon='check_circle' iconColor='green' label={nextLabel} />
       </BottomNavControl>
-
     </Wrapper>
   )
 }

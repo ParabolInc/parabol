@@ -106,8 +106,8 @@ interface CreateIssueFields {
 
 interface IssueCreateMetadata {
   projects: (Pick<JiraProject, 'self' | 'id' | 'key' | 'name' | 'avatarUrls'> & {
-      issuetypes: JiraIssueType[]
-    })[]
+    issuetypes: JiraIssueType[]
+  })[]
 }
 
 interface JiraCreateIssueResponse {
@@ -127,7 +127,7 @@ interface JiraError {
 
 class AtlassianClientManager {
   static SCOPE = 'read:jira-user read:jira-work write:jira-work offline_access'
-  static openOAuth (atmosphere: Atmosphere, teamId: string, mutationProps: MenuMutationProps) {
+  static openOAuth(atmosphere: Atmosphere, teamId: string, mutationProps: MenuMutationProps) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const providerState = Math.random()
       .toString(36)
@@ -166,7 +166,7 @@ class AtlassianClientManager {
   cache: {[key: string]: {result: any; expiration: number | any}} = {}
   timeout = 5000
 
-  constructor (accessToken: string, options: AtlassianClientManagerOptions = {}) {
+  constructor(accessToken: string, options: AtlassianClientManagerOptions = {}) {
     this.accessToken = accessToken
     this.refreshToken = options.refreshToken
     const fetch = options.fetch || window.fetch
@@ -206,19 +206,19 @@ class AtlassianClientManager {
     }
   }
 
-  async getAccessibleResources () {
+  async getAccessibleResources() {
     return this.get('https://api.atlassian.com/oauth/token/accessible-resources') as
       | AccessibleResource[]
       | AtlassianError
   }
 
-  async getMyself (cloudId: string) {
+  async getMyself(cloudId: string) {
     return this.get(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/myself`) as
       | JiraUser
       | AtlassianError
   }
 
-  async getPaginatedProjects (cloudId: string, url: string, callback: GetProjectsCallback) {
+  async getPaginatedProjects(cloudId: string, url: string, callback: GetProjectsCallback) {
     const res = (await this.get(url)) as JiraProjectResponse | AtlassianError
     if ('message' in res) {
       callback(res, null)
@@ -230,7 +230,7 @@ class AtlassianClientManager {
     }
   }
 
-  async getProjects (cloudIds: string[], callback: GetProjectsCallback) {
+  async getProjects(cloudIds: string[], callback: GetProjectsCallback) {
     return Promise.all(
       cloudIds.map(async (cloudId) => {
         return this.getPaginatedProjects(
@@ -242,19 +242,19 @@ class AtlassianClientManager {
     )
   }
 
-  async getProject (cloudId: string, projectId: string) {
+  async getProject(cloudId: string, projectId: string) {
     return this.get(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/project/${projectId}`
     ) as JiraProject | AtlassianError
   }
 
-  async convertMarkdownToADF (markdown: string) {
+  async convertMarkdownToADF(markdown: string) {
     return this.post('https://api.atlassian.com/pf-editor-service/convert?from=markdown&to=adf', {
       input: markdown
     }) as object
   }
 
-  async getCreateMeta (cloudId: string, projectKeys?: string[]) {
+  async getCreateMeta(cloudId: string, projectKeys?: string[]) {
     let args = ''
     if (projectKeys) {
       args += `projectKeys=${projectKeys.join(',')}`
@@ -267,7 +267,7 @@ class AtlassianClientManager {
     ) as IssueCreateMetadata | AtlassianError | JiraError
   }
 
-  async createIssue (cloudId: string, projectKey: string, issueFields: CreateIssueFields) {
+  async createIssue(cloudId: string, projectKey: string, issueFields: CreateIssueFields) {
     const payload = {
       fields: {
         project: {

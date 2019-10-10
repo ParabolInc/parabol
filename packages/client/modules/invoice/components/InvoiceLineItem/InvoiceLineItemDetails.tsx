@@ -10,8 +10,10 @@ import {PALETTE} from '../../../../styles/paletteV2'
 import {Breakpoint} from '../../../../types/constEnums'
 
 const detailDescriptionMaker = {
-  [InvoiceLineItemEnum.ADDED_USERS]: (detail: InvoiceLineItemDetails_details[0]) => `${detail.email} joined ${makeDateString(detail.startAt)}`,
-  [InvoiceLineItemEnum.REMOVED_USERS]: (detail: InvoiceLineItemDetails_details[0]) => `${detail.email} left ${makeDateString(detail.startAt)}`,
+  [InvoiceLineItemEnum.ADDED_USERS]: (detail: InvoiceLineItemDetails_details[0]) =>
+    `${detail.email} joined ${makeDateString(detail.startAt)}`,
+  [InvoiceLineItemEnum.REMOVED_USERS]: (detail: InvoiceLineItemDetails_details[0]) =>
+    `${detail.email} left ${makeDateString(detail.startAt)}`,
   [InvoiceLineItemEnum.INACTIVITY_ADJUSTMENTS]: (detail: InvoiceLineItemDetails_details[0]) => {
     if (!detail.endAt) {
       return `${detail.email} has been paused since ${makeDateString(detail.startAt)}`
@@ -92,16 +94,14 @@ const InvoiceLineItemDetails = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  InvoiceLineItemDetails,
-  {
-    details: graphql`
-      fragment InvoiceLineItemDetails_details on InvoiceLineItemDetails @relay(plural: true) {
-        id
-        amount
-        email
-        endAt
-        startAt
-      }`
-  }
-)
+export default createFragmentContainer(InvoiceLineItemDetails, {
+  details: graphql`
+    fragment InvoiceLineItemDetails_details on InvoiceLineItemDetails @relay(plural: true) {
+      id
+      amount
+      email
+      endAt
+      startAt
+    }
+  `
+})

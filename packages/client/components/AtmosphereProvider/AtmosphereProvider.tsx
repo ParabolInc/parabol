@@ -14,7 +14,7 @@ interface Props {
 class AtmosphereProvider extends Component<Props> {
   atmosphere?: Atmosphere | TLocalAtmosphere
 
-  constructor (props) {
+  constructor(props) {
     super(props)
     if (props.isDemo) {
       this.loadDemo().catch()
@@ -24,15 +24,17 @@ class AtmosphereProvider extends Component<Props> {
     }
   }
 
-  async loadDemo () {
-    const LocalAtmosphere = await import(/* webpackChunkName: 'LocalAtmosphere' */ '../../modules/demo/LocalAtmosphere')
+  async loadDemo() {
+    const LocalAtmosphere = await import(
+      /* webpackChunkName: 'LocalAtmosphere' */ '../../modules/demo/LocalAtmosphere'
+    )
       .then((mod) => mod.default)
       .catch()
     this.atmosphere = new LocalAtmosphere()
     this.forceUpdate()
   }
 
-  render () {
+  render() {
     if (!this.atmosphere) return null
     return (
       <AtmosphereContext.Provider value={this.atmosphere}>

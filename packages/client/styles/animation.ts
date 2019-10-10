@@ -1,4 +1,3 @@
-
 // Timing function to decelerate
 import {keyframes} from '@emotion/core'
 

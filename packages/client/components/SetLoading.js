@@ -7,11 +7,11 @@ export default class SetLoading extends Component {
     setLoading: PropTypes.func.isRequired
   }
 
-  componentWillMount () {
+  componentWillMount() {
     this.props.setLoading(true)
   }
 
-  render () {
+  render() {
     return null
   }
 }

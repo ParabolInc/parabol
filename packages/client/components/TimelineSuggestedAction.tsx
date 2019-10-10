@@ -16,9 +16,7 @@ const lookup = {
     )
   ),
   SuggestedActionTryTheDemo: lazy(() =>
-    import(
-      /* webpackChunkName: 'SuggestedActionTryTheDemo' */ './SuggestedActionTryTheDemo'
-    )
+    import(/* webpackChunkName: 'SuggestedActionTryTheDemo' */ './SuggestedActionTryTheDemo')
   ),
   SuggestedActionTryRetroMeeting: lazy(() =>
     import(
@@ -31,9 +29,7 @@ const lookup = {
     )
   ),
   SuggestedActionCreateNewTeam: lazy(() =>
-    import(
-      /* webpackChunkName: 'SuggestedActionCreateNewTeam' */ './SuggestedActionCreateNewTeam'
-    )
+    import(/* webpackChunkName: 'SuggestedActionCreateNewTeam' */ './SuggestedActionCreateNewTeam')
   )
 }
 
@@ -41,7 +37,7 @@ const Wrapper = styled('div')({
   paddingBottom: 16
 })
 
-function TimelineSuggestedAction (props: Props) {
+function TimelineSuggestedAction(props: Props) {
   const {viewer} = props
   const {suggestedActions} = viewer
   const [suggestedAction] = suggestedActions

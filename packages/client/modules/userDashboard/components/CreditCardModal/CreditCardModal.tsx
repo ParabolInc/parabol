@@ -39,9 +39,12 @@ const CreditCardModal = (props: Props) => {
   const {actionType, activeUserCount, closePortal, orgId, meetingId} = props
   const [status, setStatus] = useState<Status>('init')
   const atmosphere = useAtmosphere()
-  const onSuccess = actionType === 'update' ? closePortal : () => {
-    setStatus('success')
-  }
+  const onSuccess =
+    actionType === 'update'
+      ? closePortal
+      : () => {
+          setStatus('success')
+        }
   const onLater = (e: React.FormEvent) => {
     e.preventDefault()
     setStatus('later')
@@ -59,11 +62,20 @@ const CreditCardModal = (props: Props) => {
     <Container>
       <DialogTitle>
         {actionType === 'update' ? 'Update Credit Card' : 'Upgrade to Pro'}
-        {actionType !== 'update' && <a href={ExternalLinks.PRICING_LINK} rel='noopener noreferrer' target='blank'><Info>info</Info></a>}
+        {actionType !== 'update' && (
+          <a href={ExternalLinks.PRICING_LINK} rel='noopener noreferrer' target='blank'>
+            <Info>info</Info>
+          </a>
+        )}
       </DialogTitle>
       <CreditCardReassurance actionType={actionType} />
-      <CreditCardForm actionType={actionType} activeUserCount={activeUserCount} orgId={orgId} onSuccess={onSuccess}
-                      onLater={onLater} />
+      <CreditCardForm
+        actionType={actionType}
+        activeUserCount={activeUserCount}
+        orgId={orgId}
+        onSuccess={onSuccess}
+        onLater={onLater}
+      />
     </Container>
   )
 }

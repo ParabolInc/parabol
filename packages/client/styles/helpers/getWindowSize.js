@@ -1,4 +1,4 @@
-export default function getWindowSize () {
+export default function getWindowSize() {
   const size = {
     height: window.innerHeight,
     width: window.innerWidth

@@ -55,7 +55,7 @@ const InputField = styled('input')<{disabled: boolean}>(
     textIndent: '4px',
     width: '100%',
     ...makeFieldColorPalette('cool', false),
-    ...inputPlaceholderStyles,
+    ...inputPlaceholderStyles
   },
   ({disabled}) => {
     return (
@@ -71,7 +71,7 @@ const StyledIcon = styled(Icon)({
   color: PALETTE.TEXT_BLUE,
   display: 'block',
   left: 16,
-  opacity: .7,
+  opacity: 0.7,
   pointerEvents: 'none',
   position: 'absolute',
   top: 9

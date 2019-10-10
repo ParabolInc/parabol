@@ -12,9 +12,9 @@ export interface WithToggledPortalProps {
   isClosing: boolean
   isOpen: boolean
 
-  closePortal (): void
+  closePortal(): void
 
-  terminatePortal (): void
+  terminatePortal(): void
 }
 
 export interface WithTogglePortalState {
@@ -25,12 +25,12 @@ export interface WithTogglePortalState {
 export interface InternalProps {
   isToggleNativeElement?: boolean
 
-  onClose? (): void
+  onClose?(): void
 
   toggle: ReactElement<any>
   LoadableComponent: any
 
-  setOriginRef? (c: HTMLElement): void
+  setOriginRef?(c: HTMLElement): void
 }
 
 const withToggledPortal = <P extends WithToggledPortalProps>(
@@ -49,13 +49,13 @@ const withToggledPortal = <P extends WithToggledPortalProps>(
     smartToggle: ReactElement<any>
     toggleRef?: HTMLElement
 
-    constructor (props) {
+    constructor(props) {
       super(props)
       const {toggle} = props
       this.smartToggle = this.makeSmartToggle(toggle)
     }
 
-    componentWillReceiveProps (nextProps) {
+    componentWillReceiveProps(nextProps) {
       const {toggle} = nextProps
       if (this.props.toggle !== toggle) {
         this.smartToggle = this.makeSmartToggle(toggle)
@@ -89,7 +89,7 @@ const withToggledPortal = <P extends WithToggledPortalProps>(
       }
     }
 
-    makeSmartToggle (toggle: ReactElement<any>) {
+    makeSmartToggle(toggle: ReactElement<any>) {
       // strings are plain DOM nodes
       return React.cloneElement(toggle, {
         'aria-haspopup': 'true',
@@ -127,7 +127,7 @@ const withToggledPortal = <P extends WithToggledPortalProps>(
       })
     }
 
-    render () {
+    render() {
       const {isClosing, isOpen} = this.state
 
       return (

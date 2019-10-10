@@ -15,7 +15,7 @@ interface Props extends RouteComponentProps<{}> {
 }
 
 class TimelineEventCompletedActionMeeting extends Component<Props> {
-  render () {
+  render() {
     const {timelineEvent} = this.props
     const {meeting, team} = timelineEvent
     const {id: meetingId, meetingNumber, createdAt, endedAt, taskCount} = meeting

@@ -3,10 +3,10 @@ import AtmosphereProvider from './AtmosphereProvider/AtmosphereProvider'
 import NewMeetingSummaryRoot from '../modules/summary/components/NewMeetingSummaryRoot'
 
 class DemoSummary extends Component {
-  componentWillUnmount () {
+  componentWillUnmount() {
     window.localStorage.removeItem('retroDemo')
   }
-  render () {
+  render() {
     return (
       <AtmosphereProvider isDemo>
         <NewMeetingSummaryRoot />

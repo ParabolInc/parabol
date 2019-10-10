@@ -58,7 +58,6 @@ const HelpMessage = styled(StyledTip)({
   fontSize: 14
 })
 
-
 const UseSSO = styled(PlainButton)({
   color: PALETTE.LINK_BLUE,
   display: 'flex',
@@ -68,9 +67,9 @@ const UseSSO = styled(PlainButton)({
 })
 
 interface State {
-  isSSO: boolean,
-  pendingDomain: string | null,
-  ssoURL: string | null,
+  isSSO: boolean
+  pendingDomain: string | null
+  ssoURL: string | null
   ssoDomain: string | null
 }
 
@@ -89,7 +88,7 @@ export class EmailPasswordAuthFormBase extends Component<Props, State> {
     ssoDomain: null
   }
 
-  componentDidUpdate (prevProps: Props) {
+  componentDidUpdate(prevProps: Props) {
     const {location, onError} = this.props
     if (prevProps.location !== location && prevProps.error) {
       onError()
@@ -154,13 +153,12 @@ export class EmailPasswordAuthFormBase extends Component<Props, State> {
     this.tryLogin(email, password).catch()
   }
 
-
   /*
-  * Whenever the domain changes, we see if the domain belongs to an SSO account
-  * if they submit before the check is returned, we send another check
-  * if the domain is SSO, we redirect
-  * else, we do a standard flow
-  * */
+   * Whenever the domain changes, we see if the domain belongs to an SSO account
+   * if they submit before the check is returned, we send another check
+   * if the domain is SSO, we redirect
+   * else, we do a standard flow
+   * */
   tryLoginWithSSO = async (email: string) => {
     const {atmosphere, submitMutation, onError, history, onCompleted} = this.props
     const {ssoDomain, ssoURL} = this.state
@@ -211,7 +209,7 @@ export class EmailPasswordAuthFormBase extends Component<Props, State> {
     }
   }
 
-  render () {
+  render() {
     const {error, fields, isPrimary, isSignin, submitting, onChange, existingAccount} = this.props
     const {isSSO} = this.state
     const Button = isPrimary ? PrimaryButton : RaisedButton
@@ -246,7 +244,9 @@ export class EmailPasswordAuthFormBase extends Component<Props, State> {
             {isSignin ? SIGNIN_LABEL : CREATE_ACCOUNT_BUTTON_LABEL}
           </Button>
         </Form>
-        <UseSSO onClick={this.toggleSSO}>{`Sign ${isSignin ? 'in' : 'up'} ${isSSO ? 'without' : 'with'} SSO`}</UseSSO>
+        <UseSSO onClick={this.toggleSSO}>{`Sign ${isSignin ? 'in' : 'up'} ${
+          isSSO ? 'without' : 'with'
+        } SSO`}</UseSSO>
       </>
     )
   }

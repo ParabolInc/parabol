@@ -31,14 +31,12 @@ type DocVariables<T> = T extends DocumentNode<any, infer V> ? V : never
 
 class GitHubClientManager {
   static SCOPE = 'admin:org_hook,read:org,repo,user:email,write:repo_hook'
-  static openOAuth (atmosphere: Atmosphere, teamId: string, mutationProps: MenuMutationProps) {
+  static openOAuth(atmosphere: Atmosphere, teamId: string, mutationProps: MenuMutationProps) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const providerState = Math.random()
       .toString(36)
       .substring(5)
-    const uri = `https://github.com/login/oauth/authorize?client_id=${
-      window.__ACTION__.github
-    }&scope=${GitHubClientManager.SCOPE}&state=${providerState}`
+    const uri = `https://github.com/login/oauth/authorize?client_id=${window.__ACTION__.github}&scope=${GitHubClientManager.SCOPE}&state=${providerState}`
 
     const popup = window.open(
       uri,
@@ -65,7 +63,7 @@ class GitHubClientManager {
   cache: {[key: string]: {result: any; expiration: number | any}} = {}
   timeout = 5000
   headers: any
-  constructor (accessToken: string, options: GitHubClientManagerOptions = {}) {
+  constructor(accessToken: string, options: GitHubClientManagerOptions = {}) {
     this.accessToken = accessToken
     this.fetch = options.fetch || window.fetch
     this.headers = {
@@ -76,7 +74,7 @@ class GitHubClientManager {
     }
   }
 
-  private async post<T> (body: string): Promise<GitHubResponse<T>> {
+  private async post<T>(body: string): Promise<GitHubResponse<T>> {
     const res = await this.fetch('https://api.github.com/graphql', {
       method: 'POST',
       headers: this.headers,
@@ -85,7 +83,7 @@ class GitHubClientManager {
     return res.json()
   }
 
-  private async query<T> (
+  private async query<T>(
     query: T,
     variables?: DocVariables<T>
   ): Promise<GitHubResponse<DocResponse<T>>> {
@@ -109,7 +107,7 @@ class GitHubClientManager {
     return this.cache[body].result
   }
 
-  private async mutate<T> (
+  private async mutate<T>(
     query: T,
     variables?: DocVariables<T>
   ): Promise<GitHubResponse<DocResponse<T>>> {
@@ -117,20 +115,20 @@ class GitHubClientManager {
     return this.post(body)
   }
 
-  async getRepos () {
+  async getRepos() {
     return this.query(getRepos)
   }
 
-  async getRepoInfo (nameWithOwner: string, assigneeLogin: string) {
+  async getRepoInfo(nameWithOwner: string, assigneeLogin: string) {
     const [repoOwner, repoName] = nameWithOwner.split('/')
     return this.query(getRepoInfo, {repoName, repoOwner, assigneeLogin})
   }
 
-  async getProfile () {
+  async getProfile() {
     return this.query(getProfile)
   }
 
-  async createIssue (createIssueInput: ICreateIssueInput) {
+  async createIssue(createIssueInput: ICreateIssueInput) {
     return this.mutate(createIssue, {input: createIssueInput})
   }
 }

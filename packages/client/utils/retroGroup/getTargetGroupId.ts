@@ -13,7 +13,7 @@ const getTargetGroupId = (e: MouseEvent | TouchEvent) => {
     return null
   }
   const target = e.composedPath().find((el: any) => {
-      return el.hasAttribute ? el.hasAttribute(DragAttribute.DROPPABLE) : true
+    return el.hasAttribute ? el.hasAttribute(DragAttribute.DROPPABLE) : true
   }) as HTMLDivElement
   return target.getAttribute ? target.getAttribute(DragAttribute.DROPPABLE) : null
 }

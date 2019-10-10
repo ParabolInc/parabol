@@ -9,8 +9,10 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 
 const UserDashTeamMenu = lazyPreload(() =>
-  import(/* webpackChunkName: 'UserDashTeamMenu' */
-  '../../../../components/UserDashTeamMenu')
+  import(
+    /* webpackChunkName: 'UserDashTeamMenu' */
+    '../../../../components/UserDashTeamMenu'
+  )
 )
 
 interface Props {

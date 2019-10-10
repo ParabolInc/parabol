@@ -9,7 +9,7 @@ import hideBodyScroll from '../utils/hideBodyScroll'
 import PlainButton from './PlainButton/PlainButton'
 import {navDrawerShadow} from '../styles/elevation'
 import useEventCallback from 'hooks/useEventCallback'
-import isReactTouch from 'utils/isReactTouch';
+import isReactTouch from 'utils/isReactTouch'
 import isNativeTouch from '../utils/isNativeTouch'
 
 const PEEK_WIDTH = 20
@@ -22,8 +22,9 @@ const SidebarAndScrim = styled('div')({
 })
 
 interface StyleProps {
-x: number
+  x: number
 }
+
 const Scrim = styled('div')<StyleProps>(({x}) => ({
   background: PALETTE.BACKGROUND_FORCED_BACKDROP,
   height: '100%',
@@ -104,15 +105,19 @@ interface Props {
 
 const SwipeableDashSidebar = (props: Props) => {
   const {children, isOpen, onToggle} = props
-  const {portal, openPortal} = usePortal({allowScroll: true, noClose: true})
+  const {portal, openPortal} = usePortal({
+    allowScroll: true,
+    noClose: true
+  })
   const [xRef, setX] = useRefState(0)
   useEffect(() => {
     openPortal()
     return () => {
       window.clearTimeout(swipe.peekTimeout)
-      swipe.showBodyScroll && swipe.showBodyScroll()
     }
-  }, [/* eslint-disable-line react-hooks/exhaustive-deps*/])
+  }, [
+    /* eslint-disable-line react-hooks/exhaustive-deps*/
+  ])
 
   const hideSidebar = useCallback(() => {
     setX(0)

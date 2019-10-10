@@ -43,5 +43,5 @@ export default createFragmentContainer(FacilitatorMenu, {
         }
       }
     }
-  `,
+  `
 })

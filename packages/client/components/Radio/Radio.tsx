@@ -32,7 +32,7 @@ interface Props {
 }
 
 class Radio extends Component<Props> {
-  render () {
+  render() {
     // foce checked to a boolean again because of react bug
     const {checked, name, onChange, label, value} = this.props
     return (

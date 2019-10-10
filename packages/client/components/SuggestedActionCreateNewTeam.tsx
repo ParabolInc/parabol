@@ -20,7 +20,7 @@ class SuggestedActionCreateNewTeam extends Component<Props> {
     history.push('/newteam')
   }
 
-  render () {
+  render() {
     const {suggestedAction} = this.props
     const {id: suggestedActionId} = suggestedAction
     return (

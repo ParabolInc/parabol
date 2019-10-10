@@ -1,6 +1,6 @@
 import React from 'react'
 import {NavLink} from 'react-router-dom'
-import styled from '@emotion/styled';
+import styled from '@emotion/styled'
 import Icon from '../Icon'
 import {ICON_SIZE} from '../../styles/typographyV2'
 import {PALETTE} from '../../styles/paletteV2'
@@ -88,7 +88,6 @@ const DashNavItem = (props: Props) => {
           </NavLink>
         )
       }}
-
     </ClassNames>
   )
 }

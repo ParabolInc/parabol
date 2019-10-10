@@ -30,27 +30,27 @@ const DashboardAvatars = (props: Props) => {
         return (
           <AvatarItem key={`dbAvatar${teamMember.id}`}>
             <ErrorBoundary>
-              <DashboardAvatar isViewerLead={isViewerLead} teamMember={teamMember}/>
+              <DashboardAvatar isViewerLead={isViewerLead} teamMember={teamMember} />
             </ErrorBoundary>
           </AvatarItem>
         )
       })}
-      <AddTeamMemberAvatarButton team={team} teamMembers={teamMembers}/>
+      <AddTeamMemberAvatarButton team={team} teamMembers={teamMembers} />
     </AvatarsList>
   )
 }
 
 export default createFragmentContainer(DashboardAvatars, {
   team: graphql`
-      fragment DashboardAvatars_team on Team {
-          id
-          isLead
-          ...AddTeamMemberAvatarButton_team
-          teamMembers(sortBy: "preferredName") {
-              ...AddTeamMemberAvatarButton_teamMembers
-              ...DashboardAvatar_teamMember
-              id
-          }
+    fragment DashboardAvatars_team on Team {
+      id
+      isLead
+      ...AddTeamMemberAvatarButton_team
+      teamMembers(sortBy: "preferredName") {
+        ...AddTeamMemberAvatarButton_teamMembers
+        ...DashboardAvatar_teamMember
+        id
       }
+    }
   `
 })

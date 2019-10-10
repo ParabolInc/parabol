@@ -11,22 +11,22 @@ class SafeProxy<
 > {
   proxy: RecordProxy<any> | null
 
-  constructor (proxy: T | null) {
+  constructor(proxy: T | null) {
     this.proxy = proxy
   }
 
-  getValue<K extends keyof V> (name: K, args?: Variables): NullIfNull<U> | NullIfNull<V[K]> | V[K] {
+  getValue<K extends keyof V>(name: K, args?: Variables): NullIfNull<U> | NullIfNull<V[K]> | V[K] {
     // help wanted: how to remove the cast?
     if (!this.proxy) return null!
     return this.proxy.getValue(name, args)
   }
 
-  getLinkedRecord<K extends keyof V> (name: K, args?: Variables): SafeProxy<RecordProxy<V[K]>> {
+  getLinkedRecord<K extends keyof V>(name: K, args?: Variables): SafeProxy<RecordProxy<V[K]>> {
     const proxy = this.proxy ? this.proxy.getLinkedRecord(name, args) : null
     return new SafeProxy(proxy)
   }
 
-  getLinkedRecords<K extends keyof V> (
+  getLinkedRecords<K extends keyof V>(
     name: K,
     args?: Variables
   ): SafeProxy<RecordProxy<V[K]>>[] | SafeProxy<RecordProxy<V[K]>> {

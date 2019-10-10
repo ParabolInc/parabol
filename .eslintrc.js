@@ -1,9 +1,10 @@
 module.exports = {
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint'],
+  plugins: ['@typescript-eslint', 'prettier'],
   extends: [
     'plugin:@typescript-eslint/recommended',
-    'prettier/@typescript-eslint'
+    'prettier/@typescript-eslint',
+    'plugin:prettier/recommended'
   ],
   parserOptions: {
     project: './tsconfig.json',
@@ -11,7 +12,6 @@ module.exports = {
     sourceType: 'module'
   },
   rules: {
-    'space-before-function-paren': ['error', 'always'], // remove when done refactoring
     '@typescript-eslint/camelcase': 'off',
     '@typescript-eslint/no-empty-interface': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',

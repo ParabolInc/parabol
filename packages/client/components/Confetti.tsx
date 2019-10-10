@@ -3,7 +3,7 @@ import DOMConfetti from 'react-dom-confetti'
 import {PALETTE} from '../styles/paletteV2'
 
 // spread should hit the top left & top right of the screen assuming the start is at the centroid (req'd to look good for mobile)
-const spread = 180 - Math.atan(window.innerHeight / window.innerWidth) / Math.PI * 180 * 2
+const spread = 180 - (Math.atan(window.innerHeight / window.innerWidth) / Math.PI) * 180 * 2
 const confettiConfig = {
   angle: 90,
   spread,

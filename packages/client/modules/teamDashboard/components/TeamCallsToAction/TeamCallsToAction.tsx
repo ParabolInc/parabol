@@ -32,8 +32,10 @@ const StartButton = styled(PrimaryButton)({
 })
 
 const TeamCallsToActionMenu = lazyPreload(() =>
-  import(/* webpackChunkName: 'TeamCallsToActionMenu' */
-  './TeamCallsToActionMenu')
+  import(
+    /* webpackChunkName: 'TeamCallsToActionMenu' */
+    './TeamCallsToActionMenu'
+  )
 )
 
 const TeamCallToAction = (props: Props) => {

@@ -33,7 +33,7 @@ class SuggestedActionTryTheDemo extends Component<Props> {
     history.push('/retrospective-demo')
   }
 
-  render () {
+  render() {
     const {suggestedAction} = this.props
     const {id: suggestedActionId} = suggestedAction
     return (

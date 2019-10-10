@@ -45,35 +45,34 @@ const AgendaList = (props: Props) => {
       : agendaItems
   }, [contentFilter, agendaItems])
 
-  const onDragEnd = useEventCallback(
-    (result) => {
-      const {source, destination} = result
-      if (
-        !destination ||
-        destination.droppableId !== AGENDA_ITEM ||
-        source.droppableId !== AGENDA_ITEM ||
-        destination.index === source.index
-      ) {
-        return
-      }
-      const sourceItem = agendaItems[source.index]
-      const destinationItem = agendaItems[destination.index]
+  const onDragEnd = useEventCallback((result) => {
+    const {source, destination} = result
+    if (
+      !destination ||
+      destination.droppableId !== AGENDA_ITEM ||
+      source.droppableId !== AGENDA_ITEM ||
+      destination.index === source.index
+    ) {
+      return
+    }
+    const sourceItem = agendaItems[source.index]
+    const destinationItem = agendaItems[destination.index]
 
-      let sortOrder
-      if (destination.index === 0) {
-        sortOrder = destinationItem.sortOrder - SORT_STEP + dndNoise()
-      } else if (destination.index === agendaItems.length - 1) {
-        sortOrder = destinationItem.sortOrder + SORT_STEP + dndNoise()
-      } else {
-        const offset = source.index > destination.index ? -1 : 1
-        sortOrder =
-          (agendaItems[destination.index + offset].sortOrder + destinationItem.sortOrder) / 2 +
-          dndNoise()
-      }
-      UpdateAgendaItemMutation(atmosphere, {
-        updatedAgendaItem: {id: sourceItem.id, sortOrder}
-      })
+    let sortOrder
+    if (destination.index === 0) {
+      sortOrder = destinationItem.sortOrder - SORT_STEP + dndNoise()
+    } else if (destination.index === agendaItems.length - 1) {
+      sortOrder = destinationItem.sortOrder + SORT_STEP + dndNoise()
+    } else {
+      const offset = source.index > destination.index ? -1 : 1
+      sortOrder =
+        (agendaItems[destination.index + offset].sortOrder + destinationItem.sortOrder) / 2 +
+        dndNoise()
+    }
+    UpdateAgendaItemMutation(atmosphere, {
+      updatedAgendaItem: {id: sourceItem.id, sortOrder}
     })
+  })
 
   if (filteredAgendaItems.length === 0) {
     return <AgendaListEmptyState isDashboard={!newMeeting} />

@@ -5,7 +5,7 @@ export const taskStatusLabels = {
   [TaskStatus.DONE]: TaskStatusLabel.DONE,
   [TaskStatus.ACTIVE]: TaskStatusLabel.ACTIVE,
   [TaskStatus.STUCK]: TaskStatusLabel.STUCK,
-  [TaskStatus.FUTURE]: TaskStatusLabel.FUTURE,
+  [TaskStatus.FUTURE]: TaskStatusLabel.FUTURE
 }
 
 export const taskStatusColors = {

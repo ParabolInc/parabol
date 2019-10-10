@@ -1,7 +1,12 @@
 import React, {useState} from 'react'
 import getWordAt from './getWordAt'
 import resolvers from './resolvers'
-import {DEFAULT_MENU_HEIGHT, DEFAULT_MENU_WIDTH, HUMAN_ADDICTION_THRESH, MAX_WAIT_TIME} from '../../styles/ui'
+import {
+  DEFAULT_MENU_HEIGHT,
+  DEFAULT_MENU_WIDTH,
+  HUMAN_ADDICTION_THRESH,
+  MAX_WAIT_TIME
+} from '../../styles/ui'
 import completeEntity from '../../utils/draftjs/completeEnitity'
 import getDraftCoords from '../../utils/getDraftCoords'
 import getAnchorLocation from './getAnchorLocation'
@@ -17,9 +22,9 @@ const LoadableEditorSuggestions = Loadable({
     import(
       /* webpackChunkName: 'EditorSuggestions' */
       '../../../client/components/EditorSuggestions/EditorSuggestions'
-      ),
+    ),
   loading: (props) => (
-    <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH}/>
+    <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),
   delay: HUMAN_ADDICTION_THRESH,
   timeout: MAX_WAIT_TIME
@@ -30,9 +35,9 @@ const LoadableMentionableUsersRoot = Loadable({
     import(
       /* webpackChunkName: 'SuggestMentionableUsersRoot' */
       '../../../client/components/SuggestMentionableUsersRoot'
-      ),
+    ),
   loading: (props) => (
-    <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH}/>
+    <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),
   delay: HUMAN_ADDICTION_THRESH,
   timeout: MAX_WAIT_TIME
@@ -69,7 +74,11 @@ interface MentionSuggestion extends BaseSuggestion {
 type Suggestion = MentionSuggestion | TagSuggestion
 
 type SuggestionType = 'tag' | 'mention'
-const useSuggestions = (editorState: EditorState, setEditorState: SetEditorState, handlers: Handlers & CustomProps) => {
+const useSuggestions = (
+  editorState: EditorState,
+  setEditorState: SetEditorState,
+  handlers: Handlers & CustomProps
+) => {
   const {keyBindingFn, handleReturn, teamId, onChange} = handlers
   const [active, setActive] = useState<number | undefined>(undefined)
   const [suggestions, _setSuggestions] = useState<Suggestion[] | undefined>(undefined)
@@ -226,7 +235,7 @@ const useSuggestions = (editorState: EditorState, setEditorState: SetEditorState
     renderModal: suggestionType ? renderModal : undefined,
     removeModal: suggestionType ? onRemoveModal : undefined,
     keyBindingFn: suggestionType ? handleKeyBindingFn : keyBindingFn,
-    handleReturn: suggestionType ? onHandleReturn : handleReturn,
+    handleReturn: suggestionType ? onHandleReturn : handleReturn
   }
 }
 

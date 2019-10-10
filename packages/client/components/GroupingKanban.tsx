@@ -14,7 +14,7 @@ import {Breakpoint, Times} from '../types/constEnums'
 import useThrottledEvent from '../hooks/useThrottledEvent'
 
 interface Props {
-  meeting: GroupingKanban_meeting,
+  meeting: GroupingKanban_meeting
   phaseRef: RefObject<HTMLDivElement>
   resetActivityTimeout?: () => void
 }
@@ -56,7 +56,11 @@ const GroupingKanban = (props: Props) => {
   const [activeIdx, setActiveIdx] = useState(0)
   const ColumnWrapper = isDesktop ? ReflectWrapperDesktop : ReflectWrapperMobile
   const isViewerDragging = useMemo(() => {
-    return isDesktop ? false : !!reflectionGroups.find((group) => group.reflections.find((reflection) => reflection.isViewerDragging))
+    return isDesktop
+      ? false
+      : !!reflectionGroups.find((group) =>
+          group.reflections.find((reflection) => reflection.isViewerDragging)
+        )
   }, [isDesktop, reflectionGroups])
   const swipeColumn: SwipeColumn = useThrottledEvent((offset: number) => {
     const nextIdx = Math.min(reflectPrompts.length - 1, Math.max(0, activeIdx + offset))
@@ -65,7 +69,11 @@ const GroupingKanban = (props: Props) => {
   return (
     <PortalProvider>
       <ColumnsBlock isDesktop={isDesktop}>
-        <ColumnWrapper setActiveIdx={setActiveIdx} activeIdx={activeIdx} disabled={isViewerDragging}>
+        <ColumnWrapper
+          setActiveIdx={setActiveIdx}
+          activeIdx={activeIdx}
+          disabled={isViewerDragging}
+        >
           {reflectPrompts.map((prompt) => (
             <GroupingKanbanColumn
               isDesktop={isDesktop}
@@ -83,29 +91,27 @@ const GroupingKanban = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  GroupingKanban,
-  {
-    meeting: graphql`
-      fragment GroupingKanban_meeting on RetrospectiveMeeting {
-        ...GroupingKanbanColumn_meeting
-        phases {
-          ...on ReflectPhase {
-            phaseType
-            reflectPrompts {
-              ...GroupingKanbanColumn_prompt
-              id
-            }
+export default createFragmentContainer(GroupingKanban, {
+  meeting: graphql`
+    fragment GroupingKanban_meeting on RetrospectiveMeeting {
+      ...GroupingKanbanColumn_meeting
+      phases {
+        ... on ReflectPhase {
+          phaseType
+          reflectPrompts {
+            ...GroupingKanbanColumn_prompt
+            id
           }
         }
-        reflectionGroups {
-          ...GroupingKanbanColumn_reflectionGroups
-          id
-          retroPhaseItemId
-          reflections {
-            isViewerDragging
-          }
+      }
+      reflectionGroups {
+        ...GroupingKanbanColumn_reflectionGroups
+        id
+        retroPhaseItemId
+        reflections {
+          isViewerDragging
         }
-      }`
-  }
-)
+      }
+    }
+  `
+})

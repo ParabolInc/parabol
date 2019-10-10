@@ -27,9 +27,7 @@ const phaseLookup = {
     import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
   [NewMeetingPhaseTypeEnum.reflect]: lazyPreload(() =>
-    import(
-      /* webpackChunkName: 'RetroReflectPhase' */ './RetroReflectPhase/RetroReflectPhase'
-      )
+    import(/* webpackChunkName: 'RetroReflectPhase' */ './RetroReflectPhase/RetroReflectPhase')
   ),
   [NewMeetingPhaseTypeEnum.group]: lazyPreload(() =>
     import(/* webpackChunkName: 'RetroGroupPhase' */ './RetroGroupPhase')

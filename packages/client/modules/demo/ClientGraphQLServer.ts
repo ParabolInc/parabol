@@ -5,7 +5,8 @@ import StrictEventEmitter from 'strict-event-emitter-types'
 import handleCompletedDemoStage from './handleCompletedDemoStage'
 import {
   DragReflectionDropTargetTypeEnum,
-  IDiscussPhase, IGoogleAnalyzedEntity,
+  IDiscussPhase,
+  IGoogleAnalyzedEntity,
   INewMeetingStage,
   IReflectPhase,
   IRetroReflection,
@@ -28,7 +29,13 @@ import startStage_ from '../../utils/startStage_'
 import unlockAllStagesForPhase from '../../utils/unlockAllStagesForPhase'
 import unlockNextStages from '../../utils/unlockNextStages'
 import initBotScript from './initBotScript'
-import initDB, {demoMeetingId, demoTeamId, demoViewerId, GitHubProjectKeyLookup, JiraProjectKeyLookup} from './initDB'
+import initDB, {
+  demoMeetingId,
+  demoTeamId,
+  demoViewerId,
+  GitHubProjectKeyLookup,
+  JiraProjectKeyLookup
+} from './initDB'
 import LocalAtmosphere from './LocalAtmosphere'
 import ms from 'ms'
 import Reflection from 'parabol-server/database/types/Reflection'
@@ -64,7 +71,7 @@ interface DemoEvents {
 }
 
 interface GQLDemoEmitter {
-  new(): StrictEventEmitter<EventEmitter, DemoEvents>
+  new (): StrictEventEmitter<EventEmitter, DemoEvents>
 }
 
 class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
@@ -74,7 +81,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   pendingBotTimeout: number | undefined
   pendingBotAction?: (() => any[]) | undefined
   isNew = true
-  constructor (atmosphere: LocalAtmosphere) {
+  constructor(atmosphere: LocalAtmosphere) {
     super()
     this.atmosphere = atmosphere
     const demoDB = window.localStorage.getItem('retroDemo') || ''
@@ -92,10 +99,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     }
   }
 
-  getUnlockedStages (stageIds: string[]) {
+  getUnlockedStages(stageIds: string[]) {
     let unlockedStages = [] as INewMeetingStage[]
     this.db.newMeeting.phases!.forEach((phase) => {
-      (phase.stages as any).forEach((stage) => {
+      ;(phase.stages as any).forEach((stage) => {
         if (stageIds.includes(stage.id)) {
           unlockedStages.push(stage)
         }
@@ -390,11 +397,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
 
       const unlockedStageIds = remainingReflections.length
         ? unlockAllStagesForPhase(
-          this.db.newMeeting.phases as any,
-          NewMeetingPhaseTypeEnum.group,
-          true,
-          false
-        )
+            this.db.newMeeting.phases as any,
+            NewMeetingPhaseTypeEnum.group,
+            true,
+            false
+          )
         : []
       const unlockedStages = this.getUnlockedStages(unlockedStageIds)
       const data = {
@@ -416,14 +423,21 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       reflection.content = content
       reflection.updatedAt = new Date().toJSON()
       const plaintextContent = extractTextFromDraftString(content)
-      const isVeryDifferent =  stringSimilarity.compareTwoStrings(plaintextContent, reflection.plaintextContent) < 0.9
-      const entities = isVeryDifferent ? await getDemoEntities(plaintextContent) : reflection.entities
+      const isVeryDifferent =
+        stringSimilarity.compareTwoStrings(plaintextContent, reflection.plaintextContent) < 0.9
+      const entities = isVeryDifferent
+        ? await getDemoEntities(plaintextContent)
+        : reflection.entities
       reflection.plaintextContent = plaintextContent
       reflection.entities = entities
 
-      const reflectionsInGroup = this.db.reflections.filter(({reflectionGroupId}) => reflectionGroupId === reflection.reflectionGroupId)
+      const reflectionsInGroup = this.db.reflections.filter(
+        ({reflectionGroupId}) => reflectionGroupId === reflection.reflectionGroupId
+      )
       const newTitle = getGroupSmartTitle(reflectionsInGroup)
-      const reflectionGroup = this.db.reflectionGroups.find((group) => group.id === reflection.reflectionGroupId)
+      const reflectionGroup = this.db.reflectionGroups.find(
+        (group) => group.id === reflection.reflectionGroupId
+      )
       if (reflectionGroup) {
         const titleIsUserDefined = reflectionGroup.smartTitle !== reflectionGroup.title
         reflectionGroup.smartTitle = newTitle
@@ -647,15 +661,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           updatedAt: now
         })
         this.db.newMeeting.nextAutoGroupThreshold = null
-        const nextTitle = getGroupSmartTitle([
-          reflection as Reflection
-        ])
+        const nextTitle = getGroupSmartTitle([reflection as Reflection])
         newReflectionGroup.smartTitle = nextTitle
         newReflectionGroup.title = nextTitle
         if (oldReflections.length > 0) {
-          const oldTitle = getGroupSmartTitle(
-            oldReflections
-          )
+          const oldTitle = getGroupSmartTitle(oldReflections)
           const titleIsUserDefined = oldReflectionGroup.smartTitle !== oldReflectionGroup.title
           oldReflectionGroup.smartTitle = oldTitle
           if (!titleIsUserDefined) {
@@ -701,9 +711,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
             const oldReflections = reflections.filter(
               (reflection) => reflection.reflectionGroupId === oldReflectionGroupId
             )
-            const nextTitle = getGroupSmartTitle(
-              nextReflections
-            )
+            const nextTitle = getGroupSmartTitle(nextReflections)
             const titleIsUserDefined = reflectionGroup.smartTitle !== reflectionGroup.title
             reflectionGroup.smartTitle = nextTitle
             if (!titleIsUserDefined) {
@@ -713,9 +721,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
               (group) => group.id === oldReflectionGroupId
             )!
             if (oldReflections.length > 0) {
-              const oldTitle = getGroupSmartTitle(
-                oldReflections
-              )
+              const oldTitle = getGroupSmartTitle(oldReflections)
               const titleIsUserDefined = oldReflectionGroup.smartTitle !== oldReflectionGroup.title
               oldReflectionGroup.smartTitle = oldTitle
               if (!titleIsUserDefined) {

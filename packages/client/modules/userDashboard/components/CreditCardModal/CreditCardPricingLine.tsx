@@ -54,11 +54,14 @@ const CreditCardPricingLine = (props: Props) => {
     currency: 'USD',
     minimumFractionDigits: 0
   })
-  const totalPriceString = (Pricing.PRO_SEAT_COST / 100 * activeUserCount).toLocaleString('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0
-  })
+  const totalPriceString = ((Pricing.PRO_SEAT_COST / 100) * activeUserCount).toLocaleString(
+    'en-US',
+    {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0
+    }
+  )
   return (
     <Line>
       <UserBlock>{`${activeUserCount} Active ${plural(activeUserCount, 'User')}`}</UserBlock>

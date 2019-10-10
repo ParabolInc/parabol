@@ -79,12 +79,19 @@ const AvatarBadge = (props: Props) => {
   const {isCheckedIn = null, isConnected} = props
   const connection = isConnected ? 'online' : 'offline'
   const checkIn = isCheckedIn ? 'present' : 'absent'
-  const {icon, statusName} = isCheckedIn === null ? checkInStatus[0] : isCheckedIn === true ? checkInStatus[1] : checkInStatus[2]
+  const {icon, statusName} =
+    isCheckedIn === null
+      ? checkInStatus[0]
+      : isCheckedIn === true
+      ? checkInStatus[1]
+      : checkInStatus[2]
   const title = `${isConnected ? 'Online' : 'Offline'}${statusName}`
   const description = `${connection}, ${checkIn}`
   return (
     <Badge>
-      <BadgeIcon isConnected={isConnected as boolean} title={title as string}>{icon as any}</BadgeIcon>
+      <BadgeIcon isConnected={isConnected as boolean} title={title as string}>
+        {icon as any}
+      </BadgeIcon>
       <Description>{description}</Description>
     </Badge>
   )

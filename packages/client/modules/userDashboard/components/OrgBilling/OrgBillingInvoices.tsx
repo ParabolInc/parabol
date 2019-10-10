@@ -8,7 +8,6 @@ import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
 import InvoiceRow from '../InvoiceRow/InvoiceRow'
 import {OrgBillingInvoices_viewer} from '__generated__/OrgBillingInvoices_viewer.graphql'
 
-
 const MoreGutter = styled('div')({
   paddingBottom: Layout.ROW_GUTTER
 })
@@ -36,10 +35,7 @@ const OrgBillingInvoices = (props: Props) => {
     <Panel label='Invoices'>
       <div>
         {invoices.edges.map(({node: invoice}) => (
-          <InvoiceRow
-            key={`invoiceRow${invoice.id}`}
-            invoice={invoice}
-          />
+          <InvoiceRow key={`invoiceRow${invoice.id}`} invoice={invoice} />
         ))}
         {hasMore() && (
           <MoreGutter>
@@ -57,7 +53,7 @@ export default createPaginationContainer(
     viewer: graphql`
       fragment OrgBillingInvoices_viewer on User {
         invoices(first: $first, orgId: $orgId, after: $after)
-        @connection(key: "OrgBilling_invoices") {
+          @connection(key: "OrgBilling_invoices") {
           edges {
             cursor
             node {
@@ -76,16 +72,16 @@ export default createPaginationContainer(
   {
     direction: 'forward',
     // @ts-ignore
-    getConnectionFromProps (props) {
+    getConnectionFromProps(props) {
       return props.viewer && props.viewer.invoices
     },
-    getFragmentVariables (prevVars, totalCount) {
+    getFragmentVariables(prevVars, totalCount) {
       return {
         ...prevVars,
         first: totalCount
       }
     },
-    getVariables (_props, {count, cursor}, fragmentVariables) {
+    getVariables(_props, {count, cursor}, fragmentVariables) {
       return {
         ...fragmentVariables,
         first: count,
@@ -101,4 +97,3 @@ export default createPaginationContainer(
     `
   }
 )
-

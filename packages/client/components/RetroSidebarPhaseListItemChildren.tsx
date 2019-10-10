@@ -20,7 +20,8 @@ const RetroSidebarPhaseListItemChildren = (props: Props) => {
   const {team} = viewer
   const newMeeting = team && team.newMeeting
   const phases = newMeeting && newMeeting.phases
-  const showCheckInSection = newMeeting && newMeeting.localPhase && newMeeting.localPhase.phaseType === phaseType
+  const showCheckInSection =
+    newMeeting && newMeeting.localPhase && newMeeting.localPhase.phaseType === phaseType
   const showDiscussSection = phases && isPhaseComplete(NewMeetingPhaseTypeEnum.vote, phases)
   if (phaseType === NewMeetingPhaseTypeEnum.checkin && showCheckInSection) {
     return (

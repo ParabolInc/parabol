@@ -17,13 +17,13 @@ class RateLimiter {
   private _records = {} as Records
   private _lastCall = {} as LastCall
 
-  constructor () {
+  constructor() {
     setInterval(() => {
       this.gc()
     }, HOUR)
   }
 
-  log (userId: string, fieldName: string, isExtendedLog: boolean) {
+  log(userId: string, fieldName: string, isExtendedLog: boolean) {
     const now = Date.now()
     this._lastCall[userId] = now
     if (!this._records[userId]) {
@@ -49,7 +49,7 @@ class RateLimiter {
 
   // Garbage collecting by userId is not safe because there is no good trigger
   // If we use a signout/socket disconnect, then it encourages attackers to simply refresh
-  gc () {
+  gc() {
     const now = Date.now()
     const userIds = Object.keys(this._lastCall)
     for (let ii = 0; ii < userIds.length; ii++) {

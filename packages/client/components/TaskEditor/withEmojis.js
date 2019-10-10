@@ -96,7 +96,7 @@ const withEmojis = (ComposedComponent) => {
       )
     }
 
-    render () {
+    render() {
       return (
         <ComposedComponent
           {...this.props}

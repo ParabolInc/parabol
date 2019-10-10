@@ -6,13 +6,13 @@ import graphql from 'babel-plugin-relay/macro'
 import DashSearchControl from '../../../../components/Dashboard/DashSearchControl'
 
 class UserDashSearch extends Component {
-  componentWillUnmount () {
+  componentWillUnmount() {
     if (this.props.viewer.contentFilter) {
       this.setContentFilter('')
     }
   }
 
-  setContentFilter (nextValue) {
+  setContentFilter(nextValue) {
     const {
       atmosphere,
       viewer: {userId}
@@ -27,7 +27,7 @@ class UserDashSearch extends Component {
     this.setContentFilter(e.target.value)
   }
 
-  render () {
+  render() {
     return <DashSearchControl onChange={this.updateFilter} placeholder='Search My Tasks' />
   }
 }

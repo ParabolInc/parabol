@@ -79,7 +79,10 @@ const NewMeetingSidebar = (props: Props) => {
         <StyledToggle onClick={toggleSidebar} />
         <div>
           <MeetingName>{`${meetingLabel} Meeting`}</MeetingName>
-          <TeamDashboardLink to={teamLink}>{'Team: '}{teamName}</TeamDashboardLink>
+          <TeamDashboardLink to={teamLink}>
+            {'Team: '}
+            {teamName}
+          </TeamDashboardLink>
         </div>
       </SidebarHeader>
       {newMeeting && <Facilitator viewer={viewer} />}

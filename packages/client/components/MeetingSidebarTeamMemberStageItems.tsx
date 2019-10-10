@@ -29,7 +29,8 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
   const {facilitatorStageId, facilitatorUserId, localPhase, localStage} = newMeeting!
   const localStageId = (localStage && localStage.id) || ''
   const gotoStage = (teamMemberId) => () => {
-    const teamMemberStage = localPhase && localPhase.stages.find((stage) => stage.teamMemberId === teamMemberId)
+    const teamMemberStage =
+      localPhase && localPhase.stages.find((stage) => stage.teamMemberId === teamMemberId)
     const teamMemberStageId = (teamMemberStage && teamMemberStage.id) || ''
     gotoStageId(teamMemberStageId).catch()
     handleMenuClick()
@@ -40,7 +41,14 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
   return (
     <MeetingSidebarPhaseItemChild>
       {localPhase.stages.map((stage) => {
-        const {id: stageId, isComplete, teamMemberId, teamMember, isNavigableByFacilitator, isNavigable} = stage
+        const {
+          id: stageId,
+          isComplete,
+          teamMemberId,
+          teamMember,
+          isNavigableByFacilitator,
+          isNavigable
+        } = stage
         const {picture, preferredName} = teamMember!
         const isLocalStage = localStageId === stageId
         const isFacilitatorStage = facilitatorStageId === stageId
@@ -102,7 +110,7 @@ export default createFragmentContainer(MeetingSidebarTeamMemberStageItems, {
           facilitatorUserId
           id
           localPhase {
-          ...MeetingSidebarTeamMemberStageItems_phase @relay(mask: false)
+            ...MeetingSidebarTeamMemberStageItems_phase @relay(mask: false)
           }
           localStage {
             id

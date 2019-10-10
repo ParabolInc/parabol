@@ -85,7 +85,7 @@ class TimelineNewFeature extends Component<Props> {
     submitMutation()
     DismissNewFeatureMutation(atmosphere, {}, {onCompleted, onError})
   }
-  render () {
+  render() {
     const {viewer} = this.props
     const {newFeature} = viewer
     if (!newFeature) return null

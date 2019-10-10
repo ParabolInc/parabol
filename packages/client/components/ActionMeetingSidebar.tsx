@@ -20,7 +20,11 @@ interface Props {
 }
 
 const blackList: string[] = [NewMeetingPhaseTypeEnum.firstcall, NewMeetingPhaseTypeEnum.lastcall]
-const collapsiblePhases: string[] = [NewMeetingPhaseTypeEnum.checkin, NewMeetingPhaseTypeEnum.updates, NewMeetingPhaseTypeEnum.agendaitems]
+const collapsiblePhases: string[] = [
+  NewMeetingPhaseTypeEnum.checkin,
+  NewMeetingPhaseTypeEnum.updates,
+  NewMeetingPhaseTypeEnum.agendaitems
+]
 
 const ActionMeetingSidebar = (props: Props) => {
   const {gotoStageId, handleMenuClick, toggleSidebar, viewer} = props
@@ -54,18 +58,23 @@ const ActionMeetingSidebar = (props: Props) => {
               gotoStageId(itemStageId).catch()
               handleMenuClick()
             }
-            const phaseCount = phaseType === NewMeetingPhaseTypeEnum.agendaitems && agendaItems ? agendaItems.length : undefined
+            const phaseCount =
+              phaseType === NewMeetingPhaseTypeEnum.agendaitems && agendaItems
+                ? agendaItems.length
+                : undefined
             return (
               <NewMeetingSidebarPhaseListItem
                 handleClick={canNavigate ? handleClick : undefined}
                 isActive={
                   phaseType === NewMeetingPhaseTypeEnum.agendaitems
-                  ? blackList.includes(localPhaseType)
-                  : localPhaseType === phaseType
+                    ? blackList.includes(localPhaseType)
+                    : localPhaseType === phaseType
                 }
                 isCollapsible={collapsiblePhases.includes(phaseType)}
                 isFacilitatorPhase={phaseType === facilitatorPhaseType}
-                isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase && phaseType === facilitatorPhaseType}
+                isUnsyncedFacilitatorPhase={
+                  isUnsyncedFacilitatorPhase && phaseType === facilitatorPhaseType
+                }
                 isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
                 key={phaseType}
                 phaseCount={phaseCount}

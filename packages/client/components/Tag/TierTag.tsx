@@ -27,9 +27,11 @@ const EnterpriseTag = styled(BaseTag)({
 
 const TierTag = (props: Props) => {
   const {className, tier} = props
-  if (tier === TierEnum.personal) return <PersonalTag className={className}>{TierLabel.PERSONAL}</PersonalTag>
+  if (tier === TierEnum.personal)
+    return <PersonalTag className={className}>{TierLabel.PERSONAL}</PersonalTag>
   if (tier === TierEnum.pro) return <ProTag className={className}>{TierLabel.PRO}</ProTag>
-  if (tier === TierEnum.enterprise) return <EnterpriseTag className={className}>{TierLabel.ENTERPRISE}</EnterpriseTag>
+  if (tier === TierEnum.enterprise)
+    return <EnterpriseTag className={className}>{TierLabel.ENTERPRISE}</EnterpriseTag>
   return null
 }
 export default TierTag

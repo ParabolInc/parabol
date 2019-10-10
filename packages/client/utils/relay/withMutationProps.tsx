@@ -47,11 +47,11 @@ const withMutationProps = <P extends WithMutationProps>(
       dirty: false
     }
 
-    componentWillMount () {
+    componentWillMount() {
       this._mounted = true
     }
 
-    componentWillUnmount () {
+    componentWillUnmount() {
       this._mounted = false
     }
 
@@ -90,7 +90,7 @@ const withMutationProps = <P extends WithMutationProps>(
       }
     }
 
-    render () {
+    render() {
       const {dirty, error, submitting} = this.state
       // https://github.com/Microsoft/TypeScript/issues/10727
       const {forwardedRef, ...props} = this.props as any

@@ -5,8 +5,7 @@ import {commitLocalUpdate} from 'react-relay'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import ms from 'ms'
 
-interface Props extends WithAtmosphereProps {
-}
+interface Props extends WithAtmosphereProps {}
 
 const upgradeServiceWorker = async () => {
   if ('serviceWorker' in navigator) {
@@ -19,7 +18,7 @@ class SocketHealthMonitor extends Component<Props> {
   recentDisconnects = [] as number[]
   firewallMessageSent = false
   isFirstServiceWorker = true
-  componentDidMount () {
+  componentDidMount() {
     const {atmosphere} = this.props
     atmosphere.eventEmitter.once('newSubscriptionClient', () => {
       const {transport} = atmosphere
@@ -35,13 +34,13 @@ class SocketHealthMonitor extends Component<Props> {
     }
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.removeEventListener('controllerchange', this.onServiceWorkerChange)
     }
   }
 
-  async setFirstServiceWorker () {
+  async setFirstServiceWorker() {
     const registration = await navigator.serviceWorker.getRegistration()
     this.isFirstServiceWorker = !registration
   }
@@ -117,7 +116,7 @@ class SocketHealthMonitor extends Component<Props> {
     })
   }
 
-  render () {
+  render() {
     return null
   }
 }

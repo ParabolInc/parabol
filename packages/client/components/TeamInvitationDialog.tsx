@@ -21,7 +21,7 @@ interface Props extends WithAtmosphereProps, RouteComponentProps<{token: string}
 }
 
 class TeamInvitationDialog extends Component<Props> {
-  componentDidMount () {
+  componentDidMount() {
     const {
       match: {
         params: {token}
@@ -30,7 +30,7 @@ class TeamInvitationDialog extends Component<Props> {
     window.localStorage.setItem(LocalStorageKey.INVITATION_TOKEN, token)
   }
 
-  render () {
+  render() {
     const {atmosphere, verifiedInvitation, match} = this.props
     const {params} = match
     const {token} = params
@@ -53,7 +53,7 @@ class TeamInvitationDialog extends Component<Props> {
       return <TeamInvitationAccept invitationToken={token} teamId={teamId} />
     }
     if (ssoURL) {
-      return <TeamInvitationSSO ssoURL={ssoURL}/>
+      return <TeamInvitationSSO ssoURL={ssoURL} />
     }
     if (user) {
       return isGoogle ? (

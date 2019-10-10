@@ -13,13 +13,7 @@ export default (initialState) => {
   if (__PRODUCTION__) {
     store = createStore(reducer, initialState, compose(applyMiddleware(...middlewares)))
   } else {
-    store = createStore(
-      reducer,
-      initialState,
-      compose(
-        applyMiddleware(...middlewares)
-      )
-    )
+    store = createStore(reducer, initialState, compose(applyMiddleware(...middlewares)))
   }
   return store
 }

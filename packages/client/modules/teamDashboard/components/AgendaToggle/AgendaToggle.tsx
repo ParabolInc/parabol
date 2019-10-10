@@ -1,5 +1,7 @@
 import React from 'react'
-import withAtmosphere, {WithAtmosphereProps} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import ToggleAgendaListMutation from '../../../../mutations/ToggleAgendaListMutation'
 import {Breakpoint, Gutters} from '../../../../types/constEnums'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'

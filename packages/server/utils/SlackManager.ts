@@ -26,11 +26,11 @@ interface OAuth2Response {
 }
 
 class SlackManager extends SlackClientManager {
-  static async init (code: string) {
+  static async init(code: string) {
     return SlackManager.fetchToken(code)
   }
 
-  static async fetchToken (code: string) {
+  static async fetchToken(code: string) {
     const queryParams = {
       client_id: process.env.SLACK_CLIENT_ID,
       client_secret: process.env.SLACK_CLIENT_SECRET,
@@ -56,7 +56,7 @@ class SlackManager extends SlackClientManager {
     return new SlackManager(tokenJson.bot.bot_access_token, tokenJson) as Required<SlackManager>
   }
 
-  constructor (botAccessToken, public response?: OAuth2Response) {
+  constructor(botAccessToken, public response?: OAuth2Response) {
     super(botAccessToken, {fetch})
   }
 }

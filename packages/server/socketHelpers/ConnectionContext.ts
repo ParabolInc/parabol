@@ -33,7 +33,7 @@ class ConnectionContext {
   socket: UserWebSocket
   sharedDataLoader: DataLoaderWarehouse
   subs: Subs = {}
-  constructor (socket, authToken, sharedDataLoader, rateLimiter, ip) {
+  constructor(socket, authToken, sharedDataLoader, rateLimiter, ip) {
     this.authToken = authToken
     this.rateLimiter = rateLimiter
     this.socket = socket

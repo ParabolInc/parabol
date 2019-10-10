@@ -27,8 +27,8 @@ const UserColumnsContainer = (props: Props) => {
     const nodes = tasks.edges.map(({node}) => node)
     const contentFilteredNodes = contentFilter
       ? nodes.filter((task) => {
-        return task.contentText && task.contentText.match(contentFilterRegex)
-      })
+          return task.contentText && task.contentText.match(contentFilterRegex)
+        })
       : nodes
 
     const teamFilteredNodes = teamFilterId
@@ -44,13 +44,7 @@ const UserColumnsContainer = (props: Props) => {
       viewer: {teams}
     } = props
 
-    return (
-      <TaskColumns
-        area={AreaEnum.userDash}
-        tasks={filteredTasks}
-        teams={teams}
-      />
-    )
+    return <TaskColumns area={AreaEnum.userDash} tasks={filteredTasks} teams={teams} />
   }
 }
 

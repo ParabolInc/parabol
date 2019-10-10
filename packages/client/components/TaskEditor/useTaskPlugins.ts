@@ -8,7 +8,10 @@ import {SetEditorState} from '../../types/draft'
 import {RefObject} from 'react'
 import {UseTaskChild} from '../../hooks/useTaskChildFocus'
 
-type Handlers = Pick<EditorProps, 'handleKeyCommand' | 'keyBindingFn' | 'handleBeforeInput' | 'handleReturn'>
+type Handlers = Pick<
+  EditorProps,
+  'handleKeyCommand' | 'keyBindingFn' | 'handleBeforeInput' | 'handleReturn'
+>
 
 interface CustomProps {
   editorState: EditorState
@@ -21,18 +24,28 @@ interface CustomProps {
 type Props = Handlers & CustomProps
 
 const useTaskPlugins = (props: Props) => {
-  const {editorState, handleReturn, keyBindingFn, handleKeyCommand, handleBeforeInput, setEditorState, editorRef, useTaskChild, teamId} = props
+  const {
+    editorState,
+    handleReturn,
+    keyBindingFn,
+    handleKeyCommand,
+    handleBeforeInput,
+    setEditorState,
+    editorRef,
+    useTaskChild,
+    teamId
+  } = props
   const ks = useKeyboardShortcuts(editorState, setEditorState, {handleKeyCommand, keyBindingFn})
   const md = useMarkdown(editorState, setEditorState, {
     handleKeyCommand: ks.handleKeyCommand,
     keyBindingFn: ks.keyBindingFn,
-    handleBeforeInput,
+    handleBeforeInput
   })
   const sug = useSuggestions(editorState, setEditorState, {
     handleReturn,
     teamId,
     keyBindingFn: md.keyBindingFn,
-    onChange: md.onChange,
+    onChange: md.onChange
   })
   const emoji = useEmojis(editorState, setEditorState, {
     keyBindingFn: sug.keyBindingFn,
@@ -48,12 +61,12 @@ const useTaskPlugins = (props: Props) => {
     removeModal: emoji.removeModal,
     renderModal: emoji.renderModal,
     editorRef,
-    useTaskChild,
+    useTaskChild
   })
 
   return {
     handleReturn: sug.handleReturn,
-    ...lnk,
+    ...lnk
   }
 }
 

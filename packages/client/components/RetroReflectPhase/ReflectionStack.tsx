@@ -4,11 +4,16 @@ import styled from '@emotion/styled'
 import ReflectionCard from '../ReflectionCard/ReflectionCard'
 import ExpandedReflectionStack from './ExpandedReflectionStack'
 import ReflectionStackPlaceholder from './ReflectionStackPlaceholder'
-import {Breakpoint, ElementHeight, ElementWidth, ReflectionStackPerspective} from '../../types/constEnums'
+import {
+  Breakpoint,
+  ElementHeight,
+  ElementWidth,
+  ReflectionStackPerspective
+} from '../../types/constEnums'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import { ReflectionStack_meeting } from '__generated__/ReflectionStack_meeting.graphql';
+import {ReflectionStack_meeting} from '__generated__/ReflectionStack_meeting.graphql'
 
 interface Props {
   idx: number
@@ -34,42 +39,48 @@ const CenteredCardStack = styled('div')({
   position: 'relative'
 })
 
-const ReflectionWrapper = styled('div')<{idx: number}>(
-  ({idx}): any => {
-    const multiple = Math.min(idx, 2)
-    const scaleX = (ElementWidth.REFLECTION_CARD - ReflectionStackPerspective.X * multiple * 2) / ElementWidth.REFLECTION_CARD
-    const translateY = ReflectionStackPerspective.Y * multiple
-    return {
-      cursor: 'pointer',
-      position: idx === 0 ? 'relative' : 'absolute',
-      bottom: 0,
-      left: 0,
-      outline: 0,
-      transform: `translateY(${translateY}px) scaleX(${scaleX})`,
-      zIndex: 3 - multiple
-    }
+const ReflectionWrapper = styled('div')<{idx: number}>(({idx}): any => {
+  const multiple = Math.min(idx, 2)
+  const scaleX =
+    (ElementWidth.REFLECTION_CARD - ReflectionStackPerspective.X * multiple * 2) /
+    ElementWidth.REFLECTION_CARD
+  const translateY = ReflectionStackPerspective.Y * multiple
+  return {
+    cursor: 'pointer',
+    position: idx === 0 ? 'relative' : 'absolute',
+    bottom: 0,
+    left: 0,
+    outline: 0,
+    transform: `translateY(${translateY}px) scaleX(${scaleX})`,
+    zIndex: 3 - multiple
   }
-)
+})
 
 const ReflectionStack = (props: Props) => {
   const {phaseRef, idx, meeting, reflectionStack, stackTopRef} = props
   const stackRef = useRef<HTMLDivElement>(null)
-  const {setItemsRef, scrollRef, bgRef, portal, collapse, expand} = useExpandedReflections(stackRef, stackRef, reflectionStack.length)
+  const {setItemsRef, scrollRef, bgRef, portal, collapse, expand} = useExpandedReflections(
+    stackRef,
+    stackRef,
+    reflectionStack.length
+  )
   if (reflectionStack.length === 0) {
     return <ReflectionStackPlaceholder idx={idx} ref={stackTopRef} />
   }
   return (
     <React.Fragment>
-      {portal(<ExpandedReflectionStack
-        phaseRef={phaseRef}
-        staticReflections={reflectionStack}
-        reflections={reflectionStack}
-        meeting={meeting}
-        scrollRef={scrollRef}
-        bgRef={bgRef}
-        setItemsRef={setItemsRef}
-        closePortal={collapse}
-      />)}
+      {portal(
+        <ExpandedReflectionStack
+          phaseRef={phaseRef}
+          staticReflections={reflectionStack}
+          reflections={reflectionStack}
+          meeting={meeting}
+          scrollRef={scrollRef}
+          bgRef={bgRef}
+          setItemsRef={setItemsRef}
+          closePortal={collapse}
+        />
+      )}
       <div>
         <CardStack onClick={expand} ref={stackRef}>
           <CenteredCardStack>
@@ -96,14 +107,12 @@ const ReflectionStack = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  ReflectionStack,
-  {
-    meeting: graphql`
-      fragment ReflectionStack_meeting on RetrospectiveMeeting {
-        ...DraggableReflectionCard_meeting
-        ...ReflectionCard_meeting
-        id
-      }`
-  }
-)
+export default createFragmentContainer(ReflectionStack, {
+  meeting: graphql`
+    fragment ReflectionStack_meeting on RetrospectiveMeeting {
+      ...DraggableReflectionCard_meeting
+      ...ReflectionCard_meeting
+      id
+    }
+  `
+})

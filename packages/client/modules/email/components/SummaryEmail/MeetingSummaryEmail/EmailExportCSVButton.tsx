@@ -27,7 +27,12 @@ const EmailExportCSVButton = (props: Props) => {
     <tr>
       <td align='center' style={iconLinkLabel} width='100%'>
         <a href={emailCSVUrl} title={label}>
-          <img crossOrigin='' alt={label} src={`${emailDir}cloud_download.png`} style={imageStyle} />
+          <img
+            crossOrigin=''
+            alt={label}
+            src={`${emailDir}cloud_download.png`}
+            style={imageStyle}
+          />
           {label}
         </a>
       </td>

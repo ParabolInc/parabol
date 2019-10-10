@@ -29,10 +29,9 @@ import useResumeFacilitation from './useResumeFacilitation'
 import {Breakpoint} from '../types/constEnums'
 import useModal from './useModal'
 import lazyPreload from '../utils/lazyPreload'
-import isDemoRoute from 'utils/isDemoRoute';
+import isDemoRoute from 'utils/isDemoRoute'
 
 type Team = Omit<useMeetingTeam, ' $refType'>
-
 
 const BeginDemoModal = lazyPreload(() =>
   import(/* webpackChunkName: 'BeginDemoModal' */ '../components/BeginDemoModal')

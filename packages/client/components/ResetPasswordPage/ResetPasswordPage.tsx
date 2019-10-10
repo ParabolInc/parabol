@@ -73,7 +73,7 @@ const DialogSubTitle = styled('div')({
 })
 
 class ResetPasswordPage extends Component<Props, State> {
-  constructor (props) {
+  constructor(props) {
     super(props)
     const params = new URLSearchParams(window.location.search)
     const email = params.get('email')
@@ -130,7 +130,7 @@ class ResetPasswordPage extends Component<Props, State> {
     })
   }
 
-  render () {
+  render() {
     const {dirty, error, submitting, gotoPage} = this.props
     const {isSent, email} = this.state
     const gotoSignIn = () => {

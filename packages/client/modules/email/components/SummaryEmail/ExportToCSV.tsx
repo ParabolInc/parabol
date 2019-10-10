@@ -93,19 +93,19 @@ const imageStyle = {
 }
 
 class ExportToCSV extends Component<Props> {
-  componentDidMount () {
+  componentDidMount() {
     if (this.props.urlAction === 'csv') {
       this.exportToCSV().catch()
     }
   }
 
-  componentDidUpdate (prevProps: Readonly<Props>): void {
+  componentDidUpdate(prevProps: Readonly<Props>): void {
     if (this.props.urlAction === 'csv' && prevProps.urlAction !== 'csv') {
       this.exportToCSV().catch()
     }
   }
 
-  handleRetroMeeting (newMeeting: Meeting) {
+  handleRetroMeeting(newMeeting: Meeting) {
     const {reflectionGroups} = newMeeting
 
     const rows = [] as CSVRetroRow[]
@@ -131,7 +131,7 @@ class ExportToCSV extends Component<Props> {
     return rows
   }
 
-  handleActionMeeting (newMeeting: Meeting) {
+  handleActionMeeting(newMeeting: Meeting) {
     const {meetingMembers} = newMeeting
 
     const rows = [] as CSVActionRow[]
@@ -161,7 +161,7 @@ class ExportToCSV extends Component<Props> {
     return rows
   }
 
-  getRows (newMeeting: Meeting) {
+  getRows(newMeeting: Meeting) {
     switch (newMeeting.meetingType) {
       case 'action':
         return this.handleActionMeeting(newMeeting)
@@ -200,14 +200,19 @@ class ExportToCSV extends Component<Props> {
     document.body.removeChild(link)
   }
 
-  render () {
+  render() {
     const {emailCSVUrl, referrer} = this.props
     return (
       <>
         <tr>
           <td align='center' style={iconLinkLabel} width='100%'>
             <AnchorIfEmail isEmail={referrer === 'email'} href={emailCSVUrl} title={label}>
-              <img crossOrigin='' alt={label} src={`${emailDir}cloud_download.png`} style={imageStyle} />
+              <img
+                crossOrigin=''
+                alt={label}
+                src={`${emailDir}cloud_download.png`}
+                style={imageStyle}
+              />
               <span style={labelStyle}>{label}</span>
             </AnchorIfEmail>
           </td>

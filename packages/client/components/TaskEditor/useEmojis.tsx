@@ -8,7 +8,7 @@ import {EditorProps, EditorState} from 'draft-js'
 import {SetEditorState} from '../../types/draft'
 
 type Handlers = Pick<EditorProps, 'keyBindingFn' | 'onChange'> & {
-  renderModal?: (() => ReactNode | null),
+  renderModal?: () => ReactNode | null
   removeModal?: () => void
 }
 
@@ -16,7 +16,11 @@ interface MenuRef {
   handleKeyDown: (e: React.KeyboardEvent<any>) => 'handled' | 'not-handled'
 }
 
-const useEmojis = (editorState: EditorState, setEditorState: SetEditorState, handlers: Handlers) => {
+const useEmojis = (
+  editorState: EditorState,
+  setEditorState: SetEditorState,
+  handlers: Handlers
+) => {
   const {keyBindingFn, onChange, renderModal, removeModal} = handlers
   const menuRef = useRef<MenuRef>(null)
   const cachedCoordsRef = useRef<ClientRect | null>(null)
@@ -33,7 +37,9 @@ const useEmojis = (editorState: EditorState, setEditorState: SetEditorState, han
     }
     return null
   }
-  const menuItemClickFactory = (emoji: string, editorState: EditorState) => (e: React.MouseEvent) => {
+  const menuItemClickFactory = (emoji: string, editorState: EditorState) => (
+    e: React.MouseEvent
+  ) => {
     e.preventDefault()
     const nextEditorState = autoCompleteEmoji(editorState, emoji)
     setEditorState(nextEditorState)
@@ -78,7 +84,7 @@ const useEmojis = (editorState: EditorState, setEditorState: SetEditorState, han
   return {
     onChange: handleChange,
     renderModal: isOpen ? onRenderModal : renderModal,
-    removeModal: isOpen ? onRemoveModal: removeModal,
+    removeModal: isOpen ? onRemoveModal : removeModal,
     keyBindingFn: isOpen ? handleKeyBindingFn : keyBindingFn
   }
 }

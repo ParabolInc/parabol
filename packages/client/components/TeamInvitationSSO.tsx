@@ -42,11 +42,12 @@ const TeamInvitationSSO = (props: Props) => {
     <InviteDialog>
       <DialogTitle>SSO Login</DialogTitle>
       <DialogContent>
-        {!error && <InvitationDialogCopy>
-          Logging in to your secure SSO Provider
-          <Ellipsis />
-        </InvitationDialogCopy>
-        }
+        {!error && (
+          <InvitationDialogCopy>
+            Logging in to your secure SSO Provider
+            <Ellipsis />
+          </InvitationDialogCopy>
+        )}
         {error && <StyledError>{error.message}</StyledError>}
       </DialogContent>
     </InviteDialog>

@@ -115,9 +115,7 @@ const OrganizationRow = (props: Props) => {
       <RowInner>
         <StyledRowInfo>
           <RowInfoHeader>
-            <Name onClick={onRowClick}>
-              {name}
-            </Name>
+            <Name onClick={onRowClick}>{name}</Name>
             {tier !== TierEnum.personal && (
               <StyledTagBlock>
                 <TierTag tier={tier as TierEnum} />
@@ -134,7 +132,12 @@ const OrganizationRow = (props: Props) => {
               {upgradeCTALabel}
             </StyledFlatButton>
           )}
-          <StyledButton onClick={onRowClick} onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={originRef}>
+          <StyledButton
+            onClick={onRowClick}
+            onMouseEnter={openTooltip}
+            onMouseLeave={closeTooltip}
+            ref={originRef}
+          >
             <StyledIcon>settings</StyledIcon>
           </StyledButton>
           {tooltipPortal('Settings')}
@@ -144,20 +147,17 @@ const OrganizationRow = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  OrganizationRow,
-  {
-    organization: graphql`
-      fragment OrganizationRow_organization on Organization {
-        id
-        name
-        orgUserCount {
-          activeUserCount
-          inactiveUserCount
-        }
-        picture
-        tier
+export default createFragmentContainer(OrganizationRow, {
+  organization: graphql`
+    fragment OrganizationRow_organization on Organization {
+      id
+      name
+      orgUserCount {
+        activeUserCount
+        inactiveUserCount
       }
-    `
-  }
-)
+      picture
+      tier
+    }
+  `
+})

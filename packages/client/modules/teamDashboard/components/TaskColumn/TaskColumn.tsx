@@ -1,6 +1,8 @@
 import React, {Component} from 'react'
 import styled from '@emotion/styled'
-import withAtmosphere, {WithAtmosphereProps} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import TaskColumnAddTask from './TaskColumnAddTask'
 import {AreaEnum, TaskStatusEnum} from '../../../../types/graphql'
 import {TEAM_DASH, USER_DASH} from '../../../../utils/constants'
@@ -14,12 +16,12 @@ import TaskColumnInner from './TaskColumnInner'
 import {taskStatusLabels} from '../../../../utils/taskStatus'
 
 const Column = styled('div')<{isDragging: boolean}>(({isDragging}) => ({
-    background: isDragging ? PALETTE.BACKGROUND_MAIN_DARKENED : undefined,
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'column',
-    position: 'relative',
-    transition: `background 300ms ${BezierCurve.DECELERATE}`,
+  background: isDragging ? PALETTE.BACKGROUND_MAIN_DARKENED : undefined,
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  position: 'relative',
+  transition: `background 300ms ${BezierCurve.DECELERATE}`
 }))
 
 const ColumnHeader = styled('div')({
@@ -69,7 +71,7 @@ interface Props extends WithAtmosphereProps {
 }
 
 class TaskColumn extends Component<Props> {
-  render () {
+  render() {
     const {
       area,
       isMyMeetingSection,
@@ -83,14 +85,8 @@ class TaskColumn extends Component<Props> {
     const label = taskStatusLabels[status]
     const userCanAdd = area === TEAM_DASH || area === USER_DASH || isMyMeetingSection
     return (
-      <Droppable
-        droppableId={status}
-        type={DroppableType.TASK}
-      >
-        {(
-          dropProvided: DroppableProvided,
-          dropSnapshot: DroppableStateSnapshot
-        ) => (
+      <Droppable droppableId={status} type={DroppableType.TASK}>
+        {(dropProvided: DroppableProvided, dropSnapshot: DroppableStateSnapshot) => (
           <Column isDragging={dropSnapshot.isDraggingOver}>
             <ColumnHeader>
               <TaskColumnAddTask
@@ -109,7 +105,7 @@ class TaskColumn extends Component<Props> {
               </StatusLabelBlock>
             </ColumnHeader>
             <ColumnBody {...dropProvided.droppableProps} ref={dropProvided.innerRef}>
-              <TaskColumnInner area={area} tasks={tasks}/>
+              <TaskColumnInner area={area} tasks={tasks} />
               {dropProvided.placeholder}
             </ColumnBody>
           </Column>

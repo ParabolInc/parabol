@@ -98,7 +98,7 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
     })
   }
 
-  render () {
+  render() {
     const {error, submitting, verifiedInvitation} = this.props
     const {isEmailFallback} = this.state
     const {meetingType, teamInvitation, teamName} = verifiedInvitation
