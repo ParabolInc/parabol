@@ -20,6 +20,7 @@ const ScrollStageItems = styled('div')({
   // react-beautiful-dnd supports scrolling on 1 parent
   // this is where we need it, in order to scroll a long list
   overflow: 'auto',
+  paddingRight: 8,
   width: '100%'
 })
 
