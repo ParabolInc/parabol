@@ -123,7 +123,7 @@ const Facilitator = (props: Props) => {
           <Avatar alt='' src={picture} />
         </AvatarBlock>
         <div>
-          <Label>Faciltator</Label>
+          <Label>Facilitator</Label>
           <Subtext>{preferredName}</Subtext>
         </div>
         {!isReadOnly && <StyledIcon>more_vert</StyledIcon>}
