@@ -162,9 +162,6 @@ export default createFragmentContainer(RetroMeeting, {
         video
       }
       team(teamId: $teamId) {
-        newMeeting {
-          meetingType
-        }
         ...NewMeetingAvatarGroup_team
         ...RetroMeetingTeam @relay(mask: false)
         meetingSettings(meetingType: retrospective) {

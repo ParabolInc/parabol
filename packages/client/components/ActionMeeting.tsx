@@ -154,9 +154,6 @@ export default createFragmentContainer(ActionMeeting, {
         video
       }
       team(teamId: $teamId) {
-        newMeeting {
-          meetingType
-        }
         ...NewMeetingAvatarGroup_team
         ...ActionMeetingTeam @relay(mask: false)
       }

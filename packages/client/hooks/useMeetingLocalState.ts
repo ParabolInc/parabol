@@ -154,8 +154,6 @@ const useUpdatedSafeRoute = (
     const isNewLocalStageId = localStageId && localStageId !== oldLocalStageId
     const isUpdatedPhase = localStages !== oldLocalStages
     if (isNewLocalStageId || isUpdatedPhase) {
-      // const meetingPath = getMeetingPathParams()
-      // const {meetingSlug, teamId} = meetingPath
       if (!meetingSlug || !teamId) {
         setSafeRoute(false)
         return
