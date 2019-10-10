@@ -20,19 +20,25 @@ interface Props {
 }
 
 const blackList: string[] = [NewMeetingPhaseTypeEnum.firstcall, NewMeetingPhaseTypeEnum.lastcall]
+const collapsiblePhases: string[] = [
+  NewMeetingPhaseTypeEnum.checkin,
+  NewMeetingPhaseTypeEnum.updates,
+  NewMeetingPhaseTypeEnum.agendaitems
+]
 
 const ActionMeetingSidebar = (props: Props) => {
   const {gotoStageId, handleMenuClick, toggleSidebar, viewer} = props
   const {id: viewerId, team} = viewer
   const {meetingSettings, newMeeting, agendaItems} = team!
   const {phaseTypes} = meetingSettings
-  const {facilitatorUserId, facilitatorStageId, localPhase, phases} =
+  const {facilitatorUserId, facilitatorStageId, localPhase, localStage, phases} =
     newMeeting || UNSTARTED_MEETING
   const localPhaseType = localPhase ? localPhase.phaseType : ''
   const facilitatorStageRes = findStageById(phases, facilitatorStageId)
   const facilitatorPhaseType = facilitatorStageRes ? facilitatorStageRes.phase.phaseType : ''
   const isViewerFacilitator = facilitatorUserId === viewerId
   const isUnsyncedFacilitatorPhase = facilitatorPhaseType !== localPhaseType
+  const isUnsyncedFacilitatorStage = localStage ? localStage.id !== facilitatorStageId : undefined
   return (
     <NewMeetingSidebar
       handleMenuClick={handleMenuClick}
@@ -58,16 +64,19 @@ const ActionMeetingSidebar = (props: Props) => {
                 : undefined
             return (
               <NewMeetingSidebarPhaseListItem
-                key={phaseType}
                 handleClick={canNavigate ? handleClick : undefined}
                 isActive={
                   phaseType === NewMeetingPhaseTypeEnum.agendaitems
                     ? blackList.includes(localPhaseType)
                     : localPhaseType === phaseType
                 }
+                isCollapsible={collapsiblePhases.includes(phaseType)}
+                isFacilitatorPhase={phaseType === facilitatorPhaseType}
                 isUnsyncedFacilitatorPhase={
                   isUnsyncedFacilitatorPhase && phaseType === facilitatorPhaseType
                 }
+                isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
+                key={phaseType}
                 phaseCount={phaseCount}
                 phaseType={phaseType}
               >
@@ -106,6 +115,9 @@ export default createFragmentContainer(ActionMeetingSidebar, {
           facilitatorStageId
           localPhase {
             phaseType
+          }
+          localStage {
+            id
           }
           phases {
             phaseType

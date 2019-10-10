@@ -37,8 +37,9 @@ const navListItemLinkActive = {
   borderLeftColor: PALETTE.BORDER_MAIN,
   borderRadius: '0 4px 4px 0',
   color: PALETTE.TEXT_MAIN,
+  cursor: 'default',
   ':hover,:focus': {
-    backgroundColor: PALETTE.BACKGROUND_NAV_LIGHT_ACTIVE
+    backgroundColor: PALETTE.BACKGROUND_NAV_LIGHT_HOVER
   }
 }
 
@@ -50,8 +51,11 @@ const navListItemLinkDisabled = {
 }
 
 interface LinkProps {
-  isDisabled: boolean
   isActive: boolean
+  isCollapsible?: boolean
+  isDisabled: boolean
+  isFacilitatorPhase: boolean
+  isUnsyncedFacilitatorStage?: boolean
 }
 
 const NavListItemLink = styled('div')<LinkProps>(
@@ -70,7 +74,26 @@ const NavListItemLink = styled('div')<LinkProps>(
     }
   },
   ({isDisabled}) => isDisabled && navListItemLinkDisabled,
-  ({isActive}) => isActive && navListItemLinkActive
+  ({isActive}) => isActive && navListItemLinkActive,
+  ({isCollapsible, isActive}) =>
+    isCollapsible &&
+    isActive && {
+      backgroundColor: 'transparent',
+      ':hover,:focus': {
+        cursor: 'pointer'
+      }
+    },
+  ({isCollapsible, isFacilitatorPhase, isUnsyncedFacilitatorStage}) =>
+    isCollapsible &&
+    isFacilitatorPhase &&
+    !isUnsyncedFacilitatorStage && {
+      backgroundColor: 'transparent',
+      cursor: 'default',
+      ':hover,:focus': {
+        backgroundColor: 'transparent',
+        cursor: 'default'
+      }
+    }
 )
 
 const PhaseCountBlock = styled('div')({
@@ -91,21 +114,37 @@ interface Props {
   children: ReactNode
   handleClick?: () => void
   isActive: boolean
+  isCollapsible?: boolean
+  isFacilitatorPhase: boolean
   isUnsyncedFacilitatorPhase: boolean
+  isUnsyncedFacilitatorStage?: boolean
   phaseCount: number | null | undefined
   phaseType: string
 }
 
 const NewMeetingSidebarPhaseListItem = (props: Props) => {
-  const {children, handleClick, isActive, isUnsyncedFacilitatorPhase, phaseType, phaseCount} = props
+  const {
+    children,
+    handleClick,
+    isActive,
+    isCollapsible,
+    isFacilitatorPhase,
+    isUnsyncedFacilitatorPhase,
+    isUnsyncedFacilitatorStage,
+    phaseCount,
+    phaseType
+  } = props
   const label = phaseLabelLookup[phaseType]
   const icon = phaseIconLookup[phaseType]
   const showPhaseCount = Boolean(phaseCount || phaseCount === 0)
   return (
     <NavListItem>
       <NavListItemLink
-        isDisabled={!handleClick}
         isActive={isActive}
+        isCollapsible={isCollapsible}
+        isDisabled={!handleClick}
+        isFacilitatorPhase={isFacilitatorPhase}
+        isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
         onClick={handleClick}
         title={label}
       >
