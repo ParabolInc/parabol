@@ -3,8 +3,9 @@ import styled from '@emotion/styled'
 const MeetingSidebarPhaseItemChild = styled('div')({
   display: 'flex',
   flexDirection: 'column',
+  height: '100%', // trickle down height for overflow
   overflow: 'hidden', // required for FF68
-  height: '100%' // trickle down height for overflow
+  paddingRight: 8
 })
 
 export default MeetingSidebarPhaseItemChild

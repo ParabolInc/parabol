@@ -10,7 +10,8 @@ const NavListItem = styled('li')({
   fontWeight: 600,
   display: 'flex',
   flexDirection: 'column',
-  margin: '0 8px 0 0',
+  // margin: '0 8px 0 0',
+  margin: 0,
   // hack to work around broken flexbox
   // https://bugs.chromium.org/p/chromium/issues/detail?id=927066
   minHeight: 40
@@ -66,6 +67,7 @@ const NavListItemLink = styled('div')<LinkProps>(
     cursor: 'pointer',
     display: 'flex',
     flexShrink: 0,
+    marginRight: 8,
     minHeight: 40,
     textDecoration: 'none',
     userSelect: 'none',
