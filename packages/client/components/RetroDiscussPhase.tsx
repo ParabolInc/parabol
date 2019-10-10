@@ -182,7 +182,7 @@ const RetroDiscussPhase = (props: Props) => {
                 <TopicHeading>{`“${title}”`}</TopicHeading>
                 <VoteMeta>
                   <VoteIcon>{meetingVoteIcon}</VoteIcon>
-                  {voteCount}
+                  {voteCount || '0'}
                 </VoteMeta>
               </DiscussHeader>
             </HeaderContainer>

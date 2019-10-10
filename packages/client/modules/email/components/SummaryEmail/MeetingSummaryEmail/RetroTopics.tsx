@@ -44,8 +44,7 @@ const RetroTopics = (props: Props) => {
 export default createFragmentContainer(RetroTopics, {
   meeting: graphql`
     fragment RetroTopics_meeting on RetrospectiveMeeting {
-      # reflectionGroups(sortBy: voteCount) {
-      reflectionGroups {
+      reflectionGroups(sortBy: voteCount) {
         id
         ...RetroTopic_topic
       }
