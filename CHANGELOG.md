@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 
+## 4.8.2 2019-Oct-10
+
+### Fixes
+* Spelling error on sidebar "Faciltator" to "Facilitator"
+
 ## 4.8.1 2019-Oct-09
 
 ### Removes
