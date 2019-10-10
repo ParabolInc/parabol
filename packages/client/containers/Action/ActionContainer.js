@@ -13,11 +13,11 @@ class ActionContainer extends Component {
     params: PropTypes.object
   }
 
-  constructor (props) {
+  constructor(props) {
     super(props)
   }
 
-  render () {
+  render() {
     return (
       <React.Fragment>
         <Global

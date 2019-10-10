@@ -17,15 +17,15 @@ interface Props {
   dirty: boolean
   error: string | undefined
 
-  onChange (e: React.ChangeEvent<HTMLInputElement>): void
+  onChange(e: React.ChangeEvent<HTMLInputElement>): void
 
   teamName: string
 
-  onBlur (e: React.FocusEvent<HTMLInputElement>): void
+  onBlur(e: React.FocusEvent<HTMLInputElement>): void
 }
 
 class NewTeamFormTeamName extends Component<Props> {
-  render () {
+  render() {
     const {dirty, error, onChange, onBlur, teamName} = this.props
     return (
       <FormBlockInline>

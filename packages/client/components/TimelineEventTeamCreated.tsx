@@ -12,7 +12,7 @@ interface Props {
 }
 
 class TimelineEventTeamCreated extends Component<Props> {
-  render () {
+  render() {
     const {timelineEvent} = this.props
     const {team} = timelineEvent
     const {id: teamId, name: teamName, isArchived} = team

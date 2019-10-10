@@ -11,7 +11,7 @@ class Incrementor {
   num: number = this.min
   Button: any
 
-  constructor (public min: number, public max: number) {
+  constructor(public min: number, public max: number) {
     this.Button = () => (
       <button style={style} onClick={this.increment}>
         +1

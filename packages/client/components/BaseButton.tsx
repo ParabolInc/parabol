@@ -20,7 +20,7 @@ const ButtonRoot = styled(PlainButton)<Root>(
       ...ui.buttonSizeStyles[size],
       alignItems: 'center',
       border: '1px solid transparent',
-      boxShadow:  disabled ? undefined : pressedDown ? elevationPressed : elevationResting,
+      boxShadow: disabled ? undefined : pressedDown ? elevationPressed : elevationResting,
       display: 'flex',
       flexShrink: 0,
       justifyContent: 'center',
@@ -29,7 +29,7 @@ const ButtonRoot = styled(PlainButton)<Root>(
       userSelect: 'none',
       whiteSpace: 'nowrap',
       ':hover,:focus,:active': {
-        boxShadow:  disabled ? undefined : pressedDown ? elevationPressed : elevationHovered,
+        boxShadow: disabled ? undefined : pressedDown ? elevationPressed : elevationHovered,
         outline: pressedDown && 0
       }
     }
@@ -53,7 +53,9 @@ export interface BaseButtonProps extends PlainButtonProps {
 
 const BaseButton = forwardRef((props: BaseButtonProps, ref: Ref<HTMLButtonElement>) => {
   const {
-    onMouseDown, onMouseLeave, 'aria-label': ariaLabel,
+    onMouseDown,
+    onMouseLeave,
+    'aria-label': ariaLabel,
     size = 'small',
     children,
     className,
@@ -72,7 +74,7 @@ const BaseButton = forwardRef((props: BaseButtonProps, ref: Ref<HTMLButtonElemen
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (e.button === 0) {
-      setPressedDown((true))
+      setPressedDown(true)
     }
     onMouseDown && onMouseDown(e)
   }

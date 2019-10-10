@@ -22,7 +22,6 @@ const Switch = styled('div')({
   padding: `${(WEB_CONTROL_MIN_BOX - TRACK_HEIGHT) / 2}px 1px`
 })
 
-
 const Track = styled('div')<{active: boolean; disabled: boolean | undefined}>(
   ({active, disabled}) => ({
     backgroundColor: active ? PALETTE.CONTROL_MAIN_BACKGROUND : PALETTE.CONTROL_LIGHT_BACKGROUND,

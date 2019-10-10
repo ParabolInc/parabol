@@ -8,7 +8,7 @@ const paletteColors = {
   midGray: PALETTE.TEXT_GRAY,
   red: PALETTE.TEXT_RED,
   green: PALETTE.TEXT_GREEN,
-  blue: PALETTE.TEXT_BLUE,
+  blue: PALETTE.TEXT_BLUE
 }
 
 interface Props {

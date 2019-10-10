@@ -84,7 +84,7 @@ class EditableText extends Component<Props, State> {
 
   inputRef = React.createRef<HTMLInputElement>()
 
-  componentDidMount () {
+  componentDidMount() {
     if (this.props.autoFocus) {
       this.setState({autoFocus: true})
     }
@@ -187,7 +187,7 @@ class EditableText extends Component<Props, State> {
     )
   }
 
-  render () {
+  render() {
     const {className, error} = this.props
     const {autoFocus, isEditing} = this.state
     const showEditing = error || isEditing || autoFocus

@@ -140,14 +140,10 @@ const CenterControlBlock = styled('div')<{isComplete: boolean}>(({isComplete}) =
 }))
 
 const DiscussHelpMenu = lazyPreload(async () =>
-  import(
-    /* webpackChunkName: 'DiscussHelpMenu' */ './MeetingHelp/DiscussHelpMenu'
-    )
+  import(/* webpackChunkName: 'DiscussHelpMenu' */ './MeetingHelp/DiscussHelpMenu')
 )
 const DemoDiscussHelpMenu = lazyPreload(async () =>
-  import(
-    /* webpackChunkName: 'DemoDiscussHelpMenu' */ './MeetingHelp/DemoDiscussHelpMenu'
-    )
+  import(/* webpackChunkName: 'DemoDiscussHelpMenu' */ './MeetingHelp/DemoDiscussHelpMenu')
 )
 
 const RetroDiscussPhase = (props: Props) => {
@@ -166,7 +162,7 @@ const RetroDiscussPhase = (props: Props) => {
   const nextStageRes = findStageAfterId(phases, localStageId)
   return (
     <MeetingContent>
-      <DiscussPhaseSqueeze meeting={newMeeting} organization={organization}/>
+      <DiscussPhaseSqueeze meeting={newMeeting} organization={organization} />
       <MeetingHeaderAndPhase>
         <MeetingContentHeader
           avatarGroup={avatarGroup}
@@ -207,41 +203,39 @@ const RetroDiscussPhase = (props: Props) => {
                 <LabelContainer>
                   <LabelHeading>Takeaway Tasks</LabelHeading>
                 </LabelContainer>
-                  <ColumnInner>
-                      <MeetingAgendaCards
-                        meetingId={meetingId}
-                        reflectionGroupId={reflectionGroupId}
-                        tasks={tasks}
-                        teamId={teamId}
-                      />
-                  </ColumnInner>
+                <ColumnInner>
+                  <MeetingAgendaCards
+                    meetingId={meetingId}
+                    reflectionGroupId={reflectionGroupId}
+                    tasks={tasks}
+                    teamId={teamId}
+                  />
+                </ColumnInner>
               </TaskColumn>
             </ColumnsContainer>
           </DiscussPhaseWrapper>
         </PhaseWrapper>
-        <MeetingHelpToggle
-          menu={isDemoRoute() ? <DemoDiscussHelpMenu /> : <DiscussHelpMenu />}
-        />
+        <MeetingHelpToggle menu={isDemoRoute() ? <DemoDiscussHelpMenu /> : <DiscussHelpMenu />} />
         <EditorHelpModalContainer />
       </MeetingHeaderAndPhase>
-        <MeetingFacilitatorBar isFacilitating={isFacilitating}>
-          <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
-          {!nextStageRes && isComplete && <BottomControlSpacer />}
-          {nextStageRes && (
-            <CenterControlBlock isComplete={isComplete}>
-              <BottomNavControl
-                isBouncing={isDemoStageComplete}
-                onClick={() => gotoNext()}
-                ref={gotoNextRef}
-                onKeyDown={handleRightArrow(() => gotoNext())}
-              >
-                <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={'Next Topic'} />
-              </BottomNavControl>
-            </CenterControlBlock>
-          )}
-          <EndMeetingButton meetingId={meetingId} />
-          {!nextStageRes && <BottomControlSpacer />}
-        </MeetingFacilitatorBar>
+      <MeetingFacilitatorBar isFacilitating={isFacilitating}>
+        <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
+        {!nextStageRes && isComplete && <BottomControlSpacer />}
+        {nextStageRes && (
+          <CenterControlBlock isComplete={isComplete}>
+            <BottomNavControl
+              isBouncing={isDemoStageComplete}
+              onClick={() => gotoNext()}
+              ref={gotoNextRef}
+              onKeyDown={handleRightArrow(() => gotoNext())}
+            >
+              <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={'Next Topic'} />
+            </BottomNavControl>
+          </CenterControlBlock>
+        )}
+        <EndMeetingButton meetingId={meetingId} />
+        {!nextStageRes && <BottomControlSpacer />}
+      </MeetingFacilitatorBar>
     </MeetingContent>
   )
 }

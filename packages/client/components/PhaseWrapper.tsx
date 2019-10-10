@@ -21,9 +21,7 @@ const PhaseWrapper = forwardRef((props: Props, ref: any) => {
   const {children} = props
   return (
     <ErrorBoundary>
-      <PhaseWrapperStyles ref={ref}>
-        {children}
-      </PhaseWrapperStyles>
+      <PhaseWrapperStyles ref={ref}>{children}</PhaseWrapperStyles>
     </ErrorBoundary>
   )
 })

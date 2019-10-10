@@ -6,7 +6,7 @@ import {NavSidebar} from '../types/constEnums'
 const DURATION = 200
 
 interface StyleProps {
-isOpen: boolean
+  isOpen: boolean
 }
 const Placeholder = styled('div')<StyleProps>(({isOpen}) => ({
   minWidth: isOpen ? NavSidebar.WIDTH : 0,

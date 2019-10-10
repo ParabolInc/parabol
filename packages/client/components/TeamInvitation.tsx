@@ -10,7 +10,7 @@ interface Props {
   verifiedInvitation: TeamInvitation_verifiedInvitation
 }
 
-function TeamInvitation (props: Props) {
+function TeamInvitation(props: Props) {
   const {verifiedInvitation} = props
   const {meetingType} = verifiedInvitation
   const Wrapper = meetingType ? TeamInvitationMeetingAbstract : TeamInvitationWrapper

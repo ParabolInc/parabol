@@ -71,9 +71,7 @@ const TemplatePickerBlock = styled('div')({
 })
 
 const RetroLobbyHelpMenu = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'RetroLobbyHelpMenu' */ './MeetingHelp/RetroLobbyHelpMenu'
-  )
+  import(/* webpackChunkName: 'RetroLobbyHelpMenu' */ './MeetingHelp/RetroLobbyHelpMenu')
 )
 
 const meetingType = MeetingTypeEnum.retrospective

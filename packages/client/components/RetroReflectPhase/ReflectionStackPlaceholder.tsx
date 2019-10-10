@@ -44,7 +44,7 @@ const ReflectionStackPlaceholder = forwardRef((props: Props, ref: Ref<HTMLDivEle
   const tip = placeholders[(seed + idx) % placeholders.length]
   return (
     <PlaceholderCard ref={ref}>
-      <Tip >{tip}</Tip>
+      <Tip>{tip}</Tip>
     </PlaceholderCard>
   )
 })

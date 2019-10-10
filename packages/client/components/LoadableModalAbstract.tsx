@@ -46,7 +46,7 @@ interface State {
 }
 
 class LoadableModalAbstract extends Component<LoadableModalAbstractProps, State> {
-  render () {
+  render() {
     const {
       background,
       isClosing,

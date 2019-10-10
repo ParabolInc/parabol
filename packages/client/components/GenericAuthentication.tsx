@@ -5,9 +5,7 @@ import {RouteComponentProps, withRouter} from 'react-router'
 import EmailPasswordAuthForm from './EmailPasswordAuthForm'
 import HorizontalSeparator from './HorizontalSeparator/HorizontalSeparator'
 import PlainButton from './PlainButton/PlainButton'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import LoginMutation from '../mutations/LoginMutation'
 import {PALETTE} from '../styles/paletteV2'
 import {
@@ -78,18 +76,18 @@ const existingAccounts = {
 class GenericAuthentication extends Component<Props, State> {
   state: State = {
     existingAccount: null,
-    isForgot: false,
+    isForgot: false
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this.updateExistingAccountError()
   }
 
-  componentDidUpdate () {
+  componentDidUpdate() {
     this.updateExistingAccountError()
   }
 
-  updateExistingAccountError () {
+  updateExistingAccountError() {
     if (!window.location.search) return
     const params = new URLSearchParams(window.location.search)
     const errorCode = params.get('error')
@@ -134,7 +132,7 @@ class GenericAuthentication extends Component<Props, State> {
     gotoPage('reset-password', `?email=${email}`)
   }
 
-  render () {
+  render() {
     const {existingAccount} = this.state
     const {submitting, error, page, teamName, gotoPage} = this.props
     if (page === 'reset-password') {
@@ -179,7 +177,9 @@ class GenericAuthentication extends Component<Props, State> {
           <AuthPrivacyFooter />
         ) : (
           <>
-          <ForgotPasswordLink onClick={this.onForgot}>{'Forgot your password?'}</ForgotPasswordLink>
+            <ForgotPasswordLink onClick={this.onForgot}>
+              {'Forgot your password?'}
+            </ForgotPasswordLink>
           </>
         )}
       </AuthenticationDialog>

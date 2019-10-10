@@ -1,10 +1,21 @@
-import {DraftEditorCommand, EditorProps, EditorState, KeyBindingUtil, SelectionState} from 'draft-js'
+import {
+  DraftEditorCommand,
+  EditorProps,
+  EditorState,
+  KeyBindingUtil,
+  SelectionState
+} from 'draft-js'
 import React, {ReactNode, RefObject, useRef, useState} from 'react'
 import getAnchorLocation from './getAnchorLocation'
 import getSelectionLink from './getSelectionLink'
 import getSelectionText from './getSelectionText'
 import getWordAt from './getWordAt'
-import {DEFAULT_MENU_HEIGHT, DEFAULT_MENU_WIDTH, HUMAN_ADDICTION_THRESH, MAX_WAIT_TIME} from '../../styles/ui'
+import {
+  DEFAULT_MENU_HEIGHT,
+  DEFAULT_MENU_WIDTH,
+  HUMAN_ADDICTION_THRESH,
+  MAX_WAIT_TIME
+} from '../../styles/ui'
 import addSpace from '../../utils/draftjs/addSpace'
 import getFullLinkSelection from '../../utils/draftjs/getFullLinkSelection'
 import makeAddLink from '../../utils/draftjs/makeAddLink'
@@ -23,9 +34,9 @@ const LoadableEditorLinkChanger = Loadable({
     import(
       /* webpackChunkName: 'EditorLinkChanger' */
       '../../../client/components/EditorLinkChanger/EditorLinkChanger'
-      ),
+    ),
   loading: (props) => (
-    <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH}/>
+    <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),
   delay: HUMAN_ADDICTION_THRESH,
   timeout: MAX_WAIT_TIME
@@ -36,9 +47,9 @@ const LoadableEditorLinkViewer = Loadable({
     import(
       /* webpackChunkName: 'EditorLinkViewer' */
       '../../../client/components/EditorLinkViewer/EditorLinkViewer'
-      ),
+    ),
   loading: (props) => (
-    <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH}/>
+    <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),
   delay: HUMAN_ADDICTION_THRESH,
   timeout: MAX_WAIT_TIME
@@ -92,7 +103,11 @@ interface CustomProps {
   useTaskChild: UseTaskChild
 }
 
-type Handlers = Pick<EditorProps, 'handleBeforeInput' | 'onChange' | 'handleKeyCommand' | 'keyBindingFn'> & CustomProps
+type Handlers = Pick<
+  EditorProps,
+  'handleBeforeInput' | 'onChange' | 'handleKeyCommand' | 'keyBindingFn'
+> &
+  CustomProps
 
 interface ViewerData {
   href: string
@@ -101,7 +116,15 @@ interface ViewerData {
 }
 
 const useLinks = (editorState: EditorState, setEditorState: SetEditorState, handlers: Handlers) => {
-  const {handleBeforeInput, keyBindingFn, handleKeyCommand, onChange, removeModal, renderModal, useTaskChild} = handlers
+  const {
+    handleBeforeInput,
+    keyBindingFn,
+    handleKeyCommand,
+    onChange,
+    removeModal,
+    renderModal,
+    useTaskChild
+  } = handlers
   const undoLinkRef = useRef(false)
   const cachedCoordsRef = useRef<ClientRect | null>(null)
   const editorRef = useRef<HTMLElement>()
@@ -211,7 +234,9 @@ const useLinks = (editorState: EditorState, setEditorState: SetEditorState, hand
     })
   }
 
-  const onKeyCommand: Handlers['handleKeyCommand'] = (command: DraftEditorCommand | 'add-hyperlink') => {
+  const onKeyCommand: Handlers['handleKeyCommand'] = (
+    command: DraftEditorCommand | 'add-hyperlink'
+  ) => {
     if (handleKeyCommand) {
       const result = handleKeyCommand(command, editorState, Date.now())
       // @ts-ignore
@@ -326,7 +351,11 @@ const useLinks = (editorState: EditorState, setEditorState: SetEditorState, hand
     handleChange,
     handleKeyCommand: onKeyCommand,
     keyBindingFn: handleKeyBindingFn,
-    renderModal: linkViewerData ? renderViewerModal : linkChangerData ? renderChangerModal : renderModal,
+    renderModal: linkViewerData
+      ? renderViewerModal
+      : linkChangerData
+      ? renderChangerModal
+      : renderModal,
     removeModal: linkViewerData || linkChangerData ? onRemoveModal : removeModal
   }
 }

@@ -29,9 +29,7 @@ const ButtonWrapper = styled('div')({
 })
 
 const WebcamPermissionsModal = lazy(() =>
-  import(
-    /* webpackChunkName: 'WebcamPermissionsModal' */ './WebcamPermissionsModal'
-  )
+  import(/* webpackChunkName: 'WebcamPermissionsModal' */ './WebcamPermissionsModal')
 )
 
 const VideoControls = (props: Props) => {

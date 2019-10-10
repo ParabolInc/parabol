@@ -50,7 +50,7 @@ class RemoveTemplate extends Component<Props> {
     RemoveReflectTemplateMutation(atmosphere, {templateId}, {}, onError, onCompleted)
   }
 
-  render () {
+  render() {
     const {submitting, templateCount} = this.props
     return (
       <Button

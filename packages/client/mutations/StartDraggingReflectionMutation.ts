@@ -12,7 +12,6 @@ import {MeetingTypeEnum} from '../types/graphql'
 import {LocalHandlers} from '../types/relayMutations'
 import Atmosphere from '../Atmosphere'
 
-
 graphql`
   fragment StartDraggingReflectionMutation_team on StartDraggingReflectionPayload {
     meetingId

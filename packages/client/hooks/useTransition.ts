@@ -29,30 +29,29 @@ const useTransition = <T extends {key: string}>(children: T[]) => {
   const previousTransitionChildrenRef = useRef<TransitionChild<T>[]>([])
   const forceUpdate = useForceUpdate()
 
-  const transitionEndFactory = useEventCallback(
-    (key: string) => () => {
-      const idx = previousTransitionChildrenRef.current.findIndex(
-        (tChild) => tChild.child.key === key
-      )
-      if (idx === -1) return
-      const tChild = previousTransitionChildrenRef.current[idx]
-      const {status} = tChild
-      const {current: nextChildren} = previousTransitionChildrenRef
-      if (status === TransitionStatus.ENTERING) {
-        previousTransitionChildrenRef.current = [
-          ...nextChildren.slice(0, idx),
-          {...tChild, status: TransitionStatus.ENTERED},
-          ...nextChildren.slice(idx + 1)
-        ]
-        forceUpdate()
-      } else if (status === TransitionStatus.EXITING) {
-        previousTransitionChildrenRef.current = [
-          ...nextChildren.slice(0, idx),
-          ...nextChildren.slice(idx + 1)
-        ]
-        forceUpdate()
-      }
-    })
+  const transitionEndFactory = useEventCallback((key: string) => () => {
+    const idx = previousTransitionChildrenRef.current.findIndex(
+      (tChild) => tChild.child.key === key
+    )
+    if (idx === -1) return
+    const tChild = previousTransitionChildrenRef.current[idx]
+    const {status} = tChild
+    const {current: nextChildren} = previousTransitionChildrenRef
+    if (status === TransitionStatus.ENTERING) {
+      previousTransitionChildrenRef.current = [
+        ...nextChildren.slice(0, idx),
+        {...tChild, status: TransitionStatus.ENTERED},
+        ...nextChildren.slice(idx + 1)
+      ]
+      forceUpdate()
+    } else if (status === TransitionStatus.EXITING) {
+      previousTransitionChildrenRef.current = [
+        ...nextChildren.slice(0, idx),
+        ...nextChildren.slice(idx + 1)
+      ]
+      forceUpdate()
+    }
+  })
 
   const beginTransition = useEventCallback((key: string) => {
     requestAnimationFrame(() => {
@@ -110,7 +109,11 @@ const useTransition = <T extends {key: string}>(children: T[]) => {
       previousTransitionChildrenRef.current = currentTChildren
     }
     return previousTransitionChildrenRef.current
-  }, [beginTransition, children, previousTransitionChildrenRef.current /* eslint-disable-line react-hooks/exhaustive-deps */])
+  }, [
+    beginTransition,
+    children,
+    previousTransitionChildrenRef.current /* eslint-disable-line react-hooks/exhaustive-deps */
+  ])
 }
 
 export default useTransition

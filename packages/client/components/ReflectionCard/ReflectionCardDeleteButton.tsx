@@ -5,9 +5,7 @@
 import React, {Component} from 'react'
 import styled from '@emotion/styled'
 import PlainButton from '../PlainButton/PlainButton'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../../decorators/withAtmosphere/withAtmosphere'
 import RemoveReflectionMutation from '../../mutations/RemoveReflectionMutation'
 import withMutationProps, {WithMutationProps} from '../../utils/relay/withMutationProps'
 import Icon from '../Icon'
@@ -68,7 +66,7 @@ class ReflectionCardDeleteButton extends Component<Props> {
     RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId}, onError, onCompleted)
   }
 
-  render () {
+  render() {
     const {submitting} = this.props
     const userLabel = 'Delete this reflection card'
     if (submitting) return null

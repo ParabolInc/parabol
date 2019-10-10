@@ -39,7 +39,7 @@ const DashPanel = styled('div')({
   flex: 1,
   height: '100%',
   // any overflows should not include the width of the left nav
-  overflow: 'hidden',
+  overflow: 'hidden'
 })
 
 const DashMain = styled('div')({
@@ -63,16 +63,16 @@ const Dashboard = (props: Props) => {
       <DashPanel>
         <DashAlert viewer={viewer} />
         <DashMain>
-        <Switch>
-          <Route
-            path='/me'
-            render={(p) => (
-              <UserDashboard {...p} notifications={viewer ? viewer.notifications : null} />
-            )}
-          />
-          <Route path='/team/:teamId' component={TeamRoot} />
-          <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
-        </Switch>
+          <Switch>
+            <Route
+              path='/me'
+              render={(p) => (
+                <UserDashboard {...p} notifications={viewer ? viewer.notifications : null} />
+              )}
+            />
+            <Route path='/team/:teamId' component={TeamRoot} />
+            <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
+          </Switch>
         </DashMain>
       </DashPanel>
     </DashLayout>

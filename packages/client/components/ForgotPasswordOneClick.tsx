@@ -37,7 +37,7 @@ class ForgotPasswordOneClick extends Component<Props> {
     this.setState({isSent: true})
   }
 
-  render () {
+  render() {
     const {isSent} = this.state
     const {email, submitting} = this.props
     if (isSent) {

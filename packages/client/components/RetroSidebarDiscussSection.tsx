@@ -5,17 +5,12 @@ import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import MeetingSubnavItem from './MeetingSubnavItem'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import {useGotoStageId} from '../hooks/useMeeting'
 import DragDiscussionTopicMutation from '../mutations/DragDiscussionTopicMutation'
 import {navItemRaised} from '../styles/elevation'
 import {meetingVoteIcon} from '../styles/meeting'
-import {
-  DISCUSSION_TOPIC,
-  SORT_STEP
-} from '../utils/constants'
+import {DISCUSSION_TOPIC, SORT_STEP} from '../utils/constants'
 import dndNoise from '../utils/dndNoise'
 import Icon from './Icon'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
@@ -103,7 +98,8 @@ const RetroSidebarDiscussSection = (props: Props) => {
     } else {
       const offset = source.index > destination.index ? -1 : 1
       sortOrder =
-        (stages![destination.index + offset].sortOrder + destinationTopic.sortOrder) / 2 + dndNoise()
+        (stages![destination.index + offset].sortOrder + destinationTopic.sortOrder) / 2 +
+        dndNoise()
     }
 
     const {id: stageId} = sourceTopic

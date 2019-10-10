@@ -15,7 +15,7 @@
   "scripts": {
     "storybook": "start-storybook -p 6006 -c .storybook",
     "build-storybook": "build-storybook",
-    "lint": "eslint --fix ./**/*.{ts,tsx,js}",
+    "lint": "eslint --fix ./**/*.{ts,tsx}",
     "precommit": "lint-staged",
     "typecheck": "tsc --noEmit"
   },
@@ -47,9 +47,9 @@
     "babel-plugin-macros": "^2.6.1",
     "babel-plugin-relay": "^5.0.0",
     "eslint": "^6.1.0",
-    "eslint-config-prettier": "^6.0.0",
+    "eslint-config-prettier": "^6.4.0",
     "eslint-plugin-emotion": "^10.0.14",
-    "eslint-plugin-prettier": "^3.1.0",
+    "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-react": "^7.14.2",
     "eslint-plugin-react-hooks": "^1.6.1",
     "expect": "^24.8.0",
@@ -123,7 +123,7 @@
     "unicode-substring": "^1.0.0"
   },
   "lint-staged": {
-    "*.{js,ts,tsx}": [
+    "**/*.{js,ts,tsx}": [
       "eslint --fix",
       "git add"
     ]

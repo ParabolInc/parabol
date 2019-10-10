@@ -4,9 +4,7 @@ import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
 import {ReflectionGroupVoting_meeting} from '../__generated__/ReflectionGroupVoting_meeting.graphql'
 import {ReflectionGroupVoting_reflectionGroup} from '../__generated__/ReflectionGroupVoting_reflectionGroup.graphql'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import VoteForReflectionGroupMutation from '../mutations/VoteForReflectionGroupMutation'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import {meetingVoteIcon} from '../styles/meeting'
@@ -106,11 +104,11 @@ class ReflectionGroupVoting extends Component<Props> {
     VoteForReflectionGroupMutation(
       atmosphere,
       {isUnvote: true, reflectionGroupId},
-      {onError, onCompleted: handleCompleted, meetingId},
+      {onError, onCompleted: handleCompleted, meetingId}
     )
   }
 
-  render () {
+  render() {
     const {meeting, reflectionGroup, isExpanded} = this.props
     const viewerVoteCount = reflectionGroup.viewerVoteCount || 0
     const {localStage, settings, viewerMeetingMember} = meeting
@@ -123,7 +121,11 @@ class ReflectionGroupVoting extends Component<Props> {
       <UpvoteColumn>
         <UpvoteRow>
           {upvotes.map((idx) => (
-            <UpvoteIcon key={idx} color={isExpanded ? PALETTE.EMPHASIS_COOL_LIGHTER : PALETTE.EMPHASIS_COOL} onClick={this.unvote}>
+            <UpvoteIcon
+              key={idx}
+              color={isExpanded ? PALETTE.EMPHASIS_COOL_LIGHTER : PALETTE.EMPHASIS_COOL}
+              onClick={this.unvote}
+            >
               {meetingVoteIcon}
             </UpvoteIcon>
           ))}

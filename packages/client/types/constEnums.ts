@@ -6,14 +6,14 @@ export const enum AppBar {
 export const enum BezierCurve {
   DECELERATE = 'cubic-bezier(0, 0, .2, 1)',
 
-// Timing function to quickly accelerate and slowly decelerate
+  // Timing function to quickly accelerate and slowly decelerate
   STANDARD_CURVE = 'cubic-bezier(.4, 0, .2, 1)',
 
-// Timing function to accelerate
+  // Timing function to accelerate
   ACCELERATE = 'cubic-bezier(.4, 0, 1, 1)',
 
-// Timing function to quickly accelerate and decelerate
-  SHARP_CURVE = 'cubic-bezier(.4, 0, .6, 1)',
+  // Timing function to quickly accelerate and decelerate
+  SHARP_CURVE = 'cubic-bezier(.4, 0, .6, 1)'
 }
 
 export const enum Breakpoint {
@@ -22,7 +22,7 @@ export const enum Breakpoint {
   INVOICE_LABEL = 384,
   SIDEBAR_LEFT = 800,
   MEETING_FACILITATOR_BAR = 480,
-  SINGLE_REFLECTION_COLUMN = 704, // (ReflectionWith + 16) * 2
+  SINGLE_REFLECTION_COLUMN = 704 // (ReflectionWith + 16) * 2
 }
 
 export const enum Card {
@@ -55,7 +55,7 @@ export const enum DragAttribute {
 
 export const enum DroppableType {
   TASK = 'task',
-  REFLECTION = 'reflection',
+  REFLECTION = 'reflection'
 }
 
 export const enum Duration {
@@ -77,7 +77,7 @@ export const enum ElementWidth {
 }
 
 export const enum ElementHeight {
-  REFLECTION_CARD_MAX = 104  // 4 lines (20px each) + (2 * 12px) vertical gutter
+  REFLECTION_CARD_MAX = 104 // 4 lines (20px each) + (2 * 12px) vertical gutter
 }
 
 export const enum ExternalLinks {
@@ -102,7 +102,7 @@ export const enum InvoiceItemType {
   PAUSE_USER = 'pauseUser',
   AUTO_PAUSE_USER = 'autoPauseUser',
   REMOVE_USER = 'removeUser',
-  UNPAUSE_USER = 'unpauseUser',
+  UNPAUSE_USER = 'unpauseUser'
 }
 
 // https://material.io/design/layout/spacing-methods.html
@@ -111,7 +111,7 @@ export const enum Layout {
   TYPE_GRID = 4, // .5x
   LAYOUT_GRID = 8, // 1x
   ROW_GUTTER = 16, // 2x
-  TASK_COLUMNS_MAX_WIDTH = '1334px', // (4 x 296 card max-width) + (5 x 30 - gutters around cols)
+  TASK_COLUMNS_MAX_WIDTH = '1334px' // (4 x 296 card max-width) + (5 x 30 - gutters around cols)
 }
 
 export const enum LoaderSize {
@@ -178,7 +178,7 @@ export const enum SubscriptionChannel {
   TASK = 'task',
   TEAM = 'team',
   NOTIFICATION = 'notification',
-  ORGANIZATION = 'organization',
+  ORGANIZATION = 'organization'
 }
 
 export const enum TaskStatus {

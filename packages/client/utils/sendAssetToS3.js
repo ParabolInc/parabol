@@ -1,4 +1,4 @@
-export default async function sendAssetToS3 (asset, assetPutUrl) {
+export default async function sendAssetToS3(asset, assetPutUrl) {
   if (!__CLIENT__) return undefined
   const res = await window.fetch(assetPutUrl, {
     method: 'PUT',

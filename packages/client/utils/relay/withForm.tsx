@@ -7,16 +7,16 @@ export interface WithFormProps {
   setDirtyField: (name?: string) => void
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 
-  validateField (): {[name: string]: Legitity}
+  validateField(): {[name: string]: Legitity}
 
-  validateField (name: string): Legitity
+  validateField(name: string): Legitity
   fields: FieldState
 }
 
 interface FieldInputDict {
   [name: string]: {
-    getDefault (props: any): any
-    validate (rawInput: any, props: any): Legitity
+    getDefault(props: any): any
+    validate(rawInput: any, props: any): Legitity
   }
 }
 
@@ -117,15 +117,15 @@ const withForm = (fields: FieldInputDict) => <P extends WithFormProps>(
       }
     }
 
-    componentWillMount () {
+    componentWillMount() {
       this._mounted = true
     }
 
-    componentWillUnmount () {
+    componentWillUnmount() {
       this._mounted = false
     }
 
-    render () {
+    render() {
       const {fields} = this.state
       // https://github.com/Microsoft/TypeScript/issues/10727
       const {forwardedRef, ...props} = this.props as any

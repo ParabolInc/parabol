@@ -17,7 +17,7 @@ interface Props extends CSSTransition {
 
 // eslint-disable-next-line
 class AnimatedFade extends Component<Props> {
-  render () {
+  render() {
     const {children, duration = 100, slide = 32, ...props} = this.props
 
     const classNames = (css) => {

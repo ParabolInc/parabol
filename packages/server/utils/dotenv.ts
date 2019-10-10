@@ -8,7 +8,7 @@ import path from 'path'
  *
  * Returns true.
  */
-export default function getDotenv () {
+export default function getDotenv() {
   const name = process.env.NODE_ENV === 'test' ? '.env.test' : '.env'
   const myEnv = dotenv.config({
     path: path.join(__dirname, '..', name)

@@ -1,7 +1,7 @@
 import {urlRegex} from './regex'
 import legitify from './legitify'
 
-export default function makeUserServerSchema () {
+export default function makeUserServerSchema() {
   return legitify({
     picture: (value) =>
       value

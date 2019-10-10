@@ -31,9 +31,7 @@ const InvoiceFailedStamp = (props: Props) => {
   const {status} = props
   if (status !== InvoiceStatusEnum.FAILED) return null
 
-  return (
-    <FailedStamp>{'Payment Failed'}</FailedStamp>
-  )
+  return <FailedStamp>{'Payment Failed'}</FailedStamp>
 }
 
 export default InvoiceFailedStamp

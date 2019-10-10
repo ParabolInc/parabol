@@ -5,7 +5,7 @@ import {NavLink} from 'react-router-dom'
 import Avatar from '../Avatar/Avatar'
 import Badge from '../Badge/Badge'
 import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
-import styled from '@emotion/styled';
+import styled from '@emotion/styled'
 import textOverflow from '../../styles/helpers/textOverflow'
 import Icon from '../Icon'
 import {ICON_SIZE} from '../../styles/typographyV2'
@@ -112,7 +112,9 @@ const StandardHub = (props: Props) => {
   const {picture = '', preferredName = ''} = viewer || {}
 
   const userAvatar = picture || defaultUserAvatar
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu<HTMLDivElement>(MenuPosition.UPPER_LEFT)
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu<HTMLDivElement>(
+    MenuPosition.UPPER_LEFT
+  )
   return (
     <StandardHubRoot>
       <User>
@@ -151,7 +153,6 @@ const StandardHub = (props: Props) => {
           )
         }}
       </ClassNames>
-
     </StandardHubRoot>
   )
 }

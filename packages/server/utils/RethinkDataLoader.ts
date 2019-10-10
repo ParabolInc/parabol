@@ -28,7 +28,7 @@ import TeamInvitation from '../database/types/TeamInvitation'
 import User from '../database/types/User'
 import ReflectionGroup from '../database/types/ReflectionGroup'
 import Notification from '../database/types/Notification'
-import Organization from '../database/types/Organization';
+import Organization from '../database/types/Organization'
 
 interface JiraRemoteProjectKey {
   accessToken: string
@@ -95,7 +95,7 @@ export default class RethinkDataLoader {
   dataLoaderOptions: DataLoader.Options<any, any>
   authToken: null | AuthToken
 
-  constructor (
+  constructor(
     authToken: AuthToken | null = null,
     dataLoaderOptions: DataLoader.Options<any, any> = {}
   ) {
@@ -103,7 +103,7 @@ export default class RethinkDataLoader {
     this.dataLoaderOptions = dataLoaderOptions
   }
 
-  private fkLoader<T = any> (
+  private fkLoader<T = any>(
     standardLoader: DataLoader<string, T>,
     field: string,
     fetchFn: (ids: string[]) => any[] | Promise<any[]>
@@ -118,7 +118,7 @@ export default class RethinkDataLoader {
     return new DataLoader<string, T[]>(batchFn, this.dataLoaderOptions)
   }
 
-  private pkLoader<T extends keyof Tables> (table: T) {
+  private pkLoader<T extends keyof Tables>(table: T) {
     // don't pass in a a filter here because they requested a specific ID, they know what they want
     const batchFn = async (keys) => {
       const r = getRethink()

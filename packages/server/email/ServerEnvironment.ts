@@ -12,7 +12,7 @@ export default class ServerEnvironment extends Environment {
   results: ExecutionResult[] | undefined
   isFetched = false
 
-  constructor (public context: GQLContext) {
+  constructor(public context: GQLContext) {
     super({
       store: new Store(new RecordSource()),
       network: Network.create(noop)
@@ -20,7 +20,7 @@ export default class ServerEnvironment extends Environment {
     ;(this as any)._network = Network.create(this.fetch)
   }
 
-  async load () {
+  async load() {
     if (!this.isFetched) {
       this.isFetched = true
       this.results = await Promise.all(this.requestCache)

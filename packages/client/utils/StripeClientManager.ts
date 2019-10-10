@@ -45,7 +45,6 @@ export const normalizeExpiry = (value = '', previousValue = '') => {
 
 export const normalizeNumeric = (value: string) => value.replace(/[^\d]/g, '')
 
-
 export enum StripeError {
   cvc = 'Invalid CVC',
   expiry = 'Invalid expiration',
@@ -86,25 +85,26 @@ export default class StripeClientManager {
     return normalizeNumeric(cvc)
   }
 
-  validateCardNumber = (number: string)=> {
-    return new Legitity(number)
-      .test((value) => {
-        return !this.stripe || this.stripe.validateCardNumber(value) ? undefined : StripeError.creditCardNumber
-      })
+  validateCardNumber = (number: string) => {
+    return new Legitity(number).test((value) => {
+      return !this.stripe || this.stripe.validateCardNumber(value)
+        ? undefined
+        : StripeError.creditCardNumber
+    })
   }
 
   validateExpiry = (expiry: string) => {
-    return new Legitity(expiry)
-      .test((value) => {
-        return !this.stripe || (this.stripe.validateExpiry as any)(value) ? undefined : StripeError.expiry
-      })
+    return new Legitity(expiry).test((value) => {
+      return !this.stripe || (this.stripe.validateExpiry as any)(value)
+        ? undefined
+        : StripeError.expiry
+    })
   }
 
   validateCVC = (cvc: string) => {
-    return new Legitity(cvc)
-      .test((value) => {
-        return !this.stripe || this.stripe.validateCVC(value) ? undefined : StripeError.cvc
-      })
+    return new Legitity(cvc).test((value) => {
+      return !this.stripe || this.stripe.validateCVC(value) ? undefined : StripeError.cvc
+    })
   }
 
   cardTypeIcon = (number: string) => {

@@ -112,12 +112,7 @@ const EditorLinkChanger = (props: Props) => {
   const hasError = !!(fields.text.error || fields.link.error)
   const label = text ? 'Update' : 'Add'
   return (
-    <ModalBoundary
-      onBlur={handleBlur}
-      onKeyDown={handleKeyDown}
-      tabIndex={-1}
-      ref={innerRef}
-    >
+    <ModalBoundary onBlur={handleBlur} onKeyDown={handleKeyDown} tabIndex={-1} ref={innerRef}>
       <form onSubmit={onSubmit}>
         {text !== null && (
           <TextBlock>

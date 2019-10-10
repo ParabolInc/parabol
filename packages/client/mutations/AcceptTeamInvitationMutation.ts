@@ -72,10 +72,7 @@ const mutation = graphql`
   }
 `
 
-export const acceptTeamInvitationNotificationUpdater = (
-  payload: RecordProxy<any>,
-  {store}
-) => {
+export const acceptTeamInvitationNotificationUpdater = (payload: RecordProxy<any>, {store}) => {
   const team = payload.getLinkedRecord('team')
   handleAddTeams(team, store)
   const notificationIds = getInProxy(payload, 'removedNotificationIds')

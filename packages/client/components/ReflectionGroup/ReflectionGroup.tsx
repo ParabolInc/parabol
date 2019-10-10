@@ -6,7 +6,12 @@ import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
 import DraggableReflectionCard from './DraggableReflectionCard'
-import {DragAttribute, ElementWidth, ReflectionStackPerspective, Times} from '../../types/constEnums'
+import {
+  DragAttribute,
+  ElementWidth,
+  ReflectionStackPerspective,
+  Times
+} from '../../types/constEnums'
 import ReflectionGroupHeader from '../ReflectionGroupHeader'
 import ExpandedReflectionStack from '../RetroReflectPhase/ExpandedReflectionStack'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
@@ -30,24 +35,28 @@ const Group = styled('div')<{staticReflectionCount: number}>(({staticReflectionC
   transition: `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms`
 }))
 
-const ReflectionWrapper = styled('div')<{staticIdx: number, isDropping: boolean | null, groupCount: number}>(
-  ({staticIdx, isDropping, groupCount}): any => {
-    const isHidden = staticIdx === -1 || isDropping
-    const multiple = Math.min(staticIdx, 2)
-    const scaleX = (ElementWidth.REFLECTION_CARD - ReflectionStackPerspective.X * multiple * 2) / ElementWidth.REFLECTION_CARD
-    const translateY = ReflectionStackPerspective.Y * multiple
-    return {
-      position: staticIdx === 0 || (staticIdx === -1 && groupCount === 1) ? 'relative' : 'absolute',
-      bottom: 0,
-      left: 0,
-      outline: 0,
-      opacity: isHidden ? 0 : undefined,
-      transform: `translateY(${translateY}px) scaleX(${scaleX})`,
-      zIndex: 3 - multiple,
-      transition: isHidden ? undefined : `transform ${Times.REFLECTION_DROP_DURATION}ms`
-    }
+const ReflectionWrapper = styled('div')<{
+  staticIdx: number
+  isDropping: boolean | null
+  groupCount: number
+}>(({staticIdx, isDropping, groupCount}): any => {
+  const isHidden = staticIdx === -1 || isDropping
+  const multiple = Math.min(staticIdx, 2)
+  const scaleX =
+    (ElementWidth.REFLECTION_CARD - ReflectionStackPerspective.X * multiple * 2) /
+    ElementWidth.REFLECTION_CARD
+  const translateY = ReflectionStackPerspective.Y * multiple
+  return {
+    position: staticIdx === 0 || (staticIdx === -1 && groupCount === 1) ? 'relative' : 'absolute',
+    bottom: 0,
+    left: 0,
+    outline: 0,
+    opacity: isHidden ? 0 : undefined,
+    transform: `translateY(${translateY}px) scaleX(${scaleX})`,
+    zIndex: 3 - multiple,
+    transition: isHidden ? undefined : `transform ${Times.REFLECTION_DROP_DURATION}ms`
   }
-)
+})
 
 interface Props {
   phaseRef: RefObject<HTMLDivElement>
@@ -66,10 +75,22 @@ const ReflectionGroup = (props: Props) => {
   const titleInputRef = useRef(null)
   const headerRef = useRef<HTMLDivElement>(null)
   const staticReflections = useMemo(() => {
-    return reflections.filter((reflection) => !reflection.isViewerDragging && (!reflection.remoteDrag || reflection.isDropping))
+    return reflections.filter(
+      (reflection) =>
+        !reflection.isViewerDragging && (!reflection.remoteDrag || reflection.isDropping)
+    )
   }, [reflections])
   const stackRef = useRef<HTMLDivElement>(null)
-  const {setItemsRef, scrollRef, bgRef, modalHeaderRef, portal, portalStatus, collapse, expand} = useExpandedReflections(groupRef, stackRef, reflections.length, headerRef)
+  const {
+    setItemsRef,
+    scrollRef,
+    bgRef,
+    modalHeaderRef,
+    portal,
+    portalStatus,
+    collapse,
+    expand
+  } = useExpandedReflections(groupRef, stackRef, reflections.length, headerRef)
   const atmosphere = useAtmosphere()
   const [isEditing, thisSetIsEditing] = useState(false)
   const isDragPhase = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete
@@ -109,43 +130,58 @@ const ReflectionGroup = (props: Props) => {
     }
   }, [])
 
-  const showHeader = phaseType !== GROUP || titleIsUserDefined || reflections.length > 1 || isEditing
+  const showHeader =
+    phaseType !== GROUP || titleIsUserDefined || reflections.length > 1 || isEditing
   return (
     <>
-      {portal(<ExpandedReflectionStack
-        header={<ReflectionGroupHeader
-          isExpanded
-          ref={modalHeaderRef}
+      {portal(
+        <ExpandedReflectionStack
+          header={
+            <ReflectionGroupHeader
+              isExpanded
+              ref={modalHeaderRef}
+              meeting={meeting}
+              portalStatus={portalStatus}
+              reflectionGroup={reflectionGroup}
+              titleInputRef={titleInputRef}
+            />
+          }
+          phaseRef={phaseRef}
+          staticReflections={staticReflections}
+          reflections={reflections}
+          scrollRef={scrollRef}
+          bgRef={bgRef}
+          setItemsRef={setItemsRef}
+          closePortal={collapse}
           meeting={meeting}
-          portalStatus={portalStatus}
-          reflectionGroup={reflectionGroup}
-          titleInputRef={titleInputRef}
-        />}
-        phaseRef={phaseRef}
-        staticReflections={staticReflections}
-        reflections={reflections}
-        scrollRef={scrollRef}
-        bgRef={bgRef}
-        setItemsRef={setItemsRef}
-        closePortal={collapse}
-        meeting={meeting}
-        reflectionGroupId={reflectionGroupId}
-      />)}
-      <Group {...{[DragAttribute.DROPPABLE]: reflectionGroupId}} ref={groupRef} staticReflectionCount={staticReflections.length}>
-        {showHeader && <ReflectionGroupHeader
-          ref={headerRef}
-          meeting={meeting}
-          reflectionGroup={reflectionGroup}
-          portalStatus={portalStatus}
-          titleInputRef={titleInputRef}
-        />}
+          reflectionGroupId={reflectionGroupId}
+        />
+      )}
+      <Group
+        {...{[DragAttribute.DROPPABLE]: reflectionGroupId}}
+        ref={groupRef}
+        staticReflectionCount={staticReflections.length}
+      >
+        {showHeader && (
+          <ReflectionGroupHeader
+            ref={headerRef}
+            meeting={meeting}
+            reflectionGroup={reflectionGroup}
+            portalStatus={portalStatus}
+            titleInputRef={titleInputRef}
+          />
+        )}
         <CardStack ref={stackRef} onClick={onClick}>
           {reflections.map((reflection) => {
             const staticIdx = staticReflections.indexOf(reflection)
             const {id: reflectionId, isDropping} = reflection
             return (
-              <ReflectionWrapper key={reflectionId} groupCount={reflections.length} staticIdx={staticIdx}
-                                 isDropping={isDropping}>
+              <ReflectionWrapper
+                key={reflectionId}
+                groupCount={reflections.length}
+                staticIdx={staticIdx}
+                isDropping={isDropping}
+              >
                 <DraggableReflectionCard
                   key={reflection.id}
                   staticIdx={staticIdx}
@@ -165,46 +201,44 @@ const ReflectionGroup = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ReflectionGroup,
-  {
-    meeting: graphql`
-      fragment ReflectionGroup_meeting on RetrospectiveMeeting {
-        ...DraggableReflectionCard_meeting
-        id
-        ...ReflectionGroupHeader_meeting
-        localPhase {
-          phaseType
-        }
-        localStage {
-          isComplete
-        }
-        isViewerDragInProgress
+export default createFragmentContainer(ReflectionGroup, {
+  meeting: graphql`
+    fragment ReflectionGroup_meeting on RetrospectiveMeeting {
+      ...DraggableReflectionCard_meeting
+      id
+      ...ReflectionGroupHeader_meeting
+      localPhase {
+        phaseType
       }
-    `,
-    reflectionGroup: graphql`
-      fragment ReflectionGroup_reflectionGroup on RetroReflectionGroup {
-        ...ReflectionGroupHeader_reflectionGroup
+      localStage {
+        isComplete
+      }
+      isViewerDragInProgress
+    }
+  `,
+  reflectionGroup: graphql`
+    fragment ReflectionGroup_reflectionGroup on RetroReflectionGroup {
+      ...ReflectionGroupHeader_reflectionGroup
+      retroPhaseItemId
+      id
+      sortOrder
+      titleIsUserDefined
+      title
+      reflections {
+        ...DraggableReflectionCard_reflection
+        ...DraggableReflectionCard_staticReflections
+        ...ReflectionCard_reflection
+        id
         retroPhaseItemId
-        id
         sortOrder
-        titleIsUserDefined
-        title
-        reflections {
-          ...DraggableReflectionCard_reflection
-          ...DraggableReflectionCard_staticReflections
-          ...ReflectionCard_reflection
-          id
-          retroPhaseItemId
-          sortOrder
-          isViewerDragging
-          isDropping
-          isEditing
-          remoteDrag {
-            dragUserId
-          }
+        isViewerDragging
+        isDropping
+        isEditing
+        remoteDrag {
+          dragUserId
         }
-        isExpanded
       }
-    `
-  }
-)
+      isExpanded
+    }
+  `
+})

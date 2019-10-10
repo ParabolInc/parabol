@@ -14,7 +14,7 @@ export default <P extends WithAtmosphereProps>(ComposedComponent: React.Componen
     // noinspection JSUnusedGlobalSymbols
     static contextType = AtmosphereContext
 
-    render () {
+    render() {
       // @ts-ignore
       return <ComposedComponent atmosphere={this.context} {...this.props} />
     }

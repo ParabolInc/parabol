@@ -52,9 +52,7 @@ interface Props extends ActionMeetingPhaseProps {
 }
 
 const UpdatesHelpMenu = lazyPreload(async () =>
-  import(
-    /* webpackChunkName: 'UpdatesHelpMenu' */ './MeetingHelp/UpdatesHelpMenu'
-    )
+  import(/* webpackChunkName: 'UpdatesHelpMenu' */ './MeetingHelp/UpdatesHelpMenu')
 )
 
 const ActionMeetingUpdates = (props: Props) => {

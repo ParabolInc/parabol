@@ -35,17 +35,17 @@ const makeSubscribeIter = (channelName: string | string[], options: Options) => 
   }
 
   return {
-    next () {
+    next() {
       return getNextPromise()
     },
-    return () {
+    return() {
       dataLoader.dispose({force: true})
       return asyncIterator.return!()
     },
-    throw (error) {
+    throw(error) {
       return asyncIterator.throw!(error)
     },
-    [Symbol.asyncIterator] () {
+    [Symbol.asyncIterator]() {
       return this
     }
   }

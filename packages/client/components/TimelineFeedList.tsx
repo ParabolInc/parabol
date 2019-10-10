@@ -13,7 +13,7 @@ interface Props {
 class TimelineFeedList extends Component<Props> {
   intersectionObserver!: IntersectionObserver
   lastItemRef?: HTMLDivElement
-  constructor (props: Props) {
+  constructor(props: Props) {
     super(props)
     this.intersectionObserver = new IntersectionObserver((entries) => {
       const [entry] = entries
@@ -23,7 +23,7 @@ class TimelineFeedList extends Component<Props> {
     })
   }
 
-  componentWillUnmount (): void {
+  componentWillUnmount(): void {
     this.intersectionObserver.disconnect()
   }
 
@@ -36,7 +36,7 @@ class TimelineFeedList extends Component<Props> {
     loadMore(20, undefined as any)
   }
 
-  render () {
+  render() {
     const {viewer} = this.props
     const {timeline} = viewer
     return (
@@ -83,17 +83,17 @@ export default createPaginationContainer(
   },
   {
     direction: 'forward',
-    getConnectionFromProps (props: any) {
+    getConnectionFromProps(props: any) {
       const {viewer} = props
       return viewer && viewer.timeline
     },
-    getFragmentVariables (prevVars, totalCount) {
+    getFragmentVariables(prevVars, totalCount) {
       return {
         ...prevVars,
         first: totalCount
       }
     },
-    getVariables (_props, {count, cursor}, fragmentVariables) {
+    getVariables(_props, {count, cursor}, fragmentVariables) {
       return {
         ...fragmentVariables,
         first: count,

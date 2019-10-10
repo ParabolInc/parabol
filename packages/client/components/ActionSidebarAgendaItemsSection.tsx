@@ -26,7 +26,9 @@ const ActionSidebarAgendaItemsSection = (props: Props) => {
   }
   // show agenda (no blur) at all times if the updates phase isNavigable
   // facilitator can click on updates nav item before completing all check-in stages
-  const updatesPhase = newMeeting && newMeeting.phases!.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.updates)!
+  const updatesPhase =
+    newMeeting &&
+    newMeeting.phases!.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.updates)!
   const isUpdatesNavigable = updatesPhase && updatesPhase.stages![0].isNavigable
   return (
     <MeetingSidebarPhaseItemChild>

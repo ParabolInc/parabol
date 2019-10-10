@@ -5,7 +5,7 @@ import useRefState from './useRefState'
 import useEventCallback from './useEventCallback'
 
 export type TaskChildName =
-  'root'
+  | 'root'
   | 'dueDate'
   | 'teamAssignee'
   | 'userAssignee'

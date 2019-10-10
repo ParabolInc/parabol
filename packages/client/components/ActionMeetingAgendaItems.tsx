@@ -37,7 +37,7 @@ interface Props extends ActionMeetingPhaseProps {
 const ActionMeetingAgendaItemsHelpMenu = lazyPreload(async () =>
   import(
     /* webpackChunkName: 'ActionMeetingAgendaItemsHelpMenu' */ './MeetingHelp/ActionMeetingAgendaItemsHelpMenu'
-    )
+  )
 )
 
 const AgendaVerbatim = styled('div')({
@@ -140,9 +140,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
           </TaskCardBlock>
           <EditorHelpModalContainer />
         </PhaseWrapper>
-        <MeetingHelpToggle
-          menu={<ActionMeetingAgendaItemsHelpMenu />}
-        />
+        <MeetingHelpToggle menu={<ActionMeetingAgendaItemsHelpMenu />} />
       </MeetingHeaderAndPhase>
       <MeetingFacilitatorBar isFacilitating={isFacilitating}>
         <BottomControlSpacer />

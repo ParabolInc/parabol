@@ -50,7 +50,7 @@ const withKeyboardShortcuts = (ComposedComponent) => {
       return undefined
     }
 
-    render () {
+    render() {
       return (
         <ComposedComponent
           {...this.props}

@@ -2,7 +2,10 @@ import {addTeamTeamUpdater} from '../mutations/AddTeamMutation'
 import {archiveTeamTeamOnNext, archiveTeamTeamUpdater} from '../mutations/ArchiveTeamMutation'
 import {createReflectionTeamUpdater} from '../mutations/CreateReflectionMutation'
 import {removeReflectionTeamUpdater} from '../mutations/RemoveReflectionMutation'
-import {removeTeamMemberTeamOnNext, removeTeamMemberTeamUpdater} from '../mutations/RemoveTeamMemberMutation'
+import {
+  removeTeamMemberTeamOnNext,
+  removeTeamMemberTeamUpdater
+} from '../mutations/RemoveTeamMemberMutation'
 import {removeOrgUserTeamOnNext, removeOrgUserTeamUpdater} from '../mutations/RemoveOrgUserMutation'
 import {startNewMeetingTeamOnNext} from '../mutations/StartNewMeetingMutation'
 import {navigateMeetingTeamUpdater} from '../mutations/NavigateMeetingMutation'

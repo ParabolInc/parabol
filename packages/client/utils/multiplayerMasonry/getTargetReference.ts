@@ -48,7 +48,14 @@ const SWITCHING_COST = 50
 // if it's clear they aren't near a card, don't try to force a relative position
 const MAX_DIST = ElementWidth.REFLECTION_CARD
 
-const getTargetReference = (cursorX: number, cursorY: number, cardOffsetX: number, cardOffsetY: number, targets: TargetBBox[], prevTargetId: string) => {
+const getTargetReference = (
+  cursorX: number,
+  cursorY: number,
+  cardOffsetX: number,
+  cardOffsetY: number,
+  targets: TargetBBox[],
+  prevTargetId: string
+) => {
   const distances = [] as number[]
   for (let i = 0; i < targets.length; i++) {
     const target = targets[i]
@@ -65,7 +72,6 @@ const getTargetReference = (cursorX: number, cursorY: number, cardOffsetX: numbe
   }
   const minValue = Math.min(...distances)
 
-
   // if they were off the grid, require them to get very close to a card so we can assume they're back on the grid
   const relativePlacementThresh = prevTargetId ? MAX_DIST : MAX_DIST / 2
   if (minValue > relativePlacementThresh) return {targetId: '', targetOffset: null}
@@ -74,8 +80,8 @@ const getTargetReference = (cursorX: number, cursorY: number, cardOffsetX: numbe
 
   return {
     targetId: nextTarget.targetId,
-    targetOffsetX: cursorX - nextTarget.left- cardOffsetX,
-    targetOffsetY: cursorY - nextTarget.top - cardOffsetY,
+    targetOffsetX: cursorX - nextTarget.left - cardOffsetX,
+    targetOffsetY: cursorY - nextTarget.top - cardOffsetY
   }
 }
 

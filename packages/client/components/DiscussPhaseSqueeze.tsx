@@ -23,7 +23,10 @@ const DiscussPhaseSqueeze = (props: Props) => {
   const {viewerId} = atmosphere
   const isFacilitating = viewerId === facilitatorUserId
   const {activeUserCount} = orgUserCount
-  const {modalPortal, closePortal, openPortal} = useModal({noClose: true, background: PALETTE.BACKGROUND_FORCED_BACKDROP})
+  const {modalPortal, closePortal, openPortal} = useModal({
+    noClose: true,
+    background: PALETTE.BACKGROUND_FORCED_BACKDROP
+  })
 
   useEffect(() => {
     if (showConversionModal) {
@@ -34,30 +37,36 @@ const DiscussPhaseSqueeze = (props: Props) => {
   }, [showConversionModal, isFacilitating])
 
   if (isFacilitating) {
-    return modalPortal(<CreditCardModal activeUserCount={activeUserCount} orgId={orgId} actionType={'squeeze'}
-                                        closePortal={closePortal} meetingId={meetingId}/>)
+    return modalPortal(
+      <CreditCardModal
+        activeUserCount={activeUserCount}
+        orgId={orgId}
+        actionType={'squeeze'}
+        closePortal={closePortal}
+        meetingId={meetingId}
+      />
+    )
   }
-  return modalPortal(<WaitingForFacilitatorToPay facilitatorName={facilitatorName}/>)
+  return modalPortal(<WaitingForFacilitatorToPay facilitatorName={facilitatorName} />)
 }
 
-export default createFragmentContainer(
-  DiscussPhaseSqueeze,
-  {
-    organization: graphql`
-      fragment DiscussPhaseSqueeze_organization on Organization {
-        id
-        orgUserCount {
-          activeUserCount
-        }
-      }`,
-    meeting: graphql`
-      fragment DiscussPhaseSqueeze_meeting on RetrospectiveMeeting {
-        id
-        facilitatorUserId
-        facilitator {
-          preferredName
-        }
-        showConversionModal
-      }`
-  }
-)
+export default createFragmentContainer(DiscussPhaseSqueeze, {
+  organization: graphql`
+    fragment DiscussPhaseSqueeze_organization on Organization {
+      id
+      orgUserCount {
+        activeUserCount
+      }
+    }
+  `,
+  meeting: graphql`
+    fragment DiscussPhaseSqueeze_meeting on RetrospectiveMeeting {
+      id
+      facilitatorUserId
+      facilitator {
+        preferredName
+      }
+      showConversionModal
+    }
+  `
+})

@@ -28,7 +28,7 @@ const makeSuggestions = (triggerWord, teamMembers) => {
 }
 
 class SuggestMentionableUsers extends Component {
-  componentWillMount () {
+  componentWillMount() {
     const {
       triggerWord,
       viewer: {
@@ -39,7 +39,7 @@ class SuggestMentionableUsers extends Component {
     this._setSuggestions(triggerWord, teamMembers)
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     const {
       triggerWord,
       viewer: {
@@ -54,13 +54,13 @@ class SuggestMentionableUsers extends Component {
     }
   }
 
-  _setSuggestions (triggerWord, teamMembers) {
+  _setSuggestions(triggerWord, teamMembers) {
     const {setSuggestions} = this.props
     const suggestions = makeSuggestions(triggerWord, teamMembers)
     setSuggestions(suggestions)
   }
 
-  render () {
+  render() {
     const {activeIdx, handleSelect, suggestions} = this.props
     return (
       <AsyncEditorSuggestions

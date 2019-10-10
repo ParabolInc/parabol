@@ -25,7 +25,7 @@ const MeetingHelpToggle = (props: Props) => {
   const demoPauseOpen = useTimeout(1000)
   useEffect(() => {
     if (demoPauseOpen && isDemoRoute()) {
-      const {clientGraphQLServer} = atmosphere as unknown as LocalAtmosphere
+      const {clientGraphQLServer} = (atmosphere as unknown) as LocalAtmosphere
       const {isNew} = clientGraphQLServer
       if (!isNew) {
         togglePortal()

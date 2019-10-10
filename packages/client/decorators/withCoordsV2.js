@@ -41,14 +41,14 @@ export default (ComposedComponent) => {
       top: 0
     }
 
-    componentWillMount () {
+    componentWillMount() {
       const {originCoords} = this.props
       if (originCoords) {
         this.originCoords = originCoords
       }
     }
 
-    componentWillReceiveProps (nextProps) {
+    componentWillReceiveProps(nextProps) {
       const {originCoords} = nextProps
       if (originCoords) {
         if (
@@ -62,7 +62,7 @@ export default (ComposedComponent) => {
       }
     }
 
-    componentWillUnmount () {
+    componentWillUnmount() {
       window.removeEventListener('resize', this.resizeWindow, {
         passive: true
       })
@@ -155,7 +155,7 @@ export default (ComposedComponent) => {
       }
     }
 
-    render () {
+    render() {
       const {...coords} = this.state
       return (
         <ComposedComponent

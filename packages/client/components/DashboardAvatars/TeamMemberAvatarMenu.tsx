@@ -5,9 +5,7 @@ import graphql from 'babel-plugin-relay/macro'
 import DropdownMenuLabel from '../DropdownMenuLabel'
 import Menu from '../Menu'
 import MenuItem from '../MenuItem'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../../decorators/withAtmosphere/withAtmosphere'
 import {MenuProps} from '../../hooks/useMenu'
 import MenuItemLabel from '../MenuItemLabel'
 

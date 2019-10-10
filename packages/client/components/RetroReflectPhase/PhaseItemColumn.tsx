@@ -33,20 +33,24 @@ const ColumnWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   minHeight: isDesktop ? undefined : '100%'
 }))
 
-const ColumnHighlight = styled('div')<{isFocused: boolean, isDesktop: boolean}>(({isDesktop, isFocused}) => ({
-  backgroundColor: isFocused ? PALETTE.BACKGROUND_REFLECTION_FOCUSED : PALETTE.BACKGROUND_REFLECTION,
-  borderRadius: 8,
-  boxShadow: isFocused ? `inset 0 0 0 3px ${PALETTE.BORDER_FACILITATOR_FOCUS}` : undefined,
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  flexShrink: 0,
-  height: isDesktop ? undefined : '100%',
-  maxHeight: isDesktop ? 600 : undefined,
-  padding: `${Gutters.ROW_INNER_GUTTER} ${Gutters.COLUMN_INNER_GUTTER}`,
-  transition: `background 150ms ${DECELERATE}`,
-  width: '100%'
-}))
+const ColumnHighlight = styled('div')<{isFocused: boolean; isDesktop: boolean}>(
+  ({isDesktop, isFocused}) => ({
+    backgroundColor: isFocused
+      ? PALETTE.BACKGROUND_REFLECTION_FOCUSED
+      : PALETTE.BACKGROUND_REFLECTION,
+    borderRadius: 8,
+    boxShadow: isFocused ? `inset 0 0 0 3px ${PALETTE.BORDER_FACILITATOR_FOCUS}` : undefined,
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'column',
+    flexShrink: 0,
+    height: isDesktop ? undefined : '100%',
+    maxHeight: isDesktop ? 600 : undefined,
+    padding: `${Gutters.ROW_INNER_GUTTER} ${Gutters.COLUMN_INNER_GUTTER}`,
+    transition: `background 150ms ${DECELERATE}`,
+    width: '100%'
+  })
+)
 
 const ColumnContent = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
@@ -142,7 +146,16 @@ interface Props {
 }
 
 const PhaseItemColumn = (props: Props) => {
-  const {retroPhaseItemId, description, editorIds, idx, meeting, phaseRef, question, isDesktop} = props
+  const {
+    retroPhaseItemId,
+    description,
+    editorIds,
+    idx,
+    meeting,
+    phaseRef,
+    question,
+    isDesktop
+  } = props
   const {meetingId, facilitatorUserId, localPhase, localStage, reflectionGroups} = meeting
   const {phaseId, focusedPhaseItemId} = localPhase
   const {isComplete} = localStage
@@ -174,12 +187,13 @@ const PhaseItemColumn = (props: Props) => {
 
   const columnStack = useMemo(() => {
     const groups = reflectionGroups.filter(
-      (group) => group.retroPhaseItemId === retroPhaseItemId && group.reflections.length > 0 &&
+      (group) =>
+        group.retroPhaseItemId === retroPhaseItemId &&
+        group.reflections.length > 0 &&
         !cardsInFlightRef.current.find((card) => card.key === group.reflections[0].content)
     )
     return groups
   }, [reflectionGroups, retroPhaseItemId, cardsInFlightRef.current])
-
 
   const reflectionStack = useMemo(() => {
     return columnStack
@@ -193,10 +207,7 @@ const PhaseItemColumn = (props: Props) => {
       <ColumnHighlight isDesktop={isDesktop} isFocused={isFocused}>
         <ColumnContent isDesktop={isDesktop}>
           <HeaderAndEditor isDesktop={isDesktop}>
-            <PromptHeader
-              isClickable={isFacilitator && !isComplete}
-              onClick={setColumnFocus}
-            >
+            <PromptHeader isClickable={isFacilitator && !isComplete} onClick={setColumnFocus}>
               <FocusArrow isFocused={isFocused}>arrow_forward</FocusArrow>
               <Tooltip
                 delay={200}

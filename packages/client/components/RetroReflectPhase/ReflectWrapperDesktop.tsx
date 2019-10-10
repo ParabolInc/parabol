@@ -22,9 +22,7 @@ const ReflectWrapperDesktop = (props: Props) => {
   const {children} = props
   return (
     <DesktopWrapper>
-      <Inner>
-        {children}
-      </Inner>
+      <Inner>{children}</Inner>
     </DesktopWrapper>
   )
 }

@@ -4,12 +4,12 @@ import {store} from '../../../client/client'
 
 export default (reducerObj) => (ComposedComponent) => {
   class WithReducer extends Component {
-    componentWillMount () {
+    componentWillMount() {
       const newReducers = makeReducer(reducerObj)
       store.replaceReducer(newReducers)
     }
 
-    render () {
+    render() {
       return <ComposedComponent {...this.props} />
     }
   }

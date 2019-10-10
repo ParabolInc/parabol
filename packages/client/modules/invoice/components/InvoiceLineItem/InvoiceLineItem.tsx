@@ -8,10 +8,11 @@ import InvoiceLineItemDetails from './InvoiceLineItemDetails'
 import {InvoiceLineItemEnum} from '../../../../types/graphql'
 import InvoiceLineItemContent from './InvoiceLineItemContent'
 
-
 const descriptionMaker = {
-  [InvoiceLineItemEnum.ADDED_USERS]: (quantity) => `${quantity} new ${plural(quantity, 'user')} added`,
-  [InvoiceLineItemEnum.REMOVED_USERS]: (quantity) => `${quantity} ${plural(quantity, 'user')} removed`,
+  [InvoiceLineItemEnum.ADDED_USERS]: (quantity) =>
+    `${quantity} new ${plural(quantity, 'user')} added`,
+  [InvoiceLineItemEnum.REMOVED_USERS]: (quantity) =>
+    `${quantity} ${plural(quantity, 'user')} removed`,
   [InvoiceLineItemEnum.INACTIVITY_ADJUSTMENTS]: () => 'Adjustments for paused users'
 }
 
@@ -32,19 +33,16 @@ const InvoiceLineItem = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  InvoiceLineItem,
-  {
-    item: graphql`
-      fragment InvoiceLineItem_item on InvoiceLineItem {
-        amount
-        description
-        details {
-          ...InvoiceLineItemDetails_details
-        }
-        quantity
-        type
+export default createFragmentContainer(InvoiceLineItem, {
+  item: graphql`
+    fragment InvoiceLineItem_item on InvoiceLineItem {
+      amount
+      description
+      details {
+        ...InvoiceLineItemDetails_details
       }
-    `
-  }
-)
+      quantity
+      type
+    }
+  `
+})

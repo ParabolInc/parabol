@@ -23,18 +23,12 @@ const Impersonate = lazy(() =>
 const Signout = lazy(() =>
   import(/* webpackChunkName: 'SignoutContainer' */ '../containers/Signout/SignoutContainer')
 )
-const NotFound = lazy(() =>
-  import(/* webpackChunkName: 'NotFound' */ './NotFound/NotFound')
-)
-const DashboardRoot = lazy(() =>
-  import(/* webpackChunkName: 'DashboardRoot' */ './DashboardRoot')
-)
+const NotFound = lazy(() => import(/* webpackChunkName: 'NotFound' */ './NotFound/NotFound'))
+const DashboardRoot = lazy(() => import(/* webpackChunkName: 'DashboardRoot' */ './DashboardRoot'))
 const ActionMeetingRoot = lazy(() =>
   import(/* webpackChunkName: 'ActionMeetingRoot' */ './ActionMeetingRoot')
 )
-const RetroRoot = lazy(() =>
-  import(/* webpackChunkName: 'RetroRoot' */ './RetroRoot/RetroRoot')
-)
+const RetroRoot = lazy(() => import(/* webpackChunkName: 'RetroRoot' */ './RetroRoot/RetroRoot'))
 const ViewerNotOnTeamRoot = lazy(() =>
   import(/* webpackChunkName: 'ViewerNotOnTeamRoot' */ './ViewerNotOnTeamRoot')
 )

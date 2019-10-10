@@ -8,7 +8,7 @@ interface Props {
   store: any
 }
 
-export default function Root ({store}: Props) {
+export default function Root({store}: Props) {
   return (
     <Provider store={store}>
       <AtmosphereProvider>
@@ -19,4 +19,3 @@ export default function Root ({store}: Props) {
     </Provider>
   )
 }
-

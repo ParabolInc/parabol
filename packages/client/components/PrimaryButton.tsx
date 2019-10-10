@@ -16,7 +16,9 @@ const StyledBaseButton = styled(BaseButton)((props: BaseButtonProps) => {
     opacity: visuallyDisabled ? 1 : undefined,
     outline: 0,
     ':hover,:focus,:active': {
-      backgroundImage: visuallyDisabled ? PALETTE.GRADIENT_WARM_LIGHTENED : PALETTE.GRADIENT_WARM_DARKENED,
+      backgroundImage: visuallyDisabled
+        ? PALETTE.GRADIENT_WARM_LIGHTENED
+        : PALETTE.GRADIENT_WARM_DARKENED,
       opacity: visuallyDisabled ? 1 : undefined
     }
   }

@@ -41,7 +41,7 @@ const subscription = graphql`
       ... on AuthTokenPayload {
         id
       }
-      
+
       # ConnectSocket
       ... on User {
         id

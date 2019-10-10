@@ -10,16 +10,16 @@ interface Props {
   isNewOrg: boolean
   onTypeChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 
-  onChange (e: React.ChangeEvent<HTMLInputElement>): void
+  onChange(e: React.ChangeEvent<HTMLInputElement>): void
 
   orgName: string
   placeholder: string
 
-  onBlur (e: React.FocusEvent<HTMLInputElement>): void
+  onBlur(e: React.FocusEvent<HTMLInputElement>): void
 }
 
 class NewTeamFormOrgName extends Component<Props> {
-  render () {
+  render() {
     const {
       dirty,
       error,

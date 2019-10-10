@@ -8,7 +8,9 @@ import {RouteComponentProps, withRouter} from 'react-router-dom'
 import Panel from '../../../../components/Panel/Panel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import Row from '../../../../components/Row/Row'
-import withAtmosphere, {WithAtmosphereProps} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import ArchiveTeamContainer from '../../containers/ArchiveTeamContainer/ArchiveTeamContainer'
 import {PALETTE} from '../../../../styles/paletteV2'
 import ui from '../../../../styles/ui'

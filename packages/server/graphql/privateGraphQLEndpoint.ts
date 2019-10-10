@@ -8,7 +8,11 @@ import DataLoaderWarehouse from 'dataloader-warehouse'
 import AuthToken from '../database/types/AuthToken'
 import {SHARED_DATA_LOADER_TTL} from '../utils/serverConstants'
 
-const privateGraphQLEndpoint = async (query: string, variables: undefined | {[key: string]: any}, authToken: AuthToken) => {
+const privateGraphQLEndpoint = async (
+  query: string,
+  variables: undefined | {[key: string]: any},
+  authToken: AuthToken
+) => {
   const sharedDataLoader = new DataLoaderWarehouse({
     onShare: '_share',
     ttl: SHARED_DATA_LOADER_TTL
