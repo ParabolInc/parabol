@@ -84,8 +84,11 @@ const addDiscussionTopics = (db) => {
   if (!discussPhase) return {}
   const placeholderStage = discussPhase.stages[0]
 
-  const importantReflectionGroups = mapGroupsToStages(db.reflectionGroups)
-  const nextDiscussStages = importantReflectionGroups.map((reflectionGroup, idx) => {
+  // const importantReflectionGroups = mapGroupsToStages(db.reflectionGroups)
+  const sortedReflectionGroups = db.reflectionGroups.sort((a, b) =>
+    a.voterIds.length < b.voterIds.length ? 1 : -1
+  )
+  const nextDiscussStages = sortedReflectionGroups.map((reflectionGroup, idx) => {
     const id = idx === 0 ? placeholderStage.id : shortid.generate()
     const discussStage = makeDiscussionStage(reflectionGroup.id, meetingId, idx, id)
     addStageToBotScript(id, db, reflectionGroup.id)

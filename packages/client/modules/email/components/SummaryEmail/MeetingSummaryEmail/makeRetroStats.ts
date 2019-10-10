@@ -1,4 +1,4 @@
-import {RETRO_TOPIC_LABEL, RETRO_VOTED_LABEL} from '../../../../../utils/constants'
+import {RETRO_TOPIC_LABEL} from '../../../../../utils/constants'
 import plural from '../../../../../utils/plural'
 
 interface Meeting {
@@ -23,7 +23,7 @@ const makeRetroStats = (meeting: Meeting) => {
     (sum, {reflections}) => sum + reflections.length,
     0
   )
-  const upvotedTopicCount = reflectionGroups.filter(({voteCount}) => voteCount > 0).length
+  const topicCount = reflectionGroups.length
   const newTaskCount = meetingMembers.reduce((sum, {tasks}) => sum + tasks.length, 0)
   const meetingMembersCount = meetingMembers.length
   const meetingMembersPresentCount = meetingMembers.filter((member) => member.isCheckedIn === true)
@@ -35,8 +35,8 @@ const makeRetroStats = (meeting: Meeting) => {
   return [
     {value: reflectionCount, label: plural(reflectionCount, 'Reflection')},
     {
-      value: upvotedTopicCount,
-      label: plural(upvotedTopicCount, `${RETRO_VOTED_LABEL} ${RETRO_TOPIC_LABEL}`)
+      value: topicCount,
+      label: plural(topicCount, `${RETRO_TOPIC_LABEL}`)
     },
     {value: newTaskCount, label: plural(newTaskCount, 'New Task')},
     {value: memberCount, label: 'Present'}
