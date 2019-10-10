@@ -83,11 +83,7 @@ const addDiscussionTopics = (db) => {
   const discussPhase = phases.find((phase) => phase.phaseType === DISCUSS)
   if (!discussPhase) return {}
   const placeholderStage = discussPhase.stages[0]
-
-  // const importantReflectionGroups = mapGroupsToStages(db.reflectionGroups)
-  const sortedReflectionGroups = db.reflectionGroups.sort((a, b) =>
-    a.voterIds.length < b.voterIds.length ? 1 : -1
-  )
+  const sortedReflectionGroups = mapGroupsToStages(db.reflectionGroups)
   const nextDiscussStages = sortedReflectionGroups.map((reflectionGroup, idx) => {
     const id = idx === 0 ? placeholderStage.id : shortid.generate()
     const discussStage = makeDiscussionStage(reflectionGroup.id, meetingId, idx, id)

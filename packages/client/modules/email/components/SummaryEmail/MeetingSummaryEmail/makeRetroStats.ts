@@ -36,7 +36,7 @@ const makeRetroStats = (meeting: Meeting) => {
     {value: reflectionCount, label: plural(reflectionCount, 'Reflection')},
     {
       value: topicCount,
-      label: plural(topicCount, `${RETRO_TOPIC_LABEL}`)
+      label: plural(topicCount, RETRO_TOPIC_LABEL)
     },
     {value: newTaskCount, label: plural(newTaskCount, 'New Task')},
     {value: memberCount, label: 'Present'}

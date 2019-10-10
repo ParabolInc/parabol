@@ -16,7 +16,6 @@ export const MEETING_NAME = 'Action Meeting'
 export const MEETING_SUMMARY_LABEL = 'Summary'
 export const AGENDA_ITEM_LABEL = 'Agenda Topic'
 export const RETRO_TOPIC_LABEL = 'Topic'
-export const RETRO_VOTED_LABEL = 'Upvoted'
 
 /* Phases */
 export const LOBBY = 'lobby'
