@@ -13,8 +13,6 @@ import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from '../types/graphql'
 import lazyPreload from '../utils/lazyPreload'
 import UNSTARTED_MEETING from '../utils/meetings/unstartedMeeting'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
-import useRouter from '../hooks/useRouter'
-import {meetingTypeToSlug} from '../utils/meetings/lookups'
 
 interface Props {
   viewer: ActionMeeting_viewer
@@ -64,16 +62,11 @@ const ActionMeeting = (props: Props) => {
   useEffect(() => {
     Object.values(phaseLookup).forEach((lazy) => lazy.preload())
   }, [])
-  const {history} = useRouter()
   if (!team || !safeRoute) return null
   const {featureFlags} = viewer
   const {video: allowVideo} = featureFlags
-  const {id: teamId, newMeeting, isMeetingSidebarCollapsed} = team
+  const {newMeeting, isMeetingSidebarCollapsed} = team
   const {facilitatorStageId, localPhase, localStage} = newMeeting || UNSTARTED_MEETING
-  if (newMeeting && newMeeting.meetingType !== MeetingTypeEnum.action) {
-    history.push(`/${meetingTypeToSlug[newMeeting.meetingType]}/${teamId}`)
-    return null
-  }
   const localPhaseType = (localPhase && localPhase.phaseType) || NewMeetingPhaseTypeEnum.lobby
   const Phase = phaseLookup[localPhaseType] as PhaseComponent
   return (
@@ -161,7 +154,6 @@ export default createFragmentContainer(ActionMeeting, {
         video
       }
       team(teamId: $teamId) {
-        id
         newMeeting {
           meetingType
         }

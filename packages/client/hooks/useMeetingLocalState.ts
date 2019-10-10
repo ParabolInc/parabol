@@ -39,24 +39,32 @@ const useInitialSafeRoute = (
     }
     const {newMeeting} = team
     const meetingSlug = meetingTypeToSlug[meetingType]
+    const maybeActiveMeetingSlug = newMeeting && meetingTypeToSlug[newMeeting.meetingType]
     const {viewerId} = atmosphere
 
-    // i'm trying to go to the lobby and there's no active meeting
+    // I’m trying to go to the lobby and there's no active meeting
     if (!phaseSlug && !newMeeting) {
       setSafeRoute(true)
       return
     }
 
-    // i'm trying to go to the middle of a meeting that hasn't started
+    // I’m trying to go to the middle of a meeting that hasn't started
     if (!newMeeting) {
       history.replace(`/${meetingSlug}/${teamId}`)
       setSafeRoute(false)
       return
     }
 
+    // I’m trying to go the URL for one type of meeting but the other type is active
+    if (newMeeting && newMeeting.meetingType !== meetingType) {
+      history.replace(`/${maybeActiveMeetingSlug}/${teamId}`)
+      setSafeRoute(true)
+      return
+    }
+
     const {facilitatorStageId, facilitatorUserId, localStage, id: meetingId, phases} = newMeeting
 
-    // i'm headed to the lobby but the meeting is already going, send me there
+    // I’m headed to the lobby but the meeting is already going, send me there
     if (localStage && !phaseSlug) {
       const {id: localStageId} = localStage
       const nextUrl = fromStageIdToUrl(localStageId, phases, facilitatorStageId)
@@ -126,6 +134,15 @@ const useUpdatedSafeRoute = (
       setSafeRoute(true)
       return
     }
+    const maybeActiveMeetingSlug = newMeeting && meetingTypeToSlug[newMeeting.meetingType]
+    const meetingPath = getMeetingPathParams()
+    const {meetingType, meetingSlug, teamId} = meetingPath
+    // I’m trying to go the URL for one type of meeting but the other type is active
+    if (newMeeting && newMeeting.meetingType !== meetingType) {
+      history.replace(`/${maybeActiveMeetingSlug}/${teamId}`)
+      setSafeRoute(true)
+      return
+    }
     const {localStage, localPhase, facilitatorStageId} = newMeeting
     const localStages = (localPhase && localPhase.stages) || null
     const localStageId = (localStage && localStage.id) || null
@@ -137,8 +154,8 @@ const useUpdatedSafeRoute = (
     const isNewLocalStageId = localStageId && localStageId !== oldLocalStageId
     const isUpdatedPhase = localStages !== oldLocalStages
     if (isNewLocalStageId || isUpdatedPhase) {
-      const meetingPath = getMeetingPathParams()
-      const {meetingSlug, teamId} = meetingPath
+      // const meetingPath = getMeetingPathParams()
+      // const {meetingSlug, teamId} = meetingPath
       if (!meetingSlug || !teamId) {
         setSafeRoute(false)
         return
@@ -170,6 +187,7 @@ graphql`
   fragment useMeetingLocalStateTeam on Team {
     newMeeting {
       id
+      meetingType
       facilitatorStageId
       facilitatorUserId
       localPhase {

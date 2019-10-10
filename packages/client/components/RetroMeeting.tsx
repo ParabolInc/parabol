@@ -15,8 +15,6 @@ import lazyPreload from '../utils/lazyPreload'
 import UNSTARTED_MEETING from '../utils/meetings/unstartedMeeting'
 import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
-import useRouter from '../hooks/useRouter'
-import {meetingTypeToSlug} from '../utils/meetings/lookups'
 
 interface Props {
   viewer: RetroMeeting_viewer
@@ -68,16 +66,11 @@ const RetroMeeting = (props: Props) => {
     demoPortal
   } = useMeeting(MeetingTypeEnum.retrospective, team)
   const atmosphere = useAtmosphere()
-  const {history} = useRouter()
   if (!team || !safeRoute) return null
   const {featureFlags} = viewer
   const {video: allowVideo} = featureFlags
   const {id: teamId, meetingSettings, newMeeting, isMeetingSidebarCollapsed} = team
   const {facilitatorStageId, localPhase, localStage} = newMeeting || UNSTARTED_MEETING
-  if (newMeeting && newMeeting.meetingType !== MeetingTypeEnum.retrospective) {
-    history.push(`/${meetingTypeToSlug[newMeeting.meetingType]}/${teamId}`)
-    return null
-  }
   const localPhaseType = (localPhase && localPhase.phaseType) || NewMeetingPhaseTypeEnum.lobby
   const isDemoStageComplete =
     teamId === demoTeamId
