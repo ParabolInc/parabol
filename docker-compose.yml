@@ -9,12 +9,8 @@ services:
     image: redis:3.2.8
 
   web:
-    image: parabolinc/action-demo:3.12.0
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-      args:
-        - ENV_FILE=.env
+    image: parabol-action:latest
+    build: .
     restart: always
     expose:
       - "3000"
@@ -23,8 +19,16 @@ services:
     depends_on:
       - rethinkdb
       - redis
+    links:
+      - redis
+      - rethinkdb
     env_file:
-      - ./.env
+      - ./packages/server/.env
     entrypoint: ./docker_entrypoint.sh
     command: yarn start
+    volumes:
+      - .:/usr/src/app
+      - app_node_modules:/usr/src/app/node_modules
+volumes:
+  app_node_modules:
 
