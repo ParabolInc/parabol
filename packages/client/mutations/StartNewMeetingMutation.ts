@@ -15,7 +15,7 @@ graphql`
       ...MeetingInProgressModal_team @relay(mask: false)
       newMeeting {
         phases {
-          ...NewMeetingTeamMemberPhases @relay(mask: false)
+          ...StartNewMeetingMutation_teamMemberPhases @relay(mask: false)
         }
       }
     }
@@ -49,7 +49,7 @@ graphql`
 `
 
 graphql`
-  fragment NewMeetingTeamMemberPhases on NewMeetingPhase {
+  fragment StartNewMeetingMutation_teamMemberPhases on NewMeetingPhase {
     id
     phaseType
     stages {
