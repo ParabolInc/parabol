@@ -57,7 +57,7 @@ class ArchiveTeamForm extends Component<Props> {
           htmlFor='archivedTeamName'
           indent
           inline
-          label='Enter your team name to and hit Enter to delete it.'
+          label='Enter your team name and hit Enter to delete it.'
         />
         <BasicInput
           value={value}
