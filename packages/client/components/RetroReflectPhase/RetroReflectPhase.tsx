@@ -7,7 +7,7 @@ import graphql from 'babel-plugin-relay/macro'
 import BottomNavControl from '../BottomNavControl'
 import BottomNavIconLabel from '../BottomNavIconLabel'
 import MeetingContent from '../MeetingContent'
-import MeetingContentHeader from '../MeetingContentHeader'
+import MeetingTopBar from '../MeetingTopBar'
 import MeetingHelpToggle from '../MenuHelpToggle'
 import PhaseHeaderDescription from '../PhaseHeaderDescription'
 import PhaseHeaderTitle from '../PhaseHeaderTitle'
@@ -81,7 +81,7 @@ const RetroReflectPhase = (props: Props) => {
   return (
     <MeetingContent ref={phaseRef}>
       <MeetingHeaderAndPhase>
-        <MeetingContentHeader
+        <MeetingTopBar
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
           toggleSidebar={toggleSidebar}
@@ -90,7 +90,7 @@ const RetroReflectPhase = (props: Props) => {
           <PhaseHeaderDescription>
             {'Add anonymous reflections for each prompt'}
           </PhaseHeaderDescription>
-        </MeetingContentHeader>
+        </MeetingTopBar>
         <PhaseWrapper>
           <StageTimerDisplay stage={localStage!} />
           <ColumnWrapper

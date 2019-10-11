@@ -13,7 +13,7 @@ const AvatarsList = styled('div')({
 })
 
 const AvatarItem = styled('div')({
-  margin: '0 0 0 1rem',
+  marginLeft: 8,
   position: 'relative'
 })
 

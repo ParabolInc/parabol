@@ -8,7 +8,7 @@ import BottomNavIconLabel from './BottomNavIconLabel'
 import Icon from './Icon'
 import LabelHeading from './LabelHeading/LabelHeading'
 import MeetingContent from './MeetingContent'
-import MeetingContentHeader from './MeetingContentHeader'
+import MeetingTopBar from './MeetingTopBar'
 import MeetingPhaseWrapper from './MeetingPhaseWrapper'
 import MeetingHelpToggle from './MenuHelpToggle'
 import PhaseHeaderDescription from './PhaseHeaderDescription'
@@ -157,7 +157,7 @@ const RetroVotePhase = (props: Props) => {
   return (
     <MeetingContent ref={phaseRef}>
       <MeetingHeaderAndPhase>
-        <MeetingContentHeader
+        <MeetingTopBar
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
           toggleSidebar={toggleSidebar}
@@ -166,7 +166,7 @@ const RetroVotePhase = (props: Props) => {
           <PhaseHeaderDescription>
             {'Vote on the topics you want to discuss'}
           </PhaseHeaderDescription>
-        </MeetingContentHeader>
+        </MeetingTopBar>
         <PhaseWrapper>
           <VoteMeta>
             <StyledMetaBlock>
