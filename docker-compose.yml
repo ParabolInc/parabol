@@ -1,15 +1,16 @@
 version: "3"
 
 services:
+  redis:
+    image: redis:3.2.8
+
   rethinkdb:
     image: rethinkdb:2.3.6
     restart: always
 
-  redis:
-    image: redis:3.2.8
-
   web:
     image: parabol-action:latest
+    container_name: parabol-action
     build: .
     restart: always
     expose:
@@ -17,8 +18,8 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - rethinkdb
       - redis
+      - rethinkdb
     links:
       - redis
       - rethinkdb
@@ -29,6 +30,8 @@ services:
     volumes:
       - .:/usr/src/app
       - app_node_modules:/usr/src/app/node_modules
+      - app_build:/usr/src/app/build
 volumes:
   app_node_modules:
+  app_build:
 

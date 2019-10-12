@@ -5,23 +5,15 @@ RUN npm i lerna -g --loglevel notice
 
 USER node
 
-# Which .env file to import as default environment?
-ARG ENV_FILE=./packages/server/.env
-
 # Create app directory
 WORKDIR /usr/src/app
 
-# Install app dependencies
-COPY --chown=node:node package.json yarn.lock ./
+# Install app dependencies & cache on deps
+COPY --chown=node:node package.json yarn.lock lerna.json ./
 RUN yarn install --silent
 
 # Bundle app source
-COPY --chown=node:node . .
-
-# Copy environment
-COPY --chown=node:node $ENV_FILE ./.env
+COPY --chown=node:node packages packages
 
 # Build app
-RUN lerna bootstrap
-
-RUN yarn build
+RUN lerna bootstrap && yarn build
