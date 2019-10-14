@@ -39,7 +39,6 @@ const useInitialSafeRoute = (
     }
     const {newMeeting} = team
     const meetingSlug = meetingTypeToSlug[meetingType]
-    const maybeActiveMeetingSlug = newMeeting && meetingTypeToSlug[newMeeting.meetingType]
     const {viewerId} = atmosphere
 
     // I’m trying to go to the lobby and there's no active meeting
@@ -56,7 +55,8 @@ const useInitialSafeRoute = (
     }
 
     // I’m trying to go the URL for one type of meeting but the other type is active
-    if (newMeeting && newMeeting.meetingType !== meetingType) {
+    if (newMeeting.meetingType !== meetingType) {
+      const maybeActiveMeetingSlug = meetingTypeToSlug[newMeeting.meetingType]
       history.replace(`/${maybeActiveMeetingSlug}/${teamId}`)
       setSafeRoute(true)
       return
