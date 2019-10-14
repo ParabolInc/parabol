@@ -42,30 +42,15 @@ const PrimaryActionBlock = styled('div')({
   display: 'flex'
 })
 
-const AvatarGroupBlock = styled('div')<{isDemoRoute: boolean}>(
-  {
-    display: 'flex',
-    justifyContent: 'center',
-    padding: '10px 0',
-    [meetingAvatarMediaQueries[0]]: {
-      minHeight: 76,
-      padding: 0
-    }
-  },
-  ({isDemoRoute}) =>
-    isDemoRoute && {
-      // order: 3,
-      // margin: '0 auto',
-      // paddingTop: 12,
-      // width: '100%',
-      [localHeaderBreakpoint]: {
-        // margin: 0,
-        // order: 2,
-        // paddingTop: 0,
-        // width: 'auto'
-      }
-    }
-)
+const AvatarGroupBlock = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  padding: '10px 0',
+  [meetingAvatarMediaQueries[0]]: {
+    minHeight: 76,
+    padding: 0
+  }
+})
 
 const ChildrenBlock = styled('div')({
   width: '100%'
@@ -91,7 +76,7 @@ const MeetingTopBar = (props: Props) => {
         {isMeetingSidebarCollapsed ? <Toggle onClick={toggleSidebar} /> : null}
         <ChildrenBlock>{children}</ChildrenBlock>
       </HeadingBlock>
-      <AvatarGroupBlock isDemoRoute={showButton}>
+      <AvatarGroupBlock>
         {showButton && (
           <PrimaryActionBlock>
             <DemoCreateAccountButton />

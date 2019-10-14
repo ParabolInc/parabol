@@ -114,7 +114,6 @@ export default createFragmentContainer(DashboardAvatar, {
       ...PromoteTeamMemberModal_teamMember
       ...RemoveTeamMemberModal_teamMember
       isLead
-      isSelf
       picture
       user {
         isConnected
