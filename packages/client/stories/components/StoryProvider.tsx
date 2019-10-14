@@ -1,6 +1,4 @@
 import React, {Component, ReactNode} from 'react'
-import {DragDropContextProvider} from 'react-dnd'
-import HTML5Backend from 'react-dnd-html5-backend'
 import styled from '@emotion/styled'
 import {BrowserRouter as Router} from 'react-router-dom'
 
@@ -32,13 +30,11 @@ export default class StoryContainer extends Component<Props> {
             ${globalStyles}
           `}
         />
-        <DragDropContextProvider backend={HTML5Backend}>
-          <AtmosphereProvider>
-            <RelayStub>
-              <FullPageWrapper>{this.props.children}</FullPageWrapper>
-            </RelayStub>
-          </AtmosphereProvider>
-        </DragDropContextProvider>
+        <AtmosphereProvider>
+          <RelayStub>
+            <FullPageWrapper>{this.props.children}</FullPageWrapper>
+          </RelayStub>
+        </AtmosphereProvider>
       </Router>
     )
   }
