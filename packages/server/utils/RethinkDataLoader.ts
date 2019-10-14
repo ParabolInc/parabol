@@ -3,11 +3,13 @@ import {decode} from 'jsonwebtoken'
 import getRethink from '../database/rethinkDriver'
 import Meeting from '../database/types/Meeting'
 import AtlassianManager from './AtlassianManager'
+import AzureDevopsManager from './AzureDevopsManager'
 import {getUserId} from './authorization'
 import sendToSentry from './sendToSentry'
 import {
   IAgendaItem,
   IAtlassianAuth,
+  IAzureDevopsAuth,
   ICustomPhaseItem,
   INewFeatureBroadcast,
   IReflectTemplate,
@@ -34,6 +36,12 @@ interface JiraRemoteProjectKey {
   accessToken: string
   cloudId: string
   atlassianProjectId: string
+}
+
+interface AzureDevopsRemoteProjectKey {
+  accessToken: string
+  organization: string
+  azureDevopsProjectId: string
 }
 
 const defaultCacheKeyFn = (key) => key
@@ -70,6 +78,7 @@ const normalizeRethinkDbResults = (keys, indexField, cacheKeyFn = defaultCacheKe
 interface Tables {
   AgendaItem: IAgendaItem
   AtlassianAuth: IAtlassianAuth
+  AzureDevopsAuth: IAzureDevopsAuth
   CustomPhaseItem: ICustomPhaseItem
   MeetingSettings: ITeamMeetingSettings
   MeetingMember: MeetingMember
@@ -130,6 +139,7 @@ export default class RethinkDataLoader {
 
   agendaItems = this.pkLoader('AgendaItem')
   atlassianAuths = this.pkLoader('AtlassianAuth')
+  azureDevopsAuths = this.pkLoader('AzureDevopsAuth')
   customPhaseItems = this.pkLoader('CustomPhaseItem')
   meetingSettings = this.pkLoader('MeetingSettings')
   meetingMembers = this.pkLoader('MeetingMember')
@@ -171,6 +181,11 @@ export default class RethinkDataLoader {
   atlassianAuthByUserId = this.fkLoader(this.atlassianAuths, 'userId', (userIds) => {
     const r = getRethink()
     return r.table('AtlassianAuth').getAll(r.args(userIds), {index: 'userId'})
+  })
+
+  azureDevopsAuthByUserId = this.fkLoader(this.azureDevopsAuths, 'userId', (userIds) => {
+    const r = getRethink()
+    return r.table('AzureDevopsAuth').getAll(r.args(userIds), {index: 'userId'})
   })
 
   customPhaseItemsByTeamId = this.fkLoader(this.customPhaseItems, 'teamId', (teamIds) => {
@@ -360,6 +375,53 @@ export default class RethinkDataLoader {
     {
       ...this.dataLoaderOptions,
       cacheKeyFn: (key: JiraRemoteProjectKey) => `${key.atlassianProjectId}:${key.cloudId}`
+    }
+  )
+
+  freshAzureDevopsAccessToken = new DataLoader<{teamId: string; userId: string}, string>(
+    async (keys: {userId: string; teamId: string}[]) => {
+      return promiseAllPartial(
+        keys.map(async ({userId, teamId}) => {
+          const userAuths = await this.azureDevopsAuthByUserId.load(userId)
+          const teamAuth = userAuths.find((auth) => auth.teamId === teamId)
+          if (!teamAuth || !teamAuth.refreshToken) return null
+          const {accessToken: existingAccessToken, refreshToken} = teamAuth
+          const decodedToken = existingAccessToken && (decode(existingAccessToken) as any)
+          const now = new Date()
+          if (decodedToken && decodedToken.exp >= Math.floor(now.getTime() / 1000)) {
+            return existingAccessToken
+          }
+          // fetch a new one
+          const manager = await AzureDevopsManager.refresh(refreshToken)
+          const {accessToken} = manager
+          const r = getRethink()
+          await r
+            .table('AzureDevopsAuth')
+            .getAll(userId, {index: 'userId'})
+            .filter({teamId})
+            .update({accessToken, updatedAt: now})
+          return accessToken
+        })
+      )
+    },
+    {
+      ...this.dataLoaderOptions,
+      cacheKeyFn: (key: {teamId: string; userId: string}) => `${key.userId}:${key.teamId}`
+    }
+  )
+
+  AzureDevopsRemoteProject = new DataLoader(
+    async (keys: AzureDevopsRemoteProjectKey[]) => {
+      return promiseAllPartial(
+        keys.map(async ({accessToken, organization, azureDevopsProjectId}) => {
+          const manager = new AzureDevopsManager(accessToken)
+          return manager.getProject(organization, azureDevopsProjectId)
+        })
+      )
+    },
+    {
+      ...this.dataLoaderOptions,
+      cacheKeyFn: (key: AzureDevopsRemoteProjectKey) => `${key.azureDevopsProjectId}:${key.organization}`
     }
   )
 }

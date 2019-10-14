@@ -7,7 +7,8 @@ const IntegrationServiceEnum = new GraphQLEnumType({
   values: {
     [GITHUB]: {},
     [SLACK]: {},
-    atlassian: {}
+    atlassian: {},
+    azuredevops: {}
   }
 })
 

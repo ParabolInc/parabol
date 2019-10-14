@@ -6,12 +6,13 @@ import makeSuggestedIntegrationId from '../../../../client/utils/makeSuggestedIn
 export interface IntegrationByUserId {
   id: string
   userId: string
-  service: 'github' | 'jira'
+  service: 'github' | 'jira' | 'azuredevops'
   nameWithOwner: string | null
   projectKey: string | null
   projectName: string | null
   avatar: string | null
   cloudId: string | null
+  organization: string | null
   lastUsedAt: Date
 }
 
@@ -72,6 +73,9 @@ export const getTeamIntegrationsByUserId = async (
         .default(null),
       r
         .row('integration')('cloudId')
+        .default(null),
+      r
+        .row('integration')('organization')
         .default(null)
     ])
     .max('createdAt')('createdAt')
@@ -85,6 +89,7 @@ export const getTeamIntegrationsByUserId = async (
       projectName: row('group')(4),
       avatar: row('group')(5),
       cloudId: row('group')(6),
+      organization: row('group')(6),
       lastUsedAt: row('reduction')
     }))
   return res.map((item) => ({
@@ -114,8 +119,24 @@ export const getPermsByTaskService = async (
       .default(null)
   ])
 
+  //TODO: not ideal. Need to understand rethink schema.
+  const [azureDevopsAuths] = await Promise.all([
+    dataLoader.get('azureDevopsAuthByUserId').load(userId),
+    r
+      .table('Provider')
+      .getAll(teamId, {index: 'teamId'})
+      .filter({
+        userId,
+        service: 'GitHubIntegration',
+        isActive: true
+      })
+      .nth(0)
+      .default(null)
+  ])
+
   return {
     jira: !!atlassianAuths.find((auth) => auth.teamId === teamId),
+    azuredevops: !!azureDevopsAuths.find((auth) => auth.teamId === teamId),
     github: !!githubAuthForTeam
   }
 }

@@ -5,7 +5,9 @@ const makeSuggestedIntegrationId = (item) => {
       return item.nameWithOwner
     case 'jira':
       return `${item.cloudId}:${item.projectKey}`
-  }
+    case 'azuredevops':
+        return `${item.organization}:${item.projectKey}`
+    }
 }
 
 export default makeSuggestedIntegrationId

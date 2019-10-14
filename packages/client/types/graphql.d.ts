@@ -73,6 +73,11 @@ export interface IUser {
   atlassianAuth: IAtlassianAuth | null;
 
   /**
+   * The auth for the user. access token is null if not viewer. Use isActive to check for presence
+   */
+  azureDevopsAuth: IAzureDevopsAuth | null;
+
+  /**
    * Array of identifier + ip pairs
    */
   blockedFor: (IBlockedUserType | null)[] | null;
@@ -298,6 +303,13 @@ export interface IArchivedTasksCountOnUserArguments {
 export interface IAtlassianAuthOnUserArguments {
   /**
    * The teamId for the atlassian auth token
+   */
+  teamId: string;
+}
+
+export interface IAzureDevopsAuthOnUserArguments {
+  /**
+   * The teamId for the ADO auth token
    */
   teamId: string;
 }
@@ -1793,6 +1805,63 @@ export interface IAtlassianAuth {
 }
 
 /**
+ * OAuth token for a team member
+ */
+export interface IAzureDevopsAuth {
+  __typename: 'AzureDevopsAuth';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * true if the auth is valid, else false
+   */
+  isActive: boolean;
+
+  /**
+   * The access token to ADO, useful for 1 hour. null if no access token available
+   */
+  accessToken: string | null;
+
+  /**
+   * *The ADO account ID
+   */
+  accountId: string;
+
+  /**
+   * The ADO cloud IDs that the user has granted
+   */
+  cloudIds: string[];
+
+  /**
+   * The timestamp the provider was created
+   */
+  createdAt: any;
+
+  /**
+   * The refresh token to ADO to receive a new 1-hour accessToken, always null since server secret is required
+   */
+  refreshToken: string | null;
+
+  /**
+   * *The team that the token is linked to
+   */
+  teamId: string;
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any;
+
+  /**
+   * The user that the access token is attached to
+   */
+  userId: string;
+}
+
+/**
  * Identifier and IP address blocked
  */
 export interface IBlockedUserType {
@@ -2528,6 +2597,7 @@ export interface IMutation {
    */
   acceptTeamInvitation: IAcceptTeamInvitationPayload;
   addAtlassianAuth: IAddAtlassianAuthPayload;
+  addAzureDevopsAuth: IAddAzureDevopsAuthPayload;
   addSlackAuth: IAddSlackAuthPayload;
 
   /**
@@ -2578,6 +2648,7 @@ export interface IMutation {
   createImposterToken: ICreateImposterTokenPayload | null;
   createGitHubIssue: ICreateGitHubIssuePayload | null;
   createJiraIssue: ICreateJiraIssuePayload | null;
+  createAzureDevopsWorkItem: ICreateAzureDevopsWorkItemPayload | null;
 
   /**
    * Create a PUT URL on the CDN for an organization’s profile picture
@@ -2718,6 +2789,11 @@ export interface IMutation {
    * Disconnect a team member from atlassian
    */
   removeAtlassianAuth: IRemoveAtlassianAuthPayload;
+
+  /**
+   * Disconnect a team member from ADO
+   */
+  removeAzureDevopsAuth: IRemoveAzureDevopsAuthPayload;
 
   /**
    * Disconnect a team member from GitHub
@@ -2921,6 +2997,11 @@ export interface IAcceptTeamInvitationOnMutationArguments {
 }
 
 export interface IAddAtlassianAuthOnMutationArguments {
+  code: string;
+  teamId: string;
+}
+
+export interface IAddAzureDevopsAuthOnMutationArguments {
   code: string;
   teamId: string;
 }
@@ -3294,6 +3375,13 @@ export interface IRemoveAtlassianAuthOnMutationArguments {
   teamId: string;
 }
 
+export interface IRemoveAzureDevopsAuthOnMutationArguments {
+  /**
+   * the teamId to disconnect from the token
+   */
+  teamId: string;
+}
+
 export interface IRemoveGitHubAuthOnMutationArguments {
   /**
    * the teamId to disconnect from the token
@@ -3653,6 +3741,21 @@ export interface IAddAtlassianAuthPayload {
    * The newly created auth
    */
   atlassianAuth: IAtlassianAuth | null;
+
+  /**
+   * The user with updated atlassianAuth
+   */
+  user: IUser | null;
+}
+
+export interface IAddAzureDevopsAuthPayload {
+  __typename: 'AddAzureDevopsAuthPayload';
+  error: IStandardMutationError | null;
+
+  /**
+   * The newly created auth
+   */
+  atlassianAuth: IAzureDevopsAuth | null;
 
   /**
    * The user with updated atlassianAuth
@@ -4542,6 +4645,12 @@ export interface ICreateJiraIssuePayload {
   task: ITask | null;
 }
 
+export interface ICreateAzureDevopsWorkItemPayload {
+  __typename: 'CreateJiraIssuePayload';
+  error: IStandardMutationError | null;
+  task: ITask | null;
+}
+
 export interface ICreatePicturePutUrlPayload {
   __typename: 'CreatePicturePutUrlPayload';
   error: IStandardMutationError | null;
@@ -5143,6 +5252,22 @@ export interface IRemoveAgendaItemPayload {
 
 export interface IRemoveAtlassianAuthPayload {
   __typename: 'RemoveAtlassianAuthPayload';
+  error: IStandardMutationError | null;
+
+  /**
+   * The ID of the authorization removed
+   */
+  authId: string | null;
+  teamId: string | null;
+
+  /**
+   * The user with updated atlassianAuth
+   */
+  user: IUser | null;
+}
+
+export interface IRemoveAzureDevopsAuthPayload {
+  __typename: 'RemoveAzureDevopsAuthPayload';
   error: IStandardMutationError | null;
 
   /**
@@ -6022,6 +6147,7 @@ export type TeamSubscriptionPayload =
   | IAcceptTeamInvitationPayload
   | IAddAgendaItemPayload
   | IAddAtlassianAuthPayload
+  | IAddAzureDevopsAuthPayload
   | IAddGitHubAuthPayload
   | IAddSlackAuthPayload
   | IAddTeamPayload
@@ -6063,6 +6189,7 @@ export type TeamSubscriptionPayload =
   | IMoveReflectTemplatePromptPayload
   | IReflectTemplatePromptUpdateDescriptionPayload
   | IRemoveAtlassianAuthPayload
+  | IRemoveAzureDevopsAuthPayload
   | IRemoveGitHubAuthPayload
   | IRemoveSlackAuthPayload
   | IRemoveReflectTemplatePayload

@@ -1,5 +1,6 @@
 import {DataLoaderWorker} from '../../graphql'
 import fetchAtlassianProjects from './fetchAtlassianProjects'
+import fetchAzureDevopsProjects from './fetchAzureDevopsProjects'
 import fetchGitHubRepos from './fetchGitHubRepos'
 
 const fetchAllIntegrations = async (
@@ -7,11 +8,12 @@ const fetchAllIntegrations = async (
   teamId: string,
   userId: string
 ) => {
-  const [atlassianProjects, githubRepos] = await Promise.all([
+  const [atlassianProjects, azureDevopsProjects, githubRepos] = await Promise.all([
     fetchAtlassianProjects(dataLoader, teamId, userId),
+    fetchAzureDevopsProjects(dataLoader, teamId, userId),
     fetchGitHubRepos(teamId, userId)
   ])
-  const allIntegrations = [...atlassianProjects, ...githubRepos]
+  const allIntegrations = [...atlassianProjects, ...azureDevopsProjects, ...githubRepos]
   const getValue = (item) => (item.nameWithOwner || item.projectName).toLowerCase()
   allIntegrations.sort((a, b) => {
     return getValue(a) < getValue(b) ? -1 : 1

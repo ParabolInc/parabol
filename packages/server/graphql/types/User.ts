@@ -35,6 +35,7 @@ import TeamInvitation from './TeamInvitation'
 import newMeeting from '../queries/newMeeting'
 import suggestedIntegrations from '../queries/suggestedIntegrations'
 import AtlassianAuth from './AtlassianAuth'
+import AzureDevopsAuth from './AzureDevopsAuth'
 import GitHubAuth from './GitHubAuth'
 import {GITHUB} from '../../../client/utils/constants'
 import allAvailableIntegrations from '../queries/allAvailableIntegrations'
@@ -64,6 +65,22 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
       resolve: async ({id: userId}, {teamId}, {authToken, dataLoader}) => {
         if (!isTeamMember(authToken, teamId)) return null
         const auths = await dataLoader.get('atlassianAuthByUserId').load(userId)
+        return auths.find((auth) => auth.teamId === teamId)
+      }
+    },
+    azureDevopsAuth: {
+      type: AzureDevopsAuth,
+      description:
+        'The auth for the user. access token is null if not viewer. Use isActive to check for presence',
+      args: {
+        teamId: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The teamId for the azure devops auth token'
+        }
+      },
+      resolve: async ({id: userId}, {teamId}, {authToken, dataLoader}) => {
+        if (!isTeamMember(authToken, teamId)) return null
+        const auths = await dataLoader.get('azureDevopsAuthByUserId').load(userId)
         return auths.find((auth) => auth.teamId === teamId)
       }
     },

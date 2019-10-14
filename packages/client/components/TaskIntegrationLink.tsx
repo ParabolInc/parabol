@@ -43,6 +43,22 @@ const TaskIntegrationLink = (props: Props) => {
         {`Issue #${issueKey}`}
       </StyledLink>
     )
+  } else if (service === TaskServiceEnum.azuredevops) {
+      const {workItemId, projectKey, organizationName} = integration
+      const href =
+        organizationName === 'azuredevops-demo'
+          ? 'https://www.parabol.co/features/integrations'
+          : `https://dev.azure.com/${organizationName}/${projectKey}/_workitems/edit/${workItemId}`
+      return (
+        <StyledLink
+          href={href}
+          rel='noopener noreferrer'
+          target='_blank'
+          title={`Azure Devops Work Item #${workItemId} on ${projectKey}`}
+        >
+          {`Work Item #${workItemId}`}
+        </StyledLink>
+      )
   } else if (service === TaskServiceEnum.github) {
     const {nameWithOwner, issueNumber} = integration
     const href =
@@ -72,6 +88,14 @@ graphql`
 `
 
 graphql`
+  fragment TaskIntegrationLinkIntegrationAzureDevops on TaskIntegrationAzureDevops {
+    workItemId
+    projectKey
+    organization
+  }
+`
+
+graphql`
   fragment TaskIntegrationLinkIntegrationGitHub on TaskIntegrationGitHub {
     issueNumber
     nameWithOwner
@@ -84,6 +108,7 @@ export default createFragmentContainer(TaskIntegrationLink, {
       service
       ...TaskIntegrationLinkIntegrationGitHub @relay(mask: false)
       ...TaskIntegrationLinkIntegrationJira @relay(mask: false)
+      ...TaskIntegrationLinkIntegrationAzureDevops @relay(mask: false)
     }
   `
 })
