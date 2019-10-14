@@ -6,8 +6,6 @@ import {LoaderSize} from '../../types/constEnums'
 import ErrorBoundary from '../ErrorBoundary'
 import LoadingComponent from '../LoadingComponent/LoadingComponent'
 import PrivateRoutes from '../PrivateRoutes'
-import {DragDropContext as dragDropContext} from 'react-dnd'
-import HTML5Backend from 'react-dnd-html5-backend'
 import Snackbar from '../Snackbar'
 
 const AnalyticsPage = lazy(() => import(/* webpackChunkName: 'AnalyticsPage' */ '../AnalyticsPage'))
@@ -69,4 +67,4 @@ const Action = memo(() => {
   )
 })
 
-export default dragDropContext(HTML5Backend)(Action)
+export default Action

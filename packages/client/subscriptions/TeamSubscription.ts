@@ -72,6 +72,7 @@ const subscription = graphql`
       ...UpdateDragLocationMutation_team @relay(mask: false)
       ...UpdateReflectionContentMutation_team @relay(mask: false)
       ...UpdateReflectionGroupTitleMutation_team @relay(mask: false)
+      ...UpdateUserProfileMutation_team @relay(mask: false)
       ...UpdateTeamNameMutation_team @relay(mask: false)
       ...UpgradeToProMutation_team @relay(mask: false)
       ...VoteForReflectionGroupMutation_team @relay(mask: false)
