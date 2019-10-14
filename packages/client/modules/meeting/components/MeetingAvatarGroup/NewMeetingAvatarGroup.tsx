@@ -13,7 +13,6 @@ import MediaSwarm from '../../../../utils/swarm/MediaSwarm'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {meetingAvatarMediaQueries} from '../../../../styles/meeting'
 import {Breakpoint} from '../../../../types/constEnums'
-import isDemoRoute from '../../../../utils/isDemoRoute'
 
 const MeetingAvatarGroupRoot = styled('div')({
   alignItems: 'center',
@@ -69,12 +68,6 @@ const OverflowCount = styled('div')({
   }
 })
 
-const GroupLabel = styled('div')({
-  color: PALETTE.TEXT_GRAY,
-  fontSize: 13,
-  marginRight: 16
-})
-
 interface Props {
   team: NewMeetingAvatarGroup_team
   camStreams: StreamUserDict
@@ -87,7 +80,6 @@ const NewMeetingAvatarGroup = (props: Props) => {
   const {swarm, team, camStreams, allowVideo} = props
   const {teamMembers} = team
   const isOverflowBreakpoint = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
-
   // all connected teamMembers except self
   // TODO: filter by team members who are actually viewing “this” meeting view
   const connectedTeamMembers =
@@ -95,10 +87,6 @@ const NewMeetingAvatarGroup = (props: Props) => {
     useMemo(() => teamMembers.filter(({isSelf, isConnected}) => !isSelf && isConnected), [
       teamMembers
     ])
-  // const connectedTeamMembers = teamMembers
-  // console.log(teamMembers.length, 'teamMembers.length')
-  // console.log(connectedTeamMembers.length, 'teamMembers.length')
-
   const self = teamMembers && useMemo(() => teamMembers.find(({isSelf}) => isSelf), [teamMembers])
   // on mobile, show self and 2 other avatars, or self + count
   const overflowMobileThreshold = 3
@@ -122,7 +110,6 @@ const NewMeetingAvatarGroup = (props: Props) => {
         swarm={swarm}
         localStreamUI={camStreams[atmosphere.viewerId]}
       />
-      {/* {!isDemoRoute() && isOverflowBreakpoint && <GroupLabel>Connected</GroupLabel>} */}
       {self && (
         <OverlappingBlock key={self.id}>
           <NewMeetingAvatar teamMember={self} streamUI={camStreams[self.userId]} swarm={swarm} />

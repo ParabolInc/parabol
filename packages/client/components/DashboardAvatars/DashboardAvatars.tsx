@@ -12,7 +12,7 @@ const AvatarsList = styled('div')({
   justifyContent: 'flex-end'
 })
 
-const AvatarItem = styled('div')({
+const ItemBlock = styled('div')({
   marginLeft: 8,
   position: 'relative'
 })
@@ -28,14 +28,16 @@ const DashboardAvatars = (props: Props) => {
     <AvatarsList>
       {teamMembers.map((teamMember) => {
         return (
-          <AvatarItem key={`dbAvatar${teamMember.id}`}>
+          <ItemBlock key={`dbAvatar${teamMember.id}`}>
             <ErrorBoundary>
               <DashboardAvatar isViewerLead={isViewerLead} teamMember={teamMember} />
             </ErrorBoundary>
-          </AvatarItem>
+          </ItemBlock>
         )
       })}
-      <AddTeamMemberAvatarButton team={team} teamMembers={teamMembers} />
+      <ItemBlock>
+        <AddTeamMemberAvatarButton team={team} teamMembers={teamMembers} />
+      </ItemBlock>
     </AvatarsList>
   )
 }
