@@ -58,22 +58,6 @@ const TeamMember = new GraphQLObjectType<any, GQLContext, any>({
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The place in line for checkIn, regenerated every meeting'
     },
-    isConnected: {
-      type: GraphQLBoolean,
-      description: 'true if the user is connected',
-      resolve: async (source, _args, {dataLoader}) => {
-        if (source.hasOwnProperty('isConnected')) {
-          return source.isConnected
-        }
-        const {userId} = source
-        if (userId) {
-          const {connectedSockets} = await dataLoader.get('users').load(userId)
-          return Array.isArray(connectedSockets) && connectedSockets.length > 0
-        }
-        // should only hit this in dev
-        return false
-      }
-    },
     isSelf: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if this team member belongs to the user that queried it',
@@ -149,7 +133,7 @@ const TeamMember = new GraphQLObjectType<any, GQLContext, any>({
     user: {
       type: new GraphQLNonNull(User),
       description: 'The user for the team member',
-      resolve ({userId}, _args, {dataLoader}) {
+      resolve({userId}, _args, {dataLoader}) {
         return dataLoader.get('users').load(userId)
       }
     },
