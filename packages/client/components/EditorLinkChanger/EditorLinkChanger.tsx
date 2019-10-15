@@ -1,5 +1,5 @@
 import {EditorState, SelectionState} from 'draft-js'
-import React, {RefObject} from 'react'
+import React, {RefObject, useEffect} from 'react'
 import styled from '@emotion/styled'
 import RaisedButton from '../RaisedButton'
 import {PALETTE} from '../../styles/paletteV2'
@@ -9,6 +9,9 @@ import withForm, {WithFormProps} from '../../utils/relay/withForm'
 import Legitity from '../../validation/Legitity'
 import BasicInput from '../InputField/BasicInput'
 import {UseTaskChild} from '../../hooks/useTaskChildFocus'
+import {BBox} from '../../types/animations'
+import {MenuPosition} from '../../hooks/useCoords'
+import useMenu from '../../hooks/useMenu'
 
 const ModalBoundary = styled('div')({
   color: PALETTE.TEXT_MAIN,
@@ -47,10 +50,9 @@ interface Props extends WithFormProps {
   editorState: EditorState
   editorRef: RefObject<HTMLTextAreaElement>
 
-  innerRef: RefObject<HTMLDivElement>
-
   link: string | null
 
+  originCoords: BBox
   removeModal(allowFocus: boolean): void
 
   selectionState: SelectionState
@@ -66,6 +68,7 @@ const EditorLinkChanger = (props: Props) => {
   const {
     editorState,
     editorRef,
+    originCoords,
     removeModal,
     selectionState,
     setEditorState,
@@ -73,12 +76,13 @@ const EditorLinkChanger = (props: Props) => {
     validateField,
     link,
     fields,
-    innerRef,
     onChange,
     text,
     useTaskChild
   } = props
   useTaskChild('editor-link-changer')
+  const {menuPortal, openPortal} = useMenu(MenuPosition.UPPER_LEFT, {isDropdown: true, originCoords})
+  useEffect(openPortal, [])
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setDirtyField()
@@ -111,8 +115,12 @@ const EditorLinkChanger = (props: Props) => {
 
   const hasError = !!(fields.text.error || fields.link.error)
   const label = text ? 'Update' : 'Add'
-  return (
-    <ModalBoundary onBlur={handleBlur} onKeyDown={handleKeyDown} tabIndex={-1} ref={innerRef}>
+  return menuPortal(
+    <ModalBoundary
+      onBlur={handleBlur}
+      onKeyDown={handleKeyDown}
+      tabIndex={-1}
+    >
       <form onSubmit={onSubmit}>
         {text !== null && (
           <TextBlock>

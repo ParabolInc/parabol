@@ -1,4 +1,4 @@
-import React, {Ref} from 'react'
+import React, {useEffect} from 'react'
 import FlatButton from '../FlatButton'
 import removeLink from '../../utils/draftjs/removeLink'
 import dontTellDraft from '../../utils/draftjs/dontTellDraft'
@@ -6,6 +6,9 @@ import textOverflow from '../../styles/helpers/textOverflow'
 import {EditorState} from 'draft-js'
 import styled from '@emotion/styled'
 import {PALETTE} from '../../styles/paletteV2'
+import useMenu from '../../hooks/useMenu'
+import {MenuPosition} from '../../hooks/useCoords'
+import {BBox} from '../../types/animations'
 
 const UrlSpan = styled('span')({
   ...textOverflow,
@@ -36,15 +39,16 @@ const MenuStyles = styled('div')({
 interface Props {
   href: string
   addHyperlink: () => void
-  innerRef: Ref<HTMLDivElement>
   editorState: EditorState
+  originCoords: BBox
   setEditorState: (newEditorState: EditorState) => void
   removeModal: () => void
 }
 
 const EditorLinkViewer = (props: Props) => {
-  const {href, addHyperlink, innerRef, editorState, removeModal, setEditorState} = props
-
+  const {href, addHyperlink, editorState, removeModal, setEditorState, originCoords} = props
+  const {menuPortal, openPortal} = useMenu(MenuPosition.UPPER_LEFT, {isDropdown: true, originCoords})
+  useEffect(openPortal, [])
   const handleRemove = () => {
     setEditorState(removeLink(editorState))
     removeModal()
@@ -54,8 +58,8 @@ const EditorLinkViewer = (props: Props) => {
     addHyperlink()
   }
 
-  return (
-    <MenuStyles onMouseDown={dontTellDraft} ref={innerRef}>
+  return menuPortal(
+    <MenuStyles onMouseDown={dontTellDraft}>
       <UrlSpan>
         <LinkText href={href} rel='noopener noreferrer' target='_blank'>
           {href}
