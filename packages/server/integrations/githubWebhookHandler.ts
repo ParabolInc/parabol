@@ -63,7 +63,7 @@ const eventLookup = {
   repository: {}
 }
 
-const githubWebhookHandler: RequestHandler =  async (req, res) => {
+const githubWebhookHandler: RequestHandler = async (req, res) => {
   res.sendStatus(200)
   const event = req.get('X-GitHub-Event')
   const hexDigest = req.get('X-Hub-Signature')

@@ -116,7 +116,11 @@ const Organization = (props: Props) => {
             <OrganizationDetails createdAt={createdAt} tier={tier as TierEnum} />
           </OrgNameAndDetails>
         </AvatarAndName>
-        {!onlyShowMembers && <ToggleNavBlock><BillingMembersToggle orgId={orgId} /></ToggleNavBlock>}
+        {!onlyShowMembers && (
+          <ToggleNavBlock>
+            <BillingMembersToggle orgId={orgId} />
+          </ToggleNavBlock>
+        )}
         <OrganizationPage organization={organization} />
       </SettingsWrapper>
     </UserSettingsWrapper>

@@ -24,7 +24,6 @@ const MenuToggleLabel = styled('div')({
   whiteSpace: 'nowrap'
 })
 
-
 interface Props {
   disabled: boolean
   onChange: (orgId) => void
@@ -35,23 +34,26 @@ interface Props {
 const NO_ORGS = 'No organizations available'
 
 const NewTeamOrgDropdown = lazyPreload(() =>
-  import(/* webpackChunkName: 'NewTeamOrgDropdown' */
-    '../../../components/NewTeamOrgDropdown')
+  import(
+    /* webpackChunkName: 'NewTeamOrgDropdown' */
+    '../../../components/NewTeamOrgDropdown'
+  )
 )
 
 const NewTeamOrgPicker = (props: Props) => {
   const {disabled, onChange, organizations, orgId} = props
   const sortedOrgs = useMemo(() => {
     const orgs = organizations.slice()
-    const tierVal = (org) => (org.tier === TierEnum.enterprise ? -2 :  org.tier === TierEnum.pro ? -1 : 1)
+    const tierVal = (org) =>
+      org.tier === TierEnum.enterprise ? -2 : org.tier === TierEnum.pro ? -1 : 1
     orgs.sort((a, b) =>
       tierVal(a) < tierVal(b)
         ? -1
         : tierVal(a) > tierVal(b)
         ? 1
         : a.name.toLowerCase() < b.name.toLowerCase()
-          ? -1
-          : 1
+        ? -1
+        : 1
     )
     return orgs
   }, [organizations])
@@ -60,13 +62,18 @@ const NewTeamOrgPicker = (props: Props) => {
     if (firstOrg) {
       onChange(firstOrg.id)
     }
-  }, [/* eslint-disable-line react-hooks/exhaustive-deps*/])
+  }, [
+    /* eslint-disable-line react-hooks/exhaustive-deps*/
+  ])
   const orgIdx = orgId ? sortedOrgs.findIndex((org) => org.id === orgId) : 0
   const org = sortedOrgs[orgIdx]
   const defaultText = org ? org.name : NO_ORGS
-  const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLDivElement>(MenuPosition.UPPER_RIGHT, {
-    isDropdown: true
-  })
+  const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLDivElement>(
+    MenuPosition.UPPER_RIGHT,
+    {
+      isDropdown: true
+    }
+  )
   return (
     <>
       <DropdownMenuToggle

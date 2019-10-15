@@ -17,7 +17,9 @@ const NextPeriodChargesLineItem = (props: Props) => {
   const {unitPrice, quantity} = item
   const amount = invoiceLineFormat(item.amount)
   if (tier === TierEnum.enterprise) {
-    return <InvoiceLineItemContent description={`${quantity} Enterprise Licenses`} amount={amount}/>
+    return (
+      <InvoiceLineItemContent description={`${quantity} Enterprise Licenses`} amount={amount} />
+    )
   }
   const unitPriceString = (unitPrice! / 100).toLocaleString('en-US', {
     style: 'currency',
@@ -25,18 +27,15 @@ const NextPeriodChargesLineItem = (props: Props) => {
     minimumFractionDigits: 0
   })
   const description = `${quantity} active ${plural(quantity, 'user')} (${unitPriceString} each)`
-  return <InvoiceLineItemContent description={description} amount={amount}/>
+  return <InvoiceLineItemContent description={description} amount={amount} />
 }
 
-export default createFragmentContainer(
-  NextPeriodChargesLineItem,
-  {
-    item: graphql`
-      fragment NextPeriodChargesLineItem_item on NextPeriodCharges {
-        amount
-        quantity
-        unitPrice
-      }
-    `
-  }
-)
+export default createFragmentContainer(NextPeriodChargesLineItem, {
+  item: graphql`
+    fragment NextPeriodChargesLineItem_item on NextPeriodCharges {
+      amount
+      quantity
+      unitPrice
+    }
+  `
+})

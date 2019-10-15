@@ -43,7 +43,11 @@ const mutation = graphql`
   }
 `
 
-const UpgradeToProMutation: StandardMutation<TUpgradeToProMutation> = (atmosphere, variables, {onError, onCompleted}: LocalHandlers = {} ) => {
+const UpgradeToProMutation: StandardMutation<TUpgradeToProMutation> = (
+  atmosphere,
+  variables,
+  {onError, onCompleted}: LocalHandlers = {}
+) => {
   return commitMutation(atmosphere, {
     mutation,
     variables,

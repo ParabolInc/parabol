@@ -24,7 +24,7 @@ const NullableTask = (props: Props) => {
   const contentState = useMemo(() => {
     try {
       return convertFromRaw(JSON.parse(content))
-    } catch(e) {
+    } catch (e) {
       return convertFromRaw(JSON.parse(makeEmptyStr()))
     }
   }, [content])
@@ -38,7 +38,9 @@ const NullableTask = (props: Props) => {
     return () => {
       isMounted = false
     }
-  }, [/* eslint-disable-line react-hooks/exhaustive-deps*/])
+  }, [
+    /* eslint-disable-line react-hooks/exhaustive-deps*/
+  ])
 
   const showOutcome = contentState.hasText() || createdBy === atmosphere.viewerId
   return showOutcome ? (

@@ -16,10 +16,14 @@ const TopTabs = styled(Tabs)({
 interface Props extends RouteComponentProps<{}> {}
 
 const MyDashboardTasksRoot = lazy(() =>
-  import(/* webpackChunkName: 'MyDashboardTasksRoot' */ '../../../../components/MyDashboardTasksRoot')
+  import(
+    /* webpackChunkName: 'MyDashboardTasksRoot' */ '../../../../components/MyDashboardTasksRoot'
+  )
 )
 const MyDashboardTimelineRoot = lazy(() =>
-  import(/* webpackChunkName: 'MyDashboardTimelineRoot' */ '../../../../components/MyDashboardTimelineRoot')
+  import(
+    /* webpackChunkName: 'MyDashboardTimelineRoot' */ '../../../../components/MyDashboardTimelineRoot'
+  )
 )
 
 const UserDashMain = (props: Props) => {

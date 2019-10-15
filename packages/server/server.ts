@@ -75,13 +75,16 @@ Sentry.init({
   ]
 })
 
-app.use('/static', express.static(path.join(PROJECT_ROOT, 'build'), {
-  setHeaders: (res, path) => {
-    if (path.endsWith('sw.js')) {
-      res.setHeader('service-worker-allowed', '/')
+app.use(
+  '/static',
+  express.static(path.join(PROJECT_ROOT, 'build'), {
+    setHeaders: (res, path) => {
+      if (path.endsWith('sw.js')) {
+        res.setHeader('service-worker-allowed', '/')
+      }
     }
-  }
-}))
+  })
+)
 
 // HMR
 if (!PROD) {
@@ -129,12 +132,12 @@ app.use(
   bodyParser.json({
     verify: (req: express.Request, _res: express.Response, buf) => {
       if (req.originalUrl.startsWith('/stripe')) {
-        (req as StripeRequest).rawBody = buf.toString()
+        ;(req as StripeRequest).rawBody = buf.toString()
       }
     }
   })
 )
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}))
 app.use(cors({origin: true, credentials: true}))
 app.use('/static', express.static(path.join(PROJECT_ROOT, 'static')))
 app.use(favicon(path.join(PROJECT_ROOT, 'static', 'favicon.ico')))
@@ -163,7 +166,8 @@ app.post(
     secret: Buffer.from(secretKey, 'base64'),
     credentialsRequired: true
   }),
-  intranetHttpGraphQLHandler)
+  intranetHttpGraphQLHandler
+)
 
 // server-side rendering for emails
 if (!PROD) {

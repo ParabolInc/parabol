@@ -6,31 +6,17 @@ import {LoaderSize} from '../../types/constEnums'
 import ErrorBoundary from '../ErrorBoundary'
 import LoadingComponent from '../LoadingComponent/LoadingComponent'
 import PrivateRoutes from '../PrivateRoutes'
-import {DragDropContext as dragDropContext} from 'react-dnd'
-import HTML5Backend from 'react-dnd-html5-backend'
 import Snackbar from '../Snackbar'
 
-const AnalyticsPage = lazy(() =>
-  import(/* webpackChunkName: 'AnalyticsPage' */ '../AnalyticsPage')
-)
+const AnalyticsPage = lazy(() => import(/* webpackChunkName: 'AnalyticsPage' */ '../AnalyticsPage'))
 const AuthenticationPage = lazy(() =>
   import(/* webpackChunkName: 'AuthenticationPage' */ '../AuthenticationPage')
 )
-const DemoMeeting = lazy(() =>
-  import(/* webpackChunkName: 'DemoMeeting' */ '../DemoMeeting')
-)
-const DemoSummary = lazy(() =>
-  import(/* webpackChunkName: 'DemoSummary' */ '../DemoSummary')
-)
-const AuthProvider = lazy(() =>
-  import(/* webpackChunkName: 'AuthProvider' */ '../AuthProvider')
-)
-const OauthRedirect = lazy(() =>
-  import(/* webpackChunkName: 'OauthRedirect' */ '../OAuthRedirect')
-)
-const SAMLRedirect = lazy(() =>
-  import(/* webpackChunkName: 'SAMLRedirect' */ '../SAMLRedirect')
-)
+const DemoMeeting = lazy(() => import(/* webpackChunkName: 'DemoMeeting' */ '../DemoMeeting'))
+const DemoSummary = lazy(() => import(/* webpackChunkName: 'DemoSummary' */ '../DemoSummary'))
+const AuthProvider = lazy(() => import(/* webpackChunkName: 'AuthProvider' */ '../AuthProvider'))
+const OauthRedirect = lazy(() => import(/* webpackChunkName: 'OauthRedirect' */ '../OAuthRedirect'))
+const SAMLRedirect = lazy(() => import(/* webpackChunkName: 'SAMLRedirect' */ '../SAMLRedirect'))
 const TeamInvitation = lazy(() =>
   import(/* webpackChunkName: 'TeamInvitationRoot' */ '../TeamInvitationRoot')
 )
@@ -59,7 +45,7 @@ const Action = memo(() => {
           />
           <Route exact path={`/auth/:provider`} component={AuthProvider} />
           <Route exact path={`/oauth-redirect`} component={OauthRedirect} />
-          <Route path={`/saml-redirect`} component={SAMLRedirect}/>
+          <Route path={`/saml-redirect`} component={SAMLRedirect} />
           <Route
             path='/retrospective-demo/:localPhaseSlug?/:stageIdxSlug?'
             component={DemoMeeting}
@@ -81,4 +67,4 @@ const Action = memo(() => {
   )
 })
 
-export default dragDropContext(HTML5Backend)(Action)
+export default Action

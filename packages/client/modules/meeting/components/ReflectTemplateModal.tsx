@@ -90,7 +90,7 @@ const PromptEditor = styled('div')({
 })
 
 class ReflectTemplateModal extends Component<Props> {
-  constructor (props) {
+  constructor(props) {
     super(props)
     const {atmosphere, retroMeetingSettings} = props
     const {settingsId, selectedTemplateId} = retroMeetingSettings
@@ -119,7 +119,7 @@ class ReflectTemplateModal extends Component<Props> {
     }
   )
 
-  render () {
+  render() {
     const {retroMeetingSettings} = this.props
     const {activeTemplateId, reflectTemplates, teamId} = retroMeetingSettings
     const templateCount = reflectTemplates.length

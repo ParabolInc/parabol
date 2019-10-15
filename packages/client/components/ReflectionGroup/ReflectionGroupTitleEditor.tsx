@@ -9,9 +9,7 @@ import styled from '@emotion/styled'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import StyledError from '../StyledError'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../../decorators/withAtmosphere/withAtmosphere'
 import UpdateReflectionGroupTitleMutation from '../../mutations/UpdateReflectionGroupTitleMutation'
 import {PALETTE} from '../../styles/paletteV2'
 import ui from '../../styles/ui'
@@ -110,7 +108,7 @@ const getValidationError = (title: string | null, reflectionGroups, reflectionGr
 class ReflectionGroupTitleEditor extends Component<Props> {
   initialTitle: string
 
-  constructor (props: Props) {
+  constructor(props: Props) {
     super(props)
     this.initialTitle = props.reflectionGroup.title || ''
   }
@@ -184,7 +182,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
     )
   }
 
-  render () {
+  render() {
     const {
       isExpanded,
       error,

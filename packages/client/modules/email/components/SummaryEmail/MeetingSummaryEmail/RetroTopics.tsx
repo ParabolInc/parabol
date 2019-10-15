@@ -1,6 +1,6 @@
 import React from 'react'
 import plural from '../../../../../utils/plural'
-import {RETRO_TOPIC_LABEL, RETRO_VOTED_LABEL} from '../../../../../utils/constants'
+import {RETRO_TOPIC_LABEL} from '../../../../../utils/constants'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {PALETTE} from '../../../../../styles/paletteV2'
@@ -30,7 +30,7 @@ const RetroTopics = (props: Props) => {
     <>
       <tr>
         <td align='center' style={sectionHeading}>
-          {plural(reflectionGroups.length, `${RETRO_VOTED_LABEL} ${RETRO_TOPIC_LABEL}`)}
+          {plural(reflectionGroups.length, RETRO_TOPIC_LABEL)}
         </td>
       </tr>
       {reflectionGroups.map((topic) => (
@@ -44,7 +44,7 @@ const RetroTopics = (props: Props) => {
 export default createFragmentContainer(RetroTopics, {
   meeting: graphql`
     fragment RetroTopics_meeting on RetrospectiveMeeting {
-      reflectionGroups(sortBy: voteCount) {
+      reflectionGroups {
         id
         ...RetroTopic_topic
       }

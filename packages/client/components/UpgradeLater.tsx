@@ -34,15 +34,15 @@ const UpgradeLater = (props: Props) => {
   const {closePortal} = props
   return (
     <Container>
-      <Emoji src={wearyCat}/>
+      <Emoji src={wearyCat} />
       <InvitationDialogCopy>{'Your organization has exceeded'}</InvitationDialogCopy>
-      <InvitationDialogCopy>{'the free tier limit of '}<b>{'2 teams'}</b>{'.'}</InvitationDialogCopy>
-      <CopySpacer>
-        {'We’ll send you an email so'}
-      </CopySpacer>
       <InvitationDialogCopy>
-        {'you can upgrade later'}
+        {'the free tier limit of '}
+        <b>{'2 teams'}</b>
+        {'.'}
       </InvitationDialogCopy>
+      <CopySpacer>{'We’ll send you an email so'}</CopySpacer>
+      <InvitationDialogCopy>{'you can upgrade later'}</InvitationDialogCopy>
       <ButtonBlock>
         <ModalButton size='large' onClick={closePortal}>
           {'Back to Business'}

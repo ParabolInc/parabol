@@ -37,7 +37,7 @@ const QuestionBlock = styled('div')({
   padding: '16px 0'
 })
 
-interface Props{
+interface Props {
   team: NewCheckInQuestion_team
 }
 
@@ -49,8 +49,8 @@ const NewCheckInQuestion = (props: Props) => {
   if (!newMeeting) return null
   const {id: meetingId, localPhase, facilitatorUserId} = newMeeting
   const {checkInQuestion} = localPhase as ICheckInPhase
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [editorState, setEditorState] = useEditorState(checkInQuestion)
-
   const updateQuestion = (nextEditorState: EditorState) => {
     const wasFocused = editorState.getSelection().getHasFocus()
     const isFocused = nextEditorState.getSelection().getHasFocus()

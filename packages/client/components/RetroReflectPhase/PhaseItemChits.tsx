@@ -17,7 +17,8 @@ const CHIT_MARGIN = 4
 const CHIT_GUTTER = 8
 const CHITS_PER_ROW = 8
 const MAX_ROWS = 4
-const CHIT_WIDTH = (ElementWidth.REFLECTION_CARD_PADDED - CHIT_GUTTER * (CHITS_PER_ROW - 1)) / CHITS_PER_ROW
+const CHIT_WIDTH =
+  (ElementWidth.REFLECTION_CARD_PADDED - CHIT_GUTTER * (CHITS_PER_ROW - 1)) / CHITS_PER_ROW
 const CHIT_HEIGHT = 16
 const OFFSET = CHIT_MARGIN * 2 + CHIT_WIDTH
 const PROGRESS_WIDTH = ElementWidth.REFLECTION_CARD
@@ -97,7 +98,7 @@ const getStatus = (count: number, editorCount: number) => {
 }
 
 class PhaseItemChits extends Component<Props> {
-  render () {
+  render() {
     const {count, editorCount} = this.props
     const chitCount = Math.min(count, MAX_ROWS * CHITS_PER_ROW)
     const chits = [...Array(chitCount).keys()]

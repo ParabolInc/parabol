@@ -3,7 +3,9 @@ import ui from '../../styles/ui'
 import styled from '@emotion/styled'
 import LabelHeading from '../LabelHeading/LabelHeading'
 
-const FieldLabelStyles = styled(LabelHeading)<Pick<Props, 'customStyles' | 'fieldSize' | 'indent' | 'inline'>>(({customStyles, fieldSize, indent, inline}) => {
+const FieldLabelStyles = styled(LabelHeading)<
+  Pick<Props, 'customStyles' | 'fieldSize' | 'indent' | 'inline'>
+>(({customStyles, fieldSize, indent, inline}) => {
   const size = fieldSize || ui.buttonSizeOptions[1]
   const paddingLeft = fieldSize && indent ? ui.controlBlockPaddingHorizontal[size] : 0
   const inlineSizeStyles = ui.fieldSizeStyles[size]

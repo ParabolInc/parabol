@@ -80,7 +80,7 @@ const StyledButton = styled(FlatButton)({
 
 const StyledFlatButton = styled(FlatButton)({
   paddingLeft: 16,
-  paddingRight: 16,
+  paddingRight: 16
 })
 
 const MenuButton = forwardRef((props: FlatButtonProps, ref: Ref<HTMLButtonElement>) => (
@@ -94,7 +94,9 @@ const LeaveOrgModal = lazyPreload(() =>
 )
 
 const BillingLeaderActionMenu = lazyPreload(() =>
-  import(/* webpackChunkName: 'BillingLeaderActionMenu' */ '../../../../components/BillingLeaderActionMenu')
+  import(
+    /* webpackChunkName: 'BillingLeaderActionMenu' */ '../../../../components/BillingLeaderActionMenu'
+  )
 )
 
 const RemoveFromOrgModal = lazyPreload(() =>

@@ -24,21 +24,29 @@ import measureDroppableReflections from '../utils/measureDroppableReflections'
 import findDropZoneFromEvent from '../utils/findDropZoneFromEvent'
 import {SwipeColumn} from '../components/GroupingKanban'
 
-
 const windowDims = {
   clientHeight: window.innerHeight,
   clientWidth: window.innerWidth
 }
 
-const useRemoteDrag = (reflection: DraggableReflectionCard_reflection, drag: ReflectionDragState, staticIdx: number) => {
+const useRemoteDrag = (
+  reflection: DraggableReflectionCard_reflection,
+  drag: ReflectionDragState,
+  staticIdx: number
+) => {
   const setPortal = useContext(PortalContext)
   const {remoteDrag, isDropping} = reflection
   const setRemoteCard = (isClose?: boolean) => {
     if (!drag.ref) return
     const bbox = drag.ref.getBoundingClientRect()
     const style = getDroppingStyles(drag.ref, bbox, windowDims.clientHeight)
-    setPortal(`clone-${reflection.id}`, <RemoteReflection style={isClose ? style : {transform: style.transform}}
-                                                          reflection={reflection} />)
+    setPortal(
+      `clone-${reflection.id}`,
+      <RemoteReflection
+        style={isClose ? style : {transform: style.transform}}
+        reflection={reflection}
+      />
+    )
   }
   // is opening
   useEffect(() => {
@@ -55,7 +63,13 @@ const useRemoteDrag = (reflection: DraggableReflectionCard_reflection, drag: Ref
   }, [isDropping, staticIdx, remoteDrag])
 }
 
-const useLocalDrag = (reflection: DraggableReflectionCard_reflection, drag: ReflectionDragState, staticIdx: number, onMouseMove: any, onMouseUp: any) => {
+const useLocalDrag = (
+  reflection: DraggableReflectionCard_reflection,
+  drag: ReflectionDragState,
+  staticIdx: number,
+  onMouseMove: any,
+  onMouseUp: any
+) => {
   const {remoteDrag, isDropping, id: reflectionId, isViewerDragging} = reflection
   const atmosphere = useAtmosphere()
 
@@ -95,7 +109,10 @@ const removeClone = (reflectionId: string, setPortal: SetPortal) => {
   }
 }
 
-const useDroppingDrag = (drag: ReflectionDragState, reflection: DraggableReflectionCard_reflection) => {
+const useDroppingDrag = (
+  drag: ReflectionDragState,
+  reflection: DraggableReflectionCard_reflection
+) => {
   const setPortal = useContext(PortalContext)
   const {remoteDrag, id: reflectionId, isDropping} = reflection
   const atmosphere = useAtmosphere()
@@ -103,21 +120,25 @@ const useDroppingDrag = (drag: ReflectionDragState, reflection: DraggableReflect
     if (isDropping !== drag.wasDropping) {
       drag.wasDropping = isDropping || false
       if (isDropping) {
-        drag.timeout = window.setTimeout(() => {
-          if (drag.clone) {
-            // local
-            document.body.removeChild(drag.clone!)
-            drag.clone = null
-          } else {
-            //remote
-            removeClone(reflectionId, setPortal)
-          }
-          commitLocalUpdate(atmosphere, (store) => {
-            store.get(reflectionId)!
-              .setValue(false, 'isDropping')
-              .setValue(null, 'remoteDrag')
-          })
-        }, remoteDrag ? Times.REFLECTION_REMOTE_DROP_DURATION : Times.REFLECTION_DROP_DURATION)
+        drag.timeout = window.setTimeout(
+          () => {
+            if (drag.clone) {
+              // local
+              document.body.removeChild(drag.clone!)
+              drag.clone = null
+            } else {
+              //remote
+              removeClone(reflectionId, setPortal)
+            }
+            commitLocalUpdate(atmosphere, (store) => {
+              store
+                .get(reflectionId)!
+                .setValue(false, 'isDropping')
+                .setValue(null, 'remoteDrag')
+            })
+          },
+          remoteDrag ? Times.REFLECTION_REMOTE_DROP_DURATION : Times.REFLECTION_DROP_DURATION
+        )
       } else {
         // a new drag overrode the old one
         window.clearTimeout(drag.timeout!)
@@ -126,7 +147,14 @@ const useDroppingDrag = (drag: ReflectionDragState, reflection: DraggableReflect
   }, [isDropping])
 }
 
-const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflectionCard_reflection, staticIdx: number, teamId: string, reflectionCount: number, swipeColumn?: SwipeColumn) => {
+const useDragAndDrop = (
+  drag: ReflectionDragState,
+  reflection: DraggableReflectionCard_reflection,
+  staticIdx: number,
+  teamId: string,
+  reflectionCount: number,
+  swipeColumn?: SwipeColumn
+) => {
   const atmosphere = useAtmosphere()
 
   const {id: reflectionId, reflectionGroupId, isDropping, isEditing} = reflection
@@ -142,10 +170,12 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
     drag.targets.length = 0
     drag.prevTargetId = ''
     const targetGroupId = getTargetGroupId(e)
-    const targetType = targetGroupId && reflectionGroupId !== targetGroupId ?
-      DragReflectionDropTargetTypeEnum.REFLECTION_GROUP : !targetGroupId && reflectionCount > 0 ?
-        DragReflectionDropTargetTypeEnum.REFLECTION_GRID :
-        null
+    const targetType =
+      targetGroupId && reflectionGroupId !== targetGroupId
+        ? DragReflectionDropTargetTypeEnum.REFLECTION_GROUP
+        : !targetGroupId && reflectionCount > 0
+        ? DragReflectionDropTargetTypeEnum.REFLECTION_GRID
+        : null
     handleDrop(atmosphere, reflectionId, drag, targetType, targetGroupId)
   })
 
@@ -182,7 +212,7 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
     // required to prevent address bar scrolling & other strange browser things on mobile view
     e.preventDefault()
     const isTouch = isNativeTouch(e)
-    const {clientX, clientY} = isTouch ? (e as TouchEvent).touches[0] : e as MouseEvent
+    const {clientX, clientY} = isTouch ? (e as TouchEvent).touches[0] : (e as MouseEvent)
     const wasDrag = drag.isDrag
     if (!wasDrag) {
       drag.isDrag = getIsDrag(clientX, clientY, drag.startX, drag.startY)
@@ -199,7 +229,8 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
     }
     if (!drag.clone) return
     drag.clientY = clientY
-    drag.clone.style.transform = `translate(${clientX - drag.cardOffsetX}px,${clientY - drag.cardOffsetY}px)`
+    drag.clone.style.transform = `translate(${clientX - drag.cardOffsetX}px,${clientY -
+      drag.cardOffsetY}px)`
     const dropZoneEl = findDropZoneFromEvent(e)
     if (dropZoneEl !== drag.dropZoneEl) {
       drag.dropZoneEl = dropZoneEl
@@ -211,12 +242,12 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
     }
     if (isTouch && swipeColumn) {
       const {clientX} = (e as TouchEvent).touches[0]
-      const minThresh = windowDims.clientWidth * .1
-       if (clientX <= minThresh) {
-         swipeColumn(-1)
-       } else if (clientX >= windowDims.clientWidth - minThresh) {
-         swipeColumn(1)
-       }
+      const minThresh = windowDims.clientWidth * 0.1
+      if (clientX <= minThresh) {
+        swipeColumn(-1)
+      } else if (clientX >= windowDims.clientWidth - minThresh) {
+        swipeColumn(1)
+      }
     }
     announceDragUpdate(clientX, clientY)
   })
@@ -232,7 +263,9 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
       document.addEventListener('mousemove', onMouseMove)
       document.addEventListener('mouseup', onMouseUp)
     }
-    const {clientX, clientY} = isTouch ? (e as React.TouchEvent<HTMLDivElement>).touches[0] : e as React.MouseEvent<HTMLDivElement>
+    const {clientX, clientY} = isTouch
+      ? (e as React.TouchEvent<HTMLDivElement>).touches[0]
+      : (e as React.MouseEvent<HTMLDivElement>)
     drag.startX = clientX
     drag.startY = clientY
     drag.isDrag = false
@@ -241,7 +274,12 @@ const useDragAndDrop = (drag: ReflectionDragState, reflection: DraggableReflecti
   return {onMouseDown, onMouseMove, onMouseUp}
 }
 
-const usePlaceholder = (reflection: DraggableReflectionCard_reflection, drag: ReflectionDragState, staticIdx: number, staticReflectionCount: number) => {
+const usePlaceholder = (
+  reflection: DraggableReflectionCard_reflection,
+  drag: ReflectionDragState,
+  staticIdx: number,
+  staticReflectionCount: number
+) => {
   useEffect(() => {
     const {ref} = drag
     const {style, scrollHeight} = ref!
@@ -275,11 +313,25 @@ const usePlaceholder = (reflection: DraggableReflectionCard_reflection, drag: Re
   }, [staticIdx === -1])
 }
 
-const useDraggableReflectionCard = (reflection: DraggableReflectionCard_reflection, drag: ReflectionDragState, staticIdx: number, teamId: string, staticReflectionCount: number, swipeColumn?: SwipeColumn) => {
+const useDraggableReflectionCard = (
+  reflection: DraggableReflectionCard_reflection,
+  drag: ReflectionDragState,
+  staticIdx: number,
+  teamId: string,
+  staticReflectionCount: number,
+  swipeColumn?: SwipeColumn
+) => {
   useRemoteDrag(reflection, drag, staticIdx)
   useDroppingDrag(drag, reflection)
   usePlaceholder(reflection, drag, staticIdx, staticReflectionCount)
-  const {onMouseDown, onMouseUp, onMouseMove} = useDragAndDrop(drag, reflection, staticIdx, teamId, staticReflectionCount, swipeColumn)
+  const {onMouseDown, onMouseUp, onMouseMove} = useDragAndDrop(
+    drag,
+    reflection,
+    staticIdx,
+    teamId,
+    staticReflectionCount,
+    swipeColumn
+  )
   useLocalDrag(reflection, drag, staticIdx, onMouseMove, onMouseUp)
   return {onMouseDown}
 }

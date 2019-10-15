@@ -55,16 +55,18 @@ const modalStyles = {
     transition: `all ${Duration.PORTAL_CLOSE}ms ${DECELERATE}`
   }
 }
-const Scrim = styled('div')<{background: string; portalStatus: PortalStatus, backdropFilter?: string}>(
-  ({background, backdropFilter, portalStatus}) => ({
-    background,
-    height: '100%',
-    position: 'fixed',
-    width: '100%',
-    backdropFilter,
-    ...backdropStyles[portalStatus]
-  })
-)
+const Scrim = styled('div')<{
+  background: string
+  portalStatus: PortalStatus
+  backdropFilter?: string
+}>(({background, backdropFilter, portalStatus}) => ({
+  background,
+  height: '100%',
+  position: 'fixed',
+  width: '100%',
+  backdropFilter,
+  ...backdropStyles[portalStatus]
+}))
 
 const ModalContents = styled('div')<{portalStatus: PortalStatus}>(({portalStatus}) => ({
   display: 'flex',

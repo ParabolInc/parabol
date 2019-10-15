@@ -37,8 +37,8 @@ const entitizeText = (contentState, selectionState) => {
       return contentState === cs
         ? null
         : cs.merge({
-          selectionAfter: contentState.getSelectionAfter()
-        })
+            selectionAfter: contentState.getSelectionAfter()
+          })
     }
     currentKey = contentState.getKeyAfter(currentKey)
   }

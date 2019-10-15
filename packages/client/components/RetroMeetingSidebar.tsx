@@ -20,7 +20,10 @@ interface Props {
   viewer: RetroMeetingSidebar_viewer
 }
 
-const collapsiblePhases: string[] = [NewMeetingPhaseTypeEnum.checkin, NewMeetingPhaseTypeEnum.discuss]
+const collapsiblePhases: string[] = [
+  NewMeetingPhaseTypeEnum.checkin,
+  NewMeetingPhaseTypeEnum.discuss
+]
 
 const RetroMeetingSidebar = (props: Props) => {
   const {gotoStageId, handleMenuClick, toggleSidebar, viewer} = props
@@ -55,12 +58,12 @@ const RetroMeetingSidebar = (props: Props) => {
           const discussPhase = phases.find((phase) => {
             return phase.phaseType === NewMeetingPhaseTypeEnum.discuss
           })
-          const showDiscussSection = newMeeting && isPhaseComplete(NewMeetingPhaseTypeEnum.vote, phases)
-          const phaseCount = phaseType === NewMeetingPhaseTypeEnum.discuss
-            && newMeeting
-            && showDiscussSection
-            ? discussPhase.stages.length
-            : undefined
+          const showDiscussSection =
+            newMeeting && isPhaseComplete(NewMeetingPhaseTypeEnum.vote, phases)
+          const phaseCount =
+            phaseType === NewMeetingPhaseTypeEnum.discuss && newMeeting && showDiscussSection
+              ? discussPhase.stages.length
+              : undefined
           return (
             <NewMeetingSidebarPhaseListItem
               handleClick={canNavigate ? handleClick : undefined}
@@ -69,7 +72,9 @@ const RetroMeetingSidebar = (props: Props) => {
               }
               isCollapsible={collapsiblePhases.includes(phaseType)}
               isFacilitatorPhase={phaseType === facilitatorPhaseType}
-              isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase && phaseType === facilitatorPhaseType}
+              isUnsyncedFacilitatorPhase={
+                isUnsyncedFacilitatorPhase && phaseType === facilitatorPhaseType
+              }
               isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
               key={phaseType}
               phaseCount={phaseCount}

@@ -26,7 +26,7 @@ interface State {
 }
 
 class EmojiMenu extends Component<Props, State> {
-  static filterByQuery (query: string) {
+  static filterByQuery(query: string) {
     if (!query) {
       return emojiArray.slice(2, 8)
     }
@@ -43,7 +43,7 @@ class EmojiMenu extends Component<Props, State> {
     )
   }
 
-  static getDerivedStateFromProps (
+  static getDerivedStateFromProps(
     nextProps: Readonly<Props>,
     prevState: State
   ): Partial<State> | null {
@@ -70,7 +70,7 @@ class EmojiMenu extends Component<Props, State> {
     query: ''
   }
 
-  render () {
+  render() {
     const {menuProps, menuRef, menuItemClickFactory} = this.props
     const {focusedEditorState} = this.state
     const {suggestedEmojis} = this.state

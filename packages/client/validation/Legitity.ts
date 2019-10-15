@@ -2,66 +2,66 @@ class Legitity {
   value: any
   error: undefined | string
 
-  constructor (value: string) {
+  constructor(value: string) {
     this.value = value
     this.error = undefined
   }
 
-  boolean (msg?: string) {
+  boolean(msg?: string) {
     if (!this.error && this.value !== undefined && this.value !== true && this.value !== false) {
       this.error = msg || 'boolean'
     }
     return this
   }
 
-  float (msg?: string) {
+  float(msg?: string) {
     if (!this.error && this.value !== undefined && !Number.isFinite(this.value)) {
       this.error = msg || 'float'
     }
     return this
   }
 
-  int (msg?: string) {
+  int(msg?: string) {
     if (!this.error && this.value !== parseInt(this.value, 10)) {
       this.error = msg || 'int'
     }
     return this
   }
 
-  matches (regex: RegExp, msg?: string) {
+  matches(regex: RegExp, msg?: string) {
     if (!this.error && this.value && !regex.test(this.value)) {
       this.error = msg || 'regex'
     }
     return this
   }
 
-  max (len: number, msg?: string) {
+  max(len: number, msg?: string) {
     if (!this.error && this.value && this.value.length > len) {
       this.error = msg || 'max'
     }
     return this
   }
 
-  min (len: number, msg?: string) {
+  min(len: number, msg?: string) {
     if (!this.error && this.value && this.value.length < len) {
       this.error = msg || 'min'
     }
     return this
   }
 
-  required (msg?: string) {
+  required(msg?: string) {
     if (!this.error && !this.value) {
       this.error = msg || 'required'
     }
     return this
   }
 
-  trim () {
+  trim() {
     this.value = this.value && this.value.trim ? this.value.trim() : this.value
     return this
   }
 
-  normalize (fn: (value: any) => boolean, msg: string) {
+  normalize(fn: (value: any) => boolean, msg: string) {
     if (!this.error) {
       this.value = this.value !== undefined && fn(this.value)
       if (this.value === null) {
@@ -71,7 +71,7 @@ class Legitity {
     return this
   }
 
-  test (check: (value: any) => string | undefined) {
+  test(check: (value: any) => string | undefined) {
     if (!this.error) {
       this.error = check(this.value)
     }

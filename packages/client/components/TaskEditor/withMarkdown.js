@@ -250,9 +250,9 @@ const withMarkdown = (ComposedComponent) => {
         command === 'split-block'
           ? preSplitES.getSelection()
           : linkifiedContent.getSelectionAfter().merge({
-            anchorOffset: linkifiedContent.getSelectionAfter().getAnchorOffset() + 1,
-            focusOffset: linkifiedContent.getSelectionAfter().getAnchorOffset() + 1
-          })
+              anchorOffset: linkifiedContent.getSelectionAfter().getAnchorOffset() + 1,
+              focusOffset: linkifiedContent.getSelectionAfter().getAnchorOffset() + 1
+            })
       const adjustedSelectionContent = linkifiedContent.merge({
         selectionAfter,
         selectionBefore: selectionAfter
@@ -330,7 +330,7 @@ const withMarkdown = (ComposedComponent) => {
       this.undoMarkdown = undefined
     }
 
-    render () {
+    render() {
       return (
         <ComposedComponent
           {...this.props}

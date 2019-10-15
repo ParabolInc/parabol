@@ -60,15 +60,21 @@ const Menu = forwardRef((props: Props, ref: any) => {
     handleKeyDown
   }))
 
-  useEffect(() => {
-    if (defaultActiveIdx === undefined) {
-      const firstMenuItemIdx = itemHandles.current.findIndex(isMenuItem)
-      setActiveIdx(Math.max(0, firstMenuItemIdx))
-      if (!keepParentFocus) {
-        menuRef.current && menuRef.current.focus()
+  useEffect(
+    () => {
+      if (defaultActiveIdx === undefined) {
+        const firstMenuItemIdx = itemHandles.current.findIndex(isMenuItem)
+        setActiveIdx(Math.max(0, firstMenuItemIdx))
+        if (!keepParentFocus) {
+          menuRef.current && menuRef.current.focus()
+        }
       }
-    }
-  }, resetActiveOnChanges || [/* eslint-disable-line react-hooks/exhaustive-deps*/])
+    },
+    resetActiveOnChanges ||
+      [
+        /* eslint-disable-line react-hooks/exhaustive-deps*/
+      ]
+  )
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {

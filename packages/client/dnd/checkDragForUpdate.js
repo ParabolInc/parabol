@@ -2,7 +2,7 @@ import {SORT_STEP} from '../utils/constants'
 import {findDOMNode} from 'react-dom'
 import dndNoise from '../utils/dndNoise'
 
-export default function checkDragForUpdate (monitor, dragState, itemArray, isDescending) {
+export default function checkDragForUpdate(monitor, dragState, itemArray, isDescending) {
   const sourceProps = monitor.getItem()
   const {id} = sourceProps
   const {components, minY, maxY, thresholds} = dragState

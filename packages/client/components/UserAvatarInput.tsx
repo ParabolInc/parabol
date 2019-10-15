@@ -4,9 +4,7 @@ import styled from '@emotion/styled'
 import Avatar from './Avatar/Avatar'
 import AvatarInput from './AvatarInput'
 import DialogTitle from './DialogTitle'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import CreateUserPicturePutUrlMutation from '../mutations/CreateUserPicturePutUrlMutation'
 import UpdateUserProfileMutation from '../mutations/UpdateUserProfileMutation'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
@@ -89,13 +87,11 @@ class UserAvatarInput extends Component<Props> {
     CreateUserPicturePutUrlMutation(atmosphere, variables, onError, handleCompleted)
   }
 
-  render () {
+  render() {
     const {picture, dirty, error} = this.props
     return (
       <ModalBoundary>
-        <StyledDialogTitle>
-          {'Upload a New Photo'}
-        </StyledDialogTitle>
+        <StyledDialogTitle>{'Upload a New Photo'}</StyledDialogTitle>
         <AvatarBlock>
           <Avatar picture={picture} size={96} />
         </AvatarBlock>

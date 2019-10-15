@@ -12,7 +12,7 @@ interface Payload {
   variables?: {[key: string]: any} | undefined
 }
 
-export default async function wsGraphQLHandler (
+export default async function wsGraphQLHandler(
   connectionContext: ConnectionContext,
   payload: Payload
 ) {

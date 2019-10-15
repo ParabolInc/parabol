@@ -13,7 +13,9 @@ import ProviderCard from '../../../../components/ProviderCard'
 import ProviderActions from '../../../../components/ProviderActions'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
-import withAtmosphere, {WithAtmosphereProps} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import useAtlassianSites from '../../../../hooks/useAtlassianSites'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
@@ -146,16 +148,16 @@ const AtlassianProviderRow = (props: Props) => {
         <ListAndMenu>
           <SiteList>
             {status === 'loaded' &&
-            sites.map((site, idx) => (
-              <SiteAvatar
-                key={site.id}
-                width={24}
-                height={24}
-                src={site.avatarUrl}
-                title={site.name}
-                idx={sites.length - idx}
-              />
-            ))}
+              sites.map((site, idx) => (
+                <SiteAvatar
+                  key={site.id}
+                  width={24}
+                  height={24}
+                  src={site.avatarUrl}
+                  title={site.name}
+                  idx={sites.length - idx}
+                />
+              ))}
             {status === 'loading' && (
               <LoadingComponent spinnerSize={24} height={24} showAfter={0} />
             )}

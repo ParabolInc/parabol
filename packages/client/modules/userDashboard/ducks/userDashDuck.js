@@ -6,7 +6,7 @@ const initialState = {
   teamFilterName: 'All teams'
 }
 
-export default function reducer (state = initialState, action = {type: ''}) {
+export default function reducer(state = initialState, action = {type: ''}) {
   if (action.type.startsWith('userDashboard/')) {
     const {type, payload} = action
     if (type === FILTER_TEAM) {

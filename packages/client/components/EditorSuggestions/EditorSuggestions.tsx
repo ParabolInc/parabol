@@ -33,7 +33,10 @@ interface Props {
 
 const EditorSuggestions = (props: Props) => {
   const {active, handleSelect, suggestions, suggestionType, originCoords} = props
-  const {menuPortal, openPortal} = useMenu(MenuPosition.UPPER_LEFT,{originCoords, isDropdown: true})
+  const {menuPortal, openPortal} = useMenu(MenuPosition.UPPER_LEFT, {
+    originCoords,
+    isDropdown: true
+  })
   const SuggestionItem = suggestionTypes[suggestionType]
   useLayoutEffect(openPortal, [])
   return menuPortal(
@@ -42,7 +45,7 @@ const EditorSuggestions = (props: Props) => {
         return (
           // eslint-disable-next-line
           <div key={idx} onMouseDown={dontTellDraft} onClick={handleSelect(idx)}>
-            <SuggestionItem active={active === idx} {...suggestion as any} />
+            <SuggestionItem active={active === idx} {...(suggestion as any)} />
           </div>
         )
       })}

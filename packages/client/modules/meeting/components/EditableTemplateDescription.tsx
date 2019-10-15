@@ -43,7 +43,7 @@ class EditableTemplateDescription extends Component<Props> {
     )
   }
 
-  legitify (value: string) {
+  legitify(value: string) {
     return new Legitity(value).trim().max(256, 'That description is probably long enough')
   }
 
@@ -63,7 +63,7 @@ class EditableTemplateDescription extends Component<Props> {
     onEditingChange && onEditingChange(isEditing)
   }
 
-  render () {
+  render() {
     const {error, description} = this.props
     return (
       <EditableSubText

@@ -3,9 +3,7 @@ import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import EditableText from './EditableText'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import UpdateOrgMutation from '../mutations/UpdateOrgMutation'
 import Legitity from '../validation/Legitity'
@@ -60,7 +58,7 @@ class EditableOrgName extends Component<Props> {
     return res
   }
 
-  render () {
+  render() {
     const {error, organization} = this.props
     const {name} = organization
     return (

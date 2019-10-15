@@ -60,7 +60,7 @@ class AddTemplatePrompt extends Component<Props> {
     )
   }
 
-  render () {
+  render() {
     const {prompts, submitting} = this.props
     if (prompts.length >= 5) return null
     return (

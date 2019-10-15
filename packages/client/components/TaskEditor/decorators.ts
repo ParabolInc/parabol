@@ -12,7 +12,10 @@ const findEntity = (entityType) => (contentBlock, callback, contentState) => {
   }, callback)
 }
 
-const decorators = (getEditorState: () => EditorState | undefined, setEditorState?: SetEditorState) =>
+const decorators = (
+  getEditorState: () => EditorState | undefined,
+  setEditorState?: SetEditorState
+) =>
   new CompositeDecorator([
     {
       strategy: findEntity('LINK'),

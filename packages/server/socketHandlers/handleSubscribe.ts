@@ -52,7 +52,11 @@ interface ParsedMessage {
   }
 }
 
-const handleSubscribe = async (connectionContext: ConnectionContext, parsedMessage: ParsedMessage, options: Options = {}) => {
+const handleSubscribe = async (
+  connectionContext: ConnectionContext,
+  parsedMessage: ParsedMessage,
+  options: Options = {}
+) => {
   const {id: socketId, authToken, socket, sharedDataLoader} = connectionContext
   const {id: opId} = parsedMessage
   const {isResub} = options
@@ -95,7 +99,11 @@ const handleSubscribe = async (connectionContext: ConnectionContext, parsedMessa
     ExecutionResult<ExecutionResultDataDefault>
   >) {
     const {data} = payload
-    if (data && data.notificationSubscription && data.notificationSubscription.__typename === 'AuthTokenPayload') {
+    if (
+      data &&
+      data.notificationSubscription &&
+      data.notificationSubscription.__typename === 'AuthTokenPayload'
+    ) {
       const jwt = (data.notificationSubscription as IAuthTokenPayload).id
       connectionContext.authToken = new AuthToken(decode(jwt) as any)
       // if auth changed, then we can't trust any of the subscriptions, so dump em all and resub for the client

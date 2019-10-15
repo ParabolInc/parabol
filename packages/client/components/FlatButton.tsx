@@ -8,10 +8,10 @@ const paletteColors = {
   warm: PALETTE.TEXT_ORANGE,
   mid: PALETTE.TEXT_PURPLE,
   dark: PALETTE.TEXT_MAIN,
-  blue: PALETTE.TEXT_BLUE,
+  blue: PALETTE.TEXT_BLUE
 }
 
-export interface FlatButtonProps extends BaseButtonProps{
+export interface FlatButtonProps extends BaseButtonProps {
   size?: 'small' | 'medium' | 'large'
   children?: ReactNode
   disabled?: boolean

@@ -6,7 +6,6 @@ import Icon from '../../../../components/Icon'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {Layout} from '../../../../types/constEnums'
 
-
 const EnvelopeIcon = styled(Icon)({
   fontSize: ICON_SIZE.MD18,
   marginLeft: 4

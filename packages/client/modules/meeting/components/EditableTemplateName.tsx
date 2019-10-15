@@ -41,7 +41,7 @@ class EditableTemplateName extends Component<Props> {
     RenameReflectTemplateMutation(atmosphere, {templateId, name}, {}, onError, onCompleted)
   }
 
-  legitify (value) {
+  legitify(value) {
     const {templateId, templates} = this.props
     return new Legitity(value)
       .trim()
@@ -67,7 +67,7 @@ class EditableTemplateName extends Component<Props> {
     return res
   }
 
-  render () {
+  render() {
     const {dirty, error, name} = this.props
     return (
       <InheritedStyles>

@@ -70,33 +70,26 @@ const InvoiceHeader = (props: Props) => {
   return (
     <Header>
       <LogoPanel>
-        <Picture
-          alt={`Logo for ${orgName}`}
-          src={picture || defaultOrgAvatar}
-        />
+        <Picture alt={`Logo for ${orgName}`} src={picture || defaultOrgAvatar} />
       </LogoPanel>
       <Info>
         <OrgName>{orgName}</OrgName>
         {tier !== TierEnum.personal && <StyledTierTag tier={tier as TierEnum} />}
         {billingLeaderEmails.map((email) => (
-          <Email key={`email${email}`}>
-            {email}
-          </Email>
+          <Email key={`email${email}`}>{email}</Email>
         ))}
       </Info>
     </Header>
   )
 }
 
-export default createFragmentContainer(
-  InvoiceHeader,
-  {
-    invoice: graphql`
-      fragment InvoiceHeader_invoice on Invoice {
-        orgName
-        billingLeaderEmails
-        picture
-        tier
-      }`
-  }
-)
+export default createFragmentContainer(InvoiceHeader, {
+  invoice: graphql`
+    fragment InvoiceHeader_invoice on Invoice {
+      orgName
+      billingLeaderEmails
+      picture
+      tier
+    }
+  `
+})

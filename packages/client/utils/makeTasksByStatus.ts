@@ -7,7 +7,7 @@ interface Task {
   sortOrder: number
 }
 
-export default function makeTasksByStatus<T extends Task> (tasks: readonly T[]) {
+export default function makeTasksByStatus<T extends Task>(tasks: readonly T[]) {
   const tasksByStatus = {
     [TaskStatusEnum.active]: [] as T[],
     [TaskStatusEnum.stuck]: [] as T[],

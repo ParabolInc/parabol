@@ -1,4 +1,4 @@
-export default function trim (data) {
+export default function trim(data) {
   const trimmedData = {}
   const keys = Object.keys(data)
   for (let i = 0; i < keys.length; i++) {

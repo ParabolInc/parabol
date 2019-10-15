@@ -34,7 +34,7 @@ export default class MediaSwarm extends FastRTCSwarm {
     screen: {...qualityDict}
   }
 
-  constructor (config: Config) {
+  constructor(config: Config) {
     super(config)
     this.dispatchState = config.dispatchState
     this.trebuchet = config.trebuchet

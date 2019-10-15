@@ -68,7 +68,7 @@ const HeaderText = styled('div')({
 })
 
 class TimelineEventCard extends Component<Props> {
-  render () {
+  render() {
     const {children, iconName, title, timelineEvent} = this.props
     const {createdAt} = timelineEvent
     return (

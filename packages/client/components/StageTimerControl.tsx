@@ -37,10 +37,13 @@ const StageTimerControl = (props: Props) => {
   const connectedMemberCount = teamMembers.filter((teamMember) => teamMember.isConnected).length
   const color = scheduledEndTime ? 'green' : 'midGray'
   const icon = isAsync ? 'event' : 'timer'
-  const {menuProps, menuPortal, originRef, togglePortal} = useMenu<HTMLDivElement>(MenuPosition.LOWER_LEFT, {
-    isDropdown: true,
-    id: 'StageTimerModal'
-  })
+  const {menuProps, menuPortal, originRef, togglePortal} = useMenu<HTMLDivElement>(
+    MenuPosition.LOWER_LEFT,
+    {
+      isDropdown: true,
+      id: 'StageTimerModal'
+    }
+  )
   if (isComplete) return null
   return (
     <>

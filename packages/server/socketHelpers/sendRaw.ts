@@ -6,7 +6,7 @@ const sendRaw = (transport: WebSocket | http.ServerResponse, message) => {
   const transportType = transport.constructor.name
   switch (transportType) {
     case 'WebSocket':
-      (transport as WebSocket).send(message)
+      ;(transport as WebSocket).send(message)
       break
     case 'ServerResponse':
       const sseTransport = transport as http.ServerResponse
@@ -14,8 +14,8 @@ const sendRaw = (transport: WebSocket | http.ServerResponse, message) => {
         if (message === Events.KEEP_ALIVE) {
           sseTransport.write('event: ka\n')
         }
-        sseTransport.write(`data: ${message}\n\n`);
-        (sseTransport as any).flush()
+        sseTransport.write(`data: ${message}\n\n`)
+        ;(sseTransport as any).flush()
       }
   }
 }

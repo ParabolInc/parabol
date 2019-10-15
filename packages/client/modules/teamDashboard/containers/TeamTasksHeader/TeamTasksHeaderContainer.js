@@ -14,7 +14,7 @@ const mapStateToProps = (state) => {
 }
 
 class TeamTasksHeaderContainer extends Component {
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     const {
       dispatch,
       team: {teamId: oldTeamId}
@@ -27,12 +27,12 @@ class TeamTasksHeaderContainer extends Component {
     }
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     const {dispatch} = this.props
     dispatch(filterTeamMember(null))
   }
 
-  render () {
+  render() {
     const {dispatch, teamMemberFilterId, teamMemberFilterName, team} = this.props
     return (
       <TeamTasksHeader

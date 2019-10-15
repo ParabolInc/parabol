@@ -253,7 +253,7 @@ class NewTeamForm extends Component<Props, State> {
     }
   }
 
-  render () {
+  render() {
     const {fields, isNewOrg, orgId} = this.state
     const {error, submitting, organizations} = this.props
 

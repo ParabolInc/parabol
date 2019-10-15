@@ -20,18 +20,20 @@ const MeetingContentHeaderStyles = styled('div')({
   width: '100%'
 })
 
-const HeadingBlock = styled('div')<{isMeetingSidebarCollapsed: boolean}>(({isMeetingSidebarCollapsed}) => ({
-  alignItems: 'center',
-  display: 'flex',
-  paddingLeft: isMeetingSidebarCollapsed ? undefined : 8,
-  minHeight: 32,
-  [localHeaderBreakpoint]: {
-    flex: 1
-  },
-  [meetingTopBarMediaQuery]: {
-    alignItems: 'flex-start'
-  }
-}))
+const HeadingBlock = styled('div')<{isMeetingSidebarCollapsed: boolean}>(
+  ({isMeetingSidebarCollapsed}) => ({
+    alignItems: 'center',
+    display: 'flex',
+    paddingLeft: isMeetingSidebarCollapsed ? undefined : 8,
+    minHeight: 32,
+    [localHeaderBreakpoint]: {
+      flex: 1
+    },
+    [meetingTopBarMediaQuery]: {
+      alignItems: 'flex-start'
+    }
+  })
+)
 
 const PrimaryActionBlock = styled('div')({
   order: 2,

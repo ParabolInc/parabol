@@ -10,7 +10,7 @@ const NavListItem = styled('li')({
   fontWeight: 600,
   display: 'flex',
   flexDirection: 'column',
-  margin: '0 8px 0 0',
+  margin: 0,
   // hack to work around broken flexbox
   // https://bugs.chromium.org/p/chromium/issues/detail?id=927066
   minHeight: 40
@@ -66,6 +66,7 @@ const NavListItemLink = styled('div')<LinkProps>(
     cursor: 'pointer',
     display: 'flex',
     flexShrink: 0,
+    marginRight: 8,
     minHeight: 40,
     textDecoration: 'none',
     userSelect: 'none',
@@ -75,14 +76,18 @@ const NavListItemLink = styled('div')<LinkProps>(
   },
   ({isDisabled}) => isDisabled && navListItemLinkDisabled,
   ({isActive}) => isActive && navListItemLinkActive,
-  ({isCollapsible, isActive}) => isCollapsible && isActive && {
-    backgroundColor: 'transparent',
-    ':hover,:focus': {
-      cursor: 'pointer'
-    }
-  },
+  ({isCollapsible, isActive}) =>
+    isCollapsible &&
+    isActive && {
+      backgroundColor: 'transparent',
+      ':hover,:focus': {
+        cursor: 'pointer'
+      }
+    },
   ({isCollapsible, isFacilitatorPhase, isUnsyncedFacilitatorStage}) =>
-    isCollapsible && isFacilitatorPhase && !isUnsyncedFacilitatorStage && {
+    isCollapsible &&
+    isFacilitatorPhase &&
+    !isUnsyncedFacilitatorStage && {
       backgroundColor: 'transparent',
       cursor: 'default',
       ':hover,:focus': {
@@ -119,7 +124,17 @@ interface Props {
 }
 
 const NewMeetingSidebarPhaseListItem = (props: Props) => {
-  const {children, handleClick, isActive, isCollapsible, isFacilitatorPhase, isUnsyncedFacilitatorPhase, isUnsyncedFacilitatorStage, phaseCount, phaseType} = props
+  const {
+    children,
+    handleClick,
+    isActive,
+    isCollapsible,
+    isFacilitatorPhase,
+    isUnsyncedFacilitatorPhase,
+    isUnsyncedFacilitatorStage,
+    phaseCount,
+    phaseType
+  } = props
   const label = phaseLabelLookup[phaseType]
   const icon = phaseIconLookup[phaseType]
   const showPhaseCount = Boolean(phaseCount || phaseCount === 0)
@@ -134,15 +149,13 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
         onClick={handleClick}
         title={label}
       >
-        <NavItemIcon isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase}>
-          {icon}
-        </NavItemIcon>
+        <NavItemIcon isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase}>{icon}</NavItemIcon>
         <NavItemLabel>{label}</NavItemLabel>
-        {showPhaseCount &&
+        {showPhaseCount && (
           <PhaseCountBlock>
             <StyledBadge>{phaseCount}</StyledBadge>
           </PhaseCountBlock>
-        }
+        )}
       </NavListItemLink>
       {children}
     </NavListItem>

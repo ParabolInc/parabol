@@ -84,7 +84,8 @@ const SlackNotificationList = (props: Props) => {
           onCompleted
         }
       )
-    })
+    }
+  )
 
   return (
     <SlackNotificationListStyles>

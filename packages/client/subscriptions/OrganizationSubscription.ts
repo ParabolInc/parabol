@@ -40,7 +40,11 @@ const updateHandlers = {
   RemoveOrgUserPayload: removeOrgUserOrganizationUpdater
 }
 
-const OrganizationSubscription = (atmosphere: Atmosphere, _queryVariables: Variables, subParams: Variables) => {
+const OrganizationSubscription = (
+  atmosphere: Atmosphere,
+  _queryVariables: Variables,
+  subParams: Variables
+) => {
   const {viewerId} = atmosphere
   return {
     subscription,

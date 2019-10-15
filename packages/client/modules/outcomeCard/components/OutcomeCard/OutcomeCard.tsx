@@ -20,7 +20,11 @@ import {OutcomeCard_task} from '__generated__/OutcomeCard_task.graphql'
 import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 import EditingStatus from 'components/EditingStatus/EditingStatus'
 
-const RootCard = styled('div')<{isTaskHovered: boolean, isTaskFocused: boolean, isDragging: boolean}>(({isTaskHovered, isTaskFocused, isDragging}) => ({
+const RootCard = styled('div')<{
+  isTaskHovered: boolean
+  isTaskFocused: boolean
+  isDragging: boolean
+}>(({isTaskHovered, isTaskFocused, isDragging}) => ({
   ...cardRootStyles,
   borderTop: 0,
   outline: 'none',
@@ -30,10 +34,10 @@ const RootCard = styled('div')<{isTaskHovered: boolean, isTaskFocused: boolean, 
   boxShadow: isDragging
     ? Elevation.CARD_DRAGGING
     : isTaskFocused
-      ? cardFocusShadow
-      : isTaskHovered
-        ? cardHoverShadow
-        : cardShadow
+    ? cardFocusShadow
+    : isTaskHovered
+    ? cardHoverShadow
+    : cardShadow
 }))
 
 const ContentBlock = styled('div')({
@@ -75,7 +79,7 @@ const OutcomeCard = memo((props: Props) => {
   const {status, team} = task
   const {teamId} = team
   const {integration, taskId} = task
-  const service = integration ? integration.service as TaskServiceEnum : undefined
+  const service = integration ? (integration.service as TaskServiceEnum) : undefined
   const statusTitle = `Card status: ${taskStatusLabels[status]}`
   const privateTitle = ', marked as #private'
   const archivedTitle = ', set as #archived'
@@ -83,14 +87,14 @@ const OutcomeCard = memo((props: Props) => {
     isArchived ? archivedTitle : ''
   }`
   return (
-    <RootCard isTaskHovered={isTaskHovered} isTaskFocused={isTaskFocused} isDragging={!!isDraggingOver}>
+    <RootCard
+      isTaskHovered={isTaskHovered}
+      isTaskFocused={isTaskFocused}
+      isDragging={!!isDraggingOver}
+    >
       <TaskWatermark service={service} />
       <ContentBlock>
-        <EditingStatus
-          isTaskHovered={isTaskHovered}
-          task={task}
-          useTaskChild={useTaskChild}
-        >
+        <EditingStatus isTaskHovered={isTaskHovered} task={task} useTaskChild={useTaskChild}>
           <StatusIndicatorBlock title={statusIndicatorTitle}>
             <OutcomeCardStatusIndicator status={isDraggingOver || status} />
             {isPrivate && <OutcomeCardStatusIndicator status='private' />}

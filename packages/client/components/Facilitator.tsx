@@ -18,25 +18,27 @@ const FacilitatorBlock = styled('div')({
   padding: '0 8px 8px'
 })
 
-const FacilitatorToggle = styled('div')<{isActive: boolean, isReadOnly: boolean}>(({isActive, isReadOnly}) => ({
-  alignItems: 'center',
-  cursor: isReadOnly ? undefined : 'pointer',
-  display: 'flex',
-  // padding compensates for 8px grid, hanging elements
-  // icons and other decorators can be on a 4px grid, anyway, per MD spec
-  // total height = 40px like nav elements, and FacilitatorBlock and SidebarHeader (NewMeetingSidebar.tsx) add 8px gutter
-  padding: '2px 4px',
-  // StyledIcon when toggle isActive or not
-  '& > i': {
-    backgroundColor: isActive ? PALETTE.BACKGROUND_MAIN : undefined,
-    color: isActive ? PALETTE.TEXT_MAIN : PALETTE.TEXT_GRAY
-  },
-  // StyledIcon when toggle hovered
-  '&:hover > i': {
-    backgroundColor: PALETTE.BACKGROUND_MAIN,
-    color: PALETTE.TEXT_MAIN
-  }
-}))
+const FacilitatorToggle = styled('div')<{isActive: boolean; isReadOnly: boolean}>(
+  ({isActive, isReadOnly}) => ({
+    alignItems: 'center',
+    cursor: isReadOnly ? undefined : 'pointer',
+    display: 'flex',
+    // padding compensates for 8px grid, hanging elements
+    // icons and other decorators can be on a 4px grid, anyway, per MD spec
+    // total height = 40px like nav elements, and FacilitatorBlock and SidebarHeader (NewMeetingSidebar.tsx) add 8px gutter
+    padding: '2px 4px',
+    // StyledIcon when toggle isActive or not
+    '& > i': {
+      backgroundColor: isActive ? PALETTE.BACKGROUND_MAIN : undefined,
+      color: isActive ? PALETTE.TEXT_MAIN : PALETTE.TEXT_GRAY
+    },
+    // StyledIcon when toggle hovered
+    '&:hover > i': {
+      backgroundColor: PALETTE.BACKGROUND_MAIN,
+      color: PALETTE.TEXT_MAIN
+    }
+  })
+)
 
 const Label = styled('div')({
   color: PALETTE.TEXT_MAIN,
@@ -83,8 +85,10 @@ interface Props {
 }
 
 const FacilitatorMenu = lazyPreload(() =>
-  import(/* webpackChunkName: 'FacilitatorMenu' */
-  './FacilitatorMenu')
+  import(
+    /* webpackChunkName: 'FacilitatorMenu' */
+    './FacilitatorMenu'
+  )
 )
 
 const Facilitator = (props: Props) => {
@@ -92,10 +96,17 @@ const Facilitator = (props: Props) => {
   const {id: userId, team} = viewer
   const {newMeeting, teamMembers} = team!
   const {facilitatorUserId, facilitator} = newMeeting!
-  const {picture, preferredName, user: {isConnected}} = facilitator
-  const {togglePortal, menuProps, menuPortal, originRef, portalStatus} = useMenu<HTMLDivElement>(MenuPosition.UPPER_RIGHT, {
-    isDropdown: true
-  })
+  const {
+    picture,
+    preferredName,
+    user: {isConnected}
+  } = facilitator
+  const {togglePortal, menuProps, menuPortal, originRef, portalStatus} = useMenu<HTMLDivElement>(
+    MenuPosition.UPPER_RIGHT,
+    {
+      isDropdown: true
+    }
+  )
   const isReadOnly = isDemoRoute() || teamMembers.length === 1 || userId === facilitatorUserId
   const handleOnMouseEnter = () => !isReadOnly && FacilitatorMenu.preload()
   const handleOnClick = () => !isReadOnly && togglePortal()

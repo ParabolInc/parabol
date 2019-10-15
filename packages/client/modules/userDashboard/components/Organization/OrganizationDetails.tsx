@@ -30,7 +30,7 @@ const OrganizationDetails = (props: Props) => {
       {makeDateString(createdAt)}
       {tier !== TierEnum.personal && (
         <StyledTagBlock>
-          <TierTag tier={tier}/>
+          <TierTag tier={tier} />
         </StyledTagBlock>
       )}
     </OrgDetails>

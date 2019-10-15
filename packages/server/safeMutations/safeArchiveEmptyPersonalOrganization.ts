@@ -7,9 +7,10 @@ import {TierEnum} from 'parabol-client/types/graphql'
 const safeArchiveEmptyPersonalOrganization = async (orgId: string) => {
   const r = getRethink()
   const now = new Date()
-  const teamCountRemainingOnOldOrg = await r.table('Team')
+  const teamCountRemainingOnOldOrg = (await r
+    .table('Team')
     .getAll(orgId, {index: 'orgId'})
-    .count() as number
+    .count()) as number
 
   if (teamCountRemainingOnOldOrg > 0) return
   const org = await r.table('Organization').get(orgId)

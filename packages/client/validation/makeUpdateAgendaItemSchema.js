@@ -1,7 +1,7 @@
 import {compositeId, id} from './templates'
 import legitify from './legitify'
 
-export default function makeUpdateAgendaItemSchema () {
+export default function makeUpdateAgendaItemSchema() {
   return legitify({
     id: compositeId,
     content: (value) => value.trim().max(63, 'Try something a little shorter'),

@@ -1,4 +1,11 @@
-import {DraftEditorCommand, DraftHandleValue, Editor, EditorProps, EditorState, getDefaultKeyBinding} from 'draft-js'
+import {
+  DraftEditorCommand,
+  DraftHandleValue,
+  Editor,
+  EditorProps,
+  EditorState,
+  getDefaultKeyBinding
+} from 'draft-js'
 import React, {RefObject, Suspense, useEffect, useRef} from 'react'
 import {Card} from '../../types/constEnums'
 import {textTags} from '../../utils/constants'
@@ -12,37 +19,55 @@ import {UseTaskChild} from '../../hooks/useTaskChildFocus'
 import useTaskPlugins from './useTaskPlugins'
 import blockStyleFn from './blockStyleFn'
 
-const RootEditor = styled('div')<{noText: boolean, readOnly: boolean | undefined}>(({noText, readOnly}) => ({
-  cursor: readOnly ? undefined : 'text',
-  fontSize: Card.FONT_SIZE,
-  lineHeight: Card.LINE_HEIGHT,
-  padding: `0 ${Card.PADDING}`,
-  height: noText ? '2.75rem' : undefined // Use this if the placeholder wraps
-}))
+const RootEditor = styled('div')<{noText: boolean; readOnly: boolean | undefined}>(
+  ({noText, readOnly}) => ({
+    cursor: readOnly ? undefined : 'text',
+    fontSize: Card.FONT_SIZE,
+    lineHeight: Card.LINE_HEIGHT,
+    padding: `0 ${Card.PADDING}`,
+    height: noText ? '2.75rem' : undefined // Use this if the placeholder wraps
+  })
+)
 
 const AndroidEditorFallback = lazyPreload(() =>
   import(
     /* webpackChunkName: 'AndroidEditorFallback' */ '../../../client/components/AndroidEditorFallback'
-    )
+  )
 )
 
 const TaskEditorFallback = styled(AndroidEditorFallback)({
   padding: 0
 })
 
-type DraftProps = Pick<EditorProps, 'editorState' | 'handleBeforeInput' | 'handleKeyCommand' | 'handleReturn' | 'keyBindingFn' | 'readOnly'>
+type DraftProps = Pick<
+  EditorProps,
+  | 'editorState'
+  | 'handleBeforeInput'
+  | 'handleKeyCommand'
+  | 'handleReturn'
+  | 'keyBindingFn'
+  | 'readOnly'
+>
 
 interface Props extends DraftProps {
-  editorRef: RefObject<HTMLTextAreaElement>,
-  setEditorState: (newEditorState: EditorState) => void,
+  editorRef: RefObject<HTMLTextAreaElement>
+  setEditorState: (newEditorState: EditorState) => void
   teamId: string
   useTaskChild: UseTaskChild
 }
 
 const TaskEditor = (props: Props) => {
   const {editorRef, editorState, readOnly, setEditorState} = props
-  const entityPasteStartRef = useRef<{anchorOffset: number, anchorKey: string} | undefined>()
-  const {removeModal, renderModal, handleChange, handleBeforeInput, handleKeyCommand, keyBindingFn, handleReturn} = useTaskPlugins({...props})
+  const entityPasteStartRef = useRef<{anchorOffset: number; anchorKey: string} | undefined>()
+  const {
+    removeModal,
+    renderModal,
+    handleChange,
+    handleBeforeInput,
+    handleKeyCommand,
+    keyBindingFn,
+    handleReturn
+  } = useTaskPlugins({...props})
 
   useEffect(() => {
     if (!editorState.getCurrentContent().hasText()) {
@@ -148,7 +173,7 @@ const TaskEditor = (props: Props) => {
   return (
     <RootEditor noText={noText} readOnly={readOnly}>
       {showFallback ? (
-        <Suspense fallback={<div/>}>
+        <Suspense fallback={<div />}>
           <TaskEditorFallback
             editorState={editorState}
             placeholder={placeholder}

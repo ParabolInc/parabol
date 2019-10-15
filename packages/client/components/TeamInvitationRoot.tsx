@@ -1,9 +1,7 @@
 import React, {Component} from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import {RouteComponentProps} from 'react-router'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import TeamInvitation from './TeamInvitation'
 import QueryRenderer from './QueryRenderer/QueryRenderer'
 
@@ -18,7 +16,7 @@ const query = graphql`
 `
 
 class TeamInvitationRoot extends Component<Props> {
-  render () {
+  render() {
     const {
       atmosphere,
       match: {

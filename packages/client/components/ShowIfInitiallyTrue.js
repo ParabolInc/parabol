@@ -10,7 +10,7 @@ class ShowIfInitiallyTrue extends React.Component {
       initialCriteria: this.props.criteria
     })
   }
-  render () {
+  render() {
     const {initialCriteria} = this.state
     const {children} = this.props
     if (!initialCriteria) return null

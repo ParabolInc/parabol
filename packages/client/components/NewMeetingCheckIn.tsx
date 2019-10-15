@@ -44,9 +44,7 @@ const StyledIcon = styled(Icon)({
 })
 
 const CheckInHelpMenu = lazyPreload(async () =>
-  import(
-    /* webpackChunkName: 'CheckInHelpMenu' */ './MeetingHelp/CheckInHelpMenu'
-    )
+  import(/* webpackChunkName: 'CheckInHelpMenu' */ './MeetingHelp/CheckInHelpMenu')
 )
 
 interface Props {
@@ -99,9 +97,7 @@ const NewMeetingCheckIn = (props: Props) => {
             )}
           </CheckIn>
         </PhaseWrapper>
-        <MeetingHelpToggle
-          menu={<CheckInHelpMenu meetingType={meetingType} />}
-        />
+        <MeetingHelpToggle menu={<CheckInHelpMenu meetingType={meetingType} />} />
       </MeetingHeaderAndPhase>
       <MeetingFacilitatorBar isFacilitating={isFacilitating}>
         <CheckInControls handleGotoNext={handleGotoNext} teamMember={teamMember} />

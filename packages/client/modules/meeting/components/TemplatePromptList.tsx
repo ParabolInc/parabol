@@ -61,7 +61,7 @@ class TemplatePromptList extends Component<Props> {
     MoveReflectTemplatePromptMutation(atmosphere, variables, {templateId})
   }
 
-  render () {
+  render() {
     const {prompts} = this.props
     return (
       <DragDropContext onDragEnd={this.onDragEnd}>

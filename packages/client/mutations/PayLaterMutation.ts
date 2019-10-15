@@ -22,15 +22,11 @@ const mutation = graphql`
   }
 `
 
-const PayLaterMutation: StandardMutation<TPayLaterMutation> = (
-  atmosphere,
-  variables
-) => {
+const PayLaterMutation: StandardMutation<TPayLaterMutation> = (atmosphere, variables) => {
   return commitMutation<TPayLaterMutation>(atmosphere, {
     mutation,
-    variables,
+    variables
   })
 }
-
 
 export default PayLaterMutation

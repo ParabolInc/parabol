@@ -52,7 +52,7 @@ class AddNewReflectTemplate extends Component<Props> {
     AddReflectTemplateMutation(atmosphere, {teamId}, {}, onError, onCompleted)
   }
 
-  render () {
+  render() {
     const {error, submitting} = this.props
     return (
       <React.Fragment>

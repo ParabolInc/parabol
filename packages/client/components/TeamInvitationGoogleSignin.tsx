@@ -61,7 +61,7 @@ class TeamInvitationGoogleSignin extends Component<Props> {
     LoginMutation(atmosphere, {auth0Token: idToken, invitationToken}, {history})
   }
 
-  render () {
+  render() {
     const {error, submitting, verifiedInvitation} = this.props
     const {meetingType, user, teamName} = verifiedInvitation
     if (!user) return null

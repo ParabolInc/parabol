@@ -5,7 +5,10 @@
  */
 import GoogleAnalyzedEntity from 'parabol-server/database/types/GoogleAnalyzedEntity'
 
-const computeDistanceMatrix = (reflectionEntities: GoogleAnalyzedEntity[][], uniqueLemmaArr: string[]) => {
+const computeDistanceMatrix = (
+  reflectionEntities: GoogleAnalyzedEntity[][],
+  uniqueLemmaArr: string[]
+) => {
   return reflectionEntities.map((entities) => {
     if (!entities) return new Array<number>(uniqueLemmaArr.length).fill(0)
     return uniqueLemmaArr.map((lemma) => {

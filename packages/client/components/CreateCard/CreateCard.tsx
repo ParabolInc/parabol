@@ -36,11 +36,13 @@ const CreateCardBlock = styled('div')<{hasControls: boolean | undefined}>(({hasC
   boxShadow: 'none',
   paddingLeft: 0,
   paddingRight: 0,
-  '&:hover': hasControls ? {
-    background: Card.BACKGROUND_COLOR,
-    boxShadow: cardHoverShadow,
-    cursor: 'pointer'
-  } : undefined
+  '&:hover': hasControls
+    ? {
+        background: Card.BACKGROUND_COLOR,
+        boxShadow: cardHoverShadow,
+        cursor: 'pointer'
+      }
+    : undefined
 }))
 
 interface Props {

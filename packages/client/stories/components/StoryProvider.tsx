@@ -1,11 +1,9 @@
 import React, {Component, ReactNode} from 'react'
-import {DragDropContextProvider} from 'react-dnd'
-import HTML5Backend from 'react-dnd-html5-backend'
-import styled from '@emotion/styled';
+import styled from '@emotion/styled'
 import {BrowserRouter as Router} from 'react-router-dom'
 
 import RelayStub from './RelayStub'
-import { css, Global } from '@emotion/core'
+import {css, Global} from '@emotion/core'
 import globalStyles from '../../styles/theme/globalStyles'
 import AtmosphereProvider from '../../components/AtmosphereProvider/AtmosphereProvider'
 
@@ -20,11 +18,11 @@ const FullPageWrapper = styled('div')({
 })
 
 interface Props {
-  children: ReactNode;
+  children: ReactNode
 }
 
 export default class StoryContainer extends Component<Props> {
-  render () {
+  render() {
     return (
       <Router>
         <Global
@@ -32,13 +30,11 @@ export default class StoryContainer extends Component<Props> {
             ${globalStyles}
           `}
         />
-        <DragDropContextProvider backend={HTML5Backend}>
-          <AtmosphereProvider>
-            <RelayStub>
-              <FullPageWrapper>{this.props.children}</FullPageWrapper>
-            </RelayStub>
-          </AtmosphereProvider>
-        </DragDropContextProvider>
+        <AtmosphereProvider>
+          <RelayStub>
+            <FullPageWrapper>{this.props.children}</FullPageWrapper>
+          </RelayStub>
+        </AtmosphereProvider>
       </Router>
     )
   }
