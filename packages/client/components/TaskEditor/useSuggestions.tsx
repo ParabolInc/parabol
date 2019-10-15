@@ -1,52 +1,21 @@
-import React, {useState} from 'react'
+import React, {lazy, Suspense, useState} from 'react'
 import getWordAt from './getWordAt'
 import resolvers from './resolvers'
-import {DEFAULT_MENU_HEIGHT, DEFAULT_MENU_WIDTH, HUMAN_ADDICTION_THRESH, MAX_WAIT_TIME} from '../../styles/ui'
 import completeEntity from '../../utils/draftjs/completeEnitity'
 import getDraftCoords from '../../utils/getDraftCoords'
 import getAnchorLocation from './getAnchorLocation'
-import Loadable from 'react-loadable'
-import LoadableLoading from '../LoadableLoading'
-import LoadableDraftJSModal from '../LoadableDraftJSModal'
 import {EditorProps, EditorState} from 'draft-js'
 import {SetEditorState} from '../../types/draft'
 import useForceUpdate from '../../hooks/useForceUpdate'
 
-const LoadableEditorSuggestions = Loadable({
-  loader: () =>
-    import(
-      /* webpackChunkName: 'EditorSuggestions' */
-      '../../../client/components/EditorSuggestions/EditorSuggestions'
-      ),
-  loading: (props) => (
-    <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH}/>
-  ),
-  delay: HUMAN_ADDICTION_THRESH,
-  timeout: MAX_WAIT_TIME
-})
 
-const LoadableMentionableUsersRoot = Loadable({
-  loader: () =>
-    import(
-      /* webpackChunkName: 'SuggestMentionableUsersRoot' */
-      '../../../client/components/SuggestMentionableUsersRoot'
-      ),
-  loading: (props) => (
-    <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH}/>
-  ),
-  delay: HUMAN_ADDICTION_THRESH,
-  timeout: MAX_WAIT_TIME
-})
+const EditorSuggestions = lazy(() =>
+  import(/* webpackChunkName: 'EditorSuggestions' */ '../EditorSuggestions/EditorSuggestions')
+)
 
-const originAnchor = {
-  vertical: 'top',
-  horizontal: 'left'
-}
-
-const targetAnchor = {
-  vertical: 'top',
-  horizontal: 'left'
-}
+const SuggestMentionableUsersRoot = lazy(() =>
+  import(/* webpackChunkName: 'SuggestMentionableUsersRoot' */ '../SuggestMentionableUsersRoot')
+)
 
 type Handlers = Pick<EditorProps, 'handleReturn' | 'onChange' | 'keyBindingFn'>
 
@@ -66,23 +35,23 @@ interface MentionSuggestion extends BaseSuggestion {
   preferredName: string
 }
 
-type Suggestion = MentionSuggestion | TagSuggestion
+export type DraftSuggestion = MentionSuggestion | TagSuggestion
 
 type SuggestionType = 'tag' | 'mention'
 const useSuggestions = (editorState: EditorState, setEditorState: SetEditorState, handlers: Handlers & CustomProps) => {
   const {keyBindingFn, handleReturn, teamId, onChange} = handlers
   const [active, setActive] = useState<number | undefined>(undefined)
-  const [suggestions, _setSuggestions] = useState<Suggestion[] | undefined>(undefined)
+  const [suggestions, _setSuggestions] = useState<DraftSuggestion[]>([])
   const [suggestionType, setSuggestionType] = useState<undefined | SuggestionType>(undefined)
   const [triggerWord, setTriggerWord] = useState('')
   const forceUpdate = useForceUpdate()
   const onRemoveModal = () => {
     setActive(undefined)
-    _setSuggestions(undefined)
+    _setSuggestions([])
     setSuggestionType(undefined)
   }
 
-  const setSuggestions = (suggestions: Suggestion[]) => {
+  const setSuggestions = (suggestions: DraftSuggestion[]) => {
     if (suggestions.length === 0) {
       onRemoveModal()
     } else {
@@ -139,7 +108,7 @@ const useSuggestions = (editorState: EditorState, setEditorState: SetEditorState
     } else if (trigger === '@') {
       setActive(0)
       setTriggerWord(nextTriggerWord)
-      _setSuggestions(undefined)
+      _setSuggestions([])
       setSuggestionType('mention')
       return true
     }
@@ -181,44 +150,16 @@ const useSuggestions = (editorState: EditorState, setEditorState: SetEditorState
     }
     if (suggestionType === 'mention') {
       return (
-        <LoadableDraftJSModal
-          LoadableComponent={LoadableMentionableUsersRoot}
-          maxWidth={500}
-          maxHeight={200}
-          originAnchor={originAnchor}
-          queryVars={{
-            activeIdx: active,
-            handleSelect,
-            setSuggestions,
-            suggestions,
-            triggerWord,
-            teamId
-          }}
-          targetAnchor={targetAnchor}
-          marginFromOrigin={32}
-          originCoords={coords}
-        />
+        <Suspense fallback={''}>
+          <SuggestMentionableUsersRoot active={active || 0} handleSelect={handleSelect} setSuggestions={setSuggestions} suggestions={suggestions} triggerWord={triggerWord} teamId={teamId} originCoords={coords}/>
+        </Suspense>
       )
     }
     return (
-      <LoadableDraftJSModal
-        LoadableComponent={LoadableEditorSuggestions}
-        maxWidth={500}
-        maxHeight={200}
-        originAnchor={originAnchor}
-        queryVars={{
-          editorState,
-          setEditorState,
-          active,
-          suggestions,
-          suggestionType,
-          handleSelect,
-          removeModal: onRemoveModal
-        }}
-        targetAnchor={targetAnchor}
-        marginFromOrigin={32}
-        originCoords={coords}
-      />
+      <Suspense fallback={''}>
+      <EditorSuggestions active={active || 0} suggestions={suggestions} suggestionType={'tag'}
+      handleSelect={handleSelect} originCoords={coords} />
+      </Suspense>
     )
   }
   return {

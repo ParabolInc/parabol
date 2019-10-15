@@ -25,7 +25,7 @@ const useMenu = <T extends HTMLElement = HTMLButtonElement>(preferredMenuPositio
   if (originCoords) {
     (originRef as any).current = {getBoundingClientRect: () => originCoords} as RectElement
   }
-  const {portal, closePortal, togglePortal, portalStatus, setPortalStatus} = usePortal({
+  const {portal, closePortal, togglePortal, portalStatus, setPortalStatus, openPortal} = usePortal({
     id,
     onOpen,
     onClose,
@@ -49,7 +49,7 @@ const useMenu = <T extends HTMLElement = HTMLButtonElement>(preferredMenuPositio
     loadingDelayRef
   )
   const menuProps = {portalStatus, closePortal, isDropdown}
-  return {togglePortal, originRef, menuPortal, menuProps, loadingDelay, loadingWidth, portalStatus}
+  return {togglePortal, originRef, menuPortal, menuProps, loadingDelay, loadingWidth, portalStatus, openPortal}
 }
 
 export default useMenu
