@@ -50,6 +50,7 @@ const OverflowCount = styled('div')({
   maxWidth: 32,
   paddingRight: 4,
   textAlign: 'center',
+  userSelect: 'none',
   width: 32,
   [meetingAvatarMediaQueries[0]]: {
     fontSize: 14,
@@ -75,34 +76,24 @@ interface Props {
   allowVideo: boolean
 }
 
+const MAX_AVATARS_DESKTOP = 7
+const MAX_AVATARS_MOBILE = 3
 const NewMeetingAvatarGroup = (props: Props) => {
   const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
   const {swarm, team, camStreams, allowVideo} = props
   const {teamMembers} = team
-  const isOverflowBreakpoint = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
+  const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   // all connected teamMembers except self
   // TODO: filter by team members who are actually viewing “this” meeting view
-  const connectedTeamMembers =
-    teamMembers &&
-    useMemo(() => teamMembers.filter(({isSelf, user}) => !isSelf && user.isConnected), [
-      teamMembers
-    ])
-  const self = teamMembers && useMemo(() => teamMembers.find(({isSelf}) => isSelf), [teamMembers])
-  // on mobile, show self and 2 other avatars, or self + count
-  const overflowMobileThreshold = 3
-  const showOverflowMobile =
-    !isOverflowBreakpoint && connectedTeamMembers.length > overflowMobileThreshold
-  // on laptop+, show self and 7 other avatars, or self and 6 other avatars + count
-  const overflowLaptopThreshold = 7
-  const showOverflowLaptop =
-    isOverflowBreakpoint && connectedTeamMembers.length > overflowLaptopThreshold
-  const overflowCount =
-    (showOverflowMobile && connectedTeamMembers.length) ||
-    (showOverflowLaptop && connectedTeamMembers.length - overflowLaptopThreshold)
-  // on laptop+, slice off the first few to show if past threshold
-  const otherTeamMembers = showOverflowLaptop
-    ? connectedTeamMembers.slice(0, overflowLaptopThreshold - 1)
-    : connectedTeamMembers
+  const connectedTeamMembers = useMemo(() => {
+    return teamMembers
+      .filter(({user}) => user.isConnected)
+      .sort((a, b) => (a.userId === viewerId ? -1 : a.checkInOrder < b.checkInOrder ? -1 : 1))
+  }, [teamMembers])
+  const overflowThreshold = isDesktop ? MAX_AVATARS_DESKTOP : MAX_AVATARS_MOBILE
+  const visibleConnectedTeamMembers = connectedTeamMembers.slice(0, overflowThreshold)
+  const hiddenTeamMemberCount = connectedTeamMembers.length - visibleConnectedTeamMembers.length
   return (
     <MeetingAvatarGroupRoot>
       <VideoControls
@@ -110,27 +101,20 @@ const NewMeetingAvatarGroup = (props: Props) => {
         swarm={swarm}
         localStreamUI={camStreams[atmosphere.viewerId]}
       />
-      {self && (
-        <OverlappingBlock key={self.id}>
-          <NewMeetingAvatar teamMember={self} streamUI={camStreams[self.userId]} swarm={swarm} />
-        </OverlappingBlock>
-      )}
-      {!showOverflowMobile &&
-        teamMembers &&
-        otherTeamMembers.map((teamMember) => {
-          return (
-            <OverlappingBlock key={teamMember.id}>
-              <NewMeetingAvatar
-                teamMember={teamMember}
-                streamUI={camStreams[teamMember.userId]}
-                swarm={swarm}
-              />
-            </OverlappingBlock>
-          )
-        })}
-      {overflowCount && (
+      {visibleConnectedTeamMembers.map((teamMember) => {
+        return (
+          <OverlappingBlock key={teamMember.id}>
+            <NewMeetingAvatar
+              teamMember={teamMember}
+              streamUI={camStreams[teamMember.userId]}
+              swarm={swarm}
+            />
+          </OverlappingBlock>
+        )
+      })}
+      {hiddenTeamMemberCount > 0 && (
         <OverlappingBlock>
-          <OverflowCount>{`+${overflowCount}`}</OverflowCount>
+          <OverflowCount>{`+${hiddenTeamMemberCount}`}</OverflowCount>
         </OverlappingBlock>
       )}
       <OverlappingBlock>
@@ -143,15 +127,14 @@ const NewMeetingAvatarGroup = (props: Props) => {
 export default createFragmentContainer(NewMeetingAvatarGroup, {
   team: graphql`
     fragment NewMeetingAvatarGroup_team on Team {
-      teamId: id
       ...AddTeamMemberAvatarButton_team
       teamMembers(sortBy: "checkInOrder") {
         ...AddTeamMemberAvatarButton_teamMembers
         id
+        checkInOrder
         user {
           isConnected
         }
-        isSelf
         userId
         ...NewMeetingAvatar_teamMember
       }
