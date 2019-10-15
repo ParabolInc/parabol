@@ -54,6 +54,8 @@ const DraggableMeetingSubnavItem = styled('div')<{isDragging: boolean}>(({isDrag
 
 const ScrollWrapper = styled('div')({
   overflow: 'auto',
+  paddingBottom: 8,
+  paddingRight: 8,
   height: '100%'
 })
 

@@ -13,6 +13,17 @@ const AvatarBlock = styled('div')({
   width: 32
 })
 
+const ScrollStageItems = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100%', // trickle down height for overflow
+  // react-beautiful-dnd supports scrolling on 1 parent
+  // this is where we need it, in order to scroll a long list
+  overflow: 'auto',
+  paddingRight: 8,
+  width: '100%'
+})
+
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
   handleMenuClick: () => void
@@ -40,37 +51,39 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
   const isViewerFacilitator = viewerId === facilitatorUserId
   return (
     <MeetingSidebarPhaseItemChild>
-      {localPhase.stages.map((stage) => {
-        const {
-          id: stageId,
-          isComplete,
-          teamMemberId,
-          teamMember,
-          isNavigableByFacilitator,
-          isNavigable
-        } = stage
-        const {picture, preferredName} = teamMember!
-        const isLocalStage = localStageId === stageId
-        const isFacilitatorStage = facilitatorStageId === stageId
-        const isUnsyncedFacilitatorStage = isFacilitatorStage !== isLocalStage && !isLocalStage
-        return (
-          <MeetingSubnavItem
-            key={stageId}
-            label={preferredName}
-            metaContent={
-              <AvatarBlock>
-                <Avatar hasBadge={false} picture={picture} size={24} />
-              </AvatarBlock>
-            }
-            isDisabled={isViewerFacilitator ? !isNavigableByFacilitator : !isNavigable}
-            onClick={gotoStage(teamMemberId)}
-            isActive={localStageId === stageId}
-            isComplete={isComplete}
-            isDragging={false}
-            isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
-          />
-        )
-      })}
+      <ScrollStageItems>
+        {localPhase.stages.map((stage) => {
+          const {
+            id: stageId,
+            isComplete,
+            teamMemberId,
+            teamMember,
+            isNavigableByFacilitator,
+            isNavigable
+          } = stage
+          const {picture, preferredName} = teamMember!
+          const isLocalStage = localStageId === stageId
+          const isFacilitatorStage = facilitatorStageId === stageId
+          const isUnsyncedFacilitatorStage = isFacilitatorStage !== isLocalStage && !isLocalStage
+          return (
+            <MeetingSubnavItem
+              key={stageId}
+              label={preferredName}
+              metaContent={
+                <AvatarBlock>
+                  <Avatar hasBadge={false} picture={picture} size={24} />
+                </AvatarBlock>
+              }
+              isDisabled={isViewerFacilitator ? !isNavigableByFacilitator : !isNavigable}
+              onClick={gotoStage(teamMemberId)}
+              isActive={localStageId === stageId}
+              isComplete={isComplete}
+              isDragging={false}
+              isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
+            />
+          )
+        })}
+      </ScrollStageItems>
     </MeetingSidebarPhaseItemChild>
   )
 }
