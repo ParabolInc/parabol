@@ -7,7 +7,7 @@ import DiscussPhaseReflectionGrid from './DiscussPhaseReflectionGrid'
 import Icon from './Icon'
 import LabelHeading from './LabelHeading/LabelHeading'
 import MeetingContent from './MeetingContent'
-import MeetingContentHeader from './MeetingContentHeader'
+import MeetingTopBar from './MeetingTopBar'
 import MeetingHelpToggle from './MenuHelpToggle'
 import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
@@ -164,7 +164,7 @@ const RetroDiscussPhase = (props: Props) => {
     <MeetingContent>
       <DiscussPhaseSqueeze meeting={newMeeting} organization={organization} />
       <MeetingHeaderAndPhase>
-        <MeetingContentHeader
+        <MeetingTopBar
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
           toggleSidebar={toggleSidebar}
@@ -173,7 +173,7 @@ const RetroDiscussPhase = (props: Props) => {
           <PhaseHeaderDescription>
             {'Create takeaway task cards to capture next steps'}
           </PhaseHeaderDescription>
-        </MeetingContentHeader>
+        </MeetingTopBar>
         <PhaseWrapper>
           <StageTimerDisplay stage={localStage} />
           <DiscussPhaseWrapper>

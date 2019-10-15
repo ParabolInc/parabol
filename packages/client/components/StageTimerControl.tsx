@@ -34,7 +34,8 @@ const StageTimerControl = (props: Props) => {
   const {teamMembers, newMeeting, id: teamId} = team
   const {localStage, facilitator} = newMeeting!
   const {isAsync, isComplete, scheduledEndTime} = localStage
-  const connectedMemberCount = teamMembers.filter((teamMember) => teamMember.isConnected).length
+  const connectedMemberCount = teamMembers.filter((teamMember) => teamMember.user.isConnected)
+    .length
   const color = scheduledEndTime ? 'green' : 'midGray'
   const icon = isAsync ? 'event' : 'timer'
   const {menuProps, menuPortal, originRef, togglePortal} = useMenu<HTMLDivElement>(
@@ -79,7 +80,9 @@ export default createFragmentContainer(StageTimerControl, {
     fragment StageTimerControl_team on Team {
       id
       teamMembers(sortBy: "checkInOrder") {
-        isConnected
+        user {
+          isConnected
+        }
       }
       newMeeting {
         localStage {

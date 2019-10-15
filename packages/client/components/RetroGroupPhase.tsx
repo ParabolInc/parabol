@@ -11,7 +11,7 @@ import graphql from 'babel-plugin-relay/macro'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
 import MeetingContent from './MeetingContent'
-import MeetingContentHeader from './MeetingContentHeader'
+import MeetingTopBar from './MeetingTopBar'
 import MeetingPhaseWrapper from './MeetingPhaseWrapper'
 import MeetingHelpToggle from './MenuHelpToggle'
 import PhaseHeaderDescription from './PhaseHeaderDescription'
@@ -77,14 +77,14 @@ const RetroGroupPhase = (props: Props) => {
   return (
     <MeetingContent ref={phaseRef}>
       <MeetingHeaderAndPhase>
-        <MeetingContentHeader
+        <MeetingTopBar
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
           toggleSidebar={toggleSidebar}
         >
           <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.group]}</PhaseHeaderTitle>
           <PhaseHeaderDescription>{'Drag cards to group by common topics'}</PhaseHeaderDescription>
-        </MeetingContentHeader>
+        </MeetingTopBar>
         <PhaseWrapper>
           <StageTimerDisplay stage={localStage!} />
           {/*{error && <StyledError>{error}</StyledError>}*/}

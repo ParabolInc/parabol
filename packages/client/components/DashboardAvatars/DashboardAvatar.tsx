@@ -19,8 +19,12 @@ interface Props {
 const AvatarAndTag = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  alignItems: 'center'
+  alignItems: 'center',
+  ':hover': {
+    opacity: 0.5
+  }
 })
+
 const AvatarTag = styled(RoleTag)<{isLead?: boolean | null}>(({isLead}) => ({
   bottom: '-1.5rem',
   marginLeft: 0,
@@ -77,11 +81,11 @@ const DashboardAvatar = (props: Props) => {
     <AvatarAndTag onMouseEnter={TeamMemberAvatarMenu.preload}>
       <Avatar
         {...teamMember}
-        picture={picture || defaultUserAvatar}
         hasBadge
-        ref={originRef}
         isConnected={!!isConnected}
         onClick={togglePortal}
+        picture={picture || defaultUserAvatar}
+        ref={originRef}
         size={32}
       />
       <AvatarTag isLead={isLead}>{'Team Lead'}</AvatarTag>
@@ -110,7 +114,6 @@ export default createFragmentContainer(DashboardAvatar, {
       ...PromoteTeamMemberModal_teamMember
       ...RemoveTeamMemberModal_teamMember
       isLead
-      isSelf
       picture
       user {
         isConnected

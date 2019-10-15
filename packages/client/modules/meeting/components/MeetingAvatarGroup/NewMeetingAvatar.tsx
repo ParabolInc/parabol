@@ -1,184 +1,58 @@
-import {NewMeetingAvatar_newMeeting} from '../../../../__generated__/NewMeetingAvatar_newMeeting.graphql'
 import {NewMeetingAvatar_teamMember} from '../../../../__generated__/NewMeetingAvatar_teamMember.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import VideoAvatar from '../../../../components/Avatar/VideoAvatar'
-import BaseTag from '../../../../components/Tag/BaseTag'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../../decorators/withAtmosphere/withAtmosphere'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useMenu from '../../../../hooks/useMenu'
-import {NewMeetingTeamMemberStage} from '../../../../types/graphql'
-import {CHECKIN, UPDATES} from '../../../../utils/constants'
-import lazyPreload from '../../../../utils/lazyPreload'
-import UNSTARTED_MEETING from '../../../../utils/meetings/unstartedMeeting'
 import ErrorBoundary from '../../../../components/ErrorBoundary'
 import {StreamUI} from '../../../../hooks/useSwarm'
 import MediaSwarm from '../../../../utils/swarm/MediaSwarm'
 import {meetingAvatarMediaQueries} from '../../../../styles/meeting'
-import {PALETTE} from '../../../../styles/paletteV2'
-
-const borderActive = PALETTE.BORDER_ACTIVE
-const borderLocal = PALETTE.BORDER_LIGHT
-const boxShadowBase = '0 0 0 2px #FFFFFF, 0 0 0 4px'
-const boxShadowWarm = `${boxShadowBase} ${borderActive}`
-const boxShadowLocal = `${boxShadowBase} ${borderLocal}`
 
 const Item = styled('div')({
-  marginLeft: 12,
-  position: 'relative',
-  'div:first-of-type': {
-    marginLeft: 0
-  }
+  position: 'relative'
 })
 
-interface AvatarBlockProps {
-  isLocalStage: boolean
-  isFacilitatorStage: boolean
-  isReadOnly: boolean
-}
-
-const AvatarBlock = styled('div')<AvatarBlockProps>(
-  {
-    borderRadius: '100%',
-    height: 32,
-    maxWidth: 32,
-    width: 32,
-    ':hover': {
-      opacity: 0.5
-    },
-    [meetingAvatarMediaQueries[0]]: {
-      height: 48,
-      maxWidth: 48,
-      width: 48
-    },
-    [meetingAvatarMediaQueries[1]]: {
-      height: 56,
-      maxWidth: 56,
-      width: 56
-    }
+const AvatarBlock = styled('div')({
+  borderRadius: '100%',
+  height: 32,
+  maxWidth: 32,
+  width: 32,
+  [meetingAvatarMediaQueries[0]]: {
+    height: 48,
+    maxWidth: 48,
+    width: 48
   },
-  ({isLocalStage, isFacilitatorStage, isReadOnly}) => {
-    let boxShadow
-    if (isFacilitatorStage) {
-      boxShadow = boxShadowWarm
-    } else if (isLocalStage) {
-      boxShadow = boxShadowLocal
-    } else if (isReadOnly) {
-      boxShadow = 'none'
-    }
-    return {
-      boxShadow
-      // TS caught this one, not sure what the 1 does here
-      // ':hover': isReadOnly ? 1 : undefined
-    }
+  [meetingAvatarMediaQueries[1]]: {
+    height: 56,
+    maxWidth: 56,
+    width: 56
   }
-)
-
-const FacilitatorTag = styled(BaseTag)({
-  backgroundColor: '#FFFFFF',
-  color: PALETTE.TEXT_MAIN,
-  marginLeft: 0,
-  marginTop: 4,
-  position: 'absolute',
-  right: '50%',
-  transform: 'translateX(50%)'
 })
 
-interface Props extends WithAtmosphereProps {
-  gotoStage: () => void
-  isFacilitatorStage: boolean
-  newMeeting: NewMeetingAvatar_newMeeting | null
+interface Props {
   teamMember: NewMeetingAvatar_teamMember
   streamUI: StreamUI | undefined
   swarm: MediaSwarm | null
 }
 
-const NewMeetingAvatarMenu = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'NewMeetingAvatarMenu' */
-    '../NewMeetingAvatarMenu'
-  )
-)
-
 const NewMeetingAvatar = (props: Props) => {
-  const {gotoStage, isFacilitatorStage, newMeeting, teamMember, streamUI, swarm} = props
-  const meeting = newMeeting || UNSTARTED_MEETING
-  const {facilitatorUserId, localPhase, localStage} = meeting
-  const localPhaseType = localPhase && localPhase.phaseType
-  const canNavigate = localPhaseType === CHECKIN || localPhaseType === UPDATES
-  const {teamMemberId, userId} = teamMember
-  const avatarIsFacilitating = userId === facilitatorUserId
-  const handleNavigate = canNavigate ? gotoStage : undefined
-  const {togglePortal, menuProps, menuPortal, originRef} = useMenu<HTMLDivElement>(
-    MenuPosition.UPPER_RIGHT
-  )
+  const {teamMember, streamUI, swarm} = props
   return (
     <ErrorBoundary>
       <Item>
-        <AvatarBlock
-          isReadOnly={!canNavigate}
-          isLocalStage={
-            localStage
-              ? (localStage as NewMeetingTeamMemberStage).teamMemberId === teamMemberId
-              : false
-          }
-          isFacilitatorStage={!!isFacilitatorStage}
-        >
-          <VideoAvatar
-            ref={originRef}
-            teamMember={teamMember}
-            streamUI={streamUI}
-            swarm={swarm}
-            onClick={togglePortal}
-            onMouseEnter={NewMeetingAvatarMenu.preload}
-          />
+        <AvatarBlock>
+          <VideoAvatar teamMember={teamMember} streamUI={streamUI} swarm={swarm} />
         </AvatarBlock>
-        {avatarIsFacilitating && <FacilitatorTag>{'Facilitator'}</FacilitatorTag>}
       </Item>
-      {menuPortal(
-        <NewMeetingAvatarMenu
-          handleNavigate={handleNavigate}
-          newMeeting={newMeeting!}
-          teamMember={teamMember}
-          menuProps={menuProps}
-        />
-      )}
     </ErrorBoundary>
   )
 }
 
-export default createFragmentContainer(withAtmosphere(NewMeetingAvatar), {
+export default createFragmentContainer(NewMeetingAvatar, {
   teamMember: graphql`
     fragment NewMeetingAvatar_teamMember on TeamMember {
-      teamMemberId: id
-      meetingMember {
-        isCheckedIn
-      }
-      picture
-      userId
-      user {
-        isConnected
-      }
-      ...NewMeetingAvatarMenu_teamMember
       ...VideoAvatar_teamMember
-    }
-  `,
-  newMeeting: graphql`
-    fragment NewMeetingAvatar_newMeeting on NewMeeting {
-      facilitatorUserId
-      localStage {
-        ... on NewMeetingTeamMemberStage {
-          teamMemberId
-        }
-      }
-      localPhase {
-        phaseType
-      }
-      ...NewMeetingAvatarMenu_newMeeting
     }
   `
 })

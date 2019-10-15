@@ -8,7 +8,7 @@ import {ActionMeetingPhaseProps} from './ActionMeeting'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
 import MeetingContent from './MeetingContent'
-import MeetingContentHeader from './MeetingContentHeader'
+import MeetingTopBar from './MeetingTopBar'
 import MeetingHelpToggle from './MenuHelpToggle'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useTimeout from '../hooks/useTimeout'
@@ -61,7 +61,7 @@ const ActionMeetingFirstCall = (props: Props) => {
   return (
     <MeetingContent>
       <MeetingHeaderAndPhase>
-        <MeetingContentHeader
+        <MeetingTopBar
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
           toggleSidebar={toggleSidebar}

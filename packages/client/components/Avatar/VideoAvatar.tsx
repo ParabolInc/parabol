@@ -3,34 +3,13 @@ import React, {forwardRef, Ref, useEffect, useRef} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import AvatarBadge from '../AvatarBadge/AvatarBadge'
 import {StreamUI} from '../../hooks/useSwarm'
 import MediaSwarm from '../../utils/swarm/MediaSwarm'
 
 const AvatarStyle = styled('div')({
-  cursor: 'pointer',
-  display: 'inline-block',
   height: '100%', // needed to not pancake in firefox
   position: 'relative',
-  verticalAlign: 'middle',
   width: '100%'
-})
-
-const BadgeBlock = styled('div')({
-  height: '25%',
-  position: 'absolute',
-  right: 0,
-  top: 0,
-  width: '25%'
-})
-
-const BadgeBlockInner = styled('div')({
-  height: '14px',
-  left: '50%',
-  position: 'absolute',
-  top: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '14px'
 })
 
 interface StyleProps {
@@ -83,19 +62,13 @@ const VideoAvatar = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
       }
     }
   })
-  const {streamUI, teamMember, onClick, onMouseEnter} = props
-  const {picture, isConnected, isSelf, meetingMember} = teamMember
-  const isCheckedIn = meetingMember && meetingMember.isCheckedIn
+  const {streamUI, teamMember} = props
+  const {picture, isSelf} = teamMember
   const showVideo = streamUI ? streamUI.hasVideo : false
   return (
-    <AvatarStyle ref={ref} onClick={onClick} onMouseEnter={onMouseEnter}>
+    <AvatarStyle ref={ref}>
       <Picture src={picture} isHidden={showVideo} />
       <Video ref={videoRef} isHidden={!showVideo} autoPlay muted={isSelf} />
-      <BadgeBlock>
-        <BadgeBlockInner>
-          <AvatarBadge isCheckedIn={isCheckedIn} isConnected={isConnected || isSelf} />
-        </BadgeBlockInner>
-      </BadgeBlock>
     </AvatarStyle>
   )
 })
@@ -103,10 +76,6 @@ const VideoAvatar = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
 export default createFragmentContainer(VideoAvatar, {
   teamMember: graphql`
     fragment VideoAvatar_teamMember on TeamMember {
-      meetingMember {
-        isCheckedIn
-      }
-      isConnected
       isSelf
       picture
       userId

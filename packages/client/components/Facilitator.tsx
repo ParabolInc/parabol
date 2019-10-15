@@ -96,11 +96,8 @@ const Facilitator = (props: Props) => {
   const {id: userId, team} = viewer
   const {newMeeting, teamMembers} = team!
   const {facilitatorUserId, facilitator} = newMeeting!
-  const {
-    picture,
-    preferredName,
-    user: {isConnected}
-  } = facilitator
+  const {user, picture, preferredName} = facilitator
+  const {isConnected} = user
   const {togglePortal, menuProps, menuPortal, originRef, portalStatus} = useMenu<HTMLDivElement>(
     MenuPosition.UPPER_RIGHT,
     {

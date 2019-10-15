@@ -5,7 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import Icon from './Icon'
 import MeetingContent from './MeetingContent'
-import MeetingContentHeader from './MeetingContentHeader'
+import MeetingTopBar from './MeetingTopBar'
 import MeetingHelpToggle from './MenuHelpToggle'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -77,13 +77,13 @@ const NewMeetingCheckIn = (props: Props) => {
   return (
     <MeetingContent>
       <MeetingHeaderAndPhase>
-        <MeetingContentHeader
+        <MeetingTopBar
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
           toggleSidebar={toggleSidebar}
         >
           <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.checkin]}</PhaseHeaderTitle>
-        </MeetingContentHeader>
+        </MeetingTopBar>
         <PhaseWrapper>
           <NewMeetingCheckInPrompt team={team} teamMember={teamMember} />
           <CheckIn>
