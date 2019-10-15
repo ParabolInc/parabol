@@ -720,11 +720,6 @@ export interface ITeamMember {
   checkInOrder: number
 
   /**
-   * true if the user is connected
-   */
-  isConnected: boolean | null
-
-  /**
    * true if this team member belongs to the user that queried it
    */
   isSelf: boolean

@@ -84,7 +84,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
   // TODO: filter by team members who are actually viewing “this” meeting view
   const connectedTeamMembers =
     teamMembers &&
-    useMemo(() => teamMembers.filter(({isSelf, isConnected}) => !isSelf && isConnected), [
+    useMemo(() => teamMembers.filter(({isSelf, user}) => !isSelf && user.isConnected), [
       teamMembers
     ])
   const self = teamMembers && useMemo(() => teamMembers.find(({isSelf}) => isSelf), [teamMembers])
@@ -148,7 +148,9 @@ export default createFragmentContainer(NewMeetingAvatarGroup, {
       teamMembers(sortBy: "checkInOrder") {
         ...AddTeamMemberAvatarButton_teamMembers
         id
-        isConnected
+        user {
+          isConnected
+        }
         isSelf
         userId
         ...NewMeetingAvatar_teamMember

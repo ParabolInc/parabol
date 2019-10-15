@@ -96,7 +96,8 @@ const Facilitator = (props: Props) => {
   const {id: userId, team} = viewer
   const {newMeeting, teamMembers} = team!
   const {facilitatorUserId, facilitator} = newMeeting!
-  const {isConnected, picture, preferredName} = facilitator
+  const {user, picture, preferredName} = facilitator
+  const {isConnected} = user
   const {togglePortal, menuProps, menuPortal, originRef, portalStatus} = useMenu<HTMLDivElement>(
     MenuPosition.UPPER_RIGHT,
     {
@@ -141,9 +142,11 @@ export default createFragmentContainer(Facilitator, {
         newMeeting {
           facilitatorUserId
           facilitator {
-            isConnected
             picture
             preferredName
+            user {
+              isConnected
+            }
           }
         }
       }

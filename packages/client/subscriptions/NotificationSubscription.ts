@@ -46,14 +46,13 @@ const subscription = graphql`
       ... on User {
         id
         isConnected
-        tms
       }
 
       # DisconnectSocket
       ... on DisconnectSocketPayload {
         user {
           id
-          tms
+          isConnected
         }
       }
       # Stripe webhooks
@@ -102,32 +101,6 @@ const subscription = graphql`
     }
   }
 `
-
-const connectSocketUserUpdater = (payload, store) => {
-  const isConnected = payload.getValue('isConnected')
-  const userId = payload.getValue('id')
-  const teamIds = payload.getValue('tms')
-  if (!teamIds) return
-  const teamMemberIds = teamIds.map((teamId) => toTeamMemberId(teamId, userId))
-  teamMemberIds.forEach((teamMemberId) => {
-    const teamMember = store.get(teamMemberId)
-    if (!teamMember) return
-    teamMember.setValue(isConnected, 'isConnected')
-  })
-}
-
-const disconnectSocketNotificationUpdater = (payload, store) => {
-  const user = payload.getLinkedRecord('user')
-  const userId = user.getValue('id')
-  const teamIds = user.getValue('tms')
-  if (!teamIds) return
-  const teamMemberIds = teamIds.map((teamId) => toTeamMemberId(teamId, userId))
-  teamMemberIds.forEach((teamMemberId) => {
-    const teamMember = store.get(teamMemberId)
-    if (!teamMember) return
-    teamMember.setValue(false, 'isConnected')
-  })
-}
 
 type NextHandler = OnNextHandler<NotificationSubscriptionResponse['notificationSubscription']>
 
@@ -240,7 +213,6 @@ const NotificationSubscription = (atmosphere: Atmosphere, _queryVariables, subPa
           deleteTaskNotificationUpdater(payload, store)
           break
         case 'DisconnectSocketPayload':
-          disconnectSocketNotificationUpdater(payload, store)
           break
         case 'EndNewMeetingPayload':
           endNewMeetingNotificationUpdater(payload, context)
@@ -249,7 +221,6 @@ const NotificationSubscription = (atmosphere: Atmosphere, _queryVariables, subPa
           inviteToTeamNotificationUpdater(payload, context)
           break
         case 'User':
-          connectSocketUserUpdater(payload, store)
           break
         case 'MeetingStageTimeLimitPayload':
           meetingStageTimeLimitUpdater(payload, context)

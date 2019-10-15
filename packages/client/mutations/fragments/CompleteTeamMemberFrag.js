@@ -4,7 +4,6 @@ graphql`
     id
     checkInOrder
     isLead
-    isConnected
     isNotRemoved
     picture
     preferredName

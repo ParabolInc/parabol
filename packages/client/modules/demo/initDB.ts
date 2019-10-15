@@ -159,7 +159,6 @@ const initDemoTeamMember = ({id: userId, preferredName, picture}, idx) => {
     id: teamMemberId,
     checkInOrder: idx,
     teamMemberId,
-    isConnected: true,
     isFacilitator: idx === 0,
     isLead: idx === 0,
     isSelf: idx === 0,
