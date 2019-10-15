@@ -85,7 +85,7 @@ export default {
     const newActiveMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
     const otherActiveMeeting = newActiveMeetings.find(({isAsync, id}) => !isAsync && id !== meeting.id)
     if (otherActiveMeeting) {
-      await r.table('NewMeeting').delete(meeting.id)
+      await r.table('NewMeeting').get(meeting.id).delete()
       return standardError(new Error('Meeting already started'), {userId: viewerId})
     }
 
