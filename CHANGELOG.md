@@ -5,15 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.8.3 2019-Oct-15
 
+### Fixed
+* Delete single record for startNewMeeting race
+ 
 ## 4.8.2 2019-Oct-10
 
-### Fixes
+### Fixed
 * Spelling error on sidebar "Faciltator" to "Facilitator"
 
 ## 4.8.1 2019-Oct-09
 
-### Removes
+### Removed
 * dumpy, the memory leak debugging tool, from starting on startup
 
 ## 4.8.0 2019-Oct-09
