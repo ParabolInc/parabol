@@ -37,6 +37,7 @@ graphql`
       tasks {
         id
       }
+      voteCount
     }
     oldReflectionGroup {
       id

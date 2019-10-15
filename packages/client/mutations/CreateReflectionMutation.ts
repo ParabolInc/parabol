@@ -33,6 +33,7 @@ graphql`
       tasks {
         id
       }
+      voteCount
     }
     unlockedStages {
       id
