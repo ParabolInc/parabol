@@ -7,7 +7,6 @@ import {
 } from '../mutations/CreateTaskMutation'
 import {deleteTaskNotificationUpdater} from '../mutations/DeleteTaskMutation'
 import handleAddNotifications from '../mutations/handlers/handleAddNotifications'
-import toTeamMemberId from '../utils/relay/toTeamMemberId'
 import {
   removeOrgUserNotificationOnNext,
   removeOrgUserNotificationUpdater
