@@ -1,7 +1,8 @@
-import React from 'react'
+import React, {useRef} from 'react'
 import styled from '@emotion/styled'
 import {PALETTE} from '../styles/paletteV2'
 import {NavSidebar} from '../types/constEnums'
+import useScrollIntoView from '../hooks/useScrollIntoVIew'
 
 const lineHeight = NavSidebar.SUB_LINE_HEIGHT
 
@@ -84,9 +85,11 @@ const MeetingSubnavItem = (props: Props) => {
     metaContent,
     onClick
   } = props
-
+  const ref = useRef(null)
+  useScrollIntoView(ref, isActive)
   return (
     <ItemRoot
+      ref={ref}
       isActive={isActive}
       isComplete={isComplete}
       isDisabled={isDisabled}

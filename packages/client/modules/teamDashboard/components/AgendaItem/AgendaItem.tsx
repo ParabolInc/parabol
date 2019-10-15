@@ -10,10 +10,10 @@ import {useGotoStageId} from '../../../../hooks/useMeeting'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import RemoveAgendaItemMutation from '../../../../mutations/RemoveAgendaItemMutation'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
-import {requestIdleCallback} from '../../../../utils/requestIdleCallback'
 import UNSTARTED_MEETING from '../../../../utils/meetings/unstartedMeeting'
 import findStageById from '../../../../utils/meetings/findStageById'
 import {AgendaItem_newMeeting} from '../../../../__generated__/AgendaItem_newMeeting.graphql'
+import useScrollIntoView from '../../../../hooks/useScrollIntoVIew'
 
 const DeleteIconButton = styled(IconButton)<{disabled?: boolean}>(({disabled}) => ({
   display: 'block',
@@ -66,13 +66,7 @@ const AgendaItem = (props: Props) => {
   const {picture} = teamMember
   const isUnsyncedFacilitatorStage = isFacilitatorStage !== isLocalStage && !isLocalStage
   const ref = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    if (isFacilitatorStage) {
-      requestIdleCallback(() => {
-        ref.current && ref.current.scrollIntoView({behavior: 'smooth'})
-      })
-    }
-  }, [isFacilitatorStage])
+  useScrollIntoView(ref, isFacilitatorStage)
 
   useEffect(() => {
     ref.current && ref.current.scrollIntoView({behavior: 'smooth'})

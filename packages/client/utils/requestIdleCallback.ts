@@ -13,6 +13,6 @@ const shimRIC = (cb) => {
 const shimCancel = (id) => clearTimeout(id)
 
 export const requestIdleCallback =
-  (typeof window !== 'undefined' && window.requestIdleCallback) || shimRIC
+  (typeof window !== 'undefined' && (window as any).requestIdleCallback) || shimRIC
 export const cancelIdleCallback =
-  (typeof window !== 'undefined' && window.cancelIdleCallback) || shimCancel
+  (typeof window !== 'undefined' && (window as any).cancelIdleCallback) || shimCancel
