@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## vNEXT
+
+### Fixed
+* Editor crash on undefined mentions (#3272)
+ 
+### Removed
+* Legacy LoadableDraftJSModal
+ 
 ## 4.8.3 2019-Oct-15
 
 ### Fixed
@@ -31,7 +39,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 * We now typecheck client & server in parallel
 * Lazy make auth0 manager
 
-### Fixes
+### Fixed
 * Hopefully fixes #3120, summary unable to be scrolled until refreshed
 * Fix #3194, this.editorRef.current.focus is not a function
 * Fix #3195, cannot read property 'findIndex' of undefined
