@@ -5,14 +5,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## vNEXT
+## 4.9.0 2019-Oct-16
 
 ### Fixed
 * Editor crash on undefined mentions (#3272)
+* Allow scrollable sections in meeting left nav (#3264)
+* Fix team member name update (#3258)
+* Redirect to correct meeting if hit the wrong url (#3257)
  
 ### Removed
-* Legacy LoadableDraftJSModal
- 
+* Legacy LoadableDraftJSModal (#3273)
+* react-dnd & friends from deps (#3267)
+* Active meeting dialog on team dash (#3262)
+
+### Changed
+* Meeting Avatar Group only shows connected members (#3266)
+* Show retro groups without votes in discussion phase (#3260)
+
 ## 4.8.3 2019-Oct-15
 
 ### Fixed
