@@ -139,6 +139,9 @@ graphql`
     ... on SuggestedIntegrationJira {
       projectName
     }
+    ... on SuggestedIntegrationAzureDevops {
+      projectName
+    }
     ... on SuggestedIntegrationGitHub {
       nameWithOwner
     }

@@ -70,7 +70,7 @@ graphql`
 
 graphql`
   fragment TaskFooterIntegrateMenuViewerAzureDevopsAuth on User {
-    AzureDevopsAuth(teamId: $teamId) {
+    azureDevopsAuth(teamId: $teamId) {
       isActive
     }
   }
