@@ -14,7 +14,7 @@ const CardButton = styled(BaseButton)({
   justifyContent: 'center',
   lineHeight: Card.LINE_HEIGHT,
   minWidth: buttonSize,
-  opacity: .5,
+  opacity: 0.5,
   outline: 0,
   padding: 0,
   ':hover, :focus': {

@@ -12,7 +12,9 @@ interface Props {
 }
 
 const useTimeFrom = (timestamp: string) => {
-  const makeTimeFrom = useCallback(() => relativeDate(timestamp, {smallDiff: 'just now'}), [timestamp])
+  const makeTimeFrom = useCallback(() => relativeDate(timestamp, {smallDiff: 'just now'}), [
+    timestamp
+  ])
   const [timeFrom, setTimeFrom] = useState(makeTimeFrom)
   const timeoutRef = useRef<number | undefined>()
   useEffect(() => {
@@ -34,9 +36,9 @@ const EditingStatusText = (props: Props) => {
     if (isEditing) {
       return (
         <span>
-        {'Editing'}
+          {'Editing'}
           <Ellipsis />
-      </span>
+        </span>
       )
     }
     return <span>{`${timestampLabel}${timeFrom}`}</span>
@@ -47,11 +49,11 @@ const EditingStatusText = (props: Props) => {
     const editor = editorNames[0]
     return (
       <span>
-          {editor}
+        {editor}
         {' editing'}
         {isEditing ? ' too' : ''}
         <Ellipsis />
-        </span>
+      </span>
     )
   }
   if (editors.length === 2) {
@@ -65,16 +67,16 @@ const EditingStatusText = (props: Props) => {
     }
     return (
       <span>
-          {`${editorNames[0]} and ${editorNames[1]} editing`}
+        {`${editorNames[0]} and ${editorNames[1]} editing`}
         <Ellipsis />
-        </span>
+      </span>
     )
   }
   return (
     <span>
-          {'Several are editing'}
+      {'Several are editing'}
       <Ellipsis />
-        </span>
+    </span>
   )
 }
 

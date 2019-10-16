@@ -42,11 +42,7 @@ interface BackgroundProps {
 }
 
 const MenuBackground = styled('div')<BackgroundProps>(
-  ({
-    menuPosition,
-    portalStatus,
-    isDropdown
-  }) => ({
+  ({menuPosition, portalStatus, isDropdown}) => ({
     background: '#FFFFFF',
     borderRadius: Radius.MENU,
     boxShadow: menuShadow,

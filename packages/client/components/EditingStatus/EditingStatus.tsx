@@ -37,12 +37,7 @@ interface Props {
 }
 
 const EditingStatus = (props: Props) => {
-  const {
-    children,
-    isTaskHovered,
-    task,
-    useTaskChild
-  } = props
+  const {children, isTaskHovered, task, useTaskChild} = props
   const {createdAt, updatedAt, editors} = task
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -59,10 +54,19 @@ const EditingStatus = (props: Props) => {
       <div>
         {children}
         <EditingText isEditing={isEditing} onClick={toggleTimestamp} title={title}>
-          <EditingStatusText editors={otherEditors} isEditing={isEditing} timestamp={timestamp} timestampType={timestampType}/>
+          <EditingStatusText
+            editors={otherEditors}
+            isEditing={isEditing}
+            timestamp={timestamp}
+            timestampType={timestampType}
+          />
         </EditingText>
       </div>
-      <DueDateToggle cardIsActive={isEditing || isTaskHovered} task={task} useTaskChild={useTaskChild} />
+      <DueDateToggle
+        cardIsActive={isEditing || isTaskHovered}
+        task={task}
+        useTaskChild={useTaskChild}
+      />
     </StatusHeader>
   )
 }

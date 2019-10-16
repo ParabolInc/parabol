@@ -19,8 +19,12 @@ interface Props {
 const AvatarAndTag = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  alignItems: 'center'
+  alignItems: 'center',
+  ':hover': {
+    opacity: 0.5
+  }
 })
+
 const AvatarTag = styled(RoleTag)<{isLead?: boolean | null}>(({isLead}) => ({
   bottom: '-1.5rem',
   marginLeft: 0,
@@ -38,19 +42,28 @@ const TeamMemberAvatarMenu = lazyPreload(() =>
 )
 
 const PromoteTeamMemberModal = lazyPreload(() =>
-  import(/* webpackChunkName: 'PromoteTeamMemberModal' */ '../../modules/teamDashboard/components/PromoteTeamMemberModal/PromoteTeamMemberModal')
+  import(
+    /* webpackChunkName: 'PromoteTeamMemberModal' */ '../../modules/teamDashboard/components/PromoteTeamMemberModal/PromoteTeamMemberModal'
+  )
 )
 const RemoveTeamMemberModal = lazyPreload(() =>
-  import(/* webpackChunkName: 'RemoveTeamMemberModal' */ '../../modules/teamDashboard/components/RemoveTeamMemberModal/RemoveTeamMemberModal')
+  import(
+    /* webpackChunkName: 'RemoveTeamMemberModal' */ '../../modules/teamDashboard/components/RemoveTeamMemberModal/RemoveTeamMemberModal'
+  )
 )
 const LeaveTeamModal = lazyPreload(() =>
-  import(/* webpackChunkName: 'LeaveTeamModal' */ '../../modules/teamDashboard/components/LeaveTeamModal/LeaveTeamModal')
+  import(
+    /* webpackChunkName: 'LeaveTeamModal' */ '../../modules/teamDashboard/components/LeaveTeamModal/LeaveTeamModal'
+  )
 )
 
 const DashboardAvatar = (props: Props) => {
   const {isViewerLead, teamMember} = props
   const {isLead, picture} = teamMember
   const {user} = teamMember
+  if (!user) {
+    throw new Error(`User Avatar unavailable. ${JSON.stringify(teamMember)}`)
+  }
   const {isConnected} = user
   const {togglePortal, originRef, menuProps, menuPortal} = useMenu(MenuPosition.UPPER_RIGHT)
   const {
@@ -68,11 +81,11 @@ const DashboardAvatar = (props: Props) => {
     <AvatarAndTag onMouseEnter={TeamMemberAvatarMenu.preload}>
       <Avatar
         {...teamMember}
-        picture={picture || defaultUserAvatar}
         hasBadge
-        ref={originRef}
         isConnected={!!isConnected}
         onClick={togglePortal}
+        picture={picture || defaultUserAvatar}
+        ref={originRef}
         size={32}
       />
       <AvatarTag isLead={isLead}>{'Team Lead'}</AvatarTag>
@@ -101,7 +114,6 @@ export default createFragmentContainer(DashboardAvatar, {
       ...PromoteTeamMemberModal_teamMember
       ...RemoveTeamMemberModal_teamMember
       isLead
-      isSelf
       picture
       user {
         isConnected

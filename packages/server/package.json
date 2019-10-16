@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "4.7.0",
+  "version": "4.9.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/action"
@@ -35,7 +35,7 @@
     "debug:stripe": "node billing/debug.babel.js",
     "postdeploy": "node utils/postDeploy.babel.js",
     "precommit": "lint-staged",
-    "lint": "eslint --fix ./../**/*.{ts,tsx,js}",
+    "lint": "eslint --fix ./**/*.ts",
     "test": "jest --bail --coverage --ci --runInBand && codecov",
     "test:dev": "jest --runInBand --watch",
     "relay": "yarn build:relay --watch --watchman true",
@@ -168,7 +168,7 @@
     "ms": "^2.0.0",
     "node-env-flag": "0.1.0",
     "node-fetch": "^2.6.0",
-    "parabol-client": "^4.7.0",
+    "parabol-client": "^4.9.0",
     "rethinkdbdash": "^2.3.31",
     "samlify": "^2.6.1",
     "secure-compare": "^3.0.1",
@@ -180,7 +180,7 @@
     "v8-profiler-next": "^1.1.1"
   },
   "lint-staged": {
-    "*.{js,ts,tsx}": [
+    "**/*.{js,ts,tsx}": [
       "eslint --fix",
       "git add"
     ]

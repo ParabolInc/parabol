@@ -7,7 +7,6 @@ import Icon from '../../../../components/Icon'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {UseFormField} from '../../../../hooks/useForm'
 
-
 const LineIcon = styled(Icon)({
   fontSize: ICON_SIZE.MD18,
   lineHeight: '20px'
@@ -16,7 +15,7 @@ const LineIcon = styled(Icon)({
 interface Props {
   serverError?: string
   fields: {
-    creditCardNumber: UseFormField,
+    creditCardNumber: UseFormField
     expiry: UseFormField
     cvc: UseFormField
   }
@@ -27,7 +26,7 @@ const Line = styled('div')({
   alignItems: 'center',
   color: PALETTE.TEXT_GRAY,
   display: 'flex',
-  padding: '8px 24px',
+  padding: '8px 24px'
 })
 
 const Error = styled('div')<{isError: boolean}>(({isError}) => ({
@@ -48,7 +47,11 @@ const CreditCardErrorLine = (props: Props) => {
   const {fields, serverError, stripeClientManager} = props
   const [cardTypeIcon, setCardTypeIcon] = useState<string>()
   const {creditCardNumber, cvc, expiry} = fields
-  const primaryError = serverError || creditCardNumber.dirty && creditCardNumber.error || expiry.dirty && expiry.error || cvc.dirty && cvc.error
+  const primaryError =
+    serverError ||
+    (creditCardNumber.dirty && creditCardNumber.error) ||
+    (expiry.dirty && expiry.error) ||
+    (cvc.dirty && cvc.error)
   useEffect(() => {
     const icon = stripeClientManager.cardTypeIcon(creditCardNumber.value)
     setCardTypeIcon(icon)
@@ -58,12 +61,12 @@ const CreditCardErrorLine = (props: Props) => {
       <Error isError={!!primaryError}>
         <LineIcon>{primaryError ? 'error' : 'lock'}</LineIcon>
         <Message>
-          {primaryError ||
-          <>
-          {'Secured by '}
-            <b>Stripe</b>
-          </>
-          }
+          {primaryError || (
+            <>
+              {'Secured by '}
+              <b>Stripe</b>
+            </>
+          )}
         </Message>
       </Error>
       {cardTypeIcon ? <CreditCardIcon cardTypeIcon={cardTypeIcon} /> : null}

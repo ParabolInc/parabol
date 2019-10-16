@@ -1,8 +1,8 @@
-import React from 'react'
+import React, {useRef} from 'react'
 import styled from '@emotion/styled'
-import {meetingSidebarGutterInner} from '../styles/meeting'
 import {PALETTE} from '../styles/paletteV2'
 import {NavSidebar} from '../types/constEnums'
+import useScrollIntoView from '../hooks/useScrollIntoVIew'
 
 const lineHeight = NavSidebar.SUB_LINE_HEIGHT
 
@@ -22,14 +22,14 @@ const ItemRoot = styled('div')<ItemRootProps>(
       : isDragging
       ? PALETTE.BACKGROUND_NAV_LIGHT_HOVER
       : '#FFFFFF',
-    boxShadow: isActive ? `inset ${NavSidebar.LEFT_BORDER_WIDTH} 0 0 ${PALETTE.BORDER_MAIN}` : undefined,
+    borderRadius: '0 4px 4px 0',
     color: PALETTE.TEXT_MAIN,
     display: 'flex',
     fontSize: 14,
     fontWeight: 400,
-    minHeight: '2.5rem',
+    minHeight: 40,
     opacity: !isActive && isComplete ? 0.5 : undefined,
-    padding: '.5rem 0',
+    padding: '8px 0',
     position: 'relative',
     userSelect: 'none',
     width: '100%',
@@ -42,37 +42,16 @@ const ItemRoot = styled('div')<ItemRootProps>(
   ({isUnsyncedFacilitatorStage}) =>
     isUnsyncedFacilitatorStage && {
       color: PALETTE.EMPHASIS_WARM,
-      opacity: 1,
-      '&::after': {
-        backgroundColor: PALETTE.EMPHASIS_WARM,
-        borderRadius: '100%',
-        content: '""',
-        display: 'block',
-        left: '.875rem',
-        marginTop: '-.1875rem',
-        position: 'absolute',
-        height: '.375rem',
-        top: '50%',
-        transition: 'opacity .1s ease-in',
-        width: '.375rem'
-      }
+      opacity: 1
     }
 )
-
-const ItemOrderLabel = styled('div')({
-  height: lineHeight,
-  lineHeight,
-  opacity: 0.5,
-  paddingRight: '.75rem',
-  textAlign: 'right',
-  width: meetingSidebarGutterInner
-})
 
 const ItemLabel = styled('div')<{isComplete: boolean}>(({isComplete}) => ({
   color: 'inherit',
   fontSize: NavSidebar.SUB_FONT_SIZE,
   flex: 1,
   lineHeight,
+  paddingLeft: 56,
   textDecoration: isComplete ? 'line-through' : undefined,
   wordBreak: 'break-word'
 }))
@@ -81,7 +60,7 @@ const ItemMeta = styled('div')({
   alignContent: 'center',
   display: 'flex',
   height: lineHeight,
-  paddingLeft: '.25rem'
+  paddingLeft: 4
 })
 
 interface Props {
@@ -93,7 +72,6 @@ interface Props {
   label: string
   metaContent: any
   onClick: ((e: React.MouseEvent) => void) | undefined
-  orderLabel: string
 }
 
 const MeetingSubnavItem = (props: Props) => {
@@ -105,12 +83,13 @@ const MeetingSubnavItem = (props: Props) => {
     isUnsyncedFacilitatorStage,
     label,
     metaContent,
-    onClick,
-    orderLabel
+    onClick
   } = props
-
+  const ref = useRef(null)
+  useScrollIntoView(ref, isActive)
   return (
     <ItemRoot
+      ref={ref}
       isActive={isActive}
       isComplete={isComplete}
       isDisabled={isDisabled}
@@ -118,7 +97,6 @@ const MeetingSubnavItem = (props: Props) => {
       isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
       onClick={!isDisabled ? onClick : undefined}
     >
-      <ItemOrderLabel>{orderLabel}</ItemOrderLabel>
       <ItemLabel isComplete={isComplete}>{label}</ItemLabel>
       <ItemMeta>{metaContent}</ItemMeta>
     </ItemRoot>

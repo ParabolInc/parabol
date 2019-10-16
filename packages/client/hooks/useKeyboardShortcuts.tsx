@@ -4,7 +4,11 @@ import {SetEditorState} from '../types/draft'
 const {hasCommandModifier} = KeyBindingUtil
 
 type Handlers = Pick<EditorProps, 'handleKeyCommand' | 'keyBindingFn'>
-const useKeyboardShortcuts = (editorState: EditorState, setEditorState: SetEditorState, {handleKeyCommand, keyBindingFn}: Handlers) => {
+const useKeyboardShortcuts = (
+  editorState: EditorState,
+  setEditorState: SetEditorState,
+  {handleKeyCommand, keyBindingFn}: Handlers
+) => {
   const nextHandleKeyCommand: Handlers['handleKeyCommand'] = (command: DraftEditorCommand) => {
     if (handleKeyCommand) {
       const result = handleKeyCommand(command, editorState, Date.now())

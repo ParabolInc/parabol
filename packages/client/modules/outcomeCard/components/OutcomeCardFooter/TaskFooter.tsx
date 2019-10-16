@@ -81,11 +81,7 @@ const TaskFooter = (props: Props) => {
       <Footer>
         <AvatarBlock>
           {showTeam ? (
-            <TaskFooterTeamAssignee
-              canAssign={canAssign}
-              task={task}
-              useTaskChild={useTaskChild}
-            />
+            <TaskFooterTeamAssignee canAssign={canAssign} task={task} useTaskChild={useTaskChild} />
           ) : (
             <TaskFooterUserAssignee
               area={area}
@@ -124,7 +120,12 @@ const TaskFooter = (props: Props) => {
           )}
         </ButtonGroup>
       </Footer>
-      {error && <OutcomeCardMessage onClose={() => onError()} message={typeof error === 'string' ? error : error.message as string} />}
+      {error && (
+        <OutcomeCardMessage
+          onClose={() => onError()}
+          message={typeof error === 'string' ? error : (error.message as string)}
+        />
+      )}
     </React.Fragment>
   )
 }

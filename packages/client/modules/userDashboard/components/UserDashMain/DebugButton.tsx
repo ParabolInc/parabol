@@ -37,7 +37,7 @@ class DebugButton extends Component<Props> {
     // })
   }
 
-  render () {
+  render() {
     return <div onClick={this.onClick}>DEBUG</div>
   }
 }

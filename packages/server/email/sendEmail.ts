@@ -32,7 +32,7 @@ const makeMailgunApiData = (recipients: string | string[], template: string, pro
   }
 }
 
-const maybeMailgun = (fn, mailgunApiData) => {
+const maybeMailgun = (fn, mailgunApiData: ReturnType<typeof makeMailgunApiData>) => {
   if (!getMailgunApiConfig().apiKey) {
     const {from, to, subject, body} = mailgunApiData
     console.warn(`mailgun: no API key, so not sending the following:
@@ -48,12 +48,14 @@ const maybeMailgun = (fn, mailgunApiData) => {
       return fn(mailgun)
     }
   } catch (error) {
+    const {to, subject} = mailgunApiData
     console.warn(error)
+    console.warn(to, subject)
   }
   return false
 }
 
-export function sendBatchEmail (recipients, template, props, recipientVariables) {
+export function sendBatchEmail(recipients, template, props, recipientVariables) {
   if (!Array.isArray(recipients)) {
     throw new Error('`recipients` must be an Array')
   }
@@ -62,9 +64,7 @@ export function sendBatchEmail (recipients, template, props, recipientVariables)
     console.warn(
       `Email for template ${template} exceeded mailgun maximum batch size of ${MAILGUN_MAX_BATCH_SIZE} ` +
         `with ${recipients.length} requested recipients.  ` +
-        `Sending ${
-          chunkedRecipients.length
-        } mailgun requests of up to ${MAILGUN_MAX_BATCH_SIZE} recipients each.`
+        `Sending ${chunkedRecipients.length} mailgun requests of up to ${MAILGUN_MAX_BATCH_SIZE} recipients each.`
     )
     return Promise.all(
       chunkedRecipients.map((chunk) => sendBatchEmail(chunk, template, props, recipientVariables))
@@ -119,7 +119,7 @@ export const sendEmailContent = (
   return sendMailgunEmail(to, emailContent)
 }
 
-export default async function sendEmailPromise (to: unknown, template: string, props: any) {
+export default async function sendEmailPromise(to: unknown, template: string, props: any) {
   if (!to || typeof to !== 'string') {
     throw new Error('Expected `to` to be a string of comma-separated emails')
   }

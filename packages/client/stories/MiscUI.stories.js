@@ -16,27 +16,26 @@ import IconLabel from '../components/IconLabel'
 
 const handleDemoClick = () => console.log('demo click handler!')
 
-storiesOf('Misc. UI Components', module)
-  .add('Button variants', () => (
-    <RetroBackground>
-      <StoryContainer
-        render={() => (
-          <div style={{backgroundColor: 'white', width: '600px', padding: '20px'}}>
-            <FlatButton onClick={handleDemoClick}>{'Flat Button'}</FlatButton>
-            <br />
-            <LinkButton onClick={handleDemoClick}>{'Link Button'}</LinkButton>
-            <br />
-            <OutlinedButton onClick={handleDemoClick}>{'Outlined Button'}</OutlinedButton>
-            <br />
-            <PrimaryButton onClick={handleDemoClick}>{'Primary Button'}</PrimaryButton>
-            <br />
-            <RaisedButton onClick={handleDemoClick}>{'Raised Button'}</RaisedButton>
-            <br />
-            <RaisedButton onClick={handleDemoClick}>
-              <IconLabel icon='check_circle' label='Button with IconLabel' />
-            </RaisedButton>
-          </div>
-        )}
-      />
-    </RetroBackground>
-  ))
+storiesOf('Misc. UI Components', module).add('Button variants', () => (
+  <RetroBackground>
+    <StoryContainer
+      render={() => (
+        <div style={{backgroundColor: 'white', width: '600px', padding: '20px'}}>
+          <FlatButton onClick={handleDemoClick}>{'Flat Button'}</FlatButton>
+          <br />
+          <LinkButton onClick={handleDemoClick}>{'Link Button'}</LinkButton>
+          <br />
+          <OutlinedButton onClick={handleDemoClick}>{'Outlined Button'}</OutlinedButton>
+          <br />
+          <PrimaryButton onClick={handleDemoClick}>{'Primary Button'}</PrimaryButton>
+          <br />
+          <RaisedButton onClick={handleDemoClick}>{'Raised Button'}</RaisedButton>
+          <br />
+          <RaisedButton onClick={handleDemoClick}>
+            <IconLabel icon='check_circle' label='Button with IconLabel' />
+          </RaisedButton>
+        </div>
+      )}
+    />
+  </RetroBackground>
+))

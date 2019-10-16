@@ -20,18 +20,25 @@ interface Props {
 }
 
 const blackList: string[] = [NewMeetingPhaseTypeEnum.firstcall, NewMeetingPhaseTypeEnum.lastcall]
+const collapsiblePhases: string[] = [
+  NewMeetingPhaseTypeEnum.checkin,
+  NewMeetingPhaseTypeEnum.updates,
+  NewMeetingPhaseTypeEnum.agendaitems
+]
 
 const ActionMeetingSidebar = (props: Props) => {
   const {gotoStageId, handleMenuClick, toggleSidebar, viewer} = props
   const {id: viewerId, team} = viewer
-  const {meetingSettings, newMeeting} = team!
+  const {meetingSettings, newMeeting, agendaItems} = team!
   const {phaseTypes} = meetingSettings
-  const {facilitatorUserId, facilitatorStageId, localPhase, phases} =
+  const {facilitatorUserId, facilitatorStageId, localPhase, localStage, phases} =
     newMeeting || UNSTARTED_MEETING
   const localPhaseType = localPhase ? localPhase.phaseType : ''
   const facilitatorStageRes = findStageById(phases, facilitatorStageId)
   const facilitatorPhaseType = facilitatorStageRes ? facilitatorStageRes.phase.phaseType : ''
   const isViewerFacilitator = facilitatorUserId === viewerId
+  const isUnsyncedFacilitatorPhase = facilitatorPhaseType !== localPhaseType
+  const isUnsyncedFacilitatorStage = localStage ? localStage.id !== facilitatorStageId : undefined
   return (
     <NewMeetingSidebar
       handleMenuClick={handleMenuClick}
@@ -42,7 +49,7 @@ const ActionMeetingSidebar = (props: Props) => {
       <MeetingNavList>
         {phaseTypes
           .filter((phaseType) => !blackList.includes(phaseType))
-          .map((phaseType, idx) => {
+          .map((phaseType) => {
             const itemStage = getSidebarItemStage(phaseType, phases, facilitatorStageId)
             const {id: itemStageId = '', isNavigable = false, isNavigableByFacilitator = false} =
               itemStage || {}
@@ -51,22 +58,27 @@ const ActionMeetingSidebar = (props: Props) => {
               gotoStageId(itemStageId).catch()
               handleMenuClick()
             }
+            const phaseCount =
+              phaseType === NewMeetingPhaseTypeEnum.agendaitems && agendaItems
+                ? agendaItems.length
+                : undefined
             return (
               <NewMeetingSidebarPhaseListItem
-                key={phaseType}
-                phaseType={phaseType}
-                listPrefix={String(idx + 1)}
+                handleClick={canNavigate ? handleClick : undefined}
                 isActive={
                   phaseType === NewMeetingPhaseTypeEnum.agendaitems
                     ? blackList.includes(localPhaseType)
                     : localPhaseType === phaseType
                 }
-                isFacilitatorPhaseGroup={
-                  facilitatorPhaseType === phaseType ||
-                  (phaseType === NewMeetingPhaseTypeEnum.agendaitems &&
-                    blackList.includes(facilitatorPhaseType))
+                isCollapsible={collapsiblePhases.includes(phaseType)}
+                isFacilitatorPhase={phaseType === facilitatorPhaseType}
+                isUnsyncedFacilitatorPhase={
+                  isUnsyncedFacilitatorPhase && phaseType === facilitatorPhaseType
                 }
-                handleClick={canNavigate ? handleClick : undefined}
+                isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
+                key={phaseType}
+                phaseCount={phaseCount}
+                phaseType={phaseType}
               >
                 <ActionSidebarPhaseListItemChildren
                   gotoStageId={gotoStageId}
@@ -94,12 +106,18 @@ export default createFragmentContainer(ActionMeetingSidebar, {
         meetingSettings(meetingType: action) {
           phaseTypes
         }
+        agendaItems {
+          id
+        }
         newMeeting {
           meetingId: id
           facilitatorUserId
           facilitatorStageId
           localPhase {
             phaseType
+          }
+          localStage {
+            id
           }
           phases {
             phaseType

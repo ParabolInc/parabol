@@ -8,7 +8,7 @@ import {ActionMeetingPhaseProps} from './ActionMeeting'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
 import MeetingContent from './MeetingContent'
-import MeetingContentHeader from './MeetingContentHeader'
+import MeetingTopBar from './MeetingTopBar'
 import MeetingHelpToggle from './MenuHelpToggle'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useTimeout from '../hooks/useTimeout'
@@ -36,7 +36,7 @@ interface Props extends ActionMeetingPhaseProps {
 const ActionMeetingFirstCallHelpMenu = lazyPreload(async () =>
   import(
     /* webpackChunkName: 'ActionMeetingFirstCallHelpMenu' */ './MeetingHelp/ActionMeetingFirstCallHelpMenu'
-    )
+  )
 )
 
 const FirstCallWrapper = styled('div')({
@@ -61,7 +61,7 @@ const ActionMeetingFirstCall = (props: Props) => {
   return (
     <MeetingContent>
       <MeetingHeaderAndPhase>
-        <MeetingContentHeader
+        <MeetingTopBar
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
           toggleSidebar={toggleSidebar}
@@ -79,9 +79,7 @@ const ActionMeetingFirstCall = (props: Props) => {
             )}
           </FirstCallWrapper>
         </PhaseWrapper>
-        <MeetingHelpToggle
-          menu={<ActionMeetingFirstCallHelpMenu />}
-        />
+        <MeetingHelpToggle menu={<ActionMeetingFirstCallHelpMenu />} />
       </MeetingHeaderAndPhase>
       <MeetingFacilitatorBar isFacilitating={isFacilitating}>
         <BottomControlSpacer />

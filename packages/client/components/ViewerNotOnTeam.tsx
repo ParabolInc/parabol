@@ -55,7 +55,9 @@ const ViewerNotOnTeam = (props: Props) => {
       }
     }
     return undefined
-  }, [/* eslint-disable-line react-hooks/exhaustive-deps*/])
+  }, [
+    /* eslint-disable-line react-hooks/exhaustive-deps*/
+  ])
 
   if (teamInvitation) {
     return null

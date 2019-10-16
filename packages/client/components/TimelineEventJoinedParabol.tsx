@@ -12,7 +12,7 @@ interface Props {
 }
 
 class TimelineEventJoinedParabol extends Component<Props> {
-  render () {
+  render() {
     const {timelineEvent} = this.props
     return (
       <TimelineEventCard

@@ -1,4 +1,4 @@
-export default function plural (
+export default function plural(
   count: number,
   singularWord: string,
   pluralWord = `${singularWord}s`

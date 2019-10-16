@@ -64,11 +64,7 @@ const PromoteToBillingLeader = (props: Props) => {
             <i>{'Billing Leader'}</i>
           </b>
           {' for '}
-          <MessageVar
-            onClick={goToOrg}
-          >
-            {orgName}
-          </MessageVar>
+          <MessageVar onClick={goToOrg}>{orgName}</MessageVar>
           {'.'}
         </NotificationMessage>
         <WiderButton>

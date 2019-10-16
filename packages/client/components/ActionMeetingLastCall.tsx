@@ -6,7 +6,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {ActionMeetingPhaseProps} from './ActionMeeting'
 import ErrorBoundary from './ErrorBoundary'
 import MeetingContent from './MeetingContent'
-import MeetingContentHeader from './MeetingContentHeader'
+import MeetingTopBar from './MeetingTopBar'
 import MeetingHelpToggle from './MenuHelpToggle'
 import useAtmosphere from '../hooks/useAtmosphere'
 import AgendaShortcutHint from '../modules/meeting/components/AgendaShortcutHint/AgendaShortcutHint'
@@ -65,7 +65,7 @@ const ActionMeetingLastCall = (props: Props) => {
   }
   return (
     <MeetingContent>
-      <MeetingContentHeader
+      <MeetingTopBar
         avatarGroup={avatarGroup}
         isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
         toggleSidebar={toggleSidebar}

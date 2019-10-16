@@ -176,7 +176,7 @@ const Invoice = (props: Props) => {
   const {amount, interval, nextPeriodEnd} = nextPeriodCharges!
   const chargeDates = `${makeDateString(startAt)} to ${makeDateString(endAt)}`
   const nextChargesDates = `${makeDateString(endAt)} to ${makeDateString(nextPeriodEnd)}`
-  const amountOff = coupon && (coupon.amountOff || coupon.percentOff! / 100 * amount)
+  const amountOff = coupon && (coupon.amountOff || (coupon.percentOff! / 100) * amount)
   const discountedAmount = amountOff && invoiceLineFormat(-amountOff)
   return (
     <Wrap>
@@ -200,12 +200,12 @@ const Invoice = (props: Props) => {
             so the line item makes more sense close to the starting amount.
             Also, coupons are not part of “Last month’s adjustments”
           */}
-          {coupon &&
+          {coupon && (
             <InvoiceLineItemContent
               description={<CouponEmphasis>{`Coupon: “${coupon.name}”`}</CouponEmphasis>}
               amount={<CouponEmphasis>{discountedAmount}</CouponEmphasis>}
             />
-          }
+          )}
 
           {lines.length > 0 && (
             <>
@@ -216,7 +216,9 @@ const Invoice = (props: Props) => {
                 </Heading>
                 <Meta>{chargeDates}</Meta>
               </SectionHeader>
-              {lines.map((item) => <InvoiceLineItem key={item.id} item={item} />)}
+              {lines.map((item) => (
+                <InvoiceLineItem key={item.id} item={item} />
+              ))}
             </>
           )}
           <AmountSection>

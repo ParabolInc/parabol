@@ -29,7 +29,13 @@ const CODE_FENCE = '```'
 
 const styles = Object.keys(inlineMatchers) as (keyof typeof inlineMatchers)[]
 
-const extractStyle = (editorState: EditorState, getNextState: () => EditorState, style: keyof typeof inlineMatchers, blockKey: string, extractedStyles: typeof styles) => {
+const extractStyle = (
+  editorState: EditorState,
+  getNextState: () => EditorState,
+  style: keyof typeof inlineMatchers,
+  blockKey: string,
+  extractedStyles: typeof styles
+) => {
   const {regex, matchIdx} = inlineMatchers[style]
   const blockText = editorState
     .getCurrentContent()
@@ -82,7 +88,11 @@ const extractStyle = (editorState: EditorState, getNextState: () => EditorState,
   return editorState
 }
 
-const extractMarkdownStyles = (editorState: EditorState, getNextState: () => EditorState, blockKey: string) => {
+const extractMarkdownStyles = (
+  editorState: EditorState,
+  getNextState: () => EditorState,
+  blockKey: string
+) => {
   const extractedStyles = []
   let es = editorState
   for (let i = 0; i < styles.length; i++) {
@@ -102,8 +112,14 @@ const extractMarkdownStyles = (editorState: EditorState, getNextState: () => Edi
   return undefined
 }
 
-type Handlers = Pick<EditorProps, 'handleKeyCommand' | 'keyBindingFn' | 'handleBeforeInput'> & {onChange?: EditorProps['onChange']}
-const useMarkdown = (editorState: EditorState, setEditorState: SetEditorState, {handleKeyCommand, keyBindingFn, handleBeforeInput, onChange}: Handlers) => {
+type Handlers = Pick<EditorProps, 'handleKeyCommand' | 'keyBindingFn' | 'handleBeforeInput'> & {
+  onChange?: EditorProps['onChange']
+}
+const useMarkdown = (
+  editorState: EditorState,
+  setEditorState: SetEditorState,
+  {handleKeyCommand, keyBindingFn, handleBeforeInput, onChange}: Handlers
+) => {
   const undoMarkdownRef = useRef<undefined | boolean>(false)
 
   const getMaybeCodeBlockState = (editorState: EditorState) => {
@@ -241,9 +257,9 @@ const useMarkdown = (editorState: EditorState, setEditorState: SetEditorState, {
       command === 'split-block'
         ? preSplitES.getSelection()
         : linkifiedContent.getSelectionAfter().merge({
-          anchorOffset: linkifiedContent.getSelectionAfter().getAnchorOffset() + 1,
-          focusOffset: linkifiedContent.getSelectionAfter().getAnchorOffset() + 1
-        })
+            anchorOffset: linkifiedContent.getSelectionAfter().getAnchorOffset() + 1,
+            focusOffset: linkifiedContent.getSelectionAfter().getAnchorOffset() + 1
+          })
     const adjustedSelectionContent = linkifiedContent.merge({
       selectionAfter,
       selectionBefore: selectionAfter

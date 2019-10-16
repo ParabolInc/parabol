@@ -20,7 +20,7 @@ const MenuClose = styled(Icon)({
   right: 4,
   top: -4,
   '&:hover': {
-    opacity: .5
+    opacity: 0.5
   }
 })
 

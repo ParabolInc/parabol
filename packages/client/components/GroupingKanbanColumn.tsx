@@ -98,9 +98,15 @@ const GroupingKanbanColumn = (props: Props) => {
     <Column isDesktop={isDesktop} ref={ref}>
       <ColumnHeader>
         <Prompt>{question}</Prompt>
-        {canAdd && <AddReflectionButton aria-label={'Add a reflection'} onClick={onClick} waiting={submitting}>
-          <Icon>add</Icon>
-        </AddReflectionButton>}
+        {canAdd && (
+          <AddReflectionButton
+            aria-label={'Add a reflection'}
+            onClick={onClick}
+            waiting={submitting}
+          >
+            <Icon>add</Icon>
+          </AddReflectionButton>
+        )}
       </ColumnHeader>
       <ColumnBody isDesktop={isDesktop} {...{[DragAttribute.DROPZONE]: promptId}}>
         {reflectionGroups
@@ -109,44 +115,52 @@ const GroupingKanbanColumn = (props: Props) => {
             return group && group.reflections.length > 0
           })
           .map((reflectionGroup) => {
-          return <ReflectionGroup key={reflectionGroup.id} meeting={meeting} phaseRef={phaseRef} reflectionGroup={reflectionGroup} swipeColumn={swipeColumn}/>
-        })}
+            return (
+              <ReflectionGroup
+                key={reflectionGroup.id}
+                meeting={meeting}
+                phaseRef={phaseRef}
+                reflectionGroup={reflectionGroup}
+                swipeColumn={swipeColumn}
+              />
+            )
+          })}
       </ColumnBody>
     </Column>
   )
 }
 
-export default createFragmentContainer(
-  GroupingKanbanColumn,
-  {
-    meeting: graphql`
-      fragment GroupingKanbanColumn_meeting on RetrospectiveMeeting {
-        ...ReflectionGroup_meeting
-        id
-        localStage {
+export default createFragmentContainer(GroupingKanbanColumn, {
+  meeting: graphql`
+    fragment GroupingKanbanColumn_meeting on RetrospectiveMeeting {
+      ...ReflectionGroup_meeting
+      id
+      localStage {
+        isComplete
+        phaseType
+      }
+      phases {
+        stages {
           isComplete
           phaseType
         }
-        phases {
-          stages {
-            isComplete
-            phaseType
-          }
-        }
-      }`,
-    reflectionGroups: graphql`
-      fragment GroupingKanbanColumn_reflectionGroups on RetroReflectionGroup @relay(plural: true) {
-        ...ReflectionGroup_reflectionGroup
+      }
+    }
+  `,
+  reflectionGroups: graphql`
+    fragment GroupingKanbanColumn_reflectionGroups on RetroReflectionGroup @relay(plural: true) {
+      ...ReflectionGroup_reflectionGroup
+      id
+      sortOrder
+      reflections {
         id
-        sortOrder
-        reflections {
-          id
-        }
-      }`,
-    prompt: graphql`
-      fragment GroupingKanbanColumn_prompt on RetroPhaseItem {
-        id
-        question
-      }`
-  }
-)
+      }
+    }
+  `,
+  prompt: graphql`
+    fragment GroupingKanbanColumn_prompt on RetroPhaseItem {
+      id
+      question
+    }
+  `
+})

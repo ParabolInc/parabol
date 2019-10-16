@@ -71,7 +71,7 @@ class SuggestedActionCard extends Component<Props> {
     DismissSuggestedActionMutation(atmosphere, {suggestedActionId}, {onError, onCompleted})
   }
 
-  render () {
+  render() {
     const {backgroundColor, children, iconName} = this.props
     return (
       <Surface>

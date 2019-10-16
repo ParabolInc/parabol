@@ -1,8 +1,7 @@
-import {DASH_SIDEBAR} from './Dashboard/DashSidebar'
 import React, {ReactNode, useCallback, useEffect} from 'react'
 import usePortal from '../hooks/usePortal'
 import useRefState from '../hooks/useRefState'
-import {ZIndex} from '../types/constEnums'
+import {NavSidebar, ZIndex} from '../types/constEnums'
 import {DECELERATE} from '../styles/animation'
 import styled from '@emotion/styled'
 import {PALETTE} from '../styles/paletteV2'
@@ -10,26 +9,27 @@ import hideBodyScroll from '../utils/hideBodyScroll'
 import PlainButton from './PlainButton/PlainButton'
 import {navDrawerShadow} from '../styles/elevation'
 import useEventCallback from 'hooks/useEventCallback'
-import isReactTouch from 'utils/isReactTouch';
+import isReactTouch from 'utils/isReactTouch'
 import isNativeTouch from '../utils/isNativeTouch'
 
 const PEEK_WIDTH = 20
 
 const SidebarAndScrim = styled('div')({
   position: 'absolute',
-  left: -DASH_SIDEBAR.WIDTH,
+  left: -NavSidebar.WIDTH,
   top: 0,
   height: '100%'
 })
 
 interface StyleProps {
-x: number
+  x: number
 }
+
 const Scrim = styled('div')<StyleProps>(({x}) => ({
   background: PALETTE.BACKGROUND_FORCED_BACKDROP,
   height: '100%',
   left: 0,
-  opacity: x / DASH_SIDEBAR.WIDTH,
+  opacity: x / NavSidebar.WIDTH,
   position: 'fixed',
   pointerEvents: x > 0 ? undefined : 'none',
   transition: `opacity 200ms ${DECELERATE}`,
@@ -78,7 +78,7 @@ const updateIsSwipe = (clientX: number, clientY: number) => {
 }
 
 const HYSTERESIS = 0.55 // how far must it be pulled out to stay out (0 -1)
-const HYSTERESIS_THRESH = HYSTERESIS * DASH_SIDEBAR.WIDTH
+const HYSTERESIS_THRESH = HYSTERESIS * NavSidebar.WIDTH
 const MIN_ARC_ANGLE = 30 // how sloppy can the pull be. 0 means everything is a swipe, 90 degrees means only perfectly horizontal drags are a swipe (0 - 90)
 const MIN_ARC_RADS = (MIN_ARC_ANGLE / 180) * Math.PI
 const MIN_SPEED = 0.3 // faster than this and it's a fling (0 - 5+)
@@ -105,14 +105,19 @@ interface Props {
 
 const SwipeableDashSidebar = (props: Props) => {
   const {children, isOpen, onToggle} = props
-  const {portal, openPortal} = usePortal({allowScroll: true, noClose: true})
+  const {portal, openPortal} = usePortal({
+    allowScroll: true,
+    noClose: true
+  })
   const [xRef, setX] = useRefState(0)
   useEffect(() => {
     openPortal()
     return () => {
       window.clearTimeout(swipe.peekTimeout)
     }
-  }, [/* eslint-disable-line react-hooks/exhaustive-deps*/])
+  }, [
+    /* eslint-disable-line react-hooks/exhaustive-deps*/
+  ])
 
   const hideSidebar = useCallback(() => {
     setX(0)
@@ -120,7 +125,7 @@ const SwipeableDashSidebar = (props: Props) => {
   }, [setX])
 
   const showSidebar = useCallback(() => {
-    setX(DASH_SIDEBAR.WIDTH)
+    setX(NavSidebar.WIDTH)
     swipe.showBodyScroll = hideBodyScroll()
   }, [setX])
 
@@ -178,7 +183,7 @@ const SwipeableDashSidebar = (props: Props) => {
     }
     const movementX = clientX - swipe.lastX
     const minWidth = swipe.isOpen ? 0 : PEEK_WIDTH
-    const nextX = Math.min(DASH_SIDEBAR.WIDTH, Math.max(minWidth, xRef.current + movementX))
+    const nextX = Math.min(NavSidebar.WIDTH, Math.max(minWidth, xRef.current + movementX))
     updateSpeed(clientX)
     setX(nextX)
   })
@@ -186,7 +191,7 @@ const SwipeableDashSidebar = (props: Props) => {
   const onMouseDown = useEventCallback((e: React.MouseEvent | React.TouchEvent) => {
     if (swipe.downCaptured) return
     const {current: x} = xRef
-    if (x !== 0 && x !== DASH_SIDEBAR.WIDTH) return
+    if (x !== 0 && x !== NavSidebar.WIDTH) return
     let event
     if (isReactTouch(e)) {
       document.addEventListener('touchend', onMouseUp, {once: true})

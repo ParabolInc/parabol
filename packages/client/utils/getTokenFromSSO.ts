@@ -1,14 +1,10 @@
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 
 const getTokenFromSSO = (url: string) => {
-  const popup = window.open(
-    url,
-    'SSO',
-    getOAuthPopupFeatures({width: 385, height: 550, top: 64})
-  )
+  const popup = window.open(url, 'SSO', getOAuthPopupFeatures({width: 385, height: 550, top: 64}))
 
   let closeCheckerId
-  return new Promise<{token: string | null, error: string | null}>((resolve) => {
+  return new Promise<{token: string | null; error: string | null}>((resolve) => {
     const handler = (event) => {
       // an extension posted to the opener
       if (typeof event.data !== 'object') return

@@ -10,9 +10,9 @@ export interface WithAnimatedPortalProps {
   isClosing: boolean
   isOpen: boolean
 
-  closePortal (): void
+  closePortal(): void
 
-  terminatePortal (): void
+  terminatePortal(): void
 }
 
 export interface WithAnimatedPortalState {
@@ -34,7 +34,7 @@ const withAnimatedPortal = <P extends WithAnimatedPortalProps>(
   > {
     static displayName = `AnimatedPortal(${getDisplayName(ComposedComponent)})`
 
-    static getDerivedStateFromProps (
+    static getDerivedStateFromProps(
       nextProps: InternalProps,
       prevState: WithAnimatedPortalState
     ): Partial<WithAnimatedPortalState> | null {
@@ -66,7 +66,7 @@ const withAnimatedPortal = <P extends WithAnimatedPortalProps>(
       }
     }
 
-    render () {
+    render() {
       const {isClosing, isOpen} = this.state
       return (
         // @ts-ignore

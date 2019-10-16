@@ -20,8 +20,9 @@ import {getUserId} from '../../utils/authorization'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import SlackAuth from './SlackAuth'
 import SlackNotification from './SlackNotification'
+import {GQLContext} from '../graphql'
 
-const TeamMember = new GraphQLObjectType({
+const TeamMember = new GraphQLObjectType<any, GQLContext, any>({
   name: 'TeamMember',
   description: 'A member of a team',
   fields: () => ({
@@ -56,22 +57,6 @@ const TeamMember = new GraphQLObjectType({
     checkInOrder: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The place in line for checkIn, regenerated every meeting'
-    },
-    isConnected: {
-      type: GraphQLBoolean,
-      description: 'true if the user is connected',
-      resolve: async (source, _args, {dataLoader}) => {
-        if (source.hasOwnProperty('isConnected')) {
-          return source.isConnected
-        }
-        const {userId} = source
-        if (userId) {
-          const {connectedSockets} = await dataLoader.get('users').load(userId)
-          return Array.isArray(connectedSockets) && connectedSockets.length > 0
-        }
-        // should only hit this in dev
-        return false
-      }
     },
     isSelf: {
       type: new GraphQLNonNull(GraphQLBoolean),
@@ -148,7 +133,7 @@ const TeamMember = new GraphQLObjectType({
     user: {
       type: new GraphQLNonNull(User),
       description: 'The user for the team member',
-      resolve ({userId}, _args, {dataLoader}) {
+      resolve({userId}, _args, {dataLoader}) {
         return dataLoader.get('users').load(userId)
       }
     },

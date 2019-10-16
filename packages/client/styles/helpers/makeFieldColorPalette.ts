@@ -23,6 +23,15 @@ const fieldPalettes = {
     placeholderColorFocusActive: makePlaceholderStyles(PALETTE.PLACEHOLDER_WARM_FOCUS_ACTIVE),
     selection: PALETTE.FIELD_SELECTION_WARM
   },
+  cool: {
+    backgroundColor: '#FFFFFF',
+    borderColor: 'transparent',
+    color: PALETTE.TEXT_MAIN,
+    focusBorderColor: PALETTE.BORDER_BLUE,
+    placeholder: makePlaceholderStyles(PALETTE.TEXT_BLUE),
+    placeholderColorFocusActive: makePlaceholderStyles(PALETTE.BORDER_BLUE),
+    selection: PALETTE.BACKGROUND_PRIMARY_20A
+  },
   // white: used for dropdowns
   white: {
     backgroundColor: '#FFFFFF',
@@ -35,7 +44,7 @@ const fieldPalettes = {
   }
 }
 
-export default function makeFieldColorPalette (
+export default function makeFieldColorPalette(
   colorPalette,
   hasPseudoClassStyles = true,
   customStyles = {}

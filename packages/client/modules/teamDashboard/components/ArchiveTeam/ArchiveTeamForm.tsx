@@ -43,7 +43,7 @@ class ArchiveTeamForm extends Component<Props> {
     ArchiveTeamMutation(atmosphere, {teamId}, {history, onError, onCompleted})
   }
 
-  render () {
+  render() {
     const {
       handleFormBlur,
       onChange,

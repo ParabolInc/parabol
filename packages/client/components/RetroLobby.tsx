@@ -7,7 +7,7 @@ import graphql from 'babel-plugin-relay/macro'
 import ErrorBoundary from './ErrorBoundary'
 import LabelHeading from './LabelHeading/LabelHeading'
 import MeetingContent from './MeetingContent'
-import MeetingContentHeader from './MeetingContentHeader'
+import MeetingTopBar from './MeetingTopBar'
 import MeetingHelpToggle from './MenuHelpToggle'
 import NewMeetingLobby from './NewMeetingLobby'
 import PrimaryButton from './PrimaryButton'
@@ -71,9 +71,7 @@ const TemplatePickerBlock = styled('div')({
 })
 
 const RetroLobbyHelpMenu = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'RetroLobbyHelpMenu' */ './MeetingHelp/RetroLobbyHelpMenu'
-  )
+  import(/* webpackChunkName: 'RetroLobbyHelpMenu' */ './MeetingHelp/RetroLobbyHelpMenu')
 )
 
 const meetingType = MeetingTypeEnum.retrospective
@@ -94,7 +92,7 @@ const RetroLobby = (props: Props) => {
   }
   return (
     <MeetingContent>
-      <MeetingContentHeader
+      <MeetingTopBar
         avatarGroup={avatarGroup}
         isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
         toggleSidebar={toggleSidebar}

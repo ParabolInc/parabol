@@ -2,7 +2,10 @@ import {addTeamTeamUpdater} from '../mutations/AddTeamMutation'
 import {archiveTeamTeamOnNext, archiveTeamTeamUpdater} from '../mutations/ArchiveTeamMutation'
 import {createReflectionTeamUpdater} from '../mutations/CreateReflectionMutation'
 import {removeReflectionTeamUpdater} from '../mutations/RemoveReflectionMutation'
-import {removeTeamMemberTeamOnNext, removeTeamMemberTeamUpdater} from '../mutations/RemoveTeamMemberMutation'
+import {
+  removeTeamMemberTeamOnNext,
+  removeTeamMemberTeamUpdater
+} from '../mutations/RemoveTeamMemberMutation'
 import {removeOrgUserTeamOnNext, removeOrgUserTeamUpdater} from '../mutations/RemoveOrgUserMutation'
 import {startNewMeetingTeamOnNext} from '../mutations/StartNewMeetingMutation'
 import {navigateMeetingTeamUpdater} from '../mutations/NavigateMeetingMutation'
@@ -69,6 +72,7 @@ const subscription = graphql`
       ...UpdateDragLocationMutation_team @relay(mask: false)
       ...UpdateReflectionContentMutation_team @relay(mask: false)
       ...UpdateReflectionGroupTitleMutation_team @relay(mask: false)
+      ...UpdateUserProfileMutation_team @relay(mask: false)
       ...UpdateTeamNameMutation_team @relay(mask: false)
       ...UpgradeToProMutation_team @relay(mask: false)
       ...VoteForReflectionGroupMutation_team @relay(mask: false)

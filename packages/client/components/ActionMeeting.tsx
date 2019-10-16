@@ -87,10 +87,9 @@ const ActionMeeting = (props: Props) => {
           avatarGroup={
             <NewMeetingAvatarGroup
               allowVideo={allowVideo}
-              swarm={swarm}
-              gotoStageId={gotoStageId}
-              team={team}
               camStreams={streams.cam}
+              swarm={swarm}
+              team={team}
             />
           }
         />

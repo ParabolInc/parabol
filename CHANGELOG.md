@@ -1,9 +1,61 @@
-# Change Log
+# Parabol Change Log
 
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
+
+## 4.9.0 2019-Oct-16
+
+### Fixed
+* Editor crash on undefined mentions (#3272)
+* Allow scrollable sections in meeting left nav (#3264)
+* Fix team member name update (#3258)
+* Redirect to correct meeting if hit the wrong url (#3257)
+ 
+### Removed
+* Legacy LoadableDraftJSModal (#3273)
+* react-dnd & friends from deps (#3267)
+* Active meeting dialog on team dash (#3262)
+
+### Changed
+* Meeting Avatar Group only shows connected members (#3266)
+* Show retro groups without votes in discussion phase (#3260)
+
+## 4.8.3 2019-Oct-15
+
+### Fixed
+* Delete single record for startNewMeeting race
+ 
+## 4.8.2 2019-Oct-10
+
+### Fixed
+* Spelling error on sidebar "Faciltator" to "Facilitator"
+
+## 4.8.1 2019-Oct-09
+
+### Removed
+* dumpy, the memory leak debugging tool, from starting on startup
+
+## 4.8.0 2019-Oct-09
+
+### Added
+* New meeting sidebar
+   * New mobile-friend control to appoint facilitator
+   * Shows each meeting stage, and its completion status, more clearly
+* Show discounts on invoices, other invoice calculaton and display improvements
+* Adds better logging for console errors
+* We now typecheck client & server in parallel
+* Lazy make auth0 manager
+
+### Fixed
+* Hopefully fixes #3120, summary unable to be scrolled until refreshed
+* Fix #3194, this.editorRef.current.focus is not a function
+* Fix #3195, cannot read property 'findIndex' of undefined
+* Fix #3196, TypeError: t is undefined
+* Fix #3198, TypeError: Cannot read property 'firstElementChild' of undefined
+* Fix #3229, add tolerance to matching up Stripe invoice data
+* Clear dataloader cache for new account logins
 
 ## 4.7.0 2019-Oct-02
 

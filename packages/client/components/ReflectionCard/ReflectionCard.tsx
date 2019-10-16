@@ -28,17 +28,23 @@ interface Props {
   showOriginFooter?: boolean
 }
 
-const getReadOnly = (reflection: {id: string, isViewerCreator: boolean | null, isEditing: boolean | null}, phaseType: NewMeetingPhaseTypeEnum, stackCount: number | undefined) => {
+const getReadOnly = (
+  reflection: {id: string; isViewerCreator: boolean | null; isEditing: boolean | null},
+  phaseType: NewMeetingPhaseTypeEnum,
+  stackCount: number | undefined
+) => {
   const {isViewerCreator, isEditing, id} = reflection
   if (!isViewerCreator || isTempId(id)) return true
-  if (phaseType === NewMeetingPhaseTypeEnum.reflect) return (stackCount && stackCount > 1)
+  if (phaseType === NewMeetingPhaseTypeEnum.reflect) return stackCount && stackCount > 1
   if (phaseType === NewMeetingPhaseTypeEnum.group && isEditing) return false
   return true
 }
 
 const ReflectionCard = (props: Props) => {
   const {showOriginFooter, meeting, reflection, isClipped, stackCount} = props
-  const {phaseItem: {question}} = reflection
+  const {
+    phaseItem: {question}
+  } = reflection
   const phaseType = meeting ? meeting.localPhase.phaseType : null
   const meetingId = meeting ? meeting.id : null
   const {id: reflectionId, content, retroPhaseItemId, isViewerCreator} = reflection
@@ -144,7 +150,11 @@ const ReflectionCard = (props: Props) => {
   }
 
   const readOnly = getReadOnly(reflection, phaseType as NewMeetingPhaseTypeEnum, stackCount)
-  const userSelect = readOnly ? phaseType === NewMeetingPhaseTypeEnum.discuss ? 'text' : 'none' : undefined
+  const userSelect = readOnly
+    ? phaseType === NewMeetingPhaseTypeEnum.discuss
+      ? 'text'
+      : 'none'
+    : undefined
   return (
     <ReflectionCardRoot>
       <ReflectionEditorWrapper
@@ -194,5 +204,6 @@ export default createFragmentContainer(ReflectionCard, {
       phases {
         phaseType
       }
-    }`
+    }
+  `
 })

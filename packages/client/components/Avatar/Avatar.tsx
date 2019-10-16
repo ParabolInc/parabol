@@ -21,7 +21,10 @@ const ImageBlock = styled('div')<ImageBlockProps>(
 )
 
 const BadgeBlock = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
   height: '25%',
+  justifyContent: 'center',
   position: 'absolute',
   right: 0,
   top: 0,
@@ -29,17 +32,11 @@ const BadgeBlock = styled('div')({
 })
 
 const BadgeBlockInner = styled('div')({
-  height: 16,
-  left: '50%',
-  position: 'absolute',
-  top: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 16
+  flexShrink: 0
 })
 
 interface Props {
   hasBadge?: boolean
-  isCheckedIn?: boolean | null
   isConnected?: boolean
   onClick?: (e?: React.MouseEvent) => void
   picture: string
@@ -49,16 +46,7 @@ interface Props {
 }
 
 const Avatar = forwardRef((props: Props, ref: any) => {
-  const {
-    hasBadge,
-    isCheckedIn,
-    isConnected,
-    onClick,
-    picture,
-    sansRadius,
-    sansShadow,
-    size
-  } = props
+  const {hasBadge, isConnected, onClick, picture, sansRadius, sansShadow, size} = props
 
   return (
     <ImageBlock
@@ -72,7 +60,7 @@ const Avatar = forwardRef((props: Props, ref: any) => {
       {hasBadge && (
         <BadgeBlock>
           <BadgeBlockInner>
-            <AvatarBadge isCheckedIn={isCheckedIn} isConnected={isConnected || false} />
+            <AvatarBadge isConnected={isConnected || false} />
           </BadgeBlockInner>
         </BadgeBlock>
       )}

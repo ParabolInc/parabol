@@ -14,7 +14,12 @@ const getSelectionLink = (editorState: EditorState, selection: SelectionState) =
     const endChar = currentKey === endKey ? selection.getEndOffset() : charList.size - 1
     const subset = charList.slice(startChar, endChar)
     const lastLinkChar = subset.findLast((value) => {
-      return value && value.getEntity() && currentContent.getEntity(value.getEntity()).getType() === 'LINK' || false
+      return (
+        (value &&
+          value.getEntity() &&
+          currentContent.getEntity(value.getEntity()).getType() === 'LINK') ||
+        false
+      )
     })
     if (lastLinkChar) {
       return currentContent.getEntity(lastLinkChar.getEntity()).getData().href

@@ -35,18 +35,18 @@ class MasonryCSSGrid extends Component<Props> {
     this.setSpans()
   })
 
-  componentDidMount () {
+  componentDidMount() {
     window.addEventListener('resize', this.setSpans, {passive: true})
   }
 
-  componentDidUpdate (prevProps) {
+  componentDidUpdate(prevProps) {
     if (this.props.items !== prevProps.items) {
       // the setTimeout is required for the task list (issue #2432), but it shouldn't be.
       setTimeout(() => this.setSpans())
     }
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     window.removeEventListener('resize', this.setSpans)
     this.resizeObserver.disconnect()
   }
@@ -60,7 +60,7 @@ class MasonryCSSGrid extends Component<Props> {
     }
   }
 
-  setSpan (c: HTMLElement | null) {
+  setSpan(c: HTMLElement | null) {
     if (!c || !c.firstElementChild) return
     const {gap} = this.props
     const autoRowHeight = gap / 2
@@ -78,12 +78,13 @@ class MasonryCSSGrid extends Component<Props> {
       delete this.itemRefs[id]
     }
     const method = c ? 'observe' : 'unobserve'
-    if (el.firstElementChild) {
+    // must safe check for el: https://sentry.io/organizations/parabol/issues/1203214376/?project=107196
+    if (el && el.firstElementChild) {
       this.resizeObserver[method](el.firstElementChild)
     }
   }
 
-  render () {
+  render() {
     const {children, gap, colWidth, maxCols} = this.props
     return (
       <Grid gap={gap} colWidth={colWidth} maxCols={maxCols} ref={this.gridRef}>

@@ -12,10 +12,9 @@ graphql`
     team {
       ...ActionMeetingTeam @relay(mask: false)
       ...RetroMeetingTeam @relay(mask: false)
-      ...MeetingInProgressModal_team @relay(mask: false)
       newMeeting {
         phases {
-          ...NewMeetingAvatarGroupPhases @relay(mask: false)
+          ...StartNewMeetingMutation_teamMemberPhases @relay(mask: false)
         }
       }
     }
@@ -43,6 +42,19 @@ graphql`
             id
           }
         }
+      }
+    }
+  }
+`
+
+graphql`
+  fragment StartNewMeetingMutation_teamMemberPhases on NewMeetingPhase {
+    id
+    phaseType
+    stages {
+      id
+      ... on NewMeetingTeamMemberStage {
+        teamMemberId
       }
     }
   }

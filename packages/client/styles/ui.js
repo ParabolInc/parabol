@@ -101,7 +101,8 @@ const ui = {
     border: '1px solid transparent',
     borderRadius: 2,
     display: 'block',
-    fontFamily: '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif',
+    fontFamily:
+      '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif',
     fontSize: 16,
     lineHeight: '1.5em',
     margin: '0',

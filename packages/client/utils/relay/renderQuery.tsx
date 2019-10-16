@@ -33,7 +33,7 @@ const renderQuery = (ReadyComponent: ComponentType<any>, options: Options = {}) 
     child = <Error error={error} />
   } else if (props) {
     key = 'Ready'
-    child = <ReadyComponent {...options.props || {}} viewer={props.viewer} retry={retry} />
+    child = <ReadyComponent {...(options.props || {})} viewer={props.viewer} retry={retry} />
   } else {
     key = 'Loading'
     child = Loader

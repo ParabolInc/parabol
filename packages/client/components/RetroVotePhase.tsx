@@ -8,7 +8,7 @@ import BottomNavIconLabel from './BottomNavIconLabel'
 import Icon from './Icon'
 import LabelHeading from './LabelHeading/LabelHeading'
 import MeetingContent from './MeetingContent'
-import MeetingContentHeader from './MeetingContentHeader'
+import MeetingTopBar from './MeetingTopBar'
 import MeetingPhaseWrapper from './MeetingPhaseWrapper'
 import MeetingHelpToggle from './MenuHelpToggle'
 import PhaseHeaderDescription from './PhaseHeaderDescription'
@@ -129,9 +129,7 @@ const VoteHelpMenu = lazyPreload(async () =>
   import(/* webpackChunkName: 'VoteHelpMenu' */ './MeetingHelp/VoteHelpMenu')
 )
 const DemoVoteHelpMenu = lazyPreload(async () =>
-  import(
-    /* webpackChunkName: 'DemoVoteHelpMenu' */ './MeetingHelp/DemoVoteHelpMenu'
-    )
+  import(/* webpackChunkName: 'DemoVoteHelpMenu' */ './MeetingHelp/DemoVoteHelpMenu')
 )
 
 const RetroVotePhase = (props: Props) => {
@@ -159,14 +157,16 @@ const RetroVotePhase = (props: Props) => {
   return (
     <MeetingContent ref={phaseRef}>
       <MeetingHeaderAndPhase>
-        <MeetingContentHeader
+        <MeetingTopBar
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
           toggleSidebar={toggleSidebar}
         >
           <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.vote]}</PhaseHeaderTitle>
-          <PhaseHeaderDescription>{'Vote on the topics you want to discuss'}</PhaseHeaderDescription>
-        </MeetingContentHeader>
+          <PhaseHeaderDescription>
+            {'Vote on the topics you want to discuss'}
+          </PhaseHeaderDescription>
+        </MeetingTopBar>
         <PhaseWrapper>
           <VoteMeta>
             <StyledMetaBlock>
@@ -190,12 +190,12 @@ const RetroVotePhase = (props: Props) => {
             <GroupingKanban meeting={newMeeting} phaseRef={phaseRef} />
           </MeetingPhaseWrapper>
         </PhaseWrapper>
-        <MeetingHelpToggle
-          menu={isDemoRoute() ? <DemoVoteHelpMenu /> : <VoteHelpMenu />}
-        />
+        <MeetingHelpToggle menu={isDemoRoute() ? <DemoVoteHelpMenu /> : <VoteHelpMenu />} />
       </MeetingHeaderAndPhase>
       <MeetingFacilitatorBar isFacilitating={isFacilitating}>
-        {!isComplete && <StageTimerControl defaultTimeLimit={3} meetingId={meetingId} team={team} />}
+        {!isComplete && (
+          <StageTimerControl defaultTimeLimit={3} meetingId={meetingId} team={team} />
+        )}
         <CenterControlBlock isComplete={isComplete}>
           <BottomNavControl
             isBouncing={teamVotesRemaining === 0}

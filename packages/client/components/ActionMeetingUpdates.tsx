@@ -9,7 +9,7 @@ import ActionMeetingUpdatesPrompt from './ActionMeetingUpdatesPrompt'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
 import MeetingContent from './MeetingContent'
-import MeetingContentHeader from './MeetingContentHeader'
+import MeetingTopBar from './MeetingTopBar'
 import MeetingPhaseWrapper from './MeetingPhaseWrapper'
 import MeetingHelpToggle from './MenuHelpToggle'
 import TaskColumns from './TaskColumns/TaskColumns'
@@ -52,9 +52,7 @@ interface Props extends ActionMeetingPhaseProps {
 }
 
 const UpdatesHelpMenu = lazyPreload(async () =>
-  import(
-    /* webpackChunkName: 'UpdatesHelpMenu' */ './MeetingHelp/UpdatesHelpMenu'
-    )
+  import(/* webpackChunkName: 'UpdatesHelpMenu' */ './MeetingHelp/UpdatesHelpMenu')
 )
 
 const ActionMeetingUpdates = (props: Props) => {
@@ -84,13 +82,13 @@ const ActionMeetingUpdates = (props: Props) => {
   return (
     <MeetingContent>
       <MeetingHeaderAndPhase>
-        <MeetingContentHeader
+        <MeetingTopBar
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
           toggleSidebar={toggleSidebar}
         >
           <ActionMeetingUpdatesPrompt team={team} />
-        </MeetingContentHeader>
+        </MeetingTopBar>
         <PhaseWrapper>
           <StyledColumnsWrapper>
             <InnerColumnsWrapper>

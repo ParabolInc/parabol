@@ -2,17 +2,22 @@
  * Displays the calls to action at the top of the team dashboard.
  *
  */
+import {TeamCallsToAction_team} from '../../../../__generated__/TeamCallsToAction_team.graphql'
 import React from 'react'
+import graphql from 'babel-plugin-relay/macro'
+import {createFragmentContainer} from 'react-relay'
 import styled from '@emotion/styled'
 import IconLabel from '../../../../components/IconLabel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
+import useRouter from '../../../../hooks/useRouter'
 import lazyPreload from '../../../../utils/lazyPreload'
 import {Breakpoint, Gutters} from '../../../../types/constEnums'
+import {meetingTypeToLabel, meetingTypeToSlug} from '../../../../utils/meetings/lookups'
 
 interface Props {
-  teamId: string
+  team: TeamCallsToAction_team
 }
 
 const ButtonBlock = styled('div')({
@@ -32,30 +37,56 @@ const StartButton = styled(PrimaryButton)({
 })
 
 const TeamCallsToActionMenu = lazyPreload(() =>
-  import(/* webpackChunkName: 'TeamCallsToActionMenu' */
-  './TeamCallsToActionMenu')
+  import(
+    /* webpackChunkName: 'TeamCallsToActionMenu' */
+    './TeamCallsToActionMenu'
+  )
 )
 
 const TeamCallToAction = (props: Props) => {
-  const {teamId} = props
+  const {team} = props
+  const {id: teamId, newMeeting} = team
   const {togglePortal, originRef, menuPortal, menuProps, loadingWidth} = useMenu(
     MenuPosition.UPPER_RIGHT,
     {isDropdown: true}
   )
+  const {history} = useRouter()
+  const label = newMeeting && meetingTypeToLabel[newMeeting.meetingType]
+  const slug = newMeeting && meetingTypeToSlug[newMeeting.meetingType]
+  const goToMeeting = () => {
+    history.push(`/${slug}/${teamId}/`)
+  }
   return (
     <ButtonBlock>
-      <StartButton
-        onClick={togglePortal}
-        onMouseEnter={TeamCallsToActionMenu.preload}
-        ref={originRef}
-      >
-        <IconLabel icon='expand_more' iconAfter label='Start Meeting' />
-      </StartButton>
-      {menuPortal(
-        <TeamCallsToActionMenu menuProps={menuProps} teamId={teamId} minWidth={loadingWidth} />
+      {newMeeting ? (
+        <StartButton onClick={goToMeeting}>
+          <IconLabel icon='arrow_forward' iconAfter label={`Join ${label} Meeting`} />
+        </StartButton>
+      ) : (
+        <>
+          <StartButton
+            onClick={togglePortal}
+            onMouseEnter={TeamCallsToActionMenu.preload}
+            ref={originRef}
+          >
+            <IconLabel icon='expand_more' iconAfter label='Start Meeting' />
+          </StartButton>
+          {menuPortal(
+            <TeamCallsToActionMenu menuProps={menuProps} teamId={teamId} minWidth={loadingWidth} />
+          )}
+        </>
       )}
     </ButtonBlock>
   )
 }
 
-export default TeamCallToAction
+export default createFragmentContainer(TeamCallToAction, {
+  team: graphql`
+    fragment TeamCallsToAction_team on Team {
+      id
+      newMeeting {
+        meetingType
+      }
+    }
+  `
+})

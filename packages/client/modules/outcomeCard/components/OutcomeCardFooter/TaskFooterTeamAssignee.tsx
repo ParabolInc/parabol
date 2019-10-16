@@ -40,7 +40,9 @@ interface Props {
 }
 
 const TaskFooterTeamAssigneeMenuRoot = lazyPreload(() =>
-  import(/* webpackChunkName: 'TaskFooterTeamAssigneeMenuRoot' */ '../TaskFooterTeamAssigneeMenuRoot')
+  import(
+    /* webpackChunkName: 'TaskFooterTeamAssigneeMenuRoot' */ '../TaskFooterTeamAssigneeMenuRoot'
+  )
 )
 
 const TaskFooterTeamAssignee = (props: Props) => {
@@ -58,7 +60,13 @@ const TaskFooterTeamAssignee = (props: Props) => {
       >
         {teamName}
       </TeamToggleButton>
-      {menuPortal(<TaskFooterTeamAssigneeMenuRoot menuProps={menuProps} task={task} useTaskChild={useTaskChild} />)}
+      {menuPortal(
+        <TaskFooterTeamAssigneeMenuRoot
+          menuProps={menuProps}
+          task={task}
+          useTaskChild={useTaskChild}
+        />
+      )}
     </>
   )
 }

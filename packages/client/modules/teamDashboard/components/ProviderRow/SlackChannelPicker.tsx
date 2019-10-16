@@ -20,8 +20,10 @@ interface Props {
 }
 
 const SlackChannelDropdown = lazyPreload(() =>
-  import(/* webpackChunkName: 'SlackChannelDropdown' */
-  '../../../../components/SlackChannelDropdown')
+  import(
+    /* webpackChunkName: 'SlackChannelDropdown' */
+    '../../../../components/SlackChannelDropdown'
+  )
 )
 
 enum ChannelState {
@@ -46,17 +48,20 @@ const SlackChannelPicker = (props: Props) => {
     : channelState === ChannelState.loading
     ? ''
     : 'Token Expired! Click to renew'
-  const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLDivElement>(MenuPosition.UPPER_RIGHT, {
-    isDropdown: true
-  })
+  const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLDivElement>(
+    MenuPosition.UPPER_RIGHT,
+    {
+      isDropdown: true
+    }
+  )
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
   const handleClick =
     channelState !== ChannelState.error
       ? togglePortal
       : () => {
-        SlackClientManager.openOAuth(atmosphere, teamId, mutationProps)
-      }
+          SlackClientManager.openOAuth(atmosphere, teamId, mutationProps)
+        }
   return (
     <>
       <DropdownMenuToggle

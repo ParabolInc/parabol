@@ -9,11 +9,11 @@ interface OAuth2Response {
 }
 
 class GitHubManager extends GitHubClientManager {
-  static async init (code: string) {
+  static async init(code: string) {
     return GitHubManager.fetchToken(code)
   }
 
-  static async fetchToken (code: string) {
+  static async fetchToken(code: string) {
     const queryParams = {
       client_id: process.env.GITHUB_CLIENT_ID,
       client_secret: process.env.GITHUB_CLIENT_SECRET,
@@ -43,7 +43,7 @@ class GitHubManager extends GitHubClientManager {
     return new GitHubManager(accessToken)
   }
 
-  constructor (accessToken: string) {
+  constructor(accessToken: string) {
     super(accessToken, {fetch})
   }
 }

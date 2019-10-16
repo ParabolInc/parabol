@@ -136,12 +136,15 @@ const usePortal = (options: UsePortalOptions = {}) => {
     portalRef.current ? closePortal() : openPortal(e)
   })
 
-  const portal = useCallback((reactEl: ReactElement) => {
-    const targetEl = portalRef.current
-    return !targetEl || portalStatusRef.current === PortalStatus.Exited
-      ? null
-      : createPortal(reactEl, targetEl)
-  }, [portalRef, portalStatusRef])
+  const portal = useCallback(
+    (reactEl: ReactElement) => {
+      const targetEl = portalRef.current
+      return !targetEl || portalStatusRef.current === PortalStatus.Exited
+        ? null
+        : createPortal(reactEl, targetEl)
+    },
+    [portalRef, portalStatusRef]
+  )
 
   return {
     openPortal,

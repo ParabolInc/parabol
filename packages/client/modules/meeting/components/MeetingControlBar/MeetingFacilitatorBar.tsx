@@ -33,10 +33,6 @@ interface Props {
 const MeetingFacilitatorBar = (props: Props) => {
   const {isFacilitating, children} = props
   if (!isFacilitating) return null
-  return (
-    <MeetingFacilitatorBarStyles>
-      {children}
-    </MeetingFacilitatorBarStyles>
-  )
+  return <MeetingFacilitatorBarStyles>{children}</MeetingFacilitatorBarStyles>
 }
 export default MeetingFacilitatorBar

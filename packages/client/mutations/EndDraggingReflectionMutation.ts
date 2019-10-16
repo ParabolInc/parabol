@@ -37,6 +37,7 @@ graphql`
       tasks {
         id
       }
+      voteCount
     }
     oldReflectionGroup {
       id
@@ -71,7 +72,11 @@ const mutation = graphql`
   }
 `
 
-const handleRemoveReflectionFromGroup = (reflectionId: string, reflectionGroupId: string, store) => {
+const handleRemoveReflectionFromGroup = (
+  reflectionId: string,
+  reflectionGroupId: string,
+  store
+) => {
   const reflectionGroup = store.get(reflectionGroupId)
   if (!reflectionGroup) return
   safeRemoveNodeFromArray(reflectionId, reflectionGroup, 'reflections')
@@ -89,7 +94,7 @@ export const moveReflectionLocation = (
   reflection: RecordProxy,
   reflectionGroup: RecordProxy,
   oldReflectionGroupId: string,
-  store: RecordSourceSelectorProxy,
+  store: RecordSourceSelectorProxy
 ) => {
   if (!reflection) return
   const reflectionId = reflection.getValue('id')
@@ -200,12 +205,7 @@ const EndDraggingReflectionMutation = (
         })
         reflection.setLinkedRecord(reflectionGroupProxy, 'retroReflectionGroup')
       }
-      moveReflectionLocation(
-        reflection,
-        reflectionGroupProxy,
-        oldReflectionGroupId,
-        store,
-      )
+      moveReflectionLocation(reflection, reflectionGroupProxy, oldReflectionGroupId, store)
     }
   })
 }

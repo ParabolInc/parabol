@@ -14,7 +14,11 @@ export const getMinTop = (top: number, targetEl: HTMLElement | null) => {
 const getTransition = (isClipped: boolean) => {
   const t = `${Times.REFLECTION_DROP_DURATION}ms ${BezierCurve.DECELERATE}`
   const transition = `box-shadow ${t}, transform ${t}`
-  return isClipped ? `${transition}, opacity ${Times.REFLECTION_DROP_DURATION / 2}ms ${BezierCurve.DECELERATE} ${Times.REFLECTION_DROP_DURATION / 2}ms` : transition
+  return isClipped
+    ? `${transition}, opacity ${Times.REFLECTION_DROP_DURATION / 2}ms ${
+        BezierCurve.DECELERATE
+      } ${Times.REFLECTION_DROP_DURATION / 2}ms`
+    : transition
 }
 
 export const getDroppingStyles = (targetEl: HTMLDivElement, bbox: ClientRect, maxTop: number) => {
@@ -48,7 +52,10 @@ const updateClonePosition = (targetEl: HTMLDivElement, reflectionId: string, max
     const bbox = targetEl.getBoundingClientRect()
     const {transform} = getDroppingStyles(targetEl, bbox, maxTop)
     style.transform = transform
-    style.transition = style.transition.replace(String(Times.REFLECTION_DROP_DURATION), String(Times.REFLECTION_DROP_DURATION - Times.REFLECTION_COLLAPSE_DURATION))
+    style.transition = style.transition.replace(
+      String(Times.REFLECTION_DROP_DURATION),
+      String(Times.REFLECTION_DROP_DURATION - Times.REFLECTION_COLLAPSE_DURATION)
+    )
   }, Times.REFLECTION_COLLAPSE_DURATION)
 }
 

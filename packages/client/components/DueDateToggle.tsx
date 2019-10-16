@@ -144,7 +144,7 @@ const DueDateToggle = (props: Props) => {
         <DueDateIcon>access_time</DueDateIcon>
         {dueDate && <DateString>{formatDueDate(dueDate)}</DateString>}
       </Toggle>
-      {menuPortal(<DueDatePicker menuProps={menuProps} task={task} useTaskChild={useTaskChild}/>)}
+      {menuPortal(<DueDatePicker menuProps={menuProps} task={task} useTaskChild={useTaskChild} />)}
     </>
   )
 }

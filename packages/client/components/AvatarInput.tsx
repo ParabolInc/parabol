@@ -20,9 +20,7 @@ interface Props {
   error?: string
 }
 
-const Confetti = lazy(() =>
-  import(/* webpackChunkName: 'Confetti' */ './Confetti')
-)
+const Confetti = lazy(() => import(/* webpackChunkName: 'Confetti' */ './Confetti'))
 
 class AvatarInput extends Component<Props> {
   inputRef = React.createRef<HTMLInputElement>()
@@ -39,7 +37,7 @@ class AvatarInput extends Component<Props> {
     onSubmit(imageToUpload)
   }
 
-  render () {
+  render() {
     const {error} = this.props
     const isHack = error === 'xss'
     const errorStr = isHack ? 'You hacked us!' : error

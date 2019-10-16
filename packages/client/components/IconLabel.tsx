@@ -20,12 +20,14 @@ const Label = styled('div')<Pick<Props, 'iconAfter' | 'iconLarge'>>(({iconAfter,
   }
 })
 
-const StyledIcon = styled(Icon)<Pick<Props, 'iconAfter' | 'iconLarge'>>(({iconAfter, iconLarge}) => ({
-  color: 'inherit',
-  display: 'block',
-  fontSize: iconLarge ? ICON_SIZE.MD24 : ICON_SIZE.MD18,
-  order: iconAfter ? 2 : undefined
-}))
+const StyledIcon = styled(Icon)<Pick<Props, 'iconAfter' | 'iconLarge'>>(
+  ({iconAfter, iconLarge}) => ({
+    color: 'inherit',
+    display: 'block',
+    fontSize: iconLarge ? ICON_SIZE.MD24 : ICON_SIZE.MD18,
+    order: iconAfter ? 2 : undefined
+  })
+)
 
 interface Props {
   icon: string

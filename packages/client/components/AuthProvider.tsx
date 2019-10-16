@@ -1,7 +1,7 @@
 import {Component} from 'react'
 
 class AuthProvider extends Component<{}> {
-  componentDidMount () {
+  componentDidMount() {
     const params = new URLSearchParams(window.location.search)
     const state = params.get('state')
     const code = params.get('code')
@@ -9,7 +9,7 @@ class AuthProvider extends Component<{}> {
     window.opener.postMessage({state, code}, window.location.origin)
   }
 
-  render () {
+  render() {
     return null
   }
 }

@@ -4,7 +4,7 @@ import AtmosphereProvider from './AtmosphereProvider/AtmosphereProvider'
 import RetroRoot from './RetroRoot/RetroRoot'
 
 class DemoMeeting extends Component {
-  render () {
+  render() {
     return (
       <AtmosphereProvider isDemo>
         <React.Fragment>

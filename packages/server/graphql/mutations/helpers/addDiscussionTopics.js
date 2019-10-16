@@ -9,8 +9,8 @@ const addDiscussionTopics = async (meeting, dataLoader) => {
   if (!discussPhase) return {}
   const placeholderStage = discussPhase.stages[0]
   const reflectionGroups = await dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
-  const importantReflectionGroups = mapGroupsToStages(reflectionGroups)
-  const nextDiscussStages = importantReflectionGroups.map((reflectionGroup, idx) => {
+  const sortedReflectionGroups = mapGroupsToStages(reflectionGroups)
+  const nextDiscussStages = sortedReflectionGroups.map((reflectionGroup, idx) => {
     const id = idx === 0 ? placeholderStage.id : shortid.generate()
     return makeDiscussionStage(reflectionGroup.id, meetingId, idx, id)
   })

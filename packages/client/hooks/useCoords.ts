@@ -175,7 +175,13 @@ const useWindowResize = <T extends HTMLElement = HTMLButtonElement>(
   }, [coordsRef, currentTargetRef, setCoords])
 }
 
-const useCoords = <T extends HTMLElement = HTMLButtonElement, P extends HTMLElement = HTMLDivElement>(preferredMenuPosition: MenuPosition, options: UseCoordsOptions = {}) => {
+const useCoords = <
+  T extends HTMLElement = HTMLButtonElement,
+  P extends HTMLElement = HTMLDivElement
+>(
+  preferredMenuPosition: MenuPosition,
+  options: UseCoordsOptions = {}
+) => {
   const [currentTargetRef, setTargetRef] = useState<P | null>(null)
   const targetRef = useCallback((c: P | null) => {
     setTargetRef(c)

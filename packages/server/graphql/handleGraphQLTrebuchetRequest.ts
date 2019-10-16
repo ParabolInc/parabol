@@ -10,7 +10,7 @@ import ConnectionContext from '../socketHelpers/ConnectionContext'
 
 interface Options {
   getQueryString?: (hash: string) => string | Promise<string>
-  isQueryAllowed? (query: string, connectionContext: ConnectionContext): boolean
+  isQueryAllowed?(query: string, connectionContext: ConnectionContext): boolean
 }
 
 const {GQL_START, GQL_STOP} = ServerMessageTypes

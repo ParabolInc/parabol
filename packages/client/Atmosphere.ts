@@ -1,4 +1,7 @@
-import GQLTrebuchetClient, {GQLHTTPClient, OperationPayload} from '@mattkrick/graphql-trebuchet-client'
+import GQLTrebuchetClient, {
+  GQLHTTPClient,
+  OperationPayload
+} from '@mattkrick/graphql-trebuchet-client'
 import getTrebuchet, {SocketTrebuchet, SSETrebuchet} from '@mattkrick/trebuchet-client'
 import {InviteToTeamMutation_notification} from './__generated__/InviteToTeamMutation_notification.graphql'
 import EventEmitter from 'eventemitter3'
@@ -93,7 +96,7 @@ export default class Atmosphere extends Environment {
   // it's only null before login, so it's just a little white lie
   viewerId: string = null!
   userId: string | null = null // DEPRECATED
-  constructor () {
+  constructor() {
     super({
       store,
       handlerProvider,
@@ -206,14 +209,15 @@ export default class Atmosphere extends Environment {
     return new SSETrebuchet({url, fetchData: this.fetchHTTP, fetchPing: this.fetchPing})
   }
 
-  async promiseToUpgrade () {
+  async promiseToUpgrade() {
     const trebuchets = [this.trySockets, this.trySSE]
     const trebuchet = await getTrebuchet(trebuchets)
     if (!trebuchet) {
       this.eventEmitter.emit('addSnackbar', {
         autoDismiss: 0,
         key: 'cannotConnect',
-        message: 'Cannot establish connection. Behind a firewall? Reach out for support: love@parabol.co'
+        message:
+          'Cannot establish connection. Behind a firewall? Reach out for support: love@parabol.co'
       })
       console.error('Cannot connect!')
       return
@@ -222,7 +226,7 @@ export default class Atmosphere extends Environment {
     this.eventEmitter.emit('newSubscriptionClient')
   }
 
-  async upgradeTransport () {
+  async upgradeTransport() {
     // wait until the first and only upgrade has completed
     if (!this.upgradeTransportPromise) {
       this.upgradeTransportPromise = this.promiseToUpgrade()
@@ -232,7 +236,7 @@ export default class Atmosphere extends Environment {
 
   handleFetch = async (
     request: RequestParameters,
-    variables: Variables,
+    variables: Variables
     // _cacheConfig?: CacheConfig
   ): Promise<ObservableFromValue<GraphQLResponse>> => {
     // await sleep(1000)
@@ -300,7 +304,7 @@ export default class Atmosphere extends Environment {
     }
   }
 
-  unregisterQuery (maybeQueryKeys: string | string[], delay?: number) {
+  unregisterQuery(maybeQueryKeys: string | string[], delay?: number) {
     if (delay && delay > 0) {
       if (typeof maybeQueryKeys !== 'string') throw new Error('must not use arr')
       this.queryTimeouts[maybeQueryKeys] = window.setTimeout(() => {
@@ -344,7 +348,7 @@ export default class Atmosphere extends Environment {
     })
   }
 
-  close () {
+  close() {
     this.querySubscriptions.forEach((querySub) => {
       this.unregisterQuery(querySub.queryKey)
     })

@@ -5,7 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import Icon from './Icon'
 import MeetingContent from './MeetingContent'
-import MeetingContentHeader from './MeetingContentHeader'
+import MeetingTopBar from './MeetingTopBar'
 import MeetingHelpToggle from './MenuHelpToggle'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -44,9 +44,7 @@ const StyledIcon = styled(Icon)({
 })
 
 const CheckInHelpMenu = lazyPreload(async () =>
-  import(
-    /* webpackChunkName: 'CheckInHelpMenu' */ './MeetingHelp/CheckInHelpMenu'
-    )
+  import(/* webpackChunkName: 'CheckInHelpMenu' */ './MeetingHelp/CheckInHelpMenu')
 )
 
 interface Props {
@@ -79,13 +77,13 @@ const NewMeetingCheckIn = (props: Props) => {
   return (
     <MeetingContent>
       <MeetingHeaderAndPhase>
-        <MeetingContentHeader
+        <MeetingTopBar
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
           toggleSidebar={toggleSidebar}
         >
           <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.checkin]}</PhaseHeaderTitle>
-        </MeetingContentHeader>
+        </MeetingTopBar>
         <PhaseWrapper>
           <NewMeetingCheckInPrompt team={team} teamMember={teamMember} />
           <CheckIn>
@@ -99,9 +97,7 @@ const NewMeetingCheckIn = (props: Props) => {
             )}
           </CheckIn>
         </PhaseWrapper>
-        <MeetingHelpToggle
-          menu={<CheckInHelpMenu meetingType={meetingType} />}
-        />
+        <MeetingHelpToggle menu={<CheckInHelpMenu meetingType={meetingType} />} />
       </MeetingHeaderAndPhase>
       <MeetingFacilitatorBar isFacilitating={isFacilitating}>
         <CheckInControls handleGotoNext={handleGotoNext} teamMember={teamMember} />

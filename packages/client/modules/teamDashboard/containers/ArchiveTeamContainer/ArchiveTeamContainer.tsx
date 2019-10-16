@@ -13,7 +13,7 @@ interface State {
 }
 
 class ArchiveTeamContainer extends Component<Props, State> {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {showConfirmationField: false}
   }
@@ -26,7 +26,7 @@ class ArchiveTeamContainer extends Component<Props, State> {
     this.setState({showConfirmationField: false})
   }
 
-  render () {
+  render() {
     const {
       team: {id: teamId, name: teamName}
     } = this.props

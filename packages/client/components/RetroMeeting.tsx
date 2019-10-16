@@ -25,9 +25,7 @@ const phaseLookup = {
     import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
   [NewMeetingPhaseTypeEnum.reflect]: lazyPreload(() =>
-    import(
-      /* webpackChunkName: 'RetroReflectPhase' */ './RetroReflectPhase/RetroReflectPhase'
-      )
+    import(/* webpackChunkName: 'RetroReflectPhase' */ './RetroReflectPhase/RetroReflectPhase')
   ),
   [NewMeetingPhaseTypeEnum.group]: lazyPreload(() =>
     import(/* webpackChunkName: 'RetroGroupPhase' */ './RetroGroupPhase')
@@ -99,10 +97,9 @@ const RetroMeeting = (props: Props) => {
         avatarGroup={
           <NewMeetingAvatarGroup
             allowVideo={allowVideo}
-            swarm={swarm}
-            gotoStageId={gotoStageId}
-            team={team}
             camStreams={streams.cam}
+            swarm={swarm}
+            team={team}
           />
         }
       />

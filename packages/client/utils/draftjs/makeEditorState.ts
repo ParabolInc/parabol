@@ -1,8 +1,10 @@
-import {convertFromRaw, EditorState} from 'draft-js'
+import {ContentState, convertFromRaw, EditorState} from 'draft-js'
 import editorDecorators from '../../components/TaskEditor/decorators'
 
-const makeEditorState = (content: string, getEditorState: () => EditorState) => {
-  const contentState = convertFromRaw(JSON.parse(content))
+const makeEditorState = (content: string | undefined | null, getEditorState: () => EditorState) => {
+  const contentState = content
+    ? convertFromRaw(JSON.parse(content))
+    : ContentState.createFromText('')
   return EditorState.createWithContent(contentState, editorDecorators(getEditorState))
 }
 

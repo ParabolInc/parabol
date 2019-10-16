@@ -95,15 +95,20 @@ const useForm = (fieldInputDict: FieldInputDict, deps: any[] = []) => {
           },
           {} as FieldState
         ),
-      [/* eslint-disable-line react-hooks/exhaustive-deps */]
+      [
+        /* eslint-disable-line react-hooks/exhaustive-deps */
+      ]
     )
   )
 
-  const normalize = useCallback((name: string, value: any) => {
-    const normalizeField = fieldInputDict[name].normalize
-    const prevValue = state[name].value
-    return normalizeField ? normalizeField(value, prevValue) : value
-  }, [...deps, state])
+  const normalize = useCallback(
+    (name: string, value: any) => {
+      const normalizeField = fieldInputDict[name].normalize
+      const prevValue = state[name].value
+      return normalizeField ? normalizeField(value, prevValue) : value
+    },
+    [...deps, state]
+  )
 
   const validate = useEventCallback((name: string, value: any) => {
     const validateField = fieldInputDict[name].validate
@@ -113,34 +118,31 @@ const useForm = (fieldInputDict: FieldInputDict, deps: any[] = []) => {
     return res
   })
 
-  const validateField = useEventCallback(
-    (name?: string) => {
-      if (!name) {
-        return Object.keys(state).reduce((obj, name) => {
-          obj[name] = validateField(name)
-          return obj
-        }, {})
-      }
-      return validate(name, state[name].value)
-    })
+  const validateField = useEventCallback((name?: string) => {
+    if (!name) {
+      return Object.keys(state).reduce((obj, name) => {
+        obj[name] = validateField(name)
+        return obj
+      }, {})
+    }
+    return validate(name, state[name].value)
+  })
 
-  const setDirty = useEventCallback(
-    (name?: string) => {
-      if (!name) {
-        Object.keys(state).forEach((name) => setDirty(name))
-        return
-      }
-      dispatch({type: 'setDirty', name})
-    })
+  const setDirty = useEventCallback((name?: string) => {
+    if (!name) {
+      Object.keys(state).forEach((name) => setDirty(name))
+      return
+    }
+    dispatch({type: 'setDirty', name})
+  })
 
-  const onChange = useEventCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const {value} = e.target
-      const name = e.target.name
-      const normalizedValue = normalize(name, value)
-      dispatch({type: 'setValue', name, value: normalizedValue})
-      validate(name, normalizedValue)
-    })
+  const onChange = useEventCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const {value} = e.target
+    const name = e.target.name
+    const normalizedValue = normalize(name, value)
+    dispatch({type: 'setValue', name, value: normalizedValue})
+    validate(name, normalizedValue)
+  })
 
   return {setDirtyField: setDirty, onChange, validateField, fields: state}
 }

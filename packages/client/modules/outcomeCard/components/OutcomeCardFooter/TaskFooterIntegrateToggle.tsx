@@ -8,7 +8,9 @@ import {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 
 const TaskFooterIntegrateMenuRoot = lazyPreload(() =>
-  import(/* webpackChunkName: 'TaskFooterIntegrateMenuRoot' */ '../../../../components/TaskFooterIntegrateMenuRoot')
+  import(
+    /* webpackChunkName: 'TaskFooterIntegrateMenuRoot' */ '../../../../components/TaskFooterIntegrateMenuRoot'
+  )
 )
 
 interface Props {
@@ -22,7 +24,7 @@ const TaskFooterIntegrateToggle = (props: Props) => {
   const {togglePortal, originRef, menuPortal, menuProps, loadingWidth, loadingDelay} = useMenu(
     MenuPosition.UPPER_RIGHT,
     {
-      loadingWidth: 200,
+      loadingWidth: 200
     }
   )
   return (

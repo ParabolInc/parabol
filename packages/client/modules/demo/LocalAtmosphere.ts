@@ -24,9 +24,13 @@ export default class LocalAtmosphere extends Environment {
   clientGraphQLServer = new ClientGraphQLServer(this)
   viewerId = 'demoUser'
 
-  constructor () {
+  constructor() {
     // @ts-ignore
-    super({store, handlerProvider, publishQueue: new LinearPublishQueue(store, handlerProvider, defaultGetDataID)})
+    super({
+      store,
+      handlerProvider,
+      publishQueue: new LinearPublishQueue(store, handlerProvider, defaultGetDataID)
+    } as any)
     // @ts-ignore
     this._network = Network.create(this.fetchLocal, this.subscribeLocal)
   }

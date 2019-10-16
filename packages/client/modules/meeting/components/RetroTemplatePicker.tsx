@@ -13,13 +13,17 @@ interface Props {
 }
 
 const RetroTemplateListMenu = lazyPreload(() =>
-  import(/* webpackChunkName: 'RetroTemplateListMenu' */
-  './RetroTemplateListMenu')
+  import(
+    /* webpackChunkName: 'RetroTemplateListMenu' */
+    './RetroTemplateListMenu'
+  )
 )
 
 const ReflectTemplateModal = lazyPreload(() =>
-  import(/* webpackChunkName: 'ReflectTemplateModal' */
-  './ReflectTemplateModal')
+  import(
+    /* webpackChunkName: 'ReflectTemplateModal' */
+    './ReflectTemplateModal'
+  )
 )
 
 const RetroTemplatePicker = (props: Props) => {
@@ -33,9 +37,12 @@ const RetroTemplatePicker = (props: Props) => {
   const selectedTemplateIdx = templates.findIndex((template) => template.id === selectedTemplateId)
   const safeIdx = selectedTemplateIdx === -1 ? 0 : selectedTemplateIdx
   const selectedTemplate = templates[safeIdx]
-  const {menuPortal, togglePortal, menuProps, originRef} = useMenu<HTMLDivElement>(MenuPosition.UPPER_RIGHT, {
-    isDropdown: true
-  })
+  const {menuPortal, togglePortal, menuProps, originRef} = useMenu<HTMLDivElement>(
+    MenuPosition.UPPER_RIGHT,
+    {
+      isDropdown: true
+    }
+  )
   const {togglePortal: toggleModal, modalPortal} = useModal()
   return (
     <>

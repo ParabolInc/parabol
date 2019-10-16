@@ -7,7 +7,7 @@ import {ActionMeetingPhaseProps} from './ActionMeeting'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
 import MeetingContent from './MeetingContent'
-import MeetingContentHeader from './MeetingContentHeader'
+import MeetingTopBar from './MeetingTopBar'
 import MeetingHelpToggle from './MenuHelpToggle'
 import useAtmosphere from '../hooks/useAtmosphere'
 import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
@@ -37,7 +37,7 @@ interface Props extends ActionMeetingPhaseProps {
 const ActionMeetingAgendaItemsHelpMenu = lazyPreload(async () =>
   import(
     /* webpackChunkName: 'ActionMeetingAgendaItemsHelpMenu' */ './MeetingHelp/ActionMeetingAgendaItemsHelpMenu'
-    )
+  )
 )
 
 const AgendaVerbatim = styled('div')({
@@ -113,7 +113,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
   return (
     <MeetingContent>
       <MeetingHeaderAndPhase>
-        <MeetingContentHeader
+        <MeetingTopBar
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
           toggleSidebar={toggleSidebar}
@@ -140,9 +140,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
           </TaskCardBlock>
           <EditorHelpModalContainer />
         </PhaseWrapper>
-        <MeetingHelpToggle
-          menu={<ActionMeetingAgendaItemsHelpMenu />}
-        />
+        <MeetingHelpToggle menu={<ActionMeetingAgendaItemsHelpMenu />} />
       </MeetingHeaderAndPhase>
       <MeetingFacilitatorBar isFacilitating={isFacilitating}>
         <BottomControlSpacer />

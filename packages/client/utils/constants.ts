@@ -16,7 +16,6 @@ export const MEETING_NAME = 'Action Meeting'
 export const MEETING_SUMMARY_LABEL = 'Summary'
 export const AGENDA_ITEM_LABEL = 'Agenda Topic'
 export const RETRO_TOPIC_LABEL = 'Topic'
-export const RETRO_VOTED_LABEL = 'Upvoted'
 
 /* Phases */
 export const LOBBY = 'lobby'
@@ -139,7 +138,7 @@ export const SIGNIN_LABEL = 'Sign In'
 export const SIGNIN_SLUG = 'signin'
 export const SIGNOUT_LABEL = 'Sign Out'
 export const SIGNOUT_SLUG = 'signout'
-export const CREATE_ACCOUNT_LABEL = 'Create Account'
+export const CREATE_ACCOUNT_LABEL = 'Create Free Account'
 export const CREATE_ACCOUNT_BUTTON_LABEL = 'Create Free Account'
 export const CREATE_ACCOUNT_SLUG = 'create-account'
 

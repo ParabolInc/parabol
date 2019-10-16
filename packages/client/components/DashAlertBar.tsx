@@ -15,7 +15,8 @@ const getTranslate = (y: number) =>
 
 const Alert = styled('div')<{scrollY: number}>(
   {
-    backgroundColor: PALETTE.BACKGROUND_ORANGE,
+    backgroundColor: PALETTE.EMPHASIS_WARM,
+    backgroundImage: PALETTE.GRADIENT_WARM,
     color: '#FFFFFF',
     fontSize: 14,
     lineHeight: '22px',

@@ -12,7 +12,6 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import AddAgendaItemMutation from '../../../../mutations/AddAgendaItemMutation'
 import makeFieldColorPalette from '../../../../styles/helpers/makeFieldColorPalette'
 import makePlaceholderStyles from '../../../../styles/helpers/makePlaceholderStyles'
-import {meetingSidebarGutter} from '../../../../styles/meeting'
 import {PALETTE} from '../../../../styles/paletteV2'
 import ui from '../../../../styles/ui'
 import getNextSortOrder from '../../../../utils/getNextSortOrder'
@@ -20,14 +19,14 @@ import toTeamMemberId from '../../../../utils/relay/toTeamMemberId'
 import useForm from '../../../../hooks/useForm'
 
 const AgendaInputBlock = styled('div')({
-  padding: `${meetingSidebarGutter} 0`,
+  padding: `8px 0`,
   position: 'relative'
 })
 
 const InputForm = styled('form')<{disabled: boolean}>(({disabled}) => ({
   backgroundColor: 'transparent',
   fontSize: 14,
-  padding: `0 ${meetingSidebarGutter}`,
+  padding: `0 0 0 8px`,
   position: 'relative',
   width: '100%',
   ':hover': {
@@ -35,14 +34,15 @@ const InputForm = styled('form')<{disabled: boolean}>(({disabled}) => ({
   }
 }))
 
-const inputPlaceholderStyles = makePlaceholderStyles(PALETTE.TEXT_ORANGE)
+const inputPlaceholderStyles = makePlaceholderStyles(PALETTE.TEXT_BLUE)
 
 const InputField = styled('input')<{disabled: boolean}>(
   {
     ...ui.fieldBaseStyles,
     ...ui.fieldSizeStyles.medium,
+    borderRadius: 4,
     boxShadow: 'none',
-    color: PALETTE.TEXT_ORANGE,
+    color: PALETTE.TEXT_BLUE,
     cursor: 'not-allowed',
     display: 'block',
     fontSize: 14,
@@ -50,28 +50,28 @@ const InputField = styled('input')<{disabled: boolean}>(
     lineHeight: '24px',
     margin: 0,
     outline: 'none',
-    padding: '8px 8px 8px 48px',
+    padding: '8px 8px 8px 43px',
     position: 'relative',
-    textIndent: '3px',
+    textIndent: '4px',
     width: '100%',
-    ...makeFieldColorPalette('primary', false),
+    ...makeFieldColorPalette('cool', false),
     ...inputPlaceholderStyles
   },
   ({disabled}) => {
     return (
       !disabled && {
         cursor: 'text',
-        ...makeFieldColorPalette('primary', true)
+        ...makeFieldColorPalette('cool', true)
       }
     )
   }
 )
 
 const StyledIcon = styled(Icon)({
-  color: PALETTE.TEXT_ORANGE,
+  color: PALETTE.TEXT_BLUE,
   display: 'block',
-  left: 26,
-  opacity: .7,
+  left: 16,
+  opacity: 0.7,
   pointerEvents: 'none',
   position: 'absolute',
   top: 9
@@ -161,7 +161,7 @@ const AgendaInput = (props: Props) => {
             type='text'
             value={value}
           />
-          <StyledIcon>add_circle</StyledIcon>
+          <StyledIcon>add</StyledIcon>
         </InputForm>
       </Tooltip>
     </AgendaInputBlock>

@@ -65,7 +65,7 @@ class EditableTeamName extends Component<Props> {
     return res
   }
 
-  render () {
+  render() {
     const {error, team} = this.props
     const {teamName} = team
     return (

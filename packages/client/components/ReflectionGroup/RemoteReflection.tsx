@@ -21,7 +21,9 @@ const RemoteReflectionModal = styled('div')<{isDropping?: boolean | null}>(({isD
   top: 0,
   boxShadow: isDropping ? Elevation.CARD_SHADOW : Elevation.CARD_DRAGGING,
   pointerEvents: 'none',
-  transition: `all ${isDropping ? Times.REFLECTION_REMOTE_DROP_DURATION : Times.REFLECTION_DROP_DURATION}ms ${BezierCurve.DECELERATE}`,
+  transition: `all ${
+    isDropping ? Times.REFLECTION_REMOTE_DROP_DURATION : Times.REFLECTION_DROP_DURATION
+  }ms ${BezierCurve.DECELERATE}`,
   zIndex: ZIndex.REFLECTION_IN_FLIGHT
 }))
 
@@ -45,9 +47,21 @@ const windowDims = {
 }
 
 const OFFSCREEN_PADDING = 16
-const getCoords = (remoteDrag: DeepNonNullable<NonNullable<RemoteReflection_reflection['remoteDrag']>>) => {
-  const {targetId, clientHeight, clientWidth, clientX, clientY, targetOffsetX, targetOffsetY} = remoteDrag
-  const targetEl = targetId ? document.querySelector(`div[${DragAttribute.DROPPABLE}='${targetId}']`) as HTMLElement : null
+const getCoords = (
+  remoteDrag: DeepNonNullable<NonNullable<RemoteReflection_reflection['remoteDrag']>>
+) => {
+  const {
+    targetId,
+    clientHeight,
+    clientWidth,
+    clientX,
+    clientY,
+    targetOffsetX,
+    targetOffsetY
+  } = remoteDrag
+  const targetEl = targetId
+    ? (document.querySelector(`div[${DragAttribute.DROPPABLE}='${targetId}']`) as HTMLElement)
+    : null
   if (targetEl) {
     const targetBBox = getBBox(targetEl)!
     const minTop = getMinTop(-1, targetEl)
@@ -58,8 +72,8 @@ const getCoords = (remoteDrag: DeepNonNullable<NonNullable<RemoteReflection_refl
     }
   }
   return {
-    left: clientX / clientWidth * windowDims.innerWidth,
-    top: clientY / clientHeight * windowDims.innerHeight
+    left: (clientX / clientWidth) * windowDims.innerWidth,
+    top: (clientY / clientHeight) * windowDims.innerHeight
   }
 }
 
@@ -74,17 +88,25 @@ const getHeaderTransform = (ref: RefObject<HTMLDivElement>, topPadding = 18) => 
   const headerTop = Math.max(minTop, Math.min(maxTop, bbox.top))
   const isFloatingHeader = headerLeft !== bbox.left || headerTop !== bbox.top
   if (!isFloatingHeader) return {}
-  const arrow = headerTop === maxTop ? 'arrow_downward' :
-    headerLeft === maxLeft ? 'arrow_forward' :
-      headerLeft === minLeft ? 'arrow_back' :
-        'arrow_upward' as RemoteReflectionArrow
+  const arrow =
+    headerTop === maxTop
+      ? 'arrow_downward'
+      : headerLeft === maxLeft
+      ? 'arrow_forward'
+      : headerLeft === minLeft
+      ? 'arrow_back'
+      : ('arrow_upward' as RemoteReflectionArrow)
   return {
     arrow,
     headerTransform: `translate(${headerLeft}px,${headerTop}px)`
   }
 }
 
-const getInlineStyle = (remoteDrag: RemoteReflection_reflection['remoteDrag'], isDropping: boolean | null, style: React.CSSProperties) => {
+const getInlineStyle = (
+  remoteDrag: RemoteReflection_reflection['remoteDrag'],
+  isDropping: boolean | null,
+  style: React.CSSProperties
+) => {
   if (isDropping || !remoteDrag || !remoteDrag.clientX) return {nextStyle: style}
   const {left, top, minTop} = getCoords(remoteDrag as any)
   return {nextStyle: {transform: `translate(${left}px,${top}px)`}, minTop}
@@ -93,7 +115,9 @@ const getInlineStyle = (remoteDrag: RemoteReflection_reflection['remoteDrag'], i
 const RemoteReflection = (props: Props) => {
   const {reflection, style} = props
   const {id: reflectionId, content, isDropping} = reflection
-  const remoteDrag = reflection.remoteDrag as DeepNonNullable<NonNullable<RemoteReflection_reflection['remoteDrag']>>
+  const remoteDrag = reflection.remoteDrag as DeepNonNullable<
+    NonNullable<RemoteReflection_reflection['remoteDrag']>
+  >
   const {dragUserId, dragUserName} = remoteDrag
   const ref = useRef<HTMLDivElement>(null)
 
@@ -129,35 +153,37 @@ const RemoteReflection = (props: Props) => {
           <ReflectionEditorWrapper editorState={editorState} readOnly />
         </ReflectionCardRoot>
       </RemoteReflectionModal>
-      {headerTransform &&
-      <HeaderModal>
-        <UserDraggingHeader userId={dragUserId} name={dragUserName} style={{transform: headerTransform}}
-                            arrow={arrow} />
-      </HeaderModal>
-      }
+      {headerTransform && (
+        <HeaderModal>
+          <UserDraggingHeader
+            userId={dragUserId}
+            name={dragUserName}
+            style={{transform: headerTransform}}
+            arrow={arrow}
+          />
+        </HeaderModal>
+      )}
     </>
   )
 }
 
-export default createFragmentContainer(
-  RemoteReflection,
-  {
-    reflection: graphql`
-      fragment RemoteReflection_reflection on RetroReflection {
-        id
-        content
-        isDropping
-        remoteDrag {
-          dragUserId
-          dragUserName
-          clientHeight
-          clientWidth
-          clientX
-          clientY
-          targetId
-          targetOffsetX
-          targetOffsetY
-        }
-      }`
-  }
-)
+export default createFragmentContainer(RemoteReflection, {
+  reflection: graphql`
+    fragment RemoteReflection_reflection on RetroReflection {
+      id
+      content
+      isDropping
+      remoteDrag {
+        dragUserId
+        dragUserName
+        clientHeight
+        clientWidth
+        clientX
+        clientY
+        targetId
+        targetOffsetX
+        targetOffsetY
+      }
+    }
+  `
+})

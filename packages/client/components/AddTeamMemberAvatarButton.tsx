@@ -25,7 +25,6 @@ const AddButton = styled(OutlinedButton)<{isMeeting: boolean | undefined}>(
     fontSize: 24,
     fontWeight: 400,
     height: 32,
-    marginLeft: 12,
     maxWidth: 32,
     padding: 0,
     width: 32
@@ -36,6 +35,7 @@ const AddButton = styled(OutlinedButton)<{isMeeting: boolean | undefined}>(
       maxWidth: 32,
       width: 32,
       [meetingAvatarMediaQueries[0]]: {
+        borderWidth: 2,
         height: 48,
         maxWidth: 48,
         width: 48
@@ -49,9 +49,16 @@ const AddButton = styled(OutlinedButton)<{isMeeting: boolean | undefined}>(
 )
 
 const StyledIcon = styled(Icon)<{isMeeting: boolean}>(
+  {
+    fontSize: 18,
+    marginLeft: -1
+  },
   ({isMeeting}) =>
     isMeeting && {
-      fontSize: 24,
+      fontSize: 18,
+      [meetingAvatarMediaQueries[0]]: {
+        fontSize: 24
+      },
       [meetingAvatarMediaQueries[1]]: {
         fontSize: 36
       }
@@ -87,7 +94,7 @@ const AddTeamMemberAvatarButton = (props: Props) => {
         isMeeting={isMeeting}
         palette='blue'
       >
-        <StyledIcon isMeeting={Boolean(isMeeting)}>add</StyledIcon>
+        <StyledIcon isMeeting={Boolean(isMeeting)}>person_add</StyledIcon>
       </AddButton>
       {tooltipPortal('Invite to Team')}
       {modalPortal(modal)}

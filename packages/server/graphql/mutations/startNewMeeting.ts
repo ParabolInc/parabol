@@ -28,7 +28,7 @@ export default {
       description: 'The base type of the meeting (action, retro, etc)'
     }
   },
-  async resolve (
+  async resolve(
     _source,
     {teamId, meetingType}: IStartNewMeetingOnMutationArguments,
     {authToken, socketId: mutatorId, dataLoader}: GQLContext
@@ -64,8 +64,10 @@ export default {
     } catch (e) {
       return standardError(new Error('Could not start meeting'), {userId: viewerId})
     }
-    const organization = await r.table('Team').get(teamId)('orgId')
-      .do((orgId) => r.table('Organization').get(orgId)) as Organization
+    const organization = (await r
+      .table('Team')
+      .get(teamId)('orgId')
+      .do((orgId) => r.table('Organization').get(orgId))) as Organization
 
     const {showConversionModal} = organization
     const meeting = new Meeting({
@@ -83,9 +85,14 @@ export default {
     // Possibly rollback if mutation triggered more than once
     dataLoader.get('activeMeetingsByTeamId').clear(teamId)
     const newActiveMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
-    const otherActiveMeeting = newActiveMeetings.find(({isAsync, id}) => !isAsync && id !== meeting.id)
+    const otherActiveMeeting = newActiveMeetings.find(
+      ({isAsync, id}) => !isAsync && id !== meeting.id
+    )
     if (otherActiveMeeting) {
-      await r.table('NewMeeting').delete(meeting.id)
+      await r
+        .table('NewMeeting')
+        .get(meeting.id)
+        .delete()
       return standardError(new Error('Meeting already started'), {userId: viewerId})
     }
 

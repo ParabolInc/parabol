@@ -123,7 +123,7 @@ export const navigateMeetingTeamUpdater = (
     const prompts = reflectPhase.getLinkedRecords('reflectPrompts')
     if (!prompts) return
     prompts.forEach((phaseItem) => {
-      ((phaseItem as any) as RecordProxy<ClientRetroPhaseItem>).setValue([], 'editorIds')
+      ;((phaseItem as any) as RecordProxy<ClientRetroPhaseItem>).setValue([], 'editorIds')
     })
   }
 }
@@ -163,6 +163,9 @@ const NavigateMeetingMutation = (
             // optimistically creating an array of temporary stages is difficult because they can become undefined
             // easier to just wait for the return value before advancing
             meeting.setValue(completedStageId, 'facilitatorStageId')
+            if (completedStageId) {
+              setLocalStageAndPhase(store, meetingId, completedStageId)
+            }
           }
         }
       }

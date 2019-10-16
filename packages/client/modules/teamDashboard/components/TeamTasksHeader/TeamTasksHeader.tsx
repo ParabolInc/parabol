@@ -45,8 +45,10 @@ const orgLinkStyles = {
 }
 
 const TeamDashTeamMemberMenu = lazyPreload(() =>
-  import(/* webpackChunkName: 'TeamDashTeamMemberMenu' */
-  '../../../../components/TeamDashTeamMemberMenu')
+  import(
+    /* webpackChunkName: 'TeamDashTeamMemberMenu' */
+    '../../../../components/TeamDashTeamMemberMenu'
+  )
 )
 
 interface Props extends RouteComponentProps<{}> {
@@ -71,7 +73,11 @@ const TeamTasksHeader = (props: Props) => {
           <ClassNames>
             {({css}) => {
               return (
-                <NavLink className={css(orgLinkStyles)} title={orgName} to={`/me/organizations/${orgId}`}>
+                <NavLink
+                  className={css(orgLinkStyles)}
+                  title={orgName}
+                  to={`/me/organizations/${orgId}`}
+                >
                   {orgName}
                 </NavLink>
               )

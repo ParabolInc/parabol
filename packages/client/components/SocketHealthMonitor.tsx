@@ -5,8 +5,7 @@ import {commitLocalUpdate} from 'react-relay'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import ms from 'ms'
 
-interface Props extends WithAtmosphereProps {
-}
+interface Props extends WithAtmosphereProps {}
 
 const upgradeServiceWorker = async () => {
   if ('serviceWorker' in navigator) {

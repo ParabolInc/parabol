@@ -10,14 +10,10 @@ interface Props {
 
 const lookup = {
   TimelineEventJoinedParabol: lazy(() =>
-    import(
-      /* webpackChunkName: 'TimelineEventJoinedParabol' */ './TimelineEventJoinedParabol'
-    )
+    import(/* webpackChunkName: 'TimelineEventJoinedParabol' */ './TimelineEventJoinedParabol')
   ),
   TimelineEventTeamCreated: lazy(() =>
-    import(
-      /* webpackChunkName: 'TimelineEventTeamCreated' */ './TimelineEventTeamCreated'
-    )
+    import(/* webpackChunkName: 'TimelineEventTeamCreated' */ './TimelineEventTeamCreated')
   ),
   TimelineEventCompletedRetroMeeting: lazy(() =>
     import(
@@ -30,7 +26,7 @@ const lookup = {
     )
   )
 }
-function TimelineEvent (props: Props) {
+function TimelineEvent(props: Props) {
   const {timelineEvent} = props
   let AsyncComponent
   if (timelineEvent) {

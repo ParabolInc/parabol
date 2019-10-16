@@ -29,7 +29,9 @@ const AgendaTasks = lazy(() =>
   import(/* webpackChunkName: 'AgendaAndTasksRoot' */ '../../components/AgendaAndTasksRoot')
 )
 const TeamSettings = lazy(() =>
-  import(/* webpackChunkName: 'TeamSettingsWrapper' */ '../../components/TeamSettingsWrapper/TeamSettingsWrapper')
+  import(
+    /* webpackChunkName: 'TeamSettingsWrapper' */ '../../components/TeamSettingsWrapper/TeamSettingsWrapper'
+  )
 )
 const ArchivedTasks = lazy(() =>
   import(/* webpackChunkName: 'TeamArchiveRoot' */ '../TeamArchive/TeamArchiveRoot')

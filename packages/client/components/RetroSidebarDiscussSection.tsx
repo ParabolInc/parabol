@@ -4,29 +4,20 @@ import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import LabelHeading from './LabelHeading/LabelHeading'
-import MeetingSidebarLabelBlock from './MeetingSidebarLabelBlock'
 import MeetingSubnavItem from './MeetingSubnavItem'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import {useGotoStageId} from '../hooks/useMeeting'
 import DragDiscussionTopicMutation from '../mutations/DragDiscussionTopicMutation'
 import {navItemRaised} from '../styles/elevation'
 import {meetingVoteIcon} from '../styles/meeting'
-import {
-  DISCUSSION_TOPIC,
-  RETRO_TOPIC_LABEL,
-  RETRO_VOTED_LABEL,
-  SORT_STEP
-} from '../utils/constants'
+import {DISCUSSION_TOPIC, SORT_STEP} from '../utils/constants'
 import dndNoise from '../utils/dndNoise'
-import plural from '../utils/plural'
 import Icon from './Icon'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
 import {NavSidebar} from '../types/constEnums'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {PALETTE} from '../styles/paletteV2'
+import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 
 const lineHeight = NavSidebar.SUB_LINE_HEIGHT
 
@@ -63,6 +54,8 @@ const DraggableMeetingSubnavItem = styled('div')<{isDragging: boolean}>(({isDrag
 
 const ScrollWrapper = styled('div')({
   overflow: 'auto',
+  paddingBottom: 8,
+  paddingRight: 8,
   height: '100%'
 })
 
@@ -75,9 +68,12 @@ const RetroSidebarDiscussSection = (props: Props) => {
   } = props
   const {newMeeting} = team!
   if (!newMeeting) return null
-  const {localPhase, localStage, facilitatorStageId, id: meetingId} = newMeeting
-  if (!localPhase || !localPhase.stages || !localStage) return null
-  const {stages} = localPhase
+  const {localStage, facilitatorStageId, id: meetingId, phases} = newMeeting
+  const discussPhase = phases!.find(({phaseType}) => phaseType === NewMeetingPhaseTypeEnum.discuss)!
+  // assert that the discuss phase and its stages are non-null
+  // since we render this component when the vote phase is complete
+  // see: RetroSidebarPhaseListItemChildren.tsx
+  const {stages} = discussPhase!
   const {id: localStageId} = localStage
   const inSync = localStageId === facilitatorStageId
 
@@ -93,18 +89,19 @@ const RetroSidebarDiscussSection = (props: Props) => {
       return
     }
 
-    const sourceTopic = stages[source.index]
-    const destinationTopic = stages[destination.index]
+    const sourceTopic = stages![source.index]
+    const destinationTopic = stages![destination.index]
 
     let sortOrder
     if (destination.index === 0) {
       sortOrder = destinationTopic.sortOrder - SORT_STEP + dndNoise()
-    } else if (destination.index === stages.length - 1) {
+    } else if (destination.index === stages!.length - 1) {
       sortOrder = destinationTopic.sortOrder + SORT_STEP + dndNoise()
     } else {
       const offset = source.index > destination.index ? -1 : 1
       sortOrder =
-        (stages[destination.index + offset].sortOrder + destinationTopic.sortOrder) / 2 + dndNoise()
+        (stages![destination.index + offset].sortOrder + destinationTopic.sortOrder) / 2 +
+        dndNoise()
     }
 
     const {id: stageId} = sourceTopic
@@ -119,16 +116,11 @@ const RetroSidebarDiscussSection = (props: Props) => {
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <MeetingSidebarPhaseItemChild>
-        <MeetingSidebarLabelBlock>
-          <LabelHeading>
-            {plural(stages.length, `${RETRO_VOTED_LABEL} ${RETRO_TOPIC_LABEL}`)}
-          </LabelHeading>
-        </MeetingSidebarLabelBlock>
         <Droppable droppableId={DISCUSSION_TOPIC}>
           {(provided) => {
             return (
               <ScrollWrapper ref={provided.innerRef}>
-                {stages.map((stage, idx) => {
+                {stages!.map((stage, idx) => {
                   const {reflectionGroup} = stage
                   if (!reflectionGroup) return null
                   const {title, voteCount} = reflectionGroup
@@ -156,7 +148,6 @@ const RetroSidebarDiscussSection = (props: Props) => {
                               label={title!}
                               metaContent={voteMeta}
                               onClick={() => handleClick(stage.id)}
-                              orderLabel={`${idx + 1}.`}
                               isActive={localStage.id === stage.id}
                               isComplete={stage.isComplete}
                               isDisabled={!stage.isNavigable}
@@ -180,6 +171,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
 
 graphql`
   fragment RetroSidebarDiscussSectionDiscussPhase on DiscussPhase {
+    phaseType
     stages {
       id
       isComplete
@@ -210,8 +202,8 @@ export default createFragmentContainer(withAtmosphere(RetroSidebarDiscussSection
             phases {
               ...RetroSidebarDiscussSectionDiscussPhase @relay(mask: false)
             }
-            localPhase {
-              ...RetroSidebarDiscussSectionDiscussPhase @relay(mask: false)
+            localStage {
+              id
             }
           }
         }

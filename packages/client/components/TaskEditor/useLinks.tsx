@@ -1,58 +1,39 @@
-import {DraftEditorCommand, EditorProps, EditorState, KeyBindingUtil, SelectionState} from 'draft-js'
-import React, {ReactNode, RefObject, useRef, useState} from 'react'
+import {
+  DraftEditorCommand,
+  EditorProps,
+  EditorState,
+  KeyBindingUtil,
+  SelectionState
+} from 'draft-js'
+import React, {ReactNode, RefObject, Suspense, useRef, useState} from 'react'
 import getAnchorLocation from './getAnchorLocation'
 import getSelectionLink from './getSelectionLink'
 import getSelectionText from './getSelectionText'
 import getWordAt from './getWordAt'
-import {DEFAULT_MENU_HEIGHT, DEFAULT_MENU_WIDTH, HUMAN_ADDICTION_THRESH, MAX_WAIT_TIME} from '../../styles/ui'
 import addSpace from '../../utils/draftjs/addSpace'
 import getFullLinkSelection from '../../utils/draftjs/getFullLinkSelection'
 import makeAddLink from '../../utils/draftjs/makeAddLink'
 import splitBlock from '../../utils/draftjs/splitBlock'
 import getDraftCoords from '../../utils/getDraftCoords'
 import linkify from '../../utils/linkify'
-import Loadable from 'react-loadable'
-import LoadableLoading from '../LoadableLoading'
-import LoadableDraftJSModal from '../LoadableDraftJSModal'
 import {SetEditorState} from '../../types/draft'
 import {UseTaskChild} from '../../hooks/useTaskChildFocus'
 import useForceUpdate from '../../hooks/useForceUpdate'
+import lazyPreload from '../../utils/lazyPreload'
 
-const LoadableEditorLinkChanger = Loadable({
-  loader: () =>
-    import(
-      /* webpackChunkName: 'EditorLinkChanger' */
-      '../../../client/components/EditorLinkChanger/EditorLinkChanger'
-      ),
-  loading: (props) => (
-    <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH}/>
-  ),
-  delay: HUMAN_ADDICTION_THRESH,
-  timeout: MAX_WAIT_TIME
-})
+const EditorLinkChanger = lazyPreload(() =>
+  import(
+    /* webpackChunkName: 'EditorLinkChanger' */
+    '../EditorLinkChanger/EditorLinkChanger'
+  )
+)
 
-const LoadableEditorLinkViewer = Loadable({
-  loader: () =>
-    import(
-      /* webpackChunkName: 'EditorLinkViewer' */
-      '../../../client/components/EditorLinkViewer/EditorLinkViewer'
-      ),
-  loading: (props) => (
-    <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH}/>
-  ),
-  delay: HUMAN_ADDICTION_THRESH,
-  timeout: MAX_WAIT_TIME
-})
-
-const originAnchor = {
-  vertical: 'top',
-  horizontal: 'left'
-}
-
-const targetAnchor = {
-  vertical: 'top',
-  horizontal: 'left'
-}
+const EditorLinkViewer = lazyPreload(() =>
+  import(
+    /* webpackChunkName: 'EditorLinkViewer' */
+    '../EditorLinkViewer/EditorLinkViewer'
+  )
+)
 
 const getEntityKeyAtCaret = (editorState: EditorState) => {
   const selectionState = editorState.getSelection()
@@ -92,7 +73,11 @@ interface CustomProps {
   useTaskChild: UseTaskChild
 }
 
-type Handlers = Pick<EditorProps, 'handleBeforeInput' | 'onChange' | 'handleKeyCommand' | 'keyBindingFn'> & CustomProps
+type Handlers = Pick<
+  EditorProps,
+  'handleBeforeInput' | 'onChange' | 'handleKeyCommand' | 'keyBindingFn'
+> &
+  CustomProps
 
 interface ViewerData {
   href: string
@@ -101,10 +86,18 @@ interface ViewerData {
 }
 
 const useLinks = (editorState: EditorState, setEditorState: SetEditorState, handlers: Handlers) => {
-  const {handleBeforeInput, keyBindingFn, handleKeyCommand, onChange, removeModal, renderModal, useTaskChild} = handlers
+  const {
+    handleBeforeInput,
+    editorRef,
+    keyBindingFn,
+    handleKeyCommand,
+    onChange,
+    removeModal,
+    renderModal,
+    useTaskChild
+  } = handlers
   const undoLinkRef = useRef(false)
   const cachedCoordsRef = useRef<ClientRect | null>(null)
-  const editorRef = useRef<HTMLElement>()
   const [linkViewerData, setLinkViewerData] = useState<ViewerData | undefined>()
   const [linkChangerData, setLinkChangerData] = useState()
   const forceUpdate = useForceUpdate()
@@ -211,7 +204,9 @@ const useLinks = (editorState: EditorState, setEditorState: SetEditorState, hand
     })
   }
 
-  const onKeyCommand: Handlers['handleKeyCommand'] = (command: DraftEditorCommand | 'add-hyperlink') => {
+  const onKeyCommand: Handlers['handleKeyCommand'] = (
+    command: DraftEditorCommand | 'add-hyperlink'
+  ) => {
     if (handleKeyCommand) {
       const result = handleKeyCommand(command, editorState, Date.now())
       // @ts-ignore
@@ -256,27 +251,19 @@ const useLinks = (editorState: EditorState, setEditorState: SetEditorState, hand
     }
     // keys are very important because all modals feed into the same renderModal, which could replace 1 with the other
     return (
-      <LoadableDraftJSModal
-        key='EditorLinkChanger'
-        LoadableComponent={LoadableEditorLinkChanger}
-        maxWidth={320}
-        maxHeight={200}
-        originAnchor={originAnchor}
-        queryVars={{
-          editorState,
-          selectionState,
-          setEditorState,
-          removeModal: onRemoveModal,
-          text,
-          link,
-          initialValues: {text, link},
-          editorRef,
-          useTaskChild
-        }}
-        targetAnchor={targetAnchor}
-        marginFromOrigin={32}
-        originCoords={cachedCoordsRef.current}
-      />
+      <Suspense fallback={''} key={'EditorLinkChanger'}>
+        <EditorLinkChanger
+          originCoords={cachedCoordsRef.current}
+          editorState={editorState}
+          selectionState={selectionState}
+          setEditorState={setEditorState}
+          removeModal={onRemoveModal}
+          text={text}
+          link={link}
+          editorRef={editorRef}
+          useTaskChild={useTaskChild}
+        />
+      </Suspense>
     )
   }
 
@@ -288,23 +275,16 @@ const useLinks = (editorState: EditorState, setEditorState: SetEditorState, hand
     }
     if (!linkViewerData) return null
     return (
-      <LoadableDraftJSModal
-        key='EditorLinkViewer'
-        LoadableComponent={LoadableEditorLinkViewer}
-        maxWidth={400}
-        maxHeight={100}
-        originAnchor={originAnchor}
-        queryVars={{
-          editorState,
-          setEditorState,
-          removeModal: onRemoveModal,
-          href: linkViewerData.href,
-          addHyperlink: addHyperlink
-        }}
-        targetAnchor={targetAnchor}
-        marginFromOrigin={32}
-        originCoords={coords}
-      />
+      <Suspense fallback={''} key={'EditorLinkViewer'}>
+        <EditorLinkViewer
+          originCoords={coords}
+          editorState={editorState}
+          setEditorState={setEditorState}
+          removeModal={onRemoveModal}
+          href={linkViewerData.href}
+          addHyperlink={addHyperlink}
+        />
+      </Suspense>
     )
   }
 
@@ -326,7 +306,11 @@ const useLinks = (editorState: EditorState, setEditorState: SetEditorState, hand
     handleChange,
     handleKeyCommand: onKeyCommand,
     keyBindingFn: handleKeyBindingFn,
-    renderModal: linkViewerData ? renderViewerModal : linkChangerData ? renderChangerModal : renderModal,
+    renderModal: linkViewerData
+      ? renderViewerModal
+      : linkChangerData
+      ? renderChangerModal
+      : renderModal,
     removeModal: linkViewerData || linkChangerData ? onRemoveModal : removeModal
   }
 }

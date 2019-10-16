@@ -42,7 +42,7 @@ const Label = styled('div')({
   fontSize: 14
 })
 
-function GoogleOAuthButton (props: Props) {
+function GoogleOAuthButton(props: Props) {
   const {onClick, label, waiting} = props
   return (
     <StyledButton onClick={onClick} waiting={waiting}>
