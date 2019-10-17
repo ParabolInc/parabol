@@ -10,7 +10,7 @@ export default {
     ...forwardConnectionArgs
   },
   description: 'all the notifications for a single user',
-  resolve: async (_source, args, {authToken}) => {
+  resolve: async (_source, _args, {authToken}) => {
     const r = await getRethink()
     // AUTH
     const userId = getUserId(authToken)
@@ -26,7 +26,8 @@ export default {
           .default(false)
           .ne(true)
       )
-      .orderBy(r.desc('startAt')).run()
+      .orderBy(r.desc('startAt'))
+      .run()
     const edges = nodes.map((node) => ({
       cursor: node.startAt,
       node
