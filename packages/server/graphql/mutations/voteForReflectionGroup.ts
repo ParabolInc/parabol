@@ -23,7 +23,7 @@ export default {
     }
   },
   async resolve(
-    source,
+    _source,
     {isUnvote, reflectionGroupId},
     {authToken, dataLoader, socketId: mutatorId}
   ) {
@@ -33,7 +33,7 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const reflectionGroup = await r.table('RetroReflectionGroup').get(reflectionGroupId)
+    const reflectionGroup = await r.table('RetroReflectionGroup').get(reflectionGroupId).run()
     if (!reflectionGroup || !reflectionGroup.isActive) {
       return standardError(new Error('Reflection group not found'), {userId: viewerId})
     }
@@ -54,7 +54,7 @@ export default {
       .getAll(meetingId, {index: 'meetingId'})
       .filter({userId: viewerId})
       .nth(0)
-      .default(null)
+      .default(null).run()
     if (!meetingMember) {
       return standardError(new Error('Meeting member not found'), {userId: viewerId})
     }
@@ -104,7 +104,7 @@ export default {
         .get(meetingId)
         .update({
           phases
-        })
+        }).run()
     }
 
     const data = {

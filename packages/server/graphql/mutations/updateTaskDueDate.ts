@@ -21,7 +21,7 @@ export default {
       description: 'the new due date. if not a valid date, it will unset the due date'
     }
   },
-  async resolve(source, {taskId, dueDate}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(_source, {taskId, dueDate}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -32,7 +32,7 @@ export default {
     // VALIDATION
     const formattedDueDate = new Date(dueDate)
     const nextDueDate = isValidDate(formattedDueDate) ? formattedDueDate : null
-    const task = await r.table('Task').get(taskId)
+    const task = await r.table('Task').get(taskId).run()
     if (!task || !isTeamMember(authToken, task.teamId)) {
       return standardError(new Error('Task not found'), {userId: viewerId})
     }
@@ -43,7 +43,7 @@ export default {
       .get(taskId)
       .update({
         dueDate: nextDueDate
-      })
+      }).run()
 
     const data = {taskId}
 

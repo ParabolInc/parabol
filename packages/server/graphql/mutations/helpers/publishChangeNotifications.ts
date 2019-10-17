@@ -2,8 +2,9 @@ import getRethink from '../../../database/rethinkDriver'
 import shortid from 'shortid'
 import {ASSIGNEE, MENTIONEE, TASK_INVOLVES} from '../../../../client/utils/constants'
 import getTypeFromEntityMap from '../../../../client/utils/draftjs/getTypeFromEntityMap'
+import Task from '../../../database/types/Task'
 
-const publishChangeNotifications = async (task, oldTask, changeUserId, usersToIgnore) => {
+const publishChangeNotifications = async (task: Task, oldTask: Task, changeUserId: string, usersToIgnore: string[]) => {
   const r = await getRethink()
   const now = new Date()
   const changeAuthorId = `${changeUserId}::${task.teamId}`
@@ -67,7 +68,7 @@ const publishChangeNotifications = async (task, oldTask, changeUserId, usersToIg
         .filter({
           taskId: task.id,
           type: TASK_INVOLVES
-        })
+        }).run()
       notificationsToAdd.push(...existingTaskNotifications)
     }
   }
@@ -89,7 +90,7 @@ const publishChangeNotifications = async (task, oldTask, changeUserId, usersToIg
             .default([]),
     insertedNotifications:
       notificationsToAdd.length === 0 ? [] : r.table('Notification').insert(notificationsToAdd)
-  })
+  }).run()
   return {notificationsToRemove, notificationsToAdd}
 }
 

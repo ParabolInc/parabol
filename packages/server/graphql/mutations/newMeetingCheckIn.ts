@@ -25,7 +25,7 @@ export default {
     }
   },
   async resolve(
-    source,
+    _source,
     {userId, meetingId, isCheckedIn},
     {authToken, dataLoader, socketId: mutatorId}
   ) {
@@ -37,7 +37,7 @@ export default {
     const meeting = await r
       .table('NewMeeting')
       .get(meetingId)
-      .default(null)
+      .default(null).run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, teamId} = meeting
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
@@ -50,7 +50,7 @@ export default {
     await r
       .table('MeetingMember')
       .get(meetingMemberId)
-      .update({isCheckedIn})
+      .update({isCheckedIn}).run()
 
     const data = {meetingId, userId}
     publish(TEAM, teamId, NewMeetingCheckInPayload, data, subOptions)

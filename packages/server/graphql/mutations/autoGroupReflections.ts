@@ -23,7 +23,7 @@ export default {
     }
   },
   async resolve(
-    source,
+    _source,
     {meetingId, groupingThreshold},
     {authToken, dataLoader, socketId: mutatorId}
   ) {
@@ -37,7 +37,7 @@ export default {
     const meeting = await r
       .table('NewMeeting')
       .get(meetingId)
-      .default(null)
+      .default(null).run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases, teamId} = meeting
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
@@ -58,7 +58,7 @@ export default {
     const reflections = await r
       .table('RetroReflection')
       .getAll(meetingId, {index: 'meetingId'})
-      .filter({isActive: true})
+      .filter({isActive: true}).run()
     const {
       autoGroupThreshold,
       groupedReflections,
@@ -99,7 +99,7 @@ export default {
           autoGroupThreshold,
           nextAutoGroupThreshold: nextThresh
         })
-    })
+    }).run()
 
     const reflectionGroupIds = groups.map(({id}) => id)
     const reflectionIds = groupedReflections.map(({id}) => id)

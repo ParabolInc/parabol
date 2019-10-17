@@ -21,7 +21,7 @@ export default {
       description: 'the flag that you want to give to the user'
     }
   },
-  async resolve(source, {email, flag}, {authToken, dataLoader}) {
+  async resolve(_source, {email, flag}, {authToken, dataLoader}) {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId}
@@ -34,7 +34,7 @@ export default {
     const userIds = await r
       .table('User')
       .filter((doc) => doc('email').match(email))('id')
-      .default([])
+      .run()
     if (userIds.length === 0) {
       return standardError(new Error('Team member not found'), {userId: viewerId})
     }
@@ -48,6 +48,7 @@ export default {
           .append(flag)
           .distinct()
       }))
+      .run()
     const result = `${email} has been given access to the ${flag} feature. If the app is open, it should magically appear.`
     userIds.forEach((userId) => {
       const data = {result, userId}

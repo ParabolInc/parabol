@@ -17,7 +17,7 @@ export default {
       description: 'the updated org including the id, and at least one other field'
     }
   },
-  async resolve(source, {updatedOrg}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(_source, {updatedOrg}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
@@ -47,7 +47,7 @@ export default {
     await r
       .table('Organization')
       .get(orgId)
-      .update(dbUpdate)
+      .update(dbUpdate).run()
 
     const data = {orgId}
     publish(ORGANIZATION, orgId, UpdateOrgPayload, data, subOptions)

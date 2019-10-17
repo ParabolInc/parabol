@@ -28,7 +28,7 @@ const safelyCastVote = async (
         {}
       )
     })('replaced')
-    .eq(1)
+    .eq(1).run()
   if (!isVoteRemovedFromUser) {
     return standardError(new Error('No votes remaining'), {userId: viewerId})
   }
@@ -47,14 +47,14 @@ const safelyCastVote = async (
         {}
       )
     })('replaced')
-    .eq(1)
+    .eq(1).run()
   if (!isVoteAddedToGroup) {
     await r
       .table('MeetingMember')
       .get(meetingMemberId)
       .update((member) => ({
         votesRemaining: member('votesRemaining').add(1)
-      }))
+      })).run()
     return standardError(new Error('Max votes per group exceeded'), {userId: viewerId})
   }
   return undefined

@@ -21,7 +21,7 @@ export default {
     }
   },
   async resolve(
-    source,
+    _source,
     {meetingId, checkInQuestion},
     {authToken, dataLoader, socketId: mutatorId}
   ) {
@@ -32,7 +32,7 @@ export default {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const meeting = await r.table('NewMeeting').get(meetingId)
+    const meeting = await r.table('NewMeeting').get(meetingId).run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
@@ -52,7 +52,7 @@ export default {
       .update({
         phases,
         updatedAt: now
-      })
+      }).run()
 
     const data = {meetingId}
     publish(TEAM, teamId, UpdateNewCheckInQuestionPayload, data, subOptions)

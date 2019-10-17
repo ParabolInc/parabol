@@ -16,7 +16,7 @@ export default {
       description: 'The input object containing the teamId and any modified fields'
     }
   },
-  async resolve(source, {updatedTeam}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(_source, {updatedTeam}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
@@ -30,7 +30,7 @@ export default {
     }
 
     // VALIDATION
-    const team = await r.table('Team').get(teamId)
+    const team = await r.table('Team').get(teamId).run()
     const orgTeams = await dataLoader.get('teamsByOrgId').load(team.orgId)
     const orgTeamNames = orgTeams.filter((team) => team.id !== teamId).map((team) => team.name)
     const {error, value: name} = teamNameValidation(updatedTeam.name, orgTeamNames)
@@ -49,7 +49,7 @@ export default {
     await r
       .table('Team')
       .get(teamId)
-      .update(dbUpdate)
+      .update(dbUpdate).run()
 
     const data = {teamId}
     publish(TEAM, teamId, UpdateTeamNamePayload, data, subOptions)

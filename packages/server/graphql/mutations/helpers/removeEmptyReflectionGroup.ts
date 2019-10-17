@@ -1,6 +1,6 @@
 import getRethink from '../../../database/rethinkDriver'
 
-const removeEmptyReflectionGroup = async (reflectionGroupId, oldReflectionGroupId) => {
+const removeEmptyReflectionGroup = async (reflectionGroupId: string, oldReflectionGroupId: string) => {
   const r = await getRethink()
   const now = new Date()
   if (!reflectionGroupId) return false
@@ -22,6 +22,7 @@ const removeEmptyReflectionGroup = async (reflectionGroupId, oldReflectionGroupI
         null
       )
     })
+    .run()
 }
 
 export default removeEmptyReflectionGroup
