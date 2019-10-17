@@ -22,7 +22,7 @@ export default {
       description: 'The updated item including an id, content, status, sortOrder'
     }
   },
-  async resolve (
+  async resolve(
     _source,
     {updatedAgendaItem},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
@@ -60,31 +60,35 @@ export default {
       })
     const team = await dataLoader.get('teams').load(teamId)
     const {meetingId} = team
+
     if (meetingId) {
       const meeting = (await r.table('NewMeeting').get(meetingId)) as Meeting | null
-      if (!meeting || meeting.meetingType !== ACTION) {
+      if (!meeting) {
         return standardError(new Error('Invalid meetingId'))
       }
-      const {phases} = meeting
-      const agendaItemPhase = phases.find(
-        (phase) => phase.phaseType === AGENDA_ITEMS
-      )! as AgendaItemsPhase
-      const {stages} = agendaItemPhase
-      const agendaItems = (await dataLoader
-        .get('agendaItemsByTeamId')
-        .load(teamId)) as IAgendaItem[]
-      const getSortOrder = (stage: AgendaItemsStage) => {
-        const agendaItem = agendaItems.find((item) => item.id === stage.agendaItemId)
-        return (agendaItem && agendaItem.sortOrder) || 0
+      if (meeting.meetingType === ACTION) {
+        const {phases} = meeting
+        const agendaItemPhase = phases.find(
+          (phase) => phase.phaseType === AGENDA_ITEMS
+        )! as AgendaItemsPhase
+        const {stages} = agendaItemPhase
+        const agendaItems = (await dataLoader
+          .get('agendaItemsByTeamId')
+          .load(teamId)) as IAgendaItem[]
+        const getSortOrder = (stage: AgendaItemsStage) => {
+          const agendaItem = agendaItems.find((item) => item.id === stage.agendaItemId)
+          return (agendaItem && agendaItem.sortOrder) || 0
+        }
+        stages.sort((a, b) => (getSortOrder(a) > getSortOrder(b) ? 1 : -1))
+        await r
+          .table('NewMeeting')
+          .get(meetingId)
+          .update({
+            phases
+          })
       }
-      stages.sort((a, b) => (getSortOrder(a) > getSortOrder(b) ? 1 : -1))
-      await r
-        .table('NewMeeting')
-        .get(meetingId)
-        .update({
-          phases
-        })
     }
+
     const data = {agendaItemId, meetingId}
     publish(TEAM, teamId, UpdateAgendaItemPayload, data, subOptions)
     return data
