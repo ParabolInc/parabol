@@ -1,14 +1,23 @@
 // @ts-ignore
-import rethinkdbdash from 'rethinkdbdash'
+import {r} from 'rethinkdb-ts'
 import getRethinkConfig from './getRethinkConfig'
 
 const config = getRethinkConfig()
-let driver: any
-const getRethink = () => {
-  if (!driver) {
-    driver = rethinkdbdash(config)
+let isLoading = false
+let isLoaded = false
+let promise
+const getRethink = async () => {
+  if (isLoaded) {
+    return r
   }
-  return driver
+  // it's not loaded
+  if (!isLoading) {
+    isLoading = true
+    promise = r.connectPool(config)
+  }
+  await promise
+  isLoaded = true
+  return r
 }
 
 export default getRethink

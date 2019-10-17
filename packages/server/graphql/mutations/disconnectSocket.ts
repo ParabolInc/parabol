@@ -16,7 +16,7 @@ export default {
   type: DisconnectSocketPayload,
   resolve: async (_source, _args, {authToken, socketId}: GQLContext) => {
     // Note: no server secret means a client could call this themselves & appear disconnected when they aren't!
-    const r = getRethink()
+    const r = await getRethink()
 
     // AUTH
     if (!socketId) return undefined
@@ -35,6 +35,7 @@ export default {
         {returnChanges: true}
       )('changes')(0)('new_val')
       .default(null)
+      .run()
 
     if (!disconnectedUser) return undefined
     const {connectedSockets, tms} = disconnectedUser
@@ -42,17 +43,17 @@ export default {
     if (connectedSockets.length === 0) {
       // If that was the last socket, tell everyone they went offline
       const {listeningUserIds, facilitatingMeetings} = await r({
-        listeningUserIds: r
+        listeningUserIds: (r
           .table('TeamMember')
           .getAll(r.args(tms), {index: 'teamId'})
           .filter({isNotRemoved: true})('userId')
-          .distinct(),
-        facilitatingMeetings: r
+          .distinct() as unknown) as string[],
+        facilitatingMeetings: (r
           .table('NewMeeting')
           .getAll(userId, {index: 'facilitatorUserId'})
           .coerceTo('array')
-          .default([])
-      })
+          .default([]) as unknown) as Meeting[]
+      }).run()
       const subOptions = {mutatorId: socketId}
       listeningUserIds.forEach((onlineUserId) => {
         publish(NOTIFICATION, onlineUserId, DisconnectSocketPayload, data, subOptions)
@@ -65,6 +66,7 @@ export default {
             .count()
             .eq(0)
             .default(true)
+            .run()
           if (userOffline) {
             facilitatingMeetings.forEach((meeting) => {
               const {phases, facilitatorStageId, id: meetingId, teamId} = meeting as Meeting

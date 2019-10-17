@@ -22,12 +22,12 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve (
+  async resolve(
     source,
     {isUnvote, reflectionGroupId},
     {authToken, dataLoader, socketId: mutatorId}
   ) {
-    const r = getRethink()
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
 

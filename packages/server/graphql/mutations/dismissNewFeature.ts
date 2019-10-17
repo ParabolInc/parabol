@@ -8,7 +8,7 @@ export default {
   description: `Redeem an invitation token for a logged in user`,
   // rate limited because a notificationId subverts the expiration of the token & we don't want any brute forces for expired tokens
   resolve: async (_source, _args, {authToken}) => {
-    const r = getRethink()
+    const r = await getRethink()
 
     // AUTH
     const viewerId = getUserId(authToken)
@@ -19,6 +19,7 @@ export default {
       .update({
         newFeatureId: null
       })
+      .run()
 
     return {}
   }

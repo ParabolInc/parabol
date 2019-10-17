@@ -1,8 +1,8 @@
 import stripe from '../stripe'
 import getRethink from '../../database/rethinkDriver'
 
-export default async function terminateSubscription (orgId) {
-  const r = getRethink()
+export default async function terminateSubscription(orgId) {
+  const r = await getRethink()
   const now = new Date()
   // flag teams as unpaid
   const {stripeSubscriptionId} = await r({

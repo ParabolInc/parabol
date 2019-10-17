@@ -6,9 +6,10 @@ import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import StripeManager from '../../utils/StripeManager'
 import {IOrganization, TierEnum} from 'parabol-client/types/graphql'
 import OrganizationUser from '../../database/types/OrganizationUser'
+import Organization from '../../database/types/Organization'
 
-const changePause = (inactive) => (_orgIds, userId) => {
-  const r = getRethink()
+const changePause = (inactive) => async (_orgIds, userId) => {
+  const r = await getRethink()
   return r({
     user: r
       .table('User')
@@ -19,38 +20,42 @@ const changePause = (inactive) => (_orgIds, userId) => {
       .getAll(userId, {index: 'userId'})
       .filter({removedAt: null})
       .update({inactive})
-  })
+  }).run()
 }
 
 const addUser = async (orgIds, userId) => {
-  const r = getRethink()
+  const r = await getRethink()
   const {organizations, organizationUsers} = await r({
-    organizationUsers: r
+    organizationUsers: (r
       .table('OrganizationUser')
       .getAll(userId, {index: 'userId'})
       .orderBy(r.desc('newUserUntil'))
-      .coerceTo('array'),
-    organizations: r
+      .coerceTo('array') as unknown) as OrganizationUser[],
+    organizations: (r
       .table('Organization')
       .getAll(r.args(orgIds))
-      .coerceTo('array')
-  })
+      .coerceTo('array') as unknown) as Organization[]
+  }).run()
   const docs = orgIds.map((orgId) => {
     const oldOrganizationUser = organizationUsers.find(
       (organizationUser) => organizationUser.orgId === orgId
     )
-    const organization = organizations.find((organization) => organization.id === orgId)
+    const organization = organizations.find((organization) => organization.id === orgId)!
     // continue the grace period from before, if any OR set to the end of the invoice OR (if it is a free account) no grace period
-    const newUserUntil = (oldOrganizationUser && oldOrganizationUser.newUserUntil) ||
+    const newUserUntil =
+      (oldOrganizationUser && oldOrganizationUser.newUserUntil) ||
       organization.periodEnd ||
       new Date()
     return new OrganizationUser({orgId, userId, newUserUntil})
   })
-  return r.table('OrganizationUser').insert(docs)
+  return r
+    .table('OrganizationUser')
+    .insert(docs)
+    .run()
 }
 
-const deleteUser = (orgIds, userId) => {
-  const r = getRethink()
+const deleteUser = async (orgIds, userId) => {
+  const r = await getRethink()
   return r
     .table('OrganizationUser')
     .getAll(userId, {index: 'userId'})
@@ -58,6 +63,7 @@ const deleteUser = (orgIds, userId) => {
     .update({
       removedAt: new Date()
     })
+    .run()
 }
 
 const typeLookup = {
@@ -77,16 +83,25 @@ interface OrgWithQty extends IOrganization {
   stripeSubscriptionId: string
 }
 
-export default async function adjustUserCount (userId: string, orgInput: string | string[], type: InvoiceItemType, options: Options = {}) {
-  const r = getRethink()
+export default async function adjustUserCount(
+  userId: string,
+  orgInput: string | string[],
+  type: InvoiceItemType,
+  options: Options = {}
+) {
+  const r = await getRethink()
 
   const orgIds = Array.isArray(orgInput) ? orgInput : [orgInput]
   const dbAction = typeLookup[type]
   await dbAction(orgIds, userId)
-  const orgs = await r
+  const orgs = (await r
     .table('Organization')
     .getAll(r.args(orgIds), {index: 'id'})
-    .filter((org) => org('stripeSubscriptionId').default(null).ne(null))
+    .filter((org) =>
+      org('stripeSubscriptionId')
+        .default(null)
+        .ne(null)
+    )
     .merge((organization) => ({
       quantity: r
         .table('OrganizationUser')
@@ -96,21 +111,35 @@ export default async function adjustUserCount (userId: string, orgInput: string 
           removedAt: null
         })
         .count()
-    })) as OrgWithQty[]
+    }))
+    .run()) as OrgWithQty[]
 
   const now = new Date()
-  const prorationDate = toEpochSeconds(type === InvoiceItemType.REMOVE_USER ? options.prorationDate! : now)
+  const prorationDate = toEpochSeconds(
+    type === InvoiceItemType.REMOVE_USER ? options.prorationDate! : now
+  )
   const hooks = orgs.map((org) => {
-    return new InvoiceItemHook({stripeSubscriptionId: org.stripeSubscriptionId, prorationDate, type, userId, quantity: org.quantity})
+    return new InvoiceItemHook({
+      stripeSubscriptionId: org.stripeSubscriptionId,
+      prorationDate,
+      type,
+      userId,
+      quantity: org.quantity
+    })
   })
   // wait here to make sure the webhook finds what it's looking for
-  await r.table('InvoiceItemHook').insert(hooks)
+  await r
+    .table('InvoiceItemHook')
+    .insert(hooks)
+    .run()
   const manager = new StripeManager()
-  await Promise.all(orgs.map((org) => {
-    const {stripeSubscriptionId, quantity, tier} = org
-    const proProrationDate = tier === TierEnum.enterprise ? undefined : prorationDate
-    return manager.updateSubscriptionQuantity(stripeSubscriptionId, quantity, proProrationDate)
-  }))
+  await Promise.all(
+    orgs.map((org) => {
+      const {stripeSubscriptionId, quantity, tier} = org
+      const proProrationDate = tier === TierEnum.enterprise ? undefined : prorationDate
+      return manager.updateSubscriptionQuantity(stripeSubscriptionId, quantity, proProrationDate)
+    })
+  )
   // publish any changes to user traits (like tier counts) to segment:
   await sendSegmentIdentify(userId)
 }

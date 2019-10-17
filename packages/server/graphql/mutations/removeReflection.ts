@@ -18,15 +18,18 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve (_source, {reflectionId}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink()
+  async resolve(_source, {reflectionId}, {authToken, dataLoader, socketId: mutatorId}) {
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const now = new Date()
     const subOptions = {operationId, mutatorId}
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const reflection = await r.table('RetroReflection').get(reflectionId)
+    const reflection = await r
+      .table('RetroReflection')
+      .get(reflectionId)
+      .run()
     if (!reflection) {
       return standardError(new Error('Reflection not found'), {userId: viewerId})
     }
@@ -52,6 +55,7 @@ export default {
         isActive: false,
         updatedAt: now
       })
+      .run()
     await removeEmptyReflectionGroup(reflectionGroupId, reflectionGroupId)
     const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
     let unlockedStageIds
@@ -63,6 +67,7 @@ export default {
         .update({
           phases
         })
+        .run()
     }
     const data = {meetingId, reflectionId, unlockedStageIds}
     publish(SubscriptionChannel.TEAM, teamId, RemoveReflectionPayload, data, subOptions)

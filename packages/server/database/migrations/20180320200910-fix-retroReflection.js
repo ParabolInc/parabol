@@ -15,6 +15,7 @@ exports.up = async (r) => {
       .update({
         phaseTypes: [CHECKIN, REFLECT, GROUP, VOTE, DISCUSS]
       })
+      .run()
   } catch (e) {
     // noop
   }

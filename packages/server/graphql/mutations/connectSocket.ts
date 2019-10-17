@@ -5,13 +5,14 @@ import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEnums'
+import DBUser from '../../database/types/User'
 
 export default {
   name: 'ConnectSocket',
   description: 'a server-side mutation called when a client connects',
   type: User,
   resolve: async (_source, _args, {authToken, dataLoader, socketId}) => {
-    const r = getRethink()
+    const r = await getRethink()
     const now = new Date()
 
     // AUTH
@@ -22,7 +23,7 @@ export default {
 
     // RESOLUTION
     const userChanges = await r
-      .table('User')
+      .table<DBUser>('User')
       .get(userId)
       .update(
         (user) => ({
@@ -36,6 +37,7 @@ export default {
         {returnChanges: true}
       )('changes')(0)
       .default({})
+      .run()
 
     const {old_val: oldUser, new_val: user} = userChanges
     const {inactive} = oldUser
@@ -47,6 +49,7 @@ export default {
         .table('OrganizationUser')
         .getAll(userId, {index: 'userId'})
         .filter({removedAt: null, inactive: true})('orgId')
+        .run()
       adjustUserCount(userId, orgIds, InvoiceItemType.UNPAUSE_USER).catch(console.log)
       // TODO: re-identify
     }
@@ -59,6 +62,7 @@ export default {
         .getAll(r.args(tms), {index: 'teamId'})
         .filter({isNotRemoved: true})('userId')
         .distinct()
+        .run()
 
       // Tell everyone this user is now online
       listeningUserIds.forEach((onlineUserId) => {

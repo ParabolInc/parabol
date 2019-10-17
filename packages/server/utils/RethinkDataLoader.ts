@@ -121,8 +121,11 @@ export default class RethinkDataLoader {
   private pkLoader<T extends keyof Tables>(table: T) {
     // don't pass in a a filter here because they requested a specific ID, they know what they want
     const batchFn = async (keys) => {
-      const r = getRethink()
-      const docs = await r.table(table).getAll(r.args(keys), {index: 'id'})
+      const r = await getRethink()
+      const docs = await r
+        .table(table)
+        .getAll(r.args(keys), {index: 'id'})
+        .run()
       return normalizeRethinkDbResults(keys, 'id')(docs, this.authToken, table)
     }
     return new DataLoader<string, Tables[T]>(batchFn, this.dataLoaderOptions)
@@ -150,111 +153,143 @@ export default class RethinkDataLoader {
   teams = this.pkLoader('Team')
   users = this.pkLoader('User')
 
-  activeMeetingsByTeamId = this.fkLoader(this.newMeetings, 'teamId', (teamIds) => {
-    const r = getRethink()
+  activeMeetingsByTeamId = this.fkLoader(this.newMeetings, 'teamId', async (teamIds) => {
+    const r = await getRethink()
     return r
       .table('NewMeeting')
       .getAll(r.args(teamIds), {index: 'teamId'})
       .filter({endedAt: null}, {default: true})
       .orderBy(r.desc('createdAt'))
+      .run()
   })
 
-  agendaItemsByTeamId = this.fkLoader(this.agendaItems, 'teamId', (teamIds) => {
-    const r = getRethink()
+  agendaItemsByTeamId = this.fkLoader(this.agendaItems, 'teamId', async (teamIds) => {
+    const r = await getRethink()
     return r
       .table('AgendaItem')
       .getAll(r.args(teamIds), {index: 'teamId'})
       .filter({isActive: true})
       .orderBy('sortOrder')
+      .run()
   })
 
-  atlassianAuthByUserId = this.fkLoader(this.atlassianAuths, 'userId', (userIds) => {
-    const r = getRethink()
-    return r.table('AtlassianAuth').getAll(r.args(userIds), {index: 'userId'})
+  atlassianAuthByUserId = this.fkLoader(this.atlassianAuths, 'userId', async (userIds) => {
+    const r = await getRethink()
+    return r
+      .table('AtlassianAuth')
+      .getAll(r.args(userIds), {index: 'userId'})
+      .run()
   })
 
-  customPhaseItemsByTeamId = this.fkLoader(this.customPhaseItems, 'teamId', (teamIds) => {
-    const r = getRethink()
+  customPhaseItemsByTeamId = this.fkLoader(this.customPhaseItems, 'teamId', async (teamIds) => {
+    const r = await getRethink()
     return r
       .table('CustomPhaseItem')
       .getAll(r.args(teamIds), {index: 'teamId'})
       .filter({isActive: true})
+      .run()
   })
 
-  meetingMembersByMeetingId = this.fkLoader(this.meetingMembers, 'meetingId', (meetingIds) => {
-    const r = getRethink()
-    return r.table('MeetingMember').getAll(r.args(meetingIds), {index: 'meetingId'})
+  meetingMembersByMeetingId = this.fkLoader(
+    this.meetingMembers,
+    'meetingId',
+    async (meetingIds) => {
+      const r = await getRethink()
+      return r
+        .table('MeetingMember')
+        .getAll(r.args(meetingIds), {index: 'meetingId'})
+        .run()
+    }
+  )
+
+  meetingSettingsByTeamId = this.fkLoader(this.meetingSettings, 'teamId', async (teamIds) => {
+    const r = await getRethink()
+    return r
+      .table('MeetingSettings')
+      .getAll(r.args(teamIds), {index: 'teamId'})
+      .run()
   })
 
-  meetingSettingsByTeamId = this.fkLoader(this.meetingSettings, 'teamId', (teamIds) => {
-    const r = getRethink()
-    return r.table('MeetingSettings').getAll(r.args(teamIds), {index: 'teamId'})
-  })
-
-  organizationUsersByOrgId = this.fkLoader(this.organizationUsers, 'orgId', (orgIds) => {
-    const r = getRethink()
+  organizationUsersByOrgId = this.fkLoader(this.organizationUsers, 'orgId', async (orgIds) => {
+    const r = await getRethink()
     return r
       .table('OrganizationUser')
       .getAll(r.args(orgIds), {index: 'orgId'})
       .filter({removedAt: null})
+      .run()
   })
 
-  organizationUsersByUserId = this.fkLoader(this.organizationUsers, 'userId', (userIds) => {
-    const r = getRethink()
+  organizationUsersByUserId = this.fkLoader(this.organizationUsers, 'userId', async (userIds) => {
+    const r = await getRethink()
     return r
       .table('OrganizationUser')
       .getAll(r.args(userIds), {index: 'userId'})
       .filter({removedAt: null})
+      .run()
   })
 
   retroReflectionGroupsByMeetingId = this.fkLoader(
     this.retroReflectionGroups,
     'meetingId',
-    (meetingIds) => {
-      const r = getRethink()
+    async (meetingIds) => {
+      const r = await getRethink()
       return r
         .table('RetroReflectionGroup')
         .getAll(r.args(meetingIds), {index: 'meetingId'})
         .filter({isActive: true})
+        .run()
     }
   )
 
-  reflectTemplatesByTeamId = this.fkLoader(this.reflectTemplates, 'teamId', (teamIds) => {
-    const r = getRethink()
+  reflectTemplatesByTeamId = this.fkLoader(this.reflectTemplates, 'teamId', async (teamIds) => {
+    const r = await getRethink()
     return r
       .table('ReflectTemplate')
       .getAll(r.args(teamIds), {index: 'teamId'})
       .filter({isActive: true})
+      .run()
   })
 
-  retroReflectionsByMeetingId = this.fkLoader(this.retroReflections, 'meetingId', (meetingIds) => {
-    const r = getRethink()
+  retroReflectionsByMeetingId = this.fkLoader(
+    this.retroReflections,
+    'meetingId',
+    async (meetingIds) => {
+      const r = await getRethink()
+      return r
+        .table('RetroReflection')
+        .getAll(r.args(meetingIds), {index: 'meetingId'})
+        .filter({isActive: true})
+        .run()
+    }
+  )
+
+  slackAuthByUserId = this.fkLoader(this.slackAuths, 'userId', async (userIds) => {
+    const r = await getRethink()
     return r
-      .table('RetroReflection')
-      .getAll(r.args(meetingIds), {index: 'meetingId'})
-      .filter({isActive: true})
+      .table('SlackAuth')
+      .getAll(r.args(userIds), {index: 'userId'})
+      .run()
   })
 
-  slackAuthByUserId = this.fkLoader(this.slackAuths, 'userId', (userIds) => {
-    const r = getRethink()
-    return r.table('SlackAuth').getAll(r.args(userIds), {index: 'userId'})
+  slackNotificationsByTeamId = this.fkLoader(this.slackNotifications, 'teamId', async (teamIds) => {
+    const r = await getRethink()
+    return r
+      .table('SlackNotification')
+      .getAll(r.args(teamIds), {index: 'teamId'})
+      .run()
   })
 
-  slackNotificationsByTeamId = this.fkLoader(this.slackNotifications, 'teamId', (teamIds) => {
-    const r = getRethink()
-    return r.table('SlackNotification').getAll(r.args(teamIds), {index: 'teamId'})
-  })
-
-  suggestedActionsByUserId = this.fkLoader(this.suggestedActions, 'userId', (userIds) => {
-    const r = getRethink()
+  suggestedActionsByUserId = this.fkLoader(this.suggestedActions, 'userId', async (userIds) => {
+    const r = await getRethink()
     return r
       .table('SuggestedAction')
       .getAll(r.args(userIds), {index: 'userId'})
       .filter({removedAt: null})
+      .run()
   })
 
-  tasksByTeamId = this.fkLoader(this.tasks, 'teamId', (teamIds) => {
-    const r = getRethink()
+  tasksByTeamId = this.fkLoader(this.tasks, 'teamId', async (teamIds) => {
+    const r = await getRethink()
     const userId = getUserId(this.authToken)
     return r
       .table('Task')
@@ -266,10 +301,11 @@ export default class RethinkDataLoader {
           .or(task('tags').contains('archived'))
           .not()
       )
+      .run()
   })
 
-  tasksByUserId = this.fkLoader(this.tasks, 'userId', (_userIds) => {
-    const r = getRethink()
+  tasksByUserId = this.fkLoader(this.tasks, 'userId', async (_userIds) => {
+    const r = await getRethink()
     const userId = getUserId(this.authToken)
     const tms = (this.authToken && this.authToken.tms) || []
     return r
@@ -284,10 +320,11 @@ export default class RethinkDataLoader {
           r(tms).contains(task('teamId'))
         )
       )
+      .run()
   })
 
-  teamsByOrgId = this.fkLoader(this.teams, 'orgId', (orgIds) => {
-    const r = getRethink()
+  teamsByOrgId = this.fkLoader(this.teams, 'orgId', async (orgIds) => {
+    const r = await getRethink()
     return r
       .table('Team')
       .getAll(r.args(orgIds), {index: 'orgId'})
@@ -296,24 +333,27 @@ export default class RethinkDataLoader {
           .default(false)
           .ne(true)
       )
+      .run()
   })
 
-  teamInvitationsByTeamId = this.fkLoader(this.teamInvitations, 'teamId', (teamIds) => {
-    const r = getRethink()
+  teamInvitationsByTeamId = this.fkLoader(this.teamInvitations, 'teamId', async (teamIds) => {
+    const r = await getRethink()
     const now = new Date()
     return r
       .table('TeamInvitation')
       .getAll(r.args(teamIds), {index: 'teamId'})
       .filter({acceptedAt: null})
       .filter((row) => row('expiresAt').ge(now))
+      .run()
   })
 
-  teamMembersByTeamId = this.fkLoader(this.teamMembers, 'teamId', (teamIds) => {
-    const r = getRethink()
+  teamMembersByTeamId = this.fkLoader(this.teamMembers, 'teamId', async (teamIds) => {
+    const r = await getRethink()
     return r
       .table('TeamMember')
       .getAll(r.args(teamIds), {index: 'teamId'})
       .filter({isNotRemoved: true})
+      .run()
   })
 
   freshAtlassianAccessToken = new DataLoader<{teamId: string; userId: string}, string>(
@@ -332,12 +372,13 @@ export default class RethinkDataLoader {
           // fetch a new one
           const manager = await AtlassianManager.refresh(refreshToken)
           const {accessToken} = manager
-          const r = getRethink()
+          const r = await getRethink()
           await r
             .table('AtlassianAuth')
             .getAll(userId, {index: 'userId'})
             .filter({teamId})
             .update({accessToken, updatedAt: now})
+            .run()
           return accessToken
         })
       )

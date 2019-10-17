@@ -4,7 +4,7 @@ import {ASSIGNEE, MENTIONEE, TASK_INVOLVES} from '../../../../client/utils/const
 import getTypeFromEntityMap from '../../../../client/utils/draftjs/getTypeFromEntityMap'
 
 const publishChangeNotifications = async (task, oldTask, changeUserId, usersToIgnore) => {
-  const r = getRethink()
+  const r = await getRethink()
   const now = new Date()
   const changeAuthorId = `${changeUserId}::${task.teamId}`
   const {entityMap: oldEntityMap, blocks: oldBlocks} = JSON.parse(oldTask.content)
@@ -78,15 +78,15 @@ const publishChangeNotifications = async (task, oldTask, changeUserId, usersToIg
       userIdsToRemove.length === 0
         ? []
         : r
-          .table('Notification')
-          .getAll(r.args(userIdsToRemove), {index: 'userIds'})
-          .filter({
-            taskId: oldTask.id,
-            type: TASK_INVOLVES
-          })
-          .delete({returnChanges: true})('changes')('old_val')
-          .pluck('id', 'userIds')
-          .default([]),
+            .table('Notification')
+            .getAll(r.args(userIdsToRemove), {index: 'userIds'})
+            .filter({
+              taskId: oldTask.id,
+              type: TASK_INVOLVES
+            })
+            .delete({returnChanges: true})('changes')('old_val')
+            .pluck('id', 'userIds')
+            .default([]),
     insertedNotifications:
       notificationsToAdd.length === 0 ? [] : r.table('Notification').insert(notificationsToAdd)
   })

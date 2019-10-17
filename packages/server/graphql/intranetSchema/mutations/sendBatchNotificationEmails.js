@@ -8,7 +8,7 @@ const sendBatchNotificationEmails = {
   type: new GraphQLList(GraphQLString),
   description:
     'Send summary emails of unread notifications to all users who have not been seen within the last 24 hours',
-  async resolve (source, args, {authToken}) {
+  async resolve(source, args, {authToken}) {
     // AUTH
     requireSU(authToken)
 
@@ -16,7 +16,7 @@ const sendBatchNotificationEmails = {
     // Note - this may be a lot of data one day. userNotifications is an array
     // of all the users who have not logged in within the last 24 hours and their
     // associated notifications.
-    const r = getRethink()
+    const r = await getRethink()
     const now = Date.now()
     const today = new Date(now)
     const yesterday = new Date(now - ms('1d'))

@@ -22,8 +22,8 @@ export default {
       description: 'The new team to assign the task to'
     }
   },
-  async resolve (source, {taskId, teamId}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink()
+  async resolve(source, {taskId, teamId}, {authToken, dataLoader, socketId: mutatorId}) {
+    const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -100,15 +100,15 @@ export default {
       mentioneeUserIdsToRemove.length === 0
         ? []
         : await r
-          .table('Notification')
-          .getAll(r.args(mentioneeUserIdsToRemove), {index: 'userIds'})
-          .filter({
-            taskId,
-            type: TASK_INVOLVES
-          })
-          .delete({returnChanges: true})('changes')('old_val')
-          .pluck('id', 'userIds')
-          .default([])
+            .table('Notification')
+            .getAll(r.args(mentioneeUserIdsToRemove), {index: 'userIds'})
+            .filter({
+              taskId,
+              type: TASK_INVOLVES
+            })
+            .delete({returnChanges: true})('changes')('old_val')
+            .pluck('id', 'userIds')
+            .default([])
 
     const isPrivate = tags.includes('private')
     const data = {taskId, notificationsToRemove}

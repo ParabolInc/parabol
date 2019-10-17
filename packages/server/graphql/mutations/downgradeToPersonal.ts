@@ -18,8 +18,8 @@ export default {
       description: 'the org requesting the upgrade'
     }
   },
-  async resolve (_source, {orgId}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink()
+  async resolve(_source, {orgId}, {authToken, dataLoader, socketId: mutatorId}) {
+    const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -33,7 +33,10 @@ export default {
     }
 
     // VALIDATION
-    const {stripeSubscriptionId, tier} = await r.table('Organization').get(orgId)
+    const {stripeSubscriptionId, tier} = await r
+      .table('Organization')
+      .get(orgId)
+      .run()
 
     if (tier === TierEnum.personal) {
       return standardError(new Error('Already on free tier'), {userId: viewerId})
@@ -57,7 +60,7 @@ export default {
           stripeSubscriptionId: null,
           updatedAt: now
         }),
-      teamIds: r
+      teamIds: (r
         .table('Team')
         .getAll(orgId, {index: 'orgId'})
         .update(
@@ -68,8 +71,8 @@ export default {
           },
           {returnChanges: true}
         )('changes')('new_val')('id')
-        .default([])
-    })
+        .default([]) as unknown) as string[]
+    }).run()
     sendSegmentEvent('Downgrade to personal', viewerId, {orgId}).catch()
     const data = {orgId, teamIds}
     publish(ORGANIZATION, orgId, DowngradeToPersonalPayload, data, subOptions)
@@ -85,6 +88,7 @@ export default {
       .table('OrganizationUser')
       .getAll(orgId, {index: 'orgId'})
       .filter({removedAt: null})('userId')
+      .run()
     allUserIds.forEach((userId) => {
       sendSegmentIdentify(userId).catch()
     })

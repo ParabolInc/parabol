@@ -19,7 +19,7 @@ describe('stripeSucceedPayment', () => {
     // SETUP
     const invoiceId = `in_${shortid.generate()}`
     const res = new MockRes()
-    const r = getRethink()
+    const r = await getRethink()
     const dynamicSerializer = new DynamicSerializer()
     const mockDB = new MockDB()
     const {organization} = await mockDB.init({plan: PRO}).newInvoice({id: invoiceId})

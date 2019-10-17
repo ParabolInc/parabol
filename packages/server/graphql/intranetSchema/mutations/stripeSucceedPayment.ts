@@ -16,7 +16,7 @@ export default {
     }
   },
   resolve: async (_source, {invoiceId}, {authToken}: InternalContext) => {
-    const r = getRethink()
+    const r = await getRethink()
     const now = new Date()
 
     // AUTH
@@ -33,7 +33,10 @@ export default {
       livemode,
       metadata: {orgId}
     } = await manager.retrieveCustomer(customerId)
-    const org = await r.table('Organization').get(orgId)
+    const org = await r
+      .table('Organization')
+      .get(orgId)
+      .run()
     if (!org) {
       if (livemode) {
         throw new Error(
@@ -53,5 +56,6 @@ export default {
         paidAt: now,
         status: InvoiceStatusEnum.PAID
       })
+      .run()
   }
 }

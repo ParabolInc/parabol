@@ -17,10 +17,7 @@ import EndNewMeetingPayload from '../types/EndNewMeetingPayload'
 import {endSlackMeeting} from './helpers/notifySlack'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import shortid from 'shortid'
-import {
-  COMPLETED_ACTION_MEETING,
-  COMPLETED_RETRO_MEETING
-} from '../types/TimelineEventTypeEnum'
+import {COMPLETED_ACTION_MEETING, COMPLETED_RETRO_MEETING} from '../types/TimelineEventTypeEnum'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import standardError from '../../utils/standardError'
 import Meeting, {MeetingType} from '../../database/types/Meeting'
@@ -43,7 +40,7 @@ const suggestedActionLookup = {
 
 type Task = Pick<ITask, 'id' | 'sortOrder'>
 const updateTaskSortOrders = async (userIds: string[], tasks: Task[]) => {
-  const r = getRethink()
+  const r = await getRethink()
   const taskMax = await r
     .table('Task')
     .getAll(r.args(userIds), {index: 'userId'})
@@ -54,6 +51,7 @@ const updateTaskSortOrders = async (userIds: string[], tasks: Task[]) => {
     )
     .max('sortOrder')('sortOrder')
     .default(0)
+    .run()
   // mutate what's in the dataloader
   tasks.forEach((task, idx) => {
     task.sortOrder = taskMax + idx + 1
@@ -62,29 +60,32 @@ const updateTaskSortOrders = async (userIds: string[], tasks: Task[]) => {
     id: task.id,
     sortOrder: task.sortOrder
   }))
-  await r(updatedTasks).forEach((task) => {
-    return r
-      .table('Task')
-      .get(task('id'))
-      .update({
-        sortOrder: task('sortOrder')
-      })
-  })
+  await r(updatedTasks)
+    .forEach((task) => {
+      return r
+        .table('Task')
+        .get(task('id'))
+        .update({
+          sortOrder: task('sortOrder')
+        })
+    })
+    .run()
   return tasks
 }
 
 const clearAgendaItems = async (teamId: string) => {
-  const r = getRethink()
+  const r = await getRethink()
   return r
     .table('AgendaItem')
     .getAll(teamId, {index: 'teamId'})
     .update({
       isActive: false
     })
+    .run()
 }
 
 const shuffleCheckInOrder = async (teamId: string) => {
-  const r = getRethink()
+  const r = await getRethink()
   return r
     .table('TeamMember')
     .getAll(teamId, {index: 'teamId'})
@@ -101,11 +102,12 @@ const shuffleCheckInOrder = async (teamId: string) => {
           })
       })
     )
+    .run()
 }
 
 const finishActionMeeting = async (meeting: Meeting, dataLoader: DataLoaderWorker) => {
   const {id: meetingId, teamId} = meeting
-  const r = getRethink()
+  const r = await getRethink()
   const [meetingMembers, tasks, doneTasks] = await Promise.all([
     dataLoader.get('meetingMembersByMeetingId').load(meetingId),
     r
@@ -113,7 +115,8 @@ const finishActionMeeting = async (meeting: Meeting, dataLoader: DataLoaderWorke
       .getAll(teamId, {index: 'teamId'})
       .filter({
         meetingId
-      }),
+      })
+      .run(),
     r
       .table('Task')
       .getAll(teamId, {index: 'teamId'})
@@ -123,6 +126,7 @@ const finishActionMeeting = async (meeting: Meeting, dataLoader: DataLoaderWorke
           .contains('archived')
           .not()
       )
+      .run()
   ])
   const userIds = meetingMembers.map(({userId}) => userId)
   await Promise.all([
@@ -134,6 +138,7 @@ const finishActionMeeting = async (meeting: Meeting, dataLoader: DataLoaderWorke
       .table('NewMeeting')
       .get(meetingId)
       .update({taskCount: tasks.length})
+      .run()
   ])
   return {updatedTaskIds: [...tasks, ...doneTasks].map(({id}) => id)}
 }
@@ -161,9 +166,9 @@ export default {
       description: 'The meeting to end'
     }
   },
-  async resolve (_source, {meetingId}, context: GQLContext) {
+  async resolve(_source, {meetingId}, context: GQLContext) {
     const {authToken, socketId: mutatorId, dataLoader} = context
-    const r = getRethink()
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const now = new Date()
@@ -172,7 +177,8 @@ export default {
     const meeting = (await r
       .table('NewMeeting')
       .get(meetingId)
-      .default(null)) as Meeting | null
+      .default(null)
+      .run()) as Meeting | null
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, facilitatorStageId, meetingNumber, phases, teamId, meetingType} = meeting
 
@@ -182,7 +188,10 @@ export default {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
-    const team = await r.table('Team').get(teamId)
+    const team = await r
+      .table('Team')
+      .get(teamId)
+      .run()
     if (!team.meetingId) {
       return standardError(new Error('Meeting already ended'), {userId: viewerId})
     }
@@ -203,17 +212,17 @@ export default {
         .update({
           meetingId: null
         }),
-      completedMeeting: r
+      completedMeeting: (r
         .table('NewMeeting')
         .get(meetingId)
         .update(
-        {
-          endedAt: now,
-          phases
-        },
+          {
+            endedAt: now,
+            phases
+          },
           {returnChanges: true}
-        )('changes')(0)('new_val')
-    })
+        )('changes')(0)('new_val') as unknown) as Meeting
+    }).run()
 
     const meetingMembers = await dataLoader.get('meetingMembersByMeetingId').load(meetingId)
     const presentMembers = meetingMembers.filter(
@@ -254,13 +263,17 @@ export default {
       orgId: team.orgId,
       meetingId
     }))
-    await r.table('TimelineEvent').insert(events)
+    await r
+      .table('TimelineEvent')
+      .insert(events)
+      .run()
     if (team.isOnboardTeam) {
       const teamLeadUserId = await r
         .table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
         .filter({isLead: true})
         .nth(0)('userId')
+        .run()
 
       const removedSuggestedActionId = await removeSuggestedAction(
         teamLeadUserId,

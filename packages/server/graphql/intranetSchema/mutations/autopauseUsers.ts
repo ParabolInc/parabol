@@ -9,7 +9,7 @@ const autopauseUsers = {
   description:
     'automatically pause users that have been inactive for 30 days. returns the number of users paused',
   resolve: async (_source, _args, {authToken}) => {
-    const r = getRethink()
+    const r = await getRethink()
 
     // AUTH
     requireSU(authToken)
@@ -29,6 +29,7 @@ const autopauseUsers = {
           .filter({removedAt: null})('orgId')
           .coerceTo('array')
       }))
+      .run()
 
     await Promise.all(
       usersToPause.map((user) => {

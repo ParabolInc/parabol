@@ -2,18 +2,27 @@ import shortid from 'shortid'
 
 exports.up = async (r) => {
   try {
-    await r.tableCreate('OrganizationUser')
+    await r.tableCreate('OrganizationUser').run()
   } catch (e) {
     // noop
   }
   try {
     await r({
-      userId: r.table('OrganizationUser').indexCreate('userId'),
-      orgId: r.table('OrganizationUser').indexCreate('orgId')
+      userId: r
+        .table('OrganizationUser')
+        .indexCreate('userId')
+        .run(),
+      orgId: r
+        .table('OrganizationUser')
+        .indexCreate('orgId')
+        .run()
     })
   } catch (e) {}
   try {
-    const orgs = await r.table('Organization').pluck('id', 'createdAt', 'orgUsers')
+    const orgs = await r
+      .table('Organization')
+      .pluck('id', 'createdAt', 'orgUsers')
+      .run()
     const organizationUsers = []
     orgs.forEach((org) => {
       org.orgUsers.forEach((orgUser) => {
@@ -30,20 +39,41 @@ exports.up = async (r) => {
       })
     })
     await r({
-      organizationUsers: r.table('OrganizationUser').insert(organizationUsers),
-      users: r.table('User').replace(r.row.without('userOrgs')),
-      orgs: r.table('Organization').replace(r.row.without('orgUsers')),
-      userIdx: r.table('User').indexDrop('userOrgs'),
-      orgIdx: r.table('Organization').indexDrop('orgUsers')
+      organizationUsers: r
+        .table('OrganizationUser')
+        .insert(organizationUsers)
+        .run(),
+      users: r
+        .table('User')
+        .replace(r.row.without('userOrgs'))
+        .run(),
+      orgs: r
+        .table('Organization')
+        .replace(r.row.without('orgUsers'))
+        .run(),
+      userIdx: r
+        .table('User')
+        .indexDrop('userOrgs')
+        .run(),
+      orgIdx: r
+        .table('Organization')
+        .indexDrop('orgUsers')
+        .run()
     })
   } catch (e) {}
 }
 
 exports.down = async (r) => {
   try {
-    await r.tableDrop('OrganizationUser')
-    await r.table('User').indexCreate('userOrgs')
-    await r.table('Organization').indexCreate('orgUsers')
+    await r.tableDrop('OrganizationUser').run()
+    await r
+      .table('User')
+      .indexCreate('userOrgs')
+      .run()
+    await r
+      .table('Organization')
+      .indexCreate('orgUsers')
+      .run()
   } catch (e) {
     // noop
   }

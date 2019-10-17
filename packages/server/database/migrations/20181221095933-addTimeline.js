@@ -7,12 +7,13 @@ import {
 
 exports.up = async (r) => {
   try {
-    await r.tableCreate('TimelineEvent')
+    await r.tableCreate('TimelineEvent').run()
   } catch (e) {}
   try {
     await r
       .table('TimelineEvent')
       .indexCreate('userIdCreatedAt', (row) => [row('userId'), row('createdAt')])
+      .run()
   } catch (e) {}
 
   const {users, completedActionMeetings, completedRetroMeetings} = await r({
@@ -44,7 +45,7 @@ exports.up = async (r) => {
       }))
       .filter((meeting) => meeting('orgId').ne(null))
       .coerceTo('array')
-  })
+  }).run()
 
   const completedMeetings = [...completedActionMeetings, ...completedRetroMeetings]
 
@@ -89,11 +90,14 @@ exports.up = async (r) => {
     }))
     events.push(...userEvents)
   })
-  await r.table('TimelineEvent').insert(events)
+  await r
+    .table('TimelineEvent')
+    .insert(events)
+    .run()
 }
 
 exports.down = async (r) => {
   try {
-    await r.tableDrop('TimelineEvent')
+    await r.tableDrop('TimelineEvent').run()
   } catch (e) {}
 }

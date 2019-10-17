@@ -18,7 +18,7 @@ console.error = jest.fn()
 describe('updateTask', () => {
   test('updates the sortOrder without changing updatedAt or making a history item', async () => {
     // SETUP
-    const r = getRethink()
+    const r = await getRethink()
     const dynamicSerializer = new DynamicSerializer()
     const mockDB = new MockDB()
     const {task, user} = await mockDB.init().newTask()
@@ -52,7 +52,7 @@ describe('updateTask', () => {
 
   test('updates the content of the task', async () => {
     // SETUP
-    const r = getRethink()
+    const r = await getRethink()
     const dynamicSerializer = new DynamicSerializer()
     const mockDB = new MockDB()
     const {task, user} = await mockDB.init().newTask()
@@ -85,7 +85,7 @@ describe('updateTask', () => {
 
   test('updates the teamMember of the task slowly and trigger a new history item', async () => {
     // SETUP
-    const r = getRethink()
+    const r = await getRethink()
     const dynamicSerializer = new DynamicSerializer()
     const mockDB = new MockDB()
     const {task, teamMember, user} = await mockDB
@@ -122,7 +122,7 @@ describe('updateTask', () => {
 
   test('updates the content of the task quickly and do not trigger a new history item', async () => {
     // SETUP
-    const r = getRethink()
+    const r = await getRethink()
     const dynamicSerializer = new DynamicSerializer()
     const mockDB = new MockDB()
     const {task, user} = await mockDB
@@ -159,7 +159,7 @@ describe('updateTask', () => {
 
   test('updates the status of the task', async () => {
     // SETUP
-    const r = getRethink()
+    const r = await getRethink()
     const dynamicSerializer = new DynamicSerializer()
     const mockDB = new MockDB()
     const {task, user} = await mockDB.init().newTask()

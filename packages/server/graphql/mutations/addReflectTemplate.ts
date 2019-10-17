@@ -15,8 +15,8 @@ const addReflectTemplate = {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve (_source, {teamId}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink()
+  async resolve(_source, {teamId}, {authToken, dataLoader, socketId: mutatorId}) {
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const viewerId = getUserId(authToken)
@@ -31,6 +31,7 @@ const addReflectTemplate = {
       .table('ReflectTemplate')
       .getAll(teamId, {index: 'teamId'})
       .filter({isActive: true})
+      .run()
 
     if (allTemplates.length >= 20) {
       return standardError(new Error('Too many templates'), {userId: viewerId})
@@ -46,7 +47,7 @@ const addReflectTemplate = {
     await r({
       newTemplate: r.table('ReflectTemplate').insert(templates),
       newPhaseItem: r.table('CustomPhaseItem').insert(phaseItems)
-    })
+    }).run()
 
     const templateId = templates[0].id
     const data = {templateId}

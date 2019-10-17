@@ -3,12 +3,18 @@ import shortid from 'shortid'
 
 exports.up = async (r) => {
   try {
-    await Promise.all([r.tableCreate('ReflectTemplate')])
+    await Promise.all([r.tableCreate('ReflectTemplate').run()])
   } catch (e) {}
   try {
     await Promise.all([
-      r.table('ReflectTemplate').indexCreate('teamId'),
-      r.table('CustomPhaseItem').indexCreate('teamId')
+      r
+        .table('ReflectTemplate')
+        .indexCreate('teamId')
+        .run(),
+      r
+        .table('CustomPhaseItem')
+        .indexCreate('teamId')
+        .run()
     ])
   } catch (e) {}
 
@@ -50,7 +56,9 @@ exports.up = async (r) => {
 
   try {
     // insert all templates
-    const teamIds = await r.table('Team')('id')
+    const teamIds = await r
+      .table('Team')('id')
+      .run()
 
     // make templates
     const templatesByTeamId = {}
@@ -59,7 +67,10 @@ exports.up = async (r) => {
       templatesByTeamId[teamId] = templateNames.map((name) => makeTemplate(name, teamId))
       templateInserts.push(...templatesByTeamId[teamId])
     })
-    await r.table('ReflectTemplate').insert(templateInserts)
+    await r
+      .table('ReflectTemplate')
+      .insert(templateInserts)
+      .run()
 
     // put existing prompts into a template
     const retrosCreatedAtDate = new Date('02/12/2018')
@@ -82,7 +93,7 @@ exports.up = async (r) => {
           .update({
             selectedTemplateId: templateId
           })
-      })
+      }).run()
     })
     await Promise.all(updatedPhaseItemPromises)
 
@@ -105,13 +116,16 @@ exports.up = async (r) => {
       )
       phaseItemInserts.push(...glads, ...fourLs, ...starts, ...sailboats)
     })
-    await r.table('CustomPhaseItem').insert(phaseItemInserts)
+    await r
+      .table('CustomPhaseItem')
+      .insert(phaseItemInserts)
+      .run()
   } catch (e) {}
 }
 
 exports.down = async (r) => {
   try {
-    await Promise.all([r.tableDrop('ReflectTemplate')])
+    await Promise.all([r.tableDrop('ReflectTemplate').run()])
   } catch (e) {}
   try {
     const retrosCreatedAtDate = new Date('02/12/2018')
@@ -119,8 +133,10 @@ exports.down = async (r) => {
       .table('CustomPhaseItem')
       .filter((row) => row('createdAt').ne(retrosCreatedAtDate))
       .delete()
+      .run()
     await r
       .table('CustomPhaseItem')
       .replace((r) => r.row.without('createdAt', 'updatedAt', 'templateId'))
+      .run()
   } catch (e) {}
 }

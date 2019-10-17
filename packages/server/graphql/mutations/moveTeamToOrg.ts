@@ -3,19 +3,21 @@ import adjustUserCount from '../../billing/helpers/adjustUserCount'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isSuperUser} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
-import {OrgUserRole} from 'parabol-client/types/graphql'
+import {ITeam, OrgUserRole} from 'parabol-client/types/graphql'
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import safeArchiveEmptyPersonalOrganization from '../../safeMutations/safeArchiveEmptyPersonalOrganization'
+import Organization from '../../database/types/Organization'
+import Notification from '../../database/types/Notification'
 
 const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
-  const r = getRethink()
+  const r = await getRethink()
   // AUTH
   const su = isSuperUser(authToken)
   // VALIDATION
   const {team, org} = await r({
-    team: r.table('Team').get(teamId),
-    org: r.table('Organization').get(orgId),
-  })
+    team: (r.table('Team').get(teamId) as unknown) as ITeam,
+    org: (r.table('Organization').get(orgId) as unknown) as Organization
+  }).run()
   const {orgId: currentOrgId} = team
   if (!su) {
     const userId = getUserId(authToken)
@@ -28,6 +30,7 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
       .filter({orgId, removedAt: null})
       .nth(0)
       .default(null)
+      .run()
     if (!newOrganizationUser) {
       return standardError(new Error('Not on organization'), {userId})
     }
@@ -40,6 +43,7 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
       .getAll(userId, {index: 'userId'})
       .filter({orgId: currentOrgId, removedAt: null})
       .nth(0)
+      .run()
     const isBillingLeaderForTeam = oldOrganizationUser.role === OrgUserRole.BILLING_LEADER
     if (!isBillingLeaderForTeam) {
       return standardError(new Error('Not organization leader'), {userId})
@@ -52,20 +56,20 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
 
   // RESOLUTION
   const {newToOrgUserIds} = await r({
-    notifications: r
+    notifications: (r
       .table('Notification')
       .getAll(currentOrgId, {index: 'orgId'})
       .filter({teamId})
-      .update({orgId}),
-    team: r
+      .update({orgId}) as unknown) as Notification[],
+    team: (r
       .table('Team')
       .get(teamId)
       .update({
         orgId,
         isPaid: Boolean(org.stripeSubscriptionId),
         tier: org.tier
-      }),
-    newToOrgUserIds: r
+      }) as unknown) as ITeam,
+    newToOrgUserIds: (r
       .table('TeamMember')
       .getAll(teamId, {index: 'teamId'})
       .filter({isNotRemoved: true})
@@ -77,20 +81,23 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
           .count()
           .eq(0)
       })('userId')
-      .coerceTo('array')
-  })
+      .coerceTo('array') as unknown) as string[]
+  }).run()
 
   // if no teams remain on the org, remove it
   await safeArchiveEmptyPersonalOrganization(currentOrgId)
 
-  await Promise.all(newToOrgUserIds.map((newUserId) => {
-    return adjustUserCount(newUserId, orgId, InvoiceItemType.ADD_USER)
-  }))
+  await Promise.all(
+    newToOrgUserIds.map((newUserId) => {
+      return adjustUserCount(newUserId, orgId, InvoiceItemType.ADD_USER)
+    })
+  )
 
   const inactiveUserIds = await r
     .table('User')
     .getAll(r.args(newToOrgUserIds), {index: 'id'})
     .filter({inactive: true})('id')
+    .run()
 
   inactiveUserIds.map((newInactiveUserId) => {
     return adjustUserCount(newInactiveUserId, orgId, InvoiceItemType.AUTO_PAUSE_USER)
@@ -114,9 +121,9 @@ export default {
       description: 'The ID of the organization you want to move the team to'
     }
   },
-  async resolve (_source, {teamIds, orgId}, {authToken}) {
+  async resolve(_source, {teamIds, orgId}, {authToken}) {
     console.log('teamIds', teamIds)
-    const results = [] as (string|object)[]
+    const results = [] as (string | object)[]
     for (let i = 0; i < teamIds.length; i++) {
       const teamId = teamIds[i]
       const result = await moveToOrg(teamId, orgId, authToken)

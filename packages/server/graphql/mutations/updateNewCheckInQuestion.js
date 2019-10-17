@@ -20,12 +20,12 @@ export default {
       description: "The Team's new Check-in question"
     }
   },
-  async resolve (
+  async resolve(
     source,
     {meetingId, checkInQuestion},
     {authToken, dataLoader, socketId: mutatorId}
   ) {
-    const r = getRethink()
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const now = new Date()

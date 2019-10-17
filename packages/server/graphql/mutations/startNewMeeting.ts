@@ -28,12 +28,12 @@ export default {
       description: 'The base type of the meeting (action, retro, etc)'
     }
   },
-  async resolve (
+  async resolve(
     _source,
     {teamId, meetingType}: IStartNewMeetingOnMutationArguments,
     {authToken, socketId: mutatorId, dataLoader}: GQLContext
   ) {
-    const r = getRethink()
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
@@ -52,11 +52,12 @@ export default {
     }
 
     // RESOLUTION
-    const meetingCount = (await r
+    const meetingCount = await r
       .table('NewMeeting')
       .getAll(teamId, {index: 'teamId'})
       .count()
-      .default(0)) as number
+      .default(0)
+      .run()
 
     let phases: GenericMeetingPhase[]
     try {
@@ -64,8 +65,11 @@ export default {
     } catch (e) {
       return standardError(new Error('Could not start meeting'), {userId: viewerId})
     }
-    const organization = await r.table('Team').get(teamId)('orgId')
-      .do((orgId) => r.table('Organization').get(orgId)) as Organization
+    const organization = (await r
+      .table('Team')
+      .get(teamId)('orgId')
+      .do((orgId) => r.table('Organization').get(orgId))
+      .run()) as Organization
 
     const {showConversionModal} = organization
     const meeting = new Meeting({
@@ -78,14 +82,23 @@ export default {
     })
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(meeting.teamId)
     const meetingMembers = await createMeetingMembers(meeting, teamMembers, dataLoader)
-    await r.table('NewMeeting').insert(meeting)
+    await r
+      .table('NewMeeting')
+      .insert(meeting)
+      .run()
 
     // Possibly rollback if mutation triggered more than once
     dataLoader.get('activeMeetingsByTeamId').clear(teamId)
     const newActiveMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
-    const otherActiveMeeting = newActiveMeetings.find(({isAsync, id}) => !isAsync && id !== meeting.id)
+    const otherActiveMeeting = newActiveMeetings.find(
+      ({isAsync, id}) => !isAsync && id !== meeting.id
+    )
     if (otherActiveMeeting) {
-      await r.table('NewMeeting').get(meeting.id).delete()
+      await r
+        .table('NewMeeting')
+        .get(meeting.id)
+        .delete()
+        .run()
       return standardError(new Error('Meeting already started'), {userId: viewerId})
     }
 
@@ -96,7 +109,7 @@ export default {
         .get(teamId)
         .update({meetingId: meeting.id}),
       members: r.table('MeetingMember').insert(meetingMembers)
-    })
+    }).run()
 
     startSlackMeeting(teamId, dataLoader, meetingType).catch(console.log)
     const data = {teamId, meetingId: meeting.id}

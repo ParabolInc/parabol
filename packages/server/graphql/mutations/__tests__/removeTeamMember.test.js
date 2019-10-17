@@ -19,7 +19,7 @@ describe('removeTeamMember', () => {
 
   test('removes the teamMember, reassigns active tasks to the lead', async () => {
     // SETUP
-    const r = getRethink()
+    const r = await getRethink()
     const mockPubSub = new MockPubSub()
     const mockDB = new MockDB()
     const dynamicSerializer = new DynamicSerializer()

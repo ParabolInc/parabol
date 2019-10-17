@@ -1,7 +1,7 @@
 import getRethink from '../database/rethinkDriver'
 
-const addTeamIdToTMS = (userId, teamId) => {
-  const r = getRethink()
+const addTeamIdToTMS = async (userId, teamId) => {
+  const r = await getRethink()
   return r
     .table('User')
     .get(userId)
@@ -16,6 +16,7 @@ const addTeamIdToTMS = (userId, teamId) => {
           .append(teamId)
       )
     }))
+    .run()
 }
 
 export default addTeamIdToTMS

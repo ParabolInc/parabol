@@ -34,14 +34,17 @@ export default {
     {cloudId, projectKey, taskId}: ICreateJiraIssueOnMutationArguments,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
-    const r = getRethink()
+    const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const task = await r.table('Task').get(taskId)
+    const task = await r
+      .table('Task')
+      .get(taskId)
+      .run()
     if (!task) {
       return standardError(new Error('Task not found'), {userId: viewerId})
     }
@@ -89,7 +92,10 @@ export default {
 
     const isViewerAllowed = viewerAuth ? viewerAuth.isActive : false
     if (!isViewerAllowed) {
-      const creatorName = await r.table('User').get(viewerId)('preferredName')
+      const creatorName = await r
+        .table('User')
+        .get(viewerId)('preferredName')
+        .run()
       markdown = `${markdown}\n\n_Added by ${creatorName}_`
     }
 
@@ -153,6 +159,7 @@ export default {
         },
         updatedAt: now
       })
+      .run()
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const data = {taskId}
     teamMembers.forEach(({userId}) => {

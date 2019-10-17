@@ -37,13 +37,14 @@ const getUniqueRepos = (
 }
 
 const fetchGitHubRepos = async (teamId: string, userId: string) => {
-  const r = getRethink()
+  const r = await getRethink()
   const auth = await r
     .table('Provider')
     .getAll(teamId, {index: 'teamId'})
     .filter({service: GITHUB, userId, isActive: true})
     .nth(0)
     .default(null)
+    .run()
   if (!auth) return []
   const {accessToken} = auth
   const manager = new GitHubManager(accessToken)

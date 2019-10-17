@@ -9,6 +9,7 @@ exports.up = async (r) => {
         .ne(null)
     )
     .pluck('id', 'checkInQuestion')
+    .run()
 
   await Promise.all(
     teamsWithActiveMeetings.map((team) => {
@@ -19,6 +20,7 @@ exports.up = async (r) => {
         .table('Team')
         .get(team.id)
         .update({checkInQuestion})
+        .run()
     })
   )
 }

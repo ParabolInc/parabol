@@ -2,7 +2,7 @@ import getRethink from '../../../database/rethinkDriver'
 import extractTextFromDraftString from '../../../../client/utils/draftjs/extractTextFromDraftString'
 
 const removeEmptyReflections = async (meeting) => {
-  const r = getRethink()
+  const r = await getRethink()
   const {id: meetingId} = meeting
   const reflections = await r
     .table('RetroReflection')

@@ -11,7 +11,7 @@ const safelyCastVote = async (
   maxVotesPerGroup
 ) => {
   const meetingMemberId = toTeamMemberId(meetingId, userId)
-  const r = getRethink()
+  const r = await getRethink()
   const now = new Date()
   const viewerId = getUserId(authToken)
   const isVoteRemovedFromUser = await r

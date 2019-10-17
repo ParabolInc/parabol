@@ -35,12 +35,16 @@ export default {
         'scheduledEndTime - now. Used to reconcile bad client clocks. Present for time limit, else null'
     }
   },
-  async resolve (
+  async resolve(
     _source,
-    {meetingId, scheduledEndTime: newScheduledEndTime, timeRemaining}: {scheduledEndTime: Date | null, meetingId: string, timeRemaining: number | null},
+    {
+      meetingId,
+      scheduledEndTime: newScheduledEndTime,
+      timeRemaining
+    }: {scheduledEndTime: Date | null; meetingId: string; timeRemaining: number | null},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = getRethink()
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
@@ -88,6 +92,7 @@ export default {
         await r
           .table('ScheduledJob')
           .insert(new ScheduledJobMeetingStageTimeLimit(newScheduledEndTime, meetingId))
+          .run()
         notifySlackTimeLimitStart(newScheduledEndTime, meetingId, teamId, dataLoader).catch(
           console.error
         )
@@ -106,6 +111,7 @@ export default {
         phases,
         updatedAt: now
       })
+      .run()
 
     const data = {meetingId, stageId: facilitatorStageId}
     const {isAsync, phaseType, startAt, viewCount} = stage

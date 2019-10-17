@@ -134,20 +134,44 @@ exports.up = async (r) => {
     }
   ]
   const mockUsers = [
-    r.table('User').insert(users),
-    r.table('Team').insert(team),
-    r.table('Team').insert(engineeringTeam),
-    r.table('TeamMember').insert(teamMembers),
-    r.table('TeamMember').insert(engineeringMembers)
+    r
+      .table('User')
+      .insert(users)
+      .run(),
+    r
+      .table('Team')
+      .insert(team)
+      .run(),
+    r
+      .table('Team')
+      .insert(engineeringTeam)
+      .run(),
+    r
+      .table('TeamMember')
+      .insert(teamMembers)
+      .run(),
+    r
+      .table('TeamMember')
+      .insert(engineeringMembers)
+      .run()
   ]
   await Promise.all(mockUsers)
 }
 
 exports.down = async (r) => {
   const meetingTables = [
-    r.table('User').delete(),
-    r.table('TeamMember').delete(),
-    r.table('Team').delete()
+    r
+      .table('User')
+      .delete()
+      .run(),
+    r
+      .table('TeamMember')
+      .delete()
+      .run(),
+    r
+      .table('Team')
+      .delete()
+      .run()
   ]
   await Promise.all(meetingTables)
 }

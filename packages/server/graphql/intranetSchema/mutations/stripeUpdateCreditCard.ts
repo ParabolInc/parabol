@@ -20,7 +20,7 @@ export default {
     if (!isSuperUser(authToken)) {
       throw new Error('Don’t be rude.')
     }
-    const r = getRethink()
+    const r = await getRethink()
     const manager = new StripeManager()
     const customer = await manager.retrieveCustomer(customerId)
     const creditCard = getCCFromCustomer(customer)
@@ -31,6 +31,7 @@ export default {
       .table('Organization')
       .get(orgId)
       .update({creditCard})
+      .run()
     return true
   }
 }

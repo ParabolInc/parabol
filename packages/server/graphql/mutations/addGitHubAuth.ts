@@ -27,7 +27,7 @@ export default {
     }
 
     // RESOLUTION
-    const r = getRethink()
+    const r = await getRethink()
     const now = new Date()
 
     const manager = await GitHubManager.init(code)
@@ -77,17 +77,18 @@ export default {
             .table('Provider')
             .get(providerId)
             .update(
-            {
-              accessToken,
-              isActive: true,
-              updatedAt: now,
-              providerUserId: login,
-              providerUserName: login
-            },
+              {
+                accessToken,
+                isActive: true,
+                updatedAt: now,
+                providerUserId: login,
+                providerUserName: login
+              },
               {returnChanges: true}
             )('changes')(0)
         )
       })
+      .run()
     return {teamId, userId: viewerId}
   }
 }

@@ -10,11 +10,12 @@ import {ISegmentEventTrackOnMutationArguments} from '../../../client/types/graph
 
 const extraOptionsCreator = {
   HelpMenuOpen: async (viewerId: string, _dataLoader: DataLoaderWorker, _options: object) => {
-    const r = getRethink()
+    const r = await getRethink()
     const meetingCount = await r
       .table('MeetingMember')
       .getAll(viewerId, {index: 'userId'})
       .count()
+      .run()
     return {
       meetingCount
     }

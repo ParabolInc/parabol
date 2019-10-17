@@ -13,7 +13,7 @@ const removeStagesFromNewMeeting = async (
   dataLoader: DataLoaderWorker
 ) => {
   const now = new Date()
-  const r = getRethink()
+  const r = await getRethink()
   const team = await dataLoader.get('teams').load(teamId)
   const {meetingId} = team
   if (meetingId) {
@@ -21,7 +21,8 @@ const removeStagesFromNewMeeting = async (
     const newMeeting = (await r
       .table('NewMeeting')
       .get(meetingId)
-      .default(null)) as Meeting | null
+      .default(null)
+      .run()) as Meeting | null
     if (!newMeeting) return undefined
     const {phases} = newMeeting
     phases.forEach((phase) => {
@@ -55,6 +56,7 @@ const removeStagesFromNewMeeting = async (
         phases,
         updatedAt: now
       })
+      .run()
     return meetingId
   }
   return undefined

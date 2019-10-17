@@ -10,24 +10,28 @@ const endOldMeetings = {
   type: GraphQLInt,
   description: 'close all meetings that started before the given threshold',
   resolve: async (_source, _args, {authToken, dataLoader}) => {
-    const r = getRethink()
+    const r = await getRethink()
 
     // AUTH
     requireSU(authToken)
 
     // RESOLUTION
     const activeThresh = new Date(Date.now() - OLD_MEETING_AGE)
-    const meetingIdsInProgress = await r.table('Team').filter((team) =>
-      team('meetingId')
-        .default(null)
-        .ne(null)
-    )('meetingId')
+    const meetingIdsInProgress = await r
+      .table('Team')
+      .filter((team) =>
+        team('meetingId')
+          .default(null)
+          .ne(null)
+      )('meetingId')
+      .run()
 
-    const meetings = await r
+    const meetings = (await r
       .table('NewMeeting')
       .getAll(r.args(meetingIdsInProgress), {index: 'id'})
       .filter((meeting) => meeting('createdAt').le(activeThresh))
       .pluck('id', 'meetingType')
+      .run()) as {id: string; meetingType: string}[]
 
     await Promise.all(
       meetings.map((meeting) => {
@@ -41,7 +45,7 @@ const endOldMeetings = {
             dataLoader
           } as GQLContext)
         }
-        return undefined
+        return undefined as any
       })
     )
 

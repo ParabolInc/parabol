@@ -22,12 +22,12 @@ export default {
         'A number from 0 to 1 to determine how tightly to pack the groups. Higher means fewer groups'
     }
   },
-  async resolve (
+  async resolve(
     source,
     {meetingId, groupingThreshold},
     {authToken, dataLoader, socketId: mutatorId}
   ) {
-    const r = getRethink()
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const now = new Date()
     const subOptions = {operationId, mutatorId}

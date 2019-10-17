@@ -12,6 +12,7 @@ import {
 import {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
 import standardError from '../../utils/standardError'
 import {OrgUserRole} from 'parabol-client/types/graphql'
+import Notification from '../../database/types/Notification'
 
 export default {
   type: SetOrgUserRolePayload,
@@ -30,8 +31,8 @@ export default {
       description: 'the user’s new role'
     }
   },
-  async resolve (_source, {orgId, userId, role}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink()
+  async resolve(_source, {orgId, userId, role}, {authToken, dataLoader, socketId: mutatorId}) {
+    const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -53,6 +54,7 @@ export default {
         .getAll(orgId, {index: 'orgId'})
         .filter({removedAt: null, role: OrgUserRole.BILLING_LEADER})
         .count()
+        .run()
       if (leaderCount === 1) {
         return standardError(new Error('You’re the last leader, you can’t give that up'), {
           userId: viewerId
@@ -66,6 +68,7 @@ export default {
       .getAll(userId, {index: 'userId'})
       .filter({orgId, removedAt: null})
       .nth(0)
+      .run()
     if (organizationUser.role === role) return null
     const {id: organizationUserId} = organizationUser
     // RESOLUTION
@@ -73,6 +76,7 @@ export default {
       .table('OrganizationUser')
       .get(organizationUserId)
       .update({role})
+      .run()
 
     if (role === OrgUserRole.BILLING_LEADER) {
       const promotionNotificationId = shortid.generate()
@@ -85,7 +89,7 @@ export default {
       }
       const {existingNotificationIds} = await r({
         insert: r.table('Notification').insert(promotionNotification),
-        existingNotificationIds: r
+        existingNotificationIds: (r
           .table('Notification')
           .getAll(orgId, {index: 'orgId'})
           .filter((notification) => r.expr(billingLeaderTypes).contains(notification('type')))
@@ -95,8 +99,8 @@ export default {
             }),
             {returnChanges: true}
           )('changes')('new_val')
-          .default([])
-      })
+          .default([]) as unknown) as string[]
+      }).run()
       const notificationIdsAdded = existingNotificationIds.concat(promotionNotificationId)
       // add the org to the list of owned orgs
       const data = {orgId, userId, organizationUserId, notificationIdsAdded}
@@ -107,7 +111,7 @@ export default {
     }
     if (role === null) {
       const {oldPromotion, removedNotifications} = await r({
-        oldPromotion: r
+        oldPromotion: (r
           .table('Notification')
           .getAll(userId, {index: 'userIds'})
           .filter({
@@ -115,8 +119,8 @@ export default {
             type: PROMOTE_TO_BILLING_LEADER
           })
           .delete({returnChanges: true})('changes')(0)('old_val')
-          .default([]),
-        removedNotifications: r
+          .default([]) as unknown) as Notification,
+        removedNotifications: (r
           .table('Notification')
           .getAll(orgId, {index: 'orgId'})
           .filter((notification) => r.expr(billingLeaderTypes).contains(notification('type')))
@@ -126,8 +130,8 @@ export default {
             }),
             {returnChanges: true}
           )('changes')('new_val')
-          .default([])
-      })
+          .default([]) as unknown) as Notification[]
+      }).run()
       const notificationsRemoved = removedNotifications.concat(oldPromotion)
       const data = {orgId, userId, organizationUserId, notificationsRemoved}
       publish(ORGANIZATION, userId, SetOrgUserRolePayload, data, subOptions)

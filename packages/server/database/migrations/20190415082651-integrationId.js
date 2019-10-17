@@ -10,6 +10,7 @@ exports.up = async (r) => {
           .eq(null)
       )
       .delete()
+      .run()
   } catch (e) {
     console.log(e)
   }
@@ -32,18 +33,25 @@ exports.up = async (r) => {
             .without('integrationId')
         )
       }))
+      .run()
   } catch (e) {
     console.log(e)
   }
 
   try {
-    await r.table('Task').indexDrop('integrationId')
+    await r
+      .table('Task')
+      .indexDrop('integrationId')
+      .run()
   } catch (e) {
     console.log(e)
   }
 
   try {
-    await r.table('Task').indexCreate('integrationId', (project) => project('integration')('id'))
+    await r
+      .table('Task')
+      .indexCreate('integrationId', (project) => project('integration')('id'))
+      .run()
   } catch (e) {
     console.log(e)
   }
@@ -66,12 +74,16 @@ exports.down = async (r) => {
           })
           .without('id')
       }))
+      .run()
   } catch (e) {
     /**/
   }
 
   try {
-    await r.table('Task').indexDrop('integrationId')
+    await r
+      .table('Task')
+      .indexDrop('integrationId')
+      .run()
   } catch (e) {
     /**/
   }
@@ -80,6 +92,7 @@ exports.down = async (r) => {
     await r
       .table('Task')
       .indexCreate('integrationId', (project) => project('integration')('integrationId'))
+      .run()
   } catch (e) {
     /**/
   }

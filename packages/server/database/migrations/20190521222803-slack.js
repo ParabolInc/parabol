@@ -3,16 +3,28 @@ import shortid from 'shortid'
 // This deprecates the SlackIntegration table as well as all slack rows in the Provider table
 exports.up = async (r) => {
   try {
-    await Promise.all([r.tableCreate('SlackAuth'), r.tableCreate('SlackNotification')])
+    await Promise.all([r.tableCreate('SlackAuth').run(), r.tableCreate('SlackNotification').run()])
   } catch (e) {
     /**/
   }
   try {
     await Promise.all([
-      r.table('SlackAuth').indexCreate('userId'),
-      r.table('SlackAuth').indexCreate('teamId'),
-      r.table('SlackNotification').indexCreate('userId'),
-      r.table('SlackNotification').indexCreate('teamId')
+      r
+        .table('SlackAuth')
+        .indexCreate('userId')
+        .run(),
+      r
+        .table('SlackAuth')
+        .indexCreate('teamId')
+        .run(),
+      r
+        .table('SlackNotification')
+        .indexCreate('userId')
+        .run(),
+      r
+        .table('SlackNotification')
+        .indexCreate('teamId')
+        .run()
     ])
   } catch (e) {
     /**/
@@ -20,6 +32,7 @@ exports.up = async (r) => {
   const slackProviders = await r
     .table('Provider')
     .filter({isActive: true, service: 'SlackIntegration'})
+    .run()
   const slackAuths = slackProviders.map((provider) => ({
     id: provider.id,
     isActive: true,
@@ -35,12 +48,18 @@ exports.up = async (r) => {
     slackUserName: provider.providerUserName
   }))
   try {
-    await r.table('SlackAuth').insert(slackAuths)
+    await r
+      .table('SlackAuth')
+      .insert(slackAuths)
+      .run()
   } catch (e) {
     console.log(e)
   }
 
-  const slackIntegrations = await r.table('SlackIntegration').filter({isActive: true})
+  const slackIntegrations = await r
+    .table('SlackIntegration')
+    .filter({isActive: true})
+    .run()
   const slackNotifications = []
   slackIntegrations.forEach((integration) => {
     const slackAuth = slackAuths.find((auth) => auth.teamId === integration.teamId)
@@ -56,7 +75,10 @@ exports.up = async (r) => {
     slackNotifications.push(...notifications)
   })
   try {
-    await r.table('SlackNotification').insert(slackNotifications)
+    await r
+      .table('SlackNotification')
+      .insert(slackNotifications)
+      .run()
   } catch (e) {
     console.log(e)
   }
@@ -64,7 +86,7 @@ exports.up = async (r) => {
 
 exports.down = async (r) => {
   try {
-    await Promise.all([r.tableDrop('SlackAuth'), r.tableDrop('SlackNotification')])
+    await Promise.all([r.tableDrop('SlackAuth').run(), r.tableDrop('SlackNotification').run()])
   } catch (e) {
     /**/
   }

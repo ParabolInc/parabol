@@ -23,8 +23,8 @@ export default {
       description: 'which tier of org shall we count?'
     }
   },
-  async resolve (_source, {ignoreEmailRegex, includeInactive, tier}, {authToken}) {
-    const r = getRethink()
+  async resolve(_source, {ignoreEmailRegex, includeInactive, tier}, {authToken}) {
+    const r = await getRethink()
 
     // AUTH
     requireSU(authToken)
@@ -53,5 +53,6 @@ export default {
           .filter((user) => r.branch(includeInactive, true, user('inactive').not()))
           .count()
       })
+      .run()
   }
 }

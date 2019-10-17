@@ -18,12 +18,12 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve (
+  async resolve(
     _source,
     {facilitatorUserId, meetingId},
     {authToken, dataLoader, socketId: mutatorId}
   ) {
-    const r = getRethink()
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const now = new Date()
@@ -34,6 +34,7 @@ export default {
       .table('NewMeeting')
       .get(meetingId)
       .default(null)
+      .run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {facilitatorUserId: oldFacilitatorUserId, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
@@ -55,6 +56,7 @@ export default {
         facilitatorUserId,
         updatedAt: now
       })
+      .run()
 
     const data = {meetingId, oldFacilitatorUserId}
     publish(TEAM, teamId, PromoteNewMeetingFacilitatorPayload, data, subOptions)

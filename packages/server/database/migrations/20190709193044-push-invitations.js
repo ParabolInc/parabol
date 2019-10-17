@@ -1,11 +1,14 @@
 exports.up = async (r) => {
   try {
-    await r.tableCreate('PushInvitation')
+    await r.tableCreate('PushInvitation').run()
   } catch (e) {
     console.log(e)
   }
   try {
-    await r.table('PushInvitation').indexCreate('userId')
+    await r
+      .table('PushInvitation')
+      .indexCreate('userId')
+      .run()
   } catch (e) {
     console.log(e)
   }
@@ -13,7 +16,7 @@ exports.up = async (r) => {
 
 exports.down = async (r) => {
   try {
-    await r.tableDrop('PushInvitation')
+    await r.tableDrop('PushInvitation').run()
   } catch (e) {
     console.log(e)
   }

@@ -17,12 +17,15 @@ const renameReflectTemplatePrompt = {
       type: new GraphQLNonNull(GraphQLString)
     }
   },
-  async resolve (_source, {templateId, name}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink()
+  async resolve(_source, {templateId, name}, {authToken, dataLoader, socketId: mutatorId}) {
+    const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const template = await r.table('ReflectTemplate').get(templateId)
+    const template = await r
+      .table('ReflectTemplate')
+      .get(templateId)
+      .run()
     const viewerId = getUserId(authToken)
 
     // AUTH
@@ -38,6 +41,7 @@ const renameReflectTemplatePrompt = {
       .table('ReflectTemplate')
       .getAll(teamId, {index: 'teamId'})
       .filter({isActive: true})
+      .run()
     if (allTemplates.find((template) => template.name === normalizedName)) {
       return standardError(new Error('Duplicate template name'), {userId: viewerId})
     }
@@ -47,6 +51,7 @@ const renameReflectTemplatePrompt = {
       .table('ReflectTemplate')
       .get(templateId)
       .update({name: normalizedName, updatedAt: now})
+      .run()
 
     const data = {templateId}
     publish(TEAM, teamId, RenameReflectTemplatePayload, data, subOptions)

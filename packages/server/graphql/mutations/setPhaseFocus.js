@@ -19,12 +19,12 @@ const setPhaseFocus = {
       description: 'The currently focused phase item'
     }
   },
-  async resolve (
+  async resolve(
     source,
     {meetingId, focusedPhaseItemId},
     {authToken, dataLoader, socketId: mutatorId}
   ) {
-    const r = getRethink()
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
 

@@ -2,13 +2,17 @@ import getRethink from '../../../database/rethinkDriver'
 import StripeManager from '../../../utils/StripeManager'
 import {fromEpochSeconds} from '../../../utils/epochTime'
 import getCCFromCustomer from './getCCFromCustomer'
-import {IOrganization, TierEnum} from '../../../../client/types/graphql'
+import {TierEnum} from '../../../../client/types/graphql'
+import Organization from '../../../database/types/Organization'
 
 const upgradeToPro = async (orgId: string, source: string, email: string) => {
-  const r = getRethink()
+  const r = await getRethink()
   const now = new Date()
 
-  const organization = (await r.table('Organization').get(orgId)) as IOrganization
+  const organization = await r
+    .table<Organization>('Organization')
+    .get(orgId)
+    .run()
   if (!organization) throw new Error('Bad orgId')
 
   const {stripeId, stripeSubscriptionId} = organization
@@ -17,6 +21,7 @@ const upgradeToPro = async (orgId: string, source: string, email: string) => {
     .getAll(orgId, {index: 'orgId'})
     .filter({removedAt: null, inactive: false})
     .count()
+    .run()
 
   const manager = new StripeManager()
   const customer = stripeId
@@ -52,7 +57,7 @@ const upgradeToPro = async (orgId: string, source: string, email: string) => {
         tier: TierEnum.pro,
         updatedAt: now
       })
-  })
+  }).run()
 }
 
 export default upgradeToPro

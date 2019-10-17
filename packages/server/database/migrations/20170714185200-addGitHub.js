@@ -1,13 +1,19 @@
 exports.up = async (r) => {
-  const tables = [r.tableCreate('GitHubIntegration')]
+  const tables = [r.tableCreate('GitHubIntegration').run()]
   try {
     await Promise.all(tables)
   } catch (e) {
     console.log('Exception during Promise.all(tables)')
   }
   const indices = [
-    r.table('GitHubIntegration').indexCreate('teamId'),
-    r.table('GitHubIntegration').indexCreate('userIds', {multi: true})
+    r
+      .table('GitHubIntegration')
+      .indexCreate('teamId')
+      .run(),
+    r
+      .table('GitHubIntegration')
+      .indexCreate('userIds', {multi: true})
+      .run()
   ]
   try {
     await Promise.all(indices)
@@ -17,7 +23,7 @@ exports.up = async (r) => {
 }
 
 exports.down = async (r) => {
-  const tables = [r.tableDrop('GitHubIntegration')]
+  const tables = [r.tableDrop('GitHubIntegration').run()]
   try {
     await Promise.all(tables)
   } catch (e) {

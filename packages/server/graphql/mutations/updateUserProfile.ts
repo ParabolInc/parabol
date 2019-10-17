@@ -12,6 +12,8 @@ import sanitizeSVG from '@mattkrick/sanitize-svg'
 import fetch from 'node-fetch'
 import standardError from '../../utils/standardError'
 import linkify from '../../../client/utils/linkify'
+import User from '../../database/types/User'
+import {ITeamMember} from 'parabol-client/types/graphql'
 
 const updateUserProfile = {
   type: UpdateUserProfilePayload,
@@ -21,8 +23,8 @@ const updateUserProfile = {
       description: 'The input object containing the user profile fields that can be changed'
     }
   },
-  async resolve (_source, {updatedUser}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink()
+  async resolve(_source, {updatedUser}, {authToken, dataLoader, socketId: mutatorId}) {
+    const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
@@ -63,17 +65,17 @@ const updateUserProfile = {
     }
     // propagate denormalized changes to TeamMember
     const {user, teamMembers} = await r({
-      teamMembers: r
+      teamMembers: (r
         .table('TeamMember')
         .getAll(userId, {index: 'userId'})
         .update(updates, {returnChanges: true})('changes')('new_val')
-        .default([]),
-      user: r
+        .default([]) as unknown) as ITeamMember[],
+      user: (r
         .table('User')
         .get(userId)
         .update(updates, {returnChanges: true})('changes')(0)('new_val')
-        .default(null)
-    })
+        .default(null) as unknown) as User
+    }).run()
     //
     // If we ever want to delete the previous profile images:
     //

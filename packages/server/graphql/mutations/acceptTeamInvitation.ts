@@ -39,7 +39,7 @@ export default {
       {invitationToken, notificationId},
       {authToken, dataLoader, socketId: mutatorId}
     ) => {
-      const r = getRethink()
+      const r = await getRethink()
       const now = new Date()
       const operationId = dataLoader.share()
       const subOptions = {mutatorId, operationId}
@@ -57,7 +57,10 @@ export default {
 
       // VALIDATION
       let invitation
-      const viewer = await r.table('User').get(viewerId)
+      const viewer = await r
+        .table('User')
+        .get(viewerId)
+        .run()
       const isMassInviteToken = invitationToken.indexOf('.') !== -1
       if (isMassInviteToken) {
         const validToken = verifyMassInviteToken(invitationToken)
@@ -72,20 +75,27 @@ export default {
           expiresAt,
           email: viewer.email
         })
-        await r.table('TeamInvitation').insert(invitation)
+        await r
+          .table('TeamInvitation')
+          .insert(invitation)
+          .run()
       } else {
         invitation = await r
           .table('TeamInvitation')
           .getAll(invitationToken, {index: 'token'})
           .nth(0)
           .default(null)
+          .run()
         if (!invitation) {
           return standardError(new Error('Invitation not found'), {userId: viewerId})
         }
         if (invitation.expiresAt < now) {
           // using the notification has no expiry
           const notification = notificationId
-            ? await r.table('Notification').get(notificationId)
+            ? await r
+                .table('Notification')
+                .get(notificationId)
+                .run()
             : undefined
           if (!notification || notification.userIds[0] !== viewerId) {
             return standardError(new Error('Invitation expired'), {userId: viewerId})
@@ -119,7 +129,13 @@ export default {
 
       // remove the old notifications
       if (removedNotificationIds.length > 0) {
-        publish(SubscriptionChannel.NOTIFICATION, viewerId, AcceptTeamInvitationPayload, data, subOptions)
+        publish(
+          SubscriptionChannel.NOTIFICATION,
+          viewerId,
+          AcceptTeamInvitationPayload,
+          data,
+          subOptions
+        )
       }
 
       // Tell the rest of the team about the new team member

@@ -14,7 +14,7 @@ const addAgendaItemToNewMeeting = async (
   dataLoader: DataLoaderWorker
 ) => {
   const now = new Date()
-  const r = getRethink()
+  const r = await getRethink()
   const team = await dataLoader.get('teams').load(teamId)
   const {meetingId} = team
   if (!meetingId) return undefined
@@ -22,7 +22,8 @@ const addAgendaItemToNewMeeting = async (
   const newMeeting = (await r
     .table('NewMeeting')
     .get(meetingId)
-    .default(null)) as Meeting
+    .default(null)
+    .run()) as Meeting
   if (!newMeeting) return undefined
   const {phases} = newMeeting
   const agendaItemPhase = phases.find((phase) => phase.phaseType === AGENDA_ITEMS) as
@@ -42,6 +43,7 @@ const addAgendaItemToNewMeeting = async (
       phases,
       updatedAt: now
     })
+    .run()
   return meetingId
 }
 

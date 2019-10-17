@@ -20,12 +20,12 @@ export default {
       type: new GraphQLNonNull(GraphQLFloat)
     }
   },
-  async resolve (
+  async resolve(
     source,
     {meetingId, stageId, sortOrder},
     {authToken, dataLoader, socketId: mutatorId}
   ) {
-    const r = getRethink()
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const viewerId = getUserId(authToken)

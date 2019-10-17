@@ -29,8 +29,11 @@ export default new GraphQLObjectType<any, GQLContext>({
       },
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
       resolve: rateLimit({perMinute: 60, perHour: 240})(async (_source, {email}) => {
-        const r = getRethink()
-        const users = await r.table('User').getAll(email, {index: 'email'})
+        const r = await getRethink()
+        const users = await r
+          .table('User')
+          .getAll(email, {index: 'email'})
+          .run()
         return users.map((user) => user.identities[0].provider)
       })
     },

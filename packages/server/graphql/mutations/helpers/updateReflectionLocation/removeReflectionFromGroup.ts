@@ -6,9 +6,12 @@ import standardError from '../../../../utils/standardError'
 import ReflectionGroup from '../../../../database/types/ReflectionGroup'
 
 const removeReflectionFromGroup = async (reflectionId, {authToken, dataLoader}) => {
-  const r = getRethink()
+  const r = await getRethink()
   const now = new Date()
-  const reflection = await r.table('RetroReflection').get(reflectionId)
+  const reflection = await r
+    .table('RetroReflection')
+    .get(reflectionId)
+    .run()
   const viewerId = getUserId(authToken)
   if (!reflection) return standardError(new Error('Reflection not found'), {userId: viewerId})
   const {reflectionGroupId: oldReflectionGroupId, meetingId, retroPhaseItemId} = reflection
@@ -16,7 +19,10 @@ const removeReflectionFromGroup = async (reflectionId, {authToken, dataLoader}) 
 
   // RESOLUTION
   const reflectionGroup = new ReflectionGroup({meetingId, retroPhaseItemId})
-  await r.table('RetroReflectionGroup').insert(reflectionGroup)
+  await r
+    .table('RetroReflectionGroup')
+    .insert(reflectionGroup)
+    .run()
   const {id: reflectionGroupId} = reflectionGroup
   await r({
     reflection: r
@@ -31,21 +37,20 @@ const removeReflectionFromGroup = async (reflectionId, {authToken, dataLoader}) 
       .table('NewMeeting')
       .get(meetingId)
       .update({nextAutoGroupThreshold: null})
-  })
+  }).run()
   // mutates the dataloader response
   meeting.nextAutoGroupThreshold = null
   const oldReflections = await r
     .table('RetroReflection')
     .getAll(oldReflectionGroupId, {index: 'reflectionGroupId'})
     .filter({isActive: true})
+    .run()
 
   const nextTitle = getGroupSmartTitle([reflection])
   await updateSmartGroupTitle(reflectionGroupId, nextTitle)
 
   if (oldReflections.length > 0) {
-    const oldTitle = getGroupSmartTitle(
-      oldReflections
-    )
+    const oldTitle = getGroupSmartTitle(oldReflections)
     await updateSmartGroupTitle(oldReflectionGroupId, oldTitle)
   } else {
     await r
@@ -55,6 +60,7 @@ const removeReflectionFromGroup = async (reflectionId, {authToken, dataLoader}) 
         isActive: false,
         updatedAt: now
       })
+      .run()
   }
   return reflectionGroupId
 }

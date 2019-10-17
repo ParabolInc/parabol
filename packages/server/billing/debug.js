@@ -7,7 +7,7 @@ import StripeManager from '../utils/StripeManager'
 import getRethink from '../database/rethinkDriver'
 
 const manuallyStartSub = async () => {
-  const r = getRethink()
+  const r = await getRethink()
   const manager = new StripeManager()
   const res = await manager.createEnterpriseSubscription('cus_', 'fooOrg', 50)
   console.log('res', res)

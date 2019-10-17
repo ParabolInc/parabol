@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
-import {IUser, OrgUserRole, TierEnum} from 'parabol-client/types/graphql'
+import {OrgUserRole, TierEnum} from 'parabol-client/types/graphql'
 import {DataLoaderWorker, GQLContext} from '../../graphql'
 import getRethink from '../../../database/rethinkDriver'
 import {requireSU} from '../../../utils/authorization'
@@ -7,39 +7,57 @@ import DraftEnterpriseInvoicePayload from '../types/DraftEnterpriseInvoicePayloa
 import StripeManager from '../../../utils/StripeManager'
 import {fromEpochSeconds} from '../../../utils/epochTime'
 import hideConversionModal from '../../mutations/helpers/hideConversionModal'
+import User from '../../../database/types/User'
 
-const getBillingLeaderUser = async (email: string | null, orgId: string, dataLoader: DataLoaderWorker) => {
-  const r = getRethink()
+const getBillingLeaderUser = async (
+  email: string | null,
+  orgId: string,
+  dataLoader: DataLoaderWorker
+) => {
+  const r = await getRethink()
   if (email) {
-    const user = await r.table('User').getAll(email, {index: 'email'})
+    const user = await r
+      .table<User>('User')
+      .getAll(email, {index: 'email'})
       .nth(0)
-      .default(null) as IUser | null
+      .default(null)
+      .run()
     if (!user) {
       throw new Error('User for email not found')
     }
     const {id: userId} = user
     const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
-    const organizationUser = organizationUsers.find((organizationUser) => organizationUser.orgId === orgId)
+    const organizationUser = organizationUsers.find(
+      (organizationUser) => organizationUser.orgId === orgId
+    )
     if (!organizationUser) {
       throw new Error('Email not associated with a user on that org')
     }
-    await r.table('OrganizationUser')
+    await r
+      .table('OrganizationUser')
       .getAll(userId, {index: 'userId'})
       .filter({removedAt: null, orgId})
       .update({role: OrgUserRole.BILLING_LEADER})
+      .run()
     return user
   }
   const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
-  const billingLeaders = organizationUsers.filter((organizationUser) => organizationUser.role === OrgUserRole.BILLING_LEADER)
+  const billingLeaders = organizationUsers.filter(
+    (organizationUser) => organizationUser.role === OrgUserRole.BILLING_LEADER
+  )
   const billingLeaderUserIds = billingLeaders.map(({userId}) => userId)
-  return r.table('User').getAll(r.args(billingLeaderUserIds))
+  return r
+    .table<User>('User')
+    .getAll(r.args(billingLeaderUserIds))
     .nth(0)
-    .default(null) as IUser
+    .default(null)
+    .run()
 }
 
 export default {
   type: DraftEnterpriseInvoicePayload,
-  description: 'Create a stripe customer & subscription in stripe, send them an invoice for an enterprise license',
+  description:
+    'Create a stripe customer & subscription in stripe, send them an invoice for an enterprise license',
   args: {
     orgId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -54,12 +72,8 @@ export default {
       description: 'Email address of billing leader, if different from the org billing leader'
     }
   },
-  async resolve (
-    _source,
-    {orgId, quantity, email},
-    {authToken, dataLoader}: GQLContext
-  ) {
-    const r = getRethink()
+  async resolve(_source, {orgId, quantity, email}, {authToken, dataLoader}: GQLContext) {
+    const r = await getRethink()
     const now = new Date()
     // const operationId = dataLoader.share()
 
@@ -89,20 +103,25 @@ export default {
     }
 
     // RESOLUTION
-    let user: IUser
+    let user: User | null
     try {
       user = await getBillingLeaderUser(email, orgId, dataLoader)
-    } catch(e) {
+    } catch (e) {
       return {error: {message: e.message}}
     }
-
+    if (!user) {
+      return {error: {message: 'User not found'}}
+    }
     const manager = new StripeManager()
     let customerId
     if (!stripeId) {
       // create the customer
       const customer = await manager.createCustomer(orgId, user.email)
-      await r.table('Organization').get(orgId)
+      await r
+        .table('Organization')
+        .get(orgId)
         .update({stripeId: customer.id})
+        .run()
       customerId = customer.id
     } else {
       customerId = stripeId
@@ -129,7 +148,7 @@ export default {
           tier: TierEnum.enterprise,
           updatedAt: now
         })
-    })
+    }).run()
     await hideConversionModal(orgId, dataLoader)
     dataLoader.get('organizations').clear(orgId)
     return {orgId}

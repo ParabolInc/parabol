@@ -21,8 +21,8 @@ export default {
       description: 'The id of the organization'
     }
   },
-  async resolve (_source, {orgId, first, after}, {authToken, dataLoader}) {
-    const r = getRethink()
+  async resolve(_source, {orgId, first, after}, {authToken, dataLoader}) {
+    const r = await getRethink()
 
     // AUTH
     const viewerId = getUserId(authToken)
@@ -36,6 +36,7 @@ export default {
       .table('Organization')
       .get(orgId)
       .pluck('stripeId', 'stripeSubscriptionId')
+      .run()
     const dbAfter = after ? new Date(after) : r.maxval
     const {tooManyInvoices, upcomingInvoice} = await resolvePromiseObj({
       tooManyInvoices: r

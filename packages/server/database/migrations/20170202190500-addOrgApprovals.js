@@ -1,7 +1,7 @@
 exports.up = async (r) => {
   const tables = [
-    r.tableCreate('OrgApproval'),
-    r.tableDrop('Participant') // unused table
+    r.tableCreate('OrgApproval').run(),
+    r.tableDrop('Participant').run() // unused table
   ]
   try {
     await Promise.all(tables)
@@ -9,8 +9,14 @@ exports.up = async (r) => {
     // ignore
   }
   const indices = [
-    r.table('OrgApproval').indexCreate('teamId'),
-    r.table('OrgApproval').indexCreate('email')
+    r
+      .table('OrgApproval')
+      .indexCreate('teamId')
+      .run(),
+    r
+      .table('OrgApproval')
+      .indexCreate('email')
+      .run()
   ]
   try {
     await Promise.all(indices)

@@ -1,6 +1,6 @@
 exports.up = async (r) => {
   try {
-    await r.tableDrop('SoftTeamMember')
+    await r.tableDrop('SoftTeamMember').run()
   } catch (e) {
     console.log(e)
   }
@@ -9,6 +9,7 @@ exports.up = async (r) => {
       .table('Task')
       .filter({isSoftTask: true})
       .delete()
+      .run()
   } catch (e) {
     console.log(e)
   }
@@ -16,14 +17,20 @@ exports.up = async (r) => {
 
 exports.down = async (r) => {
   try {
-    await r.tableCreate('SoftTeamMember')
+    await r.tableCreate('SoftTeamMember').run()
   } catch (e) {
     console.log(e)
   }
   try {
     await Promise.all([
-      r.table('SoftTeamMember').indexCreate('email'),
-      r.table('SoftTeamMember').indexCreate('teamId')
+      r
+        .table('SoftTeamMember')
+        .indexCreate('email')
+        .run(),
+      r
+        .table('SoftTeamMember')
+        .indexCreate('teamId')
+        .run()
     ])
   } catch (e) {
     console.log(e)

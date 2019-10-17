@@ -5,7 +5,7 @@ import {getUserId} from '../../../utils/authorization'
 
 const safelyWithdrawVote = async (authToken, meetingId, userId, reflectionGroupId) => {
   const meetingMemberId = toTeamMemberId(meetingId, userId)
-  const r = getRethink()
+  const r = await getRethink()
   const now = new Date()
   const viewerId = getUserId(authToken)
   const isVoteRemovedFromGroup = await r

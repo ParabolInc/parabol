@@ -30,7 +30,7 @@ export default {
     }
 
     // RESOLUTION
-    const r = getRethink()
+    const r = await getRethink()
     const now = new Date()
 
     const manager = await AtlassianManager.init(code)
@@ -52,6 +52,7 @@ export default {
       .filter({teamId})
       .nth(0)
       .default(null)
+      .run()
     const updateDoc = {
       isActive: true,
       accessToken,
@@ -68,13 +69,17 @@ export default {
         .table('AtlassianAuth')
         .get(existingAuth.id)
         .update(updateDoc)
+        .run()
     } else {
       atlassianAuthId = shortid.generate()
-      await r.table('AtlassianAuth').insert({
-        ...updateDoc,
-        id: atlassianAuthId,
-        createdAt: now
-      })
+      await r
+        .table('AtlassianAuth')
+        .insert({
+          ...updateDoc,
+          id: atlassianAuthId,
+          createdAt: now
+        })
+        .run()
     }
 
     const data = {atlassianAuthId}

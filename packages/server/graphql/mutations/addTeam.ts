@@ -30,7 +30,7 @@ export default {
     async (_source, args, {authToken, dataLoader, socketId: mutatorId}) => {
       const operationId = dataLoader.share()
       const subOptions = {mutatorId, operationId}
-      const r = getRethink()
+      const r = await getRethink()
 
       // AUTH
       const {orgId} = args.newTeam
@@ -48,6 +48,7 @@ export default {
             .default(false)
             .ne(true)
         )
+        .run()
 
       const orgTeamNames = orgTeams.map((team) => team.name)
       const {
@@ -90,7 +91,13 @@ export default {
 
       const removedSuggestedActionId = await removeSuggestedAction(viewerId, 'createNewTeam')
       if (removedSuggestedActionId) {
-        publish(SubscriptionChannel.NOTIFICATION, viewerId, AddTeamPayload, {removedSuggestedActionId}, subOptions)
+        publish(
+          SubscriptionChannel.NOTIFICATION,
+          viewerId,
+          AddTeamPayload,
+          {removedSuggestedActionId},
+          subOptions
+        )
       }
       publish(SubscriptionChannel.TEAM, viewerId, AddTeamPayload, data, subOptions)
 

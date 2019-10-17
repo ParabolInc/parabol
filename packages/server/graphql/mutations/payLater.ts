@@ -18,14 +18,21 @@ export default {
       description: 'the org that has clicked pay later'
     }
   },
-  resolve: async (_source, {meetingId}, {authToken, dataLoader, socketId: mutatorId}: GQLContext) => {
-    const r = getRethink()
+  resolve: async (
+    _source,
+    {meetingId},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) => {
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const meeting = await r.table('NewMeeting').get(meetingId) as Meeting | null
+    const meeting = (await r
+      .table('NewMeeting')
+      .get(meetingId)
+      .run()) as Meeting | null
     if (!meeting) {
       return standardError(new Error('Invalid meeting'), {userId: viewerId})
     }
@@ -44,12 +51,18 @@ export default {
       .table('Organization')
       .get(orgId)
       .update((row) => ({
-        payLaterClickCount: row('payLaterClickCount').default(0).add(1)
+        payLaterClickCount: row('payLaterClickCount')
+          .default(0)
+          .add(1)
       }))
-    await r.table('NewMeeting').get(meetingId)
+      .run()
+    await r
+      .table('NewMeeting')
+      .get(meetingId)
       .update({
         showConversionModal: false
       })
+      .run()
 
     const organization = await dataLoader.get('organizations').load(orgId)
     sendSegmentEvent('Conversion Modal Pay Later Clicked', viewerId, {

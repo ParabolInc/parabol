@@ -20,7 +20,7 @@ const addNewFeature = {
     }
   },
   resolve: async (_source, {copy, url}, {authToken, dataLoader}) => {
-    const r = getRethink()
+    const r = await getRethink()
 
     // AUTH
     requireSU(authToken)
@@ -39,13 +39,16 @@ const addNewFeature = {
       userUpdate: r.table('User').update({
         newFeatureId
       })
-    })
+    }).run()
 
-    const onlineUserIds = await r.table('User').filter((user) =>
-      user('connectedSockets')
-        .count()
-        .ge(1)
-    )('id')
+    const onlineUserIds = await r
+      .table('User')
+      .filter((user) =>
+        user('connectedSockets')
+          .count()
+          .ge(1)
+      )('id')
+      .run()
     onlineUserIds.forEach((userId) => {
       publish(NOTIFICATION, userId, AddNewFeaturePayload, {newFeature}, subOptions)
     })

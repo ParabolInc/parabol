@@ -14,61 +14,63 @@ interface HubspotTraits {
   highestTier: TierEnum
 }
 
-const getHubspotTraits = (userIds: string[]) => {
-  const r = getRethink()
+const getHubspotTraits = async (userIds: string[]) => {
+  const r = await getRethink()
   // # of orgs the user is on where teams is >= 3
-  return r(userIds).map((userId) => ({
-    id: userId,
-    salesOpOrgCount: r
-      .table('OrganizationUser')
-      .getAll(userId, {index: 'userId'})
-      .filter({removedAt: null})
-      .coerceTo('array')('orgId')
-      .default([])
-      .do((orgIds) => {
-        return r
-          .table('Organization')
-          .getAll(r.args(orgIds), {index: 'id'})
-          .merge((row) => ({
-            teamCount: r
-              .table('Team')
-              .getAll(row('id'), {index: 'orgId'})
-              .count()
-          }))
-          .filter((row) => row('teamCount').gt(PERSONAL_TIER_MAX_TEAMS))
-          .count()
-      }),
-    salesOpMeetingCount: r
-      .table('MeetingMember')
-      .getAll(userId, {index: 'userId'})
-      .count(),
-    isAnyBillingLeader: r
-      .table('OrganizationUser')
-      .getAll(userId, {index: 'userId'})
-      .filter({removedAt: null, role: 'billingLeader'})
-      .count()
-      .ge(1),
-    highestTier: r
-      .table('OrganizationUser')
-      .getAll(userId, {index: 'userId'})
-      .filter({removedAt: null})
-      .coerceTo('array')('orgId')
-      .default([])
-      .do((orgIds) => {
-        return r
-          .table('Organization')
-          .getAll(r.args(orgIds), {index: 'id'})
-          .coerceTo('array')('tier')
-          .distinct()
-      })
-      .do((tiers) => {
-        return r.branch(
-          tiers.contains(TierEnum.enterprise),
-          TierEnum.enterprise,
-          r.branch(tiers.contains(TierEnum.pro), TierEnum.pro, TierEnum.personal)
-        )
-      })
-  })) as Promise<HubspotTraits[]>
+  return r(userIds)
+    .map((userId) => ({
+      id: userId,
+      salesOpOrgCount: r
+        .table('OrganizationUser')
+        .getAll(userId, {index: 'userId'})
+        .filter({removedAt: null})
+        .coerceTo('array')('orgId')
+        .default([])
+        .do((orgIds) => {
+          return r
+            .table('Organization')
+            .getAll(r.args(orgIds), {index: 'id'})
+            .merge((row) => ({
+              teamCount: r
+                .table('Team')
+                .getAll(row('id'), {index: 'orgId'})
+                .count()
+            }))
+            .filter((row) => row('teamCount').gt(PERSONAL_TIER_MAX_TEAMS))
+            .count()
+        }),
+      salesOpMeetingCount: r
+        .table('MeetingMember')
+        .getAll(userId, {index: 'userId'})
+        .count(),
+      isAnyBillingLeader: r
+        .table('OrganizationUser')
+        .getAll(userId, {index: 'userId'})
+        .filter({removedAt: null, role: 'billingLeader'})
+        .count()
+        .ge(1),
+      highestTier: r
+        .table('OrganizationUser')
+        .getAll(userId, {index: 'userId'})
+        .filter({removedAt: null})
+        .coerceTo('array')('orgId')
+        .default([])
+        .do((orgIds) => {
+          return r
+            .table('Organization')
+            .getAll(r.args(orgIds), {index: 'id'})
+            .coerceTo('array')('tier')
+            .distinct()
+        })
+        .do((tiers) => {
+          return r.branch(
+            tiers.contains(TierEnum.enterprise),
+            TierEnum.enterprise,
+            r.branch(tiers.contains(TierEnum.pro), TierEnum.pro, TierEnum.personal)
+          )
+        })
+    }))
+    .run() as Promise<HubspotTraits[]>
 }
 
 interface Traits {
@@ -80,24 +82,30 @@ interface Traits {
   parabolPreferredName: string
 }
 
-const getTraits = (userIds: string[]) => {
-  const r = getRethink()
+const getTraits = async (userIds: string[]) => {
+  const r = await getRethink()
   return r
     .table('User')
     .getAll(r.args(userIds), {index: 'id'})
-    .map({
-      avatar: r.row('picture').default(''),
-      createdAt: r.row('createdAt').default(0),
-      email: r.row('email').default(''),
-      id: r.row('id').default(''),
-      parabolId: r.row('id').default(''), // passed as a distinct trait name for HubSpot
-      parabolPreferredName: r.row('preferredName').default('')
-    }) as Promise<Traits[]>
+    .map((row) => ({
+      avatar: row('picture').default(''),
+      createdAt: row('createdAt').default(0),
+      email: row('email').default(''),
+      id: row('id').default(''),
+      parabolId: row('id').default(''), // passed as a distinct trait name for HubSpot
+      parabolPreferredName: row('preferredName').default('')
+    }))
+    .run() as Promise<Traits[]>
 }
 
-const getOrgId = (teamId) => {
-  const r = getRethink()
-  return teamId ? r.table('Team').get(teamId)('orgId') : undefined
+const getOrgId = async (teamId) => {
+  const r = await getRethink()
+  return teamId
+    ? r
+        .table('Team')
+        .get(teamId)('orgId')
+        .run()
+    : undefined
 }
 
 const getSegmentProps = (userIds, teamId) => {

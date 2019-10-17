@@ -14,7 +14,7 @@ export default {
     }
   },
   resolve: async (_source, {suggestedActionId}, {authToken, dataLoader}) => {
-    const r = getRethink()
+    const r = await getRethink()
     const now = new Date()
     const viewerId = getUserId(authToken)
 
@@ -33,6 +33,7 @@ export default {
       .table('SuggestedAction')
       .get(suggestedActionId)
       .update({removedAt: now})
+      .run()
 
     // no need to publish since that'll only affect their other open tabs
     return {

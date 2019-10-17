@@ -19,8 +19,8 @@ export default {
       description: 'The unique team ID'
     }
   },
-  async resolve (_source, {first, after, teamId}, {authToken}) {
-    const r = getRethink()
+  async resolve(_source, {first, after, teamId}, {authToken}) {
+    const r = await getRethink()
 
     // AUTH
     const userId = getUserId(authToken)
@@ -48,6 +48,7 @@ export default {
       .orderBy(r.desc('updatedAt'))
       .limit(first + 1)
       .coerceTo('array')
+      .run()
 
     const nodes = tasks.slice(0, first)
     const edges = nodes.map((node) => ({

@@ -15,8 +15,8 @@ export default {
       description: 'The id of the notification to remove'
     }
   },
-  async resolve (source, {notificationId}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink()
+  async resolve(source, {notificationId}, {authToken, dataLoader, socketId: mutatorId}) {
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 

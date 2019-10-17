@@ -4,15 +4,19 @@ import updateSmartGroupTitle from './updateSmartGroupTitle'
 import dndNoise from '../../../../../client/utils/dndNoise'
 import standardError from '../../../../utils/standardError'
 import {getUserId} from '../../../../utils/authorization'
+import Reflection from '../../../../database/types/Reflection'
 
 const addReflectionToGroup = async (reflectionId, reflectionGroupId, {authToken, dataLoader}) => {
-  const r = getRethink()
+  const r = await getRethink()
   const now = new Date()
   const viewerId = getUserId(authToken)
   const reflection = await dataLoader.get('retroReflections').load(reflectionId)
   if (!reflection) return standardError(new Error('Reflection not found'), {userId: viewerId})
   const {reflectionGroupId: oldReflectionGroupId, meetingId: reflectionMeetingId} = reflection
-  const reflectionGroup = await r.table('RetroReflectionGroup').get(reflectionGroupId)
+  const reflectionGroup = await r
+    .table('RetroReflectionGroup')
+    .get(reflectionGroupId)
+    .run()
   if (!reflectionGroup || !reflectionGroup.isActive) {
     return standardError(new Error('Reflection group not found'), {userId: viewerId})
   }
@@ -24,6 +28,7 @@ const addReflectionToGroup = async (reflectionId, reflectionGroupId, {authToken,
     .table('RetroReflection')
     .getAll(reflectionGroupId, {index: 'reflectionGroupId'})('sortOrder')
     .max()
+    .run()
 
   // RESOLUTION
   await r
@@ -34,6 +39,7 @@ const addReflectionToGroup = async (reflectionId, reflectionGroupId, {authToken,
       reflectionGroupId,
       updatedAt: now
     })
+    .run()
 
   // mutate the dataLoader cache
   reflection.reflectionGroupId = reflectionGroupId
@@ -42,27 +48,23 @@ const addReflectionToGroup = async (reflectionId, reflectionGroupId, {authToken,
   if (oldReflectionGroupId !== reflectionGroupId) {
     // ths is not just a reorder within the same group
     const {nextReflections, oldReflections} = await r({
-      nextReflections: r
+      nextReflections: (r
         .table('RetroReflection')
         .getAll(reflectionGroupId, {index: 'reflectionGroupId'})
         .filter({isActive: true})
-        .coerceTo('array'),
-      oldReflections: r
+        .coerceTo('array') as unknown) as Reflection[],
+      oldReflections: (r
         .table('RetroReflection')
         .getAll(oldReflectionGroupId, {index: 'reflectionGroupId'})
         .filter({isActive: true})
-        .coerceTo('array')
-    })
+        .coerceTo('array') as unknown) as Reflection[]
+    }).run()
 
-    const nextTitle = getGroupSmartTitle(
-      nextReflections
-    )
+    const nextTitle = getGroupSmartTitle(nextReflections)
     await updateSmartGroupTitle(reflectionGroupId, nextTitle)
 
     if (oldReflections.length > 0) {
-      const oldTitle = getGroupSmartTitle(
-        oldReflections
-      )
+      const oldTitle = getGroupSmartTitle(oldReflections)
       await updateSmartGroupTitle(oldReflectionGroupId, oldTitle)
     } else {
       await r
@@ -72,6 +74,7 @@ const addReflectionToGroup = async (reflectionId, reflectionGroupId, {authToken,
           isActive: false,
           updatedAt: now
         })
+        .run()
     }
   }
   return reflectionGroupId

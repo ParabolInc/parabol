@@ -26,7 +26,7 @@ export default {
     perMinute: 10,
     perHour: 20
   })(async (_source, {teamId}, {authToken, dataLoader, socketId: mutatorId}: GQLContext) => {
-    const r = getRethink()
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
@@ -38,7 +38,8 @@ export default {
     // VALIDATION
     const pushInvitations = (await r
       .table('PushInvitation')
-      .getAll(viewerId, {index: 'userId'})) as PushInvitation[]
+      .getAll(viewerId, {index: 'userId'})
+      .run()) as PushInvitation[]
     const teamPushInvitation = pushInvitations.find((row) => row.teamId === teamId)
     if (teamPushInvitation) {
       const {denialCount, lastDenialAt} = teamPushInvitation
@@ -57,7 +58,10 @@ export default {
     // RESOLUTION
     if (!teamPushInvitation) {
       // create a row so we know there was a request so denials are substantiated
-      await r.table('PushInvitation').insert(new PushInvitation({userId: viewerId, teamId}))
+      await r
+        .table('PushInvitation')
+        .insert(new PushInvitation({userId: viewerId, teamId}))
+        .run()
     }
 
     const data = {userId: viewerId, teamId}

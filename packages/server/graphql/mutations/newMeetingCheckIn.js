@@ -24,12 +24,12 @@ export default {
       description: 'true if the member is present, false if absent, null if undecided'
     }
   },
-  async resolve (
+  async resolve(
     source,
     {userId, meetingId, isCheckedIn},
     {authToken, dataLoader, socketId: mutatorId}
   ) {
-    const r = getRethink()
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)

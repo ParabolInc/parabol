@@ -1,8 +1,8 @@
 import getRethink from '../database/rethinkDriver'
 import toTeamMemberId from '../../client/utils/relay/toTeamMemberId'
 
-const insertNewTeamMember = (userId, teamId, options = {}) => {
-  const r = getRethink()
+const insertNewTeamMember = async (userId, teamId, options = {}) => {
+  const r = await getRethink()
   const {isLead = false, checkInOrder} = options
   const teamMemberId = toTeamMemberId(teamId, userId)
   return r
@@ -22,12 +22,12 @@ const insertNewTeamMember = (userId, teamId, options = {}) => {
               checkInOrder !== undefined
                 ? checkInOrder
                 : r
-                  .table('TeamMember')
-                  .getAll(teamId, {index: 'teamId'})
-                  .filter({isNotRemoved: true})
-                  .count()
-                  .add(1)
-                  .default(2),
+                    .table('TeamMember')
+                    .getAll(teamId, {index: 'teamId'})
+                    .filter({isNotRemoved: true})
+                    .count()
+                    .add(1)
+                    .default(2),
             teamId,
             userId,
             email: user('email').default(''),

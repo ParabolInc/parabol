@@ -15,13 +15,14 @@ const AddGitHubAuthPayload = new GraphQLObjectType({
       type: GitHubAuth,
       description: 'The newly created auth',
       resolve: async ({teamId, userId}) => {
-        const r = getRethink()
+        const r = await getRethink()
         return r
           .table('Provider')
           .getAll(teamId, {index: 'teamId'})
           .filter({service: GITHUB, isActive: true, userId})
           .nth(0)
           .default(null)
+          .run()
       }
     },
     user: {

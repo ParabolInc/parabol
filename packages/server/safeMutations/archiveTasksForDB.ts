@@ -8,7 +8,7 @@ type Task = Pick<ITask, 'content' | 'id' | 'tags'>
 
 const archiveTasksForDB = async (tasks: Task[], doneMeetingId?: string) => {
   if (!tasks || tasks.length === 0) return []
-  const r = getRethink()
+  const r = await getRethink()
   const tasksToArchive = tasks.map((task) => {
     const contentState = convertFromRaw(JSON.parse(task.content))
     const nextContentState = addTagToTask(contentState, '#archived')
@@ -37,6 +37,7 @@ const archiveTasksForDB = async (tasks: Task[], doneMeetingId?: string) => {
         )
     })
     .default([])('changes')('new_val')
+    .run()
 }
 
 export default archiveTasksForDB

@@ -19,7 +19,7 @@ const setInPhase = (phase: CheckInPhase | UpdatesPhase, newStage: CheckInStage |
 
 const addTeamMemberToNewMeeting = async (teamMember, teamId, dataLoader) => {
   const now = new Date()
-  const r = getRethink()
+  const r = await getRethink()
   const team = await dataLoader.get('teams').load(teamId)
   const {meetingId} = team
   if (!meetingId) return false
@@ -28,6 +28,7 @@ const addTeamMemberToNewMeeting = async (teamMember, teamId, dataLoader) => {
     .table('NewMeeting')
     .get(meetingId)
     .default(null)
+    .run()
   if (!newMeeting) return false
   const {phases} = newMeeting
   const checkInPhase = phases.find((phase) => phase.phaseType === CHECKIN)
@@ -48,7 +49,7 @@ const addTeamMemberToNewMeeting = async (teamMember, teamId, dataLoader) => {
         updatedAt: now
       }),
     member: r.table('MeetingMember').insert(meetingMember)
-  })
+  }).run()
   return true
 }
 

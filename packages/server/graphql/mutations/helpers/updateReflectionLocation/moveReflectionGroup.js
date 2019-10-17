@@ -5,7 +5,7 @@ import {GROUP} from '../../../../../client/utils/constants'
 import standardError from '../../../../utils/standardError'
 
 const moveReflectionGroup = async (reflectionGroupId, sortOrder, {authToken, dataLoader}) => {
-  const r = getRethink()
+  const r = await getRethink()
   const now = new Date()
   const reflectionGroup = await r.table('RetroReflectionGroup').get(reflectionGroupId)
   const viewerId = getUserId(authToken)

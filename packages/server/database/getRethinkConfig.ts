@@ -9,7 +9,7 @@ getDotenv()
 export default function getRethinkConfig () {
   const urlString = process.env.RETHINKDB_URL || 'rethinkdb://localhost:28015/actionDevelopment'
   const u = parse(urlString)
-
+  if (!u.port || !u.path) throw new Error('Invalid RethinkDB URL')
   const config = {
     host: u.hostname,
     port: parseInt(u.port, 10),

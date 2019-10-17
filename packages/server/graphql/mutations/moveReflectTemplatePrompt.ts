@@ -17,12 +17,15 @@ const moveReflectTemplate = {
       type: new GraphQLNonNull(GraphQLFloat)
     }
   },
-  async resolve (_source, {promptId, sortOrder}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink()
+  async resolve(_source, {promptId, sortOrder}, {authToken, dataLoader, socketId: mutatorId}) {
+    const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const prompt = await r.table('CustomPhaseItem').get(promptId)
+    const prompt = await r
+      .table('CustomPhaseItem')
+      .get(promptId)
+      .run()
     const viewerId = getUserId(authToken)
 
     // AUTH
@@ -38,6 +41,7 @@ const moveReflectTemplate = {
         sortOrder,
         updatedAt: now
       })
+      .run()
 
     const {teamId} = prompt
     const data = {promptId}

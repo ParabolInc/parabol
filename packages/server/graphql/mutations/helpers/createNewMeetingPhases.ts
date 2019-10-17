@@ -30,29 +30,32 @@ const primePhases = (phases: GenericMeetingPhase[]) => {
 }
 
 const getPastStageDurations = async (teamId: string) => {
-  const r = getRethink()
-  return r
-    .table('NewMeeting')
-    .getAll(teamId, {index: 'teamId'})
-    .filter({isLegacy: false}, {default: true})
-    // .orderBy(r.desc('endedAt'))
-    .concatMap((row) => row('phases'))
-    .concatMap((row) => row('stages'))
-    .filter((row) => row.hasFields('startAt', 'endAt'))
-    // convert seconds to ms
-    .merge((row) => ({
-      duration: r
-        .sub(row('endAt'), row('startAt'))
-        .mul(1000)
-        .floor()
-    }))
-    // remove stages that took under 1 minute
-    .filter((row) => row('duration').ge(60000))
-    .orderBy(r.desc('startAt'))
-    .group('phaseType')
-    .ungroup()
-    .map((row) => [row('group'), row('reduction')('duration')])
-    .coerceTo('object') as {[key: string]: number[]}
+  const r = await getRethink()
+  return (
+    (r
+      .table('NewMeeting')
+      .getAll(teamId, {index: 'teamId'})
+      .filter({isLegacy: false}, {default: true})
+      // .orderBy(r.desc('endedAt'))
+      .concatMap((row) => row('phases'))
+      .concatMap((row) => row('stages'))
+      .filter((row) => row.hasFields('startAt', 'endAt'))
+      // convert seconds to ms
+      .merge((row) => ({
+        duration: r
+          .sub(row('endAt'), row('startAt'))
+          .mul(1000)
+          .floor()
+      }))
+      // remove stages that took under 1 minute
+      .filter((row) => row('duration').ge(60000))
+      .orderBy(r.desc('startAt'))
+      .group('phaseType')
+      .ungroup()
+      .map((row) => [row('group'), row('reduction')('duration')])
+      .coerceTo('object')
+      .run() as unknown) as {[key: string]: number[]}
+  )
 }
 
 const createNewMeetingPhases = async (
@@ -61,7 +64,7 @@ const createNewMeetingPhases = async (
   meetingType: MeetingType,
   dataLoader: DataLoaderWorker
 ) => {
-  const r = getRethink()
+  const r = await getRethink()
   const now = new Date()
   const meetingSettings = await r
     .table('MeetingSettings')
@@ -69,6 +72,7 @@ const createNewMeetingPhases = async (
     .filter({meetingType})
     .nth(0)
     .default(null)
+    .run()
   if (!meetingSettings) {
     throw new Error('No meeting setting found for team!')
   }
@@ -87,6 +91,7 @@ const createNewMeetingPhases = async (
           .update({
             lastUsedAt: now
           })
+          .run()
         return new ReflectPhase(teamId, selectedTemplateId, durations)
       case DISCUSS:
         return new DiscussPhase(durations)

@@ -17,8 +17,8 @@ export default {
       description: 'the new team member that will be the leader'
     }
   },
-  async resolve (source, {teamMemberId}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink()
+  async resolve(source, {teamMemberId}, {authToken, dataLoader, socketId: mutatorId}) {
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 

@@ -1,7 +1,7 @@
 import getRethink from '../database/rethinkDriver'
 
 const flushSocketConnections = async () => {
-  const r = getRethink()
+  const r = await getRethink()
   return r.table('User').update({
     connectedSockets: []
   })
@@ -15,13 +15,13 @@ const storePersistedQueries = async () => {
     query: queryMap[hash]
   }))
 
-  const r = getRethink()
+  const r = await getRethink()
   const res = await r.table('QueryMap').insert(records, {conflict: 'replace'})
   console.log(`Added ${res.inserted} records to the queryMap`)
 }
 
 const postDeploy = async () => {
-  const r = getRethink()
+  const r = await getRethink()
   await flushSocketConnections()
   await storePersistedQueries()
   await r.getPoolMaster().drain()

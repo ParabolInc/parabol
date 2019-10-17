@@ -19,7 +19,7 @@ console.error = jest.fn()
 describe('ArchiveTeam', () => {
   test('archives a team', async () => {
     // SETUP
-    const r = getRethink()
+    const r = await getRethink()
     const dynamicSerializer = new DynamicSerializer()
     const mockPubSub = new MockPubSub()
     const mockDB = new MockDB()

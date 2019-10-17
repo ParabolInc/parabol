@@ -1,14 +1,17 @@
 import getRethink from './rethinkDriver'
 
-export default async function cloneProdToDev () {
-  const r = getRethink()
+export default async function cloneProdToDev() {
+  const r = await getRethink()
   try {
-    await r.dbDrop('cypress')
+    await r.dbDrop('cypress').run()
   } catch (e) {
     // empty
   }
-  await r.dbCreate('cypress')
-  const list = await r.db('test').tableList()
+  await r.dbCreate('cypress').run()
+  const list = await r
+    .db('test')
+    .tableList()
+    .run()
   const promises = list.map((table) =>
     r
       .db('cypress')
@@ -19,8 +22,11 @@ export default async function cloneProdToDev () {
           .table(table)
           .insert(r.db('test').table(table))
       })
+      .run()
   )
   await Promise.all(promises)
   console.log('Move to cypress complete!')
-  r.getPoolMaster().drain()
+  r.getPoolMaster()
+    .drain()
+    .run()
 }

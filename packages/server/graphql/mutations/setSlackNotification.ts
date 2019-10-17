@@ -35,7 +35,7 @@ export default {
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
-    const r = getRethink()
+    const r = await getRethink()
 
     // AUTH
     if (!isTeamMember(authToken, teamId)) {
@@ -72,6 +72,7 @@ export default {
           .table('SlackAuth')
           .get(slackAuth.id)
           .update({defaultTeamChannelId: slackChannelId})
+          .run()
       }
     }
 
@@ -81,6 +82,7 @@ export default {
       .getAll(viewerId, {index: 'userId'})
       .filter({teamId})
       .filter((row) => r(slackNotificationEvents).contains(row('event')))
+      .run()
 
     const notifications = slackNotificationEvents.map((event) => {
       const existingNotification = existingNotifications.find(
@@ -94,7 +96,10 @@ export default {
         id: (existingNotification && existingNotification.id) || undefined
       })
     })
-    await r.table('SlackNotification').insert(notifications, {conflict: 'replace'})
+    await r
+      .table('SlackNotification')
+      .insert(notifications, {conflict: 'replace'})
+      .run()
     const slackNotificationIds = notifications.map(({id}) => id)
     const data = {userId: viewerId, slackNotificationIds}
     publish(TEAM, teamId, SetSlackNotificationPayload, data, subOptions)

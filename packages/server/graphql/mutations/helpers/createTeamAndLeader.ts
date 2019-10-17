@@ -25,10 +25,13 @@ import {InvoiceItemType} from 'parabol-client/types/constEnums'
 
 // used for addorg, addTeam
 export default async function createTeamAndLeader(userId, newTeam) {
-  const r = getRethink()
+  const r = await getRethink()
   const now = new Date()
   const {id: teamId, orgId} = newTeam
-  const organization = await r.table('Organization').get(orgId)
+  const organization = await r
+    .table('Organization')
+    .get(orgId)
+    .run()
   const {tier} = organization
   const verifiedTeam = {
     ...newTeam,
@@ -93,13 +96,16 @@ export default async function createTeamAndLeader(userId, newTeam) {
       .filter({removedAt: null, orgId})
       .nth(0)
       .default(null)
-  })
+  }).run()
 
   const {organizationUser} = res
   if (!organizationUser) {
     await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER)
   }
 
-  const tms = await r.table('User').get(userId)('tms')
+  const tms = await r
+    .table('User')
+    .get(userId)('tms')
+    .run()
   updateAuth0TMS(userId, tms)
 }

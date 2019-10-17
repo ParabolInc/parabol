@@ -4,6 +4,7 @@ exports.up = (r) => {
     .table('Organization')
     .filter({tier: 'personal'})
     .replace((org) => org.without(...billingFields).merge({creditCard: {}}))
+    .run()
 }
 
 exports.down = () => {

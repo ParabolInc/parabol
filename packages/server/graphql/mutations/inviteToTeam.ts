@@ -44,7 +44,7 @@ export default {
   resolve: rateLimit({perMinute: 10, perHour: 100})(
     async (_source, {invitees, teamId}, {authToken, dataLoader, socketId: mutatorId}) => {
       const operationId = dataLoader.share()
-      const r = getRethink()
+      const r = await getRethink()
       const now = new Date()
 
       // AUTH
@@ -55,7 +55,10 @@ export default {
 
       // RESOLUTION
       const subOptions = {mutatorId, operationId}
-      const users = await r.table('User').getAll(r.args(invitees), {index: 'email'})
+      const users = await r
+        .table('User')
+        .getAll(r.args(invitees), {index: 'email'})
+        .run()
 
       const uniqueInvitees = Array.from(new Set(invitees as string[]))
       // filter out emails already on team
@@ -79,12 +82,18 @@ export default {
           token: tokens[idx]
         })
       })
-      await r.table('TeamInvitation').insert(teamInvitationsToInsert)
+      await r
+        .table('TeamInvitation')
+        .insert(teamInvitationsToInsert)
+        .run()
 
       // remove suggested action, if any
       let removedSuggestedActionId
       if (isOnboardTeam) {
-        removedSuggestedActionId = await removeSuggestedAction(viewerId, SuggestedActionTypeEnum.inviteYourTeam)
+        removedSuggestedActionId = await removeSuggestedAction(
+          viewerId,
+          SuggestedActionTypeEnum.inviteYourTeam
+        )
       }
       // insert notification records
       const notificationsToInsert = [] as NotificationToInsert[]
@@ -102,11 +111,17 @@ export default {
         }
       })
       if (notificationsToInsert.length > 0) {
-        await r.table('Notification').insert(notificationsToInsert)
+        await r
+          .table('Notification')
+          .insert(notificationsToInsert)
+          .run()
       }
       let meeting
       if (meetingId) {
-        meeting = await r.table('NewMeeting').get(meetingId)
+        meeting = await r
+          .table('NewMeeting')
+          .get(meetingId)
+          .run()
       }
 
       // send emails
@@ -142,7 +157,13 @@ export default {
           ...data,
           teamInvitationNotificationId
         }
-        publish(SubscriptionChannel.NOTIFICATION, userId, InviteToTeamPayload, subscriberData, subOptions)
+        publish(
+          SubscriptionChannel.NOTIFICATION,
+          userId,
+          InviteToTeamPayload,
+          subscriberData,
+          subOptions
+        )
       })
       sendSegmentEvent('Invite Email Sent', viewerId, {
         teamId,

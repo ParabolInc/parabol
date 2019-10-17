@@ -20,14 +20,17 @@ export default {
       type: new GraphQLNonNull(GraphQLBoolean)
     }
   },
-  async resolve (_source, {phaseItemId, isEditing}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink()
+  async resolve(_source, {phaseItemId, isEditing}, {authToken, dataLoader, socketId: mutatorId}) {
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const phaseItem = await r.table('CustomPhaseItem').get(phaseItemId)
+    const phaseItem = await r
+      .table('CustomPhaseItem')
+      .get(phaseItemId)
+      .run()
     if (!phaseItem || !phaseItem.isActive) {
       return standardError(new Error('Category not found'), {userId: viewerId})
     }
@@ -36,7 +39,10 @@ export default {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
-    const team = await r.table('Team').get(teamId)
+    const team = await r
+      .table('Team')
+      .get(teamId)
+      .run()
     const {meetingId} = team
     if (!meetingId) return standardError(new Error('Meeting already ended'), {userId: viewerId})
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
