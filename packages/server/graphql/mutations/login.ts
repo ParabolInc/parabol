@@ -24,6 +24,7 @@ import SuggestedActionInviteYourTeam from '../../database/types/SuggestedActionI
 import TimelineEventJoinedParabol from '../../database/types/TimelineEventJoinedParabol'
 import User from '../../database/types/User'
 import getAuth0ManagementClient from '../../utils/getAuth0ManagementClient'
+import {GQLContext} from '../graphql'
 
 const handleSegment = async (userId, previousId) => {
   if (previousId) {
@@ -54,7 +55,7 @@ const login = {
     }
   },
 
-  async resolve(_source, {auth0Token, isOrganic, segmentId}, {dataLoader}) {
+  async resolve(_source, {auth0Token, isOrganic, segmentId}, {dataLoader}: GQLContext) {
     const r = await getRethink()
     const now = new Date()
 
@@ -69,10 +70,14 @@ const login = {
     }
     const viewerId = getUserId(authToken)
 
-    const existingUser = (await dataLoader.get('users').load(viewerId)) as User | null
+    const existingUser = await r
+      .table<User | null>('User')
+      .get(viewerId)
+      .run()
 
     // RESOLUTION
     if (existingUser) {
+      dataLoader.get('users').prime(viewerId, existingUser)
       // LOGIN
       /*
        * The segment docs are inconsistent, and warn against sending
@@ -93,7 +98,6 @@ const login = {
       }
     }
 
-    dataLoader.get('users').clear(viewerId)
     let userInfo
     try {
       userInfo = await getAuth0ManagementClient().getUser({
