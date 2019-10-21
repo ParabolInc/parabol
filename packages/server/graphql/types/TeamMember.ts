@@ -30,15 +30,15 @@ const TeamMember = new GraphQLObjectType<any, GQLContext, any>({
       type: new GraphQLNonNull(GraphQLID),
       description: 'An ID for the teamMember. userId::teamId'
     },
+    createdAt: {
+      type: new GraphQLNonNull(GraphQLISO8601Type),
+      description: 'The datetime the team member was created'
+    },
     isNotRemoved: {
       type: GraphQLBoolean,
       description: 'true if the user is a part of the team, false if they no longer are'
     },
     isLead: {type: GraphQLBoolean, description: 'Is user a team lead?'},
-    isFacilitator: {
-      type: GraphQLBoolean,
-      description: 'Is user a team facilitator?'
-    },
     hideAgenda: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'hide the agenda list on the dashboard',
