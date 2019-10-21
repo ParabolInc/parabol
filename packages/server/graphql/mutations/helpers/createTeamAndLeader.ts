@@ -73,10 +73,7 @@ export default async function createTeamAndLeader(userId, newTeam) {
     customPhaseItems: r.table('CustomPhaseItem').insert(phaseItems),
     templates: r.table('ReflectTemplate').insert(templates),
     // denormalize common fields to team member
-    teamLead: insertNewTeamMember(userId, teamId, {
-      isLead: true,
-      checkInOrder: 0
-    }),
+    teamLead: insertNewTeamMember(userId, teamId),
     event: r.table('TimelineEvent').insert({
       id: shortid.generate(),
       // + 5 to make sure it comes after parabol joined event
