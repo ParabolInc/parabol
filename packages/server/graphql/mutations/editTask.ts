@@ -19,12 +19,19 @@ export default {
       description: 'true if the editing is starting, false if it is stopping'
     }
   },
-  async resolve(_source, {taskId, isEditing}, {authToken, dataLoader, socketId: mutatorId}:GQLContext) {
+  async resolve(
+    _source,
+    {taskId, isEditing},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
     // AUTH
     const task = await dataLoader.get('tasks').load(taskId)
+    if (!task) {
+      return {error: {message: 'Task not found'}}
+    }
     const viewerId = getUserId(authToken)
     const {tags, teamId, userId: taskUserId} = task
     if (!isTeamMember(authToken, teamId)) {

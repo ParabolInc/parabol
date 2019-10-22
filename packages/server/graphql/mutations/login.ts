@@ -22,7 +22,6 @@ import SuggestedActionTryTheDemo from '../../database/types/SuggestedActionTryTh
 import SuggestedActionCreateNewTeam from '../../database/types/SuggestedActionCreateNewTeam'
 import SuggestedActionInviteYourTeam from '../../database/types/SuggestedActionInviteYourTeam'
 import TimelineEventJoinedParabol from '../../database/types/TimelineEventJoinedParabol'
-import User from '../../database/types/User'
 import getAuth0ManagementClient from '../../utils/getAuth0ManagementClient'
 import {GQLContext} from '../graphql'
 
