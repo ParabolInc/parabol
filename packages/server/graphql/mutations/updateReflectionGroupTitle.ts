@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {GROUP, TEAM} from '../../../client/utils/constants'
+import {GROUP} from '../../../client/utils/constants'
 import stringSimilarity from 'string-similarity'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import UpdateReflectionGroupTitlePayload from '../types/UpdateReflectionGroupTitlePayload'
@@ -10,6 +10,7 @@ import isPhaseComplete from '../../../client/utils/meetings/isPhaseComplete'
 import standardError from '../../utils/standardError'
 import {IUpdateReflectionGroupTitleOnMutationArguments} from '../../../client/types/graphql'
 import {GQLContext} from '../graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: UpdateReflectionGroupTitlePayload,
@@ -42,6 +43,9 @@ export default {
       return standardError(new Error('Reflection group not found'), {userId: viewerId})
     }
     const {meetingId, smartTitle, title: oldTitle} = reflectionGroup
+    if (oldTitle === title) {
+      return {error: {message: 'Group already renamed'}}
+    }
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     const {endedAt, phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
@@ -86,7 +90,7 @@ export default {
     }
 
     const data = {meetingId, reflectionGroupId}
-    publish(TEAM, teamId, UpdateReflectionGroupTitlePayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, UpdateReflectionGroupTitlePayload, data, subOptions)
     return data
   }
 }

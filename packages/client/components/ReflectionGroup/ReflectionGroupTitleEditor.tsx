@@ -101,7 +101,6 @@ const getValidationError = (title: string | null, reflectionGroups, reflectionGr
   if (usedTitles.includes(title)) {
     return 'You already used that name'
   }
-  // TODO check for duplicate titles
   return undefined
 }
 
