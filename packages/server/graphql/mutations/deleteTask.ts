@@ -23,9 +23,12 @@ export default {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const task = await r.table('Task').get(taskId).run()
+    const task = await r
+      .table('Task')
+      .get(taskId)
+      .run()
     if (!task) {
-      return standardError(new Error('Task not found'), {userId: viewerId})
+      return {error: {message: 'Task not found'}}
     }
     const {teamId} = task
     if (!isTeamMember(authToken, teamId)) {
@@ -44,11 +47,11 @@ export default {
           index: 'taskIdUpdatedAt'
         })
         .delete(),
-      subscribedUserIds: r
+      subscribedUserIds: (r
         .table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
         .filter({isNotRemoved: true})('userId')
-        .coerceTo('array') as unknown as string[]
+        .coerceTo('array') as unknown) as string[]
     }).run()
     const {content, tags, userId: taskUserId} = task
 
@@ -63,7 +66,8 @@ export default {
         type: TASK_INVOLVES
       })
       .delete({returnChanges: true})('changes')('old_val')
-      .default([]).run()
+      .default([])
+      .run()
 
     const data = {task, notifications: clearedNotifications}
     clearedNotifications.forEach((notification) => {

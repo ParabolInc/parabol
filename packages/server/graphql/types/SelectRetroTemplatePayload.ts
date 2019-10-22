@@ -1,4 +1,4 @@
-import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLObjectType} from 'graphql'
 import RetrospectiveMeetingSettings from './RetrospectiveMeetingSettings'
 import StandardMutationError from './StandardMutationError'
 
@@ -9,9 +9,9 @@ const SelectRetroTemplatePayload = new GraphQLObjectType({
       type: StandardMutationError
     },
     retroMeetingSettings: {
-      type: new GraphQLNonNull(RetrospectiveMeetingSettings),
+      type: RetrospectiveMeetingSettings,
       resolve: ({meetingSettingsId}, _args, {dataLoader}) => {
-        return dataLoader.get('meetingSettings').load(meetingSettingsId)
+        return meetingSettingsId ? dataLoader.get('meetingSettings').load(meetingSettingsId) : null
       }
     }
   })

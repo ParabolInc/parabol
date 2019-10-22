@@ -4,7 +4,6 @@ import getRethink from '../database/rethinkDriver'
 import Meeting from '../database/types/Meeting'
 import AtlassianManager from './AtlassianManager'
 import {getUserId} from './authorization'
-import sendToSentry from './sendToSentry'
 import {
   IAgendaItem,
   IAtlassianAuth,
@@ -46,11 +45,7 @@ const indexResults = (results, indexField, cacheKeyFn = defaultCacheKeyFn) => {
   return indexedResults
 }
 
-const normalizeRethinkDbResults = (keys, indexField, cacheKeyFn = defaultCacheKeyFn) => (
-  results,
-  authToken,
-  table
-) => {
+const normalizeRethinkDbResults = (keys, indexField, results, cacheKeyFn = defaultCacheKeyFn) => {
   const indexedResults = indexResults(results, indexField, cacheKeyFn)
   // return keys.map((val) => indexedResults.get(cacheKeyFn(val)) || new Error(`Key not found : ${val}`));
   return keys.map((val) => {
@@ -127,7 +122,7 @@ export default class RethinkDataLoader {
         .table(table)
         .getAll(r.args(keys), {index: 'id'})
         .run()
-      return normalizeRethinkDbResults(keys, 'id')(docs, this.authToken, table)
+      return normalizeRethinkDbResults(keys, 'id', docs)
     }
     return new DataLoader<string, Tables[T]>(batchFn, this.dataLoaderOptions)
   }

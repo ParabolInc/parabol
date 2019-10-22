@@ -58,7 +58,9 @@ export default {
       .table('Task')
       .get(taskId)
       .run()
-    if (!task) return standardError(new Error('Task not found'), {userId: viewerId})
+    if (!task) {
+      return {error: {message: 'Task not found'}}
+    }
     const {teamId, userId} = task
     const nextUserId = inputUserId || userId
     const nextTeamId = inputTeamId || teamId
