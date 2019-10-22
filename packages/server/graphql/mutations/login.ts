@@ -70,14 +70,10 @@ const login = {
     }
     const viewerId = getUserId(authToken)
 
-    const existingUser = await r
-      .table<User | null>('User')
-      .get(viewerId)
-      .run()
+    const existingUser = await dataLoader.get('users').load(viewerId)
 
     // RESOLUTION
     if (existingUser) {
-      dataLoader.get('users').prime(viewerId, existingUser)
       // LOGIN
       /*
        * The segment docs are inconsistent, and warn against sending
@@ -98,6 +94,7 @@ const login = {
       }
     }
 
+    dataLoader.get('users').clear(viewerId)
     let userInfo
     try {
       userInfo = await getAuth0ManagementClient().getUser({

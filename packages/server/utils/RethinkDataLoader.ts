@@ -56,10 +56,11 @@ const normalizeRethinkDbResults = (keys, indexField, cacheKeyFn = defaultCacheKe
   return keys.map((val) => {
     const res = indexedResults.get(cacheKeyFn(val))
     if (!res) {
-      const viewerId = getUserId(authToken)
-      sendToSentry(new Error(`dataloader not found for ${cacheKeyFn(val)}, on ${table}`), {
-        userId: viewerId
-      })
+      // no need to send to sentry because half the time we are doing this in the validation step where it may not exist
+      // const viewerId = getUserId(authToken)
+      // sendToSentry(new Error(`dataloader not found for ${cacheKeyFn(val)}, on ${table}`), {
+      //   userId: viewerId
+      // })
       return null
     }
     return res
