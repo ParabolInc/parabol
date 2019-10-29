@@ -1,11 +1,10 @@
 import EventEmitter from 'eventemitter3'
 import {stringify} from 'flatted'
-import {requestSubscription} from 'react-relay'
 import {
   Environment,
   FetchFunction,
-  getRequest,
   Network,
+  Observable,
   RecordSource,
   Store,
   SubscribeFunction
@@ -32,22 +31,23 @@ export default class LocalAtmosphere extends Environment {
     this._network = Network.create(this.fetchLocal, this.subscribeLocal)
   }
 
-  registerQuery: Atmosphere['registerQuery'] = async (_queryKey, _queryFetcher, options = {}) => {
-    const {subscriptions, subParams, queryVariables} = options
-    if (!subscriptions) return
-    const subConfigs = subscriptions.map((subCreator) =>
-      subCreator(this as any, queryVariables, subParams)
-    )
-    subConfigs.map((config) => {
-      const {subscription} = config
-      const request = getRequest(subscription)
-      const name = request.params && request.params.name
-      if (!name) throw new Error(`No name found for request ${request}`)
-      requestSubscription(this, {...config})
-    })
+  registerQuery: Atmosphere['registerQuery'] = async (
+    _queryKey,
+    subscription,
+    variables,
+    router
+  ) => {
+    const {name} = subscription
+    // runtime error in case relay changes
+    if (!name) throw new Error(`Missing name for sub`)
+    subscription(this as any, variables, router)
   }
 
-  fetchLocal: FetchFunction = async (operation, variables) => {
+  fetchLocal: FetchFunction = (operation, variables) => {
+    return Observable.from(this.fetchLocalPromise(operation, variables))
+  }
+
+  fetchLocalPromise: FetchFunction = async (operation, variables) => {
     const res = (await this.clientGraphQLServer.fetch(operation.name, variables)) as any
     if (res.endNewMeeting && res.endNewMeeting.isKill) {
       window.localStorage.removeItem('retroDemo')
@@ -59,33 +59,28 @@ export default class LocalAtmosphere extends Environment {
     return res
   }
 
-  subscribeLocal: SubscribeFunction = (operation, _variables, _cacheConfig, observer) => {
-    const channelLookup = {
-      TaskSubscription: {
-        channel: TASK,
-        dataField: 'taskSubscription'
-      },
-      TeamSubscription: {
-        channel: TEAM,
-        dataField: 'teamSubscription'
+  subscribeLocal: SubscribeFunction = (operation, _variables, _cacheConfig) => {
+    return Observable.create((sink) => {
+      const channelLookup = {
+        TaskSubscription: {
+          channel: TASK,
+          dataField: 'taskSubscription'
+        },
+        TeamSubscription: {
+          channel: TEAM,
+          dataField: 'teamSubscription'
+        }
       }
-    }
-    const fields = channelLookup[operation.name]
-    if (fields) {
-      this.clientGraphQLServer.on(fields.channel, (data) => {
-        if (observer && observer.onNext) {
-          observer.onNext({
+      const fields = channelLookup[operation.name]
+      if (fields) {
+        this.clientGraphQLServer.on(fields.channel, (data) => {
+          sink.next({
             data: {
               [fields.dataField]: data
             }
           })
-        }
-      })
-    }
-    return {
-      dispose: () => {
-        /*noop*/
+        })
       }
-    }
+    })
   }
 }

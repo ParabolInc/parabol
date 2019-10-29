@@ -25,7 +25,6 @@ import {APP_TOKEN_KEY} from './utils/constants'
 import handlerProvider from './utils/relay/handlerProvider'
 import {Snack, SnackbarRemoveFn} from './components/Snackbar'
 import AuthToken from 'parabol-server/database/types/AuthToken'
-import QueryCache from './utils/relay/QueryCache'
 
 interface QuerySubscription {
   subKey: string
@@ -37,7 +36,11 @@ interface Subscriptions {
   [subKey: string]: ReturnType<GQLTrebuchetClient['subscribe']>
 }
 
-export type SubscriptionRequestor = (atmosphere: Atmosphere, variables?: Variables) => Disposable
+export type SubscriptionRequestor = (
+  atmosphere: Atmosphere,
+  variables: Variables,
+  router: {history: History}
+) => Disposable
 
 const noop = (): any => {
   /* noop */
@@ -238,7 +241,7 @@ export default class Atmosphere extends Environment {
     queryKey: string,
     subscription: SubscriptionRequestor,
     variables: Variables,
-    context?: Variables = {}
+    router: {history: History}
   ) => {
     window.clearTimeout(this.queryTimeouts[queryKey])
     delete this.queryTimeouts[queryKey]
@@ -249,7 +252,7 @@ export default class Atmosphere extends Environment {
     const subKey = Atmosphere.getKey(name, variables)
     const isRequested = Boolean(this.querySubscriptions.find((qs) => qs.subKey === subKey))
     if (!isRequested) {
-      subscription(this, variables, context)
+      subscription(this, variables, router)
     }
     this.querySubscriptions.push({queryKey, subKey})
   }

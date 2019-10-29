@@ -13,9 +13,13 @@ const useSubscription = (
   const {history, location} = useRouter()
   const context = {history, location}
   useEffect(() => {
-    atmosphere.registerQuery(queryKey, subscription, variables, context).catch()
+    if (atmosphere.registerQuery) {
+      atmosphere.registerQuery(queryKey, subscription, variables, context).catch()
+    }
     return () => {
-      atmosphere.scheduleUnregisterQuery(queryKey, 300000)
+      if (atmosphere.scheduleUnregisterQuery) {
+        atmosphere.scheduleUnregisterQuery(queryKey, 300000)
+      }
     }
   }, [atmosphere, queryKey, subscription, variables])
 }
