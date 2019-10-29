@@ -14,8 +14,6 @@ import {TASK, TEAM} from '../../utils/constants'
 import handlerProvider from '../../utils/relay/handlerProvider'
 import Atmosphere from '../../Atmosphere'
 import ClientGraphQLServer from './ClientGraphQLServer'
-import LinearPublishQueue from 'relay-linear-publish-queue'
-import defaultGetDataID from 'relay-runtime/lib/defaultGetDataID'
 // import sleep from 'universal/utils/sleep'
 
 const store = new Store(new RecordSource())
@@ -28,8 +26,7 @@ export default class LocalAtmosphere extends Environment {
     // @ts-ignore
     super({
       store,
-      handlerProvider,
-      publishQueue: new LinearPublishQueue(store, handlerProvider, defaultGetDataID)
+      handlerProvider
     } as any)
     // @ts-ignore
     this._network = Network.create(this.fetchLocal, this.subscribeLocal)
@@ -76,7 +73,7 @@ export default class LocalAtmosphere extends Environment {
     const fields = channelLookup[operation.name]
     if (fields) {
       this.clientGraphQLServer.on(fields.channel, (data) => {
-        if (observer.onNext) {
+        if (observer && observer.onNext) {
           observer.onNext({
             data: {
               [fields.dataField]: data

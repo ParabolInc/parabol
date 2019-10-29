@@ -6,60 +6,38 @@ import getTrebuchet, {SocketTrebuchet, SSETrebuchet} from '@mattkrick/trebuchet-
 import {InviteToTeamMutation_notification} from './__generated__/InviteToTeamMutation_notification.graphql'
 import EventEmitter from 'eventemitter3'
 import jwtDecode from 'jwt-decode'
-import {requestSubscription} from 'react-relay'
+import {Disposable} from 'react-relay'
 import {
   CacheConfig,
   Environment,
-  getRequest,
+  FetchFunction,
   GraphQLResponse,
-  GraphQLSubscriptionConfig,
   Network,
-  ObservableFromValue,
+  Observable,
   RecordSource,
   RequestParameters,
   Store,
+  SubscribeFunction,
   Variables
 } from 'relay-runtime'
-import defaultGetDataID from 'relay-runtime/lib/defaultGetDataID'
 import StrictEventEmitter from 'strict-event-emitter-types'
-import LinearPublishQueue from 'relay-linear-publish-queue'
 import {APP_TOKEN_KEY} from './utils/constants'
 import handlerProvider from './utils/relay/handlerProvider'
 import {Snack, SnackbarRemoveFn} from './components/Snackbar'
 import AuthToken from 'parabol-server/database/types/AuthToken'
-
-// import sleep from './/utils/sleep'
-
-const defaultErrorHandler = (err: any) => {
-  console.error('Captured error:', err)
-}
+import QueryCache from './utils/relay/QueryCache'
 
 interface QuerySubscription {
-  // subKey is undefined is there are no subscriptions but we have a ttl in the cacheConfig
-  subKey?: string
+  subKey: string
   queryKey: string
-  queryFetcher: QueryFetcher
+  disposable?: ReturnType<GQLTrebuchetClient['subscribe']>
 }
 
 interface Subscriptions {
   [subKey: string]: ReturnType<GQLTrebuchetClient['subscribe']>
 }
 
-interface Operation {
-  id?: string
-  name: string
-  text?: string
-}
-
-interface QueryFetcher {
-  dispose: () => void
-}
-
-type SubCreator = (
-  atmosphere: Atmosphere,
-  queryVariables: Variables | undefined,
-  subParams
-) => GraphQLSubscriptionConfig<unknown>
+export type SubscriptionRequestor = (atmosphere: Atmosphere, variables?: Variables) => Disposable
 
 const noop = (): any => {
   /* noop */
@@ -77,11 +55,12 @@ export interface AtmosphereEvents {
 }
 
 const store = new Store(new RecordSource())
+
 export default class Atmosphere extends Environment {
   static getKey = (name: string, variables: Variables | undefined) => {
     return JSON.stringify({name, variables})
   }
-  _network: Network
+  _network: typeof Network
 
   transport!: GQLHTTPClient | GQLTrebuchetClient
   authToken: string | null = null
@@ -92,6 +71,7 @@ export default class Atmosphere extends Environment {
   } = {}
   subscriptions: Subscriptions = {}
   eventEmitter: StrictEventEmitter<EventEmitter, AtmosphereEvents> = new EventEmitter()
+  queryCache = {} as {[key: string]: GraphQLResponse}
   upgradeTransportPromise: Promise<void> | null = null
   // it's only null before login, so it's just a little white lie
   viewerId: string = null!
@@ -100,12 +80,9 @@ export default class Atmosphere extends Environment {
     super({
       store,
       handlerProvider,
-      network: Network.create(noop),
-      // @ts-ignore
-      publishQueue: new LinearPublishQueue(store, handlerProvider, defaultGetDataID)
+      network: Network.create(noop)
     })
-    // @ts-ignore we should update the relay-runtime typings, this.handleSubscribe should be able to return a promise
-    this._network = Network.create(this.handleFetch, this.handleSubscribe)
+    this._network = Network.create(this.handleFetch, this.handleSubscribe) as any
     this.transport = new GQLHTTPClient(this.fetchHTTP)
   }
 
@@ -133,69 +110,35 @@ export default class Atmosphere extends Environment {
     return contentType.startsWith('application/json') ? res.json() : null
   }
 
-  registerQuery = async (
-    queryKey: string,
-    queryFetcher: QueryFetcher,
-    options: {
-      subscriptions?: SubCreator[]
-      subParams?: any
-      queryVariables?: Variables | undefined
-    } = {}
-  ) => {
-    window.clearTimeout(this.queryTimeouts[queryKey])
-    delete this.queryTimeouts[queryKey]
-    if (!options.subscriptions) {
-      this.querySubscriptions.push({queryKey, queryFetcher})
-      return
-    }
-    await this.upgradeTransport()
-    const {subscriptions, queryVariables, subParams} = options
-    const subConfigs = subscriptions.map((subCreator) =>
-      subCreator(this, queryVariables, subParams)
-    )
-    const newQuerySubs = subConfigs.map((config) => {
-      const {subscription, variables = {}} = config
-      const request = getRequest(subscription)
-      const name = request.params && request.params.name
-      if (!name) throw new Error(`No name found for request ${request}`)
-      const subKey = JSON.stringify({name, variables})
-      const isRequested = Boolean(this.querySubscriptions.find((qs) => qs.subKey === subKey))
-      if (!isRequested) {
-        requestSubscription(this, {onError: defaultErrorHandler, ...config})
-      }
-      return {
-        subKey,
-        queryKey,
-        queryFetcher
-      }
-    })
-    this.querySubscriptions.push(...newQuerySubs)
-  }
-
-  handleSubscribe = async (
-    operation: Operation,
+  handleSubscribePromise = async (
+    operation: RequestParameters,
     variables: OperationPayload['variables'] | undefined,
     _cacheConfig: CacheConfig,
     observer: any
   ) => {
-    const {name, id: documentId} = operation
+    const {name} = operation
+    const documentId = operation.id || ''
     const subKey = Atmosphere.getKey(name, variables)
     await this.upgradeTransport()
-    if (!(this.transport as GQLTrebuchetClient).subscribe) return
+    const transport = this.transport as GQLTrebuchetClient
+    if (!transport.subscribe) return
     if (!__PRODUCTION__) {
       const queryMap = await import('../server/graphql/queryMap.json')
       const query = queryMap[documentId!]
-      this.subscriptions[subKey] = (this.transport as GQLTrebuchetClient).subscribe(
-        {query, variables},
-        observer
-      )
+      this.subscriptions[subKey] = transport.subscribe({query, variables}, observer)
     } else {
-      this.subscriptions[subKey] = (this.transport as GQLTrebuchetClient).subscribe(
-        {documentId, variables},
-        observer
-      )
+      this.subscriptions[subKey] = transport.subscribe({documentId, variables}, observer)
     }
-    return this.makeDisposable(subKey)
+  }
+
+  handleSubscribe: SubscribeFunction = (operation, variables, _cacheConfig) => {
+    return Observable.create((sink) => {
+      this.handleSubscribePromise(operation, variables, _cacheConfig, {
+        onNext: sink.next,
+        onError: sink.error,
+        onCompleted: sink.complete
+      }).catch()
+    })
   }
 
   trySockets = () => {
@@ -234,22 +177,33 @@ export default class Atmosphere extends Environment {
     return this.upgradeTransportPromise
   }
 
-  handleFetch = async (
-    request: RequestParameters,
-    variables: Variables
-    // _cacheConfig?: CacheConfig
-  ): Promise<ObservableFromValue<GraphQLResponse>> => {
+  handleFetchPromise = async (request: RequestParameters, variables: Variables) => {
     // await sleep(1000)
+    const data = request.id || request.text || ''
+    const isQuery = request.operationKind === 'query'
+    const queryKey = Atmosphere.getKey(data, variables)
+    if (isQuery) {
+      const cachedValue = this.queryCache[queryKey]
+      if (cachedValue) {
+        return cachedValue
+      }
+    }
     if (!__PRODUCTION__ && request.id) {
       const queryMap = await import('../server/graphql/queryMap.json')
       const query = queryMap[request.id]
       // @ts-ignore
-      return this.transport.fetch({query, variables})
+      const res = (await this.transport.fetch({query, variables})) as GraphQLResponse
+      this.queryCache[queryKey] = res
     }
     const field = request.id ? 'documentId' : 'query'
-    const data = request.id || request.text
     // @ts-ignore
-    return this.transport.fetch({[field]: data, variables})
+    const res = (await this.transport.fetch({[field]: data, variables})) as GraphQLResponse
+    this.queryCache[queryKey] = res
+    return res
+  }
+
+  handleFetch: FetchFunction = (request, variables) => {
+    return Observable.from(this.handleFetchPromise(request, variables))
   }
 
   getAuthToken = (global: Window) => {
@@ -280,72 +234,78 @@ export default class Atmosphere extends Environment {
     }
   }
 
+  registerQuery = async (
+    queryKey: string,
+    subscription: SubscriptionRequestor,
+    variables: Variables,
+    context?: Variables = {}
+  ) => {
+    window.clearTimeout(this.queryTimeouts[queryKey])
+    delete this.queryTimeouts[queryKey]
+    await this.upgradeTransport()
+    const {name} = subscription
+    // runtime error in case relay changes
+    if (!name) throw new Error(`Missing name for sub`)
+    const subKey = Atmosphere.getKey(name, variables)
+    const isRequested = Boolean(this.querySubscriptions.find((qs) => qs.subKey === subKey))
+    if (!isRequested) {
+      subscription(this, variables, context)
+    }
+    this.querySubscriptions.push({queryKey, subKey})
+  }
+
   /*
    * When a subscription encounters an error, it affects the subscription itself,
    * the queries that depend on that subscription to stay valid,
    * and the peer subscriptions that also keep that component valid.
    *
    * For example, in my app component A subscribes to 1,2,3, component B subscribes to 1, component C subscribes to 2,4.
-   * If subscription 1 fails, then the data for component A and B get released on unmount (or immediately, if already unmounted)
+   * If subscription 1 fails, then the data for component A and B get removed from the queryCache, since it might be invalid now
    * Subscription 1 gets unsubscribed,
    * Subscription 2 does not because it is used by component C.
    * Subscription 3 does because no other component depends on it.
-   * Subscription 4 does not because it is a k > 1 nearest neighbor
+   * Subscription 4 does not because there is no overlap
    */
-  makeDisposable = (subKeyToRemove: string) => {
-    return {
-      dispose: () => {
-        // get every query that is powered by this subscription
-        const queryKeys = this.querySubscriptions
-          .filter(({subKey}) => subKey === subKeyToRemove)
-          .map(({queryKey}) => queryKey)
-        this.unregisterQuery(queryKeys)
-      }
-    }
+  scheduleUnregisterQuery(queryKey: string, delay: number) {
+    this.queryTimeouts[queryKey] = window.setTimeout(() => {
+      this.unregisterQuery(queryKey)
+    }, delay)
   }
 
-  unregisterQuery(maybeQueryKeys: string | string[], delay?: number) {
-    if (delay && delay > 0) {
-      if (typeof maybeQueryKeys !== 'string') throw new Error('must not use arr')
-      this.queryTimeouts[maybeQueryKeys] = window.setTimeout(() => {
-        this.unregisterQuery(maybeQueryKeys)
-      }, delay)
-      return
-    }
-
-    if (typeof maybeQueryKeys === 'string' && this.queryTimeouts[maybeQueryKeys]) {
-      window.clearTimeout(this.queryTimeouts[maybeQueryKeys])
-      delete this.queryTimeouts[maybeQueryKeys]
-    }
-
-    const queryKeys = Array.isArray(maybeQueryKeys) ? maybeQueryKeys : [maybeQueryKeys]
-
+  /*
+   * removes the query & if the subscription is no longer needed, unsubscribes from it
+   */
+  unregisterQuery(queryKey: string) {
+    window.clearTimeout(this.queryTimeouts[queryKey])
+    delete this.queryTimeouts[queryKey]
     // for each query that is no longer 100% supported, find the subs that power them
-    const peerSubs = this.querySubscriptions.filter(({queryKey}) => queryKeys.includes(queryKey))
-
-    peerSubs.forEach(({queryFetcher}) => {
-      queryFetcher.dispose()
+    const rowsToRemove = this.querySubscriptions.filter((qs) => qs.queryKey === queryKey)
+    rowsToRemove.forEach((qsToRemove) => {
+      // the query is no longer valid, nuke it
+      delete this.queryCache[qsToRemove.queryKey]
     })
-
-    // get a unique list of the subs to release & maybe unsub
-    const peerSubKeys = Array.from(new Set(peerSubs.map(({subKey}) => subKey)))
-
-    peerSubKeys.forEach((subKey) => {
-      if (!subKey) return
-      // for each peerSubKey, see if there exists a query that is not affected.
-      const unaffectedQuery = this.querySubscriptions.find(
-        (qs) => qs.subKey === subKey && !queryKeys.includes(qs.queryKey)
-      )
-      if (!unaffectedQuery) {
-        const disposable = this.subscriptions[subKey]
-        // tell the server to unsub
-        disposable && disposable.unsubscribe()
+    const subsToRemove = Array.from(new Set<string>(rowsToRemove.map(({subKey}) => subKey)))
+    this.querySubscriptions = this.querySubscriptions.filter((qs) => qs.queryKey !== queryKey)
+    subsToRemove.forEach((subKey) => {
+      const unaffectedSub = this.querySubscriptions.find((qs) => qs.subKey === subKey)
+      if (!unaffectedSub && this.subscriptions[subKey]) {
+        // tell the server to unsubscribe
+        this.subscriptions[subKey].unsubscribe()
       }
     })
+  }
 
-    this.querySubscriptions = this.querySubscriptions.filter((qs) => {
-      return !peerSubKeys.includes(qs.subKey) || !queryKeys.includes(qs.queryKey)
-    })
+  /* When the server wants to end the subscription, it sends a GQL_COMPLETE payload
+   * GQL_Trebuchet cleans itself up & calls the onCompleted observer
+   * unregisterSub should therefore be called in each subs onCompleted callback
+   */
+  unregisterSub(name: string, variables: Variables) {
+    const subKey = Atmosphere.getKey(name, variables)
+    delete this.subscriptions[subKey]
+    const queryKeys = this.querySubscriptions
+      .filter((qs) => qs.subKey === subKey)
+      .map(({queryKey}) => queryKey)
+    queryKeys.forEach((queryKey) => this.unregisterQuery(queryKey))
   }
 
   close() {

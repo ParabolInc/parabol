@@ -5372,7 +5372,7 @@ export interface ISegmentEventTrackOptions {
 export interface ISelectRetroTemplatePayload {
   __typename: 'SelectRetroTemplatePayload'
   error: IStandardMutationError | null
-  retroMeetingSettings: IRetrospectiveMeetingSettings
+  retroMeetingSettings: IRetrospectiveMeetingSettings | null
 }
 
 export type SetOrgUserRolePayload = ISetOrgUserRoleAddedPayload | ISetOrgUserRoleRemovedPayload

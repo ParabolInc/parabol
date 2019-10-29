@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {RouteComponentProps} from 'react-router'
 import useAtmosphere from '../hooks/useAtmosphere'
 import InvitationLink from './InvitationLink'
-import QueryRenderer from './QueryRenderer/QueryRenderer'
+import {QueryRenderer} from 'react-relay'
 
 interface Props extends RouteComponentProps<{token: string}> {}
 

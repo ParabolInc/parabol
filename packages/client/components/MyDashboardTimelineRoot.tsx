@@ -1,7 +1,7 @@
 import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import MyDashboardTimeline from './MyDashboardTimeline'
-import QueryRenderer from './QueryRenderer/QueryRenderer'
+import {QueryRenderer} from 'react-relay'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import {cacheConfig} from '../utils/constants'
 import {LoaderSize} from '../types/constEnums'

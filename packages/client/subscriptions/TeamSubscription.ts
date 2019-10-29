@@ -33,6 +33,9 @@ import {updateAgendaItemUpdater} from '../mutations/UpdateAgendaItemMutation'
 import graphql from 'babel-plugin-relay/macro'
 import {pushInvitationTeamOnNext} from '../mutations/PushInvitationMutation'
 import {denyPushInvitationTeamOnNext} from '../mutations/DenyPushInvitationMutation'
+import Atmosphere from '../Atmosphere'
+import {requestSubscription, Variables} from 'relay-runtime'
+import {TeamSubscriptionResponse} from '../__generated__/TeamSubscription.graphql'
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -96,11 +99,15 @@ const onNextHandlers = {
   PushInvitationPayload: pushInvitationTeamOnNext
 }
 
-const TeamSubscription = (atmosphere, _queryVariables, subParams) => {
+const TeamSubscription = (
+  atmosphere: Atmosphere,
+  variables: Variables,
+  router: {history: History}
+) => {
   const {viewerId} = atmosphere
-  return {
+  return requestSubscription<TeamSubscriptionResponse>(atmosphere, {
     subscription,
-    variables: {},
+    variables,
     updater: (store) => {
       const payload = store.getRootField('teamSubscription')
       if (!payload) return
@@ -210,14 +217,19 @@ const TeamSubscription = (atmosphere, _queryVariables, subParams) => {
           console.error('TeamSubscription case fail', type)
       }
     },
-    onNext: ({teamSubscription}) => {
+    onNext: (result) => {
+      if (!result) return
+      const {teamSubscription} = result
       const {__typename: type} = teamSubscription
       const handler = onNextHandlers[type]
       if (handler) {
-        handler(teamSubscription, {...subParams, atmosphere: atmosphere})
+        handler(teamSubscription, {...router, atmosphere})
       }
+    },
+    onCompleted: () => {
+      atmosphere.unregisterSub(TeamSubscription.name, variables)
     }
-  }
+  })
 }
 
 export default TeamSubscription

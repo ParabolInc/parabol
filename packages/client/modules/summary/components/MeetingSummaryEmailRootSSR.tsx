@@ -1,6 +1,6 @@
 import React from 'react'
 import {Environment} from 'relay-runtime'
-import QueryRenderer from '../../../components/QueryRenderer/QueryRenderer'
+import {QueryRenderer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import MeetingSummaryEmail from '../../email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail'
 import makeAppLink from '../../../../server/utils/makeAppLink'

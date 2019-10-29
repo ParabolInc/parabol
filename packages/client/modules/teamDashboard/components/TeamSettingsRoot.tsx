@@ -1,6 +1,6 @@
 import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
-import QueryRenderer from '../../../components/QueryRenderer/QueryRenderer'
+import {QueryRenderer} from 'react-relay'
 import TeamSettings from './TeamSettings/TeamSettings'
 import {LoaderSize} from '../../../types/constEnums'
 import {cacheConfig} from '../../../utils/constants'

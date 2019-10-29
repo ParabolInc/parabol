@@ -2,7 +2,7 @@ import {TaskFooterIntegrateMenuRoot_task} from '../__generated__/TaskFooterInteg
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import QueryRenderer from './QueryRenderer/QueryRenderer'
+import {QueryRenderer} from 'react-relay'
 import TaskFooterIntegrateMenu from './TaskFooterIntegrateMenu'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'

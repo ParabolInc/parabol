@@ -1,7 +1,7 @@
 import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import QueryRenderer from '../../../components/QueryRenderer/QueryRenderer'
+import {QueryRenderer} from 'react-relay'
 import TeamContainer from '../containers/Team/TeamContainer'
 import {cacheConfig} from '../../../utils/constants'
 import useAtmosphere from '../../../hooks/useAtmosphere'

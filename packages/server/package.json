@@ -111,7 +111,7 @@
     "mockdate": "^2.0.1",
     "piping": "^1.0.0-rc.4",
     "prettier": "^1.18.2",
-    "relay-compiler": "https://github.com/mattkrick/relay/tarball/afed4d72c613515b15d8fc0bb2bfd34e928589b1",
+    "relay-compiler": "https://github.com/mattkrick/relay/tarball/6f815fb08d64059259d079704dd62178c0b1cf93",
     "relay-compiler-language-typescript": "https://github.com/mattkrick/relay-compiler-language-typescript/tarball/0b93ff31546894afcba4f6e7bb73ac737f83cc18",
     "rethinkdb-ts-migrate": "^0.2.0",
     "script-ext-html-webpack-plugin": "^2.0.1",

@@ -1,6 +1,6 @@
 import useAtmosphere from './useAtmosphere'
 import useRefState from './useRefState'
-import {Disposable, SelectorData} from 'relay-runtime'
+import {Disposable, SelectorData, getRequest, createOperationDescriptor} from 'relay-runtime'
 import {useEffect, useRef} from 'react'
 import useDeepEqual from './useDeepEqual'
 
@@ -13,10 +13,9 @@ const useLocalQuery = <TQuery extends {response: any; variables: any}>(
   const [dataRef, setData] = useRefState<SelectorData | null>(null)
   const disposablesRef = useRef<Disposable[]>([])
   useEffect(() => {
-    const {getRequest, createOperationDescriptor} = atmosphere.unstable_internal
     const request = getRequest(query)
     const operation = createOperationDescriptor(request, variables)
-    const res = atmosphere.lookup(operation.fragment, operation)
+    const res = atmosphere.lookup(operation.fragment)
     setData(res.data || null)
     disposablesRef.current.push(atmosphere.retain(operation.root))
     disposablesRef.current.push(

@@ -1,7 +1,7 @@
 import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import QueryRenderer from '../../../../components/QueryRenderer/QueryRenderer'
+import {QueryRenderer} from 'react-relay'
 import withAtmosphere, {
   WithAtmosphereProps
 } from '../../../../decorators/withAtmosphere/withAtmosphere'

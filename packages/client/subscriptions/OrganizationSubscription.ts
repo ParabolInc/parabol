@@ -10,7 +10,8 @@ import {
 } from '../mutations/RemoveOrgUserMutation'
 import graphql from 'babel-plugin-relay/macro'
 import Atmosphere from '../Atmosphere'
-import {Variables} from 'relay-runtime'
+import {requestSubscription, Variables} from 'relay-runtime'
+import {OrganizationSubscriptionResponse} from '__generated__/OrganizationSubscription.graphql'
 
 const subscription = graphql`
   subscription OrganizationSubscription {
@@ -42,30 +43,35 @@ const updateHandlers = {
 
 const OrganizationSubscription = (
   atmosphere: Atmosphere,
-  _queryVariables: Variables,
-  subParams: Variables
+  variables: Variables,
+  router: {history: History}
 ) => {
   const {viewerId} = atmosphere
-  return {
+  return requestSubscription<OrganizationSubscriptionResponse>(atmosphere, {
     subscription,
-    variables: {},
+    variables,
     updater: (store) => {
       const payload = store.getRootField('organizationSubscription')
       if (!payload) return
-      const type = payload.getValue('__typename')
+      const type = payload.getValue('__typename') as string
       const handler = updateHandlers[type]
       if (handler) {
         handler(payload, store, viewerId)
       }
     },
-    onNext: ({organizationSubscription}) => {
+    onNext: (result) => {
+      if (!result) return
+      const {organizationSubscription} = result
       const {__typename: type} = organizationSubscription
       const handler = onNextHandlers[type]
       if (handler) {
-        handler(organizationSubscription, {...subParams, atmosphere})
+        handler(organizationSubscription, {...router, atmosphere})
       }
+    },
+    onCompleted: () => {
+      atmosphere.unregisterSub(OrganizationSubscription.name, variables)
     }
-  }
+  })
 }
 
 export default OrganizationSubscription
