@@ -7,7 +7,6 @@ import NotificationSubscription from '../subscriptions/NotificationSubscription'
 import OrganizationSubscription from '../subscriptions/OrganizationSubscription'
 import TaskSubscription from '../subscriptions/TaskSubscription'
 import TeamSubscription from '../subscriptions/TeamSubscription'
-import {cacheConfig} from '../utils/constants'
 import Dashboard from './Dashboard'
 import useSubscription from '../hooks/useSubscription'
 
@@ -21,19 +20,18 @@ const query = graphql`
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {}
 
-const DashboardRoot = ({atmosphere, history}: Props) => {
+const DashboardRoot = ({atmosphere}: Props) => {
   useSubscription(DashboardRoot.name, NotificationSubscription)
   useSubscription(DashboardRoot.name, OrganizationSubscription)
   useSubscription(DashboardRoot.name, TaskSubscription)
   useSubscription(DashboardRoot.name, TeamSubscription)
   return (
     <QueryRenderer
-      cacheConfig={cacheConfig}
       environment={atmosphere}
       query={query}
       variables={{}}
       render={({props}) => {
-        return <Dashboard viewer={props ? props.viewer : null} />
+        return <Dashboard viewer={props ? (props as any).viewer : null} />
       }}
     />
   )

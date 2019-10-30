@@ -23,7 +23,7 @@ import {OnNextContext, OnNextHandler, UpdaterHandler} from '../types/relayMutati
 import {requestSubscription, Variables} from 'relay-runtime'
 import {NotificationSubscriptionResponse} from '../__generated__/NotificationSubscription.graphql'
 import Atmosphere from '../Atmosphere'
-import * as rr from 'react-router'
+import {RouterProps} from 'react-router'
 
 const subscription = graphql`
   subscription NotificationSubscription {
@@ -182,7 +182,7 @@ const onNextHandlers = {
 const NotificationSubscription = (
   atmosphere: Atmosphere,
   variables: Variables,
-  router: {history: History}
+  router: {history: RouterProps['history']}
 ) => {
   return requestSubscription<NotificationSubscriptionResponse>(atmosphere, {
     subscription,

@@ -25,6 +25,7 @@ import {APP_TOKEN_KEY} from './utils/constants'
 import handlerProvider from './utils/relay/handlerProvider'
 import {Snack, SnackbarRemoveFn} from './components/Snackbar'
 import AuthToken from 'parabol-server/database/types/AuthToken'
+import {RouterProps} from 'react-router'
 
 interface QuerySubscription {
   subKey: string
@@ -39,7 +40,7 @@ interface Subscriptions {
 export type SubscriptionRequestor = (
   atmosphere: Atmosphere,
   variables: Variables,
-  router: {history: History}
+  router: {history: RouterProps['history']}
 ) => Disposable
 
 const noop = (): any => {
@@ -194,12 +195,11 @@ export default class Atmosphere extends Environment {
     if (!__PRODUCTION__ && request.id) {
       const queryMap = await import('../server/graphql/queryMap.json')
       const query = queryMap[request.id]
-      // @ts-ignore
       const res = (await this.transport.fetch({query, variables})) as GraphQLResponse
       this.queryCache[queryKey] = res
+      return res
     }
     const field = request.id ? 'documentId' : 'query'
-    // @ts-ignore
     const res = (await this.transport.fetch({[field]: data, variables})) as GraphQLResponse
     this.queryCache[queryKey] = res
     return res
@@ -241,7 +241,7 @@ export default class Atmosphere extends Environment {
     queryKey: string,
     subscription: SubscriptionRequestor,
     variables: Variables,
-    router: {history: History}
+    router: {history: RouterProps['history']}
   ) => {
     window.clearTimeout(this.queryTimeouts[queryKey])
     delete this.queryTimeouts[queryKey]
@@ -270,6 +270,7 @@ export default class Atmosphere extends Environment {
    * Subscription 4 does not because there is no overlap
    */
   scheduleUnregisterQuery(queryKey: string, delay: number) {
+    if (this.queryTimeouts[queryKey]) return
     this.queryTimeouts[queryKey] = window.setTimeout(() => {
       this.unregisterQuery(queryKey)
     }, delay)
@@ -305,10 +306,13 @@ export default class Atmosphere extends Environment {
   unregisterSub(name: string, variables: Variables) {
     const subKey = Atmosphere.getKey(name, variables)
     delete this.subscriptions[subKey]
-    const queryKeys = this.querySubscriptions
-      .filter((qs) => qs.subKey === subKey)
-      .map(({queryKey}) => queryKey)
-    queryKeys.forEach((queryKey) => this.unregisterQuery(queryKey))
+    const rowsToRemove = this.querySubscriptions.filter((qs) => qs.subKey === subKey)
+    rowsToRemove.forEach((qsToRemove) => {
+      // the query is no longer valid, nuke it
+      delete this.queryCache[qsToRemove.queryKey]
+    })
+    this.querySubscriptions = this.querySubscriptions.filter((qs) => qs.subKey !== subKey)
+    // does not remove other subs because they may still do interesting things like pop toasts
   }
 
   close() {
@@ -316,9 +320,7 @@ export default class Atmosphere extends Environment {
       this.unregisterQuery(querySub.queryKey)
     })
     // remove all records
-    this.getStore()
-      .getSource()
-      .clear()
+    ;(this.getStore().getSource() as any).clear()
     this.upgradeTransportPromise = null
     this.authObj = null
     this.authToken = null

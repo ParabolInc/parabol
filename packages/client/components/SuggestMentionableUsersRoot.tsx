@@ -1,5 +1,4 @@
 import React from 'react'
-import {cacheConfig} from '../utils/constants'
 import {QueryRenderer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import renderQuery from '../utils/relay/renderQuery'
@@ -40,7 +39,6 @@ const SuggestMentionableUsersRoot = (props: Props) => {
 
   return (
     <QueryRenderer
-      cacheConfig={cacheConfig}
       environment={atmosphere}
       variables={{teamId}}
       query={query}

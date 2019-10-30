@@ -47,7 +47,7 @@ export default class LocalAtmosphere extends Environment {
     return Observable.from(this.fetchLocalPromise(operation, variables))
   }
 
-  fetchLocalPromise: FetchFunction = async (operation, variables) => {
+  fetchLocalPromise = async (operation, variables) => {
     const res = (await this.clientGraphQLServer.fetch(operation.name, variables)) as any
     if (res.endNewMeeting && res.endNewMeeting.isKill) {
       window.localStorage.removeItem('retroDemo')

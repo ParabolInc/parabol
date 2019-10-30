@@ -8,6 +8,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {RecordSourceSelectorProxy, requestSubscription, Variables} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
 import {TaskSubscriptionResponse} from '__generated__/TaskSubscription.graphql'
+import {RouterProps} from 'react-router'
 
 const subscription = graphql`
   subscription TaskSubscription {
@@ -34,7 +35,7 @@ const onNextHandlers = {
 const TaskSubscription = (
   atmosphere: Atmosphere,
   variables: Variables,
-  router: {history: History}
+  router: {history: RouterProps['history']}
 ) => {
   const {viewerId} = atmosphere
   return requestSubscription<TaskSubscriptionResponse>(atmosphere, {

@@ -6,7 +6,7 @@ import {GQLContext} from '../graphql'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 
 export default {
-  type: MassInvitationPayload,
+  type: new GraphQLNonNull(MassInvitationPayload),
   args: {
     token: {
       type: new GraphQLNonNull(GraphQLID),

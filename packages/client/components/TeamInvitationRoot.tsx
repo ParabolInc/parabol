@@ -4,6 +4,7 @@ import {RouteComponentProps} from 'react-router'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import TeamInvitation from './TeamInvitation'
 import {QueryRenderer} from 'react-relay'
+import {TeamInvitationRootQuery} from '__generated__/TeamInvitationRootQuery.graphql'
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{token: string}> {}
 
@@ -24,7 +25,7 @@ class TeamInvitationRoot extends Component<Props> {
       }
     } = this.props
     return (
-      <QueryRenderer
+      <QueryRenderer<TeamInvitationRootQuery>
         environment={atmosphere}
         query={query}
         variables={{token}}

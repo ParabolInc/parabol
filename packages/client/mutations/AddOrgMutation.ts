@@ -5,6 +5,7 @@ import handleAddTeams from './handlers/handleAddTeams'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 import {OnNextHandler} from '../types/relayMutations'
 import {AddOrgMutation_organization} from '../__generated__/AddOrgMutation_organization.graphql'
+import {AddOrgMutation as IAddOrgMutation} from '../__generated__/AddOrgMutation.graphql'
 
 graphql`
   fragment AddOrgMutation_organization on AddOrgPayload {
@@ -73,7 +74,7 @@ export const addOrgMutationNotificationUpdater = (payload, {store}) => {
 
 const AddOrgMutation = (atmosphere, variables, {history}, onError, onCompleted) => {
   const {viewerId} = atmosphere
-  return commitMutation(atmosphere, {
+  return commitMutation<IAddOrgMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {

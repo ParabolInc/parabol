@@ -6,7 +6,6 @@ import withAtmosphere, {
   WithAtmosphereProps
 } from '../../../../decorators/withAtmosphere/withAtmosphere'
 import UnpaidTeamModal from '../../components/UnpaidTeamModal/UnpaidTeamModal'
-import {cacheConfig} from '../../../../utils/constants'
 import renderQuery from '../../../../utils/relay/renderQuery'
 
 const query = graphql`
@@ -25,7 +24,6 @@ const UnpaidTeamModalRoot = (props: Props) => {
   const {atmosphere, teamId} = props
   return (
     <QueryRenderer
-      cacheConfig={cacheConfig}
       environment={atmosphere}
       query={query}
       variables={{teamId}}

@@ -7,6 +7,7 @@ import {CompletedHandler, ErrorHandler, SharedUpdater} from '../types/relayMutat
 import handleRemoveReflectTemplatePrompt from './handlers/handleRemoveReflectTemplatePrompt'
 import {IRemoveReflectTemplatePromptOnMutationArguments} from '../types/graphql'
 import {RemoveReflectTemplatePromptMutation_team} from '../__generated__/RemoveReflectTemplatePromptMutation_team.graphql'
+import {RemoveReflectTemplatePromptMutation as IRemoveReflectTemplatePromptMutation} from '../__generated__/RemoveReflectTemplatePromptMutation.graphql'
 
 graphql`
   fragment RemoveReflectTemplatePromptMutation_team on RemoveReflectTemplatePromptPayload {
@@ -38,7 +39,7 @@ const RemoveReflectTemplatePromptMutation = (
   onError: ErrorHandler,
   onCompleted: CompletedHandler
 ): Disposable => {
-  return commitMutation(atmosphere, {
+  return commitMutation<IRemoveReflectTemplatePromptMutation>(atmosphere, {
     mutation,
     variables,
     onCompleted,
@@ -46,7 +47,7 @@ const RemoveReflectTemplatePromptMutation = (
     updater: (store) => {
       const payload = store.getRootField('removeReflectTemplatePrompt')
       if (!payload) return
-      removeReflectTemplatePromptTeamUpdater(payload, {atmosphere, store})
+      removeReflectTemplatePromptTeamUpdater(payload as any, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
       const {promptId} = variables

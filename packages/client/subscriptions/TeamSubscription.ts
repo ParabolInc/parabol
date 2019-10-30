@@ -36,6 +36,7 @@ import {denyPushInvitationTeamOnNext} from '../mutations/DenyPushInvitationMutat
 import Atmosphere from '../Atmosphere'
 import {requestSubscription, Variables} from 'relay-runtime'
 import {TeamSubscriptionResponse} from '../__generated__/TeamSubscription.graphql'
+import {RouterProps} from 'react-router'
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -102,7 +103,7 @@ const onNextHandlers = {
 const TeamSubscription = (
   atmosphere: Atmosphere,
   variables: Variables,
-  router: {history: History}
+  router: {history: RouterProps['history']}
 ) => {
   const {viewerId} = atmosphere
   return requestSubscription<TeamSubscriptionResponse>(atmosphere, {

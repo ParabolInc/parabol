@@ -7,7 +7,7 @@ import {insertEdgeAfter} from '../../utils/relay/insertEdge'
 import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
 import {ConnectionHandler, RecordSourceSelectorProxy} from 'relay-runtime'
 import addNodeToArray from '../../utils/relay/addNodeToArray'
-import {RecordProxy} from 'relay-runtime/RelayStoreTypes'
+import {RecordProxy} from 'relay-runtime'
 
 type Task = RecordProxy<{
   readonly id: string

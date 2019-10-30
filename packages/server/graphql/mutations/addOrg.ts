@@ -17,7 +17,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import AuthTokenPayload from '../types/AuthTokenPayload'
 
 export default {
-  type: AddOrgPayload,
+  type: new GraphQLNonNull(AddOrgPayload),
   description: 'Create a new team and add the first team member',
   args: {
     newTeam: {
@@ -66,7 +66,13 @@ export default {
 
       const removedSuggestedActionId = await removeSuggestedAction(viewerId, 'createNewTeam')
       if (removedSuggestedActionId) {
-        publish(SubscriptionChannel.NOTIFICATION, viewerId, AddOrgPayload, {removedSuggestedActionId}, subOptions)
+        publish(
+          SubscriptionChannel.NOTIFICATION,
+          viewerId,
+          AddOrgPayload,
+          {removedSuggestedActionId},
+          subOptions
+        )
       }
       publish(SubscriptionChannel.ORGANIZATION, viewerId, AddOrgPayload, data, subOptions)
 

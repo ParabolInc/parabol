@@ -5,6 +5,7 @@ import graphql from 'babel-plugin-relay/macro'
 import MeetingSummaryEmail from '../../email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail'
 import makeAppLink from '../../../../server/utils/makeAppLink'
 import {meetingTypeToSlug} from '../../../utils/meetings/lookups'
+import {MeetingSummaryEmailRootSSRQuery} from '__generated__/MeetingSummaryEmailRootSSRQuery.graphql'
 
 const query = graphql`
   query MeetingSummaryEmailRootSSRQuery($meetingId: ID!) {
@@ -28,15 +29,16 @@ interface Props {
 const MeetingSummaryEmailRootSSR = (props: Props) => {
   const {environment, meetingId} = props
   return (
-    <QueryRenderer
+    <QueryRenderer<MeetingSummaryEmailRootSSRQuery>
       environment={environment}
       query={query}
       variables={{meetingId}}
-      cacheConfig={{ttl: 1000}}
       render={({props}) => {
         if (!props) return null
         const {viewer} = props
+        if (!viewer) return null
         const {newMeeting} = viewer
+        if (!newMeeting) return null
         const {meetingType, team} = newMeeting
         const {id: teamId} = team
         const meetingSlug = meetingTypeToSlug[meetingType]

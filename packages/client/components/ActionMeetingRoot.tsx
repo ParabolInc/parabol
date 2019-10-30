@@ -9,7 +9,6 @@ import OrganizationSubscription from '../subscriptions/OrganizationSubscription'
 import TaskSubscription from '../subscriptions/TaskSubscription'
 import TeamSubscription from '../subscriptions/TeamSubscription'
 import {MeetingTypeEnum} from '../types/graphql'
-import {cacheConfig} from '../utils/constants'
 import renderQuery from '../utils/relay/renderQuery'
 import useSubscription from '../hooks/useSubscription'
 
@@ -24,7 +23,7 @@ const query = graphql`
 const meetingType = MeetingTypeEnum.action
 const ActionMeetingRoot = () => {
   const atmosphere = useAtmosphere()
-  const {history, location, match} = useRouter<{teamId: string}>()
+  const {match} = useRouter<{teamId: string}>()
   const {params} = match
   const {teamId = 'demoTeam'} = params
   useSubscription(ActionMeetingRoot.name, NotificationSubscription)

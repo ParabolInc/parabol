@@ -23,8 +23,8 @@ export interface IGraphQLResponseErrorLocation {
 export interface IQuery {
   __typename: 'Query'
   viewer: IUser | null
-  massInvitation: IMassInvitationPayload | null
-  verifiedInvitation: IVerifiedInvitationPayload | null
+  massInvitation: IMassInvitationPayload
+  verifiedInvitation: IVerifiedInvitationPayload
   authProviders: string[]
   SAMLIdP: string | null
 }
@@ -2610,12 +2610,12 @@ export interface IMutation {
   /**
    * Create a new team and add the first team member
    */
-  addOrg: IAddOrgPayload | null
+  addOrg: IAddOrgPayload
 
   /**
    * Create a new team and add the first team member
    */
-  addTeam: IAddTeamPayload | null
+  addTeam: IAddTeamPayload
   archiveTeam: IArchiveTeamPayload | null
 
   /**
@@ -2641,7 +2641,7 @@ export interface IMutation {
   /**
    * for troubleshooting by admins, create a JWT for a given userId
    */
-  createImposterToken: ICreateImposterTokenPayload | null
+  createImposterToken: ICreateImposterTokenPayload
   createGitHubIssue: ICreateGitHubIssuePayload | null
   createJiraIssue: ICreateJiraIssuePayload | null
 

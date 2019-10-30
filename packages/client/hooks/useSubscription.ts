@@ -3,18 +3,20 @@ import useAtmosphere from './useAtmosphere'
 import {Variables} from 'relay-runtime'
 import {SubscriptionRequestor} from '../Atmosphere'
 import useRouter from './useRouter'
+import useDeepEqual from './useDeepEqual'
 
 const useSubscription = (
   queryKey: string,
   subscription: SubscriptionRequestor,
-  variables: Variables = {}
+  inVariables: Variables = {}
 ) => {
   const atmosphere = useAtmosphere()
   const {history, location} = useRouter()
-  const context = {history, location}
+  const variables = useDeepEqual(inVariables)
+  const router = {history, location}
   useEffect(() => {
     if (atmosphere.registerQuery) {
-      atmosphere.registerQuery(queryKey, subscription, variables, context).catch()
+      atmosphere.registerQuery(queryKey, subscription, variables, router).catch()
     }
     return () => {
       if (atmosphere.scheduleUnregisterQuery) {

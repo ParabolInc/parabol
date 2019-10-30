@@ -8,9 +8,6 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import ViewerNotOnTeam from './ViewerNotOnTeam'
 import NotificationSubscription from '../subscriptions/NotificationSubscription'
 import useSubscription from '../hooks/useSubscription'
-import OrganizationSubscription from '../subscriptions/OrganizationSubscription'
-import TaskSubscription from '../subscriptions/TaskSubscription'
-import TeamSubscription from '../subscriptions/TeamSubscription'
 
 const query = graphql`
   query ViewerNotOnTeamRootQuery($teamId: ID!) {

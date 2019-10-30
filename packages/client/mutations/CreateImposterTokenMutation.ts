@@ -4,6 +4,7 @@ import signout from '../containers/Signout/signout'
 import getGraphQLError from '../utils/relay/getGraphQLError'
 import LoginMutation from './LoginMutation'
 import Atmosphere from '../Atmosphere'
+import {CreateImposterTokenMutation as ICreateImposterTokenMutation} from '../__generated__/CreateImposterTokenMutation.graphql'
 
 graphql`
   fragment CreateImposterTokenMutation_agendaItem on CreateImposterTokenPayload {
@@ -36,7 +37,7 @@ const CreateImposterTokenMutation = (atmosphere: Atmosphere, userId, {history}) 
     })
   }
 
-  return commitMutation(atmosphere, {
+  return commitMutation<ICreateImposterTokenMutation>(atmosphere, {
     mutation,
     variables: {userId},
     onCompleted: (res, errors) => {
@@ -47,7 +48,7 @@ const CreateImposterTokenMutation = (atmosphere: Atmosphere, userId, {history}) 
       }
       const {createImposterToken} = res
       const {authToken} = createImposterToken
-
+      if (!authToken) return
       // Reset application state:
       signout(atmosphere, undefined, history)
 

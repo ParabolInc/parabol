@@ -27,6 +27,7 @@ const NewTeamRoot = ({
     <QueryRenderer
       environment={atmosphere}
       query={query}
+      variables={{}}
       render={renderQuery(NewTeam, {props: {defaultOrgId}, size: LoaderSize.PANEL})}
     />
   )

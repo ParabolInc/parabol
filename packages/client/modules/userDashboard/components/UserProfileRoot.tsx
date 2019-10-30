@@ -6,14 +6,10 @@ import withAtmosphere, {
   WithAtmosphereProps
 } from '../../../decorators/withAtmosphere/withAtmosphere'
 import NotificationSubscription from '../../../subscriptions/NotificationSubscription'
-import {cacheConfig} from '../../../utils/constants'
 import {LoaderSize} from '../../../types/constEnums'
 import renderQuery from '../../../utils/relay/renderQuery'
 import UserProfile from './UserProfile'
 import useSubscription from '../../../hooks/useSubscription'
-import OrganizationSubscription from '../../../subscriptions/OrganizationSubscription'
-import TaskSubscription from '../../../subscriptions/TaskSubscription'
-import TeamSubscription from '../../../subscriptions/TeamSubscription'
 
 const query = graphql`
   query UserProfileRootQuery {
@@ -28,8 +24,6 @@ interface Props extends WithAtmosphereProps, RouteComponentProps<{teamId: string
 const UserProfileRoot = (props: Props) => {
   const {
     atmosphere,
-    history,
-    location,
     match: {
       params: {teamId}
     }
@@ -37,7 +31,6 @@ const UserProfileRoot = (props: Props) => {
   useSubscription(UserProfileRoot.name, NotificationSubscription)
   return (
     <QueryRenderer
-      cacheConfig={cacheConfig}
       environment={atmosphere}
       query={query}
       variables={{teamId}}
