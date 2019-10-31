@@ -1,16 +1,17 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {matchPath} from 'react-router-dom'
-import {Disposable, RecordSourceProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import {Disposable, RecordSourceProxy} from 'relay-runtime'
 import {meetingTypeToSlug} from '../utils/meetings/lookups'
 import {
   StartDraggingReflectionMutation as TStartDraggingReflectionMutation,
-  StartDraggingReflectionMutationResponse,
   StartDraggingReflectionMutationVariables
 } from '../__generated__/StartDraggingReflectionMutation.graphql'
 import {MeetingTypeEnum} from '../types/graphql'
-import {LocalHandlers} from '../types/relayMutations'
+import {LocalHandlers, SharedUpdater} from '../types/relayMutations'
 import Atmosphere from '../Atmosphere'
+import {StartDraggingReflectionMutation_team} from '__generated__/StartDraggingReflectionMutation_team.graphql'
+import {ClientRetroReflection} from '../types/clientSchema'
 
 graphql`
   fragment StartDraggingReflectionMutation_team on StartDraggingReflectionPayload {
@@ -39,10 +40,9 @@ interface UpdaterOptions {
 }
 
 // used only by subscription
-export const startDraggingReflectionTeamUpdater = (
-  payload,
-  {atmosphere, store}: UpdaterOptions
-) => {
+export const startDraggingReflectionTeamUpdater: SharedUpdater<
+  StartDraggingReflectionMutation_team
+> = (payload, {atmosphere, store}: UpdaterOptions) => {
   const teamId = payload.getValue('teamId')
   const {pathname} = window.location
   const slug = meetingTypeToSlug[MeetingTypeEnum.retrospective]
@@ -57,8 +57,8 @@ export const startDraggingReflectionTeamUpdater = (
     return
   }
   const {viewerId} = atmosphere
-  const reflectionId = payload.getValue('reflectionId')
-  const reflection = store.get(reflectionId)
+  const reflectionId = payload.getValue('reflectionId')!
+  const reflection = store.get<ClientRetroReflection>(reflectionId)
   if (!reflection) return
   const remoteDrag = payload.getLinkedRecord('remoteDrag')
   if (!remoteDrag) return
@@ -72,7 +72,7 @@ export const startDraggingReflectionTeamUpdater = (
 
   // if I'm dragging & i get a message saying someone else is, whoever has the lower userId wins
   if (isViewerDragging) {
-    if (dragUserId <= viewerId) {
+    if (dragUserId! <= viewerId) {
       // if the viewer lost, cancel their drag
       reflection.setValue(false, 'isViewerDragging')
       reflection.setValue(false, 'isDropping')
@@ -85,8 +85,8 @@ export const startDraggingReflectionTeamUpdater = (
 
   // if someone else is dragging & I get a message saying another is too, treat it the same
   if (existingRemoteDrag) {
-    const existingDragUserId = existingRemoteDrag.getValue('dragUserId')
-    if (dragUserId <= existingDragUserId) {
+    const existingDragUserId = existingRemoteDrag.getValue('dragUserId')!
+    if (dragUserId! <= existingDragUserId) {
       // new drag wins!
       reflection.setValue(false, 'isDropping')
       reflection.setLinkedRecord(remoteDrag, 'remoteDrag')
@@ -109,17 +109,17 @@ const StartDraggingReflectionMutation = (
     variables,
     onError,
     onCompleted,
-    updater: (store: RecordSourceSelectorProxy<StartDraggingReflectionMutationResponse>) => {
+    updater: (store) => {
       const {viewerId} = atmosphere
       const payload = store.getRootField('startDraggingReflection')
       if (!payload) return
       const reflectionId = payload.getValue('reflectionId')!
-      const reflection = store.get(reflectionId)
+      const reflection = store.get<ClientRetroReflection>(reflectionId)
       if (!reflection) return
       const remoteDrag = reflection.getLinkedRecord('remoteDrag')
       if (remoteDrag) {
         // if there's an existing drag & it's by someone with a smaller ID, the viewer lost the conflict
-        const remoteDragUserId = remoteDrag.getValue('dragUserId')
+        const remoteDragUserId = remoteDrag.getValue('dragUserId')!
         if (remoteDragUserId <= viewerId) return
       }
       reflection.setValue(true, 'isViewerDragging')

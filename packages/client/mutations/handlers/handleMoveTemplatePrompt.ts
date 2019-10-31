@@ -1,7 +1,8 @@
 import {RecordSourceProxy} from 'relay-runtime'
+import {IReflectTemplate} from '../../types/graphql'
 
 const handleMoveTemplatePrompt = (store: RecordSourceProxy, templateId: string) => {
-  const template = store.get(templateId)
+  const template = store.get<IReflectTemplate>(templateId)
   if (!template) return
   const prompts = template.getLinkedRecords('prompts')
   if (!Array.isArray(prompts)) return

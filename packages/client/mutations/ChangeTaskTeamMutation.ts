@@ -7,10 +7,10 @@ import getInProxy from '../utils/relay/getInProxy'
 import safeRemoveNodeFromUnknownConn from '../utils/relay/safeRemoveNodeFromUnknownConn'
 import Atmosphere from '../Atmosphere'
 import {IChangeTaskTeamOnMutationArguments, ITask, ITeam} from '../types/graphql'
-import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import getBaseRecord from '../utils/relay/getBaseRecord'
 import {ChangeTaskTeamMutation as TChangeTaskTeamMutation} from '../__generated__/ChangeTaskTeamMutation.graphql'
-import {LocalHandlers} from '../types/relayMutations'
+import {LocalHandlers, SharedUpdater} from '../types/relayMutations'
+import {ChangeTaskTeamMutation_task} from '__generated__/ChangeTaskTeamMutation_task.graphql'
 
 graphql`
   fragment ChangeTaskTeamMutation_task on ChangeTaskTeamPayload {
@@ -39,9 +39,9 @@ const mutation = graphql`
   }
 `
 
-export const changeTaskTeamTaskUpdater = (
-  payload: RecordProxy,
-  {store}: {store: RecordSourceSelectorProxy}
+export const changeTaskTeamTaskUpdater: SharedUpdater<ChangeTaskTeamMutation_task> = (
+  payload,
+  {store}
 ) => {
   const task = payload.getLinkedRecord('task')
   const taskId = (task && task.getValue('id')) || payload.getValue('removedTaskId')
@@ -67,7 +67,7 @@ const ChangeTaskTeamMutation = (
     updater: (store) => {
       const payload = store.getRootField('changeTaskTeam')
       if (!payload) return
-      changeTaskTeamTaskUpdater(payload, {store})
+      changeTaskTeamTaskUpdater(payload, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
       const {taskId, teamId} = variables

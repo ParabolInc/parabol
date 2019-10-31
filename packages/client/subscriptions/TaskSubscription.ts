@@ -41,11 +41,11 @@ const TaskSubscription = (
   return requestSubscription<TaskSubscriptionResponse>(atmosphere, {
     subscription,
     variables,
-    updater: (store: RecordSourceSelectorProxy) => {
-      const payload = store.getRootField('taskSubscription')
+    updater: (store) => {
+      const payload = store.getRootField('taskSubscription') as any
       if (!payload) return
       const type = payload.getValue('__typename')
-      const context = {atmosphere, store}
+      const context = {atmosphere, store: store as RecordSourceSelectorProxy<any>}
       switch (type) {
         case 'CreateGitHubIssuePayload':
           break

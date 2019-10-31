@@ -1,6 +1,11 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {ICreateJiraIssueOnMutationArguments, TaskServiceEnum} from '../types/graphql'
+import {
+  ICreateJiraIssueOnMutationArguments,
+  ISuggestedIntegrationJira,
+  ISuggestedIntegrationQueryPayload,
+  TaskServiceEnum
+} from '../types/graphql'
 import makeSuggestedIntegrationId from '../utils/makeSuggestedIntegrationId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import Atmosphere from '../Atmosphere'
@@ -56,13 +61,18 @@ const CreateJiraIssueMutation = (
       const integration = task.getLinkedRecord('integration')
       const user = store.get(userId)
       if (!user || !integration) return
-      const suggestedIntegrations = user.getLinkedRecord('suggestedIntegrations', {teamId})
+      const suggestedIntegrations = user.getLinkedRecord<ISuggestedIntegrationQueryPayload>(
+        'suggestedIntegrations',
+        {teamId}
+      )
       const projectKey = integration.getValue('projectKey')
       if (!suggestedIntegrations || !projectKey) return
-      const items = suggestedIntegrations.getLinkedRecords('items')
+      const items = suggestedIntegrations.getLinkedRecords<ISuggestedIntegrationJira[] | null>(
+        'items'
+      )
       if (!items) return
       const existingIntegration = items.find(
-        (item) => !!(item && item.getValue('projectKey') === projectKey)
+        (item) => item && item.getValue('projectKey') === projectKey
       )
       const hasMore = suggestedIntegrations.getValue('hasMore')
       if (!existingIntegration || !hasMore) {

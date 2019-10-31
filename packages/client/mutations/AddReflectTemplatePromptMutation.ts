@@ -7,6 +7,7 @@ import {CompletedHandler, ErrorHandler, SharedUpdater} from '../types/relayMutat
 import handleAddReflectTemplatePrompt from './handlers/handleAddReflectTemplatePrompt'
 import {IAddReflectTemplatePromptOnMutationArguments} from '../types/graphql'
 import {AddReflectTemplatePromptMutation_team} from '../__generated__/AddReflectTemplatePromptMutation_team.graphql'
+import {AddReflectTemplatePromptMutation as TAddReflectTemplatePromptMutation} from '../__generated__/AddReflectTemplatePromptMutation.graphql'
 
 interface Context {
   promptCount: number
@@ -50,7 +51,7 @@ const AddReflectTemplatePromptMutation = (
   onError: ErrorHandler,
   onCompleted: CompletedHandler
 ): Disposable => {
-  return commitMutation(atmosphere, {
+  return commitMutation<TAddReflectTemplatePromptMutation>(atmosphere, {
     mutation,
     variables,
     onCompleted,

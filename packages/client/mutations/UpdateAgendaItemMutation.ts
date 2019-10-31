@@ -5,13 +5,17 @@ import Atmosphere from '../Atmosphere'
 import handleUpdateAgendaItems from './handlers/handleUpdateAgendaItems'
 import {
   IActionMeeting,
+  IAgendaItem,
   IAgendaItemsPhase,
+  IAgendaItemsStage,
+  ITeam,
   IUpdateAgendaItemOnMutationArguments,
   NewMeetingPhaseTypeEnum
 } from '../types/graphql'
-import {LocalHandlers} from '../types/relayMutations'
+import {LocalHandlers, SharedUpdater} from '../types/relayMutations'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
 import {UpdateAgendaItemMutation as TUpdateAgendaItemMutation} from '../__generated__/UpdateAgendaItemMutation.graphql'
+import {UpdateAgendaItemMutation_team} from '__generated__/UpdateAgendaItemMutation_team.graphql'
 
 graphql`
   fragment UpdateAgendaItemMutation_team on UpdateAgendaItemPayload {
@@ -47,10 +51,10 @@ const handleUpdateAgendaPhase = (
       phase ? phase.getValue('phaseType') === NewMeetingPhaseTypeEnum.agendaitems : false
     ) as RecordProxy<IAgendaItemsPhase>
     if (!agendaPhase) return
-    const getSortOrder = (stage) => {
+    const getSortOrder = (stage: RecordProxy<IAgendaItemsStage>) => {
       const agendaItemId = stage.getValue('agendaItemId')
-      const agendaItem = store.get(agendaItemId)
-      if (!agendaItem) return
+      const agendaItem = store.get<IAgendaItem>(agendaItemId)
+      if (!agendaItem) return 0
       return agendaItem.getValue('sortOrder')
     }
     const stages = agendaPhase.getLinkedRecords('stages')
@@ -61,7 +65,10 @@ const handleUpdateAgendaPhase = (
   }
 }
 
-export const updateAgendaItemUpdater = (payload: RecordProxy, {store}) => {
+export const updateAgendaItemUpdater: SharedUpdater<UpdateAgendaItemMutation_team> = (
+  payload,
+  {store}
+) => {
   const agendaItem = payload.getLinkedRecord('agendaItem')
   const meetingId = payload.getValue('meetingId')
   if (!agendaItem) return
@@ -83,12 +90,12 @@ const UpdateAgendaItemMutation = (
     updater: (store) => {
       const payload = store.getRootField('updateAgendaItem')
       if (!payload) return
-      updateAgendaItemUpdater(payload, {store})
+      updateAgendaItemUpdater(payload, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
       const proxyAgendaItem = store.get(updatedAgendaItem.id)
       updateProxyRecord(proxyAgendaItem, updatedAgendaItem)
-      const team = store.get(teamId)
+      const team = store.get<ITeam>(teamId)
       if (!team) return
       const meetingId = team.getValue('meetingId')
       handleUpdateAgendaItems(store, teamId)

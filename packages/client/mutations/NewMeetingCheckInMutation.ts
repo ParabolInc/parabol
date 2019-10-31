@@ -2,7 +2,7 @@ import {NewMeetingCheckInMutation as TNewMeetingCheckInMutation} from '../__gene
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import Atmosphere from '../Atmosphere'
-import {INewMeetingCheckInOnMutationArguments} from '../types/graphql'
+import {IMeetingMember, INewMeetingCheckInOnMutationArguments} from '../types/graphql'
 import {LocalHandlers} from '../types/relayMutations'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
 
@@ -41,8 +41,8 @@ const NewMeetingCheckInMutation = (
     optimisticUpdater: (store) => {
       const {meetingId, userId, isCheckedIn} = variables
       const meetingMemberId = toTeamMemberId(meetingId, userId)
-      const meetingMember = store.get(meetingMemberId)!
-      meetingMember.setValue(isCheckedIn, 'isCheckedIn')
+      const meetingMember = store.get<IMeetingMember>(meetingMemberId)!
+      meetingMember.setValue(isCheckedIn!, 'isCheckedIn')
     },
     onCompleted,
     onError

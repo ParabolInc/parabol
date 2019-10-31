@@ -8,6 +8,7 @@ import {CompletedHandler, ErrorHandler, SharedUpdater} from '../types/relayMutat
 import getCachedRecord from '../utils/relay/getCachedRecord'
 import handleAddReflectTemplate from './handlers/handleAddReflectTemplate'
 import {AddReflectTemplateMutation_team} from '../__generated__/AddReflectTemplateMutation_team.graphql'
+import {AddReflectTemplateMutation as IAddReflectTemplateMutation} from '../__generated__/AddReflectTemplateMutation.graphql'
 
 graphql`
   fragment AddReflectTemplateMutation_team on AddReflectTemplatePayload {
@@ -60,7 +61,7 @@ const AddReflectTemplateMutation = (
   onError: ErrorHandler,
   onCompleted: CompletedHandler
 ): Disposable => {
-  return commitMutation(atmosphere, {
+  return commitMutation<IAddReflectTemplateMutation>(atmosphere, {
     mutation,
     variables,
     onCompleted,

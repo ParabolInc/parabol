@@ -34,7 +34,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {pushInvitationTeamOnNext} from '../mutations/PushInvitationMutation'
 import {denyPushInvitationTeamOnNext} from '../mutations/DenyPushInvitationMutation'
 import Atmosphere from '../Atmosphere'
-import {requestSubscription, Variables} from 'relay-runtime'
+import {RecordSourceSelectorProxy, requestSubscription, Variables} from 'relay-runtime'
 import {TeamSubscriptionResponse} from '../__generated__/TeamSubscription.graphql'
 import {RouterProps} from 'react-router'
 
@@ -110,10 +110,10 @@ const TeamSubscription = (
     subscription,
     variables,
     updater: (store) => {
-      const payload = store.getRootField('teamSubscription')
+      const payload = store.getRootField('teamSubscription') as any
       if (!payload) return
       const type = payload.getValue('__typename')
-      const context = {atmosphere, store}
+      const context = {atmosphere, store: store as RecordSourceSelectorProxy<any>}
       switch (type) {
         case 'AddAgendaItemPayload':
           addAgendaItemUpdater(payload, context)
@@ -162,7 +162,7 @@ const TeamSubscription = (
           moveReflectTemplatePromptTeamUpdater(payload, context)
           break
         case 'NavigateMeetingPayload':
-          navigateMeetingTeamUpdater(payload, store)
+          navigateMeetingTeamUpdater(payload, store as RecordSourceSelectorProxy<any>)
           break
         case 'NewMeetingCheckInPayload':
           break

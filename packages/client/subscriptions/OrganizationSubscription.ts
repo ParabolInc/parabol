@@ -52,7 +52,7 @@ const OrganizationSubscription = (
     subscription,
     variables,
     updater: (store) => {
-      const payload = store.getRootField('organizationSubscription')
+      const payload = store.getRootField('organizationSubscription') as any
       if (!payload) return
       const type = payload.getValue('__typename') as string
       const handler = updateHandlers[type]

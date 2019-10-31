@@ -24,6 +24,7 @@ import {requestSubscription, Variables} from 'relay-runtime'
 import {NotificationSubscriptionResponse} from '../__generated__/NotificationSubscription.graphql'
 import Atmosphere from '../Atmosphere'
 import {RouterProps} from 'react-router'
+import {RecordSourceSelectorProxy} from 'relay-runtime/lib/store/RelayStoreTypes'
 
 const subscription = graphql`
   subscription NotificationSubscription {
@@ -188,10 +189,10 @@ const NotificationSubscription = (
     subscription,
     variables,
     updater: (store) => {
-      const payload = store.getRootField('notificationSubscription')
+      const payload = store.getRootField('notificationSubscription') as any
       if (!payload) return
       const type = payload.getValue('__typename')
-      const context = {store, atmosphere}
+      const context = {store: store as RecordSourceSelectorProxy<any>, atmosphere}
       switch (type as string) {
         case 'AcceptTeamInvitationPayload':
           acceptTeamInvitationNotificationUpdater(payload, context)

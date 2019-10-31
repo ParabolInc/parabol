@@ -97,7 +97,7 @@ export const moveReflectionLocation = (
   store: RecordSourceSelectorProxy
 ) => {
   if (!reflection) return
-  const reflectionId = reflection.getValue('id')
+  const reflectionId = reflection.getValue('id') as string
   // if (userId) {
   //   // else it is an autogroup
   //   const reflection = store.get(reflectionId)
@@ -175,7 +175,7 @@ const EndDraggingReflectionMutation = (
         return
       }
 
-      const oldReflectionGroupId = reflection.getValue('reflectionGroupId')
+      const oldReflectionGroupId = reflection.getValue('reflectionGroupId') as string
       let reflectionGroupProxy
       const newReflectionGroupId = clientTempId()
       // move a reflection into its own group

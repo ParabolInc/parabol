@@ -63,11 +63,11 @@ export const updateTaskTaskOnNext: OnNextHandler<UpdateTaskMutation_task> = (
 }
 
 export const updateTaskTaskUpdater: SharedUpdater<UpdateTaskMutation_task> = (payload, {store}) => {
-  const task = payload.getLinkedRecord('task')
-  handleUpsertTasks(task, store)
+  const task = payload.getLinkedRecord('task')!
+  handleUpsertTasks(task as any, store as any)
 
   const addedNotification = payload.getLinkedRecord('addedNotification')
-  handleAddNotifications(addedNotification, store)
+  handleAddNotifications(addedNotification as any, store)
   if (task) {
     ContentFilterHandler.update(store, {
       dataID: task.getDataID(),
@@ -75,7 +75,7 @@ export const updateTaskTaskUpdater: SharedUpdater<UpdateTaskMutation_task> = (pa
     })
   }
   const removedNotificationId = getInProxy(payload, 'removedNotification', 'id')
-  handleRemoveNotifications(removedNotificationId, store)
+  handleRemoveNotifications(removedNotificationId, store as any)
   const viewer = store.getRoot().getLinkedRecord('viewer')
   const viewerId = viewer && viewer.getDataID()
   const privatizedTaskId = payload.getValue('privatizedTaskId')

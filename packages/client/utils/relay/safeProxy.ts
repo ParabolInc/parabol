@@ -18,11 +18,11 @@ class SafeProxy<
   getValue<K extends keyof V>(name: K, args?: Variables): NullIfNull<U> | NullIfNull<V[K]> | V[K] {
     // help wanted: how to remove the cast?
     if (!this.proxy) return null!
-    return this.proxy.getValue(name, args)
+    return this.proxy.getValue(name as any, args)
   }
 
   getLinkedRecord<K extends keyof V>(name: K, args?: Variables): SafeProxy<RecordProxy<V[K]>> {
-    const proxy = this.proxy ? this.proxy.getLinkedRecord(name, args) : null
+    const proxy = this.proxy ? this.proxy.getLinkedRecord(name as any, args) : null
     return new SafeProxy(proxy)
   }
 
@@ -30,8 +30,8 @@ class SafeProxy<
     name: K,
     args?: Variables
   ): SafeProxy<RecordProxy<V[K]>>[] | SafeProxy<RecordProxy<V[K]>> {
-    const records = this.proxy ? this.proxy.getLinkedRecords(name, args) : null
-    return records ? records.map((record) => new SafeProxy(record)) : new SafeProxy(null)
+    const records = this.proxy ? this.proxy.getLinkedRecords(name as any, args) : null
+    return records ? (records as any).map((record) => new SafeProxy(record)) : new SafeProxy(null)
   }
 }
 

@@ -1,16 +1,15 @@
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import {RETROSPECTIVE} from '../../utils/constants'
 import addNodeToArray from '../../utils/relay/addNodeToArray'
-import {DeepNullable} from '../../types/generics'
-import {IRetrospectiveMeetingSettings, ITeam} from '../../types/graphql'
+import {IRetrospectiveMeetingSettings} from '../../types/graphql'
 
 const handleAddReflectTemplate = (
   newNode: RecordProxy | null,
   store: RecordSourceSelectorProxy
 ) => {
   if (!newNode) return
-  const teamId = newNode.getValue('teamId')
-  const team = store.get<DeepNullable<ITeam>>(teamId)
+  const teamId = newNode.getValue('teamId') as string
+  const team = store.get(teamId)
   if (!team) return
   const meetingSettings = team.getLinkedRecord<IRetrospectiveMeetingSettings>('meetingSettings', {
     meetingType: RETROSPECTIVE
