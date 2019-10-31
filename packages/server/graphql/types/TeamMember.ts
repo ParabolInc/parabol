@@ -50,7 +50,7 @@ const TeamMember = new GraphQLObjectType<any, GQLContext, any>({
       description: 'The user email'
     },
     picture: {
-      type: GraphQLURLType,
+      type: new GraphQLNonNull(GraphQLURLType),
       description: 'url of user’s profile picture'
     },
     /* Ephemeral meeting state */

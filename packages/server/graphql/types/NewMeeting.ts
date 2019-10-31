@@ -1,4 +1,11 @@
-import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
+import {
+  GraphQLBoolean,
+  GraphQLID,
+  GraphQLInt,
+  GraphQLInterfaceType,
+  GraphQLList,
+  GraphQLNonNull
+} from 'graphql'
 import {GQLContext} from '../graphql'
 import ActionMeeting from './ActionMeeting'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -19,7 +26,7 @@ export const newMeetingFields = () => ({
     description: 'The unique meeting id. shortid.'
   },
   createdAt: {
-    type: GraphQLISO8601Type,
+    type: new GraphQLNonNull(GraphQLISO8601Type),
     description: 'The timestamp the meeting was created'
   },
   defaultFacilitatorUserId: {

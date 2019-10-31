@@ -135,7 +135,7 @@ const DueDateToggle = (props: Props) => {
     <>
       <Toggle
         cardIsActive={!dueDate && cardIsActive}
-        dueDate={dueDate}
+        dueDate={!!dueDate}
         {...getDateInfo(dueDate)}
         ref={originRef}
         onClick={togglePortal}

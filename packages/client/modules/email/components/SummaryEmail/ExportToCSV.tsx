@@ -186,7 +186,7 @@ class ExportToCSV extends Component<Props> {
     const label = meetingType[0].toUpperCase() + meetingType.slice(1)
     const parser = new Parser()
     const csv = parser.parse(rows)
-    const date = new Date(endedAt)
+    const date = new Date(endedAt!)
     const numDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
     // copied from https://stackoverflow.com/questions/18848860/javascript-array-to-csv/18849208#18849208
     // note: using encodeUri does NOT work on the # symbol & breaks

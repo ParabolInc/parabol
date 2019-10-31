@@ -41,7 +41,7 @@ const Task = new GraphQLObjectType<any, GQLContext, any>({
       description: 'The body of the task. If null, it is a new task.'
     },
     createdAt: {
-      type: GraphQLISO8601Type,
+      type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The timestamp the task was created'
     },
     createdBy: {
@@ -110,7 +110,7 @@ const Task = new GraphQLObjectType<any, GQLContext, any>({
       description: 'The id of the team member (or soft team member) assigned to this task'
     },
     updatedAt: {
-      type: GraphQLISO8601Type,
+      type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The timestamp the task was updated'
     },
     userId: {

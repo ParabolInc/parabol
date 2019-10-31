@@ -226,7 +226,7 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
       }
     },
     picture: {
-      type: GraphQLURLType,
+      type: new GraphQLNonNull(GraphQLURLType),
       description: 'url of user’s profile picture'
     },
     preferredName: {
@@ -237,7 +237,7 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
       }
     },
     rasterPicture: {
-      type: GraphQLURLType,
+      type: new GraphQLNonNull(GraphQLURLType),
       description:
         'url of user’s raster profile picture (if user profile pic is an SVG, raster will be a PNG)',
       resolve: ({picture}) => {

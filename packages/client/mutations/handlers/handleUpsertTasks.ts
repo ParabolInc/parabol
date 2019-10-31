@@ -15,7 +15,7 @@ type Task = RecordProxy<{
   readonly tags: readonly string[]
   readonly reflectionGroupId: string | null
   readonly meetingId: string | null
-  readonly updatedAt: string
+  readonly updatedAt: string | null
   readonly userId: string
 }>
 
