@@ -14,7 +14,8 @@ exports.up = async (r) => {
             teamName: row('varList')(4)
           })
           .without('varList')
-      }),
+      })
+      .run(),
     r
       .table('Notification')
       .filter({type: 'TEAM_ARCHIVED'})
@@ -24,7 +25,8 @@ exports.up = async (r) => {
             teamName: row('varList')(0)
           })
           .without('varList')
-      }),
+      })
+      .run(),
     r
       .table('Notification')
       .filter((row) => row('type').match('^TRIAL_'))
@@ -35,6 +37,7 @@ exports.up = async (r) => {
           })
           .without('varList')
       })
+      .run()
   ]
   try {
     await Promise.all(tables)

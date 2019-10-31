@@ -18,7 +18,7 @@ describe('sendBatchNotificationEmails', () => {
     // Unfortunately, other tests are not cleaning up after themselves. Since
     // "sending everyone with pending notifications an email" relies on the
     // global DB state, there's no getting around this.
-    const r = getRethink()
+    const r = await getRethink()
     await r.table('Notification').delete()
   })
 

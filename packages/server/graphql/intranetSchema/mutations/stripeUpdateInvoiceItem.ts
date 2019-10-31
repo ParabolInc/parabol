@@ -9,7 +9,7 @@ const MAX_STRIPE_DELAY = 3 // seconds
 
 const getBestHook = (possibleHooks: InvoiceItemHook[], hookQuantity: number) => {
   if (possibleHooks.length === 1) return possibleHooks[0]
-  for (let i =0 ; i < possibleHooks.length; i++) {
+  for (let i = 0; i < possibleHooks.length; i++) {
     const curHook = possibleHooks[i]
     const {quantity} = curHook
     // if 2 hooks occurred at the same second, try grabbing the one with the accurate quantity
@@ -30,7 +30,7 @@ export default {
     }
   },
   resolve: async (_source, {invoiceItemId}, {authToken}: InternalContext) => {
-    const r = getRethink()
+    const r = await getRethink()
 
     // AUTH
     if (!isSuperUser(authToken)) {
@@ -51,6 +51,7 @@ export default {
       .between(start - MAX_STRIPE_DELAY, start, {index: 'prorationDate', rightBound: 'closed'})
       .filter({stripeSubscriptionId: subscription})
       .orderBy(r.desc('prorationDate'))
+      .run()
 
     if (possibleHooks.length === 0) {
       console.log('No hook found for', invoiceItemId)

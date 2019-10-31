@@ -21,7 +21,7 @@ export default {
     }
   },
   async resolve(_source, {teamId}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink()
+    const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
@@ -34,7 +34,12 @@ export default {
 
     // RESOLUTION
     sendSegmentEvent('Archive Team', viewerId, {teamId}).catch()
-    const {team, users, removedTeamNotifications, removedSuggestedActionIds} = await safeArchiveTeam(teamId)
+    const {
+      team,
+      users,
+      removedTeamNotifications,
+      removedSuggestedActionIds
+    } = await safeArchiveTeam(teamId)
 
     if (!team) {
       return standardError(new Error('Already archived team'), {userId: viewerId})
@@ -51,7 +56,10 @@ export default {
         teamId
       }))
     if (notifications.length) {
-      await r.table('Notification').insert(notifications)
+      await r
+        .table('Notification')
+        .insert(notifications)
+        .run()
     }
 
     const data = {

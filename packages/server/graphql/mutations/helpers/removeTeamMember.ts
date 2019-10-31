@@ -7,6 +7,9 @@ import fromTeamMemberId from '../../../../client/utils/relay/fromTeamMemberId'
 import removeStagesFromNewMeeting from './removeStagesFromNewMeeting'
 import CheckInStage from '../../../database/types/CheckInStage'
 import UpdatesStage from '../../../database/types/UpdatesStage'
+import Task from '../../../database/types/Task'
+import Notification from '../../../database/types/Notification'
+import User from '../../../database/types/User'
 
 interface Options {
   isKickout: boolean
@@ -18,11 +21,14 @@ const removeTeamMember = async (
   dataLoader: DataLoaderWorker
 ) => {
   const {isKickout} = options
-  const r = getRethink()
+  const r = await getRethink()
   const now = new Date()
   const {userId, teamId} = fromTeamMemberId(teamMemberId)
   // see if they were a leader, make a new guy leader so later we can reassign tasks
-  const activeTeamMembers = await r.table('TeamMember').getAll(teamId, {index: 'teamId'})
+  const activeTeamMembers = await r
+    .table('TeamMember')
+    .getAll(teamId, {index: 'teamId'})
+    .run()
   const teamMember = activeTeamMembers.find((t) => t.id === teamMemberId)
   const {isLead, isNotRemoved} = teamMember
   // if the guy being removed is the leader & not the last, pick a new one. else, use him
@@ -37,6 +43,7 @@ const removeTeamMember = async (
       .table('Team')
       .get(teamId)
       .update({isArchived: true})
+      .run()
   } else if (isLead) {
     // assign new leader, remove old leader flag
     await r({
@@ -50,7 +57,7 @@ const removeTeamMember = async (
         .table('TeamMember')
         .get(teamMemberId)
         .update({isLead: false})
-    })
+    }).run()
   }
 
   // assign active tasks to the team lead
@@ -62,7 +69,7 @@ const removeTeamMember = async (
         isNotRemoved: false,
         updatedAt: now
       }),
-    integratedTasksToArchive: r
+    integratedTasksToArchive: (r
       .table('Task')
       .getAll(teamMemberId, {index: 'assigneeId'})
       .filter((task) => {
@@ -75,8 +82,8 @@ const removeTeamMember = async (
             .ne(null)
         )
       })
-      .coerceTo('array'),
-    reassignedTasks: r
+      .coerceTo('array') as unknown) as Task[],
+    reassignedTasks: (r
       .table('Task')
       .getAll(teamMemberId, {index: 'assigneeId'})
       .filter((task) =>
@@ -96,8 +103,8 @@ const removeTeamMember = async (
         },
         {returnChanges: true}
       )('changes')('new_val')
-      .default([]),
-    user: r
+      .default([]) as unknown) as Task[],
+    user: (r
       .table('User')
       .get(userId)
       .update(
@@ -106,7 +113,7 @@ const removeTeamMember = async (
         }),
         {returnChanges: true}
       )('changes')(0)('new_val')
-      .default(null),
+      .default(null) as unknown) as User,
     // not adjusting atlassian, if they join the team again, they'll be ready to go
     changedProviders: r
       .table('Provider')
@@ -120,24 +127,27 @@ const removeTeamMember = async (
       )('changes')('new_val')
       .default([]),
     // note this may be too aggressive since 1 notification could have multiple userIds. we need to refactor to a single userId
-    removedNotifications: r
+    removedNotifications: (r
       .table('Notification')
       .getAll(userId, {index: 'userIds'})
       .filter({teamId})
       .delete({returnChanges: true})('changes')('old_val')
-      .default([])
-  })
+      .default([]) as unknown) as Notification[]
+  }).run()
 
   let notificationId
   if (isKickout) {
     notificationId = shortid.generate()
-    await r.table('Notification').insert({
-      id: notificationId,
-      startAt: now,
-      teamId,
-      type: KICKED_OUT,
-      userIds: [userId]
-    })
+    await r
+      .table('Notification')
+      .insert({
+        id: notificationId,
+        startAt: now,
+        teamId,
+        type: KICKED_OUT,
+        userIds: [userId]
+      })
+      .run()
   }
 
   const archivedTasks = await archiveTasksForDB(integratedTasksToArchive)

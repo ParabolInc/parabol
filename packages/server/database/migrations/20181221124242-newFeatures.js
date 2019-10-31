@@ -1,10 +1,13 @@
 exports.up = async (r) => {
   try {
-    await Promise.all([r.tableCreate('SuggestedAction'), r.tableCreate('NewFeature')])
+    await Promise.all([r.tableCreate('SuggestedAction').run(), r.tableCreate('NewFeature').run()])
   } catch (e) {}
   try {
     await Promise.all([
-      r.table('SuggestedAction').indexCreate('userId')
+      r
+        .table('SuggestedAction')
+        .indexCreate('userId')
+        .run()
       // r.table('NewFeature').indexCreate('number'),
     ])
   } catch (e) {}
@@ -17,6 +20,6 @@ exports.up = async (r) => {
 
 exports.down = async (r) => {
   try {
-    await Promise.all([r.tableDrop('SuggestedAction'), r.tableDrop('NewFeature')])
+    await Promise.all([r.tableDrop('SuggestedAction').run(), r.tableDrop('NewFeature').run()])
   } catch (e) {}
 }

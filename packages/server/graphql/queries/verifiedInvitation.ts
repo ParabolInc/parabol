@@ -5,6 +5,8 @@ import VerifiedInvitationPayload from '../types/VerifiedInvitationPayload'
 import getRethink from '../../database/rethinkDriver'
 import promisify from 'es6-promisify'
 import getSAMLURLFromEmail from '../../utils/getSAMLURLFromEmail'
+import {ITeam} from 'parabol-client/types/graphql'
+import User from '../../database/types/User'
 
 const resolveMx = promisify(dns.resolveMx, dns)
 
@@ -33,21 +35,27 @@ export default {
     }
   },
   resolve: rateLimit({perMinute: 60, perHour: 1800})(async (_source, {token}) => {
-    const r = getRethink()
+    const r = await getRethink()
     const now = new Date()
     const teamInvitation = await r
       .table('TeamInvitation')
       .getAll(token, {index: 'token'})
       .nth(0)
       .default(null)
+      .run()
     if (!teamInvitation) return {errorType: 'notFound'}
     const {email, acceptedAt, expiresAt, invitedBy, teamId} = teamInvitation
     const {team, inviter} = await r({
-      team: r.table('Team').get(teamId),
-      inviter: r.table('User').get(invitedBy)
-    })
+      team: (r.table('Team').get(teamId) as unknown) as ITeam,
+      inviter: (r.table('User').get(invitedBy) as unknown) as User
+    }).run()
     const {meetingId} = team
-    const meeting = meetingId ? await r.table('NewMeeting').get(meetingId) : null
+    const meeting = meetingId
+      ? await r
+          .table('NewMeeting')
+          .get(meetingId)
+          .run()
+      : null
     const meetingType = meeting ? meeting.meetingType : null
     if (acceptedAt) {
       return {
@@ -74,6 +82,7 @@ export default {
       .getAll(email, {index: 'email'})
       .nth(0)
       .default(null)
+      .run()
     const userId = viewer ? viewer.id : null
     const ssoURL = await getSAMLURLFromEmail(email, true)
     const isGoogle = await getIsGoogleProvider(viewer, email)

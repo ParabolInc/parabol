@@ -18,13 +18,16 @@ const flagConversionModal = {
     }
   },
   resolve: async (_source, {active, orgId}, {authToken}: GQLContext) => {
-    const r = getRethink()
+    const r = await getRethink()
 
     // AUTH
     requireSU(authToken)
 
     // VALIDATION
-    const organization = await r.table('Organization').get(orgId)
+    const organization = await r
+      .table('Organization')
+      .get(orgId)
+      .run()
     if (!organization) {
       return {error: {message: 'Invalid orgId'}}
     }
@@ -36,6 +39,7 @@ const flagConversionModal = {
       .update({
         showConversionModal: active
       })
+      .run()
 
     return {orgId}
   }

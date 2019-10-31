@@ -119,13 +119,14 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
       },
       resolve: async ({id: userId}, {teamId}, {authToken}) => {
         if (!isTeamMember(authToken, teamId)) return null
-        const r = getRethink()
+        const r = await getRethink()
         return r
           .table('Provider')
           .getAll(teamId, {index: 'teamId'})
           .filter({service: GITHUB, isActive: true, userId})
           .nth(0)
           .default(null)
+          .run()
       }
     },
     identities: {
@@ -185,7 +186,7 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
         }
       },
       resolve: async ({id}, {after, first}, {authToken}) => {
-        const r = getRethink()
+        const r = await getRethink()
         const viewerId = getUserId(authToken)
         if (viewerId !== id && !isSuperUser(authToken)) return null
         const dbAfter = after ? new Date(after) : r.maxval
@@ -197,6 +198,7 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
           .orderBy(r.desc('createdAt'))
           .limit(first + 1)
           .coerceTo('array')
+          .run()
         const edges = events.slice(0, first).map((node) => ({
           cursor: node.createdAt,
           node
@@ -326,7 +328,7 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
     organizations: {
       description: 'Get the list of all organizations a user belongs to',
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Organization))),
-      async resolve ({id: userId}, _args, {authToken, dataLoader}) {
+      async resolve({id: userId}, _args, {authToken, dataLoader}) {
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
         const orgIds = organizationUsers.map(({orgId}) => orgId)
         const organizations = await dataLoader.get('organizations').loadMany(orgIds)

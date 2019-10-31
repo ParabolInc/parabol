@@ -46,12 +46,13 @@ const consumeSAML: RequestHandler = async (req, res) => {
   const {params} = req
   const {domain} = params
   if (!domain) return
-  const r = getRethink()
+  const r = await getRethink()
   const doc = (await r
     .table('SAML')
     .getAll(domain, {index: 'domain'})
     .nth(0)
-    .default(null)) as SAML | null
+    .default(null)
+    .run()) as SAML | null
   if (!doc) return
   const {metadata} = doc
   const idp = samlify.IdentityProvider({metadata})

@@ -5,6 +5,7 @@ import publish from '../../utils/publish'
 import {RETROSPECTIVE, TEAM} from '../../../client/utils/constants'
 import standardError from '../../utils/standardError'
 import RemoveReflectTemplatePayload from '../types/RemoveReflectTemplatePayload'
+import {IReflectTemplate, IRetrospectiveMeetingSettings} from 'parabol-client/types/graphql'
 
 const removeReflectTemplate = {
   description: 'Remove a template full of prompts',
@@ -14,12 +15,15 @@ const removeReflectTemplate = {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve (_source, {templateId}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink()
+  async resolve(_source, {templateId}, {authToken, dataLoader, socketId: mutatorId}) {
+    const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const template = await r.table('ReflectTemplate').get(templateId)
+    const template = await r
+      .table('ReflectTemplate')
+      .get(templateId)
+      .run()
     const viewerId = getUserId(authToken)
 
     // AUTH
@@ -30,18 +34,18 @@ const removeReflectTemplate = {
     // VALIDATION
     const {teamId} = template
     const {templates, settings} = await r({
-      templates: r
+      templates: (r
         .table('ReflectTemplate')
         .getAll(teamId, {index: 'teamId'})
         .filter({isActive: true})
         .orderBy('name')
-        .coerceTo('array'),
-      settings: r
+        .coerceTo('array') as unknown) as IReflectTemplate[],
+      settings: (r
         .table('MeetingSettings')
         .getAll(teamId, {index: 'teamId'})
         .filter({meetingType: RETROSPECTIVE})
-        .nth(0)
-    })
+        .nth(0) as unknown) as IRetrospectiveMeetingSettings
+    }).run()
 
     if (templates.length <= 1) {
       return standardError(new Error('No templates'), {userId: viewerId})
@@ -64,16 +68,19 @@ const removeReflectTemplate = {
           isActive: false,
           updatedAt: now
         })
-    })
+    }).run()
 
     if (settings.selectedTemplateId === templateId) {
       const nextTemplate = templates.find((template) => template.id !== templateId)
-      await r
-        .table('MeetingSettings')
-        .get(settingsId)
-        .update({
-          selectedTemplateId: nextTemplate.id
-        })
+      if (nextTemplate) {
+        await r
+          .table('MeetingSettings')
+          .get(settingsId)
+          .update({
+            selectedTemplateId: nextTemplate.id
+          })
+          .run()
+      }
     }
 
     const data = {templateId, settingsId}

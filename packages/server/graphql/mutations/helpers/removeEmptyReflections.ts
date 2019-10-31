@@ -1,15 +1,16 @@
 import getRethink from '../../../database/rethinkDriver'
 import extractTextFromDraftString from '../../../../client/utils/draftjs/extractTextFromDraftString'
+import Meeting from '../../../database/types/Meeting'
 
-const removeEmptyReflections = async (meeting) => {
-  const r = getRethink()
+const removeEmptyReflections = async (meeting: Meeting ) => {
+  const r = await getRethink()
   const {id: meetingId} = meeting
   const reflections = await r
     .table('RetroReflection')
     .getAll(meetingId, {index: 'meetingId'})
-    .filter({isActive: true})
-  const emptyReflectionGroupIds = []
-  const emptyReflectionIds = []
+    .filter({isActive: true}).run()
+  const emptyReflectionGroupIds = [] as string[]
+  const emptyReflectionIds = [] as string[]
   reflections.forEach((reflection) => {
     const text = extractTextFromDraftString(reflection.content)
     if (text.length === 0) {
@@ -31,7 +32,7 @@ const removeEmptyReflections = async (meeting) => {
         .update({
           isActive: false
         })
-    })
+    }).run()
   }
   return {emptyReflectionGroupIds}
 }

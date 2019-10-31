@@ -5,11 +5,12 @@ import getRethink from '../../../database/rethinkDriver'
 import StripeFailPaymentPayload from '../../types/StripeFailPaymentPayload'
 import publish from '../../../utils/publish'
 import shortid from 'shortid'
-import { NOTIFICATION, PAYMENT_REJECTED} from 'parabol-client/utils/constants'
+import {NOTIFICATION, PAYMENT_REJECTED} from 'parabol-client/utils/constants'
 import StripeManager from '../../../utils/StripeManager'
-import {InvoiceStatusEnum, IOrganization, OrgUserRole} from 'parabol-client/types/graphql'
+import {InvoiceStatusEnum, OrgUserRole} from 'parabol-client/types/graphql'
 import {isSuperUser} from '../../../utils/authorization'
 import {InternalContext} from '../../graphql'
+import Organization from '../../../database/types/Organization'
 
 export default {
   name: 'StripeFailPayment',
@@ -27,7 +28,7 @@ export default {
       throw new Error('Don’t be rude.')
     }
 
-    const r = getRethink()
+    const r = await getRethink()
     const now = new Date()
     const manager = new StripeManager()
 
@@ -43,11 +44,12 @@ export default {
         throw new Error(`Could not find orgId on invoice ${invoiceId}`)
       }
     }
-    const org = (await r
-      .table('Organization')
+    const org = await r
+      .table<Organization>('Organization')
       .get(orgId)
       .pluck('creditCard', 'stripeSubscriptionId')
-      .default(null)) as IOrganization | null
+      .default(null)
+      .run()
 
     if (!org) {
       // org no longer exists, can fail silently (useful for all the staging server bugs)
@@ -69,6 +71,7 @@ export default {
       .table('OrganizationUser')
       .getAll(orgId, {index: 'orgId'})
       .filter({removedAt: null, role: OrgUserRole.BILLING_LEADER})('userId')
+      .run()
     const {last4, brand} = creditCard!
     // amount_due includes the old account_balance, so we can (kinda) atomically set this
     // we take out the charge for future services since we are ending service immediately
@@ -91,7 +94,7 @@ export default {
         .get(invoiceId)
         .update({status: InvoiceStatusEnum.FAILED}),
       insert: r.table('Notification').insert(notification)
-    })
+    }).run()
     const data = {orgId, notificationId}
     // TODO add in subOptins when we move GraphQL to its own microservice
     publish(NOTIFICATION, orgId, StripeFailPaymentPayload, data)

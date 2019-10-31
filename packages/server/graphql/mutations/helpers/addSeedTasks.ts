@@ -15,8 +15,8 @@ const SEED_TASKS = [
   }
 ]
 
-export default (userId, teamId) => {
-  const r = getRethink()
+export default async (userId, teamId) => {
+  const r = await getRethink()
   const now = new Date()
 
   const seedTasks = SEED_TASKS.map((proj) => ({
@@ -46,4 +46,5 @@ export default (userId, teamId) => {
         }))
       )
     })
+    .run()
 }

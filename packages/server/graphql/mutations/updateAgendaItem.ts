@@ -28,7 +28,7 @@ export default {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const now = new Date()
-    const r = getRethink()
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
@@ -58,11 +58,14 @@ export default {
         ...doc,
         updatedAt: now
       })
+      .run()
     const team = await dataLoader.get('teams').load(teamId)
     const {meetingId} = team
-
     if (meetingId) {
-      const meeting = (await r.table('NewMeeting').get(meetingId)) as Meeting | null
+      const meeting = (await r
+        .table('NewMeeting')
+        .get(meetingId)
+        .run()) as Meeting | null
       if (!meeting) {
         return standardError(new Error('Invalid meetingId'))
       }
@@ -86,9 +89,9 @@ export default {
           .update({
             phases
           })
+          .run()
       }
     }
-
     const data = {agendaItemId, meetingId}
     publish(TEAM, teamId, UpdateAgendaItemPayload, data, subOptions)
     return data

@@ -1,14 +1,17 @@
 import getRethink from './rethinkDriver'
 
-export default async function cloneProdToDev () {
-  const r = getRethink()
+export default async function cloneProdToDev() {
+  const r = await getRethink()
   try {
     await r.dbDrop('actionDevelopment')
   } catch (e) {
     // empty
   }
   await r.dbCreate('actionDevelopment')
-  const list = await r.db('actionProduction').tableList()
+  const list = await r
+    .db('actionProduction')
+    .tableList()
+    .run()
   const promises = list.map((table) =>
     r
       .db('actionProduction')
@@ -17,8 +20,11 @@ export default async function cloneProdToDev () {
       .update({
         db: 'actionDevelopment'
       })
+      .run()
   )
   await Promise.all(promises)
   console.log('Move to actionDevelopment complete!')
-  r.getPoolMaster().drain()
+  r.getPoolMaster()
+    .drain()
+    .run()
 }

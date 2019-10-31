@@ -29,12 +29,12 @@ export default {
       description: 'The meeting ID'
     }
   },
-  async resolve (
+  async resolve(
     _source,
     {completedStageId, facilitatorStageId, meetingId},
     {authToken, socketId: mutatorId, dataLoader}
   ) {
-    const r = getRethink()
+    const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -44,7 +44,8 @@ export default {
     const meeting = (await r
       .table('NewMeeting')
       .get(meetingId)
-      .default(null)) as Meeting | null
+      .default(null)
+      .run()) as Meeting | null
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {defaultFacilitatorUserId, facilitatorUserId, phases, teamId} = meeting
     if (viewerId !== facilitatorUserId) {
@@ -103,13 +104,14 @@ export default {
       .table('NewMeeting')
       .get(meetingId)
       .update(
-      {
-        facilitatorStageId,
-        phases,
-        updatedAt: now
-      },
+        {
+          facilitatorStageId,
+          phases,
+          updatedAt: now
+        },
         {returnChanges: true}
       )('changes')(0)('old_val')('facilitatorStageId')
+      .run()
 
     const data = {
       meetingId,

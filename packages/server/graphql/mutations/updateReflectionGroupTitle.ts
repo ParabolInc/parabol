@@ -23,18 +23,21 @@ export default {
       description: 'The new title for the group'
     }
   },
-  async resolve (
+  async resolve(
     _source,
     {reflectionGroupId, title}: IUpdateReflectionGroupTitleOnMutationArguments,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = getRethink()
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const reflectionGroup = await r.table('RetroReflectionGroup').get(reflectionGroupId)
+    const reflectionGroup = await r
+      .table('RetroReflectionGroup')
+      .get(reflectionGroupId)
+      .run()
     if (!reflectionGroup) {
       return standardError(new Error('Reflection group not found'), {userId: viewerId})
     }
@@ -58,7 +61,7 @@ export default {
       .table('RetroReflectionGroup')
       .getAll(meetingId, {index: 'meetingId'})
       .filter({isActive: true})('title')
-      .default([])
+      .run()
     if (allTitles.includes(normalizedTitle)) {
       return standardError(new Error('Group titles must be unique'), {userId: viewerId})
     }
@@ -70,6 +73,7 @@ export default {
       .update({
         title: normalizedTitle
       })
+      .run()
 
     if (smartTitle && smartTitle === oldTitle) {
       // let's see how smart those smart titles really are. A high similarity means very helpful. Not calling this mutation means perfect!

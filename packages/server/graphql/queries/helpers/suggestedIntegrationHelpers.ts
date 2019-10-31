@@ -46,7 +46,7 @@ export const useOnlyUserIntegrations = (
 export const getTeamIntegrationsByUserId = async (
   teamId: string
 ): Promise<IntegrationByUserId[]> => {
-  const r = getRethink()
+  const r = await getRethink()
   const res = await r
     .table('Task')
     .getAll(teamId, {index: 'teamId'})
@@ -55,24 +55,14 @@ export const getTeamIntegrationsByUserId = async (
         .ne(null)
         .default(false)
     )
-    .group([
-      r.row('userId').default(null),
-      r.row('integration')('service'),
-      r
-        .row('integration')('nameWithOwner')
-        .default(null),
-      r
-        .row('integration')('projectKey')
-        .default(null),
-      r
-        .row('integration')('projectName')
-        .default(null),
-      r
-        .row('integration')('avatar')
-        .default(null),
-      r
-        .row('integration')('cloudId')
-        .default(null)
+    .group((row) => [
+      row('userId').default(null),
+      row('integration')('service'),
+      row('integration')('nameWithOwner').default(null),
+      row('integration')('projectKey').default(null),
+      row('integration')('projectName').default(null),
+      row('integration')('avatar').default(null),
+      row('integration')('cloudId').default(null)
     ])
     .max('createdAt')('createdAt')
     .ungroup()
@@ -87,6 +77,7 @@ export const getTeamIntegrationsByUserId = async (
       cloudId: row('group')(6),
       lastUsedAt: row('reduction')
     }))
+    .run()
   return res.map((item) => ({
     ...item,
     id: makeSuggestedIntegrationId(item)
@@ -98,7 +89,7 @@ export const getPermsByTaskService = async (
   teamId: string,
   userId: string
 ) => {
-  const r = getRethink()
+  const r = await getRethink()
   // we need to see which team integrations the user has access to
   const [atlassianAuths, githubAuthForTeam] = await Promise.all([
     dataLoader.get('atlassianAuthByUserId').load(userId),
@@ -112,6 +103,7 @@ export const getPermsByTaskService = async (
       })
       .nth(0)
       .default(null)
+      .run()
   ])
 
   return {

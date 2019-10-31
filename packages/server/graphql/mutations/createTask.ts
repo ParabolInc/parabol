@@ -16,6 +16,7 @@ import {ICreateTaskOnMutationArguments} from '../../../client/types/graphql'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import normalizeRawDraftJS from '../../../client/validation/normalizeRawDraftJS'
 import NotificationTaskInvolves from '../../database/types/NotificationTaskInvolves'
+import {ITeamMember} from 'parabol-client/types/graphql'
 
 const validateTaskAgendaItemId = async (
   agendaItemId: string | null | undefined,
@@ -82,12 +83,12 @@ export default {
       description: 'The part of the site where the creation occurred'
     }
   },
-  async resolve (
+  async resolve(
     _source,
     {newTask}: ICreateTaskOnMutationArguments,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = getRethink()
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const viewerId = getUserId(authToken)
@@ -133,14 +134,14 @@ export default {
     const {teamMembers} = await r({
       task: r.table('Task').insert(task),
       history: r.table('TaskHistory').insert(history),
-      teamMembers: r
+      teamMembers: (r
         .table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
         .filter({
           isNotRemoved: true
         })
-        .coerceTo('array')
-    })
+        .coerceTo('array') as unknown) as ITeamMember[]
+    }).run()
     const usersIdsToIgnore = await getUsersToIgnore(meetingId, dataLoader)
 
     // Handle notifications
@@ -179,7 +180,10 @@ export default {
     const data = {taskId, notifications: notificationsToAdd}
 
     if (notificationsToAdd.length) {
-      await r.table('Notification').insert(notificationsToAdd)
+      await r
+        .table('Notification')
+        .insert(notificationsToAdd)
+        .run()
       notificationsToAdd.forEach((notification) => {
         const {
           userIds: [notificationUserId]

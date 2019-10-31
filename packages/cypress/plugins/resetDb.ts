@@ -8,7 +8,7 @@ interface DBOptions {
   target: string
 }
 const resetDb = ({source, target}: DBOptions) => async () => {
-  const r = getRethink()
+  const r = await getRethink()
   // wipe out all records on the target
   await r
     .db(target)

@@ -3,7 +3,12 @@ import {fromEpochSeconds} from '../../utils/epochTime'
 import shortid from 'shortid'
 import Stripe from 'stripe'
 import Invoice from '../../database/types/Invoice'
-import {InvoiceLineItemEnum, InvoiceStatusEnum, OrgUserRole, TierEnum} from 'parabol-client/types/graphql'
+import {
+  InvoiceLineItemEnum,
+  InvoiceStatusEnum,
+  OrgUserRole,
+  TierEnum
+} from 'parabol-client/types/graphql'
 import InvoiceLineItemDetail from '../../database/types/InvoiceLineItemDetail'
 import QuantityChangeLineItem from '../../database/types/QuantityChangeLineItem'
 import InvoiceLineItemOtherAdjustments from '../../database/types/InvoiceLineItemOtherAdjustments'
@@ -11,6 +16,7 @@ import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import StripeManager from '../../utils/StripeManager'
 import NextPeriodCharges from '../../database/types/NextPeriodCharges'
 import Coupon from '../../database/types/Coupon'
+import Organization from '../../database/types/Organization'
 
 interface InvoicesByStartTime {
   [start: string]: {
@@ -67,11 +73,12 @@ interface DetailedLineItemDict {
 }
 
 const getEmailLookup = async (userIds: string[]) => {
-  const r = getRethink()
+  const r = await getRethink()
   const usersAndEmails = await r
     .table('User')
     .getAll(r.args(userIds), {index: 'id'})
     .pluck('id', 'email')
+    .run()
   return usersAndEmails.reduce((dict, doc) => {
     dict[doc.id] = doc.email
     return dict
@@ -154,13 +161,15 @@ const makeQuantityChangeLineItems = (detailedLineItems: DetailedLineItemDict) =>
     const details = detailedLineItems[lineItemType] as ReducedItem[]
     if (details.length > 0) {
       const id = shortid.generate()
-      quantityChangeLineItems.push(new QuantityChangeLineItem({
-        id,
-        amount: details.reduce((sum, detail) => sum + detail.amount, 0),
-        details: details.map((doc) => new InvoiceLineItemDetail({...doc, parentId: id})),
-        quantity: details.length,
-        type: lineItemType as InvoiceLineItemEnum
-      }))
+      quantityChangeLineItems.push(
+        new QuantityChangeLineItem({
+          id,
+          amount: details.reduce((sum, detail) => sum + detail.amount, 0),
+          details: details.map((doc) => new InvoiceLineItemDetail({...doc, parentId: id})),
+          quantity: details.length,
+          type: lineItemType as InvoiceLineItemEnum
+        })
+      )
     }
   }
   return quantityChangeLineItems
@@ -254,7 +263,7 @@ const maybeReduceUnknowns = async (
   itemDict: ItemDict,
   stripeSubscriptionId: string
 ) => {
-  const r = getRethink()
+  const r = await getRethink()
   const unknowns = [] as Stripe.invoices.IInvoiceLineItem[]
   const manager = new StripeManager()
   for (let i = 0; i < unknownLineItems.length; i++) {
@@ -267,6 +276,7 @@ const maybeReduceUnknowns = async (
       .filter({stripeSubscriptionId})
       .nth(0)
       .default(null)
+      .run()
     if (hook) {
       const {type, userId} = hook
       // push it back to stripe for posterity
@@ -284,13 +294,13 @@ const maybeReduceUnknowns = async (
   return unknowns
 }
 
-export default async function generateInvoice (
+export default async function generateInvoice(
   invoice: Stripe.invoices.IInvoice,
   stripeLineItems: Stripe.invoices.IInvoiceLineItem[],
   orgId: string,
   invoiceId: string
 ) {
-  const r = getRethink()
+  const r = await getRethink()
   const now = new Date()
 
   const {itemDict, nextPeriodCharges, unknownLineItems} = makeItemDict(stripeLineItems)
@@ -303,11 +313,14 @@ export default async function generateInvoice (
   const detailedLineItems = await makeDetailedLineItems(itemDict)
   const quantityChangeLineItems = makeQuantityChangeLineItems(detailedLineItems)
   const invoiceLineItems = [
-    ...unknownInvoiceLines.map((item) => new InvoiceLineItemOtherAdjustments({
-      amount: item.amount,
-      description: item.description,
-      quantity: item.quantity
-    })),
+    ...unknownInvoiceLines.map(
+      (item) =>
+        new InvoiceLineItemOtherAdjustments({
+          amount: item.amount,
+          description: item.description,
+          quantity: item.quantity
+        })
+    ),
     ...quantityChangeLineItems
   ].sort((a, b) => (a.type > b.type ? 1 : -1))
 
@@ -333,8 +346,8 @@ export default async function generateInvoice (
   const paidAt = status === InvoiceStatusEnum.PAID ? now : undefined
 
   const {organization, billingLeaderEmails} = await r({
-    organization: r.table('Organization').get(orgId),
-    billingLeaderEmails: r
+    organization: (r.table('Organization').get(orgId) as unknown) as Organization,
+    billingLeaderEmails: (r
       .table('OrganizationUser')
       .getAll(orgId, {index: 'orgId'})
       .filter({removedAt: null, role: OrgUserRole.BILLING_LEADER})
@@ -342,17 +355,20 @@ export default async function generateInvoice (
       .do((userIds) => {
         return r.table('User').getAll(userIds, {index: 'id'})('email')
       })
-      .coerceTo('array')
-  })
+      .coerceTo('array') as unknown) as string[]
+  }).run()
 
-  const couponDetails = invoice.discount && invoice.discount.coupon || null
+  const couponDetails = (invoice.discount && invoice.discount.coupon) || null
 
-  const coupon = couponDetails && new Coupon({
-    id: couponDetails.id,
-    amountOff: couponDetails.amount_off,
-    name: couponDetails.name,
-    percentOff: couponDetails.percent_off
-  }) || null
+  const coupon =
+    (couponDetails &&
+      new Coupon({
+        id: couponDetails.id,
+        amountOff: couponDetails.amount_off,
+        name: couponDetails.name,
+        percentOff: couponDetails.percent_off
+      })) ||
+    null
 
   const dbInvoice = new Invoice({
     id: invoiceId,
@@ -376,5 +392,8 @@ export default async function generateInvoice (
     tier: nextPeriodCharges.interval === 'year' ? TierEnum.enterprise : TierEnum.pro
   })
 
-  return r.table('Invoice').insert(dbInvoice, {conflict: 'replace', returnChanges: true})('changes')(0)('new_val')
+  return r
+    .table('Invoice')
+    .insert(dbInvoice, {conflict: 'replace', returnChanges: true})('changes')(0)('new_val')
+    .run()
 }

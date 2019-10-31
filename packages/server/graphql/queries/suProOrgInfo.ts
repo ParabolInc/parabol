@@ -13,8 +13,8 @@ export default {
       description: 'should organizations without active users be included?'
     }
   },
-  async resolve (_source, {includeInactive}, {authToken}) {
-    const r = getRethink()
+  async resolve(_source, {includeInactive}, {authToken}) {
+    const r = await getRethink()
 
     // AUTH
     requireSU(authToken)
@@ -32,5 +32,6 @@ export default {
           .count()
       }))
       .filter((org) => r.branch(includeInactive, true, org('users').ge(1)))
+      .run()
   }
 }

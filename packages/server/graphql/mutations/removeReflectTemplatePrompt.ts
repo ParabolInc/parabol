@@ -14,12 +14,15 @@ const removeReflectTemplatePrompt = {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve (_source, {promptId}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink()
+  async resolve(_source, {promptId}, {authToken, dataLoader, socketId: mutatorId}) {
+    const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const prompt = await r.table('CustomPhaseItem').get(promptId)
+    const prompt = await r
+      .table('CustomPhaseItem')
+      .get(promptId)
+      .run()
     const viewerId = getUserId(authToken)
 
     // AUTH
@@ -38,8 +41,9 @@ const removeReflectTemplatePrompt = {
       })
       .count()
       .default(0)
+      .run()
 
-    if (promptCount.length <= 1) {
+    if (promptCount <= 1) {
       return standardError(new Error('No prompts remain'), {userId: viewerId})
     }
 
@@ -51,6 +55,7 @@ const removeReflectTemplatePrompt = {
         isActive: false,
         updatedAt: now
       })
+      .run()
 
     const data = {promptId, templateId}
     publish(TEAM, teamId, RemoveReflectTemplatePromptPayload, data, subOptions)

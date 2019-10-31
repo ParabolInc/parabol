@@ -16,11 +16,13 @@ exports.up = async (r) => {
     r
       .table('User')
       .getAll(r.args(engineeringTeam), {index: 'id'})
-      .update({tms: ['team123', 'team456']}),
+      .update({tms: ['team123', 'team456']})
+      .run(),
     r
       .table('User')
       .get(productTeam[0])
       .update({tms: ['team123']})
+      .run()
   ]
   await Promise.all(fields)
 }
@@ -31,6 +33,7 @@ exports.down = async (r) => {
       .table('User')
       .getAll(r.args(productTeam))
       .update({tms: []})
+      .run()
   ]
   await Promise.all(fields)
 }

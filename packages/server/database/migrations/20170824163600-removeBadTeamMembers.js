@@ -37,6 +37,7 @@ exports.up = async (r) => {
         )
     })('changes')
     .default([])
+    .run()
 
   if (changes.length === 0) return
 

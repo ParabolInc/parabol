@@ -15,14 +15,14 @@ export default {
       description: 'The id of the notification to remove'
     }
   },
-  async resolve (source, {notificationId}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink()
+  async resolve(_source, {notificationId}, {authToken, dataLoader, socketId: mutatorId}) {
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const notification = await r.table('Notification').get(notificationId)
+    const notification = await r.table('Notification').get(notificationId).run()
     if (!notification || !notification.userIds.includes(viewerId)) {
       return standardError(new Error('Notification not found'), {userId: viewerId})
     }
@@ -32,6 +32,7 @@ export default {
       .table('Notification')
       .get(notificationId)
       .delete()
+      .run()
 
     const data = {notification}
     publish(NOTIFICATION, viewerId, ClearNotificationPayload, data, subOptions)

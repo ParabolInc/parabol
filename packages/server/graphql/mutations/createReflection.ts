@@ -25,14 +25,12 @@ export default {
       type: new GraphQLNonNull(CreateReflectionInput)
     }
   },
-  async resolve (
+  async resolve(
     _source,
-    {
-      input: {content, retroPhaseItemId, sortOrder}
-    },
+    {input: {content, retroPhaseItemId, sortOrder}},
     {authToken, dataLoader, socketId: mutatorId}
   ) {
-    const r = getRethink()
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const now = new Date()
     const subOptions = {operationId, mutatorId}
@@ -56,6 +54,7 @@ export default {
       .table('NewMeeting')
       .get(meetingId)
       .default(null)
+      .run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases} = meeting
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
@@ -89,13 +88,13 @@ export default {
       title: smartTitle,
       meetingId,
       retroPhaseItemId,
-      sortOrder,
+      sortOrder
     })
 
     await r({
       group: r.table('RetroReflectionGroup').insert(reflectionGroup),
       reflection: r.table('RetroReflection').insert(reflection)
-    })
+    }).run()
     const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
     let unlockedStageIds
     if (reflections.length === 1) {
@@ -106,6 +105,7 @@ export default {
         .update({
           phases
         })
+        .run()
     }
     const data = {
       meetingId,

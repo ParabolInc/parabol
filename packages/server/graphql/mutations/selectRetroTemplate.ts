@@ -17,12 +17,12 @@ const selectRetroTemplate = {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve (
+  async resolve(
     _source,
     {selectedTemplateId, teamId},
     {authToken, dataLoader, socketId: mutatorId}
   ) {
-    const r = getRethink()
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const viewerId = getUserId(authToken)
@@ -33,7 +33,10 @@ const selectRetroTemplate = {
     }
 
     // VALIDATION
-    const template = await r.table('ReflectTemplate').get(selectedTemplateId)
+    const template = await r
+      .table('ReflectTemplate')
+      .get(selectedTemplateId)
+      .run()
     if (!template || template.teamId !== teamId || !template.isActive) {
       return standardError(new Error('Template not found'), {userId: viewerId})
     }
@@ -52,6 +55,7 @@ const selectRetroTemplate = {
         {returnChanges: true}
       )('changes')(0)('new_val')('id')
       .default(null)
+      .run()
 
     if (!meetingSettingsId) {
       return standardError(new Error('Template not found'), {userId: viewerId})

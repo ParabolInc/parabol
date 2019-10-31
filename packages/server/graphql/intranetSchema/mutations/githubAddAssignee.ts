@@ -26,7 +26,7 @@ export default {
     }
   },
   resolve: async (_source, {integrationId, assigneeLogin, nameWithOwner}, {authToken}) => {
-    const r = getRethink()
+    const r = await getRethink()
     const now = new Date()
 
     // AUTH
@@ -34,7 +34,10 @@ export default {
       throw new Error('Don’t be rude.')
     }
 
-    const integrations = await r.table(GITHUB).getAll(nameWithOwner, {index: 'nameWithOwner'})
+    const integrations = await r
+      .table(GITHUB)
+      .getAll(nameWithOwner, {index: 'nameWithOwner'})
+      .run()
 
     if (integrations.length === 0) {
       throw new Error(`No integrations for ${nameWithOwner}`)
@@ -45,6 +48,7 @@ export default {
       .table('Provider')
       .getAll(assigneeLogin, {index: 'providerUserId'})
       .filter({service: GITHUB, isActive: true})
+      .run()
     // .nth(0)('userId')
     // .default(null);
 
@@ -52,7 +56,10 @@ export default {
       throw new Error(`${assigneeLogin} does not have a GitHub integration with Parabol`)
     }
 
-    const tasks = await r.table('Task').getAll(integrationId, {index: 'integrationId'})
+    const tasks = await r
+      .table('Task')
+      .getAll(integrationId, {index: 'integrationId'})
+      .run()
 
     const maybeUpdateTask = (integration) => {
       const {teamId, userIds} = integration
@@ -67,12 +74,12 @@ export default {
       const {userId} = provider
       if (!task) {
         // TODO create a new task for this team
-        return false
+        return Promise.resolve(false as any)
       }
       const {content, status, tags, updatedAt} = task
       if (!userIds.includes(userId)) {
         // This user doesn't want to own the task, so ignore
-        return false
+        return Promise.resolve(false as any)
       }
       const teamMemberId = `${userId}::${teamId}`
       const updateObj = {

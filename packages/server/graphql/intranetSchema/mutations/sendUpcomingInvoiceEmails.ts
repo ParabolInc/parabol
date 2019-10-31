@@ -47,7 +47,7 @@ const sendUpcomingInvoiceEmails = {
     'send an email to organizations including all the users that were added in the current billing cycle',
   resolve: async (_source, _args, {authToken}) => {
     requireSU(authToken)
-    const r = getRethink()
+    const r = await getRethink()
     const now = new Date()
     const periodEndThresh = new Date(Date.now() + UPCOMING_INVOICE_EMAIL_WARNING)
     const lastSentThresh = new Date(Date.now() - UPCOMING_INVOICE_EMAIL_WARNING)
@@ -99,6 +99,7 @@ const sendUpcomingInvoiceEmails = {
           }))
       }))
       .coerceTo('array')
+      .run()
 
     if (organizations.length) {
       const details = getEmailDetails(organizations)
@@ -115,6 +116,7 @@ const sendUpcomingInvoiceEmails = {
         .update({
           upcomingInvoiceEmailSentAt: now
         })
+        .run()
       return details.map(({emailStr}) => emailStr)
     }
     return []

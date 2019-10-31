@@ -42,6 +42,7 @@ exports.up = async (r) => {
           .update({
             description: descriptions[idx]
           })
+          .run()
       })
     )
   } catch (e) {
@@ -51,7 +52,10 @@ exports.up = async (r) => {
 
 exports.down = async (r) => {
   try {
-    await r.table('CustomPhaseItem').replace((row) => row.without('description'))
+    await r
+      .table('CustomPhaseItem')
+      .replace((row) => row.without('description'))
+      .run()
   } catch (e) {
     /**/
   }

@@ -1,4 +1,3 @@
-
 exports.up = async (r) => {
   await r({
     updatedUsers: r.table('User').replace((doc) => {
@@ -17,7 +16,9 @@ exports.up = async (r) => {
         r
           .table('Organization')
           .get(org('id'))
-          .replace((row) => row.merge({tier: 'personal'}).without('stripeId', 'stripeSubscriptionId'))
+          .replace((row) =>
+            row.merge({tier: 'personal'}).without('stripeId', 'stripeSubscriptionId')
+          )
           .do(() => {
             return r
               .table('Team')
@@ -44,7 +45,7 @@ exports.up = async (r) => {
           })
       )
     })
-  })
+  }).run()
 }
 
 exports.down = async () => {

@@ -20,18 +20,18 @@ export default {
       type: new GraphQLNonNull(GraphQLFloat)
     }
   },
-  async resolve (
-    source,
+  async resolve(
+    _source,
     {meetingId, stageId, sortOrder},
     {authToken, dataLoader, socketId: mutatorId}
   ) {
-    const r = getRethink()
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const meeting = await r.table('NewMeeting').get(meetingId)
+    const meeting = await r.table('NewMeeting').get(meetingId).run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
@@ -59,7 +59,7 @@ export default {
       .get(meetingId)
       .update({
         phases
-      })
+      }).run()
 
     const data = {
       meetingId,

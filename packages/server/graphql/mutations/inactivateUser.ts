@@ -7,6 +7,8 @@ import InactivateUserPayload from '../types/InactivateUserPayload'
 import standardError from '../../utils/standardError'
 import {TierEnum} from 'parabol-client/types/graphql'
 import {InvoiceItemType, Threshold} from 'parabol-client/types/constEnums'
+import User from '../../database/types/User'
+import Organization from '../../database/types/Organization'
 
 export default {
   type: InactivateUserPayload,
@@ -17,8 +19,8 @@ export default {
       description: 'the user to pause'
     }
   },
-  async resolve (_source, {userId}, {authToken}) {
-    const r = getRethink()
+  async resolve(_source, {userId}, {authToken}) {
+    const r = await getRethink()
     const viewerId = getUserId(authToken)
     // AUTH
     if (!(await isOrgLeaderOfUser(authToken, userId))) {
@@ -27,8 +29,8 @@ export default {
 
     // VALIDATION
     const {user, orgs} = await r({
-      user: r.table('User').get(userId),
-      orgs: r
+      user: (r.table('User').get(userId) as unknown) as User,
+      orgs: (r
         .table('OrganizationUser')
         .getAll(userId, {index: 'userId'})
         .filter({removedAt: null})('orgId')
@@ -38,8 +40,8 @@ export default {
             .table('Organization')
             .getAll(r.args(orgIds), {index: 'id'})
             .coerceTo('array')
-        })
-    })
+        }) as unknown) as Organization[]
+    }).run()
     if (user.inactive) {
       return standardError(new Error('User already inactivated'), {userId: viewerId})
     }
@@ -47,9 +49,9 @@ export default {
     const hookPromises = orgs.map((orgDoc) => {
       const {periodStart, periodEnd, stripeSubscriptionId, tier} = orgDoc
       // TODO see if this is OK for enterprise
-      if (tier === TierEnum.personal) return undefined
-      const periodStartInSeconds = toEpochSeconds(periodStart)
-      const periodEndInSeconds = toEpochSeconds(periodEnd)
+      if (tier === TierEnum.personal) return undefined as any
+      const periodStartInSeconds = toEpochSeconds(periodStart!)
+      const periodEndInSeconds = toEpochSeconds(periodEnd!)
       return r
         .table('InvoiceItemHook')
         .between(periodStartInSeconds, periodEndInSeconds, {
@@ -63,7 +65,7 @@ export default {
         .count()
         .run()
     })
-    const pausesByOrg = await Promise.all(hookPromises) as number[]
+    const pausesByOrg = (await Promise.all(hookPromises)) as number[]
     const triggeredPauses = Math.max(...pausesByOrg)
     if (triggeredPauses >= Threshold.MAX_MONTHLY_PAUSES) {
       return standardError(new Error('Max monthly pauses exceeded for this user'), {

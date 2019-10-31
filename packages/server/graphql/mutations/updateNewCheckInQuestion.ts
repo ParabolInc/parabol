@@ -20,19 +20,19 @@ export default {
       description: "The Team's new Check-in question"
     }
   },
-  async resolve (
-    source,
+  async resolve(
+    _source,
     {meetingId, checkInQuestion},
     {authToken, dataLoader, socketId: mutatorId}
   ) {
-    const r = getRethink()
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const now = new Date()
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const meeting = await r.table('NewMeeting').get(meetingId)
+    const meeting = await r.table('NewMeeting').get(meetingId).run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
@@ -52,7 +52,7 @@ export default {
       .update({
         phases,
         updatedAt: now
-      })
+      }).run()
 
     const data = {meetingId}
     publish(TEAM, teamId, UpdateNewCheckInQuestionPayload, data, subOptions)

@@ -19,12 +19,12 @@ const setPhaseFocus = {
       description: 'The currently focused phase item'
     }
   },
-  async resolve (
-    source,
+  async resolve(
+    _source,
     {meetingId, focusedPhaseItemId},
     {authToken, dataLoader, socketId: mutatorId}
   ) {
-    const r = getRethink()
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
 
@@ -33,7 +33,7 @@ const setPhaseFocus = {
     const meeting = await r
       .table('NewMeeting')
       .get(meetingId)
-      .default(null)
+      .default(null).run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, facilitatorUserId, phases, teamId} = meeting
     if (endedAt) return standardError(new Error('Meeting already completed'), {userId: viewerId})
@@ -54,7 +54,7 @@ const setPhaseFocus = {
     await r
       .table('NewMeeting')
       .get(meetingId)
-      .update(meeting)
+      .update(meeting).run()
     const data = {meetingId}
     publish(TEAM, teamId, SetPhaseFocusPayload, data, subOptions)
     return data

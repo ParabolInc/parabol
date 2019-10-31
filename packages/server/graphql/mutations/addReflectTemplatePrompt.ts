@@ -16,11 +16,14 @@ const addReflectTemplatePrompt = {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve (_source, {templateId}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink()
+  async resolve(_source, {templateId}, {authToken, dataLoader, socketId: mutatorId}) {
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const template = await r.table('ReflectTemplate').get(templateId)
+    const template = await r
+      .table('ReflectTemplate')
+      .get(templateId)
+      .run()
     const viewerId = getUserId(authToken)
 
     // AUTH
@@ -37,6 +40,7 @@ const addReflectTemplatePrompt = {
         templateId,
         isActive: true
       })
+      .run()
     if (activePrompts.length >= 5) {
       return standardError(new Error('Too many prompts'), {userId: viewerId})
     }
@@ -45,7 +49,10 @@ const addReflectTemplatePrompt = {
     const sortOrder = Math.max(...activePrompts.map((prompt) => prompt.sortOrder)) + 1 + dndNoise()
     const phaseItem = new Prompt(template, sortOrder, `New prompt #${activePrompts.length + 1}`, '')
 
-    await r.table('CustomPhaseItem').insert(phaseItem)
+    await r
+      .table('CustomPhaseItem')
+      .insert(phaseItem)
+      .run()
 
     const promptId = phaseItem.id
     const data = {promptId}

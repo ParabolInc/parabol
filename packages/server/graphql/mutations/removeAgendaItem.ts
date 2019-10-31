@@ -17,8 +17,8 @@ export default {
       description: 'The agenda item unique id'
     }
   },
-  async resolve (_source, {agendaItemId}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink()
+  async resolve(_source, {agendaItemId}, {authToken, dataLoader, socketId: mutatorId}) {
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
@@ -36,6 +36,7 @@ export default {
       .get(agendaItemId)
       .delete({returnChanges: true})('changes')(0)('old_val')
       .default(null)
+      .run()
     if (!agendaItem) {
       return standardError(new Error('Agenda item not found'), {userId: viewerId})
     }

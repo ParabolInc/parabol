@@ -1,11 +1,14 @@
 exports.up = async (r) => {
   try {
-    await r.tableCreate('SAML')
+    await r.tableCreate('SAML').run()
   } catch (e) {
     console.log(e)
   }
   try {
-    await r.table('SAML').indexCreate('domain')
+    await r
+      .table('SAML')
+      .indexCreate('domain')
+      .run()
   } catch (e) {
     console.log(e)
   }
@@ -13,7 +16,7 @@ exports.up = async (r) => {
 
 exports.down = async (r) => {
   try {
-    await r.tableDrop('SAML')
+    await r.tableDrop('SAML').run()
   } catch (e) {
     console.log(e)
   }

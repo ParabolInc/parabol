@@ -12,8 +12,8 @@ export default {
       description: 'the team to hide the agenda for'
     }
   },
-  async resolve (source, {teamId}, {authToken}) {
-    const r = getRethink()
+  async resolve(_source, {teamId}, {authToken}) {
+    const r = await getRethink()
 
     // AUTH
     // TODO return proper payload
@@ -32,6 +32,6 @@ export default {
             .not()
         }),
         {returnChanges: true}
-      )('changes')(0)('new_val')
+      )('changes')(0)('new_val').run()
   }
 }

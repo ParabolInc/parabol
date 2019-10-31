@@ -2,10 +2,11 @@ import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../../database/rethinkDriver'
 import standardError from '../../../utils/standardError'
 import {getUserId} from '../../../utils/authorization'
+import AuthToken from '../../../database/types/AuthToken'
 
-const safelyWithdrawVote = async (authToken, meetingId, userId, reflectionGroupId) => {
+const safelyWithdrawVote = async (authToken: AuthToken, meetingId: string, userId: string, reflectionGroupId: string) => {
   const meetingMemberId = toTeamMemberId(meetingId, userId)
-  const r = getRethink()
+  const r = await getRethink()
   const now = new Date()
   const viewerId = getUserId(authToken)
   const isVoteRemovedFromGroup = await r
@@ -28,7 +29,7 @@ const safelyWithdrawVote = async (authToken, meetingId, userId, reflectionGroupI
         {}
       )
     })('replaced')
-    .eq(1)
+    .eq(1).run()
   if (!isVoteRemovedFromGroup) {
     return standardError(new Error('Already removed vote'), {userId: viewerId})
   }
@@ -38,7 +39,7 @@ const safelyWithdrawVote = async (authToken, meetingId, userId, reflectionGroupI
     .update((member) => ({
       updatedAt: now,
       votesRemaining: member('votesRemaining').add(1)
-    }))
+    })).run()
   return undefined
 }
 

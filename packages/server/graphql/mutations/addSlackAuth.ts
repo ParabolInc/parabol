@@ -16,11 +16,12 @@ const upsertNotifications = async (
   teamChannelId: string,
   botChannelId: string
 ) => {
-  const r = getRethink()
+  const r = await getRethink()
   const existingNotifications = await r
     .table('SlackNotification')
     .getAll(viewerId, {index: 'userId'})
     .filter({teamId})
+    .run()
   const teamEvents = [
     'meetingStart',
     'meetingEnd',
@@ -41,7 +42,10 @@ const upsertNotifications = async (
       id: (existingNotification && existingNotification.id) || undefined
     })
   })
-  await r.table('SlackNotification').insert(upsertableNotifications, {conflict: 'replace'})
+  await r
+    .table('SlackNotification')
+    .insert(upsertableNotifications, {conflict: 'replace'})
+    .run()
 }
 
 const upsertAuth = async (
@@ -51,13 +55,14 @@ const upsertAuth = async (
   slackUserName: string,
   slackRes: NonNullable<SlackManager['response']>
 ) => {
-  const r = getRethink()
+  const r = await getRethink()
   const existingAuth = (await r
     .table('SlackAuth')
     .getAll(viewerId, {index: 'userId'})
     .filter({teamId})
     .nth(0)
-    .default(null)) as SlackAuth | null
+    .default(null)
+    .run()) as SlackAuth | null
   const slackAuth = new SlackAuth({
     id: (existingAuth && existingAuth.id) || undefined,
     createdAt: (existingAuth && existingAuth.createdAt) || undefined,
@@ -72,7 +77,10 @@ const upsertAuth = async (
     botUserId: slackRes.bot.bot_user_id,
     botAccessToken: slackRes.bot.bot_access_token
   })
-  await r.table('SlackAuth').insert(slackAuth, {conflict: 'replace'})
+  await r
+    .table('SlackAuth')
+    .insert(slackAuth, {conflict: 'replace'})
+    .run()
   return slackAuth.id
 }
 

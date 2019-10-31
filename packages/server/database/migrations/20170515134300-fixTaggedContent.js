@@ -1,5 +1,8 @@
 exports.up = async (r) => {
-  const projects = await r.table('Project').pluck('id', 'content', 'tags')
+  const projects = await r
+    .table('Project')
+    .pluck('id', 'content', 'tags')
+    .run()
   const promises = []
   projects.forEach((project) => {
     let contentWithTag = project.content || ''
@@ -14,6 +17,7 @@ exports.up = async (r) => {
           .table('Project')
           .get(project.id)
           .update({content: contentWithTag})
+          .run()
       )
     }
   })

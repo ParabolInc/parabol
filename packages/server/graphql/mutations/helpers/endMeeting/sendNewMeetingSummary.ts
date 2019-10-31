@@ -4,15 +4,16 @@ import newMeetingSummaryEmailCreator from '../../../../../client/modules/email/c
 import Meeting from '../../../../database/types/Meeting'
 import {GQLContext} from '../../../graphql'
 
-export default async function sendNewMeetingSummary (newMeeting: Meeting, context: GQLContext) {
+export default async function sendNewMeetingSummary(newMeeting: Meeting, context: GQLContext) {
   const {id: meetingId, summarySentAt} = newMeeting
   if (summarySentAt) return
   const now = new Date()
-  const r = getRethink()
+  const r = await getRethink()
   await r
     .table('NewMeeting')
     .get(meetingId)
     .update({summarySentAt: now})
+    .run()
   const {dataLoader} = context
   const meetingMembers = await dataLoader.get('meetingMembersByMeetingId').load(meetingId)
   const userIds = meetingMembers.map(({userId}) => userId)

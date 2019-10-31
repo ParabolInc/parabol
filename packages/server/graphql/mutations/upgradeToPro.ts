@@ -24,12 +24,12 @@ export default {
       description: 'The token that came back from stripe'
     }
   },
-  async resolve (
+  async resolve(
     _source,
     {orgId, stripeToken},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = getRethink()
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
@@ -37,7 +37,10 @@ export default {
     const viewerId = getUserId(authToken)
 
     // VALIDATION
-    const {stripeSubscriptionId: startingSubId} = await r.table('Organization').get(orgId)
+    const {stripeSubscriptionId: startingSubId} = await r
+      .table('Organization')
+      .get(orgId)
+      .run()
 
     if (startingSubId) {
       return standardError(new Error('Already a pro organization'), {userId: viewerId})
@@ -56,10 +59,12 @@ export default {
     const activeMeetings = await hideConversionModal(orgId, dataLoader)
     const meetingIds = activeMeetings.map(({id}) => id)
 
-    await r.table('OrganizationUser')
+    await r
+      .table('OrganizationUser')
       .getAll(viewerId, {index: 'userId'})
       .filter({removedAt: null, orgId})
       .update({role: OrgUserRole.BILLING_LEADER})
+      .run()
 
     const teams = await dataLoader.get('teamsByOrgId').load(orgId)
     const teamIds = teams.map(({id}) => id)

@@ -1,9 +1,11 @@
-const updateBlockEntityRanges = (blocks, updatedKeyMap) => {
-  const nextBlocks = []
+import {RawDraftContentBlock, RawDraftContentState, RawDraftEntity, RawDraftEntityRange} from 'draft-js'
+
+const updateBlockEntityRanges = (blocks: RawDraftContentBlock[], updatedKeyMap: any) => {
+  const nextBlocks = [] as RawDraftContentBlock[]
   for (let ii = 0; ii < blocks.length; ii++) {
     const block = blocks[ii]
     const {entityRanges} = block
-    const nextEntityRanges = []
+    const nextEntityRanges = [] as RawDraftEntityRange[]
     for (let jj = 0; jj < entityRanges.length; jj++) {
       const entityRange = entityRanges[jj]
       const nextKey = updatedKeyMap[entityRange.key]
@@ -20,14 +22,14 @@ const updateBlockEntityRanges = (blocks, updatedKeyMap) => {
  * Removes the underlying entity but keeps the text in place
  * Useful for e.g. removing a mention but keeping the name
  */
-const removeEntityKeepText = (rawContent, eqFn) => {
+const removeEntityKeepText = (rawContent: RawDraftContentState, eqFn: (entity: any) => boolean) => {
   const {blocks, entityMap} = rawContent
-  const nextEntityMap = {}
+  const nextEntityMap = {} as RawDraftContentState['entityMap']
   // oldKey: newKey. null is a remove sentinel
   const updatedKeyMap = {}
-  const removedEntities = []
+  const removedEntities = [] as RawDraftEntity[]
   // I'm not really sure how draft-js assigns keys, so I just reuse what they give me FIFO
-  const releasedKeys = []
+  const releasedKeys = [] as string[]
   const entityMapKeys = Object.keys(entityMap)
   for (let ii = 0; ii < entityMapKeys.length; ii++) {
     const key = entityMapKeys[ii]
@@ -37,7 +39,7 @@ const removeEntityKeepText = (rawContent, eqFn) => {
       updatedKeyMap[key] = null
       releasedKeys.push(key)
     } else {
-      const nextKey = releasedKeys.length ? releasedKeys.shift() : key
+      const nextKey = releasedKeys.length ? releasedKeys.shift()! : key
       nextEntityMap[nextKey] = entity
       updatedKeyMap[key] = nextKey
     }

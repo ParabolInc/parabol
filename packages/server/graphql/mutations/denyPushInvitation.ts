@@ -24,7 +24,7 @@ export default {
     perMinute: 10,
     perHour: 20
   })(async (_source, {userId, teamId}, {authToken, socketId: mutatorId}: GQLContext) => {
-    const r = getRethink()
+    const r = await getRethink()
     const viewerId = getUserId(authToken)
     const now = new Date()
 
@@ -38,7 +38,8 @@ export default {
       .table('PushInvitation')
       .getAll(userId, {index: 'userId'})
       .filter({teamId})
-      .nth(0)) as PushInvitation | null
+      .nth(0)
+      .run()) as PushInvitation | null
 
     if (!teamBlacklist) {
       return standardError(new Error('User did not request push invitation'), {userId: viewerId})
@@ -49,6 +50,7 @@ export default {
       .table('PushInvitation')
       .get(teamBlacklist.id)
       .update({denialCount: teamBlacklist.denialCount + 1, lastDenialAt: now})
+      .run()
 
     const data = {teamId, userId}
     publish(TEAM, teamId, DenyPushInvitationPayload, data, {mutatorId})

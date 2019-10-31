@@ -15,7 +15,7 @@ const ActionMeetingMember = new GraphQLObjectType<IActionMeetingMember, GQLConte
       type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(Task))),
       description: 'The tasks marked as done in the meeting',
       resolve: async ({meetingId, userId}) => {
-        const r = getRethink()
+        const r = await getRethink()
         return r
           .table('Task')
           .getAll(userId, {index: 'userId'})
@@ -25,6 +25,7 @@ const ActionMeetingMember = new GraphQLObjectType<IActionMeetingMember, GQLConte
               .contains('private')
               .not()
           )
+          .run()
       }
     },
     tasks: {

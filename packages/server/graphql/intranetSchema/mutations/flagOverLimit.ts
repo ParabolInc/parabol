@@ -18,7 +18,7 @@ const flagOverLimit = {
     }
   },
   resolve: async (_source, {copy, orgId}, {authToken, dataLoader}: GQLContext) => {
-    const r = getRethink()
+    const r = await getRethink()
 
     // AUTH
     requireSU(authToken)
@@ -36,6 +36,7 @@ const flagOverLimit = {
       .update({
         overLimitCopy: copy || null
       })
+      .run()
     return {userIds}
   }
 }

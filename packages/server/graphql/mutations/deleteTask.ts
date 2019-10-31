@@ -16,14 +16,14 @@ export default {
       description: 'The taskId to delete'
     }
   },
-  async resolve (source, {taskId}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink()
+  async resolve(_source, {taskId}, {authToken, dataLoader, socketId: mutatorId}) {
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const task = await r.table('Task').get(taskId)
+    const task = await r.table('Task').get(taskId).run()
     if (!task) {
       return standardError(new Error('Task not found'), {userId: viewerId})
     }
@@ -48,8 +48,8 @@ export default {
         .table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
         .filter({isNotRemoved: true})('userId')
-        .coerceTo('array')
-    })
+        .coerceTo('array') as unknown as string[]
+    }).run()
     const {content, tags, userId: taskUserId} = task
 
     // handle notifications
@@ -63,7 +63,7 @@ export default {
         type: TASK_INVOLVES
       })
       .delete({returnChanges: true})('changes')('old_val')
-      .default([])
+      .default([]).run()
 
     const data = {task, notifications: clearedNotifications}
     clearedNotifications.forEach((notification) => {

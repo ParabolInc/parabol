@@ -6,9 +6,18 @@ exports.up = async (r) => {
     [AGENDA_ID_FIELD]: null
   }
   const queries = [
-    r.table('Action').update(withAgendaId),
-    r.table('Action').indexCreate('teamMemberId'),
-    r.table('Action').indexCreate('agendaId'),
+    r
+      .table('Action')
+      .update(withAgendaId)
+      .run(),
+    r
+      .table('Action')
+      .indexCreate('teamMemberId')
+      .run(),
+    r
+      .table('Action')
+      .indexCreate('agendaId')
+      .run(),
     r.table('Project').update(withAgendaId)
   ]
   await Promise.all(queries)
@@ -17,10 +26,22 @@ exports.up = async (r) => {
 exports.down = async (r) => {
   const withoutAgendaId = r.row.without(AGENDA_ID_FIELD)
   const queries = [
-    r.table('Action').replace(withoutAgendaId),
-    r.table('Action').indexDrop('teamMemberId'),
-    r.table('Action').indexDrop('agendaId'),
-    r.table('Project').replace(withoutAgendaId)
+    r
+      .table('Action')
+      .replace(withoutAgendaId)
+      .run(),
+    r
+      .table('Action')
+      .indexDrop('teamMemberId')
+      .run(),
+    r
+      .table('Action')
+      .indexDrop('agendaId')
+      .run(),
+    r
+      .table('Project')
+      .replace(withoutAgendaId)
+      .run()
   ]
   await Promise.all(queries)
 }

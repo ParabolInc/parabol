@@ -54,8 +54,8 @@ const login = {
     }
   },
 
-  async resolve (_source, {auth0Token, isOrganic, segmentId}, {dataLoader}) {
-    const r = getRethink()
+  async resolve(_source, {auth0Token, isOrganic, segmentId}, {dataLoader}) {
+    const r = await getRethink()
     const now = new Date()
 
     // VALIDATION
@@ -69,10 +69,10 @@ const login = {
     }
     const viewerId = getUserId(authToken)
 
-    const existingUser = await dataLoader.get('users').load(viewerId) as User | null
+    const existingUser = (await dataLoader.get('users').load(viewerId)) as User | null
 
     // RESOLUTION
-    if (existingUser){
+    if (existingUser) {
       // LOGIN
       /*
        * The segment docs are inconsistent, and warn against sending
@@ -109,8 +109,11 @@ const login = {
       .getAll(userInfo.email, {index: 'email'})
       .nth(0)
       .default(null)
+      .run()
     if (existingUserWithSameEmail) {
-      return standardError(new Error(`user_exists_${existingUserWithSameEmail.identities[0].provider}`))
+      return standardError(
+        new Error(`user_exists_${existingUserWithSameEmail.identities[0].provider}`)
+      )
     }
     const preferredName =
       userInfo.nickname.length === 1 ? userInfo.nickname.repeat(2) : userInfo.nickname
@@ -136,7 +139,7 @@ const login = {
     await r({
       user: r.table('User').insert(newUser),
       event: r.table('TimelineEvent').insert(joinEvent)
-    })
+    }).run()
 
     let returnAuthToken
     if (isOrganic) {
@@ -153,7 +156,10 @@ const login = {
       await Promise.all([
         createTeamAndLeader(viewerId, validNewTeam),
         addSeedTasks(viewerId, teamId),
-        r.table('SuggestedAction').insert(new SuggestedActionInviteYourTeam({userId: newUser.id, teamId}))
+        r
+          .table('SuggestedAction')
+          .insert(new SuggestedActionInviteYourTeam({userId: newUser.id, teamId}))
+          .run()
       ])
       // ensure the return auth token has the correct tms, if !isOrganic, acceptTeamInvite will return its own with the proper tms
       returnAuthToken = encodeAuthToken(new AuthToken({...authToken, tms: [teamId]}))
@@ -167,10 +173,13 @@ const login = {
       // the meetings goe away if team is deleted
     } else {
       returnAuthToken = auth0Token
-      await r.table('SuggestedAction').insert([
-        new SuggestedActionTryTheDemo({userId: newUser.id}),
-        new SuggestedActionCreateNewTeam({userId: newUser.id})
-      ])
+      await r
+        .table('SuggestedAction')
+        .insert([
+          new SuggestedActionTryTheDemo({userId: newUser.id}),
+          new SuggestedActionCreateNewTeam({userId: newUser.id})
+        ])
+        .run()
       // create run a demo cta and create a team cta
       // it goes away after they click it
     }

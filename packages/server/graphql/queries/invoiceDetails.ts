@@ -14,8 +14,8 @@ export default {
       description: 'The id of the invoice'
     }
   },
-  async resolve (_source, {invoiceId}, {authToken, dataLoader}) {
-    const r = getRethink()
+  async resolve(_source, {invoiceId}, {authToken, dataLoader}) {
+    const r = await getRethink()
     const now = new Date()
 
     // AUTH
@@ -25,6 +25,7 @@ export default {
       .table('Invoice')
       .get(invoiceId)
       .default(null)
+      .run()
     const orgId = (currentInvoice && currentInvoice.orgId) || invoiceId.substring(9) // remove 'upcoming_'
     if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
       standardError(new Error('Not organization lead'), {userId: viewerId})

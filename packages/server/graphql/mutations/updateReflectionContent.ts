@@ -28,15 +28,22 @@ export default {
       description: 'A stringified draft-js document containing thoughts'
     }
   },
-  async resolve (_source, {reflectionId, content}, {authToken, dataLoader, socketId: mutatorId}: GQLContext) {
-    const r = getRethink()
+  async resolve(
+    _source,
+    {reflectionId, content},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const now = new Date()
     const subOptions = {operationId, mutatorId}
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const reflection = await r.table('RetroReflection').get(reflectionId) as Reflection | null
+    const reflection = await r
+      .table<Reflection>('RetroReflection')
+      .get(reflectionId)
+      .run()
     if (!reflection) {
       return standardError(new Error('Reflection not found'), {userId: viewerId})
     }
@@ -59,8 +66,11 @@ export default {
 
     // RESOLUTION
     const plaintextContent = extractTextFromDraftString(normalizedContent)
-    const isVeryDifferent =  stringSimilarity.compareTwoStrings(plaintextContent, reflection.plaintextContent) < 0.9
-    const entities = isVeryDifferent ? await getReflectionEntities(plaintextContent) : reflection.entities
+    const isVeryDifferent =
+      stringSimilarity.compareTwoStrings(plaintextContent, reflection.plaintextContent) < 0.9
+    const entities = isVeryDifferent
+      ? await getReflectionEntities(plaintextContent)
+      : reflection.entities
     await r
       .table('RetroReflection')
       .get(reflectionId)
@@ -70,10 +80,13 @@ export default {
         plaintextContent,
         updatedAt: now
       })
+      .run()
 
-    const reflectionsInGroup = await r.table('RetroReflection')
+    const reflectionsInGroup = (await r
+      .table('RetroReflection')
       .getAll(reflectionGroupId, {index: 'reflectionGroupId'})
-      .filter({isActive: true}) as Reflection[]
+      .filter({isActive: true})
+      .run()) as Reflection[]
 
     const newTitle = getGroupSmartTitle(reflectionsInGroup)
     await updateSmartGroupTitle(reflectionGroupId, newTitle)

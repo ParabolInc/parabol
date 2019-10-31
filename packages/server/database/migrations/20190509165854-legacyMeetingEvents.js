@@ -15,6 +15,7 @@ exports.up = async (r) => {
       .table('AgendaItem')
       .filter({isActive: false})
       .pluck('id', 'createdAt')
+      .run()
     const agendaItemswithMeetingId = completedAgendaItems.map((agendaItem) => {
       const teamMeetings = meetings.filter(
         (meeting) => meeting.teamId === agendaItem.teamId && meeting.endedAt >= agendaItem.createdAt
@@ -107,7 +108,7 @@ exports.up = async (r) => {
       }),
       meetingMembers: r.table('MeetingMember').insert(meetingMemberInserts),
       meetings: r.table('NewMeeting').insert(meetingInserts)
-    })
+    }).run()
   } catch (e) {
     console.log(e)
   }
@@ -121,6 +122,7 @@ exports.down = async (r) => {
       .replace((row) => {
         return row.merge({meetingId: row('legacyMeetingId')}).without('legacyMeetingId')
       })
+      .run()
   } catch (e) {
     console.log(e)
   }

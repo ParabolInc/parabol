@@ -30,14 +30,17 @@ export default {
     {nameWithOwner, taskId}: ICreateGitHubIssueOnMutationArguments,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
-    const r = getRethink()
+    const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const task = await r.table('Task').get(taskId)
+    const task = await r
+      .table('Task')
+      .get(taskId)
+      .run()
     if (!task) {
       return standardError(new Error('Task not found'), {userId: viewerId})
     }
@@ -66,6 +69,7 @@ export default {
       .table('Provider')
       .getAll(teamId, {index: 'teamId'})
       .filter({service: GITHUB, isActive: true})
+      .run()
 
     const viewerAuth = providers.find((provider) => provider.userId === viewerId)
     const assigneeAuth = providers.find((provider) => provider.userId === userId)
@@ -140,6 +144,7 @@ export default {
         },
         updatedAt: now
       })
+      .run()
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const data = {taskId}
     teamMembers.forEach(({userId}) => {

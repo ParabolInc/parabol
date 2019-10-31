@@ -17,8 +17,8 @@ export default {
       description: 'the new team member that will be the leader'
     }
   },
-  async resolve (source, {teamMemberId}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink()
+  async resolve(_source, {teamMemberId}, {authToken, dataLoader, socketId: mutatorId}) {
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
@@ -31,7 +31,7 @@ export default {
     }
 
     // VALIDATION
-    const promoteeOnTeam = await r.table('TeamMember').get(teamMemberId)
+    const promoteeOnTeam = await r.table('TeamMember').get(teamMemberId).run()
     if (!promoteeOnTeam || !promoteeOnTeam.isNotRemoved) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
@@ -50,7 +50,7 @@ export default {
         .update({
           isLead: true
         })
-    })
+    }).run()
 
     const data = {teamId, oldLeaderId: myTeamMemberId, newLeaderId: teamMemberId}
     publish(TEAM, teamId, PromoteToTeamLeadPayload, data, subOptions)

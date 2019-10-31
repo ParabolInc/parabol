@@ -1,14 +1,23 @@
 exports.up = async (r) => {
   try {
-    await Promise.all([r.tableCreate('AtlassianAuth')])
+    await Promise.all([r.tableCreate('AtlassianAuth').run()])
   } catch (e) {
     /**/
   }
   try {
     await Promise.all([
-      r.table('AtlassianAuth').indexCreate('userId'),
-      r.table('AtlassianAuth').indexCreate('teamId'),
-      r.table('AtlassianAuth').indexCreate('accountId')
+      r
+        .table('AtlassianAuth')
+        .indexCreate('userId')
+        .run(),
+      r
+        .table('AtlassianAuth')
+        .indexCreate('teamId')
+        .run(),
+      r
+        .table('AtlassianAuth')
+        .indexCreate('accountId')
+        .run()
     ])
   } catch (e) {
     /**/
@@ -17,7 +26,7 @@ exports.up = async (r) => {
 
 exports.down = async (r) => {
   try {
-    await Promise.all([r.tableDrop('AtlassianAuth')])
+    await Promise.all([r.tableDrop('AtlassianAuth').run()])
   } catch (e) {
     /**/
   }

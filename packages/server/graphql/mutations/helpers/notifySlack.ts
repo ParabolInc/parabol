@@ -47,7 +47,7 @@ const notifySlack = async (
   teamId: string,
   slackText: string
 ) => {
-  const r = getRethink()
+  const r = await getRethink()
   const slackDetails = await getSlackDetails(event, teamId, dataLoader)
   // for each slack channel, send a notification
   for (let i = 0; i < slackDetails.length; i++) {
@@ -67,9 +67,12 @@ const notifySlack = async (
           .update({
             channelId: null
           })
+          .run()
       } else if (error === 'not_in_channel' || error === 'invalid_auth') {
         console.log('Slack Channel Notification Error:', error)
-        sendToSentry(new Error(`Slack Channel Notification Error: ${teamId}, ${channelId}, ${auth.id}`))
+        sendToSentry(
+          new Error(`Slack Channel Notification Error: ${teamId}, ${channelId}, ${auth.id}`)
+        )
       }
     }
   }
@@ -90,9 +93,7 @@ export const startSlackMeeting = async (
 export const endSlackMeeting = async (meetingId, teamId, dataLoader: DataLoaderWorker) => {
   const team = await dataLoader.get('teams').load(teamId)
   const summaryUrl = makeAppLink(`new-summary/${meetingId}`)
-  const slackText = `The meeting for ${
-    team.name
-  } has ended!\n Check out the summary here: ${summaryUrl}`
+  const slackText = `The meeting for ${team.name} has ended!\n Check out the summary here: ${summaryUrl}`
   notifySlack('meetingEnd', dataLoader, teamId, slackText).catch(console.log)
 }
 
@@ -155,9 +156,7 @@ export const notifySlackTimeLimitStart = async (
   const date = formatWeekday(scheduledEndTime)
   const time = formatTime(scheduledEndTime)
   const phaseLabel = phaseLabelLookup[phaseType]
-  const slackText = `The ${phaseLabel} phase for your ${meetingLabel} meeting on ${
-    team.name
-  } has begun! You have until ${time} on ${date} to complete it. Check it out: ${meetingUrl}`
+  const slackText = `The ${phaseLabel} phase for your ${meetingLabel} meeting on ${team.name} has begun! You have until ${time} on ${date} to complete it. Check it out: ${meetingUrl}`
   const slackDetails = await getSlackDetails('MEETING_STAGE_TIME_LIMIT_START', teamId, dataLoader)
   slackDetails.forEach((slackDetail) => {
     upsertSlackMessage(slackDetail, slackText).catch(console.error)

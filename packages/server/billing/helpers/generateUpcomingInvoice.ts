@@ -6,12 +6,13 @@ import getUpcomingInvoiceId from '../../utils/getUpcomingInvoiceId'
 import StripeManager from '../../utils/StripeManager'
 
 const generateUpcomingInvoice = async (orgId) => {
-  const r = getRethink()
+  const r = await getRethink()
   const invoiceId = getUpcomingInvoiceId(orgId)
   const {stripeId, stripeSubscriptionId} = await r
     .table('Organization')
     .get(orgId)
     .pluck('stripeId', 'stripeSubscriptionId')
+    .run()
   const manager = new StripeManager()
   const {stripeLineItems, upcomingInvoice} = await resolvePromiseObj({
     stripeLineItems: fetchAllLines('upcoming', stripeId),

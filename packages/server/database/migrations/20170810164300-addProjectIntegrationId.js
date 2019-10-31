@@ -2,8 +2,12 @@ exports.up = async (r) => {
   const indices = [
     r
       .table('Project')
-      .indexCreate('integrationId', (project) => project('integration')('integrationId')),
-    r.table('GitHubIntegration').indexCreate('nameWithOwner')
+      .indexCreate('integrationId', (project) => project('integration')('integrationId'))
+      .run(),
+    r
+      .table('GitHubIntegration')
+      .indexCreate('nameWithOwner')
+      .run()
   ]
   try {
     await Promise.all(indices)
@@ -14,8 +18,14 @@ exports.up = async (r) => {
 
 exports.down = async (r) => {
   const indices = [
-    r.table('Project').indexDrop('integrationId'),
-    r.table('GitHubIntegration').indexDrop('nameWithOwner')
+    r
+      .table('Project')
+      .indexDrop('integrationId')
+      .run(),
+    r
+      .table('GitHubIntegration')
+      .indexDrop('nameWithOwner')
+      .run()
   ]
   try {
     await Promise.all(indices)

@@ -9,7 +9,7 @@ const promoteFirstTeamMember = async (
   oldFacilitatorUserId: string,
   subOptions: SubOptions
 ) => {
-  const r = getRethink()
+  const r = await getRethink()
   const now = new Date()
   await r
     .table('NewMeeting')
@@ -33,6 +33,7 @@ const promoteFirstTeamMember = async (
       }),
       {nonAtomic: true}
     )
+    .run()
   const data = {meetingId, oldFacilitatorUserId}
   publish(TEAM, teamId, PromoteNewMeetingFacilitatorPayload, data, subOptions)
 }

@@ -17,7 +17,7 @@ console.error = jest.fn()
 describe('addOrg', () => {
   test('adds a new org with no invitees', async () => {
     // SETUP
-    const r = getRethink()
+    const r = await getRethink()
     const dynamicSerializer = new DynamicSerializer()
     const mockDB = new MockDB()
     const {organization, user} = await mockDB.init().organization(0)

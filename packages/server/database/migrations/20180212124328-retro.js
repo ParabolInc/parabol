@@ -4,28 +4,45 @@ import shortid from 'shortid'
 exports.up = async (r) => {
   try {
     await Promise.all([
-      r.tableCreate('CustomPhaseItem'),
-      r.tableCreate('NewMeeting'),
-      r.tableCreate('RetroThought'),
-      r.tableCreate('RetroThoughtGroup')
+      r.tableCreate('CustomPhaseItem').run(),
+      r.tableCreate('NewMeeting').run(),
+      r.tableCreate('RetroThought').run(),
+      r.tableCreate('RetroThoughtGroup').run()
     ])
   } catch (e) {
     // noop
   }
   try {
     await Promise.all([
-      r.table('CustomPhaseItem').indexCreate('teamId'),
-      r.table('NewMeeting').indexCreate('teamId'),
-      r.table('RetroThought').indexCreate('meetingId'),
-      r.table('RetroThought').indexCreate('thoughtGroupId'),
-      r.table('RetroThoughtGroup').indexCreate('meetingId')
+      r
+        .table('CustomPhaseItem')
+        .indexCreate('teamId')
+        .run(),
+      r
+        .table('NewMeeting')
+        .indexCreate('teamId')
+        .run(),
+      r
+        .table('RetroThought')
+        .indexCreate('meetingId')
+        .run(),
+      r
+        .table('RetroThought')
+        .indexCreate('thoughtGroupId')
+        .run(),
+      r
+        .table('RetroThoughtGroup')
+        .indexCreate('meetingId')
+        .run()
       // r.table('RetroThoughtGroup').indexCreate('teamId'),
     ])
   } catch (e) {
     // noop
   }
   try {
-    const teamIds = await r.table('Team')('id')
+    const teamIds = await r
+      .table('Team')('id')
+      .run()
     const inserts = []
     teamIds.forEach((teamId) => {
       inserts.push(
@@ -55,7 +72,10 @@ exports.up = async (r) => {
         }
       )
     })
-    await r.table('CustomPhaseItem').insert(inserts)
+    await r
+      .table('CustomPhaseItem')
+      .insert(inserts)
+      .run()
   } catch (e) {
     // noop
   }
@@ -64,10 +84,10 @@ exports.up = async (r) => {
 exports.down = async (r) => {
   try {
     await Promise.all([
-      r.tableDrop('CustomPhaseItem'),
-      r.tableDrop('NewMeeting'),
-      r.tableDrop('RetroThought'),
-      r.tableDrop('RetroThoughtGroup')
+      r.tableDrop('CustomPhaseItem').run(),
+      r.tableDrop('NewMeeting').run(),
+      r.tableDrop('RetroThought').run(),
+      r.tableDrop('RetroThoughtGroup').run()
     ])
   } catch (e) {
     // noop

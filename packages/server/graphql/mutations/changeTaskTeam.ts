@@ -22,8 +22,8 @@ export default {
       description: 'The new team to assign the task to'
     }
   },
-  async resolve (source, {taskId, teamId}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink()
+  async resolve(_source, {taskId, teamId}, {authToken, dataLoader, socketId: mutatorId}) {
+    const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -33,7 +33,7 @@ export default {
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    const task = await r.table('Task').get(taskId)
+    const task = await r.table('Task').get(taskId).run()
     if (!task) {
       return standardError(new Error('Task not found'), {userId: viewerId})
     }
@@ -68,7 +68,7 @@ export default {
       teamId,
       assigneeId: toTeamMemberId(teamId, task.userId)
     }
-    const {newTask} = await r({
+    await r({
       newTask: r
         .table('Task')
         .get(taskId)
@@ -91,7 +91,7 @@ export default {
             null
           )
         })
-    })
+    }).run()
 
     const mentioneeUserIdsToRemove = Array.from(
       new Set(removedEntities.map(({data}) => data.userId))
@@ -100,21 +100,21 @@ export default {
       mentioneeUserIdsToRemove.length === 0
         ? []
         : await r
-          .table('Notification')
-          .getAll(r.args(mentioneeUserIdsToRemove), {index: 'userIds'})
-          .filter({
-            taskId,
-            type: TASK_INVOLVES
-          })
-          .delete({returnChanges: true})('changes')('old_val')
-          .pluck('id', 'userIds')
-          .default([])
+            .table('Notification')
+            .getAll(r.args(mentioneeUserIdsToRemove), {index: 'userIds'})
+            .filter({
+              taskId,
+              type: TASK_INVOLVES
+            })
+            .delete({returnChanges: true})('changes')('old_val')
+            .pluck('id', 'userIds')
+            .default([]).run()
 
     const isPrivate = tags.includes('private')
     const data = {taskId, notificationsToRemove}
     const teamMembers = oldTeamMembers.concat(newTeamMembers)
     teamMembers.forEach(({userId}) => {
-      if (!isPrivate || userId === newTask.userId) {
+      if (!isPrivate || userId === task.userId) {
         publish(TASK, userId, ChangeTaskTeamPayload, data, subOptions)
       }
     })

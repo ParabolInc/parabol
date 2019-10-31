@@ -16,17 +16,24 @@ import shortid from 'shortid'
 
 exports.up = async (r) => {
   try {
-    await Promise.all([r.tableCreate('MeetingSettings')])
+    await Promise.all([r.tableCreate('MeetingSettings').run()])
   } catch (e) {
     // noop
   }
   try {
-    await Promise.all([r.table('MeetingSettings').indexCreate('teamId')])
+    await Promise.all([
+      r
+        .table('MeetingSettings')
+        .indexCreate('teamId')
+        .run()
+    ])
   } catch (e) {
     // noop
   }
   try {
-    const teamIds = await r.table('Team')('id')
+    const teamIds = await r
+      .table('Team')('id')
+      .run()
     const inserts = []
     teamIds.forEach((teamId) => {
       inserts.push(
@@ -44,7 +51,10 @@ exports.up = async (r) => {
         }
       )
     })
-    await r.table('MeetingSettings').insert(inserts)
+    await r
+      .table('MeetingSettings')
+      .insert(inserts)
+      .run()
   } catch (e) {
     // noop
   }
@@ -52,7 +62,7 @@ exports.up = async (r) => {
 
 exports.down = async (r) => {
   try {
-    await Promise.all([r.tableDrop('MeetingSettings')])
+    await Promise.all([r.tableDrop('MeetingSettings').run()])
   } catch (e) {
     // noop
   }

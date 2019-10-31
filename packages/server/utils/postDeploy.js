@@ -1,10 +1,13 @@
 import getRethink from '../database/rethinkDriver'
 
 const flushSocketConnections = async () => {
-  const r = getRethink()
-  return r.table('User').update({
-    connectedSockets: []
-  })
+  const r = await getRethink()
+  return r
+    .table('User')
+    .update({
+      connectedSockets: []
+    })
+    .run()
 }
 
 const storePersistedQueries = async () => {
@@ -15,16 +18,22 @@ const storePersistedQueries = async () => {
     query: queryMap[hash]
   }))
 
-  const r = getRethink()
-  const res = await r.table('QueryMap').insert(records, {conflict: 'replace'})
+  const r = await getRethink()
+  const res = await r
+    .table('QueryMap')
+    .insert(records, {conflict: 'replace'})
+    .run()
   console.log(`Added ${res.inserted} records to the queryMap`)
 }
 
 const postDeploy = async () => {
-  const r = getRethink()
+  const r = await getRethink()
   await flushSocketConnections()
   await storePersistedQueries()
-  await r.getPoolMaster().drain()
+  await r
+    .getPoolMaster()
+    .drain()
+    .run()
   process.exit()
 }
 

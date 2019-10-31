@@ -9,9 +9,15 @@ const storePersistedQueries = async () => {
     query: queryMap[hash]
   }))
 
-  const r = getRethink()
-  const res = await r.table('QueryMap').insert(records, {conflict: 'replace'})
-  r.getPoolMaster().drain()
+  const r = await getRethink()
+  const res = await r
+    .table('QueryMap')
+    .insert(records, {conflict: 'replace'})
+    .run()
+  const poolMaster = r.getPoolMaster()
+  if (poolMaster) {
+    await poolMaster.drain()
+  }
   fs.unlinkSync('packages/server/graphql/queryMap.json')
   console.log(`Added ${res.inserted} records to the queryMap`)
 }

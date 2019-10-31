@@ -24,7 +24,9 @@ exports.up = async (r) => {
   // invoiceCreated has been refactored so this migration won't work anymore, which is great. it served its purpose
   const handleInvoiceCreated = require('../../billing/handlers/invoiceCreated').default
   const stripeInvoices = await fetchAllInvoices()
-  const invoiceIdsInDB = await r.table('Invoice')('id')
+  const invoiceIdsInDB = await r
+    .table('Invoice')('id')
+    .run()
   const invoicesToHandle = stripeInvoices.filter((invoice) => !invoiceIdsInDB.includes(invoice.id))
   for (let i = 0; i < invoicesToHandle.length; i++) {
     const invoice = invoicesToHandle[i]

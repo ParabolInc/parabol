@@ -9,6 +9,9 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import AuthTokenPayload from '../types/AuthTokenPayload'
+import OrganizationUser from '../../database/types/OrganizationUser'
+import Notification from '../../database/types/Notification'
+import User from '../../database/types/User'
 
 const removeOrgUser = {
   type: RemoveOrgUserPayload,
@@ -24,7 +27,7 @@ const removeOrgUser = {
     }
   },
   async resolve(_source, {orgId, userId}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink()
+    const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -38,11 +41,15 @@ const removeOrgUser = {
     }
 
     // RESOLUTION
-    const teamIds = await r.table('Team').getAll(orgId, {index: 'orgId'})('id')
-    const teamMemberIds = await r
+    const teamIds = await r
+      .table('Team')
+      .getAll(orgId, {index: 'orgId'})('id')
+      .run()
+    const teamMemberIds = (await r
       .table('TeamMember')
       .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter({userId, isNotRemoved: true})('id') as string[]
+      .filter({userId, isNotRemoved: true})('id')
+      .run()) as string[]
 
     const perTeamRes = await Promise.all(
       teamMemberIds.map((teamMemberId) => {
@@ -66,16 +73,16 @@ const removeOrgUser = {
     }, [])
 
     const {allRemovedOrgNotifications, user, organizationUser} = await r({
-      organizationUser: r
+      organizationUser: (r
         .table('OrganizationUser')
         .getAll(userId, {index: 'userId'})
         .filter({orgId, removedAt: null})
         .nth(0)
         .update({removedAt: now}, {returnChanges: true})('changes')(0)('new_val')
-        .default(null),
-      user: r.table('User').get(userId),
+        .default(null) as unknown) as OrganizationUser,
+      user: (r.table('User').get(userId) as unknown) as User,
       // remove stale notifications
-      allRemovedOrgNotifications: r
+      allRemovedOrgNotifications: (r
         .table('Notification')
         .getAll(userId, {index: 'userIds'})
         .filter({orgId})
@@ -101,8 +108,8 @@ const removeOrgUser = {
               )
               .delete()
           }
-        })
-    })
+        }) as unknown) as {notifications: Notification[]; deletions: any[]}
+    }).run()
 
     // need to make sure the org doc is updated before adjusting this
     const {joinedAt, newUserUntil} = organizationUser

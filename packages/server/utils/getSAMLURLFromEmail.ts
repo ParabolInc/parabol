@@ -7,12 +7,13 @@ import {SSOParams, SSORelayState} from '../graphql/queries/SAMLIdP'
 const getSAMLURLFromEmail = async (email: string, isInvited?: boolean | null) => {
   const domainName = getSSODomainFromEmail(email)
   if (!domainName) return null
-  const r = getRethink()
+  const r = await getRethink()
   const baseURL = (await r
     .table('SAML')
     .getAll(domainName, {index: 'domain'})
     .nth(0)('url')
-    .default(null)) as string | null
+    .default(null)
+    .run()) as string | null
   if (!baseURL) return null
   const params = {} as SSOParams
   const ssoRelayState = {isInvited} as SSORelayState

@@ -19,8 +19,8 @@ export default {
       description: 'The new task including an id, teamMemberId, and content'
     }
   },
-  async resolve (_source, {newAgendaItem}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink()
+  async resolve(_source, {newAgendaItem}, {authToken, dataLoader, socketId: mutatorId}) {
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
@@ -40,15 +40,18 @@ export default {
     // RESOLUTION
     const now = new Date()
     const agendaItemId = `${teamId}::${shortid.generate()}`
-    await r.table('AgendaItem').insert({
-      id: agendaItemId,
-      ...validNewAgendaItem,
-      createdAt: now,
-      updatedAt: now,
-      isActive: true,
-      isComplete: false,
-      teamId
-    })
+    await r
+      .table('AgendaItem')
+      .insert({
+        id: agendaItemId,
+        ...validNewAgendaItem,
+        createdAt: now,
+        updatedAt: now,
+        isActive: true,
+        isComplete: false,
+        teamId
+      })
+      .run()
 
     const meetingId = await addAgendaItemToNewMeeting(agendaItemId, teamId, dataLoader)
     const data = {agendaItemId, meetingId}

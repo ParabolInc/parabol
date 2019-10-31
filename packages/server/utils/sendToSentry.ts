@@ -15,7 +15,7 @@ const sendToSentry = async (error: Error, options: SentryOptions = {}): void => 
   if (!__PROD__) {
     console.error(error)
   }
-  const r = getRethink()
+  const r = await getRethink()
   const {userId} = options
   let user
   if (userId) {
@@ -24,6 +24,7 @@ const sendToSentry = async (error: Error, options: SentryOptions = {}): void => 
       .get(userId)
       .pluck('id', 'email')
       .default(null)
+      .run()
   }
   Sentry.withScope((scope) => {
     user && scope.setUser(user)

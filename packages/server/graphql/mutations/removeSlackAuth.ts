@@ -17,7 +17,7 @@ export default {
     }
   },
   resolve: async (_source, {teamId}, {authToken, socketId: mutatorId, dataLoader}) => {
-    const r = getRethink()
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
@@ -35,6 +35,7 @@ export default {
       .filter({teamId})
       .nth(0)
       .default(null)
+      .run()
 
     if (!existingAuth) {
       return standardError(new Error('Auth not found'), {userId: viewerId})
@@ -51,7 +52,7 @@ export default {
         .getAll(teamId, {index: 'teamId'})
         .filter({userId: viewerId})
         .delete()
-    })
+    }).run()
 
     const data = {authId, teamId, userId: viewerId}
     publish(TEAM, teamId, RemoveSlackAuthPayload, data, subOptions)

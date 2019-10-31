@@ -16,6 +16,7 @@ import {GQLContext} from '../graphql'
 import {validateTaskUserId} from './createTask'
 import Task from '../../database/types/Task'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
+import {ITeamMember} from 'parabol-client/types/graphql'
 
 const DEBOUNCE_TIME = ms('5m')
 
@@ -32,12 +33,12 @@ export default {
       description: 'the updated task including the id, and at least one other field'
     }
   },
-  async resolve (
+  async resolve(
     _source,
     {area, updatedTask}: IUpdateTaskOnMutationArguments,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = getRethink()
+    const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -53,7 +54,10 @@ export default {
       content
     } = updatedTask
     const validContent = normalizeRawDraftJS(content)
-    const task = await r.table('Task').get(taskId)
+    const task = await r
+      .table('Task')
+      .get(taskId)
+      .run()
     if (!task) return standardError(new Error('Task not found'), {userId: viewerId})
     const {teamId, userId} = task
     const nextUserId = inputUserId || userId
@@ -112,21 +116,27 @@ export default {
         })
     }
     const {newTask, teamMembers} = await r({
-      newTask: r
+      newTask: (r
         .table('Task')
         .get(taskId)
         .update(nextTask, {returnChanges: true})('changes')(0)('new_val')
-        .default(null),
+        .default(null) as unknown) as Task,
       history: taskHistory,
-      teamMembers: r
+      teamMembers: (r
         .table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
         .filter({
           isNotRemoved: true
         })
-        .coerceTo('array')
-    })
-    const team = area === MEETING ? await r.table('Team').get(nextTeamId) : undefined
+        .coerceTo('array') as unknown) as ITeamMember[]
+    }).run()
+    const team =
+      area === MEETING
+        ? await r
+            .table('Team')
+            .get(nextTeamId)
+            .run()
+        : undefined
     const meetingId = team ? team.meetingId : undefined
     const usersToIgnore = await getUsersToIgnore(meetingId, dataLoader)
     if (!newTask) return standardError(new Error('Already updated task'), {userId: viewerId})

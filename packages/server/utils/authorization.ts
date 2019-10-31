@@ -2,6 +2,7 @@ import {OrgUserRole, TierEnum} from '../../client/types/graphql'
 import getRethink from '../database/rethinkDriver'
 import toTeamMemberId from '../../client/utils/relay/toTeamMemberId'
 import AuthToken from '../database/types/AuthToken'
+import OrganizationUser from '../database/types/OrganizationUser'
 
 export const getUserId = (authToken: any) => {
   return authToken && typeof authToken === 'object' ? (authToken.sub as string) : ''
@@ -19,18 +20,19 @@ export const isTeamMember = (authToken: AuthToken, teamId: string) => {
   return Array.isArray(tms) && tms.includes(teamId)
 }
 
-export const isPastOrPresentTeamMember = async (viewerId, teamId) => {
-  const r = getRethink()
+export const isPastOrPresentTeamMember = async (viewerId: string, teamId: string) => {
+  const r = await getRethink()
   return r
     .table('TeamMember')
     .getAll(teamId, {index: 'teamId'})
     .filter({userId: viewerId})
     .count()
     .ge(1)
+    .run()
 }
 
 export const isTeamLead = async (userId, teamId) => {
-  const r = getRethink()
+  const r = await getRethink()
   const teamMemberId = toTeamMemberId(teamId, userId)
   return r
     .table('TeamMember')
@@ -65,38 +67,42 @@ export const isUserBillingLeader = async (
 }
 
 export const isUserInOrg = async (userId, orgId) => {
-  const r = getRethink()
+  const r = await getRethink()
   const organizationUser = await r
     .table('OrganizationUser')
     .getAll(userId, {index: 'userId'})
     .filter({orgId})
     .filter({removedAt: null})
     .nth(0)
+    .run()
   return !!organizationUser
 }
 
 export const isOrgLeaderOfUser = async (authToken, userId) => {
-  const r = getRethink()
+  const r = await getRethink()
   const viewerId = getUserId(authToken)
   const {viewerOrgIds, userOrgIds} = await r({
-    viewerOrgIds: r
+    viewerOrgIds: (r
       .table('OrganizationUser')
       .getAll(viewerId, {index: 'userId'})
       .filter({removedAt: null, role: OrgUserRole.BILLING_LEADER})('orgId')
-      .coerceTo('array'),
-    userOrgIds: r
+      .coerceTo('array') as any) as OrganizationUser[],
+    userOrgIds: (r
       .table('OrganizationUser')
       .getAll(userId, {index: 'userId'})
       .filter({removedAt: null})('orgId')
-      .coerceTo('array')
-  })
+      .coerceTo('array') as any) as OrganizationUser[]
+  }).run()
   const uniques = new Set(viewerOrgIds.concat(userOrgIds))
   const total = viewerOrgIds.length + userOrgIds.length
   return uniques.size < total
 }
 
 export const isPaidTier = async (teamId) => {
-  const r = getRethink()
-  const tier = await r.table('Team').get(teamId)('tier')
+  const r = await getRethink()
+  const tier = await r
+    .table('Team')
+    .get(teamId)('tier')
+    .run()
   return tier !== TierEnum.personal
 }

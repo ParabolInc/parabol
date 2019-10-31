@@ -1,6 +1,6 @@
 exports.up = async (r) => {
   try {
-    await Promise.all([r.tableDrop('OrgApproval'), r.tableDrop('Invitation')])
+    await Promise.all([r.tableDrop('OrgApproval').run(), r.tableDrop('Invitation').run()])
   } catch (e) {}
 
   const OLD_TYPES = [
@@ -17,11 +17,12 @@ exports.up = async (r) => {
       .table('Notification')
       .filter((notification) => r(OLD_TYPES).contains(notification('type')))
       .delete()
+      .run()
   } catch (e) {}
 }
 
 exports.down = async (r) => {
   try {
-    await Promise.all([r.tableCreate('OrgApproval'), r.tableCreate('Invitation')])
+    await Promise.all([r.tableCreate('OrgApproval').run(), r.tableCreate('Invitation').run()])
   } catch (e) {}
 }

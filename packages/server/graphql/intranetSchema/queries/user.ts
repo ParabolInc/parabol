@@ -16,20 +16,22 @@ const user = {
     }
   },
   description: 'Dig into a user by providing the email or userId',
-  async resolve (_source, {email, userId}, {authToken}) {
+  async resolve(_source, {email, userId}, {authToken}) {
     requireSU(authToken)
-    const r = getRethink()
+    const r = await getRethink()
     if (email) {
       return r
         .table('User')
         .getAll(email, {index: 'email'})
         .nth(0)
         .default(null)
+        .run()
     }
     return r
       .table('User')
       .get(userId)
       .default(null)
+      .run()
   }
 }
 

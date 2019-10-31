@@ -395,7 +395,7 @@
 //   }
 //
 //   async run() {
-//     const r = getRethink()
+//     const r = await getRethink()
 //     const tables = Object.keys(this.db).map((name) => name[0].toUpperCase() + name.substr(1))
 //     const docsToInsert = Object.values(this.db)
 //     const promises = docsToInsert.reduce((obj, docs, idx) => {

@@ -54,7 +54,7 @@ describe('updateTeamCheckInQuestion mutation resolver', () => {
 
   it('allows team members of paid teams to edit the check-in question', async () => {
     expect.assertions(2)
-    const r = getRethink()
+    const r = await getRethink()
     // SETUP
     const db = new MockDB()
     const {

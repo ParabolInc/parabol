@@ -1,14 +1,18 @@
 import getRethink from '../database/rethinkDriver'
 import toTeamMemberId from '../../client/utils/relay/toTeamMemberId'
 
-const insertNewTeamMember = (userId, teamId, options = {}) => {
-  const r = getRethink()
+interface Options {
+  isLead?: boolean
+  checkInOrder?: number
+}
+
+const insertNewTeamMember = async (userId: string, teamId: string, options: Options = {}) => {
+  const r = await getRethink()
   const {isLead = false, checkInOrder} = options
   const teamMemberId = toTeamMemberId(teamId, userId)
   return r
     .table('User')
     .get(userId)
-    .pluck('email', 'picture', 'preferredName')
     .do((user) => {
       return r
         .table('TeamMember')
@@ -22,12 +26,12 @@ const insertNewTeamMember = (userId, teamId, options = {}) => {
               checkInOrder !== undefined
                 ? checkInOrder
                 : r
-                  .table('TeamMember')
-                  .getAll(teamId, {index: 'teamId'})
-                  .filter({isNotRemoved: true})
-                  .count()
-                  .add(1)
-                  .default(2),
+                    .table('TeamMember')
+                    .getAll(teamId, {index: 'teamId'})
+                    .filter({isNotRemoved: true})
+                    .count()
+                    .add(1)
+                    .default(2),
             teamId,
             userId,
             email: user('email').default(''),
@@ -39,6 +43,7 @@ const insertNewTeamMember = (userId, teamId, options = {}) => {
         )('changes')(0)('new_val')
         .default(null)
     })
+    .run()
 }
 
 export default insertNewTeamMember
