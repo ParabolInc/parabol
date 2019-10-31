@@ -3,8 +3,6 @@ import {fromEpochSeconds} from '../utils/epochTime'
 import handleDisconnect from './handleDisconnect'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import AuthToken from '../database/types/AuthToken'
-import sendMessage from '../socketHelpers/sendMessage'
-import {ClientMessageTypes} from '@mattkrick/graphql-trebuchet-client'
 import encodeAuthToken from '../utils/encodeAuthToken'
 import {Threshold} from 'parabol-client/types/constEnums'
 import sendToSentry from '../utils/sendToSentry'
@@ -17,8 +15,8 @@ const isTmsValid = (tmsFromDB: string[] = [], tmsFromToken: string[] = []) => {
   return true
 }
 
-const sendFreshTokenIfNeeded = (connectionContext: ConnectionContext, tmsDB: string[]) => {
-  const {authToken, socket} = connectionContext
+const setFreshTokenIfNeeded = (connectionContext: ConnectionContext, tmsDB: string[]) => {
+  const {authToken} = connectionContext
   const {exp, tms} = authToken
   const tokenExpiration = fromEpochSeconds(exp)
   const timeLeftOnToken = tokenExpiration.getTime() - Date.now()
@@ -26,15 +24,9 @@ const sendFreshTokenIfNeeded = (connectionContext: ConnectionContext, tmsDB: str
   if (timeLeftOnToken < Threshold.REFRESH_JWT_AFTER || !tmsIsValid) {
     const nextAuthToken = new AuthToken({...authToken, tms: tmsDB})
     connectionContext.authToken = nextAuthToken
-    sendMessage(socket, ClientMessageTypes.GQL_DATA, {
-      data: {
-        notificationSubscription: {
-          __typename: 'AuthTokenPayload',
-          id: encodeAuthToken(nextAuthToken)
-        }
-      }
-    })
+    return encodeAuthToken(nextAuthToken)
   }
+  return null
 }
 
 const handleConnect = async (connectionContext) => {
@@ -57,11 +49,10 @@ const handleConnect = async (connectionContext) => {
     const {
       connectSocket: {tmsDB}
     } = data
-    sendFreshTokenIfNeeded(connectionContext, tmsDB)
-    return true
+    return setFreshTokenIfNeeded(connectionContext, tmsDB)
   }
   handleDisconnect(connectionContext, {exitCode: 4401})()
-  return false
+  return null
 }
 
 export default handleConnect

@@ -19,7 +19,7 @@ type Task = RecordProxy<{
   readonly userId: string
 }>
 
-const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy) => {
+const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<any>) => {
   if (!task) return
   // we currently have 3 connections, user, team, and team archive
   const viewer = store.getRoot().getLinkedRecord('viewer')

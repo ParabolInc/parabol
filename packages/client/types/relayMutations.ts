@@ -18,8 +18,7 @@ export interface LocalHandlers {
 
 interface UpdaterContext {
   atmosphere: Atmosphere
-  store: RecordSourceSelectorProxy
-  // viewerId?: string
+  store: RecordSourceSelectorProxy<any>
 }
 
 export interface SharedUpdater<T> {

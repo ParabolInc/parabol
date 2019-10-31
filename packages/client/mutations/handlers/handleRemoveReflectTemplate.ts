@@ -3,7 +3,7 @@ import pluralizeHandler from './pluralizeHandler'
 import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
 import getCachedRecord from '../../utils/relay/getCachedRecord'
 
-const handleRemoveReflectTemplate = (templateId: string, store: RecordSourceSelectorProxy) => {
+const handleRemoveReflectTemplate = (templateId: string, store: RecordSourceSelectorProxy<any>) => {
   const filterFn = (obj) => {
     return (
       obj.__typename === 'RetrospectiveMeetingSettings' &&

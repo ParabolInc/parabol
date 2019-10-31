@@ -79,11 +79,15 @@ class SocketHealthMonitor extends Component<Props> {
   }
 
   onData = (payload: string | object) => {
+    const {atmosphere} = this.props
     // hacky but that way we don't have to double parse huge json payloads. SSE graphql payloads are pre-parsed
     if (typeof payload !== 'string' || !payload.startsWith('{"version":')) return
     const obj = JSON.parse(payload)
     if (obj.version !== __APP_VERSION__) {
       upgradeServiceWorker().catch(console.error)
+    }
+    if (obj.authToken) {
+      atmosphere.setAuthToken(obj.authToken)
     }
   }
 
