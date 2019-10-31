@@ -118,13 +118,10 @@ const RemoteReflection = (props: Props) => {
   const remoteDrag = reflection.remoteDrag as DeepNonNullable<
     NonNullable<RemoteReflection_reflection['remoteDrag']>
   >
-  const {dragUserId, dragUserName} = remoteDrag
   const ref = useRef<HTMLDivElement>(null)
 
   const [editorState] = useEditorState(content)
   const forceUpdate = useForceUpdate()
-  const {nextStyle, minTop} = getInlineStyle(remoteDrag!, isDropping, style)
-  const {headerTransform, arrow} = getHeaderTransform(ref, minTop)
   useEffect(() => {
     // continuously update the position if dropping animation has begun
     if (isDropping) {
@@ -144,7 +141,10 @@ const RemoteReflection = (props: Props) => {
       window.clearTimeout(timeoutRef.current)
     }
   }, [remoteDrag])
-
+  if (!remoteDrag) return null
+  const {dragUserId, dragUserName} = remoteDrag
+  const {nextStyle, minTop} = getInlineStyle(remoteDrag!, isDropping, style)
+  const {headerTransform, arrow} = getHeaderTransform(ref, minTop)
   return (
     <>
       <RemoteReflectionModal ref={ref} style={nextStyle} isDropping={isDropping}>

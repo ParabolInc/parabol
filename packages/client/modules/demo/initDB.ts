@@ -194,7 +194,8 @@ const initDemoOrg = () => {
     orgUserCount: {
       activeUserCount: 5,
       inactiveUserCount: 0
-    }
+    },
+    showConversionModal: false
   }
 }
 
@@ -354,6 +355,7 @@ const initNewMeeting = (teamMembers, meetingMembers) => {
     meetingNumber: 1,
     meetingType: RETROSPECTIVE,
     meetingMember: viewerMeetingMember,
+    showConversionModal: false,
     meetingMembers,
     nextAutoGroupThreshold: null,
     viewerMeetingMember,
