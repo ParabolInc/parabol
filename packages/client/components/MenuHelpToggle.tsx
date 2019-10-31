@@ -20,7 +20,9 @@ const TallMenu = styled(Menu)({
 
 const MeetingHelpToggle = (props: Props) => {
   const {menu} = props
-  const {menuProps, menuPortal, originRef, togglePortal} = useMenu(MenuPosition.LOWER_RIGHT)
+  const {menuProps, menuPortal, originRef, togglePortal, openPortal} = useMenu(
+    MenuPosition.LOWER_RIGHT
+  )
   const atmosphere = useAtmosphere()
   const demoPauseOpen = useTimeout(1000)
   useEffect(() => {
@@ -28,15 +30,16 @@ const MeetingHelpToggle = (props: Props) => {
       const {clientGraphQLServer} = (atmosphere as unknown) as LocalAtmosphere
       const {isNew} = clientGraphQLServer
       if (!isNew) {
-        togglePortal()
+        openPortal()
       } else {
         // wait for the startBot event to occur
         clientGraphQLServer.once('startDemo', () => {
-          togglePortal()
+          clientGraphQLServer.isNew = false
+          openPortal()
         })
       }
     }
-  }, [demoPauseOpen, togglePortal])
+  }, [demoPauseOpen, openPortal])
   useFABPad(originRef)
   return (
     <>
