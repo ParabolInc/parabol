@@ -133,7 +133,6 @@ const finishActionMeeting = async (meeting: Meeting, dataLoader: DataLoaderWorke
     archiveTasksForDB(doneTasks, meetingId),
     updateTaskSortOrders(userIds, tasks),
     clearAgendaItems(teamId),
-    shuffleCheckInOrder(teamId),
     r
       .table('NewMeeting')
       .get(meetingId)
@@ -232,6 +231,7 @@ export default {
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
 
     const result = await finishMeetingType(completedMeeting, dataLoader)
+    await shuffleCheckInOrder(teamId)
     const updatedTaskIds = (result && result.updatedTaskIds) || []
     const {facilitatorUserId} = completedMeeting
     const nonFacilitators = presentMemberUserIds.filter((userId) => userId !== facilitatorUserId)

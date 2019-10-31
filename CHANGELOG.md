@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## vNext
+
+### Fixed
+* Randomize check-in order for retros (#3226)
+
 ## 4.9.0 2019-Oct-16
 
 ### Fixed
