@@ -685,6 +685,11 @@ export interface ITeamMember {
   id: string
 
   /**
+   * The datetime the team member was created
+   */
+  createdAt: any
+
+  /**
    * true if the user is a part of the team, false if they no longer are
    */
   isNotRemoved: boolean | null
@@ -693,11 +698,6 @@ export interface ITeamMember {
    * Is user a team lead?
    */
   isLead: boolean | null
-
-  /**
-   * Is user a team facilitator?
-   */
-  isFacilitator: boolean | null
 
   /**
    * hide the agenda list on the dashboard

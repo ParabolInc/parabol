@@ -22,8 +22,8 @@ import SuggestedActionTryTheDemo from '../../database/types/SuggestedActionTryTh
 import SuggestedActionCreateNewTeam from '../../database/types/SuggestedActionCreateNewTeam'
 import SuggestedActionInviteYourTeam from '../../database/types/SuggestedActionInviteYourTeam'
 import TimelineEventJoinedParabol from '../../database/types/TimelineEventJoinedParabol'
-import User from '../../database/types/User'
 import getAuth0ManagementClient from '../../utils/getAuth0ManagementClient'
+import {GQLContext} from '../graphql'
 
 const handleSegment = async (userId, previousId) => {
   if (previousId) {
@@ -54,7 +54,7 @@ const login = {
     }
   },
 
-  async resolve(_source, {auth0Token, isOrganic, segmentId}, {dataLoader}) {
+  async resolve(_source, {auth0Token, isOrganic, segmentId}, {dataLoader}: GQLContext) {
     const r = await getRethink()
     const now = new Date()
 
@@ -69,7 +69,7 @@ const login = {
     }
     const viewerId = getUserId(authToken)
 
-    const existingUser = (await dataLoader.get('users').load(viewerId)) as User | null
+    const existingUser = await dataLoader.get('users').load(viewerId)
 
     // RESOLUTION
     if (existingUser) {

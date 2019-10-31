@@ -7,6 +7,7 @@ import sendMessage from '../socketHelpers/sendMessage'
 import {ClientMessageTypes} from '@mattkrick/graphql-trebuchet-client'
 import encodeAuthToken from '../utils/encodeAuthToken'
 import {Threshold} from 'parabol-client/types/constEnums'
+import sendToSentry from '../utils/sendToSentry'
 
 const isTmsValid = (tmsFromDB: string[] = [], tmsFromToken: string[] = []) => {
   if (tmsFromDB.length !== tmsFromToken.length) return false
@@ -50,6 +51,9 @@ const handleConnect = async (connectionContext) => {
   const result = await wsGraphQLHandler(connectionContext, payload)
   const {data} = result
   if (data) {
+    if (!data.connectSocket) {
+      sendToSentry(new Error('null connectSocket'), {userId: connectionContext.userId})
+    }
     const {
       connectSocket: {tmsDB}
     } = data

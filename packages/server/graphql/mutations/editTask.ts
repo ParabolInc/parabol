@@ -2,8 +2,9 @@ import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import EditTaskPayload from '../types/EditTaskPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {TASK} from '../../../client/utils/constants'
 import standardError from '../../utils/standardError'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {GQLContext} from '../graphql'
 
 export default {
   type: EditTaskPayload,
@@ -18,12 +19,19 @@ export default {
       description: 'true if the editing is starting, false if it is stopping'
     }
   },
-  async resolve (source, {taskId, isEditing}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source,
+    {taskId, isEditing},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
     // AUTH
     const task = await dataLoader.get('tasks').load(taskId)
+    if (!task) {
+      return {error: {message: 'Task not found'}}
+    }
     const viewerId = getUserId(authToken)
     const {tags, teamId, userId: taskUserId} = task
     if (!isTeamMember(authToken, teamId)) {
@@ -38,7 +46,7 @@ export default {
     teamMembers.forEach((teamMember) => {
       const {userId} = teamMember
       if (!isPrivate || taskUserId === userId) {
-        publish(TASK, userId, EditTaskPayload, data, subOptions)
+        publish(SubscriptionChannel.TASK, userId, EditTaskPayload, data, subOptions)
       }
     })
     return data
