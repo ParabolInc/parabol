@@ -5,10 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## vNext
+## 4.10.0 2019-Oct-31
 
 ### Fixed
 * Randomize check-in order for retros (#3226)
+* Removed a handful of calls to Sentry to reduce noise (#3292)
+
+### Changed
+* Moved to rethinkdb-ts driver from rethinkdbdash (#3285)
 
 ## 4.9.0 2019-Oct-16
 
