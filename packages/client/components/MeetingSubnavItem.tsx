@@ -25,6 +25,7 @@ const ItemRoot = styled('div')<ItemRootProps>(
     borderRadius: '0 4px 4px 0',
     color: PALETTE.TEXT_MAIN,
     display: 'flex',
+    flexShrink: 0,
     fontSize: 14,
     fontWeight: 400,
     minHeight: 40,
