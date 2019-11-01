@@ -16,12 +16,14 @@ const startMigration = async () => {
   process.env.port = port
   process.env.db = path.slice(1)
   process.env.r = process.cwd()
+  console.log('Migrating DB', process.env.db)
   try {
     await migrate[direction]({all, root: __dirname})
   } catch (e) {
+    console.error('Migration error', e)
     process.exit()
   }
   process.exit()
 }
 
-startMigration()
+startMigration().catch(console.log)
