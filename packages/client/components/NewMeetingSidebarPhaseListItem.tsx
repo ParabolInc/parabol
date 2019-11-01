@@ -5,16 +5,17 @@ import {NavSidebar} from '../types/constEnums'
 import {phaseIconLookup, phaseLabelLookup} from '../utils/meetings/lookups'
 import Icon from './Icon'
 import Badge from './Badge/Badge'
+import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 
-const NavListItem = styled('li')({
+const NavListItem = styled('li')<{phaseType: string}>(({phaseType}) => ({
   fontWeight: 600,
   display: 'flex',
   flexDirection: 'column',
   margin: 0,
   // hack to work around broken flexbox
   // https://bugs.chromium.org/p/chromium/issues/detail?id=927066
-  minHeight: 40
-})
+  minHeight: phaseType === NewMeetingPhaseTypeEnum.agendaitems ? 98 : 40
+}))
 
 const NavItemIcon = styled(Icon)<{isUnsyncedFacilitatorPhase: boolean}>(
   {
@@ -139,7 +140,7 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
   const icon = phaseIconLookup[phaseType]
   const showPhaseCount = Boolean(phaseCount || phaseCount === 0)
   return (
-    <NavListItem>
+    <NavListItem phaseType={phaseType}>
       <NavListItemLink
         isActive={isActive}
         isCollapsible={isCollapsible}

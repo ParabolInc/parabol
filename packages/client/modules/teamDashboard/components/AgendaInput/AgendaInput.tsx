@@ -78,6 +78,7 @@ const StyledIcon = styled(Icon)({
 })
 
 interface Props {
+  className?: string
   disabled: boolean
   team: AgendaInput_team
 }
@@ -102,7 +103,7 @@ const AgendaInput = (props: Props) => {
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const {newItem} = fields
   const {resetValue, value} = newItem
-  const {disabled, team} = props
+  const {className, disabled, team} = props
   const {id: teamId, agendaItems} = team
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -130,7 +131,7 @@ const AgendaInput = (props: Props) => {
 
   const showTooltip = Boolean(agendaItems.length > 0 && !disabled)
   return (
-    <AgendaInputBlock>
+    <AgendaInputBlock className={className}>
       <Tooltip
         delay={1000}
         hideOnFocus
