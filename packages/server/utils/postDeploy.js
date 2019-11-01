@@ -30,10 +30,7 @@ const postDeploy = async () => {
   const r = await getRethink()
   await flushSocketConnections()
   await storePersistedQueries()
-  await r
-    .getPoolMaster()
-    .drain()
-    .run()
+  await r.getPoolMaster().drain()
   process.exit()
 }
 

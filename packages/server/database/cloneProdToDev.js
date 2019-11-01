@@ -24,7 +24,5 @@ export default async function cloneProdToDev() {
   )
   await Promise.all(promises)
   console.log('Move to actionDevelopment complete!')
-  r.getPoolMaster()
-    .drain()
-    .run()
+  r.getPoolMaster().drain()
 }
