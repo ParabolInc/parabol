@@ -2,6 +2,7 @@ import getRethink from '../database/rethinkDriver'
 
 const flushSocketConnections = async () => {
   const r = await getRethink()
+  console.log('Flushing sockets on', r.pool.connParam.db)
   return r
     .table('User')
     .update({
