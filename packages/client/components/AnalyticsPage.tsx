@@ -13,7 +13,11 @@ declare global {
 
 const dsn = window.__ACTION__.sentry
 if (dsn) {
-  Sentry.init({dsn})
+  Sentry.init({
+    dsn,
+    environment: 'client',
+    release: __APP_VERSION__
+  })
 }
 
 const AnalyticsPage = () => {

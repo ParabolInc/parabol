@@ -64,7 +64,7 @@ const rateLimiter = new RateLimiter()
 // keep a hash table of connection contexts
 const sseClients = {}
 Sentry.init({
-  environment: process.env.NODE_ENV,
+  environment: 'server',
   dsn: process.env.SENTRY_DSN,
   release: APP_VERSION,
   ignoreErrors: ['429 Too Many Requests', /language \S+ is not supported/],
