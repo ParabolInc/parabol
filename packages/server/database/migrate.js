@@ -11,7 +11,6 @@ const startMigration = async () => {
     console.log('NODE_ENV is test, loading .env.test...')
   }
 
-  console.log('reading URL', process.env.RETHINKDB_URL)
   const {hostname, port, path} = parse(process.env.RETHINKDB_URL)
   process.env.host = hostname
   process.env.port = port
