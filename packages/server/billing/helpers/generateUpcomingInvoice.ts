@@ -1,7 +1,6 @@
 import fetchAllLines from './fetchAllLines'
 import generateInvoice from './generateInvoice'
 import getRethink from '../../database/rethinkDriver'
-import resolvePromiseObj from '../../../client/utils/resolvePromiseObj'
 import getUpcomingInvoiceId from '../../utils/getUpcomingInvoiceId'
 import StripeManager from '../../utils/StripeManager'
 
@@ -14,10 +13,10 @@ const generateUpcomingInvoice = async (orgId) => {
     .pluck('stripeId', 'stripeSubscriptionId')
     .run()
   const manager = new StripeManager()
-  const {stripeLineItems, upcomingInvoice} = await resolvePromiseObj({
-    stripeLineItems: fetchAllLines('upcoming', stripeId),
-    upcomingInvoice: manager.retrieveUpcomingInvoice(stripeId, stripeSubscriptionId)
-  })
+  const [stripeLineItems, upcomingInvoice] = await Promise.all([
+    fetchAllLines('upcoming', stripeId),
+    manager.retrieveUpcomingInvoice(stripeId, stripeSubscriptionId)
+  ])
   return generateInvoice(upcomingInvoice, stripeLineItems, orgId, invoiceId)
 }
 
