@@ -2,7 +2,6 @@ import getRethink from '../database/rethinkDriver'
 import countTiersForUserId from '../graphql/queries/helpers/countTiersForUserId'
 import segmentIo from './segmentIo'
 import {ISegmentEventTrackOptions, TierEnum} from '../../client/types/graphql'
-import resolvePromiseObj from '../../client/utils/resolvePromiseObj'
 
 const PERSONAL_TIER_MAX_TEAMS = 2
 
@@ -109,10 +108,7 @@ const getOrgId = async (teamId) => {
 }
 
 const getSegmentProps = (userIds, teamId) => {
-  return resolvePromiseObj({
-    traitsArr: getTraits(userIds),
-    orgId: getOrgId(teamId)
-  })
+  return Promise.all([getTraits(userIds), getOrgId(teamId)])
 }
 
 export const sendSegmentIdentify = async (maybeUserIds) => {
@@ -147,7 +143,7 @@ const sendSegmentEvent = async (
   options: Options = {}
 ) => {
   const userIds = Array.isArray(maybeUserIds) ? maybeUserIds : [maybeUserIds]
-  const {traitsArr, orgId} = await getSegmentProps(userIds, options.teamId)
+  const [traitsArr, orgId] = await getSegmentProps(userIds, options.teamId)
   traitsArr.forEach((traitsWithId) => {
     const {id: userId, ...traits} = traitsWithId
     segmentIo.track({

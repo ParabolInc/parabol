@@ -18,7 +18,10 @@ exports.up = async (r) => {
       .table('Action')
       .indexCreate('agendaId')
       .run(),
-    r.table('Project').update(withAgendaId)
+    r
+      .table('Project')
+      .update(withAgendaId)
+      .run()
   ]
   await Promise.all(queries)
 }

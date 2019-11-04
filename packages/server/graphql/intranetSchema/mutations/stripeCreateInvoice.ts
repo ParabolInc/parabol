@@ -1,6 +1,5 @@
 import fetchAllLines from '../../../billing/helpers/fetchAllLines'
 import generateInvoice from '../../../billing/helpers/generateInvoice'
-import resolvePromiseObj from '../../../../client/utils/resolvePromiseObj'
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import StripeManager from '../../../utils/StripeManager'
 import {isSuperUser} from '../../../utils/authorization'
@@ -29,10 +28,10 @@ export default {
     const {
       metadata: {orgId}
     } = await manager.retrieveCustomer(invoice.customer as string)
-    await resolvePromiseObj({
-      newInvoice: generateInvoice(invoice, stripeLineItems, orgId, invoiceId),
-      updatedStripeMetadata: manager.updateInvoice(invoiceId, orgId)
-    })
+    await Promise.all([
+      generateInvoice(invoice, stripeLineItems, orgId, invoiceId),
+      manager.updateInvoice(invoiceId, orgId)
+    ])
     return true
   }
 }
