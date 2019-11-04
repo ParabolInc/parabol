@@ -20,10 +20,12 @@ import MeetingPhaseHeading from '../modules/meeting/components/MeetingPhaseHeadi
 import {AGENDA_ITEM_LABEL, AGENDA_ITEMS} from '../utils/constants'
 import handleRightArrow from '../utils/handleRightArrow'
 import lazyPreload from '../utils/lazyPreload'
+import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import EndMeetingButton from './EndMeetingButton'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import PhaseWrapper from './PhaseWrapper'
+import PhaseHeaderTitle from './PhaseHeaderTitle'
 
 const BottomControlSpacer = styled('div')({
   minWidth: 90
@@ -65,7 +67,11 @@ const ActionMeetingFirstCall = (props: Props) => {
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
           toggleSidebar={toggleSidebar}
-        />
+        >
+          <PhaseHeaderTitle>
+            {phaseLabelLookup[NewMeetingPhaseTypeEnum.agendaitems]}
+          </PhaseHeaderTitle>
+        </MeetingTopBar>
         <PhaseWrapper>
           <FirstCallWrapper>
             <MeetingPhaseHeading>{'Now, what do you need?'}</MeetingPhaseHeading>

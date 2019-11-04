@@ -23,6 +23,10 @@ const RootStyles = styled('div')<{isMeeting: boolean | undefined; disabled: bool
   })
 )
 
+const StyledAgendaInput = styled(AgendaInput)<{isMeeting: boolean | undefined}>(({isMeeting}) => ({
+  paddingRight: isMeeting ? 8 : undefined
+}))
+
 interface Props {
   gotoStageId?: ReturnType<typeof useGotoStageId>
   isDisabled?: boolean
@@ -35,7 +39,7 @@ const AgendaListAndInput = (props: Props) => {
   return (
     <RootStyles disabled={!!isDisabled} isMeeting={isMeeting}>
       <AgendaList gotoStageId={gotoStageId} team={team} />
-      <AgendaInput disabled={!!isDisabled} team={team} />
+      <StyledAgendaInput disabled={!!isDisabled} isMeeting={isMeeting} team={team} />
     </RootStyles>
   )
 }

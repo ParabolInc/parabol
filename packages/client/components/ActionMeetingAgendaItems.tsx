@@ -22,9 +22,11 @@ import MeetingAgendaCards from '../modules/meeting/components/MeetingAgendaCards
 import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
 import findStageAfterId from '../utils/meetings/findStageAfterId'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
+import {phaseLabelLookup} from '../utils/meetings/lookups'
 import useTimeoutWithReset from '../hooks/useTimeoutWithReset'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import PhaseWrapper from './PhaseWrapper'
+import PhaseHeaderTitle from './PhaseHeaderTitle'
 
 const BottomControlSpacer = styled('div')({
   minWidth: 90
@@ -117,7 +119,11 @@ const ActionMeetingAgendaItems = (props: Props) => {
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
           toggleSidebar={toggleSidebar}
-        />
+        >
+          <PhaseHeaderTitle>
+            {phaseLabelLookup[NewMeetingPhaseTypeEnum.agendaitems]}
+          </PhaseHeaderTitle>
+        </MeetingTopBar>
         <PhaseWrapper>
           <AgendaVerbatim>
             <Avatar picture={picture} size={64} />

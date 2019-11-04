@@ -19,8 +19,10 @@ import PrimaryButton from './PrimaryButton'
 import EndNewMeetingMutation from '../mutations/EndNewMeetingMutation'
 import useRouter from '../hooks/useRouter'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
+import {phaseLabelLookup} from '../utils/meetings/lookups'
 import plural from '../utils/plural'
 import useMutationProps from '../hooks/useMutationProps'
+import PhaseHeaderTitle from './PhaseHeaderTitle'
 
 interface Props extends ActionMeetingPhaseProps {
   team: ActionMeetingLastCall_team
@@ -69,7 +71,9 @@ const ActionMeetingLastCall = (props: Props) => {
         avatarGroup={avatarGroup}
         isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
         toggleSidebar={toggleSidebar}
-      />
+      >
+        <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.agendaitems]}</PhaseHeaderTitle>
+      </MeetingTopBar>
       <ErrorBoundary>
         <LastCallWrapper>
           <MeetingPhaseHeading>
