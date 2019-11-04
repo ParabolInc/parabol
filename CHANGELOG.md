@@ -5,10 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## vNext
+## 4.10.1 2019-Nov-04
 
-### Changed
-* Updated Cypress to v3.6.0, hopefully fixing the CI test failures
+## Fixed
+* Mid-meeting invitation would reset meeting (hotfix)
 
 ## 4.10.0 2019-Oct-31
 
