@@ -74,19 +74,9 @@ const acceptTeamInvitation = async (
   const userInOrg = Boolean(
     user.organizationUsers.find((organizationUser) => organizationUser.orgId === orgId)
   )
-  const {removedNotificationIds, teamMember} = await r({
-    // add the team to the user doc
-    userUpdate: addTeamIdToTMS(userId, teamId),
-    teamMember: insertNewTeamMember(userId, teamId),
-    // only redeem 1 invitation. any others will expire
-    redeemedInvitation: r
-      .table('TeamInvitation')
-      .get(invitationId)
-      .update({
-        acceptedAt: now,
-        acceptedBy: userId
-      }),
-    removedNotificationIds: (r
+  const [teamMember, removedNotificationIds] = await Promise.all([
+    insertNewTeamMember(userId, teamId),
+    r
       .table('Notification')
       .getAll(userId, {index: 'userIds'})
       .filter({
@@ -94,8 +84,21 @@ const acceptTeamInvitation = async (
         teamId
       })
       .update({isArchived: true}, {returnChanges: true})('changes')('new_val')('id')
-      .default([]) as unknown) as string[]
-  }).run()
+      .default([])
+      .run(),
+    // add the team to the user doc
+    addTeamIdToTMS(userId, teamId),
+    // only redeem 1 invitation. any others will expire
+    r
+      .table('TeamInvitation')
+      .get(invitationId)
+      .update({
+        acceptedAt: now,
+        acceptedBy: userId
+      })
+      .run()
+  ])
+
   if (!userInOrg) {
     try {
       await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER)

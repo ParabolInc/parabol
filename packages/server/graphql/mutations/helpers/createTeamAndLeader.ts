@@ -61,41 +61,53 @@ export default async function createTeamAndLeader(userId, newTeam) {
     }
   ]
 
-  const res = await r({
-    // insert team
-    team: r
-      .table('Team')
-      .insert(verifiedTeam, {returnChanges: true})('changes')(0)('new_val')
-      .default(null),
-    // add meeting settings
-    teamSettings: r.table('MeetingSettings').insert(meetingSettings),
-    // add customizable phase items for meetings
-    customPhaseItems: r.table('CustomPhaseItem').insert(phaseItems),
-    templates: r.table('ReflectTemplate').insert(templates),
-    // denormalize common fields to team member
-    teamLead: insertNewTeamMember(userId, teamId),
-    event: r.table('TimelineEvent').insert({
-      id: shortid.generate(),
-      // + 5 to make sure it comes after parabol joined event
-      createdAt: new Date(Date.now() + 5),
-      interactionCount: 0,
-      seenCount: 0,
-      type: CREATED_TEAM,
-      userId,
-      teamId,
-      orgId
-    }),
-    // add teamId to user tms array
-    user: addTeamIdToTMS(userId, teamId),
-    organizationUser: r
+  const [organizationUser] = await Promise.all([
+    r
       .table('OrganizationUser')
       .getAll(userId, {index: 'userId'})
       .filter({removedAt: null, orgId})
       .nth(0)
       .default(null)
-  }).run()
+      .run(),
+    // insert team
+    r
+      .table('Team')
+      .insert(verifiedTeam, {returnChanges: true})('changes')(0)('new_val')
+      .default(null)
+      .run(),
+    // add meeting settings
+    r
+      .table('MeetingSettings')
+      .insert(meetingSettings)
+      .run(),
+    // add customizable phase items for meetings
+    r
+      .table('CustomPhaseItem')
+      .insert(phaseItems)
+      .run(),
+    r
+      .table('ReflectTemplate')
+      .insert(templates)
+      .run(),
+    // denormalize common fields to team member
+    insertNewTeamMember(userId, teamId),
+    r
+      .table('TimelineEvent')
+      .insert({
+        id: shortid.generate(),
+        // + 5 to make sure it comes after parabol joined event
+        createdAt: new Date(Date.now() + 5),
+        interactionCount: 0,
+        seenCount: 0,
+        type: CREATED_TEAM,
+        userId,
+        teamId,
+        orgId
+      })
+      .run(),
+    addTeamIdToTMS(userId, teamId)
+  ])
 
-  const {organizationUser} = res
   if (!organizationUser) {
     await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER)
   }
