@@ -19,7 +19,7 @@ const ModalBlock = styled('div')({
   position: 'absolute',
   top: 0,
   width: '100%',
-  zIndex: ZIndex.MODAL
+  zIndex: ZIndex.DIALOG
 })
 
 const backdropStyles = {

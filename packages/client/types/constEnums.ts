@@ -227,13 +227,15 @@ export const enum Times {
 }
 
 /* https://material.io/design/environment/elevation.html#default-elevations */
-/* Use MD elevation * 100 to leave room to solve for collisions */
-/* See https://github.com/ParabolInc/action/issues/2772 */
 export const enum ZIndex {
-  MODAL = 2400 /* MD 24 */,
-  SIDEBAR = 1600 /* MD 16 */,
-  SNACKBAR = 600 /* MD 6 */,
-  REFLECTION_IN_FLIGHT = 800 /* MD 8 */
+  BOTTOM_BAR = 8,
+  BOTTOM_BAR_DESKTOP = 4,
+  DIALOG = 24,
+  FAB = 6,
+  SIDEBAR = 16,
+  SIDE_SHEET = 8,
+  SNACKBAR = 7,
+  REFLECTION_IN_FLIGHT = 8
 }
 
 export const enum AuthTokenRole {

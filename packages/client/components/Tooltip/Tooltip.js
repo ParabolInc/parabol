@@ -11,7 +11,7 @@ import withCoordsV2 from '../../decorators/withCoordsV2'
 const ModalBlock = styled('div')(({maxWidth}) => ({
   padding: '4px 8px',
   position: 'absolute',
-  zIndex: 400,
+  zIndex: 16, // at least equal to SIDEBAR, this component deprecated
   maxWidth
 }))
 

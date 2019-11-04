@@ -1,7 +1,6 @@
 import React, {ReactNode, Ref, useMemo} from 'react'
 import styled from '@emotion/styled'
 import getBBox from './getBBox'
-import {ZINDEX_MODAL} from '../../styles/elevation'
 import {PALETTE} from '../../styles/paletteV2'
 import {BBox} from '../../types/animations'
 import {RefCallbackInstance} from '../../types/generics'
@@ -14,7 +13,7 @@ const PortalBlock = styled('div')({
   position: 'absolute',
   top: 0,
   width: '100%',
-  zIndex: ZIndex.MODAL
+  zIndex: ZIndex.DIALOG
 })
 
 const Scrim = styled('div')({
@@ -28,7 +27,7 @@ const PhaseArea = styled('div')<{phaseBBox: BBox}>(({phaseBBox}) => ({
   justifyContent: 'center',
   alignItems: 'center',
   position: 'absolute',
-  zIndex: ZINDEX_MODAL,
+  zIndex: ZIndex.DIALOG,
   // use phaseBBox to center in the phase, not the screen (ignores left nav & fac nav bar)
   top: phaseBBox.top,
   left: phaseBBox.left,

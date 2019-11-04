@@ -14,7 +14,7 @@ import {Duration, ZIndex} from '../types/constEnums'
 const MenuBlock = styled('div')({
   // no margins or paddings since they could force it too low & cause a scrollbar to appear
   position: 'absolute',
-  zIndex: ZIndex.MODAL
+  zIndex: ZIndex.DIALOG
 })
 
 const useMenuPortal = (
