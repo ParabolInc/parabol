@@ -2828,7 +2828,7 @@ export interface IMutation {
   /**
    * Set or clear a timer for a meeting stage
    */
-  setStageTimer: ISetStageTimerPayload | null
+  setStageTimer: ISetStageTimerPayload
   setSlackNotification: ISetSlackNotificationPayload
 
   /**

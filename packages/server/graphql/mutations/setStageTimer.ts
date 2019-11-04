@@ -17,7 +17,7 @@ const BAD_CLOCK_THRESH = 2000
 const AVG_PING = 150
 
 export default {
-  type: SetStageTimerPayload,
+  type: new GraphQLNonNull(SetStageTimerPayload),
   description: 'Set or clear a timer for a meeting stage',
   args: {
     meetingId: {

@@ -1,14 +1,18 @@
 import {ConnectionHandler, ViewerHandler} from 'relay-runtime'
 import ContentTextHandler from './ContentFilterHandler'
+import LocalTimeHandler from './LocalTimeHandler'
 
 const handlerProvider = (handle) => {
   switch (handle) {
     case 'connection':
       return ConnectionHandler
     case 'viewer':
+      // @ts-ignore
       return ViewerHandler
     case 'contentText':
       return ContentTextHandler
+    case 'localTime':
+      return LocalTimeHandler
     default:
       throw new Error(`Unknown handle ${handle}`)
   }

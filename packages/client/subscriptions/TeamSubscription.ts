@@ -37,6 +37,7 @@ import Atmosphere from '../Atmosphere'
 import {RecordSourceSelectorProxy, requestSubscription, Variables} from 'relay-runtime'
 import {TeamSubscriptionResponse} from '../__generated__/TeamSubscription.graphql'
 import {RouterProps} from 'react-router'
+import {setStageTimerTeamUpdater} from '../mutations/SetStageTimerMutation'
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -194,6 +195,9 @@ const TeamSubscription = (
         case 'SelectRetroTemplatePayload':
           break
         case 'SetPhaseFocusPayload':
+          break
+        case 'SetStageTimerPayload':
+          setStageTimerTeamUpdater(payload, context)
           break
         case 'StartDraggingReflectionPayload':
           startDraggingReflectionTeamUpdater(payload, context)

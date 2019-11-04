@@ -2,8 +2,10 @@ import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import Atmosphere from '../Atmosphere'
 import {INewMeeting, INewMeetingStage, ISetStageTimerOnMutationArguments} from '../types/graphql'
-import {LocalHandlers} from '../types/relayMutations'
+import {LocalHandlers, SharedUpdater} from '../types/relayMutations'
 import {SetStageTimerMutation as TSetStageTimerMutation} from '../__generated__/SetStageTimerMutation.graphql'
+import {SetStageTimerMutation_team} from '__generated__/SetStageTimerMutation_team.graphql'
+import LocalTimeHandler from '../utils/relay/LocalTimeHandler'
 
 graphql`
   fragment SetStageTimerMutation_team on SetStageTimerPayload {
@@ -34,6 +36,22 @@ const mutation = graphql`
   }
 `
 
+export const setStageTimerTeamUpdater: SharedUpdater<SetStageTimerMutation_team> = (
+  payload,
+  {store}
+) => {
+  const stage = payload.getLinkedRecord('stage')
+  if (!stage) return
+
+  LocalTimeHandler.update(store, {
+    dataID: stage.getDataID(),
+    fieldKey: 'scheduledEndTime',
+    args: {},
+    handle: '',
+    handleKey: ''
+  })
+}
+
 const SetStageTimerMutation = (
   atmosphere: Atmosphere,
   variables: ISetStageTimerOnMutationArguments,
@@ -42,6 +60,10 @@ const SetStageTimerMutation = (
   return commitMutation<TSetStageTimerMutation>(atmosphere, {
     mutation,
     variables,
+    updater: (store) => {
+      const payload = store.getRootField('setStageTimer')
+      setStageTimerTeamUpdater(payload, {atmosphere, store})
+    },
     optimisticUpdater: (store) => {
       const {meetingId, scheduledEndTime, timeRemaining} = variables
       const meeting = store.get<INewMeeting>(meetingId)
