@@ -7,7 +7,7 @@ import {ZIndex} from '../types/constEnums'
 
 const TooltipBlock = styled('div')({
   position: 'absolute',
-  zIndex: ZIndex.DIALOG
+  zIndex: ZIndex.TOOLTIP
 })
 
 const useTooltipPortal = (

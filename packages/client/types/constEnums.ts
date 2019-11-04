@@ -232,10 +232,12 @@ export const enum ZIndex {
   BOTTOM_BAR_DESKTOP = 4,
   DIALOG = 24,
   FAB = 6,
+  MENU = 24 /* portal needs to float above other components, especially sidebars */,
   SIDEBAR = 16,
   SIDE_SHEET = 8,
   SNACKBAR = 7,
-  REFLECTION_IN_FLIGHT = 8
+  REFLECTION_IN_FLIGHT = 8,
+  TOOLTIP = 24 /* portal needs to float above other components, especially sidebars */
 }
 
 export const enum AuthTokenRole {
