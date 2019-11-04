@@ -1,14 +1,14 @@
 import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import QueryRenderer from './QueryRenderer/QueryRenderer'
+import {QueryRenderer} from 'react-relay'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import NotificationSubscription from '../subscriptions/NotificationSubscription'
 import OrganizationSubscription from '../subscriptions/OrganizationSubscription'
 import TaskSubscription from '../subscriptions/TaskSubscription'
 import TeamSubscription from '../subscriptions/TeamSubscription'
-import {cacheConfig} from '../utils/constants'
 import Dashboard from './Dashboard'
+import useSubscription from '../hooks/useSubscription'
 
 const query = graphql`
   query DashboardRootQuery {
@@ -18,26 +18,20 @@ const query = graphql`
   }
 `
 
-const subscriptions = [
-  NotificationSubscription,
-  TaskSubscription,
-  TeamSubscription,
-  OrganizationSubscription
-]
-
 interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {}
 
-const DashboardRoot = ({atmosphere, history}: Props) => {
+const DashboardRoot = ({atmosphere}: Props) => {
+  useSubscription(DashboardRoot.name, NotificationSubscription)
+  useSubscription(DashboardRoot.name, OrganizationSubscription)
+  useSubscription(DashboardRoot.name, TaskSubscription)
+  useSubscription(DashboardRoot.name, TeamSubscription)
   return (
     <QueryRenderer
-      cacheConfig={cacheConfig}
       environment={atmosphere}
       query={query}
       variables={{}}
-      subParams={{history}}
-      subscriptions={subscriptions}
       render={({props}) => {
-        return <Dashboard viewer={props ? props.viewer : null} />
+        return <Dashboard viewer={props ? (props as any).viewer : null} />
       }}
     />
   )

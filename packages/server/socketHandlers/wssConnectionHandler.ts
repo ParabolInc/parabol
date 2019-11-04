@@ -35,8 +35,8 @@ export default function connectionHandler(sharedDataLoader, rateLimiter) {
       rateLimiter,
       req.ip
     )
-    socket.send(JSON.stringify({version: APP_VERSION}))
-    handleConnect(connectionContext)
+    const nextAuthToken = await handleConnect(connectionContext)
+    socket.send(JSON.stringify({version: APP_VERSION, authToken: nextAuthToken}))
     keepAlive(connectionContext)
     socket.on('message', handleMessage(connectionContext))
     socket.on('close', handleDisconnect(connectionContext))

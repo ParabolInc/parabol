@@ -1,6 +1,5 @@
 import React from 'react'
-import {cacheConfig} from '../utils/constants'
-import QueryRenderer from './QueryRenderer/QueryRenderer'
+import {QueryRenderer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import renderQuery from '../utils/relay/renderQuery'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -9,11 +8,11 @@ import {DraftSuggestion} from './TaskEditor/useSuggestions'
 import {BBox} from '../types/animations'
 
 const query = graphql`
-    query SuggestMentionableUsersRootQuery($teamId: ID!) {
-        viewer {
-            ...SuggestMentionableUsers_viewer
-        }
+  query SuggestMentionableUsersRootQuery($teamId: ID!) {
+    viewer {
+      ...SuggestMentionableUsers_viewer
     }
+  }
 `
 
 interface Props {
@@ -40,11 +39,12 @@ const SuggestMentionableUsersRoot = (props: Props) => {
 
   return (
     <QueryRenderer
-      cacheConfig={cacheConfig}
       environment={atmosphere}
       variables={{teamId}}
       query={query}
-      render={renderQuery(SuggestMentionableUsers, {props: {active, handleSelect, originCoords, setSuggestions, suggestions, triggerWord}})}
+      render={renderQuery(SuggestMentionableUsers, {
+        props: {active, handleSelect, originCoords, setSuggestions, suggestions, triggerWord}
+      })}
     />
   )
 }

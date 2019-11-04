@@ -18,7 +18,7 @@ import AuthTokenPayload from '../types/AuthTokenPayload'
 import {TierEnum} from 'parabol-client/types/graphql'
 
 export default {
-  type: AddTeamPayload,
+  type: new GraphQLNonNull(AddTeamPayload),
   description: 'Create a new team and add the first team member',
   args: {
     newTeam: {

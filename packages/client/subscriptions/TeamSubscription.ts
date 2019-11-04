@@ -33,6 +33,10 @@ import {updateAgendaItemUpdater} from '../mutations/UpdateAgendaItemMutation'
 import graphql from 'babel-plugin-relay/macro'
 import {pushInvitationTeamOnNext} from '../mutations/PushInvitationMutation'
 import {denyPushInvitationTeamOnNext} from '../mutations/DenyPushInvitationMutation'
+import Atmosphere from '../Atmosphere'
+import {RecordSourceSelectorProxy, requestSubscription, Variables} from 'relay-runtime'
+import {TeamSubscriptionResponse} from '../__generated__/TeamSubscription.graphql'
+import {RouterProps} from 'react-router'
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -96,16 +100,20 @@ const onNextHandlers = {
   PushInvitationPayload: pushInvitationTeamOnNext
 }
 
-const TeamSubscription = (atmosphere, _queryVariables, subParams) => {
+const TeamSubscription = (
+  atmosphere: Atmosphere,
+  variables: Variables,
+  router: {history: RouterProps['history']}
+) => {
   const {viewerId} = atmosphere
-  return {
+  return requestSubscription<TeamSubscriptionResponse>(atmosphere, {
     subscription,
-    variables: {},
+    variables,
     updater: (store) => {
-      const payload = store.getRootField('teamSubscription')
+      const payload = store.getRootField('teamSubscription') as any
       if (!payload) return
       const type = payload.getValue('__typename')
-      const context = {atmosphere, store}
+      const context = {atmosphere, store: store as RecordSourceSelectorProxy<any>}
       switch (type) {
         case 'AddAgendaItemPayload':
           addAgendaItemUpdater(payload, context)
@@ -154,7 +162,7 @@ const TeamSubscription = (atmosphere, _queryVariables, subParams) => {
           moveReflectTemplatePromptTeamUpdater(payload, context)
           break
         case 'NavigateMeetingPayload':
-          navigateMeetingTeamUpdater(payload, store)
+          navigateMeetingTeamUpdater(payload, store as RecordSourceSelectorProxy<any>)
           break
         case 'NewMeetingCheckInPayload':
           break
@@ -210,14 +218,19 @@ const TeamSubscription = (atmosphere, _queryVariables, subParams) => {
           console.error('TeamSubscription case fail', type)
       }
     },
-    onNext: ({teamSubscription}) => {
+    onNext: (result) => {
+      if (!result) return
+      const {teamSubscription} = result
       const {__typename: type} = teamSubscription
       const handler = onNextHandlers[type]
       if (handler) {
-        handler(teamSubscription, {...subParams, atmosphere: atmosphere})
+        handler(teamSubscription, {...router, atmosphere})
       }
+    },
+    onCompleted: () => {
+      atmosphere.unregisterSub(TeamSubscription.name, variables)
     }
-  }
+  })
 }
 
 export default TeamSubscription

@@ -1,6 +1,6 @@
 import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
-import QueryRenderer from '../../../../components/QueryRenderer/QueryRenderer'
+import {QueryRenderer} from 'react-relay'
 import OrgMembers from '../../components/OrgMembers/OrgMembers'
 import renderQuery from '../../../../utils/relay/renderQuery'
 import useAtmosphere from '../../../../hooks/useAtmosphere'

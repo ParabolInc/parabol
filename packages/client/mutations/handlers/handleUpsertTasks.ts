@@ -7,7 +7,7 @@ import {insertEdgeAfter} from '../../utils/relay/insertEdge'
 import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
 import {ConnectionHandler, RecordSourceSelectorProxy} from 'relay-runtime'
 import addNodeToArray from '../../utils/relay/addNodeToArray'
-import {RecordProxy} from 'relay-runtime/RelayStoreTypes'
+import {RecordProxy} from 'relay-runtime'
 
 type Task = RecordProxy<{
   readonly id: string
@@ -15,11 +15,11 @@ type Task = RecordProxy<{
   readonly tags: readonly string[]
   readonly reflectionGroupId: string | null
   readonly meetingId: string | null
-  readonly updatedAt: string
+  readonly updatedAt: string | null
   readonly userId: string
 }>
 
-const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy) => {
+const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<any>) => {
   if (!task) return
   // we currently have 3 connections, user, team, and team archive
   const viewer = store.getRoot().getLinkedRecord('viewer')

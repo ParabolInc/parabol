@@ -1,10 +1,10 @@
 import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import QueryRenderer from '../../../components/QueryRenderer/QueryRenderer'
+import {QueryRenderer} from 'react-relay'
 import TeamContainer from '../containers/Team/TeamContainer'
-import {cacheConfig} from '../../../utils/constants'
 import useAtmosphere from '../../../hooks/useAtmosphere'
+import {TeamRootQuery} from '__generated__/TeamRootQuery.graphql'
 
 const query = graphql`
   query TeamRootQuery($teamId: ID!) {
@@ -22,8 +22,7 @@ const TeamRoot = ({location, match}: Props) => {
   } = match
   const atmosphere = useAtmosphere()
   return (
-    <QueryRenderer
-      cacheConfig={cacheConfig}
+    <QueryRenderer<TeamRootQuery>
       environment={atmosphere}
       query={query}
       variables={{teamId}}

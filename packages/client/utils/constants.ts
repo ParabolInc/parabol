@@ -1,4 +1,3 @@
-import ms from 'ms'
 import {TaskStatusEnum} from '../types/graphql'
 
 /**
@@ -112,8 +111,6 @@ export const textTags = ['#private', '#archived']
 export const NEWLINE_REGEX = /\r\n?|\n/g
 
 /* Integrations */
-export const DEFAULT_TTL = ms('5m')
-export const cacheConfig = {ttl: DEFAULT_TTL}
 export const GITHUB = 'GitHubIntegration'
 export const SLACK = 'SlackIntegration'
 export const GITHUB_ENDPOINT = 'https://api.github.com/graphql'

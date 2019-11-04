@@ -7,7 +7,7 @@ import handleDisconnect from '../socketHandlers/handleDisconnect'
 import keepAlive from '../socketHelpers/keepAlive'
 
 const APP_VERSION = process.env.npm_package_version
-const SSEConnectionHandler = (sharedDataLoader, rateLimiter, sseClients) => (req, res) => {
+const SSEConnectionHandler = (sharedDataLoader, rateLimiter, sseClients) => async (req, res) => {
   const {query} = url.parse(req.url, true)
   let authToken
   try {
@@ -33,12 +33,12 @@ const SSEConnectionHandler = (sharedDataLoader, rateLimiter, sseClients) => (req
     req.ip
   )
   sseClients[connectionContext.id] = connectionContext
+  const nextAuthToken = await handleConnect(connectionContext)
   res.write(`event: id\n`)
   res.write(`retry: 1000\n`)
   res.write(`data: ${connectionContext.id}\n\n`)
-  res.write(`data: ${JSON.stringify({version: APP_VERSION})}\n\n`)
-  res.flush()
-  handleConnect(connectionContext)
+  res.write(`data: ${JSON.stringify({version: APP_VERSION, authToken: nextAuthToken})}\n\n`)
+  res.flush().catch()
   keepAlive(connectionContext)
   res.on('close', () => {
     handleDisconnect(connectionContext)

@@ -1,11 +1,9 @@
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {createFragmentContainer, QueryRenderer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import QueryRenderer from '../../../components/QueryRenderer/QueryRenderer'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {MenuProps} from '../../../hooks/useMenu'
 import TaskFooterUserAssigneeMenu from './OutcomeCardAssignMenu/TaskFooterUserAssigneeMenu'
-import {cacheConfig} from '../../../utils/constants'
 import renderQuery from '../../../utils/relay/renderQuery'
 import {TaskFooterUserAssigneeMenuRoot_task} from '../../../__generated__/TaskFooterUserAssigneeMenuRoot_task.graphql'
 import {UseTaskChild} from '../../../hooks/useTaskChildFocus'
@@ -33,7 +31,6 @@ const TaskFooterUserAssigneeMenuRoot = (props: Props) => {
   const atmosphere = useAtmosphere()
   return (
     <QueryRenderer
-      cacheConfig={cacheConfig}
       environment={atmosphere}
       variables={{teamId}}
       query={query}

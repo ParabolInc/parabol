@@ -27,7 +27,7 @@ const getIsGoogleProvider = async (user: any, email: string) => {
 }
 
 export default {
-  type: VerifiedInvitationPayload,
+  type: new GraphQLNonNull(VerifiedInvitationPayload),
   args: {
     token: {
       type: new GraphQLNonNull(GraphQLID),

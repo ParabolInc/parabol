@@ -30,7 +30,7 @@ export default class ServerEnvironment extends Environment {
   // @ts-ignore
   fetch: FetchFunction = (request, variables) => {
     if (!this.isFetched) {
-      this.requestCache.push(ssrGraphQL(request.id, variables, this.context))
+      this.requestCache.push(ssrGraphQL(request.id!, variables, this.context))
       return undefined
     } else {
       return this.results!.shift()

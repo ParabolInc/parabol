@@ -31,7 +31,7 @@ const RetroTemplatePicker = (props: Props) => {
   const {selectedTemplateId, reflectTemplates} = settings
   const templates = useMemo(() => {
     const templates = reflectTemplates.slice()
-    templates.sort((a, b) => (a.lastUsedAt < b.lastUsedAt ? -1 : a.name < b.name ? -1 : 1))
+    templates.sort((a, b) => (a.lastUsedAt! < b.lastUsedAt! ? -1 : a.name < b.name ? -1 : 1))
     return templates
   }, [reflectTemplates])
   const selectedTemplateIdx = templates.findIndex((template) => template.id === selectedTemplateId)

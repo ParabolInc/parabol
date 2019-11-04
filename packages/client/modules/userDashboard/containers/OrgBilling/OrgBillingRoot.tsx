@@ -1,10 +1,8 @@
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {createFragmentContainer, QueryRenderer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import QueryRenderer from '../../../../components/QueryRenderer/QueryRenderer'
 import OrgBilling from '../../components/OrgBilling/OrgBilling'
 import {LoaderSize} from '../../../../types/constEnums'
-import {cacheConfig} from '../../../../utils/constants'
 import renderQuery from '../../../../utils/relay/renderQuery'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {OrgBillingRoot_organization} from '../../../../__generated__/OrgBillingRoot_organization.graphql'
@@ -25,7 +23,6 @@ const OrgBillingRoot = ({organization}: Props) => {
   const atmosphere = useAtmosphere()
   return (
     <QueryRenderer
-      cacheConfig={cacheConfig}
       environment={atmosphere}
       query={query}
       variables={{orgId: organization.id, first: 3}}

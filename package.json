@@ -25,17 +25,16 @@
     "start": "yarn workspace parabol-server start",
     "build": "yarn workspace parabol-server build",
     "build:relay": "yarn workspace parabol-server build:relay",
-    "dev": "yarn workspace parabol-server relay & yarn workspace parabol-server dev",
+    "dev": "yarn workspace parabol-server dev",
     "lint": "lerna run --parallel lint",
     "typecheck": "lerna run --parallel typecheck"
   },
   "resolutions": {
+    "@types/relay-runtime": "https://github.com/mattkrick/relay-runtime-strict-types/tarball/01dd857d64e45ea8f4fb5c51c1c7c7bbfb053f9d",
     "hoist-non-react-statics": "^3.3.0",
-    "@types/relay-runtime": "https://github.com/mattkrick/relay-runtime-strict-types/tarball/c78b4d9268174c7b8226acd0ceb4dc10207dba3d",
     "@types/react": "16.8.23",
     "@types/react-dom": "16.8.4",
-    "relay-compiler": "https://github.com/mattkrick/relay/tarball/afed4d72c613515b15d8fc0bb2bfd34e928589b1",
-    "relay-runtime": "https://github.com/mattkrick/relay/tarball/dbd07bab510551e0c421aad70e5b57bb86520d32",
+    "relay-runtime": "7.0.0",
     "immutable": "3.8.2"
   },
   "devDependencies": {

@@ -1,12 +1,12 @@
 import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
-import QueryRenderer from '../../../components/QueryRenderer/QueryRenderer'
+import {QueryRenderer} from 'react-relay'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {MenuProps} from '../../../hooks/useMenu'
 import TaskFooterTeamAssigneeMenu from './OutcomeCardAssignMenu/TaskFooterTeamAssigneeMenu'
-import {cacheConfig} from '../../../utils/constants'
 import renderQuery from '../../../utils/relay/renderQuery'
 import {UseTaskChild} from '../../../hooks/useTaskChildFocus'
+import {TaskFooterTeamAssigneeMenuRootQuery} from '__generated__/TaskFooterTeamAssigneeMenuRootQuery.graphql'
 
 const query = graphql`
   query TaskFooterTeamAssigneeMenuRootQuery {
@@ -27,10 +27,10 @@ const TaskFooterTeamAssigneeMenuRoot = (props: Props) => {
   const atmosphere = useAtmosphere()
   useTaskChild('teamAssignee')
   return (
-    <QueryRenderer
-      cacheConfig={cacheConfig}
+    <QueryRenderer<TaskFooterTeamAssigneeMenuRootQuery>
       environment={atmosphere}
       query={query}
+      variables={{}}
       render={renderQuery(TaskFooterTeamAssigneeMenu, {props: {menuProps, task}})}
     />
   )

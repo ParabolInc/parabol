@@ -1,7 +1,7 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import Atmosphere from '../Atmosphere'
-import {ISetStageTimerOnMutationArguments} from '../types/graphql'
+import {INewMeeting, INewMeetingStage, ISetStageTimerOnMutationArguments} from '../types/graphql'
 import {LocalHandlers} from '../types/relayMutations'
 import {SetStageTimerMutation as TSetStageTimerMutation} from '../__generated__/SetStageTimerMutation.graphql'
 
@@ -44,10 +44,10 @@ const SetStageTimerMutation = (
     variables,
     optimisticUpdater: (store) => {
       const {meetingId, scheduledEndTime, timeRemaining} = variables
-      const meeting = store.get(meetingId)
+      const meeting = store.get<INewMeeting>(meetingId)
       if (!meeting) return
-      const facilitatorStageId = meeting.getValue('facilitatorStageId')
-      const stage = store.get(facilitatorStageId)
+      const facilitatorStageId = meeting.getValue('facilitatorStageId')!
+      const stage = store.get<INewMeetingStage>(facilitatorStageId)
       if (!stage) return
       const endTime = scheduledEndTime ? scheduledEndTime.toJSON() : null
       const isAsync = scheduledEndTime ? !timeRemaining : null

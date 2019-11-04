@@ -10,6 +10,7 @@ import getInProxy from '../utils/relay/getInProxy'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
 import onTeamRoute from '../utils/onTeamRoute'
 import {RemoveTeamMemberMutation_team} from '../__generated__/RemoveTeamMemberMutation_team.graphql'
+import {RemoveTeamMemberMutation as IRemoveTeamMemberMutation} from '../__generated__/RemoveTeamMemberMutation.graphql'
 import {OnNextHandler} from '../types/relayMutations'
 
 graphql`
@@ -145,7 +146,7 @@ export const removeTeamMemberUpdater = (payload, store, viewerId) => {
 
 const RemoveTeamMemberMutation = (environment, teamMemberId) => {
   const {viewerId} = environment
-  return commitMutation(environment, {
+  return commitMutation<IRemoveTeamMemberMutation>(environment, {
     mutation,
     variables: {teamMemberId},
     updater: (store) => {

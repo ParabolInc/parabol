@@ -24,7 +24,8 @@ const GraphqlContainer = () => {
   useAuthRoute({role: AuthTokenRole.SUPER_USER})
 
   const publicFetcher = async ({query, variables}) => {
-    return atmosphere.handleFetch({text: query} as any, variables)
+    // @ts-ignore
+    return atmosphere.handleFetch({text: query}, variables)
   }
 
   const privateFetcher = async ({query, variables}) => {

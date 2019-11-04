@@ -4,7 +4,7 @@ import {getUserId, requireSU} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 
 const createImposterToken = {
-  type: CreateImposterTokenPayload,
+  type: new GraphQLNonNull(CreateImposterTokenPayload),
   description: 'for troubleshooting by admins, create a JWT for a given userId',
   args: {
     userId: {
@@ -12,7 +12,7 @@ const createImposterToken = {
       description: 'The target userId to impersonate'
     }
   },
-  async resolve (source, {userId}, {authToken, dataLoader}) {
+  async resolve (_source, {userId}, {authToken, dataLoader}) {
     // AUTH
     requireSU(authToken)
     const viewerId = getUserId(authToken)

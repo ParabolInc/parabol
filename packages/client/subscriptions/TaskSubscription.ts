@@ -5,7 +5,10 @@ import {updateTaskTaskOnNext, updateTaskTaskUpdater} from '../mutations/UpdateTa
 import {removeOrgUserTaskUpdater} from '../mutations/RemoveOrgUserMutation'
 import {changeTaskTeamTaskUpdater} from '../mutations/ChangeTaskTeamMutation'
 import graphql from 'babel-plugin-relay/macro'
-import {RecordSourceSelectorProxy} from 'relay-runtime'
+import {RecordSourceSelectorProxy, requestSubscription, Variables} from 'relay-runtime'
+import Atmosphere from '../Atmosphere'
+import {TaskSubscriptionResponse} from '__generated__/TaskSubscription.graphql'
+import {RouterProps} from 'react-router'
 
 const subscription = graphql`
   subscription TaskSubscription {
@@ -29,16 +32,20 @@ const onNextHandlers = {
   UpdateTaskPayload: updateTaskTaskOnNext
 }
 
-const TaskSubscription = (atmosphere, _queryVariables, subParams) => {
+const TaskSubscription = (
+  atmosphere: Atmosphere,
+  variables: Variables,
+  router: {history: RouterProps['history']}
+) => {
   const {viewerId} = atmosphere
-  return {
+  return requestSubscription<TaskSubscriptionResponse>(atmosphere, {
     subscription,
-    variables: {},
-    updater: (store: RecordSourceSelectorProxy) => {
-      const payload = store.getRootField('taskSubscription')
+    variables,
+    updater: (store) => {
+      const payload = store.getRootField('taskSubscription') as any
       if (!payload) return
       const type = payload.getValue('__typename')
-      const context = {atmosphere, store}
+      const context = {atmosphere, store: store as RecordSourceSelectorProxy<any>}
       switch (type) {
         case 'CreateGitHubIssuePayload':
           break
@@ -66,14 +73,19 @@ const TaskSubscription = (atmosphere, _queryVariables, subParams) => {
           console.error('TaskSubscription case fail', type)
       }
     },
-    onNext: ({taskSubscription}) => {
+    onNext: (result) => {
+      if (!result) return
+      const {taskSubscription} = result
       const {__typename: type} = taskSubscription
       const handler = onNextHandlers[type]
       if (handler) {
-        handler(taskSubscription, {...subParams, atmosphere})
+        handler(taskSubscription, {...router, atmosphere})
       }
+    },
+    onCompleted: () => {
+      atmosphere.unregisterSub(TaskSubscription.name, variables)
     }
-  }
+  })
 }
 
 export default TaskSubscription

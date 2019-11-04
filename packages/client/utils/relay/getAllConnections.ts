@@ -1,4 +1,4 @@
-import getRelayHandleKey from 'relay-runtime/lib/getRelayHandleKey'
+import {getRelayHandleKey} from 'relay-runtime'
 import {RecordSourceSelectorProxy} from 'relay-runtime'
 
 /*

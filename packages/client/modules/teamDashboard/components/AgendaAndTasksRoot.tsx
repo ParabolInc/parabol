@@ -1,10 +1,9 @@
 import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import QueryRenderer from '../../../components/QueryRenderer/QueryRenderer'
+import {QueryRenderer} from 'react-relay'
 import AgendaAndTasks from './AgendaAndTasks/AgendaAndTasks'
 import {LoaderSize} from '../../../types/constEnums'
-import {cacheConfig} from '../../../utils/constants'
 import renderQuery from '../../../utils/relay/renderQuery'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 
@@ -27,7 +26,6 @@ const AgendaAndTasksRoot = (props: Props) => {
   const atmosphere = useAtmosphere()
   return (
     <QueryRenderer
-      cacheConfig={cacheConfig}
       environment={atmosphere}
       query={query}
       variables={{teamId}}

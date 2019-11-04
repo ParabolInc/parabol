@@ -113,8 +113,8 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation> = (
         content: newTask.content || makeEmptyStr()
       }
       const task = createProxyRecord(store, 'Task', optimisticTask)
-        .setLinkedRecord(store.get(assigneeId), 'assignee')
-        .setLinkedRecord(store.get(teamId), 'team')
+        .setLinkedRecord(store.get(assigneeId)!, 'assignee')
+        .setLinkedRecord(store.get(teamId)!, 'team')
       const editorPayload = getOptimisticTaskEditor(store, userId, taskId, isEditing)
       handleEditTask(editorPayload, store)
       handleUpsertTasks(task as any, store)

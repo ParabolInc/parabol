@@ -15,6 +15,7 @@ import findStageById from '../utils/meetings/findStageById'
 import onExOrgRoute from '../utils/onExOrgRoute'
 import {OnNextHandler} from '../types/relayMutations'
 import {RemoveOrgUserMutation_notification} from '../__generated__/RemoveOrgUserMutation_notification.graphql'
+import {RemoveOrgUserMutation as IRemoveOrgUserMutation} from '__generated__/RemoveOrgUserMutation.graphql'
 
 graphql`
   fragment RemoveOrgUserMutation_organization on RemoveOrgUserPayload {
@@ -199,7 +200,7 @@ export const removeOrgUserNotificationOnNext: OnNextHandler<RemoveOrgUserMutatio
 
 const RemoveOrgUserMutation = (atmosphere, variables, context, onError, onCompleted) => {
   const {viewerId} = atmosphere
-  return commitMutation(atmosphere, {
+  return commitMutation<IRemoveOrgUserMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {

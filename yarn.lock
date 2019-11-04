@@ -797,14 +797,6 @@
     "@babel/helper-regex" "^7.4.4"
     regexpu-core "^4.5.4"
 
-"@babel/polyfill@^7.0.0":
-  version "7.4.4"
-  resolved "https://registry.yarnpkg.com/@babel/polyfill/-/polyfill-7.4.4.tgz#78801cf3dbe657844eeabf31c1cae3828051e893"
-  integrity sha512-WlthFLfhQQhh+A2Gn5NSFl0Huxz36x86Jn+E9OW7ibK8edKPq+KLy4apM1yDpQ8kJOVi1OVjpP4vSDLdrI04dg==
-  dependencies:
-    core-js "^2.6.5"
-    regenerator-runtime "^0.13.2"
-
 "@babel/preset-env@7.4.3":
   version "7.4.3"
   resolved "https://registry.yarnpkg.com/@babel/preset-env/-/preset-env-7.4.3.tgz#e71e16e123dc0fbf65a52cbcbcefd072fbd02880"
@@ -3264,10 +3256,10 @@
     hoist-non-react-statics "^3.3.0"
     redux "^4.0.0"
 
-"@types/react-relay@^5.0.0":
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/@types/react-relay/-/react-relay-5.0.0.tgz#03244d48c2942ef9b1df69479e1e6516b6074c5c"
-  integrity sha512-DUm4YW2cdkF3P1TayDMR05Bmda7Cl+mTWj2dnpSwDYl5tEuKCZsj9zhNZsGr6ldIUVbjkyW9QzyAvWYGKiKZkg==
+"@types/react-relay@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/@types/react-relay/-/react-relay-7.0.0.tgz#8cf289096732bbdbd4be1a55dd2ba8b819bc8e99"
+  integrity sha512-AixNjK8SR+8SZPOTS5XNfhXYjEPrCNI+2sIH1n7NRDdOtk/t8HlzWWByy8a5lFT4D81lTjgmP0WjwQCo9uWTPw==
   dependencies:
     "@types/react" "*"
     "@types/relay-runtime" "*"
@@ -3297,9 +3289,9 @@
     "@types/prop-types" "*"
     csstype "^2.2.0"
 
-"@types/relay-runtime@*", "@types/relay-runtime@https://github.com/mattkrick/relay-runtime-strict-types/tarball/c78b4d9268174c7b8226acd0ceb4dc10207dba3d":
-  version "5.0.0-0"
-  resolved "https://github.com/mattkrick/relay-runtime-strict-types/tarball/c78b4d9268174c7b8226acd0ceb4dc10207dba3d#dc7e8298099aef0b911a1f0d775e8142fc67036a"
+"@types/relay-runtime@*", "@types/relay-runtime@https://github.com/mattkrick/relay-runtime-strict-types/tarball/01dd857d64e45ea8f4fb5c51c1c7c7bbfb053f9d":
+  version "0.0.0"
+  resolved "https://github.com/mattkrick/relay-runtime-strict-types/tarball/01dd857d64e45ea8f4fb5c51c1c7c7bbfb053f9d#7bfa24f42a555c90720301ab43f564c31dddcf5f"
 
 "@types/segment-analytics@^0.0.31":
   version "0.0.31"
@@ -4528,6 +4520,13 @@ babel-plugin-relay@^5.0.0:
   dependencies:
     babel-plugin-macros "^2.0.0"
 
+babel-plugin-relay@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-relay/-/babel-plugin-relay-7.0.0.tgz#4d8923e0e629effe679764403db61aea9af78aae"
+  integrity sha512-lF9ExqnKeeLZ35GMi33rlbvFiKizHvE0u1A17p6mBsSeg+RfdUqF392vhWIMmMP6Xcsosd9G2wUavA3DOTF7CA==
+  dependencies:
+    babel-plugin-macros "^2.0.0"
+
 babel-plugin-syntax-jsx@^6.18.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babel-plugin-syntax-jsx/-/babel-plugin-syntax-jsx-6.18.0.tgz#0af32a9a6e13ca7a3fd5069e62d7b0f58d0d8946"
@@ -4615,10 +4614,10 @@ babel-plugin-transform-undefined-to-void@^6.9.4:
   resolved "https://registry.yarnpkg.com/babel-plugin-transform-undefined-to-void/-/babel-plugin-transform-undefined-to-void-6.9.4.tgz#be241ca81404030678b748717322b89d0c8fe280"
   integrity sha1-viQcqBQEAwZ4t0hxcyK4nQyP4oA=
 
-babel-preset-fbjs@^3.1.2:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/babel-preset-fbjs/-/babel-preset-fbjs-3.2.0.tgz#c0e6347d3e0379ed84b3c2434d3467567aa05297"
-  integrity sha512-5Jo+JeWiVz2wHUUyAlvb/sSYnXNig9r+HqGAOSfh5Fzxp7SnAaR/tEGRJ1ZX7C77kfk82658w6R5Z+uPATTD9g==
+babel-preset-fbjs@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/babel-preset-fbjs/-/babel-preset-fbjs-3.3.0.tgz#a6024764ea86c8e06a22d794ca8b69534d263541"
+  integrity sha512-7QTLTCd2gwB2qGoi5epSULMHugSVgpcVt5YAeiFO9ABLrutDQzKfGwzxgZHLpugq8qMdg/DhRZDZ5CLKxBkEbw==
   dependencies:
     "@babel/plugin-proposal-class-properties" "^7.0.0"
     "@babel/plugin-proposal-object-rest-spread" "^7.0.0"
@@ -9145,7 +9144,12 @@ hoek@6.x.x:
   resolved "https://registry.yarnpkg.com/hoek/-/hoek-6.1.3.tgz#73b7d33952e01fe27a38b0457294b79dd8da242c"
   integrity sha512-YXXAAhmF9zpQbC7LEcREFtXfGq5K1fmd+4PHkBq8NUqmzW3G+Dq10bI/i0KucLRwss3YYFQ0fSfoxBZYiGUqtQ==
 
-hoist-non-react-statics@^2.3.1, hoist-non-react-statics@^3.1.0, hoist-non-react-statics@^3.3.0:
+hoist-non-react-statics@^2.3.1:
+  version "2.5.5"
+  resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-2.5.5.tgz#c5903cf409c0dfd908f388e619d86b9c1174cb47"
+  integrity sha512-rqcy4pJo55FTTLWt+bU8ukscqHeE/e9KWvsOW2b/a3afxQZhwkQdT1rPPCJ0rYXdj4vNcasY8zHTH+jF/qStxw==
+
+hoist-non-react-statics@^3.1.0, hoist-non-react-statics@^3.3.0:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-3.3.0.tgz#b09178f0122184fb95acf525daaecb4d8f45958b"
   integrity sha512-0XsbTXxgiaCDYDIWFcwkmerZPSwywfUqYmwT4jzewKTQSWoE6FCMoUVOeBJWK3E/CrWbxRG3m5GzY4lnIwGRBA==
@@ -9490,10 +9494,20 @@ immer@1.10.0:
   resolved "https://registry.yarnpkg.com/immer/-/immer-1.10.0.tgz#bad67605ba9c810275d91e1c2a47d4582e98286d"
   integrity sha512-O3sR1/opvCDGLEVcvrGTMtLac8GJ5IwZC4puPrLuRj3l7ICKvkmA0vGuU9OW8mV9WIBRnaxp5GJh9IEAaNOoYg==
 
-immutable@3.8.2, immutable@^3.8.2, immutable@~3.7.4, immutable@~3.7.6:
+immutable@3.8.2, immutable@^3.8.2:
   version "3.8.2"
   resolved "https://registry.yarnpkg.com/immutable/-/immutable-3.8.2.tgz#c2439951455bb39913daf281376f1530e104adf3"
   integrity sha1-wkOZUUVbs5kT2vKBN28VMOEErfM=
+
+immutable@^4.0.0-rc.12:
+  version "4.0.0-rc.12"
+  resolved "https://registry.yarnpkg.com/immutable/-/immutable-4.0.0-rc.12.tgz#ca59a7e4c19ae8d9bf74a97bdf0f6e2f2a5d0217"
+  integrity sha512-0M2XxkZLx/mi3t8NVwIm1g8nHoEmM9p9UBl/G9k4+hm0kBgOVdMV/B3CY5dQ8qG8qc80NN4gDV4HQv6FTJ5q7A==
+
+immutable@~3.7.4, immutable@~3.7.6:
+  version "3.7.6"
+  resolved "https://registry.yarnpkg.com/immutable/-/immutable-3.7.6.tgz#13b4d3cb12befa15482a26fe1b2ebae640071e4b"
+  integrity sha1-E7TTyxK++hVIKib+Gy665kAHHks=
 
 import-cwd@^2.0.0:
   version "2.1.0"
@@ -12742,7 +12756,7 @@ nth-check@^1.0.2, nth-check@~1.0.1:
   dependencies:
     boolbase "~1.0.0"
 
-nullthrows@^1.1.0:
+nullthrows@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/nullthrows/-/nullthrows-1.1.1.tgz#7818258843856ae971eae4208ad7d7eb19a431b1"
   integrity sha512-2vPPEi+Z7WqML2jZYddDIfy5Dqb0r2fze2zTxNNknZaFpVHU3mFB3R+DWeJWGVx0ecvttSGlJTI+WG+8Z4cDWw==
@@ -14451,15 +14465,15 @@ react-redux@^7.0.3:
     prop-types "^15.7.2"
     react-is "^16.8.6"
 
-react-relay@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/react-relay/-/react-relay-5.0.0.tgz#66af68e8e5fad05879a3f21f895a0296ef2741a8"
-  integrity sha512-gpUvedaCaPVPT0nMrTbev2TzrU0atgq2j/zAnGHiR9WgqRXwtHsK6FWFN65HRbopO2DzuJx9VZ2I3VO6uL5EMA==
+react-relay@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/react-relay/-/react-relay-7.0.0.tgz#c8839c2781edc51d9ac3155b66e1b22aafadcf95"
+  integrity sha512-ozN7T09wXXzf+VigDK98SW6lMGly9oJsgPGk4jxremMl6WSPX4bAa6A4NMvsFoV9GVLKB2EpaFs1YirIjWywYw==
   dependencies:
     "@babel/runtime" "^7.0.0"
     fbjs "^1.0.0"
-    nullthrows "^1.1.0"
-    relay-runtime "5.0.0"
+    nullthrows "^1.1.1"
+    relay-runtime "7.0.0"
 
 react-resize-detector@^4.0.5:
   version "4.2.0"
@@ -15030,6 +15044,14 @@ relateurl@0.2.x, relateurl@^0.2.7:
   resolved "https://registry.yarnpkg.com/relateurl/-/relateurl-0.2.7.tgz#54dbf377e51440aca90a4cd274600d3ff2d888a9"
   integrity sha1-VNvzd+UUQKypCkzSdGANP/LYiKk=
 
+relay-compiler-language-typescript@^10.0.0:
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/relay-compiler-language-typescript/-/relay-compiler-language-typescript-10.0.0.tgz#4b02f10c54a4f0800e1eeb2706fdc83b6b004477"
+  integrity sha512-bESzUkZTT09eDFzA6ywWQ5P4ZYyHvS4C8VcJ+UdrIGgXTcvEp6smJzyRe03FcGQmNW45evXbBt+IVl8/HcI+QQ==
+  dependencies:
+    immutable "^4.0.0-rc.12"
+    invariant "^2.2.4"
+
 "relay-compiler-language-typescript@https://github.com/mattkrick/relay-compiler-language-typescript/tarball/0b93ff31546894afcba4f6e7bb73ac737f83cc18":
   version "4.1.0"
   resolved "https://github.com/mattkrick/relay-compiler-language-typescript/tarball/0b93ff31546894afcba4f6e7bb73ac737f83cc18#dcc9484f34528d58fe8ea5d63af9b277180ff298"
@@ -15037,39 +15059,32 @@ relateurl@0.2.x, relateurl@^0.2.7:
     immutable "^3.8.2"
     invariant "^2.2.2"
 
-"relay-compiler@https://github.com/mattkrick/relay/tarball/afed4d72c613515b15d8fc0bb2bfd34e928589b1":
-  version "5.0.0"
-  resolved "https://github.com/mattkrick/relay/tarball/afed4d72c613515b15d8fc0bb2bfd34e928589b1#13ff239c73ee917aecdbeb5fe751696a7e42f434"
+relay-compiler@7.0.0, relay-compiler@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/relay-compiler/-/relay-compiler-7.0.0.tgz#89ea3ec49de6dddeae65dcf9c9eebce49645d3ad"
+  integrity sha512-LpiKplawsZAbQU1AUD6F9HnV2ZCYmpi+p3xtA7TnxDgdqqctuWnkrsMJOOrDNHbAse8W9Fb1lZlzgEcnze/Rvg==
   dependencies:
     "@babel/core" "^7.0.0"
     "@babel/generator" "^7.0.0"
     "@babel/parser" "^7.0.0"
-    "@babel/polyfill" "^7.0.0"
     "@babel/runtime" "^7.0.0"
     "@babel/traverse" "^7.0.0"
     "@babel/types" "^7.0.0"
-    babel-preset-fbjs "^3.1.2"
+    babel-preset-fbjs "^3.3.0"
     chalk "^2.4.1"
     fast-glob "^2.2.2"
     fb-watchman "^2.0.0"
     fbjs "^1.0.0"
     immutable "~3.7.6"
-    nullthrows "^1.1.0"
-    relay-runtime "5.0.0"
+    nullthrows "^1.1.1"
+    relay-runtime "7.0.0"
     signedsource "^1.0.0"
     yargs "^9.0.0"
 
-relay-linear-publish-queue@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/relay-linear-publish-queue/-/relay-linear-publish-queue-0.1.2.tgz#2196f1fa017b655b3bc9e27c0172f28d6d2e2918"
-  integrity sha512-c9/5t6SMBLEW9v1QnneyULruHdZnyyTCMavHxkLS/GbztatUdyL74eu6sRQ61aslZWq0NDc9nXwV9zdlr9UUMw==
-  dependencies:
-    fbjs "^1.0.0"
-    relay-runtime "https://github.com/mattkrick/relay/tarball/dbd07bab510551e0c421aad70e5b57bb86520d32"
-
-relay-runtime@5.0.0, "relay-runtime@https://github.com/mattkrick/relay/tarball/dbd07bab510551e0c421aad70e5b57bb86520d32":
-  version "5.0.0"
-  resolved "https://github.com/mattkrick/relay/tarball/dbd07bab510551e0c421aad70e5b57bb86520d32#fdc9a1003eb7219622e3d173fb0935d173187665"
+relay-runtime@7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/relay-runtime/-/relay-runtime-7.0.0.tgz#49642c0e16096cd4e5f435fcbdd63ffd8da54090"
+  integrity sha512-w0TPq5xvL6dlxD8+tBR19gGep3kFsx0fJ2Xr4hsxpDFKskH2oOmsMSp6gNVsUd2T1zf/DYll5eJqjoiQc5nB1A==
   dependencies:
     "@babel/runtime" "^7.0.0"
     fbjs "^1.0.0"

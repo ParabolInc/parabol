@@ -2,8 +2,13 @@ import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
 import {LocalHandlers} from '../types/relayMutations'
-import {IVoteForReflectionGroupOnMutationArguments} from '../types/graphql'
+import {
+  IRetroReflectionGroup,
+  IRetrospectiveMeetingMember,
+  IVoteForReflectionGroupOnMutationArguments
+} from '../types/graphql'
 import Atmosphere from '../Atmosphere'
+import {VoteForReflectionGroupMutation as IVoteForReflectionGroupMutation} from '../__generated__/VoteForReflectionGroupMutation.graphql'
 
 graphql`
   fragment VoteForReflectionGroupMutation_team on VoteForReflectionGroupPayload {
@@ -42,7 +47,7 @@ const VoteForReflectionGroupMutation = (
   variables: IVoteForReflectionGroupOnMutationArguments,
   {onError, onCompleted, meetingId}: LocalHandlers & {meetingId: string}
 ) => {
-  return commitMutation(atmosphere, {
+  return commitMutation<IVoteForReflectionGroupMutation>(atmosphere, {
     mutation,
     variables,
     onCompleted,
@@ -50,11 +55,11 @@ const VoteForReflectionGroupMutation = (
     optimisticUpdater: (store) => {
       const {viewerId} = atmosphere
       const {reflectionGroupId, isUnvote} = variables
-      const reflectionGroupProxy = store.get(reflectionGroupId)
+      const reflectionGroupProxy = store.get<IRetroReflectionGroup>(reflectionGroupId)
       if (!reflectionGroupProxy) return
       const increment = isUnvote ? -1 : 1
       const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-      const meetingMemberProxy = store.get(meetingMemberId)
+      const meetingMemberProxy = store.get<IRetrospectiveMeetingMember>(meetingMemberId)
       if (!meetingMemberProxy) return
       const viewerVoteCount = reflectionGroupProxy.getValue('viewerVoteCount') || 0
       const votesRemaining = meetingMemberProxy.getValue('votesRemaining') || 0

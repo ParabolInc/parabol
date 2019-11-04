@@ -20,9 +20,11 @@ import {endNewMeetingNotificationUpdater} from '../mutations/EndNewMeetingMutati
 import graphql from 'babel-plugin-relay/macro'
 import {meetingTypeToLabel, meetingTypeToSlug} from '../utils/meetings/lookups'
 import {OnNextContext, OnNextHandler, UpdaterHandler} from '../types/relayMutations'
-import {GraphQLSubscriptionConfig, RecordSourceSelectorProxy} from 'relay-runtime'
+import {requestSubscription, Variables} from 'relay-runtime'
 import {NotificationSubscriptionResponse} from '../__generated__/NotificationSubscription.graphql'
 import Atmosphere from '../Atmosphere'
+import {RouterProps} from 'react-router'
+import {RecordSourceSelectorProxy} from 'relay-runtime/lib/store/RelayStoreTypes'
 
 const subscription = graphql`
   subscription NotificationSubscription {
@@ -178,15 +180,19 @@ const onNextHandlers = {
   MeetingStageTimeLimitPayload: meetingStageTimeLimitOnNext
 }
 
-const NotificationSubscription = (atmosphere: Atmosphere, _queryVariables, subParams) => {
-  return {
+const NotificationSubscription = (
+  atmosphere: Atmosphere,
+  variables: Variables,
+  router: {history: RouterProps['history']}
+) => {
+  return requestSubscription<NotificationSubscriptionResponse>(atmosphere, {
     subscription,
-    variables: {},
-    updater: (store: RecordSourceSelectorProxy<NotificationSubscriptionResponse>) => {
-      const payload = store.getRootField('notificationSubscription')
+    variables,
+    updater: (store) => {
+      const payload = store.getRootField('notificationSubscription') as any
       if (!payload) return
       const type = payload.getValue('__typename')
-      const context = {store, atmosphere}
+      const context = {store: store as RecordSourceSelectorProxy<any>, atmosphere}
       switch (type as string) {
         case 'AcceptTeamInvitationPayload':
           acceptTeamInvitationNotificationUpdater(payload, context)
@@ -234,16 +240,19 @@ const NotificationSubscription = (atmosphere: Atmosphere, _queryVariables, subPa
           console.error('NotificationSubscription case fail', type)
       }
     },
-    onNext: (response) => {
-      if (!response) return
-      const {notificationSubscription} = response
+    onNext: (result) => {
+      if (!result) return
+      const {notificationSubscription} = result
       const {__typename: type} = notificationSubscription
       const handler = onNextHandlers[type]
       if (handler) {
-        handler(notificationSubscription, {...subParams, atmosphere})
+        handler(notificationSubscription, {...router, atmosphere})
       }
+    },
+    onCompleted: () => {
+      atmosphere.unregisterSub(NotificationSubscription.name, variables)
     }
-  } as GraphQLSubscriptionConfig<NotificationSubscriptionResponse>
+  })
 }
 
 export default NotificationSubscription

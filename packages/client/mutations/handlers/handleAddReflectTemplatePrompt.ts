@@ -6,7 +6,7 @@ const handleAddReflectTemplatePrompt = (
   store: RecordSourceSelectorProxy
 ) => {
   if (!newNode) return
-  const templateId = newNode.getValue('templateId')
+  const templateId = newNode.getValue('templateId') as string
   const template = store.get(templateId)
   addNodeToArray(newNode, template, 'prompts', 'sortOrder')
 }

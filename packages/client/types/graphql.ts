@@ -23,8 +23,8 @@ export interface IGraphQLResponseErrorLocation {
 export interface IQuery {
   __typename: 'Query'
   viewer: IUser | null
-  massInvitation: IMassInvitationPayload | null
-  verifiedInvitation: IVerifiedInvitationPayload | null
+  massInvitation: IMassInvitationPayload
+  verifiedInvitation: IVerifiedInvitationPayload
   authProviders: string[]
   SAMLIdP: string | null
 }
@@ -186,7 +186,7 @@ export interface IUser {
   /**
    * url of user’s profile picture
    */
-  picture: any | null
+  picture: any
 
   /**
    * The application-specific name, defaults to nickname
@@ -196,7 +196,7 @@ export interface IUser {
   /**
    * url of user’s raster profile picture (if user profile pic is an SVG, raster will be a PNG)
    */
-  rasterPicture: any | null
+  rasterPicture: any
 
   /**
    * The last time the user connected via websocket
@@ -542,7 +542,7 @@ export interface ITask {
   /**
    * The timestamp the task was created
    */
-  createdAt: any | null
+  createdAt: any
 
   /**
    * The userId that created the task
@@ -613,7 +613,7 @@ export interface ITask {
   /**
    * The timestamp the task was updated
    */
-  updatedAt: any | null
+  updatedAt: any
 
   /**
    * * The userId, index useful for server-side methods getting all tasks under a user
@@ -712,7 +712,7 @@ export interface ITeamMember {
   /**
    * url of user’s profile picture
    */
-  picture: any | null
+  picture: any
 
   /**
    * The place in line for checkIn, regenerated every meeting
@@ -1242,7 +1242,7 @@ export interface INewMeeting {
   /**
    * The timestamp the meeting was created
    */
-  createdAt: any | null
+  createdAt: any
 
   /**
    * The userId of the desired facilitator (different form facilitatorUserId if disconnected)
@@ -2610,12 +2610,12 @@ export interface IMutation {
   /**
    * Create a new team and add the first team member
    */
-  addOrg: IAddOrgPayload | null
+  addOrg: IAddOrgPayload
 
   /**
    * Create a new team and add the first team member
    */
-  addTeam: IAddTeamPayload | null
+  addTeam: IAddTeamPayload
   archiveTeam: IArchiveTeamPayload | null
 
   /**
@@ -2641,7 +2641,7 @@ export interface IMutation {
   /**
    * for troubleshooting by admins, create a JWT for a given userId
    */
-  createImposterToken: ICreateImposterTokenPayload | null
+  createImposterToken: ICreateImposterTokenPayload
   createGitHubIssue: ICreateGitHubIssuePayload | null
   createJiraIssue: ICreateJiraIssuePayload | null
 
@@ -3860,7 +3860,7 @@ export interface IRetrospectiveMeeting {
   /**
    * The timestamp the meeting was created
    */
-  createdAt: any | null
+  createdAt: any
 
   /**
    * The userId of the desired facilitator (different form facilitatorUserId if disconnected)
@@ -6598,7 +6598,7 @@ export interface IActionMeeting {
   /**
    * The timestamp the meeting was created
    */
-  createdAt: any | null
+  createdAt: any
 
   /**
    * The userId of the desired facilitator (different form facilitatorUserId if disconnected)

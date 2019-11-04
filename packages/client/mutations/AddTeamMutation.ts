@@ -6,6 +6,7 @@ import getGraphQLError from '../utils/relay/getGraphQLError'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 import {OnNextHandler} from '../types/relayMutations'
 import {AddTeamMutation_team} from '../__generated__/AddTeamMutation_team.graphql'
+import {AddTeamMutation as IAddTeamMutation} from '../__generated__/AddTeamMutation.graphql'
 
 graphql`
   fragment AddTeamMutation_team on AddTeamPayload {
@@ -58,12 +59,11 @@ export const addTeamMutationNotificationUpdater = (payload, {store}) => {
 }
 
 const AddTeamMutation = (atmosphere, variables, options, onError, onCompleted) => {
-  return commitMutation(atmosphere, {
+  return commitMutation<IAddTeamMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {
       const payload = store.getRootField('addTeam')
-      if (!payload) return
       addTeamTeamUpdater(payload, store)
     },
     optimisticUpdater: (store) => {

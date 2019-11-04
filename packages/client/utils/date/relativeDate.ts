@@ -15,7 +15,7 @@ interface Opts {
   zero?: boolean
   and?: boolean
   suffix?: boolean
-  now?: string | Date
+  now?: string | Date | null
   smallDiff?: string
 }
 

@@ -1,7 +1,7 @@
 import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import {RouteComponentProps} from 'react-router'
-import QueryRenderer from '../../../../components/QueryRenderer/QueryRenderer'
+import {QueryRenderer} from 'react-relay'
 import NewTeam from '../../NewTeam'
 import {LoaderSize} from '../../../../types/constEnums'
 import renderQuery from '../../../../utils/relay/renderQuery'
@@ -27,6 +27,7 @@ const NewTeamRoot = ({
     <QueryRenderer
       environment={atmosphere}
       query={query}
+      variables={{}}
       render={renderQuery(NewTeam, {props: {defaultOrgId}, size: LoaderSize.PANEL})}
     />
   )

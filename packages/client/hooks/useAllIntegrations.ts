@@ -3,7 +3,7 @@ import {useEffect, useMemo, useRef, useState} from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import Atmosphere from '../Atmosphere'
 import useFilteredItems from './useFilteredItems'
-import fetchMaybeCachedQuery from '../utils/relay/fetchMaybeCachedQuery'
+import {fetchQuery} from 'relay-runtime'
 
 const gqlQuery = graphql`
   query useAllIntegrationsQuery($teamId: ID!, $userId: ID!) {
@@ -33,7 +33,7 @@ const useAllIntegrations = (
   useEffect(() => {
     isMountedRef.current = true
     const fetchIntegrations = async () => {
-      const {viewer} = (await fetchMaybeCachedQuery(atmosphere, gqlQuery, {
+      const {viewer} = (await fetchQuery(atmosphere, gqlQuery, {
         teamId,
         userId
       })) as useAllIntegrationsQueryResponse

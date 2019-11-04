@@ -1,9 +1,8 @@
 import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import {RouteComponentProps} from 'react-router'
-import QueryRenderer from '../../../../components/QueryRenderer/QueryRenderer'
+import {QueryRenderer} from 'react-relay'
 import Organization from '../../components/Organization/Organization'
-import {cacheConfig} from '../../../../utils/constants'
 import renderQuery from '../../../../utils/relay/renderQuery'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 
@@ -25,11 +24,9 @@ const OrganizationRoot = (props: Props) => {
   const atmosphere = useAtmosphere()
   return (
     <QueryRenderer
-      cacheConfig={cacheConfig}
       environment={atmosphere}
       query={query}
       variables={{orgId}}
-      subParams={{orgId}}
       render={renderQuery(Organization, {props: {match}, Loader: <div />})}
     />
   )

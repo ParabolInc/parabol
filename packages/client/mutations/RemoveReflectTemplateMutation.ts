@@ -7,6 +7,7 @@ import {CompletedHandler, ErrorHandler, SharedUpdater} from '../types/relayMutat
 import handleRemoveReflectTemplate from './handlers/handleRemoveReflectTemplate'
 import {IRemoveReflectTemplateOnMutationArguments} from '../types/graphql'
 import {RemoveReflectTemplateMutation_team} from '../__generated__/RemoveReflectTemplateMutation_team.graphql'
+import {RemoveReflectTemplateMutation as TRemoveReflectTemplateMutation} from '../__generated__/RemoveReflectTemplateMutation.graphql'
 
 graphql`
   fragment RemoveReflectTemplateMutation_team on RemoveReflectTemplatePayload {
@@ -42,7 +43,7 @@ const RemoveReflectTemplateMutation = (
   onError: ErrorHandler,
   onCompleted: CompletedHandler
 ): Disposable => {
-  return commitMutation(atmosphere, {
+  return commitMutation<TRemoveReflectTemplateMutation>(atmosphere, {
     mutation,
     variables,
     onCompleted,
