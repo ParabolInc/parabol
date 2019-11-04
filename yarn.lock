@@ -3289,9 +3289,14 @@
     "@types/prop-types" "*"
     csstype "^2.2.0"
 
-"@types/relay-runtime@*", "@types/relay-runtime@https://github.com/mattkrick/relay-runtime-strict-types/tarball/01dd857d64e45ea8f4fb5c51c1c7c7bbfb053f9d":
+"@types/relay-runtime@*":
   version "0.0.0"
   resolved "https://github.com/mattkrick/relay-runtime-strict-types/tarball/01dd857d64e45ea8f4fb5c51c1c7c7bbfb053f9d#7bfa24f42a555c90720301ab43f564c31dddcf5f"
+
+"@types/relay-runtime@^6.0.9":
+  version "6.0.9"
+  resolved "https://registry.yarnpkg.com/@types/relay-runtime/-/relay-runtime-6.0.9.tgz#261b1575e5a256fd9474a6cc078981c08597b03c"
+  integrity sha512-VyfieDPYEwq86PDgqWwHMluWtD+hUp8qsdcRn0ef39hfVRXE7VK9QHB/2mTyW/OkBqO7ZnUA7hejPDEdhkoSDA==
 
 "@types/segment-analytics@^0.0.31":
   version "0.0.31"

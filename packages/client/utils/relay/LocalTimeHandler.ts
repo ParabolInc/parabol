@@ -3,7 +3,7 @@
  * Assumes a fixed value for LATENCY
  */
 
-import {Handler} from 'relay-runtime'
+import {Handler} from 'relay-runtime/lib/store/RelayStoreTypes'
 
 const LATENCY = 200 // ms to travel from server to client
 
@@ -20,7 +20,7 @@ const LocalTimeHandler: Handler = {
     const record = store.get(payload.dataID)
     const viewer = store.getRoot().getLinkedRecord('viewer')
     if (!record || !viewer) return
-    const scheduledEndTimeStr = record.getValue(payload.fieldKey)
+    const scheduledEndTimeStr = record.getValue(payload.fieldKey) as string | null
     const timeRemaining = record.getValue('timeRemaining')
     if (!scheduledEndTimeStr || !timeRemaining) {
       record.setValue(null, 'localScheduledEndTime')
@@ -28,7 +28,7 @@ const LocalTimeHandler: Handler = {
     }
     const scheduledEndTime = new Date(scheduledEndTimeStr).getTime()
     const clientClockOffset =
-      viewer.getValue('clientClockOffset') ||
+      (viewer.getValue('clientClockOffset') as number) ||
       setClientClockOffset(viewer, scheduledEndTime, timeRemaining)
     console.log('clock offset', clientClockOffset)
     const localScheduledEndTime = scheduledEndTime + clientClockOffset
