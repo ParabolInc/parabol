@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## vNext
+
+### Changed
+* Updated Cypress to v3.6.0, hopefully fixing the CI test failures
+
 ## 4.10.0 2019-Oct-31
 
 ### Fixed
