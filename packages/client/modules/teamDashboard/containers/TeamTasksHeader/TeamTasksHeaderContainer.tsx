@@ -1,43 +1,27 @@
 import React, {useEffect} from 'react'
-import {connect} from 'react-redux'
 import {createFragmentContainer} from 'react-relay'
 import TeamTasksHeader from '../../components/TeamTasksHeader/TeamTasksHeader'
 import graphql from 'babel-plugin-relay/macro'
-import {filterTeamMember} from '../../ducks/teamDashDuck'
 import {TeamTasksHeaderContainer_team} from '__generated__/TeamTasksHeaderContainer_team.graphql'
-
-const mapStateToProps = (state) => {
-  return {
-    teamMemberFilterId: state.teamDashboard.teamMemberFilterId,
-    teamMemberFilterName: state.teamDashboard.teamMemberFilterName
-  }
-}
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import filterTeamMember from 'utils/relay/filterTeamMember'
 
 interface Props {
-  dispatch: any
   team: TeamTasksHeaderContainer_team
-  teamMemberFilterId: string | null
-  teamMemberFilterName: string
 }
 
 const TeamTasksHeaderContainer = (props: Props) => {
-  const {dispatch, team, teamMemberFilterId, teamMemberFilterName} = props
+  const {team} = props
   const {id: teamId} = team
-
+  const atmosphere = useAtmosphere()
   useEffect(() => {
-    dispatch(filterTeamMember(null))
+    filterTeamMember(atmosphere, teamId, null)
   }, [teamId])
 
-  return (
-    <TeamTasksHeader
-      team={team}
-      teamMemberFilterId={teamMemberFilterId}
-      teamMemberFilterName={teamMemberFilterName}
-    />
-  )
+  return <TeamTasksHeader team={team} />
 }
 
-export default createFragmentContainer(connect(mapStateToProps)(TeamTasksHeaderContainer), {
+export default createFragmentContainer(TeamTasksHeaderContainer, {
   team: graphql`
     fragment TeamTasksHeaderContainer_team on Team {
       id

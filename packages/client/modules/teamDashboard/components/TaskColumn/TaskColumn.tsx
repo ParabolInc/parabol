@@ -66,7 +66,7 @@ interface Props extends WithAtmosphereProps {
   myTeamMemberId?: string
   tasks: TaskColumn_tasks
   status: TaskStatusEnum
-  teamMemberFilterId?: string
+  teamMemberFilterId?: string | null
   teams: any[]
 }
 

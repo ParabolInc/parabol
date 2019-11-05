@@ -2,7 +2,7 @@ import {TeamTasksHeader_team} from '../../../../__generated__/TeamTasksHeader_te
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
-import {NavLink, RouteComponentProps, withRouter} from 'react-router-dom'
+import {NavLink} from 'react-router-dom'
 import DashSectionControl from '../../../../components/Dashboard/DashSectionControl'
 import DashSectionControls from '../../../../components/Dashboard/DashSectionControls'
 import DashSectionHeader from '../../../../components/Dashboard/DashSectionHeader'
@@ -17,6 +17,7 @@ import {Breakpoint} from '../../../../types/constEnums'
 import lazyPreload from '../../../../utils/lazyPreload'
 import graphql from 'babel-plugin-relay/macro'
 import {ClassNames} from '@emotion/core'
+import useRouter from '../../../../hooks/useRouter'
 
 const OrgInfoBlock = styled('div')({
   alignItems: 'center',
@@ -51,15 +52,15 @@ const TeamDashTeamMemberMenu = lazyPreload(() =>
   )
 )
 
-interface Props extends RouteComponentProps<{}> {
+interface Props {
   team: TeamTasksHeader_team
-  teamMemberFilterId: string | null
-  teamMemberFilterName: string
 }
 
 const TeamTasksHeader = (props: Props) => {
-  const {history, teamMemberFilterId, teamMemberFilterName, team} = props
-  const {organization, teamId, teamName} = team
+  const {team} = props
+  const {history} = useRouter()
+  const {organization, teamId, teamName, teamMemberFilter} = team
+  const teamMemberFilterName = (teamMemberFilter && teamMemberFilter.preferredName) || 'All members'
   const {orgName, orgId} = organization
   const {togglePortal, menuProps, originRef, menuPortal} = useMenu(MenuPosition.UPPER_RIGHT, {
     isDropdown: true
@@ -105,20 +106,14 @@ const TeamTasksHeader = (props: Props) => {
             onMouseEnter={TeamDashTeamMemberMenu.preload}
             label={teamMemberFilterName}
           />
-          {menuPortal(
-            <TeamDashTeamMemberMenu
-              menuProps={menuProps}
-              team={team}
-              teamMemberFilterId={teamMemberFilterId}
-            />
-          )}
+          {menuPortal(<TeamDashTeamMemberMenu menuProps={menuProps} team={team} />)}
         </DashSectionControl>
       </DashSectionControls>
     </DashSectionHeader>
   )
 }
 
-export default createFragmentContainer(withRouter(TeamTasksHeader), {
+export default createFragmentContainer(TeamTasksHeader, {
   team: graphql`
     fragment TeamTasksHeader_team on Team {
       teamId: id
@@ -126,6 +121,9 @@ export default createFragmentContainer(withRouter(TeamTasksHeader), {
       organization {
         orgId: id
         orgName: name
+      }
+      teamMemberFilter {
+        preferredName
       }
       ...TeamDashTeamMemberMenu_team
     }

@@ -99,7 +99,7 @@ const AgendaAndTasks = (props: Props) => {
           <TeamTasksHeaderContainer team={team} />
         </TasksHeader>
         <TasksContent>
-          <TeamColumnsContainer teamId={teamId} viewer={viewer} />
+          <TeamColumnsContainer viewer={viewer} />
         </TasksContent>
       </TasksMain>
 

@@ -18,11 +18,13 @@ extend type RetrospectiveMeeting {
 extend type Team {
   contentFilter: String
   isMeetingSidebarCollapsed: Boolean
+  teamMemberFilter: TeamMember
 }
 
 extend type User {
   contentFilter: String
   topOfFAB: Int
+  teamFilter: Team
 }
 
 extend type Task {

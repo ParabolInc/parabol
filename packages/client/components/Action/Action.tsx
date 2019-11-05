@@ -7,6 +7,8 @@ import ErrorBoundary from '../ErrorBoundary'
 import LoadingComponent from '../LoadingComponent/LoadingComponent'
 import PrivateRoutes from '../PrivateRoutes'
 import Snackbar from '../Snackbar'
+import {css, Global} from '@emotion/core'
+import globalStyles from '../../styles/theme/globalStyles'
 
 const AnalyticsPage = lazy(() => import(/* webpackChunkName: 'AnalyticsPage' */ '../AnalyticsPage'))
 const AuthenticationPage = lazy(() =>
@@ -27,6 +29,11 @@ const InvitationLink = lazy(() =>
 const Action = memo(() => {
   return (
     <StrictMode>
+      <Global
+        styles={css`
+          ${globalStyles}
+        `}
+      />
       <ErrorBoundary>
         <Snackbar />
         <SocketHealthMonitor />

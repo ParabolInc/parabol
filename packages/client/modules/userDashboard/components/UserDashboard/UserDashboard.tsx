@@ -1,8 +1,6 @@
 import React, {lazy} from 'react'
 import {Route} from 'react-router'
 import {Switch} from 'react-router-dom'
-import userDashReducer from '../../ducks/userDashDuck'
-import withReducer from '../../../../decorators/withReducer/withReducer'
 
 const Organizations = lazy(() =>
   import(
@@ -47,4 +45,4 @@ const UserDashboard = (props: Props) => {
   )
 }
 
-export default withReducer({userDashboard: userDashReducer})(UserDashboard)
+export default UserDashboard
