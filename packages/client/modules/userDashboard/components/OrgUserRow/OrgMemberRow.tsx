@@ -17,7 +17,6 @@ import EmphasisTag from '../../../../components/Tag/EmphasisTag'
 import RoleTag from '../../../../components/Tag/RoleTag'
 import InactiveTag from '../../../../components/Tag/InactiveTag'
 import Toggle from '../../../../components/Toggle/Toggle'
-import Tooltip from '../../../../components/Tooltip/Tooltip'
 import withAtmosphere, {
   WithAtmosphereProps
 } from '../../../../decorators/withAtmosphere/withAtmosphere'
@@ -30,6 +29,7 @@ import lazyPreload from '../../../../utils/lazyPreload'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 import {Breakpoint} from '../../../../types/constEnums'
 import {OrgUserRole, TierEnum} from '../../../../types/graphql'
+import useTooltip from '../../../../hooks/useTooltip'
 
 const AvatarBlock = styled('div')({
   display: 'none',
@@ -146,6 +146,10 @@ const OrgMemberRow = (props: Props) => {
       })
     }
   }
+
+  const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipRef} = useTooltip<
+    HTMLDivElement
+  >(MenuPosition.LOWER_RIGHT)
   return (
     <StyledRow>
       <AvatarBlock>
@@ -181,23 +185,20 @@ const OrgMemberRow = (props: Props) => {
             </ToggleBlock>
           )}
           {isViewerLastBillingLeader && userId === viewerId && (
-            <Tooltip
-              tip={
+            <MenuToggleBlock
+              onMouseEnter={openTooltip}
+              onMouseLeave={closeTooltip}
+              ref={tooltipRef}
+            >
+              {tooltipPortal(
                 <div>
                   {'You need to promote another Billing Leader'}
                   <br />
                   {'before you can leave this role or Organization.'}
                 </div>
-              }
-              maxHeight={60}
-              maxWidth={200}
-              originAnchor={{vertical: 'top', horizontal: 'right'}}
-              targetAnchor={{vertical: 'bottom', horizontal: 'right'}}
-            >
-              <MenuToggleBlock>
-                <MenuButton disabled />
-              </MenuToggleBlock>
-            </Tooltip>
+              )}
+              <MenuButton disabled />
+            </MenuToggleBlock>
           )}
           {isViewerBillingLeader && !(isViewerLastBillingLeader && userId === viewerId) && (
             <MenuToggleBlock>
