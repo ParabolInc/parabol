@@ -53,7 +53,7 @@ const TeamDashTeamMemberMenu = lazyPreload(() =>
 
 interface Props extends RouteComponentProps<{}> {
   team: TeamTasksHeader_team
-  teamMemberFilterId: string
+  teamMemberFilterId: string | null
   teamMemberFilterName: string
 }
 

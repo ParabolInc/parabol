@@ -75,7 +75,7 @@ const AddTeamMemberModalDemo = lazyPreload(() =>
 
 const AddTeamMemberAvatarButton = (props: Props) => {
   const {isMeeting, team, teamMembers} = props
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip(
+  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
     MenuPosition.UPPER_CENTER
   )
   const {togglePortal: toggleModal, closePortal: closeModal, modalPortal} = useModal()
