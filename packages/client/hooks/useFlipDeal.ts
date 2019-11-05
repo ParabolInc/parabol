@@ -3,7 +3,6 @@ import {RefCallbackInstance} from '../types/generics'
 import {BezierCurve, ReflectionStackPerspective, Times} from '../types/constEnums'
 import requestDoubleAnimationFrame from '../components/RetroReflectPhase/requestDoubleAnimationFrame'
 
-const CARD_SPACING = 54
 const useFlipDeal = (count: number) => {
   const isAnimatingRef = useRef(false)
   const lastListItemsRef = useRef([] as RefCallbackInstance[])
@@ -19,12 +18,16 @@ const useFlipDeal = (count: number) => {
           Times.REFLECTION_DEAL_CARD_INIT_DELAY) /
           (count - 1)
       )
+      let cardSpacing = 0
       for (let i = 0; i < count; i++) {
         const delay = Times.REFLECTION_DEAL_CARD_INIT_DELAY + variableDelay * (count - i - 1)
         const lastReflection = lastListItemsRef.current[i]
         if (!lastReflection) return
-        const hiddenPenalty = i >= 3 ? ReflectionStackPerspective.Y : 0
-        const cachedTransform = `translateY(${-(CARD_SPACING + hiddenPenalty) * i}px)`
+        if (i > 0) {
+          const bbox = lastReflection.getBoundingClientRect()
+          cardSpacing += bbox.height - ReflectionStackPerspective.Y
+        }
+        const cachedTransform = `translateY(${-cardSpacing}px)`
         const cachedTransition = `transform ${Times.REFLECTION_DEAL_CARD_DURATION}ms ${delay}ms ${BezierCurve.STANDARD_CURVE}`
         lastReflection.style.transform = cachedTransform
         requestDoubleAnimationFrame(() => {
@@ -35,13 +38,18 @@ const useFlipDeal = (count: number) => {
     }
   }
   const reverse = (count: number) => {
+    let cardSpacing = 0
     for (let i = 0; i < count; i++) {
       const lastReflection = lastListItemsRef.current[i]
       if (!lastReflection) return
-      const hiddenPenalty = i >= 3 ? ReflectionStackPerspective.Y : 0
+      if (i > 0) {
+        const bbox = lastReflection.getBoundingClientRect()
+        cardSpacing += bbox.height - ReflectionStackPerspective.Y
+      }
+      let thisCardSpace = cardSpacing // scoped inside for-loop
       lastReflection.style.transition = `transform ${Times.REFLECTION_DEAL_CARD_DURATION}ms ${BezierCurve.STANDARD_CURVE}`
       requestAnimationFrame(() => {
-        lastReflection.style.transform = `translateY(${-(CARD_SPACING + hiddenPenalty) * i}px)`
+        lastReflection.style.transform = `translateY(${-thisCardSpace}px)`
       })
     }
     isAnimatingRef.current = false
