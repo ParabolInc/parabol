@@ -30,7 +30,6 @@ const LocalTimeHandler: Handler = {
     const clientClockOffset =
       (viewer.getValue('clientClockOffset') as number) ||
       setClientClockOffset(viewer, scheduledEndTime, timeRemaining)
-    console.log('clock offset', clientClockOffset)
     const localScheduledEndTime = scheduledEndTime + clientClockOffset
     const localScheduledEndTimeStr = new Date(localScheduledEndTime).toJSON()
     record.setValue(localScheduledEndTimeStr, 'localScheduledEndTime')
