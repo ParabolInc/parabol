@@ -3,11 +3,11 @@ import React, {lazy} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import LoadableModal from './LoadableModal'
 import {PALETTE} from '../styles/paletteV2'
 import SuggestedActionButton from './SuggestedActionButton'
 import SuggestedActionCard from './SuggestedActionCard'
 import SuggestedActionCopy from './SuggestedActionCopy'
+import useModal from '../hooks/useModal'
 
 interface Props {
   suggestedAction: SuggestedActionInviteYourTeam_suggestedAction
@@ -25,6 +25,7 @@ const SuggestedActionInviteYourTeam = (props: Props) => {
   const {suggestedAction} = props
   const {id: suggestedActionId, team} = suggestedAction
   const {name: teamName, teamMembers} = team
+  const {togglePortal, modalPortal, closePortal} = useModal()
   return (
     <SuggestedActionCard
       backgroundColor={PALETTE.BACKGROUND_BLUE}
@@ -35,11 +36,10 @@ const SuggestedActionInviteYourTeam = (props: Props) => {
         {'Invite your teammates to: '}
         <TeamName>{teamName}</TeamName>
       </SuggestedActionCopy>
-      <LoadableModal
-        LoadableComponent={AddTeamMemberModal}
-        queryVars={{team, teamMembers}}
-        toggle={<SuggestedActionButton>Invite Your Teammates</SuggestedActionButton>}
-      />
+      <SuggestedActionButton onClick={togglePortal}>Invite Your Teammates</SuggestedActionButton>
+      {modalPortal(
+        <AddTeamMemberModal closePortal={closePortal} team={team} teamMembers={teamMembers} />
+      )}
     </SuggestedActionCard>
   )
 }

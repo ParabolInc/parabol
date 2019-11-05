@@ -44,7 +44,7 @@ const modalStyles = {
   [PortalStatus.Entering]: {
     opacity: 1,
     transform: 'translateY(0)',
-    transition: `all ${Duration.MODAL_OPEN}ms ${DECELERATE}`
+    transition: `transform ${Duration.MODAL_OPEN}ms ${DECELERATE}, opacity ${Duration.MODAL_OPEN}ms ${DECELERATE}`
   },
   [PortalStatus.Entered]: {
     // wipe transform so it plays nicely with react-beautiful-dnd
@@ -52,20 +52,27 @@ const modalStyles = {
   [PortalStatus.Exiting]: {
     opacity: 0,
     transform: 'translateY(-32px)',
-    transition: `all ${Duration.PORTAL_CLOSE}ms ${DECELERATE}`
+    transition: `transform ${Duration.PORTAL_CLOSE}ms ${DECELERATE}, opacity ${Duration.PORTAL_CLOSE}ms ${DECELERATE}`
   }
 }
 const Scrim = styled('div')<{
   background: string
   portalStatus: PortalStatus
   backdropFilter?: string
-}>(({background, backdropFilter, portalStatus}) => ({
+}>(({background, portalStatus}) => ({
   background,
   height: '100%',
   position: 'fixed',
   width: '100%',
-  backdropFilter,
   ...backdropStyles[portalStatus]
+}))
+
+// Animating a blur is REALLY expensive, so we blur on the branch above to keep things flowing
+const BlurredScrim = styled('div')<{backdropFilter?: string}>(({backdropFilter}) => ({
+  height: '100%',
+  position: 'fixed',
+  width: '100%',
+  backdropFilter
 }))
 
 const ModalContents = styled('div')<{portalStatus: PortalStatus}>(({portalStatus}) => ({
@@ -102,12 +109,13 @@ const useModalPortal = (
   return (reactEl) => {
     return portal(
       <ModalBlock ref={targetRef as any}>
-        <Scrim
-          onClick={closePortal}
-          background={background || PALETTE.BACKGROUND_BACKDROP}
-          backdropFilter={backdropFilter}
-          portalStatus={portalStatus}
-        />
+        <BlurredScrim backdropFilter={backdropFilter}>
+          <Scrim
+            onClick={closePortal}
+            background={background || PALETTE.BACKGROUND_BACKDROP}
+            portalStatus={portalStatus}
+          />
+        </BlurredScrim>
         <ErrorBoundary
           fallback={(error) => <ModalError error={error} portalStatus={portalStatus} />}
         >
