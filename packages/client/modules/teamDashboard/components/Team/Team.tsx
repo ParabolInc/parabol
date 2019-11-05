@@ -1,9 +1,8 @@
 import {Team_team} from '../../../../__generated__/Team_team.graphql'
-import React, {Component, lazy, Suspense} from 'react'
+import React, {lazy, ReactNode, Suspense, useEffect} from 'react'
 import styled from '@emotion/styled'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
 import DashContent from '../../../../components/Dashboard/DashContent'
 import DashHeader from '../../../../components/Dashboard/DashHeader'
 import DashSearchControl from '../../../../components/Dashboard/DashSearchControl'
@@ -11,12 +10,11 @@ import DashboardAvatars from '../../../../components/DashboardAvatars/DashboardA
 import FlatButton from '../../../../components/FlatButton'
 import Icon from '../../../../components/Icon'
 import IconLabel from '../../../../components/IconLabel'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import EditableTeamName from '../EditTeamName/EditableTeamName'
 import TeamCallsToAction from '../TeamCallsToAction/TeamCallsToAction'
 import {PALETTE} from '../../../../styles/paletteV2'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useRouter from '../../../../hooks/useRouter'
 // import DebugButton from '../../../userDashboard/components/UserDashMain/DebugButton'
 
 const StyledButton = styled(FlatButton)({
@@ -51,97 +49,76 @@ const UnpaidTeamModalRoot = lazy(() =>
   )
 )
 
-interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
+interface Props {
+  children: ReactNode
   team: Team_team | null
   isSettings: boolean
 }
 
-class Team extends Component<Props> {
-  componentWillReceiveProps(nextProps) {
-    const {team: oldTeam} = this.props
-    if (oldTeam && oldTeam.contentFilter) {
-      if (!nextProps.team || nextProps.team.id !== oldTeam.id) {
-        this.setContentFilter('')
-      }
-    }
-  }
-
-  componentWillUnmount() {
-    if (this.props.team && this.props.team.contentFilter) {
-      this.setContentFilter('')
-    }
-  }
-
-  setContentFilter(nextValue) {
-    const {atmosphere, team} = this.props
-    if (!team) return
-    const {id: teamId} = team
+const Team = (props: Props) => {
+  const atmosphere = useAtmosphere()
+  const {history} = useRouter()
+  const {children, isSettings, team} = props
+  const teamId = team && team.id
+  const contentFilter = team && team.contentFilter
+  const setContentFilter = (nextValue: string) => {
     commitLocalUpdate(atmosphere, (store) => {
-      const teamProxy = store.get(teamId)
+      const teamProxy = store.get(teamId!)
       teamProxy && teamProxy.setValue(nextValue, 'contentFilter')
     })
   }
+  useEffect(() => {
+    if (contentFilter) {
+      setContentFilter('')
+    }
+  }, [teamId])
 
-  updateFilter = (e) => {
-    this.setContentFilter(e.target.value)
+  if (!team || !teamId) return null
+  const {isPaid} = team
+  const updateFilter = (e) => {
+    setContentFilter(e.target.value)
   }
-  goToTeamSettings = () => {
-    const {history, team} = this.props
-    if (!team) return
-    const {id: teamId} = team
+
+  const goToTeamSettings = () => {
     history.push(`/team/${teamId}/settings/`)
   }
-  goToTeamDashboard = () => {
-    const {history, team} = this.props
-    if (!team) return
-    const {id: teamId} = team
+
+  const goToTeamDashboard = () => {
     history.push(`/team/${teamId}/`)
   }
 
-  render() {
-    const {children, isSettings, team} = this.props
-    if (!team) return null
-    const {id: teamId, isPaid} = team
-    const hasOverlay = !isPaid
+  const hasOverlay = !isPaid
 
-    return (
-      <>
-        <Suspense fallback={''}>{!isPaid && <UnpaidTeamModalRoot teamId={teamId} />}</Suspense>
-        <DashHeader hasOverlay={hasOverlay} key={`team${isSettings ? 'Dash' : 'Settings'}Header`}>
-          <TeamDashHeaderInner>
-            {isSettings ? (
-              <>
-                <IconButton
-                  aria-label='Back to Team Dashboard'
-                  key='1'
-                  onClick={this.goToTeamDashboard}
-                >
-                  <BackIcon>arrow_back</BackIcon>
-                </IconButton>
-                <EditableTeamName team={team} />
-              </>
-            ) : (
-              <>
-                <DashSearchControl
-                  onChange={this.updateFilter}
-                  placeholder='Search Tasks & Agenda'
-                />
-                <StyledButton aria-label='Team Settings' key='2' onClick={this.goToTeamSettings}>
-                  <IconLabel icon='settings' label='Team Settings' />
-                </StyledButton>
-                <DashboardAvatars team={team} />
-                <TeamCallsToAction team={team} />
-              </>
-            )}
-          </TeamDashHeaderInner>
-        </DashHeader>
-        <DashContent hasOverlay={hasOverlay}>{children}</DashContent>
-      </>
-    )
-  }
+  return (
+    <>
+      <Suspense fallback={''}>{!isPaid && <UnpaidTeamModalRoot teamId={teamId} />}</Suspense>
+      <DashHeader hasOverlay={hasOverlay} key={`team${isSettings ? 'Dash' : 'Settings'}Header`}>
+        <TeamDashHeaderInner>
+          {isSettings ? (
+            <>
+              <IconButton aria-label='Back to Team Dashboard' key='1' onClick={goToTeamDashboard}>
+                <BackIcon>arrow_back</BackIcon>
+              </IconButton>
+              <EditableTeamName team={team} />
+            </>
+          ) : (
+            <>
+              <DashSearchControl onChange={updateFilter} placeholder='Search Tasks & Agenda' />
+              <StyledButton aria-label='Team Settings' key='2' onClick={goToTeamSettings}>
+                <IconLabel icon='settings' label='Team Settings' />
+              </StyledButton>
+              <DashboardAvatars team={team} />
+              <TeamCallsToAction team={team} />
+            </>
+          )}
+        </TeamDashHeaderInner>
+      </DashHeader>
+      <DashContent hasOverlay={hasOverlay}>{children}</DashContent>
+    </>
+  )
 }
 
-export default createFragmentContainer(withAtmosphere(withRouter(Team)), {
+export default createFragmentContainer(Team, {
   team: graphql`
     fragment Team_team on Team {
       contentFilter
