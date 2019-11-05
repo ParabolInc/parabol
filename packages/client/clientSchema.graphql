@@ -22,6 +22,8 @@ extend type Team {
 
 extend type User {
   contentFilter: String
+  # If positive, client clock is ahead of server clock by this many ms
+  clientClockOffset: Int
   topOfFAB: Int
 }
 
@@ -47,4 +49,28 @@ extend type RetroPhaseItem {
 
 extend type RetrospectiveMeetingSettings {
   activeTemplateId: String
+}
+
+extend interface NewMeetingStage {
+  localScheduledEndTime: String
+}
+
+extend type CheckInStage {
+  localScheduledEndTime: String
+}
+
+extend type GenericMeetingStage {
+  localScheduledEndTime: String
+}
+
+extend type RetroDiscussStage {
+  localScheduledEndTime: String
+}
+
+extend type UpdatesStage {
+  localScheduledEndTime: String
+}
+
+extend type AgendaItemsStage {
+  localScheduledEndTime: String
 }

@@ -38,7 +38,7 @@
     "@types/react-relay": "^7.0.0",
     "@types/react-router": "^5.0.3",
     "@types/react-router-dom": "^4.3.2",
-    "@types/relay-runtime": "https://github.com/mattkrick/relay-runtime-strict-types/tarball/01dd857d64e45ea8f4fb5c51c1c7c7bbfb053f9d",
+    "@types/relay-runtime": "^6.0.9",
     "@types/segment-analytics": "^0.0.31",
     "@types/shortid": "^0.0.29",
     "@types/stripe-v2": "^2.0.1",
