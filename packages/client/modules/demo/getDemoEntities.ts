@@ -2,7 +2,7 @@ import {IGoogleAnalyzedEntity} from '../../types/graphql'
 
 type Response = IGoogleAnalyzedEntity[][]
 const getDemoEntities = async (text: string) => {
-  if (!text) return []
+  if (!text || text.length <= 2) return []
   const res = await window.fetch('/get-demo-entities', {
     method: 'POST',
     headers: {

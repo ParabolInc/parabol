@@ -43,6 +43,7 @@ import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraft
 import entityLookup from './entityLookup'
 import getDemoEntities from './getDemoEntities'
 import stringSimilarity from 'string-similarity'
+import normalizeRawDraftJS from '../../validation/normalizeRawDraftJS'
 
 export type DemoReflection = Omit<IRetroReflection, 'autoReflectionGroupId' | 'team'> & {
   creatorId: string
@@ -287,11 +288,12 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const phaseItem = reflectPhase.reflectPrompts.find((prompt) => prompt.id === retroPhaseItemId)
       const reflectionGroupId = groupId || this.getTempId('refGroup')
       const reflectionId = id || this.getTempId('ref')
-      const plaintextContent = extractTextFromDraftString(content)
+      const normalizedContent = normalizeRawDraftJS(content)
+      const plaintextContent = extractTextFromDraftString(normalizedContent)
       let entities = [] as IGoogleAnalyzedEntity[]
       if (userId !== demoViewerId) {
         entities = entityLookup[reflectionId].entities
-      } else if (plaintextContent && plaintextContent.length > 2) {
+      } else {
         entities = await getDemoEntities(plaintextContent)
       }
 
@@ -302,7 +304,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         reflectionId,
         createdAt: now,
         creatorId: userId,
-        content,
+        content: normalizedContent,
         plaintextContent,
         dragContext: null,
         editorIds: [],
@@ -851,7 +853,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const now = new Date().toJSON()
       Object.assign(reflectionGroup, {
         title,
-        titleIsUsedDefined: true,
+        titleIsUserDefined: true,
         updatedAt: now
       })
       const data = {
