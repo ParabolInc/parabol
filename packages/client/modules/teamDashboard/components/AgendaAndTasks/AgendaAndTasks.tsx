@@ -9,7 +9,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {desktopSidebarShadow, navDrawerShadow} from '../../../../styles/elevation'
 import {AgendaAndTasks_viewer} from '__generated__/AgendaAndTasks_viewer.graphql'
-import {RightSidebar} from '../../../../types/constEnums'
+import {RightSidebar, ZIndex} from '../../../../types/constEnums'
 
 const RootBlock = styled('div')({
   display: 'flex',
@@ -68,7 +68,7 @@ const AgendaMain = styled('div')<{hideAgenda: boolean | null}>(({hideAgenda}) =>
   '@media screen and (min-width: 800px)': {
     boxShadow: hideAgenda ? 'none' : desktopSidebarShadow
   },
-  zIndex: 2 // make sure shadow is above cards
+  zIndex: ZIndex.SIDE_SHEET // make sure shadow is above cards
 }))
 
 const AgendaContent = styled('div')({

@@ -4,6 +4,7 @@ import AnimatedFade from './AnimatedFade'
 import Modal from './Modal'
 import {PALETTE} from '../styles/paletteV2'
 import {modalShadow} from '../styles/elevation'
+import {ZIndex} from '../types/constEnums'
 import {WithAnimatedPortalProps} from '../decorators/withAnimatedPortal'
 
 const ModalBlock = styled('div')({
@@ -15,7 +16,7 @@ const ModalBlock = styled('div')({
   position: 'fixed',
   top: 0,
   width: '100%',
-  zIndex: 400
+  zIndex: ZIndex.DIALOG
 })
 
 const ModalContents = styled('div')({

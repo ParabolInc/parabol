@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {bottomBarShadow, desktopBarShadow} from '../../../../styles/elevation'
 import {PALETTE} from '../../../../styles/paletteV2'
-import {Breakpoint} from '../../../../types/constEnums'
+import {Breakpoint, ZIndex} from '../../../../types/constEnums'
 import React, {ReactNode} from 'react'
 
 const MeetingFacilitatorBarStyles = styled('div')({
@@ -17,11 +17,11 @@ const MeetingFacilitatorBarStyles = styled('div')({
   minHeight: 56,
   overflowX: 'auto',
   width: '100%',
-  zIndex: 8,
+  zIndex: ZIndex.BOTTOM_BAR,
 
   [`@media screen and (min-width: ${Breakpoint.MEETING_FACILITATOR_BAR}px)`]: {
     boxShadow: desktopBarShadow,
-    zIndex: 4
+    zIndex: ZIndex.BOTTOM_BAR_DESKTOP
   }
 })
 

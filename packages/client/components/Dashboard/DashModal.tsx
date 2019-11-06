@@ -3,7 +3,7 @@ import styled from '@emotion/styled'
 import {modalShadow} from '../../styles/elevation'
 import {PALETTE} from '../../styles/paletteV2'
 import {DECELERATE} from '../../styles/animation'
-import {Radius} from '../../types/constEnums'
+import {Radius, ZIndex} from '../../types/constEnums'
 
 const animateIn = {
   '0%': {
@@ -29,7 +29,7 @@ const Backdrop = styled('div')({
   right: 0,
   textAlign: 'center',
   top: 0,
-  zIndex: 200
+  zIndex: ZIndex.DIALOG
 })
 
 const Modal = styled('div')({

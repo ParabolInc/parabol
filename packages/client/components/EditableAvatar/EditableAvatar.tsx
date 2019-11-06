@@ -38,7 +38,7 @@ const EditableAvatarEditOverlay = styled('div')<Pick<Props, 'hasPanel' | 'size'>
     position: 'absolute',
     top: 0,
     width: size,
-    zIndex: 200,
+    zIndex: 2,
 
     '&:hover': {
       opacity: 0.75,
@@ -52,7 +52,7 @@ const EditableAvatarImgBlock = styled('div')<Pick<Props, 'hasPanel' | 'size'>>(
     height: hasPanel ? size - panelPaddingHorizontal : size,
     position: 'relative',
     width: hasPanel ? size - panelPaddingHorizontal : size,
-    zIndex: 100
+    zIndex: 1
   })
 )
 
