@@ -1,9 +1,8 @@
-import React, {Component} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {AutoSizer, CellMeasurer, CellMeasurerCache, Grid, InfiniteLoader} from 'react-virtualized'
 import NullableTask from '../../../../components/NullableTask/NullableTask'
-import Helmet from 'react-helmet'
 import TeamArchiveHeader from '../TeamArchiveHeader/TeamArchiveHeader'
 import getRallyLink from '../../../userDashboard/helpers/getRallyLink'
 import {TeamArchive_viewer} from '__generated__/TeamArchive_viewer.graphql'
@@ -12,6 +11,7 @@ import {TeamArchive_team} from '__generated__/TeamArchive_team.graphql'
 import styled from '@emotion/styled'
 import {Breakpoint, MathEnum, NavSidebar} from '../../../../types/constEnums'
 import {PALETTE} from '../../../../styles/paletteV2'
+import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 
 const CARD_WIDTH = 256 + 32 // account for box model and horizontal padding
 const GRID_PADDING = 16
@@ -20,6 +20,12 @@ const getColumnCount = () => {
   if (typeof window === 'undefined') return 4
   const {innerWidth} = window
   return Math.floor((innerWidth - NavSidebar.WIDTH - GRID_PADDING) / CARD_WIDTH)
+}
+
+const getGridIndex = (index: number, columnCount: number) => {
+  const rowIndex = Math.floor(index / columnCount)
+  const columnIndex = index % columnCount
+  return {rowIndex, columnIndex}
 }
 
 const Root = styled('div')({
@@ -91,61 +97,39 @@ interface Props {
   team: TeamArchive_team
 }
 
-class TeamArchive extends Component<Props> {
-  columnCount: number
-  _onRowsRendered: any
-  gridRef: any
-
-  constructor(props) {
-    super(props)
-    this.columnCount = getColumnCount()
+const TeamArchive = (props: Props) => {
+  const {viewer, relay, team, teamId} = props
+  const {hasMore, isLoading, loadMore} = relay
+  const {teamName} = team
+  const {archivedTasks} = viewer
+  const {edges} = archivedTasks!
+  const [columnCount] = useState(getColumnCount)
+  const _onRowsRenderedRef = useRef<
+    ({startIndex, stopIndex}: {startIndex: number; stopIndex: number}) => void
+  >()
+  const gridRef = useRef<any>(null)
+  const oldEdgesRef = useRef<typeof edges>()
+  const getIndex = (columnIndex: number, rowIndex: number) => {
+    return columnCount * rowIndex + columnIndex
   }
-
-  componentWillUpdate(nextProps) {
-    const {viewer} = this.props
-    const {archivedTasks} = viewer
-    const {edges: oldEdges} = archivedTasks!
-    const {
-      viewer: {
-        archivedTasks: {edges}
-      }
-    } = nextProps
-    this.invalidateOnAddRemove(oldEdges, edges)
-  }
-
-  getGridIndex(index) {
-    const rowIndex = Math.floor(index / this.columnCount)
-    const columnIndex = index % this.columnCount
-    return {rowIndex, columnIndex}
-  }
-
-  getIndex(columnIndex, rowIndex) {
-    return this.columnCount * rowIndex + columnIndex
-  }
-
-  isRowLoaded = ({index}) => {
-    const {viewer} = this.props
-    const {archivedTasks} = viewer
-    const {edges} = archivedTasks!
-    return index < edges.length
-  }
-
-  loadMore = () => {
-    const {
-      relay: {hasMore, isLoading, loadMore}
-    } = this.props
+  const isRowLoaded = ({index}) => index < edges.length
+  const maybeLoadMore = () => {
     if (!hasMore() || isLoading()) return
-    loadMore(this.columnCount * 10)
+    loadMore(columnCount * 10)
   }
+  const [cellCache] = useState(
+    () =>
+      new CellMeasurerCache({
+        defaultHeight: 182,
+        minHeight: 106,
+        fixedWidth: true
+      })
+  )
 
-  cellCache = new CellMeasurerCache({
-    defaultHeight: 182,
-    minHeight: 106,
-    fixedWidth: true
-  })
-
-  invalidateOnAddRemove(oldEdges, edges) {
+  const invalidateOnAddRemove = (oldEdges, edges) => {
     if (
+      edges &&
+      oldEdges &&
       edges !== oldEdges &&
       edges.length !== oldEdges.length &&
       edges.length > 0 &&
@@ -168,23 +152,27 @@ class TeamArchive extends Component<Props> {
           break
         }
       }
-      const {columnIndex, rowIndex} = this.getGridIndex(ii)
-      this.gridRef.recomputeGridSize({columnIndex, rowIndex})
-      this.cellCache.clearAll()
+      const {columnIndex, rowIndex} = getGridIndex(ii, columnCount)
+      gridRef.current.recomputeGridSize({columnIndex, rowIndex})
+      cellCache.clearAll()
     }
   }
 
-  rowRenderer = ({columnIndex, parent, rowIndex, key, style}) => {
+  useEffect(() => {
+    const {current: oldEdges} = oldEdgesRef
+    invalidateOnAddRemove(oldEdges, edges)
+    oldEdgesRef.current = edges
+  }, [edges, oldEdgesRef])
+
+  useDocumentTitle(`Team Archive | ${teamName}`)
+  const rowRenderer = ({columnIndex, parent, rowIndex, key, style}) => {
     // TODO render a very inexpensive lo-fi card while scrolling. We should reuse that cheap card for drags, too
-    const {viewer} = this.props
-    const {archivedTasks} = viewer
-    const {edges} = archivedTasks!
-    const index = this.getIndex(columnIndex, rowIndex)
-    if (!this.isRowLoaded({index})) return undefined
+    const index = getIndex(columnIndex, rowIndex)
+    if (!isRowLoaded({index})) return undefined
     const task = edges[index].node
     return (
       <CellMeasurer
-        cache={this.cellCache}
+        cache={cellCache}
         columnIndex={columnIndex}
         key={key}
         parent={parent}
@@ -205,83 +193,75 @@ class TeamArchive extends Component<Props> {
     )
   }
 
-  _onSectionRendered = ({columnStartIndex, columnStopIndex, rowStartIndex, rowStopIndex}) => {
-    this._onRowsRendered({
-      startIndex: this.getIndex(columnStartIndex, rowStartIndex),
-      stopIndex: this.getIndex(columnStopIndex, rowStopIndex)
+  const _onSectionRendered = ({columnStartIndex, columnStopIndex, rowStartIndex, rowStopIndex}) => {
+    if (!_onRowsRenderedRef.current) return
+    _onRowsRenderedRef.current({
+      startIndex: getIndex(columnStartIndex, rowStartIndex),
+      stopIndex: getIndex(columnStopIndex, rowStopIndex)
     })
   }
 
-  render() {
-    const {team, teamId, viewer} = this.props
-    if (!team) return null
-    const {teamName} = team
-    const {archivedTasks} = viewer
-    const {edges} = archivedTasks!
-    return (
-      <Root>
-        <Helmet title={`Team Archive | ${teamName}`} />
-        <Header>
-          <TeamArchiveHeader teamId={teamId} />
-          <Border />
-        </Header>
-
-        <Body>
-          {edges.length ? (
-            <CardGrid>
-              <InfiniteLoader
-                isRowLoaded={this.isRowLoaded}
-                loadMoreRows={this.loadMore}
-                rowCount={MathEnum.MAX_INT}
-              >
-                {({onRowsRendered, registerChild}) => {
-                  this._onRowsRendered = onRowsRendered
-                  return (
-                    <div style={{flex: '1 1 auto'}}>
-                      <AutoSizer>
-                        {({height, width}) => {
-                          return (
-                            <Grid
-                              cellRenderer={this.rowRenderer}
-                              columnCount={this.columnCount}
-                              columnWidth={CARD_WIDTH}
-                              deferredMeasurementCache={this.cellCache}
-                              estimatedColumnSize={CARD_WIDTH}
-                              estimatedRowSize={182}
-                              height={height}
-                              onRowsRendered={onRowsRendered}
-                              onSectionRendered={this._onSectionRendered}
-                              ref={(c) => {
-                                this.gridRef = c
-                                registerChild(c)
-                              }}
-                              rowCount={Math.ceil(edges.length / this.columnCount)}
-                              rowHeight={this.cellCache.rowHeight}
-                              style={{outline: 'none'}}
-                              width={width}
-                            />
-                          )
-                        }}
-                      </AutoSizer>
-                    </div>
-                  )
-                }}
-              </InfiniteLoader>
-            </CardGrid>
-          ) : (
-            <EmptyMsg>
-              <span>
-                {'🤓'}
-                {' Hi there! There are zero archived tasks. '}
-                {'Nothing to see here. How about a fun rally video? '}
-                <LinkSpan>{getRallyLink()}!</LinkSpan>
-              </span>
-            </EmptyMsg>
-          )}
-        </Body>
-      </Root>
-    )
-  }
+  return (
+    <Root>
+      <Header>
+        <TeamArchiveHeader teamId={teamId} />
+        <Border />
+      </Header>
+      <Body>
+        {edges.length ? (
+          <CardGrid>
+            <InfiniteLoader
+              isRowLoaded={isRowLoaded}
+              loadMoreRows={maybeLoadMore}
+              rowCount={MathEnum.MAX_INT}
+            >
+              {({onRowsRendered, registerChild}) => {
+                _onRowsRenderedRef.current = onRowsRendered
+                return (
+                  <div style={{flex: '1 1 auto'}}>
+                    <AutoSizer>
+                      {({height, width}) => {
+                        return (
+                          <Grid
+                            cellRenderer={rowRenderer}
+                            columnCount={columnCount}
+                            columnWidth={CARD_WIDTH}
+                            deferredMeasurementCache={cellCache}
+                            estimatedColumnSize={CARD_WIDTH}
+                            estimatedRowSize={182}
+                            height={height}
+                            onRowsRendered={onRowsRendered}
+                            onSectionRendered={_onSectionRendered}
+                            ref={(c) => {
+                              gridRef.current = c
+                              registerChild(c)
+                            }}
+                            rowCount={Math.ceil(edges.length / columnCount)}
+                            rowHeight={cellCache.rowHeight}
+                            style={{outline: 'none'}}
+                            width={width}
+                          />
+                        )
+                      }}
+                    </AutoSizer>
+                  </div>
+                )
+              }}
+            </InfiniteLoader>
+          </CardGrid>
+        ) : (
+          <EmptyMsg>
+            <span>
+              {'🤓'}
+              {' Hi there! There are zero archived tasks. '}
+              {'Nothing to see here. How about a fun rally video? '}
+              <LinkSpan>{getRallyLink()}!</LinkSpan>
+            </span>
+          </EmptyMsg>
+        )}
+      </Body>
+    </Root>
+  )
 }
 
 export default createPaginationContainer(

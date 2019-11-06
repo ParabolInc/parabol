@@ -1,6 +1,5 @@
 import React, {lazy} from 'react'
 import styled from '@emotion/styled'
-import Helmet from 'react-helmet'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import EditableAvatar from '../../../components/EditableAvatar/EditableAvatar'
@@ -22,6 +21,7 @@ import NotificationErrorMessage from '../../notifications/components/Notificatio
 import useModal from '../../../hooks/useModal'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
+import useDocumentTitle from '../../../hooks/useDocumentTitle'
 
 const SettingsBlock = styled('div')({
   width: '100%'
@@ -92,9 +92,9 @@ const UserProfile = (props: Props) => {
   const {picture} = viewer
   const pictureOrDefault = picture || defaultUserAvatar
   const {togglePortal, modalPortal} = useModal()
+  useDocumentTitle('My Profile | Parabol')
   return (
     <UserSettingsWrapper>
-      <Helmet title='My Profile | Parabol' />
       <SettingsBlock>
         <Panel label='My Information'>
           <SettingsForm onSubmit={onSubmit}>

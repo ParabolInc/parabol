@@ -3,11 +3,11 @@ import getRethink from './rethinkDriver'
 export default async function cloneProdToDev() {
   const r = await getRethink()
   try {
-    await r.dbDrop('actionDevelopment')
+    await r.dbDrop('actionDevelopment').run()
   } catch (e) {
     // empty
   }
-  await r.dbCreate('actionDevelopment')
+  await r.dbCreate('actionDevelopment').run()
   const list = await r
     .db('actionProduction')
     .tableList()

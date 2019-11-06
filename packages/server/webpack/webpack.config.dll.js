@@ -36,8 +36,6 @@ module.exports = {
       'react-day-picker',
       'react-dom',
       'react-dom-confetti',
-      'react-helmet',
-      'react-hotkey-hoc',
       'react-relay',
       'react-router',
       'react-router-dom',

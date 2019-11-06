@@ -1,6 +1,5 @@
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import Helmet from 'react-helmet'
 import EmptyOrgsCallOut from '../EmptyOrgsCallOut/EmptyOrgsCallOut'
 import OrganizationRow from '../OrganizationRow/OrganizationRow'
 import UserSettingsWrapper from '../UserSettingsWrapper/UserSettingsWrapper'
@@ -10,6 +9,7 @@ import graphql from 'babel-plugin-relay/macro'
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
 import {Organizations_viewer} from '__generated__/Organizations_viewer.graphql'
 import useRouter from '../../../../hooks/useRouter'
+import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 
 interface Props {
   viewer: Organizations_viewer
@@ -26,10 +26,9 @@ const Organizations = (props: Props) => {
       {'Add New Organization'}
     </LinkButton>
   )
-
+  useDocumentTitle('My Organizations | Parabol')
   return (
     <UserSettingsWrapper>
-      <Helmet title='My Organizations | Parabol' />
       <SettingsWrapper>
         {organizations.length ? (
           <Panel label='Organizations' controls={addNewOrg()}>

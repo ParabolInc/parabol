@@ -1,7 +1,6 @@
 import {Organization_viewer} from '../../../../__generated__/Organization_viewer.graphql'
 import React, {lazy, useEffect} from 'react'
 import styled from '@emotion/styled'
-import Helmet from 'react-helmet'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
@@ -18,6 +17,7 @@ import OrganizationPage from './OrganizationPage'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {TierEnum} from '../../../../types/graphql'
 import useModal from '../../../../hooks/useModal'
+import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 
 const AvatarAndName = styled('div')({
   alignItems: 'flex-start',
@@ -74,14 +74,15 @@ const Organization = (props: Props) => {
       history.replace('/me')
     }
   }, [history, organization])
+  const {togglePortal, modalPortal} = useModal()
+  const orgName = (organization && organization.name) || 'Unknown'
+  useDocumentTitle(`Organization Settings | ${orgName}`)
   if (!organization) return <div />
-  const {orgId, createdAt, isBillingLeader, name: orgName, picture: orgAvatar, tier} = organization
+  const {orgId, createdAt, isBillingLeader, picture: orgAvatar, tier} = organization
   const pictureOrDefault = orgAvatar || defaultOrgAvatar
   const onlyShowMembers = !isBillingLeader && tier !== TierEnum.personal
-  const {togglePortal, modalPortal} = useModal()
   return (
     <UserSettingsWrapper>
-      <Helmet title={`Organization Settings | ${orgName}`} />
       <SettingsWrapper narrow>
         <BackControlBlock>
           <DashNavControl
