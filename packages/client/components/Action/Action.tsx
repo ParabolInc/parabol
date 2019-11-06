@@ -1,4 +1,4 @@
-import React, {lazy, memo, Suspense, StrictMode} from 'react'
+import React, {lazy, memo, Suspense} from 'react'
 import {Route, Switch} from 'react-router'
 import SocketHealthMonitor from '../SocketHealthMonitor'
 import {CREATE_ACCOUNT_SLUG, SIGNIN_SLUG} from '../../utils/constants'
@@ -28,51 +28,49 @@ const InvitationLink = lazy(() =>
 
 const Action = memo(() => {
   return (
-    <StrictMode>
+    <ErrorBoundary>
       <Global
         styles={css`
           ${globalStyles}
         `}
       />
-      <ErrorBoundary>
-        <Snackbar />
-        <SocketHealthMonitor />
-        <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.WHOLE_PAGE} />}>
-          <AnalyticsPage />
-          <Switch>
-            <Route exact path='/' render={(p) => <AuthenticationPage {...p} page={'signin'} />} />
-            <Route
-              exact
-              path={`/${SIGNIN_SLUG}`}
-              render={(p) => <AuthenticationPage {...p} page={'signin'} />}
-            />
-            <Route
-              exact
-              path={`/${CREATE_ACCOUNT_SLUG}`}
-              render={(p) => <AuthenticationPage {...p} page={'create-account'} />}
-            />
-            <Route exact path={`/auth/:provider`} component={AuthProvider} />
-            <Route exact path={`/oauth-redirect`} component={OauthRedirect} />
-            <Route path={`/saml-redirect`} component={SAMLRedirect} />
-            <Route
-              path='/retrospective-demo/:localPhaseSlug?/:stageIdxSlug?'
-              component={DemoMeeting}
-            />
-            <Route path='/retrospective-demo-summary' component={DemoSummary} />
-            <Route
-              exact
-              path={`/reset-password`}
-              render={(p) => <AuthenticationPage {...p} page={'reset-password'} />}
-            />
-            {/*Legacy route, still referenced by old invite emails*/}
-            <Route path='/invitation/:inviteToken' component={TeamInvitation} />
-            <Route path='/team-invitation/:token' component={TeamInvitation} />
-            <Route path='/invitation-link/:token' component={InvitationLink} />
-            <Route component={PrivateRoutes} />
-          </Switch>
-        </Suspense>
-      </ErrorBoundary>
-    </StrictMode>
+      <Snackbar />
+      <SocketHealthMonitor />
+      <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.WHOLE_PAGE} />}>
+        <AnalyticsPage />
+        <Switch>
+          <Route exact path='/' render={(p) => <AuthenticationPage {...p} page={'signin'} />} />
+          <Route
+            exact
+            path={`/${SIGNIN_SLUG}`}
+            render={(p) => <AuthenticationPage {...p} page={'signin'} />}
+          />
+          <Route
+            exact
+            path={`/${CREATE_ACCOUNT_SLUG}`}
+            render={(p) => <AuthenticationPage {...p} page={'create-account'} />}
+          />
+          <Route exact path={`/auth/:provider`} component={AuthProvider} />
+          <Route exact path={`/oauth-redirect`} component={OauthRedirect} />
+          <Route path={`/saml-redirect`} component={SAMLRedirect} />
+          <Route
+            path='/retrospective-demo/:localPhaseSlug?/:stageIdxSlug?'
+            component={DemoMeeting}
+          />
+          <Route path='/retrospective-demo-summary' component={DemoSummary} />
+          <Route
+            exact
+            path={`/reset-password`}
+            render={(p) => <AuthenticationPage {...p} page={'reset-password'} />}
+          />
+          {/*Legacy route, still referenced by old invite emails*/}
+          <Route path='/invitation/:inviteToken' component={TeamInvitation} />
+          <Route path='/team-invitation/:token' component={TeamInvitation} />
+          <Route path='/invitation-link/:token' component={InvitationLink} />
+          <Route component={PrivateRoutes} />
+        </Switch>
+      </Suspense>
+    </ErrorBoundary>
   )
 })
 
