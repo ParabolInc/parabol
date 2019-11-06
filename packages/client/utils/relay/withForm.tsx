@@ -117,7 +117,7 @@ const withForm = (fields: FieldInputDict) => <P extends WithFormProps>(
       }
     }
 
-    componentWillMount() {
+    componentDidMount() {
       this._mounted = true
     }
 
