@@ -42,6 +42,7 @@ const TaskFooterIntegrateMenuRoot = ({
       variables={{teamId, userId}}
       environment={atmosphere}
       query={query}
+      fetchPolicy={'store-or-network' as any}
       render={renderQuery(TaskFooterIntegrateMenu, {
         loadingDelay,
         menuLoadingWidth: loadingWidth,

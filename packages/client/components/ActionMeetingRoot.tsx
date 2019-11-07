@@ -35,7 +35,7 @@ const ActionMeetingRoot = () => {
       environment={atmosphere}
       query={query}
       variables={{teamId, meetingType}}
-      fetchPolicy={'store-or-network'}
+      fetchPolicy={'store-or-network' as any}
       render={renderQuery(ActionMeeting)}
     />
   )

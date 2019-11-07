@@ -22,6 +22,7 @@ const MyDashboardTasksRoot = ({atmosphere}: Props) => {
       environment={atmosphere}
       query={query}
       variables={{}}
+      fetchPolicy={'store-or-network' as any}
       render={renderQuery(MyDashboardTasks, {size: LoaderSize.PANEL})}
     />
   )

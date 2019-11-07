@@ -5,6 +5,7 @@ import {QueryRenderer} from 'react-relay'
 import TeamContainer from '../containers/Team/TeamContainer'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {TeamRootQuery} from '__generated__/TeamRootQuery.graphql'
+import {createOperationDescriptor, getRequest} from 'relay-runtime'
 
 const query = graphql`
   query TeamRootQuery($teamId: ID!) {
@@ -26,6 +27,7 @@ const TeamRoot = ({location, match}: Props) => {
       environment={atmosphere}
       query={query}
       variables={{teamId}}
+      fetchPolicy={'store-or-network' as any}
       render={({props: renderProps}) => {
         const viewer = renderProps ? renderProps.viewer : null
         // @ts-ignore

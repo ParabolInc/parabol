@@ -26,6 +26,7 @@ const OrgBillingRoot = ({organization}: Props) => {
       environment={atmosphere}
       query={query}
       variables={{orgId: organization.id, first: 3}}
+      fetchPolicy={'store-or-network' as any}
       render={renderQuery(OrgBilling, {props: {organization}, size: LoaderSize.PANEL})}
     />
   )

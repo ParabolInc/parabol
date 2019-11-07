@@ -30,6 +30,7 @@ const TeamArchiveRoot = ({match, team}: Props) => {
       environment={atmosphere}
       query={query}
       variables={{teamId, first: 40}}
+      fetchPolicy={'store-or-network' as any}
       render={renderQuery(TeamArchive, {
         props: {teamId, team, userId: viewerId},
         size: LoaderSize.PANEL

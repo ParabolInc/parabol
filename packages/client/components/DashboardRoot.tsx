@@ -30,6 +30,7 @@ const DashboardRoot = ({atmosphere}: Props) => {
       environment={atmosphere}
       query={query}
       variables={{}}
+      fetchPolicy={'store-or-network' as any}
       render={({props}) => {
         return <Dashboard viewer={props ? (props as any).viewer : null} />
       }}

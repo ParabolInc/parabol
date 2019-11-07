@@ -30,6 +30,7 @@ const AgendaAndTasksRoot = (props: Props) => {
       query={query}
       variables={{teamId}}
       render={renderQuery(AgendaAndTasks, {size: LoaderSize.PANEL})}
+      fetchPolicy={'store-or-network' as any}
     />
   )
 }
