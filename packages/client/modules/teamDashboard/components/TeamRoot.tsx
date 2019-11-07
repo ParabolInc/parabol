@@ -5,7 +5,6 @@ import {QueryRenderer} from 'react-relay'
 import TeamContainer from '../containers/Team/TeamContainer'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {TeamRootQuery} from '__generated__/TeamRootQuery.graphql'
-import {createOperationDescriptor, getRequest} from 'relay-runtime'
 
 const query = graphql`
   query TeamRootQuery($teamId: ID!) {
