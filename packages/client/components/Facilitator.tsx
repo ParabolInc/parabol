@@ -67,6 +67,7 @@ const AvatarBlock = styled('div')<{isConnected: boolean | null}>(({isConnected})
   border: '2px solid',
   borderColor: isConnected ? PALETTE.TEXT_GREEN : PALETTE.TEXT_GRAY,
   borderRadius: 30,
+  flexShrink: 0,
   height: 30,
   marginLeft: 1,
   marginRight: 13,

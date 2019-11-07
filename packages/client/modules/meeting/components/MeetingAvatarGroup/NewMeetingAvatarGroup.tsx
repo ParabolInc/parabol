@@ -1,6 +1,7 @@
 import {NewMeetingAvatarGroup_team} from '../../../../__generated__/NewMeetingAvatarGroup_team.graphql'
-import React, {useMemo} from 'react'
+import React, {useEffect, useMemo, useRef} from 'react'
 import styled from '@emotion/styled'
+import {keyframes} from '@emotion/core'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import AddTeamMemberAvatarButton from '../../../../components/AddTeamMemberAvatarButton'
@@ -24,7 +25,18 @@ const MeetingAvatarGroupRoot = styled('div')({
   textAlign: 'center'
 })
 
-const OverlappingBlock = styled('div')({
+const AnimateIn = keyframes`
+  from {
+    margin-right: -40px;
+  }
+
+  to {
+    margin-right: 0;
+  }
+`
+
+const OverlappingBlock = styled('div')<{animateIn?: boolean}>(({animateIn}) => ({
+  animation: animateIn ? `${AnimateIn.toString()} 400ms ease-in` : undefined,
   backgroundColor: PALETTE.BACKGROUND_MAIN,
   borderRadius: '100%',
   marginLeft: -8,
@@ -37,7 +49,7 @@ const OverlappingBlock = styled('div')({
     marginLeft: -14,
     padding: 3
   }
-})
+}))
 
 const OverflowCount = styled('div')({
   backgroundColor: PALETTE.BACKGROUND_BLUE,
@@ -94,6 +106,30 @@ const NewMeetingAvatarGroup = (props: Props) => {
   const overflowThreshold = isDesktop ? MAX_AVATARS_DESKTOP : MAX_AVATARS_MOBILE
   const visibleConnectedTeamMembers = connectedTeamMembers.slice(0, overflowThreshold)
   const hiddenTeamMemberCount = connectedTeamMembers.length - visibleConnectedTeamMembers.length
+
+  const usePrevious = (value) => {
+    const ref = useRef()
+    useEffect(() => {
+      ref.current = value
+    })
+    return ref.current
+  }
+
+  // const prevHiddenTeamMemberCount = hiddenTeamMemberCount ? usePrevious(hiddenTeamMemberCount) : 0
+  // const prevConnectedTeamMembers = connectedTeamMembers ? usePrevious(connectedTeamMembers) : 0
+  const prevVisibleConnectedTeamMembers = visibleConnectedTeamMembers
+    ? usePrevious(visibleConnectedTeamMembers)
+    : []
+
+  useEffect(() => {
+    if (prevVisibleConnectedTeamMembers !== visibleConnectedTeamMembers) {
+      console.log('prevAmount.hiddenTeamMemberCount !== hiddenTeamMemberCount')
+    }
+  }, [hiddenTeamMemberCount])
+
+  console.log(prevVisibleConnectedTeamMembers, 'prevVisibleConnectedTeamMembers')
+  console.log(visibleConnectedTeamMembers, 'visibleConnectedTeamMembers')
+
   return (
     <MeetingAvatarGroupRoot>
       <VideoControls
@@ -102,8 +138,13 @@ const NewMeetingAvatarGroup = (props: Props) => {
         localStreamUI={camStreams[atmosphere.viewerId]}
       />
       {visibleConnectedTeamMembers.map((teamMember) => {
+        const isNotNew =
+          prevVisibleConnectedTeamMembers !== undefined
+            ? Boolean(prevVisibleConnectedTeamMembers.includes(teamMember as never))
+            : true
+        console.log(isNotNew, 'isNotNew')
         return (
-          <OverlappingBlock key={teamMember.id}>
+          <OverlappingBlock animateIn={!isNotNew} key={teamMember.id}>
             <NewMeetingAvatar
               teamMember={teamMember}
               streamUI={camStreams[teamMember.userId]}
