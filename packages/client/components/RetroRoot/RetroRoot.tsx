@@ -35,6 +35,7 @@ const RetroRoot = () => {
       environment={atmosphere}
       query={query}
       variables={{teamId, meetingType}}
+      fetchPolicy={'store-or-network'}
       render={renderQuery(RetroMeeting)}
     />
   )
