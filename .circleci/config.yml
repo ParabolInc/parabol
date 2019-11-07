@@ -130,6 +130,11 @@ jobs:
             if [ -n "${GITHUB_REMOTE}" ]; then
               git push -f dokku $CIRCLE_BRANCH:master
             fi
+      - run:
+          name: walrus.ai end-to-end tests
+          command: |
+            npm install -g @walrusai/cli
+            walrus -a ${WALRUS_API_KEY} ./walrus
       - store_artifacts:
           path: ~/action/build
           destination: build
