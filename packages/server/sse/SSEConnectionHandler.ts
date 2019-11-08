@@ -38,7 +38,7 @@ const SSEConnectionHandler = (sharedDataLoader, rateLimiter, sseClients) => asyn
   res.write(`retry: 1000\n`)
   res.write(`data: ${connectionContext.id}\n\n`)
   res.write(`data: ${JSON.stringify({version: APP_VERSION, authToken: nextAuthToken})}\n\n`)
-  res.flush().catch()
+  res.flush()
   keepAlive(connectionContext)
   res.on('close', () => {
     handleDisconnect(connectionContext)

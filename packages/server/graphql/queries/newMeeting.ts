@@ -12,10 +12,13 @@ export default {
       description: 'The meeting ID'
     }
   },
-  async resolve (_source, {meetingId}, {authToken, dataLoader}) {
+  async resolve(_source, {meetingId}, {authToken, dataLoader}) {
     const viewerId = getUserId(authToken)
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+    if (!meeting) {
+      standardError(new Error('Meeting not found'), {userId: viewerId})
+      return null
+    }
     const {teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
       if (!(await isPastOrPresentTeamMember(viewerId, teamId))) {
