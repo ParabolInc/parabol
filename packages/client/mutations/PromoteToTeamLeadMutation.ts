@@ -6,9 +6,11 @@ graphql`
       isLead
     }
     oldLeader {
+      ...DashboardAvatar_teamMember
       isLead
     }
     newLeader {
+      ...DashboardAvatar_teamMember
       isLead
     }
   }

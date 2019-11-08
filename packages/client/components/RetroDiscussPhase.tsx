@@ -160,6 +160,11 @@ const RetroDiscussPhase = (props: Props) => {
   const {id: reflectionGroupId, tasks, title, reflections, voteCount} = reflectionGroup
   const isFacilitating = facilitatorUserId === viewerId
   const nextStageRes = findStageAfterId(phases, localStageId)
+  if (!reflections) {
+    // this shouldn't ever happen, yet
+    // https://sentry.io/organizations/parabol/issues/1322927523/?environment=client&project=107196&query=is%3Aunresolved
+    console.error('NO REFLECTIONS', JSON.stringify(reflectionGroup))
+  }
   return (
     <MeetingContent>
       <DiscussPhaseSqueeze meeting={newMeeting} organization={organization} />
