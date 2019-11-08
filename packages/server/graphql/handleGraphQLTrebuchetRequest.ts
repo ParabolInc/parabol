@@ -16,6 +16,8 @@ interface Options {
 const {GQL_START, GQL_STOP} = ServerMessageTypes
 const {GQL_DATA, GQL_ERROR} = ClientMessageTypes
 
+const IGNORE_MUTATIONS = ['updateDragLocation']
+
 const handleGraphQLTrebuchetRequest = async (
   data: OutgoingMessage,
   connectionContext: ConnectionContext,
@@ -52,6 +54,7 @@ const handleGraphQLTrebuchetRequest = async (
         return
       } else {
         const result = await wsGraphQLHandler(connectionContext, params)
+        if (result.data && IGNORE_MUTATIONS.includes(Object.keys(result.data)[0])) return
         const messageType = result.data ? GQL_DATA : GQL_ERROR
         return {type: messageType, id: opId, payload: result}
       }

@@ -9,7 +9,7 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
 import getBBox from './getBBox'
 import styled from '@emotion/styled'
-import {BezierCurve} from '../../types/constEnums'
+import {BezierCurve, ZIndex} from '../../types/constEnums'
 import {ReflectColumnCardInFlight} from './PhaseItemColumn'
 import {Elevation} from '../../styles/elevation'
 import usePortal from '../../hooks/usePortal'
@@ -22,7 +22,7 @@ const CardInFlightStyles = styled(ReflectionCardRoot)<{transform: string; isStar
     top: 0,
     transform,
     transition: `all ${FLIGHT_TIME}ms ${BezierCurve.DECELERATE}`,
-    zIndex: 10
+    zIndex: ZIndex.REFLECTION_IN_FLIGHT
   })
 )
 

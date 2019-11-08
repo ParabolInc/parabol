@@ -61,8 +61,9 @@ export const endNewMeetingTeamOnNext = (payload, context) => {
   const {atmosphere, history} = context
   if (!meeting) return
   const {id: meetingId} = meeting
+  const {meetingSlug, teamId} = getMeetingPathParams()
+  if (!meetingSlug) return
   if (isKill) {
-    const {meetingSlug, teamId} = getMeetingPathParams()
     if (teamId === 'demo') {
       window.localStorage.removeItem('retroDemo')
       history.push('/create-account')

@@ -2828,7 +2828,7 @@ export interface IMutation {
   /**
    * Set or clear a timer for a meeting stage
    */
-  setStageTimer: ISetStageTimerPayload | null
+  setStageTimer: ISetStageTimerPayload
   setSlackNotification: ISetSlackNotificationPayload
 
   /**
@@ -4785,7 +4785,7 @@ export interface IEndDraggingReflectionPayload {
   /**
    * The drag as sent from the team member
    */
-  remoteDrag: IRemoteReflectionDrag
+  remoteDrag: IRemoteReflectionDrag | null
 
   /**
    * the type of item the reflection was dropped on

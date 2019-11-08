@@ -68,7 +68,7 @@ const PictureBlock = styled('div')({
     position: 'absolute',
     top: 0,
     width: 48,
-    zIndex: 200
+    zIndex: 2
   }
 })
 

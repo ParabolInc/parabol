@@ -47,6 +47,7 @@ graphql`
                 phaseType
                 reflectionGroup {
                   id
+                  voteCount
                   tasks {
                     id
                   }

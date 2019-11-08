@@ -35,6 +35,7 @@ const TaskFooterUserAssigneeMenuRoot = (props: Props) => {
       variables={{teamId}}
       query={query}
       render={renderQuery(TaskFooterUserAssigneeMenu, {props: {area, menuProps, task}})}
+      fetchPolicy={'store-or-network' as any}
     />
   )
 }

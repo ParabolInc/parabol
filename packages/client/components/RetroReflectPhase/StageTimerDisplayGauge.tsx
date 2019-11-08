@@ -3,8 +3,9 @@ import styled from '@emotion/styled'
 import {countdown} from '../../utils/date/relativeDate'
 import {PALETTE} from '../../styles/paletteV2'
 import useRefreshInterval from '../../hooks/useRefreshInterval'
-import {buttonRaisedShadow} from '../../styles/elevation'
+import {snackbarShadow} from '../../styles/elevation'
 import {DECELERATE, fadeIn} from '../../styles/animation'
+import {ZIndex} from '../../types/constEnums'
 
 interface Props {
   endTime: string
@@ -15,7 +16,7 @@ const Gauge = styled('div')<{isTimeUp: boolean}>(({isTimeUp}) => ({
   animation: `${fadeIn.toString()} 300ms ${DECELERATE}`,
   color: isTimeUp ? PALETTE.TEXT_MAIN : '#FFFFFF',
   background: isTimeUp ? PALETTE.BACKGROUND_YELLOW : PALETTE.BACKGROUND_GREEN,
-  boxShadow: buttonRaisedShadow,
+  boxShadow: snackbarShadow,
   borderRadius: 2,
   display: 'flex',
   fontWeight: 600,
@@ -24,7 +25,7 @@ const Gauge = styled('div')<{isTimeUp: boolean}>(({isTimeUp}) => ({
   padding: 8,
   transition: `background 1s ${DECELERATE}`,
   userSelect: 'none',
-  zIndex: 8 // same as boxShadown elevation (required to show timbebox in reflect phase)
+  zIndex: ZIndex.SNACKBAR
 }))
 
 const StageTimerDisplayGauge = (props: Props) => {

@@ -2,12 +2,13 @@ import React from 'react'
 import styled from '@emotion/styled'
 import FloatingActionButton from '../../../../components/FloatingActionButton'
 import IconLabel from '../../../../components/IconLabel'
+import {ZIndex} from '../../../../types/constEnums'
 
 const RejoinButton = styled(FloatingActionButton)({
   bottom: '1.25rem',
   position: 'fixed',
   right: '4.5rem',
-  zIndex: 400
+  zIndex: ZIndex.FAB
 })
 
 interface Props {

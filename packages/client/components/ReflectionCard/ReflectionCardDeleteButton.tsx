@@ -38,7 +38,7 @@ const Background = styled('div')({
   position: 'absolute',
   top: 4,
   width: 10,
-  zIndex: 100
+  zIndex: 1
 })
 
 const StyledIcon = styled(Icon)({
@@ -47,7 +47,7 @@ const StyledIcon = styled(Icon)({
   fontSize: ICON_SIZE.MD18,
   position: 'relative',
   textAlign: 'center',
-  zIndex: 200
+  zIndex: 2
 })
 
 class ReflectionCardDeleteButton extends Component<Props> {

@@ -184,25 +184,25 @@ export default class Atmosphere extends Environment {
   handleFetchPromise = async (request: RequestParameters, variables: Variables) => {
     // await sleep(1000)
     const data = request.id || request.text || ''
-    const isQuery = request.operationKind === 'query'
-    const queryKey = Atmosphere.getKey(data, variables)
-    if (isQuery) {
-      const cachedValue = this.queryCache[queryKey]
-      if (cachedValue) {
-        return cachedValue
-      }
-    }
+    // const isQuery = request.operationKind === 'query'
+    // const queryKey = Atmosphere.getKey(data, variables)
+    // if (isQuery) {
+    //   const cachedValue = this.queryCache[queryKey]
+    //   if (cachedValue) {
+    // return cachedValue
+    // }
+    // }
     if (!__PRODUCTION__ && request.id) {
       const queryMap = await import('../server/graphql/queryMap.json')
       const query = queryMap[request.id]
-      const res = (await this.transport.fetch({query, variables})) as GraphQLResponse
-      this.queryCache[queryKey] = res
-      return res
+      return this.transport.fetch({query, variables})
+      // this.queryCache[queryKey] = res
+      // return res
     }
     const field = request.id ? 'documentId' : 'query'
-    const res = (await this.transport.fetch({[field]: data, variables})) as GraphQLResponse
-    this.queryCache[queryKey] = res
-    return res
+    return this.transport.fetch({[field]: data, variables})
+    // this.queryCache[queryKey] = res
+    // return res
   }
 
   handleFetch: FetchFunction = (request, variables) => {
@@ -284,10 +284,10 @@ export default class Atmosphere extends Environment {
     delete this.queryTimeouts[queryKey]
     // for each query that is no longer 100% supported, find the subs that power them
     const rowsToRemove = this.querySubscriptions.filter((qs) => qs.queryKey === queryKey)
-    rowsToRemove.forEach((qsToRemove) => {
-      // the query is no longer valid, nuke it
-      delete this.queryCache[qsToRemove.queryKey]
-    })
+    // rowsToRemove.forEach((qsToRemove) => {
+    // the query is no longer valid, nuke it
+    // delete this.queryCache[qsToRemove.queryKey]
+    // })
     const subsToRemove = Array.from(new Set<string>(rowsToRemove.map(({subKey}) => subKey)))
     this.querySubscriptions = this.querySubscriptions.filter((qs) => qs.queryKey !== queryKey)
     subsToRemove.forEach((subKey) => {

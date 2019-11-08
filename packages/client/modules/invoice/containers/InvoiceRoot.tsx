@@ -28,6 +28,7 @@ const InvoiceRoot = ({
       environment={atmosphere}
       query={query}
       variables={{invoiceId}}
+      fetchPolicy={'store-or-network' as any}
       render={renderQuery(Invoice, {size: LoaderSize.WHOLE_PAGE})}
     />
   )

@@ -129,7 +129,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
                   const voteMeta = (
                     <VoteTally isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}>
                       <VoteIcon>{meetingVoteIcon}</VoteIcon>
-                      {voteCount}
+                      {voteCount || 0}
                     </VoteTally>
                   )
                   return (
