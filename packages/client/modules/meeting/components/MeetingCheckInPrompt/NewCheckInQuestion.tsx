@@ -1,10 +1,9 @@
-import React, {useRef} from 'react'
+import React, {useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import EditorInputWrapper from '../../../../components/EditorInputWrapper'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
 import '../../../../components/TaskEditor/Draft.css'
-import Tooltip from '../../../../components/Tooltip/Tooltip'
 import {PALETTE} from '../../../../styles/paletteV2'
 import styled from '@emotion/styled'
 import UpdateNewCheckInQuestionMutation from '../../../../mutations/UpdateNewCheckInQuestionMutation'
@@ -15,6 +14,8 @@ import {NewCheckInQuestion_team} from '../../../../__generated__/NewCheckInQuest
 import useEditorState from '../../../../hooks/useEditorState'
 import {ICheckInPhase} from '../../../../types/graphql'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useTooltip from '../../../../hooks/useTooltip'
+import {MenuPosition} from '../../../../hooks/useCoords'
 
 const CogIcon = styled(Icon)<{isEditing: boolean}>(({isEditing}) => ({
   color: PALETTE.TEXT_MAIN,
@@ -46,6 +47,7 @@ const NewCheckInQuestion = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {team} = props
   const {newMeeting} = team
+  const [isEditing, setIsEditing] = useState(false)
   if (!newMeeting) return null
   const {id: meetingId, localPhase, facilitatorUserId} = newMeeting
   const {checkInQuestion} = localPhase as ICheckInPhase
@@ -54,6 +56,7 @@ const NewCheckInQuestion = (props: Props) => {
   const updateQuestion = (nextEditorState: EditorState) => {
     const wasFocused = editorState.getSelection().getHasFocus()
     const isFocused = nextEditorState.getSelection().getHasFocus()
+    setIsEditing(isFocused)
     if (wasFocused && !isFocused) {
       const nextCheckInQuestion = JSON.stringify(convertToRaw(nextEditorState.getCurrentContent()))
       if (nextCheckInQuestion === checkInQuestion) return
@@ -78,38 +81,35 @@ const NewCheckInQuestion = (props: Props) => {
     const nextEditorState = EditorState.forceSelection(editorState, fullSelection)
     setEditorState(nextEditorState)
   }
-
-  const isEditing = editorState.getSelection().getHasFocus()
   const {viewerId} = atmosphere
   const isFacilitating = facilitatorUserId === viewerId
   const tip = 'Tap to customize the Social Check-in question.'
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
+    MenuPosition.UPPER_CENTER,
+    {
+      delay: 300,
+      disabled: isEditing || !isFacilitating
+    }
+  )
   return (
-    <Tooltip
-      delay={300}
-      tip={<div>{tip}</div>}
-      originAnchor={{vertical: 'bottom', horizontal: 'center'}}
-      targetAnchor={{vertical: 'top', horizontal: 'center'}}
-      hideOnFocus
-      maxHeight={40}
-      isOpen={isEditing || !isFacilitating ? false : undefined}
-    >
-      <QuestionBlock>
-        {/* cannot set min width because iPhone 5 has a width of 320*/}
-        <EditorInputWrapper
-          ariaLabel={'Edit the check in question'}
-          editorState={editorState}
-          setEditorState={updateQuestion}
-          readOnly={!isFacilitating}
-          placeholder='e.g. How are you?'
-          editorRef={editorRef}
-        />
-        {isFacilitating && (
-          <PlainButton aria-label={tip} onClick={selectAllQuestion}>
-            <CogIcon isEditing={isEditing}>settings</CogIcon>
-          </PlainButton>
-        )}
-      </QuestionBlock>
-    </Tooltip>
+    <QuestionBlock onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={originRef}>
+      {/* cannot set min width because iPhone 5 has a width of 320*/}
+      <EditorInputWrapper
+        ariaLabel={'Edit the check in question'}
+        editorState={editorState}
+        setEditorState={updateQuestion}
+        readOnly={!isFacilitating}
+        placeholder='e.g. How are you?'
+        editorRef={editorRef}
+      />
+      {isFacilitating && (
+        <PlainButton aria-label={tip} onClick={selectAllQuestion}>
+          <CogIcon isEditing={isEditing}>settings</CogIcon>
+        </PlainButton>
+      )}
+      {tooltipPortal(<div>{tip}</div>)}
+    </QuestionBlock>
   )
 }
 

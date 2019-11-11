@@ -28,6 +28,7 @@ const addReflectionToGroup = async (reflectionId, reflectionGroupId, {authToken,
     .table('RetroReflection')
     .getAll(reflectionGroupId, {index: 'reflectionGroupId'})('sortOrder')
     .max()
+    .default(0)
     .run()
 
   // RESOLUTION

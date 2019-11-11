@@ -1,21 +1,14 @@
 import React from 'react'
-import {Provider} from 'react-redux'
 import {BrowserRouter as Router} from 'react-router-dom'
 import AtmosphereProvider from './components/AtmosphereProvider/AtmosphereProvider'
-import ActionContainer from './containers/Action/ActionContainer'
+import Action from './components/Action/Action'
 
-interface Props {
-  store: any
-}
-
-export default function Root({store}: Props) {
+export default function Root() {
   return (
-    <Provider store={store}>
-      <AtmosphereProvider>
-        <Router>
-          <ActionContainer />
-        </Router>
-      </AtmosphereProvider>
-    </Provider>
+    <AtmosphereProvider>
+      <Router>
+        <Action />
+      </Router>
+    </AtmosphereProvider>
   )
 }

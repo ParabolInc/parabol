@@ -104,7 +104,7 @@ const OrganizationRow = (props: Props) => {
       <b>{TierLabel.PRO}</b>
     </span>
   )
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip(
+  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
     MenuPosition.UPPER_CENTER
   )
   return (

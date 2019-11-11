@@ -1,6 +1,5 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import Helmet from 'react-helmet'
 import FlatButton from '../../../../components/FlatButton'
 import IconLabel from '../../../../components/IconLabel'
 import Panel from '../../../../components/Panel/Panel'
@@ -15,6 +14,7 @@ import {PALETTE} from '../../../../styles/paletteV2'
 import {Layout} from '../../../../types/constEnums'
 import {PAYMENT_REJECTED} from '../../../../utils/constants'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
+import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 
 const ClearAllButton = styled(FlatButton)({
   alignSelf: 'center',
@@ -51,6 +51,7 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
 
 const Notifications = (props: Props) => {
   const {atmosphere, notifications, submitMutation, onCompleted, onError, submitting} = props
+  useDocumentTitle('My Notifications | Parabol')
   if (!notifications) return null
   const clearableNotifs = notifications.edges.filter(({node}) => node && !requiresAction(node.type))
   const clearAllNotifications = () => {
@@ -68,7 +69,6 @@ const Notifications = (props: Props) => {
 
   return (
     <UserSettingsWrapper>
-      <Helmet title='My Notifications | Parabol' />
       <SettingsWrapper>
         <Panel
           label='Notifications'

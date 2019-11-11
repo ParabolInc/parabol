@@ -7,6 +7,9 @@ import DashFilterToggle from '../../../../components/DashFilterToggle/DashFilter
 import lazyPreload from '../../../../utils/lazyPreload'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
+import {UserTasksHeader_viewer} from '__generated__/UserTasksHeader_viewer.graphql'
 
 const UserDashTeamMenu = lazyPreload(() =>
   import(
@@ -16,17 +19,16 @@ const UserDashTeamMenu = lazyPreload(() =>
 )
 
 interface Props {
-  teams: any[]
-  teamFilterId: string
-  teamFilterName: string
+  viewer: UserTasksHeader_viewer
 }
 
 const UserTasksHeader = (props: Props) => {
-  const {teams, teamFilterId, teamFilterName} = props
+  const {viewer} = props
   const {menuPortal, togglePortal, originRef, menuProps} = useMenu(MenuPosition.UPPER_RIGHT, {
     isDropdown: true
   })
-  // TODO refactor so we can pull teams from the relay cache instead of feeding it down a long tree
+  const {teamFilter} = viewer
+  const teamFilterName = (teamFilter && teamFilter.name) || 'All teams'
   return (
     <DashSectionHeader>
       <DashSectionControls>
@@ -41,13 +43,21 @@ const UserTasksHeader = (props: Props) => {
             onMouseEnter={UserDashTeamMenu.preload}
             label={teamFilterName}
           />
-          {menuPortal(
-            <UserDashTeamMenu menuProps={menuProps} teams={teams} teamFilterId={teamFilterId} />
-          )}
+          {menuPortal(<UserDashTeamMenu menuProps={menuProps} viewer={viewer} />)}
         </DashSectionControl>
       </DashSectionControls>
     </DashSectionHeader>
   )
 }
 
-export default UserTasksHeader
+export default createFragmentContainer(UserTasksHeader, {
+  viewer: graphql`
+    fragment UserTasksHeader_viewer on User {
+      ...UserDashTeamMenu_viewer
+      teamFilter {
+        id
+        name
+      }
+    }
+  `
+})

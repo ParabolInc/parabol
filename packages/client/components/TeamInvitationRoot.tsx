@@ -29,6 +29,7 @@ class TeamInvitationRoot extends Component<Props> {
         environment={atmosphere}
         query={query}
         variables={{token}}
+        fetchPolicy={'store-or-network' as any}
         render={({props: renderProps}) => {
           if (!renderProps) return null
           return <TeamInvitation verifiedInvitation={renderProps.verifiedInvitation} />

@@ -1,7 +1,6 @@
 import {TeamInvitationEmailSignin_verifiedInvitation} from '../__generated__/TeamInvitationEmailSignin_verifiedInvitation.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
-import Helmet from 'react-helmet'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import EmailPasswordAuthForm from './EmailPasswordAuthForm'
@@ -12,6 +11,7 @@ import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import DialogTitle from './DialogTitle'
 import {meetingTypeToLabel} from '../utils/meetings/lookups'
+import useDocumentTitle from '../hooks/useDocumentTitle'
 
 interface Props {
   verifiedInvitation: TeamInvitationEmailSignin_verifiedInvitation
@@ -29,12 +29,12 @@ const TeamName = styled('span')({
 const TeamInvitationEmailSignin = (props: Props) => {
   const {verifiedInvitation} = props
   const {meetingType, user, teamInvitation, teamName} = verifiedInvitation
+  useDocumentTitle(`Sign in | Team Invitation`)
   if (!user || !teamInvitation) return null
   const {preferredName} = user
   const {email} = teamInvitation
   return (
     <StyledDialog>
-      <Helmet title={`Sign in | Team Invitation`} />
       <DialogTitle>Welcome back, {preferredName}!</DialogTitle>
       <DialogContent>
         <InvitationDialogCopy>

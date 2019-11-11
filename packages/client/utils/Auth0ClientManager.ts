@@ -147,7 +147,7 @@ export default class Auth0ClientManager {
 
       closeCheckerId = window.setInterval(() => {
         if (popup && popup.closed) {
-          resolve(null)
+          reject('Auth popup closed')
           window.clearInterval(closeCheckerId)
           window.removeEventListener('message', handler)
         }

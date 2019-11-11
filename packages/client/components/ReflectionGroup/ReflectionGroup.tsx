@@ -97,6 +97,7 @@ const ReflectionGroup = (props: Props) => {
   const setIsEditing = (isEditing: boolean) => {
     thisSetIsEditing(isEditing)
     const [firstReflection] = staticReflections
+    if (!firstReflection) return
     const {id: firstReflectionId} = firstReflection
     commitLocalUpdate(atmosphere, (store) => {
       const reflection = store.get(firstReflectionId)!

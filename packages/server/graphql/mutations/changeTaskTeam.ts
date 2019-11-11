@@ -33,7 +33,10 @@ export default {
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    const task = await r.table('Task').get(taskId).run()
+    const task = await r
+      .table('Task')
+      .get(taskId)
+      .run()
     if (!task) {
       return standardError(new Error('Task not found'), {userId: viewerId})
     }
@@ -107,8 +110,9 @@ export default {
               type: TASK_INVOLVES
             })
             .delete({returnChanges: true})('changes')('old_val')
+            .default([])
             .pluck('id', 'userIds')
-            .default([]).run()
+            .run()
 
     const isPrivate = tags.includes('private')
     const data = {taskId, notificationsToRemove}

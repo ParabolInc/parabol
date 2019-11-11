@@ -160,6 +160,11 @@ const RetroDiscussPhase = (props: Props) => {
   const {id: reflectionGroupId, tasks, title, reflections, voteCount} = reflectionGroup
   const isFacilitating = facilitatorUserId === viewerId
   const nextStageRes = findStageAfterId(phases, localStageId)
+  if (!reflections) {
+    // this shouldn't ever happen, yet
+    // https://sentry.io/organizations/parabol/issues/1322927523/?environment=client&project=107196&query=is%3Aunresolved
+    console.error('NO REFLECTIONS', JSON.stringify(reflectionGroup))
+  }
   return (
     <MeetingContent>
       <DiscussPhaseSqueeze meeting={newMeeting} organization={organization} />
@@ -182,7 +187,7 @@ const RetroDiscussPhase = (props: Props) => {
                 <TopicHeading>{`“${title}”`}</TopicHeading>
                 <VoteMeta>
                   <VoteIcon>{meetingVoteIcon}</VoteIcon>
-                  {voteCount}
+                  {voteCount || 0}
                 </VoteMeta>
               </DiscussHeader>
             </HeaderContainer>
@@ -240,6 +245,33 @@ const RetroDiscussPhase = (props: Props) => {
   )
 }
 
+graphql`
+  fragment RetroDiscussPhase_stage on NewMeetingStage {
+    ...StageTimerDisplay_stage
+    isComplete
+    id
+    ... on RetroDiscussStage {
+      reflectionGroup {
+        id
+        title
+        voteCount
+        reflections {
+          ...DiscussPhaseReflectionGrid_reflections
+          id
+        }
+        tasks {
+          ...MeetingAgendaCards_tasks
+          id
+          reflectionGroupId
+          content
+          createdAt
+          sortOrder
+        }
+      }
+    }
+  }
+`
+
 export default createFragmentContainer(withAtmosphere(RetroDiscussPhase), {
   team: graphql`
     fragment RetroDiscussPhase_team on Team {
@@ -255,46 +287,11 @@ export default createFragmentContainer(withAtmosphere(RetroDiscussPhase), {
         facilitatorUserId
         phases {
           stages {
-            ...StageTimerDisplay_stage
-            id
-            ... on RetroDiscussStage {
-              reflectionGroup {
-                id
-                tasks {
-                  ...MeetingAgendaCards_tasks
-                }
-              }
-            }
-          }
-        }
-        localPhase {
-          stages {
-            id
+            ...RetroDiscussPhase_stage @relay(mask: false)
           }
         }
         localStage {
-          ...StageTimerDisplay_stage
-          isComplete
-          id
-          ... on RetroDiscussStage {
-            reflectionGroup {
-              id
-              title
-              voteCount
-              reflections {
-                id
-                ...DiscussPhaseReflectionGrid_reflections
-              }
-              tasks {
-                id
-                reflectionGroupId
-                content
-                createdAt
-                sortOrder
-                ...MeetingAgendaCards_tasks
-              }
-            }
-          }
+          ...RetroDiscussPhase_stage @relay(mask: false)
         }
       }
     }

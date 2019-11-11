@@ -42,6 +42,7 @@ const SuggestMentionableUsersRoot = (props: Props) => {
       environment={atmosphere}
       variables={{teamId}}
       query={query}
+      fetchPolicy={'store-or-network' as any}
       render={renderQuery(SuggestMentionableUsers, {
         props: {active, handleSelect, originCoords, setSuggestions, suggestions, triggerWord}
       })}

@@ -27,6 +27,7 @@ const OrganizationRoot = (props: Props) => {
       environment={atmosphere}
       query={query}
       variables={{orgId}}
+      fetchPolicy={'store-or-network' as any}
       render={renderQuery(Organization, {props: {match}, Loader: <div />})}
     />
   )

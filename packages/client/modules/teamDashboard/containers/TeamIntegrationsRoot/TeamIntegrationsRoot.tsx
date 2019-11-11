@@ -25,6 +25,7 @@ const TeamIntegrationsRoot = ({teamId}: Props) => {
       environment={atmosphere}
       query={teamIntegrationsQuery}
       variables={{teamId}}
+      fetchPolicy={'store-or-network' as any}
       render={renderQuery(ProviderList, {props: {teamId}, size: LoaderSize.PANEL})}
     />
   )

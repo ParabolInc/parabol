@@ -83,6 +83,7 @@ interface Traits {
 
 const getTraits = async (userIds: string[]) => {
   const r = await getRethink()
+  if (userIds.length === 0) return []
   return r
     .table('User')
     .getAll(r.args(userIds), {index: 'id'})

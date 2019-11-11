@@ -1,36 +1,23 @@
 import {TeamColumnsContainer_viewer} from '../../../../__generated__/TeamColumnsContainer_viewer.graphql'
 import React, {useMemo} from 'react'
-import {connect} from 'react-redux'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import TaskColumns from '../../../../components/TaskColumns/TaskColumns'
-import withAtmosphere from '../../../../decorators/withAtmosphere/withAtmosphere'
-import toTeamMemberId from '../../../../utils/relay/toTeamMemberId'
 import {AreaEnum} from '../../../../types/graphql'
-
-const mapStateToProps = (state, props) => {
-  const {
-    atmosphere: {viewerId},
-    teamId
-  } = props
-  const {teamMemberFilterId} = state.teamDashboard
-  return {
-    myTeamMemberId: toTeamMemberId(teamId, viewerId),
-    teamMemberFilterId
-  }
-}
+import toTeamMemberId from '../../../../utils/relay/toTeamMemberId'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
 
 interface Props {
-  myTeamMemberId: string
-  teamId: string
-  teamMemberFilterId: string
   viewer: TeamColumnsContainer_viewer
 }
 
 const TeamColumnsContainer = (props: Props) => {
-  const {myTeamMemberId, teamMemberFilterId, viewer} = props
+  const {viewer} = props
   const {team} = viewer
-  const {contentFilter, tasks, teamMembers} = team!
+  const {id: teamId, contentFilter, tasks, teamMembers, teamMemberFilter} = team!
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
+  const teamMemberFilterId = (teamMemberFilter && teamMemberFilter.id) || null
   const filteredTasks = useMemo(() => {
     const contentFilterRegex = new RegExp(contentFilter!, 'i')
     const nodes = tasks.edges.map(({node}) => node)
@@ -52,7 +39,7 @@ const TeamColumnsContainer = (props: Props) => {
 
   return (
     <TaskColumns
-      myTeamMemberId={myTeamMemberId}
+      myTeamMemberId={toTeamMemberId(teamId, viewerId)}
       tasks={filteredTasks}
       teamMemberFilterId={teamMemberFilterId}
       area={AreaEnum.teamDash}
@@ -60,36 +47,37 @@ const TeamColumnsContainer = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  withAtmosphere(connect(mapStateToProps)(TeamColumnsContainer)),
-  {
-    viewer: graphql`
-      fragment TeamColumnsContainer_viewer on User {
-        team(teamId: $teamId) {
-          contentFilter
-          teamMembers(sortBy: "preferredName") {
-            id
-            picture
-            preferredName
-          }
-          tasks(first: 1000) @connection(key: "TeamColumnsContainer_tasks") {
-            edges {
-              node {
-                ...TaskColumns_tasks
-                # grab these so we can sort correctly
+export default createFragmentContainer(TeamColumnsContainer, {
+  viewer: graphql`
+    fragment TeamColumnsContainer_viewer on User {
+      team(teamId: $teamId) {
+        id
+        contentFilter
+        teamMemberFilter {
+          id
+        }
+        teamMembers(sortBy: "preferredName") {
+          id
+          picture
+          preferredName
+        }
+        tasks(first: 1000) @connection(key: "TeamColumnsContainer_tasks") {
+          edges {
+            node {
+              ...TaskColumns_tasks
+              # grab these so we can sort correctly
+              id
+              content @__clientField(handle: "contentText")
+              contentText
+              status
+              sortOrder
+              assignee {
                 id
-                content @__clientField(handle: "contentText")
-                contentText
-                status
-                sortOrder
-                assignee {
-                  id
-                }
               }
             }
           }
         }
       }
-    `
-  }
-)
+    }
+  `
+})

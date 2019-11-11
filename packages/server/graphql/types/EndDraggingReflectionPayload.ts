@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLID, GraphQLObjectType} from 'graphql'
 import {makeResolve, resolveNewMeeting} from '../resolvers'
 import StandardMutationError from './StandardMutationError'
 import RetroReflection from './RetroReflection'
@@ -17,7 +17,7 @@ const EndDraggingReflectionPayload = new GraphQLObjectType({
       type: GraphQLID
     },
     remoteDrag: {
-      type: new GraphQLNonNull(RemoteReflectionDrag),
+      type: RemoteReflectionDrag,
       description: 'The drag as sent from the team member'
     },
     dropTargetType: {

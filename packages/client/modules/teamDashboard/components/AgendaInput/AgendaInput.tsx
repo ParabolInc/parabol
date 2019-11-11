@@ -4,7 +4,6 @@ import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import Icon from '../../../../components/Icon'
-import Tooltip from '../../../../components/Tooltip/Tooltip'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useAtmosphereListener from '../../../../hooks/useAtmosphereListener'
 import useHotkey from '../../../../hooks/useHotkey'
@@ -17,6 +16,8 @@ import ui from '../../../../styles/ui'
 import getNextSortOrder from '../../../../utils/getNextSortOrder'
 import toTeamMemberId from '../../../../utils/relay/toTeamMemberId'
 import useForm from '../../../../hooks/useForm'
+import useTooltip from '../../../../hooks/useTooltip'
+import {MenuPosition} from '../../../../hooks/useCoords'
 
 const AgendaInputBlock = styled('div')({
   padding: `8px 0`,
@@ -128,43 +129,43 @@ const AgendaInput = (props: Props) => {
       inputRef.current.blur()
     }
   }
-
-  const showTooltip = Boolean(agendaItems.length > 0 && !disabled)
+  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
+    MenuPosition.UPPER_CENTER,
+    {
+      delay: 1000,
+      disabled: agendaItems.length > 0 || disabled
+    }
+  )
   return (
-    <AgendaInputBlock className={className}>
-      <Tooltip
-        delay={1000}
-        hideOnFocus
-        tip={
-          <div style={{textAlign: 'center'}}>
-            {'Add meeting topics to discuss,'}
-            <br />
-            {'like “upcoming vacation”'}
-          </div>
-        }
-        maxHeight={52}
-        maxWidth={224}
-        originAnchor={{vertical: 'top', horizontal: 'center'}}
-        targetAnchor={{vertical: 'bottom', horizontal: 'center'}}
-        isDisabled={!showTooltip}
-      >
-        <InputForm disabled={disabled} onSubmit={handleSubmit}>
-          <InputField
-            autoCapitalize='off'
-            autoComplete='off'
-            disabled={disabled}
-            maxLength={63}
-            name='newItem'
-            onChange={onChange}
-            onKeyDown={onKeyDown}
-            placeholder='Add Agenda Topic…'
-            ref={inputRef}
-            type='text'
-            value={value}
-          />
-          <StyledIcon>add</StyledIcon>
-        </InputForm>
-      </Tooltip>
+    <AgendaInputBlock
+      className={className}
+      onMouseEnter={openTooltip}
+      onMouseLeave={closeTooltip}
+      ref={originRef}
+    >
+      {tooltipPortal(
+        <div style={{textAlign: 'center'}}>
+          {'Add meeting topics to discuss,'}
+          <br />
+          {'like “upcoming vacation”'}
+        </div>
+      )}
+      <InputForm disabled={disabled} onSubmit={handleSubmit}>
+        <InputField
+          autoCapitalize='off'
+          autoComplete='off'
+          disabled={disabled}
+          maxLength={63}
+          name='newItem'
+          onChange={onChange}
+          onKeyDown={onKeyDown}
+          placeholder='Add Agenda Topic…'
+          ref={inputRef}
+          type='text'
+          value={value}
+        />
+        <StyledIcon>add</StyledIcon>
+      </InputForm>
     </AgendaInputBlock>
   )
 }

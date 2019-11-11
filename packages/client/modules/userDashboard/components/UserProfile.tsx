@@ -1,27 +1,27 @@
-import React, {Component, lazy} from 'react'
+import React, {lazy} from 'react'
 import styled from '@emotion/styled'
-import Helmet from 'react-helmet'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import EditableAvatar from '../../../components/EditableAvatar/EditableAvatar'
 import FieldLabel from '../../../components/FieldLabel/FieldLabel'
 import BasicInput from '../../../components/InputField/BasicInput'
-import LoadableModal from '../../../components/LoadableModal'
 import Panel from '../../../components/Panel/Panel'
 import SecondaryButton from '../../../components/SecondaryButton'
 import UserSettingsWrapper from './UserSettingsWrapper/UserSettingsWrapper'
 import UpdateUserProfileMutation from '../../../mutations/UpdateUserProfileMutation'
 import defaultUserAvatar from '../../../styles/theme/images/avatar-user.svg'
-import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../decorators/withAtmosphere/withAtmosphere'
+import {WithMutationProps} from '../../../utils/relay/withMutationProps'
+import {WithAtmosphereProps} from '../../../decorators/withAtmosphere/withAtmosphere'
 import withForm, {WithFormProps} from '../../../utils/relay/withForm'
 import Legitity from '../../../validation/Legitity'
 import {UserProfile_viewer} from '../../../__generated__/UserProfile_viewer.graphql'
 import {Breakpoint, Layout} from '../../../types/constEnums'
 import {PALETTE} from '../../../styles/paletteV2'
 import NotificationErrorMessage from '../../notifications/components/NotificationErrorMessage'
+import useModal from '../../../hooks/useModal'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import useMutationProps from '../../../hooks/useMutationProps'
+import useDocumentTitle from '../../../hooks/useDocumentTitle'
 
 const SettingsBlock = styled('div')({
   width: '100%'
@@ -76,18 +76,12 @@ interface Props extends WithAtmosphereProps, WithMutationProps, WithFormProps {
   viewer: UserProfile_viewer
 }
 
-class UserProfile extends Component<Props> {
-  onSubmit = (e: React.FormEvent) => {
+const UserProfile = (props: Props) => {
+  const {fields, onChange, validateField, viewer} = props
+  const atmosphere = useAtmosphere()
+  const {error, onCompleted, onError, submitMutation, submitting} = useMutationProps()
+  const onSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    const {
-      atmosphere,
-      validateField,
-      viewer,
-      onError,
-      onCompleted,
-      submitMutation,
-      submitting
-    } = this.props
     const preferredNameRes = validateField('preferredName')
     const preferredName = preferredNameRes.value
     if (preferredNameRes.error || preferredName === viewer.preferredName || submitting) return
@@ -95,54 +89,47 @@ class UserProfile extends Component<Props> {
     UpdateUserProfileMutation(atmosphere, {preferredName}, {onError, onCompleted})
   }
 
-  render() {
-    const {fields, onChange, viewer, error} = this.props
-    const {picture} = viewer
-    const pictureOrDefault = picture || defaultUserAvatar
-    return (
-      <UserSettingsWrapper>
-        <Helmet title='My Profile | Parabol' />
-        <SettingsBlock>
-          <Panel label='My Information'>
-            <SettingsForm onSubmit={this.onSubmit}>
-              <LoadableModal
-                LoadableComponent={UserAvatarInput}
-                queryVars={{picture: pictureOrDefault}}
-                toggle={
-                  <div>
-                    <EditableAvatar picture={pictureOrDefault} size={96} />
-                  </div>
-                }
+  const {picture} = viewer
+  const pictureOrDefault = picture || defaultUserAvatar
+  const {togglePortal, modalPortal} = useModal()
+  useDocumentTitle('My Profile | Parabol')
+  return (
+    <UserSettingsWrapper>
+      <SettingsBlock>
+        <Panel label='My Information'>
+          <SettingsForm onSubmit={onSubmit}>
+            <div onClick={togglePortal}>
+              <EditableAvatar picture={pictureOrDefault} size={96} />
+            </div>
+            {modalPortal(<UserAvatarInput picture={pictureOrDefault} />)}
+            <InfoBlock>
+              <FieldLabel
+                customStyles={{paddingBottom: 8}}
+                label='Name'
+                fieldSize='medium'
+                indent
+                htmlFor='preferredName'
               />
-              <InfoBlock>
-                <FieldLabel
-                  customStyles={{paddingBottom: 8}}
-                  label='Name'
-                  fieldSize='medium'
-                  indent
-                  htmlFor='preferredName'
-                />
-                <ControlBlock>
-                  <FieldBlock>
-                    {/* TODO: Make me Editable.js (TA) */}
-                    <BasicInput
-                      {...fields.preferredName}
-                      autoFocus
-                      onChange={onChange}
-                      name='preferredName'
-                      placeholder='My name'
-                    />
-                  </FieldBlock>
-                  <StyledButton size='medium'>{'Update'}</StyledButton>
-                </ControlBlock>
-                <NotificationErrorMessage error={{message: error} as any} />
-              </InfoBlock>
-            </SettingsForm>
-          </Panel>
-        </SettingsBlock>
-      </UserSettingsWrapper>
-    )
-  }
+              <ControlBlock>
+                <FieldBlock>
+                  {/* TODO: Make me Editable.js (TA) */}
+                  <BasicInput
+                    {...fields.preferredName}
+                    autoFocus
+                    onChange={onChange}
+                    name='preferredName'
+                    placeholder='My name'
+                  />
+                </FieldBlock>
+                <StyledButton size='medium'>{'Update'}</StyledButton>
+              </ControlBlock>
+              <NotificationErrorMessage error={{message: error} as any} />
+            </InfoBlock>
+          </SettingsForm>
+        </Panel>
+      </SettingsBlock>
+    </UserSettingsWrapper>
+  )
 }
 
 const form = withForm({
@@ -157,7 +144,7 @@ const form = withForm({
   }
 })
 
-export default createFragmentContainer(withAtmosphere(withMutationProps(form(UserProfile))), {
+export default createFragmentContainer(form(UserProfile), {
   viewer: graphql`
     fragment UserProfile_viewer on User {
       preferredName

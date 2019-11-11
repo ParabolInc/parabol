@@ -4,20 +4,21 @@ import graphql from 'babel-plugin-relay/macro'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import {MenuProps} from '../hooks/useMenu'
-import {filterTeamMember} from '../modules/teamDashboard/ducks/teamDashDuck'
-import {connect, DispatchProp} from 'react-redux'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import {TeamDashTeamMemberMenu_team} from '../__generated__/TeamDashTeamMemberMenu_team.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
+import filterTeamMember from '../utils/relay/filterTeamMember'
 
-interface Props extends DispatchProp {
+interface Props {
   menuProps: MenuProps
   team: TeamDashTeamMemberMenu_team
-  teamMemberFilterId: string | null
 }
 
 const TeamDashTeamMemberMenu = (props: Props) => {
-  const {menuProps, dispatch, team, teamMemberFilterId} = props
-  const {teamMembers} = team
+  const atmosphere = useAtmosphere()
+  const {menuProps, team} = props
+  const {id: teamId, teamMembers, teamMemberFilter} = team
+  const teamMemberFilterId = teamMemberFilter && teamMemberFilter.id
   const defaultActiveIdx =
     teamMembers.findIndex((teamMember) => teamMember.id === teamMemberFilterId) + 2
   return (
@@ -30,22 +31,26 @@ const TeamDashTeamMemberMenu = (props: Props) => {
       <MenuItem
         key={'teamMemberFilterNULL'}
         label={'All members'}
-        onClick={() => dispatch(filterTeamMember(null))}
+        onClick={() => filterTeamMember(atmosphere, teamId, null)}
       />
       {teamMembers.map((teamMember) => (
         <MenuItem
           key={`teamMemberFilter${teamMember.id}`}
           label={teamMember.preferredName}
-          onClick={() => dispatch(filterTeamMember(teamMember.id, teamMember.preferredName))}
+          onClick={() => filterTeamMember(atmosphere, teamId, teamMember.id)}
         />
       ))}
     </Menu>
   )
 }
 
-export default createFragmentContainer(connect()(TeamDashTeamMemberMenu), {
+export default createFragmentContainer(TeamDashTeamMemberMenu, {
   team: graphql`
     fragment TeamDashTeamMemberMenu_team on Team {
+      id
+      teamMemberFilter {
+        id
+      }
       teamMembers(sortBy: "preferredName") {
         id
         preferredName

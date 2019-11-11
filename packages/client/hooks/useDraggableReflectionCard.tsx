@@ -36,29 +36,40 @@ const useRemoteDrag = (
 ) => {
   const setPortal = useContext(PortalContext)
   const {remoteDrag, isDropping} = reflection
-  const setRemoteCard = (isClose?: boolean) => {
-    if (!drag.ref) return
+  const setRemoteCard = (isClose: boolean, timeRemaining: number, lastTop?: number) => {
+    if (!drag.ref || timeRemaining <= 0) return
+    const beforeFrame = Date.now()
     const bbox = drag.ref.getBoundingClientRect()
-    const style = getDroppingStyles(drag.ref, bbox, windowDims.clientHeight)
-    setPortal(
-      `clone-${reflection.id}`,
-      <RemoteReflection
-        style={isClose ? style : {transform: style.transform}}
-        reflection={reflection}
-      />
-    )
+    if (bbox.top !== lastTop) {
+      // performance only
+      const style = getDroppingStyles(drag.ref, bbox, windowDims.clientHeight, timeRemaining)
+      setPortal(
+        `clone-${reflection.id}`,
+        <RemoteReflection
+          style={isClose ? style : {transform: style.transform}}
+          reflection={reflection}
+        />
+      )
+    }
+    if (isClose) {
+      // the target may be moving, so update every frame
+      requestAnimationFrame(() => {
+        const newTimeRemaining = timeRemaining - (Date.now() - beforeFrame)
+        setRemoteCard(isClose, newTimeRemaining, bbox.top)
+      })
+    }
   }
   // is opening
   useEffect(() => {
     if (remoteDrag) {
-      setRemoteCard()
+      setRemoteCard(false, Times.REFLECTION_REMOTE_DROP_DURATION)
     }
   }, [remoteDrag])
 
   // is closing
   useEffect(() => {
     if (isDropping && staticIdx !== -1 && remoteDrag) {
-      setRemoteCard(true)
+      setRemoteCard(true, Times.REFLECTION_REMOTE_DROP_DURATION)
     }
   }, [isDropping, staticIdx, remoteDrag])
 }
@@ -91,11 +102,14 @@ const useLocalDrag = (
       document.removeEventListener('mousemove', onMouseMove)
       document.removeEventListener('mouseup', onMouseUp)
       drag.isDrag = false
-      atmosphere.eventEmitter.emit('addSnackbar', {
-        key: `reflectionInterception:${reflectionId}`,
-        autoDismiss: 5,
-        message: `Oh no! ${remoteDrag!.dragUserName} stole your reflection!`
-      })
+      // there is some edge case where this can be null
+      if (remoteDrag) {
+        atmosphere.eventEmitter.emit('addSnackbar', {
+          key: `reflectionInterception:${reflectionId}`,
+          autoDismiss: 5,
+          message: `Oh no! ${remoteDrag.dragUserName} stole your reflection!`
+        })
+      }
     }
   }, [isViewerDragging, isDropping])
 }

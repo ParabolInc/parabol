@@ -241,7 +241,6 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
             />
           </Suspense>
         ) : (
-          // @ts-ignore
           <Editor
             spellCheck
             ariaLabel={ariaLabel}
@@ -257,6 +256,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
             placeholder={placeholder}
             readOnly={readOnly || (useFallback && !showFallback)}
             ref={editorRef as any}
+            // @ts-ignore
             style={{
               padding: `${Gutters.REFLECTION_INNER_GUTTER_VERTICAL} ${Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL}`,
               userSelect,

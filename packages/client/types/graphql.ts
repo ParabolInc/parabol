@@ -4785,7 +4785,7 @@ export interface IEndDraggingReflectionPayload {
   /**
    * The drag as sent from the team member
    */
-  remoteDrag: IRemoteReflectionDrag
+  remoteDrag: IRemoteReflectionDrag | null
 
   /**
    * the type of item the reflection was dropped on

@@ -1,21 +1,20 @@
 import {TeamSettings_viewer} from '../../../../__generated__/TeamSettings_viewer.graphql'
-import React, {Component} from 'react'
+import React from 'react'
 import styled from '@emotion/styled'
-import Helmet from 'react-helmet'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
+import {RouteComponentProps} from 'react-router-dom'
 import Panel from '../../../../components/Panel/Panel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import Row from '../../../../components/Row/Row'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import {WithAtmosphereProps} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import ArchiveTeamContainer from '../../containers/ArchiveTeamContainer/ArchiveTeamContainer'
 import {PALETTE} from '../../../../styles/paletteV2'
 import ui from '../../../../styles/ui'
 import {Layout, TierLabel} from '../../../../types/constEnums'
 import {TierEnum} from '../../../../types/graphql'
+import useDocumentTitle from '../../../../hooks/useDocumentTitle'
+import useRouter from '../../../../hooks/useRouter'
 
 const TeamSettingsLayout = styled('div')({
   display: 'flex',
@@ -43,53 +42,49 @@ interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
   viewer: TeamSettings_viewer
 }
 
-class TeamSettings extends Component<Props> {
-  render() {
-    const {
-      history,
-      viewer: {team}
-    } = this.props
-    if (!team) return null
-    const {orgId, teamName, teamMembers, tier} = team
-    const viewerTeamMember = teamMembers.find((m) => m.isSelf)
-    // if kicked out, the component might reload before the redirect occurs
-    if (!viewerTeamMember) return null
-    const {isLead: viewerIsLead} = viewerTeamMember
-    return (
-      <TeamSettingsLayout>
-        <Helmet title={`Team Settings | ${teamName}`} />
-        <PanelsLayout>
-          {tier === TierEnum.personal && (
-            <Panel>
-              <StyledRow>
-                <div>{'This team is currently on a personal plan.'}</div>
-                <PrimaryButton onClick={() => history.push(`/me/organizations/${orgId}`)}>
-                  {`Upgrade Team to ${TierLabel.PRO}`}
-                </PrimaryButton>
-              </StyledRow>
-            </Panel>
-          )}
-          {viewerIsLead && (
-            <Panel label='Danger Zone'>
-              <PanelRow>
-                <ArchiveTeamContainer team={team} />
-              </PanelRow>
-            </Panel>
-          )}
-        </PanelsLayout>
-      </TeamSettingsLayout>
-    )
-  }
+const TeamSettings = (props: Props) => {
+  const {viewer} = props
+  const {history} = useRouter()
+  const {team} = viewer
+  const {name: teamName, orgId, teamMembers, tier} = team!
+  useDocumentTitle(`Team Settings | ${teamName}`)
+  const viewerTeamMember = teamMembers.find((m) => m.isSelf)
+  // if kicked out, the component might reload before the redirect occurs
+  if (!viewerTeamMember) return null
+  const {isLead: viewerIsLead} = viewerTeamMember
+  return (
+    <TeamSettingsLayout>
+      <PanelsLayout>
+        {tier === TierEnum.personal && (
+          <Panel>
+            <StyledRow>
+              <div>{'This team is currently on a personal plan.'}</div>
+              <PrimaryButton onClick={() => history.push(`/me/organizations/${orgId}`)}>
+                {`Upgrade Team to ${TierLabel.PRO}`}
+              </PrimaryButton>
+            </StyledRow>
+          </Panel>
+        )}
+        {viewerIsLead && (
+          <Panel label='Danger Zone'>
+            <PanelRow>
+              <ArchiveTeamContainer team={team!} />
+            </PanelRow>
+          </Panel>
+        )}
+      </PanelsLayout>
+    </TeamSettingsLayout>
+  )
 }
 
-export default createFragmentContainer(withAtmosphere(withRouter(TeamSettings)), {
+export default createFragmentContainer(TeamSettings, {
   viewer: graphql`
     fragment TeamSettings_viewer on User {
       team(teamId: $teamId) {
         ...ArchiveTeamContainer_team
-        isViewerLead: isLead
-        teamId: id
-        teamName: name
+        isLead
+        id
+        name
         tier
         orgId
         teamMembers(sortBy: "preferredName") {

@@ -2,13 +2,13 @@ import {TeamInvitationErrorExpired_verifiedInvitation} from '../__generated__/Te
 import React from 'react'
 import styled from '@emotion/styled'
 import {PALETTE} from '../styles/paletteV2'
-import Helmet from 'react-helmet'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import InviteDialog from './InviteDialog'
 import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import DialogTitle from './DialogTitle'
+import useDocumentTitle from '../hooks/useDocumentTitle'
 
 interface Props {
   verifiedInvitation: TeamInvitationErrorExpired_verifiedInvitation
@@ -26,9 +26,9 @@ const TeamName = styled('span')({
 const TeamInvitationErrorExpired = (props: Props) => {
   const {verifiedInvitation} = props
   const {teamName, inviterName, inviterEmail} = verifiedInvitation
+  useDocumentTitle(`Token Expired | Team Invitation`)
   return (
     <InviteDialog>
-      <Helmet title={`Token Expired | Team Invitation`} />
       <DialogTitle>Invitation Expired</DialogTitle>
       <DialogContent>
         <InvitationDialogCopy>

@@ -37,7 +37,7 @@ interface Props {
   meetingId?: string
   myTeamMemberId?: string
   tasks: TaskColumns_tasks
-  teamMemberFilterId?: string
+  teamMemberFilterId?: string | null
   teams?: any
 }
 

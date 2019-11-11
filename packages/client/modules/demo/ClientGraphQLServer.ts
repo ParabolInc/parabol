@@ -591,6 +591,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     },
     StartDraggingReflectionMutation: ({reflectionId, dragId}, userId) => {
       const reflection = this.db.reflections.find((reflection) => reflection.id === reflectionId)!
+      if (!reflection) return
       if (userId !== demoViewerId) {
         if (reflection.isHumanTouched) return
       } else {

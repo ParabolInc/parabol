@@ -26,6 +26,7 @@ const TeamRoot = ({location, match}: Props) => {
       environment={atmosphere}
       query={query}
       variables={{teamId}}
+      fetchPolicy={'store-or-network' as any}
       render={({props: renderProps}) => {
         const viewer = renderProps ? renderProps.viewer : null
         // @ts-ignore

@@ -30,14 +30,16 @@ const ExpandedReflection = (props: Props) => {
       if (!isClickOnCard) {
         document.removeEventListener('click', watchForClick)
         commitLocalUpdate(atmosphere, (store) => {
-          const reflection = store.get(reflectionId)!
+          const reflection = store.get(reflectionId)
+          if (!reflection) return
           reflection.setValue(false, 'isEditing')
         })
       }
     }
     document.addEventListener('click', watchForClick)
     commitLocalUpdate(atmosphere, (store) => {
-      const reflection = store.get(reflectionId)!
+      const reflection = store.get(reflectionId)
+      if (!reflection) return
       reflection.setValue(true, 'isEditing')
     })
   }
