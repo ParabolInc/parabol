@@ -13,9 +13,8 @@ export const getMinTop = (top: number, targetEl: HTMLElement | null) => {
 }
 
 const getTransition = (isClipped: boolean, timeRemaining: number) => {
-  const completed = 1 - timeRemaining / Times.REFLECTION_DROP_DURATION
-  const curve =
-    completed === 0 ? BezierCurve.DECELERATE : getDeCasteljau(completed, BezierCurve.DECELERATE)
+  const completed = (1 - timeRemaining) / Times.REFLECTION_DROP_DURATION
+  const curve = getDeCasteljau(completed, BezierCurve.DECELERATE)
   const t = `${timeRemaining}ms ${curve}`
   const transition = `box-shadow ${t}, transform ${t}`
   return isClipped
