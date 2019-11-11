@@ -10,7 +10,7 @@ const graphQLSubscriptionType = (name: string, types: GraphQLObjectType[]) =>
       if (concreteType) return concreteType
       const abstractType = info.schema.getType(type) as GraphQLInterfaceType | GraphQLUnionType
       if (abstractType.resolveType) {
-        return abstractType.resolveType(data, context, info)
+        return abstractType.resolveType(data, context, info, abstractType)
       }
       // should never happen, but that depends on using the resolveType pattern for all abstract types
       return null

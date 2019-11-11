@@ -6,6 +6,7 @@ import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import {InvoiceConnection} from '../types/Invoice'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import {InvoiceStatusEnum} from 'parabol-client/types/graphql'
+import Invoice from '../../database/types/Invoice'
 
 export default {
   type: InvoiceConnection,
@@ -59,7 +60,8 @@ export default {
         ? Promise.resolve(undefined)
         : makeUpcomingInvoice(orgId, stripeId, stripeSubscriptionId)
     ])
-    const paginatedInvoices = after ? tooManyInvoices.slice(1) : tooManyInvoices
+    const extraInvoices: Invoice[] = tooManyInvoices || []
+    const paginatedInvoices = after ? extraInvoices.slice(1) : extraInvoices
     const allInvoices = upcomingInvoice
       ? [upcomingInvoice].concat(paginatedInvoices)
       : paginatedInvoices
@@ -74,7 +76,7 @@ export default {
       pageInfo: {
         startCursor: firstEdge && firstEdge.cursor,
         endCursor: firstEdge && edges[edges.length - 1].cursor,
-        hasNextPage: tooManyInvoices.length + (upcomingInvoice ? 1 : 0) > first
+        hasNextPage: extraInvoices.length + (upcomingInvoice ? 1 : 0) > first
       }
     }
   }
