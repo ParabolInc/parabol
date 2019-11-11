@@ -56,7 +56,9 @@ const Subtext = styled('div')({
 
 const StyledIcon = styled(Icon)({
   borderRadius: 32,
+  display: 'block',
   height: 32,
+  flexShrink: 0,
   lineHeight: '32px',
   marginLeft: 'auto',
   textAlign: 'center',

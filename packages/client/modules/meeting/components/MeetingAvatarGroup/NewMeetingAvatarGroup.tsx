@@ -27,29 +27,46 @@ const MeetingAvatarGroupRoot = styled('div')({
 
 const AnimateIn = keyframes`
   from {
-    margin-right: -40px;
+    transform: scale(0);
   }
 
   to {
-    margin-right: 0;
+    transform: scale(1);
   }
 `
 
-const OverlappingBlock = styled('div')<{animateIn?: boolean}>(({animateIn}) => ({
-  animation: animateIn ? `${AnimateIn.toString()} 400ms ease-in` : undefined,
-  backgroundColor: PALETTE.BACKGROUND_MAIN,
-  borderRadius: '100%',
-  marginLeft: -8,
-  padding: 2,
-  position: 'relative',
-  ':first-of-type': {
-    marginLeft: 0
-  },
-  [meetingAvatarMediaQueries[0]]: {
-    marginLeft: -14,
-    padding: 3
+const AnimateOut = keyframes`
+  from {
+    transform: scale(1);
   }
-}))
+
+  to {
+    transform: scale(0);
+  }
+`
+
+const OverlappingBlock = styled('div')<{animateIn?: boolean; animateOut?: boolean}>(
+  {
+    backgroundColor: PALETTE.BACKGROUND_MAIN,
+    borderRadius: '100%',
+    marginLeft: -8,
+    padding: 2,
+    position: 'relative',
+    ':first-of-type': {
+      marginLeft: 0
+    },
+    [meetingAvatarMediaQueries[0]]: {
+      marginLeft: -14,
+      padding: 3
+    }
+  },
+  ({animateIn}) => ({
+    animation: animateIn ? `${AnimateIn.toString()} 400ms ease-in` : undefined
+  }),
+  ({animateOut}) => ({
+    animation: animateOut ? `${AnimateOut.toString()} 400ms ease-out` : undefined
+  })
+)
 
 const OverflowCount = styled('div')({
   backgroundColor: PALETTE.BACKGROUND_BLUE,
@@ -103,6 +120,13 @@ const NewMeetingAvatarGroup = (props: Props) => {
       .filter(({user}) => user.isConnected)
       .sort((a, b) => (a.userId === viewerId ? -1 : a.checkInOrder < b.checkInOrder ? -1 : 1))
   }, [teamMembers])
+
+  const sortedTeamMembers = useMemo(() => {
+    return teamMembers
+      .filter(({user}) => user)
+      .sort((a, b) => (a.userId === viewerId ? -1 : a.checkInOrder < b.checkInOrder ? -1 : 1))
+  }, [teamMembers])
+
   const overflowThreshold = isDesktop ? MAX_AVATARS_DESKTOP : MAX_AVATARS_MOBILE
   const visibleConnectedTeamMembers = connectedTeamMembers.slice(0, overflowThreshold)
   const hiddenTeamMemberCount = connectedTeamMembers.length - visibleConnectedTeamMembers.length
@@ -117,18 +141,19 @@ const NewMeetingAvatarGroup = (props: Props) => {
 
   // const prevHiddenTeamMemberCount = hiddenTeamMemberCount ? usePrevious(hiddenTeamMemberCount) : 0
   // const prevConnectedTeamMembers = connectedTeamMembers ? usePrevious(connectedTeamMembers) : 0
-  const prevVisibleConnectedTeamMembers = visibleConnectedTeamMembers
-    ? usePrevious(visibleConnectedTeamMembers)
-    : []
+  const prevVisibleConnectedTeamMembers =
+    visibleConnectedTeamMembers && usePrevious(visibleConnectedTeamMembers)
 
-  useEffect(() => {
-    if (prevVisibleConnectedTeamMembers !== visibleConnectedTeamMembers) {
-      console.log('prevAmount.hiddenTeamMemberCount !== hiddenTeamMemberCount')
-    }
-  }, [hiddenTeamMemberCount])
+  // useEffect(() => {
+  //   if (prevVisibleConnectedTeamMembers !== visibleConnectedTeamMembers) {
+  //     console.log('prevAmount.hiddenTeamMemberCount !== hiddenTeamMemberCount')
+  //   }
+  // }, [hiddenTeamMemberCount])
 
   console.log(prevVisibleConnectedTeamMembers, 'prevVisibleConnectedTeamMembers')
   console.log(visibleConnectedTeamMembers, 'visibleConnectedTeamMembers')
+
+  const maybePrevMembers = prevVisibleConnectedTeamMembers || []
 
   return (
     <MeetingAvatarGroupRoot>
@@ -137,14 +162,32 @@ const NewMeetingAvatarGroup = (props: Props) => {
         swarm={swarm}
         localStreamUI={camStreams[atmosphere.viewerId]}
       />
-      {visibleConnectedTeamMembers.map((teamMember) => {
-        const isNotNew =
-          prevVisibleConnectedTeamMembers !== undefined
-            ? Boolean(prevVisibleConnectedTeamMembers.includes(teamMember as never))
-            : true
-        console.log(isNotNew, 'isNotNew')
+      {sortedTeamMembers.map((teamMember) => {
+        console.log('------------')
+        console.log(teamMember, 'teamMember')
+        console.log(maybePrevMembers.includes(teamMember as never), 'maybePrevMember')
+
+        const wasHere = Boolean(maybePrevMembers.includes(teamMember as never))
+        const isHere = Boolean(visibleConnectedTeamMembers.includes(teamMember as never))
+
+        console.log(wasHere, 'wasHere')
+        console.log(isHere, 'isHere')
+
+        const arriving = !wasHere && isHere
+        const leaving = wasHere && !isHere
+        const notHere = !wasHere && !isHere
+
+        console.log(arriving, 'arriving')
+        console.log(leaving, 'leaving')
+        console.log(notHere, 'notHere')
+        console.log('------------')
+
+        if (notHere) {
+          return
+        }
+
         return (
-          <OverlappingBlock animateIn={!isNotNew} key={teamMember.id}>
+          <OverlappingBlock animateIn={arriving} animateOut={leaving} key={teamMember.id}>
             <NewMeetingAvatar
               teamMember={teamMember}
               streamUI={camStreams[teamMember.userId]}
