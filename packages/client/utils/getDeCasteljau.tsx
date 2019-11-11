@@ -6,6 +6,7 @@
  * */
 const getDeCasteljau = (u: number, startingCurve: string) => {
   // get everything between the parens
+  if (u === 0) return startingCurve
   const re = /\(([^)]+)\)/
   const [P0, P1, P2, P3] = re
     .exec(startingCurve)![1]
