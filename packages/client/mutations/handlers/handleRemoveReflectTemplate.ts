@@ -5,8 +5,11 @@ import getCachedRecord from '../../utils/relay/getCachedRecord'
 
 const handleRemoveReflectTemplate = (templateId: string, store: RecordSourceSelectorProxy<any>) => {
   const filterFn = (obj) => {
+    if (!obj || obj.__typename !== 'RetrospectiveMeetingSettings') return false
     return (
+      obj &&
       obj.__typename === 'RetrospectiveMeetingSettings' &&
+      obj.reflectTemplates &&
       obj.reflectTemplates.__refs.includes(templateId)
     )
   }
