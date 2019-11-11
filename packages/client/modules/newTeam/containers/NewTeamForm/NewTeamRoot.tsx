@@ -28,6 +28,7 @@ const NewTeamRoot = ({
       environment={atmosphere}
       query={query}
       variables={{}}
+      fetchPolicy={'store-or-network' as any}
       render={renderQuery(NewTeam, {props: {defaultOrgId}, size: LoaderSize.PANEL})}
     />
   )

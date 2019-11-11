@@ -102,11 +102,14 @@ const useLocalDrag = (
       document.removeEventListener('mousemove', onMouseMove)
       document.removeEventListener('mouseup', onMouseUp)
       drag.isDrag = false
-      atmosphere.eventEmitter.emit('addSnackbar', {
-        key: `reflectionInterception:${reflectionId}`,
-        autoDismiss: 5,
-        message: `Oh no! ${remoteDrag!.dragUserName} stole your reflection!`
-      })
+      // there is some edge case where this can be null
+      if (remoteDrag) {
+        atmosphere.eventEmitter.emit('addSnackbar', {
+          key: `reflectionInterception:${reflectionId}`,
+          autoDismiss: 5,
+          message: `Oh no! ${remoteDrag.dragUserName} stole your reflection!`
+        })
+      }
     }
   }, [isViewerDragging, isDropping])
 }

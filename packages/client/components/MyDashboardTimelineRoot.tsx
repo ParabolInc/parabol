@@ -22,6 +22,7 @@ const MyDashboardTimelineRoot = ({atmosphere}: Props) => {
       environment={atmosphere}
       variables={{first: 10}}
       query={query}
+      fetchPolicy={'store-or-network' as any}
       render={renderQuery(MyDashboardTimeline, {size: LoaderSize.PANEL})}
     />
   )

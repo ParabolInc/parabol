@@ -22,7 +22,7 @@ const CenteredBlock = styled('div')({
   maxWidth: '100%',
   padding: '2rem 1rem',
   width: '100%',
-  zIndex: 300
+  zIndex: 3
 })
 
 const Backdrop = styled('div')({
@@ -32,7 +32,7 @@ const Backdrop = styled('div')({
   position: 'absolute',
   top: 0,
   width: '100vw',
-  zIndex: 200
+  zIndex: 2
 })
 
 const MeetingAbstractContainer = styled(PageContainer)({
@@ -43,7 +43,7 @@ const MeetingAbstractContainer = styled(PageContainer)({
   minWidth: '100vw',
   position: 'absolute',
   top: 0,
-  zIndex: 100
+  zIndex: 1
 })
 
 const AbstractSidebar = styled('div')({

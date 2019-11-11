@@ -26,6 +26,7 @@ const TeamSettingsRoot = ({teamId}: Props) => {
       query={query}
       variables={{teamId}}
       render={renderQuery(TeamSettings, {size: LoaderSize.PANEL})}
+      fetchPolicy={'store-or-network' as any}
     />
   )
 }

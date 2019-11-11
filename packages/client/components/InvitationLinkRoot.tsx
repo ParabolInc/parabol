@@ -26,6 +26,7 @@ const InvitationLinkRoot = (props: Props) => {
       environment={atmosphere}
       query={query}
       variables={{token}}
+      fetchPolicy={'store-or-network' as any}
       render={({props: renderProps}) => {
         if (!renderProps) return null
         return <InvitationLink massInvitation={renderProps.massInvitation} />

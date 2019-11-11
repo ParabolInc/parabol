@@ -2,6 +2,7 @@ import IconLabel from '../IconLabel'
 import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
 import FloatingActionButton from '../FloatingActionButton'
+import {ZIndex} from '../../types/constEnums'
 
 const StyledButton = styled(FloatingActionButton)({
   bottom: 20,
@@ -11,7 +12,7 @@ const StyledButton = styled(FloatingActionButton)({
   position: 'absolute',
   right: 20,
   width: 32,
-  zIndex: 200
+  zIndex: ZIndex.FAB
 })
 
 interface Props {

@@ -226,11 +226,18 @@ export const enum Times {
   REFLECTION_COLUMN_SWIPE_THRESH = 600
 }
 
+/* https://material.io/design/environment/elevation.html#default-elevations */
 export const enum ZIndex {
-  MODAL = 400 /*should be 24, https://github.com/ParabolInc/action/issues/2772 */,
-  SIDEBAR = 200,
-  SNACKBAR = 200,
-  REFLECTION_IN_FLIGHT = 500
+  BOTTOM_BAR = 8,
+  BOTTOM_BAR_DESKTOP = 4,
+  DIALOG = 24,
+  FAB = 6,
+  MENU = 24 /* portal needs to float above other components, especially sidebars */,
+  SIDEBAR = 16,
+  SIDE_SHEET = 8,
+  SNACKBAR = 7,
+  REFLECTION_IN_FLIGHT = 8,
+  TOOLTIP = 24 /* portal needs to float above other components, especially sidebars */
 }
 
 export const enum AuthTokenRole {

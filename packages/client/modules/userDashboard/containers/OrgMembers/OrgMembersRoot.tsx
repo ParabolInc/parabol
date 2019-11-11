@@ -26,6 +26,7 @@ const OrgMembersRoot = (props: Props) => {
       environment={atmosphere}
       query={query}
       variables={{orgId, first: 10000}}
+      fetchPolicy={'store-or-network' as any}
       render={renderQuery(OrgMembers, {size: LoaderSize.PANEL})}
     />
   )

@@ -27,6 +27,7 @@ const UnpaidTeamModalRoot = (props: Props) => {
       environment={atmosphere}
       query={query}
       variables={{teamId}}
+      fetchPolicy={'store-or-network' as any}
       render={renderQuery(UnpaidTeamModal)}
     />
   )

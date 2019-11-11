@@ -5,10 +5,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.11.0 2019-Nov-06
+
+## Fixed
+* Janky expand/collapse reflection animation (#3322)
+* Create reflections in demo group phase (#3321)
+* Z-Index levels (#3320)
+* Timer reset on stage change (#3319)
+* Meeting sidebar headers (#3314)
+
+### Changed
+* Set client/server envs on Sentry (#3311)
+* Upgraded to Relay v7 (#3306)
+  
 ## 4.10.1 2019-Nov-04
 
 ## Fixed
 * Mid-meeting invitation would reset meeting (hotfix)
+* Bumped Cypress version to fix CI breaks
 
 ## 4.10.0 2019-Oct-31
 
