@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.12.0 2019-Nov-11
+
+## Fixed
+* Janky reflection animation when dropping & animating to the bottom of a scrollable column (#3297)
+* Sentry bugs from Nov 6 - 11
+* Regression where viewer could not add/remove reflect templates
+
+## Removed
+* Redux (#3323)
+
+## Changed
+* Refactored all old patterns that relied on unsafe react methods (#3323)
+
 ## 4.11.0 2019-Nov-06
 
 ## Fixed
