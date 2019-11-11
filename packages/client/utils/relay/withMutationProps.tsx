@@ -47,7 +47,7 @@ const withMutationProps = <P extends WithMutationProps>(
       dirty: false
     }
 
-    componentWillMount() {
+    componentDidMount() {
       this._mounted = true
     }
 

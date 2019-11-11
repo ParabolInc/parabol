@@ -1,6 +1,5 @@
 import {NewMeetingSummary_viewer} from '../../../__generated__/NewMeetingSummary_viewer.graphql'
 import React, {useEffect} from 'react'
-import Helmet from 'react-helmet'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {MEETING_SUMMARY_LABEL} from '../../../utils/constants'
@@ -10,6 +9,7 @@ import {demoTeamId} from '../../demo/initDB'
 import MeetingSummaryEmail from '../../email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail'
 import useRouter from '../../../hooks/useRouter'
 import {PALETTE} from '../../../styles/paletteV2'
+import useDocumentTitle from '../../../hooks/useDocumentTitle'
 
 interface Props {
   viewer: NewMeetingSummary_viewer
@@ -38,13 +38,14 @@ const NewMeetingSummary = (props: Props) => {
   } = newMeeting
   const meetingLabel = meetingTypeToLabel[meetingType]
   const title = `${meetingLabel} Meeting ${MEETING_SUMMARY_LABEL} | ${teamName} ${meetingNumber}`
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useDocumentTitle(title)
   const slug = meetingTypeToSlug[meetingType]
   const meetingUrl = makeHref(`/${slug}/${teamId}`)
   const teamDashUrl = `/team/${teamId}`
   const emailCSVUrl = `/new-summary/${meetingId}/csv`
   return (
     <div style={{backgroundColor: PALETTE.BACKGROUND_MAIN, minHeight: '100vh'}}>
-      <Helmet title={title} />
       <MeetingSummaryEmail
         urlAction={urlAction}
         isDemo={teamId === demoTeamId}

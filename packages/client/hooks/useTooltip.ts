@@ -7,16 +7,22 @@ import useEventCallback from './useEventCallback'
 
 interface Options {
   delay?: number
+  disabled?: boolean
 }
 
-const useTooltip = (preferredMenuPosition: MenuPosition, options: Options = {}) => {
+const useTooltip = <T extends HTMLElement = HTMLElement>(
+  preferredMenuPosition: MenuPosition,
+  options: Options = {}
+) => {
   const delay = options.delay || Duration.TOOLTIP_DELAY
-  const {targetRef, originRef, coords} = useCoords(preferredMenuPosition)
+  const disabled = !!options.disabled
+  const {targetRef, originRef, coords} = useCoords<T>(preferredMenuPosition)
   const {portal, openPortal, closePortal, portalStatus} = usePortal()
   const tooltipPortal = useTooltipPortal(portal, targetRef, coords, portalStatus)
   const openDelayRef = useRef<number>()
 
   const openTooltip = useEventCallback(() => {
+    if (disabled) return
     openDelayRef.current = window.setTimeout(() => {
       openPortal()
     }, delay)

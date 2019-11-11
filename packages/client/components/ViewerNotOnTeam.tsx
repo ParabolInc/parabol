@@ -1,6 +1,5 @@
 import {ViewerNotOnTeam_viewer} from '../__generated__/ViewerNotOnTeam_viewer.graphql'
 import React, {useEffect} from 'react'
-import Helmet from 'react-helmet'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import Ellipsis from './Ellipsis/Ellipsis'
@@ -17,6 +16,7 @@ import useRouter from '../hooks/useRouter'
 import getValidRedirectParam from '../utils/getValidRedirectParam'
 import PushInvitationMutation from '../mutations/PushInvitationMutation'
 import useEventCallback from '../hooks/useEventCallback'
+import useDocumentTitle from '../hooks/useDocumentTitle'
 
 interface Props {
   teamId: string
@@ -29,7 +29,7 @@ const ViewerNotOnTeam = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {authObj} = atmosphere
   const {history} = useRouter()
-
+  useDocumentTitle(`Invitation Required`)
   const handler = useEventCallback((invitation) => {
     const {
       invitation: {token: invitationToken},
@@ -65,7 +65,6 @@ const ViewerNotOnTeam = (props: Props) => {
   return (
     <TeamInvitationWrapper>
       <InviteDialog>
-        <Helmet title={`Invitation Required`} />
         <DialogTitle>Invitation Required</DialogTitle>
         <DialogContent>
           <InvitationDialogCopy>You’re almost on the team!</InvitationDialogCopy>

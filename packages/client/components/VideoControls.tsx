@@ -1,13 +1,13 @@
 import React, {lazy, useState} from 'react'
 import styled from '@emotion/styled'
 import withHotkey from 'react-hotkey-hoc'
-import LoadableFreeModal from './LoadableFreeModal'
 import PrimaryButton from './PrimaryButton'
 import {StreamUI} from '../hooks/useSwarm'
 import MediaSwarm from '../utils/swarm/MediaSwarm'
 import AudioToggle from './AudioToggle'
 import VideoToggle from './VideoToggle'
 import useHotkey from '../hooks/useHotkey'
+import useModal from '../hooks/useModal'
 
 interface Props {
   allowVideo: boolean
@@ -36,11 +36,7 @@ const VideoControls = (props: Props) => {
   const {allowVideo, localStreamUI, swarm} = props
   const [showVideoButton, setShowVideoButton] = useState(allowVideo)
   const [deviceStatus, setDeviceStatus] = useState<PushPermissionState>('granted')
-  const [isPermModalOpen, setIsPermModalOpen] = useState<boolean>(false)
-
-  const closeModal = () => {
-    setIsPermModalOpen(false)
-  }
+  const {openPortal, modalPortal, closePortal} = useModal({background: 'rgba(0,0,0, 0.9)'})
 
   useHotkey('l o o k a t m e', () => {
     setShowVideoButton(true)
@@ -56,15 +52,15 @@ const VideoControls = (props: Props) => {
     const isPrompting = permissions.some(({state}) => state === 'prompt')
     if (isPrompting) {
       setDeviceStatus('prompt')
-      setIsPermModalOpen(true)
+      openPortal()
     }
     try {
       await swarm!.broadcastWebcam()
     } catch (e) {
       setDeviceStatus('denied')
-      setIsPermModalOpen(true)
+      openPortal()
       const onChange = () => {
-        closeModal()
+        closePortal()
         addVideo().catch()
       }
       permissions.forEach((perm) => (perm.onchange = onChange))
@@ -77,13 +73,7 @@ const VideoControls = (props: Props) => {
     return (
       <>
         <AddVideoButton onClick={addVideo}>Add Video</AddVideoButton>
-        <LoadableFreeModal
-          background='rgba(0,0,0, 0.9)'
-          LoadableComponent={WebcamPermissionsModal}
-          queryVars={{status: deviceStatus}}
-          isModalOpen={isPermModalOpen}
-          closeModal={closeModal}
-        />
+        {modalPortal(<WebcamPermissionsModal status={deviceStatus} />)}
       </>
     )
   }

@@ -14,7 +14,7 @@ const ModalBoundary = styled('div')({
 })
 
 interface Props {
-  status: 'prompt' | 'denied'
+  status: PushPermissionState
 }
 
 const WebcamPermissionsModal = (props: Props) => {

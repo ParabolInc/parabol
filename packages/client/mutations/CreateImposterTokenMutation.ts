@@ -50,7 +50,7 @@ const CreateImposterTokenMutation = (atmosphere: Atmosphere, userId, {history}) 
       const {authToken} = createImposterToken
       if (!authToken) return
       // Reset application state:
-      signout(atmosphere, undefined, history)
+      signout(atmosphere, history)
 
       // Assume the identity of the new user:
       const onCompleted = () => {

@@ -1,7 +1,6 @@
 import {Organization_viewer} from '../../../../__generated__/Organization_viewer.graphql'
 import React, {lazy, useEffect} from 'react'
 import styled from '@emotion/styled'
-import Helmet from 'react-helmet'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
@@ -9,7 +8,6 @@ import Avatar from '../../../../components/Avatar/Avatar'
 import DashNavControl from '../../../../components/DashNavControl/DashNavControl'
 import EditableAvatar from '../../../../components/EditableAvatar/EditableAvatar'
 import EditableOrgName from '../../../../components/EditableOrgName'
-import LoadableModal from '../../../../components/LoadableModal'
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
 import BillingMembersToggle from '../BillingMembersToggle/BillingMembersToggle'
 import UserSettingsWrapper from '../UserSettingsWrapper/UserSettingsWrapper'
@@ -18,6 +16,8 @@ import OrganizationDetails from './OrganizationDetails'
 import OrganizationPage from './OrganizationPage'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {TierEnum} from '../../../../types/graphql'
+import useModal from '../../../../hooks/useModal'
+import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 
 const AvatarAndName = styled('div')({
   alignItems: 'flex-start',
@@ -74,14 +74,15 @@ const Organization = (props: Props) => {
       history.replace('/me')
     }
   }, [history, organization])
+  const {togglePortal, modalPortal} = useModal()
+  const orgName = (organization && organization.name) || 'Unknown'
+  useDocumentTitle(`Organization Settings | ${orgName}`)
   if (!organization) return <div />
-  const {orgId, createdAt, isBillingLeader, name: orgName, picture: orgAvatar, tier} = organization
+  const {orgId, createdAt, isBillingLeader, picture: orgAvatar, tier} = organization
   const pictureOrDefault = orgAvatar || defaultOrgAvatar
   const onlyShowMembers = !isBillingLeader && tier !== TierEnum.personal
-
   return (
     <UserSettingsWrapper>
-      <Helmet title={`Organization Settings | ${orgName}`} />
       <SettingsWrapper narrow>
         <BackControlBlock>
           <DashNavControl
@@ -91,17 +92,11 @@ const Organization = (props: Props) => {
           />
         </BackControlBlock>
         <AvatarAndName>
+          {modalPortal(<OrgAvatarInput picture={pictureOrDefault} orgId={orgId} />)}
           {isBillingLeader ? (
-            <LoadableModal
-              isToggleNativeElement
-              LoadableComponent={OrgAvatarInput}
-              queryVars={{picture: pictureOrDefault, orgId}}
-              toggle={
-                <div>
-                  <EditableAvatar hasPanel picture={pictureOrDefault} size={64} unstyled />
-                </div>
-              }
-            />
+            <div onClick={togglePortal}>
+              <EditableAvatar hasPanel picture={pictureOrDefault} size={64} unstyled />
+            </div>
           ) : (
             <AvatarBlock>
               <Avatar picture={pictureOrDefault} size={64} sansRadius sansShadow />

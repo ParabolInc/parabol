@@ -1,6 +1,6 @@
-import React, {Component, lazy, Suspense} from 'react'
-import withHotkey from 'react-hotkey-hoc'
-import LoadableFreeModal from '../../components/LoadableFreeModal'
+import React, {lazy, Suspense} from 'react'
+import useHotkey from '../../hooks/useHotkey'
+import useModal from '../../hooks/useModal'
 
 const EditorHelpModal = lazy(() =>
   import(
@@ -8,45 +8,15 @@ const EditorHelpModal = lazy(() =>
   )
 )
 
-interface Props {
-  bindHotkey: any
+const EditorHelpModalContainer = () => {
+  const {togglePortal, closePortal, modalPortal} = useModal()
+  useHotkey('?', togglePortal)
+  useHotkey('escape', closePortal)
+  return (
+    <Suspense fallback={''}>
+      {modalPortal(<EditorHelpModal handleCloseModal={closePortal} />)}
+    </Suspense>
+  )
 }
 
-interface State {
-  isOpen: boolean
-}
-
-class EditorHelpModalContainer extends Component<Props, State> {
-  state = {
-    isOpen: false
-  }
-
-  componentDidMount() {
-    const {bindHotkey} = this.props
-    bindHotkey('?', this.toggleModal)
-    bindHotkey('escape', this.closeModal)
-  }
-
-  toggleModal = () => {
-    this.setState({isOpen: !this.state.isOpen})
-  }
-
-  closeModal = () => {
-    this.setState({isOpen: false})
-  }
-
-  render() {
-    return (
-      <Suspense fallback={''}>
-        <LoadableFreeModal
-          LoadableComponent={EditorHelpModal}
-          queryVars={{handleCloseModal: this.closeModal}}
-          isModalOpen={this.state.isOpen}
-          closeModal={this.closeModal}
-        />
-      </Suspense>
-    )
-  }
-}
-
-export default withHotkey(EditorHelpModalContainer)
+export default EditorHelpModalContainer

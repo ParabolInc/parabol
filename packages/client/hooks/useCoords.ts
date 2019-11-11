@@ -10,7 +10,6 @@ import {
 } from 'react'
 import {BBox} from '../types/animations'
 import getBBox from '../components/RetroReflectPhase/getBBox'
-import {getOffset} from '../decorators/withCoordsV2'
 import useRefState from './useRefState'
 import useResizeObserver from './useResizeObserver'
 
@@ -32,6 +31,15 @@ export enum MenuPosition {
   LOWER_LEFT,
   LOWER_RIGHT,
   LOWER_CENTER
+}
+
+const getOffset = (orientation, fullWidth) => {
+  if (orientation === 'center') {
+    return fullWidth / 2
+  } else if (orientation === 'right' || orientation === 'bottom') {
+    return fullWidth
+  }
+  return 0
 }
 
 const anchorLookup = {
@@ -176,7 +184,7 @@ const useWindowResize = <T extends HTMLElement = HTMLButtonElement>(
 }
 
 const useCoords = <
-  T extends HTMLElement = HTMLButtonElement,
+  T extends HTMLElement = HTMLButtonElement | HTMLDivElement,
   P extends HTMLElement = HTMLDivElement
 >(
   preferredMenuPosition: MenuPosition,

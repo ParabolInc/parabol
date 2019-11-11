@@ -12,7 +12,6 @@ import PhaseItemChits from './PhaseItemChits'
 import PhaseItemEditor from './PhaseItemEditor'
 import ReflectionStack from './ReflectionStack'
 import RetroPrompt from '../RetroPrompt'
-import Tooltip from '../Tooltip/Tooltip'
 import SetPhaseFocusMutation from '../../mutations/SetPhaseFocusMutation'
 import {DECELERATE} from '../../styles/animation'
 import getNextSortOrder from '../../utils/getNextSortOrder'
@@ -22,6 +21,8 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import {EditorState} from 'draft-js'
 import {ElementWidth, Gutters} from '../../types/constEnums'
 import useRefState from '../../hooks/useRefState'
+import useTooltip from '../../hooks/useTooltip'
+import {MenuPosition} from '../../hooks/useCoords'
 
 const ColumnWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   alignItems: 'center',
@@ -117,16 +118,6 @@ const ChitSection = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   minHeight: isDesktop ? 96 : undefined
 }))
 
-const originAnchor = {
-  vertical: 'top',
-  horizontal: 'center'
-}
-
-const targetAnchor = {
-  vertical: 'bottom',
-  horizontal: 'center'
-}
-
 export interface ReflectColumnCardInFlight {
   key: string
   editorState: EditorState
@@ -202,6 +193,14 @@ const PhaseItemColumn = (props: Props) => {
       .map((group) => group.reflections[0])
   }, [columnStack])
 
+  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
+    MenuPosition.UPPER_CENTER,
+    {
+      delay: 200,
+      disabled: hasFocusedRef.current || isFocused || !isFacilitator || isComplete
+    }
+  )
+
   return (
     <ColumnWrapper isDesktop={isDesktop}>
       <ColumnHighlight isDesktop={isDesktop} isFocused={isFocused}>
@@ -209,17 +208,10 @@ const PhaseItemColumn = (props: Props) => {
           <HeaderAndEditor isDesktop={isDesktop}>
             <PromptHeader isClickable={isFacilitator && !isComplete} onClick={setColumnFocus}>
               <FocusArrow isFocused={isFocused}>arrow_forward</FocusArrow>
-              <Tooltip
-                delay={200}
-                maxHeight={40}
-                maxWidth={500}
-                originAnchor={originAnchor}
-                targetAnchor={targetAnchor}
-                tip={<div>Tap to highlight prompt for everybody</div>}
-                isDisabled={hasFocusedRef.current || isFocused || !isFacilitator || isComplete}
-              >
-                <RetroPrompt>{question}</RetroPrompt>
-              </Tooltip>
+              <RetroPrompt onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={originRef}>
+                {question}
+              </RetroPrompt>
+              {tooltipPortal(<div>Tap to highlight prompt for everybody</div>)}
               <Description>{description}</Description>
             </PromptHeader>
             <EditorSection>

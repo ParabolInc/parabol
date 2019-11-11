@@ -1,24 +1,18 @@
-import React, {Component} from 'react'
-import Helmet from 'react-helmet'
+import React from 'react'
 import AtmosphereProvider from './AtmosphereProvider/AtmosphereProvider'
 import RetroRoot from './RetroRoot/RetroRoot'
+import useMetaTagContent from '../hooks/useMetaTagContent'
 
-class DemoMeeting extends Component {
-  render() {
-    return (
-      <AtmosphereProvider isDemo>
-        <React.Fragment>
-          <Helmet>
-            <meta
-              property='description'
-              content='Parabol offers effective sprint retrospectives for free. Try a 2-minute demo, no account needed. Simulated colleagues illustrate Parabol’s powerful features including multi-user grouping, rich text editing, and gorgeous meeting summaries.'
-            />
-          </Helmet>
-          <RetroRoot />
-        </React.Fragment>
-      </AtmosphereProvider>
-    )
-  }
+const CONTENT =
+  'Parabol offers effective sprint retrospectives for free. Try a 2-minute demo, no account needed. Simulated colleagues illustrate Parabol’s powerful features including multi-user grouping, rich text editing, and gorgeous meeting summaries.'
+
+const DemoMeeting = () => {
+  useMetaTagContent(CONTENT)
+  return (
+    <AtmosphereProvider isDemo>
+      <RetroRoot />
+    </AtmosphereProvider>
+  )
 }
 
 export default DemoMeeting

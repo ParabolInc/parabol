@@ -1,21 +1,18 @@
 import './cdnFallback'
 import React from 'react'
 import {render} from 'react-dom'
-import makeStore from './makeStore'
 import Root from './Root'
 import './scrollIntoViewIfNeeded'
 // do this here so useBuiltIns can replace it with only the polyfills required to hit browser targets
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
 
-const initialState = {}
-export const store = makeStore(initialState)
-render(<Root store={store} />, document.getElementById('root'))
+render(<Root />, document.getElementById('root'))
 
 if ((module as any).hot) {
   ;(module as any).hot.accept('./Root', () => {
     const Root = require('./Root').default
-    render(<Root store={store} />, document.getElementById('root'))
+    render(<Root />, document.getElementById('root'))
   })
 }
 
