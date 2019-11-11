@@ -22,8 +22,8 @@ const sendToSentry = async (error: Error, options: SentryOptions = {}): void => 
     user = await r
       .table('User')
       .get(userId)
+      .default({})
       .pluck('id', 'email')
-      .default(null)
       .run()
   }
   Sentry.withScope((scope) => {

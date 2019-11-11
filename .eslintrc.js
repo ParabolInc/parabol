@@ -12,6 +12,7 @@ module.exports = {
     sourceType: 'module'
   },
   rules: {
+    '@typescript-eslint/ban-ts-ignore': 'off',
     '@typescript-eslint/camelcase': 'off',
     '@typescript-eslint/no-empty-interface': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',

@@ -109,7 +109,7 @@ export default {
       manager.getAccessibleResources(),
       manager.getCreateMeta(cloudId, [projectKey]),
       manager.convertMarkdownToADF(markdown)
-    ])
+    ] as const)
     if ('message' in sites) {
       return standardError(new Error(sites.message), {userId: viewerId})
     }
