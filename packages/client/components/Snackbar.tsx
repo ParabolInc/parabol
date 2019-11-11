@@ -10,6 +10,7 @@ import graphql from 'babel-plugin-relay/macro'
 import useLocalQuery from '../hooks/useLocalQuery'
 import {SnackbarQuery} from '../__generated__/SnackbarQuery.graphql'
 import useEventCallback from '../hooks/useEventCallback'
+import {ZIndex} from '../types/constEnums'
 
 const MAX_SNACKS = 1
 
@@ -34,7 +35,7 @@ const Modal = styled('div')<{topOfFAB: number | undefined | null}>(({topOfFAB}) 
   top: 0,
   width: '100vw',
   pointerEvents: 'none',
-  zIndex: 1 // hack to hide task cards since draft-editor has a z-index of 1, it'll shine through if this isn't present
+  zIndex: ZIndex.SNACKBAR
 }))
 
 export type SnackbarRemoveFn = (snack: Snack) => boolean
