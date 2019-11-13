@@ -22,26 +22,26 @@ import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import addTeamIdToTMS from '../../../safeMutations/addTeamIdToTMS'
 import {CREATED_TEAM} from '../../types/TimelineEventTypeEnum'
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
+import Team from '../../../database/types/Team'
+import Organization from '../../../database/types/Organization'
+
+interface ValidNewTeam {
+  id: string
+  name: string
+  orgId: string
+  isOnboardTeam: boolean
+}
 
 // used for addorg, addTeam
-export default async function createTeamAndLeader(userId, newTeam) {
+export default async function createTeamAndLeader(userId: string, newTeam: ValidNewTeam) {
   const r = await getRethink()
-  const now = new Date()
   const {id: teamId, orgId} = newTeam
   const organization = await r
-    .table('Organization')
+    .table<Organization>('Organization')
     .get(orgId)
     .run()
   const {tier} = organization
-  const verifiedTeam = {
-    ...newTeam,
-    createdAt: now,
-    createdBy: userId,
-    isArchived: false,
-    isPaid: true,
-    meetingId: null,
-    tier
-  }
+  const verifiedTeam = new Team({...newTeam, createdBy: userId, tier})
   const {phaseItems, templates} = makeRetroTemplates(teamId)
   const meetingSettings = [
     {

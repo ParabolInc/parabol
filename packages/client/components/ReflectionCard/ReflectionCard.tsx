@@ -42,11 +42,9 @@ const getReadOnly = (
 
 const ReflectionCard = (props: Props) => {
   const {showOriginFooter, meeting, reflection, isClipped, stackCount} = props
-  const {
-    phaseItem: {question}
-  } = reflection
+  const {meetingId, phaseItem} = reflection
+  const {question} = phaseItem
   const phaseType = meeting ? meeting.localPhase.phaseType : null
-  const meetingId = meeting ? meeting.id : null
   const {id: reflectionId, content, retroPhaseItemId, isViewerCreator} = reflection
   const atmosphere = useAtmosphere()
   const {onCompleted, submitMutation, error, onError} = useMutationProps()
@@ -54,7 +52,7 @@ const ReflectionCard = (props: Props) => {
   const [editorState, setEditorState] = useEditorState(content)
 
   const handleEditorFocus = () => {
-    if (isTempId(reflectionId) || !meetingId) return
+    if (isTempId(reflectionId)) return
     EditReflectionMutation(atmosphere, {isEditing: true, meetingId, phaseItemId: retroPhaseItemId})
   }
 
@@ -74,13 +72,7 @@ const ReflectionCard = (props: Props) => {
       if (!editorEl || editorEl.type !== 'textarea') return
       const {value} = editorEl
       if (!value) {
-        RemoveReflectionMutation(
-          atmosphere,
-          {reflectionId},
-          {meetingId: meetingId!},
-          onError,
-          onCompleted
-        )
+        RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId}, onError, onCompleted)
       } else {
         const initialContentState = editorState.getCurrentContent()
         const initialText = initialContentState.getPlainText()
@@ -116,20 +108,14 @@ const ReflectionCard = (props: Props) => {
       })
     } else {
       submitMutation()
-      RemoveReflectionMutation(
-        atmosphere,
-        {reflectionId},
-        {meetingId: meetingId!},
-        onError,
-        onCompleted
-      )
+      RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId}, onError, onCompleted)
     }
   }
 
   const handleEditorBlur = () => {
     if (isTempId(reflectionId)) return
     handleContentUpdate()
-    EditReflectionMutation(atmosphere, {isEditing: false, phaseItemId: retroPhaseItemId})
+    EditReflectionMutation(atmosphere, {isEditing: false, meetingId, phaseItemId: retroPhaseItemId})
   }
 
   const handleReturn = (e) => {
@@ -172,7 +158,7 @@ const ReflectionCard = (props: Props) => {
         userSelect={userSelect}
       />
       {error && <StyledError>{error.message}</StyledError>}
-      {!readOnly && meetingId && (
+      {!readOnly && (
         <ReflectionCardDeleteButton meetingId={meetingId} reflectionId={reflectionId} />
       )}
       {showOriginFooter && !isClipped && <ReflectionCardFooter>{question}</ReflectionCardFooter>}
@@ -186,6 +172,7 @@ export default createFragmentContainer(ReflectionCard, {
       isViewerCreator
       id
       isEditing
+      meetingId
       reflectionGroupId
       retroPhaseItemId
       content

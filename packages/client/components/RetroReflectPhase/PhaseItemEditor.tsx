@@ -116,18 +116,26 @@ const PhaseItemEditor = (props: Props) => {
     if (!isEditing) return
     window.clearTimeout(idleTimerIdRef.current)
     idleTimerIdRef.current = undefined
-    EditReflectionMutation(atmosphere, {isEditing: false, phaseItemId: retroPhaseItemId})
+    EditReflectionMutation(atmosphere, {isEditing: false, meetingId, phaseItemId: retroPhaseItemId})
     setIsEditing(false)
   }
 
   const ensureEditing = () => {
     if (!isEditing) {
-      EditReflectionMutation(atmosphere, {isEditing: true, phaseItemId: retroPhaseItemId})
+      EditReflectionMutation(atmosphere, {
+        isEditing: true,
+        meetingId,
+        phaseItemId: retroPhaseItemId
+      })
       setIsEditing(true)
     }
     window.clearTimeout(idleTimerIdRef.current)
     idleTimerIdRef.current = window.setTimeout(() => {
-      EditReflectionMutation(atmosphere, {isEditing: false, phaseItemId: retroPhaseItemId})
+      EditReflectionMutation(atmosphere, {
+        isEditing: false,
+        meetingId,
+        phaseItemId: retroPhaseItemId
+      })
       setIsEditing(false)
     }, 5000)
   }

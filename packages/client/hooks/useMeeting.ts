@@ -30,6 +30,7 @@ const useMeeting = (meetingRef: any) => {
         ...useResumeFacilitation_meeting
         id
         meetingType
+        showSidebar
         team {
           id
           name
@@ -38,7 +39,7 @@ const useMeeting = (meetingRef: any) => {
     `,
     meetingRef
   )
-  const {id: meetingId, meetingType, team} = meeting
+  const {id: meetingId, meetingType, showSidebar, team} = meeting
   const {id: teamId, name: teamName} = team
   const gotoStageId = useGotoStageId(meeting)
   const handleGotoNext = useGotoNext(meeting, gotoStageId)
@@ -53,7 +54,7 @@ const useMeeting = (meetingRef: any) => {
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const toggleSidebar = useToggleSidebar(meetingId)
   const handleMenuClick = useHandleMenuClick(teamId, isDesktop)
-  useMobileSidebarDefaultClosed(isDesktop, toggleSidebar)
+  useMobileSidebarDefaultClosed(isDesktop, meetingId)
   const {streams, swarm} = useSwarm(teamId)
   return {
     demoPortal,

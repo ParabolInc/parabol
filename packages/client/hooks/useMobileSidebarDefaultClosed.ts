@@ -1,15 +1,17 @@
 import {useEffect} from 'react'
-import useToggleSidebar from './useToggleSidebar'
+import {commitLocalUpdate} from 'relay-runtime'
+import {INewMeeting} from '../types/graphql'
+import useAtmosphere from './useAtmosphere'
 
-const useMobileSidebarDefaultClosed = (
-  isDesktop: boolean,
-  toggleSidebar: ReturnType<typeof useToggleSidebar>
-) => {
+const useMobileSidebarDefaultClosed = (isDesktop: boolean, meetingId: string) => {
+  const atmosphere = useAtmosphere()
   useEffect(() => {
-    if (isDesktop) {
-      toggleSidebar()
-    }
-  }, [isDesktop, toggleSidebar])
+    commitLocalUpdate(atmosphere, (store) => {
+      const meeting = store.get<INewMeeting>(meetingId)
+      if (!meeting) return
+      meeting.setValue(isDesktop, 'showSidebar')
+    })
+  }, [isDesktop])
 }
 
 export default useMobileSidebarDefaultClosed
