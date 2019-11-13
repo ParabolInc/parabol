@@ -51,7 +51,7 @@ const useMeeting = (meetingRef: any) => {
   const demoPortal = isDemoRoute() ? useDemoMeeting() : () => null // eslint-disable-line
   useDocumentTitle(`${meetingTypeToLabel[meetingType]} Meeting | ${teamName}`)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const toggleSidebar = useToggleSidebar(teamId)
+  const toggleSidebar = useToggleSidebar(meetingId)
   const handleMenuClick = useHandleMenuClick(teamId, isDesktop)
   useMobileSidebarDefaultClosed(isDesktop, toggleSidebar)
   const {streams, swarm} = useSwarm(teamId)

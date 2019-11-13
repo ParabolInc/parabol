@@ -1,17 +1,18 @@
 import useAtmosphere from './useAtmosphere'
 import {useCallback} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
+import {INewMeeting} from '../types/graphql'
 
-export const useToggleSidebar = (teamId: string) => {
+export const useToggleSidebar = (meetingId: string) => {
   const atmosphere = useAtmosphere()
   return useCallback(() => {
     commitLocalUpdate(atmosphere, (store) => {
-      const team = store.get(teamId)
-      if (!team) return
-      const val = team.getValue('isMeetingSidebarCollapsed')
-      team.setValue(!val, 'isMeetingSidebarCollapsed')
+      const meeting = store.get<INewMeeting>(meetingId)
+      if (!meeting) return
+      const val = meeting.getValue('showSidebar')
+      meeting.setValue(!val, 'showSidebar')
     })
-  }, [atmosphere, teamId])
+  }, [atmosphere, meetingId])
 }
 
 export default useToggleSidebar

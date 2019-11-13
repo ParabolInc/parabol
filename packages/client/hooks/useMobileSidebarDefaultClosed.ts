@@ -6,7 +6,7 @@ const useMobileSidebarDefaultClosed = (
   toggleSidebar: ReturnType<typeof useToggleSidebar>
 ) => {
   useEffect(() => {
-    if (!isDesktop) {
+    if (isDesktop) {
       toggleSidebar()
     }
   }, [isDesktop, toggleSidebar])

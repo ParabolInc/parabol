@@ -132,15 +132,8 @@ export default {
         })
         .coerceTo('array') as unknown) as ITeamMember[]
     }).run()
-    const team =
-      area === MEETING
-        ? await r
-            .table('Team')
-            .get(nextTeamId)
-            .run()
-        : undefined
-    const meetingId = team ? team.meetingId : undefined
-    const usersToIgnore = await getUsersToIgnore(meetingId, dataLoader)
+    // TODO: get users in the same location
+    const usersToIgnore = []
     if (!newTask) return standardError(new Error('Already updated task'), {userId: viewerId})
 
     // send task updated messages
