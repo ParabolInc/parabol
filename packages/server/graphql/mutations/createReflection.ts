@@ -27,7 +27,7 @@ export default {
   },
   async resolve(
     _source,
-    {input: {content, retroPhaseItemId, sortOrder}},
+    {input: {content, retroPhaseItemId, sortOrder, meetingId}},
     {authToken, dataLoader, socketId: mutatorId}
   ) {
     const r = await getRethink()
@@ -48,8 +48,6 @@ export default {
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    const team = await dataLoader.get('teams').load(teamId)
-    const {meetingId} = team
     const meeting = await r
       .table('NewMeeting')
       .get(meetingId)

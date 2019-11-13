@@ -86,11 +86,12 @@ const GroupingKanbanColumn = (props: Props) => {
     if (submitting) return
     const input = {
       content: undefined,
+      meetingId,
       retroPhaseItemId: promptId,
       sortOrder: getNextSortOrder(reflectionGroups)
     }
     submitMutation()
-    CreateReflectionMutation(atmosphere, {input}, {meetingId}, onError, onCompleted)
+    CreateReflectionMutation(atmosphere, {input}, {onError, onCompleted})
   }
   const ref = useRef<HTMLDivElement>(null)
   const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete

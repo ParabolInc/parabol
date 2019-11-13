@@ -62,11 +62,12 @@ const PhaseItemEditor = (props: Props) => {
   const handleSubmit = (content) => {
     const input = {
       content,
+      meetingId,
       retroPhaseItemId,
       sortOrder: nextSortOrder()
     }
     submitMutation()
-    CreateReflectionMutation(atmosphere, {input}, {meetingId}, onError, onCompleted)
+    CreateReflectionMutation(atmosphere, {input}, {onError, onCompleted})
     const {top, left} = getBBox(phaseEditorRef.current)!
     const cardInFlight = {
       transform: `translate(${left}px,${top}px)`,

@@ -54,8 +54,8 @@ const ReflectionCard = (props: Props) => {
   const [editorState, setEditorState] = useEditorState(content)
 
   const handleEditorFocus = () => {
-    if (isTempId(reflectionId)) return
-    EditReflectionMutation(atmosphere, {isEditing: true, phaseItemId: retroPhaseItemId})
+    if (isTempId(reflectionId) || !meetingId) return
+    EditReflectionMutation(atmosphere, {isEditing: true, meetingId, phaseItemId: retroPhaseItemId})
   }
 
   useEffect(() => {

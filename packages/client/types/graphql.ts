@@ -3198,12 +3198,12 @@ export interface IEndDraggingReflectionOnMutationArguments {
 }
 
 export interface IEditReflectionOnMutationArguments {
-  phaseItemId: string
-
   /**
    * Whether a phaseItem is being edited or not
    */
   isEditing: boolean
+  meetingId: string
+  phaseItemId: string
 }
 
 export interface IEditTaskOnMutationArguments {
@@ -4534,6 +4534,7 @@ export interface ICreateReflectionInput {
    * A stringified draft-js document containing thoughts
    */
   content?: string | null
+  meetingId: string
 
   /**
    * The phase item the reflection belongs to
