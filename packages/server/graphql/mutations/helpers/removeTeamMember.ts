@@ -4,7 +4,7 @@ import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
 import shortid from 'shortid'
 import {KICKED_OUT} from '../../../../client/utils/constants'
 import fromTeamMemberId from '../../../../client/utils/relay/fromTeamMemberId'
-import removeStagesFromNewMeeting from './removeStagesFromNewMeeting'
+import removeStagesFromMeetings from './removeStagesFromMeetings'
 import CheckInStage from '../../../database/types/CheckInStage'
 import UpdatesStage from '../../../database/types/UpdatesStage'
 import Task from '../../../database/types/Task'
@@ -157,7 +157,7 @@ const removeTeamMember = async (
   const filterFn = (stage: CheckInStage | UpdatesStage) => {
     return stage.teamMemberId === teamMemberId
   }
-  await removeStagesFromNewMeeting(filterFn, teamId, dataLoader)
+  await removeStagesFromMeetings(filterFn, teamId, dataLoader)
 
   return {
     user,

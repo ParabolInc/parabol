@@ -6,7 +6,7 @@ import {matchPath} from 'react-router'
 import {Disposable} from 'relay-runtime'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import {IInviteToTeamOnMutationArguments} from '../types/graphql'
-import {LocalHandlers, OnNextContext} from '../types/relayMutations'
+import {LocalHandlers, OnNextHistoryContext} from '../types/relayMutations'
 import AcceptTeamInvitationMutation from './AcceptTeamInvitationMutation'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 
@@ -44,7 +44,7 @@ const mutation = graphql`
 
 const popInvitationReceivedToast = (
   notification: InviteToTeamMutation_notification['teamInvitationNotification'] | null,
-  {atmosphere, history}: OnNextContext
+  {atmosphere, history}: OnNextHistoryContext
 ) => {
   if (!notification) return
   const {

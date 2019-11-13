@@ -1,4 +1,3 @@
-import {RetroDiscussPhase_team} from '../__generated__/RetroDiscussPhase_team.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import BottomNavControl from './BottomNavControl'
@@ -14,7 +13,6 @@ import PhaseHeaderTitle from './PhaseHeaderTitle'
 import Overflow from './Overflow'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
 import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
-import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import MeetingAgendaCards from '../modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
 import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
 import {ICON_SIZE} from '../styles/typographyV2'
@@ -36,9 +34,11 @@ import graphql from 'babel-plugin-relay/macro'
 import {ElementWidth} from '../types/constEnums'
 import {PALETTE} from '../styles/paletteV2'
 import DiscussPhaseSqueeze from './DiscussPhaseSqueeze'
+import {RetroDiscussPhase_meeting} from '__generated__/RetroDiscussPhase_meeting.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
 
-interface Props extends WithAtmosphereProps, RetroMeetingPhaseProps {
-  team: RetroDiscussPhase_team
+interface Props extends RetroMeetingPhaseProps {
+  meeting: RetroDiscussPhase_meeting
 }
 
 const maxWidth = '114rem'
@@ -147,12 +147,19 @@ const DemoDiscussHelpMenu = lazyPreload(async () =>
 )
 
 const RetroDiscussPhase = (props: Props) => {
-  const {avatarGroup, toggleSidebar, atmosphere, handleGotoNext, team, isDemoStageComplete} = props
+  const {avatarGroup, toggleSidebar, handleGotoNext, meeting, isDemoStageComplete} = props
+  const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {isMeetingSidebarCollapsed, newMeeting, id: teamId, organization} = team
-  if (!newMeeting) return null
   const {gotoNext, ref: gotoNextRef} = handleGotoNext
-  const {id: meetingId, facilitatorUserId, localStage, phases} = newMeeting
+  const {
+    id: meetingId,
+    facilitatorUserId,
+    localStage,
+    phases,
+    showSidebar,
+    organization,
+    teamId
+  } = meeting
   const {id: localStageId, reflectionGroup} = localStage
   const isComplete = localStage ? localStage.isComplete : false
   // reflection group will be null until the server overwrites the placeholder.
@@ -167,11 +174,11 @@ const RetroDiscussPhase = (props: Props) => {
   }
   return (
     <MeetingContent>
-      <DiscussPhaseSqueeze meeting={newMeeting} organization={organization} />
+      <DiscussPhaseSqueeze meeting={meeting} organization={organization} />
       <MeetingHeaderAndPhase>
         <MeetingTopBar
           avatarGroup={avatarGroup}
-          isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
+          isMeetingSidebarCollapsed={!showSidebar}
           toggleSidebar={toggleSidebar}
         >
           <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.discuss]}</PhaseHeaderTitle>
@@ -224,7 +231,7 @@ const RetroDiscussPhase = (props: Props) => {
         <EditorHelpModalContainer />
       </MeetingHeaderAndPhase>
       <MeetingFacilitatorBar isFacilitating={isFacilitating}>
-        <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
+        <StageTimerControl defaultTimeLimit={5} meeting={meeting} />
         {!nextStageRes && isComplete && <BottomControlSpacer />}
         {nextStageRes && (
           <CenterControlBlock isComplete={isComplete}>
@@ -248,8 +255,6 @@ const RetroDiscussPhase = (props: Props) => {
 graphql`
   fragment RetroDiscussPhase_stage on NewMeetingStage {
     ...StageTimerDisplay_stage
-    isComplete
-    id
     ... on RetroDiscussStage {
       reflectionGroup {
         id
@@ -269,31 +274,31 @@ graphql`
         }
       }
     }
+    isComplete
+    id
   }
 `
 
-export default createFragmentContainer(withAtmosphere(RetroDiscussPhase), {
-  team: graphql`
-    fragment RetroDiscussPhase_team on Team {
-      ...StageTimerControl_team
+export default createFragmentContainer(RetroDiscussPhase, {
+  meeting: graphql`
+    fragment RetroDiscussPhase_meeting on RetrospectiveMeeting {
+      ...StageTimerControl_meeting
       organization {
         ...DiscussPhaseSqueeze_organization
       }
-      isMeetingSidebarCollapsed
+      showSidebar
+      ...DiscussPhaseSqueeze_meeting
       id
-      newMeeting {
-        ...DiscussPhaseSqueeze_meeting
-        id
-        facilitatorUserId
-        phases {
-          stages {
-            ...RetroDiscussPhase_stage @relay(mask: false)
-          }
-        }
-        localStage {
+      facilitatorUserId
+      phases {
+        stages {
           ...RetroDiscussPhase_stage @relay(mask: false)
         }
       }
+      localStage {
+        ...RetroDiscussPhase_stage @relay(mask: false)
+      }
+      teamId
     }
   `
 })

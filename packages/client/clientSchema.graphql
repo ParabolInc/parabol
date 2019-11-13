@@ -1,18 +1,20 @@
 extend interface NewMeeting {
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
+  showSidebar: Boolean!
 }
 
 extend type ActionMeeting {
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
+  showSidebar: Boolean!
 }
 
 extend type RetrospectiveMeeting {
   isViewerDragInProgress: Boolean
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
-  reflectionsInFlight: [RetroReflection!]
+  showSidebar: Boolean!
 }
 
 extend type Team {

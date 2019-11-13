@@ -255,26 +255,16 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
         'The meeting member associated with this user, if a meeting is currently in progress',
       args: {
         meetingId: {
-          type: GraphQLID,
+          type: new GraphQLNonNull(GraphQLID),
           description: 'The specific meeting ID'
-        },
-        teamId: {
-          type: GraphQLID,
-          description: 'The teamId of the meeting currently in progress'
         }
       },
-      resolve: async (_source, args, {authToken, dataLoader}) => {
-        if (!args.teamId && !args.meetingId) return null
-        const viewerId = getUserId(authToken)
-        let meetingId = args.meetingId
-        if (!meetingId) {
-          const team = await dataLoader.get('teams').load(args.teamId)
-          meetingId = team.meetingId
-        }
-        const meetingMemberId = toTeamMemberId(meetingId, viewerId)
+      resolve: async ({userId}, {meetingId}, {dataLoader}) => {
+        const meetingMemberId = toTeamMemberId(meetingId, userId)
         return meetingId ? dataLoader.get('meetingMembers').load(meetingMemberId) : undefined
       }
     },
+    meeting: newMeeting,
     newMeeting,
     notifications: require('../queries/notifications').default,
     organization,

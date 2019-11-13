@@ -18,7 +18,6 @@ interface Props {
   facilitator: StageTimerModalEditTimeEnd_facilitator
   meetingId: string
   stage: StageTimerModalEditTimeEnd_stage
-  teamId: string
 }
 
 const Modal = styled('div')({
@@ -50,7 +49,7 @@ const StyledIcon = styled(Icon)({
 })
 
 const StageTimerModalEditTimeEnd = (props: Props) => {
-  const {meetingId, closePortal, facilitator, teamId, stage} = props
+  const {meetingId, closePortal, facilitator, stage} = props
   const atmosphere = useAtmosphere()
   const {submitMutation, onCompleted, onError, submitting} = useMutationProps()
   const endTimer = () => {
@@ -71,7 +70,6 @@ const StageTimerModalEditTimeEnd = (props: Props) => {
         facilitator={facilitator}
         stage={stage}
         meetingId={meetingId}
-        teamId={teamId}
       />
     </Modal>
   )

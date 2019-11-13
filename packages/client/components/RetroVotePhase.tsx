@@ -1,4 +1,3 @@
-import {RetroVotePhase_team} from '../__generated__/RetroVotePhase_team.graphql'
 import React, {useRef} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
@@ -14,7 +13,6 @@ import MeetingHelpToggle from './MenuHelpToggle'
 import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
-import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
 import {minWidthMediaQueries} from '../styles/breakpoints'
 import {meetingVoteIcon} from '../styles/meeting'
@@ -27,17 +25,17 @@ import {phaseLabelLookup} from '../utils/meetings/lookups'
 import handleRightArrow from '../utils/handleRightArrow'
 import isDemoRoute from '../utils/isDemoRoute'
 import EndMeetingButton from './EndMeetingButton'
-import {RetroVotePhase_meetingSettings} from '../__generated__/RetroVotePhase_meetingSettings.graphql'
 import StageTimerControl from './StageTimerControl'
 import StageTimerDisplay from './RetroReflectPhase/StageTimerDisplay'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import PhaseWrapper from './PhaseWrapper'
 import {ElementWidth} from '../types/constEnums'
 import GroupingKanban from './GroupingKanban'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {RetroVotePhase_meeting} from '__generated__/RetroVotePhase_meeting.graphql'
 
-interface Props extends WithAtmosphereProps, RetroMeetingPhaseProps {
-  meetingSettings: RetroVotePhase_meetingSettings
-  team: RetroVotePhase_team
+interface Props extends RetroMeetingPhaseProps {
+  meeting: RetroVotePhase_meeting
 }
 
 const CenterControlBlock = styled('div')<{isComplete: boolean}>(({isComplete}) => ({
@@ -133,21 +131,23 @@ const DemoVoteHelpMenu = lazyPreload(async () =>
 )
 
 const RetroVotePhase = (props: Props) => {
-  const {
-    avatarGroup,
-    toggleSidebar,
-    meetingSettings: {totalVotes = 0},
-    atmosphere: {viewerId},
-    handleGotoNext,
-    team
-  } = props
-  const {isMeetingSidebarCollapsed, newMeeting} = team
+  const {avatarGroup, toggleSidebar, handleGotoNext, meeting} = props
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
   const phaseRef = useRef<HTMLDivElement>(null)
-  if (!newMeeting) return null
   const {gotoNext, ref: gotoNextRef} = handleGotoNext
-  const {facilitatorUserId, id: meetingId, phases, viewerMeetingMember, localStage} = newMeeting
+  const {
+    facilitatorUserId,
+    id: meetingId,
+    phases,
+    viewerMeetingMember,
+    localStage,
+    showSidebar,
+    settings
+  } = meeting
+  const totalVotes = settings.totalVotes || 0
   const isComplete = localStage ? localStage.isComplete : false
-  const teamVotesRemaining = newMeeting.votesRemaining || 0
+  const teamVotesRemaining = meeting.votesRemaining || 0
   const myVotesRemaining = viewerMeetingMember.votesRemaining || 0
   const isFacilitating = facilitatorUserId === viewerId
   const discussPhase = phases.find((phase) => phase.phaseType === DISCUSS)!
@@ -159,7 +159,7 @@ const RetroVotePhase = (props: Props) => {
       <MeetingHeaderAndPhase>
         <MeetingTopBar
           avatarGroup={avatarGroup}
-          isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
+          isMeetingSidebarCollapsed={!showSidebar}
           toggleSidebar={toggleSidebar}
         >
           <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.vote]}</PhaseHeaderTitle>
@@ -187,15 +187,13 @@ const RetroVotePhase = (props: Props) => {
           </VoteMeta>
           <StageTimerDisplay stage={localStage} />
           <MeetingPhaseWrapper>
-            <GroupingKanban meeting={newMeeting} phaseRef={phaseRef} />
+            <GroupingKanban meeting={meeting} phaseRef={phaseRef} />
           </MeetingPhaseWrapper>
         </PhaseWrapper>
         <MeetingHelpToggle menu={isDemoRoute() ? <DemoVoteHelpMenu /> : <VoteHelpMenu />} />
       </MeetingHeaderAndPhase>
       <MeetingFacilitatorBar isFacilitating={isFacilitating}>
-        {!isComplete && (
-          <StageTimerControl defaultTimeLimit={3} meetingId={meetingId} team={team} />
-        )}
+        {!isComplete && <StageTimerControl defaultTimeLimit={3} meeting={meeting} />}
         <CenterControlBlock isComplete={isComplete}>
           <BottomNavControl
             isBouncing={teamVotesRemaining === 0}
@@ -217,44 +215,40 @@ const RetroVotePhase = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withAtmosphere(RetroVotePhase), {
-  meetingSettings: graphql`
-    fragment RetroVotePhase_meetingSettings on RetrospectiveMeetingSettings {
-      totalVotes
-    }
-  `,
-  team: graphql`
-    fragment RetroVotePhase_team on Team {
-      ...StageTimerControl_team
-      isMeetingSidebarCollapsed
-      newMeeting {
-        ...GroupingKanban_meeting
-        id
-        facilitatorUserId
-        localStage {
-          ...StageTimerDisplay_stage
-          isComplete
-        }
-        phases {
-          phaseType
-          ... on DiscussPhase {
-            stages {
-              ...StageTimerDisplay_stage
-              ... on RetroDiscussStage {
-                id
-                isNavigableByFacilitator
-              }
+export default createFragmentContainer(RetroVotePhase, {
+  meeting: graphql`
+    fragment RetroVotePhase_meeting on RetrospectiveMeeting {
+      ...StageTimerControl_meeting
+      ...GroupingKanban_meeting
+      settings {
+        totalVotes
+      }
+      showSidebar
+      id
+      facilitatorUserId
+      localStage {
+        ...StageTimerDisplay_stage
+        isComplete
+      }
+      phases {
+        phaseType
+        ... on DiscussPhase {
+          stages {
+            ...StageTimerDisplay_stage
+            ... on RetroDiscussStage {
+              id
+              isNavigableByFacilitator
             }
           }
         }
-        viewerMeetingMember {
-          ... on RetrospectiveMeetingMember {
-            votesRemaining
-          }
-        }
-        ... on RetrospectiveMeeting {
+      }
+      viewerMeetingMember {
+        ... on RetrospectiveMeetingMember {
           votesRemaining
         }
+      }
+      ... on RetrospectiveMeeting {
+        votesRemaining
       }
     }
   `

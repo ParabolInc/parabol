@@ -2,7 +2,6 @@ import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {Facilitator_viewer} from '../__generated__/Facilitator_viewer.graphql'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {PortalStatus} from '../hooks/usePortal'
@@ -10,6 +9,8 @@ import lazyPreload from '../utils/lazyPreload'
 import isDemoRoute from '../utils/isDemoRoute'
 import {PALETTE} from '../styles/paletteV2'
 import Icon from './Icon'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {Facilitator_meeting} from '__generated__/Facilitator_meeting.graphql'
 
 const FacilitatorBlock = styled('div')({
   borderBottom: `1px solid ${PALETTE.BORDER_LIGHTER}`,
@@ -81,7 +82,7 @@ const Avatar = styled('img')({
 })
 
 interface Props {
-  viewer: Facilitator_viewer
+  meeting: Facilitator_meeting
 }
 
 const FacilitatorMenu = lazyPreload(() =>
@@ -92,10 +93,8 @@ const FacilitatorMenu = lazyPreload(() =>
 )
 
 const Facilitator = (props: Props) => {
-  const {viewer} = props
-  const {id: userId, team} = viewer
-  const {newMeeting, teamMembers} = team!
-  const {facilitatorUserId, facilitator} = newMeeting!
+  const {meeting} = props
+  const {facilitatorUserId, facilitator} = meeting
   const {user, picture, preferredName} = facilitator
   const {isConnected} = user
   const {togglePortal, menuProps, menuPortal, originRef, portalStatus} = useMenu<HTMLDivElement>(
@@ -104,7 +103,9 @@ const Facilitator = (props: Props) => {
       isDropdown: true
     }
   )
-  const isReadOnly = isDemoRoute() || teamMembers.length === 1 || userId === facilitatorUserId
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
+  const isReadOnly = isDemoRoute() || viewerId === facilitatorUserId
   const handleOnMouseEnter = () => !isReadOnly && FacilitatorMenu.preload()
   const handleOnClick = () => !isReadOnly && togglePortal()
   return (
@@ -125,29 +126,21 @@ const Facilitator = (props: Props) => {
         </div>
         {!isReadOnly && <StyledIcon>more_vert</StyledIcon>}
       </FacilitatorToggle>
-      {menuPortal(<FacilitatorMenu menuProps={menuProps} viewer={viewer} />)}
+      {menuPortal(<FacilitatorMenu menuProps={menuProps} meeting={meeting} />)}
     </FacilitatorBlock>
   )
 }
 
 export default createFragmentContainer(Facilitator, {
-  viewer: graphql`
-    fragment Facilitator_viewer on User {
-      ...FacilitatorMenu_viewer
-      id
-      team(teamId: $teamId) {
-        teamMembers(sortBy: "checkInOrder") {
-          id
-        }
-        newMeeting {
-          facilitatorUserId
-          facilitator {
-            picture
-            preferredName
-            user {
-              isConnected
-            }
-          }
+  meeting: graphql`
+    fragment Facilitator_meeting on NewMeeting {
+      ...FacilitatorMenu_meeting
+      facilitatorUserId
+      facilitator {
+        picture
+        preferredName
+        user {
+          isConnected
         }
       }
     }

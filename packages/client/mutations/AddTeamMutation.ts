@@ -4,7 +4,7 @@ import handleAddTeams from './handlers/handleAddTeams'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import getGraphQLError from '../utils/relay/getGraphQLError'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
-import {OnNextHandler} from '../types/relayMutations'
+import {OnNextHandler, OnNextHistoryContext, SharedUpdater} from '../types/relayMutations'
 import {AddTeamMutation_team} from '../__generated__/AddTeamMutation_team.graphql'
 import {AddTeamMutation as IAddTeamMutation} from '../__generated__/AddTeamMutation.graphql'
 
@@ -33,7 +33,7 @@ const mutation = graphql`
   }
 `
 
-const popTeamCreatedToast: OnNextHandler<AddTeamMutation_team> = (
+const popTeamCreatedToast: OnNextHandler<AddTeamMutation_team, OnNextHistoryContext> = (
   payload,
   {atmosphere, history}
 ) => {
@@ -48,7 +48,7 @@ const popTeamCreatedToast: OnNextHandler<AddTeamMutation_team> = (
   history && history.push(`/team/${teamId}`)
 }
 
-export const addTeamTeamUpdater = (payload, store) => {
+export const addTeamTeamUpdater: SharedUpdater<AddTeamMutation_team> = (payload, {store}) => {
   const team = payload.getLinkedRecord('team')
   handleAddTeams(team, store)
 }
@@ -64,7 +64,7 @@ const AddTeamMutation = (atmosphere, variables, options, onError, onCompleted) =
     variables,
     updater: (store) => {
       const payload = store.getRootField('addTeam')
-      addTeamTeamUpdater(payload, store)
+      addTeamTeamUpdater(payload, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
       const {newTeam} = variables

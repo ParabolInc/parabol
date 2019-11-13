@@ -157,7 +157,7 @@ const getIsKill = (meetingType: MeetingType, phase: GenericMeetingPhase) => {
 }
 
 export default {
-  type: EndNewMeetingPayload,
+  type: new GraphQLNonNull(EndNewMeetingPayload),
   description: 'Finish a new meeting',
   args: {
     meetingId: {

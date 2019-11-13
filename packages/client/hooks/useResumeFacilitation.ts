@@ -2,29 +2,29 @@ import graphql from 'babel-plugin-relay/macro'
 import useAtmosphere from './useAtmosphere'
 import {useEffect} from 'react'
 import PromoteNewMeetingFacilitatorMutation from '../mutations/PromoteNewMeetingFacilitatorMutation'
-import {useResumeFacilitationTeam} from '../__generated__/useResumeFacilitationTeam.graphql'
+import {readInlineData} from 'relay-runtime'
+import {useResumeFacilitation_meeting} from '__generated__/useResumeFacilitation_meeting.graphql'
 
-graphql`
-  fragment useResumeFacilitationTeam on Team {
-    newMeeting {
-      id
-      facilitatorUserId
-      defaultFacilitatorUserId
-    }
-  }
-`
-const useResumeFacilitation = (team: useResumeFacilitationTeam | null) => {
+const useResumeFacilitation = (meetingRef: any) => {
   const atmosphere = useAtmosphere()
+  const meeting = readInlineData<useResumeFacilitation_meeting>(
+    graphql`
+      fragment useResumeFacilitation_meeting on NewMeeting @inline {
+        id
+        defaultFacilitatorUserId
+        facilitatorUserId
+      }
+    `,
+    meetingRef
+  )
+
   useEffect(() => {
     const {viewerId} = atmosphere
-    if (!team) return
-    const {newMeeting} = team
-    if (!newMeeting) return
-    const {id: meetingId, defaultFacilitatorUserId, facilitatorUserId} = newMeeting
+    const {id: meetingId, defaultFacilitatorUserId, facilitatorUserId} = meeting
     if (defaultFacilitatorUserId === viewerId && facilitatorUserId !== viewerId) {
       PromoteNewMeetingFacilitatorMutation(atmosphere, {facilitatorUserId: viewerId, meetingId})
     }
-  }, [atmosphere, team])
+  }, [atmosphere, meeting])
 }
 
 export default useResumeFacilitation

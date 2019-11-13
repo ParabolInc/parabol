@@ -1,7 +1,6 @@
 import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import {QueryRenderer} from 'react-relay'
-import ActionMeeting from './ActionMeeting'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useRouter from '../hooks/useRouter'
 import NotificationSubscription from '../subscriptions/NotificationSubscription'
@@ -11,11 +10,12 @@ import TeamSubscription from '../subscriptions/TeamSubscription'
 import {MeetingTypeEnum} from '../types/graphql'
 import renderQuery from '../utils/relay/renderQuery'
 import useSubscription from '../hooks/useSubscription'
+import ActionMeetingLobby from './ActionMeetingLobby'
 
 const query = graphql`
   query ActionMeetingRootQuery($teamId: ID!) {
     viewer {
-      ...ActionMeeting_viewer
+      ...ActionMeetingLobby_viewer
     }
   }
 `
@@ -25,7 +25,7 @@ const ActionMeetingRoot = () => {
   const atmosphere = useAtmosphere()
   const {match} = useRouter<{teamId: string}>()
   const {params} = match
-  const {teamId = 'demoTeam'} = params
+  const {teamId} = params
   useSubscription(ActionMeetingRoot.name, NotificationSubscription)
   useSubscription(ActionMeetingRoot.name, OrganizationSubscription)
   useSubscription(ActionMeetingRoot.name, TaskSubscription)
@@ -36,7 +36,7 @@ const ActionMeetingRoot = () => {
       query={query}
       variables={{teamId, meetingType}}
       fetchPolicy={'store-or-network' as any}
-      render={renderQuery(ActionMeeting)}
+      render={renderQuery(ActionMeetingLobby)}
     />
   )
 }

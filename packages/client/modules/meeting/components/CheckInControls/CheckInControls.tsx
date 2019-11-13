@@ -1,11 +1,10 @@
-import {CheckInControls_teamMember} from '../../../../__generated__/CheckInControls_teamMember.graphql'
+import {CheckInControls_meetingMember} from '../../../../__generated__/CheckInControls_meetingMember.graphql'
 import React, {useRef} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import BottomNavControl from '../../../../components/BottomNavControl'
 import BottomNavIconLabel from '../../../../components/BottomNavIconLabel'
-import {useGotoNext} from '../../../../hooks/useMeeting'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import useHotkey from '../../../../hooks/useHotkey'
@@ -14,6 +13,7 @@ import NewMeetingCheckInMutation from '../../../../mutations/NewMeetingCheckInMu
 import handleRightArrow from '../../../../utils/handleRightArrow'
 import useEventCallback from '../../../../hooks/useEventCallback'
 import {Breakpoint, ElementWidth} from '../../../../types/constEnums'
+import useGotoNext from '../../../../hooks/useGotoNext'
 
 const ButtonBlock = styled('div')({
   display: 'flex',
@@ -28,20 +28,20 @@ const NotHereButton = styled(BottomNavControl)<{isMobile: boolean}>(({isMobile})
 
 interface Props {
   handleGotoNext: ReturnType<typeof useGotoNext>
-  teamMember: CheckInControls_teamMember
+  meetingMember: CheckInControls_meetingMember
 }
 
 const CheckInControls = (props: Props) => {
-  const {teamMember, handleGotoNext} = props
+  const {meetingMember, handleGotoNext} = props
+  const {teamMember} = meetingMember
   const {preferredName} = teamMember
   const atmosphere = useAtmosphere()
-  const teamMemberRef = useRef(teamMember)
+  const meetingMemberRef = useRef(meetingMember)
   const handleGotoNextRef = useRef(handleGotoNext)
-  teamMemberRef.current = teamMember
+  meetingMemberRef.current = meetingMember
   handleGotoNextRef.current = handleGotoNext
   const handleOnClickPresent = useEventCallback(() => {
-    const {userId, meetingMember} = teamMemberRef.current
-    const {isCheckedIn, meetingId} = meetingMember!
+    const {userId, isCheckedIn, meetingId} = meetingMemberRef.current
     if (!isCheckedIn) {
       NewMeetingCheckInMutation(atmosphere, {meetingId, userId, isCheckedIn: true})
     }
@@ -49,8 +49,7 @@ const CheckInControls = (props: Props) => {
   })
 
   const handleOnClickAbsent = useEventCallback(() => {
-    const {userId, meetingMember} = teamMemberRef.current
-    const {isCheckedIn, meetingId} = meetingMember!
+    const {userId, isCheckedIn, meetingId} = meetingMemberRef.current
     if (isCheckedIn !== false) {
       NewMeetingCheckInMutation(atmosphere, {meetingId, userId, isCheckedIn: false})
     }
@@ -88,14 +87,14 @@ const CheckInControls = (props: Props) => {
 }
 
 export default createFragmentContainer(CheckInControls, {
-  teamMember: graphql`
-    fragment CheckInControls_teamMember on TeamMember {
-      meetingMember {
-        meetingId
-        isCheckedIn
-      }
-      preferredName
+  meetingMember: graphql`
+    fragment CheckInControls_meetingMember on MeetingMember {
+      meetingId
+      isCheckedIn
       userId
+      teamMember {
+        preferredName
+      }
     }
   `
 })

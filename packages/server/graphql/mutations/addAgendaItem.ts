@@ -8,7 +8,7 @@ import {TEAM} from '../../../client/utils/constants'
 import makeAgendaItemSchema from '../../../client/validation/makeAgendaItemSchema'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
-import addAgendaItemToNewMeeting from './helpers/addAgendaItemToNewMeeting'
+import addAgendaItemToActiveActionMeeting from './helpers/addAgendaItemToActiveActionMeeting'
 
 export default {
   type: AddAgendaItemPayload,
@@ -53,7 +53,7 @@ export default {
       })
       .run()
 
-    const meetingId = await addAgendaItemToNewMeeting(agendaItemId, teamId, dataLoader)
+    const meetingId = await addAgendaItemToActiveActionMeeting(agendaItemId, teamId, dataLoader)
     const data = {agendaItemId, meetingId}
     publish(TEAM, teamId, AddAgendaItemPayload, data, subOptions)
     return data

@@ -11,7 +11,7 @@ import handleRemoveTasks from './handlers/handleRemoveTasks'
 import onTeamRoute from '../utils/onTeamRoute'
 import {RemoveTeamMemberMutation_team} from '../__generated__/RemoveTeamMemberMutation_team.graphql'
 import {RemoveTeamMemberMutation as IRemoveTeamMemberMutation} from '../__generated__/RemoveTeamMemberMutation.graphql'
-import {OnNextHandler} from '../types/relayMutations'
+import {OnNextHandler, OnNextHistoryContext} from '../types/relayMutations'
 
 graphql`
   fragment RemoveTeamMemberMutation_task on RemoveTeamMemberPayload {
@@ -34,7 +34,7 @@ graphql`
 graphql`
   fragment RemoveTeamMemberMutation_teamTeam on Team {
     id
-    newMeeting {
+    activeMeetings {
       facilitatorStageId
       facilitatorUserId
       meetingMembers {
@@ -84,10 +84,10 @@ const mutation = graphql`
   }
 `
 
-export const removeTeamMemberTeamOnNext: OnNextHandler<RemoveTeamMemberMutation_team> = (
-  payload,
-  {atmosphere, history}
-) => {
+export const removeTeamMemberTeamOnNext: OnNextHandler<
+  RemoveTeamMemberMutation_team,
+  OnNextHistoryContext
+> = (payload, {atmosphere, history}) => {
   if (!payload) return
   const {kickOutNotification} = payload
   if (!kickOutNotification) return

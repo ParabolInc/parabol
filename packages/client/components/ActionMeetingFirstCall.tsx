@@ -1,4 +1,4 @@
-import {ActionMeetingFirstCall_team} from '../__generated__/ActionMeetingFirstCall_team.graphql'
+import {ActionMeetingFirstCall_meeting} from '../__generated__/ActionMeetingFirstCall_meeting.graphql'
 import ms from 'ms'
 import React from 'react'
 import styled from '@emotion/styled'
@@ -32,7 +32,7 @@ const BottomControlSpacer = styled('div')({
 })
 
 interface Props extends ActionMeetingPhaseProps {
-  team: ActionMeetingFirstCall_team
+  meeting: ActionMeetingFirstCall_meeting
 }
 
 const ActionMeetingFirstCallHelpMenu = lazyPreload(async () =>
@@ -50,13 +50,12 @@ const FirstCallWrapper = styled('div')({
 })
 
 const ActionMeetingFirstCall = (props: Props) => {
-  const {avatarGroup, toggleSidebar, team, handleGotoNext} = props
+  const {avatarGroup, toggleSidebar, meeting, handleGotoNext} = props
   const atmosphere = useAtmosphere()
   const {gotoNext, ref: gotoNextRef} = handleGotoNext
   const minTimeComplete = useTimeout(ms('30s'))
   const {viewerId} = atmosphere
-  const {isMeetingSidebarCollapsed, newMeeting} = team
-  const {facilitator, facilitatorUserId, id: meetingId} = newMeeting!
+  const {facilitator, facilitatorUserId, id: meetingId, showSidebar} = meeting
   const {preferredName} = facilitator
   const isFacilitating = facilitatorUserId === viewerId
   const phaseName = phaseLabelLookup[AGENDA_ITEMS]
@@ -65,7 +64,7 @@ const ActionMeetingFirstCall = (props: Props) => {
       <MeetingHeaderAndPhase>
         <MeetingTopBar
           avatarGroup={avatarGroup}
-          isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
+          isMeetingSidebarCollapsed={!showSidebar}
           toggleSidebar={toggleSidebar}
         >
           <PhaseHeaderTitle>
@@ -104,16 +103,14 @@ const ActionMeetingFirstCall = (props: Props) => {
 }
 
 export default createFragmentContainer(ActionMeetingFirstCall, {
-  team: graphql`
-    fragment ActionMeetingFirstCall_team on Team {
+  meeting: graphql`
+    fragment ActionMeetingFirstCall_meeting on ActionMeeting {
       id
-      isMeetingSidebarCollapsed
-      newMeeting {
-        id
-        facilitatorUserId
-        facilitator {
-          preferredName
-        }
+      showSidebar
+      id
+      facilitatorUserId
+      facilitator {
+        preferredName
       }
     }
   `

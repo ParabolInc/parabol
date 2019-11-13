@@ -13,7 +13,7 @@ import handleUpsertTasks from './handlers/handleUpsertTasks'
 import {setLocalStageAndPhase} from '../utils/relay/updateLocalStage'
 import findStageById from '../utils/meetings/findStageById'
 import onExOrgRoute from '../utils/onExOrgRoute'
-import {OnNextHandler} from '../types/relayMutations'
+import {OnNextHandler, OnNextHistoryContext} from '../types/relayMutations'
 import {RemoveOrgUserMutation_notification} from '../__generated__/RemoveOrgUserMutation_notification.graphql'
 import {RemoveOrgUserMutation as IRemoveOrgUserMutation} from '__generated__/RemoveOrgUserMutation.graphql'
 
@@ -174,10 +174,10 @@ export const removeOrgUserOrganizationOnNext = (payload, context) => {
   }
 }
 
-export const removeOrgUserNotificationOnNext: OnNextHandler<RemoveOrgUserMutation_notification> = (
-  payload,
-  {atmosphere, history}
-) => {
+export const removeOrgUserNotificationOnNext: OnNextHandler<
+  RemoveOrgUserMutation_notification,
+  OnNextHistoryContext
+> = (payload, {atmosphere, history}) => {
   if (!payload) return
   const {organization, kickOutNotifications} = payload
   if (!organization || !kickOutNotifications) return

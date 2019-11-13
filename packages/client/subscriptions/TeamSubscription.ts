@@ -146,7 +146,7 @@ const TeamSubscription = (
           dragDiscussionTopicTeamUpdater(payload, context)
           break
         case 'AddTeamMutationPayload':
-          addTeamTeamUpdater(payload, store)
+          addTeamTeamUpdater(payload, context)
           break
         case 'ArchiveTeamPayload':
           archiveTeamTeamUpdater(payload, store, viewerId)

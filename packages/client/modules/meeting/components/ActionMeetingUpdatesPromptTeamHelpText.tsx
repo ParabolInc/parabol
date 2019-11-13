@@ -4,7 +4,7 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {PALETTE} from '../../../styles/paletteV2'
-import {ActionMeetingUpdatesPromptTeamHelpText_currentTeamMember} from '../../../__generated__/ActionMeetingUpdatesPromptTeamHelpText_currentTeamMember.graphql'
+import {ActionMeetingUpdatesPromptTeamHelpText_currentMeetingMember} from '../../../__generated__/ActionMeetingUpdatesPromptTeamHelpText_currentMeetingMember.graphql'
 
 const AgendaControl = styled('span')({
   color: PALETTE.LINK_BLUE,
@@ -15,20 +15,20 @@ const AgendaControl = styled('span')({
 })
 
 interface Props {
-  currentTeamMember: ActionMeetingUpdatesPromptTeamHelpText_currentTeamMember
+  currentMeetingMember: ActionMeetingUpdatesPromptTeamHelpText_currentMeetingMember
 }
 
 const ActionMeetingUpdatesPromptTeamHelpText = (props: Props) => {
-  const {currentTeamMember} = props
+  const {currentMeetingMember} = props
   const atmosphere = useAtmosphere()
   const handleAgendaControl = () => {
     atmosphere.eventEmitter.emit('focusAgendaInput')
   }
-  const {meetingMember} = currentTeamMember
-  const isCheckedInFalse = meetingMember && meetingMember.isCheckedIn === false
+  const {teamMember, isCheckedIn} = currentMeetingMember
+  const {preferredName} = teamMember
   return (
     <span>
-      <span>{isCheckedInFalse ? '(' : `(${currentTeamMember.preferredName} is sharing. `}</span>
+      <span>{isCheckedIn === false ? '(' : `(${preferredName} is sharing. `}</span>
       <AgendaControl onClick={handleAgendaControl}>{'Add agenda items'}</AgendaControl>
       {' for discussion.)'}
     </span>
@@ -36,11 +36,11 @@ const ActionMeetingUpdatesPromptTeamHelpText = (props: Props) => {
 }
 
 export default createFragmentContainer(ActionMeetingUpdatesPromptTeamHelpText, {
-  currentTeamMember: graphql`
-    fragment ActionMeetingUpdatesPromptTeamHelpText_currentTeamMember on TeamMember {
-      preferredName
-      meetingMember {
-        isCheckedIn
+  currentMeetingMember: graphql`
+    fragment ActionMeetingUpdatesPromptTeamHelpText_currentMeetingMember on ActionMeetingMember {
+      isCheckedIn
+      teamMember {
+        preferredName
       }
     }
   `

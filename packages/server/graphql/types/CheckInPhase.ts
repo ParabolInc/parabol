@@ -20,9 +20,10 @@ const CheckInPhase = new GraphQLObjectType({
     },
     stages: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(CheckInStage))),
-      resolve: ({phaseType, stages}: ICheckInPhase) => {
+      resolve: ({meetingId, phaseType, stages}: ICheckInPhase) => {
         return stages.map((stage) => ({
           ...stage,
+          meetingId,
           phaseType
         }))
       }

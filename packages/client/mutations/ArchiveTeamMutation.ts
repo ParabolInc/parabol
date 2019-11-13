@@ -1,18 +1,18 @@
-import {
-  ArchiveTeamMutation as TArchiveTeamMutation,
-  ArchiveTeamMutationVariables
-} from '../__generated__/ArchiveTeamMutation.graphql'
+import {ArchiveTeamMutation as TArchiveTeamMutation} from '../__generated__/ArchiveTeamMutation.graphql'
 import {ArchiveTeamMutation_team} from '../__generated__/ArchiveTeamMutation_team.graphql'
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {Disposable} from 'relay-runtime'
 import ClearNotificationMutation from './ClearNotificationMutation'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import onTeamRoute from '../utils/onTeamRoute'
 import getInProxy from '../utils/relay/getInProxy'
 import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
-import Atmosphere from '../Atmosphere'
-import {LocalHandlers, OnNextHandler} from '../types/relayMutations'
+import {
+  HistoryLocalHandler,
+  OnNextHandler,
+  OnNextHistoryContext,
+  StandardMutation
+} from '../types/relayMutations'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 
 graphql`
@@ -41,7 +41,7 @@ const mutation = graphql`
   }
 `
 
-const popTeamArchivedToast: OnNextHandler<ArchiveTeamMutation_team> = (
+const popTeamArchivedToast: OnNextHandler<ArchiveTeamMutation_team, OnNextHistoryContext> = (
   payload,
   {history, atmosphere}
 ) => {
@@ -76,15 +76,18 @@ export const archiveTeamTeamUpdater = (payload, store, viewerId) => {
   handleAddNotifications(notification, store)
 }
 
-export const archiveTeamTeamOnNext = (payload: ArchiveTeamMutation_team, {atmosphere, history}) => {
+export const archiveTeamTeamOnNext: OnNextHandler<
+  ArchiveTeamMutation_team,
+  OnNextHistoryContext
+> = (payload, {atmosphere, history}) => {
   popTeamArchivedToast(payload, {atmosphere, history})
 }
 
-const ArchiveTeamMutation = (
-  atmosphere: Atmosphere,
-  variables: ArchiveTeamMutationVariables,
-  {onError, onCompleted, history}: LocalHandlers
-): Disposable => {
+const ArchiveTeamMutation: StandardMutation<TArchiveTeamMutation, HistoryLocalHandler> = (
+  atmosphere,
+  variables,
+  {onError, onCompleted, history}
+) => {
   const {viewerId} = atmosphere
   return commitMutation<TArchiveTeamMutation>(atmosphere, {
     mutation,

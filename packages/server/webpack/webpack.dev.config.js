@@ -4,6 +4,9 @@ const webpack = require('webpack')
 const pluginDynamicImport = require('@babel/plugin-syntax-dynamic-import').default
 const vendors = require('./dll/vendors')
 const pluginInlineImport = require('babel-plugin-inline-import').default
+const pluginOptionalChaining = require('@babel/plugin-proposal-optional-chaining').default
+const pluginNullishCoalescing = require('@babel/plugin-proposal-nullish-coalescing-operator')
+  .default
 // const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 const pluginMacros = require('babel-plugin-macros')
 
@@ -25,7 +28,9 @@ const babelLoader = {
         }
       ],
       pluginInlineImport,
-      pluginDynamicImport
+      pluginDynamicImport,
+      pluginOptionalChaining,
+      pluginNullishCoalescing
     ]
   }
 }

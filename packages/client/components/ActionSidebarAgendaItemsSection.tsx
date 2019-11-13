@@ -1,41 +1,37 @@
-import {ActionSidebarAgendaItemsSection_viewer} from '../__generated__/ActionSidebarAgendaItemsSection_viewer.graphql'
+import {ActionSidebarAgendaItemsSection_meeting} from '../__generated__/ActionSidebarAgendaItemsSection_meeting.graphql'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {useGotoStageId} from '../hooks/useMeeting'
 import AgendaListAndInput from '../modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
+import useGotoStageId from '../hooks/useGotoStageId'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
   handleMenuClick: () => void
-  viewer: ActionSidebarAgendaItemsSection_viewer
+  meeting: ActionSidebarAgendaItemsSection_meeting
 }
 
 const ActionSidebarAgendaItemsSection = (props: Props) => {
-  const {
-    gotoStageId,
-    handleMenuClick,
-    viewer: {team}
-  } = props
-  const {newMeeting} = team!
+  const {gotoStageId, handleMenuClick, meeting} = props
+  const {id: meetingId, team} = meeting
   const handleClick = async (stageId: string) => {
     gotoStageId(stageId).catch()
     handleMenuClick()
   }
   // show agenda (no blur) at all times if the updates phase isNavigable
   // facilitator can click on updates nav item before completing all check-in stages
-  const updatesPhase =
-    newMeeting &&
-    newMeeting.phases!.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.updates)!
+  const updatesPhase = meeting.phases!.find(
+    (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.updates
+  )!
   const isUpdatesNavigable = updatesPhase && updatesPhase.stages![0].isNavigable
   return (
     <MeetingSidebarPhaseItemChild>
       <AgendaListAndInput
-        isMeeting
+        meetingId={meetingId}
         gotoStageId={handleClick}
-        isDisabled={Boolean(newMeeting && !isUpdatesNavigable)}
+        isDisabled={!isUpdatesNavigable}
         team={team!}
       />
     </MeetingSidebarPhaseItemChild>
@@ -63,26 +59,22 @@ graphql`
 `
 
 export default createFragmentContainer(ActionSidebarAgendaItemsSection, {
-  viewer: graphql`
-    fragment ActionSidebarAgendaItemsSection_viewer on User {
-      team(teamId: $teamId) {
+  meeting: graphql`
+    fragment ActionSidebarAgendaItemsSection_meeting on ActionMeeting {
+      id
+      localStage {
+        id
+      }
+      facilitatorStageId
+      # load up the localPhase
+      phases {
+        ...ActionSidebarAgendaItemsSectionAgendaItemPhase @relay(mask: false)
+      }
+      localPhase {
+        ...ActionSidebarAgendaItemsSectionAgendaItemPhase @relay(mask: false)
+      }
+      team {
         ...AgendaListAndInput_team
-        newMeeting {
-          id
-          localStage {
-            id
-          }
-          ... on ActionMeeting {
-            facilitatorStageId
-            # load up the localPhase
-            phases {
-              ...ActionSidebarAgendaItemsSectionAgendaItemPhase @relay(mask: false)
-            }
-            localPhase {
-              ...ActionSidebarAgendaItemsSectionAgendaItemPhase @relay(mask: false)
-            }
-          }
-        }
       }
     }
   `

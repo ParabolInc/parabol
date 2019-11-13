@@ -23,7 +23,6 @@ interface Props {
   meetingId: string
   stage: StageTimerModal_stage
   menuProps: MenuProps
-  teamId: string
   facilitator: StageTimerModal_facilitator
 }
 
@@ -52,7 +51,7 @@ const StyledTabsBar = styled(Tabs)({
 })
 
 const StageTimerModal = (props: Props) => {
-  const {defaultTimeLimit, defaultToAsync, meetingId, menuProps, stage, facilitator, teamId} = props
+  const {defaultTimeLimit, defaultToAsync, meetingId, menuProps, stage, facilitator} = props
   const {isAsync} = stage
   const [activeIdx, setActiveIdx] = useState(defaultToAsync ? 1 : 0)
   const {closePortal} = menuProps
@@ -67,7 +66,6 @@ const StageTimerModal = (props: Props) => {
         closePortal={closePortal}
         stage={stage}
         facilitator={facilitator}
-        teamId={teamId}
       />
     )
   }
@@ -97,7 +95,6 @@ const StageTimerModal = (props: Props) => {
             meetingId={meetingId}
             closePortal={closePortal}
             stage={stage}
-            teamId={teamId}
           />
         </TabContents>
       </SwipeableViews>

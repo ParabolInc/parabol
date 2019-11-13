@@ -1,4 +1,3 @@
-import {ActionMeeting_viewer} from '../__generated__/ActionMeeting_viewer.graphql'
 import React, {ReactElement, useEffect} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
@@ -6,16 +5,17 @@ import {ValueOf} from '../types/generics'
 import ActionMeetingSidebar from './ActionMeetingSidebar'
 import MeetingArea from './MeetingArea'
 import MeetingStyles from './MeetingStyles'
-import useMeeting, {useGotoNext} from '../hooks/useMeeting'
+import useMeeting from '../hooks/useMeeting'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import RejoinFacilitatorButton from '../modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton'
-import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from '../types/graphql'
+import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import lazyPreload from '../utils/lazyPreload'
-import UNSTARTED_MEETING from '../utils/meetings/unstartedMeeting'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
+import {ActionMeeting_meeting} from '__generated__/ActionMeeting_meeting.graphql'
+import useGotoNext from '../hooks/useGotoNext'
 
 interface Props {
-  viewer: ActionMeeting_viewer
+  meeting: ActionMeeting_meeting
 }
 
 const phaseLookup = {
@@ -33,9 +33,6 @@ const phaseLookup = {
   ),
   [NewMeetingPhaseTypeEnum.lastcall]: lazyPreload(() =>
     import(/* webpackChunkName: 'ActionMeetingLastCall' */ './ActionMeetingLastCall')
-  ),
-  [NewMeetingPhaseTypeEnum.lobby]: lazyPreload(() =>
-    import(/* webpackChunkName: 'ActionMeetingLobby' */ './ActionMeetingLobby')
   )
 }
 
@@ -48,8 +45,15 @@ export interface ActionMeetingPhaseProps {
 }
 
 const ActionMeeting = (props: Props) => {
-  const {viewer} = props
-  const team = viewer.team!
+  const {meeting} = props
+  const {
+    facilitatorStageId,
+    localPhase,
+    localStage,
+    showSidebar,
+    team,
+    viewerMeetingMember
+  } = meeting
   const {
     toggleSidebar,
     streams,
@@ -58,31 +62,30 @@ const ActionMeeting = (props: Props) => {
     gotoStageId,
     safeRoute,
     handleMenuClick
-  } = useMeeting(MeetingTypeEnum.action, team)
+  } = useMeeting(meeting)
   useEffect(() => {
     Object.values(phaseLookup).forEach((lazy) => lazy.preload())
   }, [])
-  if (!team || !safeRoute) return null
-  const {featureFlags} = viewer
+  if (!safeRoute) return null
+  const {user} = viewerMeetingMember
+  const {featureFlags} = user
   const {video: allowVideo} = featureFlags
-  const {newMeeting, isMeetingSidebarCollapsed} = team
-  const {facilitatorStageId, localPhase, localStage} = newMeeting || UNSTARTED_MEETING
   const localPhaseType = (localPhase && localPhase.phaseType) || NewMeetingPhaseTypeEnum.lobby
   const Phase = phaseLookup[localPhaseType] as PhaseComponent
   return (
     <MeetingStyles>
-      <ResponsiveDashSidebar isOpen={!isMeetingSidebarCollapsed} onToggle={toggleSidebar}>
+      <ResponsiveDashSidebar isOpen={showSidebar} onToggle={toggleSidebar}>
         <ActionMeetingSidebar
           gotoStageId={gotoStageId}
           handleMenuClick={handleMenuClick}
           toggleSidebar={toggleSidebar}
-          viewer={viewer}
+          meeting={meeting}
         />
       </ResponsiveDashSidebar>
       <MeetingArea>
         <Phase
           handleGotoNext={handleGotoNext}
-          team={team}
+          meeting={meeting}
           toggleSidebar={toggleSidebar}
           avatarGroup={
             <NewMeetingAvatarGroup
@@ -102,59 +105,41 @@ const ActionMeeting = (props: Props) => {
   )
 }
 
-graphql`
-  fragment ActionMeetingLocalStage on NewMeetingStage {
-    id
-    isComplete
-    isNavigable
-    isNavigableByFacilitator
-  }
-`
-
-graphql`
-  fragment ActionMeetingLocalPhase on NewMeetingPhase {
-    id
-    phaseType
-    stages {
-      ...ActionMeetingLocalStage @relay(mask: false)
-    }
-  }
-`
-
-graphql`
-  fragment ActionMeetingTeam on Team {
-    ...ActionMeetingLobby_team
-    ...ActionMeetingUpdates_team
-    ...ActionMeetingFirstCall_team
-    ...ActionMeetingAgendaItems_team
-    ...ActionMeetingLastCall_team
-    ...NewMeetingCheckIn_team
-    ...useMeetingTeam @relay(mask: false)
-    isMeetingSidebarCollapsed
-    newMeeting {
+export default createFragmentContainer(ActionMeeting, {
+  meeting: graphql`
+    fragment ActionMeeting_meeting on ActionMeeting {
+      ...useMeeting_meeting
+      ...ActionMeetingSidebar_meeting
+      ...NewMeetingCheckIn_meeting
+      ...ActionMeetingUpdates_meeting
+      ...ActionMeetingFirstCall_meeting
+      ...ActionMeetingAgendaItems_meeting
+      ...ActionMeetingLastCall_meeting
       localPhase {
-        ...ActionMeetingLocalPhase @relay(mask: false)
+        id
+        phaseType
       }
       localStage {
-        ...ActionMeetingLocalStage @relay(mask: false)
+        id
       }
       phases {
-        ...ActionMeetingLocalPhase @relay(mask: false)
+        id
+        phaseType
+        stages {
+          id
+        }
       }
-    }
-  }
-`
-
-export default createFragmentContainer(ActionMeeting, {
-  viewer: graphql`
-    fragment ActionMeeting_viewer on User {
-      ...ActionMeetingSidebar_viewer
-      featureFlags {
-        video
-      }
-      team(teamId: $teamId) {
+      facilitatorStageId
+      showSidebar
+      team {
         ...NewMeetingAvatarGroup_team
-        ...ActionMeetingTeam @relay(mask: false)
+      }
+      viewerMeetingMember {
+        user {
+          featureFlags {
+            video
+          }
+        }
       }
     }
   `

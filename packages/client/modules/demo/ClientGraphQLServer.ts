@@ -30,7 +30,6 @@ import unlockAllStagesForPhase from '../../utils/unlockAllStagesForPhase'
 import unlockNextStages from '../../utils/unlockNextStages'
 import initBotScript from './initBotScript'
 import initDB, {
-  demoMeetingId,
   demoTeamId,
   demoViewerId,
   GitHubProjectKeyLookup,
@@ -44,6 +43,7 @@ import entityLookup from './entityLookup'
 import getDemoEntities from './getDemoEntities'
 import stringSimilarity from 'string-similarity'
 import normalizeRawDraftJS from '../../validation/normalizeRawDraftJS'
+import {RetroDemo} from '../../types/constEnums'
 
 export type DemoReflection = Omit<IRetroReflection, 'autoReflectionGroupId' | 'team'> & {
   creatorId: string
@@ -101,7 +101,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   }
 
   getUnlockedStages(stageIds: string[]) {
-    let unlockedStages = [] as INewMeetingStage[]
+    const unlockedStages = [] as INewMeetingStage[]
     this.db.newMeeting.phases!.forEach((phase) => {
       ;(phase.stages as any).forEach((stage) => {
         if (stageIds.includes(stage.id)) {
@@ -312,7 +312,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         isEditing: null,
         isViewerCreator: userId === demoViewerId,
         entities,
-        meetingId: demoMeetingId,
+        meetingId: RetroDemo.MEETING_ID,
         meeting: this.db.newMeeting,
         phaseItem,
         reflectionGroupId,
@@ -334,7 +334,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         viewerVoteCount: 0,
         createdAt: now,
         isActive: true,
-        meetingId: demoMeetingId,
+        meetingId: RetroDemo.MEETING_ID,
         meeting: this.db.newMeeting,
         phaseItem,
         retroPhaseItemId,
@@ -356,7 +356,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       )
       const unlockedStages = this.getUnlockedStages(unlockedStageIds)
       const data = {
-        meetingId: demoMeetingId,
+        meetingId: RetroDemo.MEETING_ID,
         reflection,
         reflectionId: reflection.id,
         reflectionGroupId,
@@ -407,7 +407,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         : []
       const unlockedStages = this.getUnlockedStages(unlockedStageIds)
       const data = {
-        meetingId: demoMeetingId,
+        meetingId: RetroDemo.MEETING_ID,
         meeting: this.db.newMeeting,
         reflectionId,
         reflection,
@@ -532,7 +532,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       ) as IReflectPhase
       reflectPhase.focusedPhaseItemId = focusedPhaseItemId || null
       const data = {
-        meetingId: demoMeetingId,
+        meetingId: RetroDemo.MEETING_ID,
         meeting: this.db.newMeeting,
         reflectPhase,
         __typename: 'SetPhaseFocusMutation'
@@ -579,7 +579,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const data = {
         __typename: 'SetStageTimerMutation',
         error: null,
-        meetingId: demoMeetingId,
+        meetingId: RetroDemo.MEETING_ID,
         meeting: this.db.newMeeting,
         stageId: facilitatorStageId,
         stage
@@ -601,7 +601,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const data = {
         error: null,
         teamId: demoTeamId,
-        meetingId: demoMeetingId,
+        meetingId: RetroDemo.MEETING_ID,
         reflectionId,
         reflection,
         remoteDrag: {
@@ -644,7 +644,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           viewerVoteCount: 0,
           createdAt: now,
           isActive: true,
-          meetingId: demoMeetingId,
+          meetingId: RetroDemo.MEETING_ID,
           meeting: this.db.newMeeting,
           phaseItem: reflection.phaseItem,
           retroPhaseItemId,
@@ -744,7 +744,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const user = this.db.users.find((user) => user.id === userId)
       const data = {
         __typename: 'EndDraggingReflectionPayload',
-        meetingId: demoMeetingId,
+        meetingId: RetroDemo.MEETING_ID,
         meeting: this.db.newMeeting,
         reflectionId,
         reflection,
@@ -861,7 +861,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         __typename: 'UpdateReflectionGroupTitleMutation',
         error: null,
         meeting: this.db.newMeeting,
-        meetingId: demoMeetingId,
+        meetingId: RetroDemo.MEETING_ID,
         reflectionGroupId,
         reflectionGroup
       }
@@ -930,7 +930,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         __typename: 'VoteForReflectionGroupPayload',
         error: null,
         meeting: this.db.newMeeting,
-        meetingId: demoMeetingId,
+        meetingId: RetroDemo.MEETING_ID,
         meetingMember,
         userId,
         reflectionGroupId: reflectionGroup.id,
@@ -965,7 +965,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         editors: [],
         integration: null,
         team: this.db.team,
-        meetingId: demoMeetingId,
+        meetingId: RetroDemo.MEETING_ID,
         reflectionGroupId,
         sortOrder: sortOrder || 0,
         status,
@@ -1132,7 +1132,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         currentStage.endAt = now
       }
 
-      this.db.team.meetingId = ''
       this.db.newMeeting.endedAt = now
 
       const data = {

@@ -25,11 +25,9 @@ export default {
         dataLoader.get('teamMembers').load(teamMemberId),
         dataLoader.get('teams').load(teamId)
       ])
-
-      const meeting = team.meetingId
-        ? await dataLoader.get('newMeetings').load(team.meetingId)
-        : null
-      const meetingType = (meeting && meeting.meetingType) || undefined
+      const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
+      const [firstActiveMeeting] = activeMeetings
+      const meetingType = firstActiveMeeting?.meetingType ?? null
       if (!teamMember || !teamMember.isNotRemoved || !team || team.isArchived) {
         // this could happen if a team member is no longer on the team or some unseen nefarious action is going on
         return {errorType: 'notFound'}

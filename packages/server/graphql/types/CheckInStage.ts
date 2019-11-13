@@ -3,8 +3,9 @@ import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
 import NewMeetingTeamMemberStage, {
   newMeetingTeamMemberStageFields
 } from './NewMeetingTeamMemberStage'
+import {GQLContext} from '../graphql'
 
-const CheckInStage = new GraphQLObjectType({
+const CheckInStage = new GraphQLObjectType<any, GQLContext, any>({
   name: 'CheckInStage',
   description: 'A stage that focuses on a single team member',
   interfaces: () => [NewMeetingStage, NewMeetingTeamMemberStage],

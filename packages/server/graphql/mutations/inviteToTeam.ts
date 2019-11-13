@@ -67,7 +67,7 @@ export default {
         return !(user && user.tms && user.tms.includes(teamId))
       })
       const team = await dataLoader.get('teams').load(teamId)
-      const {name: teamName, isOnboardTeam, meetingId} = team
+      const {name: teamName, isOnboardTeam} = team
       const inviter = await dataLoader.get('users').load(viewerId)
       const bufferTokens = await Promise.all<Buffer>(newInvitees.map(() => randomBytes(48)))
       const tokens = bufferTokens.map((buffer: Buffer) => buffer.toString('hex'))
@@ -116,13 +116,8 @@ export default {
           .insert(notificationsToInsert)
           .run()
       }
-      let meeting
-      if (meetingId) {
-        meeting = await r
-          .table('NewMeeting')
-          .get(meetingId)
-          .run()
-      }
+      const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
+      const [firstActiveMeeting] = activeMeetings
 
       // send emails
       const emailResults = await Promise.all(
@@ -135,7 +130,7 @@ export default {
             inviterName: inviter.preferredName,
             inviterEmail: inviter.email,
             teamName,
-            meeting
+            meeting: firstActiveMeeting
           })
         })
       )

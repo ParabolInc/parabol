@@ -1,5 +1,3 @@
-import {RetroLobby_meetingSettings} from '../__generated__/RetroLobby_meetingSettings.graphql'
-import {RetroLobby_team} from '../__generated__/RetroLobby_team.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
@@ -11,7 +9,6 @@ import MeetingTopBar from './MeetingTopBar'
 import MeetingHelpToggle from './MenuHelpToggle'
 import NewMeetingLobby from './NewMeetingLobby'
 import PrimaryButton from './PrimaryButton'
-import {RetroMeetingPhaseProps} from './RetroMeeting'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import useRouter from '../hooks/useRouter'
@@ -25,6 +22,10 @@ import lazyPreload from '../utils/lazyPreload'
 import makeHref from '../utils/makeHref'
 import {meetingTypeToLabel, meetingTypeToSlug} from '../utils/meetings/lookups'
 import RetroTemplatePicker from '../modules/meeting/components/RetroTemplatePicker'
+import MeetingStyles from './MeetingStyles'
+import useLegacyLobby from '../hooks/useLegacyLobby'
+import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
+import {RetroLobby_viewer} from '__generated__/RetroLobby_viewer.graphql'
 
 const ButtonGroup = styled('div')({
   display: 'flex',
@@ -52,9 +53,8 @@ const UrlBlock = styled('div')({
   verticalAlign: 'middle'
 })
 
-interface Props extends RetroMeetingPhaseProps {
-  team: RetroLobby_team
-  meetingSettings: RetroLobby_meetingSettings
+interface Props {
+  viewer: RetroLobby_viewer
 }
 
 const StyledButton = styled(PrimaryButton)({
@@ -83,71 +83,78 @@ const RetroLobby = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
-  const {avatarGroup, toggleSidebar, meetingSettings, team} = props
-  const {id: teamId, name: teamName, isMeetingSidebarCollapsed} = team
+  const {viewer} = props
+  const team = viewer.team!
+  useLegacyLobby(team)
+  const {id: teamId, name: teamName, meetingSettings} = team
   const onStartMeetingClick = () => {
     if (submitting) return
     submitMutation()
     StartNewMeetingMutation(atmosphere, {teamId, meetingType}, {history, onError, onCompleted})
   }
   return (
-    <MeetingContent>
-      <MeetingTopBar
-        avatarGroup={avatarGroup}
-        isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
-        toggleSidebar={toggleSidebar}
-      />
-      <ErrorBoundary>
-        <NewMeetingLobby>
-          <StyledLabel>{`${meetingLabel} Meeting Lobby`}</StyledLabel>
-          <StyledHeading>{`${teamName} ${meetingLabel}`}</StyledHeading>
-          <StyledCopy>
-            {'The person who presses “Start Meeting” will be today’s Facilitator.'}
-            <br />
-            <br />
-            {'Everyone’s display automatically follows the Facilitator.'}
-          </StyledCopy>
-          <ButtonGroup>
-            <ButtonBlock>
-              <StyledButton
-                aria-label={buttonLabel}
-                onClick={onStartMeetingClick}
-                size='large'
-                waiting={submitting}
-              >
-                {buttonLabel}
-              </StyledButton>
-            </ButtonBlock>
-          </ButtonGroup>
-          <TemplatePickerBlock>
-            <TemplatePickerLabel>Current Template</TemplatePickerLabel>
-            <RetroTemplatePicker settings={meetingSettings} />
-          </TemplatePickerBlock>
-          <UrlBlock>
-            <CopyShortLink
-              url={makeHref(`/${meetingSlug}/${teamId}`)}
-              title={'Copy Meeting Link'}
-              tooltip={'Copied the meeting link!'}
-            />
-          </UrlBlock>
-          <MeetingHelpToggle menu={<RetroLobbyHelpMenu />} />
-        </NewMeetingLobby>
-      </ErrorBoundary>
-    </MeetingContent>
+    <MeetingStyles>
+      <MeetingContent>
+        <MeetingTopBar
+          avatarGroup={
+            <NewMeetingAvatarGroup allowVideo={false} camStreams={{}} swarm={null} team={team} />
+          }
+          isMeetingSidebarCollapsed={false}
+          toggleSidebar={() => {}}
+        />
+        <ErrorBoundary>
+          <NewMeetingLobby>
+            <StyledLabel>{`${meetingLabel} Meeting Lobby`}</StyledLabel>
+            <StyledHeading>{`${teamName} ${meetingLabel}`}</StyledHeading>
+            <StyledCopy>
+              {'The person who presses “Start Meeting” will be today’s Facilitator.'}
+              <br />
+              <br />
+              {'Everyone’s display automatically follows the Facilitator.'}
+            </StyledCopy>
+            <ButtonGroup>
+              <ButtonBlock>
+                <StyledButton
+                  aria-label={buttonLabel}
+                  onClick={onStartMeetingClick}
+                  size='large'
+                  waiting={submitting}
+                >
+                  {buttonLabel}
+                </StyledButton>
+              </ButtonBlock>
+            </ButtonGroup>
+            <TemplatePickerBlock>
+              <TemplatePickerLabel>Current Template</TemplatePickerLabel>
+              <RetroTemplatePicker settings={meetingSettings} />
+            </TemplatePickerBlock>
+            <UrlBlock>
+              <CopyShortLink
+                url={makeHref(`/${meetingSlug}/${teamId}`)}
+                title={'Copy Meeting Link'}
+                tooltip={'Copied the meeting link!'}
+              />
+            </UrlBlock>
+            <MeetingHelpToggle menu={<RetroLobbyHelpMenu />} />
+          </NewMeetingLobby>
+        </ErrorBoundary>
+      </MeetingContent>
+    </MeetingStyles>
   )
 }
 
 export default createFragmentContainer(RetroLobby, {
-  meetingSettings: graphql`
-    fragment RetroLobby_meetingSettings on RetrospectiveMeetingSettings {
-      ...RetroTemplatePicker_settings
-    }
-  `,
-  team: graphql`
-    fragment RetroLobby_team on Team {
-      id
-      name
-      isMeetingSidebarCollapsed
+  viewer: graphql`
+    fragment RetroLobby_viewer on User {
+      team(teamId: $teamId) {
+        ...useLegacyLobby_team
+        ...NewMeetingAvatarGroup_team
+        id
+        name
+        meetingSettings(meetingType: retrospective) {
+          ...RetroTemplatePicker_settings
+        }
+      }
     }
   `
 })

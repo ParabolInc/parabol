@@ -1,23 +1,22 @@
 import {StartNewMeetingMutation as TStartNewMeetingMutation} from '../__generated__/StartNewMeetingMutation.graphql'
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import Atmosphere from '../Atmosphere'
-import {IStartNewMeetingOnMutationArguments} from '../types/graphql'
-import {LocalHandlers} from '../types/relayMutations'
-import updateLocalStage from '../utils/relay/updateLocalStage'
+import {
+  HistoryLocalHandler,
+  OnNextHandler,
+  OnNextHistoryContext,
+  StandardMutation
+} from '../types/relayMutations'
+import isLegacyMeetingPath from '../utils/isLegacyMeetingPath'
+import {StartNewMeetingMutation_team} from '__generated__/StartNewMeetingMutation_team.graphql'
 
 graphql`
   fragment StartNewMeetingMutation_team on StartNewMeetingPayload {
-    ...StartNewMeetingMutationOnNext @relay(mask: false)
+    meetingId
     team {
-      ...ActionMeetingTeam @relay(mask: false)
-      ...RetroMeetingTeam @relay(mask: false)
-      newMeeting {
-        phases {
-          ...StartNewMeetingMutation_teamMemberPhases @relay(mask: false)
-        }
-      }
+      ...DashAlertMeetingActiveMeetings @relay(mask: false)
     }
+    # TODO Fetch the RetroRoot Query so we don't need to fetch again
   }
 `
 
@@ -29,54 +28,22 @@ const mutation = graphql`
   }
 `
 
-graphql`
-  fragment StartNewMeetingMutationOnNext on StartNewMeetingPayload {
-    error {
-      title
-      message
-    }
-    team {
-      newMeeting {
-        phases {
-          stages {
-            id
-          }
-        }
-      }
-    }
+export const startNewMeetingTeamOnNext: OnNextHandler<
+  StartNewMeetingMutation_team,
+  OnNextHistoryContext
+> = (payload, context) => {
+  const {history} = context
+  const {meetingId} = payload
+  const readyToRedirect = isLegacyMeetingPath()
+  if (readyToRedirect) {
+    history.push(`/meet/${meetingId}`)
   }
-`
-
-graphql`
-  fragment StartNewMeetingMutation_teamMemberPhases on NewMeetingPhase {
-    id
-    phaseType
-    stages {
-      id
-      ... on NewMeetingTeamMemberStage {
-        teamMemberId
-      }
-    }
-  }
-`
-
-export const startNewMeetingTeamOnNext = (payload, context) => {
-  const {atmosphere} = context
-  const {
-    team: {
-      newMeeting: {
-        id: meetingId,
-        phases: [firstPhase]
-      }
-    }
-  } = payload
-  updateLocalStage(atmosphere, meetingId, firstPhase.stages[0].id)
 }
 
-const StartNewMeetingMutation = (
-  atmosphere: Atmosphere,
-  variables: IStartNewMeetingOnMutationArguments,
-  {history, onError, onCompleted}: LocalHandlers
+const StartNewMeetingMutation: StandardMutation<TStartNewMeetingMutation, HistoryLocalHandler> = (
+  atmosphere,
+  variables,
+  {history, onError, onCompleted}
 ) => {
   return commitMutation<TStartNewMeetingMutation>(atmosphere, {
     mutation,
@@ -84,9 +51,7 @@ const StartNewMeetingMutation = (
     onError,
     onCompleted: (res, errors) => {
       startNewMeetingTeamOnNext(res.startNewMeeting, {atmosphere, history})
-      if (onCompleted) {
-        onCompleted(res, errors)
-      }
+      onCompleted?.(res, errors)
     }
   })
 }

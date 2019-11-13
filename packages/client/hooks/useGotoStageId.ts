@@ -1,0 +1,70 @@
+import useAtmosphere from './useAtmosphere'
+import {readInlineData} from 'relay-runtime'
+import {useCallback} from 'react'
+import findStageById from '../utils/meetings/findStageById'
+import {demoTeamId} from '../modules/demo/initDB'
+import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
+import updateLocalStage from '../utils/relay/updateLocalStage'
+import {INavigateMeetingOnMutationArguments} from '../types/graphql'
+import isForwardProgress from '../utils/meetings/isForwardProgress'
+import NavigateMeetingMutation from '../mutations/NavigateMeetingMutation'
+import graphql from 'babel-plugin-relay/macro'
+import {useGotoStageId_meeting} from '__generated__/useGotoStageId_meeting.graphql'
+
+const useGotoStageId = (meetingRef: any) => {
+  const atmosphere = useAtmosphere()
+  const meeting = readInlineData<useGotoStageId_meeting>(
+    graphql`
+      fragment useGotoStageId_meeting on NewMeeting @inline {
+        teamId
+        facilitatorStageId
+        facilitatorUserId
+        id
+        phases {
+          id
+          stages {
+            id
+            isComplete
+            isNavigable
+            isNavigableByFacilitator
+          }
+        }
+      }
+    `,
+    meetingRef
+  )
+  return useCallback(
+    async (stageId: string) => {
+      const {teamId, facilitatorStageId, facilitatorUserId, id: meetingId, phases} = meeting
+      const {viewerId} = atmosphere
+      const isViewerFacilitator = viewerId === facilitatorUserId
+      const res = findStageById(phases, stageId)
+      if (!res) return
+      const {stage} = res
+      const {isNavigable, isNavigableByFacilitator} = stage
+      const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
+      if (!canNavigate) return
+      if (teamId === demoTeamId) {
+        await ((atmosphere as any) as LocalAtmosphere).clientGraphQLServer.finishBotActions()
+      }
+      updateLocalStage(atmosphere, meetingId, stageId)
+      if (isViewerFacilitator && isNavigableByFacilitator) {
+        const res = findStageById(phases, facilitatorStageId)
+        if (!res) return
+        const {stage} = res
+        const {isComplete} = stage
+        const variables = {
+          meetingId,
+          facilitatorStageId: stageId
+        } as INavigateMeetingOnMutationArguments
+        if (!isComplete && isForwardProgress(phases, facilitatorStageId, stageId)) {
+          variables.completedStageId = facilitatorStageId
+        }
+        NavigateMeetingMutation(atmosphere, variables)
+      }
+    },
+    [meeting, atmosphere]
+  )
+}
+
+export default useGotoStageId

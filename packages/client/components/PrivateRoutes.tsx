@@ -29,6 +29,7 @@ const ActionMeetingRoot = lazy(() =>
   import(/* webpackChunkName: 'ActionMeetingRoot' */ './ActionMeetingRoot')
 )
 const RetroRoot = lazy(() => import(/* webpackChunkName: 'RetroRoot' */ './RetroRoot/RetroRoot'))
+const MeetingRoot = lazy(() => import(/* webpackChunkName: 'MeetingRoot' */ './MeetingRoot'))
 const ViewerNotOnTeamRoot = lazy(() =>
   import(/* webpackChunkName: 'ViewerNotOnTeamRoot' */ './ViewerNotOnTeamRoot')
 )
@@ -42,7 +43,8 @@ const PrivateRoutes = () => {
         path='/meeting/:teamId/:localPhaseSlug?/:stageIdxSlug?'
         component={ActionMeetingRoot}
       />
-      <Route path='/retro/:teamId/:localPhaseSlug?/:stageIdxSlug?' component={RetroRoot} />
+      <Route path='/retro/:teamId' component={RetroRoot} />
+      <Route path='/meet/:meetingId' component={MeetingRoot} />
       <Route path='/invoice/:invoiceId' component={Invoice} />
       <Route path='/new-summary/:meetingId/:urlAction?' component={NewMeetingSummary} />
       <Route path='/admin/graphql' component={Graphql} />

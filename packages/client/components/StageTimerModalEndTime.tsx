@@ -21,7 +21,6 @@ interface Props {
   facilitator: StageTimerModalEndTime_facilitator
   meetingId: string
   stage: StageTimerModalEndTime_stage
-  teamId: string
 }
 
 const Row = styled('div')({
@@ -51,7 +50,7 @@ const DEFAULT_DURATION = ms('1d')
 const TOMORROW = roundDateToNearestHalfHour(new Date(Date.now() + DEFAULT_DURATION))
 
 const StageTimerModalEndTime = (props: Props) => {
-  const {closePortal, facilitator, meetingId, stage, teamId} = props
+  const {closePortal, facilitator, meetingId, stage} = props
   const scheduledEndTime = stage.scheduledEndTime as string | null
   const suggestedEndTime = stage.suggestedEndTime as string | null
   const [endTime, setEndTime] = useState(new Date(scheduledEndTime || suggestedEndTime || TOMORROW))
@@ -84,7 +83,7 @@ const StageTimerModalEndTime = (props: Props) => {
         <StageTimerModalEndTimeHour endTime={endTime} setEndTime={setEndTime} />
       </Row>
       <Row>
-        <StageTimerModalEndTimeSlackToggle teamId={teamId} facilitator={facilitator} />
+        <StageTimerModalEndTimeSlackToggle facilitator={facilitator} />
       </Row>
       <ErrorMessage error={error} />
       <StyledButton onClick={startTimer}>

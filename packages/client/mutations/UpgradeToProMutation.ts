@@ -1,6 +1,6 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {LocalHandlers, StandardMutation} from '../types/relayMutations'
+import {StandardMutation} from '../types/relayMutations'
 import {UpgradeToProMutation as TUpgradeToProMutation} from '../__generated__/UpgradeToProMutation.graphql'
 
 graphql`
@@ -46,7 +46,7 @@ const mutation = graphql`
 const UpgradeToProMutation: StandardMutation<TUpgradeToProMutation> = (
   atmosphere,
   variables,
-  {onError, onCompleted}: LocalHandlers = {}
+  {onError, onCompleted}
 ) => {
   return commitMutation(atmosphere, {
     mutation,

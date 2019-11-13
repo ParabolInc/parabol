@@ -1,4 +1,4 @@
-import {ActionMeetingLastCall_team} from '../__generated__/ActionMeetingLastCall_team.graphql'
+import {ActionMeetingLastCall_meeting} from '../__generated__/ActionMeetingLastCall_meeting.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
@@ -25,7 +25,7 @@ import useMutationProps from '../hooks/useMutationProps'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 
 interface Props extends ActionMeetingPhaseProps {
-  team: ActionMeetingLastCall_team
+  meeting: ActionMeetingLastCall_meeting
 }
 
 const ActionMeetingLastCallHelpMenu = lazyPreload(async () =>
@@ -44,14 +44,12 @@ const LastCallWrapper = styled('div')({
 })
 
 const ActionMeetingLastCall = (props: Props) => {
-  const {avatarGroup, toggleSidebar, team} = props
+  const {avatarGroup, toggleSidebar, meeting} = props
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
   const {viewerId} = atmosphere
-  const {isMeetingSidebarCollapsed, newMeeting} = team
-  if (!newMeeting) return null
-  const {facilitator, facilitatorUserId, id: meetingId, phases} = newMeeting
+  const {facilitator, facilitatorUserId, id: meetingId, phases, showSidebar} = meeting
   const agendaItemPhase = phases.find(
     (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.agendaitems
   )!
@@ -69,7 +67,7 @@ const ActionMeetingLastCall = (props: Props) => {
     <MeetingContent>
       <MeetingTopBar
         avatarGroup={avatarGroup}
-        isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
+        isMeetingSidebarCollapsed={!showSidebar}
         toggleSidebar={toggleSidebar}
       >
         <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.agendaitems]}</PhaseHeaderTitle>
@@ -119,21 +117,19 @@ const ActionMeetingLastCall = (props: Props) => {
 }
 
 export default createFragmentContainer(ActionMeetingLastCall, {
-  team: graphql`
-    fragment ActionMeetingLastCall_team on Team {
+  meeting: graphql`
+    fragment ActionMeetingLastCall_meeting on ActionMeeting {
       id
-      isMeetingSidebarCollapsed
-      newMeeting {
-        id
-        facilitatorUserId
-        facilitator {
-          preferredName
-        }
-        phases {
-          phaseType
-          stages {
-            isComplete
-          }
+      showSidebar
+      id
+      facilitatorUserId
+      facilitator {
+        preferredName
+      }
+      phases {
+        phaseType
+        stages {
+          isComplete
         }
       }
     }
