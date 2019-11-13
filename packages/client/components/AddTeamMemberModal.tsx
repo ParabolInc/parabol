@@ -50,7 +50,7 @@ const ErrorMessage = styled(StyledError)({
 })
 
 const ShareableLink = styled('div')({
-  padding: '0 0 16px'
+  padding: '0 0 24px'
 })
 
 const StyledLabelHeading = styled(LabelHeading)({
@@ -58,8 +58,12 @@ const StyledLabelHeading = styled(LabelHeading)({
   display: 'flex',
   fontSize: 15,
   lineHeight: '24px',
-  padding: '0 0 8px',
+  padding: '0 0 4px',
   textTransform: 'none'
+})
+
+const SecondStyledLabelHeading = styled(StyledLabelHeading)({
+  padding: '0 0 8px'
 })
 
 const StyledCopyShortLink = styled(CopyShortLink)({
@@ -173,7 +177,7 @@ class AddTeamMemberModal extends Component<Props, State> {
               tooltip={'Copied! Valid for 1 day'}
             />
           </ShareableLink>
-          <StyledLabelHeading>{'Or, send invites by email'}</StyledLabelHeading>
+          <SecondStyledLabelHeading>{'Or, send invites by email'}</SecondStyledLabelHeading>
           <BasicTextArea
             autoFocus
             name='rawInvitees'
