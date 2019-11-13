@@ -56,6 +56,8 @@ const Subtext = styled('div')({
 
 const StyledIcon = styled(Icon)({
   borderRadius: 32,
+  display: 'block',
+  flexShrink: 0,
   height: 32,
   lineHeight: '32px',
   marginLeft: 'auto',
@@ -67,6 +69,7 @@ const AvatarBlock = styled('div')<{isConnected: boolean | null}>(({isConnected})
   border: '2px solid',
   borderColor: isConnected ? PALETTE.TEXT_GREEN : PALETTE.TEXT_GRAY,
   borderRadius: 30,
+  flexShrink: 0,
   height: 30,
   marginLeft: 1,
   marginRight: 13,
