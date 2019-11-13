@@ -21,8 +21,8 @@ const getTranslate = <T extends HTMLElement = HTMLDivElement>(
   first: Point,
   parent: Point,
   lastEl: T,
-  offsetLeft: number = 0,
-  offsetTop: number = 0
+  offsetLeft = 0,
+  offsetTop = 0
 ) => {
   const translateX = first.left - parent.left - lastEl.offsetLeft - offsetLeft
   const translateY = first.top - parent.top - lastEl.offsetTop - offsetTop

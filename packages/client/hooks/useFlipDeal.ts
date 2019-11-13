@@ -46,7 +46,7 @@ const useFlipDeal = (count: number) => {
         const bbox = lastReflection.getBoundingClientRect()
         cardSpacing += bbox.height - ReflectionStackPerspective.Y
       }
-      let thisCardSpace = cardSpacing // scoped inside for-loop
+      const thisCardSpace = cardSpacing // scoped inside for-loop
       lastReflection.style.transition = `transform ${Times.REFLECTION_DEAL_CARD_DURATION}ms ${BezierCurve.STANDARD_CURVE}`
       requestAnimationFrame(() => {
         lastReflection.style.transform = `translateY(${-thisCardSpace}px)`

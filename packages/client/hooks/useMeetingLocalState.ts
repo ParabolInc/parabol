@@ -16,107 +16,110 @@ const useInitialSafeRoute = (
 ) => {
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
-  useEffect(() => {
-    /*
-     * Computing location depends on 3 binary variables: going to lobby, local stage exists (exit/reenter), meeting is active
-     * the additional logic here has 2 benefits:
-     *  1) no need for validation inside phase components
-     *  2) guaranteed 1 redirect maximum (no URL flickering)
-     */
-    const meetingPath = getMeetingPathParams()
-    const {meetingType, phaseSlug, stageIdxSlug, teamId} = meetingPath
-    if (!meetingType || !teamId) {
-      setSafeRoute(false)
-      return
-    }
-    if (!team) {
-      history.replace({
-        pathname: `/invitation-required/${teamId}`,
-        search: `?redirectTo=${encodeURIComponent(window.location.pathname)}`
-      })
-      setSafeRoute(false)
-      return
-    }
-    const {newMeeting} = team
-    const meetingSlug = meetingTypeToSlug[meetingType]
-    const {viewerId} = atmosphere
+  useEffect(
+    () => {
+      /*
+       * Computing location depends on 3 binary variables: going to lobby, local stage exists (exit/reenter), meeting is active
+       * the additional logic here has 2 benefits:
+       *  1) no need for validation inside phase components
+       *  2) guaranteed 1 redirect maximum (no URL flickering)
+       */
+      const meetingPath = getMeetingPathParams()
+      const {meetingType, phaseSlug, stageIdxSlug, teamId} = meetingPath
+      if (!meetingType || !teamId) {
+        setSafeRoute(false)
+        return
+      }
+      if (!team) {
+        history.replace({
+          pathname: `/invitation-required/${teamId}`,
+          search: `?redirectTo=${encodeURIComponent(window.location.pathname)}`
+        })
+        setSafeRoute(false)
+        return
+      }
+      const {newMeeting} = team
+      const meetingSlug = meetingTypeToSlug[meetingType]
+      const {viewerId} = atmosphere
 
-    // I’m trying to go to the lobby and there's no active meeting
-    if (!phaseSlug && !newMeeting) {
+      // I’m trying to go to the lobby and there's no active meeting
+      if (!phaseSlug && !newMeeting) {
+        setSafeRoute(true)
+        return
+      }
+
+      // I’m trying to go to the middle of a meeting that hasn't started
+      if (!newMeeting) {
+        history.replace(`/${meetingSlug}/${teamId}`)
+        setSafeRoute(false)
+        return
+      }
+
+      // I’m trying to go the URL for one type of meeting but the other type is active
+      if (newMeeting.meetingType !== meetingType) {
+        const maybeActiveMeetingSlug = meetingTypeToSlug[newMeeting.meetingType]
+        history.replace(`/${maybeActiveMeetingSlug}/${teamId}`)
+        setSafeRoute(true)
+        return
+      }
+
+      const {facilitatorStageId, facilitatorUserId, localStage, id: meetingId, phases} = newMeeting
+
+      // I’m headed to the lobby but the meeting is already going, send me there
+      if (localStage && !phaseSlug) {
+        const {id: localStageId} = localStage
+        const nextUrl = fromStageIdToUrl(localStageId, phases, facilitatorStageId)
+        history.replace(nextUrl)
+        updateLocalStage(atmosphere, meetingId, facilitatorStageId)
+        setSafeRoute(false)
+        return
+      }
+
+      const localPhaseType = findKeyByValue(phaseTypeToSlug, phaseSlug)
+      const stageIdx = stageIdxSlug ? Number(stageIdxSlug) - 1 : 0
+
+      const phase = phases.find((curPhase) => curPhase.phaseType === localPhaseType)
+      if (!phase) {
+        // typo in url, send to the facilitator
+        const nextUrl = fromStageIdToUrl(facilitatorStageId, phases, facilitatorStageId)
+        history.replace(nextUrl)
+        updateLocalStage(atmosphere, meetingId, facilitatorStageId)
+        setSafeRoute(false)
+        return
+      }
+      const stage = phase.stages[stageIdx]
+      const stageId = stage && stage.id
+      const isViewerFacilitator = viewerId === facilitatorUserId
+      const itemStage = findStageById(phases, stageId)
+      if (!itemStage) {
+        // useful for e.g. /discuss/2, especially on the demo
+        const nextUrl = teamId ? `/${meetingSlug}/${teamId}` : '/retrospective-demo/reflect'
+        updateLocalStage(atmosphere, meetingId, facilitatorStageId)
+        history.replace(nextUrl)
+        setSafeRoute(false)
+        return
+      }
+      const {
+        stage: {isNavigable, isNavigableByFacilitator}
+      } = itemStage
+      const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
+      if (!canNavigate) {
+        // too early to visit meeting or typo, go to facilitator
+        const nextUrl = fromStageIdToUrl(facilitatorStageId, phases, facilitatorStageId)
+        history.replace(nextUrl)
+        updateLocalStage(atmosphere, meetingId, facilitatorStageId)
+        setSafeRoute(false)
+        return
+      }
+
+      // legit URL!
+      updateLocalStage(atmosphere, meetingId, stage.id)
       setSafeRoute(true)
-      return
-    }
-
-    // I’m trying to go to the middle of a meeting that hasn't started
-    if (!newMeeting) {
-      history.replace(`/${meetingSlug}/${teamId}`)
-      setSafeRoute(false)
-      return
-    }
-
-    // I’m trying to go the URL for one type of meeting but the other type is active
-    if (newMeeting.meetingType !== meetingType) {
-      const maybeActiveMeetingSlug = meetingTypeToSlug[newMeeting.meetingType]
-      history.replace(`/${maybeActiveMeetingSlug}/${teamId}`)
-      setSafeRoute(true)
-      return
-    }
-
-    const {facilitatorStageId, facilitatorUserId, localStage, id: meetingId, phases} = newMeeting
-
-    // I’m headed to the lobby but the meeting is already going, send me there
-    if (localStage && !phaseSlug) {
-      const {id: localStageId} = localStage
-      const nextUrl = fromStageIdToUrl(localStageId, phases, facilitatorStageId)
-      history.replace(nextUrl)
-      updateLocalStage(atmosphere, meetingId, facilitatorStageId)
-      setSafeRoute(false)
-      return
-    }
-
-    const localPhaseType = findKeyByValue(phaseTypeToSlug, phaseSlug)
-    const stageIdx = stageIdxSlug ? Number(stageIdxSlug) - 1 : 0
-
-    const phase = phases.find((curPhase) => curPhase.phaseType === localPhaseType)
-    if (!phase) {
-      // typo in url, send to the facilitator
-      const nextUrl = fromStageIdToUrl(facilitatorStageId, phases, facilitatorStageId)
-      history.replace(nextUrl)
-      updateLocalStage(atmosphere, meetingId, facilitatorStageId)
-      setSafeRoute(false)
-      return
-    }
-    const stage = phase.stages[stageIdx]
-    const stageId = stage && stage.id
-    const isViewerFacilitator = viewerId === facilitatorUserId
-    const itemStage = findStageById(phases, stageId)
-    if (!itemStage) {
-      // useful for e.g. /discuss/2, especially on the demo
-      const nextUrl = teamId ? `/${meetingSlug}/${teamId}` : '/retrospective-demo/reflect'
-      updateLocalStage(atmosphere, meetingId, facilitatorStageId)
-      history.replace(nextUrl)
-      setSafeRoute(false)
-      return
-    }
-    const {
-      stage: {isNavigable, isNavigableByFacilitator}
-    } = itemStage
-    const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
-    if (!canNavigate) {
-      // too early to visit meeting or typo, go to facilitator
-      const nextUrl = fromStageIdToUrl(facilitatorStageId, phases, facilitatorStageId)
-      history.replace(nextUrl)
-      updateLocalStage(atmosphere, meetingId, facilitatorStageId)
-      setSafeRoute(false)
-      return
-    }
-
-    // legit URL!
-    updateLocalStage(atmosphere, meetingId, stage.id)
-    setSafeRoute(true)
-  }, [
-    /* eslint-disable-line react-hooks/exhaustive-deps */
-  ])
+    },
+    [
+      /* eslint-disable-line react-hooks/exhaustive-deps */
+    ]
+  )
 }
 
 const useUpdatedSafeRoute = (

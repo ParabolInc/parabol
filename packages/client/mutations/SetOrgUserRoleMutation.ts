@@ -56,9 +56,10 @@ const mutation = graphql`
   }
 `
 
-export const setOrgUserRoleAddedOrganizationOnNext: OnNextHandler<
-  SetOrgUserRoleMutationAdded_organization
-> = (payload, {atmosphere, history}) => {
+export const setOrgUserRoleAddedOrganizationOnNext: OnNextHandler<SetOrgUserRoleMutationAdded_organization> = (
+  payload,
+  {atmosphere, history}
+) => {
   if (!payload || !payload.organization) return
   const {id: orgId, name: orgName} = payload.organization
   atmosphere.eventEmitter.emit('addSnackbar', {

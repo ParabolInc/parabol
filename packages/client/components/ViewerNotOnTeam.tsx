@@ -38,26 +38,29 @@ const ViewerNotOnTeam = (props: Props) => {
     AcceptTeamInvitationMutation(atmosphere, {invitationToken, notificationId}, {history})
   })
 
-  useEffect(() => {
-    if (teamInvitation) {
-      // if an invitation already exists, accept it
-      AcceptTeamInvitationMutation(atmosphere, {invitationToken: teamInvitation.token}, {history})
-    } else if (authObj && authObj.tms && authObj.tms.includes(teamId)) {
-      // if already on the team, goto team dash
-      const redirectTo = getValidRedirectParam()
-      const nextRoute = redirectTo || `/team/${teamId}`
-      history.replace(nextRoute)
-    } else {
-      PushInvitationMutation(atmosphere, {teamId})
-      atmosphere.eventEmitter.on('inviteToTeam', handler)
-      return () => {
-        atmosphere.eventEmitter.off('inviteToTeam', handler)
+  useEffect(
+    () => {
+      if (teamInvitation) {
+        // if an invitation already exists, accept it
+        AcceptTeamInvitationMutation(atmosphere, {invitationToken: teamInvitation.token}, {history})
+      } else if (authObj && authObj.tms && authObj.tms.includes(teamId)) {
+        // if already on the team, goto team dash
+        const redirectTo = getValidRedirectParam()
+        const nextRoute = redirectTo || `/team/${teamId}`
+        history.replace(nextRoute)
+      } else {
+        PushInvitationMutation(atmosphere, {teamId})
+        atmosphere.eventEmitter.on('inviteToTeam', handler)
+        return () => {
+          atmosphere.eventEmitter.off('inviteToTeam', handler)
+        }
       }
-    }
-    return undefined
-  }, [
-    /* eslint-disable-line react-hooks/exhaustive-deps*/
-  ])
+      return undefined
+    },
+    [
+      /* eslint-disable-line react-hooks/exhaustive-deps*/
+    ]
+  )
 
   if (teamInvitation) {
     return null

@@ -110,14 +110,17 @@ const SwipeableDashSidebar = (props: Props) => {
     noClose: true
   })
   const [xRef, setX] = useRefState(0)
-  useEffect(() => {
-    openPortal()
-    return () => {
-      window.clearTimeout(swipe.peekTimeout)
-    }
-  }, [
-    /* eslint-disable-line react-hooks/exhaustive-deps*/
-  ])
+  useEffect(
+    () => {
+      openPortal()
+      return () => {
+        window.clearTimeout(swipe.peekTimeout)
+      }
+    },
+    [
+      /* eslint-disable-line react-hooks/exhaustive-deps*/
+    ]
+  )
 
   const hideSidebar = useCallback(() => {
     setX(0)

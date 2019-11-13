@@ -36,9 +36,10 @@ const mutation = graphql`
   }
 `
 
-export const addReflectTemplatePromptTeamUpdater: SharedUpdater<
-  AddReflectTemplatePromptMutation_team
-> = (payload, {store}) => {
+export const addReflectTemplatePromptTeamUpdater: SharedUpdater<AddReflectTemplatePromptMutation_team> = (
+  payload,
+  {store}
+) => {
   const prompt = payload.getLinkedRecord('prompt')
   if (!prompt) return
   handleAddReflectTemplatePrompt(prompt, store)

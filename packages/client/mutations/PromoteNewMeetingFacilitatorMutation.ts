@@ -35,9 +35,10 @@ const mutation = graphql`
   }
 `
 
-export const promoteNewMeetingFacilitatorTeamOnNext: OnNextHandler<
-  PromoteNewMeetingFacilitatorMutation_team
-> = (payload, {atmosphere}) => {
+export const promoteNewMeetingFacilitatorTeamOnNext: OnNextHandler<PromoteNewMeetingFacilitatorMutation_team> = (
+  payload,
+  {atmosphere}
+) => {
   const {viewerId} = atmosphere
   const {oldFacilitator, meeting} = payload
   if (!oldFacilitator || !meeting) return
@@ -56,9 +57,10 @@ export const promoteNewMeetingFacilitatorTeamOnNext: OnNextHandler<
   })
 }
 
-const PromoteNewMeetingFacilitatorMutation: StandardMutation<
-  TPromoteNewMeetingFacilitatorMutation
-> = (atmosphere, variables): Disposable => {
+const PromoteNewMeetingFacilitatorMutation: StandardMutation<TPromoteNewMeetingFacilitatorMutation> = (
+  atmosphere,
+  variables
+): Disposable => {
   return commitMutation<TPromoteNewMeetingFacilitatorMutation>(atmosphere, {
     mutation,
     variables,
