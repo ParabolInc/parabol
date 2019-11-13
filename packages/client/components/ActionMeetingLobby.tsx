@@ -114,6 +114,7 @@ const ActionMeetingLobby = (props: Props) => {
           </ButtonGroup>
           <UrlBlock>
             <CopyShortLink
+              icon={'link'}
               url={makeHref(`/${meetingSlug}/${teamId}`)}
               title={'Copy Meeting Link'}
               tooltip={'Copied the meeting link!'}

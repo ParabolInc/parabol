@@ -18,10 +18,11 @@ const CopyIcon = styled(Icon)({
 
 const CopyLabel = styled('div')({
   color: 'inherit',
-  fontSize: 13
+  fontSize: 'inherit'
 })
 
 const CopyBlock = styled('div')({
+  fontSize: 13,
   color: PALETTE.TEXT_GRAY,
   position: 'relative',
   '&:hover': {
@@ -32,6 +33,7 @@ const CopyBlock = styled('div')({
 })
 
 interface Props {
+  className?: string
   icon?: string
   label?: ReactNode
   title?: string | undefined
@@ -39,13 +41,12 @@ interface Props {
   url: string
 }
 const CopyShortLink = (props: Props) => {
-  const {icon, label, url, title, tooltip} = props
-  const theIcon = icon || 'link'
+  const {className, icon, label, url, title, tooltip} = props
   const theLabel = label || url
   return (
     <CopyLink url={url} title={title} tooltip={tooltip}>
-      <CopyBlock>
-        <CopyIcon>{theIcon}</CopyIcon>
+      <CopyBlock className={className}>
+        {icon && <CopyIcon>{icon}</CopyIcon>}
         <CopyLabel>{theLabel}</CopyLabel>
       </CopyBlock>
     </CopyLink>

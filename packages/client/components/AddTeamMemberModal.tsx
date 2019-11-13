@@ -18,7 +18,8 @@ import {AddTeamMemberModal_teamMembers} from '../__generated__/AddTeamMemberModa
 import plural from '../utils/plural'
 import makeHref from '../utils/makeHref'
 import CopyShortLink from '../modules/meeting/components/CopyShortLink/CopyShortLink'
-import HorizontalSeparator from './HorizontalSeparator/HorizontalSeparator'
+import LabelHeading from './LabelHeading/LabelHeading'
+import {PALETTE} from '../styles/paletteV2'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   closePortal: () => void
@@ -49,10 +50,24 @@ const ErrorMessage = styled(StyledError)({
 })
 
 const ShareableLink = styled('div')({
+  padding: '0 0 16px'
+})
+
+const StyledLabelHeading = styled(LabelHeading)({
+  alignItems: 'center',
   display: 'flex',
-  justifyContent: 'center',
-  // padding (18+8) addresses hanging icon at mobile widths
-  padding: '0 26px'
+  fontSize: 15,
+  lineHeight: '24px',
+  padding: '0 0 8px',
+  textTransform: 'none'
+})
+
+const StyledCopyShortLink = styled(CopyShortLink)({
+  color: PALETTE.EMPHASIS_COOL,
+  fontSize: 15,
+  ':hover': {
+    color: PALETTE.EMPHASIS_COOL_LIGHTER
+  }
 })
 
 class AddTeamMemberModal extends Component<Props, State> {
@@ -149,6 +164,16 @@ class AddTeamMemberModal extends Component<Props, State> {
       <StyledDialogContainer>
         <DialogTitle>Invite to Team</DialogTitle>
         <DialogContent>
+          <StyledLabelHeading>{'Share this link'}</StyledLabelHeading>
+          <ShareableLink>
+            <StyledCopyShortLink
+              url={url}
+              label={url.slice(0, 45) + '…'}
+              title={'Copy invite link'}
+              tooltip={'Copied! Valid for 1 day'}
+            />
+          </ShareableLink>
+          <StyledLabelHeading>{'Or, send invites by email'}</StyledLabelHeading>
           <BasicTextArea
             autoFocus
             name='rawInvitees'
@@ -157,14 +182,6 @@ class AddTeamMemberModal extends Component<Props, State> {
             value={rawInvitees}
           />
           {error && <ErrorMessage>{error}</ErrorMessage>}
-          <HorizontalSeparator text={'or, share this link'} />
-          <ShareableLink>
-            <CopyShortLink
-              url={url}
-              label={url.slice(0, 45) + '…'}
-              tooltip={'Copied! Valid for 1 day'}
-            />
-          </ShareableLink>
           <ButtonGroup>
             <PrimaryButton
               onClick={this.sendInvitations}
