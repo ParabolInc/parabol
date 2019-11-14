@@ -23,6 +23,7 @@ import {ElementWidth, Gutters} from '../../types/constEnums'
 import useRefState from '../../hooks/useRefState'
 import useTooltip from '../../hooks/useTooltip'
 import {MenuPosition} from '../../hooks/useCoords'
+import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
 
 const ColumnWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   alignItems: 'center',
@@ -105,11 +106,11 @@ const PromptHeader = styled('div')<{isClickable: boolean}>(({isClickable}) => ({
 }))
 
 interface EditorAndStatusProps {
-  isPhaseComplete: boolean
+  isGroupingComplete: boolean
 }
 
-const EditorAndStatus = styled('div')<EditorAndStatusProps>(({isPhaseComplete}) => ({
-  visibility: isPhaseComplete ? 'hidden' : undefined
+const EditorAndStatus = styled('div')<EditorAndStatusProps>(({isGroupingComplete}) => ({
+  visibility: isGroupingComplete ? 'hidden' : undefined
 }))
 
 const ChitSection = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
@@ -147,9 +148,10 @@ const PhaseItemColumn = (props: Props) => {
     question,
     isDesktop
   } = props
-  const {meetingId, facilitatorUserId, localPhase, localStage, reflectionGroups} = meeting
+  const {meetingId, facilitatorUserId, localPhase, phases, reflectionGroups} = meeting
   const {phaseId, focusedPhaseItemId} = localPhase
-  const {isComplete} = localStage
+  const groupPhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.group)!
+  const {isComplete} = groupPhase
 
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -215,7 +217,7 @@ const PhaseItemColumn = (props: Props) => {
               <Description>{description}</Description>
             </PromptHeader>
             <EditorSection>
-              <EditorAndStatus isPhaseComplete={isComplete}>
+              <EditorAndStatus isGroupingComplete={isComplete}>
                 <PhaseItemEditor
                   cardsInFlightRef={cardsInFlightRef}
                   setCardsInFlight={setCardsInFlight}
