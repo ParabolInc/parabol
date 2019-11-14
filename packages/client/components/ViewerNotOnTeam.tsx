@@ -19,47 +19,60 @@ import useEventCallback from '../hooks/useEventCallback'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 
 interface Props {
-  teamId: string
   viewer: ViewerNotOnTeam_viewer
 }
 
 const ViewerNotOnTeam = (props: Props) => {
-  const {teamId, viewer} = props
-  const {teamInvitation} = viewer
+  const {viewer} = props
+  const {
+    teamInvitation: {teamInvitation, meetingId, teamId}
+  } = viewer
   const atmosphere = useAtmosphere()
   const {authObj} = atmosphere
   const {history} = useRouter()
   useDocumentTitle(`Invitation Required`)
+  const isOnTeam = authObj?.tms?.includes?.(teamId!) ?? false
   const handler = useEventCallback((invitation) => {
     const {
       invitation: {token: invitationToken},
       id: notificationId
     } = invitation
-    AcceptTeamInvitationMutation(atmosphere, {invitationToken, notificationId}, {history})
+    AcceptTeamInvitationMutation(
+      atmosphere,
+      {invitationToken, notificationId},
+      {history, meetingId}
+    )
   })
 
-  useEffect(() => {
-    if (teamInvitation) {
-      // if an invitation already exists, accept it
-      AcceptTeamInvitationMutation(atmosphere, {invitationToken: teamInvitation.token}, {history})
-    } else if (authObj && authObj.tms && authObj.tms.includes(teamId)) {
-      // if already on the team, goto team dash
-      const redirectTo = getValidRedirectParam()
-      const nextRoute = redirectTo || `/team/${teamId}`
-      history.replace(nextRoute)
-    } else {
-      PushInvitationMutation(atmosphere, {teamId})
-      atmosphere.eventEmitter.on('inviteToTeam', handler)
-      return () => {
-        atmosphere.eventEmitter.off('inviteToTeam', handler)
+  useEffect(
+    () => {
+      if (teamInvitation) {
+        // if an invitation already exists, accept it
+        AcceptTeamInvitationMutation(
+          atmosphere,
+          {invitationToken: teamInvitation.token},
+          {history, meetingId}
+        )
+      } else if (isOnTeam) {
+        // if already on the team, goto team dash
+        const redirectTo = getValidRedirectParam()
+        const nextRoute = redirectTo || `/team/${teamId}`
+        history.replace(nextRoute)
+      } else if (teamId) {
+        PushInvitationMutation(atmosphere, {teamId})
+        atmosphere.eventEmitter.on('inviteToTeam', handler)
+        return () => {
+          atmosphere.eventEmitter.off('inviteToTeam', handler)
+        }
       }
-    }
-    return undefined
-  }, [
-    /* eslint-disable-line react-hooks/exhaustive-deps*/
-  ])
+      return undefined
+    },
+    [
+      /* eslint-disable-line react-hooks/exhaustive-deps*/
+    ]
+  )
 
-  if (teamInvitation) {
+  if (teamInvitation || isOnTeam) {
     return null
   }
   return (
@@ -85,8 +98,12 @@ const ViewerNotOnTeam = (props: Props) => {
 export default createFragmentContainer(ViewerNotOnTeam, {
   viewer: graphql`
     fragment ViewerNotOnTeam_viewer on User {
-      teamInvitation(teamId: $teamId) {
-        token
+      teamInvitation(teamId: $teamId, meetingId: $meetingId) {
+        teamInvitation {
+          token
+        }
+        teamId
+        meetingId
       }
     }
   `

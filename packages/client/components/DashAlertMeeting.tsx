@@ -10,12 +10,12 @@ import plural from '../utils/plural'
 const getActiveMeetings = (teams: DashAlertMeeting_viewer['teams']) => {
   const allActiveMeetings: {link: string; name: string}[] = []
   teams.forEach((team) => {
-    const {activeMeetings} = team
+    const {activeMeetings, name: teamName} = team
     activeMeetings.forEach((activeMeeting) => {
-      const {id: meetingId, name} = activeMeeting
+      const {id: meetingId, name: meetingName} = activeMeeting
       allActiveMeetings.push({
         link: `/meet/${meetingId}`,
-        name
+        name: `${teamName} ${meetingName}`
       })
     })
   })
@@ -60,6 +60,7 @@ graphql`
       meetingType
       name
     }
+    name
   }
 `
 

@@ -115,10 +115,14 @@ export const acceptTeamInvitationTeamOnNext: OnNextHandler<AcceptTeamInvitationM
   })
 }
 
+interface LocalHandler extends HistoryMaybeLocalHandler {
+  meetingId?: string
+}
+
 const AcceptTeamInvitationMutation: StandardMutation<
   TAcceptTeamInvitationMutation,
-  HistoryMaybeLocalHandler
-> = (atmosphere, variables, {history, onCompleted, onError}) => {
+  LocalHandler
+> = (atmosphere, variables, {history, onCompleted, onError, meetingId}) => {
   return commitMutation<TAcceptTeamInvitationMutation>(atmosphere, {
     mutation,
     variables,
@@ -139,7 +143,9 @@ const AcceptTeamInvitationMutation: StandardMutation<
       atmosphere.setAuthToken(authToken)
       if (!team) return
       const {id: teamId, name: teamName, activeMeetings} = team
-      const [firstActiveMeeting] = activeMeetings
+      const activeMeeting =
+        (meetingId && activeMeetings.find((meeting) => meeting.id === meetingId)) ||
+        activeMeetings[0]
       atmosphere.eventEmitter.emit('addSnackbar', {
         key: `addedToTeam:${teamId}`,
         autoDismiss: 5,
@@ -149,9 +155,8 @@ const AcceptTeamInvitationMutation: StandardMutation<
       if (history) {
         if (redirectTo) {
           history.push(redirectTo)
-        } else if (firstActiveMeeting) {
-          const {id: meetingId} = firstActiveMeeting
-          history.push(`/meet/${meetingId}`)
+        } else if (activeMeeting) {
+          history.push(`/meet/${activeMeeting.id}`)
         } else {
           history.push(`/team/${teamId}`)
         }

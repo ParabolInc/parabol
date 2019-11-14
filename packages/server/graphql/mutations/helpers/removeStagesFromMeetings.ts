@@ -34,6 +34,7 @@ const removeStagesFromMeetings = async (
               meeting.facilitatorStageId = nextStage.id
               nextStage.startAt = now
               nextStage.viewCount = nextStage.viewCount ? nextStage.viewCount + 1 : 1
+              nextStage.isNavigable = true
             }
             const stageIdx = stages.indexOf(stage)
             stages.splice(stageIdx, 1)

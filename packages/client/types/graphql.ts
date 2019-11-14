@@ -262,7 +262,7 @@ export interface IUser {
   /**
    * The invitation sent to the user, even if it was sent before they were a user
    */
-  teamInvitation: ITeamInvitation | null
+  teamInvitation: ITeamInvitationPayload
 
   /**
    * all the teams the user is on that the viewer can see.
@@ -428,9 +428,14 @@ export interface ITeamOnUserArguments {
 
 export interface ITeamInvitationOnUserArguments {
   /**
+   * The meetingId to check for the invitation, if teamId not available
+   */
+  meetingId?: string | null
+
+  /**
    * The teamId to check for the invitation
    */
-  teamId: string
+  teamId?: string | null
 }
 
 export interface ITeamMemberOnUserArguments {
@@ -2528,6 +2533,28 @@ export interface IStandardMutationError {
    * The full error
    */
   message: string
+}
+
+/**
+ * The response to a teamInvitation query
+ */
+export interface ITeamInvitationPayload {
+  __typename: 'TeamInvitationPayload'
+
+  /**
+   * The team invitation, if any
+   */
+  teamInvitation: ITeamInvitation | null
+
+  /**
+   * the teamId of the team trying to join
+   */
+  teamId: string | null
+
+  /**
+   * one of the active meetings trying to join
+   */
+  meetingId: string | null
 }
 
 export interface IMassInvitationPayload {

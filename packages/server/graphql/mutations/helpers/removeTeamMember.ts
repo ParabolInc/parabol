@@ -159,6 +159,15 @@ const removeTeamMember = async (
   }
   await removeStagesFromMeetings(filterFn, teamId, dataLoader)
 
+  // TODO should probably just inactivate the meeting member
+  const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
+  const meetingIds = activeMeetings.map(({id}) => id)
+  await r
+    .table('MeetingMember')
+    .getAll(r.args(meetingIds), {index: 'meetingId'})
+    .filter({userId})
+    .delete()
+    .run()
   return {
     user,
     removedNotifications,

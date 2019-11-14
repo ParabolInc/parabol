@@ -15,9 +15,9 @@ const getNextFacilitatorStageAfterStageRemoved = (
     return stage
   }
   // get the next stage. if this is the last stage, get the previous one
-  const nextStage = ((findStageAfterId(phases, removedStageId) ||
-    findStageBeforeId(phases, removedStageId)) as unknown) as GenericMeetingStage
-  return nextStage
+  const nextStageRes = (findStageAfterId(phases, removedStageId) ||
+    findStageBeforeId(phases, removedStageId))!
+  return nextStageRes.stage as GenericMeetingStage
 }
 
 export default getNextFacilitatorStageAfterStageRemoved

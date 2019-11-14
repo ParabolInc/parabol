@@ -31,7 +31,6 @@ import OrganizationUser from './OrganizationUser'
 import SuggestedAction from './SuggestedAction'
 import NewFeatureBroadcast from './NewFeatureBroadcast'
 import standardError from '../../utils/standardError'
-import TeamInvitation from './TeamInvitation'
 import newMeeting from '../queries/newMeeting'
 import suggestedIntegrations from '../queries/suggestedIntegrations'
 import AtlassianAuth from './AtlassianAuth'
@@ -39,6 +38,7 @@ import GitHubAuth from './GitHubAuth'
 import {GITHUB} from '../../../client/utils/constants'
 import allAvailableIntegrations from '../queries/allAvailableIntegrations'
 import {GQLContext} from '../graphql'
+import TeamInvitationPayload from './TeamInvitationPayload'
 
 const User = new GraphQLObjectType<any, GQLContext, any>({
   name: 'User',
@@ -343,21 +343,33 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
     tasks,
     team: require('../queries/team').default,
     teamInvitation: {
-      type: TeamInvitation,
+      type: new GraphQLNonNull(TeamInvitationPayload),
       description: 'The invitation sent to the user, even if it was sent before they were a user',
       args: {
+        meetingId: {
+          type: GraphQLID,
+          description: 'The meetingId to check for the invitation, if teamId not available'
+        },
         teamId: {
-          type: new GraphQLNonNull(GraphQLID),
+          type: GraphQLID,
           description: 'The teamId to check for the invitation'
         }
       },
-      resolve: async ({id: userId}, {teamId}, {authToken, dataLoader}) => {
+      resolve: async ({id: userId}, {meetingId, teamId: inTeamId}, {authToken, dataLoader}) => {
+        if (!meetingId && !inTeamId) return {}
         const viewerId = getUserId(authToken)
-        if (viewerId !== userId && !isSuperUser(authToken)) return null
+        if (viewerId !== userId && !isSuperUser(authToken)) return {}
         const user = await dataLoader.get('users').load(userId)
         const {email} = user
+        let teamId = inTeamId
+        if (!teamId) {
+          const meeting = await dataLoader.get('newMeetings').load(meetingId)
+          if (!meeting) return {meetingId}
+          teamId = meeting.teamId
+        }
         const teamInvitations = await dataLoader.get('teamInvitationsByTeamId').load(teamId)
-        return teamInvitations.find((invitation) => invitation.email === email)
+        const teamInvitation = teamInvitations.find((invitation) => invitation.email === email)
+        return {teamInvitation, teamId, meetingId}
       }
     },
     teams: {
