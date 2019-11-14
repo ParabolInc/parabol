@@ -20,6 +20,7 @@ import makeHref from '../utils/makeHref'
 import CopyShortLink from '../modules/meeting/components/CopyShortLink/CopyShortLink'
 import LabelHeading from './LabelHeading/LabelHeading'
 import {PALETTE} from '../styles/paletteV2'
+import useBreakpoint from '../hooks/useBreakpoint'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   closePortal: () => void
@@ -34,12 +35,49 @@ interface State {
   rawInvitees: string
 }
 
+const INVITE_DIALOG_WITH_ILLUS = 864
+
 const StyledDialogContainer = styled(DialogContainer)({
-  width: 500
+  width: 480,
+  [`@media (min-width: ${INVITE_DIALOG_WITH_ILLUS}px)`]: {
+    width: 816
+  }
+})
+
+const StyledDialogTitle = styled(DialogTitle)({
+  [`@media (min-width: ${INVITE_DIALOG_WITH_ILLUS}px)`]: {
+    fontSize: 24,
+    lineHeight: '32px',
+    marginBottom: 8,
+    paddingLeft: 32,
+    paddingTop: 24
+  }
+})
+
+const StyledDialogContent = styled(DialogContent)({
+  [`@media (min-width: ${INVITE_DIALOG_WITH_ILLUS}px)`]: {
+    alignItems: 'center',
+    display: 'flex',
+    padding: '16px 32px 32px'
+  }
+})
+
+const Fields = styled('div')({
+  [`@media (min-width: ${INVITE_DIALOG_WITH_ILLUS}px)`]: {
+    maxWidth: 320,
+    marginRight: 32
+  }
+})
+
+const Illustration = styled('img')({
+  display: 'block',
+  flex: 1,
+  marginTop: -60,
+  maxWidth: 400
 })
 
 const ButtonGroup = styled('div')({
-  marginTop: '1rem',
+  marginTop: '24px',
   display: 'flex',
   justifyContent: 'flex-end'
 })
@@ -49,30 +87,34 @@ const ErrorMessage = styled(StyledError)({
   marginTop: '.5rem'
 })
 
-const ShareableLink = styled('div')({
-  padding: '0 0 24px'
-})
-
 const StyledLabelHeading = styled(LabelHeading)({
   alignItems: 'center',
   display: 'flex',
   fontSize: 15,
-  lineHeight: '24px',
-  padding: '0 0 4px',
+  lineHeight: '21px',
+  padding: '0 0 16px',
   textTransform: 'none'
 })
 
-const SecondStyledLabelHeading = styled(StyledLabelHeading)({
-  padding: '0 0 8px'
-})
-
 const StyledCopyShortLink = styled(CopyShortLink)({
+  borderRadius: 4,
+  border: `1px dashed ${PALETTE.EMPHASIS_COOL_LIGHTER}`,
   color: PALETTE.EMPHASIS_COOL,
   fontSize: 15,
+  margin: '0 0 32px',
+  padding: 11,
   ':hover': {
     color: PALETTE.EMPHASIS_COOL_LIGHTER
   }
 })
+
+const IllustrationBlock = () => {
+  const showIllustration = useBreakpoint(INVITE_DIALOG_WITH_ILLUS)
+  const imageSrc =
+    'https://s3.amazonaws.com/action-files.parabol.co/static/illustrations/illus-momentum.png' ||
+    `${__STATIC_IMAGES__}/illustrations/illus-momentum.png`
+  return <>{showIllustration && <Illustration alt='' src={imageSrc} />}</>
+}
 
 class AddTeamMemberModal extends Component<Props, State> {
   _mounted = true
@@ -166,36 +208,39 @@ class AddTeamMemberModal extends Component<Props, State> {
     const title = invitees.length <= 1 ? 'Send Invitation' : `Send ${invitees.length} Invitations`
     return (
       <StyledDialogContainer>
-        <DialogTitle>Invite to Team</DialogTitle>
-        <DialogContent>
-          <StyledLabelHeading>{'Share this link'}</StyledLabelHeading>
-          <ShareableLink>
+        <StyledDialogTitle>Invite to Team</StyledDialogTitle>
+        <StyledDialogContent>
+          <Fields>
+            <StyledLabelHeading>{'Share this link'}</StyledLabelHeading>
             <StyledCopyShortLink
+              icon='link'
               url={url}
               label={url.slice(0, 45) + '…'}
               title={'Copy invite link'}
               tooltip={'Copied! Valid for 1 day'}
             />
-          </ShareableLink>
-          <SecondStyledLabelHeading>{'Or, send invites by email'}</SecondStyledLabelHeading>
-          <BasicTextArea
-            autoFocus
-            name='rawInvitees'
-            onChange={this.onChange}
-            placeholder='email@example.co, another@example.co'
-            value={rawInvitees}
-          />
-          {error && <ErrorMessage>{error}</ErrorMessage>}
-          <ButtonGroup>
-            <PrimaryButton
-              onClick={this.sendInvitations}
-              disabled={invitees.length === 0}
-              waiting={submitting}
-            >
-              {title}
-            </PrimaryButton>
-          </ButtonGroup>
-        </DialogContent>
+            <StyledLabelHeading>{'Or, send invites by email'}</StyledLabelHeading>
+            <BasicTextArea
+              autoFocus
+              name='rawInvitees'
+              onChange={this.onChange}
+              placeholder='email@example.co, another@example.co'
+              value={rawInvitees}
+            />
+            {error && <ErrorMessage>{error}</ErrorMessage>}
+            <ButtonGroup>
+              <PrimaryButton
+                onClick={this.sendInvitations}
+                disabled={invitees.length === 0}
+                size='medium'
+                waiting={submitting}
+              >
+                {title}
+              </PrimaryButton>
+            </ButtonGroup>
+          </Fields>
+          <IllustrationBlock />
+        </StyledDialogContent>
       </StyledDialogContainer>
     )
   }
