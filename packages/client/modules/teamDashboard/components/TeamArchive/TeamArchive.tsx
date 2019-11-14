@@ -9,7 +9,7 @@ import {TeamArchive_viewer} from '__generated__/TeamArchive_viewer.graphql'
 import {AreaEnum} from '../../../../types/graphql'
 import {TeamArchive_team} from '__generated__/TeamArchive_team.graphql'
 import styled from '@emotion/styled'
-import {Breakpoint, MathEnum, NavSidebar} from '../../../../types/constEnums'
+import {MathEnum, NavSidebar} from '../../../../types/constEnums'
 import {PALETTE} from '../../../../styles/paletteV2'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 
@@ -38,11 +38,7 @@ const Root = styled('div')({
 })
 
 const Header = styled('div')({
-  padding: `0 0 0 20px`,
-
-  [`@media (min-width: ${Breakpoint.DASHBOARD_WIDE})`]: {
-    paddingLeft: 32
-  }
+  padding: `0 0 0 20px`
 })
 
 const Border = styled('div')({
@@ -57,11 +53,7 @@ const Body = styled('div')({
   flexDirection: 'column',
   justifyContent: 'flex-start',
   paddingLeft: '12',
-  position: 'relative',
-
-  [`@media (min-width: ${Breakpoint.DASHBOARD_WIDE})`]: {
-    paddingLeft: 24
-  }
+  position: 'relative'
 })
 const CardGrid = styled('div')({
   border: 0,
@@ -79,11 +71,7 @@ const EmptyMsg = styled('div')({
   fontSize: 14,
   display: 'inline-block',
   margin: 20,
-  padding: 16,
-
-  [`@media (min-width: ${Breakpoint.DASHBOARD_WIDE})`]: {
-    margin: 32
-  }
+  padding: 16
 })
 
 const LinkSpan = styled('div')({

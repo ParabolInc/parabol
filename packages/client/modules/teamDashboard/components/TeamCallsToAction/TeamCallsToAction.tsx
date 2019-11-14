@@ -13,7 +13,7 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useRouter from '../../../../hooks/useRouter'
 import lazyPreload from '../../../../utils/lazyPreload'
-import {Breakpoint, Gutters} from '../../../../types/constEnums'
+import {Gutters} from '../../../../types/constEnums'
 import {meetingTypeToLabel, meetingTypeToSlug} from '../../../../utils/meetings/lookups'
 
 interface Props {
@@ -24,12 +24,7 @@ const ButtonBlock = styled('div')({
   display: 'flex',
   justifyContent: 'flex-end',
   minWidth: 224,
-  paddingLeft: Gutters.DASH_GUTTER_SMALL,
-
-  [`@media (min-width: ${Breakpoint.DASHBOARD_WIDE})`]: {
-    minWidth: 208,
-    paddingLeft: Gutters.DASH_GUTTER_LARGE
-  }
+  paddingLeft: Gutters.DASH_GUTTER
 })
 
 const StartButton = styled(PrimaryButton)({
