@@ -39,7 +39,7 @@ const useMeeting = (meetingRef: any) => {
     `,
     meetingRef
   )
-  const {id: meetingId, meetingType, showSidebar, team} = meeting
+  const {id: meetingId, meetingType, team} = meeting
   const {id: teamId, name: teamName} = team
   const gotoStageId = useGotoStageId(meeting)
   const handleGotoNext = useGotoNext(meeting, gotoStageId)
