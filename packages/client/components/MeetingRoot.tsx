@@ -11,6 +11,7 @@ import renderQuery from '../utils/relay/renderQuery'
 import useSubscription from '../hooks/useSubscription'
 import MeetingSelector from './MeetingSelector'
 
+// Changing the name here requires a change to getLastSeenAtURL.ts
 const query = graphql`
   query MeetingRootQuery($meetingId: ID!) {
     viewer {
