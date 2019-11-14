@@ -111,8 +111,7 @@ const StyledCopyShortLink = styled(CopyShortLink)({
 const IllustrationBlock = () => {
   const showIllustration = useBreakpoint(INVITE_DIALOG_WITH_ILLUS)
   const imageSrc =
-    'https://s3.amazonaws.com/action-files.parabol.co/static/illustrations/illus-momentum.png' ||
-    `${__STATIC_IMAGES__}/illustrations/illus-momentum.png`
+    'https://s3.amazonaws.com/action-files.parabol.co/static/illustrations/illus-momentum.png'
   return <>{showIllustration && <Illustration alt='' src={imageSrc} />}</>
 }
 
