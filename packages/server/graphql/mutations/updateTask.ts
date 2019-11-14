@@ -16,6 +16,7 @@ import {validateTaskUserId} from './createTask'
 import Task from '../../database/types/Task'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import {ITeamMember} from 'parabol-client/types/graphql'
+import getUsersToIgnore from './helpers/getUsersToIgnore'
 
 const DEBOUNCE_TIME = ms('5m')
 
@@ -34,7 +35,7 @@ export default {
   },
   async resolve(
     _source,
-    {area, updatedTask}: IUpdateTaskOnMutationArguments,
+    {updatedTask}: IUpdateTaskOnMutationArguments,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
@@ -132,7 +133,7 @@ export default {
         .coerceTo('array') as unknown) as ITeamMember[]
     }).run()
     // TODO: get users in the same location
-    const usersToIgnore = []
+    const usersToIgnore = await getUsersToIgnore(viewerId, teamId, dataLoader)
     if (!newTask) return standardError(new Error('Already updated task'), {userId: viewerId})
 
     // send task updated messages

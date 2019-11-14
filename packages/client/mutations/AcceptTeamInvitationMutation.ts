@@ -1,7 +1,6 @@
 import {AcceptTeamInvitationMutation_team} from '../__generated__/AcceptTeamInvitationMutation_team.graphql'
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {RecordProxy} from 'relay-runtime'
 import handleAddTeamMembers from './handlers/handleAddTeamMembers'
 import handleRemoveNotifications from './handlers/handleRemoveNotifications'
 import getGraphQLError from '../utils/relay/getGraphQLError'
@@ -26,21 +25,7 @@ graphql`
     team {
       name
       activeMeetings {
-        meetingType
-        phases {
-          phaseType
-          meetingId
-          stages {
-            isComplete
-            isNavigable
-            isNavigableByFacilitator
-            ...NewMeetingCheckInLocalStage @relay(mask: false)
-            ...ActionMeetingUpdatesStage @relay(mask: false)
-            ... on NewMeetingTeamMemberStage {
-              teamMemberId
-            }
-          }
-        }
+        ...MeetingSelector_meeting
       }
     }
   }
@@ -88,9 +73,22 @@ export const acceptTeamInvitationNotificationUpdater: SharedUpdater<AcceptTeamIn
   handleAddTeams(team, store)
   const notificationIds = getInProxy(payload, 'removedNotificationIds')
   handleRemoveNotifications(notificationIds, store)
+
+  // the viewer could have requested the meeting & had it return null
+  const activeMeetings = team.getLinkedRecords('activeMeetings')
+  const viewer = store.getRoot().getLinkedRecord('viewer')
+  if (viewer) {
+    activeMeetings.forEach((activeMeeting) => {
+      const meetingId = activeMeeting.getValue('id')
+      viewer.setLinkedRecord(activeMeeting, 'meeting', {meetingId})
+    })
+  }
 }
 
-export const acceptTeamInvitationTeamUpdater = (payload: RecordProxy, {store}) => {
+export const acceptTeamInvitationTeamUpdater: SharedUpdater<AcceptTeamInvitationMutation_team> = (
+  payload,
+  {store}
+) => {
   const teamMember = payload.getLinkedRecord('teamMember')
   handleAddTeamMembers(teamMember, store)
 }
@@ -116,7 +114,7 @@ export const acceptTeamInvitationTeamOnNext: OnNextHandler<AcceptTeamInvitationM
 }
 
 interface LocalHandler extends HistoryMaybeLocalHandler {
-  meetingId?: string
+  meetingId?: string | null
 }
 
 const AcceptTeamInvitationMutation: StandardMutation<

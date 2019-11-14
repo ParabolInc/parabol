@@ -166,7 +166,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       async resolve({id: teamId}, _args, {authToken, dataLoader}) {
         if (!isTeamMember(authToken, teamId)) {
           standardError(new Error('Team not found'))
-          return []
+          return connectionFromTasks([])
         }
         const tasks = await dataLoader.get('tasksByTeamId').load(teamId)
         return connectionFromTasks(tasks)

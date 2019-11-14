@@ -80,8 +80,17 @@ export const inviteToTeamNotificationOnNext = (
   const {teamInvitationNotification} = payload
   if (!teamInvitationNotification) return
   const isWaiting = !!matchPath(window.location.pathname, {path: `/invitation-required`})
-  atmosphere.eventEmitter.emit('inviteToTeam', teamInvitationNotification)
-  if (!isWaiting) {
+  if (isWaiting) {
+    const search = new URLSearchParams(window.location.search)
+    const meetingId = search.get('meetingId')
+    const {id: notificationId, invitation} = teamInvitationNotification
+    const {token: invitationToken} = invitation
+    AcceptTeamInvitationMutation(
+      atmosphere,
+      {invitationToken, notificationId},
+      {history, meetingId}
+    )
+  } else {
     popInvitationReceivedToast(teamInvitationNotification, {atmosphere, history})
   }
 }

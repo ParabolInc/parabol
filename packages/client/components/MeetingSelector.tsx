@@ -38,13 +38,19 @@ const MeetingSelector = (props: Props) => {
   return <Meeting meeting={meeting} />
 }
 
+graphql`
+  fragment MeetingSelector_meeting on NewMeeting {
+    ...RetroMeeting_meeting
+    ...ActionMeeting_meeting
+    meetingType
+  }
+`
+
 export default createFragmentContainer(MeetingSelector, {
   viewer: graphql`
     fragment MeetingSelector_viewer on User {
       meeting(meetingId: $meetingId) {
-        meetingType
-        ...RetroMeeting_meeting
-        ...ActionMeeting_meeting
+        ...MeetingSelector_meeting @relay(mask: false)
       }
     }
   `

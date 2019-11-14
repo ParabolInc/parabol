@@ -15,7 +15,6 @@ import TeamInvitationWrapper from './TeamInvitationWrapper'
 import useRouter from '../hooks/useRouter'
 import getValidRedirectParam from '../utils/getValidRedirectParam'
 import PushInvitationMutation from '../mutations/PushInvitationMutation'
-import useEventCallback from '../hooks/useEventCallback'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 
 interface Props {
@@ -32,17 +31,6 @@ const ViewerNotOnTeam = (props: Props) => {
   const {history} = useRouter()
   useDocumentTitle(`Invitation Required`)
   const isOnTeam = authObj?.tms?.includes?.(teamId!) ?? false
-  const handler = useEventCallback((invitation) => {
-    const {
-      invitation: {token: invitationToken},
-      id: notificationId
-    } = invitation
-    AcceptTeamInvitationMutation(
-      atmosphere,
-      {invitationToken, notificationId},
-      {history, meetingId}
-    )
-  })
 
   useEffect(
     () => {
@@ -60,10 +48,6 @@ const ViewerNotOnTeam = (props: Props) => {
         history.replace(nextRoute)
       } else if (teamId) {
         PushInvitationMutation(atmosphere, {teamId})
-        atmosphere.eventEmitter.on('inviteToTeam', handler)
-        return () => {
-          atmosphere.eventEmitter.off('inviteToTeam', handler)
-        }
       }
       return undefined
     },

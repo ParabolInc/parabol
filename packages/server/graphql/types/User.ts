@@ -246,9 +246,12 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
     },
     lastSeenAt: {
       type: GraphQLISO8601Type,
-      description: 'The last time the user connected via websocket'
+      description: 'The last time the user connected via websocket or navigated to a common area'
     },
-
+    lastSeenAtURL: {
+      type: GraphQLString,
+      description: 'The path the user was last seen at (rough heuristic)'
+    },
     meetingMember: {
       type: MeetingMember,
       description:

@@ -1,4 +1,6 @@
-const connectionFromTasks = (nodes) => {
+import Task from '../../../database/types/Task'
+
+const connectionFromTasks = (nodes: Task[]) => {
   const edges = nodes.map((node) => ({
     cursor: node.updatedAt,
     node
