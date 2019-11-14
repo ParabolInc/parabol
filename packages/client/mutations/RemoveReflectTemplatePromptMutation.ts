@@ -25,9 +25,10 @@ const mutation = graphql`
   }
 `
 
-export const removeReflectTemplatePromptTeamUpdater: SharedUpdater<
-  RemoveReflectTemplatePromptMutation_team
-> = (payload, {store}) => {
+export const removeReflectTemplatePromptTeamUpdater: SharedUpdater<RemoveReflectTemplatePromptMutation_team> = (
+  payload,
+  {store}
+) => {
   const promptId = getInProxy(payload, 'prompt', 'id')
   handleRemoveReflectTemplatePrompt(promptId, store)
 }

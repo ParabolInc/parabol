@@ -40,9 +40,10 @@ interface UpdaterOptions {
 }
 
 // used only by subscription
-export const startDraggingReflectionTeamUpdater: SharedUpdater<
-  StartDraggingReflectionMutation_team
-> = (payload, {atmosphere, store}: UpdaterOptions) => {
+export const startDraggingReflectionTeamUpdater: SharedUpdater<StartDraggingReflectionMutation_team> = (
+  payload,
+  {atmosphere, store}: UpdaterOptions
+) => {
   const teamId = payload.getValue('teamId')
   const {pathname} = window.location
   const slug = meetingTypeToSlug[MeetingTypeEnum.retrospective]

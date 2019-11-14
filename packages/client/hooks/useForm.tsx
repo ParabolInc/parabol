@@ -78,23 +78,20 @@ const useForm = (fieldInputDict: FieldInputDict, deps: any[] = []) => {
     reducer,
     useMemo(
       () =>
-        Object.keys(fieldInputDict).reduce(
-          (obj, name) => {
-            obj[name] = {
-              value: fieldInputDict[name].getDefault(),
-              error: undefined,
-              dirty: false,
-              resetValue: (value = '') => {
-                dispatch({type: 'setValue', name, value})
-              },
-              setError: (error: string) => {
-                dispatch({type: 'setError', name, error})
-              }
+        Object.keys(fieldInputDict).reduce((obj, name) => {
+          obj[name] = {
+            value: fieldInputDict[name].getDefault(),
+            error: undefined,
+            dirty: false,
+            resetValue: (value = '') => {
+              dispatch({type: 'setValue', name, value})
+            },
+            setError: (error: string) => {
+              dispatch({type: 'setError', name, error})
             }
-            return obj
-          },
-          {} as FieldState
-        ),
+          }
+          return obj
+        }, {} as FieldState),
       [
         /* eslint-disable-line react-hooks/exhaustive-deps */
       ]
