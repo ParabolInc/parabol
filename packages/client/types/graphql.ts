@@ -199,9 +199,14 @@ export interface IUser {
   rasterPicture: any
 
   /**
-   * The last time the user connected via websocket
+   * The last time the user connected via websocket or navigated to a common area
    */
   lastSeenAt: any | null
+
+  /**
+   * The path the user was last seen at (rough heuristic)
+   */
+  lastSeenAtURL: string | null
 
   /**
    * The meeting member associated with this user, if a meeting is currently in progress

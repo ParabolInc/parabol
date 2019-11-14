@@ -24,6 +24,9 @@ graphql`
     }
     team {
       id
+      activeMeetings {
+        id
+      }
       agendaItems {
         id
       }
