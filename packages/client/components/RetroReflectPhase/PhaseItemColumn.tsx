@@ -151,7 +151,9 @@ const PhaseItemColumn = (props: Props) => {
   const {meetingId, facilitatorUserId, localPhase, phases, reflectionGroups} = meeting
   const {phaseId, focusedPhaseItemId} = localPhase
   const groupPhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.group)!
-  const {isComplete} = groupPhase
+  const {stages: groupStages} = groupPhase
+  const [groupStage] = groupStages
+  const {isComplete} = groupStage
 
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
