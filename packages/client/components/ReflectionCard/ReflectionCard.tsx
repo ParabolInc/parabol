@@ -19,6 +19,7 @@ import convertToTaskContent from '../../utils/draftjs/convertToTaskContent'
 import ReflectionCardRoot from './ReflectionCardRoot'
 import ReflectionCardFooter from './ReflectionCardFooter'
 import useEditorState from '../../hooks/useEditorState'
+import isPhaseComplete from '../../utils/meetings/isPhaseComplete'
 
 interface Props {
   isClipped?: boolean
@@ -45,6 +46,7 @@ const ReflectionCard = (props: Props) => {
   const {meetingId, phaseItem} = reflection
   const {question} = phaseItem
   const phaseType = meeting ? meeting.localPhase.phaseType : null
+  const phases = meeting ? meeting.phases : null
   const {id: reflectionId, content, retroPhaseItemId, isViewerCreator} = reflection
   const atmosphere = useAtmosphere()
   const {onCompleted, submitMutation, error, onError} = useMutationProps()
@@ -135,7 +137,9 @@ const ReflectionCard = (props: Props) => {
     }
   }
 
-  const readOnly = getReadOnly(reflection, phaseType as NewMeetingPhaseTypeEnum, stackCount)
+  const votePhaseReached = phases && isPhaseComplete(NewMeetingPhaseTypeEnum.group, phases)
+  const readOnly =
+    votePhaseReached || getReadOnly(reflection, phaseType as NewMeetingPhaseTypeEnum, stackCount)
   const userSelect = readOnly
     ? phaseType === NewMeetingPhaseTypeEnum.discuss
       ? 'text'
@@ -190,6 +194,10 @@ export default createFragmentContainer(ReflectionCard, {
       }
       phases {
         phaseType
+        stages {
+          id
+          isComplete
+        }
       }
     }
   `
