@@ -26,6 +26,9 @@ import {meetingTypeToLabel, meetingTypeToSlug} from '../utils/meetings/lookups'
 import useLegacyLobby from '../hooks/useLegacyLobby'
 import MeetingStyles from './MeetingStyles'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
+import Icon from '../components/Icon'
+import FlatButton from '../components/FlatButton'
+import {PALETTE} from '../styles/paletteV2'
 
 const ButtonGroup = styled('div')({
   display: 'flex',
@@ -59,6 +62,21 @@ const StyledButton = styled(PrimaryButton)({
   width: '100%'
 })
 
+const IconButton = styled(FlatButton)({
+  color: PALETTE.TEXT_GRAY,
+  marginLeft: -8,
+  marginTop: -4,
+  padding: '3px 0',
+  width: 32,
+  ':hover,:focus,:active': {
+    color: PALETTE.TEXT_MAIN
+  }
+})
+
+const BackIcon = styled(Icon)({
+  color: 'inherit'
+})
+
 const meetingType = MeetingTypeEnum.action
 const meetingLabel = meetingTypeToLabel[meetingType]
 const meetingSlug = meetingTypeToSlug[meetingType]
@@ -84,6 +102,10 @@ const ActionMeetingLobby = (props: Props) => {
     submitMutation()
     StartNewMeetingMutation(atmosphere, {teamId, meetingType}, {history, onError, onCompleted})
   }
+
+  const goToTeamDashboard = () => {
+    history.push(`/team/${teamId}/`)
+  }
   return (
     <MeetingStyles>
       <MeetingContent>
@@ -93,7 +115,11 @@ const ActionMeetingLobby = (props: Props) => {
           }
           isMeetingSidebarCollapsed={false}
           toggleSidebar={() => {}}
-        />
+        >
+          <IconButton aria-label='Back to Team Dashboard' onClick={goToTeamDashboard}>
+            <BackIcon>arrow_back</BackIcon>
+          </IconButton>
+        </MeetingTopBar>
         <ErrorBoundary>
           <NewMeetingLobby>
             <StyledLabel>{`${meetingLabel} Meeting Lobby`}</StyledLabel>
