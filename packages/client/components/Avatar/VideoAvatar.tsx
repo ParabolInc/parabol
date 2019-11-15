@@ -25,7 +25,19 @@ const Video = styled('video')<StyleProps>(({isHidden}) => ({
   width: '100%'
 }))
 
-const Picture = styled('img')<StyleProps>(({isHidden}) => ({
+const colors = {
+  'https://action-files.parabol.co/production/store/User/google-oauth2%7C104933228229706489335/picture/hY78C5q0h.jpeg':
+    'blue',
+  'https://lh5.googleusercontent.com/-wwaquo5dS-E/AAAAAAAAAAI/AAAAAAAAABA/TDwOhQtPDdY/photo.jpg':
+    'orange',
+  'https://action-files.parabol.co/production/store/User/auth0%7C57f52755a5ec618828a1c1e4/picture/S1vl3oBZQ.jpeg':
+    'pink',
+  'https://action-files.parabol.co/production/store/User/google-oauth2%7C112540584686400405659/picture/fEJazukfc.jpeg':
+    'green'
+}
+
+const Picture = styled('img')<StyleProps>(({isHidden, src}) => ({
+  background: colors[src],
   display: isHidden ? 'none' : undefined,
   borderRadius: '100%',
   height: '100%',
@@ -44,12 +56,9 @@ interface Props {
 
 const VideoAvatar = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
   const videoRef = useRef<HTMLVideoElement>(null)
+  const {streamUI, teamMember, swarm, onTransitionEnd, status} = props
+  const {isSelf, picture, userId} = teamMember
   useEffect(() => {
-    const {
-      streamUI,
-      teamMember: {isSelf, userId},
-      swarm
-    } = props
     if (!streamUI) return
     const {hasVideo} = streamUI
     if (hasVideo && swarm) {
@@ -62,12 +71,15 @@ const VideoAvatar = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
       }
     }
   })
-  const {streamUI, teamMember} = props
-  const {picture, isSelf} = teamMember
   const showVideo = streamUI ? streamUI.hasVideo : false
   return (
     <AvatarStyle ref={ref}>
-      <Picture src={picture} isHidden={showVideo} />
+      <Picture
+        src={picture}
+        isHidden={showVideo}
+        onTransitionEnd={onTransitionEnd}
+        status={status}
+      />
       <Video ref={videoRef} isHidden={!showVideo} autoPlay muted={isSelf} />
     </AvatarStyle>
   )
