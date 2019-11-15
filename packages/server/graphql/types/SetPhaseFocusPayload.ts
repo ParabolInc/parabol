@@ -17,7 +17,7 @@ const SetPhaseFocusPayload = new GraphQLObjectType({
     },
     reflectPhase: {
       type: new GraphQLNonNull(ReflectPhase),
-      resolve: async ({meetingId}, args, {authToken, dataLoader}) => {
+      resolve: async ({meetingId}, _args, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         return meeting.phases.find((phase) => phase.phaseType === REFLECT)
       }

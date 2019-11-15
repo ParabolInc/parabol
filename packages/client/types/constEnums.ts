@@ -127,6 +127,12 @@ export const enum LocalStorageKey {
 export const enum MathEnum {
   MAX_INT = 2147483647
 }
+
+export const enum MeetingSettingsDefaults {
+  RETROSPECTIVE_TOTAL_VOTES = 5,
+  RETROSPECTIVE_MAX_VOTES_PER_GROUP = 3
+}
+
 // equal to utils/constants
 export const enum MeetingTypes {
   ACTION = 'action',

@@ -2994,6 +2994,11 @@ export interface IMutation {
    * Rename a reflect template
    */
   renameReflectTemplatePrompt: IRenameReflectTemplatePromptPayload | null
+
+  /**
+   * Enabled or disable the check-in round
+   */
+  setCheckInEnabled: ISetCheckInEnabledPayload | null
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -3647,6 +3652,15 @@ export interface IRenameReflectTemplateOnMutationArguments {
 export interface IRenameReflectTemplatePromptOnMutationArguments {
   promptId: string
   question: string
+}
+
+export interface ISetCheckInEnabledOnMutationArguments {
+  settingsId: string
+
+  /**
+   * true to turn check-in phase on, false to turn it off
+   */
+  isEnabled: boolean
 }
 
 export interface IAcceptTeamInvitationPayload {
@@ -5934,6 +5948,12 @@ export interface IRenameReflectTemplatePromptPayload {
   prompt: IRetroPhaseItem | null
 }
 
+export interface ISetCheckInEnabledPayload {
+  __typename: 'SetCheckInEnabledPayload'
+  error: IStandardMutationError | null
+  settings: TeamMeetingSettings | null
+}
+
 export interface ISubscription {
   __typename: 'Subscription'
   notificationSubscription: NotificationSubscriptionPayload
@@ -6175,6 +6195,7 @@ export type TeamSubscriptionPayload =
   | IRemoveReflectTemplatePromptPayload
   | IRenameReflectTemplatePayload
   | IRenameReflectTemplatePromptPayload
+  | ISetCheckInEnabledPayload
   | IUpdateUserProfilePayload
 
 export interface IUpdateDragLocationPayload {

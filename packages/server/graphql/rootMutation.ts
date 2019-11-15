@@ -78,6 +78,7 @@ import setStageTimer from './mutations/setStageTimer'
 import pushInvitation from './mutations/pushInvitation'
 import denyPushInvitation from './mutations/denyPushInvitation'
 import payLater from './mutations/payLater'
+import setCheckInEnabled from './mutations/setCheckInEnabled'
 
 interface Context extends InternalContext, GQLContext {}
 
@@ -161,6 +162,7 @@ export default new GraphQLObjectType<any, Context, any>({
     removeReflectTemplate,
     removeReflectTemplatePrompt,
     renameReflectTemplate,
-    renameReflectTemplatePrompt
+    renameReflectTemplatePrompt,
+    setCheckInEnabled
   })
 })
