@@ -47,9 +47,7 @@ const StyledHeading = styled(MeetingPhaseHeading)({...textAlign})
 const StyledCopy = styled(MeetingCopy)({...textAlign})
 
 const UrlBlock = styled('div')({
-  margin: '3rem 0 0',
-  display: 'inline-block',
-  verticalAlign: 'middle'
+  margin: '48px 0 0 -36px' // hang icon
 })
 
 interface Props extends RetroMeetingPhaseProps {
@@ -125,6 +123,7 @@ const RetroLobby = (props: Props) => {
           </TemplatePickerBlock>
           <UrlBlock>
             <CopyShortLink
+              icon={'link'}
               url={makeHref(`/${meetingSlug}/${teamId}`)}
               title={'Copy Meeting Link'}
               tooltip={'Copied the meeting link!'}
