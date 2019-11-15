@@ -35,17 +35,18 @@ interface State {
   rawInvitees: string
 }
 
-const INVITE_DIALOG_WITH_ILLUS = 864
+const INVITE_DIALOG_BREAKPOINT = 864
+const INVITE_DIALOG_MEDIA_QUERY = `@media (min-width: ${INVITE_DIALOG_BREAKPOINT}px)`
 
 const StyledDialogContainer = styled(DialogContainer)({
   width: 480,
-  [`@media (min-width: ${INVITE_DIALOG_WITH_ILLUS}px)`]: {
+  [INVITE_DIALOG_MEDIA_QUERY]: {
     width: 816
   }
 })
 
 const StyledDialogTitle = styled(DialogTitle)({
-  [`@media (min-width: ${INVITE_DIALOG_WITH_ILLUS}px)`]: {
+  [INVITE_DIALOG_MEDIA_QUERY]: {
     fontSize: 24,
     lineHeight: '32px',
     marginBottom: 8,
@@ -55,7 +56,7 @@ const StyledDialogTitle = styled(DialogTitle)({
 })
 
 const StyledDialogContent = styled(DialogContent)({
-  [`@media (min-width: ${INVITE_DIALOG_WITH_ILLUS}px)`]: {
+  [INVITE_DIALOG_MEDIA_QUERY]: {
     alignItems: 'center',
     display: 'flex',
     padding: '16px 32px 32px'
@@ -63,15 +64,15 @@ const StyledDialogContent = styled(DialogContent)({
 })
 
 const Fields = styled('div')({
-  [`@media (min-width: ${INVITE_DIALOG_WITH_ILLUS}px)`]: {
-    maxWidth: 320,
-    marginRight: 32
+  [INVITE_DIALOG_MEDIA_QUERY]: {
+    maxWidth: 320
   }
 })
 
 const Illustration = styled('img')({
   display: 'block',
   flex: 1,
+  marginLeft: 32,
   marginTop: -60,
   maxWidth: 400
 })
@@ -109,10 +110,9 @@ const StyledCopyShortLink = styled(CopyShortLink)({
 })
 
 const IllustrationBlock = () => {
-  const showIllustration = useBreakpoint(INVITE_DIALOG_WITH_ILLUS)
-  const imageSrc =
-    'https://s3.amazonaws.com/action-files.parabol.co/static/illustrations/illus-momentum.png'
-  return <>{showIllustration && <Illustration alt='' src={imageSrc} />}</>
+  const showIllustration = useBreakpoint(INVITE_DIALOG_BREAKPOINT)
+  const imageSrc = `${__STATIC_IMAGES__}/illustrations/illus-momentum.png`
+  return showIllustration ? <Illustration alt='' src={imageSrc} /> : null
 }
 
 class AddTeamMemberModal extends Component<Props, State> {
