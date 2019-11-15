@@ -28,8 +28,8 @@ const StyledHeader = styled(PhaseHeaderTitle)({
   fontSize: 18
 })
 
-const getQuestion = (isCheckedIn, taskCount, preferredName) => {
-  if (isCheckedIn) {
+const getQuestion = (isConnected, taskCount, preferredName) => {
+  if (isConnected) {
     return taskCount > 0 ? 'what’s changed with your tasks?' : 'what are you working on?'
   }
   return taskCount > 0
@@ -45,9 +45,10 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
     (meetingMember) => meetingMember.teamMember.id === localStage.teamMemberId
   )
   if (!currentMeetingMember) return null
-  const {isCheckedIn, teamMember} = currentMeetingMember
+  const {teamMember, user} = currentMeetingMember
   const {isSelf: isMyMeetingSection, picture, preferredName} = teamMember
-  const prefix = isCheckedIn ? `${preferredName}, ` : ''
+  const {isConnected} = user
+  const prefix = isConnected ? `${preferredName}, ` : ''
   const taskCount = tasks.edges.length
   return (
     <StyledPrompt>
@@ -55,7 +56,7 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
       <PromptText>
         <StyledHeader>
           {prefix}
-          <i>{getQuestion(isCheckedIn, taskCount, preferredName)}</i>
+          <i>{getQuestion(isConnected, taskCount, preferredName)}</i>
         </StyledHeader>
         <PhaseHeaderDescription>
           {isMyMeetingSection && taskCount === 0 && 'Add cards to track your current work.'}
@@ -89,7 +90,9 @@ export default createFragmentContainer(ActionMeetingUpdatesPrompt, {
       }
       meetingMembers {
         ...ActionMeetingUpdatesPromptTeamHelpText_currentMeetingMember
-        isCheckedIn
+        user {
+          isConnected
+        }
         teamMember {
           id
           isSelf

@@ -18,6 +18,7 @@ import useToggleSidebar from './useToggleSidebar'
 import useHandleMenuClick from './useHandleMenuClick'
 import useMobileSidebarDefaultClosed from './useMobileSidebarDefaultClosed'
 import {useMeeting_meeting} from '__generated__/useMeeting_meeting.graphql'
+import useAutoCheckIn from './useAutoCheckIn'
 
 const useMeeting = (meetingRef: any) => {
   const meeting = readInlineData<useMeeting_meeting>(
@@ -28,6 +29,7 @@ const useMeeting = (meetingRef: any) => {
         ...useGotoPrev_meeting
         ...useMeetingLocalState_meeting
         ...useResumeFacilitation_meeting
+        ...useAutoCheckIn_meeting
         id
         meetingType
         showSidebar
@@ -56,6 +58,7 @@ const useMeeting = (meetingRef: any) => {
   const handleMenuClick = useHandleMenuClick(teamId, isDesktop)
   useMobileSidebarDefaultClosed(isDesktop, meetingId)
   const {streams, swarm} = useSwarm(teamId)
+  useAutoCheckIn(meeting)
   return {
     demoPortal,
     handleGotoNext,

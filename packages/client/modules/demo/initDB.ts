@@ -174,7 +174,6 @@ const initDemoMeetingMember = (user) => {
   return {
     __typename: 'RetrospectiveMeetingMember',
     id: toTeamMemberId(RetroDemo.MEETING_ID, user.id),
-    isCheckedIn: true,
     meetingId: RetroDemo.MEETING_ID,
     meetingType: RETROSPECTIVE,
     teamId: demoTeamId,

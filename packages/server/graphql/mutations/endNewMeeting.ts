@@ -97,8 +97,7 @@ const shuffleCheckInOrder = async (teamId: string) => {
           .table('TeamMember')
           .get(doc('id'))
           .update({
-            checkInOrder: arr.offsetsOf(doc).nth(0),
-            isCheckedIn: null
+            checkInOrder: arr.offsetsOf(doc).nth(0)
           })
       })
     )

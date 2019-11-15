@@ -24,11 +24,12 @@ const ActionMeetingUpdatesPromptTeamHelpText = (props: Props) => {
   const handleAgendaControl = () => {
     atmosphere.eventEmitter.emit('focusAgendaInput')
   }
-  const {teamMember, isCheckedIn} = currentMeetingMember
+  const {teamMember, user} = currentMeetingMember
+  const {isConnected} = user
   const {preferredName} = teamMember
   return (
     <span>
-      <span>{isCheckedIn === false ? '(' : `(${preferredName} is sharing. `}</span>
+      <span>{isConnected === false ? '(' : `(${preferredName} is sharing. `}</span>
       <AgendaControl onClick={handleAgendaControl}>{'Add agenda items'}</AgendaControl>
       {' for discussion.)'}
     </span>
@@ -38,7 +39,9 @@ const ActionMeetingUpdatesPromptTeamHelpText = (props: Props) => {
 export default createFragmentContainer(ActionMeetingUpdatesPromptTeamHelpText, {
   currentMeetingMember: graphql`
     fragment ActionMeetingUpdatesPromptTeamHelpText_currentMeetingMember on ActionMeetingMember {
-      isCheckedIn
+      user {
+        isConnected
+      }
       teamMember {
         preferredName
       }

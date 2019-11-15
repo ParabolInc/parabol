@@ -8,7 +8,6 @@ import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/
 import VoteForReflectionGroupMutation from '../mutations/VoteForReflectionGroupMutation'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import {meetingVoteIcon} from '../styles/meeting'
-import NewMeetingCheckInMutation from '../mutations/NewMeetingCheckInMutation'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
 import Icon from './Icon'
@@ -48,10 +47,7 @@ class ReflectionGroupVoting extends Component<Props> {
   vote = () => {
     const {atmosphere, meeting, onError, onCompleted, reflectionGroup, submitMutation} = this.props
 
-    const {
-      meetingId,
-      viewerMeetingMember: {isCheckedIn}
-    } = meeting
+    const {id: meetingId} = meeting
     const {id: reflectionGroupId} = reflectionGroup
     submitMutation()
     const handleCompleted = (res, errors) => {
@@ -65,27 +61,16 @@ class ReflectionGroupVoting extends Component<Props> {
         })
       }
     }
-    const sendVote = () =>
-      VoteForReflectionGroupMutation(
-        atmosphere,
-        {reflectionGroupId},
-        {onError, onCompleted: handleCompleted, meetingId}
-      )
-    if (!isCheckedIn) {
-      const {viewerId: userId} = atmosphere
-      NewMeetingCheckInMutation(
-        atmosphere,
-        {meetingId, userId, isCheckedIn: true},
-        {onError, onCompleted: sendVote}
-      )
-    } else {
-      sendVote()
-    }
+    VoteForReflectionGroupMutation(
+      atmosphere,
+      {reflectionGroupId},
+      {onError, onCompleted: handleCompleted, meetingId}
+    )
   }
 
   unvote = () => {
     const {atmosphere, meeting, onError, onCompleted, reflectionGroup, submitMutation} = this.props
-    const {meetingId, localStage} = meeting
+    const {id: meetingId, localStage} = meeting
     const {isComplete} = localStage!
     if (isComplete) return
     const {id: reflectionGroupId} = reflectionGroup
@@ -149,12 +134,9 @@ export default createFragmentContainer(withMutationProps(withAtmosphere(Reflecti
       localStage {
         isComplete
       }
-      meetingId: id
+      id
       viewerMeetingMember {
-        isCheckedIn
-        ... on RetrospectiveMeetingMember {
-          votesRemaining
-        }
+        votesRemaining
       }
       settings {
         maxVotesPerGroup
