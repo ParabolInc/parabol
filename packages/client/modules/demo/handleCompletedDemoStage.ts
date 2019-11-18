@@ -103,6 +103,9 @@ const handleCompletedDemoStage = async (db, stage) => {
   if (stage.phaseType === REFLECT) {
     const data = removeEmptyReflections(db)
     return {[REFLECT]: data, [GROUP]: null, [VOTE]: null}
+  } else if (stage.phaseType === GROUP) {
+    const data = removeEmptyReflections(db)
+    return {[REFLECT]: null, [GROUP]: data, [VOTE]: null}
   } else if (stage.phaseType === VOTE) {
     const data = addDiscussionTopics(db)
     return {[REFLECT]: null, [GROUP]: null, [VOTE]: data}

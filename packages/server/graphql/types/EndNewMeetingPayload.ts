@@ -32,6 +32,9 @@ const EndNewMeetingPayload = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLID,
       description: 'The ID of the suggestion to try a retro meeting, if tried'
     },
+    removedTaskIds: {
+      type: new GraphQLList(new GraphQLNonNull(GraphQLID))
+    },
     updatedTaskIds: {
       type: new GraphQLList(new GraphQLNonNull(GraphQLID))
     },

@@ -5000,6 +5000,7 @@ export interface IEndNewMeetingPayload {
    * The ID of the suggestion to try a retro meeting, if tried
    */
   removedSuggestedActionId: string | null
+  removedTaskIds: Array<string> | null
   updatedTaskIds: Array<string> | null
 
   /**
@@ -5059,11 +5060,16 @@ export interface IReflectPhaseCompletePayload {
   /**
    * a list of empty reflection groups to remove
    */
-  emptyReflectionGroupIds: Array<string | null> | null
+  emptyReflectionGroupIds: Array<string>
 }
 
 export interface IGroupPhaseCompletePayload {
   __typename: 'GroupPhaseCompletePayload'
+
+  /**
+   * a list of empty reflection groups to remove
+   */
+  emptyReflectionGroupIds: Array<string>
 
   /**
    * the current meeting

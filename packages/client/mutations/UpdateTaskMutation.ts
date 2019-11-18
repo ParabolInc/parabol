@@ -18,12 +18,14 @@ import {
 import {UpdateTaskMutation_task} from '../__generated__/UpdateTaskMutation_task.graphql'
 import {UpdateTaskMutation as TUpdateTaskMutation} from '../__generated__/UpdateTaskMutation.graphql'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
+import {ITask} from '../types/graphql'
 
 graphql`
   fragment UpdateTaskMutation_task on UpdateTaskPayload {
     task {
       # Entire frag needed in case it is deprivatized
       ...CompleteTaskFrag @relay(mask: false)
+      id
       editors {
         userId
         preferredName
@@ -81,7 +83,7 @@ export const updateTaskTaskUpdater: SharedUpdater<UpdateTaskMutation_task> = (pa
   const privatizedTaskId = payload.getValue('privatizedTaskId')
   const taskUserId = getInProxy(task, 'userId')
   if (taskUserId !== viewerId && privatizedTaskId) {
-    handleRemoveTasks(privatizedTaskId, store, viewerId)
+    handleRemoveTasks(privatizedTaskId, store)
   }
 }
 
@@ -99,6 +101,15 @@ const UpdateTaskMutation: StandardMutation<TUpdateTaskMutation> = (
     updater: (store) => {
       const payload = store.getRootField('updateTask')
       if (!payload) return
+      const error = payload.getLinkedRecord('error')
+      if (error) {
+        const {id: taskId} = updatedTask
+        const task = store.get<ITask>(taskId)
+        if (task) {
+          const message = error.getValue('message')
+          task.setValue(message, 'error')
+        }
+      }
       updateTaskTaskUpdater(payload, {atmosphere, store})
     },
     optimisticUpdater: (store) => {

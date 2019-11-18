@@ -33,9 +33,9 @@ const mutation = graphql`
   }
 `
 
-export const deleteTaskTaskUpdater = (payload, store, viewerId) => {
+export const deleteTaskTaskUpdater = (payload, store) => {
   const taskId = getInProxy(payload, 'task', 'id')
-  handleRemoveTasks(taskId, store, viewerId)
+  handleRemoveTasks(taskId, store)
 }
 
 export const deleteTaskNotificationUpdater = (payload, store) => {
@@ -45,7 +45,6 @@ export const deleteTaskNotificationUpdater = (payload, store) => {
 
 const DeleteTaskMutation = (environment, taskId, _teamId, onError?, onCompleted?) => {
   if (isTempId(taskId)) return undefined
-  const {viewerId} = environment
   return commitMutation(environment, {
     mutation,
     variables: {taskId},
@@ -53,10 +52,10 @@ const DeleteTaskMutation = (environment, taskId, _teamId, onError?, onCompleted?
       const payload = store.getRootField('deleteTask')
       if (!payload) return
       deleteTaskNotificationUpdater(payload, store)
-      deleteTaskTaskUpdater(payload, store, viewerId)
+      deleteTaskTaskUpdater(payload, store)
     },
     optimisticUpdater: (store) => {
-      handleRemoveTasks(taskId, store, viewerId)
+      handleRemoveTasks(taskId, store)
     },
     onError,
     onCompleted

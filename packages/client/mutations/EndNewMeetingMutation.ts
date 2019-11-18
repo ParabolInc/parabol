@@ -4,9 +4,11 @@ import getMeetingPathParams from '../utils/meetings/getMeetingPathParams'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 import Atmosphere from '../Atmosphere'
 import {IEndNewMeetingOnMutationArguments} from '../types/graphql'
-import {LocalHandlers} from '../types/relayMutations'
+import {LocalHandlers, SharedUpdater} from '../types/relayMutations'
 import {EndNewMeetingMutation as TEndNewMeetingMutation} from '../__generated__/EndNewMeetingMutation.graphql'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
+import {EndNewMeetingMutation_team} from '__generated__/EndNewMeetingMutation_team.graphql'
+import handleRemoveTasks from './handlers/handleRemoveTasks'
 
 graphql`
   fragment EndNewMeetingMutation_team on EndNewMeetingPayload {
@@ -24,6 +26,7 @@ graphql`
         id
       }
     }
+    removedTaskIds
     updatedTasks {
       content
       tags
@@ -85,9 +88,14 @@ export const endNewMeetingNotificationUpdater = (payload, {store}) => {
   handleRemoveSuggestedActions(removedSuggestedActionId, store)
 }
 
-export const endNewMeetingTeamUpdater = (payload, {store}) => {
+export const endNewMeetingTeamUpdater: SharedUpdater<EndNewMeetingMutation_team> = (
+  payload,
+  {store}
+) => {
   const updatedTasks = payload.getLinkedRecords('updatedTasks')
-  handleUpsertTasks(updatedTasks, store)
+  const removedTaskIds = payload.getValue('removedTaskIds')
+  handleRemoveTasks(removedTaskIds as any, store)
+  handleUpsertTasks(updatedTasks as any, store)
 }
 
 const EndNewMeetingMutation = (

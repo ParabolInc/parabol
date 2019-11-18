@@ -132,7 +132,7 @@ export const removeOrgUserTaskUpdater = (payload, store, viewerId) => {
   const tasks = payload.getLinkedRecords('updatedTasks')
   if (removedUserId === viewerId) {
     const taskIds = getInProxy(tasks, 'id')
-    handleRemoveTasks(taskIds, store, viewerId)
+    handleRemoveTasks(taskIds, store)
   } else {
     handleUpsertTasks(tasks, store)
   }

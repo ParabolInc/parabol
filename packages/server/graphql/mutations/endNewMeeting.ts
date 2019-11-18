@@ -27,6 +27,8 @@ import {ITask} from '../../../client/types/graphql'
 import findStageById from '../../../client/utils/meetings/findStageById'
 import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
 import {meetingTypeToLabel} from '../../../client/utils/meetings/lookups'
+import Task from '../../database/types/Task'
+import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 
 const timelineEventLookup = {
   [RETROSPECTIVE]: COMPLETED_RETRO_MEETING,
@@ -38,8 +40,8 @@ const suggestedActionLookup = {
   [ACTION]: 'tryActionMeeting'
 }
 
-type Task = Pick<ITask, 'id' | 'sortOrder'>
-const updateTaskSortOrders = async (userIds: string[], tasks: Task[]) => {
+type SortOrderTask = Pick<ITask, 'id' | 'sortOrder'>
+const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) => {
   const r = await getRethink()
   const taskMax = await r
     .table('Task')
@@ -103,6 +105,29 @@ const shuffleCheckInOrder = async (teamId: string) => {
       })
     )
     .run()
+}
+
+const removeEmptyTasks = async (teamId: string, meetingId: string) => {
+  const r = await getRethink()
+  const createdTasks = await r
+    .table<Task>('Task')
+    .getAll(teamId, {index: 'teamId'})
+    .filter({meetingId})
+    .run()
+
+  const removedTaskIds = createdTasks
+    .map((task) => ({
+      id: task.id,
+      plaintextContent: extractTextFromDraftString(task.content)
+    }))
+    .filter(({plaintextContent}) => plaintextContent.length === 0)
+    .map(({id}) => id)
+  await r
+    .table('Task')
+    .getAll(r.args(removedTaskIds))
+    .delete()
+    .run()
+  return removedTaskIds
 }
 
 const finishActionMeeting = async (meeting: Meeting, dataLoader: DataLoaderWorker) => {
@@ -223,6 +248,9 @@ export default {
         )('changes')(0)('new_val') as unknown) as Meeting
     }).run()
 
+    // remove any empty tasks
+    const removedTaskIds = removeEmptyTasks(teamId, meetingId)
+
     const meetingMembers = await dataLoader.get('meetingMembersByMeetingId').load(meetingId)
     const presentMembers = meetingMembers.filter(
       (meetingMember) => meetingMember.isCheckedIn === true
@@ -290,7 +318,13 @@ export default {
       }
     }
 
-    const data = {meetingId, teamId, isKill: getIsKill(meetingType, phase), updatedTaskIds}
+    const data = {
+      meetingId,
+      teamId,
+      isKill: getIsKill(meetingType, phase),
+      updatedTaskIds,
+      removedTaskIds
+    }
     publish(TEAM, teamId, EndNewMeetingPayload, data, subOptions)
     return data
   }
