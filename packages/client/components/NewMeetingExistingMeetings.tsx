@@ -13,8 +13,7 @@ const NewMeetingExistingMeetings = (props: Props) => {
   return `Existing meetings ${id}`
 }
 
-export default createFragmentContainer(
-  NewMeetingExistingMeetings, {
+export default createFragmentContainer(NewMeetingExistingMeetings, {
   viewer: graphql`
     fragment NewMeetingExistingMeetings_viewer on User {
       id

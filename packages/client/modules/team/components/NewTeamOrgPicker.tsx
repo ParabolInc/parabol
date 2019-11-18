@@ -44,14 +44,17 @@ const NewTeamOrgDropdown = lazyPreload(() =>
 const NewTeamOrgPicker = (props: Props) => {
   const {disabled, onChange, organizations, orgId} = props
   const sortedOrgs = useMemo(() => sortByTier(organizations), [organizations])
-  useEffect(() => {
-    const [firstOrg] = sortedOrgs
-    if (firstOrg) {
-      onChange(firstOrg.id)
-    }
-  }, [
-    /* eslint-disable-line react-hooks/exhaustive-deps*/
-  ])
+  useEffect(
+    () => {
+      const [firstOrg] = sortedOrgs
+      if (firstOrg) {
+        onChange(firstOrg.id)
+      }
+    },
+    [
+      /* eslint-disable-line react-hooks/exhaustive-deps*/
+    ]
+  )
   const orgIdx = orgId ? sortedOrgs.findIndex((org) => org.id === orgId) : 0
   const org = sortedOrgs[orgIdx]
   const defaultText = org ? org.name : NO_ORGS

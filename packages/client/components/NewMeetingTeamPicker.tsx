@@ -33,7 +33,7 @@ const SelectTeamDropdown = lazyPreload(() =>
   import(
     /* webpackChunkName: 'SelectTeamDropdown' */
     './SelectTeamDropdown'
-    )
+  )
 )
 
 const NewMeetingTeamPicker = (props: Props) => {
@@ -59,12 +59,12 @@ const NewMeetingTeamPicker = (props: Props) => {
         defaultText={
           <MenuToggleInner>
             <MenuToggleLabel>{name}</MenuToggleLabel>
-            {tier !== TierEnum.personal && <TierTag tier={tier as TierEnum}/>}
+            {tier !== TierEnum.personal && <TierTag tier={tier as TierEnum} />}
           </MenuToggleInner>
         }
       />
       {menuPortal(
-        <SelectTeamDropdown menuProps={menuProps} teams={teams} teamHandleClick={handleSelect}/>
+        <SelectTeamDropdown menuProps={menuProps} teams={teams} teamHandleClick={handleSelect} />
       )}
     </>
   )
