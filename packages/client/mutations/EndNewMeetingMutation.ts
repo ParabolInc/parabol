@@ -110,7 +110,7 @@ const EndNewMeetingMutation = (
       const payload = store.getRootField('endNewMeeting')
       if (!payload) return
       endNewMeetingNotificationUpdater(payload, {store})
-      endNewMeetingTeamUpdater(payload, {store})
+      endNewMeetingTeamUpdater(payload, {atmosphere, store})
     },
     onCompleted: (res, errors) => {
       if (onCompleted) {

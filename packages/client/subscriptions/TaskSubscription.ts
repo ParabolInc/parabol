@@ -56,7 +56,7 @@ const TaskSubscription = (
           createTaskTaskUpdater(payload, context)
           break
         case 'DeleteTaskPayload':
-          deleteTaskTaskUpdater(payload, store, viewerId)
+          deleteTaskTaskUpdater(payload, store)
           break
         case 'EditTaskPayload':
           editTaskTaskUpdater(payload, store)

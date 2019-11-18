@@ -43,7 +43,7 @@ const MessageCloseIcon = styled(Icon)({
 })
 
 interface Props {
-  onClose: () => void
+  onClose: (...args: any[]) => void
   message: string
 }
 
