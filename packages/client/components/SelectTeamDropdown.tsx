@@ -10,7 +10,7 @@ import {SelectTeamDropdown_teams} from '__generated__/SelectTeamDropdown_teams.g
 
 interface Props {
   menuProps: MenuProps
-  teamHandleClick: (teamId: string) => () => void
+  teamHandleClick: (teamId: string, e: React.MouseEvent) => void
   teams: SelectTeamDropdown_teams
 }
 
@@ -24,7 +24,7 @@ const SelectTeamDropdown = (props: Props) => {
           <MenuItem
             key={team.id}
             label={<DropdownMenuItemLabel>{team.name}</DropdownMenuItemLabel>}
-            onClick={teamHandleClick(team.id)}
+            onClick={(e) => teamHandleClick(team.id, e)}
           />
         )
       })}

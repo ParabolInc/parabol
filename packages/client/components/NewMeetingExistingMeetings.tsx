@@ -1,0 +1,28 @@
+import {createFragmentContainer} from 'react-relay'
+import React from 'react'
+import graphql from 'babel-plugin-relay/macro'
+import {NewMeetingExistingMeetings_viewer} from '__generated__/NewMeetingExistingMeetings_viewer.graphql'
+
+interface Props {
+  viewer: NewMeetingExistingMeetings_viewer
+}
+
+const NewMeetingExistingMeetings = (props: Props) => {
+  const {viewer} = props
+  const {id} = viewer
+  return `Existing meetings ${id}`
+}
+
+export default createFragmentContainer(
+  NewMeetingExistingMeetings, {
+  viewer: graphql`
+    fragment NewMeetingExistingMeetings_viewer on User {
+      id
+      teams {
+        activeMeetings {
+          id
+        }
+      }
+    }
+  `
+})

@@ -29,7 +29,7 @@ const TaskColumnAddTaskSelectTeam = (props: Props) => {
   const label = taskStatusLabels[status]
   const atmosphere = useAtmosphere()
   const {menuProps, originRef, menuPortal, togglePortal} = useMenu(MenuPosition.UPPER_LEFT)
-  const teamHandleClick = (teamId) => () => {
+  const teamHandleClick = (teamId: string) => {
     CreateTaskMutation(
       atmosphere,
       {
