@@ -32,9 +32,11 @@ interface Props {
 const getReadOnly = (
   reflection: {id: string; isViewerCreator: boolean | null; isEditing: boolean | null},
   phaseType: NewMeetingPhaseTypeEnum,
-  stackCount: number | undefined
+  stackCount: number | undefined,
+  phases: any | null
 ) => {
   const {isViewerCreator, isEditing, id} = reflection
+  if (phases && isPhaseComplete(NewMeetingPhaseTypeEnum.group, phases)) return true
   if (!isViewerCreator || isTempId(id)) return true
   if (phaseType === NewMeetingPhaseTypeEnum.reflect) return stackCount && stackCount > 1
   if (phaseType === NewMeetingPhaseTypeEnum.group && isEditing) return false
@@ -137,9 +139,7 @@ const ReflectionCard = (props: Props) => {
     }
   }
 
-  const votePhaseReached = phases && isPhaseComplete(NewMeetingPhaseTypeEnum.group, phases)
-  const readOnly =
-    votePhaseReached || getReadOnly(reflection, phaseType as NewMeetingPhaseTypeEnum, stackCount)
+  const readOnly = getReadOnly(reflection, phaseType as NewMeetingPhaseTypeEnum, stackCount, phases)
   const userSelect = readOnly
     ? phaseType === NewMeetingPhaseTypeEnum.discuss
       ? 'text'
