@@ -13,6 +13,8 @@ import MediaSwarm from '../../../../utils/swarm/MediaSwarm'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {meetingAvatarMediaQueries} from '../../../../styles/meeting'
 import {Breakpoint} from '../../../../types/constEnums'
+import useTransition, {TransitionStatus} from '../../../../hooks/useTransition'
+import {DECELERATE} from '../../../../styles/animation'
 
 const MeetingAvatarGroupRoot = styled('div')({
   alignItems: 'center',
@@ -39,7 +41,9 @@ const OverlappingBlock = styled('div')({
   }
 })
 
-const OverflowCount = styled('div')({
+const OverflowCount = styled('div')<{status: TransitionStatus}>(({status}) => ({
+  opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
+  transition: `all 300ms ${DECELERATE}`,
   backgroundColor: PALETTE.BACKGROUND_BLUE,
   borderRadius: '100%',
   color: '#FFFFFF',
@@ -62,12 +66,12 @@ const OverflowCount = styled('div')({
   },
   [meetingAvatarMediaQueries[1]]: {
     fontSize: 16,
-    height: 56,
+    height: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 8 : 56,
     lineHeight: '56px',
     maxWidth: 56,
-    width: 56
+    width: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 8 : 56
   }
-})
+}))
 
 interface Props {
   team: NewMeetingAvatarGroup_team
@@ -78,6 +82,7 @@ interface Props {
 
 const MAX_AVATARS_DESKTOP = 7
 const MAX_AVATARS_MOBILE = 3
+const OVERFLOW_AVATAR = {key: 'overflow'}
 const NewMeetingAvatarGroup = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -89,11 +94,22 @@ const NewMeetingAvatarGroup = (props: Props) => {
   const connectedTeamMembers = useMemo(() => {
     return teamMembers
       .filter(({user}) => user.isConnected)
-      .sort((a, b) => (a.userId === viewerId ? -1 : a.checkInOrder < b.checkInOrder ? -1 : 1))
+      .sort((a, b) =>
+        a.userId === viewerId ? -1 : a.user.lastSeenAt! < b.user.lastSeenAt! ? -1 : 1
+      )
+      .map((tm) => ({
+        ...tm,
+        key: tm.userId
+      }))
   }, [teamMembers])
   const overflowThreshold = isDesktop ? MAX_AVATARS_DESKTOP : MAX_AVATARS_MOBILE
   const visibleConnectedTeamMembers = connectedTeamMembers.slice(0, overflowThreshold)
   const hiddenTeamMemberCount = connectedTeamMembers.length - visibleConnectedTeamMembers.length
+  const allAvatars =
+    hiddenTeamMemberCount === 0
+      ? visibleConnectedTeamMembers
+      : visibleConnectedTeamMembers.concat(OVERFLOW_AVATAR as any)
+  const tranChildren = useTransition(allAvatars)
   return (
     <MeetingAvatarGroupRoot>
       <VideoControls
@@ -101,22 +117,30 @@ const NewMeetingAvatarGroup = (props: Props) => {
         swarm={swarm}
         localStreamUI={camStreams[atmosphere.viewerId]}
       />
-      {visibleConnectedTeamMembers.map((teamMember) => {
+
+      {tranChildren.map((teamMember) => {
+        if (teamMember.child.key === 'overflow') {
+          return (
+            <OverlappingBlock key={'overflow'}>
+              <OverflowCount
+                status={teamMember.status}
+                onTransitionEnd={teamMember.onTransitionEnd}
+              >{`+${hiddenTeamMemberCount}`}</OverflowCount>
+            </OverlappingBlock>
+          )
+        }
         return (
-          <OverlappingBlock key={teamMember.id}>
+          <OverlappingBlock key={teamMember.child.id}>
             <NewMeetingAvatar
-              teamMember={teamMember}
-              streamUI={camStreams[teamMember.userId]}
+              teamMember={teamMember.child}
+              onTransitionEnd={teamMember.onTransitionEnd}
+              status={teamMember.status}
+              streamUI={camStreams[teamMember.child.userId]}
               swarm={swarm}
             />
           </OverlappingBlock>
         )
       })}
-      {hiddenTeamMemberCount > 0 && (
-        <OverlappingBlock>
-          <OverflowCount>{`+${hiddenTeamMemberCount}`}</OverflowCount>
-        </OverlappingBlock>
-      )}
       <OverlappingBlock>
         <AddTeamMemberAvatarButton isMeeting team={team} teamMembers={teamMembers} />
       </OverlappingBlock>
@@ -134,6 +158,7 @@ export default createFragmentContainer(NewMeetingAvatarGroup, {
         checkInOrder
         user {
           isConnected
+          lastSeenAt
         }
         userId
         ...NewMeetingAvatar_teamMember

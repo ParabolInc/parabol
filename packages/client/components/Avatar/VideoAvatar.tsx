@@ -44,12 +44,9 @@ interface Props {
 
 const VideoAvatar = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
   const videoRef = useRef<HTMLVideoElement>(null)
+  const {streamUI, teamMember, swarm} = props
+  const {isSelf, picture, userId} = teamMember
   useEffect(() => {
-    const {
-      streamUI,
-      teamMember: {isSelf, userId},
-      swarm
-    } = props
     if (!streamUI) return
     const {hasVideo} = streamUI
     if (hasVideo && swarm) {
@@ -62,8 +59,6 @@ const VideoAvatar = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
       }
     }
   })
-  const {streamUI, teamMember} = props
-  const {picture, isSelf} = teamMember
   const showVideo = streamUI ? streamUI.hasVideo : false
   return (
     <AvatarStyle ref={ref}>
