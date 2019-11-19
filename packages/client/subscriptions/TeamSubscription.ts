@@ -181,7 +181,7 @@ const TeamSubscription = (
           removeReflectTemplatePromptTeamUpdater(payload, context)
           break
         case 'RemoveReflectionPayload':
-          removeReflectionTeamUpdater(payload, store)
+          removeReflectionTeamUpdater(payload, context)
           break
         case 'RemoveTeamMemberPayload':
           removeTeamMemberTeamUpdater(payload, store, viewerId)
