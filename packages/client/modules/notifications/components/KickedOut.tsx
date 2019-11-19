@@ -18,7 +18,7 @@ interface Props {
 const KickedOut = (props: Props) => {
   const {notification} = props
   const {submitting, submitMutation, onError, onCompleted, error} = useMutationProps()
-  const {notificationId, team} = notification
+  const {id: notificationId, team} = notification
   const {name: teamName} = team
   const atmosphere = useAtmosphere()
   const acknowledge = () => {
@@ -44,7 +44,7 @@ const KickedOut = (props: Props) => {
 export default createFragmentContainer(KickedOut, {
   notification: graphql`
     fragment KickedOut_notification on NotifyKickedOut {
-      notificationId: id
+      id
       team {
         id
         name

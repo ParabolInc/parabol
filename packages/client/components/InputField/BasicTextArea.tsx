@@ -7,7 +7,7 @@ import ui from '../../styles/ui'
 const TextArea = styled('textarea')({
   ...ui.fieldBaseStyles,
   ...ui.fieldSizeStyles.medium,
-  ...makeFieldColorPalette('gray'),
+  ...makeFieldColorPalette('white'),
   minHeight: '5.75rem'
 })
 

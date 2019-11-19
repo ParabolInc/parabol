@@ -13,7 +13,6 @@ import LabelHeading from '../../../../components/LabelHeading/LabelHeading'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import {PALETTE} from '../../../../styles/paletteV2'
-import {Breakpoint} from '../../../../types/constEnums'
 import lazyPreload from '../../../../utils/lazyPreload'
 import graphql from 'babel-plugin-relay/macro'
 import {ClassNames} from '@emotion/core'
@@ -31,10 +30,7 @@ const DashHeading = styled('div')({
   color: PALETTE.TEXT_MAIN,
   fontSize: 24,
   fontWeight: 600,
-  lineHeight: '1.25',
-  [`@media (min-width: ${Breakpoint.DASHBOARD_WIDE})`]: {
-    fontSize: 34
-  }
+  lineHeight: '1.25'
 })
 
 const orgLinkStyles = {

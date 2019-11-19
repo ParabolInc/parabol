@@ -2994,6 +2994,11 @@ export interface IMutation {
    * Rename a reflect template
    */
   renameReflectTemplatePrompt: IRenameReflectTemplatePromptPayload | null
+
+  /**
+   * Enabled or disable the check-in round
+   */
+  setCheckInEnabled: ISetCheckInEnabledPayload | null
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -3649,6 +3654,15 @@ export interface IRenameReflectTemplatePromptOnMutationArguments {
   question: string
 }
 
+export interface ISetCheckInEnabledOnMutationArguments {
+  settingsId: string
+
+  /**
+   * true to turn check-in phase on, false to turn it off
+   */
+  isEnabled: boolean
+}
+
 export interface IAcceptTeamInvitationPayload {
   __typename: 'AcceptTeamInvitationPayload'
   error: IStandardMutationError | null
@@ -3798,6 +3812,11 @@ export interface IAddOrgPayload {
   __typename: 'AddOrgPayload'
   organization: IOrganization | null
   error: IStandardMutationError | null
+
+  /**
+   * The new auth token sent to the mutator
+   */
+  authToken: string | null
   team: ITeam | null
 
   /**
@@ -3814,6 +3833,11 @@ export interface IAddOrgPayload {
 export interface IAddTeamPayload {
   __typename: 'AddTeamPayload'
   error: IStandardMutationError | null
+
+  /**
+   * The new auth token sent to the mutator
+   */
+  authToken: string | null
   team: ITeam | null
 
   /**
@@ -5934,6 +5958,12 @@ export interface IRenameReflectTemplatePromptPayload {
   prompt: IRetroPhaseItem | null
 }
 
+export interface ISetCheckInEnabledPayload {
+  __typename: 'SetCheckInEnabledPayload'
+  error: IStandardMutationError | null
+  settings: TeamMeetingSettings | null
+}
+
 export interface ISubscription {
   __typename: 'Subscription'
   notificationSubscription: NotificationSubscriptionPayload
@@ -6175,6 +6205,7 @@ export type TeamSubscriptionPayload =
   | IRemoveReflectTemplatePromptPayload
   | IRenameReflectTemplatePayload
   | IRenameReflectTemplatePromptPayload
+  | ISetCheckInEnabledPayload
   | IUpdateUserProfilePayload
 
 export interface IUpdateDragLocationPayload {

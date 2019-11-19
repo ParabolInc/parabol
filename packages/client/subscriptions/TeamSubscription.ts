@@ -68,6 +68,7 @@ const subscription = graphql`
       ...RenameReflectTemplateMutation_team @relay(mask: false)
       ...RenameReflectTemplatePromptMutation_team @relay(mask: false)
       ...SelectRetroTemplateMutation_team @relay(mask: false)
+      ...SetCheckInEnabledMutation_team @relay(mask: false)
       ...SetPhaseFocusMutation_team @relay(mask: false)
       ...SetStageTimerMutation_team @relay(mask: false)
       ...StartDraggingReflectionMutation_team @relay(mask: false)
@@ -181,7 +182,7 @@ const TeamSubscription = (
           removeReflectTemplatePromptTeamUpdater(payload, context)
           break
         case 'RemoveReflectionPayload':
-          removeReflectionTeamUpdater(payload, store)
+          removeReflectionTeamUpdater(payload, context)
           break
         case 'RemoveTeamMemberPayload':
           removeTeamMemberTeamUpdater(payload, store, viewerId)

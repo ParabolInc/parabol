@@ -49,6 +49,7 @@ import SetStageTimerPayload from './SetStageTimerPayload'
 import UpdateUserProfilePayload from './UpdateUserProfilePayload'
 import PushInvitationPayload from './PushInvitationPayload'
 import DenyPushInvitationPayload from './DenyPushInvitationPayload'
+import SetCheckInEnabledPayload from './SetCheckInEnabledPayload'
 
 const types = [
   AcceptTeamInvitationPayload,
@@ -100,6 +101,7 @@ const types = [
   RemoveReflectTemplatePromptPayload,
   RenameReflectTemplatePayload,
   RenameReflectTemplatePromptPayload,
+  SetCheckInEnabledPayload,
   UpdateUserProfilePayload
 ]
 

@@ -124,7 +124,7 @@ export default {
     }
 
     const {errors, data: payload} = createIssueRes
-    if (!payload || !payload.createIssue) {
+    if (!payload || !payload.createIssue || !payload.createIssue.issue) {
       return {error: errors![0]}
     }
     const {createIssue} = payload

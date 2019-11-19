@@ -15,6 +15,8 @@ import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import AuthTokenPayload from '../types/AuthTokenPayload'
+import encodeAuthToken from '../../utils/encodeAuthToken'
+import AuthToken from '../../database/types/AuthToken'
 
 export default {
   type: new GraphQLNonNull(AddOrgPayload),
@@ -76,7 +78,10 @@ export default {
       }
       publish(SubscriptionChannel.ORGANIZATION, viewerId, AddOrgPayload, data, subOptions)
 
-      return data
+      return {
+        ...data,
+        authToken: encodeAuthToken(new AuthToken({tms, sub: viewerId}))
+      }
     }
   )
 }

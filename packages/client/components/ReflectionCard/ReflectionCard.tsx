@@ -76,7 +76,7 @@ const ReflectionCard = (props: Props) => {
       if (!editorEl || editorEl.type !== 'textarea') return
       const {value} = editorEl
       if (!value) {
-        RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId}, onError, onCompleted)
+        RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId, onError, onCompleted})
       } else {
         const initialContentState = editorState.getCurrentContent()
         const initialText = initialContentState.getPlainText()
@@ -112,7 +112,7 @@ const ReflectionCard = (props: Props) => {
       })
     } else {
       submitMutation()
-      RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId}, onError, onCompleted)
+      RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId, onError, onCompleted})
     }
   }
 
