@@ -1,3 +1,3 @@
 require('../babelRegister')
 
-require('./debug.js')
+require('./debug.ts')

@@ -242,14 +242,14 @@ class NewTeamForm extends Component<Props, State> {
       }
       const variables = {newTeam, orgName}
       submitMutation()
-      AddOrgMutation(atmosphere, variables, {history}, onError, onCompleted)
+      AddOrgMutation(atmosphere, variables, {history, onError, onCompleted})
     } else {
       const newTeam = {
         name: teamRes.value,
         orgId
       }
       submitMutation()
-      AddTeamMutation(atmosphere, {newTeam}, {history}, onError, onCompleted)
+      AddTeamMutation(atmosphere, {newTeam}, {onError, onCompleted, history})
     }
   }
 

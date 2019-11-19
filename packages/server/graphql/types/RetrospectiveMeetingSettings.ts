@@ -13,7 +13,7 @@ const RetrospectiveMeetingSettings = new GraphQLObjectType({
     phaseItems: {
       type: new GraphQLList(new GraphQLNonNull(CustomPhaseItem)),
       description: 'the team-specific questions to ask during a retro',
-      resolve: async ({teamId}, args, {dataLoader}) => {
+      resolve: async ({teamId}, _args, {dataLoader}) => {
         // this isn't too useful for retros since it isn't filtered by templateId
         const customPhaseItems = await dataLoader.get('customPhaseItemsByTeamId').load(teamId)
         return customPhaseItems.filter(({phaseItemType}) => phaseItemType === RETRO_PHASE_ITEM)

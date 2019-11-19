@@ -3812,6 +3812,11 @@ export interface IAddOrgPayload {
   __typename: 'AddOrgPayload'
   organization: IOrganization | null
   error: IStandardMutationError | null
+
+  /**
+   * The new auth token sent to the mutator
+   */
+  authToken: string | null
   team: ITeam | null
 
   /**
@@ -3828,6 +3833,11 @@ export interface IAddOrgPayload {
 export interface IAddTeamPayload {
   __typename: 'AddTeamPayload'
   error: IStandardMutationError | null
+
+  /**
+   * The new auth token sent to the mutator
+   */
+  authToken: string | null
   team: ITeam | null
 
   /**
