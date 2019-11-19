@@ -243,13 +243,9 @@ export default createFragmentContainer(RetroVotePhase, {
         }
       }
       viewerMeetingMember {
-        ... on RetrospectiveMeetingMember {
-          votesRemaining
-        }
-      }
-      ... on RetrospectiveMeeting {
         votesRemaining
       }
+      votesRemaining
     }
   `
 })

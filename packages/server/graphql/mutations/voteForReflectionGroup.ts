@@ -63,10 +63,6 @@ export default {
     if (!meetingMember) {
       return standardError(new Error('Meeting member not found'), {userId: viewerId})
     }
-    const {isCheckedIn} = meetingMember
-    if (!isCheckedIn) {
-      return standardError(new Error('Meeting member not checked in'), {userId: viewerId})
-    }
 
     // RESOLUTION
     if (isUnvote) {
