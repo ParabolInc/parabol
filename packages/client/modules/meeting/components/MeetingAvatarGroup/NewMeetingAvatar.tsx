@@ -15,7 +15,7 @@ const Item = styled('div')({
   position: 'relative'
 })
 
-const AvatarBlock = styled('div')(({status}) => ({
+const AvatarBlock = styled('div')<{status: TransitionStatus}>(({status}) => ({
   opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
   transition: `all 300ms ${DECELERATE}`,
   borderRadius: '100%',
@@ -35,6 +35,8 @@ const AvatarBlock = styled('div')(({status}) => ({
 }))
 
 interface Props {
+  onTransitionEnd: () => void
+  status: TransitionStatus
   teamMember: NewMeetingAvatar_teamMember
   streamUI: StreamUI | undefined
   swarm: MediaSwarm | null

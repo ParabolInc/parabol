@@ -13,9 +13,6 @@ import MediaSwarm from '../../../../utils/swarm/MediaSwarm'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {meetingAvatarMediaQueries} from '../../../../styles/meeting'
 import {Breakpoint} from '../../../../types/constEnums'
-import useHotkey from '../../../../hooks/useHotkey'
-import useForceUpdate from '../../../../hooks/useForceUpdate'
-import {commitLocalUpdate} from 'relay-runtime'
 import useTransition, {TransitionStatus} from '../../../../hooks/useTransition'
 import {DECELERATE} from '../../../../styles/animation'
 
@@ -44,7 +41,7 @@ const OverlappingBlock = styled('div')({
   }
 })
 
-const OverflowCount = styled('div')(({status}) => ({
+const OverflowCount = styled('div')<{status: TransitionStatus}>(({status}) => ({
   opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
   transition: `all 300ms ${DECELERATE}`,
   backgroundColor: PALETTE.BACKGROUND_BLUE,
@@ -83,34 +80,23 @@ interface Props {
   allowVideo: boolean
 }
 
-const MAX_AVATARS_DESKTOP = 3
+const MAX_AVATARS_DESKTOP = 7
 const MAX_AVATARS_MOBILE = 3
+const OVERFLOW_AVATAR = {key: 'overflow'}
 const NewMeetingAvatarGroup = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {swarm, team, camStreams, allowVideo} = props
   const {teamMembers} = team
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
-  const forceUpdate = useForceUpdate()
-  const connector = (userId) => () => {
-    commitLocalUpdate(atmosphere, (store) => {
-      const userP = store.get(userId)
-      userP.setValue(!userP.getValue('isConnected'), 'isConnected')
-      userP.setValue(Date.now(), 'lastSeenAt')
-    })
-    forceUpdate()
-  }
-  useHotkey('1', connector('google-oauth2|108848476822908708026'))
-  useHotkey('2', connector('auth0|57f52755a5ec618828a1c1e4'))
-  useHotkey('3', connector('google-oauth2|112540584686400405659'))
-  useHotkey('4', connector('google-oauth2|104933228229706489335'))
-
   // all connected teamMembers except self
   // TODO: filter by team members who are actually viewing “this” meeting view
   const connectedTeamMembers = useMemo(() => {
     return teamMembers
       .filter(({user}) => user.isConnected)
-      .sort((a, b) => (a.userId === viewerId ? -1 : a.user.lastSeenAt < b.user.lastSeenAt ? -1 : 1))
+      .sort((a, b) =>
+        a.userId === viewerId ? -1 : a.user.lastSeenAt! < b.user.lastSeenAt! ? -1 : 1
+      )
       .map((tm) => ({
         ...tm,
         key: tm.userId
@@ -122,7 +108,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
   const allAvatars =
     hiddenTeamMemberCount === 0
       ? visibleConnectedTeamMembers
-      : visibleConnectedTeamMembers.concat({key: 'overflow'})
+      : visibleConnectedTeamMembers.concat(OVERFLOW_AVATAR as any)
   const tranChildren = useTransition(allAvatars)
   return (
     <MeetingAvatarGroupRoot>

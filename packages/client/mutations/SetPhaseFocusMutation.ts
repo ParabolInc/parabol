@@ -1,5 +1,8 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {StandardMutation} from '../types/relayMutations'
+import {SetPhaseFocusMutation as TSetPhaseFocusMutation} from '../__generated__/SetPhaseFocusMutation.graphql'
+import {IReflectPhase} from '../types/graphql'
 
 graphql`
   fragment SetPhaseFocusMutation_team on SetPhaseFocusPayload {
@@ -16,17 +19,22 @@ const mutation = graphql`
     }
   }
 `
+interface LocalHanders {
+  phaseId: string
+}
 
-const SetPhaseFocusMutation = (atmosphere, variables, context, onError, onCompleted) => {
-  return commitMutation(atmosphere, {
+const SetPhaseFocusMutation: StandardMutation<TSetPhaseFocusMutation, LocalHanders> = (
+  atmosphere,
+  variables,
+  {phaseId}
+) => {
+  return commitMutation<TSetPhaseFocusMutation>(atmosphere, {
     mutation,
     variables,
-    onCompleted,
-    onError,
     optimisticUpdater: (store) => {
       const {focusedPhaseItemId} = variables
-      const {phaseId} = context
-      const phase = store.get(phaseId)
+      const phase = store.get<IReflectPhase>(phaseId)
+      if (!phase) return
       phase.setValue(focusedPhaseItemId, 'focusedPhaseItemId')
     }
   })
