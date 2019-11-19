@@ -6,6 +6,9 @@ import {ACTION, RETROSPECTIVE} from '../../../client/utils/constants'
 import RetrospectiveMeetingMember from './RetrospectiveMeetingMember'
 import {resolveUser} from '../resolvers'
 import User from './User'
+import TeamMember from './TeamMember'
+import {GQLContext} from '../graphql'
+import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 
 export const meetingMemberFields = () => ({
   id: {
@@ -24,6 +27,13 @@ export const meetingMemberFields = () => ({
   },
   teamId: {
     type: new GraphQLNonNull(GraphQLID)
+  },
+  teamMember: {
+    type: new GraphQLNonNull(TeamMember),
+    resolve: ({teamId, userId}, _args, {dataLoader}: GQLContext) => {
+      const teamMemberId = toTeamMemberId(teamId, userId)
+      return dataLoader.get('teamMembers').load(teamMemberId)
+    }
   },
   user: {
     type: new GraphQLNonNull(User),

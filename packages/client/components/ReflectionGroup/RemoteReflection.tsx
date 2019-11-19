@@ -119,13 +119,20 @@ const RemoteReflection = (props: Props) => {
     NonNullable<RemoteReflection_reflection['remoteDrag']>
   >
   const ref = useRef<HTMLDivElement>(null)
-
+  const cAFRef = useRef(0)
+  useEffect(() => {
+    return () => {
+      cancelAnimationFrame(cAFRef.current)
+    }
+  }, [])
   const [editorState] = useEditorState(content)
   const forceUpdate = useForceUpdate()
   useEffect(() => {
     // continuously update the position if dropping animation has begun
     if (isDropping) {
-      forceUpdate()
+      cAFRef.current = requestAnimationFrame(() => {
+        forceUpdate()
+      })
     }
   })
   const timeoutRef = useRef(0)

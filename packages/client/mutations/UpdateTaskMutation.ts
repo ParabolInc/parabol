@@ -10,15 +10,17 @@ import updateProxyRecord from '../utils/relay/updateProxyRecord'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
 import ContentFilterHandler from '../utils/relay/ContentFilterHandler'
 import {
-  LocalHandlers,
   OnNextHandler,
-  SharedUpdater,
-  StandardMutation
+  OnNextHistoryContext,
+  OptionalHandlers,
+  SharedUpdater
 } from '../types/relayMutations'
 import {UpdateTaskMutation_task} from '../__generated__/UpdateTaskMutation_task.graphql'
 import {UpdateTaskMutation as TUpdateTaskMutation} from '../__generated__/UpdateTaskMutation.graphql'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
 import {ITask} from '../types/graphql'
+import Atmosphere from '../Atmosphere'
+import {IUpdateTaskOnMutationArguments} from '../types/graphql'
 
 graphql`
   fragment UpdateTaskMutation_task on UpdateTaskPayload {
@@ -56,7 +58,7 @@ const mutation = graphql`
   }
 `
 
-export const updateTaskTaskOnNext: OnNextHandler<UpdateTaskMutation_task> = (
+export const updateTaskTaskOnNext: OnNextHandler<UpdateTaskMutation_task, OnNextHistoryContext> = (
   payload,
   {atmosphere, history}
 ) => {
@@ -87,10 +89,10 @@ export const updateTaskTaskUpdater: SharedUpdater<UpdateTaskMutation_task> = (pa
   }
 }
 
-const UpdateTaskMutation: StandardMutation<TUpdateTaskMutation> = (
-  atmosphere,
-  {updatedTask, area},
-  {onCompleted, onError}: LocalHandlers = {}
+const UpdateTaskMutation = (
+  atmosphere: Atmosphere,
+  {updatedTask, area}: IUpdateTaskOnMutationArguments,
+  {onCompleted, onError}: OptionalHandlers = {}
 ) => {
   return commitMutation<TUpdateTaskMutation>(atmosphere, {
     mutation,

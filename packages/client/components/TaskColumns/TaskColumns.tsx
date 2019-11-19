@@ -14,6 +14,7 @@ import useEventCallback from '../../hooks/useEventCallback'
 import dndNoise from '../../utils/dndNoise'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import UpdateTaskMutation from '../../mutations/UpdateTaskMutation'
+import {TaskColumns_teams} from '__generated__/TaskColumns_teams.graphql'
 
 const ColumnsBlock = styled('div')({
   display: 'flex',
@@ -33,7 +34,7 @@ interface Props {
   myTeamMemberId?: string
   tasks: TaskColumns_tasks
   teamMemberFilterId?: string | null
-  teams?: any
+  teams: TaskColumns_teams | null
 }
 
 const TaskColumns = (props: Props) => {
@@ -110,6 +111,11 @@ export default createFragmentContainer(TaskColumns, {
       ...TaskColumn_tasks
       status
       sortOrder
+    }
+  `,
+  teams: graphql`
+    fragment TaskColumns_teams on Team @relay(plural: true) {
+      ...TaskColumn_teams
     }
   `
 })

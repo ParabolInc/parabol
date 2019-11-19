@@ -4,7 +4,7 @@ import handleAddNotifications from './handlers/handleAddNotifications'
 import handleAddOrganization from './handlers/handleAddOrganization'
 import handleRemoveNotifications from './handlers/handleRemoveNotifications'
 import getInProxy from '../utils/relay/getInProxy'
-import {OnNextHandler} from '../types/relayMutations'
+import {OnNextHandler, OnNextHistoryContext} from '../types/relayMutations'
 import {SetOrgUserRoleMutationAdded_organization} from '../__generated__/SetOrgUserRoleMutationAdded_organization.graphql'
 
 graphql`
@@ -56,10 +56,10 @@ const mutation = graphql`
   }
 `
 
-export const setOrgUserRoleAddedOrganizationOnNext: OnNextHandler<SetOrgUserRoleMutationAdded_organization> = (
-  payload,
-  {atmosphere, history}
-) => {
+export const setOrgUserRoleAddedOrganizationOnNext: OnNextHandler<
+  SetOrgUserRoleMutationAdded_organization,
+  OnNextHistoryContext
+> = (payload, {atmosphere, history}) => {
   if (!payload || !payload.organization) return
   const {id: orgId, name: orgName} = payload.organization
   atmosphere.eventEmitter.emit('addSnackbar', {

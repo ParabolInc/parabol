@@ -32,7 +32,13 @@ export const newMeetingPhaseFields = () => ({
     description: 'The type of phase'
   },
   stages: {
-    type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeetingStage)))
+    type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeetingStage))),
+    resolve: ({meetingId, stages}) => {
+      return stages.map((stage) => ({
+        ...stage,
+        meetingId
+      }))
+    }
   }
 })
 

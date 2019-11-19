@@ -114,6 +114,8 @@ export default {
         dataLoader
       )
       const tms = authToken.tms ? authToken.tms.concat(teamId) : [teamId]
+      // IMPORTANT! mutate the current authToken so any queries or subscriptions can get the latest
+      authToken.tms = tms
       const teamMemberId = toTeamMemberId(teamId, viewerId)
 
       const data = {

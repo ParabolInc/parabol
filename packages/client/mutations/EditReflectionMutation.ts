@@ -1,9 +1,8 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {Environment} from 'relay-runtime'
 import handleEditReflection from './handlers/handleEditReflection'
-import {CompletedHandler, ErrorHandler} from '../types/relayMutations'
-import {IEditReflectionOnMutationArguments} from '../types/graphql'
+import {SimpleMutation} from '../types/relayMutations'
+import {EditReflectionMutation as TEditReflectionMutation} from '../__generated__/EditReflectionMutation.graphql'
 
 graphql`
   fragment EditReflectionMutation_team on EditReflectionPayload {
@@ -14,8 +13,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation EditReflectionMutation($phaseItemId: ID!, $isEditing: Boolean!) {
-    editReflection(phaseItemId: $phaseItemId, isEditing: $isEditing) {
+  mutation EditReflectionMutation($phaseItemId: ID!, $isEditing: Boolean!, $meetingId: ID!) {
+    editReflection(phaseItemId: $phaseItemId, isEditing: $isEditing, meetingId: $meetingId) {
       ...EditReflectionMutation_team @relay(mask: false)
     }
   }
@@ -25,17 +24,10 @@ export const editReflectionTeamUpdater = (payload, store) => {
   handleEditReflection(payload, store)
 }
 
-const EditReflectionMutation = (
-  atmosphere: Environment,
-  variables: IEditReflectionOnMutationArguments,
-  onError?: ErrorHandler,
-  onCompleted?: CompletedHandler
-) => {
-  commitMutation(atmosphere, {
+const EditReflectionMutation: SimpleMutation<TEditReflectionMutation> = (atmosphere, variables) => {
+  return commitMutation(atmosphere, {
     mutation,
-    variables,
-    onCompleted,
-    onError
+    variables
     // updater: (store) => {
     //   const payload = store.getRootField('editReflection')
     //   if (!payload) return

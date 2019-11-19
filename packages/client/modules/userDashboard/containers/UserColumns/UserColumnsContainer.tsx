@@ -46,9 +46,7 @@ export default createFragmentContainer(UserColumnsContainer, {
         id
       }
       teams {
-        id
-        name
-        meetingId
+        ...TaskColumns_teams
       }
       contentFilter
       tasks(first: 1000) @connection(key: "UserColumnsContainer_tasks") {

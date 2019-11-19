@@ -51,7 +51,7 @@ const MeetingAgendaCards = (props: Props) => {
       userId: viewerId,
       teamId
     }
-    CreateTaskMutation(atmosphere, {newTask})
+    CreateTaskMutation(atmosphere, {newTask}, {})
   })
   useHotkey('t', handleAddTask)
   return (

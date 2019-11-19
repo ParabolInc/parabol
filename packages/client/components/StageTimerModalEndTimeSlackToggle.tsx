@@ -16,7 +16,6 @@ import PlainButton from './PlainButton/PlainButton'
 
 interface Props {
   facilitator: StageTimerModalEndTimeSlackToggle_facilitator
-  teamId: string
 }
 
 const ButtonRow = styled(PlainButton)({
@@ -49,8 +48,8 @@ const Block = styled('div')({
 })
 
 const StageTimerModalEndTimeSlackToggle = (props: Props) => {
-  const {facilitator, teamId} = props
-  const {slackAuth, slackNotifications} = facilitator
+  const {facilitator} = props
+  const {slackAuth, slackNotifications, teamId} = facilitator
   const timeLimitEvent = slackNotifications.find(
     (notification) =>
       notification.event === SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_START
@@ -89,6 +88,7 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
 export default createFragmentContainer(StageTimerModalEndTimeSlackToggle, {
   facilitator: graphql`
     fragment StageTimerModalEndTimeSlackToggle_facilitator on TeamMember {
+      teamId
       slackAuth {
         isActive
         defaultTeamChannelId

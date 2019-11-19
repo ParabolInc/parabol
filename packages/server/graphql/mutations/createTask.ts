@@ -142,7 +142,7 @@ export default {
         })
         .coerceTo('array') as unknown) as ITeamMember[]
     }).run()
-    const usersIdsToIgnore = await getUsersToIgnore(meetingId, dataLoader)
+    const usersIdsToIgnore = await getUsersToIgnore(viewerId, teamId, dataLoader)
 
     // Handle notifications
     // Almost always you start out with a blank card assigned to you (except for filtered team dash)

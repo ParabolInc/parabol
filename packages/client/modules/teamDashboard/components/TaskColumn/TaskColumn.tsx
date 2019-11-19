@@ -14,6 +14,7 @@ import {Droppable, DroppableProvided, DroppableStateSnapshot} from 'react-beauti
 import {PALETTE} from '../../../../styles/paletteV2'
 import TaskColumnInner from './TaskColumnInner'
 import {taskStatusLabels} from '../../../../utils/taskStatus'
+import {TaskColumn_teams} from '__generated__/TaskColumn_teams.graphql'
 
 const Column = styled('div')<{isDragging: boolean}>(({isDragging}) => ({
   background: isDragging ? PALETTE.BACKGROUND_MAIN_DARKENED : undefined,
@@ -67,7 +68,7 @@ interface Props extends WithAtmosphereProps {
   tasks: TaskColumn_tasks
   status: TaskStatusEnum
   teamMemberFilterId?: string | null
-  teams: any[]
+  teams: TaskColumn_teams | null
 }
 
 class TaskColumn extends Component<Props> {
@@ -121,6 +122,11 @@ export default createFragmentContainer(withAtmosphere(TaskColumn), {
       ...TaskColumnAddTask_tasks
       ...TaskColumnInner_tasks
       id
+    }
+  `,
+  teams: graphql`
+    fragment TaskColumn_teams on Team @relay(plural: true) {
+      ...TaskColumnAddTask_teams
     }
   `
 })

@@ -1,0 +1,3 @@
+const doDebugStuff = async () => {}
+
+doDebugStuff()

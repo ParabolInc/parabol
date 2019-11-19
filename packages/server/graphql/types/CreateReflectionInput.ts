@@ -13,6 +13,9 @@ const CreateReflectionInput = new GraphQLInputObjectType({
       type: GraphQLString,
       description: 'A stringified draft-js document containing thoughts'
     },
+    meetingId: {
+      type: new GraphQLNonNull(GraphQLID)
+    },
     retroPhaseItemId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The phase item the reflection belongs to'

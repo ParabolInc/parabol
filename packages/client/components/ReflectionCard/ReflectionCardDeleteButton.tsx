@@ -63,7 +63,7 @@ class ReflectionCardDeleteButton extends Component<Props> {
     } = this.props
     if (submitting) return
     submitMutation()
-    RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId}, onError, onCompleted)
+    RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId, onError, onCompleted})
   }
 
   render() {

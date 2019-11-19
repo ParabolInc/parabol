@@ -5,7 +5,7 @@ import publish from '../../utils/publish'
 import {TEAM} from '../../../client/utils/constants'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
-import removeStagesFromNewMeeting from './helpers/removeStagesFromNewMeeting'
+import removeStagesFromMeetings from './helpers/removeStagesFromMeetings'
 import AgendaItemsStage from '../../database/types/AgendaItemsStage'
 
 export default {
@@ -41,8 +41,9 @@ export default {
       return standardError(new Error('Agenda item not found'), {userId: viewerId})
     }
     const filterFn = (stage: AgendaItemsStage) => stage.agendaItemId === agendaItemId
-    const meetingId = await removeStagesFromNewMeeting(filterFn, teamId, dataLoader)
-
+    const meetingIds = await removeStagesFromMeetings(filterFn, teamId, dataLoader)
+    // safe to do so because we guarantee only 1 action meeting at the same time
+    const [meetingId] = meetingIds
     const data = {agendaItem, meetingId}
     publish(TEAM, teamId, RemoveAgendaItemPayload, data, subOptions)
     return data

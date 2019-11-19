@@ -3,9 +3,9 @@ import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {useGotoStageId} from '../../../../hooks/useMeeting'
 import AgendaInput from '../AgendaInput/AgendaInput'
 import AgendaList from '../AgendaList/AgendaList'
+import useGotoStageId from '../../../../hooks/useGotoStageId'
 
 const RootStyles = styled('div')<{isMeeting: boolean | undefined; disabled: boolean}>(
   ({disabled, isMeeting}) => ({
@@ -31,15 +31,15 @@ interface Props {
   gotoStageId?: ReturnType<typeof useGotoStageId>
   isDisabled?: boolean
   team: AgendaListAndInput_team
-  isMeeting?: boolean
+  meetingId?: string | null
 }
 
 const AgendaListAndInput = (props: Props) => {
-  const {gotoStageId, isDisabled, team, isMeeting} = props
+  const {gotoStageId, isDisabled, team, meetingId} = props
   return (
-    <RootStyles disabled={!!isDisabled} isMeeting={isMeeting}>
-      <AgendaList gotoStageId={gotoStageId} team={team} />
-      <StyledAgendaInput disabled={!!isDisabled} isMeeting={isMeeting} team={team} />
+    <RootStyles disabled={!!isDisabled} isMeeting={!!meetingId}>
+      <AgendaList gotoStageId={gotoStageId} meetingId={meetingId} team={team} />
+      <StyledAgendaInput disabled={!!isDisabled} isMeeting={!!meetingId} team={team} />
     </RootStyles>
   )
 }
@@ -49,16 +49,6 @@ export default createFragmentContainer(AgendaListAndInput, {
     fragment AgendaListAndInput_team on Team {
       ...AgendaInput_team
       ...AgendaList_team
-      agendaItems {
-        id
-        content
-        teamMember {
-          id
-        }
-      }
-      newMeeting {
-        id
-      }
     }
   `
 })

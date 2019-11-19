@@ -1,25 +1,29 @@
-import {
-  ArchiveTeamMutation as TArchiveTeamMutation,
-  ArchiveTeamMutationVariables
-} from '../__generated__/ArchiveTeamMutation.graphql'
+import {ArchiveTeamMutation as TArchiveTeamMutation} from '../__generated__/ArchiveTeamMutation.graphql'
 import {ArchiveTeamMutation_team} from '../__generated__/ArchiveTeamMutation_team.graphql'
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {Disposable} from 'relay-runtime'
 import ClearNotificationMutation from './ClearNotificationMutation'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import onTeamRoute from '../utils/onTeamRoute'
 import getInProxy from '../utils/relay/getInProxy'
 import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
-import Atmosphere from '../Atmosphere'
-import {LocalHandlers, OnNextHandler} from '../types/relayMutations'
+import {
+  HistoryLocalHandler,
+  OnNextHandler,
+  OnNextHistoryContext,
+  StandardMutation
+} from '../types/relayMutations'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
+import onMeetingRoute from '../utils/onMeetingRoute'
 
 graphql`
   fragment ArchiveTeamMutation_team on ArchiveTeamPayload {
     team {
       id
       name
+      activeMeetings {
+        id
+      }
     }
     notification {
       id
@@ -41,12 +45,14 @@ const mutation = graphql`
   }
 `
 
-const popTeamArchivedToast: OnNextHandler<ArchiveTeamMutation_team> = (
+const popTeamArchivedToast: OnNextHandler<ArchiveTeamMutation_team, OnNextHistoryContext> = (
   payload,
   {history, atmosphere}
 ) => {
-  if (!payload || !payload.team) return
-  const {id: teamId, name: teamName} = payload.team
+  if (!payload) return
+  const {team, notification} = payload
+  if (!team) return
+  const {id: teamId, name: teamName, activeMeetings} = team
   atmosphere.eventEmitter.emit('addSnackbar', {
     key: `teamArchived:${teamId}`,
     autoDismiss: 5,
@@ -54,7 +60,8 @@ const popTeamArchivedToast: OnNextHandler<ArchiveTeamMutation_team> = (
     action: {
       label: 'OK',
       callback: () => {
-        const notificationId = payload.notification && payload.notification.id
+        if (!notification) return
+        const {id: notificationId} = notification
         // notification is not persisted for the mutator
         if (notificationId) {
           ClearNotificationMutation(atmosphere, notificationId)
@@ -62,7 +69,11 @@ const popTeamArchivedToast: OnNextHandler<ArchiveTeamMutation_team> = (
       }
     }
   })
-  if (onTeamRoute(window.location.pathname, teamId)) {
+  const meetingIds = activeMeetings.map(({id}) => id)
+  if (
+    onTeamRoute(window.location.pathname, teamId) ||
+    onMeetingRoute(window.location.pathname, meetingIds)
+  ) {
     history && history.push('/me')
   }
 }
@@ -76,15 +87,18 @@ export const archiveTeamTeamUpdater = (payload, store, viewerId) => {
   handleAddNotifications(notification, store)
 }
 
-export const archiveTeamTeamOnNext = (payload: ArchiveTeamMutation_team, {atmosphere, history}) => {
+export const archiveTeamTeamOnNext: OnNextHandler<
+  ArchiveTeamMutation_team,
+  OnNextHistoryContext
+> = (payload, {atmosphere, history}) => {
   popTeamArchivedToast(payload, {atmosphere, history})
 }
 
-const ArchiveTeamMutation = (
-  atmosphere: Atmosphere,
-  variables: ArchiveTeamMutationVariables,
-  {onError, onCompleted, history}: LocalHandlers
-): Disposable => {
+const ArchiveTeamMutation: StandardMutation<TArchiveTeamMutation, HistoryLocalHandler> = (
+  atmosphere,
+  variables,
+  {onError, onCompleted, history}
+) => {
   const {viewerId} = atmosphere
   return commitMutation<TArchiveTeamMutation>(atmosphere, {
     mutation,
@@ -102,7 +116,7 @@ const ArchiveTeamMutation = (
       }
       const payload = res.archiveTeam
       if (payload) {
-        popTeamArchivedToast(payload as any, {atmosphere, history})
+        popTeamArchivedToast(payload, {atmosphere, history})
       }
     },
     onError

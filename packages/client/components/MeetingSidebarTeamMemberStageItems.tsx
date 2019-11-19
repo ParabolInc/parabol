@@ -1,13 +1,13 @@
-import {MeetingSidebarTeamMemberStageItems_viewer} from '../__generated__/MeetingSidebarTeamMemberStageItems_viewer.graphql'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {useGotoStageId} from '../hooks/useMeeting'
 import useAtmosphere from '../hooks/useAtmosphere'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
 import MeetingSubnavItem from '../components/MeetingSubnavItem'
 import Avatar from '../components/Avatar/Avatar'
 import styled from '@emotion/styled'
+import {MeetingSidebarTeamMemberStageItems_meeting} from '__generated__/MeetingSidebarTeamMemberStageItems_meeting.graphql'
+import useGotoStageId from '../hooks/useGotoStageId'
 
 const AvatarBlock = styled('div')({
   width: 32
@@ -27,17 +27,12 @@ const ScrollStageItems = styled('div')({
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
   handleMenuClick: () => void
-  viewer: MeetingSidebarTeamMemberStageItems_viewer
+  meeting: MeetingSidebarTeamMemberStageItems_meeting
 }
 
 const MeetingSidebarTeamMemberStageItems = (props: Props) => {
-  const {
-    gotoStageId,
-    handleMenuClick,
-    viewer: {team}
-  } = props
-  const {newMeeting} = team!
-  const {facilitatorStageId, facilitatorUserId, localPhase, localStage} = newMeeting!
+  const {gotoStageId, handleMenuClick, meeting} = props
+  const {facilitatorStageId, facilitatorUserId, localPhase, localStage} = meeting
   const localStageId = (localStage && localStage.id) || ''
   const gotoStage = (teamMemberId) => () => {
     const teamMemberStage =
@@ -110,28 +105,19 @@ graphql`
 `
 
 export default createFragmentContainer(MeetingSidebarTeamMemberStageItems, {
-  viewer: graphql`
-    fragment MeetingSidebarTeamMemberStageItems_viewer on User {
-      team(teamId: $teamId) {
-        teamMembers(sortBy: "checkInOrder") {
-          id
-          picture
-          preferredName
-        }
-        newMeeting {
-          facilitatorStageId
-          facilitatorUserId
-          id
-          localPhase {
-            ...MeetingSidebarTeamMemberStageItems_phase @relay(mask: false)
-          }
-          localStage {
-            id
-          }
-          phases {
-            ...MeetingSidebarTeamMemberStageItems_phase @relay(mask: false)
-          }
-        }
+  meeting: graphql`
+    fragment MeetingSidebarTeamMemberStageItems_meeting on NewMeeting {
+      facilitatorStageId
+      facilitatorUserId
+      id
+      localPhase {
+        ...MeetingSidebarTeamMemberStageItems_phase @relay(mask: false)
+      }
+      localStage {
+        id
+      }
+      phases {
+        ...MeetingSidebarTeamMemberStageItems_phase @relay(mask: false)
       }
     }
   `

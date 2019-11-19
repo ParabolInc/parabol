@@ -1,4 +1,4 @@
-import {FacilitatorMenu_viewer} from '../__generated__/FacilitatorMenu_viewer.graphql'
+import {FacilitatorMenu_meeting} from '../__generated__/FacilitatorMenu_meeting.graphql'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
@@ -11,17 +11,16 @@ import PromoteNewMeetingFacilitatorMutation from '../mutations/PromoteNewMeeting
 
 interface Props {
   menuProps: MenuProps
-  viewer: FacilitatorMenu_viewer
+  meeting: FacilitatorMenu_meeting
 }
 
 const FacilitatorMenu = (props: Props) => {
-  const {menuProps, viewer} = props
-  const {id: userId, team} = viewer
-  const {newMeeting} = team!
-  const {id: meetingId} = newMeeting!
+  const {menuProps, meeting} = props
+  const {id: meetingId} = meeting
   const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
   const promoteToFacilitator = () => {
-    PromoteNewMeetingFacilitatorMutation(atmosphere, {facilitatorUserId: userId, meetingId})
+    PromoteNewMeetingFacilitatorMutation(atmosphere, {facilitatorUserId: viewerId, meetingId})
   }
   return (
     <Menu ariaLabel={'Take the Facilitator role'} {...menuProps}>
@@ -34,14 +33,9 @@ const FacilitatorMenu = (props: Props) => {
 }
 
 export default createFragmentContainer(FacilitatorMenu, {
-  viewer: graphql`
-    fragment FacilitatorMenu_viewer on User {
+  meeting: graphql`
+    fragment FacilitatorMenu_meeting on NewMeeting {
       id
-      team(teamId: $teamId) {
-        newMeeting {
-          id
-        }
-      }
     }
   `
 })

@@ -1,4 +1,3 @@
-import {RetroSidebarDiscussSection_viewer} from '../__generated__/RetroSidebarDiscussSection_viewer.graphql'
 import React from 'react'
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
 import styled from '@emotion/styled'
@@ -6,7 +5,6 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import MeetingSubnavItem from './MeetingSubnavItem'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
-import {useGotoStageId} from '../hooks/useMeeting'
 import DragDiscussionTopicMutation from '../mutations/DragDiscussionTopicMutation'
 import {navItemRaised} from '../styles/elevation'
 import {meetingVoteIcon} from '../styles/meeting'
@@ -18,13 +16,15 @@ import {NavSidebar} from '../types/constEnums'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {PALETTE} from '../styles/paletteV2'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
+import {RetroSidebarDiscussSection_meeting} from '__generated__/RetroSidebarDiscussSection_meeting.graphql'
+import useGotoStageId from 'hooks/useGotoStageId'
 
 const lineHeight = NavSidebar.SUB_LINE_HEIGHT
 
 interface Props extends WithAtmosphereProps {
   gotoStageId: ReturnType<typeof useGotoStageId>
   handleMenuClick: () => void
-  viewer: RetroSidebarDiscussSection_viewer
+  meeting: RetroSidebarDiscussSection_meeting
 }
 
 const VoteTally = styled('div')<{isUnsyncedFacilitatorStage: boolean | null}>(
@@ -60,15 +60,8 @@ const ScrollWrapper = styled('div')({
 })
 
 const RetroSidebarDiscussSection = (props: Props) => {
-  const {
-    atmosphere,
-    gotoStageId,
-    handleMenuClick,
-    viewer: {team}
-  } = props
-  const {newMeeting} = team!
-  if (!newMeeting) return null
-  const {localStage, facilitatorStageId, id: meetingId, phases} = newMeeting
+  const {atmosphere, gotoStageId, handleMenuClick, meeting} = props
+  const {localStage, facilitatorStageId, id: meetingId, phases} = meeting
   const discussPhase = phases!.find(({phaseType}) => phaseType === NewMeetingPhaseTypeEnum.discuss)!
   // assert that the discuss phase and its stages are non-null
   // since we render this component when the vote phase is complete
@@ -186,26 +179,20 @@ graphql`
 `
 
 export default createFragmentContainer(withAtmosphere(RetroSidebarDiscussSection), {
-  viewer: graphql`
-    fragment RetroSidebarDiscussSection_viewer on User {
-      team(teamId: $teamId) {
-        isMeetingSidebarCollapsed
+  meeting: graphql`
+    fragment RetroSidebarDiscussSection_meeting on RetrospectiveMeeting {
+      id
+      localStage {
         id
-        newMeeting {
+      }
+      ... on RetrospectiveMeeting {
+        facilitatorStageId
+        # load up the localPhase
+        phases {
+          ...RetroSidebarDiscussSectionDiscussPhase @relay(mask: false)
+        }
+        localStage {
           id
-          localStage {
-            id
-          }
-          ... on RetrospectiveMeeting {
-            facilitatorStageId
-            # load up the localPhase
-            phases {
-              ...RetroSidebarDiscussSectionDiscussPhase @relay(mask: false)
-            }
-            localStage {
-              id
-            }
-          }
         }
       }
     }

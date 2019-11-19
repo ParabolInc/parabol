@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'relay-runtime'
-import {StandardMutation} from '../types/relayMutations'
+import {SimpleMutation} from '../types/relayMutations'
 import {PayLaterMutation as TPayLaterMutation} from '../__generated__/PayLaterMutation.graphql'
 
 graphql`
@@ -22,7 +22,7 @@ const mutation = graphql`
   }
 `
 
-const PayLaterMutation: StandardMutation<TPayLaterMutation> = (atmosphere, variables) => {
+const PayLaterMutation: SimpleMutation<TPayLaterMutation> = (atmosphere, variables) => {
   return commitMutation<TPayLaterMutation>(atmosphere, {
     mutation,
     variables

@@ -15,6 +15,7 @@ import AuthenticationDialog from '../AuthenticationDialog'
 import {GotoAuathPage} from '../GenericAuthentication'
 import DialogTitle from '../DialogTitle'
 import {PALETTE} from '../../styles/paletteV2'
+import IconLabel from '../IconLabel'
 
 interface State {
   isSent: boolean
@@ -54,6 +55,11 @@ const LinkButton = styled(PlainButton)({
 
 const SubmitButton = styled(PrimaryButton)({
   marginTop: 16
+})
+
+const StyledPrimaryButton = styled(PrimaryButton)({
+  margin: '16px auto 0',
+  width: 240
 })
 
 const BrandedLink = styled(PlainButton)({
@@ -154,6 +160,9 @@ class ResetPasswordPage extends Component<Props, State> {
                 <LinkButton onClick={this.resetState}>click here</LinkButton>
                 {' to try again.'}
               </P>
+              <StyledPrimaryButton onClick={gotoSignIn} size='medium'>
+                <IconLabel icon='arrow_back' label='Back to Sign In' />
+              </StyledPrimaryButton>
             </Fragment>
           ) : (
             <Fragment>

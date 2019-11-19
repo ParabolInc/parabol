@@ -3,6 +3,9 @@ const presetEnv = require('@babel/preset-env').default
 const pluginMacros = require('babel-plugin-macros')
 // used for importing githubQuery .graphql files as strings
 const pluginInlineImport = require('babel-plugin-inline-import').default
+const pluginOptionalChaining = require('@babel/plugin-proposal-optional-chaining').default
+const pluginNullishCoalescing = require('@babel/plugin-proposal-nullish-coalescing-operator')
+  .default
 const {addHook} = require('sucrase/dist/register')
 
 // .tsx required for email SSR
@@ -17,13 +20,16 @@ require('@babel/register')({
   extensions,
   plugins: [
     [
-      pluginMacros, {
-      relay: {
-        artifactDirectory: path.join('../client', '__generated__')
+      pluginMacros,
+      {
+        relay: {
+          artifactDirectory: path.join('../client', '__generated__')
+        }
       }
-    }
     ],
     pluginInlineImport,
+    pluginOptionalChaining,
+    pluginNullishCoalescing
   ],
   presets: [
     [
@@ -36,4 +42,3 @@ require('@babel/register')({
     ]
   ]
 })
-

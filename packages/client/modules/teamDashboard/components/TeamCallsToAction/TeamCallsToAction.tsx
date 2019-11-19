@@ -14,7 +14,7 @@ import useMenu from '../../../../hooks/useMenu'
 import useRouter from '../../../../hooks/useRouter'
 import lazyPreload from '../../../../utils/lazyPreload'
 import {Gutters} from '../../../../types/constEnums'
-import {meetingTypeToLabel, meetingTypeToSlug} from '../../../../utils/meetings/lookups'
+import {meetingTypeToLabel} from '../../../../utils/meetings/lookups'
 
 interface Props {
   team: TeamCallsToAction_team
@@ -40,20 +40,24 @@ const TeamCallsToActionMenu = lazyPreload(() =>
 
 const TeamCallToAction = (props: Props) => {
   const {team} = props
-  const {id: teamId, newMeeting} = team
-  const {togglePortal, originRef, menuPortal, menuProps, loadingWidth} = useMenu(
-    MenuPosition.UPPER_RIGHT,
-    {isDropdown: true}
-  )
+  const {id: teamId, activeMeetings} = team
+  const {
+    togglePortal,
+    originRef,
+    menuPortal,
+    menuProps,
+    loadingWidth
+  } = useMenu(MenuPosition.UPPER_RIGHT, {isDropdown: true})
+  const [firstActiveMeeting] = activeMeetings
   const {history} = useRouter()
-  const label = newMeeting && meetingTypeToLabel[newMeeting.meetingType]
-  const slug = newMeeting && meetingTypeToSlug[newMeeting.meetingType]
+  const label = firstActiveMeeting && meetingTypeToLabel[firstActiveMeeting.meetingType]
   const goToMeeting = () => {
-    history.push(`/${slug}/${teamId}/`)
+    const {id: meetingId} = firstActiveMeeting
+    history.push(`/meet/${meetingId}/`)
   }
   return (
     <ButtonBlock>
-      {newMeeting ? (
+      {firstActiveMeeting ? (
         <StartButton onClick={goToMeeting}>
           <IconLabel icon='arrow_forward' iconAfter label={`Join ${label} Meeting`} />
         </StartButton>
@@ -79,7 +83,8 @@ export default createFragmentContainer(TeamCallToAction, {
   team: graphql`
     fragment TeamCallsToAction_team on Team {
       id
-      newMeeting {
+      activeMeetings {
+        id
         meetingType
       }
     }

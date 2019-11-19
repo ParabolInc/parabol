@@ -1,20 +1,5 @@
 import getRethink from '../../../database/rethinkDriver'
 import {updateAuth0TMS} from '../../../utils/auth0Helpers'
-import {
-  ACTION,
-  AGENDA_ITEMS,
-  CHECKIN,
-  DISCUSS,
-  FIRST_CALL,
-  GROUP,
-  LAST_CALL,
-  REFLECT,
-  RETROSPECTIVE,
-  RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT,
-  RETROSPECTIVE_TOTAL_VOTES_DEFAULT,
-  UPDATES,
-  VOTE
-} from '../../../../client/utils/constants'
 import insertNewTeamMember from '../../../safeMutations/insertNewTeamMember'
 import shortid from 'shortid'
 import makeRetroTemplates from './makeRetroTemplates'
@@ -22,43 +7,32 @@ import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import addTeamIdToTMS from '../../../safeMutations/addTeamIdToTMS'
 import {CREATED_TEAM} from '../../types/TimelineEventTypeEnum'
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
+import Team from '../../../database/types/Team'
+import Organization from '../../../database/types/Organization'
+import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
+import MeetingSettingsAction from '../../../database/types/MeetingSettingsAction'
+
+interface ValidNewTeam {
+  id: string
+  name: string
+  orgId: string
+  isOnboardTeam: boolean
+}
 
 // used for addorg, addTeam
-export default async function createTeamAndLeader(userId, newTeam) {
+export default async function createTeamAndLeader(userId: string, newTeam: ValidNewTeam) {
   const r = await getRethink()
-  const now = new Date()
   const {id: teamId, orgId} = newTeam
   const organization = await r
-    .table('Organization')
+    .table<Organization>('Organization')
     .get(orgId)
     .run()
   const {tier} = organization
-  const verifiedTeam = {
-    ...newTeam,
-    createdAt: now,
-    createdBy: userId,
-    isArchived: false,
-    isPaid: true,
-    meetingId: null,
-    tier
-  }
+  const verifiedTeam = new Team({...newTeam, createdBy: userId, tier})
   const {phaseItems, templates} = makeRetroTemplates(teamId)
   const meetingSettings = [
-    {
-      id: shortid.generate(),
-      meetingType: RETROSPECTIVE,
-      teamId,
-      phaseTypes: [CHECKIN, REFLECT, GROUP, VOTE, DISCUSS],
-      selectedTemplateId: templates[0].id,
-      totalVotes: RETROSPECTIVE_TOTAL_VOTES_DEFAULT,
-      maxVotesPerGroup: RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT
-    },
-    {
-      id: shortid.generate(),
-      meetingType: ACTION,
-      teamId,
-      phaseTypes: [CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL]
-    }
+    new MeetingSettingsRetrospective({teamId, selectedTemplateId: templates[0].id}),
+    new MeetingSettingsAction({teamId})
   ]
 
   const [organizationUser] = await Promise.all([

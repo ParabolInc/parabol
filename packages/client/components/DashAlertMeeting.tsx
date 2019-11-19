@@ -5,24 +5,21 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import DashAlertBar from './DashAlertBar'
 import DashAlertLink from './DashAlertLink'
-import {meetingTypeToSlug} from '../utils/meetings/lookups'
 import plural from '../utils/plural'
 
-const getActiveMeetings = (viewer) => {
-  const activeMeetings: {link: string; name: string}[] = []
-  const teams = (viewer && viewer.teams) || []
+const getActiveMeetings = (teams: DashAlertMeeting_viewer['teams']) => {
+  const allActiveMeetings: {link: string; name: string}[] = []
   teams.forEach((team) => {
-    const {newMeeting} = team
-    if (newMeeting) {
-      const {meetingType} = newMeeting
-      const meetingSlug = meetingTypeToSlug[meetingType]
-      activeMeetings.push({
-        link: `/${meetingSlug}/${team.id}`,
-        name: team.name
+    const {activeMeetings, name: teamName} = team
+    activeMeetings.forEach((activeMeeting) => {
+      const {id: meetingId, name: meetingName} = activeMeeting
+      allActiveMeetings.push({
+        link: `/meet/${meetingId}`,
+        name: `${teamName} ${meetingName}`
       })
-    }
+    })
   })
-  return activeMeetings
+  return allActiveMeetings
 }
 
 const MessageBlock = styled('div')({
@@ -39,7 +36,8 @@ const Link = styled(DashAlertLink)({
 
 const DashAlertMeeting = (props: Props) => {
   const {viewer} = props
-  const activeMeetings = useMemo(() => getActiveMeetings(viewer), [viewer])
+  const teams = viewer?.teams ?? []
+  const activeMeetings = useMemo(() => getActiveMeetings(teams), [teams])
   if (activeMeetings.length === 0) return null
   return (
     <DashAlertBar>
@@ -55,17 +53,22 @@ const DashAlertMeeting = (props: Props) => {
   )
 }
 
+graphql`
+  fragment DashAlertMeetingActiveMeetings on Team {
+    activeMeetings {
+      id
+      meetingType
+      name
+    }
+    name
+  }
+`
+
 export default createFragmentContainer(DashAlertMeeting, {
   viewer: graphql`
     fragment DashAlertMeeting_viewer on User {
       teams {
-        id
-        meetingId
-        newMeeting {
-          id
-          meetingType
-        }
-        name
+        ...DashAlertMeetingActiveMeetings @relay(mask: false)
       }
     }
   `

@@ -19,7 +19,7 @@ import {acceptTeamInvitationNotificationUpdater} from '../mutations/AcceptTeamIn
 import {endNewMeetingNotificationUpdater} from '../mutations/EndNewMeetingMutation'
 import graphql from 'babel-plugin-relay/macro'
 import {meetingTypeToLabel, meetingTypeToSlug} from '../utils/meetings/lookups'
-import {OnNextContext, OnNextHandler, UpdaterHandler} from '../types/relayMutations'
+import {OnNextHandler, OnNextHistoryContext, UpdaterHandler} from '../types/relayMutations'
 import {requestSubscription, Variables} from 'relay-runtime'
 import {NotificationSubscriptionResponse} from '../__generated__/NotificationSubscription.graphql'
 import Atmosphere from '../Atmosphere'
@@ -47,6 +47,7 @@ const subscription = graphql`
       ... on User {
         id
         isConnected
+        lastSeenAt
       }
 
       # DisconnectSocket
@@ -103,12 +104,12 @@ const subscription = graphql`
   }
 `
 
-type NextHandler = OnNextHandler<NotificationSubscriptionResponse['notificationSubscription']>
+type NextHandler = OnNextHandler<
+  NotificationSubscriptionResponse['notificationSubscription'],
+  OnNextHistoryContext
+>
 
-const stripeFailPaymentNotificationOnNext: NextHandler = (
-  payload: any,
-  {atmosphere, history}: OnNextContext
-) => {
+const stripeFailPaymentNotificationOnNext: NextHandler = (payload: any, {atmosphere, history}) => {
   if (!payload) return
   const {notification} = payload
   const {organization} = notification

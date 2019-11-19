@@ -1,5 +1,11 @@
 import {RouterProps} from 'react-router'
-import {PayloadError, RecordProxy, RecordSourceSelectorProxy, commitMutation} from 'relay-runtime'
+import {
+  commitMutation,
+  MutationParameters,
+  PayloadError,
+  RecordProxy,
+  RecordSourceSelectorProxy
+} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
 
 export interface CompletedHandler {
@@ -10,29 +16,50 @@ export interface ErrorHandler {
   (error: Error): void
 }
 
+/* DEPRECATED, use BaseLocalHandlers+ */
 export interface LocalHandlers {
   onError?: ErrorHandler
   onCompleted?: CompletedHandler
   history?: RouterProps['history']
 }
 
-interface UpdaterContext {
+export interface BaseLocalHandlers {
+  onError: ErrorHandler
+  onCompleted: CompletedHandler
+}
+
+export interface HistoryLocalHandler extends BaseLocalHandlers {
+  history: RouterProps['history']
+}
+
+export interface HistoryMaybeLocalHandler {
+  history: RouterProps['history']
+  onError?: ErrorHandler
+  onCompleted?: CompletedHandler
+}
+
+export type OptionalHandlers = Partial<BaseLocalHandlers>
+
+interface UpdaterContext<T = any> {
   atmosphere: Atmosphere
-  store: RecordSourceSelectorProxy<any>
+  store: RecordSourceSelectorProxy<T>
 }
 
 export interface SharedUpdater<T> {
-  (payload: RecordProxy<Omit<T, ' $refType'>>, context: UpdaterContext): void
+  (payload: RecordProxy<Omit<T, ' $refType'>>, context: UpdaterContext<T>): void
 }
 
-export interface OnNextContext {
+export interface OnNextBaseContext {
   atmosphere: Atmosphere
-  history?: RouterProps['history']
 }
 
-export type OnNextHandler<TSubResponse> = (
+export interface OnNextHistoryContext extends OnNextBaseContext {
+  history: RouterProps['history']
+}
+
+export type OnNextHandler<TSubResponse, C = OnNextBaseContext> = (
   payload: Omit<TSubResponse, ' $refType'>,
-  context: OnNextContext
+  context: C
 ) => void
 
 export type UpdaterHandler<T = any> = (
@@ -40,13 +67,11 @@ export type UpdaterHandler<T = any> = (
   context: {atmosphere: Atmosphere; store: RecordSourceSelectorProxy}
 ) => void
 
-interface GeneratedMutationType {
-  readonly response: any
-  readonly variables: any
+export type SimpleMutation<T extends MutationParameters> = {
+  (atmosphere: Atmosphere, variables: T['variables']): ReturnType<typeof commitMutation>
 }
-
-export type StandardMutation<T extends GeneratedMutationType> = (
-  atmosphere: Atmosphere,
-  variables: T['variables'],
-  localHandlers?: LocalHandlers
-) => ReturnType<typeof commitMutation>
+export type StandardMutation<T extends MutationParameters, C = BaseLocalHandlers> = {
+  (atmosphere: Atmosphere, variables: T['variables'], localHandlers: C): ReturnType<
+    typeof commitMutation
+  >
+}

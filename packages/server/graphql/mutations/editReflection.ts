@@ -12,15 +12,22 @@ export default {
   description: 'Changes the editing state of a user for a phase item',
   type: EditReflectionPayload,
   args: {
-    phaseItemId: {
-      type: new GraphQLNonNull(GraphQLID)
-    },
     isEditing: {
       description: 'Whether a phaseItem is being edited or not',
       type: new GraphQLNonNull(GraphQLBoolean)
+    },
+    meetingId: {
+      type: new GraphQLNonNull(GraphQLID)
+    },
+    phaseItemId: {
+      type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve(_source, {phaseItemId, isEditing}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source,
+    {isEditing, meetingId, phaseItemId},
+    {authToken, dataLoader, socketId: mutatorId}
+  ) {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
@@ -39,12 +46,6 @@ export default {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
-    const team = await r
-      .table('Team')
-      .get(teamId)
-      .run()
-    const {meetingId} = team
-    if (!meetingId) return standardError(new Error('Meeting already ended'), {userId: viewerId})
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases} = meeting

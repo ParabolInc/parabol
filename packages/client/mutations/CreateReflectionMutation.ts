@@ -4,17 +4,12 @@
  */
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {Disposable} from 'relay-runtime'
-import {CompletedHandler, ErrorHandler} from '../types/relayMutations'
+import {StandardMutation} from '../types/relayMutations'
 import handleAddReflectionGroups from './handlers/handleAddReflectionGroups'
 import makeEmptyStr from '../utils/draftjs/makeEmptyStr'
 import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import {ICreateReflectionOnMutationArguments} from '../types/graphql'
-
-interface Context {
-  meetingId: string
-}
+import {CreateReflectionMutation as TCreateReflectionMutation} from '../__generated__/CreateReflectionMutation.graphql'
 
 graphql`
   fragment CreateReflectionMutation_team on CreateReflectionPayload {
@@ -55,14 +50,12 @@ export const createReflectionTeamUpdater = (payload, store) => {
   handleAddReflectionGroups(reflectionGroup, store)
 }
 
-const CreateReflectionMutation = (
+const CreateReflectionMutation: StandardMutation<TCreateReflectionMutation> = (
   atmosphere,
-  variables: ICreateReflectionOnMutationArguments,
-  context: Context,
-  onError: ErrorHandler,
-  onCompleted: CompletedHandler
-): Disposable => {
-  return commitMutation(atmosphere, {
+  variables,
+  {onError, onCompleted}
+) => {
+  return commitMutation<TCreateReflectionMutation>(atmosphere, {
     mutation,
     variables,
     onCompleted,
@@ -75,7 +68,7 @@ const CreateReflectionMutation = (
     optimisticUpdater: (store) => {
       const {input} = variables
       const {viewerId} = atmosphere
-      const {meetingId} = context
+      const {meetingId} = input
       const nowISO = new Date().toJSON()
       const optimisticReflection = {
         id: clientTempId(),

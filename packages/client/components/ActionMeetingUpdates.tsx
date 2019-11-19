@@ -1,4 +1,4 @@
-import {ActionMeetingUpdates_team} from '../__generated__/ActionMeetingUpdates_team.graphql'
+import {ActionMeetingUpdates_meeting} from '../__generated__/ActionMeetingUpdates_meeting.graphql'
 import ms from 'ms'
 import React, {useMemo} from 'react'
 import styled from '@emotion/styled'
@@ -48,7 +48,7 @@ const InnerColumnsWrapper = styled('div')({
 })
 
 interface Props extends ActionMeetingPhaseProps {
-  team: ActionMeetingUpdates_team
+  meeting: ActionMeetingUpdates_meeting
 }
 
 const UpdatesHelpMenu = lazyPreload(async () =>
@@ -56,13 +56,13 @@ const UpdatesHelpMenu = lazyPreload(async () =>
 )
 
 const ActionMeetingUpdates = (props: Props) => {
-  const {avatarGroup, toggleSidebar, team, handleGotoNext} = props
+  const {avatarGroup, toggleSidebar, meeting, handleGotoNext} = props
   const atmosphere = useAtmosphere()
   const {gotoNext, ref: gotoNextRef} = handleGotoNext
   const minTimeComplete = useTimeout(ms('2m'))
   const {viewerId} = atmosphere
-  const {id: teamId, isMeetingSidebarCollapsed, newMeeting, tasks} = team
-  const {facilitatorUserId, id: meetingId, localStage, phases} = newMeeting!
+  const {facilitatorUserId, id: meetingId, localStage, phases, showSidebar, team} = meeting
+  const {id: teamId, tasks} = team
   const {id: localStageId, teamMember} = localStage!
   const {userId} = teamMember!
   const teamMemberTasks = useMemo(() => {
@@ -84,10 +84,10 @@ const ActionMeetingUpdates = (props: Props) => {
       <MeetingHeaderAndPhase>
         <MeetingTopBar
           avatarGroup={avatarGroup}
-          isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
+          isMeetingSidebarCollapsed={!showSidebar}
           toggleSidebar={toggleSidebar}
         >
-          <ActionMeetingUpdatesPrompt team={team} />
+          <ActionMeetingUpdatesPrompt meeting={meeting} />
         </MeetingTopBar>
         <PhaseWrapper>
           <StyledColumnsWrapper>
@@ -98,6 +98,7 @@ const ActionMeetingUpdates = (props: Props) => {
                 meetingId={meetingId}
                 myTeamMemberId={toTeamMemberId(teamId, viewerId)}
                 tasks={teamMemberTasks}
+                teams={null}
               />
             </InnerColumnsWrapper>
           </StyledColumnsWrapper>
@@ -131,45 +132,40 @@ graphql`
 `
 
 export default createFragmentContainer(ActionMeetingUpdates, {
-  team: graphql`
-    fragment ActionMeetingUpdates_team on Team {
-      ...ActionMeetingUpdatesPrompt_team
+  meeting: graphql`
+    fragment ActionMeetingUpdates_meeting on ActionMeeting {
+      ...ActionMeetingUpdatesPrompt_meeting
+      showSidebar
       id
-      isMeetingSidebarCollapsed
-      newMeeting {
-        ...PhaseItemColumn_meeting
+      facilitatorUserId
+      localStage {
+        ...ActionMeetingUpdatesStage @relay(mask: false)
         id
-        facilitatorUserId
-        ... on ActionMeeting {
-          localStage {
-            isComplete
-          }
-          localStage {
-            id
-            ...ActionMeetingUpdatesStage @relay(mask: false)
-          }
-          phases {
-            phaseType
-            stages {
-              id
-              ...ActionMeetingUpdatesStage @relay(mask: false)
-            }
-          }
+        isComplete
+      }
+      phases {
+        phaseType
+        stages {
+          id
+          ...ActionMeetingUpdatesStage @relay(mask: false)
         }
       }
-      tasks(first: 1000) @connection(key: "TeamColumnsContainer_tasks") {
-        edges {
-          node {
-            ...TaskColumns_tasks
-            # grab these so we can sort correctly
-            id
-            status
-            sortOrder
-            tags
-            assignee {
+      team {
+        id
+        tasks(first: 1000) @connection(key: "TeamColumnsContainer_tasks") {
+          edges {
+            node {
+              ...TaskColumns_tasks
+              # grab these so we can sort correctly
               id
+              status
+              sortOrder
+              tags
+              assignee {
+                id
+              }
+              userId
             }
-            userId
           }
         }
       }

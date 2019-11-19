@@ -6,7 +6,7 @@ import {matchPath} from 'react-router'
 import {Disposable} from 'relay-runtime'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import {IInviteToTeamOnMutationArguments} from '../types/graphql'
-import {LocalHandlers, OnNextContext} from '../types/relayMutations'
+import {LocalHandlers, OnNextHistoryContext} from '../types/relayMutations'
 import AcceptTeamInvitationMutation from './AcceptTeamInvitationMutation'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 
@@ -44,7 +44,7 @@ const mutation = graphql`
 
 const popInvitationReceivedToast = (
   notification: InviteToTeamMutation_notification['teamInvitationNotification'] | null,
-  {atmosphere, history}: OnNextContext
+  {atmosphere, history}: OnNextHistoryContext
 ) => {
   if (!notification) return
   const {
@@ -79,12 +79,18 @@ export const inviteToTeamNotificationOnNext = (
 ) => {
   const {teamInvitationNotification} = payload
   if (!teamInvitationNotification) return
-  const {
-    team: {id: teamId}
-  } = teamInvitationNotification
-  const isWaiting = !!matchPath(window.location.pathname, {path: `/invitation-required/${teamId}`})
-  atmosphere.eventEmitter.emit('inviteToTeam', teamInvitationNotification)
-  if (!isWaiting) {
+  const isWaiting = !!matchPath(window.location.pathname, {path: `/invitation-required`})
+  if (isWaiting) {
+    const search = new URLSearchParams(window.location.search)
+    const meetingId = search.get('meetingId')
+    const {id: notificationId, invitation} = teamInvitationNotification
+    const {token: invitationToken} = invitation
+    AcceptTeamInvitationMutation(
+      atmosphere,
+      {invitationToken, notificationId},
+      {history, meetingId}
+    )
+  } else {
     popInvitationReceivedToast(teamInvitationNotification, {atmosphere, history})
   }
 }

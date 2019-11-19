@@ -4,7 +4,8 @@ import {
   GraphQLInt,
   GraphQLInterfaceType,
   GraphQLList,
-  GraphQLNonNull
+  GraphQLNonNull,
+  GraphQLString
 } from 'graphql'
 import {GQLContext} from '../graphql'
 import ActionMeeting from './ActionMeeting'
@@ -19,6 +20,7 @@ import MeetingMember from './MeetingMember'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import {getUserId} from '../../utils/authorization'
 import TeamMember from './TeamMember'
+import Organization from './Organization'
 
 export const newMeetingFields = () => ({
   id: {
@@ -67,6 +69,19 @@ export const newMeetingFields = () => ({
   },
   meetingType: {
     type: new GraphQLNonNull(MeetingTypeEnum)
+  },
+  name: {
+    type: new GraphQLNonNull(GraphQLString),
+    description: 'The name of the meeting'
+  },
+  organization: {
+    type: new GraphQLNonNull(Organization),
+    description: 'The organization this meeting belongs to',
+    resolve: async ({teamId}, _args, {dataLoader}: GQLContext) => {
+      const team = await dataLoader.get('teams').load(teamId)
+      const {orgId} = team
+      return dataLoader.get('organizations').load(orgId)
+    }
   },
   phases: {
     type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeetingPhase))),

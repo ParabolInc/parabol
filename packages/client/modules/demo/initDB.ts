@@ -14,8 +14,8 @@ import {
 import getDemoAvatar from '../../utils/getDemoAvatar'
 import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {DemoReflection, DemoReflectionGroup, DemoTask} from './ClientGraphQLServer'
+import {RetroDemo} from '../../types/constEnums'
 
-export const demoMeetingId = 'demoMeeting'
 export const demoViewerId = 'demoUser'
 export const demoTeamId = 'demoTeam'
 export const demoOrgId = 'demoOrg'
@@ -173,9 +173,8 @@ const initDemoTeamMember = ({id: userId, preferredName, picture}, idx) => {
 const initDemoMeetingMember = (user) => {
   return {
     __typename: 'RetrospectiveMeetingMember',
-    id: toTeamMemberId(demoMeetingId, user.id),
-    isCheckedIn: true,
-    meetingId: demoMeetingId,
+    id: toTeamMemberId(RetroDemo.MEETING_ID, user.id),
+    meetingId: RetroDemo.MEETING_ID,
     meetingType: RETROSPECTIVE,
     teamId: demoTeamId,
     tasks: [] as ITask[],
@@ -207,7 +206,7 @@ const initDemoTeam = (organization, teamMembers, newMeeting) => {
     isPaid: true,
     agendaItems: [],
     massInviteToken: '42',
-    meetingId: demoMeetingId,
+    meetingId: RetroDemo.MEETING_ID,
     name: demoTeamName,
     teamName: demoTeamName,
     orgId: demoOrgId,
@@ -225,7 +224,7 @@ const initCheckInStage = (teamMember) => ({
   endAt: new Date().toJSON(),
   id: 'checkinStage',
   isComplete: true,
-  meetingId: demoMeetingId,
+  meetingId: RetroDemo.MEETING_ID,
   phaseType: CHECKIN,
   teamMemberId: teamMember.id,
   teamMember
@@ -244,7 +243,7 @@ const initPhases = (teamMembers) => {
         '{"blocks":[{"key":"1bm6m","text":"What’s got your attention today, and why?","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}',
       id: 'checkinPhase',
       phaseType: CHECKIN,
-      meetingId: demoMeetingId,
+      meetingId: RetroDemo.MEETING_ID,
       stages: teamMembers.map(initCheckInStage)
     },
     {
@@ -252,7 +251,7 @@ const initPhases = (teamMembers) => {
       id: 'reflectPhase',
       phaseType: REFLECT,
       focusedPhaseItemId: null,
-      meetingId: demoMeetingId,
+      meetingId: RetroDemo.MEETING_ID,
       reflectPrompts: [
         {
           id: 'startId',
@@ -280,7 +279,7 @@ const initPhases = (teamMembers) => {
           isComplete: false,
           isNavigable: true,
           isNavigableByFacilitator: true,
-          meetingId: demoMeetingId,
+          meetingId: RetroDemo.MEETING_ID,
           phaseType: REFLECT,
           startAt: now
         }
@@ -290,13 +289,13 @@ const initPhases = (teamMembers) => {
       __typename: 'GenericMeetingPhase',
       id: 'groupPhase',
       phaseType: GROUP,
-      meetingId: demoMeetingId,
+      meetingId: RetroDemo.MEETING_ID,
       stages: [
         {
           __typename: 'GenericMeetingStage',
           id: 'groupStage',
           isComplete: false,
-          meetingId: demoMeetingId,
+          meetingId: RetroDemo.MEETING_ID,
           phaseType: GROUP
         }
       ]
@@ -305,13 +304,13 @@ const initPhases = (teamMembers) => {
       __typename: 'GenericMeetingPhase',
       id: 'votePhase',
       phaseType: VOTE,
-      meetingId: demoMeetingId,
+      meetingId: RetroDemo.MEETING_ID,
       stages: [
         {
           __typename: 'GenericMeetingStage',
           id: 'voteStage',
           isComplete: false,
-          meetingId: demoMeetingId,
+          meetingId: RetroDemo.MEETING_ID,
           phaseType: VOTE
         }
       ]
@@ -320,12 +319,12 @@ const initPhases = (teamMembers) => {
       __typename: 'DiscussPhase',
       id: 'discussPhase',
       phaseType: DISCUSS,
-      meetingId: demoMeetingId,
+      meetingId: RetroDemo.MEETING_ID,
       stages: [
         {
           __typename: 'RetroDiscussStage',
           id: 'discussStage0',
-          meetingId: demoMeetingId,
+          meetingId: RetroDemo.MEETING_ID,
           isComplete: false,
           isNavigable: false,
           isNavigableByFacilitator: false,
@@ -349,9 +348,9 @@ const initNewMeeting = (teamMembers, meetingMembers) => {
     facilitatorStageId: 'reflectStage',
     facilitatorUserId: demoViewerId,
     facilitator: viewerTeamMember,
-    id: demoMeetingId,
+    id: RetroDemo.MEETING_ID,
     // alias is important for relay to normalize records correctly. if not supplied, value will be null
-    meetingId: demoMeetingId,
+    meetingId: RetroDemo.MEETING_ID,
     meetingNumber: 1,
     meetingType: RETROSPECTIVE,
     meetingMember: viewerMeetingMember,

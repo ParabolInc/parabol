@@ -6,14 +6,13 @@ import graphql from 'babel-plugin-relay/macro'
 import useMenu from '../hooks/useMenu'
 import {MenuPosition} from '../hooks/useCoords'
 import lazyPreload from '../utils/lazyPreload'
-import {StageTimerControl_team} from '../__generated__/StageTimerControl_team.graphql'
 import styled from '@emotion/styled'
 import {ElementWidth} from '../types/constEnums'
+import {StageTimerControl_meeting} from '__generated__/StageTimerControl_meeting.graphql'
 
 interface Props {
   defaultTimeLimit: number
-  meetingId: string
-  team: StageTimerControl_team
+  meeting: StageTimerControl_meeting
 }
 
 const StageTimerModal = lazyPreload(async () =>
@@ -30,12 +29,10 @@ const TimerButton = styled(BottomNavControl)({
 })
 
 const StageTimerControl = (props: Props) => {
-  const {defaultTimeLimit, meetingId, team} = props
-  const {teamMembers, newMeeting, id: teamId} = team
-  const {localStage, facilitator} = newMeeting!
+  const {defaultTimeLimit, meeting} = props
+  const {meetingMembers, localStage, facilitator, id: meetingId} = meeting
   const {isAsync, isComplete, scheduledEndTime} = localStage
-  const connectedMemberCount = teamMembers.filter((teamMember) => teamMember.user.isConnected)
-    .length
+  const connectedMemberCount = meetingMembers.filter((member) => member.user.isConnected).length
   const color = scheduledEndTime ? 'green' : 'midGray'
   const icon = isAsync ? 'event' : 'timer'
   const {menuProps, menuPortal, originRef, togglePortal} = useMenu<HTMLDivElement>(
@@ -59,7 +56,6 @@ const StageTimerControl = (props: Props) => {
           menuProps={menuProps}
           stage={localStage}
           facilitator={facilitator}
-          teamId={teamId}
         />
       )}
     </>
@@ -76,26 +72,24 @@ graphql`
 `
 
 export default createFragmentContainer(StageTimerControl, {
-  team: graphql`
-    fragment StageTimerControl_team on Team {
+  meeting: graphql`
+    fragment StageTimerControl_meeting on NewMeeting {
       id
-      teamMembers(sortBy: "checkInOrder") {
+      meetingMembers {
         user {
           isConnected
         }
       }
-      newMeeting {
-        localStage {
+      localStage {
+        ...StageTimerControlStage @relay(mask: false)
+      }
+      phases {
+        stages {
           ...StageTimerControlStage @relay(mask: false)
         }
-        phases {
-          stages {
-            ...StageTimerControlStage @relay(mask: false)
-          }
-        }
-        facilitator {
-          ...StageTimerModal_facilitator
-        }
+      }
+      facilitator {
+        ...StageTimerModal_facilitator
       }
     }
   `
