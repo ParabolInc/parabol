@@ -199,6 +199,7 @@ export const removeOrgUserNotificationOnNext: OnNextHandler<
 
   for (let ii = 0; ii < teams.length; ii++) {
     const team = teams[ii]
+    if (!team) continue
     const {activeMeetings, id: teamId} = team
     const meetingIds = activeMeetings.map(({id}) => id)
     if (
