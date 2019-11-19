@@ -41,6 +41,7 @@ const mutation = graphql`
       error {
         message
       }
+      authToken
       ...AddOrgMutation_organization @relay(mask: false)
     }
   }
@@ -91,10 +92,12 @@ const AddOrgMutation: StandardMutation<TAddOrgMutation, HistoryLocalHandler> = (
       if (onCompleted) {
         onCompleted(res, errors)
       }
+      const {addOrg} = res
       if (!errors) {
-        const payload = res.addOrg
-        popOrganizationCreatedToast(payload, {atmosphere})
-        const teamId = payload.team && payload.team.id
+        const {authToken} = addOrg
+        atmosphere.setAuthToken(authToken)
+        popOrganizationCreatedToast(addOrg, {atmosphere})
+        const teamId = addOrg.team && addOrg.team.id
         history.push(`/team/${teamId}`)
       }
     },

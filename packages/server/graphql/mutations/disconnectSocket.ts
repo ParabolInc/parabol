@@ -68,6 +68,11 @@ export default {
             .default(true)
             .run()
           if (userOffline) {
+            await r
+              .table('User')
+              .get(userId)
+              .update({lastSeenAtURL: null})
+              .run()
             facilitatingMeetings.forEach((meeting) => {
               const {phases, facilitatorStageId, id: meetingId, teamId} = meeting as Meeting
               const {stage} = findStageById(phases, facilitatorStageId)!

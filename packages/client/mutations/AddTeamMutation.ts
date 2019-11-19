@@ -36,6 +36,7 @@ const mutation = graphql`
       error {
         message
       }
+      authToken
       ...AddTeamMutation_team @relay(mask: false)
     }
   }
@@ -82,9 +83,11 @@ const AddTeamMutation: StandardMutation<TAddTeamMutation, HistoryLocalHandler> =
     onCompleted: (res, errors) => {
       onCompleted(res, errors)
       const error = getGraphQLError(res, errors)
+      const {addTeam} = res
       if (!error) {
-        const payload = res.addTeam
-        popTeamCreatedToast(payload, {atmosphere, history})
+        const {authToken} = addTeam
+        atmosphere.setAuthToken(authToken)
+        popTeamCreatedToast(addTeam, {atmosphere, history})
       }
     },
     onError
