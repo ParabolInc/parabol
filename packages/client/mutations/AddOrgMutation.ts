@@ -3,9 +3,9 @@ import graphql from 'babel-plugin-relay/macro'
 import handleAddOrganization from './handlers/handleAddOrganization'
 import handleAddTeams from './handlers/handleAddTeams'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
-import {OnNextHandler} from '../types/relayMutations'
+import {HistoryLocalHandler, OnNextHandler, StandardMutation} from '../types/relayMutations'
 import {AddOrgMutation_organization} from '../__generated__/AddOrgMutation_organization.graphql'
-import {AddOrgMutation as IAddOrgMutation} from '../__generated__/AddOrgMutation.graphql'
+import {AddOrgMutation as TAddOrgMutation} from '../__generated__/AddOrgMutation.graphql'
 
 graphql`
   fragment AddOrgMutation_organization on AddOrgPayload {
@@ -23,7 +23,8 @@ graphql`
     team {
       id
       name
-      ...CompleteTeamFragWithMembers @relay(mask: false)
+      ...DashAlertMeetingActiveMeetings
+      ...Team_team
     }
   }
 `
@@ -40,6 +41,7 @@ const mutation = graphql`
       error {
         message
       }
+      authToken
       ...AddOrgMutation_organization @relay(mask: false)
     }
   }
@@ -72,9 +74,13 @@ export const addOrgMutationNotificationUpdater = (payload, {store}) => {
   handleRemoveSuggestedActions(removedSuggestedActionId, store)
 }
 
-const AddOrgMutation = (atmosphere, variables, {history}, onError, onCompleted) => {
+const AddOrgMutation: StandardMutation<TAddOrgMutation, HistoryLocalHandler> = (
+  atmosphere,
+  variables,
+  {history, onError, onCompleted}
+) => {
   const {viewerId} = atmosphere
-  return commitMutation<IAddOrgMutation>(atmosphere, {
+  return commitMutation<TAddOrgMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {
@@ -86,10 +92,12 @@ const AddOrgMutation = (atmosphere, variables, {history}, onError, onCompleted) 
       if (onCompleted) {
         onCompleted(res, errors)
       }
+      const {addOrg} = res
       if (!errors) {
-        const payload = res.addOrg
-        popOrganizationCreatedToast(payload, {atmosphere})
-        const teamId = payload.team && payload.team.id
+        const {authToken} = addOrg
+        atmosphere.setAuthToken(authToken)
+        popOrganizationCreatedToast(addOrg, {atmosphere})
+        const teamId = addOrg.team && addOrg.team.id
         history.push(`/team/${teamId}`)
       }
     },

@@ -22,7 +22,7 @@ const createProxyRecord = <T = unknown>(
   store: RecordSourceSelectorProxy<any> | RecordSourceProxy,
   type: string,
   record: T
-): T extends unknown ? RecordProxy<any> : RecordProxy<T> => {
+): unknown extends T ? RecordProxy<any> : RecordProxy<T> => {
   // @ts-ignore
   const id = record.id || clientTempId()
   const newRecord = store.create(id, type)
