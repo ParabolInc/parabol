@@ -15,19 +15,11 @@ const popInvolvementToast: OnNextHandler<TaskInvolves_notification, OnNextHistor
   } = notification
   const {id: taskId} = task
   const {pathname} = window.location
-  const inMeeting =
-    Boolean(
-      matchPath(pathname, {
-        path: '/meeting',
-        exact: false,
-        strict: false
-      })
-    ) ||
-    matchPath(pathname, {
-      path: '/retro',
-      exact: false,
-      strict: false
-    })
+  const inMeeting = !!matchPath(pathname, {
+    path: '/meet',
+    exact: false,
+    strict: false
+  })
   if (inMeeting) return
 
   const wording = involvement === MENTIONEE ? 'mentioned you in' : 'assigned you to'
