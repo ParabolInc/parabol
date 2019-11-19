@@ -5,6 +5,30 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.13.0 2019-Nov-19
+
+## Fixed
+* Summary intermittently couldn't scroll (#3361)
+* Errors caused by updateTask didn't show on the Task card (#3361)
+* Empty reflections are now removed when completing the grouping phase (#3361)
+* Empty tasks are removed before generating the meeting summary (#3361)
+* Reflections being edited while advancing to the vote stage would stay editable (#3357)
+* Drop animations for reflections at the bottom of a column (#3336)
+
+## Added
+* Back button to the Forgot Password view (#3358)
+* Transitions to online avatars in the meetings (#3356)
+* Backend support for an optional check-in round (#3355)
+* Ability to add reflections from the Reflect phase while the Group phase is still in progress (#3354)
+
+## Changed
+* Invite Dialog View (#3351)
+* Moved meetings from /meeting/:teamId to /meet/:meetingId to support future multi-meetings
+* E4E Policy to reflect new funding round (#3347)
+* Upgraded to Typescript 3.7
+* Upgraded a bunch of other dependencies
+ 
+
 ## 4.12.0 2019-Nov-11
 
 ## Fixed
