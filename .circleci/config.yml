@@ -50,11 +50,7 @@ jobs:
       - run:
           name: DevOps checkout
           command: |
-            ssh-agent $(
-            ssh-add -D;
-            ssh-add ~/.ssh/id_rsa_53a83735c37e54f519f68ea1e07852da;
             git clone $DEVOPS_REPO $DEVOPS_WORKDIR
-            )
       - run:
           name: NPM run test
           command: |
