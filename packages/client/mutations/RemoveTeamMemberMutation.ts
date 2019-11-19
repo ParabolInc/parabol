@@ -146,7 +146,7 @@ export const removeTeamMemberTeamUpdater = (payload, store, viewerId) => {
 
   const removedTasks = payload.getLinkedRecords('updatedTasks')
   const taskIds = getInProxy(removedTasks, 'id')
-  handleRemoveTasks(taskIds, store, viewerId)
+  handleRemoveTasks(taskIds, store)
 }
 
 export const removeTeamMemberUpdater = (payload, store, viewerId) => {

@@ -14,6 +14,7 @@ import handleUpsertTasks from './handlers/handleUpsertTasks'
 import {RetroDemo} from '../types/constEnums'
 import {EndNewMeetingMutation_team} from '__generated__/EndNewMeetingMutation_team.graphql'
 import {EndNewMeetingMutation_notification} from '__generated__/EndNewMeetingMutation_notification.graphql'
+import handleRemoveTasks from './handlers/handleRemoveTasks'
 
 graphql`
   fragment EndNewMeetingMutation_team on EndNewMeetingPayload {
@@ -31,6 +32,7 @@ graphql`
         id
       }
     }
+    removedTaskIds
     updatedTasks {
       id
       content
@@ -109,7 +111,8 @@ export const endNewMeetingTeamUpdater: SharedUpdater<EndNewMeetingMutation_team>
   {store}
 ) => {
   const updatedTasks = payload.getLinkedRecords('updatedTasks')
-  // TODO PR the typings to fix this
+  const removedTaskIds = payload.getValue('removedTaskIds')
+  handleRemoveTasks(removedTaskIds as any, store)
   handleUpsertTasks(updatedTasks as any, store)
 }
 

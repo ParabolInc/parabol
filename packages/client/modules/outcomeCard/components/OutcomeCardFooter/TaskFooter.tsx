@@ -15,10 +15,11 @@ import OutcomeCardMessage from '../OutcomeCardMessage/OutcomeCardMessage'
 import {USER_DASH} from '../../../../utils/constants'
 import removeContentTag from '../../../../utils/draftjs/removeContentTag'
 import isTaskArchived from '../../../../utils/isTaskArchived'
-import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 import {AreaEnum} from '../../../../types/graphql'
 import {Card} from '../../../../types/constEnums'
 import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
+import useMutationProps from '../../../../hooks/useMutationProps'
+import setLocalTaskError from '../../../../utils/relay/setLocalTaskError'
 
 const Footer = styled('div')({
   display: 'flex',
@@ -47,7 +48,7 @@ const AvatarBlock = styled('div')({
   minWidth: 0
 })
 
-interface Props extends WithMutationProps {
+interface Props {
   area: AreaEnum
   cardIsActive: boolean
   editorState: EditorState
@@ -57,23 +58,28 @@ interface Props extends WithMutationProps {
 }
 
 const TaskFooter = (props: Props) => {
-  const {
-    area,
-    cardIsActive,
-    editorState,
-    error,
-    isAgenda,
-    onCompleted,
-    onError,
+  const {area, cardIsActive, editorState, isAgenda, task, useTaskChild} = props
+  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
+  const handleError = (err: Error) => {
+    onError(err)
+    if (err.message) {
+      setLocalTaskError(atmosphere, taskId, err.message)
+    }
+  }
+  const handleCompleted = (res, errors) => {
+    onCompleted(res, errors)
+    setLocalTaskError(atmosphere, taskId, null)
+  }
+
+  const mutationProps = {
+    onCompleted: handleCompleted,
     submitMutation,
     submitting,
-    task,
-    useTaskChild
-  } = props
-  const mutationProps = {onError, onCompleted, submitMutation, submitting}
+    onError: handleError
+  }
   const atmosphere = useAtmosphere()
   const showTeam = area === USER_DASH
-  const {content, id: taskId, integration, tags} = task
+  const {content, id: taskId, error, integration, tags} = task
   const isArchived = isTaskArchived(tags)
   const canAssign = !integration && !isArchived
   return (
@@ -120,21 +126,17 @@ const TaskFooter = (props: Props) => {
           )}
         </ButtonGroup>
       </Footer>
-      {error && (
-        <OutcomeCardMessage
-          onClose={() => onError()}
-          message={typeof error === 'string' ? error : (error.message as string)}
-        />
-      )}
+      {error && <OutcomeCardMessage onClose={handleCompleted} message={error} />}
     </React.Fragment>
   )
 }
 
-export default createFragmentContainer(withMutationProps(TaskFooter), {
+export default createFragmentContainer(TaskFooter, {
   task: graphql`
     fragment TaskFooter_task on Task {
       id
       content
+      error
       integration {
         service
       }

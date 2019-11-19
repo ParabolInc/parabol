@@ -41,10 +41,13 @@ const TeamCallsToActionMenu = lazyPreload(() =>
 const TeamCallToAction = (props: Props) => {
   const {team} = props
   const {id: teamId, activeMeetings} = team
-  const {togglePortal, originRef, menuPortal, menuProps, loadingWidth} = useMenu(
-    MenuPosition.UPPER_RIGHT,
-    {isDropdown: true}
-  )
+  const {
+    togglePortal,
+    originRef,
+    menuPortal,
+    menuProps,
+    loadingWidth
+  } = useMenu(MenuPosition.UPPER_RIGHT, {isDropdown: true})
   const [firstActiveMeeting] = activeMeetings
   const {history} = useRouter()
   const label = firstActiveMeeting && meetingTypeToLabel[firstActiveMeeting.meetingType]

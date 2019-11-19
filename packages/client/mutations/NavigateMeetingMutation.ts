@@ -32,6 +32,9 @@ graphql`
       reflect {
         emptyReflectionGroupIds
       }
+      group {
+        emptyReflectionGroupIds
+      }
       vote {
         meeting {
           phases {
@@ -113,6 +116,12 @@ export const navigateMeetingTeamUpdater = (
     .getLinkedRecord('reflect')
     .getValue('emptyReflectionGroupIds')
   handleRemoveReflectionGroups(emptyReflectionGroupIds, meetingId, store)
+
+  const emptyGroupReflectionGroupIds = safeProxy(payload)
+    .getLinkedRecord('phaseComplete')
+    .getLinkedRecord('reflect')
+    .getValue('emptyReflectionGroupIds')
+  handleRemoveReflectionGroups(emptyGroupReflectionGroupIds, meetingId, store)
 
   if (emptyReflectionGroupIds) {
     const phases = meeting.getLinkedRecords('phases')
