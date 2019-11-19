@@ -16,6 +16,8 @@ import standardError from '../../utils/standardError'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import AuthTokenPayload from '../types/AuthTokenPayload'
 import {TierEnum} from 'parabol-client/types/graphql'
+import encodeAuthToken from '../../utils/encodeAuthToken'
+import AuthToken from '../../database/types/AuthToken'
 
 export default {
   type: new GraphQLNonNull(AddTeamPayload),
@@ -101,7 +103,10 @@ export default {
       }
       publish(SubscriptionChannel.TEAM, viewerId, AddTeamPayload, data, subOptions)
 
-      return data
+      return {
+        ...data,
+        authToken: encodeAuthToken(new AuthToken({tms, sub: viewerId}))
+      }
     }
   )
 }

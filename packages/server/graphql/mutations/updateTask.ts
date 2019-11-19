@@ -1,7 +1,6 @@
 import {GraphQLNonNull} from 'graphql'
 import ms from 'ms'
 import getRethink from '../../database/rethinkDriver'
-import getUsersToIgnore from './helpers/getUsersToIgnore'
 import publishChangeNotifications from './helpers/publishChangeNotifications'
 import AreaEnum from '../types/AreaEnum'
 import UpdateTaskInput from '../types/UpdateTaskInput'
@@ -9,7 +8,7 @@ import UpdateTaskPayload from '../types/UpdateTaskPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import shortid from 'shortid'
-import {MEETING, TASK} from '../../../client/utils/constants'
+import {TASK} from '../../../client/utils/constants'
 import standardError from '../../utils/standardError'
 import {IUpdateTaskOnMutationArguments} from '../../../client/types/graphql'
 import {GQLContext} from '../graphql'
@@ -17,6 +16,7 @@ import {validateTaskUserId} from './createTask'
 import Task from '../../database/types/Task'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import {ITeamMember} from 'parabol-client/types/graphql'
+import getUsersToIgnore from './helpers/getUsersToIgnore'
 
 const DEBOUNCE_TIME = ms('5m')
 
@@ -35,7 +35,7 @@ export default {
   },
   async resolve(
     _source,
-    {area, updatedTask}: IUpdateTaskOnMutationArguments,
+    {updatedTask}: IUpdateTaskOnMutationArguments,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
@@ -132,15 +132,8 @@ export default {
         })
         .coerceTo('array') as unknown) as ITeamMember[]
     }).run()
-    const team =
-      area === MEETING
-        ? await r
-            .table('Team')
-            .get(nextTeamId)
-            .run()
-        : undefined
-    const meetingId = team ? team.meetingId : undefined
-    const usersToIgnore = await getUsersToIgnore(meetingId, dataLoader)
+    // TODO: get users in the same location
+    const usersToIgnore = await getUsersToIgnore(viewerId, teamId, dataLoader)
     if (!newTask) return standardError(new Error('Already updated task'), {userId: viewerId})
 
     // send task updated messages

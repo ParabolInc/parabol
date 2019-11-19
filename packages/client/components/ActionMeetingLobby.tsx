@@ -1,4 +1,4 @@
-import {ActionMeetingLobby_team} from '../__generated__/ActionMeetingLobby_team.graphql'
+import {ActionMeetingLobby_viewer} from '../__generated__/ActionMeetingLobby_viewer.graphql'
 import React from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
@@ -23,6 +23,12 @@ import {MeetingTypeEnum} from '../types/graphql'
 import lazyPreload from '../utils/lazyPreload'
 import makeHref from '../utils/makeHref'
 import {meetingTypeToLabel, meetingTypeToSlug} from '../utils/meetings/lookups'
+import useLegacyLobby from '../hooks/useLegacyLobby'
+import MeetingStyles from './MeetingStyles'
+import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
+import Icon from '../components/Icon'
+import FlatButton from '../components/FlatButton'
+import {PALETTE} from '../styles/paletteV2'
 
 const ButtonGroup = styled('div')({
   display: 'flex',
@@ -49,11 +55,26 @@ const UrlBlock = styled('div')({
 })
 
 interface Props extends ActionMeetingPhaseProps {
-  team: ActionMeetingLobby_team
+  viewer: ActionMeetingLobby_viewer
 }
 
 const StyledButton = styled(PrimaryButton)({
   width: '100%'
+})
+
+const IconButton = styled(FlatButton)({
+  color: PALETTE.TEXT_GRAY,
+  marginLeft: -8,
+  marginTop: -4,
+  padding: '3px 0',
+  width: 32,
+  ':hover,:focus,:active': {
+    color: PALETTE.TEXT_MAIN
+  }
+})
+
+const BackIcon = styled(Icon)({
+  color: 'inherit'
 })
 
 const meetingType = MeetingTypeEnum.action
@@ -71,66 +92,84 @@ const ActionMeetingLobby = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {submitMutation, submitting, onError, onCompleted} = useMutationProps()
-  const {avatarGroup, toggleSidebar, team} = props
-  const {id: teamId, name: teamName, isMeetingSidebarCollapsed} = team
+  const {viewer} = props
+  const team = viewer.team!
+  useLegacyLobby(team)
+  const {id: teamId, name: teamName} = team
+
   const onStartMeetingClick = () => {
     if (submitting) return
     submitMutation()
     StartNewMeetingMutation(atmosphere, {teamId, meetingType}, {history, onError, onCompleted})
   }
+
+  const goToTeamDashboard = () => {
+    history.push(`/team/${teamId}/`)
+  }
   return (
-    <MeetingContent>
-      <MeetingTopBar
-        avatarGroup={avatarGroup}
-        isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
-        toggleSidebar={toggleSidebar}
-      />
-      <ErrorBoundary>
-        <NewMeetingLobby>
-          <StyledLabel>{`${meetingLabel} Meeting Lobby`}</StyledLabel>
-          <StyledHeading>{`${teamName} ${meetingLabel}`}</StyledHeading>
-          <StyledCopy>
-            {'The person who presses “Start Meeting” will be today’s Facilitator.'}
-            <br />
-            {'Everyone’s display automatically follows the Facilitator.'}
-          </StyledCopy>
-          <StyledCopy>
-            <b>{'Today’s Facilitator'}</b>
-            {`: begin the ${meetingLabel} Meeting!`}
-          </StyledCopy>
-          <ButtonGroup>
-            <ButtonBlock>
-              <StyledButton
-                aria-label={buttonLabel}
-                onClick={onStartMeetingClick}
-                size='large'
-                waiting={submitting}
-              >
-                {buttonLabel}
-              </StyledButton>
-            </ButtonBlock>
-          </ButtonGroup>
-          <UrlBlock>
-            <CopyShortLink
-              icon={'link'}
-              url={makeHref(`/${meetingSlug}/${teamId}`)}
-              title={'Copy Meeting Link'}
-              tooltip={'Copied the meeting link!'}
-            />
-          </UrlBlock>
-          <MeetingHelpToggle menu={<ActionMeetingLobbyHelpMenu />} />
-        </NewMeetingLobby>
-      </ErrorBoundary>
-    </MeetingContent>
+    <MeetingStyles>
+      <MeetingContent>
+        <MeetingTopBar
+          avatarGroup={
+            <NewMeetingAvatarGroup allowVideo={false} camStreams={{}} swarm={null} team={team} />
+          }
+          isMeetingSidebarCollapsed={false}
+          toggleSidebar={() => {}}
+        >
+          <IconButton aria-label='Back to Team Dashboard' onClick={goToTeamDashboard}>
+            <BackIcon>arrow_back</BackIcon>
+          </IconButton>
+        </MeetingTopBar>
+        <ErrorBoundary>
+          <NewMeetingLobby>
+            <StyledLabel>{`${meetingLabel} Meeting Lobby`}</StyledLabel>
+            <StyledHeading>{`${teamName} ${meetingLabel}`}</StyledHeading>
+            <StyledCopy>
+              {'The person who presses “Start Meeting” will be today’s Facilitator.'}
+              <br />
+              {'Everyone’s display automatically follows the Facilitator.'}
+            </StyledCopy>
+            <StyledCopy>
+              <b>{'Today’s Facilitator'}</b>
+              {`: begin the ${meetingLabel} Meeting!`}
+            </StyledCopy>
+            <ButtonGroup>
+              <ButtonBlock>
+                <StyledButton
+                  aria-label={buttonLabel}
+                  onClick={onStartMeetingClick}
+                  size='large'
+                  waiting={submitting}
+                >
+                  {buttonLabel}
+                </StyledButton>
+              </ButtonBlock>
+            </ButtonGroup>
+            <UrlBlock>
+              <CopyShortLink
+                icon={'link'}
+                url={makeHref(`/${meetingSlug}/${teamId}`)}
+                title={'Copy Meeting Link'}
+                tooltip={'Copied the meeting link!'}
+              />
+            </UrlBlock>
+            <MeetingHelpToggle menu={<ActionMeetingLobbyHelpMenu />} />
+          </NewMeetingLobby>
+        </ErrorBoundary>
+      </MeetingContent>
+    </MeetingStyles>
   )
 }
 
 export default createFragmentContainer(ActionMeetingLobby, {
-  team: graphql`
-    fragment ActionMeetingLobby_team on Team {
-      id
-      name
-      isMeetingSidebarCollapsed
+  viewer: graphql`
+    fragment ActionMeetingLobby_viewer on User {
+      team(teamId: $teamId) {
+        ...useLegacyLobby_team
+        ...NewMeetingAvatarGroup_team
+        id
+        name
+      }
     }
   `
 })

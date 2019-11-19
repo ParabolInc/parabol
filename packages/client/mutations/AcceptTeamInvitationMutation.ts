@@ -1,17 +1,21 @@
 import {AcceptTeamInvitationMutation_team} from '../__generated__/AcceptTeamInvitationMutation_team.graphql'
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {RecordProxy} from 'relay-runtime'
 import handleAddTeamMembers from './handlers/handleAddTeamMembers'
 import handleRemoveNotifications from './handlers/handleRemoveNotifications'
 import getGraphQLError from '../utils/relay/getGraphQLError'
 import getInProxy from '../utils/relay/getInProxy'
-import {LocalHandlers, OnNextHandler, StandardMutation} from '../types/relayMutations'
+import {
+  HistoryMaybeLocalHandler,
+  OnNextHandler,
+  SharedUpdater,
+  StandardMutation
+} from '../types/relayMutations'
 import {AcceptTeamInvitationMutation as TAcceptTeamInvitationMutation} from '../__generated__/AcceptTeamInvitationMutation.graphql'
 import handleAddTeams from './handlers/handleAddTeams'
-import {meetingTypeToSlug} from '../utils/meetings/lookups'
 import getValidRedirectParam from '../utils/getValidRedirectParam'
 import fromTeamMemberId from '../utils/relay/fromTeamMemberId'
+import {AcceptTeamInvitationMutation_notification} from '__generated__/AcceptTeamInvitationMutation_notification.graphql'
 
 graphql`
   fragment AcceptTeamInvitationMutation_team on AcceptTeamInvitationPayload {
@@ -20,22 +24,8 @@ graphql`
     }
     team {
       name
-      newMeeting {
-        meetingType
-        phases {
-          phaseType
-          meetingId
-          stages {
-            isComplete
-            isNavigable
-            isNavigableByFacilitator
-            ...NewMeetingCheckInLocalStage @relay(mask: false)
-            ...ActionMeetingUpdatesStage @relay(mask: false)
-            ... on NewMeetingTeamMemberStage {
-              teamMemberId
-            }
-          }
-        }
+      activeMeetings {
+        ...MeetingSelector_meeting
       }
     }
   }
@@ -45,9 +35,12 @@ graphql`
     # this is just for the user that accepted the invitation
     removedNotificationIds
     team {
-      ...CompleteTeamFrag @relay(mask: false)
-      newMeeting {
-        meetingType
+      ...DashNavTeam_team
+      ...DashAlertMeetingActiveMeetings
+      id
+      name
+      activeMeetings {
+        id
       }
     }
     # this is just for the team lead
@@ -72,14 +65,30 @@ const mutation = graphql`
   }
 `
 
-export const acceptTeamInvitationNotificationUpdater = (payload: RecordProxy<any>, {store}) => {
+export const acceptTeamInvitationNotificationUpdater: SharedUpdater<AcceptTeamInvitationMutation_notification> = (
+  payload,
+  {store}
+) => {
   const team = payload.getLinkedRecord('team')
   handleAddTeams(team, store)
   const notificationIds = getInProxy(payload, 'removedNotificationIds')
   handleRemoveNotifications(notificationIds, store)
+
+  // the viewer could have requested the meeting & had it return null
+  const activeMeetings = team.getLinkedRecords('activeMeetings')
+  const viewer = store.getRoot().getLinkedRecord('viewer')
+  if (viewer) {
+    activeMeetings.forEach((activeMeeting) => {
+      const meetingId = activeMeeting.getValue('id')
+      viewer.setLinkedRecord(activeMeeting, 'meeting', {meetingId})
+    })
+  }
 }
 
-export const acceptTeamInvitationTeamUpdater = (payload: RecordProxy, {store}) => {
+export const acceptTeamInvitationTeamUpdater: SharedUpdater<AcceptTeamInvitationMutation_team> = (
+  payload,
+  {store}
+) => {
   const teamMember = payload.getLinkedRecord('teamMember')
   handleAddTeamMembers(teamMember, store)
 }
@@ -104,18 +113,21 @@ export const acceptTeamInvitationTeamOnNext: OnNextHandler<AcceptTeamInvitationM
   })
 }
 
-const AcceptTeamInvitationMutation: StandardMutation<TAcceptTeamInvitationMutation> = (
-  atmosphere,
-  variables,
-  {history, onCompleted, onError}: LocalHandlers = {}
-) => {
+interface LocalHandler extends HistoryMaybeLocalHandler {
+  meetingId?: string | null
+}
+
+const AcceptTeamInvitationMutation: StandardMutation<
+  TAcceptTeamInvitationMutation,
+  LocalHandler
+> = (atmosphere, variables, {history, onCompleted, onError, meetingId}) => {
   return commitMutation<TAcceptTeamInvitationMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {
       const payload = store.getRootField('acceptTeamInvitation')
       if (!payload) return
-      acceptTeamInvitationNotificationUpdater(payload, {store})
+      acceptTeamInvitationNotificationUpdater(payload, {atmosphere, store})
     },
     onError,
     onCompleted: (data, errors) => {
@@ -124,12 +136,14 @@ const AcceptTeamInvitationMutation: StandardMutation<TAcceptTeamInvitationMutati
       }
       const serverError = getGraphQLError(data, errors)
       if (serverError) return
-      const {
-        acceptTeamInvitation: {authToken, team}
-      } = data
+      const {acceptTeamInvitation} = data
+      const {authToken, team} = acceptTeamInvitation
       atmosphere.setAuthToken(authToken)
       if (!team) return
-      const {id: teamId, name: teamName, newMeeting} = team
+      const {id: teamId, name: teamName, activeMeetings} = team
+      const activeMeeting =
+        (meetingId && activeMeetings.find((meeting) => meeting.id === meetingId)) ||
+        activeMeetings[0]
       atmosphere.eventEmitter.emit('addSnackbar', {
         key: `addedToTeam:${teamId}`,
         autoDismiss: 5,
@@ -139,10 +153,8 @@ const AcceptTeamInvitationMutation: StandardMutation<TAcceptTeamInvitationMutati
       if (history) {
         if (redirectTo) {
           history.push(redirectTo)
-        } else if (newMeeting) {
-          const {meetingType} = newMeeting
-          const meetingSlug = meetingTypeToSlug[meetingType]
-          history.push(`/${meetingSlug}/${teamId}`)
+        } else if (activeMeeting) {
+          history.push(`/meet/${activeMeeting.id}`)
         } else {
           history.push(`/team/${teamId}`)
         }

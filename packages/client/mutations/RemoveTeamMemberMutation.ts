@@ -11,7 +11,8 @@ import handleRemoveTasks from './handlers/handleRemoveTasks'
 import onTeamRoute from '../utils/onTeamRoute'
 import {RemoveTeamMemberMutation_team} from '../__generated__/RemoveTeamMemberMutation_team.graphql'
 import {RemoveTeamMemberMutation as IRemoveTeamMemberMutation} from '../__generated__/RemoveTeamMemberMutation.graphql'
-import {OnNextHandler} from '../types/relayMutations'
+import {OnNextHandler, OnNextHistoryContext} from '../types/relayMutations'
+import onMeetingRoute from '../utils/onMeetingRoute'
 
 graphql`
   fragment RemoveTeamMemberMutation_task on RemoveTeamMemberPayload {
@@ -34,7 +35,7 @@ graphql`
 graphql`
   fragment RemoveTeamMemberMutation_teamTeam on Team {
     id
-    newMeeting {
+    activeMeetings {
       facilitatorStageId
       facilitatorUserId
       meetingMembers {
@@ -60,7 +61,14 @@ graphql`
     kickOutNotification {
       id
       type
-      ...KickedOut_notification @relay(mask: false)
+      team {
+        id
+        name
+        activeMeetings {
+          id
+        }
+      }
+      ...KickedOut_notification
     }
     team {
       ...RemoveTeamMemberMutation_teamTeam @relay(mask: false)
@@ -84,17 +92,15 @@ const mutation = graphql`
   }
 `
 
-export const removeTeamMemberTeamOnNext: OnNextHandler<RemoveTeamMemberMutation_team> = (
-  payload,
-  {atmosphere, history}
-) => {
+export const removeTeamMemberTeamOnNext: OnNextHandler<
+  RemoveTeamMemberMutation_team,
+  OnNextHistoryContext
+> = (payload, {atmosphere, history}) => {
   if (!payload) return
   const {kickOutNotification} = payload
   if (!kickOutNotification) return
-  const {
-    team: {id: teamId, name: teamName},
-    id: notificationId
-  } = kickOutNotification
+  const {team, id: notificationId} = kickOutNotification
+  const {id: teamId, activeMeetings, name: teamName} = team
   if (!teamId) return
   atmosphere.eventEmitter.emit('addSnackbar', {
     key: `removedFromTeam:${teamId}`,
@@ -107,8 +113,12 @@ export const removeTeamMemberTeamOnNext: OnNextHandler<RemoveTeamMemberMutation_
       }
     }
   })
-  if (onTeamRoute(window.location.pathname, teamId)) {
-    history && history.push('/me')
+  const meetingIds = activeMeetings.map(({id}) => id)
+  if (
+    onTeamRoute(window.location.pathname, teamId) ||
+    onMeetingRoute(window.location.pathname, meetingIds)
+  ) {
+    history.push('/me')
   }
 }
 

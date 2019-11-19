@@ -1,6 +1,6 @@
 import adjustUserCount from '../billing/helpers/adjustUserCount'
 import getRethink from '../database/rethinkDriver'
-import addTeamMemberToNewMeeting from '../graphql/mutations/helpers/addTeamMemberToNewMeeting'
+import addTeamMemberToMeetings from '../graphql/mutations/helpers/addTeamMemberToMeetings'
 import insertNewTeamMember from './insertNewTeamMember'
 import {updateAuth0TMS} from '../utils/auth0Helpers'
 import shortid from 'shortid'
@@ -83,7 +83,10 @@ const acceptTeamInvitation = async (
         type: TEAM_INVITATION,
         teamId
       })
-      .update({isArchived: true}, {returnChanges: true})('changes')('new_val')('id')
+      .update(
+        {isArchived: true},
+        {returnChanges: true}
+      )('changes')('new_val')('id')
       .default([])
       .run(),
     // add the team to the user doc
@@ -108,7 +111,7 @@ const acceptTeamInvitation = async (
   }
 
   // if a meeting is going on right now, add them
-  await addTeamMemberToNewMeeting(teamMember, teamId, dataLoader)
+  await addTeamMemberToMeetings(teamMember, teamId, dataLoader)
 
   // update auth0
   const tms = user.tms ? user.tms.concat(teamId) : [teamId]

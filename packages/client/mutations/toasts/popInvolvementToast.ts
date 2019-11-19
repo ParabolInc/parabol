@@ -1,9 +1,9 @@
 import {matchPath} from 'react-router-dom'
 import {MENTIONEE} from '../../utils/constants'
-import {OnNextHandler} from '../../types/relayMutations'
+import {OnNextHandler, OnNextHistoryContext} from '../../types/relayMutations'
 import {TaskInvolves_notification} from '../../__generated__/TaskInvolves_notification.graphql'
 
-const popInvolvementToast: OnNextHandler<TaskInvolves_notification> = (
+const popInvolvementToast: OnNextHandler<TaskInvolves_notification, OnNextHistoryContext> = (
   notification,
   {atmosphere, history}
 ) => {
@@ -15,19 +15,11 @@ const popInvolvementToast: OnNextHandler<TaskInvolves_notification> = (
   } = notification
   const {id: taskId} = task
   const {pathname} = window.location
-  const inMeeting =
-    Boolean(
-      matchPath(pathname, {
-        path: '/meeting',
-        exact: false,
-        strict: false
-      })
-    ) ||
-    matchPath(pathname, {
-      path: '/retro',
-      exact: false,
-      strict: false
-    })
+  const inMeeting = !!matchPath(pathname, {
+    path: '/meet',
+    exact: false,
+    strict: false
+  })
   if (inMeeting) return
 
   const wording = involvement === MENTIONEE ? 'mentioned you in' : 'assigned you to'

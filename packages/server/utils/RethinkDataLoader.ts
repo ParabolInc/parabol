@@ -11,8 +11,7 @@ import {
   INewFeatureBroadcast,
   IReflectTemplate,
   ITeam,
-  ITeamMeetingSettings,
-  ITeamMember
+  ITeamMeetingSettings
 } from '../../client/types/graphql'
 import promiseAllPartial from '../../client/utils/promiseAllPartial'
 import MeetingMember from '../database/types/MeetingMember'
@@ -28,6 +27,7 @@ import User from '../database/types/User'
 import ReflectionGroup from '../database/types/ReflectionGroup'
 import Notification from '../database/types/Notification'
 import Organization from '../database/types/Organization'
+import TeamMember from '../database/types/TeamMember'
 
 interface JiraRemoteProjectKey {
   accessToken: string
@@ -81,7 +81,7 @@ interface Tables {
   SlackNotification: SlackNotification
   SuggestedAction: SuggestedAction
   Task: Task
-  TeamMember: ITeamMember
+  TeamMember: TeamMember
   TeamInvitation: TeamInvitation
   Team: ITeam
   User: User

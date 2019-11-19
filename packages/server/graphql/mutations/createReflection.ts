@@ -16,6 +16,7 @@ import getReflectionEntities from './helpers/getReflectionEntities'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import shortid from 'shortid'
 import getGroupSmartTitle from 'parabol-client/utils/autogroup/getGroupSmartTitle'
+import Meeting from '../../database/types/Meeting'
 
 export default {
   type: CreateReflectionPayload,
@@ -27,7 +28,7 @@ export default {
   },
   async resolve(
     _source,
-    {input: {content, retroPhaseItemId, sortOrder}},
+    {input: {content, retroPhaseItemId, sortOrder, meetingId}},
     {authToken, dataLoader, socketId: mutatorId}
   ) {
     const r = await getRethink()
@@ -48,10 +49,8 @@ export default {
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    const team = await dataLoader.get('teams').load(teamId)
-    const {meetingId} = team
     const meeting = await r
-      .table('NewMeeting')
+      .table<Meeting>('NewMeeting')
       .get(meetingId)
       .default(null)
       .run()
@@ -95,9 +94,12 @@ export default {
       group: r.table('RetroReflectionGroup').insert(reflectionGroup),
       reflection: r.table('RetroReflection').insert(reflection)
     }).run()
-    const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
+    const groupPhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.group)!
+    const {stages} = groupPhase
+    const [groupStage] = stages
+
     let unlockedStageIds
-    if (reflections.length === 1) {
+    if (!groupStage.isNavigableByFacilitator) {
       unlockedStageIds = unlockAllStagesForPhase(phases, NewMeetingPhaseTypeEnum.group, true)
       await r
         .table('NewMeeting')

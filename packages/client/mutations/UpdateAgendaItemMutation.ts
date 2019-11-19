@@ -8,11 +8,10 @@ import {
   IAgendaItem,
   IAgendaItemsPhase,
   IAgendaItemsStage,
-  ITeam,
   IUpdateAgendaItemOnMutationArguments,
   NewMeetingPhaseTypeEnum
 } from '../types/graphql'
-import {LocalHandlers, SharedUpdater} from '../types/relayMutations'
+import {SharedUpdater} from '../types/relayMutations'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
 import {UpdateAgendaItemMutation as TUpdateAgendaItemMutation} from '../__generated__/UpdateAgendaItemMutation.graphql'
 import {UpdateAgendaItemMutation_team} from '__generated__/UpdateAgendaItemMutation_team.graphql'
@@ -80,7 +79,7 @@ export const updateAgendaItemUpdater: SharedUpdater<UpdateAgendaItemMutation_tea
 const UpdateAgendaItemMutation = (
   atmosphere: Atmosphere,
   variables: IUpdateAgendaItemOnMutationArguments,
-  {onError, onCompleted}: LocalHandlers = {}
+  {onError, onCompleted, meetingId}: any = {}
 ) => {
   const {updatedAgendaItem} = variables
   const [teamId] = updatedAgendaItem.id.split('::')
@@ -95,9 +94,6 @@ const UpdateAgendaItemMutation = (
     optimisticUpdater: (store) => {
       const proxyAgendaItem = store.get(updatedAgendaItem.id)
       updateProxyRecord(proxyAgendaItem, updatedAgendaItem)
-      const team = store.get<ITeam>(teamId)
-      if (!team) return
-      const meetingId = team.getValue('meetingId')
       handleUpdateAgendaItems(store, teamId)
       handleUpdateAgendaPhase(store, meetingId)
     },

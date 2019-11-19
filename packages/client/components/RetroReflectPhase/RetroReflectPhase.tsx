@@ -1,4 +1,3 @@
-import {RetroReflectPhase_team} from '../../__generated__/RetroReflectPhase_team.graphql'
 import ms from 'ms'
 import React, {useRef, useState} from 'react'
 import styled from '@emotion/styled'
@@ -31,6 +30,7 @@ import useBreakpoint from '../../hooks/useBreakpoint'
 import ReflectWrapperDesktop from './ReflectWrapperDesktop'
 import ReflectWrapperMobile from './ReflectionWrapperMobile'
 import {Breakpoint, ElementWidth} from '../../types/constEnums'
+import {RetroReflectPhase_meeting} from '__generated__/RetroReflectPhase_meeting.graphql'
 
 const CenterControlBlock = styled('div')<{isComplete: boolean}>(({isComplete}) => ({
   margin: '0 auto',
@@ -38,7 +38,7 @@ const CenterControlBlock = styled('div')<{isComplete: boolean}>(({isComplete}) =
 }))
 
 interface Props extends RetroMeetingPhaseProps {
-  team: RetroReflectPhase_team
+  meeting: RetroReflectPhase_meeting
 }
 
 const ReflectHelpMenu = lazyPreload(async () =>
@@ -49,17 +49,22 @@ const DemoReflectHelpMenu = lazyPreload(async () =>
 )
 
 const RetroReflectPhase = (props: Props) => {
-  const {avatarGroup, toggleSidebar, team, handleGotoNext, isDemoStageComplete} = props
+  const {avatarGroup, toggleSidebar, meeting, handleGotoNext, isDemoStageComplete} = props
   const atmosphere = useAtmosphere()
   const {gotoNext, ref: gotoNextRef} = handleGotoNext
   const minTimeComplete = useTimeout(ms('2m'))
   const phaseRef = useRef<HTMLDivElement>(null)
   const {viewerId} = atmosphere
-  const {isMeetingSidebarCollapsed, newMeeting} = team
   const [activeIdx, setActiveIdx] = useState(0)
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
-  if (!newMeeting) return null
-  const {facilitatorUserId, localPhase, id: meetingId, reflectionGroups, localStage} = newMeeting
+  const {
+    facilitatorUserId,
+    localPhase,
+    id: meetingId,
+    reflectionGroups,
+    showSidebar,
+    localStage
+  } = meeting
   if (!localStage || !localPhase || !localPhase.reflectPrompts) return null
   const {isComplete, isAsync} = localStage
   const reflectPrompts = localPhase!.reflectPrompts
@@ -83,7 +88,7 @@ const RetroReflectPhase = (props: Props) => {
       <MeetingHeaderAndPhase>
         <MeetingTopBar
           avatarGroup={avatarGroup}
-          isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
+          isMeetingSidebarCollapsed={!showSidebar}
           toggleSidebar={toggleSidebar}
         >
           <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.reflect]}</PhaseHeaderTitle>
@@ -101,7 +106,7 @@ const RetroReflectPhase = (props: Props) => {
             {reflectPrompts.map((prompt, idx) => (
               <PhaseItemColumn
                 key={prompt.id}
-                meeting={newMeeting}
+                meeting={meeting}
                 retroPhaseItemId={prompt.id}
                 question={prompt.question}
                 editorIds={prompt.editorIds}
@@ -116,9 +121,7 @@ const RetroReflectPhase = (props: Props) => {
         <MeetingHelpToggle menu={isDemoRoute() ? <DemoReflectHelpMenu /> : <ReflectHelpMenu />} />
       </MeetingHeaderAndPhase>
       <MeetingFacilitatorBar isFacilitating={isFacilitating}>
-        {!isComplete && (
-          <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
-        )}
+        {!isComplete && <StageTimerControl defaultTimeLimit={5} meeting={meeting} />}
         <CenterControlBlock isComplete={isComplete}>
           <BottomNavControl
             isBouncing={!isEmpty && (isDemoStageComplete || isReadyToGroup)}
@@ -158,29 +161,27 @@ graphql`
 `
 
 export default createFragmentContainer(RetroReflectPhase, {
-  team: graphql`
-    fragment RetroReflectPhase_team on Team {
-      ...StageTimerControl_team
-      isMeetingSidebarCollapsed
-      newMeeting {
-        ...PhaseItemColumn_meeting
-        id
-        facilitatorUserId
-        ... on RetrospectiveMeeting {
-          localStage {
-            ...StageTimerDisplay_stage
-            isAsync
-            isComplete
-          }
-          reflectionGroups {
-            id
-          }
-          localPhase {
-            ...RetroReflectPhase_phase @relay(mask: false)
-          }
-          phases {
-            ...RetroReflectPhase_phase @relay(mask: false)
-          }
+  meeting: graphql`
+    fragment RetroReflectPhase_meeting on RetrospectiveMeeting {
+      showSidebar
+      ...StageTimerControl_meeting
+      ...PhaseItemColumn_meeting
+      id
+      facilitatorUserId
+      ... on RetrospectiveMeeting {
+        localStage {
+          ...StageTimerDisplay_stage
+          isAsync
+          isComplete
+        }
+        reflectionGroups {
+          id
+        }
+        localPhase {
+          ...RetroReflectPhase_phase @relay(mask: false)
+        }
+        phases {
+          ...RetroReflectPhase_phase @relay(mask: false)
         }
       }
     }

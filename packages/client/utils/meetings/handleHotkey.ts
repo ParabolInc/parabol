@@ -1,4 +1,4 @@
-const handleHotkey = (gotoFunc) => () => {
+const handleHotkey = (gotoFunc: () => void) => () => {
   if (document.activeElement === document.body) gotoFunc()
 }
 

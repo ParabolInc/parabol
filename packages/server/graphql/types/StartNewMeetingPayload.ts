@@ -1,4 +1,4 @@
-import {GraphQLObjectType} from 'graphql'
+import {GraphQLID, GraphQLObjectType} from 'graphql'
 import {resolveNewMeeting, resolveTeam} from '../resolvers'
 import Team from './Team'
 import NewMeeting from './NewMeeting'
@@ -13,6 +13,9 @@ const StartNewMeetingPayload = new GraphQLObjectType({
     team: {
       type: Team,
       resolve: resolveTeam
+    },
+    meetingId: {
+      type: GraphQLID
     },
     meeting: {
       type: NewMeeting,

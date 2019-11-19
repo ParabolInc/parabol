@@ -16,7 +16,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import Organization from '../../database/types/Organization'
 
 export default {
-  type: StartNewMeetingPayload,
+  type: new GraphQLNonNull(StartNewMeetingPayload),
   description: 'Start a new meeting',
   args: {
     teamId: {
@@ -102,14 +102,10 @@ export default {
       return standardError(new Error('Meeting already started'), {userId: viewerId})
     }
 
-    // Single meeting guaranteed
-    await r({
-      team: r
-        .table('Team')
-        .get(teamId)
-        .update({meetingId: meeting.id}),
-      members: r.table('MeetingMember').insert(meetingMembers)
-    }).run()
+    await r
+      .table('MeetingMember')
+      .insert(meetingMembers)
+      .run()
 
     startSlackMeeting(teamId, dataLoader, meetingType).catch(console.log)
     const data = {teamId, meetingId: meeting.id}

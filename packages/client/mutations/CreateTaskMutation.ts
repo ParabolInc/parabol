@@ -11,8 +11,9 @@ import getOptimisticTaskEditor from '../utils/relay/getOptimisticTaskEditor'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
 import Atmosphere from '../Atmosphere'
 import {
-  LocalHandlers,
   OnNextHandler,
+  OnNextHistoryContext,
+  OptionalHandlers,
   SharedUpdater,
   StandardMutation
 } from '../types/relayMutations'
@@ -61,10 +62,10 @@ export const createTaskTaskUpdater: SharedUpdater<CreateTaskMutation_task> = (pa
   handleUpsertTasks(task, store)
 }
 
-export const createTaskNotificationOnNext: OnNextHandler<CreateTaskMutation_notification> = (
-  payload,
-  {atmosphere, history}
-) => {
+export const createTaskNotificationOnNext: OnNextHandler<
+  CreateTaskMutation_notification,
+  OnNextHistoryContext
+> = (payload, {atmosphere, history}) => {
   if (!payload || !payload.involvementNotification) return
   popInvolvementToast(payload.involvementNotification, {atmosphere, history})
 }
@@ -78,10 +79,10 @@ export const createTaskNotificationUpdater: SharedUpdater<CreateTaskMutation_not
   handleAddNotifications(notification, store)
 }
 
-const CreateTaskMutation: StandardMutation<TCreateTaskMutation> = (
+const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers> = (
   atmosphere: Atmosphere,
   variables,
-  {onError, onCompleted}: LocalHandlers = {}
+  {onError, onCompleted}
 ) => {
   const {viewerId} = atmosphere
   const {newTask} = variables

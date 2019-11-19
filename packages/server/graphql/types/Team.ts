@@ -46,7 +46,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
     isOnboardTeam: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the team was created when the account was created, else false',
-      resovle: ({isOnboardTeam}) => !!isOnboardTeam
+      resolve: ({isOnboardTeam}) => !!isOnboardTeam
     },
     massInviteToken: {
       type: GraphQLID,
@@ -85,10 +85,6 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
         return dataLoader.get('customPhaseItemsByTeamId').load(teamId)
       }
     },
-    meetingId: {
-      type: GraphQLID,
-      description: 'The unique Id of the active meeting'
-    },
     teamInvitations: {
       type: new GraphQLList(new GraphQLNonNull(TeamInvitation)),
       description: 'The outstanding invitations to join the team',
@@ -123,17 +119,22 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
     activeMeetings: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeeting))),
       description: 'a list of meetings that are currently in progress',
-      resolve: ({id: teamId}, _args, {dataLoader}) => {
+      resolve: async ({id: teamId}, _args, {dataLoader}) => {
         return dataLoader.get('activeMeetingsByTeamId').load(teamId)
       }
     },
-    newMeeting: {
+    meeting: {
       type: NewMeeting,
       description: 'The new meeting in progress, if any',
-      resolve: ({meetingId}, _args, {dataLoader}) => {
-        if (meetingId) {
-          return dataLoader.get('newMeetings').load(meetingId)
+      args: {
+        meetingId: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The unique meetingId'
         }
+      },
+      resolve: async ({id: teamId}, {meetingId}, {dataLoader}) => {
+        const meeting = await dataLoader.get('newMeetings').load(meetingId)
+        if (meeting && meeting.teamId === teamId) return meeting
         return null
       }
     },
@@ -148,7 +149,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
     agendaItems: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AgendaItem))),
       description: 'The agenda items for the upcoming or current meeting',
-      async resolve ({id: teamId}, _args, {dataLoader}) {
+      async resolve({id: teamId}, _args, {dataLoader}) {
         return dataLoader.get('agendaItemsByTeamId').load(teamId)
       }
     },
@@ -162,10 +163,10 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
         }
       },
       description: 'All of the tasks for this team',
-      async resolve ({id: teamId}, _args, {authToken, dataLoader}) {
+      async resolve({id: teamId}, _args, {authToken, dataLoader}) {
         if (!isTeamMember(authToken, teamId)) {
           standardError(new Error('Team not found'))
-          return []
+          return connectionFromTasks([])
         }
         const tasks = await dataLoader.get('tasksByTeamId').load(teamId)
         return connectionFromTasks(tasks)
@@ -180,7 +181,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
         }
       },
       description: 'All the team members actively associated with the team',
-      async resolve ({id: teamId}, {sortBy = 'preferredName'}, {dataLoader}) {
+      async resolve({id: teamId}, {sortBy = 'preferredName'}, {dataLoader}) {
         const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
         teamMembers.sort((a, b) => (a[sortBy] > b[sortBy] ? 1 : -1))
         return teamMembers

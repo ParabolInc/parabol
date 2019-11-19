@@ -22,6 +22,9 @@ const pluginInlineImport = require('babel-plugin-inline-import').default
 const {InjectManifest} = require('wrkbx')
 const CopyPlugin = require('copy-webpack-plugin')
 const TagsPlugin = require('html-webpack-tags-plugin')
+const pluginOptionalChaining = require('@babel/plugin-proposal-optional-chaining').default
+const pluginNullishCoalescing = require('@babel/plugin-proposal-nullish-coalescing-operator')
+  .default
 
 getDotenv.default()
 
@@ -72,7 +75,9 @@ const babelConfig = {
       pluginInlineImport,
       pluginObjectRestSpread,
       pluginClassProps,
-      pluginDynamicImport
+      pluginDynamicImport,
+      pluginOptionalChaining,
+      pluginNullishCoalescing
     ],
     presets: [
       [

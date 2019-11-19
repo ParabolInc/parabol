@@ -73,7 +73,7 @@ const RetrospectiveMeeting = new GraphQLObjectType({
     settings: {
       type: new GraphQLNonNull(RetrospectiveMeetingSettings),
       description: 'The settings that govern the retrospective meeting',
-      resolve: async ({id: meetingId}, args, {dataLoader}) => {
+      resolve: async ({id: meetingId}, _args, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const {teamId} = meeting
         const allSettings = await dataLoader.get('meetingSettingsByTeamId').load(teamId)
@@ -93,7 +93,7 @@ const RetrospectiveMeeting = new GraphQLObjectType({
     tasks: {
       type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(Task))),
       description: 'The tasks created within the meeting',
-      resolve: async ({id: meetingId}, args, {dataLoader}) => {
+      resolve: async ({id: meetingId}, _args, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const {teamId} = meeting
         const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
@@ -104,7 +104,7 @@ const RetrospectiveMeeting = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLInt),
       description:
         'The sum total of the votes remaining for the meeting members that are present in the meeting',
-      resolve: async ({id: meetingId}, args, {dataLoader}) => {
+      resolve: async ({id: meetingId}, _args, {dataLoader}) => {
         const meetingMembers = await dataLoader.get('meetingMembersByMeetingId').load(meetingId)
         return meetingMembers.reduce(
           (sum, member) => (member.isCheckedIn ? sum + member.votesRemaining : sum),
@@ -115,7 +115,7 @@ const RetrospectiveMeeting = new GraphQLObjectType({
     viewerMeetingMember: {
       type: new GraphQLNonNull(RetrospectiveMeetingMember),
       description: 'The retrospective meeting member of the viewer',
-      resolve: ({id: meetingId}, args, {authToken, dataLoader}) => {
+      resolve: ({id: meetingId}, _args, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
         const meetingMemberId = toTeamMemberId(meetingId, viewerId)
         return dataLoader.get('meetingMembers').load(meetingMemberId)

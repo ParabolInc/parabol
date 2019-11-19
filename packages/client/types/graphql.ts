@@ -199,14 +199,24 @@ export interface IUser {
   rasterPicture: any
 
   /**
-   * The last time the user connected via websocket
+   * The last time the user connected via websocket or navigated to a common area
    */
   lastSeenAt: any | null
+
+  /**
+   * The path the user was last seen at (rough heuristic)
+   */
+  lastSeenAtURL: string | null
 
   /**
    * The meeting member associated with this user, if a meeting is currently in progress
    */
   meetingMember: MeetingMember | null
+
+  /**
+   * A previous meeting that the user was in (present or absent)
+   */
+  meeting: NewMeeting | null
 
   /**
    * A previous meeting that the user was in (present or absent)
@@ -257,7 +267,7 @@ export interface IUser {
   /**
    * The invitation sent to the user, even if it was sent before they were a user
    */
-  teamInvitation: ITeamInvitation | null
+  teamInvitation: ITeamInvitationPayload
 
   /**
    * all the teams the user is on that the viewer can see.
@@ -358,12 +368,14 @@ export interface IMeetingMemberOnUserArguments {
   /**
    * The specific meeting ID
    */
-  meetingId?: string | null
+  meetingId: string
+}
 
+export interface IMeetingOnUserArguments {
   /**
-   * The teamId of the meeting currently in progress
+   * The meeting ID
    */
-  teamId?: string | null
+  meetingId: string
 }
 
 export interface INewMeetingOnUserArguments {
@@ -421,9 +433,14 @@ export interface ITeamOnUserArguments {
 
 export interface ITeamInvitationOnUserArguments {
   /**
+   * The meetingId to check for the invitation, if teamId not available
+   */
+  meetingId?: string | null
+
+  /**
    * The teamId to check for the invitation
    */
-  teamId: string
+  teamId?: string | null
 }
 
 export interface ITeamMemberOnUserArguments {
@@ -771,7 +788,7 @@ export interface ITeamMember {
 }
 
 export interface IMeetingMemberOnTeamMemberArguments {
-  meetingId?: string | null
+  meetingId: string
 }
 
 export interface ITasksOnTeamMemberArguments {
@@ -805,6 +822,7 @@ export interface IMeetingMember {
   meetingId: string
   meetingType: MeetingTypeEnum
   teamId: string
+  teamMember: ITeamMember
   user: IUser
   userId: string
 
@@ -999,11 +1017,6 @@ export interface ITeam {
   customPhaseItems: Array<CustomPhaseItem | null> | null
 
   /**
-   * The unique Id of the active meeting
-   */
-  meetingId: string | null
-
-  /**
    * The outstanding invitations to join the team
    */
   teamInvitations: Array<ITeamInvitation> | null
@@ -1026,7 +1039,7 @@ export interface ITeam {
   /**
    * The new meeting in progress, if any
    */
-  newMeeting: NewMeeting | null
+  meeting: NewMeeting | null
 
   /**
    * The level of access to features on the parabol site
@@ -1060,6 +1073,13 @@ export interface IMeetingSettingsOnTeamArguments {
    * the type of meeting for the settings
    */
   meetingType: MeetingTypeEnum
+}
+
+export interface IMeetingOnTeamArguments {
+  /**
+   * The unique meetingId
+   */
+  meetingId: string
 }
 
 export interface ITasksOnTeamArguments {
@@ -1281,6 +1301,16 @@ export interface INewMeeting {
   meetingType: MeetingTypeEnum
 
   /**
+   * The name of the meeting
+   */
+  name: string
+
+  /**
+   * The organization this meeting belongs to
+   */
+  organization: IOrganization
+
+  /**
    * The phases the meeting will go through, including all phase-specific state
    */
   phases: Array<NewMeetingPhase>
@@ -1314,136 +1344,6 @@ export interface INewMeeting {
    * The meeting member of the viewer
    */
   viewerMeetingMember: MeetingMember
-}
-
-export type NewMeetingPhase =
-  | IReflectPhase
-  | ICheckInPhase
-  | IDiscussPhase
-  | IUpdatesPhase
-  | IAgendaItemsPhase
-  | IGenericMeetingPhase
-
-export interface INewMeetingPhase {
-  __typename: 'NewMeetingPhase'
-
-  /**
-   * shortid
-   */
-  id: string
-  meetingId: string
-
-  /**
-   * The type of phase
-   */
-  phaseType: NewMeetingPhaseTypeEnum
-  stages: Array<NewMeetingStage>
-}
-
-/**
- * An instance of a meeting phase item. On the client, this usually represents a single view
- */
-export type NewMeetingStage =
-  | IRetroDiscussStage
-  | IGenericMeetingStage
-  | ICheckInStage
-  | IUpdatesStage
-  | IAgendaItemsStage
-
-/**
- * An instance of a meeting phase item. On the client, this usually represents a single view
- */
-export interface INewMeetingStage {
-  __typename: 'NewMeetingStage'
-
-  /**
-   * shortid
-   */
-  id: string
-
-  /**
-   * The datetime the stage was completed
-   */
-  endAt: any | null
-
-  /**
-   * foreign key. try using meeting
-   */
-  meetingId: string
-
-  /**
-   * The meeting this stage belongs to
-   */
-  meeting: NewMeeting | null
-
-  /**
-   * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
-   */
-  isComplete: boolean
-
-  /**
-   * true if any meeting participant can navigate to this stage
-   */
-  isNavigable: boolean
-
-  /**
-   * true if the facilitator can navigate to this stage
-   */
-  isNavigableByFacilitator: boolean
-
-  /**
-   * The phase this stage belongs to
-   */
-  phase: NewMeetingPhase | null
-
-  /**
-   * The type of the phase
-   */
-  phaseType: NewMeetingPhaseTypeEnum | null
-
-  /**
-   * The datetime the stage was started
-   */
-  startAt: any | null
-
-  /**
-   * Number of times the facilitator has visited this stage
-   */
-  viewCount: number | null
-
-  /**
-   * true if a time limit is set, false if end time is set, null if neither is set
-   */
-  isAsync: boolean | null
-
-  /**
-   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
-   */
-  scheduledEndTime: any | null
-
-  /**
-   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
-   */
-  suggestedEndTime: any | null
-
-  /**
-   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
-   */
-  suggestedTimeLimit: number | null
-
-  /**
-   * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
-   */
-  timeRemaining: number | null
-}
-
-/**
- * The pay tier of the team
- */
-export const enum TierEnum {
-  personal = 'personal',
-  pro = 'pro',
-  enterprise = 'enterprise'
 }
 
 /**
@@ -1576,6 +1476,15 @@ export interface ICreditCard {
    * The last 4 digits of a credit card
    */
   last4: string
+}
+
+/**
+ * The pay tier of the team
+ */
+export const enum TierEnum {
+  personal = 'personal',
+  pro = 'pro',
+  enterprise = 'enterprise'
 }
 
 /**
@@ -1715,6 +1624,127 @@ export interface IOrgUserCount {
    * The number of orgUsers who do not have an inactive flag
    */
   activeUserCount: number
+}
+
+export type NewMeetingPhase =
+  | IReflectPhase
+  | ICheckInPhase
+  | IDiscussPhase
+  | IUpdatesPhase
+  | IAgendaItemsPhase
+  | IGenericMeetingPhase
+
+export interface INewMeetingPhase {
+  __typename: 'NewMeetingPhase'
+
+  /**
+   * shortid
+   */
+  id: string
+  meetingId: string
+
+  /**
+   * The type of phase
+   */
+  phaseType: NewMeetingPhaseTypeEnum
+  stages: Array<NewMeetingStage>
+}
+
+/**
+ * An instance of a meeting phase item. On the client, this usually represents a single view
+ */
+export type NewMeetingStage =
+  | IRetroDiscussStage
+  | IGenericMeetingStage
+  | ICheckInStage
+  | IUpdatesStage
+  | IAgendaItemsStage
+
+/**
+ * An instance of a meeting phase item. On the client, this usually represents a single view
+ */
+export interface INewMeetingStage {
+  __typename: 'NewMeetingStage'
+
+  /**
+   * stageId, shortid
+   */
+  id: string
+
+  /**
+   * The datetime the stage was completed
+   */
+  endAt: any | null
+
+  /**
+   * foreign key. try using meeting
+   */
+  meetingId: string
+
+  /**
+   * The meeting this stage belongs to
+   */
+  meeting: NewMeeting | null
+
+  /**
+   * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
+   */
+  isComplete: boolean
+
+  /**
+   * true if any meeting participant can navigate to this stage
+   */
+  isNavigable: boolean
+
+  /**
+   * true if the facilitator can navigate to this stage
+   */
+  isNavigableByFacilitator: boolean
+
+  /**
+   * The phase this stage belongs to
+   */
+  phase: NewMeetingPhase | null
+
+  /**
+   * The type of the phase
+   */
+  phaseType: NewMeetingPhaseTypeEnum | null
+
+  /**
+   * The datetime the stage was started
+   */
+  startAt: any | null
+
+  /**
+   * Number of times the facilitator has visited this stage
+   */
+  viewCount: number | null
+
+  /**
+   * true if a time limit is set, false if end time is set, null if neither is set
+   */
+  isAsync: boolean | null
+
+  /**
+   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+   */
+  scheduledEndTime: any | null
+
+  /**
+   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+   */
+  suggestedEndTime: any | null
+
+  /**
+   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+   */
+  suggestedTimeLimit: number | null
+
+  /**
+   * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+   */
+  timeRemaining: number | null
 }
 
 export interface ITaskEditorDetails {
@@ -2510,6 +2540,28 @@ export interface IStandardMutationError {
   message: string
 }
 
+/**
+ * The response to a teamInvitation query
+ */
+export interface ITeamInvitationPayload {
+  __typename: 'TeamInvitationPayload'
+
+  /**
+   * The team invitation, if any
+   */
+  teamInvitation: ITeamInvitation | null
+
+  /**
+   * the teamId of the team trying to join
+   */
+  teamId: string | null
+
+  /**
+   * one of the active meetings trying to join
+   */
+  meetingId: string | null
+}
+
 export interface IMassInvitationPayload {
   __typename: 'MassInvitationPayload'
   errorType: TeamInvitationErrorEnum | null
@@ -2728,7 +2780,7 @@ export interface IMutation {
   /**
    * Finish a new meeting
    */
-  endNewMeeting: IEndNewMeetingPayload | null
+  endNewMeeting: IEndNewMeetingPayload
 
   /**
    * Move a team to a different org. Requires billing leader rights on both orgs!
@@ -2839,7 +2891,7 @@ export interface IMutation {
   /**
    * Start a new meeting
    */
-  startNewMeeting: IStartNewMeetingPayload | null
+  startNewMeeting: IStartNewMeetingPayload
 
   /**
    * Show/hide the agenda list
@@ -3178,12 +3230,12 @@ export interface IEndDraggingReflectionOnMutationArguments {
 }
 
 export interface IEditReflectionOnMutationArguments {
-  phaseItemId: string
-
   /**
    * Whether a phaseItem is being edited or not
    */
   isEditing: boolean
+  meetingId: string
+  phaseItemId: string
 }
 
 export interface IEditTaskOnMutationArguments {
@@ -3746,6 +3798,11 @@ export interface IAddOrgPayload {
   __typename: 'AddOrgPayload'
   organization: IOrganization | null
   error: IStandardMutationError | null
+
+  /**
+   * The new auth token sent to the mutator
+   */
+  authToken: string | null
   team: ITeam | null
 
   /**
@@ -3762,6 +3819,11 @@ export interface IAddOrgPayload {
 export interface IAddTeamPayload {
   __typename: 'AddTeamPayload'
   error: IStandardMutationError | null
+
+  /**
+   * The new auth token sent to the mutator
+   */
+  authToken: string | null
   team: ITeam | null
 
   /**
@@ -3899,6 +3961,16 @@ export interface IRetrospectiveMeeting {
   meetingType: MeetingTypeEnum
 
   /**
+   * The name of the meeting
+   */
+  name: string
+
+  /**
+   * The organization this meeting belongs to
+   */
+  organization: IOrganization
+
+  /**
    * The phases the meeting will go through, including all phase-specific state
    */
   phases: Array<NewMeetingPhase>
@@ -3991,6 +4063,7 @@ export interface IRetrospectiveMeetingMember {
   meetingId: string
   meetingType: MeetingTypeEnum
   teamId: string
+  teamMember: ITeamMember
   user: IUser
   userId: string
 
@@ -4503,6 +4576,7 @@ export interface ICreateReflectionInput {
    * A stringified draft-js document containing thoughts
    */
   content?: string | null
+  meetingId: string
 
   /**
    * The phase item the reflection belongs to
@@ -4674,7 +4748,7 @@ export interface IRetroDiscussStage {
   __typename: 'RetroDiscussStage'
 
   /**
-   * shortid
+   * stageId, shortid
    */
   id: string
 
@@ -5438,7 +5512,7 @@ export interface IGenericMeetingStage {
   __typename: 'GenericMeetingStage'
 
   /**
-   * shortid
+   * stageId, shortid
    */
   id: string
 
@@ -5558,6 +5632,7 @@ export interface IStartNewMeetingPayload {
   __typename: 'StartNewMeetingPayload'
   error: IStandardMutationError | null
   team: ITeam | null
+  meetingId: string | null
   meeting: NewMeeting | null
 }
 
@@ -6158,7 +6233,7 @@ export interface ICheckInStage {
   __typename: 'CheckInStage'
 
   /**
-   * shortid
+   * stageId, shortid
    */
   id: string
 
@@ -6238,6 +6313,11 @@ export interface ICheckInStage {
   timeRemaining: number | null
 
   /**
+   * The meeting member that is the focus for this phase item
+   */
+  meetingMember: MeetingMember
+
+  /**
    * foreign key. use teamMember
    */
   teamMemberId: string
@@ -6258,6 +6338,11 @@ export type NewMeetingTeamMemberStage = ICheckInStage | IUpdatesStage
  */
 export interface INewMeetingTeamMemberStage {
   __typename: 'NewMeetingTeamMemberStage'
+
+  /**
+   * The meeting member that is the focus for this phase item
+   */
+  meetingMember: MeetingMember
 
   /**
    * foreign key. use teamMember
@@ -6329,7 +6414,7 @@ export interface IUpdatesStage {
   __typename: 'UpdatesStage'
 
   /**
-   * shortid
+   * stageId, shortid
    */
   id: string
 
@@ -6409,6 +6494,11 @@ export interface IUpdatesStage {
   timeRemaining: number | null
 
   /**
+   * The meeting member that is the focus for this phase item
+   */
+  meetingMember: MeetingMember
+
+  /**
    * foreign key. use teamMember
    */
   teamMemberId: string
@@ -6445,7 +6535,7 @@ export interface IAgendaItemsStage {
   __typename: 'AgendaItemsStage'
 
   /**
-   * shortid
+   * stageId, shortid
    */
   id: string
 
@@ -6637,6 +6727,16 @@ export interface IActionMeeting {
   meetingType: MeetingTypeEnum
 
   /**
+   * The name of the meeting
+   */
+  name: string
+
+  /**
+   * The organization this meeting belongs to
+   */
+  organization: IOrganization
+
+  /**
    * The phases the meeting will go through, including all phase-specific state
    */
   phases: Array<NewMeetingPhase>
@@ -6705,6 +6805,7 @@ export interface IActionMeetingMember {
   meetingId: string
   meetingType: MeetingTypeEnum
   teamId: string
+  teamMember: ITeamMember
   user: IUser
   userId: string
 

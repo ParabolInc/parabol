@@ -10,12 +10,12 @@ import UpdateNewCheckInQuestionMutation from '../../../../mutations/UpdateNewChe
 import {convertToRaw, EditorState, SelectionState} from 'draft-js'
 import Icon from '../../../../components/Icon'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
-import {NewCheckInQuestion_team} from '../../../../__generated__/NewCheckInQuestion_team.graphql'
 import useEditorState from '../../../../hooks/useEditorState'
 import {ICheckInPhase} from '../../../../types/graphql'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useTooltip from '../../../../hooks/useTooltip'
 import {MenuPosition} from '../../../../hooks/useCoords'
+import {NewCheckInQuestion_meeting} from '__generated__/NewCheckInQuestion_meeting.graphql'
 
 const CogIcon = styled(Icon)<{isEditing: boolean}>(({isEditing}) => ({
   color: PALETTE.TEXT_MAIN,
@@ -39,19 +39,16 @@ const QuestionBlock = styled('div')({
 })
 
 interface Props {
-  team: NewCheckInQuestion_team
+  meeting: NewCheckInQuestion_meeting
 }
 
 const NewCheckInQuestion = (props: Props) => {
   const editorRef = useRef<HTMLTextAreaElement>()
   const atmosphere = useAtmosphere()
-  const {team} = props
-  const {newMeeting} = team
+  const {meeting} = props
   const [isEditing, setIsEditing] = useState(false)
-  if (!newMeeting) return null
-  const {id: meetingId, localPhase, facilitatorUserId} = newMeeting
+  const {id: meetingId, localPhase, facilitatorUserId} = meeting
   const {checkInQuestion} = localPhase as ICheckInPhase
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [editorState, setEditorState] = useEditorState(checkInQuestion)
   const updateQuestion = (nextEditorState: EditorState) => {
     const wasFocused = editorState.getSelection().getHasFocus()
@@ -114,22 +111,19 @@ const NewCheckInQuestion = (props: Props) => {
 }
 
 export default createFragmentContainer(NewCheckInQuestion, {
-  team: graphql`
-    fragment NewCheckInQuestion_team on Team {
+  meeting: graphql`
+    fragment NewCheckInQuestion_meeting on NewMeeting {
       id
-      newMeeting {
-        id
-        facilitatorUserId
-        localPhase {
-          ... on CheckInPhase {
-            checkInQuestion
-          }
+      facilitatorUserId
+      localPhase {
+        ... on CheckInPhase {
+          checkInQuestion
         }
-        # request question from server to use locally (above)
-        phases {
-          ... on CheckInPhase {
-            checkInQuestion
-          }
+      }
+      # request question from server to use locally (above)
+      phases {
+        ... on CheckInPhase {
+          checkInQuestion
         }
       }
     }

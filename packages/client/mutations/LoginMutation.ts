@@ -10,7 +10,6 @@ import {SegmentClientEventEnum} from '../types/graphql'
 import getGraphQLError from '../utils/relay/getGraphQLError'
 import {Omit} from '../types/generics'
 import {LocalHandlers} from '../types/relayMutations'
-import {meetingTypeToSlug} from '../utils/meetings/lookups'
 import getValidRedirectParam from '../utils/getValidRedirectParam'
 
 const mutation = graphql`
@@ -34,8 +33,8 @@ const mutation = graphql`
       authToken
       team {
         id
-        newMeeting {
-          meetingType
+        activeMeetings {
+          id
         }
       }
     }
@@ -68,11 +67,11 @@ const LoginMutation = (
       const {team} = acceptTeamInvitation
       // redirect directly into meeting
       if (team) {
-        const {newMeeting, id: teamId} = team
-        if (newMeeting) {
-          const {meetingType} = newMeeting
-          const slug = meetingTypeToSlug[meetingType]
-          history.push(`/${slug}/${teamId}`)
+        const {activeMeetings, id: teamId} = team
+        const [firstActiveMeeting] = activeMeetings
+        if (firstActiveMeeting) {
+          const {id: meetingId} = firstActiveMeeting
+          history.push(`/meet/${meetingId}`)
         } else {
           history.push(`/team/${teamId}`)
         }

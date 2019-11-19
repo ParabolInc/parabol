@@ -1,23 +1,30 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import getMeetingPathParams from '../utils/meetings/getMeetingPathParams'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 import Atmosphere from '../Atmosphere'
-import {IEndNewMeetingOnMutationArguments} from '../types/graphql'
-import {LocalHandlers} from '../types/relayMutations'
+import {
+  HistoryMaybeLocalHandler,
+  OnNextHandler,
+  OnNextHistoryContext,
+  SharedUpdater,
+  StandardMutation
+} from '../types/relayMutations'
 import {EndNewMeetingMutation as TEndNewMeetingMutation} from '../__generated__/EndNewMeetingMutation.graphql'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
+import {RetroDemo} from '../types/constEnums'
+import {EndNewMeetingMutation_team} from '__generated__/EndNewMeetingMutation_team.graphql'
+import {EndNewMeetingMutation_notification} from '__generated__/EndNewMeetingMutation_notification.graphql'
 
 graphql`
   fragment EndNewMeetingMutation_team on EndNewMeetingPayload {
     isKill
     meeting {
       id
+      teamId
     }
     team {
       id
-      meetingId
-      newMeeting {
+      activeMeetings {
         id
       }
       agendaItems {
@@ -25,8 +32,14 @@ graphql`
       }
     }
     updatedTasks {
+      id
       content
       tags
+      teamId
+      reflectionGroupId
+      meetingId
+      updatedAt
+      userId
     }
   }
 `
@@ -56,44 +69,54 @@ const popEndNewMeetingToast = (atmosphere: Atmosphere, meetingId: string) => {
   })
 }
 
-export const endNewMeetingTeamOnNext = (payload, context) => {
+export const endNewMeetingTeamOnNext: OnNextHandler<
+  EndNewMeetingMutation_team,
+  OnNextHistoryContext
+> = (payload, context) => {
   const {isKill, meeting} = payload
   const {atmosphere, history} = context
   if (!meeting) return
-  const {id: meetingId} = meeting
-  const {meetingSlug, teamId} = getMeetingPathParams()
-  if (!meetingSlug) return
-  if (isKill) {
-    if (teamId === 'demo') {
+  const {id: meetingId, teamId} = meeting
+  // const {} = getMeetingPathParams()
+  // if (!meetingSlug) return
+  if (meetingId === RetroDemo.MEETING_ID) {
+    if (isKill) {
       window.localStorage.removeItem('retroDemo')
       history.push('/create-account')
     } else {
-      history.push(`/${meetingSlug}/${teamId}`)
-      popEndNewMeetingToast(atmosphere, meetingId)
+      history.push('/retrospective-demo-summary')
     }
   } else {
-    if (meetingId === 'demoMeeting') {
-      history.push('/retrospective-demo-summary')
+    if (isKill) {
+      history.push(`/team/${teamId}`)
+      popEndNewMeetingToast(atmosphere, meetingId)
     } else {
       history.push(`/new-summary/${meetingId}`)
     }
   }
 }
 
-export const endNewMeetingNotificationUpdater = (payload, {store}) => {
+export const endNewMeetingNotificationUpdater: SharedUpdater<EndNewMeetingMutation_notification> = (
+  payload,
+  {store}
+) => {
   const removedSuggestedActionId = payload.getValue('removedSuggestedActionId')
   handleRemoveSuggestedActions(removedSuggestedActionId, store)
 }
 
-export const endNewMeetingTeamUpdater = (payload, {store}) => {
+export const endNewMeetingTeamUpdater: SharedUpdater<EndNewMeetingMutation_team> = (
+  payload,
+  {store}
+) => {
   const updatedTasks = payload.getLinkedRecords('updatedTasks')
-  handleUpsertTasks(updatedTasks, store)
+  // TODO PR the typings to fix this
+  handleUpsertTasks(updatedTasks as any, store)
 }
 
-const EndNewMeetingMutation = (
-  atmosphere: Atmosphere,
-  variables: IEndNewMeetingOnMutationArguments,
-  {onError, onCompleted, history}: LocalHandlers
+const EndNewMeetingMutation: StandardMutation<TEndNewMeetingMutation, HistoryMaybeLocalHandler> = (
+  atmosphere,
+  variables,
+  {onError, onCompleted, history}
 ) => {
   return commitMutation<TEndNewMeetingMutation>(atmosphere, {
     mutation,
@@ -101,8 +124,9 @@ const EndNewMeetingMutation = (
     updater: (store) => {
       const payload = store.getRootField('endNewMeeting')
       if (!payload) return
-      endNewMeetingNotificationUpdater(payload, {store})
-      endNewMeetingTeamUpdater(payload, {store})
+      const context = {atmosphere, store: store as any}
+      endNewMeetingNotificationUpdater(payload, context)
+      endNewMeetingTeamUpdater(payload, context)
     },
     onCompleted: (res, errors) => {
       if (onCompleted) {

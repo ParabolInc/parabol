@@ -1,17 +1,25 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import handleAddTeams from './handlers/handleAddTeams'
-import createProxyRecord from '../utils/relay/createProxyRecord'
 import getGraphQLError from '../utils/relay/getGraphQLError'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
-import {OnNextHandler} from '../types/relayMutations'
+import {
+  HistoryLocalHandler,
+  OnNextHandler,
+  OnNextHistoryContext,
+  SharedUpdater,
+  StandardMutation
+} from '../types/relayMutations'
 import {AddTeamMutation_team} from '../__generated__/AddTeamMutation_team.graphql'
-import {AddTeamMutation as IAddTeamMutation} from '../__generated__/AddTeamMutation.graphql'
+import {AddTeamMutation as TAddTeamMutation} from '../__generated__/AddTeamMutation.graphql'
 
 graphql`
   fragment AddTeamMutation_team on AddTeamPayload {
     team {
-      ...CompleteTeamFragWithMembers @relay(mask: false)
+      id
+      name
+      ...DashAlertMeetingActiveMeetings
+      ...Team_team
     }
   }
 `
@@ -28,12 +36,13 @@ const mutation = graphql`
       error {
         message
       }
+      authToken
       ...AddTeamMutation_team @relay(mask: false)
     }
   }
 `
 
-const popTeamCreatedToast: OnNextHandler<AddTeamMutation_team> = (
+const popTeamCreatedToast: OnNextHandler<AddTeamMutation_team, OnNextHistoryContext> = (
   payload,
   {atmosphere, history}
 ) => {
@@ -48,7 +57,7 @@ const popTeamCreatedToast: OnNextHandler<AddTeamMutation_team> = (
   history && history.push(`/team/${teamId}`)
 }
 
-export const addTeamTeamUpdater = (payload, store) => {
+export const addTeamTeamUpdater: SharedUpdater<AddTeamMutation_team> = (payload, {store}) => {
   const team = payload.getLinkedRecord('team')
   handleAddTeams(team, store)
 }
@@ -58,28 +67,27 @@ export const addTeamMutationNotificationUpdater = (payload, {store}) => {
   handleRemoveSuggestedActions(removedSuggestedActionId, store)
 }
 
-const AddTeamMutation = (atmosphere, variables, options, onError, onCompleted) => {
-  return commitMutation<IAddTeamMutation>(atmosphere, {
+const AddTeamMutation: StandardMutation<TAddTeamMutation, HistoryLocalHandler> = (
+  atmosphere,
+  variables,
+  {history, onError, onCompleted}
+) => {
+  return commitMutation<TAddTeamMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {
       const payload = store.getRootField('addTeam')
-      addTeamTeamUpdater(payload, store)
+      addTeamTeamUpdater(payload, {atmosphere, store})
     },
-    optimisticUpdater: (store) => {
-      const {newTeam} = variables
-      const team = createProxyRecord(store, 'Team', {
-        ...newTeam,
-        isPaid: true
-      })
-      handleAddTeams(team, store)
-    },
+    // optimistic updater is too brittle because if we are missing a single field it could break
     onCompleted: (res, errors) => {
       onCompleted(res, errors)
       const error = getGraphQLError(res, errors)
+      const {addTeam} = res
       if (!error) {
-        const payload = res.addTeam
-        popTeamCreatedToast(payload, {atmosphere, ...options})
+        const {authToken} = addTeam
+        atmosphere.setAuthToken(authToken)
+        popTeamCreatedToast(addTeam, {atmosphere, history})
       }
     },
     onError

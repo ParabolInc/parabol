@@ -157,7 +157,7 @@ const getIsKill = (meetingType: MeetingType, phase: GenericMeetingPhase) => {
 }
 
 export default {
-  type: EndNewMeetingPayload,
+  type: new GraphQLNonNull(EndNewMeetingPayload),
   description: 'Finish a new meeting',
   args: {
     meetingId: {
@@ -187,13 +187,6 @@ export default {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
-    const team = await r
-      .table('Team')
-      .get(teamId)
-      .run()
-    if (!team.meetingId) {
-      return standardError(new Error('Meeting already ended'), {userId: viewerId})
-    }
 
     // RESOLUTION
     const currentStageRes = findStageById(phases, facilitatorStageId)
@@ -204,26 +197,22 @@ export default {
     stage.isComplete = true
     stage.endAt = now
 
-    const {completedMeeting} = await r({
-      team: r
-        .table('Team')
-        .get(teamId)
-        .update({
-          meetingId: null
-        }),
-      completedMeeting: (r
-        .table('NewMeeting')
-        .get(meetingId)
-        .update(
-          {
-            endedAt: now,
-            phases
-          },
-          {returnChanges: true}
-        )('changes')(0)('new_val') as unknown) as Meeting
-    }).run()
+    const completedMeeting = ((await r
+      .table('NewMeeting')
+      .get(meetingId)
+      .update(
+        {
+          endedAt: now,
+          phases
+        },
+        {returnChanges: true}
+      )('changes')(0)('new_val')
+      .run()) as unknown) as Meeting
 
-    const meetingMembers = await dataLoader.get('meetingMembersByMeetingId').load(meetingId)
+    const [meetingMembers, team] = await Promise.all([
+      dataLoader.get('meetingMembersByMeetingId').load(meetingId),
+      dataLoader.get('teams').load(teamId)
+    ])
     const presentMembers = meetingMembers.filter(
       (meetingMember) => meetingMember.isCheckedIn === true
     )

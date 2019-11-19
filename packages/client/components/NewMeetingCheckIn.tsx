@@ -1,4 +1,3 @@
-import {NewMeetingCheckIn_team} from '../__generated__/NewMeetingCheckIn_team.graphql'
 import React, {ReactElement} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
@@ -9,7 +8,6 @@ import MeetingTopBar from './MeetingTopBar'
 import MeetingHelpToggle from './MenuHelpToggle'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import useAtmosphere from '../hooks/useAtmosphere'
-import {useGotoNext} from '../hooks/useMeeting'
 import CheckInControls from '../modules/meeting/components/CheckInControls/CheckInControls'
 import NewMeetingCheckInPrompt from '../modules/meeting/components/MeetingCheckInPrompt/NewMeetingCheckInPrompt'
 import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
@@ -23,6 +21,8 @@ import {phaseLabelLookup} from '../utils/meetings/lookups'
 import EndMeetingButton from './EndMeetingButton'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import PhaseWrapper from './PhaseWrapper'
+import {NewMeetingCheckIn_meeting} from '__generated__/NewMeetingCheckIn_meeting.graphql'
+import useGotoNext from '../hooks/useGotoNext'
 
 const CheckIn = styled('div')({
   display: 'flex',
@@ -50,23 +50,24 @@ const CheckInHelpMenu = lazyPreload(async () =>
 interface Props {
   avatarGroup: ReactElement
   handleGotoNext: ReturnType<typeof useGotoNext>
-  team: NewMeetingCheckIn_team
+  meeting: NewMeetingCheckIn_meeting
   toggleSidebar: () => void
 }
 
 const NewMeetingCheckIn = (props: Props) => {
-  const {avatarGroup, handleGotoNext, team, toggleSidebar} = props
+  const {avatarGroup, handleGotoNext, meeting, toggleSidebar} = props
   const atmosphere = useAtmosphere()
-  const {isMeetingSidebarCollapsed, newMeeting} = team
-  if (!newMeeting) return null
   const {
+    showSidebar,
     facilitator: {userId: facilitatorUserId},
-    localStage: {id: localStageId},
+    localStage,
     id: meetingId,
     phases,
     meetingType
-  } = newMeeting
-  const teamMember = newMeeting.localStage.teamMember!
+  } = meeting
+  const {id: localStageId} = localStage
+  const teamMember = localStage.teamMember!
+  const meetingMember = localStage.meetingMember!
   const {userId} = teamMember
   const nextStageRes = findStageAfterId(phases, localStageId)
   // in case the checkin is the last phase of the meeting
@@ -79,13 +80,13 @@ const NewMeetingCheckIn = (props: Props) => {
       <MeetingHeaderAndPhase>
         <MeetingTopBar
           avatarGroup={avatarGroup}
-          isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
+          isMeetingSidebarCollapsed={!showSidebar}
           toggleSidebar={toggleSidebar}
         >
           <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.checkin]}</PhaseHeaderTitle>
         </MeetingTopBar>
         <PhaseWrapper>
-          <NewMeetingCheckInPrompt team={team} teamMember={teamMember} />
+          <NewMeetingCheckInPrompt meeting={meeting} teamMember={teamMember} />
           <CheckIn>
             {isMyMeetingSection && (
               <Hint>
@@ -100,7 +101,7 @@ const NewMeetingCheckIn = (props: Props) => {
         <MeetingHelpToggle menu={<CheckInHelpMenu meetingType={meetingType} />} />
       </MeetingHeaderAndPhase>
       <MeetingFacilitatorBar isFacilitating={isFacilitating}>
-        <CheckInControls handleGotoNext={handleGotoNext} teamMember={teamMember} />
+        <CheckInControls handleGotoNext={handleGotoNext} meetingMember={meetingMember} />
         <EndMeetingButton meetingId={meetingId} />
       </MeetingFacilitatorBar>
     </MeetingContent>
@@ -109,38 +110,38 @@ const NewMeetingCheckIn = (props: Props) => {
 
 graphql`
   fragment NewMeetingCheckInLocalStage on CheckInStage {
+    meetingMember {
+      ...CheckInControls_meetingMember
+    }
     teamMember {
       userId
       ...NewMeetingCheckInPrompt_teamMember
-      ...CheckInControls_teamMember
     }
   }
 `
 
 export default createFragmentContainer(NewMeetingCheckIn, {
-  team: graphql`
-    fragment NewMeetingCheckIn_team on Team {
-      ...NewMeetingCheckInPrompt_team
-      isMeetingSidebarCollapsed
-      newMeeting {
-        meetingType
+  meeting: graphql`
+    fragment NewMeetingCheckIn_meeting on NewMeeting {
+      ...NewMeetingCheckInPrompt_meeting
+      showSidebar
+      meetingType
+      id
+      facilitatorStageId
+      facilitator {
+        userId
+      }
+      localStage {
         id
-        facilitatorStageId
-        facilitator {
-          userId
-        }
-        localStage {
+        ...NewMeetingCheckInLocalStage @relay(mask: false)
+      }
+      phases {
+        stages {
           id
           ...NewMeetingCheckInLocalStage @relay(mask: false)
         }
-        phases {
-          stages {
-            id
-            ...NewMeetingCheckInLocalStage @relay(mask: false)
-          }
-        }
       }
-      teamId: id
+      teamId
     }
   `
 })

@@ -7,11 +7,10 @@ import LogoBlock from './LogoBlock/LogoBlock'
 import SidebarToggle from './SidebarToggle'
 import Facilitator from './Facilitator'
 import {PALETTE} from '../styles/paletteV2'
-import {MeetingTypeEnum} from '../types/graphql'
 import {meetingTypeToLabel} from '../utils/meetings/lookups'
 import isDemoRoute from '../utils/isDemoRoute'
 import {NavSidebar} from '../types/constEnums'
-import {NewMeetingSidebar_viewer} from '../__generated__/NewMeetingSidebar_viewer.graphql'
+import {NewMeetingSidebar_meeting} from '__generated__/NewMeetingSidebar_meeting.graphql'
 
 const SidebarHeader = styled('div')({
   alignItems: 'flex-start',
@@ -61,16 +60,14 @@ const TeamDashboardLink = styled(Link)({
 interface Props {
   children: ReactNode
   handleMenuClick: () => void
-  meetingType: MeetingTypeEnum
   toggleSidebar: () => void
-  viewer: NewMeetingSidebar_viewer
+  meeting: NewMeetingSidebar_meeting
 }
 
 const NewMeetingSidebar = (props: Props) => {
-  const {children, handleMenuClick, meetingType, toggleSidebar, viewer} = props
-  const {team} = viewer
-  if (!team) return null
-  const {id: teamId, name: teamName, newMeeting} = team
+  const {children, handleMenuClick, toggleSidebar, meeting} = props
+  const {meetingType, team} = meeting
+  const {id: teamId, name: teamName} = team
   const meetingLabel = meetingTypeToLabel[meetingType]
   const teamLink = isDemoRoute() ? '/create-account' : `/team/${teamId}`
   return (
@@ -85,7 +82,7 @@ const NewMeetingSidebar = (props: Props) => {
           </TeamDashboardLink>
         </div>
       </SidebarHeader>
-      {newMeeting && <Facilitator viewer={viewer} />}
+      <Facilitator meeting={meeting} />
       {children}
       <LogoBlock variant='primary' onClick={handleMenuClick} />
     </SidebarParent>
@@ -93,15 +90,14 @@ const NewMeetingSidebar = (props: Props) => {
 }
 
 export default createFragmentContainer(NewMeetingSidebar, {
-  viewer: graphql`
-    fragment NewMeetingSidebar_viewer on User {
-      ...Facilitator_viewer
-      team(teamId: $teamId) {
+  meeting: graphql`
+    fragment NewMeetingSidebar_meeting on NewMeeting {
+      ...Facilitator_meeting
+      id
+      meetingType
+      team {
         id
         name
-        newMeeting {
-          id
-        }
       }
     }
   `

@@ -1,22 +1,22 @@
-import {ActionMeetingSidebar_viewer} from '../__generated__/ActionMeetingSidebar_viewer.graphql'
+import {ActionMeetingSidebar_meeting} from '../__generated__/ActionMeetingSidebar_meeting.graphql'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import NewMeetingSidebarPhaseListItem from './NewMeetingSidebarPhaseListItem'
 import ActionSidebarPhaseListItemChildren from './ActionSidebarPhaseListItemChildren'
-import {useGotoStageId} from '../hooks/useMeeting'
-import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from '../types/graphql'
+import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import getSidebarItemStage from '../utils/getSidebarItemStage'
 import findStageById from '../utils/meetings/findStageById'
-import UNSTARTED_MEETING from '../utils/meetings/unstartedMeeting'
 import NewMeetingSidebar from './NewMeetingSidebar'
 import MeetingNavList from './MeetingNavList'
+import useAtmosphere from '../hooks/useAtmosphere'
+import useGotoStageId from '../hooks/useGotoStageId'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
   handleMenuClick: () => void
   toggleSidebar: () => void
-  viewer: ActionMeetingSidebar_viewer
+  meeting: ActionMeetingSidebar_meeting
 }
 
 const blackList: string[] = [NewMeetingPhaseTypeEnum.firstcall, NewMeetingPhaseTypeEnum.lastcall]
@@ -27,12 +27,13 @@ const collapsiblePhases: string[] = [
 ]
 
 const ActionMeetingSidebar = (props: Props) => {
-  const {gotoStageId, handleMenuClick, toggleSidebar, viewer} = props
-  const {id: viewerId, team} = viewer
-  const {meetingSettings, newMeeting, agendaItems} = team!
-  const {phaseTypes} = meetingSettings
-  const {facilitatorUserId, facilitatorStageId, localPhase, localStage, phases} =
-    newMeeting || UNSTARTED_MEETING
+  const {gotoStageId, handleMenuClick, toggleSidebar, meeting} = props
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
+  const {team, settings} = meeting
+  const {agendaItems} = team
+  const {phaseTypes} = settings
+  const {facilitatorUserId, facilitatorStageId, localPhase, localStage, phases} = meeting
   const localPhaseType = localPhase ? localPhase.phaseType : ''
   const facilitatorStageRes = findStageById(phases, facilitatorStageId)
   const facilitatorPhaseType = facilitatorStageRes ? facilitatorStageRes.phase.phaseType : ''
@@ -42,9 +43,8 @@ const ActionMeetingSidebar = (props: Props) => {
   return (
     <NewMeetingSidebar
       handleMenuClick={handleMenuClick}
-      meetingType={MeetingTypeEnum.action}
       toggleSidebar={toggleSidebar}
-      viewer={viewer}
+      meeting={meeting}
     >
       <MeetingNavList>
         {phaseTypes
@@ -84,7 +84,7 @@ const ActionMeetingSidebar = (props: Props) => {
                   gotoStageId={gotoStageId}
                   handleMenuClick={handleMenuClick}
                   phaseType={phaseType}
-                  viewer={viewer}
+                  meeting={meeting}
                 />
               </NewMeetingSidebarPhaseListItem>
             )
@@ -95,39 +95,33 @@ const ActionMeetingSidebar = (props: Props) => {
 }
 
 export default createFragmentContainer(ActionMeetingSidebar, {
-  viewer: graphql`
-    fragment ActionMeetingSidebar_viewer on User {
-      ...ActionSidebarPhaseListItemChildren_viewer
-      ...NewMeetingSidebar_viewer
-      id
-      team(teamId: $teamId) {
-        isMeetingSidebarCollapsed
+  meeting: graphql`
+    fragment ActionMeetingSidebar_meeting on ActionMeeting {
+      ...ActionSidebarPhaseListItemChildren_meeting
+      ...NewMeetingSidebar_meeting
+      settings {
+        phaseTypes
+      }
+      facilitatorUserId
+      facilitatorStageId
+      localPhase {
+        phaseType
+      }
+      localStage {
         id
-        meetingSettings(meetingType: action) {
-          phaseTypes
+      }
+      phases {
+        phaseType
+        stages {
+          id
+          isComplete
+          isNavigable
+          isNavigableByFacilitator
         }
+      }
+      team {
         agendaItems {
           id
-        }
-        newMeeting {
-          meetingId: id
-          facilitatorUserId
-          facilitatorStageId
-          localPhase {
-            phaseType
-          }
-          localStage {
-            id
-          }
-          phases {
-            phaseType
-            stages {
-              id
-              isComplete
-              isNavigable
-              isNavigableByFacilitator
-            }
-          }
         }
       }
     }

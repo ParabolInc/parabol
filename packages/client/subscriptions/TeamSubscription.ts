@@ -146,7 +146,7 @@ const TeamSubscription = (
           dragDiscussionTopicTeamUpdater(payload, context)
           break
         case 'AddTeamMutationPayload':
-          addTeamTeamUpdater(payload, store)
+          addTeamTeamUpdater(payload, context)
           break
         case 'ArchiveTeamPayload':
           archiveTeamTeamUpdater(payload, store, viewerId)
@@ -181,7 +181,7 @@ const TeamSubscription = (
           removeReflectTemplatePromptTeamUpdater(payload, context)
           break
         case 'RemoveReflectionPayload':
-          removeReflectionTeamUpdater(payload, store)
+          removeReflectionTeamUpdater(payload, context)
           break
         case 'RemoveTeamMemberPayload':
           removeTeamMemberTeamUpdater(payload, store, viewerId)

@@ -71,15 +71,10 @@ const TeamMember = new GraphQLObjectType<any, GQLContext, any>({
       description: 'The meeting specifics for the meeting the team member is currently in',
       args: {
         meetingId: {
-          type: GraphQLID
+          type: new GraphQLNonNull(GraphQLID)
         }
       },
-      resolve: async ({teamId, userId}, args, {dataLoader}) => {
-        let meetingId = args.meetingId
-        if (!meetingId) {
-          const team = await dataLoader.get('teams').load(teamId)
-          meetingId = team.meetingId
-        }
+      resolve: async ({userId}, {meetingId}, {dataLoader}) => {
         const meetingMemberId = toTeamMemberId(meetingId, userId)
         return meetingId ? dataLoader.get('meetingMembers').load(meetingMemberId) : undefined
       }

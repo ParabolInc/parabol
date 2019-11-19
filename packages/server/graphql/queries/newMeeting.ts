@@ -1,7 +1,8 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import NewMeeting from '../types/NewMeeting'
-import {getUserId, isPastOrPresentTeamMember, isTeamMember} from '../../utils/authorization'
+import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
+import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 
 export default {
   type: NewMeeting,
@@ -21,7 +22,9 @@ export default {
     }
     const {teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
-      if (!(await isPastOrPresentTeamMember(viewerId, teamId))) {
+      const meetingMemberId = toTeamMemberId(meetingId, viewerId)
+      const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
+      if (!meetingMember) {
         standardError(new Error('Team not found'), {userId: viewerId})
         return null
       }

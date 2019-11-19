@@ -5,7 +5,6 @@ import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {useGotoStageId} from '../../../../hooks/useMeeting'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import AgendaItem from '../AgendaItem/AgendaItem'
 import AgendaListEmptyState from './AgendaListEmptyState'
@@ -14,6 +13,7 @@ import {navItemRaised} from '../../../../styles/elevation'
 import {AGENDA_ITEM, SORT_STEP} from '../../../../utils/constants'
 import dndNoise from '../../../../utils/dndNoise'
 import useEventCallback from '../../../../hooks/useEventCallback'
+import useGotoStageId from '../../../../hooks/useGotoStageId'
 
 const AgendaListRoot = styled('div')({
   display: 'flex',
@@ -33,13 +33,14 @@ const DraggableAgendaItem = styled('div')<{isDragging: boolean}>(({isDragging}) 
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
+  meetingId?: string | null
   team: AgendaList_team
 }
 
 const AgendaList = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {gotoStageId, team} = props
-  const {contentFilter, agendaItems, newMeeting} = team
+  const {gotoStageId, meetingId, team} = props
+  const {activeMeetings, contentFilter, agendaItems} = team
   const filteredAgendaItems = useMemo(() => {
     return contentFilter
       ? agendaItems.filter(({content}) => content.match(contentFilter))
@@ -70,13 +71,15 @@ const AgendaList = (props: Props) => {
         (agendaItems[destination.index + offset].sortOrder + destinationItem.sortOrder) / 2 +
         dndNoise()
     }
-    UpdateAgendaItemMutation(atmosphere, {
-      updatedAgendaItem: {id: sourceItem.id, sortOrder}
-    })
+    UpdateAgendaItemMutation(
+      atmosphere,
+      {updatedAgendaItem: {id: sourceItem.id, sortOrder}},
+      {meetingId}
+    )
   })
 
   if (filteredAgendaItems.length === 0) {
-    return <AgendaListEmptyState isDashboard={!newMeeting} />
+    return <AgendaListEmptyState isDashboard={!meetingId} />
   }
 
   return (
@@ -102,7 +105,7 @@ const AgendaList = (props: Props) => {
                             gotoStageId={gotoStageId}
                             idx={agendaItems.findIndex((agendaItem) => agendaItem === item)}
                             isDragging={dragSnapshot.isDragging}
-                            newMeeting={newMeeting}
+                            activeMeetings={activeMeetings}
                           />
                         </DraggableAgendaItem>
                       )
@@ -130,8 +133,8 @@ export default createFragmentContainer(AgendaList, {
         sortOrder
         ...AgendaItem_agendaItem
       }
-      newMeeting {
-        ...AgendaItem_newMeeting
+      activeMeetings {
+        ...AgendaItem_activeMeetings
         id
       }
     }

@@ -1,8 +1,7 @@
 import {PromoteNewMeetingFacilitatorMutation_team} from '../__generated__/PromoteNewMeetingFacilitatorMutation_team.graphql'
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {Disposable} from 'relay-runtime'
-import {OnNextHandler, StandardMutation} from '../types/relayMutations'
+import {OnNextHandler, SimpleMutation} from '../types/relayMutations'
 import {PromoteNewMeetingFacilitatorMutation as TPromoteNewMeetingFacilitatorMutation} from '../__generated__/PromoteNewMeetingFacilitatorMutation.graphql'
 
 graphql`
@@ -57,10 +56,10 @@ export const promoteNewMeetingFacilitatorTeamOnNext: OnNextHandler<PromoteNewMee
   })
 }
 
-const PromoteNewMeetingFacilitatorMutation: StandardMutation<TPromoteNewMeetingFacilitatorMutation> = (
+const PromoteNewMeetingFacilitatorMutation: SimpleMutation<TPromoteNewMeetingFacilitatorMutation> = (
   atmosphere,
   variables
-): Disposable => {
+) => {
   return commitMutation<TPromoteNewMeetingFacilitatorMutation>(atmosphere, {
     mutation,
     variables,

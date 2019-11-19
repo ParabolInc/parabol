@@ -13,9 +13,10 @@ import handleUpsertTasks from './handlers/handleUpsertTasks'
 import {setLocalStageAndPhase} from '../utils/relay/updateLocalStage'
 import findStageById from '../utils/meetings/findStageById'
 import onExOrgRoute from '../utils/onExOrgRoute'
-import {OnNextHandler} from '../types/relayMutations'
+import {OnNextHandler, OnNextHistoryContext} from '../types/relayMutations'
 import {RemoveOrgUserMutation_notification} from '../__generated__/RemoveOrgUserMutation_notification.graphql'
 import {RemoveOrgUserMutation as IRemoveOrgUserMutation} from '__generated__/RemoveOrgUserMutation.graphql'
+import onMeetingRoute from '../utils/onMeetingRoute'
 
 graphql`
   fragment RemoveOrgUserMutation_organization on RemoveOrgUserPayload {
@@ -44,7 +45,14 @@ graphql`
     kickOutNotifications {
       id
       type
-      ...KickedOut_notification @relay(mask: false)
+      team {
+        id
+        name
+        activeMeetings {
+          id
+        }
+      }
+      ...KickedOut_notification
     }
   }
 `
@@ -174,25 +182,31 @@ export const removeOrgUserOrganizationOnNext = (payload, context) => {
   }
 }
 
-export const removeOrgUserNotificationOnNext: OnNextHandler<RemoveOrgUserMutation_notification> = (
-  payload,
-  {atmosphere, history}
-) => {
+export const removeOrgUserNotificationOnNext: OnNextHandler<
+  RemoveOrgUserMutation_notification,
+  OnNextHistoryContext
+> = (payload, {atmosphere, history}) => {
   if (!payload) return
   const {organization, kickOutNotifications} = payload
   if (!organization || !kickOutNotifications) return
   const {name: orgName, id: orgId} = organization
-  const teamIds = kickOutNotifications.map((notification) => notification && notification.team.id)
+  const teams = kickOutNotifications.map((notification) => notification && notification.team)
   atmosphere.eventEmitter.emit('addSnackbar', {
     key: `removedFromOrg:${orgId}`,
     autoDismiss: 10,
     message: `You have been removed from ${orgName} and all its teams`
   })
 
-  for (let ii = 0; ii < teamIds.length; ii++) {
-    const teamId = teamIds[ii]
-    if (onTeamRoute(window.location.pathname, teamId)) {
-      history && history.push('/me')
+  for (let ii = 0; ii < teams.length; ii++) {
+    const team = teams[ii]
+    if (!team) continue
+    const {activeMeetings, id: teamId} = team
+    const meetingIds = activeMeetings.map(({id}) => id)
+    if (
+      onTeamRoute(window.location.pathname, teamId) ||
+      onMeetingRoute(window.location.pathname, meetingIds)
+    ) {
+      history.push('/me')
       return
     }
   }

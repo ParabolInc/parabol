@@ -43,6 +43,7 @@ const TeamColumnsContainer = (props: Props) => {
       tasks={filteredTasks}
       teamMemberFilterId={teamMemberFilterId}
       area={AreaEnum.teamDash}
+      teams={null}
     />
   )
 }

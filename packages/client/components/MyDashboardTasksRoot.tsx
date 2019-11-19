@@ -6,6 +6,7 @@ import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/
 import {LoaderSize} from '../types/constEnums'
 import renderQuery from '../utils/relay/renderQuery'
 
+// Changing the name here requires a change to getLastSeenAtURL.ts
 const query = graphql`
   query MyDashboardTasksRootQuery {
     viewer {

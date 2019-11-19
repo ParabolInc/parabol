@@ -2,12 +2,10 @@ import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {matchPath} from 'react-router-dom'
 import {Disposable, RecordSourceProxy} from 'relay-runtime'
-import {meetingTypeToSlug} from '../utils/meetings/lookups'
 import {
   StartDraggingReflectionMutation as TStartDraggingReflectionMutation,
   StartDraggingReflectionMutationVariables
 } from '../__generated__/StartDraggingReflectionMutation.graphql'
-import {MeetingTypeEnum} from '../types/graphql'
 import {LocalHandlers, SharedUpdater} from '../types/relayMutations'
 import Atmosphere from '../Atmosphere'
 import {StartDraggingReflectionMutation_team} from '__generated__/StartDraggingReflectionMutation_team.graphql'
@@ -44,10 +42,9 @@ export const startDraggingReflectionTeamUpdater: SharedUpdater<StartDraggingRefl
   payload,
   {atmosphere, store}: UpdaterOptions
 ) => {
-  const teamId = payload.getValue('teamId')
+  const meetingId = payload.getValue('meetingId')
   const {pathname} = window.location
-  const slug = meetingTypeToSlug[MeetingTypeEnum.retrospective]
-  const meetingRoute = matchPath(pathname, {path: `/${slug}/${teamId}`})
+  const meetingRoute = matchPath(pathname, {path: `/meet/${meetingId}`})
   const isDemoRoute = matchPath(pathname, {path: `/retrospective-demo`})
   /*
    * Avoid adding reflectionsInFlight on clients that are not in the meeting because

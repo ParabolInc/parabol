@@ -1,31 +1,26 @@
 import {AGENDA_ITEMS} from '../../../../client/utils/constants'
 import getRethink from '../../../database/rethinkDriver'
 import {DataLoaderWorker} from '../../graphql'
-import Meeting from '../../../database/types/Meeting'
 import AgendaItemsPhase from '../../../database/types/AgendaItemsPhase'
 import AgendaItemsStage from '../../../database/types/AgendaItemsStage'
+import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 
 /*
  * NewMeetings have a predefined set of stages, we need to add the new agenda item manually
  */
-const addAgendaItemToNewMeeting = async (
+const addAgendaItemToActiveActionMeeting = async (
   agendaItemId,
   teamId: string,
   dataLoader: DataLoaderWorker
 ) => {
   const now = new Date()
   const r = await getRethink()
-  const team = await dataLoader.get('teams').load(teamId)
-  const {meetingId} = team
-  if (!meetingId) return undefined
-  // make sure it's a new meeting
-  const newMeeting = (await r
-    .table('NewMeeting')
-    .get(meetingId)
-    .default(null)
-    .run()) as Meeting
-  if (!newMeeting) return undefined
-  const {phases} = newMeeting
+  const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
+  const actionMeeting = activeMeetings.find(
+    (activeMeeting) => activeMeeting.meetingType === MeetingTypeEnum.action
+  )
+  if (!actionMeeting) return undefined
+  const {id: meetingId, phases} = actionMeeting
   const agendaItemPhase = phases.find((phase) => phase.phaseType === AGENDA_ITEMS) as
     | AgendaItemsPhase
     | undefined
@@ -47,4 +42,4 @@ const addAgendaItemToNewMeeting = async (
   return meetingId
 }
 
-export default addAgendaItemToNewMeeting
+export default addAgendaItemToActiveActionMeeting

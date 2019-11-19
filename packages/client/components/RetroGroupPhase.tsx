@@ -1,4 +1,3 @@
-import {RetroGroupPhase_team} from '../__generated__/RetroGroupPhase_team.graphql'
 import ms from 'ms'
 /**
  * Renders the UI for the reflection phase of the retrospective meeting
@@ -33,9 +32,10 @@ import PhaseWrapper from './PhaseWrapper'
 import {ElementWidth} from '../types/constEnums'
 import GroupingKanban from './GroupingKanban'
 import useAtmosphere from '../hooks/useAtmosphere'
+import {RetroGroupPhase_meeting} from '__generated__/RetroGroupPhase_meeting.graphql'
 
 interface Props extends RetroMeetingPhaseProps {
-  team: RetroGroupPhase_team
+  meeting: RetroGroupPhase_meeting
 }
 
 const CenteredControlBlock = styled('div')<{isComplete: boolean | undefined}>(({isComplete}) => ({
@@ -57,11 +57,9 @@ const RetroGroupPhase = (props: Props) => {
   const phaseRef = useRef<HTMLDivElement>(null)
   // const {onCompleted, submitMutation, error, onError, submitting} = useMutationProps()
   const [isReadyToVote, resetActivityTimeout] = useTimeoutWithReset(ms('1m'), ms('30s'))
-  const {avatarGroup, toggleSidebar, handleGotoNext, team, isDemoStageComplete} = props
+  const {avatarGroup, toggleSidebar, handleGotoNext, meeting, isDemoStageComplete} = props
   const {viewerId} = atmosphere
-  const {isMeetingSidebarCollapsed, newMeeting} = team
-  if (!newMeeting) return null
-  const {facilitatorUserId, id: meetingId, localStage} = newMeeting
+  const {showSidebar, facilitatorUserId, id: meetingId, localStage} = meeting
   const isComplete = localStage ? localStage.isComplete : false
   const isAsync = localStage ? localStage.isAsync : false
   const isFacilitating = facilitatorUserId === viewerId
@@ -79,7 +77,7 @@ const RetroGroupPhase = (props: Props) => {
       <MeetingHeaderAndPhase>
         <MeetingTopBar
           avatarGroup={avatarGroup}
-          isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
+          isMeetingSidebarCollapsed={!showSidebar}
           toggleSidebar={toggleSidebar}
         >
           <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.group]}</PhaseHeaderTitle>
@@ -90,7 +88,7 @@ const RetroGroupPhase = (props: Props) => {
           {/*{error && <StyledError>{error}</StyledError>}*/}
           <MeetingPhaseWrapper>
             <GroupingKanban
-              meeting={newMeeting}
+              meeting={meeting}
               phaseRef={phaseRef}
               resetActivityTimeout={resetActivityTimeout}
             />
@@ -99,9 +97,7 @@ const RetroGroupPhase = (props: Props) => {
         <MeetingHelpToggle menu={isDemoRoute() ? <DemoGroupHelpMenu /> : <GroupHelpMenu />} />
       </MeetingHeaderAndPhase>
       <MeetingFacilitatorBar isFacilitating={isFacilitating}>
-        {!isComplete && (
-          <StageTimerControl defaultTimeLimit={5} meetingId={meetingId} team={team} />
-        )}
+        {!isComplete && <StageTimerControl defaultTimeLimit={5} meeting={meeting} />}
         <CenteredControlBlock isComplete={isComplete}>
           {/*{canAutoGroup && (*/}
           {/*  <BottomNavControl onClick={autoGroup} waiting={submitting}>*/}
@@ -141,25 +137,23 @@ graphql`
 `
 
 export default createFragmentContainer(RetroGroupPhase, {
-  team: graphql`
-    fragment RetroGroupPhase_team on Team {
-      ...StageTimerControl_team
-      isMeetingSidebarCollapsed
-      newMeeting {
-        id
-        facilitatorUserId
-        ... on RetrospectiveMeeting {
-          ...GroupingKanban_meeting
-          localStage {
+  meeting: graphql`
+    fragment RetroGroupPhase_meeting on RetrospectiveMeeting {
+      ...StageTimerControl_meeting
+      showSidebar
+      id
+      facilitatorUserId
+      ... on RetrospectiveMeeting {
+        ...GroupingKanban_meeting
+        localStage {
+          ...RetroGroupPhase_stage @relay(mask: false)
+        }
+        phases {
+          stages {
             ...RetroGroupPhase_stage @relay(mask: false)
           }
-          phases {
-            stages {
-              ...RetroGroupPhase_stage @relay(mask: false)
-            }
-          }
-          nextAutoGroupThreshold
         }
+        nextAutoGroupThreshold
       }
     }
   `

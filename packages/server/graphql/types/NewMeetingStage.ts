@@ -42,7 +42,7 @@ import AgendaItemsStage from './AgendaItemsStage'
 export const newMeetingStageFields = () => ({
   id: {
     type: new GraphQLNonNull(GraphQLID),
-    description: 'shortid'
+    description: 'stageId, shortid'
   },
   endAt: {
     description: 'The datetime the stage was completed',

@@ -4,13 +4,12 @@ import UpdateAgendaItemInput from '../types/UpdateAgendaItemInput'
 import UpdateAgendaItemPayload from '../types/UpdateAgendaItemPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {ACTION, AGENDA_ITEMS, TEAM} from '../../../client/utils/constants'
+import {AGENDA_ITEMS, TEAM} from '../../../client/utils/constants'
 import makeUpdateAgendaItemSchema from '../../../client/validation/makeUpdateAgendaItemSchema'
 import standardError from '../../utils/standardError'
-import Meeting from '../../database/types/Meeting'
 import {GQLContext} from '../graphql'
 import AgendaItemsStage from '../../database/types/AgendaItemsStage'
-import {IAgendaItem} from '../../../client/types/graphql'
+import {IAgendaItem, MeetingTypeEnum} from '../../../client/types/graphql'
 import AgendaItemsPhase from '../../database/types/AgendaItemsPhase'
 
 export default {
@@ -59,38 +58,32 @@ export default {
         updatedAt: now
       })
       .run()
-    const team = await dataLoader.get('teams').load(teamId)
-    const {meetingId} = team
-    if (meetingId) {
-      const meeting = (await r
+    const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
+    const actionMeeting = activeMeetings.find(
+      (activeMeeting) => activeMeeting.meetingType === MeetingTypeEnum.action
+    )
+    const meetingId = actionMeeting?.id ?? null
+    if (actionMeeting) {
+      const {id: meetingId, phases} = actionMeeting
+      const agendaItemPhase = phases.find(
+        (phase) => phase.phaseType === AGENDA_ITEMS
+      )! as AgendaItemsPhase
+      const {stages} = agendaItemPhase
+      const agendaItems = (await dataLoader
+        .get('agendaItemsByTeamId')
+        .load(teamId)) as IAgendaItem[]
+      const getSortOrder = (stage: AgendaItemsStage) => {
+        const agendaItem = agendaItems.find((item) => item.id === stage.agendaItemId)
+        return (agendaItem && agendaItem.sortOrder) || 0
+      }
+      stages.sort((a, b) => (getSortOrder(a) > getSortOrder(b) ? 1 : -1))
+      await r
         .table('NewMeeting')
         .get(meetingId)
-        .run()) as Meeting | null
-      if (!meeting) {
-        return standardError(new Error('Invalid meetingId'))
-      }
-      if (meeting.meetingType === ACTION) {
-        const {phases} = meeting
-        const agendaItemPhase = phases.find(
-          (phase) => phase.phaseType === AGENDA_ITEMS
-        )! as AgendaItemsPhase
-        const {stages} = agendaItemPhase
-        const agendaItems = (await dataLoader
-          .get('agendaItemsByTeamId')
-          .load(teamId)) as IAgendaItem[]
-        const getSortOrder = (stage: AgendaItemsStage) => {
-          const agendaItem = agendaItems.find((item) => item.id === stage.agendaItemId)
-          return (agendaItem && agendaItem.sortOrder) || 0
-        }
-        stages.sort((a, b) => (getSortOrder(a) > getSortOrder(b) ? 1 : -1))
-        await r
-          .table('NewMeeting')
-          .get(meetingId)
-          .update({
-            phases
-          })
-          .run()
-      }
+        .update({
+          phases
+        })
+        .run()
     }
     const data = {agendaItemId, meetingId}
     publish(TEAM, teamId, UpdateAgendaItemPayload, data, subOptions)

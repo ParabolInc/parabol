@@ -16,7 +16,6 @@ import MeetingPhaseHeading from '../modules/meeting/components/MeetingPhaseHeadi
 import handleRightArrow from '../utils/handleRightArrow'
 import lazyPreload from '../utils/lazyPreload'
 import EndMeetingButton from './EndMeetingButton'
-import {ActionMeetingAgendaItems_team} from '../__generated__/ActionMeetingAgendaItems_team.graphql'
 import Avatar from './Avatar/Avatar'
 import MeetingAgendaCards from '../modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
 import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
@@ -27,13 +26,14 @@ import useTimeoutWithReset from '../hooks/useTimeoutWithReset'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import PhaseWrapper from './PhaseWrapper'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
+import {ActionMeetingAgendaItems_meeting} from '__generated__/ActionMeetingAgendaItems_meeting.graphql'
 
 const BottomControlSpacer = styled('div')({
   minWidth: 90
 })
 
 interface Props extends ActionMeetingPhaseProps {
-  team: ActionMeetingAgendaItems_team
+  meeting: ActionMeetingAgendaItems_meeting
 }
 
 const ActionMeetingAgendaItemsHelpMenu = lazyPreload(async () =>
@@ -84,13 +84,13 @@ const Inception = styled('div')({
 })
 
 const ActionMeetingAgendaItems = (props: Props) => {
-  const {avatarGroup, toggleSidebar, team, handleGotoNext} = props
+  const {avatarGroup, toggleSidebar, meeting, handleGotoNext} = props
   const atmosphere = useAtmosphere()
   const {gotoNext, ref: gotoNextRef} = handleGotoNext
   const [minTimeComplete, resetMinTimeComplete] = useTimeoutWithReset(ms('2m'))
   const {viewerId} = atmosphere
-  const {agendaItems, isMeetingSidebarCollapsed, newMeeting, tasks} = team
-  const {facilitatorUserId, id: meetingId, localStage, phases} = newMeeting!
+  const {showSidebar, team, facilitatorUserId, id: meetingId, localStage, phases} = meeting
+  const {id: teamId, agendaItems, tasks} = team
   const {id: localStageId, agendaItemId} = localStage
   useEffect(() => {
     resetMinTimeComplete()
@@ -117,7 +117,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
       <MeetingHeaderAndPhase>
         <MeetingTopBar
           avatarGroup={avatarGroup}
-          isMeetingSidebarCollapsed={!!isMeetingSidebarCollapsed}
+          isMeetingSidebarCollapsed={!showSidebar}
           toggleSidebar={toggleSidebar}
         >
           <PhaseHeaderTitle>
@@ -139,7 +139,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
                   meetingId={meetingId}
                   showPlaceholders
                   tasks={agendaTasks}
-                  teamId={team.id}
+                  teamId={teamId}
                 />
               </Inception>
             </Inner>
@@ -174,40 +174,41 @@ graphql`
 `
 
 export default createFragmentContainer(ActionMeetingAgendaItems, {
-  team: graphql`
-    fragment ActionMeetingAgendaItems_team on Team {
+  meeting: graphql`
+    fragment ActionMeetingAgendaItems_meeting on ActionMeeting {
       id
-      isMeetingSidebarCollapsed
-      agendaItems {
-        id
-        content
-        teamMember {
-          picture
-          preferredName
-        }
+      showSidebar
+      id
+      facilitatorUserId
+      localStage {
+        ...ActionMeetingAgendaItemsStage @relay(mask: false)
       }
-      newMeeting {
+      phases {
         id
-        facilitatorUserId
-        localStage {
+        phaseType
+        stages {
           ...ActionMeetingAgendaItemsStage @relay(mask: false)
         }
-        phases {
+      }
+      team {
+        id
+        agendaItems {
           id
-          phaseType
-          stages {
-            ...ActionMeetingAgendaItemsStage @relay(mask: false)
+          content
+          teamMember {
+            picture
+            preferredName
           }
         }
-      }
-      tasks(first: 1000) @connection(key: "TeamColumnsContainer_tasks") {
-        edges {
-          node {
-            ...MeetingAgendaCards_tasks
-            id
-            agendaId
-            createdAt
-            sortOrder
+        tasks(first: 1000) @connection(key: "TeamColumnsContainer_tasks") {
+          edges {
+            node {
+              ...MeetingAgendaCards_tasks
+              id
+              agendaId
+              createdAt
+              sortOrder
+            }
           }
         }
       }

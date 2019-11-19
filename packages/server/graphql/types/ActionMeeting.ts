@@ -5,8 +5,7 @@ import ActionMeetingSettings from './ActionMeetingSettings'
 import NewMeeting, {newMeetingFields} from './NewMeeting'
 import Task from './Task'
 import {getUserId} from '../../utils/authorization'
-import {IActionMeeting} from '../../../client/types/graphql'
-import {RETROSPECTIVE} from '../../../client/utils/constants'
+import {IActionMeeting, MeetingTypeEnum} from '../../../client/types/graphql'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 
 const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
@@ -25,11 +24,9 @@ const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
     settings: {
       type: new GraphQLNonNull(ActionMeetingSettings),
       description: 'The settings that govern the action meeting',
-      resolve: async ({id: meetingId}, _args, {dataLoader}) => {
-        const meeting = await dataLoader.get('newMeetings').load(meetingId)
-        const {teamId} = meeting
+      resolve: async ({teamId}, _args, {dataLoader}) => {
         const allSettings = await dataLoader.get('meetingSettingsByTeamId').load(teamId)
-        return allSettings.find((settings) => settings.meetingType === RETROSPECTIVE)
+        return allSettings.find((settings) => settings.meetingType === MeetingTypeEnum.action)
       }
     },
     taskCount: {

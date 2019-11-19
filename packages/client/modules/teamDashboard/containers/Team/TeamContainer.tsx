@@ -32,8 +32,8 @@ const TeamContainer = (props: Props) => {
   useEffect(() => {
     if (viewer && !viewer.team) {
       history.replace({
-        pathname: `/invitation-required/${teamId}`,
-        search: `?redirectTo=${encodeURIComponent(pathname)}`
+        pathname: `/invitation-required`,
+        search: `?redirectTo=${encodeURIComponent(pathname)}&teamId=${teamId}`
       })
     }
   })

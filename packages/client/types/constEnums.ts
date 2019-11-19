@@ -168,6 +168,11 @@ export const enum ReflectionStackPerspective {
   Y = 6
 }
 
+export const enum RetroDemo {
+  MEETING_ID = 'demoMeetingId',
+  TEAM_ID = 'demoTeamId'
+}
+
 export const enum RightSidebar {
   WIDTH = 240
 }

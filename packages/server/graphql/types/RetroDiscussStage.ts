@@ -2,8 +2,9 @@ import {GraphQLID, GraphQLObjectType, GraphQLFloat, GraphQLNonNull} from 'graphq
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
 import RetroReflectionGroup from './RetroReflectionGroup'
 import {makeResolve} from '../resolvers'
+import {GQLContext} from '../graphql'
 
-const RetroDiscussStage = new GraphQLObjectType({
+const RetroDiscussStage = new GraphQLObjectType<any, GQLContext, any>({
   name: 'RetroDiscussStage',
   description: 'The stage where the team discusses a single theme',
   interfaces: () => [NewMeetingStage],

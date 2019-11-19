@@ -2,11 +2,12 @@ import Meeting from '../../../database/types/Meeting'
 import MeetingMember from '../../../database/types/MeetingMember'
 import RetroMeetingMember from '../../../database/types/RetroMeetingMember'
 import {DataLoaderWorker} from '../../graphql'
-import {IRetrospectiveMeetingSettings, ITeamMember} from '../../../../client/types/graphql'
+import {IRetrospectiveMeetingSettings} from '../../../../client/types/graphql'
+import TeamMember from '../../../database/types/TeamMember'
 
 const createMeetingMembers = async (
   meeting: Meeting,
-  teamMembers: ITeamMember[],
+  teamMembers: TeamMember[],
   dataLoader: DataLoaderWorker
 ) => {
   switch (meeting.meetingType) {
