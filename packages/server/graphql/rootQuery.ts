@@ -23,7 +23,7 @@ export default new GraphQLObjectType<any, GQLContext>({
         if (name) {
           const {value} = name
           const lastSeenAtURL = getLastSeenAtURL(value, variableValues)
-          if (lastSeenAtURL !== viewer.lastSeenAtURL) {
+          if (lastSeenAtURL && lastSeenAtURL !== viewer.lastSeenAtURL) {
             viewer.lastSeenAtURL = lastSeenAtURL
             // no need to wait for the update since we've already got it in the cache
             r.table('User')
