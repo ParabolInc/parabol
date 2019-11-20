@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.13.1 2019-Nov-20
+
+## Fixed
+* Auto-checkin meeting members who joined the team after a meeting started
+* Gracefully handle group/ungroup errors
+
 ## 4.13.0 2019-Nov-19
 
 ## Fixed
