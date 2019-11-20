@@ -1,5 +1,5 @@
 import {NewMeetingAvatarGroup_team} from '../../../../__generated__/NewMeetingAvatarGroup_team.graphql'
-import React, {useMemo} from 'react'
+import React, {useEffect, useMemo, useRef} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
@@ -89,6 +89,10 @@ const NewMeetingAvatarGroup = (props: Props) => {
   const {swarm, team, camStreams, allowVideo} = props
   const {teamMembers} = team
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
+  const isInitialRenderRef = useRef(true)
+  useEffect(() => {
+    isInitialRenderRef.current = false
+  }, [])
   // all connected teamMembers except self
   // TODO: filter by team members who are actually viewing “this” meeting view
   const connectedTeamMembers = useMemo(() => {
@@ -110,6 +114,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
       ? visibleConnectedTeamMembers
       : visibleConnectedTeamMembers.concat(OVERFLOW_AVATAR as any)
   const tranChildren = useTransition(allAvatars)
+  const {current: isInit} = isInitialRenderRef
   return (
     <MeetingAvatarGroupRoot>
       <VideoControls
@@ -123,7 +128,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
           return (
             <OverlappingBlock key={'overflow'}>
               <OverflowCount
-                status={teamMember.status}
+                status={isInit ? TransitionStatus.ENTERED : teamMember.status}
                 onTransitionEnd={teamMember.onTransitionEnd}
               >{`+${hiddenTeamMemberCount}`}</OverflowCount>
             </OverlappingBlock>
@@ -134,7 +139,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
             <NewMeetingAvatar
               teamMember={teamMember.child}
               onTransitionEnd={teamMember.onTransitionEnd}
-              status={teamMember.status}
+              status={isInit ? TransitionStatus.ENTERED : teamMember.status}
               streamUI={camStreams[teamMember.child.userId]}
               swarm={swarm}
             />
