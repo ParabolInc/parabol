@@ -35,7 +35,7 @@ export default {
       type: GraphQLID
     }
   },
-  async resolve (_source, {reflectionId, dropTargetType, dropTargetId, dragId}, context) {
+  async resolve(_source, {reflectionId, dropTargetType, dropTargetId, dragId}, context) {
     const {authToken, dataLoader, socketId: mutatorId} = context
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
@@ -62,12 +62,22 @@ export default {
     let newReflectionGroupId
     if (dropTargetType === EDragReflectionDropTargetTypeEnum.REFLECTION_GRID) {
       // ungroup
-      newReflectionGroupId = await removeReflectionFromGroup(reflectionId, context)
-    } else if (dropTargetType === EDragReflectionDropTargetTypeEnum.REFLECTION_GROUP && dropTargetId) {
+      try {
+        newReflectionGroupId = await removeReflectionFromGroup(reflectionId, context)
+      } catch (e) {
+        return standardError(e, {userId: viewerId})
+      }
+    } else if (
+      dropTargetType === EDragReflectionDropTargetTypeEnum.REFLECTION_GROUP &&
+      dropTargetId
+    ) {
       // group
-      newReflectionGroupId = await addReflectionToGroup(reflectionId, dropTargetId, context)
+      try {
+        newReflectionGroupId = await addReflectionToGroup(reflectionId, dropTargetId, context)
+      } catch (e) {
+        return standardError(e, {userId: viewerId})
+      }
     }
-
     const data = {
       meetingId,
       reflectionId,
