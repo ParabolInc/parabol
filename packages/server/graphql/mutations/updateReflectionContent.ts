@@ -92,7 +92,13 @@ export default {
     await updateSmartGroupTitle(reflectionGroupId, newTitle)
 
     const data = {meetingId, reflectionId}
-    publish(SubscriptionChannel.TEAM, teamId, UpdateReflectionContentPayload, data, subOptions)
+    publish(
+      SubscriptionChannel.MEETING,
+      meetingId,
+      'UpdateReflectionContentPayload',
+      data,
+      subOptions
+    )
     return data
   }
 }

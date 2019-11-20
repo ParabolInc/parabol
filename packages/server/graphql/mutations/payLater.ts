@@ -70,7 +70,7 @@ export default {
       payLaterClickCount: organization.payLaterClickCount
     }).catch()
     const data = {orgId, meetingId}
-    publish(SubscriptionChannel.ORGANIZATION, orgId, PayLaterPayload, data, subOptions)
+    publish(SubscriptionChannel.ORGANIZATION, orgId, 'PayLaterPayload', data, subOptions)
     return {orgId, meetingId}
   }
 }

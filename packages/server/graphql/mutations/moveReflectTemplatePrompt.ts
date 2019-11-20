@@ -2,9 +2,9 @@ import {GraphQLFloat, GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {TEAM} from '../../../client/utils/constants'
 import standardError from '../../utils/standardError'
 import MoveReflectTemplatePromptPayload from '../types/MoveReflectTemplatePromptPayload'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const moveReflectTemplate = {
   description: 'Move a reflect template',
@@ -45,7 +45,7 @@ const moveReflectTemplate = {
 
     const {teamId} = prompt
     const data = {promptId}
-    publish(TEAM, teamId, MoveReflectTemplatePromptPayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'MoveReflectTemplatePromptPayload', data, subOptions)
     return data
   }
 }

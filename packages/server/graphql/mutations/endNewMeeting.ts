@@ -9,9 +9,7 @@ import {
   DISCUSS,
   DONE,
   LAST_CALL,
-  NOTIFICATION,
-  RETROSPECTIVE,
-  TEAM
+  RETROSPECTIVE
 } from '../../../client/utils/constants'
 import EndNewMeetingPayload from '../types/EndNewMeetingPayload'
 import {endSlackMeeting} from './helpers/notifySlack'
@@ -29,6 +27,7 @@ import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
 import {meetingTypeToLabel} from '../../../client/utils/meetings/lookups'
 import Task from '../../database/types/Task'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const timelineEventLookup = {
   [RETROSPECTIVE]: COMPLETED_RETRO_MEETING,
@@ -297,9 +296,9 @@ export default {
       )
       if (removedSuggestedActionId) {
         publish(
-          NOTIFICATION,
+          SubscriptionChannel.NOTIFICATION,
           teamLeadUserId,
-          EndNewMeetingPayload,
+          'EndNewMeetingPayload',
           {removedSuggestedActionId},
           subOptions
         )
@@ -313,7 +312,7 @@ export default {
       updatedTaskIds,
       removedTaskIds
     }
-    publish(TEAM, teamId, EndNewMeetingPayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'EndNewMeetingPayload', data, subOptions)
     return data
   }
 }

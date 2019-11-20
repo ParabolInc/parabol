@@ -56,7 +56,7 @@ export default {
 
     // RESOLUTION
     const data = {phaseItemId, editorId: mutatorId, isEditing}
-    publish(SubscriptionChannel.TEAM, teamId, EditReflectionPayload, data, subOptions)
+    publish(SubscriptionChannel.MEETING, meetingId, 'EditReflectionPayload', data, subOptions)
     return data
   }
 }

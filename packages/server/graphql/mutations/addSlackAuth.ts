@@ -5,10 +5,10 @@ import getRethink from '../../database/rethinkDriver'
 import SlackManager from '../../utils/SlackManager'
 import standardError from '../../utils/standardError'
 import publish from '../../utils/publish'
-import {TEAM} from '../../../client/utils/constants'
 import {GQLContext} from '../graphql'
 import SlackNotification, {SlackNotificationEvent} from '../../database/types/SlackNotification'
 import SlackAuth from '../../database/types/SlackAuth'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const upsertNotifications = async (
   viewerId: string,
@@ -135,7 +135,7 @@ export default {
       upsertAuth(viewerId, teamId, teamChannelId, userInfoRes.user.profile.display_name, response)
     ])
     const data = {slackAuthId, userId: viewerId}
-    publish(TEAM, teamId, AddSlackAuthPayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'AddSlackAuthPayload', data, subOptions)
     return data
   }
 }

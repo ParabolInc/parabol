@@ -115,7 +115,7 @@ export default {
       reflectionGroupId: reflectionGroupId,
       unlockedStageIds
     }
-    publish(SubscriptionChannel.TEAM, teamId, CreateReflectionPayload, data, subOptions)
+    publish(SubscriptionChannel.MEETING, meetingId, 'CreateReflectionPayload', data, subOptions)
     return data
   }
 }

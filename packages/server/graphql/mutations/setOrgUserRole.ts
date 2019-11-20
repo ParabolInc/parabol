@@ -4,15 +4,12 @@ import SetOrgUserRolePayload from '../types/SetOrgUserRolePayload'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import shortid from 'shortid'
-import {
-  billingLeaderTypes,
-  ORGANIZATION,
-  PROMOTE_TO_BILLING_LEADER
-} from '../../../client/utils/constants'
+import {billingLeaderTypes, PROMOTE_TO_BILLING_LEADER} from '../../../client/utils/constants'
 import {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
 import standardError from '../../utils/standardError'
 import {OrgUserRole} from 'parabol-client/types/graphql'
 import Notification from '../../database/types/Notification'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: SetOrgUserRolePayload,
@@ -104,8 +101,20 @@ export default {
       const notificationIdsAdded = existingNotificationIds.concat(promotionNotificationId)
       // add the org to the list of owned orgs
       const data = {orgId, userId, organizationUserId, notificationIdsAdded}
-      publish(ORGANIZATION, userId, SetOrgUserRolePayload, data, subOptions)
-      publish(ORGANIZATION, orgId, SetOrgUserRolePayload, data, subOptions)
+      publish(
+        SubscriptionChannel.ORGANIZATION,
+        userId,
+        'SetOrgUserRolePayload' as any,
+        data,
+        subOptions
+      )
+      publish(
+        SubscriptionChannel.ORGANIZATION,
+        orgId,
+        'SetOrgUserRolePayload' as any,
+        data,
+        subOptions
+      )
       await sendSegmentIdentify(userId)
       return data
     }
@@ -134,8 +143,20 @@ export default {
       }).run()
       const notificationsRemoved = removedNotifications.concat(oldPromotion)
       const data = {orgId, userId, organizationUserId, notificationsRemoved}
-      publish(ORGANIZATION, userId, SetOrgUserRolePayload, data, subOptions)
-      publish(ORGANIZATION, orgId, SetOrgUserRolePayload, data, subOptions)
+      publish(
+        SubscriptionChannel.ORGANIZATION,
+        userId,
+        'SetOrgUserRolePayload' as any,
+        data,
+        subOptions
+      )
+      publish(
+        SubscriptionChannel.ORGANIZATION,
+        orgId,
+        'SetOrgUserRolePayload' as any,
+        data,
+        subOptions
+      )
       await sendSegmentIdentify(userId)
       return data
     }

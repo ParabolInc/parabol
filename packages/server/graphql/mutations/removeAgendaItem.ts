@@ -2,11 +2,11 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import RemoveAgendaItemPayload from '../types/RemoveAgendaItemPayload'
 import publish from '../../utils/publish'
-import {TEAM} from '../../../client/utils/constants'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import removeStagesFromMeetings from './helpers/removeStagesFromMeetings'
 import AgendaItemsStage from '../../database/types/AgendaItemsStage'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: RemoveAgendaItemPayload,
@@ -45,7 +45,7 @@ export default {
     // safe to do so because we guarantee only 1 action meeting at the same time
     const [meetingId] = meetingIds
     const data = {agendaItem, meetingId}
-    publish(TEAM, teamId, RemoveAgendaItemPayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'RemoveAgendaItemPayload', data, subOptions)
     return data
   }
 }

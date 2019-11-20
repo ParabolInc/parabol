@@ -4,11 +4,11 @@ import AddAgendaItemPayload from '../types/AddAgendaItemPayload'
 import CreateAgendaItemInput from '../types/CreateAgendaItemInput'
 import publish from '../../utils/publish'
 import shortid from 'shortid'
-import {TEAM} from '../../../client/utils/constants'
 import makeAgendaItemSchema from '../../../client/validation/makeAgendaItemSchema'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import addAgendaItemToActiveActionMeeting from './helpers/addAgendaItemToActiveActionMeeting'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: AddAgendaItemPayload,
@@ -55,7 +55,7 @@ export default {
 
     const meetingId = await addAgendaItemToActiveActionMeeting(agendaItemId, teamId, dataLoader)
     const data = {agendaItemId, meetingId}
-    publish(TEAM, teamId, AddAgendaItemPayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'AddAgendaItemPayload', data, subOptions)
     return data
   }
 }

@@ -33,6 +33,7 @@ import UpdateUserProfilePayload from './UpdateUserProfilePayload'
 import PushInvitationPayload from './PushInvitationPayload'
 import DenyPushInvitationPayload from './DenyPushInvitationPayload'
 import SetCheckInEnabledPayload from './SetCheckInEnabledPayload'
+import SetSlackNotificationPayload from './SetSlackNotificationPayload'
 
 const types = [
   AcceptTeamInvitationPayload,
@@ -68,6 +69,7 @@ const types = [
   RenameReflectTemplatePayload,
   RenameReflectTemplatePromptPayload,
   SetCheckInEnabledPayload,
+  SetSlackNotificationPayload,
   UpdateUserProfilePayload
 ]
 

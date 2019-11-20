@@ -109,7 +109,7 @@ export default {
 
     startSlackMeeting(teamId, dataLoader, meetingType).catch(console.log)
     const data = {teamId, meetingId: meeting.id}
-    publish(SubscriptionChannel.TEAM, teamId, StartNewMeetingPayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'StartNewMeetingPayload', data, subOptions)
     return data
   }
 }

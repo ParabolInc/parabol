@@ -7,7 +7,6 @@ import CreateTaskPayload from '../types/CreateTaskPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import shortid from 'shortid'
-import {NOTIFICATION, TASK} from '../../../client/utils/constants'
 import getTypeFromEntityMap from '../../../client/utils/draftjs/getTypeFromEntityMap'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import standardError from '../../utils/standardError'
@@ -17,6 +16,7 @@ import {DataLoaderWorker, GQLContext} from '../graphql'
 import normalizeRawDraftJS from '../../../client/validation/normalizeRawDraftJS'
 import NotificationTaskInvolves from '../../database/types/NotificationTaskInvolves'
 import {ITeamMember} from 'parabol-client/types/graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const validateTaskAgendaItemId = async (
   agendaItemId: string | null | undefined,
@@ -188,14 +188,20 @@ export default {
         const {
           userIds: [notificationUserId]
         } = notification
-        publish(NOTIFICATION, notificationUserId, CreateTaskPayload, data, subOptions)
+        publish(
+          SubscriptionChannel.NOTIFICATION,
+          notificationUserId,
+          'CreateTaskPayload',
+          data,
+          subOptions
+        )
       })
     }
 
     const isPrivate = tags.includes('private')
     teamMembers.forEach((teamMember) => {
       if (!isPrivate || teamMember.userId === userId) {
-        publish(TASK, teamMember.userId, CreateTaskPayload, data, subOptions)
+        publish(SubscriptionChannel.TASK, teamMember.userId, 'CreateTaskPayload', data, subOptions)
       }
     })
     return data

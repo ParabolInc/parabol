@@ -46,7 +46,7 @@ export default {
     teamMembers.forEach((teamMember) => {
       const {userId} = teamMember
       if (!isPrivate || taskUserId === userId) {
-        publish(SubscriptionChannel.TASK, userId, EditTaskPayload, data, subOptions)
+        publish(SubscriptionChannel.TASK, userId, 'EditTaskPayload', data, subOptions)
       }
     })
     return data

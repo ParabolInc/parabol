@@ -12,7 +12,6 @@ import {verifyMassInviteToken} from '../../utils/massInviteToken'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import AuthToken from '../../database/types/AuthToken'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import AuthTokenPayload from '../types/AuthTokenPayload'
 import encodeAuthToken from '../../utils/encodeAuthToken'
 
 export default {
@@ -127,21 +126,21 @@ export default {
       const encodedAuthToken = encodeAuthToken(new AuthToken({tms, sub: viewerId}))
 
       // Send the new team member a welcome & a new token
-      publish(SubscriptionChannel.NOTIFICATION, viewerId, AuthTokenPayload, {tms})
+      publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
 
       // remove the old notifications
       if (removedNotificationIds.length > 0) {
         publish(
           SubscriptionChannel.NOTIFICATION,
           viewerId,
-          AcceptTeamInvitationPayload,
+          'AcceptTeamInvitationPayload',
           data,
           subOptions
         )
       }
 
       // Tell the rest of the team about the new team member
-      publish(SubscriptionChannel.TEAM, teamId, AcceptTeamInvitationPayload, data, subOptions)
+      publish(SubscriptionChannel.TEAM, teamId, 'AcceptTeamInvitationPayload', data, subOptions)
 
       // Give the team lead new suggested actions
       if (teamLeadUserIdWithNewActions) {
@@ -149,7 +148,7 @@ export default {
         publish(
           SubscriptionChannel.NOTIFICATION,
           teamLeadUserIdWithNewActions,
-          AcceptTeamInvitationPayload,
+          'AcceptTeamInvitationPayload',
           {teamLeadId: teamLeadUserIdWithNewActions},
           subOptions
         )

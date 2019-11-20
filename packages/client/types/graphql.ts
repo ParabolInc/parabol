@@ -5742,6 +5742,7 @@ export interface IUpdateDragLocationInput {
   id: string
   clientHeight: number
   clientWidth: number
+  meetingId: string
 
   /**
    * The primary key of the item being drug
@@ -6229,6 +6230,7 @@ export type TeamSubscriptionPayload =
   | IRenameReflectTemplatePayload
   | IRenameReflectTemplatePromptPayload
   | ISetCheckInEnabledPayload
+  | ISetSlackNotificationPayload
   | IUpdateUserProfilePayload
 
 /**

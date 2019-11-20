@@ -2,10 +2,10 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import UpdateCreditCardPayload from '../types/UpdateCreditCardPayload'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {ORGANIZATION, TEAM} from '../../../client/utils/constants'
 import standardError from '../../utils/standardError'
 import upgradeToPro from './helpers/upgradeToPro'
 import {GQLContext} from '../graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: UpdateCreditCardPayload,
@@ -20,7 +20,7 @@ export default {
       description: 'The token that came back from stripe'
     }
   },
-  async resolve (
+  async resolve(
     _source,
     {orgId, stripeToken},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
@@ -42,10 +42,10 @@ export default {
     const data = {teamIds, orgId}
 
     teamIds.forEach((teamId) => {
-      publish(TEAM, teamId, UpdateCreditCardPayload, data, subOptions)
+      publish(SubscriptionChannel.TEAM, teamId, 'UpdateCreditCardPayload', data, subOptions)
     })
 
-    publish(ORGANIZATION, orgId, UpdateCreditCardPayload, data, subOptions)
+    publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpdateCreditCardPayload', data, subOptions)
 
     return data
   }

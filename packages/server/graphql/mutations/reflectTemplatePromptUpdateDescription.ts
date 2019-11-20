@@ -2,9 +2,9 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {TEAM} from '../../../client/utils/constants'
 import standardError from '../../utils/standardError'
 import ReflectTemplatePromptUpdateDescriptionPayload from '../types/ReflectTemplatePromptUpdateDescriptionPayload'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const reflectTemplatePromptUpdateDescription = {
   description: 'Update the description of a reflection prompt',
@@ -48,7 +48,13 @@ const reflectTemplatePromptUpdateDescription = {
       .run()
 
     const data = {promptId}
-    publish(TEAM, teamId, ReflectTemplatePromptUpdateDescriptionPayload, data, subOptions)
+    publish(
+      SubscriptionChannel.TEAM,
+      teamId,
+      'ReflectTemplatePromptUpdateDescriptionPayload',
+      data,
+      subOptions
+    )
     return data
   }
 }

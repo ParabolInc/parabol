@@ -7,7 +7,7 @@ import rateLimit from '../rateLimit'
 import DenyPushInvitationPayload from '../types/DenyPushInvitationPayload'
 import PushInvitation from '../../database/types/PushInvitation'
 import publish from '../../utils/publish'
-import {TEAM} from '../../../client/utils/constants'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: DenyPushInvitationPayload,
@@ -53,7 +53,7 @@ export default {
       .run()
 
     const data = {teamId, userId}
-    publish(TEAM, teamId, DenyPushInvitationPayload, data, {mutatorId})
+    publish(SubscriptionChannel.TEAM, teamId, 'DenyPushInvitationPayload', data, {mutatorId})
     return data
   })
 }

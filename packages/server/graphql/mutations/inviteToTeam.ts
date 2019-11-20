@@ -155,7 +155,7 @@ export default {
         publish(
           SubscriptionChannel.NOTIFICATION,
           userId,
-          InviteToTeamPayload,
+          'InviteToTeamPayload',
           subscriberData,
           subOptions
         )

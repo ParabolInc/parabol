@@ -90,7 +90,13 @@ export default {
     }
 
     const data = {meetingId, reflectionGroupId}
-    publish(SubscriptionChannel.TEAM, teamId, UpdateReflectionGroupTitlePayload, data, subOptions)
+    publish(
+      SubscriptionChannel.MEETING,
+      meetingId,
+      'UpdateReflectionGroupTitlePayload',
+      data,
+      subOptions
+    )
     return data
   }
 }

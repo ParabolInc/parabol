@@ -2,12 +2,13 @@ import {GraphQLFloat, GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {GROUP, TEAM} from '../../../client/utils/constants'
+import {GROUP} from '../../../client/utils/constants'
 import isPhaseComplete from '../../../client/utils/meetings/isPhaseComplete'
 import AutoGroupReflectionsPayload from '../types/AutoGroupReflectionsPayload'
 import groupReflections from '../../../client/utils/autogroup/groupReflections'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import standardError from '../../utils/standardError'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: AutoGroupReflectionsPayload,
@@ -37,7 +38,8 @@ export default {
     const meeting = await r
       .table('NewMeeting')
       .get(meetingId)
-      .default(null).run()
+      .default(null)
+      .run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases, teamId} = meeting
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
@@ -58,7 +60,8 @@ export default {
     const reflections = await r
       .table('RetroReflection')
       .getAll(meetingId, {index: 'meetingId'})
-      .filter({isActive: true}).run()
+      .filter({isActive: true})
+      .run()
     const {
       autoGroupThreshold,
       groupedReflections,
@@ -104,7 +107,7 @@ export default {
     const reflectionGroupIds = groups.map(({id}) => id)
     const reflectionIds = groupedReflections.map(({id}) => id)
     const data = {meetingId, reflectionGroupIds, reflectionIds, removedReflectionGroupIds}
-    publish(TEAM, teamId, AutoGroupReflectionsPayload, data, subOptions)
+    publish(SubscriptionChannel.MEETING, meetingId, 'AutoGroupReflectionsPayload', data, subOptions)
     sendSegmentEvent('Autogroup', viewerId, {meetingId})
     return data
   }

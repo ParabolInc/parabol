@@ -3,8 +3,9 @@ import getRethink from '../../database/rethinkDriver'
 import SelectRetroTemplatePayload from '../types/SelectRetroTemplatePayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {RETROSPECTIVE, TEAM} from '../../../client/utils/constants'
+import {RETROSPECTIVE} from '../../../client/utils/constants'
 import standardError from '../../utils/standardError'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const selectRetroTemplate = {
   description: 'Set the selected template for the upcoming retro meeting',
@@ -62,7 +63,7 @@ const selectRetroTemplate = {
     }
 
     const data = {meetingSettingsId}
-    publish(TEAM, teamId, SelectRetroTemplatePayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'SelectRetroTemplatePayload', data, subOptions)
     return data
   }
 }

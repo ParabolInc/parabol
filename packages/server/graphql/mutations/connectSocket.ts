@@ -66,7 +66,7 @@ export default {
 
       // Tell everyone this user is now online
       listeningUserIds.forEach((onlineUserId) => {
-        publish(SubscriptionChannel.NOTIFICATION, onlineUserId, User, user, subOptions)
+        publish(SubscriptionChannel.NOTIFICATION, onlineUserId, 'User', user, subOptions)
       })
     }
 
