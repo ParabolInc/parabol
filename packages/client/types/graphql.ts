@@ -134,7 +134,7 @@ export interface IUser {
    * An array of objects with information about the user's identities.
    *       More than one will exists in case accounts are linked
    */
-  identities: Array<IAuthIdentityType | null> | null
+  identities: Array<AuthIdentity | null> | null
 
   /**
    * true if the user is not currently being billed for service. removed on every websocket handshake
@@ -1917,30 +1917,30 @@ export interface IGitHubAuth {
   userId: string
 }
 
-export interface IAuthIdentityType {
-  __typename: 'AuthIdentityType'
+/**
+ * An authentication strategy to log in to Parabol
+ */
+export type AuthIdentity = IAuthIdentityGoogle | IAuthIdentityLocal
+
+/**
+ * An authentication strategy to log in to Parabol
+ */
+export interface IAuthIdentity {
+  __typename: 'AuthIdentity'
 
   /**
-   * The connection name.
-   *       This field is not itself updateable
-   *       but is needed when updating email, email_verified, username or password.
+   * true if the email address using this strategy is verified, else false
    */
-  connection: string | null
+  isEmailVerified: boolean
+  type: AuthIdentityTypeEnum
+}
 
-  /**
-   * The unique identifier for the user for the identity.
-   */
-  userId: string | null
-
-  /**
-   * The type of identity provider.
-   */
-  provider: string | null
-
-  /**
-   * true if the identity provider is a social provider, false otherwise
-   */
-  isSocial: boolean | null
+/**
+ * The types of authentication strategies
+ */
+export const enum AuthIdentityTypeEnum {
+  LOCAL = 'LOCAL',
+  GOOGLE = 'GOOGLE'
 }
 
 /**
@@ -6222,6 +6222,57 @@ export interface IUpdateDragLocationPayload {
    */
   remoteDrag: IRemoteReflectionDrag
   userId: string
+}
+
+/**
+ * An authentication strategy using Google
+ */
+export interface IAuthIdentityGoogle {
+  __typename: 'AuthIdentityGoogle'
+
+  /**
+   * true if the email address using this strategy is verified, else false
+   */
+  isEmailVerified: boolean
+  type: AuthIdentityTypeEnum
+
+  /**
+   * The googleID for this strategy
+   */
+  id: string
+}
+
+/**
+ * An authentication strategy using an email & password
+ */
+export interface IAuthIdentityLocal {
+  __typename: 'AuthIdentityLocal'
+
+  /**
+   * true if the email address using this strategy is verified, else false
+   */
+  isEmailVerified: boolean
+  type: AuthIdentityTypeEnum
+
+  /**
+   * The token used to verify the user's email address. If null, verification is not pending
+   */
+  verifiedEmailToken: string | null
+
+  /**
+   * The token expiration. If null, verification not pending
+   */
+  verifiedEmailTokenExpiration: any | null
+
+  /**
+   * The token used to reset the local strategy's password. If null, no reset is pending
+   */
+  resetPasswordToken: string | null
+
+  /**
+   * The token expiration. If null, verification is complete
+   */
+  resetPasswordTokenExpiration: any | null
 }
 
 /**

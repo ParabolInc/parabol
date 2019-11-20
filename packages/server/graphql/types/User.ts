@@ -10,7 +10,6 @@ import {
 import archivedTasksCount from '../queries/archivedTasksCount'
 import invoiceDetails from '../queries/invoiceDetails'
 import invoices from '../queries/invoices'
-import AuthIdentityType from './AuthIdentityType'
 import BlockedUserType from './BlockedUserType'
 import GraphQLEmailType from './GraphQLEmailType'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -39,6 +38,7 @@ import {GITHUB} from '../../../client/utils/constants'
 import allAvailableIntegrations from '../queries/allAvailableIntegrations'
 import {GQLContext} from '../graphql'
 import TeamInvitationPayload from './TeamInvitationPayload'
+import AuthIdentity from './AuthIdentity'
 
 const User = new GraphQLObjectType<any, GQLContext, any>({
   name: 'User',
@@ -130,7 +130,7 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
       }
     },
     identities: {
-      type: new GraphQLList(AuthIdentityType),
+      type: new GraphQLList(AuthIdentity),
       description: `An array of objects with information about the user's identities.
       More than one will exists in case accounts are linked`
     },

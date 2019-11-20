@@ -183,6 +183,10 @@ export const enum RightSidebar {
   WIDTH = 240
 }
 
+export const enum Security {
+  SALT_ROUNDS = 12
+}
+
 export const enum SubscriptionChannel {
   TASK = 'task',
   TEAM = 'team',
@@ -217,9 +221,11 @@ export const enum TierLabel {
 export const enum Threshold {
   AUTO_PAUSE = 2592000000, // 30 days
   JWT_LIFESPAN = 2592000000, // 30 days
-  REFRESH_JWT_AFTER = 1296000000, // 15 days
   MAX_FREE_TEAMS = 10,
-  MAX_MONTHLY_PAUSES = 4
+  MAX_MONTHLY_PAUSES = 4,
+  REFRESH_JWT_AFTER = 1296000000, // 15 days
+  RESET_PASSWORD_LIFESPAN = 3600000, // 1 hour
+  VERIFY_TOKEN_LIFESPAN = 2592000000 // 30 days
 }
 export const enum Times {
   HUMAN_ADDICTION_THRESH = 300,

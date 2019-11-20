@@ -69,8 +69,8 @@ interface State {
 }
 
 const existingAccounts = {
-  'user_exists_google-oauth2': 'google',
-  user_exists_auth0: 'email'
+  user_exists_GOOGLE: 'google',
+  user_exists_LOCAL: 'email'
 }
 
 class GenericAuthentication extends Component<Props, State> {

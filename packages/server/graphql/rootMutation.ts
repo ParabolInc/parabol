@@ -79,6 +79,7 @@ import pushInvitation from './mutations/pushInvitation'
 import denyPushInvitation from './mutations/denyPushInvitation'
 import payLater from './mutations/payLater'
 import setCheckInEnabled from './mutations/setCheckInEnabled'
+import signUpWithPassword from './mutations/signUpWithPassword'
 
 interface Context extends InternalContext, GQLContext {}
 
@@ -139,6 +140,7 @@ export default new GraphQLObjectType<any, Context, any>({
     setPhaseFocus,
     setStageTimer,
     setSlackNotification,
+    signUpWithPassword,
     startDraggingReflection,
     startNewMeeting,
     toggleAgendaList,

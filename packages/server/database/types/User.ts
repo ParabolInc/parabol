@@ -1,4 +1,5 @@
-import Auth0Identity from './Auth0Identity'
+import {AuthTokenRole} from 'parabol-client/types/constEnums'
+import AuthIdentity from './AuthIdentity'
 
 interface Input {
   id: string
@@ -12,7 +13,7 @@ interface Input {
   updatedAt?: Date
   picture?: string
   inactive?: boolean
-  identities?: Auth0Identity[]
+  identities?: AuthIdentity[]
   createdAt?: Date
   segmentId?: string
   tms?: string[]
@@ -34,10 +35,11 @@ export default class User {
   updatedAt: Date
   picture: string
   inactive: boolean
-  identities: Auth0Identity[]
+  identities: AuthIdentity[]
   createdAt: Date
   segmentId?: string
   tms: string[]
+  rol?: AuthTokenRole.SUPER_USER
   constructor(input: Input) {
     const {
       tms,
