@@ -1,14 +1,13 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import Atmosphere from '../Atmosphere'
-import {INewMeeting, INewMeetingStage, ISetStageTimerOnMutationArguments} from '../types/graphql'
-import {LocalHandlers, SharedUpdater} from '../types/relayMutations'
-import {SetStageTimerMutation as TSetStageTimerMutation} from '../__generated__/SetStageTimerMutation.graphql'
-import {SetStageTimerMutation_team} from '__generated__/SetStageTimerMutation_team.graphql'
+import {INewMeeting, INewMeetingStage} from '../types/graphql'
+import {RelayDateHack, SharedUpdater, StandardMutation} from '../types/relayMutations'
+import {SetStageTimerMutation as _SetStageTimerMutation} from '../__generated__/SetStageTimerMutation.graphql'
+import {SetStageTimerMutation_meeting} from '__generated__/SetStageTimerMutation_meeting.graphql'
 import LocalTimeHandler from '../utils/relay/LocalTimeHandler'
 
 graphql`
-  fragment SetStageTimerMutation_team on SetStageTimerPayload {
+  fragment SetStageTimerMutation_meeting on SetStageTimerPayload {
     stage {
       isAsync
       scheduledEndTime
@@ -31,12 +30,12 @@ const mutation = graphql`
       error {
         message
       }
-      ...SetStageTimerMutation_team @relay(mask: false)
+      ...SetStageTimerMutation_meeting @relay(mask: false)
     }
   }
 `
 
-export const setStageTimerTeamUpdater: SharedUpdater<SetStageTimerMutation_team> = (
+export const setStageTimerTeamUpdater: SharedUpdater<SetStageTimerMutation_meeting> = (
   payload,
   {store}
 ) => {
@@ -52,10 +51,14 @@ export const setStageTimerTeamUpdater: SharedUpdater<SetStageTimerMutation_team>
   })
 }
 
-const SetStageTimerMutation = (
-  atmosphere: Atmosphere,
-  variables: ISetStageTimerOnMutationArguments,
-  {onError, onCompleted}: LocalHandlers
+type TSetStageTimerMutation = RelayDateHack<
+  _SetStageTimerMutation,
+  {scheduledEndTime?: Date | null}
+>
+const SetStageTimerMutation: StandardMutation<TSetStageTimerMutation> = (
+  atmosphere,
+  variables,
+  {onError, onCompleted}
 ) => {
   return commitMutation<TSetStageTimerMutation>(atmosphere, {
     mutation,

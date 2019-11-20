@@ -2,7 +2,7 @@ import {getRequest} from 'relay-runtime'
 import graphql from 'babel-plugin-relay/macro'
 
 graphql`
-  fragment UpdateDragLocationMutation_team on UpdateDragLocationPayload {
+  fragment UpdateDragLocationMutation_meeting on UpdateDragLocationPayload {
     remoteDrag {
       id
       clientX

@@ -9,11 +9,11 @@ import {IRetroReflection, IRetroReflectionGroup} from '../types/graphql'
 import {BaseLocalHandlers, SharedUpdater, StandardMutation} from '../types/relayMutations'
 import {RemoveReflectionMutation as TRemoveReflectionMutation} from '../__generated__/RemoveReflectionMutation.graphql'
 import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
-import {RemoveReflectionMutation_team} from '__generated__/RemoveReflectionMutation_team.graphql'
+import {RemoveReflectionMutation_meeting} from '__generated__/RemoveReflectionMutation_meeting.graphql'
 import {RecordSourceSelectorProxy} from 'relay-runtime'
 
 graphql`
-  fragment RemoveReflectionMutation_team on RemoveReflectionPayload {
+  fragment RemoveReflectionMutation_meeting on RemoveReflectionPayload {
     meeting {
       id
     }
@@ -31,7 +31,7 @@ graphql`
 const mutation = graphql`
   mutation RemoveReflectionMutation($reflectionId: ID!) {
     removeReflection(reflectionId: $reflectionId) {
-      ...RemoveReflectionMutation_team @relay(mask: false)
+      ...RemoveReflectionMutation_meeting @relay(mask: false)
     }
   }
 `
@@ -53,7 +53,7 @@ const removeReflectionAndEmptyGroup = (
   }
 }
 
-export const removeReflectionTeamUpdater: SharedUpdater<RemoveReflectionMutation_team> = (
+export const removeReflectionTeamUpdater: SharedUpdater<RemoveReflectionMutation_meeting> = (
   payload,
   {store}
 ) => {

@@ -186,6 +186,7 @@ export const enum RightSidebar {
 export const enum SubscriptionChannel {
   TASK = 'task',
   TEAM = 'team',
+  MEETING = 'meeting',
   NOTIFICATION = 'notification',
   ORGANIZATION = 'organization'
 }

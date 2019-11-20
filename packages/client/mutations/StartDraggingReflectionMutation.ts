@@ -8,11 +8,11 @@ import {
 } from '../__generated__/StartDraggingReflectionMutation.graphql'
 import {LocalHandlers, SharedUpdater} from '../types/relayMutations'
 import Atmosphere from '../Atmosphere'
-import {StartDraggingReflectionMutation_team} from '__generated__/StartDraggingReflectionMutation_team.graphql'
+import {StartDraggingReflectionMutation_meeting} from '__generated__/StartDraggingReflectionMutation_meeting.graphql'
 import {ClientRetroReflection} from '../types/clientSchema'
 
 graphql`
-  fragment StartDraggingReflectionMutation_team on StartDraggingReflectionPayload {
+  fragment StartDraggingReflectionMutation_meeting on StartDraggingReflectionPayload {
     meetingId
     reflectionId
     teamId
@@ -27,7 +27,7 @@ graphql`
 const mutation = graphql`
   mutation StartDraggingReflectionMutation($reflectionId: ID!, $dragId: ID!) {
     startDraggingReflection(reflectionId: $reflectionId, dragId: $dragId) {
-      ...StartDraggingReflectionMutation_team @relay(mask: false)
+      ...StartDraggingReflectionMutation_meeting @relay(mask: false)
     }
   }
 `
@@ -38,7 +38,7 @@ interface UpdaterOptions {
 }
 
 // used only by subscription
-export const startDraggingReflectionTeamUpdater: SharedUpdater<StartDraggingReflectionMutation_team> = (
+export const startDraggingReflectionTeamUpdater: SharedUpdater<StartDraggingReflectionMutation_meeting> = (
   payload,
   {atmosphere, store}: UpdaterOptions
 ) => {

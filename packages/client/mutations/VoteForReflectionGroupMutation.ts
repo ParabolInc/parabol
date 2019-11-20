@@ -11,7 +11,7 @@ import Atmosphere from '../Atmosphere'
 import {VoteForReflectionGroupMutation as IVoteForReflectionGroupMutation} from '../__generated__/VoteForReflectionGroupMutation.graphql'
 
 graphql`
-  fragment VoteForReflectionGroupMutation_team on VoteForReflectionGroupPayload {
+  fragment VoteForReflectionGroupMutation_meeting on VoteForReflectionGroupPayload {
     error {
       message
       title
@@ -37,7 +37,7 @@ graphql`
 const mutation = graphql`
   mutation VoteForReflectionGroupMutation($reflectionGroupId: ID!, $isUnvote: Boolean) {
     voteForReflectionGroup(reflectionGroupId: $reflectionGroupId, isUnvote: $isUnvote) {
-      ...VoteForReflectionGroupMutation_team @relay(mask: false)
+      ...VoteForReflectionGroupMutation_meeting @relay(mask: false)
     }
   }
 `
