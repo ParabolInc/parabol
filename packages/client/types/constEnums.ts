@@ -95,6 +95,11 @@ export const enum Gutters {
   ROW_INNER_GUTTER = '12px'
 }
 
+export const enum InvitationTokenError {
+  NOT_FOUND = 'notFound',
+  EXPIRED = 'expired',
+  ALREADY_ACCEPTED = 'accepted'
+}
 export const enum InvoiceItemType {
   ADD_USER = 'addUser',
   PAUSE_USER = 'pauseUser',
@@ -119,7 +124,15 @@ export const enum LoaderSize {
 }
 
 export const enum LocalStorageKey {
-  INVITATION_TOKEN = 'invitationToken'
+  INVITATION_TOKEN = 'invitationToken',
+  GOOGLE_OAUTH_STATE = 'googleOauthState'
+}
+
+export const enum AuthenticationError {
+  INVALID_PASSWORD = 'invalidPassword',
+  IDENTITY_NOT_FOUND = 'identityNotFound',
+  USER_NOT_FOUND = 'userNotFound',
+  USER_EXISTS_GOOGLE = 'userExistsGoogle'
 }
 
 export const enum MathEnum {

@@ -60,6 +60,7 @@ export default class User {
     } = input
     const avatarName =
       preferredName
+        .toLowerCase()
         .split('')
         .filter((letter) => letters.includes(letter))
         .slice(0, 2)

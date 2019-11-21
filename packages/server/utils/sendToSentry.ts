@@ -1,5 +1,6 @@
 import * as Sentry from '@sentry/node'
 import getRethink from '../database/rethinkDriver'
+import User from '../database/types/User'
 
 export interface SentryOptions {
   userId?: string
@@ -17,15 +18,15 @@ const sendToSentry = async (error: Error, options: SentryOptions = {}): void => 
   }
   const r = await getRethink()
   const {userId} = options
-  let user
-  if (userId) {
-    user = await r
-      .table('User')
-      .get(userId)
-      .default({})
-      .pluck('id', 'email')
-      .run()
-  }
+  const user = userId
+    ? ((await r
+        .table('User')
+        .get(userId)
+        .default({})
+        .pluck('id', 'email')
+        .run()) as User | null)
+    : null
+
   Sentry.withScope((scope) => {
     user && scope.setUser(user)
     // if (tags) {

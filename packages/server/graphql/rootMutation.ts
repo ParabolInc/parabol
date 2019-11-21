@@ -80,6 +80,8 @@ import denyPushInvitation from './mutations/denyPushInvitation'
 import payLater from './mutations/payLater'
 import setCheckInEnabled from './mutations/setCheckInEnabled'
 import signUpWithPassword from './mutations/signUpWithPassword'
+import loginWithGoogle from './mutations/loginWithGoogle'
+import loginWithPassword from './mutations/loginWithPassword'
 
 interface Context extends InternalContext, GQLContext {}
 
@@ -157,6 +159,8 @@ export default new GraphQLObjectType<any, Context, any>({
     updateUserProfile,
     voteForReflectionGroup,
     login,
+    loginWithGoogle,
+    loginWithPassword,
     upgradeToPro,
     addReflectTemplate,
     addReflectTemplatePrompt,

@@ -12,6 +12,7 @@ import SuggestedActionCreateNewTeam from '../database/types/SuggestedActionCreat
 import {ITeam} from 'parabol-client/types/graphql'
 import User from '../database/types/User'
 import OrganizationUser from '../database/types/OrganizationUser'
+import {DataLoaderWorker} from '../graphql/graphql'
 
 const handleFirstAcceptedInvitation = async (team): Promise<string | null> => {
   const r = await getRethink()
@@ -51,8 +52,7 @@ const handleFirstAcceptedInvitation = async (team): Promise<string | null> => {
 const acceptTeamInvitation = async (
   teamId: string,
   userId: string,
-  invitationId: string,
-  dataLoader: any
+  dataLoader: DataLoaderWorker
 ) => {
   const r = await getRethink()
   const now = new Date()
@@ -70,10 +70,9 @@ const acceptTeamInvitation = async (
       }) as unknown) as User & {organizationUsers: OrganizationUser[]}
   }).run()
   const {orgId} = team
+  const {email, organizationUsers} = user
   const teamLeadUserIdWithNewActions = await handleFirstAcceptedInvitation(team)
-  const userInOrg = Boolean(
-    user.organizationUsers.find((organizationUser) => organizationUser.orgId === orgId)
-  )
+  const userInOrg = !!organizationUsers.find((organizationUser) => organizationUser.orgId === orgId)
   const [teamMember, removedNotificationIds] = await Promise.all([
     insertNewTeamMember(userId, teamId),
     r
@@ -91,10 +90,11 @@ const acceptTeamInvitation = async (
       .run(),
     // add the team to the user doc
     addTeamIdToTMS(userId, teamId),
-    // only redeem 1 invitation. any others will expire
     r
       .table('TeamInvitation')
-      .get(invitationId)
+      .getAll(teamId, {index: 'teamId'})
+      // redeem all invitations, otherwise if they have 2 someone could join after they've been kicked out
+      .filter({email})
       .update({
         acceptedAt: now,
         acceptedBy: userId

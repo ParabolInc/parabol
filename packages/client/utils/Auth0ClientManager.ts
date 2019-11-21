@@ -1,5 +1,6 @@
 import makeHref from './makeHref'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
+import {LocalStorageKey} from '../types/constEnums'
 
 interface SignupResponse {
   email: string
@@ -90,7 +91,7 @@ export default class Auth0ClientManager {
       const state = Math.random()
         .toString(36)
         .substring(5)
-      window.localStorage.setItem('auth0State', state)
+      window.localStorage.setItem(LocalStorageKey.GOOGLE_OAUTH_STATE, state)
       const params = new URLSearchParams({
         client_id: this.clientId,
         scope: Auth0ClientManager.SCOPE,
