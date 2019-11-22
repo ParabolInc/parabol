@@ -40,7 +40,7 @@ export default class GoogleServerManager extends GoogleManager {
       client_secret: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
       code,
       grant_type: 'authorization_code',
-      redirect_uri: makeAppLink('/oauth-redirect')
+      redirect_uri: makeAppLink('auth/google')
     }
 
     const uri = `https://oauth2.googleapis.com/token?${stringify(queryParams)}`

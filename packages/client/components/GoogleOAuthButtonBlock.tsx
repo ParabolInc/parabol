@@ -40,7 +40,7 @@ const GoogleOAuthButtonBlock = (props: Props) => {
   return (
     <React.Fragment>
       <GoogleOAuthButton label={label} onClick={openOAuth} waiting={submitting} />
-      {error && !submitting && <ErrorMessage>{error}</ErrorMessage>}
+      {error && !submitting && <ErrorMessage>{error.message}</ErrorMessage>}
       {submitting && <HelpMessage>Continue through the login popup</HelpMessage>}
     </React.Fragment>
   )

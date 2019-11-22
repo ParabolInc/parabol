@@ -23,7 +23,7 @@ const AuthProvider = () => {
   if (error) {
     return (
       <InviteDialog>
-        <DialogTitle>Google Login</DialogTitle>
+        <DialogTitle>Authentication Error</DialogTitle>
         <DialogContent>
           <StyledError>{error}</StyledError>}
         </DialogContent>

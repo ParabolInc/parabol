@@ -20,9 +20,17 @@ class GoogleClientManager extends GoogleManager {
     const providerState = Math.random()
       .toString(36)
       .substring(5)
-    const redirectURI = makeHref(`/oauth-redirect${window.location.search}`)
-    const uri = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${window.__ACTION__.google}&scope=${GoogleClientManager.SCOPE}&state=${providerState}&login_hint=${loginHint}&redirect_uri=${redirectURI}`
-
+    const params = new URLSearchParams({
+      client_id: window.__ACTION__.google,
+      scope: GoogleClientManager.SCOPE,
+      redirect_uri: makeHref(`/auth/google`),
+      response_type: 'code',
+      state: providerState,
+      prompt: 'select_account',
+      login_hint: loginHint ?? ''
+    })
+    const uri = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
+    submitMutation()
     const popup = window.open(
       uri,
       'OAuth',
@@ -42,7 +50,6 @@ class GoogleClientManager extends GoogleManager {
       const {code, state} = event.data
       if (state !== providerState || typeof code !== 'string') return
       window.clearInterval(closeCheckerId)
-      submitMutation()
       const segmentId = getAnonymousId()
       window.localStorage.removeItem(LocalStorageKey.INVITATION_TOKEN)
       LoginWithGoogleMutation(

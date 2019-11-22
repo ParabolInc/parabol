@@ -16,6 +16,7 @@ export const getClientKeys = () => {
     cdn: webpackPublicPath,
     github: process.env.GITHUB_CLIENT_ID,
     googleTagManagerId: process.env.GOOGLE_TAG_MANAGER_CONTAINER_ID,
+    google: process.env.GOOGLE_OAUTH_CLIENT_ID,
     segment: process.env.SEGMENT_WRITE_KEY,
     sentry: process.env.SENTRY_DSN,
     slack: process.env.SLACK_CLIENT_ID,
@@ -34,9 +35,7 @@ const getHTML = () => {
       ? ''
       : '<script src="/static/vendors.dll.js"></script><script src="/static/app.js"></script>'
 
-    finalHTML = html
-      .replace('<head>', `<head>${extraHead}`)
-      .replace('</body>', `${devBody}</body>`)
+    finalHTML = html.replace('<head>', `<head>${extraHead}`).replace('</body>', `${devBody}</body>`)
   }
   return finalHTML
 }
