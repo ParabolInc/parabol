@@ -36,13 +36,17 @@ const signUpWithPassword = {
       const isOrganic = !invitationToken
       const loginAttempt = await attemptLogin(email, password)
       if (loginAttempt.userId) {
-        return loginAttempt
+        context.authToken = loginAttempt.authToken
+        return {
+          userId: loginAttempt.userId,
+          authToken: encodeAuthToken(loginAttempt.authToken)
+        }
       }
       const {error} = loginAttempt
       if (error === AuthenticationError.USER_EXISTS_GOOGLE) {
-        return {error: 'Try logging in with Google'}
+        return {error: {message: 'Try logging in with Google'}}
       } else if (error === AuthenticationError.INVALID_PASSWORD) {
-        return {error: 'User already exists'}
+        return {error: {message: 'User already exists'}}
       }
 
       // it's a new user!

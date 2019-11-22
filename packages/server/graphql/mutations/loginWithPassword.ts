@@ -3,6 +3,7 @@ import LoginWithPasswordPayload from '../types/LoginWithPasswordPayload'
 import {AuthenticationError} from 'parabol-client/types/constEnums'
 import rateLimit from '../rateLimit'
 import attemptLogin from './helpers/attemptLogin'
+import encodeAuthToken from '../../utils/encodeAuthToken'
 
 const loginWithPassword = {
   type: new GraphQLNonNull(LoginWithPasswordPayload),
@@ -15,21 +16,27 @@ const loginWithPassword = {
       type: new GraphQLNonNull(GraphQLString)
     }
   },
-  resolve: rateLimit({perMinute: 50, perHour: 500})(async (_source, {email, password}) => {
+  resolve: rateLimit({perMinute: 50, perHour: 500})(async (_source, {email, password}, context) => {
     const loginAttempt = await attemptLogin(email, password)
     if (loginAttempt.userId) {
-      return loginAttempt
+      context.authToken = loginAttempt.authToken
+      return {
+        userId: loginAttempt.userId,
+        authToken: encodeAuthToken(loginAttempt.authToken)
+      }
     }
     const {error} = loginAttempt
     if (error === AuthenticationError.USER_EXISTS_GOOGLE) {
-      return {error: 'Try logging in with Google'}
+      return {error: {message: 'Try logging in with Google'}}
     } else if (
       error === AuthenticationError.INVALID_PASSWORD ||
       error === AuthenticationError.USER_NOT_FOUND
     ) {
-      return {error: 'Invalid email or password'}
+      return {error: {message: 'Invalid email or password'}}
+    } else if (error === AuthenticationError.MISSING_HASH) {
+      return {error: {message: error}}
     }
-    return {error: 'Unknown Error'}
+    return {error: {message: 'Unknown Error'}}
   })
 }
 

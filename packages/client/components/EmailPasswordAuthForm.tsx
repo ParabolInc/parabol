@@ -98,7 +98,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
     },
     password: {
       getDefault: () => '',
-      validate: validatePassword
+      validate: isSignin ? undefined : validatePassword
     }
   })
 

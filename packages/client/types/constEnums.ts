@@ -124,11 +124,11 @@ export const enum LoaderSize {
 }
 
 export const enum LocalStorageKey {
-  INVITATION_TOKEN = 'invitationToken',
-  GOOGLE_OAUTH_STATE = 'googleOauthState'
+  INVITATION_TOKEN = 'invitationToken'
 }
 
 export const enum AuthenticationError {
+  MISSING_HASH = 'missingHash',
   INVALID_PASSWORD = 'invalidPassword',
   IDENTITY_NOT_FOUND = 'identityNotFound',
   USER_NOT_FOUND = 'userNotFound',

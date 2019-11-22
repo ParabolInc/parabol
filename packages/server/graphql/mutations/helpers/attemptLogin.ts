@@ -3,7 +3,6 @@ import {AuthIdentityTypeEnum} from 'parabol-client/types/graphql'
 import AuthIdentityLocal from '../../../database/types/AuthIdentityLocal'
 import {AuthenticationError} from 'parabol-client/types/constEnums'
 import {sendSegmentIdentify} from '../../../utils/sendSegmentEvent'
-import encodeAuthToken from '../../../utils/encodeAuthToken'
 import AuthToken from '../../../database/types/AuthToken'
 import getRethink from '../../../database/rethinkDriver'
 import bcrypt from 'bcrypt'
@@ -32,6 +31,9 @@ const attemptLogin = async (email: string, password: string) => {
     throw new Error(`Unknown identity type: ${type}`)
   }
   const {hashedPassword} = localIdentity
+  if (!hashedPassword) {
+    return {error: AuthenticationError.MISSING_HASH}
+  }
   // check password
   const isCorrectPassword = await bcrypt.compare(password, hashedPassword)
   if (isCorrectPassword) {
@@ -40,7 +42,7 @@ const attemptLogin = async (email: string, password: string) => {
     return {
       userId: viewerId,
       // create a brand new auth token using the tms in our DB, not auth0s
-      authToken: encodeAuthToken(new AuthToken({sub: viewerId, rol, tms: existingUser.tms}))
+      authToken: new AuthToken({sub: viewerId, rol, tms: existingUser.tms})
     }
   }
   return {error: AuthenticationError.INVALID_PASSWORD}
