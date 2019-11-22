@@ -5,9 +5,17 @@ import makeHref from './makeHref'
 import getAnonymousId from './getAnonymousId'
 import {LocalStorageKey} from '../types/constEnums'
 import GoogleManager from './GoogleManager'
+import LoginWithGoogleMutation from '../mutations/LoginWithGoogleMutation'
+import {RouterProps} from 'react-router'
 
 class GoogleClientManager extends GoogleManager {
-  static openOAuth(atmosphere: Atmosphere, mutationProps: MenuMutationProps, loginHint?: string) {
+  static openOAuth(
+    atmosphere: Atmosphere,
+    mutationProps: MenuMutationProps,
+    history: RouterProps['history'],
+    invitationToken?: string,
+    loginHint?: string
+  ) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const providerState = Math.random()
       .toString(36)
@@ -20,20 +28,27 @@ class GoogleClientManager extends GoogleManager {
       'OAuth',
       getOAuthPopupFeatures({width: 500, height: 750, top: 56})
     )
+    const closeCheckerId = window.setInterval(() => {
+      if (popup && popup.closed) {
+        onError({message: 'Error logging in! Did you close the popup?'})
+        window.clearInterval(closeCheckerId)
+        window.removeEventListener('message', handler)
+      }
+    }, 100)
     const handler = (event) => {
       if (typeof event.data !== 'object' || event.origin !== window.location.origin || submitting) {
         return
       }
       const {code, state} = event.data
       if (state !== providerState || typeof code !== 'string') return
+      window.clearInterval(closeCheckerId)
       submitMutation()
       const segmentId = getAnonymousId()
-      const invitationToken = window.localStorage.getItem(LocalStorageKey.INVITATION_TOKEN)
       window.localStorage.removeItem(LocalStorageKey.INVITATION_TOKEN)
       LoginWithGoogleMutation(
         atmosphere,
         {code, segmentId, invitationToken},
-        {onError, onCompleted}
+        {onError, onCompleted, history}
       )
       popup && popup.close()
       window.removeEventListener('message', handler)

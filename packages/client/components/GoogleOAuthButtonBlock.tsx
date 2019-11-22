@@ -3,13 +3,15 @@ import styled from '@emotion/styled'
 import StyledError from './StyledError'
 import StyledTip from './StyledTip'
 import GoogleOAuthButton from './GoogleOAuthButton'
+import GoogleClientManager from '../utils/GoogleClientManager'
+import useMutationProps from '../hooks/useMutationProps'
+import useAtmosphere from '../hooks/useAtmosphere'
+import useRouter from '../hooks/useRouter'
 
 interface Props {
-  label: string
-  onClick: () => void
-  submitting: boolean
-  isError: boolean
-  existingAccount?: boolean
+  invitationToken?: string
+  isCreate?: boolean
+  loginHint?: string
 }
 
 const helpText = {
@@ -26,16 +28,19 @@ const HelpMessage = styled(StyledTip)({
 })
 
 const GoogleOAuthButtonBlock = (props: Props) => {
-  const {label, onClick, submitting, isError, existingAccount} = props
+  const {invitationToken, isCreate, loginHint} = props
+  const {onError, error, submitting, onCompleted, submitMutation} = useMutationProps()
+  const atmosphere = useAtmosphere()
+  const {history} = useRouter()
+  const label = isCreate ? 'Sign up with Google' : 'Sign in with Google'
+  const openOAuth = () => {
+    const mutationProps = {onError, onCompleted, submitMutation, submitting}
+    GoogleClientManager.openOAuth(atmosphere, mutationProps, history, invitationToken, loginHint)
+  }
   return (
     <React.Fragment>
-      <GoogleOAuthButton label={label} onClick={onClick} waiting={submitting} />
-      {!isError && existingAccount && (
-        <ErrorMessage>Your account was created with Google! Sign in above</ErrorMessage>
-      )}
-      {isError && !submitting && (
-        <ErrorMessage>Error logging in! Did you close the popup?</ErrorMessage>
-      )}
+      <GoogleOAuthButton label={label} onClick={openOAuth} waiting={submitting} />
+      {error && !submitting && <ErrorMessage>{error}</ErrorMessage>}
       {submitting && <HelpMessage>Continue through the login popup</HelpMessage>}
     </React.Fragment>
   )

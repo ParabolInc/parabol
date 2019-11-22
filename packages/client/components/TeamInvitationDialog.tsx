@@ -33,7 +33,7 @@ class TeamInvitationDialog extends Component<Props> {
   render() {
     const {atmosphere, verifiedInvitation, match} = this.props
     const {params} = match
-    const {token} = params
+    const {token: invitationToken} = params
     if (!verifiedInvitation) {
       // rate limit reached
       return <TeamInvitationErrorNotFound />
@@ -50,7 +50,7 @@ class TeamInvitationDialog extends Component<Props> {
     const {authToken} = atmosphere
     const {teamId} = teamInvitation!
     if (authToken) {
-      return <TeamInvitationAccept invitationToken={token} teamId={teamId} />
+      return <TeamInvitationAccept invitationToken={invitationToken} teamId={teamId} />
     }
     if (ssoURL) {
       return <TeamInvitationSSO ssoURL={ssoURL} />
@@ -59,13 +59,22 @@ class TeamInvitationDialog extends Component<Props> {
       return isGoogle ? (
         <TeamInvitationGoogleSignin verifiedInvitation={verifiedInvitation} />
       ) : (
-        <TeamInvitationEmailSignin verifiedInvitation={verifiedInvitation} />
+        <TeamInvitationEmailSignin
+          invitationToken={invitationToken}
+          verifiedInvitation={verifiedInvitation}
+        />
       )
     }
     return isGoogle ? (
-      <TeamInvitationGoogleCreateAccount verifiedInvitation={verifiedInvitation} />
+      <TeamInvitationGoogleCreateAccount
+        invitationToken={invitationToken}
+        verifiedInvitation={verifiedInvitation}
+      />
     ) : (
-      <TeamInvitationEmailCreateAccount verifiedInvitation={verifiedInvitation} />
+      <TeamInvitationEmailCreateAccount
+        invitationToken={invitationToken}
+        verifiedInvitation={verifiedInvitation}
+      />
     )
   }
 }

@@ -1,4 +1,4 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import SignUpWithPasswordPayload from '../types/SignUpWithPasswordPayload'
 import User from '../../database/types/User'
 import AuthIdentityLocal from '../../database/types/AuthIdentityLocal'
@@ -24,13 +24,14 @@ const signUpWithPassword = {
       type: GraphQLID,
       description: 'optional segment id created before they were a user'
     },
-    isOrganic: {
-      type: new GraphQLNonNull(GraphQLBoolean),
-      description: 'true if the user is signing up without a team invitation, else false'
+    invitationToken: {
+      type: GraphQLID,
+      description: 'used to determine what suggested actions to create'
     }
   },
   resolve: rateLimit({perMinute: 50, perHour: 500})(
-    async (_source, {email, isOrganic, password, segmentId}) => {
+    async (_source, {email, invitationToken, password, segmentId}) => {
+      const isOrganic = !invitationToken
       const loginAttempt = await attemptLogin(email, password)
       if (loginAttempt.userId) {
         return loginAttempt

@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
+import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import LoginWithGooglePayload from '../types/LoginWithGooglePayload'
 import standardError from '../../utils/standardError'
@@ -9,7 +9,7 @@ import AuthToken from '../../database/types/AuthToken'
 import shortid from 'shortid'
 import rateLimit from '../rateLimit'
 import {AuthIdentityTypeEnum} from 'parabol-client/types/graphql'
-import GoogleServerManager from 'utils/GoogleServerManager'
+import GoogleServerManager from '../../utils/GoogleServerManager'
 import AuthIdentityGoogle from '../../database/types/AuthIdentityGoogle'
 import bootstrapNewUser from './helpers/bootstrapNewUser'
 
@@ -26,7 +26,7 @@ const loginWithGoogle = {
       description: 'optional segment id created before they were a user'
     },
     invitationToken: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLID,
       description: 'if present, the user is also joining a team'
     }
   },

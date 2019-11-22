@@ -12,7 +12,7 @@ import {emailRegex} from '../../validation/regex'
 import Auth0ClientManager from '../../utils/Auth0ClientManager'
 import Legitity from '../../validation/Legitity'
 import AuthenticationDialog from '../AuthenticationDialog'
-import {GotoAuathPage} from '../GenericAuthentication'
+import {GotoAuthPage} from '../GenericAuthentication'
 import DialogTitle from '../DialogTitle'
 import {PALETTE} from '../../styles/paletteV2'
 import IconLabel from '../IconLabel'
@@ -24,7 +24,7 @@ interface State {
 
 interface Props extends WithMutationProps {
   email?: string
-  gotoPage: GotoAuathPage
+  gotoPage: GotoAuthPage
 }
 
 const Form = styled('form')({

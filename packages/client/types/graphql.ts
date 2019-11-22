@@ -2884,6 +2884,11 @@ export interface IMutation {
   setSlackNotification: ISetSlackNotificationPayload
 
   /**
+   * Sign up using an email address and password
+   */
+  signUpWithPassword: ISignUpWithPasswordPayload
+
+  /**
    * Broadcast that the viewer started dragging a reflection
    */
   startDraggingReflection: IStartDraggingReflectionPayload | null
@@ -2954,6 +2959,16 @@ export interface IMutation {
    * Log in, or sign up if it is a new user
    */
   login: ILoginPayload
+
+  /**
+   * Sign up or login using Google
+   */
+  loginWithGoogle: ILoginWithGooglePayload
+
+  /**
+   * Login using an email address and password
+   */
+  loginWithPassword: ILoginWithPasswordPayload
 
   /**
    * Upgrade an account to the paid service
@@ -3464,6 +3479,21 @@ export interface ISetSlackNotificationOnMutationArguments {
   teamId: string
 }
 
+export interface ISignUpWithPasswordOnMutationArguments {
+  email: string
+  password: string
+
+  /**
+   * optional segment id created before they were a user
+   */
+  segmentId?: string | null
+
+  /**
+   * used to determine what suggested actions to create
+   */
+  invitationToken?: string | null
+}
+
 export interface IStartDraggingReflectionOnMutationArguments {
   reflectionId: string
   dragId: string
@@ -3609,6 +3639,28 @@ export interface ILoginOnMutationArguments {
    * optional segment id created before they were a user
    */
   segmentId?: string | null
+}
+
+export interface ILoginWithGoogleOnMutationArguments {
+  /**
+   * The code provided from the OAuth2 flow
+   */
+  code: string
+
+  /**
+   * optional segment id created before they were a user
+   */
+  segmentId?: string | null
+
+  /**
+   * if present, the user is also joining a team
+   */
+  invitationToken?: string | null
+}
+
+export interface ILoginWithPasswordOnMutationArguments {
+  email: string
+  password: string
 }
 
 export interface IUpgradeToProOnMutationArguments {
@@ -5633,6 +5685,22 @@ export interface ISetSlackNotificationPayload {
   user: IUser | null
 }
 
+export interface ISignUpWithPasswordPayload {
+  __typename: 'SignUpWithPasswordPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The new auth token
+   */
+  authToken: string | null
+  userId: string | null
+
+  /**
+   * the newly created user
+   */
+  user: IUser | null
+}
+
 export interface IStartDraggingReflectionPayload {
   __typename: 'StartDraggingReflectionPayload'
   error: IStandardMutationError | null
@@ -5893,6 +5961,38 @@ export interface ILoginPayload {
    * The new JWT
    */
   authToken: string | null
+}
+
+export interface ILoginWithGooglePayload {
+  __typename: 'LoginWithGooglePayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The new auth token
+   */
+  authToken: string | null
+  userId: string | null
+
+  /**
+   * the newly created user
+   */
+  user: IUser | null
+}
+
+export interface ILoginWithPasswordPayload {
+  __typename: 'LoginWithPasswordPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The new auth token
+   */
+  authToken: string | null
+  userId: string | null
+
+  /**
+   * the newly created user
+   */
+  user: IUser | null
 }
 
 export interface IUpgradeToProPayload {

@@ -29,6 +29,7 @@ const loginWithPassword = {
     ) {
       return {error: 'Invalid email or password'}
     }
+    return {error: 'Unknown Error'}
   })
 }
 

@@ -15,6 +15,7 @@ import useDocumentTitle from '../hooks/useDocumentTitle'
 
 interface Props {
   verifiedInvitation: TeamInvitationEmailCreateAccount_verifiedInvitation
+  invitationToken: string
 }
 
 const StyledDialog = styled(InviteDialog)({
@@ -27,7 +28,7 @@ const TeamName = styled('span')({
 })
 
 const TeamInvitationEmailCreateAccount = (props: Props) => {
-  const {verifiedInvitation} = props
+  const {invitationToken, verifiedInvitation} = props
   const {meetingType, teamName, teamInvitation} = verifiedInvitation
   useDocumentTitle(`Sign up | Team Invitation`)
   if (!teamInvitation) return null
@@ -44,7 +45,7 @@ const TeamInvitationEmailCreateAccount = (props: Props) => {
           <TeamName>{teamName}</TeamName>
         </InvitationDialogCopy>
         <InvitationCenteredCopy>
-          <EmailPasswordAuthForm email={email} isPrimary />
+          <EmailPasswordAuthForm email={email} isPrimary invitationToken={invitationToken} />
         </InvitationCenteredCopy>
         <AuthPrivacyFooter />
       </DialogContent>
