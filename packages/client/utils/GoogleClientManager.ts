@@ -34,7 +34,7 @@ class GoogleClientManager extends GoogleManager {
     const popup = window.open(
       uri,
       'OAuth',
-      getOAuthPopupFeatures({width: 500, height: 750, top: 56})
+      getOAuthPopupFeatures({width: 356, height: 530, top: 56})
     )
     const closeCheckerId = window.setInterval(() => {
       if (popup && popup.closed) {

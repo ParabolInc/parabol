@@ -66,10 +66,7 @@ const bootstrapNewUser = async (
   }
   handleSegment(userId, segmentId).catch()
 
-  return {
-    authToken: encodeAuthToken(new AuthToken({sub: userId, tms})),
-    userId
-  }
+  return new AuthToken({sub: userId, tms})
 }
 
 export default bootstrapNewUser

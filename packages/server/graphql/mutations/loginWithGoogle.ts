@@ -12,6 +12,7 @@ import {AuthIdentityTypeEnum} from 'parabol-client/types/graphql'
 import GoogleServerManager from '../../utils/GoogleServerManager'
 import AuthIdentityGoogle from '../../database/types/AuthIdentityGoogle'
 import bootstrapNewUser from './helpers/bootstrapNewUser'
+import {GQLContext} from '../graphql'
 
 const loginWithGoogle = {
   type: new GraphQLNonNull(LoginWithGooglePayload),
@@ -31,7 +32,7 @@ const loginWithGoogle = {
     }
   },
   resolve: rateLimit({perMinute: 50, perHour: 500})(
-    async (_source, {code, invitationToken, segmentId}) => {
+    async (_source, {code, invitationToken, segmentId}, context: GQLContext) => {
       const r = await getRethink()
 
       // VALIDATION
@@ -85,10 +86,12 @@ const loginWithGoogle = {
         }
         // log them in
         sendSegmentIdentify(viewerId).catch()
+        // MUTATIVE
+        context.authToken = new AuthToken({sub: viewerId, rol, tms: existingUser.tms})
         return {
           userId: viewerId,
           // create a brand new auth token using the tms in our DB, not auth0s
-          authToken: encodeAuthToken(new AuthToken({sub: viewerId, rol, tms: existingUser.tms}))
+          authToken: encodeAuthToken(context.authToken)
         }
       }
 
@@ -108,7 +111,11 @@ const loginWithGoogle = {
         identities: [identity],
         segmentId
       })
-      return bootstrapNewUser(newUser, !invitationToken, segmentId)
+      context.authToken = await bootstrapNewUser(newUser, !invitationToken, segmentId)
+      return {
+        userId,
+        authToken: encodeAuthToken(context.authToken)
+      }
     }
   )
 }

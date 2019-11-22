@@ -9,6 +9,8 @@ import {AuthIdentityTypeEnum} from 'parabol-client/types/graphql'
 import bootstrapNewUser from './helpers/bootstrapNewUser'
 import attemptLogin from './helpers/attemptLogin'
 import bcrypt from 'bcrypt'
+import {GQLContext} from '../graphql'
+import encodeAuthToken from '../../utils/encodeAuthToken'
 
 const signUpWithPassword = {
   type: new GraphQLNonNull(SignUpWithPasswordPayload),
@@ -30,7 +32,7 @@ const signUpWithPassword = {
     }
   },
   resolve: rateLimit({perMinute: 50, perHour: 500})(
-    async (_source, {email, invitationToken, password, segmentId}) => {
+    async (_source, {email, invitationToken, password, segmentId}, context: GQLContext) => {
       const isOrganic = !invitationToken
       const loginAttempt = await attemptLogin(email, password)
       if (loginAttempt.userId) {
@@ -57,7 +59,12 @@ const signUpWithPassword = {
         identities: [identity],
         segmentId
       })
-      return bootstrapNewUser(newUser, isOrganic, segmentId)
+      // MUTATIVE
+      context.authToken = await bootstrapNewUser(newUser, isOrganic, segmentId)
+      return {
+        userId,
+        authToken: encodeAuthToken(context.authToken)
+      }
     }
   )
 }

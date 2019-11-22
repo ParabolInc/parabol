@@ -412,11 +412,9 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
     tms: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
       description: 'all the teams the user is a part of that the viewer can see',
-      resolve: (source, _args, {authToken}) => {
+      resolve: ({id: userId, tms}, _args, {authToken}) => {
         const viewerId = getUserId(authToken)
-        return viewerId === source.id
-          ? source.tms
-          : source.tms.filter((teamId) => authToken.tms.includes(teamId))
+        return viewerId === userId ? tms : tms.filter((teamId) => authToken.tms.includes(teamId))
       }
     },
     updatedAt: {
