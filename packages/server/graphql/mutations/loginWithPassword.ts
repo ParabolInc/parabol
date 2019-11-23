@@ -17,7 +17,7 @@ const loginWithPassword = {
     }
   },
   resolve: rateLimit({perMinute: 50, perHour: 500})(async (_source, {email, password}, context) => {
-    const loginAttempt = await attemptLogin(email, password)
+    const loginAttempt = await attemptLogin(email, password, context.ip)
     if (loginAttempt.userId) {
       context.authToken = loginAttempt.authToken
       return {
