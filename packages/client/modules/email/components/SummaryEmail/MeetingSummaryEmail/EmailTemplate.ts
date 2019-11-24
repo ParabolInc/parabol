@@ -1,5 +1,4 @@
 interface Props {
-  headCSS: string
   title: string
   previewText: string
   bodyContent: string
@@ -7,7 +6,7 @@ interface Props {
 }
 
 const emailTemplate = (props: Props) => {
-  const {headCSS, title, previewText, bodyContent, bgColor} = props
+  const {title, previewText, bodyContent, bgColor} = props
   return `
       <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
       <html
@@ -20,7 +19,12 @@ const emailTemplate = (props: Props) => {
           <meta name="viewport" content="width=device-width"/>
           <title>${title}</title>
           <style type="text/css">
-            ${headCSS}
+            @media only screen and (max-width: 620px) {
+              table[class=body] .maxWidthContainer {
+                padding: 0 !important;
+                width: 100% !important;
+              }
+            }
             #__bodyTable__ {
               margin: 0;
               padding: 0;
