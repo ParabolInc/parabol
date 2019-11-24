@@ -46,11 +46,14 @@ const SignUpWithPasswordMutation: StandardMutation<
     variables,
     onError,
     onCompleted: (res, errors) => {
-      onCompleted(res, errors)
       const {acceptTeamInvitation, signUpWithPassword} = res
-      const authToken = acceptTeamInvitation.authToken || signUpWithPassword.authToken
-      atmosphere.setAuthToken(authToken)
-      handleAuthenticationRedirect(acceptTeamInvitation, {atmosphere, history})
+      const {error: uiError} = signUpWithPassword
+      onCompleted({signUpWithPassword}, errors)
+      if (!uiError && !errors) {
+        const authToken = acceptTeamInvitation.authToken || signUpWithPassword.authToken
+        atmosphere.setAuthToken(authToken)
+        handleAuthenticationRedirect(acceptTeamInvitation, {atmosphere, history})
+      }
     }
   })
 }

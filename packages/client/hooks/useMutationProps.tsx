@@ -6,6 +6,12 @@ interface MutationServerError {
   message: string
   path: string[]
 }
+interface RelayMustFixError extends MutationServerError {
+  type: 'mustfix'
+  framesToPop: number
+  name: 'RelayNetwork'
+  source: MutationServerError[]
+}
 
 export type MenuMutationProps = Pick<
   WithMutationProps,
@@ -43,9 +49,10 @@ const useMutationProps = () => {
     []
   )
 
-  const onError = useCallback((error: Error | MutationServerError) => {
+  const onError = useCallback((error: Error | MutationServerError | RelayMustFixError) => {
     setSubmitting(false)
-    setError(error)
+    const sourceError = (error as any)?.source?.errors?.[0]
+    setError(sourceError || error)
   }, [])
 
   const submitMutation = useCallback(() => {

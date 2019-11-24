@@ -34,7 +34,7 @@ const signUpWithPassword = {
   resolve: rateLimit({perMinute: 50, perHour: 500})(
     async (_source, {email, invitationToken, password, segmentId}, context: GQLContext) => {
       const isOrganic = !invitationToken
-      const loginAttempt = await attemptLogin(email, password)
+      const loginAttempt = await attemptLogin(email, password, context.ip)
       if (loginAttempt.userId) {
         context.authToken = loginAttempt.authToken
         return {

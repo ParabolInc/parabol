@@ -9,7 +9,7 @@ import bcrypt from 'bcrypt'
 import ms from 'ms'
 import FailedAuthRequest from '../../../database/types/FailedAuthRequest'
 
-const attemptLogin = async (email: string, password: string, ip: string) => {
+const attemptLogin = async (email: string, password: string, ip = '') => {
   const r = await getRethink()
   const yesterday = Date.now() - ms('1d')
   const {existingUser, failOnAccount, failOnTime} = await r({

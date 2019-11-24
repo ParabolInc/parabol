@@ -58,14 +58,13 @@ const LoginWithPasswordMutation: StandardMutation<
     onCompleted: (res, errors) => {
       const {acceptTeamInvitation, loginWithPassword} = res
       const {error: uiError} = loginWithPassword
-      if (errors || uiError) {
-        if (uiError?.message === AuthenticationError.MISSING_HASH) {
-          const {email, password} = variables
-          handleAuth0Fallback(email, password, onError, onCompleted).catch()
-          return
-        }
-        onCompleted(res, errors)
-      } else {
+      if (uiError?.message === AuthenticationError.MISSING_HASH) {
+        const {email, password} = variables
+        handleAuth0Fallback(email, password, onError, onCompleted).catch()
+        return
+      }
+      onCompleted({loginWithPassword}, errors)
+      if (!uiError && !errors) {
         const authToken = acceptTeamInvitation.authToken || loginWithPassword.authToken
         atmosphere.setAuthToken(authToken)
         handleAuthenticationRedirect(acceptTeamInvitation, {atmosphere, history})

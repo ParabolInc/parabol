@@ -52,12 +52,15 @@ class GoogleClientManager extends GoogleManager {
       window.clearInterval(closeCheckerId)
       const segmentId = getAnonymousId()
       window.localStorage.removeItem(LocalStorageKey.INVITATION_TOKEN)
+      const handleComplete = (...args) => {
+        popup && popup.close()
+        onCompleted(...args)
+      }
       LoginWithGoogleMutation(
         atmosphere,
         {code, segmentId, invitationToken},
-        {onError, onCompleted, history}
+        {onError, onCompleted: handleComplete, history}
       )
-      popup && popup.close()
       window.removeEventListener('message', handler)
     }
     window.addEventListener('message', handler)
