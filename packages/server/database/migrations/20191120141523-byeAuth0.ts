@@ -2,15 +2,32 @@ import {R} from 'rethinkdb-ts'
 
 export const up = async function(r: R) {
   try {
-    await r.tableCreate('FailedAuthRequest').run()
-    await r
-      .table('FailedAuthRequest')
-      .indexCreate('ipEmail', [r.row('ip'), r.row('email')])
-      .run()
-    await r
-      .table('FailedAuthRequest')
-      .indexCreate('ipTime', [r.row('ip'), r.row('time')])
-      .run()
+    await Promise.all([
+      r.tableCreate('FailedAuthRequest').run(),
+      r.tableCreate('PasswordResetRequest').run()
+    ])
+    await Promise.all([
+      r
+        .table('FailedAuthRequest')
+        .indexCreate('ipEmail', [r.row('ip'), r.row('email')])
+        .run(),
+      r
+        .table('FailedAuthRequest')
+        .indexCreate('ipTime', [r.row('ip'), r.row('time')])
+        .run(),
+      r
+        .table('PasswordResetRequest')
+        .indexCreate('ipEmail', [r.row('ip'), r.row('email')])
+        .run(),
+      r
+        .table('PasswordResetRequest')
+        .indexCreate('ipTime', [r.row('ip'), r.row('time')])
+        .run(),
+      r
+        .table('PasswordResetRequest')
+        .indexCreate('token')
+        .run()
+    ])
   } catch (e) {
     console.log(e)
   }
@@ -43,7 +60,10 @@ export const up = async function(r: R) {
 
 export const down = async function(r: R) {
   try {
-    await r.tableDrop('FailedAuthRequest').run()
+    await Promise.all([
+      r.tableDrop('FailedAuthRequest').run(),
+      r.tableDrop('PasswordResetRequest').run()
+    ])
   } catch (e) {
     console.log(e)
   }

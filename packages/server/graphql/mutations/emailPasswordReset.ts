@@ -7,7 +7,7 @@ import {GQLContext} from '../graphql'
 import {sendEmailContent} from '../../email/sendEmail'
 import ms from 'ms'
 import {Threshold} from 'parabol-client/types/constEnums'
-import FailedAuthRequest from '../../database/types/FailedAuthRequest'
+import PasswordResetRequest from '../../database/types/PasswordResetRequest'
 import crypto from 'crypto'
 import promisify from 'es6-promisify'
 import base64url from 'base64url'
@@ -37,15 +37,13 @@ const emailPasswordReset = {
         .nth(0)
         .default(null) as unknown) as User | null,
       failOnAccount: (r
-        .table('FailedAuthRequest')
+        .table('PasswordResetRequest')
         .getAll([ip, email], {index: 'ipEmail'})
-        .filter({type: 'reset'})
         .count()
         .ge(Threshold.MAX_ACCOUNT_DAILY_PASSWORD_RESETS) as unknown) as boolean,
       failOnTime: (r
-        .table('FailedAuthRequest')
+        .table('PasswordResetRequest')
         .between([ip, yesterday], [ip, r.maxval], {index: 'ipTime'})
-        .filter({type: 'reset'})
         .count()
         .ge(Threshold.MAX_DAILY_PASSWORD_RESETS) as unknown) as boolean
     }).run()
@@ -58,13 +56,20 @@ const emailPasswordReset = {
     if (!localIdentity) return true
 
     // seems legit, make a record of it create a reset code
+    const resetPasswordToken = base64url.encode(randomBytes(48))
+    // invalidate all other tokens for this email
     await r
-      .table('FailedAuthRequest')
-      .insert(new FailedAuthRequest({ip, email, type: 'reset'}))
+      .table('PasswordResetRequest')
+      .getAll([r.maxval, email], {index: 'ipEmail'})
+      .filter({isValid: true})
+      .update({isValid: false})
+      .run()
+    await r
+      .table('PasswordResetRequest')
+      .insert(new PasswordResetRequest({ip, email, token: resetPasswordToken}))
       .run()
 
     // MUTATIVE
-    const resetPasswordToken = base64url.encode(randomBytes(48))
     localIdentity.resetPasswordToken = resetPasswordToken
     localIdentity.resetPasswordTokenExpiration = new Date(
       Date.now() + Threshold.RESET_PASSWORD_LIFESPAN
