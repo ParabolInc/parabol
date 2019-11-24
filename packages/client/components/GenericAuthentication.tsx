@@ -16,7 +16,7 @@ import DialogTitle from './DialogTitle'
 import ResetPasswordPage from './ResetPasswordPage/ResetPasswordPage'
 import AuthenticationDialog from './AuthenticationDialog'
 
-export type AuthPageSlug = 'create-account' | 'signin' | 'reset-password'
+export type AuthPageSlug = 'create-account' | 'signin' | 'forgot-password'
 
 export type GotoAuthPage = (page: AuthPageSlug, search?: string) => void
 
@@ -61,7 +61,7 @@ const GenericAuthentication = (props: Props) => {
   const emailRef = useRef('')
   const {current: email} = emailRef
 
-  if (page === 'reset-password') {
+  if (page === 'forgot-password') {
     return <ResetPasswordPage email={email} gotoPage={gotoPage} />
   }
 
@@ -72,7 +72,7 @@ const GenericAuthentication = (props: Props) => {
   const actionCopy = isCreate ? 'Already have an account? ' : 'New to Parabol? '
   const title = teamName ? `${teamName} is waiting` : action
   const onForgot = () => {
-    gotoPage('reset-password', `?email=${email}`)
+    gotoPage('forgot-password', `?email=${email}`)
   }
   return (
     <AuthenticationDialog>

@@ -9,6 +9,7 @@ import PrivateRoutes from '../PrivateRoutes'
 import Snackbar from '../Snackbar'
 import {css, Global} from '@emotion/core'
 import globalStyles from '../../styles/theme/globalStyles'
+import SetNewPassword from '../ResetPasswordPage/SetNewPassword'
 
 const AnalyticsPage = lazy(() => import(/* webpackChunkName: 'AnalyticsPage' */ '../AnalyticsPage'))
 const AuthenticationPage = lazy(() =>
@@ -60,9 +61,10 @@ const Action = memo(() => {
           <Route path='/retrospective-demo-summary' component={DemoSummary} />
           <Route
             exact
-            path={`/reset-password`}
-            render={(p) => <AuthenticationPage {...p} page={'reset-password'} />}
+            path={`/forgot-password`}
+            render={(p) => <AuthenticationPage {...p} page={'forgot-password'} />}
           />
+          <Route path='/reset-password/:token' component={SetNewPassword} />
           {/*Legacy route, still referenced by old invite emails*/}
           <Route path='/invitation/:inviteToken' component={TeamInvitation} />
           <Route path='/team-invitation/:token' component={TeamInvitation} />

@@ -1,4 +1,3 @@
-import {RouterProps} from 'react-router'
 import {OnNextHandler, OnNextHistoryContext} from '../../types/relayMutations'
 import getValidRedirectParam from '../../utils/getValidRedirectParam'
 import SendClientSegmentEventMutation from '../SendClientSegmentEventMutation'
