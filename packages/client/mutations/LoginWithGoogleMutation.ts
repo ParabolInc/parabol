@@ -37,11 +37,14 @@ const LoginWithGoogleMutation: StandardMutation<TLoginWithGoogleMutation, Histor
     variables,
     onError,
     onCompleted: (res, errors) => {
-      onCompleted(res, errors)
       const {acceptTeamInvitation, loginWithGoogle} = res
-      const authToken = acceptTeamInvitation.authToken || loginWithGoogle.authToken
-      atmosphere.setAuthToken(authToken)
-      handleAuthenticationRedirect(acceptTeamInvitation, {atmosphere, history})
+      onCompleted({loginWithGoogle}, errors)
+      const {error: uiError} = loginWithGoogle
+      if (!uiError && !errors) {
+        const authToken = acceptTeamInvitation.authToken || loginWithGoogle.authToken
+        atmosphere.setAuthToken(authToken)
+        handleAuthenticationRedirect(acceptTeamInvitation, {atmosphere, history})
+      }
     }
   })
 }

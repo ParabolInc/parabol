@@ -70,13 +70,20 @@ const resetPassword = {
       // MUTATIVE
       localIdentity.hashedPassword = await bcrypt.hash(newPassword, Security.SALT_ROUNDS)
       localIdentity.isEmailVerified = true
-      await r
-        .table('User')
-        .get(userId)
-        .update({
-          identities
-        })
-        .run()
+      await Promise.all([
+        r
+          .table('User')
+          .get(userId)
+          .update({
+            identities
+          })
+          .run(),
+        r
+          .table('FailedAuthRequest')
+          .getAll(email, {index: 'email'})
+          .delete()
+          .run()
+      ])
       context.authToken = new AuthToken({sub: userId, tms, rol})
       return {
         userId,

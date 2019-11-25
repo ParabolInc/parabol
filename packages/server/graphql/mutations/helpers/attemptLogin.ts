@@ -20,12 +20,14 @@ const attemptLogin = async (email: string, password: string, ip = '') => {
       .default(null) as unknown) as User,
     failOnAccount: (r
       .table('FailedAuthRequest')
-      .getAll([ip, email], {index: 'ipEmail'})
+      .getAll(ip, {index: 'ip'})
+      .filter({email})
       .count()
       .ge(Threshold.MAX_ACCOUNT_PASSWORD_ATTEMPTS) as unknown) as boolean,
     failOnTime: (r
       .table('FailedAuthRequest')
-      .between([ip, yesterday], [ip, r.maxval], {index: 'ipTime'})
+      .getAll(ip, {index: 'ip'})
+      .filter((row) => row('time').ge(yesterday))
       .count()
       .ge(Threshold.MAX_DAILY_PASSWORD_ATTEMPTS) as unknown) as boolean
   }).run()

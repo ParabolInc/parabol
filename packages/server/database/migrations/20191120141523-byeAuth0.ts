@@ -9,19 +9,19 @@ export const up = async function(r: R) {
     await Promise.all([
       r
         .table('FailedAuthRequest')
-        .indexCreate('ipEmail', [r.row('ip'), r.row('email')])
+        .indexCreate('ip')
         .run(),
       r
         .table('FailedAuthRequest')
-        .indexCreate('ipTime', [r.row('ip'), r.row('time')])
+        .indexCreate('email')
         .run(),
       r
         .table('PasswordResetRequest')
-        .indexCreate('ipEmail', [r.row('ip'), r.row('email')])
+        .indexCreate('ip')
         .run(),
       r
         .table('PasswordResetRequest')
-        .indexCreate('ipTime', [r.row('ip'), r.row('time')])
+        .indexCreate('email')
         .run(),
       r
         .table('PasswordResetRequest')

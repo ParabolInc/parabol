@@ -38,12 +38,14 @@ const emailPasswordReset = {
         .default(null) as unknown) as User | null,
       failOnAccount: (r
         .table('PasswordResetRequest')
-        .getAll([ip, email], {index: 'ipEmail'})
+        .getAll(ip, {index: 'ip'})
+        .filter({email})
         .count()
         .ge(Threshold.MAX_ACCOUNT_DAILY_PASSWORD_RESETS) as unknown) as boolean,
       failOnTime: (r
         .table('PasswordResetRequest')
-        .between([ip, yesterday], [ip, r.maxval], {index: 'ipTime'})
+        .getAll(ip, {index: 'ip'})
+        .filter((row) => row('time').ge(yesterday))
         .count()
         .ge(Threshold.MAX_DAILY_PASSWORD_RESETS) as unknown) as boolean
     }).run()
@@ -60,7 +62,7 @@ const emailPasswordReset = {
     // invalidate all other tokens for this email
     await r
       .table('PasswordResetRequest')
-      .getAll([r.maxval, email], {index: 'ipEmail'})
+      .getAll(email, {index: 'email'})
       .filter({isValid: true})
       .update({isValid: false})
       .run()
