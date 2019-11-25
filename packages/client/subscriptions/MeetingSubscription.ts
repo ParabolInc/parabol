@@ -61,8 +61,6 @@ const MeetingSubscription = (
   variables: Variables,
   router: {history: RouterProps['history']}
 ) => {
-  console.log('vars', variables)
-  const {viewerId} = atmosphere
   return requestSubscription<MeetingSubscriptionResponse>(atmosphere, {
     subscription,
     variables,
@@ -72,7 +70,7 @@ const MeetingSubscription = (
       const type = payload.getValue('__typename') as string
       const handler = updateHandlers[type]
       if (handler) {
-        handler(payload, store, viewerId)
+        handler(payload, {atmosphere, store})
       }
     },
     onNext: (result) => {

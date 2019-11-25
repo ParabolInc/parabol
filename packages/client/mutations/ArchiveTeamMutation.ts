@@ -11,6 +11,7 @@ import {
   HistoryLocalHandler,
   OnNextHandler,
   OnNextHistoryContext,
+  SharedUpdater,
   StandardMutation
 } from '../types/relayMutations'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
@@ -78,8 +79,11 @@ const popTeamArchivedToast: OnNextHandler<ArchiveTeamMutation_team, OnNextHistor
   }
 }
 
-export const archiveTeamTeamUpdater = (payload, store, viewerId) => {
-  const viewer = store.get(viewerId)
+export const archiveTeamTeamUpdater: SharedUpdater<ArchiveTeamMutation_team> = (
+  payload,
+  {store}
+) => {
+  const viewer = store.getRoot().getLinkedRecord('viewer')!
   const teamId = getInProxy(payload, 'team', 'id')
   safeRemoveNodeFromArray(teamId, viewer, 'teams')
 
@@ -99,14 +103,13 @@ const ArchiveTeamMutation: StandardMutation<TArchiveTeamMutation, HistoryLocalHa
   variables,
   {onError, onCompleted, history}
 ) => {
-  const {viewerId} = atmosphere
   return commitMutation<TArchiveTeamMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {
       const payload = store.getRootField('archiveTeam')
       if (!payload) return
-      archiveTeamTeamUpdater(payload, store, viewerId)
+      archiveTeamTeamUpdater(payload, {atmosphere, store})
       const removedSuggestedActionIds = payload.getValue('removedSuggestedActionIds')
       handleRemoveSuggestedActions(removedSuggestedActionIds, store)
     },

@@ -13,10 +13,11 @@ import handleUpsertTasks from './handlers/handleUpsertTasks'
 import {setLocalStageAndPhase} from '../utils/relay/updateLocalStage'
 import findStageById from '../utils/meetings/findStageById'
 import onExOrgRoute from '../utils/onExOrgRoute'
-import {OnNextHandler, OnNextHistoryContext} from '../types/relayMutations'
+import {OnNextHandler, OnNextHistoryContext, SharedUpdater} from '../types/relayMutations'
 import {RemoveOrgUserMutation_notification} from '../__generated__/RemoveOrgUserMutation_notification.graphql'
 import {RemoveOrgUserMutation as IRemoveOrgUserMutation} from '__generated__/RemoveOrgUserMutation.graphql'
 import onMeetingRoute from '../utils/onMeetingRoute'
+import {RemoveOrgUserMutation_team} from '__generated__/RemoveOrgUserMutation_team.graphql'
 
 graphql`
   fragment RemoveOrgUserMutation_organization on RemoveOrgUserPayload {
@@ -122,12 +123,16 @@ export const removeOrgUserNotificationUpdater = (payload, store) => {
   handleAddNotifications(kickOutNotifications, store)
 }
 
-export const removeOrgUserTeamUpdater = (payload, store, viewerId) => {
+export const removeOrgUserTeamUpdater: SharedUpdater<RemoveOrgUserMutation_team> = (
+  payload,
+  {atmosphere, store}
+) => {
   const removedUserId = getInProxy(payload, 'user', 'id')
+  const {viewerId} = atmosphere
   if (removedUserId === viewerId) {
     const teams = payload.getLinkedRecords('teams')
     const teamIds = getInProxy(teams, 'id')
-    handleRemoveTeams(teamIds, store, viewerId)
+    handleRemoveTeams(teamIds, store)
   } else {
     const teamMembers = payload.getLinkedRecords('teamMembers')
     const teamMemberIds = getInProxy(teamMembers, 'id')
@@ -221,7 +226,7 @@ const RemoveOrgUserMutation = (atmosphere, variables, context, onError, onComple
       const payload = store.getRootField('removeOrgUser')
       if (!payload) return
       removeOrgUserOrganizationUpdater(payload, store, viewerId)
-      removeOrgUserTeamUpdater(payload, store, viewerId)
+      removeOrgUserTeamUpdater(payload, {atmosphere, store})
       removeOrgUserTaskUpdater(payload, store, viewerId)
     },
     // optimisticUpdater: (store) => {

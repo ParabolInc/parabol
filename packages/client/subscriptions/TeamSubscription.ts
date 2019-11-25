@@ -23,7 +23,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {pushInvitationTeamOnNext} from '../mutations/PushInvitationMutation'
 import {denyPushInvitationTeamOnNext} from '../mutations/DenyPushInvitationMutation'
 import Atmosphere from '../Atmosphere'
-import {RecordSourceSelectorProxy, requestSubscription, Variables} from 'relay-runtime'
+import {requestSubscription, Variables} from 'relay-runtime'
 import {TeamSubscriptionResponse} from '../__generated__/TeamSubscription.graphql'
 import {RouterProps} from 'react-router'
 
@@ -72,87 +72,38 @@ const onNextHandlers = {
   PushInvitationPayload: pushInvitationTeamOnNext
 }
 
+const updateHandlers = {
+  AddAgendaItemPayload: addAgendaItemUpdater,
+  RemoveAgendaItemPayload: removeAgendaItemUpdater,
+  UpdateAgendaItemPayload: updateAgendaItemUpdater,
+  AcceptTeamInvitationPayload: acceptTeamInvitationTeamUpdater,
+  AddReflectTemplatePayload: addReflectTemplateTeamUpdater,
+  AddReflectTemplatePromptPayload: addReflectTemplatePromptTeamUpdater,
+  AddTeamMutationPayload: addTeamTeamUpdater,
+  ArchiveTeamPayload: archiveTeamTeamUpdater,
+  EndNewMeetingPayload: endNewMeetingTeamUpdater,
+  MoveReflectTemplatePromptPayload: moveReflectTemplatePromptTeamUpdater,
+  RemoveOrgUserPayload: removeOrgUserTeamUpdater,
+  RemoveReflectTemplatePayload: removeReflectTemplateTeamUpdater,
+  RemoveReflectTemplatePromptPayload: removeReflectTemplatePromptTeamUpdater,
+  RemoveTeamMemberPayload: removeTeamMemberTeamUpdater
+}
+
 const TeamSubscription = (
   atmosphere: Atmosphere,
   variables: Variables,
   router: {history: RouterProps['history']}
 ) => {
-  const {viewerId} = atmosphere
   return requestSubscription<TeamSubscriptionResponse>(atmosphere, {
     subscription,
     variables,
     updater: (store) => {
       const payload = store.getRootField('teamSubscription') as any
       if (!payload) return
-      const type = payload.getValue('__typename')
-      const context = {atmosphere, store: store as RecordSourceSelectorProxy<any>}
-      switch (type) {
-        case 'AddAgendaItemPayload':
-          addAgendaItemUpdater(payload, context)
-          break
-        case 'RemoveAgendaItemPayload':
-          removeAgendaItemUpdater(payload, context)
-          break
-        case 'UpdateAgendaItemPayload':
-          updateAgendaItemUpdater(payload, context)
-          break
-        case 'AcceptTeamInvitationPayload':
-          acceptTeamInvitationTeamUpdater(payload, context)
-          break
-        case 'AddReflectTemplatePayload':
-          addReflectTemplateTeamUpdater(payload, context)
-          break
-        case 'AddReflectTemplatePromptPayload':
-          addReflectTemplatePromptTeamUpdater(payload, context)
-          break
-        case 'CreateGitHubIssuePayload':
-          break
-        case 'AddTeamMutationPayload':
-          addTeamTeamUpdater(payload, context)
-          break
-        case 'ArchiveTeamPayload':
-          archiveTeamTeamUpdater(payload, store, viewerId)
-          break
-        case 'EndNewMeetingPayload':
-          endNewMeetingTeamUpdater(payload, context)
-          break
-        case 'MeetingCheckInPayload':
-          break
-        case 'MoveReflectTemplatePromptPayload':
-          moveReflectTemplatePromptTeamUpdater(payload, context)
-          break
-        case 'PromoteToTeamLeadPayload':
-          break
-        case 'RemoveOrgUserPayload':
-          removeOrgUserTeamUpdater(payload, store, viewerId)
-          break
-        case 'RemoveReflectTemplatePayload':
-          removeReflectTemplateTeamUpdater(payload, context)
-          break
-        case 'RemoveReflectTemplatePromptPayload':
-          removeReflectTemplatePromptTeamUpdater(payload, context)
-          break
-        case 'RemoveTeamMemberPayload':
-          removeTeamMemberTeamUpdater(payload, store, viewerId)
-          break
-        case 'RenameReflectTemplatePayload':
-          break
-        case 'RenameReflectTemplatePromptPayload':
-          break
-        case 'ReflectTemplatePromptUpdateDescriptionPayload':
-          break
-        case 'SelectRetroTemplatePayload':
-          break
-        case 'StartNewMeetingPayload':
-          break
-        case 'UpdateCreditCardPayload':
-          break
-        case 'UpdateNewCheckInQuestionPayload':
-          break
-        case 'UpgradeToProPayload':
-          break
-        default:
-          console.error('TeamSubscription case fail', type)
+      const type = payload.getValue('__typename') as string
+      const handler = updateHandlers[type]
+      if (handler) {
+        handler(payload, {atmosphere, store})
       }
     },
     onNext: (result) => {

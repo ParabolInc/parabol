@@ -11,7 +11,7 @@ import handleRemoveTasks from './handlers/handleRemoveTasks'
 import onTeamRoute from '../utils/onTeamRoute'
 import {RemoveTeamMemberMutation_team} from '../__generated__/RemoveTeamMemberMutation_team.graphql'
 import {RemoveTeamMemberMutation as IRemoveTeamMemberMutation} from '../__generated__/RemoveTeamMemberMutation.graphql'
-import {OnNextHandler, OnNextHistoryContext} from '../types/relayMutations'
+import {OnNextHandler, OnNextHistoryContext, SharedUpdater} from '../types/relayMutations'
 import onMeetingRoute from '../utils/onMeetingRoute'
 
 graphql`
@@ -127,8 +127,12 @@ export const removeTeamMemberTasksUpdater = (payload, store) => {
   handleUpsertTasks(tasks, store)
 }
 
-export const removeTeamMemberTeamUpdater = (payload, store, viewerId) => {
+export const removeTeamMemberTeamUpdater: SharedUpdater<RemoveTeamMemberMutation_team> = (
+  payload,
+  {atmosphere, store}
+) => {
   const removedUserId = getInProxy(payload, 'teamMember', 'userId')
+  const {viewerId} = atmosphere
   if (removedUserId !== viewerId) {
     const teamMemberId = getInProxy(payload, 'teamMember', 'id')
     handleRemoveTeamMembers(teamMemberId, store)
@@ -139,7 +143,7 @@ export const removeTeamMemberTeamUpdater = (payload, store, viewerId) => {
   handleRemoveNotifications(notificationIds, store)
 
   const teamId = getInProxy(payload, 'team', 'id')
-  handleRemoveTeams(teamId, store, viewerId)
+  handleRemoveTeams(teamId, store)
 
   const notification = payload.getLinkedRecord('kickOutNotification')
   handleAddNotifications(notification, store)
@@ -149,20 +153,19 @@ export const removeTeamMemberTeamUpdater = (payload, store, viewerId) => {
   handleRemoveTasks(taskIds, store)
 }
 
-export const removeTeamMemberUpdater = (payload, store, viewerId) => {
-  removeTeamMemberTasksUpdater(payload, store)
-  removeTeamMemberTeamUpdater(payload, store, viewerId)
+export const removeTeamMemberUpdater: SharedUpdater<any> = (payload, context) => {
+  removeTeamMemberTasksUpdater(payload, context.store)
+  removeTeamMemberTeamUpdater(payload, context)
 }
 
-const RemoveTeamMemberMutation = (environment, teamMemberId) => {
-  const {viewerId} = environment
-  return commitMutation<IRemoveTeamMemberMutation>(environment, {
+const RemoveTeamMemberMutation = (atmosphere, teamMemberId) => {
+  return commitMutation<IRemoveTeamMemberMutation>(atmosphere, {
     mutation,
     variables: {teamMemberId},
     updater: (store) => {
       const payload = store.getRootField('removeTeamMember')
       if (!payload) return
-      removeTeamMemberUpdater(payload, store, viewerId)
+      removeTeamMemberUpdater(payload, {atmosphere, store})
     }
   })
 }

@@ -12,15 +12,13 @@ import ContentFilterHandler from '../utils/relay/ContentFilterHandler'
 import {
   OnNextHandler,
   OnNextHistoryContext,
-  OptionalHandlers,
-  SharedUpdater
+  SharedUpdater,
+  SimpleMutation
 } from '../types/relayMutations'
 import {UpdateTaskMutation_task} from '../__generated__/UpdateTaskMutation_task.graphql'
 import {UpdateTaskMutation as TUpdateTaskMutation} from '../__generated__/UpdateTaskMutation.graphql'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
 import {ITask} from '../types/graphql'
-import Atmosphere from '../Atmosphere'
-import {IUpdateTaskOnMutationArguments} from '../types/graphql'
 
 graphql`
   fragment UpdateTaskMutation_task on UpdateTaskPayload {
@@ -89,10 +87,9 @@ export const updateTaskTaskUpdater: SharedUpdater<UpdateTaskMutation_task> = (pa
   }
 }
 
-const UpdateTaskMutation = (
-  atmosphere: Atmosphere,
-  {updatedTask, area}: IUpdateTaskOnMutationArguments,
-  {onCompleted, onError}: OptionalHandlers = {}
+const UpdateTaskMutation: SimpleMutation<TUpdateTaskMutation> = (
+  atmosphere,
+  {updatedTask, area}
 ) => {
   return commitMutation<TUpdateTaskMutation>(atmosphere, {
     mutation,
@@ -125,8 +122,8 @@ const UpdateTaskMutation = (
       }
       updateProxyRecord(task, optimisticTask)
       if (teamId || userId) {
-        const nextTeamId = teamId || task.getValue('teamId')
-        const nextUserId = userId || task.getValue('userId')
+        const nextTeamId = teamId || (task.getValue('teamId') as string)
+        const nextUserId = userId || (task.getValue('userId') as string)
         const assigneeId = toTeamMemberId(nextTeamId, nextUserId)
         task.setValue(assigneeId, 'assigneeId')
         const assignee = store.get(assigneeId)
@@ -141,9 +138,7 @@ const UpdateTaskMutation = (
         task.setValue(nextTags, 'tags')
       }
       handleUpsertTasks(task as any, store)
-    },
-    onCompleted,
-    onError
+    }
   })
 }
 
