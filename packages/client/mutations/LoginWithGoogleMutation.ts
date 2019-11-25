@@ -1,10 +1,7 @@
 import {LoginWithGoogleMutation as TLoginWithGoogleMutation} from '../__generated__/LoginWithGoogleMutation.graphql'
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import SendClientSegmentEventMutation from './SendClientSegmentEventMutation'
-import {SegmentClientEventEnum} from '../types/graphql'
 import {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
-import getValidRedirectParam from '../utils/getValidRedirectParam'
 import handleAuthenticationRedirect from './handlers/handleAuthenticationRedirect'
 
 const mutation = graphql`

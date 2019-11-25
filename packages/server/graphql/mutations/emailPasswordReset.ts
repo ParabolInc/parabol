@@ -9,12 +9,12 @@ import ms from 'ms'
 import {Threshold} from 'parabol-client/types/constEnums'
 import PasswordResetRequest from '../../database/types/PasswordResetRequest'
 import crypto from 'crypto'
-import promisify from 'es6-promisify'
 import base64url from 'base64url'
 import AuthIdentityLocal from '../../database/types/AuthIdentityLocal'
 import resetPasswordEmailCreator from '../../../client/modules/email/components/resetPasswordEmailCreator'
+import util from 'util'
 
-const randomBytes = promisify(crypto.randomBytes, crypto)
+const randomBytes = util.promisify(crypto.randomBytes)
 
 const emailPasswordReset = {
   type: new GraphQLNonNull(GraphQLBoolean),
@@ -54,9 +54,9 @@ const emailPasswordReset = {
       (identity) => identity.type === AuthIdentityTypeEnum.LOCAL
     ) as AuthIdentityLocal
     if (!localIdentity) return true
-
     // seems legit, make a record of it create a reset code
-    const resetPasswordToken = base64url.encode(randomBytes(48))
+    const tokenBuffer = await randomBytes(48)
+    const resetPasswordToken = base64url.encode(tokenBuffer)
     // invalidate all other tokens for this email
     await r
       .table('PasswordResetRequest')
@@ -69,18 +69,13 @@ const emailPasswordReset = {
       .insert(new PasswordResetRequest({ip, email, token: resetPasswordToken}))
       .run()
 
-    // MUTATIVE
-    localIdentity.resetPasswordToken = resetPasswordToken
-    localIdentity.resetPasswordTokenExpiration = new Date(
-      Date.now() + Threshold.RESET_PASSWORD_LIFESPAN
-    )
     await r
       .table('User')
       .get(userId)
       .update({identities})
       .run()
 
-    const emailContent = await resetPasswordEmailCreator({resetPasswordToken})
+    const emailContent = resetPasswordEmailCreator({resetPasswordToken})
     try {
       await sendEmailContent([email], emailContent)
     } catch (e) {

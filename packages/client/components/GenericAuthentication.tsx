@@ -13,8 +13,8 @@ import {
 import AuthPrivacyFooter from './AuthPrivacyFooter'
 import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
 import DialogTitle from './DialogTitle'
-import ResetPasswordPage from './ResetPasswordPage/ResetPasswordPage'
 import AuthenticationDialog from './AuthenticationDialog'
+import ForgotPasswordPage from './ForgotPasswordPage'
 
 export type AuthPageSlug = 'create-account' | 'signin' | 'forgot-password'
 
@@ -58,11 +58,10 @@ const DialogSubTitle = styled('div')({
 
 const GenericAuthentication = (props: Props) => {
   const {gotoPage, invitationToken, page, teamName} = props
-  const emailRef = useRef('')
-  const {current: email} = emailRef
+  const emailRef = useRef<{email: () => string}>()
 
   if (page === 'forgot-password') {
-    return <ResetPasswordPage email={email} gotoPage={gotoPage} />
+    return <ForgotPasswordPage gotoPage={gotoPage} />
   }
 
   const isCreate = page === 'create-account'
@@ -72,7 +71,7 @@ const GenericAuthentication = (props: Props) => {
   const actionCopy = isCreate ? 'Already have an account? ' : 'New to Parabol? '
   const title = teamName ? `${teamName} is waiting` : action
   const onForgot = () => {
-    gotoPage('forgot-password', `?email=${email}`)
+    gotoPage('forgot-password', `?email=${emailRef.current?.email()}`)
   }
   return (
     <AuthenticationDialog>
@@ -85,7 +84,12 @@ const GenericAuthentication = (props: Props) => {
       </DialogSubTitle>
       <GoogleOAuthButtonBlock isCreate={isCreate} invitationToken={invitationToken} />
       <HorizontalSeparator margin='1rem 0 0' text='or' />
-      <EmailPasswordAuthForm email='' isSignin={!isCreate} invitationToken={invitationToken} />
+      <EmailPasswordAuthForm
+        email=''
+        isSignin={!isCreate}
+        invitationToken={invitationToken}
+        ref={emailRef}
+      />
       {isCreate ? (
         <AuthPrivacyFooter />
       ) : (

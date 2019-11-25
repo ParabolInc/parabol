@@ -9,7 +9,7 @@ interface Props {
   resetPasswordToken: string
 }
 
-const resetPasswordEmailCreator = async (props: Props) => {
+const resetPasswordEmailCreator = (props: Props) => {
   const {resetPasswordToken} = props
   const resetURL = makeAppLink(`reset-password/${resetPasswordToken}`)
   const bodyContent = ReactDOMServer.renderToStaticMarkup(

@@ -19,7 +19,9 @@ export default {
       if ('error' in tokenRes && tokenRes.error === 'notFound') {
         return {errorType: 'notFound'}
       }
-      const {teamId, userId, error} = tokenRes
+      const {error} = tokenRes
+      const teamId = tokenRes.teamId!
+      const userId = tokenRes.userId!
       const teamMemberId = toTeamMemberId(teamId, userId)
       const [teamMember, team] = await Promise.all([
         dataLoader.get('teamMembers').load(teamMemberId),

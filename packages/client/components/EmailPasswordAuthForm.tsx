@@ -103,7 +103,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
   })
 
   useImperativeHandle(ref, () => ({
-    email: () => fields.email.value
+    email: () => encodeURIComponent(fields.email.value)
   }))
 
   useEffect(() => {

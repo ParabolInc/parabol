@@ -11,6 +11,7 @@ import ResetPasswordMutation from '../../mutations/ResetPasswordMutation'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import ErrorAlert from '../ErrorAlert/ErrorAlert'
 import {RouteComponentProps} from 'react-router'
+import TeamInvitationWrapper from '../TeamInvitationWrapper'
 
 interface Props extends RouteComponentProps<{token: string}> {}
 
@@ -55,7 +56,7 @@ const SetNewPassword = (props: Props) => {
       validate: validatePassword
     }
   })
-  const handleBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const {name} = e.target
     setDirtyField(name)
   }
@@ -71,24 +72,26 @@ const SetNewPassword = (props: Props) => {
     ResetPasswordMutation(atmosphere, {newPassword, token}, {onError, onCompleted, history})
   }
   return (
-    <AuthenticationDialog>
-      <DialogTitle>{'Pick a new password'}</DialogTitle>
-      <Container>
-        <P>{'Password reset almost complete, just type your new password below'}</P>
-        {error && <ErrorAlert message={error.message} />}
-        <Form onSubmit={onSubmit}>
-          <PasswordInputField
-            {...fields.password}
-            autoFocus
-            onChange={onChange}
-            onBlur={handleBlur}
-          />
-          <SubmitButton size='medium' waiting={submitting}>
-            {'Reset Password'}
-          </SubmitButton>
-        </Form>
-      </Container>
-    </AuthenticationDialog>
+    <TeamInvitationWrapper>
+      <AuthenticationDialog>
+        <DialogTitle>{'Reset Password'}</DialogTitle>
+        <Container>
+          <P>{'Type your new password below'}</P>
+          {error && <ErrorAlert message={error.message} />}
+          <Form onSubmit={onSubmit}>
+            <PasswordInputField
+              {...fields.password}
+              autoFocus
+              onChange={onChange}
+              onBlur={handleBlur}
+            />
+            <SubmitButton size='medium' waiting={submitting}>
+              {'Reset Password'}
+            </SubmitButton>
+          </Form>
+        </Container>
+      </AuthenticationDialog>
+    </TeamInvitationWrapper>
   )
 }
 

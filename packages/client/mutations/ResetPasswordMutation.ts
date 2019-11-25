@@ -5,8 +5,8 @@ import {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
 import handleAuthenticationRedirect from './handlers/handleAuthenticationRedirect'
 
 const mutation = graphql`
-  mutation ResetPasswordMutation($newPassword: String!$token: ID) {
-    resetPassword(newPassword: $newPasswordtoken: $token) {
+  mutation ResetPasswordMutation($newPassword: String!, $token: ID!) {
+    resetPassword(newPassword: $newPassword, token: $token) {
       error {
         message
       }
