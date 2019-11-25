@@ -125,8 +125,8 @@ const UpdateTaskMutation = (
       }
       updateProxyRecord(task, optimisticTask)
       if (teamId || userId) {
-        const nextTeamId = teamId || task.getValue('teamId')
-        const nextUserId = userId || task.getValue('userId')
+        const nextTeamId = teamId || (task.getValue('teamId') as string)
+        const nextUserId = userId || (task.getValue('userId') as string)
         const assigneeId = toTeamMemberId(nextTeamId, nextUserId)
         task.setValue(assigneeId, 'assigneeId')
         const assignee = store.get(assigneeId)
