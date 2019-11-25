@@ -132,7 +132,9 @@ const ForgotPasswordPage = (props: Props) => {
   }
 
   const gotoSignIn = () => {
-    gotoPage('signin', location.search)
+    const params = new URLSearchParams(location.search)
+    params.delete('email')
+    gotoPage('signin', params.toString())
   }
 
   return (

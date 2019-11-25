@@ -8,6 +8,18 @@ import getRethink from '../../../database/rethinkDriver'
 import bcrypt from 'bcrypt'
 import ms from 'ms'
 import FailedAuthRequest from '../../../database/types/FailedAuthRequest'
+import sleep from 'parabol-client/utils/sleep'
+
+const logFailedLogin = async (ip: string, email: string) => {
+  const r = await getRethink()
+  if (ip) {
+    const failedAuthRequest = new FailedAuthRequest({ip, email})
+    await r
+      .table('FailedAuthRequest')
+      .insert(failedAuthRequest)
+      .run()
+  }
+}
 
 const attemptLogin = async (email: string, password: string, ip = '') => {
   const r = await getRethink()
@@ -32,11 +44,15 @@ const attemptLogin = async (email: string, password: string, ip = '') => {
       .ge(Threshold.MAX_DAILY_PASSWORD_ATTEMPTS) as unknown) as boolean
   }).run()
   if (failOnAccount || failOnTime) {
+    await sleep(1000)
     // silently fail to trick security researchers
     return {error: AuthenticationError.INVALID_PASSWORD}
   }
 
-  if (!existingUser) return {error: AuthenticationError.USER_NOT_FOUND}
+  if (!existingUser) {
+    await logFailedLogin(ip, email)
+    return {error: AuthenticationError.USER_NOT_FOUND}
+  }
 
   const {id: viewerId, identities, rol} = existingUser
   const localIdentity = identities.find(
@@ -66,13 +82,7 @@ const attemptLogin = async (email: string, password: string, ip = '') => {
       authToken: new AuthToken({sub: viewerId, rol, tms: existingUser.tms})
     }
   }
-  if (ip) {
-    const failedAuthRequest = new FailedAuthRequest({ip, email})
-    await r
-      .table('FailedAuthRequest')
-      .insert(failedAuthRequest)
-      .run()
-  }
+  await logFailedLogin(ip, email)
   return {error: AuthenticationError.INVALID_PASSWORD}
 }
 
