@@ -139,7 +139,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       }
     },
     tier: {
-      type: TierEnum,
+      type: GraphQLNonNull(TierEnum),
       description: 'The level of access to features on the parabol site'
     },
     organization: {

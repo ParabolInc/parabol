@@ -32,9 +32,11 @@ export const enum PALETTE {
   BACKGROUND_NAV_LIGHT_ACTIVE = '#F2F2FB',
   BACKGROUND_NAV_LIGHT_HOVER = '#F8F8FD',
   BORDER_DASH_LIGHT = '#D9D8E1',
+  BORDER_ILLUSTRATION = '#493272A6',
   BORDER_FACILITATOR_FOCUS = '#ED4C8666', // alpha 50% = 80, 40% = 66, emphasis = warm = rose/pink
   BORDER_LIGHTER = '#DFDFE5', // gray 25% over white
   BORDER_LIGHT = '#C9C2D5', // primary 30% over white // was '#C1C0CD', // gray 50% over white
+  BORDER_DROPDOWN = '#82809A80', // alpha 65%
   BORDER_PLACEHOLDER = '#82809AA6', // alpha 65%
   BORDER_GRAY = '#82809A80',
   BORDER_MAIN = '#493272',

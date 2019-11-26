@@ -2,11 +2,12 @@ import {RetroTemplatePicker_settings} from '../../../__generated__/RetroTemplate
 import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import DropdownMenuToggle from '../../../components/DropdownMenuToggle'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
 import useModal from '../../../hooks/useModal'
 import lazyPreload from '../../../utils/lazyPreload'
+import styled from '@emotion/styled'
+import NewMeetingDropdown from '../../../components/NewMeetingDropdown'
 
 interface Props {
   settings: RetroTemplatePicker_settings
@@ -26,6 +27,10 @@ const ReflectTemplateModal = lazyPreload(() =>
   )
 )
 
+const Dropdown = styled(NewMeetingDropdown)({
+  marginTop: 16
+})
+
 const RetroTemplatePicker = (props: Props) => {
   const {settings} = props
   const {selectedTemplateId, reflectTemplates} = settings
@@ -38,7 +43,7 @@ const RetroTemplatePicker = (props: Props) => {
   const safeIdx = selectedTemplateIdx === -1 ? 0 : selectedTemplateIdx
   const selectedTemplate = templates[safeIdx]
   const {menuPortal, togglePortal, menuProps, originRef} = useMenu<HTMLDivElement>(
-    MenuPosition.UPPER_RIGHT,
+    MenuPosition.LOWER_RIGHT,
     {
       isDropdown: true
     }
@@ -46,10 +51,11 @@ const RetroTemplatePicker = (props: Props) => {
   const {togglePortal: toggleModal, modalPortal} = useModal()
   return (
     <>
-      <DropdownMenuToggle
-        defaultText={selectedTemplate.name}
-        onMouseEnter={RetroTemplateListMenu.preload}
+      <Dropdown
+        icon={'question_answer'}
+        label={selectedTemplate.name}
         onClick={togglePortal}
+        onMouseEnter={RetroTemplateListMenu.preload}
         ref={originRef}
       />
       {menuPortal(

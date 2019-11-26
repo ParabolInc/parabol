@@ -7,5 +7,6 @@ export const enum ICON_SIZE {
   MD18 = '18px',
   MD24 = '24px',
   MD36 = '36px',
+  MD40 = '40px',
   MD48 = '48px'
 }

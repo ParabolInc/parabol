@@ -1,3 +1,4 @@
+/* DEPRECATED. SEE DropdownToggleV2 */
 import React, {forwardRef, ReactElement, Ref} from 'react'
 import styled from '@emotion/styled'
 import Icon from './Icon'
