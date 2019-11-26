@@ -1,4 +1,4 @@
-import {REFLECT, RETROSPECTIVE, VOTE} from '../../../../client/utils/constants'
+import {GROUP, REFLECT, RETROSPECTIVE, VOTE} from '../../../../client/utils/constants'
 import addDiscussionTopics from './addDiscussionTopics'
 import removeEmptyReflections from './removeEmptyReflections'
 import Meeting from '../../../database/types/Meeting'
@@ -15,9 +15,9 @@ const handleCompletedRetrospectiveStage = async (
   meeting: Meeting,
   dataLoader: DataLoaderWorker
 ) => {
-  if (stage.phaseType === REFLECT) {
+  if (stage.phaseType === REFLECT || stage.phaseType === GROUP) {
     const data = await removeEmptyReflections(meeting)
-    return {[REFLECT]: data}
+    return {[stage.phaseType]: data}
   } else if (stage.phaseType === VOTE) {
     // mutates the meeting discuss phase.stages array
     const data = await addDiscussionTopics(meeting, dataLoader)

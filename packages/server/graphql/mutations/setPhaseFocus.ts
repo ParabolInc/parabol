@@ -3,9 +3,10 @@ import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
 import SetPhaseFocusPayload from '../types/SetPhaseFocusPayload'
 import publish from '../../utils/publish'
-import {REFLECT, TEAM} from '../../../client/utils/constants'
+import {GROUP, REFLECT} from '../../../client/utils/constants'
 import isPhaseComplete from '../../../client/utils/meetings/isPhaseComplete'
 import standardError from '../../utils/standardError'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const setPhaseFocus = {
   type: SetPhaseFocusPayload,
@@ -33,11 +34,12 @@ const setPhaseFocus = {
     const meeting = await r
       .table('NewMeeting')
       .get(meetingId)
-      .default(null).run()
+      .default(null)
+      .run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
-    const {endedAt, facilitatorUserId, phases, teamId} = meeting
+    const {endedAt, facilitatorUserId, phases} = meeting
     if (endedAt) return standardError(new Error('Meeting already completed'), {userId: viewerId})
-    if (isPhaseComplete(REFLECT, phases)) {
+    if (isPhaseComplete(GROUP, phases)) {
       return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
     }
     if (facilitatorUserId !== viewerId) {
@@ -54,9 +56,10 @@ const setPhaseFocus = {
     await r
       .table('NewMeeting')
       .get(meetingId)
-      .update(meeting).run()
+      .update(meeting)
+      .run()
     const data = {meetingId}
-    publish(TEAM, teamId, SetPhaseFocusPayload, data, subOptions)
+    publish(SubscriptionChannel.MEETING, meetingId, 'SetPhaseFocusPayload', data, subOptions)
     return data
   }
 }

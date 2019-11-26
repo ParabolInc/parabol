@@ -47,6 +47,7 @@ const subscription = graphql`
       ... on User {
         id
         isConnected
+        lastSeenAt
       }
 
       # DisconnectSocket

@@ -13,9 +13,11 @@ import handleUpsertTasks from './handlers/handleUpsertTasks'
 import {setLocalStageAndPhase} from '../utils/relay/updateLocalStage'
 import findStageById from '../utils/meetings/findStageById'
 import onExOrgRoute from '../utils/onExOrgRoute'
-import {OnNextHandler, OnNextHistoryContext} from '../types/relayMutations'
+import {OnNextHandler, OnNextHistoryContext, SharedUpdater} from '../types/relayMutations'
 import {RemoveOrgUserMutation_notification} from '../__generated__/RemoveOrgUserMutation_notification.graphql'
 import {RemoveOrgUserMutation as IRemoveOrgUserMutation} from '__generated__/RemoveOrgUserMutation.graphql'
+import onMeetingRoute from '../utils/onMeetingRoute'
+import {RemoveOrgUserMutation_team} from '__generated__/RemoveOrgUserMutation_team.graphql'
 
 graphql`
   fragment RemoveOrgUserMutation_organization on RemoveOrgUserPayload {
@@ -44,7 +46,14 @@ graphql`
     kickOutNotifications {
       id
       type
-      ...KickedOut_notification @relay(mask: false)
+      team {
+        id
+        name
+        activeMeetings {
+          id
+        }
+      }
+      ...KickedOut_notification
     }
   }
 `
@@ -114,12 +123,16 @@ export const removeOrgUserNotificationUpdater = (payload, store) => {
   handleAddNotifications(kickOutNotifications, store)
 }
 
-export const removeOrgUserTeamUpdater = (payload, store, viewerId) => {
+export const removeOrgUserTeamUpdater: SharedUpdater<RemoveOrgUserMutation_team> = (
+  payload,
+  {atmosphere, store}
+) => {
   const removedUserId = getInProxy(payload, 'user', 'id')
+  const {viewerId} = atmosphere
   if (removedUserId === viewerId) {
     const teams = payload.getLinkedRecords('teams')
     const teamIds = getInProxy(teams, 'id')
-    handleRemoveTeams(teamIds, store, viewerId)
+    handleRemoveTeams(teamIds, store)
   } else {
     const teamMembers = payload.getLinkedRecords('teamMembers')
     const teamMemberIds = getInProxy(teamMembers, 'id')
@@ -132,7 +145,7 @@ export const removeOrgUserTaskUpdater = (payload, store, viewerId) => {
   const tasks = payload.getLinkedRecords('updatedTasks')
   if (removedUserId === viewerId) {
     const taskIds = getInProxy(tasks, 'id')
-    handleRemoveTasks(taskIds, store, viewerId)
+    handleRemoveTasks(taskIds, store)
   } else {
     handleUpsertTasks(tasks, store)
   }
@@ -182,17 +195,23 @@ export const removeOrgUserNotificationOnNext: OnNextHandler<
   const {organization, kickOutNotifications} = payload
   if (!organization || !kickOutNotifications) return
   const {name: orgName, id: orgId} = organization
-  const teamIds = kickOutNotifications.map((notification) => notification && notification.team.id)
+  const teams = kickOutNotifications.map((notification) => notification && notification.team)
   atmosphere.eventEmitter.emit('addSnackbar', {
     key: `removedFromOrg:${orgId}`,
     autoDismiss: 10,
     message: `You have been removed from ${orgName} and all its teams`
   })
 
-  for (let ii = 0; ii < teamIds.length; ii++) {
-    const teamId = teamIds[ii]
-    if (onTeamRoute(window.location.pathname, teamId)) {
-      history && history.push('/me')
+  for (let ii = 0; ii < teams.length; ii++) {
+    const team = teams[ii]
+    if (!team) continue
+    const {activeMeetings, id: teamId} = team
+    const meetingIds = activeMeetings.map(({id}) => id)
+    if (
+      onTeamRoute(window.location.pathname, teamId) ||
+      onMeetingRoute(window.location.pathname, meetingIds)
+    ) {
+      history.push('/me')
       return
     }
   }
@@ -207,7 +226,7 @@ const RemoveOrgUserMutation = (atmosphere, variables, context, onError, onComple
       const payload = store.getRootField('removeOrgUser')
       if (!payload) return
       removeOrgUserOrganizationUpdater(payload, store, viewerId)
-      removeOrgUserTeamUpdater(payload, store, viewerId)
+      removeOrgUserTeamUpdater(payload, {atmosphere, store})
       removeOrgUserTaskUpdater(payload, store, viewerId)
     },
     // optimisticUpdater: (store) => {

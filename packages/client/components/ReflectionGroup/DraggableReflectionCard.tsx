@@ -70,7 +70,7 @@ const DraggableReflectionCard = (props: Props) => {
     isDraggable,
     swipeColumn
   } = props
-  const {teamId, localStage} = meeting
+  const {id: meetingId, teamId, localStage} = meeting
   const {isComplete, phaseType} = localStage
   const {isDropping, isEditing} = reflection
   const dragRef = useRef({...DRAG_STATE})
@@ -80,6 +80,7 @@ const DraggableReflectionCard = (props: Props) => {
     reflection,
     drag,
     staticIdx,
+    meetingId,
     teamId,
     staticReflectionCount,
     swipeColumn

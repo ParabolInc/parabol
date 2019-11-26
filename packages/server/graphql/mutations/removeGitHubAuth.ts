@@ -4,7 +4,8 @@ import RemoveGitHubAuthPayload from '../types/RemoveGitHubAuthPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GITHUB, TEAM} from '../../../client/utils/constants'
+import {GITHUB} from '../../../client/utils/constants'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   name: 'RemoveGitHubAuth',
@@ -48,7 +49,7 @@ export default {
       .run()
 
     const data = {authId, teamId, userId: viewerId}
-    publish(TEAM, teamId, RemoveGitHubAuthPayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'RemoveGitHubAuthPayload', data, subOptions)
     return data
   }
 }

@@ -16,6 +16,7 @@ import getReflectionEntities from './helpers/getReflectionEntities'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import shortid from 'shortid'
 import getGroupSmartTitle from 'parabol-client/utils/autogroup/getGroupSmartTitle'
+import Meeting from '../../database/types/Meeting'
 
 export default {
   type: CreateReflectionPayload,
@@ -49,7 +50,7 @@ export default {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
     const meeting = await r
-      .table('NewMeeting')
+      .table<Meeting>('NewMeeting')
       .get(meetingId)
       .default(null)
       .run()
@@ -93,9 +94,12 @@ export default {
       group: r.table('RetroReflectionGroup').insert(reflectionGroup),
       reflection: r.table('RetroReflection').insert(reflection)
     }).run()
-    const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
+    const groupPhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.group)!
+    const {stages} = groupPhase
+    const [groupStage] = stages
+
     let unlockedStageIds
-    if (reflections.length === 1) {
+    if (!groupStage.isNavigableByFacilitator) {
       unlockedStageIds = unlockAllStagesForPhase(phases, NewMeetingPhaseTypeEnum.group, true)
       await r
         .table('NewMeeting')
@@ -111,7 +115,7 @@ export default {
       reflectionGroupId: reflectionGroupId,
       unlockedStageIds
     }
-    publish(SubscriptionChannel.TEAM, teamId, CreateReflectionPayload, data, subOptions)
+    publish(SubscriptionChannel.MEETING, meetingId, 'CreateReflectionPayload', data, subOptions)
     return data
   }
 }

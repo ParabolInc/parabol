@@ -5,7 +5,6 @@ import UpdateUserProfilePayload from '../types/UpdateUserProfilePayload'
 import {getUserId, isAuthenticated} from '../../utils/authorization'
 import makeUserServerSchema from '../../../client/validation/makeUserServerSchema'
 import publish from '../../utils/publish'
-import {TEAM} from '../../../client/utils/constants'
 import {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
 import {JSDOM} from 'jsdom'
 import sanitizeSVG from '@mattkrick/sanitize-svg'
@@ -14,6 +13,7 @@ import standardError from '../../utils/standardError'
 import linkify from '../../../client/utils/linkify'
 import User from '../../database/types/User'
 import {ITeamMember} from 'parabol-client/types/graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const updateUserProfile = {
   type: UpdateUserProfilePayload,
@@ -90,7 +90,7 @@ const updateUserProfile = {
     const teamIds = teamMembers.map(({teamId}) => teamId)
     teamIds.forEach((teamId) => {
       const data = {userId, teamIds: [teamId]}
-      publish(TEAM, teamId, UpdateUserProfilePayload, data, subOptions)
+      publish(SubscriptionChannel.TEAM, teamId, 'UpdateUserProfilePayload', data, subOptions)
     })
     return {userId, teamIds}
   }

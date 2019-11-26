@@ -14,8 +14,9 @@ import getRethink from '../../database/rethinkDriver'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
-import AuthTokenPayload from '../types/AuthTokenPayload'
 import {TierEnum} from 'parabol-client/types/graphql'
+import encodeAuthToken from '../../utils/encodeAuthToken'
+import AuthToken from '../../database/types/AuthToken'
 
 export default {
   type: new GraphQLNonNull(AddTeamPayload),
@@ -80,7 +81,7 @@ export default {
 
       const tms = authToken.tms.concat(teamId)
       sendSegmentEvent('New Team', viewerId, {orgId, teamId}).catch()
-      publish(SubscriptionChannel.NOTIFICATION, viewerId, AuthTokenPayload, {tms})
+      publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
       updateAuth0TMS(viewerId, tms)
       const teamMemberId = toTeamMemberId(teamId, viewerId)
       const data = {
@@ -94,14 +95,17 @@ export default {
         publish(
           SubscriptionChannel.NOTIFICATION,
           viewerId,
-          AddTeamPayload,
+          'AddTeamPayload',
           {removedSuggestedActionId},
           subOptions
         )
       }
-      publish(SubscriptionChannel.TEAM, viewerId, AddTeamPayload, data, subOptions)
+      publish(SubscriptionChannel.TEAM, viewerId, 'AddTeamPayload', data, subOptions)
 
-      return data
+      return {
+        ...data,
+        authToken: encodeAuthToken(new AuthToken({tms, sub: viewerId}))
+      }
     }
   )
 }

@@ -8,12 +8,16 @@ import ErrorBoundary from '../../../../components/ErrorBoundary'
 import {StreamUI} from '../../../../hooks/useSwarm'
 import MediaSwarm from '../../../../utils/swarm/MediaSwarm'
 import {meetingAvatarMediaQueries} from '../../../../styles/meeting'
+import {TransitionStatus} from '../../../../hooks/useTransition'
+import {DECELERATE} from '../../../../styles/animation'
 
 const Item = styled('div')({
   position: 'relative'
 })
 
-const AvatarBlock = styled('div')({
+const AvatarBlock = styled('div')<{status: TransitionStatus}>(({status}) => ({
+  opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
+  transition: `all 300ms ${DECELERATE}`,
   borderRadius: '100%',
   height: 32,
   maxWidth: 32,
@@ -24,24 +28,26 @@ const AvatarBlock = styled('div')({
     width: 48
   },
   [meetingAvatarMediaQueries[1]]: {
-    height: 56,
+    height: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 8 : 56,
     maxWidth: 56,
-    width: 56
+    width: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 8 : 56
   }
-})
+}))
 
 interface Props {
+  onTransitionEnd: () => void
+  status: TransitionStatus
   teamMember: NewMeetingAvatar_teamMember
   streamUI: StreamUI | undefined
   swarm: MediaSwarm | null
 }
 
 const NewMeetingAvatar = (props: Props) => {
-  const {teamMember, streamUI, swarm} = props
+  const {teamMember, streamUI, swarm, onTransitionEnd, status} = props
   return (
     <ErrorBoundary>
       <Item>
-        <AvatarBlock>
+        <AvatarBlock status={status} onTransitionEnd={onTransitionEnd}>
           <VideoAvatar teamMember={teamMember} streamUI={streamUI} swarm={swarm} />
         </AvatarBlock>
       </Item>

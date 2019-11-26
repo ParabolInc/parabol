@@ -12,6 +12,7 @@ import MeetingStageTimeLimitPayload from '../../types/MeetingStageTimeLimitPaylo
 import NotificationMeetingStageTimeLimitEnd from '../../../database/types/NotificationMeetingStageTimeLimitEnd'
 import SlackAuth from '../../../database/types/SlackAuth'
 import SlackNotification from '../../../database/types/SlackNotification'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const processMeetingStageTimeLimits = async (job: ScheduledJobMeetingStageTimeLimit) => {
   const r = await getRethink()
@@ -63,7 +64,9 @@ const processMeetingStageTimeLimits = async (job: ScheduledJobMeetingStageTimeLi
       .table('Notification')
       .insert(notification)
       .run()
-    publish('notification', facilitatorUserId, MeetingStageTimeLimitPayload, {notification})
+    publish(SubscriptionChannel.NOTIFICATION, facilitatorUserId, 'MeetingStageTimeLimitPayload', {
+      notification
+    })
   }
 
   // get the meeting

@@ -2,12 +2,12 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import stripe from '../../billing/stripe'
 import getRethink from '../../database/rethinkDriver'
 import DowngradeToPersonalPayload from '../types/DowngradeToPersonalPayload'
-import {getUserId, isUserBillingLeader, isSuperUser} from '../../utils/authorization'
+import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import sendSegmentEvent, {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
-import {ORGANIZATION, TEAM} from '../../../client/utils/constants'
 import standardError from '../../utils/standardError'
 import {TierEnum} from 'parabol-client/types/graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: DowngradeToPersonalPayload,
@@ -75,13 +75,13 @@ export default {
     }).run()
     sendSegmentEvent('Downgrade to personal', viewerId, {orgId}).catch()
     const data = {orgId, teamIds}
-    publish(ORGANIZATION, orgId, DowngradeToPersonalPayload, data, subOptions)
+    publish(SubscriptionChannel.ORGANIZATION, orgId, 'DowngradeToPersonalPayload', data, subOptions)
 
     teamIds.forEach((teamId) => {
       // I can't readily think of a clever way to use the data obj and filter in the resolver so I'll reduce here.
       // This is probably a smelly piece of code telling me I should be sending this per-viewerId or per-org
       const teamData = {orgId, teamIds: [teamId]}
-      publish(TEAM, teamId, DowngradeToPersonalPayload, teamData, subOptions)
+      publish(SubscriptionChannel.TEAM, teamId, 'DowngradeToPersonalPayload', teamData, subOptions)
     })
     // the count of this users tier stats just changed, update:
     const allUserIds = await r

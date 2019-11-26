@@ -9,7 +9,7 @@ const Message = styled('div')({
 })
 
 const textShadow = '0 1px rgba(0, 0, 0, .15)'
-const Inner = styled('div')<{onClose: boolean}>(({onClose}) => ({
+const Inner = styled('div')<{canClose: boolean}>(({canClose}) => ({
   backgroundColor: PALETTE.ERROR_MAIN,
   borderRadius: 2,
   color: '#FFFFFF',
@@ -20,7 +20,7 @@ const Inner = styled('div')<{onClose: boolean}>(({onClose}) => ({
   padding: 15,
   position: 'relative',
   textShadow,
-  paddingRight: onClose ? 22 : undefined
+  paddingRight: canClose ? 22 : undefined
 }))
 
 const MessageClose = styled('div')({
@@ -43,7 +43,7 @@ const MessageCloseIcon = styled(Icon)({
 })
 
 interface Props {
-  onClose: () => void
+  onClose: (...args: any[]) => void
   message: string
 }
 
@@ -51,7 +51,7 @@ const OutcomeCardMessage = (props: Props) => {
   const {onClose, message} = props
   return (
     <Message>
-      <Inner onClose={!!onClose}>
+      <Inner canClose={!!onClose}>
         {message}
         {onClose && (
           <MessageClose onClick={onClose} tabIndex={0}>

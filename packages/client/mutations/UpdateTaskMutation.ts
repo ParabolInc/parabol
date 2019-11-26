@@ -12,20 +12,20 @@ import ContentFilterHandler from '../utils/relay/ContentFilterHandler'
 import {
   OnNextHandler,
   OnNextHistoryContext,
-  OptionalHandlers,
-  SharedUpdater
+  SharedUpdater,
+  SimpleMutation
 } from '../types/relayMutations'
 import {UpdateTaskMutation_task} from '../__generated__/UpdateTaskMutation_task.graphql'
 import {UpdateTaskMutation as TUpdateTaskMutation} from '../__generated__/UpdateTaskMutation.graphql'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
-import Atmosphere from '../Atmosphere'
-import {IUpdateTaskOnMutationArguments} from '../types/graphql'
+import {ITask} from '../types/graphql'
 
 graphql`
   fragment UpdateTaskMutation_task on UpdateTaskPayload {
     task {
       # Entire frag needed in case it is deprivatized
       ...CompleteTaskFrag @relay(mask: false)
+      id
       editors {
         userId
         preferredName
@@ -83,14 +83,13 @@ export const updateTaskTaskUpdater: SharedUpdater<UpdateTaskMutation_task> = (pa
   const privatizedTaskId = payload.getValue('privatizedTaskId')
   const taskUserId = getInProxy(task, 'userId')
   if (taskUserId !== viewerId && privatizedTaskId) {
-    handleRemoveTasks(privatizedTaskId, store, viewerId)
+    handleRemoveTasks(privatizedTaskId, store)
   }
 }
 
-const UpdateTaskMutation = (
-  atmosphere: Atmosphere,
-  {updatedTask, area}: IUpdateTaskOnMutationArguments,
-  {onCompleted, onError}: OptionalHandlers = {}
+const UpdateTaskMutation: SimpleMutation<TUpdateTaskMutation> = (
+  atmosphere,
+  {updatedTask, area}
 ) => {
   return commitMutation<TUpdateTaskMutation>(atmosphere, {
     mutation,
@@ -101,6 +100,15 @@ const UpdateTaskMutation = (
     updater: (store) => {
       const payload = store.getRootField('updateTask')
       if (!payload) return
+      const error = payload.getLinkedRecord('error')
+      if (error) {
+        const {id: taskId} = updatedTask
+        const task = store.get<ITask>(taskId)
+        if (task) {
+          const message = error.getValue('message')
+          task.setValue(message, 'error')
+        }
+      }
       updateTaskTaskUpdater(payload, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
@@ -114,8 +122,8 @@ const UpdateTaskMutation = (
       }
       updateProxyRecord(task, optimisticTask)
       if (teamId || userId) {
-        const nextTeamId = teamId || task.getValue('teamId')
-        const nextUserId = userId || task.getValue('userId')
+        const nextTeamId = teamId || (task.getValue('teamId') as string)
+        const nextUserId = userId || (task.getValue('userId') as string)
         const assigneeId = toTeamMemberId(nextTeamId, nextUserId)
         task.setValue(assigneeId, 'assigneeId')
         const assignee = store.get(assigneeId)
@@ -130,9 +138,7 @@ const UpdateTaskMutation = (
         task.setValue(nextTags, 'tags')
       }
       handleUpsertTasks(task as any, store)
-    },
-    onCompleted,
-    onError
+    }
   })
 }
 

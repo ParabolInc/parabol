@@ -1,7 +1,7 @@
 import React, {ReactNode} from 'react'
 import {PALETTE} from '../../styles/paletteV2'
 import styled from '@emotion/styled'
-import {AppBar, Breakpoint, Gutters, Filter} from '../../types/constEnums'
+import {AppBar, Gutters, Filter} from '../../types/constEnums'
 
 const RootBlock = styled('div')<{hasOverlay?: boolean}>(({hasOverlay}) => ({
   alignItems: 'center',
@@ -17,12 +17,8 @@ const InnerBlock = styled('div')({
   display: 'flex',
   margin: '0 auto',
   minHeight: AppBar.HEIGHT,
-  padding: `0 ${Gutters.DASH_GUTTER_SMALL}`,
-  width: '100%',
-
-  [`@media (min-width: ${Breakpoint.DASHBOARD_WIDE})`]: {
-    padding: `0 ${Gutters.DASH_GUTTER_LARGE}`
-  }
+  padding: `0 ${Gutters.DASH_GUTTER}`,
+  width: '100%'
 })
 
 interface Props {

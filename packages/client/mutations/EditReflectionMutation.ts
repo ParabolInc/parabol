@@ -1,11 +1,12 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import handleEditReflection from './handlers/handleEditReflection'
-import {SimpleMutation} from '../types/relayMutations'
+import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import {EditReflectionMutation as TEditReflectionMutation} from '../__generated__/EditReflectionMutation.graphql'
+import {EditReflectionMutation_meeting} from '__generated__/EditReflectionMutation_meeting.graphql'
 
 graphql`
-  fragment EditReflectionMutation_team on EditReflectionPayload {
+  fragment EditReflectionMutation_meeting on EditReflectionPayload {
     editorId
     isEditing
     phaseItemId
@@ -15,12 +16,15 @@ graphql`
 const mutation = graphql`
   mutation EditReflectionMutation($phaseItemId: ID!, $isEditing: Boolean!, $meetingId: ID!) {
     editReflection(phaseItemId: $phaseItemId, isEditing: $isEditing, meetingId: $meetingId) {
-      ...EditReflectionMutation_team @relay(mask: false)
+      ...EditReflectionMutation_meeting @relay(mask: false)
     }
   }
 `
 
-export const editReflectionTeamUpdater = (payload, store) => {
+export const editReflectionTeamUpdater: SharedUpdater<EditReflectionMutation_meeting> = (
+  payload,
+  {store}
+) => {
   handleEditReflection(payload, store)
 }
 

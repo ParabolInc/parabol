@@ -19,6 +19,7 @@ import convertToTaskContent from '../../utils/draftjs/convertToTaskContent'
 import ReflectionCardRoot from './ReflectionCardRoot'
 import ReflectionCardFooter from './ReflectionCardFooter'
 import useEditorState from '../../hooks/useEditorState'
+import isPhaseComplete from '../../utils/meetings/isPhaseComplete'
 
 interface Props {
   isClipped?: boolean
@@ -31,9 +32,11 @@ interface Props {
 const getReadOnly = (
   reflection: {id: string; isViewerCreator: boolean | null; isEditing: boolean | null},
   phaseType: NewMeetingPhaseTypeEnum,
-  stackCount: number | undefined
+  stackCount: number | undefined,
+  phases: any | null
 ) => {
   const {isViewerCreator, isEditing, id} = reflection
+  if (phases && isPhaseComplete(NewMeetingPhaseTypeEnum.group, phases)) return true
   if (!isViewerCreator || isTempId(id)) return true
   if (phaseType === NewMeetingPhaseTypeEnum.reflect) return stackCount && stackCount > 1
   if (phaseType === NewMeetingPhaseTypeEnum.group && isEditing) return false
@@ -45,6 +48,7 @@ const ReflectionCard = (props: Props) => {
   const {meetingId, phaseItem} = reflection
   const {question} = phaseItem
   const phaseType = meeting ? meeting.localPhase.phaseType : null
+  const phases = meeting ? meeting.phases : null
   const {id: reflectionId, content, retroPhaseItemId, isViewerCreator} = reflection
   const atmosphere = useAtmosphere()
   const {onCompleted, submitMutation, error, onError} = useMutationProps()
@@ -72,7 +76,7 @@ const ReflectionCard = (props: Props) => {
       if (!editorEl || editorEl.type !== 'textarea') return
       const {value} = editorEl
       if (!value) {
-        RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId}, onError, onCompleted)
+        RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId, onError, onCompleted})
       } else {
         const initialContentState = editorState.getCurrentContent()
         const initialText = initialContentState.getPlainText()
@@ -108,7 +112,7 @@ const ReflectionCard = (props: Props) => {
       })
     } else {
       submitMutation()
-      RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId}, onError, onCompleted)
+      RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId, onError, onCompleted})
     }
   }
 
@@ -135,7 +139,7 @@ const ReflectionCard = (props: Props) => {
     }
   }
 
-  const readOnly = getReadOnly(reflection, phaseType as NewMeetingPhaseTypeEnum, stackCount)
+  const readOnly = getReadOnly(reflection, phaseType as NewMeetingPhaseTypeEnum, stackCount, phases)
   const userSelect = readOnly
     ? phaseType === NewMeetingPhaseTypeEnum.discuss
       ? 'text'
@@ -190,6 +194,10 @@ export default createFragmentContainer(ReflectionCard, {
       }
       phases {
         phaseType
+        stages {
+          id
+          isComplete
+        }
       }
     }
   `

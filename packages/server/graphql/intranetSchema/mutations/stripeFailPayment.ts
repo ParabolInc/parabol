@@ -11,6 +11,7 @@ import {InvoiceStatusEnum, OrgUserRole} from 'parabol-client/types/graphql'
 import {isSuperUser} from '../../../utils/authorization'
 import {InternalContext} from '../../graphql'
 import Organization from '../../../database/types/Organization'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   name: 'StripeFailPayment',
@@ -97,7 +98,7 @@ export default {
     }).run()
     const data = {orgId, notificationId}
     // TODO add in subOptins when we move GraphQL to its own microservice
-    publish(NOTIFICATION, orgId, StripeFailPaymentPayload, data)
+    publish(SubscriptionChannel.NOTIFICATION, orgId, 'StripeFailPaymentPayload', data)
     return data
   }
 }

@@ -2,9 +2,9 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {TEAM} from '../../../client/utils/constants'
 import standardError from '../../utils/standardError'
 import RenameReflectTemplatePayload from '../types/RenameReflectTemplatePayload'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const renameReflectTemplatePrompt = {
   description: 'Rename a reflect template prompt',
@@ -54,7 +54,7 @@ const renameReflectTemplatePrompt = {
       .run()
 
     const data = {templateId}
-    publish(TEAM, teamId, RenameReflectTemplatePayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'RenameReflectTemplatePayload', data, subOptions)
     return data
   }
 }

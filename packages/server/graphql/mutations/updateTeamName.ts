@@ -4,9 +4,9 @@ import UpdatedTeamInput from '../types/UpdatedTeamInput'
 import UpdateTeamNamePayload from '../types/UpdateTeamNamePayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {TEAM} from '../../../client/utils/constants'
 import teamNameValidation from '../../../client/validation/teamNameValidation'
 import standardError from '../../utils/standardError'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: UpdateTeamNamePayload,
@@ -30,7 +30,10 @@ export default {
     }
 
     // VALIDATION
-    const team = await r.table('Team').get(teamId).run()
+    const team = await r
+      .table('Team')
+      .get(teamId)
+      .run()
     const orgTeams = await dataLoader.get('teamsByOrgId').load(team.orgId)
     const orgTeamNames = orgTeams.filter((team) => team.id !== teamId).map((team) => team.name)
     const {error, value: name} = teamNameValidation(updatedTeam.name, orgTeamNames)
@@ -49,10 +52,11 @@ export default {
     await r
       .table('Team')
       .get(teamId)
-      .update(dbUpdate).run()
+      .update(dbUpdate)
+      .run()
 
     const data = {teamId}
-    publish(TEAM, teamId, UpdateTeamNamePayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'UpdateTeamNamePayload', data, subOptions)
     return data
   }
 }

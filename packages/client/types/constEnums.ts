@@ -17,7 +17,6 @@ export const enum BezierCurve {
 }
 
 export const enum Breakpoint {
-  DASHBOARD_WIDE = 1600,
   INVOICE = 512,
   INVOICE_LABEL = 384,
   SIDEBAR_LEFT = 800,
@@ -90,8 +89,7 @@ export const enum Filter {
 
 export const enum Gutters {
   COLUMN_INNER_GUTTER = '12px',
-  DASH_GUTTER_SMALL = '20px',
-  DASH_GUTTER_LARGE = '32px',
+  DASH_GUTTER = '20px',
   REFLECTION_INNER_GUTTER_HORIZONTAL = '16px',
   REFLECTION_INNER_GUTTER_VERTICAL = '12px',
   ROW_INNER_GUTTER = '12px'
@@ -188,6 +186,7 @@ export const enum RightSidebar {
 export const enum SubscriptionChannel {
   TASK = 'task',
   TEAM = 'team',
+  MEETING = 'meeting',
   NOTIFICATION = 'notification',
   ORGANIZATION = 'organization'
 }

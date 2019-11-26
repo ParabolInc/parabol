@@ -2,10 +2,10 @@ import getRethink from '../../database/rethinkDriver'
 import {GraphQLNonNull, GraphQLString} from 'graphql'
 import {getUserId, requireSU} from '../../utils/authorization'
 import UserFlagEnum from '../types/UserFlagEnum'
-import {NOTIFICATION} from '../../../client/utils/constants'
 import publish from '../../utils/publish'
 import AddFeatureFlagPayload from '../types/AddFeatureFlagPayload'
 import standardError from '../../utils/standardError'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: AddFeatureFlagPayload,
@@ -52,7 +52,7 @@ export default {
     const result = `${email} has been given access to the ${flag} feature. If the app is open, it should magically appear.`
     userIds.forEach((userId) => {
       const data = {result, userId}
-      publish(NOTIFICATION, userId, AddFeatureFlagPayload, data, subOptions)
+      publish(SubscriptionChannel.NOTIFICATION, userId, 'AddFeatureFlagPayload', data, subOptions)
     })
     return {result, userIds}
   }

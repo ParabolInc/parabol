@@ -9,9 +9,7 @@ import {
   DISCUSS,
   DONE,
   LAST_CALL,
-  NOTIFICATION,
-  RETROSPECTIVE,
-  TEAM
+  RETROSPECTIVE
 } from '../../../client/utils/constants'
 import EndNewMeetingPayload from '../types/EndNewMeetingPayload'
 import {endSlackMeeting} from './helpers/notifySlack'
@@ -27,6 +25,9 @@ import {ITask} from '../../../client/types/graphql'
 import findStageById from '../../../client/utils/meetings/findStageById'
 import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
 import {meetingTypeToLabel} from '../../../client/utils/meetings/lookups'
+import Task from '../../database/types/Task'
+import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const timelineEventLookup = {
   [RETROSPECTIVE]: COMPLETED_RETRO_MEETING,
@@ -38,8 +39,8 @@ const suggestedActionLookup = {
   [ACTION]: 'tryActionMeeting'
 }
 
-type Task = Pick<ITask, 'id' | 'sortOrder'>
-const updateTaskSortOrders = async (userIds: string[], tasks: Task[]) => {
+type SortOrderTask = Pick<ITask, 'id' | 'sortOrder'>
+const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) => {
   const r = await getRethink()
   const taskMax = await r
     .table('Task')
@@ -102,6 +103,29 @@ const shuffleCheckInOrder = async (teamId: string) => {
       })
     )
     .run()
+}
+
+const removeEmptyTasks = async (teamId: string, meetingId: string) => {
+  const r = await getRethink()
+  const createdTasks = await r
+    .table<Task>('Task')
+    .getAll(teamId, {index: 'teamId'})
+    .filter({meetingId})
+    .run()
+
+  const removedTaskIds = createdTasks
+    .map((task) => ({
+      id: task.id,
+      plaintextContent: extractTextFromDraftString(task.content)
+    }))
+    .filter(({plaintextContent}) => plaintextContent.length === 0)
+    .map(({id}) => id)
+  await r
+    .table('Task')
+    .getAll(r.args(removedTaskIds))
+    .delete()
+    .run()
+  return removedTaskIds
 }
 
 const finishActionMeeting = async (meeting: Meeting, dataLoader: DataLoaderWorker) => {
@@ -208,6 +232,9 @@ export default {
       )('changes')(0)('new_val')
       .run()) as unknown) as Meeting
 
+    // remove any empty tasks
+    const removedTaskIds = removeEmptyTasks(teamId, meetingId)
+
     const [meetingMembers, team] = await Promise.all([
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
       dataLoader.get('teams').load(teamId)
@@ -269,17 +296,23 @@ export default {
       )
       if (removedSuggestedActionId) {
         publish(
-          NOTIFICATION,
+          SubscriptionChannel.NOTIFICATION,
           teamLeadUserId,
-          EndNewMeetingPayload,
+          'EndNewMeetingPayload',
           {removedSuggestedActionId},
           subOptions
         )
       }
     }
 
-    const data = {meetingId, teamId, isKill: getIsKill(meetingType, phase), updatedTaskIds}
-    publish(TEAM, teamId, EndNewMeetingPayload, data, subOptions)
+    const data = {
+      meetingId,
+      teamId,
+      isKill: getIsKill(meetingType, phase),
+      updatedTaskIds,
+      removedTaskIds
+    }
+    publish(SubscriptionChannel.TEAM, teamId, 'EndNewMeetingPayload', data, subOptions)
     return data
   }
 }

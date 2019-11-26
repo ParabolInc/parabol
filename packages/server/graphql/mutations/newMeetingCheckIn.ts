@@ -2,10 +2,10 @@ import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {TEAM} from '../../../client/utils/constants'
 import NewMeetingCheckInPayload from '../types/NewMeetingCheckInPayload'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import standardError from '../../utils/standardError'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: NewMeetingCheckInPayload,
@@ -37,7 +37,8 @@ export default {
     const meeting = await r
       .table('NewMeeting')
       .get(meetingId)
-      .default(null).run()
+      .default(null)
+      .run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, teamId} = meeting
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
@@ -50,10 +51,11 @@ export default {
     await r
       .table('MeetingMember')
       .get(meetingMemberId)
-      .update({isCheckedIn}).run()
+      .update({isCheckedIn})
+      .run()
 
     const data = {meetingId, userId}
-    publish(TEAM, teamId, NewMeetingCheckInPayload, data, subOptions)
+    publish(SubscriptionChannel.MEETING, meetingId, 'NewMeetingCheckInPayload', data, subOptions)
     return data
   }
 }

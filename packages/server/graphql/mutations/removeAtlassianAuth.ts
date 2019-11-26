@@ -4,7 +4,7 @@ import RemoveAtlassianAuthPayload from '../types/RemoveAtlassianAuthPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {TEAM} from '../../../client/utils/constants'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   name: 'RemoveAtlassianAuth',
@@ -49,7 +49,7 @@ export default {
       .run()
 
     const data = {authId, teamId, userId: viewerId}
-    publish(TEAM, teamId, RemoveAtlassianAuthPayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'RemoveAtlassianAuthPayload', data, subOptions)
     return data
   }
 }

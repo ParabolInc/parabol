@@ -2,10 +2,9 @@ import {
   NavigateMeetingMutation as TNavigateMeetingMutation,
   NavigateMeetingMutationVariables
 } from '../__generated__/NavigateMeetingMutation.graphql'
-import {NavigateMeetingMutation_team} from '../__generated__/NavigateMeetingMutation_team.graphql'
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import {RecordProxy} from 'relay-runtime'
 import handleRemoveReflectionGroups from './handlers/handleRemoveReflectionGroups'
 import {VOTE} from '../utils/constants'
 import isInterruptingChickenPhase from '../utils/isInterruptingChickenPhase'
@@ -17,9 +16,11 @@ import Atmosphere from '../Atmosphere'
 import {ClientRetroPhaseItem, ClientRetrospectiveMeeting} from '../types/clientSchema'
 import {IReflectPhase} from '../types/graphql'
 import safeProxy from '../utils/relay/safeProxy'
+import {SharedUpdater} from '../types/relayMutations'
+import {NavigateMeetingMutation_meeting} from '__generated__/NavigateMeetingMutation_meeting.graphql'
 
 graphql`
-  fragment NavigateMeetingMutation_team on NavigateMeetingPayload {
+  fragment NavigateMeetingMutation_meeting on NavigateMeetingPayload {
     meeting {
       id
       facilitatorStageId
@@ -30,6 +31,9 @@ graphql`
     }
     phaseComplete {
       reflect {
+        emptyReflectionGroupIds
+      }
+      group {
         emptyReflectionGroupIds
       }
       vote {
@@ -81,14 +85,14 @@ const mutation = graphql`
       error {
         message
       }
-      ...NavigateMeetingMutation_team @relay(mask: false)
+      ...NavigateMeetingMutation_meeting @relay(mask: false)
     }
   }
 `
 
-export const navigateMeetingTeamUpdater = (
-  payload: RecordProxy<NavigateMeetingMutation_team>,
-  store: RecordSourceSelectorProxy
+export const navigateMeetingTeamUpdater: SharedUpdater<NavigateMeetingMutation_meeting> = (
+  payload,
+  {store}
 ) => {
   const meetingId = safeProxy(payload)
     .getLinkedRecord('meeting')
@@ -113,6 +117,12 @@ export const navigateMeetingTeamUpdater = (
     .getLinkedRecord('reflect')
     .getValue('emptyReflectionGroupIds')
   handleRemoveReflectionGroups(emptyReflectionGroupIds, meetingId, store)
+
+  const emptyGroupReflectionGroupIds = safeProxy(payload)
+    .getLinkedRecord('phaseComplete')
+    .getLinkedRecord('reflect')
+    .getValue('emptyReflectionGroupIds')
+  handleRemoveReflectionGroups(emptyGroupReflectionGroupIds, meetingId, store)
 
   if (emptyReflectionGroupIds) {
     const phases = meeting.getLinkedRecords('phases')
@@ -140,7 +150,7 @@ const NavigateMeetingMutation = (
     variables,
     updater: (store) => {
       const payload = store.getRootField('navigateMeeting')
-      navigateMeetingTeamUpdater(payload as any, store as any)
+      navigateMeetingTeamUpdater(payload, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
       const {meetingId, facilitatorStageId, completedStageId} = variables

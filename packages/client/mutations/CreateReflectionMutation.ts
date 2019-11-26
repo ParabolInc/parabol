@@ -4,15 +4,16 @@
  */
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {StandardMutation} from '../types/relayMutations'
+import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import handleAddReflectionGroups from './handlers/handleAddReflectionGroups'
 import makeEmptyStr from '../utils/draftjs/makeEmptyStr'
 import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {CreateReflectionMutation as TCreateReflectionMutation} from '../__generated__/CreateReflectionMutation.graphql'
+import {CreateReflectionMutation_meeting} from '__generated__/CreateReflectionMutation_meeting.graphql'
 
 graphql`
-  fragment CreateReflectionMutation_team on CreateReflectionPayload {
+  fragment CreateReflectionMutation_meeting on CreateReflectionPayload {
     reflectionGroup {
       meetingId
       sortOrder
@@ -40,12 +41,15 @@ graphql`
 const mutation = graphql`
   mutation CreateReflectionMutation($input: CreateReflectionInput!) {
     createReflection(input: $input) {
-      ...CreateReflectionMutation_team @relay(mask: false)
+      ...CreateReflectionMutation_meeting @relay(mask: false)
     }
   }
 `
 
-export const createReflectionTeamUpdater = (payload, store) => {
+export const createReflectionTeamUpdater: SharedUpdater<CreateReflectionMutation_meeting> = (
+  payload,
+  {store}
+) => {
   const reflectionGroup = payload.getLinkedRecord('reflectionGroup')
   handleAddReflectionGroups(reflectionGroup, store)
 }
@@ -63,7 +67,7 @@ const CreateReflectionMutation: StandardMutation<TCreateReflectionMutation> = (
     updater: (store) => {
       const payload = store.getRootField('createReflection')
       if (!payload) return
-      createReflectionTeamUpdater(payload, store)
+      createReflectionTeamUpdater(payload, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
       const {input} = variables

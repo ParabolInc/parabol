@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {TASK} from '../../../client/utils/constants'
 import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import isValidDate from '../../../client/utils/isValidDate'
 import getRethink from '../../database/rethinkDriver'
 import UpdateTaskDueDatePayload from '../types/UpdateTaskDueDatePayload'
 import standardError from '../../utils/standardError'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: UpdateTaskDueDatePayload,
@@ -32,7 +32,10 @@ export default {
     // VALIDATION
     const formattedDueDate = new Date(dueDate)
     const nextDueDate = isValidDate(formattedDueDate) ? formattedDueDate : null
-    const task = await r.table('Task').get(taskId).run()
+    const task = await r
+      .table('Task')
+      .get(taskId)
+      .run()
     if (!task || !isTeamMember(authToken, task.teamId)) {
       return standardError(new Error('Task not found'), {userId: viewerId})
     }
@@ -43,19 +46,20 @@ export default {
       .get(taskId)
       .update({
         dueDate: nextDueDate
-      }).run()
+      })
+      .run()
 
     const data = {taskId}
 
     // send task updated messages
     const isPrivate = task.tags.includes('private')
     if (isPrivate) {
-      publish(TASK, viewerId, UpdateTaskDueDatePayload, data, subOptions)
+      publish(SubscriptionChannel.TASK, viewerId, 'UpdateTaskDueDatePayload', data, subOptions)
     } else {
       const teamMembers = await dataLoader.get('teamMembersByTeamId').load(task.teamId)
       teamMembers.forEach((teamMember) => {
         const {userId} = teamMember
-        publish(TASK, userId, UpdateTaskDueDatePayload, data, subOptions)
+        publish(SubscriptionChannel.TASK, userId, 'UpdateTaskDueDatePayload', data, subOptions)
       })
     }
     return data

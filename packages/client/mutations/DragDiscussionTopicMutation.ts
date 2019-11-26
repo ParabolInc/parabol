@@ -6,10 +6,11 @@ import getInProxy from '../utils/relay/getInProxy'
 import {IDragDiscussionTopicOnMutationArguments} from '../types/graphql'
 import Atmosphere from '../Atmosphere'
 import {DragDiscussionTopicMutation as IDragDiscussionTopicMutation} from '../__generated__/DragDiscussionTopicMutation.graphql'
-import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import {SharedUpdater} from '../types/relayMutations'
+import {DragDiscussionTopicMutation_meeting} from '__generated__/DragDiscussionTopicMutation_meeting.graphql'
 
 graphql`
-  fragment DragDiscussionTopicMutation_team on DragDiscussionTopicPayload {
+  fragment DragDiscussionTopicMutation_meeting on DragDiscussionTopicPayload {
     stage {
       id
       sortOrder
@@ -23,14 +24,14 @@ graphql`
 const mutation = graphql`
   mutation DragDiscussionTopicMutation($meetingId: ID!, $stageId: ID!, $sortOrder: Float!) {
     dragDiscussionTopic(meetingId: $meetingId, stageId: $stageId, sortOrder: $sortOrder) {
-      ...DragDiscussionTopicMutation_team @relay(mask: false)
+      ...DragDiscussionTopicMutation_meeting @relay(mask: false)
     }
   }
 `
 
-export const dragDiscussionTopicTeamUpdater = (
-  payload: RecordProxy,
-  {store}: {store: RecordSourceSelectorProxy}
+export const dragDiscussionTopicTeamUpdater: SharedUpdater<DragDiscussionTopicMutation_meeting> = (
+  payload,
+  {store}
 ) => {
   const meetingId = getInProxy(payload, 'meeting', 'id')
   handleUpdateStageSort(store, meetingId, DISCUSS)
@@ -46,7 +47,7 @@ const DragDiscussionTopicMutation = (
     updater: (store) => {
       const payload = store.getRootField('dragDiscussionTopic')
       if (!payload) return
-      dragDiscussionTopicTeamUpdater(payload, {store})
+      dragDiscussionTopicTeamUpdater(payload, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
       const {meetingId, stageId, sortOrder} = variables

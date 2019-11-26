@@ -1,7 +1,6 @@
 import publish, {SubOptions} from '../../../utils/publish'
-import {TEAM} from '../../../../client/utils/constants'
 import getRethink from '../../../database/rethinkDriver'
-import PromoteNewMeetingFacilitatorPayload from '../../types/PromoteNewMeetingFacilitatorPayload'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const promoteFirstTeamMember = async (
   meetingId: string,
@@ -35,7 +34,13 @@ const promoteFirstTeamMember = async (
     )
     .run()
   const data = {meetingId, oldFacilitatorUserId}
-  publish(TEAM, teamId, PromoteNewMeetingFacilitatorPayload, data, subOptions)
+  publish(
+    SubscriptionChannel.MEETING,
+    meetingId,
+    'PromoteNewMeetingFacilitatorPayload',
+    data,
+    subOptions
+  )
 }
 
 export default promoteFirstTeamMember

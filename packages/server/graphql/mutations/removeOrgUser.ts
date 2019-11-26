@@ -8,7 +8,6 @@ import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEnums'
-import AuthTokenPayload from '../types/AuthTokenPayload'
 import OrganizationUser from '../../database/types/OrganizationUser'
 import Notification from '../../database/types/Notification'
 import User from '../../database/types/User'
@@ -78,7 +77,10 @@ const removeOrgUser = {
         .getAll(userId, {index: 'userId'})
         .filter({orgId, removedAt: null})
         .nth(0)
-        .update({removedAt: now}, {returnChanges: true})('changes')(0)('new_val')
+        .update(
+          {removedAt: now},
+          {returnChanges: true}
+        )('changes')(0)('new_val')
         .default(null) as unknown) as OrganizationUser,
       user: (r.table('User').get(userId) as unknown) as User,
       // remove stale notifications
@@ -121,7 +123,7 @@ const removeOrgUser = {
     }
 
     const {tms} = user
-    publish(SubscriptionChannel.NOTIFICATION, userId, AuthTokenPayload, {tms})
+    publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {tms})
     updateAuth0TMS(userId, tms)
     const data = {
       orgId,
@@ -135,17 +137,17 @@ const removeOrgUser = {
       organizationUserId: organizationUser.id
     }
 
-    publish(SubscriptionChannel.ORGANIZATION, orgId, RemoveOrgUserPayload, data, subOptions)
-    publish(SubscriptionChannel.NOTIFICATION, userId, RemoveOrgUserPayload, data, subOptions)
+    publish(SubscriptionChannel.ORGANIZATION, orgId, 'RemoveOrgUserPayload', data, subOptions)
+    publish(SubscriptionChannel.NOTIFICATION, userId, 'RemoveOrgUserPayload', data, subOptions)
     teamIds.forEach((teamId) => {
       const teamData = {...data, teamFilterId: teamId}
-      publish(SubscriptionChannel.TEAM, teamId, RemoveOrgUserPayload, teamData, subOptions)
+      publish(SubscriptionChannel.TEAM, teamId, 'RemoveOrgUserPayload', teamData, subOptions)
     })
 
     const remainingTeamMembers = await dataLoader.get('teamMembersByTeamId').loadMany(teamIds)
     remainingTeamMembers.forEach((teamMember) => {
       if (teamMemberIds.includes(teamMember.id)) return
-      publish(SubscriptionChannel.TASK, teamMember.userId, RemoveOrgUserPayload, data, subOptions)
+      publish(SubscriptionChannel.TASK, teamMember.userId, 'RemoveOrgUserPayload', data, subOptions)
     })
     return data
   }

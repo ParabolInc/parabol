@@ -1,7 +1,6 @@
 import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {NOTIFICATION} from '../../../client/utils/constants'
 import DisconnectSocketPayload from '../types/DisconnectSocketPayload'
 import promoteFirstTeamMember from './helpers/promoteFirstTeamMember'
 import {MEETING_FACILITATOR_ELECTION_TIMEOUT} from '../../utils/serverConstants'
@@ -9,6 +8,7 @@ import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import findStageById from '../../../client/utils/meetings/findStageById'
 import Meeting from '../../database/types/Meeting'
 import {GQLContext} from '../graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   name: 'DisconnectSocket',
@@ -56,7 +56,13 @@ export default {
       }).run()
       const subOptions = {mutatorId: socketId}
       listeningUserIds.forEach((onlineUserId) => {
-        publish(NOTIFICATION, onlineUserId, DisconnectSocketPayload, data, subOptions)
+        publish(
+          SubscriptionChannel.NOTIFICATION,
+          onlineUserId,
+          'DisconnectSocketPayload',
+          data,
+          subOptions
+        )
       })
       if (facilitatingMeetings.length > 0) {
         setTimeout(async () => {
@@ -68,6 +74,11 @@ export default {
             .default(true)
             .run()
           if (userOffline) {
+            await r
+              .table('User')
+              .get(userId)
+              .update({lastSeenAtURL: null})
+              .run()
             facilitatingMeetings.forEach((meeting) => {
               const {phases, facilitatorStageId, id: meetingId, teamId} = meeting as Meeting
               const {stage} = findStageById(phases, facilitatorStageId)!

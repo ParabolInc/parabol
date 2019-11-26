@@ -55,7 +55,7 @@ const setCheckInEnabled = {
       .run()
 
     const data = {settingsId}
-    publish(SubscriptionChannel.TEAM, teamId, SetCheckInEnabledPayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'SetCheckInEnabledPayload', data, subOptions)
     return data
   }
 }

@@ -1,9 +1,6 @@
 import React from 'react'
 import styled from '@emotion/styled'
 import DemoCreateAccountPrimaryButton from './DemoCreateAccountPrimaryButton'
-import Icon from './Icon'
-import {PALETTE} from '../styles/paletteV2'
-import {ICON_SIZE} from '../styles/typographyV2'
 import DialogContainer from './DialogContainer'
 import hasToken from '../utils/hasToken'
 
@@ -23,18 +20,21 @@ const StyledCopy = styled('p')({
   textAlign: 'center'
 })
 
-const StyledIcon = styled(Icon)({
-  color: PALETTE.EMPHASIS_COOL,
-  fontSize: ICON_SIZE.MD48
+const Illustration = styled('img')({
+  display: 'block',
+  margin: '16px auto 0',
+  maxWidth: 320,
+  width: '100%'
 })
 
 const AddTeamMemberModalDemo = () => {
   const copy = hasToken()
     ? 'Invite your teammates to a team and kick off a real Retro!'
     : 'Sign up, invite your teammates, and kick off a real Retro!'
+  const imageSrc = `${__STATIC_IMAGES__}/illustrations/illus-momentum.png`
   return (
     <StyledDialogContainer>
-      <StyledIcon>group_add</StyledIcon>
+      <Illustration alt='' src={imageSrc} />
       <StyledCopy>{copy}</StyledCopy>
       <DemoCreateAccountPrimaryButton />
     </StyledDialogContainer>

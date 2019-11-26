@@ -11,15 +11,20 @@ import {
   HistoryLocalHandler,
   OnNextHandler,
   OnNextHistoryContext,
+  SharedUpdater,
   StandardMutation
 } from '../types/relayMutations'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
+import onMeetingRoute from '../utils/onMeetingRoute'
 
 graphql`
   fragment ArchiveTeamMutation_team on ArchiveTeamPayload {
     team {
       id
       name
+      activeMeetings {
+        id
+      }
     }
     notification {
       id
@@ -45,8 +50,10 @@ const popTeamArchivedToast: OnNextHandler<ArchiveTeamMutation_team, OnNextHistor
   payload,
   {history, atmosphere}
 ) => {
-  if (!payload || !payload.team) return
-  const {id: teamId, name: teamName} = payload.team
+  if (!payload) return
+  const {team, notification} = payload
+  if (!team) return
+  const {id: teamId, name: teamName, activeMeetings} = team
   atmosphere.eventEmitter.emit('addSnackbar', {
     key: `teamArchived:${teamId}`,
     autoDismiss: 5,
@@ -54,7 +61,8 @@ const popTeamArchivedToast: OnNextHandler<ArchiveTeamMutation_team, OnNextHistor
     action: {
       label: 'OK',
       callback: () => {
-        const notificationId = payload.notification && payload.notification.id
+        if (!notification) return
+        const {id: notificationId} = notification
         // notification is not persisted for the mutator
         if (notificationId) {
           ClearNotificationMutation(atmosphere, notificationId)
@@ -62,13 +70,20 @@ const popTeamArchivedToast: OnNextHandler<ArchiveTeamMutation_team, OnNextHistor
       }
     }
   })
-  if (onTeamRoute(window.location.pathname, teamId)) {
+  const meetingIds = activeMeetings.map(({id}) => id)
+  if (
+    onTeamRoute(window.location.pathname, teamId) ||
+    onMeetingRoute(window.location.pathname, meetingIds)
+  ) {
     history && history.push('/me')
   }
 }
 
-export const archiveTeamTeamUpdater = (payload, store, viewerId) => {
-  const viewer = store.get(viewerId)
+export const archiveTeamTeamUpdater: SharedUpdater<ArchiveTeamMutation_team> = (
+  payload,
+  {store}
+) => {
+  const viewer = store.getRoot().getLinkedRecord('viewer')!
   const teamId = getInProxy(payload, 'team', 'id')
   safeRemoveNodeFromArray(teamId, viewer, 'teams')
 
@@ -88,14 +103,13 @@ const ArchiveTeamMutation: StandardMutation<TArchiveTeamMutation, HistoryLocalHa
   variables,
   {onError, onCompleted, history}
 ) => {
-  const {viewerId} = atmosphere
   return commitMutation<TArchiveTeamMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {
       const payload = store.getRootField('archiveTeam')
       if (!payload) return
-      archiveTeamTeamUpdater(payload, store, viewerId)
+      archiveTeamTeamUpdater(payload, {atmosphere, store})
       const removedSuggestedActionIds = payload.getValue('removedSuggestedActionIds')
       handleRemoveSuggestedActions(removedSuggestedActionIds, store)
     },
@@ -105,7 +119,7 @@ const ArchiveTeamMutation: StandardMutation<TArchiveTeamMutation, HistoryLocalHa
       }
       const payload = res.archiveTeam
       if (payload) {
-        popTeamArchivedToast(payload as any, {atmosphere, history})
+        popTeamArchivedToast(payload, {atmosphere, history})
       }
     },
     onError

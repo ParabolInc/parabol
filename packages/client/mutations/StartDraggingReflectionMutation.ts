@@ -2,19 +2,17 @@ import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {matchPath} from 'react-router-dom'
 import {Disposable, RecordSourceProxy} from 'relay-runtime'
-import {meetingTypeToSlug} from '../utils/meetings/lookups'
 import {
   StartDraggingReflectionMutation as TStartDraggingReflectionMutation,
   StartDraggingReflectionMutationVariables
 } from '../__generated__/StartDraggingReflectionMutation.graphql'
-import {MeetingTypeEnum} from '../types/graphql'
 import {LocalHandlers, SharedUpdater} from '../types/relayMutations'
 import Atmosphere from '../Atmosphere'
-import {StartDraggingReflectionMutation_team} from '__generated__/StartDraggingReflectionMutation_team.graphql'
+import {StartDraggingReflectionMutation_meeting} from '__generated__/StartDraggingReflectionMutation_meeting.graphql'
 import {ClientRetroReflection} from '../types/clientSchema'
 
 graphql`
-  fragment StartDraggingReflectionMutation_team on StartDraggingReflectionPayload {
+  fragment StartDraggingReflectionMutation_meeting on StartDraggingReflectionPayload {
     meetingId
     reflectionId
     teamId
@@ -29,7 +27,7 @@ graphql`
 const mutation = graphql`
   mutation StartDraggingReflectionMutation($reflectionId: ID!, $dragId: ID!) {
     startDraggingReflection(reflectionId: $reflectionId, dragId: $dragId) {
-      ...StartDraggingReflectionMutation_team @relay(mask: false)
+      ...StartDraggingReflectionMutation_meeting @relay(mask: false)
     }
   }
 `
@@ -40,14 +38,13 @@ interface UpdaterOptions {
 }
 
 // used only by subscription
-export const startDraggingReflectionTeamUpdater: SharedUpdater<StartDraggingReflectionMutation_team> = (
+export const startDraggingReflectionTeamUpdater: SharedUpdater<StartDraggingReflectionMutation_meeting> = (
   payload,
   {atmosphere, store}: UpdaterOptions
 ) => {
-  const teamId = payload.getValue('teamId')
+  const meetingId = payload.getValue('meetingId')
   const {pathname} = window.location
-  const slug = meetingTypeToSlug[MeetingTypeEnum.retrospective]
-  const meetingRoute = matchPath(pathname, {path: `/${slug}/${teamId}`})
+  const meetingRoute = matchPath(pathname, {path: `/meet/${meetingId}`})
   const isDemoRoute = matchPath(pathname, {path: `/retrospective-demo`})
   /*
    * Avoid adding reflectionsInFlight on clients that are not in the meeting because

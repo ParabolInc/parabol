@@ -2,7 +2,7 @@ import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {RETROSPECTIVE, TEAM, VOTE} from '../../../client/utils/constants'
+import {RETROSPECTIVE, VOTE} from '../../../client/utils/constants'
 import isPhaseComplete from '../../../client/utils/meetings/isPhaseComplete'
 import VoteForReflectionGroupPayload from '../types/VoteForReflectionGroupPayload'
 import safelyCastVote from './helpers/safelyCastVote'
@@ -10,6 +10,7 @@ import safelyWithdrawVote from './helpers/safelyWithdrawVote'
 import unlockAllStagesForPhase from '../../../client/utils/unlockAllStagesForPhase'
 import standardError from '../../utils/standardError'
 import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: VoteForReflectionGroupPayload,
@@ -120,7 +121,13 @@ export default {
       reflectionGroupId,
       unlockedStageIds
     }
-    publish(TEAM, teamId, VoteForReflectionGroupPayload, data, subOptions)
+    publish(
+      SubscriptionChannel.MEETING,
+      meetingId,
+      'VoteForReflectionGroupPayload',
+      data,
+      subOptions
+    )
     return data
   }
 }

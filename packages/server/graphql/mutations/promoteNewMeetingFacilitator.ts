@@ -1,10 +1,10 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import publish from '../../utils/publish'
-import {TEAM} from '../../../client/utils/constants'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import PromoteNewMeetingFacilitatorPayload from '../types/PromoteNewMeetingFacilitatorPayload'
 import standardError from '../../utils/standardError'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: PromoteNewMeetingFacilitatorPayload,
@@ -59,7 +59,13 @@ export default {
       .run()
 
     const data = {meetingId, oldFacilitatorUserId}
-    publish(TEAM, teamId, PromoteNewMeetingFacilitatorPayload, data, subOptions)
+    publish(
+      SubscriptionChannel.MEETING,
+      meetingId,
+      'PromoteNewMeetingFacilitatorPayload',
+      data,
+      subOptions
+    )
     return data
   }
 }

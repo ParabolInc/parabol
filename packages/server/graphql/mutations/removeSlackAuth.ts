@@ -4,7 +4,7 @@ import RemoveSlackAuthPayload from '../types/RemoveSlackAuthPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {TEAM} from '../../../client/utils/constants'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   name: 'RemoveSlackAuth',
@@ -55,7 +55,7 @@ export default {
     }).run()
 
     const data = {authId, teamId, userId: viewerId}
-    publish(TEAM, teamId, RemoveSlackAuthPayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'RemoveSlackAuthPayload', data, subOptions)
     return data
   }
 }

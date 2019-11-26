@@ -26,6 +26,9 @@ import MeetingStyles from './MeetingStyles'
 import useLegacyLobby from '../hooks/useLegacyLobby'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import {RetroLobby_viewer} from '__generated__/RetroLobby_viewer.graphql'
+import Icon from '../components/Icon'
+import FlatButton from '../components/FlatButton'
+import {PALETTE} from '../styles/paletteV2'
 
 const ButtonGroup = styled('div')({
   display: 'flex',
@@ -43,14 +46,27 @@ const textAlign = {
   }
 }
 
+const IconButton = styled(FlatButton)({
+  color: PALETTE.TEXT_GRAY,
+  marginLeft: -8,
+  marginTop: -4,
+  padding: '3px 0',
+  width: 32,
+  ':hover,:focus,:active': {
+    color: PALETTE.TEXT_MAIN
+  }
+})
+
+const BackIcon = styled(Icon)({
+  color: 'inherit'
+})
+
 const StyledLabel = styled(LabelHeading)({...textAlign})
 const StyledHeading = styled(MeetingPhaseHeading)({...textAlign})
 const StyledCopy = styled(MeetingCopy)({...textAlign})
 
 const UrlBlock = styled('div')({
-  margin: '3rem 0 0',
-  display: 'inline-block',
-  verticalAlign: 'middle'
+  margin: '48px 0 0 -36px' // hang icon
 })
 
 interface Props {
@@ -92,6 +108,9 @@ const RetroLobby = (props: Props) => {
     submitMutation()
     StartNewMeetingMutation(atmosphere, {teamId, meetingType}, {history, onError, onCompleted})
   }
+  const goToTeamDashboard = () => {
+    history.push(`/team/${teamId}/`)
+  }
   return (
     <MeetingStyles>
       <MeetingContent>
@@ -101,7 +120,11 @@ const RetroLobby = (props: Props) => {
           }
           isMeetingSidebarCollapsed={false}
           toggleSidebar={() => {}}
-        />
+        >
+          <IconButton aria-label='Back to Team Dashboard' onClick={goToTeamDashboard}>
+            <BackIcon>arrow_back</BackIcon>
+          </IconButton>
+        </MeetingTopBar>
         <ErrorBoundary>
           <NewMeetingLobby>
             <StyledLabel>{`${meetingLabel} Meeting Lobby`}</StyledLabel>
@@ -130,6 +153,7 @@ const RetroLobby = (props: Props) => {
             </TemplatePickerBlock>
             <UrlBlock>
               <CopyShortLink
+                icon={'link'}
                 url={makeHref(`/${meetingSlug}/${teamId}`)}
                 title={'Copy Meeting Link'}
                 tooltip={'Copied the meeting link!'}

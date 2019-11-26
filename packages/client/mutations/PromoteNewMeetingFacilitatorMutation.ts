@@ -1,11 +1,11 @@
-import {PromoteNewMeetingFacilitatorMutation_team} from '../__generated__/PromoteNewMeetingFacilitatorMutation_team.graphql'
+import {PromoteNewMeetingFacilitatorMutation_meeting} from '../__generated__/PromoteNewMeetingFacilitatorMutation_meeting.graphql'
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {OnNextHandler, SimpleMutation} from '../types/relayMutations'
 import {PromoteNewMeetingFacilitatorMutation as TPromoteNewMeetingFacilitatorMutation} from '../__generated__/PromoteNewMeetingFacilitatorMutation.graphql'
 
 graphql`
-  fragment PromoteNewMeetingFacilitatorMutation_team on PromoteNewMeetingFacilitatorPayload {
+  fragment PromoteNewMeetingFacilitatorMutation_meeting on PromoteNewMeetingFacilitatorPayload {
     meeting {
       defaultFacilitatorUserId
       facilitatorUserId
@@ -29,12 +29,12 @@ const mutation = graphql`
       error {
         message
       }
-      ...PromoteNewMeetingFacilitatorMutation_team @relay(mask: false)
+      ...PromoteNewMeetingFacilitatorMutation_meeting @relay(mask: false)
     }
   }
 `
 
-export const promoteNewMeetingFacilitatorTeamOnNext: OnNextHandler<PromoteNewMeetingFacilitatorMutation_team> = (
+export const promoteNewMeetingFacilitatorTeamOnNext: OnNextHandler<PromoteNewMeetingFacilitatorMutation_meeting> = (
   payload,
   {atmosphere}
 ) => {

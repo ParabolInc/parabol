@@ -3,7 +3,7 @@ import withAtmosphere, {
   WithAtmosphereProps
 } from '../../../../decorators/withAtmosphere/withAtmosphere'
 import ToggleAgendaListMutation from '../../../../mutations/ToggleAgendaListMutation'
-import {Breakpoint, Gutters} from '../../../../types/constEnums'
+import {Gutters} from '../../../../types/constEnums'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 import {CompletedHandler, ErrorHandler} from '../../../../types/relayMutations'
 import styled from '@emotion/styled'
@@ -15,12 +15,8 @@ import IconLabel from '../../../../components/IconLabel'
 const RootBlock = styled('div')({
   alignItems: 'flex-end',
   display: 'flex',
-  padding: `16px ${Gutters.DASH_GUTTER_SMALL}`,
-  width: '100%',
-
-  [`@media (min-width: ${Breakpoint.DASHBOARD_WIDE})`]: {
-    padding: `16px ${Gutters.DASH_GUTTER_SMALL}`
-  }
+  padding: `16px ${Gutters.DASH_GUTTER}`,
+  width: '100%'
 })
 
 interface Props extends WithMutationProps, WithAtmosphereProps {

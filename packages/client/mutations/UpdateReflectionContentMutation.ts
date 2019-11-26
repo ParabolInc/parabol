@@ -5,12 +5,11 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
-import {LocalHandlers} from '../types/relayMutations'
-import {IUpdateReflectionContentOnMutationArguments} from '../types/graphql'
-import Atmosphere from '../Atmosphere'
+import {StandardMutation} from '../types/relayMutations'
+import {UpdateReflectionContentMutation as TUpdateReflectionContentMutation} from '../__generated__/UpdateReflectionContentMutation.graphql'
 
 graphql`
-  fragment UpdateReflectionContentMutation_team on UpdateReflectionContentPayload {
+  fragment UpdateReflectionContentMutation_meeting on UpdateReflectionContentPayload {
     meeting {
       id
     }
@@ -30,15 +29,15 @@ const mutation = graphql`
       error {
         message
       }
-      ...UpdateReflectionContentMutation_team @relay(mask: false)
+      ...UpdateReflectionContentMutation_meeting @relay(mask: false)
     }
   }
 `
 
-const UpdateReflectionContentMutation = (
-  atmosphere: Atmosphere,
-  variables: IUpdateReflectionContentOnMutationArguments,
-  {onError, onCompleted}: LocalHandlers
+const UpdateReflectionContentMutation: StandardMutation<TUpdateReflectionContentMutation> = (
+  atmosphere,
+  variables,
+  {onError, onCompleted}
 ) => {
   return commitMutation(atmosphere, {
     mutation,

@@ -115,6 +115,7 @@ const SwipeableDashSidebar = (props: Props) => {
       openPortal()
       return () => {
         window.clearTimeout(swipe.peekTimeout)
+        hideSidebar()
       }
     },
     [

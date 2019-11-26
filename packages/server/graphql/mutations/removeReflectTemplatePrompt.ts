@@ -2,9 +2,9 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {TEAM} from '../../../client/utils/constants'
 import standardError from '../../utils/standardError'
 import RemoveReflectTemplatePromptPayload from '../types/RemoveReflectTemplatePromptPayload'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const removeReflectTemplatePrompt = {
   description: 'Remove a prompt from a template',
@@ -58,7 +58,13 @@ const removeReflectTemplatePrompt = {
       .run()
 
     const data = {promptId, templateId}
-    publish(TEAM, teamId, RemoveReflectTemplatePromptPayload, data, subOptions)
+    publish(
+      SubscriptionChannel.TEAM,
+      teamId,
+      'RemoveReflectTemplatePromptPayload',
+      data,
+      subOptions
+    )
     return data
   }
 }

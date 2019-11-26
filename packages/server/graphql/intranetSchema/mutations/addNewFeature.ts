@@ -3,8 +3,8 @@ import getRethink from '../../../database/rethinkDriver'
 import {requireSU} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import shortid from 'shortid'
-import {NOTIFICATION} from '../../../../client/utils/constants'
 import AddNewFeaturePayload from '../../types/addNewFeaturePayload'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const addNewFeature = {
   type: AddNewFeaturePayload,
@@ -50,7 +50,13 @@ const addNewFeature = {
       )('id')
       .run()
     onlineUserIds.forEach((userId) => {
-      publish(NOTIFICATION, userId, AddNewFeaturePayload, {newFeature}, subOptions)
+      publish(
+        SubscriptionChannel.NOTIFICATION,
+        userId,
+        'AddNewFeaturePayload',
+        {newFeature},
+        subOptions
+      )
     })
     return {newFeature}
   }

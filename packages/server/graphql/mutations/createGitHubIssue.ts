@@ -10,7 +10,8 @@ import publish from '../../utils/publish'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import standardError from '../../utils/standardError'
 import {ICreateGitHubIssueOnMutationArguments} from '../../../client/types/graphql'
-import {GITHUB, TASK} from '../../../client/utils/constants'
+import {GITHUB} from '../../../client/utils/constants'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   name: 'CreateGitHubIssue',
@@ -124,7 +125,7 @@ export default {
     }
 
     const {errors, data: payload} = createIssueRes
-    if (!payload || !payload.createIssue) {
+    if (!payload || !payload.createIssue || !payload.createIssue.issue) {
       return {error: errors![0]}
     }
     const {createIssue} = payload
@@ -148,7 +149,7 @@ export default {
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const data = {taskId}
     teamMembers.forEach(({userId}) => {
-      publish(TASK, userId, CreateGitHubIssuePayload, data, subOptions)
+      publish(SubscriptionChannel.TASK, userId, 'CreateGitHubIssuePayload', data, subOptions)
     })
     sendSegmentEvent('Published Task to GitHub', viewerId, {teamId, meetingId}).catch()
     return data
