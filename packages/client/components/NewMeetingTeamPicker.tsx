@@ -17,10 +17,6 @@ const SelectTeamDropdown = lazyPreload(() =>
   )
 )
 
-const Dropdown = styled(NewMeetingDropdown)({
-  marginTop: 32
-})
-
 interface Props {
   selectedTeam: NewMeetingTeamPicker_selectedTeam
   teams: NewMeetingTeamPicker_teams
@@ -41,7 +37,7 @@ const NewMeetingTeamPicker = (props: Props) => {
   }
   return (
     <>
-      <Dropdown
+      <NewMeetingDropdown
         icon={'group'}
         label={name}
         onClick={togglePortal}

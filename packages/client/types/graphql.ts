@@ -1044,7 +1044,7 @@ export interface ITeam {
   /**
    * The level of access to features on the parabol site
    */
-  tier: TierEnum | null
+  tier: TierEnum
   organization: IOrganization
 
   /**

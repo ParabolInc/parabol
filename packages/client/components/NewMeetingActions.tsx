@@ -4,8 +4,22 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {NewMeetingActions_viewer} from '__generated__/NewMeetingActions_viewer.graphql'
 import {MeetingTypeEnum} from '../types/graphql'
+import PrimaryButton from './PrimaryButton'
+import Icon from './Icon'
 
-const ButtonBlock = styled('div')({})
+const ButtonBlock = styled('div')({
+  gridRowStart: 3,
+  paddingTop: 32
+})
+
+const StartButton = styled(PrimaryButton)({
+  fontSize: 20,
+  width: 320
+})
+
+const ForwardIcon = styled(Icon)({
+  paddingLeft: 16
+})
 
 interface Props {
   meetingType: MeetingTypeEnum
@@ -14,8 +28,14 @@ interface Props {
 }
 
 const NewMeetingActions = (props: Props) => {
-  const {viewer} = props
-  return <ButtonBlock>{viewer.id}</ButtonBlock>
+  return (
+    <ButtonBlock>
+      <StartButton size={'large'}>
+        Start Meeting
+        <ForwardIcon>arrow_forward</ForwardIcon>
+      </StartButton>
+    </ButtonBlock>
+  )
 }
 
 export default createFragmentContainer(NewMeetingActions, {

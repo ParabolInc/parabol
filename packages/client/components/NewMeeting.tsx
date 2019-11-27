@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react'
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {createFragmentContainer} from 'react-relay'
-import NewMeetingExistingMeetings from './NewMeetingExistingMeetings'
 import NewMeetingTeamPicker from './NewMeetingTeamPicker'
 import NewMeetingMeetingSelector from './NewMeetingMeetingSelector'
 import {MeetingTypeEnum} from '../types/graphql'
@@ -13,31 +12,34 @@ import NewMeetingActions from './NewMeetingActions'
 import NewMeetingBackButton from './NewMeetingBackButton'
 import WaveSVG from '../../../static/images/wave.svg'
 import {NewMeeting_viewer} from '__generated__/NewMeeting_viewer.graphql'
+import NewMeetingHowTo from './NewMeetingHowTo'
+import NewMeetingIllustration from './NewMeetingIllustration'
 
 interface Props {
   teamId?: string | null
   viewer: NewMeeting_viewer
 }
 
-const NewMeetingBlock = styled('div')<{innerWidth: number}>(({innerWidth}) => ({
-  backgroundRepeat: 'no-repeat',
-  backgroundImage: `url('${WaveSVG}'), linear-gradient(0deg, #F1F0FA 50%, #FFFFFF 50%)`,
-  display: 'flex',
-  height: '100%',
-  backgroundSize: '100%',
-  backgroundPositionY: `calc(50% - ${Math.floor(((innerWidth / 2560) * 231) / 2 - 1)}px), 0`
-}))
-
-const LeftColumn = styled('div')({
+const BottomLeft = styled('div')({
   alignItems: 'center',
+  gridRow: 3,
   display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  paddingTop: 104,
-  paddingLeft: 104
+  flexDirection: 'column'
 })
 
-const RightColumn = styled('div')({})
+const NewMeetingBlock = styled('div')<{innerWidth: number}>(({innerWidth}) => ({
+  display: 'grid',
+  gridTemplateColumns: '5fr 5fr',
+  gridTemplateRows: '2fr 5fr 5fr',
+  alignItems: 'start',
+  backgroundRepeat: 'no-repeat',
+  backgroundImage: `url('${WaveSVG}'), linear-gradient(0deg, #F1F0FA 50%, #FFFFFF 50%)`,
+  height: '100%',
+  backgroundSize: '100%',
+  // the wave is 2560x231, so to figure out the offset from the center, we need to find how much scaling there was
+  backgroundPositionY: `calc(50% - ${Math.floor(((innerWidth / 2560) * 231) / 2 - 1)}px), 0`,
+  justifyItems: 'center'
+}))
 
 const useInnerWidth = () => {
   const [innerWidth, setInnerWidth] = useState(() => window.innerWidth)
@@ -69,20 +71,18 @@ const NewMeeting = (props: Props) => {
   }, [])
   const selectedTeam = teams.find((team) => team.id === teamId)
   if (!selectedTeam) return null
-  // for now, the sortOrder of the meeting selector should be fixed
-  // meeting type should be stored in state here
   return (
     <NewMeetingBlock innerWidth={innerWidth}>
       <NewMeetingBackButton />
-      <LeftColumn>
+      <NewMeetingIllustration meetingType={meetingType} />
+      <BottomLeft>
         <NewMeetingMeetingSelector meetingType={meetingType} setMeetingType={setMeetingType} />
         <NewMeetingTeamPicker selectedTeam={selectedTeam} teams={teams} />
         <NewMeetingSettings selectedTeam={selectedTeam} meetingType={meetingType} />
-      </LeftColumn>
-      <RightColumn>
-        <NewMeetingExistingMeetings viewer={viewer} />
-        <NewMeetingActions viewer={viewer} />
-      </RightColumn>
+      </BottomLeft>
+      <NewMeetingHowTo meetingType={meetingType} />
+      {/*<NewMeetingExistingMeetings viewer={viewer} />*/}
+      <NewMeetingActions viewer={viewer} />
     </NewMeetingBlock>
   )
 }

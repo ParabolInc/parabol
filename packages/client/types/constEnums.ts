@@ -80,7 +80,8 @@ export const enum ElementHeight {
 }
 
 export const enum ExternalLinks {
-  PRICING_LINK = 'https://www.parabol.co/pricing/'
+  PRICING_LINK = 'https://www.parabol.co/pricing/',
+  GETTING_STARTED_RETROS = 'https://www.parabol.co/getting-started-guide/retrospective-meetings-101'
 }
 
 export const enum Filter {
