@@ -41,11 +41,7 @@ export const up = async function(r: R) {
           {
             id: identity('user_id'),
             isEmailVerified: false,
-            type: 'LOCAL',
-            verifiedEmailToken: null,
-            verifiedEmailTokenExpiration: null,
-            resetPasswordToken: null,
-            resetPasswordTokenExpiration: null
+            type: 'LOCAL'
           },
           {
             id: identity('user_id'),
