@@ -80,7 +80,9 @@ export default {
       // FIXME turn isOnboardTeam to false after finished debugging
       await createTeamAndLeader(viewerId, {id: teamId, isOnboardTeam: true, ...newTeam})
 
-      const tms = authToken.tms.concat(teamId)
+      const {tms} = authToken
+      // MUTATIVE
+      tms.push(teamId)
       sendSegmentEvent('New Team', viewerId, {orgId, teamId}).catch()
       publish(SubscriptionChannel.NOTIFICATION, viewerId, AuthTokenPayload, {tms})
       updateAuth0TMS(viewerId, tms)

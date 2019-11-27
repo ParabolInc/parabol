@@ -1,5 +1,4 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from '../../database/rethinkDriver'
 import rateLimit from '../rateLimit'
 import {getUserId, isAuthenticated} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -7,13 +6,12 @@ import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import acceptTeamInvitation from '../../safeMutations/acceptTeamInvitation'
 import standardError from '../../utils/standardError'
 import AcceptTeamInvitationPayload from '../types/AcceptTeamInvitationPayload'
-import TeamInvitation from '../../database/types/TeamInvitation'
-import {verifyMassInviteToken} from '../../utils/massInviteToken'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import AuthToken from '../../database/types/AuthToken'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import AuthTokenPayload from '../types/AuthTokenPayload'
 import encodeAuthToken from '../../utils/encodeAuthToken'
+import handleInvitationToken from './helpers/handleInvitationToken'
 
 export default {
   type: new GraphQLNonNull(AcceptTeamInvitationPayload),
@@ -39,8 +37,6 @@ export default {
       {invitationToken, notificationId},
       {authToken, dataLoader, socketId: mutatorId}
     ) => {
-      const r = await getRethink()
-      const now = new Date()
       const operationId = dataLoader.share()
       const subOptions = {mutatorId, operationId}
 
@@ -56,61 +52,15 @@ export default {
       }
 
       // VALIDATION
-      let invitation
-      const viewer = await r
-        .table('User')
-        .get(viewerId)
-        .run()
-      const isMassInviteToken = invitationToken.indexOf('.') !== -1
-      if (isMassInviteToken) {
-        const validToken = verifyMassInviteToken(invitationToken)
-        if (validToken.error) {
-          return standardError(new Error(validToken.error), {userId: viewerId})
-        }
-        const {teamId, userId: invitedBy, exp: expiresAt} = validToken
-        invitation = new TeamInvitation({
-          token: invitationToken,
-          invitedBy,
-          teamId,
-          expiresAt,
-          email: viewer.email
-        })
-        await r
-          .table('TeamInvitation')
-          .insert(invitation)
-          .run()
-      } else {
-        invitation = await r
-          .table('TeamInvitation')
-          .getAll(invitationToken, {index: 'token'})
-          .nth(0)
-          .default(null)
-          .run()
-        if (!invitation) {
-          return standardError(new Error('Invitation not found'), {userId: viewerId})
-        }
-        if (invitation.expiresAt < now) {
-          // using the notification has no expiry
-          const notification = notificationId
-            ? await r
-                .table('Notification')
-                .get(notificationId)
-                .run()
-            : undefined
-          if (!notification || notification.userIds[0] !== viewerId) {
-            return standardError(new Error('Invitation expired'), {userId: viewerId})
-          }
-        }
-      }
-      const {id: invitationId, acceptedAt, teamId} = invitation
-      if (acceptedAt || (viewer.tms && viewer.tms.includes(teamId))) {
-        return {error: {message: 'Team already joined'}}
-      }
+      const invitationRes = await handleInvitationToken(invitationToken, viewerId, notificationId)
+      if (invitationRes.error)
+        return standardError(new Error(invitationRes.error), {userId: viewerId})
+      const {invitation} = invitationRes
+      const {teamId} = invitation
       // RESOLUTION
       const {teamLeadUserIdWithNewActions, removedNotificationIds} = await acceptTeamInvitation(
         teamId,
         viewerId,
-        invitationId,
         dataLoader
       )
       const tms = authToken.tms ? authToken.tms.concat(teamId) : [teamId]

@@ -95,6 +95,11 @@ export const enum Gutters {
   ROW_INNER_GUTTER = '12px'
 }
 
+export const enum InvitationTokenError {
+  NOT_FOUND = 'notFound',
+  EXPIRED = 'expired',
+  ALREADY_ACCEPTED = 'accepted'
+}
 export const enum InvoiceItemType {
   ADD_USER = 'addUser',
   PAUSE_USER = 'pauseUser',
@@ -120,6 +125,14 @@ export const enum LoaderSize {
 
 export const enum LocalStorageKey {
   INVITATION_TOKEN = 'invitationToken'
+}
+
+export const enum AuthenticationError {
+  MISSING_HASH = 'missingHash',
+  INVALID_PASSWORD = 'invalidPassword',
+  IDENTITY_NOT_FOUND = 'identityNotFound',
+  USER_NOT_FOUND = 'userNotFound',
+  USER_EXISTS_GOOGLE = 'userExistsGoogle'
 }
 
 export const enum MathEnum {
@@ -183,6 +196,10 @@ export const enum RightSidebar {
   WIDTH = 240
 }
 
+export const enum Security {
+  SALT_ROUNDS = 12
+}
+
 export const enum SubscriptionChannel {
   TASK = 'task',
   TEAM = 'team',
@@ -217,9 +234,15 @@ export const enum TierLabel {
 export const enum Threshold {
   AUTO_PAUSE = 2592000000, // 30 days
   JWT_LIFESPAN = 2592000000, // 30 days
-  REFRESH_JWT_AFTER = 1296000000, // 15 days
   MAX_FREE_TEAMS = 10,
-  MAX_MONTHLY_PAUSES = 4
+  MAX_MONTHLY_PAUSES = 4,
+  MAX_ACCOUNT_PASSWORD_ATTEMPTS = 10,
+  MAX_ACCOUNT_DAILY_PASSWORD_RESETS = 3,
+  MAX_DAILY_PASSWORD_RESETS = 5,
+  MAX_DAILY_PASSWORD_ATTEMPTS = 100,
+  REFRESH_JWT_AFTER = 1296000000, // 15 days
+  RESET_PASSWORD_LIFESPAN = 86400000, // 1 day
+  VERIFY_TOKEN_LIFESPAN = 2592000000 // 30 days
 }
 export const enum Times {
   HUMAN_ADDICTION_THRESH = 300,

@@ -14,6 +14,7 @@ import {meetingTypeToLabel} from '../utils/meetings/lookups'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 
 interface Props {
+  invitationToken: string
   verifiedInvitation: TeamInvitationEmailSignin_verifiedInvitation
 }
 
@@ -27,7 +28,7 @@ const TeamName = styled('span')({
 })
 
 const TeamInvitationEmailSignin = (props: Props) => {
-  const {verifiedInvitation} = props
+  const {invitationToken, verifiedInvitation} = props
   const {meetingType, user, teamInvitation, teamName} = verifiedInvitation
   useDocumentTitle(`Sign in | Team Invitation`)
   if (!user || !teamInvitation) return null
@@ -45,7 +46,12 @@ const TeamInvitationEmailSignin = (props: Props) => {
           <TeamName>{teamName}</TeamName>
         </InvitationDialogCopy>
         <InvitationCenteredCopy>
-          <EmailPasswordAuthForm email={email} isPrimary isSignin />
+          <EmailPasswordAuthForm
+            email={email}
+            isPrimary
+            isSignin
+            invitationToken={invitationToken}
+          />
           <ForgotPasswordOneClick email={email} />
         </InvitationCenteredCopy>
       </DialogContent>

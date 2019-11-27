@@ -5,15 +5,17 @@ import VerifiedInvitationPayload from '../types/VerifiedInvitationPayload'
 import getRethink from '../../database/rethinkDriver'
 import promisify from 'es6-promisify'
 import getSAMLURLFromEmail from '../../utils/getSAMLURLFromEmail'
-import {ITeam} from 'parabol-client/types/graphql'
+import {AuthIdentityTypeEnum, ITeam} from 'parabol-client/types/graphql'
 import User from '../../database/types/User'
 import {GQLContext} from '../graphql'
+import {InvitationTokenError} from 'parabol-client/types/constEnums'
 
 const resolveMx = promisify(dns.resolveMx, dns)
 
-const getIsGoogleProvider = async (user: any, email: string) => {
-  if (user && user.identities) {
-    return !!user.identities.find((identity) => identity.provider === 'google-oauth2')
+const getIsGoogleProvider = async (user: User | null, email: string) => {
+  const identities = user?.identities
+  if (identities) {
+    return !!identities.find((identity) => identity.type === AuthIdentityTypeEnum.GOOGLE)
   }
   const [, domain] = email.split('@')
   let res
@@ -45,7 +47,7 @@ export default {
         .nth(0)
         .default(null)
         .run()
-      if (!teamInvitation) return {errorType: 'notFound'}
+      if (!teamInvitation) return {errorType: InvitationTokenError.NOT_FOUND}
       const {email, acceptedAt, expiresAt, invitedBy, teamId} = teamInvitation
       const {team, inviter} = await r({
         team: (r.table('Team').get(teamId) as unknown) as ITeam,
@@ -56,7 +58,7 @@ export default {
       const meetingType = firstActiveMeeting?.meetingType ?? null
       if (acceptedAt) {
         return {
-          errorType: 'accepted',
+          errorType: InvitationTokenError.ALREADY_ACCEPTED,
           teamName: team.name,
           meetingType,
           inviterName: inviter.preferredName,
@@ -67,20 +69,20 @@ export default {
 
       if (expiresAt < now) {
         return {
-          errorType: 'expired',
+          errorType: InvitationTokenError.EXPIRED,
           teamName: team.name,
           inviterName: inviter.preferredName,
           inviterEmail: inviter.email
         }
       }
 
-      const viewer = await r
+      const viewer = (await r
         .table('User')
         .getAll(email, {index: 'email'})
         .nth(0)
         .default(null)
-        .run()
-      const userId = viewer ? viewer.id : null
+        .run()) as User | null
+      const userId = viewer?.id ?? null
       const ssoURL = await getSAMLURLFromEmail(email, true)
       const isGoogle = await getIsGoogleProvider(viewer, email)
       return {

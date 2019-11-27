@@ -98,7 +98,7 @@ const getTraits = async (userIds: string[]) => {
     .run() as Promise<Traits[]>
 }
 
-const getOrgId = async (teamId) => {
+const getOrgId = async (teamId: string | undefined | null) => {
   const r = await getRethink()
   return teamId
     ? r
@@ -108,7 +108,7 @@ const getOrgId = async (teamId) => {
     : undefined
 }
 
-const getSegmentProps = (userIds, teamId) => {
+const getSegmentProps = (userIds: string[], teamId: string | null | undefined) => {
   return Promise.all([getTraits(userIds), getOrgId(teamId)])
 }
 
@@ -144,6 +144,7 @@ const sendSegmentEvent = async (
   options: Options = {}
 ) => {
   const userIds = Array.isArray(maybeUserIds) ? maybeUserIds : [maybeUserIds]
+  if (userIds.length === 0) return
   const [traitsArr, orgId] = await getSegmentProps(userIds, options.teamId)
   traitsArr.forEach((traitsWithId) => {
     const {id: userId, ...traits} = traitsWithId

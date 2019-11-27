@@ -9,10 +9,10 @@ const segmentIoOpts = {flushAt: 1}
 const segmentIo = process.env.SEGMENT_WRITE_KEY
   ? new SegmentIo(process.env.SEGMENT_WRITE_KEY, segmentIoOpts)
   : {
-    // no environment variable? Mock it!
-    alias: () => true,
-    identify: () => true,
-    track: () => true
-  }
+      // no environment variable? Mock it!
+      alias: () => true,
+      identify: () => true,
+      track: () => true
+    }
 
 export default segmentIo
