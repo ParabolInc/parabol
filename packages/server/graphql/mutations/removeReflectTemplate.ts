@@ -2,10 +2,11 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {RETROSPECTIVE, TEAM} from '../../../client/utils/constants'
+import {RETROSPECTIVE} from '../../../client/utils/constants'
 import standardError from '../../utils/standardError'
 import RemoveReflectTemplatePayload from '../types/RemoveReflectTemplatePayload'
 import {IReflectTemplate, IRetrospectiveMeetingSettings} from 'parabol-client/types/graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const removeReflectTemplate = {
   description: 'Remove a template full of prompts',
@@ -84,7 +85,7 @@ const removeReflectTemplate = {
     }
 
     const data = {templateId, settingsId}
-    publish(TEAM, teamId, RemoveReflectTemplatePayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'RemoveReflectTemplatePayload', data, subOptions)
     return data
   }
 }

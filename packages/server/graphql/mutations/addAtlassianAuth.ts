@@ -3,10 +3,10 @@ import AddAtlassianAuthPayload from '../types/AddAtlassianAuthPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import shortid from 'shortid'
-import {TEAM} from '../../../client/utils/constants'
 import getRethink from '../../database/rethinkDriver'
 import AtlassianManager from '../../utils/AtlassianManager'
 import standardError from '../../utils/standardError'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   name: 'AddAtlassianAuth',
@@ -83,7 +83,7 @@ export default {
     }
 
     const data = {atlassianAuthId}
-    publish(TEAM, teamId, AddAtlassianAuthPayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'AddAtlassianAuthPayload', data, subOptions)
     return data
   }
 }

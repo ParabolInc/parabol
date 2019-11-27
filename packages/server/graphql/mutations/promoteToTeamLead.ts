@@ -3,10 +3,10 @@ import getRethink from '../../database/rethinkDriver'
 import PromoteToTeamLeadPayload from '../types/PromoteToTeamLeadPayload'
 import {getUserId, isTeamLead} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {TEAM} from '../../../client/utils/constants'
 import fromTeamMemberId from '../../../client/utils/relay/fromTeamMemberId'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import standardError from '../../utils/standardError'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: PromoteToTeamLeadPayload,
@@ -31,7 +31,10 @@ export default {
     }
 
     // VALIDATION
-    const promoteeOnTeam = await r.table('TeamMember').get(teamMemberId).run()
+    const promoteeOnTeam = await r
+      .table('TeamMember')
+      .get(teamMemberId)
+      .run()
     if (!promoteeOnTeam || !promoteeOnTeam.isNotRemoved) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
@@ -53,7 +56,7 @@ export default {
     }).run()
 
     const data = {teamId, oldLeaderId: myTeamMemberId, newLeaderId: teamMemberId}
-    publish(TEAM, teamId, PromoteToTeamLeadPayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'PromoteToTeamLeadPayload', data, subOptions)
     return data
   }
 }

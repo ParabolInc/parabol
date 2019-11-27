@@ -9,13 +9,14 @@ import createProxyRecord from '../utils/relay/createProxyRecord'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
 import dndNoise from '../utils/dndNoise'
 import addNodeToArray from '../utils/relay/addNodeToArray'
-import {LocalHandlers} from '../types/relayMutations'
+import {LocalHandlers, SharedUpdater} from '../types/relayMutations'
 import {IEndDraggingReflectionOnMutationArguments} from '../types/graphql'
 import Atmosphere from '../Atmosphere'
 import clientTempId from '../utils/relay/clientTempId'
+import {EndDraggingReflectionMutation_meeting} from '__generated__/EndDraggingReflectionMutation_meeting.graphql'
 
 graphql`
-  fragment EndDraggingReflectionMutation_team on EndDraggingReflectionPayload {
+  fragment EndDraggingReflectionMutation_meeting on EndDraggingReflectionPayload {
     meeting {
       id
       nextAutoGroupThreshold
@@ -67,7 +68,7 @@ const mutation = graphql`
       dropTargetId: $dropTargetId
       dragId: $dragId
     ) {
-      ...EndDraggingReflectionMutation_team @relay(mask: false)
+      ...EndDraggingReflectionMutation_meeting @relay(mask: false)
     }
   }
 `
@@ -114,7 +115,10 @@ export const moveReflectionLocation = (
   handleAddReflectionGroupToGroups(store, reflectionGroup)
 }
 
-export const endDraggingReflectionTeamUpdater = (payload, {store}) => {
+export const endDraggingReflectionTeamUpdater: SharedUpdater<EndDraggingReflectionMutation_meeting> = (
+  payload,
+  {store}
+) => {
   const reflection = payload.getLinkedRecord('reflection')
   if (!reflection) return
   const reflectionGroup = payload.getLinkedRecord('reflectionGroup')
@@ -123,7 +127,7 @@ export const endDraggingReflectionTeamUpdater = (payload, {store}) => {
   if (!existingDrag) {
     const remoteDrag = payload.getLinkedRecord('remoteDrag')
     const remoteDragId = remoteDrag.getValue('id')
-    const existingDragStarts = reflection.getValue('ignoreDragStarts') || []
+    const existingDragStarts = (reflection.getValue('ignoreDragStarts') as string[]) || []
     const nextDragStarts = existingDragStarts.concat(remoteDragId)
     reflection.setValue(nextDragStarts, 'ignoreDragStarts')
     reflection.setLinkedRecord(remoteDrag, 'remoteDrag')

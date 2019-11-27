@@ -5,12 +5,13 @@ import getRethink from '../../../database/rethinkDriver'
 import StripeFailPaymentPayload from '../../types/StripeFailPaymentPayload'
 import publish from '../../../utils/publish'
 import shortid from 'shortid'
-import {NOTIFICATION, PAYMENT_REJECTED} from 'parabol-client/utils/constants'
+import {PAYMENT_REJECTED} from 'parabol-client/utils/constants'
 import StripeManager from '../../../utils/StripeManager'
 import {InvoiceStatusEnum, OrgUserRole} from 'parabol-client/types/graphql'
 import {isSuperUser} from '../../../utils/authorization'
 import {InternalContext} from '../../graphql'
 import Organization from '../../../database/types/Organization'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   name: 'StripeFailPayment',
@@ -97,7 +98,7 @@ export default {
     }).run()
     const data = {orgId, notificationId}
     // TODO add in subOptins when we move GraphQL to its own microservice
-    publish(NOTIFICATION, orgId, StripeFailPaymentPayload, data)
+    publish(SubscriptionChannel.NOTIFICATION, orgId, 'StripeFailPaymentPayload', data)
     return data
   }
 }

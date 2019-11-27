@@ -2,10 +2,11 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {CHECKIN, TEAM} from '../../../client/utils/constants'
+import {CHECKIN} from '../../../client/utils/constants'
 import normalizeRawDraftJS from '../../../client/validation/normalizeRawDraftJS'
 import UpdateNewCheckInQuestionPayload from '../types/UpdateNewCheckInQuestionPayload'
 import standardError from '../../utils/standardError'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: UpdateNewCheckInQuestionPayload,
@@ -32,7 +33,10 @@ export default {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const meeting = await r.table('NewMeeting').get(meetingId).run()
+    const meeting = await r
+      .table('NewMeeting')
+      .get(meetingId)
+      .run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
@@ -52,10 +56,17 @@ export default {
       .update({
         phases,
         updatedAt: now
-      }).run()
+      })
+      .run()
 
     const data = {meetingId}
-    publish(TEAM, teamId, UpdateNewCheckInQuestionPayload, data, subOptions)
+    publish(
+      SubscriptionChannel.MEETING,
+      meetingId,
+      'UpdateNewCheckInQuestionPayload',
+      data,
+      subOptions
+    )
     return data
   }
 }

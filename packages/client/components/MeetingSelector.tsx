@@ -5,6 +5,12 @@ import React, {useEffect} from 'react'
 import useRouter from '../hooks/useRouter'
 import {MeetingSelector_viewer} from '__generated__/MeetingSelector_viewer.graphql'
 import lazyPreload from '../utils/lazyPreload'
+import useSubscription from '../hooks/useSubscription'
+import NotificationSubscription from '../subscriptions/NotificationSubscription'
+import OrganizationSubscription from '../subscriptions/OrganizationSubscription'
+import TaskSubscription from '../subscriptions/TaskSubscription'
+import TeamSubscription from '../subscriptions/TeamSubscription'
+import MeetingSubscription from '../subscriptions/MeetingSubscription'
 
 interface Props {
   meetingId: string
@@ -32,6 +38,11 @@ const MeetingSelector = (props: Props) => {
       })
     }
   }, [])
+  useSubscription(MeetingSelector.name, NotificationSubscription)
+  useSubscription(MeetingSelector.name, OrganizationSubscription)
+  useSubscription(MeetingSelector.name, TaskSubscription)
+  useSubscription(MeetingSelector.name, TeamSubscription)
+  useSubscription(MeetingSelector.name, MeetingSubscription, {meetingId})
   if (!meeting) return null
   const {meetingType} = meeting
   const Meeting = meetingLookup[meetingType]

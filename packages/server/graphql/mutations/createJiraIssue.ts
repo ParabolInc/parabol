@@ -9,8 +9,8 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {ICreateJiraIssueOnMutationArguments} from '../../../client/types/graphql'
-import {TASK} from '../../../client/utils/constants'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   name: 'CreateJiraIssue',
@@ -163,7 +163,7 @@ export default {
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const data = {taskId}
     teamMembers.forEach(({userId}) => {
-      publish(TASK, userId, CreateJiraIssuePayload, data, subOptions)
+      publish(SubscriptionChannel.TASK, userId, 'CreateJiraIssuePayload', data, subOptions)
     })
     sendSegmentEvent('Published Task to Jira', viewerId, {teamId, meetingId}).catch()
     return data

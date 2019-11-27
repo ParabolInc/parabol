@@ -4,10 +4,11 @@ import ChangeTaskTeamPayload from '../types/ChangeTaskTeamPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import shortid from 'shortid'
 import removeEntityKeepText from '../../../client/utils/draftjs/removeEntityKeepText'
-import {TASK, TASK_INVOLVES} from '../../../client/utils/constants'
+import {TASK_INVOLVES} from '../../../client/utils/constants'
 import publish from '../../utils/publish'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import standardError from '../../utils/standardError'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: ChangeTaskTeamPayload,
@@ -119,7 +120,7 @@ export default {
     const teamMembers = oldTeamMembers.concat(newTeamMembers)
     teamMembers.forEach(({userId}) => {
       if (!isPrivate || userId === task.userId) {
-        publish(TASK, userId, ChangeTaskTeamPayload, data, subOptions)
+        publish(SubscriptionChannel.TASK, userId, 'ChangeTaskTeamPayload', data, subOptions)
       }
     })
     return data

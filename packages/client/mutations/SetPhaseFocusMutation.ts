@@ -5,7 +5,7 @@ import {SetPhaseFocusMutation as TSetPhaseFocusMutation} from '../__generated__/
 import {IReflectPhase} from '../types/graphql'
 
 graphql`
-  fragment SetPhaseFocusMutation_team on SetPhaseFocusPayload {
+  fragment SetPhaseFocusMutation_meeting on SetPhaseFocusPayload {
     reflectPhase {
       focusedPhaseItemId
     }
@@ -15,7 +15,7 @@ graphql`
 const mutation = graphql`
   mutation SetPhaseFocusMutation($meetingId: ID!, $focusedPhaseItemId: ID) {
     setPhaseFocus(meetingId: $meetingId, focusedPhaseItemId: $focusedPhaseItemId) {
-      ...SetPhaseFocusMutation_team @relay(mask: false)
+      ...SetPhaseFocusMutation_meeting @relay(mask: false)
     }
   }
 `

@@ -128,7 +128,7 @@ export default {
     const stoppedOrStarted = newScheduledEndTime ? 'Meeting Timer Started' : 'Meeting Timer Stopped'
     const eventName =
       scheduledEndTime && newScheduledEndTime ? 'Meeting Timer Updated' : stoppedOrStarted
-    publish(SubscriptionChannel.TEAM, teamId, SetStageTimerPayload, data, subOptions)
+    publish(SubscriptionChannel.MEETING, meetingId, 'SetStageTimerPayload', data, subOptions)
     sendSegmentEvent(eventName, viewerId, segmentOptions).catch()
     return data
   }

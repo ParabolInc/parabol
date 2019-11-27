@@ -4,13 +4,14 @@ import UpdateAgendaItemInput from '../types/UpdateAgendaItemInput'
 import UpdateAgendaItemPayload from '../types/UpdateAgendaItemPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {AGENDA_ITEMS, TEAM} from '../../../client/utils/constants'
+import {AGENDA_ITEMS} from '../../../client/utils/constants'
 import makeUpdateAgendaItemSchema from '../../../client/validation/makeUpdateAgendaItemSchema'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import AgendaItemsStage from '../../database/types/AgendaItemsStage'
 import {IAgendaItem, MeetingTypeEnum} from '../../../client/types/graphql'
 import AgendaItemsPhase from '../../database/types/AgendaItemsPhase'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: UpdateAgendaItemPayload,
@@ -86,7 +87,7 @@ export default {
         .run()
     }
     const data = {agendaItemId, meetingId}
-    publish(TEAM, teamId, UpdateAgendaItemPayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'UpdateAgendaItemPayload', data, subOptions)
     return data
   }
 }

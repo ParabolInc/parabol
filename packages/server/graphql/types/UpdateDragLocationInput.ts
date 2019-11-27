@@ -12,6 +12,9 @@ const UpdateDragLocationInput = new GraphQLInputObjectType({
     clientWidth: {
       type: new GraphQLNonNull(GraphQLFloat)
     },
+    meetingId: {
+      type: new GraphQLNonNull(GraphQLID)
+    },
     sourceId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The primary key of the item being drug'
@@ -39,7 +42,7 @@ const UpdateDragLocationInput = new GraphQLInputObjectType({
     clientY: {
       type: GraphQLFloat,
       description: 'the top of the source, relative to the client window'
-    },
+    }
   })
 })
 

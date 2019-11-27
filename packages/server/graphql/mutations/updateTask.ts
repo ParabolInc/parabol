@@ -8,7 +8,6 @@ import UpdateTaskPayload from '../types/UpdateTaskPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import shortid from 'shortid'
-import {TASK} from '../../../client/utils/constants'
 import standardError from '../../utils/standardError'
 import {IUpdateTaskOnMutationArguments} from '../../../client/types/graphql'
 import {GQLContext} from '../graphql'
@@ -17,6 +16,7 @@ import Task from '../../database/types/Task'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import {ITeamMember} from 'parabol-client/types/graphql'
 import getUsersToIgnore from './helpers/getUsersToIgnore'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const DEBOUNCE_TIME = ms('5m')
 
@@ -157,7 +157,7 @@ export default {
     }
     teamMembers.forEach(({userId}) => {
       if (isPublic || userId === newTask.userId || userId === viewerId) {
-        publish(TASK, userId, UpdateTaskPayload, data, subOptions)
+        publish(SubscriptionChannel.TASK, userId, 'UpdateTaskPayload', data, subOptions)
       }
     })
 

@@ -7,7 +7,6 @@ import publish from '../../utils/publish'
 import fromTeamMemberId from '../../../client/utils/relay/fromTeamMemberId'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import AuthTokenPayload from '../types/AuthTokenPayload'
 
 export default {
   type: RemoveTeamMemberPayload,
@@ -39,7 +38,7 @@ export default {
 
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const {tms} = user
-    publish(SubscriptionChannel.NOTIFICATION, userId, AuthTokenPayload, {tms})
+    publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {tms})
     updateAuth0TMS(userId, tms)
     const taskIds = [...archivedTaskIds, ...reassignedTaskIds]
     const data = {
@@ -51,15 +50,21 @@ export default {
       userId
     }
     // messages to the rest of the team reporting the kick out
-    publish(SubscriptionChannel.TEAM, teamId, RemoveTeamMemberPayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'RemoveTeamMemberPayload', data, subOptions)
     teamMembers.forEach(({teamMemberUserId}) => {
       // don't send updated tasks to the person being kicked out
       if (teamMemberUserId === userId) return
-      publish(SubscriptionChannel.TASK, teamMemberUserId, RemoveTeamMemberPayload, data, subOptions)
+      publish(
+        SubscriptionChannel.TASK,
+        teamMemberUserId,
+        'RemoveTeamMemberPayload',
+        data,
+        subOptions
+      )
     })
 
     // individualized message to the user getting kicked out
-    publish(SubscriptionChannel.TEAM, userId, RemoveTeamMemberPayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, userId, 'RemoveTeamMemberPayload', data, subOptions)
 
     return data
   }

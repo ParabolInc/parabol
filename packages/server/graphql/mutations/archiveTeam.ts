@@ -9,7 +9,6 @@ import shortid from 'shortid'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {NotificationEnum} from 'parabol-client/types/graphql'
-import AuthTokenPayload from '../types/AuthTokenPayload'
 import safeArchiveTeam from '../../safeMutations/safeArchiveTeam'
 
 export default {
@@ -68,12 +67,12 @@ export default {
       removedTeamNotifications,
       removedSuggestedActionIds
     }
-    publish(SubscriptionChannel.TEAM, teamId, ArchiveTeamPayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'ArchiveTeamPayload', data, subOptions)
 
     users.forEach((user) => {
       const {id, tms} = user
       updateAuth0TMS(id, tms)
-      publish(SubscriptionChannel.NOTIFICATION, id, AuthTokenPayload, {tms})
+      publish(SubscriptionChannel.NOTIFICATION, id, 'AuthTokenPayload', {tms})
     })
 
     return data

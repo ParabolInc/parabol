@@ -3,8 +3,8 @@ import getRethink from '../../database/rethinkDriver'
 import ClearNotificationPayload from '../types/ClearNotificationPayload'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {NOTIFICATION} from '../../../client/utils/constants'
 import standardError from '../../utils/standardError'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: ClearNotificationPayload,
@@ -22,7 +22,10 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const notification = await r.table('Notification').get(notificationId).run()
+    const notification = await r
+      .table('Notification')
+      .get(notificationId)
+      .run()
     if (!notification || !notification.userIds.includes(viewerId)) {
       return standardError(new Error('Notification not found'), {userId: viewerId})
     }
@@ -35,7 +38,13 @@ export default {
       .run()
 
     const data = {notification}
-    publish(NOTIFICATION, viewerId, ClearNotificationPayload, data, subOptions)
+    publish(
+      SubscriptionChannel.NOTIFICATION,
+      viewerId,
+      'ClearNotificationPayload',
+      data,
+      subOptions
+    )
     return data
   }
 }

@@ -70,7 +70,7 @@ export default {
         .run()
     }
     const data = {meetingId, reflectionId, unlockedStageIds}
-    publish(SubscriptionChannel.TEAM, teamId, RemoveReflectionPayload, data, subOptions)
+    publish(SubscriptionChannel.MEETING, meetingId, 'RemoveReflectionPayload', data, subOptions)
     return data
   }
 }

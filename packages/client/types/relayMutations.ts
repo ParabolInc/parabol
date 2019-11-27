@@ -75,3 +75,7 @@ export type StandardMutation<T extends MutationParameters, C = BaseLocalHandlers
     typeof commitMutation
   >
 }
+
+export type RelayDateHack<T extends {variables: any}, P> = Omit<T, 'variables'> & {
+  variables: Omit<T['variables'], keyof P> & P
+}

@@ -3,8 +3,9 @@ import getRethink from '../../database/rethinkDriver'
 import DragDiscussionTopicPayload from '../types/DragDiscussionTopicPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {DISCUSS, TEAM} from '../../../client/utils/constants'
+import {DISCUSS} from '../../../client/utils/constants'
 import standardError from '../../utils/standardError'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   description: 'Changes the priority of the discussion topics',
@@ -31,7 +32,10 @@ export default {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const meeting = await r.table('NewMeeting').get(meetingId).run()
+    const meeting = await r
+      .table('NewMeeting')
+      .get(meetingId)
+      .run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
@@ -59,13 +63,14 @@ export default {
       .get(meetingId)
       .update({
         phases
-      }).run()
+      })
+      .run()
 
     const data = {
       meetingId,
       stageId
     }
-    publish(TEAM, teamId, DragDiscussionTopicPayload, data, subOptions)
+    publish(SubscriptionChannel.MEETING, meetingId, 'DragDiscussionTopicPayload', data, subOptions)
     return data
   }
 }

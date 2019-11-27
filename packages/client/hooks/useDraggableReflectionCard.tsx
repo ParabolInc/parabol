@@ -165,6 +165,7 @@ const useDragAndDrop = (
   drag: ReflectionDragState,
   reflection: DraggableReflectionCard_reflection,
   staticIdx: number,
+  meetingId: string,
   teamId: string,
   reflectionCount: number,
   swipeColumn?: SwipeColumn
@@ -211,6 +212,7 @@ const useDragAndDrop = (
       clientX: cursorX - drag.cardOffsetX,
       clientY: cursorY - drag.cardOffsetY,
       sourceId: reflectionId,
+      meetingId,
       teamId,
       targetId,
       targetOffsetX,
@@ -331,6 +333,7 @@ const useDraggableReflectionCard = (
   reflection: DraggableReflectionCard_reflection,
   drag: ReflectionDragState,
   staticIdx: number,
+  meetingId: string,
   teamId: string,
   staticReflectionCount: number,
   swipeColumn?: SwipeColumn
@@ -342,6 +345,7 @@ const useDraggableReflectionCard = (
     drag,
     reflection,
     staticIdx,
+    meetingId,
     teamId,
     staticReflectionCount,
     swipeColumn

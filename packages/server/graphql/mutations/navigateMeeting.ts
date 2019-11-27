@@ -2,7 +2,6 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {TEAM} from '../../../client/utils/constants'
 import NavigateMeetingPayload from '../types/NavigateMeetingPayload'
 import findStageById from '../../../client/utils/meetings/findStageById'
 import handleCompletedStage from './helpers/handleCompletedStage'
@@ -11,6 +10,7 @@ import startStage_ from '../../../client/utils/startStage_'
 import standardError from '../../utils/standardError'
 import Meeting from '../../database/types/Meeting'
 import removeScheduledJobs from './helpers/removeScheduledJobs'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: new GraphQLNonNull(NavigateMeetingPayload),
@@ -47,7 +47,7 @@ export default {
       .default(null)
       .run()) as Meeting | null
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
-    const {defaultFacilitatorUserId, facilitatorUserId, phases, teamId} = meeting
+    const {defaultFacilitatorUserId, facilitatorUserId, phases} = meeting
     if (viewerId !== facilitatorUserId) {
       if (viewerId !== defaultFacilitatorUserId) {
         return standardError(new Error('Not meeting facilitator'), {userId: viewerId})
@@ -120,7 +120,7 @@ export default {
       unlockedStageIds,
       ...phaseCompleteData
     }
-    publish(TEAM, teamId, NavigateMeetingPayload, data, subOptions)
+    publish(SubscriptionChannel.MEETING, meetingId, 'NavigateMeetingPayload', data, subOptions)
     return data
   }
 }

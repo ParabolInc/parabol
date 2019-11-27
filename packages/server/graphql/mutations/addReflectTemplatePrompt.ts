@@ -2,11 +2,11 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {TEAM} from '../../../client/utils/constants'
 import dndNoise from '../../../client/utils/dndNoise'
 import standardError from '../../utils/standardError'
 import AddReflectTemplatePromptPayload from '../types/AddReflectTemplatePromptPayload'
 import {Prompt} from './helpers/makeRetroTemplates'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const addReflectTemplatePrompt = {
   description: 'Add a new template full of prompts',
@@ -56,7 +56,7 @@ const addReflectTemplatePrompt = {
 
     const promptId = phaseItem.id
     const data = {promptId}
-    publish(TEAM, teamId, AddReflectTemplatePromptPayload, data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'AddReflectTemplatePromptPayload', data, subOptions)
     return data
   }
 }

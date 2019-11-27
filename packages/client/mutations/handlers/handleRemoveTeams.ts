@@ -1,8 +1,9 @@
 import pluralizeHandler from './pluralizeHandler'
 import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
+import {RecordSourceSelectorProxy} from 'relay-runtime'
 
-const handleRemoveTeam = (teamId, store, viewerId) => {
-  const viewer = store.get(viewerId)
+const handleRemoveTeam = (teamId: string, store: RecordSourceSelectorProxy<any>) => {
+  const viewer = store.getRoot().getLinkedRecord('viewer')
   safeRemoveNodeFromArray(teamId, viewer, 'teams')
 }
 

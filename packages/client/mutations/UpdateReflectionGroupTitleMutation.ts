@@ -5,12 +5,11 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
-import {IUpdateReflectionGroupTitleOnMutationArguments} from '../types/graphql'
-import Atmosphere from '../Atmosphere'
-import {LocalHandlers} from '../types/relayMutations'
+import {StandardMutation} from '../types/relayMutations'
+import {UpdateReflectionGroupTitleMutation as TUpdateReflectionGroupTitleMutation} from '../__generated__/UpdateReflectionGroupTitleMutation.graphql'
 
 graphql`
-  fragment UpdateReflectionGroupTitleMutation_team on UpdateReflectionGroupTitlePayload {
+  fragment UpdateReflectionGroupTitleMutation_meeting on UpdateReflectionGroupTitlePayload {
     reflectionGroup {
       title
       titleIsUserDefined
@@ -21,17 +20,17 @@ graphql`
 const mutation = graphql`
   mutation UpdateReflectionGroupTitleMutation($title: String!, $reflectionGroupId: ID!) {
     updateReflectionGroupTitle(title: $title, reflectionGroupId: $reflectionGroupId) {
-      ...UpdateReflectionGroupTitleMutation_team @relay(mask: false)
+      ...UpdateReflectionGroupTitleMutation_meeting @relay(mask: false)
     }
   }
 `
 
-const UpdateReflectionGroupTitleMutation = (
-  atmosphere: Atmosphere,
-  variables: IUpdateReflectionGroupTitleOnMutationArguments,
-  {onCompleted, onError}: LocalHandlers
+const UpdateReflectionGroupTitleMutation: StandardMutation<TUpdateReflectionGroupTitleMutation> = (
+  atmosphere,
+  variables,
+  {onCompleted, onError}
 ) => {
-  return commitMutation(atmosphere, {
+  return commitMutation<TUpdateReflectionGroupTitleMutation>(atmosphere, {
     mutation,
     variables,
     onCompleted,

@@ -71,13 +71,13 @@ export default {
 
     sendSegmentEvent('Upgrade to Pro', viewerId, {orgId}).catch()
     const data = {orgId, teamIds, meetingIds}
-    publish(SubscriptionChannel.ORGANIZATION, orgId, UpgradeToProPayload, data, subOptions)
+    publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpgradeToProPayload', data, subOptions)
 
     teamIds.forEach((teamId) => {
       // I can't readily think of a clever way to use the data obj and filter in the resolver so I'll reduce here.
       // This is probably a smelly piece of code telling me I should be sending this per-viewerId or per-org
       const teamData = {orgId, teamIds: [teamId]}
-      publish(SubscriptionChannel.TEAM, teamId, UpgradeToProPayload, teamData, subOptions)
+      publish(SubscriptionChannel.TEAM, teamId, 'UpgradeToProPayload', teamData, subOptions)
     })
     // the count of this users tier stats just changed, update:
     await sendSegmentIdentify(viewerId)

@@ -14,7 +14,6 @@ import rateLimit from '../rateLimit'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import AuthTokenPayload from '../types/AuthTokenPayload'
 import encodeAuthToken from '../../utils/encodeAuthToken'
 import AuthToken from '../../database/types/AuthToken'
 
@@ -58,7 +57,7 @@ export default {
       // MUTATIVE
       tms.push(teamId)
       sendSegmentEvent('New Org', viewerId, {orgId, teamId}).catch()
-      publish(SubscriptionChannel.NOTIFICATION, viewerId, AuthTokenPayload, {tms})
+      publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
       updateAuth0TMS(viewerId, tms)
 
       const teamMemberId = toTeamMemberId(teamId, viewerId)
@@ -73,12 +72,12 @@ export default {
         publish(
           SubscriptionChannel.NOTIFICATION,
           viewerId,
-          AddOrgPayload,
+          'AddOrgPayload',
           {removedSuggestedActionId},
           subOptions
         )
       }
-      publish(SubscriptionChannel.ORGANIZATION, viewerId, AddOrgPayload, data, subOptions)
+      publish(SubscriptionChannel.ORGANIZATION, viewerId, 'AddOrgPayload', data, subOptions)
 
       return {
         ...data,

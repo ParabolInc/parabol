@@ -4,9 +4,9 @@ import UpdateOrgInput from '../types/UpdateOrgInput'
 import UpdateOrgPayload from '../types/UpdateOrgPayload'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {ORGANIZATION} from '../../../client/utils/constants'
 import updateOrgValidation from './helpers/updateOrgValidation'
 import standardError from '../../utils/standardError'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: new GraphQLNonNull(UpdateOrgPayload),
@@ -47,10 +47,11 @@ export default {
     await r
       .table('Organization')
       .get(orgId)
-      .update(dbUpdate).run()
+      .update(dbUpdate)
+      .run()
 
     const data = {orgId}
-    publish(ORGANIZATION, orgId, UpdateOrgPayload, data, subOptions)
+    publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpdateOrgPayload', data, subOptions)
     return data
   }
 }

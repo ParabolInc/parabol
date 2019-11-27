@@ -5952,6 +5952,7 @@ export interface IUpdateDragLocationInput {
   id: string
   clientHeight: number
   clientWidth: number
+  meetingId: string
 
   /**
    * The primary key of the item being drug
@@ -6117,10 +6118,44 @@ export interface IUpgradeToProPayload {
 
 export interface ISubscription {
   __typename: 'Subscription'
+  meetingSubscription: MeetingSubscriptionPayload
   notificationSubscription: NotificationSubscriptionPayload
   organizationSubscription: OrganizationSubscriptionPayload
   taskSubscription: TaskSubscriptionPayload
   teamSubscription: TeamSubscriptionPayload
+}
+
+export interface IMeetingSubscriptionOnSubscriptionArguments {
+  meetingId: string
+}
+
+export type MeetingSubscriptionPayload =
+  | IAutoGroupReflectionsPayload
+  | ICreateReflectionPayload
+  | IDragDiscussionTopicPayload
+  | IEndDraggingReflectionPayload
+  | IEditReflectionPayload
+  | INavigateMeetingPayload
+  | INewMeetingCheckInPayload
+  | IPromoteNewMeetingFacilitatorPayload
+  | IRemoveReflectionPayload
+  | ISetPhaseFocusPayload
+  | ISetStageTimerPayload
+  | IStartDraggingReflectionPayload
+  | IUpdateDragLocationPayload
+  | IUpdateNewCheckInQuestionPayload
+  | IUpdateReflectionContentPayload
+  | IUpdateReflectionGroupTitlePayload
+  | IVoteForReflectionGroupPayload
+
+export interface IUpdateDragLocationPayload {
+  __typename: 'UpdateDragLocationPayload'
+
+  /**
+   * The drag as sent from the team member
+   */
+  remoteDrag: IRemoteReflectionDrag
+  userId: string
 }
 
 export type NotificationSubscriptionPayload =
@@ -6314,37 +6349,20 @@ export type TeamSubscriptionPayload =
   | IAddSlackAuthPayload
   | IAddTeamPayload
   | IArchiveTeamPayload
-  | IAutoGroupReflectionsPayload
-  | ICreateReflectionPayload
   | IDenyPushInvitationPayload
   | IDowngradeToPersonalPayload
-  | IDragDiscussionTopicPayload
-  | IEndDraggingReflectionPayload
-  | IEditReflectionPayload
   | IEndNewMeetingPayload
-  | INavigateMeetingPayload
-  | INewMeetingCheckInPayload
   | IPushInvitationPayload
-  | IPromoteNewMeetingFacilitatorPayload
   | IPromoteToTeamLeadPayload
   | IRemoveAgendaItemPayload
   | IRemoveOrgUserPayload
-  | IRemoveReflectionPayload
   | IRemoveTeamMemberPayload
   | ISelectRetroTemplatePayload
-  | ISetPhaseFocusPayload
-  | ISetStageTimerPayload
-  | IStartDraggingReflectionPayload
   | IStartNewMeetingPayload
   | IUpdateAgendaItemPayload
   | IUpdateCreditCardPayload
-  | IUpdateDragLocationPayload
-  | IUpdateNewCheckInQuestionPayload
-  | IUpdateReflectionContentPayload
-  | IUpdateReflectionGroupTitlePayload
   | IUpdateTeamNamePayload
   | IUpgradeToProPayload
-  | IVoteForReflectionGroupPayload
   | IAddReflectTemplatePayload
   | IAddReflectTemplatePromptPayload
   | IMoveReflectTemplatePromptPayload
@@ -6357,17 +6375,8 @@ export type TeamSubscriptionPayload =
   | IRenameReflectTemplatePayload
   | IRenameReflectTemplatePromptPayload
   | ISetCheckInEnabledPayload
+  | ISetSlackNotificationPayload
   | IUpdateUserProfilePayload
-
-export interface IUpdateDragLocationPayload {
-  __typename: 'UpdateDragLocationPayload'
-
-  /**
-   * The drag as sent from the team member
-   */
-  remoteDrag: IRemoteReflectionDrag
-  userId: string
-}
 
 /**
  * An authentication strategy using Google

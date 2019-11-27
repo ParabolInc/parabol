@@ -3,12 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {QueryRenderer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useRouter from '../hooks/useRouter'
-import NotificationSubscription from '../subscriptions/NotificationSubscription'
-import OrganizationSubscription from '../subscriptions/OrganizationSubscription'
-import TaskSubscription from '../subscriptions/TaskSubscription'
-import TeamSubscription from '../subscriptions/TeamSubscription'
 import renderQuery from '../utils/relay/renderQuery'
-import useSubscription from '../hooks/useSubscription'
 import MeetingSelector from './MeetingSelector'
 
 // Changing the name here requires a change to getLastSeenAtURL.ts
@@ -25,10 +20,6 @@ const MeetingRoot = () => {
   const {history, match} = useRouter<{meetingId: string}>()
   const {params} = match
   const {meetingId} = params
-  useSubscription(MeetingRoot.name, NotificationSubscription)
-  useSubscription(MeetingRoot.name, OrganizationSubscription)
-  useSubscription(MeetingRoot.name, TaskSubscription)
-  useSubscription(MeetingRoot.name, TeamSubscription)
   useEffect(() => {
     if (!meetingId) {
       history.replace('/me')

@@ -3,9 +3,10 @@ import getRethink from '../../database/rethinkDriver'
 import DeleteTaskPayload from '../types/DeleteTaskPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {NOTIFICATION, TASK, TASK_INVOLVES} from '../../../client/utils/constants'
+import {TASK_INVOLVES} from '../../../client/utils/constants'
 import getTypeFromEntityMap from '../../../client/utils/draftjs/getTypeFromEntityMap'
 import standardError from '../../utils/standardError'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: DeleteTaskPayload,
@@ -74,13 +75,19 @@ export default {
       const {
         userIds: [notificationUserId]
       } = notification
-      publish(NOTIFICATION, notificationUserId, DeleteTaskPayload, data, subOptions)
+      publish(
+        SubscriptionChannel.NOTIFICATION,
+        notificationUserId,
+        'DeleteTaskPayload',
+        data,
+        subOptions
+      )
     })
 
     const isPrivate = tags.includes('private')
     subscribedUserIds.forEach((userId) => {
       if (!isPrivate || userId === taskUserId) {
-        publish(TASK, userId, DeleteTaskPayload, data, subOptions)
+        publish(SubscriptionChannel.TASK, userId, 'DeleteTaskPayload', data, subOptions)
       }
     })
     return data

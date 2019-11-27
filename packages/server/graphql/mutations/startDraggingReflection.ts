@@ -18,11 +18,7 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve(
-    _source,
-    {dragId, reflectionId},
-    {authToken, dataLoader, socketId: mutatorId}
-  ) {
+  async resolve(_source, {dragId, reflectionId}, {authToken, dataLoader, socketId: mutatorId}) {
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
 
@@ -54,7 +50,13 @@ export default {
         dragUserId: viewerId
       }
     }
-    publish(SubscriptionChannel.TEAM, teamId, StartDraggingReflectionPayload, data, subOptions)
+    publish(
+      SubscriptionChannel.MEETING,
+      meetingId,
+      'StartDraggingReflectionPayload',
+      data,
+      subOptions
+    )
 
     return data
   }
