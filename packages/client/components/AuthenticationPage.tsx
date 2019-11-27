@@ -1,6 +1,6 @@
 import React from 'react'
 import TeamInvitationWrapper from './TeamInvitationWrapper'
-import GenericAuthentication, {AuthPageSlug, GotoAuathPage} from './GenericAuthentication'
+import GenericAuthentication, {AuthPageSlug, GotoAuthPage} from './GenericAuthentication'
 import useRouter from '../hooks/useRouter'
 import getValidRedirectParam from '../utils/getValidRedirectParam'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -22,7 +22,7 @@ const AuthenticationPage = (props: Props) => {
     setTimeout(() => history.replace(nextUrl))
     return null
   }
-  const gotoPage: GotoAuathPage = (page, search?) => {
+  const gotoPage: GotoAuthPage = (page, search?) => {
     history.push(`/${page}${search}`)
   }
   return (

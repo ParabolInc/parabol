@@ -94,10 +94,21 @@ export default {
 
     let isUnlock
     let unlockedStageIds
-    if (voteCount === 0) {
+
+    if (!isUnvote) {
+      const discussPhase = phases.find(
+        (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.discuss
+      )
+      const {stages} = discussPhase
+      const [firstStage] = stages
+      const {isNavigableByFacilitator} = firstStage
+      if (!isNavigableByFacilitator) {
+        isUnlock = true
+      }
+    } else if (voteCount === 0) {
+      // technically, this is still a possible race condition if someone removes & adds 1 very quickly
+      // but then can fix that by casting another vote, so it's not terrible
       isUnlock = false
-    } else if (voteCount === 1 && !isUnvote) {
-      isUnlock = true
     }
     if (isUnlock !== undefined) {
       unlockedStageIds = unlockAllStagesForPhase(

@@ -53,7 +53,9 @@ export default {
       await createNewOrg(orgId, orgName, viewerId)
       await createTeamAndLeader(viewerId, {id: teamId, orgId, isOnboardTeam: false, ...newTeam})
 
-      const tms = authToken.tms.concat(teamId)
+      const {tms} = authToken
+      // MUTATIVE
+      tms.push(teamId)
       sendSegmentEvent('New Org', viewerId, {orgId, teamId}).catch()
       publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
       updateAuth0TMS(viewerId, tms)

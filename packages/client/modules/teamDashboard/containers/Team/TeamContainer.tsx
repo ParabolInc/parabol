@@ -6,6 +6,7 @@ import {Route} from 'react-router'
 import {matchPath, Switch} from 'react-router-dom'
 import Team from '../../components/Team/Team'
 import useRouter from '../../../../hooks/useRouter'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
 
 const AgendaTasks = lazy(() =>
   import(/* webpackChunkName: 'AgendaAndTasksRoot' */ '../../components/AgendaAndTasksRoot')
@@ -29,12 +30,16 @@ const TeamContainer = (props: Props) => {
   const {history, match} = useRouter()
   const {location} = window
   const {pathname} = location
+  const atmosphere = useAtmosphere()
   useEffect(() => {
     if (viewer && !viewer.team) {
-      history.replace({
-        pathname: `/invitation-required`,
-        search: `?redirectTo=${encodeURIComponent(pathname)}&teamId=${teamId}`
-      })
+      const tms = atmosphere.authObj?.tms ?? []
+      if (!tms.includes(teamId)) {
+        history.replace({
+          pathname: `/invitation-required`,
+          search: `?redirectTo=${encodeURIComponent(pathname)}&teamId=${teamId}`
+        })
+      }
     }
   })
   if (viewer && !viewer.team) return null

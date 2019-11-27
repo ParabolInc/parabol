@@ -1,3 +1,4 @@
+/* Deprecated! Will remove when we remove auth0 */
 import {Component} from 'react'
 import {RouteComponentProps, withRouter} from 'react-router'
 import LoginMutation from '../mutations/LoginMutation'

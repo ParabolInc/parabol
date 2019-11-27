@@ -134,7 +134,7 @@ export interface IUser {
    * An array of objects with information about the user's identities.
    *       More than one will exists in case accounts are linked
    */
-  identities: Array<IAuthIdentityType | null> | null
+  identities: Array<AuthIdentity | null> | null
 
   /**
    * true if the user is not currently being billed for service. removed on every websocket handshake
@@ -1917,30 +1917,30 @@ export interface IGitHubAuth {
   userId: string
 }
 
-export interface IAuthIdentityType {
-  __typename: 'AuthIdentityType'
+/**
+ * An authentication strategy to log in to Parabol
+ */
+export type AuthIdentity = IAuthIdentityGoogle | IAuthIdentityLocal
+
+/**
+ * An authentication strategy to log in to Parabol
+ */
+export interface IAuthIdentity {
+  __typename: 'AuthIdentity'
 
   /**
-   * The connection name.
-   *       This field is not itself updateable
-   *       but is needed when updating email, email_verified, username or password.
+   * true if the email address using this strategy is verified, else false
    */
-  connection: string | null
+  isEmailVerified: boolean
+  type: AuthIdentityTypeEnum
+}
 
-  /**
-   * The unique identifier for the user for the identity.
-   */
-  userId: string | null
-
-  /**
-   * The type of identity provider.
-   */
-  provider: string | null
-
-  /**
-   * true if the identity provider is a social provider, false otherwise
-   */
-  isSocial: boolean | null
+/**
+ * The types of authentication strategies
+ */
+export const enum AuthIdentityTypeEnum {
+  LOCAL = 'LOCAL',
+  GOOGLE = 'GOOGLE'
 }
 
 /**
@@ -2645,13 +2645,23 @@ export interface IMutation {
    * Redeem an invitation token for a logged in user
    */
   acceptTeamInvitation: IAcceptTeamInvitationPayload
-  addAtlassianAuth: IAddAtlassianAuthPayload
-  addSlackAuth: IAddSlackAuthPayload
 
   /**
    * Create a new agenda item
    */
   addAgendaItem: IAddAgendaItemPayload | null
+  addAtlassianAuth: IAddAtlassianAuthPayload
+
+  /**
+   * Add a new template full of prompts
+   */
+  addReflectTemplate: IAddReflectTemplatePayload | null
+
+  /**
+   * Add a new template full of prompts
+   */
+  addReflectTemplatePrompt: IAddReflectTemplatePromptPayload | null
+  addSlackAuth: IAddSlackAuthPayload
 
   /**
    * Give someone advanced features in a flag
@@ -2753,6 +2763,11 @@ export interface IMutation {
   dragDiscussionTopic: IDragDiscussionTopicPayload | null
 
   /**
+   * Send an email to reset a password
+   */
+  emailPasswordReset: boolean
+
+  /**
    * Broadcast that the viewer stopped dragging a reflection
    */
   endDraggingReflection: IEndDraggingReflectionPayload | null
@@ -2768,6 +2783,11 @@ export interface IMutation {
   editTask: IEditTaskPayload | null
 
   /**
+   * Finish a new meeting
+   */
+  endNewMeeting: IEndNewMeetingPayload
+
+  /**
    * pauses the subscription for a single user
    */
   inactivateUser: IInactivateUserPayload | null
@@ -2778,9 +2798,24 @@ export interface IMutation {
   inviteToTeam: IInviteToTeamPayload
 
   /**
-   * Finish a new meeting
+   * Log in, or sign up if it is a new user
    */
-  endNewMeeting: IEndNewMeetingPayload
+  login: ILoginPayload
+
+  /**
+   * Sign up or login using Google
+   */
+  loginWithGoogle: ILoginWithGooglePayload
+
+  /**
+   * Login using an email address and password
+   */
+  loginWithPassword: ILoginWithPasswordPayload
+
+  /**
+   * Move a reflect template
+   */
+  moveReflectTemplatePrompt: IMoveReflectTemplatePromptPayload | null
 
   /**
    * Move a team to a different org. Requires billing leader rights on both orgs!
@@ -2843,6 +2878,26 @@ export interface IMutation {
   removeOrgUser: IRemoveOrgUserPayload | null
 
   /**
+   * Remove a template full of prompts
+   */
+  removeReflectTemplate: IRemoveReflectTemplatePayload | null
+
+  /**
+   * Remove a prompt from a template
+   */
+  removeReflectTemplatePrompt: IRemoveReflectTemplatePromptPayload | null
+
+  /**
+   * Rename a reflect template prompt
+   */
+  renameReflectTemplate: IRenameReflectTemplatePayload | null
+
+  /**
+   * Rename a reflect template
+   */
+  renameReflectTemplatePrompt: IRenameReflectTemplatePromptPayload | null
+
+  /**
    * Remove a reflection
    */
   removeReflection: IRemoveReflectionPayload | null
@@ -2858,6 +2913,11 @@ export interface IMutation {
   removeTeamMember: IRemoveTeamMemberPayload | null
 
   /**
+   * Reset the password for an account
+   */
+  resetPassword: IResetPasswordPayload
+
+  /**
    * track an event in segment, like when errors are hit
    */
   segmentEventTrack: boolean | null
@@ -2866,6 +2926,11 @@ export interface IMutation {
    * Set the selected template for the upcoming retro meeting
    */
   selectRetroTemplate: ISelectRetroTemplatePayload | null
+
+  /**
+   * Enabled or disable the check-in round
+   */
+  setCheckInEnabled: ISetCheckInEnabledPayload | null
 
   /**
    * Set the role of a user
@@ -2882,6 +2947,11 @@ export interface IMutation {
    */
   setStageTimer: ISetStageTimerPayload
   setSlackNotification: ISetSlackNotificationPayload
+
+  /**
+   * Sign up using an email address and password
+   */
+  signUpWithPassword: ISignUpWithPasswordPayload
 
   /**
    * Broadcast that the viewer started dragging a reflection
@@ -2951,54 +3021,9 @@ export interface IMutation {
   voteForReflectionGroup: IVoteForReflectionGroupPayload | null
 
   /**
-   * Log in, or sign up if it is a new user
-   */
-  login: ILoginPayload
-
-  /**
    * Upgrade an account to the paid service
    */
   upgradeToPro: IUpgradeToProPayload | null
-
-  /**
-   * Add a new template full of prompts
-   */
-  addReflectTemplate: IAddReflectTemplatePayload | null
-
-  /**
-   * Add a new template full of prompts
-   */
-  addReflectTemplatePrompt: IAddReflectTemplatePromptPayload | null
-
-  /**
-   * Move a reflect template
-   */
-  moveReflectTemplatePrompt: IMoveReflectTemplatePromptPayload | null
-
-  /**
-   * Remove a template full of prompts
-   */
-  removeReflectTemplate: IRemoveReflectTemplatePayload | null
-
-  /**
-   * Remove a prompt from a template
-   */
-  removeReflectTemplatePrompt: IRemoveReflectTemplatePromptPayload | null
-
-  /**
-   * Rename a reflect template prompt
-   */
-  renameReflectTemplate: IRenameReflectTemplatePayload | null
-
-  /**
-   * Rename a reflect template
-   */
-  renameReflectTemplatePrompt: IRenameReflectTemplatePromptPayload | null
-
-  /**
-   * Enabled or disable the check-in round
-   */
-  setCheckInEnabled: ISetCheckInEnabledPayload | null
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -3013,21 +3038,29 @@ export interface IAcceptTeamInvitationOnMutationArguments {
   notificationId?: string | null
 }
 
-export interface IAddAtlassianAuthOnMutationArguments {
-  code: string
-  teamId: string
-}
-
-export interface IAddSlackAuthOnMutationArguments {
-  code: string
-  teamId: string
-}
-
 export interface IAddAgendaItemOnMutationArguments {
   /**
    * The new task including an id, teamMemberId, and content
    */
   newAgendaItem: ICreateAgendaItemInput
+}
+
+export interface IAddAtlassianAuthOnMutationArguments {
+  code: string
+  teamId: string
+}
+
+export interface IAddReflectTemplateOnMutationArguments {
+  teamId: string
+}
+
+export interface IAddReflectTemplatePromptOnMutationArguments {
+  templateId: string
+}
+
+export interface IAddSlackAuthOnMutationArguments {
+  code: string
+  teamId: string
 }
 
 export interface IAddFeatureFlagOnMutationArguments {
@@ -3215,6 +3248,13 @@ export interface IDragDiscussionTopicOnMutationArguments {
   sortOrder: number
 }
 
+export interface IEmailPasswordResetOnMutationArguments {
+  /**
+   * email to send the password reset code to
+   */
+  email: string
+}
+
 export interface IEndDraggingReflectionOnMutationArguments {
   reflectionId: string
 
@@ -3255,6 +3295,13 @@ export interface IEditTaskOnMutationArguments {
   isEditing: boolean
 }
 
+export interface IEndNewMeetingOnMutationArguments {
+  /**
+   * The meeting to end
+   */
+  meetingId: string
+}
+
 export interface IInactivateUserOnMutationArguments {
   /**
    * the user to pause
@@ -3270,11 +3317,48 @@ export interface IInviteToTeamOnMutationArguments {
   invitees: Array<any>
 }
 
-export interface IEndNewMeetingOnMutationArguments {
+export interface ILoginOnMutationArguments {
   /**
-   * The meeting to end
+   * The ID Token from auth0, a base64 JWT
    */
-  meetingId: string
+  auth0Token: string
+
+  /**
+   * true if the user is signing up without a team invitation, else false
+   */
+  isOrganic: boolean
+
+  /**
+   * optional segment id created before they were a user
+   */
+  segmentId?: string | null
+}
+
+export interface ILoginWithGoogleOnMutationArguments {
+  /**
+   * The code provided from the OAuth2 flow
+   */
+  code: string
+
+  /**
+   * optional segment id created before they were a user
+   */
+  segmentId?: string | null
+
+  /**
+   * if present, the user is also joining a team
+   */
+  invitationToken?: string | null
+}
+
+export interface ILoginWithPasswordOnMutationArguments {
+  email: string
+  password: string
+}
+
+export interface IMoveReflectTemplatePromptOnMutationArguments {
+  promptId: string
+  sortOrder: number
 }
 
 export interface IMoveTeamToOrgOnMutationArguments {
@@ -3387,6 +3471,24 @@ export interface IRemoveOrgUserOnMutationArguments {
   orgId: string
 }
 
+export interface IRemoveReflectTemplateOnMutationArguments {
+  templateId: string
+}
+
+export interface IRemoveReflectTemplatePromptOnMutationArguments {
+  promptId: string
+}
+
+export interface IRenameReflectTemplateOnMutationArguments {
+  templateId: string
+  name: string
+}
+
+export interface IRenameReflectTemplatePromptOnMutationArguments {
+  promptId: string
+  question: string
+}
+
 export interface IRemoveReflectionOnMutationArguments {
   reflectionId: string
 }
@@ -3405,6 +3507,18 @@ export interface IRemoveTeamMemberOnMutationArguments {
   teamMemberId: string
 }
 
+export interface IResetPasswordOnMutationArguments {
+  /**
+   * the password reset token
+   */
+  token: string
+
+  /**
+   * The new password for the account
+   */
+  newPassword: string
+}
+
 export interface ISegmentEventTrackOnMutationArguments {
   event: SegmentClientEventEnum
   options?: ISegmentEventTrackOptions | null
@@ -3413,6 +3527,15 @@ export interface ISegmentEventTrackOnMutationArguments {
 export interface ISelectRetroTemplateOnMutationArguments {
   selectedTemplateId: string
   teamId: string
+}
+
+export interface ISetCheckInEnabledOnMutationArguments {
+  settingsId: string
+
+  /**
+   * true to turn check-in phase on, false to turn it off
+   */
+  isEnabled: boolean
 }
 
 export interface ISetOrgUserRoleOnMutationArguments {
@@ -3462,6 +3585,21 @@ export interface ISetSlackNotificationOnMutationArguments {
   slackChannelId?: string | null
   slackNotificationEvents: Array<SlackNotificationEventEnum>
   teamId: string
+}
+
+export interface ISignUpWithPasswordOnMutationArguments {
+  email: string
+  password: string
+
+  /**
+   * optional segment id created before they were a user
+   */
+  segmentId?: string | null
+
+  /**
+   * used to determine what suggested actions to create
+   */
+  invitationToken?: string | null
 }
 
 export interface IStartDraggingReflectionOnMutationArguments {
@@ -3594,23 +3732,6 @@ export interface IVoteForReflectionGroupOnMutationArguments {
   reflectionGroupId: string
 }
 
-export interface ILoginOnMutationArguments {
-  /**
-   * The ID Token from auth0, a base64 JWT
-   */
-  auth0Token: string
-
-  /**
-   * true if the user is signing up without a team invitation, else false
-   */
-  isOrganic: boolean
-
-  /**
-   * optional segment id created before they were a user
-   */
-  segmentId?: string | null
-}
-
 export interface IUpgradeToProOnMutationArguments {
   /**
    * the org requesting the upgrade
@@ -3621,46 +3742,6 @@ export interface IUpgradeToProOnMutationArguments {
    * The token that came back from stripe
    */
   stripeToken: string
-}
-
-export interface IAddReflectTemplateOnMutationArguments {
-  teamId: string
-}
-
-export interface IAddReflectTemplatePromptOnMutationArguments {
-  templateId: string
-}
-
-export interface IMoveReflectTemplatePromptOnMutationArguments {
-  promptId: string
-  sortOrder: number
-}
-
-export interface IRemoveReflectTemplateOnMutationArguments {
-  templateId: string
-}
-
-export interface IRemoveReflectTemplatePromptOnMutationArguments {
-  promptId: string
-}
-
-export interface IRenameReflectTemplateOnMutationArguments {
-  templateId: string
-  name: string
-}
-
-export interface IRenameReflectTemplatePromptOnMutationArguments {
-  promptId: string
-  question: string
-}
-
-export interface ISetCheckInEnabledOnMutationArguments {
-  settingsId: string
-
-  /**
-   * true to turn check-in phase on, false to turn it off
-   */
-  isEnabled: boolean
 }
 
 export interface IAcceptTeamInvitationPayload {
@@ -3693,36 +3774,6 @@ export interface IAcceptTeamInvitationPayload {
   teamLead: IUser | null
 }
 
-export interface IAddAtlassianAuthPayload {
-  __typename: 'AddAtlassianAuthPayload'
-  error: IStandardMutationError | null
-
-  /**
-   * The newly created auth
-   */
-  atlassianAuth: IAtlassianAuth | null
-
-  /**
-   * The user with updated atlassianAuth
-   */
-  user: IUser | null
-}
-
-export interface IAddSlackAuthPayload {
-  __typename: 'AddSlackAuthPayload'
-  error: IStandardMutationError | null
-
-  /**
-   * The newly created auth
-   */
-  slackAuth: ISlackAuth | null
-
-  /**
-   * The user with updated slackAuth
-   */
-  user: IUser | null
-}
-
 export interface ICreateAgendaItemInput {
   /**
    * The content of the agenda item
@@ -3751,6 +3802,147 @@ export interface IAddAgendaItemPayload {
    * The meeting with the updated agenda item, if any
    */
   meeting: NewMeeting | null
+}
+
+export interface IAddAtlassianAuthPayload {
+  __typename: 'AddAtlassianAuthPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The newly created auth
+   */
+  atlassianAuth: IAtlassianAuth | null
+
+  /**
+   * The user with updated atlassianAuth
+   */
+  user: IUser | null
+}
+
+export interface IAddReflectTemplatePayload {
+  __typename: 'AddReflectTemplatePayload'
+  error: IStandardMutationError | null
+  reflectTemplate: IReflectTemplate | null
+}
+
+/**
+ * The team-specific templates for the reflection prompts
+ */
+export interface IReflectTemplate {
+  __typename: 'ReflectTemplate'
+  id: string
+  createdAt: any
+
+  /**
+   * True if template can be used, else false
+   */
+  isActive: boolean
+
+  /**
+   * The time of the meeting the template was last used
+   */
+  lastUsedAt: any | null
+
+  /**
+   * The name of the template
+   */
+  name: string
+
+  /**
+   * The prompts that are part of this template
+   */
+  prompts: Array<IRetroPhaseItem>
+
+  /**
+   * *Foreign key. The team this template belongs to
+   */
+  teamId: string
+  updatedAt: any
+}
+
+/**
+ * A team-specific retro phase. Usually 3 or 4 exist per team, eg Good/Bad/Change, 4Ls, etc.
+ */
+export interface IRetroPhaseItem {
+  __typename: 'RetroPhaseItem'
+
+  /**
+   * shortid
+   */
+  id: string
+  createdAt: any
+
+  /**
+   * The type of phase item
+   */
+  phaseItemType: CustomPhaseItemTypeEnum | null
+
+  /**
+   * true if the phase item is currently used by the team, else false
+   */
+  isActive: boolean | null
+
+  /**
+   * foreign key. use the team field
+   */
+  teamId: string
+
+  /**
+   * The team that owns this customPhaseItem
+   */
+  team: ITeam | null
+  updatedAt: any
+
+  /**
+   * the order of the items in the template
+   */
+  sortOrder: number
+
+  /**
+   * FK for template
+   */
+  templateId: string
+
+  /**
+   * The template that this prompt belongs to
+   */
+  template: IReflectTemplate
+
+  /**
+   * The title of the phase of the retrospective. Often a short version of the question
+   */
+  title: string
+
+  /**
+   * The question to answer during the phase of the retrospective (eg What went well?)
+   */
+  question: string
+
+  /**
+   * The description to the question for further context. A long version of the question.
+   */
+  description: string
+}
+
+export interface IAddReflectTemplatePromptPayload {
+  __typename: 'AddReflectTemplatePromptPayload'
+  error: IStandardMutationError | null
+  prompt: IRetroPhaseItem | null
+}
+
+export interface IAddSlackAuthPayload {
+  __typename: 'AddSlackAuthPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The newly created auth
+   */
+  slackAuth: ISlackAuth | null
+
+  /**
+   * The user with updated slackAuth
+   */
+  user: IUser | null
 }
 
 /**
@@ -4187,105 +4379,6 @@ export interface IRetroReflectionGroup {
    * The number of votes the viewer has given this group
    */
   viewerVoteCount: number | null
-}
-
-/**
- * A team-specific retro phase. Usually 3 or 4 exist per team, eg Good/Bad/Change, 4Ls, etc.
- */
-export interface IRetroPhaseItem {
-  __typename: 'RetroPhaseItem'
-
-  /**
-   * shortid
-   */
-  id: string
-  createdAt: any
-
-  /**
-   * The type of phase item
-   */
-  phaseItemType: CustomPhaseItemTypeEnum | null
-
-  /**
-   * true if the phase item is currently used by the team, else false
-   */
-  isActive: boolean | null
-
-  /**
-   * foreign key. use the team field
-   */
-  teamId: string
-
-  /**
-   * The team that owns this customPhaseItem
-   */
-  team: ITeam | null
-  updatedAt: any
-
-  /**
-   * the order of the items in the template
-   */
-  sortOrder: number
-
-  /**
-   * FK for template
-   */
-  templateId: string
-
-  /**
-   * The template that this prompt belongs to
-   */
-  template: IReflectTemplate
-
-  /**
-   * The title of the phase of the retrospective. Often a short version of the question
-   */
-  title: string
-
-  /**
-   * The question to answer during the phase of the retrospective (eg What went well?)
-   */
-  question: string
-
-  /**
-   * The description to the question for further context. A long version of the question.
-   */
-  description: string
-}
-
-/**
- * The team-specific templates for the reflection prompts
- */
-export interface IReflectTemplate {
-  __typename: 'ReflectTemplate'
-  id: string
-  createdAt: any
-
-  /**
-   * True if template can be used, else false
-   */
-  isActive: boolean
-
-  /**
-   * The time of the meeting the template was last used
-   */
-  lastUsedAt: any | null
-
-  /**
-   * The name of the template
-   */
-  name: string
-
-  /**
-   * The prompts that are part of this template
-   */
-  prompts: Array<IRetroPhaseItem>
-
-  /**
-   * *Foreign key. The team this template belongs to
-   */
-  teamId: string
-  updatedAt: any
 }
 
 /**
@@ -4984,6 +5077,30 @@ export interface IEditTaskPayload {
   isEditing: boolean | null
 }
 
+export interface IEndNewMeetingPayload {
+  __typename: 'EndNewMeetingPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * true if the meeting was killed (ended before reaching last stage)
+   */
+  isKill: boolean | null
+  team: ITeam | null
+  meeting: NewMeeting | null
+
+  /**
+   * The ID of the suggestion to try a retro meeting, if tried
+   */
+  removedSuggestedActionId: string | null
+  removedTaskIds: Array<string> | null
+  updatedTaskIds: Array<string> | null
+
+  /**
+   * Any tasks that were updated during the meeting
+   */
+  updatedTasks: Array<ITask>
+}
+
 export interface IInactivateUserPayload {
   __typename: 'InactivateUserPayload'
   error: IStandardMutationError | null
@@ -5073,28 +5190,57 @@ export interface INotificationTeamInvitation {
   userIds: Array<string>
 }
 
-export interface IEndNewMeetingPayload {
-  __typename: 'EndNewMeetingPayload'
+export interface ILoginPayload {
+  __typename: 'LoginPayload'
   error: IStandardMutationError | null
 
   /**
-   * true if the meeting was killed (ended before reaching last stage)
+   * The user that just logged in
    */
-  isKill: boolean | null
-  team: ITeam | null
-  meeting: NewMeeting | null
+  user: IUser | null
 
   /**
-   * The ID of the suggestion to try a retro meeting, if tried
+   * The new JWT
    */
-  removedSuggestedActionId: string | null
-  removedTaskIds: Array<string> | null
-  updatedTaskIds: Array<string> | null
+  authToken: string | null
+}
+
+export interface ILoginWithGooglePayload {
+  __typename: 'LoginWithGooglePayload'
+  error: IStandardMutationError | null
 
   /**
-   * Any tasks that were updated during the meeting
+   * The new auth token
    */
-  updatedTasks: Array<ITask>
+  authToken: string | null
+  userId: string | null
+
+  /**
+   * the newly created user
+   */
+  user: IUser | null
+}
+
+export interface ILoginWithPasswordPayload {
+  __typename: 'LoginWithPasswordPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The new auth token
+   */
+  authToken: string | null
+  userId: string | null
+
+  /**
+   * the newly created user
+   */
+  user: IUser | null
+}
+
+export interface IMoveReflectTemplatePromptPayload {
+  __typename: 'MoveReflectTemplatePromptPayload'
+  error: IStandardMutationError | null
+  prompt: IRetroPhaseItem | null
 }
 
 export interface INavigateMeetingPayload {
@@ -5385,6 +5531,32 @@ export interface INotifyKickedOut {
   team: ITeam
 }
 
+export interface IRemoveReflectTemplatePayload {
+  __typename: 'RemoveReflectTemplatePayload'
+  error: IStandardMutationError | null
+  reflectTemplate: IReflectTemplate | null
+  retroMeetingSettings: IRetrospectiveMeetingSettings | null
+}
+
+export interface IRemoveReflectTemplatePromptPayload {
+  __typename: 'RemoveReflectTemplatePromptPayload'
+  error: IStandardMutationError | null
+  reflectTemplate: IReflectTemplate | null
+  prompt: IReflectTemplate | null
+}
+
+export interface IRenameReflectTemplatePayload {
+  __typename: 'RenameReflectTemplatePayload'
+  error: IStandardMutationError | null
+  reflectTemplate: IReflectTemplate | null
+}
+
+export interface IRenameReflectTemplatePromptPayload {
+  __typename: 'RenameReflectTemplatePromptPayload'
+  error: IStandardMutationError | null
+  prompt: IRetroPhaseItem | null
+}
+
 export interface IRemoveReflectionPayload {
   __typename: 'RemoveReflectionPayload'
   error: IStandardMutationError | null
@@ -5448,6 +5620,22 @@ export interface IRemoveTeamMemberPayload {
   kickOutNotification: INotifyKickedOut | null
 }
 
+export interface IResetPasswordPayload {
+  __typename: 'ResetPasswordPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The new auth token
+   */
+  authToken: string | null
+  userId: string | null
+
+  /**
+   * the user that changed their password
+   */
+  user: IUser | null
+}
+
 /**
  * The client event to report to segment
  */
@@ -5467,6 +5655,12 @@ export interface ISelectRetroTemplatePayload {
   __typename: 'SelectRetroTemplatePayload'
   error: IStandardMutationError | null
   retroMeetingSettings: IRetrospectiveMeetingSettings | null
+}
+
+export interface ISetCheckInEnabledPayload {
+  __typename: 'SetCheckInEnabledPayload'
+  error: IStandardMutationError | null
+  settings: TeamMeetingSettings | null
 }
 
 export type SetOrgUserRolePayload = ISetOrgUserRoleAddedPayload | ISetOrgUserRoleRemovedPayload
@@ -5629,6 +5823,22 @@ export interface ISetSlackNotificationPayload {
 
   /**
    * The user with updated slack notifications
+   */
+  user: IUser | null
+}
+
+export interface ISignUpWithPasswordPayload {
+  __typename: 'SignUpWithPasswordPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The new auth token
+   */
+  authToken: string | null
+  userId: string | null
+
+  /**
+   * the newly created user
    */
   user: IUser | null
 }
@@ -5881,21 +6091,6 @@ export interface IVoteForReflectionGroupPayload {
   unlockedStages: Array<NewMeetingStage> | null
 }
 
-export interface ILoginPayload {
-  __typename: 'LoginPayload'
-  error: IStandardMutationError | null
-
-  /**
-   * The user that just logged in
-   */
-  user: IUser | null
-
-  /**
-   * The new JWT
-   */
-  authToken: string | null
-}
-
 export interface IUpgradeToProPayload {
   __typename: 'UpgradeToProPayload'
   error: IStandardMutationError | null
@@ -5919,56 +6114,6 @@ export interface IUpgradeToProPayload {
    * the meetings that were showing conversion modals
    */
   meetings: Array<NewMeeting> | null
-}
-
-export interface IAddReflectTemplatePayload {
-  __typename: 'AddReflectTemplatePayload'
-  error: IStandardMutationError | null
-  reflectTemplate: IReflectTemplate | null
-}
-
-export interface IAddReflectTemplatePromptPayload {
-  __typename: 'AddReflectTemplatePromptPayload'
-  error: IStandardMutationError | null
-  prompt: IRetroPhaseItem | null
-}
-
-export interface IMoveReflectTemplatePromptPayload {
-  __typename: 'MoveReflectTemplatePromptPayload'
-  error: IStandardMutationError | null
-  prompt: IRetroPhaseItem | null
-}
-
-export interface IRemoveReflectTemplatePayload {
-  __typename: 'RemoveReflectTemplatePayload'
-  error: IStandardMutationError | null
-  reflectTemplate: IReflectTemplate | null
-  retroMeetingSettings: IRetrospectiveMeetingSettings | null
-}
-
-export interface IRemoveReflectTemplatePromptPayload {
-  __typename: 'RemoveReflectTemplatePromptPayload'
-  error: IStandardMutationError | null
-  reflectTemplate: IReflectTemplate | null
-  prompt: IReflectTemplate | null
-}
-
-export interface IRenameReflectTemplatePayload {
-  __typename: 'RenameReflectTemplatePayload'
-  error: IStandardMutationError | null
-  reflectTemplate: IReflectTemplate | null
-}
-
-export interface IRenameReflectTemplatePromptPayload {
-  __typename: 'RenameReflectTemplatePromptPayload'
-  error: IStandardMutationError | null
-  prompt: IRetroPhaseItem | null
-}
-
-export interface ISetCheckInEnabledPayload {
-  __typename: 'SetCheckInEnabledPayload'
-  error: IStandardMutationError | null
-  settings: TeamMeetingSettings | null
 }
 
 export interface ISubscription {
@@ -6232,6 +6377,37 @@ export type TeamSubscriptionPayload =
   | ISetCheckInEnabledPayload
   | ISetSlackNotificationPayload
   | IUpdateUserProfilePayload
+
+/**
+ * An authentication strategy using Google
+ */
+export interface IAuthIdentityGoogle {
+  __typename: 'AuthIdentityGoogle'
+
+  /**
+   * true if the email address using this strategy is verified, else false
+   */
+  isEmailVerified: boolean
+  type: AuthIdentityTypeEnum
+
+  /**
+   * The googleID for this strategy
+   */
+  id: string
+}
+
+/**
+ * An authentication strategy using an email & password
+ */
+export interface IAuthIdentityLocal {
+  __typename: 'AuthIdentityLocal'
+
+  /**
+   * true if the email address using this strategy is verified, else false
+   */
+  isEmailVerified: boolean
+  type: AuthIdentityTypeEnum
+}
 
 /**
  * The meeting phase where all team members check in one-by-one

@@ -204,9 +204,9 @@ const initDemoTeam = (organization, teamMembers, newMeeting) => {
     id: demoTeamId,
     isArchived: false,
     isPaid: true,
+    activeMeetings: [newMeeting],
     agendaItems: [],
     massInviteToken: '42',
-    meetingId: RetroDemo.MEETING_ID,
     name: demoTeamName,
     teamName: demoTeamName,
     orgId: demoOrgId,
@@ -214,8 +214,7 @@ const initDemoTeam = (organization, teamMembers, newMeeting) => {
     teamId: demoTeamId,
     organization,
     meetingSettings: initMeetingSettings(),
-    teamMembers,
-    newMeeting
+    teamMembers
   }
 }
 
@@ -227,6 +226,7 @@ const initCheckInStage = (teamMember) => ({
   meetingId: RetroDemo.MEETING_ID,
   phaseType: CHECKIN,
   teamMemberId: teamMember.id,
+  meetingMember: teamMember.meetingMember,
   teamMember
 })
 
@@ -337,13 +337,14 @@ const initPhases = (teamMembers) => {
   ]
 }
 
-const initNewMeeting = (teamMembers, meetingMembers) => {
+const initNewMeeting = (organization, teamMembers, meetingMembers) => {
   const now = new Date().toJSON()
   const [viewerMeetingMember] = meetingMembers
   const [viewerTeamMember] = teamMembers
   return {
     __typename: 'RetrospectiveMeeting',
     createdAt: now,
+    defaultFacilitatorUserId: demoViewerId,
     endedAt: null,
     facilitatorStageId: 'reflectStage',
     facilitatorUserId: demoViewerId,
@@ -354,6 +355,7 @@ const initNewMeeting = (teamMembers, meetingMembers) => {
     meetingNumber: 1,
     meetingType: RETROSPECTIVE,
     meetingMember: viewerMeetingMember,
+    organization,
     showConversionModal: false,
     meetingMembers,
     nextAutoGroupThreshold: null,
@@ -389,7 +391,7 @@ const initDB = (botScript) => {
     ;(user as any).teamMember = teamMembers[idx]
   })
   const org = initDemoOrg()
-  const newMeeting = initNewMeeting(teamMembers, meetingMembers)
+  const newMeeting = initNewMeeting(org, teamMembers, meetingMembers)
   const team = initDemoTeam(org, teamMembers, newMeeting)
   teamMembers.forEach((teamMember) => {
     ;(teamMember as any).team = team

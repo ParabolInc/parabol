@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import GenericAuthentication, {AuthPageSlug, GotoAuathPage} from './GenericAuthentication'
+import GenericAuthentication, {AuthPageSlug, GotoAuthPage} from './GenericAuthentication'
 
 interface Props {
   teamName: string
@@ -8,7 +8,7 @@ interface Props {
 
 const InvitationLinkAuthentication = (props: Props) => {
   const [page, setPage] = useState<AuthPageSlug>('create-account')
-  const gotoPage: GotoAuathPage = (page) => {
+  const gotoPage: GotoAuthPage = (page) => {
     setPage(page)
   }
   return <GenericAuthentication {...props} gotoPage={gotoPage} page={page} />

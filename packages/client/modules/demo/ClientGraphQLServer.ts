@@ -202,11 +202,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
     },
-    RetroRootQuery: () => {
+    DemoMeetingRootQuery: () => {
       return {
         viewer: {
           ...this.db.users[0],
-          team: this.db.team
+          meeting: this.db.newMeeting
         }
       }
     },
@@ -475,10 +475,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           const groupData = phaseCompleteData[GROUP]
           if (groupData) {
             Object.assign(groupData, {
-              meeting: this.db.newMeeting,
-              reflectionGroups: groupData.reflectionGroupIds.map((id) =>
-                this.db.reflectionGroups.find((group) => group.id === id)
-              )
+              meeting: this.db.newMeeting
             })
           } else if (phaseCompleteData[VOTE]) {
             Object.assign(phaseCompleteData[VOTE], {
@@ -1141,6 +1138,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         team: this.db.team,
         teamId: demoTeamId,
         isKill: !currentStage,
+        removedTaskIds: [],
         updatedTasks: this.db.tasks,
         __typename: 'EndNewMeetingPayload'
       }

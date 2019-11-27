@@ -324,13 +324,13 @@ export default class Atmosphere extends Environment {
     this.upgradeTransportPromise = null
     this.authObj = null
     this.authToken = null
+    if (this.transport instanceof GQLTrebuchetClient) {
+      this.transport.close()
+    }
     this.transport = new GQLHTTPClient(this.fetchHTTP)
     this.querySubscriptions = []
     this.subscriptions = {}
     this.viewerId = null!
     this.userId = null // DEPRECATED
-    if (this.transport instanceof GQLTrebuchetClient) {
-      this.transport.close()
-    }
   }
 }

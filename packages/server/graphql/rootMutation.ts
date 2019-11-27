@@ -79,6 +79,11 @@ import pushInvitation from './mutations/pushInvitation'
 import denyPushInvitation from './mutations/denyPushInvitation'
 import payLater from './mutations/payLater'
 import setCheckInEnabled from './mutations/setCheckInEnabled'
+import signUpWithPassword from './mutations/signUpWithPassword'
+import loginWithGoogle from './mutations/loginWithGoogle'
+import loginWithPassword from './mutations/loginWithPassword'
+import emailPasswordReset from './mutations/emailPasswordReset'
+import resetPassword from './mutations/resetPassword'
 
 interface Context extends InternalContext, GQLContext {}
 
@@ -86,9 +91,11 @@ export default new GraphQLObjectType<any, Context, any>({
   name: 'Mutation',
   fields: () => ({
     acceptTeamInvitation,
-    addAtlassianAuth,
-    addSlackAuth,
     addAgendaItem,
+    addAtlassianAuth,
+    addReflectTemplate,
+    addReflectTemplatePrompt,
+    addSlackAuth,
     addFeatureFlag,
     addGitHubAuth,
     addOrg,
@@ -112,12 +119,17 @@ export default new GraphQLObjectType<any, Context, any>({
     dismissSuggestedAction,
     downgradeToPersonal,
     dragDiscussionTopic,
+    emailPasswordReset,
     endDraggingReflection,
     editReflection,
     editTask,
+    endNewMeeting,
     inactivateUser,
     inviteToTeam,
-    endNewMeeting,
+    login,
+    loginWithGoogle,
+    loginWithPassword,
+    moveReflectTemplatePrompt,
     moveTeamToOrg,
     navigateMeeting,
     newMeetingCheckIn,
@@ -130,15 +142,22 @@ export default new GraphQLObjectType<any, Context, any>({
     removeAtlassianAuth,
     removeGitHubAuth,
     removeOrgUser,
+    removeReflectTemplate,
+    removeReflectTemplatePrompt,
+    renameReflectTemplate,
+    renameReflectTemplatePrompt,
     removeReflection,
     removeSlackAuth,
     removeTeamMember,
+    resetPassword,
     segmentEventTrack,
     selectRetroTemplate,
+    setCheckInEnabled,
     setOrgUserRole,
     setPhaseFocus,
     setStageTimer,
     setSlackNotification,
+    signUpWithPassword,
     startDraggingReflection,
     startNewMeeting,
     toggleAgendaList,
@@ -154,15 +173,6 @@ export default new GraphQLObjectType<any, Context, any>({
     updateTeamName,
     updateUserProfile,
     voteForReflectionGroup,
-    login,
-    upgradeToPro,
-    addReflectTemplate,
-    addReflectTemplatePrompt,
-    moveReflectTemplatePrompt,
-    removeReflectTemplate,
-    removeReflectTemplatePrompt,
-    renameReflectTemplate,
-    renameReflectTemplatePrompt,
-    setCheckInEnabled
+    upgradeToPro
   })
 })

@@ -2,7 +2,6 @@ import React from 'react'
 import makeDateString from '../../../../utils/makeDateString'
 import {MEETING_SUMMARY_LABEL} from '../../../../utils/constants'
 import {meetingTypeToLabel} from '../../../../utils/meetings/lookups'
-import {headCSS} from '../../../../styles/email'
 import {GQLContext} from '../../../../../server/graphql/graphql'
 import emailTemplate from './MeetingSummaryEmail/EmailTemplate'
 import {PALETTE} from '../../../../styles/paletteV2'
@@ -34,7 +33,6 @@ const newMeetingSummaryEmailCreator = async (props: Props) => {
   const subject = `${teamName} ${dateStr} ${meetingLabel} Meeting ${MEETING_SUMMARY_LABEL}`
   const html = emailTemplate({
     bodyContent,
-    headCSS,
     title: subject,
     previewText: subject,
     bgColor: PALETTE.BACKGROUND_MAIN

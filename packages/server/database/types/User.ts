@@ -1,7 +1,9 @@
-import Auth0Identity from './Auth0Identity'
+import {AuthTokenRole} from 'parabol-client/types/constEnums'
+import AuthIdentity from './AuthIdentity'
+import shortid from 'shortid'
 
 interface Input {
-  id: string
+  id?: string
   preferredName: string
   email: string
   emailVerified?: boolean
@@ -12,7 +14,7 @@ interface Input {
   updatedAt?: Date
   picture?: string
   inactive?: boolean
-  identities?: Auth0Identity[]
+  identities?: AuthIdentity[]
   createdAt?: Date
   segmentId?: string
   tms?: string[]
@@ -34,10 +36,11 @@ export default class User {
   updatedAt: Date
   picture: string
   inactive: boolean
-  identities: Auth0Identity[]
+  identities: AuthIdentity[]
   createdAt: Date
   segmentId?: string
   tms: string[]
+  rol?: AuthTokenRole.SUPER_USER
   constructor(input: Input) {
     const {
       tms,
@@ -58,12 +61,13 @@ export default class User {
     } = input
     const avatarName =
       preferredName
+        .toLowerCase()
         .split('')
         .filter((letter) => letters.includes(letter))
         .slice(0, 2)
         .join('') || 'pa'
     const now = new Date()
-    this.id = id
+    this.id = id ?? `local|${shortid.generate()}`
     this.connectedSockets = []
     this.tms = tms || []
     this.email = email

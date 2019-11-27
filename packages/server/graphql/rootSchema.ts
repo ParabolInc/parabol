@@ -30,12 +30,16 @@ import ActionMeeting from './types/ActionMeeting'
 import ActionMeetingMember from './types/ActionMeetingMember'
 import UpdatesPhase from './types/UpdatesPhase'
 import AgendaItemsPhase from './types/AgendaItemsPhase'
+import AuthIdentityGoogle from './types/AuthIdentityGoogle'
+import AuthIdentityLocal from './types/AuthIdentityLocal'
 
 export default new GraphQLSchema({
   query,
   mutation,
   subscription,
   types: [
+    AuthIdentityGoogle,
+    AuthIdentityLocal,
     CheckInPhase,
     ReflectPhase,
     DiscussPhase,

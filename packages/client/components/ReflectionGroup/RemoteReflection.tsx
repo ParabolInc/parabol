@@ -11,7 +11,6 @@ import {RemoteReflection_reflection} from '../../__generated__/RemoteReflection_
 import getBBox from '../RetroReflectPhase/getBBox'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {DeepNonNullable} from '../../types/generics'
-import useForceUpdate from '../../hooks/useForceUpdate'
 import {getMinTop} from '../../utils/retroGroup/updateClonePosition'
 import useEditorState from '../../hooks/useEditorState'
 
@@ -119,22 +118,7 @@ const RemoteReflection = (props: Props) => {
     NonNullable<RemoteReflection_reflection['remoteDrag']>
   >
   const ref = useRef<HTMLDivElement>(null)
-  const cAFRef = useRef(0)
-  useEffect(() => {
-    return () => {
-      cancelAnimationFrame(cAFRef.current)
-    }
-  }, [])
   const [editorState] = useEditorState(content)
-  const forceUpdate = useForceUpdate()
-  useEffect(() => {
-    // continuously update the position if dropping animation has begun
-    if (isDropping) {
-      cAFRef.current = requestAnimationFrame(() => {
-        forceUpdate()
-      })
-    }
-  })
   const timeoutRef = useRef(0)
   const atmosphere = useAtmosphere()
   useEffect(() => {

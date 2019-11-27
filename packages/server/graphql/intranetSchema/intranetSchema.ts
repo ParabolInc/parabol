@@ -23,6 +23,8 @@ import stripeInvoiceFinalized from './mutations/stripeInvoiceFinalized'
 import stripeUpdateCreditCard from './mutations/stripeUpdateCreditCard'
 import stripeUpdateInvoiceItem from './mutations/stripeUpdateInvoiceItem'
 import flagConversionModal from './mutations/flagConversionModal'
+import logins from './queries/logins'
+import signups from './queries/signups'
 
 const query = new GraphQLObjectType<any, GQLContext, any>({
   name: 'Query',
@@ -32,7 +34,9 @@ const query = new GraphQLObjectType<any, GQLContext, any>({
     suUserCount,
     suProOrgInfo,
     suOrgCount,
-    user
+    user,
+    logins,
+    signups
   })
 })
 
@@ -55,7 +59,7 @@ const mutation = new GraphQLObjectType<any, GQLContext, any>({
     stripeSucceedPayment,
     stripeUpdateCreditCard,
     stripeUpdateInvoiceItem,
-    stripeInvoiceFinalized,
+    stripeInvoiceFinalized
   })
 })
 
