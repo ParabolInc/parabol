@@ -6,7 +6,6 @@ import User from '../../database/types/User'
 import {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
 import encodeAuthToken from '../../utils/encodeAuthToken'
 import AuthToken from '../../database/types/AuthToken'
-import shortid from 'shortid'
 import rateLimit from '../rateLimit'
 import {AuthIdentityTypeEnum} from 'parabol-client/types/graphql'
 import GoogleServerManager from '../../utils/GoogleServerManager'
@@ -98,7 +97,7 @@ const loginWithGoogle = {
       // it's a new user!
       const nickname = name || email.substring(0, email.indexOf('@'))
       const preferredName = nickname.length === 1 ? nickname.repeat(2) : nickname
-      const userId = `u_${shortid.generate()}`
+      const userId = `google-oauth2|${sub}`
       const identity = new AuthIdentityGoogle({
         id: sub,
         isEmailVerified: email_verified !== 'false'

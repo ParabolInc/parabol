@@ -1,8 +1,9 @@
 import {AuthTokenRole} from 'parabol-client/types/constEnums'
 import AuthIdentity from './AuthIdentity'
+import shortid from 'shortid'
 
 interface Input {
-  id: string
+  id?: string
   preferredName: string
   email: string
   emailVerified?: boolean
@@ -66,7 +67,7 @@ export default class User {
         .slice(0, 2)
         .join('') || 'pa'
     const now = new Date()
-    this.id = id
+    this.id = id ?? `local|${shortid.generate()}`
     this.connectedSockets = []
     this.tms = tms || []
     this.email = email

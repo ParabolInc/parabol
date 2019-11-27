@@ -2,7 +2,6 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import SignUpWithPasswordPayload from '../types/SignUpWithPasswordPayload'
 import User from '../../database/types/User'
 import AuthIdentityLocal from '../../database/types/AuthIdentityLocal'
-import shortid from 'shortid'
 import {AuthenticationError, Security} from 'parabol-client/types/constEnums'
 import rateLimit from '../rateLimit'
 import {AuthIdentityTypeEnum} from 'parabol-client/types/graphql'
@@ -53,16 +52,15 @@ const signUpWithPassword = {
       const nickname = email.substring(0, email.indexOf('@'))
       const preferredName = nickname.length === 1 ? nickname.repeat(2) : nickname
       const hashedPassword = await bcrypt.hash(password, Security.SALT_ROUNDS)
-      const userId = `u_${shortid.generate()}`
-      const identityId = `${userId}:${AuthIdentityTypeEnum.LOCAL}`
-      const identity = new AuthIdentityLocal({hashedPassword, id: identityId})
       const newUser = new User({
-        id: userId,
         preferredName,
         email,
-        identities: [identity],
+        identities: [],
         segmentId
       })
+      const {id: userId} = newUser
+      const identityId = `${userId}:${AuthIdentityTypeEnum.LOCAL}`
+      newUser.identities.push(new AuthIdentityLocal({hashedPassword, id: identityId}))
       // MUTATIVE
       context.authToken = await bootstrapNewUser(newUser, isOrganic, segmentId)
       return {
