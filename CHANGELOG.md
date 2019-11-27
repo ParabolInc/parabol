@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.14.0 2019-Nov-27
+
+## Added
+* A subscription channel for each meeting (#3376)
+
+## Removed
+* Auth0 (#3372)
+
+## Fixed
+* Race condition to 2 votes (#3367)
+
 ## 4.13.0 2019-Nov-19
 
 ## Fixed
