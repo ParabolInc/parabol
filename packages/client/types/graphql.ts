@@ -6398,26 +6398,6 @@ export interface IAuthIdentityLocal {
    */
   isEmailVerified: boolean
   type: AuthIdentityTypeEnum
-
-  /**
-   * The token used to verify the user's email address. If null, verification is not pending
-   */
-  verifiedEmailToken: string | null
-
-  /**
-   * The token expiration. If null, verification not pending
-   */
-  verifiedEmailTokenExpiration: any | null
-
-  /**
-   * The token used to reset the local strategy's password. If null, no reset is pending
-   */
-  resetPasswordToken: string | null
-
-  /**
-   * The token expiration. If null, verification is complete
-   */
-  resetPasswordTokenExpiration: any | null
 }
 
 /**
