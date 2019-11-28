@@ -12,6 +12,7 @@ import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
 import Icon from './Icon'
 import getGraphQLError from '../utils/relay/getGraphQLError'
+import isTempId from '../utils/relay/isTempId'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   isExpanded: boolean
@@ -46,9 +47,9 @@ const UpvoteColumn = styled('div')({
 class ReflectionGroupVoting extends Component<Props> {
   vote = () => {
     const {atmosphere, meeting, onError, onCompleted, reflectionGroup, submitMutation} = this.props
-
     const {id: meetingId} = meeting
     const {id: reflectionGroupId} = reflectionGroup
+    if (isTempId(reflectionGroupId)) return
     submitMutation()
     const handleCompleted = (res, errors) => {
       onCompleted()
@@ -56,7 +57,7 @@ class ReflectionGroupVoting extends Component<Props> {
       if (error) {
         atmosphere.eventEmitter.emit('addSnackbar', {
           key: 'voteError',
-          message: error,
+          message: error.message || 'Error submitting vote',
           autoDismiss: 5
         })
       }

@@ -113,6 +113,15 @@ const Snackbar = React.memo(() => {
       const snackInQueue = snackQueueRef.current.find(dupeFilter)
       const snackIsActive = snacksRef.current.find(dupeFilter)
       if (snackInQueue || snackIsActive) return
+      // This is temporary until these errors stop showing up in sentry
+      if (typeof snack.message !== 'string') {
+        console.error(`Bad snack message: ${snack.key}`)
+        if (snack.message.message) {
+          snack.message = snack.message.message
+        } else {
+          return
+        }
+      }
       const keyedSnack = {key: shortid.generate(), ...snack}
       if (transitionChildrenRef.current.length < MAX_SNACKS) {
         showSnack(keyedSnack)
