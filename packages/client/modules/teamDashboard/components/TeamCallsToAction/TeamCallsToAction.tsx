@@ -9,10 +9,7 @@ import {createFragmentContainer} from 'react-relay'
 import styled from '@emotion/styled'
 import IconLabel from '../../../../components/IconLabel'
 import PrimaryButton from '../../../../components/PrimaryButton'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useMenu from '../../../../hooks/useMenu'
 import useRouter from '../../../../hooks/useRouter'
-import lazyPreload from '../../../../utils/lazyPreload'
 import {Gutters} from '../../../../types/constEnums'
 import {meetingTypeToLabel} from '../../../../utils/meetings/lookups'
 
@@ -31,29 +28,18 @@ const StartButton = styled(PrimaryButton)({
   width: '100%'
 })
 
-const TeamCallsToActionMenu = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'TeamCallsToActionMenu' */
-    './TeamCallsToActionMenu'
-  )
-)
-
 const TeamCallToAction = (props: Props) => {
   const {team} = props
   const {id: teamId, activeMeetings} = team
-  const {
-    togglePortal,
-    originRef,
-    menuPortal,
-    menuProps,
-    loadingWidth
-  } = useMenu(MenuPosition.UPPER_RIGHT, {isDropdown: true})
   const [firstActiveMeeting] = activeMeetings
   const {history} = useRouter()
   const label = firstActiveMeeting && meetingTypeToLabel[firstActiveMeeting.meetingType]
   const goToMeeting = () => {
     const {id: meetingId} = firstActiveMeeting
     history.push(`/meet/${meetingId}/`)
+  }
+  const startMeeting = () => {
+    history.push(`/new-meeting/${teamId}`)
   }
   return (
     <ButtonBlock>
@@ -63,16 +49,9 @@ const TeamCallToAction = (props: Props) => {
         </StartButton>
       ) : (
         <>
-          <StartButton
-            onClick={togglePortal}
-            onMouseEnter={TeamCallsToActionMenu.preload}
-            ref={originRef}
-          >
+          <StartButton onClick={startMeeting}>
             <IconLabel icon='expand_more' iconAfter label='Start Meeting' />
           </StartButton>
-          {menuPortal(
-            <TeamCallsToActionMenu menuProps={menuProps} teamId={teamId} minWidth={loadingWidth} />
-          )}
         </>
       )}
     </ButtonBlock>

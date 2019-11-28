@@ -7,12 +7,22 @@ import {
   OnNextHistoryContext,
   StandardMutation
 } from '../types/relayMutations'
-import isLegacyMeetingPath from '../utils/isLegacyMeetingPath'
 import {StartNewMeetingMutation_team} from '__generated__/StartNewMeetingMutation_team.graphql'
+import {meetingTypeToLabel} from '../utils/meetings/lookups'
 
 graphql`
   fragment StartNewMeetingMutation_team on StartNewMeetingPayload {
-    meetingId
+    meeting {
+      id
+      defaultFacilitatorUserId
+      meetingType
+      meetingMembers {
+        user {
+          id
+          preferredName
+        }
+      }
+    }
     team {
       ...DashAlertMeetingActiveMeetings @relay(mask: false)
     }
@@ -32,12 +42,30 @@ export const startNewMeetingTeamOnNext: OnNextHandler<
   StartNewMeetingMutation_team,
   OnNextHistoryContext
 > = (payload, context) => {
-  const {history} = context
-  const {meetingId} = payload
-  const readyToRedirect = isLegacyMeetingPath()
-  if (readyToRedirect) {
-    history.push(`/meet/${meetingId}`)
-  }
+  const {atmosphere, history} = context
+  const {viewerId} = atmosphere
+  const {meeting} = payload
+  if (!meeting) return
+  const {id: meetingId, defaultFacilitatorUserId, meetingMembers, meetingType} = meeting
+  const viewerMeetingMember = meetingMembers.find((member) => member.user.id === viewerId)
+  const facilitatorMeetingMember = meetingMembers.find(
+    (member) => member.user.id === defaultFacilitatorUserId
+  )
+  if (!facilitatorMeetingMember || !viewerMeetingMember) return
+  const {user: facilitator} = facilitatorMeetingMember
+  const {preferredName} = facilitator
+  const type = meetingTypeToLabel[meetingType]
+  atmosphere.eventEmitter.emit('addSnackbar', {
+    autoDismiss: 5,
+    key: `newMeeting:${meetingId}`,
+    message: `${preferredName} just started a ${type} meeting.`,
+    action: {
+      label: 'Join Now',
+      callback: () => {
+        history.push(`/meet/${meetingId}`)
+      }
+    }
+  })
 }
 
 const StartNewMeetingMutation: StandardMutation<TStartNewMeetingMutation, HistoryLocalHandler> = (
@@ -50,8 +78,12 @@ const StartNewMeetingMutation: StandardMutation<TStartNewMeetingMutation, Histor
     variables,
     onError,
     onCompleted: (res, errors) => {
-      startNewMeetingTeamOnNext(res.startNewMeeting, {atmosphere, history})
-      onCompleted?.(res, errors)
+      const {startNewMeeting} = res
+      const {meeting} = startNewMeeting
+      if (!meeting) return
+      const {id: meetingId} = meeting
+      history.push(`/meet/${meetingId}`)
+      onCompleted(res, errors)
     }
   })
 }
