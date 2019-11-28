@@ -5,7 +5,9 @@ const hideBodyScroll = () => {
   } = document
   bodyStyle.overflow = 'hidden'
   bodyStyle.position = 'relative'
+  console.log('hide body scroll')
   return () => {
+    console.log('hide body scroll return')
     bodyStyle.overflow = ''
     bodyStyle.position = ''
   }
