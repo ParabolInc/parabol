@@ -25,7 +25,7 @@ const GraphqlContainer = () => {
 
   const publicFetcher = async ({query, variables}) => {
     // @ts-ignore
-    return atmosphere.handleFetch({text: query}, variables)
+    return atmosphere.handleFetchPromise({text: query}, variables)
   }
 
   const privateFetcher = async ({query, variables}) => {
