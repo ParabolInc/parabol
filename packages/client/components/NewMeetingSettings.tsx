@@ -4,6 +4,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {MeetingTypeEnum} from '../types/graphql'
 import NewMeetingSettingsRetrospective from './NewMeetingSettingsRetrospective'
 import {NewMeetingSettings_selectedTeam} from '__generated__/NewMeetingSettings_selectedTeam.graphql'
+import NewMeetingSettingsAction from './NewMeetingSettingsAction'
 
 interface Props {
   meetingType: MeetingTypeEnum
@@ -11,7 +12,7 @@ interface Props {
 }
 
 const settingsLookup = {
-  // [MeetingTypeEnum.action]: NewMeetingSettingsAction,
+  [MeetingTypeEnum.action]: NewMeetingSettingsAction,
   [MeetingTypeEnum.retrospective]: NewMeetingSettingsRetrospective
 }
 
@@ -27,6 +28,7 @@ export default createFragmentContainer(NewMeetingSettings, {
     fragment NewMeetingSettings_selectedTeam on Team {
       meetingSettings(meetingType: retrospective) {
         ...NewMeetingSettingsRetrospective_settings
+        ...NewMeetingSettingsAction_settings
       }
       id
     }

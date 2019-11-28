@@ -2930,7 +2930,7 @@ export interface IMutation {
   /**
    * Enabled or disable the check-in round
    */
-  setCheckInEnabled: ISetCheckInEnabledPayload | null
+  setCheckInEnabled: ISetCheckInEnabledPayload
 
   /**
    * Set the role of a user

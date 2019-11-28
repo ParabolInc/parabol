@@ -14,6 +14,9 @@ import WaveSVG from '../../../static/images/wave.svg'
 import {NewMeeting_viewer} from '__generated__/NewMeeting_viewer.graphql'
 import NewMeetingHowTo from './NewMeetingHowTo'
 import NewMeetingIllustration from './NewMeetingIllustration'
+import {mod} from 'react-swipeable-views-core'
+import useBreakpoint from '../hooks/useBreakpoint'
+import {Breakpoint} from '../types/constEnums'
 
 interface Props {
   teamId?: string | null
@@ -27,19 +30,21 @@ const BottomLeft = styled('div')({
   flexDirection: 'column'
 })
 
-const NewMeetingBlock = styled('div')<{innerWidth: number}>(({innerWidth}) => ({
-  display: 'grid',
-  gridTemplateColumns: '5fr 5fr',
-  gridTemplateRows: '2fr 5fr 5fr',
-  alignItems: 'start',
-  backgroundRepeat: 'no-repeat',
-  backgroundImage: `url('${WaveSVG}'), linear-gradient(0deg, #F1F0FA 50%, #FFFFFF 50%)`,
-  height: '100%',
-  backgroundSize: '100%',
-  // the wave is 2560x231, so to figure out the offset from the center, we need to find how much scaling there was
-  backgroundPositionY: `calc(50% - ${Math.floor(((innerWidth / 2560) * 231) / 2 - 1)}px), 0`,
-  justifyItems: 'center'
-}))
+const NewMeetingBlock = styled('div')<{innerWidth: number; isDesktop: boolean}>(
+  ({innerWidth, isDesktop}) => ({
+    display: isDesktop ? 'grid' : 'flex',
+    gridTemplateColumns: '5fr 5fr',
+    gridTemplateRows: '2fr 5fr 5fr',
+    alignItems: 'start',
+    backgroundRepeat: 'no-repeat',
+    backgroundImage: `url('${WaveSVG}'), linear-gradient(0deg, #F1F0FA 50%, #FFFFFF 50%)`,
+    height: '100%',
+    backgroundSize: '100%',
+    // the wave is 2560x231, so to figure out the offset from the center, we need to find how much scaling there was
+    backgroundPositionY: `calc(50% - ${Math.floor(((innerWidth / 2560) * 231) / 2 - 1)}px), 0`,
+    justifyItems: 'center'
+  })
+)
 
 const useInnerWidth = () => {
   const [innerWidth, setInnerWidth] = useState(() => window.innerWidth)
@@ -55,13 +60,15 @@ const useInnerWidth = () => {
   return innerWidth
 }
 
+export const NEW_MEETING_ORDER = [MeetingTypeEnum.retrospective, MeetingTypeEnum.action]
+
 const NewMeeting = (props: Props) => {
   const {teamId, viewer} = props
   const {teams} = viewer
-  const [meetingType, setMeetingType] = useState(MeetingTypeEnum.retrospective)
   const {history} = useRouter()
   const innerWidth = useInnerWidth()
-
+  const [idx, setIdx] = useState(0)
+  const meetingType = NEW_MEETING_ORDER[mod(idx, NEW_MEETING_ORDER.length)]
   useEffect(() => {
     if (!teamId) {
       const [firstTeam] = sortByTier(teams)
@@ -69,18 +76,19 @@ const NewMeeting = (props: Props) => {
       history.replace(nextPath)
     }
   }, [])
+  const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING)
   const selectedTeam = teams.find((team) => team.id === teamId)
   if (!selectedTeam) return null
   return (
-    <NewMeetingBlock innerWidth={innerWidth}>
+    <NewMeetingBlock innerWidth={innerWidth} isDesktop={isDesktop}>
       <NewMeetingBackButton />
-      <NewMeetingIllustration meetingType={meetingType} />
+      <NewMeetingIllustration idx={idx} setIdx={setIdx} />
+      <NewMeetingHowTo meetingType={meetingType} />
       <BottomLeft>
-        <NewMeetingMeetingSelector meetingType={meetingType} setMeetingType={setMeetingType} />
+        <NewMeetingMeetingSelector meetingType={meetingType} idx={idx} setIdx={setIdx} />
         <NewMeetingTeamPicker selectedTeam={selectedTeam} teams={teams} />
         <NewMeetingSettings selectedTeam={selectedTeam} meetingType={meetingType} />
       </BottomLeft>
-      <NewMeetingHowTo meetingType={meetingType} />
       {/*<NewMeetingExistingMeetings viewer={viewer} />*/}
       <NewMeetingActions viewer={viewer} />
     </NewMeetingBlock>

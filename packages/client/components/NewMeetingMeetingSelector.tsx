@@ -8,7 +8,8 @@ import {ICON_SIZE} from '../styles/typographyV2'
 
 interface Props {
   meetingType: MeetingTypeEnum
-  setMeetingType: (meetingType: MeetingTypeEnum) => void
+  idx: number
+  setIdx: (idx: number) => void
 }
 
 const MeetingSelector = styled('div')({
@@ -17,7 +18,7 @@ const MeetingSelector = styled('div')({
   paddingBottom: 32
 })
 
-const SelectPrevious = styled(FloatingActionButton)({
+const SelectArrow = styled(FloatingActionButton)({
   background: PALETTE.CONTROL_MAIN,
   color: '#fff',
   height: ICON_SIZE.MD40,
@@ -33,16 +34,29 @@ const MeetingTitle = styled('div')({
   textAlign: 'center'
 })
 
-const NewMeetingMeetingSelector = (_props: Props) => {
+const TITLES = {
+  [MeetingTypeEnum.retrospective]: 'Retrospective Meeting',
+  [MeetingTypeEnum.action]: 'Action Meeting'
+}
+
+const NewMeetingMeetingSelector = (props: Props) => {
+  const {idx, setIdx, meetingType} = props
+  const title = TITLES[meetingType]
+  const onPrevious = () => {
+    setIdx(idx - 1)
+  }
+  const onNext = () => {
+    setIdx(idx + 1)
+  }
   return (
     <MeetingSelector>
-      <SelectPrevious>
+      <SelectArrow onClick={onPrevious}>
         <Icon>keyboard_arrow_left</Icon>
-      </SelectPrevious>
-      <MeetingTitle>Retrospective Meeting</MeetingTitle>
-      <SelectPrevious>
+      </SelectArrow>
+      <MeetingTitle>{title}</MeetingTitle>
+      <SelectArrow onClick={onNext}>
         <Icon>keyboard_arrow_right</Icon>
-      </SelectPrevious>
+      </SelectArrow>
     </MeetingSelector>
   )
 }
