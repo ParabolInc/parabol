@@ -1,7 +1,6 @@
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {NewMeetingSettingsRetrospective_settings} from '__generated__/NewMeetingSettingsRetrospective_settings.graphql'
 import styled from '@emotion/styled'
 import PlainButton from './PlainButton/PlainButton'
 import Checkbox from './Checkbox'
@@ -12,6 +11,7 @@ import SetCheckInEnabledMutation from '../mutations/SetCheckInEnabledMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import {NewMeeting} from '../types/constEnums'
+import {NewMeetingSettingsToggleCheckIn_settings} from '__generated__/NewMeetingSettingsToggleCheckIn_settings.graphql'
 
 const ButtonRow = styled(PlainButton)({
   alignItems: 'center',
@@ -40,7 +40,7 @@ const StyledCheckbox = styled(Checkbox)({
 })
 
 interface Props {
-  settings: NewMeetingSettingsRetrospective_settings
+  settings: NewMeetingSettingsToggleCheckIn_settings
 }
 
 const NewMeetingSettingsToggleCheckIn = (props: Props) => {

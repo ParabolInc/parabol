@@ -88,7 +88,7 @@ const NewMeeting = (props: Props) => {
   }, [])
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_GRID)
   const selectedTeam = teams.find((team) => team.id === teamId)
-  if (!selectedTeam) return null
+  if (!teamId || !selectedTeam) return null
   return (
     <NewMeetingBlock innerWidth={innerWidth} isDesktop={isDesktop}>
       <NewMeetingBackButton teamId={teamId} sendToMe={sendToMeRef.current} />

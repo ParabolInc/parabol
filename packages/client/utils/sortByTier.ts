@@ -2,7 +2,7 @@ import {TierEnum} from '../types/graphql'
 
 const sortByTier = <T extends readonly {tier: TierEnum | string; name: string}[]>(
   teamsOrOrgs: T
-): T => {
+) => {
   const teamsSlice = teamsOrOrgs.slice()
   const tierVal = (team) =>
     team.tier === TierEnum.enterprise ? -2 : team.tier === TierEnum.pro ? -1 : 1
@@ -15,7 +15,7 @@ const sortByTier = <T extends readonly {tier: TierEnum | string; name: string}[]
       ? -1
       : 1
   )
-  return teamsSlice
+  return (teamsSlice as unknown) as T
 }
 
 export default sortByTier

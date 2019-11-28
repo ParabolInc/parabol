@@ -10,7 +10,7 @@ interface Props {
 const NewMeetingExistingMeetings = (props: Props) => {
   const {viewer} = props
   const {id} = viewer
-  return `Existing meetings ${id}`
+  return <div>`Existing meetings ${id}`</div>
 }
 
 export default createFragmentContainer(NewMeetingExistingMeetings, {

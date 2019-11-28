@@ -6,12 +6,12 @@ import getDotenv from '../../server/utils/dotenv'
 // Import .env and expand variables:
 getDotenv()
 
-export default function getRethinkConfig () {
+export default function getRethinkConfig() {
   const urlString = process.env.RETHINKDB_URL || 'rethinkdb://localhost:28015/actionDevelopment'
   const u = parse(urlString)
   if (!u.port || !u.path) throw new Error('Invalid RethinkDB URL')
   const config = {
-    host: u.hostname,
+    host: u.hostname || '',
     port: parseInt(u.port, 10),
     authKey: process.env.RETHINKDB_AUTH_KEY || '',
     db: u.path.split('/')[1],

@@ -1,7 +1,6 @@
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import styled from '@emotion/styled'
 import lazyPreload from '../utils/lazyPreload'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
