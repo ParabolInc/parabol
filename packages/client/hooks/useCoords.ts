@@ -135,8 +135,6 @@ const getNextCoords = (targetBBox: BBox, originBBox: BBox, preferredMenuPosition
   }
   const menuPosition =
     (nextCoords.top === undefined && lowerLookup[preferredMenuPosition]) || preferredMenuPosition
-  console.log('men pos', menuPosition)
-  debugger
   // if by choice or circumstance, put it above & anchor it from the bottom
   if (nextCoords.top === undefined) {
     const bottom = innerHeight - originTop - scrollY

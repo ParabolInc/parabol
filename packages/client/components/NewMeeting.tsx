@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {createFragmentContainer} from 'react-relay'
@@ -23,18 +23,26 @@ interface Props {
   viewer: NewMeeting_viewer
 }
 
-const BottomLeft = styled('div')({
-  alignItems: 'center',
-  gridRow: 3,
-  display: 'flex',
-  flexDirection: 'column'
+const IllustrationAndSelector = styled('div')({
+  gridArea: 'picker',
+  width: '100%'
 })
+
+const TeamAndSettings = styled('div')<{isDesktop}>(({isDesktop}) => ({
+  gridArea: 'settings',
+  paddingTop: isDesktop ? 32 : undefined
+}))
 
 const NewMeetingBlock = styled('div')<{innerWidth: number; isDesktop: boolean}>(
   ({innerWidth, isDesktop}) => ({
-    display: isDesktop ? 'grid' : 'flex',
-    gridTemplateColumns: '5fr 5fr',
-    gridTemplateRows: '2fr 5fr 5fr',
+    display: 'grid',
+    gridTemplateColumns: isDesktop ? '8vw minmax(0, 4fr) minmax(0, 3fr)' : '100%',
+    gridTemplateRows: isDesktop ? '8vw 4fr 3fr' : '48px',
+    gridTemplateAreas: isDesktop
+      ? ` 'backButton x1 x1' 
+        'x2 picker howto'
+        'x2 settings actions'`
+      : `'backButton' 'picker' 'howto' 'settings' 'actions'`,
     alignItems: 'start',
     backgroundRepeat: 'no-repeat',
     backgroundImage: `url('${WaveSVG}'), linear-gradient(0deg, #F1F0FA 50%, #FFFFFF 50%)`,
@@ -69,28 +77,31 @@ const NewMeeting = (props: Props) => {
   const innerWidth = useInnerWidth()
   const [idx, setIdx] = useState(0)
   const meetingType = NEW_MEETING_ORDER[mod(idx, NEW_MEETING_ORDER.length)]
+  const sendToMeRef = useRef(false)
   useEffect(() => {
     if (!teamId) {
+      sendToMeRef.current = true
       const [firstTeam] = sortByTier(teams)
       const nextPath = firstTeam ? `/new-meeting/${firstTeam.id}` : '/newteam'
       history.replace(nextPath)
     }
   }, [])
-  const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING)
+  const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_GRID)
   const selectedTeam = teams.find((team) => team.id === teamId)
   if (!selectedTeam) return null
   return (
     <NewMeetingBlock innerWidth={innerWidth} isDesktop={isDesktop}>
-      <NewMeetingBackButton />
-      <NewMeetingIllustration idx={idx} setIdx={setIdx} />
-      <NewMeetingHowTo meetingType={meetingType} />
-      <BottomLeft>
+      <NewMeetingBackButton teamId={teamId} sendToMe={sendToMeRef.current} />
+      <IllustrationAndSelector>
+        <NewMeetingIllustration idx={idx} setIdx={setIdx} />
         <NewMeetingMeetingSelector meetingType={meetingType} idx={idx} setIdx={setIdx} />
+      </IllustrationAndSelector>
+      <NewMeetingHowTo meetingType={meetingType} />
+      <TeamAndSettings isDesktop={isDesktop}>
         <NewMeetingTeamPicker selectedTeam={selectedTeam} teams={teams} />
         <NewMeetingSettings selectedTeam={selectedTeam} meetingType={meetingType} />
-      </BottomLeft>
-      {/*<NewMeetingExistingMeetings viewer={viewer} />*/}
-      <NewMeetingActions viewer={viewer} />
+      </TeamAndSettings>
+      <NewMeetingActions teamId={selectedTeam.id} meetingType={meetingType} />
     </NewMeetingBlock>
   )
 }
@@ -99,7 +110,6 @@ export default createFragmentContainer(NewMeeting, {
   viewer: graphql`
     fragment NewMeeting_viewer on User {
       ...NewMeetingExistingMeetings_viewer
-      ...NewMeetingActions_viewer
       teams {
         ...NewMeetingTeamPicker_selectedTeam
         ...NewMeetingSettings_selectedTeam

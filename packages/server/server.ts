@@ -117,7 +117,6 @@ if (!PROD) {
         version: false
       },
       watchOptions: {
-        poll: true,
         aggregateTimeout: 300
       }
     })

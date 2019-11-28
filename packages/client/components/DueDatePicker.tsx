@@ -51,7 +51,7 @@ const DueDatePicker = (props: Props) => {
     menuProps.closePortal()
   }
 
-  const selectedDate = dueDate ? new Date(dueDate) : null
+  const selectedDate = dueDate ? new Date(dueDate) : undefined
   const showHint = false
   const now = new Date()
   const nextYear = new Date(new Date().setFullYear(now.getFullYear() + 1))

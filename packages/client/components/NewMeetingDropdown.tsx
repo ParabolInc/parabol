@@ -3,6 +3,7 @@ import useMenu from '../hooks/useMenu'
 import DropdownToggleV2 from './DropdownToggleV2'
 import MenuToggleV2Text from './MenuToggleV2Text'
 import styled from '@emotion/styled'
+import {NewMeeting} from '../types/constEnums'
 
 interface Props {
   className?: string
@@ -14,7 +15,7 @@ interface Props {
 }
 
 const Dropdown = styled(DropdownToggleV2)({
-  width: 320
+  width: NewMeeting.CONTROLS_WIDTH
 })
 
 const NewMeetingDropdown = forwardRef((props: Props, ref: any) => {

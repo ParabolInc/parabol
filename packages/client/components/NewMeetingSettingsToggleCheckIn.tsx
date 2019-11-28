@@ -11,13 +11,14 @@ import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import SetCheckInEnabledMutation from '../mutations/SetCheckInEnabledMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
+import {NewMeeting} from '../types/constEnums'
 
 const ButtonRow = styled(PlainButton)({
   alignItems: 'center',
   display: 'flex',
   paddingTop: 12,
   paddingLeft: 12,
-  width: 320
+  width: NewMeeting.CONTROLS_WIDTH
 })
 
 const Label = styled('div')({

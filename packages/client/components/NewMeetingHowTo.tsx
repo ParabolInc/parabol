@@ -1,31 +1,54 @@
-import React from 'react'
+import React, {useRef, useState} from 'react'
 import {MeetingTypeEnum} from '../types/graphql'
-import NewMeetingHowToRetrospective from './NewMeetingHowToRetrospective'
-import NewMeetingHowToAction from './NewMeetingHowToAction'
+import NewMeetingHowToSteps from './NewMeetingHowToSteps'
 import styled from '@emotion/styled'
 import useBreakpoint from '../hooks/useBreakpoint'
-import {Breakpoint} from '../types/constEnums'
+import {BezierCurve, Breakpoint, NewMeeting} from '../types/constEnums'
+import ExpansionPanelSummary from './ExpansionPanelSummary'
 
 interface Props {
   meetingType: MeetingTypeEnum
 }
 
-const howToLookup = {
-  [MeetingTypeEnum.action]: NewMeetingHowToAction,
-  [MeetingTypeEnum.retrospective]: NewMeetingHowToRetrospective
-}
-
-const Parent = styled('div')({
+const Parent = styled('div')<{isDesktop?: boolean}>(({isDesktop}) => ({
+  gridArea: 'howto',
   // make it wider than any child so there's no movement between changes
-  minWidth: 400
-})
+  minWidth: isDesktop ? NewMeeting.ILLUSTRATION_WIDTH : undefined
+}))
+
+const ExpansionPanelBody = styled('div')<{bodyHeight: number}>(({bodyHeight}) => ({
+  height: bodyHeight,
+  justifyContent: 'center',
+  overflow: 'hidden',
+  transition: `height 600ms ${BezierCurve.DECELERATE}`
+}))
 
 const NewMeetingHowTo = (props: Props) => {
   const {meetingType} = props
-  const HowTo = howToLookup[meetingType]
+  const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_GRID)
+  const [bodyHeight, setBodyHeight] = useState(0)
+  const ref = useRef<HTMLDivElement>(null)
+  const toggleExpansionPanel = () => {
+    const nextHeight = (bodyHeight === 0 && ref.current?.scrollHeight) || 0
+    setBodyHeight(nextHeight)
+  }
+  if (isDesktop) {
+    return (
+      <Parent isDesktop>
+        <NewMeetingHowToSteps meetingType={meetingType} showTitle />
+      </Parent>
+    )
+  }
   return (
     <Parent>
-      <HowTo />
+      <ExpansionPanelSummary
+        label={'How to Run'}
+        onClick={toggleExpansionPanel}
+        isExpanded={bodyHeight > 0}
+      />
+      <ExpansionPanelBody bodyHeight={bodyHeight} ref={ref}>
+        <NewMeetingHowToSteps meetingType={meetingType} />
+      </ExpansionPanelBody>
     </Parent>
   )
 }

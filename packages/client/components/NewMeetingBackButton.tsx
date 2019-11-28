@@ -4,24 +4,48 @@ import styled from '@emotion/styled'
 import Icon from './Icon'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {PALETTE} from '../styles/paletteV2'
-import {ZIndex} from '../types/constEnums'
+import {Breakpoint, ZIndex} from '../types/constEnums'
+import useBreakpoint from '../hooks/useBreakpoint'
+import PlainButton from './PlainButton/PlainButton'
+import useRouter from '../hooks/useRouter'
 
-const BackButton = styled(FloatingActionButton)({
+const BackButtonMobile = styled(PlainButton)({
+  background: '#fff',
+  height: ICON_SIZE.MD24,
+  justifySelf: 'start',
+  width: ICON_SIZE.MD24,
+  alignSelf: 'center',
+  margin: 16,
+  zIndex: ZIndex.FAB
+})
+
+const BackButtonDesktop = styled(FloatingActionButton)({
+  alignSelf: 'center',
   background: PALETTE.BACKGROUND_MAIN,
   height: ICON_SIZE.MD40,
-  left: 32,
+  justifySelf: 'center',
   padding: 0,
-  position: 'absolute',
-  top: 32,
   width: ICON_SIZE.MD40,
   zIndex: ZIndex.FAB
 })
 
 const BackIcon = styled(Icon)({})
 
-const NewMeetingBackButton = () => {
+interface Props {
+  sendToMe: boolean
+  teamId: string
+}
+const NewMeetingBackButton = (props: Props) => {
+  const {sendToMe, teamId} = props
+  const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_GRID)
+  const BackButton = isDesktop ? BackButtonDesktop : BackButtonMobile
+  const {history} = useRouter()
+  const onClick = () => {
+    const nextRoute = sendToMe ? '/me' : `/team/${teamId}`
+    history.push(nextRoute)
+  }
   return (
-    <BackButton>
+    <BackButton onClick={onClick}>
       <BackIcon>arrow_back</BackIcon>
     </BackButton>
   )

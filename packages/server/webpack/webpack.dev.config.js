@@ -13,6 +13,7 @@ const pluginMacros = require('babel-plugin-macros')
 const PROJECT_ROOT = path.join(__dirname, '..', '..', '..')
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
 
+process.env.TSC_WATCHFILE = 'UseFsEvents'
 const babelLoader = {
   loader: 'babel-loader',
   options: {
