@@ -1,4 +1,4 @@
-import {GraphQLObjectType, GraphQLList, GraphQLString} from 'graphql'
+import {GraphQLNonNull, GraphQLObjectType, GraphQLList, GraphQLString} from 'graphql'
 import {
   makeResolveNotificationsForViewer,
   resolveFilterByTeam,
@@ -30,17 +30,17 @@ const RemoveOrgUserPayload = new GraphQLObjectType({
       description: 'The organization the user was removed from'
     },
     teams: {
-      type: new GraphQLList(Team),
+      type: new GraphQLList(GraphQLNonNull(Team)),
       description: 'The teams the user was removed from',
       resolve: resolveFilterByTeam(resolveTeams, ({id}) => id)
     },
     teamMembers: {
-      type: new GraphQLList(TeamMember),
+      type: new GraphQLList(GraphQLNonNull(TeamMember)),
       description: 'The teamMembers removed',
       resolve: resolveFilterByTeam(resolveTeamMembers, ({teamId}) => teamId)
     },
     updatedTasks: {
-      type: new GraphQLList(Task),
+      type: new GraphQLList(GraphQLNonNull(Task)),
       description: 'The tasks that were archived or reassigned',
       resolve: resolveFilterByTeam(resolveTasks, ({teamId}) => teamId)
     },
@@ -50,7 +50,7 @@ const RemoveOrgUserPayload = new GraphQLObjectType({
       resolve: resolveUser
     },
     removedTeamNotifications: {
-      type: new GraphQLList(Notification),
+      type: new GraphQLList(GraphQLNonNull(Notification)),
       description: 'The notifications relating to a team the user was removed from',
       resolve: resolveFilterByTeam(
         makeResolveNotificationsForViewer('', 'removedTeamNotifications'),
@@ -58,12 +58,12 @@ const RemoveOrgUserPayload = new GraphQLObjectType({
       )
     },
     removedOrgNotifications: {
-      type: new GraphQLList(Notification),
+      type: new GraphQLList(GraphQLNonNull(Notification)),
       description: 'The notifications that are no longer relevant to the removed org user',
       resolve: makeResolveNotificationsForViewer('', 'removedOrgNotifications')
     },
     kickOutNotifications: {
-      type: new GraphQLList(NotifyKickedOut),
+      type: new GraphQLList(GraphQLNonNull(NotifyKickedOut)),
       description: 'The notifications for each team the user was kicked out of',
       resolve: makeResolveNotificationsForViewer('kickOutNotificationIds', '')
     },

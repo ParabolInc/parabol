@@ -59,8 +59,8 @@
     "jest-junit-reporter": "^1.0.1",
     "jscodeshift": "^0.6.4",
     "lint-staged": "^9.4.2",
-    "relay-compiler": "^7.0.0",
-    "relay-compiler-language-typescript": "https://github.com/mattkrick/relay-compiler-language-typescript/tarball/0b93ff31546894afcba4f6e7bb73ac737f83cc18",
+    "relay-compiler": "^7.1.0",
+    "relay-compiler-language-typescript": "^10.0.0",
     "strict-event-emitter-types": "^2.0.0",
     "typescript": "3.7.2"
   },

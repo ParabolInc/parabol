@@ -5439,17 +5439,17 @@ export interface IRemoveOrgUserPayload {
   /**
    * The teams the user was removed from
    */
-  teams: Array<ITeam | null> | null
+  teams: Array<ITeam> | null
 
   /**
    * The teamMembers removed
    */
-  teamMembers: Array<ITeamMember | null> | null
+  teamMembers: Array<ITeamMember> | null
 
   /**
    * The tasks that were archived or reassigned
    */
-  updatedTasks: Array<ITask | null> | null
+  updatedTasks: Array<ITask> | null
 
   /**
    * The user removed from the organization
@@ -5459,17 +5459,17 @@ export interface IRemoveOrgUserPayload {
   /**
    * The notifications relating to a team the user was removed from
    */
-  removedTeamNotifications: Array<Notification | null> | null
+  removedTeamNotifications: Array<Notification> | null
 
   /**
    * The notifications that are no longer relevant to the removed org user
    */
-  removedOrgNotifications: Array<Notification | null> | null
+  removedOrgNotifications: Array<Notification> | null
 
   /**
    * The notifications for each team the user was kicked out of
    */
-  kickOutNotifications: Array<INotifyKickedOut | null> | null
+  kickOutNotifications: Array<INotifyKickedOut> | null
 
   /**
    * The organization member that got removed
@@ -5602,7 +5602,7 @@ export interface IRemoveTeamMemberPayload {
   /**
    * The tasks that got reassigned
    */
-  updatedTasks: Array<ITask | null> | null
+  updatedTasks: Array<ITask> | null
 
   /**
    * The user removed from the team
