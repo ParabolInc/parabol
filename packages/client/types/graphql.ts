@@ -5098,7 +5098,7 @@ export interface IEndNewMeetingPayload {
   /**
    * Any tasks that were updated during the meeting
    */
-  updatedTasks: Array<ITask>
+  updatedTasks: Array<ITask> | null
 }
 
 export interface IInactivateUserPayload {
@@ -6103,7 +6103,7 @@ export interface IUpgradeToProPayload {
   /**
    * The updated teams under the org
    */
-  teams: Array<ITeam | null> | null
+  teams: Array<ITeam> | null
 
   /**
    * the ids of the meetings that were showing conversion modals
@@ -6154,7 +6154,7 @@ export interface IUpdateDragLocationPayload {
   /**
    * The drag as sent from the team member
    */
-  remoteDrag: IRemoteReflectionDrag
+  remoteDrag: IRemoteReflectionDrag | null
   userId: string
 }
 

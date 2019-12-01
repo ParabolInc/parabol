@@ -6,15 +6,12 @@
     "configurations": [
         {
             "type": "node",
-            "request": "attach",
-            "name": "Node Server Babel Launcher",
-            "port": 9229
-        },
-        {
-            "type": "node",
-            "request": "attach",
-            "name": "Action Server",
-            "port": 9230
+            "request": "launch",
+            "name": "Debug relay compiler",
+            "program": "${workspaceFolder}/node_modules/.bin/relay-compiler",
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
         },
     ]
 }

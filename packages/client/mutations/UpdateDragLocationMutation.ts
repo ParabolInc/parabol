@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 
 graphql`
   fragment UpdateDragLocationMutation_meeting on UpdateDragLocationPayload {
-    remoteDrag {
+    drag: remoteDrag {
       id
       clientX
       clientY
@@ -14,7 +14,6 @@ graphql`
       targetOffsetX
       targetOffsetY
     }
-    userId
   }
 `
 const mutation = graphql`

@@ -3,5 +3,6 @@
 		"editor.tabSize": 2,
 	},
 	"git.ignoreLimitWarning": true,
-	"eslint.packageManager": "yarn"
+	"eslint.packageManager": "yarn",
+	"typescript.tsdk": "node_modules/typescript/lib"
 }

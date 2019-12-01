@@ -25,6 +25,37 @@ import {NotificationSubscriptionResponse} from '../__generated__/NotificationSub
 import Atmosphere from '../Atmosphere'
 import {RouterProps} from 'react-router'
 import {RecordSourceSelectorProxy} from 'relay-runtime/lib/store/RelayStoreTypes'
+import {NotificationSubscription_meetingStageTimeLimitEnd} from '__generated__/NotificationSubscription_meetingStageTimeLimitEnd.graphql'
+import {NotificationSubscription_paymentRejected} from '__generated__/NotificationSubscription_paymentRejected.graphql'
+
+graphql`
+  fragment NotificationSubscription_paymentRejected on StripeFailPaymentPayload {
+    paymentRejectedNotification: notification {
+      type
+      organization {
+        id
+        name
+      }
+      ...PaymentRejected_notification
+    }
+  }
+`
+graphql`
+  fragment NotificationSubscription_meetingStageTimeLimitEnd on MeetingStageTimeLimitPayload {
+    timeLimitNotification: notification {
+      ...MeetingStageTimeLimitEnd_notification
+      type
+      meeting {
+        id
+        meetingType
+        team {
+          id
+          name
+        }
+      }
+    }
+  }
+`
 
 const subscription = graphql`
   subscription NotificationSubscription {
@@ -38,10 +69,13 @@ const subscription = graphql`
       ...EndNewMeetingMutation_notification @relay(mask: false)
       ...InviteToTeamMutation_notification @relay(mask: false)
       ...RemoveOrgUserMutation_notification @relay(mask: false)
-
       ... on AuthTokenPayload {
         id
       }
+
+      # ScheduledJob Result
+      ...NotificationSubscription_meetingStageTimeLimitEnd @relay(mask: false)
+      ...NotificationSubscription_paymentRejected @relay(mask: false)
 
       # ConnectSocket
       ... on User {
@@ -55,13 +89,6 @@ const subscription = graphql`
         user {
           id
           isConnected
-        }
-      }
-      # Stripe webhooks
-      ... on StripeFailPaymentPayload {
-        notification {
-          type
-          ...PaymentRejected_notification @relay(mask: false)
         }
       }
 
@@ -84,22 +111,6 @@ const subscription = graphql`
           url
         }
       }
-
-      # ScheduledJob Result
-      ... on MeetingStageTimeLimitPayload {
-        notification {
-          ...MeetingStageTimeLimitEnd_notification
-          type
-          meeting {
-            id
-            meetingType
-            team {
-              id
-              name
-            }
-          }
-        }
-      }
     }
   }
 `
@@ -109,10 +120,13 @@ type NextHandler = OnNextHandler<
   OnNextHistoryContext
 >
 
-const stripeFailPaymentNotificationOnNext: NextHandler = (payload: any, {atmosphere, history}) => {
+const stripeFailPaymentNotificationOnNext: OnNextHandler<
+  NotificationSubscription_paymentRejected,
+  OnNextHistoryContext
+> = (payload, {atmosphere, history}) => {
   if (!payload) return
-  const {notification} = payload
-  const {organization} = notification
+  const {paymentRejectedNotification} = payload
+  const {organization} = paymentRejectedNotification
   if (!organization) return
   const {id: orgId, name: orgName} = organization
   atmosphere.eventEmitter.emit('addSnackbar', {
@@ -129,10 +143,13 @@ const stripeFailPaymentNotificationOnNext: NextHandler = (payload: any, {atmosph
 }
 
 // there's a bug in relay compiler that only shows part of the discriminated union
-const meetingStageTimeLimitOnNext: NextHandler = (payload: any, {atmosphere, history}) => {
+const meetingStageTimeLimitOnNext: OnNextHandler<
+  NotificationSubscription_meetingStageTimeLimitEnd,
+  OnNextHistoryContext
+> = (payload: any, {atmosphere, history}) => {
   if (!payload || payload.__typename !== 'MeetingStageTimeLimitPayload') return
-  const {notification} = payload
-  const {meeting} = notification
+  const {timeLimitNotification} = payload
+  const {meeting} = timeLimitNotification
   const {meetingType, team, id: meetingId} = meeting
   const {id: teamId, name: teamName} = team
   const meetingLabel = meetingTypeToLabel[meetingType]
