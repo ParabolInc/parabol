@@ -1,8 +1,35 @@
 {
-	"settings": {
-		"editor.tabSize": 2,
-	},
 	"git.ignoreLimitWarning": true,
 	"eslint.packageManager": "yarn",
-	"typescript.tsdk": "node_modules/typescript/lib"
+	"typescript.tsdk": "node_modules/typescript/lib",
+	"editor.tabSize": 2,
+	"eslint.workingDirectories": [
+		{
+			"directory": "./packages/server",
+			"changeProcessCWD": true
+		},
+		{
+			"directory": "./packages/client",
+			"changeProcessCWD": true
+		},
+	],
+	"eslint.validate": [
+		"javascript",
+		"javascriptreact",
+		{
+			"language": "typescript",
+			"autoFix": true
+		},
+		{
+			"language": "typescriptreact",
+			"autoFix": true
+		}
+	],
+	"npm.packageManager": "yarn",
+	"javascript.format.semicolons": "remove",
+	"javascript.preferences.quoteStyle": "single",
+	"javascript.preferences.renameShorthandProperties": false,
+	"typescript.format.semicolons": "remove",
+	"typescript.preferences.quoteStyle": "single",
+	"typescript.preferences.renameShorthandProperties": false,
 }
