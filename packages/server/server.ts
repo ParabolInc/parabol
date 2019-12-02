@@ -29,6 +29,7 @@ import rateLimit from 'express-rate-limit'
 import demoEntityHandler from './demoEntityHandler'
 import * as Integrations from '@sentry/integrations'
 import consumeSAML from './utils/consumeSAML'
+import * as heapProfile from 'heap-profile'
 
 declare global {
   namespace NodeJS {
@@ -45,9 +46,20 @@ interface StripeRequest extends express.Request {
 const APP_VERSION = process.env.npm_package_version
 const PROJECT_ROOT = path.join(__dirname, '..', '..')
 
+setTimeout(() => {
+  heapProfile.start()
+  setInterval(() => {
+    const memoryUsage = process.memoryUsage()
+    const {rss} = memoryUsage
+    const MB = 2 ** 20
+    const usedMB = Math.floor(rss / MB)
+    const fileName = `sample_${Date.now()}_${usedMB}.heapprofile`
+    heapProfile.write(path.join(PROJECT_ROOT, fileName))
+  }, ms('1h')).unref()
+}, 1000)
+
 // Import .env and expand variables:
 getDotenv()
-
 const PROD = process.env.NODE_ENV === 'production'
 const {PORT = 3000} = process.env
 
