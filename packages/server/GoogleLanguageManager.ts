@@ -1,6 +1,6 @@
 import {sign} from 'jsonwebtoken'
 import fetch from 'node-fetch'
-import sendToSentry from 'utils/sendToSentry'
+import sendToSentry from './utils/sendToSentry'
 
 interface SyntaxTextToken {
   content: string

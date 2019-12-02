@@ -1,20 +1,18 @@
-import getRethink from '../../../database/rethinkDriver'
-import makeAppLink from '../../../utils/makeAppLink'
+import ms from 'ms'
+import {Unpromise} from '../../../../client/types/generics'
+import findStageById from '../../../../client/utils/meetings/findStageById'
 import {
   meetingTypeToLabel,
   meetingTypeToSlug,
   phaseLabelLookup
 } from '../../../../client/utils/meetings/lookups'
+import getRethink from '../../../database/rethinkDriver'
 import {MeetingType} from '../../../database/types/Meeting'
-import {DataLoaderWorker} from '../../graphql'
 import SlackNotification, {SlackNotificationEvent} from '../../../database/types/SlackNotification'
-import SlackManager from '../../../utils/SlackManager'
-import findStageById from '../../../../client/utils/meetings/findStageById'
-import {Unpromise} from '../../../../client/types/generics'
-import ms from 'ms'
-import formatTime from '../../../../client/utils/date/formatTime'
-import formatWeekday from '../../../../client/utils/date/formatWeekday'
+import makeAppLink from '../../../utils/makeAppLink'
 import sendToSentry from '../../../utils/sendToSentry'
+import SlackManager from '../../../utils/SlackManager'
+import {DataLoaderWorker} from '../../graphql'
 
 const getSlackDetails = async (
   event: SlackNotificationEvent,
@@ -136,6 +134,7 @@ const upsertSlackMessage = async (
     console.error(res.error)
   }
 }
+
 export const notifySlackTimeLimitStart = async (
   scheduledEndTime: Date,
   meetingId: string,
@@ -153,12 +152,26 @@ export const notifySlackTimeLimitStart = async (
   const meetingUrl = makeAppLink(`${slug}/${teamId}`)
   const meetingLabel = meetingTypeToLabel[meetingType]
   const {phaseType} = stage
-  const date = formatWeekday(scheduledEndTime)
-  const time = formatTime(scheduledEndTime)
   const phaseLabel = phaseLabelLookup[phaseType]
-  const slackText = `The ${phaseLabel} phase for your ${meetingLabel} meeting on ${team.name} has begun! You have until ${time} on ${date} to complete it. Check it out: ${meetingUrl}`
   const slackDetails = await getSlackDetails('MEETING_STAGE_TIME_LIMIT_START', teamId, dataLoader)
-  slackDetails.forEach((slackDetail) => {
+  slackDetails.forEach(async (slackDetail) => {
+    const {auth} = slackDetail
+    const {botAccessToken, slackUserId} = auth
+    const manager = new SlackManager(botAccessToken)
+    const res = await manager.getUserInfo(slackUserId)
+    if ('error' in res) return
+    const {tz: timeZone, tz_label: timeZoneLabel} = res.user
+    const date = scheduledEndTime.toLocaleDateString(undefined, {
+      weekday: 'long',
+      month: 'short',
+      day: 'numeric',
+      timeZone
+    })
+    const time = scheduledEndTime.toLocaleTimeString(undefined, {
+      hour: 'numeric',
+      minute: '2-digit'
+    })
+    const slackText = `The ${phaseLabel} phase for your ${meetingLabel} meeting on ${team.name} has begun! You have until ${time} on ${date} (${timeZoneLabel}) to complete it. Check it out: ${meetingUrl}`
     upsertSlackMessage(slackDetail, slackText).catch(console.error)
   })
 }
