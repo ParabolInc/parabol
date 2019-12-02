@@ -51,7 +51,8 @@ const ExpandedReflection = (props: Props) => {
   useEffect(() => {
     return () => {
       commitLocalUpdate(atmosphere, (store) => {
-        const reflection = store.get(reflectionId)!
+        const reflection = store.get(reflectionId)
+        if (!reflection) return
         reflection.setValue(false, 'isEditing')
       })
     }
