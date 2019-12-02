@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import ViewInBrowserHeader from './ViewInBrowserHeader'
 import SummarySheet from './SummarySheet'
 import {createFragmentContainer} from 'react-relay'
@@ -58,6 +58,10 @@ const PagePadding = () => {
 
 const MeetingSummaryEmail = (props: Props) => {
   const {referrer, referrerUrl} = props
+  useEffect(() => {
+    document.body.style.overflow = ''
+    document.body.style.position = ''
+  })
   return (
     <table width='100%' align='center' style={parentStyles}>
       <tbody>
