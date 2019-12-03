@@ -115,7 +115,7 @@ export const moveReflectionLocation = (
   handleAddReflectionGroupToGroups(store, reflectionGroup)
 }
 
-export const endDraggingReflectionTeamUpdater: SharedUpdater<EndDraggingReflectionMutation_meeting> = (
+export const endDraggingReflectionMeetingUpdater: SharedUpdater<EndDraggingReflectionMutation_meeting> = (
   payload,
   {store}
 ) => {
@@ -135,7 +135,7 @@ export const endDraggingReflectionTeamUpdater: SharedUpdater<EndDraggingReflecti
   moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, store)
 }
 
-export const endDraggingReflectionTeamOnNext = (payload, context) => {
+export const endDraggingReflectionMeetingOnNext = (payload, context) => {
   const {atmosphere} = context
   const {reflection} = payload
   if (!reflection) return

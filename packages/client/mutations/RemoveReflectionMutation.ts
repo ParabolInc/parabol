@@ -53,7 +53,7 @@ const removeReflectionAndEmptyGroup = (
   }
 }
 
-export const removeReflectionTeamUpdater: SharedUpdater<RemoveReflectionMutation_meeting> = (
+export const removeReflectionMeetingUpdater: SharedUpdater<RemoveReflectionMutation_meeting> = (
   payload,
   {store}
 ) => {
@@ -79,7 +79,7 @@ const RemoveReflectionMutation: StandardMutation<TRemoveReflectionMutation, Hand
     updater: (store) => {
       const payload = store.getRootField('removeReflection')
       if (!payload) return
-      removeReflectionTeamUpdater(payload, {atmosphere, store})
+      removeReflectionMeetingUpdater(payload, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
       const {reflectionId} = variables

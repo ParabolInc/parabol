@@ -43,7 +43,7 @@ import entityLookup from './entityLookup'
 import getDemoEntities from './getDemoEntities'
 import stringSimilarity from 'string-similarity'
 import normalizeRawDraftJS from '../../validation/normalizeRawDraftJS'
-import {RetroDemo} from '../../types/constEnums'
+import {RetroDemo, SubscriptionChannel} from '../../types/constEnums'
 
 export type DemoReflection = Omit<IRetroReflection, 'autoReflectionGroupId' | 'team'> & {
   creatorId: string
@@ -67,6 +67,7 @@ interface Payload {
 interface DemoEvents {
   task: Payload
   team: Payload
+  meeting: Payload
   botsFinished: void
   startDemo: void
 }
@@ -367,7 +368,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
 
       if (userId !== demoViewerId) {
-        this.emit(TEAM, data)
+        this.emit(SubscriptionChannel.MEETING, data)
       }
       return {createReflection: data}
     },
@@ -382,7 +383,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         __typename: 'EditReflectionPayload'
       }
       if (userId !== demoViewerId) {
-        this.emit(TEAM, data)
+        this.emit(SubscriptionChannel.MEETING, data)
       }
       return {editReflection: data}
     },
@@ -416,7 +417,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         __typename: 'RemoveReflectionMutation'
       }
       if (userId !== demoViewerId) {
-        this.emit(TEAM, data)
+        this.emit(SubscriptionChannel.MEETING, data)
       }
       return {removeReflection: data}
     },
@@ -454,7 +455,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         __typename: 'UpdateReflectionContentMutation'
       }
       if (userId !== demoViewerId) {
-        this.emit(TEAM, data)
+        this.emit(SubscriptionChannel.MEETING, data)
       }
       return {updateReflectionContent: data}
     },
@@ -516,7 +517,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         __typename: 'NavigateMeetingMutation'
       }
       if (userId !== demoViewerId) {
-        this.emit(TEAM, data)
+        this.emit(SubscriptionChannel.MEETING, data)
       }
       if (runBot) {
         this.startBot()
@@ -535,7 +536,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         __typename: 'SetPhaseFocusMutation'
       }
       if (userId !== demoViewerId) {
-        this.emit(TEAM, data)
+        this.emit(SubscriptionChannel.MEETING, data)
       }
       return {setPhaseFocus: data}
     },
@@ -582,7 +583,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         stage
       }
       if (userId !== demoViewerId) {
-        this.emit(TEAM, data)
+        this.emit(SubscriptionChannel.MEETING, data)
       }
       return {setStageTimer: data}
     },
@@ -609,7 +610,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         __typename: 'StartDraggingReflectionPayload'
       }
       if (userId !== demoViewerId) {
-        this.emit(TEAM, data)
+        this.emit(SubscriptionChannel.MEETING, data)
       }
       return {startDraggingReflection: data}
     },
@@ -762,7 +763,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
 
       if (userId !== demoViewerId) {
-        this.emit(TEAM, data)
+        this.emit(SubscriptionChannel.MEETING, data)
       }
       return {endDraggingReflection: data}
     },
@@ -773,7 +774,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         const {sourceId} = inputData
         const reflection = this.db.reflections.find((reflection) => reflection.id === sourceId)
         if (!reflection || reflection.isHumanTouched) return undefined
-        this.emit(TEAM, data)
+        this.emit(SubscriptionChannel.MEETING, data)
       }
       return {updateDragLocation: data}
     },
@@ -840,7 +841,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         __typename: 'AutoGroupReflectionsMutation'
       }
       if (userId !== demoViewerId) {
-        this.emit(TEAM, data)
+        this.emit(SubscriptionChannel.MEETING, data)
       }
       return {autoGroupReflections: data}
     },
@@ -863,7 +864,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         reflectionGroup
       }
       if (userId !== demoViewerId) {
-        this.emit(TEAM, data)
+        this.emit(SubscriptionChannel.MEETING, data)
       }
       return {updateReflectionGroupTitle: data}
     },
@@ -938,7 +939,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           : []
       }
       if (userId !== demoViewerId) {
-        this.emit(TEAM, data)
+        this.emit(SubscriptionChannel.MEETING, data)
       }
       return {voteForReflectionGroup: data}
     },
@@ -1115,7 +1116,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         stage: draggedStage
       }
       if (userId !== demoViewerId) {
-        this.emit(TEAM, data)
+        this.emit(SubscriptionChannel.MEETING, data)
       }
       return {dragDiscussionTopic: data}
     },

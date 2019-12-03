@@ -13,6 +13,7 @@ import {TASK, TEAM} from '../../utils/constants'
 import handlerProvider from '../../utils/relay/handlerProvider'
 import Atmosphere from '../../Atmosphere'
 import ClientGraphQLServer from './ClientGraphQLServer'
+import {SubscriptionChannel} from 'types/constEnums'
 // import sleep from 'universal/utils/sleep'
 
 const store = new Store(new RecordSource())
@@ -69,6 +70,10 @@ export default class LocalAtmosphere extends Environment {
         TeamSubscription: {
           channel: TEAM,
           dataField: 'teamSubscription'
+        },
+        MeetingSubscription: {
+          channel: SubscriptionChannel.MEETING,
+          dataField: 'meetingSubscription'
         }
       }
       const fields = channelLookup[operation.name]
