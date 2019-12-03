@@ -1,15 +1,32 @@
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
+import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 
-export default class MeetingMember {
+interface MeetingMemberInput {
+  id?: string
+  isCheckedIn?: boolean
+  updatedAt?: Date
+  teamId: string
+  userId: string
+  meetingType: MeetingTypeEnum
+  meetingId: string
+}
+
+export default abstract class MeetingMember {
   id: string
-  isCheckedIn = null
+  isCheckedIn: boolean | null
+  meetingType: MeetingTypeEnum
+  meetingId: string
+  teamId: string
   updatedAt = new Date()
-  constructor (
-    public teamId: string,
-    public userId: string,
-    public meetingType: string,
-    public meetingId: string
-  ) {
-    this.id = toTeamMemberId(meetingId, userId)
+  userId: string
+  constructor(input: MeetingMemberInput) {
+    const {teamId, meetingType, id, updatedAt, isCheckedIn, meetingId, userId} = input
+    this.id = id ?? toTeamMemberId(meetingId, userId)
+    this.isCheckedIn = isCheckedIn ?? null
+    this.meetingType = meetingType
+    this.meetingId = meetingId
+    this.teamId = teamId
+    this.updatedAt = updatedAt ?? new Date()
+    this.userId = userId
   }
 }
