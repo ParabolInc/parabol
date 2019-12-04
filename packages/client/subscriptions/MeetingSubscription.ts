@@ -2,18 +2,18 @@ import graphql from 'babel-plugin-relay/macro'
 import Atmosphere from '../Atmosphere'
 import {requestSubscription, Variables} from 'relay-runtime'
 import {RouterProps} from 'react-router'
-import {createReflectionTeamUpdater} from '../mutations/CreateReflectionMutation'
-import {dragDiscussionTopicTeamUpdater} from '../mutations/DragDiscussionTopicMutation'
-import {editReflectionTeamUpdater} from '../mutations/EditReflectionMutation'
+import {createReflectionMeetingUpdater} from '../mutations/CreateReflectionMutation'
+import {dragDiscussionTopicMeetingUpdater} from '../mutations/DragDiscussionTopicMutation'
+import {editReflectionMeetingUpdater} from '../mutations/EditReflectionMutation'
 import {
-  endDraggingReflectionTeamOnNext,
-  endDraggingReflectionTeamUpdater
+  endDraggingReflectionMeetingOnNext,
+  endDraggingReflectionMeetingUpdater
 } from '../mutations/EndDraggingReflectionMutation'
-import {navigateMeetingTeamUpdater} from '../mutations/NavigateMeetingMutation'
-import {promoteNewMeetingFacilitatorTeamOnNext} from '../mutations/PromoteNewMeetingFacilitatorMutation'
-import {removeReflectionTeamUpdater} from '../mutations/RemoveReflectionMutation'
-import {setStageTimerTeamUpdater} from '../mutations/SetStageTimerMutation'
-import {startDraggingReflectionTeamUpdater} from '../mutations/StartDraggingReflectionMutation'
+import {navigateMeetingMeetingUpdater} from '../mutations/NavigateMeetingMutation'
+import {promoteNewMeetingFacilitatorMeetingOnNext} from '../mutations/PromoteNewMeetingFacilitatorMutation'
+import {removeReflectionMeetingUpdater} from '../mutations/RemoveReflectionMutation'
+import {setStageTimerMeetingUpdater} from '../mutations/SetStageTimerMutation'
+import {startDraggingReflectionMeetingUpdater} from '../mutations/StartDraggingReflectionMutation'
 import {MeetingSubscriptionResponse} from '__generated__/MeetingSubscription.graphql'
 
 const subscription = graphql`
@@ -41,19 +41,19 @@ const subscription = graphql`
 `
 
 const onNextHandlers = {
-  EndDraggingReflectionPayload: endDraggingReflectionTeamOnNext,
-  PromoteNewMeetingFacilitatorPayload: promoteNewMeetingFacilitatorTeamOnNext
+  EndDraggingReflectionPayload: endDraggingReflectionMeetingOnNext,
+  PromoteNewMeetingFacilitatorPayload: promoteNewMeetingFacilitatorMeetingOnNext
 }
 
 const updateHandlers = {
-  CreateReflectionPayload: createReflectionTeamUpdater,
-  DragDiscussionTopicPayload: dragDiscussionTopicTeamUpdater,
-  EditReflectionPayload: editReflectionTeamUpdater,
-  EndDraggingReflectionPayload: endDraggingReflectionTeamUpdater,
-  NavigateMeetingPayload: navigateMeetingTeamUpdater,
-  RemoveReflectionPayload: removeReflectionTeamUpdater,
-  SetStageTimerPayload: setStageTimerTeamUpdater,
-  StartDraggingReflectionPayload: startDraggingReflectionTeamUpdater
+  CreateReflectionPayload: createReflectionMeetingUpdater,
+  DragDiscussionTopicPayload: dragDiscussionTopicMeetingUpdater,
+  EditReflectionPayload: editReflectionMeetingUpdater,
+  EndDraggingReflectionPayload: endDraggingReflectionMeetingUpdater,
+  NavigateMeetingPayload: navigateMeetingMeetingUpdater,
+  RemoveReflectionPayload: removeReflectionMeetingUpdater,
+  SetStageTimerPayload: setStageTimerMeetingUpdater,
+  StartDraggingReflectionPayload: startDraggingReflectionMeetingUpdater
 }
 
 const MeetingSubscription = (

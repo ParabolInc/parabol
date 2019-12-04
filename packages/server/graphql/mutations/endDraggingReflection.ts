@@ -62,15 +62,22 @@ export default {
     let newReflectionGroupId
     if (dropTargetType === EDragReflectionDropTargetTypeEnum.REFLECTION_GRID) {
       // ungroup
-      newReflectionGroupId = await removeReflectionFromGroup(reflectionId, context)
+      try {
+        newReflectionGroupId = await removeReflectionFromGroup(reflectionId, context)
+      } catch (e) {
+        return standardError(e, {userId: viewerId})
+      }
     } else if (
       dropTargetType === EDragReflectionDropTargetTypeEnum.REFLECTION_GROUP &&
       dropTargetId
     ) {
       // group
-      newReflectionGroupId = await addReflectionToGroup(reflectionId, dropTargetId, context)
+      try {
+        newReflectionGroupId = await addReflectionToGroup(reflectionId, dropTargetId, context)
+      } catch (e) {
+        return standardError(e, {userId: viewerId})
+      }
     }
-
     const data = {
       meetingId,
       reflectionId,

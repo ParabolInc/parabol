@@ -9,6 +9,7 @@ import NotificationSubscription from '../subscriptions/NotificationSubscription'
 import OrganizationSubscription from '../subscriptions/OrganizationSubscription'
 import TaskSubscription from '../subscriptions/TaskSubscription'
 import TeamSubscription from '../subscriptions/TeamSubscription'
+import MeetingSubscription from 'subscriptions/MeetingSubscription'
 
 const query = graphql`
   query DemoMeetingRootQuery($meetingId: ID!) {
@@ -26,6 +27,7 @@ const DemoMeetingRoot = () => {
   useSubscription(DemoMeetingRoot.name, OrganizationSubscription)
   useSubscription(DemoMeetingRoot.name, TaskSubscription)
   useSubscription(DemoMeetingRoot.name, TeamSubscription)
+  useSubscription(DemoMeetingRoot.name, MeetingSubscription, {meetingId: RetroDemo.MEETING_ID})
   return (
     <QueryRenderer
       environment={atmosphere}
