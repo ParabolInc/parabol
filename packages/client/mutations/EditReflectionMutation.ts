@@ -21,7 +21,7 @@ const mutation = graphql`
   }
 `
 
-export const editReflectionTeamUpdater: SharedUpdater<EditReflectionMutation_meeting> = (
+export const editReflectionMeetingUpdater: SharedUpdater<EditReflectionMutation_meeting> = (
   payload,
   {store}
 ) => {

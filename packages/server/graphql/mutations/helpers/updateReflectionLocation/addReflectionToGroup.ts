@@ -3,26 +3,24 @@ import getRethink from '../../../../database/rethinkDriver'
 import updateSmartGroupTitle from './updateSmartGroupTitle'
 import dndNoise from '../../../../../client/utils/dndNoise'
 import standardError from '../../../../utils/standardError'
-import {getUserId} from '../../../../utils/authorization'
 import Reflection from '../../../../database/types/Reflection'
 
-const addReflectionToGroup = async (reflectionId, reflectionGroupId, {authToken, dataLoader}) => {
+const addReflectionToGroup = async (reflectionId, reflectionGroupId, {dataLoader}) => {
   const r = await getRethink()
   const now = new Date()
-  const viewerId = getUserId(authToken)
   const reflection = await dataLoader.get('retroReflections').load(reflectionId)
-  if (!reflection) return standardError(new Error('Reflection not found'), {userId: viewerId})
+  if (!reflection) throw new Error('Reflection not found')
   const {reflectionGroupId: oldReflectionGroupId, meetingId: reflectionMeetingId} = reflection
   const reflectionGroup = await r
     .table('RetroReflectionGroup')
     .get(reflectionGroupId)
     .run()
   if (!reflectionGroup || !reflectionGroup.isActive) {
-    return standardError(new Error('Reflection group not found'), {userId: viewerId})
+    throw new Error('Reflection group not found')
   }
   const {meetingId} = reflectionGroup
   if (reflectionMeetingId !== meetingId) {
-    return standardError(new Error('Reflection group not found'), {userId: viewerId})
+    throw new Error('Reflection group not found')
   }
   const maxSortOrder = await r
     .table('RetroReflection')

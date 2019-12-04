@@ -29,7 +29,7 @@ const mutation = graphql`
   }
 `
 
-export const dragDiscussionTopicTeamUpdater: SharedUpdater<DragDiscussionTopicMutation_meeting> = (
+export const dragDiscussionTopicMeetingUpdater: SharedUpdater<DragDiscussionTopicMutation_meeting> = (
   payload,
   {store}
 ) => {
@@ -47,7 +47,7 @@ const DragDiscussionTopicMutation = (
     updater: (store) => {
       const payload = store.getRootField('dragDiscussionTopic')
       if (!payload) return
-      dragDiscussionTopicTeamUpdater(payload, {atmosphere, store})
+      dragDiscussionTopicMeetingUpdater(payload, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
       const {meetingId, stageId, sortOrder} = variables

@@ -38,7 +38,7 @@ interface UpdaterOptions {
 }
 
 // used only by subscription
-export const startDraggingReflectionTeamUpdater: SharedUpdater<StartDraggingReflectionMutation_meeting> = (
+export const startDraggingReflectionMeetingUpdater: SharedUpdater<StartDraggingReflectionMutation_meeting> = (
   payload,
   {atmosphere, store}: UpdaterOptions
 ) => {
