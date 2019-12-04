@@ -13,7 +13,8 @@ const ignorePatterns = [
 ]
 
 const ignoreRegexp = new RegExp(ignorePatterns.join('|'), 'i')
-if (process.env.NODE_ENV !== 'production') {
+
+if (process.env.NODE_ENV !== 'production' && !process.execArgv.join().includes('inspect')) {
   const hasChanged = require('piping')({
     // eslint-disable-line
     hook: false,

@@ -57,12 +57,12 @@ export default {
     if (connectedSockets.length === 1) {
       const operationId = dataLoader.share()
       const subOptions = {mutatorId: socketId, operationId}
-      const listeningUserIds = await r
+      const listeningUserIds = (await r
         .table('TeamMember')
         .getAll(r.args(tms), {index: 'teamId'})
         .filter({isNotRemoved: true})('userId')
         .distinct()
-        .run()
+        .run()) as string[]
 
       // Tell everyone this user is now online
       listeningUserIds.forEach((onlineUserId) => {

@@ -70,6 +70,7 @@ export const acceptTeamInvitationNotificationUpdater: SharedUpdater<AcceptTeamIn
   {store}
 ) => {
   const team = payload.getLinkedRecord('team')
+  if (!team) return
   handleAddTeams(team, store)
   const notificationIds = getInProxy(payload, 'removedNotificationIds')
   handleRemoveNotifications(notificationIds, store)

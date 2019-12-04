@@ -14,7 +14,7 @@ const fontFaceDefinitions = fontLoader
       font-style: ${fontFace.fontStyle};
       font-weight: ${fontFace.fontWeight};
       font-stretch: ${fontFace.fontStretch};
-      font-display: swap;
+      font-display: ${fontFace.fontDisplay};
     }
   `
   )

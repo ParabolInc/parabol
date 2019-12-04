@@ -31,8 +31,9 @@ const fontStylesSemiBoldItalic = {
   fontStyle: 'italic'
 }
 
-const makeFont = (fontFamily, woff2File, style) => ({
+const makeFont = (fontFamily: string, woff2File: any, style: any) => ({
   ...style,
+  fontDisplay: 'swap',
   fontFamily,
   src: `url('${woff2File}') format('woff2')`
 })
@@ -53,7 +54,8 @@ const materialIconsRegular = {
   fontFamily: 'Material Icons',
   fontStyle: 'normal',
   fontWeight: '400',
-  src: `local('Material Icons'), local('MaterialIcons-Regular'), url(${materialIconsRegularWoff2}) format('woff2')`
+  src: `local('Material Icons'), local('MaterialIcons-Regular'), url(${materialIconsRegularWoff2}) format('woff2')`,
+  fontDisplay: 'block'
 }
 
 export default [

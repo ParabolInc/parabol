@@ -7,10 +7,15 @@ import {verify} from 'jsonwebtoken'
 import handleConnect from './handleConnect'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import {TREBUCHET_WS} from '@mattkrick/trebuchet-client'
+import DataLoaderWarehouse from 'dataloader-warehouse'
+import RateLimiter from 'graphql/RateLimiter'
 
 const APP_VERSION = process.env.npm_package_version
-export default function connectionHandler(sharedDataLoader, rateLimiter) {
-  return async function socketConnectionHandler(socket, req) {
+export default function connectionHandler(
+  sharedDataLoader: DataLoaderWarehouse,
+  rateLimiter: RateLimiter
+) {
+  return async function socketConnectionHandler(socket: UserWebSocket, req) {
     const {headers} = req
     const protocol = headers['sec-websocket-protocol']
     if (protocol !== TREBUCHET_WS) {
@@ -35,10 +40,10 @@ export default function connectionHandler(sharedDataLoader, rateLimiter) {
       rateLimiter,
       req.ip
     )
-    const nextAuthToken = await handleConnect(connectionContext)
-    socket.send(JSON.stringify({version: APP_VERSION, authToken: nextAuthToken}))
     keepAlive(connectionContext)
     socket.on('message', handleMessage(connectionContext))
     socket.on('close', handleDisconnect(connectionContext))
+    const nextAuthToken = await handleConnect(connectionContext)
+    socket.send(JSON.stringify({version: APP_VERSION, authToken: nextAuthToken}))
   }
 }

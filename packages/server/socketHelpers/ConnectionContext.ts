@@ -25,7 +25,7 @@ interface Subs {
 class ConnectionContext {
   authToken: AuthToken
   availableResubs: any[] = []
-  cancelKeepAlive: NodeJS.Timeout | null = null
+  cancelKeepAlive: NodeJS.Timeout | undefined = undefined
   ip: string
   id = shortid.generate()
   isAlive = true
@@ -33,12 +33,25 @@ class ConnectionContext {
   socket: UserWebSocket
   sharedDataLoader: DataLoaderWarehouse
   subs: Subs = {}
-  constructor(socket, authToken, sharedDataLoader, rateLimiter, ip) {
+  isReady = false
+  readyQueue = [] as (() => void)[]
+  constructor(
+    socket: UserWebSocket,
+    authToken: AuthToken,
+    sharedDataLoader: DataLoaderWarehouse,
+    rateLimiter: RateLimiter,
+    ip: string
+  ) {
     this.authToken = authToken
     this.rateLimiter = rateLimiter
     this.socket = socket
     this.sharedDataLoader = sharedDataLoader
     this.ip = ip
+  }
+  ready() {
+    this.isReady = true
+    this.readyQueue.forEach((thunk) => thunk())
+    this.readyQueue.length = 0
   }
 }
 

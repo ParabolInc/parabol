@@ -1,11 +1,12 @@
 import handleDisconnect from '../socketHandlers/handleDisconnect'
 import sendRaw from './sendRaw'
 import {Events} from '@mattkrick/trebuchet-client'
+import ConnectionContext from './ConnectionContext'
 
 const WS_KEEP_ALIVE = 10000
-const keepAlive = (connectionContext) => {
+const keepAlive = (connectionContext: ConnectionContext) => {
   connectionContext.isAlive = true
-  clearInterval(connectionContext.cancelKeepAlive)
+  clearInterval(connectionContext.cancelKeepAlive!)
   connectionContext.cancelKeepAlive = setInterval(() => {
     const {socket} = connectionContext
     if (connectionContext.isAlive === false) {

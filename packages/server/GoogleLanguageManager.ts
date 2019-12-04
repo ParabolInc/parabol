@@ -1,5 +1,6 @@
 import {sign} from 'jsonwebtoken'
 import fetch from 'node-fetch'
+import sendToSentry from './utils/sendToSentry'
 
 interface SyntaxTextToken {
   content: string
@@ -12,7 +13,7 @@ export interface GoogleAnalyzedSyntax {
   }[]
   tokens: {
     lemma: string
-    text: SyntaxTextToken,
+    text: SyntaxTextToken
     partOfSpeech: {
       tag: string
       aspect: string
@@ -26,7 +27,7 @@ export interface GoogleAnalyzedSyntax {
       reciprocity: string
       tense: string
       voice: string
-    },
+    }
     dependencyEdge: {
       label: string
       headTokenIndex: number
@@ -38,7 +39,7 @@ export interface GoogleAnalyzedEntities {
   entities: {
     name: string
     salience: number // 0 - 1
-  }[],
+  }[]
   language: string
 }
 
@@ -54,15 +55,17 @@ interface CloudKey {
   private_key: string
 }
 
-export type GoogleErrorResponse = [{
-  error: GoogleError
-}]
+export type GoogleErrorResponse = [
+  {
+    error: GoogleError
+  }
+]
 
 export default class GoogleLanguageManager {
   static GOOGLE_EXPIRY = 3600
   jwt!: string
   cloudKey: CloudKey
-  constructor (cloudKey: CloudKey) {
+  constructor(cloudKey: CloudKey) {
     this.cloudKey = cloudKey
     const timeout = (GoogleLanguageManager.GOOGLE_EXPIRY - 100) * 1000
     this.refreshJWT()
@@ -71,7 +74,7 @@ export default class GoogleLanguageManager {
     }, timeout)
   }
 
-  refreshJWT () {
+  refreshJWT() {
     const {client_email, private_key_id, private_key} = this.cloudKey
     this.jwt = sign({}, private_key, {
       algorithm: 'RS256',
@@ -82,7 +85,7 @@ export default class GoogleLanguageManager {
       expiresIn: GoogleLanguageManager.GOOGLE_EXPIRY
     })
   }
-  async post<T> (endpoint: string, content: string): Promise<T> {
+  async post<T>(endpoint: string, content: string): Promise<T> {
     const res = await fetch(`https://language.googleapis.com/v1/${endpoint}`, {
       method: 'POST',
       headers: {
@@ -95,16 +98,26 @@ export default class GoogleLanguageManager {
           content
         }
       })
+    }).catch((e: Error) => {
+      sendToSentry(e)
+      return {
+        code: 500,
+        message: e.message,
+        status: 'Google is down'
+      }
     })
     const resJSON = await res.json()
     return resJSON
   }
 
-  analyzeEntities (content: string) {
-    return this.post<GoogleAnalyzedEntities | GoogleErrorResponse>('documents:analyzeEntities', content)
+  analyzeEntities(content: string) {
+    return this.post<GoogleAnalyzedEntities | GoogleErrorResponse>(
+      'documents:analyzeEntities',
+      content
+    )
   }
 
-  analyzeSyntax (content: string) {
+  analyzeSyntax(content: string) {
     return this.post<GoogleAnalyzedSyntax | GoogleErrorResponse>('documents:analyzeSyntax', content)
   }
 }
