@@ -1,27 +1,35 @@
 {
-	"folders": [
+	"git.ignoreLimitWarning": true,
+	"eslint.packageManager": "yarn",
+	"typescript.tsdk": "node_modules/typescript/lib",
+	"editor.tabSize": 2,
+	"eslint.workingDirectories": [
 		{
-			"path": ".."
+			"directory": "./packages/server",
+			"changeProcessCWD": true
+		},
+		{
+			"directory": "./packages/client",
+			"changeProcessCWD": true
+		},
+	],
+	"eslint.validate": [
+		"javascript",
+		"javascriptreact",
+		{
+			"language": "typescript",
+			"autoFix": true
+		},
+		{
+			"language": "typescriptreact",
+			"autoFix": true
 		}
 	],
-	"settings": {
-		"files.associations": {
-			".gqlconfig": "javascript",
-			"src/**/*.js": "flow"
-		},
-		"editor.codeActionsOnSave": {
-			// "source.organizeImports": true
-		},
-		"javascript.validate.enable": false,
-		"editor.formatOnSave": false,
-		"editor.tabSize": 2,
-		"javascript.format.insertSpaceAfterConstructor": true,
-		"javascript.format.insertSpaceBeforeFunctionParenthesis": true,
-		"javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": false,
-		"typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": false,
-		"prettier.requireConfig": true,
-		"standard.usePackageJson": true,
-		"standard.autoFixOnSave": true
-	},
-	"git.ignoreLimitWarning": true,
+	"npm.packageManager": "yarn",
+	"javascript.format.semicolons": "remove",
+	"javascript.preferences.quoteStyle": "single",
+	"javascript.preferences.renameShorthandProperties": false,
+	"typescript.format.semicolons": "remove",
+	"typescript.preferences.quoteStyle": "single",
+	"typescript.preferences.renameShorthandProperties": false,
 }

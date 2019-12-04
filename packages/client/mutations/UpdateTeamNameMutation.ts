@@ -19,13 +19,13 @@ const mutation = graphql`
   }
 `
 
-const UpdateTeamNameMutation = (environment, updatedTeam, onError, onCompleted) => {
-  return commitMutation(environment, {
+const UpdateTeamNameMutation = (atmosphere, updatedTeam, onError, onCompleted) => {
+  return commitMutation(atmosphere, {
     mutation,
     variables: {updatedTeam},
     optimisticUpdater: (store) => {
       const {id: teamId, name: teamName} = updatedTeam
-      store.get(teamId).setValue(teamName, 'name')
+      store.get(teamId)!.setValue(teamName, 'name')
     },
     onCompleted,
     onError

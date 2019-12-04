@@ -39,7 +39,7 @@ const EndNewMeetingPayload = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLList(new GraphQLNonNull(GraphQLID))
     },
     updatedTasks: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Task))),
+      type: new GraphQLList(new GraphQLNonNull(Task)),
       description: 'Any tasks that were updated during the meeting',
       resolve: async ({updatedTaskIds}, _args, {authToken, dataLoader}) => {
         if (!updatedTaskIds) return []

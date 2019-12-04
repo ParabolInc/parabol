@@ -5,7 +5,7 @@ const UpdateDragLocationPayload = new GraphQLObjectType({
   name: 'UpdateDragLocationPayload',
   fields: () => ({
     remoteDrag: {
-      type: new GraphQLNonNull(RemoteReflectionDrag),
+      type: RemoteReflectionDrag,
       description: 'The drag as sent from the team member'
     },
     userId: {

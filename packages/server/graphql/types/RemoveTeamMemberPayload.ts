@@ -1,4 +1,4 @@
-import {GraphQLList, GraphQLObjectType} from 'graphql'
+import {GraphQLNonNull, GraphQLList, GraphQLObjectType} from 'graphql'
 import {
   makeResolveNotificationsForViewer,
   resolveTasks,
@@ -32,7 +32,7 @@ const RemoveTeamMemberPayload = new GraphQLObjectType({
       resolve: resolveTeam
     },
     updatedTasks: {
-      type: new GraphQLList(Task),
+      type: GraphQLList(GraphQLNonNull(Task)),
       description: 'The tasks that got reassigned',
       resolve: resolveTasks
     },
@@ -49,7 +49,7 @@ const RemoveTeamMemberPayload = new GraphQLObjectType({
     kickOutNotification: {
       type: NotifyKickedOut,
       description: 'A notification if you were kicked out by the team leader',
-      resolve: async ({notificationId}, args, {authToken, dataLoader}) => {
+      resolve: async ({notificationId}, _args, {authToken, dataLoader}) => {
         if (!notificationId) return null
         const viewerId = getUserId(authToken)
         const notification = await dataLoader.get('notifications').load(notificationId)

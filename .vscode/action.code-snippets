@@ -1,0 +1,23 @@
+{
+	"React Functional Component": {
+		"scope": "typescriptreact",
+		"prefix": "rfc",
+		"body": [
+			"import React from 'react'",
+			"",
+			"interface Props {",
+			"\t$1",
+			"}",
+			"",
+			"const ${2:${TM_FILENAME_BASE}} = (props: Props) => {",
+			"\tconst {$3} = props",
+			"\treturn (",
+			"\t\t$0",
+			"\t)",
+			"}",
+			"",
+			"export default $2"
+		],
+		"description": "A react functional component",
+	}
+}

@@ -18,7 +18,7 @@ const UpgradeToProPayload = new GraphQLObjectType({
       resolve: resolveOrganization
     },
     teams: {
-      type: new GraphQLList(Team),
+      type: new GraphQLList(GraphQLNonNull(Team)),
       description: 'The updated teams under the org',
       resolve: resolveTeams
     },
