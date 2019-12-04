@@ -8,6 +8,7 @@ import protocolRelativeUrl from './protocolRelativeUrl'
  * AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
  */
 const s3 =
+  process.env.DISABLE_CDN_BUILD !== 'true' &&
   typeof process.env.CDN_BASE_URL !== 'undefined' &&
   new aws.S3({
     endpoint: protocolRelativeUrl.parse(process.env.CDN_BASE_URL).hostname,
@@ -15,7 +16,7 @@ const s3 =
     signatureVersion: 'v4'
   })
 
-function s3CheckInitialized () {
+function s3CheckInitialized() {
   if (!s3) {
     throw new Error('S3 uninitialized, did you set process.env.CDN_BASE_URL?')
   }
@@ -29,11 +30,11 @@ function s3CheckInitialized () {
  */
 const keyifyPath = (path) => path.replace(/^\//, '')
 
-export function s3GetObject (url) {
+export function s3GetObject(url) {
   return s3.getObject({Bucket: process.env.AWS_S3_BUCKET, Key: url}).promise()
 }
 
-export function s3DeleteObject (url) {
+export function s3DeleteObject(url) {
   s3CheckInitialized()
   const s3Params = {
     Bucket: process.env.AWS_S3_BUCKET,
@@ -42,7 +43,7 @@ export function s3DeleteObject (url) {
   return s3.deleteObject(s3Params).promise()
 }
 
-export function s3SignUrl (
+export function s3SignUrl(
   operation,
   pathname,
   contentType,
@@ -85,7 +86,7 @@ export const s3SignPutObject = (pathname, contentType, contentLength, acl) =>
  *
  * Returns Boolean
  */
-export function urlIsPossiblyOnS3 (url) {
+export function urlIsPossiblyOnS3(url) {
   if (!url) {
     return false
   }
