@@ -10,12 +10,12 @@ interface Options {
   isWebhook?: boolean
 }
 
-export default function makeAppLink(location: string = '', options: Options = {}) {
+export default function makeAppLink(location = '', options: Options = {}) {
   const {qs, isWebhook} = options
   const proto = process.env.PROTO || 'http'
   const host = process.env.HOST || 'localhost'
   const port = process.env.PORT || '3000'
-  const portSuffix = process.env.NODE_ENV === 'production' ? '' : `:${port}`
+  const portSuffix = host !== 'localhost' ? '' : `:${port}`
   const qsSuffix = qs ? `?${querystring.stringify(qs)}` : ''
   if (host === 'localhost' && isWebhook) {
     return `http://dev.parabol.ultrahook.com/${location}${qsSuffix}`
