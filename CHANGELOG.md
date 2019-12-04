@@ -5,6 +5,31 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.15.0 2019-Dec-04
+
+## Added
+* New meeting lobby (#3364)
+* Optional check-in phase (#3364)
+* console.logs for monitor when meeting summary does not scroll (#3397)
+* Initial support for VSCode (#3398)
+* Server debugger support for VSCode (#3400)
+* A lightweight heap profiler that runs every hour (#3399)
+* A heavy duty heap dumper that should only be run when there is no server load (#3399)
+
+## Fixed
+* GraphiQL Public Schema (#3397)
+* Cannot vote on optimistic reflection groups (#3397)
+* Snackbars can handle error string and object (#3397)
+* GraphQL validation error when an abstract object could return a null or non-null of the same name (#3398)
+* FOUC for Material Icons (#3400)
+* Gracefully handle fetches that fail when Google's language API is down (#3400)
+* Times in Slack notifications are relative to the timezone of whomever sent the message (#3400)
+* Subscriptions work after initial login (#3400)
+* AcceptTeamInnvitation has correct error when login credentials are wrong (#3405)
+
+## Changed
+* Disconnecting does not promote someone else to facilitator (#3397)
+
 ## 4.14.0 2019-Nov-27
 
 ## Added
@@ -44,7 +69,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 * E4E Policy to reflect new funding round (#3347)
 * Upgraded to Typescript 3.7
 * Upgraded a bunch of other dependencies
- 
+
 
 ## 4.12.0 2019-Nov-11
 
@@ -71,7 +96,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ### Changed
 * Set client/server envs on Sentry (#3311)
 * Upgraded to Relay v7 (#3306)
-  
+
 ## 4.10.1 2019-Nov-04
 
 ## Fixed
@@ -94,7 +119,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 * Allow scrollable sections in meeting left nav (#3264)
 * Fix team member name update (#3258)
 * Redirect to correct meeting if hit the wrong url (#3257)
- 
+
 ### Removed
 * Legacy LoadableDraftJSModal (#3273)
 * react-dnd & friends from deps (#3267)
@@ -108,7 +133,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Fixed
 * Delete single record for startNewMeeting race
- 
+
 ## 4.8.2 2019-Oct-10
 
 ### Fixed
