@@ -46,7 +46,7 @@ const mutation = graphql`
   }
 `
 
-export const createReflectionTeamUpdater: SharedUpdater<CreateReflectionMutation_meeting> = (
+export const createReflectionMeetingUpdater: SharedUpdater<CreateReflectionMutation_meeting> = (
   payload,
   {store}
 ) => {
@@ -67,7 +67,7 @@ const CreateReflectionMutation: StandardMutation<TCreateReflectionMutation> = (
     updater: (store) => {
       const payload = store.getRootField('createReflection')
       if (!payload) return
-      createReflectionTeamUpdater(payload, {atmosphere, store})
+      createReflectionMeetingUpdater(payload, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
       const {input} = variables
