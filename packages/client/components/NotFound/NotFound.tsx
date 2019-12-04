@@ -70,7 +70,7 @@ const move = (el: HTMLImageElement, onWin: () => void) => {
       nextPalette = colors[Math.floor(Math.random() * colors.length)]
     }
     palette = nextPalette
-    const wings = (el as any).firstChild.firstChild.children
+    const wings = Array.from((el as any).firstChild.firstChild.children) as SVGPathElement[]
     wings.forEach((wing, idx) => {
       wing.setAttribute('fill', palette[idx])
     })

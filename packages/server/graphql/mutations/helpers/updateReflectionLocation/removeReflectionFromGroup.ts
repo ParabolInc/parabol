@@ -1,19 +1,16 @@
 import getGroupSmartTitle from 'parabol-client/utils/autogroup/getGroupSmartTitle'
 import getRethink from '../../../../database/rethinkDriver'
 import updateSmartGroupTitle from './updateSmartGroupTitle'
-import {getUserId} from '../../../../utils/authorization'
-import standardError from '../../../../utils/standardError'
 import ReflectionGroup from '../../../../database/types/ReflectionGroup'
 
-const removeReflectionFromGroup = async (reflectionId, {authToken, dataLoader}) => {
+const removeReflectionFromGroup = async (reflectionId, {dataLoader}) => {
   const r = await getRethink()
   const now = new Date()
   const reflection = await r
     .table('RetroReflection')
     .get(reflectionId)
     .run()
-  const viewerId = getUserId(authToken)
-  if (!reflection) return standardError(new Error('Reflection not found'), {userId: viewerId})
+  if (!reflection) throw new Error('Reflection not found')
   const {reflectionGroupId: oldReflectionGroupId, meetingId, retroPhaseItemId} = reflection
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
 
