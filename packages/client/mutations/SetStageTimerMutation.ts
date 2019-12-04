@@ -35,7 +35,7 @@ const mutation = graphql`
   }
 `
 
-export const setStageTimerTeamUpdater: SharedUpdater<SetStageTimerMutation_meeting> = (
+export const setStageTimerMeetingUpdater: SharedUpdater<SetStageTimerMutation_meeting> = (
   payload,
   {store}
 ) => {
@@ -65,7 +65,7 @@ const SetStageTimerMutation: StandardMutation<TSetStageTimerMutation> = (
     variables,
     updater: (store) => {
       const payload = store.getRootField('setStageTimer')
-      setStageTimerTeamUpdater(payload, {atmosphere, store})
+      setStageTimerMeetingUpdater(payload, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
       const {meetingId, scheduledEndTime, timeRemaining} = variables

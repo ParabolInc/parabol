@@ -34,7 +34,7 @@ const mutation = graphql`
   }
 `
 
-export const promoteNewMeetingFacilitatorTeamOnNext: OnNextHandler<PromoteNewMeetingFacilitatorMutation_meeting> = (
+export const promoteNewMeetingFacilitatorMeetingOnNext: OnNextHandler<PromoteNewMeetingFacilitatorMutation_meeting> = (
   payload,
   {atmosphere}
 ) => {
@@ -73,7 +73,7 @@ const PromoteNewMeetingFacilitatorMutation: SimpleMutation<TPromoteNewMeetingFac
     onCompleted: (res) => {
       const payload = res.promoteNewMeetingFacilitator
       if (payload) {
-        promoteNewMeetingFacilitatorTeamOnNext(payload, {
+        promoteNewMeetingFacilitatorMeetingOnNext(payload, {
           atmosphere
         })
       }

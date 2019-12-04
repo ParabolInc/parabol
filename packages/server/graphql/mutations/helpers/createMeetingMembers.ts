@@ -1,9 +1,9 @@
 import Meeting from '../../../database/types/Meeting'
-import MeetingMember from '../../../database/types/MeetingMember'
 import RetroMeetingMember from '../../../database/types/RetroMeetingMember'
 import {DataLoaderWorker} from '../../graphql'
 import {IRetrospectiveMeetingSettings} from '../../../../client/types/graphql'
 import TeamMember from '../../../database/types/TeamMember'
+import ActionMeetingMember from '../../../database/types/ActionMeetingMember'
 
 const createMeetingMembers = async (
   meeting: Meeting,
@@ -13,7 +13,8 @@ const createMeetingMembers = async (
   switch (meeting.meetingType) {
     case 'action':
       return teamMembers.map(
-        ({teamId, userId}) => new MeetingMember(teamId, userId, meeting.meetingType, meeting.id)
+        ({teamId, userId}) =>
+          new ActionMeetingMember({teamId, userId, meetingId: meeting.id, isCheckedIn: true})
       )
     case 'retrospective':
       const allSettings = await dataLoader.get('meetingSettingsByTeamId').load(meeting.teamId)
@@ -23,7 +24,13 @@ const createMeetingMembers = async (
       const {totalVotes} = retroSettings
       return teamMembers.map(
         ({teamId, userId}) =>
-          new RetroMeetingMember(teamId, userId, meeting.meetingType, meeting.id, totalVotes)
+          new RetroMeetingMember({
+            teamId,
+            userId,
+            meetingId: meeting.id,
+            votesRemaining: totalVotes,
+            isCheckedIn: true
+          })
       )
   }
 }

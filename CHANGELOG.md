@@ -16,6 +16,12 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ## Fixed
 * Race condition to 2 votes (#3367)
 
+## 4.13.1 2019-Nov-20
+
+## Fixed
+* Auto-checkin meeting members who joined the team after a meeting started
+* Gracefully handle group/ungroup errors
+
 ## 4.13.0 2019-Nov-19
 
 ## Fixed
