@@ -2,10 +2,13 @@ import getGroupSmartTitle from 'parabol-client/utils/autogroup/getGroupSmartTitl
 import getRethink from '../../../../database/rethinkDriver'
 import updateSmartGroupTitle from './updateSmartGroupTitle'
 import dndNoise from '../../../../../client/utils/dndNoise'
-import standardError from '../../../../utils/standardError'
 import Reflection from '../../../../database/types/Reflection'
 
-const addReflectionToGroup = async (reflectionId, reflectionGroupId, {dataLoader}) => {
+const addReflectionToGroup = async (
+  reflectionId: string,
+  reflectionGroupId: string,
+  {dataLoader}
+) => {
   const r = await getRethink()
   const now = new Date()
   const reflection = await dataLoader.get('retroReflections').load(reflectionId)
