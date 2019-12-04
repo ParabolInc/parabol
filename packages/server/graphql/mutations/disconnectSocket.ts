@@ -2,11 +2,7 @@ import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import DisconnectSocketPayload from '../types/DisconnectSocketPayload'
-import promoteFirstTeamMember from './helpers/promoteFirstTeamMember'
-import {MEETING_FACILITATOR_ELECTION_TIMEOUT} from '../../utils/serverConstants'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
-import findStageById from '../../../client/utils/meetings/findStageById'
-import Meeting from '../../database/types/Meeting'
 import {GQLContext} from '../graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
@@ -42,17 +38,16 @@ export default {
     const data = {user: disconnectedUser}
     if (connectedSockets.length === 0) {
       // If that was the last socket, tell everyone they went offline
-      const {listeningUserIds, facilitatingMeetings} = await r({
+      const {listeningUserIds} = await r({
         listeningUserIds: (r
           .table('TeamMember')
           .getAll(r.args(tms), {index: 'teamId'})
           .filter({isNotRemoved: true})('userId')
           .distinct() as unknown) as string[],
-        facilitatingMeetings: (r
-          .table('NewMeeting')
-          .getAll(userId, {index: 'facilitatorUserId'})
-          .coerceTo('array')
-          .default([]) as unknown) as Meeting[]
+        clearedLastSeen: r
+          .table('User')
+          .get(userId)
+          .update({lastSeenAtURL: null})
       }).run()
       const subOptions = {mutatorId: socketId}
       listeningUserIds.forEach((onlineUserId) => {
@@ -64,31 +59,6 @@ export default {
           subOptions
         )
       })
-      if (facilitatingMeetings.length > 0) {
-        setTimeout(async () => {
-          const userOffline = await r
-            .table('User')
-            .get(userId)('connectedSockets')
-            .count()
-            .eq(0)
-            .default(true)
-            .run()
-          if (userOffline) {
-            await r
-              .table('User')
-              .get(userId)
-              .update({lastSeenAtURL: null})
-              .run()
-            facilitatingMeetings.forEach((meeting) => {
-              const {phases, facilitatorStageId, id: meetingId, teamId} = meeting as Meeting
-              const {stage} = findStageById(phases, facilitatorStageId)!
-              if (!stage.isAsync) {
-                promoteFirstTeamMember(meetingId, teamId, userId, subOptions).catch(console.error)
-              }
-            })
-          }
-        }, MEETING_FACILITATOR_ELECTION_TIMEOUT)
-      }
     }
     sendSegmentEvent('Disconnect WebSocket', userId, {
       connectedSockets,
