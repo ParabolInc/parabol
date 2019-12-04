@@ -4,6 +4,7 @@ import HelpMenuCopy from './HelpMenuCopy'
 import HelpMenuLink from './HelpMenuLink'
 import useSegmentTrack from '../../hooks/useSegmentTrack'
 import {NewMeetingPhaseTypeEnum, SegmentClientEventEnum} from '../../types/graphql'
+import {ExternalLinks} from '../../types/constEnums'
 
 interface Props {}
 
@@ -14,10 +15,7 @@ const ActionMeetingLobbyHelpMenu = forwardRef((_props: Props, ref: any) => {
     <HelpMenuContent closePortal={closePortal}>
       <HelpMenuCopy>{'To learn more about how to run an Action Meeting, see our '}</HelpMenuCopy>
       <div>
-        <HelpMenuLink
-          copy='Getting Started Guide'
-          href='https://www.parabol.co/getting-started-guide/action-meetings-101'
-        />
+        <HelpMenuLink copy='Getting Started Guide' href={ExternalLinks.GETTING_STARTED_ACTION} />
         {' for running an Action Meeting.'}
       </div>
     </HelpMenuContent>

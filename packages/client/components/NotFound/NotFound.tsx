@@ -74,7 +74,7 @@ const move = (el: HTMLImageElement, onWin: () => void) => {
     wings.forEach((wing, idx) => {
       wing.setAttribute('fill', palette[idx])
     })
-    if ((curX === 0 || curX === maxX) && (curY === 0 || curY === maxY)) {
+    if (curX !== nextX && curY !== nextY) {
       onWin()
     }
   }

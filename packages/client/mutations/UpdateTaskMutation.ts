@@ -109,7 +109,7 @@ const UpdateTaskMutation: SimpleMutation<TUpdateTaskMutation> = (
           task.setValue(message, 'error')
         }
       }
-      updateTaskTaskUpdater(payload, {atmosphere, store})
+      updateTaskTaskUpdater(payload, {atmosphere, store: store as any})
     },
     optimisticUpdater: (store) => {
       const {id, content, teamId, userId} = updatedTask

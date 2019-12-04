@@ -1,4 +1,4 @@
-import React, {ReactElement, ReactPortal, Suspense, useEffect} from 'react'
+import React, {ReactElement, ReactPortal, RefObject, Suspense, useEffect} from 'react'
 import styled from '@emotion/styled'
 import ErrorBoundary from '../components/ErrorBoundary'
 import LoadingComponent from '../components/LoadingComponent/LoadingComponent'
@@ -19,7 +19,7 @@ const MenuBlock = styled('div')({
 
 const useMenuPortal = (
   portal: (el: ReactElement) => ReactPortal | null,
-  targetRef: (el: HTMLDivElement | null) => void,
+  targetRef: RefObject<HTMLDivElement>,
   minWidth: number,
   coords: UseCoordsValue,
   portalStatus: PortalStatus,

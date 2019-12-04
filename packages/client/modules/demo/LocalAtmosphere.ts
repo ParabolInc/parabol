@@ -13,7 +13,7 @@ import {TASK, TEAM} from '../../utils/constants'
 import handlerProvider from '../../utils/relay/handlerProvider'
 import Atmosphere from '../../Atmosphere'
 import ClientGraphQLServer from './ClientGraphQLServer'
-import {SubscriptionChannel} from 'types/constEnums'
+import {SubscriptionChannel} from '../../types/constEnums'
 // import sleep from 'universal/utils/sleep'
 
 const store = new Store(new RecordSource())

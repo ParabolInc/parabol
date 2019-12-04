@@ -40,13 +40,14 @@ export interface HistoryMaybeLocalHandler {
 
 export type OptionalHandlers = Partial<BaseLocalHandlers>
 
-interface UpdaterContext<T = any> {
+interface UpdaterContext {
   atmosphere: Atmosphere
-  store: RecordSourceSelectorProxy<T>
+  // can't assume store<Parent> == store<Child>, so no generics can be used here
+  store: RecordSourceSelectorProxy
 }
 
 export interface SharedUpdater<T> {
-  (payload: RecordProxy<Omit<T, ' $refType'>>, context: UpdaterContext<T>): void
+  (payload: RecordProxy<Omit<T, ' $refType'>>, context: UpdaterContext): void
 }
 
 export interface OnNextBaseContext {

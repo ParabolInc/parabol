@@ -21,6 +21,8 @@ export const enum Breakpoint {
   INVOICE_LABEL = 384,
   SIDEBAR_LEFT = 800,
   MEETING_FACILITATOR_BAR = 480,
+  NEW_MEETING_GRID = 1112,
+  NEW_MEETING_SELECTOR = 500,
   SINGLE_REFLECTION_COLUMN = 704 // (ReflectionWith + 16) * 2
 }
 
@@ -80,7 +82,9 @@ export const enum ElementHeight {
 }
 
 export const enum ExternalLinks {
-  PRICING_LINK = 'https://www.parabol.co/pricing/'
+  PRICING_LINK = 'https://www.parabol.co/pricing/',
+  GETTING_STARTED_RETROS = 'https://www.parabol.co/getting-started-guide/retrospective-meetings-101',
+  GETTING_STARTED_ACTION = 'https://www.parabol.co/getting-started-guide/action-meetings-101'
 }
 
 export const enum Filter {
@@ -159,6 +163,10 @@ export const enum NavSidebar {
   WIDTH = 240
 }
 
+export const enum NewMeeting {
+  ILLUSTRATION_WIDTH = 400,
+  CONTROLS_WIDTH = 300
+}
 export const enum Pricing {
   PRO_SEAT_COST = 600
 }

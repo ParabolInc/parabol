@@ -58,6 +58,7 @@ const mutation = graphql`
       error {
         message
       }
+      ...EndNewMeetingMutation_notification @relay(mask: false)
       ...EndNewMeetingMutation_team @relay(mask: false)
     }
   }

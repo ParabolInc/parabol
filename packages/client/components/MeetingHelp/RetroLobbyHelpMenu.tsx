@@ -4,6 +4,7 @@ import HelpMenuCopy from './HelpMenuCopy'
 import HelpMenuLink from './HelpMenuLink'
 import useSegmentTrack from '../../hooks/useSegmentTrack'
 import {NewMeetingPhaseTypeEnum, SegmentClientEventEnum} from '../../types/graphql'
+import {ExternalLinks} from '../../types/constEnums'
 
 interface Props {}
 
@@ -19,10 +20,7 @@ const RetroLobbyHelpMenu = forwardRef((_props: Props, ref: any) => {
       </HelpMenuCopy>
       <div>
         {'See our '}
-        <HelpMenuLink
-          copy='Getting Started Guide'
-          href='https://www.parabol.co/getting-started-guide/retrospective-meetings-101'
-        />
+        <HelpMenuLink copy='Getting Started Guide' href={ExternalLinks.GETTING_STARTED_RETROS} />
         {' for running a Retrospective Meeting.'}
       </div>
     </HelpMenuContent>

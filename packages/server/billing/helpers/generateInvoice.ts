@@ -379,7 +379,7 @@ export default async function generateInvoice(
     billingLeaderEmails,
     creditCard: organization.creditCard,
     endAt: fromEpochSeconds(invoice.period_end),
-    invoiceDate: fromEpochSeconds(invoice.date),
+    invoiceDate: fromEpochSeconds(invoice.date!),
     lines: invoiceLineItems,
     nextPeriodCharges,
     orgId,

@@ -1,13 +1,4 @@
-import {
-  Dispatch,
-  MutableRefObject,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState
-} from 'react'
+import {Dispatch, MutableRefObject, SetStateAction, useEffect, useLayoutEffect, useRef} from 'react'
 import {BBox} from '../types/animations'
 import getBBox from '../components/RetroReflectPhase/getBBox'
 import useRefState from './useRefState'
@@ -190,28 +181,25 @@ const useCoords = <
   preferredMenuPosition: MenuPosition,
   options: UseCoordsOptions = {}
 ) => {
-  const [currentTargetRef, setTargetRef] = useState<P | null>(null)
-  const targetRef = useCallback((c: P | null) => {
-    setTargetRef(c)
-  }, [])
+  const targetRef = useRef<P>(null)
   const originRef = useRef<T | null>(null)
   const [coordsRef, setCoords] = useRefState<CoordState>({
     coords: {left: 0, top: 0},
     menuPosition: preferredMenuPosition
   })
   useLayoutEffect(() => {
-    if (!currentTargetRef || !originRef.current) return
+    if (!targetRef.current || !originRef.current) return
     // Bounding adjustments mimic native (flip from below to above for Y, but adjust pixel-by-pixel for X)
-    const targetBBox = getBBox(currentTargetRef)
+    const targetBBox = getBBox(targetRef.current)
     const originBBox = getBBox(originRef.current)
     if (targetBBox && originBBox) {
       const coordState = getNextCoords(targetBBox, originBBox, preferredMenuPosition)
       setCoords(coordState)
     }
-  }, [currentTargetRef, setCoords, options.originCoords, preferredMenuPosition])
+  }, [targetRef.current, setCoords, options.originCoords, preferredMenuPosition])
 
-  useResizeObserver(currentTargetRef, () => {
-    const targetBBox = getBBox(currentTargetRef)!
+  useResizeObserver(targetRef.current, () => {
+    const targetBBox = getBBox(targetRef.current)!
     const originBBox = getBBox(originRef.current)!
     if (targetBBox && originBBox) {
       const coordState = getNextCoords(targetBBox, originBBox, preferredMenuPosition)
@@ -219,7 +207,7 @@ const useCoords = <
     }
   })
 
-  useWindowResize(coordsRef, currentTargetRef, setCoords)
+  useWindowResize(coordsRef, targetRef.current, setCoords)
   const {coords, menuPosition} = coordsRef.current
 
   return {targetRef, originRef, coords, menuPosition}

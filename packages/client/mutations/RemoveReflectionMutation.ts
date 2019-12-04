@@ -73,7 +73,7 @@ const RemoveReflectionMutation: StandardMutation<TRemoveReflectionMutation, Hand
   variables,
   {onError, onCompleted, meetingId}
 ) => {
-  return commitMutation(atmosphere, {
+  return commitMutation<TRemoveReflectionMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {

@@ -9,7 +9,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import MeetingSettings from '../../database/types/MeetingSettings'
 
 const setCheckInEnabled = {
-  type: SetCheckInEnabledPayload,
+  type: GraphQLNonNull(SetCheckInEnabledPayload),
   description: 'Enabled or disable the check-in round',
   args: {
     settingsId: {
@@ -48,7 +48,7 @@ const setCheckInEnabled = {
           row('phaseTypes').contains(NewMeetingPhaseTypeEnum.checkin),
           isEnabled
             ? row('phaseTypes')
-            : row('phaseTypes').without(NewMeetingPhaseTypeEnum.checkin),
+            : row('phaseTypes').difference([NewMeetingPhaseTypeEnum.checkin]),
           isEnabled ? row('phaseTypes').prepend(NewMeetingPhaseTypeEnum.checkin) : row('phaseTypes')
         )
       }))
