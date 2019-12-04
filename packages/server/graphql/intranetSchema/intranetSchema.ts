@@ -23,6 +23,7 @@ import stripeInvoiceFinalized from './mutations/stripeInvoiceFinalized'
 import stripeUpdateCreditCard from './mutations/stripeUpdateCreditCard'
 import stripeUpdateInvoiceItem from './mutations/stripeUpdateInvoiceItem'
 import flagConversionModal from './mutations/flagConversionModal'
+import dumpHeap from './mutations/dumpHeap'
 import logins from './queries/logins'
 import signups from './queries/signups'
 
@@ -46,6 +47,7 @@ const mutation = new GraphQLObjectType<any, GQLContext, any>({
     addNewFeature,
     autopauseUsers,
     draftEnterpriseInvoice,
+    dumpHeap,
     endOldMeetings,
     flagConversionModal,
     flagOverLimit,

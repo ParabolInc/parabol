@@ -164,6 +164,7 @@
     "graphql": "^14.5.8",
     "graphql-redis-subscriptions": "^2.1.0",
     "graphql-relay": "^0.5.2",
+    "heap-profile": "^0.4.0",
     "intersection-observer": "^0.7.0",
     "ioredis": "^4.11.2",
     "jsonwebtoken": "^8.5.0",
