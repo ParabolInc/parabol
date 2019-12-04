@@ -46,6 +46,7 @@ interface StripeRequest extends express.Request {
 const APP_VERSION = process.env.npm_package_version
 const PROJECT_ROOT = path.join(__dirname, '..', '..')
 
+let highWaterMark = 0
 setTimeout(() => {
   heapProfile.start()
   setInterval(() => {
@@ -53,8 +54,12 @@ setTimeout(() => {
     const {rss} = memoryUsage
     const MB = 2 ** 20
     const usedMB = Math.floor(rss / MB)
-    const fileName = `sample_${Date.now()}_${usedMB}.heapprofile`
-    heapProfile.write(path.join(PROJECT_ROOT, fileName))
+    if (usedMB > highWaterMark + 50) {
+      // only profile if it's gonna be interesting
+      highWaterMark = usedMB
+      const fileName = `sample_${Date.now()}_${usedMB}.heapprofile`
+      heapProfile.write(path.join(PROJECT_ROOT, fileName))
+    }
   }, ms('1h')).unref()
 }, 1000)
 
