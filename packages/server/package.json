@@ -32,6 +32,7 @@
     "db:migrate-down": "node database/migrate.babel.js down",
     "db:migrate-down-all": "node database/migrate.babel.js down --all",
     "db:migrate-create": "node database/migrate-create.babel.js",
+    "debug": "node --nolazy --inspect=9229 server.babel.js",
     "debug:stripe": "node billing/debug.babel.js",
     "postdeploy": "node utils/postDeploy.babel.js",
     "precommit": "lint-staged",

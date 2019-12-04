@@ -29,7 +29,7 @@ const setFreshTokenIfNeeded = (connectionContext: ConnectionContext, tmsDB: stri
   return null
 }
 
-const handleConnect = async (connectionContext) => {
+const handleConnect = async (connectionContext: ConnectionContext) => {
   const payload = {
     query: `
     mutation ConnectSocket {
@@ -44,12 +44,14 @@ const handleConnect = async (connectionContext) => {
   const {data} = result
   if (data) {
     if (!data.connectSocket) {
-      sendToSentry(new Error('null connectSocket'), {userId: connectionContext.userId})
+      sendToSentry(new Error('null connectSocket'), {userId: connectionContext?.authToken?.sub})
     }
     const {
       connectSocket: {tmsDB}
     } = data
-    return setFreshTokenIfNeeded(connectionContext, tmsDB)
+    const freshToken = setFreshTokenIfNeeded(connectionContext, tmsDB)
+    connectionContext.ready()
+    return freshToken
   }
   handleDisconnect(connectionContext, {exitCode: 4401})()
   return null
