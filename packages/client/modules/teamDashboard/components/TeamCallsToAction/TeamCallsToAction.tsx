@@ -35,25 +35,19 @@ const TeamCallToAction = (props: Props) => {
   const {history} = useRouter()
   const label = firstActiveMeeting && meetingTypeToLabel[firstActiveMeeting.meetingType]
   const goToMeeting = () => {
-    const {id: meetingId} = firstActiveMeeting
-    history.push(`/meet/${meetingId}/`)
+    if (firstActiveMeeting) {
+      const {id: meetingId} = firstActiveMeeting
+      history.push(`/meet/${meetingId}/`)
+    } else {
+      history.push(`/new-meeting/${teamId}`)
+    }
   }
-  const startMeeting = () => {
-    history.push(`/new-meeting/${teamId}`)
-  }
+  const startLabel = firstActiveMeeting ? `Join ${label} Meeting` : 'Start Meeting'
   return (
     <ButtonBlock>
-      {firstActiveMeeting ? (
-        <StartButton onClick={goToMeeting}>
-          <IconLabel icon='arrow_forward' iconAfter label={`Join ${label} Meeting`} />
-        </StartButton>
-      ) : (
-        <>
-          <StartButton onClick={startMeeting}>
-            <IconLabel icon='expand_more' iconAfter label='Start Meeting' />
-          </StartButton>
-        </>
-      )}
+      <StartButton onClick={goToMeeting}>
+        <IconLabel icon='arrow_forward' iconAfter label={startLabel} />
+      </StartButton>
     </ButtonBlock>
   )
 }

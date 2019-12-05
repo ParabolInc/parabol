@@ -276,7 +276,7 @@ export const enum ZIndex {
   MENU = 24 /* portal needs to float above other components, especially sidebars */,
   SIDEBAR = 16,
   SIDE_SHEET = 8,
-  SNACKBAR = 7,
+  SNACKBAR = 24 /* snackbar is kind of dialog */,
   REFLECTION_IN_FLIGHT = 8,
   TOOLTIP = 24 /* portal needs to float above other components, especially sidebars */
 }
