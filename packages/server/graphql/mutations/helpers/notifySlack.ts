@@ -13,6 +13,9 @@ import makeAppLink from '../../../utils/makeAppLink'
 import sendToSentry from '../../../utils/sendToSentry'
 import SlackManager from '../../../utils/SlackManager'
 import {DataLoaderWorker} from '../../graphql'
+import {toEpochSeconds} from '../../../utils/epochTime'
+import formatWeekday from '../../../../client/utils/date/formatWeekday'
+import formatTime from '../../../../client/utils/date/formatTime'
 
 const getSlackDetails = async (
   event: SlackNotificationEvent,
@@ -155,23 +158,16 @@ export const notifySlackTimeLimitStart = async (
   const phaseLabel = phaseLabelLookup[phaseType]
   const slackDetails = await getSlackDetails('MEETING_STAGE_TIME_LIMIT_START', teamId, dataLoader)
   slackDetails.forEach(async (slackDetail) => {
-    const {auth} = slackDetail
-    const {botAccessToken, slackUserId} = auth
-    const manager = new SlackManager(botAccessToken)
-    const res = await manager.getUserInfo(slackUserId)
-    if ('error' in res) return
-    const {tz: timeZone, tz_label: timeZoneLabel} = res.user
-    const date = scheduledEndTime.toLocaleDateString(undefined, {
-      weekday: 'long',
-      month: 'short',
-      day: 'numeric',
-      timeZone
-    })
-    const time = scheduledEndTime.toLocaleTimeString(undefined, {
-      hour: 'numeric',
-      minute: '2-digit'
-    })
-    const slackText = `The ${phaseLabel} phase for your ${meetingLabel} meeting on ${team.name} has begun! You have until ${time} on ${date} (${timeZoneLabel}) to complete it. Check it out: ${meetingUrl}`
+    const fallbackDate = formatWeekday(scheduledEndTime)
+    const fallbackTime = formatTime(scheduledEndTime)
+    const fallbackZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Eastern Time'
+    const fallback = `${fallbackDate} at ${fallbackTime} (${fallbackZone})`
+    const situation = `The *${phaseLabel} Phase* for your ${meetingLabel} meeting on ${team.name} has begun!`
+    const constraint = `You have until *<!date^${toEpochSeconds(
+      scheduledEndTime
+    )}^{date_short_pretty} at {time}|${fallback}>* to complete it.`
+    const cta = `Check it out: ${meetingUrl}`
+    const slackText = [situation, constraint, cta].join('\n')
     upsertSlackMessage(slackDetail, slackText).catch(console.error)
   })
 }

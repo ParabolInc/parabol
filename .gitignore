@@ -4,6 +4,8 @@
 .DS_Store
 .awcache/
 packages/server/.googlecloudkey.json
+.heapprofile
+.heapsnapshot
 .history/
 .idea/
 build/

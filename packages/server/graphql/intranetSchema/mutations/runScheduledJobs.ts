@@ -32,12 +32,11 @@ const processMeetingStageTimeLimits = async (job: ScheduledJobMeetingStageTimeLi
       .table('SlackAuth')
       .getAll(facilitatorUserId, {index: 'userId'})
       .filter({teamId})
-      .nth(0) as unknown) as SlackAuth
+      .nth(0)
+      .default(null) as unknown) as SlackAuth
   }).run()
 
-  let sendViaSlack = Boolean(
-    slackAuth && slackAuth.botAccessToken && slackNotification && slackNotification.channelId
-  )
+  let sendViaSlack = Boolean(slackAuth?.botAccessToken && slackNotification?.channelId)
   if (sendViaSlack) {
     const {channelId} = slackNotification
     if (!channelId) {
