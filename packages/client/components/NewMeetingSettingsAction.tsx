@@ -1,22 +1,25 @@
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import {NewMeetingSettingsAction_settings} from '__generated__/NewMeetingSettingsAction_settings.graphql'
 import NewMeetingSettingsToggleCheckIn from './NewMeetingSettingsToggleCheckIn'
+import {NewMeetingSettingsAction_team} from '../__generated__/NewMeetingSettingsAction_team.graphql'
 
 interface Props {
-  settings: NewMeetingSettingsAction_settings
+  team: NewMeetingSettingsAction_team
 }
 
 const NewMeetingSettingsAction = (props: Props) => {
-  const {settings} = props
-  return <NewMeetingSettingsToggleCheckIn settings={settings} />
+  const {team} = props
+  const {actionSettings} = team
+  return <NewMeetingSettingsToggleCheckIn settings={actionSettings} />
 }
 
 export default createFragmentContainer(NewMeetingSettingsAction, {
-  settings: graphql`
-    fragment NewMeetingSettingsAction_settings on ActionMeetingSettings {
-      ...NewMeetingSettingsToggleCheckIn_settings
+  team: graphql`
+    fragment NewMeetingSettingsAction_team on Team {
+      actionSettings: meetingSettings(meetingType: action) {
+        ...NewMeetingSettingsToggleCheckIn_settings
+      }
     }
   `
 })

@@ -19,17 +19,14 @@ const settingsLookup = {
 const NewMeetingSettings = (props: Props) => {
   const {meetingType, selectedTeam} = props
   const Settings = settingsLookup[meetingType]
-  const {meetingSettings} = selectedTeam
-  return <Settings settings={meetingSettings} />
+  return <Settings team={selectedTeam} />
 }
 
 export default createFragmentContainer(NewMeetingSettings, {
   selectedTeam: graphql`
     fragment NewMeetingSettings_selectedTeam on Team {
-      meetingSettings(meetingType: retrospective) {
-        ...NewMeetingSettingsRetrospective_settings
-        ...NewMeetingSettingsAction_settings
-      }
+      ...NewMeetingSettingsRetrospective_team
+      ...NewMeetingSettingsAction_team
       id
     }
   `
