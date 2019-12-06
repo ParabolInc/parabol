@@ -128,6 +128,7 @@ export const enum LoaderSize {
 }
 
 export const enum LocalStorageKey {
+  APP_TOKEN_KEY = 'Action:token',
   INVITATION_TOKEN = 'invitationToken'
 }
 

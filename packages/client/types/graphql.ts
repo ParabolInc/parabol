@@ -2793,6 +2793,11 @@ export interface IMutation {
   inactivateUser: IInactivateUserPayload | null
 
   /**
+   * Invalidate all sessions by blacklisting all JWTs issued before now
+   */
+  invalidateSessions: IInvalidateSessionsPayload
+
+  /**
    * Send a team invitation to an email address
    */
   inviteToTeam: IInviteToTeamPayload
@@ -5111,6 +5116,16 @@ export interface IInactivateUserPayload {
   user: IUser | null
 }
 
+export interface IInvalidateSessionsPayload {
+  __typename: 'InvalidateSessionsPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The new, only valid auth token
+   */
+  authToken: string | null
+}
+
 export interface IInviteToTeamPayload {
   __typename: 'InviteToTeamPayload'
   error: IStandardMutationError | null
@@ -6169,6 +6184,7 @@ export type NotificationSubscriptionPayload =
   | IDeleteTaskPayload
   | IDisconnectSocketPayload
   | IEndNewMeetingPayload
+  | IInvalidateSessionsPayload
   | IInviteToTeamPayload
   | IMeetingStageTimeLimitPayload
   | IRemoveOrgUserPayload

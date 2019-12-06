@@ -12,6 +12,7 @@ import ConnectionContext from '../socketHelpers/ConnectionContext'
 import AuthToken from '../database/types/AuthToken'
 import {IAuthTokenPayload} from 'parabol-client/types/graphql'
 import {decode} from 'jsonwebtoken'
+import handleDisconnect from './handleDisconnect'
 
 const {GQL_COMPLETE, GQL_DATA, GQL_ERROR} = ClientMessageTypes
 
@@ -99,16 +100,15 @@ const handleSubscribe = async (
     ExecutionResult<ExecutionResultDataDefault>
   >) {
     const {data} = payload
-    if (
-      data &&
-      data.notificationSubscription &&
-      data.notificationSubscription.__typename === 'AuthTokenPayload'
-    ) {
+    const notificationType = data?.notificationSubscription?.__typename
+    if (notificationType === 'AuthTokenPayload') {
       const jwt = (data.notificationSubscription as IAuthTokenPayload).id
       connectionContext.authToken = new AuthToken(decode(jwt) as any)
       // if auth changed, then we can't trust any of the subscriptions, so dump em all and resub for the client
       // delay it to guarantee that no matter when this is published, it is the last message on the mutation
       setTimeout(() => relayUnsubscribeAll(connectionContext, {isResub: true}), 1000)
+    } else if (notificationType === 'InvalidateSessionsPayload') {
+      setTimeout(() => handleDisconnect(connectionContext, {exitCode: 1011}), 1000)
     }
     sendMessage(socket, GQL_DATA, payload, opId)
   }

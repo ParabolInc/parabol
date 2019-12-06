@@ -27,6 +27,7 @@ import {RouterProps} from 'react-router'
 import {RecordSourceSelectorProxy} from 'relay-runtime/lib/store/RelayStoreTypes'
 import {NotificationSubscription_meetingStageTimeLimitEnd} from '__generated__/NotificationSubscription_meetingStageTimeLimitEnd.graphql'
 import {NotificationSubscription_paymentRejected} from '__generated__/NotificationSubscription_paymentRejected.graphql'
+import {LocalStorageKey} from '../types/constEnums'
 
 graphql`
   fragment NotificationSubscription_paymentRejected on StripeFailPaymentPayload {
@@ -189,13 +190,30 @@ const authTokenNotificationOnNext: NextHandler = (payload, {atmosphere}) => {
   atmosphere.setAuthToken(id)
 }
 
+const invalidateSessionsNotificationOnNext: OnNextHandler<
+  InvalidateSessionsMutation_notification,
+  OnNextHistoryContext
+> = (_payload, {atmosphere, history}) => {
+  window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)
+  atmosphere.eventEmitter.emit('addSnackbar', {
+    key: 'logOutJWT',
+    message: 'You’ve been logged out from another device',
+    autoDismiss: 5
+  })
+  setTimeout(() => {
+    atmosphere.close()
+    history.replace('/')
+  })
+}
+
 const onNextHandlers = {
   AuthTokenPayload: authTokenNotificationOnNext,
   CreateTaskPayload: createTaskNotificationOnNext,
   InviteToTeamPayload: inviteToTeamNotificationOnNext,
   RemoveOrgUserPayload: removeOrgUserNotificationOnNext,
   StripeFailPaymentPayload: stripeFailPaymentNotificationOnNext,
-  MeetingStageTimeLimitPayload: meetingStageTimeLimitOnNext
+  MeetingStageTimeLimitPayload: meetingStageTimeLimitOnNext,
+  InvalidateSessionsPayload: invalidateSessionsNotificationOnNext
 }
 
 const NotificationSubscription = (

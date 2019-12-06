@@ -7,7 +7,6 @@ export const APP_CDN_USER_ASSET_SUBDIR = '/store'
 export const APP_MAX_AVATAR_FILE_SIZE = 1024 * 1024
 export const APP_NAME = 'Action'
 
-export const APP_TOKEN_KEY = `${APP_NAME}:token`
 export const APP_WEBPACK_PUBLIC_PATH_DEFAULT = '/static/'
 
 /* Meeting Misc. */

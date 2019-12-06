@@ -1,4 +1,4 @@
-const relayUnsubscribe = (subs, opId) => {
+const relayUnsubscribe = (subs: string[], opId: string) => {
   const subscriptionContext = subs && subs[opId]
   if (!subscriptionContext) return
   const {asyncIterator} = subscriptionContext
