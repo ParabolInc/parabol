@@ -8,7 +8,8 @@ import handleConnect from './handleConnect'
 import ConnectionContext, {UserWebSocket} from '../socketHelpers/ConnectionContext'
 import {TREBUCHET_WS} from '@mattkrick/trebuchet-client'
 import DataLoaderWarehouse from 'dataloader-warehouse'
-import RateLimiter from 'graphql/RateLimiter'
+import RateLimiter from '../graphql/RateLimiter'
+import checkBlacklistJWT from '../utils/checkBlacklistJWT'
 
 const APP_VERSION = process.env.npm_package_version
 export default function connectionHandler(
@@ -33,6 +34,9 @@ export default function connectionHandler(
       socket.close(1011)
       return
     }
+    const {sub: userId, iat} = authToken
+    const isBlacklistedJWT = await checkBlacklistJWT(userId, iat)
+    socket.close(1011, 'blacklist')
     const connectionContext = new ConnectionContext(
       socket,
       authToken,

@@ -1,9 +1,11 @@
 import GQLTrebuchetClient from '@mattkrick/graphql-trebuchet-client'
-import {Component} from 'react'
+import {Component, useRef, useEffect} from 'react'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import {commitLocalUpdate} from 'react-relay'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import ms from 'ms'
+import useAtmosphere from 'hooks/useAtmosphere'
+import useEventCallback from 'hooks/useEventCallback'
 
 interface Props extends WithAtmosphereProps {}
 
@@ -14,6 +16,67 @@ const upgradeServiceWorker = async () => {
   }
 }
 
+const setupServiceWorker = async () => {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('controllerchange', this.onServiceWorkerChange)
+  }
+  return () => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.removeEventListener('controllerchange', this.onServiceWorkerChange)
+    }
+  }
+}
+
+const useServiceWorker = () => {
+  const atmosphere = useAtmosphere()
+  const isFirstServiceWorkerRef = useRef(true)
+  useEffectect(() => {
+    const setFirstServiceWorker = async () => {
+      const registration = await navigator.serviceWorker.getRegistration()
+      isFirstServiceWorkerRef.current = !registration
+    }
+    const onServiceWorkerChange = () => {
+      if (isFirstServiceWorkerRef.current) {
+        isFirstServiceWorkerRef.current = false
+        return
+      }
+      atmosphere.eventEmitter.emit('addSnackbar', {
+        key: 'newVersion',
+        autoDismiss: 0,
+        message: 'A new version of Parabol is available',
+        action: {
+          label: 'Refresh to upgrade',
+          callback: () => {
+            window.location.reload()
+          }
+        }
+      })
+    }
+    if ('serviceWorker' in navigator) {
+      setFirstServiceWorker().catch()
+      navigator.serviceWorker.addEventListener('controllerchange', onServiceWorkerChange)
+    }
+  }, [])
+}
+const SocketHealthMonitor = (props: Props) => {
+  const recentDisconnectsRef = useRef([] as number[])
+  const firewallMessageSentRef = useRef(false)
+
+  const atmosphere = useAtmosphere()
+  const {eventEmitter} = atmosphere
+
+  useEffect(() => {
+    eventEmitter.once('newSubscriptionClient', () => {
+      const {transport} = atmosphere
+      const {trebuchet} = transport as GQLTrebuchetClient
+      trebuchet.on('reconnected' as any, this.onReconnected)
+      trebuchet.on('disconnected' as any, this.onDisconnected)
+      trebuchet.on('data' as any, this.onData)
+      trebuchet.on('close', this.onClose)
+      this.setConnectedStatus(true)
+    })
+  }, [])
+}
 class SocketHealthMonitor extends Component<Props> {
   recentDisconnects = [] as number[]
   firewallMessageSent = false
@@ -26,6 +89,7 @@ class SocketHealthMonitor extends Component<Props> {
       trebuchet.on('reconnected' as any, this.onReconnected)
       trebuchet.on('disconnected' as any, this.onDisconnected)
       trebuchet.on('data' as any, this.onData)
+      trebuchet.on('close', this.onClose)
       this.setConnectedStatus(true)
     })
     if ('serviceWorker' in navigator) {
@@ -45,25 +109,6 @@ class SocketHealthMonitor extends Component<Props> {
     this.isFirstServiceWorker = !registration
   }
 
-  onServiceWorkerChange = () => {
-    if (this.isFirstServiceWorker) {
-      this.isFirstServiceWorker = false
-      return
-    }
-    const {atmosphere} = this.props
-    atmosphere.eventEmitter.emit('addSnackbar', {
-      key: 'newVersion',
-      autoDismiss: 0,
-      message: 'A new version of Parabol is available',
-      action: {
-        label: 'Refresh to upgrade',
-        callback: () => {
-          window.location.reload()
-        }
-      }
-    })
-  }
-
   setConnectedStatus = (isConnected: boolean) => {
     const {atmosphere} = this.props
     commitLocalUpdate(atmosphere, (store) => {
@@ -78,6 +123,10 @@ class SocketHealthMonitor extends Component<Props> {
     })
   }
 
+  onClose = ({reason}) => {
+    if (reason === 'invalidated') {
+    }
+  }
   onData = (payload: string | object) => {
     const {atmosphere} = this.props
     // hacky but that way we don't have to double parse huge json payloads. SSE graphql payloads are pre-parsed

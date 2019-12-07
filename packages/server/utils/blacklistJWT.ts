@@ -2,6 +2,7 @@ import getBlacklistJWTKey from './getBlacklistJWTKey'
 import {Threshold, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {toEpochSeconds} from './epochTime'
 import publish from './publish'
+import getRedis from './getRedis'
 
 const blacklistJWT = async (userId: string, iat: number, mutatorId?: string) => {
   const key = getBlacklistJWTKey(userId)

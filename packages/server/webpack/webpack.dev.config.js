@@ -114,6 +114,11 @@ module.exports = {
       {
         test: /\.(eot|ttf|wav|mp3|woff|woff2|otf)$/,
         use: ['file-loader']
+      },
+      // https://github.com/graphql/graphiql/issues/1055#issuecomment-561353578
+      {
+        test: /\/__tests__\//i,
+        use: ['ignore-loader']
       }
     ]
   }
