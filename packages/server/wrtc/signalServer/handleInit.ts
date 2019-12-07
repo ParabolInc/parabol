@@ -20,16 +20,11 @@ const handleInit = (ws: UWebSocket, payload: InitSignal) => {
   ws.context.userId = userId
   const ps = getPubSub()
   const onMessage = handleMessage(ws)
-  ps.publish(
-    `signal/room/${roomId}`,
-    JSON.stringify({type: 'pubInit', userId, createdAt: ws.context.createdAt})
-  ).catch()
-  ps.subscribe(`signal/room/${roomId}`, onMessage)
-    .then((subId) => ws.context.subs.push(subId))
-    .catch()
-  ps.subscribe(`signal/user/${userId}`, onMessage)
-    .then((subId) => ws.context.subs.push(subId))
-    .catch()
+  ps.publish(`signal/room/${roomId}`, {type: 'pubInit', userId, createdAt: ws.context.createdAt})
+
+  const channels = [`signal/room/${roomId}`, `signal/user/${userId}`]
+  const iterator = ps.subscribe(channels, onMessage)
+  ws.context.iterators.push(iterator)
 }
 
 export default handleInit

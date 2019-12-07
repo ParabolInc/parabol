@@ -1,9 +1,9 @@
 import {GraphQLNonNull} from 'graphql'
-import makeSubscribeIter from '../makeSubscribeIter'
-import TaskSubscriptionPayload from '../types/TaskSubscriptionPayload'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getUserId, isAuthenticated} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import TaskSubscriptionPayload from '../types/TaskSubscriptionPayload'
+import makeStandardSubscription from './makeStandardSubscription'
 
 const taskSubscription = {
   type: new GraphQLNonNull(TaskSubscriptionPayload),
@@ -16,9 +16,7 @@ const taskSubscription = {
     // RESOLUTION
     const viewerId = getUserId(authToken)
     const channelName = `${SubscriptionChannel.TASK}.${viewerId}`
-    const filterFn = ({mutatorId}) => mutatorId !== socketId
-    const resolve = ({data}) => ({taskSubscription: data})
-    return makeSubscribeIter(channelName, {filterFn, dataLoader, resolve})
+    return makeStandardSubscription('taskSubscription', [channelName], socketId, dataLoader)
   }
 }
 

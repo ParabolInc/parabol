@@ -1,14 +1,15 @@
+import Redis from 'ioredis'
 import getDotenv from '../../server/utils/dotenv'
-import {RedisPubSub} from 'graphql-redis-subscriptions'
+import GraphQLRedisPubSub from './GraphQLRedisPubSub'
 
 getDotenv()
 
-let pubsub: RedisPubSub | undefined
+let pubsub: GraphQLRedisPubSub
 const getPubSub = () => {
   if (!pubsub) {
-    pubsub = new RedisPubSub({
-      connection: process.env.REDIS_URL as any
-    })
+    const pub = new Redis(process.env.REDIS_URL)
+    const sub = new Redis(process.env.REDIS_URL)
+    pubsub = new GraphQLRedisPubSub(pub, sub)
   }
   return pubsub
 }

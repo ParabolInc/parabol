@@ -1,10 +1,10 @@
 import {GraphQLNonNull} from 'graphql'
-import makeSubscribeIter from '../makeSubscribeIter'
-import TeamSubscriptionPayload from '../types/TeamSubscriptionPayload'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getUserId, isAuthenticated} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import TeamSubscriptionPayload from '../types/TeamSubscriptionPayload'
+import makeStandardSubscription from './makeStandardSubscription'
 
 export default {
   type: new GraphQLNonNull(TeamSubscriptionPayload),
@@ -18,8 +18,6 @@ export default {
     const userId = getUserId(authToken)
     const {tms: teamIds} = authToken
     const channelNames = teamIds.concat(userId).map((id) => `${SubscriptionChannel.TEAM}.${id}`)
-    const filterFn = (value) => value.mutatorId !== socketId
-    const resolve = ({data}) => ({teamSubscription: data})
-    return makeSubscribeIter(channelNames, {filterFn, dataLoader, resolve})
+    return makeStandardSubscription('teamSubscription', channelNames, socketId, dataLoader)
   }
 }

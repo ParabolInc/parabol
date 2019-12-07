@@ -9322,15 +9322,6 @@ graphql-language-service-utils@^2.3.2:
     graphql-config "2.2.1"
     graphql-language-service-types "^1.5.1"
 
-graphql-redis-subscriptions@^2.1.0:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/graphql-redis-subscriptions/-/graphql-redis-subscriptions-2.1.1.tgz#61d5cf36ccc74abbc596d640eadbddf2cd1a7a91"
-  integrity sha512-oBd6thADySxLpLEYEtUmpGTxGQhHCN8M+9gaGZaUic11UYEfCtCpvuP6vwx8p7R8uhGZ3dYG8dhEJ01ZMg8E/A==
-  dependencies:
-    iterall "^1.2.2"
-  optionalDependencies:
-    ioredis "^4.6.3"
-
 graphql-relay@^0.5.2:
   version "0.5.5"
   resolved "https://registry.yarnpkg.com/graphql-relay/-/graphql-relay-0.5.5.tgz#d6815e6edd618e878d5d921c13fc66033ec867e2"
@@ -9997,20 +9988,10 @@ immer@1.10.0:
   resolved "https://registry.yarnpkg.com/immer/-/immer-1.10.0.tgz#bad67605ba9c810275d91e1c2a47d4582e98286d"
   integrity sha512-O3sR1/opvCDGLEVcvrGTMtLac8GJ5IwZC4puPrLuRj3l7ICKvkmA0vGuU9OW8mV9WIBRnaxp5GJh9IEAaNOoYg==
 
-immutable@3.8.2:
+immutable@3.8.2, immutable@^4.0.0-rc.12, immutable@^4.0.0-rc.9, immutable@~3.7.4, immutable@~3.7.6:
   version "3.8.2"
   resolved "https://registry.yarnpkg.com/immutable/-/immutable-3.8.2.tgz#c2439951455bb39913daf281376f1530e104adf3"
   integrity sha1-wkOZUUVbs5kT2vKBN28VMOEErfM=
-
-immutable@^4.0.0-rc.12, immutable@^4.0.0-rc.9:
-  version "4.0.0-rc.12"
-  resolved "https://registry.yarnpkg.com/immutable/-/immutable-4.0.0-rc.12.tgz#ca59a7e4c19ae8d9bf74a97bdf0f6e2f2a5d0217"
-  integrity sha512-0M2XxkZLx/mi3t8NVwIm1g8nHoEmM9p9UBl/G9k4+hm0kBgOVdMV/B3CY5dQ8qG8qc80NN4gDV4HQv6FTJ5q7A==
-
-immutable@~3.7.4, immutable@~3.7.6:
-  version "3.7.6"
-  resolved "https://registry.yarnpkg.com/immutable/-/immutable-3.7.6.tgz#13b4d3cb12befa15482a26fe1b2ebae640071e4b"
-  integrity sha1-E7TTyxK++hVIKib+Gy665kAHHks=
 
 import-cwd@^2.0.0:
   version "2.1.0"
@@ -10236,7 +10217,7 @@ invert-kv@^2.0.0:
   resolved "https://registry.yarnpkg.com/invert-kv/-/invert-kv-2.0.0.tgz#7393f5afa59ec9ff5f67a27620d11c226e3eec02"
   integrity sha512-wPVv/y/QQ/Uiirj/vh3oP+1Ww+AWehmi1g5fFWGPF6IpCBCDVrhgHRMvrLfdYcwDh3QJbGXDW4JAuzxElLSqKA==
 
-ioredis@^4.11.2, ioredis@^4.6.3:
+ioredis@^4.11.2:
   version "4.14.1"
   resolved "https://registry.yarnpkg.com/ioredis/-/ioredis-4.14.1.tgz#b73ded95fcf220f106d33125a92ef6213aa31318"
   integrity sha512-94W+X//GHM+1GJvDk6JPc+8qlM7Dul+9K+lg3/aHixPN7ZGkW6qlvX0DG6At9hWtH2v3B32myfZqWoANUJYGJA==
@@ -15888,17 +15869,9 @@ relay-config@^7.1.0:
   dependencies:
     cosmiconfig "^5.0.5"
 
-relay-runtime@7.0.0, "relay-runtime@https://github.com/mattkrick/relay/tarball/8022e82ac358a628913ab879286c88e4e1e18b82":
+relay-runtime@7.0.0, relay-runtime@7.1.0, "relay-runtime@https://github.com/mattkrick/relay/tarball/8022e82ac358a628913ab879286c88e4e1e18b82":
   version "7.0.0"
   resolved "https://github.com/mattkrick/relay/tarball/8022e82ac358a628913ab879286c88e4e1e18b82#5e954624a39d683c1d3af949fa5aba26fed2f4a9"
-  dependencies:
-    "@babel/runtime" "^7.0.0"
-    fbjs "^1.0.0"
-
-relay-runtime@7.1.0:
-  version "7.1.0"
-  resolved "https://registry.yarnpkg.com/relay-runtime/-/relay-runtime-7.1.0.tgz#3a1b38cb55fae7ab2fbb404f7db7a5b900ef963f"
-  integrity sha512-19WV0dC4rcbXnVBKEA4ZL41ccfJRUZ7/KKfQsgc9SwjqCi2g3+yYIR9wJ4KoC+rEfG2yN3W1vWBEqr+igH/rzA==
   dependencies:
     "@babel/runtime" "^7.0.0"
     fbjs "^1.0.0"

@@ -3,12 +3,13 @@ import {UWebSocket} from './handleSignal'
 
 const closeWRTC = (ws: UWebSocket) => {
   if (!ws.context) return
-  const {userId, roomId, subs} = ws.context
+  const {userId, roomId, iterators} = ws.context
   const redis = getPubSub()
-  subs.forEach((subId) => redis.unsubscribe(subId))
-  subs.length = 0
+  iterators.forEach((iterator) => iterator.return())
+  // i wonder if setting length = 0 is a cause of the V8 mem leak?
+  ws.context.iterators = []
   if (userId) {
-    redis.publish(`signal/room/${roomId}`, JSON.stringify({type: 'leaveSwarm', userId})).catch()
+    redis.publish(`signal/room/${roomId}`, {type: 'leaveSwarm', userId})
   }
   delete ws.context
 }

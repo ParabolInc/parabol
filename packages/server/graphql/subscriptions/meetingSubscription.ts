@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import makeSubscribeIter from '../makeSubscribeIter'
-import MeetingSubscriptionPayload from '../types/MeetingSubscriptionPayload'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import MeetingSubscriptionPayload from '../types/MeetingSubscriptionPayload'
+import makeStandardSubscription from './makeStandardSubscription'
 
 export default {
   type: new GraphQLNonNull(MeetingSubscriptionPayload),
@@ -25,8 +25,6 @@ export default {
 
     // RESOLUTION
     const channelName = `${SubscriptionChannel.MEETING}.${meetingId}`
-    const filterFn = (value) => value.mutatorId !== socketId
-    const resolve = ({data}) => ({meetingSubscription: data})
-    return makeSubscribeIter(channelName, {filterFn, dataLoader, resolve})
+    return makeStandardSubscription('meetingSubscription', [channelName], socketId, dataLoader)
   }
 }

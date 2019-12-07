@@ -1,11 +1,11 @@
 import {GraphQLNonNull} from 'graphql'
-import makeSubscribeIter from '../makeSubscribeIter'
-import NotificationSubscriptionPayload from '../types/NotificationSubscriptionPayload'
-import {getUserId, isAuthenticated} from '../../utils/authorization'
-import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import AuthToken from '../../database/types/AuthToken'
+import {getUserId, isAuthenticated} from '../../utils/authorization'
 import encodeAuthToken from '../../utils/encodeAuthToken'
+import getPubSub from '../../utils/getPubSub'
+import standardError from '../../utils/standardError'
+import NotificationSubscriptionPayload from '../types/NotificationSubscriptionPayload'
 
 export default {
   type: new GraphQLNonNull(NotificationSubscriptionPayload),
@@ -18,14 +18,27 @@ export default {
     // RESOLUTION
     const viewerId = getUserId(authToken)
     const channelName = `${SubscriptionChannel.NOTIFICATION}.${viewerId}`
-    const filterFn = (value) => value.mutatorId !== socketId
-    const resolve = ({data}) => {
-      // we have to do this here so we get access to the recipient's auth token
-      if (data.type === 'AuthTokenPayload') {
-        return {notificationSubscription: {type: data.type, id: encodeAuthToken(new AuthToken({...authToken, ...data}))}}
+    const pubSub = getPubSub()
+    const transform = (value: any) => {
+      if (value.mutatorId === socketId) return undefined
+      if (value.operationId) {
+        dataLoader.useShared(value.operationId)
       }
+      const data =
+        value.data.type === 'AuthTokenPayload'
+          ? {
+              type: value.data.type,
+              id: encodeAuthToken(new AuthToken({...authToken, ...value.data}))
+            }
+          : value.data
+
       return {notificationSubscription: data}
     }
-    return makeSubscribeIter(channelName, {filterFn, dataLoader, resolve})
+
+    const onCompleted = () => {
+      dataLoader.dispose({force: true})
+    }
+
+    return pubSub.subscribe([channelName], transform, {onCompleted})
   }
 }
