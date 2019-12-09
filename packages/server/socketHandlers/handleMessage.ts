@@ -1,18 +1,12 @@
-import {ClientMessageTypes, OutgoingMessage} from '@mattkrick/graphql-trebuchet-client'
+import {OutgoingMessage} from '@mattkrick/graphql-trebuchet-client'
 import {Data, Events} from '@mattkrick/trebuchet-client'
-import handleDisconnect from './handleDisconnect'
-import sendMessage from '../socketHelpers/sendMessage'
 import handleGraphQLTrebuchetRequest from '../graphql/handleGraphQLTrebuchetRequest'
-import isQueryAllowed from '../graphql/isQueryAllowed'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
-import {getUserId} from '../utils/authorization'
-import sendToSentry from '../utils/sendToSentry'
+import sendMessage from '../socketHelpers/sendMessage'
 import handleSignal, {UWebSocket} from '../wrtc/signalServer/handleSignal'
 import validateInit from '../wrtc/signalServer/validateInit'
-import getQueryString from '../graphql/getQueryString'
+import handleDisconnect from './handleDisconnect'
 import keepAlive from '../socketHelpers/keepAlive'
-
-const {GQL_ERROR} = ClientMessageTypes
 
 interface WRTCMessage {
   type: 'WRTC_SIGNAL'
@@ -29,19 +23,10 @@ const handleParsedMessage = async (
     }
     return
   }
-  try {
-    const response = await handleGraphQLTrebuchetRequest(parsedMessage, connectionContext, {
-      getQueryString,
-      isQueryAllowed
-    })
-    if (response) {
-      const {type, id: opId, payload} = response
-      sendMessage(socket, type, payload, opId)
-    }
-  } catch (e) {
-    const userId = getUserId(authToken)
-    sendToSentry(e, {userId})
-    sendMessage(socket, GQL_ERROR, {errors: [e.message]})
+  const response = await handleGraphQLTrebuchetRequest(parsedMessage, connectionContext)
+  if (response) {
+    const {type, id: opId, payload} = response
+    sendMessage(socket, type, payload, opId)
   }
 }
 

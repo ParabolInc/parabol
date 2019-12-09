@@ -1,12 +1,13 @@
 import {GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {IActionMeeting, MeetingTypeEnum} from '../../../client/types/graphql'
+import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
+import {getUserId} from '../../utils/authorization'
+import filterTasksByMeeting from '../../utils/filterTasksByMeeting'
 import {GQLContext} from '../graphql'
 import ActionMeetingMember from './ActionMeetingMember'
 import ActionMeetingSettings from './ActionMeetingSettings'
 import NewMeeting, {newMeetingFields} from './NewMeeting'
 import Task from './Task'
-import {getUserId} from '../../utils/authorization'
-import {IActionMeeting, MeetingTypeEnum} from '../../../client/types/graphql'
-import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 
 const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
   name: 'ActionMeeting',
@@ -32,22 +33,24 @@ const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
     taskCount: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of tasks generated in the meeting',
-      resolve: async ({id: meetingId, taskCount}, _args, {dataLoader}) => {
+      resolve: async ({id: meetingId, taskCount}, _args, {authToken, dataLoader}) => {
         if (Number.isFinite(taskCount)) return taskCount
+        const viewerId = getUserId(authToken)
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const {teamId} = meeting
         const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
-        return teamTasks.filter((task) => task.meetingId === meetingId).length
+        return filterTasksByMeeting(teamTasks, meetingId, viewerId).length
       }
     },
     tasks: {
       type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(Task))),
       description: 'The tasks created within the meeting',
-      resolve: async ({id: meetingId}, _args, {dataLoader}) => {
+      resolve: async ({id: meetingId}, _args, {authToken, dataLoader}) => {
+        const viewerId = getUserId(authToken)
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const {teamId} = meeting
         const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
-        return teamTasks.filter((task) => task.meetingId === meetingId)
+        return filterTasksByMeeting(teamTasks, meetingId, viewerId)
       }
     },
     viewerMeetingMember: {

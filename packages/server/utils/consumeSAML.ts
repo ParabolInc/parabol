@@ -8,7 +8,8 @@ import base64url from 'base64url'
 import {SSORelayState} from '../graphql/queries/SAMLIdP'
 import getSSODomainFromEmail from 'parabol-client/utils/getSSODomainFromEmail'
 import ServerAuthToken from '../database/types/ServerAuthToken'
-import privateGraphQLEndpoint from '../graphql/privateGraphQLEndpoint'
+import express from 'express'
+import executeGraphQL from '../graphql/executeGraphQL'
 
 const serviceProvider = samlify.ServiceProvider({})
 const query = `
@@ -20,7 +21,7 @@ mutation LoginSSO($email: ID!, $isInvited: Boolean, $name: String!) {
 `
 samlify.setSchemaValidator(validator)
 
-const getRelayState = (req: any) => {
+const getRelayState = (req: express.Request) => {
   const {RelayState} = req.body
   let relayState = {} as SSORelayState
   try {
@@ -75,7 +76,12 @@ const consumeSAML: RequestHandler = async (req, res) => {
   }
   const serverAuthToken = new ServerAuthToken()
   const variables = {email, isInvited, name}
-  const payload = await privateGraphQLEndpoint(query, variables, serverAuthToken)
+  const payload = await executeGraphQL({
+    authToken: serverAuthToken,
+    query,
+    variables,
+    isPrivate: true
+  })
   const {data} = payload
   const authToken = (data && data.loginSSO && data.loginSSO.authToken) || ''
   if (!authToken) {

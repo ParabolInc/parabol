@@ -16,6 +16,7 @@ import {resolveForSU} from '../resolvers'
 import RetroPhaseItem from './RetroPhaseItem'
 import {getUserId} from '../../utils/authorization'
 import Task from './Task'
+import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 
 const RetroReflectionGroup = new GraphQLObjectType({
   name: 'RetroReflectionGroup',
@@ -78,11 +79,16 @@ const RetroReflectionGroup = new GraphQLObjectType({
     tasks: {
       type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(Task))),
       description: 'The tasks created for this group in the discussion phase',
-      resolve: async ({id: reflectionGroupId, meetingId}, _args, {dataLoader}) => {
+      resolve: async ({id: reflectionGroupId, meetingId}, _args, {authToken, dataLoader}) => {
+        const viewerId = getUserId(authToken)
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const {teamId} = meeting
         const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
-        return teamTasks.filter((task) => task.reflectionGroupId === reflectionGroupId)
+        return teamTasks.filter((task) =>
+          task.reflectionGroupId === reflectionGroupId && isTaskPrivate(task.tags)
+            ? task.userId === viewerId
+            : true
+        )
       }
     },
     team: {

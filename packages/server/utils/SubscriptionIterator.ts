@@ -1,23 +1,24 @@
 export type SubscriptionTransform = (value: any) => any
 export type SubscriptionListener = (value: JSON) => Promise<void>
+
 interface Handlers {
   onStart?: (listener: SubscriptionListener) => void
   onCompleted?: (listener: SubscriptionListener) => void
+  transform?: SubscriptionTransform
 }
 
-export default class SubscriptionIterator {
+export default class SubscriptionIterator implements AsyncIterator<any> {
   [Symbol.asyncIterator]() {
     return this
   }
   done = false
   pushQueue = [] as any[]
   pullQueue = [] as any[]
-  transform: SubscriptionTransform
+  transform?: SubscriptionTransform
   onStart?: (listener: SubscriptionListener) => void
   onCompleted?: (listener: SubscriptionListener) => void
-  pushValue = async (input: any) => {
-    // TODO try/catch
-    const value = await this.transform(input)
+  pushValue: SubscriptionListener = async (input) => {
+    const value = this.transform ? await this.transform(input) : input
     if (value !== undefined) {
       const resolver = this.pullQueue.shift()
       if (resolver) {
@@ -28,7 +29,7 @@ export default class SubscriptionIterator {
     }
   }
 
-  constructor(transform: SubscriptionTransform, {onStart, onCompleted}: Handlers) {
+  constructor({onStart, onCompleted, transform}: Handlers) {
     this.transform = transform
     this.onStart = onStart
     this.onCompleted = onCompleted
@@ -36,8 +37,8 @@ export default class SubscriptionIterator {
   }
 
   pullValue = () => {
-    if (this.done) return {done: true, value: undefined}
-    return new Promise((resolve) => {
+    return new Promise<IteratorResult<any>>((resolve) => {
+      if (this.done) resolve({done: true, value: undefined})
       const value = this.pushQueue.shift()
       if (value) {
         resolve({value, done: false})
@@ -58,11 +59,11 @@ export default class SubscriptionIterator {
 
   return() {
     this.close()
-    return Promise.resolve({value: undefined, done: true})
+    return Promise.resolve({done: true, value: undefined})
   }
 
   throw(error) {
     this.close()
-    return Promise.reject(error)
+    return Promise.resolve({done: true, value: error})
   }
 }

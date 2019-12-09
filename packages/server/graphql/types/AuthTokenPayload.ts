@@ -1,4 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import encodeAuthToken from '../../utils/encodeAuthToken'
+import AuthToken from '../../database/types/AuthToken'
 
 // const AuthTokenRole = new GraphQLEnumType({
 //   name: 'AuthTokenRole',
@@ -16,8 +18,10 @@ const AuthTokenPayload = new GraphQLObjectType({
     id: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The encoded JWT',
-      // resolve: () => 'AuthToken'
-    },
+      resolve: ({tms}, _args, {authToken}) => {
+        return encodeAuthToken(new AuthToken({...authToken, tms}))
+      }
+    }
     // aud: {
     //   type: new GraphQLNonNull(GraphQLID),
     //   description: 'audience. the target API used in auth0. Parabol does not use this.'

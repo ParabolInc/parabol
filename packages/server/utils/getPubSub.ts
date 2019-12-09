@@ -1,5 +1,5 @@
 import Redis from 'ioredis'
-import getDotenv from '../../server/utils/dotenv'
+import getDotenv from './dotenv'
 import GraphQLRedisPubSub from './GraphQLRedisPubSub'
 
 getDotenv()

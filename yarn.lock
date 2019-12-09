@@ -6862,11 +6862,6 @@ data-urls@^1.0.0, data-urls@^1.1.0:
     whatwg-mimetype "^2.2.0"
     whatwg-url "^7.0.0"
 
-dataloader-warehouse@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/dataloader-warehouse/-/dataloader-warehouse-0.5.0.tgz#821afd2ecc5dddbac0091f47909d25823c30bb78"
-  integrity sha512-8SBXfJbC4tvd01AX192024fTSNfUeIWQZgQ7tYd4HSGUeyuwejwdTtbj/J3XJLDSfZEXHa8GolR231JsKdixbA==
-
 dataloader@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/dataloader/-/dataloader-1.4.0.tgz#bca11d867f5d3f1b9ed9f737bd15970c65dff5c8"

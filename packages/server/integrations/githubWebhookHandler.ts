@@ -1,8 +1,8 @@
-import secureCompare from 'secure-compare'
-import signPayload from '../utils/signPayload'
 import {RequestHandler} from 'express'
+import executeGraphQL from '../graphql/executeGraphQL'
+import secureCompare from 'secure-compare'
 import ServerAuthToken from '../database/types/ServerAuthToken'
-import privateGraphQLEndpoint from '../graphql/privateGraphQLEndpoint'
+import signPayload from '../utils/signPayload'
 
 const getPublicKey = ({repository: {id}}) => String(id)
 
@@ -84,8 +84,8 @@ const githubWebhookHandler: RequestHandler = async (req, res) => {
 
   const {getVars, query} = actionHandler
   const variables = getVars(body)
-  const serverAuthToken = new ServerAuthToken()
-  await privateGraphQLEndpoint(query, variables, serverAuthToken)
+  const authToken = new ServerAuthToken()
+  await executeGraphQL({authToken, query, variables, isPrivate: true})
 }
 
 export default githubWebhookHandler

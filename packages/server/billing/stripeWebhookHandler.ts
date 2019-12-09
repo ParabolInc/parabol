@@ -1,7 +1,7 @@
-import stripe from './stripe'
-import privateGraphQLEndpoint from '../graphql/privateGraphQLEndpoint'
-import ServerAuthToken from '../database/types/ServerAuthToken'
 import {RequestHandler} from 'express'
+import executeGraphQL from '../graphql/executeGraphQL'
+import ServerAuthToken from '../database/types/ServerAuthToken'
+import stripe from './stripe'
 
 const eventLookup = {
   invoice: {
@@ -107,8 +107,8 @@ const stripeWebhookHandler: RequestHandler = async (req, res) => {
 
   const {getVars, query} = actionHandler
   const variables = getVars(payload)
-  const serverAuthToken = new ServerAuthToken()
-  await privateGraphQLEndpoint(query, variables, serverAuthToken)
+  const authToken = new ServerAuthToken()
+  await executeGraphQL({authToken, query, variables, isPrivate: true})
 }
 
 export default stripeWebhookHandler

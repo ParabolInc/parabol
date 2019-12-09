@@ -26,7 +26,7 @@ export const getClientKeys = () => {
 const getHTML = () => {
   if (!finalHTML) {
     const clientIds = getClientKeys()
-    const prod = process.env.NODE_ENV
+    const prod = process.env.NODE_ENV === 'production'
 
     const htmlFile = prod ? '../../build/index.html' : './template.html'
     const html = fs.readFileSync(path.join(__dirname, htmlFile), 'utf8')

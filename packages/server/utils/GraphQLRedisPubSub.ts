@@ -10,6 +10,7 @@ interface ListenersByChannel {
 
 interface SubscribeOptions {
   onCompleted?: () => void
+  transform?: SubscriptionTransform
 }
 
 export default class GraphQLRedisPubSub {
@@ -40,11 +41,7 @@ export default class GraphQLRedisPubSub {
     return this.publisher.publish(channel, JSON.stringify(payload))
   }
 
-  subscribe = (
-    channels: string[],
-    transform: SubscriptionTransform,
-    options: SubscribeOptions = {}
-  ) => {
+  subscribe = (channels: string[], options: SubscribeOptions = {}) => {
     this.subscriber.subscribe(...channels)
     const onStart = (listener: SubscriptionListener) => {
       for (let i = 0; i < channels.length; i++) {
@@ -57,7 +54,7 @@ export default class GraphQLRedisPubSub {
       options?.onCompleted?.()
       this.unsubscribe(channels, listener)
     }
-    return new SubscriptionIterator(transform, {onStart, onCompleted})
+    return new SubscriptionIterator({onStart, onCompleted, transform: options?.transform})
   }
 
   unsubscribe = (channels: string[], listener: SubscriptionListener) => {

@@ -1,10 +1,8 @@
-import DataLoaderWarehouse from 'dataloader-warehouse'
-import shortid from 'shortid'
-import RateLimiter from '../graphql/RateLimiter'
-import WebSocketContext from '../wrtc/signalServer/WebSocketContext'
 import {WebSocket} from '@clusterws/cws'
 import {ExecutionResult, ExecutionResultDataDefault} from 'graphql/execution/execute'
+import shortid from 'shortid'
 import AuthToken from '../database/types/AuthToken'
+import WebSocketContext from '../wrtc/signalServer/WebSocketContext'
 
 export interface UserWebSocket extends WebSocket {
   context?: WebSocketContext
@@ -15,7 +13,7 @@ interface PendingSub {
 }
 
 export interface ConnectionContextSub {
-  asyncIterator: AsyncIterableIterator<ExecutionResult<ExecutionResultDataDefault>>
+  asyncIterator: AsyncIterableIterator<ExecutionResult>
 }
 
 interface Subs {
@@ -29,23 +27,13 @@ class ConnectionContext {
   ip: string
   id = shortid.generate()
   isAlive = true
-  rateLimiter: RateLimiter
   socket: UserWebSocket
-  sharedDataLoader: DataLoaderWarehouse
   subs: Subs = {}
   isReady = false
   readyQueue = [] as (() => void)[]
-  constructor(
-    socket: UserWebSocket,
-    authToken: AuthToken,
-    sharedDataLoader: DataLoaderWarehouse,
-    rateLimiter: RateLimiter,
-    ip: string
-  ) {
+  constructor(socket: UserWebSocket, authToken: AuthToken, ip: string) {
     this.authToken = authToken
-    this.rateLimiter = rateLimiter
     this.socket = socket
-    this.sharedDataLoader = sharedDataLoader
     this.ip = ip
   }
   ready() {

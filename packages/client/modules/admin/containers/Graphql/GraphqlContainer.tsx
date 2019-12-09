@@ -23,12 +23,7 @@ const GraphqlContainer = () => {
   const atmosphere = useAtmosphere()
   useAuthRoute({role: AuthTokenRole.SUPER_USER})
 
-  const publicFetcher = async ({query, variables}) => {
-    // @ts-ignore
-    return atmosphere.handleFetchPromise({text: query}, variables)
-  }
-
-  const privateFetcher = async ({query, variables}) => {
+  const fetcher = async ({query, variables}) => {
     const url = `${window.location.origin}/intranet-graphql/`
     const res = await fetch(url, {
       method: 'POST',
@@ -36,12 +31,10 @@ const GraphqlContainer = () => {
         'content-type': 'application/json',
         Authorization: `Bearer ${atmosphere.authToken}`
       },
-      body: JSON.stringify({query, variables})
+      body: JSON.stringify({query, variables, isPrivate: currentSchema === 'Private'})
     })
     return res.json()
   }
-
-  const fetcher = currentSchema === 'Public' ? publicFetcher : privateFetcher
 
   return (
     <GQL>
