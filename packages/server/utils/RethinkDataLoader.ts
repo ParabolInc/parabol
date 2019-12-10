@@ -1,9 +1,5 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
-import getRethink from '../database/rethinkDriver'
-import Meeting from '../database/types/Meeting'
-import AtlassianManager from './AtlassianManager'
-import {getUserId} from './authorization'
 import {
   IAgendaItem,
   IAtlassianAuth,
@@ -14,20 +10,22 @@ import {
   ITeamMeetingSettings
 } from '../../client/types/graphql'
 import promiseAllPartial from '../../client/utils/promiseAllPartial'
+import getRethink from '../database/rethinkDriver'
+import Meeting from '../database/types/Meeting'
 import MeetingMember from '../database/types/MeetingMember'
-import SlackAuth from '../database/types/SlackAuth'
-import SlackNotification from '../database/types/SlackNotification'
-import AuthToken from '../database/types/AuthToken'
+import Notification from '../database/types/Notification'
+import Organization from '../database/types/Organization'
 import OrganizationUser from '../database/types/OrganizationUser'
 import Reflection from '../database/types/Reflection'
+import ReflectionGroup from '../database/types/ReflectionGroup'
+import SlackAuth from '../database/types/SlackAuth'
+import SlackNotification from '../database/types/SlackNotification'
 import SuggestedAction from '../database/types/SuggestedAction'
 import Task from '../database/types/Task'
 import TeamInvitation from '../database/types/TeamInvitation'
-import User from '../database/types/User'
-import ReflectionGroup from '../database/types/ReflectionGroup'
-import Notification from '../database/types/Notification'
-import Organization from '../database/types/Organization'
 import TeamMember from '../database/types/TeamMember'
+import User from '../database/types/User'
+import AtlassianManager from './AtlassianManager'
 
 interface JiraRemoteProjectKey {
   accessToken: string

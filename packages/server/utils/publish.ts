@@ -9,7 +9,7 @@ import {
 
 export interface SubOptions {
   mutatorId?: string
-  operationId?: number | null
+  operationId?: string | null
 }
 
 interface SubTable {

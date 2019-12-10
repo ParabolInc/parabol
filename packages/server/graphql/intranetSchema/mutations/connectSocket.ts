@@ -6,7 +6,7 @@ import publish from '../../../utils/publish'
 import sendSegmentEvent from '../../../utils/sendSegmentEvent'
 import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import DBUser from '../../../database/types/User'
-import {GQLContext} from 'graphql/graphql'
+import {GQLContext} from '../../graphql'
 
 export default {
   name: 'ConnectSocket',
