@@ -25,7 +25,8 @@ import handlerProvider from './utils/relay/handlerProvider'
 import {Snack, SnackbarRemoveFn} from './components/Snackbar'
 import AuthToken from 'parabol-server/database/types/AuthToken'
 import {RouterProps} from 'react-router'
-import {LocalStorageKey} from './types/constEnums'
+import {LocalStorageKey, TrebuchetCloseReason} from './types/constEnums'
+import handleInvalidatedSession from 'hooks/handleInvalidatedSession'
 
 interface QuerySubscription {
   subKey: string
@@ -110,8 +111,13 @@ export default class Atmosphere extends Environment {
       body
     })
     const contentTypeHeader = res.headers.get('content-type') || ''
-    const contentType = contentTypeHeader.toLowerCase()
-    return contentType.startsWith('application/json') ? res.json() : null
+    if (contentTypeHeader.toLowerCase().startsWith('application/json')) {
+      return res.json()
+    }
+    if (res.status === 401) {
+      handleInvalidatedSession(TrebuchetCloseReason.EXPIRED_SESSION, {atmosphere: this})
+    }
+    return null
   }
 
   handleSubscribePromise = async (

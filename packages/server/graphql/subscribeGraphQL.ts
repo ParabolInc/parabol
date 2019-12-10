@@ -22,6 +22,7 @@ import DocumentCache from './DocumentCache'
 import ResponseStream from './ResponseStream'
 import publicSchema from './rootSchema'
 import handleDisconnect from '../socketHandlers/handleDisconnect'
+import {TrebuchetCloseReason} from 'parabol-client/types/constEnums'
 
 export interface SubscribeRequest {
   connectionContext: ConnectionContext
@@ -87,7 +88,10 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
         relayUnsubscribeAll(connectionContext, {isResub: true})
       }, 1000)
     } else if (notificationType === 'InvalidateSessionsPayload') {
-      setTimeout(() => handleDisconnect(connectionContext, {exitCode: 1011}), 1000)
+      handleDisconnect(connectionContext, {
+        exitCode: 1011,
+        reason: TrebuchetCloseReason.SESSION_INVALIDATED
+      })
     }
     sendMessage(socket, GQL_DATA, payload, opId)
   }

@@ -3,13 +3,18 @@ import sseClients from '../sseClients'
 import {getUserId} from '../utils/authorization'
 import sendToSentry from '../utils/sendToSentry'
 import handleGraphQLTrebuchetRequest from './handleGraphQLTrebuchetRequest'
+import StatelessContext from '../socketHelpers/StatelessContext'
+import checkBlacklistJWT from '../utils/checkBlacklistJWT'
+import {TrebuchetCloseReason} from 'parabol-client/types/constEnums'
 
 const SSE_PROBLEM_USERS = [] as string[]
 
 const httpGraphQLHandler = async (req: e.Request, res: e.Response) => {
   const connectionId = req.headers['x-correlation-id']
   const authToken = (req as any).user || {}
-  const connectionContext = connectionId ? sseClients.get(connectionId) : {authToken, ip: req.ip}
+  const connectionContext = connectionId
+    ? sseClients.get(connectionId)
+    : new StatelessContext(req.ip, authToken)
   if (!connectionContext) {
     const viewerId = getUserId(authToken)
     if (!SSE_PROBLEM_USERS.includes(viewerId)) {
@@ -27,6 +32,16 @@ const httpGraphQLHandler = async (req: e.Request, res: e.Response) => {
   }
 
   if (req.body?.type === 'WRTC_SIGNAL') return
+  if (!connectionId) {
+    const {iat, sub: viewerId} = authToken
+    if (viewerId) {
+      const isBlacklistedJWT = await checkBlacklistJWT(viewerId, iat)
+      if (isBlacklistedJWT) {
+        res.status(401).send(TrebuchetCloseReason.EXPIRED_SESSION)
+        return
+      }
+    }
+  }
   const response = await handleGraphQLTrebuchetRequest(req.body, connectionContext)
   if (response) {
     res.send(response)

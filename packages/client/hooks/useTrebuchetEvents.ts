@@ -2,10 +2,11 @@ import GQLTrebuchetClient from '@mattkrick/graphql-trebuchet-client'
 import ms from 'ms'
 import {useEffect, useRef} from 'react'
 import {commitLocalUpdate} from 'react-relay'
+import {TrebuchetCloseReason} from 'types/constEnums'
 import createProxyRecord from '../utils/relay/createProxyRecord'
+import handleInvalidatedSession from './handleInvalidatedSession'
 import useAtmosphere from './useAtmosphere'
 import useRouter from './useRouter'
-import {LocalStorageKey} from 'types/constEnums'
 
 const useTrebuchetEvents = () => {
   const atmosphere = useAtmosphere()
@@ -70,20 +71,8 @@ const useTrebuchetEvents = () => {
       }
     }
 
-    const onClose = ({reason}) => {
-      console.log('close')
-      if (reason === 'sessionInvalidated') {
-        window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)
-        atmosphere.eventEmitter.emit('addSnackbar', {
-          key: 'logOutJWT',
-          message: 'You’ve been logged out from another device',
-          autoDismiss: 5
-        })
-        setTimeout(() => {
-          atmosphere.close()
-          history.replace('/')
-        })
-      }
+    const onClose = ({reason}: {reason?: TrebuchetCloseReason}) => {
+      handleInvalidatedSession(reason, {atmosphere, history})
     }
 
     atmosphere.eventEmitter.once('newSubscriptionClient', () => {
