@@ -41,7 +41,11 @@ export default {
 
       // AUTH
       const viewerId = getUserId(authToken)
-      if (!isAuthenticated(authToken)) return standardError(new Error('Not authenticated'))
+      if (!isAuthenticated(authToken)) {
+        return {
+          error: {message: 'Not authenticated'}
+        }
+      }
       if (!invitationToken) {
         return {
           error: {

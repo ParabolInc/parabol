@@ -1,9 +1,13 @@
 /*
-  This is a stateless function that can be broken out into its own microservice to scale
-  It is used for all GraphQL queries, both trusted and untrusted
-  It is NOT used for subscription source streams, since those require state
-  It IS used to transform a source stream into a response stream
+  This is the primary GraphQL function on the socket server
+  It containis 2 pieces of state:
+    * The WebSocket (or EvemtStream) to the client
+    * A dictionary of GraphQL source streams pulled from Redis
+  In the future, we could break those 2 apart:
+    * The socket server listens to a single redis channel: socket:socketId
+    * The GraphQL subscription server publishes to that channel
  */
+
 import {ClientMessageTypes} from '@mattkrick/graphql-trebuchet-client'
 import {createSourceEventStream, ExecutionResult} from 'graphql'
 import {decode} from 'jsonwebtoken'
@@ -86,8 +90,8 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
   const resubIdx = connectionContext.availableResubs.indexOf(opId)
   if (resubIdx !== -1) {
     // reinitialize the subscription
-    subscribeGraphQL({...req, hideErrors: true}).catch()
     connectionContext.availableResubs.splice(resubIdx, 1)
+    subscribeGraphQL({...req, hideErrors: true}).catch()
   } else {
     sendMessage(socket, GQL_COMPLETE, undefined, opId)
   }

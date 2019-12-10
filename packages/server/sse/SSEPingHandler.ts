@@ -5,7 +5,7 @@ import sseClients from '../sseClients'
 
 const SSEPingHandler = (req: express.Request, res: express.Response) => {
   const connectionId = req.headers['x-correlation-id']
-  const connectionContext = sseClients[connectionId as string]
+  const connectionContext = sseClients.get(connectionId)
   if (connectionContext) {
     const token = req.headers['authorization']!.split(' ')[1]
     let authToken

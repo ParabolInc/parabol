@@ -20,7 +20,7 @@ export default class GraphQLRedisPubSub {
   constructor(publisher: Redis.Redis, subscriber: Redis.Redis) {
     this.publisher = publisher
     this.subscriber = subscriber
-    this.setup()
+    this.subscriber.on('message', this.onMessage)
   }
 
   private onMessage = (channel: string, message: string) => {
@@ -31,10 +31,6 @@ export default class GraphQLRedisPubSub {
       const listener = listeners[i]
       listener(parsedMessage)
     }
-  }
-
-  private setup() {
-    this.subscriber.on('message', this.onMessage)
   }
 
   publish = (channel: string, payload: object) => {

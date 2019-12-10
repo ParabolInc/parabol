@@ -8,16 +8,12 @@ interface Handlers {
 }
 
 export default class SubscriptionIterator<T = any> implements AsyncIterator<T> {
-  [Symbol.asyncIterator]() {
-    return this
-  }
-  done = false
-  pushQueue = [] as any[]
-  pullQueue = [] as any[]
-  transform?: SubscriptionTransform
-  onStart?: (listener: SubscriptionListener) => void
-  onCompleted?: (listener: SubscriptionListener) => void
-  pushValue: SubscriptionListener = async (input) => {
+  private done = false
+  private pushQueue = [] as any[]
+  private pullQueue = [] as ((resolvedValue?: any) => void)[]
+  private transform?: SubscriptionTransform
+  private onCompleted?: (listener: SubscriptionListener) => void
+  private pushValue: SubscriptionListener = async (input) => {
     const value = this.transform ? await this.transform(input) : input
     if (value !== undefined) {
       const resolver = this.pullQueue.shift()
@@ -31,12 +27,23 @@ export default class SubscriptionIterator<T = any> implements AsyncIterator<T> {
 
   constructor({onStart, onCompleted, transform}: Handlers) {
     this.transform = transform
-    this.onStart = onStart
     this.onCompleted = onCompleted
     onStart?.(this.pushValue)
   }
 
-  pullValue = () => {
+  private close = () => {
+    if (this.done) return
+    this.done = true
+    this.onCompleted?.(this.pushValue)
+    this.pullQueue.forEach((resolve) => resolve({done: true, value: undefined}))
+    this.pullQueue = []
+  };
+
+  [Symbol.asyncIterator]() {
+    return this
+  }
+
+  next() {
     return new Promise<IteratorResult<any>>((resolve) => {
       if (this.done) resolve({done: true, value: undefined})
       const value = this.pushQueue.shift()
@@ -46,17 +53,6 @@ export default class SubscriptionIterator<T = any> implements AsyncIterator<T> {
         this.pullQueue.push(resolve)
       }
     })
-  }
-
-  close = () => {
-    this.done = true
-    this.onCompleted?.(this.pushValue)
-    this.pullQueue.forEach((resolve) => resolve({done: true, value: undefined}))
-    this.pullQueue = []
-  }
-
-  next() {
-    return this.pullValue()
   }
 
   return() {

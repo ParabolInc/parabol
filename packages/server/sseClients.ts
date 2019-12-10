@@ -1,3 +1,16 @@
-const sseClients = {}
+import ConnectionContext from './socketHelpers/ConnectionContext'
 
-export default sseClients
+class SSEClients {
+  store = {}
+  get(connectionId: unknown) {
+    return this.store[String(connectionId)]
+  }
+  set(connectionContext: ConnectionContext) {
+    this.store[connectionContext.id] = connectionContext
+  }
+  delete(connectionId: string) {
+    delete this.store[connectionId]
+  }
+}
+
+export default new SSEClients()

@@ -28,7 +28,7 @@ const SSEConnectionHandler = async (req: express.Request, res: express.Response)
   })
   ;(res as any).socket.setNoDelay() // disable Nagle algorithm
   const connectionContext = new ConnectionContext(res as any, authToken, req.ip)
-  sseClients[connectionContext.id] = connectionContext
+  sseClients.set(connectionContext)
   const nextAuthToken = await handleConnect(connectionContext)
   res.write(`event: id\n`)
   res.write(`retry: 1000\n`)
@@ -38,11 +38,11 @@ const SSEConnectionHandler = async (req: express.Request, res: express.Response)
   keepAlive(connectionContext)
   res.on('close', () => {
     handleDisconnect(connectionContext)
-    delete sseClients[connectionContext.id]
+    sseClients.delete(connectionContext.id)
   })
   res.on('finish', () => {
     handleDisconnect(connectionContext)
-    delete sseClients[connectionContext.id]
+    sseClients.delete(connectionContext.id)
   })
 }
 

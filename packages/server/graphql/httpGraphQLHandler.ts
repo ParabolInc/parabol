@@ -9,9 +9,7 @@ const SSE_PROBLEM_USERS = [] as string[]
 const httpGraphQLHandler = async (req: e.Request, res: e.Response) => {
   const connectionId = req.headers['x-correlation-id']
   const authToken = (req as any).user || {}
-  const connectionContext = connectionId
-    ? sseClients[connectionId as string]
-    : {authToken, ip: req.ip}
+  const connectionContext = connectionId ? sseClients.get(connectionId) : {authToken, ip: req.ip}
   if (!connectionContext) {
     const viewerId = getUserId(authToken)
     if (!SSE_PROBLEM_USERS.includes(viewerId)) {

@@ -5,8 +5,8 @@ import SubscriptionIterator from '../utils/SubscriptionIterator'
 import {SubscribeRequest} from './subscribeGraphQL'
 
 export default class ResponseStream implements AsyncIterableIterator<ExecutionResult> {
-  sourceStream: SubscriptionIterator
-  req: SubscribeRequest
+  private sourceStream: SubscriptionIterator
+  private req: SubscribeRequest
 
   constructor(sourceStream: SubscriptionIterator, req: SubscribeRequest) {
     this.sourceStream = sourceStream
