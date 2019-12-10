@@ -30,7 +30,7 @@ const wssConnectionHandler = async (socket: UserWebSocket, req: express.Request)
   }
   const {sub: userId, iat} = authToken
   const isBlacklistedJWT = await checkBlacklistJWT(userId, iat)
-  socket.close(1011, 'blacklist')
+  socket.close(1011, 'sessionInvalidated')
   const connectionContext = new ConnectionContext(socket, authToken, req.ip)
   socket.on('message', handleMessage(connectionContext))
   socket.on('close', handleDisconnect(connectionContext))

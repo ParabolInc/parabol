@@ -10,6 +10,8 @@ import Snackbar from '../Snackbar'
 import {css, Global} from '@emotion/core'
 import globalStyles from '../../styles/theme/globalStyles'
 import SetNewPassword from '../ResetPasswordPage/SetNewPassword'
+import useTrebuchetEvents from '../../hooks/useTrebuchetEvents'
+import useServiceWorker from '../../hooks/useServiceWorker'
 
 const AnalyticsPage = lazy(() => import(/* webpackChunkName: 'AnalyticsPage' */ '../AnalyticsPage'))
 const AuthenticationPage = lazy(() =>
@@ -28,6 +30,8 @@ const InvitationLink = lazy(() =>
 )
 
 const Action = memo(() => {
+  useTrebuchetEvents()
+  useServiceWorker()
   return (
     <ErrorBoundary>
       <Global
@@ -36,7 +40,6 @@ const Action = memo(() => {
         `}
       />
       <Snackbar />
-      <SocketHealthMonitor />
       <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.WHOLE_PAGE} />}>
         <AnalyticsPage />
         <Switch>
