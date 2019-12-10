@@ -9,8 +9,8 @@ import AuthToken from '../database/types/AuthToken'
 import DocumentCache from './DocumentCache'
 import getDataLoader from './getDataLoader'
 import privateSchema from './intranetSchema/intranetSchema'
-import RateLimiter from './RateLimiter'
 import publicSchema from './rootSchema'
+import getRateLimiter from './getRateLimiter'
 
 interface GQLRequest {
   authToken: AuthToken
@@ -27,7 +27,6 @@ interface GQLRequest {
   isAdHoc?: boolean
 }
 
-const rateLimiter = new RateLimiter()
 const documentCache = new DocumentCache()
 
 const executeGraphQL = async (req: GQLRequest) => {
@@ -44,6 +43,7 @@ const executeGraphQL = async (req: GQLRequest) => {
     rootValue
   } = req
   const dataLoader = getDataLoader(dataLoaderId)
+  const rateLimiter = getRateLimiter()
   const contextValue = {ip, authToken, socketId, rateLimiter, dataLoader}
   const schema = isPrivate ? privateSchema : publicSchema
   const variableValues = variables
