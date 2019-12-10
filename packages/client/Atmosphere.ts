@@ -26,7 +26,7 @@ import {Snack, SnackbarRemoveFn} from './components/Snackbar'
 import AuthToken from 'parabol-server/database/types/AuthToken'
 import {RouterProps} from 'react-router'
 import {LocalStorageKey, TrebuchetCloseReason} from './types/constEnums'
-import handleInvalidatedSession from 'hooks/handleInvalidatedSession'
+import handleInvalidatedSession from './hooks/handleInvalidatedSession'
 
 interface QuerySubscription {
   subKey: string

@@ -1,4 +1,4 @@
-import Atmosphere from 'Atmosphere'
+import Atmosphere from '../Atmosphere'
 import {RouterProps} from 'react-router'
 import {LocalStorageKey, TrebuchetCloseReason} from '../types/constEnums'
 

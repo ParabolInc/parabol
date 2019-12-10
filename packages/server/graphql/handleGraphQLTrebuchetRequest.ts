@@ -3,15 +3,12 @@ import {
   OutgoingMessage,
   ServerMessageTypes
 } from '@mattkrick/graphql-trebuchet-client'
-import executeGraphQL from './executeGraphQL'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import relayUnsubscribe from '../utils/relayUnsubscribe'
 import sanitizeGraphQLErrors from '../utils/sanitizeGraphQLErrors'
 import sendToSentry from '../utils/sendToSentry'
+import executeGraphQL from './executeGraphQL'
 import subscribeGraphQL from './subscribeGraphQL'
-import StatelessContext from 'socketHelpers/StatelessContext'
-import checkBlacklistJWT from 'utils/checkBlacklistJWT'
-import {getUserId} from 'utils/authorization'
 
 const {GQL_START, GQL_STOP} = ServerMessageTypes
 const {GQL_DATA, GQL_ERROR} = ClientMessageTypes
