@@ -33,6 +33,7 @@ const useServiceWorker = () => {
         navigator.serviceWorker.removeEventListener('controllerchange', onServiceWorkerChange)
       }
     }
+    return
   }, [])
 }
 export default useServiceWorker

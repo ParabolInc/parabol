@@ -81,7 +81,7 @@ const useTrebuchetEvents = () => {
       trebuchet.on('reconnected' as any, onReconnected)
       trebuchet.on('disconnected' as any, onDisconnected)
       trebuchet.on('data' as any, onData)
-      trebuchet.on('close', onClose)
+      trebuchet.on('close' as any, onClose)
       setConnectedStatus(true)
     })
   }, [])

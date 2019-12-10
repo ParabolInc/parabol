@@ -1,5 +1,5 @@
 import ConnectionChunk from './ConnectionChunk'
-import SubscriptionIterator from 'utils/SubscriptionIterator'
+import SubscriptionIterator from '../../utils/SubscriptionIterator'
 
 type WebSocketId = string
 export default class WebSocketContext {

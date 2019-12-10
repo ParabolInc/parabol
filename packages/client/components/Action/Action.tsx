@@ -1,6 +1,5 @@
 import React, {lazy, memo, Suspense} from 'react'
 import {Route, Switch} from 'react-router'
-import SocketHealthMonitor from '../SocketHealthMonitor'
 import {CREATE_ACCOUNT_SLUG, SIGNIN_SLUG} from '../../utils/constants'
 import {LoaderSize} from '../../types/constEnums'
 import ErrorBoundary from '../ErrorBoundary'

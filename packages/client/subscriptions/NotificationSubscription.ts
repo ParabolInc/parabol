@@ -28,6 +28,7 @@ import {RecordSourceSelectorProxy} from 'relay-runtime/lib/store/RelayStoreTypes
 import {NotificationSubscription_meetingStageTimeLimitEnd} from '__generated__/NotificationSubscription_meetingStageTimeLimitEnd.graphql'
 import {NotificationSubscription_paymentRejected} from '__generated__/NotificationSubscription_paymentRejected.graphql'
 import {LocalStorageKey} from '../types/constEnums'
+import {InvalidateSessionsMutation_notification} from '__generated__/InvalidateSessionsMutation_notification.graphql'
 
 graphql`
   fragment NotificationSubscription_paymentRejected on StripeFailPaymentPayload {
@@ -70,6 +71,7 @@ const subscription = graphql`
       ...EndNewMeetingMutation_notification @relay(mask: false)
       ...InviteToTeamMutation_notification @relay(mask: false)
       ...RemoveOrgUserMutation_notification @relay(mask: false)
+      ...InvalidateSessionsMutation_notification @relay(mask: false)
       ... on AuthTokenPayload {
         id
       }
