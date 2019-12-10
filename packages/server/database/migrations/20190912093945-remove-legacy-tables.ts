@@ -1,13 +1,12 @@
 exports.up = async (r) => {
   try {
-    await Promise.all([r.tableDrop('Meeting').run(), r.tableDrop('Outcome').run()])
-    const hasAtlassianProjectTable = await r
-      .tableList()
-      .contains('AtlassianProject')
-      .run()
-    if (hasAtlassianProjectTable) {
-      await r.tableDrop('AtlassianProject').run()
-    }
+    await Promise.all([
+      r.tableDrop('Meeting').run(),
+      r.tableDrop('Outcome').run(),
+      r
+        .branch(r.tableList().contains('AtlassianProject'), r.tableDrop('AtlassianProject'), null)
+        .run()
+    ])
   } catch (e) {
     console.log(e)
   }
