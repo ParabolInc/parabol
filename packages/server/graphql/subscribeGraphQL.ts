@@ -8,16 +8,17 @@ import {ClientMessageTypes} from '@mattkrick/graphql-trebuchet-client'
 import {createSourceEventStream, ExecutionResult} from 'graphql'
 import {decode} from 'jsonwebtoken'
 import {IAuthTokenPayload} from 'parabol-client/types/graphql'
+import SubscriptionIterator from 'utils/SubscriptionIterator'
 import AuthToken from '../database/types/AuthToken'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import sendMessage from '../socketHelpers/sendMessage'
 import relayUnsubscribeAll from '../utils/relayUnsubscribeAll'
 import sendToSentry from '../utils/sendToSentry'
 import DocumentCache from './DocumentCache'
-import executeGraphQL from './executeGraphQL'
+import ResponseStream from './ResponseStream'
 import publicSchema from './rootSchema'
 
-interface SubscribeRequest {
+export interface SubscribeRequest {
   connectionContext: ConnectionContext
   variables?: {[key: string]: any}
   docId?: string
@@ -42,7 +43,7 @@ const {GQL_COMPLETE, GQL_DATA} = ClientMessageTypes
 
 const subscribeGraphQL = async (req: SubscribeRequest) => {
   const {connectionContext, variables, docId, query, opId, hideErrors} = req
-  const {id: socketId, authToken, socket, ip} = connectionContext
+  const {id: socketId, authToken, socket} = connectionContext
   const document = docId ? await documentCache.fromID(docId) : documentCache.fromString(query!)
   if (!document) {
     if (!hideErrors) {
@@ -57,7 +58,7 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
     {},
     context,
     variables
-  )) as AsyncIterableIterator<PubSubPayload>
+  )) as SubscriptionIterator<PubSubPayload>
 
   const {errors} = sourceStream as ExecutionResult
   if (errors) {
@@ -66,40 +67,7 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
     }
     return
   }
-
-  const responseStream: AsyncIterableIterator<ExecutionResult> = {
-    [Symbol.asyncIterator]() {
-      return this
-    },
-    async next() {
-      const sourceIter = await sourceStream.next()
-      if (sourceIter.done) return sourceIter
-      const {mutatorId, operationId: dataLoaderId, rootValue} = sourceIter.value
-      if (mutatorId === socketId) return this.next()
-      const result = await executeGraphQL({
-        docId,
-        authToken,
-        dataLoaderId,
-        ip,
-        query,
-        variables,
-        rootValue,
-        socketId
-      })
-      if (result.errors) {
-        sendToSentry(new Error(result.errors[0].message))
-        return this.next()
-      }
-      return {done: false, value: result}
-    },
-    return() {
-      return Promise.resolve({done: true, value: undefined})
-    },
-    throw(error) {
-      sourceStream.throw!(error)
-      return Promise.resolve({done: true, value: error})
-    }
-  }
+  const responseStream = new ResponseStream(sourceStream, req)
   connectionContext.subs[opId] = responseStream
   // TODO PR definitelytyped
   for await (const payload of responseStream) {
@@ -115,7 +83,6 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
     }
     sendMessage(socket, GQL_DATA, payload, opId)
   }
-  console.log('unsub from res stream')
   const resubIdx = connectionContext.availableResubs.indexOf(opId)
   if (resubIdx !== -1) {
     // reinitialize the subscription

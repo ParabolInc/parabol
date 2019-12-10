@@ -7,7 +7,7 @@ interface Handlers {
   transform?: SubscriptionTransform
 }
 
-export default class SubscriptionIterator implements AsyncIterator<any> {
+export default class SubscriptionIterator<T = any> implements AsyncIterator<T> {
   [Symbol.asyncIterator]() {
     return this
   }
@@ -51,6 +51,8 @@ export default class SubscriptionIterator implements AsyncIterator<any> {
   close = () => {
     this.done = true
     this.onCompleted?.(this.pushValue)
+    this.pullQueue.forEach((resolve) => resolve({done: true, value: undefined}))
+    this.pullQueue = []
   }
 
   next() {
@@ -59,7 +61,7 @@ export default class SubscriptionIterator implements AsyncIterator<any> {
 
   return() {
     this.close()
-    return Promise.resolve({done: true, value: undefined})
+    return Promise.resolve({done: true as true, value: undefined})
   }
 
   throw(error) {

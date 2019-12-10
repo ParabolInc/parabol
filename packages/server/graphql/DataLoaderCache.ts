@@ -19,7 +19,7 @@ export class CacheWorker<T> {
     const ttl = force || !this.shared ? 0 : this.cache.ttl
     clearTimeout(this.disposeId!)
     this.disposeId = setTimeout(() => {
-      delete this.cache[this.did]
+      delete this.cache.workers[this.did]
     }, ttl)
   }
 
