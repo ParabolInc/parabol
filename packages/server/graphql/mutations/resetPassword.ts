@@ -11,7 +11,7 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import ResetPasswordPayload from '../types/ResetPasswordPayload'
-import blacklistJWT from 'utils/blacklistJWT'
+import blacklistJWT from '../../utils/blacklistJWT'
 
 const resetPassword = {
   type: new GraphQLNonNull(ResetPasswordPayload),

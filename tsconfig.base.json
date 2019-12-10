@@ -17,7 +17,7 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
-    "baseUrl": "./",
+    // "baseUrl": "./",
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
