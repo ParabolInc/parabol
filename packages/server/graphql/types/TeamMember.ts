@@ -21,6 +21,7 @@ import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import SlackAuth from './SlackAuth'
 import SlackNotification from './SlackNotification'
 import {GQLContext} from '../graphql'
+import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 
 const TeamMember = new GraphQLObjectType<any, GQLContext, any>({
   name: 'TeamMember',
@@ -111,8 +112,11 @@ const TeamMember = new GraphQLObjectType<any, GQLContext, any>({
       },
       resolve: async ({teamId, userId}, _args, {dataLoader}) => {
         const allTasks = await dataLoader.get('tasksByTeamId').load(teamId)
-        const tasksForUserId = allTasks.filter((task) => task.userId === userId)
-        const publicTasksForUserId = tasksForUserId.filter((task) => !task.tags.includes('private'))
+        const publicTasksForUserId = allTasks.filter((task) => {
+          if (task.userId !== userId) return false
+          if (isTaskPrivate(task.tags)) return false
+          return true
+        })
         return connectionFromTasks(publicTasksForUserId)
       }
     },

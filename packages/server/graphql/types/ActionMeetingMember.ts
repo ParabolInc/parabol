@@ -1,9 +1,10 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {IActionMeetingMember} from '../../../client/types/graphql'
+import getRethink from '../../database/rethinkDriver'
 import {GQLContext} from '../graphql'
 import MeetingMember, {meetingMemberFields} from './MeetingMember'
 import Task from './Task'
-import {IActionMeetingMember} from '../../../client/types/graphql'
-import getRethink from '../../database/rethinkDriver'
+import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 
 const ActionMeetingMember = new GraphQLObjectType<IActionMeetingMember, GQLContext>({
   name: 'ActionMeetingMember',
@@ -35,11 +36,12 @@ const ActionMeetingMember = new GraphQLObjectType<IActionMeetingMember, GQLConte
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const {teamId} = meeting
         const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
-        const tasks = teamTasks.filter(
-          (task) =>
-            task.meetingId === meetingId && task.userId === userId && !task.tags.includes('private')
-        )
-        return tasks
+        return teamTasks.filter((task) => {
+          if (task.meetingId !== meetingId) return false
+          if (task.userId !== userId) return false
+          if (isTaskPrivate(task.tags)) return false
+          return true
+        })
       }
     }
   })

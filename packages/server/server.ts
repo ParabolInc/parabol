@@ -1,35 +1,31 @@
-import path from 'path'
-import express from 'express'
+import {WebSocketServer} from '@clusterws/cws'
+import * as Integrations from '@sentry/integrations'
+import * as Sentry from '@sentry/node'
+import bodyParser from 'body-parser'
 import compression from 'compression'
 import cors from 'cors'
-import bodyParser from 'body-parser'
+import express from 'express'
 import jwt from 'express-jwt'
-import favicon from 'serve-favicon'
-import * as Sentry from '@sentry/node'
-import createSSR from './createSSR'
-import emailSSR from './emailSSR'
-import {clientSecret as secretKey} from './utils/auth0Helpers'
-import connectionHandler from './socketHandlers/wssConnectionHandler'
-import httpGraphQLHandler from './graphql/httpGraphQLHandler'
-import stripeWebhookHandler from './billing/stripeWebhookHandler'
-import getDotenv from '../server/utils/dotenv'
-import sendICS from './sendICS'
-import githubWebhookHandler from './integrations/githubWebhookHandler'
-import DataLoaderWarehouse from 'dataloader-warehouse'
-import {WebSocketServer} from '@clusterws/cws'
-import http from 'http'
-// import startMemwatch from 'server/utils/startMemwatch'
-import {SHARED_DATA_LOADER_TTL} from './utils/serverConstants'
-import RateLimiter from './graphql/RateLimiter'
-import SSEConnectionHandler from './sse/SSEConnectionHandler'
-import intranetHttpGraphQLHandler from './graphql/intranetGraphQLHandler'
-import SSEPingHandler from './sse/SSEPingHandler'
-import ms from 'ms'
 import rateLimit from 'express-rate-limit'
-import demoEntityHandler from './demoEntityHandler'
-import * as Integrations from '@sentry/integrations'
-import consumeSAML from './utils/consumeSAML'
 import * as heapProfile from 'heap-profile'
+import http from 'http'
+import ms from 'ms'
+import path from 'path'
+import favicon from 'serve-favicon'
+import getDotenv from '../server/utils/dotenv'
+import stripeWebhookHandler from './billing/stripeWebhookHandler'
+import createSSR from './createSSR'
+import demoEntityHandler from './demoEntityHandler'
+import emailSSR from './emailSSR'
+import httpGraphQLHandler from './graphql/httpGraphQLHandler'
+import intranetHttpGraphQLHandler from './graphql/intranetGraphQLHandler'
+import githubWebhookHandler from './integrations/githubWebhookHandler'
+import sendICS from './sendICS'
+import wssConnectionHandler from './socketHandlers/wssConnectionHandler'
+import SSEConnectionHandler from './sse/SSEConnectionHandler'
+import SSEPingHandler from './sse/SSEPingHandler'
+import {clientSecret as secretKey} from './utils/auth0Helpers'
+import consumeSAML from './utils/consumeSAML'
 
 declare global {
   namespace NodeJS {
@@ -73,13 +69,8 @@ const server = http.createServer(app)
 const wss = new WebSocketServer({server})
 server.listen(PORT)
 // This houses a per-mutation dataloader. When GraphQL is its own microservice, we can move this there.
-const sharedDataLoader = new DataLoaderWarehouse({
-  onShare: '_share',
-  ttl: SHARED_DATA_LOADER_TTL
-})
-const rateLimiter = new RateLimiter()
+
 // keep a hash table of connection contexts
-const sseClients = {}
 Sentry.init({
   environment: 'server',
   dsn: process.env.SENTRY_DSN,
@@ -164,7 +155,6 @@ if (PROD) {
 }
 
 // HTTP GraphQL endpoint
-const graphQLHandler = httpGraphQLHandler(sharedDataLoader, rateLimiter, sseClients)
 app.post(
   '/graphql',
   jwt({
@@ -172,7 +162,7 @@ app.post(
     audience: process.env.AUTH0_CLIENT_ID,
     credentialsRequired: false
   }),
-  graphQLHandler
+  httpGraphQLHandler
 )
 
 // HTTP Intranet GraphQL endpoint:
@@ -196,11 +186,9 @@ app.post('/stripe', stripeWebhookHandler)
 
 app.post('/webhooks/github', githubWebhookHandler)
 
-// app.post('/rtc-fallback', WRTCFallbackHandler(sharedDataLoader, rateLimiter))
-
 // SSE Fallback
-app.get('/sse-ping', SSEPingHandler(sseClients))
-app.get('/sse', SSEConnectionHandler(sharedDataLoader, rateLimiter, sseClients))
+app.get('/sse-ping', SSEPingHandler)
+app.get('/sse', SSEConnectionHandler)
 
 // Entity generator for demo
 app.enable('trust proxy')
@@ -216,4 +204,4 @@ app.post('/saml/:domain', consumeSAML)
 app.get('*', createSSR)
 
 // handle sockets
-wss.on('connection', connectionHandler(sharedDataLoader, rateLimiter))
+wss.on('connection', wssConnectionHandler)

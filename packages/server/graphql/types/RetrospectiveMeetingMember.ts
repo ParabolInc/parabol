@@ -3,6 +3,7 @@ import {GQLContext} from '../graphql'
 import MeetingMember, {meetingMemberFields} from './MeetingMember'
 import Task from './Task'
 import {IRetrospectiveMeetingMember} from '../../../client/types/graphql'
+import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 
 const RetrospectiveMeetingMember = new GraphQLObjectType<IRetrospectiveMeetingMember, GQLContext>({
   name: 'RetrospectiveMeetingMember',
@@ -17,10 +18,12 @@ const RetrospectiveMeetingMember = new GraphQLObjectType<IRetrospectiveMeetingMe
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const {teamId} = meeting
         const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
-        return teamTasks.filter(
-          (task) =>
-            task.meetingId === meetingId && task.userId === userId && !task.tags.includes('private')
-        )
+        return teamTasks.filter((task) => {
+          if (task.meetingId !== meetingId) return false
+          if (task.userId !== userId) return false
+          if (isTaskPrivate(task.tags)) return false
+          return true
+        })
       }
     },
     votesRemaining: {

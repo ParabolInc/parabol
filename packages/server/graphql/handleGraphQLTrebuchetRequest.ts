@@ -3,67 +3,51 @@ import {
   OutgoingMessage,
   ServerMessageTypes
 } from '@mattkrick/graphql-trebuchet-client'
-import wsGraphQLHandler from '../socketHandlers/wsGraphQLHandler'
-import handleSubscribe from '../socketHandlers/handleSubscribe'
-import relayUnsubscribe from '../utils/relayUnsubscribe'
+import executeGraphQL from './executeGraphQL'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
-
-interface Options {
-  getQueryString?: (hash: string) => string | Promise<string>
-  isQueryAllowed?(query: string, connectionContext: ConnectionContext): boolean
-}
+import relayUnsubscribe from '../utils/relayUnsubscribe'
+import sanitizeGraphQLErrors from '../utils/sanitizeGraphQLErrors'
+import sendToSentry from '../utils/sendToSentry'
+import subscribeGraphQL from './subscribeGraphQL'
 
 const {GQL_START, GQL_STOP} = ServerMessageTypes
 const {GQL_DATA, GQL_ERROR} = ClientMessageTypes
-
 const IGNORE_MUTATIONS = ['updateDragLocation']
+const PROD = process.env.NODE_ENV === 'production'
 
 const handleGraphQLTrebuchetRequest = async (
   data: OutgoingMessage,
-  connectionContext: ConnectionContext,
-  options: Options = {}
+  connectionContext: ConnectionContext
 ) => {
   const opId = data.id!
-  switch (data.type) {
-    case GQL_START:
-      const {payload} = data
-      if (!payload) {
-        throw new Error('No payload provided')
-      }
-      const {variables, documentId} = payload
-
-      const {getQueryString, isQueryAllowed} = options
-      let query: string | null | undefined = payload.query
-      // const isQueryAllowed = options.isQueryAllowed || trueOp
-      if (query) {
-        if (getQueryString) {
-          if (isQueryAllowed && !isQueryAllowed(query, connectionContext)) {
-            throw new Error('Custom queries are not allowed')
-          }
-        }
-      } else {
-        query = getQueryString ? await getQueryString(documentId!) : null
-        if (!query) {
-          throw new Error('Invalid document ID')
-        }
-      }
-
-      const params = {query, variables}
-      if (query.startsWith('subscription')) {
-        handleSubscribe(connectionContext, {id: opId, payload: params}).catch()
-        return
-      } else {
-        const result = await wsGraphQLHandler(connectionContext, params)
-        if (result.data && IGNORE_MUTATIONS.includes(Object.keys(result.data)[0])) return
-        const messageType = result.data ? GQL_DATA : GQL_ERROR
-        return {type: messageType, id: opId, payload: result}
-      }
-    case GQL_STOP:
-      relayUnsubscribe(connectionContext.subs, opId)
+  const {id: socketId, authToken, ip, subs} = connectionContext
+  if (data.type === GQL_START) {
+    const {payload} = data
+    if (!payload)
+      return {type: GQL_ERROR, id: opId, payload: {errors: [new Error('No payload provided')]}}
+    const {variables, documentId: docId, query} = payload
+    if (PROD && !docId)
+      return {type: GQL_ERROR, id: opId, payload: {errors: [new Error('DocumentId not provided')]}}
+    const isSubscription = PROD ? docId![0] === 's' : query?.startsWith('subscription')
+    if (isSubscription) {
+      subscribeGraphQL({docId, query, opId, variables, connectionContext})
       return
-    default:
-      throw new Error('No type provided to GraphQL Trebuchet Server')
+    }
+    const result = await executeGraphQL({docId, query, variables, socketId, authToken, ip})
+    if (result.errors) {
+      const [firstError] = result.errors
+      const safeError = new Error(firstError.message)
+      safeError.stack = firstError.stack
+      sendToSentry(safeError)
+    }
+    if (result.data && IGNORE_MUTATIONS.includes(Object.keys(result.data)[0])) return
+    const safeResult = sanitizeGraphQLErrors(result)
+    const messageType = result.data ? GQL_DATA : GQL_ERROR
+    return {type: messageType, id: opId, payload: safeResult}
+  } else if (data.type === GQL_STOP) {
+    relayUnsubscribe(subs, opId)
   }
+  return
 }
 
 export default handleGraphQLTrebuchetRequest

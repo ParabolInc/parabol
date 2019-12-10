@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-//    "composite": true,
+    //    "composite": true,
     "lib": [
       "esnext",
       "dom" // unfortunately almost inescapable. we extend client managers, etc which use the DOM
@@ -13,18 +13,18 @@
     "module": "esnext",
     "sourceMap": true,
     "baseUrl": ".",
-    "paths": {
-      "*": [
-        // resolve all absolute imports as imports relative to the package,
-        "*"
-        // also try looking in the client package (this makes for incorrect imports, don't do this)
-//        "../client/*"
-      ]
-    }
+    //     "paths": {
+    //       "*": [
+    //         // resolve all absolute imports as imports relative to the package,
+    //         "*"
+    //         // also try looking in the client package (this makes for incorrect imports, don't do this)
+    // //        "../client/*"
+    //       ]
+    //     }
   }
-//  "references": [
-//    {
-//      "path": "../client"
-//    }
-//  ]
+  //  "references": [
+  //    {
+  //      "path": "../client"
+  //    }
+  //  ]
 }

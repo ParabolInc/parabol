@@ -1,9 +1,9 @@
-import getRethink from '../../database/rethinkDriver'
-import {getUserId} from '../../utils/authorization'
-import publish from '../../utils/publish'
-import DisconnectSocketPayload from '../types/DisconnectSocketPayload'
-import sendSegmentEvent from '../../utils/sendSegmentEvent'
-import {GQLContext} from '../graphql'
+import getRethink from '../../../database/rethinkDriver'
+import {getUserId} from '../../../utils/authorization'
+import publish from '../../../utils/publish'
+import DisconnectSocketPayload from '../../types/DisconnectSocketPayload'
+import sendSegmentEvent from '../../../utils/sendSegmentEvent'
+import {GQLContext} from '../../graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {

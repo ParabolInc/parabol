@@ -9,7 +9,7 @@ import {
 
 export interface SubOptions {
   mutatorId?: string
-  operationId?: number | null
+  operationId?: string | null
 }
 
 interface SubTable {
@@ -27,13 +27,11 @@ const publish = <T extends keyof SubTable>(
   payload: {[key: string]: any},
   subOptions: SubOptions = {}
 ) => {
-  const data = {
-    ...payload,
-    type
-  }
-
+  const subName = `${topic}Subscription`
+  const data = {...payload, type}
+  const rootValue = {[subName]: data}
   getPubSub()
-    .publish(`${topic}.${channel}`, {data, ...subOptions})
+    .publish(`${topic}.${channel}`, {rootValue, ...subOptions})
     .catch(console.error)
 }
 

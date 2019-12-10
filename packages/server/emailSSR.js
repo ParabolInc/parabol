@@ -1,6 +1,5 @@
 import templates from './email/templates'
 import makeAppLink from './utils/makeAppLink'
-import DataLoaderWarehouse from 'dataloader-warehouse'
 import RethinkDataLoader from './utils/RethinkDataLoader'
 
 const ORG_MEMBERS_LINK = makeAppLink('me/organizations/tzsqFnuzh/members')
@@ -43,7 +42,7 @@ const EMAIL_ALL_PROPS = {
     ]
   }
 }
-export default async function emailSSR (req, res) {
+export default async function emailSSR(req, res) {
   const {template} = req.params
   const emailFactory = templates[template]
   const props = EMAIL_ALL_PROPS[template]
@@ -53,17 +52,17 @@ export default async function emailSSR (req, res) {
    * Don't forget to set the MAILGUN_API_KEY, MAILGUN_DOMAIN, and MAILGUN_FROM
    * environment variables if you want to send the email for reals.
    */
-  const sharedDataLoader = new DataLoaderWarehouse({
-    onShare: '_share',
-    ttl: 2000
-  })
+  // const sharedDataLoader = new DataLoaderWarehouse({
+  //   onShare: '_share',
+  //   ttl: 2000
+  // })
   const authToken = {}
-  const dataLoader = sharedDataLoader.add(new RethinkDataLoader(authToken, {cache: false}))
+  // const dataLoader = sharedDataLoader.add(new RethinkDataLoader(authToken, { cache: false }))
 
   const context = {
     socketId: 'foo',
     rateLimiter: null,
-    dataLoader,
+    // dataLoader,
     authToken
   }
 

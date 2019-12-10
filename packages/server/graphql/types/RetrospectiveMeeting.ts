@@ -15,6 +15,7 @@ import Task from './Task'
 import {getUserId} from '../../utils/authorization'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import RetrospectiveMeetingMember from './RetrospectiveMeetingMember'
+import filterTasksByMeeting from '../../utils/filterTasksByMeeting'
 
 const ReflectionGroupSortEnum = new GraphQLEnumType({
   name: 'ReflectionGroupSortEnum',
@@ -83,21 +84,23 @@ const RetrospectiveMeeting = new GraphQLObjectType({
     taskCount: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of tasks generated in the meeting',
-      resolve: async ({id: meetingId}, _args, {dataLoader}) => {
+      resolve: async ({id: meetingId}, _args, {authToken, dataLoader}) => {
+        const viewerId = getUserId(authToken)
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const {teamId} = meeting
         const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
-        return teamTasks.filter((task) => task.meetingId === meetingId).length
+        return filterTasksByMeeting(teamTasks, meetingId, viewerId).length
       }
     },
     tasks: {
       type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(Task))),
       description: 'The tasks created within the meeting',
-      resolve: async ({id: meetingId}, _args, {dataLoader}) => {
+      resolve: async ({id: meetingId}, _args, {authToken, dataLoader}) => {
+        const viewerId = getUserId(authToken)
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const {teamId} = meeting
         const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
-        return teamTasks.filter((task) => task.meetingId === meetingId)
+        return filterTasksByMeeting(teamTasks, meetingId, viewerId)
       }
     },
     votesRemaining: {

@@ -1,9 +1,5 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
-import getRethink from '../database/rethinkDriver'
-import Meeting from '../database/types/Meeting'
-import AtlassianManager from './AtlassianManager'
-import {getUserId} from './authorization'
 import {
   IAgendaItem,
   IAtlassianAuth,
@@ -14,20 +10,22 @@ import {
   ITeamMeetingSettings
 } from '../../client/types/graphql'
 import promiseAllPartial from '../../client/utils/promiseAllPartial'
+import getRethink from '../database/rethinkDriver'
+import Meeting from '../database/types/Meeting'
 import MeetingMember from '../database/types/MeetingMember'
-import SlackAuth from '../database/types/SlackAuth'
-import SlackNotification from '../database/types/SlackNotification'
-import AuthToken from '../database/types/AuthToken'
+import Notification from '../database/types/Notification'
+import Organization from '../database/types/Organization'
 import OrganizationUser from '../database/types/OrganizationUser'
 import Reflection from '../database/types/Reflection'
+import ReflectionGroup from '../database/types/ReflectionGroup'
+import SlackAuth from '../database/types/SlackAuth'
+import SlackNotification from '../database/types/SlackNotification'
 import SuggestedAction from '../database/types/SuggestedAction'
 import Task from '../database/types/Task'
 import TeamInvitation from '../database/types/TeamInvitation'
-import User from '../database/types/User'
-import ReflectionGroup from '../database/types/ReflectionGroup'
-import Notification from '../database/types/Notification'
-import Organization from '../database/types/Organization'
 import TeamMember from '../database/types/TeamMember'
+import User from '../database/types/User'
+import AtlassianManager from './AtlassianManager'
 
 interface JiraRemoteProjectKey {
   accessToken: string
@@ -89,13 +87,8 @@ interface Tables {
 
 export default class RethinkDataLoader {
   dataLoaderOptions: DataLoader.Options<any, any>
-  authToken: null | AuthToken
 
-  constructor(
-    authToken: AuthToken | null = null,
-    dataLoaderOptions: DataLoader.Options<any, any> = {}
-  ) {
-    this.authToken = authToken
+  constructor(dataLoaderOptions: DataLoader.Options<any, any> = {}) {
     this.dataLoaderOptions = dataLoaderOptions
   }
 
@@ -286,39 +279,18 @@ export default class RethinkDataLoader {
 
   tasksByTeamId = this.fkLoader(this.tasks, 'teamId', async (teamIds) => {
     const r = await getRethink()
-    const userId = getUserId(this.authToken)
+    // waraning! contains private tasks
     return r
       .table('Task')
       .getAll(r.args(teamIds), {index: 'teamId'})
       .filter((task) =>
         task('tags')
-          .contains('private')
-          .and(task('userId').ne(userId))
-          .or(task('tags').contains('archived'))
+          .contains('archived')
           .not()
       )
       .run()
   })
-
-  tasksByUserId = this.fkLoader(this.tasks, 'userId', async (_userIds) => {
-    const r = await getRethink()
-    const userId = getUserId(this.authToken)
-    const tms = (this.authToken && this.authToken.tms) || []
-    return r
-      .table('Task')
-      .getAll(userId, {index: 'userId'})
-      .filter((task) =>
-        r.and(
-          task('tags')
-            .contains('archived')
-            .not(),
-          // weed out the tasks on archived teams
-          r(tms).contains(task('teamId'))
-        )
-      )
-      .run()
-  })
-
+  // tasksByUserId is expensive since we have to look up each team to check the team archive status
   teamsByOrgId = this.fkLoader(this.teams, 'orgId', async (orgIds) => {
     const r = await getRethink()
     return r

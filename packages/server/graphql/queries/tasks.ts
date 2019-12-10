@@ -5,6 +5,7 @@ import {TaskConnection} from '../types/Task'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import connectionFromTasks from './helpers/connectionFromTasks'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 
 export default {
   type: new GraphQLNonNull(TaskConnection),
@@ -19,21 +20,16 @@ export default {
       description: 'The unique team ID'
     }
   },
-  async resolve (source, {teamId}, {authToken, dataLoader}) {
+  async resolve(_source, {teamId}, {authToken, dataLoader}: GQLContext) {
     // AUTH
-    const userId = getUserId(authToken)
-    let tasks
-    if (teamId) {
-      if (!isTeamMember(authToken, teamId)) {
-        standardError(new Error('Team not found'), {userId})
-        tasks = []
-      }
-      tasks = await dataLoader.get('tasksByTeamId').load(teamId)
-    } else {
-      tasks = await dataLoader.get('tasksByUserId').load(userId)
+    const viewerId = getUserId(authToken)
+    if (teamId && !isTeamMember(authToken, teamId)) {
+      standardError(new Error('Team not found'), {userId: viewerId})
+      return connectionFromTasks([])
     }
-
-    // RESOLUTION
+    const teamIds = teamId ? [teamId] : authToken.tms || []
+    const teamTasksByTeamId = await dataLoader.get('tasksByTeamId').loadMany(teamIds)
+    const tasks = teamTasksByTeamId.flat().filter((task) => task.userId === viewerId)
     return connectionFromTasks(tasks)
   }
 }

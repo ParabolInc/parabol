@@ -15,15 +15,10 @@ const handleCandidate = (ws: UWebSocket, payload: CandidatePayloadToServer) => {
   const to = context.connectedPeers[id]
   if (to) {
     // the receiver is known
-    getPubSub()
-      .publish(
-        `signal/user/${to}`,
-        JSON.stringify({
-          type: 'pubToClient',
-          payload: {type: 'candidate', id, candidate}
-        })
-      )
-      .catch()
+    getPubSub().publish(`signal/user/${to}`, {
+      type: 'pubToClient',
+      payload: {type: 'candidate', id, candidate}
+    })
     return
   }
   const existingChunk = context.pushQueue.find((connectionChunk) => connectionChunk.id === id)

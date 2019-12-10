@@ -9,15 +9,10 @@ interface AnswerPayload {
 
 const handleAnswer = (ws: UWebSocket, payload: AnswerPayload) => {
   const to = ws.context.connectedPeers[payload.id]
-  getPubSub()
-    .publish(
-      `signal/user/${to}`,
-      JSON.stringify({
-        type: 'pubToClient',
-        payload
-      })
-    )
-    .catch()
+  getPubSub().publish(`signal/user/${to}`, {
+    type: 'pubToClient',
+    payload
+  })
 }
 
 export default handleAnswer

@@ -4,6 +4,7 @@ import fs from 'fs'
 import path from 'path'
 import {RequestHandler} from 'express'
 
+const prod = process.env.NODE_ENV === 'production'
 let finalHTML
 
 export const getClientKeys = () => {
@@ -26,8 +27,6 @@ export const getClientKeys = () => {
 const getHTML = () => {
   if (!finalHTML) {
     const clientIds = getClientKeys()
-    const prod = process.env.NODE_ENV
-
     const htmlFile = prod ? '../../build/index.html' : './template.html'
     const html = fs.readFileSync(path.join(__dirname, htmlFile), 'utf8')
     const extraHead = `<script>${dehydrate('__ACTION__', clientIds)}</script>`

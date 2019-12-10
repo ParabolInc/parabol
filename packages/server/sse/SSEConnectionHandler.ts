@@ -5,9 +5,11 @@ import ConnectionContext from '../socketHelpers/ConnectionContext'
 import handleConnect from '../socketHandlers/handleConnect'
 import handleDisconnect from '../socketHandlers/handleDisconnect'
 import keepAlive from '../socketHelpers/keepAlive'
+import express from 'express'
+import sseClients from '../sseClients'
 
 const APP_VERSION = process.env.npm_package_version
-const SSEConnectionHandler = (sharedDataLoader, rateLimiter, sseClients) => async (req, res) => {
+const SSEConnectionHandler = async (req: express.Request, res: express.Response) => {
   const {query} = url.parse(req.url, true)
   let authToken
   try {
@@ -24,29 +26,23 @@ const SSEConnectionHandler = (sharedDataLoader, rateLimiter, sseClients) => asyn
     // turn off nginx buffering: https://www.nginx.com/resources/wiki/start/topics/examples/x-accel/#x-accel-buffering
     'X-Accel-Buffering': 'no'
   })
-  res.socket.setNoDelay() // disable Nagle algorithm
-  const connectionContext = new ConnectionContext(
-    res,
-    authToken,
-    sharedDataLoader,
-    rateLimiter,
-    req.ip
-  )
-  sseClients[connectionContext.id] = connectionContext
+  ;(res as any).socket.setNoDelay() // disable Nagle algorithm
+  const connectionContext = new ConnectionContext(res as any, authToken, req.ip)
+  sseClients.set(connectionContext)
   const nextAuthToken = await handleConnect(connectionContext)
   res.write(`event: id\n`)
   res.write(`retry: 1000\n`)
   res.write(`data: ${connectionContext.id}\n\n`)
   res.write(`data: ${JSON.stringify({version: APP_VERSION, authToken: nextAuthToken})}\n\n`)
-  res.flush()
+  ;(res as any).flush()
   keepAlive(connectionContext)
   res.on('close', () => {
     handleDisconnect(connectionContext)
-    delete sseClients[connectionContext.id]
+    sseClients.delete(connectionContext.id)
   })
   res.on('finish', () => {
     handleDisconnect(connectionContext)
-    delete sseClients[connectionContext.id]
+    sseClients.delete(connectionContext.id)
   })
 }
 

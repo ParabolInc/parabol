@@ -1,4 +1,5 @@
 import ConnectionChunk from './ConnectionChunk'
+import SubscriptionIterator from 'utils/SubscriptionIterator'
 
 type WebSocketId = string
 export default class WebSocketContext {
@@ -7,9 +8,9 @@ export default class WebSocketContext {
   connectedPeers: {[connectionId: string]: WebSocketId} = {}
   pushQueue: ConnectionChunk[] = []
   pullQueue: string[] = []
-  subs: number[] = []
+  iterators: SubscriptionIterator[] = []
   roomId: string
-  constructor (roomId: string) {
+  constructor(roomId: string) {
     this.roomId = roomId
     this.createdAt = Date.now()
   }
