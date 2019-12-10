@@ -26,6 +26,8 @@ import flagConversionModal from './mutations/flagConversionModal'
 import dumpHeap from './mutations/dumpHeap'
 import logins from './queries/logins'
 import signups from './queries/signups'
+import connectSocket from './mutations/connectSocket'
+import disconnectSocket from './mutations/disconnectSocket'
 
 const query = new GraphQLObjectType<any, GQLContext, any>({
   name: 'Query',
@@ -46,6 +48,8 @@ const mutation = new GraphQLObjectType<any, GQLContext, any>({
   fields: () => ({
     addNewFeature,
     autopauseUsers,
+    connectSocket,
+    disconnectSocket,
     draftEnterpriseInvoice,
     dumpHeap,
     endOldMeetings,

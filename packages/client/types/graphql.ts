@@ -2696,11 +2696,6 @@ export interface IMutation {
   clearNotification: IClearNotificationPayload | null
 
   /**
-   * a server-side mutation called when a client connects
-   */
-  connectSocket: IUser | null
-
-  /**
    * for troubleshooting by admins, create a JWT for a given userId
    */
   createImposterToken: ICreateImposterTokenPayload
@@ -2736,11 +2731,6 @@ export interface IMutation {
    * Deny a user from joining via push invitation
    */
   denyPushInvitation: IDenyPushInvitationPayload | null
-
-  /**
-   * a server-side mutation called when a client disconnects
-   */
-  disconnectSocket: IDisconnectSocketPayload | null
 
   /**
    * Redeem an invitation token for a logged in user
@@ -4802,15 +4792,6 @@ export interface IDenyPushInvitationPayload {
   userId: string | null
 }
 
-export interface IDisconnectSocketPayload {
-  __typename: 'DisconnectSocketPayload'
-
-  /**
-   * The user that disconnected
-   */
-  user: IUser | null
-}
-
 export interface IDismissNewFeaturePayload {
   __typename: 'DismissNewFeaturePayload'
   error: IStandardMutationError | null
@@ -6199,6 +6180,15 @@ export interface IAddNewFeaturePayload {
    * the new feature broadcast
    */
   newFeature: INewFeatureBroadcast | null
+}
+
+export interface IDisconnectSocketPayload {
+  __typename: 'DisconnectSocketPayload'
+
+  /**
+   * The user that disconnected
+   */
+  user: IUser | null
 }
 
 export interface IMeetingStageTimeLimitPayload {

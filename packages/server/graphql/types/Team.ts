@@ -26,6 +26,7 @@ import standardError from '../../utils/standardError'
 import {ITeam} from '../../../client/types/graphql'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import {signMassInviteToken} from '../../utils/massInviteToken'
+import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 
 const Team = new GraphQLObjectType<ITeam, GQLContext>({
   name: 'Team',
@@ -168,7 +169,12 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
           standardError(new Error('Team not found'))
           return connectionFromTasks([])
         }
-        const tasks = await dataLoader.get('tasksByTeamId').load(teamId)
+        const viewerId = getUserId(authToken)
+        const allTasks = await dataLoader.get('tasksByTeamId').load(teamId)
+        const tasks = allTasks.filter((task) => {
+          if (isTaskPrivate(task.tags) && task.userId !== viewerId) return false
+          return true
+        })
         return connectionFromTasks(tasks)
       }
     },

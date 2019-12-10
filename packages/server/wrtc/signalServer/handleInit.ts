@@ -8,8 +8,8 @@ interface InitSignal {
 }
 
 // make the closure context as small as possible. there will be dozens of these. DOZENS
-const handleMessage = (ws) => (data: string) => {
-  handleSignal(ws, JSON.parse(data))
+const handleMessage = (ws) => (data: any) => {
+  handleSignal(ws, data)
 }
 
 const handleInit = (ws: UWebSocket, payload: InitSignal) => {
@@ -19,17 +19,12 @@ const handleInit = (ws: UWebSocket, payload: InitSignal) => {
   if (ws.context.userId) return
   ws.context.userId = userId
   const ps = getPubSub()
-  const onMessage = handleMessage(ws)
-  ps.publish(
-    `signal/room/${roomId}`,
-    JSON.stringify({type: 'pubInit', userId, createdAt: ws.context.createdAt})
-  ).catch()
-  ps.subscribe(`signal/room/${roomId}`, onMessage)
-    .then((subId) => ws.context.subs.push(subId))
-    .catch()
-  ps.subscribe(`signal/user/${userId}`, onMessage)
-    .then((subId) => ws.context.subs.push(subId))
-    .catch()
+  const transform = handleMessage(ws)
+  ps.publish(`signal/room/${roomId}`, {type: 'pubInit', userId, createdAt: ws.context.createdAt})
+
+  const channels = [`signal/room/${roomId}`, `signal/user/${userId}`]
+  const iterator = ps.subscribe(channels, {transform})
+  ws.context.iterators.push(iterator)
 }
 
 export default handleInit

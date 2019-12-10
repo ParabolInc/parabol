@@ -5,6 +5,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.16.0 2019-Dec-10
+
+## Changed
+* Broke GraphQL into 2 services
+* Refactored objects to classes for easier memory leak debugging
+
+## Added
+* DataLoaderCache
+* GraphQLRedisPubSub
+
+## Fixed
+* Memory leak traced to resolve fn in pullQueue of graphql-redis-subscription
+* Borked version of GraphiQL
+
+## Removed
+* dataloader-warehouse
+* graphql-redis-subscriptions
+
 ## 4.15.0 2019-Dec-04
 
 ## Added

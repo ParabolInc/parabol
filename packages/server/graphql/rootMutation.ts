@@ -4,11 +4,9 @@ import addOrg from './mutations/addOrg'
 import archiveTeam from './mutations/archiveTeam'
 import clearNotification from './mutations/clearNotification'
 import changeTaskTeam from './mutations/changeTaskTeam'
-import connectSocket from './mutations/connectSocket'
 import createGitHubIssue from './mutations/createGitHubIssue'
 import createTask from './mutations/createTask'
 import deleteTask from './mutations/deleteTask'
-import disconnectSocket from './mutations/disconnectSocket'
 import downgradeToPersonal from './mutations/downgradeToPersonal'
 import editTask from './mutations/editTask'
 import inactivateUser from './mutations/inactivateUser'
@@ -105,7 +103,6 @@ export default new GraphQLObjectType<any, Context, any>({
     autoGroupReflections,
     changeTaskTeam,
     clearNotification,
-    connectSocket,
     createImposterToken,
     createGitHubIssue,
     createJiraIssue,
@@ -115,7 +112,6 @@ export default new GraphQLObjectType<any, Context, any>({
     createUserPicturePutUrl,
     deleteTask,
     denyPushInvitation,
-    disconnectSocket,
     dismissNewFeature,
     dismissSuggestedAction,
     downgradeToPersonal,

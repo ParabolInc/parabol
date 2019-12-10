@@ -1,11 +1,11 @@
-import wsGraphQLHandler from './wsGraphQLHandler'
-import {fromEpochSeconds} from '../utils/epochTime'
-import handleDisconnect from './handleDisconnect'
-import ConnectionContext from '../socketHelpers/ConnectionContext'
-import AuthToken from '../database/types/AuthToken'
-import encodeAuthToken from '../utils/encodeAuthToken'
 import {Threshold} from 'parabol-client/types/constEnums'
+import AuthToken from '../database/types/AuthToken'
+import ConnectionContext from '../socketHelpers/ConnectionContext'
+import encodeAuthToken from '../utils/encodeAuthToken'
+import {fromEpochSeconds} from '../utils/epochTime'
 import sendToSentry from '../utils/sendToSentry'
+import executeGraphQL from '../graphql/executeGraphQL'
+import handleDisconnect from './handleDisconnect'
 
 const isTmsValid = (tmsFromDB: string[] = [], tmsFromToken: string[] = []) => {
   if (tmsFromDB.length !== tmsFromToken.length) return false
@@ -15,6 +15,7 @@ const isTmsValid = (tmsFromDB: string[] = [], tmsFromToken: string[] = []) => {
   return true
 }
 
+// TODO move inside connectSocket
 const setFreshTokenIfNeeded = (connectionContext: ConnectionContext, tmsDB: string[]) => {
   const {authToken} = connectionContext
   const {exp, tms} = authToken
@@ -29,27 +30,24 @@ const setFreshTokenIfNeeded = (connectionContext: ConnectionContext, tmsDB: stri
   return null
 }
 
-const handleConnect = async (connectionContext: ConnectionContext) => {
-  const payload = {
-    query: `
-    mutation ConnectSocket {
-      connectSocket {
-        tmsDB: tms
-      }
-    }
-  `
+const query = `
+mutation ConnectSocket {
+  connectSocket {
+    tms
   }
+}`
 
-  const result = await wsGraphQLHandler(connectionContext, payload)
+const handleConnect = async (connectionContext: ConnectionContext) => {
+  const {authToken, ip, id: socketId} = connectionContext
+  const result = await executeGraphQL({authToken, ip, query, isPrivate: true, socketId})
   const {data} = result
   if (data) {
     if (!data.connectSocket) {
       sendToSentry(new Error('null connectSocket'), {userId: connectionContext?.authToken?.sub})
     }
-    const {
-      connectSocket: {tmsDB}
-    } = data
-    const freshToken = setFreshTokenIfNeeded(connectionContext, tmsDB)
+    const {connectSocket} = data
+    const {tms} = connectSocket
+    const freshToken = setFreshTokenIfNeeded(connectionContext, tms)
     connectionContext.ready()
     return freshToken
   }

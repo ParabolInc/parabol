@@ -1,11 +1,12 @@
+import getRethink from '../../database/rethinkDriver'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import makeSubscribeIter from '../makeSubscribeIter'
-import MeetingSubscriptionPayload from '../types/MeetingSubscriptionPayload'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import getPubSub from '../../utils/getPubSub'
 import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import MeetingSubscriptionPayload from '../types/MeetingSubscriptionPayload'
 
 export default {
   type: new GraphQLNonNull(MeetingSubscriptionPayload),
@@ -14,19 +15,21 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  subscribe: async (_source, {meetingId}, {authToken, dataLoader, socketId}: GQLContext) => {
+  subscribe: async (_source, {meetingId}, {authToken}: GQLContext) => {
     // AUTH
+    const r = await getRethink()
     const viewerId = getUserId(authToken)
     const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-    const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
+    const meetingMember = await r
+      .table('MeetingMember')
+      .get(meetingMemberId)
+      .run()
     if (!meetingMember) {
       return standardError(new Error('Not invited to the meeting'))
     }
 
     // RESOLUTION
     const channelName = `${SubscriptionChannel.MEETING}.${meetingId}`
-    const filterFn = (value) => value.mutatorId !== socketId
-    const resolve = ({data}) => ({meetingSubscription: data})
-    return makeSubscribeIter(channelName, {filterFn, dataLoader, resolve})
+    return getPubSub().subscribe([channelName])
   }
 }

@@ -1,17 +1,18 @@
-import adjustUserCount from '../../billing/helpers/adjustUserCount'
-import getRethink from '../../database/rethinkDriver'
-import User from '../types/User'
-import {getUserId} from '../../utils/authorization'
-import publish from '../../utils/publish'
-import sendSegmentEvent from '../../utils/sendSegmentEvent'
+import adjustUserCount from '../../../billing/helpers/adjustUserCount'
+import getRethink from '../../../database/rethinkDriver'
+import User from '../../types/User'
+import {getUserId} from '../../../utils/authorization'
+import publish from '../../../utils/publish'
+import sendSegmentEvent from '../../../utils/sendSegmentEvent'
 import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEnums'
-import DBUser from '../../database/types/User'
+import DBUser from '../../../database/types/User'
+import {GQLContext} from '../../graphql'
 
 export default {
   name: 'ConnectSocket',
   description: 'a server-side mutation called when a client connects',
   type: User,
-  resolve: async (_source, _args, {authToken, dataLoader, socketId}) => {
+  resolve: async (_source, _args, {authToken, dataLoader, socketId}: GQLContext) => {
     const r = await getRethink()
     const now = new Date()
 

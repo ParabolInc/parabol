@@ -183,26 +183,13 @@ export default class Atmosphere extends Environment {
 
   handleFetchPromise = async (request: RequestParameters, variables: Variables) => {
     // await sleep(1000)
-    const data = request.id || request.text || ''
-    // const isQuery = request.operationKind === 'query'
-    // const queryKey = Atmosphere.getKey(data, variables)
-    // if (isQuery) {
-    //   const cachedValue = this.queryCache[queryKey]
-    //   if (cachedValue) {
-    // return cachedValue
-    // }
-    // }
-    if (!__PRODUCTION__ && request.id) {
+    const field = __PRODUCTION__ ? 'documentId' : 'query'
+    let data = request.id
+    if (!__PRODUCTION__) {
       const queryMap = await import('../server/graphql/queryMap.json')
-      const query = queryMap[request.id]
-      return this.transport.fetch({query, variables})
-      // this.queryCache[queryKey] = res
-      // return res
+      data = queryMap[request.id!]
     }
-    const field = request.id ? 'documentId' : 'query'
     return this.transport.fetch({[field]: data, variables})
-    // this.queryCache[queryKey] = res
-    // return res
   }
 
   handleFetch: FetchFunction = (request, variables) => {

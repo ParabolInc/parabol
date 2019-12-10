@@ -1,22 +1,27 @@
+import getRethink from '../../database/rethinkDriver'
 import {GraphQLNonNull} from 'graphql'
-import makeSubscribeIter from '../makeSubscribeIter'
-import OrganizationSubscriptionPayload from '../types/OrganizationSubscriptionPayload'
-import {getUserId} from '../../utils/authorization'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import getPubSub from '../../utils/getPubSub'
+import {getUserId} from '../../utils/authorization'
+import OrganizationSubscriptionPayload from '../types/OrganizationSubscriptionPayload'
 
 export default {
   type: new GraphQLNonNull(OrganizationSubscriptionPayload),
-  subscribe: async (_source, _args, {authToken, dataLoader, socketId}) => {
+  subscribe: async (_source, _args, {authToken}) => {
     // AUTH
     const viewerId = getUserId(authToken)
-    const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(viewerId)
-    const orgIds = organizationUsers
-      .map(({orgId}) => orgId)
+    const r = await getRethink()
+    const organizationUsers = await r
+      .table('OrganizationUser')
+      .getAll(viewerId, {index: 'userId'})
+      .filter({removedAt: null})
+      .run()
+    const orgIds = organizationUsers.map(({orgId}) => orgId)
 
     // RESOLUTION
-    const channelNames = orgIds.concat(viewerId).map((id) => `${SubscriptionChannel.ORGANIZATION}.${id}`)
-    const filterFn = (value) => value.mutatorId !== socketId
-    const resolve = ({data}) => ({organizationSubscription: data})
-    return makeSubscribeIter(channelNames, {filterFn, dataLoader, resolve})
+    const channelNames = orgIds
+      .concat(viewerId)
+      .map((id) => `${SubscriptionChannel.ORGANIZATION}.${id}`)
+    return getPubSub().subscribe(channelNames)
   }
 }

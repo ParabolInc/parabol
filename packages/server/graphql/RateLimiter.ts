@@ -18,6 +18,7 @@ class RateLimiter {
   private _lastCall = {} as LastCall
 
   constructor() {
+    // careful! this is not unreffed, so it can keep a process alive
     setInterval(() => {
       this.gc()
     }, HOUR)

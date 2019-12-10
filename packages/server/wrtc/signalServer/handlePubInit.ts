@@ -15,9 +15,7 @@ const handlePubInit = (ws: UWebSocket, payload: PubInitPayload) => {
   if (userId === context.userId) {
     if (context.createdAt < createdAt) {
       // the publishing websocket used an id that was already taken, kick em out
-      getPubSub()
-        .publish(`signal/user/${userId}`, JSON.stringify({type: 'pubKickOut', createdAt}))
-        .catch()
+      getPubSub().publish(`signal/user/${userId}`, {type: 'pubKickOut', createdAt})
     }
     return
   }
