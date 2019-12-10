@@ -171,9 +171,10 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
         }
         const viewerId = getUserId(authToken)
         const allTasks = await dataLoader.get('tasksByTeamId').load(teamId)
-        const tasks = allTasks.filter((task) =>
-          isTaskPrivate(task.tags) ? viewerId === task.userId : true
-        )
+        const tasks = allTasks.filter((task) => {
+          if (isTaskPrivate(task.tags) && task.userId !== viewerId) return false
+          return true
+        })
         return connectionFromTasks(tasks)
       }
     },

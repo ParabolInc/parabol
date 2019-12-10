@@ -1,6 +1,7 @@
 import getRethink from '../database/rethinkDriver'
 import {parse, DocumentNode} from 'graphql'
 
+const PROD = process.env.NODE_ENV === 'production'
 export default class DocumentCache {
   store = {} as {[docId: string]: DocumentNode}
   private set(docId: string, ast: DocumentNode) {
@@ -10,11 +11,16 @@ export default class DocumentCache {
     let document = this.store[docId]
     if (!document) {
       const r = await getRethink()
-      const queryString = await r
+      let queryString = await r
         .table('QueryMap')
         .get(docId)('query')
         .default(null)
         .run()
+      if (!queryString && !PROD) {
+        const queryMap = require('./queryMap.json')
+        queryString = queryMap[docId]
+      }
+      if (!queryString) return undefined
       document = parse(queryString)
       this.set(docId, document)
     }

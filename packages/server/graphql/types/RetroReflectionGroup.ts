@@ -84,11 +84,11 @@ const RetroReflectionGroup = new GraphQLObjectType({
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const {teamId} = meeting
         const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
-        return teamTasks.filter((task) =>
-          task.reflectionGroupId === reflectionGroupId && isTaskPrivate(task.tags)
-            ? task.userId === viewerId
-            : true
-        )
+        return teamTasks.filter((task) => {
+          if (task.reflectionGroupId !== reflectionGroupId) return false
+          if (isTaskPrivate(task.tags) && task.userId !== viewerId) return false
+          return true
+        })
       }
     },
     team: {

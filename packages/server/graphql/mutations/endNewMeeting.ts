@@ -233,7 +233,7 @@ export default {
       .run()) as unknown) as Meeting
 
     // remove any empty tasks
-    const removedTaskIds = removeEmptyTasks(teamId, meetingId)
+    const removedTaskIds = await removeEmptyTasks(teamId, meetingId)
 
     const [meetingMembers, team] = await Promise.all([
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),

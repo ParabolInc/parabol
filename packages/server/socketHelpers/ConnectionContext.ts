@@ -1,5 +1,5 @@
 import {WebSocket} from '@clusterws/cws'
-import {ExecutionResult, ExecutionResultDataDefault} from 'graphql/execution/execute'
+import {ExecutionResult} from 'graphql/execution/execute'
 import shortid from 'shortid'
 import AuthToken from '../database/types/AuthToken'
 import WebSocketContext from '../wrtc/signalServer/WebSocketContext'
@@ -8,16 +8,8 @@ export interface UserWebSocket extends WebSocket {
   context?: WebSocketContext
 }
 
-interface PendingSub {
-  status: 'pending'
-}
-
-export interface ConnectionContextSub {
-  asyncIterator: AsyncIterableIterator<ExecutionResult>
-}
-
-interface Subs {
-  [opId: string]: PendingSub | ConnectionContextSub
+export interface ConnectedSubs {
+  [opId: string]: AsyncIterableIterator<ExecutionResult>
 }
 
 class ConnectionContext {
@@ -28,7 +20,7 @@ class ConnectionContext {
   id = shortid.generate()
   isAlive = true
   socket: UserWebSocket
-  subs: Subs = {}
+  subs: ConnectedSubs = {}
   isReady = false
   readyQueue = [] as (() => void)[]
   constructor(socket: UserWebSocket, authToken: AuthToken, ip: string) {

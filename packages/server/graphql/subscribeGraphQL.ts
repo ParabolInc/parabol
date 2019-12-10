@@ -8,11 +8,11 @@ import {ClientMessageTypes} from '@mattkrick/graphql-trebuchet-client'
 import {createSourceEventStream, ExecutionResult} from 'graphql'
 import {decode} from 'jsonwebtoken'
 import {IAuthTokenPayload} from 'parabol-client/types/graphql'
+import AuthToken from '../database/types/AuthToken'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import sendMessage from '../socketHelpers/sendMessage'
 import relayUnsubscribeAll from '../utils/relayUnsubscribeAll'
 import sendToSentry from '../utils/sendToSentry'
-import AuthToken from '../database/types/AuthToken'
 import DocumentCache from './DocumentCache'
 import executeGraphQL from './executeGraphQL'
 import publicSchema from './rootSchema'
@@ -23,7 +23,7 @@ interface SubscribeRequest {
   docId?: string
   query?: string
   opId: string
-  reportErrors?: boolean
+  hideErrors?: boolean
 }
 
 export interface PubSubPayload {
@@ -41,9 +41,15 @@ const documentCache = new DocumentCache()
 const {GQL_COMPLETE, GQL_DATA} = ClientMessageTypes
 
 const subscribeGraphQL = async (req: SubscribeRequest) => {
-  const {connectionContext, variables, docId, query, opId, reportErrors} = req
+  const {connectionContext, variables, docId, query, opId, hideErrors} = req
   const {id: socketId, authToken, socket, ip} = connectionContext
   const document = docId ? await documentCache.fromID(docId) : documentCache.fromString(query!)
+  if (!document) {
+    if (!hideErrors) {
+      sendToSentry(new Error(`DocumentID not found: ${docId}`))
+    }
+    return
+  }
   const context = {socketId, authToken}
   const sourceStream = (await createSourceEventStream(
     publicSchema,
@@ -55,13 +61,13 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
 
   const {errors} = sourceStream as ExecutionResult
   if (errors) {
-    if (!reportErrors) {
+    if (!hideErrors) {
       sendToSentry(new Error(errors[0].message))
     }
     return
   }
 
-  const responseStream = {
+  const responseStream: AsyncIterableIterator<ExecutionResult> = {
     [Symbol.asyncIterator]() {
       return this
     },
@@ -69,7 +75,7 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
       const sourceIter = await sourceStream.next()
       if (sourceIter.done) return sourceIter
       const {mutatorId, operationId: dataLoaderId, rootValue} = sourceIter.value
-      if (mutatorId === socketId) return {value: undefined, done: false}
+      if (mutatorId === socketId) return this.next()
       const result = await executeGraphQL({
         docId,
         authToken,
@@ -82,7 +88,7 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
       })
       if (result.errors) {
         sendToSentry(new Error(result.errors[0].message))
-        return {value: undefined, done: false}
+        return this.next()
       }
       return {done: false, value: result}
     },
@@ -90,10 +96,11 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
       return Promise.resolve({done: true, value: undefined})
     },
     throw(error) {
+      sourceStream.throw!(error)
       return Promise.resolve({done: true, value: error})
     }
   }
-
+  connectionContext.subs[opId] = responseStream
   // TODO PR definitelytyped
   for await (const payload of responseStream) {
     const {data} = payload
@@ -102,14 +109,17 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
       connectionContext.authToken = new AuthToken(decode(jwt) as any)
       // if auth changed, then we can't trust any of the subscriptions, so dump em all and resub for the client
       // delay it to guarantee that no matter when this is published, it is the last message on the mutation
-      setTimeout(() => relayUnsubscribeAll(connectionContext, {isResub: true}), 1000)
+      setTimeout(() => {
+        relayUnsubscribeAll(connectionContext, {isResub: true})
+      }, 1000)
     }
     sendMessage(socket, GQL_DATA, payload, opId)
   }
+  console.log('unsub from res stream')
   const resubIdx = connectionContext.availableResubs.indexOf(opId)
   if (resubIdx !== -1) {
     // reinitialize the subscription
-    subscribeGraphQL({...req, reportErrors: true}).catch()
+    subscribeGraphQL({...req, hideErrors: true}).catch()
     connectionContext.availableResubs.splice(resubIdx, 1)
   } else {
     sendMessage(socket, GQL_COMPLETE, undefined, opId)

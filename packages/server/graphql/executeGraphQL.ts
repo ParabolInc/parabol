@@ -53,7 +53,11 @@ const executeGraphQL = async (req: GQLRequest) => {
     response = await graphql({schema, source, variableValues, contextValue})
   } else {
     const document = docId ? await documentCache.fromID(docId) : documentCache.fromString(source)
-    response = await execute({schema, document, variableValues, contextValue, rootValue})
+    if (document) {
+      response = await execute({schema, document, variableValues, contextValue, rootValue})
+    } else {
+      response = {errors: [new Error(`DocumentID not found: ${docId}`)] as any}
+    }
   }
   dataLoader.dispose()
   return response
