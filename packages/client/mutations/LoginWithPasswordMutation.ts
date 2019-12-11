@@ -1,10 +1,8 @@
-import {LoginWithPasswordMutation as TLoginWithPasswordMutation} from '../__generated__/LoginWithPasswordMutation.graphql'
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {commitMutation} from 'react-relay'
 import {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
+import {LoginWithPasswordMutation as TLoginWithPasswordMutation} from '../__generated__/LoginWithPasswordMutation.graphql'
 import handleAuthenticationRedirect from './handlers/handleAuthenticationRedirect'
-import {AuthenticationError} from '../types/constEnums'
-import Auth0ClientManager from '../utils/Auth0ClientManager'
 
 const mutation = graphql`
   mutation LoginWithPasswordMutation($email: ID!, $password: String!, $invitationToken: ID) {
@@ -30,23 +28,6 @@ const mutation = graphql`
   }
 `
 
-const handleAuth0Fallback = async (
-  email: string,
-  password: string,
-  onError: any,
-  onCompleted: any
-) => {
-  // need to go out to auth0
-  const manager = new Auth0ClientManager()
-
-  const errorResult = await manager.login(email, password)
-  if (!errorResult) {
-    onCompleted()
-    return
-  }
-  onError(new Error(errorResult.error_description))
-}
-
 const LoginWithPasswordMutation: StandardMutation<
   TLoginWithPasswordMutation,
   HistoryLocalHandler
@@ -58,11 +39,6 @@ const LoginWithPasswordMutation: StandardMutation<
     onCompleted: (res, errors) => {
       const {acceptTeamInvitation, loginWithPassword} = res
       const {error: uiError} = loginWithPassword
-      if (uiError?.message === AuthenticationError.MISSING_HASH) {
-        const {email, password} = variables
-        handleAuth0Fallback(email, password, onError, onCompleted).catch()
-        return
-      }
       onCompleted({loginWithPassword}, errors)
       if (!uiError && !errors) {
         const authToken = acceptTeamInvitation.authToken || loginWithPassword.authToken

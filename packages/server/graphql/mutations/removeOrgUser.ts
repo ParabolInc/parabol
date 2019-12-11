@@ -3,7 +3,6 @@ import adjustUserCount from '../../billing/helpers/adjustUserCount'
 import getRethink from '../../database/rethinkDriver'
 import removeTeamMember from './helpers/removeTeamMember'
 import RemoveOrgUserPayload from '../types/RemoveOrgUserPayload'
-import {updateAuth0TMS} from '../../utils/auth0Helpers'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -124,7 +123,6 @@ const removeOrgUser = {
 
     const {tms} = user
     publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {tms})
-    updateAuth0TMS(userId, tms)
     const data = {
       orgId,
       kickOutNotificationIds,

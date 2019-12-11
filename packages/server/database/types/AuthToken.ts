@@ -24,7 +24,7 @@ export default class AuthToken {
     this.sub = sub
     this.tms = tms
     this.iat = toEpochSeconds(now)
-    this.aud = process.env.AUTH0_CLIENT_ID as string
+    this.aud = 'action'
     this.iss = makeAppLink()
     this.exp = toEpochSeconds(now.getTime() + Threshold.JWT_LIFESPAN)
 
@@ -36,4 +36,3 @@ export default class AuthToken {
     }
   }
 }
-

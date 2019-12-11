@@ -7,11 +7,12 @@ import {InvitationTokenError} from 'parabol-client/types/constEnums'
 const header = Buffer.from(JSON.stringify({alg: 'HS256'})).toString('base64')
 
 const LIFESPAN = ms('1d')
+const SERVER_SECRET = process.env.AUTH0_CLIENT_SECRET!
 
 export const signMassInviteToken = (teamId: string, userId: string) => {
   const exp = toEpochSeconds(Date.now() + LIFESPAN)
   const raw = [exp, teamId, userId].join('.')
-  const fullToken = sign(raw, process.env.AUTH0_CLIENT_SECRET!)
+  const fullToken = sign(raw, SERVER_SECRET)
   // remove the alg header
   return fullToken.slice(header.length + 1)
 }
@@ -20,7 +21,7 @@ export const verifyMassInviteToken = (token: string) => {
   const fullToken = `${header}.${token}`
   let raw: string
   try {
-    raw = verify(fullToken, process.env.AUTH0_CLIENT_SECRET!) as string
+    raw = verify(fullToken, SERVER_SECRET) as string
   } catch (e) {
     return {error: InvitationTokenError.NOT_FOUND}
   }

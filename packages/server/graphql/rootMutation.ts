@@ -34,7 +34,6 @@ import createOrgPicturePutUrl from './mutations/createOrgPicturePutUrl'
 import addFeatureFlag from './mutations/addFeatureFlag'
 import createImposterToken from './mutations/createImposterToken'
 import createUserPicturePutUrl from './mutations/createUserPicturePutUrl'
-import login from './mutations/login'
 import updateUserProfile from './mutations/updateUserProfile'
 import endNewMeeting from './mutations/endNewMeeting'
 import createReflection from './mutations/createReflection'
@@ -124,7 +123,6 @@ export default new GraphQLObjectType<any, Context, any>({
     inactivateUser,
     invalidateSessions,
     inviteToTeam,
-    login,
     loginWithGoogle,
     loginWithPassword,
     moveReflectTemplatePrompt,

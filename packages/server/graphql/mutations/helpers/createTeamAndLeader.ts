@@ -1,5 +1,4 @@
 import getRethink from '../../../database/rethinkDriver'
-import {updateAuth0TMS} from '../../../utils/auth0Helpers'
 import insertNewTeamMember from '../../../safeMutations/insertNewTeamMember'
 import shortid from 'shortid'
 import makeRetroTemplates from './makeRetroTemplates'
@@ -90,5 +89,4 @@ export default async function createTeamAndLeader(userId: string, newTeam: Valid
     .table('User')
     .get(userId)('tms')
     .run()
-  updateAuth0TMS(userId, tms)
 }

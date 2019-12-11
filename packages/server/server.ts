@@ -24,9 +24,9 @@ import sendICS from './sendICS'
 import wssConnectionHandler from './socketHandlers/wssConnectionHandler'
 import SSEConnectionHandler from './sse/SSEConnectionHandler'
 import SSEPingHandler from './sse/SSEPingHandler'
-import {clientSecret as secretKey} from './utils/auth0Helpers'
 import consumeSAML from './utils/consumeSAML'
 
+getDotenv()
 declare global {
   namespace NodeJS {
     interface Global {
@@ -41,6 +41,7 @@ interface StripeRequest extends express.Request {
 
 const APP_VERSION = process.env.npm_package_version
 const PROJECT_ROOT = path.join(__dirname, '..', '..')
+const SERVER_SECRET = process.env.AUTH0_CLIENT_SECRET!
 
 let highWaterMark = 0
 setTimeout(() => {
@@ -60,7 +61,6 @@ setTimeout(() => {
 }, 1000)
 
 // Import .env and expand variables:
-getDotenv()
 const PROD = process.env.NODE_ENV === 'production'
 const {PORT = 3000} = process.env
 
@@ -158,8 +158,7 @@ if (PROD) {
 app.post(
   '/graphql',
   jwt({
-    secret: Buffer.from(secretKey, 'base64'),
-    audience: process.env.AUTH0_CLIENT_ID,
+    secret: Buffer.from(SERVER_SECRET, 'base64'),
     credentialsRequired: false
   }),
   httpGraphQLHandler
@@ -169,7 +168,7 @@ app.post(
 app.post(
   '/intranet-graphql',
   jwt({
-    secret: Buffer.from(secretKey, 'base64'),
+    secret: Buffer.from(SERVER_SECRET, 'base64'),
     credentialsRequired: true
   }),
   intranetHttpGraphQLHandler

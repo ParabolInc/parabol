@@ -1,27 +1,28 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "../../../../tsconfig.base.json",
   "compilerOptions": {
-//    "composite": true,
+    //    "composite": true,
     "noEmitOnError": false,
     "lib": [
-      "esnext", "dom"
+      "esnext",
+      "dom"
     ],
     "types": [
-      "node", "cypress"
+      "node",
+      "cypress"
     ],
     "target": "esnext",
     "module": "es2015",
     "sourceMap": true,
-    "paths": {
-      "*": [
-        "*"
-        // resolve all absolute imports as imports relative to the package
-      ]
-    }
+    // "paths": {
+    // "*": [
+    // "*"
+    // resolve all absolute imports as imports relative to the package
+    // ]
   }
+}
 //  "references": [
 //    {
 //      "path": "../client"
 //    }
 //  ]
-}

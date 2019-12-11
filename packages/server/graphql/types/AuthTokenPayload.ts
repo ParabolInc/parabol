@@ -24,7 +24,7 @@ const AuthTokenPayload = new GraphQLObjectType({
     }
     // aud: {
     //   type: new GraphQLNonNull(GraphQLID),
-    //   description: 'audience. the target API used in auth0. Parabol does not use this.'
+    //   description: 'audience. the target API. Parabol does not use this.'
     // },
     // bet: {
     //   type: new GraphQLNonNull(GraphQLInt),

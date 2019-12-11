@@ -12,8 +12,6 @@ export const getClientKeys = () => {
 
   return {
     atlassian: process.env.ATLASSIAN_CLIENT_ID,
-    auth0: process.env.AUTH0_CLIENT_ID,
-    auth0Domain: process.env.AUTH0_DOMAIN,
     cdn: webpackPublicPath,
     github: process.env.GITHUB_CLIENT_ID,
     googleTagManagerId: process.env.GOOGLE_TAG_MANAGER_CONTAINER_ID,

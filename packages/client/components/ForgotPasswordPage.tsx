@@ -8,7 +8,6 @@ import EmailInputField from './EmailInputField'
 import PlainButton from './PlainButton/PlainButton'
 import PrimaryButton from './PrimaryButton'
 import {emailRegex} from '../validation/regex'
-import Auth0ClientManager from '../utils/Auth0ClientManager'
 import Legitity from '../validation/Legitity'
 import AuthenticationDialog from './AuthenticationDialog'
 import {GotoAuthPage} from './GenericAuthentication'
@@ -120,8 +119,6 @@ const ForgotPasswordPage = (props: Props) => {
         onError: () => {}
       }
     )
-    const manager = new Auth0ClientManager()
-    await manager.changePassword(email)
     onCompleted()
     setIsSent(true)
   }

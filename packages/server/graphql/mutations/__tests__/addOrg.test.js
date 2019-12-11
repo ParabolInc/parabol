@@ -9,7 +9,6 @@ import {__now} from '../../../__tests__/setup/mockTimes'
 import fetchAndSerialize from '../../../__tests__/utils/fetchAndSerialize'
 import getRethink from '../../../database/rethinkDriver'
 import addOrg from '../addOrg'
-import {auth0ManagementClient} from '../../../utils/auth0Helpers'
 
 MockDate.set(__now)
 console.error = jest.fn()
@@ -22,7 +21,6 @@ describe('addOrg', () => {
     const mockDB = new MockDB()
     const {organization, user} = await mockDB.init().organization(0)
     const org = organization[0]
-    auth0ManagementClient.__initMock(mockDB.db)
     const authToken = mockAuthToken(user[0])
     const dataLoader = makeDataLoader(authToken)
 

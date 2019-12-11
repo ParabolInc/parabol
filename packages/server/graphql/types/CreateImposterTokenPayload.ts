@@ -1,8 +1,9 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql'
 import {resolveUser} from '../resolvers'
 import User from './User'
-import tmsSignToken from '../../utils/tmsSignToken'
 import StandardMutationError from './StandardMutationError'
+import encodeAuthToken from '../../utils/encodeAuthToken'
+import AuthToken from '../../database/types/AuthToken'
 
 const CreateImposterTokenPayload = new GraphQLObjectType({
   name: 'CreateImposterTokenPayload',
@@ -17,7 +18,7 @@ const CreateImposterTokenPayload = new GraphQLObjectType({
         const user = await resolveUser(source, args, context)
         const {userId} = source
         const {tms} = user
-        return tmsSignToken({sub: userId}, tms)
+        return encodeAuthToken(new AuthToken({sub: userId, tms}))
       }
     },
     user: {

@@ -46,7 +46,7 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The userId provided by auth0'
+      description: 'The userId provided by us'
     },
     allAvailableIntegrations,
     archivedTasks,

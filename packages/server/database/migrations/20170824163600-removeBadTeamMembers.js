@@ -1,5 +1,3 @@
-import getAuth0ManagementClient from '../../utils/getAuth0ManagementClient'
-
 exports.up = async (r) => {
   const changes = await r
     .table('User')
@@ -51,12 +49,7 @@ exports.up = async (r) => {
   }, {})
 
   const userIds = Object.keys(smallestTMSperUser)
-  await userIds.map((userId) => {
-    return getAuth0ManagementClient().users.updateAppMetadata(
-      {id: userId},
-      {tms: smallestTMSperUser[userId]}
-    )
-  })
+
   console.log(`Removed ${userIds.length} users from ${changes.length} teams`)
   const affectedUsers = changes.map((change) => change.new_val.preferredName).join()
   console.log('affected users: ', affectedUsers)

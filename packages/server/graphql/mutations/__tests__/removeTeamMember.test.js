@@ -9,7 +9,6 @@ import {__now} from '../../../__tests__/setup/mockTimes'
 import fetchAndSerialize from '../../../__tests__/utils/fetchAndSerialize'
 import getRethink from '../../../database/rethinkDriver'
 import removeTeamMember from '../removeTeamMember'
-import {auth0ManagementClient} from '../../../utils/auth0Helpers'
 
 MockDate.set(__now)
 console.error = jest.fn()
@@ -24,8 +23,6 @@ describe('removeTeamMember', () => {
     const mockDB = new MockDB()
     const dynamicSerializer = new DynamicSerializer()
     await mockDB.init().newTask()
-    auth0ManagementClient.__initMock(mockDB.db)
-    auth0ManagementClient.users.updateAppMetadata.mockReset()
     const userToBoot = mockDB.db.user[7]
     const authToken = mockAuthToken(mockDB.db.user[0])
     const dataLoader = makeDataLoader(authToken)
@@ -46,7 +43,6 @@ describe('removeTeamMember', () => {
       dynamicSerializer
     )
     expect(db).toMatchSnapshot()
-    expect(auth0ManagementClient.users.updateAppMetadata.mock.calls.length).toBe(1)
     expect(mockPubSub.__serialize(dynamicSerializer)).toMatchSnapshot()
   })
 
@@ -54,8 +50,6 @@ describe('removeTeamMember', () => {
     // reassigns their tasks
 
     // deactivates providers
-
-    // updates tms in auth0
 
     // inserts notification in table if kickout
 
@@ -67,8 +61,6 @@ describe('removeTeamMember', () => {
     // SETUP
     const mockDB = new MockDB()
     await mockDB.init().newTask()
-    auth0ManagementClient.__initMock(mockDB.db)
-    auth0ManagementClient.users.updateAppMetadata.mockReset()
     const authToken = mockAuthToken(mockDB.db.user[1])
     const dataLoader = makeDataLoader(authToken)
     // TEST

@@ -1,11 +1,12 @@
-import React, {Component} from 'react'
 import styled from '@emotion/styled'
-import PlainButton from './PlainButton/PlainButton'
+import useAtmosphere from 'hooks/useAtmosphere'
+import useMutationProps from 'hooks/useMutationProps'
+import EmailPasswordResetMutation from 'mutations/EmailPasswordResetMutation'
+import React, {useState} from 'react'
 import {PALETTE} from '../styles/paletteV2'
-import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
-import Auth0ClientManager from '../utils/Auth0ClientManager'
+import PlainButton from './PlainButton/PlainButton'
 
-interface Props extends WithMutationProps {
+interface Props {
   email: string
 }
 
@@ -23,37 +24,39 @@ const MessageSent = styled('div')({
   alignItems: 'center'
 })
 
-class ForgotPasswordOneClick extends Component<Props> {
-  state = {
-    isSent: false
-  }
-  onClick = async () => {
-    const {email, submitMutation, submitting, onCompleted} = this.props
+const ForgotPasswordOneClick = (props: Props) => {
+  const {email} = props
+  const [isSent, setIsSent] = useState(false)
+  const {submitMutation, submitting, onCompleted} = useMutationProps()
+  const atmosphere = useAtmosphere()
+  const onClick = async () => {
     if (submitting) return
     submitMutation()
-    const manager = new Auth0ClientManager()
-    await manager.changePassword(email)
+    EmailPasswordResetMutation(
+      atmosphere,
+      {email},
+      {
+        onCompleted: () => {},
+        onError: () => {}
+      }
+    )
     onCompleted()
-    this.setState({isSent: true})
+    setIsSent(true)
   }
 
-  render() {
-    const {isSent} = this.state
-    const {email, submitting} = this.props
-    if (isSent) {
-      return (
-        <MessageSent>
-          <div>Message sent to {email}</div>
-          <div>Check your inbox!</div>
-        </MessageSent>
-      )
-    }
+  if (isSent) {
     return (
-      <ForgotButton onClick={this.onClick} waiting={submitting}>
-        Forgot your password?
-      </ForgotButton>
+      <MessageSent>
+        <div>Message sent to {email}</div>
+        <div>Check your inbox!</div>
+      </MessageSent>
     )
   }
+  return (
+    <ForgotButton onClick={this.onClick} waiting={submitting}>
+      Forgot your password?
+    </ForgotButton>
+  )
 }
 
-export default withMutationProps(ForgotPasswordOneClick)
+export default ForgotPasswordOneClick
