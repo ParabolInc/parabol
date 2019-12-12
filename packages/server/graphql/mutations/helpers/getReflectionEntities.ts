@@ -24,6 +24,13 @@ const manageErrorResponse = <T>(res: T) => {
 
 const getReflectionEntities = async (plaintextContent: string) => {
   if (!plaintextContent) return []
+  // If Google NLP is disabled, just return the first 3 words of the reflection
+  if (process.env.DISABLE_GOOGLE_NLP === 'true') {
+    return plaintextContent
+      .split(' ')
+      .slice(0, 3)
+      .join(' ')
+  }
   const manager = getGoogleLanguageManager()
   const res = await Promise.all([
     manager.analyzeEntities(plaintextContent),
