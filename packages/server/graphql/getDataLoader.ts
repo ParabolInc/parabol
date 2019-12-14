@@ -1,5 +1,5 @@
 import numToBase64 from '../utils/numToBase64'
-import RethinkDataLoader from '../utils/RethinkDataLoader'
+import RethinkDataLoader from '../dataloader/RethinkDataLoader'
 import DataLoaderCache from './DataLoaderCache'
 import getNodeId from './getNodeId'
 

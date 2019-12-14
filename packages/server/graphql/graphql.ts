@@ -1,5 +1,5 @@
 import AuthToken from '../database/types/AuthToken'
-import RethinkDataLoader from '../utils/RethinkDataLoader'
+import RethinkDataLoader from '../dataloader/RethinkDataLoader'
 import RateLimiter from './RateLimiter'
 import {CacheWorker} from './DataLoaderCache'
 

@@ -1,18 +1,24 @@
-export class CacheWorker<T> {
+import DataLoader from 'dataloader'
+
+interface DataLoaderBase {
+  get: (loaderName: any) => DataLoader<any, any>
+}
+
+export class CacheWorker<T extends DataLoaderBase> {
   cache: DataLoaderCache<T>
-  dataLoader: T
+  dataLoaderBase: T
   did: string
   disposeId: NodeJS.Timeout | undefined
   shared = false
 
-  constructor(dataLoader: T, did: string, cache: DataLoaderCache<T>) {
-    this.dataLoader = dataLoader
+  constructor(dataLoaderBase: T, did: string, cache: DataLoaderCache<T>) {
+    this.dataLoaderBase = dataLoaderBase
     this.did = did
     this.cache = cache
   }
 
-  get<K extends keyof T>(dataLoaderName: K) {
-    return this.dataLoader[dataLoaderName]
+  get(dataLoaderName: Parameters<T['get']>[0]) {
+    return this.dataLoaderBase.get(dataLoaderName)
   }
 
   dispose(force?: boolean) {
@@ -29,7 +35,7 @@ export class CacheWorker<T> {
   }
 }
 
-export default class DataLoaderCache<T> {
+export default class DataLoaderCache<T extends DataLoaderBase> {
   ttl: number
   workers: {[did: string]: CacheWorker<T>} = {}
   nextId = 0
@@ -37,8 +43,8 @@ export default class DataLoaderCache<T> {
     this.ttl = ttl
   }
 
-  add<T>(did: string, dataLoader: T) {
-    this.workers[did] = new CacheWorker<any>(dataLoader, did, this)
+  add<T>(did: string, dataLoaderBase: T) {
+    this.workers[did] = new CacheWorker<any>(dataLoaderBase, did, this)
     return this.workers[did]
   }
 

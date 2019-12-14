@@ -150,7 +150,7 @@
     "cheerio": "^0.22.0",
     "compression": "^1.7.0",
     "cors": "^2.8.4",
-    "dataloader": "^1.4.0",
+    "dataloader": "^2.0.0",
     "dotenv": "8.0.0",
     "dotenv-expand": "5.1.0",
     "draft-js": "https://github.com/mattkrick/draft-js/tarball/559a21968370c4944511657817d601a6c4ade0f6",
