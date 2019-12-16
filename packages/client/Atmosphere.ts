@@ -27,6 +27,8 @@ import AuthToken from 'parabol-server/database/types/AuthToken'
 import {RouterProps} from 'react-router'
 import {LocalStorageKey, TrebuchetCloseReason} from './types/constEnums'
 import handleInvalidatedSession from './hooks/handleInvalidatedSession'
+import {Sink} from 'relay-runtime/lib/network/RelayObservable'
+import {encode, decode} from '@msgpack/msgpack'
 
 interface QuerySubscription {
   subKey: string
@@ -100,7 +102,7 @@ export default class Atmosphere extends Environment {
     })
   }
 
-  fetchHTTP = async (body: string, connectionId?: string) => {
+  fetchHTTP = async (body: object, connectionId?: string) => {
     const res = await fetch('/graphql', {
       method: 'POST',
       headers: {
@@ -108,11 +110,12 @@ export default class Atmosphere extends Environment {
         Authorization: this.authToken ? `Bearer ${this.authToken}` : '',
         'x-correlation-id': connectionId || ''
       },
-      body
+      body: JSON.stringify(body)
     })
     const contentTypeHeader = res.headers.get('content-type') || ''
     if (contentTypeHeader.toLowerCase().startsWith('application/json')) {
-      return res.json()
+      const resJson = await res.json()
+      return resJson
     }
     if (res.status === 401) {
       handleInvalidatedSession(TrebuchetCloseReason.EXPIRED_SESSION, {atmosphere: this})
@@ -124,7 +127,7 @@ export default class Atmosphere extends Environment {
     operation: RequestParameters,
     variables: OperationPayload['variables'] | undefined,
     _cacheConfig: CacheConfig,
-    observer: any
+    sink: Sink<any>
   ) => {
     const {name} = operation
     const documentId = operation.id || ''
@@ -135,26 +138,25 @@ export default class Atmosphere extends Environment {
     if (!__PRODUCTION__) {
       const queryMap = await import('../server/graphql/queryMap.json')
       const query = queryMap[documentId!]
-      this.subscriptions[subKey] = transport.subscribe({query, variables}, observer)
+      this.subscriptions[subKey] = transport.subscribe({query, variables}, sink)
     } else {
-      this.subscriptions[subKey] = transport.subscribe({documentId, variables}, observer)
+      this.subscriptions[subKey] = transport.subscribe({documentId, variables}, sink)
     }
   }
 
   handleSubscribe: SubscribeFunction = (operation, variables, _cacheConfig) => {
     return Observable.create((sink) => {
-      this.handleSubscribePromise(operation, variables, _cacheConfig, {
-        onNext: sink.next,
-        onError: sink.error,
-        onCompleted: sink.complete
-      }).catch()
+      this.handleSubscribePromise(operation, variables, _cacheConfig, sink).catch()
     })
   }
 
   trySockets = () => {
     const wsProtocol = window.location.protocol.replace('http', 'ws')
     const url = `${wsProtocol}//${window.location.host}/?token=${this.authToken}`
-    return new SocketTrebuchet({url})
+    if (!__PRODUCTION__) {
+      return new SocketTrebuchet({url, batchDelay: 0})
+    }
+    return new SocketTrebuchet({url, encode, decode, batchDelay: 0})
   }
 
   trySSE = () => {
@@ -187,7 +189,7 @@ export default class Atmosphere extends Environment {
     return this.upgradeTransportPromise
   }
 
-  handleFetchPromise = async (request: RequestParameters, variables: Variables) => {
+  handleFetchPromise = async (request: RequestParameters, variables: Variables, sink) => {
     // await sleep(1000)
     const field = __PRODUCTION__ ? 'documentId' : 'query'
     let data = request.id
@@ -195,11 +197,13 @@ export default class Atmosphere extends Environment {
       const queryMap = await import('../server/graphql/queryMap.json')
       data = queryMap[request.id!]
     }
-    return this.transport.fetch({[field]: data, variables})
+    return this.transport.fetch({[field]: data, variables}, sink)
   }
 
   handleFetch: FetchFunction = (request, variables) => {
-    return Observable.from(this.handleFetchPromise(request, variables))
+    return Observable.create((sink) => {
+      this.handleFetchPromise(request, variables, sink)
+    })
   }
 
   getAuthToken = (global: Window) => {

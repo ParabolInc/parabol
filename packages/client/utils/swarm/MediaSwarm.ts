@@ -1,5 +1,5 @@
 import FastRTCSwarm, {FastRTCSwarmEvents, SwarmConfig} from '@mattkrick/fast-rtc-swarm'
-import {Events, Trebuchet} from '@mattkrick/trebuchet-client'
+import {Trebuchet} from '@mattkrick/trebuchet-client'
 import {Dispatch, ReducerAction} from 'react'
 import {StreamUI} from '../../hooks/useSwarm'
 import {StreamName} from './joinSwarm'
@@ -39,9 +39,9 @@ export default class MediaSwarm extends FastRTCSwarm {
     this.dispatchState = config.dispatchState
     this.trebuchet = config.trebuchet
     this.userId = config.userId
-    this.trebuchet.on(Events.DATA, this.handleSignal)
+    this.trebuchet.on('data', this.handleSignal)
     this.on('signal', (signal) => {
-      this.trebuchet.send(JSON.stringify({type: 'WRTC_SIGNAL', signal}))
+      this.trebuchet.send({type: 'WRTC_SIGNAL', signal})
     })
     this.on('stream', this.handleStream)
     this.on('close', this.handleClose)
@@ -61,14 +61,8 @@ export default class MediaSwarm extends FastRTCSwarm {
   }
 
   private handleSignal = (data) => {
-    if (typeof data !== 'string') return
-    try {
-      const payload = JSON.parse(data)
-      if (payload.type === 'WRTC_SIGNAL') {
-        this.dispatch(payload.signal)
-      }
-    } catch (e) {
-      /**/
+    if (data.type === 'WRTC_SIGNAL') {
+      this.dispatch(data.signal)
     }
   }
 
@@ -211,7 +205,7 @@ export default class MediaSwarm extends FastRTCSwarm {
       /**/
     }
     this.off('close')
-    this.trebuchet.off(Events.DATA, this.handleSignal)
+    this.trebuchet.off('data', this.handleSignal)
     this.close()
   }
 }

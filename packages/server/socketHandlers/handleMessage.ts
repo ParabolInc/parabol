@@ -1,45 +1,46 @@
 import {OutgoingMessage} from '@mattkrick/graphql-trebuchet-client'
-import {Data, Events} from '@mattkrick/trebuchet-client'
+import {Data} from '@mattkrick/trebuchet-client'
+import {decode} from '@msgpack/msgpack'
 import handleGraphQLTrebuchetRequest from '../graphql/handleGraphQLTrebuchetRequest'
+import PROD from '../PROD'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
-import sendMessage from '../socketHelpers/sendMessage'
+import sendGQLMessage from '../socketHelpers/sendGQLMessage'
 import handleSignal, {UWebSocket} from '../wrtc/signalServer/handleSignal'
 import validateInit from '../wrtc/signalServer/validateInit'
 import handleDisconnect from './handleDisconnect'
-import keepAlive from '../socketHelpers/keepAlive'
 
 interface WRTCMessage {
   type: 'WRTC_SIGNAL'
   signal: any
 }
+
+const decoder = PROD ? decode : JSON.parse
+
 const handleParsedMessage = async (
   parsedMessage: OutgoingMessage | WRTCMessage,
   connectionContext: ConnectionContext
 ) => {
   const {socket, authToken} = connectionContext
-  if (parsedMessage.type === 'WRTC_SIGNAL') {
-    if (validateInit(socket as UWebSocket, parsedMessage.signal, authToken)) {
-      handleSignal(socket as UWebSocket, parsedMessage.signal)
+  const parsedMessages = Array.isArray(parsedMessage) ? parsedMessage : [parsedMessage]
+  parsedMessages.forEach(async (msg) => {
+    if (msg.type === 'WRTC_SIGNAL') {
+      if (validateInit(socket as UWebSocket, msg.signal, authToken)) {
+        handleSignal(socket as UWebSocket, msg.signal)
+      }
+      return
     }
-    return
-  }
-  const response = await handleGraphQLTrebuchetRequest(parsedMessage, connectionContext)
-  if (response) {
-    const {type, id: opId, payload} = response
-    sendMessage(socket, type, payload, opId)
-  }
+    const response = await handleGraphQLTrebuchetRequest(msg, connectionContext)
+    if (response) {
+      const {type, id: opId, payload} = response
+      sendGQLMessage(socket, type, payload, opId)
+    }
+  })
 }
 
 const handleMessage = (connectionContext: ConnectionContext) => async (message: Data) => {
-  keepAlive(connectionContext)
-  // catch raw, non-graphql protocol messages here
-  if (message === Events.KEEP_ALIVE) {
-    return
-  }
-
   let parsedMessage
   try {
-    parsedMessage = JSON.parse(message as string)
+    parsedMessage = decoder(message as any)
   } catch (e) {
     /*
      * Invalid frame payload data

@@ -1,5 +1,6 @@
 import {UserWebSocket} from '../socketHelpers/ConnectionContext'
 import http from 'http'
+import sendSSEMessage from '../sse/sendSSEMessage'
 
 const closeTransport = (
   transport: UserWebSocket | http.ServerResponse,
@@ -14,9 +15,8 @@ const closeTransport = (
       const res = transport as http.ServerResponse
       if (!res.finished) {
         if (code || reason) {
-          res.write(`event: close\n`)
-          res.write(`data: ${code}:${reason}\n\n`)
-          ;(res as any).flushHeaders()
+          const msg = reason ? `${code}:${reason}` : String(code) || '401'
+          sendSSEMessage(res, msg, 'close')
         }
         res.end()
       }

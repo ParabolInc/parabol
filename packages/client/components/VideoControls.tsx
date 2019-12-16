@@ -39,6 +39,7 @@ const VideoControls = (props: Props) => {
   const {openPortal, modalPortal, closePortal} = useModal({background: 'rgba(0,0,0, 0.9)'})
 
   useHotkey('l o o k a t m e', () => {
+    console.log('look')
     setShowVideoButton(true)
   })
 

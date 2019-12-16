@@ -34,12 +34,13 @@ export class CacheWorker<T extends DataLoaderBase> {
     return this.did
   }
 }
+4
 
 export default class DataLoaderCache<T extends DataLoaderBase> {
   ttl: number
   workers: {[did: string]: CacheWorker<T>} = {}
   nextId = 0
-  constructor({ttl} = {ttl: 5000}) {
+  constructor({ttl} = {ttl: 500}) {
     this.ttl = ttl
   }
 

@@ -25,6 +25,7 @@ import wssConnectionHandler from './socketHandlers/wssConnectionHandler'
 import SSEConnectionHandler from './sse/SSEConnectionHandler'
 import SSEPingHandler from './sse/SSEPingHandler'
 import consumeSAML from './utils/consumeSAML'
+import {Times} from 'parabol-client/types/constEnums'
 
 getDotenv()
 declare global {
@@ -203,4 +204,5 @@ app.post('/saml/:domain', consumeSAML)
 app.get('*', createSSR)
 
 // handle sockets
+wss.startAutoPing(Times.WEBSOCKET_KEEP_ALIVE, true)
 wss.on('connection', wssConnectionHandler)

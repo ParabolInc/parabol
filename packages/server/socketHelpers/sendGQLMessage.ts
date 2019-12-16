@@ -1,6 +1,6 @@
-import sendRaw from './sendRaw'
-import http from 'http'
 import {WebSocket} from '@clusterws/cws'
+import {ServerResponse} from 'http'
+import sendEncodedMessage from './sendEncodedMessage'
 
 interface Message {
   type: string
@@ -8,8 +8,8 @@ interface Message {
   id?: string
 }
 
-const sendMessage = (
-  transport: WebSocket | http.ServerResponse,
+const sendGQLMessage = (
+  transport: WebSocket | ServerResponse,
   type: string,
   payload?: object,
   opId?: string
@@ -17,7 +17,7 @@ const sendMessage = (
   const message = {type} as Message
   if (payload) message.payload = payload
   if (opId) message.id = opId
-  sendRaw(transport, JSON.stringify(message))
+  sendEncodedMessage(transport, message)
 }
 
-export default sendMessage
+export default sendGQLMessage
