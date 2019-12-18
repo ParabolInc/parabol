@@ -19,8 +19,7 @@ const SSEConnectionHandler = async (res: HttpResponse, req: HttpRequest) => {
   res.onAborted(() => {
     console.log('sse abort')
     if (typeof connectionContext !== 'undefined') {
-      handleDisconnect(connectionContext)
-      sseClients.delete(connectionContext.id)
+      handleDisconnect(connectionContext, {isClosed: true})
     }
   })
   const authToken = getQueryToken(req)
@@ -42,7 +41,7 @@ const SSEConnectionHandler = async (res: HttpResponse, req: HttpRequest) => {
     closeTransport(res, 401, TrebuchetCloseReason.EXPIRED_SESSION)
     return
   }
-  const connectionContext = new ConnectionContext(res as any, authToken, uwsGetIP(res))
+  const connectionContext = new ConnectionContext(res, authToken, uwsGetIP(res))
   sseClients.set(connectionContext)
   const nextAuthToken = await handleConnect(connectionContext)
   res.tryEnd(`retry: 1000\n`, 1e8)

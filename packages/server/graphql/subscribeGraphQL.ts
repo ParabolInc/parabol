@@ -10,18 +10,18 @@
 
 import {createSourceEventStream, ExecutionResult} from 'graphql'
 import {decode} from 'jsonwebtoken'
+import {TrebuchetCloseReason} from 'parabol-client/types/constEnums'
 import {IAuthTokenPayload} from 'parabol-client/types/graphql'
-import SubscriptionIterator from '../utils/SubscriptionIterator'
 import AuthToken from '../database/types/AuthToken'
+import handleDisconnect from '../socketHandlers/handleDisconnect'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import sendGQLMessage from '../socketHelpers/sendGQLMessage'
 import relayUnsubscribeAll from '../utils/relayUnsubscribeAll'
 import sendToSentry from '../utils/sendToSentry'
+import SubscriptionIterator from '../utils/SubscriptionIterator'
 import DocumentCache from './DocumentCache'
 import ResponseStream from './ResponseStream'
 import publicSchema from './rootSchema'
-import handleDisconnect from '../socketHandlers/handleDisconnect'
-import {TrebuchetCloseReason} from 'parabol-client/types/constEnums'
 
 export interface SubscribeRequest {
   connectionContext: ConnectionContext
@@ -98,7 +98,7 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
     // reinitialize the subscription
     connectionContext.availableResubs.splice(resubIdx, 1)
     subscribeGraphQL({...req, hideErrors: true}).catch()
-  } else {
+  } else if (connectionContext.isAlive) {
     sendGQLMessage(socket, 'complete', undefined, opId)
   }
 }

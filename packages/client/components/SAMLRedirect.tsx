@@ -5,6 +5,7 @@ import StyledError from './StyledError'
 import InviteDialog from './InviteDialog'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useRouter from '../hooks/useRouter'
+import TeamInvitationMeetingAbstract from './TeamInvitationMeetingAbstract'
 
 const SAMLRedirect = () => {
   const [error, setError] = useState('')
@@ -29,13 +30,18 @@ const SAMLRedirect = () => {
   }, [])
 
   if (error) {
+    const errors = error.split('|')
     return (
-      <InviteDialog>
-        <DialogTitle>SSO Login</DialogTitle>
-        <DialogContent>
-          <StyledError>{'Error logging in from SSO Provider. Please try again.'}</StyledError>}
-        </DialogContent>
-      </InviteDialog>
+      <TeamInvitationMeetingAbstract>
+        <InviteDialog>
+          <DialogTitle>SSO Login</DialogTitle>
+          <DialogContent>
+            {errors.map((error, idx) => (
+              <StyledError key={idx}>{error}</StyledError>
+            ))}
+          </DialogContent>
+        </InviteDialog>
+      </TeamInvitationMeetingAbstract>
     )
   }
   return null

@@ -1,7 +1,6 @@
-// import {WebSocketServer} from '@clusterws/cws'
 import fs from 'fs'
+import mime from 'mime-types'
 import path from 'path'
-import {Readable} from 'stream'
 import {HttpResponse} from 'uWebSockets.js'
 import pipeStreamOverResponse from '../pipeStreamOverResponse'
 import PROD from '../PROD'
@@ -15,16 +14,17 @@ const staticDirectories = [
   path.join(PROJECT_ROOT, 'build')
 ].filter(Boolean) as string[]
 
+const fileNamesToCache = new Set(['sw.ts', 'favicon.ico'])
+
 const getMetaFromStaticFolders = (fileName: string) => {
   for (let i = 0; i < staticDirectories.length; i++) {
     const directory = staticDirectories[i]
     const pathName = path.join(directory, fileName)
     try {
       const {mtime, size} = fs.statSync(pathName)
-      // DEV ONLY
-      const file = fs.readFileSync(pathName)
-      return (staticObjects[pathName] = {mtime, size, directory, file})
-      break
+      const file = !PROD || fileNamesToCache.has(fileName) ? fs.readFileSync(pathName) : undefined
+      const type = mime.contentType(fileName)
+      return (staticObjects[pathName] = {mtime: mtime.toUTCString(), size, directory, file, type})
     } catch (e) {
       continue
     }
@@ -38,17 +38,15 @@ const serveStatic = (res: HttpResponse, fileName: string) => {
     meta = getMetaFromStaticFolders(fileName)
     if (!meta) return false
   }
-  const {mtime, size, directory, file} = meta
-  const pathName = path.join(directory, fileName)
+  const {mtime, size, directory, file, type} = meta
+
+  res.writeHeader('content-type', type).writeHeader('last-modified', mtime)
+
   if (file) {
-    const readStream = new Readable()
-    readStream.push(file)
-    readStream.push(null)
     res.end(file)
-    // pipeStreamOverResponse(res, readStream, size)
     return true
   }
-
+  const pathName = path.join(directory, fileName)
   const readStream = fs.createReadStream(pathName)
   pipeStreamOverResponse(res, readStream, size)
   return true

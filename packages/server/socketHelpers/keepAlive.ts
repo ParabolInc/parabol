@@ -11,7 +11,7 @@ const keepAlive = (connectionContext: ConnectionContext) => {
   clearInterval(connectionContext.cancelKeepAlive!)
   connectionContext.cancelKeepAlive = setInterval(() => {
     if (connectionContext.isAlive === false) {
-      handleDisconnect(connectionContext)()
+      handleDisconnect(connectionContext)
     } else {
       connectionContext.isAlive = false
     }

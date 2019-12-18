@@ -11,7 +11,7 @@ import keepAlive from '../socketHelpers/keepAlive'
 
 const APP_VERSION = process.env.npm_package_version
 
-const authorize = async (connectionContext: ConnectionContext) => {
+const authorize = async (connectionContext: ConnectionContext<WebSocket>) => {
   const {authToken, socket} = connectionContext
   const {sub: userId, iat} = authToken
   // ALL async calls must come after the message listener, or we'll skip out on messages (e.g. resub after server restart)

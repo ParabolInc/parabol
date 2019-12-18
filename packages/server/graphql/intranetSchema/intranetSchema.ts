@@ -27,6 +27,7 @@ import dumpHeap from './mutations/dumpHeap'
 import logins from './queries/logins'
 import signups from './queries/signups'
 import connectSocket from './mutations/connectSocket'
+import loginSAML from './mutations/loginSAML'
 import disconnectSocket from './mutations/disconnectSocket'
 
 const query = new GraphQLObjectType<any, GQLContext, any>({
@@ -56,6 +57,7 @@ const mutation = new GraphQLObjectType<any, GQLContext, any>({
     flagConversionModal,
     flagOverLimit,
     githubAddAssignee,
+    loginSAML,
     loginSSO,
     runScheduledJobs,
     sendBatchNotificationEmails,

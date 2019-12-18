@@ -12,6 +12,7 @@ import privateSchema from './intranetSchema/intranetSchema'
 import publicSchema from './rootSchema'
 import getRateLimiter from './getRateLimiter'
 import {getUserId} from '../utils/authorization'
+import {ExecutionResultDataDefault} from 'graphql/execution/execute'
 
 interface GQLRequest {
   authToken: AuthToken
@@ -30,7 +31,7 @@ interface GQLRequest {
 
 const documentCache = new DocumentCache()
 
-const executeGraphQL = async (req: GQLRequest) => {
+const executeGraphQL = async <T = ExecutionResultDataDefault>(req: GQLRequest) => {
   const {
     ip,
     authToken,
@@ -51,7 +52,7 @@ const executeGraphQL = async (req: GQLRequest) => {
   const schema = isPrivate ? privateSchema : publicSchema
   const variableValues = variables
   const source = query!
-  let response: ExecutionResult
+  let response: ExecutionResult<T>
   if (isAdHoc) {
     response = await graphql({schema, source, variableValues, contextValue})
   } else {

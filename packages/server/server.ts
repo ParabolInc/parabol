@@ -21,7 +21,6 @@ getDotenv()
 
 process.on('unhandledRejection', (_reason, p) => {
   console.log('Unhandled Rejection at: Promise', p)
-  // application specific logging, throwing an error, or other logic here
 })
 
 const PORT = Number(process.env.PORT || 3000)
@@ -32,12 +31,7 @@ if (!PROD) {
 
 uws
   .App()
-  .listen(PORT, (listenSocket) => {
-    if (listenSocket) {
-      console.log('uWS listening on port', PORT)
-    }
-  })
-  .get('/static/favicon.ico', getFavicon)
+  .get('/favicon.ico', getFavicon)
   .get('/static/sw.ts', serviceWorkerHandler)
   .get('/static/:file', staticFileHandler)
   .get('/email/createics', sendICS)
@@ -50,4 +44,8 @@ uws
   .post('/saml/:domain', consumeSAML)
   .ws('/*', wsHandler)
   .any('/*', createSSR)
-// wss.startAutoPing(, true)
+  .listen(PORT, (listenSocket) => {
+    if (listenSocket) {
+      console.log('\n🔥🔥🔥 Ready for Action 🔥🔥🔥')
+    }
+  })

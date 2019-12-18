@@ -51,7 +51,7 @@ const handleConnect = async (connectionContext: ConnectionContext) => {
     connectionContext.ready()
     return freshToken
   }
-  handleDisconnect(connectionContext, {exitCode: 4401})()
+  handleDisconnect(connectionContext, {exitCode: 4401})
   return null
 }
 

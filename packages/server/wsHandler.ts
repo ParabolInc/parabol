@@ -9,11 +9,9 @@ const wsHandler: WebSocketBehavior = {
   maxPayloadLength: 5 * 2 ** 20,
   open: wssConnectionHandler,
   message: handleMessage,
-  // drain: (ws) => {
-  // console.log('WebSocket backpressure: ' + ws.getBufferedAmount())
-  // },
+  // today, we don't send folks enough data to worry about backpressure
   close: (ws) => {
-    handleDisconnect(ws.connectionContext)
+    handleDisconnect(ws.connectionContext, {isClosed: true})
   }
 }
 
