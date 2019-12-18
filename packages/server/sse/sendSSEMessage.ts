@@ -1,14 +1,12 @@
-import {ServerResponse} from 'http'
+import {HttpResponse} from 'uWebSockets.js'
 
 type event = 'ka' | 'close' | 'id'
 
-const sendSSEMessage = (res: ServerResponse, rawData: string, event?: event) => {
-  if (res.finished) return
+const sendSSEMessage = (res: HttpResponse, rawData: string, event?: event) => {
   if (event) {
-    res.write(`event: ${event}\n`)
+    res.tryEnd(`event: ${event}\n`, 1e8)
   }
-  res.write(`data: ${rawData}\n\n`)
-  res.flushHeaders()
+  res.tryEnd(`data: ${rawData}\n\n`, 1e8)
 }
 
 export default sendSSEMessage

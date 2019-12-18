@@ -1,6 +1,7 @@
-import {RequestHandler} from 'express'
-import executeGraphQL from '../graphql/executeGraphQL'
+import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import ServerAuthToken from '../database/types/ServerAuthToken'
+import executeGraphQL from '../graphql/executeGraphQL'
+import resDataToBuffer from '../resDataToBuffer'
 import stripe from './stripe'
 
 const eventLookup = {
@@ -74,26 +75,19 @@ const splitType = (type = '') => {
   }
 }
 
-const verifyBody = (req) => {
-  const sig = req.get('stripe-signature')
+const stripeWebhookBufferHandler = (res: HttpResponse, sig: string) => (buffer: Buffer) => {
+  res.writeStatus('200 OK')
+  res.end()
+  let verifiedBody
   try {
-    return stripe.webhooks.constructEvent(req.rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET)
+    verifiedBody = stripe.webhooks.constructEvent(buffer, sig, process.env.STRIPE_WEBHOOK_SECRET)
   } catch (e) {
-    console.error(e)
-    return null
+    return
   }
-}
-
-const stripeWebhookHandler: RequestHandler = async (req, res) => {
-  res.sendStatus(200)
-
-  const verifiedBody = verifyBody(req)
   if (!verifiedBody) return
 
-  const {
-    data: {object: payload},
-    type
-  } = verifiedBody
+  const {data, type} = verifiedBody
+  const {object: payload} = data
   const {event, subEvent, action} = splitType(type)
 
   const parentHandler = eventLookup[event]
@@ -108,7 +102,15 @@ const stripeWebhookHandler: RequestHandler = async (req, res) => {
   const {getVars, query} = actionHandler
   const variables = getVars(payload)
   const authToken = new ServerAuthToken()
-  await executeGraphQL({authToken, query, variables, isPrivate: true})
+  executeGraphQL({authToken, query, variables, isPrivate: true})
+}
+
+const stripeWebhookHandler = (res: HttpResponse, req: HttpRequest) => {
+  res.onAborted(() => {
+    console.log('stripeWebhookHandler aborted')
+  })
+  const stripeSignature = req.getHeader('stripe-signature')
+  resDataToBuffer(res, stripeWebhookBufferHandler(res, stripeSignature))
 }
 
 export default stripeWebhookHandler

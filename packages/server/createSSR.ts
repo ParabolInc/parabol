@@ -1,8 +1,8 @@
-import dehydrate from './utils/dehydrate'
-import getWebpackPublicPath from './utils/getWebpackPublicPath'
 import fs from 'fs'
 import path from 'path'
-import {RequestHandler} from 'express'
+import {HttpResponse} from 'uWebSockets.js'
+import dehydrate from './utils/dehydrate'
+import getWebpackPublicPath from './utils/getWebpackPublicPath'
 
 const prod = process.env.NODE_ENV === 'production'
 let finalHTML
@@ -37,8 +37,8 @@ const getHTML = () => {
   return finalHTML
 }
 
-const createSSR: RequestHandler = (_req, res) => {
-  res.send(getHTML())
+const createSSR = (res: HttpResponse) => {
+  res.end(getHTML())
 }
 
 export default createSSR

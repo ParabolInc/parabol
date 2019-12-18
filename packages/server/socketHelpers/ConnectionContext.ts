@@ -1,4 +1,4 @@
-import {WebSocket} from '@clusterws/cws'
+import {WebSocket} from 'uWebSockets.js'
 import {ExecutionResult} from 'graphql/execution/execute'
 import shortid from 'shortid'
 import AuthToken from '../database/types/AuthToken'
@@ -23,7 +23,7 @@ class ConnectionContext {
   subs: ConnectedSubs = {}
   isReady = false
   readyQueue = [] as (() => void)[]
-  constructor(socket: UserWebSocket, authToken: AuthToken, ip: string) {
+  constructor(socket: WebSocket, authToken: AuthToken, ip: string) {
     this.authToken = authToken
     this.socket = socket
     this.ip = ip

@@ -1,23 +1,38 @@
-import AuthToken from '../database/types/AuthToken'
-import express from 'express'
+import {HttpRequest, HttpResponse} from 'uWebSockets.js'
+import resDataToBuffer from '../resDataToBuffer'
+import {isAuthenticated, isSuperUser} from '../utils/authorization'
+import getReqAuth from '../utils/getReqAuth'
+import uwsGetIP from '../utils/uwsGetIP'
 import executeGraphQL from './executeGraphQL'
 
-const intranetHttpGraphQLHandler = async (req: express.Request, res: express.Response) => {
-  const {query, variables, isPrivate} = req.body
-  const authToken = (req as any).user || ({} as AuthToken)
-  if (authToken.rol !== 'su') {
-    res.status(401).send()
+const intranetHttpGraphQLHandler = async (res: HttpResponse, req: HttpRequest) => {
+  res.onAborted(() => {
+    console.log('intranetHttpGraphQLHandler aborted')
+  })
+  const authToken = getReqAuth(req)
+  const ip = uwsGetIP(res)
+  if (!isAuthenticated(authToken) || !isSuperUser(authToken)) {
+    res.writeStatus('404 Not Found').end()
     return
   }
-  const result = await executeGraphQL({
-    authToken,
-    ip: req.ip,
-    query,
-    variables,
-    isPrivate,
-    isAdHoc: true
+  const contentType = req.getHeader('content-type')
+  if (!contentType.startsWith('application/json')) {
+    res.writeStatus('400 Bad Request').end()
+    return
+  }
+  resDataToBuffer(res, async (buffer) => {
+    const body = JSON.parse(buffer.toString())
+    const {query, variables, isPrivate} = body
+    const result = await executeGraphQL({
+      authToken,
+      ip,
+      query,
+      variables,
+      isPrivate,
+      isAdHoc: true
+    })
+    res.writeHeader('content-type', 'application/json').end(JSON.stringify(result))
   })
-  res.send(result)
 }
 
 export default intranetHttpGraphQLHandler

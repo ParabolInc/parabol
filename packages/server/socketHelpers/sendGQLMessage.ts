@@ -1,5 +1,4 @@
-import {WebSocket} from '@clusterws/cws'
-import {ServerResponse} from 'http'
+import {WebSocket, HttpResponse} from 'uWebSockets.js'
 import sendEncodedMessage from './sendEncodedMessage'
 
 interface Message {
@@ -9,7 +8,7 @@ interface Message {
 }
 
 const sendGQLMessage = (
-  transport: WebSocket | ServerResponse,
+  transport: WebSocket | HttpResponse,
   type: string,
   payload?: object,
   opId?: string

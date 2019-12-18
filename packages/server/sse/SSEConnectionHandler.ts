@@ -1,57 +1,54 @@
-import url from 'url'
-import {verify} from 'jsonwebtoken'
-import ConnectionContext from '../socketHelpers/ConnectionContext'
+import {TrebuchetCloseReason} from 'parabol-client/types/constEnums'
+import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import handleConnect from '../socketHandlers/handleConnect'
 import handleDisconnect from '../socketHandlers/handleDisconnect'
-import keepAlive from '../socketHelpers/keepAlive'
-import express from 'express'
-import sseClients from '../sseClients'
-import checkBlacklistJWT from '../utils/checkBlacklistJWT'
 import closeTransport from '../socketHelpers/closeTransport'
-import {TrebuchetCloseReason} from 'parabol-client/types/constEnums'
-import sendSSEMessage from './sendSSEMessage'
+import ConnectionContext from '../socketHelpers/ConnectionContext'
+import keepAlive from '../socketHelpers/keepAlive'
 import sendEncodedMessage from '../socketHelpers/sendEncodedMessage'
+import sseClients from '../sseClients'
+import {isAuthenticated} from '../utils/authorization'
+import checkBlacklistJWT from '../utils/checkBlacklistJWT'
+import getQueryToken from '../utils/getQueryToken'
+import uwsGetIP from '../utils/uwsGetIP'
+import sendSSEMessage from './sendSSEMessage'
 
 const APP_VERSION = process.env.npm_package_version
-const SERVER_SECRET = process.env.AUTH0_CLIENT_SECRET!
-const SSEConnectionHandler = async (req: express.Request, res: express.Response) => {
-  const {query} = url.parse(req.url, true)
-  let authToken
-  try {
-    authToken = verify(query.token as string, Buffer.from(SERVER_SECRET, 'base64'))
-  } catch (e) {
-    res.sendStatus(404)
+
+const SSEConnectionHandler = async (res: HttpResponse, req: HttpRequest) => {
+  res.onAborted(() => {
+    console.log('sse abort')
+    if (typeof connectionContext !== 'undefined') {
+      handleDisconnect(connectionContext)
+      sseClients.delete(connectionContext.id)
+    }
+  })
+  const authToken = getQueryToken(req)
+  if (!isAuthenticated(authToken)) {
+    res.writeStatus('401 Unauthorized')
+    res.end()
     return
   }
-  res.writeHead(200, {
-    'Content-Type': 'text/event-stream',
-    'Cache-Control': 'no-cache',
-    Connection: 'keep-alive',
+  res
+    .writeHeader('content-type', 'text/event-stream')
+    .writeHeader('cache-control', 'no-cache')
+    .writeHeader('connection', 'keep-alive')
     // turn off nginx buffering: https://www.nginx.com/resources/wiki/start/topics/examples/x-accel/#x-accel-buffering
-    'X-Accel-Buffering': 'no'
-  })
-  ;(res as any).socket.setNoDelay() // disable Nagle algorithm
+    .writeHeader('x-accel-buffering', 'no')
+
   const {sub: userId, iat} = authToken
   const isBlacklistedJWT = await checkBlacklistJWT(userId, iat)
   if (isBlacklistedJWT) {
     closeTransport(res, 401, TrebuchetCloseReason.EXPIRED_SESSION)
     return
   }
-  const connectionContext = new ConnectionContext(res as any, authToken, req.ip)
+  const connectionContext = new ConnectionContext(res as any, authToken, uwsGetIP(res))
   sseClients.set(connectionContext)
   const nextAuthToken = await handleConnect(connectionContext)
-  res.write(`retry: 1000\n`)
+  res.tryEnd(`retry: 1000\n`, 1e8)
   sendSSEMessage(res, connectionContext.id, 'id')
   sendEncodedMessage(res, {version: APP_VERSION, authToken: nextAuthToken})
   keepAlive(connectionContext)
-  res.on('close', () => {
-    handleDisconnect(connectionContext)
-    sseClients.delete(connectionContext.id)
-  })
-  res.on('finish', () => {
-    handleDisconnect(connectionContext)
-    sseClients.delete(connectionContext.id)
-  })
 }
 
 export default SSEConnectionHandler

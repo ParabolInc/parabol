@@ -106,8 +106,9 @@ export default class Atmosphere extends Environment {
     const res = await fetch('/graphql', {
       method: 'POST',
       headers: {
-        'content-type': 'application/json',
+        accept: 'application/json',
         Authorization: this.authToken ? `Bearer ${this.authToken}` : '',
+        'content-type': 'application/json',
         'x-correlation-id': connectionId || ''
       },
       body: JSON.stringify(body)
@@ -153,10 +154,18 @@ export default class Atmosphere extends Environment {
   trySockets = () => {
     const wsProtocol = window.location.protocol.replace('http', 'ws')
     const url = `${wsProtocol}//${window.location.host}/?token=${this.authToken}`
-    if (!__PRODUCTION__) {
-      return new SocketTrebuchet({url, batchDelay: 0})
+    const decoder = (data) => {
+      if (typeof data === 'string') {
+        return JSON.parse(data)
+      } else {
+        return decode(data)
+      }
     }
-    return new SocketTrebuchet({url, encode, decode, batchDelay: 0})
+    if (!__PRODUCTION__) {
+      return new SocketTrebuchet({url, batchDelay: 0, decode: decoder})
+    }
+
+    return new SocketTrebuchet({url, encode, decode: decoder, batchDelay: 0})
   }
 
   trySSE = () => {

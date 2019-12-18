@@ -1,12 +1,10 @@
-import {ServerResponse} from 'http'
 import {Times} from 'parabol-client/types/constEnums'
 import handleDisconnect from '../socketHandlers/handleDisconnect'
 import sendSSEMessage from '../sse/sendSSEMessage'
 import ConnectionContext from './ConnectionContext'
+import isHttpResponse from './isHttpResponse'
 
-const isSSE = (socketOrRes: unknown): socketOrRes is ServerResponse => {
-  return 'statusCode' in (socketOrRes as ServerResponse)
-}
+const PING = new Uint8Array([57])
 
 const keepAlive = (connectionContext: ConnectionContext) => {
   connectionContext.isAlive = true
@@ -18,8 +16,10 @@ const keepAlive = (connectionContext: ConnectionContext) => {
       connectionContext.isAlive = false
     }
     const {socket} = connectionContext
-    if (isSSE(socket)) {
+    if (isHttpResponse(socket)) {
       sendSSEMessage(socket, 'ka', 'ka')
+    } else {
+      socket.send(PING, true)
     }
   }, Times.WEBSOCKET_KEEP_ALIVE)
 }

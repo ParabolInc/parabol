@@ -20,11 +20,11 @@ mutation DisconnectSocket {
 
 const handleDisconnect = (connectionContext: ConnectionContext, options: Options = {}) => () => {
   const {exitCode = 1000, reason} = options
-  relayUnsubscribeAll(connectionContext)
   const {authToken, ip, cancelKeepAlive, socket, id: socketId} = connectionContext
-  closeTransport(socket, exitCode, reason)
   clearInterval(cancelKeepAlive!)
-  closeWRTC(socket as UWebSocket)
+  relayUnsubscribeAll(connectionContext)
+  closeTransport(socket, exitCode, reason)
+  closeWRTC(socket as any)
   executeGraphQL({authToken, ip, query, isPrivate: true, socketId})
 }
 

@@ -23,10 +23,18 @@ export interface IGraphQLResponseErrorLocation {
 export interface IQuery {
   __typename: 'Query'
   viewer: IUser | null
+  getDemoEntities: IGetDemoEntitiesPayload | null
   massInvitation: IMassInvitationPayload
   verifiedInvitation: IVerifiedInvitationPayload
   authProviders: Array<string>
   SAMLIdP: string | null
+}
+
+export interface IGetDemoEntitiesOnQueryArguments {
+  /**
+   * the reflection bodies to entitize
+   */
+  texts: Array<string>
 }
 
 export interface IMassInvitationOnQueryArguments {
@@ -69,7 +77,7 @@ export interface IUser {
   __typename: 'User'
 
   /**
-   * The userId provided by auth0
+   * The userId provided by us
    */
   id: string
 
@@ -2562,6 +2570,31 @@ export interface ITeamInvitationPayload {
   meetingId: string | null
 }
 
+export interface IGetDemoEntitiesPayload {
+  __typename: 'GetDemoEntitiesPayload'
+  error: IStandardMutationError | null
+  entities: Array<IGoogleAnalyzedEntity> | null
+}
+
+export interface IGoogleAnalyzedEntity {
+  __typename: 'GoogleAnalyzedEntity'
+
+  /**
+   * The lemma (dictionary entry) of the entity name. Fancy way of saying the singular form of the name, if plural.
+   */
+  lemma: string
+
+  /**
+   * The name of the entity. Usually 1 or 2 words. Always a noun, sometimes a proper noun.
+   */
+  name: string
+
+  /**
+   * The salience of the entity in the provided text. The salience of all entities always sums to 1
+   */
+  salience: number
+}
+
 export interface IMassInvitationPayload {
   __typename: 'MassInvitationPayload'
   errorType: TeamInvitationErrorEnum | null
@@ -2791,11 +2824,6 @@ export interface IMutation {
    * Send a team invitation to an email address
    */
   inviteToTeam: IInviteToTeamPayload
-
-  /**
-   * Log in, or sign up if it is a new user
-   */
-  login: ILoginPayload
 
   /**
    * Sign up or login using Google
@@ -3310,23 +3338,6 @@ export interface IInviteToTeamOnMutationArguments {
    */
   teamId: string
   invitees: Array<any>
-}
-
-export interface ILoginOnMutationArguments {
-  /**
-   * The ID Token from auth0, a base64 JWT
-   */
-  auth0Token: string
-
-  /**
-   * true if the user is signing up without a team invitation, else false
-   */
-  isOrganic: boolean
-
-  /**
-   * optional segment id created before they were a user
-   */
-  segmentId?: string | null
 }
 
 export interface ILoginWithGoogleOnMutationArguments {
@@ -4474,25 +4485,6 @@ export interface IRetroReflection {
   updatedAt: any | null
 }
 
-export interface IGoogleAnalyzedEntity {
-  __typename: 'GoogleAnalyzedEntity'
-
-  /**
-   * The lemma (dictionary entry) of the entity name. Fancy way of saying the singular form of the name, if plural.
-   */
-  lemma: string
-
-  /**
-   * The name of the entity. Usually 1 or 2 words. Always a noun, sometimes a proper noun.
-   */
-  name: string
-
-  /**
-   * The salience of the entity in the provided text. The salience of all entities always sums to 1
-   */
-  salience: number
-}
-
 /**
  * The retro-specific meeting settings
  */
@@ -5184,21 +5176,6 @@ export interface INotificationTeamInvitation {
    * *The userId that should see this notification
    */
   userIds: Array<string>
-}
-
-export interface ILoginPayload {
-  __typename: 'LoginPayload'
-  error: IStandardMutationError | null
-
-  /**
-   * The user that just logged in
-   */
-  user: IUser | null
-
-  /**
-   * The new JWT
-   */
-  authToken: string | null
 }
 
 export interface ILoginWithGooglePayload {
