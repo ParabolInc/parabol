@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.16.1 2019-Dec-18
+
+## Fixed
+* querystring parsing for SAML urls with search params
+
 ## 4.16.0 2019-Dec-10
 
 ## Changed
