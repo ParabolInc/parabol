@@ -8,23 +8,22 @@ const pipeStreamOverResponse = (
 ) => {
   res.onAborted(() => {
     readStream.destroy()
-    res.aborted = true
+    res.done = true
   })
   readStream
     .on('data', (chunk: Buffer) => {
-      if (res.aborted) return
       const ab = chunk.buffer.slice(chunk.byteOffset, chunk.byteOffset + chunk.byteLength)
       const lastOffset = res.getWriteOffset()
       const [ok, done] = res.tryEnd(ab, totalSize)
-      if (done) {
-        readStream.destroy()
-        return
-      }
+      if (done) readStream.destroy()
       if (ok) return
-      // backpressure handling
+      // backpressure found!
       readStream.pause()
+      // save the current chunk & its offset
       res.ab = ab
       res.abOffset = lastOffset
+
+      // set up a drainage
       res.onWritable((offset) => {
         const [ok, done] = res.tryEnd(res.ab.slice(offset - res.abOffset), totalSize)
         if (done) {
@@ -36,13 +35,11 @@ const pipeStreamOverResponse = (
       })
     })
 
-    .on('error', (e) => {
-      if (!res.aborted) {
-        res.writeStatus('500 Internal server error')
-        res.end()
+    .on('error', () => {
+      if (!res.done) {
+        res.writeStatus('500').end()
       }
       readStream.destroy()
-      throw e
     })
 }
 

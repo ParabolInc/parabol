@@ -1,7 +1,8 @@
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import ServerAuthToken from '../database/types/ServerAuthToken'
 import executeGraphQL from '../graphql/executeGraphQL'
-import resDataToBuffer from '../resDataToBuffer'
+import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
+import parseBody from '../parseBody'
 
 const query = `
 mutation LoginSAML($queryString: String!, $domain: String!) {
@@ -16,15 +17,21 @@ mutation LoginSAML($queryString: String!, $domain: String!) {
 
 const redirectOnError = (res: HttpResponse, error: string) => {
   res
-    .writeStatus('302 Found')
+    .writeStatus('302')
     .writeHeader('location', `/saml-redirect?error=${error}`)
     .end()
 }
 
 const GENERIC_ERROR = 'Error signing in|Please try again'
 
-const consumeSAMLBuffer = (res: HttpResponse, domain: string) => async (buffer: Buffer) => {
-  const queryString = buffer.toString()
+const consumeSAML = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
+  const domain = req.getParameter(0)
+  if (!domain) {
+    redirectOnError(res, 'No Domain Provided!|Did you set up the service provider correctly?')
+    return
+  }
+  const parser = (buffer: Buffer) => buffer.toString()
+  const queryString = await parseBody(res, parser)
   const payload = await executeGraphQL({
     authToken: new ServerAuthToken(),
     query,
@@ -33,32 +40,20 @@ const consumeSAMLBuffer = (res: HttpResponse, domain: string) => async (buffer: 
   })
   const {data, errors} = payload
   if (!data || errors) {
-    return redirectOnError(res, GENERIC_ERROR)
+    redirectOnError(res, GENERIC_ERROR)
+    return
   }
   const {loginSAML} = data
   const {error, authToken} = loginSAML
   if (!authToken) {
     const message = error?.message || GENERIC_ERROR
-    return redirectOnError(res, message)
+    redirectOnError(res, message)
+    return
   }
   res
-    .writeStatus('302 Found')
+    .writeStatus('302')
     .writeHeader('location', `/saml-redirect?token=${authToken}`)
     .end()
-}
-
-const consumeSAML = (res: HttpResponse, req: HttpRequest) => {
-  res.onAborted(() => {
-    console.log('consumeSAML aborted')
-  })
-  const domain = req.getParameter(0)
-  if (!domain) {
-    return redirectOnError(
-      res,
-      'No Domain Provided!|Did you set up the service provider correctly?'
-    )
-  }
-  resDataToBuffer(res, consumeSAMLBuffer(res, domain))
-}
+})
 
 export default consumeSAML

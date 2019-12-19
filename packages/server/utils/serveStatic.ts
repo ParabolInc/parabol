@@ -38,9 +38,9 @@ const serveStatic = (res: HttpResponse, fileName: string) => {
     meta = getMetaFromStaticFolders(fileName)
     if (!meta) return false
   }
-  const {mtime, size, directory, file, type} = meta
+  const {size, directory, file, type} = meta
 
-  res.writeHeader('content-type', type).writeHeader('last-modified', mtime)
+  res.writeHeader('content-type', type)
 
   if (file) {
     res.end(file)

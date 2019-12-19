@@ -1,5 +1,6 @@
 import {TrebuchetCloseReason} from 'parabol-client/types/constEnums'
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
+import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
 import handleConnect from '../socketHandlers/handleConnect'
 import handleDisconnect from '../socketHandlers/handleDisconnect'
 import closeTransport from '../socketHelpers/closeTransport'
@@ -15,19 +16,17 @@ import sendSSEMessage from './sendSSEMessage'
 
 const APP_VERSION = process.env.npm_package_version
 
-const SSEConnectionHandler = async (res: HttpResponse, req: HttpRequest) => {
-  res.onAborted(() => {
-    console.log('sse abort')
-    if (typeof connectionContext !== 'undefined') {
-      handleDisconnect(connectionContext, {isClosed: true})
-    }
-  })
+const SSEConnectionHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
   const authToken = getQueryToken(req)
+  const connectionContext = new ConnectionContext(res, authToken, uwsGetIP(res))
+  res.onAborted(() => {
+    handleDisconnect(connectionContext)
+  })
   if (!isAuthenticated(authToken)) {
-    res.writeStatus('401 Unauthorized')
-    res.end()
+    res.writeStatus('401').end()
     return
   }
+
   res
     .writeHeader('content-type', 'text/event-stream')
     .writeHeader('cache-control', 'no-cache')
@@ -41,13 +40,13 @@ const SSEConnectionHandler = async (res: HttpResponse, req: HttpRequest) => {
     closeTransport(res, 401, TrebuchetCloseReason.EXPIRED_SESSION)
     return
   }
-  const connectionContext = new ConnectionContext(res, authToken, uwsGetIP(res))
+
   sseClients.set(connectionContext)
   const nextAuthToken = await handleConnect(connectionContext)
   res.tryEnd(`retry: 1000\n`, 1e8)
   sendSSEMessage(res, connectionContext.id, 'id')
   sendEncodedMessage(res, {version: APP_VERSION, authToken: nextAuthToken})
   keepAlive(connectionContext)
-}
+}, true)
 
 export default SSEConnectionHandler

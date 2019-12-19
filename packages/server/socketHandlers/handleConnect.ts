@@ -1,11 +1,9 @@
 import {Threshold} from 'parabol-client/types/constEnums'
 import AuthToken from '../database/types/AuthToken'
+import executeGraphQL from '../graphql/executeGraphQL'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import encodeAuthToken from '../utils/encodeAuthToken'
 import {fromEpochSeconds} from '../utils/epochTime'
-import sendToSentry from '../utils/sendToSentry'
-import executeGraphQL from '../graphql/executeGraphQL'
-import handleDisconnect from './handleDisconnect'
 
 const isTmsValid = (tmsFromDB: string[] = [], tmsFromToken: string[] = []) => {
   if (tmsFromDB.length !== tmsFromToken.length) return false
@@ -41,18 +39,11 @@ const handleConnect = async (connectionContext: ConnectionContext) => {
   const {authToken, ip, id: socketId} = connectionContext
   const result = await executeGraphQL({authToken, ip, query, isPrivate: true, socketId})
   const {data} = result
-  if (data) {
-    if (!data.connectSocket) {
-      sendToSentry(new Error('null connectSocket'), {userId: connectionContext?.authToken?.sub})
-    }
-    const {connectSocket} = data
-    const {tms} = connectSocket
-    const freshToken = setFreshTokenIfNeeded(connectionContext, tms)
-    connectionContext.ready()
-    return freshToken
-  }
-  handleDisconnect(connectionContext, {exitCode: 4401})
-  return null
+  const tms = data?.connectSocket?.tms
+  if (!tms) return null // should NEVER happen
+  const freshToken = setFreshTokenIfNeeded(connectionContext, tms)
+  connectionContext.ready()
+  return freshToken
 }
 
 export default handleConnect

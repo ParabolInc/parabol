@@ -10,7 +10,9 @@ const sendEncodedMessage = (transport: WebSocket | HttpResponse, message: object
     sendSSEMessage(transport as HttpResponse, JSON.stringify(message))
     return
   }
-  transport.send(encoder(message) as string | Buffer)
+  if (!transport.done) {
+    transport.send(encoder(message) as string | Buffer)
+  }
 }
 
 export default sendEncodedMessage

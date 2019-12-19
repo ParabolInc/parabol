@@ -9,7 +9,17 @@ getDotenv()
 export default class StripeManager {
   static PARABOL_PRO_600 = 'parabol-pro-600' // $6/seat/mo
   static PARABOL_ENTERPRISE_2019Q3 = 'plan_Fifb1fmjyFfTm8'
+  static WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!
   stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+
+  constructEvent(rawBody: string, signature: string) {
+    try {
+      return this.stripe.webhooks.constructEvent(rawBody, signature, StripeManager.WEBHOOK_SECRET)
+    } catch (e) {
+      console.log('StripeWebhookError:', e)
+      return null
+    }
+  }
 
   async createCustomer(orgId: string, email: string, source?: string) {
     return this.stripe.customers.create({

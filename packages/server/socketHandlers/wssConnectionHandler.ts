@@ -17,7 +17,9 @@ const authorize = async (connectionContext: ConnectionContext<WebSocket>) => {
   // ALL async calls must come after the message listener, or we'll skip out on messages (e.g. resub after server restart)
   const isBlacklistedJWT = await checkBlacklistJWT(userId, iat)
   if (isBlacklistedJWT) {
-    socket.end(1011, TrebuchetCloseReason.EXPIRED_SESSION)
+    if (!socket.done) {
+      socket.end(1011, TrebuchetCloseReason.EXPIRED_SESSION)
+    }
     return
   }
   const nextAuthToken = await handleConnect(connectionContext)
@@ -41,8 +43,8 @@ const wssConnectionHandler = (socket: WebSocket, req: HttpRequest) => {
   }
   const ip = uwsGetIP(socket)
   socket.connectionContext = new ConnectionContext(socket, authToken, ip)
+  // keep async stuff separate so the message handler gets set up fast
   authorize(socket.connectionContext).catch()
-  // socket.send(new Uint8Array([57]), true, false)
 }
 
 export default wssConnectionHandler

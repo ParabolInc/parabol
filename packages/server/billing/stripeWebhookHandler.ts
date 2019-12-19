@@ -1,8 +1,9 @@
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import ServerAuthToken from '../database/types/ServerAuthToken'
 import executeGraphQL from '../graphql/executeGraphQL'
-import resDataToBuffer from '../resDataToBuffer'
-import stripe from './stripe'
+import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
+import parseBody from '../parseBody'
+import StripeManager from '../utils/StripeManager'
 
 const eventLookup = {
   invoice: {
@@ -75,15 +76,15 @@ const splitType = (type = '') => {
   }
 }
 
-const stripeWebhookBufferHandler = (res: HttpResponse, sig: string) => (buffer: Buffer) => {
-  res.writeStatus('200 OK')
+const stripeWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
+  const stripeSignature = req.getHeader('stripe-signature')
+  const parser = (buffer: Buffer) => buffer.toString()
+  const str = (await parseBody(res, parser)) as string | null
   res.end()
-  let verifiedBody
-  try {
-    verifiedBody = stripe.webhooks.constructEvent(buffer, sig, process.env.STRIPE_WEBHOOK_SECRET)
-  } catch (e) {
-    return
-  }
+
+  if (!str) return
+  const manager = new StripeManager()
+  const verifiedBody = manager.constructEvent(str, stripeSignature)
   if (!verifiedBody) return
 
   const {data, type} = verifiedBody
@@ -103,14 +104,6 @@ const stripeWebhookBufferHandler = (res: HttpResponse, sig: string) => (buffer: 
   const variables = getVars(payload)
   const authToken = new ServerAuthToken()
   executeGraphQL({authToken, query, variables, isPrivate: true})
-}
-
-const stripeWebhookHandler = (res: HttpResponse, req: HttpRequest) => {
-  res.onAborted(() => {
-    console.log('stripeWebhookHandler aborted')
-  })
-  const stripeSignature = req.getHeader('stripe-signature')
-  resDataToBuffer(res, stripeWebhookBufferHandler(res, stripeSignature))
-}
+})
 
 export default stripeWebhookHandler

@@ -48,12 +48,7 @@ const handleMessage = (websocket: WebSocket, message: ArrayBuffer, isBinary: boo
   try {
     parsedMessage = isBinary ? decoder(message as any) : JSON.parse(Buffer.from(message).toString())
   } catch (e) {
-    /*
-     * Invalid frame payload data
-     * The endpoint is terminating the connection because a message was received that contained inconsistent data
-     * (e.g., non-UTF-8 data within a text message).
-     */
-    // handleDisconnect(connectionContext, {exitCode: 1007})()
+    // ignore the message
     return
   }
 

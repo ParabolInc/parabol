@@ -2,7 +2,8 @@ import secureCompare from 'secure-compare'
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import ServerAuthToken from '../database/types/ServerAuthToken'
 import executeGraphQL from '../graphql/executeGraphQL'
-import resDataToBuffer from '../resDataToBuffer'
+import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
+import parseBody from '../parseBody'
 import signPayload from '../utils/signPayload'
 
 const getPublicKey = ({repository: {id}}) => String(id)
@@ -64,35 +65,32 @@ const eventLookup = {
   repository: {}
 }
 
-const githubWebhookHandler = (res: HttpResponse, req: HttpRequest) => {
-  res.onAborted(() => {
-    console.log('githubWebhookHandler aborted')
-  })
+const githubWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
   const event = req.getHeader('X-GitHub-Event')
   const hexDigest = req.getHeader('X-Hub-Signature')
-  resDataToBuffer(res, (buffer) => {
-    res.writeStatus('200 OK').end()
-    const bodyStr = buffer.toString()
-    const body = JSON.parse(bodyStr)
-    const eventHandler = eventLookup[event!]
-    if (!body || !hexDigest || !eventHandler) return
+  const parser = (buffer: Buffer) => buffer.toString()
+  const bodyStr = (await parseBody(res, parser)) as string | null
+  res.end()
+  if (!bodyStr) return
+  const body = JSON.parse(bodyStr)
+  const eventHandler = eventLookup[event!]
+  if (!hexDigest || !eventHandler) return
 
-    const actionHandler = eventHandler[body.action]
-    const publicKey = eventHandler._getPublickKey
-      ? eventHandler._getPublickKey(body)
-      : getPublicKey(body)
-    if (!actionHandler || !publicKey) return
+  const actionHandler = eventHandler[body.action]
+  const publicKey = eventHandler._getPublickKey
+    ? eventHandler._getPublickKey(body)
+    : getPublicKey(body)
+  if (!actionHandler || !publicKey) return
 
-    const [shaType, hash] = hexDigest.split('=')
-    const githubSecret = signPayload(process.env.GITHUB_WEBHOOK_SECRET, publicKey)
-    const myHash = signPayload(githubSecret, bodyStr, shaType)
-    if (!secureCompare(hash, myHash)) return
+  const [shaType, hash] = hexDigest.split('=')
+  const githubSecret = signPayload(process.env.GITHUB_WEBHOOK_SECRET, publicKey)
+  const myHash = signPayload(githubSecret, bodyStr, shaType)
+  if (!secureCompare(hash, myHash)) return
 
-    const {getVars, query} = actionHandler
-    const variables = getVars(body)
-    const authToken = new ServerAuthToken()
-    executeGraphQL({authToken, query, variables, isPrivate: true})
-  })
-}
+  const {getVars, query} = actionHandler
+  const variables = getVars(body)
+  const authToken = new ServerAuthToken()
+  executeGraphQL({authToken, query, variables, isPrivate: true})
+})
 
 export default githubWebhookHandler

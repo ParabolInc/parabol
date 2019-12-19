@@ -119,7 +119,10 @@ export default class Atmosphere extends Environment {
       return resJson
     }
     if (res.status === 401) {
-      handleInvalidatedSession(TrebuchetCloseReason.EXPIRED_SESSION, {atmosphere: this})
+      const text = await res.text()
+      if (text === TrebuchetCloseReason.EXPIRED_SESSION) {
+        handleInvalidatedSession(TrebuchetCloseReason.EXPIRED_SESSION, {atmosphere: this})
+      }
     }
     return null
   }

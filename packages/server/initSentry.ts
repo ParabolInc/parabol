@@ -10,7 +10,6 @@ declare global {
 }
 
 const APP_VERSION = process.env.npm_package_version
-// Sentry.Handlers.requestHandler()
 Sentry.init({
   environment: 'server',
   dsn: process.env.SENTRY_DSN,

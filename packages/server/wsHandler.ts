@@ -11,7 +11,8 @@ const wsHandler: WebSocketBehavior = {
   message: handleMessage,
   // today, we don't send folks enough data to worry about backpressure
   close: (ws) => {
-    handleDisconnect(ws.connectionContext, {isClosed: true})
+    ws.done = true
+    handleDisconnect(ws.connectionContext)
   }
 }
 

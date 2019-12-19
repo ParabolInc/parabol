@@ -19,8 +19,8 @@ import wsHandler from './wsHandler'
 
 getDotenv()
 
-process.on('unhandledRejection', (_reason, p) => {
-  console.log('Unhandled Rejection at: Promise', p)
+process.on('uncaughtException', (err) => {
+  console.log('FIXME UNCAUGHT EXCEPTION', err)
 })
 
 const PORT = Number(process.env.PORT || 3000)
@@ -32,12 +32,12 @@ if (!PROD) {
 uws
   .App()
   .get('/favicon.ico', getFavicon)
-  .get('/static/sw.ts', serviceWorkerHandler)
+  .get('/sw.ts', serviceWorkerHandler)
   .get('/static/:file', staticFileHandler)
   .get('/email/createics', sendICS)
   .get('/sse', SSEConnectionHandler)
   .get('/sse-ping', SSEPingHandler)
-  .get('/stripe', stripeWebhookHandler)
+  .post('/stripe', stripeWebhookHandler)
   .post('/webhooks/github', githubWebhookHandler)
   .post('/graphql', httpGraphQLHandler)
   .post('/intranet-graphql', intranetHttpGraphQLHandler)

@@ -18,7 +18,7 @@ const keepAlive = (connectionContext: ConnectionContext) => {
     const {socket} = connectionContext
     if (isHttpResponse(socket)) {
       sendSSEMessage(socket, 'ka', 'ka')
-    } else {
+    } else if (!socket.done) {
       socket.send(PING, true)
     }
   }, Times.WEBSOCKET_KEEP_ALIVE)

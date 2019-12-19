@@ -7,11 +7,12 @@ import sendSegmentEvent from '../../../utils/sendSegmentEvent'
 import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import DBUser from '../../../database/types/User'
 import {GQLContext} from '../../graphql'
+import {GraphQLNonNull} from 'graphql'
 
 export default {
   name: 'ConnectSocket',
   description: 'a server-side mutation called when a client connects',
-  type: User,
+  type: GraphQLNonNull(User),
   resolve: async (_source, _args, {authToken, dataLoader, socketId}: GQLContext) => {
     const r = await getRethink()
     const now = new Date()

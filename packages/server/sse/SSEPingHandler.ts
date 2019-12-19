@@ -12,7 +12,7 @@ const SSEPingHandler = (res: HttpResponse, req: HttpRequest) => {
       connectionContext.isAlive = true
     }
   }
-  res.writeStatus('200 OK').end()
+  res.end()
 }
 
 export default SSEPingHandler
