@@ -87,7 +87,8 @@ const DraggableReflectionCard = (props: Props) => {
   )
   const isDragPhase = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete
   const canDrag = isDraggable && isDragPhase && !isEditing && !isDropping
-  const handleDrag = canDrag ? onMouseDown : undefined
+  // slow state updates can mean we miss an onMouseDown event, so use isDragPhase instead of canDrag
+  const handleDrag = isDragPhase ? onMouseDown : undefined
   return (
     <DragWrapper
       ref={(c) => (drag.ref = c)}

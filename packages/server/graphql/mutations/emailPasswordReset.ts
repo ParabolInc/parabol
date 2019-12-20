@@ -29,7 +29,7 @@ const emailPasswordReset = {
     const r = await getRethink()
 
     // we only wanna send like 2 emails/min or 5 per day to the same person
-    const yesterday = Date.now() - ms('1d')
+    const yesterday = new Date(Date.now() - ms('1d'))
     const {user, failOnAccount, failOnTime} = await r({
       user: (r
         .table('User')
@@ -49,7 +49,7 @@ const emailPasswordReset = {
         .count()
         .ge(Threshold.MAX_DAILY_PASSWORD_RESETS) as unknown) as boolean
     }).run()
-
+    console.log('reset', failOnAccount, failOnTime, user)
     if (failOnAccount || failOnTime || !user) return true
     const {id: userId, identities} = user
     const localIdentity = identities.find(

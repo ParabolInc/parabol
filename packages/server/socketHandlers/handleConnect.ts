@@ -1,4 +1,4 @@
-import {Threshold} from 'parabol-client/types/constEnums'
+import {Threshold, TrebuchetCloseReason} from 'parabol-client/types/constEnums'
 import AuthToken from '../database/types/AuthToken'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import encodeAuthToken from '../utils/encodeAuthToken'
@@ -6,6 +6,7 @@ import {fromEpochSeconds} from '../utils/epochTime'
 import sendToSentry from '../utils/sendToSentry'
 import executeGraphQL from '../graphql/executeGraphQL'
 import handleDisconnect from './handleDisconnect'
+import checkBlacklistJWT from '../utils/checkBlacklistJWT'
 
 const isTmsValid = (tmsFromDB: string[] = [], tmsFromToken: string[] = []) => {
   if (tmsFromDB.length !== tmsFromToken.length) return false

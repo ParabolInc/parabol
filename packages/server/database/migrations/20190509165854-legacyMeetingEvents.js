@@ -10,7 +10,7 @@ import Meeting from '../types/Meeting'
 
 exports.up = async (r) => {
   try {
-    const meetings = await r.table('Meeting')
+    const meetings = await r.table('Meeting').run()
     const completedAgendaItems = await r
       .table('AgendaItem')
       .filter({isActive: false})
