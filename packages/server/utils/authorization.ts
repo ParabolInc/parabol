@@ -8,7 +8,9 @@ export const getUserId = (authToken: any) => {
   return authToken && typeof authToken === 'object' ? (authToken.sub as string) : ''
 }
 
-export const isAuthenticated = (authToken: any) => typeof authToken?.sub === 'string'
+export const isAuthenticated = (authToken: any): authToken is AuthToken => {
+  return typeof authToken?.sub === 'string'
+}
 
 export const isSuperUser = (authToken) => {
   const userId = getUserId(authToken)

@@ -1,7 +1,9 @@
-import {RequestHandler} from 'express'
-import executeGraphQL from '../graphql/executeGraphQL'
+import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import ServerAuthToken from '../database/types/ServerAuthToken'
-import stripe from './stripe'
+import executeGraphQL from '../graphql/executeGraphQL'
+import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
+import parseBody from '../parseBody'
+import StripeManager from '../utils/StripeManager'
 
 const eventLookup = {
   invoice: {
@@ -74,26 +76,19 @@ const splitType = (type = '') => {
   }
 }
 
-const verifyBody = (req) => {
-  const sig = req.get('stripe-signature')
-  try {
-    return stripe.webhooks.constructEvent(req.rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET)
-  } catch (e) {
-    console.error(e)
-    return null
-  }
-}
+const stripeWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
+  const stripeSignature = req.getHeader('stripe-signature')
+  const parser = (buffer: Buffer) => buffer.toString()
+  const str = (await parseBody(res, parser)) as string | null
+  res.end()
 
-const stripeWebhookHandler: RequestHandler = async (req, res) => {
-  res.sendStatus(200)
-
-  const verifiedBody = verifyBody(req)
+  if (!str) return
+  const manager = new StripeManager()
+  const verifiedBody = manager.constructEvent(str, stripeSignature)
   if (!verifiedBody) return
 
-  const {
-    data: {object: payload},
-    type
-  } = verifiedBody
+  const {data, type} = verifiedBody
+  const {object: payload} = data
   const {event, subEvent, action} = splitType(type)
 
   const parentHandler = eventLookup[event]
@@ -108,7 +103,7 @@ const stripeWebhookHandler: RequestHandler = async (req, res) => {
   const {getVars, query} = actionHandler
   const variables = getVars(payload)
   const authToken = new ServerAuthToken()
-  await executeGraphQL({authToken, query, variables, isPrivate: true})
-}
+  executeGraphQL({authToken, query, variables, isPrivate: true})
+})
 
 export default stripeWebhookHandler

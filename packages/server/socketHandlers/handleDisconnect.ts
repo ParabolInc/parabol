@@ -1,9 +1,9 @@
+import executeGraphQL from '../graphql/executeGraphQL'
 import closeTransport from '../socketHelpers/closeTransport'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
+import sseClients from '../sseClients'
 import relayUnsubscribeAll from '../utils/relayUnsubscribeAll'
 import closeWRTC from '../wrtc/signalServer/closeWRTC'
-import {UWebSocket} from '../wrtc/signalServer/handleSignal'
-import executeGraphQL from '../graphql/executeGraphQL'
 
 interface Options {
   exitCode?: number
@@ -18,14 +18,17 @@ mutation DisconnectSocket {
   }
 }`
 
-const handleDisconnect = (connectionContext: ConnectionContext, options: Options = {}) => () => {
+const handleDisconnect = (connectionContext: ConnectionContext, options: Options = {}) => {
   const {exitCode = 1000, reason} = options
-  relayUnsubscribeAll(connectionContext)
-  const {authToken, ip, cancelKeepAlive, socket, id: socketId} = connectionContext
-  closeTransport(socket, exitCode, reason)
+  const {authToken, ip, cancelKeepAlive, id: socketId, socket} = connectionContext
   clearInterval(cancelKeepAlive!)
-  closeWRTC(socket as UWebSocket)
+  relayUnsubscribeAll(connectionContext)
+  closeWRTC(socket as any)
   executeGraphQL({authToken, ip, query, isPrivate: true, socketId})
+  if (connectionContext.id.startsWith('sse')) {
+    sseClients.delete(connectionContext.id)
+  }
+  closeTransport(socket, exitCode, reason)
 }
 
 export default handleDisconnect

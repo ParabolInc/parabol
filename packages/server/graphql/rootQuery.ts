@@ -7,6 +7,7 @@ import getRethink from '../database/rethinkDriver'
 import massInvitation from './queries/massInvitation'
 import {GQLContext} from './graphql'
 import SAMLIdP from './queries/SAMLIdP'
+import getDemoEntities from './queries/getDemoEntitites'
 import getLastSeenAtURL from './queries/helpers/getLastSeenAtURL'
 
 export default new GraphQLObjectType<any, GQLContext>({
@@ -35,6 +36,7 @@ export default new GraphQLObjectType<any, GQLContext>({
         return viewer
       }
     },
+    getDemoEntities,
     massInvitation,
     verifiedInvitation,
     authProviders: {

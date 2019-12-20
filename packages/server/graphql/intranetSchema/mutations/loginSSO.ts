@@ -1,3 +1,4 @@
+// DEPRECATED. USE LOGINSAML
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import shortid from 'shortid'
 import User from '../../../database/types/User'

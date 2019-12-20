@@ -1,26 +1,18 @@
-import {UserWebSocket} from '../socketHelpers/ConnectionContext'
-import http from 'http'
+import {HttpResponse, WebSocket} from 'uWebSockets.js'
 import sendSSEMessage from '../sse/sendSSEMessage'
+import isHttpResponse from './isHttpResponse'
 
-const closeTransport = (
-  transport: UserWebSocket | http.ServerResponse,
-  code?: number,
-  reason?: string
-) => {
-  switch (transport.constructor.name) {
-    case 'WebSocket':
-      ;(transport as UserWebSocket).close(code, reason)
-      break
-    case 'ServerResponse':
-      const res = transport as http.ServerResponse
-      if (!res.finished) {
-        if (code || reason) {
-          const msg = reason ? `${code}:${reason}` : String(code) || '401'
-          sendSSEMessage(res, msg, 'close')
-        }
-        res.end()
-      }
+const closeTransport = (transport: WebSocket | HttpResponse, code?: number, reason?: string) => {
+  if (transport.done) return
+  if (isHttpResponse(transport)) {
+    if (code || reason) {
+      const msg = reason ? `${code}:${reason}` : String(code) || '401'
+      sendSSEMessage(transport, msg, 'close')
+    }
+    transport.end()
+    return
   }
+  transport.end(code, reason)
 }
 
 export default closeTransport

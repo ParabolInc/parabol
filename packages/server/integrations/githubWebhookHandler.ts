@@ -1,7 +1,9 @@
-import {RequestHandler} from 'express'
-import executeGraphQL from '../graphql/executeGraphQL'
 import secureCompare from 'secure-compare'
+import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import ServerAuthToken from '../database/types/ServerAuthToken'
+import executeGraphQL from '../graphql/executeGraphQL'
+import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
+import parseBody from '../parseBody'
 import signPayload from '../utils/signPayload'
 
 const getPublicKey = ({repository: {id}}) => String(id)
@@ -63,13 +65,16 @@ const eventLookup = {
   repository: {}
 }
 
-const githubWebhookHandler: RequestHandler = async (req, res) => {
-  res.sendStatus(200)
-  const event = req.get('X-GitHub-Event')
-  const hexDigest = req.get('X-Hub-Signature')
-  const {body} = req
+const githubWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
+  const event = req.getHeader('X-GitHub-Event')
+  const hexDigest = req.getHeader('X-Hub-Signature')
+  const parser = (buffer: Buffer) => buffer.toString()
+  const bodyStr = (await parseBody(res, parser)) as string | null
+  res.end()
+  if (!bodyStr) return
+  const body = JSON.parse(bodyStr)
   const eventHandler = eventLookup[event!]
-  if (!body || !hexDigest || !eventHandler) return
+  if (!hexDigest || !eventHandler) return
 
   const actionHandler = eventHandler[body.action]
   const publicKey = eventHandler._getPublickKey
@@ -79,13 +84,13 @@ const githubWebhookHandler: RequestHandler = async (req, res) => {
 
   const [shaType, hash] = hexDigest.split('=')
   const githubSecret = signPayload(process.env.GITHUB_WEBHOOK_SECRET, publicKey)
-  const myHash = signPayload(githubSecret, JSON.stringify(body), shaType)
+  const myHash = signPayload(githubSecret, bodyStr, shaType)
   if (!secureCompare(hash, myHash)) return
 
   const {getVars, query} = actionHandler
   const variables = getVars(body)
   const authToken = new ServerAuthToken()
-  await executeGraphQL({authToken, query, variables, isPrivate: true})
-}
+  executeGraphQL({authToken, query, variables, isPrivate: true})
+})
 
 export default githubWebhookHandler

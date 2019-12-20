@@ -1,13 +1,13 @@
 import {OutgoingMessage} from '@mattkrick/graphql-trebuchet-client'
-import {Data} from '@mattkrick/trebuchet-client'
 import {decode} from '@msgpack/msgpack'
+import {WebSocket} from 'uWebSockets.js'
 import handleGraphQLTrebuchetRequest from '../graphql/handleGraphQLTrebuchetRequest'
 import PROD from '../PROD'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
+import keepAlive from '../socketHelpers/keepAlive'
 import sendGQLMessage from '../socketHelpers/sendGQLMessage'
-import handleSignal, {UWebSocket} from '../wrtc/signalServer/handleSignal'
+import handleSignal from '../wrtc/signalServer/handleSignal'
 import validateInit from '../wrtc/signalServer/validateInit'
-import handleDisconnect from './handleDisconnect'
 
 interface WRTCMessage {
   type: 'WRTC_SIGNAL'
@@ -24,8 +24,8 @@ const handleParsedMessage = async (
   const parsedMessages = Array.isArray(parsedMessage) ? parsedMessage : [parsedMessage]
   parsedMessages.forEach(async (msg) => {
     if (msg.type === 'WRTC_SIGNAL') {
-      if (validateInit(socket as UWebSocket, msg.signal, authToken)) {
-        handleSignal(socket as UWebSocket, msg.signal)
+      if (validateInit(socket as any, msg.signal, authToken)) {
+        handleSignal(socket as any, msg.signal)
       }
       return
     }
@@ -37,17 +37,18 @@ const handleParsedMessage = async (
   })
 }
 
-const handleMessage = (connectionContext: ConnectionContext) => async (message: Data) => {
+const PONG = 65
+const handleMessage = (websocket: WebSocket, message: ArrayBuffer, isBinary: boolean) => {
+  const {connectionContext} = websocket
+  if (isBinary && message.byteLength === 1 && Buffer.from(message)[0] === PONG) {
+    keepAlive(connectionContext)
+    return
+  }
   let parsedMessage
   try {
-    parsedMessage = decoder(message as any)
+    parsedMessage = isBinary ? decoder(message as any) : JSON.parse(Buffer.from(message).toString())
   } catch (e) {
-    /*
-     * Invalid frame payload data
-     * The endpoint is terminating the connection because a message was received that contained inconsistent data
-     * (e.g., non-UTF-8 data within a text message).
-     */
-    handleDisconnect(connectionContext, {exitCode: 1007})()
+    // ignore the message
     return
   }
 

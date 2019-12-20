@@ -23,11 +23,7 @@ const handleSegment = async (userId: string, previousId: string | null | undefin
   return sendSegmentIdentify(userId)
 }
 
-const bootstrapNewUser = async (
-  newUser: User,
-  isOrganic: boolean,
-  segmentId: string | null | undefined
-) => {
+const bootstrapNewUser = async (newUser: User, isOrganic: boolean, segmentId?: string | null) => {
   const {id: userId, preferredName} = newUser
   const r = await getRethink()
   const joinEvent = new TimelineEventJoinedParabol({userId})
