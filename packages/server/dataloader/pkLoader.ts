@@ -16,31 +16,6 @@ const normalizeRethinkDbResults = <T extends {id: string}>(keys: string[], resul
   return mappedResults
 }
 
-// as we build out more constructors we can move away from using the gql types
-export const pkLoaderToTable = {
-  agendaItems: 'AgendaItem',
-  atlassianAuths: 'AtlassianAuth',
-  customPhaseItems: 'CustomPhaseItem',
-  meetingSettings: 'MeetingSettings',
-  meetingMembers: 'MeetingMember',
-  newMeetings: 'NewMeeting',
-  newFeatures: 'NewFeature',
-  notifications: 'Notification',
-  organizations: 'Organization',
-  organizationUsers: 'OrganizationUser',
-  reflectTemplates: 'ReflectTemplate',
-  retroReflectionGroups: 'RetroReflectionGroup',
-  retroReflections: 'RetroReflection',
-  slackAuths: 'SlackAuth',
-  slackNotifications: 'SlackNotification',
-  suggestedActions: 'SuggestedAction',
-  tasks: 'Task',
-  teamMembers: 'TeamMember',
-  teamInvitations: 'TeamInvitation',
-  teams: 'Team',
-  users: 'User'
-} as const
-
 const pkLoader = <T extends keyof Tables>(
   options: DataLoader.Options<string, Tables[T]>,
   table: T

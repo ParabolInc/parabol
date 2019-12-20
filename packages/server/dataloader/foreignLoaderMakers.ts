@@ -1,35 +1,45 @@
+import {DataLoaderType} from 'parabol-client/types/constEnums'
 import getRethink from '../database/rethinkDriver'
-import {pkLoaderToTable} from './pkLoader'
+import * as primaryLoaderMakers from './primaryLoaderMakers'
 
-class ForeignLoaderParams {
+class LoaderMakerForeign {
+  type = DataLoaderType.FOREIGN
   constructor(
-    public pk: keyof typeof pkLoaderToTable,
+    public pk: keyof typeof primaryLoaderMakers,
     public field: string,
     public fetch: (ids: string[]) => Promise<any[]>
   ) {}
 }
 
-const activeMeetingsByTeamId = new ForeignLoaderParams('newMeetings', 'teamId', async (teamIds) => {
-  const r = await getRethink()
-  return r
-    .table('NewMeeting')
-    .getAll(r.args(teamIds), {index: 'teamId'})
-    .filter({endedAt: null}, {default: true})
-    .orderBy(r.desc('createdAt'))
-    .run()
-})
+export const activeMeetingsByTeamId = new LoaderMakerForeign(
+  'newMeetings',
+  'teamId',
+  async (teamIds) => {
+    const r = await getRethink()
+    return r
+      .table('NewMeeting')
+      .getAll(r.args(teamIds), {index: 'teamId'})
+      .filter({endedAt: null}, {default: true})
+      .orderBy(r.desc('createdAt'))
+      .run()
+  }
+)
 
-const agendaItemsByTeamId = new ForeignLoaderParams('agendaItems', 'teamId', async (teamIds) => {
-  const r = await getRethink()
-  return r
-    .table('AgendaItem')
-    .getAll(r.args(teamIds), {index: 'teamId'})
-    .filter({isActive: true})
-    .orderBy('sortOrder')
-    .run()
-})
+export const agendaItemsByTeamId = new LoaderMakerForeign(
+  'agendaItems',
+  'teamId',
+  async (teamIds) => {
+    const r = await getRethink()
+    return r
+      .table('AgendaItem')
+      .getAll(r.args(teamIds), {index: 'teamId'})
+      .filter({isActive: true})
+      .orderBy('sortOrder')
+      .run()
+  }
+)
 
-const atlassianAuthByUserId = new ForeignLoaderParams(
+export const atlassianAuthByUserId = new LoaderMakerForeign(
   'atlassianAuths',
   'userId',
   async (userIds) => {
@@ -41,7 +51,7 @@ const atlassianAuthByUserId = new ForeignLoaderParams(
   }
 )
 
-const customPhaseItemsByTeamId = new ForeignLoaderParams(
+export const customPhaseItemsByTeamId = new LoaderMakerForeign(
   'customPhaseItems',
   'teamId',
   async (teamIds) => {
@@ -54,7 +64,7 @@ const customPhaseItemsByTeamId = new ForeignLoaderParams(
   }
 )
 
-const meetingMembersByMeetingId = new ForeignLoaderParams(
+export const meetingMembersByMeetingId = new LoaderMakerForeign(
   'meetingMembers',
   'meetingId',
   async (meetingIds) => {
@@ -66,7 +76,7 @@ const meetingMembersByMeetingId = new ForeignLoaderParams(
   }
 )
 
-const meetingSettingsByTeamId = new ForeignLoaderParams(
+export const meetingSettingsByTeamId = new LoaderMakerForeign(
   'meetingSettings',
   'teamId',
   async (teamIds) => {
@@ -78,7 +88,7 @@ const meetingSettingsByTeamId = new ForeignLoaderParams(
   }
 )
 
-const organizationUsersByOrgId = new ForeignLoaderParams(
+export const organizationUsersByOrgId = new LoaderMakerForeign(
   'organizationUsers',
   'orgId',
   async (orgIds) => {
@@ -91,7 +101,7 @@ const organizationUsersByOrgId = new ForeignLoaderParams(
   }
 )
 
-const organizationUsersByUserId = new ForeignLoaderParams(
+export const organizationUsersByUserId = new LoaderMakerForeign(
   'organizationUsers',
   'userId',
   async (userIds) => {
@@ -104,7 +114,7 @@ const organizationUsersByUserId = new ForeignLoaderParams(
   }
 )
 
-const retroReflectionGroupsByMeetingId = new ForeignLoaderParams(
+export const retroReflectionGroupsByMeetingId = new LoaderMakerForeign(
   'retroReflectionGroups',
   'meetingId',
   async (meetingIds) => {
@@ -117,7 +127,7 @@ const retroReflectionGroupsByMeetingId = new ForeignLoaderParams(
   }
 )
 
-const reflectTemplatesByTeamId = new ForeignLoaderParams(
+export const reflectTemplatesByTeamId = new LoaderMakerForeign(
   'reflectTemplates',
   'teamId',
   async (teamIds) => {
@@ -130,7 +140,7 @@ const reflectTemplatesByTeamId = new ForeignLoaderParams(
   }
 )
 
-const retroReflectionsByMeetingId = new ForeignLoaderParams(
+export const retroReflectionsByMeetingId = new LoaderMakerForeign(
   'retroReflections',
   'meetingId',
   async (meetingIds) => {
@@ -143,7 +153,7 @@ const retroReflectionsByMeetingId = new ForeignLoaderParams(
   }
 )
 
-const slackAuthByUserId = new ForeignLoaderParams('slackAuths', 'userId', async (userIds) => {
+export const slackAuthByUserId = new LoaderMakerForeign('slackAuths', 'userId', async (userIds) => {
   const r = await getRethink()
   return r
     .table('SlackAuth')
@@ -151,7 +161,7 @@ const slackAuthByUserId = new ForeignLoaderParams('slackAuths', 'userId', async 
     .run()
 })
 
-const slackNotificationsByTeamId = new ForeignLoaderParams(
+export const slackNotificationsByTeamId = new LoaderMakerForeign(
   'slackNotifications',
   'teamId',
   async (teamIds) => {
@@ -163,7 +173,7 @@ const slackNotificationsByTeamId = new ForeignLoaderParams(
   }
 )
 
-const suggestedActionsByUserId = new ForeignLoaderParams(
+export const suggestedActionsByUserId = new LoaderMakerForeign(
   'suggestedActions',
   'userId',
   async (userIds) => {
@@ -176,7 +186,7 @@ const suggestedActionsByUserId = new ForeignLoaderParams(
   }
 )
 
-const teamsByOrgId = new ForeignLoaderParams('teams', 'orgId', async (orgIds) => {
+export const teamsByOrgId = new LoaderMakerForeign('teams', 'orgId', async (orgIds) => {
   const r = await getRethink()
   return r
     .table('Team')
@@ -189,7 +199,7 @@ const teamsByOrgId = new ForeignLoaderParams('teams', 'orgId', async (orgIds) =>
     .run()
 })
 
-const tasksByTeamId = new ForeignLoaderParams('tasks', 'teamId', async (teamIds) => {
+export const tasksByTeamId = new LoaderMakerForeign('tasks', 'teamId', async (teamIds) => {
   const r = await getRethink()
   // waraning! contains private tasks
   return r
@@ -203,34 +213,16 @@ const tasksByTeamId = new ForeignLoaderParams('tasks', 'teamId', async (teamIds)
     .run()
 })
 
-const teamMembersByTeamId = new ForeignLoaderParams('teamMembers', 'teamId', async (teamIds) => {
-  // tasksByUserId is expensive since we have to look up each team to check the team archive status
-  const r = await getRethink()
-  return r
-    .table('TeamMember')
-    .getAll(r.args(teamIds), {index: 'teamId'})
-    .filter({isNotRemoved: true})
-    .run()
-})
-
-const foreignParamDict = {
-  activeMeetingsByTeamId,
-  agendaItemsByTeamId,
-  atlassianAuthByUserId,
-  customPhaseItemsByTeamId,
-  meetingMembersByMeetingId,
-  meetingSettingsByTeamId,
-  organizationUsersByOrgId,
-  organizationUsersByUserId,
-  retroReflectionGroupsByMeetingId,
-  reflectTemplatesByTeamId,
-  retroReflectionsByMeetingId,
-  slackAuthByUserId,
-  slackNotificationsByTeamId,
-  suggestedActionsByUserId,
-  tasksByTeamId,
-  teamsByOrgId,
-  teamMembersByTeamId
-}
-
-export default foreignParamDict
+export const teamMembersByTeamId = new LoaderMakerForeign(
+  'teamMembers',
+  'teamId',
+  async (teamIds) => {
+    // tasksByUserId is expensive since we have to look up each team to check the team archive status
+    const r = await getRethink()
+    return r
+      .table('TeamMember')
+      .getAll(r.args(teamIds), {index: 'teamId'})
+      .filter({isNotRemoved: true})
+      .run()
+  }
+)
