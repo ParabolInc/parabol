@@ -3,6 +3,7 @@ import {resolveTeam, resolveTeamMember} from '../resolvers'
 import Team from './Team'
 import TeamMember from './TeamMember'
 import StandardMutationError from './StandardMutationError'
+import {GQLContext} from '../graphql'
 
 export const addTeamFields = {
   error: {
@@ -27,7 +28,7 @@ export const addTeamFields = {
   }
 }
 
-const AddTeamPayload = new GraphQLObjectType({
+const AddTeamPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'AddTeamPayload',
   fields: () => addTeamFields
 })

@@ -5,8 +5,9 @@ import {resolveNewMeeting, resolveUnlockedStages} from '../resolvers'
 import findStageById from '../../../client/utils/meetings/findStageById'
 import NewMeetingStage from './NewMeetingStage'
 import PhaseCompletePayload from './PhaseCompletePayload'
+import {GQLContext} from '../graphql'
 
-const NavigateMeetingPayload = new GraphQLObjectType({
+const NavigateMeetingPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'NavigateMeetingPayload',
   fields: () => ({
     error: {

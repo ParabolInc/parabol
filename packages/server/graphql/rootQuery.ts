@@ -1,14 +1,13 @@
-import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
-import User from './types/User'
-import {getUserId} from '../utils/authorization'
-import verifiedInvitation from './queries/verifiedInvitation'
-import rateLimit from './rateLimit'
+import {GraphQLObjectType} from 'graphql'
 import getRethink from '../database/rethinkDriver'
-import massInvitation from './queries/massInvitation'
+import {getUserId} from '../utils/authorization'
 import {GQLContext} from './graphql'
-import SAMLIdP from './queries/SAMLIdP'
 import getDemoEntities from './queries/getDemoEntitites'
 import getLastSeenAtURL from './queries/helpers/getLastSeenAtURL'
+import massInvitation from './queries/massInvitation'
+import SAMLIdP from './queries/SAMLIdP'
+import verifiedInvitation from './queries/verifiedInvitation'
+import User from './types/User'
 
 export default new GraphQLObjectType<any, GQLContext>({
   name: 'Query',
@@ -39,23 +38,6 @@ export default new GraphQLObjectType<any, GQLContext>({
     getDemoEntities,
     massInvitation,
     verifiedInvitation,
-    authProviders: {
-      args: {
-        email: {
-          type: new GraphQLNonNull(GraphQLID),
-          description: 'the email to see if it exists as an oauth account'
-        }
-      },
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))),
-      resolve: rateLimit({perMinute: 60, perHour: 240})(async (_source, {email}) => {
-        const r = await getRethink()
-        const users = await r
-          .table('User')
-          .getAll(email, {index: 'email'})
-          .run()
-        return users.map((user) => user.identities[0].provider)
-      })
-    },
     SAMLIdP
   })
 })

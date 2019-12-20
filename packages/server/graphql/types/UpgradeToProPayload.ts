@@ -6,7 +6,7 @@ import StandardMutationError from './StandardMutationError'
 import NewMeeting from './NewMeeting'
 import {GQLContext} from '../graphql'
 
-const UpgradeToProPayload = new GraphQLObjectType({
+const UpgradeToProPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'UpgradeToProPayload',
   fields: () => ({
     error: {
@@ -29,7 +29,7 @@ const UpgradeToProPayload = new GraphQLObjectType({
     meetings: {
       type: new GraphQLList(new GraphQLNonNull(NewMeeting)),
       description: 'the meetings that were showing conversion modals',
-      resolve: ({meetingIds}, _args, {dataLoader}: GQLContext) => {
+      resolve: ({meetingIds}, _args, {dataLoader}) => {
         return dataLoader.get('newMeetings').loadMany(meetingIds)
       }
     }

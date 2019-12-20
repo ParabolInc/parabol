@@ -1,66 +1,49 @@
 import fkLoader from './fkLoader'
 import DataLoader from 'dataloader'
-import foreignParamDict from './foreignParamDict'
-import pkLoader, {pkLoaderToTable} from './pkLoader'
-import customLoaderFns from './customLoaderFns'
-
-type PKLoaderName = keyof typeof pkLoaderToTable
-type FKLoaderName = keyof typeof foreignParamDict
-type CustomLoaderName = keyof typeof customLoaderFns
-type LoaderName = PKLoaderName | FKLoaderName | CustomLoaderName
+import pkLoader from './pkLoader'
+import * as primaryLoaderMakers from './primaryLoaderMakers'
+import * as customLoaderMakers from './customLoaderMakers'
+import * as foreignLoaderMakers from './foreignLoaderMakers'
+import {DataLoaderType} from 'parabol-client/types/constEnums'
 
 interface LoaderDict {
   [loaderName: string]: DataLoader<any, any>
 }
+
+const loaderMakers = {
+  ...primaryLoaderMakers,
+  ...foreignLoaderMakers,
+  ...customLoaderMakers
+} as const
+
 export default class RethinkDataLoader {
   dataLoaderOptions: DataLoader.Options<any, any>
-  primaryLoaders: LoaderDict = {}
-  foreginLoaders: LoaderDict = {}
-  customLoaders: LoaderDict = {}
+  loaders: LoaderDict = {}
   constructor(dataLoaderOptions: DataLoader.Options<any, any> = {}) {
     this.dataLoaderOptions = dataLoaderOptions
   }
 
-  getPrimary(loaderName: PKLoaderName) {
-    let loader = this.primaryLoaders[loaderName]
-    if (!loader) {
-      const table = pkLoaderToTable[loaderName]
-      loader = this.primaryLoaders[loaderName] = pkLoader(this.dataLoaderOptions, table)
+  get(loaderName: keyof typeof loaderMakers) {
+    const loader = this.loaders[loaderName]
+    if (loader) return loader
+    const loaderMaker = loaderMakers[loaderName]
+    const {type} = loaderMaker
+    switch (type) {
+      case DataLoaderType.PRIMARY:
+        const {table} = loaderMaker
+        return (this.loaders[loaderName] = pkLoader(this.dataLoaderOptions, table))
+      case DataLoaderType.FOREIGN:
+        const {fetch, field, pk} = loaderMaker
+        const basePkLoader = this.get(pk)
+        return (this.loaders[loaderName] = fkLoader(
+          basePkLoader,
+          this.dataLoaderOptions,
+          field,
+          fetch
+        ))
+      case DataLoaderType.CUSTOM:
+        const {fn} = loaderMaker
+        return (this.loaders[loaderName] = fn(this))
     }
-    return loader
-  }
-
-  getForeign(loaderName: FKLoaderName) {
-    let loader = this.foreginLoaders[loaderName]
-    if (!loader) {
-      const {fetch, field, pk} = foreignParamDict[loaderName]
-      const pkLoader = this.getPrimary(pk)
-      loader = this.foreginLoaders[loaderName] = fkLoader(
-        pkLoader,
-        this.dataLoaderOptions,
-        field,
-        fetch
-      )
-    }
-    return loader
-  }
-
-  getCustom(loaderName: CustomLoaderName) {
-    let loader = this.customLoaders[loaderName]
-    if (!loader) {
-      const loaderFn = customLoaderFns[loaderName]
-      loader = this.customLoaders[loaderName] = loaderFn(this)
-    }
-    return loader
-  }
-
-  get(loaderName: LoaderName) {
-    if (foreignParamDict[loaderName]) {
-      return this.getForeign(loaderName as FKLoaderName)
-    }
-    if (pkLoaderToTable[loaderName]) {
-      return this.getPrimary(loaderName as PKLoaderName)
-    }
-    return this.getCustom(loaderName as CustomLoaderName)
   }
 }

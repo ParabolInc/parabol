@@ -3,8 +3,9 @@ import {resolveOrganization, resolveTeams} from '../resolvers'
 import Organization from './Organization'
 import Team from './Team'
 import StandardMutationError from './StandardMutationError'
+import {GQLContext} from '../graphql'
 
-const DowngradeToPersonalPayload = new GraphQLObjectType({
+const DowngradeToPersonalPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'DowngradeToPersonalPayload',
   fields: () => ({
     error: {
