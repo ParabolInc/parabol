@@ -23,7 +23,7 @@ const logFailedLogin = async (ip: string, email: string) => {
 
 const attemptLogin = async (email: string, password: string, ip = '') => {
   const r = await getRethink()
-  const yesterday = Date.now() - ms('1d')
+  const yesterday = new Date(Date.now() - ms('1d'))
   const {existingUser, failOnAccount, failOnTime} = await r({
     existingUser: (r
       .table<User>('User')

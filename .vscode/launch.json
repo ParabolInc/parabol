@@ -7,7 +7,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch via NPM",
+            "name": "Launch via Yarn",
             "runtimeExecutable": "yarn",
             "runtimeArgs": [
                 "debug"

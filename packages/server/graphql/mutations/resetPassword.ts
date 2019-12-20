@@ -85,8 +85,8 @@ const resetPassword = {
           .delete()
           .run()
       ])
-      await blacklistJWT(userId, context.authToken.iat, context.socketId)
       context.authToken = new AuthToken({sub: userId, tms, rol})
+      await blacklistJWT(userId, context.authToken.iat, context.socketId)
       return {
         userId,
         authToken: encodeAuthToken(context.authToken)

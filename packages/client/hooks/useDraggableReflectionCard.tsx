@@ -268,24 +268,26 @@ const useDragAndDrop = (
     announceDragUpdate(clientX, clientY)
   })
 
-  const onMouseDown = (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
-    if (isDropping || staticIdx === -1 || isEditing) return
-    const isTouch = isReactTouch(e)
-    if (isTouch && drag.ref) {
-      // https://stackoverflow.com/questions/33298828/touch-move-event-dont-fire-after-touch-start-target-is-removed
-      drag.ref.addEventListener('touchmove', onMouseMove)
-      drag.ref.addEventListener('touchend', onMouseUp)
-    } else {
-      document.addEventListener('mousemove', onMouseMove)
-      document.addEventListener('mouseup', onMouseUp)
+  const onMouseDown = useEventCallback(
+    (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
+      if (isDropping || staticIdx === -1 || isEditing) return
+      const isTouch = isReactTouch(e)
+      if (isTouch && drag.ref) {
+        // https://stackoverflow.com/questions/33298828/touch-move-event-dont-fire-after-touch-start-target-is-removed
+        drag.ref.addEventListener('touchmove', onMouseMove)
+        drag.ref.addEventListener('touchend', onMouseUp)
+      } else {
+        document.addEventListener('mousemove', onMouseMove)
+        document.addEventListener('mouseup', onMouseUp)
+      }
+      const {clientX, clientY} = isTouch
+        ? (e as React.TouchEvent<HTMLDivElement>).touches[0]
+        : (e as React.MouseEvent<HTMLDivElement>)
+      drag.startX = clientX
+      drag.startY = clientY
+      drag.isDrag = false
     }
-    const {clientX, clientY} = isTouch
-      ? (e as React.TouchEvent<HTMLDivElement>).touches[0]
-      : (e as React.MouseEvent<HTMLDivElement>)
-    drag.startX = clientX
-    drag.startY = clientY
-    drag.isDrag = false
-  }
+  )
 
   return {onMouseDown, onMouseMove, onMouseUp}
 }
