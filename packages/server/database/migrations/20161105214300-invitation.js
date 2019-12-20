@@ -14,7 +14,9 @@ exports.up = async (r) => {
         {
           email: r
             .table('User')
-            .get(r.row('userId'))('email')
+            .get((row) => {
+              return row('userId')
+            })('email')
             .default('')
         },
         {nonAtomic: true}

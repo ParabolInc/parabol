@@ -84,9 +84,4 @@ export default async function createTeamAndLeader(userId: string, newTeam: Valid
   if (!organizationUser) {
     await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER)
   }
-
-  const tms = await r
-    .table('User')
-    .get(userId)('tms')
-    .run()
 }

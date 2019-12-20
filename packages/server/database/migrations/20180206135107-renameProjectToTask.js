@@ -57,7 +57,11 @@ exports.up = async (r) => {
   // replace Notification.projectId wth Notification.taskId, and PROJECT_INVOLVES notification type to TASK_INVOLVES
   await r
     .table('Notification')
-    .filter(r.row.hasFields('projectId').and(r.row('type').eq('PROJECT_INVOLVES')))
+    .filter(
+      r.row.hasFields('projectId').and((row) => {
+        return row('type').eq('PROJECT_INVOLVES')
+      })
+    )
     .update((notification) =>
       notification
         .merge({
@@ -129,7 +133,11 @@ exports.down = async (r) => {
   // replace Notification.projectId wth Notification.taskId, and PROJECT_INVOLVES notification type to TASK_INVOLVES
   await r
     .table('Notification')
-    .filter(r.row.hasFields('taskId').and(r.row('type').eq('TASK_INVOLVES')))
+    .filter(
+      r.row.hasFields('taskId').and(function(row) {
+        return row('type').eq('TASK_INVOLVES')
+      })
+    )
     .update((notification) =>
       notification
         .merge({
