@@ -1,10 +1,9 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import signout from '../containers/Signout/signout'
-import getGraphQLError from '../utils/relay/getGraphQLError'
-import LoginMutation from './LoginMutation'
+import {commitMutation} from 'react-relay'
 import Atmosphere from '../Atmosphere'
+import getGraphQLError from '../utils/relay/getGraphQLError'
 import {CreateImposterTokenMutation as ICreateImposterTokenMutation} from '../__generated__/CreateImposterTokenMutation.graphql'
+import {LocalStorageKey} from 'types/constEnums'
 
 graphql`
   fragment CreateImposterTokenMutation_agendaItem on CreateImposterTokenPayload {
@@ -49,15 +48,9 @@ const CreateImposterTokenMutation = (atmosphere: Atmosphere, userId, {history}) 
       const {createImposterToken} = res
       const {authToken} = createImposterToken
       if (!authToken) return
-      // Reset application state:
-      signout(atmosphere, history)
-
-      // Assume the identity of the new user:
-      const onCompleted = () => {
-        // Navigate to a default location, the application root:
-        history.replace('/')
-      }
-      LoginMutation(atmosphere, {auth0Token: authToken}, {onCompleted, history})
+      atmosphere.close()
+      window.localStorage.setItem(LocalStorageKey.APP_TOKEN_KEY, authToken)
+      window.location.reload()
     },
     onError
   })

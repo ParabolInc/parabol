@@ -89,7 +89,7 @@ const loginWithGoogle = {
         context.authToken = new AuthToken({sub: viewerId, rol, tms: existingUser.tms})
         return {
           userId: viewerId,
-          // create a brand new auth token using the tms in our DB, not auth0s
+          // create a brand new auth token using the tms in our DB
           authToken: encodeAuthToken(context.authToken)
         }
       }

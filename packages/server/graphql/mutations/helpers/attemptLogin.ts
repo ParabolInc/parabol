@@ -78,7 +78,7 @@ const attemptLogin = async (email: string, password: string, ip = '') => {
     sendSegmentIdentify(viewerId).catch()
     return {
       userId: viewerId,
-      // create a brand new auth token using the tms in our DB, not auth0s
+      // create a brand new auth token using the tms in our DB
       authToken: new AuthToken({sub: viewerId, rol, tms: existingUser.tms})
     }
   }

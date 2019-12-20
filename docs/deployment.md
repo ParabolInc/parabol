@@ -42,9 +42,7 @@ define the variable with the appropriate value for the environment by
 using `dokku config:set <app>`. For example:
 
 ```sh
-$ dokku config:set parabol-action --no-restart \
-    AUTH0_CLIENT_ID="w3mBrhiXGsE3DsrSMgpAz2bS6VzLhOyJ" \
-    AUTH0_CLIENT_SECRET="..."
+$ dokku config:set parabol-action --no-restart FOO="bar"
 ```
 
 ## Add remote to your git environment:

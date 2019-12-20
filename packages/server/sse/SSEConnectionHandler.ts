@@ -1,6 +1,5 @@
 import url from 'url'
 import {verify} from 'jsonwebtoken'
-import {clientSecret as auth0ClientSecret} from '../utils/auth0Helpers'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import handleConnect from '../socketHandlers/handleConnect'
 import handleDisconnect from '../socketHandlers/handleDisconnect'
@@ -12,11 +11,12 @@ import closeTransport from '../socketHelpers/closeTransport'
 import {TrebuchetCloseReason} from 'parabol-client/types/constEnums'
 
 const APP_VERSION = process.env.npm_package_version
+const SERVER_SECRET = process.env.AUTH0_CLIENT_SECRET!
 const SSEConnectionHandler = async (req: express.Request, res: express.Response) => {
   const {query} = url.parse(req.url, true)
   let authToken
   try {
-    authToken = verify(query.token as string, Buffer.from(auth0ClientSecret, 'base64'))
+    authToken = verify(query.token as string, Buffer.from(SERVER_SECRET, 'base64'))
   } catch (e) {
     res.sendStatus(404)
     return

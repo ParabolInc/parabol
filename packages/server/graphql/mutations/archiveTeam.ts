@@ -1,7 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import ArchiveTeamPayload from '../types/ArchiveTeamPayload'
-import {updateAuth0TMS} from '../../utils/auth0Helpers'
 import {getUserId, isTeamLead} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
@@ -71,7 +70,6 @@ export default {
 
     users.forEach((user) => {
       const {id, tms} = user
-      updateAuth0TMS(id, tms)
       publish(SubscriptionChannel.NOTIFICATION, id, 'AuthTokenPayload', {tms})
     })
 

@@ -3,12 +3,13 @@ import express from 'express'
 import {verify} from 'jsonwebtoken'
 import url from 'url'
 import ConnectionContext, {UserWebSocket} from '../socketHelpers/ConnectionContext'
-import {clientSecret as auth0ClientSecret} from '../utils/auth0Helpers'
 import handleConnect from './handleConnect'
 import handleDisconnect from './handleDisconnect'
 import handleMessage from './handleMessage'
 
 const APP_VERSION = process.env.npm_package_version
+const SERVER_SECRET = process.env.AUTH0_CLIENT_SECRET!
+
 const wssConnectionHandler = async (socket: UserWebSocket, req: express.Request) => {
   const {headers} = req
   const protocol = headers['sec-websocket-protocol']
@@ -21,7 +22,7 @@ const wssConnectionHandler = async (socket: UserWebSocket, req: express.Request)
   const {query} = url.parse(req.url, true)
   let authToken
   try {
-    authToken = verify(query.token as string, Buffer.from(auth0ClientSecret, 'base64'))
+    authToken = verify(query.token as string, Buffer.from(SERVER_SECRET, 'base64'))
   } catch (e) {
     // internal error (bad auth)
     socket.close(1011)

@@ -24,7 +24,6 @@
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
-import {APP_TOKEN_KEY} from '../../client/utils/constants'
 import {toEpochSeconds} from '../../server/utils/epochTime'
 import {JWT_LIFESPAN} from '../../server/utils/serverConstants'
 import {sign} from 'jsonwebtoken'
@@ -38,7 +37,7 @@ const login = (_overrides = {}) => {
   const iat = toEpochSeconds(now)
   const tokenObj = {
     sub: 'auth0|5c75e3a068d77f71b39513a9',
-    aud: Cypress.env('AUTH0_CLIENT_ID'),
+    aud: 'action',
     iss: window.location.origin,
     exp,
     iat,
@@ -46,7 +45,7 @@ const login = (_overrides = {}) => {
   }
   const secret = Buffer.from(Cypress.env('AUTH0_CLIENT_SECRET'), 'base64')
   const authToken = sign(tokenObj, secret)
-  window.localStorage.setItem(APP_TOKEN_KEY, authToken)
+  window.localStorage.setItem('Action:token', authToken)
   cy.visit('/')
   cy.location('pathname').should('eq', '/me')
 }

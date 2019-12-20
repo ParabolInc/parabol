@@ -2,7 +2,6 @@ import {GraphQLNonNull} from 'graphql'
 import createTeamAndLeader from './helpers/createTeamAndLeader'
 import AddTeamPayload from '../types/AddTeamPayload'
 import NewTeamInput from '../types/NewTeamInput'
-import {updateAuth0TMS} from '../../utils/auth0Helpers'
 import {getUserId, isUserInOrg} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
@@ -84,7 +83,6 @@ export default {
       tms.push(teamId)
       sendSegmentEvent('New Team', viewerId, {orgId, teamId}).catch()
       publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
-      updateAuth0TMS(viewerId, tms)
       const teamMemberId = toTeamMemberId(teamId, viewerId)
       const data = {
         orgId,
