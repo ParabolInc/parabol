@@ -82,6 +82,7 @@ import loginWithGoogle from './mutations/loginWithGoogle'
 import loginWithPassword from './mutations/loginWithPassword'
 import emailPasswordReset from './mutations/emailPasswordReset'
 import resetPassword from './mutations/resetPassword'
+import invalidateSessions from './mutations/invalidateSessions'
 
 interface Context extends InternalContext, GQLContext {}
 
@@ -121,6 +122,7 @@ export default new GraphQLObjectType<any, Context, any>({
     editTask,
     endNewMeeting,
     inactivateUser,
+    invalidateSessions,
     inviteToTeam,
     login,
     loginWithGoogle,

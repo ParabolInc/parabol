@@ -1,4 +1,4 @@
-import {ConnectedSubs} from 'socketHelpers/ConnectionContext'
+import {ConnectedSubs} from '../socketHelpers/ConnectionContext'
 
 const relayUnsubscribe = (subs: ConnectedSubs | undefined, opId: string) => {
   if (subs) {

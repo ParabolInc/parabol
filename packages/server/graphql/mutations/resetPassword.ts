@@ -1,16 +1,17 @@
-import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
-import getRethink from '../../database/rethinkDriver'
-import rateLimit from '../rateLimit'
-import {GQLContext} from '../graphql'
-import PasswordResetRequest from '../../database/types/PasswordResetRequest'
-import {Security, Threshold} from 'parabol-client/types/constEnums'
 import bcrypt from 'bcrypt'
-import standardError from '../../utils/standardError'
+import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
+import {Security, Threshold} from 'parabol-client/types/constEnums'
 import {AuthIdentityTypeEnum} from 'parabol-client/types/graphql'
+import getRethink from '../../database/rethinkDriver'
 import AuthIdentityLocal from '../../database/types/AuthIdentityLocal'
-import encodeAuthToken from '../../utils/encodeAuthToken'
 import AuthToken from '../../database/types/AuthToken'
+import PasswordResetRequest from '../../database/types/PasswordResetRequest'
+import encodeAuthToken from '../../utils/encodeAuthToken'
+import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
+import rateLimit from '../rateLimit'
 import ResetPasswordPayload from '../types/ResetPasswordPayload'
+import blacklistJWT from '../../utils/blacklistJWT'
 
 const resetPassword = {
   type: new GraphQLNonNull(ResetPasswordPayload),
@@ -85,6 +86,7 @@ const resetPassword = {
           .run()
       ])
       context.authToken = new AuthToken({sub: userId, tms, rol})
+      await blacklistJWT(userId, context.authToken.iat, context.socketId)
       return {
         userId,
         authToken: encodeAuthToken(context.authToken)

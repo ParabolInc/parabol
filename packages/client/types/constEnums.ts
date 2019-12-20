@@ -128,6 +128,7 @@ export const enum LoaderSize {
 }
 
 export const enum LocalStorageKey {
+  APP_TOKEN_KEY = 'Action:token',
   INVITATION_TOKEN = 'invitationToken'
 }
 
@@ -267,6 +268,10 @@ export const enum Times {
   REFLECTION_COLUMN_SWIPE_THRESH = 600
 }
 
+export const enum TrebuchetCloseReason {
+  SESSION_INVALIDATED = 'sessionInvalidated',
+  EXPIRED_SESSION = 'expiredSession'
+}
 /* https://material.io/design/environment/elevation.html#default-elevations */
 export const enum ZIndex {
   BOTTOM_BAR = 8,

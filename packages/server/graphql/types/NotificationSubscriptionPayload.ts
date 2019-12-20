@@ -15,6 +15,7 @@ import EndNewMeetingPayload from './EndNewMeetingPayload'
 import AddNewFeaturePayload from './addNewFeaturePayload'
 import MeetingStageTimeLimitPayload from './MeetingStageTimeLimitPayload'
 import AuthTokenPayload from './AuthTokenPayload'
+import InvalidateSessionsPayload from './InvalidateSessionsPayload'
 
 const types = [
   AcceptTeamInvitationPayload,
@@ -27,6 +28,7 @@ const types = [
   DeleteTaskPayload,
   DisconnectSocketPayload,
   EndNewMeetingPayload,
+  InvalidateSessionsPayload,
   InviteToTeamPayload,
   MeetingStageTimeLimitPayload,
   RemoveOrgUserPayload,

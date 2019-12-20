@@ -21,11 +21,12 @@ import {
   Variables
 } from 'relay-runtime'
 import StrictEventEmitter from 'strict-event-emitter-types'
-import {APP_TOKEN_KEY} from './utils/constants'
 import handlerProvider from './utils/relay/handlerProvider'
 import {Snack, SnackbarRemoveFn} from './components/Snackbar'
 import AuthToken from 'parabol-server/database/types/AuthToken'
 import {RouterProps} from 'react-router'
+import {LocalStorageKey, TrebuchetCloseReason} from './types/constEnums'
+import handleInvalidatedSession from './hooks/handleInvalidatedSession'
 
 interface QuerySubscription {
   subKey: string
@@ -110,8 +111,13 @@ export default class Atmosphere extends Environment {
       body
     })
     const contentTypeHeader = res.headers.get('content-type') || ''
-    const contentType = contentTypeHeader.toLowerCase()
-    return contentType.startsWith('application/json') ? res.json() : null
+    if (contentTypeHeader.toLowerCase().startsWith('application/json')) {
+      return res.json()
+    }
+    if (res.status === 401) {
+      handleInvalidatedSession(TrebuchetCloseReason.EXPIRED_SESSION, {atmosphere: this})
+    }
+    return null
   }
 
   handleSubscribePromise = async (
@@ -198,7 +204,7 @@ export default class Atmosphere extends Environment {
 
   getAuthToken = (global: Window) => {
     if (!global) return
-    const authToken = global.localStorage.getItem(APP_TOKEN_KEY)
+    const authToken = global.localStorage.getItem(LocalStorageKey.APP_TOKEN_KEY)
     this.setAuthToken(authToken)
   }
 
@@ -206,7 +212,7 @@ export default class Atmosphere extends Environment {
     this.authToken = authToken
     if (!authToken) {
       this.authObj = null
-      window.localStorage.removeItem(APP_TOKEN_KEY)
+      window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)
       return
     }
     this.authObj = jwtDecode(authToken)
@@ -215,10 +221,10 @@ export default class Atmosphere extends Environment {
     if (exp < Date.now() / 1000) {
       this.authToken = null
       this.authObj = null
-      window.localStorage.removeItem(APP_TOKEN_KEY)
+      window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)
     } else {
       this.viewerId = viewerId!
-      window.localStorage.setItem(APP_TOKEN_KEY, authToken)
+      window.localStorage.setItem(LocalStorageKey.APP_TOKEN_KEY, authToken)
       // deprecated! will be removed soon
       this.userId = viewerId
     }

@@ -3,11 +3,11 @@ import {
   OutgoingMessage,
   ServerMessageTypes
 } from '@mattkrick/graphql-trebuchet-client'
-import executeGraphQL from './executeGraphQL'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import relayUnsubscribe from '../utils/relayUnsubscribe'
 import sanitizeGraphQLErrors from '../utils/sanitizeGraphQLErrors'
 import sendToSentry from '../utils/sendToSentry'
+import executeGraphQL from './executeGraphQL'
 import subscribeGraphQL from './subscribeGraphQL'
 
 const {GQL_START, GQL_STOP} = ServerMessageTypes

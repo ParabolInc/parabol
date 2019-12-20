@@ -7,6 +7,7 @@ import executeGraphQL from '../graphql/executeGraphQL'
 
 interface Options {
   exitCode?: number
+  reason?: string
 }
 const query = `
 mutation DisconnectSocket {
@@ -18,10 +19,10 @@ mutation DisconnectSocket {
 }`
 
 const handleDisconnect = (connectionContext: ConnectionContext, options: Options = {}) => () => {
-  const {exitCode = 1000} = options
+  const {exitCode = 1000, reason} = options
   relayUnsubscribeAll(connectionContext)
   const {authToken, ip, cancelKeepAlive, socket, id: socketId} = connectionContext
-  closeTransport(socket, exitCode)
+  closeTransport(socket, exitCode, reason)
   clearInterval(cancelKeepAlive!)
   closeWRTC(socket as UWebSocket)
   executeGraphQL({authToken, ip, query, isPrivate: true, socketId})

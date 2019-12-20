@@ -12,7 +12,7 @@ import {ClientMessageTypes} from '@mattkrick/graphql-trebuchet-client'
 import {createSourceEventStream, ExecutionResult} from 'graphql'
 import {decode} from 'jsonwebtoken'
 import {IAuthTokenPayload} from 'parabol-client/types/graphql'
-import SubscriptionIterator from 'utils/SubscriptionIterator'
+import SubscriptionIterator from '../utils/SubscriptionIterator'
 import AuthToken from '../database/types/AuthToken'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import sendMessage from '../socketHelpers/sendMessage'
@@ -21,6 +21,8 @@ import sendToSentry from '../utils/sendToSentry'
 import DocumentCache from './DocumentCache'
 import ResponseStream from './ResponseStream'
 import publicSchema from './rootSchema'
+import handleDisconnect from '../socketHandlers/handleDisconnect'
+import {TrebuchetCloseReason} from 'parabol-client/types/constEnums'
 
 export interface SubscribeRequest {
   connectionContext: ConnectionContext
@@ -76,7 +78,8 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
   // TODO PR definitelytyped
   for await (const payload of responseStream) {
     const {data} = payload
-    if (data?.notificationSubscription?.__typename === 'AuthTokenPayload') {
+    const notificationType = data?.notificationSubscription?.__typename
+    if (notificationType === 'AuthTokenPayload') {
       const jwt = (data.notificationSubscription as IAuthTokenPayload).id
       connectionContext.authToken = new AuthToken(decode(jwt) as any)
       // if auth changed, then we can't trust any of the subscriptions, so dump em all and resub for the client
@@ -84,6 +87,11 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
       setTimeout(() => {
         relayUnsubscribeAll(connectionContext, {isResub: true})
       }, 1000)
+    } else if (notificationType === 'InvalidateSessionsPayload') {
+      handleDisconnect(connectionContext, {
+        exitCode: 1011,
+        reason: TrebuchetCloseReason.SESSION_INVALIDATED
+      })
     }
     sendMessage(socket, GQL_DATA, payload, opId)
   }

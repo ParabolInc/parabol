@@ -1,10 +1,10 @@
 import Atmosphere from '../../Atmosphere'
 import SendClientSegmentEventMutation from '../../mutations/SendClientSegmentEventMutation'
-import {APP_TOKEN_KEY} from '../../utils/constants'
 import {SegmentClientEventEnum} from '../../types/graphql'
+import {LocalStorageKey} from '../../types/constEnums'
 
 const signout = (atmosphere: Atmosphere, history: any) => {
-  window.localStorage.removeItem(APP_TOKEN_KEY)
+  window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)
   SendClientSegmentEventMutation(atmosphere, SegmentClientEventEnum.UserLogout)
   atmosphere.eventEmitter.emit('addSnackbar', {
     key: 'logOut',

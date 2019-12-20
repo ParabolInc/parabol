@@ -15,7 +15,7 @@ const sendRaw = (transport: WebSocket | http.ServerResponse, message) => {
           sseTransport.write('event: ka\n')
         }
         sseTransport.write(`data: ${message}\n\n`)
-        ;(sseTransport as any).flush()
+        ;(sseTransport as any).flushHeaders()
       }
   }
 }
