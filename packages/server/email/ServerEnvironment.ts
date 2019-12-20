@@ -1,7 +1,7 @@
-import AuthToken from '../database/types/AuthToken'
 import {ExecutionResult} from 'graphql'
-import executeGraphQL from '../graphql/executeGraphQL'
 import {Environment, FetchFunction, Network, RecordSource, Store} from 'relay-runtime'
+import AuthToken from '../database/types/AuthToken'
+import executeGraphQL from '../graphql/executeGraphQL'
 
 const noop = (): any => {
   /**/
@@ -27,6 +27,7 @@ export default class ServerEnvironment extends Environment {
     if (!this.isFetched) {
       this.isFetched = true
       this.results = await Promise.all(this.requestCache)
+      this.requestCache = []
     }
   }
 

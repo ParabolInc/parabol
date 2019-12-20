@@ -10,7 +10,7 @@ let nextId = 0
 const getDataLoader = (did?: string) => {
   // for queries & mutations, make a new dataLoader
   if (!did)
-    return dataLoaderCache.add(`${NODE_ID}: ${numToBase64(nextId++)}`, new RethinkDataLoader())
+    return dataLoaderCache.add(`${NODE_ID}:${numToBase64(nextId++)}`, new RethinkDataLoader())
   // if this will be used for a subscription payload, try reusing the dataLoader that made it
   const dataLoader = dataLoaderCache.use(did)
   if (dataLoader) return dataLoader
