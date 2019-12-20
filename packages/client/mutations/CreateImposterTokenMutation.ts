@@ -27,7 +27,7 @@ const mutation = graphql`
   }
 `
 
-const CreateImposterTokenMutation = (atmosphere: Atmosphere, userId, {history}) => {
+const CreateImposterTokenMutation = (atmosphere: Atmosphere, userId) => {
   const onError = (err) => {
     atmosphere.eventEmitter.emit('addSnackbar', {
       autoDismiss: 5,

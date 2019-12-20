@@ -53,7 +53,7 @@ const ForgotPasswordOneClick = (props: Props) => {
     )
   }
   return (
-    <ForgotButton onClick={this.onClick} waiting={submitting}>
+    <ForgotButton onClick={onClick} waiting={submitting}>
       Forgot your password?
     </ForgotButton>
   )

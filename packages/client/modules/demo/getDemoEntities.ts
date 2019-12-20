@@ -1,4 +1,4 @@
-import Atmosphere from 'Atmosphere'
+import Atmosphere from '../../Atmosphere'
 import graphql from 'babel-plugin-relay/macro'
 import {fetchQuery} from 'relay-runtime'
 import {IGoogleAnalyzedEntity} from '../../types/graphql'

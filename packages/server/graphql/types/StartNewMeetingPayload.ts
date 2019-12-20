@@ -3,8 +3,9 @@ import {resolveNewMeeting, resolveTeam} from '../resolvers'
 import Team from './Team'
 import NewMeeting from './NewMeeting'
 import StandardMutationError from './StandardMutationError'
+import {GQLContext} from '../graphql'
 
-const StartNewMeetingPayload = new GraphQLObjectType({
+const StartNewMeetingPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'StartNewMeetingPayload',
   fields: () => ({
     error: {

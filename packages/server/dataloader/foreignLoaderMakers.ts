@@ -213,6 +213,21 @@ export const tasksByTeamId = new LoaderMakerForeign('tasks', 'teamId', async (te
     .run()
 })
 
+export const teamInvitationsByTeamId = new LoaderMakerForeign(
+  'teamInvitations',
+  'teamId',
+  async (teamIds) => {
+    const r = await getRethink()
+    const now = new Date()
+    return r
+      .table('TeamInvitation')
+      .getAll(r.args(teamIds), {index: 'teamId'})
+      .filter({acceptedAt: null})
+      .filter((row) => row('expiresAt').ge(now))
+      .run()
+  }
+)
+
 export const teamMembersByTeamId = new LoaderMakerForeign(
   'teamMembers',
   'teamId',

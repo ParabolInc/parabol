@@ -4,8 +4,9 @@ import StandardMutationError from './StandardMutationError'
 import Team from './Team'
 import TeamMember from './TeamMember'
 import User from './User'
+import {GQLContext} from '../graphql'
 
-const AcceptTeamInvitationPayload = new GraphQLObjectType({
+const AcceptTeamInvitationPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'AcceptTeamInvitationPayload',
   fields: () => ({
     error: {

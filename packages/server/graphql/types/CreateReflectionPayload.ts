@@ -5,8 +5,9 @@ import NewMeeting from './NewMeeting'
 import RetroReflection from './RetroReflection'
 import RetroReflectionGroup from './RetroReflectionGroup'
 import NewMeetingStage from './NewMeetingStage'
+import {GQLContext} from '../graphql'
 
-const CreateReflectionPayload = new GraphQLObjectType({
+const CreateReflectionPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'CreateReflectionPayload',
   fields: () => ({
     error: {
@@ -17,7 +18,7 @@ const CreateReflectionPayload = new GraphQLObjectType({
       resolve: resolveNewMeeting
     },
     reflectionId: {
-      type: GraphQLID,
+      type: GraphQLID
     },
     reflection: {
       type: RetroReflection,

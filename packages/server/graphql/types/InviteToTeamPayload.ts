@@ -4,8 +4,9 @@ import GraphQLEmailType from './GraphQLEmailType'
 import StandardMutationError from './StandardMutationError'
 import Team from './Team'
 import NotificationTeamInvitation from './NotificationTeamInvitation'
+import {GQLContext} from '../graphql'
 
-const InviteToTeamPayload = new GraphQLObjectType({
+const InviteToTeamPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'InviteToTeamPayload',
   fields: () => ({
     error: {

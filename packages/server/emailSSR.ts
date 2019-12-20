@@ -1,6 +1,5 @@
 import templates from './email/templates'
 import makeAppLink from './utils/makeAppLink'
-import RethinkDataLoader from './dataloader/RethinkDataLoader'
 
 const ORG_MEMBERS_LINK = makeAppLink('me/organizations/tzsqFnuzh/members')
 

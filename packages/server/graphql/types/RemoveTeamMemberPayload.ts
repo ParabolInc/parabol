@@ -14,8 +14,9 @@ import TeamMember from './TeamMember'
 import User from './User'
 import {getUserId} from '../../utils/authorization'
 import StandardMutationError from './StandardMutationError'
+import {GQLContext} from '../graphql'
 
-const RemoveTeamMemberPayload = new GraphQLObjectType({
+const RemoveTeamMemberPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'RemoveTeamMemberPayload',
   fields: () => ({
     error: {
