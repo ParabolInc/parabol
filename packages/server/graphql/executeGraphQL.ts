@@ -11,6 +11,7 @@ import getDataLoader from './getDataLoader'
 import privateSchema from './intranetSchema/intranetSchema'
 import publicSchema from './rootSchema'
 import getRateLimiter from './getRateLimiter'
+import {getUserId} from '../utils/authorization'
 
 interface GQLRequest {
   authToken: AuthToken
@@ -42,7 +43,9 @@ const executeGraphQL = async (req: GQLRequest) => {
     dataLoaderId,
     rootValue
   } = req
-  const dataLoader = getDataLoader(dataLoaderId)
+  const viewerId = getUserId(authToken)
+  const dataLoader = getDataLoader(dataLoaderId, viewerId)
+  dataLoader.share()
   const rateLimiter = getRateLimiter()
   const contextValue = {ip, authToken, socketId, rateLimiter, dataLoader}
   const schema = isPrivate ? privateSchema : publicSchema

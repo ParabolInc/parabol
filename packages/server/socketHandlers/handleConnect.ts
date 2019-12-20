@@ -39,13 +39,7 @@ mutation ConnectSocket {
 }`
 
 const handleConnect = async (connectionContext: ConnectionContext) => {
-  const {authToken, ip, id: socketId, socket} = connectionContext
-  const {sub: userId, iat} = authToken
-  const isBlacklistedJWT = await checkBlacklistJWT(userId, iat)
-  if (isBlacklistedJWT) {
-    socket.close(1011, TrebuchetCloseReason.EXPIRED_SESSION)
-    return
-  }
+  const {authToken, ip, id: socketId} = connectionContext
   const result = await executeGraphQL({authToken, ip, query, isPrivate: true, socketId})
   const {data} = result
   if (data) {

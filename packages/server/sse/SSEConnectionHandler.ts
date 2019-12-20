@@ -9,6 +9,8 @@ import sseClients from '../sseClients'
 import checkBlacklistJWT from '../utils/checkBlacklistJWT'
 import closeTransport from '../socketHelpers/closeTransport'
 import {TrebuchetCloseReason} from 'parabol-client/types/constEnums'
+import sendSSEMessage from './sendSSEMessage'
+import sendEncodedMessage from '../socketHelpers/sendEncodedMessage'
 
 const APP_VERSION = process.env.npm_package_version
 const SERVER_SECRET = process.env.AUTH0_CLIENT_SECRET!
@@ -38,11 +40,9 @@ const SSEConnectionHandler = async (req: express.Request, res: express.Response)
   const connectionContext = new ConnectionContext(res as any, authToken, req.ip)
   sseClients.set(connectionContext)
   const nextAuthToken = await handleConnect(connectionContext)
-  res.write(`event: id\n`)
   res.write(`retry: 1000\n`)
-  res.write(`data: ${connectionContext.id}\n\n`)
-  res.write(`data: ${JSON.stringify({version: APP_VERSION, authToken: nextAuthToken})}\n\n`)
-  ;(res as any).flushHeaders()
+  sendSSEMessage(res, connectionContext.id, 'id')
+  sendEncodedMessage(res, {version: APP_VERSION, authToken: nextAuthToken})
   keepAlive(connectionContext)
   res.on('close', () => {
     handleDisconnect(connectionContext)

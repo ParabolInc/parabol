@@ -8,14 +8,13 @@
     * The GraphQL subscription server publishes to that channel
  */
 
-import {ClientMessageTypes} from '@mattkrick/graphql-trebuchet-client'
 import {createSourceEventStream, ExecutionResult} from 'graphql'
 import {decode} from 'jsonwebtoken'
 import {IAuthTokenPayload} from 'parabol-client/types/graphql'
 import SubscriptionIterator from '../utils/SubscriptionIterator'
 import AuthToken from '../database/types/AuthToken'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
-import sendMessage from '../socketHelpers/sendMessage'
+import sendGQLMessage from '../socketHelpers/sendGQLMessage'
 import relayUnsubscribeAll from '../utils/relayUnsubscribeAll'
 import sendToSentry from '../utils/sendToSentry'
 import DocumentCache from './DocumentCache'
@@ -45,7 +44,6 @@ export interface PubSubPayload {
 }
 
 const documentCache = new DocumentCache()
-const {GQL_COMPLETE, GQL_DATA} = ClientMessageTypes
 
 const subscribeGraphQL = async (req: SubscribeRequest) => {
   const {connectionContext, variables, docId, query, opId, hideErrors} = req
@@ -93,7 +91,7 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
         reason: TrebuchetCloseReason.SESSION_INVALIDATED
       })
     }
-    sendMessage(socket, GQL_DATA, payload, opId)
+    sendGQLMessage(socket, 'data', payload, opId)
   }
   const resubIdx = connectionContext.availableResubs.indexOf(opId)
   if (resubIdx !== -1) {
@@ -101,7 +99,7 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
     connectionContext.availableResubs.splice(resubIdx, 1)
     subscribeGraphQL({...req, hideErrors: true}).catch()
   } else {
-    sendMessage(socket, GQL_COMPLETE, undefined, opId)
+    sendGQLMessage(socket, 'complete', undefined, opId)
   }
 }
 

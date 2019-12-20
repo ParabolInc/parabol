@@ -1,8 +1,5 @@
-import {
-  ClientMessageTypes,
-  OutgoingMessage,
-  ServerMessageTypes
-} from '@mattkrick/graphql-trebuchet-client'
+import {OutgoingMessage} from '@mattkrick/graphql-trebuchet-client'
+import PROD from '../PROD'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import relayUnsubscribe from '../utils/relayUnsubscribe'
 import sanitizeGraphQLErrors from '../utils/sanitizeGraphQLErrors'
@@ -10,24 +7,27 @@ import sendToSentry from '../utils/sendToSentry'
 import executeGraphQL from './executeGraphQL'
 import subscribeGraphQL from './subscribeGraphQL'
 
-const {GQL_START, GQL_STOP} = ServerMessageTypes
-const {GQL_DATA, GQL_ERROR} = ClientMessageTypes
+type TrebuchetServerResult = Promise<{
+  type: 'data' | 'complete' | 'error'
+  id?: string
+  payload: {data?: any; errors?: {message: string; path?: string[]}[]}
+} | void>
+
 const IGNORE_MUTATIONS = ['updateDragLocation']
-const PROD = process.env.NODE_ENV === 'production'
 
 const handleGraphQLTrebuchetRequest = async (
   data: OutgoingMessage,
   connectionContext: ConnectionContext
-) => {
+): TrebuchetServerResult => {
   const opId = data.id!
   const {id: socketId, authToken, ip, subs} = connectionContext
-  if (data.type === GQL_START) {
+  if (data.type === 'start') {
     const {payload} = data
     if (!payload)
-      return {type: GQL_ERROR, id: opId, payload: {errors: [new Error('No payload provided')]}}
+      return {type: 'error', id: opId, payload: {errors: [{message: 'No payload provided'}]}}
     const {variables, documentId: docId, query} = payload
     if (PROD && !docId)
-      return {type: GQL_ERROR, id: opId, payload: {errors: [new Error('DocumentId not provided')]}}
+      return {type: 'error', id: opId, payload: {errors: [{message: 'DocumentId not provided'}]}}
     const isSubscription = PROD ? docId![0] === 's' : query?.startsWith('subscription')
     if (isSubscription) {
       subscribeGraphQL({docId, query, opId, variables, connectionContext})
@@ -42,9 +42,10 @@ const handleGraphQLTrebuchetRequest = async (
     }
     if (result.data && IGNORE_MUTATIONS.includes(Object.keys(result.data)[0])) return
     const safeResult = sanitizeGraphQLErrors(result)
-    const messageType = result.data ? GQL_DATA : GQL_ERROR
-    return {type: messageType, id: opId, payload: safeResult}
-  } else if (data.type === GQL_STOP) {
+    // TODO if multiple results, send GQL_DATA for all but the last
+    const messageType = result.data ? 'complete' : 'error'
+    return {type: messageType, id: opId, payload: safeResult as any}
+  } else if (data.type === 'stop') {
     relayUnsubscribe(subs, opId)
   }
   return

@@ -1,22 +1,27 @@
+import {ServerResponse} from 'http'
+import {Times} from 'parabol-client/types/constEnums'
 import handleDisconnect from '../socketHandlers/handleDisconnect'
-import sendRaw from './sendRaw'
-import {Events} from '@mattkrick/trebuchet-client'
+import sendSSEMessage from '../sse/sendSSEMessage'
 import ConnectionContext from './ConnectionContext'
 
-const WS_KEEP_ALIVE = 10000
+const isSSE = (socketOrRes: unknown): socketOrRes is ServerResponse => {
+  return 'statusCode' in (socketOrRes as ServerResponse)
+}
+
 const keepAlive = (connectionContext: ConnectionContext) => {
   connectionContext.isAlive = true
   clearInterval(connectionContext.cancelKeepAlive!)
   connectionContext.cancelKeepAlive = setInterval(() => {
-    const {socket} = connectionContext
     if (connectionContext.isAlive === false) {
       handleDisconnect(connectionContext)()
     } else {
       connectionContext.isAlive = false
-      // TODO record time sent so when we get a message we can calc latency
-      sendRaw(socket, Events.KEEP_ALIVE)
     }
-  }, WS_KEEP_ALIVE)
+    const {socket} = connectionContext
+    if (isSSE(socket)) {
+      sendSSEMessage(socket, 'ka', 'ka')
+    }
+  }, Times.WEBSOCKET_KEEP_ALIVE)
 }
 
 export default keepAlive

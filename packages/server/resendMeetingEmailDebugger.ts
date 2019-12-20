@@ -3,7 +3,7 @@ import newMeetingSummaryEmailCreator from '../client/modules/email/components/Su
 import {sendEmailContent} from './email/sendEmail'
 import RateLimiter from './graphql/RateLimiter'
 import DataLoaderCache from './graphql/DataLoaderCache'
-import RethinkDataLoader from './utils/RethinkDataLoader'
+import RethinkDataLoader from './dataloader/RethinkDataLoader'
 
 /* Useful function to debug email layout in actual email clients. */
 const JWT = 'foo'
