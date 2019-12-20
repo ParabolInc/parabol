@@ -28,9 +28,7 @@ const handleDisconnect = (connectionContext: ConnectionContext, options: Options
   if (connectionContext.id.startsWith('sse')) {
     sseClients.delete(connectionContext.id)
   }
-  if (!socket.done) {
-    closeTransport(socket, exitCode, reason)
-  }
+  closeTransport(socket, exitCode, reason)
 }
 
 export default handleDisconnect
