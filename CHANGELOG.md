@@ -5,6 +5,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.17.0 2019-Dec-20
+
+## Fixed
+* ratelimiter for forgot example/bad login
+ Memory leak in Relay SSR
+
+## Added
+* uWebSockets.js
+* Session invalidation on password reset
+
+## Removed
+* Express.js, cws
+* Auth0
+
+## Changed
+* Refactored dataloader to be much more memory efficient
+
 ## 4.16.0 2019-Dec-10
 
 ## Changed
