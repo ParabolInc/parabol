@@ -7,8 +7,6 @@ import {clientSecret as auth0ClientSecret} from '../utils/auth0Helpers'
 import handleConnect from './handleConnect'
 import handleDisconnect from './handleDisconnect'
 import handleMessage from './handleMessage'
-import checkBlacklistJWT from '../utils/checkBlacklistJWT'
-import {TrebuchetCloseReason} from 'parabol-client/types/constEnums'
 
 const APP_VERSION = process.env.npm_package_version
 const wssConnectionHandler = async (socket: UserWebSocket, req: express.Request) => {
@@ -27,12 +25,6 @@ const wssConnectionHandler = async (socket: UserWebSocket, req: express.Request)
   } catch (e) {
     // internal error (bad auth)
     socket.close(1011)
-    return
-  }
-  const {sub: userId, iat} = authToken
-  const isBlacklistedJWT = await checkBlacklistJWT(userId, iat)
-  if (isBlacklistedJWT) {
-    socket.close(1011, TrebuchetCloseReason.EXPIRED_SESSION)
     return
   }
   const connectionContext = new ConnectionContext(socket, authToken, req.ip)
