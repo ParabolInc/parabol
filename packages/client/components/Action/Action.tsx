@@ -10,7 +10,7 @@ import {css, Global} from '@emotion/core'
 import globalStyles from '../../styles/theme/globalStyles'
 import SetNewPassword from '../ResetPasswordPage/SetNewPassword'
 import useTrebuchetEvents from '../../hooks/useTrebuchetEvents'
-import useServiceWorker from '../../hooks/useServiceWorker'
+import useServiceWorkerUpdater from '../../hooks/useServiceWorkerUpdater'
 
 const AnalyticsPage = lazy(() => import(/* webpackChunkName: 'AnalyticsPage' */ '../AnalyticsPage'))
 const AuthenticationPage = lazy(() =>
@@ -29,7 +29,7 @@ const InvitationLink = lazy(() =>
 
 const Action = memo(() => {
   useTrebuchetEvents()
-  useServiceWorker()
+  useServiceWorkerUpdater()
   return (
     <ErrorBoundary>
       <Global

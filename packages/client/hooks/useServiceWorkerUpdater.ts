@@ -1,7 +1,7 @@
 import {useEffect, useRef} from 'react'
 import useAtmosphere from './useAtmosphere'
 
-const useServiceWorker = () => {
+const useServiceWorkerUpdater = () => {
   const atmosphere = useAtmosphere()
   const isFirstServiceWorkerRef = useRef(true)
   useEffect(() => {
@@ -36,4 +36,4 @@ const useServiceWorker = () => {
     return
   }, [])
 }
-export default useServiceWorker
+export default useServiceWorkerUpdater
