@@ -26,7 +26,6 @@ export interface IQuery {
   getDemoEntities: IGetDemoEntitiesPayload | null
   massInvitation: IMassInvitationPayload
   verifiedInvitation: IVerifiedInvitationPayload
-  authProviders: Array<string>
   SAMLIdP: string | null
 }
 
@@ -49,13 +48,6 @@ export interface IVerifiedInvitationOnQueryArguments {
    * The invitation token
    */
   token: string
-}
-
-export interface IAuthProvidersOnQueryArguments {
-  /**
-   * the email to see if it exists as an oauth account
-   */
-  email: string
 }
 
 export interface ISAMLIdPOnQueryArguments {
