@@ -22,6 +22,11 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ## Changed
 * Refactored dataloader to be much more memory efficient
 
+## 4.16.1 2019-Dec-18
+
+## Fixed
+* querystring parsing for SAML urls with search params
+
 ## 4.16.0 2019-Dec-10
 
 ## Changed
