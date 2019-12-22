@@ -28,7 +28,6 @@ import {RouterProps} from 'react-router'
 import {LocalStorageKey, TrebuchetCloseReason} from './types/constEnums'
 import handleInvalidatedSession from './hooks/handleInvalidatedSession'
 import {Sink} from 'relay-runtime/lib/network/RelayObservable'
-import {encode, decode} from '@msgpack/msgpack'
 
 interface QuerySubscription {
   subKey: string
@@ -157,18 +156,7 @@ export default class Atmosphere extends Environment {
   trySockets = () => {
     const wsProtocol = window.location.protocol.replace('http', 'ws')
     const url = `${wsProtocol}//${window.location.host}/?token=${this.authToken}`
-    const decoder = (data) => {
-      if (typeof data === 'string') {
-        return JSON.parse(data)
-      } else {
-        return decode(data)
-      }
-    }
-    if (!__PRODUCTION__) {
-      return new SocketTrebuchet({url, batchDelay: 0, decode: decoder})
-    }
-
-    return new SocketTrebuchet({url, encode, decode: decoder, batchDelay: 0})
+    return new SocketTrebuchet({url, batchDelay: 0})
   }
 
   trySSE = () => {

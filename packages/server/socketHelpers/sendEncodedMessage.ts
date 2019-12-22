@@ -1,17 +1,16 @@
-import {encode} from '@msgpack/msgpack'
 import {HttpResponse, WebSocket} from 'uWebSockets.js'
-import PROD from '../PROD'
 import sendSSEMessage from '../sse/sendSSEMessage'
 import isHttpResponse from './isHttpResponse'
 
-const encoder = PROD ? encode : JSON.stringify
+const ESTIMATED_MTU = 1400
 const sendEncodedMessage = (transport: WebSocket | HttpResponse, message: object | string) => {
   if (transport.done) return
+  const str = JSON.stringify(message)
   if (isHttpResponse(transport)) {
-    sendSSEMessage(transport as HttpResponse, JSON.stringify(message))
+    sendSSEMessage(transport as HttpResponse, str)
     return
   }
-  transport.send(encoder(message) as string | Buffer)
+  transport.send(str, false, str.length > ESTIMATED_MTU)
 }
 
 export default sendEncodedMessage

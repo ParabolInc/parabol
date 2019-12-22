@@ -71,7 +71,6 @@
     "@mattkrick/graphql-trebuchet-client": "^1.0.0",
     "@mattkrick/sanitize-svg": "^0.2.1",
     "@mattkrick/trebuchet-client": "^1.1.0",
-    "@msgpack/msgpack": "^1.9.3",
     "@sentry/browser": "^5.8.0",
     "core-js": "^3.1.4",
     "draft-js": "https://github.com/mattkrick/draft-js/tarball/559a21968370c4944511657817d601a6c4ade0f6",
@@ -113,7 +112,8 @@
     "tayden-clusterfck": "^0.7.0",
     "tlds": "^1.192.0",
     "tslib": "^1.10.0",
-    "unicode-substring": "^1.0.0"
+    "unicode-substring": "^1.0.0",
+    "wasm-brotli": "^2.0.2"
   },
   "lint-staged": {
     "**/*.{js,ts,tsx}": [
