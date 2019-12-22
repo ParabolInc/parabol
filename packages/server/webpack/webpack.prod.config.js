@@ -155,7 +155,7 @@ module.exports = {
     new TagsPlugin({
       links: [
         {
-          path: `https://${process.env.AWS_S3_BUCKET}/static/favicon.ico`,
+          path: `favicon.ico`,
           attributes: {
             rel: 'shortcut icon',
             crossorigin: ''
