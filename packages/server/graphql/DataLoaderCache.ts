@@ -24,7 +24,7 @@ export class CacheWorker<T extends DataLoaderBase> {
   dispose(force?: boolean) {
     const ttl = force || !this.shared ? 0 : this.cache.ttl
     clearTimeout(this.disposeId!)
-    this.disposeId = setTimeout(() => {
+    this.disposeId = global.setTimeout(() => {
       delete this.cache.workers[this.did]
     }, ttl)
   }
