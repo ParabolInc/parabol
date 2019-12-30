@@ -180,6 +180,8 @@ export const enum Pricing {
 export const enum Providers {
   ATLASSIAN_NAME = 'Atlassian',
   ATLASSIAN_DESC = 'Create Jira issues from Parabol',
+  AZUREDEVOPS_NAME = 'Azure DevOps',
+  AZUREDEVOPS_DESC = 'Create Azure DevOps Work Items from Parabol',
   GITHUB_NAME = 'GitHub',
   GITHUB_DESC = 'Create issues from Parabol',
   SLACK_NAME = 'Slack',

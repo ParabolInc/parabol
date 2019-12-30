@@ -64,6 +64,9 @@ import dismissNewFeature from './mutations/dismissNewFeature'
 import addAtlassianAuth from './mutations/addAtlassianAuth'
 import removeAtlassianAuth from './mutations/removeAtlassianAuth'
 import createJiraIssue from './mutations/createJiraIssue'
+import addAzureDevopsAuth from './mutations/addAzureDevopsAuth'
+import removeAzureDevopsAuth from './mutations/removeAzureDevopsAuth'
+import createAzureDevopsWorkItem from './mutations/createAzureDevopsWorkItem'
 import reflectTemplatePromptUpdateDescription from './mutations/reflectTemplatePromptUpdateDescription'
 import addGitHubAuth from './mutations/addGitHubAuth'
 import removeGitHubAuth from './mutations/removeGitHubAuth'
@@ -91,6 +94,7 @@ export default new GraphQLObjectType<any, Context, any>({
     acceptTeamInvitation,
     addAgendaItem,
     addAtlassianAuth,
+    addAzureDevopsAuth,
     addReflectTemplate,
     addReflectTemplatePrompt,
     addSlackAuth,
@@ -105,6 +109,7 @@ export default new GraphQLObjectType<any, Context, any>({
     createImposterToken,
     createGitHubIssue,
     createJiraIssue,
+    createAzureDevopsWorkItem,
     createOrgPicturePutUrl,
     createReflection,
     createTask,
@@ -136,6 +141,7 @@ export default new GraphQLObjectType<any, Context, any>({
     reflectTemplatePromptUpdateDescription,
     removeAgendaItem,
     removeAtlassianAuth,
+    removeAzureDevopsAuth,
     removeGitHubAuth,
     removeOrgUser,
     removeReflectTemplate,
