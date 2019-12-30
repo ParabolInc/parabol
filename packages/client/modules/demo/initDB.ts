@@ -6,6 +6,8 @@ import {
   IRetrospectiveMeetingSettings,
   ISuggestedIntegrationGitHub,
   ISuggestedIntegrationJira,
+  IAzureDevopsRemoteProject,
+  ISuggestedIntegrationAzureDevops,
   ITask,
   SlackNotificationEventEnum,
   TaskServiceEnum,
@@ -65,6 +67,29 @@ export const JiraProjectKeyLookup = {
   }
 }
 
+export const AzureDevopsDemoKey = 'Demo'
+export const AzureDevopsDemoName = 'azure-devops-demo'
+const AzureDevopsSecretKey = 'azure-devops-secret'
+
+export const AzureDevopsProjectKeyLookup = {
+  [AzureDevopsDemoKey]: {
+    projectKey: AzureDevopsDemoKey,
+    projectName: 'Demo AzureDevops Project',
+    organization: '123',
+    cloudName: AzureDevopsDemoName,
+    avatar: 'foo',
+    service: TaskServiceEnum.azuredevops
+  },
+  [AzureDevopsSecretKey]: {
+    projectKey: AzureDevopsSecretKey,
+    projectName: 'Secret AzureDevops Project',
+    organization: '123',
+    cloudName: AzureDevopsDemoName,
+    avatar: 'foo',
+    service: TaskServiceEnum.azuredevops
+  }
+}
+
 export const GitHubDemoKey = 'ParabolInc/ParabolDemo'
 export const GitHubProjectKeyLookup = {
   [GitHubDemoKey]: {
@@ -80,6 +105,13 @@ const makeSuggestedIntegrationJira = (key): ISuggestedIntegrationJira => ({
   ...JiraProjectKeyLookup[key]
 })
 
+const makeSuggestedIntegrationAzureDevops = (key): ISuggestedIntegrationAzureDevops => ({
+  __typename: 'SuggestedIntegrationAzureDevops',
+  id: key,
+  remoteProject: {} as IAzureDevopsRemoteProject,
+  ...AzureDevopsProjectKeyLookup[key]
+})
+
 const makeSuggestedIntegrationGitHub = (nameWithOwner): ISuggestedIntegrationGitHub => ({
   __typename: 'SuggestedIntegrationGitHub',
   id: nameWithOwner,
@@ -93,6 +125,7 @@ const initDemoUser = ({preferredName, email, picture}: BaseUser, idx: number) =>
     id,
     viewerId: id,
     atlassianAuth: {isActive: true, accessToken: '123'},
+    azureDevopsAuth: {isActive: true, accessToken: '123'},
     githubAuth: {isActive: true, accessToken: '123'},
     connectedSockets: [`socket${idx}`],
     createdAt: now,
@@ -114,12 +147,15 @@ const initDemoUser = ({preferredName, email, picture}: BaseUser, idx: number) =>
       hasMore: true,
       items: [
         makeSuggestedIntegrationJira(JiraDemoKey),
+        makeSuggestedIntegrationAzureDevops(AzureDevopsDemoKey),
         makeSuggestedIntegrationGitHub(GitHubDemoKey)
       ]
     },
     allAvailableIntegrations: [
       makeSuggestedIntegrationJira(JiraDemoKey),
-      makeSuggestedIntegrationJira(JiraSecretKey)
+      makeSuggestedIntegrationJira(JiraSecretKey),
+      makeSuggestedIntegrationAzureDevops(AzureDevopsDemoKey),
+      makeSuggestedIntegrationAzureDevops(AzureDevopsSecretKey)
     ],
     tms: [demoTeamId]
   }

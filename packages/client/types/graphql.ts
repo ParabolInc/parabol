@@ -86,6 +86,11 @@ export interface IUser {
   atlassianAuth: IAtlassianAuth | null
 
   /**
+   * The auth for the user. access token is null if not viewer. Use isActive to check for presence
+   */
+  azureDevopsAuth: IAzureDevopsAuth | null
+
+  /**
    * Array of identifier + ip pairs
    */
   blockedFor: Array<IBlockedUserType | null> | null
@@ -331,6 +336,13 @@ export interface IAtlassianAuthOnUserArguments {
   teamId: string
 }
 
+export interface IAzureDevopsAuthOnUserArguments {
+  /**
+   * The teamId for the azure devops auth token
+   */
+  teamId: string
+}
+
 export interface IGithubAuthOnUserArguments {
   /**
    * The teamId for the auth object
@@ -465,7 +477,10 @@ export interface IUserOnTeamOnUserArguments {
   userId: string
 }
 
-export type SuggestedIntegration = ISuggestedIntegrationGitHub | ISuggestedIntegrationJira
+export type SuggestedIntegration =
+  | ISuggestedIntegrationGitHub
+  | ISuggestedIntegrationJira
+  | ISuggestedIntegrationAzureDevops
 
 export interface ISuggestedIntegration {
   __typename: 'SuggestedIntegration'
@@ -1896,7 +1911,10 @@ export interface ITaskEditorDetails {
   preferredName: string
 }
 
-export type TaskIntegration = ITaskIntegrationGitHub | ITaskIntegrationJira
+export type TaskIntegration =
+  | ITaskIntegrationGitHub
+  | ITaskIntegrationJira
+  | ITaskIntegrationAzureDevops
 
 export interface ITaskIntegration {
   __typename: 'TaskIntegration'
@@ -1952,6 +1970,63 @@ export interface IAtlassianAuth {
 
   /**
    * The refresh token to atlassian to receive a new 1-hour accessToken, always null since server secret is required
+   */
+  refreshToken: string | null
+
+  /**
+   * *The team that the token is linked to
+   */
+  teamId: string
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any
+
+  /**
+   * The user that the access token is attached to
+   */
+  userId: string
+}
+
+/**
+ * OAuth token for a team member
+ */
+export interface IAzureDevopsAuth {
+  __typename: 'AzureDevopsAuth'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * true if the auth is valid, else false
+   */
+  isActive: boolean
+
+  /**
+   * The access token to Azure Devops, useful for 1 hour. null if no access token available
+   */
+  accessToken: string | null
+
+  /**
+   * *The Azure Devops account ID
+   */
+  accountId: string
+
+  /**
+   * The Azure Devops organization that the user has granted
+   */
+  organizations: Array<string>
+
+  /**
+   * The timestamp the provider was created
+   */
+  createdAt: any
+
+  /**
+   * The refresh token to Azure Devops to receive a new 1-hour accessToken, always null since server secret is required
    */
   refreshToken: string | null
 
@@ -2815,6 +2890,7 @@ export interface IMutation {
    */
   addAgendaItem: IAddAgendaItemPayload | null
   addAtlassianAuth: IAddAtlassianAuthPayload
+  addAzureDevopsAuth: IAddAzureDevopsAuthPayload
 
   /**
    * Add a comment to a discussion
@@ -2881,6 +2957,7 @@ export interface IMutation {
   createImposterToken: ICreateImposterTokenPayload
   createGitHubIssue: ICreateGitHubIssuePayload | null
   createJiraIssue: ICreateJiraIssuePayload | null
+  createAzureDevopsWorkItem: ICreateAzureDevopsWorkItemPayload | null
 
   /**
    * Create a new mass inivtation and optionally void old ones
@@ -3051,6 +3128,11 @@ export interface IMutation {
    * Disconnect a team member from atlassian
    */
   removeAtlassianAuth: IRemoveAtlassianAuthPayload
+
+  /**
+   * Disconnect a team member from Azure Devops
+   */
+  removeAzureDevopsAuth: IRemoveAzureDevopsAuthPayload
 
   /**
    * Disconnect a team member from GitHub
@@ -3301,6 +3383,11 @@ export interface IAddReactjiToReactableOnMutationArguments {
   isRemove?: boolean | null
 }
 
+export interface IAddAzureDevopsAuthOnMutationArguments {
+  code: string
+  teamId: string
+}
+
 export interface IAddReflectTemplateOnMutationArguments {
   teamId: string
 }
@@ -3445,6 +3532,23 @@ export interface ICreateMassInvitationOnMutationArguments {
    * If true, will void all existing mass invitations for the team member
    */
   voidOld?: boolean | null
+}
+
+export interface ICreateAzureDevopsWorkItemOnMutationArguments {
+  /**
+   * The Azure Devops organization for the site
+   */
+  organization: string
+
+  /**
+   * The Azure Devops key of the project to put the work item in
+   */
+  projectKey: string
+
+  /**
+   * The id of the task to convert to an Azure Devops work item
+   */
+  taskId: string
 }
 
 export interface ICreateOrgPicturePutUrlOnMutationArguments {
@@ -3730,6 +3834,13 @@ export interface IRemoveAgendaItemOnMutationArguments {
 }
 
 export interface IRemoveAtlassianAuthOnMutationArguments {
+  /**
+   * the teamId to disconnect from the token
+   */
+  teamId: string
+}
+
+export interface IRemoveAzureDevopsAuthOnMutationArguments {
   /**
    * the teamId to disconnect from the token
    */
@@ -4190,6 +4301,21 @@ export interface IAddAtlassianAuthPayload {
 
   /**
    * The user with updated atlassianAuth
+   */
+  user: IUser | null
+}
+
+export interface IAddAzureDevopsAuthPayload {
+  __typename: 'AddAzureDevopsAuthPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The newly created auth
+   */
+  azureDevopsAuth: IAzureDevopsAuth | null
+
+  /**
+   * The user with updated azureDevopsAuth
    */
   user: IUser | null
 }
@@ -5215,6 +5341,12 @@ export interface ICreateJiraIssuePayload {
   task: ITask | null
 }
 
+export interface ICreateAzureDevopsWorkItemPayload {
+  __typename: 'CreateAzureDevopsWorkItemPayload'
+  error: IStandardMutationError | null
+  task: ITask | null
+}
+
 /**
  * Return object for CreateMassInvitationPayload
  */
@@ -5983,6 +6115,22 @@ export interface IRemoveAtlassianAuthPayload {
 
   /**
    * The user with updated atlassianAuth
+   */
+  user: IUser | null
+}
+
+export interface IRemoveAzureDevopsAuthPayload {
+  __typename: 'RemoveAzureDevopsAuthPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The ID of the authorization removed
+   */
+  authId: string | null
+  teamId: string | null
+
+  /**
+   * The user with updated azureDevopsAuth
    */
   user: IUser | null
 }
@@ -8226,6 +8374,40 @@ export interface ITaskIntegrationJira {
 }
 
 /**
+ * The details associated with a task integrated with Azure Devops
+ */
+export interface ITaskIntegrationAzureDevops {
+  __typename: 'TaskIntegrationAzureDevops'
+  id: string
+  service: TaskServiceEnum
+
+  /**
+   * The project key used by Azure Devops as a more human readable proxy for a projectId
+   */
+  projectKey: string
+
+  /**
+   * The name of the project as defined by Azure Devops
+   */
+  projectName: string
+
+  /**
+   * The organization that the project lives on
+   */
+  organization: string
+
+  /**
+   * The work item id in Azure Devops
+   */
+  workItemId: string
+
+  /**
+   * The psuedo-domain to use to generate a base url
+   */
+  cloudName: string
+}
+
+/**
  * The details associated with a task integrated with GitHub
  */
 export interface ISuggestedIntegrationGitHub {
@@ -8304,6 +8486,72 @@ export interface IJiraRemoteAvatarUrls {
  */
 export interface IJiraRemoteProjectCategory {
   __typename: 'JiraRemoteProjectCategory'
+  self: string
+  id: string
+  name: string
+  description: string
+}
+
+/**
+ * The details associated with a task integrated with Azure Devops
+ */
+export interface ISuggestedIntegrationAzureDevops {
+  __typename: 'SuggestedIntegrationAzureDevops'
+  id: string
+  service: TaskServiceEnum
+
+  /**
+   * URL to a 24x24 avatar icon
+   */
+  avatar: string
+
+  /**
+   * The name of the project, prefixed with the organization name if more than 1 project exists
+   */
+  projectName: string
+
+  /**
+   * The organization that the project lives on
+   */
+  organization: string
+
+  /**
+   * The full project document fetched from Azure Devops
+   */
+  remoteProject: IAzureDevopsRemoteProject
+}
+
+/**
+ * A project fetched from Azure Devops in real time
+ */
+export interface IAzureDevopsRemoteProject {
+  __typename: 'AzureDevopsRemoteProject'
+  self: string
+  id: string
+  key: string
+  name: string
+  avatarUrls: IAzureDevopsRemoteAvatarUrls
+  projectCategory: IAzureDevopsRemoteProjectCategory
+  simplified: boolean
+  style: string
+}
+
+/**
+ * A project fetched from Azure Devops in real time
+ */
+export interface IAzureDevopsRemoteAvatarUrls {
+  __typename: 'AzureDevopsRemoteAvatarUrls'
+  x48: string
+  x24: string
+  x16: string
+  x32: string
+}
+
+/**
+ * A project category fetched from a AzureDevopsRemoteProject
+ */
+export interface IAzureDevopsRemoteProjectCategory {
+  __typename: 'AzureDevopsRemoteProjectCategory'
   self: string
   id: string
   name: string

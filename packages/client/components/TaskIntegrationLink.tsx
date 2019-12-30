@@ -72,6 +72,14 @@ graphql`
 `
 
 graphql`
+  fragment TaskIntegrationLinkIntegrationAzureDevops on TaskIntegrationAzureDevops {
+    workItemId
+    projectKey
+    organization
+  }
+`
+
+graphql`
   fragment TaskIntegrationLinkIntegrationGitHub on TaskIntegrationGitHub {
     issueNumber
     nameWithOwner
@@ -84,6 +92,7 @@ export default createFragmentContainer(TaskIntegrationLink, {
       service
       ...TaskIntegrationLinkIntegrationGitHub @relay(mask: false)
       ...TaskIntegrationLinkIntegrationJira @relay(mask: false)
+      ...TaskIntegrationLinkIntegrationAzureDevops @relay(mask: false)
     }
   `
 })

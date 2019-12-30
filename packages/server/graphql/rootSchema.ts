@@ -24,8 +24,10 @@ import TimelineEventCompletedRetroMeeting from './types/TimelineEventCompletedRe
 import TimelineEventCompletedActionMeeting from './types/TimelineEventCompletedActionMeeting'
 import TaskIntegrationGitHub from './types/TaskIntegrationGitHub'
 import SuggestedIntegrationJira from './types/SuggestedIntegrationJira'
+import SuggestedIntegrationAzureDevops from './types/SuggestedIntegrationAzureDevops'
 import SuggestedIntegrationGitHub from './types/SuggestedIntegrationGitHub'
 import TaskIntegrationJira from './types/TaskIntegrationJira'
+import TaskIntegrationAzureDevops from './types/TaskIntegrationAzureDevops'
 import ActionMeeting from './types/ActionMeeting'
 import ActionMeetingMember from './types/ActionMeetingMember'
 import UpdatesPhase from './types/UpdatesPhase'
@@ -67,8 +69,10 @@ export default new GraphQLSchema({
     ActionMeetingSettings,
     TaskIntegrationGitHub,
     TaskIntegrationJira,
+    TaskIntegrationAzureDevops,
     SuggestedIntegrationGitHub,
     SuggestedIntegrationJira,
+    SuggestedIntegrationAzureDevops,
     Comment
   ]
 })
