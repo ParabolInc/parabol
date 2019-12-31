@@ -3337,6 +3337,11 @@ export interface IAddAtlassianAuthOnMutationArguments {
   teamId: string
 }
 
+export interface IAddAzureDevopsAuthOnMutationArguments {
+  code: string
+  teamId: string
+}
+
 export interface IAddCommentOnMutationArguments {
   /**
    * A partial new comment
