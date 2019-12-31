@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
 import SuggestedIntegrationGitHub from './SuggestedIntegrationGitHub'
 import SuggestedIntegrationJira from './SuggestedIntegrationJira'
+import SuggestedIntegrationAzureDevops from './SuggestedIntegrationAzureDevops'
 import TaskServiceEnum from './TaskServiceEnum'
 
 export const suggestedIntegrationFields = () => ({
@@ -14,13 +15,14 @@ export const suggestedIntegrationFields = () => ({
 
 const resolveTypeLookup = {
   github: SuggestedIntegrationGitHub,
-  jira: SuggestedIntegrationJira
+  jira: SuggestedIntegrationJira,
+  azuredevops: SuggestedIntegrationAzureDevops
 }
 
 const SuggestedIntegration = new GraphQLInterfaceType({
   name: 'SuggestedIntegration',
   fields: suggestedIntegrationFields,
-  resolveType (value) {
+  resolveType(value) {
     return resolveTypeLookup[value.service]
   }
 })

@@ -61,6 +61,7 @@ const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
 
 const serviceToMenuItemLookup = {
   [TaskServiceEnum.jira]: SuggestedIntegrationJiraMenuItem,
+  [TaskServiceEnum.azuredevops]: SuggestedIntegrationAzureDevopsMenuItem,
   [TaskServiceEnum.github]: SuggestedIntegrationGitHubMenuItem
 }
 
@@ -139,10 +140,14 @@ graphql`
     ... on SuggestedIntegrationJira {
       projectName
     }
+    ... on SuggestedIntegrationAzureDevops {
+      projectName
+    }
     ... on SuggestedIntegrationGitHub {
       nameWithOwner
     }
     ...SuggestedIntegrationJiraMenuItem_suggestedIntegration
+    ...SuggestedIntegrationAzureDevopsMenuItem_suggestedIntegration
     ...SuggestedIntegrationGitHubMenuItem_suggestedIntegration
   }
 `

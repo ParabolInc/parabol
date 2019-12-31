@@ -16,11 +16,12 @@ interface Props {
   viewer: TaskFooterIntegrateMenu_viewer
 }
 
-const makePlaceholder = (hasGitHub: boolean, hasAtlassian: boolean) => {
+const makePlaceholder = (hasGitHub: boolean, hasAtlassian: boolean, hasAzureDevops: boolean) => {
   const names = [] as string[]
   if (hasGitHub) names.push('GitHub')
   if (hasAtlassian) names.push('Jira')
-  return `Search ${names.join(' & ')}`
+  if (hasAzureDevops) names.push('AzureDevops')
+  return `Search ${names.slice(0, -1).join(' , ') + ' & ' + names.slice(-1)}`
 }
 
 const TaskFooterIntegrateMenu = (props: Props) => {
@@ -29,12 +30,19 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   // not 100% sure how this could be, maybe if we manually deleted a user?
   // https://github.com/ParabolInc/action/issues/2980
   if (!userOnTeam) return null
-  const {atlassianAuth, githubAuth, preferredName, suggestedIntegrations} = userOnTeam
+  const {
+    atlassianAuth,
+    azureDevopsAuth,
+    githubAuth,
+    preferredName,
+    suggestedIntegrations
+  } = userOnTeam
   const {teamId, userId} = task
   const isViewerAssignee = viewerId === userId
   const hasAtlassian = !!(atlassianAuth && atlassianAuth.isActive)
+  const hasAzureDevops = !!(azureDevopsAuth && azureDevopsAuth.isActive)
   const hasGitHub = !!(githubAuth && githubAuth.isActive)
-  const isAssigneeIntegrated = hasAtlassian || hasGitHub
+  const isAssigneeIntegrated = hasAtlassian || hasAzureDevops || hasGitHub
   if (!isAssigneeIntegrated) {
     return isViewerAssignee ? (
       <TaskFooterIntegrateMenuSignup
@@ -46,7 +54,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
       <TaskFooterIntegrateMenuNoIntegrations menuProps={menuProps} preferredName={preferredName} />
     )
   }
-  const placeholder = makePlaceholder(hasGitHub, hasAtlassian)
+  const placeholder = makePlaceholder(hasGitHub, hasAtlassian, hasAzureDevops)
   return (
     <TaskFooterIntegrateMenuList
       menuProps={menuProps}
@@ -61,6 +69,14 @@ const TaskFooterIntegrateMenu = (props: Props) => {
 graphql`
   fragment TaskFooterIntegrateMenuViewerAtlassianAuth on User {
     atlassianAuth(teamId: $teamId) {
+      isActive
+    }
+  }
+`
+
+graphql`
+  fragment TaskFooterIntegrateMenuViewerAzureDevopsAuth on User {
+    azureDevopsAuth(teamId: $teamId) {
       isActive
     }
   }
@@ -89,6 +105,7 @@ export default createFragmentContainer(TaskFooterIntegrateMenu, {
       userOnTeam(userId: $userId) {
         preferredName
         ...TaskFooterIntegrateMenuViewerAtlassianAuth @relay(mask: false)
+        ...TaskFooterIntegrateMenuViewerAzureDevopsAuth @relay(mask: false)
         ...TaskFooterIntegrateMenuViewerSuggestedIntegrations @relay(mask: false)
         ...TaskFooterIntegrateMenuViewerGitHubAuth @relay(mask: false)
       }
