@@ -1,15 +1,5 @@
-import {DataLoaderType} from 'parabol-client/types/constEnums'
 import getRethink from '../database/rethinkDriver'
-import * as primaryLoaderMakers from './primaryLoaderMakers'
-
-class LoaderMakerForeign {
-  type = DataLoaderType.FOREIGN
-  constructor(
-    public pk: keyof typeof primaryLoaderMakers,
-    public field: string,
-    public fetch: (ids: string[]) => Promise<any[]>
-  ) {}
-}
+import LoaderMakerForeign from './LoaderMakerForeign'
 
 export const activeMeetingsByTeamId = new LoaderMakerForeign(
   'newMeetings',

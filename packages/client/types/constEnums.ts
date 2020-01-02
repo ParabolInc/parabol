@@ -41,11 +41,6 @@ export const enum ContactInfo {
   EMAIL_LOVE = 'love@parabol.co'
 }
 
-export const enum DataLoaderType {
-  PRIMARY,
-  FOREIGN,
-  CUSTOM
-}
 // TODO refactor into ElementWidth
 export const enum DashTimeline {
   FEED_MAX_WIDTH = 600,

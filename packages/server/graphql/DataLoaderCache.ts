@@ -17,7 +17,7 @@ export class CacheWorker<T extends DataLoaderBase> {
     this.cache = cache
   }
 
-  get(dataLoaderName: Parameters<T['get']>[0]) {
+  get: T['get'] = (dataLoaderName) => {
     return this.dataLoaderBase.get(dataLoaderName)
   }
 
