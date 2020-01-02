@@ -6468,6 +6468,7 @@ export type TeamSubscriptionPayload =
   | IAcceptTeamInvitationPayload
   | IAddAgendaItemPayload
   | IAddAtlassianAuthPayload
+  | IAddAzureDevopsAuthPayload
   | IAddGitHubAuthPayload
   | IAddSlackAuthPayload
   | IAddTeamPayload
@@ -6491,6 +6492,7 @@ export type TeamSubscriptionPayload =
   | IMoveReflectTemplatePromptPayload
   | IReflectTemplatePromptUpdateDescriptionPayload
   | IRemoveAtlassianAuthPayload
+  | IRemoveAzureDevopsAuthPayload
   | IRemoveGitHubAuthPayload
   | IRemoveSlackAuthPayload
   | IRemoveReflectTemplatePayload

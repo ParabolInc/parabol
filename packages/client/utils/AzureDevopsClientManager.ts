@@ -4,23 +4,39 @@ import makeHref from './makeHref'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import AddAzureDevopsAuthMutation from '../mutations/AddAzureDevopsAuthMutation'
 
+// export interface AzureDevopsUser {
+//   self: string
+//   key: string
+//   accountId: string
+//   name: string
+//   emailAddress: string
+//   avatarUrls: {[key: string]: string}
+//   displayName: string
+//   active: boolean
+//   timeZone: string
+// }
+
 export interface AzureDevopsUser {
-  self: string
-  key: string
-  accountId: string
-  name: string
-  emailAddress: string
-  avatarUrls: {[key: string]: string}
   displayName: string
-  active: boolean
-  timeZone: string
+  publicAlias: string
+  emailAddress: string
+  coreRevision: number
+  timeStamp: string
+  id: string
+  revision: number
 }
 
-export interface AccessibleResource {
-  id: string
-  name: string
-  scopes: string[]
-  avatarUrl: string
+// export interface AccessibleResource {
+//   id: string
+//   name: string
+//   scopes: string[]
+//   avatarUrl: string
+// }
+
+export interface AzureDevopsAccounts {
+  AccountId: string
+  AccountName: string
+  NamespaceId: string
 }
 
 export interface AzureDevopsProject {
@@ -132,6 +148,7 @@ interface AzureBoardsError {
 class AzureDevopsClientManager {
   static SCOPE =
     'vso.graph_manage vso.project_manage vso.tokenadministration vso.tokens vso.work_full'
+
   static openOAuth(atmosphere: Atmosphere, teamId: string, mutationProps: MenuMutationProps) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const providerState = Math.random()
@@ -143,7 +160,7 @@ class AzureDevopsClientManager {
       atmosphere,
       {
         code:
-          'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im9PdmN6NU1fN3AtSGpJS2xGWHo5M3VfVjBabyJ9.eyJhdWkiOiJkZTA1Yzc2Ni0wZjAzLTRlMTAtOWY0ZS0yNzFkZjFlNmFhNmYiLCJuYW1laWQiOiJhZWFjMDg0MS0zYjgwLTQ5MjQtOTEyMC1mNGU3NDk4NzE1NzciLCJzY3AiOiJ2c28uZ3JhcGhfbWFuYWdlIHZzby5wcm9qZWN0X21hbmFnZSB2c28udG9rZW5hZG1pbmlzdHJhdGlvbiB2c28udG9rZW5zIHZzby53b3JrX2Z1bGwgdnNvLmF1dGhvcml6YXRpb25fZ3JhbnQiLCJpc3MiOiJhcHAudnN0b2tlbi52aXN1YWxzdHVkaW8uY29tIiwiYXVkIjoiYXBwLnZzdG9rZW4udmlzdWFsc3R1ZGlvLmNvbSIsIm5iZiI6MTU3NTkxMzExMCwiZXhwIjoxNTc1OTE0MDEwfQ.XgPesptrO4tam4XLQTeMrMU1XBYh6akB_7V_w3iuTG-2OuYynEzU-oe-9n6OPD7Jso1Mciiaa1gY0lEUHRyaGsg3Bwu4VoCquv1kY-ureikDYZzupKbypL6okFGK0a588spRp2tW9LKQq5KJdWJf_YDaFmJxHIl81GZrd2-6UW9_hiVRs6N2uq2Y1wX1AYRLIwAm7QMNgONk87j_8jX9P6U3LKmr6xVJtkUR2_3GPEiH5asXRBNelF6MzcNu4co-tqS719g2tY0To2keOkiYYjTimgjVzltWMwB7j_eD-GvaBTws_ORiXq5rCe01tJ315oAAK0tvdae_RJIkXZNzZg',
+          'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im9PdmN6NU1fN3AtSGpJS2xGWHo5M3VfVjBabyJ9.eyJhdWkiOiI5N2QwMDdhZC0wNzhhLTRlMmItYjQ2Zi00OWZlMjNhMGYxYjEiLCJuYW1laWQiOiJhZWFjMDg0MS0zYjgwLTQ5MjQtOTEyMC1mNGU3NDk4NzE1NzciLCJzY3AiOiJ2c28uZ3JhcGhfbWFuYWdlIHZzby5wcm9qZWN0X21hbmFnZSB2c28udG9rZW5hZG1pbmlzdHJhdGlvbiB2c28udG9rZW5zIHZzby53b3JrX2Z1bGwgdnNvLmF1dGhvcml6YXRpb25fZ3JhbnQiLCJpc3MiOiJhcHAudnN0b2tlbi52aXN1YWxzdHVkaW8uY29tIiwiYXVkIjoiYXBwLnZzdG9rZW4udmlzdWFsc3R1ZGlvLmNvbSIsIm5iZiI6MTU3Nzk4MDY4MSwiZXhwIjoxNTc3OTgxNTgxfQ.rirrDZ-8CubrcpYUoWRp4w9iB5mJCmSeTKI-X3t4Hzaq9Ybpza78zoWZceuF2JsFIt_K5x7-GqgbFpnB9Jr3RxPO8AeNBU9I9DmIgE0EGX-WKWzVrqJqZdmueLbXhekXUehsvGnJj9b3KpA1A1JNR4c2hwvB0W1yJj_Cp1kKnSHm2XHYivg_NdT1QE6V2yTXFRmN7Qt-iVzU0JoPmcHkuv7HJ9aRhNTosL_sy7HUPnzhn_HiTKbA6CElcpKAU9K36tdGOo60XrCm1aav0hQL-5oGlS_07FXUvOj0Us1wuw1bTq4Wz0S94PjqO0y7eDoQ8kN5eEVsq1hv0DtuWxvmQw',
         teamId
       },
       {onError, onCompleted}
@@ -151,12 +168,12 @@ class AzureDevopsClientManager {
     return
 
     // const redirect = makeHref('/auth/azuredevops')
-    const redirect = 'https://jdahost:3001/auth/azuredevops'
+    const redirect = 'https://jdahost:3000/auth/azuredevops'
     const uri = `https://app.vssps.visualstudio.com/oauth2/authorize?client_id=${
       window.__ACTION__.azuredevops
-    }&scope=${encodeURI(
+    }&response_type=Assertion&state=${providerState}&scope=${encodeURI(
       AzureDevopsClientManager.SCOPE
-    )}&redirect_uri=${redirect}&state=${providerState}&response_type=Assertion`
+    )}&redirect_uri=${redirect}`
 
     const popup = window.open(
       uri,
@@ -171,17 +188,17 @@ class AzureDevopsClientManager {
       if (state !== providerState || typeof code !== 'string') return
       submitMutation()
 
-      // AddAzureDevopsAuthMutation(atmosphere, {code, teamId}, {onError, onCompleted})
-      // Callbackurl hack
-      AddAzureDevopsAuthMutation(
-        atmosphere,
-        {
-          code:
-            'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im9PdmN6NU1fN3AtSGpJS2xGWHo5M3VfVjBabyJ9.eyJhdWkiOiJkZTA1Yzc2Ni0wZjAzLTRlMTAtOWY0ZS0yNzFkZjFlNmFhNmYiLCJuYW1laWQiOiJhZWFjMDg0MS0zYjgwLTQ5MjQtOTEyMC1mNGU3NDk4NzE1NzciLCJzY3AiOiJ2c28uZ3JhcGhfbWFuYWdlIHZzby5wcm9qZWN0X21hbmFnZSB2c28udG9rZW5hZG1pbmlzdHJhdGlvbiB2c28udG9rZW5zIHZzby53b3JrX2Z1bGwgdnNvLmF1dGhvcml6YXRpb25fZ3JhbnQiLCJpc3MiOiJhcHAudnN0b2tlbi52aXN1YWxzdHVkaW8uY29tIiwiYXVkIjoiYXBwLnZzdG9rZW4udmlzdWFsc3R1ZGlvLmNvbSIsIm5iZiI6MTU3NTkxMzExMCwiZXhwIjoxNTc1OTE0MDEwfQ.XgPesptrO4tam4XLQTeMrMU1XBYh6akB_7V_w3iuTG-2OuYynEzU-oe-9n6OPD7Jso1Mciiaa1gY0lEUHRyaGsg3Bwu4VoCquv1kY-ureikDYZzupKbypL6okFGK0a588spRp2tW9LKQq5KJdWJf_YDaFmJxHIl81GZrd2-6UW9_hiVRs6N2uq2Y1wX1AYRLIwAm7QMNgONk87j_8jX9P6U3LKmr6xVJtkUR2_3GPEiH5asXRBNelF6MzcNu4co-tqS719g2tY0To2keOkiYYjTimgjVzltWMwB7j_eD-GvaBTws_ORiXq5rCe01tJ315oAAK0tvdae_RJIkXZNzZg',
-          teamId
-        },
-        {onError, onCompleted}
-      )
+      AddAzureDevopsAuthMutation(atmosphere, {code, teamId}, {onError, onCompleted})
+      // // Callbackurl hack
+      // AddAzureDevopsAuthMutation(
+      //   atmosphere,
+      //   {
+      //     code:
+      //       'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im9PdmN6NU1fN3AtSGpJS2xGWHo5M3VfVjBabyJ9.eyJhdWkiOiI2YmI0YzJhMC0wMmIxLTQyNDctYTg0My0yZDgxZDU4Y2RlN2UiLCJuYW1laWQiOiJhZWFjMDg0MS0zYjgwLTQ5MjQtOTEyMC1mNGU3NDk4NzE1NzciLCJzY3AiOiJ2c28uZ3JhcGhfbWFuYWdlIHZzby5wcm9qZWN0X21hbmFnZSB2c28udG9rZW5hZG1pbmlzdHJhdGlvbiB2c28udG9rZW5zIHZzby53b3JrX2Z1bGwgdnNvLmF1dGhvcml6YXRpb25fZ3JhbnQiLCJpc3MiOiJhcHAudnN0b2tlbi52aXN1YWxzdHVkaW8uY29tIiwiYXVkIjoiYXBwLnZzdG9rZW4udmlzdWFsc3R1ZGlvLmNvbSIsIm5iZiI6MTU3Nzk2MjE5MywiZXhwIjoxNTc3OTYzMDkzfQ.sWmarsGcDh0niOQF5Wl-1XFDFdqOmEjBBBua116WIuz9jJiizGqL_SP9GBdvR61XZmM2QrP9J4AU3ewsrzo6crMAtZigpEPFV52Jzmc2TW4XNfqMp-2Q1u4zVYBNdtinBuz7PXTxNRN6ue3n61OzatREzCpUOwltmWzy17d4SpSWfJAlYKKkFxdqMCzBOe1udW1DlNO1gNptsyTi1Vu-DW1p4ElrTD98K5TfposZBHngpMa_mPlXH2YJtAWqw46qQlCMITNamdxM1AEpCz-yolsNxkUcnC9NhjNpQ3X4pDR66fe2rxA1QfitHbvFitu7SnRuCpxIJ9GGlluXDGkeqg',
+      //     teamId
+      //   },
+      //   {onError, onCompleted}
+      // )
       popup && popup.close()
       window.removeEventListener('message', handler)
     }
@@ -236,16 +253,19 @@ class AzureDevopsClientManager {
     }
   }
 
-  //TODO: review full auth process
-  async getAccessibleResources() {
-    return this.get('https://api.atlassian.com/oauth/token/accessible-resources') as
-      | AccessibleResource[]
+  async getAzureDevOpsAccounts() {
+    return this.get('https://app.vssps.visualstudio.com/_apis/accounts') as
+      | AzureDevopsAccounts[]
       | AzureDevopsError
   }
 
-  //async getMyself (cloudId: string) {
-  async getMyself() {
-    //return this.get(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/myself`) as
+  // async getAccessibleResources() {
+  //   return this.get('https://api.atlassian.com/oauth/token/accessible-resources') as
+  //     | AccessibleResource[]
+  //     | AzureDevopsError
+  // }
+
+  async getMyAzureDevopsProfile() {
     return this.get(
       `https://app.vssps.visualstudio.com/_apis/profile/profiles/me?api-version=5.1`
     ) as AzureDevopsUser | AzureDevopsError

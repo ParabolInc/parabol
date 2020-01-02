@@ -16,7 +16,7 @@ import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
 import withAtmosphere, {
   WithAtmosphereProps
 } from '../../../../decorators/withAtmosphere/withAtmosphere'
-import useAzureDevopsSites from '../../../../hooks/useAzureDevopsSites'
+import useAzureDevopsAccounts from '../../../../hooks/useAzureDevopsAccounts'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import {DECELERATE, fadeIn} from '../../../../styles/animation'
@@ -127,7 +127,7 @@ const AzureDevopsProviderRow = (props: Props) => {
     AzureDevopsClientManager.openOAuth(atmosphere, teamId, mutationProps)
   }
 
-  const {sites, status} = useAzureDevopsSites(accessToken)
+  const {accounts, status} = useAzureDevopsAccounts(accessToken)
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   return (
@@ -148,14 +148,14 @@ const AzureDevopsProviderRow = (props: Props) => {
         <ListAndMenu>
           <SiteList>
             {status === 'loaded' &&
-              sites.map((site, idx) => (
+              accounts.map((account, idx) => (
                 <SiteAvatar
-                  key={site.id}
+                  key={account.AccountId}
                   width={24}
                   height={24}
-                  src={site.avatarUrl}
-                  title={site.name}
-                  idx={sites.length - idx}
+                  src={account.NamespaceId}
+                  title={account.AccountName}
+                  idx={accounts.length - idx}
                 />
               ))}
             {status === 'loading' && (
