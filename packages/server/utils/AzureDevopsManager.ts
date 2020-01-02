@@ -3,6 +3,7 @@ import AzureDevopsClientManager from '../../client/utils/AzureDevopsClientManage
 import makeAppLink from './makeAppLink'
 
 interface AuthBodyParams {
+  grant_type: string
   code: string
   redirect_uri: string
 }
@@ -12,20 +13,27 @@ interface OAuth2Response {
   token_type: string
   expires_in: any
   refresh_token: string
+  Error: string
+  ErrorDescription: string
+  scope: string
 }
 
 class AzureDevopsManager extends AzureDevopsClientManager {
   static async init(code: string) {
     return AzureDevopsManager.fetchToken({
       code,
-      redirect_uri: makeAppLink('auth/azuredevops')
+      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+      // redirect_uri: makeAppLink('auth/azuredevops')
+      redirect_uri: 'https://jdahost:3000/auth/azuredevops'
     })
   }
 
   static async refresh(refreshToken: string) {
     return AzureDevopsManager.fetchToken({
       code: refreshToken,
-      redirect_uri: makeAppLink('auth/azuredevops')
+      grant_type: 'refresh_token',
+      // redirect_uri: makeAppLink('auth/azuredevops')
+      redirect_uri: 'https://jdahost:3000/auth/azuredevops'
     })
   }
 
@@ -44,30 +52,28 @@ class AzureDevopsManager extends AzureDevopsClientManager {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       body: `client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&client_assertion=${bodyParams.client_secret}&grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${bodyParams.code}&redirect_uri=${bodyParams.redirect_uri}`
-      //body: JSON.stringify(queryParams)
     })
 
-    // const tokenJson = (await tokenRes.json()) as OAuth2Response
-    const dbgAnswer = console.log(await tokenRes)
     const tokenJson = (await tokenRes.json()) as OAuth2Response
     const {
       access_token: accessToken,
-      token_type: tokenType,
-      expires_in: expiresIn,
-      refresh_token: refreshToken
+      refresh_token: refreshToken,
+      Error: error,
+      ErrorDescription: errorDescription,
+      scope
     } = tokenJson
 
-    // const {access_token: accessToken, refresh_token: refreshToken, error, scope} = tokenJson
-    // if (error) {
-    //   throw new Error(`AzureDevops: ${error}`)
-    // }
-    // const providedScope = scope.split(' ')
-    // const matchingScope =
-    //   new Set([...AzureDevopsManager.SCOPE.split(' '), ...providedScope]).size ===
-    //   providedScope.length
-    // if (!matchingScope) {
-    //   throw new Error(`bad scope: ${scope}`)
-    // }
+    if (error) {
+      throw new Error(`AzureDevops: ${error}, ${errorDescription},`)
+    }
+    const providedScope = scope.split(' ')
+    const matchingScope =
+      new Set([...AzureDevopsManager.SCOPE.split(' '), ...providedScope]).size ===
+      providedScope.length
+    if (!matchingScope) {
+      throw new Error(`bad scope: ${scope}`)
+    }
+
     return new AzureDevopsManager(accessToken, refreshToken)
   }
 

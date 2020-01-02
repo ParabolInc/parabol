@@ -1,19 +1,19 @@
 import {useEffect, useRef, useState} from 'react'
 import AzureDevopsClientManager, {
-  AccessibleResource,
+  AzureDevopsAccounts,
   AzureDevopsError
 } from '../utils/AzureDevopsClientManager'
 
-const useAzureDevopsSites = (accessToken?: string) => {
+const useAzureDevopsAccounts = (accessToken?: string) => {
   const isMountedRef = useRef(true)
-  const [sites, setSites] = useState<AccessibleResource[]>([])
+  const [accounts, setAccounts] = useState<AzureDevopsAccounts[]>([])
   const [status, setStatus] = useState<null | 'loading' | 'loaded' | 'error'>(null)
   useEffect(() => {
     const manager = new AzureDevopsClientManager(accessToken || '')
-    const fetchSites = async () => {
-      let res: AzureDevopsError | AccessibleResource[]
+    const fetchAccounts = async () => {
+      let res: AzureDevopsError | AzureDevopsAccounts[]
       try {
-        res = await manager.getAccessibleResources()
+        res = await manager.getAzureDevOpsAccounts()
       } catch (e) {
         if (isMountedRef.current) {
           setStatus('error')
@@ -23,7 +23,7 @@ const useAzureDevopsSites = (accessToken?: string) => {
       if (isMountedRef.current) {
         if (Array.isArray(res)) {
           setStatus('loaded')
-          setSites(res)
+          setAccounts(res)
         } else {
           setStatus('error')
         }
@@ -32,13 +32,13 @@ const useAzureDevopsSites = (accessToken?: string) => {
 
     if (accessToken && isMountedRef.current) {
       setStatus('loading')
-      fetchSites().catch()
+      fetchAccounts().catch()
     }
     return () => {
       isMountedRef.current = false
     }
   }, [accessToken])
-  return {sites, status}
+  return {accounts, status}
 }
 
-export default useAzureDevopsSites
+export default useAzureDevopsAccounts

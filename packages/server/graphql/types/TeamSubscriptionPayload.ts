@@ -2,6 +2,7 @@ import graphQLSubscriptionType from '../graphQLSubscriptionType'
 import AcceptTeamInvitationPayload from './AcceptTeamInvitationPayload'
 import AddAgendaItemPayload from './AddAgendaItemPayload'
 import AddAtlassianAuthPayload from './AddAtlassianAuthPayload'
+import AddAzureDevopsAuthPayload from './AddAzureDevopsAuthPayload'
 import AddGitHubAuthPayload from './AddGitHubAuthPayload'
 import AddReflectTemplatePayload from './AddReflectTemplatePayload'
 import AddReflectTemplatePromptPayload from './AddReflectTemplatePromptPayload'
@@ -14,6 +15,7 @@ import PromoteToTeamLeadPayload from './PromoteToTeamLeadPayload'
 import ReflectTemplatePromptUpdateDescriptionPayload from './ReflectTemplatePromptUpdateDescriptionPayload'
 import RemoveAgendaItemPayload from './RemoveAgendaItemPayload'
 import RemoveAtlassianAuthPayload from './RemoveAtlassianAuthPayload'
+import RemoveAzureDevopsAuthPayload from './RemoveAzureDevopsAuthPayload'
 import RemoveGitHubAuthPayload from './RemoveGitHubAuthPayload'
 import RemoveOrgUserPayload from './RemoveOrgUserPayload'
 import RemoveReflectTemplatePayload from './RemoveReflectTemplatePayload'
@@ -41,6 +43,7 @@ const types = [
   AcceptTeamInvitationPayload,
   AddAgendaItemPayload,
   AddAtlassianAuthPayload,
+  AddAzureDevopsAuthPayload,
   AddGitHubAuthPayload,
   AddSlackAuthPayload,
   AddTeamPayload,
@@ -66,6 +69,7 @@ const types = [
   MoveReflectTemplatePromptPayload,
   ReflectTemplatePromptUpdateDescriptionPayload,
   RemoveAtlassianAuthPayload,
+  RemoveAzureDevopsAuthPayload,
   RemoveGitHubAuthPayload,
   RemoveSlackAuthPayload,
   RemoveReflectTemplatePayload,

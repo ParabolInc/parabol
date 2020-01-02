@@ -7,6 +7,7 @@ import {Reactable} from '../database/types/Reactable'
 import Task from '../database/types/Task'
 import {ThreadSource} from '../database/types/ThreadSource'
 import AtlassianServerManager from '../utils/AtlassianServerManager'
+import AzureDevopsManager from '../utils/AzureDevopsManager'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import RethinkDataLoader from './RethinkDataLoader'
 
@@ -15,6 +16,12 @@ interface JiraRemoteProjectKey {
   accessToken: string
   cloudId: string
   atlassianProjectId: string
+}
+
+interface AzureDevopsRemoteProjectKey {
+  accessToken: string
+  organization: string
+  azureDevopsProjectId: string
 }
 
 interface UserTasksKey {
@@ -169,6 +176,60 @@ export const jiraRemoteProject = (parent: RethinkDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.atlassianProjectId}:${key.cloudId}`
+    }
+  )
+}
+
+// Azure Devops
+export const freshAzureDevopsAccessToken = (parent: RethinkDataLoader) => {
+  const userAuthLoader = parent.get('azureDevopsAuthByUserId')
+  return new DataLoader<AccessTokenKey, string, string>(
+    async (keys) => {
+      return promiseAllPartial(
+        keys.map(async ({userId, teamId}) => {
+          const userAuths = await userAuthLoader.load(userId)
+          const teamAuth = userAuths.find((auth) => auth.teamId === teamId)
+          if (!teamAuth || !teamAuth.refreshToken) return null
+          const {accessToken: existingAccessToken, refreshToken} = teamAuth
+          const decodedToken = existingAccessToken && (decode(existingAccessToken) as any)
+          const now = new Date()
+          if (decodedToken && decodedToken.exp >= Math.floor(now.getTime() / 1000)) {
+            return existingAccessToken
+          }
+          // fetch a new one
+          const manager = await AzureDevopsManager.refresh(refreshToken)
+          const {accessToken} = manager
+          const r = await getRethink()
+          await r
+            .table('AzureDevopsAuth')
+            .getAll(userId, {index: 'userId'})
+            .filter({teamId})
+            .update({accessToken, updatedAt: now})
+            .run()
+          return accessToken
+        })
+      )
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.userId}:${key.teamId}`
+    }
+  )
+}
+
+export const azureDevopsRemoteProject = (parent: RethinkDataLoader) => {
+  return new DataLoader<AzureDevopsRemoteProjectKey, string, string>(
+    async (keys) => {
+      return promiseAllPartial(
+        keys.map(async ({accessToken, organization, azureDevopsProjectId}) => {
+          const manager = new AzureDevopsManager(accessToken)
+          return manager.getProject(cloudId, atlassianProjectId)
+        })
+      )
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.azureDevopsProjectId}:${key.organization}`
     }
   )
 }

@@ -41,6 +41,18 @@ export const atlassianAuthByUserId = new LoaderMakerForeign(
   }
 )
 
+export const azureDevosAuthByUserId = new LoaderMakerForeign(
+  'azureDevopsAuths',
+  'userId',
+  async (userIds) => {
+    const r = await getRethink()
+    return r
+      .table('AzureDevopsAuth')
+      .getAll(r.args(userIds), {index: 'userId'})
+      .run()
+  }
+)
+
 export const commentsByThreadId = new LoaderMakerForeign(
   'comments',
   'threadId',
