@@ -50,10 +50,12 @@ const SAMLhandler23 = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest
     redirectOnError(res, message)
     return
   }
-  res
-    .writeStatus('302')
-    .writeHeader('location', `/saml-redirect?token=${authToken}`)
-    .end()
+  res.cork(() => {
+    res
+      .writeStatus('302')
+      .writeHeader('location', `/saml-redirect?token=${authToken}`)
+      .end()
+  })
 })
 
 export default SAMLhandler23

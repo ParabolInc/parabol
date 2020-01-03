@@ -54,11 +54,13 @@ const httpGraphQLBodyHandler = async (
     }
   }
   const response = await handleGraphQLTrebuchetRequest(body, connectionContext)
-  if (response) {
-    res.writeHeader('content-type', 'application/json').end(JSON.stringify(response))
-  } else {
-    res.writeStatus('200').end()
-  }
+  res.cork(() => {
+    if (response) {
+      res.writeHeader('content-type', 'application/json').end(JSON.stringify(response))
+    } else {
+      res.writeStatus('200').end()
+    }
+  })
 }
 
 const httpGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {

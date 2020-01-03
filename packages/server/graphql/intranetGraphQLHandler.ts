@@ -37,7 +37,9 @@ const intranetHttpGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req
     isPrivate,
     isAdHoc: true
   })
-  res.writeHeader('content-type', 'application/json').end(JSON.stringify(result))
+  res.cork(() => {
+    res.writeHeader('content-type', 'application/json').end(JSON.stringify(result))
+  })
 })
 
 export default intranetHttpGraphQLHandler

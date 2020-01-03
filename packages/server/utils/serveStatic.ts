@@ -18,15 +18,18 @@ const serveStatic = (res: HttpResponse, fileName: string, sendCompressed?: boole
   const meta = staticServer.getMeta(fileName)
   if (!meta) return false
   const {size, pathname, brotliFile, file, type} = meta
-  res.writeHeader('content-type', type)
   if (file) {
-    if (PROD && sendCompressed && brotliFile) {
-      res.writeHeader('content-encoding', 'br').end(brotliFile)
-    } else {
-      res.end(file)
-    }
+    res.cork(() => {
+      res.writeHeader('content-type', type)
+      if (PROD && sendCompressed && brotliFile) {
+        res.writeHeader('content-encoding', 'br').end(brotliFile)
+      } else {
+        res.end(file)
+      }
+    })
     return true
   }
+  res.writeHeader('content-type', type)
   const readStream = fs.createReadStream(pathname)
   pipeStreamOverResponse(res, readStream, size)
   return true

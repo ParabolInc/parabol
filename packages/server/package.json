@@ -172,7 +172,7 @@
     "string-similarity": "^3.0.0",
     "stripe": "^4.24.0",
     "ts-node": "^8.5.0",
-    "uWebSockets.js": "uNetworking/uWebSockets.js#v16.4.0",
+    "uWebSockets.js": "uNetworking/uWebSockets.js#v16.5.0",
     "v8-profiler-next": "^1.1.1"
   },
   "lint-staged": {
