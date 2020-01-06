@@ -40,7 +40,7 @@ const createMassInvitation = {
 
     await r
       .table('MassInvitation')
-      .insert(massInvitation)
+      .insert(massInvitation, {conflict: 'replace'})
       .run()
     return {teamId}
   }
