@@ -17,7 +17,7 @@ const startHotServer = async (compiler) => {
 const buildMiddleware = (compiler, config) => {
   const mw = require('webpack-dev-middleware')
   return mw(compiler, {
-    writeToDisk: true,
+    // writeToDisk: true,
     logLevel: 'warn',
     noInfo: true,
     quiet: true,

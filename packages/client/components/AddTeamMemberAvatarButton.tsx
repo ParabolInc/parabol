@@ -1,22 +1,21 @@
-import {AddTeamMemberAvatarButton_team} from '../__generated__/AddTeamMemberAvatarButton_team.graphql'
-import {AddTeamMemberAvatarButton_teamMembers} from '../__generated__/AddTeamMemberAvatarButton_teamMembers.graphql'
-import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import Icon from './Icon'
-import OutlinedButton from './OutlinedButton'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import {MenuPosition} from '../hooks/useCoords'
-import useTooltip from '../hooks/useTooltip'
 import useModal from '../hooks/useModal'
-import lazyPreload from '../utils/lazyPreload'
-import isDemoRoute from '../utils/isDemoRoute'
+import useTooltip from '../hooks/useTooltip'
 import {meetingAvatarMediaQueries} from '../styles/meeting'
+import isDemoRoute from '../utils/isDemoRoute'
+import lazyPreload from '../utils/lazyPreload'
+import {AddTeamMemberAvatarButton_teamMembers} from '../__generated__/AddTeamMemberAvatarButton_teamMembers.graphql'
+import Icon from './Icon'
+import OutlinedButton from './OutlinedButton'
 
 interface Props extends WithAtmosphereProps {
   isMeeting?: boolean
-  team: AddTeamMemberAvatarButton_team
+  teamId: string
   teamMembers: AddTeamMemberAvatarButton_teamMembers
 }
 
@@ -74,7 +73,7 @@ const AddTeamMemberModalDemo = lazyPreload(() =>
 )
 
 const AddTeamMemberAvatarButton = (props: Props) => {
-  const {isMeeting, team, teamMembers} = props
+  const {isMeeting, teamId, teamMembers} = props
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
     MenuPosition.UPPER_CENTER
   )
@@ -82,7 +81,7 @@ const AddTeamMemberAvatarButton = (props: Props) => {
   const modal = isDemoRoute() ? (
     <AddTeamMemberModalDemo />
   ) : (
-    <AddTeamMemberModal closePortal={closeModal} team={team} teamMembers={teamMembers} />
+    <AddTeamMemberModal closePortal={closeModal} teamId={teamId} teamMembers={teamMembers} />
   )
   return (
     <>
@@ -103,11 +102,6 @@ const AddTeamMemberAvatarButton = (props: Props) => {
 }
 
 export default createFragmentContainer(withAtmosphere(AddTeamMemberAvatarButton), {
-  team: graphql`
-    fragment AddTeamMemberAvatarButton_team on Team {
-      ...AddTeamMemberModal_team
-    }
-  `,
   teamMembers: graphql`
     fragment AddTeamMemberAvatarButton_teamMembers on TeamMember @relay(plural: true) {
       ...AddTeamMemberModal_teamMembers

@@ -1,6 +1,6 @@
 import {Dispatch, MutableRefObject, SetStateAction, useEffect, useLayoutEffect, useRef} from 'react'
 import {BBox} from '../types/animations'
-import getBBox from '../components/RetroReflectPhase/getBBox'
+import {PortalStatus} from './usePortal'
 import useRefState from './useRefState'
 import useResizeObserver from './useResizeObserver'
 
@@ -146,6 +146,7 @@ const getNextCoords = (targetBBox: BBox, originBBox: BBox, preferredMenuPosition
 
 export interface UseCoordsOptions {
   originCoords?: BBox
+  portalStatus?: PortalStatus
 }
 
 const useWindowResize = <T extends HTMLElement = HTMLButtonElement>(
@@ -190,17 +191,23 @@ const useCoords = <
   useLayoutEffect(() => {
     if (!targetRef.current || !originRef.current) return
     // Bounding adjustments mimic native (flip from below to above for Y, but adjust pixel-by-pixel for X)
-    const targetBBox = getBBox(targetRef.current)
-    const originBBox = getBBox(originRef.current)
+    const targetBBox = targetRef.current?.getBoundingClientRect()
+    const originBBox = originRef.current?.getBoundingClientRect()
     if (targetBBox && originBBox) {
       const coordState = getNextCoords(targetBBox, originBBox, preferredMenuPosition)
       setCoords(coordState)
     }
-  }, [targetRef.current, setCoords, options.originCoords, preferredMenuPosition])
+  }, [
+    targetRef.current,
+    setCoords,
+    options.originCoords,
+    preferredMenuPosition,
+    options.portalStatus
+  ])
 
   useResizeObserver(targetRef.current, () => {
-    const targetBBox = getBBox(targetRef.current)!
-    const originBBox = getBBox(originRef.current)!
+    const targetBBox = targetRef.current?.getBoundingClientRect()
+    const originBBox = originRef.current?.getBoundingClientRect()
     if (targetBBox && originBBox) {
       const coordState = getNextCoords(targetBBox, originBBox, preferredMenuPosition)
       setCoords(coordState)

@@ -7,12 +7,18 @@ import {
   GraphQLString
 } from 'graphql'
 import {forwardConnectionArgs} from 'graphql-relay'
+import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
+import {ITeam} from '../../../client/types/graphql'
+import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import {resolveOrganization} from '../resolvers'
 import AgendaItem from './AgendaItem'
 import CustomPhaseItem from './CustomPhaseItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
+import MassInvitation from './MassInvitation'
 import MeetingTypeEnum from './MeetingTypeEnum'
 import NewMeeting from './NewMeeting'
 import Organization from './Organization'
@@ -21,12 +27,6 @@ import TeamInvitation from './TeamInvitation'
 import TeamMeetingSettings from './TeamMeetingSettings'
 import TeamMember from './TeamMember'
 import TierEnum from './TierEnum'
-import {getUserId, isTeamMember} from '../../utils/authorization'
-import standardError from '../../utils/standardError'
-import {ITeam} from '../../../client/types/graphql'
-import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
-import {signMassInviteToken} from '../../utils/massInviteToken'
-import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 
 const Team = new GraphQLObjectType<ITeam, GQLContext>({
   name: 'Team',
@@ -49,13 +49,19 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       description: 'true if the team was created when the account was created, else false',
       resolve: ({isOnboardTeam}) => !!isOnboardTeam
     },
-    massInviteToken: {
-      type: GraphQLID,
+    massInvitation: {
+      type: MassInvitation,
       description:
-        'a user-specific token that allows anyone who uses it within 24 hours to join the team',
-      resolve: ({id: teamId}, _args, {authToken}) => {
+        'The hash and expiration for a token that allows anyone with it to join the team',
+      resolve: async ({id: teamId}, _args, {authToken, dataLoader}) => {
+        if (!isTeamMember(authToken, teamId)) return null
         const viewerId = getUserId(authToken)
-        return isTeamMember(authToken, teamId) ? signMassInviteToken(teamId, viewerId) : null
+        const teamMemberId = toTeamMemberId(teamId, viewerId)
+        const invitationTokens = await dataLoader
+          .get('massInvitationsByTeamMemberId')
+          .load(teamMemberId)
+        const [newestInvitationToken] = invitationTokens
+        return newestInvitationToken
       }
     },
     isPaid: {

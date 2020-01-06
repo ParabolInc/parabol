@@ -1,10 +1,9 @@
 import fs from 'fs'
 import mime from 'mime-types'
 import path from 'path'
-import PROD from '../PROD'
 import {brotliCompressSync} from 'zlib'
+import PROD from '../PROD'
 import isCompressible from './isCompressible'
-
 class StaticFileMeta {
   mtime: string
   size: number
@@ -39,10 +38,22 @@ interface Options {
   }
 }
 
+interface PathNames {
+  [filename: string]: string
+}
+
+const makePathnames = (dirname: string, pathnames: PathNames, prefix: string) => {
+  fs.readdirSync(dirname, {withFileTypes: true}).forEach((dirent) => {
+    if (dirent.isFile()) {
+      const key = prefix + dirent.name
+      pathnames[key] = path.join(dirname, dirent.name)
+    } else if (dirent.isDirectory()) {
+      makePathnames(path.join(dirname, dirent.name), pathnames, `${prefix}${dirent.name}/`)
+    }
+  })
+}
 export default class StaticServer {
-  pathnames: {
-    [filename: string]: string
-  } = {}
+  pathnames: PathNames = {}
   cachedFileSet: Set<string>
   meta: MetaDict = {}
   constructor(options: Options) {
@@ -51,9 +62,7 @@ export default class StaticServer {
     Object.keys(staticPaths).forEach((dirname) => {
       if (!staticPaths[dirname]) return
       try {
-        fs.readdirSync(dirname).forEach((filename) => {
-          this.pathnames[filename] = path.join(dirname, filename)
-        })
+        makePathnames(dirname, this.pathnames, '')
       } catch (e) {
         console.log(e)
       }

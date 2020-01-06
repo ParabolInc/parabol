@@ -34,7 +34,7 @@ uws
   .get('/favicon.ico', PWAHandler)
   .get('/sw.js', PWAHandler)
   .get('/manifest.json', PWAHandler)
-  .get('/static/:file', staticFileHandler)
+  .get('/static/*', staticFileHandler)
   .get('/email/createics', ICSHandler)
   .get('/sse', SSEConnectionHandler)
   .get('/sse-ping', SSEPingHandler)

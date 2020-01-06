@@ -1,38 +1,28 @@
-import {AddTeamMemberModal_team} from '../__generated__/AddTeamMemberModal_team.graphql'
-import React, {Component} from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import PrimaryButton from './PrimaryButton'
-import parseEmailAddressList from '../utils/parseEmailAddressList'
-import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
+import useAtmosphere from 'hooks/useAtmosphere'
+import useMutationProps from 'hooks/useMutationProps'
+import React, {useState} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import useBreakpoint from '../hooks/useBreakpoint'
 import InviteToTeamMutation from '../mutations/InviteToTeamMutation'
-import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
+import parseEmailAddressList from '../utils/parseEmailAddressList'
+import plural from '../utils/plural'
+import {AddTeamMemberModal_teamMembers} from '../__generated__/AddTeamMemberModal_teamMembers.graphql'
 import AddTeamMemberModalSuccess from './AddTeamMemberModalSuccess'
-import BasicTextArea from './InputField/BasicTextArea'
 import DialogContainer from './DialogContainer'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
-import StyledError from './StyledError'
-import {AddTeamMemberModal_teamMembers} from '../__generated__/AddTeamMemberModal_teamMembers.graphql'
-import plural from '../utils/plural'
-import makeHref from '../utils/makeHref'
-import CopyShortLink from '../modules/meeting/components/CopyShortLink/CopyShortLink'
+import BasicTextArea from './InputField/BasicTextArea'
 import LabelHeading from './LabelHeading/LabelHeading'
-import {PALETTE} from '../styles/paletteV2'
-import useBreakpoint from '../hooks/useBreakpoint'
+import MassInvitationTokenLink from './MassInvitationTokenLink'
+import PrimaryButton from './PrimaryButton'
+import StyledError from './StyledError'
 
-interface Props extends WithAtmosphereProps, WithMutationProps {
+interface Props {
   closePortal: () => void
   teamMembers: AddTeamMemberModal_teamMembers
-  team: AddTeamMemberModal_team
-}
-
-interface State {
-  invitees: string[]
-  pendingSuccessfulInvitations: string[]
-  successfulInvitations: null | string[]
-  rawInvitees: string
+  teamId: string
 }
 
 const INVITE_DIALOG_BREAKPOINT = 864
@@ -97,161 +87,113 @@ const StyledLabelHeading = styled(LabelHeading)({
   textTransform: 'none'
 })
 
-const StyledCopyShortLink = styled(CopyShortLink)({
-  borderRadius: 4,
-  border: `1px dashed ${PALETTE.EMPHASIS_COOL_LIGHTER}`,
-  color: PALETTE.EMPHASIS_COOL,
-  fontSize: 15,
-  margin: '0 0 32px',
-  padding: 11,
-  ':hover': {
-    color: PALETTE.EMPHASIS_COOL_LIGHTER
-  }
-})
-
 const IllustrationBlock = () => {
   const showIllustration = useBreakpoint(INVITE_DIALOG_BREAKPOINT)
   const imageSrc = `${__STATIC_IMAGES__}/illustrations/illus-momentum.png`
   return showIllustration ? <Illustration alt='' src={imageSrc} /> : null
 }
 
-class AddTeamMemberModal extends Component<Props, State> {
-  _mounted = true
-  state: State = {
-    pendingSuccessfulInvitations: [] as string[],
-    successfulInvitations: null,
-    rawInvitees: '',
-    invitees: [] as string[]
-  }
-
-  onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const {error, onCompleted, onError, teamMembers} = this.props
-    const rawInvitees = e.target.value
-    const parsedInvitees = parseEmailAddressList(rawInvitees)
+const AddTeamMemberModal = (props: Props) => {
+  const {closePortal, teamMembers, teamId} = props
+  const [pendingSuccessfulInvitations, setPendingSuccessfulInvitations] = useState([] as string[])
+  const [successfulInvitations, setSuccessfulInvitations] = useState<string[] | null>(null)
+  const [rawInvitees, setRawInvitees] = useState('')
+  const [invitees, setInvitees] = useState([] as string[])
+  const {error, onCompleted, onError, submitMutation, submitting} = useMutationProps()
+  const atmosphere = useAtmosphere()
+  const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const nextValue = e.target.value
+    if (rawInvitees === nextValue) return
+    const parsedInvitees = parseEmailAddressList(nextValue)
     const allInvitees = parsedInvitees
       ? (parsedInvitees.map(({address}) => address) as string[])
-      : this.state.invitees
+      : invitees
     const teamEmailSet = new Set(teamMembers.map(({email}) => email))
     const uniqueInvitees = Array.from(new Set(allInvitees))
     const offTeamInvitees = uniqueInvitees.filter((email) => !teamEmailSet.has(email))
     const alreadyInvitedEmail = uniqueInvitees.find((email) => teamEmailSet.has(email))
-    this.setState({
-      rawInvitees,
-      invitees: offTeamInvitees
-    })
+    setRawInvitees(nextValue)
+    setInvitees(offTeamInvitees)
     if (alreadyInvitedEmail) {
-      onError(`${alreadyInvitedEmail} is already on the team`)
+      onError(new Error(`${alreadyInvitedEmail} is already on the team`))
     } else if (error) {
       onCompleted()
     }
   }
 
-  sendInvitations = () => {
-    const {atmosphere, onError, onCompleted, submitMutation, setDirty, team} = this.props
-    const {id: teamId} = team
-    const {invitees, pendingSuccessfulInvitations} = this.state
+  const sendInvitations = () => {
     if (invitees.length === 0) return
-    setDirty()
     submitMutation()
     const handleCompleted = (res) => {
       onCompleted()
       if (res) {
         const {inviteToTeam} = res
-        if (this._mounted) {
-          if (inviteToTeam.invitees.length === invitees.length) {
-            this.setState({
-              successfulInvitations: pendingSuccessfulInvitations.concat(inviteToTeam.invitees)
-            })
-          } else {
-            // there was a problem with at least 1 email
-            const goodInvitees = invitees.filter((invitee) =>
-              inviteToTeam.invitees.includes(invitee)
-            )
+        if (inviteToTeam.invitees.length === invitees.length) {
+          setSuccessfulInvitations(pendingSuccessfulInvitations.concat(inviteToTeam.invitees))
+        } else {
+          // there was a problem with at least 1 email
+          const goodInvitees = invitees.filter((invitee) => inviteToTeam.invitees.includes(invitee))
 
-            const badInvitees = invitees.filter(
-              (invitee) => !inviteToTeam.invitees.includes(invitee)
-            )
-            onError(
+          const badInvitees = invitees.filter((invitee) => !inviteToTeam.invitees.includes(invitee))
+          onError(
+            new Error(
               `Could not send an invitation to the above ${plural(badInvitees.length, 'email')}`
             )
-            this.setState({
-              invitees: badInvitees,
-              rawInvitees: badInvitees.join(', '),
-              // store the successes in a list so the user gets a confirmation that all emails were sent
-              pendingSuccessfulInvitations: pendingSuccessfulInvitations.concat(goodInvitees)
-            })
-          }
+          )
+          setInvitees(badInvitees)
+          setRawInvitees(badInvitees.join(', '))
+          // store the successes in a list so the user gets a confirmation that all emails were sent
+          setPendingSuccessfulInvitations(pendingSuccessfulInvitations.concat(goodInvitees))
         }
       }
     }
     InviteToTeamMutation(atmosphere, {teamId, invitees}, {onError, onCompleted: handleCompleted})
   }
 
-  componentWillUnmount() {
-    this._mounted = false
-  }
-
-  render() {
-    const {closePortal, error, submitting, team} = this.props
-    const {invitees, successfulInvitations, rawInvitees} = this.state
-    const {massInviteToken} = team
-    if (successfulInvitations) {
-      return (
-        <AddTeamMemberModalSuccess
-          closePortal={closePortal}
-          successfulInvitations={successfulInvitations}
-        />
-      )
-    }
-    const url = makeHref(`/invitation-link/${massInviteToken}`)
-    const title = invitees.length <= 1 ? 'Send Invitation' : `Send ${invitees.length} Invitations`
+  if (successfulInvitations) {
     return (
-      <StyledDialogContainer>
-        <StyledDialogTitle>Invite to Team</StyledDialogTitle>
-        <StyledDialogContent>
-          <Fields>
-            <StyledLabelHeading>{'Share this link'}</StyledLabelHeading>
-            <StyledCopyShortLink
-              icon='link'
-              url={url}
-              label={url.slice(0, 45) + '…'}
-              title={'Copy invite link'}
-              tooltip={'Copied! Valid for 1 day'}
-            />
-            <StyledLabelHeading>{'Or, send invites by email'}</StyledLabelHeading>
-            <BasicTextArea
-              autoFocus
-              name='rawInvitees'
-              onChange={this.onChange}
-              placeholder='email@example.co, another@example.co'
-              value={rawInvitees}
-            />
-            {error && <ErrorMessage>{error}</ErrorMessage>}
-            <ButtonGroup>
-              <PrimaryButton
-                onClick={this.sendInvitations}
-                disabled={invitees.length === 0}
-                size='medium'
-                waiting={submitting}
-              >
-                {title}
-              </PrimaryButton>
-            </ButtonGroup>
-          </Fields>
-          <IllustrationBlock />
-        </StyledDialogContent>
-      </StyledDialogContainer>
+      <AddTeamMemberModalSuccess
+        closePortal={closePortal}
+        successfulInvitations={successfulInvitations}
+      />
     )
   }
+  const title = invitees.length <= 1 ? 'Send Invitation' : `Send ${invitees.length} Invitations`
+  return (
+    <StyledDialogContainer>
+      <StyledDialogTitle>Invite to Team</StyledDialogTitle>
+      <StyledDialogContent>
+        <Fields>
+          <StyledLabelHeading>{'Share this link'}</StyledLabelHeading>
+          <MassInvitationTokenLink teamId={teamId} />
+
+          <StyledLabelHeading>{'Or, send invites by email'}</StyledLabelHeading>
+          <BasicTextArea
+            autoFocus
+            name='rawInvitees'
+            onChange={onChange}
+            placeholder='email@example.co, another@example.co'
+            value={rawInvitees}
+          />
+          {error && <ErrorMessage>{error}</ErrorMessage>}
+          <ButtonGroup>
+            <PrimaryButton
+              onClick={sendInvitations}
+              disabled={invitees.length === 0}
+              size='medium'
+              waiting={submitting}
+            >
+              {title}
+            </PrimaryButton>
+          </ButtonGroup>
+        </Fields>
+        <IllustrationBlock />
+      </StyledDialogContent>
+    </StyledDialogContainer>
+  )
 }
 
-export default createFragmentContainer(withAtmosphere(withMutationProps(AddTeamMemberModal)), {
-  team: graphql`
-    fragment AddTeamMemberModal_team on Team {
-      id
-      massInviteToken
-    }
-  `,
+export default createFragmentContainer(AddTeamMemberModal, {
   teamMembers: graphql`
     fragment AddTeamMemberModal_teamMembers on TeamMember @relay(plural: true) {
       email

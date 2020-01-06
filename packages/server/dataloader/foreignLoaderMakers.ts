@@ -54,6 +54,18 @@ export const customPhaseItemsByTeamId = new LoaderMakerForeign(
   }
 )
 
+export const massInvitationsByTeamMemberId = new LoaderMakerForeign(
+  'massInvitations',
+  'teamMemberId',
+  async (teamMemberIds) => {
+    const r = await getRethink()
+    return r
+      .table('MassInvitation')
+      .getAll(r.args(teamMemberIds), {index: 'teamMemberId'})
+      .orderBy(r.desc('expiration'))
+      .run()
+  }
+)
 export const meetingMembersByMeetingId = new LoaderMakerForeign(
   'meetingMembers',
   'meetingId',

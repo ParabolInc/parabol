@@ -206,7 +206,8 @@ export const enum RightSidebar {
 }
 
 export const enum Security {
-  SALT_ROUNDS = 12
+  SALT_ROUNDS = 12,
+  MASS_INVITATION_TOKEN_LENGTH = 12
 }
 
 export const enum SubscriptionChannel {
@@ -244,6 +245,7 @@ export const enum TierLabel {
 export const enum Threshold {
   AUTO_PAUSE = 2592000000, // 30 days
   JWT_LIFESPAN = 2592000000, // 30 days
+  MASS_INVITATION_TOKEN_LIFESPAN = 86400000, // 1 day
   MAX_FREE_TEAMS = 10,
   MAX_MONTHLY_PAUSES = 4,
   MAX_ACCOUNT_PASSWORD_ATTEMPTS = 10,

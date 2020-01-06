@@ -87,7 +87,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {swarm, team, camStreams, allowVideo} = props
-  const {teamMembers} = team
+  const {id: teamId, teamMembers} = team
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const isInitialRenderRef = useRef(true)
   useEffect(() => {
@@ -147,7 +147,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
         )
       })}
       <OverlappingBlock>
-        <AddTeamMemberAvatarButton isMeeting team={team} teamMembers={teamMembers} />
+        <AddTeamMemberAvatarButton isMeeting teamId={teamId} teamMembers={teamMembers} />
       </OverlappingBlock>
     </MeetingAvatarGroupRoot>
   )
@@ -156,7 +156,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
 export default createFragmentContainer(NewMeetingAvatarGroup, {
   team: graphql`
     fragment NewMeetingAvatarGroup_team on Team {
-      ...AddTeamMemberAvatarButton_team
+      id
       teamMembers(sortBy: "checkInOrder") {
         ...AddTeamMemberAvatarButton_teamMembers
         id
