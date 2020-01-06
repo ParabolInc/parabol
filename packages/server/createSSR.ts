@@ -1,11 +1,14 @@
 import fs from 'fs'
 import path from 'path'
-import {HttpResponse} from 'uWebSockets.js'
+import {HttpResponse, HttpRequest} from 'uWebSockets.js'
 import dehydrate from './utils/dehydrate'
 import getWebpackPublicPath from './utils/getWebpackPublicPath'
+import {brotliCompressSync} from 'zlib'
+import PROD from './PROD'
+import {minify} from 'html-minifier-terser'
+import acceptsBrotli from './acceptsBrotli'
 
-const prod = process.env.NODE_ENV === 'production'
-let finalHTML
+let rawHTML
 
 export const getClientKeys = () => {
   const webpackPublicPath = getWebpackPublicPath()
@@ -22,23 +25,47 @@ export const getClientKeys = () => {
     stripe: process.env.STRIPE_PUBLISHABLE_KEY
   }
 }
-const getHTML = () => {
-  if (!finalHTML) {
+const getRaw = () => {
+  if (!rawHTML) {
     const clientIds = getClientKeys()
-    const htmlFile = prod ? '../../build/index.html' : './template.html'
+    const htmlFile = PROD ? '../../build/index.html' : './template.html'
     const html = fs.readFileSync(path.join(__dirname, htmlFile), 'utf8')
     const extraHead = `<script>${dehydrate('__ACTION__', clientIds)}</script>`
-    const devBody = prod
+    const devBody = PROD
       ? ''
       : '<script src="/static/vendors.dll.js"></script><script src="/static/app.js"></script>'
 
-    finalHTML = html.replace('<head>', `<head>${extraHead}`).replace('</body>', `${devBody}</body>`)
+    rawHTML = html.replace('<head>', `<head>${extraHead}`).replace('</body>', `${devBody}</body>`)
   }
-  return finalHTML
+  return minify(rawHTML, {
+    collapseBooleanAttributes: true,
+    collapseWhitespace: true,
+    minifyJS: true,
+    removeScriptTypeAttributes: true,
+    removeComments: true
+  })
 }
 
-const createSSR = (res: HttpResponse) => {
-  res.end(getHTML())
+let brotliHTML: Buffer
+const getBrotli = () => {
+  if (!brotliHTML) {
+    brotliHTML = brotliCompressSync(getRaw())
+  }
+  return brotliHTML
+}
+
+const createSSR = (res: HttpResponse, req: HttpRequest) => {
+  if (req.getMethod() !== 'get') {
+    res.end()
+    return
+  }
+  res.writeHeader('cotent-type', 'text/html; charset=utf-8')
+  // no need for eTag since file is < 1 MTU
+  if (acceptsBrotli(req)) {
+    res.writeHeader('content-encoding', 'br').end(getBrotli())
+  } else {
+    res.end(getRaw())
+  }
 }
 
 export default createSSR

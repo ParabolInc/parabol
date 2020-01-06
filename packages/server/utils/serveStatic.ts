@@ -1,53 +1,36 @@
 import fs from 'fs'
-import mime from 'mime-types'
 import path from 'path'
 import {HttpResponse} from 'uWebSockets.js'
 import pipeStreamOverResponse from '../pipeStreamOverResponse'
 import PROD from '../PROD'
+import StaticServer from './StaticServer'
 
-const staticObjects = {}
 const PROJECT_ROOT = path.join(__dirname, '..', '..', '..')
-
-const staticDirectories = [
-  path.join(PROJECT_ROOT, 'static'),
-  !PROD && path.join(PROJECT_ROOT, 'packages', 'server', 'webpack', 'dll'),
-  path.join(PROJECT_ROOT, 'build')
-].filter(Boolean) as string[]
-
-const fileNamesToCache = new Set(['sw.ts', 'favicon.ico'])
-
-const getMetaFromStaticFolders = (fileName: string) => {
-  for (let i = 0; i < staticDirectories.length; i++) {
-    const directory = staticDirectories[i]
-    const pathName = path.join(directory, fileName)
-    try {
-      const {mtime, size} = fs.statSync(pathName)
-      const file = !PROD || fileNamesToCache.has(fileName) ? fs.readFileSync(pathName) : undefined
-      const type = mime.contentType(fileName)
-      return (staticObjects[pathName] = {mtime: mtime.toUTCString(), size, directory, file, type})
-    } catch (e) {
-      continue
-    }
-  }
-  return undefined
+const staticPaths = {
+  [path.join(PROJECT_ROOT, 'build')]: true,
+  [path.join(PROJECT_ROOT, 'static')]: true,
+  [path.join(PROJECT_ROOT, 'packages', 'server', 'webpack', 'dll')]: !PROD
 }
+const filesToCache = ['sw.js', 'favicon.ico', 'manifest.json']
+const staticServer = new StaticServer({staticPaths, filesToCache})
 
-const serveStatic = (res: HttpResponse, fileName: string) => {
-  let meta = staticObjects[fileName]
-  if (!meta) {
-    meta = getMetaFromStaticFolders(fileName)
-    if (!meta) return false
-  }
-  const {size, directory, file, type} = meta
-
-  res.writeHeader('content-type', type)
-
+const serveStatic = (res: HttpResponse, fileName: string, sendCompressed?: boolean) => {
+  const meta = staticServer.getMeta(fileName)
+  if (!meta) return false
+  const {size, pathname, brotliFile, file, type} = meta
   if (file) {
-    res.end(file)
+    res.cork(() => {
+      res.writeHeader('content-type', type)
+      if (PROD && sendCompressed && brotliFile) {
+        res.writeHeader('content-encoding', 'br').end(brotliFile)
+      } else {
+        res.end(file)
+      }
+    })
     return true
   }
-  const pathName = path.join(directory, fileName)
-  const readStream = fs.createReadStream(pathName)
+  res.writeHeader('content-type', type)
+  const readStream = fs.createReadStream(pathname)
   pipeStreamOverResponse(res, readStream, size)
   return true
 }

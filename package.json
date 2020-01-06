@@ -28,6 +28,7 @@
     "debug": "yarn workspace parabol-server debug",
     "dev": "yarn workspace parabol-server dev",
     "lint": "lerna run --parallel lint",
+    "test": "yarn workspace parabol-cypress test",
     "typecheck": "lerna run --parallel typecheck"
   },
   "resolutions": {

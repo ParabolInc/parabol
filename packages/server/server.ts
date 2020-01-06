@@ -6,15 +6,15 @@ import httpGraphQLHandler from './graphql/httpGraphQLHandler'
 import intranetHttpGraphQLHandler from './graphql/intranetGraphQLHandler'
 import './initSentry'
 import githubWebhookHandler from './integrations/githubWebhookHandler'
+import listenHandler from './listenHandler'
 import PROD from './PROD'
-import sendICS from './sendICS'
+import ICSHandler from './ICSHandler'
 import {getWebpackDevMiddleware} from './serveFromWebpack'
-import serviceWorkerHandler from './serviceWorkerHandler'
+import PWAHandler from './PWAHandler'
 import SSEConnectionHandler from './sse/SSEConnectionHandler'
 import SSEPingHandler from './sse/SSEPingHandler'
 import staticFileHandler from './staticFileHandler'
-import consumeSAML from './utils/consumeSAML'
-import getFavicon from './utils/getFavicon'
+import SAMLHandler from './utils/SAMLHandler'
 import wsHandler from './wsHandler'
 
 getDotenv()
@@ -31,21 +31,18 @@ if (!PROD) {
 
 uws
   .App()
-  .get('/favicon.ico', getFavicon)
-  .get('/sw.ts', serviceWorkerHandler)
-  .get('/static/:file', staticFileHandler)
-  .get('/email/createics', sendICS)
+  .get('/favicon.ico', PWAHandler)
+  .get('/sw.js', PWAHandler)
+  .get('/manifest.json', PWAHandler)
+  .get('/static/*', staticFileHandler)
+  .get('/email/createics', ICSHandler)
   .get('/sse', SSEConnectionHandler)
   .get('/sse-ping', SSEPingHandler)
   .post('/stripe', stripeWebhookHandler)
   .post('/webhooks/github', githubWebhookHandler)
   .post('/graphql', httpGraphQLHandler)
   .post('/intranet-graphql', intranetHttpGraphQLHandler)
-  .post('/saml/:domain', consumeSAML)
+  .post('/saml/:domain', SAMLHandler)
   .ws('/*', wsHandler)
   .any('/*', createSSR)
-  .listen(PORT, (listenSocket) => {
-    if (listenSocket) {
-      console.log('\n🔥🔥🔥 Ready for Action 🔥🔥🔥')
-    }
-  })
+  .listen(PORT, listenHandler)

@@ -152,17 +152,6 @@ module.exports = {
       template: path.join(PROJECT_ROOT, 'packages', 'server', 'template.html'),
       title: 'Free Online Retrospectives | Parabol'
     }),
-    new TagsPlugin({
-      links: [
-        {
-          path: `https://${process.env.AWS_S3_BUCKET}/static/favicon.ico`,
-          attributes: {
-            rel: 'shortcut icon',
-            crossorigin: ''
-          }
-        }
-      ]
-    }),
     new ScriptExtHtmlWebpackPlugin({
       custom: {
         test: /\.js$/,

@@ -23,7 +23,7 @@ interface Props {
 
 const DashboardAvatars = (props: Props) => {
   const {team} = props
-  const {isLead: isViewerLead, teamMembers} = team
+  const {id: teamId, isLead: isViewerLead, teamMembers} = team
   return (
     <AvatarsList>
       {teamMembers.map((teamMember) => {
@@ -36,7 +36,7 @@ const DashboardAvatars = (props: Props) => {
         )
       })}
       <ItemBlock>
-        <AddTeamMemberAvatarButton team={team} teamMembers={teamMembers} />
+        <AddTeamMemberAvatarButton teamId={teamId} teamMembers={teamMembers} />
       </ItemBlock>
     </AvatarsList>
   )
@@ -47,7 +47,6 @@ export default createFragmentContainer(DashboardAvatars, {
     fragment DashboardAvatars_team on Team {
       id
       isLead
-      ...AddTeamMemberAvatarButton_team
       teamMembers(sortBy: "preferredName") {
         ...AddTeamMemberAvatarButton_teamMembers
         ...DashboardAvatar_teamMember

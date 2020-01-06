@@ -1,10 +1,10 @@
-import {WebSocketBehavior} from 'uWebSockets.js'
+import {SHARED_COMPRESSOR, WebSocketBehavior} from 'uWebSockets.js'
 import handleDisconnect from './socketHandlers/handleDisconnect'
 import handleMessage from './socketHandlers/handleMessage'
 import wssConnectionHandler from './socketHandlers/wssConnectionHandler'
 
 const wsHandler: WebSocketBehavior = {
-  compression: 0,
+  compression: SHARED_COMPRESSOR,
   idleTimeout: 0,
   maxPayloadLength: 5 * 2 ** 20,
   open: wssConnectionHandler,

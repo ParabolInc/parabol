@@ -17,14 +17,14 @@ export class CacheWorker<T extends DataLoaderBase> {
     this.cache = cache
   }
 
-  get(dataLoaderName: Parameters<T['get']>[0]) {
+  get: T['get'] = (dataLoaderName) => {
     return this.dataLoaderBase.get(dataLoaderName)
   }
 
   dispose(force?: boolean) {
     const ttl = force || !this.shared ? 0 : this.cache.ttl
     clearTimeout(this.disposeId!)
-    this.disposeId = setTimeout(() => {
+    this.disposeId = global.setTimeout(() => {
       delete this.cache.workers[this.did]
     }, ttl)
   }
@@ -34,7 +34,6 @@ export class CacheWorker<T extends DataLoaderBase> {
     return this.did
   }
 }
-4
 
 export default class DataLoaderCache<T extends DataLoaderBase> {
   ttl: number

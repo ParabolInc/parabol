@@ -2,9 +2,9 @@ import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
 import promiseAllPartial from 'parabol-client/utils/promiseAllPartial'
 import getRethink from '../database/rethinkDriver'
+import Task from '../database/types/Task'
 import AtlassianManager from '../utils/AtlassianManager'
 import RethinkDataLoader from './RethinkDataLoader'
-import {DataLoaderType} from 'parabol-client/types/constEnums'
 
 type AccessTokenKey = {teamId: string; userId: string}
 interface JiraRemoteProjectKey {
@@ -13,12 +13,47 @@ interface JiraRemoteProjectKey {
   atlassianProjectId: string
 }
 
-class LoaderMakerCustom<T> {
-  type = DataLoaderType.CUSTOM
-  constructor(public fn: (parent: RethinkDataLoader) => DataLoader<T, string, string>) {}
+interface UserTasksKey {
+  userId: string
+  teamIds: string[]
 }
 
-export const freshAtlassianAccessToken = new LoaderMakerCustom((parent: RethinkDataLoader) => {
+// export type LoaderMakerCustom<K, V, C = K> = (parent: RethinkDataLoader) => DataLoader<K, V, C>
+
+export const userTasks = (parent: RethinkDataLoader) => {
+  return new DataLoader<UserTasksKey, Task[], string>(
+    async (keys) => {
+      const r = await getRethink()
+      const userIds = keys.map(({userId}) => userId)
+      const teamIds = Array.from(new Set(keys.flatMap(({teamIds}) => teamIds)))
+      const taskLoader = parent.get('tasks')
+      const allUsersTasks = (await r
+        .table('Task')
+        .getAll(r.args(userIds), {index: 'userId'})
+        .filter((task) => r(teamIds).contains(task('teamId')))
+        .filter((task) =>
+          task('tags')
+            .contains('archived')
+            .not()
+        )
+        .run()) as Task[]
+      allUsersTasks.forEach((task) => {
+        taskLoader.clear(task.id).prime(task.id, task)
+      })
+      return keys.map((key) =>
+        allUsersTasks.filter(
+          (task) => task.userId === key.userId && key.teamIds.includes(task.teamId)
+        )
+      )
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.userId}:${key.teamIds.sort().join(':')}`
+    }
+  )
+}
+
+export const freshAtlassianAccessToken = (parent: RethinkDataLoader) => {
   const userAuthLoader = parent.get('atlassianAuthByUserId')
   return new DataLoader<AccessTokenKey, string, string>(
     async (keys) => {
@@ -49,12 +84,12 @@ export const freshAtlassianAccessToken = new LoaderMakerCustom((parent: RethinkD
     },
     {
       ...parent.dataLoaderOptions,
-      cacheKeyFn: (key: AccessTokenKey) => `${key.userId}:${key.teamId}`
+      cacheKeyFn: (key) => `${key.userId}:${key.teamId}`
     }
   )
-})
+}
 
-export const jiraRemoteProject = new LoaderMakerCustom((parent: RethinkDataLoader) => {
+export const jiraRemoteProject = (parent: RethinkDataLoader) => {
   return new DataLoader<JiraRemoteProjectKey, string, string>(
     async (keys) => {
       return promiseAllPartial(
@@ -66,7 +101,7 @@ export const jiraRemoteProject = new LoaderMakerCustom((parent: RethinkDataLoade
     },
     {
       ...parent.dataLoaderOptions,
-      cacheKeyFn: (key: JiraRemoteProjectKey) => `${key.atlassianProjectId}:${key.cloudId}`
+      cacheKeyFn: (key) => `${key.atlassianProjectId}:${key.cloudId}`
     }
   )
-})
+}

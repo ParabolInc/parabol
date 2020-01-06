@@ -1,15 +1,5 @@
-import {DataLoaderType} from 'parabol-client/types/constEnums'
 import getRethink from '../database/rethinkDriver'
-import * as primaryLoaderMakers from './primaryLoaderMakers'
-
-class LoaderMakerForeign {
-  type = DataLoaderType.FOREIGN
-  constructor(
-    public pk: keyof typeof primaryLoaderMakers,
-    public field: string,
-    public fetch: (ids: string[]) => Promise<any[]>
-  ) {}
-}
+import LoaderMakerForeign from './LoaderMakerForeign'
 
 export const activeMeetingsByTeamId = new LoaderMakerForeign(
   'newMeetings',
@@ -64,6 +54,18 @@ export const customPhaseItemsByTeamId = new LoaderMakerForeign(
   }
 )
 
+export const massInvitationsByTeamMemberId = new LoaderMakerForeign(
+  'massInvitations',
+  'teamMemberId',
+  async (teamMemberIds) => {
+    const r = await getRethink()
+    return r
+      .table('MassInvitation')
+      .getAll(r.args(teamMemberIds), {index: 'teamMemberId'})
+      .orderBy(r.desc('expiration'))
+      .run()
+  }
+)
 export const meetingMembersByMeetingId = new LoaderMakerForeign(
   'meetingMembers',
   'meetingId',

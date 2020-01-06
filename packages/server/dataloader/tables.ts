@@ -21,11 +21,13 @@ import Task from '../database/types/Task'
 import TeamInvitation from '../database/types/TeamInvitation'
 import TeamMember from '../database/types/TeamMember'
 import User from '../database/types/User'
+import MassInvitation from '../database/types/MassInvitation'
 
 export interface Tables {
   AgendaItem: IAgendaItem
   AtlassianAuth: IAtlassianAuth
   CustomPhaseItem: ICustomPhaseItem
+  MassInvitation: MassInvitation
   MeetingSettings: ITeamMeetingSettings
   MeetingMember: MeetingMember
   NewMeeting: Meeting

@@ -1,8 +1,14 @@
+import base64url from 'base64url'
 import getSSODomainFromEmail from 'parabol-client/utils/getSSODomainFromEmail'
 import getRethink from '../database/rethinkDriver'
-import base64url from 'base64url'
-import {stringify} from 'querystring'
-import {SSOParams, SSORelayState} from '../graphql/queries/SAMLIdP'
+
+const urlWithRelayState = (url: string, isInvited?: boolean | null) => {
+  if (!isInvited) return url
+  const relayState = base64url.encode(JSON.stringify({isInvited: true}))
+  const urlObj = new URL(url)
+  urlObj.searchParams.append('RelayState', relayState)
+  return urlObj.toString()
+}
 
 const getSAMLURLFromEmail = async (email: string, isInvited?: boolean | null) => {
   const domainName = getSSODomainFromEmail(email)
@@ -15,15 +21,7 @@ const getSAMLURLFromEmail = async (email: string, isInvited?: boolean | null) =>
     .default(null)
     .run()) as string | null
   if (!baseURL) return null
-  const params = {} as SSOParams
-  const ssoRelayState = {isInvited} as SSORelayState
-  const relayState = isInvited ? base64url.encode(JSON.stringify(ssoRelayState)) : ''
-  if (relayState) {
-    params.RelayState = relayState
-  }
-  const suffixStr = stringify(params as any)
-  const suffix = suffixStr ? `?${suffixStr}` : ''
-  return `${baseURL}${suffix}`
+  return urlWithRelayState(baseURL, isInvited)
 }
 
 export default getSAMLURLFromEmail

@@ -1,4 +1,4 @@
-import {Threshold, TrebuchetCloseReason} from 'parabol-client/types/constEnums'
+import {Threshold} from 'parabol-client/types/constEnums'
 import AuthToken from '../database/types/AuthToken'
 import executeGraphQL from '../graphql/executeGraphQL'
 import ConnectionContext from '../socketHelpers/ConnectionContext'

@@ -28,8 +28,7 @@ export default {
       return connectionFromTasks([])
     }
     const teamIds = teamId ? [teamId] : authToken.tms || []
-    const teamTasksByTeamId = await dataLoader.get('tasksByTeamId').loadMany(teamIds)
-    const tasks = teamTasksByTeamId.flat().filter((task) => task.userId === viewerId)
+    const tasks = await dataLoader.get('userTasks').load({userId: viewerId, teamIds})
     return connectionFromTasks(tasks)
   }
 }

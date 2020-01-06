@@ -24,7 +24,7 @@ const redirectOnError = (res: HttpResponse, error: string) => {
 
 const GENERIC_ERROR = 'Error signing in|Please try again'
 
-const consumeSAML = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
+const SAMLhandler23 = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
   const domain = req.getParameter(0)
   if (!domain) {
     redirectOnError(res, 'No Domain Provided!|Did you set up the service provider correctly?')
@@ -50,10 +50,12 @@ const consumeSAML = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) 
     redirectOnError(res, message)
     return
   }
-  res
-    .writeStatus('302')
-    .writeHeader('location', `/saml-redirect?token=${authToken}`)
-    .end()
+  res.cork(() => {
+    res
+      .writeStatus('302')
+      .writeHeader('location', `/saml-redirect?token=${authToken}`)
+      .end()
+  })
 })
 
-export default consumeSAML
+export default SAMLhandler23

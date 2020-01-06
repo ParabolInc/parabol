@@ -16,8 +16,9 @@ const useTooltip = <T extends HTMLElement = HTMLElement>(
 ) => {
   const delay = options.delay || Duration.TOOLTIP_DELAY
   const disabled = !!options.disabled
-  const {targetRef, originRef, coords} = useCoords<T>(preferredMenuPosition)
   const {portal, openPortal, closePortal, portalStatus} = usePortal()
+  const {targetRef, originRef, coords} = useCoords<T>(preferredMenuPosition, {portalStatus})
+
   const tooltipPortal = useTooltipPortal(portal, targetRef, coords, portalStatus)
   const openDelayRef = useRef<number>()
 

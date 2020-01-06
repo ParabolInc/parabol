@@ -1,15 +1,15 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import rateLimit from '../rateLimit'
-import {getUserId, isAuthenticated} from '../../utils/authorization'
-import publish from '../../utils/publish'
-import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
-import acceptTeamInvitation from '../../safeMutations/acceptTeamInvitation'
-import standardError from '../../utils/standardError'
-import AcceptTeamInvitationPayload from '../types/AcceptTeamInvitationPayload'
-import sendSegmentEvent from '../../utils/sendSegmentEvent'
-import AuthToken from '../../database/types/AuthToken'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
+import AuthToken from '../../database/types/AuthToken'
+import acceptTeamInvitation from '../../safeMutations/acceptTeamInvitation'
+import {getUserId, isAuthenticated} from '../../utils/authorization'
 import encodeAuthToken from '../../utils/encodeAuthToken'
+import publish from '../../utils/publish'
+import sendSegmentEvent from '../../utils/sendSegmentEvent'
+import standardError from '../../utils/standardError'
+import rateLimit from '../rateLimit'
+import AcceptTeamInvitationPayload from '../types/AcceptTeamInvitationPayload'
 import handleInvitationToken from './helpers/handleInvitationToken'
 
 export default {
@@ -55,7 +55,12 @@ export default {
       }
 
       // VALIDATION
-      const invitationRes = await handleInvitationToken(invitationToken, viewerId, notificationId)
+      const invitationRes = await handleInvitationToken(
+        invitationToken,
+        viewerId,
+        dataLoader,
+        notificationId
+      )
       if (invitationRes.error)
         return standardError(new Error(invitationRes.error), {userId: viewerId})
       const {invitation} = invitationRes

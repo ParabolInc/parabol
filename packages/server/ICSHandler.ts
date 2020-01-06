@@ -2,7 +2,7 @@ import {createICS} from 'parabol-client/utils/makeCalendarInvites'
 import {HttpResponse, HttpRequest} from 'uWebSockets.js'
 import qs from 'querystring'
 
-const sendICS = (res: HttpResponse, req: HttpRequest) => {
+const ICSHandler = (res: HttpResponse, req: HttpRequest) => {
   const query = req.getQuery()
   const {teamName, createdAt, meetingUrl} = qs.parse(query)
   const startDate = new Date(Number(createdAt))
@@ -13,4 +13,4 @@ const sendICS = (res: HttpResponse, req: HttpRequest) => {
     .end(icsText)
 }
 
-export default sendICS
+export default ICSHandler

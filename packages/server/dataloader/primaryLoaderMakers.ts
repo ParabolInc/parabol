@@ -1,13 +1,9 @@
-import {DataLoaderType} from 'parabol-client/types/constEnums'
-
-class LoaderMakerPrimary {
-  type = DataLoaderType.PRIMARY
-  constructor(public table: string) {}
-}
+import LoaderMakerPrimary from './LoaderMakerPrimary'
 
 export const agendaItems = new LoaderMakerPrimary('AgendaItem')
 export const atlassianAuths = new LoaderMakerPrimary('AtlassianAuth')
 export const customPhaseItems = new LoaderMakerPrimary('CustomPhaseItem')
+export const massInvitations = new LoaderMakerPrimary('MassInvitation')
 export const meetingSettings = new LoaderMakerPrimary('MeetingSettings')
 export const meetingMembers = new LoaderMakerPrimary('MeetingMember')
 export const newMeetings = new LoaderMakerPrimary('NewMeeting')

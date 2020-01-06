@@ -16,13 +16,14 @@ export default async function cloneProdToDev() {
     r
       .db('cypress')
       .tableCreate(table)
+      .run()
       .then(() => {
         return r
           .db('cypress')
           .table(table)
           .insert(r.db('test').table(table))
+          .run()
       })
-      .run()
   )
   await Promise.all(promises)
   console.log('Move to cypress complete!')

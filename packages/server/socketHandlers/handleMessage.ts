@@ -1,8 +1,6 @@
 import {OutgoingMessage} from '@mattkrick/graphql-trebuchet-client'
-import {decode} from '@msgpack/msgpack'
 import {WebSocket} from 'uWebSockets.js'
 import handleGraphQLTrebuchetRequest from '../graphql/handleGraphQLTrebuchetRequest'
-import PROD from '../PROD'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import keepAlive from '../socketHelpers/keepAlive'
 import sendGQLMessage from '../socketHelpers/sendGQLMessage'
@@ -13,8 +11,6 @@ interface WRTCMessage {
   type: 'WRTC_SIGNAL'
   signal: any
 }
-
-const decoder = PROD ? decode : JSON.parse
 
 const handleParsedMessage = async (
   parsedMessage: OutgoingMessage | WRTCMessage,
@@ -38,15 +34,16 @@ const handleParsedMessage = async (
 }
 
 const PONG = 65
-const handleMessage = (websocket: WebSocket, message: ArrayBuffer, isBinary: boolean) => {
+const isPong = (message) => message.byteLength === 1 && Buffer.from(message)[0] === PONG
+const handleMessage = (websocket: WebSocket, message: ArrayBuffer) => {
   const {connectionContext} = websocket
-  if (isBinary && message.byteLength === 1 && Buffer.from(message)[0] === PONG) {
+  if (isPong(message)) {
     keepAlive(connectionContext)
     return
   }
   let parsedMessage
   try {
-    parsedMessage = isBinary ? decoder(message as any) : JSON.parse(Buffer.from(message).toString())
+    parsedMessage = JSON.parse(Buffer.from(message).toString())
   } catch (e) {
     // ignore the message
     return

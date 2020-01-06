@@ -1,8 +1,9 @@
 import DataLoader from 'dataloader'
+import {Tables} from './tables'
 
-const fkLoader = <T = any>(
-  standardLoader: DataLoader<string, T>,
-  options: DataLoader.Options<string, T[]>,
+const fkLoader = <T extends keyof Tables>(
+  standardLoader: DataLoader<string, Tables[T]>,
+  options: DataLoader.Options<string, Tables[T]>,
   field: string,
   fetchFn: (ids: string[]) => any[] | Promise<any[]>
 ) => {
@@ -13,7 +14,7 @@ const fkLoader = <T = any>(
     })
     return ids.map((id) => items.filter((item) => item[field] === id))
   }
-  return new DataLoader<string, T[]>(batchFn, options)
+  return new DataLoader<string, Tables[T]>(batchFn, options)
 }
 
 export default fkLoader

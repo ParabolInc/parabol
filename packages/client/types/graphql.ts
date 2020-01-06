@@ -26,7 +26,6 @@ export interface IQuery {
   getDemoEntities: IGetDemoEntitiesPayload | null
   massInvitation: IMassInvitationPayload
   verifiedInvitation: IVerifiedInvitationPayload
-  authProviders: Array<string>
   SAMLIdP: string | null
 }
 
@@ -34,7 +33,7 @@ export interface IGetDemoEntitiesOnQueryArguments {
   /**
    * the reflection bodies to entitize
    */
-  texts: Array<string>
+  text: string
 }
 
 export interface IMassInvitationOnQueryArguments {
@@ -49,13 +48,6 @@ export interface IVerifiedInvitationOnQueryArguments {
    * The invitation token
    */
   token: string
-}
-
-export interface IAuthProvidersOnQueryArguments {
-  /**
-   * the email to see if it exists as an oauth account
-   */
-  email: string
 }
 
 export interface ISAMLIdPOnQueryArguments {
@@ -994,9 +986,9 @@ export interface ITeam {
   isOnboardTeam: boolean
 
   /**
-   * a user-specific token that allows anyone who uses it within 24 hours to join the team
+   * The hash and expiration for a token that allows anyone with it to join the team
    */
-  massInviteToken: string | null
+  massInvitation: IMassInvitation | null
 
   /**
    * true if the underlying org has a validUntil date greater than now. if false, subs do not work
@@ -1103,6 +1095,23 @@ export interface ITeamMembersOnTeamArguments {
    * the field to sort the teamMembers by
    */
   sortBy?: string | null
+}
+
+/**
+ * An invitation and expiration
+ */
+export interface IMassInvitation {
+  __typename: 'MassInvitation'
+
+  /**
+   * the invitation token
+   */
+  id: string
+
+  /**
+   * the expiration for the token
+   */
+  expiration: any
 }
 
 export type CustomPhaseItem = IRetroPhaseItem
@@ -2573,7 +2582,7 @@ export interface ITeamInvitationPayload {
 export interface IGetDemoEntitiesPayload {
   __typename: 'GetDemoEntitiesPayload'
   error: IStandardMutationError | null
-  entities: Array<IGoogleAnalyzedEntity> | null
+  entities: Array<IGoogleAnalyzedEntity>
 }
 
 export interface IGoogleAnalyzedEntity {
@@ -2734,6 +2743,11 @@ export interface IMutation {
   createImposterToken: ICreateImposterTokenPayload
   createGitHubIssue: ICreateGitHubIssuePayload | null
   createJiraIssue: ICreateJiraIssuePayload | null
+
+  /**
+   * Create a new mass inivtation and optionally void old ones
+   */
+  createMassInvitation: CreateMassInvitationPayload
 
   /**
    * Create a PUT URL on the CDN for an organization’s profile picture
@@ -3192,6 +3206,18 @@ export interface ICreateJiraIssueOnMutationArguments {
    * The id of the task to convert to a Jira issue
    */
   taskId: string
+}
+
+export interface ICreateMassInvitationOnMutationArguments {
+  /**
+   * The teamId to create the mass invitation for
+   */
+  teamId: string
+
+  /**
+   * If true, will void all existing mass invitations for the team member
+   */
+  voidOld?: boolean | null
 }
 
 export interface ICreateOrgPicturePutUrlOnMutationArguments {
@@ -4657,6 +4683,25 @@ export interface ICreateJiraIssuePayload {
   __typename: 'CreateJiraIssuePayload'
   error: IStandardMutationError | null
   task: ITask | null
+}
+
+/**
+ * Return object for CreateMassInvitationPayload
+ */
+export type CreateMassInvitationPayload = IErrorPayload | ICreateMassInvitationSuccess
+
+export interface IErrorPayload {
+  __typename: 'ErrorPayload'
+  error: IStandardMutationError
+}
+
+export interface ICreateMassInvitationSuccess {
+  __typename: 'CreateMassInvitationSuccess'
+
+  /**
+   * the team with the updated mass inivtation
+   */
+  team: ITeam
 }
 
 export interface ICreatePicturePutUrlPayload {

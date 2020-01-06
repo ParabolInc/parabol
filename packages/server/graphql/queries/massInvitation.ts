@@ -4,6 +4,7 @@ import MassInvitationPayload from '../types/MassInvitationPayload'
 import {verifyMassInviteToken} from '../../utils/massInviteToken'
 import {GQLContext} from '../graphql'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
+import {InvitationTokenError} from 'parabol-client/types/constEnums'
 
 export default {
   type: new GraphQLNonNull(MassInvitationPayload),
@@ -15,9 +16,9 @@ export default {
   },
   resolve: rateLimit({perMinute: 60, perHour: 1800})(
     async (_source, {token}, {dataLoader}: GQLContext) => {
-      const tokenRes = verifyMassInviteToken(token)
-      if ('error' in tokenRes && tokenRes.error === 'notFound') {
-        return {errorType: 'notFound'}
+      const tokenRes = await verifyMassInviteToken(token, dataLoader)
+      if ('error' in tokenRes && tokenRes.error === InvitationTokenError.NOT_FOUND) {
+        return {errorType: InvitationTokenError.NOT_FOUND}
       }
       const {error} = tokenRes
       const teamId = tokenRes.teamId!
@@ -32,7 +33,7 @@ export default {
       const meetingType = firstActiveMeeting?.meetingType ?? null
       if (!teamMember || !teamMember.isNotRemoved || !team || team.isArchived) {
         // this could happen if a team member is no longer on the team or some unseen nefarious action is going on
-        return {errorType: 'notFound'}
+        return {errorType: InvitationTokenError.NOT_FOUND}
       }
       return {
         errorType: error,

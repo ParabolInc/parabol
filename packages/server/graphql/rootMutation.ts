@@ -82,6 +82,7 @@ import loginWithPassword from './mutations/loginWithPassword'
 import emailPasswordReset from './mutations/emailPasswordReset'
 import resetPassword from './mutations/resetPassword'
 import invalidateSessions from './mutations/invalidateSessions'
+import createMassInvitation from './mutations/createMassInvitation'
 
 interface Context extends InternalContext, GQLContext {}
 
@@ -105,6 +106,7 @@ export default new GraphQLObjectType<any, Context, any>({
     createImposterToken,
     createGitHubIssue,
     createJiraIssue,
+    createMassInvitation,
     createOrgPicturePutUrl,
     createReflection,
     createTask,

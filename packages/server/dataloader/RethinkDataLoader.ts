@@ -1,10 +1,12 @@
-import fkLoader from './fkLoader'
 import DataLoader from 'dataloader'
+import * as customLoaderMakers from './customLoaderMakers'
+import fkLoader from './fkLoader'
+import * as foreignLoaderMakers from './foreignLoaderMakers'
+import LoaderMakerForeign from './LoaderMakerForeign'
+import LoaderMakerPrimary from './LoaderMakerPrimary'
 import pkLoader from './pkLoader'
 import * as primaryLoaderMakers from './primaryLoaderMakers'
-import * as customLoaderMakers from './customLoaderMakers'
-import * as foreignLoaderMakers from './foreignLoaderMakers'
-import {DataLoaderType} from 'parabol-client/types/constEnums'
+import {Tables} from './tables'
 
 interface LoaderDict {
   [loaderName: string]: DataLoader<any, any>
@@ -16,6 +18,35 @@ const loaderMakers = {
   ...customLoaderMakers
 } as const
 
+type LoaderMakers = typeof loaderMakers
+type Loaders = keyof LoaderMakers
+
+type PrimaryLoaderMakers = typeof primaryLoaderMakers
+type PrimaryLoaders = keyof PrimaryLoaderMakers
+type Unprimary<T> = T extends LoaderMakerPrimary<infer U> ? Tables[U] : never
+type TypeFromPrimary<T extends PrimaryLoaders> = Unprimary<PrimaryLoaderMakers[T]>
+
+type ForeignLoaderMakers = typeof foreignLoaderMakers
+type ForeignLoaders = keyof ForeignLoaderMakers
+type Unforeign<T> = T extends LoaderMakerForeign<infer U> ? U : never
+type TypeFromForeign<T extends ForeignLoaders> = TypeFromPrimary<Unforeign<ForeignLoaderMakers[T]>>
+
+type CustomLoaderMakers = typeof customLoaderMakers
+type CustomLoaders = keyof CustomLoaderMakers
+type Uncustom<T> = T extends (parent: RethinkDataLoader) => infer U ? U : never
+type TypeFromCustom<T extends CustomLoaders> = Uncustom<CustomLoaderMakers[T]>
+
+type TypedDataLoader<LoaderName> = LoaderName extends CustomLoaders
+  ? TypeFromCustom<LoaderName>
+  : DataLoader<
+      string,
+      LoaderName extends ForeignLoaders
+        ? TypeFromForeign<LoaderName>[]
+        : LoaderName extends PrimaryLoaders
+        ? TypeFromPrimary<LoaderName>
+        : never
+    >
+
 export default class RethinkDataLoader {
   dataLoaderOptions: DataLoader.Options<any, any>
   loaders: LoaderDict = {}
@@ -23,27 +54,22 @@ export default class RethinkDataLoader {
     this.dataLoaderOptions = dataLoaderOptions
   }
 
-  get(loaderName: keyof typeof loaderMakers) {
-    const loader = this.loaders[loaderName]
-    if (loader) return loader
+  get<LoaderName extends Loaders>(loaderName: LoaderName) {
+    let loader = this.loaders[loaderName]
+    if (loader) return loader as TypedDataLoader<LoaderName>
     const loaderMaker = loaderMakers[loaderName]
-    const {type} = loaderMaker
-    switch (type) {
-      case DataLoaderType.PRIMARY:
-        const {table} = loaderMaker
-        return (this.loaders[loaderName] = pkLoader(this.dataLoaderOptions, table))
-      case DataLoaderType.FOREIGN:
-        const {fetch, field, pk} = loaderMaker
-        const basePkLoader = this.get(pk)
-        return (this.loaders[loaderName] = fkLoader(
-          basePkLoader,
-          this.dataLoaderOptions,
-          field,
-          fetch
-        ))
-      case DataLoaderType.CUSTOM:
-        const {fn} = loaderMaker
-        return (this.loaders[loaderName] = fn(this))
+    if (loaderMaker instanceof LoaderMakerPrimary) {
+      const {table} = loaderMaker
+      loader = pkLoader(this.dataLoaderOptions, table)
+      this.loaders[loaderName]
+    } else if (loaderMaker instanceof LoaderMakerForeign) {
+      const {fetch, field, pk} = loaderMaker
+      const basePkLoader = this.get(pk)
+      loader = fkLoader(basePkLoader, this.dataLoaderOptions, field, fetch)
+    } else {
+      loader = (loaderMaker as any)(this)
     }
+    this.loaders[loaderName] = loader
+    return loader as TypedDataLoader<LoaderName>
   }
 }

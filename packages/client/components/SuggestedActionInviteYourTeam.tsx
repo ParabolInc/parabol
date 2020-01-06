@@ -24,7 +24,7 @@ const TeamName = styled('span')({
 const SuggestedActionInviteYourTeam = (props: Props) => {
   const {suggestedAction} = props
   const {id: suggestedActionId, team} = suggestedAction
-  const {name: teamName, teamMembers} = team
+  const {id: teamId, name: teamName, teamMembers} = team
   const {togglePortal, modalPortal, closePortal} = useModal()
   return (
     <SuggestedActionCard
@@ -38,7 +38,7 @@ const SuggestedActionInviteYourTeam = (props: Props) => {
       </SuggestedActionCopy>
       <SuggestedActionButton onClick={togglePortal}>Invite Your Teammates</SuggestedActionButton>
       {modalPortal(
-        <AddTeamMemberModal closePortal={closePortal} team={team} teamMembers={teamMembers} />
+        <AddTeamMemberModal closePortal={closePortal} teamId={teamId} teamMembers={teamMembers} />
       )}
     </SuggestedActionCard>
   )
@@ -49,8 +49,8 @@ export default createFragmentContainer(SuggestedActionInviteYourTeam, {
     fragment SuggestedActionInviteYourTeam_suggestedAction on SuggestedActionInviteYourTeam {
       id
       team {
+        id
         name
-        ...AddTeamMemberModal_team
         teamMembers {
           ...AddTeamMemberModal_teamMembers
         }

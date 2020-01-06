@@ -1,12 +1,10 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import Atmosphere from '../Atmosphere'
-import handleAddAgendaItems from './handlers/handleAddAgendaItems'
-import {IAddAgendaItemOnMutationArguments} from '../types/graphql'
-import {LocalHandlers} from '../types/relayMutations'
+import {commitMutation} from 'react-relay'
+import {StandardMutation} from '../types/relayMutations'
 import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {AddAgendaItemMutation as TAddAgendaItemMutation} from '../__generated__/AddAgendaItemMutation.graphql'
+import handleAddAgendaItems from './handlers/handleAddAgendaItems'
 
 graphql`
   fragment AddAgendaItemMutation_team on AddAgendaItemPayload {
@@ -50,10 +48,10 @@ export const addAgendaItemUpdater = (payload, {store}) => {
   handleAddAgendaItems(agendaItem, store)
 }
 
-const AddAgendaItemMutation = (
-  atmosphere: Atmosphere,
-  variables: IAddAgendaItemOnMutationArguments,
-  {onError, onCompleted}: LocalHandlers
+const AddAgendaItemMutation: StandardMutation<TAddAgendaItemMutation> = (
+  atmosphere,
+  variables,
+  {onError, onCompleted}
 ) => {
   return commitMutation<TAddAgendaItemMutation>(atmosphere, {
     mutation,

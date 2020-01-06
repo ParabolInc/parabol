@@ -1,13 +1,10 @@
-import Atmosphere from '../../Atmosphere'
 import graphql from 'babel-plugin-relay/macro'
 import {fetchQuery} from 'relay-runtime'
-import {IGoogleAnalyzedEntity} from '../../types/graphql'
-
-type Response = IGoogleAnalyzedEntity[][]
+import Atmosphere from '../../Atmosphere'
 
 const query = graphql`
-  query getDemoEntitiesQuery($texts: [String!]!) {
-    getDemoEntities(texts: $texts) {
+  query getDemoEntitiesQuery($text: String!) {
+    getDemoEntities(text: $text) {
       entities {
         lemma
         name
@@ -20,13 +17,10 @@ const query = graphql`
 const getDemoEntities = async (text: string) => {
   if (!text || text.length <= 2) return []
   const remoteAtmosphere = new Atmosphere()
-  const texts = [text]
-  const res = await fetchQuery<any>(remoteAtmosphere, query, {texts})
-  if (res.status === 200) {
-    const resJSON = (await res.json()) as Response
-    return resJSON[0] || []
-  }
-  return []
+  const res = await fetchQuery<any>(remoteAtmosphere, query, {text})
+  const {getDemoEntities} = res
+  const {entities} = getDemoEntities
+  return entities
 }
 
 export default getDemoEntities
