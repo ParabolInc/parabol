@@ -33,7 +33,7 @@ export interface IGetDemoEntitiesOnQueryArguments {
   /**
    * the reflection bodies to entitize
    */
-  texts: Array<string>
+  text: string
 }
 
 export interface IMassInvitationOnQueryArguments {
@@ -2582,7 +2582,7 @@ export interface ITeamInvitationPayload {
 export interface IGetDemoEntitiesPayload {
   __typename: 'GetDemoEntitiesPayload'
   error: IStandardMutationError | null
-  entities: Array<IGoogleAnalyzedEntity> | null
+  entities: Array<IGoogleAnalyzedEntity>
 }
 
 export interface IGoogleAnalyzedEntity {

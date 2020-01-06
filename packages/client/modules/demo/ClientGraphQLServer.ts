@@ -769,7 +769,12 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     },
     UpdateDragLocationMutation: ({input}, userId) => {
       const {teamId, ...inputData} = input
-      const data = {remoteDrag: inputData, userId, __typename: 'UpdateDragLocationPayload'}
+      const data = {
+        drag: inputData,
+        remoteDrag: inputData,
+        userId,
+        __typename: 'UpdateDragLocationPayload'
+      }
       if (userId !== demoViewerId) {
         const {sourceId} = inputData
         const reflection = this.db.reflections.find((reflection) => reflection.id === sourceId)

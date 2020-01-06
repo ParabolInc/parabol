@@ -34,7 +34,6 @@ export class CacheWorker<T extends DataLoaderBase> {
     return this.did
   }
 }
-4
 
 export default class DataLoaderCache<T extends DataLoaderBase> {
   ttl: number
