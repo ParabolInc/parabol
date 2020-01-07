@@ -83,6 +83,7 @@ import emailPasswordReset from './mutations/emailPasswordReset'
 import resetPassword from './mutations/resetPassword'
 import invalidateSessions from './mutations/invalidateSessions'
 import createMassInvitation from './mutations/createMassInvitation'
+import renameMeeting from './mutations/renameMeeting'
 
 interface Context extends InternalContext, GQLContext {}
 
@@ -142,6 +143,7 @@ export default new GraphQLObjectType<any, Context, any>({
     removeOrgUser,
     removeReflectTemplate,
     removeReflectTemplatePrompt,
+    renameMeeting,
     renameReflectTemplate,
     renameReflectTemplatePrompt,
     removeReflection,

@@ -2925,6 +2925,11 @@ export interface IMutation {
   removeReflectTemplatePrompt: IRemoveReflectTemplatePromptPayload | null
 
   /**
+   * Rename a meeting
+   */
+  renameMeeting: RenameMeetingPayload
+
+  /**
    * Rename a reflect template prompt
    */
   renameReflectTemplate: IRenameReflectTemplatePayload | null
@@ -3509,6 +3514,18 @@ export interface IRemoveReflectTemplateOnMutationArguments {
 
 export interface IRemoveReflectTemplatePromptOnMutationArguments {
   promptId: string
+}
+
+export interface IRenameMeetingOnMutationArguments {
+  /**
+   * the new meeting name
+   */
+  name: string
+
+  /**
+   * the meeting with the new name
+   */
+  meetingId: string
 }
 
 export interface IRenameReflectTemplateOnMutationArguments {
@@ -5563,6 +5580,20 @@ export interface IRemoveReflectTemplatePromptPayload {
   prompt: IReflectTemplate | null
 }
 
+/**
+ * Return object for RenameMeetingPayload
+ */
+export type RenameMeetingPayload = IErrorPayload | IRenameMeetingSuccess
+
+export interface IRenameMeetingSuccess {
+  __typename: 'RenameMeetingSuccess'
+
+  /**
+   * the renamed meeting
+   */
+  meeting: NewMeeting
+}
+
 export interface IRenameReflectTemplatePayload {
   __typename: 'RenameReflectTemplatePayload'
   error: IStandardMutationError | null
@@ -6157,6 +6188,7 @@ export type MeetingSubscriptionPayload =
   | INewMeetingCheckInPayload
   | IPromoteNewMeetingFacilitatorPayload
   | IRemoveReflectionPayload
+  | IRenameMeetingSuccess
   | ISetPhaseFocusPayload
   | ISetStageTimerPayload
   | IStartDraggingReflectionPayload
