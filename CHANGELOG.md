@@ -9,7 +9,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ## Fixed
 * ratelimiter for forgot example/bad login
- Memory leak in Relay SSR
+* Memory leak in Relay SSR
 
 ## Added
 * uWebSockets.js
@@ -21,6 +21,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ## Changed
 * Refactored dataloader to be much more memory efficient
+* Shorter mass invite links #3469
 
 ## 4.16.1 2019-Dec-18
 
