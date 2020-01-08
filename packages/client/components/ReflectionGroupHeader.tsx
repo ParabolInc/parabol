@@ -53,7 +53,7 @@ const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>
     localPhase: {phaseType}
   } = meeting
   const {reflections} = reflectionGroup
-  const canEdit = phaseType === GROUP && !localStage.isComplete
+  const canEdit = (phaseType === GROUP || phaseType === VOTE) && !localStage.isComplete
   return (
     <GroupHeader portalStatus={portalStatus} isExpanded={isExpanded} ref={ref}>
       <ReflectionGroupTitleEditor
@@ -61,6 +61,7 @@ const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>
         reflectionGroup={reflectionGroup}
         meeting={meeting}
         readOnly={!canEdit}
+        hidePencil={canEdit && phaseType === VOTE}
         titleInputRef={titleInputRef}
       />
       {phaseType === GROUP && (
