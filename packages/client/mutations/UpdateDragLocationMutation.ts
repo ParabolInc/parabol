@@ -23,8 +23,8 @@ const mutation = graphql`
 `
 
 const UpdateDragLocationMutation = (atmosphere, variables) => {
-  const {_network: network} = atmosphere
-  network.execute(getRequest(mutation).params, variables, {force: true})
+  const request = getRequest(mutation).params
+  atmosphere.handleFetchPromise(request, variables)
 }
 
 export default UpdateDragLocationMutation
