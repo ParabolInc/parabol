@@ -7,17 +7,19 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import Reflection from '../../database/types/Reflection'
+import {getUserId} from '../../utils/authorization'
+import {GQLContext} from '../graphql'
 import {resolveForSU} from '../resolvers'
 import GoogleAnalyzedEntity from './GoogleAnalyzedEntity'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
+import Reactji from './Reactji'
 import RetroPhaseItem from './RetroPhaseItem'
 import RetroReflectionGroup from './RetroReflectionGroup'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
-import {getUserId} from '../../utils/authorization'
-import {GQLContext} from '../graphql'
 import Team from './Team'
 
-const RetroReflection = new GraphQLObjectType<any, GQLContext>({
+const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
   name: 'RetroReflection',
   description: 'A reflection created during the reflect phase of a retrospective',
   fields: () => ({
@@ -88,6 +90,27 @@ const RetroReflection = new GraphQLObjectType<any, GQLContext>({
     plaintextContent: {
       description: 'The plaintext version of content',
       type: new GraphQLNonNull(GraphQLString)
+    },
+    reactjis: {
+      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(Reactji))),
+      description: 'All the reactjis for the given reflection',
+      resolve: ({reactjis, id: reflectionId}, _args, {authToken}) => {
+        const viewerId = getUserId(authToken)
+        const agg = {}
+        for (let i = 0; i < reactjis.length; i++) {
+          const {id, userId} = reactjis[i]
+          const guid = `${reflectionId}:${id}`
+          const isViewerReactji = viewerId === userId
+          const record = agg[guid]
+          if (!record) {
+            agg[guid] = {id: guid, count: 1, isViewerReactji}
+          } else {
+            record.count++
+            record.isViewerReactji = record.isViewerReactji || isViewerReactji
+          }
+        }
+        return Object.values(agg)
+      }
     },
     retroPhaseItemId: {
       type: new GraphQLNonNull(GraphQLID),
