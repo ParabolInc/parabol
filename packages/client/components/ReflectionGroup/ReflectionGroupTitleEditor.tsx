@@ -23,6 +23,7 @@ interface Props extends WithMutationProps, WithAtmosphereProps {
   isExpanded: boolean
   reflectionGroup: ReflectionGroupTitleEditor_reflectionGroup
   readOnly: boolean
+  hidePencil: boolean
   meeting: ReflectionGroupTitleEditor_meeting
   titleInputRef: RefObject<HTMLInputElement>
 }
@@ -186,6 +187,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
       isExpanded,
       error,
       readOnly,
+      hidePencil,
       reflectionGroup: {title},
       titleInputRef
     } = this.props
@@ -207,7 +209,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
           </FormBlock>
           {error && <StyledError>{error}</StyledError>}
         </RootBlock>
-        {!readOnly && (
+        {!readOnly && !hidePencil && (
           <PencilIcon isExpanded={isExpanded} onClick={this.onClick}>
             edit
           </PencilIcon>

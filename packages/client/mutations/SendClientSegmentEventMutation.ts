@@ -11,8 +11,7 @@ const mutation = graphql`
 `
 
 const SendClientSegmentEventMutation = (atmosphere, event, options?) => {
-  const {_network: network} = atmosphere
-  network.execute(getRequest(mutation).params, {event, options}, {force: true})
+  atmosphere.handleFetchPromise(getRequest(mutation).params, {event, options})
 }
 
 export default SendClientSegmentEventMutation

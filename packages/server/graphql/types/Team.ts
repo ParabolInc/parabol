@@ -27,6 +27,9 @@ import TeamInvitation from './TeamInvitation'
 import TeamMeetingSettings from './TeamMeetingSettings'
 import TeamMember from './TeamMember'
 import TierEnum from './TierEnum'
+import getRethink from '../../database/rethinkDriver'
+import MassInvitationDB from '../../database/types/MassInvitation'
+import massInvitation from '../queries/massInvitation'
 
 const Team = new GraphQLObjectType<ITeam, GQLContext>({
   name: 'Team',
@@ -55,13 +58,29 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
         'The hash and expiration for a token that allows anyone with it to join the team',
       resolve: async ({id: teamId}, _args, {authToken, dataLoader}) => {
         if (!isTeamMember(authToken, teamId)) return null
+        const r = await getRethink()
         const viewerId = getUserId(authToken)
         const teamMemberId = toTeamMemberId(teamId, viewerId)
         const invitationTokens = await dataLoader
           .get('massInvitationsByTeamMemberId')
           .load(teamMemberId)
         const [newestInvitationToken] = invitationTokens
-        return newestInvitationToken
+        if (newestInvitationToken?.expiration > Date.now()) return newestInvitationToken
+        if (newestInvitationToken) {
+          await r
+            .table('MassInvitation')
+            .getAll(teamMemberId, {index: 'teamMemberId'})
+            .delete()
+            .run()
+        }
+        const massInvitation = new MassInvitationDB({teamMemberId})
+        await r
+          .table('MassInvitation')
+          .insert(massInvitation, {conflict: 'replace'})
+          .run()
+        invitationTokens.length = 1
+        invitationTokens[0] = massInvitation
+        return massInvitation
       }
     },
     isPaid: {
