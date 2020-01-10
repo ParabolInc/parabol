@@ -41,7 +41,7 @@ const wssConnectionHandler = (socket: WebSocket, req: HttpRequest) => {
     socket.end(1011)
     return
   }
-  const ip = uwsGetIP(socket)
+  const ip = uwsGetIP(socket, req)
   socket.connectionContext = new ConnectionContext(socket, authToken, ip)
   // keep async stuff separate so the message handler gets set up fast
   authorize(socket.connectionContext).catch()

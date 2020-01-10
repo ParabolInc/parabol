@@ -18,11 +18,12 @@ const httpGraphQLBodyHandler = async (
   res: HttpResponse,
   body: any,
   authToken: AuthToken,
-  connectionId?: string
+  connectionId?: string,
+  ip: string
 ) => {
   const connectionContext = connectionId
     ? sseClients.get(connectionId)
-    : new StatelessContext(uwsGetIP(res), authToken)
+    : new StatelessContext(ip, authToken)
   if (!connectionContext) {
     const viewerId = getUserId(authToken)
     if (!SSE_PROBLEM_USERS.includes(viewerId)) {
@@ -67,13 +68,14 @@ const httpGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRe
   const contentType = req.getHeader('content-type')
   const connectionId = req.getHeader('x-correlation-id')
   const authToken = getReqAuth(req)
+  const ip = uwsGetIP(res, req)
   if (contentType.startsWith('application/json')) {
     const body = await parseBody(res)
     if (!body) {
       res.writeStatus('422').end()
       return
     }
-    await httpGraphQLBodyHandler(res, body, authToken, connectionId)
+    await httpGraphQLBodyHandler(res, body, authToken, connectionId, ip)
   } else {
     res.writeStatus('415').end()
   }
