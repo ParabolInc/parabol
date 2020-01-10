@@ -8,6 +8,7 @@ import getQueryToken from '../utils/getQueryToken'
 import uwsGetIP from '../utils/uwsGetIP'
 import handleConnect from './handleConnect'
 import keepAlive from '../socketHelpers/keepAlive'
+import sendToSentry from '../utils/sendToSentry'
 
 const APP_VERSION = process.env.npm_package_version
 
@@ -28,23 +29,27 @@ const authorize = async (connectionContext: ConnectionContext<WebSocket>) => {
 }
 
 const wssConnectionHandler = (socket: WebSocket, req: HttpRequest) => {
-  const protocol = req.getHeader('sec-websocket-protocol')
-  if (protocol !== 'trebuchet-ws') {
-    // protocol error
-    socket.end(1002)
-    return
-  }
+  try {
+    const protocol = req.getHeader('sec-websocket-protocol')
+    if (protocol !== 'trebuchet-ws') {
+      // protocol error
+      socket.end(1002)
+      return
+    }
 
-  const authToken = getQueryToken(req)
-  if (!isAuthenticated(authToken)) {
-    // internal error (bad auth)
-    socket.end(1011)
-    return
+    const authToken = getQueryToken(req)
+    if (!isAuthenticated(authToken)) {
+      // internal error (bad auth)
+      socket.end(1011)
+      return
+    }
+    const ip = uwsGetIP(socket, req)
+    socket.connectionContext = new ConnectionContext(socket, authToken, ip)
+    // keep async stuff separate so the message handler gets set up fast
+    authorize(socket.connectionContext).catch()
+  } catch (e) {
+    sendToSentry(e)
   }
-  const ip = uwsGetIP(socket, req)
-  socket.connectionContext = new ConnectionContext(socket, authToken, ip)
-  // keep async stuff separate so the message handler gets set up fast
-  authorize(socket.connectionContext).catch()
 }
 
 export default wssConnectionHandler
