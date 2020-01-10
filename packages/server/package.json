@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "4.17.0",
+  "version": "4.17.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/action"
@@ -33,6 +33,7 @@
     "db:migrate-down-all": "node database/migrate.babel.js down --all",
     "db:migrate-create": "node database/migrate-create.babel.js",
     "debug": "node --nolazy --inspect=9229 server.babel.js",
+    "debug:prod": "NODE_ENV=production node --nolazy --inspect=9229 server.babel.js",
     "debug:stripe": "node billing/debug.babel.js",
     "postdeploy": "node utils/postDeploy.babel.js",
     "precommit": "lint-staged",
@@ -163,8 +164,8 @@
     "ms": "^2.0.0",
     "node-env-flag": "0.1.0",
     "node-fetch": "^2.6.0",
-    "parabol-client": "^4.17.0",
-    "rethinkdb-ts": "^2.4.0-rc.16",
+    "parabol-client": "^4.17.1",
+    "rethinkdb-ts": "^2.4.0",
     "rethinkdbdash": "^2.3.31",
     "samlify": "^2.6.1",
     "secure-compare": "^3.0.1",
