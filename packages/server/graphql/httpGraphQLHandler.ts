@@ -18,7 +18,7 @@ const httpGraphQLBodyHandler = async (
   res: HttpResponse,
   body: any,
   authToken: AuthToken,
-  connectionId?: string,
+  connectionId: string | undefined | null,
   ip: string
 ) => {
   const connectionContext = connectionId

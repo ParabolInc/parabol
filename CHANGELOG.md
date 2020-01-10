@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.17.1 2020-Jan-10
+
+## Fixed
+* Use forwarded IP address instead of IP of reverse proxy
+
 ## 4.17.0 2019-Dec-20
 
 ## Fixed
