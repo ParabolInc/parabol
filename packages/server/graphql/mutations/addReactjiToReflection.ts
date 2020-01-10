@@ -6,10 +6,10 @@ import {getUserId} from '../../utils/authorization'
 import emojiIds from '../../utils/emojiIds.json'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
-import CreateMassInvitationPayload from '../types/CreateMassInvitationPayload'
+import AddReactjiToReflectionPayload from '../types/AddReactjiToReflectionPayload'
 
 const addReactjiToReflection = {
-  type: GraphQLNonNull(CreateMassInvitationPayload),
+  type: GraphQLNonNull(AddReactjiToReflectionPayload),
   description: `Add or remove a reactji to a reflection`,
   args: {
     reflectionId: {
@@ -18,7 +18,7 @@ const addReactjiToReflection = {
     },
     reactji: {
       type: GraphQLNonNull(GraphQLString),
-      description: 'the name of the reactji to add'
+      description: 'the id of the reactji to add'
     },
     isRemove: {
       type: GraphQLBoolean,
