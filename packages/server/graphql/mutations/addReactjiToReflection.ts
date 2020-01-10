@@ -1,5 +1,5 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
@@ -7,6 +7,7 @@ import emojiIds from '../../utils/emojiIds.json'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import AddReactjiToReflectionPayload from '../types/AddReactjiToReflectionPayload'
+import getGroupedReactjis from '../../utils/getGroupedReactjis'
 
 const addReactjiToReflection = {
   type: GraphQLNonNull(AddReactjiToReflectionPayload),
@@ -43,7 +44,7 @@ const addReactjiToReflection = {
     if (!reflection) {
       return {error: {message: `Reflection does not exist`}}
     }
-    const {meetingId} = reflection
+    const {meetingId, reactjis} = reflection
     const meetingMemberId = toTeamMemberId(meetingId, viewerId)
     const viewerMeetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
     if (!viewerMeetingMember) {
@@ -53,6 +54,16 @@ const addReactjiToReflection = {
     // VALIDATION
     if (!emojiIds.includes(reactji)) {
       return {error: {message: `invalid emoji`}}
+    }
+
+    if (!isRemove) {
+      const groupedReactjis = getGroupedReactjis(reactjis, viewerId, reflectionId)
+      const nextReactjiId = `${reflectionId}:${reactji}`
+      const isReactjiPresent = !!groupedReactjis.find((agg) => agg.id === nextReactjiId)
+      // console.log('is present', isReactjiPresent, reactji, groupedReactjis)
+      if (!isReactjiPresent && groupedReactjis.length >= Threshold.REFLECTION_REACTJIS) {
+        return {error: {message: `Reactji limit reached`}}
+      }
     }
 
     // RESOLUTION
@@ -71,9 +82,12 @@ const addReactjiToReflection = {
         .table('RetroReflection')
         .get(reflectionId)
         .update((row) => ({
-          reactjis: row('reactjis')
-            .append(subDoc)
-            .distinct(),
+          reactjis: r.branch(
+            row('reactjis').contains(subDoc),
+            row('reactjis'),
+            // don't use distinct, it sorts the fields
+            row('reactjis').append(subDoc)
+          ),
           updatedAt: now
         }))
         .run()

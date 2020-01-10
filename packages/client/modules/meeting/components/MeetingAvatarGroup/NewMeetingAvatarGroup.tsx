@@ -14,6 +14,7 @@ import {PALETTE} from '../../../../styles/paletteV2'
 import {meetingAvatarMediaQueries} from '../../../../styles/meeting'
 import {Breakpoint} from '../../../../types/constEnums'
 import useTransition, {TransitionStatus} from '../../../../hooks/useTransition'
+import useInitialRender from '../../../../hooks/useInitialRender'
 import {DECELERATE} from '../../../../styles/animation'
 
 const MeetingAvatarGroupRoot = styled('div')({
@@ -89,10 +90,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
   const {swarm, team, camStreams, allowVideo} = props
   const {id: teamId, teamMembers} = team
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
-  const isInitialRenderRef = useRef(true)
-  useEffect(() => {
-    isInitialRenderRef.current = false
-  }, [])
+
   // all connected teamMembers except self
   // TODO: filter by team members who are actually viewing “this” meeting view
   const connectedTeamMembers = useMemo(() => {
@@ -114,7 +112,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
       ? visibleConnectedTeamMembers
       : visibleConnectedTeamMembers.concat(OVERFLOW_AVATAR as any)
   const tranChildren = useTransition(allAvatars)
-  const {current: isInit} = isInitialRenderRef
+  const isInit = useInitialRender()
   return (
     <MeetingAvatarGroupRoot>
       <VideoControls

@@ -5,6 +5,9 @@ import {createFragmentContainer} from 'react-relay'
 import {ReactjiSection_reactjis} from '__generated__/ReactjiSection_reactjis.graphql'
 import AddReactjiButton from './AddReactjiButton'
 import ReactjiCount from './ReactjiCount'
+import useTransition, {TransitionStatus} from 'hooks/useTransition'
+import useInitialRender from 'hooks/useInitialRender'
+import {Threshold} from 'types/constEnums'
 
 const Wrapper = styled('div')({
   display: 'flex',
@@ -23,12 +26,25 @@ interface Props {
 
 const ReactjiSection = (props: Props) => {
   const {onToggle, reactjis} = props
+  const animatedReactjis = reactjis.map((reactji) => ({...reactji, key: reactji.id}))
+  const tranChildren = useTransition(animatedReactjis)
+  const isInit = useInitialRender()
   return (
     <Wrapper>
-      {reactjis.map((reactji) => {
-        return <ReactjiCount key={reactji.id} reactji={reactji} />
+      {tranChildren.map((transReactji) => {
+        return (
+          <ReactjiCount
+            key={transReactji.child.key}
+            reactji={transReactji.child}
+            onTransitionEnd={transReactji.onTransitionEnd}
+            status={isInit ? TransitionStatus.ENTERED : transReactji.status}
+            onToggle={onToggle}
+          />
+        )
       })}
-      <AddReactjiButton onToggle={onToggle} />
+      {tranChildren.length <= Threshold.REFLECTION_REACTJIS - 1 && (
+        <AddReactjiButton onToggle={onToggle} />
+      )}
     </Wrapper>
   )
 }

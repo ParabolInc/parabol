@@ -1,8 +1,11 @@
 import EventEmitter from 'eventemitter3'
 import {parse} from 'flatted'
+import ms from 'ms'
+import Reflection from 'parabol-server/database/types/Reflection'
 import {Variables} from 'relay-runtime'
 import StrictEventEmitter from 'strict-event-emitter-types'
-import handleCompletedDemoStage from './handleCompletedDemoStage'
+import stringSimilarity from 'string-similarity'
+import {RetroDemo, SubscriptionChannel} from '../../types/constEnums'
 import {
   DragReflectionDropTargetTypeEnum,
   IDiscussPhase,
@@ -15,10 +18,11 @@ import {
   NewMeetingPhase,
   NewMeetingPhaseTypeEnum
 } from '../../types/graphql'
-import groupReflections from '../../utils/autogroup/groupReflections'
 import getGroupSmartTitle from '../../utils/autogroup/getGroupSmartTitle'
+import groupReflections from '../../utils/autogroup/groupReflections'
 import {DISCUSS, GROUP, REFLECT, TASK, TEAM, VOTE} from '../../utils/constants'
 import dndNoise from '../../utils/dndNoise'
+import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraftString'
 import getTagsFromEntityMap from '../../utils/draftjs/getTagsFromEntityMap'
 import makeEmptyStr from '../../utils/draftjs/makeEmptyStr'
 import findStageById from '../../utils/meetings/findStageById'
@@ -28,6 +32,10 @@ import sleep from '../../utils/sleep'
 import startStage_ from '../../utils/startStage_'
 import unlockAllStagesForPhase from '../../utils/unlockAllStagesForPhase'
 import unlockNextStages from '../../utils/unlockNextStages'
+import normalizeRawDraftJS from '../../validation/normalizeRawDraftJS'
+import entityLookup from './entityLookup'
+import getDemoEntities from './getDemoEntities'
+import handleCompletedDemoStage from './handleCompletedDemoStage'
 import initBotScript from './initBotScript'
 import initDB, {
   demoTeamId,
@@ -36,17 +44,13 @@ import initDB, {
   JiraProjectKeyLookup
 } from './initDB'
 import LocalAtmosphere from './LocalAtmosphere'
-import ms from 'ms'
-import Reflection from 'parabol-server/database/types/Reflection'
-import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraftString'
-import entityLookup from './entityLookup'
-import getDemoEntities from './getDemoEntities'
-import stringSimilarity from 'string-similarity'
-import normalizeRawDraftJS from '../../validation/normalizeRawDraftJS'
-import {RetroDemo, SubscriptionChannel} from '../../types/constEnums'
 
-export type DemoReflection = Omit<IRetroReflection, 'autoReflectionGroupId' | 'team'> & {
+export type DemoReflection = Omit<
+  IRetroReflection,
+  'autoReflectionGroupId' | 'team' | 'reactjis'
+> & {
   creatorId: string
+  reactjis: any[]
   reflectionId: string
   isHumanTouched: boolean
 }
@@ -316,6 +320,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         meetingId: RetroDemo.MEETING_ID,
         meeting: this.db.newMeeting,
         phaseItem,
+        reactjis: [] as any[],
         reflectionGroupId,
         retroPhaseItemId,
         sortOrder: 0,

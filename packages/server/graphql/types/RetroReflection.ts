@@ -18,6 +18,7 @@ import RetroPhaseItem from './RetroPhaseItem'
 import RetroReflectionGroup from './RetroReflectionGroup'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
 import Team from './Team'
+import getGroupedReactjis from '../../utils/getGroupedReactjis'
 
 const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
   name: 'RetroReflection',
@@ -96,20 +97,7 @@ const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
       description: 'All the reactjis for the given reflection',
       resolve: ({reactjis, id: reflectionId}, _args, {authToken}) => {
         const viewerId = getUserId(authToken)
-        const agg = {}
-        for (let i = 0; i < reactjis.length; i++) {
-          const {id, userId} = reactjis[i]
-          const guid = `${reflectionId}:${id}`
-          const isViewerReactji = viewerId === userId
-          const record = agg[guid]
-          if (!record) {
-            agg[guid] = {id: guid, count: 1, isViewerReactji}
-          } else {
-            record.count++
-            record.isViewerReactji = record.isViewerReactji || isViewerReactji
-          }
-        }
-        return Object.values(agg)
+        return getGroupedReactjis(reactjis, viewerId, reflectionId)
       }
     },
     retroPhaseItemId: {

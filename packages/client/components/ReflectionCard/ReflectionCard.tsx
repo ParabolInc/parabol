@@ -162,6 +162,9 @@ const ReflectionCard = (props: Props) => {
     )
   }
 
+  const clearError = () => {
+    onCompleted()
+  }
   return (
     <ReflectionCardRoot>
       {showOriginFooter && !isClipped && <ReflectionCardFooter>{question}</ReflectionCardFooter>}
@@ -179,7 +182,7 @@ const ReflectionCard = (props: Props) => {
         setEditorState={setEditorState}
         userSelect={userSelect}
       />
-      {error && <StyledError>{error.message}</StyledError>}
+      {error && <StyledError onClick={clearError}>{error.message}</StyledError>}
       {!readOnly && (
         <ReflectionCardDeleteButton meetingId={meetingId} reflectionId={reflectionId} />
       )}

@@ -54,7 +54,7 @@ const AddReactjiToReflectionMutation: StandardMutation<TAddReactjiToReflectionMu
         const reactji = reactjis[reactjiIdx]
         const count = reactji.getValue('count')
         if (count === 1) {
-          const nextReactjis = reactjis.slice().splice(reactjiIdx, 1)
+          const nextReactjis = [...reactjis.slice(0, reactjiIdx), ...reactjis.slice(reactjiIdx + 1)]
           reflection.setLinkedRecords(nextReactjis, 'reactjis')
         } else {
           reactji.setValue(count - 1, 'count')
@@ -62,11 +62,13 @@ const AddReactjiToReflectionMutation: StandardMutation<TAddReactjiToReflectionMu
         }
       } else {
         if (reactjiIdx === -1) {
-          const optimisticReactji = createProxyRecord(store, 'Reactji', {
-            id,
-            count: 1,
-            isViewerReactji: true
-          })
+          const optimisticReactji =
+            store.get(id) ||
+            createProxyRecord(store, 'Reactji', {
+              id,
+              count: 1,
+              isViewerReactji: true
+            })
           const nextReactjis = [...reactjis, optimisticReactji]
           reflection.setLinkedRecords(nextReactjis, 'reactjis')
         } else {
