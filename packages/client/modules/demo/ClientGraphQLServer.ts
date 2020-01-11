@@ -236,6 +236,39 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
     },
+    AddReactjiToReflectionMutation: ({reflectionId, isRemove, reactji}, userId) => {
+      const reflection = this.db.reflections.find((reflection) => reflection.id === reflectionId)
+      if (!reflection) return null
+      const reactjiId = `${reflectionId}:${reactji}`
+      const {reactjis} = reflection
+      const existingReactjiIdx = reactjis.findIndex((agg) => agg.id === reactjiId)
+      const existingReactji = reactjis[existingReactjiIdx]
+      if (isRemove) {
+        if (!existingReactji) return null
+        if (existingReactji.count === 1) {
+          reactjis.splice(existingReactjiIdx, 1)
+        } else {
+          existingReactji.count--
+          existingReactji.isViewerReactji = false
+        }
+      } else {
+        if (!existingReactji) {
+          reactjis.push({id: reactjiId, count: 1, isViewerReactji: true})
+        } else {
+          existingReactji.count++
+          existingReactji.isViewerReactji =
+            existingReactji.isViewerReactji || userId === demoViewerId
+        }
+      }
+      const data = {
+        __typename: 'AddReactjiToReflectionSuccess',
+        reflection
+      }
+      if (userId !== demoViewerId) {
+        this.emit(SubscriptionChannel.MEETING, data)
+      }
+      return {addReactjiToReflection: data}
+    },
     CreateGitHubIssueMutation: ({taskId, nameWithOwner}, userId) => {
       const task = this.db.tasks.find((task) => task.id === taskId)
       // if the human deleted the task, exit fast
@@ -1150,6 +1183,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         teamId: demoTeamId,
         isKill: !currentStage,
         removedTaskIds: [],
+        removedSuggestedActionId: null,
         updatedTasks: this.db.tasks,
         __typename: 'EndNewMeetingPayload'
       }
