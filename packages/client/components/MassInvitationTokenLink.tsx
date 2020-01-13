@@ -36,9 +36,9 @@ const acceptableLifeLeft = Threshold.MASS_INVITATION_TOKEN_LIFESPAN - FIVE_MINUT
 const MassInvitationTokenLink = (props: Props) => {
   const {viewer} = props
   const {team} = viewer
-  const {id: teamId, massInvitation} = team
+  const {id: teamId, massInvitation} = team!
   const atmosphere = useAtmosphere()
-  const {expiration, id: token} = massInvitation
+  const {expiration, id: token} = massInvitation!
   const tokenLifeRemaining = new Date(expiration).getTime() - Date.now()
   const isTokenValid = tokenLifeRemaining > acceptableLifeLeft
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()

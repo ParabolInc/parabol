@@ -27,12 +27,12 @@ const animations = (portalStatus) => {
 
 export interface MenuContentsProps {
   minWidth?: number
-  menuContentStyles: any
+  menuContentStyles?: any
   portalStatus: PortalStatus
 }
 
 const MenuContents = styled('div')<MenuContentsProps>(
-  ({minWidth, menuContentStyles, portalStatus}) => ({
+  ({minWidth, menuContentStyles = {}, portalStatus}) => ({
     borderRadius: Radius.MENU,
     outline: 0,
     overflowY: portalStatus >= PortalStatus.Entered ? 'auto' : 'hidden',
