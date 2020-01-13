@@ -10,6 +10,8 @@ import {forwardConnectionArgs} from 'graphql-relay'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import {ITeam} from '../../../client/types/graphql'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
+import getRethink from '../../database/rethinkDriver'
+import MassInvitationDB from '../../database/types/MassInvitation'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -55,13 +57,29 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
         'The hash and expiration for a token that allows anyone with it to join the team',
       resolve: async ({id: teamId}, _args, {authToken, dataLoader}) => {
         if (!isTeamMember(authToken, teamId)) return null
+        const r = await getRethink()
         const viewerId = getUserId(authToken)
         const teamMemberId = toTeamMemberId(teamId, viewerId)
         const invitationTokens = await dataLoader
           .get('massInvitationsByTeamMemberId')
           .load(teamMemberId)
         const [newestInvitationToken] = invitationTokens
-        return newestInvitationToken
+        if (newestInvitationToken?.expiration > Date.now()) return newestInvitationToken
+        if (newestInvitationToken) {
+          await r
+            .table('MassInvitation')
+            .getAll(teamMemberId, {index: 'teamMemberId'})
+            .delete()
+            .run()
+        }
+        const massInvitation = new MassInvitationDB({teamMemberId})
+        await r
+          .table('MassInvitation')
+          .insert(massInvitation, {conflict: 'replace'})
+          .run()
+        invitationTokens.length = 1
+        invitationTokens[0] = massInvitation
+        return massInvitation
       }
     },
     isPaid: {

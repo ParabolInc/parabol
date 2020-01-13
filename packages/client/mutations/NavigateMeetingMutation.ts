@@ -120,7 +120,7 @@ export const navigateMeetingMeetingUpdater: SharedUpdater<NavigateMeetingMutatio
 
   const emptyGroupReflectionGroupIds = safeProxy(payload)
     .getLinkedRecord('phaseComplete')
-    .getLinkedRecord('reflect')
+    .getLinkedRecord('group')
     .getValue('emptyReflectionGroupIds')
   handleRemoveReflectionGroups(emptyGroupReflectionGroupIds, meetingId, store)
 

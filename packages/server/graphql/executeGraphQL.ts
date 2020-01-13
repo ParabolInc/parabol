@@ -45,7 +45,10 @@ const executeGraphQL = async <T = ExecutionResultDataDefault>(req: GQLRequest) =
     rootValue
   } = req
   const viewerId = getUserId(authToken)
-  const dataLoader = getDataLoader(dataLoaderId, viewerId)
+  // dataloaders are only reuseable if they are non-mutative
+  // since the mutation might change the underlying data but keep the previously used dataloader
+  const reuseableId = docId?.[0] === 'q' ? viewerId : undefined
+  const dataLoader = getDataLoader(dataLoaderId, reuseableId)
   dataLoader.share()
   const rateLimiter = getRateLimiter()
   const contextValue = {ip, authToken, socketId, rateLimiter, dataLoader}

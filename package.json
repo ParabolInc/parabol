@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "4.17.0",
+  "version": "4.17.4",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/action"
@@ -13,7 +13,7 @@
     "url": "https://github.com/ParabolInc/action/issues"
   },
   "engines": {
-    "node": "^12.12.0",
+    "node": "^13.6.0",
     "yarn": "^1.15.2"
   },
   "main": "index.js",
@@ -26,6 +26,7 @@
     "build": "yarn workspace parabol-server build",
     "build:relay": "yarn workspace parabol-server build:relay",
     "debug": "yarn workspace parabol-server debug",
+    "debug:prod": "yarn workspace parabol-server debug:prod",
     "dev": "yarn workspace parabol-server dev",
     "lint": "lerna run --parallel lint",
     "test": "yarn workspace parabol-cypress test",

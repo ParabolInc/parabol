@@ -1,10 +1,10 @@
-import profiler from 'v8-profiler-next'
-import fs from 'fs'
-import path from 'path'
+// import profiler from 'v8-profiler-next'
+// import fs from 'fs'
+// import path from 'path'
 
 interface Options {
-  path?: string,
-  checkEvery?: number,
+  path?: string
+  checkEvery?: number
   dumpEvery?: number
 }
 
@@ -20,7 +20,7 @@ const dumpy = (options: Options) => {
   console.log('Node PID:', process.pid)
   const MB = 2 ** 20
   let isEnabled = false
-  let intervalId: NodeJS.Timeout;
+  let intervalId: NodeJS.Timeout
   let nextThresh = 0
 
   const stopMonitor = () => {
@@ -40,24 +40,24 @@ const dumpy = (options: Options) => {
       if (rss > nextThresh) {
         isSnapping = true
         nextThresh = rss + dumpEvery * MB // take a new snapshot every 50 MB
-        const snap = profiler.takeSnapshot()
-        const transform = snap.export()
-        const usedMB = Math.floor(rss / MB)
-        const now = new Date().toJSON()
-        const fileName = `Dumpy_${now}-${usedMB}.json`
-        console.log(`Dumpy: New Dump! ${fileName}`)
-        const pathName = path.join(options.path || __dirname, fileName)
-        transform.pipe(fs.createWriteStream(pathName))
-        transform.on('error', (err) => {
-          snap.delete()
-          console.log('Dumpy: Error writing heap dump to disk')
-          console.log(err)
-          stopMonitor()
-        })
-        transform.on('finish', () => {
-          isSnapping = false
-          snap.delete()
-        })
+        // const snap = profiler.takeSnapshot()
+        // const transform = snap.export()
+        // const usedMB = Math.floor(rss / MB)
+        // const now = new Date().toJSON()
+        // const fileName = `Dumpy_${now}-${usedMB}.json`
+        // console.log(`Dumpy: New Dump! ${fileName}`)
+        // const pathName = path.join(options.path || __dirname, fileName)
+        // transform.pipe(fs.createWriteStream(pathName))
+        // transform.on('error', (err) => {
+        //   snap.delete()
+        //   console.log('Dumpy: Error writing heap dump to disk')
+        //   console.log(err)
+        //   stopMonitor()
+        // })
+        // transform.on('finish', () => {
+        //   isSnapping = false
+        //   snap.delete()
+        // })
       }
     }
 

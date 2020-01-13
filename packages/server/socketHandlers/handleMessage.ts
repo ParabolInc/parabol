@@ -6,6 +6,7 @@ import keepAlive from '../socketHelpers/keepAlive'
 import sendGQLMessage from '../socketHelpers/sendGQLMessage'
 import handleSignal from '../wrtc/signalServer/handleSignal'
 import validateInit from '../wrtc/signalServer/validateInit'
+import sendToSentry from '../utils/sendToSentry'
 
 interface WRTCMessage {
   type: 'WRTC_SIGNAL'
@@ -58,4 +59,12 @@ const handleMessage = (websocket: WebSocket, message: ArrayBuffer) => {
   }
 }
 
-export default handleMessage
+const safeHandleMessage = (websocket: WebSocket, message: ArrayBuffer) => {
+  try {
+    handleMessage(websocket, message)
+  } catch (e) {
+    sendToSentry(e)
+  }
+}
+
+export default safeHandleMessage

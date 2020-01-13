@@ -60,6 +60,8 @@ export default class LocalAtmosphere extends Environment {
     return res
   }
 
+  handleFetchPromise = () => {}
+
   subscribeLocal: SubscribeFunction = (operation, _variables, _cacheConfig) => {
     return Observable.create((sink) => {
       const channelLookup = {

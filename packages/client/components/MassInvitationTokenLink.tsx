@@ -4,26 +4,13 @@ import useMutationProps from 'hooks/useMutationProps'
 import ms from 'ms'
 import CreateMassInvitationMutation from 'mutations/CreateMassInvitationMutation'
 import React, {useEffect} from 'react'
+import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useLocalQuery from '../hooks/useLocalQuery'
 import CopyShortLink from '../modules/meeting/components/CopyShortLink/CopyShortLink'
 import {PALETTE} from '../styles/paletteV2'
 import {Threshold} from '../types/constEnums'
 import makeHref from '../utils/makeHref'
-import {MassInvitationTokenLinkQuery} from '../__generated__/MassInvitationTokenLinkQuery.graphql'
-
-const query = graphql`
-  query MassInvitationTokenLinkQuery($teamId: ID!) {
-    viewer {
-      team(teamId: $teamId) {
-        massInvitation {
-          id
-          expiration
-        }
-      }
-    }
-  }
-`
+import {MassInvitationTokenLink_viewer} from '../__generated__/MassInvitationTokenLink_viewer.graphql'
 
 const StyledCopyShortLink = styled(CopyShortLink)({
   borderRadius: 4,
@@ -40,18 +27,18 @@ const StyledCopyShortLink = styled(CopyShortLink)({
 })
 
 interface Props {
-  teamId: string
+  viewer: MassInvitationTokenLink_viewer
 }
 
 const FIVE_MINUTES = ms('5m')
 const acceptableLifeLeft = Threshold.MASS_INVITATION_TOKEN_LIFESPAN - FIVE_MINUTES
 
 const MassInvitationTokenLink = (props: Props) => {
-  const {teamId} = props
+  const {viewer} = props
+  const {team} = viewer
+  const {id: teamId, massInvitation} = team!
   const atmosphere = useAtmosphere()
-  const data = useLocalQuery<MassInvitationTokenLinkQuery>(query, {teamId}, {ttl: FIVE_MINUTES})
-  const massInvitation = data?.viewer?.team?.massInvitation || {expiration: 0, id: ''}
-  const {expiration, id: token} = massInvitation
+  const {expiration, id: token} = massInvitation!
   const tokenLifeRemaining = new Date(expiration).getTime() - Date.now()
   const isTokenValid = tokenLifeRemaining > acceptableLifeLeft
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
@@ -65,7 +52,7 @@ const MassInvitationTokenLink = (props: Props) => {
     doFetch().catch()
   }, [])
   const displayToken = isTokenValid ? token : '············'
-  const linkLabel = `prbl.app/a/${displayToken}`
+  const linkLabel = `prbl.in/${displayToken}`
   const url = __PRODUCTION__ ? `https://${linkLabel}` : makeHref(`/invitation-link/${token}`)
   return (
     <StyledCopyShortLink
@@ -78,4 +65,16 @@ const MassInvitationTokenLink = (props: Props) => {
   )
 }
 
-export default MassInvitationTokenLink
+export default createFragmentContainer(MassInvitationTokenLink, {
+  viewer: graphql`
+    fragment MassInvitationTokenLink_viewer on User {
+      team(teamId: $teamId) {
+        id
+        massInvitation {
+          id
+          expiration
+        }
+      }
+    }
+  `
+})

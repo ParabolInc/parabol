@@ -15,7 +15,7 @@ import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
 import BasicTextArea from './InputField/BasicTextArea'
 import LabelHeading from './LabelHeading/LabelHeading'
-import MassInvitationTokenLink from './MassInvitationTokenLink'
+import MassInvitationTokenLinkRoot from './MassInvitationTokenLinkRoot'
 import PrimaryButton from './PrimaryButton'
 import StyledError from './StyledError'
 
@@ -165,7 +165,7 @@ const AddTeamMemberModal = (props: Props) => {
       <StyledDialogContent>
         <Fields>
           <StyledLabelHeading>{'Share this link'}</StyledLabelHeading>
-          <MassInvitationTokenLink teamId={teamId} />
+          <MassInvitationTokenLinkRoot teamId={teamId} />
 
           <StyledLabelHeading>{'Or, send invites by email'}</StyledLabelHeading>
           <BasicTextArea

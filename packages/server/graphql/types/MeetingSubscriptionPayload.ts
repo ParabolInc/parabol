@@ -17,8 +17,10 @@ import UpdateReflectionGroupTitlePayload from './UpdateReflectionGroupTitlePaylo
 import VoteForReflectionGroupPayload from './VoteForReflectionGroupPayload'
 import SetStageTimerPayload from './SetStageTimerPayload'
 import {RenameMeetingSuccess} from './RenameMeetingPayload'
+import {AddReactjiToReflectionSuccess} from './AddReactjiToReflectionPayload'
 
 const types = [
+  AddReactjiToReflectionSuccess,
   AutoGroupReflectionsPayload,
   CreateReflectionPayload,
   DragDiscussionTopicPayload,

@@ -1,6 +1,7 @@
 import shortid from 'shortid'
 import GoogleAnalyzedEntity from './GoogleAnalyzedEntity'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
+import Reactji from './Reactji'
 
 export interface ReflectionInput {
   id?: string
@@ -10,6 +11,7 @@ export interface ReflectionInput {
   plaintextContent?: string // the plaintext version of content
   entities: GoogleAnalyzedEntity[]
   meetingId: string
+  reactjis?: Reactji[]
   reflectionGroupId?: string
   retroPhaseItemId: string
   sortOrder?: number
@@ -26,12 +28,26 @@ export default class Reflection {
   entities: GoogleAnalyzedEntity[]
   isActive: boolean
   meetingId: string
+  reactjis: Reactji[]
   reflectionGroupId: string
   retroPhaseItemId: string
   sortOrder: number
   updatedAt: Date
   constructor(input: ReflectionInput) {
-    const {content, plaintextContent, createdAt, creatorId, entities, id, meetingId, reflectionGroupId, retroPhaseItemId, sortOrder, updatedAt} = input
+    const {
+      content,
+      plaintextContent,
+      createdAt,
+      creatorId,
+      entities,
+      id,
+      meetingId,
+      reactjis,
+      reflectionGroupId,
+      retroPhaseItemId,
+      sortOrder,
+      updatedAt
+    } = input
     const now = new Date()
     this.id = id || shortid.generate()
     this.createdAt = createdAt || now
@@ -41,6 +57,7 @@ export default class Reflection {
     this.entities = entities
     this.isActive = true
     this.meetingId = meetingId
+    this.reactjis = reactjis || []
     this.reflectionGroupId = reflectionGroupId || shortid.generate()
     this.retroPhaseItemId = retroPhaseItemId
     this.sortOrder = sortOrder || 0

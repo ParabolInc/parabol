@@ -5,11 +5,32 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.17.4 2020-Jan-13
+
+## Fixed
+* Upgraded to Node v13.6.0, no longer treat RethinkDBError as an unhandledRejection
+
+## 4.17.3 2020-Jan-12
+
+## Added
+* pm2 to production deploy with mem limit (~1.2G)
+* Datadog apm
+
+## 4.17.2 2020-Jan-10
+
+## Fixed
+* Safely handle closing websocket that doesn't yet have a connection context
+
+## 4.17.1 2020-Jan-10
+
+## Fixed
+* Use forwarded IP address instead of IP of reverse proxy
+
 ## 4.17.0 2019-Dec-20
 
 ## Fixed
 * ratelimiter for forgot example/bad login
- Memory leak in Relay SSR
+* Memory leak in Relay SSR
 
 ## Added
 * uWebSockets.js
@@ -21,6 +42,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ## Changed
 * Refactored dataloader to be much more memory efficient
+* Shorter mass invite links #3469
 
 ## 4.16.1 2019-Dec-18
 

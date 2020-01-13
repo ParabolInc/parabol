@@ -1,3 +1,4 @@
+import './tracer'
 import uws from 'uWebSockets.js'
 import getDotenv from '../server/utils/dotenv'
 import stripeWebhookHandler from './billing/stripeWebhookHandler'

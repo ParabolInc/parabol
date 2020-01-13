@@ -3,10 +3,11 @@ import GQLTrebuchetClient, {
   OperationPayload
 } from '@mattkrick/graphql-trebuchet-client'
 import getTrebuchet, {SocketTrebuchet, SSETrebuchet} from '@mattkrick/trebuchet-client'
-import {InviteToTeamMutation_notification} from './__generated__/InviteToTeamMutation_notification.graphql'
 import EventEmitter from 'eventemitter3'
 import jwtDecode from 'jwt-decode'
+import AuthToken from 'parabol-server/database/types/AuthToken'
 import {Disposable} from 'react-relay'
+import {RouterProps} from 'react-router'
 import {
   CacheConfig,
   Environment,
@@ -20,14 +21,13 @@ import {
   SubscribeFunction,
   Variables
 } from 'relay-runtime'
-import StrictEventEmitter from 'strict-event-emitter-types'
-import handlerProvider from './utils/relay/handlerProvider'
-import {Snack, SnackbarRemoveFn} from './components/Snackbar'
-import AuthToken from 'parabol-server/database/types/AuthToken'
-import {RouterProps} from 'react-router'
-import {LocalStorageKey, TrebuchetCloseReason} from './types/constEnums'
-import handleInvalidatedSession from './hooks/handleInvalidatedSession'
 import {Sink} from 'relay-runtime/lib/network/RelayObservable'
+import StrictEventEmitter from 'strict-event-emitter-types'
+import {Snack, SnackbarRemoveFn} from './components/Snackbar'
+import handleInvalidatedSession from './hooks/handleInvalidatedSession'
+import {LocalStorageKey, TrebuchetCloseReason} from './types/constEnums'
+import handlerProvider from './utils/relay/handlerProvider'
+import {InviteToTeamMutation_notification} from './__generated__/InviteToTeamMutation_notification.graphql'
 
 interface QuerySubscription {
   subKey: string
@@ -47,6 +47,14 @@ export type SubscriptionRequestor = (
 
 const noop = (): any => {
   /* noop */
+}
+
+// used when no sink is provided (not awaiting responses)
+const noopSink = {
+  next: noop,
+  error: noop,
+  complete: noop,
+  closed: false
 }
 
 export interface AtmosphereEvents {
@@ -189,7 +197,11 @@ export default class Atmosphere extends Environment {
     return this.upgradeTransportPromise
   }
 
-  handleFetchPromise = async (request: RequestParameters, variables: Variables, sink) => {
+  handleFetchPromise = async (
+    request: RequestParameters,
+    variables: Variables,
+    sink?: Sink<any>
+  ) => {
     // await sleep(1000)
     const field = __PRODUCTION__ ? 'documentId' : 'query'
     let data = request.id
@@ -197,7 +209,7 @@ export default class Atmosphere extends Environment {
       const queryMap = await import('../server/graphql/queryMap.json')
       data = queryMap[request.id!]
     }
-    return this.transport.fetch({[field]: data, variables}, sink)
+    return this.transport.fetch({[field]: data, variables}, sink || noopSink)
   }
 
   handleFetch: FetchFunction = (request, variables) => {
