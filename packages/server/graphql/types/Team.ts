@@ -10,6 +10,8 @@ import {forwardConnectionArgs} from 'graphql-relay'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import {ITeam} from '../../../client/types/graphql'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
+import getRethink from '../../database/rethinkDriver'
+import MassInvitationDB from '../../database/types/MassInvitation'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -27,9 +29,6 @@ import TeamInvitation from './TeamInvitation'
 import TeamMeetingSettings from './TeamMeetingSettings'
 import TeamMember from './TeamMember'
 import TierEnum from './TierEnum'
-import getRethink from '../../database/rethinkDriver'
-import MassInvitationDB from '../../database/types/MassInvitation'
-import massInvitation from '../queries/massInvitation'
 
 const Team = new GraphQLObjectType<ITeam, GQLContext>({
   name: 'Team',
