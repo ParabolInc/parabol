@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.17.4 2020-Jan-13
+
+## Fixed
+* Upgraded to Node v13.6.0, no longer treat RethinkDBError as an unhandledRejection
+
 ## 4.17.3 2020-Jan-12
 
 ## Added

@@ -153,14 +153,12 @@
     "es6-promisify": "^5.0.0",
     "graphql": "^14.5.8",
     "graphql-relay": "^0.5.2",
-    "heap-profile": "^0.4.0",
     "html-minifier-terser": "^5.0.2",
     "intersection-observer": "^0.7.0",
     "ioredis": "^4.11.2",
     "jsonwebtoken": "^8.5.0",
     "mailcomposer": "^4.0.1",
     "mailgun-js": "^0.13.1",
-    "migrate-rethinkdb": "^1.6.2",
     "mime-types": "^2.1.16",
     "ms": "^2.0.0",
     "node-env-flag": "0.1.0",
@@ -175,8 +173,7 @@
     "string-similarity": "^3.0.0",
     "stripe": "^4.24.0",
     "ts-node": "^8.5.0",
-    "uWebSockets.js": "uNetworking/uWebSockets.js#v16.5.0",
-    "v8-profiler-next": "^1.1.1"
+    "uWebSockets.js": "uNetworking/uWebSockets.js#v16.5.0"
   },
   "lint-staged": {
     "**/*.{js,ts,tsx}": [
