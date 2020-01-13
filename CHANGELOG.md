@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.17.3 2020-Jan-12
+
+## Added
+* pm2 to production deploy with mem limit (~1.2G)
+* Datadog apm
+
 ## 4.17.2 2020-Jan-10
 
 ## Fixed
