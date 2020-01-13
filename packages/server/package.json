@@ -13,7 +13,7 @@
     "url": "https://github.com/ParabolInc/action/issues"
   },
   "scripts": {
-    "start": "cross-env NODE_ENV=production node server.babel.js",
+    "start": "cross-env NODE_ENV=production pm2-runtime start pm2.config.js",
     "start:tunnel": "export $(grep ^ULTRAHOOK_API_KEY .env | tr -d '\"') && ultrahook -k $ULTRAHOOK_API_KEY dev 3000",
     "start:memwatch": "NODE_ENV=production MEMWATCH=true node --expose-gc --inspect --trace-warnings server.babel.js",
     "quickstart": "yarn db:migrate && yarn bs",
@@ -145,6 +145,7 @@
     "bcrypt": "^3.0.7",
     "cheerio": "^0.22.0",
     "dataloader": "^2.0.0",
+    "dd-trace": "^0.16.3",
     "dotenv": "8.0.0",
     "dotenv-expand": "5.1.0",
     "draft-js": "https://github.com/mattkrick/draft-js/tarball/559a21968370c4944511657817d601a6c4ade0f6",
@@ -165,6 +166,7 @@
     "node-env-flag": "0.1.0",
     "node-fetch": "^2.6.0",
     "parabol-client": "^4.17.1",
+    "pm2": "^4.2.1",
     "rethinkdb-ts": "^2.4.0",
     "rethinkdbdash": "^2.3.31",
     "samlify": "^2.6.1",
