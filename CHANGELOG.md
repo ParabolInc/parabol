@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.17.5 2020-Jan-13
+
+### Removed
+* Disabled Datadog apm
+
 ## 4.17.4 2020-Jan-13
 
 ## Fixed
