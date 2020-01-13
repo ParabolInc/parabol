@@ -83,7 +83,6 @@ const NewMeetingSidebar = (props: Props) => {
     if (submitting || error) return
     submitMutation()
     RenameMeetingMutation(atmosphere, {meetingId, name}, {onCompleted, onError})
-    console.log('submit', name)
   }
   const validate = (rawMeetingName: string) => {
     const res = new Legitity(rawMeetingName)
