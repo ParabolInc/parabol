@@ -39,6 +39,7 @@ import allAvailableIntegrations from '../queries/allAvailableIntegrations'
 import {GQLContext} from '../graphql'
 import TeamInvitationPayload from './TeamInvitationPayload'
 import AuthIdentity from './AuthIdentity'
+import TierEnum from './TierEnum'
 
 const User = new GraphQLObjectType<any, GQLContext, any>({
   name: 'User',
@@ -408,6 +409,10 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
         const teamMemberId = toTeamMemberId(teamId, viewerId)
         return dataLoader.get('teamMembers').load(teamMemberId)
       }
+    },
+    tier: {
+      type: GraphQLNonNull(TierEnum),
+      description: 'The highest tier of any org the user belongs to'
     },
     tms: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),

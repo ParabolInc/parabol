@@ -8,6 +8,10 @@ import DashSidebar from './Dashboard/DashSidebar'
 import DashAlert from './DashAlert'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import useSidebar from '../hooks/useSidebar'
+import {Breakpoint} from 'types/constEnums'
+import MobileDashSidebar from './Dashboard/MobileDashSidebar'
+import SwipeableDashSidebar from './SwipeableDashSidebar'
+import useBreakpoint from 'hooks/useBreakpoint'
 
 const UserDashboard = lazy(() =>
   import(
@@ -55,11 +59,18 @@ const DashMain = styled('div')({
 const Dashboard = (props: Props) => {
   const {viewer} = props
   const {isOpen, toggle, handleMenuClick} = useSidebar()
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   return (
     <DashLayout>
-      <ResponsiveDashSidebar isOpen={isOpen} onToggle={toggle}>
-        <DashSidebar viewer={viewer} handleMenuClick={handleMenuClick} />
-      </ResponsiveDashSidebar>
+      {isDesktop ? (
+        <ResponsiveDashSidebar isOpen={isOpen} onToggle={toggle}>
+          <DashSidebar viewer={viewer} handleMenuClick={handleMenuClick} />
+        </ResponsiveDashSidebar>
+      ) : (
+        <SwipeableDashSidebar isOpen={isOpen} onToggle={toggle}>
+          <MobileDashSidebar viewer={viewer} handleMenuClick={handleMenuClick} />
+        </SwipeableDashSidebar>
+      )}
       <DashPanel>
         <DashAlert viewer={viewer} />
         <DashMain>
@@ -82,6 +93,7 @@ const Dashboard = (props: Props) => {
 export default createFragmentContainer(Dashboard, {
   viewer: graphql`
     fragment Dashboard_viewer on User {
+      ...MobileDashSidebar_viewer
       ...DashAlert_viewer
       notifications(first: 100) @connection(key: "DashboardWrapper_notifications") {
         edges {

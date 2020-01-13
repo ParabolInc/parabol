@@ -49,25 +49,9 @@ const getHubspotTraits = async (userIds: string[]) => {
         .count()
         .ge(1),
       highestTier: r
-        .table('OrganizationUser')
-        .getAll(userId, {index: 'userId'})
-        .filter({removedAt: null})
-        .coerceTo('array')('orgId')
-        .default([])
-        .do((orgIds) => {
-          return r
-            .table('Organization')
-            .getAll(r.args(orgIds), {index: 'id'})
-            .coerceTo('array')('tier')
-            .distinct()
-        })
-        .do((tiers) => {
-          return r.branch(
-            tiers.contains(TierEnum.enterprise),
-            TierEnum.enterprise,
-            r.branch(tiers.contains(TierEnum.pro), TierEnum.pro, TierEnum.personal)
-          )
-        })
+        .table('User')
+        .get(userId)('tier')
+        .default(TierEnum.personal)
     }))
     .run() as Promise<HubspotTraits[]>
 }

@@ -1,28 +1,31 @@
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
+import Icon from 'components/Icon'
+import PlainButton from 'components/PlainButton/PlainButton'
+import TierTag from 'components/Tag/TierTag'
+import useRouter from 'hooks/useRouter'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import {NavLink} from 'react-router-dom'
-import Avatar from '../Avatar/Avatar'
-import Badge from '../Badge/Badge'
-import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
-import styled from '@emotion/styled'
-import textOverflow from '../../styles/helpers/textOverflow'
-import Icon from '../Icon'
-import {ICON_SIZE} from '../../styles/typographyV2'
-import {PALETTE} from '../../styles/paletteV2'
+import {TierLabel} from 'types/constEnums'
+import {TierEnum} from 'types/graphql'
+import WaveSVG from '../../../../static/images/wave.svg'
 import {APP_BAR_HEIGHT} from '../../styles/appbars'
-import useMenu from '../../hooks/useMenu'
-import {MenuPosition} from '../../hooks/useCoords'
-import lazyPreload from '../../utils/lazyPreload'
+import {PALETTE} from '../../styles/paletteV2'
+import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {StandardHub_viewer} from '../../__generated__/StandardHub_viewer.graphql'
-import {ClassNames} from '@emotion/core'
+import Avatar from '../Avatar/Avatar'
 
 const StandardHubRoot = styled('div')({
-  alignItems: 'center',
+  backgroundRepeat: 'no-repeat',
+  backgroundSize: '100%',
+  // the wave is 2560x231, so to figure out the offset from the center, we need to find how much scaling there was
+  backgroundPositionY: `100%, 0`,
+  backgroundImage: `url('${WaveSVG}'), linear-gradient(90deg, ${PALETTE.BACKGROUND_PRIMARY} 0%, ${PALETTE.BACKGROUND_DARK} 100%)`,
   borderBottom: `1px solid ${PALETTE.BORDER_NAV_DARK}`,
   display: 'flex',
+  flexDirection: 'column',
   minHeight: APP_BAR_HEIGHT + 1, // add border
-  padding: '9px 16px',
+  padding: 16,
   width: '100%'
 })
 
@@ -30,129 +33,91 @@ const User = styled('div')({
   display: 'flex',
   cursor: 'pointer',
   flex: 1,
-  position: 'relative',
-  transition: `opacity 100ms ease-in`,
-
-  ':hover': {
-    opacity: 0.5
-  }
+  position: 'relative'
 })
 
-// Make a single clickable area, over user details, to trigger the menu
-const MenuToggle = styled('div')({
-  bottom: 0,
-  left: 0,
-  position: 'absolute',
-  right: 0,
-  top: 0
+const NameAndEmail = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  overflow: 'hidden',
+  paddingLeft: 16
 })
 
 const PreferredName = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  flex: 1,
+  color: PALETTE.TEXT_LIGHT,
   fontSize: 16,
-  fontWeight: 600,
-  maxWidth: '9rem',
-  padding: '0 .25rem 0 1rem',
-  '& > span': {...textOverflow}
+  lineHeight: '24px',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap'
 })
 
-const notificationsStyles = {
-  alignItems: 'center',
-  backgroundColor: PALETTE.BACKGROUND_PRIMARY,
-  borderRadius: '2rem',
+const Email = styled('div')({
+  fontSize: 12,
+  lineHeight: '16px'
+})
+
+const Upgrade = styled(PlainButton)({
+  background: 'transparent',
+  color: PALETTE.BACKGROUND_YELLOW,
   display: 'flex',
-  height: 32,
-  justifyContent: 'center',
-  position: 'relative' as 'relative',
-  transition: `background-color 100ms ease-in`,
-  width: 32,
-  '&:hover,:focus': {
-    backgroundColor: PALETTE.BACKGROUND_NAV_DARK_HOVER
-  }
-}
-
-const notificationsWithBadge = {
-  backgroundColor: PALETTE.BACKGROUND_NAV_DARK_HOVER
-}
-
-const notificationsActive = {
-  backgroundColor: PALETTE.BACKGROUND_NAV_DARK_ACTIVE,
-  '&:hover,:focus': {
-    backgroundColor: PALETTE.BACKGROUND_NAV_DARK_ACTIVE
-  }
-}
-
-const BadgeBlock = styled('div')({
-  bottom: '-6px',
-  position: 'absolute',
-  right: '-6px'
+  fontWeight: 600,
+  paddingTop: 16,
+  paddingBottom: 16
 })
 
-const NotificationIcon = styled(Icon)({
-  fontSize: ICON_SIZE.MD18,
-  lineHeight: 'inherit',
-  color: 'white'
+const UpgradeCTA = styled('span')({
+  fontSize: 14,
+  lineHeight: '24px',
+  paddingLeft: 16
 })
 
-const StandardHubUserMenu = lazyPreload(() =>
-  import(/* webpackChunkName: 'StandardHubUserMenu' */ '../StandardHubUserMenu')
-)
+const Tier = styled(TierTag)({
+  marginLeft: 64,
+  marginBottom: 16,
+  padding: '0 16px',
+  width: 'fit-content'
+})
 
 interface Props {
-  handleMenuClick: () => void
   viewer: StandardHub_viewer | null
 }
 
-const StandardHub = (props: Props) => {
-  const {handleMenuClick, viewer} = props
-  const notifications = viewer && viewer.notifications && viewer.notifications.edges
-  const notificationsCount = notifications ? notifications.length : 0
-  const {picture = '', preferredName = ''} = viewer || {}
+const DEFAULT_VIEWER = {
+  picture: '',
+  preferredName: '',
+  email: '',
+  tier: TierEnum.personal
+}
 
+const StandardHub = (props: Props) => {
+  const {viewer} = props
+  const {email, picture, preferredName, tier} = viewer || DEFAULT_VIEWER
   const userAvatar = picture || defaultUserAvatar
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu<HTMLDivElement>(
-    MenuPosition.UPPER_LEFT
-  )
+  const {history} = useRouter()
+  const handleUpgradeClick = () => {
+    history.push(`/me/organizations`)
+  }
   return (
     <StandardHubRoot>
       <User>
-        <Avatar hasBadge={false} picture={userAvatar} size={32} />
-        <PreferredName>
-          <span>{preferredName}</span>
-        </PreferredName>
-        <MenuToggle
-          onClick={togglePortal}
-          onMouseEnter={StandardHubUserMenu.preload}
-          ref={originRef}
-        />
-        {menuPortal(
-          <StandardHubUserMenu
-            handleMenuClick={handleMenuClick}
-            menuProps={menuProps}
-            viewer={viewer!}
-          />
-        )}
+        <Avatar hasBadge={false} picture={userAvatar} size={48} />
+        <NameAndEmail>
+          <PreferredName>{preferredName}</PreferredName>
+          <Email>{email}</Email>
+        </NameAndEmail>
       </User>
-      <ClassNames>
-        {({css}) => {
-          return (
-            <NavLink
-              activeClassName={css(notificationsActive)}
-              className={css(notificationsStyles, notificationsCount > 0 && notificationsWithBadge)}
-              to='/me/notifications'
-            >
-              <NotificationIcon>notifications</NotificationIcon>
-              {notificationsCount > 0 && (
-                <BadgeBlock>
-                  <Badge>{notificationsCount}</Badge>
-                </BadgeBlock>
-              )}
-            </NavLink>
-          )
-        }}
-      </ClassNames>
+      {tier !== TierEnum.personal ? (
+        <Upgrade onClick={handleUpgradeClick}>
+          <Icon>verified_user</Icon>
+          <UpgradeCTA>
+            {'Upgrade to '}
+            <b>{TierLabel.PRO}</b>
+          </UpgradeCTA>
+        </Upgrade>
+      ) : (
+        <Tier tier={tier as TierEnum} />
+      )}
     </StandardHubRoot>
   )
 }
@@ -160,16 +125,10 @@ const StandardHub = (props: Props) => {
 export default createFragmentContainer(StandardHub, {
   viewer: graphql`
     fragment StandardHub_viewer on User {
+      email
       picture
       preferredName
-      notifications(first: 100) @connection(key: "DashboardWrapper_notifications") {
-        edges {
-          node {
-            id
-          }
-        }
-      }
-      ...StandardHubUserMenu_viewer
+      tier
     }
   `
 })
