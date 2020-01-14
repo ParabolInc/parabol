@@ -12,6 +12,8 @@ import {Breakpoint} from 'types/constEnums'
 import MobileDashSidebar from './Dashboard/MobileDashSidebar'
 import SwipeableDashSidebar from './SwipeableDashSidebar'
 import useBreakpoint from 'hooks/useBreakpoint'
+import DashTopBar from './DashTopBar'
+import MobileDashTopBar from './MobileDashTopBar'
 
 const UserDashboard = lazy(() =>
   import(
@@ -33,6 +35,7 @@ interface Props {
 
 const DashLayout = styled('div')({
   display: 'flex',
+  flexDirection: 'column',
   height: '100%'
   // overflow: 'auto', removed because react-beautiful-dnd only supports 1 scrolling parent
 })
@@ -62,17 +65,18 @@ const Dashboard = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   return (
     <DashLayout>
-      {isDesktop ? (
-        <ResponsiveDashSidebar isOpen={isOpen} onToggle={toggle}>
-          <DashSidebar viewer={viewer} handleMenuClick={handleMenuClick} />
-        </ResponsiveDashSidebar>
-      ) : (
-        <SwipeableDashSidebar isOpen={isOpen} onToggle={toggle}>
-          <MobileDashSidebar viewer={viewer} handleMenuClick={handleMenuClick} />
-        </SwipeableDashSidebar>
-      )}
+      {isDesktop ? <DashTopBar /> : <MobileDashTopBar />}
+      <DashAlert viewer={viewer} />
       <DashPanel>
-        <DashAlert viewer={viewer} />
+        {isDesktop ? (
+          <ResponsiveDashSidebar isOpen={isOpen} onToggle={toggle}>
+            <DashSidebar viewer={viewer} handleMenuClick={handleMenuClick} />
+          </ResponsiveDashSidebar>
+        ) : (
+          <SwipeableDashSidebar isOpen={isOpen} onToggle={toggle}>
+            <MobileDashSidebar viewer={viewer} handleMenuClick={handleMenuClick} />
+          </SwipeableDashSidebar>
+        )}
         <DashMain>
           <Switch>
             <Route

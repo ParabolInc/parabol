@@ -25,9 +25,9 @@ const DashNavList = (props: Props) => {
   const {onClick, viewer} = props
   if (!viewer) return null
   const {teams} = viewer
-  // if (teams.length === 0) {
-  return <EmptyTeams>It appears you are not a member of any team!</EmptyTeams>
-  // }
+  if (teams.length === 0) {
+    return <EmptyTeams>It appears you are not a member of any team!</EmptyTeams>
+  }
   return (
     <DashNavListStyles>
       {teams.map((team) => (
