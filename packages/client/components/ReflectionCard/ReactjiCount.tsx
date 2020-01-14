@@ -15,27 +15,38 @@ import {BezierCurve} from 'types/constEnums'
 uncompress(data)
 
 const Parent = styled('div')<{status: TransitionStatus}>(({status}) => ({
-  height: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 28,
+  height: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 24,
   maxWidth: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 68,
   opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
-  paddingLeft: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 2,
-  paddingRight: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 2,
+  paddingLeft: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 0,
+  paddingRight: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 8,
   transition: `all 300ms ${BezierCurve.DECELERATE}`,
   userSelect: 'none'
 }))
 
 const Inner = styled(PlainButton)<{isViewerReactji: boolean}>(({isViewerReactji}) => ({
-  background: isViewerReactji ? PALETTE.BACKGROUND_BLUE_LIGHT : '#fff',
-  border: `1px solid ${isViewerReactji ? PALETTE.BORDER_BLUE : PALETTE.BORDER_GRAY}`,
-  borderRadius: 24,
-  fontSize: 16,
-  padding: '0 8px',
+  alignItems: 'center',
+  color: isViewerReactji ? PALETTE.TEXT_BLUE : PALETTE.TEXT_GRAY,
+  display: 'flex',
+  height: 24,
+  lineHeight: '24px',
   width: 'max-content'
 }))
 
-const Emoji = styled('span')({
+const Emoji = styled('div')({
   // IBM Plex has ugly emojis, don't use those
-  fontFamily: 'sans-serif'
+  fontFamily: 'sans-serif',
+  fontSize: 16,
+  height: 24,
+  lineHeight: '24px'
+})
+
+const Count = styled('div')({
+  fontSize: 12,
+  fontWeight: 600,
+  height: 24,
+  lineHeight: '24px',
+  paddingLeft: 2
 })
 
 interface Props {
@@ -59,7 +70,7 @@ const ReactjiCount = (props: Props) => {
     <Parent onTransitionEnd={onTransitionEnd} status={status}>
       <Inner isViewerReactji={isViewerReactji} onClick={onClick}>
         <Emoji>{unicode}</Emoji>
-        {count}
+        <Count>{count}</Count>
       </Inner>
     </Parent>
   )
