@@ -8,7 +8,7 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {TierLabel} from 'types/constEnums'
 import {TierEnum} from 'types/graphql'
-import WaveSVG from '../../../../static/images/wave.svg'
+import WaveWhiteSVG from '../../../../static/images/waveWhite.svg'
 import {APP_BAR_HEIGHT} from '../../styles/appbars'
 import {PALETTE} from '../../styles/paletteV2'
 import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
@@ -18,13 +18,11 @@ import Avatar from '../Avatar/Avatar'
 const StandardHubRoot = styled('div')({
   backgroundRepeat: 'no-repeat',
   backgroundSize: '100%',
-  // the wave is 2560x231, so to figure out the offset from the center, we need to find how much scaling there was
-  backgroundPositionY: `100%, 0`,
-  backgroundImage: `url('${WaveSVG}'), linear-gradient(90deg, ${PALETTE.BACKGROUND_PRIMARY} 0%, ${PALETTE.BACKGROUND_DARK} 100%)`,
-  borderBottom: `1px solid ${PALETTE.BORDER_NAV_DARK}`,
+  backgroundPositionY: `101%, 0`,
+  backgroundImage: `url('${WaveWhiteSVG}'), linear-gradient(90deg, ${PALETTE.BACKGROUND_PRIMARY} 0%, ${PALETTE.BACKGROUND_DARK} 100%)`,
   display: 'flex',
   flexDirection: 'column',
-  minHeight: APP_BAR_HEIGHT + 1, // add border
+  minHeight: APP_BAR_HEIGHT,
   padding: 16,
   width: '100%'
 })
@@ -80,6 +78,7 @@ const Tier = styled(TierTag)({
 })
 
 interface Props {
+  handleMenuClick: () => void
   viewer: StandardHub_viewer | null
 }
 
@@ -91,17 +90,22 @@ const DEFAULT_VIEWER = {
 }
 
 const StandardHub = (props: Props) => {
-  const {viewer} = props
+  const {handleMenuClick, viewer} = props
   const {email, picture, preferredName, tier} = viewer || DEFAULT_VIEWER
   const userAvatar = picture || defaultUserAvatar
   const {history} = useRouter()
   const handleUpgradeClick = () => {
     history.push(`/me/organizations`)
+    handleMenuClick()
+  }
+  const gotoUserSettings = () => {
+    history.push('/me/profile')
+    handleMenuClick()
   }
   return (
     <StandardHubRoot>
       <User>
-        <Avatar hasBadge={false} picture={userAvatar} size={48} />
+        <Avatar onClick={gotoUserSettings} hasBadge={false} picture={userAvatar} size={48} />
         <NameAndEmail>
           <PreferredName>{preferredName}</PreferredName>
           <Email>{email}</Email>
