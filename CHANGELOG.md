@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.18.0 2020-Jan-15
+
+## Added
+* Reactjis during Discuss Phase
+* Editable meeting name
+
 ## 4.17.5 2020-Jan-13
 
 ### Removed

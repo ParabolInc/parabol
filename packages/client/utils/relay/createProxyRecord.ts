@@ -18,11 +18,11 @@ import clientTempId from './clientTempId'
 //   [key: string]: any
 // }
 
-const createProxyRecord = <T = unknown>(
+const createProxyRecord = <T, N extends string>(
   store: RecordSourceSelectorProxy<any> | RecordSourceProxy,
-  type: string,
+  type: N,
   record: T
-): unknown extends T ? RecordProxy<any> : RecordProxy<T> => {
+): RecordProxy<T & {__typename: N}> => {
   // @ts-ignore
   const id = record.id || clientTempId()
   const newRecord = store.create(id, type)

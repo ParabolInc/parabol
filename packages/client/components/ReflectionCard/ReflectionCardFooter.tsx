@@ -6,7 +6,7 @@ const ReflectionCardFooter = styled('div')({
   color: PALETTE.TEXT_GRAY,
   fontSize: 12,
   lineHeight: '16px',
-  padding: `0 ${Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL} ${Gutters.REFLECTION_INNER_GUTTER_VERTICAL}`
+  padding: `${Gutters.REFLECTION_INNER_GUTTER_VERTICAL} ${Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL} 0`
 })
 
 export default ReflectionCardFooter

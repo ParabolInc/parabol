@@ -20,6 +20,7 @@ const subscription = graphql`
   subscription MeetingSubscription($meetingId: ID!) {
     meetingSubscription(meetingId: $meetingId) {
       __typename
+      ...AddReactjiToReflectionMutation_meeting @relay(mask: false)
       ...CreateReflectionMutation_meeting @relay(mask: false)
       ...DragDiscussionTopicMutation_meeting @relay(mask: false)
       ...EditReflectionMutation_meeting @relay(mask: false)
@@ -28,6 +29,7 @@ const subscription = graphql`
       ...NewMeetingCheckInMutation_meeting @relay(mask: false)
       ...PromoteNewMeetingFacilitatorMutation_meeting @relay(mask: false)
       ...RemoveReflectionMutation_meeting @relay(mask: false)
+      ...RenameMeetingMutation_meeting @relay(mask: false)
       ...SetPhaseFocusMutation_meeting @relay(mask: false)
       ...SetStageTimerMutation_meeting @relay(mask: false)
       ...StartDraggingReflectionMutation_meeting @relay(mask: false)

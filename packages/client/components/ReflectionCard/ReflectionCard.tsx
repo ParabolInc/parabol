@@ -20,6 +20,8 @@ import ReflectionCardRoot from './ReflectionCardRoot'
 import ReflectionCardFooter from './ReflectionCardFooter'
 import useEditorState from '../../hooks/useEditorState'
 import isPhaseComplete from '../../utils/meetings/isPhaseComplete'
+import ReactjiSection from './ReactjiSection'
+import AddReactjiToReflectionMutation from 'mutations/AddReactjiToReflectionMutation'
 
 interface Props {
   isClipped?: boolean
@@ -27,6 +29,7 @@ interface Props {
   meeting: ReflectionCard_meeting | null
   stackCount?: number
   showOriginFooter?: boolean
+  showReactji?: boolean
 }
 
 const getReadOnly = (
@@ -44,14 +47,14 @@ const getReadOnly = (
 }
 
 const ReflectionCard = (props: Props) => {
-  const {showOriginFooter, meeting, reflection, isClipped, stackCount} = props
-  const {meetingId, phaseItem} = reflection
+  const {showOriginFooter, meeting, reflection, isClipped, stackCount, showReactji} = props
+  const {meetingId, phaseItem, reactjis} = reflection
   const {question} = phaseItem
   const phaseType = meeting ? meeting.localPhase.phaseType : null
   const phases = meeting ? meeting.phases : null
   const {id: reflectionId, content, retroPhaseItemId, isViewerCreator} = reflection
   const atmosphere = useAtmosphere()
-  const {onCompleted, submitMutation, error, onError} = useMutationProps()
+  const {onCompleted, submitting, submitMutation, error, onError} = useMutationProps()
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const [editorState, setEditorState] = useEditorState(content)
 
@@ -145,8 +148,26 @@ const ReflectionCard = (props: Props) => {
       ? 'text'
       : 'none'
     : undefined
+
+  const onToggleReactji = (emojiId: string) => {
+    if (submitting) return
+    const isRemove = !!reactjis.find((reactji) => {
+      return reactji.isViewerReactji && reactji.id.split(':')[1] === emojiId
+    })
+    submitMutation()
+    AddReactjiToReflectionMutation(
+      atmosphere,
+      {reflectionId, isRemove, reactji: emojiId},
+      {onCompleted, onError}
+    )
+  }
+
+  const clearError = () => {
+    onCompleted()
+  }
   return (
     <ReflectionCardRoot>
+      {showOriginFooter && !isClipped && <ReflectionCardFooter>{question}</ReflectionCardFooter>}
       <ReflectionEditorWrapper
         isClipped={isClipped}
         ariaLabel='Edit this reflection'
@@ -161,11 +182,11 @@ const ReflectionCard = (props: Props) => {
         setEditorState={setEditorState}
         userSelect={userSelect}
       />
-      {error && <StyledError>{error.message}</StyledError>}
+      {error && <StyledError onClick={clearError}>{error.message}</StyledError>}
       {!readOnly && (
         <ReflectionCardDeleteButton meetingId={meetingId} reflectionId={reflectionId} />
       )}
-      {showOriginFooter && !isClipped && <ReflectionCardFooter>{question}</ReflectionCardFooter>}
+      {showReactji && <ReactjiSection reactjis={reactjis} onToggle={onToggleReactji} />}
     </ReflectionCardRoot>
   )
 }
@@ -182,6 +203,11 @@ export default createFragmentContainer(ReflectionCard, {
       content
       phaseItem {
         question
+      }
+      reactjis {
+        ...ReactjiSection_reactjis
+        id
+        isViewerReactji
       }
       sortOrder
     }

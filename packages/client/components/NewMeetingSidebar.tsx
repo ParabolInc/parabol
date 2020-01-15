@@ -1,16 +1,28 @@
-import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import useAtmosphere from 'hooks/useAtmosphere'
+import useMutationProps from 'hooks/useMutationProps'
+import RenameMeetingMutation from 'mutations/RenameMeetingMutation'
+import React, {ReactNode} from 'react'
+import {createFragmentContainer} from 'react-relay'
 import {Link} from 'react-router-dom'
+import Legitity from 'validation/Legitity'
+import {NewMeetingSidebar_meeting} from '__generated__/NewMeetingSidebar_meeting.graphql'
+import {PALETTE} from '../styles/paletteV2'
+import {NavSidebar} from '../types/constEnums'
+import isDemoRoute from '../utils/isDemoRoute'
+import EditableText from './EditableText'
+import Facilitator from './Facilitator'
 import LogoBlock from './LogoBlock/LogoBlock'
 import SidebarToggle from './SidebarToggle'
-import Facilitator from './Facilitator'
-import {PALETTE} from '../styles/paletteV2'
-import {meetingTypeToLabel} from '../utils/meetings/lookups'
-import isDemoRoute from '../utils/isDemoRoute'
-import {NavSidebar} from '../types/constEnums'
-import {NewMeetingSidebar_meeting} from '__generated__/NewMeetingSidebar_meeting.graphql'
+
+const MeetingName = styled('div')({
+  fontSize: 20,
+  fontWeight: 600,
+  lineHeight: '24px'
+})
+
+const EditableMeetingName = MeetingName.withComponent(EditableText)
 
 const SidebarHeader = styled('div')({
   alignItems: 'flex-start',
@@ -37,12 +49,6 @@ const SidebarParent = styled('div')({
   userSelect: 'none'
 })
 
-const MeetingName = styled('div')({
-  fontSize: 20,
-  fontWeight: 600,
-  lineHeight: '24px'
-})
-
 const TeamDashboardLink = styled(Link)({
   color: PALETTE.LINK_BLUE,
   display: 'block',
@@ -66,16 +72,51 @@ interface Props {
 
 const NewMeetingSidebar = (props: Props) => {
   const {children, handleMenuClick, toggleSidebar, meeting} = props
-  const {meetingType, team} = meeting
+  const {error, submitMutation, submitting, onCompleted, onError} = useMutationProps()
+  const {id: meetingId, team, name: meetingName, facilitatorUserId} = meeting
   const {id: teamId, name: teamName} = team
-  const meetingLabel = meetingTypeToLabel[meetingType]
   const teamLink = isDemoRoute() ? '/create-account' : `/team/${teamId}`
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
+  const isFacilitator = viewerId === facilitatorUserId
+  const handleSubmit = (name: string) => {
+    if (submitting || error) return
+    submitMutation()
+    RenameMeetingMutation(atmosphere, {meetingId, name}, {onCompleted, onError})
+  }
+  const validate = (rawMeetingName: string) => {
+    const res = new Legitity(rawMeetingName)
+      .trim()
+      .required('Meetings need names')
+      .min(2, 'Meetings need good names')
+      .max(50, 'Meetings need short names')
+
+    if (res.error) {
+      onError(new Error(res.error))
+    } else if (error) {
+      onCompleted()
+    }
+    return res
+  }
+
   return (
     <SidebarParent>
       <SidebarHeader>
         <StyledToggle onClick={toggleSidebar} />
         <div>
-          <MeetingName>{`${meetingLabel} Meeting`}</MeetingName>
+          {isFacilitator ? (
+            <EditableMeetingName
+              error={error?.message}
+              handleSubmit={handleSubmit}
+              initialValue={meetingName}
+              isWrap
+              maxLength={50}
+              validate={validate}
+              placeholder={'Best Meeting Ever!'}
+            />
+          ) : (
+            <MeetingName>{meetingName}</MeetingName>
+          )}
           <TeamDashboardLink to={teamLink}>
             {'Team: '}
             {teamName}
@@ -94,7 +135,8 @@ export default createFragmentContainer(NewMeetingSidebar, {
     fragment NewMeetingSidebar_meeting on NewMeeting {
       ...Facilitator_meeting
       id
-      meetingType
+      facilitatorUserId
+      name
       team {
         id
         name

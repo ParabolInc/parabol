@@ -2695,6 +2695,11 @@ export interface IMutation {
   addAtlassianAuth: IAddAtlassianAuthPayload
 
   /**
+   * Add or remove a reactji to a reflection
+   */
+  addReactjiToReflection: AddReactjiToReflectionPayload
+
+  /**
    * Add a new template full of prompts
    */
   addReflectTemplate: IAddReflectTemplatePayload | null
@@ -2925,6 +2930,11 @@ export interface IMutation {
   removeReflectTemplatePrompt: IRemoveReflectTemplatePromptPayload | null
 
   /**
+   * Rename a meeting
+   */
+  renameMeeting: RenameMeetingPayload
+
+  /**
    * Rename a reflect template prompt
    */
   renameReflectTemplate: IRenameReflectTemplatePayload | null
@@ -3085,6 +3095,23 @@ export interface IAddAgendaItemOnMutationArguments {
 export interface IAddAtlassianAuthOnMutationArguments {
   code: string
   teamId: string
+}
+
+export interface IAddReactjiToReflectionOnMutationArguments {
+  /**
+   * The reflection getting the reaction
+   */
+  reflectionId: string
+
+  /**
+   * the id of the reactji to add
+   */
+  reactji: string
+
+  /**
+   * If true, remove the reaction, else add it
+   */
+  isRemove?: boolean | null
 }
 
 export interface IAddReflectTemplateOnMutationArguments {
@@ -3511,6 +3538,18 @@ export interface IRemoveReflectTemplatePromptOnMutationArguments {
   promptId: string
 }
 
+export interface IRenameMeetingOnMutationArguments {
+  /**
+   * the new meeting name
+   */
+  name: string
+
+  /**
+   * the meeting with the new name
+   */
+  meetingId: string
+}
+
 export interface IRenameReflectTemplateOnMutationArguments {
   templateId: string
   name: string
@@ -3851,299 +3890,126 @@ export interface IAddAtlassianAuthPayload {
   user: IUser | null
 }
 
-export interface IAddReflectTemplatePayload {
-  __typename: 'AddReflectTemplatePayload'
-  error: IStandardMutationError | null
-  reflectTemplate: IReflectTemplate | null
+/**
+ * Return object for AddReactjiToReflectionPayload
+ */
+export type AddReactjiToReflectionPayload = IErrorPayload | IAddReactjiToReflectionSuccess
+
+export interface IErrorPayload {
+  __typename: 'ErrorPayload'
+  error: IStandardMutationError
+}
+
+export interface IAddReactjiToReflectionSuccess {
+  __typename: 'AddReactjiToReflectionSuccess'
+
+  /**
+   * the reflection with the updated list of reactjis
+   */
+  reflection: IRetroReflection
 }
 
 /**
- * The team-specific templates for the reflection prompts
+ * A reflection created during the reflect phase of a retrospective
  */
-export interface IReflectTemplate {
-  __typename: 'ReflectTemplate'
-  id: string
-  createdAt: any
-
-  /**
-   * True if template can be used, else false
-   */
-  isActive: boolean
-
-  /**
-   * The time of the meeting the template was last used
-   */
-  lastUsedAt: any | null
-
-  /**
-   * The name of the template
-   */
-  name: string
-
-  /**
-   * The prompts that are part of this template
-   */
-  prompts: Array<IRetroPhaseItem>
-
-  /**
-   * *Foreign key. The team this template belongs to
-   */
-  teamId: string
-  updatedAt: any
-}
-
-/**
- * A team-specific retro phase. Usually 3 or 4 exist per team, eg Good/Bad/Change, 4Ls, etc.
- */
-export interface IRetroPhaseItem {
-  __typename: 'RetroPhaseItem'
+export interface IRetroReflection {
+  __typename: 'RetroReflection'
 
   /**
    * shortid
    */
   id: string
-  createdAt: any
 
   /**
-   * The type of phase item
+   * The ID of the group that the autogrouper assigned the reflection. Error rate = Sum(autoId != Id) / autoId.count()
    */
-  phaseItemType: CustomPhaseItemTypeEnum | null
+  autoReflectionGroupId: string | null
 
   /**
-   * true if the phase item is currently used by the team, else false
+   * The timestamp the meeting was created
    */
-  isActive: boolean | null
+  createdAt: any | null
 
   /**
-   * foreign key. use the team field
+   * The userId that created the reflection (or unique Id if not a team member)
    */
-  teamId: string
+  creatorId: string | null
 
   /**
-   * The team that owns this customPhaseItem
+   * an array of all the socketIds that are currently editing the reflection
    */
-  team: ITeam | null
-  updatedAt: any
+  editorIds: Array<string>
 
   /**
-   * the order of the items in the template
+   * True if the reflection was not removed, else false
+   */
+  isActive: boolean
+
+  /**
+   * true if the viewer (userId) is the creator of the retro reflection, else false
+   */
+  isViewerCreator: boolean
+
+  /**
+   * The stringified draft-js content
+   */
+  content: string
+
+  /**
+   * The entities (i.e. nouns) parsed from the content and their respective salience
+   */
+  entities: Array<IGoogleAnalyzedEntity>
+
+  /**
+   * The foreign key to link a reflection to its meeting
+   */
+  meetingId: string
+
+  /**
+   * The retrospective meeting this reflection was created in
+   */
+  meeting: IRetrospectiveMeeting
+  phaseItem: IRetroPhaseItem
+
+  /**
+   * The plaintext version of content
+   */
+  plaintextContent: string
+
+  /**
+   * All the reactjis for the given reflection
+   */
+  reactjis: Array<IReactji>
+
+  /**
+   * The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group.
+   */
+  retroPhaseItemId: string
+
+  /**
+   * The foreign key to link a reflection to its group
+   */
+  reflectionGroupId: string
+
+  /**
+   * The group the reflection belongs to, if any
+   */
+  retroReflectionGroup: IRetroReflectionGroup | null
+
+  /**
+   * The sort order of the reflection in the group (increments starting from 0)
    */
   sortOrder: number
 
   /**
-   * FK for template
+   * The team that is running the meeting that contains this reflection
    */
-  templateId: string
-
-  /**
-   * The template that this prompt belongs to
-   */
-  template: IReflectTemplate
-
-  /**
-   * The title of the phase of the retrospective. Often a short version of the question
-   */
-  title: string
-
-  /**
-   * The question to answer during the phase of the retrospective (eg What went well?)
-   */
-  question: string
-
-  /**
-   * The description to the question for further context. A long version of the question.
-   */
-  description: string
-}
-
-export interface IAddReflectTemplatePromptPayload {
-  __typename: 'AddReflectTemplatePromptPayload'
-  error: IStandardMutationError | null
-  prompt: IRetroPhaseItem | null
-}
-
-export interface IAddSlackAuthPayload {
-  __typename: 'AddSlackAuthPayload'
-  error: IStandardMutationError | null
-
-  /**
-   * The newly created auth
-   */
-  slackAuth: ISlackAuth | null
-
-  /**
-   * The user with updated slackAuth
-   */
-  user: IUser | null
-}
-
-/**
- * A flag to give an individual user super powers
- */
-export const enum UserFlagEnum {
-  video = 'video',
-  jira = 'jira'
-}
-
-export interface IAddFeatureFlagPayload {
-  __typename: 'AddFeatureFlagPayload'
-  error: IStandardMutationError | null
-
-  /**
-   * the user that was given the super power. Use users instead in GraphiQL since it may affect multiple users
-   */
-  user: IUser | null
-
-  /**
-   * the users given the super power
-   */
-  users: Array<IUser | null> | null
-
-  /**
-   * A human-readable result
-   */
-  result: string | null
-}
-
-export interface IAddGitHubAuthPayload {
-  __typename: 'AddGitHubAuthPayload'
-  error: IStandardMutationError | null
-
-  /**
-   * The newly created auth
-   */
-  githubAuth: IGitHubAuth | null
-
-  /**
-   * The user with updated githubAuth
-   */
-  user: IUser | null
-}
-
-export interface INewTeamInput {
-  /**
-   * The name of the team
-   */
-  name?: string | null
-
-  /**
-   * The unique orginization ID that pays for the team
-   */
-  orgId?: string | null
-}
-
-export interface IAddOrgPayload {
-  __typename: 'AddOrgPayload'
-  organization: IOrganization | null
-  error: IStandardMutationError | null
-
-  /**
-   * The new auth token sent to the mutator
-   */
-  authToken: string | null
-  team: ITeam | null
-
-  /**
-   * The teamMember that just created the new team, if this is a creation
-   */
-  teamMember: ITeamMember | null
-
-  /**
-   * The ID of the suggestion to create a new team
-   */
-  removedSuggestedActionId: string | null
-}
-
-export interface IAddTeamPayload {
-  __typename: 'AddTeamPayload'
-  error: IStandardMutationError | null
-
-  /**
-   * The new auth token sent to the mutator
-   */
-  authToken: string | null
-  team: ITeam | null
-
-  /**
-   * The teamMember that just created the new team, if this is a creation
-   */
-  teamMember: ITeamMember | null
-
-  /**
-   * The ID of the suggestion to create a new team
-   */
-  removedSuggestedActionId: string | null
-}
-
-export interface IArchiveTeamPayload {
-  __typename: 'ArchiveTeamPayload'
-  error: IStandardMutationError | null
-  team: ITeam | null
-
-  /**
-   * A notification explaining that the team was archived and removed from view
-   */
-  notification: INotifyTeamArchived | null
-  removedTeamNotifications: Array<TeamNotification | null> | null
-
-  /**
-   * all the suggested actions that never happened
-   */
-  removedSuggestedActionIds: Array<string | null> | null
-}
-
-/**
- * A notification alerting the user that a team they were on is now archived
- */
-export interface INotifyTeamArchived {
-  __typename: 'NotifyTeamArchived'
   team: ITeam
 
   /**
-   * A shortid for the notification
+   * The timestamp the meeting was updated. Used to determine how long it took to write a reflection
    */
-  id: string
-
-  /**
-   * true if the notification has been archived, else false (or null)
-   */
-  isArchived: boolean | null
-
-  /**
-   * *The unique organization ID for this notification. Can be blank for targeted notifications
-   */
-  orgId: string | null
-
-  /**
-   * The datetime to activate the notification & send it to the client
-   */
-  startAt: any
-  type: NotificationEnum
-
-  /**
-   * *The userId that should see this notification
-   */
-  userIds: Array<string>
-}
-
-export type TeamNotification =
-  | INotifyTaskInvolves
-  | INotificationTeamInvitation
-  | INotificationMeetingStageTimeLimitEnd
-
-export interface ITeamNotification {
-  __typename: 'TeamNotification'
-  id: string | null
-  type: NotificationEnum | null
-}
-
-export interface IAutoGroupReflectionsPayload {
-  __typename: 'AutoGroupReflectionsPayload'
-  error: IStandardMutationError | null
-  meeting: IRetrospectiveMeeting | null
-  reflections: Array<IRetroReflection | null> | null
-  reflectionGroups: Array<IRetroReflectionGroup | null> | null
-  removedReflectionGroups: Array<IRetroReflectionGroup | null> | null
+  updatedAt: any | null
 }
 
 /**
@@ -4414,101 +4280,102 @@ export interface IRetroReflectionGroup {
 }
 
 /**
- * A reflection created during the reflect phase of a retrospective
+ * A team-specific retro phase. Usually 3 or 4 exist per team, eg Good/Bad/Change, 4Ls, etc.
  */
-export interface IRetroReflection {
-  __typename: 'RetroReflection'
+export interface IRetroPhaseItem {
+  __typename: 'RetroPhaseItem'
 
   /**
    * shortid
    */
   id: string
+  createdAt: any
 
   /**
-   * The ID of the group that the autogrouper assigned the reflection. Error rate = Sum(autoId != Id) / autoId.count()
+   * The type of phase item
    */
-  autoReflectionGroupId: string | null
+  phaseItemType: CustomPhaseItemTypeEnum | null
 
   /**
-   * The timestamp the meeting was created
+   * true if the phase item is currently used by the team, else false
    */
-  createdAt: any | null
+  isActive: boolean | null
 
   /**
-   * The userId that created the reflection (or unique Id if not a team member)
+   * foreign key. use the team field
    */
-  creatorId: string | null
+  teamId: string
 
   /**
-   * an array of all the socketIds that are currently editing the reflection
+   * The team that owns this customPhaseItem
    */
-  editorIds: Array<string>
+  team: ITeam | null
+  updatedAt: any
 
   /**
-   * True if the reflection was not removed, else false
-   */
-  isActive: boolean
-
-  /**
-   * true if the viewer (userId) is the creator of the retro reflection, else false
-   */
-  isViewerCreator: boolean
-
-  /**
-   * The stringified draft-js content
-   */
-  content: string
-
-  /**
-   * The entities (i.e. nouns) parsed from the content and their respective salience
-   */
-  entities: Array<IGoogleAnalyzedEntity>
-
-  /**
-   * The foreign key to link a reflection to its meeting
-   */
-  meetingId: string
-
-  /**
-   * The retrospective meeting this reflection was created in
-   */
-  meeting: IRetrospectiveMeeting
-  phaseItem: IRetroPhaseItem
-
-  /**
-   * The plaintext version of content
-   */
-  plaintextContent: string
-
-  /**
-   * The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group.
-   */
-  retroPhaseItemId: string
-
-  /**
-   * The foreign key to link a reflection to its group
-   */
-  reflectionGroupId: string
-
-  /**
-   * The group the reflection belongs to, if any
-   */
-  retroReflectionGroup: IRetroReflectionGroup | null
-
-  /**
-   * The sort order of the reflection in the group (increments starting from 0)
+   * the order of the items in the template
    */
   sortOrder: number
 
   /**
-   * The team that is running the meeting that contains this reflection
+   * FK for template
    */
-  team: ITeam
+  templateId: string
 
   /**
-   * The timestamp the meeting was updated. Used to determine how long it took to write a reflection
+   * The template that this prompt belongs to
    */
-  updatedAt: any | null
+  template: IReflectTemplate
+
+  /**
+   * The title of the phase of the retrospective. Often a short version of the question
+   */
+  title: string
+
+  /**
+   * The question to answer during the phase of the retrospective (eg What went well?)
+   */
+  question: string
+
+  /**
+   * The description to the question for further context. A long version of the question.
+   */
+  description: string
+}
+
+/**
+ * The team-specific templates for the reflection prompts
+ */
+export interface IReflectTemplate {
+  __typename: 'ReflectTemplate'
+  id: string
+  createdAt: any
+
+  /**
+   * True if template can be used, else false
+   */
+  isActive: boolean
+
+  /**
+   * The time of the meeting the template was last used
+   */
+  lastUsedAt: any | null
+
+  /**
+   * The name of the template
+   */
+  name: string
+
+  /**
+   * The prompts that are part of this template
+   */
+  prompts: Array<IRetroPhaseItem>
+
+  /**
+   * *Foreign key. The team this template belongs to
+   */
+  teamId: string
+  updatedAt: any
 }
 
 /**
@@ -4562,6 +4429,224 @@ export interface IRetrospectiveMeetingSettings {
    * The list of templates used to start a retrospective
    */
   reflectTemplates: Array<IReflectTemplate>
+}
+
+/**
+ * An aggregate of reactji metadata
+ */
+export interface IReactji {
+  __typename: 'Reactji'
+
+  /**
+   * composite of entity:reactjiId
+   */
+  id: string
+
+  /**
+   * The number of users who have added this reactji
+   */
+  count: number
+
+  /**
+   * true if the viewer is included in the count, else false
+   */
+  isViewerReactji: boolean
+}
+
+export interface IAddReflectTemplatePayload {
+  __typename: 'AddReflectTemplatePayload'
+  error: IStandardMutationError | null
+  reflectTemplate: IReflectTemplate | null
+}
+
+export interface IAddReflectTemplatePromptPayload {
+  __typename: 'AddReflectTemplatePromptPayload'
+  error: IStandardMutationError | null
+  prompt: IRetroPhaseItem | null
+}
+
+export interface IAddSlackAuthPayload {
+  __typename: 'AddSlackAuthPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The newly created auth
+   */
+  slackAuth: ISlackAuth | null
+
+  /**
+   * The user with updated slackAuth
+   */
+  user: IUser | null
+}
+
+/**
+ * A flag to give an individual user super powers
+ */
+export const enum UserFlagEnum {
+  video = 'video',
+  jira = 'jira'
+}
+
+export interface IAddFeatureFlagPayload {
+  __typename: 'AddFeatureFlagPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * the user that was given the super power. Use users instead in GraphiQL since it may affect multiple users
+   */
+  user: IUser | null
+
+  /**
+   * the users given the super power
+   */
+  users: Array<IUser | null> | null
+
+  /**
+   * A human-readable result
+   */
+  result: string | null
+}
+
+export interface IAddGitHubAuthPayload {
+  __typename: 'AddGitHubAuthPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The newly created auth
+   */
+  githubAuth: IGitHubAuth | null
+
+  /**
+   * The user with updated githubAuth
+   */
+  user: IUser | null
+}
+
+export interface INewTeamInput {
+  /**
+   * The name of the team
+   */
+  name?: string | null
+
+  /**
+   * The unique orginization ID that pays for the team
+   */
+  orgId?: string | null
+}
+
+export interface IAddOrgPayload {
+  __typename: 'AddOrgPayload'
+  organization: IOrganization | null
+  error: IStandardMutationError | null
+
+  /**
+   * The new auth token sent to the mutator
+   */
+  authToken: string | null
+  team: ITeam | null
+
+  /**
+   * The teamMember that just created the new team, if this is a creation
+   */
+  teamMember: ITeamMember | null
+
+  /**
+   * The ID of the suggestion to create a new team
+   */
+  removedSuggestedActionId: string | null
+}
+
+export interface IAddTeamPayload {
+  __typename: 'AddTeamPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The new auth token sent to the mutator
+   */
+  authToken: string | null
+  team: ITeam | null
+
+  /**
+   * The teamMember that just created the new team, if this is a creation
+   */
+  teamMember: ITeamMember | null
+
+  /**
+   * The ID of the suggestion to create a new team
+   */
+  removedSuggestedActionId: string | null
+}
+
+export interface IArchiveTeamPayload {
+  __typename: 'ArchiveTeamPayload'
+  error: IStandardMutationError | null
+  team: ITeam | null
+
+  /**
+   * A notification explaining that the team was archived and removed from view
+   */
+  notification: INotifyTeamArchived | null
+  removedTeamNotifications: Array<TeamNotification | null> | null
+
+  /**
+   * all the suggested actions that never happened
+   */
+  removedSuggestedActionIds: Array<string | null> | null
+}
+
+/**
+ * A notification alerting the user that a team they were on is now archived
+ */
+export interface INotifyTeamArchived {
+  __typename: 'NotifyTeamArchived'
+  team: ITeam
+
+  /**
+   * A shortid for the notification
+   */
+  id: string
+
+  /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
+
+  /**
+   * *The unique organization ID for this notification. Can be blank for targeted notifications
+   */
+  orgId: string | null
+
+  /**
+   * The datetime to activate the notification & send it to the client
+   */
+  startAt: any
+  type: NotificationEnum
+
+  /**
+   * *The userId that should see this notification
+   */
+  userIds: Array<string>
+}
+
+export type TeamNotification =
+  | INotifyTaskInvolves
+  | INotificationTeamInvitation
+  | INotificationMeetingStageTimeLimitEnd
+
+export interface ITeamNotification {
+  __typename: 'TeamNotification'
+  id: string | null
+  type: NotificationEnum | null
+}
+
+export interface IAutoGroupReflectionsPayload {
+  __typename: 'AutoGroupReflectionsPayload'
+  error: IStandardMutationError | null
+  meeting: IRetrospectiveMeeting | null
+  reflections: Array<IRetroReflection | null> | null
+  reflectionGroups: Array<IRetroReflectionGroup | null> | null
+  removedReflectionGroups: Array<IRetroReflectionGroup | null> | null
 }
 
 export interface IChangeTaskTeamPayload {
@@ -4689,11 +4774,6 @@ export interface ICreateJiraIssuePayload {
  * Return object for CreateMassInvitationPayload
  */
 export type CreateMassInvitationPayload = IErrorPayload | ICreateMassInvitationSuccess
-
-export interface IErrorPayload {
-  __typename: 'ErrorPayload'
-  error: IStandardMutationError
-}
 
 export interface ICreateMassInvitationSuccess {
   __typename: 'CreateMassInvitationSuccess'
@@ -5563,6 +5643,20 @@ export interface IRemoveReflectTemplatePromptPayload {
   prompt: IReflectTemplate | null
 }
 
+/**
+ * Return object for RenameMeetingPayload
+ */
+export type RenameMeetingPayload = IErrorPayload | IRenameMeetingSuccess
+
+export interface IRenameMeetingSuccess {
+  __typename: 'RenameMeetingSuccess'
+
+  /**
+   * the renamed meeting
+   */
+  meeting: NewMeeting
+}
+
 export interface IRenameReflectTemplatePayload {
   __typename: 'RenameReflectTemplatePayload'
   error: IStandardMutationError | null
@@ -6148,6 +6242,7 @@ export interface IMeetingSubscriptionOnSubscriptionArguments {
 }
 
 export type MeetingSubscriptionPayload =
+  | IAddReactjiToReflectionSuccess
   | IAutoGroupReflectionsPayload
   | ICreateReflectionPayload
   | IDragDiscussionTopicPayload
@@ -6157,6 +6252,7 @@ export type MeetingSubscriptionPayload =
   | INewMeetingCheckInPayload
   | IPromoteNewMeetingFacilitatorPayload
   | IRemoveReflectionPayload
+  | IRenameMeetingSuccess
   | ISetPhaseFocusPayload
   | ISetStageTimerPayload
   | IStartDraggingReflectionPayload

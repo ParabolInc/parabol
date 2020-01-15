@@ -19,6 +19,8 @@ const pluginMacros = require('babel-plugin-macros')
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const pluginInlineImport = require('babel-plugin-inline-import').default
+const pluginTransformReactRemovePropTypes = require('babel-plugin-transform-react-remove-prop-types')
+  .default
 const {InjectManifest} = require('wrkbx')
 const CopyPlugin = require('copy-webpack-plugin')
 const TagsPlugin = require('html-webpack-tags-plugin')
@@ -77,7 +79,8 @@ const babelConfig = {
       pluginClassProps,
       pluginDynamicImport,
       pluginOptionalChaining,
-      pluginNullishCoalescing
+      pluginNullishCoalescing,
+      pluginTransformReactRemovePropTypes
     ],
     presets: [
       [

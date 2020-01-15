@@ -27,21 +27,25 @@ const animations = (portalStatus) => {
 
 export interface MenuContentsProps {
   minWidth?: number
+  menuContentStyles?: any
   portalStatus: PortalStatus
 }
 
-const MenuContents = styled('div')<MenuContentsProps>(({minWidth, portalStatus}) => ({
-  borderRadius: Radius.MENU,
-  outline: 0,
-  overflowY: portalStatus >= PortalStatus.Entered ? 'auto' : 'hidden',
-  paddingBottom: 8,
-  paddingTop: 8,
-  textAlign: 'left',
-  width: '100%',
-  opacity: 0,
-  transition: `opacity 100ms ${DECELERATE} `,
-  minWidth,
-  ...animations(portalStatus)
-}))
+const MenuContents = styled('div')<MenuContentsProps>(
+  ({minWidth, menuContentStyles = {}, portalStatus}) => ({
+    borderRadius: Radius.MENU,
+    outline: 0,
+    overflowY: portalStatus >= PortalStatus.Entered ? 'auto' : 'hidden',
+    paddingBottom: 8,
+    paddingTop: 8,
+    textAlign: 'left',
+    width: '100%',
+    opacity: 0,
+    transition: `opacity 100ms ${DECELERATE} `,
+    minWidth,
+    ...animations(portalStatus),
+    ...menuContentStyles
+  })
+)
 
 export default MenuContents
