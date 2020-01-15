@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {forwardRef} from 'react'
 import styled from '@emotion/styled'
 import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
@@ -27,17 +27,18 @@ const Badge = styled('div')({
 interface Props {
   icon: string
   onClick: () => void
+  onMouseEnter: () => void
   hasBadge: boolean
 }
 
-const TopBarIcon = (props: Props) => {
-  const {icon, hasBadge, onClick} = props
+const TopBarIcon = forwardRef((props: Props, ref: any) => {
+  const {icon, hasBadge, onClick, onMouseEnter} = props
   return (
-    <Button onClick={onClick}>
+    <Button onClick={onClick} ref={ref} onMouseEnter={onMouseEnter}>
       <ButtonIcon>{icon}</ButtonIcon>
       {hasBadge && <Badge />}
     </Button>
   )
-}
+})
 
 export default TopBarIcon

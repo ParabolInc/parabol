@@ -65,8 +65,11 @@ const Dashboard = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   return (
     <DashLayout>
-      {isDesktop ? <DashTopBar viewer={viewer} /> : <MobileDashTopBar toggle={toggle} />}
-      <DashAlert viewer={viewer} />
+      {isDesktop ? (
+        <DashTopBar viewer={viewer} />
+      ) : (
+        <MobileDashTopBar viewer={viewer} toggle={toggle} />
+      )}
       <DashPanel>
         {isDesktop ? (
           <ResponsiveDashSidebar isOpen={isOpen} onToggle={toggle}>

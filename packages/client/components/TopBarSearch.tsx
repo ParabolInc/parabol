@@ -12,7 +12,8 @@ const Wrapper = styled('div')({
   backgroundColor: 'hsla(0,0%,100%,.125)',
   display: 'flex',
   margin: 12,
-  width: 480
+  width: 480,
+  visibility: 'hidden'
 })
 
 const SearchInput = styled('input')({

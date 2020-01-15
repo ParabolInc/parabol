@@ -1,16 +1,15 @@
-import React from 'react'
-import {PALETTE} from 'styles/paletteV2'
 import styled from '@emotion/styled'
-import PlainButton from './PlainButton/PlainButton'
-import Icon from './Icon'
-import {ICON_SIZE} from 'styles/typographyV2'
-import parabolLogo from '../styles/theme/images/brand/logo.svg'
-import {NavSidebar} from 'types/constEnums'
-import TopBarSearch from './TopBarSearch'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import Avatar from './Avatar/Avatar'
-import defaultUserAvatar from '../styles/theme/images/avatar-user.svg'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {PALETTE} from 'styles/paletteV2'
+import {ICON_SIZE} from 'styles/typographyV2'
+import {NavSidebar} from 'types/constEnums'
+import Icon from './Icon'
+import PlainButton from './PlainButton/PlainButton'
+import TopBarIcon from './TopBarIcon'
+import TopBarMeetings from './TopBarMeetings'
+import TopBarNotifications from './TopBarNotifications'
 
 interface Props {
   toggle: () => void
@@ -46,10 +45,6 @@ const TopBarIcons = styled('div')({
   paddingRight: 16
 })
 
-const TopBarIcon = styled(Icon)({
-  padding: '16px 8px'
-})
-
 const Title = styled('div')({
   paddingLeft: 16,
   fontSize: 24
@@ -57,6 +52,8 @@ const Title = styled('div')({
 
 const MobileDashTopBar = (props: Props) => {
   const {toggle, viewer} = props
+  const hasNotification = viewer?.notifications?.edges?.length > 0
+  const teams = viewer?.teams ?? []
   return (
     <Wrapper>
       <LeftNavHeader>
@@ -69,8 +66,8 @@ const MobileDashTopBar = (props: Props) => {
         {/* Disable search in mobile for now */}
         {false && <TopBarIcon>{'search'}</TopBarIcon>}
         {false && <TopBarIcon>{'help_outline'}</TopBarIcon>}
-        <TopBarIcon>{'notifications'}</TopBarIcon>
-        <TopBarIcon>{'forum'}</TopBarIcon>
+        <TopBarNotifications hasNotification={hasNotification} />
+        <TopBarMeetings teams={teams} />
       </TopBarIcons>
     </Wrapper>
   )
@@ -79,7 +76,16 @@ const MobileDashTopBar = (props: Props) => {
 export default createFragmentContainer(MobileDashTopBar, {
   viewer: graphql`
     fragment MobileDashTopBar_viewer on User {
-      picture
+      notifications(first: 100) @connection(key: "DashboardWrapper_notifications") {
+        edges {
+          node {
+            id
+          }
+        }
+      }
+      teams {
+        ...TopBarMeetings_teams
+      }
     }
   `
 })
