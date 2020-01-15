@@ -253,7 +253,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       } else {
         if (!existingReactji) {
-          reactjis.push({id: reactjiId, count: 1, isViewerReactji: true})
+          reactjis.push({id: reactjiId, count: 1, isViewerReactji: userId === demoViewerId})
         } else {
           existingReactji.count++
           existingReactji.isViewerReactji =
