@@ -17,6 +17,7 @@ export const up = async function(r: R) {
                 .table('Organization')
                 .getAll(r.args(orgIds))('tier')
                 .distinct()
+                .coerceTo('array')
             )
             .do((tiers) => {
               return r.branch(

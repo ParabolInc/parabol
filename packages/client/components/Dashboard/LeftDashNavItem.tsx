@@ -39,7 +39,7 @@ const Label = styled('div')({
 })
 
 interface Props {
-  onClick: () => void
+  onClick?: () => void
   label: string
   href: string
   icon: string
@@ -58,7 +58,7 @@ const LeftDashNavItem = (props: Props) => {
   const isActive = getIsActive(href)
   const handleClick = () => {
     history.push(href)
-    onClick()
+    onClick?.()
   }
   return (
     <NavItem onClick={handleClick} isActive={isActive}>

@@ -24,6 +24,7 @@ const setUserTierForOrgId = async (orgId: string) => {
                   .table('Organization')
                   .getAll(r.args(orgIds))('tier')
                   .distinct()
+                  .coerceTo('array')
               )
               .do((tiers) => {
                 return r.branch(

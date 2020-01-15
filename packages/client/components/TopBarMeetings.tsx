@@ -5,6 +5,7 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import lazyPreload from 'utils/lazyPreload'
 import TopBarIcon from './TopBarIcon'
+import {TopBarMeetings_teams} from '__generated__/TopBarMeetings_teams.graphql'
 
 const SelectMeetingDropdown = lazyPreload(() =>
   import(

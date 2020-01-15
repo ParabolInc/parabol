@@ -26,9 +26,9 @@ const Badge = styled('div')({
 
 interface Props {
   icon: string
-  onClick: () => void
-  onMouseEnter: () => void
-  hasBadge: boolean
+  onClick?: () => void
+  onMouseEnter?: () => void
+  hasBadge?: boolean
 }
 
 const TopBarIcon = forwardRef((props: Props, ref: any) => {

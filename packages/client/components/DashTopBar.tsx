@@ -16,6 +16,7 @@ import TopBarNotifications from './TopBarNotifications'
 import TopBarSearch from './TopBarSearch'
 
 interface Props {
+  toggle: () => void
   viewer: DashTopBar_viewer
 }
 
@@ -54,14 +55,14 @@ const TopBarIcons = styled('div')({
 })
 
 const DashTopBar = (props: Props) => {
-  const {viewer} = props
-  const hasNotification = viewer?.notifications?.edges?.length > 0
+  const {toggle, viewer} = props
+  const hasNotification = (viewer?.notifications?.edges?.length ?? 0) > 0
   const teams = viewer?.teams ?? []
 
   return (
     <Wrapper>
       <LeftNavHeader>
-        <LeftNavToggle>
+        <LeftNavToggle onClick={toggle}>
           <Icon>{'menu'}</Icon>
         </LeftNavToggle>
         <Img crossOrigin='' src={parabolLogo} alt='' />

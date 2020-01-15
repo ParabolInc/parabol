@@ -4,7 +4,7 @@ import {PALETTE} from 'styles/paletteV2'
 import Icon from './Icon'
 
 interface Props {
-  viewer: any
+  viewer?: any
 }
 
 const Wrapper = styled('div')({

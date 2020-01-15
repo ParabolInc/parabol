@@ -18,7 +18,7 @@ const EmptyTeams = styled('div')({
 
 interface Props {
   viewer: DashNavList_viewer | null
-  onClick: () => void
+  onClick?: () => void
 }
 
 const DashNavList = (props: Props) => {

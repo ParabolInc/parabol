@@ -1,19 +1,17 @@
-import {Dashboard_viewer} from '../__generated__/Dashboard_viewer.graphql'
-import React, {lazy} from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {Route, Switch} from 'react-router'
-import DashSidebar from './Dashboard/DashSidebar'
-import DashAlert from './DashAlert'
-import ResponsiveDashSidebar from './ResponsiveDashSidebar'
-import useSidebar from '../hooks/useSidebar'
-import {Breakpoint} from 'types/constEnums'
-import MobileDashSidebar from './Dashboard/MobileDashSidebar'
-import SwipeableDashSidebar from './SwipeableDashSidebar'
 import useBreakpoint from 'hooks/useBreakpoint'
+import React, {lazy} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {Route, Switch} from 'react-router'
+import {Breakpoint} from 'types/constEnums'
+import useSidebar from '../hooks/useSidebar'
+import {Dashboard_viewer} from '../__generated__/Dashboard_viewer.graphql'
+import DashSidebar from './Dashboard/DashSidebar'
+import MobileDashSidebar from './Dashboard/MobileDashSidebar'
 import DashTopBar from './DashTopBar'
 import MobileDashTopBar from './MobileDashTopBar'
+import SwipeableDashSidebar from './SwipeableDashSidebar'
 
 const UserDashboard = lazy(() =>
   import(
@@ -42,7 +40,7 @@ const DashLayout = styled('div')({
 
 const DashPanel = styled('div')({
   display: 'flex',
-  flexDirection: 'column',
+  // flexDirection: 'column',
   flex: 1,
   height: '100%',
   // any overflows should not include the width of the left nav
@@ -66,15 +64,13 @@ const Dashboard = (props: Props) => {
   return (
     <DashLayout>
       {isDesktop ? (
-        <DashTopBar viewer={viewer} />
+        <DashTopBar viewer={viewer} toggle={toggle} />
       ) : (
         <MobileDashTopBar viewer={viewer} toggle={toggle} />
       )}
       <DashPanel>
         {isDesktop ? (
-          <ResponsiveDashSidebar isOpen={isOpen} onToggle={toggle}>
-            <DashSidebar viewer={viewer} handleMenuClick={handleMenuClick} />
-          </ResponsiveDashSidebar>
+          <DashSidebar viewer={viewer} isOpen={isOpen} />
         ) : (
           <SwipeableDashSidebar isOpen={isOpen} onToggle={toggle}>
             <MobileDashSidebar viewer={viewer} handleMenuClick={handleMenuClick} />
