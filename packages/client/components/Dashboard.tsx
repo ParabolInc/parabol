@@ -65,7 +65,7 @@ const Dashboard = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   return (
     <DashLayout>
-      {isDesktop ? <DashTopBar /> : <MobileDashTopBar />}
+      {isDesktop ? <DashTopBar viewer={viewer} /> : <MobileDashTopBar toggle={toggle} />}
       <DashAlert viewer={viewer} />
       <DashPanel>
         {isDesktop ? (
@@ -98,7 +98,9 @@ export default createFragmentContainer(Dashboard, {
   viewer: graphql`
     fragment Dashboard_viewer on User {
       ...MobileDashSidebar_viewer
+      ...MobileDashTopBar_viewer
       ...DashAlert_viewer
+      ...DashTopBar_viewer
       notifications(first: 100) @connection(key: "DashboardWrapper_notifications") {
         edges {
           node {

@@ -24,7 +24,7 @@ graphql`
       }
     }
     team {
-      ...DashAlertMeetingActiveMeetings @relay(mask: false)
+      ...DashTopBarActiveMeetings @relay(mask: false)
     }
     # TODO Fetch the RetroRoot Query so we don't need to fetch again
   }

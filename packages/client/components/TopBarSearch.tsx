@@ -11,7 +11,7 @@ const Wrapper = styled('div')({
   alignItems: 'center',
   backgroundColor: 'hsla(0,0%,100%,.125)',
   display: 'flex',
-  margin: 16,
+  margin: 12,
   width: 480
 })
 
@@ -30,6 +30,7 @@ const SearchInput = styled('input')({
 
 const SearchIcon = styled(Icon)({
   color: '#fff',
+  cursor: 'pointer',
   padding: 12
 })
 
