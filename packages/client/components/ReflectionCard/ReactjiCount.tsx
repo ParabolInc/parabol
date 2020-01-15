@@ -43,6 +43,7 @@ const Emoji = styled('div')({
 
 const Count = styled('div')({
   fontSize: 12,
+  fontVariantNumeric: 'tabular-nums',
   fontWeight: 600,
   height: 24,
   lineHeight: '24px',

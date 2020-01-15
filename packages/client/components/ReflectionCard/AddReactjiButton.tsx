@@ -5,7 +5,7 @@ import lazyPreload from 'utils/lazyPreload'
 import useMenu from 'hooks/useMenu'
 import {MenuPosition} from 'hooks/useCoords'
 
-const icon = 'https://s3.amazonaws.com/action-files.parabol.co/static/icons/add_reactji_24.svg'
+const icon = `${__STATIC_IMAGES__}/icons/add_reactji_24.svg`
 
 const Button = styled(PlainButton)({
   display: 'block',
