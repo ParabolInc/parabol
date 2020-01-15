@@ -83,6 +83,7 @@ import emailPasswordReset from './mutations/emailPasswordReset'
 import resetPassword from './mutations/resetPassword'
 import invalidateSessions from './mutations/invalidateSessions'
 import createMassInvitation from './mutations/createMassInvitation'
+import addReactjiToReflection from './mutations/addReactjiToReflection'
 
 interface Context extends InternalContext, GQLContext {}
 
@@ -92,6 +93,7 @@ export default new GraphQLObjectType<any, Context, any>({
     acceptTeamInvitation,
     addAgendaItem,
     addAtlassianAuth,
+    addReactjiToReflection,
     addReflectTemplate,
     addReflectTemplatePrompt,
     addSlackAuth,

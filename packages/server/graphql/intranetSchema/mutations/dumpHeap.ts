@@ -35,7 +35,7 @@ const dumpHeap = {
       session.on('HeapProfiler.addHeapSnapshotChunk', (m) => {
         fs.writeSync(fd, m.params.chunk)
       })
-      session.post('HeapProfiler.takeHeapSnapshot', null, (err, r) => {
+      session.post('HeapProfiler.takeHeapSnapshot', undefined, (err) => {
         session.disconnect()
         fs.closeSync(fd)
         resolve(err || pathName)

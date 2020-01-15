@@ -8,6 +8,7 @@ import usePortal, {PortalStatus, UsePortalOptions} from './usePortal'
 interface Options extends UsePortalOptions, UseCoordsOptions {
   loadingWidth?: number
   isDropdown?: boolean
+  menuContentStyles?: any
 }
 
 export interface MenuProps {
@@ -20,7 +21,7 @@ const useMenu = <T extends HTMLElement = HTMLButtonElement>(
   preferredMenuPosition: MenuPosition,
   options: Options = {}
 ) => {
-  const {onOpen, onClose, id, parentId, originCoords} = options
+  const {onOpen, onClose, id, parentId, originCoords, menuContentStyles} = options
   const isDropdown = !!options.isDropdown
   const {targetRef, originRef, coords, menuPosition} = useCoords<T>(preferredMenuPosition, {
     originCoords
@@ -49,7 +50,8 @@ const useMenu = <T extends HTMLElement = HTMLButtonElement>(
     setPortalStatus,
     isDropdown,
     menuPosition,
-    loadingDelayRef
+    loadingDelayRef,
+    menuContentStyles
   )
   const menuProps = {portalStatus, closePortal, isDropdown}
   return {

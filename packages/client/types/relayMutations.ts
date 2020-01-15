@@ -2,14 +2,13 @@ import {RouterProps} from 'react-router'
 import {
   commitMutation,
   MutationParameters,
-  PayloadError,
   RecordProxy,
   RecordSourceSelectorProxy
 } from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
 
 export interface CompletedHandler {
-  (response: any, errors?: readonly (Error | PayloadError)[] | null): void
+  (response: any, errors?: readonly any[] | null): void
 }
 
 export interface ErrorHandler {

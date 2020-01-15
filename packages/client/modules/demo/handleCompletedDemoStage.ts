@@ -4,6 +4,7 @@ import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraft
 import makeDiscussionStage from '../../utils/makeDiscussionStage'
 import mapGroupsToStages from '../../utils/makeGroupsToStages'
 import taskLookup from './taskLookup'
+import reactjiLookup from './reactjiLookup'
 
 const removeEmptyReflections = (db) => {
   const reflections = db.reflections.filter((reflection) => reflection.isActive)
@@ -35,12 +36,31 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
   const reflectionGroup = db.reflectionGroups.find((group) => group.id === reflectionGroupId)
   const {reflections} = reflectionGroup
   const stageTasks = [] as string[]
+  const reactions = [] as {reflectionId: string; reactji: string}[]
   reflections.forEach((reflection) => {
     const tasks = taskLookup[reflection.id]
-    if (!tasks) return
-    stageTasks.push(...tasks)
+    if (tasks) {
+      stageTasks.push(...tasks)
+    }
+    const reactjis = reactjiLookup[reflection.id]
+    if (reactjis) {
+      reactions.push(...reactjis.map((reactji) => ({reflectionId: reflection.id, reactji})))
+    }
   })
   const ops = [] as any[]
+  reactions.forEach((variables) => {
+    const baseOp = {
+      op: 'AddReactjiToReflectionMutation',
+      delay: 1000,
+      variables
+    }
+    if (Math.random() > 0.1) {
+      ops.push({...baseOp, botId: 'bot1'})
+    }
+    if (Math.random() > 0.6) {
+      ops.push({...baseOp, botId: 'bot2'})
+    }
+  })
   stageTasks.forEach((taskContent, idx) => {
     const taskId = `botTask${stageId}:${idx}`
     const botId = idx % 2 === 0 ? 'bot2' : 'bot1'
