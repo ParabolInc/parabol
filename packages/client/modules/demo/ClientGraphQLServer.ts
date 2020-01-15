@@ -562,6 +562,18 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {navigateMeeting: data}
     },
+    RenameMeetingMutation: ({name}, userId) => {
+      const meeting = this.db.newMeeting
+      meeting.name = name
+      const data = {
+        __typename: 'RenameMeetingSuccess',
+        meeting
+      }
+      if (userId !== demoViewerId) {
+        this.emit(SubscriptionChannel.MEETING, data)
+      }
+      return {renameMeeting: data}
+    },
     SetPhaseFocusMutation: ({focusedPhaseItemId}, userId) => {
       const reflectPhase = this.db.newMeeting.phases!.find(
         (phase) => phase.phaseType === REFLECT
