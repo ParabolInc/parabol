@@ -14,10 +14,11 @@ import TopBarIcon from './TopBarIcon'
 import TopBarMeetings from './TopBarMeetings'
 import TopBarNotifications from './TopBarNotifications'
 import TopBarSearch from './TopBarSearch'
+import useRouter from 'hooks/useRouter'
 
 interface Props {
   toggle: () => void
-  viewer: DashTopBar_viewer
+  viewer: DashTopBar_viewer | null
 }
 
 const Wrapper = styled('header')({
@@ -41,6 +42,7 @@ const LeftNavHeader = styled('div')({
 })
 
 const Img = styled('img')({
+  cursor: 'pointer',
   padding: 16
 })
 
@@ -56,18 +58,21 @@ const TopBarIcons = styled('div')({
 
 const DashTopBar = (props: Props) => {
   const {toggle, viewer} = props
+  const {history} = useRouter()
   const hasNotification = (viewer?.notifications?.edges?.length ?? 0) > 0
   const teams = viewer?.teams ?? []
-
+  const gotoHome = () => {
+    history.push('/me')
+  }
   return (
     <Wrapper>
       <LeftNavHeader>
         <LeftNavToggle onClick={toggle}>
           <Icon>{'menu'}</Icon>
         </LeftNavToggle>
-        <Img crossOrigin='' src={parabolLogo} alt='' />
+        <Img onClick={gotoHome} crossOrigin='' src={parabolLogo} alt='' />
       </LeftNavHeader>
-      <TopBarSearch />
+      <TopBarSearch viewer={viewer} />
       <TopBarIcons>
         {false && <TopBarIcon icon={'help_outline'} />}
         <TopBarNotifications hasNotification={hasNotification} />
@@ -82,6 +87,7 @@ export default createFragmentContainer(DashTopBar, {
   viewer: graphql`
     fragment DashTopBar_viewer on User {
       ...TopBarAvatar_viewer
+      ...TopBarSearch_viewer
       picture
       notifications(first: 100) @connection(key: "DashboardWrapper_notifications") {
         edges {

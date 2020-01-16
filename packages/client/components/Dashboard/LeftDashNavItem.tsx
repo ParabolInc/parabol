@@ -39,6 +39,7 @@ const Label = styled('div')({
 })
 
 interface Props {
+  className?: string
   onClick?: () => void
   label: string
   href: string
@@ -49,11 +50,14 @@ const getIsActive = (href: string) => {
   const {pathname} = window.location
   const slashlessPath = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname
   if (href === '/me') return slashlessPath === href
+  if (href.startsWith('/newteam')) {
+    return href.startsWith(slashlessPath)
+  }
   return slashlessPath.startsWith(href)
 }
 
 const LeftDashNavItem = (props: Props) => {
-  const {label, icon, href, onClick} = props
+  const {className, label, icon, href, onClick} = props
   const {history} = useRouter()
   const isActive = getIsActive(href)
   const handleClick = () => {
@@ -61,7 +65,7 @@ const LeftDashNavItem = (props: Props) => {
     onClick?.()
   }
   return (
-    <NavItem onClick={handleClick} isActive={isActive}>
+    <NavItem className={className} onClick={handleClick} isActive={isActive}>
       <StyledIcon>{icon}</StyledIcon>
       <Label>{label}</Label>
     </NavItem>

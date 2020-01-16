@@ -36,7 +36,7 @@ const BadgeBlockInner = styled('div')({
 })
 
 interface Props {
-  className?: stiring
+  className?: string
   hasBadge?: boolean
   isConnected?: boolean
   onClick?: (e?: React.MouseEvent) => void

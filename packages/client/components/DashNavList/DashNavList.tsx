@@ -22,7 +22,7 @@ interface Props {
 }
 
 const DashNavList = (props: Props) => {
-  const {onClick, viewer} = props
+  const {className, onClick, viewer} = props
   if (!viewer) return null
   const {teams} = viewer
   if (teams.length === 0) {
@@ -32,6 +32,7 @@ const DashNavList = (props: Props) => {
     <DashNavListStyles>
       {teams.map((team) => (
         <LeftDashNavItem
+          className={className}
           onClick={onClick}
           key={team.id}
           icon={team.isPaid ? 'group' : 'warning'}

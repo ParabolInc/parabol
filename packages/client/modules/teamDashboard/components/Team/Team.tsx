@@ -1,20 +1,19 @@
-import {Team_team} from '../../../../__generated__/Team_team.graphql'
-import React, {lazy, ReactNode, Suspense, useEffect} from 'react'
 import styled from '@emotion/styled'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React, {lazy, ReactNode, Suspense} from 'react'
+import {createFragmentContainer} from 'react-relay'
 import DashContent from '../../../../components/Dashboard/DashContent'
 import DashHeader from '../../../../components/Dashboard/DashHeader'
-import DashSearchControl from '../../../../components/Dashboard/DashSearchControl'
 import DashboardAvatars from '../../../../components/DashboardAvatars/DashboardAvatars'
 import FlatButton from '../../../../components/FlatButton'
 import Icon from '../../../../components/Icon'
 import IconLabel from '../../../../components/IconLabel'
-import EditableTeamName from '../EditTeamName/EditableTeamName'
-import TeamCallsToAction from '../TeamCallsToAction/TeamCallsToAction'
-import {PALETTE} from '../../../../styles/paletteV2'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useRouter from '../../../../hooks/useRouter'
+import {PALETTE} from '../../../../styles/paletteV2'
+import {Team_team} from '../../../../__generated__/Team_team.graphql'
+import EditableTeamName from '../EditTeamName/EditableTeamName'
+import TeamCallsToAction from '../TeamCallsToAction/TeamCallsToAction'
 // import DebugButton from '../../../userDashboard/components/UserDashMain/DebugButton'
 
 const StyledButton = styled(FlatButton)({
@@ -36,6 +35,7 @@ const TeamDashHeaderInner = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flexWrap: 'wrap',
+  justifyContent: 'flex-end',
   width: '100%'
 })
 
@@ -51,6 +51,7 @@ const UnpaidTeamModalRoot = lazy(() =>
 
 interface Props {
   children: ReactNode
+  dashSearch?: string
   team: Team_team | null
   isSettings: boolean
 }
@@ -58,26 +59,10 @@ interface Props {
 const Team = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
-  const {children, isSettings, team} = props
-  const teamId = team && team.id
-  const contentFilter = team && team.contentFilter
-  const setContentFilter = (nextValue: string) => {
-    commitLocalUpdate(atmosphere, (store) => {
-      const teamProxy = store.get(teamId!)
-      teamProxy && teamProxy.setValue(nextValue, 'contentFilter')
-    })
-  }
-  useEffect(() => {
-    if (contentFilter) {
-      setContentFilter('')
-    }
-  }, [teamId])
-
-  if (!team || !teamId) return null
+  const {children, dashSearch, isSettings, team} = props
+  const teamId = team?.id
+  if (!teamId) return null
   const {isPaid} = team
-  const updateFilter = (e) => {
-    setContentFilter(e.target.value)
-  }
 
   const goToTeamSettings = () => {
     history.push(`/team/${teamId}/settings/`)
@@ -103,7 +88,6 @@ const Team = (props: Props) => {
             </>
           ) : (
             <>
-              <DashSearchControl onChange={updateFilter} placeholder='Search Tasks & Agenda' />
               <StyledButton aria-label='Team Settings' key='2' onClick={goToTeamSettings}>
                 <IconLabel icon='settings' label='Team Settings' />
               </StyledButton>
@@ -121,7 +105,6 @@ const Team = (props: Props) => {
 export default createFragmentContainer(Team, {
   team: graphql`
     fragment Team_team on Team {
-      contentFilter
       id
       isPaid
       ...TeamCallsToAction_team

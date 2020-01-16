@@ -14,7 +14,7 @@ interface Props {
 }
 
 const Nav = styled('nav')<{isOpen: boolean}>(({isOpen}) => ({
-  height: '100vh',
+  height: '100%',
   userSelect: 'none',
   transition: `all 300ms`,
   transform: isOpen ? undefined : 'translateX(-240px)',
@@ -24,11 +24,12 @@ const Nav = styled('nav')<{isOpen: boolean}>(({isOpen}) => ({
 const Contents = styled('div')({
   display: 'flex',
   flexDirection: 'column',
+  height: '100%',
   width: NavSidebar.WIDTH
 })
 
 const NavMain = styled('div')({
-  flex: 1,
+  // flex: 1,
   overflowY: 'auto'
 })
 
@@ -40,14 +41,13 @@ const DashHR = styled('div')({
   width: 'calc(100% + 16px)'
 })
 
-const Footer = styled('div')({
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  justifyContent: 'space-between'
+const NavItem = styled(LeftDashNavItem)({
+  paddingLeft: 16
 })
 
-const FooterBottom = styled('div')({})
+const NavList = styled(DashNavList)({
+  paddingLeft: 16
+})
 
 const DashSidebar = (props: Props) => {
   const {isOpen, viewer} = props
@@ -55,19 +55,14 @@ const DashSidebar = (props: Props) => {
   return (
     <Nav isOpen={isOpen}>
       <Contents>
-        <LeftDashNavItem icon={'timeline'} href={'/me'} label={'Timeline'} />
-        <LeftDashNavItem icon={'playlist_add_check'} href={'/me/tasks'} label={'Tasks'} />
+        <NavItem icon={'timeline'} href={'/me'} label={'Timeline'} />
+        <NavItem icon={'playlist_add_check'} href={'/me/tasks'} label={'Tasks'} />
         <DashHR />
         <NavMain>
-          <DashNavList viewer={viewer} />
+          <NavList viewer={viewer} />
         </NavMain>
         <DashHR />
-        <Footer>
-          <LeftDashNavItem icon={'add'} href={'/newteam/1'} label={'Add a Team'} />
-          <FooterBottom>
-            <LeftDashNavItem icon={'exit_to_app'} href={'/signout'} label={'Sign out'} />
-          </FooterBottom>
-        </Footer>
+        <NavItem icon={'add'} href={'/newteam/1'} label={'Add a Team'} />
       </Contents>
     </Nav>
   )

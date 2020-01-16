@@ -85,6 +85,7 @@ interface Props {
 
 const AgendaAndTasks = (props: Props) => {
   const {viewer} = props
+  const {dashSearch} = viewer
   const team = viewer.team!
   const teamMember = viewer.teamMember!
   const {hideAgenda} = teamMember
@@ -107,7 +108,7 @@ const AgendaAndTasks = (props: Props) => {
         <AgendaToggle hideAgenda={hideAgenda} teamId={teamId} />
         {!hideAgenda && (
           <AgendaContent>
-            <AgendaListAndInput team={team!} />
+            <AgendaListAndInput dashSearch={dashSearch} team={team!} />
           </AgendaContent>
         )}
       </AgendaMain>
@@ -118,6 +119,7 @@ const AgendaAndTasks = (props: Props) => {
 export default createFragmentContainer(AgendaAndTasks, {
   viewer: graphql`
     fragment AgendaAndTasks_viewer on User {
+      dashSearch
       team(teamId: $teamId) {
         teamId: id
         teamName: name

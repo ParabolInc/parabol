@@ -101,7 +101,7 @@
     "react-relay": "https://github.com/mattkrick/relay/tarball/348dffd4b9566d28fc51bc10116c23d12ec41996",
     "react-router": "^5.0.1",
     "react-router-dom": "^5.0.1",
-    "react-swipeable-views": "^0.13.3",
+    "react-swipeable-views": "0.13.3",
     "react-textarea-autosize": "^7.1.0",
     "react-transition-group": "^4.3.0",
     "react-virtualized": "^9.21.1",

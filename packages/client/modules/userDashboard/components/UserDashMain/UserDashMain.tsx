@@ -8,6 +8,7 @@ import LoadingComponent from '../../../../components/LoadingComponent/LoadingCom
 import {LoaderSize} from '../../../../types/constEnums'
 import DashContent from 'components/Dashboard/DashContent'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
+import useRouter from 'hooks/useRouter'
 
 const TopTabs = styled(Tabs)({
   marginTop: 12
@@ -27,27 +28,18 @@ const MyDashboardTimelineRoot = lazy(() =>
 )
 
 const UserDashMain = (props: Props) => {
-  const {history, match} = props
-  const isTasks = !!matchPath(location.pathname, {path: `${match.url}/tasks`})
+  const {match} = props
   useDocumentTitle('My Dashboard | Parabol')
   return (
-    <>
-      <DashHeader>
-        <TopTabs activeIdx={isTasks ? 1 : 0}>
-          <Tab label='TIMELINE' onClick={() => history.push('/me')} />
-          <Tab label='TASKS' onClick={() => history.push('/me/tasks')} />
-        </TopTabs>
-      </DashHeader>
-      <DashContent>
-        <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.PANEL} />}>
-          <Switch>
-            <Route path={`${match.url}/tasks`} component={MyDashboardTasksRoot} />
-            <Route path={match.url} component={MyDashboardTimelineRoot} />
-          </Switch>
-        </Suspense>
-      </DashContent>
-    </>
+    <DashContent>
+      <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.PANEL} />}>
+        <Switch>
+          <Route path={`${match.url}/tasks`} component={MyDashboardTasksRoot} />
+          <Route path={match.url} component={MyDashboardTimelineRoot} />
+        </Switch>
+      </Suspense>
+    </DashContent>
   )
 }
 
-export default withRouter(UserDashMain)
+export default UserDashMain

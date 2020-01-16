@@ -1,20 +1,37 @@
 import styled from '@emotion/styled'
-import React from 'react'
+import graphql from 'babel-plugin-relay/macro'
+import useAtmosphere from 'hooks/useAtmosphere'
+import React, {useRef} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate} from 'relay-runtime'
 import {PALETTE} from 'styles/paletteV2'
 import Icon from './Icon'
+import {matchPath} from 'react-router'
+import useRouter from 'hooks/useRouter'
 
+const getShowSearch = (location) => {
+  const {pathname} = location
+  return (
+    pathname.includes('/me/tasks') ||
+    !!matchPath(pathname, {
+      path: '/team/:teamId',
+      exact: true,
+      strict: true
+    })
+  )
+}
 interface Props {
-  viewer?: any
+  viewer: TopBarSearch_viewer | null
 }
 
-const Wrapper = styled('div')({
+const Wrapper = styled('div')(({location}) => ({
   alignItems: 'center',
   backgroundColor: 'hsla(0,0%,100%,.125)',
   display: 'flex',
   margin: 12,
   width: 480,
-  visibility: 'hidden'
-})
+  visibility: getShowSearch(location) ? undefined : 'hidden'
+}))
 
 const SearchInput = styled('input')({
   appearance: 'none',
@@ -35,14 +52,40 @@ const SearchIcon = styled(Icon)({
   padding: 12
 })
 
+const setSearch = (atmosphere: Atmosphere, value: string) => {
+  commitLocalUpdate(atmosphere, (store) => {
+    const viewer = store.getRoot().getLinkedRecord('viewer')
+    if (!viewer) return
+    viewer.setValue(value, 'dashSearch')
+  })
+}
+
 const TopBarSearch = (props: Props) => {
-  const {} = props
+  const {viewer} = props
+  const dashSearch = viewer?.dashSearch ?? ''
+  const inputRef = useRef<HTMLInputElement>()
+  const atmosphere = useAtmosphere()
+  const {location} = useRouter()
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(atmosphere, e.target.value)
+  }
+  const icon = dashSearch ? 'close' : 'search'
+  const onClick = () => {
+    setSearch(atmosphere, '')
+    inputRef.current?.focus()
+  }
   return (
-    <Wrapper>
-      <SearchInput placeholder={'Search'} />
-      <SearchIcon>{'search'}</SearchIcon>
+    <Wrapper location={location}>
+      <SearchInput ref={inputRef} onChange={onChange} placeholder={'Search'} value={dashSearch} />
+      <SearchIcon onClick={onClick}>{icon}</SearchIcon>
     </Wrapper>
   )
 }
 
-export default TopBarSearch
+export default createFragmentContainer(TopBarSearch, {
+  viewer: graphql`
+    fragment TopBarSearch_viewer on User {
+      dashSearch
+    }
+  `
+})
