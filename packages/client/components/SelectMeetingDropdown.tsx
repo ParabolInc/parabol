@@ -4,6 +4,7 @@ import useRouter from 'hooks/useRouter'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from 'styles/paletteV2'
+import getTeamIdFromPathname from 'utils/getTeamIdFromPathname'
 import plural from 'utils/plural'
 import {SelectMeetingDropdown_meetings} from '__generated__/SelectMeetingDropdown_meetings.graphql'
 import {MenuProps} from '../hooks/useMenu'
@@ -26,14 +27,30 @@ const HeaderLabel = styled('div')({
   userSelect: 'none'
 })
 
+const NoMeetings = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  fontWeight: 600,
+  justifyContent: 'center',
+  padding: 8,
+  width: '100%'
+})
+
 const SelectMeetingDropdown = (props: Props) => {
   const {meetings, menuProps} = props
   const {history} = useRouter()
   const meetingCount = meetings.length
   const label = `${meetingCount} Active ${plural(meetingCount, 'Meeting')}`
+  const startMeeting = () => {
+    const teamId = getTeamIdFromPathname()
+    history.push(`/new-meeting/${teamId}`)
+  }
   return (
     <Menu ariaLabel={'Select the Meeting to enter'} {...menuProps}>
       <HeaderLabel>{label}</HeaderLabel>
+      {meetingCount === 0 && (
+        <MenuItem onClick={startMeeting} label={<NoMeetings>{'Start a New Meeting'}</NoMeetings>} />
+      )}
       {meetings.map((meeting) => {
         const handleClick = () => {
           history.push(`/meet/${meeting.id}`)

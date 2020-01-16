@@ -1,15 +1,17 @@
 import styled from '@emotion/styled'
+import Atmosphere from 'Atmosphere'
 import graphql from 'babel-plugin-relay/macro'
 import useAtmosphere from 'hooks/useAtmosphere'
+import useRouter from 'hooks/useRouter'
 import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {matchPath, RouteProps} from 'react-router'
 import {commitLocalUpdate} from 'relay-runtime'
 import {PALETTE} from 'styles/paletteV2'
+import {TopBarSearch_viewer} from '__generated__/TopBarSearch_viewer.graphql'
 import Icon from './Icon'
-import {matchPath} from 'react-router'
-import useRouter from 'hooks/useRouter'
 
-const getShowSearch = (location) => {
+const getShowSearch = (location: NonNullable<RouteProps['location']>) => {
   const {pathname} = location
   return (
     pathname.includes('/me/tasks') ||
@@ -24,7 +26,7 @@ interface Props {
   viewer: TopBarSearch_viewer | null
 }
 
-const Wrapper = styled('div')(({location}) => ({
+const Wrapper = styled('div')<{location: any}>(({location}) => ({
   alignItems: 'center',
   backgroundColor: 'hsla(0,0%,100%,.125)',
   display: 'flex',
@@ -63,7 +65,7 @@ const setSearch = (atmosphere: Atmosphere, value: string) => {
 const TopBarSearch = (props: Props) => {
   const {viewer} = props
   const dashSearch = viewer?.dashSearch ?? ''
-  const inputRef = useRef<HTMLInputElement>()
+  const inputRef = useRef<HTMLInputElement>(null)
   const atmosphere = useAtmosphere()
   const {location} = useRouter()
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {

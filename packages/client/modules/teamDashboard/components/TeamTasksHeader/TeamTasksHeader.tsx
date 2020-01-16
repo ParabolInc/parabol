@@ -17,6 +17,9 @@ import lazyPreload from '../../../../utils/lazyPreload'
 import graphql from 'babel-plugin-relay/macro'
 import {ClassNames} from '@emotion/core'
 import useRouter from '../../../../hooks/useRouter'
+import FlatButton from 'components/FlatButton'
+import IconLabel from 'components/IconLabel'
+import DashboardAvatars from 'components/DashboardAvatars/DashboardAvatars'
 
 const OrgInfoBlock = styled('div')({
   alignItems: 'center',
@@ -48,6 +51,15 @@ const TeamDashTeamMemberMenu = lazyPreload(() =>
   )
 )
 
+const StyledButton = styled(FlatButton)({
+  paddingLeft: 16,
+  paddingRight: 16
+})
+
+const HeadingAndAvatars = styled('div')({
+  display: 'flex'
+})
+
 interface Props {
   team: TeamTasksHeader_team
 }
@@ -55,17 +67,25 @@ interface Props {
 const TeamTasksHeader = (props: Props) => {
   const {team} = props
   const {history} = useRouter()
-  const {organization, teamId, teamName, teamMemberFilter} = team
+  const {organization, id: teamId, name: teamName, teamMemberFilter} = team
   const teamMemberFilterName = (teamMemberFilter && teamMemberFilter.preferredName) || 'All members'
-  const {orgName, orgId} = organization
+  const {name: orgName, id: orgId} = organization
   const {togglePortal, menuProps, originRef, menuPortal} = useMenu(MenuPosition.UPPER_RIGHT, {
     isDropdown: true
   })
+
+  const goToTeamSettings = () => {
+    history.push(`/team/${teamId}/settings/`)
+  }
   return (
     <DashSectionHeader>
       <div>
         <LabelHeading>{'Team Dashboard'}</LabelHeading>
-        <DashHeading>{`${teamName} Tasks`}</DashHeading>
+        <HeadingAndAvatars>
+          <DashHeading>{`${teamName} Tasks`}</DashHeading>
+          <DashboardAvatars team={team} />
+        </HeadingAndAvatars>
+
         <OrgInfoBlock>
           <ClassNames>
             {({css}) => {
@@ -80,6 +100,9 @@ const TeamTasksHeader = (props: Props) => {
               )
             }}
           </ClassNames>
+          <StyledButton aria-label='Team Settings' onClick={goToTeamSettings}>
+            <IconLabel icon='settings' label='Team Settings' />
+          </StyledButton>
         </OrgInfoBlock>
       </div>
       <DashSectionControls>
@@ -112,11 +135,12 @@ const TeamTasksHeader = (props: Props) => {
 export default createFragmentContainer(TeamTasksHeader, {
   team: graphql`
     fragment TeamTasksHeader_team on Team {
-      teamId: id
-      teamName: name
+      ...DashboardAvatars_team
+      id
+      name
       organization {
-        orgId: id
-        orgName: name
+        id
+        name
       }
       teamMemberFilter {
         preferredName

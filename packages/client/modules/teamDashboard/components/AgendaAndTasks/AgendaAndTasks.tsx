@@ -1,15 +1,15 @@
-import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import AgendaToggle from '../AgendaToggle/AgendaToggle'
-import AgendaListAndInput from '../AgendaListAndInput/AgendaListAndInput'
-import TeamColumnsContainer from '../../containers/TeamColumns/TeamColumnsContainer'
-import TeamTasksHeaderContainer from '../../containers/TeamTasksHeader/TeamTasksHeaderContainer'
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {desktopSidebarShadow, navDrawerShadow} from '../../../../styles/elevation'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
 import {AgendaAndTasks_viewer} from '__generated__/AgendaAndTasks_viewer.graphql'
-import {RightSidebar, ZIndex} from '../../../../types/constEnums'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
+import {desktopSidebarShadow, navDrawerShadow} from '../../../../styles/elevation'
+import {RightSidebar, ZIndex} from '../../../../types/constEnums'
+import TeamColumnsContainer from '../../containers/TeamColumns/TeamColumnsContainer'
+import TeamTasksHeaderContainer from '../../containers/TeamTasksHeader/TeamTasksHeaderContainer'
+import AgendaListAndInput from '../AgendaListAndInput/AgendaListAndInput'
+import AgendaToggle from '../AgendaToggle/AgendaToggle'
 
 const RootBlock = styled('div')({
   display: 'flex',
@@ -102,13 +102,12 @@ const AgendaAndTasks = (props: Props) => {
           <TeamColumnsContainer viewer={viewer} />
         </TasksContent>
       </TasksMain>
-
       {/* Agenda */}
       <AgendaMain hideAgenda={hideAgenda}>
         <AgendaToggle hideAgenda={hideAgenda} teamId={teamId} />
         {!hideAgenda && (
           <AgendaContent>
-            <AgendaListAndInput dashSearch={dashSearch} team={team!} />
+            <AgendaListAndInput dashSearch={dashSearch || ''} team={team!} />
           </AgendaContent>
         )}
       </AgendaMain>
