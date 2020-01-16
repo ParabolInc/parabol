@@ -25,7 +25,6 @@ const TeamDashHeaderInner = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flexWrap: 'wrap',
-  // justifyContent: 'flex-end',
   width: '100%'
 })
 

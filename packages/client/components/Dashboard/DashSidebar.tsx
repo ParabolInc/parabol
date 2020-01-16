@@ -29,7 +29,6 @@ const Contents = styled('div')({
 })
 
 const NavMain = styled('div')({
-  // flex: 1,
   overflowY: 'auto'
 })
 
