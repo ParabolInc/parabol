@@ -69,7 +69,7 @@ const NewMeetingHowToSteps = (props: Props) => {
       {steps.map((step, idx) => {
         return <HowToStepItem key={idx} number={idx + 1} step={step} />
       })}
-      <LearnMoreLink palette='blue' onClick={() => window.open(learnMore, '_blank')}>
+      <LearnMoreLink palette='blue' onClick={() => window.open(learnMore, '_blank', 'noreferrer')}>
         <IconLabel icon='open_in_new' iconAfter label='Learn More' />
       </LearnMoreLink>
     </HowToBlock>
