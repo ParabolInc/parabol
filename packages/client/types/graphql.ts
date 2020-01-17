@@ -2672,6 +2672,7 @@ export interface IVerifiedInvitationPayload {
    * name of the inviting team, present if invitation exists
    */
   teamName: string | null
+  meetingId: string | null
   meetingType: MeetingTypeEnum | null
 
   /**
@@ -2973,6 +2974,11 @@ export interface IMutation {
    * Set the selected template for the upcoming retro meeting
    */
   selectRetroTemplate: ISelectRetroTemplatePayload | null
+
+  /**
+   * Share where in the app the viewer is
+   */
+  setAppLocation: SetAppLocationPayload
 
   /**
    * Enabled or disable the check-in round
@@ -3586,6 +3592,13 @@ export interface ISegmentEventTrackOnMutationArguments {
 export interface ISelectRetroTemplateOnMutationArguments {
   selectedTemplateId: string
   teamId: string
+}
+
+export interface ISetAppLocationOnMutationArguments {
+  /**
+   * The location the viewer is currently at
+   */
+  location?: string | null
 }
 
 export interface ISetCheckInEnabledOnMutationArguments {
@@ -5743,6 +5756,20 @@ export interface ISelectRetroTemplatePayload {
   retroMeetingSettings: IRetrospectiveMeetingSettings | null
 }
 
+/**
+ * Return object for SetAppLocationPayload
+ */
+export type SetAppLocationPayload = IErrorPayload | ISetAppLocationSuccess
+
+export interface ISetAppLocationSuccess {
+  __typename: 'SetAppLocationSuccess'
+
+  /**
+   * the user with the updated location
+   */
+  user: IUser
+}
+
 export interface ISetCheckInEnabledPayload {
   __typename: 'SetCheckInEnabledPayload'
   error: IStandardMutationError | null
@@ -6226,6 +6253,7 @@ export type MeetingSubscriptionPayload =
   | INewMeetingCheckInPayload
   | IPromoteNewMeetingFacilitatorPayload
   | IRemoveReflectionPayload
+  | ISetAppLocationSuccess
   | ISetPhaseFocusPayload
   | ISetStageTimerPayload
   | IStartDraggingReflectionPayload

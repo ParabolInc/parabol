@@ -14,7 +14,7 @@ import {meetingAvatarMediaQueries} from '../../../../styles/meeting'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {Breakpoint} from '../../../../types/constEnums'
 import MediaSwarm from '../../../../utils/swarm/MediaSwarm'
-import {NewMeetingAvatarGroup_team} from '../../../../__generated__/NewMeetingAvatarGroup_team.graphql'
+import {NewMeetingAvatarGroup_meeting} from '../../../../__generated__/NewMeetingAvatarGroup_meeting.graphql'
 import NewMeetingAvatar from './NewMeetingAvatar'
 
 const MeetingAvatarGroupRoot = styled('div')({
@@ -75,7 +75,7 @@ const OverflowCount = styled('div')<{status: TransitionStatus}>(({status}) => ({
 }))
 
 interface Props {
-  team: NewMeetingAvatarGroup_team
+  meeting: NewMeetingAvatarGroup_meeting
   camStreams: StreamUserDict
   swarm: MediaSwarm | null
   allowVideo: boolean
@@ -87,7 +87,8 @@ const OVERFLOW_AVATAR = {key: 'overflow'}
 const NewMeetingAvatarGroup = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {swarm, team, camStreams, allowVideo} = props
+  const {swarm, meeting, camStreams, allowVideo} = props
+  const {id: meetingId, team} = meeting
   const {id: teamId, teamMembers} = team
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
 
@@ -95,7 +96,12 @@ const NewMeetingAvatarGroup = (props: Props) => {
   // TODO: filter by team members who are actually viewing “this” meeting view
   const connectedTeamMembers = useMemo(() => {
     return teamMembers
-      .filter(({user}) => user.isConnected)
+      .filter((teamMember) => {
+        return (
+          teamMember.userId === viewerId ||
+          (teamMember.user.lastSeenAtURL === `/meet/${meetingId}` && teamMember.user.isConnected)
+        )
+      })
       .sort((a, b) =>
         a.userId === viewerId ? -1 : a.user.lastSeenAt! < b.user.lastSeenAt! ? -1 : 1
       )
@@ -152,19 +158,23 @@ const NewMeetingAvatarGroup = (props: Props) => {
 }
 
 export default createFragmentContainer(NewMeetingAvatarGroup, {
-  team: graphql`
-    fragment NewMeetingAvatarGroup_team on Team {
+  meeting: graphql`
+    fragment NewMeetingAvatarGroup_meeting on NewMeeting {
       id
-      teamMembers(sortBy: "checkInOrder") {
-        ...AddTeamMemberAvatarButton_teamMembers
+      team {
         id
-        checkInOrder
-        user {
-          isConnected
-          lastSeenAt
+        teamMembers(sortBy: "checkInOrder") {
+          ...AddTeamMemberAvatarButton_teamMembers
+          id
+          checkInOrder
+          user {
+            isConnected
+            lastSeenAt
+            lastSeenAtURL
+          }
+          userId
+          ...NewMeetingAvatar_teamMember
         }
-        userId
-        ...NewMeetingAvatar_teamMember
       }
     }
   `

@@ -154,7 +154,7 @@ const meetingStageTimeLimitOnNext: OnNextHandler<
   const {timeLimitNotification} = payload
   const {meeting} = timeLimitNotification
   const {meetingType, team, id: meetingId} = meeting
-  const {name: teamName} = tesam
+  const {name: teamName} = team
   const meetingLabel = meetingTypeToLabel[meetingType]
   atmosphere.eventEmitter.emit('addSnackbar', {
     key: `meetingStageLimitReached:${meetingId}`,

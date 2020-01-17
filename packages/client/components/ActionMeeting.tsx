@@ -46,14 +46,7 @@ export interface ActionMeetingPhaseProps {
 
 const ActionMeeting = (props: Props) => {
   const {meeting} = props
-  const {
-    facilitatorStageId,
-    localPhase,
-    localStage,
-    showSidebar,
-    team,
-    viewerMeetingMember
-  } = meeting
+  const {facilitatorStageId, localPhase, localStage, showSidebar, viewerMeetingMember} = meeting
   const {
     toggleSidebar,
     streams,
@@ -92,7 +85,7 @@ const ActionMeeting = (props: Props) => {
               allowVideo={allowVideo}
               camStreams={streams.cam}
               swarm={swarm}
-              team={team}
+              meeting={meeting}
             />
           }
         />
@@ -115,6 +108,7 @@ export default createFragmentContainer(ActionMeeting, {
       ...ActionMeetingFirstCall_meeting
       ...ActionMeetingAgendaItems_meeting
       ...ActionMeetingLastCall_meeting
+      ...NewMeetingAvatarGroup_meeting
       localPhase {
         id
         phaseType
@@ -131,9 +125,6 @@ export default createFragmentContainer(ActionMeeting, {
       }
       facilitatorStageId
       showSidebar
-      team {
-        ...NewMeetingAvatarGroup_team
-      }
       viewerMeetingMember {
         user {
           featureFlags {
