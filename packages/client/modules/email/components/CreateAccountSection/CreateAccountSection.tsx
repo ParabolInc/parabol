@@ -3,6 +3,7 @@ import {PALETTE} from '../../../../styles/paletteV2'
 import {emailFontFamily, emailPrimaryButtonStyle, emailTableBase} from '../../../../styles/email'
 import emailDir from '../../emailDir'
 import EmailBorderBottom from '../SummaryEmail/MeetingSummaryEmail/EmailBorderBottom'
+import {LocalStorageKey} from 'types/constEnums'
 
 const tableStyle = {
   ...emailTableBase,
@@ -70,8 +71,6 @@ const features = [
   {icon: 'feature-summary@3x.png', copy: 'Detailed meeting summary email'},
   {icon: 'feature-owners@3x.png', copy: 'Takeaway tasks with owners'}
 ]
-const primaryActionLabel = 'Create a Free Account'
-const primaryActionLink = '/create-account?from=demo'
 
 const makeFeatureRow = (featureIconFile, featureCopy, idx) => {
   const src = `${emailDir}${featureIconFile}`
@@ -90,6 +89,9 @@ const makeFeatureRow = (featureIconFile, featureCopy, idx) => {
 const CreateAccountSection = (props) => {
   const {isDemo} = props
   if (!isDemo) return null
+  const isLoggedIn = localStorage.getItem(LocalStorageKey.APP_TOKEN_KEY)
+  const primaryActionLabel = isLoggedIn ? 'Go to My Dashboard' : 'Create a Free Account'
+  const primaryActionLink = isLoggedIn ? '/me' : '/create-account?from=demo'
   return (
     <>
       <tr>
