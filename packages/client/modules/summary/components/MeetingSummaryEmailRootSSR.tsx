@@ -4,7 +4,6 @@ import {QueryRenderer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import MeetingSummaryEmail from '../../email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail'
 import makeAppLink from '../../../../server/utils/makeAppLink'
-import {meetingTypeToSlug} from '../../../utils/meetings/lookups'
 import {MeetingSummaryEmailRootSSRQuery} from '__generated__/MeetingSummaryEmailRootSSRQuery.graphql'
 
 const query = graphql`
@@ -41,9 +40,8 @@ const MeetingSummaryEmailRootSSR = (props: Props) => {
         if (!newMeeting) return null
         const {meetingType, team} = newMeeting
         const {id: teamId} = team
-        const meetingSlug = meetingTypeToSlug[meetingType]
         const referrerUrl = makeAppLink(`new-summary/${meetingId}`)
-        const meetingUrl = makeAppLink(`${meetingSlug}/${teamId}`)
+        const meetingUrl = makeAppLink(`meet/${meetingId}`)
         const teamDashUrl = makeAppLink(`team/${teamId}`)
         const emailCSVUrl = makeAppLink(`new-summary/${meetingId}/csv`)
         return (

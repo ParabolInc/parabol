@@ -1,17 +1,16 @@
 import {GraphQLInt, GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
-import {requireSU} from '../../../utils/authorization'
+import Meeting from '../../../database/types/Meeting'
+import NotificationMeetingStageTimeLimitEnd from '../../../database/types/NotificationMeetingStageTimeLimitEnd'
 import ScheduledJob from '../../../database/types/ScheduledJob'
 import ScheduledJobMeetingStageTimeLimit from '../../../database/types/ScheduledJobMetingStageTimeLimit'
-import SlackManager from '../../../utils/SlackManager'
-import makeAppLink from '../../../utils/makeAppLink'
-import Meeting from '../../../database/types/Meeting'
-import {meetingTypeToSlug} from '../../../../client/utils/meetings/lookups'
-import publish from '../../../utils/publish'
-import NotificationMeetingStageTimeLimitEnd from '../../../database/types/NotificationMeetingStageTimeLimitEnd'
 import SlackAuth from '../../../database/types/SlackAuth'
 import SlackNotification from '../../../database/types/SlackNotification'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {requireSU} from '../../../utils/authorization'
+import makeAppLink from '../../../utils/makeAppLink'
+import publish from '../../../utils/publish'
+import SlackManager from '../../../utils/SlackManager'
 
 const processMeetingStageTimeLimits = async (job: ScheduledJobMeetingStageTimeLimit) => {
   const r = await getRethink()
@@ -20,7 +19,7 @@ const processMeetingStageTimeLimits = async (job: ScheduledJobMeetingStageTimeLi
     .table('NewMeeting')
     .get(meetingId)
     .run()) as Meeting
-  const {teamId, facilitatorUserId, meetingType} = meeting
+  const {teamId, facilitatorUserId} = meeting
   const {slackNotification, slackAuth} = await r({
     slackNotification: (r
       .table('SlackNotification')
@@ -44,8 +43,7 @@ const processMeetingStageTimeLimits = async (job: ScheduledJobMeetingStageTimeLi
     } else {
       const {botAccessToken} = slackAuth
       const manager = new SlackManager(botAccessToken)
-      const slug = meetingTypeToSlug[meetingType]
-      const meetingUrl = makeAppLink(`${slug}/${teamId}`)
+      const meetingUrl = makeAppLink(`meet/${meetingId}`)
       const slackText = `Time’s up! Advance your meeting to the next phase: ${meetingUrl}`
       const res = await manager.postMessage(channelId, slackText)
       if (!res.ok) {

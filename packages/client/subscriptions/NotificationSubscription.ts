@@ -1,3 +1,12 @@
+import graphql from 'babel-plugin-relay/macro'
+import {RouterProps} from 'react-router'
+import {requestSubscription, Variables} from 'relay-runtime'
+import {RecordSourceSelectorProxy} from 'relay-runtime/lib/store/RelayStoreTypes'
+import {InvalidateSessionsMutation_notification} from '__generated__/InvalidateSessionsMutation_notification.graphql'
+import {NotificationSubscription_meetingStageTimeLimitEnd} from '__generated__/NotificationSubscription_meetingStageTimeLimitEnd.graphql'
+import {NotificationSubscription_paymentRejected} from '__generated__/NotificationSubscription_paymentRejected.graphql'
+import Atmosphere from '../Atmosphere'
+import {acceptTeamInvitationNotificationUpdater} from '../mutations/AcceptTeamInvitationMutation'
 import {addOrgMutationNotificationUpdater} from '../mutations/AddOrgMutation'
 import {addTeamMutationNotificationUpdater} from '../mutations/AddTeamMutation'
 import {clearNotificationNotificationUpdater} from '../mutations/ClearNotificationMutation'
@@ -6,29 +15,20 @@ import {
   createTaskNotificationUpdater
 } from '../mutations/CreateTaskMutation'
 import {deleteTaskNotificationUpdater} from '../mutations/DeleteTaskMutation'
+import {endNewMeetingNotificationUpdater} from '../mutations/EndNewMeetingMutation'
 import handleAddNotifications from '../mutations/handlers/handleAddNotifications'
-import {
-  removeOrgUserNotificationOnNext,
-  removeOrgUserNotificationUpdater
-} from '../mutations/RemoveOrgUserMutation'
 import {
   inviteToTeamNotificationOnNext,
   inviteToTeamNotificationUpdater
 } from '../mutations/InviteToTeamMutation'
-import {acceptTeamInvitationNotificationUpdater} from '../mutations/AcceptTeamInvitationMutation'
-import {endNewMeetingNotificationUpdater} from '../mutations/EndNewMeetingMutation'
-import graphql from 'babel-plugin-relay/macro'
-import {meetingTypeToLabel, meetingTypeToSlug} from '../utils/meetings/lookups'
-import {OnNextHandler, OnNextHistoryContext, UpdaterHandler} from '../types/relayMutations'
-import {requestSubscription, Variables} from 'relay-runtime'
-import {NotificationSubscriptionResponse} from '../__generated__/NotificationSubscription.graphql'
-import Atmosphere from '../Atmosphere'
-import {RouterProps} from 'react-router'
-import {RecordSourceSelectorProxy} from 'relay-runtime/lib/store/RelayStoreTypes'
-import {NotificationSubscription_meetingStageTimeLimitEnd} from '__generated__/NotificationSubscription_meetingStageTimeLimitEnd.graphql'
-import {NotificationSubscription_paymentRejected} from '__generated__/NotificationSubscription_paymentRejected.graphql'
+import {
+  removeOrgUserNotificationOnNext,
+  removeOrgUserNotificationUpdater
+} from '../mutations/RemoveOrgUserMutation'
 import {LocalStorageKey} from '../types/constEnums'
-import {InvalidateSessionsMutation_notification} from '__generated__/InvalidateSessionsMutation_notification.graphql'
+import {OnNextHandler, OnNextHistoryContext, UpdaterHandler} from '../types/relayMutations'
+import {meetingTypeToLabel} from '../utils/meetings/lookups'
+import {NotificationSubscriptionResponse} from '../__generated__/NotificationSubscription.graphql'
 
 graphql`
   fragment NotificationSubscription_paymentRejected on StripeFailPaymentPayload {
@@ -154,9 +154,8 @@ const meetingStageTimeLimitOnNext: OnNextHandler<
   const {timeLimitNotification} = payload
   const {meeting} = timeLimitNotification
   const {meetingType, team, id: meetingId} = meeting
-  const {id: teamId, name: teamName} = team
+  const {name: teamName} = tesam
   const meetingLabel = meetingTypeToLabel[meetingType]
-  const meetingSlug = meetingTypeToSlug[meetingType]
   atmosphere.eventEmitter.emit('addSnackbar', {
     key: `meetingStageLimitReached:${meetingId}`,
     autoDismiss: 10,
@@ -164,7 +163,7 @@ const meetingStageTimeLimitOnNext: OnNextHandler<
     action: {
       label: 'Go there',
       callback: () => {
-        history!.push(`/${meetingSlug}/${teamId}`)
+        history!.push(`/meet/${meetingId}`)
       }
     }
   })
