@@ -355,6 +355,7 @@ const initNewMeeting = (organization, teamMembers, meetingMembers) => {
     meetingNumber: 1,
     meetingType: RETROSPECTIVE,
     meetingMember: viewerMeetingMember,
+    name: 'Retro Meeting',
     organization,
     showConversionModal: false,
     meetingMembers,
