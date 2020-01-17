@@ -13,7 +13,6 @@ import user from './queries/user'
 import flagOverLimit from './mutations/flagOverLimit'
 import runScheduledJobs from './mutations/runScheduledJobs'
 import {GQLContext} from '../graphql'
-import loginSSO from './mutations/loginSSO'
 import draftEnterpriseInvoice from './mutations/draftEnterpriseInvoice'
 import githubAddAssignee from './mutations/githubAddAssignee'
 import stripeCreateInvoice from './mutations/stripeCreateInvoice'
@@ -58,7 +57,6 @@ const mutation = new GraphQLObjectType<any, GQLContext, any>({
     flagOverLimit,
     githubAddAssignee,
     loginSAML,
-    loginSSO,
     runScheduledJobs,
     sendBatchNotificationEmails,
     sendUpcomingInvoiceEmails,
