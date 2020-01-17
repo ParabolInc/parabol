@@ -50,7 +50,6 @@ const NavList = styled(DashNavList)({
 
 const DashSidebar = (props: Props) => {
   const {isOpen, viewer} = props
-  console.log('isOpen', isOpen)
   return (
     <Nav isOpen={isOpen}>
       <Contents>
