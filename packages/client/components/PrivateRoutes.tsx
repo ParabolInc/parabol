@@ -1,6 +1,7 @@
 import React, {lazy} from 'react'
 import {Route, Switch} from 'react-router'
 import useAuthRoute from '../hooks/useAuthRoute'
+import useNoIndex from '../hooks/useNoIndex'
 
 const Invoice = lazy(() =>
   import(/* webpackChunkName: 'InvoiceRoot' */ '../modules/invoice/containers/InvoiceRoot')
@@ -35,6 +36,7 @@ const ViewerNotOnTeamRoot = lazy(() =>
 
 const PrivateRoutes = () => {
   useAuthRoute()
+  useNoIndex()
   return (
     <Switch>
       <Route path='(/me|/newteam|/team)' component={DashboardRoot} />
