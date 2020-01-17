@@ -83,6 +83,7 @@ import emailPasswordReset from './mutations/emailPasswordReset'
 import resetPassword from './mutations/resetPassword'
 import invalidateSessions from './mutations/invalidateSessions'
 import createMassInvitation from './mutations/createMassInvitation'
+import renameMeeting from './mutations/renameMeeting'
 import addReactjiToReflection from './mutations/addReactjiToReflection'
 import setAppLocation from './mutations/setAppLocation'
 
@@ -145,6 +146,7 @@ export default new GraphQLObjectType<any, Context, any>({
     removeOrgUser,
     removeReflectTemplate,
     removeReflectTemplatePrompt,
+    renameMeeting,
     renameReflectTemplate,
     renameReflectTemplatePrompt,
     removeReflection,

@@ -18,6 +18,7 @@ import UpdateNewCheckInQuestionPayload from './UpdateNewCheckInQuestionPayload'
 import UpdateReflectionContentPayload from './UpdateReflectionContentPayload'
 import UpdateReflectionGroupTitlePayload from './UpdateReflectionGroupTitlePayload'
 import VoteForReflectionGroupPayload from './VoteForReflectionGroupPayload'
+import {RenameMeetingSuccess} from './RenameMeetingPayload'
 
 const types = [
   AddReactjiToReflectionSuccess,
@@ -31,6 +32,7 @@ const types = [
   PromoteNewMeetingFacilitatorPayload,
   RemoveReflectionPayload,
   SetAppLocationSuccess,
+  RenameMeetingSuccess,
   SetPhaseFocusPayload,
   SetStageTimerPayload,
   StartDraggingReflectionPayload,

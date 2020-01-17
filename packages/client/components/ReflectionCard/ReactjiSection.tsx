@@ -10,13 +10,12 @@ import useInitialRender from 'hooks/useInitialRender'
 import {Threshold} from 'types/constEnums'
 
 const Wrapper = styled('div')({
+  alignItems: 'flex-start',
   display: 'flex',
   flexWrap: 'wrap',
   justifyItems: 'center',
   justifyContent: 'start',
-  paddingBottom: 12,
-  paddingLeft: 14,
-  paddingRight: 14
+  padding: '0 14px 12px'
 })
 
 interface Props {

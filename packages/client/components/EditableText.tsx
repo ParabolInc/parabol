@@ -4,6 +4,7 @@ import Icon from './Icon'
 import {FONT_FAMILY, ICON_SIZE} from '../styles/typographyV2'
 import {PALETTE} from '../styles/paletteV2'
 import Legitity from '../validation/Legitity'
+import TextAreaAutoSize from 'react-textarea-autosize'
 
 const StaticBlock = styled('div')({
   alignItems: 'center',
@@ -51,6 +52,20 @@ const Input = styled('input')({
   width: 'auto'
 })
 
+const TextArea = styled(TextAreaAutoSize)({
+  backgroundColor: 'transparent',
+  border: 0,
+  color: PALETTE.TEXT_MAIN,
+  display: 'block',
+  fontSize: 'inherit',
+  fontWeight: 'inherit',
+  lineHeight: 'inherit',
+  outline: 'none',
+  padding: 0,
+  resize: 'none',
+  width: '100%'
+})
+
 const Form = styled('form')({
   display: 'flex',
   flexDirection: 'column'
@@ -63,6 +78,7 @@ interface Props {
   validate: (value: string) => Legitity
   handleSubmit: (value: string) => void
   hideIcon?: boolean
+  isWrap?: boolean
   initialValue: string
   maxLength: number
   placeholder: string
@@ -76,13 +92,22 @@ interface State {
 }
 
 class EditableText extends Component<Props, State> {
+  static getDerivedStateFromProps(
+    nextProps: Readonly<Props>,
+    prevState: State
+  ): Partial<State> | null {
+    const {initialValue} = nextProps
+    if (prevState.isEditing || initialValue === prevState.value) return null
+    return {value: initialValue}
+  }
+
   state = {
     autoFocus: false,
     isEditing: false,
     value: this.props.initialValue
   }
 
-  inputRef = React.createRef<HTMLInputElement>()
+  inputRef = React.createRef<HTMLInputElement | HTMLTextAreaElement>()
 
   componentDidMount() {
     if (this.props.autoFocus) {
@@ -101,7 +126,7 @@ class EditableText extends Component<Props, State> {
     })
   }
 
-  onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const {validate} = this.props
     const nextValue = e.target.value || ''
     validate(nextValue)
@@ -113,11 +138,18 @@ class EditableText extends Component<Props, State> {
     })
   }
 
-  onFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+  onFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const {value} = this.state
-    const {placeholder} = this.props
+    const {placeholder, isWrap} = this.props
     if (value.toLowerCase().startsWith(placeholder.toLowerCase())) {
       e.target.select()
+    }
+    if (isWrap) {
+      // hack to move caret to end
+      // because it's 2020 and we still have to do stupid hacks like this >:-(
+      const tmp = e.target.value
+      e.target.value = ''
+      e.target.value = tmp
     }
   }
 
@@ -150,21 +182,22 @@ class EditableText extends Component<Props, State> {
     )
   }
   renderEditing = () => {
-    const {error, maxLength, placeholder} = this.props
+    const {error, maxLength, placeholder, isWrap} = this.props
     const {value} = this.state
+    const inProps = {
+      autoFocus: true,
+      ref: this.inputRef,
+      maxLength,
+      onBlur: this.onSubmit,
+      onChange: this.onChange,
+      onFocus: this.onFocus,
+      onKeyDown: this.onKeyDown,
+      placeholder,
+      value
+    } as any
     return (
       <Form onSubmit={this.onSubmit}>
-        <Input
-          autoFocus
-          ref={this.inputRef}
-          maxLength={maxLength}
-          onBlur={this.onSubmit}
-          onChange={this.onChange}
-          onFocus={this.onFocus}
-          onKeyDown={this.onKeyDown}
-          placeholder={placeholder}
-          value={value}
-        />
+        {isWrap ? <TextArea {...inProps} maxRows={3} /> : <Input {...inProps} />}
         {error && <Error>{error}</Error>}
       </Form>
     )
