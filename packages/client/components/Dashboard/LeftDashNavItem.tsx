@@ -3,7 +3,7 @@ import styled from '@emotion/styled'
 import Icon from 'components/Icon'
 import {ICON_SIZE} from 'styles/typographyV2'
 import {PALETTE} from 'styles/paletteV2'
-import {NavSidebar} from 'types/constEnums'
+import {Breakpoint, NavSidebar} from 'types/constEnums'
 import PlainButton from 'components/PlainButton/PlainButton'
 import useRouter from 'hooks/useRouter'
 
@@ -16,11 +16,16 @@ const NavItem = styled(PlainButton)<{isActive: boolean}>(({isActive}) => ({
   fontSize: NavSidebar.FONT_SIZE,
   fontWeight: 600,
   lineHeight: NavSidebar.LINE_HEIGHT,
-  padding: '12px 8px',
+  marginBottom: 4,
+  marginTop: 4,
+  padding: 8,
   textDecoration: 'none',
   transition: `background-color 100ms ease-in`,
   userSelect: 'none',
   width: '100%',
+  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
+    borderRadius: '0 4px 4px 0'
+  },
   ':hover,:focus': {
     backgroundColor: PALETTE.BACKGROUND_TOGGLE_ACTIVE
   }
@@ -29,7 +34,7 @@ const NavItem = styled(PlainButton)<{isActive: boolean}>(({isActive}) => ({
 const StyledIcon = styled(Icon)({
   color: PALETTE.TEXT_MAIN,
   fontSize: ICON_SIZE.MD24,
-  marginRight: 8,
+  marginRight: 16,
   opacity: 0.5
 })
 

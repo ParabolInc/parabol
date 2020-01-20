@@ -29,8 +29,9 @@ interface Props {
 const Wrapper = styled('div')<{location: any}>(({location}) => ({
   alignItems: 'center',
   backgroundColor: 'hsla(0,0%,100%,.125)',
+  borderRadius: 4,
   display: 'flex',
-  margin: 12,
+  margin: '8px 16px',
   width: 480,
   visibility: getShowSearch(location) ? undefined : 'hidden'
 }))

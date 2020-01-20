@@ -161,7 +161,7 @@ export const enum NavSidebar {
   LINE_HEIGHT = '24px',
   SUB_FONT_SIZE = 14,
   SUB_LINE_HEIGHT = '24px',
-  WIDTH = 240
+  WIDTH = 256
 }
 
 export const enum NewMeeting {
@@ -202,7 +202,7 @@ export const enum RetroDemo {
 }
 
 export const enum RightSidebar {
-  WIDTH = 240
+  WIDTH = 256
 }
 
 export const enum Security {

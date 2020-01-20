@@ -47,7 +47,7 @@ const TopBarIcons = styled('div')({
 
 const Title = styled('div')({
   paddingLeft: 16,
-  fontSize: 24
+  fontSize: 20
 })
 
 const MobileDashTopBar = (props: Props) => {

@@ -25,6 +25,7 @@ const Contents = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   height: '100%',
+  padding: '4px 0',
   width: NavSidebar.WIDTH
 })
 

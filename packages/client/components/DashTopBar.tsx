@@ -43,7 +43,7 @@ const LeftNavHeader = styled('div')({
 
 const Img = styled('img')({
   cursor: 'pointer',
-  padding: 16
+  margin: '8px 16px'
 })
 
 const TopBarIcons = styled('div')({
