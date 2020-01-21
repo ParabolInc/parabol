@@ -13,6 +13,7 @@ import DashTopBar from './DashTopBar'
 import MobileDashTopBar from './MobileDashTopBar'
 import SwipeableDashSidebar from './SwipeableDashSidebar'
 import StartMeetingFAB from './StartMeetingFAB'
+import StaticStartMeetingFAB from './StaticStartMeetingFAB'
 
 const UserDashboard = lazy(() =>
   import(
@@ -88,7 +89,7 @@ const Dashboard = (props: Props) => {
           </Switch>
         </DashMain>
       </DashPanel>
-      <StartMeetingFAB />
+      {isDesktop ? <StaticStartMeetingFAB /> : <StartMeetingFAB />}
     </DashLayout>
   )
 }

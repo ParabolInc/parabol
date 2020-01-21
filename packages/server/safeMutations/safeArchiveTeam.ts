@@ -9,7 +9,10 @@ const safeArchiveTeam = async (teamId: string) => {
     team: r
       .table('Team')
       .get(teamId)
-      .update({isArchived: true}, {returnChanges: true})('changes')(0)('new_val')
+      .update(
+        {isArchived: true},
+        {returnChanges: true}
+      )('changes')(0)('new_val')
       .default(null),
     users: (r
       .table('TeamMember')
