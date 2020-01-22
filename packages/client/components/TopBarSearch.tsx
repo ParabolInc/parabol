@@ -18,13 +18,7 @@ const getShowSearch = (location: NonNullable<RouteProps['location']>) => {
     !!matchPath(pathname, {
       path: '/team/:teamId',
       exact: true,
-      strict: true
-    }) ||
-    // returning from team settings, url ends in slash
-    !!matchPath(pathname, {
-      path: '/team/:teamId/',
-      exact: true,
-      strict: true
+      strict: false
     })
   )
 }

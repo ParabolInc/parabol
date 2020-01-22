@@ -32,7 +32,6 @@ const NewTeam = lazy(() =>
 
 const getShowFAB = (location: NonNullable<RouteProps['location']>) => {
   const {pathname} = location
-  // not sure the cleanest way to check for trailing slash
   return (
     pathname.includes('/me/tasks') ||
     !!matchPath(pathname, {
@@ -48,12 +47,7 @@ const getShowFAB = (location: NonNullable<RouteProps['location']>) => {
     !!matchPath(pathname, {
       path: '/team/:teamId',
       exact: true,
-      strict: true
-    }) ||
-    !!matchPath(pathname, {
-      path: '/team/:teamId/',
-      exact: true,
-      strict: true
+      strict: false
     })
   )
 }
