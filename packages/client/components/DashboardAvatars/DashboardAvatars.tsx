@@ -7,14 +7,15 @@ import AddTeamMemberAvatarButton from '../AddTeamMemberAvatarButton'
 import DashboardAvatar from './DashboardAvatar'
 import ErrorBoundary from '../ErrorBoundary'
 import {Breakpoint} from 'types/constEnums'
+import makeMinWidthMediaQuery from 'utils/makeMinWidthMediaQuery'
 
-const dashboardBreakpoint = `@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`
+const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 
 const AvatarsList = styled('div')({
   display: 'flex',
   overflow: 'auto',
   maxWidth: '100%',
-  [dashboardBreakpoint]: {
+  [desktopBreakpoint]: {
     overflow: 'visible'
   }
 })
@@ -22,7 +23,7 @@ const AvatarsList = styled('div')({
 const ItemBlock = styled('div')({
   marginRight: 8,
   position: 'relative',
-  [dashboardBreakpoint]: {
+  [desktopBreakpoint]: {
     marginBottom: 8,
     marginLeft: 8,
     marginRight: 0

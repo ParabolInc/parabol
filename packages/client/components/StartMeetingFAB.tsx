@@ -9,7 +9,6 @@ import Icon from './Icon'
 
 const Block = styled('div')({
   position: 'fixed',
-  // mobile, use 16px offset
   bottom: 16,
   right: 16,
   // hacky, but we need the FAB to show up over the team right nav

@@ -10,12 +10,12 @@ import Icon from './Icon'
 
 const Block = styled('div')({
   position: 'fixed',
-  // laptop+, use 24px offset
   bottom: 16,
   right: 16,
   // hacky, but we need the FAB to show up over the team right nav
   zIndex: ZIndex.SIDE_SHEET,
   [makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)]: {
+    // this will work until we scope the FAB to dashboard main container
     right: `calc(((100vw - ${Layout.TASK_COLUMNS_MAX_WIDTH}px) / 2) + 16px)`
   }
 })

@@ -5,23 +5,21 @@ import {createFragmentContainer} from 'react-relay'
 import {AgendaAndTasks_viewer} from '__generated__/AgendaAndTasks_viewer.graphql'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 import {desktopSidebarShadow, navDrawerShadow} from '../../../../styles/elevation'
-import {Breakpoint, RightSidebar, ZIndex} from '../../../../types/constEnums'
+import {AppBar, Breakpoint, NavSidebar, RightSidebar, ZIndex} from '../../../../types/constEnums'
 import TeamColumnsContainer from '../../containers/TeamColumns/TeamColumnsContainer'
 import TeamTasksHeaderContainer from '../../containers/TeamTasksHeader/TeamTasksHeaderContainer'
 import AgendaListAndInput from '../AgendaListAndInput/AgendaListAndInput'
 import LabelHeading from 'components/LabelHeading/LabelHeading'
 import CloseAgenda from '../AgendaToggle/CloseAgenda'
+import makeMinWidthMediaQuery from 'utils/makeMinWidthMediaQuery'
 
-const desktopBreakpointMediaQuery = `@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`
-const desktopDashWidestMediaQuery = `@media screen and (min-width: ${Breakpoint.DASH_BREAKPOINT_WIDEST}px)`
+const desktopBreakpointMediaQuery = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
+const desktopDashWidestMediaQuery = makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)
 
 const RootBlock = styled('div')({
   display: 'flex',
   height: '100%',
-  width: '100%',
-  '@media screen and (min-width: 1200px)': {
-    minWidth: 0
-  }
+  width: '100%'
 })
 
 const TasksMain = styled('div')({
@@ -31,21 +29,15 @@ const TasksMain = styled('div')({
   height: '100%',
   overflow: 'auto',
   [desktopDashWidestMediaQuery]: {
-    paddingLeft: 256,
-    paddingRight: 256
+    paddingLeft: NavSidebar.WIDTH,
+    paddingRight: RightSidebar.WIDTH
   }
 })
-
-const teamDashLargeBreakpointUp = '@media (min-width: 123.25rem)'
 
 const TasksHeader = styled('div')({
   display: 'flex',
   justifyContent: 'flex-start',
-  width: '100%',
-  [teamDashLargeBreakpointUp]: {
-    justifyContent: 'center',
-    paddingTop: 0
-  }
+  width: '100%'
 })
 
 const TasksContent = styled('div')({
@@ -54,10 +46,7 @@ const TasksContent = styled('div')({
   height: '100%',
   margin: 0,
   minHeight: 0,
-  width: '100%',
-  [teamDashLargeBreakpointUp]: {
-    margin: '0 auto'
-  }
+  width: '100%'
 })
 
 const AgendaMain = styled('div')<{hideAgenda: boolean | null}>(({hideAgenda}) => ({
@@ -70,7 +59,7 @@ const AgendaMain = styled('div')<{hideAgenda: boolean | null}>(({hideAgenda}) =>
   position: 'fixed',
   right: 0,
   bottom: 0,
-  top: 56,
+  top: AppBar.HEIGHT,
   minWidth: RightSidebar.WIDTH,
   maxWidth: RightSidebar.WIDTH,
   zIndex: ZIndex.SIDE_SHEET, // make sure shadow is above cards
@@ -81,7 +70,7 @@ const AgendaMain = styled('div')<{hideAgenda: boolean | null}>(({hideAgenda}) =>
   },
   [desktopDashWidestMediaQuery]: {
     position: 'fixed',
-    top: 56
+    top: AppBar.HEIGHT
   }
 }))
 

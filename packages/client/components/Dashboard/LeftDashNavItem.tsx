@@ -6,6 +6,7 @@ import {PALETTE} from 'styles/paletteV2'
 import {Breakpoint, NavSidebar} from 'types/constEnums'
 import PlainButton from 'components/PlainButton/PlainButton'
 import useRouter from 'hooks/useRouter'
+import makeMinWidthMediaQuery from 'utils/makeMinWidthMediaQuery'
 
 const NavItem = styled(PlainButton)<{isActive: boolean}>(({isActive}) => ({
   alignItems: 'center',
@@ -23,7 +24,7 @@ const NavItem = styled(PlainButton)<{isActive: boolean}>(({isActive}) => ({
   transition: `background-color 100ms ease-in`,
   userSelect: 'none',
   width: '100%',
-  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
+  [makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)]: {
     borderRadius: '0 4px 4px 0'
   },
   ':hover,:focus': {

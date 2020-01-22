@@ -21,8 +21,9 @@ import Icon from 'components/Icon'
 import useTooltip from '../../../../hooks/useTooltip'
 import DashboardAvatars from 'components/DashboardAvatars/DashboardAvatars'
 import AgendaToggle from 'modules/teamDashboard/components/AgendaToggle/AgendaToggle'
+import makeMinWidthMediaQuery from 'utils/makeMinWidthMediaQuery'
 
-const dashMediaQuery = `@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`
+const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 
 const TeamMeta = styled('div')({
   // define
@@ -38,7 +39,7 @@ const TeamLinks = styled('div')({
   maxWidth: '100%',
   overflow: 'auto',
   width: '100%',
-  [dashMediaQuery]: {
+  [desktopBreakpoint]: {
     justifyContent: 'flex-start',
     margin: 0,
     width: 'auto'
@@ -51,7 +52,7 @@ const DashHeading = styled('div')({
   display: 'flex',
   fontSize: 24,
   lineHeight: '32px',
-  [dashMediaQuery]: {
+  [desktopBreakpoint]: {
     marginBottom: 8
   }
 })
@@ -91,7 +92,7 @@ const TeamHeaderAndAvatars = styled('div')({
   margin: '0 0 16px',
   padding: '0 0 16px',
   width: '100%',
-  [dashMediaQuery]: {
+  [desktopBreakpoint]: {
     display: 'flex',
     justifyContent: 'space-between'
   }
@@ -103,7 +104,7 @@ const AvatarsAndAgendaToggle = styled('div')({
   justifyContent: 'space-between',
   flexWrap: 'wrap',
   width: '100%',
-  [dashMediaQuery]: {
+  [desktopBreakpoint]: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-end',
