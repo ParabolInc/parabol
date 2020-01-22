@@ -78,7 +78,7 @@ const DashboardAvatar = (props: Props) => {
       {menuPortal(
         <TeamMemberAvatarMenu
           menuProps={menuProps}
-          isLead={isLead}
+          isLead={Boolean(isLead)}
           isViewerLead={isViewerLead}
           teamMember={teamMember}
           togglePromote={togglePromote}
