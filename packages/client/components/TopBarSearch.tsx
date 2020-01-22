@@ -37,6 +37,7 @@ const Wrapper = styled('div')<{location: any}>(({location}) => ({
   backgroundColor: 'hsla(0,0%,100%,.125)',
   borderRadius: 4,
   display: 'flex',
+  height: 40,
   margin: '8px 16px',
   width: 480,
   visibility: getShowSearch(location) ? undefined : 'hidden'

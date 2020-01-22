@@ -13,6 +13,7 @@ import LabelHeading from 'components/LabelHeading/LabelHeading'
 import CloseAgenda from '../AgendaToggle/CloseAgenda'
 
 const desktopBreakpointMediaQuery = `@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`
+const desktopDashWidestMediaQuery = `@media screen and (min-width: ${Breakpoint.DASH_BREAKPOINT_WIDEST}px)`
 
 const RootBlock = styled('div')({
   display: 'flex',
@@ -28,7 +29,11 @@ const TasksMain = styled('div')({
   flex: 1,
   flexDirection: 'column',
   height: '100%',
-  overflow: 'auto'
+  overflow: 'auto',
+  [desktopDashWidestMediaQuery]: {
+    paddingLeft: 256,
+    paddingRight: 256
+  }
 })
 
 const teamDashLargeBreakpointUp = '@media (min-width: 123.25rem)'
@@ -37,7 +42,6 @@ const TasksHeader = styled('div')({
   display: 'flex',
   justifyContent: 'flex-start',
   width: '100%',
-
   [teamDashLargeBreakpointUp]: {
     justifyContent: 'center',
     paddingTop: 0
@@ -51,7 +55,6 @@ const TasksContent = styled('div')({
   margin: 0,
   minHeight: 0,
   width: '100%',
-
   [teamDashLargeBreakpointUp]: {
     margin: '0 auto'
   }
@@ -75,6 +78,10 @@ const AgendaMain = styled('div')<{hideAgenda: boolean | null}>(({hideAgenda}) =>
     boxShadow: desktopSidebarShadow,
     position: 'relative',
     top: 0
+  },
+  [desktopDashWidestMediaQuery]: {
+    position: 'fixed',
+    top: 56
   }
 }))
 
@@ -89,7 +96,7 @@ const AgendaContent = styled('div')({
   display: 'flex',
   overflow: 'hidden',
   // padding-bottom makes space for the Start New Meeting FAB
-  padding: '0 0 84px',
+  padding: '0 0 80px',
   height: '100%',
   flexDirection: 'column',
   width: '100%'

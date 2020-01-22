@@ -3,17 +3,21 @@ import useRouter from 'hooks/useRouter'
 import React from 'react'
 import {PALETTE} from 'styles/paletteV2'
 import getTeamIdFromPathname from 'utils/getTeamIdFromPathname'
-import {ZIndex} from '../types/constEnums'
+import makeMinWidthMediaQuery from 'utils/makeMinWidthMediaQuery'
+import {Breakpoint, Layout, ZIndex} from '../types/constEnums'
 import FloatingActionButton from './FloatingActionButton'
 import Icon from './Icon'
 
 const Block = styled('div')({
   position: 'fixed',
-  // laptop+, use 28px offset
-  bottom: 28,
-  right: 28,
+  // laptop+, use 24px offset
+  bottom: 16,
+  right: 16,
   // hacky, but we need the FAB to show up over the team right nav
-  zIndex: ZIndex.SIDE_SHEET
+  zIndex: ZIndex.SIDE_SHEET,
+  [makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)]: {
+    right: `calc(((100vw - ${Layout.TASK_COLUMNS_MAX_WIDTH}px) / 2) + 16px)`
+  }
 })
 
 const Button = styled(FloatingActionButton)({

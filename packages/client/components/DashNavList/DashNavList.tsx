@@ -6,6 +6,7 @@ import {DashNavList_viewer} from '../../__generated__/DashNavList_viewer.graphql
 import LeftDashNavItem from '../Dashboard/LeftDashNavItem'
 
 const DashNavListStyles = styled('div')({
+  paddingRight: 8,
   width: '100%'
 })
 

@@ -4,7 +4,7 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from 'styles/paletteV2'
 import {ICON_SIZE} from 'styles/typographyV2'
-import {NavSidebar} from 'types/constEnums'
+import {AppBar, Breakpoint, Layout, NavSidebar} from 'types/constEnums'
 import {DashTopBar_viewer} from '__generated__/DashTopBar_viewer.graphql'
 import parabolLogo from '../styles/theme/images/brand/logo.svg'
 import Icon from './Icon'
@@ -15,6 +15,9 @@ import TopBarMeetings from './TopBarMeetings'
 import TopBarNotifications from './TopBarNotifications'
 import TopBarSearch from './TopBarSearch'
 import useRouter from 'hooks/useRouter'
+import makeMinWidthMediaQuery from 'utils/makeMinWidthMediaQuery'
+
+const dashWidestBreakpoint = makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)
 
 interface Props {
   toggle: () => void
@@ -24,8 +27,12 @@ interface Props {
 const Wrapper = styled('header')({
   backgroundColor: PALETTE.PRIMARY_MAIN,
   display: 'flex',
-  // 64px was the spec, but it looked too fat
-  height: 56
+  height: AppBar.HEIGHT,
+  justifyContent: 'space-between',
+  width: '100%',
+  [dashWidestBreakpoint]: {
+    paddingRight: NavSidebar.WIDTH
+  }
 })
 
 const LeftNavToggle = styled(PlainButton)({
@@ -56,6 +63,19 @@ const TopBarIcons = styled('div')({
   paddingRight: 16
 })
 
+const TopBarMain = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  flex: 1,
+  height: AppBar.HEIGHT,
+  justifyContent: 'space-between',
+  width: '100%',
+  [dashWidestBreakpoint]: {
+    margin: '0 auto',
+    maxWidth: Layout.TASK_COLUMNS_MAX_WIDTH
+  }
+})
+
 const DashTopBar = (props: Props) => {
   const {toggle, viewer} = props
   const {history} = useRouter()
@@ -72,13 +92,15 @@ const DashTopBar = (props: Props) => {
         </LeftNavToggle>
         <Img onClick={gotoHome} crossOrigin='' src={parabolLogo} alt='' />
       </LeftNavHeader>
-      <TopBarSearch viewer={viewer} />
-      <TopBarIcons>
-        {false && <TopBarIcon icon={'help_outline'} />}
-        <TopBarNotifications hasNotification={hasNotification} />
-        <TopBarMeetings teams={teams} />
-        <TopBarAvatar viewer={viewer || null} />
-      </TopBarIcons>
+      <TopBarMain>
+        <TopBarSearch viewer={viewer} />
+        <TopBarIcons>
+          {false && <TopBarIcon icon={'help_outline'} />}
+          <TopBarNotifications hasNotification={hasNotification} />
+          <TopBarMeetings teams={teams} />
+          <TopBarAvatar viewer={viewer || null} />
+        </TopBarIcons>
+      </TopBarMain>
     </Wrapper>
   )
 }
