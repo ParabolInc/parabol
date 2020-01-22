@@ -45,6 +45,7 @@ const LeftNavHeader = styled('div')({
   alignItems: 'center',
   color: PALETTE.TEXT_LIGHT,
   display: 'flex',
+  flexShrink: 0,
   width: NavSidebar.WIDTH
 })
 
@@ -57,7 +58,6 @@ const TopBarIcons = styled('div')({
   alignItems: 'center',
   color: PALETTE.TEXT_LIGHT,
   display: 'flex',
-  flex: 1,
   justifyContent: 'flex-end',
   maxWidth: 560,
   paddingRight: 16
