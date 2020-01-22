@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import Icon from './Icon'
 import React from 'react'
+import {PALETTE} from 'styles/paletteV2'
 
 const MenuToggleInner = styled('div')({
   alignItems: 'center',
@@ -11,6 +12,7 @@ const MenuToggleInner = styled('div')({
 })
 
 const GroupIcon = styled(Icon)({
+  color: PALETTE.TEXT_GRAY,
   paddingLeft: 12,
   paddingRight: 12
 })
