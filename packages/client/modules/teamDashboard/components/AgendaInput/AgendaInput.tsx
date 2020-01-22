@@ -55,14 +55,14 @@ const InputField = styled('input')<{disabled: boolean}>(
     position: 'relative',
     textIndent: '4px',
     width: '100%',
-    ...makeFieldColorPalette('cool', false),
+    ...makeFieldColorPalette('cool', false, {backgroundColor: 'transparent'}),
     ...inputPlaceholderStyles
   },
   ({disabled}) => {
     return (
       !disabled && {
         cursor: 'text',
-        ...makeFieldColorPalette('cool', true)
+        ...makeFieldColorPalette('cool', true, {backgroundColor: 'transparent'})
       }
     )
   }

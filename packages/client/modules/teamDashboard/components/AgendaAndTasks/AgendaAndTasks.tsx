@@ -5,11 +5,14 @@ import {createFragmentContainer} from 'react-relay'
 import {AgendaAndTasks_viewer} from '__generated__/AgendaAndTasks_viewer.graphql'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 import {desktopSidebarShadow, navDrawerShadow} from '../../../../styles/elevation'
-import {RightSidebar, ZIndex} from '../../../../types/constEnums'
+import {Breakpoint, RightSidebar, ZIndex} from '../../../../types/constEnums'
 import TeamColumnsContainer from '../../containers/TeamColumns/TeamColumnsContainer'
 import TeamTasksHeaderContainer from '../../containers/TeamTasksHeader/TeamTasksHeaderContainer'
 import AgendaListAndInput from '../AgendaListAndInput/AgendaListAndInput'
-import AgendaToggle from '../AgendaToggle/AgendaToggle'
+import LabelHeading from 'components/LabelHeading/LabelHeading'
+import CloseAgenda from '../AgendaToggle/CloseAgenda'
+
+const desktopBreakpointMediaQuery = `@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`
 
 const RootBlock = styled('div')({
   display: 'flex',
@@ -28,14 +31,14 @@ const TasksMain = styled('div')({
   overflow: 'auto'
 })
 
-const dashTeamBreakpointUp = '@media (min-width: 123.25rem)'
+const teamDashLargeBreakpointUp = '@media (min-width: 123.25rem)'
+
 const TasksHeader = styled('div')({
   display: 'flex',
-  paddingTop: '.75rem',
   justifyContent: 'flex-start',
   width: '100%',
 
-  [dashTeamBreakpointUp]: {
+  [teamDashLargeBreakpointUp]: {
     justifyContent: 'center',
     paddingTop: 0
   }
@@ -49,34 +52,52 @@ const TasksContent = styled('div')({
   minHeight: 0,
   width: '100%',
 
-  [dashTeamBreakpointUp]: {
+  [teamDashLargeBreakpointUp]: {
     margin: '0 auto'
   }
 })
 
 const AgendaMain = styled('div')<{hideAgenda: boolean | null}>(({hideAgenda}) => ({
-  backgroundColor: hideAgenda ? '' : '#FFFFFF',
-  boxShadow: hideAgenda ? 'none' : navDrawerShadow,
-  display: 'flex',
+  backgroundColor: '#FFFFFF',
+  boxShadow: navDrawerShadow,
+  display: hideAgenda ? 'none' : 'flex',
   flex: 1,
   flexDirection: 'column',
   overflow: 'hidden',
-  position: hideAgenda ? 'absolute' : undefined,
-  right: hideAgenda ? 0 : undefined,
+  position: 'fixed',
+  right: 0,
+  bottom: 0,
+  top: 56,
   minWidth: RightSidebar.WIDTH,
   maxWidth: RightSidebar.WIDTH,
-  '@media screen and (min-width: 800px)': {
-    boxShadow: hideAgenda ? 'none' : desktopSidebarShadow
-  },
-  zIndex: ZIndex.SIDE_SHEET // make sure shadow is above cards
+  zIndex: ZIndex.SIDE_SHEET, // make sure shadow is above cards
+  [desktopBreakpointMediaQuery]: {
+    boxShadow: desktopSidebarShadow,
+    position: 'relative',
+    top: 0
+  }
 }))
+
+const AgendaHeader = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  justifyContent: 'space-between',
+  padding: '16px 8px 16px 16px'
+})
 
 const AgendaContent = styled('div')({
   display: 'flex',
   overflow: 'hidden',
+  // padding-bottom makes space for the Start New Meeting FAB
+  padding: '0 0 84px',
   height: '100%',
   flexDirection: 'column',
   width: '100%'
+})
+
+const StyledLabelHeading = styled(LabelHeading)({
+  fontSize: 14,
+  textTransform: 'none'
 })
 
 interface Props {
@@ -96,7 +117,7 @@ const AgendaAndTasks = (props: Props) => {
       {/* Tasks */}
       <TasksMain>
         <TasksHeader>
-          <TeamTasksHeaderContainer team={team} />
+          <TeamTasksHeaderContainer team={team} viewer={viewer} />
         </TasksHeader>
         <TasksContent>
           <TeamColumnsContainer viewer={viewer} />
@@ -104,9 +125,12 @@ const AgendaAndTasks = (props: Props) => {
       </TasksMain>
       {/* Agenda */}
       <AgendaMain hideAgenda={hideAgenda}>
-        <AgendaToggle hideAgenda={hideAgenda} teamId={teamId} />
         {!hideAgenda && (
           <AgendaContent>
+            <AgendaHeader>
+              <StyledLabelHeading>{'Team Agenda'}</StyledLabelHeading>
+              <CloseAgenda hideAgenda={hideAgenda} teamId={teamId} />
+            </AgendaHeader>
             <AgendaListAndInput dashSearch={dashSearch || ''} team={team!} />
           </AgendaContent>
         )}
@@ -128,6 +152,7 @@ export default createFragmentContainer(AgendaAndTasks, {
       teamMember(teamId: $teamId) {
         hideAgenda
       }
+      ...TeamTasksHeaderContainer_viewer
       ...TeamColumnsContainer_viewer
     }
   `

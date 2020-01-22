@@ -4,7 +4,7 @@ import {PALETTE} from '../styles/paletteV2'
 
 const DropdownMenuLabel = styled('div')<{isEmpty?: boolean}>(({isEmpty}) => ({
   ...textOverflow,
-  borderBottom: `1px solid ${PALETTE.BORDER_LIGHT}`,
+  borderBottom: `1px solid ${PALETTE.BORDER_LIGHTER}`,
   color: PALETTE.TEXT_MAIN,
   fontSize: 15,
   fontWeight: 600,

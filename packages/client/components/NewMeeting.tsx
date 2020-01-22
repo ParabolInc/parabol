@@ -39,7 +39,7 @@ const NewMeetingBlock = styled('div')<{innerWidth: number; isDesktop: boolean}>(
     gridTemplateColumns: isDesktop ? '8vw minmax(0, 4fr) minmax(0, 3fr)' : '100%',
     gridTemplateRows: isDesktop ? '8vw 4fr 3fr' : '48px',
     gridTemplateAreas: isDesktop
-      ? ` 'backButton x1 x1' 
+      ? ` 'backButton x1 x1'
         'x2 picker howto'
         'x2 settings actions'`
       : `'backButton' 'picker' 'howto' 'settings' 'actions'`,

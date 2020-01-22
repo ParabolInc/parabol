@@ -6,15 +6,27 @@ import graphql from 'babel-plugin-relay/macro'
 import AddTeamMemberAvatarButton from '../AddTeamMemberAvatarButton'
 import DashboardAvatar from './DashboardAvatar'
 import ErrorBoundary from '../ErrorBoundary'
+import {Breakpoint} from 'types/constEnums'
+
+const dashboardBreakpoint = `@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`
 
 const AvatarsList = styled('div')({
   display: 'flex',
-  justifyContent: 'flex-end'
+  overflow: 'auto',
+  maxWidth: '100%',
+  [dashboardBreakpoint]: {
+    overflow: 'visible'
+  }
 })
 
 const ItemBlock = styled('div')({
-  marginLeft: 8,
-  position: 'relative'
+  marginRight: 8,
+  position: 'relative',
+  [dashboardBreakpoint]: {
+    marginBottom: 8,
+    marginLeft: 8,
+    marginRight: 0
+  }
 })
 
 interface Props {
@@ -26,6 +38,9 @@ const DashboardAvatars = (props: Props) => {
   const {id: teamId, isLead: isViewerLead, teamMembers} = team
   return (
     <AvatarsList>
+      <ItemBlock>
+        <AddTeamMemberAvatarButton teamId={teamId} teamMembers={teamMembers} />
+      </ItemBlock>
       {teamMembers.map((teamMember) => {
         return (
           <ItemBlock key={`dbAvatar${teamMember.id}`}>
@@ -35,9 +50,6 @@ const DashboardAvatars = (props: Props) => {
           </ItemBlock>
         )
       })}
-      <ItemBlock>
-        <AddTeamMemberAvatarButton teamId={teamId} teamMembers={teamMembers} />
-      </ItemBlock>
     </AvatarsList>
   )
 }
