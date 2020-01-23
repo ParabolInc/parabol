@@ -3,7 +3,7 @@ import {PALETTE} from '../../../../styles/paletteV2'
 import {emailFontFamily, emailPrimaryButtonStyle, emailTableBase} from '../../../../styles/email'
 import emailDir from '../../emailDir'
 import EmailBorderBottom from '../SummaryEmail/MeetingSummaryEmail/EmailBorderBottom'
-import {LocalStorageKey} from 'types/constEnums'
+import {LocalStorageKey} from '../../../../types/constEnums'
 
 const tableStyle = {
   ...emailTableBase,

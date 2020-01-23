@@ -11,6 +11,7 @@ import {MenuProps} from '../hooks/useMenu'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import SelectMeetingDropdownItem from './SelectMeetingDropdownItem'
+import Icon from 'components/Icon'
 
 interface Props {
   menuProps: MenuProps
@@ -29,10 +30,17 @@ const HeaderLabel = styled('div')({
 const NoMeetings = styled('div')({
   alignItems: 'center',
   display: 'flex',
+  fontSize: 16,
   fontWeight: 600,
+  height: 56,
   justifyContent: 'center',
-  padding: 8,
+  padding: '0 16px',
   width: '100%'
+})
+
+const StyledIcon = styled(Icon)({
+  color: PALETTE.TEXT_GRAY,
+  marginRight: 16
 })
 
 const SelectMeetingDropdown = (props: Props) => {
@@ -44,12 +52,16 @@ const SelectMeetingDropdown = (props: Props) => {
     const teamId = getTeamIdFromPathname()
     history.push(`/new-meeting/${teamId}`)
   }
+  const NoMeetingItem = () => (
+    <NoMeetings>
+      <StyledIcon>{'forum'}</StyledIcon>
+      {'Start a New Meeting'}
+    </NoMeetings>
+  )
   return (
     <Menu ariaLabel={'Select the Meeting to enter'} {...menuProps}>
       <HeaderLabel>{label}</HeaderLabel>
-      {meetingCount === 0 && (
-        <MenuItem onClick={startMeeting} label={<NoMeetings>{'Start a New Meeting'}</NoMeetings>} />
-      )}
+      {meetingCount === 0 && <MenuItem onClick={startMeeting} label={<NoMeetingItem />} />}
       {meetings.map((meeting) => {
         const handleClick = () => {
           history.push(`/meet/${meeting.id}`)
