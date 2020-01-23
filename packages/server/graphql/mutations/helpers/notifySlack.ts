@@ -1,21 +1,16 @@
 import ms from 'ms'
 import {Unpromise} from '../../../../client/types/generics'
+import formatTime from '../../../../client/utils/date/formatTime'
+import formatWeekday from '../../../../client/utils/date/formatWeekday'
 import findStageById from '../../../../client/utils/meetings/findStageById'
-import {
-  meetingTypeToLabel,
-  meetingTypeToSlug,
-  phaseLabelLookup
-} from '../../../../client/utils/meetings/lookups'
+import {meetingTypeToLabel, phaseLabelLookup} from '../../../../client/utils/meetings/lookups'
 import getRethink from '../../../database/rethinkDriver'
-import {MeetingType} from '../../../database/types/Meeting'
 import SlackNotification, {SlackNotificationEvent} from '../../../database/types/SlackNotification'
+import {toEpochSeconds} from '../../../utils/epochTime'
 import makeAppLink from '../../../utils/makeAppLink'
 import sendToSentry from '../../../utils/sendToSentry'
 import SlackManager from '../../../utils/SlackManager'
 import {DataLoaderWorker} from '../../graphql'
-import {toEpochSeconds} from '../../../utils/epochTime'
-import formatWeekday from '../../../../client/utils/date/formatWeekday'
-import formatTime from '../../../../client/utils/date/formatTime'
 
 const getSlackDetails = async (
   event: SlackNotificationEvent,
@@ -80,13 +75,12 @@ const notifySlack = async (
 }
 
 export const startSlackMeeting = async (
+  meetingId: string,
   teamId: string,
-  dataLoader: DataLoaderWorker,
-  meetingType: MeetingType
+  dataLoader: DataLoaderWorker
 ) => {
   const team = await dataLoader.get('teams').load(teamId)
-  const meetingSlug = meetingTypeToSlug[meetingType]
-  const meetingUrl = makeAppLink(`${meetingSlug}/${teamId}`)
+  const meetingUrl = makeAppLink(`meet/${meetingId}`)
   const slackText = `${team.name} has started a meeting!\n To join, click here: ${meetingUrl}`
   notifySlack('meetingStart', dataLoader, teamId, slackText).catch(console.log)
 }
@@ -151,8 +145,7 @@ export const notifySlackTimeLimitStart = async (
   const {meetingType, phases, facilitatorStageId} = meeting
   const stageRes = findStageById(phases, facilitatorStageId)
   const {stage} = stageRes!
-  const slug = meetingTypeToSlug[meetingType]
-  const meetingUrl = makeAppLink(`${slug}/${teamId}`)
+  const meetingUrl = makeAppLink(`meet/${meetingId}`)
   const meetingLabel = meetingTypeToLabel[meetingType]
   const {phaseType} = stage
   const phaseLabel = phaseLabelLookup[phaseType]

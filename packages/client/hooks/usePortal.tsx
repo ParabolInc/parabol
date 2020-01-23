@@ -49,7 +49,6 @@ const usePortal = (options: UsePortalOptions = {}) => {
       /* portal already removed (possible when parent is not document.body) */
     }
     portalRef.current = undefined
-    console.log('show body scroll uP')
     showBodyScroll.current && showBodyScroll.current()
     timeoutRef.current = null
   })
@@ -101,7 +100,6 @@ const usePortal = (options: UsePortalOptions = {}) => {
     if (portalStatus <= PortalStatus.Entered) return
 
     if (!options.allowScroll) {
-      console.log('hide body scroll uP')
       showBodyScroll.current = hideBodyScroll()
     }
     if (!options.noClose) {

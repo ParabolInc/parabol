@@ -1,15 +1,15 @@
-import {NewMeetingSummary_viewer} from '../../../__generated__/NewMeetingSummary_viewer.graphql'
+import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import {MEETING_SUMMARY_LABEL} from '../../../utils/constants'
-import makeHref from '../../../utils/makeHref'
-import {meetingTypeToLabel, meetingTypeToSlug} from '../../../utils/meetings/lookups'
-import {demoTeamId} from '../../demo/initDB'
-import MeetingSummaryEmail from '../../email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail'
+import useDocumentTitle from '../../../hooks/useDocumentTitle'
 import useRouter from '../../../hooks/useRouter'
 import {PALETTE} from '../../../styles/paletteV2'
-import useDocumentTitle from '../../../hooks/useDocumentTitle'
+import {MEETING_SUMMARY_LABEL} from '../../../utils/constants'
+import makeHref from '../../../utils/makeHref'
+import {meetingTypeToLabel} from '../../../utils/meetings/lookups'
+import {NewMeetingSummary_viewer} from '../../../__generated__/NewMeetingSummary_viewer.graphql'
+import {demoTeamId} from '../../demo/initDB'
+import MeetingSummaryEmail from '../../email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail'
 
 interface Props {
   viewer: NewMeetingSummary_viewer
@@ -40,8 +40,7 @@ const NewMeetingSummary = (props: Props) => {
   const title = `${meetingLabel} Meeting ${MEETING_SUMMARY_LABEL} | ${teamName} ${meetingNumber}`
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useDocumentTitle(title)
-  const slug = meetingTypeToSlug[meetingType]
-  const meetingUrl = makeHref(`/${slug}/${teamId}`)
+  const meetingUrl = makeHref(`/meet/${meetingId}`)
   const teamDashUrl = `/team/${teamId}`
   const emailCSVUrl = `/new-summary/${meetingId}/csv`
   return (

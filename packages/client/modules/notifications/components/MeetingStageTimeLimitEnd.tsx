@@ -1,21 +1,21 @@
-import {MeetingStageTimeLimitEnd_notification} from '../../../__generated__/MeetingStageTimeLimitEnd_notification.graphql'
-import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
 import IconAvatar from '../../../components/IconAvatar/IconAvatar'
 import RaisedButton from '../../../components/RaisedButton'
 import Row from '../../../components/Row/Row'
-import ui from '../../../styles/ui'
-import NotificationButton from './NotificationButton'
-import NotificationMessage from './NotificationMessage'
-import useRouter from '../../../hooks/useRouter'
-import {meetingTypeToLabel, meetingTypeToSlug} from '../../../utils/meetings/lookups'
-import AcknowledgeButton from './AcknowledgeButton/AcknowledgeButton'
-import useMutationProps from '../../../hooks/useMutationProps'
-import NotificationErrorMessage from './NotificationErrorMessage'
 import useAtmosphere from '../../../hooks/useAtmosphere'
+import useMutationProps from '../../../hooks/useMutationProps'
+import useRouter from '../../../hooks/useRouter'
 import ClearNotificationMutation from '../../../mutations/ClearNotificationMutation'
+import ui from '../../../styles/ui'
+import {meetingTypeToLabel} from '../../../utils/meetings/lookups'
+import {MeetingStageTimeLimitEnd_notification} from '../../../__generated__/MeetingStageTimeLimitEnd_notification.graphql'
+import AcknowledgeButton from './AcknowledgeButton/AcknowledgeButton'
+import NotificationButton from './NotificationButton'
+import NotificationErrorMessage from './NotificationErrorMessage'
+import NotificationMessage from './NotificationMessage'
 
 interface Props {
   notification: MeetingStageTimeLimitEnd_notification
@@ -27,14 +27,13 @@ const MeetingStageTimeLimitEnd = (props: Props) => {
   const {notification} = props
   const {history} = useRouter()
   const {id: notificationId, meeting} = notification
-  const {meetingType, team} = meeting
-  const {id: teamId, name: teamName} = team
+  const {id: meetingId, meetingType, team} = meeting
+  const {name: teamName} = team
   const meetingLabel = meetingTypeToLabel[meetingType]
   const {error, submitMutation, onCompleted, onError, submitting} = useMutationProps()
   const atmosphere = useAtmosphere()
   const goThere = () => {
-    const meetingSlug = meetingTypeToSlug[meetingType]
-    history.push(`/${meetingSlug}/${teamId}`)
+    history.push(`/meet/${meetingId}`)
   }
 
   const acknowledge = () => {
@@ -71,9 +70,9 @@ export default createFragmentContainer(MeetingStageTimeLimitEnd, {
     fragment MeetingStageTimeLimitEnd_notification on NotificationMeetingStageTimeLimitEnd {
       id
       meeting {
+        id
         meetingType
         team {
-          id
           name
         }
       }

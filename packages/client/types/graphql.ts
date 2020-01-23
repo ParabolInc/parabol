@@ -2672,6 +2672,7 @@ export interface IVerifiedInvitationPayload {
    * name of the inviting team, present if invitation exists
    */
   teamName: string | null
+  meetingId: string | null
   meetingType: MeetingTypeEnum | null
 
   /**
