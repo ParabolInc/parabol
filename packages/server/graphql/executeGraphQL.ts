@@ -11,7 +11,7 @@ import getDataLoader from './getDataLoader'
 import privateSchema from './intranetSchema/intranetSchema'
 import publicSchema from './rootSchema'
 import getRateLimiter from './getRateLimiter'
-import {getUserId} from '../utils/authorization'
+// import {getUserId} from '../utils/authorization'
 import {ExecutionResultDataDefault} from 'graphql/execution/execute'
 
 interface GQLRequest {
