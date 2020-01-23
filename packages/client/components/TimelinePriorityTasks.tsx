@@ -44,7 +44,9 @@ const TaskList = styled('div')({
   paddingTop: 8
 })
 
-const PriorityTaskBody = styled('div')({})
+const PriorityTaskBody = styled('div')({
+  width: '100%'
+})
 
 const TimelinePriorityTasks = (props: Props) => {
   const {viewer} = props

@@ -49,6 +49,11 @@ export const meetingTypeToLabel = {
   [ACTION]: 'Action' as 'Action'
 }
 
+export const meetingTypeToIcon = {
+  [RETROSPECTIVE]: 'history',
+  [ACTION]: 'change_history'
+} as const
+
 export const phaseTypeToSlug = {
   [CHECKIN]: 'checkin',
   [REFLECT]: 'reflect',

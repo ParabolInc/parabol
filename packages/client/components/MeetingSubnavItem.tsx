@@ -21,7 +21,7 @@ const ItemRoot = styled('div')<ItemRootProps>(
       ? PALETTE.BACKGROUND_NAV_LIGHT_ACTIVE
       : isDragging
       ? PALETTE.BACKGROUND_NAV_LIGHT_HOVER
-      : '#FFFFFF',
+      : 'transparent',
     borderRadius: '0 4px 4px 0',
     color: PALETTE.TEXT_MAIN,
     display: 'flex',

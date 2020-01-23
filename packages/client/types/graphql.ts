@@ -280,6 +280,11 @@ export interface IUser {
   teamMember: ITeamMember | null
 
   /**
+   * The highest tier of any org the user belongs to
+   */
+  tier: TierEnum
+
+  /**
    * all the teams the user is a part of that the viewer can see
    */
   tms: Array<string>

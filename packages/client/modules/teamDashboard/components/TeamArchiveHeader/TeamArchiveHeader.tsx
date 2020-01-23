@@ -28,7 +28,7 @@ const Heading = styled('div')({
 
 const StyledIcon = styled(Icon)({
   color: PALETTE.TEXT_GRAY,
-  fontSize: ICON_SIZE.MD18,
+  fontSize: ICON_SIZE.MD24,
   marginRight: 8
 })
 

@@ -72,7 +72,7 @@ export default function makeFieldColorPalette(
       backgroundColor: fieldPalettes[colorPalette].selection,
       ...selection
     },
-
-    ...addPsuedoClassStyles
+    ...addPsuedoClassStyles,
+    ...customStyles
   }
 }

@@ -3,20 +3,19 @@ import withAtmosphere, {
   WithAtmosphereProps
 } from '../../../../decorators/withAtmosphere/withAtmosphere'
 import ToggleAgendaListMutation from '../../../../mutations/ToggleAgendaListMutation'
-import {Gutters} from '../../../../types/constEnums'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 import {CompletedHandler, ErrorHandler} from '../../../../types/relayMutations'
-import styled from '@emotion/styled'
 import {AGENDA_ITEM_LABEL} from '../../../../utils/constants'
-import OutlinedButton from '../../../../components/OutlinedButton'
-import FlatButton from '../../../../components/FlatButton'
+import LinkButton from '../../../../components/LinkButton'
 import IconLabel from '../../../../components/IconLabel'
+import styled from '@emotion/styled'
+import {PALETTE} from '../../../../styles/paletteV2'
 
-const RootBlock = styled('div')({
-  alignItems: 'flex-end',
-  display: 'flex',
-  padding: `16px ${Gutters.DASH_GUTTER}`,
-  width: '100%'
+const StyledLinkButton = styled(LinkButton)({
+  height: 24,
+  '&:hover, &:focus, &:active': {
+    color: PALETTE.TEXT_GRAY
+  }
 })
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
@@ -35,18 +34,10 @@ const AgendaToggle = (props: Props) => {
     }
   }
   const label = `${hideAgenda ? 'See' : 'Hide'} ${AGENDA_ITEM_LABEL}s`
-  const ToggleButton = hideAgenda ? OutlinedButton : FlatButton
   return (
-    <RootBlock>
-      <ToggleButton
-        key={`agendaToggleTo${hideAgenda ? 'Show' : 'Hide'}`}
-        onClick={toggleHide}
-        palette={hideAgenda ? 'warm' : 'mid'}
-        style={{width: '100%'}}
-      >
-        <IconLabel icon='comment' label={label} />
-      </ToggleButton>
-    </RootBlock>
+    <StyledLinkButton key={`agendaToggleTo${hideAgenda ? 'Show' : 'Hide'}`} onClick={toggleHide}>
+      <IconLabel icon='comment' iconLarge label={label} />
+    </StyledLinkButton>
   )
 }
 

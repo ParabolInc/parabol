@@ -11,25 +11,25 @@ interface Props {
 
 const UserColumnsContainer = (props: Props) => {
   const {viewer} = props
-  const {contentFilter, tasks, teamFilter} = viewer
+  const {dashSearch, tasks, teamFilter} = viewer
   const teamFilterId = (teamFilter && teamFilter.id) || null
   const filteredTasks = useMemo(() => {
-    const contentFilterRegex = new RegExp(contentFilter!, 'i')
+    const dashSearchRegex = new RegExp(dashSearch!, 'i')
     const nodes = tasks.edges.map(({node}) => node)
-    const contentFilteredNodes = contentFilter
+    const dashSearchNodes = dashSearch
       ? nodes.filter((task) => {
-          return task.contentText && task.contentText.match(contentFilterRegex)
+          return task.contentText && task.contentText.match(dashSearchRegex)
         })
       : nodes
 
     const teamFilteredNodes = teamFilterId
-      ? contentFilteredNodes.filter((node) => node.team.id === teamFilterId)
-      : contentFilteredNodes
+      ? dashSearchNodes.filter((node) => node.team.id === teamFilterId)
+      : dashSearchNodes
 
     return teamFilteredNodes.map((node) => ({
       ...node
     }))
-  }, [teamFilterId, tasks, contentFilter])
+  }, [teamFilterId, tasks, dashSearch])
   {
     const {
       viewer: {teams}
@@ -42,13 +42,13 @@ const UserColumnsContainer = (props: Props) => {
 export default createFragmentContainer(UserColumnsContainer, {
   viewer: graphql`
     fragment UserColumnsContainer_viewer on User {
+      dashSearch
       teamFilter {
         id
       }
       teams {
         ...TaskColumns_teams
       }
-      contentFilter
       tasks(first: 1000) @connection(key: "UserColumnsContainer_tasks") {
         edges {
           node {

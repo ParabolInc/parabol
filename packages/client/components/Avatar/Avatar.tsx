@@ -36,9 +36,11 @@ const BadgeBlockInner = styled('div')({
 })
 
 interface Props {
+  className?: string
   hasBadge?: boolean
   isConnected?: boolean
   onClick?: (e?: React.MouseEvent) => void
+  onMouseEnter?: () => void
   picture: string
   sansRadius?: boolean
   sansShadow?: boolean
@@ -46,12 +48,24 @@ interface Props {
 }
 
 const Avatar = forwardRef((props: Props, ref: any) => {
-  const {hasBadge, isConnected, onClick, picture, sansRadius, sansShadow, size} = props
+  const {
+    className,
+    hasBadge,
+    isConnected,
+    onClick,
+    onMouseEnter,
+    picture,
+    sansRadius,
+    sansShadow,
+    size
+  } = props
 
   return (
     <ImageBlock
+      className={className}
       ref={ref}
       onClick={onClick}
+      onMouseEnter={onMouseEnter}
       sansRadius={sansRadius}
       sansShadow={sansShadow}
       picture={picture}

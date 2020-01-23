@@ -1,27 +1,30 @@
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import DashNavTeam from '../Dashboard/DashNavTeam'
-import styled from '@emotion/styled'
 import {DashNavList_viewer} from '../../__generated__/DashNavList_viewer.graphql'
-// import SexyScrollbar from 'universal/components/Dashboard/SexyScrollbar'
+import LeftDashNavItem from '../Dashboard/LeftDashNavItem'
 
 const DashNavListStyles = styled('div')({
+  paddingRight: 8,
   width: '100%'
 })
 
 const EmptyTeams = styled('div')({
   fontSize: 16,
   fontStyle: 'italic',
-  marginLeft: '2.1875rem'
+  padding: 16,
+  textAlign: 'center'
 })
 
 interface Props {
+  className?: string
   viewer: DashNavList_viewer | null
-  onClick: () => void
+  onClick?: () => void
 }
+
 const DashNavList = (props: Props) => {
-  const {onClick, viewer} = props
+  const {className, onClick, viewer} = props
   if (!viewer) return null
   const {teams} = viewer
   if (teams.length === 0) {
@@ -30,30 +33,26 @@ const DashNavList = (props: Props) => {
   return (
     <DashNavListStyles>
       {teams.map((team) => (
-        <DashNavTeam key={team.id} team={team} onClick={onClick} />
+        <LeftDashNavItem
+          className={className}
+          onClick={onClick}
+          key={team.id}
+          icon={team.isPaid ? 'group' : 'warning'}
+          href={`/team/${team.id}`}
+          label={team.name}
+        />
       ))}
     </DashNavListStyles>
   )
 }
-
-// return (
-//   <SexyScrollbar>
-//     {(scrollRef) => {
-//       return (
-//         <DashNavListStyles ref={scrollRef}>
-//           {teams.map((team) => <DashNavTeam key={team.id} location={location} team={team} />)}
-//         </DashNavListStyles>
-//       )
-//     }}
-//   </SexyScrollbar>
-// )
 
 export default createFragmentContainer(DashNavList, {
   viewer: graphql`
     fragment DashNavList_viewer on User {
       teams {
         id
-        ...DashNavTeam_team
+        isPaid
+        name
       }
     }
   `

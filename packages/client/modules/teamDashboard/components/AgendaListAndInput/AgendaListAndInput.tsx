@@ -28,6 +28,7 @@ const StyledAgendaInput = styled(AgendaInput)<{isMeeting: boolean | undefined}>(
 }))
 
 interface Props {
+  dashSearch?: string
   gotoStageId?: ReturnType<typeof useGotoStageId>
   isDisabled?: boolean
   team: AgendaListAndInput_team
@@ -35,10 +36,15 @@ interface Props {
 }
 
 const AgendaListAndInput = (props: Props) => {
-  const {gotoStageId, isDisabled, team, meetingId} = props
+  const {dashSearch, gotoStageId, isDisabled, team, meetingId} = props
   return (
     <RootStyles disabled={!!isDisabled} isMeeting={!!meetingId}>
-      <AgendaList gotoStageId={gotoStageId} meetingId={meetingId} team={team} />
+      <AgendaList
+        gotoStageId={gotoStageId}
+        meetingId={meetingId}
+        team={team}
+        dashSearch={dashSearch}
+      />
       <StyledAgendaInput disabled={!!isDisabled} isMeeting={!!meetingId} team={team} />
     </RootStyles>
   )
