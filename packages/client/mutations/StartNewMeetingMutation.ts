@@ -25,6 +25,7 @@ graphql`
     }
     team {
       ...TopBarMeetingsActiveMeetings @relay(mask: false)
+      lastMeetingType
     }
     # TODO Fetch the RetroRoot Query so we don't need to fetch again
   }
