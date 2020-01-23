@@ -92,6 +92,18 @@ const CreateAccountSection = (props) => {
   const isLoggedIn = localStorage.getItem(LocalStorageKey.APP_TOKEN_KEY)
   const primaryActionLabel = isLoggedIn ? 'Go to My Dashboard' : 'Create a Free Account'
   const primaryActionLink = isLoggedIn ? '/me' : '/create-account?from=demo'
+  const copyLineOne = isLoggedIn
+    ? 'Head on over to your dashboard'
+    : 'In just a few seconds you’ll have access'
+  const copyLineTwo = isLoggedIn ? (
+    <span>
+      to run <b>a real retrospective</b> with your team.
+    </span>
+  ) : (
+    <span>
+      to run <b>unlimited retrospectives</b> with your team.
+    </span>
+  )
   return (
     <>
       <tr>
@@ -101,14 +113,12 @@ const CreateAccountSection = (props) => {
       </tr>
       <tr>
         <td align='center' style={copyStyle}>
-          In just a few seconds you’ll have access
+          {copyLineOne}
         </td>
       </tr>
       <tr>
         <td align='center' style={copyStyle}>
-          <span>
-            to run <b>unlimited retrospectives</b> with your team.
-          </span>
+          {copyLineTwo}
         </td>
       </tr>
       <tr>
