@@ -12,6 +12,7 @@ import {ITeam} from 'parabol-client/types/graphql'
 import User from '../database/types/User'
 import OrganizationUser from '../database/types/OrganizationUser'
 import {DataLoaderWorker} from '../graphql/graphql'
+import setUserTierForOrgId from '../utils/setUserTierForOrgId'
 
 const handleFirstAcceptedInvitation = async (team): Promise<string | null> => {
   const r = await getRethink()
@@ -107,6 +108,8 @@ const acceptTeamInvitation = async (
     } catch (e) {
       console.log(e)
     }
+    // wildly inefficient, updating everyone on the org, but not a hot query
+    await setUserTierForOrgId(orgId)
   }
 
   // if a meeting is going on right now, add them
