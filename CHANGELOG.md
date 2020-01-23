@@ -5,9 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.19.0 2020-WIP
+
+### Changed
+* Made a first pass at implementing the new dashboard IA see #3488
+* Avatars only appear in the meeting when actually in the meeting view see #3496
+
+### Fixed
+* Made several bug fixes in a single PR see #3494
+* Made minor fixes in the meeting lobby see #3500
+
 ## 4.18.0 2020-Jan-15
 
-## Added
+### Added
 * Reactjis during Discuss Phase
 * Editable meeting name
 
@@ -29,58 +39,58 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ## 4.17.2 2020-Jan-10
 
-## Fixed
+### Fixed
 * Safely handle closing websocket that doesn't yet have a connection context
 
 ## 4.17.1 2020-Jan-10
 
-## Fixed
+### Fixed
 * Use forwarded IP address instead of IP of reverse proxy
 
 ## 4.17.0 2019-Dec-20
 
-## Fixed
+### Fixed
 * ratelimiter for forgot example/bad login
 * Memory leak in Relay SSR
 
-## Added
+### Added
 * uWebSockets.js
 * Session invalidation on password reset
 
-## Removed
+### Removed
 * Express.js, cws
 * Auth0
 
-## Changed
+### Changed
 * Refactored dataloader to be much more memory efficient
 * Shorter mass invite links #3469
 
 ## 4.16.1 2019-Dec-18
 
-## Fixed
+### Fixed
 * querystring parsing for SAML urls with search params
 
 ## 4.16.0 2019-Dec-10
 
-## Changed
+### Changed
 * Broke GraphQL into 2 services
 * Refactored objects to classes for easier memory leak debugging
 
-## Added
+### Added
 * DataLoaderCache
 * GraphQLRedisPubSub
 
-## Fixed
+### Fixed
 * Memory leak traced to resolve fn in pullQueue of graphql-redis-subscription
 * Borked version of GraphiQL
 
-## Removed
+### Removed
 * dataloader-warehouse
 * graphql-redis-subscriptions
 
 ## 4.15.0 2019-Dec-04
 
-## Added
+### Added
 * New meeting lobby (#3364)
 * Optional check-in phase (#3364)
 * console.logs for monitor when meeting summary does not scroll (#3397)
@@ -89,7 +99,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 * A lightweight heap profiler that runs every hour (#3399)
 * A heavy duty heap dumper that should only be run when there is no server load (#3399)
 
-## Fixed
+### Fixed
 * GraphiQL Public Schema (#3397)
 * Cannot vote on optimistic reflection groups (#3397)
 * Snackbars can handle error string and object (#3397)
@@ -100,29 +110,29 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 * Subscriptions work after initial login (#3400)
 * AcceptTeamInnvitation has correct error when login credentials are wrong (#3405)
 
-## Changed
+### Changed
 * Disconnecting does not promote someone else to facilitator (#3397)
 
 ## 4.14.0 2019-Nov-27
 
-## Added
+### Added
 * A subscription channel for each meeting (#3376)
 
-## Removed
+### Removed
 * Auth0 (#3372)
 
-## Fixed
+### Fixed
 * Race condition to 2 votes (#3367)
 
 ## 4.13.1 2019-Nov-20
 
-## Fixed
+### Fixed
 * Auto-checkin meeting members who joined the team after a meeting started
 * Gracefully handle group/ungroup errors
 
 ## 4.13.0 2019-Nov-19
 
-## Fixed
+### Fixed
 * Summary intermittently couldn't scroll (#3361)
 * Errors caused by updateTask didn't show on the Task card (#3361)
 * Empty reflections are now removed when completing the grouping phase (#3361)
@@ -130,13 +140,13 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 * Reflections being edited while advancing to the vote stage would stay editable (#3357)
 * Drop animations for reflections at the bottom of a column (#3336)
 
-## Added
+### Added
 * Back button to the Forgot Password view (#3358)
 * Transitions to online avatars in the meetings (#3356)
 * Backend support for an optional check-in round (#3355)
 * Ability to add reflections from the Reflect phase while the Group phase is still in progress (#3354)
 
-## Changed
+### Changed
 * Invite Dialog View (#3351)
 * Moved meetings from /meeting/:teamId to /meet/:meetingId to support future multi-meetings
 * E4E Policy to reflect new funding round (#3347)
@@ -146,15 +156,15 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ## 4.12.0 2019-Nov-11
 
-## Fixed
+### Fixed
 * Janky reflection animation when dropping & animating to the bottom of a scrollable column (#3297)
 * Sentry bugs from Nov 6 - 11
 * Regression where viewer could not add/remove reflect templates
 
-## Removed
+### Removed
 * Redux (#3323)
 
-## Changed
+### Changed
 * Refactored all old patterns that relied on unsafe react methods (#3323)
 
 ## 4.11.0 2019-Nov-06
