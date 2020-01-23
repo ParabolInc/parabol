@@ -38,7 +38,7 @@ const MeetingSummaryEmailRootSSR = (props: Props) => {
         if (!viewer) return null
         const {newMeeting} = viewer
         if (!newMeeting) return null
-        const {meetingType, team} = newMeeting
+        const {team} = newMeeting
         const {id: teamId} = team
         const referrerUrl = makeAppLink(`new-summary/${meetingId}`)
         const meetingUrl = makeAppLink(`meet/${meetingId}`)
