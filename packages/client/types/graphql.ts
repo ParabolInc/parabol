@@ -2936,11 +2936,6 @@ export interface IMutation {
   removeReflectTemplatePrompt: IRemoveReflectTemplatePromptPayload | null
 
   /**
-   * Rename a meeting
-   */
-  renameMeeting: RenameMeetingPayload
-
-  /**
    * Rename a reflect template prompt
    */
   renameReflectTemplate: IRenameReflectTemplatePayload | null
@@ -2979,6 +2974,11 @@ export interface IMutation {
    * Set the selected template for the upcoming retro meeting
    */
   selectRetroTemplate: ISelectRetroTemplatePayload | null
+
+  /**
+   * Share where in the app the viewer is
+   */
+  setAppLocation: SetAppLocationPayload
 
   /**
    * Enabled or disable the check-in round
@@ -3544,18 +3544,6 @@ export interface IRemoveReflectTemplatePromptOnMutationArguments {
   promptId: string
 }
 
-export interface IRenameMeetingOnMutationArguments {
-  /**
-   * the new meeting name
-   */
-  name: string
-
-  /**
-   * the meeting with the new name
-   */
-  meetingId: string
-}
-
 export interface IRenameReflectTemplateOnMutationArguments {
   templateId: string
   name: string
@@ -3604,6 +3592,13 @@ export interface ISegmentEventTrackOnMutationArguments {
 export interface ISelectRetroTemplateOnMutationArguments {
   selectedTemplateId: string
   teamId: string
+}
+
+export interface ISetAppLocationOnMutationArguments {
+  /**
+   * The location the viewer is currently at
+   */
+  location?: string | null
 }
 
 export interface ISetCheckInEnabledOnMutationArguments {
@@ -5649,20 +5644,6 @@ export interface IRemoveReflectTemplatePromptPayload {
   prompt: IReflectTemplate | null
 }
 
-/**
- * Return object for RenameMeetingPayload
- */
-export type RenameMeetingPayload = IErrorPayload | IRenameMeetingSuccess
-
-export interface IRenameMeetingSuccess {
-  __typename: 'RenameMeetingSuccess'
-
-  /**
-   * the renamed meeting
-   */
-  meeting: NewMeeting
-}
-
 export interface IRenameReflectTemplatePayload {
   __typename: 'RenameReflectTemplatePayload'
   error: IStandardMutationError | null
@@ -5773,6 +5754,20 @@ export interface ISelectRetroTemplatePayload {
   __typename: 'SelectRetroTemplatePayload'
   error: IStandardMutationError | null
   retroMeetingSettings: IRetrospectiveMeetingSettings | null
+}
+
+/**
+ * Return object for SetAppLocationPayload
+ */
+export type SetAppLocationPayload = IErrorPayload | ISetAppLocationSuccess
+
+export interface ISetAppLocationSuccess {
+  __typename: 'SetAppLocationSuccess'
+
+  /**
+   * the user with the updated location
+   */
+  user: IUser
 }
 
 export interface ISetCheckInEnabledPayload {
@@ -6258,7 +6253,7 @@ export type MeetingSubscriptionPayload =
   | INewMeetingCheckInPayload
   | IPromoteNewMeetingFacilitatorPayload
   | IRemoveReflectionPayload
-  | IRenameMeetingSuccess
+  | ISetAppLocationSuccess
   | ISetPhaseFocusPayload
   | ISetStageTimerPayload
   | IStartDraggingReflectionPayload

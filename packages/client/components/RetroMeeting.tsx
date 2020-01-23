@@ -68,8 +68,7 @@ const RetroMeeting = (props: Props) => {
     viewerMeetingMember,
     facilitatorStageId,
     localPhase,
-    localStage,
-    team
+    localStage
   } = meeting
   const {user} = viewerMeetingMember
   const {featureFlags} = user
@@ -101,7 +100,7 @@ const RetroMeeting = (props: Props) => {
             allowVideo={allowVideo}
             camStreams={streams.cam}
             swarm={swarm}
-            team={team}
+            meeting={meeting}
           />
         }
       />
@@ -123,11 +122,9 @@ export default createFragmentContainer(RetroMeeting, {
       ...RetroGroupPhase_meeting
       ...RetroVotePhase_meeting
       ...RetroDiscussPhase_meeting
+      ...NewMeetingAvatarGroup_meeting
       id
       showSidebar
-      team {
-        ...NewMeetingAvatarGroup_team
-      }
       facilitatorStageId
       localPhase {
         phaseType
