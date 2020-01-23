@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.18.1 2020-Jan-23
+
+## Removed
+* Dataloader caching per user
+* Sending sentry errors for service worker scopes
+
+## Changed
+* Updated uWS to v17.1.0
+
 ## 4.18.0 2020-Jan-15
 
 ## Added

@@ -16,7 +16,8 @@ if (dsn) {
   Sentry.init({
     dsn,
     environment: 'client',
-    release: __APP_VERSION__
+    release: __APP_VERSION__,
+    ignoreErrors: [/Failed to update a ServiceWorker for scope/]
   })
 }
 

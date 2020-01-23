@@ -18424,9 +18424,9 @@ typescript@^3.7.3:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.4.tgz#1743a5ec5fef6a1fa9f3e4708e33c81c73876c19"
   integrity sha512-A25xv5XCtarLwXpcDNZzCGvW2D1S3/bACratYBx2sax8PefsFhlYmkQicKHvpYflFS8if4zne5zT5kpJ7pzuvw==
 
-uWebSockets.js@uNetworking/uWebSockets.js#v16.5.0:
-  version "16.5.0"
-  resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/69026e121ae4a8d4f285c68b565710ef697b5dac"
+uWebSockets.js@uNetworking/uWebSockets.js#v17.1.0:
+  version "17.1.0"
+  resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/5b524b61b25c78325304a71f810dfdfaa7f5e5eb"
 
 ua-parser-js@^0.7.18:
   version "0.7.21"
