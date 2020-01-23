@@ -11,11 +11,16 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 * Made a first pass at implementing the new dashboard IA see #3488
 * Avatars only appear in the meeting when actually in the meeting view see #3496
 * The meeting lobby remembers the last meeting type a team has run see #3501
+* Updated uWS to v17.1.0 see #3512
 
 ### Fixed
 * Made several bug fixes in a single PR see #3494
 * Made minor fixes in the meeting lobby see #3500
 * Bumped the version of uWS to clear up some errors see #3512
+
+### Removed
+* Dataloader caching per user see #3512
+* Sending sentry errors for service worker scopes #3512
 
 ## 4.18.0 2020-Jan-15
 
