@@ -6,7 +6,7 @@ import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
 
 const DropdownIcon = styled(Icon)({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.TEXT_MAIN,
   padding: 12,
   fontSize: ICON_SIZE.MD24
 })
