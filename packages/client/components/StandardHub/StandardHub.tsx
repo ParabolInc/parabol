@@ -8,7 +8,7 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {TierLabel} from 'types/constEnums'
 import {TierEnum} from 'types/graphql'
-import WaveWhiteSVG from '../../../../static/images/waveWhiteV2.svg'
+import WaveWhiteSVG from '../../../../static/images/waveWhite.svg'
 import {APP_BAR_HEIGHT} from '../../styles/appbars'
 import {PALETTE} from '../../styles/paletteV2'
 import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
@@ -18,7 +18,7 @@ import Avatar from '../Avatar/Avatar'
 const StandardHubRoot = styled('div')({
   backgroundRepeat: 'no-repeat',
   backgroundSize: '100%',
-  backgroundPositionY: 'bottom',
+  backgroundPositionY: '101%',
   backgroundPositionX: '0',
   backgroundImage: `url('${WaveWhiteSVG}'), linear-gradient(90deg, ${PALETTE.BACKGROUND_PRIMARY} 0%, ${PALETTE.BACKGROUND_DARK} 100%)`,
   display: 'flex',
