@@ -1,4 +1,4 @@
-import {TierEnum} from 'parabol-client/types/graphql'
+import {TierEnum, MeetingTypeEnum} from 'parabol-client/types/graphql'
 import shortid from 'shortid'
 
 interface Input {
@@ -6,6 +6,7 @@ interface Input {
   name: string
   createdAt?: Date
   createdBy: string
+  lastMeetingType?: MeetingTypeEnum
   isArchived?: boolean
   isPaid?: boolean
   tier: TierEnum
@@ -21,6 +22,7 @@ export default class Team {
   createdBy: string
   isArchived: boolean
   isPaid: boolean
+  lastMeetingType: MeetingTypeEnum
   tier: TierEnum
   orgId: string
   isOnboardTeam: boolean
@@ -32,6 +34,7 @@ export default class Team {
       id,
       isArchived,
       isOnboardTeam,
+      lastMeetingType,
       isPaid,
       name,
       orgId,
@@ -45,6 +48,7 @@ export default class Team {
     this.id = id ?? shortid.generate()
     this.createdAt = createdAt ?? new Date()
     this.updatedAt = updatedAt ?? new Date()
+    this.lastMeetingType = lastMeetingType ?? MeetingTypeEnum.retrospective
     this.isArchived = isArchived ?? false
     this.isOnboardTeam = isOnboardTeam ?? false
     this.isPaid = isPaid ?? true

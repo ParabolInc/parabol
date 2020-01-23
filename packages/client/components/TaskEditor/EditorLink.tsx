@@ -25,7 +25,7 @@ const EditorLink = (getEditorState) =>
       e.preventDefault()
       const {contentState, entityKey} = this.props
       const {href} = contentState.getEntity(entityKey).getData()
-      window.open(href, '_blank')
+      window.open(href, '_blank', 'noreferrer')
     }
 
     onMouseOver = () => {

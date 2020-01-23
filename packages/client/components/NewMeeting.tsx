@@ -39,7 +39,7 @@ const NewMeetingBlock = styled('div')<{innerWidth: number; isDesktop: boolean}>(
     gridTemplateColumns: isDesktop ? '8vw minmax(0, 4fr) minmax(0, 3fr)' : '100%',
     gridTemplateRows: isDesktop ? '8vw 4fr 3fr' : '48px',
     gridTemplateAreas: isDesktop
-      ? ` 'backButton x1 x1' 
+      ? ` 'backButton x1 x1'
         'x2 picker howto'
         'x2 settings actions'`
       : `'backButton' 'picker' 'howto' 'settings' 'actions'`,
@@ -88,6 +88,12 @@ const NewMeeting = (props: Props) => {
   }, [])
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_GRID)
   const selectedTeam = teams.find((team) => team.id === teamId)
+  useEffect(() => {
+    if (!selectedTeam) return
+    const {lastMeetingType} = selectedTeam
+    const meetingIdx = NEW_MEETING_ORDER.indexOf(lastMeetingType as MeetingTypeEnum)
+    setIdx(meetingIdx)
+  }, [teamId])
   if (!teamId || !selectedTeam) return null
   return (
     <NewMeetingBlock innerWidth={innerWidth} isDesktop={isDesktop}>
@@ -115,6 +121,7 @@ export default createFragmentContainer(NewMeeting, {
         ...NewMeetingSettings_selectedTeam
         ...NewMeetingTeamPicker_teams
         id
+        lastMeetingType
         name
         tier
       }

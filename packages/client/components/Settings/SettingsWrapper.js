@@ -5,7 +5,7 @@ const SettingsWrapper = styled('div')(({narrow}) => ({
   display: 'flex',
   flexDirection: 'column',
   margin: '0 auto',
-  maxWidth: narrow ? ui.settingsPanelMaxWidthNarrow : ui.settingsPanelMaxWidth,
+  maxWidth: narrow ? 644 : 768,
   width: '100%'
 }))
 

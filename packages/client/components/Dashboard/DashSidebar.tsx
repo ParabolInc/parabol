@@ -1,161 +1,82 @@
-import {DashSidebar_viewer} from '../../__generated__/DashSidebar_viewer.graphql'
-import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {NavLink} from 'react-router-dom'
-import DashNavList from '../DashNavList/DashNavList'
-import Icon from '../Icon'
-import LogoBlock from '../LogoBlock/LogoBlock'
-import StandardHub from '../StandardHub/StandardHub'
-import makeHoverFocus from '../../styles/helpers/makeHoverFocus'
-import {ICON_SIZE} from '../../styles/typographyV2'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from '../../styles/paletteV2'
-import {NavSidebar} from '../../types/constEnums'
-import DashNavItem from './DashNavItem'
-import {ClassNames} from '@emotion/core'
+import {AppBar, Breakpoint, NavSidebar} from '../../types/constEnums'
+import {DashSidebar_viewer} from '../../__generated__/DashSidebar_viewer.graphql'
+import DashNavList from '../DashNavList/DashNavList'
+import LeftDashNavItem from './LeftDashNavItem'
+import makeMinWidthMediaQuery from 'utils/makeMinWidthMediaQuery'
 
 interface Props {
-  handleMenuClick: () => void
+  isOpen: boolean
   viewer: DashSidebar_viewer | null
 }
 
-const linkBaseStyles = {
-  color: '#FFFFFF',
-  textDecoration: 'none'
-}
+const Nav = styled('nav')<{isOpen: boolean}>(({isOpen}) => ({
+  height: '100%',
+  userSelect: 'none',
+  transition: `all 300ms`,
+  transform: isOpen ? undefined : `translateX(-${NavSidebar.WIDTH}px)`,
+  width: isOpen ? NavSidebar.WIDTH : 0,
+  [makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)]: {
+    bottom: 0,
+    left: 0,
+    position: 'fixed',
+    top: AppBar.HEIGHT,
+    zIndex: 2
+  }
+}))
 
-const DashSidebarStyles = styled('div')({
-  backgroundColor: PALETTE.BACKGROUND_PRIMARY,
-  color: '#FFFFFF',
+const Contents = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  height: '100vh',
-  maxWidth: NavSidebar.WIDTH,
-  minWidth: NavSidebar.WIDTH,
-  overflow: 'hidden',
-  userSelect: 'none'
-})
-
-const MyDashboard = styled('div')({
-  borderBottom: `1px solid ${PALETTE.BORDER_NAV_DARK}`,
-  marginBottom: 16
-})
-
-const NavBlock = styled('div')({
-  flex: 1,
-  position: 'relative'
-})
-
-const Nav = styled('nav')({
-  display: 'flex',
-  flexDirection: 'column',
-  left: 0,
-  maxHeight: '100%',
-  paddingBottom: '1.25rem',
-  position: 'absolute',
-  top: 0,
-  width: '100%'
+  height: '100%',
+  padding: 0,
+  width: NavSidebar.WIDTH
 })
 
 const NavMain = styled('div')({
-  flex: 1,
   overflowY: 'auto'
 })
 
-const NavLabel = styled('div')({
-  color: 'rgba(255, 255, 255, .5)',
-  cursor: 'default',
-  fontSize: 12,
-  fontWeight: 600,
-  marginLeft: '2.1875rem',
-  padding: '1.25rem 0',
-  textTransform: 'uppercase'
+const DashHR = styled('div')({
+  borderBottom: `solid ${PALETTE.BACKGROUND_TOGGLE_ACTIVE} 1px`,
+  width: '100%'
 })
 
-const addTeamStyles = {
-  ...linkBaseStyles,
-  alignItems: 'center',
-  borderLeft: `${NavSidebar.LEFT_BORDER_WIDTH} solid transparent`,
-  cursor: 'pointer',
-  display: 'flex',
-  margin: '.75rem 0 0',
-  opacity: '.65',
-  padding: '.625rem .5rem .625rem 2rem',
-  position: 'relative',
-  transition: `opacity 100ms ease-in`,
-  userSelect: 'none',
-
-  ...makeHoverFocus({
-    ...linkBaseStyles,
-    backgroundColor: PALETTE.BACKGROUND_NAV_DARK_HOVER,
-    opacity: 1
-  })
-}
-
-const disabledAddTeamStyles = {
-  backgroundColor: PALETTE.BACKGROUND_NAV_DARK_ACTIVE,
-  cursor: 'default',
-  opacity: 1,
-
-  ...makeHoverFocus({
-    backgroundColor: PALETTE.BACKGROUND_NAV_DARK_ACTIVE,
-    opacity: 1
-  })
-}
-
-const AddTeamIcon = styled(Icon)({
-  fontSize: ICON_SIZE.MD18,
-  marginRight: '.5rem'
+const NavItem = styled(LeftDashNavItem)({
+  paddingLeft: 16
 })
 
-const AddTeamLabel = styled('div')({
-  fontSize: NavSidebar.FONT_SIZE,
-  lineHeight: NavSidebar.LINE_HEIGHT
+const NavList = styled(DashNavList)({
+  paddingLeft: 16
+})
+
+const NavItemsWrap = styled('div')({
+  paddingRight: 8
 })
 
 const DashSidebar = (props: Props) => {
-  const {handleMenuClick, viewer} = props
+  const {isOpen, viewer} = props
   return (
-    <DashSidebarStyles>
-      <StandardHub handleMenuClick={handleMenuClick} viewer={viewer} />
-      <NavBlock>
-        <Nav>
-          {/* use div for flex layout */}
-          <div>
-            <MyDashboard>
-              <DashNavItem
-                href='/me'
-                icon='dashboard'
-                label='My Dashboard'
-                onClick={handleMenuClick}
-              />
-            </MyDashboard>
-            <NavLabel>{'My Teams'}</NavLabel>
-          </div>
-          <NavMain>
-            <DashNavList viewer={viewer} onClick={handleMenuClick} />
-          </NavMain>
-          <ClassNames>
-            {({css}) => {
-              return (
-                <NavLink
-                  onClick={handleMenuClick}
-                  className={css(addTeamStyles)}
-                  activeClassName={css(disabledAddTeamStyles)}
-                  title='Add New Team'
-                  to='/newteam/1'
-                >
-                  <AddTeamIcon>add_circle</AddTeamIcon>
-                  <AddTeamLabel>{'Add New Team'}</AddTeamLabel>
-                </NavLink>
-              )
-            }}
-          </ClassNames>
-        </Nav>
-      </NavBlock>
-      <LogoBlock variant='white' onClick={handleMenuClick} />
-    </DashSidebarStyles>
+    <Nav isOpen={isOpen}>
+      <Contents>
+        <NavItemsWrap>
+          <NavItem icon={'timeline'} href={'/me'} label={'Timeline'} />
+          <NavItem icon={'playlist_add_check'} href={'/me/tasks'} label={'Tasks'} />
+        </NavItemsWrap>
+        <DashHR />
+        <NavMain>
+          <NavList viewer={viewer} />
+        </NavMain>
+        <DashHR />
+        <NavItemsWrap>
+          <NavItem icon={'add'} href={'/newteam/1'} label={'Add a Team'} />
+        </NavItemsWrap>
+      </Contents>
+    </Nav>
   )
 }
 

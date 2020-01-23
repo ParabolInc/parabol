@@ -35,10 +35,10 @@ graphql`
     # this is just for the user that accepted the invitation
     removedNotificationIds
     team {
-      ...DashNavTeam_team
-      ...DashAlertMeetingActiveMeetings
+      ...TopBarMeetingsActiveMeetings
       id
       name
+      isPaid
       activeMeetings {
         id
       }

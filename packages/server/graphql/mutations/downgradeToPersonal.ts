@@ -8,6 +8,7 @@ import sendSegmentEvent, {sendSegmentIdentify} from '../../utils/sendSegmentEven
 import standardError from '../../utils/standardError'
 import {TierEnum} from 'parabol-client/types/graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import setUserTierForOrgId from '../../utils/setUserTierForOrgId'
 
 export default {
   type: DowngradeToPersonalPayload,
@@ -73,6 +74,8 @@ export default {
         )('changes')('new_val')('id')
         .default([]) as unknown) as string[]
     }).run()
+
+    await setUserTierForOrgId(orgId)
     sendSegmentEvent('Downgrade to personal', viewerId, {orgId}).catch()
     const data = {orgId, teamIds}
     publish(SubscriptionChannel.ORGANIZATION, orgId, 'DowngradeToPersonalPayload', data, subOptions)

@@ -125,13 +125,11 @@ const SwipeableDashSidebar = (props: Props) => {
 
   const hideSidebar = useCallback(() => {
     setX(0)
-    console.log('show body scroll SDS')
     swipe.showBodyScroll && swipe.showBodyScroll()
   }, [setX])
 
   const showSidebar = useCallback(() => {
     setX(NavSidebar.WIDTH)
-    console.log('hide body scroll SDS')
     swipe.showBodyScroll = hideBodyScroll()
   }, [setX])
 

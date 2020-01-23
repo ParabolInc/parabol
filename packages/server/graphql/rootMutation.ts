@@ -85,6 +85,7 @@ import invalidateSessions from './mutations/invalidateSessions'
 import createMassInvitation from './mutations/createMassInvitation'
 import renameMeeting from './mutations/renameMeeting'
 import addReactjiToReflection from './mutations/addReactjiToReflection'
+import setAppLocation from './mutations/setAppLocation'
 
 interface Context extends InternalContext, GQLContext {}
 
@@ -154,6 +155,7 @@ export default new GraphQLObjectType<any, Context, any>({
     resetPassword,
     segmentEventTrack,
     selectRetroTemplate,
+    setAppLocation,
     setCheckInEnabled,
     setOrgUserRole,
     setPhaseFocus,

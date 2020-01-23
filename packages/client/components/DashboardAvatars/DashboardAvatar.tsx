@@ -4,7 +4,6 @@ import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import Avatar from '../Avatar/Avatar'
-import RoleTag from '../Tag/RoleTag'
 import {MenuPosition} from '../../hooks/useCoords'
 import useMenu from '../../hooks/useMenu'
 import useModal from '../../hooks/useModal'
@@ -24,18 +23,6 @@ const AvatarAndTag = styled('div')({
     opacity: 0.5
   }
 })
-
-const AvatarTag = styled(RoleTag)<{isLead?: boolean | null}>(({isLead}) => ({
-  bottom: '-1.5rem',
-  marginLeft: 0,
-  opacity: isLead ? 1 : 0,
-  position: 'absolute',
-  pointerEvents: 'none',
-  transform: `scale(${isLead ? 1 : 0})`,
-  transition: 'all 300ms',
-  userSelect: 'none',
-  whiteSpace: 'nowrap'
-}))
 
 const TeamMemberAvatarMenu = lazyPreload(() =>
   import(/* webpackChunkName: 'TeamMemberAvatarMenu' */ './TeamMemberAvatarMenu')
@@ -88,10 +75,10 @@ const DashboardAvatar = (props: Props) => {
         ref={originRef}
         size={32}
       />
-      <AvatarTag isLead={isLead}>{'Team Lead'}</AvatarTag>
       {menuPortal(
         <TeamMemberAvatarMenu
           menuProps={menuProps}
+          isLead={Boolean(isLead)}
           isViewerLead={isViewerLead}
           teamMember={teamMember}
           togglePromote={togglePromote}

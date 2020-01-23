@@ -18,12 +18,11 @@ extend type RetrospectiveMeeting {
 }
 
 extend type Team {
-  contentFilter: String
   teamMemberFilter: TeamMember
 }
 
 extend type User {
-  contentFilter: String
+  dashSearch: String
   # If positive, client clock is ahead of server clock by this many ms
   clientClockOffset: Int
   topOfFAB: Int

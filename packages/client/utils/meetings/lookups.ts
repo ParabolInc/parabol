@@ -39,15 +39,15 @@ export const phaseIconLookup = {
   [LAST_CALL]: 'comment'
 }
 
-export const meetingTypeToSlug = {
-  [RETROSPECTIVE]: 'retro' as 'retro',
-  [ACTION]: 'meeting' as 'meeting'
-}
-
 export const meetingTypeToLabel = {
   [RETROSPECTIVE]: 'Retro' as 'Retro',
   [ACTION]: 'Action' as 'Action'
 }
+
+export const meetingTypeToIcon = {
+  [RETROSPECTIVE]: 'history',
+  [ACTION]: 'change_history'
+} as const
 
 export const phaseTypeToSlug = {
   [CHECKIN]: 'checkin',

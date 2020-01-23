@@ -32,6 +32,7 @@ const DraggableAgendaItem = styled('div')<{isDragging: boolean}>(({isDragging}) 
 }))
 
 interface Props {
+  dashSearch?: string
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
   meetingId?: string | null
   team: AgendaList_team
@@ -39,13 +40,11 @@ interface Props {
 
 const AgendaList = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {gotoStageId, meetingId, team} = props
-  const {activeMeetings, contentFilter, agendaItems} = team
+  const {dashSearch, gotoStageId, meetingId, team} = props
+  const {activeMeetings, agendaItems} = team
   const filteredAgendaItems = useMemo(() => {
-    return contentFilter
-      ? agendaItems.filter(({content}) => content.match(contentFilter))
-      : agendaItems
-  }, [contentFilter, agendaItems])
+    return dashSearch ? agendaItems.filter(({content}) => content.match(dashSearch)) : agendaItems
+  }, [dashSearch, agendaItems])
 
   const onDragEnd = useEventCallback((result) => {
     const {source, destination} = result
@@ -125,7 +124,6 @@ const AgendaList = (props: Props) => {
 export default createFragmentContainer(AgendaList, {
   team: graphql`
     fragment AgendaList_team on Team {
-      contentFilter
       agendaItems {
         id
         content

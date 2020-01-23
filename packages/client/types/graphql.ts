@@ -280,6 +280,11 @@ export interface IUser {
   teamMember: ITeamMember | null
 
   /**
+   * The highest tier of any org the user belongs to
+   */
+  tier: TierEnum
+
+  /**
    * all the teams the user is a part of that the viewer can see
    */
   tms: Array<string>
@@ -984,6 +989,11 @@ export interface ITeam {
    * true if the team was created when the account was created, else false
    */
   isOnboardTeam: boolean
+
+  /**
+   * The type of the last meeting run
+   */
+  lastMeetingType: MeetingTypeEnum
 
   /**
    * The hash and expiration for a token that allows anyone with it to join the team
@@ -2667,6 +2677,7 @@ export interface IVerifiedInvitationPayload {
    * name of the inviting team, present if invitation exists
    */
   teamName: string | null
+  meetingId: string | null
   meetingType: MeetingTypeEnum | null
 
   /**
@@ -2973,6 +2984,11 @@ export interface IMutation {
    * Set the selected template for the upcoming retro meeting
    */
   selectRetroTemplate: ISelectRetroTemplatePayload | null
+
+  /**
+   * Share where in the app the viewer is
+   */
+  setAppLocation: SetAppLocationPayload
 
   /**
    * Enabled or disable the check-in round
@@ -3598,6 +3614,13 @@ export interface ISegmentEventTrackOnMutationArguments {
 export interface ISelectRetroTemplateOnMutationArguments {
   selectedTemplateId: string
   teamId: string
+}
+
+export interface ISetAppLocationOnMutationArguments {
+  /**
+   * The location the viewer is currently at
+   */
+  location?: string | null
 }
 
 export interface ISetCheckInEnabledOnMutationArguments {
@@ -5769,6 +5792,20 @@ export interface ISelectRetroTemplatePayload {
   retroMeetingSettings: IRetrospectiveMeetingSettings | null
 }
 
+/**
+ * Return object for SetAppLocationPayload
+ */
+export type SetAppLocationPayload = IErrorPayload | ISetAppLocationSuccess
+
+export interface ISetAppLocationSuccess {
+  __typename: 'SetAppLocationSuccess'
+
+  /**
+   * the user with the updated location
+   */
+  user: IUser
+}
+
 export interface ISetCheckInEnabledPayload {
   __typename: 'SetCheckInEnabledPayload'
   error: IStandardMutationError | null
@@ -6252,6 +6289,7 @@ export type MeetingSubscriptionPayload =
   | INewMeetingCheckInPayload
   | IPromoteNewMeetingFacilitatorPayload
   | IRemoveReflectionPayload
+  | ISetAppLocationSuccess
   | IRenameMeetingSuccess
   | ISetPhaseFocusPayload
   | ISetStageTimerPayload

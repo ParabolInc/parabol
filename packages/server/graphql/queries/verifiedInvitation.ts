@@ -56,10 +56,12 @@ export default {
       const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
       const [firstActiveMeeting] = activeMeetings
       const meetingType = firstActiveMeeting?.meetingType ?? null
+      const meetingId = firstActiveMeeting?.id ?? null
       if (acceptedAt) {
         return {
           errorType: InvitationTokenError.ALREADY_ACCEPTED,
           teamName: team.name,
+          meetingId,
           meetingType,
           inviterName: inviter.preferredName,
           inviterEmail: inviter.email,

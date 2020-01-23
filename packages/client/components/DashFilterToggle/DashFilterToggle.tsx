@@ -1,25 +1,38 @@
 import React, {forwardRef, Ref} from 'react'
-import IconLabel from '../IconLabel'
+import styled from '@emotion/styled'
 import LinkButton from '../LinkButton'
+import Icon from '../Icon'
+import {PALETTE} from 'styles/paletteV2'
 
 interface Props {
   label: string
+  value: string
   onClick: () => void
   onMouseEnter: () => void
 }
 
+const StyledIcon = styled(Icon)({
+  marginRight: 8
+})
+
+const StyledLinkButton = styled(LinkButton)({
+  '&:hover, &:focus, &:active': {
+    color: PALETTE.TEXT_GRAY
+  }
+})
+
 const DashFilterToggle = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
-  const {label, onClick, onMouseEnter} = props
+  const {label, value, onClick, onMouseEnter} = props
   return (
-    <LinkButton
+    <StyledLinkButton
       aria-label={`Filter by ${label}`}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
-      palette='midGray'
       ref={ref}
     >
-      <IconLabel icon='expand_more' iconAfter label={label} />
-    </LinkButton>
+      <StyledIcon>filter_list</StyledIcon>
+      {value}
+    </StyledLinkButton>
   )
 })
 

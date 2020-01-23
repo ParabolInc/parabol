@@ -65,8 +65,8 @@
     "typescript": "3.7.2"
   },
   "dependencies": {
-    "@emotion/core": "^10.0.14",
-    "@emotion/styled": "^10.0.14",
+    "@emotion/core": "^10.0.27",
+    "@emotion/styled": "^10.0.27",
     "@mattkrick/fast-rtc-swarm": "^0.3.3",
     "@mattkrick/graphql-trebuchet-client": "^1.0.0",
     "@mattkrick/sanitize-svg": "^0.2.1",
@@ -101,7 +101,7 @@
     "react-relay": "https://github.com/mattkrick/relay/tarball/348dffd4b9566d28fc51bc10116c23d12ec41996",
     "react-router": "^5.0.1",
     "react-router-dom": "^5.0.1",
-    "react-swipeable-views": "^0.13.3",
+    "react-swipeable-views": "0.13.3",
     "react-textarea-autosize": "^7.1.0",
     "react-transition-group": "^4.3.0",
     "react-virtualized": "^9.21.1",

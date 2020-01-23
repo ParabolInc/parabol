@@ -5,6 +5,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import InvitationLink from './InvitationLink'
 import {QueryRenderer} from 'react-relay'
 import {InvitationLinkRootQuery} from '__generated__/InvitationLinkRootQuery.graphql'
+import useNoIndex from '../hooks/useNoIndex'
 
 interface Props extends RouteComponentProps<{token: string}> {}
 
@@ -17,6 +18,7 @@ const query = graphql`
 `
 
 const InvitationLinkRoot = (props: Props) => {
+  useNoIndex()
   const atmosphere = useAtmosphere()
   const {match} = props
   const {params} = match

@@ -23,7 +23,7 @@ graphql`
     team {
       id
       name
-      ...DashAlertMeetingActiveMeetings
+      ...TopBarMeetingsActiveMeetings
       ...Team_team
     }
   }

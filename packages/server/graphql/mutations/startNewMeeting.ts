@@ -102,12 +102,19 @@ export default {
       return standardError(new Error('Meeting already started'), {userId: viewerId})
     }
 
-    await r
-      .table('MeetingMember')
-      .insert(meetingMembers)
-      .run()
+    await Promise.all([
+      r
+        .table('MeetingMember')
+        .insert(meetingMembers)
+        .run(),
+      r
+        .table('Team')
+        .get(teamId)
+        .update({lastMeetingType: meetingType})
+        .run()
+    ])
 
-    startSlackMeeting(teamId, dataLoader, meetingType).catch(console.log)
+    startSlackMeeting(meeting.id, teamId, dataLoader).catch(console.log)
     const data = {teamId, meetingId: meeting.id}
     publish(SubscriptionChannel.TEAM, teamId, 'StartNewMeetingPayload', data, subOptions)
     return data

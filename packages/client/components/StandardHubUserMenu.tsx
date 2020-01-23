@@ -32,14 +32,12 @@ const TallMenu = styled(Menu)({
 })
 
 interface Props extends RouteComponentProps<{}> {
-  handleMenuClick: () => void
   menuProps: MenuProps
   viewer: StandardHubUserMenu_viewer
 }
 
 const StandardHubUserMenu = (props: Props) => {
   const {
-    handleMenuClick,
     menuProps,
     history,
     viewer: {email, organizations}
@@ -48,19 +46,12 @@ const StandardHubUserMenu = (props: Props) => {
   // nav menu routes
   const goToProfile = () => {
     history.push('/me/profile')
-    handleMenuClick()
   }
   const goToOrganizations = () => {
     history.push('/me/organizations')
-    handleMenuClick()
-  }
-  const goToNotifications = () => {
-    history.push('/me/notifications')
-    handleMenuClick()
   }
   const signOut = () => {
     history.push(`/${SIGNOUT_SLUG}`)
-    handleMenuClick()
   }
 
   const ownedFreeOrgs = organizations.filter((org) => org.tier === TierEnum.personal)
@@ -91,15 +82,6 @@ const StandardHubUserMenu = (props: Props) => {
           </MenuItemLabel>
         }
         onClick={goToOrganizations}
-      />
-      <MenuItem
-        label={
-          <MenuItemLabel>
-            <MenuItemIcon>notifications</MenuItemIcon>
-            {'Notifications'}
-          </MenuItemLabel>
-        }
-        onClick={goToNotifications}
       />
       {showUpgradeCTA && <MenuItemHR key='HR0' />}
       {showUpgradeCTA && (

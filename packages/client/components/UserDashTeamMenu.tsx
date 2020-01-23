@@ -26,7 +26,7 @@ const UserDashTeamMenu = (props: Props) => {
       {...menuProps}
       defaultActiveIdx={defaultActiveIdx}
     >
-      <DropdownMenuLabel>{'Filter by:'}</DropdownMenuLabel>
+      <DropdownMenuLabel>{'Filter by team:'}</DropdownMenuLabel>
       <MenuItem
         key={'teamFilterNULL'}
         label={'All teams'}
