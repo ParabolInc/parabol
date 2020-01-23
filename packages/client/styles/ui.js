@@ -126,12 +126,7 @@ const ui = {
       lineHeight: CONTROL_LARGE_LINE_HEIGHT,
       padding: `${CONTROL_LARGE_PADDING_VERTICAL} ${CONTROL_LARGE_PADDING_HORIZONTAL}`
     }
-  },
-
-  // Settings
-  // ---------------------------------------------------------------------------
-  settingsPanelMaxWidth: '48rem',
-  settingsPanelMaxWidthNarrow: '40.25rem'
+  }
 }
 
 export default ui

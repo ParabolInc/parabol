@@ -27,10 +27,10 @@ const TeamDashTeamMemberMenu = (props: Props) => {
       {...menuProps}
       defaultActiveIdx={defaultActiveIdx}
     >
-      <DropdownMenuLabel>{'Filter by:'}</DropdownMenuLabel>
+      <DropdownMenuLabel>{'Filter by team member:'}</DropdownMenuLabel>
       <MenuItem
         key={'teamMemberFilterNULL'}
-        label={'All members'}
+        label={'All team members'}
         onClick={() => filterTeamMember(atmosphere, teamId, null)}
       />
       {teamMembers.map((teamMember) => (

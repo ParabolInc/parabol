@@ -3,7 +3,8 @@ import graphql from 'babel-plugin-relay/macro'
 import useBreakpoint from 'hooks/useBreakpoint'
 import React, {lazy} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {Route, Switch} from 'react-router'
+import {matchPath, Route, RouteProps, Switch} from 'react-router'
+import useRouter from 'hooks/useRouter'
 import {Breakpoint} from 'types/constEnums'
 import useSidebar from '../hooks/useSidebar'
 import {Dashboard_viewer} from '../__generated__/Dashboard_viewer.graphql'
@@ -13,6 +14,7 @@ import DashTopBar from './DashTopBar'
 import MobileDashTopBar from './MobileDashTopBar'
 import SwipeableDashSidebar from './SwipeableDashSidebar'
 import StartMeetingFAB from './StartMeetingFAB'
+import StaticStartMeetingFAB from './StaticStartMeetingFAB'
 
 const UserDashboard = lazy(() =>
   import(
@@ -27,6 +29,28 @@ const NewTeam = lazy(() =>
     /* webpackChunkName: 'NewTeamRoot' */ '../modules/newTeam/containers/NewTeamForm/NewTeamRoot'
   )
 )
+
+const getShowFAB = (location: NonNullable<RouteProps['location']>) => {
+  const {pathname} = location
+  return (
+    pathname.includes('/me/tasks') ||
+    !!matchPath(pathname, {
+      path: '/me/',
+      exact: true,
+      strict: true
+    }) ||
+    !!matchPath(pathname, {
+      path: '/me',
+      exact: true,
+      strict: true
+    }) ||
+    !!matchPath(pathname, {
+      path: '/team/:teamId',
+      exact: true,
+      strict: false
+    })
+  )
+}
 
 interface Props {
   viewer: Dashboard_viewer | null
@@ -60,6 +84,7 @@ const Dashboard = (props: Props) => {
   const {viewer} = props
   const {isOpen, toggle, handleMenuClick} = useSidebar()
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
+  const {location} = useRouter()
   return (
     <DashLayout>
       {isDesktop ? (
@@ -88,7 +113,7 @@ const Dashboard = (props: Props) => {
           </Switch>
         </DashMain>
       </DashPanel>
-      <StartMeetingFAB />
+      {getShowFAB(location) ? isDesktop ? <StaticStartMeetingFAB /> : <StartMeetingFAB /> : null}
     </DashLayout>
   )
 }

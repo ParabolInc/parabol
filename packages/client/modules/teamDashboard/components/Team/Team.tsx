@@ -9,6 +9,7 @@ import useRouter from '../../../../hooks/useRouter'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {Team_team} from '../../../../__generated__/Team_team.graphql'
 import EditableTeamName from '../EditTeamName/EditableTeamName'
+import {Layout} from 'types/constEnums'
 // import DebugButton from '../../../userDashboard/components/UserDashMain/DebugButton'
 
 const IconButton = styled(FlatButton)({
@@ -25,6 +26,8 @@ const TeamDashHeaderInner = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flexWrap: 'wrap',
+  margin: '0 auto',
+  maxWidth: Layout.SETTINGS_MAX_WIDTH,
   width: '100%'
 })
 

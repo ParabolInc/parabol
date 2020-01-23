@@ -23,7 +23,8 @@ export const enum Breakpoint {
   MEETING_FACILITATOR_BAR = 480,
   NEW_MEETING_GRID = 1112,
   NEW_MEETING_SELECTOR = 500,
-  SINGLE_REFLECTION_COLUMN = 704 // (ReflectionWith + 16) * 2
+  SINGLE_REFLECTION_COLUMN = 704, // (ReflectionWith + 16) * 2,
+  DASH_BREAKPOINT_WIDEST = 1816 // (4*296) + (5*24) + (256*2) = 4 card cols, 4 col gutters, 2 sidebars
 }
 
 export const enum Card {
@@ -44,7 +45,7 @@ export const enum ContactInfo {
 // TODO refactor into ElementWidth
 export const enum DashTimeline {
   FEED_MAX_WIDTH = 600,
-  FEED_MIN_WIDTH = 288,
+  FEED_MIN_WIDTH = 296,
   MIN_PADDING = 16,
   TIMELINE_DRAWER_WIDTH = 336
 }
@@ -118,7 +119,8 @@ export const enum Layout {
   TYPE_GRID = 4, // .5x
   LAYOUT_GRID = 8, // 1x
   ROW_GUTTER = 16, // 2x
-  TASK_COLUMNS_MAX_WIDTH = '1334px' // (4 x 296 card max-width) + (5 x 30 - gutters around cols)
+  SETTINGS_MAX_WIDTH = 768,
+  TASK_COLUMNS_MAX_WIDTH = 1304 // (4 x 296 card max-width) + (5 x 24 - gutters around cols)
 }
 
 export const enum LoaderSize {
@@ -161,7 +163,7 @@ export const enum NavSidebar {
   LINE_HEIGHT = '24px',
   SUB_FONT_SIZE = 14,
   SUB_LINE_HEIGHT = '24px',
-  WIDTH = 240
+  WIDTH = 256
 }
 
 export const enum NewMeeting {
@@ -202,7 +204,7 @@ export const enum RetroDemo {
 }
 
 export const enum RightSidebar {
-  WIDTH = 240
+  WIDTH = 256
 }
 
 export const enum Security {

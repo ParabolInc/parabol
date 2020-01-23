@@ -18,7 +18,8 @@ import Avatar from '../Avatar/Avatar'
 const StandardHubRoot = styled('div')({
   backgroundRepeat: 'no-repeat',
   backgroundSize: '100%',
-  backgroundPositionY: `101%, 0`,
+  backgroundPositionY: '101%',
+  backgroundPositionX: '0',
   backgroundImage: `url('${WaveWhiteSVG}'), linear-gradient(90deg, ${PALETTE.BACKGROUND_PRIMARY} 0%, ${PALETTE.BACKGROUND_DARK} 100%)`,
   display: 'flex',
   flexDirection: 'column',
@@ -111,7 +112,7 @@ const StandardHub = (props: Props) => {
           <Email>{email}</Email>
         </NameAndEmail>
       </User>
-      {tier !== TierEnum.personal ? (
+      {tier === TierEnum.personal ? (
         <Upgrade onClick={handleUpgradeClick}>
           <Icon>verified_user</Icon>
           <UpgradeCTA>

@@ -18,7 +18,7 @@ const getShowSearch = (location: NonNullable<RouteProps['location']>) => {
     !!matchPath(pathname, {
       path: '/team/:teamId',
       exact: true,
-      strict: true
+      strict: false
     })
   )
 }
@@ -29,9 +29,12 @@ interface Props {
 const Wrapper = styled('div')<{location: any}>(({location}) => ({
   alignItems: 'center',
   backgroundColor: 'hsla(0,0%,100%,.125)',
+  borderRadius: 4,
   display: 'flex',
-  margin: 12,
-  width: 480,
+  flex: 1,
+  height: 40,
+  margin: '8px 16px',
+  maxWidth: 480,
   visibility: getShowSearch(location) ? undefined : 'hidden'
 }))
 

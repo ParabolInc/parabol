@@ -9,8 +9,8 @@ const LabelBlock = styled('div')({
   justifyContent: 'center'
 })
 
-const Label = styled('div')<Pick<Props, 'iconAfter' | 'iconLarge'>>(({iconAfter, iconLarge}) => {
-  const gutter = iconLarge ? '12px' : '8px'
+const Label = styled('div')<Pick<Props, 'iconAfter'>>(({iconAfter}) => {
+  const gutter = '8px'
   return {
     color: 'inherit',
     fontSize: 'inherit',

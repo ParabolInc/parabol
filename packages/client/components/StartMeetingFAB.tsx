@@ -9,12 +9,8 @@ import Icon from './Icon'
 
 const Block = styled('div')({
   position: 'fixed',
-  left: 0,
   bottom: 16,
-  width: '100%',
-  maxWidth: 1800,
-  display: 'flex',
-  justifyContent: 'flex-end',
+  right: 16,
   // hacky, but we need the FAB to show up over the team right nav
   zIndex: ZIndex.SIDE_SHEET
 })
@@ -23,7 +19,6 @@ const Button = styled(FloatingActionButton)({
   color: '#fff',
   backgroundImage: PALETTE.GRADIENT_WARM,
   height: 56,
-  marginRight: 16,
   padding: 0,
   overflow: 'hidden',
   zIndex: ZIndex.FAB

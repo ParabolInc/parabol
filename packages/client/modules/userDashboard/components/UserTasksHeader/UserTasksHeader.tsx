@@ -1,8 +1,6 @@
 import React from 'react'
-import DashSectionControl from '../../../../components/Dashboard/DashSectionControl'
 import DashSectionControls from '../../../../components/Dashboard/DashSectionControls'
 import DashSectionHeader from '../../../../components/Dashboard/DashSectionHeader'
-import DashFilterLabel from '../../../../components/DashFilterLabel/DashFilterLabel'
 import DashFilterToggle from '../../../../components/DashFilterToggle/DashFilterToggle'
 import lazyPreload from '../../../../utils/lazyPreload'
 import {MenuPosition} from '../../../../hooks/useCoords'
@@ -32,19 +30,14 @@ const UserTasksHeader = (props: Props) => {
   return (
     <DashSectionHeader>
       <DashSectionControls>
-        <DashSectionControl>
-          <DashFilterLabel>
-            <b>{'Show Tasks for'}</b>
-            {': '}
-          </DashFilterLabel>
-          <DashFilterToggle
-            ref={originRef}
-            onClick={togglePortal}
-            onMouseEnter={UserDashTeamMenu.preload}
-            label={teamFilterName}
-          />
-          {menuPortal(<UserDashTeamMenu menuProps={menuProps} viewer={viewer} />)}
-        </DashSectionControl>
+        <DashFilterToggle
+          label='Team'
+          onClick={togglePortal}
+          onMouseEnter={UserDashTeamMenu.preload}
+          ref={originRef}
+          value={teamFilterName}
+        />
+        {menuPortal(<UserDashTeamMenu menuProps={menuProps} viewer={viewer} />)}
       </DashSectionControls>
     </DashSectionHeader>
   )

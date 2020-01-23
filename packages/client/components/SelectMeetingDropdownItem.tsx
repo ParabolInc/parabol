@@ -16,6 +16,7 @@ const Wrapper = styled('div')({
 })
 
 const MeetingIcon = styled(Icon)({
+  color: PALETTE.TEXT_GRAY,
   fontSize: ICON_SIZE.MD24,
   padding: 16
 })

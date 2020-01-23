@@ -14,6 +14,7 @@ import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import SAML from '../../../database/types/SAML'
 import {SSORelayState} from '../../queries/SAMLIdP'
 import LoginSAMLPayload from '../types/LoginSAMLPayload'
+import {TierEnum} from 'parabol-client/types/graphql'
 
 const serviceProvider = samlify.ServiceProvider({})
 samlify.setSchemaValidator(validator)
@@ -95,7 +96,8 @@ const loginSAML = {
       email,
       preferredName: name,
       emailVerified: true,
-      lastLogin: now
+      lastLogin: now,
+      tier: TierEnum.enterprise
     })
 
     const authToken = await bootstrapNewUser(newUser, !isInvited)

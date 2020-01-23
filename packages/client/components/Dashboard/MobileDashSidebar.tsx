@@ -39,7 +39,7 @@ const Nav = styled('nav')({
   left: 0,
   height: '100%',
   maxHeight: '100%',
-  padding: 8,
+  padding: '0 0 8px 8px',
   position: 'absolute',
   top: 0,
   width: '100%'
@@ -49,12 +49,14 @@ const NavMain = styled('div')({
   overflowY: 'auto'
 })
 
+const NavItemsWrap = styled('div')({
+  paddingRight: 8
+})
+
 const DashHR = styled('div')({
   borderBottom: `solid ${PALETTE.BACKGROUND_TOGGLE_ACTIVE} 1px`,
   marginLeft: -8,
-  marginTop: 4,
-  marginBottom: 4,
-  width: 'calc(100% + 16px)'
+  width: 'calc(100% + 8px)'
 })
 
 const Footer = styled('div')({
@@ -73,37 +75,43 @@ const MobileDashSidebar = (props: Props) => {
       <StandardHub handleMenuClick={handleMenuClick} viewer={viewer} />
       <NavBlock>
         <Nav>
-          <LeftDashNavItem
-            onClick={handleMenuClick}
-            icon={'timeline'}
-            href={'/me'}
-            label={'Timeline'}
-          />
-          <LeftDashNavItem
-            onClick={handleMenuClick}
-            icon={'playlist_add_check'}
-            href={'/me/tasks'}
-            label={'Tasks'}
-          />
+          <NavItemsWrap>
+            <LeftDashNavItem
+              onClick={handleMenuClick}
+              icon={'timeline'}
+              href={'/me'}
+              label={'Timeline'}
+            />
+            <LeftDashNavItem
+              onClick={handleMenuClick}
+              icon={'playlist_add_check'}
+              href={'/me/tasks'}
+              label={'Tasks'}
+            />
+          </NavItemsWrap>
           <DashHR />
           <NavMain>
             <DashNavList onClick={handleMenuClick} viewer={viewer} />
           </NavMain>
           <DashHR />
           <Footer>
-            <LeftDashNavItem
-              onClick={handleMenuClick}
-              icon={'add'}
-              href={'/newteam/1'}
-              label={'Add a Team'}
-            />
-            <FooterBottom>
+            <NavItemsWrap>
               <LeftDashNavItem
                 onClick={handleMenuClick}
-                icon={'exit_to_app'}
-                href={'/signout'}
-                label={'Sign out'}
+                icon={'add'}
+                href={'/newteam/1'}
+                label={'Add a Team'}
               />
+            </NavItemsWrap>
+            <FooterBottom>
+              <NavItemsWrap>
+                <LeftDashNavItem
+                  onClick={handleMenuClick}
+                  icon={'exit_to_app'}
+                  href={'/signout'}
+                  label={'Sign out'}
+                />
+              </NavItemsWrap>
               <LeftDashParabol />
             </FooterBottom>
           </Footer>

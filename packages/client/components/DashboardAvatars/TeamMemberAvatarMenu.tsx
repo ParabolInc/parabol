@@ -2,14 +2,17 @@ import {TeamMemberAvatarMenu_teamMember} from '../../__generated__/TeamMemberAva
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import DropdownMenuLabel from '../DropdownMenuLabel'
 import Menu from '../Menu'
 import MenuItem from '../MenuItem'
 import withAtmosphere, {WithAtmosphereProps} from '../../decorators/withAtmosphere/withAtmosphere'
 import {MenuProps} from '../../hooks/useMenu'
+import {PALETTE} from '../../styles/paletteV2'
 import MenuItemLabel from '../MenuItemLabel'
+import styled from '@emotion/styled'
+import RoleTag from 'components/Tag/RoleTag'
 
 interface Props extends WithAtmosphereProps {
+  isLead: boolean
   isViewerLead: boolean
   teamMember: TeamMemberAvatarMenu_teamMember
   menuProps: MenuProps
@@ -19,9 +22,40 @@ interface Props extends WithAtmosphereProps {
   toggleLeave: () => void
 }
 
+const Header = styled('div')<{hasOptions: boolean}>(({hasOptions}) => ({
+  borderBottom: hasOptions ? `1px solid ${PALETTE.BORDER_LIGHTER}` : undefined,
+  display: 'flex',
+  justifyContent: 'space-between',
+  marginBottom: hasOptions ? 8 : 0,
+  padding: hasOptions ? '4px 16px 12px' : '4px 16px',
+  width: '100%'
+}))
+
+const NameAndMeta = styled('div')({
+  paddingRight: 8
+})
+
+const Name = styled('div')({
+  fontSize: 15,
+  fontWeight: 600,
+  lineHeight: '24px'
+})
+
+const Meta = styled('div')({
+  color: PALETTE.TEXT_GRAY,
+  fontSize: 12,
+  lineHeight: '16px',
+  textTransform: 'capitalize'
+})
+
+const StyledRoleTag = styled(RoleTag)({
+  marginTop: 4
+})
+
 const TeamMemberAvatarMenu = (props: Props) => {
   const {
     atmosphere,
+    isLead,
     isViewerLead,
     teamMember,
     menuProps,
@@ -39,9 +73,13 @@ const TeamMemberAvatarMenu = (props: Props) => {
   return (
     <>
       <Menu ariaLabel={'Select what to do with this team member'} {...menuProps}>
-        <DropdownMenuLabel isEmpty={!hasOptions}>{`${
-          isSelf ? 'You are' : `${preferredName} is`
-        } ${connected}`}</DropdownMenuLabel>
+        <Header hasOptions={hasOptions}>
+          <NameAndMeta>
+            <Name>{preferredName}</Name>
+            <Meta>{connected}</Meta>
+          </NameAndMeta>
+          {isLead && <StyledRoleTag>{'Team Lead'}</StyledRoleTag>}
+        </Header>
         {isViewerLead && !isSelf && (
           <MenuItem
             key='promote'

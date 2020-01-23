@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {withRouter} from 'react-router-dom'
-import ui from '../../../../styles/ui'
 import ToggleNav from '../../../../components/ToggleNav/ToggleNav'
 
 const TeamSettingsToggleNav = (props) => {
@@ -31,7 +30,7 @@ const TeamSettingsToggleNav = (props) => {
 
   const wrapperStyle = {
     margin: '16px auto 0',
-    maxWidth: ui.settingsPanelMaxWidth,
+    maxWidth: 768,
     width: '100%'
   }
 

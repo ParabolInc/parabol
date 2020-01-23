@@ -18,12 +18,11 @@ interface Props {
 }
 
 const HeaderLabel = styled('div')({
-  borderBottom: `1px solid ${PALETTE.BORDER_LIGHT}`,
   color: PALETTE.TEXT_GRAY,
   fontSize: 12,
   fontWeight: 600,
   lineHeight: '16px',
-  padding: `8px 56px`,
+  padding: '2px 16px 8px',
   userSelect: 'none'
 })
 
