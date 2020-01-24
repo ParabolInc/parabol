@@ -20,7 +20,7 @@ const TimelineFeed = styled('div')({
   flex: 1,
   paddingLeft: DashTimeline.MIN_PADDING,
   paddingRight: DashTimeline.MIN_PADDING,
-  paddingTop: 24
+  paddingTop: DashTimeline.MIN_PADDING
 })
 
 export const TimelineFeedItems = styled('div')({
