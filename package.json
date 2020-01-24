@@ -34,6 +34,7 @@
   },
   "resolutions": {
     "hoist-non-react-statics": "^3.3.0",
+    "@types/relay-runtime": "6.0.11",
     "@types/react": "16.9.11",
     "@types/react-dom": "16.9.4",
     "relay-runtime": "https://github.com/mattkrick/relay/tarball/74f97387b7a419d2d7a5769c0ce98596a070fb6a",

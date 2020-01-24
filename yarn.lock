@@ -3538,12 +3538,7 @@
     "@types/prop-types" "*"
     csstype "^2.2.0"
 
-"@types/relay-runtime@*":
-  version "8.0.2"
-  resolved "https://registry.yarnpkg.com/@types/relay-runtime/-/relay-runtime-8.0.2.tgz#b93e5ce86e6830a87568fcbd6315c088a9b65e11"
-  integrity sha512-V1q1lKNwCcx8MjrtqvBfKlC+NSf/qshL453ZCp2zyZcf20X+fv2NriX7K5mf4ld7wL+9+f/lsrRlDZYIdLYvdw==
-
-"@types/relay-runtime@^6.0.9":
+"@types/relay-runtime@*", "@types/relay-runtime@6.0.11":
   version "6.0.11"
   resolved "https://registry.yarnpkg.com/@types/relay-runtime/-/relay-runtime-6.0.11.tgz#635e0e7d60d6b66fa632bdeb7e3d02b44f9add03"
   integrity sha512-59JBBYnO6aHvIoVoUHuXQbZA/FWPfQgUPr34xOXKTiJ04cV1Mp+JRmtGBmuBw9N9dT/aDMwq1SOgHMQdAha4Pg==

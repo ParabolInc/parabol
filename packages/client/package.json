@@ -37,7 +37,7 @@
     "@types/react-relay": "^7.0.0",
     "@types/react-router": "^5.0.3",
     "@types/react-router-dom": "^4.3.2",
-    "@types/relay-runtime": "^6.0.9",
+    "@types/relay-runtime": "6.0.11",
     "@types/segment-analytics": "^0.0.31",
     "@types/shortid": "^0.0.29",
     "@types/stripe-v2": "^2.0.1",
