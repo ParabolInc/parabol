@@ -37,6 +37,9 @@ const VerifiedInvitationPayload = new GraphQLObjectType({
       type: GraphQLString,
       description: 'name of the inviting team, present if invitation exists'
     },
+    meetingId: {
+      type: GraphQLID
+    },
     meetingType: {
       type: MeetingTypeEnum
     },

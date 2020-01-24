@@ -5,7 +5,7 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 
 // HANDLED_OPS is a list of operations that we gracefully handle on the client, so we don't want to report them to sentry
-const HANDLED_OPS = ['TeamRootQuery', 'ActionMeetingRootQuery', 'RetroRootQuery']
+const HANDLED_OPS = ['TeamRootQuery']
 
 export default {
   type: Team,

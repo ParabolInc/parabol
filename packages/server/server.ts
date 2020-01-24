@@ -1,4 +1,5 @@
-import './tracer'
+// Datadog APM, must be first import (disabled for now)
+// import './tracer'
 import uws from 'uWebSockets.js'
 import getDotenv from '../server/utils/dotenv'
 import stripeWebhookHandler from './billing/stripeWebhookHandler'

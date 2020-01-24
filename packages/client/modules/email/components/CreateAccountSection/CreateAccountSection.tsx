@@ -3,6 +3,7 @@ import {PALETTE} from '../../../../styles/paletteV2'
 import {emailFontFamily, emailPrimaryButtonStyle, emailTableBase} from '../../../../styles/email'
 import emailDir from '../../emailDir'
 import EmailBorderBottom from '../SummaryEmail/MeetingSummaryEmail/EmailBorderBottom'
+import {LocalStorageKey} from '../../../../types/constEnums'
 
 const tableStyle = {
   ...emailTableBase,
@@ -70,8 +71,6 @@ const features = [
   {icon: 'feature-summary@3x.png', copy: 'Detailed meeting summary email'},
   {icon: 'feature-owners@3x.png', copy: 'Takeaway tasks with owners'}
 ]
-const primaryActionLabel = 'Create a Free Account'
-const primaryActionLink = '/create-account?from=demo'
 
 const makeFeatureRow = (featureIconFile, featureCopy, idx) => {
   const src = `${emailDir}${featureIconFile}`
@@ -90,6 +89,21 @@ const makeFeatureRow = (featureIconFile, featureCopy, idx) => {
 const CreateAccountSection = (props) => {
   const {isDemo} = props
   if (!isDemo) return null
+  const isLoggedIn = localStorage.getItem(LocalStorageKey.APP_TOKEN_KEY)
+  const primaryActionLabel = isLoggedIn ? 'Go to My Dashboard' : 'Create a Free Account'
+  const primaryActionLink = isLoggedIn ? '/me' : '/create-account?from=demo'
+  const copyLineOne = isLoggedIn
+    ? 'Head on over to your dashboard'
+    : 'In just a few seconds you’ll have access'
+  const copyLineTwo = isLoggedIn ? (
+    <span>
+      to run <b>a real retrospective</b> with your team.
+    </span>
+  ) : (
+    <span>
+      to run <b>unlimited retrospectives</b> with your team.
+    </span>
+  )
   return (
     <>
       <tr>
@@ -99,14 +113,12 @@ const CreateAccountSection = (props) => {
       </tr>
       <tr>
         <td align='center' style={copyStyle}>
-          In just a few seconds you’ll have access
+          {copyLineOne}
         </td>
       </tr>
       <tr>
         <td align='center' style={copyStyle}>
-          <span>
-            to run <b>unlimited retrospectives</b> with your team.
-          </span>
+          {copyLineTwo}
         </td>
       </tr>
       <tr>

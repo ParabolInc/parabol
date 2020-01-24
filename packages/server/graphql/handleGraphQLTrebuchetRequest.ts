@@ -13,7 +13,7 @@ type TrebuchetServerResult = Promise<{
   payload: {data?: any; errors?: {message: string; path?: string[]}[]}
 } | void>
 
-const IGNORE_MUTATIONS = ['segmentEventTrack', 'updateDragLocation']
+const IGNORE_MUTATIONS = ['segmentEventTrack', 'updateDragLocation', 'setAppLocation']
 
 const handleGraphQLTrebuchetRequest = async (
   data: OutgoingMessage,
