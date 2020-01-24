@@ -51,6 +51,10 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       description: 'true if the team was created when the account was created, else false',
       resolve: ({isOnboardTeam}) => !!isOnboardTeam
     },
+    lastMeetingType: {
+      type: GraphQLNonNull(MeetingTypeEnum),
+      description: 'The type of the last meeting run'
+    },
     massInvitation: {
       type: MassInvitation,
       description:

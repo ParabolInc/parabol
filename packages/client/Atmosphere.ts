@@ -164,7 +164,7 @@ export default class Atmosphere extends Environment {
   trySockets = () => {
     const wsProtocol = window.location.protocol.replace('http', 'ws')
     const url = `${wsProtocol}//${window.location.host}/?token=${this.authToken}`
-    return new SocketTrebuchet({url, batchDelay: 0})
+    return new SocketTrebuchet({url})
   }
 
   trySSE = () => {

@@ -14,6 +14,8 @@ import PrimaryButton from './PrimaryButton'
 import StyledError from './StyledError'
 import graphql from 'babel-plugin-relay/macro'
 
+const newMeetingGridMediaQuery = `@media screen and (min-width: ${Breakpoint.NEW_MEETING_GRID}px)`
+
 const ButtonBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   alignItems: 'center',
   display: 'flex',
@@ -28,13 +30,20 @@ const ButtonBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 }))
 
 const StartButton = styled(PrimaryButton)({
-  fontSize: 20,
+  fontSize: 18,
   width: 320,
-  maxWidth: '100%'
+  maxWidth: '100%',
+  [newMeetingGridMediaQuery]: {
+    fontSize: 24,
+    height: 64
+  }
 })
 
 const ForwardIcon = styled(Icon)({
-  paddingLeft: 16
+  paddingLeft: 16,
+  [newMeetingGridMediaQuery]: {
+    fontSize: 36 // MD 1.5x
+  }
 })
 
 interface Props {

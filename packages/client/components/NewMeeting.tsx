@@ -88,6 +88,12 @@ const NewMeeting = (props: Props) => {
   }, [])
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_GRID)
   const selectedTeam = teams.find((team) => team.id === teamId)
+  useEffect(() => {
+    if (!selectedTeam) return
+    const {lastMeetingType} = selectedTeam
+    const meetingIdx = NEW_MEETING_ORDER.indexOf(lastMeetingType as MeetingTypeEnum)
+    setIdx(meetingIdx)
+  }, [teamId])
   if (!teamId || !selectedTeam) return null
   return (
     <NewMeetingBlock innerWidth={innerWidth} isDesktop={isDesktop}>
@@ -116,6 +122,7 @@ export default createFragmentContainer(NewMeeting, {
         ...NewMeetingTeamPicker_teams
         ...NewMeetingActions_team
         id
+        lastMeetingType
         name
         tier
       }

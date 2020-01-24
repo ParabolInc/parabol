@@ -61,7 +61,7 @@ const NewMeetingSettingsToggleCheckIn = (props: Props) => {
   return (
     <ButtonRow onClick={toggleCheckIn}>
       <StyledCheckbox active={hasCheckIn} />
-      <Label>{'Include Social Checkin-In Phase'}</Label>
+      <Label>{'Include Social Check-In Phase'}</Label>
     </ButtonRow>
   )
 }

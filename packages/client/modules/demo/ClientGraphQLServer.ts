@@ -253,7 +253,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       } else {
         if (!existingReactji) {
-          reactjis.push({id: reactjiId, count: 1, isViewerReactji: true})
+          reactjis.push({id: reactjiId, count: 1, isViewerReactji: userId === demoViewerId})
         } else {
           existingReactji.count++
           existingReactji.isViewerReactji =
@@ -561,6 +561,18 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         this.startBot()
       }
       return {navigateMeeting: data}
+    },
+    RenameMeetingMutation: ({name}, userId) => {
+      const meeting = this.db.newMeeting
+      meeting.name = name
+      const data = {
+        __typename: 'RenameMeetingSuccess',
+        meeting
+      }
+      if (userId !== demoViewerId) {
+        this.emit(SubscriptionChannel.MEETING, data)
+      }
+      return {renameMeeting: data}
     },
     SetPhaseFocusMutation: ({focusedPhaseItemId}, userId) => {
       const reflectPhase = this.db.newMeeting.phases!.find(

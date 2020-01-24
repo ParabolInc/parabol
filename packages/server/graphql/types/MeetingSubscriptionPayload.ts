@@ -1,4 +1,5 @@
 import graphQLSubscriptionType from '../graphQLSubscriptionType'
+import {AddReactjiToReflectionSuccess} from './AddReactjiToReflectionPayload'
 import AutoGroupReflectionsPayload from './AutoGroupReflectionsPayload'
 import CreateReflectionPayload from './CreateReflectionPayload'
 import DragDiscussionTopicPayload from './DragDiscussionTopicPayload'
@@ -8,15 +9,16 @@ import NavigateMeetingPayload from './NavigateMeetingPayload'
 import NewMeetingCheckInPayload from './NewMeetingCheckInPayload'
 import PromoteNewMeetingFacilitatorPayload from './PromoteNewMeetingFacilitatorPayload'
 import RemoveReflectionPayload from './RemoveReflectionPayload'
+import {SetAppLocationSuccess} from './SetAppLocationPayload'
 import SetPhaseFocusPayload from './SetPhaseFocusPayload'
+import SetStageTimerPayload from './SetStageTimerPayload'
 import StartDraggingReflectionPayload from './StartDraggingReflectionPayload'
 import UpdateDragLocationPayload from './UpdateDragLocationPayload'
 import UpdateNewCheckInQuestionPayload from './UpdateNewCheckInQuestionPayload'
 import UpdateReflectionContentPayload from './UpdateReflectionContentPayload'
 import UpdateReflectionGroupTitlePayload from './UpdateReflectionGroupTitlePayload'
 import VoteForReflectionGroupPayload from './VoteForReflectionGroupPayload'
-import SetStageTimerPayload from './SetStageTimerPayload'
-import {AddReactjiToReflectionSuccess} from './AddReactjiToReflectionPayload'
+import {RenameMeetingSuccess} from './RenameMeetingPayload'
 
 const types = [
   AddReactjiToReflectionSuccess,
@@ -29,6 +31,8 @@ const types = [
   NewMeetingCheckInPayload,
   PromoteNewMeetingFacilitatorPayload,
   RemoveReflectionPayload,
+  SetAppLocationSuccess,
+  RenameMeetingSuccess,
   SetPhaseFocusPayload,
   SetStageTimerPayload,
   StartDraggingReflectionPayload,

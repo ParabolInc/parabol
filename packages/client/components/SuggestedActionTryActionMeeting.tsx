@@ -17,7 +17,7 @@ class SuggestedActionTryActionMeeting extends Component<Props> {
     const {history, suggestedAction} = this.props
     const {team} = suggestedAction
     const {id: teamId} = team
-    history.push(`/meeting/${teamId}`)
+    history.push(`/new-meeting/${teamId}`)
   }
 
   render() {

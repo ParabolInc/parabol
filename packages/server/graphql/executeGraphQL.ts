@@ -11,7 +11,7 @@ import getDataLoader from './getDataLoader'
 import privateSchema from './intranetSchema/intranetSchema'
 import publicSchema from './rootSchema'
 import getRateLimiter from './getRateLimiter'
-import {getUserId} from '../utils/authorization'
+// import {getUserId} from '../utils/authorization'
 import {ExecutionResultDataDefault} from 'graphql/execution/execute'
 
 interface GQLRequest {
@@ -44,11 +44,11 @@ const executeGraphQL = async <T = ExecutionResultDataDefault>(req: GQLRequest) =
     dataLoaderId,
     rootValue
   } = req
-  const viewerId = getUserId(authToken)
+  // const viewerId = getUserId(authToken)
   // dataloaders are only reuseable if they are non-mutative
   // since the mutation might change the underlying data but keep the previously used dataloader
-  const reuseableId = docId?.[0] === 'q' ? viewerId : undefined
-  const dataLoader = getDataLoader(dataLoaderId, reuseableId)
+  // const reuseableId = docId?.[0] === 'q' ? viewerId : undefined // removing to triage the wonky behavior
+  const dataLoader = getDataLoader(dataLoaderId)
   dataLoader.share()
   const rateLimiter = getRateLimiter()
   const contextValue = {ip, authToken, socketId, rateLimiter, dataLoader}
