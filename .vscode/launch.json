@@ -35,9 +35,7 @@
             "request": "launch",
             "name": "Debug relay compiler",
             "program": "${workspaceFolder}/node_modules/.bin/relay-compiler",
-            "args": [
-                "--src ../client --exclude '**/__generated__/**' --exclude '**/githubSchema.graphql' --schema ../../build/schema.json --extensions js ts tsx --artifactDirectory ../client/__generated__ --language typescript --client-schema ../client/clientSchema.graphql --persist-output graphql/queryMap.json --watchman false"
-            ],
+            "args": [],
             "skipFiles": [
                 "<node_internals>/**"
             ]

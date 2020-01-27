@@ -29,7 +29,7 @@ const useLocalQuery = <TQuery extends {response: any; variables: any}>(
     const operation = createOperationDescriptor(request, variables)
     const res = atmosphere.lookup(operation.fragment)
     setData(res.data || null)
-    opDisposableRef.current = atmosphere.retain(operation.root)
+    opDisposableRef.current = atmosphere.retain(operation)
     subDisposableRef.current = atmosphere.subscribe(res, (newSnapshot) => {
       setData(newSnapshot.data || null)
     })
