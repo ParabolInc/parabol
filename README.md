@@ -65,7 +65,7 @@ Action is a Node.js application based upon the
 $ git clone https://github.com/ParabolInc/action.git
 $ cd action
 $ cp packages/server/.env.example packages/server/.env # Add your own vars here
-$ rethinkdb &
+$ rethinkdb & # Or if you prefer docker: $ docker-compose up -d db
 $ yarn
 $ yarn quickstart
 ```
