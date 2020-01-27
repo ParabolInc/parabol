@@ -7,21 +7,20 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import {forwardConnectionArgs} from 'graphql-relay'
+import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
+import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
+import {getUserId} from '../../utils/authorization'
+import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import {resolveTeam} from '../resolvers'
 import GraphQLEmailType from './GraphQLEmailType'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
+import SlackAuth from './SlackAuth'
+import SlackNotification from './SlackNotification'
 import {TaskConnection} from './Task'
 import Team from './Team'
 import User from './User'
-import {getUserId} from '../../utils/authorization'
-import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
-import SlackAuth from './SlackAuth'
-import SlackNotification from './SlackNotification'
-import {GQLContext} from '../graphql'
-import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 
 const TeamMember = new GraphQLObjectType<any, GQLContext, any>({
   name: 'TeamMember',
@@ -104,7 +103,9 @@ const TeamMember = new GraphQLObjectType<any, GQLContext, any>({
       type: TaskConnection,
       description: 'Tasks owned by the team member',
       args: {
-        ...forwardConnectionArgs,
+        first: {
+          type: GraphQLInt
+        },
         after: {
           type: GraphQLISO8601Type,
           description: 'the datetime cursor'

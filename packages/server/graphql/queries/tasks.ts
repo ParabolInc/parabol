@@ -1,16 +1,17 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {forwardConnectionArgs} from 'graphql-relay'
-import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
-import {TaskConnection} from '../types/Task'
+import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
 import {getUserId, isTeamMember} from '../../utils/authorization'
-import connectionFromTasks from './helpers/connectionFromTasks'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
+import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
+import {TaskConnection} from '../types/Task'
+import connectionFromTasks from './helpers/connectionFromTasks'
 
 export default {
   type: new GraphQLNonNull(TaskConnection),
   args: {
-    ...forwardConnectionArgs,
+    first: {
+      type: GraphQLInt
+    },
     after: {
       type: GraphQLISO8601Type,
       description: 'the datetime cursor'

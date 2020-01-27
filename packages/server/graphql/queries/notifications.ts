@@ -1,13 +1,18 @@
-import {forwardConnectionArgs} from 'graphql-relay'
+import {GraphQLInt, GraphQLString} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
-import {NotificationConnection} from '../types/Notification'
 import {getUserId} from '../../utils/authorization'
+import {NotificationConnection} from '../types/Notification'
 
 export default {
   type: NotificationConnection,
   args: {
     // currently not used
-    ...forwardConnectionArgs
+    first: {
+      type: GraphQLInt
+    },
+    after: {
+      type: GraphQLString
+    }
   },
   description: 'all the notifications for a single user',
   resolve: async (_source, _args, {authToken}) => {

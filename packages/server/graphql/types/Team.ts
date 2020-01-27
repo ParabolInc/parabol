@@ -1,12 +1,12 @@
 import {
   GraphQLBoolean,
   GraphQLID,
+  GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import {forwardConnectionArgs} from 'graphql-relay'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import {ITeam} from '../../../client/types/graphql'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
@@ -185,7 +185,9 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
     tasks: {
       type: new GraphQLNonNull(TaskConnection),
       args: {
-        ...forwardConnectionArgs,
+        first: {
+          type: GraphQLInt
+        },
         after: {
           type: GraphQLISO8601Type,
           description: 'the datetime cursor'
