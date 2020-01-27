@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLInt} from 'graphql'
 import {InvoiceStatusEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import Invoice from '../../database/types/Invoice'
