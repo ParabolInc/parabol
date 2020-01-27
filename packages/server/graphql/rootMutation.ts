@@ -86,6 +86,7 @@ import createMassInvitation from './mutations/createMassInvitation'
 import renameMeeting from './mutations/renameMeeting'
 import addReactjiToReflection from './mutations/addReactjiToReflection'
 import setAppLocation from './mutations/setAppLocation'
+import deleteUser from './mutations/deleteUser'
 
 interface Context extends InternalContext, GQLContext {}
 
@@ -116,6 +117,7 @@ export default new GraphQLObjectType<any, Context, any>({
     createTask,
     createUserPicturePutUrl,
     deleteTask,
+    deleteUser,
     denyPushInvitation,
     dismissNewFeature,
     dismissSuggestedAction,
