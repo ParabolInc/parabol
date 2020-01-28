@@ -10,7 +10,7 @@ import SlackNotification from '../../../database/types/SlackNotification'
 import {requireSU} from '../../../utils/authorization'
 import makeAppLink from '../../../utils/makeAppLink'
 import publish from '../../../utils/publish'
-import SlackManager from '../../../utils/SlackManager'
+import SlackServerManager from '../../../utils/SlackServerManager'
 
 const processMeetingStageTimeLimits = async (job: ScheduledJobMeetingStageTimeLimit) => {
   const r = await getRethink()
@@ -42,7 +42,7 @@ const processMeetingStageTimeLimits = async (job: ScheduledJobMeetingStageTimeLi
       sendViaSlack = false
     } else {
       const {botAccessToken} = slackAuth
-      const manager = new SlackManager(botAccessToken)
+      const manager = new SlackServerManager(botAccessToken)
       const meetingUrl = makeAppLink(`meet/${meetingId}`)
       const slackText = `Time’s up! Advance your meeting to the next phase: ${meetingUrl}`
       const res = await manager.postMessage(channelId, slackText)

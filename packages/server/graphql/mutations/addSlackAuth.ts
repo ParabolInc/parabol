@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import AddSlackAuthPayload from '../types/AddSlackAuthPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getRethink from '../../database/rethinkDriver'
-import SlackManager from '../../utils/SlackManager'
+import SlackServerManager from '../../utils/SlackServerManager'
 import standardError from '../../utils/standardError'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
@@ -53,7 +53,7 @@ const upsertAuth = async (
   teamId: string,
   teamChannelId: string,
   slackUserName: string,
-  slackRes: NonNullable<SlackManager['response']>
+  slackRes: NonNullable<SlackServerManager['response']>
 ) => {
   const r = await getRethink()
   const existingAuth = (await r
@@ -110,7 +110,7 @@ export default {
     }
 
     // RESOLUTION
-    const manager = await SlackManager.init(code)
+    const manager = await SlackServerManager.init(code)
     const {response} = manager
     const slackUserId = response.user_id
     const defaultChannelId = response.incoming_webhook.channel_id

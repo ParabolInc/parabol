@@ -9,7 +9,7 @@ import SlackNotification, {SlackNotificationEvent} from '../../../database/types
 import {toEpochSeconds} from '../../../utils/epochTime'
 import makeAppLink from '../../../utils/makeAppLink'
 import sendToSentry from '../../../utils/sendToSentry'
-import SlackManager from '../../../utils/SlackManager'
+import SlackServerManager from '../../../utils/SlackServerManager'
 import {DataLoaderWorker} from '../../graphql'
 
 const getSlackDetails = async (
@@ -50,7 +50,7 @@ const notifySlack = async (
     const {notification, auth} = slackDetails[i]
     const {channelId} = notification
     const {accessToken, botAccessToken} = auth
-    const manager = new SlackManager(botAccessToken || accessToken)
+    const manager = new SlackServerManager(botAccessToken || accessToken)
     const res = await manager.postMessage(channelId!, slackText)
 
     if ('error' in res) {
@@ -100,8 +100,8 @@ const upsertSlackMessage = async (
   const {channelId} = notification
   const {accessToken, botAccessToken} = auth
   if (!channelId) return
-  const manager = new SlackManager(accessToken)
-  const botManager = new SlackManager(botAccessToken)
+  const manager = new SlackServerManager(accessToken)
+  const botManager = new SlackServerManager(botAccessToken)
   const channelInfo = await manager.getChannelInfo(channelId)
   if (channelInfo.ok) {
     const {channel} = channelInfo

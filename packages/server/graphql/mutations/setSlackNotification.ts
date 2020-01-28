@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import SetSlackNotificationPayload from '../types/SetSlackNotificationPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getRethink from '../../database/rethinkDriver'
-import SlackManager from '../../utils/SlackManager'
+import SlackServerManager from '../../utils/SlackServerManager'
 import standardError from '../../utils/standardError'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
@@ -52,7 +52,7 @@ export default {
 
     if (slackChannelId) {
       // use accessToken as a fallback for folks who haven't refreshed their auth lately
-      const manager = new SlackManager(slackAuth.botAccessToken || slackAuth.accessToken)
+      const manager = new SlackServerManager(slackAuth.botAccessToken || slackAuth.accessToken)
       const channelInfo = await manager.getConversationInfo(slackChannelId)
 
       if (!channelInfo.ok) {

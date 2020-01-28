@@ -1,6 +1,6 @@
 import fetch from 'node-fetch'
 import {stringify} from 'querystring'
-import SlackClientManager from '../../client/utils/SlackClientManager'
+import SlackManager from '../../client/utils/SlackManager'
 import makeAppLink from './makeAppLink'
 
 interface IncomingWebhook {
@@ -25,9 +25,9 @@ interface OAuth2Response {
   }
 }
 
-class SlackManager extends SlackClientManager {
+class SlackServerManager extends SlackManager {
   static async init(code: string) {
-    return SlackManager.fetchToken(code)
+    return SlackServerManager.fetchToken(code)
   }
 
   static async fetchToken(code: string) {
@@ -53,7 +53,9 @@ class SlackManager extends SlackClientManager {
     if (error) {
       throw new Error(`Slack: ${error}`)
     }
-    return new SlackManager(tokenJson.bot.bot_access_token, tokenJson) as Required<SlackManager>
+    return new SlackServerManager(tokenJson.bot.bot_access_token, tokenJson) as Required<
+      SlackServerManager
+    >
   }
 
   constructor(botAccessToken, public response?: OAuth2Response) {
@@ -61,4 +63,4 @@ class SlackManager extends SlackClientManager {
   }
 }
 
-export default SlackManager
+export default SlackServerManager
