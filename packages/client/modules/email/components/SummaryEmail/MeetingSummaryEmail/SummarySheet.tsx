@@ -1,22 +1,21 @@
-import React from 'react'
-import {MeetingSummaryReferrer} from './MeetingSummaryEmail'
-import {sheetShadow} from '../../../../../styles/elevation'
-import SummaryHeader from './SummaryHeader'
-import QuickStats from './QuickStats'
-import SummarySheetCTA from './SummarySheetCTA'
-import ExportToCSV from '../ExportToCSV'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import MeetingMembersWithoutTasks from './MeetingMembersWithoutTasks'
-import MeetingMembersWithTasks from './MeetingMembersWithTasks'
-import SummaryEmailScheduleCalendar from '../SummaryEmailScheduleCalendar'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {sheetShadow} from '../../../../../styles/elevation'
 import {ACTION} from '../../../../../utils/constants'
-import {meetingTypeToLabel} from '../../../../../utils/meetings/lookups'
+import {SummarySheet_meeting} from '../../../../../__generated__/SummarySheet_meeting.graphql'
+import CreateAccountSection from '../../CreateAccountSection/CreateAccountSection'
+import ExportToCSV from '../ExportToCSV'
+import SummaryEmailScheduleCalendar from '../SummaryEmailScheduleCalendar'
 import ContactUsFooter from './ContactUsFooter'
 import LogoFooter from './LogoFooter'
-import CreateAccountSection from '../../CreateAccountSection/CreateAccountSection'
+import MeetingMembersWithoutTasks from './MeetingMembersWithoutTasks'
+import MeetingMembersWithTasks from './MeetingMembersWithTasks'
+import {MeetingSummaryReferrer} from './MeetingSummaryEmail'
+import QuickStats from './QuickStats'
 import RetroTopics from './RetroTopics'
-import {SummarySheet_meeting} from '../../../../../__generated__/SummarySheet_meeting.graphql'
+import SummaryHeader from './SummaryHeader'
+import SummarySheetCTA from './SummarySheetCTA'
 
 interface Props {
   emailCSVUrl: string
@@ -36,11 +35,9 @@ const sheetStyle = {
 
 const SummarySheet = (props: Props) => {
   const {emailCSVUrl, urlAction, meeting, meetingUrl, referrer, teamDashUrl} = props
-  const {createdAt, meetingNumber, meetingType, team} = meeting
+  const {id: meetingId, createdAt, meetingNumber, meetingType, team} = meeting
   const {name: teamName} = team
   const isDemo = !!props.isDemo
-  const {id: meetingId} = meeting
-  const meetingLabel = meetingTypeToLabel[meetingType]
   return (
     <table width='100%' height='100%' align='center' bgcolor='#FFFFFF' style={sheetStyle}>
       <tbody>
@@ -73,7 +70,7 @@ const SummarySheet = (props: Props) => {
         <ContactUsFooter
           isDemo={isDemo}
           hasLearningLink={meetingType === ACTION}
-          prompt={`How’d your ${meetingLabel} meeting go?`}
+          prompt={`How’d your meeting go?`}
           tagline='We’re eager for your feedback!'
         />
         <LogoFooter />
@@ -92,6 +89,7 @@ export default createFragmentContainer(SummarySheet, {
       ...MeetingMembersWithoutTasks_meeting
       ...RetroTopics_meeting
       meetingType
+      name
       meetingNumber
       team {
         name

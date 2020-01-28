@@ -304,11 +304,12 @@ export interface IAllAvailableIntegrationsOnUserArguments {
 }
 
 export interface IArchivedTasksOnUserArguments {
+  first?: number | null
+
   /**
    * the datetime cursor
    */
   after?: any | null
-  first?: number | null
 
   /**
    * The unique team ID
@@ -345,11 +346,12 @@ export interface IInvoiceDetailsOnUserArguments {
 }
 
 export interface IInvoicesOnUserArguments {
+  first?: number | null
+
   /**
    * the datetime cursor
    */
   after?: any | null
-  first?: number | null
 
   /**
    * The id of the organization
@@ -391,8 +393,8 @@ export interface INewMeetingOnUserArguments {
 }
 
 export interface INotificationsOnUserArguments {
-  after?: string | null
   first?: number | null
+  after?: string | null
 }
 
 export interface IOrganizationOnUserArguments {
@@ -417,11 +419,12 @@ export interface ISuggestedIntegrationsOnUserArguments {
 }
 
 export interface ITasksOnUserArguments {
+  first?: number | null
+
   /**
    * the datetime cursor
    */
   after?: any | null
-  first?: number | null
 
   /**
    * The unique team ID
@@ -797,11 +800,12 @@ export interface IMeetingMemberOnTeamMemberArguments {
 }
 
 export interface ITasksOnTeamMemberArguments {
+  first?: number | null
+
   /**
    * the datetime cursor
    */
   after?: any | null
-  first?: number | null
 }
 
 /**
@@ -1093,11 +1097,12 @@ export interface IMeetingOnTeamArguments {
 }
 
 export interface ITasksOnTeamArguments {
+  first?: number | null
+
   /**
    * the datetime cursor
    */
   after?: any | null
-  first?: number | null
 }
 
 export interface ITeamMembersOnTeamArguments {
@@ -2678,6 +2683,7 @@ export interface IVerifiedInvitationPayload {
    */
   teamName: string | null
   meetingId: string | null
+  meetingName: string | null
   meetingType: MeetingTypeEnum | null
 
   /**
@@ -2789,6 +2795,11 @@ export interface IMutation {
    * Delete (not archive!) a task
    */
   deleteTask: IDeleteTaskPayload | null
+
+  /**
+   * Delete a user, removing them from all teams and orgs
+   */
+  deleteUser: IDeleteUserPayload
 
   /**
    * Deny a user from joining via push invitation
@@ -3313,6 +3324,18 @@ export interface IDeleteTaskOnMutationArguments {
    * The taskId to delete
    */
   taskId: string
+}
+
+export interface IDeleteUserOnMutationArguments {
+  /**
+   * a userId
+   */
+  userId?: string | null
+
+  /**
+   * the user email
+   */
+  email?: string | null
 }
 
 export interface IDenyPushInvitationOnMutationArguments {
@@ -4923,6 +4946,11 @@ export interface IDeleteTaskPayload {
    * The notification stating that the viewer was mentioned or assigned
    */
   involvementNotification: INotifyTaskInvolves | null
+}
+
+export interface IDeleteUserPayload {
+  __typename: 'DeleteUserPayload'
+  error: IStandardMutationError | null
 }
 
 export interface IDenyPushInvitationPayload {

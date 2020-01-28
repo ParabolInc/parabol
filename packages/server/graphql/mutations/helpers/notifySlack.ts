@@ -3,7 +3,7 @@ import {Unpromise} from '../../../../client/types/generics'
 import formatTime from '../../../../client/utils/date/formatTime'
 import formatWeekday from '../../../../client/utils/date/formatWeekday'
 import findStageById from '../../../../client/utils/meetings/findStageById'
-import {meetingTypeToLabel, phaseLabelLookup} from '../../../../client/utils/meetings/lookups'
+import {phaseLabelLookup} from '../../../../client/utils/meetings/lookups'
 import getRethink from '../../../database/rethinkDriver'
 import SlackNotification, {SlackNotificationEvent} from '../../../database/types/SlackNotification'
 import {toEpochSeconds} from '../../../utils/epochTime'
@@ -142,11 +142,10 @@ export const notifySlackTimeLimitStart = async (
     dataLoader.get('teams').load(teamId),
     dataLoader.get('newMeetings').load(meetingId)
   ])
-  const {meetingType, phases, facilitatorStageId} = meeting
+  const {name: meetingName, phases, facilitatorStageId} = meeting
   const stageRes = findStageById(phases, facilitatorStageId)
   const {stage} = stageRes!
   const meetingUrl = makeAppLink(`meet/${meetingId}`)
-  const meetingLabel = meetingTypeToLabel[meetingType]
   const {phaseType} = stage
   const phaseLabel = phaseLabelLookup[phaseType]
   const slackDetails = await getSlackDetails('MEETING_STAGE_TIME_LIMIT_START', teamId, dataLoader)
@@ -155,7 +154,7 @@ export const notifySlackTimeLimitStart = async (
     const fallbackTime = formatTime(scheduledEndTime)
     const fallbackZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Eastern Time'
     const fallback = `${fallbackDate} at ${fallbackTime} (${fallbackZone})`
-    const situation = `The *${phaseLabel} Phase* for your ${meetingLabel} meeting on ${team.name} has begun!`
+    const situation = `The *${phaseLabel} Phase* for ${meetingName} on ${team.name} has begun!`
     const constraint = `You have until *<!date^${toEpochSeconds(
       scheduledEndTime
     )}^{date_short_pretty} at {time}|${fallback}>* to complete it.`

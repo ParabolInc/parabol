@@ -1,12 +1,11 @@
-import emailDir from '../../../emailDir'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from '../../../../../styles/paletteV2'
 import {FONT_FAMILY} from '../../../../../styles/typographyV2'
-import {meetingTypeToLabel} from '../../../../../utils/meetings/lookups'
 import makeDateString from '../../../../../utils/makeDateString'
-import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
 import {SummaryHeader_meeting} from '../../../../../__generated__/SummaryHeader_meeting.graphql'
+import emailDir from '../../../emailDir'
 
 const meetingSummaryLabel = {
   color: PALETTE.TEXT_GRAY,
@@ -41,14 +40,9 @@ interface Props {
 
 const SummaryHeader = (props: Props) => {
   const {meeting, isDemo} = props
-  const {
-    createdAt,
-    meetingNumber,
-    meetingType,
-    team: {name: teamName}
-  } = meeting
+  const {createdAt, name: meetingName, team} = meeting
+  const {name: teamName} = team
   const meetingDate = makeDateString(createdAt, {showDay: true})
-  const meetingLabel = meetingTypeToLabel[meetingType]
   return (
     <table align='center' width='100%'>
       <tbody>
@@ -75,7 +69,7 @@ const SummaryHeader = (props: Props) => {
         </tr>
         <tr>
           <td align='center' style={dateLabel}>
-            {isDemo ? meetingDate : `${meetingLabel} Meeting #${meetingNumber} • ${meetingDate}`}
+            {isDemo ? meetingDate : `${meetingName} • ${meetingDate}`}
           </td>
         </tr>
       </tbody>
@@ -87,8 +81,7 @@ export default createFragmentContainer(SummaryHeader, {
   meeting: graphql`
     fragment SummaryHeader_meeting on NewMeeting {
       createdAt
-      meetingNumber
-      meetingType
+      name
       team {
         name
       }

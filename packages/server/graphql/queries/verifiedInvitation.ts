@@ -57,10 +57,12 @@ export default {
       const [firstActiveMeeting] = activeMeetings
       const meetingType = firstActiveMeeting?.meetingType ?? null
       const meetingId = firstActiveMeeting?.id ?? null
+      const meetingName = firstActiveMeeting?.name ?? null
       if (acceptedAt) {
         return {
           errorType: InvitationTokenError.ALREADY_ACCEPTED,
           teamName: team.name,
+          meetingName,
           meetingId,
           meetingType,
           inviterName: inviter.preferredName,

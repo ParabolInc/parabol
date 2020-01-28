@@ -10,7 +10,6 @@ import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import DialogTitle from './DialogTitle'
 import AuthPrivacyFooter from './AuthPrivacyFooter'
-import {meetingTypeToLabel} from '../utils/meetings/lookups'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 
 interface Props {
@@ -29,19 +28,17 @@ const TeamName = styled('span')({
 
 const TeamInvitationEmailCreateAccount = (props: Props) => {
   const {invitationToken, verifiedInvitation} = props
-  const {meetingType, teamName, teamInvitation} = verifiedInvitation
+  const {meetingName, teamName, teamInvitation} = verifiedInvitation
   useDocumentTitle(`Sign up | Team Invitation`)
   if (!teamInvitation) return null
   const {email} = teamInvitation
   return (
     <StyledDialog>
-      <DialogTitle>
-        {meetingType ? `Join ${meetingTypeToLabel[meetingType]} Meeting` : 'Join Team'}
-      </DialogTitle>
+      <DialogTitle>{meetingName ? `Join ${meetingName}` : 'Join Team'}</DialogTitle>
       <DialogContent>
         <InvitationDialogCopy>
           Choose a password for immediate access
-          {meetingType ? ' to the team meeting for: ' : ' to your team: '}
+          {meetingName ? ' to the team meeting for: ' : ' to your team: '}
           <TeamName>{teamName}</TeamName>
         </InvitationDialogCopy>
         <InvitationCenteredCopy>
@@ -56,7 +53,7 @@ const TeamInvitationEmailCreateAccount = (props: Props) => {
 export default createFragmentContainer(TeamInvitationEmailCreateAccount, {
   verifiedInvitation: graphql`
     fragment TeamInvitationEmailCreateAccount_verifiedInvitation on VerifiedInvitationPayload {
-      meetingType
+      meetingName
       teamInvitation {
         email
       }
