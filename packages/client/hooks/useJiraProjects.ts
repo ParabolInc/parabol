@@ -1,8 +1,6 @@
 import {useEffect, useRef, useState} from 'react'
-import AtlassianClientManager, {
-  AccessibleResource,
-  JiraProject
-} from '../utils/AtlassianClientManager'
+import AtlassianClientManager from '../utils/AtlassianClientManager'
+import {AccessibleResource, JiraProject} from '../utils/AtlassianManager'
 
 interface MenuItem {
   cloudId: string

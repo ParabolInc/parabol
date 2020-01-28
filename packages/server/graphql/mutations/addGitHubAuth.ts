@@ -4,7 +4,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import shortid from 'shortid'
 import {GITHUB} from '../../../client/utils/constants'
 import getRethink from '../../database/rethinkDriver'
-import GitHubManager from '../../utils/GitHubManager'
+import GitHubServerManager from '../../utils/GitHubServerManager'
 import standardError from '../../utils/standardError'
 
 export default {
@@ -30,7 +30,7 @@ export default {
     const r = await getRethink()
     const now = new Date()
 
-    const manager = await GitHubManager.init(code)
+    const manager = await GitHubServerManager.init(code)
     const {accessToken} = manager
     const profile = await manager.getProfile()
 
@@ -58,8 +58,7 @@ export default {
       .do((providerId) => {
         return r.branch(
           providerId.eq(null),
-          r.table('Provider').insert(
-            {
+          r.table('Provider').insert({
               id: shortid.generate(),
               accessToken,
               createdAt: now,
@@ -70,9 +69,7 @@ export default {
               teamId,
               updatedAt: now,
               userId: viewerId
-            },
-            {returnChanges: true}
-          )('changes')(0),
+            }, {returnChanges: true})('changes')(0),
           r
             .table('Provider')
             .get(providerId)

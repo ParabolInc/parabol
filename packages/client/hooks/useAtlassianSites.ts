@@ -1,8 +1,6 @@
 import {useEffect, useRef, useState} from 'react'
-import AtlassianClientManager, {
-  AccessibleResource,
-  AtlassianError
-} from '../utils/AtlassianClientManager'
+import AtlassianClientManager from '../utils/AtlassianClientManager'
+import {AccessibleResource, AtlassianError} from '../utils/AtlassianManager'
 
 const useAtlassianSites = (accessToken?: string) => {
   const isMountedRef = useRef(true)
