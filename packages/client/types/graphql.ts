@@ -304,11 +304,12 @@ export interface IAllAvailableIntegrationsOnUserArguments {
 }
 
 export interface IArchivedTasksOnUserArguments {
+  first?: number | null
+
   /**
    * the datetime cursor
    */
   after?: any | null
-  first?: number | null
 
   /**
    * The unique team ID
@@ -345,11 +346,12 @@ export interface IInvoiceDetailsOnUserArguments {
 }
 
 export interface IInvoicesOnUserArguments {
+  first?: number | null
+
   /**
    * the datetime cursor
    */
   after?: any | null
-  first?: number | null
 
   /**
    * The id of the organization
@@ -391,8 +393,8 @@ export interface INewMeetingOnUserArguments {
 }
 
 export interface INotificationsOnUserArguments {
-  after?: string | null
   first?: number | null
+  after?: string | null
 }
 
 export interface IOrganizationOnUserArguments {
@@ -417,11 +419,12 @@ export interface ISuggestedIntegrationsOnUserArguments {
 }
 
 export interface ITasksOnUserArguments {
+  first?: number | null
+
   /**
    * the datetime cursor
    */
   after?: any | null
-  first?: number | null
 
   /**
    * The unique team ID
@@ -797,11 +800,12 @@ export interface IMeetingMemberOnTeamMemberArguments {
 }
 
 export interface ITasksOnTeamMemberArguments {
+  first?: number | null
+
   /**
    * the datetime cursor
    */
   after?: any | null
-  first?: number | null
 }
 
 /**
@@ -1093,11 +1097,12 @@ export interface IMeetingOnTeamArguments {
 }
 
 export interface ITasksOnTeamArguments {
+  first?: number | null
+
   /**
    * the datetime cursor
    */
   after?: any | null
-  first?: number | null
 }
 
 export interface ITeamMembersOnTeamArguments {

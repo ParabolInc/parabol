@@ -1,4 +1,4 @@
-import {DocumentNode} from 'graphql'
+import {DocumentNode} from 'graphql-typed'
 import {ICreateIssueInput} from '../types/githubGraphql'
 import {IGraphQLResponseError} from '../types/graphql'
 import createIssue from './githubQueries/createIssue.graphql'
