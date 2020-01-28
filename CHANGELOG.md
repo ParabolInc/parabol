@@ -11,6 +11,10 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 * Refresh button to check-in question
 * Active meetings to the new meeting view
 
+### Changed
+* Upgraded to Relay v8.0.0
+* Use meeting names in copy instead of the type of meeting
+
 ## 4.19.0 2020-Jan-23
 
 ### Changed
