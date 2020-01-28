@@ -37,7 +37,6 @@ export default {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const DUPLICATE_THRESHOLD = 2000
-
     // AUTH
     const viewerId = getUserId(authToken)
     if (!isTeamMember(authToken, teamId)) {
