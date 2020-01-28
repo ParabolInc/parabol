@@ -19,6 +19,6 @@ module.exports = {
     '**/githubQueries/**',
     '**/__generated__/**'
   ],
-  quiet: true,
+  // quiet: true,
   watchman: false
 }
