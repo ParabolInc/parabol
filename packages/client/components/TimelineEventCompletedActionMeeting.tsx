@@ -18,7 +18,7 @@ class TimelineEventCompletedActionMeeting extends Component<Props> {
   render() {
     const {timelineEvent} = this.props
     const {meeting, team} = timelineEvent
-    const {id: meetingId, meetingNumber, createdAt, endedAt, taskCount} = meeting
+    const {id: meetingId, name: meetingName, createdAt, endedAt, taskCount} = meeting
     const {name: teamName} = team
     const meetingDuration = relativeDate(createdAt, {
       now: endedAt,
@@ -31,7 +31,7 @@ class TimelineEventCompletedActionMeeting extends Component<Props> {
         iconName='change_history'
         timelineEvent={timelineEvent}
         title={
-          <TimelineEventTitle>{`Action Meeting #${meetingNumber} with ${teamName} Complete`}</TimelineEventTitle>
+          <TimelineEventTitle>{`${meetingName} with ${teamName} Complete`}</TimelineEventTitle>
         }
       >
         <TimelineEventBody>
@@ -54,7 +54,7 @@ export default createFragmentContainer(TimelineEventCompletedActionMeeting, {
         id
         createdAt
         endedAt
-        meetingNumber
+        name
         taskCount
       }
       team {

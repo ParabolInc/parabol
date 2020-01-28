@@ -17,7 +17,7 @@ class TimelineEventCompletedRetroMeeting extends Component<Props> {
   render() {
     const {timelineEvent} = this.props
     const {meeting, team} = timelineEvent
-    const {id: meetingId, meetingNumber, createdAt, endedAt, taskCount} = meeting
+    const {id: meetingId, name: meetingName, createdAt, endedAt, taskCount} = meeting
     const {name: teamName} = team
     const meetingDuration = relativeDate(createdAt, {
       now: endedAt,
@@ -30,7 +30,7 @@ class TimelineEventCompletedRetroMeeting extends Component<Props> {
         iconName='history'
         timelineEvent={timelineEvent}
         title={
-          <TimelineEventTitle>{`Retro #${meetingNumber} with ${teamName} Complete`}</TimelineEventTitle>
+          <TimelineEventTitle>{`${meetingName} with ${teamName} Complete`}</TimelineEventTitle>
         }
       >
         <TimelineEventBody>
@@ -53,7 +53,7 @@ export default createFragmentContainer(TimelineEventCompletedRetroMeeting, {
         id
         createdAt
         endedAt
-        meetingNumber
+        name
         taskCount
       }
       team {
