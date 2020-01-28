@@ -1,5 +1,5 @@
 import {DataLoaderWorker} from '../../graphql'
-import AtlassianManager from '../../../utils/AtlassianManager'
+import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import {Omit} from '../../../../client/types/generics'
 import {ISuggestedIntegrationJira} from '../../../../client/types/graphql'
 import makeJiraProjectName from '../../../../client/utils/makeJiraProjectName'
@@ -15,7 +15,7 @@ const fetchAtlassianProjects = async (dataLoader: DataLoaderWorker, teamId, user
   // mutate the cache to ensure accessToken is always the same
   auth.accessToken = accessToken
 
-  const manager = new AtlassianManager(accessToken)
+  const manager = new AtlassianServerManager(accessToken)
   const sites = await manager.getAccessibleResources()
 
   if ('message' in sites) {

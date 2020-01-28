@@ -4,7 +4,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {GQLContext} from '../graphql'
 import CreateJiraIssuePayload from '../types/CreateJiraIssuePayload'
-import AtlassianManager from '../../utils/AtlassianManager'
+import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -103,7 +103,7 @@ export default {
     const accessToken = await dataLoader
       .get('freshAtlassianAccessToken')
       .load({teamId, userId: tokenUserId})
-    const manager = new AtlassianManager(accessToken)
+    const manager = new AtlassianServerManager(accessToken)
 
     const [sites, issueMetaRes, description] = await Promise.all([
       manager.getAccessibleResources(),
