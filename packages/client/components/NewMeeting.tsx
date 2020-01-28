@@ -107,7 +107,7 @@ const NewMeeting = (props: Props) => {
         <NewMeetingTeamPicker selectedTeam={selectedTeam} teams={teams} />
         <NewMeetingSettings selectedTeam={selectedTeam} meetingType={meetingType} />
       </TeamAndSettings>
-      <NewMeetingActions teamId={selectedTeam.id} meetingType={meetingType} />
+      <NewMeetingActions team={selectedTeam} meetingType={meetingType} />
     </NewMeetingBlock>
   )
 }
@@ -120,6 +120,7 @@ export default createFragmentContainer(NewMeeting, {
         ...NewMeetingTeamPicker_selectedTeam
         ...NewMeetingSettings_selectedTeam
         ...NewMeetingTeamPicker_teams
+        ...NewMeetingActions_team
         id
         lastMeetingType
         name
