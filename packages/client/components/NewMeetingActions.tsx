@@ -13,6 +13,7 @@ import NewMeetingActionsCurrentMeetings from './NewMeetingActionsCurrentMeetings
 import PrimaryButton from './PrimaryButton'
 import StyledError from './StyledError'
 import graphql from 'babel-plugin-relay/macro'
+import {NewMeetingActions_team} from '__generated__/NewMeetingActions_team.graphql'
 
 const newMeetingGridMediaQuery = `@media screen and (min-width: ${Breakpoint.NEW_MEETING_GRID}px)`
 
