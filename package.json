@@ -25,6 +25,7 @@
     "start": "yarn workspace parabol-server start",
     "build": "yarn workspace parabol-server build",
     "build:relay": "yarn workspace parabol-server build:relay",
+    "quickstart": "yarn workspace parabol-server quickstart",
     "debug": "yarn workspace parabol-server debug",
     "debug:prod": "yarn workspace parabol-server debug:prod",
     "dev": "yarn workspace parabol-server dev",
