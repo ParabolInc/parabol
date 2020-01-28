@@ -21,6 +21,7 @@ import StyledError from './StyledError'
 
 interface Props {
   closePortal: () => void
+  meetingId?: string | undefined
   teamMembers: AddTeamMemberModal_teamMembers
   teamId: string
 }
@@ -94,7 +95,7 @@ const IllustrationBlock = () => {
 }
 
 const AddTeamMemberModal = (props: Props) => {
-  const {closePortal, teamMembers, teamId} = props
+  const {closePortal, meetingId, teamMembers, teamId} = props
   const [pendingSuccessfulInvitations, setPendingSuccessfulInvitations] = useState([] as string[])
   const [successfulInvitations, setSuccessfulInvitations] = useState<string[] | null>(null)
   const [rawInvitees, setRawInvitees] = useState('')
@@ -147,7 +148,11 @@ const AddTeamMemberModal = (props: Props) => {
         }
       }
     }
-    InviteToTeamMutation(atmosphere, {teamId, invitees}, {onError, onCompleted: handleCompleted})
+    InviteToTeamMutation(
+      atmosphere,
+      {meetingId, teamId, invitees},
+      {onError, onCompleted: handleCompleted}
+    )
   }
 
   if (successfulInvitations) {
@@ -165,7 +170,7 @@ const AddTeamMemberModal = (props: Props) => {
       <StyledDialogContent>
         <Fields>
           <StyledLabelHeading>{'Share this link'}</StyledLabelHeading>
-          <MassInvitationTokenLinkRoot teamId={teamId} />
+          <MassInvitationTokenLinkRoot meetingId={meetingId} teamId={teamId} />
 
           <StyledLabelHeading>{'Or, send invites by email'}</StyledLabelHeading>
           <BasicTextArea

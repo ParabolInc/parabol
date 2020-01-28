@@ -14,7 +14,7 @@ import Icon from './Icon'
 import OutlinedButton from './OutlinedButton'
 
 interface Props extends WithAtmosphereProps {
-  isMeeting?: boolean
+  meetingId?: string
   teamId: string
   teamMembers: AddTeamMemberAvatarButton_teamMembers
 }
@@ -73,7 +73,8 @@ const AddTeamMemberModalDemo = lazyPreload(() =>
 )
 
 const AddTeamMemberAvatarButton = (props: Props) => {
-  const {isMeeting, teamId, teamMembers} = props
+  const {meetingId, teamId, teamMembers} = props
+  const isMeeting = !!meetingId
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
     MenuPosition.UPPER_CENTER
   )
@@ -81,7 +82,12 @@ const AddTeamMemberAvatarButton = (props: Props) => {
   const modal = isDemoRoute() ? (
     <AddTeamMemberModalDemo />
   ) : (
-    <AddTeamMemberModal closePortal={closeModal} teamId={teamId} teamMembers={teamMembers} />
+    <AddTeamMemberModal
+      closePortal={closeModal}
+      meetingId={meetingId}
+      teamId={teamId}
+      teamMembers={teamMembers}
+    />
   )
   return (
     <>

@@ -30,8 +30,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation InviteToTeamMutation($teamId: ID!, $invitees: [Email!]!) {
-    inviteToTeam(invitees: $invitees, teamId: $teamId) {
+  mutation InviteToTeamMutation($meetingId: ID, $teamId: ID!, $invitees: [Email!]!) {
+    inviteToTeam(meetingId: $meetingId, invitees: $invitees, teamId: $teamId) {
       error {
         message
       }

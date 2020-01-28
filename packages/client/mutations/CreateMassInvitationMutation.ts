@@ -15,8 +15,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation CreateMassInvitationMutation($teamId: ID!, $voidOld: Boolean) {
-    createMassInvitation(teamId: $teamId, voidOld: $voidOld) {
+  mutation CreateMassInvitationMutation($meetingId: ID, $teamId: ID!, $voidOld: Boolean) {
+    createMassInvitation(meetingId: $meetingId, teamId: $teamId, voidOld: $voidOld) {
       ... on ErrorPayload {
         error {
           message

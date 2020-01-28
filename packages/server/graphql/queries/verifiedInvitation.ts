@@ -48,16 +48,24 @@ export default {
         .default(null)
         .run()
       if (!teamInvitation) return {errorType: InvitationTokenError.NOT_FOUND}
-      const {email, acceptedAt, expiresAt, invitedBy, teamId} = teamInvitation
+      const {
+        email,
+        acceptedAt,
+        expiresAt,
+        invitedBy,
+        meetingId: maybeMeetingId,
+        teamId
+      } = teamInvitation
       const {team, inviter} = await r({
         team: (r.table('Team').get(teamId) as unknown) as ITeam,
         inviter: (r.table('User').get(invitedBy) as unknown) as User
       }).run()
       const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
-      const [firstActiveMeeting] = activeMeetings
-      const meetingType = firstActiveMeeting?.meetingType ?? null
-      const meetingId = firstActiveMeeting?.id ?? null
-      const meetingName = firstActiveMeeting?.name ?? null
+      const invitedMeeting = activeMeetings.find((meeting) => meeting.id === maybeMeetingId)
+      const bestMeeting = invitedMeeting || activeMeetings[0]
+      const meetingType = bestMeeting?.meetingType ?? null
+      const meetingId = bestMeeting?.id ?? null
+      const meetingName = bestMeeting?.name ?? null
       if (acceptedAt) {
         return {
           errorType: InvitationTokenError.ALREADY_ACCEPTED,

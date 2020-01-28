@@ -60,6 +60,7 @@ const mutation = graphql`
         message
         title
       }
+      meetingId
       ...AcceptTeamInvitationMutation_notification @relay(mask: false)
     }
   }
@@ -121,7 +122,11 @@ interface LocalHandler extends HistoryMaybeLocalHandler {
 const AcceptTeamInvitationMutation: StandardMutation<
   TAcceptTeamInvitationMutation,
   LocalHandler
-> = (atmosphere, variables, {history, onCompleted, onError, meetingId}) => {
+> = (
+  atmosphere,
+  variables,
+  {history, onCompleted, onError, meetingId: locallyRequestedMeetingId}
+) => {
   return commitMutation<TAcceptTeamInvitationMutation>(atmosphere, {
     mutation,
     variables,
@@ -138,10 +143,11 @@ const AcceptTeamInvitationMutation: StandardMutation<
       const serverError = getGraphQLError(data, errors)
       if (serverError) return
       const {acceptTeamInvitation} = data
-      const {authToken, team} = acceptTeamInvitation
+      const {authToken, meetingId: invitedMeetingId, team} = acceptTeamInvitation
       atmosphere.setAuthToken(authToken)
       if (!team) return
       const {id: teamId, name: teamName, activeMeetings} = team
+      const meetingId = locallyRequestedMeetingId || invitedMeetingId
       const activeMeeting =
         (meetingId && activeMeetings.find((meeting) => meeting.id === meetingId)) ||
         activeMeetings[0]

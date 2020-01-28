@@ -1,4 +1,4 @@
-import {GraphQLObjectType} from 'graphql'
+import {GraphQLObjectType, GraphQLID} from 'graphql'
 import StandardMutationError from './StandardMutationError'
 import {GQLContext} from '../graphql'
 import User from './User'
@@ -15,6 +15,9 @@ const PushInvitationPayload = new GraphQLObjectType<any, GQLContext>({
       resolve: ({userId}, _args, {dataLoader}) => {
         return dataLoader.get('users').load(userId)
       }
+    },
+    meetingId: {
+      type: GraphQLID
     },
     team: {
       type: Team,

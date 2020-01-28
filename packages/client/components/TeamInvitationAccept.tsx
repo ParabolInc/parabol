@@ -5,18 +5,14 @@ import useAtmosphere from '../hooks/useAtmosphere'
 
 interface Props {
   invitationToken: string
-  teamId: string
 }
 
 const TeamInvitationAccept = (props: Props) => {
-  const {invitationToken, teamId} = props
+  const {invitationToken} = props
   const {history} = useRouter()
-  const onCompleted = () => {
-    history.replace(`/team/${teamId}`)
-  }
   const atmosphere = useAtmosphere()
   useEffect(() => {
-    AcceptTeamInvitationMutation(atmosphere, {invitationToken}, {history, onCompleted})
+    AcceptTeamInvitationMutation(atmosphere, {invitationToken}, {history})
   })
   return null
 }

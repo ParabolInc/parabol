@@ -47,7 +47,7 @@ const ViewerNotOnTeam = (props: Props) => {
         const nextRoute = redirectTo || `/team/${teamId}`
         history.replace(nextRoute)
       } else if (teamId) {
-        PushInvitationMutation(atmosphere, {teamId})
+        PushInvitationMutation(atmosphere, {meetingId, teamId})
       }
       return undefined
     },

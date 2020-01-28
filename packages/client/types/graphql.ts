@@ -441,7 +441,7 @@ export interface ITeamOnUserArguments {
 
 export interface ITeamInvitationOnUserArguments {
   /**
-   * The meetingId to check for the invitation, if teamId not available
+   * The meetingId to check for the invitation, if teamId not available (e.g. on a meeting route)
    */
   meetingId?: string | null
 
@@ -1082,6 +1082,13 @@ export interface ITeam {
   isArchived: boolean | null
 }
 
+export interface IMassInvitationOnTeamArguments {
+  /**
+   * the meetingId to optionally direct them to
+   */
+  meetingId?: string | null
+}
+
 export interface IMeetingSettingsOnTeamArguments {
   /**
    * the type of meeting for the settings
@@ -1214,6 +1221,11 @@ export interface ITeamInvitation {
    * The userId of the person that sent the invitation
    */
   inviter: IUser
+
+  /**
+   * the meetingId that the invite was generated for
+   */
+  meetingId: string | null
 
   /**
    * The team invited to
@@ -2637,7 +2649,6 @@ export interface IMassInvitationPayload {
    * name of the inviting team, present if invitation exists
    */
   teamName: string | null
-  meetingType: MeetingTypeEnum | null
 }
 
 /**
@@ -3264,6 +3275,11 @@ export interface ICreateJiraIssueOnMutationArguments {
 
 export interface ICreateMassInvitationOnMutationArguments {
   /**
+   * the specific meeting where the invite occurred, if any
+   */
+  meetingId?: string | null
+
+  /**
    * The teamId to create the mass invitation for
    */
   teamId: string
@@ -3426,6 +3442,11 @@ export interface IInactivateUserOnMutationArguments {
 
 export interface IInviteToTeamOnMutationArguments {
   /**
+   * the specific meeting where the invite occurred, if any
+   */
+  meetingId?: string | null
+
+  /**
    * The id of the inviting team
    */
   teamId: string
@@ -3513,6 +3534,10 @@ export interface IPayLaterOnMutationArguments {
 }
 
 export interface IPushInvitationOnMutationArguments {
+  /**
+   * the meeting ID the pusher would like to join
+   */
+  meetingId?: string | null
   teamId: string
 }
 
@@ -3869,6 +3894,11 @@ export interface IAcceptTeamInvitationPayload {
    * The new auth token sent to the mutator
    */
   authToken: string | null
+
+  /**
+   * the meetingId to redirect to
+   */
+  meetingId: string | null
 
   /**
    * The team that the invitee will be joining
@@ -5500,6 +5530,7 @@ export interface IPushInvitationPayload {
   __typename: 'PushInvitationPayload'
   error: IStandardMutationError | null
   user: IUser | null
+  meetingId: string | null
   team: ITeam | null
 }
 

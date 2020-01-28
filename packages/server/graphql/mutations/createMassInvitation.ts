@@ -9,6 +9,10 @@ const createMassInvitation = {
   type: GraphQLNonNull(CreateMassInvitationPayload),
   description: `Create a new mass inivtation and optionally void old ones`,
   args: {
+    meetingId: {
+      type: GraphQLID,
+      description: 'the specific meeting where the invite occurred, if any'
+    },
     teamId: {
       type: GraphQLNonNull(GraphQLID),
       description: 'The teamId to create the mass invitation for'
@@ -18,7 +22,7 @@ const createMassInvitation = {
       description: 'If true, will void all existing mass invitations for the team member'
     }
   },
-  resolve: async (_source, {teamId, voidOld}, {authToken}) => {
+  resolve: async (_source, {meetingId, teamId, voidOld}, {authToken}) => {
     const r = await getRethink()
     const viewerId = getUserId(authToken)
 
@@ -36,7 +40,7 @@ const createMassInvitation = {
         .delete()
         .run()
     }
-    const massInvitation = new MassInvitation({teamMemberId})
+    const massInvitation = new MassInvitation({meetingId, teamMemberId})
 
     await r
       .table('MassInvitation')

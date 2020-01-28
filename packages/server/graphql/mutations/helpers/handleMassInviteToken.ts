@@ -9,12 +9,13 @@ const handleMassInviteToken = async (
   dataLoader: DataLoaderWorker
 ) => {
   const validToken = await verifyMassInviteToken(invitationToken, dataLoader)
-  if (validToken.error) return {error: validToken.error}
+  if ('error' in validToken) return {error: validToken.error}
   const r = await getRethink()
-  const {teamId, userId: invitedBy, exp: expiresAt} = validToken
+  const {teamId, userId: invitedBy, exp: expiresAt, meetingId} = validToken
   const invitation = new TeamInvitation({
     token: invitationToken,
     invitedBy,
+    meetingId,
     teamId,
     expiresAt,
     email

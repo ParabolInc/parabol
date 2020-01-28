@@ -33,6 +33,10 @@ export default {
   type: new GraphQLNonNull(InviteToTeamPayload),
   description: 'Send a team invitation to an email address',
   args: {
+    meetingId: {
+      type: GraphQLID,
+      description: 'the specific meeting where the invite occurred, if any'
+    },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The id of the inviting team'
@@ -42,7 +46,11 @@ export default {
     }
   },
   resolve: rateLimit({perMinute: 10, perHour: 100})(
-    async (_source, {invitees, teamId}, {authToken, dataLoader, socketId: mutatorId}) => {
+    async (
+      _source,
+      {invitees, meetingId, teamId},
+      {authToken, dataLoader, socketId: mutatorId}
+    ) => {
       const operationId = dataLoader.share()
       const r = await getRethink()
       const now = new Date()
@@ -78,6 +86,7 @@ export default {
           expiresAt,
           email,
           invitedBy: viewerId,
+          meetingId,
           teamId,
           token: tokens[idx]
         })
