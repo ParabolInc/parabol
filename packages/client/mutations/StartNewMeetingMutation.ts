@@ -33,6 +33,9 @@ graphql`
 const mutation = graphql`
   mutation StartNewMeetingMutation($teamId: ID!, $meetingType: MeetingTypeEnum!) {
     startNewMeeting(teamId: $teamId, meetingType: $meetingType) {
+      error {
+        message
+      }
       ...StartNewMeetingMutation_team @relay(mask: false)
     }
   }
@@ -77,12 +80,12 @@ const StartNewMeetingMutation: StandardMutation<TStartNewMeetingMutation, Histor
     variables,
     onError,
     onCompleted: (res, errors) => {
+      onCompleted(res, errors)
       const {startNewMeeting} = res
       const {meeting} = startNewMeeting
       if (!meeting) return
       const {id: meetingId} = meeting
       history.push(`/meet/${meetingId}`)
-      onCompleted(res, errors)
     }
   })
 }
