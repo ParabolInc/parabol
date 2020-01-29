@@ -9,6 +9,7 @@ import {AuthIdentityTypeEnum, ITeam} from 'parabol-client/types/graphql'
 import User from '../../database/types/User'
 import {GQLContext} from '../graphql'
 import {InvitationTokenError} from 'parabol-client/types/constEnums'
+import getBestInvitationMeeting from '../../utils/getBestInvitationMeeting'
 
 const resolveMx = promisify(dns.resolveMx, dns)
 
@@ -60,9 +61,7 @@ export default {
         team: (r.table('Team').get(teamId) as unknown) as ITeam,
         inviter: (r.table('User').get(invitedBy) as unknown) as User
       }).run()
-      const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
-      const invitedMeeting = activeMeetings.find((meeting) => meeting.id === maybeMeetingId)
-      const bestMeeting = invitedMeeting || activeMeetings[0]
+      const bestMeeting = await getBestInvitationMeeting(teamId, maybeMeetingId, dataLoader)
       const meetingType = bestMeeting?.meetingType ?? null
       const meetingId = bestMeeting?.id ?? null
       const meetingName = bestMeeting?.name ?? null

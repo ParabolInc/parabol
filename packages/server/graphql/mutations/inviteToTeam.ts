@@ -17,6 +17,7 @@ import TeamInvitation from '../../database/types/TeamInvitation'
 import {NotificationEnum, SuggestedActionTypeEnum} from 'parabol-client/types/graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
+import getBestInvitationMeeting from '../../utils/getBestInvitationMeeting'
 
 const randomBytes = promisify(crypto.randomBytes, crypto)
 
@@ -125,8 +126,8 @@ export default {
           .insert(notificationsToInsert)
           .run()
       }
-      const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
-      const [firstActiveMeeting] = activeMeetings
+
+      const bestMeeting = await getBestInvitationMeeting(teamId, meetingId, dataLoader)
 
       // send emails
       const emailResults = await Promise.all(
@@ -139,7 +140,7 @@ export default {
             inviterName: inviter.preferredName,
             inviterEmail: inviter.email,
             teamName,
-            meeting: firstActiveMeeting
+            meeting: bestMeeting
           })
         })
       )

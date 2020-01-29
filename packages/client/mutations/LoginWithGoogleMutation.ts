@@ -17,13 +17,7 @@ const mutation = graphql`
       }
     }
     acceptTeamInvitation(invitationToken: $invitationToken) {
-      authToken
-      team {
-        id
-        activeMeetings {
-          id
-        }
-      }
+      ...AcceptTeamInvitationMutationReply @relay(mask: false)
     }
   }
 `
