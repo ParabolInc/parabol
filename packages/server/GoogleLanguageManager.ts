@@ -90,6 +90,7 @@ export default class GoogleLanguageManager {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${this.jwt}`,
+        Accept: 'application/json',
         'Content-Type': 'application/json; charset=utf-8'
       },
       body: JSON.stringify({
