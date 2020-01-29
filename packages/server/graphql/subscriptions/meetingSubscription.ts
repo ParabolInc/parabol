@@ -1,13 +1,11 @@
-import getRethink from '../../database/rethinkDriver'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import getPubSub from '../../utils/getPubSub'
+import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
-import standardError from '../../utils/standardError'
+import getPubSub from '../../utils/getPubSub'
 import {GQLContext} from '../graphql'
 import MeetingSubscriptionPayload from '../types/MeetingSubscriptionPayload'
-
 export default {
   type: new GraphQLNonNull(MeetingSubscriptionPayload),
   args: {
@@ -25,7 +23,7 @@ export default {
       .get(meetingMemberId)
       .run()
     if (!meetingMember) {
-      return standardError(new Error('Not invited to the meeting'))
+      throw new Error('Not invited to the meeting. Cannot subscribe')
     }
 
     // RESOLUTION

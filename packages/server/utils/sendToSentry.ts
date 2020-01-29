@@ -14,10 +14,10 @@ export interface SentryOptions {
 // @ts-ignore
 const sendToSentry = async (error: Error, options: SentryOptions = {}): void => {
   if (!PROD) {
-    console.error(error)
+    console.error('SEND TO SENTRY', error)
   }
   const r = await getRethink()
-  const {userId} = options
+  const {tags, userId} = options
   const user = userId
     ? ((await r
         .table('User')
@@ -29,11 +29,11 @@ const sendToSentry = async (error: Error, options: SentryOptions = {}): void => 
 
   Sentry.withScope((scope) => {
     user && scope.setUser(user)
-    // if (tags) {
-    //   Object.keys(tags).forEach((tag) => {
-    //     scope.setTag(tag, tags[tag])
-    //   })
-    // }
+    if (tags) {
+      Object.keys(tags).forEach((tag) => {
+        scope.setTag(tag, tags[tag])
+      })
+    }
     Sentry.captureException(error)
   })
 }

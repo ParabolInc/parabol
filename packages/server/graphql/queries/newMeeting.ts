@@ -25,7 +25,7 @@ export default {
       const meetingMemberId = toTeamMemberId(meetingId, viewerId)
       const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
       if (!meetingMember) {
-        standardError(new Error('Team not found'), {userId: viewerId})
+        standardError(new Error('Team not found'), {userId: viewerId, tags: {teamId}})
         return null
       }
     }
