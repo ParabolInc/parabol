@@ -47,6 +47,7 @@ export default {
     const meetingCount = await r
       .table('NewMeeting')
       .getAll(teamId, {index: 'teamId'})
+      .filter({meetingType})
       .count()
       .default(0)
       .run()

@@ -9,7 +9,6 @@ jobs:
         environment:
           TERM: xterm
     environment:
-      CODECOV_TOKEN: "ebdd735e-579a-4afd-85fc-f53907544c31"
       DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
       DEVOPS_WORKDIR: "~/action-devops"
       GITHUB_REMOTE_DEVELOPMENT: "dokku@action-dev-nyc1-01.parabol.co:web"
