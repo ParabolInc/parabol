@@ -151,7 +151,11 @@ const NewMeetingAvatarGroup = (props: Props) => {
         )
       })}
       <OverlappingBlock>
-        <AddTeamMemberAvatarButton isMeeting teamId={teamId} teamMembers={teamMembers} />
+        <AddTeamMemberAvatarButton
+          meetingId={meetingId}
+          teamId={teamId}
+          teamMembers={teamMembers}
+        />
       </OverlappingBlock>
     </MeetingAvatarGroupRoot>
   )

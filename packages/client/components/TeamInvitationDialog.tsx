@@ -38,7 +38,7 @@ class TeamInvitationDialog extends Component<Props> {
       // rate limit reached
       return <TeamInvitationErrorNotFound />
     }
-    const {errorType, isGoogle, user, ssoURL, teamInvitation} = verifiedInvitation
+    const {errorType, isGoogle, user, ssoURL} = verifiedInvitation
     switch (errorType) {
       case 'notFound':
         return <TeamInvitationErrorNotFound />
@@ -48,9 +48,8 @@ class TeamInvitationDialog extends Component<Props> {
         return <TeamInvitationErrorExpired verifiedInvitation={verifiedInvitation} />
     }
     const {authToken} = atmosphere
-    const {teamId} = teamInvitation!
     if (authToken) {
-      return <TeamInvitationAccept invitationToken={invitationToken} teamId={teamId} />
+      return <TeamInvitationAccept invitationToken={invitationToken} />
     }
     if (ssoURL) {
       return <TeamInvitationSSO ssoURL={ssoURL} />
@@ -88,9 +87,6 @@ export default createFragmentContainer(withAtmosphere(withRouter(TeamInvitationD
       ...TeamInvitationGoogleCreateAccount_verifiedInvitation
       ...TeamInvitationEmailSignin_verifiedInvitation
       ...TeamInvitationEmailCreateAccount_verifiedInvitation
-      teamInvitation {
-        teamId
-      }
       errorType
       isGoogle
       ssoURL

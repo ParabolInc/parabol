@@ -39,11 +39,6 @@ export const phaseIconLookup = {
   [LAST_CALL]: 'comment'
 }
 
-export const meetingTypeToLabel = {
-  [RETROSPECTIVE]: 'Retro' as 'Retro',
-  [ACTION]: 'Action' as 'Action'
-}
-
 export const meetingTypeToIcon = {
   [RETROSPECTIVE]: 'history',
   [ACTION]: 'change_history'

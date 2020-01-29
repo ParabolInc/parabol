@@ -5,7 +5,7 @@ import getRethink from '../../database/rethinkDriver'
 import {GQLContext} from '../graphql'
 import CreateGitHubIssuePayload from '../types/CreateGitHubIssuePayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
-import GitHubManager from '../../utils/GitHubManager'
+import GitHubServerManager from '../../utils/GitHubServerManager'
 import publish from '../../utils/publish'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import standardError from '../../utils/standardError'
@@ -99,7 +99,7 @@ export default {
       body = `${body}\n\n_Added by ${viewer.preferredName}_`
     }
     const {accessToken} = viewerAuth || assigneeAuth
-    const manager = new GitHubManager(accessToken)
+    const manager = new GitHubServerManager(accessToken)
 
     const repoInfo = await manager.getRepoInfo(nameWithOwner, assigneeAuth.providerUserName)
     if ('message' in repoInfo) {

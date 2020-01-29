@@ -1,17 +1,16 @@
-import {TeamInvitationGoogleSignin_verifiedInvitation} from '../__generated__/TeamInvitationGoogleSignin_verifiedInvitation.graphql'
-import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import useDocumentTitle from '../hooks/useDocumentTitle'
+import useRouter from '../hooks/useRouter'
+import {TeamInvitationGoogleSignin_verifiedInvitation} from '../__generated__/TeamInvitationGoogleSignin_verifiedInvitation.graphql'
+import DialogContent from './DialogContent'
+import DialogTitle from './DialogTitle'
 import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
 import InvitationCenteredCopy from './InvitationCenteredCopy'
-import InviteDialog from './InviteDialog'
-import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
-import DialogTitle from './DialogTitle'
-import {meetingTypeToLabel} from '../utils/meetings/lookups'
-import useRouter from '../hooks/useRouter'
-import useDocumentTitle from '../hooks/useDocumentTitle'
+import InviteDialog from './InviteDialog'
 
 interface Props {
   verifiedInvitation: TeamInvitationGoogleSignin_verifiedInvitation
@@ -27,7 +26,7 @@ const TeamInvitationGoogleSignin = (props: Props) => {
   const {params} = match
   const {token: invitationToken} = params
   const {verifiedInvitation} = props
-  const {meetingType, user, teamName} = verifiedInvitation
+  const {meetingName, user, teamName} = verifiedInvitation
   useDocumentTitle(`Sign in with Google | Team Invitation`)
 
   if (!user) return null
@@ -39,9 +38,7 @@ const TeamInvitationGoogleSignin = (props: Props) => {
         <InvitationDialogCopy>You last signed in with Google. </InvitationDialogCopy>
         <InvitationDialogCopy>
           Tap below
-          {meetingType
-            ? ` to join the ${meetingTypeToLabel[meetingType]} Meeting for: `
-            : ' for immediate access to your team: '}
+          {meetingName ? ` to join ${meetingName} for: ` : ' for immediate access to your team: '}
           <TeamName>{teamName}</TeamName>
         </InvitationDialogCopy>
         <InvitationCenteredCopy>
@@ -55,7 +52,7 @@ const TeamInvitationGoogleSignin = (props: Props) => {
 export default createFragmentContainer(TeamInvitationGoogleSignin, {
   verifiedInvitation: graphql`
     fragment TeamInvitationGoogleSignin_verifiedInvitation on VerifiedInvitationPayload {
-      meetingType
+      meetingName
       user {
         email
         preferredName

@@ -3,7 +3,7 @@ import {decode} from 'jsonwebtoken'
 import promiseAllPartial from 'parabol-client/utils/promiseAllPartial'
 import getRethink from '../database/rethinkDriver'
 import Task from '../database/types/Task'
-import AtlassianManager from '../utils/AtlassianManager'
+import AtlassianServerManager from '../utils/AtlassianServerManager'
 import RethinkDataLoader from './RethinkDataLoader'
 
 type AccessTokenKey = {teamId: string; userId: string}
@@ -69,7 +69,7 @@ export const freshAtlassianAccessToken = (parent: RethinkDataLoader) => {
             return existingAccessToken
           }
           // fetch a new one
-          const manager = await AtlassianManager.refresh(refreshToken)
+          const manager = await AtlassianServerManager.refresh(refreshToken)
           const {accessToken} = manager
           const r = await getRethink()
           await r
@@ -94,7 +94,7 @@ export const jiraRemoteProject = (parent: RethinkDataLoader) => {
     async (keys) => {
       return promiseAllPartial(
         keys.map(async ({accessToken, cloudId, atlassianProjectId}) => {
-          const manager = new AtlassianManager(accessToken)
+          const manager = new AtlassianServerManager(accessToken)
           return manager.getProject(cloudId, atlassianProjectId)
         })
       )

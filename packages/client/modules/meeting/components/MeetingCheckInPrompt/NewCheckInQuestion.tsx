@@ -55,7 +55,10 @@ const NewCheckInQuestion = (props: Props) => {
     const isFocused = nextEditorState.getSelection().getHasFocus()
     setIsEditing(isFocused)
     if (wasFocused && !isFocused) {
-      const nextCheckInQuestion = JSON.stringify(convertToRaw(nextEditorState.getCurrentContent()))
+      const nextContent = nextEditorState.getCurrentContent()
+      const nextCheckInQuestion = nextContent.hasText()
+        ? JSON.stringify(convertToRaw(nextContent))
+        : ''
       if (nextCheckInQuestion === checkInQuestion) return
       UpdateNewCheckInQuestionMutation(atmosphere, {
         meetingId,
@@ -82,15 +85,21 @@ const NewCheckInQuestion = (props: Props) => {
   const isFacilitating = facilitatorUserId === viewerId
   const tip = 'Tap to customize the Social Check-in question.'
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
+  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
     MenuPosition.UPPER_CENTER,
     {
       delay: 300,
       disabled: isEditing || !isFacilitating
     }
   )
+  const refresh = () => {
+    UpdateNewCheckInQuestionMutation(atmosphere, {
+      meetingId,
+      checkInQuestion: ''
+    })
+  }
   return (
-    <QuestionBlock onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={originRef}>
+    <QuestionBlock>
       {/* cannot set min width because iPhone 5 has a width of 320*/}
       <EditorInputWrapper
         ariaLabel={'Edit the check in question'}
@@ -101,9 +110,20 @@ const NewCheckInQuestion = (props: Props) => {
         editorRef={editorRef}
       />
       {isFacilitating && (
-        <PlainButton aria-label={tip} onClick={selectAllQuestion}>
-          <CogIcon isEditing={isEditing}>settings</CogIcon>
-        </PlainButton>
+        <>
+          <PlainButton
+            aria-label={tip}
+            onClick={selectAllQuestion}
+            onMouseEnter={openTooltip}
+            onMouseLeave={closeTooltip}
+            ref={originRef}
+          >
+            <CogIcon isEditing={isEditing}>settings</CogIcon>
+          </PlainButton>
+          <PlainButton aria-label={'Refresh'} onClick={refresh}>
+            <CogIcon isEditing={isEditing}>refresh</CogIcon>
+          </PlainButton>
+        </>
       )}
       {tooltipPortal(<div>{tip}</div>)}
     </QuestionBlock>

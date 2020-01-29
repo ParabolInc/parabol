@@ -352,7 +352,8 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
       args: {
         meetingId: {
           type: GraphQLID,
-          description: 'The meetingId to check for the invitation, if teamId not available'
+          description:
+            'The meetingId to check for the invitation, if teamId not available (e.g. on a meeting route)'
         },
         teamId: {
           type: GraphQLID,

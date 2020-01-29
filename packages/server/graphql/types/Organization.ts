@@ -7,18 +7,17 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import {forwardConnectionArgs} from 'graphql-relay'
+import {OrgUserRole} from 'parabol-client/types/graphql'
+import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
+import {resolveForBillingLeaders} from '../resolvers'
 import CreditCard from './CreditCard'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
+import {OrganizationUserConnection} from './OrganizationUser'
 import OrgUserCount from './OrgUserCount'
+import Team from './Team'
 import TierEnum from './TierEnum'
 import User from './User'
-import {resolveForBillingLeaders} from '../resolvers'
-import Team from './Team'
-import {OrganizationUserConnection} from './OrganizationUser'
-import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
-import {OrgUserRole} from 'parabol-client/types/graphql'
 
 const Organization = new GraphQLObjectType({
   name: 'Organization',
@@ -109,7 +108,12 @@ const Organization = new GraphQLObjectType({
     },
     organizationUsers: {
       args: {
-        ...forwardConnectionArgs
+        after: {
+          type: GraphQLString
+        },
+        first: {
+          type: GraphQLInt
+        }
       },
       type: new GraphQLNonNull(OrganizationUserConnection),
       resolve: async ({id: orgId}, _args, {dataLoader}) => {

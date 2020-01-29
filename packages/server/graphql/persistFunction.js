@@ -2,7 +2,6 @@
   Used by Relay to generate the documentId (persisted query ID)
   We prefix each with a m/q/s to tell the query type (mutation/query/subscription)
 */
-const shortid = require('shortid')
 const crypto = require('crypto')
 const base64url = require('base64url')
 

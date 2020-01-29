@@ -20,17 +20,13 @@ export default {
       if ('error' in tokenRes && tokenRes.error === InvitationTokenError.NOT_FOUND) {
         return {errorType: InvitationTokenError.NOT_FOUND}
       }
-      const {error} = tokenRes
-      const teamId = tokenRes.teamId!
-      const userId = tokenRes.userId!
+      const {error, teamId, userId} = tokenRes as any
       const teamMemberId = toTeamMemberId(teamId, userId)
       const [teamMember, team] = await Promise.all([
         dataLoader.get('teamMembers').load(teamMemberId),
         dataLoader.get('teams').load(teamId)
       ])
-      const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
-      const [firstActiveMeeting] = activeMeetings
-      const meetingType = firstActiveMeeting?.meetingType ?? null
+
       if (!teamMember || !teamMember.isNotRemoved || !team || team.isArchived) {
         // this could happen if a team member is no longer on the team or some unseen nefarious action is going on
         return {errorType: InvitationTokenError.NOT_FOUND}
@@ -39,8 +35,7 @@ export default {
         errorType: error,
         inviterName: teamMember.preferredName,
         teamId,
-        teamName: team.name,
-        meetingType
+        teamName: team.name
       }
     }
   )

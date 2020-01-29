@@ -64,7 +64,10 @@ export default {
       if (invitationRes.error)
         return standardError(new Error(invitationRes.error), {userId: viewerId})
       const {invitation} = invitationRes
-      const {teamId} = invitation
+      const {meetingId, teamId} = invitation
+      const meeting = meetingId ? await dataLoader.get('newMeetings').load(meetingId) : null
+      const activeMeetingId = meeting && !meeting.endedAt ? meetingId : null
+
       // RESOLUTION
       const {teamLeadUserIdWithNewActions, removedNotificationIds} = await acceptTeamInvitation(
         teamId,
@@ -77,6 +80,7 @@ export default {
       const teamMemberId = toTeamMemberId(teamId, viewerId)
 
       const data = {
+        meetingId: activeMeetingId,
         teamId,
         teamMemberId,
         removedNotificationIds

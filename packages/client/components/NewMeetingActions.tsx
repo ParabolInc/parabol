@@ -1,15 +1,19 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import {MeetingTypeEnum} from '../types/graphql'
-import PrimaryButton from './PrimaryButton'
-import Icon from './Icon'
-import StartNewMeetingMutation from '../mutations/StartNewMeetingMutation'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useRouter from '../hooks/useRouter'
-import useMutationProps from '../hooks/useMutationProps'
-import StyledError from './StyledError'
 import useBreakpoint from '../hooks/useBreakpoint'
+import useMutationProps from '../hooks/useMutationProps'
+import useRouter from '../hooks/useRouter'
+import StartNewMeetingMutation from '../mutations/StartNewMeetingMutation'
 import {Breakpoint} from '../types/constEnums'
+import {MeetingTypeEnum} from '../types/graphql'
+import Icon from './Icon'
+import NewMeetingActionsCurrentMeetings from './NewMeetingActionsCurrentMeetings'
+import PrimaryButton from './PrimaryButton'
+import StyledError from './StyledError'
+import graphql from 'babel-plugin-relay/macro'
+import {NewMeetingActions_team} from '__generated__/NewMeetingActions_team.graphql'
 
 const newMeetingGridMediaQuery = `@media screen and (min-width: ${Breakpoint.NEW_MEETING_GRID}px)`
 
@@ -45,11 +49,12 @@ const ForwardIcon = styled(Icon)({
 
 interface Props {
   meetingType: MeetingTypeEnum
-  teamId: string
+  team: NewMeetingActions_team
 }
 
 const NewMeetingActions = (props: Props) => {
-  const {teamId, meetingType} = props
+  const {team, meetingType} = props
+  const {id: teamId} = team
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {submitMutation, error, submitting, onError, onCompleted} = useMutationProps()
@@ -62,6 +67,7 @@ const NewMeetingActions = (props: Props) => {
 
   return (
     <ButtonBlock isDesktop={isDesktop}>
+      <NewMeetingActionsCurrentMeetings meetingType={meetingType} team={team} />
       {error && <StyledError>{error.message}</StyledError>}
       <StartButton size={'large'} onClick={onStartMeetingClick} waiting={submitting}>
         Start Meeting
@@ -71,4 +77,11 @@ const NewMeetingActions = (props: Props) => {
   )
 }
 
-export default NewMeetingActions
+export default createFragmentContainer(NewMeetingActions, {
+  team: graphql`
+    fragment NewMeetingActions_team on Team {
+      ...NewMeetingActionsCurrentMeetings_team
+      id
+    }
+  `
+})

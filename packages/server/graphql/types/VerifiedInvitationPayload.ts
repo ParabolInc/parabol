@@ -40,6 +40,9 @@ const VerifiedInvitationPayload = new GraphQLObjectType({
     meetingId: {
       type: GraphQLID
     },
+    meetingName: {
+      type: GraphQLString
+    },
     meetingType: {
       type: MeetingTypeEnum
     },

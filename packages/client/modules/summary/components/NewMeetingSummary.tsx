@@ -6,7 +6,6 @@ import useRouter from '../../../hooks/useRouter'
 import {PALETTE} from '../../../styles/paletteV2'
 import {MEETING_SUMMARY_LABEL} from '../../../utils/constants'
 import makeHref from '../../../utils/makeHref'
-import {meetingTypeToLabel} from '../../../utils/meetings/lookups'
 import {NewMeetingSummary_viewer} from '../../../__generated__/NewMeetingSummary_viewer.graphql'
 import {demoTeamId} from '../../demo/initDB'
 import MeetingSummaryEmail from '../../email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail'
@@ -30,14 +29,9 @@ const NewMeetingSummary = (props: Props) => {
   if (!newMeeting) {
     return null
   }
-  const {
-    id: meetingId,
-    meetingNumber,
-    meetingType,
-    team: {id: teamId, name: teamName}
-  } = newMeeting
-  const meetingLabel = meetingTypeToLabel[meetingType]
-  const title = `${meetingLabel} Meeting ${MEETING_SUMMARY_LABEL} | ${teamName} ${meetingNumber}`
+  const {id: meetingId, name: meetingName, team} = newMeeting
+  const {id: teamId, name: teamName} = team
+  const title = `${meetingName} ${MEETING_SUMMARY_LABEL} | ${teamName}`
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useDocumentTitle(title)
   const meetingUrl = makeHref(`/meet/${meetingId}`)
@@ -68,8 +62,7 @@ export default createFragmentContainer(NewMeetingSummary, {
           id
           name
         }
-        meetingType
-        meetingNumber
+        name
       }
     }
   `

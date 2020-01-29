@@ -30,7 +30,7 @@ const InvitationLinkDialog = (props: Props) => {
     // rate limit reached or other server error
     return <TeamInvitationErrorNotFound isMassInvite />
   }
-  const {errorType, teamId, teamName} = massInvitation
+  const {errorType, teamName} = massInvitation
   switch (errorType) {
     case 'notFound':
       return <TeamInvitationErrorNotFound isMassInvite />
@@ -39,7 +39,7 @@ const InvitationLinkDialog = (props: Props) => {
   }
   const {authToken} = atmosphere
   if (authToken) {
-    return <TeamInvitationAccept invitationToken={token} teamId={teamId!} />
+    return <TeamInvitationAccept invitationToken={token} />
   }
   return <InvitationLinkAuthentication teamName={teamName!} invitationToken={token} />
 }
@@ -50,9 +50,7 @@ export default createFragmentContainer(withAtmosphere(withRouter(InvitationLinkD
       ...InvitationLinkErrorExpired_massInvitation
       errorType
       inviterName
-      meetingType
       teamName
-      teamId
     }
   `
 })

@@ -4,7 +4,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import shortid from 'shortid'
 import getRethink from '../../database/rethinkDriver'
-import AtlassianManager from '../../utils/AtlassianManager'
+import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
@@ -33,7 +33,7 @@ export default {
     const r = await getRethink()
     const now = new Date()
 
-    const manager = await AtlassianManager.init(code)
+    const manager = await AtlassianServerManager.init(code)
     const sites = await manager.getAccessibleResources()
     if (!Array.isArray(sites)) {
       return standardError(new Error(sites.message), {userId: viewerId})

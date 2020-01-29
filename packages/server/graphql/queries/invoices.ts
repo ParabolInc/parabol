@@ -1,17 +1,18 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {forwardConnectionArgs} from 'graphql-relay'
+import {GraphQLID, GraphQLNonNull, GraphQLInt} from 'graphql'
+import {InvoiceStatusEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
-import makeUpcomingInvoice from './helpers/makeUpcomingInvoice'
+import Invoice from '../../database/types/Invoice'
+import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import {InvoiceConnection} from '../types/Invoice'
-import {getUserId, isUserBillingLeader} from '../../utils/authorization'
-import {InvoiceStatusEnum} from 'parabol-client/types/graphql'
-import Invoice from '../../database/types/Invoice'
+import makeUpcomingInvoice from './helpers/makeUpcomingInvoice'
 
 export default {
   type: InvoiceConnection,
   args: {
-    ...forwardConnectionArgs,
+    first: {
+      type: GraphQLInt
+    },
     after: {
       type: GraphQLISO8601Type,
       description: 'the datetime cursor'

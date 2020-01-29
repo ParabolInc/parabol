@@ -1,15 +1,16 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {forwardConnectionArgs} from 'graphql-relay'
+import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
-import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
-import {TaskConnection} from '../types/Task'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
+import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
+import {TaskConnection} from '../types/Task'
 
 export default {
   type: TaskConnection,
   args: {
-    ...forwardConnectionArgs,
+    first: {
+      type: GraphQLInt
+    },
     after: {
       type: GraphQLISO8601Type,
       description: 'the datetime cursor'

@@ -1,23 +1,25 @@
+const path = require('path')
 module.exports = {
-  artifactDirectory: './packages/client/__generated__',
-  'client-schema': './packages/client/clientSchema.graphql',
-  'persist-output': './packages/server/graphql/queryMap.json',
+  'artifact-directory': path.join(__dirname, 'packages/client/__generated__'),
+  'client-schema': path.join(__dirname, 'packages/client/clientSchema.graphql'),
+  'persist-function': path.join(__dirname, 'packages/server/graphql/persistFunction.js'),
+  'persist-output': path.join(__dirname, 'packages/server/graphql/queryMap.json'),
   language: 'typescript',
-  src: './packages/client',
-  customScalars: {
+  src: path.join(__dirname, 'packages/client'),
+  'custom-scalars': {
     Email: 'string',
     DateTime: 'string',
     URL: 'string'
   },
   extensions: ['js', 'ts', 'tsx'],
-  noFutureProofEnums: true,
-  schema: './build/schema.json',
+  'no-future-proof-enums': true,
+  schema: path.join(__dirname, 'build/schema.json'),
   exclude: [
     '**/node_modules/**',
     '**/githubSchema.graphql',
     '**/githubQueries/**',
     '**/__generated__/**'
   ],
-  quiet: true,
-  watchMan: false
+  // quiet: true,
+  watchman: false
 }

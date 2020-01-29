@@ -1,14 +1,13 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import Layout from '../../components/Layout/Layout'
-import EmailBlock from '../../components/EmailBlock/EmailBlock'
+import {emailCopyStyle, emailLinkStyle, emailProductTeamSignature} from '../../../../styles/email'
 import Button from '../../components/Button/Button'
+import EmailBlock from '../../components/EmailBlock/EmailBlock'
+import EmailFooter from '../../components/EmailFooter/EmailFooter'
 import EmptySpace from '../../components/EmptySpace/EmptySpace'
 import Header from '../../components/Header/Header'
-import EmailFooter from '../../components/EmailFooter/EmailFooter'
-import {emailCopyStyle, emailLinkStyle, emailProductTeamSignature} from '../../../../styles/email'
+import Layout from '../../components/Layout/Layout'
 import emailDir from '../../emailDir'
-import {meetingTypeToLabel} from '../../../../utils/meetings/lookups'
 
 const innerMaxWidth = 480
 
@@ -74,7 +73,7 @@ const TeamInvite = (props) => {
               <b>{teamName}</b>
               {'). Just a few clicks and you’re in!'}
             </p>
-            <Button url={inviteLink}>Join {meetingTypeToLabel[meeting.meetingType]} Meeting</Button>
+            <Button url={inviteLink}>Join {meeting.name}</Button>
           </div>
         ) : (
           <div>

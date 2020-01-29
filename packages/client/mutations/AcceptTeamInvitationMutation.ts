@@ -1,21 +1,21 @@
-import {AcceptTeamInvitationMutation_team} from '../__generated__/AcceptTeamInvitationMutation_team.graphql'
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import handleAddTeamMembers from './handlers/handleAddTeamMembers'
-import handleRemoveNotifications from './handlers/handleRemoveNotifications'
-import getGraphQLError from '../utils/relay/getGraphQLError'
-import getInProxy from '../utils/relay/getInProxy'
+import {commitMutation} from 'react-relay'
+import {AcceptTeamInvitationMutation_notification} from '__generated__/AcceptTeamInvitationMutation_notification.graphql'
 import {
   HistoryMaybeLocalHandler,
   OnNextHandler,
   SharedUpdater,
   StandardMutation
 } from '../types/relayMutations'
-import {AcceptTeamInvitationMutation as TAcceptTeamInvitationMutation} from '../__generated__/AcceptTeamInvitationMutation.graphql'
-import handleAddTeams from './handlers/handleAddTeams'
-import getValidRedirectParam from '../utils/getValidRedirectParam'
 import fromTeamMemberId from '../utils/relay/fromTeamMemberId'
-import {AcceptTeamInvitationMutation_notification} from '__generated__/AcceptTeamInvitationMutation_notification.graphql'
+import getGraphQLError from '../utils/relay/getGraphQLError'
+import getInProxy from '../utils/relay/getInProxy'
+import {AcceptTeamInvitationMutation as TAcceptTeamInvitationMutation} from '../__generated__/AcceptTeamInvitationMutation.graphql'
+import {AcceptTeamInvitationMutation_team} from '../__generated__/AcceptTeamInvitationMutation_team.graphql'
+import handleAddTeamMembers from './handlers/handleAddTeamMembers'
+import handleAddTeams from './handlers/handleAddTeams'
+import handleAuthenticationRedirect from './handlers/handleAuthenticationRedirect'
+import handleRemoveNotifications from './handlers/handleRemoveNotifications'
 
 graphql`
   fragment AcceptTeamInvitationMutation_team on AcceptTeamInvitationPayload {
@@ -52,14 +52,26 @@ graphql`
   }
 `
 
+graphql`
+  fragment AcceptTeamInvitationMutationReply on AcceptTeamInvitationPayload {
+    authToken
+    error {
+      message
+    }
+    meetingId
+    team {
+      id
+      activeMeetings {
+        id
+      }
+    }
+  }
+`
+
 const mutation = graphql`
   mutation AcceptTeamInvitationMutation($invitationToken: ID!, $notificationId: ID) {
     acceptTeamInvitation(invitationToken: $invitationToken, notificationId: $notificationId) {
-      authToken
-      error {
-        message
-        title
-      }
+      ...AcceptTeamInvitationMutationReply @relay(mask: false)
       ...AcceptTeamInvitationMutation_notification @relay(mask: false)
     }
   }
@@ -121,7 +133,11 @@ interface LocalHandler extends HistoryMaybeLocalHandler {
 const AcceptTeamInvitationMutation: StandardMutation<
   TAcceptTeamInvitationMutation,
   LocalHandler
-> = (atmosphere, variables, {history, onCompleted, onError, meetingId}) => {
+> = (
+  atmosphere,
+  variables,
+  {history, onCompleted, onError, meetingId: locallyRequestedMeetingId}
+) => {
   return commitMutation<TAcceptTeamInvitationMutation>(atmosphere, {
     mutation,
     variables,
@@ -141,25 +157,17 @@ const AcceptTeamInvitationMutation: StandardMutation<
       const {authToken, team} = acceptTeamInvitation
       atmosphere.setAuthToken(authToken)
       if (!team) return
-      const {id: teamId, name: teamName, activeMeetings} = team
-      const activeMeeting =
-        (meetingId && activeMeetings.find((meeting) => meeting.id === meetingId)) ||
-        activeMeetings[0]
+      const {id: teamId, name: teamName} = team
       atmosphere.eventEmitter.emit('addSnackbar', {
         key: `addedToTeam:${teamId}`,
         autoDismiss: 5,
         message: `Congratulations! You’ve been added to team ${teamName}`
       })
-      const redirectTo = getValidRedirectParam()
-      if (history) {
-        if (redirectTo) {
-          history.push(redirectTo)
-        } else if (activeMeeting) {
-          history.push(`/meet/${activeMeeting.id}`)
-        } else {
-          history.push(`/team/${teamId}`)
-        }
-      }
+      handleAuthenticationRedirect(acceptTeamInvitation, {
+        atmosphere,
+        history,
+        meetingId: locallyRequestedMeetingId
+      })
     }
   })
 }

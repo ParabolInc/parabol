@@ -1,12 +1,11 @@
 import React from 'react'
-import makeDateString from '../../../../utils/makeDateString'
-import {MEETING_SUMMARY_LABEL} from '../../../../utils/constants'
-import {meetingTypeToLabel} from '../../../../utils/meetings/lookups'
-import {GQLContext} from '../../../../../server/graphql/graphql'
-import emailTemplate from './MeetingSummaryEmail/EmailTemplate'
-import {PALETTE} from '../../../../styles/paletteV2'
 import renderSSRElement from '../../../../../server/email/renderSSRElement'
 import ServerEnvironment from '../../../../../server/email/ServerEnvironment'
+import {GQLContext} from '../../../../../server/graphql/graphql'
+import {PALETTE} from '../../../../styles/paletteV2'
+import {MEETING_SUMMARY_LABEL} from '../../../../utils/constants'
+import makeDateString from '../../../../utils/makeDateString'
+import emailTemplate from './MeetingSummaryEmail/EmailTemplate'
 
 interface Props {
   meetingId: string
@@ -27,11 +26,10 @@ const newMeetingSummaryEmailCreator = async (props: Props) => {
   )
   const newMeeting = await dataLoader.get('newMeetings').load(meetingId)
   const team = await dataLoader.get('teams').load(newMeeting.teamId)
-  const {meetingType, endedAt} = newMeeting
+  const {name: meetingName, endedAt} = newMeeting
   const {name: teamName} = team
   const dateStr = makeDateString(endedAt)
-  const meetingLabel = meetingTypeToLabel[meetingType]
-  const subject = `${teamName} ${dateStr} ${meetingLabel} Meeting ${MEETING_SUMMARY_LABEL}`
+  const subject = `${teamName} ${dateStr} ${meetingName} ${MEETING_SUMMARY_LABEL}`
   const html = emailTemplate({
     bodyContent,
     title: subject,
@@ -41,7 +39,7 @@ const newMeetingSummaryEmailCreator = async (props: Props) => {
 
   return {
     subject,
-    body: `Hello, ${teamName}. Here is your ${meetingLabel} meeting summary`,
+    body: `Hello, ${teamName}. Here is your ${meetingName} summary`,
     html
   }
 }

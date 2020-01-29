@@ -12,6 +12,7 @@ import DenyPushInvitationMutation from './DenyPushInvitationMutation'
 
 graphql`
   fragment PushInvitationMutation_team on PushInvitationPayload {
+    meetingId
     user {
       id
       preferredName
@@ -25,8 +26,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation PushInvitationMutation($teamId: ID!) {
-    pushInvitation(teamId: $teamId) {
+  mutation PushInvitationMutation($teamId: ID!, $meetingId: ID) {
+    pushInvitation(teamId: $teamId, meetingId: $meetingId) {
       error {
         message
         title
@@ -39,7 +40,7 @@ export const pushInvitationTeamOnNext: OnNextHandler<PushInvitationMutation_team
   payload,
   {atmosphere}
 ) => {
-  const {user, team} = payload
+  const {user, team, meetingId} = payload
   if (!user || !team) return
   const {preferredName, email, id: userId} = user
   const {name: teamName, id: teamId} = team
@@ -50,7 +51,7 @@ export const pushInvitationTeamOnNext: OnNextHandler<PushInvitationMutation_team
     action: {
       label: 'Accept',
       callback: () => {
-        InviteToTeamMutation(atmosphere, {teamId, invitees: [email]})
+        InviteToTeamMutation(atmosphere, {meetingId, teamId, invitees: [email]})
       }
     },
     secondaryAction: {

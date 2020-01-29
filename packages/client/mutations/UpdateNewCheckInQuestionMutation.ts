@@ -36,6 +36,7 @@ const UpdateNewCheckInQuestionMutation: SimpleMutation<TUpdateNewCheckInQuestion
     variables,
     optimisticUpdater: (store) => {
       const {meetingId, checkInQuestion} = variables
+      if (!checkInQuestion) return
       const meeting = store.get<INewMeeting>(meetingId)
       if (!meeting) return
       const phases = meeting.getLinkedRecords('phases')

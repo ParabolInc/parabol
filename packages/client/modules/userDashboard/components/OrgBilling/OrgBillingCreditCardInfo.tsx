@@ -68,9 +68,9 @@ interface Props {
 
 const OrgBillingCreditCardInfo = (props: Props) => {
   const {organization} = props
-  const {creditCard, id: orgId, orgUserCount, stripeSubscriptionId} = organization
+  const {creditCard, id: orgId, orgUserCount} = organization
   const {modalPortal, closePortal, togglePortal} = useModal()
-  if (!creditCard || !stripeSubscriptionId) return null
+  if (!creditCard) return null
   const {activeUserCount} = orgUserCount
   const {brand, last4, expiry} = creditCard
   return (
@@ -115,7 +115,6 @@ export default createFragmentContainer(OrgBillingCreditCardInfo, {
       orgUserCount {
         activeUserCount
       }
-      stripeSubscriptionId
       creditCard {
         brand
         expiry

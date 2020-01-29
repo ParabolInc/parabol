@@ -27,7 +27,6 @@ import {
 } from '../mutations/RemoveOrgUserMutation'
 import {LocalStorageKey} from '../types/constEnums'
 import {OnNextHandler, OnNextHistoryContext, UpdaterHandler} from '../types/relayMutations'
-import {meetingTypeToLabel} from '../utils/meetings/lookups'
 import {NotificationSubscriptionResponse} from '../__generated__/NotificationSubscription.graphql'
 
 graphql`
@@ -49,7 +48,7 @@ graphql`
       type
       meeting {
         id
-        meetingType
+        name
         team {
           id
           name
@@ -153,13 +152,12 @@ const meetingStageTimeLimitOnNext: OnNextHandler<
   if (!payload || payload.__typename !== 'MeetingStageTimeLimitPayload') return
   const {timeLimitNotification} = payload
   const {meeting} = timeLimitNotification
-  const {meetingType, team, id: meetingId} = meeting
+  const {name: meetingName, team, id: meetingId} = meeting
   const {name: teamName} = team
-  const meetingLabel = meetingTypeToLabel[meetingType]
   atmosphere.eventEmitter.emit('addSnackbar', {
     key: `meetingStageLimitReached:${meetingId}`,
     autoDismiss: 10,
-    message: `Your ${meetingLabel} meeting for ${teamName} is ready to move forward!`,
+    message: `${meetingName} for ${teamName} is ready to move forward!`,
     action: {
       label: 'Go there',
       callback: () => {

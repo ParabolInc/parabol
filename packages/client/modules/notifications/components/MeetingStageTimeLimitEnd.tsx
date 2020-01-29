@@ -10,7 +10,6 @@ import useMutationProps from '../../../hooks/useMutationProps'
 import useRouter from '../../../hooks/useRouter'
 import ClearNotificationMutation from '../../../mutations/ClearNotificationMutation'
 import ui from '../../../styles/ui'
-import {meetingTypeToLabel} from '../../../utils/meetings/lookups'
 import {MeetingStageTimeLimitEnd_notification} from '../../../__generated__/MeetingStageTimeLimitEnd_notification.graphql'
 import AcknowledgeButton from './AcknowledgeButton/AcknowledgeButton'
 import NotificationButton from './NotificationButton'
@@ -27,9 +26,8 @@ const MeetingStageTimeLimitEnd = (props: Props) => {
   const {notification} = props
   const {history} = useRouter()
   const {id: notificationId, meeting} = notification
-  const {id: meetingId, meetingType, team} = meeting
+  const {id: meetingId, name: meetingName, team} = meeting
   const {name: teamName} = team
-  const meetingLabel = meetingTypeToLabel[meetingType]
   const {error, submitMutation, onCompleted, onError, submitting} = useMutationProps()
   const atmosphere = useAtmosphere()
   const goThere = () => {
@@ -47,9 +45,8 @@ const MeetingStageTimeLimitEnd = (props: Props) => {
       <Row>
         <IconAvatar>group</IconAvatar>
         <NotificationMessage>
-          {'Your '}
-          <b>{meetingLabel}</b>
-          {' meeting for '}
+          <b>{meetingName}</b>
+          {' for '}
           <b>{teamName}</b>
           {' is ready to move forward!'}
         </NotificationMessage>
@@ -71,7 +68,7 @@ export default createFragmentContainer(MeetingStageTimeLimitEnd, {
       id
       meeting {
         id
-        meetingType
+        name
         team {
           name
         }

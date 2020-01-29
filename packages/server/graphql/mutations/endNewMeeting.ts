@@ -1,8 +1,8 @@
-import sendSegmentEvent, {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from '../../database/rethinkDriver'
-import {getUserId, isTeamMember} from '../../utils/authorization'
-import publish from '../../utils/publish'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
+import shortid from 'shortid'
+import {ITask} from '../../../client/types/graphql'
 import {
   ACTION,
   AGENDA_ITEMS,
@@ -11,23 +11,22 @@ import {
   LAST_CALL,
   RETROSPECTIVE
 } from '../../../client/utils/constants'
-import EndNewMeetingPayload from '../types/EndNewMeetingPayload'
-import {endSlackMeeting} from './helpers/notifySlack'
-import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
-import shortid from 'shortid'
-import {COMPLETED_ACTION_MEETING, COMPLETED_RETRO_MEETING} from '../types/TimelineEventTypeEnum'
-import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
-import standardError from '../../utils/standardError'
-import Meeting, {MeetingType} from '../../database/types/Meeting'
-import {DataLoaderWorker, GQLContext} from '../graphql'
-import archiveTasksForDB from '../../safeMutations/archiveTasksForDB'
-import {ITask} from '../../../client/types/graphql'
 import findStageById from '../../../client/utils/meetings/findStageById'
+import getRethink from '../../database/rethinkDriver'
 import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
-import {meetingTypeToLabel} from '../../../client/utils/meetings/lookups'
+import Meeting, {MeetingType} from '../../database/types/Meeting'
 import Task from '../../database/types/Task'
-import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import archiveTasksForDB from '../../safeMutations/archiveTasksForDB'
+import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import sendSegmentEvent, {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
+import standardError from '../../utils/standardError'
+import {DataLoaderWorker, GQLContext} from '../graphql'
+import EndNewMeetingPayload from '../types/EndNewMeetingPayload'
+import {COMPLETED_ACTION_MEETING, COMPLETED_RETRO_MEETING} from '../types/TimelineEventTypeEnum'
+import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
+import {endSlackMeeting} from './helpers/notifySlack'
 
 const timelineEventLookup = {
   [RETROSPECTIVE]: COMPLETED_RETRO_MEETING,
@@ -248,7 +247,7 @@ export default {
     const result = await finishMeetingType(completedMeeting, dataLoader)
     await shuffleCheckInOrder(teamId)
     const updatedTaskIds = (result && result.updatedTaskIds) || []
-    const {facilitatorUserId} = completedMeeting
+    const {facilitatorUserId, name: meetingName} = completedMeeting
     const nonFacilitators = presentMemberUserIds.filter((userId) => userId !== facilitatorUserId)
     const traits = {
       wasFacilitator: false,
@@ -257,8 +256,7 @@ export default {
       teamId,
       meetingNumber
     }
-    const meetingLabel = meetingTypeToLabel[meetingType]
-    const eventName = `${meetingLabel} Meeting Completed`
+    const eventName = `${meetingName} Completed`
     sendSegmentEvent(eventName, facilitatorUserId, {
       ...traits,
       wasFacilitator: true

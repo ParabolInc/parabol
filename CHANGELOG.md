@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.20.0 2020-Jan-28
+
+### Added
+* Refresh button to check-in question
+* Active meetings to the new meeting view
+
+### Changed
+* Upgraded to Relay v8.0.0
+* Use meeting names in copy instead of the type of meeting
+
 ## 4.19.0 2020-Jan-23
 
 ### Changed

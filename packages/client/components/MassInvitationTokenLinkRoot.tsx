@@ -6,7 +6,7 @@ import renderQuery from '../utils/relay/renderQuery'
 import MassInvitationTokenLink from './MassInvitationTokenLink'
 
 const query = graphql`
-  query MassInvitationTokenLinkRootQuery($teamId: ID!) {
+  query MassInvitationTokenLinkRootQuery($teamId: ID!, $meetingId: ID) {
     viewer {
       ...MassInvitationTokenLink_viewer
     }
@@ -14,19 +14,20 @@ const query = graphql`
 `
 
 interface Props {
+  meetingId: string | undefined
   teamId: string
 }
 
 const MassInvitationTokenLinkRoot = (props: Props) => {
-  const {teamId} = props
+  const {meetingId, teamId} = props
   const atmosphere = useAtmosphere()
   return (
     <QueryRenderer
       environment={atmosphere}
       query={query}
-      variables={{teamId}}
+      variables={{meetingId, teamId}}
       fetchPolicy={'store-or-network' as any}
-      render={renderQuery(MassInvitationTokenLink)}
+      render={renderQuery(MassInvitationTokenLink, {props: {meetingId}})}
     />
   )
 }

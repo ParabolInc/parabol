@@ -1,5 +1,5 @@
 import getRethink from '../../../database/rethinkDriver'
-import GitHubManager from '../../../utils/GitHubManager'
+import GitHubServerManager from '../../../utils/GitHubServerManager'
 import {Omit} from '../../../../client/types/generics'
 import {ISuggestedIntegrationGitHub} from '../../../../client/types/graphql'
 import {GITHUB} from '../../../../client/utils/constants'
@@ -47,7 +47,7 @@ const fetchGitHubRepos = async (teamId: string, userId: string) => {
     .run()
   if (!auth) return []
   const {accessToken} = auth
-  const manager = new GitHubManager(accessToken)
+  const manager = new GitHubServerManager(accessToken)
   const repos = await manager.getRepos()
   if ('message' in repos) {
     console.error(repos)

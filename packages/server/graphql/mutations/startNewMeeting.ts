@@ -36,25 +36,18 @@ export default {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
-
+    const DUPLICATE_THRESHOLD = 2000
     // AUTH
     const viewerId = getUserId(authToken)
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
-    // VALIDATION
-    // Not strictly required since we do this below, but cheap enough to prevent extra work
-    const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
-    const syncMeetingInProgress = activeMeetings.find((meeting) => !meeting.isAsync)
-    if (syncMeetingInProgress) {
-      return standardError(new Error('Meeting already started'), {userId: viewerId})
-    }
-
     // RESOLUTION
     const meetingCount = await r
       .table('NewMeeting')
       .getAll(teamId, {index: 'teamId'})
+      .filter({meetingType})
       .count()
       .default(0)
       .run()
@@ -87,11 +80,10 @@ export default {
       .insert(meeting)
       .run()
 
-    // Possibly rollback if mutation triggered more than once
-    dataLoader.get('activeMeetingsByTeamId').clear(teamId)
+    // Disallow accidental starts (2 meetings within 2 seconds)
     const newActiveMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
     const otherActiveMeeting = newActiveMeetings.find(
-      ({isAsync, id}) => !isAsync && id !== meeting.id
+      ({createdAt, id}) => id !== meeting.id && createdAt > Date.now() - DUPLICATE_THRESHOLD
     )
     if (otherActiveMeeting) {
       await r

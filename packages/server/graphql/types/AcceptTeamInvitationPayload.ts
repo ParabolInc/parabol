@@ -16,6 +16,10 @@ const AcceptTeamInvitationPayload = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLID,
       description: 'The new auth token sent to the mutator'
     },
+    meetingId: {
+      type: GraphQLID,
+      description: 'the meetingId to redirect to'
+    },
     team: {
       type: Team,
       description: 'The team that the invitee will be joining',

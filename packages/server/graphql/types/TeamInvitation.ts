@@ -42,6 +42,11 @@ const TeamInvitation = new GraphQLObjectType({
         return dataLoader.get('users').load(invitedBy)
       }
     },
+    // no meeting because we don't trust the TeamInvite owner yet
+    meetingId: {
+      type: GraphQLID,
+      description: 'the meetingId that the invite was generated for'
+    },
     // Don't allow trusted resolvers to run on this objects since it's a payload of an untrusted user
     // TODO this should be the job of the Team object to protect from non-team reqs
     // team: {

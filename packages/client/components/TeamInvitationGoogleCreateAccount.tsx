@@ -1,22 +1,21 @@
-import {TeamInvitationGoogleCreateAccount_verifiedInvitation} from '../__generated__/TeamInvitationGoogleCreateAccount_verifiedInvitation.graphql'
-import React, {useState} from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React, {useState} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import useDocumentTitle from '../hooks/useDocumentTitle'
+import useRouter from '../hooks/useRouter'
 import {PALETTE} from '../styles/paletteV2'
+import {TeamInvitationGoogleCreateAccount_verifiedInvitation} from '../__generated__/TeamInvitationGoogleCreateAccount_verifiedInvitation.graphql'
+import AuthPrivacyFooter from './AuthPrivacyFooter'
+import DialogContent from './DialogContent'
+import DialogTitle from './DialogTitle'
 import EmailPasswordAuthForm from './EmailPasswordAuthForm'
 import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
-import InvitationCenteredCopy from './InvitationCenteredCopy'
-import InviteDialog from './InviteDialog'
-import DialogContent from './DialogContent'
-import InvitationDialogCopy from './InvitationDialogCopy'
-import DialogTitle from './DialogTitle'
-import PlainButton from './PlainButton/PlainButton'
 import HorizontalSeparator from './HorizontalSeparator/HorizontalSeparator'
-import AuthPrivacyFooter from './AuthPrivacyFooter'
-import {meetingTypeToLabel} from '../utils/meetings/lookups'
-import useRouter from '../hooks/useRouter'
-import useDocumentTitle from '../hooks/useDocumentTitle'
+import InvitationCenteredCopy from './InvitationCenteredCopy'
+import InvitationDialogCopy from './InvitationDialogCopy'
+import InviteDialog from './InviteDialog'
+import PlainButton from './PlainButton/PlainButton'
 
 interface Props {
   invitationToken: string
@@ -52,7 +51,7 @@ const TeamInvitationGoogleCreateAccount = (props: Props) => {
   const {params} = match
   const {token: invitationToken} = params
   const {verifiedInvitation} = props
-  const {meetingType, teamInvitation, teamName} = verifiedInvitation
+  const {meetingName, teamInvitation, teamName} = verifiedInvitation
 
   const useEmail = () => {
     setIsEmailFallback(true)
@@ -63,15 +62,13 @@ const TeamInvitationGoogleCreateAccount = (props: Props) => {
   const {email} = teamInvitation
   return (
     <StyledDialog>
-      <DialogTitle>
-        {meetingType ? `Join ${meetingTypeToLabel[meetingType]} Meeting` : 'Join Team'}
-      </DialogTitle>
+      <DialogTitle>{meetingName ? `Join ${meetingName}` : 'Join Team'}</DialogTitle>
       <StyledContent>
         <CopyMargins>
           <InvitationDialogCopy>It looks like your email is hosted by Google.</InvitationDialogCopy>
           <InvitationDialogCopy>
             Tap below for immediate access
-            {meetingType ? ' to the team meeting for: ' : ' to your team: '}
+            {meetingName ? ' to the team meeting for: ' : ' to your team: '}
             <TeamName>{teamName}</TeamName>
           </InvitationDialogCopy>
         </CopyMargins>
@@ -95,7 +92,7 @@ const TeamInvitationGoogleCreateAccount = (props: Props) => {
 export default createFragmentContainer(TeamInvitationGoogleCreateAccount, {
   verifiedInvitation: graphql`
     fragment TeamInvitationGoogleCreateAccount_verifiedInvitation on VerifiedInvitationPayload {
-      meetingType
+      meetingName
       teamInvitation {
         email
       }

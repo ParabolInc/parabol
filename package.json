@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "4.19.0",
+  "version": "4.20.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/action"
@@ -35,16 +35,22 @@
   },
   "resolutions": {
     "hoist-non-react-statics": "^3.3.0",
-    "@types/relay-runtime": "6.0.11",
     "@types/react": "16.9.11",
     "@types/react-dom": "16.9.4",
-    "relay-runtime": "https://github.com/mattkrick/relay/tarball/74f97387b7a419d2d7a5769c0ce98596a070fb6a",
+    "relay-runtime": "https://github.com/mattkrick/relay/tarball/7e8d4b395c204499cc07df7a37f4ef1110a31c4f",
     "immutable": "3.8.2"
   },
   "devDependencies": {
     "@types/jscodeshift": "^0.6.2",
+    "graphql": "^14.6.0",
     "husky": "^3.0.1",
-    "lerna": "^3.19.0"
+    "jscodeshift": "^0.7.0",
+    "lerna": "^3.19.0",
+    "prettier": "^1.19.1",
+    "relay-compiler": "^8.0.0",
+    "relay-config": "^8.0.0",
+    "vscode-apollo-relay": "^1.5.0",
+    "webpack": "^4.41.5"
   },
   "husky": {
     "hooks": {

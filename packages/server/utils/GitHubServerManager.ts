@@ -1,6 +1,6 @@
 import fetch from 'node-fetch'
+import GitHubManager from 'parabol-client/utils/GitHubManager'
 import {stringify} from 'querystring'
-import GitHubClientManager from '../../client/utils/GitHubClientManager'
 
 interface OAuth2Response {
   access_token: string
@@ -8,9 +8,9 @@ interface OAuth2Response {
   scope: string
 }
 
-class GitHubManager extends GitHubClientManager {
+class GitHubServerManager extends GitHubManager {
   static async init(code: string) {
-    return GitHubManager.fetchToken(code)
+    return GitHubServerManager.fetchToken(code)
   }
 
   static async fetchToken(code: string) {
@@ -36,11 +36,12 @@ class GitHubManager extends GitHubClientManager {
     }
     const providedScope = scope.split(',')
     const matchingScope =
-      new Set([...GitHubManager.SCOPE.split(','), ...providedScope]).size === providedScope.length
+      new Set([...GitHubServerManager.SCOPE.split(','), ...providedScope]).size ===
+      providedScope.length
     if (!matchingScope) {
       throw new Error(`GitHub Bad scope: ${scope}`)
     }
-    return new GitHubManager(accessToken)
+    return new GitHubServerManager(accessToken)
   }
 
   constructor(accessToken: string) {
@@ -48,4 +49,4 @@ class GitHubManager extends GitHubClientManager {
   }
 }
 
-export default GitHubManager
+export default GitHubServerManager

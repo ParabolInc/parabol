@@ -1,6 +1,6 @@
 import fetch from 'node-fetch'
-import AtlassianClientManager from '../../client/utils/AtlassianClientManager'
 import makeAppLink from './makeAppLink'
+import AtlassianManager from 'parabol-client/utils/AtlassianManager'
 
 interface AuthQueryParams {
   grant_type: 'authorization_code'
@@ -20,9 +20,9 @@ interface OAuth2Response {
   scope: string
 }
 
-class AtlassianManager extends AtlassianClientManager {
+class AtlassianServerManager extends AtlassianManager {
   static async init(code: string) {
-    return AtlassianManager.fetchToken({
+    return AtlassianServerManager.fetchToken({
       grant_type: 'authorization_code',
       code,
       redirect_uri: makeAppLink('auth/atlassian')
@@ -30,7 +30,7 @@ class AtlassianManager extends AtlassianClientManager {
   }
 
   static async refresh(refreshToken: string) {
-    return AtlassianManager.fetchToken({
+    return AtlassianServerManager.fetchToken({
       grant_type: 'refresh_token',
       refresh_token: refreshToken
     })
@@ -62,17 +62,20 @@ class AtlassianManager extends AtlassianClientManager {
     }
     const providedScope = scope.split(' ')
     const matchingScope =
-      new Set([...AtlassianManager.SCOPE.split(' '), ...providedScope]).size ===
+      new Set([...AtlassianServerManager.SCOPE.split(' '), ...providedScope]).size ===
       providedScope.length
     if (!matchingScope) {
       throw new Error(`bad scope: ${scope}`)
     }
-    return new AtlassianManager(accessToken, refreshToken)
+    return new AtlassianServerManager(accessToken, refreshToken)
   }
 
+  refreshToken?: string
+
   constructor(accessToken: string, refreshToken?: string) {
-    super(accessToken, {fetch, refreshToken})
+    super(accessToken, {fetch})
+    this.refreshToken = refreshToken
   }
 }
 
-export default AtlassianManager
+export default AtlassianServerManager
