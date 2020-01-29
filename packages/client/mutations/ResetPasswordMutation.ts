@@ -2,7 +2,7 @@ import {ResetPasswordMutation as TResetPasswordMutation} from '../__generated__/
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
-import handleAuthenticationRedirect from './handlers/handleAuthenticationRedirect'
+import getValidRedirectParam from 'utils/getValidRedirectParam'
 
 const mutation = graphql`
   mutation ResetPasswordMutation($newPassword: String!, $token: ID!) {
@@ -34,7 +34,8 @@ const ResetPasswordMutation: StandardMutation<TResetPasswordMutation, HistoryLoc
       if (!uiError && !errors) {
         const {authToken} = resetPassword
         atmosphere.setAuthToken(authToken)
-        handleAuthenticationRedirect(resetPassword, {atmosphere, history})
+        const nextUrl = getValidRedirectParam() || '/me'
+        history.push(nextUrl)
       }
     }
   })
