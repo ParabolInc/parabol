@@ -16,6 +16,7 @@ import handleAddTeamMembers from './handlers/handleAddTeamMembers'
 import handleAddTeams from './handlers/handleAddTeams'
 import handleAuthenticationRedirect from './handlers/handleAuthenticationRedirect'
 import handleRemoveNotifications from './handlers/handleRemoveNotifications'
+import {InvitationTokenError} from 'types/constEnums'
 
 graphql`
   fragment AcceptTeamInvitationMutation_team on AcceptTeamInvitationPayload {
@@ -152,7 +153,17 @@ const AcceptTeamInvitationMutation: StandardMutation<
         onCompleted(data, errors)
       }
       const serverError = getGraphQLError(data, errors)
-      if (serverError) return
+      if (serverError) {
+        if (serverError.message === InvitationTokenError.ALREADY_ACCEPTED) {
+          const {acceptTeamInvitation} = data
+          handleAuthenticationRedirect(acceptTeamInvitation, {
+            atmosphere,
+            history,
+            meetingId: locallyRequestedMeetingId
+          })
+        }
+        return
+      }
       const {acceptTeamInvitation} = data
       const {authToken, team} = acceptTeamInvitation
       atmosphere.setAuthToken(authToken)

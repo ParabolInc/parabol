@@ -29,9 +29,9 @@ const handleTeamInviteToken = async (
       return {error: InvitationTokenError.EXPIRED}
     }
   }
-  const {acceptedAt, teamId} = invitation
+  const {acceptedAt, teamId, meetingId} = invitation
   if (acceptedAt || tms?.includes(teamId)) {
-    return {error: InvitationTokenError.ALREADY_ACCEPTED}
+    return {error: InvitationTokenError.ALREADY_ACCEPTED, teamId, meetingId}
   }
   return {invitation}
 }

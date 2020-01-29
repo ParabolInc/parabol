@@ -75,8 +75,7 @@ export default {
 
       // RESOLUTION
       const teamId = shortid.generate()
-      // FIXME turn isOnboardTeam to false after finished debugging
-      await createTeamAndLeader(viewerId, {id: teamId, isOnboardTeam: true, ...newTeam})
+      await createTeamAndLeader(viewerId, {id: teamId, isOnboardTeam: false, ...newTeam})
 
       const {tms} = authToken
       // MUTATIVE

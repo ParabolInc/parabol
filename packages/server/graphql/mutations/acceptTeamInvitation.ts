@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {SubscriptionChannel, InvitationTokenError} from 'parabol-client/types/constEnums'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import AuthToken from '../../database/types/AuthToken'
 import acceptTeamInvitation from '../../safeMutations/acceptTeamInvitation'
@@ -61,8 +61,14 @@ export default {
         dataLoader,
         notificationId
       )
-      if (invitationRes.error)
-        return standardError(new Error(invitationRes.error), {userId: viewerId})
+      if (invitationRes.error) {
+        const {error: message, teamId, meetingId} = invitationRes
+        if (message === InvitationTokenError.ALREADY_ACCEPTED) {
+          return {error: {message}, teamId, meetingId}
+        }
+        return {error: {message}}
+      }
+      return standardError(new Error(invitationRes.error), {userId: viewerId})
       const {invitation} = invitationRes
       const {meetingId, teamId} = invitation
       const meeting = meetingId ? await dataLoader.get('newMeetings').load(meetingId) : null
