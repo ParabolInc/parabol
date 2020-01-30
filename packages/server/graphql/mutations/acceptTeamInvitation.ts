@@ -7,7 +7,6 @@ import {getUserId, isAuthenticated} from '../../utils/authorization'
 import encodeAuthToken from '../../utils/encodeAuthToken'
 import publish from '../../utils/publish'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
-import standardError from '../../utils/standardError'
 import rateLimit from '../rateLimit'
 import AcceptTeamInvitationPayload from '../types/AcceptTeamInvitationPayload'
 import handleInvitationToken from './helpers/handleInvitationToken'
@@ -68,7 +67,7 @@ export default {
         }
         return {error: {message}}
       }
-      return standardError(new Error(invitationRes.error), {userId: viewerId})
+
       const {invitation} = invitationRes
       const {meetingId, teamId} = invitation
       const meeting = meetingId ? await dataLoader.get('newMeetings').load(meetingId) : null
