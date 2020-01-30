@@ -7,7 +7,7 @@ import {PALETTE} from 'styles/paletteV2'
 import useRouter from 'hooks/useRouter'
 import {createFragmentContainer} from 'react-relay'
 import {SelectMeetingDropdownItem_meeting} from '__generated__/SelectMeetingDropdownItem_meeting.graphql'
-import {meetingTypeToIcon} from 'utils/meetings/lookups'
+import {meetingTypeToIcon, phaseLabelLookup} from 'utils/meetings/lookups'
 
 const Wrapper = styled('div')({
   alignItems: 'center',
@@ -44,6 +44,18 @@ const Action = styled(Icon)({
   padding: 16
 })
 
+interface Phase {
+  stages: {
+    isComplete: boolean
+  }[]
+}
+
+const getMeetingPhase = <T extends Phase[]>(phases: T) => {
+  return phases.find((phase) => {
+    return !phase.stages.every((stage) => stage.isComplete)
+  }) as T
+}
+
 interface Props {
   meeting: SelectMeetingDropdownItem_meeting
 }
@@ -51,18 +63,23 @@ interface Props {
 const SelectMeetingDropdownItem = (props: Props) => {
   const {meeting} = props
   const {history} = useRouter()
-  const {name, team, id: meetingId, meetingType} = meeting
+  const {name, team, id: meetingId, meetingType, phases} = meeting
   const {name: teamName} = team
   const gotoMeeting = () => {
     history.push(`/meet/${meetingId}`)
   }
   const icon = meetingTypeToIcon[meetingType]
+  const meetingPhase = getMeetingPhase(phases)
+  const meetingPhaseLabel = (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'
+
   return (
     <Wrapper onClick={gotoMeeting}>
       <MeetingIcon>{icon}</MeetingIcon>
       <MeetingInfo>
         <Title>{name}</Title>
-        <Subtitle>{teamName}</Subtitle>
+        <Subtitle>
+          {meetingPhaseLabel} • {teamName}
+        </Subtitle>
       </MeetingInfo>
       <Action>{'arrow_forward'}</Action>
     </Wrapper>
@@ -75,6 +92,12 @@ export default createFragmentContainer(SelectMeetingDropdownItem, {
       id
       name
       meetingType
+      phases {
+        phaseType
+        stages {
+          isComplete
+        }
+      }
       team {
         name
       }

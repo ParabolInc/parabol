@@ -35,7 +35,7 @@ const renameMeeting = {
     if (!meeting) {
       return {error: {message: 'Meeting not found'}}
     }
-    const {facilitatorUserId} = meeting
+    const {facilitatorUserId, teamId} = meeting
     const viewerId = getUserId(authToken)
     if (viewerId !== facilitatorUserId) {
       return {error: {message: 'Only the facilitator can change the meeting name'}}
@@ -62,7 +62,7 @@ const renameMeeting = {
       .run()
 
     const data = {meetingId}
-    publish(SubscriptionChannel.MEETING, meetingId, 'RenameMeetingSuccess', data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'RenameMeetingSuccess', data, subOptions)
 
     return data
   }

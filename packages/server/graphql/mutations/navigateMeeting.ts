@@ -47,7 +47,7 @@ export default {
       .default(null)
       .run()) as Meeting | null
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
-    const {defaultFacilitatorUserId, facilitatorUserId, phases} = meeting
+    const {defaultFacilitatorUserId, facilitatorUserId, phases, teamId} = meeting
     if (viewerId !== facilitatorUserId) {
       if (viewerId !== defaultFacilitatorUserId) {
         return standardError(new Error('Not meeting facilitator'), {userId: viewerId})
@@ -120,7 +120,7 @@ export default {
       unlockedStageIds,
       ...phaseCompleteData
     }
-    publish(SubscriptionChannel.MEETING, meetingId, 'NavigateMeetingPayload', data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'NavigateMeetingPayload', data, subOptions)
     return data
   }
 }

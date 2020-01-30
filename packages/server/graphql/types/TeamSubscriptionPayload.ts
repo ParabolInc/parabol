@@ -34,6 +34,8 @@ import PushInvitationPayload from './PushInvitationPayload'
 import DenyPushInvitationPayload from './DenyPushInvitationPayload'
 import SetCheckInEnabledPayload from './SetCheckInEnabledPayload'
 import SetSlackNotificationPayload from './SetSlackNotificationPayload'
+import {RenameMeetingSuccess} from './RenameMeetingPayload'
+import NavigateMeetingPayload from './NavigateMeetingPayload'
 
 const types = [
   AcceptTeamInvitationPayload,
@@ -46,11 +48,13 @@ const types = [
   DenyPushInvitationPayload,
   DowngradeToPersonalPayload,
   EndNewMeetingPayload,
+  NavigateMeetingPayload,
   PushInvitationPayload,
   PromoteToTeamLeadPayload,
   RemoveAgendaItemPayload,
   RemoveOrgUserPayload,
   RemoveTeamMemberPayload,
+  RenameMeetingSuccess,
   SelectRetroTemplatePayload,
   StartNewMeetingPayload,
   UpdateAgendaItemPayload,
