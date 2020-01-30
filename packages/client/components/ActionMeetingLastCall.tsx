@@ -49,14 +49,14 @@ const ActionMeetingLastCall = (props: Props) => {
   const {history} = useRouter()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
   const {viewerId} = atmosphere
-  const {facilitator, facilitatorUserId, id: meetingId, phases, showSidebar} = meeting
+  const {endedAt, facilitator, facilitatorUserId, id: meetingId, phases, showSidebar} = meeting
   const agendaItemPhase = phases.find(
     (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.agendaitems
   )!
   const {stages} = agendaItemPhase
   const agendaItemsCompleted = stages.filter((stage) => stage.isComplete).length
   const {preferredName} = facilitator
-  const isFacilitating = facilitatorUserId === viewerId
+  const isFacilitating = facilitatorUserId === viewerId && !endedAt
   const labelAgendaItems = plural(0, AGENDA_ITEM_LABEL)
   const endMeeting = () => {
     if (submitting) return
@@ -101,7 +101,12 @@ const ActionMeetingLastCall = (props: Props) => {
           <AgendaShortcutHint />
 
           {isFacilitating ? (
-            <PrimaryButton aria-label='End Meeting' size='large' onClick={endMeeting}>
+            <PrimaryButton
+              aria-label='End Meeting'
+              size='large'
+              onClick={endMeeting}
+              disabled={!!endedAt}
+            >
               End Action Meeting
             </PrimaryButton>
           ) : (
@@ -120,6 +125,7 @@ export default createFragmentContainer(ActionMeetingLastCall, {
   meeting: graphql`
     fragment ActionMeetingLastCall_meeting on ActionMeeting {
       id
+      endedAt
       showSidebar
       id
       facilitatorUserId

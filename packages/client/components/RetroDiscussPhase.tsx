@@ -152,6 +152,7 @@ const RetroDiscussPhase = (props: Props) => {
   const {viewerId} = atmosphere
   const {gotoNext, ref: gotoNextRef} = handleGotoNext
   const {
+    endedAt,
     id: meetingId,
     facilitatorUserId,
     localStage,
@@ -165,7 +166,7 @@ const RetroDiscussPhase = (props: Props) => {
   // reflection group will be null until the server overwrites the placeholder.
   if (!reflectionGroup) return null
   const {id: reflectionGroupId, tasks, title, reflections, voteCount} = reflectionGroup
-  const isFacilitating = facilitatorUserId === viewerId
+  const isFacilitating = facilitatorUserId === viewerId && !endedAt
   const nextStageRes = findStageAfterId(phases, localStageId)
   if (!reflections) {
     // this shouldn't ever happen, yet
@@ -245,7 +246,7 @@ const RetroDiscussPhase = (props: Props) => {
             </BottomNavControl>
           </CenterControlBlock>
         )}
-        <EndMeetingButton meetingId={meetingId} />
+        <EndMeetingButton meetingId={meetingId} isEnded={!!endedAt} />
         {!nextStageRes && <BottomControlSpacer />}
       </MeetingFacilitatorBar>
     </MeetingContent>
@@ -283,6 +284,7 @@ export default createFragmentContainer(RetroDiscussPhase, {
   meeting: graphql`
     fragment RetroDiscussPhase_meeting on RetrospectiveMeeting {
       ...StageTimerControl_meeting
+      endedAt
       organization {
         ...DiscussPhaseSqueeze_organization
       }

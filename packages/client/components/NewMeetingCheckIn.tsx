@@ -58,6 +58,7 @@ const NewMeetingCheckIn = (props: Props) => {
   const {avatarGroup, handleGotoNext, meeting, toggleSidebar} = props
   const atmosphere = useAtmosphere()
   const {
+    endedAt,
     showSidebar,
     facilitator: {userId: facilitatorUserId},
     localStage,
@@ -73,7 +74,7 @@ const NewMeetingCheckIn = (props: Props) => {
   // in case the checkin is the last phase of the meeting
   if (!nextStageRes) return null
   const {viewerId} = atmosphere
-  const isFacilitating = facilitatorUserId === viewerId
+  const isFacilitating = facilitatorUserId === viewerId && !endedAt
   const isMyMeetingSection = userId === viewerId
   return (
     <MeetingContent>
@@ -102,7 +103,7 @@ const NewMeetingCheckIn = (props: Props) => {
       </MeetingHeaderAndPhase>
       <MeetingFacilitatorBar isFacilitating={isFacilitating}>
         <CheckInControls handleGotoNext={handleGotoNext} meetingMember={meetingMember} />
-        <EndMeetingButton meetingId={meetingId} />
+        <EndMeetingButton meetingId={meetingId} isEnded={!!endedAt} />
       </MeetingFacilitatorBar>
     </MeetingContent>
   )
@@ -124,6 +125,7 @@ export default createFragmentContainer(NewMeetingCheckIn, {
   meeting: graphql`
     fragment NewMeetingCheckIn_meeting on NewMeeting {
       ...NewMeetingCheckInPrompt_meeting
+      endedAt
       showSidebar
       meetingType
       id

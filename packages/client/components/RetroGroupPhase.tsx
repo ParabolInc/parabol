@@ -59,10 +59,10 @@ const RetroGroupPhase = (props: Props) => {
   const [isReadyToVote, resetActivityTimeout] = useTimeoutWithReset(ms('1m'), ms('30s'))
   const {avatarGroup, toggleSidebar, handleGotoNext, meeting, isDemoStageComplete} = props
   const {viewerId} = atmosphere
-  const {showSidebar, facilitatorUserId, id: meetingId, localStage} = meeting
+  const {endedAt, showSidebar, facilitatorUserId, id: meetingId, localStage} = meeting
   const isComplete = localStage ? localStage.isComplete : false
   const isAsync = localStage ? localStage.isAsync : false
-  const isFacilitating = facilitatorUserId === viewerId
+  const isFacilitating = facilitatorUserId === viewerId && !endedAt
   const nextPhaseLabel = phaseLabelLookup[VOTE]
   const {gotoNext, ref: gotoNextRef} = handleGotoNext
   // const autoGroup = () => {
@@ -122,7 +122,7 @@ const RetroGroupPhase = (props: Props) => {
             />
           </BottomNavControl>
         </CenteredControlBlock>
-        <EndMeetingButton meetingId={meetingId} />
+        <EndMeetingButton meetingId={meetingId} isEnded={!!endedAt} />
       </MeetingFacilitatorBar>
     </MeetingContent>
   )
@@ -140,6 +140,7 @@ export default createFragmentContainer(RetroGroupPhase, {
   meeting: graphql`
     fragment RetroGroupPhase_meeting on RetrospectiveMeeting {
       ...StageTimerControl_meeting
+      endedAt
       showSidebar
       id
       facilitatorUserId

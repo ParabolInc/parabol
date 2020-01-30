@@ -11,6 +11,7 @@ import {ElementWidth} from '../types/constEnums'
 
 interface Props {
   meetingId: string
+  isEnded: boolean
 }
 
 const EndMeetingButtonStyles = styled(BottomNavControl)({
@@ -18,7 +19,7 @@ const EndMeetingButtonStyles = styled(BottomNavControl)({
 })
 
 const EndMeetingButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
-  const {meetingId} = props
+  const {isEnded, meetingId} = props
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {submitMutation, onCompleted, onError, submitting} = useMutationProps()
@@ -31,7 +32,7 @@ const EndMeetingButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) 
 
   const label = isDemoRoute() ? 'End Demo' : 'End Meeting'
   return (
-    <EndMeetingButtonStyles onClick={endMeeting} waiting={submitting} ref={ref}>
+    <EndMeetingButtonStyles onClick={endMeeting} waiting={submitting} ref={ref} disabled={isEnded}>
       <BottomNavIconLabel icon='flag' iconColor='blue' label={label} />
     </EndMeetingButtonStyles>
   )

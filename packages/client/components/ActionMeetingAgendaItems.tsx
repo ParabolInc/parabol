@@ -89,7 +89,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
   const {gotoNext, ref: gotoNextRef} = handleGotoNext
   const [minTimeComplete, resetMinTimeComplete] = useTimeoutWithReset(ms('2m'))
   const {viewerId} = atmosphere
-  const {showSidebar, team, facilitatorUserId, id: meetingId, localStage, phases} = meeting
+  const {endedAt, showSidebar, team, facilitatorUserId, id: meetingId, localStage, phases} = meeting
   const {id: teamId, agendaItems, tasks} = team
   const {id: localStageId, agendaItemId} = localStage
   useEffect(() => {
@@ -107,7 +107,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
   if (!agendaItem) return null
   const {content, teamMember} = agendaItem
   const {picture, preferredName} = teamMember
-  const isFacilitating = facilitatorUserId === viewerId
+  const isFacilitating = facilitatorUserId === viewerId && !endedAt
   const nextStageRes = findStageAfterId(phases, localStageId)
   const {phase: nextPhase} = nextStageRes!
   const label =
@@ -158,7 +158,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
         >
           <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={label} />
         </BottomNavControl>
-        <EndMeetingButton meetingId={meetingId} />
+        <EndMeetingButton meetingId={meetingId} isEnded={!!endedAt} />
       </MeetingFacilitatorBar>
     </MeetingContent>
   )
@@ -178,7 +178,7 @@ export default createFragmentContainer(ActionMeetingAgendaItems, {
     fragment ActionMeetingAgendaItems_meeting on ActionMeeting {
       id
       showSidebar
-      id
+      endedAt
       facilitatorUserId
       localStage {
         ...ActionMeetingAgendaItemsStage @relay(mask: false)

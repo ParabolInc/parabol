@@ -137,6 +137,7 @@ const RetroVotePhase = (props: Props) => {
   const phaseRef = useRef<HTMLDivElement>(null)
   const {gotoNext, ref: gotoNextRef} = handleGotoNext
   const {
+    endedAt,
     facilitatorUserId,
     id: meetingId,
     phases,
@@ -149,7 +150,7 @@ const RetroVotePhase = (props: Props) => {
   const isComplete = localStage ? localStage.isComplete : false
   const teamVotesRemaining = meeting.votesRemaining || 0
   const myVotesRemaining = viewerMeetingMember.votesRemaining || 0
-  const isFacilitating = facilitatorUserId === viewerId
+  const isFacilitating = facilitatorUserId === viewerId && !endedAt
   const discussPhase = phases.find((phase) => phase.phaseType === DISCUSS)!
   const discussStage = discussPhase.stages![0]
   const nextPhaseLabel = phaseLabelLookup[DISCUSS]
@@ -209,7 +210,7 @@ const RetroVotePhase = (props: Props) => {
             />
           </BottomNavControl>
         </CenterControlBlock>
-        <EndMeetingButton meetingId={meetingId} />
+        <EndMeetingButton meetingId={meetingId} isEnded={!!endedAt} />
       </MeetingFacilitatorBar>
     </MeetingContent>
   )
@@ -220,6 +221,7 @@ export default createFragmentContainer(RetroVotePhase, {
     fragment RetroVotePhase_meeting on RetrospectiveMeeting {
       ...StageTimerControl_meeting
       ...GroupingKanban_meeting
+      endedAt
       settings {
         totalVotes
       }
