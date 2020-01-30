@@ -1,7 +1,16 @@
 import {useRef} from 'react'
 import {RefCallbackInstance} from '../types/generics'
-import {BezierCurve, ReflectionStackPerspective, Times} from '../types/constEnums'
+import {BezierCurve, ReflectionStackPerspective, Times, ElementWidth} from '../types/constEnums'
 import requestDoubleAnimationFrame from '../components/RetroReflectPhase/requestDoubleAnimationFrame'
+
+const getScaleX = (i: number) => {
+  if (i === 0) return 1
+  const multiple = i === 1 ? 2 : 4
+  return (
+    (ElementWidth.REFLECTION_CARD - ReflectionStackPerspective.X * multiple) /
+    ElementWidth.REFLECTION_CARD
+  )
+}
 
 const useFlipDeal = (count: number) => {
   const isAnimatingRef = useRef(false)
@@ -25,9 +34,11 @@ const useFlipDeal = (count: number) => {
         if (!lastReflection) return
         if (i > 0) {
           const bbox = lastReflection.getBoundingClientRect()
-          cardSpacing += bbox.height - ReflectionStackPerspective.Y
+          const peek = i < 3 ? ReflectionStackPerspective.Y : 0
+          cardSpacing += bbox.height - peek
         }
-        const cachedTransform = `translateY(${-cardSpacing}px)`
+        const scaleX = getScaleX(i)
+        const cachedTransform = `translateY(${-cardSpacing}px)scaleX(${scaleX})`
         const cachedTransition = `transform ${Times.REFLECTION_DEAL_CARD_DURATION}ms ${delay}ms ${BezierCurve.STANDARD_CURVE}`
         lastReflection.style.transform = cachedTransform
         requestDoubleAnimationFrame(() => {
@@ -44,12 +55,14 @@ const useFlipDeal = (count: number) => {
       if (!lastReflection) return
       if (i > 0) {
         const bbox = lastReflection.getBoundingClientRect()
-        cardSpacing += bbox.height - ReflectionStackPerspective.Y
+        const peek = i < 3 ? ReflectionStackPerspective.Y : 0
+        cardSpacing += bbox.height - peek
       }
       const thisCardSpace = cardSpacing // scoped inside for-loop
+      const scaleX = getScaleX(i)
       lastReflection.style.transition = `transform ${Times.REFLECTION_DEAL_CARD_DURATION}ms ${BezierCurve.STANDARD_CURVE}`
       requestAnimationFrame(() => {
-        lastReflection.style.transform = `translateY(${-thisCardSpace}px)`
+        lastReflection.style.transform = `translateY(${-thisCardSpace}px)scaleX(${scaleX})`
       })
     }
     isAnimatingRef.current = false
