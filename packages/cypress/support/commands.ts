@@ -43,7 +43,7 @@ const login = (_overrides = {}) => {
     iat,
     tms: []
   }
-  const secret = Buffer.from(Cypress.env('AUTH0_CLIENT_SECRET'), 'base64')
+  const secret = Buffer.from(Cypress.env('SERVER_SECRET'), 'base64')
   const authToken = sign(tokenObj, secret)
   window.localStorage.setItem('Action:token', authToken)
   cy.visit('/')
