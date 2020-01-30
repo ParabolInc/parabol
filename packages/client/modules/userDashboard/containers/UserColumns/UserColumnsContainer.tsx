@@ -4,6 +4,7 @@ import graphql from 'babel-plugin-relay/macro'
 import TaskColumns from '../../../../components/TaskColumns/TaskColumns'
 import {UserColumnsContainer_viewer} from '../../../../__generated__/UserColumnsContainer_viewer.graphql'
 import {AreaEnum} from '../../../../types/graphql'
+import getSafeRegex from '../../../../utils/getSafeRegex'
 
 interface Props {
   viewer: UserColumnsContainer_viewer
@@ -14,7 +15,7 @@ const UserColumnsContainer = (props: Props) => {
   const {dashSearch, tasks, teamFilter} = viewer
   const teamFilterId = (teamFilter && teamFilter.id) || null
   const filteredTasks = useMemo(() => {
-    const dashSearchRegex = new RegExp(dashSearch!, 'i')
+    const dashSearchRegex = getSafeRegex(dashSearch, 'i')
     const nodes = tasks.edges.map(({node}) => node)
     const dashSearchNodes = dashSearch
       ? nodes.filter((task) => {

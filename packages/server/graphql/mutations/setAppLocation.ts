@@ -26,7 +26,7 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const viewer = await dataLoader.get('users').load(viewerId)
+    const viewer = viewerId ? await dataLoader.get('users').load(viewerId) : null
     if (!viewer) {
       return {error: {message: 'Not a user'}}
     }
