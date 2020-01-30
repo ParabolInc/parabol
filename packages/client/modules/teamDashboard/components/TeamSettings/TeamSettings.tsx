@@ -46,7 +46,7 @@ const TeamSettings = (props: Props) => {
   const {history} = useRouter()
   const {team} = viewer
   const {name: teamName, orgId, teamMembers, tier} = team!
-  useDocumentTitle(`Team Settings | ${teamName}`)
+  useDocumentTitle(`Team Settings | ${teamName}`, 'Team Settings')
   const viewerTeamMember = teamMembers.find((m) => m.isSelf)
   // if kicked out, the component might reload before the redirect occurs
   if (!viewerTeamMember) return null

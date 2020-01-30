@@ -27,7 +27,7 @@ const TeamInvitationGoogleSignin = (props: Props) => {
   const {token: invitationToken} = params
   const {verifiedInvitation} = props
   const {meetingName, user, teamName} = verifiedInvitation
-  useDocumentTitle(`Sign in with Google | Team Invitation`)
+  useDocumentTitle(`Sign in with Google | Team Invitation`, 'Sign in')
 
   if (!user) return null
   const {email, preferredName} = user

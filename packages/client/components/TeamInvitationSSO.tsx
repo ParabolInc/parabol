@@ -36,7 +36,7 @@ const TeamInvitationSSO = (props: Props) => {
     }
     loginWithSAML().catch()
   }, [])
-  useDocumentTitle('SSO Login | Team Invitation')
+  useDocumentTitle('SSO Login | Team Invitation', 'Team Invitation')
 
   return (
     <InviteDialog>

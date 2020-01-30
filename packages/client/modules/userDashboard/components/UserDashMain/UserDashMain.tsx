@@ -2,7 +2,6 @@ import DashContent from 'components/Dashboard/DashContent'
 import React, {lazy, Suspense} from 'react'
 import {Route, RouteComponentProps, Switch} from 'react-router'
 import LoadingComponent from '../../../../components/LoadingComponent/LoadingComponent'
-import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 import {LoaderSize} from '../../../../types/constEnums'
 
 interface Props extends RouteComponentProps<{}> {}
@@ -20,7 +19,6 @@ const MyDashboardTimelineRoot = lazy(() =>
 
 const UserDashMain = (props: Props) => {
   const {match} = props
-  useDocumentTitle('My Dashboard | Parabol')
   return (
     <DashContent>
       <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.PANEL} />}>

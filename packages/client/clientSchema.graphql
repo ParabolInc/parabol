@@ -22,9 +22,10 @@ extend type Team {
 }
 
 extend type User {
-  dashSearch: String
   # If positive, client clock is ahead of server clock by this many ms
   clientClockOffset: Int
+  dashSearch: String
+  pageName: String
   topOfFAB: Int
   teamFilter: Team
 }

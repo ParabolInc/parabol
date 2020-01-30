@@ -33,7 +33,7 @@ const NewMeetingSummary = (props: Props) => {
   const {id: teamId, name: teamName} = team
   const title = `${meetingName} ${MEETING_SUMMARY_LABEL} | ${teamName}`
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  useDocumentTitle(title)
+  useDocumentTitle(title, 'Summary')
   const meetingUrl = makeHref(`/meet/${meetingId}`)
   const teamDashUrl = `/team/${teamId}`
   const emailCSVUrl = `/new-summary/${meetingId}/csv`

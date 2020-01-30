@@ -107,7 +107,7 @@ const AgendaAndTasks = (props: Props) => {
   const teamMember = viewer.teamMember!
   const {hideAgenda} = teamMember
   const {teamId, teamName} = team
-  useDocumentTitle(`Team Dashboard | ${teamName}`)
+  useDocumentTitle(`Team Dashboard | ${teamName}`, teamName)
   return (
     <RootBlock>
       {/* Tasks */}

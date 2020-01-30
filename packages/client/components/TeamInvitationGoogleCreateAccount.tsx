@@ -57,7 +57,7 @@ const TeamInvitationGoogleCreateAccount = (props: Props) => {
     setIsEmailFallback(true)
   }
 
-  useDocumentTitle(`Sign up with Google | Team Invitation`)
+  useDocumentTitle(`Sign up with Google | Team Invitation`, 'Team Invitation')
   if (!teamInvitation) return null
   const {email} = teamInvitation
   return (

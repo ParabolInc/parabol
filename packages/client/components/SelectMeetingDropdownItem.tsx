@@ -45,15 +45,15 @@ const Action = styled(Icon)({
 })
 
 interface Phase {
-  stages: {
+  stages: ReadonlyArray<{
     isComplete: boolean
-  }[]
+  }>
 }
 
-const getMeetingPhase = <T extends Phase[]>(phases: T) => {
-  return phases.find((phase) => {
+const getMeetingPhase = <T extends Phase>(phases: readonly T[]) => {
+  return (phases.find((phase) => {
     return !phase.stages.every((stage) => stage.isComplete)
-  }) as T
+  }) as unknown) as T
 }
 
 interface Props {

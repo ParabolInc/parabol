@@ -10,7 +10,7 @@ interface Props {
 }
 const TeamInvitationErrorNotFound = (props: Props) => {
   const {isMassInvite} = props
-  useDocumentTitle(`Token not found | Team Invitation`)
+  useDocumentTitle(`Token not found | Team Invitation`, 'Team Invitation')
   const tip = isMassInvite
     ? 'Try requesting another link.'
     : 'Try copying the link from your email again.'

@@ -92,7 +92,7 @@ const UserProfile = (props: Props) => {
   const {picture} = viewer
   const pictureOrDefault = picture || defaultUserAvatar
   const {togglePortal, modalPortal} = useModal()
-  useDocumentTitle('My Profile | Parabol')
+  useDocumentTitle('My Profile | Parabol', 'My Profile')
   return (
     <UserSettingsWrapper>
       <SettingsBlock>
