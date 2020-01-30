@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.20.1 2020-Jan-30
+
+### Fixed
+* Reflection column height overflow (#3525)
+* Team lead self-demote (#3530)
+* Bork when inviting existing team member
+* Hide facilitator bar when meeting is over
+* Fix user-defined RegEx (#3201)
+* Reflection expand/collapse animation (#3490)
+
 ## 4.20.0 2020-Jan-28
 
 ### Added
