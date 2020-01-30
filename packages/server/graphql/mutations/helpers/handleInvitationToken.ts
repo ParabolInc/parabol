@@ -17,7 +17,7 @@ const handleInvitationToken = async (
     .run()
   const {email, tms} = viewer
   const isMassInviteToken = getIsMassInviteToken(invitationToken)
-  if (isMassInviteToken) return handleMassInviteToken(invitationToken, email, dataLoader)
+  if (isMassInviteToken) return handleMassInviteToken(invitationToken, email, tms, dataLoader)
   return handleTeamInviteToken(invitationToken, viewerId, tms, notificationId)
 }
 

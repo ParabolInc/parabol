@@ -14,7 +14,7 @@ export default new GraphQLObjectType<any, GQLContext>({
       type: User,
       resolve: async (_source, _args, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
-        return dataLoader.get('users').load(viewerId)
+        return viewerId ? dataLoader.get('users').load(viewerId) : null
       }
     },
     getDemoEntities,

@@ -4,7 +4,6 @@ import DeleteTaskPayload from '../types/DeleteTaskPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {TASK_INVOLVES} from '../../../client/utils/constants'
-import getTypeFromEntityMap from '../../../client/utils/draftjs/getTypeFromEntityMap'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
@@ -54,14 +53,16 @@ export default {
         .filter({isNotRemoved: true})('userId')
         .coerceTo('array') as unknown) as string[]
     }).run()
-    const {content, tags, userId: taskUserId} = task
+    const {tags, userId: taskUserId} = task
 
     // handle notifications
-    const {entityMap} = JSON.parse(content)
-    const userIdsWithNotifications = getTypeFromEntityMap('MENTION', entityMap).concat(taskUserId)
+    // const {entityMap} = JSON.parse(content)
+    // const userIdsWithNotifications = getTypeFromEntityMap('MENTION', entityMap).concat(taskUserId)
     const clearedNotifications = await r
       .table('Notification')
-      .getAll(r.args(userIdsWithNotifications), {index: 'userIds'})
+      // there's a bug somewhere which results in userIdsWithNotifications missing values.
+      // When a task is deleting, the notifidation is not
+      // .getAll(r.args(userIdsWithNotifications), {index: 'userIds'})
       .filter({
         taskId,
         type: TASK_INVOLVES

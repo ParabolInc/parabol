@@ -61,7 +61,7 @@ const ActionMeetingUpdates = (props: Props) => {
   const {gotoNext, ref: gotoNextRef} = handleGotoNext
   const minTimeComplete = useTimeout(ms('2m'))
   const {viewerId} = atmosphere
-  const {facilitatorUserId, id: meetingId, localStage, phases, showSidebar, team} = meeting
+  const {endedAt, facilitatorUserId, id: meetingId, localStage, phases, showSidebar, team} = meeting
   const {id: teamId, tasks} = team
   const {id: localStageId, teamMember} = localStage!
   const {userId} = teamMember!
@@ -78,7 +78,7 @@ const ActionMeetingUpdates = (props: Props) => {
       ? (nextStage as IUpdatesStage).teamMember.preferredName
       : phaseLabelLookup[nextPhase.phaseType]
 
-  const isFacilitating = facilitatorUserId === viewerId
+  const isFacilitating = facilitatorUserId === viewerId && !endedAt
   return (
     <MeetingContent>
       <MeetingHeaderAndPhase>
@@ -115,7 +115,7 @@ const ActionMeetingUpdates = (props: Props) => {
         >
           <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={`Next: ${label}`} />
         </BottomNavControl>
-        <EndMeetingButton meetingId={meetingId} />
+        <EndMeetingButton meetingId={meetingId} isEnded={!!endedAt} />
       </MeetingFacilitatorBar>
     </MeetingContent>
   )
@@ -135,6 +135,7 @@ export default createFragmentContainer(ActionMeetingUpdates, {
   meeting: graphql`
     fragment ActionMeetingUpdates_meeting on ActionMeeting {
       ...ActionMeetingUpdatesPrompt_meeting
+      endedAt
       showSidebar
       id
       facilitatorUserId

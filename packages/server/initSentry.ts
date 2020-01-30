@@ -14,7 +14,11 @@ Sentry.init({
   environment: 'server',
   dsn: process.env.SENTRY_DSN,
   release: APP_VERSION,
-  ignoreErrors: ['429 Too Many Requests', /language \S+ is not supported/],
+  ignoreErrors: [
+    '429 Too Many Requests',
+    /language \S+ is not supported/,
+    'Not invited to the meeting. Cannot subscribe'
+  ],
   integrations: [
     new Integrations.RewriteFrames({
       root: global.__rootdir__

@@ -169,7 +169,7 @@ const Menu = forwardRef((props: Props, ref: any) => {
       } else if (e.key === 'Enter' || (tabReturns && e.key === 'Tab')) {
         e.preventDefault()
         const itemHandle = itemHandles.current[activeIdx]
-        itemHandle && itemHandle.onClick(e)
+        itemHandle?.onClick?.(e)
       } else if (e.key === 'Tab') {
         e.preventDefault()
         closePortal()

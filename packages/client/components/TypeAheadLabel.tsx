@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from '@emotion/styled'
+import getSafeRegex from 'utils/getSafeRegex'
 
 interface Props {
   query: string
@@ -17,7 +18,7 @@ const TypeAheadLabel = (props: Props) => {
   return (
     <Span
       dangerouslySetInnerHTML={{
-        __html: query ? label.replace(new RegExp(query, 'gi'), `<b>$&</b>`) : label
+        __html: query ? label.replace(getSafeRegex(query, 'gi'), `<b>$&</b>`) : label
       }}
     />
   )

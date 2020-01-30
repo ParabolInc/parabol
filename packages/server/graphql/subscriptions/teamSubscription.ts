@@ -1,8 +1,7 @@
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getPubSub from '../../utils/getPubSub'
 import {getUserId, isAuthenticated} from '../../utils/authorization'
-import standardError from '../../utils/standardError'
+import getPubSub from '../../utils/getPubSub'
 import {GQLContext} from '../graphql'
 import TeamSubscriptionPayload from '../types/TeamSubscriptionPayload'
 
@@ -11,7 +10,7 @@ export default {
   subscribe: (_source, _args, {authToken}: GQLContext) => {
     // AUTH
     if (!isAuthenticated(authToken)) {
-      return standardError(new Error('Not authenticated'))
+      throw new Error('Not authenticated')
     }
 
     // RESOLUTION

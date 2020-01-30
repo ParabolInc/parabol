@@ -17,7 +17,7 @@ export default {
     const viewerId = getUserId(authToken)
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) {
-      standardError(new Error('Meeting not found'), {userId: viewerId})
+      standardError(new Error('Meeting not found'), {userId: viewerId, tags: {meetingId}})
       return null
     }
     const {teamId} = meeting
@@ -25,7 +25,7 @@ export default {
       const meetingMemberId = toTeamMemberId(meetingId, viewerId)
       const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
       if (!meetingMember) {
-        standardError(new Error('Team not found'), {userId: viewerId})
+        standardError(new Error('Team not found'), {userId: viewerId, tags: {teamId}})
         return null
       }
     }

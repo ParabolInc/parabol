@@ -1,8 +1,7 @@
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getPubSub from '../../utils/getPubSub'
 import {getUserId, isAuthenticated} from '../../utils/authorization'
-import standardError from '../../utils/standardError'
+import getPubSub from '../../utils/getPubSub'
 import TaskSubscriptionPayload from '../types/TaskSubscriptionPayload'
 
 const taskSubscription = {
@@ -10,7 +9,7 @@ const taskSubscription = {
   subscribe: async (_source, _args, {authToken}) => {
     // AUTH
     if (!isAuthenticated(authToken)) {
-      return standardError(new Error('Not authenticated'))
+      throw new Error('Not authenticated')
     }
 
     // RESOLUTION

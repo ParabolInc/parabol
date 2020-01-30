@@ -58,6 +58,7 @@ const RetroReflectPhase = (props: Props) => {
   const [activeIdx, setActiveIdx] = useState(0)
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const {
+    endedAt,
     facilitatorUserId,
     localPhase,
     id: meetingId,
@@ -70,7 +71,7 @@ const RetroReflectPhase = (props: Props) => {
   const reflectPrompts = localPhase!.reflectPrompts
 
   const focusedPhaseItemId = localPhase!.focusedPhaseItemId
-  const isFacilitating = facilitatorUserId === viewerId
+  const isFacilitating = facilitatorUserId === viewerId && !endedAt
   const nextPhaseLabel = phaseLabelLookup[GROUP]
   const isEmpty = !reflectionGroups || reflectionGroups.length === 0
   const isReadyToGroup =
@@ -137,7 +138,7 @@ const RetroReflectPhase = (props: Props) => {
             />
           </BottomNavControl>
         </CenterControlBlock>
-        <EndMeetingButton meetingId={meetingId} />
+        <EndMeetingButton meetingId={meetingId} isEnded={!!endedAt} />
       </MeetingFacilitatorBar>
     </MeetingContent>
   )
@@ -163,6 +164,7 @@ graphql`
 export default createFragmentContainer(RetroReflectPhase, {
   meeting: graphql`
     fragment RetroReflectPhase_meeting on RetrospectiveMeeting {
+      endedAt
       showSidebar
       ...StageTimerControl_meeting
       ...PhaseItemColumn_meeting

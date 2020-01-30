@@ -55,9 +55,9 @@ const ActionMeetingFirstCall = (props: Props) => {
   const {gotoNext, ref: gotoNextRef} = handleGotoNext
   const minTimeComplete = useTimeout(ms('30s'))
   const {viewerId} = atmosphere
-  const {facilitator, facilitatorUserId, id: meetingId, showSidebar} = meeting
+  const {endedAt, facilitator, facilitatorUserId, id: meetingId, showSidebar} = meeting
   const {preferredName} = facilitator
-  const isFacilitating = facilitatorUserId === viewerId
+  const isFacilitating = facilitatorUserId === viewerId && !endedAt
   const phaseName = phaseLabelLookup[AGENDA_ITEMS]
   return (
     <MeetingContent>
@@ -96,7 +96,7 @@ const ActionMeetingFirstCall = (props: Props) => {
         >
           <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={phaseName} />
         </BottomNavControl>
-        <EndMeetingButton meetingId={meetingId} />
+        <EndMeetingButton meetingId={meetingId} isEnded={!!endedAt} />
       </MeetingFacilitatorBar>
     </MeetingContent>
   )
@@ -107,7 +107,7 @@ export default createFragmentContainer(ActionMeetingFirstCall, {
     fragment ActionMeetingFirstCall_meeting on ActionMeeting {
       id
       showSidebar
-      id
+      endedAt
       facilitatorUserId
       facilitator {
         preferredName

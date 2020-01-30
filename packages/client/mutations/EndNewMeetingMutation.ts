@@ -21,6 +21,7 @@ graphql`
     isKill
     meeting {
       id
+      endedAt
       teamId
     }
     team {

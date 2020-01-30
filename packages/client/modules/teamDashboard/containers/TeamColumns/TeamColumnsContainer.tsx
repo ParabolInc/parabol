@@ -6,6 +6,7 @@ import TaskColumns from '../../../../components/TaskColumns/TaskColumns'
 import {AreaEnum} from '../../../../types/graphql'
 import toTeamMemberId from '../../../../utils/relay/toTeamMemberId'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
+import getSafeRegex from 'utils/getSafeRegex'
 
 interface Props {
   viewer: TeamColumnsContainer_viewer
@@ -30,7 +31,7 @@ const TeamColumnsContainer = (props: Props) => {
 
   const filteredTasks = useMemo(() => {
     if (!dashSearch) return teamMemberFilteredTasks
-    const dashSearchRegex = new RegExp(dashSearch!, 'i')
+    const dashSearchRegex = getSafeRegex(dashSearch, 'i')
     return teamMemberFilteredTasks.filter((task) => task.contentText?.match(dashSearchRegex))
   }, [dashSearch, teamMemberFilteredTasks])
 

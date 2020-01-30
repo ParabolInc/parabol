@@ -37,7 +37,7 @@ const TopBarAvatar = (props: Props) => {
         picture={userAvatar}
         size={40}
       />
-      {menuPortal(<StandardHubUserMenu menuProps={menuProps} viewer={viewer!} />)}
+      {menuPortal(<StandardHubUserMenu menuProps={menuProps} viewer={viewer} />)}
     </>
   )
 }

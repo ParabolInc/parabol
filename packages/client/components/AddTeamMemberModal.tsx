@@ -180,7 +180,7 @@ const AddTeamMemberModal = (props: Props) => {
             placeholder='email@example.co, another@example.co'
             value={rawInvitees}
           />
-          {error && <ErrorMessage>{error}</ErrorMessage>}
+          {error && <ErrorMessage>{error.message}</ErrorMessage>}
           <ButtonGroup>
             <PrimaryButton
               onClick={sendInvitations}
