@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "4.20.0",
+  "version": "4.20.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/action"
@@ -20,9 +20,6 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "webpack": "^4.41.5",
-    "prettier": "^1.19.1",
-    "graphql": "^14.6.0",
     "@babel/core": "^7.8.3",
     "@storybook/addon-actions": "^5.3.9",
     "@storybook/addon-info": "^5.3.9",
@@ -59,10 +56,13 @@
     "eslint-plugin-react-hooks": "^1.6.1",
     "expect": "^24.8.0",
     "flow-bin": "^0.103.0",
+    "graphql": "^14.6.0",
     "jscodeshift": "^0.6.4",
     "lint-staged": "^9.4.2",
+    "prettier": "^1.19.1",
     "strict-event-emitter-types": "^2.0.0",
-    "typescript": "3.7.2"
+    "typescript": "3.7.2",
+    "webpack": "^4.41.5"
   },
   "dependencies": {
     "@emotion/core": "^10.0.27",
