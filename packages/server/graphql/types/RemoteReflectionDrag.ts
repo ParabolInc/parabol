@@ -49,7 +49,7 @@ const RemoteReflectionDrag = new GraphQLObjectType({
     clientY: {
       type: GraphQLFloat,
       description: 'the top of the source, relative to the client window'
-    },
+    }
   })
 })
 
