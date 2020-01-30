@@ -33,16 +33,13 @@ const TallMenu = styled(Menu)({
 
 interface Props extends RouteComponentProps<{}> {
   menuProps: MenuProps
-  viewer: StandardHubUserMenu_viewer
+  viewer: StandardHubUserMenu_viewer | null
 }
 
 const StandardHubUserMenu = (props: Props) => {
-  const {
-    menuProps,
-    history,
-    viewer: {email, organizations}
-  } = props
-
+  const {menuProps, history, viewer} = props
+  if (!viewer) return null
+  const {email, organizations} = viewer
   // nav menu routes
   const goToProfile = () => {
     history.push('/me/profile')
