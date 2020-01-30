@@ -49,7 +49,7 @@ const GroupingKanban = (props: Props) => {
       container[retroPhaseItemId].push(group)
     }
     // anytime the groups change, reset the timeout. OK if it's not perfect
-    resetActivityTimeout && resetActivityTimeout()
+    resetActivityTimeout?.()
     return container
   }, [reflectionGroups])
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)

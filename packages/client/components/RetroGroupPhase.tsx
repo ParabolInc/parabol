@@ -33,6 +33,7 @@ import {ElementWidth} from '../types/constEnums'
 import GroupingKanban from './GroupingKanban'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {RetroGroupPhase_meeting} from '__generated__/RetroGroupPhase_meeting.graphql'
+import useMeetingProgressTimeout from 'hooks/useMeetingProgressTimeout'
 
 interface Props extends RetroMeetingPhaseProps {
   meeting: RetroGroupPhase_meeting
@@ -56,22 +57,19 @@ const RetroGroupPhase = (props: Props) => {
   const atmosphere = useAtmosphere()
   const phaseRef = useRef<HTMLDivElement>(null)
   // const {onCompleted, submitMutation, error, onError, submitting} = useMutationProps()
-  const [isReadyToVote, resetActivityTimeout] = useTimeoutWithReset(ms('1m'), ms('30s'))
   const {avatarGroup, toggleSidebar, handleGotoNext, meeting, isDemoStageComplete} = props
   const {viewerId} = atmosphere
   const {endedAt, showSidebar, facilitatorUserId, id: meetingId, localStage} = meeting
+  const [timedOut, resetActivityTimeout] = useMeetingProgressTimeout(
+    ms('1m'),
+    localStage?.localScheduledEndTime,
+    ms('30s')
+  )
   const isComplete = localStage ? localStage.isComplete : false
   const isAsync = localStage ? localStage.isAsync : false
   const isFacilitating = facilitatorUserId === viewerId && !endedAt
   const nextPhaseLabel = phaseLabelLookup[VOTE]
   const {gotoNext, ref: gotoNextRef} = handleGotoNext
-  // const autoGroup = () => {
-  //   if (submitting) return
-  //   submitMutation()
-  //   const groupingThreshold = nextAutoGroupThreshold || 0.5
-  //   AutoGroupReflectionsMutation(atmosphere, {meetingId, groupingThreshold}, onError, onCompleted)
-  // }
-  // const canAutoGroup = !isDemoRoute() && (!nextAutoGroupThreshold || nextAutoGroupThreshold < 1) && !isComplete
   return (
     <MeetingContent ref={phaseRef}>
       <MeetingHeaderAndPhase>
@@ -99,17 +97,8 @@ const RetroGroupPhase = (props: Props) => {
       <MeetingFacilitatorBar isFacilitating={isFacilitating}>
         {!isComplete && <StageTimerControl defaultTimeLimit={5} meeting={meeting} />}
         <CenteredControlBlock isComplete={isComplete}>
-          {/*{canAutoGroup && (*/}
-          {/*  <BottomNavControl onClick={autoGroup} waiting={submitting}>*/}
-          {/*    <BottomNavIconLabel*/}
-          {/*      icon='photo_filter'*/}
-          {/*      iconColor='midGray'*/}
-          {/*      label={'Auto Group'}*/}
-          {/*    />*/}
-          {/*  </BottomNavControl>*/}
-          {/*)}*/}
           <BottomNavControl
-            isBouncing={isDemoStageComplete || (!isAsync && !isComplete && isReadyToVote)}
+            isBouncing={isDemoStageComplete || (!isAsync && !isComplete && timedOut)}
             disabled={isDemoRoute() && !isDemoStageComplete}
             onClick={() => gotoNext()}
             onKeyDown={handleRightArrow(() => gotoNext())}
@@ -133,6 +122,7 @@ graphql`
     ...StageTimerDisplay_stage
     isAsync
     isComplete
+    localScheduledEndTime
   }
 `
 
