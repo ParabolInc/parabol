@@ -91,7 +91,7 @@ export default {
         .get(meeting.id)
         .delete()
         .run()
-      return standardError(new Error('Meeting already started'), {userId: viewerId})
+      return {error: {message: 'Meeting already started'}}
     }
 
     await Promise.all([

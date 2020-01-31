@@ -47,7 +47,7 @@ export default {
     }
     const {teamId} = phaseItem
     if (!isTeamMember(authToken, teamId)) {
-      return standardError(new Error('Team not found'), {userId: viewerId})
+      return standardError(new Error('Team not found'), {userId: viewerId, tags: {teamId}})
     }
     const meeting = await r
       .table<Meeting>('NewMeeting')
@@ -56,7 +56,9 @@ export default {
       .run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases} = meeting
-    if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
+    if (endedAt) {
+      return {error: {message: 'Meeting already ended'}}
+    }
     if (isPhaseComplete(NewMeetingPhaseTypeEnum.group, phases)) {
       return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
     }
