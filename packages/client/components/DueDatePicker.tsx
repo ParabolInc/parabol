@@ -49,6 +49,7 @@ const DueDatePicker = (props: Props) => {
     const dueDate = selected ? null : day
     UpdateTaskDueDateMutation(atmosphere, {taskId, dueDate}, onCompleted, onError)
     menuProps.closePortal()
+    ;(document as any).activeElement?.blur()
   }
 
   const selectedDate = dueDate ? new Date(dueDate) : undefined
