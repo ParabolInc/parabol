@@ -83,6 +83,7 @@ export default class Atmosphere extends Environment {
   queryTimeouts: {
     [queryKey: string]: number
   } = {}
+  retries = new Set<() => void>()
   subscriptions: Subscriptions = {}
   eventEmitter: StrictEventEmitter<EventEmitter, AtmosphereEvents> = new EventEmitter()
   queryCache = {} as {[key: string]: GraphQLResponse}

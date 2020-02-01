@@ -1,7 +1,10 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import LabelHeading from 'components/LabelHeading/LabelHeading'
+import useStoreQueryRetry from 'hooks/useStoreQueryRetry'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import makeMinWidthMediaQuery from 'utils/makeMinWidthMediaQuery'
 import {AgendaAndTasks_viewer} from '__generated__/AgendaAndTasks_viewer.graphql'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 import {desktopSidebarShadow, navDrawerShadow} from '../../../../styles/elevation'
@@ -9,9 +12,7 @@ import {AppBar, Breakpoint, NavSidebar, RightSidebar, ZIndex} from '../../../../
 import TeamColumnsContainer from '../../containers/TeamColumns/TeamColumnsContainer'
 import TeamTasksHeaderContainer from '../../containers/TeamTasksHeader/TeamTasksHeaderContainer'
 import AgendaListAndInput from '../AgendaListAndInput/AgendaListAndInput'
-import LabelHeading from 'components/LabelHeading/LabelHeading'
 import CloseAgenda from '../AgendaToggle/CloseAgenda'
-import makeMinWidthMediaQuery from 'utils/makeMinWidthMediaQuery'
 
 const desktopBreakpointMediaQuery = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 const desktopDashWidestMediaQuery = makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)
@@ -98,15 +99,17 @@ const StyledLabelHeading = styled(LabelHeading)({
 
 interface Props {
   viewer: AgendaAndTasks_viewer
+  retry(): void
 }
 
 const AgendaAndTasks = (props: Props) => {
-  const {viewer} = props
+  const {viewer, retry} = props
   const {dashSearch} = viewer
   const team = viewer.team!
   const teamMember = viewer.teamMember!
   const {hideAgenda} = teamMember
   const {teamId, teamName} = team
+  useStoreQueryRetry(retry)
   useDocumentTitle(`Team Dashboard | ${teamName}`, teamName)
   return (
     <RootBlock>

@@ -139,7 +139,6 @@
   "dependencies": {
     "@authenio/samlify-node-xmllint": "^1.0.1",
     "@mattkrick/sanitize-svg": "^0.2.1",
-    "@mattkrick/trebuchet-client": "^0.2.0",
     "@sentry/integrations": "^5.8.0",
     "@sentry/node": "^5.8.0",
     "analytics-node": "^3.0.0",

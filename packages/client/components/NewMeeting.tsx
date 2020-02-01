@@ -17,8 +17,10 @@ import NewMeetingIllustration from './NewMeetingIllustration'
 import {mod} from 'react-swipeable-views-core'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {Breakpoint} from '../types/constEnums'
+import useStoreQueryRetry from 'hooks/useStoreQueryRetry'
 
 interface Props {
+  retry(): void
   teamId?: string | null
   viewer: NewMeeting_viewer
 }
@@ -71,8 +73,9 @@ const useInnerWidth = () => {
 export const NEW_MEETING_ORDER = [MeetingTypeEnum.retrospective, MeetingTypeEnum.action]
 
 const NewMeeting = (props: Props) => {
-  const {teamId, viewer} = props
+  const {teamId, viewer, retry} = props
   const {teams} = viewer
+  useStoreQueryRetry(retry)
   const {history} = useRouter()
   const innerWidth = useInnerWidth()
   const [idx, setIdx] = useState(0)
