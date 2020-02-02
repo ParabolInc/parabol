@@ -5,8 +5,7 @@ const NotificationMessage = styled('div')({
   color: PALETTE.TEXT_MAIN,
   flex: 1,
   fontSize: 14,
-  lineHeight: '20px',
-  marginLeft: 16
+  lineHeight: '20px'
 })
 
 export default NotificationMessage
