@@ -2096,19 +2096,10 @@
   resolved "https://registry.yarnpkg.com/@mattkrick/sanitize-svg/-/sanitize-svg-0.2.1.tgz#050e68e10e15d074e15945dfc2dd7245858db261"
   integrity sha512-9T5xb8pq0GLNuKmKbXLvILOi1bQeu9FzAup+dB3zWRgzOVh40yE0YqWY/lrKzBrpj968ZaKTxegTwU1zyRtfBA==
 
-"@mattkrick/trebuchet-client@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@mattkrick/trebuchet-client/-/trebuchet-client-0.2.0.tgz#663f840dc251d680fff894a04928a3b29354c702"
-  integrity sha512-aZcxplwV+AyUsjo62obbz3vrvOOyMQQXOsUVR+iAdeRyxC7gYX1shwpO8UiLFgUNbZoPFnfzv0Rj9wSVZLp85g==
-  dependencies:
-    "@mattkrick/fast-rtc-peer" "^0.0.6"
-    backo2 "^1.0.2"
-    eventemitter3 "^3.1.0"
-
-"@mattkrick/trebuchet-client@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@mattkrick/trebuchet-client/-/trebuchet-client-1.1.0.tgz#de1cc40c09efc0135b85b1a55ec25c6f5ba91aea"
-  integrity sha512-pCJ9A/RPkpOwk+9RXYbOMfisf3ZuiyrfVKr2sNvsKNmD/P/fAdmCMPlQlwddPZXrRfC0bLMS/0ojtRdBdFUZ/A==
+"@mattkrick/trebuchet-client@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@mattkrick/trebuchet-client/-/trebuchet-client-1.2.0.tgz#539cd6e088c5e696ccc69549bc7927ad3167e61b"
+  integrity sha512-foVisJ6nB1UFA/Yxusku2ftbKinTOMHgo3R+mbVdSjDPtKQZfiEHsKzT0DD6g5CgTxeux4ifs6mzH1YzqXKInQ==
   dependencies:
     "@mattkrick/fast-rtc-peer" "^0.0.6"
     eventemitter3 "^3.1.0"
@@ -4981,11 +4972,6 @@ babylon@^6.18.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
   integrity sha512-q/UEjfGJ2Cm3oKV71DJz9d25TPnq5rhBVL2Q4fA5wcC3jcrdn7+SssEybFIxwAvvP+YCsCYNKughoF33GxgycQ==
-
-backo2@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/backo2/-/backo2-1.0.2.tgz#31ab1ac8b129363463e35b3ebb69f4dfcfba7947"
-  integrity sha1-MasayLEpNjRj41s+u2n038+6eUc=
 
 bail@^1.0.0:
   version "1.0.5"
