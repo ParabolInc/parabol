@@ -2517,9 +2517,9 @@ export interface INotification {
   id: string
 
   /**
-   * true if the notification has been archived, else false (or null)
+   * UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
    */
-  isArchived: boolean | null
+  status: NotificationStatusEnum
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
@@ -2536,6 +2536,15 @@ export interface INotification {
    * *The userId that should see this notification
    */
   userIds: Array<string>
+}
+
+/**
+ * The status of the notification interaction
+ */
+export const enum NotificationStatusEnum {
+  UNREAD = 'UNREAD',
+  READ = 'READ',
+  CLICKED = 'CLICKED'
 }
 
 /**
@@ -4684,9 +4693,9 @@ export interface INotifyTeamArchived {
   id: string
 
   /**
-   * true if the notification has been archived, else false (or null)
+   * UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
    */
-  isArchived: boolean | null
+  status: NotificationStatusEnum
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
@@ -4749,9 +4758,9 @@ export interface INotifyTaskInvolves {
   id: string
 
   /**
-   * true if the notification has been archived, else false (or null)
+   * UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
    */
-  isArchived: boolean | null
+  status: NotificationStatusEnum
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
@@ -5363,9 +5372,9 @@ export interface INotificationTeamInvitation {
   id: string
 
   /**
-   * true if the notification has been archived, else false (or null)
+   * UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
    */
-  isArchived: boolean | null
+  status: NotificationStatusEnum
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
@@ -5670,9 +5679,9 @@ export interface INotifyKickedOut {
   id: string
 
   /**
-   * true if the notification has been archived, else false (or null)
+   * UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
    */
-  isArchived: boolean | null
+  status: NotificationStatusEnum
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
@@ -6425,9 +6434,9 @@ export interface INotificationMeetingStageTimeLimitEnd {
   id: string
 
   /**
-   * true if the notification has been archived, else false (or null)
+   * UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
    */
-  isArchived: boolean | null
+  status: NotificationStatusEnum
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
@@ -6480,9 +6489,9 @@ export interface INotifyPaymentRejected {
   id: string
 
   /**
-   * true if the notification has been archived, else false (or null)
+   * UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
    */
-  isArchived: boolean | null
+  status: NotificationStatusEnum
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
@@ -7086,9 +7095,9 @@ export interface INotifyPromoteToOrgLeader {
   id: string
 
   /**
-   * true if the notification has been archived, else false (or null)
+   * UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
    */
-  isArchived: boolean | null
+  status: NotificationStatusEnum
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications

@@ -1,4 +1,5 @@
 import Notification from './Notification'
+import {NotificationEnum} from 'parabol-client/types/graphql'
 
 export type TaskInvolvement = 'ASSIGNEE' | 'MENTIONEE'
 
@@ -7,7 +8,7 @@ interface Input {
   involvement: TaskInvolvement
   taskId: string
   teamId: string
-  userIds: string[]
+  userId: string
 }
 
 export default class NotificationTaskInvolves extends Notification {
@@ -16,9 +17,9 @@ export default class NotificationTaskInvolves extends Notification {
   taskId: string
   teamId: string
 
-  constructor (input: Input) {
-    const {teamId, changeAuthorId, involvement, taskId, userIds} = input
-    super({userIds, type: 'TASK_INVOLVES'})
+  constructor(input: Input) {
+    const {teamId, changeAuthorId, involvement, taskId, userId} = input
+    super({userId, type: NotificationEnum.TASK_INVOLVES})
     this.changeAuthorId = changeAuthorId
     this.involvement = involvement
     this.taskId = taskId
