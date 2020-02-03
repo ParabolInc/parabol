@@ -246,6 +246,7 @@ export const enum TierLabel {
 
 export const enum Threshold {
   AUTO_PAUSE = 2592000000, // 30 days
+  EMAIL_VERIFICATION_LIFESPAN = 86400000, // 1 day
   JWT_LIFESPAN = 2592000000, // 30 days
   MASS_INVITATION_TOKEN_LIFESPAN = 86400000, // 1 day
   MAX_FREE_TEAMS = 10,
