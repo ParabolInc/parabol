@@ -10,8 +10,10 @@ import TimelineRightDrawer from './TimelineRightDrawer'
 import {DashTimeline} from '../types/constEnums'
 import ErrorBoundary from './ErrorBoundary'
 import useDocumentTitle from 'hooks/useDocumentTitle'
+import useStoreQueryRetry from 'hooks/useStoreQueryRetry'
 
 interface Props {
+  retry(): void
   viewer: MyDashboardTimeline_viewer
 }
 
@@ -37,7 +39,8 @@ const FeedAndDrawer = styled('div')({
 })
 
 const MyDashboardTimeline = (props: Props) => {
-  const {viewer} = props
+  const {retry, viewer} = props
+  useStoreQueryRetry(retry)
   useDocumentTitle('My Timeline | Parabol', 'Timeline')
   return (
     <FeedAndDrawer>

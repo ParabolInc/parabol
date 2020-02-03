@@ -11,10 +11,12 @@ import OrganizationSubscription from '../subscriptions/OrganizationSubscription'
 import TaskSubscription from '../subscriptions/TaskSubscription'
 import TeamSubscription from '../subscriptions/TeamSubscription'
 import MeetingSubscription from '../subscriptions/MeetingSubscription'
+import useStoreQueryRetry from 'hooks/useStoreQueryRetry'
 
 interface Props {
   meetingId: string
   viewer: MeetingSelector_viewer
+  retry(): void
 }
 
 const meetingLookup = {
@@ -27,7 +29,7 @@ const meetingLookup = {
 }
 
 const MeetingSelector = (props: Props) => {
-  const {meetingId, viewer} = props
+  const {meetingId, viewer, retry} = props
   const {meeting} = viewer
   const {history} = useRouter()
   useEffect(() => {
@@ -38,6 +40,7 @@ const MeetingSelector = (props: Props) => {
       })
     }
   }, [])
+  useStoreQueryRetry(retry)
   useSubscription(MeetingSelector.name, NotificationSubscription)
   useSubscription(MeetingSelector.name, OrganizationSubscription)
   useSubscription(MeetingSelector.name, TaskSubscription)

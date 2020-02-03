@@ -86,12 +86,8 @@ const OutcomeCardContainer = memo((props: Props) => {
       tabIndex={-1}
       style={{outline: 'none'}}
       onFocus={() => {
-        const contentState = editorStateRef.current?.getCurrentContent()
-        if (!contentState.hasText()) {
-          // allow users to set the due date before entering text
-          // but if text is present, don't focus  after changing due date
-          addTaskChild('root')
-        }
+        // clicking into text requires this be triggered all the time
+        addTaskChild('root')
       }}
       onBlur={() => {
         removeTaskChild('root')

@@ -33,6 +33,7 @@ const wssConnectionHandler = (socket: WebSocket, req: HttpRequest) => {
     const protocol = req.getHeader('sec-websocket-protocol')
     if (protocol !== 'trebuchet-ws') {
       // protocol error
+      sendToSentry(new Error(`WebSocket error: invalid protocol: ${protocol}`))
       socket.end(1002)
       return
     }
@@ -40,6 +41,7 @@ const wssConnectionHandler = (socket: WebSocket, req: HttpRequest) => {
     const authToken = getQueryToken(req)
     if (!isAuthenticated(authToken)) {
       // internal error (bad auth)
+      sendToSentry(new Error(`WebSocket error: not authenticated`))
       socket.end(1011)
       return
     }

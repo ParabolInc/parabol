@@ -7,14 +7,17 @@ import {MyDashboardTasks_viewer} from '../__generated__/MyDashboardTasks_viewer.
 import filterTeam from '../utils/relay/filterTeam'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useDocumentTitle from 'hooks/useDocumentTitle'
+import useStoreQueryRetry from 'hooks/useStoreQueryRetry'
 
 interface Props {
   viewer: MyDashboardTasks_viewer
+  retry(): void
 }
 
 const MyDashboardTasks = (props: Props) => {
-  const {viewer} = props
+  const {retry, viewer} = props
   const atmosphere = useAtmosphere()
+  useStoreQueryRetry(retry)
   useDocumentTitle('My Tasks | Parabol', 'My Tasks')
   useEffect(() => {
     return () => filterTeam(atmosphere, null)

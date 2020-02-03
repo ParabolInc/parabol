@@ -55,6 +55,7 @@ const useTrebuchetEvents = () => {
 
     const onReconnected = () => {
       setConnectedStatus(true)
+      atmosphere.retries.forEach((retry) => retry())
       atmosphere.eventEmitter.emit('removeSnackbar', ({key}) => key === 'offline')
     }
 
