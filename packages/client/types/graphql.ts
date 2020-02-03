@@ -6344,12 +6344,10 @@ export type MeetingSubscriptionPayload =
   | IDragDiscussionTopicPayload
   | IEndDraggingReflectionPayload
   | IEditReflectionPayload
-  | INavigateMeetingPayload
   | INewMeetingCheckInPayload
   | IPromoteNewMeetingFacilitatorPayload
   | IRemoveReflectionPayload
   | ISetAppLocationSuccess
-  | IRenameMeetingSuccess
   | ISetPhaseFocusPayload
   | ISetStageTimerPayload
   | IStartDraggingReflectionPayload
@@ -6573,11 +6571,13 @@ export type TeamSubscriptionPayload =
   | IDenyPushInvitationPayload
   | IDowngradeToPersonalPayload
   | IEndNewMeetingPayload
+  | INavigateMeetingPayload
   | IPushInvitationPayload
   | IPromoteToTeamLeadPayload
   | IRemoveAgendaItemPayload
   | IRemoveOrgUserPayload
   | IRemoveTeamMemberPayload
+  | IRenameMeetingSuccess
   | ISelectRetroTemplatePayload
   | IStartNewMeetingPayload
   | IUpdateAgendaItemPayload

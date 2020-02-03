@@ -17,11 +17,12 @@ import {ClientRetroPhaseItem, ClientRetrospectiveMeeting} from '../types/clientS
 import {IReflectPhase} from '../types/graphql'
 import safeProxy from '../utils/relay/safeProxy'
 import {SharedUpdater} from '../types/relayMutations'
-import {NavigateMeetingMutation_meeting} from '__generated__/NavigateMeetingMutation_meeting.graphql'
+import {NavigateMeetingMutation_team} from '__generated__/NavigateMeetingMutation_team.graphql'
 
 graphql`
-  fragment NavigateMeetingMutation_meeting on NavigateMeetingPayload {
+  fragment NavigateMeetingMutation_team on NavigateMeetingPayload {
     meeting {
+      ...SelectMeetingDropdownItem_meeting
       id
       facilitatorStageId
     }
@@ -85,12 +86,12 @@ const mutation = graphql`
       error {
         message
       }
-      ...NavigateMeetingMutation_meeting @relay(mask: false)
+      ...NavigateMeetingMutation_team @relay(mask: false)
     }
   }
 `
 
-export const navigateMeetingMeetingUpdater: SharedUpdater<NavigateMeetingMutation_meeting> = (
+export const navigateMeetingMeetingUpdater: SharedUpdater<NavigateMeetingMutation_team> = (
   payload,
   {store}
 ) => {

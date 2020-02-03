@@ -17,7 +17,7 @@ if (dsn) {
     dsn,
     environment: 'client',
     release: __APP_VERSION__,
-    ignoreErrors: [/Failed to update a ServiceWorker for scope/]
+    ignoreErrors: ['Failed to update a ServiceWorker for scope']
   })
 }
 

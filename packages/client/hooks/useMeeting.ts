@@ -51,7 +51,7 @@ const useMeeting = (meetingRef: any) => {
   useGotoPrevHotkey(meeting, gotoStageId)
   // save a few cycles
   const demoPortal = isDemoRoute() ? useDemoMeeting() : () => null // eslint-disable-line
-  useDocumentTitle(`${meetingName} | ${teamName}`)
+  useDocumentTitle(`${meetingName} | ${teamName}`, meetingName)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const toggleSidebar = useToggleSidebar(meetingId)
   const handleMenuClick = useHandleMenuClick(teamId, isDesktop)

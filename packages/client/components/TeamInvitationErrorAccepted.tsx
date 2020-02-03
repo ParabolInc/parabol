@@ -21,7 +21,7 @@ const InlineCopy = styled(InvitationDialogCopy)({
 const TeamInvitationErrorAccepted = (props: Props) => {
   const {verifiedInvitation} = props
   const {meetingId, meetingName, teamInvitation, teamName} = verifiedInvitation
-  useDocumentTitle(`Token already accepted | Team Invitation`)
+  useDocumentTitle(`Token already accepted | Team Invitation`, 'Team Invitation')
   if (!teamInvitation || teamName === null) return null
   const {teamId} = teamInvitation
   return (

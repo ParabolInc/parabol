@@ -6,6 +6,7 @@ import UserTasksHeader from '../modules/userDashboard/components/UserTasksHeader
 import {MyDashboardTasks_viewer} from '../__generated__/MyDashboardTasks_viewer.graphql'
 import filterTeam from '../utils/relay/filterTeam'
 import useAtmosphere from '../hooks/useAtmosphere'
+import useDocumentTitle from 'hooks/useDocumentTitle'
 
 interface Props {
   viewer: MyDashboardTasks_viewer
@@ -14,6 +15,7 @@ interface Props {
 const MyDashboardTasks = (props: Props) => {
   const {viewer} = props
   const atmosphere = useAtmosphere()
+  useDocumentTitle('My Tasks | Parabol', 'My Tasks')
   useEffect(() => {
     return () => filterTeam(atmosphere, null)
   }, [])

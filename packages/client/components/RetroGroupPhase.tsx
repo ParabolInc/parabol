@@ -1,38 +1,38 @@
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
+import useMeetingProgressTimeout from 'hooks/useMeetingProgressTimeout'
 import ms from 'ms'
 /**
  * Renders the UI for the reflection phase of the retrospective meeting
  *
  */
 import React, {useRef} from 'react'
-import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
+import {RetroGroupPhase_meeting} from '__generated__/RetroGroupPhase_meeting.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
+import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
+import {ElementWidth} from '../types/constEnums'
+import {NewMeetingPhaseTypeEnum} from '../types/graphql'
+import {VOTE} from '../utils/constants'
+import handleRightArrow from '../utils/handleRightArrow'
+import isDemoRoute from '../utils/isDemoRoute'
+import lazyPreload from '../utils/lazyPreload'
+import {phaseLabelLookup} from '../utils/meetings/lookups'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
+import EndMeetingButton from './EndMeetingButton'
+import GroupingKanban from './GroupingKanban'
 import MeetingContent from './MeetingContent'
-import MeetingTopBar from './MeetingTopBar'
+import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingPhaseWrapper from './MeetingPhaseWrapper'
+import MeetingTopBar from './MeetingTopBar'
 import MeetingHelpToggle from './MenuHelpToggle'
 import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
+import PhaseWrapper from './PhaseWrapper'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
-import useTimeoutWithReset from '../hooks/useTimeoutWithReset'
-import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
-import {VOTE} from '../utils/constants'
-import lazyPreload from '../utils/lazyPreload'
-import {phaseLabelLookup} from '../utils/meetings/lookups'
-import handleRightArrow from '../utils/handleRightArrow'
-import isDemoRoute from '../utils/isDemoRoute'
-import EndMeetingButton from './EndMeetingButton'
 import StageTimerDisplay from './RetroReflectPhase/StageTimerDisplay'
 import StageTimerControl from './StageTimerControl'
-import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
-import PhaseWrapper from './PhaseWrapper'
-import {ElementWidth} from '../types/constEnums'
-import GroupingKanban from './GroupingKanban'
-import useAtmosphere from '../hooks/useAtmosphere'
-import {RetroGroupPhase_meeting} from '__generated__/RetroGroupPhase_meeting.graphql'
 
 interface Props extends RetroMeetingPhaseProps {
   meeting: RetroGroupPhase_meeting
@@ -56,22 +56,19 @@ const RetroGroupPhase = (props: Props) => {
   const atmosphere = useAtmosphere()
   const phaseRef = useRef<HTMLDivElement>(null)
   // const {onCompleted, submitMutation, error, onError, submitting} = useMutationProps()
-  const [isReadyToVote, resetActivityTimeout] = useTimeoutWithReset(ms('1m'), ms('30s'))
   const {avatarGroup, toggleSidebar, handleGotoNext, meeting, isDemoStageComplete} = props
   const {viewerId} = atmosphere
   const {endedAt, showSidebar, facilitatorUserId, id: meetingId, localStage} = meeting
+  const [timedOut, resetActivityTimeout] = useMeetingProgressTimeout(
+    ms('1m'),
+    localStage?.localScheduledEndTime,
+    ms('30s')
+  )
   const isComplete = localStage ? localStage.isComplete : false
   const isAsync = localStage ? localStage.isAsync : false
   const isFacilitating = facilitatorUserId === viewerId && !endedAt
   const nextPhaseLabel = phaseLabelLookup[VOTE]
   const {gotoNext, ref: gotoNextRef} = handleGotoNext
-  // const autoGroup = () => {
-  //   if (submitting) return
-  //   submitMutation()
-  //   const groupingThreshold = nextAutoGroupThreshold || 0.5
-  //   AutoGroupReflectionsMutation(atmosphere, {meetingId, groupingThreshold}, onError, onCompleted)
-  // }
-  // const canAutoGroup = !isDemoRoute() && (!nextAutoGroupThreshold || nextAutoGroupThreshold < 1) && !isComplete
   return (
     <MeetingContent ref={phaseRef}>
       <MeetingHeaderAndPhase>
@@ -99,17 +96,8 @@ const RetroGroupPhase = (props: Props) => {
       <MeetingFacilitatorBar isFacilitating={isFacilitating}>
         {!isComplete && <StageTimerControl defaultTimeLimit={5} meeting={meeting} />}
         <CenteredControlBlock isComplete={isComplete}>
-          {/*{canAutoGroup && (*/}
-          {/*  <BottomNavControl onClick={autoGroup} waiting={submitting}>*/}
-          {/*    <BottomNavIconLabel*/}
-          {/*      icon='photo_filter'*/}
-          {/*      iconColor='midGray'*/}
-          {/*      label={'Auto Group'}*/}
-          {/*    />*/}
-          {/*  </BottomNavControl>*/}
-          {/*)}*/}
           <BottomNavControl
-            isBouncing={isDemoStageComplete || (!isAsync && !isComplete && isReadyToVote)}
+            isBouncing={isDemoStageComplete || (!isAsync && !isComplete && timedOut)}
             disabled={isDemoRoute() && !isDemoStageComplete}
             onClick={() => gotoNext()}
             onKeyDown={handleRightArrow(() => gotoNext())}
@@ -133,6 +121,7 @@ graphql`
     ...StageTimerDisplay_stage
     isAsync
     isComplete
+    localScheduledEndTime
   }
 `
 

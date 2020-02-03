@@ -152,7 +152,7 @@ const TeamArchive = (props: Props) => {
     oldEdgesRef.current = edges
   }, [edges, oldEdgesRef])
 
-  useDocumentTitle(`Team Archive | ${teamName}`)
+  useDocumentTitle(`Team Archive | ${teamName}`, 'Archive')
   const rowRenderer = ({columnIndex, parent, rowIndex, key, style}) => {
     // TODO render a very inexpensive lo-fi card while scrolling. We should reuse that cheap card for drags, too
     const index = getIndex(columnIndex, rowIndex)

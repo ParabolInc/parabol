@@ -43,7 +43,7 @@ export default {
     }
     const {teamId} = phaseItem
     if (!isTeamMember(authToken, teamId)) {
-      return standardError(new Error('Team not found'), {userId: viewerId})
+      return standardError(new Error('Team not found'), {userId: viewerId, tags: {teamId}})
     }
 
     const meeting = await dataLoader.get('newMeetings').load(meetingId)

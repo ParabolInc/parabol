@@ -9,6 +9,7 @@ import TimelineLoadingEvents from './TimelineLoadingEvents'
 import TimelineRightDrawer from './TimelineRightDrawer'
 import {DashTimeline} from '../types/constEnums'
 import ErrorBoundary from './ErrorBoundary'
+import useDocumentTitle from 'hooks/useDocumentTitle'
 
 interface Props {
   viewer: MyDashboardTimeline_viewer
@@ -37,6 +38,7 @@ const FeedAndDrawer = styled('div')({
 
 const MyDashboardTimeline = (props: Props) => {
   const {viewer} = props
+  useDocumentTitle('My Timeline | Parabol', 'Timeline')
   return (
     <FeedAndDrawer>
       <TimelineFeed>

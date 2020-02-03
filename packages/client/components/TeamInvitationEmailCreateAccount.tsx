@@ -29,7 +29,7 @@ const TeamName = styled('span')({
 const TeamInvitationEmailCreateAccount = (props: Props) => {
   const {invitationToken, verifiedInvitation} = props
   const {meetingName, teamName, teamInvitation} = verifiedInvitation
-  useDocumentTitle(`Sign up | Team Invitation`)
+  useDocumentTitle(`Sign up | Team Invitation`, 'Sign Up')
   if (!teamInvitation) return null
   const {email} = teamInvitation
   return (

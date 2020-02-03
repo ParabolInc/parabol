@@ -1,36 +1,36 @@
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
 import React, {useRef, useState} from 'react'
-import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import BottomNavControl from '../BottomNavControl'
-import BottomNavIconLabel from '../BottomNavIconLabel'
-import MeetingContent from '../MeetingContent'
-import MeetingTopBar from '../MeetingTopBar'
-import MeetingHelpToggle from '../MenuHelpToggle'
-import PhaseHeaderDescription from '../PhaseHeaderDescription'
-import PhaseHeaderTitle from '../PhaseHeaderTitle'
-import {RetroMeetingPhaseProps} from '../RetroMeeting'
-import PhaseItemColumn from './PhaseItemColumn'
+import {RetroReflectPhase_meeting} from '__generated__/RetroReflectPhase_meeting.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
-import useTimeout from '../../hooks/useTimeout'
+import useBreakpoint from '../../hooks/useBreakpoint'
+import useMeetingProgressTimeout from '../../hooks/useMeetingProgressTimeout'
 import MeetingFacilitatorBar from '../../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
+import {Breakpoint, ElementWidth} from '../../types/constEnums'
 import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
 import {GROUP} from '../../utils/constants'
 import handleRightArrow from '../../utils/handleRightArrow'
 import isDemoRoute from '../../utils/isDemoRoute'
 import lazyPreload from '../../utils/lazyPreload'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'
+import BottomNavControl from '../BottomNavControl'
+import BottomNavIconLabel from '../BottomNavIconLabel'
 import EndMeetingButton from '../EndMeetingButton'
-import StageTimerControl from '../StageTimerControl'
-import StageTimerDisplay from './StageTimerDisplay'
+import MeetingContent from '../MeetingContent'
 import MeetingHeaderAndPhase from '../MeetingHeaderAndPhase'
+import MeetingTopBar from '../MeetingTopBar'
+import MeetingHelpToggle from '../MenuHelpToggle'
+import PhaseHeaderDescription from '../PhaseHeaderDescription'
+import PhaseHeaderTitle from '../PhaseHeaderTitle'
 import PhaseWrapper from '../PhaseWrapper'
-import useBreakpoint from '../../hooks/useBreakpoint'
-import ReflectWrapperDesktop from './ReflectWrapperDesktop'
+import {RetroMeetingPhaseProps} from '../RetroMeeting'
+import StageTimerControl from '../StageTimerControl'
+import PhaseItemColumn from './PhaseItemColumn'
 import ReflectWrapperMobile from './ReflectionWrapperMobile'
-import {Breakpoint, ElementWidth} from '../../types/constEnums'
-import {RetroReflectPhase_meeting} from '__generated__/RetroReflectPhase_meeting.graphql'
+import ReflectWrapperDesktop from './ReflectWrapperDesktop'
+import StageTimerDisplay from './StageTimerDisplay'
 
 const CenterControlBlock = styled('div')<{isComplete: boolean}>(({isComplete}) => ({
   margin: '0 auto',
@@ -52,7 +52,6 @@ const RetroReflectPhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting, handleGotoNext, isDemoStageComplete} = props
   const atmosphere = useAtmosphere()
   const {gotoNext, ref: gotoNextRef} = handleGotoNext
-  const minTimeComplete = useTimeout(ms('2m'))
   const phaseRef = useRef<HTMLDivElement>(null)
   const {viewerId} = atmosphere
   const [activeIdx, setActiveIdx] = useState(0)
@@ -66,6 +65,7 @@ const RetroReflectPhase = (props: Props) => {
     showSidebar,
     localStage
   } = meeting
+  const [timedOut] = useMeetingProgressTimeout(ms('2m'), localStage?.localScheduledEndTime)
   if (!localStage || !localPhase || !localPhase.reflectPrompts) return null
   const {isComplete, isAsync} = localStage
   const reflectPrompts = localPhase!.reflectPrompts
@@ -78,7 +78,7 @@ const RetroReflectPhase = (props: Props) => {
     !isAsync &&
     !isComplete &&
     !isEmpty &&
-    minTimeComplete &&
+    timedOut &&
     reflectPrompts.reduce(
       (sum, prompt) => sum + (prompt.editorIds ? prompt.editorIds.length : 0),
       0
@@ -125,7 +125,7 @@ const RetroReflectPhase = (props: Props) => {
         {!isComplete && <StageTimerControl defaultTimeLimit={5} meeting={meeting} />}
         <CenterControlBlock isComplete={isComplete}>
           <BottomNavControl
-            isBouncing={!isEmpty && (isDemoStageComplete || isReadyToGroup)}
+            isBouncing={isDemoStageComplete || isReadyToGroup}
             disabled={isEmpty}
             onClick={() => gotoNext()}
             onKeyDown={handleRightArrow(() => gotoNext())}
@@ -157,6 +157,7 @@ graphql`
       ...StageTimerDisplay_stage
       isAsync
       isComplete
+      localScheduledEndTime
     }
   }
 `
@@ -175,6 +176,7 @@ export default createFragmentContainer(RetroReflectPhase, {
           ...StageTimerDisplay_stage
           isAsync
           isComplete
+          localScheduledEndTime
         }
         reflectionGroups {
           id

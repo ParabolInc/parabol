@@ -26,7 +26,7 @@ const Organizations = (props: Props) => {
       {'Add New Organization'}
     </LinkButton>
   )
-  useDocumentTitle('My Organizations | Parabol')
+  useDocumentTitle('My Organizations | Parabol', 'Organizations')
   return (
     <UserSettingsWrapper>
       <SettingsWrapper>

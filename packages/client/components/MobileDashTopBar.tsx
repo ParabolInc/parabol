@@ -46,21 +46,25 @@ const TopBarIcons = styled('div')({
 })
 
 const Title = styled('div')({
+  fontSize: 20,
+  overflow: 'hidden',
   paddingLeft: 16,
-  fontSize: 20
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap'
 })
 
 const MobileDashTopBar = (props: Props) => {
   const {toggle, viewer} = props
   const hasNotification = viewer?.notifications?.edges?.length > 0
   const teams = viewer?.teams ?? []
+  const pageName = viewer?.pageName ?? 'Parabol'
   return (
     <Wrapper>
       <LeftNavHeader>
         <LeftNavToggle onClick={toggle}>
           <Icon>{'menu'}</Icon>
         </LeftNavToggle>
-        <Title>Parabol</Title>
+        <Title>{pageName}</Title>
       </LeftNavHeader>
       <TopBarIcons>
         {/* Disable search in mobile for now */}
@@ -76,6 +80,7 @@ const MobileDashTopBar = (props: Props) => {
 export default createFragmentContainer(MobileDashTopBar, {
   viewer: graphql`
     fragment MobileDashTopBar_viewer on User {
+      pageName
       notifications(first: 100) @connection(key: "DashboardWrapper_notifications") {
         edges {
           node {

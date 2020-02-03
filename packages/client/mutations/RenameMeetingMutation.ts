@@ -4,7 +4,7 @@ import {StandardMutation} from '../types/relayMutations'
 import {RenameMeetingMutation as TRenameMeetingMutation} from '../__generated__/RenameMeetingMutation.graphql'
 
 graphql`
-  fragment RenameMeetingMutation_meeting on RenameMeetingSuccess {
+  fragment RenameMeetingMutation_team on RenameMeetingSuccess {
     meeting {
       name
     }
@@ -19,7 +19,7 @@ const mutation = graphql`
           message
         }
       }
-      ...RenameMeetingMutation_meeting @relay(mask: false)
+      ...RenameMeetingMutation_team @relay(mask: false)
     }
   }
 `

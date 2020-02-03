@@ -15,7 +15,7 @@ const AuthenticationPage = (props: Props) => {
   const {page} = props
   const atmosphere = useAtmosphere()
   const {authObj} = atmosphere
-  useDocumentTitle('Sign Up for Free Online Retrospectives | Parabol')
+  useDocumentTitle('Sign Up for Free Online Retrospectives | Parabol', 'Sign Up')
   if (authObj) {
     const nextUrl = getValidRedirectParam() || '/me'
     // always replace otherwise they could get stuck in a back-button loop

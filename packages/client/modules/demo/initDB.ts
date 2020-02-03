@@ -106,6 +106,7 @@ const initDemoUser = ({preferredName, email, picture}: BaseUser, idx: number) =>
     inactive: false,
     isConnected: true,
     lastLogin: now,
+    lastSeenAtURL: `/meet/${RetroDemo.MEETING_ID}`,
     lastSeenAt: now,
     rasterPicture: picture,
     picture: picture,

@@ -26,7 +26,7 @@ const TeamName = styled('span')({
 const TeamInvitationErrorExpired = (props: Props) => {
   const {verifiedInvitation} = props
   const {teamName, inviterName, inviterEmail} = verifiedInvitation
-  useDocumentTitle(`Token Expired | Team Invitation`)
+  useDocumentTitle(`Token Expired | Team Invitation`, 'Team Invitation')
   return (
     <InviteDialog>
       <DialogTitle>Invitation Expired</DialogTitle>

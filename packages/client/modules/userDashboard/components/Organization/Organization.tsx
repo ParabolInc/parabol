@@ -76,7 +76,7 @@ const Organization = (props: Props) => {
   }, [history, organization])
   const {togglePortal, modalPortal} = useModal()
   const orgName = (organization && organization.name) || 'Unknown'
-  useDocumentTitle(`Organization Settings | ${orgName}`)
+  useDocumentTitle(`Organization Settings | ${orgName}`, orgName)
   if (!organization) return <div />
   const {orgId, createdAt, isBillingLeader, picture: orgAvatar, tier} = organization
   const pictureOrDefault = orgAvatar || defaultOrgAvatar

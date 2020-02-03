@@ -1,6 +1,19 @@
 import {DragReflectionDropTargetTypeEnum} from '../../types/graphql'
 import {demoTeamId} from './initDB'
 
+// 3 -> 1
+// 4 -> 1
+// 5 -> 8
+// 7 -> 8
+
+const locationInfo = {
+  clientHeight: window.innerHeight,
+  clientWidth: window.innerWidth,
+  clientX: 1,
+  clientY: 1,
+  teamId: demoTeamId
+}
+
 const initBotScript = () => {
   return {
     reflectStage: [
@@ -228,7 +241,7 @@ const initBotScript = () => {
     groupStage: [
       {
         op: 'StartDraggingReflectionMutation',
-        delay: 2000,
+        delay: 1500,
         botId: 'bot1',
         variables: {
           dragId: 'botDrag1',
@@ -241,22 +254,48 @@ const initBotScript = () => {
         botId: 'bot1',
         variables: {
           input: {
+            ...locationInfo,
             id: 'botDrag1',
-            clientX: 1,
-            clientY: 1,
-            clientHeight: window.innerHeight,
-            clientWidth: window.innerWidth,
+            sourceId: 'botRef3',
+            targetId: 'botGroup3',
+            targetOffsetX: 10,
+            targetOffsetY: 10
+          }
+        }
+      },
+      {
+        op: 'UpdateDragLocationMutation',
+        delay: 300,
+        botId: 'bot1',
+        variables: {
+          input: {
+            ...locationInfo,
+            id: 'botDrag1',
             sourceId: 'botRef3',
             targetId: 'botGroup1',
-            teamId: demoTeamId,
-            targetOffsetX: 10,
-            targetOffsetY: 20
+            targetOffsetX: 100,
+            targetOffsetY: 40
+          }
+        }
+      },
+      {
+        op: 'UpdateDragLocationMutation',
+        delay: 300,
+        botId: 'bot1',
+        variables: {
+          input: {
+            ...locationInfo,
+            id: 'botDrag1',
+            sourceId: 'botRef3',
+            targetId: 'botGroup1',
+            targetOffsetX: 0,
+            targetOffsetY: 0
           }
         }
       },
       {
         op: 'EndDraggingReflectionMutation',
-        delay: 100,
+        delay: 1000,
         botId: 'bot1',
         variables: {
           reflectionId: 'botRef3',
@@ -267,39 +306,11 @@ const initBotScript = () => {
       },
       {
         op: 'StartDraggingReflectionMutation',
-        delay: 1500,
+        delay: 2500,
         botId: 'bot2',
         variables: {
           dragId: 'botDrag2',
           reflectionId: 'botRef4'
-        }
-      },
-      {
-        op: 'StartDraggingReflectionMutation',
-        delay: 500,
-        botId: 'bot2',
-        variables: {
-          dragId: 'botDrag4',
-          reflectionId: 'botRef5'
-        }
-      },
-      {
-        op: 'UpdateDragLocationMutation',
-        delay: 400,
-        botId: 'bot2',
-        variables: {
-          input: {
-            id: 'botDrag4',
-            clientHeight: window.innerHeight,
-            clientWidth: window.innerWidth,
-            clientX: 1,
-            clientY: 1,
-            sourceId: 'botRef5',
-            teamId: demoTeamId,
-            targetId: 'botGroup8',
-            targetOffsetX: -1,
-            targetOffsetY: -100
-          }
         }
       },
       {
@@ -308,13 +319,39 @@ const initBotScript = () => {
         botId: 'bot2',
         variables: {
           input: {
-            id: 'botDrag4',
-            clientHeight: window.innerHeight,
-            clientWidth: window.innerWidth,
-            clientX: 1,
-            clientY: 1,
+            ...locationInfo,
+            id: 'botDrag2',
             sourceId: 'botRef4',
-            teamId: demoTeamId,
+            targetId: 'botGroup4',
+            targetOffsetX: -10,
+            targetOffsetY: 10
+          }
+        }
+      },
+      {
+        op: 'UpdateDragLocationMutation',
+        delay: 1000,
+        botId: 'bot2',
+        variables: {
+          input: {
+            ...locationInfo,
+            id: 'botDrag2',
+            sourceId: 'botRef4',
+            targetId: 'botGroup1',
+            targetOffsetX: 200,
+            targetOffsetY: 0
+          }
+        }
+      },
+      {
+        op: 'UpdateDragLocationMutation',
+        delay: 1000,
+        botId: 'bot2',
+        variables: {
+          input: {
+            ...locationInfo,
+            id: 'botDrag2',
+            sourceId: 'botRef4',
             targetId: 'botGroup1',
             targetOffsetX: -1,
             targetOffsetY: -10
@@ -326,17 +363,6 @@ const initBotScript = () => {
         delay: 800,
         botId: 'bot2',
         variables: {
-          reflectionId: 'botRef5',
-          dropTargetType: DragReflectionDropTargetTypeEnum.REFLECTION_GROUP,
-          dropTargetId: 'botGroup8',
-          dragId: 'botDrag4'
-        }
-      },
-      {
-        op: 'EndDraggingReflectionMutation',
-        delay: 500,
-        botId: 'bot2',
-        variables: {
           reflectionId: 'botRef4',
           dropTargetType: DragReflectionDropTargetTypeEnum.REFLECTION_GROUP,
           dropTargetId: 'botGroup1',
@@ -345,7 +371,7 @@ const initBotScript = () => {
       },
       {
         op: 'StartDraggingReflectionMutation',
-        delay: 1500,
+        delay: 2500,
         botId: 'bot1',
         variables: {
           dragId: 'botDrag3',
@@ -358,16 +384,42 @@ const initBotScript = () => {
         botId: 'bot1',
         variables: {
           input: {
+            ...locationInfo,
             id: 'botDrag3',
-            clientHeight: window.innerHeight,
-            clientWidth: window.innerWidth,
-            clientX: 1,
-            clientY: 1,
             sourceId: 'botRef7',
-            teamId: demoTeamId,
+            targetId: 'botGroup7',
+            targetOffsetX: -10,
+            targetOffsetY: -10
+          }
+        }
+      },
+      {
+        op: 'UpdateDragLocationMutation',
+        delay: 700,
+        botId: 'bot1',
+        variables: {
+          input: {
+            ...locationInfo,
+            id: 'botDrag3',
+            sourceId: 'botRef7',
             targetId: 'botGroup8',
-            targetOffsetX: 20,
-            targetOffsetY: -40
+            targetOffsetX: 0,
+            targetOffsetY: 100
+          }
+        }
+      },
+      {
+        op: 'UpdateDragLocationMutation',
+        delay: 700,
+        botId: 'bot1',
+        variables: {
+          input: {
+            ...locationInfo,
+            id: 'botDrag3',
+            sourceId: 'botRef7',
+            targetId: 'botGroup8',
+            targetOffsetX: 0,
+            targetOffsetY: 0
           }
         }
       },
@@ -382,20 +434,81 @@ const initBotScript = () => {
           dragId: 'botDrag3'
         }
       },
+      {
+        op: 'StartDraggingReflectionMutation',
+        delay: 2500,
+        botId: 'bot2',
+        variables: {
+          dragId: 'botDrag4',
+          reflectionId: 'botRef5'
+        }
+      },
+      {
+        op: 'UpdateDragLocationMutation',
+        delay: 700,
+        botId: 'bot2',
+        variables: {
+          input: {
+            ...locationInfo,
+            id: 'botDrag4',
+            sourceId: 'botRef5',
+            targetId: 'botGroup5',
+            targetOffsetX: -10,
+            targetOffsetY: -10
+          }
+        }
+      },
+      {
+        op: 'UpdateDragLocationMutation',
+        delay: 700,
+        botId: 'bot2',
+        variables: {
+          input: {
+            ...locationInfo,
+            id: 'botDrag4',
+            sourceId: 'botRef5',
+            targetId: 'botGroup8',
+            targetOffsetX: 0,
+            targetOffsetY: 100
+          }
+        }
+      },
+      {
+        op: 'UpdateDragLocationMutation',
+        delay: 700,
+        botId: 'bot2',
+        variables: {
+          input: {
+            ...locationInfo,
+            id: 'botDrag4',
+            sourceId: 'botRef5',
+            targetId: 'botGroup8',
+            targetOffsetX: 0,
+            targetOffsetY: 0
+          }
+        }
+      },
+      {
+        op: 'EndDraggingReflectionMutation',
+        delay: 500,
+        botId: 'bot2',
+        variables: {
+          reflectionId: 'botRef5',
+          dropTargetType: DragReflectionDropTargetTypeEnum.REFLECTION_GROUP,
+          dropTargetId: 'botGroup8',
+          dragId: 'botDrag4'
+        }
+      },
       // dummy op to make the user wait until dragging is complete
       {
         op: 'UpdateDragLocationMutation',
-        delay: 500,
+        delay: 1500,
         botId: 'bot1',
         variables: {
           input: {
+            ...locationInfo,
             id: 'botDrag3',
-            clientHeight: window.innerHeight,
-            clientWidth: window.innerWidth,
-            clientX: 1,
-            clientY: 1,
             sourceId: 'botRef3',
-            teamId: demoTeamId,
             targetId: 'botGroup1',
             targetOffsetX: 10,
             targetOffsetY: 20

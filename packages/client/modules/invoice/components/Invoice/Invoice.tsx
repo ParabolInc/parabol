@@ -157,7 +157,7 @@ const Invoice = (props: Props) => {
   const {invoiceDetails} = viewer
   const endAt = invoiceDetails && invoiceDetails.endAt
   const subject = makeMonthString(endAt)
-  useDocumentTitle(`Invoice | ${subject}`)
+  useDocumentTitle(`Invoice | ${subject}`, 'Invoices')
   if (!invoiceDetails) return null
 
   const {

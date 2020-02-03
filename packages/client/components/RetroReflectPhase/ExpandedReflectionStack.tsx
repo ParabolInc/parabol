@@ -1,4 +1,4 @@
-import React, {ReactNode, Ref, useMemo} from 'react'
+import React, {ReactNode, Ref, useMemo, useEffect} from 'react'
 import styled from '@emotion/styled'
 import getBBox from './getBBox'
 import {PALETTE} from '../../styles/paletteV2'
@@ -90,6 +90,17 @@ const ExpandedReflectionStack = (props: Props) => {
   const phaseBBox = useMemo(() => {
     return getBBox(phaseRef.current)
   }, [phaseRef.current])
+  useEffect(() => {
+    const handleKeydown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closePortal()
+      }
+    }
+    document.addEventListener('keydown', handleKeydown)
+    return () => {
+      document.removeEventListener('keydown', handleKeydown)
+    }
+  }, [])
   if (!phaseBBox) return null
   const closeOnEdge = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) closePortal()

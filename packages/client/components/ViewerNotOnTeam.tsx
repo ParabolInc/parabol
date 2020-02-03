@@ -29,7 +29,7 @@ const ViewerNotOnTeam = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {authObj} = atmosphere
   const {history} = useRouter()
-  useDocumentTitle(`Invitation Required`)
+  useDocumentTitle(`Invitation Required`, 'Invitation Required')
   const isOnTeam = authObj?.tms?.includes?.(teamId!) ?? false
 
   useEffect(

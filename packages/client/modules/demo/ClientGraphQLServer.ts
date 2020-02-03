@@ -620,9 +620,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (newScheduledEndTime) {
         stage.scheduledEndTime = newScheduledEndTime
         stage.isAsync = !timeRemaining
+        stage.timeRemaining = newScheduledEndTime - Date.now()
       } else {
         stage.isAsync = null
         stage.scheduledEndTime = null
+        stage.timeRemaining = null
       }
       const data = {
         __typename: 'SetStageTimerMutation',
