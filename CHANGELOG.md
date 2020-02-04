@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.21.0 2020-Feb-04
+
+## Added
+* Meeting phase to active meeting menu (#3493)
+* Real-time updating of meeting name (#3532)
+* Page name to mobile views (#3487)
+* Blacklisted domains requiring email verification
+* Refetch query on reconnect (#3020)
+
+## Fixed
+* No bouncing next when timer is running (#3495)
+* Rename server secret .env var (#3482)
+* Missing demo avatars (#3516)
+* Missing demo timer (#3516)
+* Collapse on escape (#3284)
+* Janky grouping demo animations
+* Bad reconnect logic (#3502)
+* Editing status not firing (#3507)
+
 ## 4.20.1 2020-Jan-30
 
 ### Fixed
