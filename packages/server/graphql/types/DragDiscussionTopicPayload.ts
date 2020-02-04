@@ -4,6 +4,7 @@ import StandardMutationError from './StandardMutationError'
 import NewMeeting from './NewMeeting'
 import RetroDiscussStage from './RetroDiscussStage'
 import {DISCUSS} from '../../../client/utils/constants'
+import {GQLContext} from '../graphql'
 
 const DragDiscussionTopicPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'DragDiscussionTopicPayload',
@@ -17,7 +18,7 @@ const DragDiscussionTopicPayload = new GraphQLObjectType<any, GQLContext>({
     },
     stage: {
       type: RetroDiscussStage,
-      resolve: async ({meetingId, stageId}, args, {dataLoader}) => {
+      resolve: async ({meetingId, stageId}, _args, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const {phases} = meeting
         const discussPhase = phases.find((phase) => phase.phaseType === DISCUSS)

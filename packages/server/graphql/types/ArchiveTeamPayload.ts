@@ -1,13 +1,9 @@
 import {GraphQLID, GraphQLList, GraphQLObjectType} from 'graphql'
-import {
-  makeResolveNotificationsForViewer,
-  resolveNotificationForViewer,
-  resolveTeam
-} from '../resolvers'
+import {GQLContext} from '../graphql'
+import {resolveNotificationForViewer, resolveTeam} from '../resolvers'
 import NotifyTeamArchived from './NotifyTeamArchived'
-import Team from './Team'
-import TeamNotification from './TeamNotification'
 import StandardMutationError from './StandardMutationError'
+import Team from './Team'
 
 const ArchiveTeamPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'ArchiveTeamPayload',

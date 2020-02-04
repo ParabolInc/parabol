@@ -1,7 +1,8 @@
 import {GraphQLList, GraphQLObjectType} from 'graphql'
-import SetOrgUserRolePayload, {setOrgUserRoleFields} from './SetOrgUserRolePayload'
-import {makeResolveNotificationsForViewer} from '../resolvers'
+import {getUserId} from '../../utils/authorization'
+import {GQLContext} from '../graphql'
 import Notification from './Notification'
+import SetOrgUserRolePayload, {setOrgUserRoleFields} from './SetOrgUserRolePayload'
 
 const SetOrgUserRoleAddedPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'SetOrgUserRoleAddedPayload',
@@ -11,7 +12,12 @@ const SetOrgUserRoleAddedPayload = new GraphQLObjectType<any, GQLContext>({
     notificationsAdded: {
       type: new GraphQLList(Notification),
       description: 'If promoted, notify them and give them all other admin notifications',
-      resolve: makeResolveNotificationsForViewer('notificationIdsAdded')
+      resolve: async ({notificationIdsAdded}, _args, {authToken, dataLoader}) => {
+        if (!notificationIdsAdded) return []
+        const viewerId = getUserId(authToken)
+        const notifications = await dataLoader.get('notifications').loadMany(notificationIdsAdded)
+        return notifications.filter((notification) => notification.userId === viewerId)
+      }
     }
   })
 })

@@ -226,7 +226,7 @@ export interface IUser {
   /**
    * all the notifications for a single user
    */
-  notifications: INotificationConnection | null
+  notifications: INotificationConnection
 
   /**
    * get a single organization and the count of users by status
@@ -2552,7 +2552,6 @@ export const enum NotificationEnum {
   TEAM_INVITATION = 'TEAM_INVITATION',
   TEAM_ARCHIVED = 'TEAM_ARCHIVED',
   TASK_INVOLVES = 'TASK_INVOLVES',
-  VERSION_INFO = 'VERSION_INFO',
   MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END'
 }
 

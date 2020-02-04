@@ -4,6 +4,7 @@ import StandardMutationError from './StandardMutationError'
 import NewMeeting from './NewMeeting'
 import RetroReflection from './RetroReflection'
 import NewMeetingStage from './NewMeetingStage'
+import {GQLContext} from '../graphql'
 
 const RemoveReflectionPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'RemoveReflectionPayload',

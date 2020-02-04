@@ -1,8 +1,7 @@
 import {GraphQLObjectType} from 'graphql'
-import {resolveNotificationForViewer} from '../resolvers'
-import NotifyTaskInvolves from './NotifyTaskInvolves'
-import Task from './Task'
+import {GQLContext} from '../graphql'
 import StandardMutationError from './StandardMutationError'
+import Task from './Task'
 
 const DeleteTaskPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'DeleteTaskPayload',

@@ -3,6 +3,7 @@ import {resolveNotificationForViewer, resolveTask} from '../resolvers'
 import NotifyTaskInvolves from './NotifyTaskInvolves'
 import Task from './Task'
 import StandardMutationError from './StandardMutationError'
+import {GQLContext} from '../graphql'
 
 const CreateTaskPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'CreateTaskPayload',

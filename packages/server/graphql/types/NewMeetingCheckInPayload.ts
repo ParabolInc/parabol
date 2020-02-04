@@ -3,6 +3,7 @@ import {resolveMeetingMember, resolveNewMeeting} from '../resolvers'
 import StandardMutationError from './StandardMutationError'
 import MeetingMember from './MeetingMember'
 import NewMeeting from './NewMeeting'
+import {GQLContext} from '../graphql'
 
 const NewMeetingCheckInPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'NewMeetingCheckInPayload',

@@ -2,6 +2,7 @@ import {GraphQLObjectType, GraphQLList, GraphQLString} from 'graphql'
 import {resolveUser} from '../resolvers'
 import User from './User'
 import StandardMutationError from './StandardMutationError'
+import {GQLContext} from '../graphql'
 
 const AddFeatureFlagPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'AddFeatureFlagPayload',
@@ -18,7 +19,7 @@ const AddFeatureFlagPayload = new GraphQLObjectType<any, GQLContext>({
     users: {
       type: new GraphQLList(User),
       description: 'the users given the super power',
-      resolve: ({userIds}, args, {dataLoader}) => {
+      resolve: ({userIds}, _args, {dataLoader}) => {
         return dataLoader.get('users').loadMany(userIds)
       }
     },

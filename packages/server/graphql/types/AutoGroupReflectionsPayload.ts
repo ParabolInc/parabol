@@ -4,6 +4,7 @@ import StandardMutationError from './StandardMutationError'
 import RetroReflectionGroup from './RetroReflectionGroup'
 import RetroReflection from './RetroReflection'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
+import {GQLContext} from '../graphql'
 
 const AutoGroupReflectionsPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'AutoGroupReflectionsPayload',

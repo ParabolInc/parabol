@@ -1,4 +1,5 @@
 import {GraphQLObjectType, GraphQLString} from 'graphql'
+import {GQLContext} from '../graphql'
 
 const BlockedUserType = new GraphQLObjectType<any, GQLContext>({
   name: 'BlockedUserType',

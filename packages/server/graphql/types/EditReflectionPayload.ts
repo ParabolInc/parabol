@@ -1,5 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLObjectType} from 'graphql'
 import StandardMutationError from './StandardMutationError'
+import {GQLContext} from '../graphql'
 
 const EditReflectionPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'EditReflectionPayload',

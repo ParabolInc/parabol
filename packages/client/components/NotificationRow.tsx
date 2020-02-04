@@ -1,5 +1,6 @@
-import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
+import React, {ReactNode} from 'react'
+import {NotificationStatusEnum} from 'types/graphql'
 import {PALETTE} from '../styles/paletteV2'
 
 const Row = styled('div')<{isNew: boolean}>(({isNew}) => ({
@@ -30,13 +31,15 @@ const Dot = styled('div')<{isNew: boolean}>(({isNew}) => ({
 interface Props {
   avatar: string
   children: ReactNode
-  isNew: boolean
+  status: NotificationStatusEnum
 }
 
 const NotificationRow = (props: Props) => {
-  const {avatar, children, isNew} = props
+  const {avatar, children, status} = props
+  const isClicked = status === NotificationStatusEnum.CLICKED
+  const isNew = status === NotificationStatusEnum.UNREAD
   return (
-    <Row isNew={isNew}>
+    <Row isNew={!isClicked}>
       <Avatar src={avatar} />
       {children}
       <NewDotColumn>

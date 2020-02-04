@@ -1,10 +1,10 @@
-import {GraphQLInt, GraphQLString} from 'graphql'
+import {GraphQLInt, GraphQLString, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
 import {NotificationConnection} from '../types/Notification'
 
 export default {
-  type: NotificationConnection,
+  type: GraphQLNonNull(NotificationConnection),
   args: {
     // currently not used
     first: {
@@ -15,26 +15,23 @@ export default {
     }
   },
   description: 'all the notifications for a single user',
-  resolve: async (_source, _args, {authToken}) => {
+  resolve: async (_source, {first}, {authToken}) => {
     const r = await getRethink()
     // AUTH
     const userId = getUserId(authToken)
 
     // RESOLUTION
     // TODO consider moving the requestedFields to all queries
-    const nodes = await r
+    const nodesPlus1 = await r
       .table('Notification')
       .getAll(userId, {index: 'userId'})
-      .filter((row) => row('startAt').le(r.now()))
-      .filter((row) =>
-        row('isArchived')
-          .default(false)
-          .ne(true)
-      )
-      .orderBy(r.desc('startAt'))
+      .orderBy(r.desc('createdAt'))
+      .limit(first + 1)
       .run()
+
+    const nodes = nodesPlus1.slice(0, -1)
     const edges = nodes.map((node) => ({
-      cursor: node.startAt,
+      cursor: node.createdAt,
       node
     }))
     const firstEdge = edges[0]
@@ -42,7 +39,7 @@ export default {
       edges,
       pageInfo: {
         startCursor: firstEdge && firstEdge.cursor,
-        hasNextPage: false
+        hasNextPage: nodesPlus1.length > first
       }
     }
   }

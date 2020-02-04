@@ -66,10 +66,14 @@ const popTeamArchivedToast: OnNextHandler<ArchiveTeamMutation_team, OnNextHistor
         const {id: notificationId} = notification
         // notification is not persisted for the mutator
         if (notificationId) {
-          SetNotificationStatusMutation(atmosphere, {
-            notificationId,
-            status: NotificationStatusEnum.CLICKED
-          })
+          SetNotificationStatusMutation(
+            atmosphere,
+            {
+              notificationId,
+              status: NotificationStatusEnum.CLICKED
+            },
+            {}
+          )
         }
       }
     }

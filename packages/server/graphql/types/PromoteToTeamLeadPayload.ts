@@ -3,6 +3,7 @@ import {makeResolve, resolveTeam} from '../resolvers'
 import StandardMutationError from './StandardMutationError'
 import Team from './Team'
 import TeamMember from './TeamMember'
+import {GQLContext} from '../graphql'
 
 const PromoteToTeamLeadPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'PromoteToTeamLeadPayload',

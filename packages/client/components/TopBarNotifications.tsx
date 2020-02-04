@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {MenuPosition} from 'hooks/useCoords'
 import useMenu from 'hooks/useMenu'
-import React from 'react'
+import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import lazyPreload from 'utils/lazyPreload'
 import TopBarIcon from './TopBarIcon'
@@ -23,8 +23,10 @@ const TopBarNotifications = (props: Props) => {
   const {notifications} = viewer || {notifications: {edges: []}}
   const {edges} = notifications
   const hasNotifications = edges.length > 0
+  const menuContentRef = useRef<HTMLDivElement>(null)
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu<HTMLDivElement>(
-    MenuPosition.UPPER_RIGHT
+    MenuPosition.UPPER_RIGHT,
+    {menuContentRef}
   )
   return (
     <>
@@ -35,7 +37,13 @@ const TopBarNotifications = (props: Props) => {
         icon={'notifications'}
         hasBadge={hasNotifications}
       />
-      {menuPortal(<NotificationDropdown menuProps={menuProps} viewer={viewer || null} />)}
+      {menuPortal(
+        <NotificationDropdown
+          parentRef={menuContentRef}
+          menuProps={menuProps}
+          viewer={viewer || null}
+        />
+      )}
     </>
   )
 }

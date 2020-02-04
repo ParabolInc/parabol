@@ -1,4 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {GQLContext} from '../graphql'
 
 const TaskEditorDetails = new GraphQLObjectType<any, GQLContext>({
   name: 'TaskEditorDetails',

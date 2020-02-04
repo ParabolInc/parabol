@@ -3,6 +3,7 @@ import Organization from './Organization'
 import {resolveOrganization, resolveTeams} from '../resolvers'
 import Team from './Team'
 import StandardMutationError from './StandardMutationError'
+import {GQLContext} from '../graphql'
 
 const UpdateCreditCardPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'UpdateCreditCardPayload',

@@ -10,6 +10,7 @@ import RetroReflectionGroup from './RetroReflectionGroup'
 import RetrospectiveMeetingMember from './RetrospectiveMeetingMember'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
 import NewMeetingStage from './NewMeetingStage'
+import {GQLContext} from '../graphql'
 
 const VoteForReflectionGroupPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'VoteForReflectionGroupPayload',

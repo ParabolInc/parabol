@@ -1,5 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import Organization from './Organization'
+import {GQLContext} from '../graphql'
 
 const SuProOrgInfo = new GraphQLObjectType<any, GQLContext>({
   name: 'SuProOrgInfo',
@@ -8,7 +9,7 @@ const SuProOrgInfo = new GraphQLObjectType<any, GQLContext>({
     organization: {
       type: Organization,
       description: 'The PRO organization',
-      resolve: ({organizationId}, args, {dataLoader}) => {
+      resolve: ({organizationId}, _args, {dataLoader}) => {
         return dataLoader.get('organizations').load(organizationId)
       }
     },

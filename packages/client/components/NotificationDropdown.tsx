@@ -1,15 +1,17 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import NotificationRow from 'modules/notifications/components/NotificationRow/NotificationRow'
-import React from 'react'
+import NotificationPicker from 'modules/notifications/components/NotificationRow/NotificationPicker'
+import React, {RefObject} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {NotificationStatusEnum} from 'types/graphql'
+import {NotificationDropdown_viewer} from '__generated__/NotificationDropdown_viewer.graphql'
 import {MenuProps} from '../hooks/useMenu'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
-import {NotificationDropdown_viewer} from '__generated__/NotificationDropdown_viewer.graphql'
 
 interface Props {
   menuProps: MenuProps
+  parentRef: RefObject<HTMLDivElement>
   viewer: NotificationDropdown_viewer | null
 }
 
@@ -24,9 +26,11 @@ const NoNotifications = styled('div')({
   width: '100%'
 })
 
+const defaultViewer = ({notifications: {edges: []}} as unknown) as NotificationDropdown_viewer
+
 const NotificationDropdown = (props: Props) => {
-  const {viewer, menuProps} = props
-  const {notifications} = viewer || {notifications: {edges: []}}
+  const {viewer, menuProps, parentRef} = props
+  const {notifications} = viewer || defaultViewer
   const {edges} = notifications
   const hasNotifications = edges.length > 0
   return (
@@ -35,7 +39,20 @@ const NotificationDropdown = (props: Props) => {
         <MenuItem label={<NoNotifications>{'You’re all caught up! 💯'}</NoNotifications>} />
       )}
       {edges.map(({node}) => {
-        return <MenuItem key={node.id} label={<NotificationRow notification={node} />} />
+        const {id: notificationId, status} = node
+        const onViewFn = () => {
+          console.log('viewable', notificationId)
+        }
+
+        const onView = status === NotificationStatusEnum.UNREAD ? onViewFn : undefined
+        return (
+          <MenuItem
+            key={node.id}
+            onView={onView}
+            parentRef={parentRef}
+            label={<NotificationPicker notification={node} />}
+          />
+        )
       })}
     </Menu>
   )
@@ -48,7 +65,8 @@ export default createFragmentContainer(NotificationDropdown, {
         edges {
           node {
             id
-            ...NotificationRow_notification
+            status
+            ...NotificationPicker_notification
           }
         }
       }

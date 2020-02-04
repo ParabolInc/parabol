@@ -1,5 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import User from './User'
+import {GQLContext} from '../graphql'
 
 const TaskEditorPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'TaskEditorPayload',
@@ -15,7 +16,7 @@ const TaskEditorPayload = new GraphQLObjectType<any, GQLContext>({
     user: {
       type: User,
       description: 'The user editing the task',
-      resolve: ({userId}, args, {dataLoader}) => {
+      resolve: ({userId}, _args, {dataLoader}) => {
         return dataLoader.get('users').load(userId)
       }
     },

@@ -73,7 +73,7 @@ export const updateTaskTaskUpdater: SharedUpdater<UpdateTaskMutation_task> = (pa
     })
   }
   const viewer = store.getRoot().getLinkedRecord('viewer')
-  const viewerId = viewer && viewer.getDataIDs()
+  const viewerId = viewer && viewer.getDataID()
   const privatizedTaskId = payload.getValue('privatizedTaskId')
   const taskUserId = getInProxy(task, 'userId')
   if (taskUserId !== viewerId && privatizedTaskId) {

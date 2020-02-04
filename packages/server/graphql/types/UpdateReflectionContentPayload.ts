@@ -3,6 +3,7 @@ import {makeResolve, resolveNewMeeting} from '../resolvers'
 import StandardMutationError from './StandardMutationError'
 import NewMeeting from './NewMeeting'
 import RetroReflection from './RetroReflection'
+import {GQLContext} from '../graphql'
 
 const UpdateReflectionContentPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'UpdateReflectionContentPayload',

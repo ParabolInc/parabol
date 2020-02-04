@@ -1,7 +1,7 @@
 import React, {Suspense} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {NotificationRow_notification} from '../../../../__generated__/NotificationRow_notification.graphql'
+import {NotificationPicker_notification} from '../../../../__generated__/NotificationPicker_notification.graphql'
 import {NotificationEnum} from '../../../../types/graphql'
 import lazyPreload from '../../../../utils/lazyPreload'
 import {ValueOf} from '../../../../types/generics'
@@ -33,10 +33,10 @@ const typePicker = {
 }
 
 interface Props {
-  notification: NotificationRow_notification
+  notification: NotificationPicker_notification
 }
 
-const NotificationRow = (props: Props) => {
+const NotificationPicker = (props: Props) => {
   const {notification} = props
   const {type} = notification
   const SpecificNotification = typePicker[type] as ValueOf<typeof typePicker>
@@ -47,9 +47,9 @@ const NotificationRow = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(NotificationRow, {
+export default createFragmentContainer(NotificationPicker, {
   notification: graphql`
-    fragment NotificationRow_notification on Notification {
+    fragment NotificationPicker_notification on Notification {
       type
       ...KickedOut_notification
       ...PaymentRejected_notification

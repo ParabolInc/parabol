@@ -2,6 +2,7 @@ import {GraphQLObjectType, GraphQLNonNull, GraphQLID, GraphQLString, GraphQLEnum
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import {USER_DASH, TEAM_DASH, MEETING} from 'parabol-client/utils/constants'
 import TaskStatusEnum from './TaskStatusEnum'
+import {GQLContext} from '../graphql'
 
 export const ChangeModule = new GraphQLEnumType({
   name: 'ChangeModule',

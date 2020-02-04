@@ -1,4 +1,5 @@
 import {GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {GQLContext} from '../graphql'
 
 const MeetingGreeting = new GraphQLObjectType<any, GQLContext>({
   name: 'MeetingGreeting',

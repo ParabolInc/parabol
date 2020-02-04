@@ -13,6 +13,7 @@ const popInvolvementToast: OnNextHandler<TaskInvolves_notification, OnNextHistor
     changeAuthor: {preferredName: changeAuthorName},
     task
   } = notification
+  if (!task) return
   const {id: taskId} = task
   const {pathname} = window.location
   const inMeeting = !!matchPath(pathname, {

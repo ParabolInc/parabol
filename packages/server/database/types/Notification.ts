@@ -9,7 +9,7 @@ export interface NotificationInput {
 export default abstract class Notification {
   id = shortid.generate()
   status = NotificationStatusEnum.UNREAD
-  startAt = new Date()
+  createdAt = new Date()
   type: NotificationEnum
   userId: string
 

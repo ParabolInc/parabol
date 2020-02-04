@@ -6,19 +6,19 @@ const GraphQLURLType = new GraphQLScalarType({
   name: 'URL',
   serialize: (value) => String(value),
   parseValue: (value) => String(value),
-  parseLiteral: (ast) => {
+  parseLiteral: (ast: any) => {
     // eslint-disable-next-line max-len, no-useless-escape
     if (!urlRegex.test(ast.value)) {
-      throw new Error('Query error: Not a valid URL', [ast])
+      throw new Error('Query error: Not a valid URL')
     }
     if (ast.kind !== Kind.STRING) {
-      throw new Error(`Query error: URL is not a string, it is a: ${ast.kind}`, [ast])
+      throw new Error(`Query error: URL is not a string, it is a: ${ast.kind}`)
     }
     if (ast.value.length < 1) {
-      throw new Error('Query error: URL must have a minimum length of 1.', [ast])
+      throw new Error('Query error: URL must have a minimum length of 1.')
     }
     if (ast.value.length > 2083) {
-      throw new Error('Query error: URL is too long.', [ast])
+      throw new Error('Query error: URL is too long.')
     }
     return String(ast.value)
   }

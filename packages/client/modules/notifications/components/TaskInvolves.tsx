@@ -77,7 +77,15 @@ const deletedTask = () => ({
 
 const TaskInvolves = (props: Props) => {
   const {notification} = props
-  const {id: notificationId, task, team, involvement, changeAuthor, createdAt} = notification
+  const {
+    id: notificationId,
+    task,
+    team,
+    involvement,
+    changeAuthor,
+    createdAt,
+    status: notificationStatus
+  } = notification
   const {content, status, tags, assignee} = task || deletedTask()
   const {picture: changeAuthorPicture, preferredName: changeAuthorName} = changeAuthor
   const {name: teamName, id: teamId} = team
@@ -100,7 +108,10 @@ const TaskInvolves = (props: Props) => {
   }
   const preposition = involvement === MENTIONEE ? ' in' : ''
   return (
-    <NotificationRow avatar={changeAuthorPicture} isNew>
+    <NotificationRow
+      avatar={changeAuthorPicture}
+      status={(notificationStatus as unknown) as NotificationStatusEnum}
+    >
       <Body>
         <NotificationMessage>
           {`${changeAuthorName} ${action} you ${preposition} a task on the ${teamName} team.`}
@@ -123,7 +134,7 @@ const TaskInvolves = (props: Props) => {
             }}
           />
           <Owner>
-            <OwnerAvatar alt='Avatar' src={assignee.picture} />
+            <OwnerAvatar alt='Avatar' src={assignee.picture || undefined} />
             <OwnerName>{assignee.preferredName}</OwnerName>
           </Owner>
         </TaskListView>
@@ -142,6 +153,7 @@ export default createFragmentContainer(TaskInvolves, {
       }
       involvement
       createdAt
+      status
       team {
         id
         name
