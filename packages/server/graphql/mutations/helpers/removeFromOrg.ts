@@ -1,7 +1,6 @@
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
-import getRethink from '../../../database/rethinkDriver'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
-import Notification from '../../../database/types/Notification'
+import getRethink from '../../../database/rethinkDriver'
 import OrganizationUser from '../../../database/types/OrganizationUser'
 import User from '../../../database/types/User'
 import {DataLoaderWorker} from '../../graphql'
@@ -32,17 +31,12 @@ const removeFromOrg = async (userId: string, orgId: string, dataLoader: DataLoad
     return arr
   }, [])
 
-  const removedTeamNotifications = perTeamRes.reduce((arr: any[], res) => {
-    arr.push(...res.removedNotifications)
-    return arr
-  }, [])
-
   const kickOutNotificationIds = perTeamRes.reduce((arr: string[], res) => {
     arr.push(res.notificationId)
     return arr
   }, [])
 
-  const {allRemovedOrgNotifications, user, organizationUser} = await r({
+  const {user, organizationUser} = await r({
     organizationUser: (r
       .table('OrganizationUser')
       .getAll(userId, {index: 'userId'})
@@ -53,35 +47,7 @@ const removeFromOrg = async (userId: string, orgId: string, dataLoader: DataLoad
         {returnChanges: true}
       )('changes')(0)('new_val')
       .default(null) as unknown) as OrganizationUser,
-    user: (r.table('User').get(userId) as unknown) as User,
-    // remove stale notifications
-    allRemovedOrgNotifications: (r
-      .table('Notification')
-      .getAll(userId, {index: 'userIds'})
-      .filter({orgId})
-      .update(
-        (notification) => ({
-          // if this was for many people, remove them from it
-          userIds: notification('userIds').filter((id) => id.ne(userId))
-        }),
-        {returnChanges: true}
-      )('changes')('new_val')
-      .default([])
-      .do((allNotifications) => {
-        return {
-          notifications: allNotifications,
-          // if this was for them, delete it
-          deletions: r
-            .table('Notification')
-            .getAll(r.args(allNotifications('id')), {index: 'id'})
-            .filter((notification) =>
-              notification('userIds')
-                .count()
-                .eq(0)
-            )
-            .delete()
-        }
-      }) as unknown) as {notifications: Notification[]; deletions: any[]}
+    user: (r.table('User').get(userId) as unknown) as User
   }).run()
 
   // need to make sure the org doc is updated before adjusting this
@@ -95,12 +61,9 @@ const removeFromOrg = async (userId: string, orgId: string, dataLoader: DataLoad
   return {
     tms: user.tms,
     taskIds,
-    removedTeamNotifications,
     kickOutNotificationIds,
-    allRemovedOrgNotifications,
     teamIds,
     teamMemberIds,
-    removedOrgNotifications: allRemovedOrgNotifications.notifications,
     organizationUserId: organizationUser.id
   }
 }

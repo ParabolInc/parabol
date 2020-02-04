@@ -43,7 +43,7 @@ const loginWithGoogle = {
       const {email, picture, name, email_verified, sub} = id
 
       const existingUser = await r
-        .table<User>('User')
+        .table('User')
         .getAll(email, {index: 'email'})
         .nth(0)
         .default(null)

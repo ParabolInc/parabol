@@ -5,24 +5,24 @@ import {InvoiceStatusEnum, TierEnum} from 'parabol-client/types/graphql'
 import NextPeriodCharges from './NextPeriodCharges'
 
 interface Input {
-  id: string,
-  amountDue: number,
-  createdAt?: Date,
-  coupon?: Coupon | null,
-  total: number,
-  billingLeaderEmails: string[],
-  creditCard?: CreditCard,
-  endAt: Date,
-  invoiceDate: Date,
-  lines: InvoiceLineItem[],
-  nextPeriodCharges: NextPeriodCharges,
-  orgId: string,
-  orgName?: string | null,
-  paidAt?: Date | null,
-  payUrl?: string | null,
-  picture?: string | null,
-  startAt: Date,
-  startingBalance: number,
+  id: string
+  amountDue: number
+  createdAt?: Date
+  coupon?: Coupon | null
+  total: number
+  billingLeaderEmails: string[]
+  creditCard?: CreditCard
+  endAt: Date
+  invoiceDate: Date
+  lines: InvoiceLineItem[]
+  nextPeriodCharges: NextPeriodCharges
+  orgId: string
+  orgName?: string | null
+  paidAt?: Date | null
+  payUrl?: string | null
+  picture?: string | null
+  startAt: Date
+  startingBalance: number
   status: InvoiceStatusEnum
   tier: TierEnum
 }
@@ -42,15 +42,37 @@ export default class Invoice {
   orgId: string
   orgName: string
   paidAt: Date | null
-  payUrl?: string
+  payUrl?: string | null
   picture: string | null
   startAt: Date
   startingBalance: number
   status: InvoiceStatusEnum
   tier: TierEnum
+  updatedAt?: Date
 
-  constructor (input: Input) {
-    const {id, amountDue, createdAt, coupon, billingLeaderEmails, creditCard, endAt, invoiceDate, lines, nextPeriodCharges, orgId, orgName, paidAt, payUrl,  picture, startAt, startingBalance, status, total, tier} = input
+  constructor(input: Input) {
+    const {
+      id,
+      amountDue,
+      createdAt,
+      coupon,
+      billingLeaderEmails,
+      creditCard,
+      endAt,
+      invoiceDate,
+      lines,
+      nextPeriodCharges,
+      orgId,
+      orgName,
+      paidAt,
+      payUrl,
+      picture,
+      startAt,
+      startingBalance,
+      status,
+      total,
+      tier
+    } = input
     this.id = id
     this.amountDue = amountDue
     this.createdAt = createdAt || new Date()

@@ -48,9 +48,6 @@ export default createFragmentContainer(NotificationDropdown, {
         edges {
           node {
             id
-            orgId
-            startAt
-            type
             ...NotificationRow_notification
           }
         }

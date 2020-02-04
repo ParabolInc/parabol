@@ -11,12 +11,14 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import useEditorState from '../../../hooks/useEditorState'
 import useMutationProps from '../../../hooks/useMutationProps'
 import useRouter from '../../../hooks/useRouter'
-import ClearNotificationMutation from '../../../mutations/ClearNotificationMutation'
+import SetNotificationStatusMutation from '../../../mutations/SetNotificationStatusMutation'
 import {ASSIGNEE, MENTIONEE} from '../../../utils/constants'
 import {TaskInvolves_notification} from '../../../__generated__/TaskInvolves_notification.graphql'
 import OutcomeCardStatusIndicator from '../../outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
 import NotificationErrorMessage from './NotificationErrorMessage'
 import NotificationMessage from './NotificationMessage'
+import {NotificationStatusEnum, TaskStatusEnum} from 'types/graphql'
+import convertToTaskContent from 'utils/draftjs/convertToTaskContent'
 
 const involvementWord = {
   [ASSIGNEE]: 'assigned',
@@ -63,10 +65,20 @@ interface Props {
   notification: TaskInvolves_notification
 }
 
+const deletedTask = () => ({
+  content: convertToTaskContent('<<TASK DELETED>>'),
+  status: TaskStatusEnum.done,
+  tags: ['archived'],
+  assignee: {
+    picture: null,
+    preferredName: 'A Ghost'
+  }
+})
+
 const TaskInvolves = (props: Props) => {
   const {notification} = props
-  const {id: notificationId, task, team, involvement, changeAuthor, startAt} = notification
-  const {content, status, tags, assignee} = task
+  const {id: notificationId, task, team, involvement, changeAuthor, createdAt} = notification
+  const {content, status, tags, assignee} = task || deletedTask()
   const {picture: changeAuthorPicture, preferredName: changeAuthorName} = changeAuthor
   const {name: teamName, id: teamId} = team
   const action = involvementWord[involvement]
@@ -78,7 +90,11 @@ const TaskInvolves = (props: Props) => {
   const gotoBoard = () => {
     if (submitting) return
     submitMutation()
-    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted)
+    SetNotificationStatusMutation(
+      atmosphere,
+      {notificationId, status: NotificationStatusEnum.CLICKED},
+      {onError, onCompleted}
+    )
     const archiveSuffix = tags.includes('archived') ? '/archive' : ''
     history.push(`/team/${teamId}${archiveSuffix}`)
   }
@@ -89,7 +105,7 @@ const TaskInvolves = (props: Props) => {
         <NotificationMessage>
           {`${changeAuthorName} ${action} you ${preposition} a task on the ${teamName} team.`}
         </NotificationMessage>
-        <NotificationSubtitle timestamp={startAt}>
+        <NotificationSubtitle timestamp={createdAt}>
           <NotificationAction onClick={gotoBoard} label={'See the task'} />
         </NotificationSubtitle>
         <NotificationErrorMessage error={error} />
@@ -125,7 +141,7 @@ export default createFragmentContainer(TaskInvolves, {
         preferredName
       }
       involvement
-      startAt
+      createdAt
       team {
         id
         name

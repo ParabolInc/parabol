@@ -12,13 +12,13 @@ interface Input {
 
 export default class InvoiceItemHook {
   id: string
-  stripeSubscriptionId: string
+  stripeSubscriptionId: string | null
   prorationDate: number | false
   quantity: number
   type: InvoiceItemType
   userId: string
 
-  constructor (input: Input) {
+  constructor(input: Input) {
     const {id, quantity, userId, type, prorationDate, stripeSubscriptionId} = input
     this.id = id || shortid.generate()
     this.quantity = quantity

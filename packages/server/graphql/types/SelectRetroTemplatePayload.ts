@@ -1,8 +1,9 @@
 import {GraphQLObjectType} from 'graphql'
 import RetrospectiveMeetingSettings from './RetrospectiveMeetingSettings'
 import StandardMutationError from './StandardMutationError'
+import {GQLContext} from '../graphql'
 
-const SelectRetroTemplatePayload = new GraphQLObjectType({
+const SelectRetroTemplatePayload = new GraphQLObjectType<any, GQLContext>({
   name: 'SelectRetroTemplatePayload',
   fields: () => ({
     error: {

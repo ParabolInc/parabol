@@ -4,6 +4,7 @@ import getIsMassInviteToken from '../../graphql/mutations/helpers/getIsMassInvit
 interface Input {
   id?: string
   acceptedAt?: Date
+  acceptedBy?: string
   expiresAt: Date
   email: string
   invitedBy: string
@@ -14,6 +15,7 @@ interface Input {
 export default class TeamInvitation {
   id: string
   acceptedAt: Date | null
+  acceptedBy?: string
   createdAt: Date
   expiresAt: Date
   email: string
@@ -23,9 +25,20 @@ export default class TeamInvitation {
   teamId: string
   token: string
   constructor(input: Input) {
-    const {teamId, acceptedAt, email, expiresAt, id, invitedBy, meetingId, token} = input
+    const {
+      teamId,
+      acceptedAt,
+      acceptedBy,
+      email,
+      expiresAt,
+      id,
+      invitedBy,
+      meetingId,
+      token
+    } = input
     this.id = id || shortid.generate()
     this.acceptedAt = acceptedAt || null
+    this.acceptedBy = acceptedBy
     this.createdAt = new Date()
     this.expiresAt = expiresAt
     this.email = email

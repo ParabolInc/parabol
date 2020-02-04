@@ -1,8 +1,9 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import JiraRemoteAvatarUrls from './JiraRemoteAvatarUrls'
 import JiraRemoteProjectCategory from './JiraRemoteProjectCategory'
+import {GQLContext} from '../graphql'
 
-const JiraRemoteProject = new GraphQLObjectType({
+const JiraRemoteProject = new GraphQLObjectType<any, GQLContext>({
   name: 'JiraRemoteProject',
   description: 'A project fetched from Jira in real time',
   fields: () => ({

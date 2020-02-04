@@ -1,6 +1,7 @@
 import {GraphQLInt, GraphQLObjectType, GraphQLNonNull} from 'graphql'
+import {GQLContext} from '../graphql'
 
-const OrgUserCount = new GraphQLObjectType({
+const OrgUserCount = new GraphQLObjectType<any, GQLContext>({
   name: 'OrgUserCount',
   fields: () => ({
     inactiveUserCount: {

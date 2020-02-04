@@ -1,8 +1,9 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import Notification, {notificationInterfaceFields} from './Notification'
 import Team from './Team'
+import {GQLContext} from '../graphql'
 
-const NotifyKickedOut = new GraphQLObjectType({
+const NotifyKickedOut = new GraphQLObjectType<any, GQLContext>({
   name: 'NotifyKickedOut',
   description: 'A notification sent to someone who was just kicked off a team',
   interfaces: () => [Notification],

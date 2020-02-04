@@ -3,8 +3,9 @@ import {GROUP, REFLECT, VOTE} from '../../../client/utils/constants'
 import GroupPhaseCompletePayload from './GroupPhaseCompletePayload'
 import VotePhaseCompletePayload from './VotePhaseCompletePayload'
 import ReflectPhaseCompletePayload from './ReflectPhaseCompletePayload'
+import {GQLContext} from '../graphql'
 
-const PhaseCompletePayload = new GraphQLObjectType({
+const PhaseCompletePayload = new GraphQLObjectType<any, GQLContext>({
   name: 'PhaseCompletePayload',
   fields: () => ({
     [REFLECT]: {

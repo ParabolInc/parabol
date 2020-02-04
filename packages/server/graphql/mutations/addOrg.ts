@@ -15,6 +15,7 @@ import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import encodeAuthToken from '../../utils/encodeAuthToken'
 import AuthToken from '../../database/types/AuthToken'
+import {SuggestedActionTypeEnum} from 'parabol-client/types/graphql'
 
 export default {
   type: new GraphQLNonNull(AddOrgPayload),
@@ -65,7 +66,10 @@ export default {
         teamMemberId
       }
 
-      const removedSuggestedActionId = await removeSuggestedAction(viewerId, 'createNewTeam')
+      const removedSuggestedActionId = await removeSuggestedAction(
+        viewerId,
+        SuggestedActionTypeEnum.createNewTeam
+      )
       if (removedSuggestedActionId) {
         publish(
           SubscriptionChannel.NOTIFICATION,

@@ -1,4 +1,5 @@
 import getRethink from '../database/rethinkDriver'
+import {SuggestedActionTypeEnum} from 'parabol-client/types/graphql'
 
 // returns the userId of the team lead if they have never received the initial starting suggested actions
 const getNewTeamLeadUserId = async (teamId: string) => {
@@ -14,7 +15,7 @@ const getNewTeamLeadUserId = async (teamId: string) => {
         r
           .table('SuggestedAction')
           .getAll(userId, {index: 'userId'})
-          .filter({type: 'tryRetroMeeting'})
+          .filter({type: SuggestedActionTypeEnum.tryRetroMeeting})
           .count()
           .eq(0),
         userId,

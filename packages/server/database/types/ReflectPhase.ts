@@ -4,8 +4,9 @@ import {REFLECT} from '../../../client/utils/constants'
 
 export default class ReflectPhase extends GenericMeetingPhase {
   stages: GenericMeetingStage[]
+  focusedPhaseItemId?: string
 
-  constructor (
+  constructor(
     public teamId: string,
     public promptTemplateId: string,
     durations: number[] | undefined

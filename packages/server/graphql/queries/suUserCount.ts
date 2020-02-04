@@ -35,12 +35,12 @@ export default {
       .getAll(tier, {index: 'tier'})('id')
       .coerceTo('array')
       .do((orgIds) => {
-        return r
+        return (r
           .table('OrganizationUser')
           .getAll(r.args(orgIds), {index: 'orgId'})
           .filter({removedAt: null})
           .eqJoin('userId', r.table('User'))
-          .zip()
+          .zip() as any)
           .filter((user) =>
             r.branch(
               r(ignoreEmailRegex).eq(''),

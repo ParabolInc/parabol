@@ -8,13 +8,14 @@ import Row from '../../../components/Row/Row'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import useRouter from '../../../hooks/useRouter'
-import ClearNotificationMutation from '../../../mutations/ClearNotificationMutation'
+import SetNotificationStatusMutation from '../../../mutations/SetNotificationStatusMutation'
 import ui from '../../../styles/ui'
 import {MeetingStageTimeLimitEnd_notification} from '../../../__generated__/MeetingStageTimeLimitEnd_notification.graphql'
 import AcknowledgeButton from './AcknowledgeButton/AcknowledgeButton'
 import NotificationButton from './NotificationButton'
 import NotificationErrorMessage from './NotificationErrorMessage'
 import NotificationMessage from './NotificationMessage'
+import {NotificationStatusEnum} from 'types/graphql'
 
 interface Props {
   notification: MeetingStageTimeLimitEnd_notification
@@ -37,7 +38,11 @@ const MeetingStageTimeLimitEnd = (props: Props) => {
   const acknowledge = () => {
     if (submitting) return
     submitMutation()
-    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted)
+    SetNotificationStatusMutation(
+      atmosphere,
+      {notificationId, status: NotificationStatusEnum.CLICKED},
+      {onError, onCompleted}
+    )
   }
 
   return (

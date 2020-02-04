@@ -24,7 +24,7 @@ export default {
     // TODO consider moving the requestedFields to all queries
     const nodes = await r
       .table('Notification')
-      .getAll(userId, {index: 'userIds'})
+      .getAll(userId, {index: 'userId'})
       .filter((row) => row('startAt').le(r.now()))
       .filter((row) =>
         row('isArchived')

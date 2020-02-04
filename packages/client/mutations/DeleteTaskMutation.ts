@@ -1,21 +1,12 @@
+import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import handleRemoveNotifications from './handlers/handleRemoveNotifications'
-import handleRemoveTasks from './handlers/handleRemoveTasks'
 import getInProxy from '../utils/relay/getInProxy'
 import isTempId from '../utils/relay/isTempId'
-import graphql from 'babel-plugin-relay/macro'
+import handleRemoveTasks from './handlers/handleRemoveTasks'
 
 graphql`
   fragment DeleteTaskMutation_task on DeleteTaskPayload {
     task {
-      id
-    }
-  }
-`
-
-graphql`
-  fragment DeleteTaskMutation_notification on DeleteTaskPayload {
-    involvementNotification {
       id
     }
   }
@@ -27,7 +18,6 @@ const mutation = graphql`
       error {
         message
       }
-      ...DeleteTaskMutation_notification @relay(mask: false)
       ...DeleteTaskMutation_task @relay(mask: false)
     }
   }
@@ -38,11 +28,6 @@ export const deleteTaskTaskUpdater = (payload, store) => {
   handleRemoveTasks(taskId, store)
 }
 
-export const deleteTaskNotificationUpdater = (payload, store) => {
-  const notificationId = getInProxy(payload, 'involvementNotification', 'id')
-  handleRemoveNotifications(notificationId, store)
-}
-
 const DeleteTaskMutation = (environment, taskId, _teamId, onError?, onCompleted?) => {
   if (isTempId(taskId)) return undefined
   return commitMutation(environment, {
@@ -51,7 +36,6 @@ const DeleteTaskMutation = (environment, taskId, _teamId, onError?, onCompleted?
     updater: (store) => {
       const payload = store.getRootField('deleteTask')
       if (!payload) return
-      deleteTaskNotificationUpdater(payload, store)
       deleteTaskTaskUpdater(payload, store)
     },
     optimisticUpdater: (store) => {

@@ -3,8 +3,9 @@ import CustomPhaseItem from './CustomPhaseItem'
 import TeamMeetingSettings, {teamMeetingSettingsFields} from './TeamMeetingSettings'
 import {RETRO_PHASE_ITEM} from '../../../client/utils/constants'
 import ReflectTemplate from './ReflectTemplate'
+import {GQLContext} from '../graphql'
 
-const RetrospectiveMeetingSettings = new GraphQLObjectType({
+const RetrospectiveMeetingSettings = new GraphQLObjectType<any, GQLContext>({
   name: 'RetrospectiveMeetingSettings',
   description: 'The retro-specific meeting settings',
   interfaces: () => [TeamMeetingSettings],

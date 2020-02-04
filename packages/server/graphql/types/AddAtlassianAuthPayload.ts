@@ -3,8 +3,9 @@ import StandardMutationError from './StandardMutationError'
 import {getUserId} from '../../utils/authorization'
 import AtlassianAuth from './AtlassianAuth'
 import User from './User'
+import {GQLContext} from '../graphql'
 
-const AddAtlassianAuthPayload = new GraphQLObjectType({
+const AddAtlassianAuthPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'AddAtlassianAuthPayload',
   fields: () => ({
     error: {

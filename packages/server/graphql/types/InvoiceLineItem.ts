@@ -9,8 +9,9 @@ import {
 } from 'graphql'
 import InvoiceLineItemEnum from './InvoiceLineItemEnum'
 import InvoiceLineItemDetails from './InvoiceLineItemDetails'
+import {GQLContext} from '../graphql'
 
-const InvoiceLineItem = new GraphQLObjectType({
+const InvoiceLineItem = new GraphQLObjectType<any, GQLContext>({
   name: 'InvoiceLineItem',
   description: 'A single line item charge on the invoice',
   fields: () => ({

@@ -4,7 +4,7 @@ import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 
 interface Input {
   teamId: string
-  meetingType: MeetingType
+  meetingType: MeetingTypeEnum
   meetingCount: number
   name?: string
   phases: GenericMeetingPhase[]
@@ -16,13 +16,14 @@ const namePrefix = {
   [MeetingTypeEnum.action]: 'Action meeting',
   [MeetingTypeEnum.retrospective]: 'Retro'
 }
-export type MeetingType = 'action' | 'retrospective'
+// export type MeetingTypeEnum = 'action' | 'retrospective'
 export default class Meeting {
   id = shortid.generate()
+  isLegacy?: boolean // true if old version of action meeting
   createdAt = new Date()
   updatedAt = new Date()
   defaultFacilitatorUserId: string
-  endedAt: Date | undefined = undefined
+  endedAt: Date | undefined | null = undefined
   facilitatorStageId: string
   facilitatorUserId: string
   isAsync: undefined
@@ -31,7 +32,7 @@ export default class Meeting {
   name: string
   summarySentAt: Date | undefined = undefined
   teamId: string
-  meetingType: MeetingType
+  meetingType: MeetingTypeEnum
   phases: GenericMeetingPhase[]
   showConversionModal?: boolean
 

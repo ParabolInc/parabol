@@ -1,8 +1,9 @@
 import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import {getUserId} from '../../utils/authorization'
+import {GQLContext} from '../graphql'
 
-const AtlassianAuth = new GraphQLObjectType({
+const AtlassianAuth = new GraphQLObjectType<any, GQLContext>({
   name: 'AtlassianAuth',
   description: 'OAuth token for a team member',
   fields: () => ({

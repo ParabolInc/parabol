@@ -1,7 +1,8 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import TaskIntegration, {taskIntegrationFields} from './TaskIntegration'
+import {GQLContext} from '../graphql'
 
-const TaskIntegrationJira = new GraphQLObjectType({
+const TaskIntegrationJira = new GraphQLObjectType<any, GQLContext>({
   name: 'TaskIntegrationJira',
   description: 'The details associated with a task integrated with Jira',
   interfaces: () => [TaskIntegration],

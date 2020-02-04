@@ -1,6 +1,7 @@
 import {GraphQLFloat, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {GQLContext} from '../graphql'
 
-const GoogleAnalyzedEntity = new GraphQLObjectType({
+const GoogleAnalyzedEntity = new GraphQLObjectType<any, GQLContext>({
   name: 'GoogleAnalyzedEntity',
   fields: () => ({
     lemma: {

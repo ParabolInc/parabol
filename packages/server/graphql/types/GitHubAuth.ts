@@ -1,8 +1,9 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import {getUserId} from '../../utils/authorization'
+import {GQLContext} from '../graphql'
 
-const GitHubAuth = new GraphQLObjectType({
+const GitHubAuth = new GraphQLObjectType<any, GQLContext>({
   name: 'GitHubAuth',
   description: 'OAuth token for a team member',
   fields: () => ({

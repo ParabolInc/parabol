@@ -6,6 +6,7 @@ import publish from '../../utils/publish'
 import {DISCUSS} from '../../../client/utils/constants'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import DiscussPhase from '../../database/types/DiscussPhase'
 
 export default {
   description: 'Changes the priority of the discussion topics',
@@ -42,7 +43,7 @@ export default {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
-    const discussPhase = phases.find((phase) => phase.phaseType === DISCUSS)
+    const discussPhase = phases.find((phase) => phase.phaseType === DISCUSS) as DiscussPhase
     if (!discussPhase) {
       return standardError(new Error('Meeting stage not found'), {userId: viewerId})
     }

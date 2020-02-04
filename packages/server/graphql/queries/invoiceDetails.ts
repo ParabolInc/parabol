@@ -35,7 +35,8 @@ export default {
     // RESOLUTION
     if (
       !isUpcoming ||
-      (currentInvoice && currentInvoice.createdAt.getTime() + UPCOMING_INVOICE_TIME_VALID > now)
+      (currentInvoice &&
+        new Date(currentInvoice.createdAt.getTime() + UPCOMING_INVOICE_TIME_VALID) > now)
     ) {
       return currentInvoice
     }

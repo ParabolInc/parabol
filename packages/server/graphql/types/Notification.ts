@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
 import {NotificationEnum as ENotificationEnum} from 'parabol-client/types/graphql'
 import connectionDefinitions from '../connectionDefinitions'
 import GraphQLISO8601Type from './GraphQLISO8601Type'

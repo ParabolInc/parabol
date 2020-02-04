@@ -1,15 +1,14 @@
-import getRethink from '../../../database/rethinkDriver'
-import insertNewTeamMember from '../../../safeMutations/insertNewTeamMember'
-import shortid from 'shortid'
-import makeRetroTemplates from './makeRetroTemplates'
-import adjustUserCount from '../../../billing/helpers/adjustUserCount'
-import addTeamIdToTMS from '../../../safeMutations/addTeamIdToTMS'
-import {CREATED_TEAM} from '../../types/TimelineEventTypeEnum'
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
-import Team from '../../../database/types/Team'
-import Organization from '../../../database/types/Organization'
-import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
+import shortid from 'shortid'
+import adjustUserCount from '../../../billing/helpers/adjustUserCount'
+import getRethink from '../../../database/rethinkDriver'
 import MeetingSettingsAction from '../../../database/types/MeetingSettingsAction'
+import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
+import Team from '../../../database/types/Team'
+import addTeamIdToTMS from '../../../safeMutations/addTeamIdToTMS'
+import insertNewTeamMember from '../../../safeMutations/insertNewTeamMember'
+import {CREATED_TEAM} from '../../types/TimelineEventTypeEnum'
+import makeRetroTemplates from './makeRetroTemplates'
 
 interface ValidNewTeam {
   id: string
@@ -23,7 +22,7 @@ export default async function createTeamAndLeader(userId: string, newTeam: Valid
   const r = await getRethink()
   const {id: teamId, orgId} = newTeam
   const organization = await r
-    .table<Organization>('Organization')
+    .table('Organization')
     .get(orgId)
     .run()
   const {tier} = organization

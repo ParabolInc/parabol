@@ -2,7 +2,7 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import AcknowledgeButton from './AcknowledgeButton/AcknowledgeButton'
-import ClearNotificationMutation from '../../../mutations/ClearNotificationMutation'
+import SetNotificationStatusMutation from '../../../mutations/SetNotificationStatusMutation'
 import Row from '../../../components/Row/Row'
 import IconAvatar from '../../../components/IconAvatar/IconAvatar'
 import useAtmosphere from '../../../hooks/useAtmosphere'
@@ -10,6 +10,7 @@ import useMutationProps from '../../../hooks/useMutationProps'
 import {KickedOut_notification} from '../../../__generated__/KickedOut_notification.graphql'
 import NotificationErrorMessage from './NotificationErrorMessage'
 import NotificationMessage from './NotificationMessage'
+import {NotificationStatusEnum} from 'types/graphql'
 
 interface Props {
   notification: KickedOut_notification
@@ -23,7 +24,11 @@ const KickedOut = (props: Props) => {
   const atmosphere = useAtmosphere()
   const acknowledge = () => {
     submitMutation()
-    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted)
+    SetNotificationStatusMutation(
+      atmosphere,
+      {notificationId, status: NotificationStatusEnum.CLICKED},
+      {onError, onCompleted}
+    )
   }
   return (
     <>

@@ -1,18 +1,17 @@
+import {InvoiceItemType} from 'parabol-client/types/constEnums'
+import {ITeam, NotificationEnum, NotificationStatusEnum} from 'parabol-client/types/graphql'
+import shortid from 'shortid'
 import adjustUserCount from '../billing/helpers/adjustUserCount'
 import getRethink from '../database/rethinkDriver'
-import addTeamMemberToMeetings from '../graphql/mutations/helpers/addTeamMemberToMeetings'
-import insertNewTeamMember from './insertNewTeamMember'
-import shortid from 'shortid'
-import {TEAM_INVITATION} from '../../client/utils/constants'
-import getNewTeamLeadUserId from '../safeQueries/getNewTeamLeadUserId'
-import addTeamIdToTMS from './addTeamIdToTMS'
-import {InvoiceItemType} from 'parabol-client/types/constEnums'
-import SuggestedActionCreateNewTeam from '../database/types/SuggestedActionCreateNewTeam'
-import {ITeam} from 'parabol-client/types/graphql'
-import User from '../database/types/User'
 import OrganizationUser from '../database/types/OrganizationUser'
+import SuggestedActionCreateNewTeam from '../database/types/SuggestedActionCreateNewTeam'
+import User from '../database/types/User'
 import {DataLoaderWorker} from '../graphql/graphql'
+import addTeamMemberToMeetings from '../graphql/mutations/helpers/addTeamMemberToMeetings'
+import getNewTeamLeadUserId from '../safeQueries/getNewTeamLeadUserId'
 import setUserTierForOrgId from '../utils/setUserTierForOrgId'
+import addTeamIdToTMS from './addTeamIdToTMS'
+import insertNewTeamMember from './insertNewTeamMember'
 
 const handleFirstAcceptedInvitation = async (team): Promise<string | null> => {
   const r = await getRethink()
@@ -56,6 +55,7 @@ const acceptTeamInvitation = async (
 ) => {
   const r = await getRethink()
   const now = new Date()
+
   const {team, user} = await r({
     team: (r.table('Team').get(teamId) as unknown) as ITeam,
     user: (r
@@ -73,17 +73,18 @@ const acceptTeamInvitation = async (
   const {email, organizationUsers} = user
   const teamLeadUserIdWithNewActions = await handleFirstAcceptedInvitation(team)
   const userInOrg = !!organizationUsers.find((organizationUser) => organizationUser.orgId === orgId)
-  const [teamMember, removedNotificationIds] = await Promise.all([
+  const [teamMember, invitationNotificationIds] = await Promise.all([
     insertNewTeamMember(userId, teamId),
     r
       .table('Notification')
-      .getAll(userId, {index: 'userIds'})
+      .getAll(userId, {index: 'userId'})
       .filter({
-        type: TEAM_INVITATION,
+        type: NotificationEnum.TEAM_INVITATION,
         teamId
       })
       .update(
-        {isArchived: true},
+        // not really clicked, but no longer important
+        {status: NotificationStatusEnum.CLICKED},
         {returnChanges: true}
       )('changes')('new_val')('id')
       .default([])
@@ -124,7 +125,7 @@ const acceptTeamInvitation = async (
     .run()
   return {
     teamLeadUserIdWithNewActions,
-    removedNotificationIds: removedNotificationIds as string[]
+    invitationNotificationIds: invitationNotificationIds as string[]
   }
 }
 

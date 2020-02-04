@@ -47,7 +47,7 @@ export const getTeamIntegrationsByUserId = async (
   teamId: string
 ): Promise<IntegrationByUserId[]> => {
   const r = await getRethink()
-  const res = await r
+  const res = await (r
     .table('Task')
     .getAll(teamId, {index: 'teamId'})
     .filter((row) =>
@@ -63,7 +63,7 @@ export const getTeamIntegrationsByUserId = async (
       row('integration')('projectName').default(null),
       row('integration')('avatar').default(null),
       row('integration')('cloudId').default(null)
-    ])
+    ]) as any)
     .max('createdAt')('createdAt')
     .ungroup()
     .orderBy(r.desc('reduction'))

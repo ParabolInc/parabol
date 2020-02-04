@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
-import SelectRetroTemplatePayload from '../types/SelectRetroTemplatePayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {RETROSPECTIVE} from '../../../client/utils/constants'
 import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import SelectRetroTemplatePayload from '../types/SelectRetroTemplatePayload'
 
 const selectRetroTemplate = {
   description: 'Set the selected template for the upcoming retro meeting',
@@ -47,7 +47,7 @@ const selectRetroTemplate = {
       .table('MeetingSettings')
       .getAll(teamId, {index: 'teamId'})
       .filter({
-        meetingType: RETROSPECTIVE
+        meetingType: MeetingTypeEnum.retrospective
       })
       .update(
         {

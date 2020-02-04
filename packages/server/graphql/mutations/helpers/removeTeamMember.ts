@@ -1,15 +1,14 @@
-import getRethink from '../../../database/rethinkDriver'
-import {DataLoaderWorker} from '../../graphql'
-import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
 import shortid from 'shortid'
 import {KICKED_OUT} from '../../../../client/utils/constants'
 import fromTeamMemberId from '../../../../client/utils/relay/fromTeamMemberId'
-import removeStagesFromMeetings from './removeStagesFromMeetings'
+import getRethink from '../../../database/rethinkDriver'
 import CheckInStage from '../../../database/types/CheckInStage'
-import UpdatesStage from '../../../database/types/UpdatesStage'
 import Task from '../../../database/types/Task'
-import Notification from '../../../database/types/Notification'
+import UpdatesStage from '../../../database/types/UpdatesStage'
 import User from '../../../database/types/User'
+import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
+import {DataLoaderWorker} from '../../graphql'
+import removeStagesFromMeetings from './removeStagesFromMeetings'
 
 interface Options {
   isKickout: boolean
@@ -29,7 +28,7 @@ const removeTeamMember = async (
     .table('TeamMember')
     .getAll(teamId, {index: 'teamId'})
     .run()
-  const teamMember = activeTeamMembers.find((t) => t.id === teamMemberId)
+  const teamMember = activeTeamMembers.find((t) => t.id === teamMemberId)!
   const {isLead, isNotRemoved} = teamMember
   // if the guy being removed is the leader & not the last, pick a new one. else, use him
   const teamLeader = activeTeamMembers.find((t) => t.isLead === !isLead) || teamMember
@@ -61,7 +60,7 @@ const removeTeamMember = async (
   }
 
   // assign active tasks to the team lead
-  const {integratedTasksToArchive, reassignedTasks, removedNotifications, user} = await r({
+  const {integratedTasksToArchive, reassignedTasks, user} = await r({
     teamMember: r
       .table('TeamMember')
       .get(teamMemberId)
@@ -125,14 +124,7 @@ const removeTeamMember = async (
         },
         {returnChanges: true}
       )('changes')('new_val')
-      .default([]),
-    // note this may be too aggressive since 1 notification could have multiple userIds. we need to refactor to a single userId
-    removedNotifications: (r
-      .table('Notification')
-      .getAll(userId, {index: 'userIds'})
-      .filter({teamId})
-      .delete({returnChanges: true})('changes')('old_val')
-      .default([]) as unknown) as Notification[]
+      .default([])
   }).run()
 
   let notificationId
@@ -170,7 +162,6 @@ const removeTeamMember = async (
     .run()
   return {
     user,
-    removedNotifications,
     notificationId,
     archivedTaskIds,
     reassignedTaskIds: reassignedTasks.map(({id}) => id)

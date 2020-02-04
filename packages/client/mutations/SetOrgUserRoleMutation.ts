@@ -1,11 +1,10 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {commitMutation} from 'react-relay'
+import {OnNextHandler, OnNextHistoryContext} from '../types/relayMutations'
+import getInProxy from '../utils/relay/getInProxy'
+import {SetOrgUserRoleMutationAdded_organization} from '../__generated__/SetOrgUserRoleMutationAdded_organization.graphql'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleAddOrganization from './handlers/handleAddOrganization'
-import handleRemoveNotifications from './handlers/handleRemoveNotifications'
-import getInProxy from '../utils/relay/getInProxy'
-import {OnNextHandler, OnNextHistoryContext} from '../types/relayMutations'
-import {SetOrgUserRoleMutationAdded_organization} from '../__generated__/SetOrgUserRoleMutationAdded_organization.graphql'
 
 graphql`
   fragment SetOrgUserRoleMutationAdded_organization on SetOrgUserRoleAddedPayload {
@@ -31,9 +30,6 @@ graphql`
     organization {
       id
       isBillingLeader
-    }
-    notificationsRemoved {
-      id
     }
     updatedOrgMember {
       user {
@@ -83,17 +79,6 @@ export const setOrgUserRoleAddedOrganizationUpdater = (payload, store, viewerId)
 
     const org = payload.getLinkedRecord('organization')
     handleAddOrganization(org, store, viewerId)
-  }
-}
-
-export const setOrgUserRoleRemovedOrganizationUpdater = (payload, store, viewerId) => {
-  const removedUserId = getInProxy(payload, 'updatedOrgMember', 'user', 'id')
-  if (removedUserId === viewerId) {
-    const notificationsRemoved = payload.getLinkedRecords('notificationsRemoved')
-    const notificationIdsRemoved = getInProxy(notificationsRemoved, 'id')
-    handleRemoveNotifications(notificationIdsRemoved, store)
-    // const orgId = getInProxy(payload, 'organization', 'id');
-    // handleRemoveOrganization(orgId, store, viewerId);
   }
 }
 

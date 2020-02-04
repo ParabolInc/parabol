@@ -1,8 +1,9 @@
 import {GraphQLObjectType} from 'graphql'
 import TimelineEvent, {timelineEventInterfaceFields} from './TimelineEvent'
 import {JOINED_PARABOL} from './TimelineEventTypeEnum'
+import {GQLContext} from '../graphql'
 
-const TimelineEventJoinedParabol = new GraphQLObjectType({
+const TimelineEventJoinedParabol = new GraphQLObjectType<any, GQLContext>({
   name: 'TimelineEventJoinedParabol',
   description: 'An event for joining the app',
   interfaces: () => [TimelineEvent],

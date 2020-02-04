@@ -2,8 +2,9 @@ import {GraphQLNonNull, GraphQLObjectType, GraphQLID} from 'graphql'
 import SuggestedAction, {suggestedActionInterfaceFields} from './SuggestedAction'
 import Team from './Team'
 import {resolveTeam} from '../resolvers'
+import {GQLContext} from '../graphql'
 
-const SuggestedActionTryRetroMeeting = new GraphQLObjectType({
+const SuggestedActionTryRetroMeeting = new GraphQLObjectType<any, GQLContext>({
   name: 'SuggestedActionTryRetroMeeting',
   description: 'a suggestion to try a retro with your team',
   interfaces: () => [SuggestedAction],

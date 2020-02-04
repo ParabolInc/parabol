@@ -3,7 +3,7 @@ import StandardMutationError from './StandardMutationError'
 import NewMeeting from './NewMeeting'
 import {GQLContext} from '../graphql'
 
-const PayLaterPayload = new GraphQLObjectType({
+const PayLaterPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'PayLaterPayload',
   fields: () => ({
     error: {

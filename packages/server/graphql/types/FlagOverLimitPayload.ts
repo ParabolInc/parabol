@@ -1,8 +1,9 @@
 import {GraphQLList, GraphQLObjectType} from 'graphql'
 import User from './User'
 import StandardMutationError from './StandardMutationError'
+import {GQLContext} from '../graphql'
 
-const FlagOverLimitPayload = new GraphQLObjectType({
+const FlagOverLimitPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'FlagOverLimitPayload',
   fields: () => ({
     error: {

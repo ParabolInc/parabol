@@ -4,7 +4,7 @@ import getRethink from '../../database/rethinkDriver'
 import getUpcomingInvoiceId from '../../utils/getUpcomingInvoiceId'
 import StripeManager from '../../utils/StripeManager'
 
-const generateUpcomingInvoice = async (orgId) => {
+const generateUpcomingInvoice = async (orgId: string) => {
   const r = await getRethink()
   const invoiceId = getUpcomingInvoiceId(orgId)
   const {stripeId, stripeSubscriptionId} = await r
@@ -15,7 +15,7 @@ const generateUpcomingInvoice = async (orgId) => {
   const manager = new StripeManager()
   const [stripeLineItems, upcomingInvoice] = await Promise.all([
     fetchAllLines('upcoming', stripeId),
-    manager.retrieveUpcomingInvoice(stripeId, stripeSubscriptionId)
+    manager.retrieveUpcomingInvoice(stripeId!, stripeSubscriptionId!)
   ])
   return generateInvoice(upcomingInvoice, stripeLineItems, orgId, invoiceId)
 }

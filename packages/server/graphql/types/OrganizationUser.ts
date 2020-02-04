@@ -5,8 +5,9 @@ import User from './User'
 import Organization from './Organization'
 import {resolveOrganization, resolveUser} from '../resolvers'
 import connectionDefinitions from '../connectionDefinitions'
+import {GQLContext} from '../graphql'
 
-const OrganizationUser = new GraphQLObjectType({
+const OrganizationUser = new GraphQLObjectType<any, GQLContext>({
   name: 'OrganizationUser',
   description: 'organization-specific details about a user',
   fields: () => ({

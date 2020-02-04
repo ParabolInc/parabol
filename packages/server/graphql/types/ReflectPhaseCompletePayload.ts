@@ -1,6 +1,7 @@
 import {GraphQLNonNull, GraphQLID, GraphQLList, GraphQLObjectType} from 'graphql'
+import {GQLContext} from '../graphql'
 
-const ReflectPhaseCompletePayload = new GraphQLObjectType({
+const ReflectPhaseCompletePayload = new GraphQLObjectType<any, GQLContext>({
   name: 'ReflectPhaseCompletePayload',
   fields: () => ({
     emptyReflectionGroupIds: {

@@ -1,14 +1,13 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from '../../database/rethinkDriver'
-import ChangeTaskTeamPayload from '../types/ChangeTaskTeamPayload'
-import {getUserId, isTeamMember} from '../../utils/authorization'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import shortid from 'shortid'
 import removeEntityKeepText from '../../../client/utils/draftjs/removeEntityKeepText'
-import {TASK_INVOLVES} from '../../../client/utils/constants'
-import publish from '../../utils/publish'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
+import getRethink from '../../database/rethinkDriver'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import ChangeTaskTeamPayload from '../types/ChangeTaskTeamPayload'
 
 export default {
   type: ChangeTaskTeamPayload,
@@ -64,7 +63,7 @@ export default {
     const eqFn = (entity) =>
       entity.type === 'MENTION' &&
       Boolean(userIdsOnlyOnOldTeam.find((userId) => userId === entity.data.userId))
-    const {rawContent: nextRawContent, removedEntities} = removeEntityKeepText(rawContent, eqFn)
+    const {rawContent: nextRawContent} = removeEntityKeepText(rawContent, eqFn)
 
     const updates = {
       content: rawContent === nextRawContent ? undefined : JSON.stringify(nextRawContent),
@@ -97,26 +96,8 @@ export default {
         })
     }).run()
 
-    const mentioneeUserIdsToRemove = Array.from(
-      new Set(removedEntities.map(({data}) => data.userId))
-    )
-    const notificationsToRemove =
-      mentioneeUserIdsToRemove.length === 0
-        ? []
-        : await r
-            .table('Notification')
-            .getAll(r.args(mentioneeUserIdsToRemove), {index: 'userIds'})
-            .filter({
-              taskId,
-              type: TASK_INVOLVES
-            })
-            .delete({returnChanges: true})('changes')('old_val')
-            .default([])
-            .pluck('id', 'userIds')
-            .run()
-
     const isPrivate = tags.includes('private')
-    const data = {taskId, notificationsToRemove}
+    const data = {taskId}
     const teamMembers = oldTeamMembers.concat(newTeamMembers)
     teamMembers.forEach(({userId}) => {
       if (!isPrivate || userId === task.userId) {

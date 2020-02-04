@@ -1,7 +1,7 @@
 import Meeting from '../../../database/types/Meeting'
 import RetroMeetingMember from '../../../database/types/RetroMeetingMember'
 import {DataLoaderWorker} from '../../graphql'
-import {IRetrospectiveMeetingSettings} from '../../../../client/types/graphql'
+import {IRetrospectiveMeetingSettings, MeetingTypeEnum} from '../../../../client/types/graphql'
 import TeamMember from '../../../database/types/TeamMember'
 import ActionMeetingMember from '../../../database/types/ActionMeetingMember'
 
@@ -11,12 +11,12 @@ const createMeetingMembers = async (
   dataLoader: DataLoaderWorker
 ) => {
   switch (meeting.meetingType) {
-    case 'action':
+    case MeetingTypeEnum.action:
       return teamMembers.map(
         ({teamId, userId}) =>
           new ActionMeetingMember({teamId, userId, meetingId: meeting.id, isCheckedIn: true})
       )
-    case 'retrospective':
+    case MeetingTypeEnum.retrospective:
       const allSettings = await dataLoader.get('meetingSettingsByTeamId').load(meeting.teamId)
       const retroSettings = (allSettings.find(
         (settings) => settings.meetingType === meeting.meetingType

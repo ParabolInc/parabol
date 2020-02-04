@@ -1,11 +1,11 @@
-import getRethink from '../../database/rethinkDriver'
 import {GraphQLNonNull, GraphQLString} from 'graphql'
-import {getUserId, requireSU} from '../../utils/authorization'
-import UserFlagEnum from '../types/UserFlagEnum'
-import publish from '../../utils/publish'
-import AddFeatureFlagPayload from '../types/AddFeatureFlagPayload'
-import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import getRethink from '../../database/rethinkDriver'
+import {getUserId, requireSU} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import standardError from '../../utils/standardError'
+import AddFeatureFlagPayload from '../types/AddFeatureFlagPayload'
+import UserFlagEnum from '../types/UserFlagEnum'
 
 export default {
   type: AddFeatureFlagPayload,
@@ -13,7 +13,7 @@ export default {
   args: {
     email: {
       type: new GraphQLNonNull(GraphQLString),
-      description: `the complete or partial email of the person to whom you are giving advanced features. 
+      description: `the complete or partial email of the person to whom you are giving advanced features.
       Matches via a regex to support entire domains`
     },
     flag: {
@@ -21,7 +21,7 @@ export default {
       description: 'the flag that you want to give to the user'
     }
   },
-  async resolve(_source, {email, flag}, {authToken, dataLoader}) {
+  async resolve(_source, {email, flag}: {email: string; flag: string}, {authToken, dataLoader}) {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId}
@@ -33,7 +33,7 @@ export default {
     // RESOLUTION
     const userIds = await r
       .table('User')
-      .filter((doc) => doc('email').match(email))('id')
+      .filter((doc) => (doc as any)('email').match(email))('id')
       .run()
     if (userIds.length === 0) {
       return standardError(new Error('Team member not found'), {userId: viewerId})

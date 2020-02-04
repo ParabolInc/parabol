@@ -1,11 +1,10 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import JiraRemoteProject from './JiraRemoteProject'
-import SuggestedIntegration, {
-  suggestedIntegrationFields
-} from './SuggestedIntegration'
+import SuggestedIntegration, {suggestedIntegrationFields} from './SuggestedIntegration'
 import {getUserId} from '../../utils/authorization'
+import {GQLContext} from '../graphql'
 
-const SuggestedIntegrationJira = new GraphQLObjectType({
+const SuggestedIntegrationJira = new GraphQLObjectType<any, GQLContext>({
   name: 'SuggestedIntegrationJira',
   description: 'The details associated with a task integrated with Jira',
   interfaces: () => [SuggestedIntegration],

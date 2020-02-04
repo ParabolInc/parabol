@@ -1,12 +1,11 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
-import SetCheckInEnabledPayload from '../types/SetCheckInEnabledPayload'
-import standardError from '../../utils/standardError'
-import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import publish from '../../utils/publish'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import MeetingSettings from '../../database/types/MeetingSettings'
+import standardError from '../../utils/standardError'
+import SetCheckInEnabledPayload from '../types/SetCheckInEnabledPayload'
 
 const setCheckInEnabled = {
   type: GraphQLNonNull(SetCheckInEnabledPayload),
@@ -41,7 +40,7 @@ const setCheckInEnabled = {
     const {teamId} = settings
     // RESOLUTION
     await r
-      .table<MeetingSettings>('MeetingSettings')
+      .table('MeetingSettings')
       .get(settingsId)
       .update((row) => ({
         phaseTypes: r.branch(

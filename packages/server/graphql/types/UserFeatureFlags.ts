@@ -1,6 +1,7 @@
 import {GraphQLBoolean, GraphQLObjectType, GraphQLNonNull} from 'graphql'
+import {GQLContext} from '../graphql'
 
-const UserFeatureFlags = new GraphQLObjectType({
+const UserFeatureFlags = new GraphQLObjectType<any, GQLContext>({
   name: 'UserFeatureFlags',
   description: 'The user account profile',
   fields: () => ({

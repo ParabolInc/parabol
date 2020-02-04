@@ -26,7 +26,7 @@ const attemptLogin = async (email: string, password: string, ip = '') => {
   const yesterday = new Date(Date.now() - ms('1d'))
   const {existingUser, failOnAccount, failOnTime} = await r({
     existingUser: (r
-      .table<User>('User')
+      .table('User')
       .getAll(email, {index: 'email'})
       .nth(0)
       .default(null) as unknown) as User,

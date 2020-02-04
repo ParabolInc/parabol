@@ -1,6 +1,7 @@
 import {GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {GQLContext} from '../graphql'
 
-const Coupon = new GraphQLObjectType({
+const Coupon = new GraphQLObjectType<any, GQLContext>({
   name: 'Coupon',
   description: 'The discount coupon from Stripe, if any',
   fields: () => ({

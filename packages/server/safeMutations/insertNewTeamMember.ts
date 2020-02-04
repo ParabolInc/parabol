@@ -1,7 +1,6 @@
+import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../database/rethinkDriver'
 import TeamMember from '../database/types/TeamMember'
-import User from '../database/types/User'
-import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 
 const insertNewTeamMember = async (userId: string, teamId: string) => {
   const r = await getRethink()
@@ -9,7 +8,7 @@ const insertNewTeamMember = async (userId: string, teamId: string) => {
   const teamMemberId = toTeamMemberId(teamId, userId)
   const [user, checkInOrder, existingTeamMember] = await Promise.all([
     r
-      .table<User>('User')
+      .table('User')
       .get(userId)
       .run(),
     r

@@ -29,10 +29,10 @@ const archiveTasksForDB = async (tasks: Task[], doneMeetingId?: string) => {
         .get(task('id'))
         .update(
           {
-            content: task('content'),
+            content: task('content') as unknown,
             tags: task('tags'),
             doneMeetingId: task('doneMeetingId').default(null)
-          },
+          } as any,
           {returnChanges: true}
         )
     })

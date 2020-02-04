@@ -1,6 +1,7 @@
 import {GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {GQLContext} from '../graphql'
 
-const CreditCard = new GraphQLObjectType({
+const CreditCard = new GraphQLObjectType<any, GQLContext>({
   name: 'CreditCard',
   description: 'A credit card',
   fields: () => ({

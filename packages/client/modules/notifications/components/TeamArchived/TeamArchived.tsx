@@ -2,7 +2,7 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import AcknowledgeButton from '../AcknowledgeButton/AcknowledgeButton'
-import ClearNotificationMutation from '../../../../mutations/ClearNotificationMutation'
+import SetNotificationStatusMutation from '../../../../mutations/SetNotificationStatusMutation'
 import Row from '../../../../components/Row/Row'
 import IconAvatar from '../../../../components/IconAvatar/IconAvatar'
 import {TeamArchived_notification} from '../../../../__generated__/TeamArchived_notification.graphql'
@@ -10,6 +10,7 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import NotificationErrorMessage from '../NotificationErrorMessage'
 import NotificationMessage from '../NotificationMessage'
+import {NotificationStatusEnum} from 'types/graphql'
 
 interface Props {
   notification: TeamArchived_notification
@@ -25,7 +26,11 @@ const TeamArchived = (props: Props) => {
   const acknowledge = () => {
     if (submitting) return
     submitMutation()
-    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted)
+    SetNotificationStatusMutation(
+      atmosphere,
+      {notificationId, status: NotificationStatusEnum.CLICKED},
+      {onError, onCompleted}
+    )
   }
 
   return (

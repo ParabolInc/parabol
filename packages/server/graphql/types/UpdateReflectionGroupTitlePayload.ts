@@ -3,8 +3,9 @@ import {makeResolve, resolveNewMeeting} from '../resolvers'
 import StandardMutationError from './StandardMutationError'
 import NewMeeting from './NewMeeting'
 import RetroReflectionGroup from './RetroReflectionGroup'
+import {GQLContext} from '../graphql'
 
-const UpdateReflectionGroupTitlePayload = new GraphQLObjectType({
+const UpdateReflectionGroupTitlePayload = new GraphQLObjectType<any, GQLContext>({
   name: 'UpdateReflectionGroupTitlePayload',
   fields: () => ({
     error: {

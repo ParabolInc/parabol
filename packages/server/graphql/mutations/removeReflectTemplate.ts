@@ -1,12 +1,15 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {
+  IReflectTemplate,
+  IRetrospectiveMeetingSettings,
+  MeetingTypeEnum
+} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {RETROSPECTIVE} from '../../../client/utils/constants'
 import standardError from '../../utils/standardError'
 import RemoveReflectTemplatePayload from '../types/RemoveReflectTemplatePayload'
-import {IReflectTemplate, IRetrospectiveMeetingSettings} from 'parabol-client/types/graphql'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const removeReflectTemplate = {
   description: 'Remove a template full of prompts',
@@ -44,7 +47,7 @@ const removeReflectTemplate = {
       settings: (r
         .table('MeetingSettings')
         .getAll(teamId, {index: 'teamId'})
-        .filter({meetingType: RETROSPECTIVE})
+        .filter({meetingType: MeetingTypeEnum.retrospective})
         .nth(0) as unknown) as IRetrospectiveMeetingSettings
     }).run()
 

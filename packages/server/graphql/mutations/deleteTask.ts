@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {NotificationEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
-import DeleteTaskPayload from '../types/DeleteTaskPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {TASK_INVOLVES} from '../../../client/utils/constants'
 import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import DeleteTaskPayload from '../types/DeleteTaskPayload'
 
 export default {
   type: DeleteTaskPayload,
@@ -55,36 +55,7 @@ export default {
     }).run()
     const {tags, userId: taskUserId} = task
 
-    // handle notifications
-    // const {entityMap} = JSON.parse(content)
-    // const userIdsWithNotifications = getTypeFromEntityMap('MENTION', entityMap).concat(taskUserId)
-    const clearedNotifications = await r
-      .table('Notification')
-      // there's a bug somewhere which results in userIdsWithNotifications missing values.
-      // When a task is deleting, the notifidation is not
-      // .getAll(r.args(userIdsWithNotifications), {index: 'userIds'})
-      .filter({
-        taskId,
-        type: TASK_INVOLVES
-      })
-      .delete({returnChanges: true})('changes')('old_val')
-      .default([])
-      .run()
-
-    const data = {task, notifications: clearedNotifications}
-    clearedNotifications.forEach((notification) => {
-      const {
-        userIds: [notificationUserId]
-      } = notification
-      publish(
-        SubscriptionChannel.NOTIFICATION,
-        notificationUserId,
-        'DeleteTaskPayload',
-        data,
-        subOptions
-      )
-    })
-
+    const data = {task}
     const isPrivate = tags.includes('private')
     subscribedUserIds.forEach((userId) => {
       if (!isPrivate || userId === taskUserId) {

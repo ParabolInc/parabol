@@ -1,8 +1,9 @@
 import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import GraphQLEmailType from './GraphQLEmailType'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
+import {GQLContext} from '../graphql'
 
-const InvoiceLineItemDetails = new GraphQLObjectType({
+const InvoiceLineItemDetails = new GraphQLObjectType<any, GQLContext>({
   name: 'InvoiceLineItemDetails',
   description: 'The per-user-action line item details,',
   fields: () => ({

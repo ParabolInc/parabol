@@ -1,6 +1,7 @@
 // pulled straight from graphql-relay-js because of the stupid instanceof bug
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import PageInfo from './types/PageInfo'
+import {GQLContext} from './graphql'
 
 function resolveMaybeThunk(thingOrThunk) {
   return typeof thingOrThunk === 'function' ? thingOrThunk() : thingOrThunk
@@ -13,7 +14,7 @@ export default function connectionDefinitions(config) {
   const connectionFields = config.connectionFields || {}
   const resolveNode = config.resolveNode
   const resolveCursor = config.resolveCursor
-  const edgeType = new GraphQLObjectType({
+  const edgeType = new GraphQLObjectType<any, GQLContext>({
     name: `${name}Edge`,
     description: 'An edge in a connection.',
     fields: () => ({
@@ -32,7 +33,7 @@ export default function connectionDefinitions(config) {
     })
   })
 
-  const connectionType = new GraphQLObjectType({
+  const connectionType = new GraphQLObjectType<any, GQLContext>({
     name: `${name}Connection`,
     description: 'A connection to a list of items.',
     fields: () => ({

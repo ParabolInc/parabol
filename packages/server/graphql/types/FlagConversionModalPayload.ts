@@ -1,8 +1,9 @@
 import {GraphQLObjectType} from 'graphql'
 import StandardMutationError from './StandardMutationError'
 import Organization from './Organization'
+import {GQLContext} from '../graphql'
 
-const FlagConversionModalPayload = new GraphQLObjectType({
+const FlagConversionModalPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'FlagConversionModalPayload',
   fields: () => ({
     error: {

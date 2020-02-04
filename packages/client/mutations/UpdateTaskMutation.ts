@@ -1,24 +1,23 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import handleAddNotifications from './handlers/handleAddNotifications'
-import handleRemoveNotifications from './handlers/handleRemoveNotifications'
-import handleUpsertTasks from './handlers/handleUpsertTasks'
-import popInvolvementToast from './toasts/popInvolvementToast'
-import getTagsFromEntityMap from '../utils/draftjs/getTagsFromEntityMap'
-import getInProxy from '../utils/relay/getInProxy'
-import updateProxyRecord from '../utils/relay/updateProxyRecord'
-import handleRemoveTasks from './handlers/handleRemoveTasks'
-import ContentFilterHandler from '../utils/relay/ContentFilterHandler'
+import {commitMutation} from 'react-relay'
+import {ITask} from '../types/graphql'
 import {
   OnNextHandler,
   OnNextHistoryContext,
   SharedUpdater,
   SimpleMutation
 } from '../types/relayMutations'
-import {UpdateTaskMutation_task} from '../__generated__/UpdateTaskMutation_task.graphql'
-import {UpdateTaskMutation as TUpdateTaskMutation} from '../__generated__/UpdateTaskMutation.graphql'
+import getTagsFromEntityMap from '../utils/draftjs/getTagsFromEntityMap'
+import ContentFilterHandler from '../utils/relay/ContentFilterHandler'
+import getInProxy from '../utils/relay/getInProxy'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
-import {ITask} from '../types/graphql'
+import updateProxyRecord from '../utils/relay/updateProxyRecord'
+import {UpdateTaskMutation as TUpdateTaskMutation} from '../__generated__/UpdateTaskMutation.graphql'
+import {UpdateTaskMutation_task} from '../__generated__/UpdateTaskMutation_task.graphql'
+import handleAddNotifications from './handlers/handleAddNotifications'
+import handleRemoveTasks from './handlers/handleRemoveTasks'
+import handleUpsertTasks from './handlers/handleUpsertTasks'
+import popInvolvementToast from './toasts/popInvolvementToast'
 
 graphql`
   fragment UpdateTaskMutation_task on UpdateTaskPayload {
@@ -37,9 +36,6 @@ graphql`
         preferredName
       }
       ...TaskInvolves_notification @relay(mask: false)
-    }
-    removedNotification {
-      id
     }
     privatizedTaskId
   }
@@ -76,10 +72,8 @@ export const updateTaskTaskUpdater: SharedUpdater<UpdateTaskMutation_task> = (pa
       fieldKey: 'content'
     })
   }
-  const removedNotificationId = getInProxy(payload, 'removedNotification', 'id')
-  handleRemoveNotifications(removedNotificationId, store as any)
   const viewer = store.getRoot().getLinkedRecord('viewer')
-  const viewerId = viewer && viewer.getDataID()
+  const viewerId = viewer && viewer.getDataIDs()
   const privatizedTaskId = payload.getValue('privatizedTaskId')
   const taskUserId = getInProxy(task, 'userId')
   if (taskUserId !== viewerId && privatizedTaskId) {

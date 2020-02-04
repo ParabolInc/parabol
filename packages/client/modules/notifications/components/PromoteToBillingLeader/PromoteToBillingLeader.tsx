@@ -3,7 +3,7 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import AcknowledgeButton from '../AcknowledgeButton/AcknowledgeButton'
-import ClearNotificationMutation from '../../../../mutations/ClearNotificationMutation'
+import SetNotificationStatusMutation from '../../../../mutations/SetNotificationStatusMutation'
 import ui from '../../../../styles/ui'
 import Row from '../../../../components/Row/Row'
 import IconAvatar from '../../../../components/IconAvatar/IconAvatar'
@@ -15,6 +15,7 @@ import useRouter from '../../../../hooks/useRouter'
 import NotificationErrorMessage from '../NotificationErrorMessage'
 import NotificationMessage from '../NotificationMessage'
 import {PALETTE} from '../../../../styles/paletteV2'
+import {NotificationStatusEnum} from 'types/graphql'
 
 const StyledButton = styled(RaisedButton)({...ui.buttonBlockStyles})
 const MessageVar = styled('div')({
@@ -44,13 +45,21 @@ const PromoteToBillingLeader = (props: Props) => {
   const acknowledge = () => {
     if (submitting) return
     submitMutation()
-    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted)
+    SetNotificationStatusMutation(
+      atmosphere,
+      {notificationId, status: NotificationStatusEnum.CLICKED},
+      {onError, onCompleted}
+    )
   }
 
   const goToOrg = () => {
     if (submitting) return
     submitMutation()
-    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted)
+    SetNotificationStatusMutation(
+      atmosphere,
+      {notificationId, status: NotificationStatusEnum.CLICKED},
+      {onError, onCompleted}
+    )
     history.push(`/me/organizations/${orgId}`)
   }
 

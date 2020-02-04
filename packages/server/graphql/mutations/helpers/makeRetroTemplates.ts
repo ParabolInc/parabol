@@ -1,59 +1,5 @@
-import shortid from 'shortid'
-import {RETRO_PHASE_ITEM} from '../../../../client/utils/constants'
-
-export class Prompt {
-  id: string
-  createdAt: Date
-  description: string
-  isActive: boolean
-  phaseItemType: string
-  sortOrder: number
-  teamId: string
-  templateId: string
-  question: string
-  title: string
-  updatedAt: Date
-
-  constructor (
-    template: Template,
-    sortOrder: number,
-    question: string,
-    description: string,
-    title: string = question
-  ) {
-    const now = new Date()
-    this.id = shortid.generate()
-    this.createdAt = now
-    this.phaseItemType = RETRO_PHASE_ITEM
-    this.isActive = true
-    this.sortOrder = sortOrder
-    this.teamId = template.teamId
-    this.updatedAt = now
-    this.templateId = template.id
-    this.question = question
-    this.description = description || ''
-    this.title = title
-  }
-}
-
-class Template {
-  id: string
-  createdAt: Date
-  isActive: boolean
-  updatedAt: Date
-  name: string
-  teamId: string
-
-  constructor (name: string, teamId: string) {
-    const now = new Date()
-    this.id = shortid.generate()
-    this.createdAt = now
-    this.isActive = true
-    this.name = name
-    this.teamId = teamId
-    this.updatedAt = now
-  }
-}
+import ReflectTemplate from '../../../database/types/ReflectTemplate'
+import RetrospectivePrompt from '../../../database/types/RetrospectivePrompt'
 
 const templateBase = {
   'Working & Stuck': [
@@ -89,7 +35,7 @@ const templateBase = {
     {description: 'What’s slowing the team down in your journey?', question: 'Anchors'},
     {description: 'What risks may the team encounter ahead?', question: 'Risks'}
   ]
-}
+} as TemplateObject
 
 interface TemplatePrompt {
   description: string
@@ -101,15 +47,24 @@ interface TemplateObject {
   [templateName: string]: TemplatePrompt[]
 }
 
-const makeRetroTemplates = (teamId: string, templateObj: TemplateObject = templateBase) => {
-  const phaseItems: Prompt[] = []
-  const templates: Template[] = []
+const makeRetroTemplates = (teamId: string, templateObj = templateBase) => {
+  const phaseItems: RetrospectivePrompt[] = []
+  const templates: ReflectTemplate[] = []
   const templateNames = Object.keys(templateObj)
   templateNames.forEach((templateName) => {
     const promptBase = templateObj[templateName]
-    const template = new Template(templateName, teamId)
+    const template = new ReflectTemplate({name: templateName, teamId})
+
     const prompts = promptBase.map(
-      (prompt, idx) => new Prompt(template, idx, prompt.question, prompt.description, prompt.title)
+      (prompt, idx) =>
+        new RetrospectivePrompt({
+          teamId,
+          templateId: template.id,
+          sortOrder: idx,
+          question: prompt.question,
+          description: prompt.description,
+          title: prompt.title
+        })
     )
     templates.push(template)
     phaseItems.push(...prompts)

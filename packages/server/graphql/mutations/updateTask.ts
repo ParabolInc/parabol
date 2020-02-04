@@ -143,7 +143,7 @@ export default {
     const isPublic = !isPrivate || isPrivatized
 
     // get notification diffs
-    const {notificationsToRemove, notificationsToAdd} = await publishChangeNotifications(
+    const {notificationsToAdd} = await publishChangeNotifications(
       newTask,
       task,
       viewerId,
@@ -152,8 +152,7 @@ export default {
     const data = {
       isPrivatized,
       taskId,
-      notificationsToAdd,
-      notificationsToRemove
+      notificationsToAdd
     }
     teamMembers.forEach(({userId}) => {
       if (isPublic || userId === newTask.userId || userId === viewerId) {

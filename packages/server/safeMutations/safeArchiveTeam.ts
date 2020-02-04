@@ -35,12 +35,6 @@ const safeArchiveTeam = async (teamId: string) => {
       .update((invitation) => ({
         expiresAt: r.min([invitation('expiresAt'), now])
       })),
-    removedTeamNotifications: r
-      .table('Notification')
-      // TODO index
-      .filter({teamId})
-      .delete({returnChanges: true})('changes')('new_val')
-      .default([]),
     removedSuggestedActionIds: r
       .table('SuggestedAction')
       .filter({teamId})

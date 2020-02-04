@@ -1,15 +1,14 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../billing/helpers/adjustUserCount'
 import getRethink from '../../database/rethinkDriver'
-import removeTeamMember from './helpers/removeTeamMember'
-import RemoveOrgUserPayload from '../types/RemoveOrgUserPayload'
+import OrganizationUser from '../../database/types/OrganizationUser'
+import User from '../../database/types/User'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEnums'
-import OrganizationUser from '../../database/types/OrganizationUser'
-import Notification from '../../database/types/Notification'
-import User from '../../database/types/User'
+import RemoveOrgUserPayload from '../types/RemoveOrgUserPayload'
+import removeTeamMember from './helpers/removeTeamMember'
 
 const removeOrgUser = {
   type: RemoveOrgUserPayload,
@@ -60,17 +59,12 @@ const removeOrgUser = {
       return arr
     }, [])
 
-    const removedTeamNotifications = perTeamRes.reduce((arr: any[], res) => {
-      arr.push(...res.removedNotifications)
-      return arr
-    }, [])
-
     const kickOutNotificationIds = perTeamRes.reduce((arr: string[], res) => {
       arr.push(res.notificationId)
       return arr
     }, [])
 
-    const {allRemovedOrgNotifications, user, organizationUser} = await r({
+    const {user, organizationUser} = await r({
       organizationUser: (r
         .table('OrganizationUser')
         .getAll(userId, {index: 'userId'})
@@ -81,35 +75,7 @@ const removeOrgUser = {
           {returnChanges: true}
         )('changes')(0)('new_val')
         .default(null) as unknown) as OrganizationUser,
-      user: (r.table('User').get(userId) as unknown) as User,
-      // remove stale notifications
-      allRemovedOrgNotifications: (r
-        .table('Notification')
-        .getAll(userId, {index: 'userIds'})
-        .filter({orgId})
-        .update(
-          (notification) => ({
-            // if this was for many people, remove them from it
-            userIds: notification('userIds').filter((id) => id.ne(userId))
-          }),
-          {returnChanges: true}
-        )('changes')('new_val')
-        .default([])
-        .do((allNotifications) => {
-          return {
-            notifications: allNotifications,
-            // if this was for them, delete it
-            deletions: r
-              .table('Notification')
-              .getAll(r.args(allNotifications('id')), {index: 'id'})
-              .filter((notification) =>
-                notification('userIds')
-                  .count()
-                  .eq(0)
-              )
-              .delete()
-          }
-        }) as unknown) as {notifications: Notification[]; deletions: any[]}
+      user: (r.table('User').get(userId) as unknown) as User
     }).run()
 
     // need to make sure the org doc is updated before adjusting this
@@ -129,8 +95,6 @@ const removeOrgUser = {
       teamIds,
       teamMemberIds,
       taskIds,
-      removedTeamNotifications,
-      removedOrgNotifications: allRemovedOrgNotifications.notifications,
       userId,
       organizationUserId: organizationUser.id
     }

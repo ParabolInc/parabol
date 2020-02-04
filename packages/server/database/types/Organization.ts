@@ -25,7 +25,8 @@ export default class Organization {
   picture?: string
   showConversionModal?: boolean
   stripeId?: string
-  stripeSubscriptionId?: string
+  stripeSubscriptionId?: string | null
+  upcomingInvoiceEmailSentAt?: Date
   tier: TierEnum
   updatedAt: Date
   constructor(input: Input) {

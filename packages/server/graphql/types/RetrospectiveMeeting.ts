@@ -16,6 +16,7 @@ import {getUserId} from '../../utils/authorization'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import RetrospectiveMeetingMember from './RetrospectiveMeetingMember'
 import filterTasksByMeeting from '../../utils/filterTasksByMeeting'
+import {GQLContext} from '../graphql'
 
 const ReflectionGroupSortEnum = new GraphQLEnumType({
   name: 'ReflectionGroupSortEnum',
@@ -26,7 +27,7 @@ const ReflectionGroupSortEnum = new GraphQLEnumType({
   }
 })
 
-const RetrospectiveMeeting = new GraphQLObjectType({
+const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
   name: 'RetrospectiveMeeting',
   interfaces: () => [NewMeeting],
   description: 'A retrospective meeting',
