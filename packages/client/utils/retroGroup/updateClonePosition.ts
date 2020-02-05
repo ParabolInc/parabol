@@ -77,7 +77,14 @@ const maybeUpdate = (
 
 const updateClonePosition = (targetEl: HTMLDivElement, reflectionId: string, maxTop: number) => {
   const clone = document.getElementById(`clone-${reflectionId}`) as HTMLDivElement
-  if (!clone) return
+  if (!clone || clone.getAttribute('acquired')) return
+  // DIRTY HACK: makes cancelled drags in the expanded group look good
+  // 'acquired' is necessary otherwise the hidden card will try to take control of the clone
+  clone.setAttribute('acquired', 'true')
+  targetEl.style.opacity = '0'
+  setTimeout(() => {
+    targetEl.style.opacity = ''
+  }, Times.REFLECTION_DROP_DURATION * 0.9)
   maybeUpdate(clone, targetEl, maxTop, Times.REFLECTION_DROP_DURATION)
 }
 

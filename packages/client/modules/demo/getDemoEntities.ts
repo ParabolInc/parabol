@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {fetchQuery} from 'relay-runtime'
 import Atmosphere from '../../Atmosphere'
+import {getDemoEntitiesQuery} from '__generated__/getDemoEntitiesQuery.graphql'
 
 const query = graphql`
   query getDemoEntitiesQuery($text: String!) {
@@ -17,10 +18,10 @@ const query = graphql`
 const getDemoEntities = async (text: string) => {
   if (!text || text.length <= 2) return []
   const remoteAtmosphere = new Atmosphere()
-  const res = await fetchQuery<any>(remoteAtmosphere, query, {text})
+  const res = await fetchQuery<getDemoEntitiesQuery>(remoteAtmosphere, query, {text})
   const {getDemoEntities} = res
-  const {entities} = getDemoEntities
-  return entities
+  const {entities} = getDemoEntities!
+  return entities || []
 }
 
 export default getDemoEntities

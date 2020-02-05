@@ -291,6 +291,7 @@ export const enum ZIndex {
   SIDE_SHEET = 8,
   SNACKBAR = 24 /* snackbar is kind of dialog */,
   REFLECTION_IN_FLIGHT = 8,
+  REFLECTION_IN_FLIGHT_LOCAL = 26, // keep it above the dialog
   TOOLTIP = 24 /* portal needs to float above other components, especially sidebars */
 }
 

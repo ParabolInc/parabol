@@ -4,7 +4,7 @@ import rateLimit from '../rateLimit'
 import GetDemoEntitiesPayload from '../types/GetDemoEntitiesPayload'
 
 const getDemoEntities = {
-  type: GetDemoEntitiesPayload,
+  type: GraphQLNonNull(GetDemoEntitiesPayload),
   args: {
     text: {
       type: GraphQLNonNull(GraphQLString),
