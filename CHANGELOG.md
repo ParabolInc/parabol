@@ -23,6 +23,8 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 * Janky grouping demo animations
 * Bad reconnect logic (#3502)
 * Editing status not firing (#3507)
+* Cancel drags in expanded groups (#3560)
+* Cards occassionally not being dragged
 
 ## 4.20.1 2020-Jan-30
 
