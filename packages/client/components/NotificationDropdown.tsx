@@ -10,6 +10,8 @@ import {NotificationDropdown_viewer} from '__generated__/NotificationDropdown_vi
 import {MenuProps} from '../hooks/useMenu'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
+import SetNotificationStatusMutation from 'mutations/SetNotificationStatusMutation'
+import useAtmosphere from 'hooks/useAtmosphere'
 
 interface Props {
   menuProps: MenuProps
@@ -38,6 +40,7 @@ const NotificationDropdown = (props: Props) => {
   const hasNotifications = edges.length > 0
   const timeOut = useTimeout(300)
   const lastItem = useLoadMoreOnScrollBottom(relay)
+  const atmosphere = useAtmosphere()
   return (
     <Menu ariaLabel={'Select a notification'} {...menuProps}>
       {!hasNotifications && (
@@ -46,7 +49,11 @@ const NotificationDropdown = (props: Props) => {
       {edges.map(({node}) => {
         const {id: notificationId, status} = node
         const onViewFn = () => {
-          console.log('viewable', notificationId)
+          SetNotificationStatusMutation(
+            atmosphere,
+            {notificationId, status: NotificationStatusEnum.READ},
+            {}
+          )
         }
         const onView = status === NotificationStatusEnum.UNREAD ? onViewFn : undefined
         return (
@@ -58,7 +65,7 @@ const NotificationDropdown = (props: Props) => {
           />
         )
       })}
-      {timeOut && lastItem}
+      {hasNotifications && timeOut && <MenuItem key={'last'} label={lastItem} />}
     </Menu>
   )
 }

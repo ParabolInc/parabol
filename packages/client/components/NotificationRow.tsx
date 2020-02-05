@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {ReactNode} from 'react'
+import React, {ReactNode, useState} from 'react'
 import {NotificationStatusEnum} from 'types/graphql'
 import {PALETTE} from '../styles/paletteV2'
 
@@ -36,8 +36,9 @@ interface Props {
 
 const NotificationRow = (props: Props) => {
   const {avatar, children, status} = props
-  const isClicked = status === NotificationStatusEnum.CLICKED
-  const isNew = status === NotificationStatusEnum.UNREAD
+  const [initialStatus] = useState(status)
+  const isClicked = initialStatus === NotificationStatusEnum.CLICKED
+  const isNew = initialStatus === NotificationStatusEnum.UNREAD
   return (
     <Row isNew={!isClicked}>
       <Avatar src={avatar} />

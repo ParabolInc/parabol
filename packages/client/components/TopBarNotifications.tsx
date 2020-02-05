@@ -6,6 +6,7 @@ import {createFragmentContainer} from 'react-relay'
 import lazyPreload from 'utils/lazyPreload'
 import TopBarIcon from './TopBarIcon'
 import {TopBarNotifications_viewer} from '__generated__/TopBarNotifications_viewer.graphql'
+import {NotificationStatusEnum} from '../types/graphql'
 
 const NotificationDropdown = lazyPreload(() =>
   import(
@@ -22,7 +23,7 @@ const TopBarNotifications = (props: Props) => {
   const {viewer} = props
   const {notifications} = viewer || {notifications: {edges: []}}
   const {edges} = notifications
-  const hasNotifications = edges.length > 0
+  const hasNotifications = edges.some(({node}) => node.status === NotificationStatusEnum.UNREAD)
   const menuContentRef = useRef<HTMLDivElement>(null)
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu<HTMLDivElement>(
     MenuPosition.UPPER_RIGHT,
@@ -57,6 +58,7 @@ export default createFragmentContainer(TopBarNotifications, {
         edges {
           node {
             id
+            status
           }
         }
       }
