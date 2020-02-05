@@ -1,62 +1,27 @@
-import {TimelineFeedList_viewer} from '../__generated__/TimelineFeedList_viewer.graphql'
-import React, {Component} from 'react'
-import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import useLoadMoreOnScrollBottom from 'hooks/useLoadMoreOnScrollBottom'
+import React from 'react'
+import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
+import {TimelineFeedList_viewer} from '../__generated__/TimelineFeedList_viewer.graphql'
 import TimelineEvent from './TimelineEvent'
-import 'intersection-observer'
 
 interface Props {
   viewer: TimelineFeedList_viewer
   relay: RelayPaginationProp
 }
 
-class TimelineFeedList extends Component<Props> {
-  intersectionObserver!: IntersectionObserver
-  lastItemRef?: HTMLDivElement
-  constructor(props: Props) {
-    super(props)
-    this.intersectionObserver = new IntersectionObserver((entries) => {
-      const [entry] = entries
-      if (entry.intersectionRatio > 0) {
-        this.loadMore()
-      }
-    })
-  }
-
-  componentWillUnmount(): void {
-    this.intersectionObserver.disconnect()
-  }
-
-  loadMore = () => {
-    const {
-      relay: {hasMore, isLoading, loadMore}
-    } = this.props
-    if (!hasMore() || isLoading()) return
-    // can remove pending https://github.com/DefinitelyTyped/DefinitelyTyped/pull/32609
-    loadMore(20, undefined as any)
-  }
-
-  render() {
-    const {viewer} = this.props
-    const {timeline} = viewer
-    return (
-      <div>
-        {timeline.edges.map(({node: timelineEvent}) => (
-          <TimelineEvent key={timelineEvent.id} timelineEvent={timelineEvent} />
-        ))}
-        <div
-          ref={(c) => {
-            if (c) {
-              this.intersectionObserver.observe(c)
-              this.lastItemRef = c
-            } else {
-              this.intersectionObserver.unobserve(this.lastItemRef!)
-            }
-          }}
-        />
-      </div>
-    )
-  }
+const TimelineFeedList = (props: Props) => {
+  const {relay, viewer} = props
+  const {timeline} = viewer
+  const lastItem = useLoadMoreOnScrollBottom(relay)
+  return (
+    <div>
+      {timeline.edges.map(({node: timelineEvent}) => (
+        <TimelineEvent key={timelineEvent.id} timelineEvent={timelineEvent} />
+      ))}
+      {lastItem}
+    </div>
+  )
 }
 
 export default createPaginationContainer(

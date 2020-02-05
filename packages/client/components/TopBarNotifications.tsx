@@ -52,7 +52,8 @@ export default createFragmentContainer(TopBarNotifications, {
   viewer: graphql`
     fragment TopBarNotifications_viewer on User {
       ...NotificationDropdown_viewer
-      notifications(first: 100) @connection(key: "NotificationDropdown_notifications") {
+      notifications(first: $first, after: $after)
+        @connection(key: "NotificationDropdown_notifications") {
         edges {
           node {
             id

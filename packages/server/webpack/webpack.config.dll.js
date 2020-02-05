@@ -21,7 +21,6 @@ module.exports = {
       'graphiql',
       'hoist-non-react-statics',
       'immutable',
-      'intersection-observer',
       'json2csv',
       'jwt-decode',
       'linkify-it',

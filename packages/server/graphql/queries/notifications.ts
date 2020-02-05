@@ -1,6 +1,7 @@
-import {GraphQLInt, GraphQLString, GraphQLNonNull} from 'graphql'
+import {GraphQLInt, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
+import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import {NotificationConnection} from '../types/Notification'
 
 export default {
@@ -8,24 +9,25 @@ export default {
   args: {
     // currently not used
     first: {
-      type: GraphQLInt
+      type: GraphQLNonNull(GraphQLInt)
     },
     after: {
-      type: GraphQLString
+      type: GraphQLISO8601Type
     }
   },
   description: 'all the notifications for a single user',
-  resolve: async (_source, {first}, {authToken}) => {
+  resolve: async (_source, {first, after}, {authToken}) => {
     const r = await getRethink()
     // AUTH
     const userId = getUserId(authToken)
-
+    const dbAfter = after || r.maxval
     // RESOLUTION
     // TODO consider moving the requestedFields to all queries
     const nodesPlus1 = await r
       .table('Notification')
       .getAll(userId, {index: 'userId'})
       .orderBy(r.desc('createdAt'))
+      .filter((row) => row('createdAt').lt(dbAfter))
       .limit(first + 1)
       .run()
 
@@ -34,11 +36,11 @@ export default {
       cursor: node.createdAt,
       node
     }))
-    const firstEdge = edges[0]
+    const lastEdge = edges[edges.length - 1]
     return {
       edges,
       pageInfo: {
-        startCursor: firstEdge && firstEdge.cursor,
+        endCursor: lastEdge?.cursor,
         hasNextPage: nodesPlus1.length > first
       }
     }

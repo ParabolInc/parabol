@@ -393,8 +393,8 @@ export interface INewMeetingOnUserArguments {
 }
 
 export interface INotificationsOnUserArguments {
-  first?: number | null
-  after?: string | null
+  first: number
+  after?: any | null
 }
 
 export interface IOrganizationOnUserArguments {

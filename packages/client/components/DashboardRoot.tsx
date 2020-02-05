@@ -11,7 +11,7 @@ import Dashboard from './Dashboard'
 import useSubscription from '../hooks/useSubscription'
 
 const query = graphql`
-  query DashboardRootQuery {
+  query DashboardRootQuery($first: Int!, $after: DateTime) {
     viewer {
       ...Dashboard_viewer
     }
@@ -29,7 +29,7 @@ const DashboardRoot = ({atmosphere}: Props) => {
     <QueryRenderer
       environment={atmosphere}
       query={query}
-      variables={{}}
+      variables={{first: 5}}
       fetchPolicy={'store-or-network' as any}
       render={({props}) => {
         return <Dashboard viewer={props ? (props as any).viewer : null} />
