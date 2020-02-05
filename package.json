@@ -23,6 +23,7 @@
   ],
   "scripts": {
     "start": "yarn workspace parabol-server start",
+    "heroku-postbuild": "echo 'Skipping build'",
     "build": "yarn workspace parabol-server build",
     "build:relay": "yarn workspace parabol-server build:relay",
     "quickstart": "yarn workspace parabol-server quickstart",
