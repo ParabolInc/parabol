@@ -1,16 +1,14 @@
+import styled from '@emotion/styled'
+import useEventCallback from 'hooks/useEventCallback'
 import React, {ReactNode, useCallback, useEffect} from 'react'
 import usePortal from '../hooks/usePortal'
 import useRefState from '../hooks/useRefState'
-import {NavSidebar, ZIndex} from '../types/constEnums'
 import {DECELERATE} from '../styles/animation'
-import styled from '@emotion/styled'
+import {navDrawerShadow} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV2'
+import {NavSidebar, ZIndex} from '../types/constEnums'
 import hideBodyScroll from '../utils/hideBodyScroll'
 import PlainButton from './PlainButton/PlainButton'
-import {navDrawerShadow} from '../styles/elevation'
-import useEventCallback from 'hooks/useEventCallback'
-import isReactTouch from 'utils/isReactTouch'
-import isNativeTouch from '../utils/isNativeTouch'
 
 const PEEK_WIDTH = 20
 
@@ -142,7 +140,7 @@ const SwipeableDashSidebar = (props: Props) => {
 
   const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
     window.clearTimeout(swipe.peekTimeout)
-    const eventType = isNativeTouch(e) ? 'touchmove' : 'mousemove'
+    const eventType = e.type === 'mouseup' ? 'mousemove' : 'touchmove'
     document.removeEventListener(eventType, onMouseMove)
     const movementX = swipe.lastX - swipe.startX
     const {isOpen: nextIsOpen} = swipe
@@ -172,7 +170,7 @@ const SwipeableDashSidebar = (props: Props) => {
   })
 
   const onMouseMove = useEventCallback((e: MouseEvent | TouchEvent) => {
-    const event = isNativeTouch(e) ? e.touches[0] : e
+    const event = e.type === 'touchmove' ? (e as TouchEvent).touches[0] : (e as MouseEvent)
     const {clientX, clientY} = event
     if (swipe.isSwipe === null) {
       // they don't want a peek
@@ -196,15 +194,16 @@ const SwipeableDashSidebar = (props: Props) => {
     if (swipe.downCaptured) return
     const {current: x} = xRef
     if (x !== 0 && x !== NavSidebar.WIDTH) return
-    let event
-    if (isReactTouch(e)) {
+    const isTouchStart = e.type === 'touchstart'
+    let event: {clientX: number; clientY: number}
+    if (isTouchStart) {
       document.addEventListener('touchend', onMouseUp, {once: true})
       document.addEventListener('touchmove', onMouseMove)
-      event = e.touches[0]
+      event = (e as React.TouchEvent).touches[0]
     } else {
       document.addEventListener('mouseup', onMouseUp, {once: true})
       document.addEventListener('mousemove', onMouseMove)
-      event = e
+      event = e as React.MouseEvent
     }
     const {clientX, clientY} = event
     swipe.startX = clientX

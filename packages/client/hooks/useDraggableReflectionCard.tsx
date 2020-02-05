@@ -1,28 +1,26 @@
 import React, {useContext, useEffect} from 'react'
-import {PortalContext, SetPortal} from '../components/AtmosphereProvider/PortalProvider'
-import RemoteReflection from '../components/ReflectionGroup/RemoteReflection'
-import useAtmosphere from './useAtmosphere'
-import updateClonePosition, {getDroppingStyles} from '../utils/retroGroup/updateClonePosition'
 import {commitLocalUpdate} from 'relay-runtime'
-import {Times} from '../types/constEnums'
-import useEventCallback from './useEventCallback'
-import isNativeTouch from '../utils/isNativeTouch'
-import getTargetGroupId from '../utils/retroGroup/getTargetGroupId'
-import {DragReflectionDropTargetTypeEnum} from '../types/graphql'
-import handleDrop from '../utils/retroGroup/handleDrop'
-import getTargetReference from '../utils/multiplayerMasonry/getTargetReference'
-import UpdateDragLocationMutation from '../mutations/UpdateDragLocationMutation'
-import getIsDrag from '../utils/retroGroup/getIsDrag'
-import cloneReflection from '../utils/retroGroup/cloneReflection'
 import shortid from 'shortid'
-import StartDraggingReflectionMutation from '../mutations/StartDraggingReflectionMutation'
-import isReactTouch from '../utils/isReactTouch'
+import {PortalContext, SetPortal} from '../components/AtmosphereProvider/PortalProvider'
+import {SwipeColumn} from '../components/GroupingKanban'
 import {ReflectionDragState} from '../components/ReflectionGroup/DraggableReflectionCard'
-import {DraggableReflectionCard_reflection} from '../__generated__/DraggableReflectionCard_reflection.graphql'
+import RemoteReflection from '../components/ReflectionGroup/RemoteReflection'
+import StartDraggingReflectionMutation from '../mutations/StartDraggingReflectionMutation'
+import UpdateDragLocationMutation from '../mutations/UpdateDragLocationMutation'
+import {Times} from '../types/constEnums'
+import {DragReflectionDropTargetTypeEnum} from '../types/graphql'
+import findDropZoneFromEvent from '../utils/findDropZoneFromEvent'
 import maybeStartReflectionScroll from '../utils/maybeStartReflectionScroll'
 import measureDroppableReflections from '../utils/measureDroppableReflections'
-import findDropZoneFromEvent from '../utils/findDropZoneFromEvent'
-import {SwipeColumn} from '../components/GroupingKanban'
+import getTargetReference from '../utils/multiplayerMasonry/getTargetReference'
+import cloneReflection from '../utils/retroGroup/cloneReflection'
+import getIsDrag from '../utils/retroGroup/getIsDrag'
+import getTargetGroupId from '../utils/retroGroup/getTargetGroupId'
+import handleDrop from '../utils/retroGroup/handleDrop'
+import updateClonePosition, {getDroppingStyles} from '../utils/retroGroup/updateClonePosition'
+import {DraggableReflectionCard_reflection} from '../__generated__/DraggableReflectionCard_reflection.graphql'
+import useAtmosphere from './useAtmosphere'
+import useEventCallback from './useEventCallback'
 
 const windowDims = {
   clientHeight: window.innerHeight,
@@ -175,7 +173,7 @@ const useDragAndDrop = (
   const {id: reflectionId, reflectionGroupId, isDropping, isEditing} = reflection
 
   const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
-    if (isNativeTouch(e) && drag.ref) {
+    if (e.type === 'touchend' && drag.ref) {
       drag.ref.removeEventListener('touchmove', onMouseMove)
     } else {
       document.removeEventListener('mousemove', onMouseMove)
@@ -227,13 +225,13 @@ const useDragAndDrop = (
   const onMouseMove = useEventCallback((e: MouseEvent | TouchEvent) => {
     // required to prevent address bar scrolling & other strange browser things on mobile view
     e.preventDefault()
-    const isTouch = isNativeTouch(e)
-    const {clientX, clientY} = isTouch ? (e as TouchEvent).touches[0] : (e as MouseEvent)
+    const isTouchMove = e.type === 'touchmove'
+    const {clientX, clientY} = isTouchMove ? (e as TouchEvent).touches[0] : (e as MouseEvent)
     const wasDrag = drag.isDrag
     if (!wasDrag) {
       drag.isDrag = getIsDrag(clientX, clientY, drag.startX, drag.startY)
       if (!drag.isDrag || !drag.ref) return
-      const eventName = isTouch ? 'touchend' : 'mouseup'
+      const eventName = isTouchMove ? 'touchend' : 'mouseup'
       document.addEventListener(eventName, onMouseUp, {once: true})
       const bbox = drag.ref.getBoundingClientRect()!
       // clip quick drags so the cursor is guaranteed to be inside the card
@@ -256,7 +254,7 @@ const useDragAndDrop = (
         maybeStartReflectionScroll(drag)
       }
     }
-    if (isTouch && swipeColumn) {
+    if (isTouchMove && swipeColumn) {
       const {clientX} = (e as TouchEvent).touches[0]
       const minThresh = windowDims.clientWidth * 0.1
       if (clientX <= minThresh) {
@@ -271,8 +269,8 @@ const useDragAndDrop = (
   const onMouseDown = useEventCallback(
     (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
       if (isDropping || staticIdx === -1 || isEditing) return
-      const isTouch = isReactTouch(e)
-      if (isTouch && drag.ref) {
+      const isTouchStart = e.type === 'touchstart'
+      if (isTouchStart && drag.ref) {
         // https://stackoverflow.com/questions/33298828/touch-move-event-dont-fire-after-touch-start-target-is-removed
         drag.ref.addEventListener('touchmove', onMouseMove)
         drag.ref.addEventListener('touchend', onMouseUp)
@@ -280,7 +278,7 @@ const useDragAndDrop = (
         document.addEventListener('mousemove', onMouseMove)
         document.addEventListener('mouseup', onMouseUp)
       }
-      const {clientX, clientY} = isTouch
+      const {clientX, clientY} = isTouchStart
         ? (e as React.TouchEvent<HTMLDivElement>).touches[0]
         : (e as React.MouseEvent<HTMLDivElement>)
       drag.startX = clientX
