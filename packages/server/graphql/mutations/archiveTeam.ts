@@ -39,7 +39,10 @@ export default {
     const notifications = users
       .map(({id}) => id)
       .filter((userId) => userId !== viewerId)
-      .map((notifiedUserId) => new NotificationTeamArchived({userId: notifiedUserId, teamId}))
+      .map(
+        (notifiedUserId) =>
+          new NotificationTeamArchived({userId: notifiedUserId, teamId, archivorUserId: viewerId})
+      )
 
     if (notifications.length) {
       await r
@@ -57,7 +60,7 @@ export default {
 
     users.forEach((user) => {
       const {id, tms} = user
-      // publish(SubscriptionChannel.NOTIFICATION, id, 'AuthTokenPayload', {tms})
+      publish(SubscriptionChannel.NOTIFICATION, id, 'AuthTokenPayload', {tms})
     })
 
     return data

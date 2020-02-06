@@ -54,6 +54,23 @@ export const up = async function(r: R) {
       )
       .run()
 
+    // add archivorUserId to team archived
+    await r
+      .table('Notification')
+      .filter({type: 'TEAM_ARCHIVED'})
+      .update(
+        (row) => ({
+          archivorUserId: r
+            .table('TeamMember')
+            .getAll(row('teamId'), {index: 'teamId'})
+            .filter({isLead: true})
+            .nth(0)('userId')
+            .default(row('userId'))
+        }),
+        {nonAtomic: true}
+      )
+      .run()
+
     await Promise.all([
       r
         .table('Notification')

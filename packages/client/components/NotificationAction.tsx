@@ -14,9 +14,9 @@ interface Props {
   onClick(): void
 }
 
-const NotificationSubtitle = (props: Props) => {
+const NotificationAction = (props: Props) => {
   const {label, onClick} = props
   return <Button onClick={onClick}>{label}</Button>
 }
 
-export default NotificationSubtitle
+export default NotificationAction

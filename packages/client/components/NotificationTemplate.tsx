@@ -4,9 +4,12 @@ import React, {ReactNode} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {NotificationStatusEnum} from 'types/graphql'
 import {NotificationTemplate_notification} from '__generated__/NotificationTemplate_notification.graphql'
-import NotificationRow from '../../../components/NotificationRow'
+import NotificationRow from './NotificationRow'
 import NotificationBody from './NotificationBody'
 import NotificationMessage from './NotificationMessage'
+import parabolLogo from '../../../static/images/brand/mark-color.svg'
+import useRefreshInterval from 'hooks/useRefreshInterval'
+import ms from 'ms'
 
 interface Props {
   avatar?: string
@@ -19,8 +22,14 @@ interface Props {
 const NotificationTemplate = (props: Props) => {
   const {avatar, message, notification, action, children} = props
   const {createdAt, status} = notification
+  // keep the timestamp fresh
+  useRefreshInterval(ms('1m'))
   return (
-    <NotificationRow avatar={avatar} status={(status as unknown) as NotificationStatusEnum}>
+    <NotificationRow
+      avatar={avatar || parabolLogo}
+      isParabol={!avatar}
+      status={(status as unknown) as NotificationStatusEnum}
+    >
       <NotificationBody>
         <NotificationMessage>{message}</NotificationMessage>
         <NotificationSubtitle timestamp={createdAt}>{action}</NotificationSubtitle>

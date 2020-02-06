@@ -31,6 +31,7 @@ export default {
           inactive: false,
           updatedAt: now,
           lastSeenAt: now,
+          lastSeenAtURL: null,
           connectedSockets: user('connectedSockets')
             .default([])
             .append(socketId)

@@ -18,6 +18,7 @@ import {NotificationEnum, SuggestedActionTypeEnum} from 'parabol-client/types/gr
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import getBestInvitationMeeting from '../../utils/getBestInvitationMeeting'
+import NotificationTeamInvitation from '../../database/types/NotificationTeamInvitation'
 
 const randomBytes = promisify(crypto.randomBytes, crypto)
 
@@ -106,18 +107,17 @@ export default {
         )
       }
       // insert notification records
-      const notificationsToInsert = [] as NotificationToInsert[]
+      const notificationsToInsert = [] as NotificationTeamInvitation[]
       teamInvitationsToInsert.forEach((invitation) => {
         const user = users.find((user) => user.email === invitation.email)
         if (user) {
-          notificationsToInsert.push({
-            id: shortid.generate(),
-            type: NotificationEnum.TEAM_INVITATION,
-            startAt: now,
-            userIds: [user.id],
-            invitationId: invitation.id,
-            teamId
-          })
+          notificationsToInsert.push(
+            new NotificationTeamInvitation({
+              userId: user.id,
+              invitationId: invitation.id,
+              teamId
+            })
+          )
         }
       })
       if (notificationsToInsert.length > 0) {
@@ -154,10 +154,7 @@ export default {
 
       // Tell each invitee
       notificationsToInsert.forEach((notification) => {
-        const {
-          userIds: [userId],
-          id: teamInvitationNotificationId
-        } = notification
+        const {userId, id: teamInvitationNotificationId} = notification
         const subscriberData = {
           ...data,
           teamInvitationNotificationId

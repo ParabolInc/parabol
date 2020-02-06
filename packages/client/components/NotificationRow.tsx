@@ -10,12 +10,15 @@ const Row = styled('div')<{isNew: boolean}>(({isNew}) => ({
   width: '100%'
 }))
 
-const Avatar = styled('img')({
+const Avatar = styled('img')<{isParabol: boolean}>(({isParabol}) => ({
+  background: '#fff',
   borderRadius: '100%',
+  border: isParabol ? `solid 1px ${PALETTE.BORDER_GRAY}` : undefined,
   height: 40,
   margin: 12,
+  padding: isParabol ? 2 : undefined,
   width: 40
-})
+}))
 
 const NewDotColumn = styled('div')({
   padding: 12
@@ -32,17 +35,18 @@ const Dot = styled('div')<{isNew: boolean}>(({isNew}) => ({
 interface Props {
   avatar: string
   children: ReactNode
+  isParabol: boolean
   status: NotificationStatusEnum
 }
 
 const NotificationRow = (props: Props) => {
-  const {avatar, children, status} = props
+  const {avatar, children, isParabol, status} = props
   const [initialStatus] = useState(status)
   const isClicked = initialStatus === NotificationStatusEnum.CLICKED
   const isNew = initialStatus === NotificationStatusEnum.UNREAD
   return (
     <Row isNew={!isClicked}>
-      <Avatar src={avatar} />
+      <Avatar isParabol={isParabol} src={avatar} />
       {children}
       <NewDotColumn>
         <Dot isNew={isNew} />

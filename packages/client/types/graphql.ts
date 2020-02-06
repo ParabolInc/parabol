@@ -4742,6 +4742,11 @@ export interface IArchiveTeamPayload {
  */
 export interface INotifyTeamArchived {
   __typename: 'NotifyTeamArchived'
+
+  /**
+   * the user that archived the team
+   */
+  archivor: IUser
   team: ITeam
 
   /**
