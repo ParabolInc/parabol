@@ -36,6 +36,24 @@ export const up = async function(r: R) {
           .without('startAt', 'userIds')
       )
       .run()
+
+    // add evictorUserId to all kick out notifications
+    await r
+      .table('Notification')
+      .filter({type: 'KICKED_OUT'})
+      .update(
+        (row) => ({
+          evictorUserId: r
+            .table('TeamMember')
+            .getAll(row('teamId'), {index: 'teamId'})
+            .filter({isLead: true})
+            .nth(0)('userId')
+            .default(row('userId'))
+        }),
+        {nonAtomic: true}
+      )
+      .run()
+
     await Promise.all([
       r
         .table('Notification')

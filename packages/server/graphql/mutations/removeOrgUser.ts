@@ -1,14 +1,10 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEnums'
-import adjustUserCount from '../../billing/helpers/adjustUserCount'
-import getRethink from '../../database/rethinkDriver'
-import OrganizationUser from '../../database/types/OrganizationUser'
-import User from '../../database/types/User'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import RemoveOrgUserPayload from '../types/RemoveOrgUserPayload'
-import removeTeamMember from './helpers/removeTeamMember'
+import removeFromOrg from './helpers/removeFromOrg'
 
 const removeOrgUser = {
   type: RemoveOrgUserPayload,
@@ -24,8 +20,6 @@ const removeOrgUser = {
     }
   },
   async resolve(_source, {orgId, userId}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = await getRethink()
-    const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
@@ -37,58 +31,17 @@ const removeOrgUser = {
       }
     }
 
-    // RESOLUTION
-    const teamIds = await r
-      .table('Team')
-      .getAll(orgId, {index: 'orgId'})('id')
-      .run()
-    const teamMemberIds = (await r
-      .table('TeamMember')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter({userId, isNotRemoved: true})('id')
-      .run()) as string[]
+    const {
+      tms,
+      taskIds,
+      kickOutNotificationIds,
+      teamIds,
+      teamMemberIds,
+      organizationUserId
+    } = await removeFromOrg(userId, orgId, viewerId, dataLoader)
 
-    const perTeamRes = await Promise.all(
-      teamMemberIds.map((teamMemberId) => {
-        return removeTeamMember(teamMemberId, {isKickout: true}, dataLoader)
-      })
-    )
-
-    const taskIds = perTeamRes.reduce((arr: string[], res) => {
-      arr.push(...res.archivedTaskIds, ...res.reassignedTaskIds)
-      return arr
-    }, [])
-
-    const kickOutNotificationIds = perTeamRes.reduce((arr: string[], res) => {
-      arr.push(res.notificationId)
-      return arr
-    }, [])
-
-    const {user, organizationUser} = await r({
-      organizationUser: (r
-        .table('OrganizationUser')
-        .getAll(userId, {index: 'userId'})
-        .filter({orgId, removedAt: null})
-        .nth(0)
-        .update(
-          {removedAt: now},
-          {returnChanges: true}
-        )('changes')(0)('new_val')
-        .default(null) as unknown) as OrganizationUser,
-      user: (r.table('User').get(userId) as unknown) as User
-    }).run()
-
-    // need to make sure the org doc is updated before adjusting this
-    const {joinedAt, newUserUntil} = organizationUser
-    const prorationDate = newUserUntil >= now ? new Date(joinedAt) : now
-    try {
-      await adjustUserCount(userId, orgId, InvoiceItemType.REMOVE_USER, {prorationDate})
-    } catch (e) {
-      console.log(e)
-    }
-
-    const {tms} = user
     publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {tms})
+
     const data = {
       orgId,
       kickOutNotificationIds,
@@ -96,7 +49,7 @@ const removeOrgUser = {
       teamMemberIds,
       taskIds,
       userId,
-      organizationUserId: organizationUser.id
+      organizationUserId
     }
 
     publish(SubscriptionChannel.ORGANIZATION, orgId, 'RemoveOrgUserPayload', data, subOptions)

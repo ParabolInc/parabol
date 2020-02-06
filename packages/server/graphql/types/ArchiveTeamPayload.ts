@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLList, GraphQLObjectType} from 'graphql'
+import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
-import {resolveNotificationForViewer, resolveTeam} from '../resolvers'
+import {resolveTeam} from '../resolvers'
 import NotifyTeamArchived from './NotifyTeamArchived'
 import StandardMutationError from './StandardMutationError'
 import Team from './Team'
@@ -18,7 +19,12 @@ const ArchiveTeamPayload = new GraphQLObjectType<any, GQLContext>({
     notification: {
       type: NotifyTeamArchived,
       description: 'A notification explaining that the team was archived and removed from view',
-      resolve: resolveNotificationForViewer
+      resolve: async ({notificationIds}, _args, {authToken, dataLoader}) => {
+        if (!notificationIds) return null
+        const notifications = await dataLoader.get('notifications').loadMany(notificationIds)
+        const viewerId = getUserId(authToken)
+        return notifications.find((notification) => notification.userId === viewerId)
+      }
     },
     removedSuggestedActionIds: {
       type: new GraphQLList(GraphQLID),

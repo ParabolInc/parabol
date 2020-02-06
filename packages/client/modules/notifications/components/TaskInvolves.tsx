@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import NotificationAction from 'components/NotificationAction'
-import NotificationSubtitle from 'components/NotificationSubtitle'
 import {Editor} from 'draft-js'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {cardShadow} from 'styles/elevation'
-import NotificationRow from '../../../components/NotificationRow'
+import {NotificationStatusEnum, TaskStatusEnum} from 'types/graphql'
+import convertToTaskContent from 'utils/draftjs/convertToTaskContent'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useEditorState from '../../../hooks/useEditorState'
 import useMutationProps from '../../../hooks/useMutationProps'
@@ -15,10 +15,7 @@ import SetNotificationStatusMutation from '../../../mutations/SetNotificationSta
 import {ASSIGNEE, MENTIONEE} from '../../../utils/constants'
 import {TaskInvolves_notification} from '../../../__generated__/TaskInvolves_notification.graphql'
 import OutcomeCardStatusIndicator from '../../outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
-import NotificationErrorMessage from './NotificationErrorMessage'
-import NotificationMessage from './NotificationMessage'
-import {NotificationStatusEnum, TaskStatusEnum} from 'types/graphql'
-import convertToTaskContent from 'utils/draftjs/convertToTaskContent'
+import NotificationTemplate from './NotificationTemplate'
 
 const involvementWord = {
   [ASSIGNEE]: 'assigned',
@@ -26,11 +23,13 @@ const involvementWord = {
 }
 
 const TaskListView = styled('div')({
+  alignSelf: 'center',
   backgroundColor: '#fff',
   borderRadius: 4,
   boxShadow: cardShadow,
   margin: '4px 0 0',
-  padding: 8
+  padding: 8,
+  width: 240
 })
 
 const IndicatorsBlock = styled('div')({
@@ -54,13 +53,6 @@ const OwnerAvatar = styled('img')({
   width: 24
 })
 
-const Body = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  paddingTop: 8,
-  paddingBottom: 8
-})
-
 interface Props {
   notification: TaskInvolves_notification
 }
@@ -77,21 +69,13 @@ const deletedTask = () => ({
 
 const TaskInvolves = (props: Props) => {
   const {notification} = props
-  const {
-    id: notificationId,
-    task,
-    team,
-    involvement,
-    changeAuthor,
-    createdAt,
-    status: notificationStatus
-  } = notification
+  const {id: notificationId, task, team, involvement, changeAuthor} = notification
   const {content, status, tags, assignee} = task || deletedTask()
   const {picture: changeAuthorPicture, preferredName: changeAuthorName} = changeAuthor
   const {name: teamName, id: teamId} = team
   const action = involvementWord[involvement]
   const [editorState] = useEditorState(content)
-  const {error, submitMutation, onCompleted, onError, submitting} = useMutationProps()
+  const {submitMutation, onCompleted, onError, submitting} = useMutationProps()
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
 
@@ -108,51 +92,44 @@ const TaskInvolves = (props: Props) => {
   }
   const preposition = involvement === MENTIONEE ? ' in' : ''
   return (
-    <NotificationRow
+    <NotificationTemplate
       avatar={changeAuthorPicture}
-      status={(notificationStatus as unknown) as NotificationStatusEnum}
+      message={`${changeAuthorName} ${action} you ${preposition} a task on the ${teamName} team.`}
+      notification={notification}
+      action={<NotificationAction onClick={gotoBoard} label={'See the task'} />}
     >
-      <Body>
-        <NotificationMessage>
-          {`${changeAuthorName} ${action} you ${preposition} a task on the ${teamName} team.`}
-        </NotificationMessage>
-        <NotificationSubtitle timestamp={createdAt}>
-          <NotificationAction onClick={gotoBoard} label={'See the task'} />
-        </NotificationSubtitle>
-        <NotificationErrorMessage error={error} />
-        <TaskListView>
-          <IndicatorsBlock>
-            <OutcomeCardStatusIndicator status={status} />
-            {tags.includes('private') && <OutcomeCardStatusIndicator status='private' />}
-            {tags.includes('archived') && <OutcomeCardStatusIndicator status='archived' />}
-          </IndicatorsBlock>
-          <Editor
-            readOnly
-            editorState={editorState}
-            onChange={() => {
-              /*noop*/
-            }}
-          />
-          <Owner>
-            <OwnerAvatar alt='Avatar' src={assignee.picture || undefined} />
-            <OwnerName>{assignee.preferredName}</OwnerName>
-          </Owner>
-        </TaskListView>
-      </Body>
-    </NotificationRow>
+      <TaskListView>
+        <IndicatorsBlock>
+          <OutcomeCardStatusIndicator status={status} />
+          {tags.includes('private') && <OutcomeCardStatusIndicator status='private' />}
+          {tags.includes('archived') && <OutcomeCardStatusIndicator status='archived' />}
+        </IndicatorsBlock>
+        <Editor
+          readOnly
+          editorState={editorState}
+          onChange={() => {
+            /*noop*/
+          }}
+        />
+        <Owner>
+          <OwnerAvatar alt='Avatar' src={assignee.picture || undefined} />
+          <OwnerName>{assignee.preferredName}</OwnerName>
+        </Owner>
+      </TaskListView>
+    </NotificationTemplate>
   )
 }
 
 export default createFragmentContainer(TaskInvolves, {
   notification: graphql`
     fragment TaskInvolves_notification on NotifyTaskInvolves {
+      ...NotificationTemplate_notification
       id
       changeAuthor {
         picture
         preferredName
       }
       involvement
-      createdAt
       status
       team {
         id

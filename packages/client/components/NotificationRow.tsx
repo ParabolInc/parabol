@@ -6,7 +6,8 @@ import {PALETTE} from '../styles/paletteV2'
 const Row = styled('div')<{isNew: boolean}>(({isNew}) => ({
   background: isNew ? PALETTE.BACKGROUND_MAIN_DARKENED : '#fff',
   cursor: 'default',
-  display: 'flex'
+  display: 'flex',
+  width: '100%'
 }))
 
 const Avatar = styled('img')({

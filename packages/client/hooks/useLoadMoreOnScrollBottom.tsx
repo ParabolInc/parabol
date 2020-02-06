@@ -1,7 +1,10 @@
 import React, {useEffect, useRef, useState} from 'react'
 import {RelayPaginationProp} from 'react-relay'
 
-const useLoadMoreOnScrollBottom = (relay: RelayPaginationProp) => {
+const useLoadMoreOnScrollBottom = (
+  relay: RelayPaginationProp,
+  options?: IntersectionObserverInit
+) => {
   const {loadMore, hasMore, isLoading} = relay
   const [intersectionObserver] = useState(() => {
     return new IntersectionObserver((entries) => {
@@ -10,7 +13,7 @@ const useLoadMoreOnScrollBottom = (relay: RelayPaginationProp) => {
         if (!hasMore() || isLoading()) return
         loadMore(20)
       }
-    })
+    }, options)
   })
   const lastItemRef = useRef<HTMLDivElement>()
   useEffect(() => {
@@ -28,9 +31,7 @@ const useLoadMoreOnScrollBottom = (relay: RelayPaginationProp) => {
           intersectionObserver.unobserve(lastItemRef.current)
         }
       }}
-    >
-      hi there
-    </div>
+    />
   )
 }
 

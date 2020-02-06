@@ -10,7 +10,7 @@ import standardError from '../../utils/standardError'
 import ArchiveTeamPayload from '../types/ArchiveTeamPayload'
 
 export default {
-  type: ArchiveTeamPayload,
+  type: GraphQLNonNull(ArchiveTeamPayload),
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -57,7 +57,7 @@ export default {
 
     users.forEach((user) => {
       const {id, tms} = user
-      publish(SubscriptionChannel.NOTIFICATION, id, 'AuthTokenPayload', {tms})
+      // publish(SubscriptionChannel.NOTIFICATION, id, 'AuthTokenPayload', {tms})
     })
 
     return data

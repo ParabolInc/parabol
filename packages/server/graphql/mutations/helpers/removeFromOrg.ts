@@ -6,10 +6,14 @@ import User from '../../../database/types/User'
 import {DataLoaderWorker} from '../../graphql'
 import removeTeamMember from './removeTeamMember'
 
-const removeFromOrg = async (userId: string, orgId: string, dataLoader: DataLoaderWorker) => {
+const removeFromOrg = async (
+  userId: string,
+  orgId: string,
+  evictorUserId: string,
+  dataLoader: DataLoaderWorker
+) => {
   const r = await getRethink()
   const now = new Date()
-  console.log('uid', userId)
   const teamIds = await r
     .table('Team')
     .getAll(orgId, {index: 'orgId'})('id')
@@ -22,7 +26,7 @@ const removeFromOrg = async (userId: string, orgId: string, dataLoader: DataLoad
 
   const perTeamRes = await Promise.all(
     teamMemberIds.map((teamMemberId) => {
-      return removeTeamMember(teamMemberId, {isKickout: true}, dataLoader)
+      return removeTeamMember(teamMemberId, {evictorUserId}, dataLoader)
     })
   )
 

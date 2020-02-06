@@ -1,8 +1,10 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import useAtmosphere from 'hooks/useAtmosphere'
 import useLoadMoreOnScrollBottom from 'hooks/useLoadMoreOnScrollBottom'
 import useTimeout from 'hooks/useTimeout'
 import NotificationPicker from 'modules/notifications/components/NotificationRow/NotificationPicker'
+import SetNotificationStatusMutation from 'mutations/SetNotificationStatusMutation'
 import React, {RefObject} from 'react'
 import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
 import {NotificationStatusEnum} from 'types/graphql'
@@ -10,8 +12,6 @@ import {NotificationDropdown_viewer} from '__generated__/NotificationDropdown_vi
 import {MenuProps} from '../hooks/useMenu'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
-import SetNotificationStatusMutation from 'mutations/SetNotificationStatusMutation'
-import useAtmosphere from 'hooks/useAtmosphere'
 
 interface Props {
   menuProps: MenuProps
@@ -39,7 +39,10 @@ const NotificationDropdown = (props: Props) => {
   const {edges} = notifications
   const hasNotifications = edges.length > 0
   const timeOut = useTimeout(300)
-  const lastItem = useLoadMoreOnScrollBottom(relay)
+  const lastItem = useLoadMoreOnScrollBottom(relay, {
+    root: parentRef.current,
+    rootMargin: '8px'
+  })
   const atmosphere = useAtmosphere()
   return (
     <Menu ariaLabel={'Select a notification'} {...menuProps}>
@@ -55,11 +58,19 @@ const NotificationDropdown = (props: Props) => {
             {}
           )
         }
+        const onClickFn = () => {
+          SetNotificationStatusMutation(
+            atmosphere,
+            {notificationId, status: NotificationStatusEnum.CLICKED},
+            {}
+          )
+        }
         const onView = status === NotificationStatusEnum.UNREAD ? onViewFn : undefined
         return (
           <MenuItem
             key={node.id}
             onView={onView}
+            onClick={onClickFn}
             parentRef={parentRef}
             label={<NotificationPicker notification={node} />}
           />

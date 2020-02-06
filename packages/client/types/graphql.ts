@@ -23,7 +23,7 @@ export interface IGraphQLResponseErrorLocation {
 export interface IQuery {
   __typename: 'Query'
   viewer: IUser | null
-  getDemoEntities: IGetDemoEntitiesPayload | null
+  getDemoEntities: IGetDemoEntitiesPayload
   massInvitation: IMassInvitationPayload
   verifiedInvitation: IVerifiedInvitationPayload
   SAMLIdP: string | null
@@ -2612,7 +2612,7 @@ export interface ITeamInvitationPayload {
 export interface IGetDemoEntitiesPayload {
   __typename: 'GetDemoEntitiesPayload'
   error: IStandardMutationError | null
-  entities: Array<IGoogleAnalyzedEntity>
+  entities: Array<IGoogleAnalyzedEntity> | null
 }
 
 export interface IGoogleAnalyzedEntity {
@@ -2756,7 +2756,7 @@ export interface IMutation {
    * Create a new team and add the first team member
    */
   addTeam: IAddTeamPayload
-  archiveTeam: IArchiveTeamPayload | null
+  archiveTeam: IArchiveTeamPayload
 
   /**
    * Automatically group reflections
@@ -5666,9 +5666,9 @@ export interface INotifyKickedOut {
   userId: string
 
   /**
-   * true if kicked out, false if leaving by choice
+   * the user that evicted recipient
    */
-  isKickout: boolean | null
+  evictor: IUser
 
   /**
    * The name of the team the user is joining

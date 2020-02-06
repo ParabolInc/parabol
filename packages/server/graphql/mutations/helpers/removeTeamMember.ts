@@ -1,8 +1,7 @@
-import shortid from 'shortid'
-import {KICKED_OUT} from '../../../../client/utils/constants'
 import fromTeamMemberId from '../../../../client/utils/relay/fromTeamMemberId'
 import getRethink from '../../../database/rethinkDriver'
 import CheckInStage from '../../../database/types/CheckInStage'
+import NotificationKickedOut from '../../../database/types/NotificationKickedOut'
 import Task from '../../../database/types/Task'
 import UpdatesStage from '../../../database/types/UpdatesStage'
 import User from '../../../database/types/User'
@@ -11,7 +10,7 @@ import {DataLoaderWorker} from '../../graphql'
 import removeStagesFromMeetings from './removeStagesFromMeetings'
 
 interface Options {
-  isKickout: boolean
+  evictorUserId?: string
 }
 
 const removeTeamMember = async (
@@ -19,7 +18,7 @@ const removeTeamMember = async (
   options: Options,
   dataLoader: DataLoaderWorker
 ) => {
-  const {isKickout} = options
+  const {evictorUserId} = options
   const r = await getRethink()
   const now = new Date()
   const {userId, teamId} = fromTeamMemberId(teamMemberId)
@@ -128,17 +127,12 @@ const removeTeamMember = async (
   }).run()
 
   let notificationId
-  if (isKickout) {
-    notificationId = shortid.generate()
+  if (evictorUserId) {
+    const notification = new NotificationKickedOut({teamId, userId, evictorUserId})
+    notificationId = notification.id
     await r
       .table('Notification')
-      .insert({
-        id: notificationId,
-        startAt: now,
-        teamId,
-        type: KICKED_OUT,
-        userIds: [userId]
-      })
+      .insert(notification)
       .run()
   }
 

@@ -1,9 +1,10 @@
 import {GraphQLObjectType} from 'graphql'
-import {resolveNotificationForViewer, resolveTask} from '../resolvers'
-import NotifyTaskInvolves from './NotifyTaskInvolves'
-import Task from './Task'
-import StandardMutationError from './StandardMutationError'
+import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
+import {resolveTask} from '../resolvers'
+import NotifyTaskInvolves from './NotifyTaskInvolves'
+import StandardMutationError from './StandardMutationError'
+import Task from './Task'
 
 const CreateTaskPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'CreateTaskPayload',
@@ -17,7 +18,12 @@ const CreateTaskPayload = new GraphQLObjectType<any, GQLContext>({
     },
     involvementNotification: {
       type: NotifyTaskInvolves,
-      resolve: resolveNotificationForViewer
+      resolve: async ({notificationIds}, _args, {authToken, dataLoader}) => {
+        if (!notificationIds) return null
+        const notifications = await dataLoader.get('notifications').loadMany(notificationIds)
+        const viewerId = getUserId(authToken)
+        return notifications.find((notification) => notification.userId === viewerId)
+      }
     }
   })
 })
