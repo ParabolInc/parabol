@@ -46,9 +46,10 @@ const TopBarIcons = styled('div')({
 })
 
 const Title = styled('div')({
-  paddingLeft: 16,
   fontSize: 20,
   overflow: 'hidden',
+  paddingLeft: 16,
+  textOverflow: 'ellipsis',
   whiteSpace: 'nowrap'
 })
 

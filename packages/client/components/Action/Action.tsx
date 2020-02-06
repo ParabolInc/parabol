@@ -8,7 +8,6 @@ import PrivateRoutes from '../PrivateRoutes'
 import Snackbar from '../Snackbar'
 import {css, Global} from '@emotion/core'
 import globalStyles from '../../styles/theme/globalStyles'
-import SetNewPassword from '../ResetPasswordPage/SetNewPassword'
 import useTrebuchetEvents from '../../hooks/useTrebuchetEvents'
 import useServiceWorkerUpdater from '../../hooks/useServiceWorkerUpdater'
 
@@ -20,6 +19,10 @@ const DemoMeeting = lazy(() => import(/* webpackChunkName: 'DemoMeeting' */ '../
 const DemoSummary = lazy(() => import(/* webpackChunkName: 'DemoSummary' */ '../DemoSummary'))
 const AuthProvider = lazy(() => import(/* webpackChunkName: 'AuthProvider' */ '../AuthProvider'))
 const SAMLRedirect = lazy(() => import(/* webpackChunkName: 'SAMLRedirect' */ '../SAMLRedirect'))
+const SetNewPassword = lazy(() =>
+  import(/* webpackChunkName: 'SetNewPassword' */ '../ResetPasswordPage/SetNewPassword')
+)
+const VerifyEmail = lazy(() => import(/* webpackChunkName: 'VerifyEmail' */ '../VerifyEmail'))
 const TeamInvitation = lazy(() =>
   import(/* webpackChunkName: 'TeamInvitationRoot' */ '../TeamInvitationRoot')
 )
@@ -63,6 +66,10 @@ const Action = memo(() => {
             exact
             path={`/forgot-password`}
             render={(p) => <AuthenticationPage {...p} page={'forgot-password'} />}
+          />
+          <Route
+            path='/verify-email/:verificationToken/:invitationToken?'
+            component={VerifyEmail}
           />
           <Route path='/reset-password/:token' component={SetNewPassword} />
           {/*Legacy route, still referenced by old invite emails*/}

@@ -10,7 +10,7 @@ const GetDemoEntitiesPayload = new GraphQLObjectType<any, GQLContext>({
       type: StandardMutationError
     },
     entities: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GoogleAnalyzedEntity)))
+      type: GraphQLList(GraphQLNonNull(GoogleAnalyzedEntity))
     }
   })
 })

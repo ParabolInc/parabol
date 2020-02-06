@@ -91,7 +91,7 @@ const mutation = graphql`
   }
 `
 
-export const navigateMeetingMeetingUpdater: SharedUpdater<NavigateMeetingMutation_team> = (
+export const navigateMeetingTeamUpdater: SharedUpdater<NavigateMeetingMutation_team> = (
   payload,
   {store}
 ) => {
@@ -151,7 +151,7 @@ const NavigateMeetingMutation = (
     variables,
     updater: (store) => {
       const payload = store.getRootField('navigateMeeting')
-      navigateMeetingMeetingUpdater(payload, {atmosphere, store})
+      navigateMeetingTeamUpdater(payload, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
       const {meetingId, facilitatorStageId, completedStageId} = variables

@@ -87,6 +87,7 @@ import renameMeeting from './mutations/renameMeeting'
 import addReactjiToReflection from './mutations/addReactjiToReflection'
 import setAppLocation from './mutations/setAppLocation'
 import deleteUser from './mutations/deleteUser'
+import verifyEmail from './mutations/verifyEmail'
 
 interface Context extends InternalContext, GQLContext {}
 
@@ -178,6 +179,7 @@ export default new GraphQLObjectType<any, Context, any>({
     updateTaskDueDate,
     updateTeamName,
     updateUserProfile,
+    verifyEmail,
     voteForReflectionGroup,
     upgradeToPro
   })

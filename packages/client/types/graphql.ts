@@ -3104,6 +3104,11 @@ export interface IMutation {
   updateUserProfile: IUpdateUserProfilePayload | null
 
   /**
+   * Verify an email address and sign in if not already a user
+   */
+  verifyEmail: IVerifyEmailPayload
+
+  /**
    * Cast your vote for a reflection group
    */
   voteForReflectionGroup: IVoteForReflectionGroupPayload | null
@@ -3868,6 +3873,13 @@ export interface IUpdateUserProfileOnMutationArguments {
    * The input object containing the user profile fields that can be changed
    */
   updatedUser: IUpdateUserProfileInput
+}
+
+export interface IVerifyEmailOnMutationArguments {
+  /**
+   * The 48-byte url-safe base64 encoded verification token
+   */
+  verificationToken?: string | null
 }
 
 export interface IVoteForReflectionGroupOnMutationArguments {
@@ -6241,6 +6253,18 @@ export interface IUpdateUserProfilePayload {
    * The updated team member
    */
   teamMembers: Array<ITeamMember> | null
+}
+
+export interface IVerifyEmailPayload {
+  __typename: 'VerifyEmailPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The new auth token sent to the mutator
+   */
+  authToken: string | null
+  userId: string | null
+  user: IUser | null
 }
 
 export interface IVoteForReflectionGroupPayload {

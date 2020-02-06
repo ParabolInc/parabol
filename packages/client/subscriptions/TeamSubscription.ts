@@ -26,6 +26,7 @@ import Atmosphere from '../Atmosphere'
 import {requestSubscription, Variables} from 'relay-runtime'
 import {TeamSubscriptionResponse} from '../__generated__/TeamSubscription.graphql'
 import {RouterProps} from 'react-router'
+import {navigateMeetingTeamUpdater} from 'mutations/NavigateMeetingMutation'
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -85,6 +86,7 @@ const updateHandlers = {
   ArchiveTeamPayload: archiveTeamTeamUpdater,
   EndNewMeetingPayload: endNewMeetingTeamUpdater,
   MoveReflectTemplatePromptPayload: moveReflectTemplatePromptTeamUpdater,
+  NavigateMeetingPayload: navigateMeetingTeamUpdater,
   RemoveOrgUserPayload: removeOrgUserTeamUpdater,
   RemoveReflectTemplatePayload: removeReflectTemplateTeamUpdater,
   RemoveReflectTemplatePromptPayload: removeReflectTemplatePromptTeamUpdater,

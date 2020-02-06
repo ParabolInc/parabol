@@ -10,6 +10,7 @@ import NewTeamForm from './components/NewTeamForm/NewTeamForm'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import {NewTeam_viewer} from '../../__generated__/NewTeam_viewer.graphql'
 import {Breakpoint, ExternalLinks} from '../../types/constEnums'
+import useDocumentTitle from 'hooks/useDocumentTitle'
 
 const NewTeamLayout = styled('div')({
   alignItems: 'center',
@@ -69,6 +70,7 @@ const NewTeam = (props: Props) => {
   const {defaultOrgId, viewer} = props
   const {organizations} = viewer
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
+  useDocumentTitle('New Team | Parabol', 'New Team')
   return (
     <NewTeamLayout>
       <NewTeamInner>

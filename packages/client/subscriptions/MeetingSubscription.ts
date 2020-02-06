@@ -9,7 +9,6 @@ import {
   endDraggingReflectionMeetingOnNext,
   endDraggingReflectionMeetingUpdater
 } from '../mutations/EndDraggingReflectionMutation'
-import {navigateMeetingMeetingUpdater} from '../mutations/NavigateMeetingMutation'
 import {promoteNewMeetingFacilitatorMeetingOnNext} from '../mutations/PromoteNewMeetingFacilitatorMutation'
 import {removeReflectionMeetingUpdater} from '../mutations/RemoveReflectionMutation'
 import {setStageTimerMeetingUpdater} from '../mutations/SetStageTimerMutation'
@@ -51,7 +50,6 @@ const updateHandlers = {
   DragDiscussionTopicPayload: dragDiscussionTopicMeetingUpdater,
   EditReflectionPayload: editReflectionMeetingUpdater,
   EndDraggingReflectionPayload: endDraggingReflectionMeetingUpdater,
-  NavigateMeetingPayload: navigateMeetingMeetingUpdater,
   RemoveReflectionPayload: removeReflectionMeetingUpdater,
   SetStageTimerPayload: setStageTimerMeetingUpdater,
   StartDraggingReflectionPayload: startDraggingReflectionMeetingUpdater

@@ -8,7 +8,7 @@ const cloneReflection = (element: HTMLElement, reflectionId: string) => {
   cloneContainer.style.left = '0'
   cloneContainer.style.top = '0'
   cloneContainer.style.pointerEvents = 'none'
-  cloneContainer.style.zIndex = `${ZIndex.REFLECTION_IN_FLIGHT}`
+  cloneContainer.style.zIndex = `${ZIndex.REFLECTION_IN_FLIGHT_LOCAL}`
   cloneContainer.id = `clone-${reflectionId}`
   const clone = element.cloneNode(true)
   cloneContainer.appendChild(clone)

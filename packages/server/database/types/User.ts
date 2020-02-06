@@ -9,7 +9,6 @@ interface Input {
   email: string
   emailVerified?: boolean
   featureFlags?: string[]
-  lastLogin?: Date
   lastSeenAt?: Date
   lastSeenAtURL?: string
   updatedAt?: Date
@@ -32,7 +31,6 @@ export default class User {
   email: string
   emailVerified: boolean
   featureFlags: string[]
-  lastLogin: Date | null
   lastSeenAt: Date | null
   lastSeenAtURL: string | null
   updatedAt: Date
@@ -61,7 +59,6 @@ export default class User {
       lastSeenAtURL,
       identities,
       inactive,
-      lastLogin,
       preferredName,
       segmentId,
       tier
@@ -85,7 +82,6 @@ export default class User {
     this.featureFlags = featureFlags || []
     this.identities = identities || []
     this.inactive = inactive || false
-    this.lastLogin = lastLogin || null
     this.lastSeenAt = lastSeenAt ?? null
     this.lastSeenAtURL = lastSeenAtURL ?? null
     this.preferredName = preferredName

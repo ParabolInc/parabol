@@ -5,6 +5,37 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.21.0 2020-Feb-04
+
+## Added
+* Meeting phase to active meeting menu (#3493)
+* Real-time updating of meeting name (#3532)
+* Page name to mobile views (#3487)
+* Blacklisted domains requiring email verification
+* Refetch query on reconnect (#3020)
+
+## Fixed
+* No bouncing next when timer is running (#3495)
+* Rename server secret .env var (#3482)
+* Missing demo avatars (#3516)
+* Missing demo timer (#3516)
+* Collapse on escape (#3284)
+* Janky grouping demo animations
+* Bad reconnect logic (#3502)
+* Editing status not firing (#3507)
+* Cancel drags in expanded groups (#3560)
+* Cards occassionally not being dragged
+
+## 4.20.1 2020-Jan-30
+
+### Fixed
+* Reflection column height overflow (#3525)
+* Team lead self-demote (#3530)
+* Bork when inviting existing team member
+* Hide facilitator bar when meeting is over
+* Fix user-defined RegEx (#3201)
+* Reflection expand/collapse animation (#3490)
+
 ## 4.20.0 2020-Jan-28
 
 ### Added
