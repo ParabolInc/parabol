@@ -111,7 +111,7 @@ const formatDueDate = (dueDate) => {
 
 const action = 'tap to change'
 const getDateInfo = (dueDate) => {
-  if (!dueDate) return {title: 'Add a due date'}
+  if (!dueDate) return {title: 'Add a Due Date'}
   const date = new Date(dueDate)
   const timeDiff = date.getTime() - Date.now()
   const diffDays = Math.ceil(timeDiff / ms('1d'))

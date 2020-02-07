@@ -72,7 +72,7 @@ const EditingStatus = (props: Props) => {
             timestampType={timestampType}
           />
         </EditingText>
-        {tooltipPortal(<div>{'Toggle timestamp'}</div>)}
+        {tooltipPortal(<div>{'Toggle Timestamp'}</div>)}
       </div>
       <DueDateToggle
         cardIsActive={isEditing || isTaskHovered}
