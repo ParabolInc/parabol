@@ -572,12 +572,12 @@ export interface ITask {
   /**
    * The userId that created the task
    */
-  createdBy: string | null
+  createdBy: string
 
   /**
    * The user that created the card
    */
-  createdByUser: IUser | null
+  createdByUser: IUser
 
   /**
    * a user-defined due date

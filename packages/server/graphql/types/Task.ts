@@ -45,11 +45,11 @@ const Task = new GraphQLObjectType<any, GQLContext, any>({
       description: 'The timestamp the task was created'
     },
     createdBy: {
-      type: GraphQLID,
+      type: GraphQLNonNull(GraphQLID),
       description: 'The userId that created the task'
     },
     createdByUser: {
-      type: require('./User').default,
+      type: GraphQLNonNull(require('./User').default),
       description: 'The user that created the card',
       resolve: ({createdBy}, _args, {dataLoader}) => {
         return dataLoader.get('users').load(createdBy)

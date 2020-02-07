@@ -60,7 +60,7 @@ interface Props {
 const deletedTask = {
   content: convertToTaskContent('<<TASK DELETED>>'),
   status: TaskStatusEnum.done,
-  tags: [],
+  tags: [] as string[],
   assignee: {
     picture: null,
     preferredName: null
