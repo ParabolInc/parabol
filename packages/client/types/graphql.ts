@@ -23,7 +23,7 @@ export interface IGraphQLResponseErrorLocation {
 export interface IQuery {
   __typename: 'Query'
   viewer: IUser | null
-  getDemoEntities: IGetDemoEntitiesPayload | null
+  getDemoEntities: IGetDemoEntitiesPayload
   massInvitation: IMassInvitationPayload
   verifiedInvitation: IVerifiedInvitationPayload
   SAMLIdP: string | null
@@ -1134,6 +1134,7 @@ export interface IMassInvitation {
    * the expiration for the token
    */
   expiration: any
+  meetingId: string | null
 }
 
 export type CustomPhaseItem = IRetroPhaseItem
@@ -2609,7 +2610,7 @@ export interface ITeamInvitationPayload {
 export interface IGetDemoEntitiesPayload {
   __typename: 'GetDemoEntitiesPayload'
   error: IStandardMutationError | null
-  entities: Array<IGoogleAnalyzedEntity>
+  entities: Array<IGoogleAnalyzedEntity> | null
 }
 
 export interface IGoogleAnalyzedEntity {

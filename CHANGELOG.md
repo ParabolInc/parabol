@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.21.1 2020-Feb-07
+
+## Changed
+* Increase max prompts from 5 to 12
+* Add Accounts Payable email for enterprise invoices
+
+## Fixed
+* Drop reflection flicker regression
+* Mass Invitation token did not always refresh
+
 ## 4.21.0 2020-Feb-04
 
 ## Added
