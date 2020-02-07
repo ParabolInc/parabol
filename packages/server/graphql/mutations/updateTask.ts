@@ -134,7 +134,6 @@ export default {
     }).run()
     // TODO: get users in the same location
     const usersToIgnore = await getUsersToIgnore(viewerId, teamId, dataLoader)
-    console.log('usersToIgnore', usersToIgnore)
     if (!newTask) return standardError(new Error('Already updated task'), {userId: viewerId})
 
     // send task updated messages
@@ -150,7 +149,7 @@ export default {
       viewerId,
       usersToIgnore
     )
-    console.log('notes to add', notificationsToAdd)
+    console.log('notKes to add', notificationsToAdd)
     const data = {
       isPrivatized,
       taskId,

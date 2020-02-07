@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import NotificationAction from 'components/NotificationAction'
 import {Editor} from 'draft-js'
+import OutcomeCardStatusIndicator from 'modules/outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {cardShadow} from 'styles/elevation'
@@ -15,7 +16,6 @@ import SetNotificationStatusMutation from '../mutations/SetNotificationStatusMut
 import {ASSIGNEE, MENTIONEE} from '../utils/constants'
 import {TaskInvolves_notification} from '../__generated__/TaskInvolves_notification.graphql'
 import NotificationTemplate from './NotificationTemplate'
-import OutcomeCardStatusIndicator from 'modules/outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
 
 const involvementWord = {
   [ASSIGNEE]: 'assigned',
@@ -57,20 +57,20 @@ interface Props {
   notification: TaskInvolves_notification
 }
 
-const deletedTask = () => ({
+const deletedTask = {
   content: convertToTaskContent('<<TASK DELETED>>'),
   status: TaskStatusEnum.done,
-  tags: ['archived'],
+  tags: [],
   assignee: {
     picture: null,
-    preferredName: 'A Ghost'
+    preferredName: null
   }
-})
+}
 
 const TaskInvolves = (props: Props) => {
   const {notification} = props
   const {id: notificationId, task, team, involvement, changeAuthor} = notification
-  const {content, status, tags, assignee} = task || deletedTask()
+  const {content, status, tags, assignee} = task || deletedTask
   const {picture: changeAuthorPicture, preferredName: changeAuthorName} = changeAuthor
   const {name: teamName, id: teamId} = team
   const action = involvementWord[involvement]
@@ -96,7 +96,7 @@ const TaskInvolves = (props: Props) => {
       avatar={changeAuthorPicture}
       message={`${changeAuthorName} ${action} you ${preposition} a task on the ${teamName} team.`}
       notification={notification}
-      action={<NotificationAction onClick={gotoBoard} label={'See the task'} />}
+      action={task ? <NotificationAction onClick={gotoBoard} label={'See the task'} /> : undefined}
     >
       <TaskListView>
         <IndicatorsBlock>
@@ -112,8 +112,8 @@ const TaskInvolves = (props: Props) => {
           }}
         />
         <Owner>
-          <OwnerAvatar alt='Avatar' src={assignee.picture || undefined} />
-          <OwnerName>{assignee.preferredName}</OwnerName>
+          <OwnerAvatar alt='Avatar' src={assignee.picture || changeAuthorPicture} />
+          <OwnerName>{assignee.preferredName || changeAuthorName}</OwnerName>
         </Owner>
       </TaskListView>
     </NotificationTemplate>

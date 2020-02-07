@@ -6,6 +6,9 @@ graphql`
     content
     createdAt
     createdBy
+    createdByUser {
+      preferredName
+    }
     dueDate
     integration {
       ... on TaskIntegrationGitHub {

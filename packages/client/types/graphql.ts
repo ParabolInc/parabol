@@ -575,6 +575,11 @@ export interface ITask {
   createdBy: string | null
 
   /**
+   * The user that created the card
+   */
+  createdByUser: IUser | null
+
+  /**
    * a user-defined due date
    */
   dueDate: any | null

@@ -48,6 +48,13 @@ const Task = new GraphQLObjectType<any, GQLContext, any>({
       type: GraphQLID,
       description: 'The userId that created the task'
     },
+    createdByUser: {
+      type: require('./User').default,
+      description: 'The user that created the card',
+      resolve: ({createdBy}, _args, {dataLoader}) => {
+        return dataLoader.get('users').load(createdBy)
+      }
+    },
     dueDate: {
       type: GraphQLISO8601Type,
       description: 'a user-defined due date'

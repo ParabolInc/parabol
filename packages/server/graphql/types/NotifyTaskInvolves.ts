@@ -29,6 +29,7 @@ const NotifyTaskInvolves = new GraphQLObjectType<any, GQLContext, any>({
       resolve: async ({taskId}, _args, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
         const task = await dataLoader.get('tasks').load(taskId)
+        if (!task) return null
         const {tags, teamId, userId} = task
         if (!isTeamMember(authToken, teamId)) return null
         if (isTaskPrivate(tags) && viewerId !== userId) return null
