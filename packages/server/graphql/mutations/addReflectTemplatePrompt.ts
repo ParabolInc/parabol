@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
+import dndNoise from '../../../client/utils/dndNoise'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import dndNoise from '../../../client/utils/dndNoise'
 import standardError from '../../utils/standardError'
 import AddReflectTemplatePromptPayload from '../types/AddReflectTemplatePromptPayload'
 import {Prompt} from './helpers/makeRetroTemplates'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const addReflectTemplatePrompt = {
   description: 'Add a new template full of prompts',
@@ -41,7 +41,7 @@ const addReflectTemplatePrompt = {
         isActive: true
       })
       .run()
-    if (activePrompts.length >= 5) {
+    if (activePrompts.length >= Threshold.MAX_REFLECTION_PROMPTS) {
       return standardError(new Error('Too many prompts'), {userId: viewerId})
     }
 
