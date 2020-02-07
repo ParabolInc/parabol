@@ -1,9 +1,9 @@
 import {useRef} from 'react'
-import useCoords, {MenuPosition} from './useCoords'
-import useTooltipPortal from './useTooltipPortal'
-import usePortal from './usePortal'
 import {Duration} from '../types/constEnums'
+import useCoords, {MenuPosition} from './useCoords'
 import useEventCallback from './useEventCallback'
+import usePortal from './usePortal'
+import useTooltipPortal from './useTooltipPortal'
 
 interface Options {
   delay?: number
@@ -24,6 +24,7 @@ const useTooltip = <T extends HTMLElement = HTMLElement>(
 
   const openTooltip = useEventCallback(() => {
     if (disabled) return
+    window.clearTimeout(openDelayRef.current)
     openDelayRef.current = window.setTimeout(() => {
       openPortal()
     }, delay)
@@ -33,7 +34,6 @@ const useTooltip = <T extends HTMLElement = HTMLElement>(
     window.clearTimeout(openDelayRef.current)
     closePortal()
   })
-
   return {
     openTooltip,
     closeTooltip,

@@ -39,11 +39,17 @@ interface Props {
 }
 
 const IconLabel = forwardRef((props: Props, ref: any) => {
-  const {icon, label, onMouseEnter, onMouseLeave} = props
+  const {icon, label, onMouseEnter, onMouseLeave, iconAfter, iconLarge} = props
   return (
     <LabelBlock ref={ref} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-      <StyledIcon {...props}>{icon}</StyledIcon>
-      {label && <Label {...props}>{label}</Label>}
+      <StyledIcon iconAfter={iconAfter} iconLarge={iconLarge}>
+        {icon}
+      </StyledIcon>
+      {label && (
+        <Label iconAfter={iconAfter} iconLarge={iconLarge}>
+          {label}
+        </Label>
+      )}
     </LabelBlock>
   )
 })
