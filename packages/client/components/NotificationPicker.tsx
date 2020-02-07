@@ -1,10 +1,10 @@
 import React, {Suspense} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {NotificationPicker_notification} from '../../../../__generated__/NotificationPicker_notification.graphql'
 import lazyPreload from 'utils/lazyPreload'
 import {NotificationEnum} from 'types/graphql'
 import {ValueOf} from 'types/generics'
+import {NotificationPicker_notification} from '__generated__/NotificationPicker_notification.graphql'
 
 const typePicker = {
   [NotificationEnum.KICKED_OUT]: lazyPreload(() =>

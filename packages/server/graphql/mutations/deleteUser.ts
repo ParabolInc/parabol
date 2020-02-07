@@ -48,7 +48,9 @@ export default {
     const {id: userIdToDelete} = user
     const orgUsers = await dataLoader.get('organizationUsersByUserId').load(userIdToDelete)
     const orgIds = orgUsers.map((orgUser) => orgUser.orgId)
-    await Promise.all(orgIds.map((orgId) => removeFromOrg(userIdToDelete, orgId, dataLoader)))
+    await Promise.all(
+      orgIds.map((orgId) => removeFromOrg(userIdToDelete, orgId, undefined, dataLoader))
+    )
     await r
       .table('User')
       .get(userIdToDelete)

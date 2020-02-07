@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {PromoteToBillingLeader_notification} from '../../../../__generated__/PromoteToBillingLeader_notification.graphql'
 import NotificationAction from './NotificationAction'
 import NotificationTemplate from './NotificationTemplate'
 import useRouter from 'hooks/useRouter'
-
+import {PromoteToBillingLeader_notification} from '__generated__/PromoteToBillingLeader_notification.graphql'
+import defaultOrgAvatar from 'styles/theme/images/avatar-organization.svg'
 interface Props {
   notification: PromoteToBillingLeader_notification
 }
@@ -22,7 +22,7 @@ const PromoteToBillingLeader = (props: Props) => {
 
   return (
     <NotificationTemplate
-      avatar={orgPicture}
+      avatar={orgPicture || defaultOrgAvatar}
       message={`You‘ve been promoted to billing leader for ${orgName}`}
       action={<NotificationAction label={'See organization'} onClick={goToOrg} />}
       notification={notification}
@@ -38,6 +38,7 @@ export default createFragmentContainer(PromoteToBillingLeader, {
       organization {
         id
         name
+        picture
       }
     }
   `

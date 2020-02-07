@@ -9,7 +9,7 @@ import removeTeamMember from './removeTeamMember'
 const removeFromOrg = async (
   userId: string,
   orgId: string,
-  evictorUserId: string,
+  evictorUserId: string | undefined,
   dataLoader: DataLoaderWorker
 ) => {
   const r = await getRethink()

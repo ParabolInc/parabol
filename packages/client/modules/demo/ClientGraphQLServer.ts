@@ -332,7 +332,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (userId !== demoViewerId) {
         entities = entityLookup[reflectionId].entities
       } else {
-        entities = await getDemoEntities(plaintextContent)
+        entities = (await getDemoEntities(plaintextContent)) as any
       }
 
       const reflection = {
@@ -470,7 +470,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         ? await getDemoEntities(plaintextContent)
         : reflection.entities
       reflection.plaintextContent = plaintextContent
-      reflection.entities = entities
+      reflection.entities = entities as any
 
       const reflectionsInGroup = this.db.reflections.filter(
         ({reflectionGroupId}) => reflectionGroupId === reflection.reflectionGroupId

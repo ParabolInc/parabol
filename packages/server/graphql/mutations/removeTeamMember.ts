@@ -31,8 +31,8 @@ export default {
     }
 
     // RESOLUTION
-    const isKickout = !isSelf
-    const res = await removeTeamMember(teamMemberId, {isKickout}, dataLoader)
+    const evictorUserId = isSelf ? undefined : viewerId
+    const res = await removeTeamMember(teamMemberId, {evictorUserId}, dataLoader)
     const {user, notificationId, archivedTaskIds, reassignedTaskIds} = res
 
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
