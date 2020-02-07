@@ -11,12 +11,16 @@ import {PALETTE} from '../../../../styles/paletteV2'
 import {Radius} from '../../../../types/constEnums'
 import lazyPreload from '../../../../utils/lazyPreload'
 import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
+import useTooltip from 'hooks/useTooltip'
 
+const TooltipToggle = styled('div')({
+  display: 'inline-flex'
+})
 const TeamToggleButton = styled(CardButton)({
   ...textOverflow,
   borderRadius: Radius.BUTTON_PILL,
   color: PALETTE.TEXT_GRAY,
-  display: 'block',
+  display: 'inline-flex',
   fontSize: 12,
   fontWeight: 400,
   height: 24,
@@ -50,16 +54,22 @@ const TaskFooterTeamAssignee = (props: Props) => {
   const {team} = task
   const {name: teamName} = team
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT)
+  const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
+    MenuPosition.UPPER_CENTER
+  )
   return (
     <>
-      <TeamToggleButton
-        aria-label='Assign this task to another team'
-        onClick={canAssign ? togglePortal : undefined}
-        onMouseEnter={TaskFooterTeamAssigneeMenuRoot.preload}
-        ref={originRef}
-      >
-        {teamName}
-      </TeamToggleButton>
+      <TooltipToggle onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={tipRef}>
+        <TeamToggleButton
+          aria-label='Assign this task to another team'
+          onClick={canAssign ? togglePortal : undefined}
+          onMouseEnter={TaskFooterTeamAssigneeMenuRoot.preload}
+          ref={originRef}
+        >
+          {teamName}
+        </TeamToggleButton>
+      </TooltipToggle>
+      {tooltipPortal(<div>{'Reassign Team'}</div>)}
       {menuPortal(
         <TaskFooterTeamAssigneeMenuRoot
           menuProps={menuProps}

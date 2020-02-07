@@ -9,6 +9,8 @@ import {EditingStatus_task} from '__generated__/EditingStatus_task.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {UseTaskChild} from '../../hooks/useTaskChildFocus'
 import EditingStatusText from './EditingStatusText'
+import useTooltip from 'hooks/useTooltip'
+import {MenuPosition} from 'hooks/useCoords'
 
 const StatusHeader = styled('div')({
   alignItems: 'flex-start',
@@ -43,17 +45,26 @@ const EditingStatus = (props: Props) => {
   const {viewerId} = atmosphere
   const otherEditors = editors.filter((editor) => editor.userId !== viewerId)
   const isEditing = editors.length > otherEditors.length
-  const title = isEditing ? 'Editing…' : 'Tap to toggle Created/Updated'
   const [timestampType, setTimestampType] = useState<TimestampType>('createdAt')
   const toggleTimestamp = () => {
     setTimestampType(timestampType === 'createdAt' ? 'updatedAt' : 'createdAt')
   }
+  const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
+    MenuPosition.UPPER_CENTER,
+    {disabled: isEditing}
+  )
   const timestamp = timestampType === 'createdAt' ? createdAt : updatedAt
   return (
     <StatusHeader>
       <div>
         {children}
-        <EditingText isEditing={isEditing} onClick={toggleTimestamp} title={title}>
+        <EditingText
+          isEditing={isEditing}
+          onClick={toggleTimestamp}
+          onMouseEnter={openTooltip}
+          onMouseLeave={closeTooltip}
+          ref={tipRef}
+        >
           <EditingStatusText
             editors={otherEditors}
             isEditing={isEditing}
@@ -61,6 +72,7 @@ const EditingStatus = (props: Props) => {
             timestampType={timestampType}
           />
         </EditingText>
+        {tooltipPortal(<div>{'Toggle timestamp'}</div>)}
       </div>
       <DueDateToggle
         cardIsActive={isEditing || isTaskHovered}

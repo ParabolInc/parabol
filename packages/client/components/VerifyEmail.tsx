@@ -22,8 +22,6 @@ const VerifyEmail = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, error, submitMutation} = useMutationProps()
   useEffect(() => {
-    console.log('inv', invitationToken)
-    debugger
     submitMutation()
     VerifyEmailMutation(
       atmosphere,

@@ -13,6 +13,7 @@ import lazyPreload from '../utils/lazyPreload'
 import {shortMonths} from '../utils/makeDateString'
 import {PALETTE} from '../styles/paletteV2'
 import {UseTaskChild} from '../hooks/useTaskChildFocus'
+import useTooltip from 'hooks/useTooltip'
 
 interface StyleProps {
   cardIsActive: boolean
@@ -131,19 +132,27 @@ const DueDateToggle = (props: Props) => {
   const {cardIsActive, task, useTaskChild} = props
   const {dueDate} = task
   const {menuProps, menuPortal, originRef, togglePortal} = useMenu(MenuPosition.UPPER_RIGHT)
+  const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
+    MenuPosition.UPPER_CENTER
+  )
+  const {title, isPastDue, isDueSoon} = getDateInfo(dueDate)
   return (
     <>
       <Toggle
         cardIsActive={!dueDate && cardIsActive}
         dueDate={!!dueDate}
-        {...getDateInfo(dueDate)}
+        isPastDue={isPastDue}
+        isDueSoon={isDueSoon}
         ref={originRef}
         onClick={togglePortal}
         onMouseEnter={DueDatePicker.preload}
       >
-        <DueDateIcon>access_time</DueDateIcon>
+        <DueDateIcon onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={tipRef}>
+          access_time
+        </DueDateIcon>
         {dueDate && <DateString>{formatDueDate(dueDate)}</DateString>}
       </Toggle>
+      {tooltipPortal(<div>{title}</div>)}
       {menuPortal(<DueDatePicker menuProps={menuProps} task={task} useTaskChild={useTaskChild} />)}
     </>
   )

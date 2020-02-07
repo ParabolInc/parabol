@@ -11,6 +11,7 @@ import avatarUser from '../../../../styles/theme/images/avatar-user.svg'
 import {PALETTE} from '../../../../styles/paletteV2'
 import lazyPreload from '../../../../utils/lazyPreload'
 import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
+import useTooltip from 'hooks/useTooltip'
 
 const label = {
   ...textOverflow,
@@ -70,6 +71,10 @@ const AvatarLabel = styled('div')({
   minWidth: 0
 })
 
+const TooltipToggle = styled('div')({
+  display: 'inline-flex'
+})
+
 interface Props {
   area: string
   canAssign: boolean
@@ -88,19 +93,25 @@ const TaskFooterUserAssignee = (props: Props) => {
   const {area, canAssign, cardIsActive, task, useTaskChild} = props
   const {assignee} = task
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT)
+  const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
+    MenuPosition.UPPER_CENTER
+  )
   return (
     <>
-      <AvatarButton
-        aria-label='Assign this task to a teammate'
-        onClick={canAssign ? togglePortal : undefined}
-        onMouseEnter={TaskFooterUserAssigneeMenuRoot.preload}
-        ref={originRef}
-      >
-        <Avatar cardIsActive={cardIsActive}>
-          <AvatarImage alt={assignee.preferredName} src={assignee.picture || avatarUser} />
-        </Avatar>
-        <AvatarLabel>{assignee.preferredName}</AvatarLabel>
-      </AvatarButton>
+      <TooltipToggle onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={tipRef}>
+        <AvatarButton
+          aria-label='Assign this task to a teammate'
+          onClick={canAssign ? togglePortal : undefined}
+          onMouseEnter={TaskFooterUserAssigneeMenuRoot.preload}
+          ref={originRef}
+        >
+          <Avatar cardIsActive={cardIsActive}>
+            <AvatarImage alt={assignee.preferredName} src={assignee.picture || avatarUser} />
+          </Avatar>
+          <AvatarLabel>{assignee.preferredName}</AvatarLabel>
+        </AvatarButton>
+      </TooltipToggle>
+      {tooltipPortal(<div>{'Reassign Responsibility'}</div>)}
       {menuPortal(
         <TaskFooterUserAssigneeMenuRoot
           menuProps={menuProps}

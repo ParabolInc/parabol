@@ -1,4 +1,4 @@
-import React, {ReactNode} from 'react'
+import React, {ReactNode, forwardRef} from 'react'
 import styled from '@emotion/styled'
 import Icon from './Icon'
 import {ICON_SIZE} from '../styles/typographyV2'
@@ -34,16 +34,18 @@ interface Props {
   iconAfter?: boolean
   iconLarge?: boolean
   label?: ReactNode
+  onMouseEnter?(): void
+  onMouseLeave?(): void
 }
 
-const IconLabel = (props: Props) => {
-  const {icon, label} = props
+const IconLabel = forwardRef((props: Props, ref: any) => {
+  const {icon, label, onMouseEnter, onMouseLeave} = props
   return (
-    <LabelBlock>
+    <LabelBlock ref={ref} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       <StyledIcon {...props}>{icon}</StyledIcon>
       {label && <Label {...props}>{label}</Label>}
     </LabelBlock>
   )
-}
+})
 
 export default IconLabel

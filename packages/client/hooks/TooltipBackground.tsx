@@ -7,6 +7,12 @@ import TooltipStyled from '../components/TooltipStyled'
 const backgroundStyles = (portalStatus: PortalStatus) => {
   switch (portalStatus) {
     case PortalStatus.Entering:
+      // not sure why, but this component is never mounting n the mounted state
+      return {
+        opacity: 0,
+        transform: 'scale(0)',
+        transition: `all ${Duration.TOOLTIP_OPEN}ms ${DECELERATE}`
+      }
     case PortalStatus.Entered:
       return {
         opacity: 1,
@@ -20,7 +26,9 @@ const backgroundStyles = (portalStatus: PortalStatus) => {
       }
     case PortalStatus.Mounted:
       return {
-        transform: 'scale(0)'
+        opacity: 0,
+        transform: 'scale(0)',
+        transition: `all ${Duration.TOOLTIP_OPEN}ms ${DECELERATE}`
       }
     default:
       return {}
