@@ -9,6 +9,7 @@ graphql`
       massInvitation {
         id
         expiration
+        meetingId
       }
     }
   }
@@ -34,6 +35,16 @@ const CreateMassInvitationMutation: StandardMutation<TCreateMassInvitationMutati
 ) => {
   return commitMutation<TCreateMassInvitationMutation>(atmosphere, {
     mutation,
+    updater: (store) => {
+      const payload = store.getRootField('createMassInvitation')
+      if (!payload) return
+      const team = payload.getLinkedRecord('team')
+      const massInvitation = team.getLinkedRecord('massInvitation')
+      const meetingId = massInvitation.getValue('meetingId')
+      if (!meetingId) return
+      // satisfy the need of the query
+      team.setLinkedRecord(massInvitation, 'massInvitation', {meetingId})
+    },
     variables,
     onCompleted,
     onError
