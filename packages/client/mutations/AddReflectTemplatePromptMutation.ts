@@ -1,15 +1,12 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {Disposable} from 'relay-runtime'
-import Atmosphere from '../Atmosphere'
+import {commitMutation} from 'react-relay'
+import {BaseLocalHandlers, SharedUpdater, StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import {CompletedHandler, ErrorHandler, SharedUpdater} from '../types/relayMutations'
-import handleAddReflectTemplatePrompt from './handlers/handleAddReflectTemplatePrompt'
-import {IAddReflectTemplatePromptOnMutationArguments} from '../types/graphql'
-import {AddReflectTemplatePromptMutation_team} from '../__generated__/AddReflectTemplatePromptMutation_team.graphql'
 import {AddReflectTemplatePromptMutation as TAddReflectTemplatePromptMutation} from '../__generated__/AddReflectTemplatePromptMutation.graphql'
+import {AddReflectTemplatePromptMutation_team} from '../__generated__/AddReflectTemplatePromptMutation_team.graphql'
+import handleAddReflectTemplatePrompt from './handlers/handleAddReflectTemplatePrompt'
 
-interface Context {
+interface Handlers extends BaseLocalHandlers {
   promptCount: number
   sortOrder: number
 }
@@ -45,13 +42,10 @@ export const addReflectTemplatePromptTeamUpdater: SharedUpdater<AddReflectTempla
   handleAddReflectTemplatePrompt(prompt, store)
 }
 
-const AddReflectTemplatePromptMutation = (
-  atmosphere: Atmosphere,
-  variables: IAddReflectTemplatePromptOnMutationArguments,
-  context: Context,
-  onError: ErrorHandler,
-  onCompleted: CompletedHandler
-): Disposable => {
+const AddReflectTemplatePromptMutation: StandardMutation<
+  TAddReflectTemplatePromptMutation,
+  Handlers
+> = (atmosphere, variables, {promptCount, sortOrder, onError, onCompleted}) => {
   return commitMutation<TAddReflectTemplatePromptMutation>(atmosphere, {
     mutation,
     variables,
@@ -63,7 +57,6 @@ const AddReflectTemplatePromptMutation = (
       addReflectTemplatePromptTeamUpdater(payload, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
-      const {promptCount, sortOrder} = context
       const {templateId} = variables
       const nowISO = new Date().toJSON()
       const proxyTemplatePrompt = createProxyRecord(store, 'ReflectTemplatePrompt', {
