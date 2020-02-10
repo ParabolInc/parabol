@@ -1,10 +1,11 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import useBreakpoint from 'hooks/useBreakpoint'
+import useRouter from 'hooks/useRouter'
+import useSnackNag from 'hooks/useSnackNag'
 import React, {lazy} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {matchPath, Route, RouteProps, Switch} from 'react-router'
-import useRouter from 'hooks/useRouter'
 import {Breakpoint} from 'types/constEnums'
 import useSidebar from '../hooks/useSidebar'
 import {Dashboard_viewer} from '../__generated__/Dashboard_viewer.graphql'
@@ -12,9 +13,9 @@ import DashSidebar from './Dashboard/DashSidebar'
 import MobileDashSidebar from './Dashboard/MobileDashSidebar'
 import DashTopBar from './DashTopBar'
 import MobileDashTopBar from './MobileDashTopBar'
-import SwipeableDashSidebar from './SwipeableDashSidebar'
 import StartMeetingFAB from './StartMeetingFAB'
 import StaticStartMeetingFAB from './StaticStartMeetingFAB'
+import SwipeableDashSidebar from './SwipeableDashSidebar'
 
 const UserDashboard = lazy(() =>
   import(
@@ -85,6 +86,8 @@ const Dashboard = (props: Props) => {
   const {isOpen, toggle, handleMenuClick} = useSidebar()
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {location} = useRouter()
+  const overLimitCopy = viewer?.overLimitCopy
+  useSnackNag(overLimitCopy)
   return (
     <DashLayout>
       {isDesktop ? (
@@ -121,6 +124,7 @@ export default createFragmentContainer(Dashboard, {
       ...DashAlert_viewer
       ...DashTopBar_viewer
       ...DashSidebar_viewer
+      overLimitCopy
     }
   `
 })

@@ -1,16 +1,16 @@
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
+import useForceUpdate from 'hooks/useForceUpdate'
 import React, {useEffect, useLayoutEffect, useRef} from 'react'
+import shortid from 'shortid'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useRefState from '../hooks/useRefState'
+import useEventCallback from '../hooks/useEventCallback'
+import useLocalQuery from '../hooks/useLocalQuery'
 import usePortal from '../hooks/usePortal'
 import useTransition from '../hooks/useTransition'
-import shortid from 'shortid'
-import styled from '@emotion/styled'
-import SnackbarMessage from './SnackbarMessage'
-import graphql from 'babel-plugin-relay/macro'
-import useLocalQuery from '../hooks/useLocalQuery'
-import {SnackbarQuery} from '../__generated__/SnackbarQuery.graphql'
-import useEventCallback from '../hooks/useEventCallback'
 import {ZIndex} from '../types/constEnums'
+import {SnackbarQuery} from '../__generated__/SnackbarQuery.graphql'
+import SnackbarMessage from './SnackbarMessage'
 
 const MAX_SNACKS = 1
 
@@ -49,31 +49,33 @@ export interface Snack {
   key: string // string following format: `type` OR `type:variable`
   message: string
   autoDismiss: number // seconds. 0 means never dismiss
+  noDismissOnClick?: boolean // clicking has no effect on the show state
   action?: SnackAction
   secondaryAction?: SnackAction
 }
 
 const Snackbar = React.memo(() => {
   const snackQueueRef = useRef<Snack[]>([])
-  const [snacksRef, setActiveSnacks] = useRefState<Snack[]>([])
+  const activeSnacksRef = useRef<Snack[]>([])
+  const forceUpdate = useForceUpdate()
+  // const [snacksRef, setActiveSnacks] = useRefState<Snack[]>([])
   const atmosphere = useAtmosphere()
-  const {openPortal, terminatePortal, portal} = usePortal({id: 'snackbar'})
-  const transitionChildren = useTransition(snacksRef.current)
-  const transitionChildrenRef = useRef(transitionChildren)
+  const {openPortal, terminatePortal, portal} = usePortal({id: 'snackbar', noClose: true})
+  const transitionChildren = useTransition(activeSnacksRef.current)
+  // const transitionChildrenRef = useRef(transitionChildren)
   const data = useLocalQuery<SnackbarQuery>(query)
-  const topOfFAB = data && data.viewer && data.viewer.topOfFAB
+  const topOfFAB = data?.viewer?.topOfFAB
   // used to ensure the snack isn't dismissed when the cursor is on it
-  const [hoveredSnackRef, setHoveredSnack] = useRefState<Snack | null>(null)
+  const hoveredSnackRef = useRef<Snack | null>(null)
   const dismissOnLeaveRef = useRef<Snack>()
-
-  transitionChildrenRef.current = transitionChildren
 
   const filterSnacks = useEventCallback((removeFn: SnackbarRemoveFn) => {
     const filterFn = (snack: Snack) => !removeFn(snack)
     snackQueueRef.current = snackQueueRef.current.filter(filterFn)
-    const nextSnacks = snacksRef.current.filter(filterFn)
-    if (nextSnacks.length !== snacksRef.current.length) {
-      setActiveSnacks(nextSnacks)
+    const nextSnacks = activeSnacksRef.current.filter(filterFn)
+    if (nextSnacks.length !== activeSnacksRef.current.length) {
+      activeSnacksRef.current = nextSnacks
+      forceUpdate()
     }
   })
 
@@ -82,7 +84,7 @@ const Snackbar = React.memo(() => {
   })
 
   const showSnack = useEventCallback((snack: Snack) => {
-    setActiveSnacks([...snacksRef.current, snack])
+    activeSnacksRef.current = [...activeSnacksRef.current, snack]
     if (snack.autoDismiss !== 0) {
       setTimeout(() => {
         if (hoveredSnackRef.current === snack) {
@@ -92,10 +94,11 @@ const Snackbar = React.memo(() => {
         }
       }, snack.autoDismiss * 1000)
     }
+    forceUpdate()
   })
 
   const onMouseEnter = (snack: Snack) => () => {
-    setHoveredSnack(snack)
+    hoveredSnackRef.current = snack
   }
 
   const onMouseLeave = () => {
@@ -103,39 +106,40 @@ const Snackbar = React.memo(() => {
       dismissSnack(dismissOnLeaveRef.current)
       dismissOnLeaveRef.current = undefined
     }
-    setHoveredSnack(null)
+    hoveredSnackRef.current = null
   }
+
+  const handleAdd = useEventCallback((snack) => {
+    const dupeFilter = ({key}: Snack) => key === snack.key
+    const snackInQueue = snackQueueRef.current.find(dupeFilter)
+    const snackIsActive = activeSnacksRef.current.find(dupeFilter)
+    if (snackInQueue || snackIsActive) return
+    // This is temporary until these errors stop showing up in sentry
+    if (typeof snack.message !== 'string') {
+      console.error(`Bad snack message: ${snack.key}`)
+      if (snack.message.message) {
+        snack.message = snack.message.message
+      } else {
+        return
+      }
+    }
+    const keyedSnack = {key: shortid.generate(), ...snack}
+    if (transitionChildren.length < MAX_SNACKS) {
+      showSnack(keyedSnack)
+    } else {
+      snackQueueRef.current.push(keyedSnack)
+    }
+  })
 
   // handle events
   useEffect(() => {
-    const handleAdd = (snack) => {
-      const dupeFilter = ({key}: Snack) => key === snack.key
-      const snackInQueue = snackQueueRef.current.find(dupeFilter)
-      const snackIsActive = snacksRef.current.find(dupeFilter)
-      if (snackInQueue || snackIsActive) return
-      // This is temporary until these errors stop showing up in sentry
-      if (typeof snack.message !== 'string') {
-        console.error(`Bad snack message: ${snack.key}`)
-        if (snack.message.message) {
-          snack.message = snack.message.message
-        } else {
-          return
-        }
-      }
-      const keyedSnack = {key: shortid.generate(), ...snack}
-      if (transitionChildrenRef.current.length < MAX_SNACKS) {
-        showSnack(keyedSnack)
-      } else {
-        snackQueueRef.current.push(keyedSnack)
-      }
-    }
     atmosphere.eventEmitter.on('addSnackbar', handleAdd)
     atmosphere.eventEmitter.on('removeSnackbar', filterSnacks)
     return () => {
       atmosphere.eventEmitter.off('addSnackbar', handleAdd)
       atmosphere.eventEmitter.off('removeSnackbar', filterSnacks)
     }
-  }, [atmosphere.eventEmitter, filterSnacks, showSnack, snacksRef])
+  }, [])
 
   // handle portal
   useLayoutEffect(() => {
@@ -156,6 +160,10 @@ const Snackbar = React.memo(() => {
   return portal(
     <Modal topOfFAB={topOfFAB}>
       {transitionChildren.map(({child, onTransitionEnd, status}) => {
+        const dismiss = () => {
+          if (child.noDismissOnClick) return
+          dismissSnack(child)
+        }
         return (
           <SnackbarMessage
             key={child.key}
@@ -164,7 +172,7 @@ const Snackbar = React.memo(() => {
             secondaryAction={child.secondaryAction}
             status={status}
             onTransitionEnd={onTransitionEnd}
-            dismissSnack={() => dismissSnack(child)}
+            dismissSnack={dismiss}
             onMouseEnter={onMouseEnter(child)}
             onMouseLeave={onMouseLeave}
           />
