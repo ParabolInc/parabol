@@ -45,11 +45,7 @@ const IconLabel = forwardRef((props: Props, ref: any) => {
       <StyledIcon iconAfter={iconAfter} iconLarge={iconLarge}>
         {icon}
       </StyledIcon>
-      {label && (
-        <Label iconAfter={iconAfter} iconLarge={iconLarge}>
-          {label}
-        </Label>
-      )}
+      {label && <Label iconAfter={iconAfter}>{label}</Label>}
     </LabelBlock>
   )
 })
