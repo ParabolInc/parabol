@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import makeAppLink from '../../../../../server/utils/makeAppLink'
+import makeAppLink from 'parabol-server/utils/makeAppLink'
 import EmailBlock from '../EmailBlock/EmailBlock'
-import EmptySpace from '..//EmptySpace/EmptySpace'
+import EmptySpace from '../EmptySpace/EmptySpace'
 import Button from '../Button/Button'
 import Header from '../Header/Header'
 import Layout from '../Layout/Layout'
@@ -20,7 +20,7 @@ const linkStyle = {
   ...emailLinkStyle
 }
 
-const notificationPageUrl = makeAppLink('me/notifications')
+const notificationPageUrl = makeAppLink('me')
 
 export default function NotificationSummaryEmail() {
   return (

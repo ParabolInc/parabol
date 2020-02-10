@@ -13,6 +13,9 @@ const MassInvitation = new GraphQLObjectType<any, GQLContext>({
     expiration: {
       type: GraphQLNonNull(GraphQLISO8601Type),
       description: 'the expiration for the token'
+    },
+    meetingId: {
+      type: GraphQLID
     }
   })
 })

@@ -17,6 +17,7 @@ import Task from './Task'
 import Team from './Team'
 import TeamMember from './TeamMember'
 import User from './User'
+import {getUserId} from '../../utils/authorization'
 
 const RemoveOrgUserPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'RemoveOrgUserPayload',
@@ -52,7 +53,12 @@ const RemoveOrgUserPayload = new GraphQLObjectType<any, GQLContext>({
     kickOutNotifications: {
       type: new GraphQLList(GraphQLNonNull(NotifyKickedOut)),
       description: 'The notifications for each team the user was kicked out of',
-      resolve: makeResolveNotificationsForViewer('kickOutNotificationIds', '')
+      resolve: async ({kickOutNotificationIds}, _args, {authToken, dataLoader}) => {
+        if (!kickOutNotificationIds) return null
+        const viewerId = getUserId(authToken)
+        const notifications = await dataLoader.get('notifications').loadMany(kickOutNotificationIds)
+        return notifications.filter((notification) => notification.userId === viewerId)
+      }
     },
     removedOrgMember: {
       type: OrganizationUser,

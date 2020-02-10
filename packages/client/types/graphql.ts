@@ -1139,6 +1139,7 @@ export interface IMassInvitation {
    * the expiration for the token
    */
   expiration: any
+  meetingId: string | null
 }
 
 export type CustomPhaseItem = IRetroPhaseItem

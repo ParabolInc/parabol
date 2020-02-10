@@ -32,6 +32,9 @@ graphql`
 graphql`
   fragment CreateTaskMutation_notification on CreateTaskPayload {
     involvementNotification {
+      team {
+        id
+      }
       ...TaskInvolves_notification @relay(mask: false)
     }
   }

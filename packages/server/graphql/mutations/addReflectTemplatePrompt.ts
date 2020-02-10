@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import dndNoise from '../../../client/utils/dndNoise'
 import getRethink from '../../database/rethinkDriver'
 import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
@@ -41,7 +41,7 @@ const addReflectTemplatePrompt = {
         isActive: true
       })
       .run()
-    if (activePrompts.length >= 5) {
+    if (activePrompts.length >= Threshold.MAX_REFLECTION_PROMPTS) {
       return standardError(new Error('Too many prompts'), {userId: viewerId})
     }
 

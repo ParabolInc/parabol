@@ -77,14 +77,25 @@ const maybeUpdate = (
 
 const updateClonePosition = (targetEl: HTMLDivElement, reflectionId: string, maxTop: number) => {
   const clone = document.getElementById(`clone-${reflectionId}`) as HTMLDivElement
-  if (!clone || clone.getAttribute('acquired')) return
-  // DIRTY HACK: makes cancelled drags in the expanded group look good
-  // 'acquired' is necessary otherwise the hidden card will try to take control of the clone
-  clone.setAttribute('acquired', 'true')
-  targetEl.style.opacity = '0'
+  // When dragging from an expanded group, this function gets called first for the expanded, then for the collapsed
+  // We don't know it's expanded until the 2nd call occurs
+  // So, we set an acquired flag after called the first time & save the ID of the target
+  // Then if a second call occurs, we know it's an expanded drag & can handle appropriately
+  if (!clone) return
+  if (clone.getAttribute('acquired')) {
+    const bestTarget = document.getElementById('localDropTarget')
+    if (!bestTarget) return
+    bestTarget.style.opacity = '0'
+    setTimeout(() => {
+      bestTarget.style.opacity = ''
+    }, Times.REFLECTION_DROP_DURATION * 0.9)
+    return
+  }
+  targetEl.id = 'localDropTarget'
   setTimeout(() => {
-    targetEl.style.opacity = ''
-  }, Times.REFLECTION_DROP_DURATION * 0.9)
+    targetEl.id = ''
+  })
+  clone.setAttribute('acquired', 'true')
   maybeUpdate(clone, targetEl, maxTop, Times.REFLECTION_DROP_DURATION)
 }
 

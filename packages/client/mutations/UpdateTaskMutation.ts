@@ -35,6 +35,9 @@ graphql`
       changeAuthor {
         preferredName
       }
+      team {
+        id
+      }
       ...TaskInvolves_notification @relay(mask: false)
     }
     privatizedTaskId
