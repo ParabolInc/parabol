@@ -79,7 +79,6 @@ const TopBarMain = styled('div')({
 const DashTopBar = (props: Props) => {
   const {toggle, viewer} = props
   const {history} = useRouter()
-  const hasNotification = (viewer?.notifications?.edges?.length ?? 0) > 0
   const teams = viewer?.teams ?? []
   const gotoHome = () => {
     history.push('/me')
@@ -96,7 +95,7 @@ const DashTopBar = (props: Props) => {
         <TopBarSearch viewer={viewer} />
         <TopBarIcons>
           {false && <TopBarIcon icon={'help_outline'} />}
-          <TopBarNotifications hasNotification={hasNotification} />
+          <TopBarNotifications viewer={viewer || null} />
           <TopBarMeetings teams={teams} />
           <TopBarAvatar viewer={viewer || null} />
         </TopBarIcons>
@@ -110,14 +109,8 @@ export default createFragmentContainer(DashTopBar, {
     fragment DashTopBar_viewer on User {
       ...TopBarAvatar_viewer
       ...TopBarSearch_viewer
+      ...TopBarNotifications_viewer
       picture
-      notifications(first: 100) @connection(key: "DashboardWrapper_notifications") {
-        edges {
-          node {
-            id
-          }
-        }
-      }
       teams {
         ...TopBarMeetings_teams
       }

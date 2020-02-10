@@ -17,6 +17,7 @@ import InvoiceLineItem from './InvoiceLineItem'
 import InvoiceStatusEnum from './InvoiceStatusEnum'
 import PageInfoDateCursor from './PageInfoDateCursor'
 import TierEnum from './TierEnum'
+import {GQLContext} from '../graphql'
 
 /* Each invoice has 3 levels.
  * L1 is a the invoice itself: how much to pay.
@@ -24,7 +25,7 @@ import TierEnum from './TierEnum'
  * L3 is a detailed line item & is a breakdown of the L2 quantity (eg a user with the pause/unpause dates)
  */
 
-const Invoice = new GraphQLObjectType({
+const Invoice = new GraphQLObjectType<any, GQLContext>({
   name: 'Invoice',
   description: 'A monthly billing invoice for an organization',
   fields: () => ({
@@ -59,7 +60,7 @@ const Invoice = new GraphQLObjectType({
     },
     creditCard: {
       type: CreditCard,
-      description: 'the card used to pay the invoice',
+      description: 'the card used to pay the invoice'
     },
     endAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),

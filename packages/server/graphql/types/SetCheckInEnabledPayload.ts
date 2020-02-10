@@ -1,8 +1,9 @@
 import {GraphQLObjectType} from 'graphql'
 import StandardMutationError from './StandardMutationError'
 import TeamMeetingSettings from './TeamMeetingSettings'
+import {GQLContext} from '../graphql'
 
-const SetCheckInEnabledPayload = new GraphQLObjectType({
+const SetCheckInEnabledPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'SetCheckInEnabledPayload',
   fields: () => ({
     error: {

@@ -1,8 +1,9 @@
 import {GraphQLObjectType} from 'graphql'
 import StandardMutationError from './StandardMutationError'
 import ReflectTemplate from './ReflectTemplate'
+import {GQLContext} from '../graphql'
 
-const RenameReflectTemplatePayload = new GraphQLObjectType({
+const RenameReflectTemplatePayload = new GraphQLObjectType<any, GQLContext>({
   name: 'RenameReflectTemplatePayload',
   fields: () => ({
     error: {

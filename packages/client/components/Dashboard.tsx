@@ -102,12 +102,7 @@ const Dashboard = (props: Props) => {
         )}
         <DashMain>
           <Switch>
-            <Route
-              path='/me'
-              render={(p) => (
-                <UserDashboard {...p} notifications={viewer ? viewer.notifications : null} />
-              )}
-            />
+            <Route path='/me' component={UserDashboard} />
             <Route path='/team/:teamId' component={TeamRoot} />
             <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
           </Switch>
@@ -125,17 +120,6 @@ export default createFragmentContainer(Dashboard, {
       ...MobileDashTopBar_viewer
       ...DashAlert_viewer
       ...DashTopBar_viewer
-      notifications(first: 100) @connection(key: "DashboardWrapper_notifications") {
-        edges {
-          node {
-            id
-            orgId
-            startAt
-            type
-            ...NotificationRow_notification
-          }
-        }
-      }
       ...DashSidebar_viewer
     }
   `

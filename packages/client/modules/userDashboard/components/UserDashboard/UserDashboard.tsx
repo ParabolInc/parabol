@@ -18,11 +18,6 @@ const UserDashMain = lazy(() =>
 const UserProfile = lazy(() =>
   import(/* webpackChunkName: 'UserProfileRoot' */ '../UserProfileRoot')
 )
-const Notifications = lazy(() =>
-  import(
-    /* webpackChunkName: 'NotificationsContainer' */ '../../../notifications/components/Notifications/Notifications'
-  )
-)
 
 interface Props {
   match: any
@@ -30,16 +25,12 @@ interface Props {
 }
 
 const UserDashboard = (props: Props) => {
-  const {match, notifications} = props
+  const {match} = props
   return (
     <Switch>
       <Route path={`${match.url}/profile`} component={UserProfile} />
       <Route exact path={`${match.url}/organizations`} component={Organizations} />
       <Route path={`${match.url}/organizations/:orgId`} component={Organization} />
-      <Route
-        path={`${match.url}/notifications`}
-        render={(p) => <Notifications {...p} notifications={notifications} />}
-      />
       <Route path={match.url} component={UserDashMain} />
     </Switch>
   )

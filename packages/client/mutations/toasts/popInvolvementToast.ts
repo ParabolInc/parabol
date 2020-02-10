@@ -11,9 +11,12 @@ const popInvolvementToast: OnNextHandler<TaskInvolves_notification, OnNextHistor
   const {
     involvement,
     changeAuthor: {preferredName: changeAuthorName},
-    task
+    task,
+    team
   } = notification
+  if (!task) return
   const {id: taskId} = task
+  const {id: teamId} = team
   const {pathname} = window.location
   const inMeeting = !!matchPath(pathname, {
     path: '/meet',
@@ -31,7 +34,7 @@ const popInvolvementToast: OnNextHandler<TaskInvolves_notification, OnNextHistor
     action: {
       label: 'Check it out!',
       callback: () => {
-        history && history.push('/me/notifications')
+        history?.push(`/team/${teamId}`)
       }
     }
   })

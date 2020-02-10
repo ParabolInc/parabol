@@ -2,7 +2,7 @@ import {GraphQLScalarType} from 'graphql'
 import {Kind} from 'graphql/language'
 import isValidDate from '../../../client/utils/isValidDate'
 
-function parseDate (value) {
+function parseDate(value) {
   const result = new Date(value)
   if (!isValidDate(result)) {
     throw new Error(`Invalid date: ${value}`)
@@ -17,7 +17,7 @@ const GraphQLISO8601Type = new GraphQLScalarType({
   name: 'DateTime',
 
   // Serialize a date to send to the client.
-  serialize (value) {
+  serialize(value) {
     const date = new Date(value)
 
     if (isNaN(date.getTime())) {
@@ -27,7 +27,7 @@ const GraphQLISO8601Type = new GraphQLScalarType({
   },
 
   // Parse a date received as a query variable.
-  parseValue (value) {
+  parseValue(value) {
     if (typeof value !== 'string') {
       throw new Error('Field error: value is not an instance of string')
     }
@@ -35,7 +35,7 @@ const GraphQLISO8601Type = new GraphQLScalarType({
   },
 
   // Parse a date received as an inline value.
-  parseLiteral (ast) {
+  parseLiteral(ast) {
     if (ast.kind !== Kind.STRING) {
       throw new Error(
         `Query error: Can only parse strings to dates but got a: ${ast.kind}, ${[ast]}`

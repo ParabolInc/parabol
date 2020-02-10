@@ -3,8 +3,9 @@ import {resolveTask} from '../resolvers'
 import Task from './Task'
 import User from './User'
 import StandardMutationError from './StandardMutationError'
+import {GQLContext} from '../graphql'
 
-const EditTaskPayload = new GraphQLObjectType({
+const EditTaskPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'EditTaskPayload',
   fields: () => ({
     error: {

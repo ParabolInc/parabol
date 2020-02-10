@@ -74,11 +74,11 @@ interface DetailedLineItemDict {
 
 const getEmailLookup = async (userIds: string[]) => {
   const r = await getRethink()
-  const usersAndEmails = await r
+  const usersAndEmails = (await r
     .table('User')
     .getAll(r.args(userIds), {index: 'id'})
     .pluck('id', 'email')
-    .run()
+    .run()) as {id: string; email: string}[]
   return usersAndEmails.reduce((dict, doc) => {
     dict[doc.id] = doc.email
     return dict

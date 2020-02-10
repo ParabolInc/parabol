@@ -5,8 +5,11 @@ import Task from './Task'
 import TaskInvolvementType from './TaskInvolvementType'
 import TeamMember from './TeamMember'
 import TeamNotification from './TeamNotification'
+import {GQLContext} from '../graphql'
+import {isTeamMember, getUserId} from '../../utils/authorization'
+import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 
-const NotifyTaskInvolves = new GraphQLObjectType({
+const NotifyTaskInvolves = new GraphQLObjectType<any, GQLContext, any>({
   name: 'NotifyTaskInvolves',
   description: 'A notification sent to someone who was just added to a team',
   interfaces: () => [Notification, TeamNotification],
@@ -21,10 +24,16 @@ const NotifyTaskInvolves = new GraphQLObjectType({
       description: 'The taskId that now involves the userId'
     },
     task: {
-      type: new GraphQLNonNull(Task),
+      type: Task,
       description: 'The task that now involves the userId',
-      resolve: ({taskId}, _args, {dataLoader}) => {
-        return dataLoader.get('tasks').load(taskId)
+      resolve: async ({taskId}, _args, {authToken, dataLoader}) => {
+        const viewerId = getUserId(authToken)
+        const task = await dataLoader.get('tasks').load(taskId)
+        if (!task) return null
+        const {tags, teamId, userId} = task
+        if (!isTeamMember(authToken, teamId)) return null
+        if (isTaskPrivate(tags) && viewerId !== userId) return null
+        return task
       }
     },
     changeAuthorId: {

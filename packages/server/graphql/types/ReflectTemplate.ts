@@ -8,8 +8,9 @@ import {
 } from 'graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import RetroPhaseItem from './RetroPhaseItem'
+import {GQLContext} from '../graphql'
 
-const ReflectTemplate = new GraphQLObjectType({
+const ReflectTemplate = new GraphQLObjectType<any, GQLContext>({
   name: 'ReflectTemplate',
   description: 'The team-specific templates for the reflection prompts',
   fields: () => ({

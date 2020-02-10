@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import shortid from 'shortid'
-import {ITask} from '../../../client/types/graphql'
+import {ITask, MeetingTypeEnum, SuggestedActionTypeEnum} from '../../../client/types/graphql'
 import {
   ACTION,
   AGENDA_ITEMS,
@@ -14,8 +14,8 @@ import {
 import findStageById from '../../../client/utils/meetings/findStageById'
 import getRethink from '../../database/rethinkDriver'
 import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
-import Meeting, {MeetingType} from '../../database/types/Meeting'
-import Task from '../../database/types/Task'
+import Meeting from '../../database/types/Meeting'
+import MeetingAction from '../../database/types/MeetingAction'
 import archiveTasksForDB from '../../safeMutations/archiveTasksForDB'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -34,21 +34,21 @@ const timelineEventLookup = {
 }
 
 const suggestedActionLookup = {
-  [RETROSPECTIVE]: 'tryRetroMeeting',
-  [ACTION]: 'tryActionMeeting'
-}
+  [MeetingTypeEnum.retrospective]: SuggestedActionTypeEnum.tryRetroMeeting,
+  [MeetingTypeEnum.action]: SuggestedActionTypeEnum.tryActionMeeting
+} as const
 
 type SortOrderTask = Pick<ITask, 'id' | 'sortOrder'>
 const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) => {
   const r = await getRethink()
-  const taskMax = await r
+  const taskMax = await (r
     .table('Task')
     .getAll(r.args(userIds), {index: 'userId'})
     .filter((task) =>
       task('tags')
         .contains('archived')
         .not()
-    )
+    ) as any)
     .max('sortOrder')('sortOrder')
     .default(0)
     .run()
@@ -66,7 +66,7 @@ const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) =
         .table('Task')
         .get(task('id'))
         .update({
-          sortOrder: task('sortOrder')
+          sortOrder: (task('sortOrder') as unknown) as number
         })
     })
     .run()
@@ -107,7 +107,7 @@ const shuffleCheckInOrder = async (teamId: string) => {
 const removeEmptyTasks = async (teamId: string, meetingId: string) => {
   const r = await getRethink()
   const createdTasks = await r
-    .table<Task>('Task')
+    .table('Task')
     .getAll(teamId, {index: 'teamId'})
     .filter({meetingId})
     .run()
@@ -127,7 +127,7 @@ const removeEmptyTasks = async (teamId: string, meetingId: string) => {
   return removedTaskIds
 }
 
-const finishActionMeeting = async (meeting: Meeting, dataLoader: DataLoaderWorker) => {
+const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoaderWorker) => {
   const {id: meetingId, teamId} = meeting
   const r = await getRethink()
   const [meetingMembers, tasks, doneTasks] = await Promise.all([
@@ -169,11 +169,11 @@ const finishMeetingType = async (meeting: Meeting, dataLoader: DataLoaderWorker)
   return undefined
 }
 
-const getIsKill = (meetingType: MeetingType, phase: GenericMeetingPhase) => {
+const getIsKill = (meetingType: MeetingTypeEnum, phase: GenericMeetingPhase) => {
   switch (meetingType) {
-    case 'action':
+    case MeetingTypeEnum.action:
       return ![AGENDA_ITEMS, LAST_CALL].includes(phase.phaseType)
-    case 'retrospective':
+    case MeetingTypeEnum.retrospective:
       return ![DISCUSS].includes(phase.phaseType)
   }
 }

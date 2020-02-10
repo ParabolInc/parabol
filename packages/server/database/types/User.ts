@@ -34,9 +34,12 @@ export default class User {
   lastSeenAt: Date | null
   lastSeenAtURL: string | null
   updatedAt: Date
+  newFeatureId?: string | null
+  overLimitCopy?: string | null
   picture: string
   inactive: boolean
   identities: AuthIdentity[]
+  isRemoved?: true
   createdAt: Date
   segmentId?: string
   tier: TierEnum

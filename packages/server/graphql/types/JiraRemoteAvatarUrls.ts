@@ -1,6 +1,7 @@
 import {GraphQLNonNull, GraphQLID, GraphQLObjectType} from 'graphql'
+import {GQLContext} from '../graphql'
 
-const JiraRemoteAvatarUrls = new GraphQLObjectType({
+const JiraRemoteAvatarUrls = new GraphQLObjectType<any, GQLContext>({
   name: 'JiraRemoteAvatarUrls',
   description: 'A project fetched from Jira in real time',
   fields: () => ({

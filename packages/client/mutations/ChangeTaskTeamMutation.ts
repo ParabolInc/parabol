@@ -1,16 +1,14 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import handleUpsertTasks from './handlers/handleUpsertTasks'
-import updateProxyRecord from '../utils/relay/updateProxyRecord'
-import handleRemoveNotifications from './handlers/handleRemoveNotifications'
-import getInProxy from '../utils/relay/getInProxy'
-import safeRemoveNodeFromUnknownConn from '../utils/relay/safeRemoveNodeFromUnknownConn'
+import {commitMutation} from 'react-relay'
+import {ChangeTaskTeamMutation_task} from '__generated__/ChangeTaskTeamMutation_task.graphql'
 import Atmosphere from '../Atmosphere'
 import {IChangeTaskTeamOnMutationArguments, ITask, ITeam} from '../types/graphql'
-import getBaseRecord from '../utils/relay/getBaseRecord'
-import {ChangeTaskTeamMutation as TChangeTaskTeamMutation} from '../__generated__/ChangeTaskTeamMutation.graphql'
 import {LocalHandlers, SharedUpdater} from '../types/relayMutations'
-import {ChangeTaskTeamMutation_task} from '__generated__/ChangeTaskTeamMutation_task.graphql'
+import getBaseRecord from '../utils/relay/getBaseRecord'
+import safeRemoveNodeFromUnknownConn from '../utils/relay/safeRemoveNodeFromUnknownConn'
+import updateProxyRecord from '../utils/relay/updateProxyRecord'
+import {ChangeTaskTeamMutation as TChangeTaskTeamMutation} from '../__generated__/ChangeTaskTeamMutation.graphql'
+import handleUpsertTasks from './handlers/handleUpsertTasks'
 
 graphql`
   fragment ChangeTaskTeamMutation_task on ChangeTaskTeamPayload {
@@ -20,9 +18,6 @@ graphql`
         userId
         preferredName
       }
-    }
-    removedNotification {
-      id
     }
     removedTaskId
   }
@@ -52,8 +47,6 @@ export const changeTaskTeamTaskUpdater: SharedUpdater<ChangeTaskTeamMutation_tas
   if (!oldTeamId) return
   safeRemoveNodeFromUnknownConn(store, oldTeamId, 'TeamColumnsContainer_tasks', taskId)
   handleUpsertTasks(task, store)
-  const removedNotificationId = getInProxy(payload, 'removedNotification', 'id')
-  handleRemoveNotifications(removedNotificationId, store)
 }
 
 const ChangeTaskTeamMutation = (

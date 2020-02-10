@@ -1,17 +1,16 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
-import ArchiveTeamPayload from '../types/ArchiveTeamPayload'
+import NotificationTeamArchived from '../../database/types/NotificationTeamArchived'
+import safeArchiveTeam from '../../safeMutations/safeArchiveTeam'
 import {getUserId, isTeamLead} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
-import shortid from 'shortid'
 import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {NotificationEnum} from 'parabol-client/types/graphql'
-import safeArchiveTeam from '../../safeMutations/safeArchiveTeam'
+import ArchiveTeamPayload from '../types/ArchiveTeamPayload'
 
 export default {
-  type: ArchiveTeamPayload,
+  type: GraphQLNonNull(ArchiveTeamPayload),
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -20,7 +19,6 @@ export default {
   },
   async resolve(_source, {teamId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = await getRethink()
-    const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
 
@@ -32,12 +30,7 @@ export default {
 
     // RESOLUTION
     sendSegmentEvent('Archive Team', viewerId, {teamId}).catch()
-    const {
-      team,
-      users,
-      removedTeamNotifications,
-      removedSuggestedActionIds
-    } = await safeArchiveTeam(teamId)
+    const {team, users, removedSuggestedActionIds} = await safeArchiveTeam(teamId)
 
     if (!team) {
       return standardError(new Error('Already archived team'), {userId: viewerId})
@@ -46,13 +39,11 @@ export default {
     const notifications = users
       .map(({id}) => id)
       .filter((userId) => userId !== viewerId)
-      .map((notifiedUserId) => ({
-        id: shortid.generate(),
-        startAt: now,
-        type: NotificationEnum.TEAM_ARCHIVED,
-        userIds: [notifiedUserId],
-        teamId
-      }))
+      .map(
+        (notifiedUserId) =>
+          new NotificationTeamArchived({userId: notifiedUserId, teamId, archivorUserId: viewerId})
+      )
+
     if (notifications.length) {
       await r
         .table('Notification')
@@ -63,7 +54,6 @@ export default {
     const data = {
       teamId,
       notificationIds: notifications.map(({id}) => id),
-      removedTeamNotifications,
       removedSuggestedActionIds
     }
     publish(SubscriptionChannel.TEAM, teamId, 'ArchiveTeamPayload', data, subOptions)

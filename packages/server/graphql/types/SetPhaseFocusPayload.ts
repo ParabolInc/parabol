@@ -4,8 +4,9 @@ import StandardMutationError from './StandardMutationError'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
 import ReflectPhase from './ReflectPhase'
 import {REFLECT} from '../../../client/utils/constants'
+import {GQLContext} from '../graphql'
 
-const SetPhaseFocusPayload = new GraphQLObjectType({
+const SetPhaseFocusPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'SetPhaseFocusPayload',
   fields: () => ({
     error: {

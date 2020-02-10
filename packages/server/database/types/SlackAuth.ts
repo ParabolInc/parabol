@@ -23,7 +23,7 @@ export default class SlackAuth {
   botAccessToken: string
   createdAt: Date
   defaultTeamChannelId: string
-  accessToken: string
+  accessToken: string | null
   teamId: string
   userId: string
   slackTeamId: string
@@ -31,7 +31,7 @@ export default class SlackAuth {
   slackUserId: string
   slackUserName: string
 
-  constructor (input: Input) {
+  constructor(input: Input) {
     const {
       accessToken,
       botUserId,

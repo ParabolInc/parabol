@@ -13,7 +13,7 @@ import getRethink from '../../database/rethinkDriver'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
-import {TierEnum} from 'parabol-client/types/graphql'
+import {TierEnum, SuggestedActionTypeEnum} from 'parabol-client/types/graphql'
 import encodeAuthToken from '../../utils/encodeAuthToken'
 import AuthToken from '../../database/types/AuthToken'
 
@@ -89,7 +89,10 @@ export default {
         teamMemberId
       }
 
-      const removedSuggestedActionId = await removeSuggestedAction(viewerId, 'createNewTeam')
+      const removedSuggestedActionId = await removeSuggestedAction(
+        viewerId,
+        SuggestedActionTypeEnum.createNewTeam
+      )
       if (removedSuggestedActionId) {
         publish(
           SubscriptionChannel.NOTIFICATION,

@@ -1,18 +1,18 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import ClearNotificationMutation from './ClearNotificationMutation'
+import {commitMutation} from 'react-relay'
+import {OnNextHandler, OnNextHistoryContext, SharedUpdater} from '../types/relayMutations'
+import onMeetingRoute from '../utils/onMeetingRoute'
+import onTeamRoute from '../utils/onTeamRoute'
+import getInProxy from '../utils/relay/getInProxy'
+import {RemoveTeamMemberMutation as IRemoveTeamMemberMutation} from '../__generated__/RemoveTeamMemberMutation.graphql'
+import {RemoveTeamMemberMutation_team} from '../__generated__/RemoveTeamMemberMutation_team.graphql'
 import handleAddNotifications from './handlers/handleAddNotifications'
-import handleRemoveNotifications from './handlers/handleRemoveNotifications'
+import handleRemoveTasks from './handlers/handleRemoveTasks'
 import handleRemoveTeamMembers from './handlers/handleRemoveTeamMembers'
 import handleRemoveTeams from './handlers/handleRemoveTeams'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
-import getInProxy from '../utils/relay/getInProxy'
-import handleRemoveTasks from './handlers/handleRemoveTasks'
-import onTeamRoute from '../utils/onTeamRoute'
-import {RemoveTeamMemberMutation_team} from '../__generated__/RemoveTeamMemberMutation_team.graphql'
-import {RemoveTeamMemberMutation as IRemoveTeamMemberMutation} from '../__generated__/RemoveTeamMemberMutation.graphql'
-import {OnNextHandler, OnNextHistoryContext, SharedUpdater} from '../types/relayMutations'
-import onMeetingRoute from '../utils/onMeetingRoute'
+import SetNotificationStatusMutation from './SetNotificationStatusMutation'
+import {NotificationStatusEnum} from 'types/graphql'
 
 graphql`
   fragment RemoveTeamMemberMutation_task on RemoveTeamMemberPayload {
@@ -53,9 +53,6 @@ graphql`
 graphql`
   fragment RemoveTeamMemberMutation_team on RemoveTeamMemberPayload {
     updatedTasks {
-      id
-    }
-    removedNotifications {
       id
     }
     kickOutNotification {
@@ -109,7 +106,14 @@ export const removeTeamMemberTeamOnNext: OnNextHandler<
     action: {
       label: 'OK',
       callback: () => {
-        ClearNotificationMutation(atmosphere, notificationId)
+        SetNotificationStatusMutation(
+          atmosphere,
+          {
+            notificationId,
+            status: NotificationStatusEnum.CLICKED
+          },
+          {}
+        )
       }
     }
   })
@@ -138,10 +142,6 @@ export const removeTeamMemberTeamUpdater: SharedUpdater<RemoveTeamMemberMutation
     handleRemoveTeamMembers(teamMemberId, store)
     return
   }
-  const removedNotifications = payload.getLinkedRecords('removedNotifications')
-  const notificationIds = getInProxy(removedNotifications, 'id')
-  handleRemoveNotifications(notificationIds, store)
-
   const teamId = getInProxy(payload, 'team', 'id')
   handleRemoveTeams(teamId, store)
 

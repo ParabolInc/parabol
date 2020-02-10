@@ -1,8 +1,9 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql'
 import StandardMutationError from './StandardMutationError'
 import User from './User'
+import {GQLContext} from '../graphql'
 
-const RemoveGitHubAuthPayload = new GraphQLObjectType({
+const RemoveGitHubAuthPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'RemoveGitHubAuthPayload',
   fields: () => ({
     error: {

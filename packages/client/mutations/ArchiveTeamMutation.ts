@@ -2,7 +2,6 @@ import {ArchiveTeamMutation as TArchiveTeamMutation} from '../__generated__/Arch
 import {ArchiveTeamMutation_team} from '../__generated__/ArchiveTeamMutation_team.graphql'
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import ClearNotificationMutation from './ClearNotificationMutation'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import onTeamRoute from '../utils/onTeamRoute'
 import getInProxy from '../utils/relay/getInProxy'
@@ -16,6 +15,8 @@ import {
 } from '../types/relayMutations'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 import onMeetingRoute from '../utils/onMeetingRoute'
+import SetNotificationStatusMutation from './SetNotificationStatusMutation'
+import {NotificationStatusEnum} from 'types/graphql'
 
 graphql`
   fragment ArchiveTeamMutation_team on ArchiveTeamPayload {
@@ -65,7 +66,14 @@ const popTeamArchivedToast: OnNextHandler<ArchiveTeamMutation_team, OnNextHistor
         const {id: notificationId} = notification
         // notification is not persisted for the mutator
         if (notificationId) {
-          ClearNotificationMutation(atmosphere, notificationId)
+          SetNotificationStatusMutation(
+            atmosphere,
+            {
+              notificationId,
+              status: NotificationStatusEnum.CLICKED
+            },
+            {}
+          )
         }
       }
     }

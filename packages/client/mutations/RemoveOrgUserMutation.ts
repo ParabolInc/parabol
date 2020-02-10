@@ -1,23 +1,22 @@
-import {commitLocalUpdate, commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {commitLocalUpdate, commitMutation} from 'react-relay'
+import {RemoveOrgUserMutation as IRemoveOrgUserMutation} from '__generated__/RemoveOrgUserMutation.graphql'
+import {RemoveOrgUserMutation_team} from '__generated__/RemoveOrgUserMutation_team.graphql'
+import {OnNextHandler, OnNextHistoryContext, SharedUpdater} from '../types/relayMutations'
+import findStageById from '../utils/meetings/findStageById'
+import onExOrgRoute from '../utils/onExOrgRoute'
+import onMeetingRoute from '../utils/onMeetingRoute'
+import onTeamRoute from '../utils/onTeamRoute'
+import getInProxy from '../utils/relay/getInProxy'
+import {setLocalStageAndPhase} from '../utils/relay/updateLocalStage'
+import {RemoveOrgUserMutation_notification} from '../__generated__/RemoveOrgUserMutation_notification.graphql'
 import handleAddNotifications from './handlers/handleAddNotifications'
-import handleRemoveNotifications from './handlers/handleRemoveNotifications'
 import handleRemoveOrganization from './handlers/handleRemoveOrganization'
 import handleRemoveOrgMembers from './handlers/handleRemoveOrgMembers'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
 import handleRemoveTeamMembers from './handlers/handleRemoveTeamMembers'
 import handleRemoveTeams from './handlers/handleRemoveTeams'
-import getInProxy from '../utils/relay/getInProxy'
-import onTeamRoute from '../utils/onTeamRoute'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
-import {setLocalStageAndPhase} from '../utils/relay/updateLocalStage'
-import findStageById from '../utils/meetings/findStageById'
-import onExOrgRoute from '../utils/onExOrgRoute'
-import {OnNextHandler, OnNextHistoryContext, SharedUpdater} from '../types/relayMutations'
-import {RemoveOrgUserMutation_notification} from '../__generated__/RemoveOrgUserMutation_notification.graphql'
-import {RemoveOrgUserMutation as IRemoveOrgUserMutation} from '__generated__/RemoveOrgUserMutation.graphql'
-import onMeetingRoute from '../utils/onMeetingRoute'
-import {RemoveOrgUserMutation_team} from '__generated__/RemoveOrgUserMutation_team.graphql'
 
 graphql`
   fragment RemoveOrgUserMutation_organization on RemoveOrgUserPayload {
@@ -33,12 +32,6 @@ graphql`
 
 graphql`
   fragment RemoveOrgUserMutation_notification on RemoveOrgUserPayload {
-    removedTeamNotifications {
-      id
-    }
-    removedOrgNotifications {
-      id
-    }
     organization {
       id
       name
@@ -111,14 +104,6 @@ export const removeOrgUserOrganizationUpdater = (payload, store, viewerId) => {
 }
 
 export const removeOrgUserNotificationUpdater = (payload, store) => {
-  const removedTeamNotifications = payload.getLinkedRecords('removedTeamNotifications')
-  const teamNotificationIds = getInProxy(removedTeamNotifications, 'id')
-  handleRemoveNotifications(teamNotificationIds, store)
-
-  const removedOrgNotifications = payload.getLinkedRecords('removedOrgNotifications')
-  const orgNotificationIds = getInProxy(removedOrgNotifications, 'id')
-  handleRemoveNotifications(orgNotificationIds, store)
-
   const kickOutNotifications = payload.getLinkedRecords('kickOutNotifications')
   handleAddNotifications(kickOutNotifications, store)
 }

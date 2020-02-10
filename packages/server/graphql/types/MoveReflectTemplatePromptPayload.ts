@@ -1,8 +1,9 @@
 import {GraphQLObjectType} from 'graphql'
 import StandardMutationError from './StandardMutationError'
 import RetroPhaseItem from './RetroPhaseItem'
+import {GQLContext} from '../graphql'
 
-const MoveReflectTemplatePromptPayload = new GraphQLObjectType({
+const MoveReflectTemplatePromptPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'MoveReflectTemplatePromptPayload',
   fields: () => ({
     error: {

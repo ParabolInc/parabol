@@ -1,7 +1,8 @@
 import {GraphQLFloat, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
+import {GQLContext} from '../graphql'
 
-const NextPeriodCharges = new GraphQLObjectType({
+const NextPeriodCharges = new GraphQLObjectType<any, GQLContext>({
   name: 'NextPeriodCharges',
   description: 'A single line item for the charges for next month',
   fields: () => ({
@@ -20,7 +21,8 @@ const NextPeriodCharges = new GraphQLObjectType({
     },
     unitPrice: {
       type: GraphQLFloat,
-      description: 'The per-seat monthly price of the subscription (in dollars), null if invoice is not per-seat'
+      description:
+        'The per-seat monthly price of the subscription (in dollars), null if invoice is not per-seat'
     },
     interval: {
       type: GraphQLString,

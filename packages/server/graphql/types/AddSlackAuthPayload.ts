@@ -4,7 +4,7 @@ import SlackAuth from './SlackAuth'
 import User from './User'
 import {GQLContext} from '../graphql'
 
-const AddSlackAuthPayload = new GraphQLObjectType({
+const AddSlackAuthPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'AddSlackAuthPayload',
   fields: () => ({
     error: {

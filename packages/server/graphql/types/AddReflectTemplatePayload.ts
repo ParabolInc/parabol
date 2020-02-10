@@ -1,8 +1,9 @@
 import {GraphQLObjectType} from 'graphql'
 import StandardMutationError from './StandardMutationError'
 import ReflectTemplate from './ReflectTemplate'
+import {GQLContext} from '../graphql'
 
-const AddReflectTemplatePayload = new GraphQLObjectType({
+const AddReflectTemplatePayload = new GraphQLObjectType<any, GQLContext>({
   name: 'AddReflectTemplatePayload',
   fields: () => ({
     error: {

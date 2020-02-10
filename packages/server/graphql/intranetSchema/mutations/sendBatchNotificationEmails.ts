@@ -23,28 +23,19 @@ const sendBatchNotificationEmails = {
     const userNotifications = await r
       .table('Notification')
       // Only include notifications which occurred within the last day
-      .filter(r.row('startAt').gt(yesterday))
-      // flatten into one notification per user
-      .concatMap((notification) =>
-        notification('userIds').map((userId) => ({userId, notification}))
-      )
+      .filter((row) => row('createdAt').gt(yesterday))
       // join with the users table
       .eqJoin('userId', r.table('User'))
       // filter to active users not seen within the last day
       .filter((row) =>
-        r.and(
-          row('right')('inactive')
-            .eq(false),
-          row('right')('lastSeenAt')
-            .lt(yesterday)
-        )
+        r.and(row('right')('inactive').eq(false), row('right')('lastSeenAt').lt(yesterday))
       )
       // clean up the join
       .map((join) => ({
         userId: join('right')('id'),
         email: join('right')('email'),
         preferredName: join('right')('preferredName'),
-        notification: join('left')('notification')
+        notification: join('left')
       }))
       // de-dup users
       .group('userId')
@@ -54,7 +45,8 @@ const sendBatchNotificationEmails = {
         email: group('reduction')(0)('email'),
         name: group('reduction')(0)('preferredName'),
         numNotifications: group('reduction').count()
-      })).run()
+      }))
+      .run()
 
     const emails = userNotifications.map(({email}) => email)
     const recipientVariables = userNotifications.reduce(

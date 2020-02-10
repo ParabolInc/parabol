@@ -55,7 +55,6 @@ const Title = styled('div')({
 
 const MobileDashTopBar = (props: Props) => {
   const {toggle, viewer} = props
-  const hasNotification = viewer?.notifications?.edges?.length > 0
   const teams = viewer?.teams ?? []
   const pageName = viewer?.pageName ?? 'Parabol'
   return (
@@ -70,7 +69,7 @@ const MobileDashTopBar = (props: Props) => {
         {/* Disable search in mobile for now */}
         {false && <TopBarIcon icon={'search'} />}
         {false && <TopBarIcon icon={'help_outline'} />}
-        <TopBarNotifications hasNotification={hasNotification} />
+        <TopBarNotifications viewer={viewer || null} />
         <TopBarMeetings teams={teams} />
       </TopBarIcons>
     </Wrapper>
@@ -80,14 +79,8 @@ const MobileDashTopBar = (props: Props) => {
 export default createFragmentContainer(MobileDashTopBar, {
   viewer: graphql`
     fragment MobileDashTopBar_viewer on User {
+      ...TopBarNotifications_viewer
       pageName
-      notifications(first: 100) @connection(key: "DashboardWrapper_notifications") {
-        edges {
-          node {
-            id
-          }
-        }
-      }
       teams {
         ...TopBarMeetings_teams
       }

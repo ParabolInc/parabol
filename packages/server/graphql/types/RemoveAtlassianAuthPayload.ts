@@ -1,8 +1,9 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql'
 import StandardMutationError from './StandardMutationError'
 import User from './User'
+import {GQLContext} from '../graphql'
 
-const RemoveAtlassianAuthPayload = new GraphQLObjectType({
+const RemoveAtlassianAuthPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'RemoveAtlassianAuthPayload',
   fields: () => ({
     error: {

@@ -1,8 +1,7 @@
 import {addOrgMutationOrganizationUpdater} from '../mutations/AddOrgMutation'
 import {
   setOrgUserRoleAddedOrganizationOnNext,
-  setOrgUserRoleAddedOrganizationUpdater,
-  setOrgUserRoleRemovedOrganizationUpdater
+  setOrgUserRoleAddedOrganizationUpdater
 } from '../mutations/SetOrgUserRoleMutation'
 import {
   removeOrgUserOrganizationOnNext,
@@ -38,7 +37,6 @@ const onNextHandlers = {
 const updateHandlers = {
   AddOrgPayload: addOrgMutationOrganizationUpdater,
   SetOrgUserRoleAddedPayload: setOrgUserRoleAddedOrganizationUpdater,
-  SetOrgUserRoleRemovedPayload: setOrgUserRoleRemovedOrganizationUpdater,
   RemoveOrgUserPayload: removeOrgUserOrganizationUpdater
 }
 

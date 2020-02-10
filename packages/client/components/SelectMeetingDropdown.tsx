@@ -43,6 +43,13 @@ const StyledIcon = styled(Icon)({
   marginRight: 16
 })
 
+const NoMeetingItem = () => (
+  <NoMeetings>
+    <StyledIcon>{'forum'}</StyledIcon>
+    {'Start a New Meeting'}
+  </NoMeetings>
+)
+
 const SelectMeetingDropdown = (props: Props) => {
   const {meetings, menuProps} = props
   const {history} = useRouter()
@@ -52,12 +59,6 @@ const SelectMeetingDropdown = (props: Props) => {
     const teamId = getTeamIdFromPathname()
     history.push(`/new-meeting/${teamId}`)
   }
-  const NoMeetingItem = () => (
-    <NoMeetings>
-      <StyledIcon>{'forum'}</StyledIcon>
-      {'Start a New Meeting'}
-    </NoMeetings>
-  )
   return (
     <Menu ariaLabel={'Select the Meeting to enter'} {...menuProps}>
       <HeaderLabel>{label}</HeaderLabel>

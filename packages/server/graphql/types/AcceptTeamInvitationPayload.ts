@@ -1,10 +1,11 @@
-import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLID, GraphQLObjectType} from 'graphql'
+import {GQLContext} from '../graphql'
 import {resolveTeam, resolveTeamMember} from '../resolvers'
+import NotificationTeamInvitation from './NotificationTeamInvitation'
 import StandardMutationError from './StandardMutationError'
 import Team from './Team'
 import TeamMember from './TeamMember'
 import User from './User'
-import {GQLContext} from '../graphql'
 
 const AcceptTeamInvitationPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'AcceptTeamInvitationPayload',
@@ -30,9 +31,11 @@ const AcceptTeamInvitationPayload = new GraphQLObjectType<any, GQLContext>({
       description: 'The new team member on the team',
       resolve: resolveTeamMember
     },
-    removedNotificationIds: {
-      type: new GraphQLList(new GraphQLNonNull(GraphQLID)),
-      description: 'The invite notifications that are no longer necessary'
+    notifications: {
+      type: NotificationTeamInvitation,
+      resolve: ({notificationId}, _args, {dataLoader}) => {
+        return dataLoader.get('notifications').load(notificationId)
+      }
     },
     teamLead: {
       type: User,

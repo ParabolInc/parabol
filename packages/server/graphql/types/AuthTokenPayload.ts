@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import encodeAuthToken from '../../utils/encodeAuthToken'
 import AuthToken from '../../database/types/AuthToken'
+import {GQLContext} from '../graphql'
 
 // const AuthTokenRole = new GraphQLEnumType({
 //   name: 'AuthTokenRole',
@@ -11,7 +12,7 @@ import AuthToken from '../../database/types/AuthToken'
 //   }
 // })
 
-const AuthTokenPayload = new GraphQLObjectType({
+const AuthTokenPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'AuthTokenPayload',
   description: 'An auth token provided by Parabol to the client',
   fields: () => ({

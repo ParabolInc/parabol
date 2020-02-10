@@ -27,7 +27,8 @@ const useMenuPortal = (
   isDropdown: boolean,
   menuPosition: MenuPosition,
   loadingDelayRef: LoadingDelayRef,
-  menuContentStyles: any = {}
+  menuContentStyles: any = {},
+  menuContentRef: RefObject<HTMLDivElement> | undefined
 ) => {
   useEffect(() => {
     let isMounted = true
@@ -61,6 +62,7 @@ const useMenuPortal = (
             minWidth={minWidth}
             portalStatus={portalStatus}
             menuContentStyles={menuContentStyles}
+            ref={menuContentRef}
           >
             <Suspense
               fallback={

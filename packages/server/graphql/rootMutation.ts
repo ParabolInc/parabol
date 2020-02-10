@@ -2,7 +2,7 @@ import {GraphQLObjectType} from 'graphql'
 import addAgendaItem from './mutations/addAgendaItem'
 import addOrg from './mutations/addOrg'
 import archiveTeam from './mutations/archiveTeam'
-import clearNotification from './mutations/clearNotification'
+import setNotificationStatus from './mutations/setNotificationStatus'
 import changeTaskTeam from './mutations/changeTaskTeam'
 import createGitHubIssue from './mutations/createGitHubIssue'
 import createTask from './mutations/createTask'
@@ -108,7 +108,7 @@ export default new GraphQLObjectType<any, Context, any>({
     archiveTeam,
     autoGroupReflections,
     changeTaskTeam,
-    clearNotification,
+    setNotificationStatus,
     createImposterToken,
     createGitHubIssue,
     createJiraIssue,

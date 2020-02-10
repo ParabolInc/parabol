@@ -2,6 +2,8 @@ import shortid from 'shortid'
 import dndNoise from '../../../client/utils/dndNoise'
 import getTagsFromEntityMap from '../../../client/utils/draftjs/getTagsFromEntityMap'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
+import TaskIntegrationJira from './TaskIntegrationJira'
+import TaskIntegrationGitHub from './TaskIntegrationGitHub'
 
 export type TaskStatus = 'active' | 'stuck' | 'done' | 'future'
 export type TaskTag = 'private' | 'archived'
@@ -12,6 +14,7 @@ export interface TaskInput {
   content: string
   createdAt?: Date | null
   createdBy: string
+  doneMeetingId?: string
   dueDate?: Date | null
   meetingId?: string | null
   reflectionGroupId?: string | null
@@ -29,7 +32,9 @@ export default class Task {
   content: string
   createdAt: Date
   createdBy: string
+  doneMeetingId?: string
   dueDate?: Date | null
+  integration?: TaskIntegrationJira | TaskIntegrationGitHub
   meetingId?: string
   reflectionGroupId?: string
   sortOrder: number
@@ -39,7 +44,7 @@ export default class Task {
   updatedAt: Date
   userId: string
 
-  constructor (input: TaskInput) {
+  constructor(input: TaskInput) {
     const {
       id,
       userId,
@@ -49,6 +54,7 @@ export default class Task {
       content,
       createdAt,
       createdBy,
+      doneMeetingId,
       dueDate,
       reflectionGroupId,
       sortOrder,
@@ -63,6 +69,7 @@ export default class Task {
     this.content = content
     this.createdAt = createdAt || new Date()
     this.createdBy = createdBy
+    this.doneMeetingId = doneMeetingId
     this.dueDate = dueDate || undefined
     this.meetingId = meetingId || undefined
     this.reflectionGroupId = reflectionGroupId || undefined

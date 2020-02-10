@@ -10,6 +10,7 @@ interface Input {
   checkInOrder: number
   teamId: string
   userId: string
+  updatedAt?: Date
 }
 
 export default class TeamMember {
@@ -24,7 +25,7 @@ export default class TeamMember {
   teamId: string
   userId: string
   createdAt: Date
-
+  updatedAt: Date
   constructor(input: Input) {
     const {
       checkInOrder,
@@ -48,5 +49,6 @@ export default class TeamMember {
     this.preferredName = preferredName
     this.userId = userId
     this.createdAt = new Date()
+    this.updatedAt = new Date()
   }
 }

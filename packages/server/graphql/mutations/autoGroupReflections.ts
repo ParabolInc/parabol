@@ -82,7 +82,7 @@ export default {
             title: group('title'),
             smartTitle: group('smartTitle'),
             updatedAt: now
-          })
+          } as any)
       ),
       reflections: r(groupedReflections).forEach((reflection) => {
         return r
@@ -93,7 +93,7 @@ export default {
             reflectionGroupId: reflection('reflectionGroupId'),
             sortOrder: reflection('sortOrder'),
             updatedAt: now
-          })
+          } as any)
       }),
       meeting: r
         .table('NewMeeting')

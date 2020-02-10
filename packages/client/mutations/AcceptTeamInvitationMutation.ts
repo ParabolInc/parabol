@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
+import {InvitationTokenError} from 'types/constEnums'
 import {AcceptTeamInvitationMutation_notification} from '__generated__/AcceptTeamInvitationMutation_notification.graphql'
 import {
   HistoryMaybeLocalHandler,
@@ -9,14 +10,11 @@ import {
 } from '../types/relayMutations'
 import fromTeamMemberId from '../utils/relay/fromTeamMemberId'
 import getGraphQLError from '../utils/relay/getGraphQLError'
-import getInProxy from '../utils/relay/getInProxy'
 import {AcceptTeamInvitationMutation as TAcceptTeamInvitationMutation} from '../__generated__/AcceptTeamInvitationMutation.graphql'
 import {AcceptTeamInvitationMutation_team} from '../__generated__/AcceptTeamInvitationMutation_team.graphql'
 import handleAddTeamMembers from './handlers/handleAddTeamMembers'
 import handleAddTeams from './handlers/handleAddTeams'
 import handleAuthenticationRedirect from './handlers/handleAuthenticationRedirect'
-import handleRemoveNotifications from './handlers/handleRemoveNotifications'
-import {InvitationTokenError} from 'types/constEnums'
 
 graphql`
   fragment AcceptTeamInvitationMutation_team on AcceptTeamInvitationPayload {
@@ -34,7 +32,6 @@ graphql`
 graphql`
   fragment AcceptTeamInvitationMutation_notification on AcceptTeamInvitationPayload {
     # this is just for the user that accepted the invitation
-    removedNotificationIds
     team {
       ...TopBarMeetingsActiveMeetings
       id
@@ -85,8 +82,6 @@ export const acceptTeamInvitationNotificationUpdater: SharedUpdater<AcceptTeamIn
   const team = payload.getLinkedRecord('team')
   if (!team) return
   handleAddTeams(team, store)
-  const notificationIds = getInProxy(payload, 'removedNotificationIds')
-  handleRemoveNotifications(notificationIds, store)
 
   // the viewer could have requested the meeting & had it return null
   const activeMeetings = team.getLinkedRecords('activeMeetings')

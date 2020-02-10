@@ -1120,8 +1120,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         error: null,
         task,
         privatizedTaskId: null,
-        addedNotification: null,
-        removedNotification: null
+        addedNotification: null
       }
       if (userId !== demoViewerId) {
         this.emit(TASK, data)

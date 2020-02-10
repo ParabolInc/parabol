@@ -4,8 +4,9 @@ import StandardMutationError from './StandardMutationError'
 import RetroReflection from './RetroReflection'
 import NewMeeting from './NewMeeting'
 import RemoteReflectionDrag from './RemoteReflectionDrag'
+import {GQLContext} from '../graphql'
 
-const StartDraggingReflectionPayload = new GraphQLObjectType({
+const StartDraggingReflectionPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'StartDraggingReflectionPayload',
   fields: () => ({
     error: {
@@ -32,7 +33,7 @@ const StartDraggingReflectionPayload = new GraphQLObjectType({
     },
     teamId: {
       type: GraphQLID
-    },
+    }
   })
 })
 

@@ -1,8 +1,9 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import NewMeetingPhase, {newMeetingPhaseFields} from './NewMeetingPhase'
 import UpdatesStage from './UpdatesStage'
+import {GQLContext} from '../graphql'
 
-const UpdatesPhase = new GraphQLObjectType({
+const UpdatesPhase = new GraphQLObjectType<any, GQLContext>({
   name: 'UpdatesPhase',
   description: 'The meeting phase where all team members give updates one-by-one',
   interfaces: () => [NewMeetingPhase],

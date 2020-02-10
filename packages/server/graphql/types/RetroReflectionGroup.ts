@@ -17,8 +17,9 @@ import RetroPhaseItem from './RetroPhaseItem'
 import {getUserId} from '../../utils/authorization'
 import Task from './Task'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
+import {GQLContext} from '../graphql'
 
-const RetroReflectionGroup = new GraphQLObjectType({
+const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
   name: 'RetroReflectionGroup',
   description: 'A reflection created during the reflect phase of a retrospective',
   fields: () => ({

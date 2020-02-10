@@ -1,12 +1,4 @@
-import getRethink from '../../../database/rethinkDriver'
-import AgendaItemsPhase from '../../../database/types/AgendaItemsPhase'
-import CheckInPhase from '../../../database/types/CheckInPhase'
-import DiscussPhase from '../../../database/types/DiscussPhase'
-import GenericMeetingPhase from '../../../database/types/GenericMeetingPhase'
-import {MeetingType} from '../../../database/types/Meeting'
-import ReflectPhase from '../../../database/types/ReflectPhase'
-import UpdatesPhase from '../../../database/types/UpdatesPhase'
-import {DataLoaderWorker} from '../../graphql'
+import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 import {
   AGENDA_ITEMS,
   CHECKIN,
@@ -18,6 +10,15 @@ import {
   UPDATES,
   VOTE
 } from '../../../../client/utils/constants'
+import getRethink from '../../../database/rethinkDriver'
+import AgendaItemsPhase from '../../../database/types/AgendaItemsPhase'
+import CheckInPhase from '../../../database/types/CheckInPhase'
+import DiscussPhase from '../../../database/types/DiscussPhase'
+import GenericMeetingPhase from '../../../database/types/GenericMeetingPhase'
+import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
+import ReflectPhase from '../../../database/types/ReflectPhase'
+import UpdatesPhase from '../../../database/types/UpdatesPhase'
+import {DataLoaderWorker} from '../../graphql'
 
 const primePhases = (phases: GenericMeetingPhase[]) => {
   const [firstPhase, secondPhase] = phases
@@ -61,56 +62,58 @@ const getPastStageDurations = async (teamId: string) => {
 const createNewMeetingPhases = async (
   teamId: string,
   meetingCount: number,
-  meetingType: MeetingType,
+  meetingType: MeetingTypeEnum,
   dataLoader: DataLoaderWorker
 ) => {
   const r = await getRethink()
   const now = new Date()
-  const meetingSettings = await r
+  const meetingSettings = (await r
     .table('MeetingSettings')
     .getAll(teamId, {index: 'teamId'})
     .filter({meetingType})
     .nth(0)
     .default(null)
-    .run()
+    .run()) as MeetingSettingsRetrospective
   if (!meetingSettings) {
     throw new Error('No meeting setting found for team!')
   }
   const {phaseTypes, selectedTemplateId} = meetingSettings
   const stageDurations = await getPastStageDurations(teamId)
-  const phases = await Promise.all(phaseTypes.map(async (phaseType) => {
-    const durations = stageDurations[phaseType]
-    switch (phaseType) {
-      case CHECKIN:
-        const teamMembers1 = await dataLoader.get('teamMembersByTeamId').load(teamId)
-        return new CheckInPhase(teamId, meetingCount, teamMembers1)
-      case REFLECT:
-        await r
-          .table('ReflectTemplate')
-          .get(selectedTemplateId)
-          .update({
-            lastUsedAt: now
-          })
-          .run()
-        return new ReflectPhase(teamId, selectedTemplateId, durations)
-      case DISCUSS:
-        return new DiscussPhase(durations)
-      case UPDATES:
-        const teamMembers2 = await dataLoader.get('teamMembersByTeamId').load(teamId)
-        return new UpdatesPhase(teamMembers2, durations)
-      case AGENDA_ITEMS:
-        const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
-        const agendaItemIds = agendaItems.map(({id}) => id)
-        return new AgendaItemsPhase(agendaItemIds, durations)
-      case GROUP:
-      case VOTE:
-      case FIRST_CALL:
-      case LAST_CALL:
-        return new GenericMeetingPhase(phaseType, durations)
-      default:
-        throw new Error(`Unhandled phaseType: ${phaseType}`)
-    }
-  }) as GenericMeetingPhase[])
+  const phases = (await Promise.all(
+    phaseTypes.map(async (phaseType) => {
+      const durations = stageDurations[phaseType]
+      switch (phaseType) {
+        case CHECKIN:
+          const teamMembers1 = await dataLoader.get('teamMembersByTeamId').load(teamId)
+          return new CheckInPhase(teamId, meetingCount, teamMembers1)
+        case REFLECT:
+          await r
+            .table('ReflectTemplate')
+            .get(selectedTemplateId)
+            .update({
+              lastUsedAt: now
+            })
+            .run()
+          return new ReflectPhase(teamId, selectedTemplateId, durations)
+        case DISCUSS:
+          return new DiscussPhase(durations)
+        case UPDATES:
+          const teamMembers2 = await dataLoader.get('teamMembersByTeamId').load(teamId)
+          return new UpdatesPhase(teamMembers2, durations)
+        case AGENDA_ITEMS:
+          const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
+          const agendaItemIds = agendaItems.map(({id}) => id)
+          return new AgendaItemsPhase(agendaItemIds, durations)
+        case GROUP:
+        case VOTE:
+        case FIRST_CALL:
+        case LAST_CALL:
+          return new GenericMeetingPhase(phaseType, durations)
+        default:
+          throw new Error(`Unhandled phaseType: ${phaseType}`)
+      }
+    })
+  )) as GenericMeetingPhase[]
   primePhases(phases)
   return phases
 }

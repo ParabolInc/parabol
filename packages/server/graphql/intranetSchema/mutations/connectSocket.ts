@@ -1,13 +1,12 @@
+import {GraphQLNonNull} from 'graphql'
+import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
-import User from '../../types/User'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import sendSegmentEvent from '../../../utils/sendSegmentEvent'
-import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEnums'
-import DBUser from '../../../database/types/User'
 import {GQLContext} from '../../graphql'
-import {GraphQLNonNull} from 'graphql'
+import User from '../../types/User'
 
 export default {
   name: 'ConnectSocket',
@@ -25,13 +24,14 @@ export default {
 
     // RESOLUTION
     const userChanges = await r
-      .table<DBUser>('User')
+      .table('User')
       .get(userId)
       .update(
         (user) => ({
           inactive: false,
           updatedAt: now,
           lastSeenAt: now,
+          lastSeenAtURL: null,
           connectedSockets: user('connectedSockets')
             .default([])
             .append(socketId)

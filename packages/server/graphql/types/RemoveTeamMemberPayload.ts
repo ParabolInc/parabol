@@ -1,20 +1,13 @@
-import {GraphQLNonNull, GraphQLList, GraphQLObjectType} from 'graphql'
-import {
-  makeResolveNotificationsForViewer,
-  resolveTasks,
-  resolveTeam,
-  resolveTeamMember,
-  resolveUser
-} from '../resolvers'
-import Notification from './Notification'
+import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {getUserId} from '../../utils/authorization'
+import {GQLContext} from '../graphql'
+import {resolveTasks, resolveTeam, resolveTeamMember, resolveUser} from '../resolvers'
 import NotifyKickedOut from './NotifyKickedOut'
+import StandardMutationError from './StandardMutationError'
 import Task from './Task'
 import Team from './Team'
 import TeamMember from './TeamMember'
 import User from './User'
-import {getUserId} from '../../utils/authorization'
-import StandardMutationError from './StandardMutationError'
-import {GQLContext} from '../graphql'
 
 const RemoveTeamMemberPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'RemoveTeamMemberPayload',
@@ -41,11 +34,6 @@ const RemoveTeamMemberPayload = new GraphQLObjectType<any, GQLContext>({
       type: User,
       description: 'The user removed from the team',
       resolve: resolveUser
-    },
-    removedNotifications: {
-      type: new GraphQLList(Notification),
-      description: 'Any notifications pertaining to the team that are no longer relevant',
-      resolve: makeResolveNotificationsForViewer('', 'removedNotifications')
     },
     kickOutNotification: {
       type: NotifyKickedOut,

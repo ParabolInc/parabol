@@ -1,8 +1,9 @@
 import {GraphQLObjectType} from 'graphql'
 import StandardMutationError from './StandardMutationError'
 import ReflectTemplate from './ReflectTemplate'
+import {GQLContext} from '../graphql'
 
-const RemoveReflectTemplatePromptPayload = new GraphQLObjectType({
+const RemoveReflectTemplatePromptPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'RemoveReflectTemplatePromptPayload',
   fields: () => ({
     error: {

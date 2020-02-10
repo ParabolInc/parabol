@@ -1,15 +1,13 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {OrgUserRole} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
-import SetOrgUserRolePayload from '../types/SetOrgUserRolePayload'
+import NotificationPromoteToBillingLeader from '../../database/types/NotificationPromoteToBillingLeader'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import shortid from 'shortid'
-import {billingLeaderTypes, PROMOTE_TO_BILLING_LEADER} from '../../../client/utils/constants'
 import {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
 import standardError from '../../utils/standardError'
-import {OrgUserRole} from 'parabol-client/types/graphql'
-import Notification from '../../database/types/Notification'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import SetOrgUserRolePayload from '../types/SetOrgUserRolePayload'
 
 export default {
   type: SetOrgUserRolePayload,
@@ -30,7 +28,6 @@ export default {
   },
   async resolve(_source, {orgId, userId, role}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = await getRethink()
-    const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
@@ -76,29 +73,13 @@ export default {
       .run()
 
     if (role === OrgUserRole.BILLING_LEADER) {
-      const promotionNotificationId = shortid.generate()
-      const promotionNotification = {
-        id: promotionNotificationId,
-        type: PROMOTE_TO_BILLING_LEADER,
-        startAt: now,
-        orgId,
-        userIds: [userId]
-      }
-      const {existingNotificationIds} = await r({
-        insert: r.table('Notification').insert(promotionNotification),
-        existingNotificationIds: (r
-          .table('Notification')
-          .getAll(orgId, {index: 'orgId'})
-          .filter((notification) => r.expr(billingLeaderTypes).contains(notification('type')))
-          .update(
-            (notification) => ({
-              userIds: notification('userIds').append(userId)
-            }),
-            {returnChanges: true}
-          )('changes')('new_val')
-          .default([]) as unknown) as string[]
-      }).run()
-      const notificationIdsAdded = existingNotificationIds.concat(promotionNotificationId)
+      const promotionNotification = new NotificationPromoteToBillingLeader({orgId, userId})
+      const {id: promotionNotificationId} = promotionNotification
+      await r
+        .table('Notification')
+        .insert(promotionNotification)
+        .run()
+      const notificationIdsAdded = [promotionNotificationId]
       // add the org to the list of owned orgs
       const data = {orgId, userId, organizationUserId, notificationIdsAdded}
       publish(
@@ -119,30 +100,7 @@ export default {
       return data
     }
     if (role === null) {
-      const {oldPromotion, removedNotifications} = await r({
-        oldPromotion: (r
-          .table('Notification')
-          .getAll(userId, {index: 'userIds'})
-          .filter({
-            orgId,
-            type: PROMOTE_TO_BILLING_LEADER
-          })
-          .delete({returnChanges: true})('changes')(0)('old_val')
-          .default([]) as unknown) as Notification,
-        removedNotifications: (r
-          .table('Notification')
-          .getAll(orgId, {index: 'orgId'})
-          .filter((notification) => r.expr(billingLeaderTypes).contains(notification('type')))
-          .update(
-            (notification) => ({
-              userIds: notification('userIds').filter((id) => id.ne(userId))
-            }),
-            {returnChanges: true}
-          )('changes')('new_val')
-          .default([]) as unknown) as Notification[]
-      }).run()
-      const notificationsRemoved = removedNotifications.concat(oldPromotion)
-      const data = {orgId, userId, organizationUserId, notificationsRemoved}
+      const data = {orgId, userId, organizationUserId}
       publish(
         SubscriptionChannel.ORGANIZATION,
         userId,

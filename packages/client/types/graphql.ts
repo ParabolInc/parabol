@@ -226,7 +226,7 @@ export interface IUser {
   /**
    * all the notifications for a single user
    */
-  notifications: INotificationConnection | null
+  notifications: INotificationConnection
 
   /**
    * get a single organization and the count of users by status
@@ -393,8 +393,8 @@ export interface INewMeetingOnUserArguments {
 }
 
 export interface INotificationsOnUserArguments {
-  first?: number | null
-  after?: string | null
+  first: number
+  after?: any | null
 }
 
 export interface IOrganizationOnUserArguments {
@@ -572,7 +572,12 @@ export interface ITask {
   /**
    * The userId that created the task
    */
-  createdBy: string | null
+  createdBy: string
+
+  /**
+   * The user that created the card
+   */
+  createdByUser: IUser
 
   /**
    * a user-defined due date
@@ -2501,9 +2506,9 @@ export interface INotificationEdge {
 }
 
 export type Notification =
+  | INotificationTeamInvitation
   | INotifyTeamArchived
   | INotifyTaskInvolves
-  | INotificationTeamInvitation
   | INotifyKickedOut
   | INotificationMeetingStageTimeLimitEnd
   | INotifyPaymentRejected
@@ -2518,25 +2523,29 @@ export interface INotification {
   id: string
 
   /**
-   * true if the notification has been archived, else false (or null)
+   * UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
    */
-  isArchived: boolean | null
-
-  /**
-   * *The unique organization ID for this notification. Can be blank for targeted notifications
-   */
-  orgId: string | null
+  status: NotificationStatusEnum
 
   /**
    * The datetime to activate the notification & send it to the client
    */
-  startAt: any
+  createdAt: any
   type: NotificationEnum
 
   /**
    * *The userId that should see this notification
    */
-  userIds: Array<string>
+  userId: string
+}
+
+/**
+ * The status of the notification interaction
+ */
+export const enum NotificationStatusEnum {
+  UNREAD = 'UNREAD',
+  READ = 'READ',
+  CLICKED = 'CLICKED'
 }
 
 /**
@@ -2549,7 +2558,6 @@ export const enum NotificationEnum {
   TEAM_INVITATION = 'TEAM_INVITATION',
   TEAM_ARCHIVED = 'TEAM_ARCHIVED',
   TASK_INVOLVES = 'TASK_INVOLVES',
-  VERSION_INFO = 'VERSION_INFO',
   MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END'
 }
 
@@ -2754,7 +2762,7 @@ export interface IMutation {
    * Create a new team and add the first team member
    */
   addTeam: IAddTeamPayload
-  archiveTeam: IArchiveTeamPayload | null
+  archiveTeam: IArchiveTeamPayload
 
   /**
    * Automatically group reflections
@@ -2767,9 +2775,9 @@ export interface IMutation {
   changeTaskTeam: IChangeTaskTeamPayload | null
 
   /**
-   * Remove a notification by ID
+   * set the interaction status of a notifcation
    */
-  clearNotification: IClearNotificationPayload | null
+  setNotificationStatus: ISetNotificationStatusPayload | null
 
   /**
    * for troubleshooting by admins, create a JWT for a given userId
@@ -3236,11 +3244,12 @@ export interface IChangeTaskTeamOnMutationArguments {
   teamId: string
 }
 
-export interface IClearNotificationOnMutationArguments {
+export interface ISetNotificationStatusOnMutationArguments {
   /**
-   * The id of the notification to remove
+   * The id of the notification
    */
   notificationId: string
+  status: NotificationStatusEnum
 }
 
 export interface ICreateImposterTokenOnMutationArguments {
@@ -3922,16 +3931,67 @@ export interface IAcceptTeamInvitationPayload {
    * The new team member on the team
    */
   teamMember: ITeamMember | null
-
-  /**
-   * The invite notifications that are no longer necessary
-   */
-  removedNotificationIds: Array<string> | null
+  notifications: INotificationTeamInvitation | null
 
   /**
    * For payloads going to the team leader that got new suggested actions
    */
   teamLead: IUser | null
+}
+
+/**
+ * A notification sent to a user that was invited to a new team
+ */
+export interface INotificationTeamInvitation {
+  __typename: 'NotificationTeamInvitation'
+
+  /**
+   * FK
+   */
+  teamId: string
+
+  /**
+   * FK
+   */
+  invitationId: string
+
+  /**
+   * The invitation that triggered this notification
+   */
+  invitation: ITeamInvitation
+  team: ITeam
+
+  /**
+   * A shortid for the notification
+   */
+  id: string
+
+  /**
+   * UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
+   */
+  status: NotificationStatusEnum
+
+  /**
+   * The datetime to activate the notification & send it to the client
+   */
+  createdAt: any
+  type: NotificationEnum
+
+  /**
+   * *The userId that should see this notification
+   */
+  userId: string
+}
+
+export type TeamNotification =
+  | INotificationTeamInvitation
+  | INotifyTaskInvolves
+  | INotificationMeetingStageTimeLimitEnd
+
+export interface ITeamNotification {
+  __typename: 'TeamNotification'
+  id: string | null
+  type: NotificationEnum | null
 }
 
 export interface ICreateAgendaItemInput {
@@ -4676,7 +4736,6 @@ export interface IArchiveTeamPayload {
    * A notification explaining that the team was archived and removed from view
    */
   notification: INotifyTeamArchived | null
-  removedTeamNotifications: Array<TeamNotification | null> | null
 
   /**
    * all the suggested actions that never happened
@@ -4689,6 +4748,11 @@ export interface IArchiveTeamPayload {
  */
 export interface INotifyTeamArchived {
   __typename: 'NotifyTeamArchived'
+
+  /**
+   * the user that archived the team
+   */
+  archivor: IUser
   team: ITeam
 
   /**
@@ -4697,36 +4761,20 @@ export interface INotifyTeamArchived {
   id: string
 
   /**
-   * true if the notification has been archived, else false (or null)
+   * UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
    */
-  isArchived: boolean | null
-
-  /**
-   * *The unique organization ID for this notification. Can be blank for targeted notifications
-   */
-  orgId: string | null
+  status: NotificationStatusEnum
 
   /**
    * The datetime to activate the notification & send it to the client
    */
-  startAt: any
+  createdAt: any
   type: NotificationEnum
 
   /**
    * *The userId that should see this notification
    */
-  userIds: Array<string>
-}
-
-export type TeamNotification =
-  | INotifyTaskInvolves
-  | INotificationTeamInvitation
-  | INotificationMeetingStageTimeLimitEnd
-
-export interface ITeamNotification {
-  __typename: 'TeamNotification'
-  id: string | null
-  type: NotificationEnum | null
+  userId: string
 }
 
 export interface IAutoGroupReflectionsPayload {
@@ -4742,7 +4790,6 @@ export interface IChangeTaskTeamPayload {
   __typename: 'ChangeTaskTeamPayload'
   error: IStandardMutationError | null
   task: ITask | null
-  removedNotification: INotifyTaskInvolves | null
 
   /**
    * the taskId sent to a user who is not on the new team so they can remove it from their client
@@ -4750,84 +4797,12 @@ export interface IChangeTaskTeamPayload {
   removedTaskId: string | null
 }
 
-/**
- * A notification sent to someone who was just added to a team
- */
-export interface INotifyTaskInvolves {
-  __typename: 'NotifyTaskInvolves'
-
-  /**
-   * A shortid for the notification
-   */
-  id: string
-
-  /**
-   * true if the notification has been archived, else false (or null)
-   */
-  isArchived: boolean | null
-
-  /**
-   * *The unique organization ID for this notification. Can be blank for targeted notifications
-   */
-  orgId: string | null
-
-  /**
-   * The datetime to activate the notification & send it to the client
-   */
-  startAt: any
-  type: NotificationEnum
-
-  /**
-   * *The userId that should see this notification
-   */
-  userIds: Array<string>
-
-  /**
-   * How the user is affiliated with the task
-   */
-  involvement: TaskInvolvementType
-
-  /**
-   * The taskId that now involves the userId
-   */
-  taskId: string
-
-  /**
-   * The task that now involves the userId
-   */
-  task: ITask
-
-  /**
-   * The teamMemberId of the person that made the change
-   */
-  changeAuthorId: string | null
-
-  /**
-   * The TeamMember of the person that made the change
-   */
-  changeAuthor: ITeamMember
-  teamId: string
-
-  /**
-   * The team the task is on
-   */
-  team: ITeam
-}
-
-/**
- * How a user is involved with a task (listed in hierarchical order)
- */
-export const enum TaskInvolvementType {
-  ASSIGNEE = 'ASSIGNEE',
-  MENTIONEE = 'MENTIONEE'
-}
-
-export interface IClearNotificationPayload {
-  __typename: 'ClearNotificationPayload'
+export interface ISetNotificationStatusPayload {
+  __typename: 'SetNotificationStatusPayload'
   error: IStandardMutationError | null
 
   /**
-   * The deleted notifcation
+   * The updated notification
    */
   notification: Notification | null
 }
@@ -4957,6 +4932,73 @@ export interface ICreateTaskPayload {
   involvementNotification: INotifyTaskInvolves | null
 }
 
+/**
+ * A notification sent to someone who was just added to a team
+ */
+export interface INotifyTaskInvolves {
+  __typename: 'NotifyTaskInvolves'
+
+  /**
+   * A shortid for the notification
+   */
+  id: string
+
+  /**
+   * UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
+   */
+  status: NotificationStatusEnum
+
+  /**
+   * The datetime to activate the notification & send it to the client
+   */
+  createdAt: any
+  type: NotificationEnum
+
+  /**
+   * *The userId that should see this notification
+   */
+  userId: string
+
+  /**
+   * How the user is affiliated with the task
+   */
+  involvement: TaskInvolvementType
+
+  /**
+   * The taskId that now involves the userId
+   */
+  taskId: string
+
+  /**
+   * The task that now involves the userId
+   */
+  task: ITask | null
+
+  /**
+   * The teamMemberId of the person that made the change
+   */
+  changeAuthorId: string | null
+
+  /**
+   * The TeamMember of the person that made the change
+   */
+  changeAuthor: ITeamMember
+  teamId: string
+
+  /**
+   * The team the task is on
+   */
+  team: ITeam
+}
+
+/**
+ * How a user is involved with a task (listed in hierarchical order)
+ */
+export const enum TaskInvolvementType {
+  ASSIGNEE = 'ASSIGNEE',
+  MENTIONEE = 'MENTIONEE'
+}
+
 export interface IImageMetadataInput {
   /**
    * user-supplied MIME content type
@@ -4984,11 +5026,6 @@ export interface IDeleteTaskPayload {
    * The task that was deleted
    */
   task: ITask | null
-
-  /**
-   * The notification stating that the viewer was mentioned or assigned
-   */
-  involvementNotification: INotifyTaskInvolves | null
 }
 
 export interface IDeleteUserPayload {
@@ -5348,55 +5385,6 @@ export interface IInviteToTeamPayload {
   removedSuggestedActionId: string | null
 }
 
-/**
- * A notification sent to a user that was invited to a new team
- */
-export interface INotificationTeamInvitation {
-  __typename: 'NotificationTeamInvitation'
-
-  /**
-   * FK
-   */
-  teamId: string
-
-  /**
-   * FK
-   */
-  invitationId: string
-
-  /**
-   * The invitation that triggered this notification
-   */
-  invitation: ITeamInvitation
-  team: ITeam
-
-  /**
-   * A shortid for the notification
-   */
-  id: string
-
-  /**
-   * true if the notification has been archived, else false (or null)
-   */
-  isArchived: boolean | null
-
-  /**
-   * *The unique organization ID for this notification. Can be blank for targeted notifications
-   */
-  orgId: string | null
-
-  /**
-   * The datetime to activate the notification & send it to the client
-   */
-  startAt: any
-  type: NotificationEnum
-
-  /**
-   * *The userId that should see this notification
-   */
-  userIds: Array<string>
-}
-
 export interface ILoginWithGooglePayload {
   __typename: 'LoginWithGooglePayload'
   error: IStandardMutationError | null
@@ -5650,16 +5638,6 @@ export interface IRemoveOrgUserPayload {
   user: IUser | null
 
   /**
-   * The notifications relating to a team the user was removed from
-   */
-  removedTeamNotifications: Array<Notification> | null
-
-  /**
-   * The notifications that are no longer relevant to the removed org user
-   */
-  removedOrgNotifications: Array<Notification> | null
-
-  /**
    * The notifications for each team the user was kicked out of
    */
   kickOutNotifications: Array<INotifyKickedOut> | null
@@ -5683,30 +5661,25 @@ export interface INotifyKickedOut {
   id: string
 
   /**
-   * true if the notification has been archived, else false (or null)
+   * UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
    */
-  isArchived: boolean | null
-
-  /**
-   * *The unique organization ID for this notification. Can be blank for targeted notifications
-   */
-  orgId: string | null
+  status: NotificationStatusEnum
 
   /**
    * The datetime to activate the notification & send it to the client
    */
-  startAt: any
+  createdAt: any
   type: NotificationEnum
 
   /**
    * *The userId that should see this notification
    */
-  userIds: Array<string>
+  userId: string
 
   /**
-   * true if kicked out, false if leaving by choice
+   * the user that evicted recipient
    */
-  isKickout: boolean | null
+  evictor: IUser
 
   /**
    * The name of the team the user is joining
@@ -5815,11 +5788,6 @@ export interface IRemoveTeamMemberPayload {
    * The user removed from the team
    */
   user: IUser | null
-
-  /**
-   * Any notifications pertaining to the team that are no longer relevant
-   */
-  removedNotifications: Array<Notification | null> | null
 
   /**
    * A notification if you were kicked out by the team leader
@@ -6247,7 +6215,6 @@ export interface IUpdateTaskPayload {
    */
   privatizedTaskId: string | null
   addedNotification: INotifyTaskInvolves | null
-  removedNotification: INotifyTaskInvolves | null
 }
 
 export interface IUpdateTaskDueDatePayload {
@@ -6398,7 +6365,7 @@ export type NotificationSubscriptionPayload =
   | IAddNewFeaturePayload
   | IAddOrgPayload
   | IAddTeamPayload
-  | IClearNotificationPayload
+  | ISetNotificationStatusPayload
   | ICreateTaskPayload
   | IDeleteTaskPayload
   | IDisconnectSocketPayload
@@ -6450,25 +6417,20 @@ export interface INotificationMeetingStageTimeLimitEnd {
   id: string
 
   /**
-   * true if the notification has been archived, else false (or null)
+   * UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
    */
-  isArchived: boolean | null
-
-  /**
-   * *The unique organization ID for this notification. Can be blank for targeted notifications
-   */
-  orgId: string | null
+  status: NotificationStatusEnum
 
   /**
    * The datetime to activate the notification & send it to the client
    */
-  startAt: any
+  createdAt: any
   type: NotificationEnum
 
   /**
    * *The userId that should see this notification
    */
-  userIds: Array<string>
+  userId: string
 
   /**
    * FK
@@ -6487,7 +6449,7 @@ export interface IStripeFailPaymentPayload {
   organization: IOrganization | null
 
   /**
-   * The notification to billing leaders stating the payment was rejected
+   * The notification to a billing leader stating the payment was rejected
    */
   notification: INotifyPaymentRejected
 }
@@ -6505,25 +6467,20 @@ export interface INotifyPaymentRejected {
   id: string
 
   /**
-   * true if the notification has been archived, else false (or null)
+   * UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
    */
-  isArchived: boolean | null
-
-  /**
-   * *The unique organization ID for this notification. Can be blank for targeted notifications
-   */
-  orgId: string | null
+  status: NotificationStatusEnum
 
   /**
    * The datetime to activate the notification & send it to the client
    */
-  startAt: any
+  createdAt: any
   type: NotificationEnum
 
   /**
    * *The userId that should see this notification
    */
-  userIds: Array<string>
+  userId: string
 }
 
 /**
@@ -6566,11 +6523,6 @@ export interface ISetOrgUserRoleRemovedPayload {
   error: IStandardMutationError | null
   organization: IOrganization | null
   updatedOrgMember: IOrganizationUser | null
-
-  /**
-   * If demoted, notify them and remove all other admin notifications
-   */
-  notificationsRemoved: Array<Notification | null> | null
 }
 
 export type TaskSubscriptionPayload =
@@ -7111,25 +7063,20 @@ export interface INotifyPromoteToOrgLeader {
   id: string
 
   /**
-   * true if the notification has been archived, else false (or null)
+   * UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
    */
-  isArchived: boolean | null
-
-  /**
-   * *The unique organization ID for this notification. Can be blank for targeted notifications
-   */
-  orgId: string | null
+  status: NotificationStatusEnum
 
   /**
    * The datetime to activate the notification & send it to the client
    */
-  startAt: any
+  createdAt: any
   type: NotificationEnum
 
   /**
    * *The userId that should see this notification
    */
-  userIds: Array<string>
+  userId: string
 }
 
 /**

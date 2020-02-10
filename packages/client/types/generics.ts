@@ -42,6 +42,8 @@ type DeepNonNullableObject<T> = {
 // };
 export type Opaque<K, T> = T & {__TYPE__: K}
 
+export type Writeable<T> = {-readonly [P in keyof T]: T[P]}
+
 // there's rumor of a negated operator coming to TS soon...
 export type NotVoid =
   | {[key: string]: NotVoid}

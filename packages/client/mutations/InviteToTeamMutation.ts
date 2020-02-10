@@ -13,6 +13,7 @@ import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedAction
 graphql`
   fragment InviteToTeamMutation_notification on InviteToTeamPayload {
     teamInvitationNotification {
+      ...TeamInvitationNotification_notification
       id
       type
       team {

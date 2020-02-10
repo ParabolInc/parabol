@@ -9,12 +9,10 @@ import Atmosphere from '../Atmosphere'
 import {acceptTeamInvitationNotificationUpdater} from '../mutations/AcceptTeamInvitationMutation'
 import {addOrgMutationNotificationUpdater} from '../mutations/AddOrgMutation'
 import {addTeamMutationNotificationUpdater} from '../mutations/AddTeamMutation'
-import {clearNotificationNotificationUpdater} from '../mutations/ClearNotificationMutation'
 import {
   createTaskNotificationOnNext,
   createTaskNotificationUpdater
 } from '../mutations/CreateTaskMutation'
-import {deleteTaskNotificationUpdater} from '../mutations/DeleteTaskMutation'
 import {endNewMeetingNotificationUpdater} from '../mutations/EndNewMeetingMutation'
 import handleAddNotifications from '../mutations/handlers/handleAddNotifications'
 import {
@@ -64,9 +62,8 @@ const subscription = graphql`
       __typename
       ...AddOrgMutation_notification @relay(mask: false)
       ...AddTeamMutation_notification @relay(mask: false)
-      ...ClearNotificationMutation_notification @relay(mask: false)
+      ...SetNotificationStatusMutation_notification @relay(mask: false)
       ...CreateTaskMutation_notification @relay(mask: false)
-      ...DeleteTaskMutation_notification @relay(mask: false)
       ...EndNewMeetingMutation_notification @relay(mask: false)
       ...InviteToTeamMutation_notification @relay(mask: false)
       ...RemoveOrgUserMutation_notification @relay(mask: false)
@@ -243,14 +240,8 @@ const NotificationSubscription = (
         case 'AddTeamPayload':
           addTeamMutationNotificationUpdater(payload, context)
           break
-        case 'ClearNotificationPayload':
-          clearNotificationNotificationUpdater(payload, store)
-          break
         case 'CreateTaskPayload':
           createTaskNotificationUpdater(payload as any, context)
-          break
-        case 'DeleteTaskPayload':
-          deleteTaskNotificationUpdater(payload, store)
           break
         case 'DisconnectSocketPayload':
           break

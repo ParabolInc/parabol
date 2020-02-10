@@ -74,7 +74,7 @@ export default {
       const activeMeetingId = meeting && !meeting.endedAt ? meetingId : null
 
       // RESOLUTION
-      const {teamLeadUserIdWithNewActions, removedNotificationIds} = await acceptTeamInvitation(
+      const {teamLeadUserIdWithNewActions, invitationNotificationIds} = await acceptTeamInvitation(
         teamId,
         viewerId,
         dataLoader
@@ -88,7 +88,7 @@ export default {
         meetingId: activeMeetingId,
         teamId,
         teamMemberId,
-        removedNotificationIds
+        invitationNotificationIds
       }
 
       const encodedAuthToken = encodeAuthToken(new AuthToken({tms, sub: viewerId}))
@@ -97,7 +97,7 @@ export default {
       publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
 
       // remove the old notifications
-      if (removedNotificationIds.length > 0) {
+      if (invitationNotificationIds.length > 0) {
         publish(
           SubscriptionChannel.NOTIFICATION,
           viewerId,

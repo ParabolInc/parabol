@@ -39,12 +39,12 @@ export default {
       .table('Organization')
       .getAll(tier, {index: 'tier'})
       .merge((organization) => ({
-        users: r
+        users: (r
           .table('OrganizationUser')
           .getAll(organization('id'), {index: 'orgId'})
           .filter({removedAt: null})
           .eqJoin('userId', r.table('User'))
-          .zip()
+          .zip() as any)
           .filter((user) =>
             r.branch(
               r(ignoreEmailRegex).eq(''),

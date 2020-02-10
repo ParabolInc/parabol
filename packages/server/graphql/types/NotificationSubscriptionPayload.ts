@@ -1,7 +1,7 @@
 import graphQLSubscriptionType from '../graphQLSubscriptionType'
 import AddOrgPayload from './AddOrgPayload'
 import AddTeamPayload from './AddTeamPayload'
-import ClearNotificationPayload from './ClearNotificationPayload'
+import SetNotificationStatusPayload from './SetNotificationStatusPayload'
 import CreateTaskPayload from './CreateTaskPayload'
 import DeleteTaskPayload from './DeleteTaskPayload'
 import StripeFailPaymentPayload from './StripeFailPaymentPayload'
@@ -23,7 +23,7 @@ const types = [
   AddNewFeaturePayload,
   AddOrgPayload,
   AddTeamPayload,
-  ClearNotificationPayload,
+  SetNotificationStatusPayload,
   CreateTaskPayload,
   DeleteTaskPayload,
   DisconnectSocketPayload,

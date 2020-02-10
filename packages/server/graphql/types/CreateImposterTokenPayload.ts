@@ -4,8 +4,9 @@ import User from './User'
 import StandardMutationError from './StandardMutationError'
 import encodeAuthToken from '../../utils/encodeAuthToken'
 import AuthToken from '../../database/types/AuthToken'
+import {GQLContext} from '../graphql'
 
-const CreateImposterTokenPayload = new GraphQLObjectType({
+const CreateImposterTokenPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'CreateImposterTokenPayload',
   fields: () => ({
     error: {

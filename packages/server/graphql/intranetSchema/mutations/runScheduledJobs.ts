@@ -54,7 +54,7 @@ const processMeetingStageTimeLimits = async (job: ScheduledJobMeetingStageTimeLi
   if (!sendViaSlack) {
     const notification = new NotificationMeetingStageTimeLimitEnd({
       meetingId,
-      userIds: [facilitatorUserId]
+      userId: facilitatorUserId
     })
     await r
       .table('Notification')

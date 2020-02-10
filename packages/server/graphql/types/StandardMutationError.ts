@@ -1,6 +1,7 @@
 import {GraphQLObjectType, GraphQLNonNull, GraphQLString} from 'graphql'
+import {GQLContext} from '../graphql'
 
-const StandardMutationError = new GraphQLObjectType({
+const StandardMutationError = new GraphQLObjectType<any, GQLContext>({
   name: 'StandardMutationError',
   fields: () => ({
     title: {

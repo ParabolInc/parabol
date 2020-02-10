@@ -18,7 +18,7 @@ const getBillingLeaderUser = async (
   const r = await getRethink()
   if (email) {
     const user = await r
-      .table<User>('User')
+      .table('User')
       .getAll(email, {index: 'email'})
       .nth(0)
       .default(null)
@@ -48,7 +48,7 @@ const getBillingLeaderUser = async (
   )
   const billingLeaderUserIds = billingLeaders.map(({userId}) => userId)
   return r
-    .table<User>('User')
+    .table('User')
     .getAll(r.args(billingLeaderUserIds))
     .nth(0)
     .default(null)

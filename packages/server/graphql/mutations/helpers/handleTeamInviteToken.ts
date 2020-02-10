@@ -25,7 +25,7 @@ const handleTeamInviteToken = async (
           .get(notificationId)
           .run()
       : undefined
-    if (!notification || notification.userIds[0] !== viewerId) {
+    if (!notification || notification.userId !== viewerId) {
       return {error: InvitationTokenError.EXPIRED}
     }
   }

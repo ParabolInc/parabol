@@ -1,7 +1,8 @@
 import {GraphQLID, GraphQLObjectType, GraphQLString} from 'graphql'
 import TeamInvitationErrorEnum from './TeamInvitationErrorEnum'
+import {GQLContext} from '../graphql'
 
-const MassInvitationPayload = new GraphQLObjectType({
+const MassInvitationPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'MassInvitationPayload',
   fields: () => ({
     errorType: {

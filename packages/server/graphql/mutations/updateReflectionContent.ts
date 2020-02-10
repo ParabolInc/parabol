@@ -41,7 +41,7 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken)
     const reflection = await r
-      .table<Reflection>('RetroReflection')
+      .table('RetroReflection')
       .get(reflectionId)
       .run()
     if (!reflection) {

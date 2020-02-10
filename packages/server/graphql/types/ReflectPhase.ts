@@ -2,8 +2,9 @@ import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql
 import NewMeetingPhase, {newMeetingPhaseFields} from './NewMeetingPhase'
 import RetroPhaseItem from './RetroPhaseItem'
 import GenericMeetingStage from './GenericMeetingStage'
+import {GQLContext} from '../graphql'
 
-const ReflectPhase = new GraphQLObjectType({
+const ReflectPhase = new GraphQLObjectType<any, GQLContext>({
   name: 'ReflectPhase',
   description: 'The meeting phase where all team members check in one-by-one',
   interfaces: () => [NewMeetingPhase],

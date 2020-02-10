@@ -58,8 +58,12 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
   const {newToOrgUserIds} = await r({
     notifications: (r
       .table('Notification')
-      .getAll(currentOrgId, {index: 'orgId'})
       .filter({teamId})
+      .filter((notification) =>
+        notification('orgId')
+          .default(null)
+          .ne(null)
+      )
       .update({orgId}) as unknown) as Notification[],
     team: (r
       .table('Team')

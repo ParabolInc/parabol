@@ -31,9 +31,9 @@ export default {
     }
 
     // RESOLUTION
-    const isKickout = !isSelf
-    const res = await removeTeamMember(teamMemberId, {isKickout}, dataLoader)
-    const {user, removedNotifications, notificationId, archivedTaskIds, reassignedTaskIds} = res
+    const evictorUserId = isSelf ? undefined : viewerId
+    const res = await removeTeamMember(teamMemberId, {evictorUserId}, dataLoader)
+    const {user, notificationId, archivedTaskIds, reassignedTaskIds} = res
 
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const {tms} = user
@@ -44,7 +44,6 @@ export default {
       teamMemberId,
       taskIds,
       notificationId,
-      removedNotifications,
       userId
     }
     // messages to the rest of the team reporting the kick out

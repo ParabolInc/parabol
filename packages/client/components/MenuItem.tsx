@@ -1,4 +1,11 @@
-import React, {forwardRef, ReactNode, useEffect, useImperativeHandle, useRef} from 'react'
+import React, {
+  forwardRef,
+  ReactNode,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  RefObject
+} from 'react'
 import styled from '@emotion/styled'
 import MenuItemLabel from './MenuItemLabel'
 import {PALETTE} from '../styles/paletteV2'
@@ -15,6 +22,8 @@ interface Props {
   onClick?: (e: React.MouseEvent) => void
   onMouseEnter?: (e: React.MouseEvent) => void
   noCloseOnClick?: boolean
+  onView?: () => void // the viewer has scrolled to where the content is 90% in view
+  parentRef?: RefObject<HTMLDivElement>
 }
 
 const MenuItemStyles = styled('div')<{isActive: boolean; isDisabled: boolean | undefined}>(
@@ -31,8 +40,15 @@ const MenuItemStyles = styled('div')<{isActive: boolean; isDisabled: boolean | u
   })
 )
 
+const MINIMUM_VIEW_TIME = 300
+
+const getIsHidden = (el: HTMLElement, parent: HTMLElement) => {
+  const isViewedThreshold = el.offsetTop + el.clientHeight * 0.9 // you must see 90% to have it count as viewed
+  const parentBottom = parent.clientHeight + parent.scrollTop
+  return parentBottom < isViewedThreshold
+}
 const MenuItem = forwardRef((props: Props, ref: any) => {
-  const {isDisabled, label, noCloseOnClick, onMouseEnter, onClick} = props
+  const {isDisabled, label, noCloseOnClick, onMouseEnter, onClick, onView, parentRef} = props
   const itemRef = useRef<HTMLDivElement>(null)
   // we're doing something a little hacky here, overloading a callback ref with some props so we don't need to pass them explicitly
   const {activate, closePortal, isActive} = ref as MenuItemProps
@@ -42,6 +58,35 @@ const MenuItem = forwardRef((props: Props, ref: any) => {
       itemRef.current.scrollIntoViewIfNeeded()
     }
   }, [isActive])
+
+  useEffect(() => {
+    if (!onView || !parentRef) return
+    const timer = setTimeout(() => {
+      const {current: el} = itemRef
+      if (!el) return
+      const parent = parentRef.current
+      if (!parent) {
+        console.error('No parent found for notifications')
+        return
+      }
+      const isHidden = getIsHidden(el, parent)
+      if (!isHidden) {
+        onView()
+        return
+      }
+      const handler = () => {
+        if (!getIsHidden(el, parent)) {
+          parent.removeEventListener('scroll', handler)
+          onView()
+        }
+      }
+      parent.addEventListener('scroll', handler, {passive: true})
+    }, MINIMUM_VIEW_TIME)
+
+    return () => {
+      window.clearTimeout(timer)
+    }
+  }, [])
 
   const handleClick = (e) => {
     if (isDisabled) return

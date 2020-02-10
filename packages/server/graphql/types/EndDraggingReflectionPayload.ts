@@ -6,8 +6,9 @@ import DragReflectionDropTargetTypeEnum from './DragReflectionDropTargetTypeEnum
 import RetroReflectionGroup from './RetroReflectionGroup'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
 import RemoteReflectionDrag from './RemoteReflectionDrag'
+import {GQLContext} from '../graphql'
 
-const EndDraggingReflectionPayload = new GraphQLObjectType({
+const EndDraggingReflectionPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'EndDraggingReflectionPayload',
   fields: () => ({
     error: {

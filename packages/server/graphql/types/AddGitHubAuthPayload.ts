@@ -4,8 +4,9 @@ import StandardMutationError from './StandardMutationError'
 import {GITHUB} from '../../../client/utils/constants'
 import GitHubAuth from './GitHubAuth'
 import User from './User'
+import {GQLContext} from '../graphql'
 
-const AddGitHubAuthPayload = new GraphQLObjectType({
+const AddGitHubAuthPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'AddGitHubAuthPayload',
   fields: () => ({
     error: {

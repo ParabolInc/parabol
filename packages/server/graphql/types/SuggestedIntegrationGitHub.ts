@@ -1,9 +1,8 @@
 import {GraphQLNonNull, GraphQLObjectType, GraphQLID} from 'graphql'
-import SuggestedIntegration, {
-  suggestedIntegrationFields
-} from './SuggestedIntegration'
+import SuggestedIntegration, {suggestedIntegrationFields} from './SuggestedIntegration'
+import {GQLContext} from '../graphql'
 
-const SuggestedIntegrationGitHub = new GraphQLObjectType({
+const SuggestedIntegrationGitHub = new GraphQLObjectType<any, GQLContext>({
   name: 'SuggestedIntegrationGitHub',
   description: 'The details associated with a task integrated with GitHub',
   interfaces: () => [SuggestedIntegration],

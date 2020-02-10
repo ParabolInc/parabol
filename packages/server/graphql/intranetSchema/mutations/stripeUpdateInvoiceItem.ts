@@ -49,7 +49,7 @@ export default {
     const possibleHooks = await r
       .table('InvoiceItemHook')
       .between(start - MAX_STRIPE_DELAY, start, {index: 'prorationDate', rightBound: 'closed'})
-      .filter({stripeSubscriptionId: subscription})
+      .filter({stripeSubscriptionId: subscription as string})
       .orderBy(r.desc('prorationDate'))
       .run()
 

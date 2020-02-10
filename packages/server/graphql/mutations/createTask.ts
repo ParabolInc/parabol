@@ -155,7 +155,7 @@ export default {
           taskId,
           changeAuthorId,
           teamId,
-          userIds: [userId]
+          userId
         })
       )
     }
@@ -169,7 +169,7 @@ export default {
       .forEach((mentioneeUserId) => {
         notificationsToAdd.push(
           new NotificationTaskInvolves({
-            userIds: [mentioneeUserId],
+            userId: mentioneeUserId,
             involvement: 'MENTIONEE',
             taskId,
             changeAuthorId,
@@ -185,12 +185,9 @@ export default {
         .insert(notificationsToAdd)
         .run()
       notificationsToAdd.forEach((notification) => {
-        const {
-          userIds: [notificationUserId]
-        } = notification
         publish(
           SubscriptionChannel.NOTIFICATION,
-          notificationUserId,
+          notification.userId,
           'CreateTaskPayload',
           data,
           subOptions

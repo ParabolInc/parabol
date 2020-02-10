@@ -19,8 +19,8 @@ interface Props {
 
 const NullableTask = (props: Props) => {
   const {area, isAgenda, task, isDraggingOver} = props
-  const {content, createdBy, assignee} = task
-  const {preferredName} = assignee
+  const {content, createdBy, createdByUser} = task
+  const {preferredName} = createdByUser
   const contentState = useMemo(() => {
     try {
       return convertFromRaw(JSON.parse(content))
@@ -30,17 +30,20 @@ const NullableTask = (props: Props) => {
   }, [content])
 
   const atmosphere = useAtmosphere()
-  useEffect(() => {
-    let isMounted = true
-    setTimeout(() => {
-      isMounted && props.measure && props.measure()
-    })
-    return () => {
-      isMounted = false
-    }
-  }, [
-    /* eslint-disable-line react-hooks/exhaustive-deps*/
-  ])
+  useEffect(
+    () => {
+      let isMounted = true
+      setTimeout(() => {
+        isMounted && props.measure && props.measure()
+      })
+      return () => {
+        isMounted = false
+      }
+    },
+    [
+      /* eslint-disable-line react-hooks/exhaustive-deps*/
+    ]
+  )
 
   const showOutcome = contentState.hasText() || createdBy === atmosphere.viewerId
   return showOutcome ? (
@@ -61,12 +64,10 @@ export default createFragmentContainer(NullableTask, {
     fragment NullableTask_task on Task {
       content
       createdBy
-      status
-      assignee {
-        ... on TeamMember {
-          preferredName
-        }
+      createdByUser {
+        preferredName
       }
+      status
       ...OutcomeCardContainer_task
     }
   `

@@ -1,4 +1,4 @@
-import {useMemo} from 'react'
+import {useMemo, RefObject} from 'react'
 import getBBox, {RectElement} from '../components/RetroReflectPhase/getBBox'
 import useCoords, {MenuPosition, UseCoordsOptions} from './useCoords'
 import useLoadingDelay from './useLoadingDelay'
@@ -9,6 +9,7 @@ interface Options extends UsePortalOptions, UseCoordsOptions {
   loadingWidth?: number
   isDropdown?: boolean
   menuContentStyles?: any
+  menuContentRef?: RefObject<HTMLDivElement>
 }
 
 export interface MenuProps {
@@ -21,7 +22,7 @@ const useMenu = <T extends HTMLElement = HTMLButtonElement>(
   preferredMenuPosition: MenuPosition,
   options: Options = {}
 ) => {
-  const {onOpen, onClose, id, parentId, originCoords, menuContentStyles} = options
+  const {onOpen, onClose, id, parentId, originCoords, menuContentStyles, menuContentRef} = options
   const isDropdown = !!options.isDropdown
   const {targetRef, originRef, coords, menuPosition} = useCoords<T>(preferredMenuPosition, {
     originCoords
@@ -51,7 +52,8 @@ const useMenu = <T extends HTMLElement = HTMLButtonElement>(
     isDropdown,
     menuPosition,
     loadingDelayRef,
-    menuContentStyles
+    menuContentStyles,
+    menuContentRef
   )
   const menuProps = {portalStatus, closePortal, isDropdown}
   return {

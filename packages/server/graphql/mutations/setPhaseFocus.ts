@@ -7,6 +7,7 @@ import {GROUP, REFLECT} from '../../../client/utils/constants'
 import isPhaseComplete from '../../../client/utils/meetings/isPhaseComplete'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import ReflectPhase from '../../database/types/ReflectPhase'
 
 const setPhaseFocus = {
   type: SetPhaseFocusPayload,
@@ -45,7 +46,7 @@ const setPhaseFocus = {
     if (facilitatorUserId !== viewerId) {
       return standardError(new Error('Not meeting facilitator'), {userId: viewerId})
     }
-    const phase = meeting.phases.find((phase) => phase.phaseType === REFLECT)
+    const phase = meeting.phases.find((phase) => phase.phaseType === REFLECT) as ReflectPhase
     if (!phase) {
       return standardError(new Error('Meeting not found'), {userId: viewerId})
     }

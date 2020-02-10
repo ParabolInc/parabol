@@ -1,8 +1,9 @@
 import {GraphQLBoolean, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import SuggestedIntegration from './SuggestedIntegration'
 import StandardMutationError from './StandardMutationError'
+import {GQLContext} from '../graphql'
 
-const SuggestedIntegrationQueryPayload = new GraphQLObjectType({
+const SuggestedIntegrationQueryPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'SuggestedIntegrationQueryPayload',
   description: 'The details associated with a task integrated with GitHub',
   fields: () => ({
