@@ -12,6 +12,7 @@ import AddReflectTemplatePromptMutation from '../../../mutations/AddReflectTempl
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import Icon from '../../../components/Icon'
 import {ICON_SIZE} from '../../../styles/typographyV2'
+import {Threshold} from 'types/constEnums'
 
 const AddPromptLink = styled(LinkButton)({
   alignItems: 'center',
@@ -54,15 +55,18 @@ class AddTemplatePrompt extends Component<Props> {
     AddReflectTemplatePromptMutation(
       atmosphere,
       {templateId},
-      {promptCount, sortOrder},
-      onError,
-      onCompleted
+      {
+        promptCount,
+        sortOrder,
+        onError,
+        onCompleted
+      }
     )
   }
 
   render() {
     const {prompts, submitting} = this.props
-    if (prompts.length >= 5) return null
+    if (prompts.length >= Threshold.MAX_REFLECTION_PROMPTS) return null
     return (
       <AddPromptLink palette='blue' onClick={this.addPrompt} waiting={submitting}>
         <AddPromptLinkPlus>add</AddPromptLinkPlus>

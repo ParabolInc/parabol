@@ -2,7 +2,7 @@ import React from 'react'
 import Oy from 'oy-vey'
 
 import makeDateString from '../../../../utils/makeDateString'
-import makeAppLink from '../../../../../server/utils/makeAppLink'
+import makeAppLink from 'parabol-server/utils/makeAppLink'
 
 import NotificationSummaryEmail from './NotificationSummaryEmail'
 
@@ -13,7 +13,7 @@ import NotificationSummaryEmail from './NotificationSummaryEmail'
  */
 
 const textOnlySummary = () => {
-  const notificationPageUrl = makeAppLink('me/notifications')
+  const notificationPageUrl = makeAppLink('me')
   return `Hi there, %recipient.name%!
 
 You have received %recipient.numNotifications% new notification(s) in the last day.
@@ -33,7 +33,7 @@ export default (props) => {
   const subject = `Parabol notifications for ${makeDateString(date)}`
   return {
     subject,
-    body: textOnlySummary(props),
+    body: textOnlySummary(),
     html: Oy.renderTemplate(<NotificationSummaryEmail {...props} />, {
       title: subject,
       previewText: subject

@@ -71,9 +71,14 @@ export default {
     email: {
       type: GraphQLID,
       description: 'Email address of billing leader, if different from the org billing leader'
+    },
+    apEmail: {
+      type: GraphQLID,
+      description:
+        'The email address for Accounts Payable. Use only if the invoice will be sent to a non-user!'
     }
   },
-  async resolve(_source, {orgId, quantity, email}, {authToken, dataLoader}: GQLContext) {
+  async resolve(_source, {orgId, quantity, email, apEmail}, {authToken, dataLoader}: GQLContext) {
     const r = await getRethink()
     const now = new Date()
     // const operationId = dataLoader.share()
@@ -117,7 +122,7 @@ export default {
     let customerId
     if (!stripeId) {
       // create the customer
-      const customer = await manager.createCustomer(orgId, user.email)
+      const customer = await manager.createCustomer(orgId, apEmail || user.email)
       await r
         .table('Organization')
         .get(orgId)
