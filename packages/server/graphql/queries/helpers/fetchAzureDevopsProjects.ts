@@ -43,7 +43,7 @@ const fetchAzureDevopsProjects = async (dataLoader: DataLoaderWorker, teamId, us
           service
         }),
         service,
-        organizations,
+        organization,
         projectName: makeAzureDevopsProjectName(project.name, sites, organization),
         projectKey: project.key,
         avatar: project.avatarUrls['24x24']

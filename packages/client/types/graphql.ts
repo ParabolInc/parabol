@@ -485,7 +485,8 @@ export interface ISuggestedIntegration {
  */
 export const enum TaskServiceEnum {
   github = 'github',
-  jira = 'jira'
+  jira = 'jira',
+  azuredevops = 'azuredevops'
 }
 
 /**

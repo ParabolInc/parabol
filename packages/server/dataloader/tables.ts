@@ -1,6 +1,7 @@
 import {
   IAgendaItem,
   IAtlassianAuth,
+  IAzureDevopsAuth,
   ICustomPhaseItem,
   INewFeatureBroadcast,
   IReflectTemplate,
@@ -25,6 +26,7 @@ import User from '../database/types/User'
 export interface Tables {
   AgendaItem: IAgendaItem
   AtlassianAuth: IAtlassianAuth
+  AzureDevopsAuth: IAzureDevopsAuth
   CustomPhaseItem: ICustomPhaseItem
   MeetingSettings: ITeamMeetingSettings
   MeetingMember: MeetingMember

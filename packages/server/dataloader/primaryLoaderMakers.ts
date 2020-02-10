@@ -7,6 +7,7 @@ class LoaderMakerPrimary {
 
 export const agendaItems = new LoaderMakerPrimary('AgendaItem')
 export const atlassianAuths = new LoaderMakerPrimary('AtlassianAuth')
+export const azureDevopsAuths = new LoaderMakerPrimary('AzureDevopsAuth')
 export const customPhaseItems = new LoaderMakerPrimary('CustomPhaseItem')
 export const meetingSettings = new LoaderMakerPrimary('MeetingSettings')
 export const meetingMembers = new LoaderMakerPrimary('MeetingMember')

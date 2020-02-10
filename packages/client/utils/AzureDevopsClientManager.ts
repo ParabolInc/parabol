@@ -4,17 +4,17 @@ import makeHref from './makeHref'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import AddAzureDevopsAuthMutation from '../mutations/AddAzureDevopsAuthMutation'
 
-// export interface AzureDevopsUser {
-//   self: string
-//   key: string
-//   accountId: string
-//   name: string
-//   emailAddress: string
-//   avatarUrls: {[key: string]: string}
-//   displayName: string
-//   active: boolean
-//   timeZone: string
-// }
+export interface AzureDevopsUser {
+  self: string
+  key: string
+  accountId: string
+  name: string
+  emailAddress: string
+  avatarUrls: {[key: string]: string}
+  displayName: string
+  active: boolean
+  timeZone: string
+}
 
 export interface AzureDevopsUser {
   displayName: string
@@ -26,12 +26,12 @@ export interface AzureDevopsUser {
   revision: number
 }
 
-// export interface AccessibleResource {
-//   id: string
-//   name: string
-//   scopes: string[]
-//   avatarUrl: string
-// }
+export interface AccessibleResource {
+  id: string
+  name: string
+  scopes: string[]
+  avatarUrl: string
+}
 
 export interface AzureDevopsAccounts {
   AccountId: string
@@ -167,8 +167,7 @@ class AzureDevopsClientManager {
     // )
     // return
 
-    // const redirect = makeHref('/auth/azuredevops')
-    const redirect = 'https://jdahost:3000/auth/azuredevops'
+    const redirect = makeHref('/auth/azuredevops')
     const uri = `https://app.vssps.visualstudio.com/oauth2/authorize?client_id=${
       window.__ACTION__.azuredevops
     }&response_type=Assertion&state=${providerState}&scope=${encodeURI(
@@ -259,11 +258,12 @@ class AzureDevopsClientManager {
       | AzureDevopsError
   }
 
-  // async getAccessibleResources() {
-  //   return this.get('https://api.atlassian.com/oauth/token/accessible-resources') as
-  //     | AccessibleResource[]
-  //     | AzureDevopsError
-  // }
+  // REVIEW: accessible-resources do not exist in azure deveops
+  async getAccessibleResources() {
+    return this.get('https://app.vssps.visualstudio.com/oauth/token/accessible-resources') as
+      | AccessibleResource[]
+      | AzureDevopsError
+  }
 
   async getMyAzureDevopsProfile() {
     return this.get(

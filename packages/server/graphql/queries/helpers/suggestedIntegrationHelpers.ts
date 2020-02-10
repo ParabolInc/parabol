@@ -6,7 +6,7 @@ import makeSuggestedIntegrationId from '../../../../client/utils/makeSuggestedIn
 export interface IntegrationByUserId {
   id: string
   userId: string
-  service: 'github' | 'jira'
+  service: 'github' | 'jira' | 'azuredevops'
   nameWithOwner: string | null
   projectKey: string | null
   projectName: string | null
@@ -91,8 +91,9 @@ export const getPermsByTaskService = async (
 ) => {
   const r = await getRethink()
   // we need to see which team integrations the user has access to
-  const [atlassianAuths, githubAuthForTeam] = await Promise.all([
+  const [atlassianAuths, azureDevopsAuths, githubAuthForTeam] = await Promise.all([
     dataLoader.get('atlassianAuthByUserId').load(userId),
+    dataLoader.get('azureDevopsAuthByUserId').load(userId),
     r
       .table('Provider')
       .getAll(teamId, {index: 'teamId'})
@@ -108,6 +109,7 @@ export const getPermsByTaskService = async (
 
   return {
     jira: !!atlassianAuths.find((auth) => auth.teamId === teamId),
+    azuredevops: !!azureDevopsAuths.find((auth) => auth.teamId === teamId),
     github: !!githubAuthForTeam
   }
 }
