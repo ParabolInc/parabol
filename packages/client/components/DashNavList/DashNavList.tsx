@@ -28,8 +28,8 @@ const EmptyTeams = styled('div')({
 })
 
 const DashHR = styled('div')({
-  borderBottom: `solid ${PALETTE.BACKGROUND_TOGGLE_ACTIVE} 1px`,
-  width: '100%'
+  borderBottom: `1px solid ${PALETTE.BACKGROUND_TOGGLE_ACTIVE}`,
+  width: 'calc(100% + 8px)'
 })
 
 interface Props {
@@ -93,7 +93,7 @@ const DashNavList = (props: Props) => {
                     label={team.name}
                   />
                 ))}
-                {idx !== teamsByOrgKey.length && <DashHR />}
+                {idx !== teamsByOrgKey.length - 1 && <DashHR />}
               </>
             )
           })}
