@@ -5,7 +5,7 @@ import styled from '@emotion/styled'
 import logoMarkPrimary from '../../../../styles/theme/images/brand/parabol-lockup-h-dark.svg'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useAuthRoute from '../../../../hooks/useAuthRoute'
-import {AuthTokenRole} from '../../../../types/constEnums'
+import {AuthTokenRole, LocalStorageKey} from '../../../../types/constEnums'
 
 const GQL = styled('div')({
   margin: 0,
@@ -18,11 +18,17 @@ const GQL = styled('div')({
 type SchemaType = 'Public' | 'Private'
 
 const GraphqlContainer = () => {
-  const [currentSchema, setCurrentSchema] = useState<SchemaType>('Public')
+  const [currentSchema, setCurrentSchema] = useState<SchemaType>(() => {
+    return window.localStorage.getItem(LocalStorageKey.GRAPHIQL_SCHEMA) || 'Public'
+  })
+
   const graphiql = useRef<GraphiQL>()
   const atmosphere = useAtmosphere()
   useAuthRoute({role: AuthTokenRole.SUPER_USER})
-
+  const changeSchema = (value: SchemaType) => {
+    setCurrentSchema(value)
+    window.localStorage.setItem(LocalStorageKey.GRAPHIQL_SCHEMA, value)
+  }
   const fetcher = async ({query, variables}) => {
     const url = `${window.location.origin}/intranet-graphql/`
     const res = await fetch(url, {
@@ -55,7 +61,7 @@ const GraphqlContainer = () => {
           />
           <GraphiQL.Group>
             <span>Schema: </span>
-            <GraphiQL.Select title='Schema' label='Schema' onSelect={setCurrentSchema}>
+            <GraphiQL.Select title='Schema' label='Schema' onSelect={changeSchema}>
               <GraphiQL.SelectOption
                 label='Public'
                 value='Public'

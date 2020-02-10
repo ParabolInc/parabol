@@ -15,23 +15,6 @@ export const resolveNotification = ({notificationId, notification}, _args, {data
   return notificationId ? dataLoader.get('notifications').load(notificationId) : notification
 }
 
-export const makeResolveNotificationsForViewer = (idArray, docArray) => async (
-  source,
-  _args,
-  {authToken, dataLoader}
-) => {
-  const notificationIds = source[idArray]
-  const notifications = source[docArray]
-  const notificationDocs =
-    notificationIds && notificationIds.length > 0
-      ? await dataLoader.get('notifications').loadMany(notificationIds)
-      : notifications
-  const viewerId = getUserId(authToken)
-  if (!notificationDocs) return null
-  const viewerNotifications = notificationDocs.filter((n) => n.userIds.includes(viewerId))
-  return nullIfEmpty(viewerNotifications)
-}
-
 export const resolveMeetingMember = ({meetingId, userId}, _args, {dataLoader}) => {
   if (!meetingId || !userId) return null
   const meetingMemberId = toTeamMemberId(meetingId, userId)
