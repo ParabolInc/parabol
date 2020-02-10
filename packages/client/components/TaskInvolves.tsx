@@ -27,6 +27,8 @@ const TaskListView = styled('div')({
   backgroundColor: '#fff',
   borderRadius: 4,
   boxShadow: cardShadow,
+  fontSize: 14,
+  lineHeight: '20px',
   margin: '4px 0 0',
   padding: 8,
   width: 240
@@ -43,7 +45,7 @@ const Owner = styled('div')({
   paddingTop: 8
 })
 const OwnerName = styled('div')({
-  fontWeight: 600,
+  fontSize: 12,
   paddingLeft: 8
 })
 const OwnerAvatar = styled('img')({
