@@ -19,7 +19,7 @@ type SchemaType = 'Public' | 'Private'
 
 const GraphqlContainer = () => {
   const [currentSchema, setCurrentSchema] = useState<SchemaType>(() => {
-    return window.localStorage.getItem(LocalStorageKey.GRAPHIQL_SCHEMA) || 'Public'
+    return (window.localStorage.getItem(LocalStorageKey.GRAPHIQL_SCHEMA) as SchemaType) || 'Public'
   })
 
   const graphiql = useRef<GraphiQL>()
