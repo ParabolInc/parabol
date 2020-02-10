@@ -6,6 +6,7 @@ import useMenu from '../../../../hooks/useMenu'
 import lazyPreload from '../../../../utils/lazyPreload'
 import {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
+import useTooltip from 'hooks/useTooltip'
 
 const TaskFooterIntegrateMenuRoot = lazyPreload(() =>
   import(
@@ -27,6 +28,9 @@ const TaskFooterIntegrateToggle = (props: Props) => {
       loadingWidth: 200
     }
   )
+  const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
+    MenuPosition.UPPER_CENTER
+  )
   return (
     <>
       <CardButton
@@ -34,8 +38,14 @@ const TaskFooterIntegrateToggle = (props: Props) => {
         ref={originRef}
         onMouseEnter={TaskFooterIntegrateMenuRoot.preload}
       >
-        <IconLabel icon='publish' />
+        <IconLabel
+          icon='publish'
+          onMouseEnter={openTooltip}
+          onMouseLeave={closeTooltip}
+          ref={tipRef}
+        />
       </CardButton>
+      {tooltipPortal(<div>{'Push to Integration'}</div>)}
       {menuPortal(
         <TaskFooterIntegrateMenuRoot
           menuProps={menuProps}
