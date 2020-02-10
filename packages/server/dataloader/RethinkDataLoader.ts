@@ -6,7 +6,7 @@ import LoaderMakerForeign from './LoaderMakerForeign'
 import LoaderMakerPrimary from './LoaderMakerPrimary'
 import pkLoader from './pkLoader'
 import * as primaryLoaderMakers from './primaryLoaderMakers'
-import {Tables} from './tables'
+import {RethinkTypes} from '../database/rethinkDriver'
 
 interface LoaderDict {
   [loaderName: string]: DataLoader<any, any>
@@ -23,7 +23,7 @@ type Loaders = keyof LoaderMakers
 
 type PrimaryLoaderMakers = typeof primaryLoaderMakers
 type PrimaryLoaders = keyof PrimaryLoaderMakers
-type Unprimary<T> = T extends LoaderMakerPrimary<infer U> ? Tables[U] : never
+type Unprimary<T> = T extends LoaderMakerPrimary<infer U> ? RethinkTypes[U]['type'] : never
 type TypeFromPrimary<T extends PrimaryLoaders> = Unprimary<PrimaryLoaderMakers[T]>
 
 type ForeignLoaderMakers = typeof foreignLoaderMakers

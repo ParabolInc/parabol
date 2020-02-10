@@ -2,7 +2,11 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import shortid from 'shortid'
-import {ITask, MeetingTypeEnum, SuggestedActionTypeEnum} from '../../../client/types/graphql'
+import {
+  MeetingTypeEnum,
+  NewMeetingPhaseTypeEnum,
+  SuggestedActionTypeEnum
+} from '../../../client/types/graphql'
 import {
   ACTION,
   AGENDA_ITEMS,
@@ -16,6 +20,8 @@ import getRethink from '../../database/rethinkDriver'
 import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
 import Meeting from '../../database/types/Meeting'
 import MeetingAction from '../../database/types/MeetingAction'
+import ReflectPhase from '../../database/types/ReflectPhase'
+import Task from '../../database/types/Task'
 import archiveTasksForDB from '../../safeMutations/archiveTasksForDB'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -38,7 +44,7 @@ const suggestedActionLookup = {
   [MeetingTypeEnum.action]: SuggestedActionTypeEnum.tryActionMeeting
 } as const
 
-type SortOrderTask = Pick<ITask, 'id' | 'sortOrder'>
+type SortOrderTask = Pick<Task, 'id' | 'sortOrder'>
 const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) => {
   const r = await getRethink()
   const taskMax = await (r
@@ -257,11 +263,19 @@ export default {
       meetingNumber
     }
     const eventName = `${meetingName} Completed`
-    sendSegmentEvent(eventName, facilitatorUserId, {
-      ...traits,
-      wasFacilitator: true
-    }).catch()
-    sendSegmentEvent(eventName, nonFacilitators, traits).catch()
+    let meetingTemplateName
+    if (meetingType === MeetingTypeEnum.retrospective) {
+      const reflectPhase = phases.find(
+        (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.reflect
+      ) as ReflectPhase
+      const {promptTemplateId} = reflectPhase
+      const template = await dataLoader.get('reflectTemplates').load(promptTemplateId)
+      meetingTemplateName = template.name
+    }
+    const segmentData = {...traits, meetingType, meetingTemplateName}
+    const facilitatorSegmentData = {...segmentData, wasFacilitator: true}
+    sendSegmentEvent('Meeting Completed', facilitatorUserId, facilitatorSegmentData).catch()
+    sendSegmentEvent(eventName, nonFacilitators, segmentData).catch()
     sendSegmentIdentify(presentMemberUserIds).catch()
     sendNewMeetingSummary(completedMeeting, context).catch(console.log)
 
