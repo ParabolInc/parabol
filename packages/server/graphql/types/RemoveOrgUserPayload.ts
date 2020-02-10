@@ -1,7 +1,6 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import {GQLContext} from '../graphql'
 import {
-  makeResolveNotificationsForViewer,
   resolveFilterByTeam,
   resolveOrganization,
   resolveTasks,
