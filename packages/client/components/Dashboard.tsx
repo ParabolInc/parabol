@@ -121,7 +121,6 @@ export default createFragmentContainer(Dashboard, {
     fragment Dashboard_viewer on User {
       ...MobileDashSidebar_viewer
       ...MobileDashTopBar_viewer
-      ...DashAlert_viewer
       ...DashTopBar_viewer
       ...DashSidebar_viewer
       overLimitCopy
