@@ -38,7 +38,7 @@ import Team from './types/Team'
 import TimelineEvent from './types/TimelineEvent'
 import User from './types/User'
 
-type RethinkTypes = {
+export type RethinkTypes = {
   AgendaItem: {
     type: IAgendaItem
     index: 'teamId'

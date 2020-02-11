@@ -1,4 +1,5 @@
-import {Tables} from './tables'
-export default class LoaderMakerPrimary<T extends keyof Tables> {
-  constructor(public table: T) {}
+import {RethinkTypes} from '../database/rethinkDriver'
+
+export default class LoaderMakerPrimary<T extends keyof RethinkTypes> {
+  constructor(public table: RethinkTypes[T]['type']) {}
 }
