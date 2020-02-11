@@ -101,17 +101,22 @@ const DashNavList = (props: Props) => {
   )
 }
 
+graphql`
+  fragment DashNavListTeam on Team {
+    id
+    isPaid
+    name
+    organization {
+      id
+      name
+    }
+  }
+`
 export default createFragmentContainer(DashNavList, {
   viewer: graphql`
     fragment DashNavList_viewer on User {
       teams {
-        id
-        isPaid
-        name
-        organization {
-          id
-          name
-        }
+        ...DashNavListTeam @relay(mask: false)
       }
     }
   `

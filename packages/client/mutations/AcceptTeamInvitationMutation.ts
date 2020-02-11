@@ -19,7 +19,17 @@ import handleAuthenticationRedirect from './handlers/handleAuthenticationRedirec
 graphql`
   fragment AcceptTeamInvitationMutation_team on AcceptTeamInvitationPayload {
     teamMember {
-      ...CompleteTeamMemberFrag @relay(mask: false)
+      id
+      checkInOrder
+      isLead
+      isNotRemoved
+      picture
+      preferredName
+      teamId
+      userId
+      user {
+        isConnected
+      }
     }
     team {
       name
@@ -33,6 +43,7 @@ graphql`
   fragment AcceptTeamInvitationMutation_notification on AcceptTeamInvitationPayload {
     # this is just for the user that accepted the invitation
     team {
+      ...DashNavListTeam
       ...TopBarMeetingsActiveMeetings
       id
       name
