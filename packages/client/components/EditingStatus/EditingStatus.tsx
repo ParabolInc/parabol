@@ -46,10 +46,10 @@ const EditingStatus = (props: Props) => {
   const otherEditors = editors.filter((editor) => editor.userId !== viewerId)
   const isEditing = editors.length > otherEditors.length
   const [timestampType, setTimestampType] = useState<TimestampType>('createdAt')
-  const toggleTimestamp = () => {
+  const toggleTimestamp = (e: React.MouseEvent) => {
+    e.preventDefault()
     closeTooltip()
     setTimestampType(timestampType === 'createdAt' ? 'updatedAt' : 'createdAt')
-    ;(document as any).activeElement?.blur()
   }
   const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
     MenuPosition.UPPER_CENTER,
