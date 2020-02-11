@@ -36,12 +36,13 @@ interface Props {
   label?: ReactNode
   onMouseEnter?(): void
   onMouseLeave?(): void
+  onClick?(): void
 }
 
 const IconLabel = forwardRef((props: Props, ref: any) => {
-  const {icon, label, onMouseEnter, onMouseLeave, iconAfter, iconLarge} = props
+  const {icon, label, onClick, onMouseEnter, onMouseLeave, iconAfter, iconLarge} = props
   return (
-    <LabelBlock ref={ref} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+    <LabelBlock ref={ref} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} onClick={onClick}>
       <StyledIcon iconAfter={iconAfter} iconLarge={iconLarge}>
         {icon}
       </StyledIcon>

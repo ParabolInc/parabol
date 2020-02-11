@@ -59,7 +59,12 @@ const TaskFooterTeamAssignee = (props: Props) => {
   )
   return (
     <>
-      <TooltipToggle onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={tipRef}>
+      <TooltipToggle
+        onClick={closeTooltip}
+        onMouseEnter={openTooltip}
+        onMouseLeave={closeTooltip}
+        ref={tipRef}
+      >
         <TeamToggleButton
           aria-label='Assign this task to another team'
           onClick={canAssign ? togglePortal : undefined}

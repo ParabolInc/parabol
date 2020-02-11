@@ -95,7 +95,10 @@ const OrganizationRow = (props: Props) => {
     tier
   } = organization
   const orgAvatar = picture || defaultOrgAvatar
-  const onRowClick = () => history.push(`/me/organizations/${orgId}`)
+  const onRowClick = () => {
+    closeTooltip()
+    history.push(`/me/organizations/${orgId}`)
+  }
   const totalUsers = activeUserCount + inactiveUserCount
   const showUpgradeCTA = tier === TierEnum.personal
   const upgradeCTALabel = (

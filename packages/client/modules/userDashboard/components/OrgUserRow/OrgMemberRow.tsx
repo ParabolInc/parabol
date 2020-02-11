@@ -186,6 +186,7 @@ const OrgMemberRow = (props: Props) => {
           )}
           {isViewerLastBillingLeader && userId === viewerId && (
             <MenuToggleBlock
+              onClick={closeTooltip}
               onMouseEnter={openTooltip}
               onMouseLeave={closeTooltip}
               ref={tooltipRef}

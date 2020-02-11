@@ -147,7 +147,12 @@ const DueDateToggle = (props: Props) => {
         onClick={togglePortal}
         onMouseEnter={DueDatePicker.preload}
       >
-        <DueDateIcon onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={tipRef}>
+        <DueDateIcon
+          onClick={closeTooltip}
+          onMouseEnter={openTooltip}
+          onMouseLeave={closeTooltip}
+          ref={tipRef}
+        >
           access_time
         </DueDateIcon>
         {dueDate && <DateString>{formatDueDate(dueDate)}</DateString>}

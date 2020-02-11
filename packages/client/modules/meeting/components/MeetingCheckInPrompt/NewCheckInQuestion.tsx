@@ -69,6 +69,7 @@ const NewCheckInQuestion = (props: Props) => {
   }
 
   const selectAllQuestion = () => {
+    closeTooltip()
     editorRef.current && editorRef.current.focus()
     const selection = editorState.getSelection()
     const contentState = editorState.getCurrentContent()

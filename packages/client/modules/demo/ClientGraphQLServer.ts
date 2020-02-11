@@ -1016,6 +1016,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         content,
         createdAt: now,
         createdBy: userId,
+        createdByUser: this.db.users.find((user) => user.id === userId),
         dueDate: null,
         editors: [],
         integration: null,

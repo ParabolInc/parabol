@@ -135,6 +135,7 @@ const TeamTasksHeader = (props: Props) => {
     isDropdown: true
   })
   const goToTeamSettings = () => {
+    closeTooltip()
     history.push(`/team/${teamId}/settings/`)
   }
   const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipOriginRef} = useTooltip<

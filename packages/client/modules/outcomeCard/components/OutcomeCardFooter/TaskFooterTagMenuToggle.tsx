@@ -36,6 +36,7 @@ const TaskFooterTagMenuToggle = (props: Props) => {
           icon='more_vert'
           onMouseEnter={openTooltip}
           onMouseLeave={closeTooltip}
+          onClick={closeTooltip}
           ref={tipRef}
         />
       </CardButton>

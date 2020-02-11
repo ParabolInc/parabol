@@ -98,7 +98,12 @@ const TaskFooterUserAssignee = (props: Props) => {
   )
   return (
     <>
-      <TooltipToggle onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={tipRef}>
+      <TooltipToggle
+        onMouseEnter={openTooltip}
+        onMouseLeave={closeTooltip}
+        onClick={closeTooltip}
+        ref={tipRef}
+      >
         <AvatarButton
           aria-label='Assign this task to a teammate'
           onClick={canAssign ? togglePortal : undefined}

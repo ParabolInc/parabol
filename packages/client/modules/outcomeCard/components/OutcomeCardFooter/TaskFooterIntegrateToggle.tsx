@@ -42,6 +42,7 @@ const TaskFooterIntegrateToggle = (props: Props) => {
           icon='publish'
           onMouseEnter={openTooltip}
           onMouseLeave={closeTooltip}
+          onClick={closeTooltip}
           ref={tipRef}
         />
       </CardButton>
