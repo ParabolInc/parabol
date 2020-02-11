@@ -5,26 +5,39 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.22.0 2020-Feb-11
+
+### Added
+* User-defined schema to RethinkDB types (#3556)
+* Nagging snack for over limit copy (#3566)
+* Left nav teams broken out by organization (#3567)
+* Tooltip to Task icons (#3564)
+
+### Changed
+* Notification page to notification menu (#3556)
+* Notifications are never deleted (#3556)
+* Segment end meeting event (#3569)
+
 ## 4.21.1 2020-Feb-07
 
-## Changed
+### Changed
 * Increase max prompts from 5 to 12
 * Add Accounts Payable email for enterprise invoices
 
-## Fixed
+### Fixed
 * Drop reflection flicker regression
 * Mass Invitation token did not always refresh
 
 ## 4.21.0 2020-Feb-04
 
-## Added
+### Added
 * Meeting phase to active meeting menu (#3493)
 * Real-time updating of meeting name (#3532)
 * Page name to mobile views (#3487)
 * Blacklisted domains requiring email verification
 * Refetch query on reconnect (#3020)
 
-## Fixed
+### Fixed
 * No bouncing next when timer is running (#3495)
 * Rename server secret .env var (#3482)
 * Missing demo avatars (#3516)
