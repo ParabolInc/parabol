@@ -10,6 +10,7 @@ import PlainButton from './PlainButton/PlainButton'
 import TopBarIcon from './TopBarIcon'
 import TopBarMeetings from './TopBarMeetings'
 import TopBarNotifications from './TopBarNotifications'
+import TopBarHelp from './TopBarHelp'
 
 interface Props {
   toggle: () => void
@@ -68,7 +69,7 @@ const MobileDashTopBar = (props: Props) => {
       <TopBarIcons>
         {/* Disable search in mobile for now */}
         {false && <TopBarIcon icon={'search'} />}
-        {false && <TopBarIcon icon={'help_outline'} />}
+        <TopBarHelp />
         <TopBarNotifications viewer={viewer || null} />
         <TopBarMeetings teams={teams} />
       </TopBarIcons>
