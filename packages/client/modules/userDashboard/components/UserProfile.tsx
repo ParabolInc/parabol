@@ -123,7 +123,7 @@ const UserProfile = (props: Props) => {
                 </FieldBlock>
                 <StyledButton size='medium'>{'Update'}</StyledButton>
               </ControlBlock>
-              <NotificationErrorMessage error={{message: error} as any} />
+              <NotificationErrorMessage error={error} />
             </InfoBlock>
           </SettingsForm>
         </Panel>

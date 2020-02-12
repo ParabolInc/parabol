@@ -42,7 +42,7 @@ const RemoveTeamMemberPayload = new GraphQLObjectType<any, GQLContext>({
         if (!notificationId) return null
         const viewerId = getUserId(authToken)
         const notification = await dataLoader.get('notifications').load(notificationId)
-        return notification.userIds[0] === viewerId ? notification : null
+        return notification.userId === viewerId ? notification : null
       }
     }
   })

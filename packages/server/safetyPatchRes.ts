@@ -58,7 +58,7 @@ const safetyPatchRes = (res: HttpResponse) => {
   res._writeHeader = res.writeHeader
   res.writeHeader = (key: RecognizedString, value: RecognizedString) => {
     if (res.done) {
-      console.log(`uWS DEBUG: Called writeHeader after done`)
+      console.log(`uWS DEBUG: Called writeHeader after done ${key}`)
       return res
     }
     return res._writeHeader(key, value)
@@ -67,7 +67,7 @@ const safetyPatchRes = (res: HttpResponse) => {
   res._writeStatus = res.writeStatus
   res.writeStatus = (status: RecognizedString) => {
     if (res.done) {
-      console.log(`uWS DEBUG: Called writeStatus after done`)
+      console.error(`uWS DEBUG: Called writeStatus after done ${status}`)
       return res
     }
     return res._writeStatus(status)

@@ -28,7 +28,6 @@ const updateUserProfile = {
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const viewerId = getUserId(authToken)
 
     // AUTH
     if (!isAuthenticated(authToken)) return standardError(new Error('Not authenticated'))
@@ -47,14 +46,16 @@ const updateUserProfile = {
       const {window} = new JSDOM()
       const sanitaryPicture = await sanitizeSVG(buffer, window)
       if (!sanitaryPicture) {
-        return {error: {message: 'Attempted Stored XSS attack', title: 'Uh oh'}}
+        return {error: {message: 'Attempted Stored XSS attack'}}
       }
     }
 
     if (validUpdatedUser.preferredName) {
       const links = linkify.match(validUpdatedUser.preferredName)
       if (links) {
-        return standardError(new Error('Name cannot be a hyperlink'), {userId: viewerId})
+        return {
+          error: {message: 'Name cannot be a hyperlink'}
+        }
       }
     }
 
