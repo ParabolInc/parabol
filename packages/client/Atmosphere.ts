@@ -257,6 +257,10 @@ export default class Atmosphere extends Environment {
     variables: Variables,
     router: {history: RouterProps['history']}
   ) => {
+    if (!this.authToken) {
+      console.error('Attempted query registrationw without JWT')
+      return
+    }
     window.clearTimeout(this.queryTimeouts[queryKey])
     delete this.queryTimeouts[queryKey]
     await this.upgradeTransport()
