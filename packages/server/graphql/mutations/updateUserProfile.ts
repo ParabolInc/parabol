@@ -28,7 +28,6 @@ const updateUserProfile = {
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const viewerId = getUserId(authToken)
 
     // AUTH
     if (!isAuthenticated(authToken)) return standardError(new Error('Not authenticated'))
