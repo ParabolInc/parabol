@@ -113,12 +113,12 @@ export default {
       data: {repository, user}
     } = repoInfo
     const {id: repositoryId} = repository
-    const {id: assigneeId} = user
+    const {id: ghAssigneeId} = user
     const createIssueRes = await manager.createIssue({
       title,
       body,
       repositoryId,
-      assigneeIds: [assigneeId]
+      assigneeIds: [ghAssigneeId]
     })
     if ('message' in createIssueRes) {
       return {error: createIssueRes}

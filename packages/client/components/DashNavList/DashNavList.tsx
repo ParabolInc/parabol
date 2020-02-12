@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo} from 'react'
+import React, {useMemo, Fragment} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {DashNavList_viewer} from '../../__generated__/DashNavList_viewer.graphql'
 import LeftDashNavItem from '../Dashboard/LeftDashNavItem'
@@ -81,8 +81,8 @@ const DashNavList = (props: Props) => {
             const [key, teams] = entry
             const name = key.slice(0, key.lastIndexOf(':'))
             return (
-              <>
-                <OrgName key={key}>{name}</OrgName>
+              <Fragment key={key}>
+                <OrgName>{name}</OrgName>
                 {teams.map((team) => (
                   <LeftDashNavItem
                     className={className}
@@ -94,7 +94,7 @@ const DashNavList = (props: Props) => {
                   />
                 ))}
                 {idx !== teamsByOrgKey.length - 1 && <DashHR />}
-              </>
+              </Fragment>
             )
           })}
     </DashNavListStyles>

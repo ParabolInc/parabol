@@ -2,7 +2,7 @@ import pluralizeHandler from './pluralizeHandler'
 import fromTeamMemberId from '../../utils/relay/fromTeamMemberId'
 import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
 
-const handleRemoveTeamMember = (teamMemberId, store) => {
+const handleRemoveTeamMember = (teamMemberId: string, store) => {
   const teamMember = store.get(teamMemberId)
   if (!teamMember) return
   const {teamId} = fromTeamMemberId(teamMemberId)

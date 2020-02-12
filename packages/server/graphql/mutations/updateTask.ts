@@ -94,7 +94,8 @@ export default {
         content: nextTask.content,
         taskId,
         status,
-        assigneeId: nextTask.assigneeId,
+        userId: nextTask.userId,
+        teamId: nextTask.teamId,
         updatedAt: now,
         tags: nextTask.tags
       }

@@ -23,13 +23,12 @@ interface Props {
 
 const TaskFooterUserAssigneeMenu = (props: Props) => {
   const {area, menuProps, task, viewer} = props
-  const {assignee, id: taskId} = task
-  const {id: assigneeId, userId} = assignee
+  const {userId, id: taskId} = task
   const {team} = viewer
   const {teamMembers} = team || {teamMembers: []}
   const assignees = useMemo(
-    () => teamMembers.filter((teamMember) => teamMember.id !== assigneeId),
-    [assigneeId, teamMembers]
+    () => teamMembers.filter((teamMember) => teamMember.userId !== userId),
+    [userId, teamMembers]
   )
   const atmosphere = useAtmosphere()
   if (!team) return null
@@ -77,10 +76,7 @@ export default createFragmentContainer(TaskFooterUserAssigneeMenu, {
   task: graphql`
     fragment TaskFooterUserAssigneeMenu_task on Task {
       id
-      assignee {
-        id
-        userId
-      }
+      userId
       team {
         id
       }

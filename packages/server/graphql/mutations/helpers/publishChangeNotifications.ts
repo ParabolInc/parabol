@@ -45,7 +45,7 @@ const publishChangeNotifications = async (
     )
 
   // add in the assignee changes
-  if (oldTask.assigneeId !== task.assigneeId) {
+  if (oldTask.userId !== task.userId) {
     if (task.userId !== changeUserId && !usersToIgnore.includes(task.userId)) {
       notificationsToAdd.push(
         new NotificationTaskInvolves({

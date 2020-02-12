@@ -63,7 +63,7 @@ const deletedTask = {
   content: convertToTaskContent('<<TASK DELETED>>'),
   status: TaskStatusEnum.done,
   tags: [] as string[],
-  assignee: {
+  user: {
     picture: null,
     preferredName: null
   }
@@ -72,7 +72,7 @@ const deletedTask = {
 const TaskInvolves = (props: Props) => {
   const {notification} = props
   const {id: notificationId, task, team, involvement, changeAuthor} = notification
-  const {content, status, tags, assignee} = task || deletedTask
+  const {content, status, tags, user} = task || deletedTask
   const {picture: changeAuthorPicture, preferredName: changeAuthorName} = changeAuthor
   const {name: teamName, id: teamId} = team
   const action = involvementWord[involvement]
@@ -114,8 +114,8 @@ const TaskInvolves = (props: Props) => {
           }}
         />
         <Owner>
-          <OwnerAvatar alt='Avatar' src={assignee.picture || changeAuthorPicture} />
-          <OwnerName>{assignee.preferredName || changeAuthorName}</OwnerName>
+          <OwnerAvatar alt='Avatar' src={user.picture || changeAuthorPicture} />
+          <OwnerName>{user.preferredName || changeAuthorName}</OwnerName>
         </Owner>
       </TaskListView>
     </NotificationTemplate>
@@ -142,11 +142,9 @@ export default createFragmentContainer(TaskInvolves, {
         content
         status
         tags
-        assignee {
-          ... on TeamMember {
-            picture
-            preferredName
-          }
+        user {
+          picture
+          preferredName
         }
       }
     }

@@ -19,13 +19,10 @@ graphql`
     updatedTasks {
       id
       tags
-      assigneeId
-      assignee {
+      user {
         id
         preferredName
-        ... on TeamMember {
-          picture
-        }
+        picture
       }
       userId
     }

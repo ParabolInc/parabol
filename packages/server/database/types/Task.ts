@@ -1,7 +1,6 @@
 import shortid from 'shortid'
 import dndNoise from '../../../client/utils/dndNoise'
 import getTagsFromEntityMap from '../../../client/utils/draftjs/getTagsFromEntityMap'
-import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import TaskIntegrationJira from './TaskIntegrationJira'
 import TaskIntegrationGitHub from './TaskIntegrationGitHub'
 
@@ -28,7 +27,6 @@ export interface TaskInput {
 export default class Task {
   id: string
   agendaId?: string
-  assigneeId: string
   content: string
   createdAt: Date
   createdBy: string
@@ -65,7 +63,6 @@ export default class Task {
     const tags = getTagsFromEntityMap<TaskTag>(entityMap)
     this.id = id || shortid.generate()
     this.agendaId = agendaId || undefined
-    this.assigneeId = toTeamMemberId(teamId, userId)
     this.content = content
     this.createdAt = createdAt || new Date()
     this.createdBy = createdBy

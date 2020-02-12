@@ -1,14 +1,5 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import handleAddNotifications from './handlers/handleAddNotifications'
-import handleEditTask from './handlers/handleEditTask'
-import handleUpsertTasks from './handlers/handleUpsertTasks'
-import popInvolvementToast from './toasts/popInvolvementToast'
-import makeEmptyStr from '../utils/draftjs/makeEmptyStr'
-import clientTempId from '../utils/relay/clientTempId'
-import createProxyRecord from '../utils/relay/createProxyRecord'
-import getOptimisticTaskEditor from '../utils/relay/getOptimisticTaskEditor'
-import toTeamMemberId from '../utils/relay/toTeamMemberId'
+import {commitMutation} from 'react-relay'
 import Atmosphere from '../Atmosphere'
 import {
   OnNextHandler,
@@ -17,9 +8,17 @@ import {
   SharedUpdater,
   StandardMutation
 } from '../types/relayMutations'
+import makeEmptyStr from '../utils/draftjs/makeEmptyStr'
+import clientTempId from '../utils/relay/clientTempId'
+import createProxyRecord from '../utils/relay/createProxyRecord'
+import getOptimisticTaskEditor from '../utils/relay/getOptimisticTaskEditor'
 import {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
-import {CreateTaskMutation_task} from '../__generated__/CreateTaskMutation_task.graphql'
 import {CreateTaskMutation_notification} from '../__generated__/CreateTaskMutation_notification.graphql'
+import {CreateTaskMutation_task} from '../__generated__/CreateTaskMutation_task.graphql'
+import handleAddNotifications from './handlers/handleAddNotifications'
+import handleEditTask from './handlers/handleEditTask'
+import handleUpsertTasks from './handlers/handleUpsertTasks'
+import popInvolvementToast from './toasts/popInvolvementToast'
 
 graphql`
   fragment CreateTaskMutation_task on CreateTaskPayload {
@@ -101,7 +100,6 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
     },
     optimisticUpdater: (store) => {
       const {teamId, userId} = newTask
-      const assigneeId = toTeamMemberId(teamId, userId)
       const now = new Date().toJSON()
       const taskId = clientTempId(teamId)
       const viewer = store.getRoot().getLinkedRecord('viewer')
@@ -114,12 +112,11 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
         createdBy: viewerId,
         updatedAt: now,
         tags: [],
-        assigneeId,
         content: newTask.content || makeEmptyStr()
       }
       const task = createProxyRecord(store, 'Task', optimisticTask)
-        .setLinkedRecord(store.get(assigneeId)!, 'assignee')
         .setLinkedRecord(store.get(teamId)!, 'team')
+        .setLinkedRecord(store.get(userId)!, 'user')
         .setLinkedRecord(viewer, 'createdByUser')
       const editorPayload = getOptimisticTaskEditor(store, userId, taskId, isEditing)
       handleEditTask(editorPayload, store)

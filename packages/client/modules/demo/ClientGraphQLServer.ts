@@ -26,8 +26,6 @@ import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraft
 import getTagsFromEntityMap from '../../utils/draftjs/getTagsFromEntityMap'
 import makeEmptyStr from '../../utils/draftjs/makeEmptyStr'
 import findStageById from '../../utils/meetings/findStageById'
-import fromTeamMemberId from '../../utils/relay/fromTeamMemberId'
-import toTeamMemberId from '../../utils/relay/toTeamMemberId'
 import sleep from '../../utils/sleep'
 import startStage_ from '../../utils/startStage_'
 import unlockAllStagesForPhase from '../../utils/unlockAllStagesForPhase'
@@ -1002,7 +1000,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     },
     CreateTaskMutation: async ({newTask}, userId) => {
       const now = new Date().toJSON()
-      const teamMemberId = toTeamMemberId(demoTeamId, userId)
       const taskId = newTask.id || this.getTempId('task')
       const {reflectionGroupId, sortOrder, status} = newTask
       const content = newTask.content || makeEmptyStr()
@@ -1028,8 +1025,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         taskStatus: status,
         tags,
         teamId: demoTeamId,
-        assigneeId: teamMemberId,
-        assignee: this.db.teamMembers.find((teamMember) => teamMember.id === teamMemberId),
         updatedAt: now,
         userId
       }
@@ -1072,25 +1067,22 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       return {editTask: data}
     },
     UpdateTaskMutation: ({updatedTask}, userId) => {
-      const {agendaId, content, status, assigneeId, sortOrder} = updatedTask
+      const {agendaId, content, status, sortOrder} = updatedTask
+      const task = this.db.tasks.find((task) => task.id === updatedTask.id)
+      // if the human deleted the task, exit fast
+      if (!task) return null
+
       const taskUpdates = {
         agendaId,
         content,
         status,
         tags: content ? getTagsFromEntityMap(JSON.parse(content).entityMap) : undefined,
         teamId: demoTeamId,
-        assigneeId,
         sortOrder,
-        userId: null as null | string
+        userId: updatedTask.userId || task.userId
       }
-      const task = this.db.tasks.find((task) => task.id === updatedTask.id)
-      // if the human deleted the task, exit fast
-      if (!task) return null
-      if (assigneeId) {
-        taskUpdates.userId = fromTeamMemberId(assigneeId).userId
-        if (assigneeId === false) {
-          taskUpdates.userId = null
-        }
+
+      if (updatedTask.userId) {
         const oldMeetingMember = this.db.meetingMembers.find(
           (member) => member.userId === task.userId
         )!
@@ -1108,10 +1100,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         status: taskUpdates.status || task.status,
         tags: taskUpdates.tags || task.tags,
         teamId: taskUpdates.teamId || task.teamId,
-        assigneeId: taskUpdates.assigneeId || task.assigneeId,
-        assignee: taskUpdates.assigneeId
-          ? this.db.teamMembers.find((teamMember) => teamMember.id === taskUpdates.assigneeId)
-          : task.assignee,
         sortOrder: taskUpdates.sortOrder || task.sortOrder,
         userId: taskUpdates.userId || task.userId
       })
