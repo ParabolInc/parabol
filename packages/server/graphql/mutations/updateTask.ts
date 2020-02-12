@@ -149,7 +149,6 @@ export default {
       viewerId,
       usersToIgnore
     )
-    console.log('notKes to add', notificationsToAdd)
     const data = {
       isPrivatized,
       taskId,
