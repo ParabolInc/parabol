@@ -15,15 +15,14 @@ import TaskEditorDetails from './TaskEditorDetails'
 import TaskIntegration from './TaskIntegration'
 import TaskStatusEnum from './TaskStatusEnum'
 import Team from './Team'
+import Threadable, {threadableFields} from './Threadable'
 
 const Task = new GraphQLObjectType<any, GQLContext, any>({
   name: 'Task',
   description: 'A long-term task shared across the team, assigned to a single user ',
+  interfaces: () => [Threadable],
   fields: () => ({
-    id: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'shortid'
-    },
+    ...threadableFields(),
     agendaId: {
       type: GraphQLID,
       description: 'the agenda item that created this task, if any'
@@ -33,25 +32,6 @@ const Task = new GraphQLObjectType<any, GQLContext, any>({
       description: 'The agenda item that the task was created in, if any',
       resolve: ({agendaId}, _args, {dataLoader}) => {
         return agendaId ? dataLoader.get('agendaItems').load(agendaId) : null
-      }
-    },
-    content: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The body of the task. If null, it is a new task.'
-    },
-    createdAt: {
-      type: new GraphQLNonNull(GraphQLISO8601Type),
-      description: 'The timestamp the task was created'
-    },
-    createdBy: {
-      type: GraphQLNonNull(GraphQLID),
-      description: 'The userId that created the task'
-    },
-    createdByUser: {
-      type: GraphQLNonNull(require('./User').default),
-      description: 'The user that created the card',
-      resolve: ({createdBy}, _args, {dataLoader}) => {
-        return dataLoader.get('users').load(createdBy)
       }
     },
     dueDate: {
@@ -103,10 +83,6 @@ const Task = new GraphQLObjectType<any, GQLContext, any>({
       resolve: ({teamId}, _args, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)
       }
-    },
-    updatedAt: {
-      type: new GraphQLNonNull(GraphQLISO8601Type),
-      description: 'The timestamp the task was updated'
     },
     userId: {
       type: new GraphQLNonNull(GraphQLID),

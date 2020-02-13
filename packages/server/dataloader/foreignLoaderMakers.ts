@@ -41,6 +41,19 @@ export const atlassianAuthByUserId = new LoaderMakerForeign(
   }
 )
 
+export const commentsByThreadId = new LoaderMakerForeign(
+  'comments',
+  'threadId',
+  async (threadIds) => {
+    const r = await getRethink()
+    return r
+      .table('Comment')
+      .getAll(r.args(threadIds), {index: 'threadId'})
+      .filter({isActive: true})
+      .run()
+  }
+)
+
 export const customPhaseItemsByTeamId = new LoaderMakerForeign(
   'customPhaseItems',
   'teamId',
@@ -199,6 +212,17 @@ export const teamsByOrgId = new LoaderMakerForeign('teams', 'orgId', async (orgI
         .ne(true)
     )
     .run()
+})
+
+export const tasksByThreadId = new LoaderMakerForeign('tasks', 'threadId', async (threadIds) => {
+  const r = await getRethink()
+  return (
+    r
+      .table('Task')
+      .getAll(r.args(threadIds), {index: 'threadId'})
+      // include archived cards in the conversation, since it's persistent
+      .run()
+  )
 })
 
 export const tasksByTeamId = new LoaderMakerForeign('tasks', 'teamId', async (teamIds) => {

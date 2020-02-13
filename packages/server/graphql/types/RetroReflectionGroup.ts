@@ -8,16 +8,18 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import {IThreadable} from 'parabol-client/types/graphql'
+import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
+import {getUserId} from '../../utils/authorization'
+import {GQLContext} from '../graphql'
+import {resolveForSU} from '../resolvers'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
+import RetroPhaseItem from './RetroPhaseItem'
 import RetroReflection from './RetroReflection'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
-import Team from './Team'
-import {resolveForSU} from '../resolvers'
-import RetroPhaseItem from './RetroPhaseItem'
-import {getUserId} from '../../utils/authorization'
 import Task from './Task'
-import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
-import {GQLContext} from '../graphql'
+import Team from './Team'
+import {ThreadableConnection} from './Threadable'
 
 const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
   name: 'RetroReflectionGroup',
@@ -98,6 +100,61 @@ const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({meetingId}, _args, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         return dataLoader.get('teams').load(meeting.teamId)
+      }
+    },
+    thread: {
+      type: GraphQLNonNull(ThreadableConnection),
+      args: {
+        first: {
+          type: GraphQLNonNull(GraphQLInt)
+        },
+        after: {
+          type: GraphQLISO8601Type,
+          description: 'the datetime cursor'
+        }
+      },
+      description: 'the comments and tasks created from the discussion',
+      resolve: async ({id: reflectionGroupId}, _args, {dataLoader}) => {
+        const [comments, tasks] = await Promise.all([
+          dataLoader.get('commentsByThreadId').load(reflectionGroupId),
+          dataLoader.get('tasksByThreadId').load(reflectionGroupId)
+        ])
+
+        const threadables = [...comments, tasks] as IThreadable[]
+        const threadablesByParentId = {} as {[parentId: string]: IThreadable[]}
+        const rootThreadables = [] as IThreadable[]
+        threadables.forEach((threadable) => {
+          const {threadParentId} = threadable
+          if (!threadParentId) {
+            rootThreadables.push(threadable)
+          } else {
+            threadablesByParentId[threadParentId] = threadablesByParentId[threadParentId] || []
+            threadablesByParentId[threadParentId].push(threadable)
+          }
+        })
+        rootThreadables.sort((a, b) => (a.threadSortOrder < b.threadSortOrder ? -1 : 1))
+        rootThreadables.forEach((threadable) => {
+          const {id: threadableId} = threadable
+          const replies = threadablesByParentId[threadableId]
+          if (replies) {
+            replies.sort((a, b) => (a.threadSortOrder < b.threadSortOrder ? -1 : 1))
+            ;(threadable as any).replies = replies
+          }
+        })
+
+        const edges = rootThreadables.map((node) => ({
+          cursor: node.createdAt,
+          node
+        }))
+
+        const lastEdge = edges[edges.length - 1]
+        return {
+          edges,
+          pageInfo: {
+            endCursor: lastEdge?.cursor,
+            hasNextPage: false
+          }
+        }
       }
     },
     title: {
