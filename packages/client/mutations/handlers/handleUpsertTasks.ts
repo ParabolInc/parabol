@@ -8,12 +8,13 @@ import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
 import {ConnectionHandler, RecordSourceSelectorProxy} from 'relay-runtime'
 import addNodeToArray from '../../utils/relay/addNodeToArray'
 import {RecordProxy} from 'relay-runtime'
+import {ThreadSourceEnum} from 'types/graphql'
 
 type Task = RecordProxy<{
   readonly id: string
   readonly teamId: string
   readonly tags: readonly string[]
-  readonly reflectionGroupId: string | null
+  readonly threadId: string | null
   readonly meetingId: string | null
   readonly updatedAt: string | null
   readonly userId: string
@@ -28,7 +29,9 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
   const teamId = task.getValue('teamId')
   const taskId = task.getValue('id')
   const tags = task.getValue('tags')
-  const reflectionGroupId = task.getValue('reflectionGroupId')
+  const threadSource = task.getValue('threadSource')
+  const reflectionGroupId =
+    threadSource === ThreadSourceEnum.REFLECTION_GROUP ? task.getValue('threadId') : undefined
   const meetingId = task.getValue('meetingId')
   const isNowArchived = tags.includes('archived')
   const archiveConn = getArchivedTasksConn(viewer, teamId)

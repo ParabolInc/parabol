@@ -577,12 +577,12 @@ export interface ITask {
   /**
    * The ID of the thread
    */
-  threadId: string
+  threadId: string | null
 
   /**
    * The item that spurred the threaded discussion
    */
-  threadSource: ThreadSourceEnum
+  threadSource: ThreadSourceEnum | null
 
   /**
    * the parent, if this threadable is a reply, else null
@@ -592,17 +592,12 @@ export interface ITask {
   /**
    * the order of this threadable, relative to threadParentId
    */
-  threadSortOrder: number
+  threadSortOrder: number | null
 
   /**
    * The timestamp the item was updated
    */
   updatedAt: any
-
-  /**
-   * the agenda item that created this task, if any
-   */
-  agendaId: string | null
 
   /**
    * The agenda item that the task was created in, if any
@@ -629,11 +624,6 @@ export interface ITask {
    * the foreign key for the meeting the task was marked as complete
    */
   doneMeetingId: string | null
-
-  /**
-   * the foreign key for the retrospective reflection group this was created in
-   */
-  reflectionGroupId: string | null
 
   /**
    * the shared sort order for tasks on the team dash & user dash
@@ -700,12 +690,12 @@ export interface IThreadable {
   /**
    * The userId that created the item
    */
-  createdBy: string
+  createdBy: string | null
 
   /**
    * The user that created the item
    */
-  createdByUser: IUser
+  createdByUser: IUser | null
 
   /**
    * the replies to this threadable item
@@ -715,12 +705,12 @@ export interface IThreadable {
   /**
    * The ID of the thread
    */
-  threadId: string
+  threadId: string | null
 
   /**
    * The item that spurred the threaded discussion
    */
-  threadSource: ThreadSourceEnum
+  threadSource: ThreadSourceEnum | null
 
   /**
    * the parent, if this threadable is a reply, else null
@@ -730,7 +720,7 @@ export interface IThreadable {
   /**
    * the order of this threadable, relative to threadParentId
    */
-  threadSortOrder: number
+  threadSortOrder: number | null
 
   /**
    * The timestamp the item was updated
@@ -2899,7 +2889,7 @@ export interface IMutation {
   /**
    * Create a new task, triggering a CreateCard for other viewers
    */
-  createTask: ICreateTaskPayload | null
+  createTask: ICreateTaskPayload
 
   /**
    * Create a PUT URL on the CDN for the currently authenticated user’s profile picture
@@ -5026,10 +5016,6 @@ export interface ICreateReflectionPayload {
 }
 
 export interface ICreateTaskInput {
-  /**
-   * foreign key for AgendaItem
-   */
-  agendaId?: string | null
   content?: string | null
 
   /**
@@ -5038,9 +5024,12 @@ export interface ICreateTaskInput {
   meetingId?: string | null
 
   /**
-   * foreign key for the reflection group this was created from
+   * foreign key for the reflection group or agenda item this was created from
    */
-  reflectionGroupId?: string | null
+  threadId?: string | null
+  threadSource?: ThreadSourceEnum | null
+  threadSortOrder?: number | null
+  threadParentId?: string | null
   sortOrder?: number | null
   status: TaskStatusEnum
 
@@ -8057,14 +8046,14 @@ export interface IComment {
   createdAt: any
 
   /**
-   * The userId that created the item
+   * The userId that created the item, null if anonymous
    */
-  createdBy: string
+  createdBy: string | null
 
   /**
-   * The user that created the item
+   * The user that created the item, null if anonymous
    */
-  createdByUser: IUser
+  createdByUser: IUser | null
 
   /**
    * the replies to this threadable item
@@ -8074,12 +8063,12 @@ export interface IComment {
   /**
    * The ID of the thread
    */
-  threadId: string
+  threadId: string | null
 
   /**
    * The item that spurred the threaded discussion
    */
-  threadSource: ThreadSourceEnum
+  threadSource: ThreadSourceEnum | null
 
   /**
    * the parent, if this threadable is a reply, else null
@@ -8089,7 +8078,7 @@ export interface IComment {
   /**
    * the order of this threadable, relative to threadParentId
    */
-  threadSortOrder: number
+  threadSortOrder: number | null
 
   /**
    * The timestamp the item was updated
@@ -8100,6 +8089,16 @@ export interface IComment {
    * true if the agenda item has not been processed or deleted
    */
   isActive: boolean
+
+  /**
+   * true if the comment is anonymous, else false
+   */
+  isAnonymous: boolean
+
+  /**
+   * true if the viewer wrote this comment, else false
+   */
+  isViewerComment: boolean
 
   /**
    * All the reactjis for the given reflection

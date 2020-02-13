@@ -16,6 +16,7 @@ import TaskIntegration from './TaskIntegration'
 import TaskStatusEnum from './TaskStatusEnum'
 import Team from './Team'
 import Threadable, {threadableFields} from './Threadable'
+import {ThreadSourceEnum} from 'parabol-client/types/graphql'
 
 const Task = new GraphQLObjectType<any, GQLContext, any>({
   name: 'Task',
@@ -23,15 +24,23 @@ const Task = new GraphQLObjectType<any, GQLContext, any>({
   interfaces: () => [Threadable],
   fields: () => ({
     ...threadableFields(),
-    agendaId: {
-      type: GraphQLID,
-      description: 'the agenda item that created this task, if any'
-    },
     agendaItem: {
       type: AgendaItem,
       description: 'The agenda item that the task was created in, if any',
-      resolve: ({agendaId}, _args, {dataLoader}) => {
+      resolve: ({threadId, threadSource}, _args, {dataLoader}) => {
+        const agendaId = threadSource === ThreadSourceEnum.AGENDA_ITEM ? threadId : undefined
         return agendaId ? dataLoader.get('agendaItems').load(agendaId) : null
+      }
+    },
+    createdBy: {
+      type: GraphQLNonNull(GraphQLID),
+      description: 'The userId that created the item'
+    },
+    createdByUser: {
+      type: GraphQLNonNull(require('./User').default),
+      description: 'The user that created the item',
+      resolve: ({createdBy}, _args, {dataLoader}: GQLContext) => {
+        return dataLoader.get('users').load(createdBy)
       }
     },
     dueDate: {
@@ -56,10 +65,6 @@ const Task = new GraphQLObjectType<any, GQLContext, any>({
     doneMeetingId: {
       type: GraphQLID,
       description: 'the foreign key for the meeting the task was marked as complete'
-    },
-    reflectionGroupId: {
-      type: GraphQLID,
-      description: 'the foreign key for the retrospective reflection group this was created in'
     },
     sortOrder: {
       type: new GraphQLNonNull(GraphQLFloat),

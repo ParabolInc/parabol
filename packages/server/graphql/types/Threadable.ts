@@ -28,11 +28,11 @@ export const threadableFields = () => ({
     description: 'The timestamp the item was created'
   },
   createdBy: {
-    type: GraphQLNonNull(GraphQLID),
+    type: GraphQLID,
     description: 'The userId that created the item'
   },
   createdByUser: {
-    type: GraphQLNonNull(require('./User').default),
+    type: require('./User').default,
     description: 'The user that created the item',
     resolve: ({createdBy}, _args, {dataLoader}: GQLContext) => {
       return dataLoader.get('users').load(createdBy)
@@ -44,11 +44,11 @@ export const threadableFields = () => ({
     resolve: ({replies}) => replies || []
   },
   threadId: {
-    type: GraphQLNonNull(GraphQLID),
+    type: GraphQLID,
     description: 'The ID of the thread'
   },
   threadSource: {
-    type: GraphQLNonNull(ThreadSourceEnum),
+    type: ThreadSourceEnum,
     description: 'The item that spurred the threaded discussion'
   },
   threadParentId: {
@@ -56,7 +56,7 @@ export const threadableFields = () => ({
     description: 'the parent, if this threadable is a reply, else null'
   },
   threadSortOrder: {
-    type: GraphQLNonNull(GraphQLFloat),
+    type: GraphQLFloat,
     description: 'the order of this threadable, relative to threadParentId'
   },
   updatedAt: {

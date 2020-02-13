@@ -10,21 +10,19 @@ export type TaskTag = 'private' | 'archived'
 
 export interface TaskInput {
   id?: string
-  agendaId?: string | null
   content: string
   createdAt?: Date | null
   createdBy: string
   doneMeetingId?: string
   dueDate?: Date | null
   meetingId?: string | null
-  reflectionGroupId?: string | null
   sortOrder?: number | null
   status: TaskStatus
   teamId: string
-  threadId?: string
-  threadParentId?: string
+  threadId?: string | null
+  threadParentId?: string | null
   threadSortOrder?: number | null
-  threadSource?: ThreadSourceEnum
+  threadSource?: ThreadSourceEnum | null
   updatedAt?: Date
   userId: string
 }
@@ -71,8 +69,8 @@ export default class Task {
     const {entityMap} = JSON.parse(content)
     const tags = getTagsFromEntityMap<TaskTag>(entityMap)
     this.id = id || shortid.generate()
-    this.threadId = threadId ?? undefined
-    this.threadSource = threadSource
+    this.threadId = threadId || undefined
+    this.threadSource = threadSource || undefined
     this.content = content
     this.createdAt = createdAt || new Date()
     this.createdBy = createdBy
@@ -83,8 +81,8 @@ export default class Task {
     this.status = status
     this.tags = tags
     this.teamId = teamId
-    this.threadSortOrder = threadSortOrder
-    this.threadParentId = threadParentId
+    this.threadSortOrder = threadSortOrder || undefined
+    this.threadParentId = threadParentId || undefined
     this.updatedAt = updatedAt || new Date()
     this.userId = userId
   }

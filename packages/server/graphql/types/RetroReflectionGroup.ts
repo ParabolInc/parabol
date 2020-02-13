@@ -82,13 +82,10 @@ const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
     tasks: {
       type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(Task))),
       description: 'The tasks created for this group in the discussion phase',
-      resolve: async ({id: reflectionGroupId, meetingId}, _args, {authToken, dataLoader}) => {
+      resolve: async ({id: reflectionGroupId}, _args, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
-        const meeting = await dataLoader.get('newMeetings').load(meetingId)
-        const {teamId} = meeting
-        const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
-        return teamTasks.filter((task) => {
-          if (task.reflectionGroupId !== reflectionGroupId) return false
+        const tasks = await dataLoader.get('tasksByThreadId').load(reflectionGroupId)
+        return tasks.filter((task) => {
           if (isTaskPrivate(task.tags) && task.userId !== viewerId) return false
           return true
         })
@@ -119,10 +116,11 @@ const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
           dataLoader.get('commentsByThreadId').load(reflectionGroupId),
           dataLoader.get('tasksByThreadId').load(reflectionGroupId)
         ])
+        type Item = IThreadable & {threadSortOrder: NonNullable<number>}
 
-        const threadables = [...comments, tasks] as IThreadable[]
-        const threadablesByParentId = {} as {[parentId: string]: IThreadable[]}
-        const rootThreadables = [] as IThreadable[]
+        const threadables = [...comments, tasks] as Item[]
+        const threadablesByParentId = {} as {[parentId: string]: Item[]}
+        const rootThreadables = [] as Item[]
         threadables.forEach((threadable) => {
           const {threadParentId} = threadable
           if (!threadParentId) {

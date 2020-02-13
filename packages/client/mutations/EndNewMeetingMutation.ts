@@ -39,7 +39,8 @@ graphql`
       content
       tags
       teamId
-      reflectionGroupId
+      threadId
+      threadSource
       meetingId
       updatedAt
       userId

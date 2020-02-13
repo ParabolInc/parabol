@@ -378,6 +378,17 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         reflections: [reflection],
         sortOrder,
         tasks: [],
+        thread: {
+          __typename: 'ThreadableConnection',
+          edges: [],
+          pageInfo: {
+            __typename: 'PageInfoDateCursor',
+            startCursor: null,
+            endCursor: null,
+            hasNextPage: false,
+            hasPreviousPage: false
+          }
+        },
         titleIsUserDefined: false,
         updatedAt: now,
         voterIds: []
@@ -1001,7 +1012,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     CreateTaskMutation: async ({newTask}, userId) => {
       const now = new Date().toJSON()
       const taskId = newTask.id || this.getTempId('task')
-      const {reflectionGroupId, sortOrder, status} = newTask
+      const {threadId, threadSource, threadParentId, threadSortOrder, sortOrder, status} = newTask
       const content = newTask.content || makeEmptyStr()
       const {entityMap} = JSON.parse(content)
       const tags = getTagsFromEntityMap(entityMap)
@@ -1009,7 +1020,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         __typename: 'Task',
         id: taskId,
         taskId,
-        agendaId: null,
         content,
         createdAt: now,
         createdBy: userId,
@@ -1019,7 +1029,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         integration: null,
         team: this.db.team,
         meetingId: RetroDemo.MEETING_ID,
-        reflectionGroupId,
+        threadId,
+        threadSource,
+        threadParentId,
+        threadSortOrder,
         sortOrder: sortOrder || 0,
         status,
         taskStatus: status,
@@ -1029,9 +1042,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         userId
       }
       this.db.tasks.push(task as any)
-      const reflectionGroup = this.db.reflectionGroups.find(
-        (group) => group.id === reflectionGroupId
-      )!
+      const reflectionGroup = this.db.reflectionGroups.find((group) => group.id === threadId)!
       const meetingMember = this.db.meetingMembers.find((member) => member.userId === userId)!
       meetingMember.tasks.push(task as any)
       reflectionGroup.tasks!.push(task as any)
@@ -1067,13 +1078,12 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       return {editTask: data}
     },
     UpdateTaskMutation: ({updatedTask}, userId) => {
-      const {agendaId, content, status, sortOrder} = updatedTask
+      const {content, status, sortOrder} = updatedTask
       const task = this.db.tasks.find((task) => task.id === updatedTask.id)
       // if the human deleted the task, exit fast
       if (!task) return null
 
       const taskUpdates = {
-        agendaId,
         content,
         status,
         tags: content ? getTagsFromEntityMap(JSON.parse(content).entityMap) : undefined,
@@ -1095,7 +1105,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
       Object.assign(task, {
-        agendaId: taskUpdates.agendaId || task.agendaId,
         content: taskUpdates.content || task.content,
         status: taskUpdates.status || task.status,
         tags: taskUpdates.tags || task.tags,
@@ -1118,10 +1127,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     },
     DeleteTaskMutation: ({taskId}, userId) => {
       const task = this.db.tasks.find((task) => task.id === taskId)!
-      const {reflectionGroupId} = task
-      const reflectionGroup = this.db.reflectionGroups.find(
-        (group) => group.id === reflectionGroupId
-      )!
+      const {threadId} = task
+      const reflectionGroup = this.db.reflectionGroups.find((group) => group.id === threadId)
+      if (!reflectionGroup) return
       reflectionGroup.tasks!.splice(reflectionGroup.tasks!.indexOf(task as any), 1)
       const data = {
         __typename: 'DeleteTaskPayload',
