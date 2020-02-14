@@ -631,16 +631,6 @@ export interface ITask {
   team: ITeam
 
   /**
-   * The team member that owns this task
-   */
-  assignee: ITeamMember
-
-  /**
-   * The id of the team member (or soft team member) assigned to this task
-   */
-  assigneeId: string
-
-  /**
    * The timestamp the task was updated
    */
   updatedAt: any
@@ -649,6 +639,11 @@ export interface ITask {
    * * The userId, index useful for server-side methods getting all tasks under a user
    */
   userId: string
+
+  /**
+   * The user the task is assigned to
+   */
+  user: IUser
 }
 
 /**

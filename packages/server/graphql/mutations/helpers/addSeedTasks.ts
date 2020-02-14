@@ -2,7 +2,6 @@ import shortid from 'shortid'
 import getRethink from '../../../database/rethinkDriver'
 import convertToTaskContent from '../../../../client/utils/draftjs/convertToTaskContent'
 import getTagsFromEntityMap from '../../../../client/utils/draftjs/getTagsFromEntityMap'
-import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import {TaskStatusEnum} from 'parabol-client/types/graphql'
 
 const SEED_TASKS = [
@@ -26,7 +25,6 @@ export default async (userId, teamId) => {
     createdBy: userId,
     tags: getTagsFromEntityMap(JSON.parse(proj.content).entityMap),
     teamId,
-    assigneeId: toTeamMemberId(teamId, userId),
     userId,
     updatedAt: now
   }))
@@ -41,7 +39,8 @@ export default async (userId, teamId) => {
           content: change('new_val')('content'),
           taskId: change('new_val')('id'),
           status: change('new_val')('status'),
-          assigneeId: change('new_val')('assigneeId'),
+          teamId: change('new_val')('teamId'),
+          userId: change('new_val')('userId'),
           updatedAt: change('new_val')('updatedAt')
         }))
       )

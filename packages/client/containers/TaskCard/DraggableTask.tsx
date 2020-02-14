@@ -43,6 +43,7 @@ const DraggableTask = (props: Props) => {
 export default createFragmentContainer(DraggableTask, {
   task: graphql`
     fragment DraggableTask_task on Task {
+      ...NullableTask_task
       id
       content
       integration {
@@ -50,10 +51,6 @@ export default createFragmentContainer(DraggableTask, {
       }
       status
       sortOrder
-      assignee {
-        id
-      }
-      ...NullableTask_task
     }
   `
 })

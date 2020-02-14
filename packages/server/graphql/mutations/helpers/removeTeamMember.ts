@@ -69,7 +69,8 @@ const removeTeamMember = async (
       }),
     integratedTasksToArchive: (r
       .table('Task')
-      .getAll(teamMemberId, {index: 'assigneeId'})
+      .getAll(userId, {index: 'userId'})
+      .filter({teamId})
       .filter((task) => {
         return r.and(
           task('tags')
@@ -83,7 +84,8 @@ const removeTeamMember = async (
       .coerceTo('array') as unknown) as Task[],
     reassignedTasks: (r
       .table('Task')
-      .getAll(teamMemberId, {index: 'assigneeId'})
+      .getAll(userId, {index: 'userId'})
+      .filter({teamId})
       .filter((task) =>
         r.and(
           task('tags')
@@ -96,7 +98,6 @@ const removeTeamMember = async (
       )
       .update(
         {
-          assigneeId: teamLeader.id,
           userId: teamLeader.userId
         },
         {returnChanges: true}

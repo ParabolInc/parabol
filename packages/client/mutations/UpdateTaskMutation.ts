@@ -10,7 +10,6 @@ import {
 import getTagsFromEntityMap from '../utils/draftjs/getTagsFromEntityMap'
 import ContentFilterHandler from '../utils/relay/ContentFilterHandler'
 import getInProxy from '../utils/relay/getInProxy'
-import toTeamMemberId from '../utils/relay/toTeamMemberId'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
 import {UpdateTaskMutation as TUpdateTaskMutation} from '../__generated__/UpdateTaskMutation.graphql'
 import {UpdateTaskMutation_task} from '../__generated__/UpdateTaskMutation_task.graphql'
@@ -118,16 +117,13 @@ const UpdateTaskMutation: SimpleMutation<TUpdateTaskMutation> = (
         updatedAt: now.toJSON()
       }
       updateProxyRecord(task, optimisticTask)
-      if (teamId || userId) {
-        const nextTeamId = teamId || (task.getValue('teamId') as string)
-        const nextUserId = userId || (task.getValue('userId') as string)
-        const assigneeId = toTeamMemberId(nextTeamId, nextUserId)
-        task.setValue(assigneeId, 'assigneeId')
-        const assignee = store.get(assigneeId)
-        if (assignee) {
-          task.setLinkedRecord(assignee, 'assignee')
-          task.setValue(nextUserId, 'userId')
-        }
+      if (teamId) {
+        task.setValue(teamId, 'teamId')
+        task.setLinkedRecord(store.get(teamId)!, 'team')
+      }
+      if (userId) {
+        task.setValue(userId, 'userId')
+        task.setLinkedRecord(store.get(userId)!, 'user')
       }
       if (content) {
         const {entityMap} = JSON.parse(content)

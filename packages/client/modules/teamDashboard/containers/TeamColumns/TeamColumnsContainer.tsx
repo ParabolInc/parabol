@@ -25,7 +25,9 @@ const TeamColumnsContainer = (props: Props) => {
       teamMembers
     }))
     return teamMemberFilterId
-      ? nodes.filter((node) => node.assignee.id === teamMemberFilterId)
+      ? nodes.filter((node) => {
+          return toTeamMemberId(node.teamId, node.userId) === teamMemberFilterId
+        })
       : nodes
   }, [tasks.edges, teamMemberFilterId, teamMembers])
 
@@ -70,9 +72,8 @@ export default createFragmentContainer(TeamColumnsContainer, {
               contentText
               status
               sortOrder
-              assignee {
-                id
-              }
+              teamId
+              userId
             }
           }
         }

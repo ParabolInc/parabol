@@ -122,13 +122,14 @@ export default {
       teamId,
       userId
     })
-    const {id: taskId, assigneeId, updatedAt, tags} = task
+    const {id: taskId, updatedAt, tags} = task
     const history = {
       id: shortid.generate(),
       content,
       taskId,
       status,
-      assigneeId,
+      teamId,
+      userId,
       updatedAt
     }
     const {teamMembers} = await r({
@@ -148,7 +149,7 @@ export default {
     // Almost always you start out with a blank card assigned to you (except for filtered team dash)
     const changeAuthorId = toTeamMemberId(teamId, viewerId)
     const notificationsToAdd = [] as NotificationTaskInvolves[]
-    if (changeAuthorId !== assigneeId && !usersIdsToIgnore.includes(userId)) {
+    if (viewerId !== userId && !usersIdsToIgnore.includes(userId)) {
       notificationsToAdd.push(
         new NotificationTaskInvolves({
           involvement: 'ASSIGNEE',

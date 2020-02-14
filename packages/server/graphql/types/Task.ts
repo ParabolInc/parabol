@@ -7,15 +7,14 @@ import {
   GraphQLString
 } from 'graphql'
 import connectionDefinitions from '../connectionDefinitions'
+import {GQLContext} from '../graphql'
+import AgendaItem from './AgendaItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import PageInfoDateCursor from './PageInfoDateCursor'
 import TaskEditorDetails from './TaskEditorDetails'
+import TaskIntegration from './TaskIntegration'
 import TaskStatusEnum from './TaskStatusEnum'
 import Team from './Team'
-import TaskIntegration from './TaskIntegration'
-import AgendaItem from './AgendaItem'
-import TeamMember from './TeamMember'
-import {GQLContext} from '../graphql'
 
 const Task = new GraphQLObjectType<any, GQLContext, any>({
   name: 'Task',
@@ -105,17 +104,6 @@ const Task = new GraphQLObjectType<any, GQLContext, any>({
         return dataLoader.get('teams').load(teamId)
       }
     },
-    assignee: {
-      type: new GraphQLNonNull(TeamMember),
-      description: 'The team member that owns this task',
-      resolve: ({assigneeId}, _args, {dataLoader}) => {
-        return dataLoader.get('teamMembers').load(assigneeId)
-      }
-    },
-    assigneeId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The id of the team member (or soft team member) assigned to this task'
-    },
     updatedAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The timestamp the task was updated'
@@ -124,6 +112,13 @@ const Task = new GraphQLObjectType<any, GQLContext, any>({
       type: new GraphQLNonNull(GraphQLID),
       description:
         '* The userId, index useful for server-side methods getting all tasks under a user'
+    },
+    user: {
+      type: GraphQLNonNull(require('./User').default),
+      description: 'The user the task is assigned to',
+      resolve: ({userId}, _args, {dataLoader}) => {
+        return dataLoader.get('users').load(userId)
+      }
     }
   })
 })

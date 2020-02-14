@@ -162,9 +162,6 @@ export default createFragmentContainer(ActionMeetingUpdates, {
               status
               sortOrder
               tags
-              assignee {
-                id
-              }
               userId
             }
           }

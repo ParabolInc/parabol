@@ -1,4 +1,3 @@
-// @ts-ignore
 import {IAgendaItem, IAtlassianAuth, INewFeatureBroadcast} from 'parabol-client/types/graphql'
 import {r} from 'rethinkdb-ts'
 import MeetingMember from '../database/types/MeetingMember'
@@ -37,6 +36,9 @@ import Task from './types/Task'
 import Team from './types/Team'
 import TimelineEvent from './types/TimelineEvent'
 import User from './types/User'
+import NotificationKickedOut from './types/NotificationKickedOut'
+import NotificationPromoteToBillingLeader from './types/NotificationPromoteToBillingLeader'
+import NotificationTeamInvitation from './types/NotificationTeamInvitation'
 
 export type RethinkTypes = {
   AgendaItem: {
@@ -87,15 +89,15 @@ export type RethinkTypes = {
     type: INewFeatureBroadcast
     index: ''
   }
-  // [ENotificationEnum.KICKED_OUT]: NotifyKickedOut,
-  // [ENotificationEnum.PROMOTE_TO_BILLING_LEADER]: NotifyPromoteToOrgLeader,
-  // [ENotificationEnum.TEAM_INVITATION]: NotificationTeamInvitation,
   Notification: {
     type:
       | NotificationTaskInvolves
       | NotificationTeamArchived
       | NotificationMeetingStageTimeLimitEnd
       | NotificationPaymentRejected
+      | NotificationKickedOut
+      | NotificationPromoteToBillingLeader
+      | NotificationTeamInvitation
     index: 'userId'
   }
   Organization: {
@@ -162,14 +164,7 @@ export type RethinkTypes = {
   }
   Task: {
     type: Task
-    index:
-      | 'agendaId'
-      | 'assigneeId'
-      | 'integrationId'
-      | 'tags'
-      | 'teamId'
-      | 'teamIdUpdatedAt'
-      | 'userId'
+    index: 'agendaId' | 'integrationId' | 'tags' | 'teamId' | 'teamIdUpdatedAt' | 'userId'
   }
   TaskHistory: {
     type: any
@@ -185,7 +180,7 @@ export type RethinkTypes = {
   }
   TeamMember: {
     type: TeamMember
-    index: 'assigneeId' | 'teamId' | 'userId'
+    index: 'teamId' | 'userId'
   }
   TimelineEvent: {
     type: TimelineEvent
@@ -204,16 +199,14 @@ let isLoading = false
 let isLoaded = false
 let promise
 const getRethink = async () => {
-  if (isLoaded) {
-    return (r as unknown) as ParabolR
+  if (!isLoaded) {
+    if (!isLoading) {
+      isLoading = true
+      promise = r.connectPool(config)
+    }
+    await promise
+    isLoaded = true
   }
-  // it's not loaded
-  if (!isLoading) {
-    isLoading = true
-    promise = r.connectPool(config)
-  }
-  await promise
-  isLoaded = true
   return (r as unknown) as ParabolR
 }
 

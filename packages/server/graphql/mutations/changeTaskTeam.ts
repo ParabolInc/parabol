@@ -2,7 +2,6 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import shortid from 'shortid'
 import removeEntityKeepText from '../../../client/utils/draftjs/removeEntityKeepText'
-import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -68,8 +67,7 @@ export default {
     const updates = {
       content: rawContent === nextRawContent ? undefined : JSON.stringify(nextRawContent),
       updatedAt: now,
-      teamId,
-      assigneeId: toTeamMemberId(teamId, task.userId)
+      teamId
     }
     await r({
       newTask: r

@@ -91,7 +91,7 @@ const TaskFooterUserAssigneeMenuRoot = lazyPreload(() =>
 
 const TaskFooterUserAssignee = (props: Props) => {
   const {area, canAssign, cardIsActive, task, useTaskChild} = props
-  const {assignee} = task
+  const {user} = task
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT)
   const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
     MenuPosition.UPPER_CENTER
@@ -111,9 +111,9 @@ const TaskFooterUserAssignee = (props: Props) => {
           ref={originRef}
         >
           <Avatar cardIsActive={cardIsActive}>
-            <AvatarImage alt={assignee.preferredName} src={assignee.picture || avatarUser} />
+            <AvatarImage alt={user.preferredName} src={user.picture || avatarUser} />
           </Avatar>
-          <AvatarLabel>{assignee.preferredName}</AvatarLabel>
+          <AvatarLabel>{user.preferredName}</AvatarLabel>
         </AvatarButton>
       </TooltipToggle>
       {tooltipPortal(<div>{'Reassign Responsibility'}</div>)}
@@ -133,10 +133,8 @@ export default createFragmentContainer(TaskFooterUserAssignee, {
   task: graphql`
     fragment TaskFooterUserAssignee_task on Task {
       ...TaskFooterUserAssigneeMenuRoot_task
-      assignee {
-        ... on TeamMember {
-          picture
-        }
+      user {
+        picture
         preferredName
       }
       team {
