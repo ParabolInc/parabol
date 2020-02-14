@@ -1,21 +1,21 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import useRouter from 'hooks/useRouter'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from 'styles/paletteV2'
 import {ICON_SIZE} from 'styles/typographyV2'
 import {AppBar, Breakpoint, Layout, NavSidebar} from 'types/constEnums'
+import makeMinWidthMediaQuery from 'utils/makeMinWidthMediaQuery'
 import {DashTopBar_viewer} from '__generated__/DashTopBar_viewer.graphql'
 import parabolLogo from '../styles/theme/images/brand/logo.svg'
 import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
 import TopBarAvatar from './TopBarAvatar'
-import TopBarIcon from './TopBarIcon'
+import TopBarHelp from './TopBarHelp'
 import TopBarMeetings from './TopBarMeetings'
 import TopBarNotifications from './TopBarNotifications'
 import TopBarSearch from './TopBarSearch'
-import useRouter from 'hooks/useRouter'
-import makeMinWidthMediaQuery from 'utils/makeMinWidthMediaQuery'
 
 const dashWidestBreakpoint = makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)
 
@@ -94,7 +94,7 @@ const DashTopBar = (props: Props) => {
       <TopBarMain>
         <TopBarSearch viewer={viewer} />
         <TopBarIcons>
-          {false && <TopBarIcon icon={'help_outline'} />}
+          <TopBarHelp />
           <TopBarNotifications viewer={viewer || null} />
           <TopBarMeetings teams={teams} />
           <TopBarAvatar viewer={viewer || null} />
