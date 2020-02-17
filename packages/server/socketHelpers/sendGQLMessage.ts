@@ -1,5 +1,6 @@
 import {WebSocket, HttpResponse} from 'uWebSockets.js'
 import sendEncodedMessage from './sendEncodedMessage'
+import {GraphQLMessageType} from '../graphql/handleGraphQLTrebuchetRequest'
 
 interface Message {
   type: string
@@ -9,7 +10,7 @@ interface Message {
 
 const sendGQLMessage = (
   transport: WebSocket | HttpResponse,
-  type: string,
+  type: GraphQLMessageType,
   payload?: object,
   opId?: string
 ) => {

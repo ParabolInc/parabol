@@ -4,15 +4,14 @@
   It is NOT used for subscription source streams, since those require state
   It IS used to transform a source stream into a response stream
  */
-import {execute, ExecutionResult, graphql} from 'graphql'
+import {ExecutionResult, graphql} from 'graphql'
+import {ExecutionResultDataDefault} from 'graphql/execution/execute'
 import AuthToken from '../database/types/AuthToken'
-import DocumentCache from './DocumentCache'
+import CompiledQueryCache from './CompiledQueryCache'
 import getDataLoader from './getDataLoader'
+import getRateLimiter from './getRateLimiter'
 import privateSchema from './intranetSchema/intranetSchema'
 import publicSchema from './rootSchema'
-import getRateLimiter from './getRateLimiter'
-// import {getUserId} from '../utils/authorization'
-import {ExecutionResultDataDefault} from 'graphql/execution/execute'
 
 interface GQLRequest {
   authToken: AuthToken
@@ -29,7 +28,7 @@ interface GQLRequest {
   isAdHoc?: boolean
 }
 
-const documentCache = new DocumentCache()
+const queryCache = new CompiledQueryCache()
 
 const executeGraphQL = async <T = ExecutionResultDataDefault>(req: GQLRequest) => {
   const {
@@ -59,9 +58,15 @@ const executeGraphQL = async <T = ExecutionResultDataDefault>(req: GQLRequest) =
   if (isAdHoc) {
     response = await graphql({schema, source, variableValues, contextValue})
   } else {
-    const document = docId ? await documentCache.fromID(docId) : documentCache.fromString(source)
-    if (document) {
-      response = await execute({schema, document, variableValues, contextValue, rootValue})
+    const compiledQuery = docId
+      ? await queryCache.fromID(docId, schema)
+      : queryCache.fromString(source, schema)
+    if (compiledQuery) {
+      response = ((await compiledQuery.query(
+        rootValue,
+        contextValue,
+        variableValues
+      )) as any) as ExecutionResultDataDefault
     } else {
       response = {errors: [new Error(`DocumentID not found: ${docId}`)] as any}
     }

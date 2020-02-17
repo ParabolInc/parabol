@@ -7,8 +7,10 @@ import sendToSentry from '../utils/sendToSentry'
 import executeGraphQL from './executeGraphQL'
 import subscribeGraphQL from './subscribeGraphQL'
 
+export type GraphQLMessageType = 'data' | 'complete' | 'error'
+
 type TrebuchetServerResult = Promise<{
-  type: 'data' | 'complete' | 'error'
+  type: GraphQLMessageType
   id?: string
   payload: {data?: any; errors?: {message: string; path?: string[]}[]}
 } | void>
