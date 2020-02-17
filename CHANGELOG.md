@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.23.0 2020-Feb-17
+
+### Added
+* graphql-jit for faster GraphQL resolutions (#3580)
+* threadSource, threadId to task. Replaces agendaId, reflectionGroupId (#3579)
+* Comment entity to backend (#3579)
+
+### Removed
+* assigneeId from Task (remnant of soft team members) (#3576)
+* reflectionGroupId, agendaId from Task (#3579)
+
 ## 4.22.0 2020-Feb-11
 
 ### Added
