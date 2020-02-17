@@ -1016,6 +1016,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const content = newTask.content || makeEmptyStr()
       const {entityMap} = JSON.parse(content)
       const tags = getTagsFromEntityMap(entityMap)
+      const user = this.db.users.find((user) => user.id === userId)
       const task = {
         __typename: 'Task',
         id: taskId,
@@ -1023,7 +1024,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         content,
         createdAt: now,
         createdBy: userId,
-        createdByUser: this.db.users.find((user) => user.id === userId),
+        createdByUser: user,
         dueDate: null,
         editors: [],
         integration: null,
@@ -1039,7 +1040,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         tags,
         teamId: demoTeamId,
         updatedAt: now,
-        userId
+        userId,
+        user
       }
       this.db.tasks.push(task as any)
       const reflectionGroup = this.db.reflectionGroups.find((group) => group.id === threadId)!
