@@ -1,11 +1,11 @@
 /*
-  This is the primary GraphQL function on the socket server
+  This is the primary stateful GraphQL function, to be broken out into its own server when necessary
   It containis 2 pieces of state:
-    * The WebSocket (or EvemtStream) to the client
-    * A dictionary of GraphQL source streams pulled from Redis
-  In the future, we could break those 2 apart:
-    * The socket server listens to a single redis channel: socket:socketId
-    * The GraphQL subscription server publishes to that channel
+    * The WebSocket (or EventStream, if SSE) to the client
+    * A list of subscriptions (response streams) kept in the connection context
+  In the future, we could break apart the socket server from the subscription server:
+    * The socket server listens to a single redis channel (socket:socketId) and is unaware of GraphQL
+    * The GraphQL subscription server keeps a dictionary of subscriptions by socketId
  */
 
 import {createSourceEventStream, ExecutionResult} from 'graphql'
@@ -19,9 +19,9 @@ import sendGQLMessage from '../socketHelpers/sendGQLMessage'
 import relayUnsubscribeAll from '../utils/relayUnsubscribeAll'
 import sendToSentry from '../utils/sendToSentry'
 import SubscriptionIterator from '../utils/SubscriptionIterator'
-import DocumentCache from './DocumentCache'
 import ResponseStream from './ResponseStream'
 import publicSchema from './rootSchema'
+import DocumentCache from './DocumentCache'
 
 export interface SubscribeRequest {
   connectionContext: ConnectionContext
@@ -72,20 +72,22 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
     return
   }
   const responseStream = new ResponseStream(sourceStream, req)
+  // hold onto responseStream so we can unsubscribe from other contexts
   connectionContext.subs[opId] = responseStream
-  // TODO PR definitelytyped
   for await (const payload of responseStream) {
     const {data} = payload
     const notificationType = data?.notificationSubscription?.__typename
     if (notificationType === 'AuthTokenPayload') {
+      // AuthTokenPayload is sent when a user is added/removed from a team and their JWT is soft invalidated
       const jwt = (data.notificationSubscription as IAuthTokenPayload).id
       connectionContext.authToken = new AuthToken(decode(jwt) as any)
-      // if auth changed, then we can't trust any of the subscriptions, so dump em all and resub for the client
-      // delay it to guarantee that no matter when this is published, it is the last message on the mutation
+      // When a JWT is invalidated, so are the subscriptions.
+      // Allow the other subscription payloads to complete, then resubscribe
       setTimeout(() => {
         relayUnsubscribeAll(connectionContext, {isResub: true})
       }, 1000)
     } else if (notificationType === 'InvalidateSessionsPayload') {
+      // InvalidateSessionsPayload is sent when e.g. a password is reset and the JWT is hard invalidated
       handleDisconnect(connectionContext, {
         exitCode: 1011,
         reason: TrebuchetCloseReason.SESSION_INVALIDATED
