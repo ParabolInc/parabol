@@ -2,6 +2,7 @@ import LoaderMakerPrimary from './LoaderMakerPrimary'
 
 export const agendaItems = new LoaderMakerPrimary('AgendaItem')
 export const atlassianAuths = new LoaderMakerPrimary('AtlassianAuth')
+export const comments = new LoaderMakerPrimary('Comment')
 export const customPhaseItems = new LoaderMakerPrimary('CustomPhaseItem')
 export const massInvitations = new LoaderMakerPrimary('MassInvitation')
 export const meetingSettings = new LoaderMakerPrimary('MeetingSettings')

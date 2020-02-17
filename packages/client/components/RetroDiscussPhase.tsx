@@ -267,11 +267,6 @@ graphql`
         }
         tasks {
           ...MeetingAgendaCards_tasks
-          id
-          reflectionGroupId
-          content
-          createdAt
-          sortOrder
         }
       }
     }

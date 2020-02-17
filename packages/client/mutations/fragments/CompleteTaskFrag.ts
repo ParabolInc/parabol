@@ -2,7 +2,6 @@ import graphql from 'babel-plugin-relay/macro'
 graphql`
   fragment CompleteTaskFrag on Task {
     id
-    agendaId
     content
     createdAt
     createdBy
@@ -18,7 +17,8 @@ graphql`
       }
     }
     meetingId
-    reflectionGroupId
+    threadId
+    threadSource
     sortOrder
     status
     tags

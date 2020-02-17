@@ -5,6 +5,7 @@ import makeDiscussionStage from '../../utils/makeDiscussionStage'
 import mapGroupsToStages from '../../utils/makeGroupsToStages'
 import taskLookup from './taskLookup'
 import reactjiLookup from './reactjiLookup'
+import {ThreadSourceEnum} from 'types/graphql'
 
 const removeEmptyReflections = (db) => {
   const reflections = db.reflections.filter((reflection) => reflection.isActive)
@@ -73,10 +74,10 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
           variables: {
             newTask: {
               id: taskId,
-              // content: taskContent,
               sortOrder: idx,
               status: ACTIVE,
-              reflectionGroupId
+              threadId: reflectionGroupId,
+              threadSource: ThreadSourceEnum.REFLECTION_GROUP
             }
           }
         },

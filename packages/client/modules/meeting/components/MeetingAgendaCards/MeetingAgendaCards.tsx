@@ -10,7 +10,7 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {MeetingAgendaCards_tasks} from '../../../../__generated__/MeetingAgendaCards_tasks.graphql'
-import {AreaEnum, TaskStatusEnum} from '../../../../types/graphql'
+import {AreaEnum, TaskStatusEnum, ThreadSourceEnum} from '../../../../types/graphql'
 import useEventCallback from '../../../../hooks/useEventCallback'
 
 const makePlaceholders = (
@@ -45,9 +45,11 @@ const MeetingAgendaCards = (props: Props) => {
     const newTask = {
       status: TaskStatusEnum.active,
       sortOrder: sortOrderBetween(maybeLastTask, null, null, false) || 0,
-      agendaId,
       meetingId,
-      reflectionGroupId,
+      threadId: reflectionGroupId || agendaId,
+      threadSource: reflectionGroupId
+        ? ThreadSourceEnum.REFLECTION_GROUP
+        : ThreadSourceEnum.AGENDA_ITEM,
       userId: viewerId,
       teamId
     }

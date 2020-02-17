@@ -99,7 +99,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
   const agendaTasks = useMemo(() => {
     return tasks.edges
       .map(({node}) => node)
-      .filter((node) => node.agendaId === agendaItemId)
+      .filter((node) => node.threadId === agendaItemId)
       .sort((a, b) => (a.sortOrder < b.sortOrder ? 1 : -1))
   }, [agendaItemId, tasks])
   const agendaItem = agendaItems.find((item) => item.id === agendaItemId!)
@@ -205,9 +205,9 @@ export default createFragmentContainer(ActionMeetingAgendaItems, {
             node {
               ...MeetingAgendaCards_tasks
               id
-              agendaId
               createdAt
               sortOrder
+              threadId
             }
           }
         }

@@ -39,6 +39,7 @@ import User from './types/User'
 import NotificationKickedOut from './types/NotificationKickedOut'
 import NotificationPromoteToBillingLeader from './types/NotificationPromoteToBillingLeader'
 import NotificationTeamInvitation from './types/NotificationTeamInvitation'
+import Comment from './types/Comment'
 
 export type RethinkTypes = {
   AgendaItem: {
@@ -48,6 +49,10 @@ export type RethinkTypes = {
   AtlassianAuth: {
     type: IAtlassianAuth
     index: 'atlassianUserId' | 'userId' | 'teamId'
+  }
+  Comment: {
+    type: Comment
+    index: 'threadId'
   }
   CustomPhaseItem: {
     type: RetrospectivePrompt
@@ -164,7 +169,7 @@ export type RethinkTypes = {
   }
   Task: {
     type: Task
-    index: 'agendaId' | 'integrationId' | 'tags' | 'teamId' | 'teamIdUpdatedAt' | 'userId'
+    index: 'integrationId' | 'tags' | 'teamId' | 'teamIdUpdatedAt' | 'threadId' | 'userId'
   }
   TaskHistory: {
     type: any

@@ -32,6 +32,7 @@ import UpdatesPhase from './types/UpdatesPhase'
 import AgendaItemsPhase from './types/AgendaItemsPhase'
 import AuthIdentityGoogle from './types/AuthIdentityGoogle'
 import AuthIdentityLocal from './types/AuthIdentityLocal'
+import Comment from './types/Comment'
 
 export default new GraphQLSchema({
   query,
@@ -67,6 +68,7 @@ export default new GraphQLSchema({
     TaskIntegrationGitHub,
     TaskIntegrationJira,
     SuggestedIntegrationGitHub,
-    SuggestedIntegrationJira
+    SuggestedIntegrationJira,
+    Comment
   ]
 })

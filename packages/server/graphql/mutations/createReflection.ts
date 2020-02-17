@@ -113,7 +113,7 @@ export default {
     const data = {
       meetingId,
       reflectionId: reflection.id,
-      reflectionGroupId: reflectionGroupId,
+      reflectionGroupId,
       unlockedStageIds
     }
     publish(SubscriptionChannel.MEETING, meetingId, 'CreateReflectionPayload', data, subOptions)

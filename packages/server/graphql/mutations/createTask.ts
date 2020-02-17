@@ -11,7 +11,7 @@ import getTypeFromEntityMap from '../../../client/utils/draftjs/getTypeFromEntit
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import standardError from '../../utils/standardError'
 import Task from '../../database/types/Task'
-import {ICreateTaskOnMutationArguments} from '../../../client/types/graphql'
+import {ICreateTaskOnMutationArguments, ThreadSourceEnum} from '../../../client/types/graphql'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import normalizeRawDraftJS from '../../../client/validation/normalizeRawDraftJS'
 import NotificationTaskInvolves from '../../database/types/NotificationTaskInvolves'
@@ -19,10 +19,12 @@ import {ITeamMember} from 'parabol-client/types/graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const validateTaskAgendaItemId = async (
-  agendaItemId: string | null | undefined,
+  threadSource: ThreadSourceEnum | null,
+  threadId: string | null | undefined,
   teamId: string,
   dataLoader: DataLoaderWorker
 ) => {
+  const agendaItemId = threadSource === ThreadSourceEnum.AGENDA_ITEM ? threadId : undefined
   if (agendaItemId) {
     const agendaItem = await dataLoader.get('agendaItems').load(agendaItemId)
     if (!agendaItem || agendaItem.teamId !== teamId) {
@@ -33,10 +35,13 @@ const validateTaskAgendaItemId = async (
 }
 
 const validateTaskReflectionGroupId = async (
-  reflectionGroupId: string | null | undefined,
+  threadSource: ThreadSourceEnum | null,
+  threadId: string | null | undefined,
   meetingId: string | null | undefined,
   dataLoader: DataLoaderWorker
 ) => {
+  const reflectionGroupId =
+    threadSource === ThreadSourceEnum.REFLECTION_GROUP ? threadId : undefined
   if (reflectionGroupId) {
     const reflectionGroup = await dataLoader.get('retroReflectionGroups').load(reflectionGroupId)
     if (!reflectionGroup || reflectionGroup.meetingId !== meetingId) {
@@ -71,7 +76,7 @@ export const validateTaskUserId = async (
 }
 
 export default {
-  type: CreateTaskPayload,
+  type: GraphQLNonNull(CreateTaskPayload),
   description: 'Create a new task, triggering a CreateCard for other viewers',
   args: {
     newTask: {
@@ -93,14 +98,25 @@ export default {
     const subOptions = {operationId, mutatorId}
     const viewerId = getUserId(authToken)
 
-    const {agendaId, meetingId, reflectionGroupId, sortOrder, status, teamId, userId} = newTask
+    const {
+      meetingId,
+      threadId,
+      threadParentId,
+      threadSortOrder,
+      sortOrder,
+      status,
+      teamId,
+      userId
+    } = newTask
+    const threadSource = newTask.threadSource as ThreadSourceEnum | null
     // const {teamId, userId, content} = validNewTask
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
     const errors = await Promise.all([
-      validateTaskAgendaItemId(agendaId, teamId, dataLoader),
-      validateTaskReflectionGroupId(reflectionGroupId, meetingId, dataLoader),
+      // threadParentId not validated because if it's invalid it simply won't appear
+      validateTaskAgendaItemId(threadSource, threadId, teamId, dataLoader),
+      validateTaskReflectionGroupId(threadSource, threadId, meetingId, dataLoader),
       validateTaskMeetingId(meetingId, teamId, dataLoader),
       validateTaskUserId(userId, teamId, dataLoader)
     ])
@@ -112,14 +128,16 @@ export default {
     // RESOLUTION
     const content = normalizeRawDraftJS(newTask.content)
     const task = new Task({
-      agendaId,
       content,
       createdBy: viewerId,
       meetingId,
-      reflectionGroupId,
       sortOrder,
       status,
       teamId,
+      threadId,
+      threadSource,
+      threadSortOrder,
+      threadParentId,
       userId
     })
     const {id: taskId, updatedAt, tags} = task

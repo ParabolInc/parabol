@@ -12,7 +12,7 @@ const handleRemoveTask = (taskId: string, store: RecordSourceSelectorProxy<any>)
   const task = store.get<ITask>(taskId)
   if (!task) return
   const teamId = task.getValue('teamId')
-  const reflectionGroupId = task.getValue('reflectionGroupId')
+  const reflectionGroupId = task.getValue('threadId')
   const reflectionGroup = store.get(reflectionGroupId!)
   const meetingId = task.getValue('meetingId')
   const meeting = store.get(meetingId!)

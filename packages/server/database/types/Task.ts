@@ -3,30 +3,32 @@ import dndNoise from '../../../client/utils/dndNoise'
 import getTagsFromEntityMap from '../../../client/utils/draftjs/getTagsFromEntityMap'
 import TaskIntegrationJira from './TaskIntegrationJira'
 import TaskIntegrationGitHub from './TaskIntegrationGitHub'
+import {ThreadSourceEnum} from 'parabol-client/types/graphql'
 
 export type TaskStatus = 'active' | 'stuck' | 'done' | 'future'
 export type TaskTag = 'private' | 'archived'
 
 export interface TaskInput {
   id?: string
-  agendaId?: string | null
   content: string
   createdAt?: Date | null
   createdBy: string
   doneMeetingId?: string
   dueDate?: Date | null
   meetingId?: string | null
-  reflectionGroupId?: string | null
   sortOrder?: number | null
   status: TaskStatus
   teamId: string
+  threadId?: string | null
+  threadParentId?: string | null
+  threadSortOrder?: number | null
+  threadSource?: ThreadSourceEnum | null
   updatedAt?: Date
   userId: string
 }
 
 export default class Task {
   id: string
-  agendaId?: string
   content: string
   createdAt: Date
   createdBy: string
@@ -34,11 +36,14 @@ export default class Task {
   dueDate?: Date | null
   integration?: TaskIntegrationJira | TaskIntegrationGitHub
   meetingId?: string
-  reflectionGroupId?: string
   sortOrder: number
   status: TaskStatus
   tags: TaskTag[]
   teamId: string
+  threadId?: string
+  threadParentId?: string
+  threadSortOrder?: number | null
+  threadSource?: ThreadSourceEnum
   updatedAt: Date
   userId: string
 
@@ -48,32 +53,36 @@ export default class Task {
       userId,
       meetingId,
       teamId,
-      agendaId,
       content,
       createdAt,
       createdBy,
       doneMeetingId,
       dueDate,
-      reflectionGroupId,
       sortOrder,
       status,
+      threadParentId,
+      threadSortOrder,
+      threadSource,
+      threadId,
       updatedAt
     } = input
     const {entityMap} = JSON.parse(content)
     const tags = getTagsFromEntityMap<TaskTag>(entityMap)
     this.id = id || shortid.generate()
-    this.agendaId = agendaId || undefined
+    this.threadId = threadId || undefined
+    this.threadSource = threadSource || undefined
     this.content = content
     this.createdAt = createdAt || new Date()
     this.createdBy = createdBy
     this.doneMeetingId = doneMeetingId
     this.dueDate = dueDate || undefined
     this.meetingId = meetingId || undefined
-    this.reflectionGroupId = reflectionGroupId || undefined
     this.sortOrder = sortOrder || dndNoise()
     this.status = status
     this.tags = tags
     this.teamId = teamId
+    this.threadSortOrder = threadSortOrder || undefined
+    this.threadParentId = threadParentId || undefined
     this.updatedAt = updatedAt || new Date()
     this.userId = userId
   }

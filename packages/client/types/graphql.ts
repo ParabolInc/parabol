@@ -550,34 +550,59 @@ export interface ITask {
   id: string
 
   /**
-   * the agenda item that created this task, if any
+   * The rich text body of the item
    */
-  agendaId: string | null
+  content: string
+
+  /**
+   * The timestamp the item was created
+   */
+  createdAt: any
+
+  /**
+   * The userId that created the item
+   */
+  createdBy: string
+
+  /**
+   * The user that created the item
+   */
+  createdByUser: IUser
+
+  /**
+   * the replies to this threadable item
+   */
+  replies: Array<Threadable>
+
+  /**
+   * The ID of the thread
+   */
+  threadId: string | null
+
+  /**
+   * The item that spurred the threaded discussion
+   */
+  threadSource: ThreadSourceEnum | null
+
+  /**
+   * the parent, if this threadable is a reply, else null
+   */
+  threadParentId: string | null
+
+  /**
+   * the order of this threadable, relative to threadParentId
+   */
+  threadSortOrder: number | null
+
+  /**
+   * The timestamp the item was updated
+   */
+  updatedAt: any
 
   /**
    * The agenda item that the task was created in, if any
    */
   agendaItem: IAgendaItem | null
-
-  /**
-   * The body of the task. If null, it is a new task.
-   */
-  content: string
-
-  /**
-   * The timestamp the task was created
-   */
-  createdAt: any
-
-  /**
-   * The userId that created the task
-   */
-  createdBy: string
-
-  /**
-   * The user that created the card
-   */
-  createdByUser: IUser
 
   /**
    * a user-defined due date
@@ -599,11 +624,6 @@ export interface ITask {
    * the foreign key for the meeting the task was marked as complete
    */
   doneMeetingId: string | null
-
-  /**
-   * the foreign key for the retrospective reflection group this was created in
-   */
-  reflectionGroupId: string | null
 
   /**
    * the shared sort order for tasks on the team dash & user dash
@@ -631,11 +651,6 @@ export interface ITask {
   team: ITeam
 
   /**
-   * The timestamp the task was updated
-   */
-  updatedAt: any
-
-  /**
    * * The userId, index useful for server-side methods getting all tasks under a user
    */
   userId: string
@@ -644,6 +659,81 @@ export interface ITask {
    * The user the task is assigned to
    */
   user: IUser
+}
+
+/**
+ * An item that can be put in a thread
+ */
+export type Threadable = ITask | IComment
+
+/**
+ * An item that can be put in a thread
+ */
+export interface IThreadable {
+  __typename: 'Threadable'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * The rich text body of the item
+   */
+  content: string
+
+  /**
+   * The timestamp the item was created
+   */
+  createdAt: any
+
+  /**
+   * The userId that created the item
+   */
+  createdBy: string | null
+
+  /**
+   * The user that created the item
+   */
+  createdByUser: IUser | null
+
+  /**
+   * the replies to this threadable item
+   */
+  replies: Array<Threadable>
+
+  /**
+   * The ID of the thread
+   */
+  threadId: string | null
+
+  /**
+   * The item that spurred the threaded discussion
+   */
+  threadSource: ThreadSourceEnum | null
+
+  /**
+   * the parent, if this threadable is a reply, else null
+   */
+  threadParentId: string | null
+
+  /**
+   * the order of this threadable, relative to threadParentId
+   */
+  threadSortOrder: number | null
+
+  /**
+   * The timestamp the item was updated
+   */
+  updatedAt: any
+}
+
+/**
+ * The source of the thread
+ */
+export const enum ThreadSourceEnum {
+  AGENDA_ITEM = 'AGENDA_ITEM',
+  REFLECTION_GROUP = 'REFLECTION_GROUP'
 }
 
 /**
@@ -2799,7 +2889,7 @@ export interface IMutation {
   /**
    * Create a new task, triggering a CreateCard for other viewers
    */
-  createTask: ICreateTaskPayload | null
+  createTask: ICreateTaskPayload
 
   /**
    * Create a PUT URL on the CDN for the currently authenticated user’s profile picture
@@ -4393,6 +4483,11 @@ export interface IRetroReflectionGroup {
   team: ITeam | null
 
   /**
+   * the comments and tasks created from the discussion
+   */
+  thread: IThreadableConnection
+
+  /**
    * The title of the grouping of the retrospective reflections
    */
   title: string | null
@@ -4421,6 +4516,15 @@ export interface IRetroReflectionGroup {
    * The number of votes the viewer has given this group
    */
   viewerVoteCount: number | null
+}
+
+export interface IThreadOnRetroReflectionGroupArguments {
+  first: number
+
+  /**
+   * the datetime cursor
+   */
+  after?: any | null
 }
 
 /**
@@ -4520,6 +4624,36 @@ export interface IReflectTemplate {
    */
   teamId: string
   updatedAt: any
+}
+
+/**
+ * A connection to a list of items.
+ */
+export interface IThreadableConnection {
+  __typename: 'ThreadableConnection'
+
+  /**
+   * Page info with cursors coerced to ISO8601 dates
+   */
+  pageInfo: IPageInfoDateCursor | null
+
+  /**
+   * A list of edges.
+   */
+  edges: Array<IThreadableEdge>
+}
+
+/**
+ * An edge in a connection.
+ */
+export interface IThreadableEdge {
+  __typename: 'ThreadableEdge'
+
+  /**
+   * The item at the end of the edge
+   */
+  node: Threadable
+  cursor: any | null
 }
 
 /**
@@ -4882,10 +5016,6 @@ export interface ICreateReflectionPayload {
 }
 
 export interface ICreateTaskInput {
-  /**
-   * foreign key for AgendaItem
-   */
-  agendaId?: string | null
   content?: string | null
 
   /**
@@ -4894,9 +5024,12 @@ export interface ICreateTaskInput {
   meetingId?: string | null
 
   /**
-   * foreign key for the reflection group this was created from
+   * foreign key for the reflection group or agenda item this was created from
    */
-  reflectionGroupId?: string | null
+  threadId?: string | null
+  threadSource?: ThreadSourceEnum | null
+  threadSortOrder?: number | null
+  threadParentId?: string | null
   sortOrder?: number | null
   status: TaskStatusEnum
 
@@ -7889,6 +8022,88 @@ export interface IJiraRemoteProjectCategory {
   id: string
   name: string
   description: string
+}
+
+/**
+ * A comment on a thread
+ */
+export interface IComment {
+  __typename: 'Comment'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * The rich text body of the item
+   */
+  content: string
+
+  /**
+   * The timestamp the item was created
+   */
+  createdAt: any
+
+  /**
+   * The userId that created the item, null if anonymous
+   */
+  createdBy: string | null
+
+  /**
+   * The user that created the item, null if anonymous
+   */
+  createdByUser: IUser | null
+
+  /**
+   * the replies to this threadable item
+   */
+  replies: Array<Threadable>
+
+  /**
+   * The ID of the thread
+   */
+  threadId: string | null
+
+  /**
+   * The item that spurred the threaded discussion
+   */
+  threadSource: ThreadSourceEnum | null
+
+  /**
+   * the parent, if this threadable is a reply, else null
+   */
+  threadParentId: string | null
+
+  /**
+   * the order of this threadable, relative to threadParentId
+   */
+  threadSortOrder: number | null
+
+  /**
+   * The timestamp the item was updated
+   */
+  updatedAt: any
+
+  /**
+   * true if the agenda item has not been processed or deleted
+   */
+  isActive: boolean
+
+  /**
+   * true if the comment is anonymous, else false
+   */
+  isAnonymous: boolean
+
+  /**
+   * true if the viewer wrote this comment, else false
+   */
+  isViewerComment: boolean
+
+  /**
+   * All the reactjis for the given reflection
+   */
+  reactjis: Array<IReactji>
 }
 
 // tslint:enable

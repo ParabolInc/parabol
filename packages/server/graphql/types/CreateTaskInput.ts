@@ -6,14 +6,11 @@ import {
   GraphQLString
 } from 'graphql'
 import TaskStatusEnum from './TaskStatusEnum'
+import ThreadSourceEnum from './ThreadSourceEnum'
 
 const CreateTaskInput = new GraphQLInputObjectType({
   name: 'CreateTaskInput',
   fields: () => ({
-    agendaId: {
-      type: GraphQLID,
-      description: 'foreign key for AgendaItem'
-    },
     content: {
       type: GraphQLString
     },
@@ -21,9 +18,18 @@ const CreateTaskInput = new GraphQLInputObjectType({
       type: GraphQLID,
       description: 'foreign key for the meeting this was created in'
     },
-    reflectionGroupId: {
+    threadId: {
       type: GraphQLID,
-      description: 'foreign key for the reflection group this was created from'
+      description: 'foreign key for the reflection group or agenda item this was created from'
+    },
+    threadSource: {
+      type: ThreadSourceEnum
+    },
+    threadSortOrder: {
+      type: GraphQLFloat
+    },
+    threadParentId: {
+      type: GraphQLID
     },
     sortOrder: {
       type: GraphQLFloat

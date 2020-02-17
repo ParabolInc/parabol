@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import 'emoji-mart/css/emoji-mart.css'
-import {NimblePicker} from 'emoji-mart/dist-modern/index.js'
+import NimblePicker from 'emoji-mart/dist-modern/components/picker/nimble-picker'
 import React from 'react'
 import {PALETTE} from 'styles/paletteV2'
 import {MenuProps} from '../hooks/useMenu'
