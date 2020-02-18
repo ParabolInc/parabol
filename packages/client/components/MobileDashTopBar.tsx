@@ -4,7 +4,7 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from 'styles/paletteV2'
 import {ICON_SIZE} from 'styles/typographyV2'
-import {AppBar, NavSidebar} from 'types/constEnums'
+import {AppBar} from 'types/constEnums'
 import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
 import TopBarIcon from './TopBarIcon'
@@ -20,7 +20,8 @@ interface Props {
 const Wrapper = styled('header')({
   backgroundColor: PALETTE.PRIMARY_MAIN,
   display: 'flex',
-  height: AppBar.HEIGHT
+  height: AppBar.HEIGHT,
+  maxWidth: '100%'
 })
 
 const LeftNavToggle = styled(PlainButton)({
@@ -33,14 +34,14 @@ const LeftNavHeader = styled('div')({
   alignItems: 'center',
   color: PALETTE.TEXT_LIGHT,
   display: 'flex',
-  width: NavSidebar.WIDTH
+  flex: 1,
+  minWidth: 0
 })
 
 const TopBarIcons = styled('div')({
   alignItems: 'center',
   color: PALETTE.TEXT_LIGHT,
   display: 'flex',
-  flex: 1,
   justifyContent: 'flex-end',
   maxWidth: 560,
   paddingRight: 16
