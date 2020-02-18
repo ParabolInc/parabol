@@ -9,7 +9,7 @@ import {PALETTE} from '../../styles/paletteV2'
 import NewTeamForm from './components/NewTeamForm/NewTeamForm'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import {NewTeam_viewer} from '../../__generated__/NewTeam_viewer.graphql'
-import {Breakpoint, ExternalLinks} from '../../types/constEnums'
+import {ExternalLinks} from '../../types/constEnums'
 import useDocumentTitle from 'hooks/useDocumentTitle'
 
 const NewTeamLayout = styled('div')({
