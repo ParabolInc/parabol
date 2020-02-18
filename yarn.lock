@@ -9417,7 +9417,7 @@ graphql-typescript-definitions@^0.17.1:
     graphql-config-utilities "^1.0.0"
     graphql-tool-utilities "^1.1.0"
 
-graphql@*, "graphql@14.0.2 - 14.2.0 || ^14.3.1", "graphql@>= 0.10 <15", graphql@^14.0.0, graphql@^14.5.8, graphql@^14.6.0:
+graphql@*, "graphql@14.0.2 - 14.2.0 || ^14.3.1", "graphql@>= 0.10 <15", graphql@^14.0.0, graphql@^14.6.0:
   version "14.6.0"
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-14.6.0.tgz#57822297111e874ea12f5cd4419616930cd83e49"
   integrity sha512-VKzfvHEKybTKjQVpTFrA5yUq2S9ihcZvfJAtsDBBCuV6wauPu1xl/f9ehgVf0FcEJJs4vz6ysb/ZMkGigQZseg==
