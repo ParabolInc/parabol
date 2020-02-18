@@ -69,7 +69,7 @@ interface Props {
 const NewTeam = (props: Props) => {
   const {defaultOrgId, viewer} = props
   const {organizations} = viewer
-  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
+  const isDesktop = useBreakpoint(1280)
   useDocumentTitle('New Team | Parabol', 'New Team')
   return (
     <NewTeamLayout>
