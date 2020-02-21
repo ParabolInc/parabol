@@ -48,6 +48,9 @@ const query = graphql`
           reflectionGroups {
             reflections {
               content
+              phaseItem {
+                question
+              }
             }
             tasks {
               content
@@ -66,6 +69,7 @@ type Meeting = NonNullable<NonNullable<ExportToCSVQuery['response']['viewer']>['
 interface CSVRetroRow {
   title: string
   votes: number
+  prompt: string
   type: 'Task' | 'Reflection'
   content: string
 }
@@ -116,6 +120,7 @@ class ExportToCSV extends Component<Props> {
           title: title!,
           votes,
           type: 'Task',
+          prompt: '',
           content: extractTextFromDraftString(task.content)
         })
       })
@@ -124,6 +129,7 @@ class ExportToCSV extends Component<Props> {
           title: title!,
           votes,
           type: 'Reflection',
+          prompt: reflection.phaseItem.question,
           content: extractTextFromDraftString(reflection.content)
         })
       })
