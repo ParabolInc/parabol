@@ -36,6 +36,7 @@ import {PALETTE} from '../styles/paletteV2'
 import DiscussPhaseSqueeze from './DiscussPhaseSqueeze'
 import {RetroDiscussPhase_meeting} from '__generated__/RetroDiscussPhase_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import DiscussionThread from './DiscussionThread'
 
 interface Props extends RetroMeetingPhaseProps {
   meeting: RetroDiscussPhase_meeting
@@ -121,7 +122,7 @@ const Column = styled('div')({
 })
 
 const TaskColumn = styled(Column)({
-  borderLeft: '1px solid rgba(0, 0, 0, .05)'
+  alignItems: 'center'
 })
 
 const ColumnInner = styled('div')({
@@ -213,17 +214,7 @@ const RetroDiscussPhase = (props: Props) => {
                 </Overflow>
               </Column>
               <TaskColumn>
-                <LabelContainer>
-                  <LabelHeading>Takeaway Tasks</LabelHeading>
-                </LabelContainer>
-                <ColumnInner>
-                  <MeetingAgendaCards
-                    meetingId={meetingId}
-                    reflectionGroupId={reflectionGroupId}
-                    tasks={tasks}
-                    teamId={teamId}
-                  />
-                </ColumnInner>
+                <DiscussionThread reflectionGroup={reflectionGroup} meeting={meeting} />
               </TaskColumn>
             </ColumnsContainer>
           </DiscussPhaseWrapper>
@@ -258,6 +249,7 @@ graphql`
     ...StageTimerDisplay_stage
     ... on RetroDiscussStage {
       reflectionGroup {
+        ...DiscussionThread_reflectionGroup
         id
         title
         voteCount
@@ -279,6 +271,7 @@ export default createFragmentContainer(RetroDiscussPhase, {
   meeting: graphql`
     fragment RetroDiscussPhase_meeting on RetrospectiveMeeting {
       ...StageTimerControl_meeting
+      ...DiscussionThread_meeting
       endedAt
       organization {
         ...DiscussPhaseSqueeze_organization

@@ -117,8 +117,7 @@ const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
           dataLoader.get('tasksByThreadId').load(reflectionGroupId)
         ])
         type Item = IThreadable & {threadSortOrder: NonNullable<number>}
-
-        const threadables = [...comments, tasks] as Item[]
+        const threadables = [...comments, ...tasks] as Item[]
         const threadablesByParentId = {} as {[parentId: string]: Item[]}
         const rootThreadables = [] as Item[]
         threadables.forEach((threadable) => {
