@@ -4,6 +4,7 @@ import User from '../database/types/User'
 import PROD from '../PROD'
 
 export interface SentryOptions {
+  sampleRate?: number
   userId?: string
   tags?: {
     [tag: string]: string
@@ -17,7 +18,8 @@ const sendToSentry = async (error: Error, options: SentryOptions = {}): void => 
     console.error('SEND TO SENTRY', error)
   }
   const r = await getRethink()
-  const {tags, userId} = options
+  const {sampleRate, tags, userId} = options
+  if (sampleRate && Math.random() > sampleRate) return
   const user = userId
     ? ((await r
         .table('User')
