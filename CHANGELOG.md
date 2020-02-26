@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.23.1 2020-Feb-26
+
+### Fixed
+* Extra logs to track down why unauthed clients init websockets
+
 ## 4.23.0 2020-Feb-17
 
 ### Added

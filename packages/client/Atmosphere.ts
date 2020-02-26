@@ -168,6 +168,9 @@ export default class Atmosphere extends Environment {
 
   trySockets = () => {
     const wsProtocol = window.location.protocol.replace('http', 'ws')
+    if (!this.authToken) {
+      console.error('Attempted socket use without JWT')
+    }
     const url = `${wsProtocol}//${window.location.host}/?token=${this.authToken}`
     return new SocketTrebuchet({url})
   }
@@ -258,7 +261,7 @@ export default class Atmosphere extends Environment {
     router: {history: RouterProps['history']}
   ) => {
     if (!this.authToken) {
-      console.error('Attempted query registrationw without JWT')
+      console.error('Attempted query registration without JWT')
       return
     }
     window.clearTimeout(this.queryTimeouts[queryKey])
