@@ -8,7 +8,6 @@ import {EditorProps, EditorState} from 'draft-js'
 import {SetEditorState} from '../../types/draft'
 import useForceUpdate from '../../hooks/useForceUpdate'
 
-
 const EditorSuggestions = lazy(() =>
   import(/* webpackChunkName: 'EditorSuggestions' */ '../EditorSuggestions/EditorSuggestions')
 )
@@ -35,11 +34,20 @@ interface MentionSuggestion extends BaseSuggestion {
   preferredName: string
 }
 
+interface Options {
+  excludeTags?: boolean
+}
 export type DraftSuggestion = MentionSuggestion | TagSuggestion
 
 type SuggestionType = 'tag' | 'mention'
-const useSuggestions = (editorState: EditorState, setEditorState: SetEditorState, handlers: Handlers & CustomProps) => {
+const useSuggestions = (
+  editorState: EditorState,
+  setEditorState: SetEditorState,
+  handlers: Handlers & CustomProps,
+  options: Options = {}
+) => {
   const {keyBindingFn, handleReturn, teamId, onChange} = handlers
+  const {excludeTags} = options
   const [active, setActive] = useState<number | undefined>(undefined)
   const [suggestions, _setSuggestions] = useState<DraftSuggestion[]>([])
   const [suggestionType, setSuggestionType] = useState<undefined | SuggestionType>(undefined)
@@ -102,7 +110,7 @@ const useSuggestions = (editorState: EditorState, setEditorState: SetEditorState
   const checkForSuggestions = (word: string) => {
     const trigger = word[0]
     const nextTriggerWord = word.slice(1)
-    if (trigger === '#') {
+    if (trigger === '#' && !excludeTags) {
       makeSuggestions(nextTriggerWord, 'tag')
       return true
     } else if (trigger === '@') {
@@ -151,14 +159,27 @@ const useSuggestions = (editorState: EditorState, setEditorState: SetEditorState
     if (suggestionType === 'mention') {
       return (
         <Suspense fallback={''}>
-          <SuggestMentionableUsersRoot active={active || 0} handleSelect={handleSelect} setSuggestions={setSuggestions} suggestions={suggestions} triggerWord={triggerWord} teamId={teamId} originCoords={coords}/>
+          <SuggestMentionableUsersRoot
+            active={active || 0}
+            handleSelect={handleSelect}
+            setSuggestions={setSuggestions}
+            suggestions={suggestions}
+            triggerWord={triggerWord}
+            teamId={teamId}
+            originCoords={coords}
+          />
         </Suspense>
       )
     }
     return (
       <Suspense fallback={''}>
-      <EditorSuggestions active={active || 0} suggestions={suggestions} suggestionType={'tag'}
-      handleSelect={handleSelect} originCoords={coords} />
+        <EditorSuggestions
+          active={active || 0}
+          suggestions={suggestions}
+          suggestionType={'tag'}
+          handleSelect={handleSelect}
+          originCoords={coords}
+        />
       </Suspense>
     )
   }
@@ -167,7 +188,7 @@ const useSuggestions = (editorState: EditorState, setEditorState: SetEditorState
     renderModal: suggestionType ? renderModal : undefined,
     removeModal: suggestionType ? onRemoveModal : undefined,
     keyBindingFn: suggestionType ? handleKeyBindingFn : keyBindingFn,
-    handleReturn: suggestionType ? onHandleReturn : handleReturn,
+    handleReturn: suggestionType ? onHandleReturn : handleReturn
   }
 }
 

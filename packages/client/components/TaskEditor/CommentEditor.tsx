@@ -18,6 +18,7 @@ import isAndroid from '../../utils/draftjs/isAndroid'
 import {UseTaskChild} from '../../hooks/useTaskChildFocus'
 import useTaskPlugins from './useTaskPlugins'
 import blockStyleFn from './blockStyleFn'
+import useCommentPlugins from './useCommentPlugins'
 
 const RootEditor = styled('div')<{noText: boolean; readOnly: boolean | undefined}>(
   ({noText, readOnly}) => ({
@@ -51,13 +52,13 @@ type DraftProps = Pick<
 
 interface Props extends DraftProps {
   editorRef: RefObject<HTMLTextAreaElement>
+  placeholder: string
   setEditorState: (newEditorState: EditorState) => void
   teamId: string
-  useTaskChild: UseTaskChild
 }
 
 const CommentEditor = (props: Props) => {
-  const {editorRef, editorState, readOnly, setEditorState} = props
+  const {editorRef, editorState, placeholder, readOnly, setEditorState} = props
   const entityPasteStartRef = useRef<{anchorOffset: number; anchorKey: string} | undefined>()
   const {
     removeModal,
@@ -67,7 +68,7 @@ const CommentEditor = (props: Props) => {
     handleKeyCommand,
     keyBindingFn,
     handleReturn
-  } = useTaskPlugins({...props})
+  } = useCommentPlugins({...props})
 
   useEffect(() => {
     if (!editorState.getCurrentContent().hasText()) {
@@ -167,7 +168,6 @@ const CommentEditor = (props: Props) => {
   }
 
   const noText = !editorState.getCurrentContent().hasText()
-  const placeholder = 'Describe what “Done” looks like'
   const useFallback = isAndroid && !readOnly
   const showFallback = useFallback && !isRichDraft(editorState)
   return (

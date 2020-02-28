@@ -37,10 +37,10 @@ const DiscussionThread = (props: Props) => {
 
 export default createFragmentContainer(DiscussionThread, {
   meeting: graphql`
-      DiscussionThread_meeting on RetrospectiveMeeting {
-        ...DiscussionThreadInput_meeting
-      }
-    `,
+    fragment DiscussionThread_meeting on RetrospectiveMeeting {
+      ...DiscussionThreadInput_meeting
+    }
+  `,
   reflectionGroup: graphql`
     fragment DiscussionThread_reflectionGroup on RetroReflectionGroup {
       thread(first: 1000) @connection(key: "DiscussionThread_thread") {
