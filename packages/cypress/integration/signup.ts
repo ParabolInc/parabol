@@ -7,10 +7,10 @@ describe('signup', () => {
       cy.root().submit()
       cy.location('pathname', {timeout: 10000}).should('eq', '/me')
     })
-    // this shouldn't be necessary, but all the sudden it started breaking without
-    cy.visit('/')
   })
   it('performs a login when matches existing credentials', () => {
+    // this shouldn't be necessary, but all the sudden it started breaking without
+    cy.clearLocalStorage()
     cy.visit('/create-account')
     cy.get('form').within(() => {
       cy.get('input[name="email"]').type(`cypress@parabol.co`)
