@@ -178,7 +178,7 @@
     "string-similarity": "^3.0.0",
     "stripe": "^4.24.0",
     "tslib": "^1.10.0",
-    "uWebSockets.js": "uNetworking/uWebSockets.js#v17.1.0"
+    "uWebSockets.js": "uNetworking/uWebSockets.js#v17.3.0"
   },
   "lint-staged": {
     "**/*.{js,ts,tsx}": [
