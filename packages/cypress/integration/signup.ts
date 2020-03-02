@@ -7,6 +7,8 @@ describe('signup', () => {
       cy.root().submit()
       cy.location('pathname', {timeout: 10000}).should('eq', '/me')
     })
+    // this shouldn't be necessary, but all the sudden it started breaking without
+    cy.visit('/')
   })
   it('performs a login when matches existing credentials', () => {
     cy.visit('/create-account')
