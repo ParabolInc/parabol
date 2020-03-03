@@ -12,13 +12,13 @@ import StoryContainer from './components/StoryContainer'
 import LabelHeading from '../components/LabelHeading/LabelHeading'
 
 storiesOf('Meeting Components', module)
-  .add('Social Check-In Heading', () => (
+  .add('Social Check-in Heading', () => (
     <RetroBackground>
       <StoryContainer
         render={() => (
           <div>
-            <LabelHeading>{'Social Check-In'}</LabelHeading>
-            <MeetingPhaseHeading>{'Terry’s Check-In'}</MeetingPhaseHeading>
+            <LabelHeading>{'Social Check-in'}</LabelHeading>
+            <MeetingPhaseHeading>{'Terry’s Check-in'}</MeetingPhaseHeading>
             <MeetingCopy margin='0'>{'Terry, share your response to today’s prompt.'}</MeetingCopy>
           </div>
         )}
