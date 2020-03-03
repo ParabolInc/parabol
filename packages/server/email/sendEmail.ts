@@ -86,7 +86,7 @@ interface EmailContent {
   html: string
 }
 
-const sendMailgunEmail = async (to: string, emailContent: EmailContent) => {
+const sendMailgunEmail = async (to: string, emailContent: EmailContent, tags: string[]) => {
   const {subject, body, html} = emailContent
   if (!mailgunKey) {
     console.log('No mailgun key. Logging email: ', to, '\n', subject, '\n', body)
@@ -98,7 +98,8 @@ const sendMailgunEmail = async (to: string, emailContent: EmailContent) => {
       to,
       subject,
       text: body,
-      html
+      html,
+      'o:tag': tags
     })
   } catch (e) {
     console.log(e)
@@ -110,16 +111,22 @@ const sendMailgunEmail = async (to: string, emailContent: EmailContent) => {
 
 export const sendEmailContent = (
   maybeEmailAddresses: string | string[],
-  emailContent: EmailContent
+  emailContent: EmailContent,
+  tags: string[]
 ) => {
   const emailAddresses = Array.isArray(maybeEmailAddresses)
     ? maybeEmailAddresses
     : [maybeEmailAddresses]
   const to = emailAddresses.join(', ')
-  return sendMailgunEmail(to, emailContent)
+  return sendMailgunEmail(to, emailContent, tags)
 }
 
-export default async function sendEmailPromise(to: unknown, template: string, props: any) {
+export default async function sendEmailPromise(
+  to: unknown,
+  template: string,
+  props: any,
+  tags: string[]
+) {
   if (!to || typeof to !== 'string') {
     throw new Error('Expected `to` to be a string of comma-separated emails')
   }
@@ -129,5 +136,5 @@ export default async function sendEmailPromise(to: unknown, template: string, pr
   }
 
   const emailContent = emailFactory(props)
-  return sendMailgunEmail(to, emailContent)
+  return sendMailgunEmail(to, emailContent, tags)
 }

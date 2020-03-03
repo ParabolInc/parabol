@@ -5,7 +5,7 @@ import Meeting from '../../../../database/types/Meeting'
 import {GQLContext} from '../../../graphql'
 
 export default async function sendNewMeetingSummary(newMeeting: Meeting, context: GQLContext) {
-  const {id: meetingId, summarySentAt} = newMeeting
+  const {id: meetingId, teamId, summarySentAt} = newMeeting
   if (summarySentAt) return
   const now = new Date()
   const r = await getRethink()
@@ -15,10 +15,22 @@ export default async function sendNewMeetingSummary(newMeeting: Meeting, context
     .update({summarySentAt: now})
     .run()
   const {dataLoader} = context
-  const meetingMembers = await dataLoader.get('meetingMembersByMeetingId').load(meetingId)
+  const [meetingMembers, team] = await Promise.all([
+    dataLoader.get('meetingMembersByMeetingId').load(meetingId),
+    dataLoader.get('teams').load(teamId)
+  ])
+  const {name: teamName, orgId} = team
   const userIds = meetingMembers.map(({userId}) => userId)
-  const users = await dataLoader.get('users').loadMany(userIds)
+  const [users, organization] = await Promise.all([
+    dataLoader.get('users').loadMany(userIds),
+    dataLoader.get('organizations').load(orgId)
+  ])
+  const {tier, name: orgName} = organization
   const emailAddresses = users.map(({email}) => email)
   const emailContent = await newMeetingSummaryEmailCreator({meetingId, context})
-  return sendEmailContent(emailAddresses, emailContent)
+  return sendEmailContent(emailAddresses, emailContent, [
+    'meetingSummary',
+    tier,
+    `${teamName}:${orgName}:${teamId}:${orgId}`
+  ])
 }
