@@ -29,8 +29,8 @@ export default async function sendNewMeetingSummary(newMeeting: Meeting, context
   const emailAddresses = users.map(({email}) => email)
   const emailContent = await newMeetingSummaryEmailCreator({meetingId, context})
   return sendEmailContent(emailAddresses, emailContent, [
-    'meetingSummary',
-    tier,
-    `${teamName}:${orgName}:${teamId}:${orgId}`
+    'type:meetingSummary',
+    `tier:${tier}`,
+    `team:${teamName}:${orgName}:${teamId}:${orgId}`
   ])
 }

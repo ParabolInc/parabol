@@ -138,7 +138,11 @@ export default {
               teamName,
               meeting: bestMeeting
             },
-            ['teamInvitation', tier, `${teamName}:${orgName}:${teamId}:${orgId}`]
+            [
+              'type:teamInvitation',
+              `tier:${tier}`,
+              `team:${teamName}:${orgName}:${teamId}:${orgId}`
+            ]
           )
         })
       )

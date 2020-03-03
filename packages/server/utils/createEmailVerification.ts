@@ -14,7 +14,7 @@ const createEmailVerification = async (props: ISignUpWithPasswordOnMutationArgum
   const verifiedEmailToken = base64url.encode(tokenBuffer)
   const emailContent = emailVerificationEmailCreator({verifiedEmailToken, invitationToken})
   try {
-    await sendEmailContent([email], emailContent, ['emailVerification'])
+    await sendEmailContent([email], emailContent, ['type:emailVerification'])
   } catch (e) {
     return {error: {message: 'Unable to send verification email'}}
   }
