@@ -72,8 +72,6 @@ const Action = memo(() => {
             component={VerifyEmail}
           />
           <Route path='/reset-password/:token' component={SetNewPassword} />
-          {/*Legacy route, still referenced by old invite emails*/}
-          <Route path='/invitation/:inviteToken' component={TeamInvitation} />
           <Route path='/team-invitation/:token' component={TeamInvitation} />
           <Route path='/invitation-link/:token' component={InvitationLink} />
           <Route component={PrivateRoutes} />

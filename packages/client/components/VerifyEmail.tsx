@@ -11,6 +11,7 @@ import Ellipsis from './Ellipsis/Ellipsis'
 import InvitationCenteredCopy from './InvitationCenteredCopy'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import InviteDialog from './InviteDialog'
+import useCanonical from 'hooks/useCanonical'
 
 interface Props
   extends RouteComponentProps<{verificationToken: string; invitationToken?: string}> {}
@@ -21,6 +22,7 @@ const VerifyEmail = (props: Props) => {
   const {verificationToken, invitationToken} = params
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, error, submitMutation} = useMutationProps()
+  useCanonical('verify-email')
   useEffect(() => {
     submitMutation()
     VerifyEmailMutation(

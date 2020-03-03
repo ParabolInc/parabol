@@ -12,6 +12,7 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import ErrorAlert from '../ErrorAlert/ErrorAlert'
 import {RouteComponentProps} from 'react-router'
 import TeamInvitationWrapper from '../TeamInvitationWrapper'
+import useCanonical from 'hooks/useCanonical'
 
 interface Props extends RouteComponentProps<{token: string}> {}
 
@@ -49,6 +50,7 @@ const SetNewPassword = (props: Props) => {
   const {params} = match
   const {token} = params
   const atmosphere = useAtmosphere()
+  useCanonical('reset-password')
   const {onCompleted, onError, error, submitting, submitMutation} = useMutationProps()
   const {fields, onChange, setDirtyField, validateField} = useForm({
     password: {
