@@ -7,7 +7,7 @@ export const up = async function(r: R) {
       name: r.branch(
         row('meetingType').eq('retrospective'),
         r('Retro #').add(row('meetingNumber').coerceTo('string')),
-        r('Check-in meeting #').add(row('meetingNumber').coerceTo('string'))
+        r('Action meeting #').add(row('meetingNumber').coerceTo('string'))
       )
     }))
     .run()
