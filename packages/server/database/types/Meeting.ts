@@ -13,7 +13,7 @@ interface Input {
 }
 
 const namePrefix = {
-  [MeetingTypeEnum.action]: 'Check-in meeting',
+  [MeetingTypeEnum.action]: 'Check-in',
   [MeetingTypeEnum.retrospective]: 'Retro'
 }
 // export type MeetingTypeEnum = 'action' | 'retrospective'
