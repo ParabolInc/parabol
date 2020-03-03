@@ -9,6 +9,7 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import SetSlackNotificationMutation from '../../../../mutations/SetSlackNotificationMutation'
 import StyledError from '../../../../components/StyledError'
 import {SlackNotificationEventEnum} from '../../../../types/graphql'
+import {MeetingLabels} from '../../../../types/constEnums'
 
 interface Props {
   event: SlackNotificationEventEnum
@@ -20,8 +21,8 @@ interface Props {
 const labelLookup = {
   [SlackNotificationEventEnum.meetingEnd]: 'Meeting End',
   [SlackNotificationEventEnum.meetingStart]: 'Meeting Start',
-  [SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_END]: 'Meeting Time Limit Ended',
-  [SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_START]: 'Meeting Time Limit Started'
+  [SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_END]: `Meeting ${MeetingLabels.DEADLINE} Ended`,
+  [SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_START]: `Meeting ${MeetingLabels.DEADLINE} Started`
 }
 
 const Row = styled('div')({

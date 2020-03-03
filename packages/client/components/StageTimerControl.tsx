@@ -7,7 +7,7 @@ import useMenu from '../hooks/useMenu'
 import {MenuPosition} from '../hooks/useCoords'
 import lazyPreload from '../utils/lazyPreload'
 import styled from '@emotion/styled'
-import {ElementWidth} from '../types/constEnums'
+import {ElementWidth, MeetingLabels} from '../types/constEnums'
 import {StageTimerControl_meeting} from '__generated__/StageTimerControl_meeting.graphql'
 
 interface Props {
@@ -35,6 +35,7 @@ const StageTimerControl = (props: Props) => {
   const connectedMemberCount = meetingMembers.filter((member) => member.user.isConnected).length
   const color = scheduledEndTime ? 'green' : 'midGray'
   const icon = isAsync ? 'event' : 'timer'
+  const label = isAsync ? MeetingLabels.DEADLINE : MeetingLabels.TIMER
   const {menuProps, menuPortal, originRef, togglePortal} = useMenu<HTMLDivElement>(
     MenuPosition.LOWER_LEFT,
     {
@@ -46,7 +47,7 @@ const StageTimerControl = (props: Props) => {
   return (
     <>
       <TimerButton onMouseEnter={StageTimerModal.preload} onClick={togglePortal}>
-        <IconLabel ref={originRef} icon={icon} iconColor={color} label={'Timer'} />
+        <IconLabel ref={originRef} icon={icon} iconColor={color} label={label} />
       </TimerButton>
       {menuPortal(
         <StageTimerModal

@@ -149,6 +149,11 @@ export const enum MathEnum {
   MAX_INT = 2147483647
 }
 
+export const enum MeetingLabels {
+  DEADLINE = 'Deadline',
+  TIMER = 'Timer'
+}
+
 export const enum MeetingSettingsDefaults {
   RETROSPECTIVE_TOTAL_VOTES = 5,
   RETROSPECTIVE_MAX_VOTES_PER_GROUP = 3
