@@ -107,7 +107,7 @@ const sendUpcomingInvoiceEmails = {
         details.map((detail) => {
           const {emailStr, ...props} = detail
           sendEmailPromise(emailStr, 'UpcomingInvoiceEmailTemplate', props, [
-            'upcomingInvoice'
+            'type:upcomingInvoice'
           ]).catch()
         })
       )
