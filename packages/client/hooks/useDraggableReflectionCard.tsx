@@ -231,7 +231,7 @@ const useDragAndDrop = (
     const wasDrag = drag.isDrag
     if (!wasDrag) {
       const isDrag = getIsDrag(clientX, clientY, drag.startX, drag.startY)
-      if (isTouchMove && !drag.longpressed) {
+      if (isDrag && isTouchMove && !drag.longpressed) {
         //they don't really want to drag
         window.clearTimeout(drag.longpressTimeout)
         drag.ref?.removeEventListener('touchmove', onMouseMove)
