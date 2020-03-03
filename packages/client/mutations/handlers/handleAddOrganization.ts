@@ -1,7 +1,7 @@
 import addNodeToArray from '../../utils/relay/addNodeToArray'
 
-const handleAddOrganization = (newNode, store, viewerId) => {
-  const viewer = store.get(viewerId)
+const handleAddOrganization = (newNode, store) => {
+  const viewer = store.getRoot().getLinkedRecord('viewer')
   addNodeToArray(newNode, viewer, 'organizations', 'name')
 }
 

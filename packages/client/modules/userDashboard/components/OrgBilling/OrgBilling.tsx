@@ -15,13 +15,12 @@ interface Props {
 
 const OrgBilling = (props: Props) => {
   const {organization, viewer} = props
-  const {isBillingLeader} = organization
   return (
     <div>
       <OrgBillingUpgrade organization={organization} />
       <OrgBillingCreditCardInfo organization={organization} />
       <OrgBillingInvoices viewer={viewer} />
-      <OrgBillingDangerZone isBillingLeader={isBillingLeader} />
+      <OrgBillingDangerZone organization={organization} />
     </div>
   )
 }
@@ -36,8 +35,8 @@ export default createFragmentContainer(OrgBilling, {
     fragment OrgBilling_organization on Organization {
       ...OrgBillingCreditCardInfo_organization
       ...OrgBillingUpgrade_organization
+      ...OrgBillingDangerZone_organization
       id
-      isBillingLeader
     }
   `
 })

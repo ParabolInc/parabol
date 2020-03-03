@@ -88,6 +88,7 @@ import addReactjiToReflection from './mutations/addReactjiToReflection'
 import setAppLocation from './mutations/setAppLocation'
 import deleteUser from './mutations/deleteUser'
 import verifyEmail from './mutations/verifyEmail'
+import archiveOrganization from './mutations/archiveOrganization'
 
 interface Context extends InternalContext, GQLContext {}
 
@@ -105,6 +106,7 @@ export default new GraphQLObjectType<any, Context, any>({
     addGitHubAuth,
     addOrg,
     addTeam,
+    archiveOrganization,
     archiveTeam,
     autoGroupReflections,
     changeTaskTeam,

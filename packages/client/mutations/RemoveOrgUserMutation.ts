@@ -92,12 +92,13 @@ const mutation = graphql`
   }
 `
 
-export const removeOrgUserOrganizationUpdater = (payload, store, viewerId) => {
+export const removeOrgUserOrganizationUpdater = (payload, {atmosphere, store}) => {
+  const {viewerId} = atmosphere
   const removedUserId = getInProxy(payload, 'user', 'id')
   const removedOrgUserId = getInProxy(payload, 'organizationUserId')
   const orgId = getInProxy(payload, 'organization', 'id')
   if (removedUserId === viewerId) {
-    handleRemoveOrganization(orgId, store, viewerId)
+    handleRemoveOrganization(orgId, store)
   } else {
     handleRemoveOrgMembers(orgId, removedOrgUserId, store)
   }
@@ -210,7 +211,7 @@ const RemoveOrgUserMutation = (atmosphere, variables, context, onError, onComple
     updater: (store) => {
       const payload = store.getRootField('removeOrgUser')
       if (!payload) return
-      removeOrgUserOrganizationUpdater(payload, store, viewerId)
+      removeOrgUserOrganizationUpdater(payload, {atmosphere, store})
       removeOrgUserTeamUpdater(payload, {atmosphere, store})
       removeOrgUserTaskUpdater(payload, store, viewerId)
     },

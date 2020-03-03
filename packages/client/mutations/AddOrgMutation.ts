@@ -3,7 +3,12 @@ import graphql from 'babel-plugin-relay/macro'
 import handleAddOrganization from './handlers/handleAddOrganization'
 import handleAddTeams from './handlers/handleAddTeams'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
-import {HistoryLocalHandler, OnNextHandler, StandardMutation} from '../types/relayMutations'
+import {
+  HistoryLocalHandler,
+  OnNextHandler,
+  StandardMutation,
+  SharedUpdater
+} from '../types/relayMutations'
 import {AddOrgMutation_organization} from '../__generated__/AddOrgMutation_organization.graphql'
 import {AddOrgMutation as TAddOrgMutation} from '../__generated__/AddOrgMutation.graphql'
 
@@ -61,9 +66,12 @@ const popOrganizationCreatedToast: OnNextHandler<AddOrgMutation_organization> = 
   })
 }
 
-export const addOrgMutationOrganizationUpdater = (payload, store, viewerId) => {
+export const addOrgMutationOrganizationUpdater: SharedUpdater<AddOrgMutation_organization> = (
+  payload,
+  {store}
+) => {
   const organization = payload.getLinkedRecord('organization')
-  handleAddOrganization(organization, store, viewerId)
+  handleAddOrganization(organization, store)
 
   const team = payload.getLinkedRecord('team')
   handleAddTeams(team, store)
@@ -79,14 +87,13 @@ const AddOrgMutation: StandardMutation<TAddOrgMutation, HistoryLocalHandler> = (
   variables,
   {history, onError, onCompleted}
 ) => {
-  const {viewerId} = atmosphere
   return commitMutation<TAddOrgMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {
       const payload = store.getRootField('addOrg')
       if (!payload) return
-      addOrgMutationOrganizationUpdater(payload, store, viewerId)
+      addOrgMutationOrganizationUpdater(payload, {atmosphere, store})
     },
     onCompleted: (res, errors) => {
       if (onCompleted) {

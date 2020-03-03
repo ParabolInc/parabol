@@ -31,13 +31,13 @@ const AvatarBlock = styled('div')({
   width: '2rem'
 })
 
-const AgendaItemStyles = styled('div')(({}) => ({
+const AgendaItemStyles = styled('div')({
   position: 'relative',
   // show the DeleteIconButton on hover
   '&:hover > button': {
     opacity: 1
   }
-}))
+})
 
 const getItemProps = (
   activeMeetings: AgendaItem_activeMeetings,

@@ -5,57 +5,57 @@ import useRouter from 'hooks/useRouter'
 import React from 'react'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
 import BasicInput from '../../../../components/InputField/BasicInput'
-import ArchiveTeamMutation from '../../../../mutations/ArchiveTeamMutation'
 import Legitity from '../../../../validation/Legitity'
 import graphql from 'babel-plugin-relay/macro'
-import {ArchiveTeamForm_team} from '__generated__/ArchiveTeamForm_team.graphql'
+import {ArchiveOrganizationForm_organization} from '__generated__/ArchiveOrganizationForm_organization.graphql'
 import {createFragmentContainer} from 'react-relay'
+import ArchiveOrganizationMutation from 'mutations/ArchiveOrganizationMutation'
 
 interface Props {
   handleFormBlur: () => any
-  team: ArchiveTeamForm_team
+  organization: ArchiveOrganizationForm_organization
 }
 
 const normalize = (str) => str && str.toLowerCase().replace('’', "'")
 
-const ArchiveTeamForm = (props: Props) => {
+const ArchiveOrganizationForm = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const {history} = useRouter()
-  const {handleFormBlur, team} = props
-  const {id: teamId, name: teamName} = team
+  const {handleFormBlur, organization} = props
+  const {id: orgId, name: orgName} = organization
   const {validateField, setDirtyField, onChange, fields} = useForm({
-    archivedTeamName: {
+    archivedOrganizationName: {
       getDefault: () => '',
       validate: (rawInput) => {
         return new Legitity(rawInput)
           .normalize(normalize, 'err')
           .test((val) =>
-            val === normalize(teamName) ? undefined : 'The team name entered was incorrect.'
+            val === normalize(orgName) ? undefined : 'The organization name entered was incorrect.'
           )
       }
     }
   })
-  const {archivedTeamName} = fields
-  const {value, error, dirty} = archivedTeamName
+  const {archivedOrganizationName} = fields
+  const {value, error, dirty} = archivedOrganizationName
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setDirtyField()
-    const {archivedTeamName: res} = validateField()
+    const {archivedOrganizationName: res} = validateField()
     if (submitting || res.error) return
     submitMutation()
-    ArchiveTeamMutation(atmosphere, {teamId}, {history, onError, onCompleted})
+    ArchiveOrganizationMutation(atmosphere, {orgId}, {history, onError, onCompleted})
   }
 
   return (
     <form onSubmit={onSubmit}>
       <FieldLabel
         fieldSize='medium'
-        htmlFor='archivedTeamName'
+        htmlFor='archivedOrganizationName'
         indent
         inline
-        label='Enter your team name and hit Enter to delete it.'
+        label='Enter your organization name and hit Enter to delete it.'
       />
       <BasicInput
         value={value}
@@ -63,16 +63,16 @@ const ArchiveTeamForm = (props: Props) => {
         onChange={onChange}
         autoFocus
         onBlur={handleFormBlur}
-        name='archivedTeamName'
-        placeholder='E.g. "My Team"'
+        name='archivedOrganizationName'
+        placeholder='E.g. "My organization"'
       />
     </form>
   )
 }
 
-export default createFragmentContainer(ArchiveTeamForm, {
-  team: graphql`
-    fragment ArchiveTeamForm_team on Team {
+export default createFragmentContainer(ArchiveOrganizationForm, {
+  organization: graphql`
+    fragment ArchiveOrganizationForm_organization on Organization {
       id
       name
     }
