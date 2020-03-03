@@ -227,6 +227,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
         useFallback={useFallback}
         userSelect={userSelect}
         isClipped={isClipped}
+        data-cy='reflection-editor'
         ref={this.styleRef}
       >
         {showFallback ? (

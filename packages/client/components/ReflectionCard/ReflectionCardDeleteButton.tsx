@@ -15,6 +15,7 @@ import {ICON_SIZE} from '../../styles/typographyV2'
 interface Props extends WithMutationProps, WithAtmosphereProps {
   meetingId: string
   reflectionId: string
+  deleteButton: string
 }
 
 const DeleteButton = styled(PlainButton)({
@@ -59,7 +60,7 @@ class ReflectionCardDeleteButton extends Component<Props> {
       meetingId,
       reflectionId,
       submitMutation,
-      submitting
+      submitting,
     } = this.props
     if (submitting) return
     submitMutation()
@@ -67,11 +68,11 @@ class ReflectionCardDeleteButton extends Component<Props> {
   }
 
   render() {
-    const {submitting} = this.props
+    const {submitting, deleteButton} = this.props
     const userLabel = 'Delete this reflection card'
     if (submitting) return null
     return (
-      <DeleteButton aria-label={userLabel} onClick={this.handleDelete} title={userLabel}>
+      <DeleteButton data-cy={deleteButton} aria-label={userLabel} onClick={this.handleDelete} title={userLabel}>
         <StyledIcon>cancel</StyledIcon>
         <Background />
       </DeleteButton>

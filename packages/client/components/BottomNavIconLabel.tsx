@@ -16,6 +16,7 @@ interface Props {
   icon: string | undefined
   iconColor?: keyof typeof paletteColors
   label: any | undefined
+  bottomIcon?: string
 }
 
 const Inner = styled('div')({
@@ -37,10 +38,10 @@ const Label = styled('div')({
 })
 
 const BottomNavIconLabel = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
-  const {className, icon, iconColor, label} = props
+  const {className, icon, iconColor, label, bottomIcon} = props
   return (
-    <Inner className={className} ref={ref}>
-      <StyledIcon iconColor={iconColor}>{icon}</StyledIcon>
+    <Inner data-cy={bottomIcon} className={className} ref={ref}>
+      <StyledIcon  iconColor={iconColor}>{icon}</StyledIcon>
       <Label>{label}</Label>
     </Inner>
   )

@@ -113,7 +113,7 @@ const ActionMeetingUpdates = (props: Props) => {
           onKeyDown={handleRightArrow(() => gotoNext())}
           ref={gotoNextRef}
         >
-          <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={`Next: ${label}`} />
+          <BottomNavIconLabel bottomIcon='bottom-icon' icon='arrow_forward' iconColor='warm' label={`Next: ${label}`} />
         </BottomNavControl>
         <EndMeetingButton meetingId={meetingId} isEnded={!!endedAt} />
       </MeetingFacilitatorBar>

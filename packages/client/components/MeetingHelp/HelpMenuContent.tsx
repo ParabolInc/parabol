@@ -33,7 +33,7 @@ const HelpMenuContent = (props: Props) => {
   const {children, closePortal} = props
   return (
     <Content>
-      <MenuClose onClick={closePortal} title='Close help menu'>
+      <MenuClose onClick={closePortal} data-cy="help-menu-close" title='Close help menu'>
         close
       </MenuClose>
       {children}

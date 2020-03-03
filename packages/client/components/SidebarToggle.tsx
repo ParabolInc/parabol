@@ -12,7 +12,9 @@ const StyledButton = styled(IconButton)({
   }
 })
 
-interface Props extends BaseButtonProps {}
+interface Props extends BaseButtonProps {
+  toggle: string
+}
 
 const SidebarToggle = (props: Props) => {
   return (

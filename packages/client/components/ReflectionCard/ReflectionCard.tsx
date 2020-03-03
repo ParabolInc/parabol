@@ -30,6 +30,7 @@ interface Props {
   stackCount?: number
   showOriginFooter?: boolean
   showReactji?: boolean
+  cardName?: string
 }
 
 const getReadOnly = (
@@ -47,7 +48,7 @@ const getReadOnly = (
 }
 
 const ReflectionCard = (props: Props) => {
-  const {showOriginFooter, meeting, reflection, isClipped, stackCount, showReactji} = props
+  const {showOriginFooter, meeting, reflection, isClipped, stackCount, showReactji, cardName} = props
   const {meetingId, phaseItem, reactjis} = reflection
   const {question} = phaseItem
   const phaseType = meeting ? meeting.localPhase.phaseType : null
@@ -166,7 +167,7 @@ const ReflectionCard = (props: Props) => {
     onCompleted()
   }
   return (
-    <ReflectionCardRoot>
+    <ReflectionCardRoot data-cy={cardName}>
       {showOriginFooter && !isClipped && <ReflectionCardFooter>{question}</ReflectionCardFooter>}
       <ReflectionEditorWrapper
         isClipped={isClipped}
@@ -184,7 +185,7 @@ const ReflectionCard = (props: Props) => {
       />
       {error && <StyledError onClick={clearError}>{error.message}</StyledError>}
       {!readOnly && (
-        <ReflectionCardDeleteButton meetingId={meetingId} reflectionId={reflectionId} />
+        <ReflectionCardDeleteButton deleteButton= {`${cardName}-delete`} meetingId={meetingId} reflectionId={reflectionId} />
       )}
       {showReactji && <ReactjiSection reactjis={reactjis} onToggle={onToggleReactji} />}
     </ReflectionCardRoot>

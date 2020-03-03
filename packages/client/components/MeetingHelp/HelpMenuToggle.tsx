@@ -22,7 +22,7 @@ interface Props {
 
 const HelpMenuToggle = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
   return (
-    <StyledButton palette='white' {...props} ref={ref}>
+    <StyledButton buttonName='help-menu-toggle' palette='white' {...props} ref={ref}>
       <IconLabel icon='help_outline' />
     </StyledButton>
   )

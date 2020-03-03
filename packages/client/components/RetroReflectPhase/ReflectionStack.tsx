@@ -20,6 +20,7 @@ interface Props {
   meeting: ReflectionStack_meeting
   phaseEditorRef: React.RefObject<HTMLDivElement>
   phaseRef: React.RefObject<HTMLDivElement>
+  stackName: string
   reflectionStack: readonly PhaseItemColumn_meeting['reflectionGroups'][0]['reflections'][0][]
   stackTopRef: RefObject<HTMLDivElement>
 }
@@ -57,7 +58,7 @@ const ReflectionWrapper = styled('div')<{idx: number}>(({idx}): any => {
 })
 
 const ReflectionStack = (props: Props) => {
-  const {phaseRef, idx, meeting, reflectionStack, stackTopRef} = props
+  const {phaseRef, idx, meeting, reflectionStack, stackTopRef, stackName} = props
   const stackRef = useRef<HTMLDivElement>(null)
   const {setItemsRef, scrollRef, bgRef, portal, collapse, expand} = useExpandedReflections(
     stackRef,
@@ -82,16 +83,18 @@ const ReflectionStack = (props: Props) => {
         />
       )}
       <div>
-        <CardStack onClick={expand} ref={stackRef}>
-          <CenteredCardStack>
+        <CardStack data-cy={stackName} onClick={expand} ref={stackRef}>
+          <CenteredCardStack data-cy={`${stackName}-centered`}>
             {reflectionStack.map((reflection, idx) => {
               return (
                 <ReflectionWrapper
                   key={reflection.id}
                   idx={idx}
                   ref={idx === 0 ? stackTopRef : undefined}
+                  data-cy={`${stackName}-card-wrapper-${idx}`}
                 >
                   <ReflectionCard
+                    cardName={`${stackName}-card-${idx}`}
                     meeting={meeting}
                     reflection={reflection}
                     stackCount={reflectionStack.length}
