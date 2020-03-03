@@ -35,7 +35,7 @@ const StageTimerControl = (props: Props) => {
   const connectedMemberCount = meetingMembers.filter((member) => member.user.isConnected).length
   const color = scheduledEndTime ? 'green' : 'midGray'
   const icon = isAsync ? 'event' : 'timer'
-  const label = isAsync ? MeetingLabels.DEADLINE : MeetingLabels.TIMER
+  const label = isAsync ? MeetingLabels.TIME_LIMIT : MeetingLabels.TIMER
   const {menuProps, menuPortal, originRef, togglePortal} = useMenu<HTMLDivElement>(
     MenuPosition.LOWER_LEFT,
     {

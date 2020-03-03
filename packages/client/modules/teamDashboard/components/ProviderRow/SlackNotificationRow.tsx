@@ -21,8 +21,8 @@ interface Props {
 const labelLookup = {
   [SlackNotificationEventEnum.meetingEnd]: 'Meeting End',
   [SlackNotificationEventEnum.meetingStart]: 'Meeting Start',
-  [SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_END]: `Meeting ${MeetingLabels.DEADLINE} Ended`,
-  [SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_START]: `Meeting ${MeetingLabels.DEADLINE} Started`
+  [SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_END]: `Meeting ${MeetingLabels.TIME_LIMIT} Ended`,
+  [SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_START]: `Meeting ${MeetingLabels.TIME_LIMIT} Started`
 }
 
 const Row = styled('div')({

@@ -63,7 +63,7 @@ const StageTimerModalEditTimeEnd = (props: Props) => {
     <Modal>
       <EndTimer onClick={endTimer}>
         <StyledIcon>stop</StyledIcon>
-        <Label>End {MeetingLabels.DEADLINE}</Label>
+        <Label>End {MeetingLabels.TIME_LIMIT}</Label>
       </EndTimer>
       <HR />
       <StageTimerModalEndTime

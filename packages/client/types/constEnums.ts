@@ -150,7 +150,7 @@ export const enum MathEnum {
 }
 
 export const enum MeetingLabels {
-  DEADLINE = 'Deadline',
+  TIME_LIMIT = 'Time Limit',
   TIMER = 'Timer'
 }
 

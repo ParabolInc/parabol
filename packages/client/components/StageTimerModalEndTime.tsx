@@ -89,7 +89,7 @@ const StageTimerModalEndTime = (props: Props) => {
       <ErrorMessage error={error} />
       <StyledButton onClick={startTimer}>
         {scheduledEndTime ? 'Update ' : 'Start '}
-        {MeetingLabels.DEADLINE}
+        {MeetingLabels.TIME_LIMIT}
       </StyledButton>
     </SetLimit>
   )
