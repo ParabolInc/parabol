@@ -49,7 +49,7 @@ const TeamInvite = (props) => {
   )
   const nameOrEmail = inviteeName || inviteeEmailBlock
   const meetingCopyLabelLookup = {
-    action: 'an Action Meeting',
+    action: 'a Check-in Meeting',
     retrospective: 'a Retrospective Meeting'
   }
   return (
@@ -125,9 +125,9 @@ const TeamInvite = (props) => {
           <a
             href='https://www.parabol.co/getting-started-guide/action-meetings-101'
             style={emailLinkStyle}
-            title='Leveling Up: Action 101'
+            title='Leveling Up: Check-in 101'
           >
-            {'Leveling Up: Action 101'}
+            {'Leveling Up: Check-in 101'}
           </a>
         </p>
         <p style={emailCopyStyle}>

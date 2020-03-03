@@ -38,7 +38,7 @@ const MeetingTitle = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 
 const TITLES = {
   [MeetingTypeEnum.retrospective]: 'Retro Meeting',
-  [MeetingTypeEnum.action]: 'Action Meeting'
+  [MeetingTypeEnum.action]: 'Check-in Meeting'
 }
 
 const NewMeetingMeetingSelector = (props: Props) => {

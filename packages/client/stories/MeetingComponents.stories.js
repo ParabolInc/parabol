@@ -38,7 +38,7 @@ storiesOf('Meeting Components', module)
       />
     </RetroBackground>
   ))
-  .add('Action Agenda Heading', () => (
+  .add('Check-in Agenda Heading', () => (
     <RetroBackground>
       <StoryContainer
         render={() => (
