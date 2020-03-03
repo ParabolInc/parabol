@@ -11,6 +11,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import MenuItemHR from './MenuItemHR'
 import {PALETTE} from '../styles/paletteV2'
+import {MeetingLabels} from '../types/constEnums'
 
 interface Props {
   meetingId: string
@@ -60,7 +61,7 @@ const StageTimerModalEditTimeLimit = (props: Props) => {
     <Modal>
       <EndTimer onClick={endTimer}>
         <StyledIcon>timer_off</StyledIcon>
-        <Label>End Timer</Label>
+        <Label>End {MeetingLabels.TIMER}</Label>
       </EndTimer>
       <HR />
       <StageTimerModalTimeLimit

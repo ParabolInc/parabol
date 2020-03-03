@@ -15,6 +15,7 @@ import StageTimerModalEndTimeHour from './StageTimerModalEndTimeHour'
 import StageTimerModalEndTimeSlackToggle from './StageTimerModalEndTimeSlackToggle'
 import {StageTimerModalEndTime_facilitator} from '../__generated__/StageTimerModalEndTime_facilitator.graphql'
 import NotificationErrorMessage from '../modules/notifications/components/NotificationErrorMessage'
+import {MeetingLabels} from '../types/constEnums'
 
 interface Props {
   closePortal: () => void
@@ -87,7 +88,8 @@ const StageTimerModalEndTime = (props: Props) => {
       </Row>
       <ErrorMessage error={error} />
       <StyledButton onClick={startTimer}>
-        {scheduledEndTime ? 'Update Timebox' : 'Start Timebox'}
+        {scheduledEndTime ? 'Update ' : 'Start '}
+        {MeetingLabels.TIME_LIMIT}
       </StyledButton>
     </SetLimit>
   )

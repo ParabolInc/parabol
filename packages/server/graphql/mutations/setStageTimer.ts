@@ -11,7 +11,7 @@ import ScheduledJobMeetingStageTimeLimit from '../../database/types/ScheduledJob
 import removeScheduledJobs from './helpers/removeScheduledJobs'
 import {notifySlackTimeLimitStart} from './helpers/notifySlack'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {MeetingLabels, SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const BAD_CLOCK_THRESH = 2000
 const AVG_PING = 150
@@ -125,9 +125,13 @@ export default {
       timeRemaining,
       viewCount
     }
-    const stoppedOrStarted = newScheduledEndTime ? 'Meeting Timer Started' : 'Meeting Timer Stopped'
+    const stoppedOrStarted = newScheduledEndTime
+      ? `Meeting ${MeetingLabels.TIMER} Started`
+      : `Meeting ${MeetingLabels.TIMER} Stopped`
     const eventName =
-      scheduledEndTime && newScheduledEndTime ? 'Meeting Timer Updated' : stoppedOrStarted
+      scheduledEndTime && newScheduledEndTime
+        ? `Meeting ${MeetingLabels.TIMER} Updated`
+        : stoppedOrStarted
     publish(SubscriptionChannel.MEETING, meetingId, 'SetStageTimerPayload', data, subOptions)
     sendSegmentEvent(eventName, viewerId, segmentOptions).catch()
     return data

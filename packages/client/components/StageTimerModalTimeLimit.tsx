@@ -16,6 +16,7 @@ import useMutationProps from '../hooks/useMutationProps'
 import StyledError from './StyledError'
 import Icon from './Icon'
 import {PALETTE} from '../styles/paletteV2'
+import {MeetingLabels} from '../types/constEnums'
 
 interface Props {
   closePortal: () => void
@@ -104,7 +105,7 @@ const StageTimerModalTimeLimit = (props: Props) => {
         />
       )}
       <StyledButton onClick={startTimer}>
-        {scheduledEndTime ? 'Add Time' : 'Start Timer'}
+        {scheduledEndTime ? 'Add Time' : `Start ${MeetingLabels.TIMER}`}
       </StyledButton>
       {error && <StyledError>{error}</StyledError>}
     </SetLimit>

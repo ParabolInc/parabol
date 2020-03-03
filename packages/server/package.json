@@ -118,10 +118,10 @@
     "rethinkdb-ts-migrate": "^0.2.1",
     "script-ext-html-webpack-plugin": "^2.0.1",
     "style-loader": "1.0.0",
-    "sucrase": "^3.10.1",
+    "sucrase": "^3.12.1",
     "terser-webpack-plugin": "2.2.1",
     "ts-node": "^8.6.2",
-    "typescript": "3.7.2",
+    "typescript": "^3.8.3",
     "url-loader": "2.2.0",
     "vscode-apollo-relay": "^1.5.0",
     "webpack": "^4.41.5",
@@ -176,7 +176,7 @@
     "shortid": "2.2.15",
     "string-similarity": "^3.0.0",
     "stripe": "^4.24.0",
-    "tslib": "^1.10.0",
+    "tslib": "^1.11.1",
     "uWebSockets.js": "uNetworking/uWebSockets.js#v17.3.0"
   },
   "lint-staged": {
