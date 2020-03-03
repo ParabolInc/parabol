@@ -52,7 +52,7 @@ how it works:
    one of the project maintainers, we’ll tally up the points for your work.
 
 2. We’ll add a row to the
-   [Parabol Action Contributors Scoreboard](https://docs.google.com/spreadsheets/d/1V1KZJn6oKFsqrYwqr430rO3hkIkekSY7oYFzX3cVty4).
+   [Parabol Contributors Scoreboard](https://docs.google.com/spreadsheets/d/1V1KZJn6oKFsqrYwqr430rO3hkIkekSY7oYFzX3cVty4).
    If you’re working as a team, we’ll divide the points among you equally
    unless your team has requested an alternate distribution in the issue
    comments.
@@ -67,7 +67,7 @@ how it works:
 ## Points and sizes
 
 Before you begin working on an issue, you size it. Most issues will have a
-*SWAG* sizing from one of the Action maintainers, but it’s up to you to
+*SWAG* sizing from one of the Parabol maintainers, but it’s up to you to
 adjust it to what you think is fair.
 
 |  Points  | Individual *or* team effort required |
