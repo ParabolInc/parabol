@@ -17,7 +17,7 @@ export const up = async function(r: R) {
   }
 }
 
-export const down = async function(r) {
+export const down = async function(r: R) {
   try {
     await r
       .table('NewMeeting')
