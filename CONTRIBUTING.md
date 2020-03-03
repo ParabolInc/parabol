@@ -20,7 +20,7 @@ To get started, simply follow these steps:
 
    1. **Find a project:** review the projects listed under the
    “Help Requested” list on the
-   [Equity For Effort Projects Board](https://github.com/ParabolInc/action/projects/1)
+   [Equity For Effort Projects Board](https://github.com/ParabolInc/parabol/projects/1)
    and select one you're interested in working on.
 
    2. **Bid on it:** leave a comment on the project saying how many points
@@ -48,7 +48,7 @@ how it works:
 
 1. When we've verified your eligibility to participate within the E4E program
    and you've had an issue is merged into the
-   [Parabol Inc Action Repository](https://github.com/ParabolInc/action) by
+   [Parabol Inc Repository](https://github.com/ParabolInc/parabol) by
    one of the project maintainers, we’ll tally up the points for your work.
 
 2. We’ll add a row to the

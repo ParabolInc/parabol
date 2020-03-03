@@ -17,7 +17,7 @@
 - **Node version:** `node --version`
 - **NPM version:** `npm --version`
 - **RethinkDB version:** `rethinkdb --version`
-- **Estimated effort:** X points ([see CONTRIBUTING.md](https://github.com/ParabolInc/action/blob/master/CONTRIBUTING.md#points-and-sizes))
+- **Estimated effort:** X points ([see CONTRIBUTING.md](https://github.com/ParabolInc/parabol/blob/master/CONTRIBUTING.md#points-and-sizes))
 
 ### Acceptance Criteria (optional)
 Users can:
@@ -35,4 +35,4 @@ Users can:
    - Do that
    - Cannot do that
 
-- **Estimated effort:** X points ([see CONTRIBUTING.md](https://github.com/ParabolInc/action/blob/master/CONTRIBUTING.md#points-and-sizes))
+- **Estimated effort:** X points ([see CONTRIBUTING.md](https://github.com/ParabolInc/parabol/blob/master/CONTRIBUTING.md#points-and-sizes))
