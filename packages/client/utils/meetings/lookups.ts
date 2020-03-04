@@ -16,7 +16,7 @@ import {
 
 /* These are the labels show to the viewer */
 export const phaseLabelLookup = {
-  [CHECKIN]: 'Social Check-In',
+  [CHECKIN]: 'Social Check-in',
   [REFLECT]: 'Reflect',
   [GROUP]: 'Group',
   [VOTE]: 'Vote',

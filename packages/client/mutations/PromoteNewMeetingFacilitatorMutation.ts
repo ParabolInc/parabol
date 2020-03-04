@@ -10,7 +10,7 @@ graphql`
       defaultFacilitatorUserId
       facilitatorUserId
       facilitator {
-        # https://github.com/ParabolInc/action/issues/2984
+        # https://github.com/ParabolInc/parabol/issues/2984
         ...StageTimerModalEndTimeSlackToggle_facilitator
         userId
         preferredName

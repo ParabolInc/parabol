@@ -19,7 +19,7 @@ const DemoDiscussHelpMenu = forwardRef((_props: Props, ref: any) => {
         Take action by assigning next steps.
       </DelayedCopy>
       <DelayedCopy show={permShow} thresh={2}>
-        Track task progress with our Action meeting. (It’s Free!)
+        Track task progress with our Check-in meeting. (It’s Free!)
       </DelayedCopy>
       <DelayedCopy show={permShow} thresh={3} margin={'0'}>
         When you’re ready, end the demo to see the summary.

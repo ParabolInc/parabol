@@ -30,8 +30,8 @@ class SuggestedActionTryActionMeeting extends Component<Props> {
         iconName='change_history'
         suggestedActionId={suggestedActionId}
       >
-        <SuggestedActionCopy>Hold your first Action Meeting with {teamName}</SuggestedActionCopy>
-        <SuggestedActionButton onClick={this.onClick}>Start Action Meeting</SuggestedActionButton>
+        <SuggestedActionCopy>Hold your first Check-in Meeting with {teamName}</SuggestedActionCopy>
+        <SuggestedActionButton onClick={this.onClick}>Start Check-in Meeting</SuggestedActionButton>
       </SuggestedActionCard>
     )
   }
