@@ -1,19 +1,20 @@
 import getRethink from '../database/rethinkDriver'
 import User from '../database/types/User'
+import Team from '../database/types/Team'
 
 const safeArchiveTeam = async (teamId: string) => {
   const r = await getRethink()
   const now = new Date()
 
   return r({
-    team: r
+    team: (r
       .table('Team')
       .get(teamId)
       .update(
         {isArchived: true},
         {returnChanges: true}
       )('changes')(0)('new_val')
-      .default(null),
+      .default(null) as unknown) as Team | null,
     users: (r
       .table('TeamMember')
       .getAll(teamId, {index: 'teamId'})
@@ -28,14 +29,14 @@ const safeArchiveTeam = async (teamId: string) => {
           })('changes')('new_val')
           .default([])
       }) as unknown) as User[],
-    invitations: r
+    invitations: (r
       .table('TeamInvitation')
       .getAll(teamId, {index: 'teamId'})
       .filter({acceptedAt: null})
       .update((invitation) => ({
         expiresAt: r.min([invitation('expiresAt'), now])
-      })),
-    removedSuggestedActionIds: r
+      })) as unknown) as null,
+    removedSuggestedActionIds: (r
       .table('SuggestedAction')
       .filter({teamId})
       .update(
@@ -44,7 +45,7 @@ const safeArchiveTeam = async (teamId: string) => {
         },
         {returnChanges: true}
       )('changes')('new_val')('id')
-      .default([])
+      .default([]) as unknown) as string[]
   }).run()
 }
 

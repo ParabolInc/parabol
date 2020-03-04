@@ -1,4 +1,10 @@
-import {DraftEditorCommand, EditorProps, EditorState, KeyBindingUtil, SelectionState} from 'draft-js'
+import {
+  DraftEditorCommand,
+  EditorProps,
+  EditorState,
+  KeyBindingUtil,
+  SelectionState
+} from 'draft-js'
 import React, {ReactNode, RefObject, Suspense, useRef, useState} from 'react'
 import getAnchorLocation from './getAnchorLocation'
 import getSelectionLink from './getSelectionLink'
@@ -16,13 +22,17 @@ import useForceUpdate from '../../hooks/useForceUpdate'
 import lazyPreload from '../../utils/lazyPreload'
 
 const EditorLinkChanger = lazyPreload(() =>
-  import(/* webpackChunkName: 'EditorLinkChanger' */
-    '../EditorLinkChanger/EditorLinkChanger')
+  import(
+    /* webpackChunkName: 'EditorLinkChanger' */
+    '../EditorLinkChanger/EditorLinkChanger'
+  )
 )
 
 const EditorLinkViewer = lazyPreload(() =>
-  import(/* webpackChunkName: 'EditorLinkViewer' */
-    '../EditorLinkViewer/EditorLinkViewer')
+  import(
+    /* webpackChunkName: 'EditorLinkViewer' */
+    '../EditorLinkViewer/EditorLinkViewer'
+  )
 )
 
 const getEntityKeyAtCaret = (editorState: EditorState) => {
@@ -48,7 +58,7 @@ const getCtrlKSelection = (editorState: EditorState) => {
       return selectionState.merge({
         anchorOffset: begin,
         focusOffset: end
-      })
+      }) as SelectionState
     }
   }
   return selectionState
@@ -63,7 +73,11 @@ interface CustomProps {
   useTaskChild: UseTaskChild
 }
 
-type Handlers = Pick<EditorProps, 'handleBeforeInput' | 'onChange' | 'handleKeyCommand' | 'keyBindingFn'> & CustomProps
+type Handlers = Pick<
+  EditorProps,
+  'handleBeforeInput' | 'onChange' | 'handleKeyCommand' | 'keyBindingFn'
+> &
+  CustomProps
 
 interface ViewerData {
   href: string
@@ -72,11 +86,22 @@ interface ViewerData {
 }
 
 const useLinks = (editorState: EditorState, setEditorState: SetEditorState, handlers: Handlers) => {
-  const {handleBeforeInput, editorRef, keyBindingFn, handleKeyCommand, onChange, removeModal, renderModal, useTaskChild} = handlers
+  const {
+    handleBeforeInput,
+    editorRef,
+    keyBindingFn,
+    handleKeyCommand,
+    onChange,
+    removeModal,
+    renderModal,
+    useTaskChild
+  } = handlers
   const undoLinkRef = useRef(false)
   const cachedCoordsRef = useRef<ClientRect | null>(null)
   const [linkViewerData, setLinkViewerData] = useState<ViewerData | undefined>()
-  const [linkChangerData, setLinkChangerData] = useState()
+  const [linkChangerData, setLinkChangerData] = useState<
+    undefined | {link: string | null; selectionState: SelectionState; text: string | null}
+  >()
   const forceUpdate = useForceUpdate()
   const onRemoveModal = (allowFocus?: boolean) => {
     // LinkChanger can take focus, so sometimes we don't want to blur
@@ -181,7 +206,9 @@ const useLinks = (editorState: EditorState, setEditorState: SetEditorState, hand
     })
   }
 
-  const onKeyCommand: Handlers['handleKeyCommand'] = (command: DraftEditorCommand | 'add-hyperlink') => {
+  const onKeyCommand: Handlers['handleKeyCommand'] = (
+    command: DraftEditorCommand | 'add-hyperlink'
+  ) => {
     if (handleKeyCommand) {
       const result = handleKeyCommand(command, editorState, Date.now())
       // @ts-ignore
@@ -213,6 +240,7 @@ const useLinks = (editorState: EditorState, setEditorState: SetEditorState, hand
   }
 
   const renderChangerModal = () => {
+    if (!linkChangerData) return null
     const {text, link, selectionState} = linkChangerData
     const coords = getDraftCoords()
     // in this case, coords can be good, then bad as soon as the changer takes focus
@@ -227,10 +255,17 @@ const useLinks = (editorState: EditorState, setEditorState: SetEditorState, hand
     // keys are very important because all modals feed into the same renderModal, which could replace 1 with the other
     return (
       <Suspense fallback={''} key={'EditorLinkChanger'}>
-        <EditorLinkChanger originCoords={cachedCoordsRef.current} editorState={editorState}
-                           selectionState={selectionState} setEditorState={setEditorState} removeModal={onRemoveModal}
-                           text={text} link={link} editorRef={editorRef}
-                           useTaskChild={useTaskChild}/>
+        <EditorLinkChanger
+          originCoords={cachedCoordsRef.current}
+          editorState={editorState}
+          selectionState={selectionState}
+          setEditorState={setEditorState}
+          removeModal={onRemoveModal}
+          text={text}
+          link={link}
+          editorRef={editorRef}
+          useTaskChild={useTaskChild}
+        />
       </Suspense>
     )
   }
@@ -244,9 +279,14 @@ const useLinks = (editorState: EditorState, setEditorState: SetEditorState, hand
     if (!linkViewerData) return null
     return (
       <Suspense fallback={''} key={'EditorLinkViewer'}>
-        <EditorLinkViewer originCoords={coords} editorState={editorState}
-                          setEditorState={setEditorState} removeModal={onRemoveModal}
-                          href={linkViewerData.href} addHyperlink={addHyperlink}/>
+        <EditorLinkViewer
+          originCoords={coords}
+          editorState={editorState}
+          setEditorState={setEditorState}
+          removeModal={onRemoveModal}
+          href={linkViewerData.href}
+          addHyperlink={addHyperlink}
+        />
       </Suspense>
     )
   }
@@ -269,7 +309,11 @@ const useLinks = (editorState: EditorState, setEditorState: SetEditorState, hand
     handleChange,
     handleKeyCommand: onKeyCommand,
     keyBindingFn: handleKeyBindingFn,
-    renderModal: linkViewerData ? renderViewerModal : linkChangerData ? renderChangerModal : renderModal,
+    renderModal: linkViewerData
+      ? renderViewerModal
+      : linkChangerData
+      ? renderChangerModal
+      : renderModal,
     removeModal: linkViewerData || linkChangerData ? onRemoveModal : removeModal
   }
 }

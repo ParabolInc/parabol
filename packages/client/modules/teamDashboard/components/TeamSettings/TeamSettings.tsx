@@ -8,12 +8,12 @@ import Panel from '../../../../components/Panel/Panel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import Row from '../../../../components/Row/Row'
 import {WithAtmosphereProps} from '../../../../decorators/withAtmosphere/withAtmosphere'
-import ArchiveTeamContainer from '../../containers/ArchiveTeamContainer/ArchiveTeamContainer'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {Layout, TierLabel} from '../../../../types/constEnums'
 import {TierEnum} from '../../../../types/graphql'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 import useRouter from '../../../../hooks/useRouter'
+import ArchiveTeam from '../ArchiveTeam/ArchiveTeam'
 
 const TeamSettingsLayout = styled('div')({
   display: 'flex',
@@ -67,7 +67,7 @@ const TeamSettings = (props: Props) => {
         {viewerIsLead && (
           <Panel label='Danger Zone'>
             <PanelRow>
-              <ArchiveTeamContainer team={team!} />
+              <ArchiveTeam team={team!} />
             </PanelRow>
           </Panel>
         )}
@@ -80,7 +80,7 @@ export default createFragmentContainer(TeamSettings, {
   viewer: graphql`
     fragment TeamSettings_viewer on User {
       team(teamId: $teamId) {
-        ...ArchiveTeamContainer_team
+        ...ArchiveTeam_team
         isLead
         id
         name

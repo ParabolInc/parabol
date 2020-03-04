@@ -12,12 +12,17 @@ import Atmosphere from '../Atmosphere'
 import {requestSubscription, Variables} from 'relay-runtime'
 import {OrganizationSubscriptionResponse} from '__generated__/OrganizationSubscription.graphql'
 import {RouterProps} from 'react-router'
+import {
+  archiveOrganizationOrganizationOnNext,
+  archiveOrganizationOrganizationUpdater
+} from 'mutations/ArchiveOrganizationMutation'
 
 const subscription = graphql`
   subscription OrganizationSubscription {
     organizationSubscription {
       __typename
       ...AddOrgMutation_organization @relay(mask: false)
+      ...ArchiveOrganizationMutation_organization @relay(mask: false)
       ...PayLaterMutation_organization @relay(mask: false)
       ...SetOrgUserRoleMutationAdded_organization @relay(mask: false)
       ...SetOrgUserRoleMutationRemoved_organization @relay(mask: false)
@@ -30,12 +35,14 @@ const subscription = graphql`
 `
 
 const onNextHandlers = {
+  ArchiveOrganizationPayload: archiveOrganizationOrganizationOnNext,
   RemoveOrgUserPayload: removeOrgUserOrganizationOnNext,
   SetOrgUserRoleAddedPayload: setOrgUserRoleAddedOrganizationOnNext
 }
 
 const updateHandlers = {
   AddOrgPayload: addOrgMutationOrganizationUpdater,
+  ArchiveOrganizationPayload: archiveOrganizationOrganizationUpdater,
   SetOrgUserRoleAddedPayload: setOrgUserRoleAddedOrganizationUpdater,
   RemoveOrgUserPayload: removeOrgUserOrganizationUpdater
 }
@@ -45,7 +52,6 @@ const OrganizationSubscription = (
   variables: Variables,
   router: {history: RouterProps['history']}
 ) => {
-  const {viewerId} = atmosphere
   return requestSubscription<OrganizationSubscriptionResponse>(atmosphere, {
     subscription,
     variables,
@@ -55,7 +61,7 @@ const OrganizationSubscription = (
       const type = payload.getValue('__typename') as string
       const handler = updateHandlers[type]
       if (handler) {
-        handler(payload, store, viewerId)
+        handler(payload, {atmosphere, store})
       }
     },
     onNext: (result) => {
