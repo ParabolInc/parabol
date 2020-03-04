@@ -67,6 +67,7 @@ $ cd action
 $ cp packages/server/.env.example packages/server/.env # Add your own vars here
 $ rethinkdb &
 $ yarn
+$ yarn postdeploy
 $ yarn quickstart
 ```
 _Remember: if RethinkDB is running locally, you can reach its dashboard at
@@ -74,6 +75,8 @@ _Remember: if RethinkDB is running locally, you can reach its dashboard at
 
 ### Development
 ```bash
+$ yarn build:relay
+$ yarn db:migrate
 $ yarn dev
 ```
 
