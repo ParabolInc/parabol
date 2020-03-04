@@ -6,12 +6,11 @@ import {Radius} from 'types/constEnums'
 import {Elevation} from 'styles/elevation'
 
 const StyledBaseButton = styled(BaseButton)((props: BaseButtonProps) => {
-  const {disabled, waiting, buttonName} = props
+  const {disabled, waiting} = props
   const visuallyDisabled = disabled || waiting
   return {
     backgroundImage: visuallyDisabled ? PALETTE.GRADIENT_WARM_LIGHTENED : PALETTE.GRADIENT_WARM,
     borderRadius: Radius.BUTTON_PILL,
-    buttonName,
     color: '#FFFFFF',
     fontWeight: 600,
     opacity: visuallyDisabled ? 1 : undefined,

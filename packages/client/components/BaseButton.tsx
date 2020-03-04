@@ -41,7 +41,7 @@ export interface BaseButtonProps extends PlainButtonProps {
   size?: 'small' | 'medium' | 'large'
   children?: ReactNode
   className?: string
-  buttonName?: string
+  dataCy?: string
   elevationHovered?: Elevation
   elevationResting?: Elevation
   elevationPressed?: Elevation
@@ -68,7 +68,7 @@ const BaseButton = forwardRef((props: BaseButtonProps, ref: Ref<HTMLButtonElemen
     onMouseEnter,
     style,
     waiting,
-    buttonName
+    dataCy
   } = props
   const hasDisabledStyles = !!(disabled || waiting)
 
@@ -99,7 +99,7 @@ const BaseButton = forwardRef((props: BaseButtonProps, ref: Ref<HTMLButtonElemen
   return (
     <ButtonRoot
       {...props}
-      data-cy={buttonName}
+      data-cy={dataCy}
       aria-label={ariaLabel}
       className={className}
       disabled={hasDisabledStyles}
