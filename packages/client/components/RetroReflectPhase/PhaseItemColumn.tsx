@@ -206,7 +206,7 @@ const PhaseItemColumn = (props: Props) => {
   )
 
   return (
-    <ColumnWrapper isDesktop={isDesktop}>
+    <ColumnWrapper data-cy={`reflection-column-${question}`} isDesktop={isDesktop}>
       <ColumnHighlight isDesktop={isDesktop} isFocused={isFocused}>
         <ColumnContent isDesktop={isDesktop}>
           <HeaderAndEditor isDesktop={isDesktop}>
@@ -218,9 +218,10 @@ const PhaseItemColumn = (props: Props) => {
               {tooltipPortal(<div>Tap to highlight prompt for everybody</div>)}
               <Description>{description}</Description>
             </PromptHeader>
-            <EditorSection>
-              <EditorAndStatus isGroupingComplete={isComplete}>
+            <EditorSection data-cy={`editor-section-${question}`}>
+              <EditorAndStatus data-cy={`editor-status-${question}`} isGroupingComplete={isComplete}>
                 <PhaseItemEditor
+                  dataCy={`phase-item-editor-${question}`}
                   cardsInFlightRef={cardsInFlightRef}
                   setCardsInFlight={setCardsInFlight}
                   phaseEditorRef={phaseEditorRef}
@@ -234,6 +235,7 @@ const PhaseItemColumn = (props: Props) => {
           </HeaderAndEditor>
           <ReflectionStackSection isDesktop={isDesktop}>
             <ReflectionStack
+              dataCy={`reflection-stack-${question}`}
               reflectionStack={reflectionStack}
               idx={idx}
               phaseEditorRef={phaseEditorRef}

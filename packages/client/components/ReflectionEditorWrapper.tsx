@@ -224,6 +224,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     const showFallback = useFallback && !isRichDraft(editorState)
     return (
       <EditorStyles
+        data-cy='reflection-editor-wrapper'
         useFallback={useFallback}
         userSelect={userSelect}
         isClipped={isClipped}
