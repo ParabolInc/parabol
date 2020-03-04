@@ -8,6 +8,7 @@ import useRouter from 'hooks/useRouter'
 import {createFragmentContainer} from 'react-relay'
 import {SelectMeetingDropdownItem_meeting} from '__generated__/SelectMeetingDropdownItem_meeting.graphql'
 import {meetingTypeToIcon, phaseLabelLookup} from 'utils/meetings/lookups'
+import * as Sentry from '@sentry/browser'
 
 const Wrapper = styled('div')({
   alignItems: 'center',
@@ -64,6 +65,15 @@ const SelectMeetingDropdownItem = (props: Props) => {
   const {meeting} = props
   const {history} = useRouter()
   const {name, team, id: meetingId, meetingType, phases} = meeting
+  if (!team) {
+    // 95% sure there's a bug in relay causing this
+    const errObj = {id: meetingId} as any
+    if (meeting.hasOwnProperty('team')) {
+      errObj.team = team
+    }
+    Sentry.captureException(new Error(`Missing Team on Meeting ${JSON.stringify(errObj)}`))
+    return null
+  }
   const {name: teamName} = team
   const gotoMeeting = () => {
     history.push(`/meet/${meetingId}`)
