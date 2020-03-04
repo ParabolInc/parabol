@@ -938,8 +938,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const reflectionGroup =
         this.db.reflectionGroups.find((group) => group.id === reflectionGroupId) ||
         this.db.reflectionGroups.find((group) => Boolean(group.isActive))!
+      if (!reflectionGroup) return null
       const meetingMember = this.db.meetingMembers.find((member) => member.userId === userId)!
-      const voterIds = reflectionGroup.voterIds!
+      const {voterIds} = reflectionGroup
       const now = new Date().toJSON()
       if (isUnvote) {
         const idx = voterIds.indexOf(userId)
