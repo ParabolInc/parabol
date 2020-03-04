@@ -1,0 +1,12 @@
+version: '3'
+services:
+    redis:
+        image: 'redis:alpine'
+        ports:
+            - '6379:6379'
+    rethinkdb:
+        image: 'rethinkdb'
+        ports:
+            - '28015:28015'
+            - '29015:29015'
+            - '8080:8080'

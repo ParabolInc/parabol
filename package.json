@@ -26,10 +26,11 @@
     "heroku-postbuild": "echo 'Skipping build'",
     "build": "yarn workspace parabol-server build",
     "build:relay": "yarn workspace parabol-server build:relay",
-    "quickstart": "yarn workspace parabol-server quickstart",
+    "quickstart": "yarn dev:system-dependencies && yarn workspace parabol-server quickstart",
     "debug": "yarn workspace parabol-server debug",
     "debug:prod": "yarn workspace parabol-server debug:prod",
     "dev": "yarn workspace parabol-server dev",
+    "dev:system-dependencies": "docker-compose --file=docker/local.yml up --detach",
     "lint": "lerna run --parallel lint",
     "test": "yarn workspace parabol-cypress test",
     "typecheck": "lerna run --parallel typecheck"
