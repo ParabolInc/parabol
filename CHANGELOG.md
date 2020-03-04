@@ -5,6 +5,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 4.24.0 2020-Mar-04
+
+### Added
+* Can now archive an organization (#3625)
+* rel="canonical" tags on all public routes (#3623)
+* tags to mailgun emails (#3616)
+
+### Fixed
+* Disabled ability to create multiple simultaneous check-in meetings (#3626)
+* Handful of small sentry bugs (#3628)
+* Require longpress on mobile to drag reflection cards (#3624)
+
+### Changed
+* Renamed action to check-in (#3620)
+* Upgrade typescript, sucrase (#3618)
+* Rename timebox to deadline (#3617)
+
 ## 4.23.2 2020-Mar-02
 
 ### Fixed
