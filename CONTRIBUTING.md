@@ -20,7 +20,7 @@ To get started, simply follow these steps:
 
    1. **Find a project:** review the projects listed under the
    “Help Requested” list on the
-   [Equity For Effort Projects Board](https://github.com/ParabolInc/action/projects/1)
+   [Equity For Effort Projects Board](https://github.com/ParabolInc/parabol/projects/1)
    and select one you're interested in working on.
 
    2. **Bid on it:** leave a comment on the project saying how many points
@@ -48,11 +48,11 @@ how it works:
 
 1. When we've verified your eligibility to participate within the E4E program
    and you've had an issue is merged into the
-   [Parabol Inc Action Repository](https://github.com/ParabolInc/action) by
+   [Parabol Inc Repository](https://github.com/ParabolInc/parabol) by
    one of the project maintainers, we’ll tally up the points for your work.
 
 2. We’ll add a row to the
-   [Parabol Action Contributors Scoreboard](https://docs.google.com/spreadsheets/d/1V1KZJn6oKFsqrYwqr430rO3hkIkekSY7oYFzX3cVty4).
+   [Parabol Contributors Scoreboard](https://docs.google.com/spreadsheets/d/1V1KZJn6oKFsqrYwqr430rO3hkIkekSY7oYFzX3cVty4).
    If you’re working as a team, we’ll divide the points among you equally
    unless your team has requested an alternate distribution in the issue
    comments.
@@ -67,7 +67,7 @@ how it works:
 ## Points and sizes
 
 Before you begin working on an issue, you size it. Most issues will have a
-*SWAG* sizing from one of the Action maintainers, but it’s up to you to
+*SWAG* sizing from one of the Parabol maintainers, but it’s up to you to
 adjust it to what you think is fair.
 
 |  Points  | Individual *or* team effort required |

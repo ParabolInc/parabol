@@ -61,7 +61,7 @@ const ContactUsFooter = (props: Props) => {
               rel='noopener noreferrer'
               style={linkStyle}
               target='_blank'
-              title='How to Navigate Uncertainty using the Action Rhythm'
+              title='Navigate uncertainty with the Parabol Rhythm'
             >
               Learn More
             </a>

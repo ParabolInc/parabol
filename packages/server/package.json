@@ -6,11 +6,11 @@
   "version": "4.23.2",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ParabolInc/action"
+    "url": "https://github.com/ParabolInc/parabol"
   },
-  "homepage": "https://github.com/ParabolInc/action",
+  "homepage": "https://github.com/ParabolInc/parabol",
   "bugs": {
-    "url": "https://github.com/ParabolInc/action/issues"
+    "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "scripts": {
     "start": "cross-env NODE_ENV=production pm2-runtime start pm2.config.js",

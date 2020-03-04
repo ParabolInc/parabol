@@ -10,7 +10,7 @@ export const APP_NAME = 'Action'
 export const APP_WEBPACK_PUBLIC_PATH_DEFAULT = '/static/'
 
 /* Meeting Misc. */
-export const MEETING_NAME = 'Action Meeting'
+export const MEETING_NAME = 'Check-in Meeting'
 export const MEETING_SUMMARY_LABEL = 'Summary'
 export const AGENDA_ITEM_LABEL = 'Agenda Topic'
 export const RETRO_TOPIC_LABEL = 'Topic'
@@ -93,7 +93,7 @@ export const FAILED = 'FAILED'
 /* character limits */
 export const TASK_MAX_CHARS = 51200
 
-/* Action Tags */
+/* Task tags */
 export const tags = [
   {
     name: 'private',

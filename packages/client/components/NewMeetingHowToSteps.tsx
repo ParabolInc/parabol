@@ -29,7 +29,7 @@ const LINKS = {
 
 const TITLES = {
   [MeetingTypeEnum.retrospective]: 'How to Run a Retro Meeting',
-  [MeetingTypeEnum.action]: 'How to Run an Action Meeting'
+  [MeetingTypeEnum.action]: 'How to Run a Check-in Meeting'
 }
 
 const LearnMoreLink = styled(LinkButton)({

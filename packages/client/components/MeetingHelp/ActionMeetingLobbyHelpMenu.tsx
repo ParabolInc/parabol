@@ -13,10 +13,10 @@ const ActionMeetingLobbyHelpMenu = forwardRef((_props: Props, ref: any) => {
   useSegmentTrack(SegmentClientEventEnum.HelpMenuOpen, {phase: NewMeetingPhaseTypeEnum.lobby})
   return (
     <HelpMenuContent closePortal={closePortal}>
-      <HelpMenuCopy>{'To learn more about how to run an Action Meeting, see our '}</HelpMenuCopy>
+      <HelpMenuCopy>{'To learn more about how to run a Check-in Meeting, see our '}</HelpMenuCopy>
       <div>
         <HelpMenuLink copy='Getting Started Guide' href={ExternalLinks.GETTING_STARTED_ACTION} />
-        {' for running an Action Meeting.'}
+        {' for running a Check-in Meeting.'}
       </div>
     </HelpMenuContent>
   )
