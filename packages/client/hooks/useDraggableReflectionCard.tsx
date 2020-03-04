@@ -175,6 +175,7 @@ const useDragAndDrop = (
   const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
     if (e.type === 'touchend' && drag.ref) {
       drag.ref.removeEventListener('touchmove', onMouseMove)
+      window.clearTimeout(drag.longpressTimeout)
     } else {
       document.removeEventListener('mousemove', onMouseMove)
     }
@@ -229,7 +230,15 @@ const useDragAndDrop = (
     const {clientX, clientY} = isTouchMove ? (e as TouchEvent).touches[0] : (e as MouseEvent)
     const wasDrag = drag.isDrag
     if (!wasDrag) {
-      drag.isDrag = getIsDrag(clientX, clientY, drag.startX, drag.startY)
+      const isDrag = getIsDrag(clientX, clientY, drag.startX, drag.startY)
+      if (isDrag && isTouchMove && !drag.longpressed) {
+        //they don't really want to drag
+        window.clearTimeout(drag.longpressTimeout)
+        drag.ref?.removeEventListener('touchmove', onMouseMove)
+        drag.ref?.removeEventListener('touchend', onMouseUp)
+        return
+      }
+      drag.isDrag = isDrag
       if (!drag.isDrag || !drag.ref) return
       const eventName = isTouchMove ? 'touchend' : 'mouseup'
       document.addEventListener(eventName, onMouseUp, {once: true})
@@ -270,10 +279,15 @@ const useDragAndDrop = (
     (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
       if (isDropping || staticIdx === -1 || isEditing) return
       const isTouchStart = e.type === 'touchstart'
-      if (isTouchStart && drag.ref) {
+      if (isTouchStart) {
         // https://stackoverflow.com/questions/33298828/touch-move-event-dont-fire-after-touch-start-target-is-removed
+        if (!drag.ref) return
         drag.ref.addEventListener('touchmove', onMouseMove)
         drag.ref.addEventListener('touchend', onMouseUp)
+        drag.longpressed = false
+        drag.longpressTimeout = window.setTimeout(() => {
+          drag.longpressed = true
+        }, Times.TOUCH_LONGPRESS)
       } else {
         document.addEventListener('mousemove', onMouseMove)
         document.addEventListener('mouseup', onMouseUp)

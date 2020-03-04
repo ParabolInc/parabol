@@ -23,6 +23,8 @@ const DRAG_STATE = {
   clientY: 0, // used for scrollZone
   clone: null as null | HTMLDivElement,
   isDrag: false,
+  longpressed: null as null | boolean,
+  longpressTimeout: undefined as undefined | number,
   ref: null as null | HTMLDivElement,
   startX: 0,
   startY: 0,
