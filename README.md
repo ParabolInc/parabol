@@ -74,6 +74,8 @@ _Remember: if RethinkDB is running locally, you can reach its dashboard at
 
 ### Development 
 ```bash
+$ yarn build:relay
+$ yarn db:migrate
 $ yarn dev
 ```
 

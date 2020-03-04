@@ -26,6 +26,7 @@
     "heroku-postbuild": "echo 'Skipping build'",
     "build": "yarn workspace parabol-server build",
     "build:relay": "yarn workspace parabol-server build:relay",
+    "db:migrate": "yarn workspace parabol-server db:migrate",
     "quickstart": "yarn workspace parabol-server quickstart",
     "debug": "yarn workspace parabol-server debug",
     "debug:prod": "yarn workspace parabol-server debug:prod",
