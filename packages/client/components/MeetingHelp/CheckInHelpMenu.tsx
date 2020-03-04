@@ -28,7 +28,7 @@ const CheckInHelpMenu = forwardRef((props: Props, ref: any) => {
       <HelpMenuHeader>{phaseLabelLookup[CHECKIN]}</HelpMenuHeader>
       <HelpMenuCopy>
         {
-          'The Social Check-In is an opportunity to quickly share some personal context with your team.'
+          'The Social Check-in is an opportunity to quickly share some personal context with your team.'
         }
       </HelpMenuCopy>
       <HelpMenuCopy>

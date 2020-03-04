@@ -1,18 +1,20 @@
-import React, {Component} from 'react'
-import AtmosphereProvider from './AtmosphereProvider/AtmosphereProvider'
+import useCanonical from 'hooks/useCanonical'
+import React, {useEffect} from 'react'
 import NewMeetingSummaryRoot from '../modules/summary/components/NewMeetingSummaryRoot'
+import AtmosphereProvider from './AtmosphereProvider/AtmosphereProvider'
 
-class DemoSummary extends Component {
-  componentWillUnmount() {
-    window.localStorage.removeItem('retroDemo')
-  }
-  render() {
-    return (
-      <AtmosphereProvider isDemo>
-        <NewMeetingSummaryRoot />
-      </AtmosphereProvider>
-    )
-  }
+const DemoSummary = () => {
+  useCanonical('retrospective-demo-summary')
+  useEffect(() => {
+    return () => {
+      window.localStorage.removeItem('retroDemo')
+    }
+  }, [])
+  return (
+    <AtmosphereProvider isDemo>
+      <NewMeetingSummaryRoot />
+    </AtmosphereProvider>
+  )
 }
 
 export default DemoSummary

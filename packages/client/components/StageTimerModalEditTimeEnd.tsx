@@ -12,6 +12,7 @@ import MenuItemHR from './MenuItemHR'
 import StageTimerModalEndTime from './StageTimerModalEndTime'
 import {StageTimerModalEditTimeEnd_facilitator} from '../__generated__/StageTimerModalEditTimeEnd_facilitator.graphql'
 import {PALETTE} from '../styles/paletteV2'
+import {MeetingLabels} from '../types/constEnums'
 
 interface Props {
   closePortal: () => void
@@ -62,7 +63,7 @@ const StageTimerModalEditTimeEnd = (props: Props) => {
     <Modal>
       <EndTimer onClick={endTimer}>
         <StyledIcon>stop</StyledIcon>
-        <Label>End Timebox</Label>
+        <Label>End {MeetingLabels.TIME_LIMIT}</Label>
       </EndTimer>
       <HR />
       <StageTimerModalEndTime

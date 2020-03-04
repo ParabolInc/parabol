@@ -153,6 +153,11 @@ export const enum MathEnum {
   MAX_INT = 2147483647
 }
 
+export const enum MeetingLabels {
+  TIME_LIMIT = 'Time Limit',
+  TIMER = 'Timer'
+}
+
 export const enum MeetingSettingsDefaults {
   RETROSPECTIVE_TOTAL_VOTES = 5,
   RETROSPECTIVE_MAX_VOTES_PER_GROUP = 3
@@ -281,6 +286,7 @@ export const enum Times {
   REFLECTION_REMOTE_DROP_DURATION = 2000,
   REFLECTION_STALE_LIMIT = 5000,
   REFLECTION_COLUMN_SWIPE_THRESH = 600,
+  TOUCH_LONGPRESS = 120,
   WEBSOCKET_KEEP_ALIVE = 10000
 }
 

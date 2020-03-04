@@ -9,6 +9,8 @@ describe('signup', () => {
     })
   })
   it('performs a login when matches existing credentials', () => {
+    // this shouldn't be necessary, but all the sudden it started breaking without
+    cy.clearLocalStorage()
     cy.visit('/create-account')
     cy.get('form').within(() => {
       cy.get('input[name="email"]').type(`cypress@parabol.co`)

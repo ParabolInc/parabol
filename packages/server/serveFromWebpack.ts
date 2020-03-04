@@ -59,6 +59,8 @@ export const getWebpackDevMiddleware = async () => {
 
 const makeExpressHandlers = (res: HttpResponse, req: HttpRequest) => {
   res.setHeader = (key: string, value: unknown) => {
+    // setting content length triggers a bug in cypress-initiated browsers where the browser will get ERR_NO_RESPONSE
+    if (key === 'Content-Length') return
     res.writeHeader(key.toLowerCase(), String(value))
   }
   return {
@@ -77,7 +79,7 @@ const serveFromWebpack = async (res: HttpResponse, req: HttpRequest) => {
   const {req: mwReq, res: mwRes, next} = makeExpressHandlers(res, req)
   const mw = await getWebpackDevMiddleware()
   await mw(mwReq, mwRes, next)
-  return res.statusCode === 200
+  return mwRes.statusCode === 200
 }
 
 export default serveFromWebpack

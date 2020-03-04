@@ -8,9 +8,11 @@ import RemoveOrgUserPayload from './RemoveOrgUserPayload'
 import UpdateCreditCardPayload from './UpdateCreditCardPayload'
 import DowngradeToPersonalPayload from './DowngradeToPersonalPayload'
 import PayLaterPayload from './PayLaterPayload'
+import ArchiveOrganizationPayload from './ArchiveOrganizationPayload'
 
 const types = [
   AddOrgPayload,
+  ArchiveOrganizationPayload,
   DowngradeToPersonalPayload,
   PayLaterPayload,
   RemoveOrgUserPayload,

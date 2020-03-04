@@ -79,7 +79,7 @@ const emailPasswordReset = {
 
     const emailContent = resetPasswordEmailCreator({resetPasswordToken})
     try {
-      await sendEmailContent([email], emailContent)
+      await sendEmailContent([email], emailContent, ['type:resetPassword'])
     } catch (e) {
       console.log(e)
     }

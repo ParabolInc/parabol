@@ -18,6 +18,7 @@ import standardError from '../../utils/standardError'
 import rateLimit from '../rateLimit'
 import GraphQLEmailType from '../types/GraphQLEmailType'
 import InviteToTeamPayload from '../types/InviteToTeamPayload'
+import {GQLContext} from '../graphql'
 
 const randomBytes = promisify(crypto.randomBytes, crypto)
 
@@ -41,7 +42,7 @@ export default {
     async (
       _source,
       {invitees, meetingId, teamId},
-      {authToken, dataLoader, socketId: mutatorId}
+      {authToken, dataLoader, socketId: mutatorId}: GQLContext
     ) => {
       const operationId = dataLoader.share()
       const r = await getRethink()
@@ -54,20 +55,23 @@ export default {
 
       // RESOLUTION
       const subOptions = {mutatorId, operationId}
-      const users = await r
-        .table('User')
-        .getAll(r.args(invitees), {index: 'email'})
-        .run()
-
+      const [users, team, inviter] = await Promise.all([
+        r
+          .table('User')
+          .getAll(r.args(invitees), {index: 'email'})
+          .run(),
+        dataLoader.get('teams').load(teamId),
+        dataLoader.get('users').load(viewerId)
+      ])
+      const {name: teamName, isOnboardTeam, orgId} = team
+      const organization = await dataLoader.get('organizations').load(orgId)
+      const {tier, name: orgName} = organization
       const uniqueInvitees = Array.from(new Set(invitees as string[]))
       // filter out emails already on team
       const newInvitees = uniqueInvitees.filter((email) => {
         const user = users.find((user) => user.email === email)
         return !(user && user.tms && user.tms.includes(teamId))
       })
-      const team = await dataLoader.get('teams').load(teamId)
-      const {name: teamName, isOnboardTeam} = team
-      const inviter = await dataLoader.get('users').load(viewerId)
       const bufferTokens = await Promise.all<Buffer>(newInvitees.map(() => randomBytes(48)))
       const tokens = bufferTokens.map((buffer: Buffer) => buffer.toString('hex'))
       const expiresAt = new Date(Date.now() + TEAM_INVITATION_LIFESPAN)
@@ -122,15 +126,24 @@ export default {
       const emailResults = await Promise.all(
         teamInvitationsToInsert.map((invitation) => {
           const user = users.find((user) => user.email === invitation.email)
-          return sendEmailPromise(invitation.email, 'teamInvite', {
-            inviteLink: makeAppLink(`team-invitation/${invitation.token}`),
-            inviteeName: user ? user.preferredName : null,
-            inviteeEmail: invitation.email,
-            inviterName: inviter.preferredName,
-            inviterEmail: inviter.email,
-            teamName,
-            meeting: bestMeeting
-          })
+          return sendEmailPromise(
+            invitation.email,
+            'teamInvite',
+            {
+              inviteLink: makeAppLink(`team-invitation/${invitation.token}`),
+              inviteeName: user ? user.preferredName : null,
+              inviteeEmail: invitation.email,
+              inviterName: inviter.preferredName,
+              inviterEmail: inviter.email,
+              teamName,
+              meeting: bestMeeting
+            },
+            [
+              'type:teamInvitation',
+              `tier:${tier}`,
+              `team:${teamName}:${orgName}:${teamId}:${orgId}`
+            ]
+          )
         })
       )
 

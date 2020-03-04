@@ -22,7 +22,7 @@ const getSelectionLink = (editorState: EditorState, selection: SelectionState) =
       )
     })
     if (lastLinkChar) {
-      return currentContent.getEntity(lastLinkChar.getEntity()).getData().href
+      return currentContent.getEntity(lastLinkChar.getEntity()).getData().href as string
     }
     if (currentKey === startKey) return null
     currentKey = currentContent.getKeyBefore(currentKey)

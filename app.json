@@ -1,7 +1,7 @@
 {
   "name": "action",
   "description": "An open-source app for building smarter, more agile teams.",
-  "repository": "https://github.com/ParabolInc/action",
+  "repository": "https://github.com/ParabolInc/parabol",
   "scripts": {
     "dokku": {
       "predeploy": "yarn workspace parabol-server db:migrate",

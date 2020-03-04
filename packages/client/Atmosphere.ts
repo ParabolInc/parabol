@@ -178,6 +178,21 @@ export default class Atmosphere extends Environment {
   }
 
   async promiseToUpgrade() {
+    this.setAuthToken(this.authToken)
+    if (!this.authToken) {
+      this.eventEmitter.emit('addSnackbar', {
+        autoDismiss: 0,
+        key: 'cannotConnectJWT',
+        message: 'Session expired. Please refresh to continue',
+        action: {
+          label: 'Refresh',
+          callback: () => {
+            window.location.reload()
+          }
+        }
+      })
+      return
+    }
     const trebuchets = [this.trySockets, this.trySSE]
     const trebuchet = await getTrebuchet(trebuchets)
     if (!trebuchet) {
@@ -257,10 +272,6 @@ export default class Atmosphere extends Environment {
     variables: Variables,
     router: {history: RouterProps['history']}
   ) => {
-    if (!this.authToken) {
-      console.error('Attempted query registrationw without JWT')
-      return
-    }
     window.clearTimeout(this.queryTimeouts[queryKey])
     delete this.queryTimeouts[queryKey]
     await this.upgradeTransport()

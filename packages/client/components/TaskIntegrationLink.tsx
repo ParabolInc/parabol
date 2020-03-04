@@ -47,7 +47,7 @@ const TaskIntegrationLink = (props: Props) => {
     const {nameWithOwner, issueNumber} = integration
     const href =
       nameWithOwner === 'ParabolInc/ParabolDemo'
-        ? 'https://github.com/ParabolInc/action'
+        ? 'https://github.com/ParabolInc/parabol'
         : `https://www.github.com/${nameWithOwner}/issues/${issueNumber}`
     return (
       <StyledLink

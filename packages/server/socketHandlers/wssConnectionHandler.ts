@@ -40,8 +40,12 @@ const wssConnectionHandler = (socket: WebSocket, req: HttpRequest) => {
 
     const authToken = getQueryToken(req)
     if (!isAuthenticated(authToken)) {
+      const clientIp = req.getHeader('x-forwarded-for')
       // internal error (bad auth)
-      sendToSentry(new Error(`WebSocket error: not authenticated`))
+      sendToSentry(new Error(`WebSocket error: not authenticated`), {
+        tags: {ip: clientIp},
+        sampleRate: 0.03
+      })
       socket.end(1011)
       return
     }

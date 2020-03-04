@@ -1,10 +1,10 @@
 # Action
 
 [![Slack Status](http://slackin.parabol.co/badge.svg)](http://slackin.parabol.co/)
-[![CircleCI](https://circleci.com/gh/ParabolInc/action.svg?style=svg)](https://circleci.com/gh/ParabolInc/action)
-[![codecov](https://codecov.io/gh/ParabolInc/action/branch/master/graph/badge.svg)](https://codecov.io/gh/ParabolInc/action)
+[![CircleCI](https://circleci.com/gh/ParabolInc/parabol.svg?style=svg)](https://circleci.com/gh/ParabolInc/parabol)
+[![codecov](https://codecov.io/gh/ParabolInc/parabol/branch/master/graph/badge.svg)](https://codecov.io/gh/ParabolInc/parabol)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
-[![StackShare](https://img.shields.io/badge/tech-stack-0690fa.svg?style=flat)](https://stackshare.io/parabol-inc/action)
+[![StackShare](https://img.shields.io/badge/tech-stack-0690fa.svg?style=flat)](https://stackshare.io/parabol-inc/parabol-multiplayer-web-app)
 
 ## Overview
 
@@ -58,22 +58,25 @@ Action is a Node.js application based upon the
  - Redis
  - yarn
  - watchman (for Relay)
- 
+
 #### Source code
 
 ```bash
-$ git clone https://github.com/ParabolInc/action.git
+$ git clone https://github.com/ParabolInc/parabol.git
 $ cd action
 $ cp packages/server/.env.example packages/server/.env # Add your own vars here
 $ rethinkdb &
 $ yarn
+$ yarn postdeploy
 $ yarn quickstart
 ```
 _Remember: if RethinkDB is running locally, you can reach its dashboard at
 [http://localhost:8080](http://localhost:8080) by default._
 
-### Development 
+### Development
 ```bash
+$ yarn build:relay
+$ yarn db:migrate
 $ yarn dev
 ```
 
@@ -111,7 +114,7 @@ Authored and maintained by [Parabol](http://parabol.co).
 ### License
 
 Copyright (c) 2016-present, Parabol, Inc.
- 
+
 This codebase is dual-licensed under the GNU AFFERO GENERAL PUBLIC LICENSE,
 Version 3.0 while holding, at Parabol's sole discretion, the right to create
 new licenses. For details please read [LICENSE](LICENSE).

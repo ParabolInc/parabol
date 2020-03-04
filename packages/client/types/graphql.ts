@@ -2847,6 +2847,7 @@ export interface IMutation {
    * Create a new team and add the first team member
    */
   addTeam: IAddTeamPayload
+  archiveOrganization: IArchiveOrganizationPayload
   archiveTeam: IArchiveTeamPayload
 
   /**
@@ -3299,6 +3300,13 @@ export interface IAddTeamOnMutationArguments {
    * The new team object
    */
   newTeam: INewTeamInput
+}
+
+export interface IArchiveOrganizationOnMutationArguments {
+  /**
+   * The orgId to archive
+   */
+  orgId: string
 }
 
 export interface IArchiveTeamOnMutationArguments {
@@ -4854,6 +4862,18 @@ export interface IAddTeamPayload {
    * The ID of the suggestion to create a new team
    */
   removedSuggestedActionId: string | null
+}
+
+export interface IArchiveOrganizationPayload {
+  __typename: 'ArchiveOrganizationPayload'
+  error: IStandardMutationError | null
+  orgId: string | null
+  teams: Array<ITeam> | null
+
+  /**
+   * all the suggested actions that never happened
+   */
+  removedSuggestedActionIds: Array<string | null> | null
 }
 
 export interface IArchiveTeamPayload {
@@ -6625,6 +6645,7 @@ export interface IAuthTokenPayload {
 
 export type OrganizationSubscriptionPayload =
   | IAddOrgPayload
+  | IArchiveOrganizationPayload
   | IDowngradeToPersonalPayload
   | IPayLaterPayload
   | IRemoveOrgUserPayload

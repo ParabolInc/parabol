@@ -59,7 +59,7 @@ const RenderBlock = () => (
       <br />
       {makeLink(
         'See our custom elevation values for common UI components',
-        'https://github.com/ParabolInc/action/blob/master/src/universal/styles/elevation.js'
+        'https://github.com/ParabolInc/parabol/blob/master/src/universal/styles/elevation.js'
       )}
       <br />
       {makeLink(

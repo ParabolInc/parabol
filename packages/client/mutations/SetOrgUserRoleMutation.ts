@@ -71,14 +71,15 @@ export const setOrgUserRoleAddedOrganizationOnNext: OnNextHandler<
   })
 }
 
-export const setOrgUserRoleAddedOrganizationUpdater = (payload, store, viewerId) => {
+export const setOrgUserRoleAddedOrganizationUpdater = (payload, {atmosphere, store}) => {
+  const {viewerId} = atmosphere
   const promotedUserId = getInProxy(payload, 'updatedOrgMember', 'user', 'id')
   if (promotedUserId === viewerId) {
     const notificationsAdded = payload.getLinkedRecords('notificationsAdded')
     handleAddNotifications(notificationsAdded, store)
 
     const org = payload.getLinkedRecord('organization')
-    handleAddOrganization(org, store, viewerId)
+    handleAddOrganization(org, store)
   }
 }
 

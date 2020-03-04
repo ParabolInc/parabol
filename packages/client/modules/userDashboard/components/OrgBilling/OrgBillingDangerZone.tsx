@@ -5,6 +5,11 @@ import {PALETTE} from '../../../../styles/paletteV2'
 import Icon from '../../../../components/Icon'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {Layout} from '../../../../types/constEnums'
+import graphql from 'babel-plugin-relay/macro'
+import {createFragmentContainer} from 'react-relay'
+import {OrgBillingDangerZone_organization} from '__generated__/OrgBillingDangerZone_organization.graphql'
+import {TierEnum} from 'types/graphql'
+import ArchiveOrganization from 'modules/teamDashboard/components/ArchiveTeam/ArchiveOrganization'
 
 const EnvelopeIcon = styled(Icon)({
   fontSize: ICON_SIZE.MD18,
@@ -37,27 +42,41 @@ const Unsubscribe = styled('div')({
 })
 
 interface Props {
-  isBillingLeader: boolean
+  organization: OrgBillingDangerZone_organization
 }
 const OrgBillingDangerZone = (props: Props) => {
-  const {isBillingLeader} = props
+  const {organization} = props
+  const {isBillingLeader, tier} = organization
   if (!isBillingLeader) return null
+  const isPersonal = tier === TierEnum.personal
   return (
     <Panel label='Danger Zone'>
       <PanelRow>
-        <Unsubscribe>
-          <span>{'Need to cancel? It’s painless. '}</span>
-          <a
-            href='mailto:love@parabol.co?subject=Instant Unsubscribe from Pro'
-            title='Instant Unsubscribe from Pro'
-          >
-            <u>{'Contact us'}</u>
-            <EnvelopeIcon>email</EnvelopeIcon>
-          </a>
-        </Unsubscribe>
+        {isPersonal ? (
+          <ArchiveOrganization organization={organization} />
+        ) : (
+          <Unsubscribe>
+            <span>{'Need to cancel? It’s painless. '}</span>
+            <a
+              href='mailto:love@parabol.co?subject=Instant Unsubscribe from Pro'
+              title='Instant Unsubscribe from Pro'
+            >
+              <u>{'Contact us'}</u>
+              <EnvelopeIcon>email</EnvelopeIcon>
+            </a>
+          </Unsubscribe>
+        )}
       </PanelRow>
     </Panel>
   )
 }
 
-export default OrgBillingDangerZone
+export default createFragmentContainer(OrgBillingDangerZone, {
+  organization: graphql`
+    fragment OrgBillingDangerZone_organization on Organization {
+      ...ArchiveOrganization_organization
+      isBillingLeader
+      tier
+    }
+  `
+})

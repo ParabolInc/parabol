@@ -3,14 +3,14 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "4.23.0",
+  "version": "4.24.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ParabolInc/action"
+    "url": "https://github.com/ParabolInc/parabol"
   },
-  "homepage": "https://github.com/ParabolInc/action",
+  "homepage": "https://github.com/ParabolInc/parabol",
   "bugs": {
-    "url": "https://github.com/ParabolInc/action/issues"
+    "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "scripts": {
     "storybook": "start-storybook -p 6006 -c .storybook",
@@ -61,7 +61,7 @@
     "lint-staged": "^9.4.2",
     "prettier": "^1.19.1",
     "strict-event-emitter-types": "^2.0.0",
-    "typescript": "3.7.2",
+    "typescript": "^3.8.3",
     "webpack": "^4.41.5"
   },
   "dependencies": {
@@ -114,7 +114,7 @@
     "string-score": "^1.0.1",
     "tayden-clusterfck": "^0.7.0",
     "tlds": "^1.192.0",
-    "tslib": "^1.10.0",
+    "tslib": "^1.11.1",
     "unicode-substring": "^1.0.0",
     "wasm-brotli": "^2.0.2"
   },

@@ -1,19 +1,22 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {
+  IStartNewMeetingOnMutationArguments,
+  MeetingTypeEnum as EMeetingTypeEnum
+} from '../../../client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
 import Meeting from '../../database/types/Meeting'
-import {GQLContext} from '../graphql'
-import createMeetingMembers from './helpers/createMeetingMembers'
-import createNewMeetingPhases from './helpers/createNewMeetingPhases'
-import {startSlackMeeting} from './helpers/notifySlack'
-import MeetingTypeEnum from '../types/MeetingTypeEnum'
-import StartNewMeetingPayload from '../types/StartNewMeetingPayload'
+import Organization from '../../database/types/Organization'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {IStartNewMeetingOnMutationArguments} from '../../../client/types/graphql'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import Organization from '../../database/types/Organization'
+import {GQLContext} from '../graphql'
+import MeetingTypeEnum from '../types/MeetingTypeEnum'
+import StartNewMeetingPayload from '../types/StartNewMeetingPayload'
+import createMeetingMembers from './helpers/createMeetingMembers'
+import createNewMeetingPhases from './helpers/createNewMeetingPhases'
+import {startSlackMeeting} from './helpers/notifySlack'
 
 export default {
   type: new GraphQLNonNull(StartNewMeetingPayload),
@@ -82,9 +85,10 @@ export default {
 
     // Disallow accidental starts (2 meetings within 2 seconds)
     const newActiveMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
-    const otherActiveMeeting = newActiveMeetings.find(
-      ({createdAt, id}) => id !== meeting.id && createdAt > Date.now() - DUPLICATE_THRESHOLD
-    )
+    const otherActiveMeeting = newActiveMeetings.find(({createdAt, id, meetingType}) => {
+      if (id == meeting.id) return false
+      return meetingType === EMeetingTypeEnum.action || createdAt > Date.now() - DUPLICATE_THRESHOLD
+    })
     if (otherActiveMeeting) {
       await r
         .table('NewMeeting')

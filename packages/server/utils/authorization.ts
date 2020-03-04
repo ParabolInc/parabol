@@ -3,6 +3,7 @@ import getRethink from '../database/rethinkDriver'
 import toTeamMemberId from '../../client/utils/relay/toTeamMemberId'
 import AuthToken from '../database/types/AuthToken'
 import OrganizationUser from '../database/types/OrganizationUser'
+import {DataLoaderWorker} from '../graphql/graphql'
 
 export const getUserId = (authToken: any) => {
   return authToken && typeof authToken === 'object' ? (authToken.sub as string) : ''
@@ -55,7 +56,7 @@ interface Options {
 export const isUserBillingLeader = async (
   userId: string,
   orgId: string,
-  dataLoader: any,
+  dataLoader: DataLoaderWorker,
   options?: Options
 ) => {
   const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
