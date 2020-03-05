@@ -15,6 +15,7 @@ interface Props {
 }
 
 const MeetingSelector = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+  alignItems: 'center',
   display: 'flex',
   justifyContent: isDesktop ? 'center' : 'space-between',
   padding: '0 16px'
@@ -30,7 +31,7 @@ const SelectArrow = styled(FloatingActionButton)({
 
 const MeetingTitle = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   color: PALETTE.TEXT_PURPLE,
-  fontSize: 36,
+  fontSize: isDesktop ? 34 : 27,
   fontWeight: 600,
   minWidth: isDesktop ? NewMeeting.ILLUSTRATION_WIDTH * 0.8 : undefined,
   textAlign: 'center'

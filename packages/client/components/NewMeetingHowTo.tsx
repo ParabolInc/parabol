@@ -20,7 +20,9 @@ const ExpansionPanelBody = styled('div')<{bodyHeight: number}>(({bodyHeight}) =>
   height: bodyHeight,
   justifyContent: 'center',
   overflow: 'hidden',
-  transition: `height 600ms ${BezierCurve.DECELERATE}`
+  padding: '0 16px',
+  transition: `height 600ms ${BezierCurve.DECELERATE}`,
+  width: '100%'
 }))
 
 const NewMeetingHowTo = (props: Props) => {

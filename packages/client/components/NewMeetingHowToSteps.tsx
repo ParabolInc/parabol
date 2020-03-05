@@ -35,7 +35,8 @@ const TITLES = {
 const LearnMoreLink = styled(LinkButton)({
   fontSize: 16,
   justifySelf: 'start',
-  gridColumnStart: 2
+  gridColumnStart: 2,
+  paddingBottom: 16
 })
 
 const HowToBlock = styled('div')({

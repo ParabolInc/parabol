@@ -12,18 +12,19 @@ import useRouter from '../hooks/useRouter'
 const BackButtonMobile = styled(PlainButton)({
   background: '#fff',
   height: ICON_SIZE.MD24,
-  justifySelf: 'start',
+  justifySelf: 'flex-start',
   width: ICON_SIZE.MD24,
-  alignSelf: 'center',
+  alignSelf: 'flex-start',
   margin: 16,
   zIndex: ZIndex.FAB
 })
 
 const BackButtonDesktop = styled(FloatingActionButton)({
-  alignSelf: 'center',
+  alignSelf: 'flex-start',
   background: PALETTE.BACKGROUND_MAIN,
   height: ICON_SIZE.MD40,
-  justifySelf: 'center',
+  justifySelf: 'flex-start',
+  margin: '24px 32px 16px',
   padding: 0,
   width: ICON_SIZE.MD40,
   zIndex: ZIndex.FAB
