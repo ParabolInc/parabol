@@ -1,3 +1,4 @@
+import styled from '@emotion/styled'
 import {
   DraftEditorCommand,
   DraftHandleValue,
@@ -10,25 +11,20 @@ import React, {RefObject, Suspense, useEffect, useRef} from 'react'
 import {Card} from '../../types/constEnums'
 import {textTags} from '../../utils/constants'
 import entitizeText from '../../utils/draftjs/entitizeText'
-import './Draft.css'
-import styled from '@emotion/styled'
-import lazyPreload from '../../utils/lazyPreload'
-import isRichDraft from '../../utils/draftjs/isRichDraft'
 import isAndroid from '../../utils/draftjs/isAndroid'
-import {UseTaskChild} from '../../hooks/useTaskChildFocus'
-import useTaskPlugins from './useTaskPlugins'
+import isRichDraft from '../../utils/draftjs/isRichDraft'
+import lazyPreload from '../../utils/lazyPreload'
 import blockStyleFn from './blockStyleFn'
+import './Draft.css'
 import useCommentPlugins from './useCommentPlugins'
 
-const RootEditor = styled('div')<{noText: boolean; readOnly: boolean | undefined}>(
-  ({noText, readOnly}) => ({
-    cursor: readOnly ? undefined : 'text',
-    fontSize: Card.FONT_SIZE,
-    lineHeight: Card.LINE_HEIGHT,
-    padding: `0 ${Card.PADDING}`,
-    height: noText ? '2.75rem' : undefined // Use this if the placeholder wraps
-  })
-)
+const RootEditor = styled('div')({
+  fontSize: Card.FONT_SIZE,
+  lineHeight: Card.LINE_HEIGHT,
+  maxHeight: 84,
+  overflowY: 'auto',
+  width: '100%'
+})
 
 const AndroidEditorFallback = lazyPreload(() =>
   import(
@@ -167,11 +163,10 @@ const CommentEditor = (props: Props) => {
     return 'not-handled'
   }
 
-  const noText = !editorState.getCurrentContent().hasText()
   const useFallback = isAndroid && !readOnly
   const showFallback = useFallback && !isRichDraft(editorState)
   return (
-    <RootEditor noText={noText} readOnly={readOnly}>
+    <RootEditor>
       {showFallback ? (
         <Suspense fallback={<div />}>
           <TaskEditorFallback

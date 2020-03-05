@@ -1,9 +1,11 @@
 import styled from '@emotion/styled'
 import React from 'react'
 import {PALETTE} from 'styles/paletteV2'
+import {Elevation} from 'styles/elevation'
 
 const Wrapper = styled('div')({
   alignItems: 'center',
+  boxShadow: Elevation.DISCUSSION_THREAD_INSET,
   display: 'flex',
   height: '100%',
   justifyContent: 'center'
