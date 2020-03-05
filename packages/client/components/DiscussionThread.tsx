@@ -27,13 +27,13 @@ interface Props {
 
 const DiscussionThread = (props: Props) => {
   const {meeting, reflectionGroup} = props
-  const {thread} = reflectionGroup
+  const {id: reflectionGroupId, thread} = reflectionGroup
   const {edges} = thread
   const threadables = edges.map(({node}) => node)
   return (
     <Wrapper>
       <DiscussionThreadList threadables={threadables} />
-      <DiscussionThreadInput meeting={meeting} />
+      <DiscussionThreadInput meeting={meeting} reflectionGroupId={reflectionGroupId} />
     </Wrapper>
   )
 }
@@ -46,6 +46,7 @@ export default createFragmentContainer(DiscussionThread, {
   `,
   reflectionGroup: graphql`
     fragment DiscussionThread_reflectionGroup on RetroReflectionGroup {
+      id
       thread(first: 1000) @connection(key: "DiscussionThread_thread") {
         edges {
           node {

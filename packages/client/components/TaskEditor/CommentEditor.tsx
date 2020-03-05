@@ -44,6 +44,7 @@ type DraftProps = Pick<
   | 'handleReturn'
   | 'keyBindingFn'
   | 'readOnly'
+  | 'onFocus'
 >
 
 interface Props extends DraftProps {
@@ -54,7 +55,7 @@ interface Props extends DraftProps {
 }
 
 const CommentEditor = (props: Props) => {
-  const {editorRef, editorState, placeholder, readOnly, setEditorState} = props
+  const {editorRef, editorState, placeholder, readOnly, setEditorState, onFocus} = props
   const entityPasteStartRef = useRef<{anchorOffset: number; anchorKey: string} | undefined>()
   const {
     removeModal,
@@ -65,12 +66,6 @@ const CommentEditor = (props: Props) => {
     keyBindingFn,
     handleReturn
   } = useCommentPlugins({...props})
-
-  useEffect(() => {
-    if (!editorState.getCurrentContent().hasText()) {
-      editorRef.current && editorRef.current.focus()
-    }
-  }, [])
 
   const onRemoveModal = () => {
     if (removeModal) {
@@ -187,6 +182,7 @@ const CommentEditor = (props: Props) => {
           handleReturn={onReturn}
           keyBindingFn={onKeyBindingFn}
           onChange={onChange}
+          onFocus={onFocus}
           placeholder={placeholder}
           readOnly={readOnly || (useFallback && !showFallback)}
           ref={editorRef as any}
