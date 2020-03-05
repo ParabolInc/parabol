@@ -1,7 +1,5 @@
 function addCard(column, text) {
-  cy.get(`[data-cy=reflection-column-${column}]`)
-      .find(`[data-cy=phase-item-editor-${column}]`)
-      .find('[data-cy=reflection-editor-wrapper]')
+  cy.get(`[data-cy=phase-item-editor-${column}-wrapper]`)
       .as('column-phase-item-editor')
     
   cy.get('@column-phase-item-editor')
@@ -16,10 +14,7 @@ function addCard(column, text) {
 }
 
 function editCard(column, oldText, newText) {
-  cy.get(`[data-cy=reflection-column-${column}]`)
-    .find(`[data-cy=reflection-stack-${column}]`)
-    .find(`[data-cy=reflection-stack-${column}-card-0]`)
-    .find('[data-cy=reflection-editor-wrapper]')
+  cy.get(`[data-cy=reflection-stack-${column}-card-0-wrapper]`)
     .as('reflection-card-edit')
 
   cy.get('@reflection-card-edit')
@@ -33,10 +28,7 @@ function editCard(column, oldText, newText) {
 
 function deleteCard(column) {
       
-  cy.get(`[data-cy=reflection-column-${column}]`)
-    .find(`[data-cy=reflection-stack-${column}]`)
-    .find(`[data-cy=reflection-stack-${column}-card-0]`)
-    .find(`[data-cy=reflection-stack-${column}-card-0-delete]`)
+  cy.get(`[data-cy=reflection-stack-${column}-card-0-delete]`)
     .as('reflection-card-delete')
 
   cy.get('@reflection-card-delete').click()

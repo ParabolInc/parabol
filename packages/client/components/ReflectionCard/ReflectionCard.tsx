@@ -170,6 +170,7 @@ const ReflectionCard = (props: Props) => {
     <ReflectionCardRoot data-cy={dataCy}>
       {showOriginFooter && !isClipped && <ReflectionCardFooter>{question}</ReflectionCardFooter>}
       <ReflectionEditorWrapper
+        dataCy={`${dataCy}-wrapper`}
         isClipped={isClipped}
         ariaLabel='Edit this reflection'
         editorRef={editorRef}

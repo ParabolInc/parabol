@@ -165,6 +165,7 @@ const PhaseItemEditor = (props: Props) => {
     <>
       <ReflectionCardRoot data-cy={dataCy} ref={phaseEditorRef}>
         <ReflectionEditorWrapper
+          dataCy={`${dataCy}-wrapper`}
           isPhaseItemEditor
           ariaLabel='Edit this reflection'
           editorState={editorState}

@@ -37,6 +37,7 @@ interface Props {
   innerRef: (c: any) => void
   handleKeyDownFallback: () => void
   userSelect: string
+  dataCy: string
 }
 
 const editorBlockquote = {
@@ -218,13 +219,14 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
       handleKeyDownFallback,
       renderModal,
       readOnly,
-      userSelect
+      userSelect,
+      dataCy
     } = this.props
     const useFallback = isAndroid && !readOnly
     const showFallback = useFallback && !isRichDraft(editorState)
     return (
       <EditorStyles
-        data-cy='reflection-editor-wrapper'
+        data-cy={dataCy}
         useFallback={useFallback}
         userSelect={userSelect}
         isClipped={isClipped}
