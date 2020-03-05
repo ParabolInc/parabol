@@ -1,11 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import useMutationProps from 'hooks/useMutationProps'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from 'styles/paletteV2'
 import {AreaEnum} from 'types/graphql'
-import {ThreadedTask_task} from '__generated__/ThreadedTask_task.graphql'
-import NullableTask from './NullableTask/NullableTask'
+import relativeDate from 'utils/date/relativeDate'
+import {ThreadedComment_comment} from '__generated__/ThreadedComment_comment.graphql'
+import AddReactjiButton from './ReflectionCard/AddReactjiButton'
 import ThreadedAvatarColumn from './ThreadedAvatarColumn'
 
 const Wrapper = styled('div')({
@@ -49,13 +51,27 @@ const HeaderActions = styled('div')({
 })
 
 interface Props {
-  task: ThreadedTask_task
+  comment: ThreadedComment_comment
 }
 
-const ThreadedTask = (props: Props) => {
-  const {task} = props
-  const {createdByUser} = task
+const ThreadedComment = (props: Props) => {
+  const {comment} = props
+  const {createdByUser, reactjis, updatedAt} = comment
   const {picture, preferredName} = createdByUser
+  const hasReactjis = reactjis.length > 0
+  const {submitMutation, submitting} = useMutationProps()
+  const onToggleReactji = (_emojiId: string) => {
+    if (submitting) return
+    // const isRemove = !!reactjis.find((reactji) => {
+    // return reactji.isViewerReactji && reactji.id.split(':')[1] === emojiId
+    // })
+    submitMutation()
+    // AddReactjiToReflectionMutation(
+    //   atmosphere,
+    //   {reflectionId, isRemove, reactji: emojiId},
+    //   {onCompleted, onError}
+    // )
+  }
   return (
     <Wrapper>
       <ThreadedAvatarColumn picture={picture} />
@@ -63,26 +79,34 @@ const ThreadedTask = (props: Props) => {
         <Header>
           <HeaderDescription>
             <HeaderName>{preferredName}</HeaderName>
-            <HeaderResult> added a Task</HeaderResult>
+            <HeaderResult> {relativeDate(updatedAt)}</HeaderResult>
           </HeaderDescription>
-          <HeaderActions>Reply</HeaderActions>
+          {!hasReactjis && (
+            <>
+              <AddReactjiButton onToggle={onToggleReactji} />
+              <HeaderActions>Reply</HeaderActions>
+            </>
+          )}
         </Header>
-        <NullableTask area={AreaEnum.meeting} task={task} />
       </BodyCol>
     </Wrapper>
   )
 }
 
-export default createFragmentContainer(ThreadedTask, {
-  task: graphql`
-    fragment ThreadedTask_task on Task {
-      ...NullableTask_task
+export default createFragmentContainer(ThreadedComment, {
+  comment: graphql`
+    fragment ThreadedComment_comment on Comment {
       id
       content
       createdByUser {
         picture
         preferredName
       }
+      reactjis {
+        id
+        isViewerReactji
+      }
+      updatedAt
     }
   `
 })

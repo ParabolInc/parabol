@@ -17,8 +17,10 @@ import UpdateNewCheckInQuestionPayload from './UpdateNewCheckInQuestionPayload'
 import UpdateReflectionContentPayload from './UpdateReflectionContentPayload'
 import UpdateReflectionGroupTitlePayload from './UpdateReflectionGroupTitlePayload'
 import VoteForReflectionGroupPayload from './VoteForReflectionGroupPayload'
+import {AddCommentPayloadSuccess} from './AddCommentPayload'
 
 const types = [
+  AddCommentPayloadSuccess,
   AddReactjiToReflectionSuccess,
   AutoGroupReflectionsPayload,
   CreateReflectionPayload,
