@@ -17,11 +17,12 @@ graphql`
       }
     }
     meetingId
-    threadId
-    threadSource
     sortOrder
     status
     tags
+    threadId
+    threadSource
+    threadSortOrder
     updatedAt
     userId
     teamId

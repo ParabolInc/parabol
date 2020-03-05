@@ -14,6 +14,7 @@ import {OutcomeCardContainer_task} from '__generated__/OutcomeCardContainer_task
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useRefState from '../../../../hooks/useRefState'
 import useTaskChildFocus from '../../../../hooks/useTaskChildFocus'
+import useScrollIntoView from 'hooks/useScrollIntoVIew'
 
 interface Props {
   area: AreaEnum
@@ -28,6 +29,7 @@ const OutcomeCardContainer = memo((props: Props) => {
   const {id: taskId, team} = task
   const {id: teamId} = team
   const atmosphere = useAtmosphere()
+  const ref = useRef<HTMLDivElement>(null)
   const [isTaskHovered, setIsTaskHovered] = useState(false)
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const [editorStateRef, setEditorStateRef] = useRefState<EditorState>(() => {
@@ -82,6 +84,7 @@ const OutcomeCardContainer = memo((props: Props) => {
     setEditorStateRef(newEditorState)
   }, [contentState, editorStateRef])
 
+  useScrollIntoView(ref, !contentState.hasText())
   return (
     <div
       tabIndex={-1}
@@ -96,6 +99,7 @@ const OutcomeCardContainer = memo((props: Props) => {
       }}
       onMouseEnter={() => setIsTaskHovered(true)}
       onMouseLeave={() => setIsTaskHovered(false)}
+      ref={ref}
     >
       <OutcomeCard
         area={area}

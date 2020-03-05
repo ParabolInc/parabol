@@ -72,7 +72,7 @@ const ColumnsContainer = styled('div')({
   height: '100%',
   margin: '0 auto',
   maxWidth,
-  overflowX: 'auto',
+  overflowX: 'hidden',
   padding: 0,
   width: '100%'
 })

@@ -17,6 +17,7 @@ const Wrapper = styled('div')({
   flexDirection: 'column',
   height: '100%',
   marginBottom: 16,
+  overflow: 'hidden',
   width: DiscussionThreadEnum.WIDTH
 })
 
@@ -30,10 +31,17 @@ const DiscussionThread = (props: Props) => {
   const {id: reflectionGroupId, thread} = reflectionGroup
   const {edges} = thread
   const threadables = edges.map(({node}) => node)
+  const getMaxSortOrder = () => {
+    return Math.max(0, ...threadables.map((threadable) => threadable.threadSortOrder || 0))
+  }
   return (
     <Wrapper>
       <DiscussionThreadList threadables={threadables} />
-      <DiscussionThreadInput meeting={meeting} reflectionGroupId={reflectionGroupId} />
+      <DiscussionThreadInput
+        getMaxSortOrder={getMaxSortOrder}
+        meeting={meeting}
+        reflectionGroupId={reflectionGroupId}
+      />
     </Wrapper>
   )
 }
@@ -50,7 +58,11 @@ export default createFragmentContainer(DiscussionThread, {
       thread(first: 1000) @connection(key: "DiscussionThread_thread") {
         edges {
           node {
+            threadSortOrder
+            threadId
+            threadSource
             ...DiscussionThreadList_threadables
+            threadSortOrder
           }
         }
       }

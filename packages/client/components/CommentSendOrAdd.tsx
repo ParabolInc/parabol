@@ -13,6 +13,7 @@ import useAtmosphere from 'hooks/useAtmosphere'
 import {CommentSendOrAdd_meeting} from '__generated__/CommentSendOrAdd_meeting.graphql'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {SORT_STEP} from 'utils/constants'
 
 export type CommentSubmitState = 'send' | 'add' | 'addExpanded'
 
@@ -70,13 +71,15 @@ const ButtonGroup = styled('div')({
 })
 
 interface Props {
+  collapseAddTask: () => void
   commentSubmitState: CommentSubmitState
+  getMaxSortOrder: () => number
   meeting: CommentSendOrAdd_meeting
   reflectionGroupId: string
 }
 
 const CommentSendOrAdd = (props: Props) => {
-  const {commentSubmitState, meeting, reflectionGroupId} = props
+  const {collapseAddTask, commentSubmitState, getMaxSortOrder, meeting, reflectionGroupId} = props
   const {id: meetingId, teamId} = meeting
   const atmosphere = useAtmosphere()
   if (commentSubmitState === 'send') {
@@ -94,10 +97,12 @@ const CommentSendOrAdd = (props: Props) => {
       meetingId,
       threadId: reflectionGroupId,
       threadSource: ThreadSourceEnum.REFLECTION_GROUP,
+      threadSortOrder: getMaxSortOrder() + SORT_STEP + dndNoise(),
       userId: viewerId,
       teamId
     }
     CreateTaskMutation(atmosphere, {newTask}, {})
+    collapseAddTask()
   }
   const isExpanded = commentSubmitState === 'addExpanded'
   return (

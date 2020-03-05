@@ -1,22 +1,30 @@
-import {Variables} from 'relay-runtime'
+import {Variables, RecordProxy} from 'relay-runtime'
 
-const getDescendingIdx = (newName, arr, sortValue) => {
+export const getDescendingIdx = (
+  newName: string | number,
+  arr: (RecordProxy | null)[],
+  sortValue: string
+) => {
   let nextIdx
   for (nextIdx = 0; nextIdx < arr.length; nextIdx++) {
     const node = arr[nextIdx]
     if (!node) continue
-    const nodeName = node.getValue(sortValue)
+    const nodeName = node.getValue(sortValue) as string | number
     if (nodeName < newName) break
   }
   return nextIdx
 }
 
-const getAscendingIdx = (newName, arr, sortValue) => {
+export const getAscendingIdx = (
+  newName: string | number,
+  arr: (RecordProxy | null)[],
+  sortValue: string
+) => {
   let nextIdx
   for (nextIdx = 0; nextIdx < arr.length; nextIdx++) {
     const node = arr[nextIdx]
     if (!node) continue
-    const nodeName = node.getValue(sortValue)
+    const nodeName = node.getValue(sortValue) as string | number
     if (nodeName > newName) break
   }
   return nextIdx

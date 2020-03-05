@@ -9,6 +9,7 @@ import {ConnectionHandler, RecordSourceSelectorProxy} from 'relay-runtime'
 import addNodeToArray from '../../utils/relay/addNodeToArray'
 import {RecordProxy} from 'relay-runtime'
 import {ThreadSourceEnum} from 'types/graphql'
+import getReflectionGroupTasksConn from 'mutations/connections/getReflectionGroupTasksConn'
 
 type Task = RecordProxy<{
   readonly id: string
@@ -38,13 +39,19 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
   const team = store.get(teamId)
   const teamConn = getTeamTasksConn(team)
   const userConn = getUserTasksConn(viewer)
-  const reflectionGroup = reflectionGroupId && store.get(reflectionGroupId)
+  const reflectionGroup = (reflectionGroupId && store.get(reflectionGroupId)) || null
+  const reflectionGroupConn = getReflectionGroupTasksConn(reflectionGroup)
   const meeting = meetingId && store.get(meetingId)
-  const safePutNodeInConn = (conn) => {
+  const safePutNodeInConn = (
+    conn: RecordProxy | null | undefined,
+    sortValue = 'updatedAt',
+    isAscending?: boolean
+  ) => {
     if (conn && !getNodeById(taskId, conn)) {
       const newEdge = ConnectionHandler.createEdge(store, conn, task, 'TaskEdge')
-      newEdge.setValue(task.getValue('updatedAt'), 'cursor')
-      insertEdgeAfter(conn, newEdge, 'updatedAt')
+      newEdge.setValue(task.getValue(sortValue), 'cursor')
+      const options = {isAscending}
+      insertEdgeAfter(conn, newEdge, sortValue, options)
     }
   }
 
@@ -55,7 +62,7 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
   } else {
     safeRemoveNodeFromConn(taskId, archiveConn)
     safePutNodeInConn(teamConn)
-    addNodeToArray(task, reflectionGroup, 'tasks', 'createdAt')
+    safePutNodeInConn(reflectionGroupConn, 'threadSortOrder', true)
     addNodeToArray(task, meeting, 'tasks', 'createdAt')
     if (userConn) {
       const ownedByViewer = task.getValue('userId') === viewerId

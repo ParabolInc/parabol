@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from 'styles/paletteV2'
 import {AreaEnum} from 'types/graphql'
@@ -88,6 +88,7 @@ const ThreadedTask = (props: Props) => {
 export default createFragmentContainer(ThreadedTask, {
   task: graphql`
     fragment ThreadedTask_task on Task {
+      ...NullableTask_task
       id
       content
       createdByUser {

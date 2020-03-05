@@ -106,8 +106,8 @@ const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
           type: GraphQLNonNull(GraphQLInt)
         },
         after: {
-          type: GraphQLISO8601Type,
-          description: 'the datetime cursor'
+          type: GraphQLString,
+          description: 'the incrementing sort order in string format'
         }
       },
       description: 'the comments and tasks created from the discussion',

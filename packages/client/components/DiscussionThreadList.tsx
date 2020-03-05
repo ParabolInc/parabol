@@ -7,13 +7,27 @@ import {DiscussionThreadList_threadables} from '__generated__/DiscussionThreadLi
 import {Elevation} from 'styles/elevation'
 import ThreadedTask from './ThreadedTask'
 
-const Wrapper = styled('div')<{isEmpty: boolean}>(({isEmpty}) => ({
-  alignItems: isEmpty ? 'center' : 'flex-end',
+const EmptyWrapper = styled('div')({
+  alignItems: 'center',
   boxShadow: Elevation.DISCUSSION_THREAD_INSET,
   display: 'flex',
+  flexDirection: 'column',
   height: '100%',
   justifyContent: 'center'
-}))
+})
+
+const Wrapper = styled('div')({
+  flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  overflow: 'auto',
+  paddingTop: 8
+})
+
+// https://stackoverflow.com/questions/36130760/use-justify-content-flex-end-and-to-have-vertical-scrollbar
+const PusherDowner = styled('div')({
+  margin: 'auto'
+})
 
 interface Props {
   threadables: DiscussionThreadList_threadables
@@ -22,12 +36,19 @@ interface Props {
 const DiscussionThreadList = (props: Props) => {
   const {threadables} = props
   const isEmpty = threadables.length === 0
+  if (isEmpty) {
+    return (
+      <EmptyWrapper>
+        <DiscussionThreadListEmptyState />
+      </EmptyWrapper>
+    )
+  }
   return (
-    <Wrapper isEmpty={false}>
-      {isEmpty && <DiscussionThreadListEmptyState />}
+    <Wrapper>
+      <PusherDowner />
       {threadables.map((threadable) => {
-        const {__typename} = threadable
-        return __typename === 'Task' ? <ThreadedTask task={threadable} /> : null
+        const {__typename, id} = threadable
+        return __typename === 'Task' ? <ThreadedTask key={id} task={threadable} /> : null
       })}
     </Wrapper>
   )

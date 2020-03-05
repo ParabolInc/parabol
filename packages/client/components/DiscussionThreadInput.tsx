@@ -18,13 +18,14 @@ const CommentAvatar = styled(Avatar)({
 })
 
 interface Props {
+  getMaxSortOrder: () => number
   meeting: DiscussionThreadInput_meeting
   reflectionGroupId: string
 }
 
 const DiscussionThreadInput = (props: Props) => {
-  const {meeting, reflectionGroupId} = props
-  const {id: meetingId, teamId, viewerMeetingMember} = meeting
+  const {getMaxSortOrder, meeting, reflectionGroupId} = props
+  const {teamId, viewerMeetingMember} = meeting
   const {user} = viewerMeetingMember
   const {picture} = user
   const editorRef = useRef<HTMLTextAreaElement>(null)
@@ -37,7 +38,7 @@ const DiscussionThreadInput = (props: Props) => {
   const [canCollapse, setCanCollapse] = useState(false)
   const hasText = editorState.getCurrentContent().hasText()
   const commentSubmitState = hasText ? 'send' : canCollapse ? 'add' : 'addExpanded'
-  const onFocus = () => {
+  const collapseAddTask = () => {
     if (!canCollapse) {
       setCanCollapse(true)
     }
@@ -51,12 +52,14 @@ const DiscussionThreadInput = (props: Props) => {
         editorState={editorState}
         setEditorState={setEditorState}
         placeholder={placeholder}
-        onFocus={onFocus}
+        onFocus={collapseAddTask}
       />
       <CommentSendOrAdd
+        getMaxSortOrder={getMaxSortOrder}
         commentSubmitState={commentSubmitState}
         meeting={meeting}
         reflectionGroupId={reflectionGroupId}
+        collapseAddTask={collapseAddTask}
       />
     </Wrapper>
   )
@@ -66,7 +69,6 @@ export default createFragmentContainer(DiscussionThreadInput, {
   meeting: graphql`
     fragment DiscussionThreadInput_meeting on RetrospectiveMeeting {
       ...CommentSendOrAdd_meeting
-      id
       teamId
       viewerMeetingMember {
         user {
