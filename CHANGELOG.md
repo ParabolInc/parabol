@@ -20,7 +20,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ### Changed
 * Renamed action to check-in (#3620)
 * Upgrade typescript, sucrase (#3618)
-* Rename timebox to deadline (#3617)
+* Rename timebox to time limit (#3617)
 
 ## 4.23.2 2020-Mar-02
 
