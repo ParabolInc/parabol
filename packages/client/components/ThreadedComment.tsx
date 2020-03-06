@@ -1,13 +1,15 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import useEditorState from 'hooks/useEditorState'
 import useMutationProps from 'hooks/useMutationProps'
-import React from 'react'
+import React, {useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from 'styles/paletteV2'
-import {AreaEnum} from 'types/graphql'
 import relativeDate from 'utils/date/relativeDate'
 import {ThreadedComment_comment} from '__generated__/ThreadedComment_comment.graphql'
+import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import AddReactjiButton from './ReflectionCard/AddReactjiButton'
+import CommentEditor from './TaskEditor/CommentEditor'
 import ThreadedAvatarColumn from './ThreadedAvatarColumn'
 
 const Wrapper = styled('div')({
@@ -52,14 +54,25 @@ const HeaderActions = styled('div')({
 
 interface Props {
   comment: ThreadedComment_comment
+  teamId: string
 }
 
+const ANONYMOUS_USER = {
+  picture: anonymousAvatar,
+  preferredName: 'Anonymous'
+}
 const ThreadedComment = (props: Props) => {
-  const {comment} = props
-  const {createdByUser, reactjis, updatedAt} = comment
-  const {picture, preferredName} = createdByUser
+  const {comment, teamId} = props
+  const {content, createdByUser, reactjis, updatedAt} = comment
+  const {picture, preferredName} = createdByUser || ANONYMOUS_USER
   const hasReactjis = reactjis.length > 0
   const {submitMutation, submitting} = useMutationProps()
+  const [editorState, setEditorState] = useEditorState(content)
+  const editorRef = useRef<HTMLTextAreaElement>(null)
+  const [isEditing, setIsEditing] = useState(false)
+  const submitComment = () => {}
+  const handleSubmitFallback = () => {}
+
   const onToggleReactji = (_emojiId: string) => {
     if (submitting) return
     // const isRemove = !!reactjis.find((reactji) => {
@@ -88,6 +101,16 @@ const ThreadedComment = (props: Props) => {
             </>
           )}
         </Header>
+        <CommentEditor
+          teamId={teamId}
+          editorRef={editorRef}
+          editorState={editorState}
+          handleSubmitFallback={handleSubmitFallback}
+          setEditorState={setEditorState}
+          submitComment={submitComment}
+          readOnly={!isEditing}
+          placeholder={'Edit your comment'}
+        />
       </BodyCol>
     </Wrapper>
   )

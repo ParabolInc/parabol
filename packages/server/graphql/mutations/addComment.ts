@@ -8,11 +8,12 @@ import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import AddCommentInput from '../types/AddCommentInput'
-import AddCommentPayloadPayload from '../types/AddCommentPayload'
+import AddCommentPayload from '../types/AddCommentPayload'
 import validateThreadableReflectionGroupId from './validateThreadableReflectionGroupId'
+import {IAddCommentOnMutationArguments} from 'parabol-client/types/graphql'
 
 const addComment = {
-  type: GraphQLNonNull(AddCommentPayloadPayload),
+  type: GraphQLNonNull(AddCommentPayload),
   description: `Add a comment to a discussion`,
   args: {
     comment: {
@@ -20,7 +21,11 @@ const addComment = {
       description: 'A partial new comment'
     }
   },
-  resolve: async (_source, {comment}, {authToken, dataLoader, socketId: mutatorId}: GQLContext) => {
+  resolve: async (
+    _source,
+    {comment}: IAddCommentOnMutationArguments,
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) => {
     const r = await getRethink()
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
@@ -45,7 +50,7 @@ const addComment = {
     // VALIDATION
     const content = normalizeRawDraftJS(comment.content)
 
-    const dbComment = new Comment({...comment, content})
+    const dbComment = new Comment({...comment, content, createdBy: viewerId})
     const {id: commentId} = dbComment
     await r
       .table('Comment')
@@ -54,7 +59,7 @@ const addComment = {
 
     const data = {commentId}
 
-    publish(SubscriptionChannel.MEETING, meetingId, 'AddCommentPayloadSuccess', data, subOptions)
+    publish(SubscriptionChannel.MEETING, meetingId, 'AddCommentSuccess', data, subOptions)
     return data
   }
 }

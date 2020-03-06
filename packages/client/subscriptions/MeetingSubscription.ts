@@ -14,12 +14,14 @@ import {removeReflectionMeetingUpdater} from '../mutations/RemoveReflectionMutat
 import {setStageTimerMeetingUpdater} from '../mutations/SetStageTimerMutation'
 import {startDraggingReflectionMeetingUpdater} from '../mutations/StartDraggingReflectionMutation'
 import {MeetingSubscriptionResponse} from '__generated__/MeetingSubscription.graphql'
+import {addCommentMeetingUpdater} from 'mutations/AddCommentMutation'
 
 const subscription = graphql`
   subscription MeetingSubscription($meetingId: ID!) {
     meetingSubscription(meetingId: $meetingId) {
       __typename
       ...AddReactjiToReflectionMutation_meeting @relay(mask: false)
+      ...AddCommentMutation_meeting @relay(mask: false)
       ...CreateReflectionMutation_meeting @relay(mask: false)
       ...DragDiscussionTopicMutation_meeting @relay(mask: false)
       ...EditReflectionMutation_meeting @relay(mask: false)
@@ -46,6 +48,7 @@ const onNextHandlers = {
 }
 
 const updateHandlers = {
+  AddCommentPayload: addCommentMeetingUpdater,
   CreateReflectionPayload: createReflectionMeetingUpdater,
   DragDiscussionTopicPayload: dragDiscussionTopicMeetingUpdater,
   EditReflectionPayload: editReflectionMeetingUpdater,

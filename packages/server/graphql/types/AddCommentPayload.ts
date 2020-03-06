@@ -3,8 +3,8 @@ import {GQLContext} from '../graphql'
 import Comment from './Comment'
 import makeMutationPayload from './makeMutationPayload'
 
-export const AddCommentPayloadSuccess = new GraphQLObjectType<any, GQLContext>({
-  name: 'AddCommentPayloadSuccess',
+export const AddCommentSuccess = new GraphQLObjectType<any, GQLContext>({
+  name: 'AddCommentSuccess',
   fields: () => ({
     comment: {
       type: GraphQLNonNull(Comment),
@@ -16,9 +16,6 @@ export const AddCommentPayloadSuccess = new GraphQLObjectType<any, GQLContext>({
   })
 })
 
-const AddCommentPayloadPayload = makeMutationPayload(
-  'AddCommentPayloadPayload',
-  AddCommentPayloadSuccess
-)
+const AddCommentPayload = makeMutationPayload('AddCommentPayload', AddCommentSuccess)
 
-export default AddCommentPayloadPayload
+export default AddCommentPayload

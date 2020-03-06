@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {forwardRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
@@ -6,6 +6,7 @@ import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import {DiscussionThreadList_threadables} from '__generated__/DiscussionThreadList_threadables.graphql'
 import {Elevation} from 'styles/elevation'
 import ThreadedTask from './ThreadedTask'
+import ThreadedComment from './ThreadedComment'
 
 const EmptyWrapper = styled('div')({
   alignItems: 'center',
@@ -30,11 +31,12 @@ const PusherDowner = styled('div')({
 })
 
 interface Props {
+  teamId: string
   threadables: DiscussionThreadList_threadables
 }
 
-const DiscussionThreadList = (props: Props) => {
-  const {threadables} = props
+const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
+  const {teamId, threadables} = props
   const isEmpty = threadables.length === 0
   if (isEmpty) {
     return (
@@ -44,20 +46,30 @@ const DiscussionThreadList = (props: Props) => {
     )
   }
   return (
-    <Wrapper>
+    <Wrapper ref={ref}>
       <PusherDowner />
       {threadables.map((threadable) => {
         const {__typename, id} = threadable
-        return __typename === 'Task' ? <ThreadedTask key={id} task={threadable} /> : null
+        return __typename === 'Task' ? (
+          <ThreadedTask key={id} task={threadable} />
+        ) : (
+          <ThreadedComment key={id} comment={threadable} teamId={teamId} />
+        )
       })}
     </Wrapper>
   )
-}
+})
 
 export default createFragmentContainer(DiscussionThreadList, {
   threadables: graphql`
     fragment DiscussionThreadList_threadables on Threadable @relay(plural: true) {
       ...ThreadedTask_task
+      ...ThreadedComment_comment
+      ... on Comment {
+        reactjis {
+          id
+        }
+      }
       __typename
       id
       content

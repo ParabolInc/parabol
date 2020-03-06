@@ -89,6 +89,7 @@ import setAppLocation from './mutations/setAppLocation'
 import deleteUser from './mutations/deleteUser'
 import verifyEmail from './mutations/verifyEmail'
 import archiveOrganization from './mutations/archiveOrganization'
+import addComment from './mutations/addComment'
 
 interface Context extends InternalContext, GQLContext {}
 
@@ -98,6 +99,7 @@ export default new GraphQLObjectType<any, Context, any>({
     acceptTeamInvitation,
     addAgendaItem,
     addAtlassianAuth,
+    addComment,
     addReactjiToReflection,
     addReflectTemplate,
     addReflectTemplatePrompt,

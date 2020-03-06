@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
@@ -28,18 +28,27 @@ interface Props {
 
 const DiscussionThread = (props: Props) => {
   const {meeting, reflectionGroup} = props
+  const {teamId} = meeting
   const {id: reflectionGroupId, thread} = reflectionGroup
   const {edges} = thread
   const threadables = edges.map(({node}) => node)
   const getMaxSortOrder = () => {
     return Math.max(0, ...threadables.map((threadable) => threadable.threadSortOrder || 0))
   }
+  const listRef = useRef<HTMLDivElement>(null)
+  const onSubmit = () => {
+    // wait a tick so the optimistic comment can hit the DOM
+    setImmediate(() => {
+      listRef.current?.scrollTo({top: 1e6, behavior: 'smooth'})
+    })
+  }
   return (
     <Wrapper>
-      <DiscussionThreadList threadables={threadables} />
+      <DiscussionThreadList teamId={teamId} threadables={threadables} ref={listRef} />
       <DiscussionThreadInput
         getMaxSortOrder={getMaxSortOrder}
         meeting={meeting}
+        onSubmit={onSubmit}
         reflectionGroupId={reflectionGroupId}
       />
     </Wrapper>
@@ -50,6 +59,7 @@ export default createFragmentContainer(DiscussionThread, {
   meeting: graphql`
     fragment DiscussionThread_meeting on RetrospectiveMeeting {
       ...DiscussionThreadInput_meeting
+      teamId
     }
   `,
   reflectionGroup: graphql`

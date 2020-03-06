@@ -6,7 +6,7 @@ import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
 import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
 import {RecordSourceSelectorProxy} from 'relay-runtime'
 import {ITask, IUser} from '../../types/graphql'
-import getReflectionGroupTasksConn from 'mutations/connections/getReflectionGroupTasksConn'
+import getReflectionGroupThreadConn from 'mutations/connections/getReflectionGroupThreadConn'
 
 const handleRemoveTask = (taskId: string, store: RecordSourceSelectorProxy<any>) => {
   const viewer = store.getRoot().getLinkedRecord<IUser>('viewer')
@@ -21,7 +21,7 @@ const handleRemoveTask = (taskId: string, store: RecordSourceSelectorProxy<any>)
   const archiveConn = getArchivedTasksConn(viewer, teamId)
   const teamConn = getTeamTasksConn(team)
   const userConn = getUserTasksConn(viewer)
-  const reflectionGroupConn = getReflectionGroupTasksConn(reflectionGroup)
+  const reflectionGroupConn = getReflectionGroupThreadConn(reflectionGroup)
   safeRemoveNodeFromConn(taskId, teamConn)
   safeRemoveNodeFromConn(taskId, userConn)
   safeRemoveNodeFromConn(taskId, archiveConn)

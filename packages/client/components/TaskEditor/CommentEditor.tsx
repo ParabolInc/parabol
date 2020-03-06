@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import {
+  convertToRaw,
   DraftEditorCommand,
   DraftHandleValue,
   Editor,
@@ -7,7 +8,7 @@ import {
   EditorState,
   getDefaultKeyBinding
 } from 'draft-js'
-import React, {RefObject, Suspense, useEffect, useRef} from 'react'
+import React, {RefObject, Suspense, useRef} from 'react'
 import {Card} from '../../types/constEnums'
 import {textTags} from '../../utils/constants'
 import entitizeText from '../../utils/draftjs/entitizeText'
@@ -38,24 +39,29 @@ const TaskEditorFallback = styled(AndroidEditorFallback)({
 
 type DraftProps = Pick<
   EditorProps,
-  | 'editorState'
-  | 'handleBeforeInput'
-  | 'handleKeyCommand'
-  | 'handleReturn'
-  | 'keyBindingFn'
-  | 'readOnly'
-  | 'onFocus'
+  'editorState' | 'handleBeforeInput' | 'handleKeyCommand' | 'keyBindingFn' | 'readOnly' | 'onFocus'
 >
 
 interface Props extends DraftProps {
   editorRef: RefObject<HTMLTextAreaElement>
+  handleSubmitFallback: () => void
   placeholder: string
   setEditorState: (newEditorState: EditorState) => void
+  submitComment: (rawContent: string) => void
   teamId: string
 }
 
 const CommentEditor = (props: Props) => {
-  const {editorRef, editorState, placeholder, readOnly, setEditorState, onFocus} = props
+  const {
+    editorRef,
+    editorState,
+    placeholder,
+    readOnly,
+    setEditorState,
+    onFocus,
+    handleSubmitFallback,
+    submitComment
+  } = props
   const entityPasteStartRef = useRef<{anchorOffset: number; anchorKey: string} | undefined>()
   const {
     removeModal,
@@ -63,8 +69,7 @@ const CommentEditor = (props: Props) => {
     handleChange,
     handleBeforeInput,
     handleKeyCommand,
-    keyBindingFn,
-    handleReturn
+    keyBindingFn
   } = useCommentPlugins({...props})
 
   const onRemoveModal = () => {
@@ -97,20 +102,11 @@ const CommentEditor = (props: Props) => {
   }
 
   const onReturn = (e) => {
-    if (handleReturn) {
-      return handleReturn(e, editorState)
-    }
-    if (!e.shiftKey && !renderModal) {
-      editorRef.current && editorRef.current.blur()
-      return 'handled'
-    }
-    return 'not-handled'
-  }
-
-  const onKeyDownFallback = (e) => {
-    if (e.key !== 'Enter' || e.shiftKey) return
-    e.preventDefault()
-    editorRef.current && editorRef.current.blur()
+    if (e.shiftKey) return 'not-handled'
+    const content = editorState.getCurrentContent()
+    if (!content.hasText()) return
+    submitComment(JSON.stringify(convertToRaw(content)))
+    return 'handled'
   }
 
   const nextKeyCommand = (command: DraftEditorCommand) => {
@@ -156,6 +152,12 @@ const CommentEditor = (props: Props) => {
       }
     }
     return 'not-handled'
+  }
+
+  const onKeyDownFallback = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key !== 'Enter' || e.shiftKey) return
+    e.preventDefault()
+    handleSubmitFallback()
   }
 
   const useFallback = isAndroid && !readOnly
