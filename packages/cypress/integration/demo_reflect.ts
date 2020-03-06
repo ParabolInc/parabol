@@ -37,16 +37,12 @@ function deleteCard(column) {
 describe('Test Reflect page Demo', () => {
 
   before(function() {
-    // runs before each test in the block
-    cy.visit('/retrospective-demo/reflect')
-    cy.get('[data-cy=start-demo-button]').should('be.visible').click().then(() => {
-      cy.get('[data-cy=sidebar-header]').find('button').should('be.visible').click()
-    })
-
+    // runs before all tests in the block
+    cy.visitReflect()
 
   })
 
-  it.skip('Test help menu toggle', () => {
+  it('Test help menu toggle', () => {
 
     cy.get('[data-cy=help-menu-toggle]').should('be.visible')
     
@@ -59,7 +55,7 @@ describe('Test Reflect page Demo', () => {
 
   })
 
-  it.skip('Test adding, editing, and deleting reflections', () => {
+  it('Test adding, editing, and deleting reflections', () => {
 
     addCard('Start', 'Start column reflection')
 
@@ -82,9 +78,8 @@ describe('Test Reflect page Demo', () => {
 
   it('Test if can advance to groups', () => {
 
-    cy.get('[data-cy=next-Group]:not(:disabled)').should('be.visible').click()
+    cy.visitPhase('group')
 
-    cy.url().should('be.eq', 'http://localhost:3000/retrospective-demo/group')
   })
 
 })
