@@ -1,5 +1,6 @@
 import graphQLSubscriptionType from '../graphQLSubscriptionType'
 import {AddReactjiToReflectionSuccess} from './AddReactjiToReflectionPayload'
+import {AddReactjiToReactableSuccess} from './AddReactjiToReactablePayload'
 import AutoGroupReflectionsPayload from './AutoGroupReflectionsPayload'
 import CreateReflectionPayload from './CreateReflectionPayload'
 import DragDiscussionTopicPayload from './DragDiscussionTopicPayload'
@@ -21,7 +22,8 @@ import {AddCommentSuccess} from './AddCommentPayload'
 
 const types = [
   AddCommentSuccess,
-  AddReactjiToReflectionSuccess,
+  AddReactjiToReflectionSuccess, // DEPRECATED
+  AddReactjiToReactableSuccess,
   AutoGroupReflectionsPayload,
   CreateReflectionPayload,
   DragDiscussionTopicPayload,

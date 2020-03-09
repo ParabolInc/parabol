@@ -4,13 +4,11 @@ import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
 import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import {DiscussionThreadList_threadables} from '__generated__/DiscussionThreadList_threadables.graphql'
-import {Elevation} from 'styles/elevation'
 import ThreadedTask from './ThreadedTask'
 import ThreadedComment from './ThreadedComment'
 
 const EmptyWrapper = styled('div')({
   alignItems: 'center',
-  boxShadow: Elevation.DISCUSSION_THREAD_INSET,
   display: 'flex',
   flexDirection: 'column',
   height: '100%',

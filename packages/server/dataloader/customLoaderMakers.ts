@@ -1,9 +1,13 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
+import {ReactableEnum, ThreadSourceEnum} from 'parabol-client/types/graphql'
 import promiseAllPartial from 'parabol-client/utils/promiseAllPartial'
 import getRethink from '../database/rethinkDriver'
+import {Reactable} from '../database/types/Reactable'
 import Task from '../database/types/Task'
+import {ThreadSource} from '../database/types/ThreadSource'
 import AtlassianServerManager from '../utils/AtlassianServerManager'
+import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import RethinkDataLoader from './RethinkDataLoader'
 
 type AccessTokenKey = {teamId: string; userId: string}
@@ -18,7 +22,74 @@ interface UserTasksKey {
   teamIds: string[]
 }
 
+interface ReactablesKey {
+  id: string
+  type: ReactableEnum
+}
+
+interface ThreadSourceKey {
+  sourceId: string
+  type: ThreadSourceEnum
+}
+
+const reactableLoaders = [
+  {type: ReactableEnum.COMMENT, loader: 'comments'},
+  {type: ReactableEnum.REFLECTION, loader: 'retroReflections'}
+] as const
+
+const threadableLoaders = [
+  {type: ThreadSourceEnum.AGENDA_ITEM, loader: 'agendaItems'},
+  {type: ThreadSourceEnum.REFLECTION_GROUP, loader: 'retroReflectionGroups'}
+] as const
+
 // export type LoaderMakerCustom<K, V, C = K> = (parent: RethinkDataLoader) => DataLoader<K, V, C>
+
+// TODO: refactor if the interface pattern is used a total of 3 times
+export const reactables = (parent: RethinkDataLoader) => {
+  return new DataLoader<ReactablesKey, Reactable, string>(
+    async (keys) => {
+      const reactableResults = (await Promise.all(
+        reactableLoaders.map((val) => {
+          const ids = keys.filter((key) => key.type === val.type).map(({id}) => id)
+          return parent.get(val.loader).loadMany(ids)
+        })
+      )) as Reactable[][]
+      const reactables = reactableResults.flat()
+      const keyIds = keys.map(({id}) => id)
+      const ret = normalizeRethinkDbResults(keyIds, reactables)
+      console.log('react', ret)
+      return ret
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.id}:${key.type}`
+    }
+  )
+}
+
+export const threadSources = (parent: RethinkDataLoader) => {
+  return new DataLoader<ThreadSourceKey, ThreadSource, string>(
+    async (keys) => {
+      const threadableResults = (await Promise.all(
+        threadableLoaders.map((val) => {
+          const ids = keys.filter((key) => key.type === val.type).map(({sourceId}) => sourceId)
+          console.log('getting', val.type, ids)
+          return parent.get(val.loader).loadMany(ids)
+        })
+      )) as ThreadSource[][]
+      const threadables = threadableResults.flat()
+      const keyIds = keys.map(({sourceId}) => sourceId)
+      console.log('threadz', threadables)
+      const ret = normalizeRethinkDbResults(keyIds, threadables)
+      console.log('ret', ret)
+      return ret
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.sourceId}:${key.type}`
+    }
+  )
+}
 
 export const userTasks = (parent: RethinkDataLoader) => {
   return new DataLoader<UserTasksKey, Task[], string>(

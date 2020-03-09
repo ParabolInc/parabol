@@ -11,6 +11,10 @@ import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import AddReactjiButton from './ReflectionCard/AddReactjiButton'
 import CommentEditor from './TaskEditor/CommentEditor'
 import ThreadedAvatarColumn from './ThreadedAvatarColumn'
+import Icon from './Icon'
+import AddReactjiToReactableMutation from 'mutations/AddReactjiToReactableMutation'
+import {ReactableEnum} from 'types/graphql'
+import useAtmosphere from 'hooks/useAtmosphere'
 
 const Wrapper = styled('div')({
   display: 'flex',
@@ -48,8 +52,21 @@ const HeaderResult = styled('div')({
 
 const HeaderActions = styled('div')({
   color: PALETTE.TEXT_GRAY,
+  display: 'flex',
   fontWeight: 600,
   paddingRight: 12
+})
+
+const StyledIcon = styled(Icon)({
+  borderRadius: 24,
+  color: PALETTE.TEXT_GRAY,
+  display: 'block',
+  flexShrink: 0,
+  height: 24,
+  lineHeight: '24px',
+  marginLeft: 'auto',
+  textAlign: 'center',
+  width: 24
 })
 
 interface Props {
@@ -63,27 +80,28 @@ const ANONYMOUS_USER = {
 }
 const ThreadedComment = (props: Props) => {
   const {comment, teamId} = props
-  const {content, createdByUser, reactjis, updatedAt} = comment
+  const {id: commentId, content, createdByUser, isViewerComment, reactjis, updatedAt} = comment
   const {picture, preferredName} = createdByUser || ANONYMOUS_USER
   const hasReactjis = reactjis.length > 0
-  const {submitMutation, submitting} = useMutationProps()
+  const {submitMutation, submitting, onError, onCompleted} = useMutationProps()
   const [editorState, setEditorState] = useEditorState(content)
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const [isEditing, setIsEditing] = useState(false)
+  const atmosphere = useAtmosphere()
   const submitComment = () => {}
   const handleSubmitFallback = () => {}
 
-  const onToggleReactji = (_emojiId: string) => {
+  const onToggleReactji = (emojiId: string) => {
     if (submitting) return
-    // const isRemove = !!reactjis.find((reactji) => {
-    // return reactji.isViewerReactji && reactji.id.split(':')[1] === emojiId
-    // })
+    const isRemove = !!reactjis.find((reactji) => {
+      return reactji.isViewerReactji && reactji.id.split(':')[1] === emojiId
+    })
     submitMutation()
-    // AddReactjiToReflectionMutation(
-    //   atmosphere,
-    //   {reflectionId, isRemove, reactji: emojiId},
-    //   {onCompleted, onError}
-    // )
+    AddReactjiToReactableMutation(
+      atmosphere,
+      {reactableType: ReactableEnum.COMMENT, reactableId: commentId, isRemove, reactji: emojiId},
+      {onCompleted, onError}
+    )
   }
   return (
     <Wrapper>
@@ -94,11 +112,13 @@ const ThreadedComment = (props: Props) => {
             <HeaderName>{preferredName}</HeaderName>
             <HeaderResult> {relativeDate(updatedAt)}</HeaderResult>
           </HeaderDescription>
-          {!hasReactjis && (
-            <>
+          {!isViewerComment ? (
+            <StyledIcon>more_vert</StyledIcon>
+          ) : hasReactjis ? null : (
+            <HeaderActions>
               <AddReactjiButton onToggle={onToggleReactji} />
-              <HeaderActions>Reply</HeaderActions>
-            </>
+              Reply
+            </HeaderActions>
           )}
         </Header>
         <CommentEditor
@@ -125,6 +145,7 @@ export default createFragmentContainer(ThreadedComment, {
         picture
         preferredName
       }
+      isViewerComment
       reactjis {
         id
         isViewerReactji

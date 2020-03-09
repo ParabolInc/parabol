@@ -1,19 +1,21 @@
-import {GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLBoolean, GraphQLID} from 'graphql'
+import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {getUserId} from '../../utils/authorization'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import PageInfoDateCursor from './PageInfoDateCursor'
+import Reactable, {reactableFields} from './Reactable'
 import Reactji from './Reactji'
 import Threadable, {threadableFields} from './Threadable'
-import {getUserId} from '../../utils/authorization'
-import getGroupedReactjis from '../../utils/getGroupedReactjis'
+import resolveReactjis from '../resolvers/resolveReactjis'
 
 const Comment = new GraphQLObjectType<any, GQLContext, any>({
   name: 'Comment',
   description: 'A comment on a thread',
-  interfaces: () => [Threadable],
+  interfaces: () => [Reactable, Threadable],
   fields: () => ({
     ...threadableFields(),
+    ...reactableFields(),
     createdAt: {
       type: GraphQLNonNull(GraphQLISO8601Type),
       description: 'The timestamp the item was created'
@@ -53,10 +55,7 @@ const Comment = new GraphQLObjectType<any, GQLContext, any>({
     reactjis: {
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(Reactji))),
       description: 'All the reactjis for the given reflection',
-      resolve: ({reactjis, id: commentId}, _args, {authToken}) => {
-        const viewerId = getUserId(authToken)
-        return getGroupedReactjis(reactjis, viewerId, commentId)
-      }
+      resolve: resolveReactjis
     }
   })
 })

@@ -2827,6 +2827,11 @@ export interface IMutation {
   addReactjiToReflection: AddReactjiToReflectionPayload
 
   /**
+   * Add or remove a reactji from a reactable
+   */
+  addReactjiToReactable: AddReactjiToReactablePayload
+
+  /**
    * Add a new template full of prompts
    */
   addReflectTemplate: IAddReflectTemplatePayload | null
@@ -3252,6 +3257,28 @@ export interface IAddReactjiToReflectionOnMutationArguments {
    * The reflection getting the reaction
    */
   reflectionId: string
+
+  /**
+   * the id of the reactji to add
+   */
+  reactji: string
+
+  /**
+   * If true, remove the reaction, else add it
+   */
+  isRemove?: boolean | null
+}
+
+export interface IAddReactjiToReactableOnMutationArguments {
+  /**
+   * The id of the reactable
+   */
+  reactableId: string
+
+  /**
+   * the type of the
+   */
+  reactableType: ReactableEnum
 
   /**
    * the id of the reactji to add
@@ -4246,6 +4273,11 @@ export interface IComment {
   updatedAt: any
 
   /**
+   * All the reactjis for the given reflection
+   */
+  reactjis: Array<IReactji>
+
+  /**
    * true if the agenda item has not been processed or deleted
    */
   isActive: boolean
@@ -4259,6 +4291,23 @@ export interface IComment {
    * true if the viewer wrote this comment, else false
    */
   isViewerComment: boolean
+}
+
+/**
+ * An item that can have reactjis
+ */
+export type Reactable = IComment | IRetroReflection
+
+/**
+ * An item that can have reactjis
+ */
+export interface IReactable {
+  __typename: 'Reactable'
+
+  /**
+   * shortid
+   */
+  id: string
 
   /**
    * All the reactjis for the given reflection
@@ -4312,6 +4361,11 @@ export interface IRetroReflection {
    * shortid
    */
   id: string
+
+  /**
+   * All the reactjis for the given reflection
+   */
+  reactjis: Array<IReactji>
 
   /**
    * The ID of the group that the autogrouper assigned the reflection. Error rate = Sum(autoId != Id) / autoId.count()
@@ -4368,11 +4422,6 @@ export interface IRetroReflection {
    * The plaintext version of content
    */
   plaintextContent: string
-
-  /**
-   * All the reactjis for the given reflection
-   */
-  reactjis: Array<IReactji>
 
   /**
    * The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group.
@@ -4866,6 +4915,28 @@ export interface IRetrospectiveMeetingSettings {
    * The list of templates used to start a retrospective
    */
   reflectTemplates: Array<IReflectTemplate>
+}
+
+/**
+ * The type of reactable
+ */
+export const enum ReactableEnum {
+  COMMENT = 'COMMENT',
+  REFLECTION = 'REFLECTION'
+}
+
+/**
+ * Return object for AddReactjiToReactablePayload
+ */
+export type AddReactjiToReactablePayload = IErrorPayload | IAddReactjiToReactableSuccess
+
+export interface IAddReactjiToReactableSuccess {
+  __typename: 'AddReactjiToReactableSuccess'
+
+  /**
+   * the Reactable with the updated list of reactjis
+   */
+  reactable: Reactable
 }
 
 export interface IAddReflectTemplatePayload {
@@ -6609,6 +6680,7 @@ export interface IMeetingSubscriptionOnSubscriptionArguments {
 export type MeetingSubscriptionPayload =
   | IAddCommentSuccess
   | IAddReactjiToReflectionSuccess
+  | IAddReactjiToReactableSuccess
   | IAutoGroupReflectionsPayload
   | ICreateReflectionPayload
   | IDragDiscussionTopicPayload

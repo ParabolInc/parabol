@@ -41,7 +41,7 @@ const ReactjiSection = (props: Props) => {
           />
         )
       })}
-      {tranChildren.length <= Threshold.REFLECTION_REACTJIS - 1 && (
+      {tranChildren.length <= Threshold.MAX_REACTJIS - 1 && (
         <AddReactjiButton onToggle={onToggle} />
       )}
     </Wrapper>

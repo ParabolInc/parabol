@@ -16,10 +16,14 @@ import Avatar from './Avatar/Avatar'
 import CommentSendOrAdd from './CommentSendOrAdd'
 import CommentEditor from './TaskEditor/CommentEditor'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
+import {Elevation} from 'styles/elevation'
 
 const Wrapper = styled('div')({
   alignItems: 'center',
-  display: 'flex'
+  display: 'flex',
+  boxShadow: Elevation.DISCUSSION_INPUT,
+  // required for the shadow to overlay draft-js in the task cards
+  zIndex: 0
 })
 
 const CommentAvatar = styled(Avatar)({

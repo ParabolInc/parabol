@@ -1,22 +1,53 @@
-// DEPRECATED, USE ADDREACTJITOENTITY
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
+import {ReactableEnum as EReactableEnum} from 'parabol-client/types/graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
 import emojiIds from '../../utils/emojiIds.json'
-import publish from '../../utils/publish'
-import {GQLContext} from '../graphql'
-import AddReactjiToReflectionPayload from '../types/AddReactjiToReflectionPayload'
 import getGroupedReactjis from '../../utils/getGroupedReactjis'
+import publish from '../../utils/publish'
+import {GQLContext, DataLoaderWorker} from '../graphql'
+import AddReactjiToReactablePayload from '../types/AddReactjiToReactablePayload'
+import ReactableEnum from '../types/ReactableEnum'
+import {Reactable} from '../../database/types/Reactable'
+import getReactableType from '../types/getReactableType'
+import Comment from '../../database/types/Comment'
+import Reflection from '../../database/types/Reflection'
 
-const addReactjiToReflection = {
-  type: GraphQLNonNull(AddReactjiToReflectionPayload),
-  description: `Add or remove a reactji to a reflection`,
+const tableLookup = {
+  [EReactableEnum.COMMENT]: 'Comment',
+  [EReactableEnum.REFLECTION]: 'RetroReflection'
+}
+
+const getMeetingIdFromReactable = async (
+  reactable: Reactable,
+  reactableType: EReactableEnum,
+  dataLoader: DataLoaderWorker
+) => {
+  switch (reactableType) {
+    case EReactableEnum.COMMENT:
+      const {threadId, threadSource} = reactable as Comment
+      const source = await dataLoader
+        .get('threadSources')
+        .load({sourceId: threadId, type: threadSource})
+      return source.meetingId
+    case EReactableEnum.REFLECTION:
+      return (reactable as Reflection).meetingId
+  }
+}
+
+const addReactjiToReactable = {
+  type: GraphQLNonNull(AddReactjiToReactablePayload),
+  description: `Add or remove a reactji from a reactable`,
   args: {
-    reflectionId: {
+    reactableId: {
       type: GraphQLNonNull(GraphQLID),
-      description: 'The reflection getting the reaction'
+      description: 'The id of the reactable'
+    },
+    reactableType: {
+      type: GraphQLNonNull(ReactableEnum),
+      description: 'the type of the'
     },
     reactji: {
       type: GraphQLNonNull(GraphQLString),
@@ -29,7 +60,7 @@ const addReactjiToReflection = {
   },
   resolve: async (
     _source,
-    {reflectionId, reactji, isRemove},
+    {reactableId, reactableType, reactji, isRemove},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
@@ -37,15 +68,22 @@ const addReactjiToReflection = {
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
+
     //AUTH
-    const reflection = await r
-      .table('RetroReflection')
-      .get(reflectionId)
-      .run()
-    if (!reflection) {
-      return {error: {message: `Reflection does not exist`}}
+    const dbTable = tableLookup[reactableType]
+    const reactable = (await r
+      .table(dbTable)
+      .get(reactableId)
+      .run()) as Reactable
+    if (!reactable) {
+      return {error: {message: `Item does not exist`}}
     }
-    const {meetingId, reactjis} = reflection
+    const {reactjis} = reactable
+    const verifiedType = getReactableType(reactable)
+    if (verifiedType !== reactableType) {
+      return {error: {message: `Unknown item`}}
+    }
+    const meetingId = await getMeetingIdFromReactable(reactable, reactableType, dataLoader)
     const meetingMemberId = toTeamMemberId(meetingId, viewerId)
     const viewerMeetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
     if (!viewerMeetingMember) {
@@ -58,8 +96,8 @@ const addReactjiToReflection = {
     }
 
     if (!isRemove) {
-      const groupedReactjis = getGroupedReactjis(reactjis, viewerId, reflectionId)
-      const nextReactjiId = `${reflectionId}:${reactji}`
+      const groupedReactjis = getGroupedReactjis(reactjis, viewerId, reactableId)
+      const nextReactjiId = `${reactableId}:${reactji}`
       const isReactjiPresent = !!groupedReactjis.find((agg) => agg.id === nextReactjiId)
       // console.log('is present', isReactjiPresent, reactji, groupedReactjis)
       if (!isReactjiPresent && groupedReactjis.length >= Threshold.MAX_REACTJIS) {
@@ -71,8 +109,8 @@ const addReactjiToReflection = {
     const subDoc = {id: reactji, userId: viewerId}
     if (isRemove) {
       await r
-        .table('RetroReflection')
-        .get(reflectionId)
+        .table(dbTable)
+        .get(reactableId)
         .update((row) => ({
           reactjis: row('reactjis').difference([subDoc]),
           updatedAt: now
@@ -80,8 +118,8 @@ const addReactjiToReflection = {
         .run()
     } else {
       await r
-        .table('RetroReflection')
-        .get(reflectionId)
+        .table(dbTable)
+        .get(reactableId)
         .update((row) => ({
           reactjis: r.branch(
             row('reactjis').contains(subDoc),
@@ -94,11 +132,11 @@ const addReactjiToReflection = {
         .run()
     }
 
-    const data = {reflectionId}
+    const data = {reactableId, reactableType}
     publish(
       SubscriptionChannel.MEETING,
       meetingId,
-      'AddReactjiToReflectionSuccess',
+      'AddReactjiToReactableSuccess',
       data,
       subOptions
     )
@@ -106,4 +144,4 @@ const addReactjiToReflection = {
   }
 }
 
-export default addReactjiToReflection
+export default addReactjiToReactable
