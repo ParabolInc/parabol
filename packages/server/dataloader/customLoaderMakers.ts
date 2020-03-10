@@ -73,16 +73,12 @@ export const threadSources = (parent: RethinkDataLoader) => {
       const threadableResults = (await Promise.all(
         threadableLoaders.map((val) => {
           const ids = keys.filter((key) => key.type === val.type).map(({sourceId}) => sourceId)
-          console.log('getting', val.type, ids)
           return parent.get(val.loader).loadMany(ids)
         })
       )) as ThreadSource[][]
       const threadables = threadableResults.flat()
       const keyIds = keys.map(({sourceId}) => sourceId)
-      console.log('threadz', threadables)
-      const ret = normalizeRethinkDbResults(keyIds, threadables)
-      console.log('ret', ret)
-      return ret
+      return normalizeRethinkDbResults(keyIds, threadables)
     },
     {
       ...parent.dataLoaderOptions,

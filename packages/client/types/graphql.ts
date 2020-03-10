@@ -2908,6 +2908,11 @@ export interface IMutation {
   createUserPicturePutUrl: ICreateUserPicturePutUrlPayload | null
 
   /**
+   * Delete a comment from a discussion
+   */
+  deleteComment: DeleteCommentPayload
+
+  /**
    * Delete (not archive!) a task
    */
   deleteTask: IDeleteTaskPayload | null
@@ -3480,6 +3485,10 @@ export interface ICreateUserPicturePutUrlOnMutationArguments {
    * a png version of the above image
    */
   pngVersion?: IImageMetadataInput | null
+}
+
+export interface IDeleteCommentOnMutationArguments {
+  commentId: string
 }
 
 export interface IDeleteTaskOnMutationArguments {
@@ -4223,7 +4232,7 @@ export interface IComment {
   id: string
 
   /**
-   * The rich text body of the item
+   * The rich text body of the item, if inactive, a tombstone text
    */
   content: string
 
@@ -5364,6 +5373,21 @@ export interface ICreateUserPicturePutUrlPayload {
   error: IStandardMutationError | null
   url: any | null
   pngUrl: any | null
+}
+
+/**
+ * Return object for DeleteCommentPayload
+ */
+export type DeleteCommentPayload = IErrorPayload | IDeleteCommentSuccess
+
+export interface IDeleteCommentSuccess {
+  __typename: 'DeleteCommentSuccess'
+  commentId: string
+
+  /**
+   * the comment just deleted
+   */
+  comment: IComment
 }
 
 export interface IDeleteTaskPayload {
@@ -6683,6 +6707,7 @@ export type MeetingSubscriptionPayload =
   | IAddReactjiToReactableSuccess
   | IAutoGroupReflectionsPayload
   | ICreateReflectionPayload
+  | IDeleteCommentSuccess
   | IDragDiscussionTopicPayload
   | IEndDraggingReflectionPayload
   | IEditReflectionPayload

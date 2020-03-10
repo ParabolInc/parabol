@@ -19,6 +19,7 @@ import UpdateReflectionContentPayload from './UpdateReflectionContentPayload'
 import UpdateReflectionGroupTitlePayload from './UpdateReflectionGroupTitlePayload'
 import VoteForReflectionGroupPayload from './VoteForReflectionGroupPayload'
 import {AddCommentSuccess} from './AddCommentPayload'
+import {DeleteCommentSuccess} from './DeleteCommentPayload'
 
 const types = [
   AddCommentSuccess,
@@ -26,6 +27,7 @@ const types = [
   AddReactjiToReactableSuccess,
   AutoGroupReflectionsPayload,
   CreateReflectionPayload,
+  DeleteCommentSuccess,
   DragDiscussionTopicPayload,
   EndDraggingReflectionPayload,
   EditReflectionPayload,

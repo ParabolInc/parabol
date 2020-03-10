@@ -1,4 +1,11 @@
-import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {
+  GraphQLBoolean,
+  GraphQLID,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
+} from 'graphql'
 import {getUserId} from '../../utils/authorization'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
@@ -8,6 +15,9 @@ import Reactable, {reactableFields} from './Reactable'
 import Reactji from './Reactji'
 import Threadable, {threadableFields} from './Threadable'
 import resolveReactjis from '../resolvers/resolveReactjis'
+import convertToTaskContent from '../../../client/utils/draftjs/convertToTaskContent'
+
+const TOMBSTONE = convertToTaskContent('[deleted]')
 
 const Comment = new GraphQLObjectType<any, GQLContext, any>({
   name: 'Comment',
@@ -16,6 +26,13 @@ const Comment = new GraphQLObjectType<any, GQLContext, any>({
   fields: () => ({
     ...threadableFields(),
     ...reactableFields(),
+    content: {
+      type: GraphQLNonNull(GraphQLString),
+      description: 'The rich text body of the item, if inactive, a tombstone text',
+      resolve: ({isActive, content}) => {
+        return isActive ? content : TOMBSTONE
+      }
+    },
     createdAt: {
       type: GraphQLNonNull(GraphQLISO8601Type),
       description: 'The timestamp the item was created'

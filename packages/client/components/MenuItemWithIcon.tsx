@@ -12,7 +12,7 @@ const Wrapper = styled('div')({
   width: '100%'
 })
 
-const HelpIcon = styled(Icon)({
+const ItemIcon = styled(Icon)({
   color: PALETTE.TEXT_GRAY,
   fontSize: ICON_SIZE.MD24,
   padding: 8
@@ -29,14 +29,14 @@ interface Props {
   label: string
 }
 
-const TopBarHelpMenuItem = (props: Props) => {
+const MenuItemWithIcon = (props: Props) => {
   const {icon, label} = props
   return (
     <Wrapper>
-      <HelpIcon>{icon}</HelpIcon>
+      <ItemIcon>{icon}</ItemIcon>
       <Label>{label}</Label>
     </Wrapper>
   )
 }
 
-export default TopBarHelpMenuItem
+export default MenuItemWithIcon

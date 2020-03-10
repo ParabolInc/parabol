@@ -91,6 +91,7 @@ import deleteUser from './mutations/deleteUser'
 import verifyEmail from './mutations/verifyEmail'
 import archiveOrganization from './mutations/archiveOrganization'
 import addComment from './mutations/addComment'
+import deleteComment from './mutations/deleteComment'
 
 interface Context extends InternalContext, GQLContext {}
 
@@ -123,6 +124,7 @@ export default new GraphQLObjectType<any, Context, any>({
     createReflection,
     createTask,
     createUserPicturePutUrl,
+    deleteComment,
     deleteTask,
     deleteUser,
     denyPushInvitation,

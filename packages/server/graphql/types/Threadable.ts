@@ -38,6 +38,10 @@ export const threadableFields = () => ({
       return dataLoader.get('users').load(createdBy)
     }
   },
+  // isThreadTombstone: {
+  //   type: GraphQLBoolean,
+  //   description: 'true if the item has been deleted but still has replies, else falsy'
+  // },
   replies: {
     type: GraphQLNonNull(GraphQLList(GraphQLNonNull(Threadable))),
     description: 'the replies to this threadable item',

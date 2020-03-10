@@ -3,7 +3,7 @@ import {ExternalLinks, Breakpoint} from 'types/constEnums'
 import {MenuProps} from '../hooks/useMenu'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
-import TopBarHelpMenuItem from './TopBarHelpMenuItem'
+import MenuItemWithIcon from './MenuItemWithIcon'
 import useBreakpoint from 'hooks/useBreakpoint'
 
 interface Props {
@@ -23,17 +23,17 @@ const TopBarHelpMenu = (props: Props) => {
   return (
     <Menu ariaLabel={'How many we help?'} {...menuProps}>
       <MenuItem
-        label={<TopBarHelpMenuItem label={'Teamwork Resources'} icon={'bookmark'} />}
+        label={<MenuItemWithIcon label={'Teamwork Resources'} icon={'bookmark'} />}
         onClick={gotoTeamworkResources}
       />
       {isDesktop && (
         <MenuItem
-          label={<TopBarHelpMenuItem label={'Keyboard Shortcuts'} icon={'keyboard'} />}
+          label={<MenuItemWithIcon label={'Keyboard Shortcuts'} icon={'keyboard'} />}
           onClick={toggleShortcuts}
         />
       )}
       <MenuItem
-        label={<TopBarHelpMenuItem label={'Give Feedback'} icon={'comment '} />}
+        label={<MenuItemWithIcon label={'Give Feedback'} icon={'comment '} />}
         onClick={gotoSupport}
       />
     </Menu>

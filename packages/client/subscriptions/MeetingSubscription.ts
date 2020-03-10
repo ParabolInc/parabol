@@ -23,6 +23,7 @@ const subscription = graphql`
       ...AddReactjiToReactableMutation_meeting @relay(mask: false)
       ...AddCommentMutation_meeting @relay(mask: false)
       ...CreateReflectionMutation_meeting @relay(mask: false)
+      ...DeleteCommentMutation_meeting @relay(mask: false)
       ...DragDiscussionTopicMutation_meeting @relay(mask: false)
       ...EditReflectionMutation_meeting @relay(mask: false)
       ...EndDraggingReflectionMutation_meeting @relay(mask: false)

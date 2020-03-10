@@ -22,6 +22,11 @@ import useEditorState from '../../hooks/useEditorState'
 import isPhaseComplete from '../../utils/meetings/isPhaseComplete'
 import ReactjiSection from './ReactjiSection'
 import AddReactjiToReactableMutation from 'mutations/AddReactjiToReactableMutation'
+import styled from '@emotion/styled'
+
+const StyledReacjis = styled(ReactjiSection)({
+  padding: '0 14px 12px'
+})
 
 interface Props {
   isClipped?: boolean
@@ -191,7 +196,7 @@ const ReflectionCard = (props: Props) => {
       {!readOnly && (
         <ReflectionCardDeleteButton meetingId={meetingId} reflectionId={reflectionId} />
       )}
-      {showReactji && <ReactjiSection reactjis={reactjis} onToggle={onToggleReactji} />}
+      {showReactji && <StyledReacjis reactjis={reactjis} onToggle={onToggleReactji} />}
     </ReflectionCardRoot>
   )
 }
