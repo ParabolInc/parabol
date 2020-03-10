@@ -167,10 +167,10 @@ const ReflectionCard = (props: Props) => {
     onCompleted()
   }
   return (
-    <ReflectionCardRoot data-cy={dataCy}>
+    <ReflectionCardRoot data-cy={`${dataCy}-root`}>
       {showOriginFooter && !isClipped && <ReflectionCardFooter>{question}</ReflectionCardFooter>}
       <ReflectionEditorWrapper
-        dataCy={`${dataCy}-wrapper`}
+        dataCy={`editor-wrapper`}
         isClipped={isClipped}
         ariaLabel='Edit this reflection'
         editorRef={editorRef}
@@ -186,7 +186,7 @@ const ReflectionCard = (props: Props) => {
       />
       {error && <StyledError onClick={clearError}>{error.message}</StyledError>}
       {!readOnly && (
-        <ReflectionCardDeleteButton dataCy={`${dataCy}-delete`} meetingId={meetingId} reflectionId={reflectionId} />
+        <ReflectionCardDeleteButton dataCy={`reflection-delete`} meetingId={meetingId} reflectionId={reflectionId} />
       )}
       {showReactji && <ReactjiSection reactjis={reactjis} onToggle={onToggleReactji} />}
     </ReflectionCardRoot>

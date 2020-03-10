@@ -9,12 +9,10 @@ function addCard(column, text) {
   cy.get('@column-phase-item-editor')
     .type('{enter}')
   
-  cy.wait(500)
-
 }
 
 function editCard(column, oldText, newText) {
-  cy.get(`[data-cy=reflection-stack-${column}-card-0-wrapper]`)
+  cy.get(`[data-cy=reflection-stack-${column}-card-0-root]`).find(`[data-cy=editor-wrapper]`)
     .as('reflection-card-edit')
 
   cy.get('@reflection-card-edit')
@@ -28,10 +26,13 @@ function editCard(column, oldText, newText) {
 
 function deleteCard(column) {
       
-  cy.get(`[data-cy=reflection-stack-${column}-card-0-delete]`)
+  cy.get(`[data-cy=reflection-stack-${column}-card-0-root]`)
     .as('reflection-card-delete')
 
-  cy.get('@reflection-card-delete').click()
+  cy.get('@reflection-card-delete').find(`[data-cy=reflection-delete]`).click()
+
+  cy.get('@reflection-card-delete').should('not.exist')
+
 }
 
 describe('Test Reflect page Demo', () => {
