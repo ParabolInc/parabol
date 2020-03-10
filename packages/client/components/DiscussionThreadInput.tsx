@@ -5,26 +5,29 @@ import useAtmosphere from 'hooks/useAtmosphere'
 import useEditorState from 'hooks/useEditorState'
 import useMutationProps from 'hooks/useMutationProps'
 import AddCommentMutation from 'mutations/AddCommentMutation'
-import React, {useRef, useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import React, {forwardRef, RefObject, useState} from 'react'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {Elevation} from 'styles/elevation'
 import {ThreadSourceEnum} from 'types/graphql'
 import {SORT_STEP} from 'utils/constants'
 import dndNoise from 'utils/dndNoise'
 import convertToTaskContent from 'utils/draftjs/convertToTaskContent'
 import {DiscussionThreadInput_meeting} from '__generated__/DiscussionThreadInput_meeting.graphql'
+import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import Avatar from './Avatar/Avatar'
 import CommentSendOrAdd from './CommentSendOrAdd'
 import CommentEditor from './TaskEditor/CommentEditor'
-import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
-import {Elevation} from 'styles/elevation'
 
-const Wrapper = styled('div')({
+const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisabled, isReply}) => ({
   alignItems: 'center',
+  borderRadius: isReply ? '4px 0 0 4px' : undefined,
   display: 'flex',
-  boxShadow: Elevation.DISCUSSION_INPUT,
+  boxShadow: isReply ? Elevation.Z2 : Elevation.DISCUSSION_INPUT,
+  opacity: isDisabled ? 0.5 : undefined,
+  pointerEvents: isDisabled ? 'none' : undefined,
   // required for the shadow to overlay draft-js in the task cards
   zIndex: 0
-})
+}))
 
 const CommentAvatar = styled(Avatar)({
   margin: 12,
@@ -32,27 +35,35 @@ const CommentAvatar = styled(Avatar)({
 })
 
 interface Props {
+  editorRef: RefObject<HTMLTextAreaElement>
   getMaxSortOrder: () => number
   meeting: DiscussionThreadInput_meeting
   onSubmit: () => void
   reflectionGroupId: string
+  isReply?: boolean
+  isDisabled?: boolean
 }
 
-const DiscussionThreadInput = (props: Props) => {
-  const {getMaxSortOrder, meeting, onSubmit, reflectionGroupId} = props
-  const {id: meetingId, teamId, viewerMeetingMember} = meeting
+const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
+  const {editorRef, getMaxSortOrder, meeting, onSubmit, reflectionGroupId} = props
+  const isReply = !!props.isReply
+  const isDisabled = !!props.isDisabled
+  const {id: meetingId, isAnonymousComment, teamId, viewerMeetingMember} = meeting
   const {user} = viewerMeetingMember
   const {picture} = user
-  const editorRef = useRef<HTMLTextAreaElement>(null)
-  const [isAnonymous, setIsAnonymous] = useState(false)
+
   const [editorState, setEditorState] = useEditorState()
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
-  const placeholder = isAnonymous ? 'Comment anonymously' : 'Comment publically'
+  const placeholder = isAnonymousComment ? 'Comment anonymously' : 'Comment publically'
   const toggleAnonymous = () => {
-    setIsAnonymous(!isAnonymous)
+    commitLocalUpdate(atmosphere, (store) => {
+      const meeting = store.get(meetingId)
+      if (!meeting) return
+      meeting.setValue(!meeting.getValue('isAnonymousComment'), 'isAnonymousComment')
+    })
   }
-  const [canCollapse, setCanCollapse] = useState(false)
+  const [canCollapse, setCanCollapse] = useState(isReply)
   const hasText = editorState.getCurrentContent().hasText()
   const commentSubmitState = hasText ? 'send' : canCollapse ? 'add' : 'addExpanded'
   const collapseAddTask = () => {
@@ -66,7 +77,7 @@ const DiscussionThreadInput = (props: Props) => {
     submitMutation()
     const comment = {
       content: rawContent,
-      isAnonymous,
+      isAnonymousComment,
       meetingId,
       threadId: reflectionGroupId,
       threadSource: ThreadSourceEnum.REFLECTION_GROUP,
@@ -86,9 +97,9 @@ const DiscussionThreadInput = (props: Props) => {
     submitComment(convertToTaskContent(value))
   }
 
-  const avatar = isAnonymous ? anonymousAvatar : picture
+  const avatar = isAnonymousComment ? anonymousAvatar : picture
   return (
-    <Wrapper>
+    <Wrapper ref={ref} isReply={isReply} isDisabled={isDisabled}>
       <CommentAvatar size={32} picture={avatar} onClick={toggleAnonymous} />
       <CommentEditor
         teamId={teamId}
@@ -109,13 +120,14 @@ const DiscussionThreadInput = (props: Props) => {
       />
     </Wrapper>
   )
-}
+})
 
 export default createFragmentContainer(DiscussionThreadInput, {
   meeting: graphql`
     fragment DiscussionThreadInput_meeting on RetrospectiveMeeting {
       ...CommentSendOrAdd_meeting
       id
+      isAnonymousComment
       teamId
       viewerMeetingMember {
         user {

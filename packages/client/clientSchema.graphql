@@ -11,6 +11,7 @@ extend type ActionMeeting {
 }
 
 extend type RetrospectiveMeeting {
+  isAnonymousComment: Boolean
   isViewerDragInProgress: Boolean
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!

@@ -1,11 +1,12 @@
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React, {forwardRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import styled from '@emotion/styled'
-import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
+import {DiscussionThreadList_meeting} from '__generated__/DiscussionThreadList_meeting.graphql'
 import {DiscussionThreadList_threadables} from '__generated__/DiscussionThreadList_threadables.graphql'
-import ThreadedTask from './ThreadedTask'
+import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import ThreadedComment from './ThreadedComment'
+import ThreadedTask from './ThreadedTask'
 
 const EmptyWrapper = styled('div')({
   alignItems: 'center',
@@ -29,12 +30,15 @@ const PusherDowner = styled('div')({
 })
 
 interface Props {
-  teamId: string
+  meeting: DiscussionThreadList_meeting
+  reflectionGroupId: string
+  replyingToComment: string
+  setReplyingToComment: (commentId: string) => void
   threadables: DiscussionThreadList_threadables
 }
 
 const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
-  const {teamId, threadables} = props
+  const {meeting, reflectionGroupId, replyingToComment, setReplyingToComment, threadables} = props
   const isEmpty = threadables.length === 0
   if (isEmpty) {
     return (
@@ -51,7 +55,14 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
         return __typename === 'Task' ? (
           <ThreadedTask key={id} task={threadable} />
         ) : (
-          <ThreadedComment key={id} comment={threadable} teamId={teamId} />
+          <ThreadedComment
+            key={id}
+            comment={threadable}
+            meeting={meeting}
+            reflectionGroupId={reflectionGroupId}
+            isReplying={id === replyingToComment}
+            setReplyingToComment={setReplyingToComment}
+          />
         )
       })}
     </Wrapper>
@@ -59,6 +70,11 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
 })
 
 export default createFragmentContainer(DiscussionThreadList, {
+  meeting: graphql`
+    fragment DiscussionThreadList_meeting on RetrospectiveMeeting {
+      ...ThreadedComment_meeting
+    }
+  `,
   threadables: graphql`
     fragment DiscussionThreadList_threadables on Threadable @relay(plural: true) {
       ...ThreadedTask_task

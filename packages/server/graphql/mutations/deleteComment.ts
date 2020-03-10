@@ -5,6 +5,7 @@ import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import DeleteCommentPayload from '../types/DeleteCommentPayload'
+import {IDeleteCommentOnMutationArguments} from 'parabol-client/types/graphql'
 
 const deleteComment = {
   type: GraphQLNonNull(DeleteCommentPayload),

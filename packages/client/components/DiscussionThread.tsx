@@ -1,4 +1,4 @@
-import React, {useRef} from 'react'
+import React, {useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
@@ -28,7 +28,6 @@ interface Props {
 
 const DiscussionThread = (props: Props) => {
   const {meeting, reflectionGroup} = props
-  const {teamId} = meeting
   const {id: reflectionGroupId, thread} = reflectionGroup
   const {edges} = thread
   const threadables = edges.map(({node}) => node)
@@ -42,10 +41,22 @@ const DiscussionThread = (props: Props) => {
       listRef.current?.scrollTo({top: 1e6, behavior: 'smooth'})
     })
   }
+  // use a string to guarantee single reply open even when click from reply to reply with full comment
+  const [replyingToComment, setReplyingToComment] = useState('')
+  const editorRef = useRef<HTMLTextAreaElement>(null)
   return (
     <Wrapper>
-      <DiscussionThreadList teamId={teamId} threadables={threadables} ref={listRef} />
+      <DiscussionThreadList
+        reflectionGroupId={reflectionGroupId}
+        meeting={meeting}
+        replyingToComment={replyingToComment}
+        setReplyingToComment={setReplyingToComment}
+        threadables={threadables}
+        ref={listRef}
+      />
       <DiscussionThreadInput
+        editorRef={editorRef}
+        isDisabled={!!replyingToComment}
         getMaxSortOrder={getMaxSortOrder}
         meeting={meeting}
         onSubmit={onSubmit}
@@ -59,7 +70,7 @@ export default createFragmentContainer(DiscussionThread, {
   meeting: graphql`
     fragment DiscussionThread_meeting on RetrospectiveMeeting {
       ...DiscussionThreadInput_meeting
-      teamId
+      ...DiscussionThreadList_meeting
     }
   `,
   reflectionGroup: graphql`

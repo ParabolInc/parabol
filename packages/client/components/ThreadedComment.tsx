@@ -1,22 +1,26 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import {EditorState, SelectionState, Editor} from 'draft-js'
 import useAtmosphere from 'hooks/useAtmosphere'
 import useEditorState from 'hooks/useEditorState'
 import useMutationProps from 'hooks/useMutationProps'
 import AddReactjiToReactableMutation from 'mutations/AddReactjiToReactableMutation'
-import React, {useRef, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from 'styles/paletteV2'
 import {ReactableEnum} from 'types/graphql'
 import relativeDate from 'utils/date/relativeDate'
 import {ThreadedComment_comment} from '__generated__/ThreadedComment_comment.graphql'
+import {ThreadedComment_meeting} from '__generated__/ThreadedComment_meeting.graphql'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import CommentAuthorOptionsButton from './CommentAuthorOptionsButton'
+import DiscussionThreadInput from './DiscussionThreadInput'
 import AddReactjiButton from './ReflectionCard/AddReactjiButton'
 import ReactjiSection from './ReflectionCard/ReactjiSection'
 import CommentEditor from './TaskEditor/CommentEditor'
 import ThreadedAvatarColumn from './ThreadedAvatarColumn'
-import {SelectionState, EditorState} from 'draft-js'
+import isAndroid from 'utils/draftjs/isAndroid'
+import PlainButton from './PlainButton/PlainButton'
 
 const Wrapper = styled('div')({
   display: 'flex',
@@ -34,6 +38,7 @@ const Header = styled('div')({
   display: 'flex',
   fontSize: 12,
   justifyContent: 'space-between',
+  lineHeight: '24px',
   paddingBottom: 8,
   width: '100%'
 })
@@ -68,7 +73,8 @@ const FooterActions = styled('div')({
   paddingRight: 12
 })
 
-const Reply = styled('div')({
+const Reply = styled(PlainButton)({
+  fontWeight: 600,
   lineHeight: '24px'
 })
 
@@ -78,21 +84,27 @@ const StyledReactjis = styled(ReactjiSection)({
 
 interface Props {
   comment: ThreadedComment_comment
-  teamId: string
+  meeting: ThreadedComment_meeting
+  isReplying: boolean
+  reflectionGroupId: string
+  setReplyingToComment: (commentId: string) => void
 }
 
 const ANONYMOUS_USER = {
   picture: anonymousAvatar,
   preferredName: 'Anonymous'
 }
+
 const ThreadedComment = (props: Props) => {
-  const {comment, teamId} = props
+  const {comment, reflectionGroupId, isReplying, setReplyingToComment, meeting} = props
+  const {teamId} = meeting
   const {id: commentId, content, createdByUser, isViewerComment, reactjis, updatedAt} = comment
   const {picture, preferredName} = createdByUser || ANONYMOUS_USER
   const hasReactjis = reactjis.length > 0
   const {submitMutation, submitting, onError, onCompleted} = useMutationProps()
   const [editorState, setEditorState] = useEditorState(content)
   const editorRef = useRef<HTMLTextAreaElement>(null)
+  const ref = useRef<HTMLDivElement>(null)
   const [isEditing, setIsEditing] = useState(false)
   const atmosphere = useAtmosphere()
   const submitComment = () => {}
@@ -124,9 +136,47 @@ const ThreadedComment = (props: Props) => {
       {reactableType: ReactableEnum.COMMENT, reactableId: commentId, isRemove, reactji: emojiId},
       {onCompleted, onError}
     )
+    // when the reactjis move to the bottom & increase the height, make sure they're visible
+    setImmediate(() => ref.current?.scrollIntoView({behavior: 'smooth'}))
   }
+  const replyToComment = () => {
+    setReplyingToComment(commentId)
+    setImmediate(() => {
+      ref.current?.scrollIntoView({behavior: 'smooth'})
+      replyEditorRef.current?.focus()
+    })
+  }
+
+  const getMaxSortOrder = () => {
+    return 0
+  }
+
+  const onSubmitReply = () => {}
+  const replyEditorRef = useRef<HTMLTextAreaElement>(null)
+  const replyRef = useRef<HTMLTextAreaElement>(null)
+  useEffect(() => {
+    const handleDocumentClick = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as Node
+      if (!replyRef.current?.contains(target)) {
+        const editorEl = replyEditorRef.current
+        if (!editorEl) return
+        const hasText = isAndroid
+          ? editorEl.value
+          : ((editorEl as any) as Editor).props.editorState.getCurrentContent().hasText()
+        if (!hasText) {
+          setReplyingToComment('')
+        }
+      }
+    }
+    if (isReplying) {
+      document.addEventListener('click', handleDocumentClick)
+    }
+    return () => {
+      document.removeEventListener('click', handleDocumentClick)
+    }
+  }, [isReplying])
   return (
-    <Wrapper>
+    <Wrapper ref={ref}>
       <ThreadedAvatarColumn picture={picture} />
       <BodyCol>
         <Header>
@@ -138,7 +188,7 @@ const ThreadedComment = (props: Props) => {
             {!hasReactjis && (
               <>
                 <AddReactjiButton onToggle={onToggleReactji} />
-                <Reply>Reply</Reply>
+                {!isReplying && <Reply>Reply</Reply>}
               </>
             )}
             {isViewerComment && (
@@ -147,8 +197,8 @@ const ThreadedComment = (props: Props) => {
           </HeaderActions>
         </Header>
         <CommentEditor
-          teamId={teamId}
           editorRef={editorRef}
+          teamId={teamId}
           editorState={editorState}
           handleSubmitFallback={handleSubmitFallback}
           setEditorState={setEditorState}
@@ -158,9 +208,20 @@ const ThreadedComment = (props: Props) => {
         />
         {hasReactjis && (
           <FooterActions>
-            <Reply>Reply</Reply>
+            {!isReplying && <Reply onClick={replyToComment}>Reply</Reply>}
             <StyledReactjis reactjis={reactjis} onToggle={onToggleReactji} />
           </FooterActions>
+        )}
+        {isReplying && (
+          <DiscussionThreadInput
+            ref={replyRef}
+            editorRef={replyEditorRef}
+            isReply
+            getMaxSortOrder={getMaxSortOrder}
+            meeting={meeting}
+            onSubmit={onSubmitReply}
+            reflectionGroupId={reflectionGroupId}
+          />
         )}
       </BodyCol>
     </Wrapper>
@@ -168,6 +229,12 @@ const ThreadedComment = (props: Props) => {
 }
 
 export default createFragmentContainer(ThreadedComment, {
+  meeting: graphql`
+    fragment ThreadedComment_meeting on RetrospectiveMeeting {
+      ...DiscussionThreadInput_meeting
+      teamId
+    }
+  `,
   comment: graphql`
     fragment ThreadedComment_comment on Comment {
       id

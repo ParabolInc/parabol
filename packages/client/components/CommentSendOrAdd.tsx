@@ -67,7 +67,8 @@ const ExpandedLabel = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
 
 const ButtonGroup = styled('div')({
   borderLeft: `1px solid ${PALETTE.BORDER_GRAY} `,
-  padding: 12
+  padding: 12,
+  userSelect: 'none'
 })
 
 interface Props {
