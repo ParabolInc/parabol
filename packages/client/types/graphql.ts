@@ -3169,6 +3169,11 @@ export interface IMutation {
   updateAgendaItem: IUpdateAgendaItemPayload | null
 
   /**
+   * Update the content of a comment
+   */
+  updateCommentContent: UpdateCommentContentPayload | null
+
+  /**
    * Update an existing credit card on file
    */
   updateCreditCard: IUpdateCreditCardPayload | null
@@ -3929,6 +3934,15 @@ export interface IUpdateAgendaItemOnMutationArguments {
    * The updated item including an id, content, status, sortOrder
    */
   updatedAgendaItem: IUpdateAgendaItemInput
+}
+
+export interface IUpdateCommentContentOnMutationArguments {
+  commentId: string
+
+  /**
+   * A stringified draft-js document containing thoughts
+   */
+  content: string
 }
 
 export interface IUpdateCreditCardOnMutationArguments {
@@ -6461,6 +6475,20 @@ export interface IUpdateAgendaItemPayload {
   error: IStandardMutationError | null
 }
 
+/**
+ * Return object for UpdateCommentContentPayload
+ */
+export type UpdateCommentContentPayload = IErrorPayload | IUpdateCommentContentSuccess
+
+export interface IUpdateCommentContentSuccess {
+  __typename: 'UpdateCommentContentSuccess'
+
+  /**
+   * the comment with updated content
+   */
+  comment: IComment
+}
+
 export interface IUpdateCreditCardPayload {
   __typename: 'UpdateCreditCardPayload'
   error: IStandardMutationError | null
@@ -6718,6 +6746,7 @@ export type MeetingSubscriptionPayload =
   | ISetPhaseFocusPayload
   | ISetStageTimerPayload
   | IStartDraggingReflectionPayload
+  | IUpdateCommentContentSuccess
   | IUpdateDragLocationPayload
   | IUpdateNewCheckInQuestionPayload
   | IUpdateReflectionContentPayload

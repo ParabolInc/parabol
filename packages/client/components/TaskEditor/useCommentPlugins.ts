@@ -1,12 +1,11 @@
+import {EditorProps, EditorState} from 'draft-js'
+import {RefObject} from 'react'
 import useKeyboardShortcuts from '../../hooks/useKeyboardShortcuts'
 import useMarkdown from '../../hooks/useMarkdown'
-import useSuggestions from './useSuggestions'
+import {SetEditorState} from '../../types/draft'
 import useEmojis from './useEmojis'
 import useLinks from './useLinks'
-import {EditorProps, EditorState} from 'draft-js'
-import {SetEditorState} from '../../types/draft'
-import {RefObject} from 'react'
-import {UseTaskChild} from '../../hooks/useTaskChildFocus'
+import useSuggestions from './useSuggestions'
 
 type Handlers = Pick<
   EditorProps,

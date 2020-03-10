@@ -92,6 +92,7 @@ import verifyEmail from './mutations/verifyEmail'
 import archiveOrganization from './mutations/archiveOrganization'
 import addComment from './mutations/addComment'
 import deleteComment from './mutations/deleteComment'
+import updateCommentContent from './mutations/updateCommentContent'
 
 interface Context extends InternalContext, GQLContext {}
 
@@ -177,6 +178,7 @@ export default new GraphQLObjectType<any, Context, any>({
     startNewMeeting,
     toggleAgendaList,
     updateAgendaItem,
+    updateCommentContent,
     updateCreditCard,
     updateOrg,
     updateNewCheckInQuestion,

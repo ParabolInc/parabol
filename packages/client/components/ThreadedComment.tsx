@@ -1,26 +1,25 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {EditorState, SelectionState, Editor} from 'draft-js'
+import {convertToRaw, EditorState, SelectionState} from 'draft-js'
 import useAtmosphere from 'hooks/useAtmosphere'
 import useEditorState from 'hooks/useEditorState'
 import useMutationProps from 'hooks/useMutationProps'
 import AddReactjiToReactableMutation from 'mutations/AddReactjiToReactableMutation'
-import React, {useEffect, useRef, useState} from 'react'
+import UpdateCommentContentMutation from 'mutations/UpdateCommentContentMutation'
+import React, {useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {PALETTE} from 'styles/paletteV2'
 import {ReactableEnum} from 'types/graphql'
-import relativeDate from 'utils/date/relativeDate'
+import convertToTaskContent from 'utils/draftjs/convertToTaskContent'
+import isAndroid from 'utils/draftjs/isAndroid'
+import isTempId from 'utils/relay/isTempId'
 import {ThreadedComment_comment} from '__generated__/ThreadedComment_comment.graphql'
 import {ThreadedComment_meeting} from '__generated__/ThreadedComment_meeting.graphql'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
-import CommentAuthorOptionsButton from './CommentAuthorOptionsButton'
-import DiscussionThreadInput from './DiscussionThreadInput'
-import AddReactjiButton from './ReflectionCard/AddReactjiButton'
-import ReactjiSection from './ReflectionCard/ReactjiSection'
 import CommentEditor from './TaskEditor/CommentEditor'
 import ThreadedAvatarColumn from './ThreadedAvatarColumn'
-import isAndroid from 'utils/draftjs/isAndroid'
-import PlainButton from './PlainButton/PlainButton'
+import ThreadedCommentFooter from './ThreadedCommentFooter'
+import ThreadedCommentHeader from './ThreadedCommentHeader'
+import ThreadedCommentReply from './ThreadedCommentReply'
 
 const Wrapper = styled('div')({
   display: 'flex',
@@ -34,54 +33,6 @@ const BodyCol = styled('div')({
   width: '100%'
 })
 
-const Header = styled('div')({
-  display: 'flex',
-  fontSize: 12,
-  justifyContent: 'space-between',
-  lineHeight: '24px',
-  paddingBottom: 8,
-  width: '100%'
-})
-
-const HeaderDescription = styled('div')({
-  display: 'flex'
-})
-
-const HeaderName = styled('div')({
-  color: PALETTE.TEXT_MAIN,
-  fontWeight: 600
-})
-
-const HeaderResult = styled('div')({
-  color: PALETTE.TEXT_GRAY,
-  whiteSpace: 'pre-wrap'
-})
-
-const HeaderActions = styled('div')({
-  color: PALETTE.TEXT_GRAY,
-  display: 'flex',
-  fontWeight: 600,
-  paddingRight: 12
-})
-
-const FooterActions = styled('div')({
-  alignItems: 'center',
-  color: PALETTE.TEXT_GRAY,
-  display: 'flex',
-  fontSize: 12,
-  fontWeight: 600,
-  paddingRight: 12
-})
-
-const Reply = styled(PlainButton)({
-  fontWeight: 600,
-  lineHeight: '24px'
-})
-
-const StyledReactjis = styled(ReactjiSection)({
-  paddingLeft: 8
-})
-
 interface Props {
   comment: ThreadedComment_comment
   meeting: ThreadedComment_meeting
@@ -90,7 +41,7 @@ interface Props {
   setReplyingToComment: (commentId: string) => void
 }
 
-const ANONYMOUS_USER = {
+export const ANONYMOUS_COMMENT_USER = {
   picture: anonymousAvatar,
   preferredName: 'Anonymous'
 }
@@ -98,16 +49,43 @@ const ANONYMOUS_USER = {
 const ThreadedComment = (props: Props) => {
   const {comment, reflectionGroupId, isReplying, setReplyingToComment, meeting} = props
   const {teamId} = meeting
-  const {id: commentId, content, createdByUser, isViewerComment, reactjis, updatedAt} = comment
-  const {picture, preferredName} = createdByUser || ANONYMOUS_USER
-  const hasReactjis = reactjis.length > 0
+  const {id: commentId, content, createdByUser, reactjis} = comment
+  const {picture} = createdByUser || ANONYMOUS_COMMENT_USER
   const {submitMutation, submitting, onError, onCompleted} = useMutationProps()
   const [editorState, setEditorState] = useEditorState(content)
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const ref = useRef<HTMLDivElement>(null)
+  const replyEditorRef = useRef<HTMLTextAreaElement>(null)
   const [isEditing, setIsEditing] = useState(false)
   const atmosphere = useAtmosphere()
-  const submitComment = () => {}
+  const submitComment = () => {
+    if (isTempId(commentId)) return
+    if (isAndroid) {
+      const editorEl = editorRef.current
+      if (!editorEl || editorEl.type !== 'textarea') return
+      const {value} = editorEl
+      const initialContentState = editorState.getCurrentContent()
+      const initialText = initialContentState.getPlainText()
+      if (initialText === value) return
+      submitMutation()
+      UpdateCommentContentMutation(
+        atmosphere,
+        {commentId, content: convertToTaskContent(value)},
+        {onError, onCompleted}
+      )
+      return
+    }
+    const contentState = editorState.getCurrentContent()
+    const nextContent = JSON.stringify(convertToRaw(contentState))
+    if (content === nextContent) return
+    submitMutation()
+    UpdateCommentContentMutation(
+      atmosphere,
+      {commentId, content: nextContent},
+      {onError, onCompleted}
+    )
+  }
+
   const handleSubmitFallback = () => {}
   const editComment = () => {
     setIsEditing(true)
@@ -125,6 +103,7 @@ const ThreadedComment = (props: Props) => {
       editorRef.current?.focus()
     })
   }
+
   const onToggleReactji = (emojiId: string) => {
     if (submitting) return
     const isRemove = !!reactjis.find((reactji) => {
@@ -139,7 +118,8 @@ const ThreadedComment = (props: Props) => {
     // when the reactjis move to the bottom & increase the height, make sure they're visible
     setImmediate(() => ref.current?.scrollIntoView({behavior: 'smooth'}))
   }
-  const replyToComment = () => {
+
+  const onReply = () => {
     setReplyingToComment(commentId)
     setImmediate(() => {
       ref.current?.scrollIntoView({behavior: 'smooth'})
@@ -147,55 +127,17 @@ const ThreadedComment = (props: Props) => {
     })
   }
 
-  const getMaxSortOrder = () => {
-    return 0
-  }
-
-  const onSubmitReply = () => {}
-  const replyEditorRef = useRef<HTMLTextAreaElement>(null)
-  const replyRef = useRef<HTMLTextAreaElement>(null)
-  useEffect(() => {
-    const handleDocumentClick = (e: MouseEvent | TouchEvent) => {
-      const target = e.target as Node
-      if (!replyRef.current?.contains(target)) {
-        const editorEl = replyEditorRef.current
-        if (!editorEl) return
-        const hasText = isAndroid
-          ? editorEl.value
-          : ((editorEl as any) as Editor).props.editorState.getCurrentContent().hasText()
-        if (!hasText) {
-          setReplyingToComment('')
-        }
-      }
-    }
-    if (isReplying) {
-      document.addEventListener('click', handleDocumentClick)
-    }
-    return () => {
-      document.removeEventListener('click', handleDocumentClick)
-    }
-  }, [isReplying])
   return (
     <Wrapper ref={ref}>
       <ThreadedAvatarColumn picture={picture} />
       <BodyCol>
-        <Header>
-          <HeaderDescription>
-            <HeaderName>{preferredName}</HeaderName>
-            <HeaderResult> {relativeDate(updatedAt)}</HeaderResult>
-          </HeaderDescription>
-          <HeaderActions>
-            {!hasReactjis && (
-              <>
-                <AddReactjiButton onToggle={onToggleReactji} />
-                {!isReplying && <Reply>Reply</Reply>}
-              </>
-            )}
-            {isViewerComment && (
-              <CommentAuthorOptionsButton editComment={editComment} commentId={commentId} />
-            )}
-          </HeaderActions>
-        </Header>
+        <ThreadedCommentHeader
+          comment={comment}
+          isReplying={isReplying}
+          editComment={editComment}
+          onToggleReactji={onToggleReactji}
+          onReply={onReply}
+        />
         <CommentEditor
           editorRef={editorRef}
           teamId={teamId}
@@ -206,23 +148,19 @@ const ThreadedComment = (props: Props) => {
           readOnly={!isEditing}
           placeholder={'Edit your comment'}
         />
-        {hasReactjis && (
-          <FooterActions>
-            {!isReplying && <Reply onClick={replyToComment}>Reply</Reply>}
-            <StyledReactjis reactjis={reactjis} onToggle={onToggleReactji} />
-          </FooterActions>
-        )}
-        {isReplying && (
-          <DiscussionThreadInput
-            ref={replyRef}
-            editorRef={replyEditorRef}
-            isReply
-            getMaxSortOrder={getMaxSortOrder}
-            meeting={meeting}
-            onSubmit={onSubmitReply}
-            reflectionGroupId={reflectionGroupId}
-          />
-        )}
+        <ThreadedCommentFooter
+          isReplying={isReplying}
+          reactjis={reactjis}
+          onToggleReactji={onToggleReactji}
+          onReply={onReply}
+        />
+        <ThreadedCommentReply
+          isReplying={isReplying}
+          reflectionGroupId={reflectionGroupId}
+          setReplyingToComment={setReplyingToComment}
+          meeting={meeting}
+          editorRef={replyEditorRef}
+        />
       </BodyCol>
     </Wrapper>
   )
@@ -232,24 +170,23 @@ export default createFragmentContainer(ThreadedComment, {
   meeting: graphql`
     fragment ThreadedComment_meeting on RetrospectiveMeeting {
       ...DiscussionThreadInput_meeting
+      ...ThreadedCommentReply_meeting
       teamId
     }
   `,
   comment: graphql`
     fragment ThreadedComment_comment on Comment {
+      ...ThreadedCommentHeader_comment
       id
       content
       createdByUser {
         picture
-        preferredName
       }
-      isViewerComment
       reactjis {
-        ...ReactjiSection_reactjis
+        ...ThreadedCommentFooter_reactjis
         id
         isViewerReactji
       }
-      updatedAt
     }
   `
 })

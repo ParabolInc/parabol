@@ -382,7 +382,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           __typename: 'ThreadableConnection',
           edges: [],
           pageInfo: {
-            __typename: 'PageInfoDateCursor',
+            __typename: 'PageInfo',
             startCursor: null,
             endCursor: null,
             hasNextPage: false,

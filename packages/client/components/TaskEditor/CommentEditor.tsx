@@ -104,8 +104,9 @@ const CommentEditor = (props: Props) => {
   const onReturn = (e) => {
     if (e.shiftKey) return 'not-handled'
     const content = editorState.getCurrentContent()
-    if (!content.hasText()) return
-    submitComment(JSON.stringify(convertToRaw(content)))
+    if (content.hasText()) {
+      submitComment(JSON.stringify(convertToRaw(content)))
+    }
     return 'handled'
   }
 
@@ -154,7 +155,7 @@ const CommentEditor = (props: Props) => {
     return 'not-handled'
   }
 
-  const onKeyDownFallback = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const onKeyDownFallback = (e: React.KeyboardEvent<Element>) => {
     if (e.key !== 'Enter' || e.shiftKey) return
     e.preventDefault()
     handleSubmitFallback()

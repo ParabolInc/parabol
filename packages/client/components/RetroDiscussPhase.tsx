@@ -1,42 +1,41 @@
-import React from 'react'
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {RetroDiscussPhase_meeting} from '__generated__/RetroDiscussPhase_meeting.graphql'
+import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
+import useAtmosphere from '../hooks/useAtmosphere'
+import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
+import {meetingVoteIcon} from '../styles/meeting'
+import {PALETTE} from '../styles/paletteV2'
+import {ICON_SIZE} from '../styles/typographyV2'
+import {ElementWidth} from '../types/constEnums'
+import {NewMeetingPhaseTypeEnum} from '../types/graphql'
+import handleRightArrow from '../utils/handleRightArrow'
+import isDemoRoute from '../utils/isDemoRoute'
+import lazyPreload from '../utils/lazyPreload'
+import findStageAfterId from '../utils/meetings/findStageAfterId'
+import {phaseLabelLookup} from '../utils/meetings/lookups'
+import plural from '../utils/plural'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
+import DiscussionThread from './DiscussionThread'
 import DiscussPhaseReflectionGrid from './DiscussPhaseReflectionGrid'
+import DiscussPhaseSqueeze from './DiscussPhaseSqueeze'
+import EndMeetingButton from './EndMeetingButton'
 import Icon from './Icon'
 import LabelHeading from './LabelHeading/LabelHeading'
 import MeetingContent from './MeetingContent'
+import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingTopBar from './MeetingTopBar'
 import MeetingHelpToggle from './MenuHelpToggle'
+import Overflow from './Overflow'
 import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
-import Overflow from './Overflow'
+import PhaseWrapper from './PhaseWrapper'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
-import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
-import MeetingAgendaCards from '../modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
-import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
-import {ICON_SIZE} from '../styles/typographyV2'
-import {meetingVoteIcon} from '../styles/meeting'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
-import lazyPreload from '../utils/lazyPreload'
-import findStageAfterId from '../utils/meetings/findStageAfterId'
-import plural from '../utils/plural'
-import handleRightArrow from '../utils/handleRightArrow'
-import isDemoRoute from '../utils/isDemoRoute'
-import EndMeetingButton from './EndMeetingButton'
-import {phaseLabelLookup} from '../utils/meetings/lookups'
 import StageTimerDisplay from './RetroReflectPhase/StageTimerDisplay'
 import StageTimerControl from './StageTimerControl'
-import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
-import PhaseWrapper from './PhaseWrapper'
-import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import {ElementWidth} from '../types/constEnums'
-import {PALETTE} from '../styles/paletteV2'
-import DiscussPhaseSqueeze from './DiscussPhaseSqueeze'
-import {RetroDiscussPhase_meeting} from '__generated__/RetroDiscussPhase_meeting.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
-import DiscussionThread from './DiscussionThread'
 
 interface Props extends RetroMeetingPhaseProps {
   meeting: RetroDiscussPhase_meeting
@@ -159,14 +158,13 @@ const RetroDiscussPhase = (props: Props) => {
     localStage,
     phases,
     showSidebar,
-    organization,
-    teamId
+    organization
   } = meeting
   const {id: localStageId, reflectionGroup} = localStage
   const isComplete = localStage ? localStage.isComplete : false
   // reflection group will be null until the server overwrites the placeholder.
   if (!reflectionGroup) return null
-  const {id: reflectionGroupId, tasks, title, reflections, voteCount} = reflectionGroup
+  const {title, reflections, voteCount} = reflectionGroup
   const isFacilitating = facilitatorUserId === viewerId && !endedAt
   const nextStageRes = findStageAfterId(phases, localStageId)
   if (!reflections) {
@@ -250,15 +248,11 @@ graphql`
     ... on RetroDiscussStage {
       reflectionGroup {
         ...DiscussionThread_reflectionGroup
-        id
         title
         voteCount
         reflections {
           ...DiscussPhaseReflectionGrid_reflections
           id
-        }
-        tasks {
-          ...MeetingAgendaCards_tasks
         }
       }
     }

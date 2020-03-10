@@ -20,6 +20,7 @@ import UpdateReflectionGroupTitlePayload from './UpdateReflectionGroupTitlePaylo
 import VoteForReflectionGroupPayload from './VoteForReflectionGroupPayload'
 import {AddCommentSuccess} from './AddCommentPayload'
 import {DeleteCommentSuccess} from './DeleteCommentPayload'
+import {UpdateCommentContentSuccess} from './UpdateCommentContentPayload'
 
 const types = [
   AddCommentSuccess,
@@ -38,6 +39,7 @@ const types = [
   SetPhaseFocusPayload,
   SetStageTimerPayload,
   StartDraggingReflectionPayload,
+  UpdateCommentContentSuccess,
   UpdateDragLocationPayload,
   UpdateNewCheckInQuestionPayload,
   UpdateReflectionContentPayload,
