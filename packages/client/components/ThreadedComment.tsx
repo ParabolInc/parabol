@@ -9,22 +9,14 @@ import ThreadedRepliesList from './ThreadedRepliesList'
 interface Props {
   comment: ThreadedComment_comment
   meeting: ThreadedComment_meeting
-  isReplying: boolean // the replying input is currently open
   reflectionGroupId: string
-  setReplyingToComment: (commentId: string) => void
 }
 
 export const ThreadedComment = (props: Props) => {
-  const {comment, reflectionGroupId, isReplying, setReplyingToComment, meeting} = props
+  const {comment, reflectionGroupId, meeting} = props
   const {replies} = comment
   return (
-    <ThreadedCommentBase
-      comment={comment}
-      meeting={meeting}
-      isReplying={isReplying}
-      reflectionGroupId={reflectionGroupId}
-      setReplyingToComment={setReplyingToComment}
-    >
+    <ThreadedCommentBase comment={comment} meeting={meeting} reflectionGroupId={reflectionGroupId}>
       <ThreadedRepliesList
         meeting={meeting}
         replies={replies}

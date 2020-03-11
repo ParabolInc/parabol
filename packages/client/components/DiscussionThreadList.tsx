@@ -32,13 +32,11 @@ const PusherDowner = styled('div')({
 interface Props {
   meeting: DiscussionThreadList_meeting
   reflectionGroupId: string
-  replyingToComment: string
-  setReplyingToComment: (commentId: string) => void
   threadables: DiscussionThreadList_threadables
 }
 
 const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
-  const {meeting, reflectionGroupId, replyingToComment, setReplyingToComment, threadables} = props
+  const {meeting, reflectionGroupId, threadables} = props
   const isEmpty = threadables.length === 0
   if (isEmpty) {
     return (
@@ -60,8 +58,6 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
             comment={threadable}
             meeting={meeting}
             reflectionGroupId={reflectionGroupId}
-            isReplying={id === replyingToComment}
-            setReplyingToComment={setReplyingToComment}
           />
         )
       })}

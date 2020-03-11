@@ -21,19 +21,18 @@ const StyledReactjis = styled(ReactjiSection)({
 })
 
 interface Props {
-  isReplying: boolean
   onReply: () => void
   onToggleReactji: (emojiId: string) => void
   reactjis: ThreadedCommentFooter_reactjis
 }
 
 const ThreadedCommentFooter = (props: Props) => {
-  const {isReplying, onReply, onToggleReactji, reactjis} = props
+  const {onReply, onToggleReactji, reactjis} = props
   const hasReactjis = reactjis.length > 0
   if (!hasReactjis) return null
   return (
     <FooterActions>
-      <ThreadedReplyButton isReplying={isReplying} onReply={onReply} />
+      <ThreadedReplyButton onReply={onReply} />
       <StyledReactjis reactjis={reactjis} onToggle={onToggleReactji} />
     </FooterActions>
   )

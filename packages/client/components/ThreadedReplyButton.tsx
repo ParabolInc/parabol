@@ -8,13 +8,12 @@ const Reply = styled(PlainButton)({
 })
 
 interface Props {
-  isReplying: boolean
   onReply: () => void
 }
 
 const ThreadedReplyButton = (props: Props) => {
-  const {isReplying, onReply} = props
-  return isReplying ? null : <Reply onClick={onReply}>Reply</Reply>
+  const {onReply} = props
+  return <Reply onClick={onReply}>Reply</Reply>
 }
 
 export default ThreadedReplyButton

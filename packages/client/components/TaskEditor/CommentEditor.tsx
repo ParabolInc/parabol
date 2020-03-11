@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import {
-  convertToRaw,
   DraftEditorCommand,
   DraftHandleValue,
   Editor,

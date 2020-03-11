@@ -1,13 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {convertToRaw, EditorState, SelectionState} from 'draft-js'
+import {convertToRaw, EditorState} from 'draft-js'
 import useAtmosphere from 'hooks/useAtmosphere'
 import useEditorState from 'hooks/useEditorState'
 import useMutationProps from 'hooks/useMutationProps'
 import AddReactjiToReactableMutation from 'mutations/AddReactjiToReactableMutation'
 import UpdateCommentContentMutation from 'mutations/UpdateCommentContentMutation'
 import React, {ReactNode, useRef, useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import {ReactableEnum} from 'types/graphql'
 import convertToTaskContent from 'utils/draftjs/convertToTaskContent'
 import isAndroid from 'utils/draftjs/isAndroid'
@@ -15,11 +15,13 @@ import isTempId from 'utils/relay/isTempId'
 import {ThreadedCommentBase_comment} from '__generated__/ThreadedCommentBase_comment.graphql'
 import {ThreadedCommentBase_meeting} from '__generated__/ThreadedCommentBase_meeting.graphql'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
+import deletedAvatar from '../styles/theme/images/deleted-avatar-placeholder.svg'
 import CommentEditor from './TaskEditor/CommentEditor'
 import ThreadedAvatarColumn from './ThreadedAvatarColumn'
 import ThreadedCommentFooter from './ThreadedCommentFooter'
 import ThreadedCommentHeader from './ThreadedCommentHeader'
 import ThreadedCommentReply from './ThreadedCommentReply'
+import useFocusedReply from './useFocusedReply'
 
 const Wrapper = styled('div')<{isReply: boolean}>(({isReply}) => ({
   display: 'flex',
@@ -40,18 +42,24 @@ interface Props {
   children?: ReactNode // the replies, listed here to avoid a circular reference
   meeting: ThreadedCommentBase_meeting
   isReply?: boolean // this comment is a reply & should be indented
-  isReplying: boolean // the replying input is currently open
   reflectionGroupId: string
-  setReplyingToComment?: (commentId: string) => void
 }
 
 const ThreadedCommentBase = (props: Props) => {
-  const {children, comment, reflectionGroupId, isReplying, setReplyingToComment, meeting} = props
+  const {children, comment, reflectionGroupId, meeting} = props
   const isReply = !!props.isReply
-  const {teamId} = meeting
-  const {id: commentId, content, createdByUser, isActive, reactjis, replies} = comment
-  const picture = isActive ? createdByUser?.picture ?? anonymousAvatar : 'delete'
-  // const {picture} = createdByUser || ANONYMOUS_COMMENT_USER
+  const {id: meetingId, replyingToCommentId, teamId} = meeting
+  const {
+    id: commentId,
+    content,
+    createdByUser,
+    isActive,
+    reactjis,
+    replies,
+    threadParentId
+  } = comment
+  const ownerId = threadParentId || commentId
+  const picture = isActive ? createdByUser?.picture ?? anonymousAvatar : deletedAvatar
   const {submitMutation, submitting, onError, onCompleted} = useMutationProps()
   const [editorState, setEditorState] = useEditorState(content)
   const editorRef = useRef<HTMLTextAreaElement>(null)
@@ -59,7 +67,7 @@ const ThreadedCommentBase = (props: Props) => {
   const replyEditorRef = useRef<HTMLTextAreaElement>(null)
   const [isEditing, setIsEditing] = useState(false)
   const atmosphere = useAtmosphere()
-
+  useFocusedReply(ownerId, replyingToCommentId, ref, replyEditorRef)
   const editComment = () => {
     setIsEditing(true)
     setImmediate(() => {
@@ -84,10 +92,8 @@ const ThreadedCommentBase = (props: Props) => {
   }
 
   const onReply = () => {
-    setReplyingToComment?.(commentId)
-    setImmediate(() => {
-      ref.current?.scrollIntoView({behavior: 'smooth'})
-      replyEditorRef.current?.focus()
+    commitLocalUpdate(atmosphere, (store) => {
+      store.get(meetingId)?.setValue(ownerId, 'replyingToCommentId')
     })
   }
 
@@ -133,7 +139,6 @@ const ThreadedCommentBase = (props: Props) => {
       <BodyCol>
         <ThreadedCommentHeader
           comment={comment}
-          isReplying={isReplying || isReply}
           editComment={editComment}
           onToggleReactji={onToggleReactji}
           onReply={onReply}
@@ -151,7 +156,6 @@ const ThreadedCommentBase = (props: Props) => {
           />
         )}
         <ThreadedCommentFooter
-          isReplying={isReplying || isReply}
           reactjis={reactjis}
           onToggleReactji={onToggleReactji}
           onReply={onReply}
@@ -160,9 +164,7 @@ const ThreadedCommentBase = (props: Props) => {
         <ThreadedCommentReply
           commentId={commentId}
           getMaxSortOrder={getMaxSortOrder}
-          isReplying={isReply ? false : isReplying}
           reflectionGroupId={reflectionGroupId}
-          setReplyingToComment={setReplyingToComment}
           meeting={meeting}
           editorRef={replyEditorRef}
         />
@@ -176,6 +178,8 @@ export default createFragmentContainer(ThreadedCommentBase, {
     fragment ThreadedCommentBase_meeting on RetrospectiveMeeting {
       ...DiscussionThreadInput_meeting
       ...ThreadedCommentReply_meeting
+      id
+      replyingToCommentId
       teamId
     }
   `,
@@ -197,6 +201,7 @@ export default createFragmentContainer(ThreadedCommentBase, {
         id
         threadSortOrder
       }
+      threadParentId
     }
   `
 })

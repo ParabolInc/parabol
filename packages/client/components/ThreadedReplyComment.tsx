@@ -9,18 +9,16 @@ interface Props {
   comment: ThreadedReplyComment_comment
   meeting: ThreadedReplyComment_meeting
   reflectionGroupId: string
-  setReplyingToComment: (commentId: string) => void
 }
 
 export const ThreadedComment = (props: Props) => {
-  const {comment, reflectionGroupId, setReplyingToComment, meeting} = props
+  const {comment, reflectionGroupId, meeting} = props
   return (
     <ThreadedCommentBase
       comment={comment}
       meeting={meeting}
       isReply
       reflectionGroupId={reflectionGroupId}
-      setReplyingToComment={setReplyingToComment}
     />
   )
 }

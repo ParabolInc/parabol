@@ -1,13 +1,13 @@
-import React, {useRef, useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
-import DiscussionThreadList from './DiscussionThreadList'
+import graphql from 'babel-plugin-relay/macro'
+import React, {useRef} from 'react'
+import {createFragmentContainer} from 'react-relay'
 import {DiscussionThreadEnum} from 'types/constEnums'
-import {Elevation} from '../styles/elevation'
-import {DiscussionThread_reflectionGroup} from '__generated__/DiscussionThread_reflectionGroup.graphql'
-import DiscussionThreadInput from './DiscussionThreadInput'
 import {DiscussionThread_meeting} from '__generated__/DiscussionThread_meeting.graphql'
+import {DiscussionThread_reflectionGroup} from '__generated__/DiscussionThread_reflectionGroup.graphql'
+import {Elevation} from '../styles/elevation'
+import DiscussionThreadInput from './DiscussionThreadInput'
+import DiscussionThreadList from './DiscussionThreadList'
 
 const Wrapper = styled('div')({
   background: '#fff',
@@ -28,6 +28,7 @@ interface Props {
 
 const DiscussionThread = (props: Props) => {
   const {meeting, reflectionGroup} = props
+  const {replyingToCommentId} = meeting
   const {id: reflectionGroupId, thread} = reflectionGroup
   const {edges} = thread
   const threadables = edges.map(({node}) => node)
@@ -41,22 +42,18 @@ const DiscussionThread = (props: Props) => {
       listRef.current?.scrollTo({top: 1e6, behavior: 'smooth'})
     })
   }
-  // use a string to guarantee single reply open even when click from reply to reply with full comment
-  const [replyingToComment, setReplyingToComment] = useState('')
   const editorRef = useRef<HTMLTextAreaElement>(null)
   return (
     <Wrapper>
       <DiscussionThreadList
         reflectionGroupId={reflectionGroupId}
         meeting={meeting}
-        replyingToComment={replyingToComment}
-        setReplyingToComment={setReplyingToComment}
         threadables={threadables}
         ref={listRef}
       />
       <DiscussionThreadInput
         editorRef={editorRef}
-        isDisabled={!!replyingToComment}
+        isDisabled={!!replyingToCommentId}
         getMaxSortOrder={getMaxSortOrder}
         meeting={meeting}
         onSubmitSuccess={onSubmitSuccess}
@@ -71,6 +68,7 @@ export default createFragmentContainer(DiscussionThread, {
     fragment DiscussionThread_meeting on RetrospectiveMeeting {
       ...DiscussionThreadInput_meeting
       ...DiscussionThreadList_meeting
+      replyingToCommentId
     }
   `,
   reflectionGroup: graphql`

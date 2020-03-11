@@ -86,7 +86,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     submitMutation()
     const comment = {
       content: rawContent,
-      isAnonymousComment,
+      isAnonymous: isAnonymousComment,
       meetingId,
       threadId: reflectionGroupId,
       threadParentId,

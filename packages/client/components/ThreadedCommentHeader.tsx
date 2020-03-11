@@ -32,23 +32,22 @@ const HeaderResult = styled('div')({
   whiteSpace: 'pre-wrap'
 })
 
-const HeaderActions = styled('div')({
+const HeaderActions = styled('div')<{isViewerComment: boolean}>(({isViewerComment}) => ({
   color: PALETTE.TEXT_GRAY,
   display: 'flex',
-  fontWeight: 600
-  // paddingRight: 12
-})
+  fontWeight: 600,
+  paddingRight: !isViewerComment ? 24 : undefined
+}))
 
 interface Props {
   comment: ThreadedCommentHeader_comment
-  isReplying: boolean
   editComment: () => void
   onToggleReactji: (emojiId: string) => void
   onReply: () => void
 }
 
-const ThreadedComment = (props: Props) => {
-  const {comment, isReplying, onReply, editComment, onToggleReactji} = props
+const ThreadedCommentHeader = (props: Props) => {
+  const {comment, onReply, editComment, onToggleReactji} = props
   const {id: commentId, createdByUser, isActive, isViewerComment, reactjis, updatedAt} = comment
   const name = isActive ? createdByUser?.preferredName ?? 'Anonymous' : 'Messaged Deleted'
   const hasReactjis = reactjis.length > 0
@@ -58,11 +57,11 @@ const ThreadedComment = (props: Props) => {
         <HeaderName>{name}</HeaderName>
         <HeaderResult> {relativeDate(updatedAt)}</HeaderResult>
       </HeaderDescription>
-      <HeaderActions>
+      <HeaderActions isViewerComment={isViewerComment}>
         {!hasReactjis && (
           <>
             <AddReactjiButton onToggle={onToggleReactji} />
-            <ThreadedReplyButton onReply={onReply} isReplying={isReplying} />
+            <ThreadedReplyButton onReply={onReply} />
           </>
         )}
         {isViewerComment && (
@@ -73,7 +72,7 @@ const ThreadedComment = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ThreadedComment, {
+export default createFragmentContainer(ThreadedCommentHeader, {
   comment: graphql`
     fragment ThreadedCommentHeader_comment on Comment {
       id

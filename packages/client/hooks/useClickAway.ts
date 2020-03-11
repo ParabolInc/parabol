@@ -14,11 +14,15 @@ const useClickAway = (
         cb(e)
       }
     }
-    document.addEventListener('mousedown', handler)
-    document.addEventListener('touchstart', handler)
+    // in the future we'll probably change this to mousedown
+    // but for now, the reply needs to trigger later
+    // REPRO: given 2 comments, click reply on 1st, then reply on 2nd
+    // make sure the 2nd reply input opens on click
+    document.addEventListener('click', handler)
+    // document.addEventListener('touchstart', handler)
     return () => {
-      document.removeEventListener('mousedown', handler)
-      document.removeEventListener('touchstart', handler)
+      document.removeEventListener('click', handler)
+      // document.removeEventListener('touchstart', handler)
     }
   }, [ref])
 }

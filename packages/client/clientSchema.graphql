@@ -15,6 +15,7 @@ extend type RetrospectiveMeeting {
   isViewerDragInProgress: Boolean
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
+  replyingToCommentId: String
   showSidebar: Boolean!
 }
 
