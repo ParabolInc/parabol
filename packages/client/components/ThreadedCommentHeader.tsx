@@ -7,7 +7,6 @@ import relativeDate from 'utils/date/relativeDate'
 import {ThreadedCommentHeader_comment} from '__generated__/ThreadedCommentHeader_comment.graphql'
 import CommentAuthorOptionsButton from './CommentAuthorOptionsButton'
 import AddReactjiButton from './ReflectionCard/AddReactjiButton'
-import {ANONYMOUS_COMMENT_USER} from './ThreadedCommentBase'
 import ThreadedReplyButton from './ThreadedReplyButton'
 
 const Header = styled('div')({
@@ -50,13 +49,13 @@ interface Props {
 
 const ThreadedComment = (props: Props) => {
   const {comment, isReplying, onReply, editComment, onToggleReactji} = props
-  const {id: commentId, createdByUser, isViewerComment, reactjis, updatedAt} = comment
-  const {preferredName} = createdByUser || ANONYMOUS_COMMENT_USER
+  const {id: commentId, createdByUser, isActive, isViewerComment, reactjis, updatedAt} = comment
+  const name = isActive ? createdByUser?.preferredName ?? 'Anonymous' : 'Messaged Deleted'
   const hasReactjis = reactjis.length > 0
   return (
     <Header>
       <HeaderDescription>
-        <HeaderName>{preferredName}</HeaderName>
+        <HeaderName>{name}</HeaderName>
         <HeaderResult> {relativeDate(updatedAt)}</HeaderResult>
       </HeaderDescription>
       <HeaderActions>
@@ -81,6 +80,7 @@ export default createFragmentContainer(ThreadedComment, {
       createdByUser {
         preferredName
       }
+      isActive
       isViewerComment
       reactjis {
         id

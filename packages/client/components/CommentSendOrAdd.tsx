@@ -77,15 +77,23 @@ interface Props {
   getMaxSortOrder: () => number
   meeting: CommentSendOrAdd_meeting
   reflectionGroupId: string
+  onSubmit: () => void
 }
 
 const CommentSendOrAdd = (props: Props) => {
-  const {collapseAddTask, commentSubmitState, getMaxSortOrder, meeting, reflectionGroupId} = props
+  const {
+    collapseAddTask,
+    commentSubmitState,
+    getMaxSortOrder,
+    meeting,
+    reflectionGroupId,
+    onSubmit
+  } = props
   const {id: meetingId, teamId} = meeting
   const atmosphere = useAtmosphere()
   if (commentSubmitState === 'send') {
     return (
-      <PlainButton>
+      <PlainButton onClick={onSubmit}>
         <SendIcon>send</SendIcon>
       </PlainButton>
     )

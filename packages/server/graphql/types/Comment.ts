@@ -47,8 +47,8 @@ const Comment = new GraphQLObjectType<any, GQLContext, any>({
     createdByUser: {
       type: require('./User').default,
       description: 'The user that created the item, null if anonymous',
-      resolve: ({createdBy, isAnonymous}, _args, {dataLoader}: GQLContext) => {
-        return isAnonymous ? null : dataLoader.get('users').load(createdBy)
+      resolve: ({createdBy, isActive, isAnonymous}, _args, {dataLoader}: GQLContext) => {
+        return isAnonymous || !isActive ? null : dataLoader.get('users').load(createdBy)
       }
     },
     isActive: {
@@ -64,15 +64,18 @@ const Comment = new GraphQLObjectType<any, GQLContext, any>({
     isViewerComment: {
       type: GraphQLNonNull(GraphQLBoolean),
       description: 'true if the viewer wrote this comment, else false',
-      resolve: ({createdBy}, _args, {authToken}) => {
+      resolve: ({createdBy, isActive}, _args, {authToken}) => {
         const viewerId = getUserId(authToken)
-        return viewerId === createdBy
+        return isActive ? viewerId === createdBy : false
       }
     },
     reactjis: {
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(Reactji))),
       description: 'All the reactjis for the given reflection',
-      resolve: resolveReactjis
+      resolve: (source, args, context) => {
+        const {isActive} = source
+        return isActive ? resolveReactjis(source, args, context) : []
+      }
     }
   })
 })

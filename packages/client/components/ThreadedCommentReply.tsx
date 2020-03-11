@@ -28,7 +28,9 @@ const ThreadedCommentReply = (props: Props) => {
     meeting
   } = props
   const replyRef = useRef<HTMLTextAreaElement>(null)
-  const onSubmitReply = () => {}
+  const onSubmitSuccess = () => {
+    setReplyingToComment('')
+  }
 
   const listeningRef = isReplying ? replyRef : null
   useClickAway(listeningRef, () => {
@@ -41,6 +43,7 @@ const ThreadedCommentReply = (props: Props) => {
       setReplyingToComment('')
     }
   })
+
   if (!isReplying) return null
   return (
     <DiscussionThreadInput
@@ -49,7 +52,7 @@ const ThreadedCommentReply = (props: Props) => {
       isReply
       getMaxSortOrder={getMaxSortOrder}
       meeting={meeting}
-      onSubmit={onSubmitReply}
+      onSubmitSuccess={onSubmitSuccess}
       reflectionGroupId={reflectionGroupId}
       threadParentId={commentId}
     />

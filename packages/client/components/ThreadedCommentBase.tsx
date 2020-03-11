@@ -45,17 +45,13 @@ interface Props {
   setReplyingToComment?: (commentId: string) => void
 }
 
-export const ANONYMOUS_COMMENT_USER = {
-  picture: anonymousAvatar,
-  preferredName: 'Anonymous'
-}
-
 const ThreadedCommentBase = (props: Props) => {
   const {children, comment, reflectionGroupId, isReplying, setReplyingToComment, meeting} = props
   const isReply = !!props.isReply
   const {teamId} = meeting
-  const {id: commentId, content, createdByUser, reactjis, replies} = comment
-  const {picture} = createdByUser || ANONYMOUS_COMMENT_USER
+  const {id: commentId, content, createdByUser, isActive, reactjis, replies} = comment
+  const picture = isActive ? createdByUser?.picture ?? anonymousAvatar : 'delete'
+  // const {picture} = createdByUser || ANONYMOUS_COMMENT_USER
   const {submitMutation, submitting, onError, onCompleted} = useMutationProps()
   const [editorState, setEditorState] = useEditorState(content)
   const editorRef = useRef<HTMLTextAreaElement>(null)
@@ -64,50 +60,10 @@ const ThreadedCommentBase = (props: Props) => {
   const [isEditing, setIsEditing] = useState(false)
   const atmosphere = useAtmosphere()
 
-  const submitComment = () => {
-    if (isTempId(commentId)) return
-    if (isAndroid) {
-      const editorEl = editorRef.current
-      if (!editorEl || editorEl.type !== 'textarea') return
-      const {value} = editorEl
-      const initialContentState = editorState.getCurrentContent()
-      const initialText = initialContentState.getPlainText()
-      if (initialText === value) return
-      submitMutation()
-      UpdateCommentContentMutation(
-        atmosphere,
-        {commentId, content: convertToTaskContent(value)},
-        {onError, onCompleted}
-      )
-      setIsEditing(false)
-      return
-    }
-    const contentState = editorState.getCurrentContent()
-    const nextContent = JSON.stringify(convertToRaw(contentState))
-    if (content === nextContent) return
-    submitMutation()
-    UpdateCommentContentMutation(
-      atmosphere,
-      {commentId, content: nextContent},
-      {onError, onCompleted}
-    )
-    setIsEditing(false)
-  }
-
-  const handleSubmitFallback = () => {}
   const editComment = () => {
     setIsEditing(true)
     setImmediate(() => {
-      const selection = editorState.getSelection()
-      const contentState = editorState.getCurrentContent()
-      const fullSelection = (selection as any).merge({
-        anchorKey: contentState.getLastBlock().getKey(),
-        focusKey: contentState.getLastBlock().getKey(),
-        anchorOffset: contentState.getLastBlock().getLength(),
-        focusOffset: contentState.getLastBlock().getLength()
-      }) as SelectionState
-      const nextEditorState = EditorState.forceSelection(editorState, fullSelection)
-      setEditorState(nextEditorState)
+      setEditorState(EditorState.moveFocusToEnd(editorState))
       editorRef.current?.focus()
     })
   }
@@ -135,6 +91,38 @@ const ThreadedCommentBase = (props: Props) => {
     })
   }
 
+  const onSubmit = () => {
+    if (submitting || isTempId(commentId)) return
+    const editorEl = editorRef.current
+    if (isAndroid) {
+      if (!editorEl || editorEl.type !== 'textarea') return
+      const {value} = editorEl
+      if (!value) return
+      const initialContentState = editorState.getCurrentContent()
+      const initialText = initialContentState.getPlainText()
+      setIsEditing(false)
+      if (initialText === value) return
+      submitMutation()
+      UpdateCommentContentMutation(
+        atmosphere,
+        {commentId, content: convertToTaskContent(value)},
+        {onError, onCompleted}
+      )
+      return
+    }
+    const contentState = editorState.getCurrentContent()
+    if (!contentState.hasText()) return
+    const nextContent = JSON.stringify(convertToRaw(contentState))
+    setIsEditing(false)
+    if (content === nextContent) return
+    submitMutation()
+    UpdateCommentContentMutation(
+      atmosphere,
+      {commentId, content: nextContent},
+      {onError, onCompleted}
+    )
+  }
+
   const getMaxSortOrder = () => {
     return replies ? Math.max(0, ...replies.map((reply) => reply.threadSortOrder || 0)) : 0
   }
@@ -150,17 +138,18 @@ const ThreadedCommentBase = (props: Props) => {
           onToggleReactji={onToggleReactji}
           onReply={onReply}
         />
-        <CommentEditor
-          editorRef={editorRef}
-          teamId={teamId}
-          editorState={editorState}
-          handleSubmitFallback={handleSubmitFallback}
-          setEditorState={setEditorState}
-          onBlur={submitComment}
-          submitComment={submitComment}
-          readOnly={!isEditing}
-          placeholder={'Edit your comment'}
-        />
+        {isActive && (
+          <CommentEditor
+            editorRef={editorRef}
+            teamId={teamId}
+            editorState={editorState}
+            setEditorState={setEditorState}
+            onBlur={onSubmit}
+            onSubmit={onSubmit}
+            readOnly={!isEditing}
+            placeholder={'Edit your comment'}
+          />
+        )}
         <ThreadedCommentFooter
           isReplying={isReplying || isReply}
           reactjis={reactjis}
@@ -194,6 +183,7 @@ export default createFragmentContainer(ThreadedCommentBase, {
     fragment ThreadedCommentBase_comment on Comment {
       ...ThreadedCommentHeader_comment
       id
+      isActive
       content
       createdByUser {
         picture
@@ -205,6 +195,7 @@ export default createFragmentContainer(ThreadedCommentBase, {
       }
       replies {
         id
+        threadSortOrder
       }
     }
   `

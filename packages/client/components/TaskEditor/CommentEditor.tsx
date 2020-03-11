@@ -50,10 +50,9 @@ type DraftProps = Pick<
 
 interface Props extends DraftProps {
   editorRef: RefObject<HTMLTextAreaElement>
-  handleSubmitFallback: () => void
   placeholder: string
   setEditorState: (newEditorState: EditorState) => void
-  submitComment: (rawContent: string) => void
+  onSubmit: () => void
   teamId: string
 }
 
@@ -65,8 +64,7 @@ const CommentEditor = (props: Props) => {
     readOnly,
     setEditorState,
     onFocus,
-    handleSubmitFallback,
-    submitComment,
+    onSubmit,
     onBlur
   } = props
   const entityPasteStartRef = useRef<{anchorOffset: number; anchorKey: string} | undefined>()
@@ -113,10 +111,9 @@ const CommentEditor = (props: Props) => {
     const res = handleReturn?.(e, editorState)
     if (res === 'handled') return res
     if (e.shiftKey) return 'not-handled'
-    const content = editorState.getCurrentContent()
-    if (content.hasText() && !renderModal) {
-      submitComment(JSON.stringify(convertToRaw(content)))
-    }
+    // TODO see if this is right
+    if (renderModal) return 'handled'
+    onSubmit()
     return 'handled'
   }
 
@@ -168,7 +165,7 @@ const CommentEditor = (props: Props) => {
   const onKeyDownFallback = (e: React.KeyboardEvent<Element>) => {
     if (e.key !== 'Enter' || e.shiftKey) return
     e.preventDefault()
-    handleSubmitFallback()
+    onSubmit()
   }
 
   const useFallback = isAndroid && !readOnly

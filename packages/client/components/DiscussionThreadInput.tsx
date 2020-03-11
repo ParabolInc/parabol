@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {EditorState} from 'draft-js'
+import {EditorState, convertToRaw} from 'draft-js'
 import useAtmosphere from 'hooks/useAtmosphere'
 import useEditorState from 'hooks/useEditorState'
 import useMutationProps from 'hooks/useMutationProps'
@@ -17,6 +17,7 @@ import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import Avatar from './Avatar/Avatar'
 import CommentSendOrAdd from './CommentSendOrAdd'
 import CommentEditor from './TaskEditor/CommentEditor'
+import isAndroid from 'utils/draftjs/isAndroid'
 
 const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisabled, isReply}) => ({
   alignItems: 'center',
@@ -39,7 +40,7 @@ interface Props {
   editorRef: RefObject<HTMLTextAreaElement>
   getMaxSortOrder: () => number
   meeting: DiscussionThreadInput_meeting
-  onSubmit: () => void
+  onSubmitSuccess: () => void
   reflectionGroupId: string
   threadParentId?: string
   isReply?: boolean
@@ -47,7 +48,14 @@ interface Props {
 }
 
 const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
-  const {editorRef, getMaxSortOrder, meeting, onSubmit, reflectionGroupId, threadParentId} = props
+  const {
+    editorRef,
+    getMaxSortOrder,
+    meeting,
+    onSubmitSuccess,
+    reflectionGroupId,
+    threadParentId
+  } = props
   const isReply = !!props.isReply
   const isDisabled = !!props.isDisabled
   const {id: meetingId, isAnonymousComment, teamId, viewerMeetingMember} = meeting
@@ -74,8 +82,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     }
   }
 
-  const submitComment = (rawContent: string) => {
-    if (submitting) return
+  const addComment = (rawContent: string) => {
     submitMutation()
     const comment = {
       content: rawContent,
@@ -89,15 +96,22 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     AddCommentMutation(atmosphere, {comment}, {onError, onCompleted})
     // move focus to end is very important! otherwise ghost chars appear
     setEditorState(EditorState.moveFocusToEnd(EditorState.createEmpty()))
-    onSubmit()
+    onSubmitSuccess()
   }
 
-  const handleSubmitFallback = () => {
+  const onSubmit = () => {
+    if (submitting) return
     const editorEl = editorRef.current
-    if (!editorEl || editorEl.type !== 'textarea') return
-    const {value} = editorEl
-    if (!value) return
-    submitComment(convertToTaskContent(value))
+    if (isAndroid) {
+      if (!editorEl || editorEl.type !== 'textarea') return
+      const {value} = editorEl
+      if (!value) return
+      addComment(convertToTaskContent(value))
+      return
+    }
+    const content = editorState.getCurrentContent()
+    if (!content.hasText()) return
+    addComment(JSON.stringify(convertToRaw(content)))
   }
 
   const avatar = isAnonymousComment ? anonymousAvatar : picture
@@ -108,9 +122,8 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
         teamId={teamId}
         editorRef={editorRef}
         editorState={editorState}
-        handleSubmitFallback={handleSubmitFallback}
+        onSubmit={onSubmit}
         setEditorState={setEditorState}
-        submitComment={submitComment}
         placeholder={placeholder}
         onFocus={collapseAddTask}
       />
@@ -120,6 +133,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
         meeting={meeting}
         reflectionGroupId={reflectionGroupId}
         collapseAddTask={collapseAddTask}
+        onSubmit={onSubmit}
       />
     </Wrapper>
   )
