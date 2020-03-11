@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {ThreadedComment_comment} from '__generated__/ThreadedComment_comment.graphql'
 import {ThreadedComment_meeting} from '__generated__/ThreadedComment_meeting.graphql'
@@ -12,15 +12,31 @@ interface Props {
   reflectionGroupId: string
 }
 
+export type ReplyMention = {
+  userId: string
+  preferredName: string
+} | null
+
+export type SetReplyMention = (replyMention: ReplyMention) => void
+
 export const ThreadedComment = (props: Props) => {
   const {comment, reflectionGroupId, meeting} = props
   const {replies} = comment
+  const [replyMention, setReplyMention] = useState<ReplyMention>(null)
+
   return (
-    <ThreadedCommentBase comment={comment} meeting={meeting} reflectionGroupId={reflectionGroupId}>
+    <ThreadedCommentBase
+      comment={comment}
+      meeting={meeting}
+      reflectionGroupId={reflectionGroupId}
+      replyMention={replyMention}
+      setReplyMention={setReplyMention}
+    >
       <ThreadedRepliesList
         meeting={meeting}
         replies={replies}
         reflectionGroupId={reflectionGroupId}
+        setReplyMention={setReplyMention}
       />
     </ThreadedCommentBase>
   )

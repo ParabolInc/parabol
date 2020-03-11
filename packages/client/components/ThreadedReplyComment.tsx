@@ -4,21 +4,24 @@ import {createFragmentContainer} from 'react-relay'
 import {ThreadedReplyComment_comment} from '__generated__/ThreadedReplyComment_comment.graphql'
 import {ThreadedReplyComment_meeting} from '__generated__/ThreadedReplyComment_meeting.graphql'
 import ThreadedCommentBase from './ThreadedCommentBase'
+import {SetReplyMention} from './ThreadedComment'
 
 interface Props {
   comment: ThreadedReplyComment_comment
   meeting: ThreadedReplyComment_meeting
   reflectionGroupId: string
+  setReplyMention: SetReplyMention
 }
 
 export const ThreadedComment = (props: Props) => {
-  const {comment, reflectionGroupId, meeting} = props
+  const {comment, setReplyMention, reflectionGroupId, meeting} = props
   return (
     <ThreadedCommentBase
       comment={comment}
       meeting={meeting}
       isReply
       reflectionGroupId={reflectionGroupId}
+      setReplyMention={setReplyMention}
     />
   )
 }

@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {EditorState, convertToRaw} from 'draft-js'
+import {convertToRaw, EditorState} from 'draft-js'
 import useAtmosphere from 'hooks/useAtmosphere'
-import useEditorState from 'hooks/useEditorState'
 import useMutationProps from 'hooks/useMutationProps'
+import useReplyEditorState from 'hooks/useReplyEditorState'
 import AddCommentMutation from 'mutations/AddCommentMutation'
 import React, {forwardRef, RefObject, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
@@ -12,12 +12,13 @@ import {ThreadSourceEnum} from 'types/graphql'
 import {SORT_STEP} from 'utils/constants'
 import dndNoise from 'utils/dndNoise'
 import convertToTaskContent from 'utils/draftjs/convertToTaskContent'
+import isAndroid from 'utils/draftjs/isAndroid'
 import {DiscussionThreadInput_meeting} from '__generated__/DiscussionThreadInput_meeting.graphql'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import Avatar from './Avatar/Avatar'
 import CommentSendOrAdd from './CommentSendOrAdd'
 import CommentEditor from './TaskEditor/CommentEditor'
-import isAndroid from 'utils/draftjs/isAndroid'
+import {ReplyMention, SetReplyMention} from './ThreadedComment'
 
 const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisabled, isReply}) => ({
   alignItems: 'center',
@@ -45,6 +46,8 @@ interface Props {
   threadParentId?: string
   isReply?: boolean
   isDisabled?: boolean
+  setReplyMention?: SetReplyMention
+  replyMention?: ReplyMention
 }
 
 const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
@@ -54,15 +57,16 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     meeting,
     onSubmitSuccess,
     reflectionGroupId,
-    threadParentId
+    threadParentId,
+    replyMention,
+    setReplyMention
   } = props
   const isReply = !!props.isReply
   const isDisabled = !!props.isDisabled
   const {id: meetingId, isAnonymousComment, teamId, viewerMeetingMember} = meeting
   const {user} = viewerMeetingMember
   const {picture} = user
-
-  const [editorState, setEditorState] = useEditorState()
+  const [editorState, setEditorState] = useReplyEditorState(replyMention, setReplyMention)
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
   const placeholder = isAnonymousComment ? 'Comment anonymously' : 'Comment publically'

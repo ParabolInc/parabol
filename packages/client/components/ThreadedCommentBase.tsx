@@ -22,6 +22,7 @@ import ThreadedCommentFooter from './ThreadedCommentFooter'
 import ThreadedCommentHeader from './ThreadedCommentHeader'
 import ThreadedCommentReply from './ThreadedCommentReply'
 import useFocusedReply from './useFocusedReply'
+import {SetReplyMention, ReplyMention} from './ThreadedComment'
 
 const Wrapper = styled('div')<{isReply: boolean}>(({isReply}) => ({
   display: 'flex',
@@ -43,10 +44,12 @@ interface Props {
   meeting: ThreadedCommentBase_meeting
   isReply?: boolean // this comment is a reply & should be indented
   reflectionGroupId: string
+  setReplyMention: SetReplyMention
+  replyMention?: ReplyMention
 }
 
 const ThreadedCommentBase = (props: Props) => {
-  const {children, comment, reflectionGroupId, meeting} = props
+  const {children, comment, reflectionGroupId, replyMention, setReplyMention, meeting} = props
   const isReply = !!props.isReply
   const {id: meetingId, replyingToCommentId, teamId} = meeting
   const {
@@ -92,6 +95,12 @@ const ThreadedCommentBase = (props: Props) => {
   }
 
   const onReply = () => {
+    if (createdByUser && threadParentId) {
+      const {id: userId, preferredName} = createdByUser
+      console.log('setting', preferredName)
+      setReplyMention({userId, preferredName})
+    }
+
     commitLocalUpdate(atmosphere, (store) => {
       store.get(meetingId)?.setValue(ownerId, 'replyingToCommentId')
     })
@@ -167,6 +176,8 @@ const ThreadedCommentBase = (props: Props) => {
           reflectionGroupId={reflectionGroupId}
           meeting={meeting}
           editorRef={replyEditorRef}
+          replyMention={replyMention}
+          setReplyMention={setReplyMention}
         />
       </BodyCol>
     </Wrapper>
@@ -190,6 +201,8 @@ export default createFragmentContainer(ThreadedCommentBase, {
       isActive
       content
       createdByUser {
+        id
+        preferredName
         picture
       }
       reactjis {

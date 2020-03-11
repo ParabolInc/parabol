@@ -2,7 +2,7 @@ import {useRef, useEffect, RefObject} from 'react'
 
 const useFocusedReply = (
   ownerId: string,
-  replyingToCommentId: string,
+  replyingToCommentId: string | null,
   commentRef: RefObject<HTMLDivElement>,
   replyEditorRef: RefObject<HTMLTextAreaElement>
 ) => {

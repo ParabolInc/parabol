@@ -5,15 +5,17 @@ import {ThreadedRepliesList_meeting} from '__generated__/ThreadedRepliesList_mee
 import {ThreadedRepliesList_replies} from '__generated__/ThreadedRepliesList_replies.graphql'
 import ThreadedReplyComment from './ThreadedReplyComment'
 import ThreadedTask from './ThreadedTask'
+import {SetReplyMention} from './ThreadedComment'
 
 interface Props {
   meeting: ThreadedRepliesList_meeting
   reflectionGroupId: string
   replies: ThreadedRepliesList_replies
+  setReplyMention: SetReplyMention
 }
 
 const ThreadedRepliesList = (props: Props) => {
-  const {replies, meeting, reflectionGroupId} = props
+  const {replies, setReplyMention, meeting, reflectionGroupId} = props
   return (
     <>
       {replies.map((reply) => {
@@ -26,6 +28,7 @@ const ThreadedRepliesList = (props: Props) => {
             comment={reply}
             meeting={meeting}
             reflectionGroupId={reflectionGroupId}
+            setReplyMention={setReplyMention}
           />
         )
       })}

@@ -7,6 +7,7 @@ import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import isAndroid from 'utils/draftjs/isAndroid'
 import {ThreadedCommentReply_meeting} from '__generated__/ThreadedCommentReply_meeting.graphql'
 import DiscussionThreadInput from './DiscussionThreadInput'
+import {ReplyMention, SetReplyMention} from './ThreadedComment'
 
 interface Props {
   commentId: string
@@ -14,10 +15,20 @@ interface Props {
   getMaxSortOrder: () => number
   reflectionGroupId: string
   meeting: ThreadedCommentReply_meeting
+  replyMention?: ReplyMention
+  setReplyMention: SetReplyMention
 }
 
 const ThreadedCommentReply = (props: Props) => {
-  const {commentId, editorRef, getMaxSortOrder, reflectionGroupId, meeting} = props
+  const {
+    replyMention,
+    commentId,
+    editorRef,
+    getMaxSortOrder,
+    reflectionGroupId,
+    meeting,
+    setReplyMention
+  } = props
   const {id: meetingId, replyingToCommentId} = meeting
   const isReplying = replyingToCommentId === commentId
   const replyRef = useRef<HTMLTextAreaElement>(null)
@@ -46,10 +57,12 @@ const ThreadedCommentReply = (props: Props) => {
       ref={replyRef}
       editorRef={editorRef}
       isReply
+      replyMention={replyMention}
       getMaxSortOrder={getMaxSortOrder}
       meeting={meeting}
       onSubmitSuccess={clearReplyingToCommentId}
       reflectionGroupId={reflectionGroupId}
+      setReplyMention={setReplyMention}
       threadParentId={commentId}
     />
   )
