@@ -21,7 +21,7 @@ const Wrapper = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   overflow: 'auto',
-  paddingTop: 8
+  padding: 8
 })
 
 // https://stackoverflow.com/questions/36130760/use-justify-content-flex-end-and-to-have-vertical-scrollbar
@@ -79,14 +79,8 @@ export default createFragmentContainer(DiscussionThreadList, {
     fragment DiscussionThreadList_threadables on Threadable @relay(plural: true) {
       ...ThreadedTask_task
       ...ThreadedComment_comment
-      ... on Comment {
-        reactjis {
-          id
-        }
-      }
       __typename
       id
-      content
     }
   `
 })

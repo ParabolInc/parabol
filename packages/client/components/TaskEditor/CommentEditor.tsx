@@ -39,7 +39,13 @@ const TaskEditorFallback = styled(AndroidEditorFallback)({
 
 type DraftProps = Pick<
   EditorProps,
-  'editorState' | 'handleBeforeInput' | 'handleKeyCommand' | 'keyBindingFn' | 'readOnly' | 'onFocus'
+  | 'editorState'
+  | 'handleBeforeInput'
+  | 'handleKeyCommand'
+  | 'keyBindingFn'
+  | 'readOnly'
+  | 'onFocus'
+  | 'onBlur'
 >
 
 interface Props extends DraftProps {
@@ -60,13 +66,15 @@ const CommentEditor = (props: Props) => {
     setEditorState,
     onFocus,
     handleSubmitFallback,
-    submitComment
+    submitComment,
+    onBlur
   } = props
   const entityPasteStartRef = useRef<{anchorOffset: number; anchorKey: string} | undefined>()
   const {
     removeModal,
     renderModal,
     handleChange,
+    handleReturn,
     handleBeforeInput,
     handleKeyCommand,
     keyBindingFn
@@ -102,9 +110,11 @@ const CommentEditor = (props: Props) => {
   }
 
   const onReturn = (e) => {
+    const res = handleReturn?.(e, editorState)
+    if (res === 'handled') return res
     if (e.shiftKey) return 'not-handled'
     const content = editorState.getCurrentContent()
-    if (content.hasText()) {
+    if (content.hasText() && !renderModal) {
       submitComment(JSON.stringify(convertToRaw(content)))
     }
     return 'handled'
@@ -170,6 +180,7 @@ const CommentEditor = (props: Props) => {
           <TaskEditorFallback
             editorState={editorState}
             placeholder={placeholder}
+            onBlur={onBlur}
             onKeyDown={onKeyDownFallback}
             editorRef={editorRef}
           />
@@ -184,6 +195,7 @@ const CommentEditor = (props: Props) => {
           handlePastedText={onPastedText}
           handleReturn={onReturn}
           keyBindingFn={onKeyBindingFn}
+          onBlur={onBlur}
           onChange={onChange}
           onFocus={onFocus}
           placeholder={placeholder}

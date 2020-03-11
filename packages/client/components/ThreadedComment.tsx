@@ -20,11 +20,16 @@ import ThreadedAvatarColumn from './ThreadedAvatarColumn'
 import ThreadedCommentFooter from './ThreadedCommentFooter'
 import ThreadedCommentHeader from './ThreadedCommentHeader'
 import ThreadedCommentReply from './ThreadedCommentReply'
+import ThreadedRepliesList from './ThreadedRepliesList'
+import {ThreadedReplyComment_comment} from '__generated__/ThreadedReplyComment_comment.graphql'
+import {ThreadedReplyComment_meeting} from '__generated__/ThreadedReplyComment_meeting.graphql'
+import ThreadedCommentBase from './ThreadedCommentBase'
 
-const Wrapper = styled('div')({
+const Wrapper = styled('div')(({isReply}) => ({
   display: 'flex',
+  paddingLeft: isReply ? 16 : undefined,
   width: '100%'
-})
+}))
 
 const BodyCol = styled('div')({
   display: 'flex',
@@ -36,156 +41,43 @@ const BodyCol = styled('div')({
 interface Props {
   comment: ThreadedComment_comment
   meeting: ThreadedComment_meeting
-  isReplying: boolean
+  isReplying: boolean // the replying input is currently open
   reflectionGroupId: string
   setReplyingToComment: (commentId: string) => void
 }
 
-export const ANONYMOUS_COMMENT_USER = {
-  picture: anonymousAvatar,
-  preferredName: 'Anonymous'
-}
-
-const ThreadedComment = (props: Props) => {
+export const ThreadedComment = (props: Props) => {
   const {comment, reflectionGroupId, isReplying, setReplyingToComment, meeting} = props
-  const {teamId} = meeting
-  const {id: commentId, content, createdByUser, reactjis} = comment
-  const {picture} = createdByUser || ANONYMOUS_COMMENT_USER
-  const {submitMutation, submitting, onError, onCompleted} = useMutationProps()
-  const [editorState, setEditorState] = useEditorState(content)
-  const editorRef = useRef<HTMLTextAreaElement>(null)
-  const ref = useRef<HTMLDivElement>(null)
-  const replyEditorRef = useRef<HTMLTextAreaElement>(null)
-  const [isEditing, setIsEditing] = useState(false)
-  const atmosphere = useAtmosphere()
-  const submitComment = () => {
-    if (isTempId(commentId)) return
-    if (isAndroid) {
-      const editorEl = editorRef.current
-      if (!editorEl || editorEl.type !== 'textarea') return
-      const {value} = editorEl
-      const initialContentState = editorState.getCurrentContent()
-      const initialText = initialContentState.getPlainText()
-      if (initialText === value) return
-      submitMutation()
-      UpdateCommentContentMutation(
-        atmosphere,
-        {commentId, content: convertToTaskContent(value)},
-        {onError, onCompleted}
-      )
-      return
-    }
-    const contentState = editorState.getCurrentContent()
-    const nextContent = JSON.stringify(convertToRaw(contentState))
-    if (content === nextContent) return
-    submitMutation()
-    UpdateCommentContentMutation(
-      atmosphere,
-      {commentId, content: nextContent},
-      {onError, onCompleted}
-    )
-  }
-
-  const handleSubmitFallback = () => {}
-  const editComment = () => {
-    setIsEditing(true)
-    setImmediate(() => {
-      const selection = editorState.getSelection()
-      const contentState = editorState.getCurrentContent()
-      const fullSelection = (selection as any).merge({
-        anchorKey: contentState.getLastBlock().getKey(),
-        focusKey: contentState.getLastBlock().getKey(),
-        anchorOffset: contentState.getLastBlock().getLength(),
-        focusOffset: contentState.getLastBlock().getLength()
-      }) as SelectionState
-      const nextEditorState = EditorState.forceSelection(editorState, fullSelection)
-      setEditorState(nextEditorState)
-      editorRef.current?.focus()
-    })
-  }
-
-  const onToggleReactji = (emojiId: string) => {
-    if (submitting) return
-    const isRemove = !!reactjis.find((reactji) => {
-      return reactji.isViewerReactji && reactji.id.split(':')[1] === emojiId
-    })
-    submitMutation()
-    AddReactjiToReactableMutation(
-      atmosphere,
-      {reactableType: ReactableEnum.COMMENT, reactableId: commentId, isRemove, reactji: emojiId},
-      {onCompleted, onError}
-    )
-    // when the reactjis move to the bottom & increase the height, make sure they're visible
-    setImmediate(() => ref.current?.scrollIntoView({behavior: 'smooth'}))
-  }
-
-  const onReply = () => {
-    setReplyingToComment(commentId)
-    setImmediate(() => {
-      ref.current?.scrollIntoView({behavior: 'smooth'})
-      replyEditorRef.current?.focus()
-    })
-  }
-
+  const {replies} = comment
   return (
-    <Wrapper ref={ref}>
-      <ThreadedAvatarColumn picture={picture} />
-      <BodyCol>
-        <ThreadedCommentHeader
-          comment={comment}
-          isReplying={isReplying}
-          editComment={editComment}
-          onToggleReactji={onToggleReactji}
-          onReply={onReply}
-        />
-        <CommentEditor
-          editorRef={editorRef}
-          teamId={teamId}
-          editorState={editorState}
-          handleSubmitFallback={handleSubmitFallback}
-          setEditorState={setEditorState}
-          submitComment={submitComment}
-          readOnly={!isEditing}
-          placeholder={'Edit your comment'}
-        />
-        <ThreadedCommentFooter
-          isReplying={isReplying}
-          reactjis={reactjis}
-          onToggleReactji={onToggleReactji}
-          onReply={onReply}
-        />
-        <ThreadedCommentReply
-          isReplying={isReplying}
-          reflectionGroupId={reflectionGroupId}
-          setReplyingToComment={setReplyingToComment}
-          meeting={meeting}
-          editorRef={replyEditorRef}
-        />
-      </BodyCol>
-    </Wrapper>
+    <ThreadedCommentBase
+      comment={comment}
+      meeting={meeting}
+      isReplying={isReplying}
+      reflectionGroupId={reflectionGroupId}
+      setReplyingToComment={setReplyingToComment}
+    >
+      <ThreadedRepliesList
+        meeting={meeting}
+        replies={replies}
+        reflectionGroupId={reflectionGroupId}
+      />
+    </ThreadedCommentBase>
   )
 }
 
 export default createFragmentContainer(ThreadedComment, {
   meeting: graphql`
     fragment ThreadedComment_meeting on RetrospectiveMeeting {
-      ...DiscussionThreadInput_meeting
-      ...ThreadedCommentReply_meeting
-      teamId
+      ...ThreadedCommentBase_meeting
+      ...ThreadedRepliesList_meeting
     }
   `,
   comment: graphql`
     fragment ThreadedComment_comment on Comment {
-      ...ThreadedCommentHeader_comment
-      id
-      content
-      createdByUser {
-        picture
-      }
-      reactjis {
-        ...ThreadedCommentFooter_reactjis
-        id
-        isViewerReactji
+      ...ThreadedCommentBase_comment
+      replies {
+        ...ThreadedRepliesList_replies
       }
     }
   `

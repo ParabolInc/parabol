@@ -8,7 +8,9 @@ import {ThreadedCommentReply_meeting} from '__generated__/ThreadedCommentReply_m
 import DiscussionThreadInput from './DiscussionThreadInput'
 
 interface Props {
+  commentId: string
   editorRef: RefObject<HTMLTextAreaElement>
+  getMaxSortOrder: () => number
   isReplying: boolean
   reflectionGroupId: string
   setReplyingToComment: (commentId: string) => void
@@ -16,13 +18,16 @@ interface Props {
 }
 
 const ThreadedCommentReply = (props: Props) => {
-  const {editorRef, reflectionGroupId, isReplying, setReplyingToComment, meeting} = props
+  const {
+    commentId,
+    editorRef,
+    getMaxSortOrder,
+    reflectionGroupId,
+    isReplying,
+    setReplyingToComment,
+    meeting
+  } = props
   const replyRef = useRef<HTMLTextAreaElement>(null)
-
-  const getMaxSortOrder = () => {
-    return 0
-  }
-
   const onSubmitReply = () => {}
 
   const listeningRef = isReplying ? replyRef : null
@@ -46,6 +51,7 @@ const ThreadedCommentReply = (props: Props) => {
       meeting={meeting}
       onSubmit={onSubmitReply}
       reflectionGroupId={reflectionGroupId}
+      threadParentId={commentId}
     />
   )
 }

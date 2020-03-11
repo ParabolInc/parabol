@@ -7,7 +7,7 @@ import relativeDate from 'utils/date/relativeDate'
 import {ThreadedCommentHeader_comment} from '__generated__/ThreadedCommentHeader_comment.graphql'
 import CommentAuthorOptionsButton from './CommentAuthorOptionsButton'
 import AddReactjiButton from './ReflectionCard/AddReactjiButton'
-import {ANONYMOUS_COMMENT_USER} from './ThreadedComment'
+import {ANONYMOUS_COMMENT_USER} from './ThreadedCommentBase'
 import ThreadedReplyButton from './ThreadedReplyButton'
 
 const Header = styled('div')({
@@ -36,8 +36,8 @@ const HeaderResult = styled('div')({
 const HeaderActions = styled('div')({
   color: PALETTE.TEXT_GRAY,
   display: 'flex',
-  fontWeight: 600,
-  paddingRight: 12
+  fontWeight: 600
+  // paddingRight: 12
 })
 
 interface Props {

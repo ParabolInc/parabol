@@ -4,13 +4,11 @@ import styled from '@emotion/styled'
 import Avatar from './Avatar/Avatar'
 
 const AvatarCol = styled('div')({
-  display: 'flex'
+  display: 'flex',
+  paddingRight: 12
 })
 
-const ColumnAvatar = styled(Avatar)({
-  margin: 12,
-  marginTop: 0
-})
+const ColumnAvatar = styled(Avatar)({})
 
 interface Props {
   picture: string | null

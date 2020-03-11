@@ -24,6 +24,7 @@ const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisab
   display: 'flex',
   boxShadow: isReply ? Elevation.Z2 : Elevation.DISCUSSION_INPUT,
   opacity: isDisabled ? 0.5 : undefined,
+  marginLeft: isReply ? -12 : undefined,
   pointerEvents: isDisabled ? 'none' : undefined,
   // required for the shadow to overlay draft-js in the task cards
   zIndex: 0
@@ -40,12 +41,13 @@ interface Props {
   meeting: DiscussionThreadInput_meeting
   onSubmit: () => void
   reflectionGroupId: string
+  threadParentId?: string
   isReply?: boolean
   isDisabled?: boolean
 }
 
 const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
-  const {editorRef, getMaxSortOrder, meeting, onSubmit, reflectionGroupId} = props
+  const {editorRef, getMaxSortOrder, meeting, onSubmit, reflectionGroupId, threadParentId} = props
   const isReply = !!props.isReply
   const isDisabled = !!props.isDisabled
   const {id: meetingId, isAnonymousComment, teamId, viewerMeetingMember} = meeting
@@ -80,6 +82,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       isAnonymousComment,
       meetingId,
       threadId: reflectionGroupId,
+      threadParentId,
       threadSource: ThreadSourceEnum.REFLECTION_GROUP,
       threadSortOrder: getMaxSortOrder() + SORT_STEP + dndNoise()
     }

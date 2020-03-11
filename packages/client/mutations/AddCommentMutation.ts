@@ -8,6 +8,7 @@ import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import {AddCommentMutation as TAddCommentMutation} from '../__generated__/AddCommentMutation.graphql'
 import getReflectionGroupThreadConn from './connections/getReflectionGroupThreadConn'
 import safePutNodeInConn from './handlers/safePutNodeInConn'
+import addNodeToArray from 'utils/relay/addNodeToArray'
 
 graphql`
   fragment AddCommentMutation_meeting on AddCommentSuccess {
@@ -16,6 +17,7 @@ graphql`
       threadSource
       threadId
       threadSortOrder
+      threadParentId
     }
   }
 `
@@ -40,6 +42,13 @@ export const addCommentMeetingUpdater: SharedUpdater<AddCommentMutation_meeting>
   const comment = payload.getLinkedRecord('comment')
   if (!comment) return
   const threadSource = comment.getValue('threadSource')
+  const threadParentId = comment.getValue('threadParentId')
+  if (threadParentId) {
+    const threadParent = store.get(threadParentId)
+    if (!threadParent) return
+    addNodeToArray(comment, threadParent, 'replies', 'threadSortOrder')
+    return
+  }
   const reflectionGroupId =
     threadSource === ThreadSourceEnum.REFLECTION_GROUP ? comment.getValue('threadId') : undefined
   if (reflectionGroupId) {
@@ -72,12 +81,12 @@ const AddCommentMutation: StandardMutation<TAddCommentMutation> = (
         updatedAt: now,
         createdBy: viewerId,
         comtent: comment.content || makeEmptyStr(),
-        isViewerComment: true,
-        reactjis: []
+        isViewerComment: true
       })
         .setLinkedRecord(store.get(viewerId)!, 'user')
         .setLinkedRecord(viewer, 'createdByUser')
         .setLinkedRecords([], 'reactjis')
+        .setLinkedRecords([], 'replies')
       const payload = createProxyRecord(store, 'payload', {})
       payload.setLinkedRecord(optimisticComment, 'comment')
       addCommentMeetingUpdater(payload as any, {atmosphere, store})
