@@ -1,10 +1,16 @@
 import GoogleLanguageManager from './GoogleLanguageManager'
 
+const clientEmail = process.env.GOOGLE_CLOUD_CLIENT_EMAIL
+const privateKey = process.env.GOOGLE_CLOUD_PRIVATE_KEY
+const privateKeyId = process.env.GOOGLE_CLOUD_PRIVATE_KEY_ID
+
 let languageManager: GoogleLanguageManager
 const getGoogleLanguageManager = () => {
   if (!languageManager) {
-    const serviceAccount = require(process.env.GOOGLE_APPLICATION_CREDENTIALS!)
-    languageManager = new GoogleLanguageManager(serviceAccount)
+    if (!clientEmail || !privateKeyId || !privateKey) {
+      throw new Error('Missing Google Cloud Credentials in ENV')
+    }
+    languageManager = new GoogleLanguageManager({clientEmail, privateKey, privateKeyId})
   }
   return languageManager
 }
