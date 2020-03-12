@@ -50,9 +50,9 @@ interface GoogleError {
 }
 
 interface CloudKey {
-  client_email: string
-  private_key_id: string
-  private_key: string
+  clientEmail: string
+  privateKeyId: string
+  privateKey: string
 }
 
 export type GoogleErrorResponse = [
@@ -75,13 +75,13 @@ export default class GoogleLanguageManager {
   }
 
   refreshJWT() {
-    const {client_email, private_key_id, private_key} = this.cloudKey
-    this.jwt = sign({}, private_key, {
+    const {clientEmail, privateKeyId, privateKey} = this.cloudKey
+    this.jwt = sign({}, privateKey, {
       algorithm: 'RS256',
       audience: 'https://language.googleapis.com/',
-      subject: client_email,
-      issuer: client_email,
-      keyid: private_key_id,
+      subject: clientEmail,
+      issuer: clientEmail,
+      keyid: privateKeyId,
       expiresIn: GoogleLanguageManager.GOOGLE_EXPIRY
     })
   }
