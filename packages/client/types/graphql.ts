@@ -4585,6 +4585,11 @@ export interface IRetrospectiveMeeting {
   nextAutoGroupThreshold: number | null
 
   /**
+   * a single reflection group
+   */
+  reflectionGroup: IRetroReflectionGroup | null
+
+  /**
    * The grouped reflections
    */
   reflectionGroups: Array<IRetroReflectionGroup>
@@ -4608,6 +4613,10 @@ export interface IRetrospectiveMeeting {
    * The sum total of the votes remaining for the meeting members that are present in the meeting
    */
   votesRemaining: number
+}
+
+export interface IReflectionGroupOnRetrospectiveMeetingArguments {
+  reflectionGroupId: string
 }
 
 export interface IReflectionGroupsOnRetrospectiveMeetingArguments {
@@ -4646,13 +4655,6 @@ export interface IRetrospectiveMeetingMember {
    */
   tasks: Array<ITask>
   votesRemaining: number
-}
-
-/**
- * sorts for the reflection group. default is sortOrder. sorting by voteCount filters out items without votes.
- */
-export const enum ReflectionGroupSortEnum {
-  voteCount = 'voteCount'
 }
 
 /**
@@ -4885,6 +4887,13 @@ export interface IThreadableEdge {
    */
   node: Threadable
   cursor: string | null
+}
+
+/**
+ * sorts for the reflection group. default is sortOrder. sorting by voteCount filters out items without votes.
+ */
+export const enum ReflectionGroupSortEnum {
+  voteCount = 'voteCount'
 }
 
 /**

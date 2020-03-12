@@ -48,7 +48,6 @@ type DraftProps = Pick<
 >
 
 interface Props extends DraftProps {
-  autoFocus: boolean
   editorRef: RefObject<HTMLTextAreaElement>
   placeholder: string
   setEditorState: (newEditorState: EditorState) => void
@@ -58,7 +57,6 @@ interface Props extends DraftProps {
 
 const CommentEditor = (props: Props) => {
   const {
-    autoFocus,
     editorRef,
     editorState,
     placeholder,
@@ -109,13 +107,14 @@ const CommentEditor = (props: Props) => {
   }
 
   const onReturn = (e) => {
-    const res = handleReturn?.(e, editorState)
-    if (res === 'handled') return res
-    if (e.shiftKey) return 'not-handled'
-    // TODO see if this is right
-    if (renderModal) return 'handled'
-    onSubmit()
-    return 'handled'
+    if (handleReturn) {
+      return handleReturn(e, editorState)
+    }
+    if (!e.shiftKey && !renderModal) {
+      onSubmit()
+      return 'handled'
+    }
+    return 'not-handled'
   }
 
   const nextKeyCommand = (command: DraftEditorCommand) => {

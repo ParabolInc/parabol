@@ -20,7 +20,8 @@ import {phaseLabelLookup} from '../utils/meetings/lookups'
 import plural from '../utils/plural'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
-import DiscussionThread from './DiscussionThread'
+import DiscussionThreadRoot from './DiscussionThreadRoot'
+import DiscussPhaseReflectionGrid from './DiscussPhaseReflectionGrid'
 import DiscussPhaseSqueeze from './DiscussPhaseSqueeze'
 import EndMeetingButton from './EndMeetingButton'
 import Icon from './Icon'
@@ -37,7 +38,6 @@ import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
 import StageTimerDisplay from './RetroReflectPhase/StageTimerDisplay'
 import StageTimerControl from './StageTimerControl'
-import DiscussPhaseReflectionGrid from './DiscussPhaseReflectionGrid'
 interface Props extends RetroMeetingPhaseProps {
   meeting: RetroDiscussPhase_meeting
 }
@@ -175,7 +175,7 @@ const RetroDiscussPhase = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   // reflection group will be null until the server overwrites the placeholder.
   if (!reflectionGroup) return null
-  const {title, reflections, voteCount} = reflectionGroup
+  const {id: reflectionGroupId, title, reflections, voteCount} = reflectionGroup
   const isFacilitating = facilitatorUserId === viewerId && !endedAt
   const nextStageRes = findStageAfterId(phases, localStageId)
   if (!reflections) {
@@ -229,7 +229,7 @@ const RetroDiscussPhase = (props: Props) => {
                 </Overflow>
               </ReflectionColumn>
               <TaskColumn>
-                <DiscussionThread reflectionGroup={reflectionGroup} meeting={meeting} />
+                <DiscussionThreadRoot meetingId={meetingId} reflectionGroupId={reflectionGroupId} />
               </TaskColumn>
             </ColumnsContainer>
           </DiscussPhaseWrapper>
@@ -266,8 +266,8 @@ graphql`
     ...StageTimerDisplay_stage
     ... on RetroDiscussStage {
       reflectionGroup {
-        ...DiscussionThread_reflectionGroup
         ...ReflectionGroup_reflectionGroup
+        id
         title
         voteCount
         reflections {
@@ -285,7 +285,6 @@ export default createFragmentContainer(RetroDiscussPhase, {
   meeting: graphql`
     fragment RetroDiscussPhase_meeting on RetrospectiveMeeting {
       ...StageTimerControl_meeting
-      ...DiscussionThread_meeting
       ...ReflectionGroup_meeting
       endedAt
       organization {
