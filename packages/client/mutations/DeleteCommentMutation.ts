@@ -7,6 +7,8 @@ import {DeleteCommentMutation_meeting} from '__generated__/DeleteCommentMutation
 import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import {DeleteCommentMutation as TDeleteCommentMutation} from '../__generated__/DeleteCommentMutation.graphql'
 import getReflectionGroupThreadConn from './connections/getReflectionGroupThreadConn'
+import safeRemoveNodeFromArray from 'utils/relay/safeRemoveNodeFromArray'
+import {RecordSourceSelectorProxy} from 'relay-runtime'
 
 graphql`
   fragment DeleteCommentMutation_meeting on DeleteCommentSuccess {
@@ -34,14 +36,31 @@ const mutation = graphql`
   }
 `
 
+export const handleRemoveReply = (
+  nodeId: string,
+  threadParentId: string,
+  store: RecordSourceSelectorProxy
+) => {
+  // delete w/o tombstone
+  const threadParent = store.get(threadParentId)
+  if (!threadParent) return
+  safeRemoveNodeFromArray(nodeId, threadParent, 'replies')
+  const isParentActive = threadParent.getValue('isActive')
+  const isParentComment = threadParent.getValue('__typename') === 'Comment'
+  if (isParentComment && !isParentActive) {
+    handleDeleteComment(threadParent, store)
+  }
+}
+
 const handleDeleteComment = (comment, store) => {
   const commentId = comment.getValue('id')
   const replies = comment.getLinkedRecords('replies')
   const threadParentId = comment.getValue('threadParentId')
-  const isRoot = !threadParentId
-  const hasReplies = replies && replies.length > 0
-  const doTombstone = isRoot && hasReplies
-  if (doTombstone) {
+  if (threadParentId) {
+    handleRemoveReply(commentId, threadParentId, store)
+    return
+  }
+  if (replies && replies.length > 0) {
     const TOMBSTONE = convertToTaskContent('[deleted]')
     comment.setValue(TOMBSTONE, 'content')
     comment.setValue(false, 'isActive')
@@ -76,6 +95,7 @@ const DeleteCommentMutation: SimpleMutation<TDeleteCommentMutation> = (atmospher
       const {commentId} = variables
       const comment = store.get<IComment>(commentId)
       if (!comment) return
+      handleDeleteComment(comment, store)
     }
   })
 }

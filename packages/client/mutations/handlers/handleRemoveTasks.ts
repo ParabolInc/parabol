@@ -7,6 +7,7 @@ import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
 import {RecordSourceSelectorProxy} from 'relay-runtime'
 import {ITask, IUser} from '../../types/graphql'
 import getReflectionGroupThreadConn from 'mutations/connections/getReflectionGroupThreadConn'
+import {handleRemoveReply} from 'mutations/DeleteCommentMutation'
 
 const handleRemoveTask = (taskId: string, store: RecordSourceSelectorProxy<any>) => {
   const viewer = store.getRoot().getLinkedRecord<IUser>('viewer')
@@ -14,6 +15,11 @@ const handleRemoveTask = (taskId: string, store: RecordSourceSelectorProxy<any>)
   if (!task) return
   const teamId = task.getValue('teamId')
   const reflectionGroupId = task.getValue('threadId')
+  const threadParentId = task.getValue('threadParentId')
+  if (threadParentId) {
+    handleRemoveReply(taskId, threadParentId, store)
+    return
+  }
   const reflectionGroup = store.get(reflectionGroupId!)
   const meetingId = task.getValue('meetingId')
   const meeting = store.get(meetingId!)

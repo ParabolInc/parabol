@@ -36,7 +36,7 @@ const DiscussionThread = (props: Props) => {
     return Math.max(0, ...threadables.map((threadable) => threadable.threadSortOrder || 0))
   }
   const listRef = useRef<HTMLDivElement>(null)
-  const onSubmitSuccess = () => {
+  const onSubmitCommentSuccess = () => {
     // wait a tick so the optimistic comment can hit the DOM
     setImmediate(() => {
       listRef.current?.scrollTo({top: 1e6, behavior: 'smooth'})
@@ -56,7 +56,7 @@ const DiscussionThread = (props: Props) => {
         isDisabled={!!replyingToCommentId}
         getMaxSortOrder={getMaxSortOrder}
         meeting={meeting}
-        onSubmitSuccess={onSubmitSuccess}
+        onSubmitCommentSuccess={onSubmitCommentSuccess}
         reflectionGroupId={reflectionGroupId}
       />
     </Wrapper>

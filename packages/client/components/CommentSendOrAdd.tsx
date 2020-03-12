@@ -11,7 +11,7 @@ import CreateTaskMutation from 'mutations/CreateTaskMutation'
 import {TaskStatusEnum, ThreadSourceEnum} from 'types/graphql'
 import useAtmosphere from 'hooks/useAtmosphere'
 import {CommentSendOrAdd_meeting} from '__generated__/CommentSendOrAdd_meeting.graphql'
-import {createFragmentContainer} from 'react-relay'
+import {createFragmentContainer, commitLocalUpdate} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {SORT_STEP} from 'utils/constants'
 
@@ -115,6 +115,9 @@ const CommentSendOrAdd = (props: Props) => {
     }
     CreateTaskMutation(atmosphere, {newTask}, {})
     collapseAddTask()
+    commitLocalUpdate(atmosphere, (store) => {
+      store.get(meetingId)?.setValue('', 'replyingToCommentId')
+    })
   }
   const isExpanded = commentSubmitState === 'addExpanded'
   return (

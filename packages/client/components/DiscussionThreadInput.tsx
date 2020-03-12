@@ -41,7 +41,7 @@ interface Props {
   editorRef: RefObject<HTMLTextAreaElement>
   getMaxSortOrder: () => number
   meeting: DiscussionThreadInput_meeting
-  onSubmitSuccess: () => void
+  onSubmitCommentSuccess: () => void
   reflectionGroupId: string
   threadParentId?: string
   isReply?: boolean
@@ -55,7 +55,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     editorRef,
     getMaxSortOrder,
     meeting,
-    onSubmitSuccess,
+    onSubmitCommentSuccess,
     reflectionGroupId,
     threadParentId,
     replyMention,
@@ -76,6 +76,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       if (!meeting) return
       meeting.setValue(!meeting.getValue('isAnonymousComment'), 'isAnonymousComment')
     })
+    editorRef.current?.focus()
   }
   const [canCollapse, setCanCollapse] = useState(isReply)
   const hasText = editorState.getCurrentContent().hasText()
@@ -100,7 +101,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     AddCommentMutation(atmosphere, {comment}, {onError, onCompleted})
     // move focus to end is very important! otherwise ghost chars appear
     setEditorState(EditorState.moveFocusToEnd(EditorState.createEmpty()))
-    onSubmitSuccess()
+    onSubmitCommentSuccess()
   }
 
   const onSubmit = () => {

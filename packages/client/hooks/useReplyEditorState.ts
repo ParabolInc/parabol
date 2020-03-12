@@ -1,7 +1,6 @@
 import {EditorState, Modifier} from 'draft-js'
 import useEditorState from 'hooks/useEditorState'
 import {useEffect} from 'react'
-import completeEntity from 'utils/draftjs/completeEnitity'
 import {ReplyMention, SetReplyMention} from '../components/ThreadedItem'
 
 const useReplyEditorState = (
@@ -13,12 +12,18 @@ const useReplyEditorState = (
     if (replyMention) {
       const {userId, preferredName} = replyMention
       setTimeout(() => {
-        const es = EditorState.moveFocusToEnd(
-          completeEntity(EditorState.createEmpty(), 'MENTION', {userId}, preferredName)
+        const empty = EditorState.createEmpty()
+        const cs = empty.getCurrentContent().createEntity('MENTION', 'IMMUTABLE', {userId})
+        const nextContentState = Modifier.insertText(
+          cs,
+          empty.getSelection(),
+          preferredName,
+          undefined,
+          cs.getLastCreatedEntityKey()
         )
-        const nextContentState = Modifier.insertText(es.getCurrentContent(), es.getSelection(), ' ')
-        const es2 = EditorState.moveFocusToEnd(EditorState.createWithContent(nextContentState))
-        setEditorState(es2)
+        setEditorState(
+          EditorState.moveFocusToEnd(EditorState.push(empty, nextContentState, 'apply-entity'))
+        )
         setReplyMention!(null)
       })
     }

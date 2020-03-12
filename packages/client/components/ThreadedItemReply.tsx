@@ -56,7 +56,7 @@ const ThreadedItemReply = (props: Props) => {
       replyMention={replyMention}
       getMaxSortOrder={getMaxSortOrder}
       meeting={meeting}
-      onSubmitSuccess={clearReplyingToCommentId}
+      onSubmitCommentSuccess={clearReplyingToCommentId}
       reflectionGroupId={reflectionGroupId}
       setReplyMention={setReplyMention}
       threadParentId={threadableId}

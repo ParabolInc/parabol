@@ -14,6 +14,7 @@ import ThreadedItemReply from './ThreadedItemReply'
 import ThreadedItemWrapper from './ThreadedItemWrapper'
 import {SetReplyMention, ReplyMention} from './ThreadedItem'
 import ThreadedItemHeaderDescription from './ThreadedItemHeaderDescription'
+import useFocusedReply from './useFocusedReply'
 
 const BodyCol = styled('div')({
   display: 'flex',
@@ -46,7 +47,7 @@ interface Props {
 const ThreadedTaskBase = (props: Props) => {
   const {children, meeting, reflectionGroupId, setReplyMention, replyMention, task} = props
   const isReply = !!props.isReply
-  const {id: meetingId} = meeting
+  const {id: meetingId, replyingToCommentId} = meeting
   const {id: taskId, createdByUser, threadParentId} = task
   const {picture, preferredName} = createdByUser
   const atmosphere = useAtmosphere()
@@ -58,7 +59,7 @@ const ThreadedTaskBase = (props: Props) => {
       store.get(meetingId)?.setValue(ownerId, 'replyingToCommentId')
     })
   }
-
+  useFocusedReply(ownerId, replyingToCommentId, ref, replyEditorRef)
   return (
     <ThreadedItemWrapper isReply={isReply} ref={ref}>
       <ThreadedAvatarColumn isReply={isReply} picture={picture} />
@@ -88,6 +89,7 @@ export default createFragmentContainer(ThreadedTaskBase, {
     fragment ThreadedTaskBase_meeting on RetrospectiveMeeting {
       ...ThreadedItemReply_meeting
       id
+      replyingToCommentId
     }
   `,
   task: graphql`
