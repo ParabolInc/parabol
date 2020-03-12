@@ -5,32 +5,25 @@ import useClickAway from 'hooks/useClickAway'
 import React, {RefObject, useRef} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import isAndroid from 'utils/draftjs/isAndroid'
-import {ThreadedCommentReply_meeting} from '__generated__/ThreadedCommentReply_meeting.graphql'
+import {ThreadedItemReply_meeting} from '__generated__/ThreadedItemReply_meeting.graphql'
 import DiscussionThreadInput from './DiscussionThreadInput'
-import {ReplyMention, SetReplyMention} from './ThreadedComment'
+import {ReplyMention, SetReplyMention} from './ThreadedItem'
+import {ThreadedItemReply_threadable} from '__generated__/ThreadedItemReply_threadable.graphql'
 
 interface Props {
-  commentId: string
+  threadable: ThreadedItemReply_threadable
   editorRef: RefObject<HTMLTextAreaElement>
-  getMaxSortOrder: () => number
   reflectionGroupId: string
-  meeting: ThreadedCommentReply_meeting
+  meeting: ThreadedItemReply_meeting
   replyMention?: ReplyMention
   setReplyMention: SetReplyMention
 }
 
-const ThreadedCommentReply = (props: Props) => {
-  const {
-    replyMention,
-    commentId,
-    editorRef,
-    getMaxSortOrder,
-    reflectionGroupId,
-    meeting,
-    setReplyMention
-  } = props
+const ThreadedItemReply = (props: Props) => {
+  const {replyMention, threadable, editorRef, reflectionGroupId, meeting, setReplyMention} = props
+  const {id: threadableId, replies} = threadable
   const {id: meetingId, replyingToCommentId} = meeting
-  const isReplying = replyingToCommentId === commentId
+  const isReplying = replyingToCommentId === threadableId
   const replyRef = useRef<HTMLTextAreaElement>(null)
   const atmosphere = useAtmosphere()
   const clearReplyingToCommentId = () => {
@@ -52,6 +45,9 @@ const ThreadedCommentReply = (props: Props) => {
   })
 
   if (!isReplying) return null
+  const getMaxSortOrder = () => {
+    return replies ? Math.max(0, ...replies.map((reply) => reply.threadSortOrder || 0)) : 0
+  }
   return (
     <DiscussionThreadInput
       ref={replyRef}
@@ -63,14 +59,23 @@ const ThreadedCommentReply = (props: Props) => {
       onSubmitSuccess={clearReplyingToCommentId}
       reflectionGroupId={reflectionGroupId}
       setReplyMention={setReplyMention}
-      threadParentId={commentId}
+      threadParentId={threadableId}
     />
   )
 }
 
-export default createFragmentContainer(ThreadedCommentReply, {
+export default createFragmentContainer(ThreadedItemReply, {
+  threadable: graphql`
+    fragment ThreadedItemReply_threadable on Threadable {
+      id
+      replies {
+        id
+        threadSortOrder
+      }
+    }
+  `,
   meeting: graphql`
-    fragment ThreadedCommentReply_meeting on RetrospectiveMeeting {
+    fragment ThreadedItemReply_meeting on RetrospectiveMeeting {
       ...DiscussionThreadInput_meeting
       id
       replyingToCommentId

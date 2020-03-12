@@ -5,7 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import {DiscussionThreadList_meeting} from '__generated__/DiscussionThreadList_meeting.graphql'
 import {DiscussionThreadList_threadables} from '__generated__/DiscussionThreadList_threadables.graphql'
 import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
-import ThreadedComment from './ThreadedComment'
+import ThreadedItem from './ThreadedItem'
 import ThreadedTask from './ThreadedTask'
 
 const EmptyWrapper = styled('div')({
@@ -21,7 +21,7 @@ const Wrapper = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   overflow: 'auto',
-  padding: 8
+  padding: '8px 0'
 })
 
 // https://stackoverflow.com/questions/36130760/use-justify-content-flex-end-and-to-have-vertical-scrollbar
@@ -49,13 +49,11 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
     <Wrapper ref={ref}>
       <PusherDowner />
       {threadables.map((threadable) => {
-        const {__typename, id} = threadable
-        return __typename === 'Task' ? (
-          <ThreadedTask key={id} task={threadable} />
-        ) : (
-          <ThreadedComment
+        const {id} = threadable
+        return (
+          <ThreadedItem
             key={id}
-            comment={threadable}
+            threadable={threadable}
             meeting={meeting}
             reflectionGroupId={reflectionGroupId}
           />
@@ -68,14 +66,12 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
 export default createFragmentContainer(DiscussionThreadList, {
   meeting: graphql`
     fragment DiscussionThreadList_meeting on RetrospectiveMeeting {
-      ...ThreadedComment_meeting
+      ...ThreadedItem_meeting
     }
   `,
   threadables: graphql`
     fragment DiscussionThreadList_threadables on Threadable @relay(plural: true) {
-      ...ThreadedTask_task
-      ...ThreadedComment_comment
-      __typename
+      ...ThreadedItem_threadable
       id
     }
   `

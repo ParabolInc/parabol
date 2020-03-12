@@ -2,7 +2,7 @@ import {EditorState, Modifier} from 'draft-js'
 import useEditorState from 'hooks/useEditorState'
 import {useEffect} from 'react'
 import completeEntity from 'utils/draftjs/completeEnitity'
-import {ReplyMention, SetReplyMention} from '../components/ThreadedComment'
+import {ReplyMention, SetReplyMention} from '../components/ThreadedItem'
 
 const useReplyEditorState = (
   replyMention: ReplyMention | undefined,

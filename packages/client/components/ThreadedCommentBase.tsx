@@ -20,16 +20,10 @@ import CommentEditor from './TaskEditor/CommentEditor'
 import ThreadedAvatarColumn from './ThreadedAvatarColumn'
 import ThreadedCommentFooter from './ThreadedCommentFooter'
 import ThreadedCommentHeader from './ThreadedCommentHeader'
-import ThreadedCommentReply from './ThreadedCommentReply'
+import ThreadedItemReply from './ThreadedItemReply'
 import useFocusedReply from './useFocusedReply'
-import {SetReplyMention, ReplyMention} from './ThreadedComment'
-
-const Wrapper = styled('div')<{isReply: boolean}>(({isReply}) => ({
-  display: 'flex',
-  // marginLeft: isReply ? -12 : undefined,
-  marginTop: isReply ? 8 : undefined,
-  width: '100%'
-}))
+import {SetReplyMention, ReplyMention} from './ThreadedItem'
+import ThreadedItemWrapper from './ThreadedItemWrapper'
 
 const BodyCol = styled('div')({
   display: 'flex',
@@ -97,7 +91,6 @@ const ThreadedCommentBase = (props: Props) => {
   const onReply = () => {
     if (createdByUser && threadParentId) {
       const {id: userId, preferredName} = createdByUser
-      console.log('setting', preferredName)
       setReplyMention({userId, preferredName})
     }
 
@@ -138,13 +131,9 @@ const ThreadedCommentBase = (props: Props) => {
     )
   }
 
-  const getMaxSortOrder = () => {
-    return replies ? Math.max(0, ...replies.map((reply) => reply.threadSortOrder || 0)) : 0
-  }
-
   return (
-    <Wrapper isReply={isReply} ref={ref}>
-      <ThreadedAvatarColumn picture={picture} />
+    <ThreadedItemWrapper isReply={isReply} ref={ref}>
+      <ThreadedAvatarColumn isReply={isReply} picture={picture} />
       <BodyCol>
         <ThreadedCommentHeader
           comment={comment}
@@ -170,17 +159,16 @@ const ThreadedCommentBase = (props: Props) => {
           onReply={onReply}
         />
         {children}
-        <ThreadedCommentReply
-          commentId={commentId}
-          getMaxSortOrder={getMaxSortOrder}
+        <ThreadedItemReply
           reflectionGroupId={reflectionGroupId}
           meeting={meeting}
           editorRef={replyEditorRef}
           replyMention={replyMention}
           setReplyMention={setReplyMention}
+          threadable={comment}
         />
       </BodyCol>
-    </Wrapper>
+    </ThreadedItemWrapper>
   )
 }
 
@@ -188,7 +176,7 @@ export default createFragmentContainer(ThreadedCommentBase, {
   meeting: graphql`
     fragment ThreadedCommentBase_meeting on RetrospectiveMeeting {
       ...DiscussionThreadInput_meeting
-      ...ThreadedCommentReply_meeting
+      ...ThreadedItemReply_meeting
       id
       replyingToCommentId
       teamId
@@ -197,6 +185,7 @@ export default createFragmentContainer(ThreadedCommentBase, {
   comment: graphql`
     fragment ThreadedCommentBase_comment on Comment {
       ...ThreadedCommentHeader_comment
+      ...ThreadedItemReply_threadable
       id
       isActive
       content

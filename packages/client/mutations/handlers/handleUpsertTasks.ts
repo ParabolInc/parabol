@@ -14,6 +14,8 @@ type Task = RecordProxy<{
   readonly teamId: string
   readonly tags: readonly string[]
   readonly threadId: string | null
+  readonly threadSource: string | null
+  readonly threadParentId: string | null
   readonly meetingId: string | null
   readonly updatedAt: string | null
   readonly userId: string
@@ -29,6 +31,11 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
   const taskId = task.getValue('id')
   const tags = task.getValue('tags')
   const threadSource = task.getValue('threadSource')
+  const threadParentId = task.getValue('threadParentId')
+  if (threadParentId) {
+    addNodeToArray(task, store.get(threadParentId), 'replies', 'threadSortOrder')
+    return
+  }
   const reflectionGroupId =
     threadSource === ThreadSourceEnum.REFLECTION_GROUP ? task.getValue('threadId') : undefined
   const meetingId = task.getValue('meetingId')
@@ -39,7 +46,7 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
   const userConn = getUserTasksConn(viewer)
   const reflectionGroup = (reflectionGroupId && store.get(reflectionGroupId)) || null
   const reflectionGroupConn = getReflectionGroupThreadConn(reflectionGroup)
-  const meeting = meetingId && store.get(meetingId)
+  const meeting = meetingId ? store.get(meetingId) : null
 
   if (isNowArchived) {
     safeRemoveNodeFromConn(taskId, teamConn)

@@ -18,7 +18,7 @@ import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import Avatar from './Avatar/Avatar'
 import CommentSendOrAdd from './CommentSendOrAdd'
 import CommentEditor from './TaskEditor/CommentEditor'
-import {ReplyMention, SetReplyMention} from './ThreadedComment'
+import {ReplyMention, SetReplyMention} from './ThreadedItem'
 
 const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisabled, isReply}) => ({
   alignItems: 'center',
@@ -136,6 +136,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
         commentSubmitState={commentSubmitState}
         meeting={meeting}
         reflectionGroupId={reflectionGroupId}
+        threadParentId={threadParentId}
         collapseAddTask={collapseAddTask}
         onSubmit={onSubmit}
       />

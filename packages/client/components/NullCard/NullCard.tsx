@@ -17,13 +17,14 @@ const AddingHint = styled('div')({
 })
 
 interface Props {
+  className?: string
   preferredName: string
 }
 
 const NullCard = (props: Props) => {
-  const {preferredName} = props
+  const {className, preferredName} = props
   return (
-    <CardBlock>
+    <CardBlock className={className}>
       <AddingHint>
         {preferredName}
         {' is adding a Task'}

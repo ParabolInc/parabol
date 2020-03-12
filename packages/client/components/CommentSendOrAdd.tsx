@@ -77,6 +77,7 @@ interface Props {
   getMaxSortOrder: () => number
   meeting: CommentSendOrAdd_meeting
   reflectionGroupId: string
+  threadParentId?: string
   onSubmit: () => void
 }
 
@@ -87,6 +88,7 @@ const CommentSendOrAdd = (props: Props) => {
     getMaxSortOrder,
     meeting,
     reflectionGroupId,
+    threadParentId,
     onSubmit
   } = props
   const {id: meetingId, teamId} = meeting
@@ -105,6 +107,7 @@ const CommentSendOrAdd = (props: Props) => {
       sortOrder: dndNoise(),
       meetingId,
       threadId: reflectionGroupId,
+      threadParentId,
       threadSource: ThreadSourceEnum.REFLECTION_GROUP,
       threadSortOrder: getMaxSortOrder() + SORT_STEP + dndNoise(),
       userId: viewerId,

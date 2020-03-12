@@ -8,36 +8,19 @@ import {ThreadedCommentHeader_comment} from '__generated__/ThreadedCommentHeader
 import CommentAuthorOptionsButton from './CommentAuthorOptionsButton'
 import AddReactjiButton from './ReflectionCard/AddReactjiButton'
 import ThreadedReplyButton from './ThreadedReplyButton'
-
-const Header = styled('div')({
-  display: 'flex',
-  fontSize: 12,
-  justifyContent: 'space-between',
-  lineHeight: '24px',
-  paddingBottom: 8,
-  width: '100%'
-})
-
-const HeaderDescription = styled('div')({
-  display: 'flex'
-})
-
-const HeaderName = styled('div')({
-  color: PALETTE.TEXT_MAIN,
-  fontWeight: 600
-})
-
-const HeaderResult = styled('div')({
-  color: PALETTE.TEXT_GRAY,
-  whiteSpace: 'pre-wrap'
-})
+import ThreadedItemHeaderDescription from './ThreadedItemHeaderDescription'
 
 const HeaderActions = styled('div')<{isViewerComment: boolean}>(({isViewerComment}) => ({
   color: PALETTE.TEXT_GRAY,
   display: 'flex',
   fontWeight: 600,
-  paddingRight: !isViewerComment ? 24 : undefined
+  paddingRight: !isViewerComment ? 32 : 8
 }))
+
+const AddReactji = styled(AddReactjiButton)({
+  display: 'flex',
+  padding: 0
+})
 
 interface Props {
   comment: ThreadedCommentHeader_comment
@@ -52,15 +35,11 @@ const ThreadedCommentHeader = (props: Props) => {
   const name = isActive ? createdByUser?.preferredName ?? 'Anonymous' : 'Messaged Deleted'
   const hasReactjis = reactjis.length > 0
   return (
-    <Header>
-      <HeaderDescription>
-        <HeaderName>{name}</HeaderName>
-        <HeaderResult> {relativeDate(updatedAt)}</HeaderResult>
-      </HeaderDescription>
+    <ThreadedItemHeaderDescription title={name} subTitle={relativeDate(updatedAt)}>
       <HeaderActions isViewerComment={isViewerComment}>
         {!hasReactjis && (
           <>
-            <AddReactjiButton onToggle={onToggleReactji} />
+            <AddReactji onToggle={onToggleReactji} />
             <ThreadedReplyButton onReply={onReply} />
           </>
         )}
@@ -68,7 +47,7 @@ const ThreadedCommentHeader = (props: Props) => {
           <CommentAuthorOptionsButton editComment={editComment} commentId={commentId} />
         )}
       </HeaderActions>
-    </Header>
+    </ThreadedItemHeaderDescription>
   )
 }
 

@@ -5,7 +5,9 @@ import {ThreadedRepliesList_meeting} from '__generated__/ThreadedRepliesList_mee
 import {ThreadedRepliesList_replies} from '__generated__/ThreadedRepliesList_replies.graphql'
 import ThreadedReplyComment from './ThreadedReplyComment'
 import ThreadedTask from './ThreadedTask'
-import {SetReplyMention} from './ThreadedComment'
+import {SetReplyMention} from './ThreadedItem'
+import ThreadedCommentBase from './ThreadedCommentBase'
+import ThreadedTaskBase from './ThreadedTaskBase'
 
 interface Props {
   meeting: ThreadedRepliesList_meeting
@@ -21,10 +23,18 @@ const ThreadedRepliesList = (props: Props) => {
       {replies.map((reply) => {
         const {__typename, id} = reply
         return __typename === 'Task' ? (
-          <ThreadedTask key={id} task={reply} />
-        ) : (
-          <ThreadedReplyComment
+          <ThreadedTaskBase
             key={id}
+            isReply
+            task={reply}
+            meeting={meeting}
+            reflectionGroupId={reflectionGroupId}
+            setReplyMention={setReplyMention}
+          />
+        ) : (
+          <ThreadedCommentBase
+            key={id}
+            isReply
             comment={reply}
             meeting={meeting}
             reflectionGroupId={reflectionGroupId}
@@ -39,13 +49,14 @@ const ThreadedRepliesList = (props: Props) => {
 export default createFragmentContainer(ThreadedRepliesList, {
   meeting: graphql`
     fragment ThreadedRepliesList_meeting on RetrospectiveMeeting {
-      ...ThreadedReplyComment_meeting
+      ...ThreadedCommentBase_meeting
+      ...ThreadedTaskBase_meeting
     }
   `,
   replies: graphql`
     fragment ThreadedRepliesList_replies on Threadable @relay(plural: true) {
-      ...ThreadedTask_task
-      ...ThreadedReplyComment_comment
+      ...ThreadedTaskBase_task
+      ...ThreadedCommentBase_comment
       __typename
       id
     }

@@ -34,7 +34,13 @@ interface Options {
   descending?: boolean
   storageKeyArgs?: Variables
 }
-const addNodeToArray = (newNode, parent, arrayName, sortValue, options: Options = {}) => {
+const addNodeToArray = (
+  newNode: RecordProxy | null | undefined,
+  parent: RecordProxy | null | undefined,
+  arrayName: string,
+  sortValue: string,
+  options: Options = {}
+) => {
   if (!newNode || !parent) return
   const {descending, storageKeyArgs} = options
   // create an empty array so we don't have to make sure all of our mutations are bullet proof.

@@ -11,6 +11,7 @@ import {AreaEnum, TaskStatusEnum} from '../../types/graphql'
 
 interface Props {
   area: AreaEnum
+  className?: string
   isAgenda?: boolean
   isDraggingOver?: TaskStatusEnum
   measure?: () => void
@@ -18,7 +19,7 @@ interface Props {
 }
 
 const NullableTask = (props: Props) => {
-  const {area, isAgenda, task, isDraggingOver} = props
+  const {area, className, isAgenda, task, isDraggingOver} = props
   const {content, createdBy, createdByUser} = task
   const {preferredName} = createdByUser
   const contentState = useMemo(() => {
@@ -49,13 +50,14 @@ const NullableTask = (props: Props) => {
   return showOutcome ? (
     <OutcomeCardContainer
       area={area}
+      className={className}
       contentState={contentState}
       isDraggingOver={isDraggingOver}
       isAgenda={isAgenda}
       task={task}
     />
   ) : (
-    <NullCard preferredName={preferredName} />
+    <NullCard className={className} preferredName={preferredName} />
   )
 }
 

@@ -13,7 +13,7 @@ import addNodeToArray from 'utils/relay/addNodeToArray'
 graphql`
   fragment AddCommentMutation_meeting on AddCommentSuccess {
     comment {
-      ...ThreadedComment_comment
+      ...ThreadedItem_threadable
       threadSource
       threadId
       threadSortOrder
@@ -44,9 +44,7 @@ export const addCommentMeetingUpdater: SharedUpdater<AddCommentMutation_meeting>
   const threadSource = comment.getValue('threadSource')
   const threadParentId = comment.getValue('threadParentId')
   if (threadParentId) {
-    const threadParent = store.get(threadParentId)
-    if (!threadParent) return
-    addNodeToArray(comment, threadParent, 'replies', 'threadSortOrder')
+    addNodeToArray(comment, store.get(threadParentId), 'replies', 'threadSortOrder')
     return
   }
   const reflectionGroupId =
