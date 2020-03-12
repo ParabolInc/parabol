@@ -79,6 +79,7 @@ const AddCommentMutation: StandardMutation<TAddCommentMutation> = (
         updatedAt: now,
         createdBy: viewerId,
         comtent: comment.content || makeEmptyStr(),
+        isActive: true,
         isViewerComment: true
       })
         .setLinkedRecord(store.get(viewerId)!, 'user')

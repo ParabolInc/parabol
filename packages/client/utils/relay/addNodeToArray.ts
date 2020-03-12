@@ -53,7 +53,7 @@ const addNodeToArray = (
     const node = arr[ii]
     if (node && node.getDataID() === nodeDataId) return
   }
-  const newName = newNode.getValue(sortValue)
+  const newName = newNode.getValue(sortValue) as string | number
   const idxFinder = descending ? getDescendingIdx : getAscendingIdx
   const nextIdx = idxFinder(newName, arr, sortValue)
   const newArr = [...arr.slice(0, nextIdx), newNode, ...arr.slice(nextIdx)]

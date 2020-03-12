@@ -27,6 +27,7 @@ const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisab
   boxShadow: isReply ? Elevation.Z2 : Elevation.DISCUSSION_INPUT,
   opacity: isDisabled ? 0.5 : undefined,
   marginLeft: isReply ? -12 : undefined,
+  marginTop: isReply ? 8 : undefined,
   pointerEvents: isDisabled ? 'none' : undefined,
   // required for the shadow to overlay draft-js in the task cards
   zIndex: 0
@@ -41,7 +42,7 @@ interface Props {
   editorRef: RefObject<HTMLTextAreaElement>
   getMaxSortOrder: () => number
   meeting: DiscussionThreadInput_meeting
-  onSubmitCommentSuccess: () => void
+  onSubmitCommentSuccess?: () => void
   reflectionGroupId: string
   threadParentId?: string
   isReply?: boolean
@@ -101,7 +102,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     AddCommentMutation(atmosphere, {comment}, {onError, onCompleted})
     // move focus to end is very important! otherwise ghost chars appear
     setEditorState(EditorState.moveFocusToEnd(EditorState.createEmpty()))
-    onSubmitCommentSuccess()
+    onSubmitCommentSuccess?.()
   }
 
   const onSubmit = () => {

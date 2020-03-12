@@ -48,6 +48,7 @@ type DraftProps = Pick<
 >
 
 interface Props extends DraftProps {
+  autoFocus: boolean
   editorRef: RefObject<HTMLTextAreaElement>
   placeholder: string
   setEditorState: (newEditorState: EditorState) => void
@@ -57,6 +58,7 @@ interface Props extends DraftProps {
 
 const CommentEditor = (props: Props) => {
   const {
+    autoFocus,
     editorRef,
     editorState,
     placeholder,

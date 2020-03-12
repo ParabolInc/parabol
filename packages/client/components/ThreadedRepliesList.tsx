@@ -3,10 +3,8 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {ThreadedRepliesList_meeting} from '__generated__/ThreadedRepliesList_meeting.graphql'
 import {ThreadedRepliesList_replies} from '__generated__/ThreadedRepliesList_replies.graphql'
-import ThreadedReplyComment from './ThreadedReplyComment'
-import ThreadedTask from './ThreadedTask'
-import {SetReplyMention} from './ThreadedItem'
 import ThreadedCommentBase from './ThreadedCommentBase'
+import {SetReplyMention} from './ThreadedItem'
 import ThreadedTaskBase from './ThreadedTaskBase'
 
 interface Props {

@@ -46,15 +46,7 @@ const ThreadedCommentBase = (props: Props) => {
   const {children, comment, reflectionGroupId, replyMention, setReplyMention, meeting} = props
   const isReply = !!props.isReply
   const {id: meetingId, replyingToCommentId, teamId} = meeting
-  const {
-    id: commentId,
-    content,
-    createdByUser,
-    isActive,
-    reactjis,
-    replies,
-    threadParentId
-  } = comment
+  const {id: commentId, content, createdByUser, isActive, reactjis, threadParentId} = comment
   const ownerId = threadParentId || commentId
   const picture = isActive ? createdByUser?.picture ?? anonymousAvatar : deletedAvatar
   const {submitMutation, submitting, onError, onCompleted} = useMutationProps()
@@ -198,10 +190,6 @@ export default createFragmentContainer(ThreadedCommentBase, {
         ...ThreadedCommentFooter_reactjis
         id
         isViewerReactji
-      }
-      replies {
-        id
-        threadSortOrder
       }
       threadParentId
     }

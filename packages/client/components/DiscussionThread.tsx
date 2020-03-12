@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef} from 'react'
+import React, {useRef, useEffect} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {DiscussionThreadEnum} from 'types/constEnums'
 import {DiscussionThread_meeting} from '__generated__/DiscussionThread_meeting.graphql'
@@ -8,6 +8,7 @@ import {DiscussionThread_reflectionGroup} from '__generated__/DiscussionThread_r
 import {Elevation} from '../styles/elevation'
 import DiscussionThreadInput from './DiscussionThreadInput'
 import DiscussionThreadList from './DiscussionThreadList'
+import useInitialRender from 'hooks/useInitialRender'
 
 const Wrapper = styled('div')({
   background: '#fff',
@@ -36,12 +37,6 @@ const DiscussionThread = (props: Props) => {
     return Math.max(0, ...threadables.map((threadable) => threadable.threadSortOrder || 0))
   }
   const listRef = useRef<HTMLDivElement>(null)
-  const onSubmitCommentSuccess = () => {
-    // wait a tick so the optimistic comment can hit the DOM
-    setImmediate(() => {
-      listRef.current?.scrollTo({top: 1e6, behavior: 'smooth'})
-    })
-  }
   const editorRef = useRef<HTMLTextAreaElement>(null)
   return (
     <Wrapper>
@@ -50,13 +45,13 @@ const DiscussionThread = (props: Props) => {
         meeting={meeting}
         threadables={threadables}
         ref={listRef}
+        editorRef={editorRef}
       />
       <DiscussionThreadInput
         editorRef={editorRef}
         isDisabled={!!replyingToCommentId}
         getMaxSortOrder={getMaxSortOrder}
         meeting={meeting}
-        onSubmitCommentSuccess={onSubmitCommentSuccess}
         reflectionGroupId={reflectionGroupId}
       />
     </Wrapper>
