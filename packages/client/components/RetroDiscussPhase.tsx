@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import useBreakpoint from 'hooks/useBreakpoint'
+import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {RetroDiscussPhase_meeting} from '__generated__/RetroDiscussPhase_meeting.graphql'
 import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
@@ -9,7 +10,7 @@ import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlB
 import {meetingVoteIcon} from '../styles/meeting'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {ElementWidth} from '../types/constEnums'
+import {Breakpoint, ElementWidth} from '../types/constEnums'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import handleRightArrow from '../utils/handleRightArrow'
 import isDemoRoute from '../utils/isDemoRoute'
@@ -20,7 +21,6 @@ import plural from '../utils/plural'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
 import DiscussionThread from './DiscussionThread'
-import DiscussPhaseReflectionGrid from './DiscussPhaseReflectionGrid'
 import DiscussPhaseSqueeze from './DiscussPhaseSqueeze'
 import EndMeetingButton from './EndMeetingButton'
 import Icon from './Icon'
@@ -33,10 +33,11 @@ import Overflow from './Overflow'
 import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
+import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
 import StageTimerDisplay from './RetroReflectPhase/StageTimerDisplay'
 import StageTimerControl from './StageTimerControl'
-
+import DiscussPhaseReflectionGrid from './DiscussPhaseReflectionGrid'
 interface Props extends RetroMeetingPhaseProps {
   meeting: RetroDiscussPhase_meeting
 }
@@ -50,7 +51,7 @@ const HeaderContainer = styled('div')({
   userSelect: 'none'
 })
 
-const LabelContainer = styled('div')({
+const LabelContainer = styled(LabelHeading)({
   background: PALETTE.BACKGROUND_MAIN,
   margin: '0 1.25rem',
   padding: '0 0 .625rem',
@@ -65,8 +66,9 @@ const DiscussHeader = styled('div')({
   margin: '0 0 1.25rem'
 })
 
-const ColumnsContainer = styled('div')({
+const ColumnsContainer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
+  flexDirection: isDesktop ? undefined : 'column',
   flex: 1,
   height: '100%',
   margin: '0 auto',
@@ -74,7 +76,7 @@ const ColumnsContainer = styled('div')({
   overflowX: 'hidden',
   padding: 0,
   width: '100%'
-})
+}))
 
 const TopicHeading = styled('div')({
   fontSize: 24,
@@ -112,7 +114,16 @@ const DiscussPhaseWrapper = styled('div')({
   width: '100%'
 })
 
-const Column = styled('div')({
+const ReflectionColumn = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  height: isDesktop ? '100%' : undefined,
+  flex: isDesktop ? 1 : undefined,
+  width: '100%'
+}))
+
+const TaskColumn = styled('div')({
+  alignItems: 'center',
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
@@ -120,15 +131,13 @@ const Column = styled('div')({
   width: '100%'
 })
 
-const TaskColumn = styled(Column)({
-  alignItems: 'center'
-})
-
-const ColumnInner = styled('div')({
+const ColumnInner = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+  display: isDesktop ? undefined : 'flex',
+  justifyContent: 'center',
   height: '100%',
-  padding: '.625rem 1.25rem 1.25rem',
+  padding: '10px 20px 20px',
   width: '100%'
-})
+}))
 
 const BottomControlSpacer = styled('div')({
   minWidth: 90
@@ -149,6 +158,7 @@ const DemoDiscussHelpMenu = lazyPreload(async () =>
 const RetroDiscussPhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, handleGotoNext, meeting, isDemoStageComplete} = props
   const atmosphere = useAtmosphere()
+  const phaseRef = useRef<HTMLDivElement>(null)
   const {viewerId} = atmosphere
   const {gotoNext, ref: gotoNextRef} = handleGotoNext
   const {
@@ -162,6 +172,7 @@ const RetroDiscussPhase = (props: Props) => {
   } = meeting
   const {id: localStageId, reflectionGroup} = localStage
   const isComplete = localStage ? localStage.isComplete : false
+  const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   // reflection group will be null until the server overwrites the placeholder.
   if (!reflectionGroup) return null
   const {title, reflections, voteCount} = reflectionGroup
@@ -173,7 +184,7 @@ const RetroDiscussPhase = (props: Props) => {
     console.error('NO REFLECTIONS', JSON.stringify(reflectionGroup))
   }
   return (
-    <MeetingContent>
+    <MeetingContent ref={phaseRef}>
       <DiscussPhaseSqueeze meeting={meeting} organization={organization} />
       <MeetingHeaderAndPhase>
         <MeetingTopBar
@@ -198,26 +209,34 @@ const RetroDiscussPhase = (props: Props) => {
                 </VoteMeta>
               </DiscussHeader>
             </HeaderContainer>
-            <ColumnsContainer>
-              <Column>
+            <ColumnsContainer isDesktop={isDesktop}>
+              <ReflectionColumn isDesktop={isDesktop}>
                 <LabelContainer>
-                  <LabelHeading>
-                    {reflections.length} {plural(reflections.length, 'Reflection')}
-                  </LabelHeading>
+                  {reflections.length} {plural(reflections.length, 'Reflection')}
                 </LabelContainer>
                 <Overflow>
-                  <ColumnInner>
-                    <DiscussPhaseReflectionGrid reflections={reflections} />
+                  <ColumnInner isDesktop={isDesktop}>
+                    {isDesktop ? (
+                      <DiscussPhaseReflectionGrid reflections={reflections} />
+                    ) : (
+                      <ReflectionGroup
+                        meeting={meeting}
+                        phaseRef={phaseRef}
+                        reflectionGroup={reflectionGroup}
+                      />
+                    )}
                   </ColumnInner>
                 </Overflow>
-              </Column>
+              </ReflectionColumn>
               <TaskColumn>
                 <DiscussionThread reflectionGroup={reflectionGroup} meeting={meeting} />
               </TaskColumn>
             </ColumnsContainer>
           </DiscussPhaseWrapper>
         </PhaseWrapper>
-        <MeetingHelpToggle menu={isDemoRoute() ? <DemoDiscussHelpMenu /> : <DiscussHelpMenu />} />
+        {isDesktop && (
+          <MeetingHelpToggle menu={isDemoRoute() ? <DemoDiscussHelpMenu /> : <DiscussHelpMenu />} />
+        )}
         <EditorHelpModalContainer />
       </MeetingHeaderAndPhase>
       <MeetingFacilitatorBar isFacilitating={isFacilitating}>
@@ -248,6 +267,7 @@ graphql`
     ... on RetroDiscussStage {
       reflectionGroup {
         ...DiscussionThread_reflectionGroup
+        ...ReflectionGroup_reflectionGroup
         title
         voteCount
         reflections {
@@ -266,6 +286,7 @@ export default createFragmentContainer(RetroDiscussPhase, {
     fragment RetroDiscussPhase_meeting on RetrospectiveMeeting {
       ...StageTimerControl_meeting
       ...DiscussionThread_meeting
+      ...ReflectionGroup_meeting
       endedAt
       organization {
         ...DiscussPhaseSqueeze_organization
