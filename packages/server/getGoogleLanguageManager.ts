@@ -1,7 +1,7 @@
 import GoogleLanguageManager from './GoogleLanguageManager'
 
 const clientEmail = process.env.GOOGLE_CLOUD_CLIENT_EMAIL
-const privateKey = process.env.GOOGLE_CLOUD_PRIVATE_KEY
+const privateKey = (process.env.GOOGLE_CLOUD_PRIVATE_KEY || '').replace(/\\n/gm, '\n')
 const privateKeyId = process.env.GOOGLE_CLOUD_PRIVATE_KEY_ID
 
 let languageManager: GoogleLanguageManager
