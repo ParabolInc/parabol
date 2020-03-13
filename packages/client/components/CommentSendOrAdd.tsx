@@ -33,7 +33,7 @@ const SendIcon = styled(Icon)({
   opacity: 1,
   color: PALETTE.TEXT_BLUE,
   fontSize: 32,
-  padding: 12
+  padding: 8
 })
 
 const AddIcon = styled(Icon)<{isExpanded: boolean}>(({isExpanded}) => ({
@@ -67,7 +67,7 @@ const ExpandedLabel = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
 
 const ButtonGroup = styled('div')({
   borderLeft: `1px solid ${PALETTE.BORDER_GRAY} `,
-  padding: 12,
+  padding: 8,
   userSelect: 'none'
 })
 

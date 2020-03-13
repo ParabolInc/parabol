@@ -34,7 +34,7 @@ const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisab
 }))
 
 const CommentAvatar = styled(Avatar)({
-  margin: 12,
+  margin: 8,
   transition: 'all 150ms'
 })
 

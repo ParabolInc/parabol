@@ -50,14 +50,14 @@ const HeaderContainer = styled('div')({
   userSelect: 'none'
 })
 
-const LabelContainer = styled(LabelHeading)({
+const LabelContainer = styled(LabelHeading)<{isDesktop: boolean}>(({isDesktop}) => ({
   background: PALETTE.BACKGROUND_MAIN,
-  margin: '0 1.25rem',
-  padding: '0 0 .625rem',
+  margin: '0 16px',
+  padding: isDesktop ? '0 0 8px' : undefined,
   position: 'sticky',
   top: 0,
   zIndex: 2
-})
+}))
 
 const DiscussHeader = styled('div')({
   alignItems: 'center',
@@ -135,7 +135,8 @@ const ColumnInner = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: isDesktop ? undefined : 'flex',
   justifyContent: 'center',
   height: '100%',
-  padding: '10px 20px 20px',
+  padding: isDesktop ? '8px 16px 16px' : undefined,
+  paddingBottom: isDesktop ? undefined : 8,
   width: '100%'
 }))
 
@@ -211,7 +212,7 @@ const RetroDiscussPhase = (props: Props) => {
             </HeaderContainer>
             <ColumnsContainer isDesktop={isDesktop}>
               <ReflectionColumn isDesktop={isDesktop}>
-                <LabelContainer>
+                <LabelContainer isDesktop={isDesktop}>
                   {reflections.length} {plural(reflections.length, 'Reflection')}
                 </LabelContainer>
                 <ColumnInner isDesktop={isDesktop}>
