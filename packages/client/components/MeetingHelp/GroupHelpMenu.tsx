@@ -7,6 +7,7 @@ import HelpMenuHeader from './HelpMenuHeader'
 import HelpMenuCopy from './HelpMenuCopy'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'
 import HelpMenuLink from './HelpMenuLink'
+import {ExternalLinks} from '../../types/constEnums'
 
 interface Props {}
 
@@ -21,10 +22,7 @@ const GroupHelpMenu = forwardRef((_props: Props, ref: any) => {
       </HelpMenuCopy>
       <HelpMenuCopy>To group, drag and drop a card onto another card or group.</HelpMenuCopy>
       <HelpMenuCopy>Tap group headings to edit.</HelpMenuCopy>
-      <HelpMenuLink
-        copy='Learn More'
-        href='https://www.parabol.co/getting-started-guide/retrospective-meetings-101#group'
-      />
+      <HelpMenuLink copy='Learn More' href={`${ExternalLinks.GETTING_STARTED_RETROS}#group`} />
     </HelpMenuContent>
   )
 })

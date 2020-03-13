@@ -7,12 +7,11 @@ import useSegmentTrack from '../../hooks/useSegmentTrack'
 import {MeetingTypeEnum, NewMeetingPhaseTypeEnum, SegmentClientEventEnum} from '../../types/graphql'
 import {CHECKIN} from '../../utils/constants'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'
+import {ExternalLinks} from '../../types/constEnums'
 
 const linkLookup = {
-  [MeetingTypeEnum.action]:
-    'https://www.parabol.co/getting-started-guide/action-meetings-101#social-check-in',
-  [MeetingTypeEnum.retrospective]:
-    'https://www.parabol.co/getting-started-guide/retrospective-meetings-101#social-check-in'
+  [MeetingTypeEnum.action]: `${ExternalLinks.GETTING_STARTED_CHECK_INS}#social-check-in`,
+  [MeetingTypeEnum.retrospective]: `${ExternalLinks.GETTING_STARTED_RETROS}#social-check-in`
 }
 
 interface Props {

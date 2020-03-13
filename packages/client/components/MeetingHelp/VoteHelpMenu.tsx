@@ -7,6 +7,7 @@ import useSegmentTrack from '../../hooks/useSegmentTrack'
 import {NewMeetingPhaseTypeEnum, SegmentClientEventEnum} from '../../types/graphql'
 import {VOTE} from '../../utils/constants'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'
+import {ExternalLinks} from '../../types/constEnums'
 
 interface Props {}
 
@@ -25,10 +26,7 @@ const VoteHelpMenu = forwardRef((_props: Props, ref: any) => {
       <HelpMenuCopy>
         To vote, simply tap on the thumb-up icon above a group. Toggle votes to remove.
       </HelpMenuCopy>
-      <HelpMenuLink
-        copy='Learn More'
-        href='https://www.parabol.co/getting-started-guide/retrospective-meetings-101#vote'
-      />
+      <HelpMenuLink copy='Learn More' href={`${ExternalLinks.GETTING_STARTED_RETROS}#vote`} />
     </HelpMenuContent>
   )
 })

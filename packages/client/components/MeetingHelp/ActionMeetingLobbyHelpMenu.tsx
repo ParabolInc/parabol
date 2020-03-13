@@ -15,7 +15,7 @@ const ActionMeetingLobbyHelpMenu = forwardRef((_props: Props, ref: any) => {
     <HelpMenuContent closePortal={closePortal}>
       <HelpMenuCopy>{'To learn more about how to run a Check-in Meeting, see our '}</HelpMenuCopy>
       <div>
-        <HelpMenuLink copy='Getting Started Guide' href={ExternalLinks.GETTING_STARTED_ACTION} />
+        <HelpMenuLink copy='Getting Started Guide' href={ExternalLinks.GETTING_STARTED_CHECK_INS} />
         {' for running a Check-in Meeting.'}
       </div>
     </HelpMenuContent>
