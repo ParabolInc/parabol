@@ -7,6 +7,7 @@ import HelpMenuHeader from './HelpMenuHeader'
 import HelpMenuCopy from './HelpMenuCopy'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'
 import HelpMenuLink from './HelpMenuLink'
+import {ExternalLinks} from '../../types/constEnums'
 
 interface Props {}
 
@@ -24,10 +25,7 @@ const ReflectHelpMenu = forwardRef((_props: Props, ref: any) => {
         During this phase nobody can see your reflections. After this phase reflections will be
         visible, but remain anonymous.
       </HelpMenuCopy>
-      <HelpMenuLink
-        copy='Learn More'
-        href='https://www.parabol.co/getting-started-guide/retrospective-meetings-101#reflect'
-      />
+      <HelpMenuLink copy='Learn More' href={`${ExternalLinks.GETTING_STARTED_RETROS}#reflect`} />
     </HelpMenuContent>
   )
 })

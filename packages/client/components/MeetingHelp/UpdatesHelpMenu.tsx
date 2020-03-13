@@ -6,6 +6,7 @@ import HelpMenuLink from './HelpMenuLink'
 import useSegmentTrack from '../../hooks/useSegmentTrack'
 import {NewMeetingPhaseTypeEnum, SegmentClientEventEnum} from '../../types/graphql'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'
+import {ExternalLinks} from '../../types/constEnums'
 
 interface Props {}
 
@@ -27,7 +28,7 @@ const UpdatesHelpMenu = forwardRef((_props: Props, ref: any) => {
       </HelpMenuCopy>
       <HelpMenuLink
         copy='Learn More'
-        href={`https://www.parabol.co/getting-started-guide/action-meetings-101#solo-updates`}
+        href={`${ExternalLinks.GETTING_STARTED_CHECK_INS}#solo-updates`}
       />
     </HelpMenuContent>
   )

@@ -24,7 +24,7 @@ const STEPS = {
 
 const LINKS = {
   [MeetingTypeEnum.retrospective]: ExternalLinks.GETTING_STARTED_RETROS,
-  [MeetingTypeEnum.action]: ExternalLinks.GETTING_STARTED_ACTION
+  [MeetingTypeEnum.action]: ExternalLinks.GETTING_STARTED_CHECK_INS
 }
 
 const TITLES = {

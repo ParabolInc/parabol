@@ -8,6 +8,7 @@ import EmptySpace from '../../components/EmptySpace/EmptySpace'
 import Header from '../../components/Header/Header'
 import Layout from '../../components/Layout/Layout'
 import emailDir from '../../emailDir'
+import {ExternalLinks} from '../../../../types/constEnums'
 
 const innerMaxWidth = 480
 
@@ -103,11 +104,7 @@ const TeamInvite = (props) => {
             'Parabol is software for remote teams to run online retrospective and check-in meetings. See the video and links below:'
           }
         </p>
-        <a
-          href='https://www.parabol.co/getting-started-guide/retrospective-meetings-101'
-          style={videoLinkStyle}
-          title='Retro 101'
-        >
+        <a href={ExternalLinks.GETTING_STARTED_RETROS} style={videoLinkStyle} title='Retro 101'>
           <img crossOrigin='' alt='' src={videoGraphicSrc} style={videoGraphicStyle} />
         </a>
         <EmptySpace height={24} />
@@ -115,7 +112,7 @@ const TeamInvite = (props) => {
           {'Learn more about Parabol meetings:'}
           <br />
           <a
-            href='https://www.parabol.co/getting-started-guide/retrospective-meetings-101'
+            href={ExternalLinks.GETTING_STARTED_RETROS}
             style={emailLinkStyle}
             title='Getting Started: Retro 101'
           >
@@ -123,7 +120,7 @@ const TeamInvite = (props) => {
           </a>
           <br />
           <a
-            href='https://www.parabol.co/getting-started-guide/action-meetings-101'
+            href={ExternalLinks.GETTING_STARTED_CHECK_INS}
             style={emailLinkStyle}
             title='Leveling Up: Check-in 101'
           >

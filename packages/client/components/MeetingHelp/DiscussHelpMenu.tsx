@@ -7,6 +7,7 @@ import useSegmentTrack from '../../hooks/useSegmentTrack'
 import {NewMeetingPhaseTypeEnum, SegmentClientEventEnum} from '../../types/graphql'
 import {DISCUSS} from '../../utils/constants'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'
+import {ExternalLinks} from '../../types/constEnums'
 
 interface Props {}
 
@@ -24,10 +25,7 @@ const DiscussHelpMenu = forwardRef((_props: Props, ref: any) => {
         Sometimes the next task is to schedule a time to discuss a topic more in depth at a later
         time.
       </HelpMenuCopy>
-      <HelpMenuLink
-        copy='Learn More'
-        href='https://www.parabol.co/getting-started-guide/retrospective-meetings-101#discuss'
-      />
+      <HelpMenuLink copy='Learn More' href={`${ExternalLinks.GETTING_STARTED_RETROS}#discuss`} />
     </HelpMenuContent>
   )
 })
