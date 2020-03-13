@@ -36,24 +36,47 @@ const TeamAndSettings = styled('div')<{isDesktop}>(({isDesktop}) => ({
 }))
 
 const NewMeetingBlock = styled('div')<{innerWidth: number; isDesktop: boolean}>(
-  ({innerWidth, isDesktop}) => ({
-    display: 'grid',
-    gridTemplateColumns: isDesktop ? '8vw minmax(0, 4fr) minmax(0, 3fr)' : '100%',
-    gridTemplateRows: isDesktop ? '8vw 4fr 3fr' : '48px',
-    gridTemplateAreas: isDesktop
-      ? ` 'backButton x1 x1'
-        'x2 picker howto'
-        'x2 settings actions'`
-      : `'backButton' 'picker' 'howto' 'settings' 'actions'`,
-    alignItems: 'start',
+  {
+    alignItems: 'flex-start',
+    backgroundImage: 'linear-gradient(0deg, #F1F0FA 25%, #FFFFFF 50%)',
     backgroundRepeat: 'no-repeat',
-    backgroundImage: `url('${WaveSVG}'), linear-gradient(0deg, #F1F0FA 50%, #FFFFFF 50%)`,
-    height: '100%',
-    backgroundSize: '100%',
-    // the wave is 2560x231, so to figure out the offset from the center, we need to find how much scaling there was
-    backgroundPositionY: `calc(50% - ${Math.floor(((innerWidth / 2560) * 231) / 2 - 1)}px), 0`,
-    justifyItems: 'center'
-  })
+    display: 'flex',
+    flexDirection: 'column',
+    justifyItems: 'center',
+    minHeight: '100%'
+  },
+  ({innerWidth, isDesktop}) =>
+    isDesktop && {
+      backgroundImage: `url('${WaveSVG}'), linear-gradient(0deg, #F1F0FA 50%, #FFFFFF 50%)`,
+      backgroundSize: '100%',
+      // the wave is 2560x231, so to figure out the offset from the center, we need to find how much scaling there was
+      backgroundPositionY: `calc(50% - ${Math.floor(((innerWidth / 2560) * 231) / 2 - 1)}px), 0`,
+      height: '100%',
+      minHeight: 0,
+      overflow: 'auto'
+    }
+)
+
+const NewMeetingInner = styled('div')<{isDesktop: boolean}>(
+  {
+    alignItems: 'flex-start',
+    display: 'grid',
+    gridTemplateAreas: `'picker' 'howto' 'settings' 'actions'`,
+    gridTemplateColumns: '100%',
+    gridTemplateRows: 'auto',
+    justifyItems: 'center',
+    margin: 'auto'
+  },
+  ({isDesktop}) =>
+    isDesktop && {
+      gridTemplateAreas: `'picker howto' 'settings actions'`,
+      gridTemplateColumns: 'minmax(0, 4fr) minmax(0, 3fr)',
+      gridTemplateRows: 'auto 3fr',
+      height: '100%',
+      maxHeight: 900,
+      maxWidth: 1400,
+      padding: '0 32px 16px 64px'
+    }
 )
 
 const useInnerWidth = () => {
@@ -101,16 +124,18 @@ const NewMeeting = (props: Props) => {
   return (
     <NewMeetingBlock innerWidth={innerWidth} isDesktop={isDesktop}>
       <NewMeetingBackButton teamId={teamId} sendToMe={sendToMeRef.current} />
-      <IllustrationAndSelector>
-        <NewMeetingIllustration idx={idx} setIdx={setIdx} />
-        <NewMeetingMeetingSelector meetingType={meetingType} idx={idx} setIdx={setIdx} />
-      </IllustrationAndSelector>
-      <NewMeetingHowTo meetingType={meetingType} />
-      <TeamAndSettings isDesktop={isDesktop}>
-        <NewMeetingTeamPicker selectedTeam={selectedTeam} teams={teams} />
-        <NewMeetingSettings selectedTeam={selectedTeam} meetingType={meetingType} />
-      </TeamAndSettings>
-      <NewMeetingActions team={selectedTeam} meetingType={meetingType} />
+      <NewMeetingInner isDesktop={isDesktop}>
+        <IllustrationAndSelector>
+          <NewMeetingIllustration idx={idx} setIdx={setIdx} />
+          <NewMeetingMeetingSelector meetingType={meetingType} idx={idx} setIdx={setIdx} />
+        </IllustrationAndSelector>
+        <NewMeetingHowTo meetingType={meetingType} />
+        <TeamAndSettings isDesktop={isDesktop}>
+          <NewMeetingTeamPicker selectedTeam={selectedTeam} teams={teams} />
+          <NewMeetingSettings selectedTeam={selectedTeam} meetingType={meetingType} />
+        </TeamAndSettings>
+        <NewMeetingActions team={selectedTeam} meetingType={meetingType} />
+      </NewMeetingInner>
     </NewMeetingBlock>
   )
 }

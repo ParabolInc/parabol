@@ -24,9 +24,7 @@ const ButtonBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   height: '100%',
   justifyContent: isDesktop ? 'flex-start' : 'flex-end',
   gridArea: 'actions',
-  padding: 8,
-  paddingTop: 32,
-  paddingBottom: 32,
+  padding: isDesktop ? '32px 8px' : '24px 8px',
   width: '100%'
 }))
 
