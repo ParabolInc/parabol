@@ -36,17 +36,19 @@ const ThreadedCommentHeader = (props: Props) => {
   const hasReactjis = reactjis.length > 0
   return (
     <ThreadedItemHeaderDescription title={name} subTitle={relativeDate(updatedAt)}>
-      <HeaderActions isViewerComment={isViewerComment}>
-        {!hasReactjis && (
-          <>
-            <AddReactji onToggle={onToggleReactji} />
-            <ThreadedReplyButton onReply={onReply} />
-          </>
-        )}
-        {isViewerComment && (
-          <CommentAuthorOptionsButton editComment={editComment} commentId={commentId} />
-        )}
-      </HeaderActions>
+      {isActive && (
+        <HeaderActions isViewerComment={isViewerComment}>
+          {!hasReactjis && (
+            <>
+              <AddReactji onToggle={onToggleReactji} />
+              <ThreadedReplyButton onReply={onReply} />
+            </>
+          )}
+          {isViewerComment && (
+            <CommentAuthorOptionsButton editComment={editComment} commentId={commentId} />
+          )}
+        </HeaderActions>
+      )}
     </ThreadedItemHeaderDescription>
   )
 }

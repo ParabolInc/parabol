@@ -405,6 +405,7 @@ const initDB = (botScript) => {
     meetingMembers,
     newMeeting,
     organization: org,
+    comments: [] as any[],
     reflections: [] as DemoReflection[],
     reflectionGroups: (newMeeting.reflectionGroups as any) as DemoReflectionGroup[],
     tasks: [] as DemoTask[],

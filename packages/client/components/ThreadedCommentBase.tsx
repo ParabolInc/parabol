@@ -145,11 +145,13 @@ const ThreadedCommentBase = (props: Props) => {
             placeholder={'Edit your comment'}
           />
         )}
-        <ThreadedCommentFooter
-          reactjis={reactjis}
-          onToggleReactji={onToggleReactji}
-          onReply={onReply}
-        />
+        {isActive && (
+          <ThreadedCommentFooter
+            reactjis={reactjis}
+            onToggleReactji={onToggleReactji}
+            onReply={onReply}
+          />
+        )}
         {children}
         <ThreadedItemReply
           reflectionGroupId={reflectionGroupId}

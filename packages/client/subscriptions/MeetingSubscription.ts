@@ -34,6 +34,7 @@ const subscription = graphql`
       ...SetPhaseFocusMutation_meeting @relay(mask: false)
       ...SetStageTimerMutation_meeting @relay(mask: false)
       ...StartDraggingReflectionMutation_meeting @relay(mask: false)
+      ...UpdateCommentContentMutation_meeting @relay(mask: false)
       ...UpdateNewCheckInQuestionMutation_meeting @relay(mask: false)
       ...UpdateDragLocationMutation_meeting @relay(mask: false)
       ...UpdateReflectionContentMutation_meeting @relay(mask: false)

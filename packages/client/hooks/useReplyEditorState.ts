@@ -1,4 +1,4 @@
-import {EditorState, Modifier} from 'draft-js'
+import {ContentState, EditorState, Modifier} from 'draft-js'
 import useEditorState from 'hooks/useEditorState'
 import {useEffect} from 'react'
 import {ReplyMention, SetReplyMention} from '../components/ThreadedItem'
@@ -12,7 +12,7 @@ const useReplyEditorState = (
     if (replyMention) {
       const {userId, preferredName} = replyMention
       setTimeout(() => {
-        const empty = EditorState.createEmpty()
+        const empty = EditorState.push(editorState, ContentState.createFromText(''), 'remove-range')
         const cs = empty.getCurrentContent().createEntity('MENTION', 'IMMUTABLE', {userId})
         const nextContentState = Modifier.insertText(
           cs,

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {convertToRaw, EditorState} from 'draft-js'
+import {convertToRaw, EditorState, ContentState} from 'draft-js'
 import useAtmosphere from 'hooks/useAtmosphere'
 import useMutationProps from 'hooks/useMutationProps'
 import useReplyEditorState from 'hooks/useReplyEditorState'
@@ -101,7 +101,11 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     }
     AddCommentMutation(atmosphere, {comment}, {onError, onCompleted})
     // move focus to end is very important! otherwise ghost chars appear
-    setEditorState(EditorState.moveFocusToEnd(EditorState.createEmpty()))
+    setEditorState(
+      EditorState.moveFocusToEnd(
+        EditorState.push(editorState, ContentState.createFromText(''), 'remove-range')
+      )
+    )
     onSubmitCommentSuccess?.()
   }
 

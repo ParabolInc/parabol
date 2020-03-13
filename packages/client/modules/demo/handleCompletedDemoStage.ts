@@ -87,7 +87,9 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
               sortOrder: idx,
               status: ACTIVE,
               threadId: reflectionGroupId,
-              threadSource: ThreadSourceEnum.REFLECTION_GROUP
+              threadParentId: null,
+              threadSource: ThreadSourceEnum.REFLECTION_GROUP,
+              threadSortOrder: idx
             }
           }
         },
