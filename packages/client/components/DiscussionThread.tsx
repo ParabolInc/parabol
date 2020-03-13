@@ -15,7 +15,7 @@ const Wrapper = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   height: '100%',
-  marginBottom: 16,
+  marginBottom: 64,
   overflow: 'hidden',
   width: DiscussionThreadEnum.WIDTH
 })

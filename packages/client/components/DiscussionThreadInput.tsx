@@ -70,7 +70,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const [editorState, setEditorState] = useReplyEditorState(replyMention, setReplyMention)
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
-  const placeholder = isAnonymousComment ? 'Comment anonymously' : 'Comment publically'
+  const placeholder = isAnonymousComment ? 'Comment anonymously' : 'Comment publicly'
   const toggleAnonymous = () => {
     commitLocalUpdate(atmosphere, (store) => {
       const meeting = store.get(meetingId)

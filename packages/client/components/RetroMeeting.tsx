@@ -105,7 +105,6 @@ const RetroMeeting = (props: Props) => {
         }
       />
       <RejoinFacilitatorButton
-        localPhaseType={localPhaseType as NewMeetingPhaseTypeEnum}
         inSync={localStage ? localStage.id === facilitatorStageId : true}
         onClick={() => gotoStageId(facilitatorStageId)}
       />

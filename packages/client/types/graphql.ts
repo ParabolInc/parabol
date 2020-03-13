@@ -4592,7 +4592,7 @@ export interface IRetrospectiveMeeting {
   /**
    * The grouped reflections
    */
-  wreflectionGroups: Array<IRetroReflectionGroup>
+  reflectionGroups: Array<IRetroReflectionGroup>
 
   /**
    * The settings that govern the retrospective meeting

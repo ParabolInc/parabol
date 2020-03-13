@@ -30,7 +30,6 @@ import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingTopBar from './MeetingTopBar'
 import MeetingHelpToggle from './MenuHelpToggle'
-import Overflow from './Overflow'
 import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
@@ -73,7 +72,7 @@ const ColumnsContainer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   height: '100%',
   margin: '0 auto',
   maxWidth,
-  overflowX: 'hidden',
+  overflow: 'hidden',
   padding: 0,
   width: '100%'
 }))
@@ -128,6 +127,7 @@ const TaskColumn = styled('div')({
   flex: 1,
   flexDirection: 'column',
   height: '100%',
+  overflow: 'auto',
   width: '100%'
 })
 
@@ -214,19 +214,17 @@ const RetroDiscussPhase = (props: Props) => {
                 <LabelContainer>
                   {reflections.length} {plural(reflections.length, 'Reflection')}
                 </LabelContainer>
-                <Overflow>
-                  <ColumnInner isDesktop={isDesktop}>
-                    {isDesktop ? (
-                      <DiscussPhaseReflectionGrid reflections={reflections} />
-                    ) : (
-                      <ReflectionGroup
-                        meeting={meeting}
-                        phaseRef={phaseRef}
-                        reflectionGroup={reflectionGroup}
-                      />
-                    )}
-                  </ColumnInner>
-                </Overflow>
+                <ColumnInner isDesktop={isDesktop}>
+                  {isDesktop ? (
+                    <DiscussPhaseReflectionGrid reflections={reflections} />
+                  ) : (
+                    <ReflectionGroup
+                      meeting={meeting}
+                      phaseRef={phaseRef}
+                      reflectionGroup={reflectionGroup}
+                    />
+                  )}
+                </ColumnInner>
               </ReflectionColumn>
               <TaskColumn>
                 <DiscussionThreadRoot meetingId={meetingId} reflectionGroupId={reflectionGroupId} />
@@ -234,9 +232,7 @@ const RetroDiscussPhase = (props: Props) => {
             </ColumnsContainer>
           </DiscussPhaseWrapper>
         </PhaseWrapper>
-        {isDesktop && (
-          <MeetingHelpToggle menu={isDemoRoute() ? <DemoDiscussHelpMenu /> : <DiscussHelpMenu />} />
-        )}
+        <MeetingHelpToggle menu={isDemoRoute() ? <DemoDiscussHelpMenu /> : <DiscussHelpMenu />} />
         <EditorHelpModalContainer />
       </MeetingHeaderAndPhase>
       <MeetingFacilitatorBar isFacilitating={isFacilitating}>
