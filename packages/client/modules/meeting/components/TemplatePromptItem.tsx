@@ -14,6 +14,7 @@ import {ICON_SIZE} from '../../../styles/typographyV2'
 import {PALETTE} from '../../../styles/paletteV2'
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import EditableTemplatePrompt from './EditableTemplatePrompt'
+import EditableTemplateColor from './EditableTemplateColor'
 
 interface PassedProps {
   canRemove: boolean
@@ -58,8 +59,11 @@ const RemovePromptIcon = styled(Icon)<StyledProps>(({isHover}) => ({
 }))
 
 const PromptAndDescription = styled('div')({
-  width: '100%'
+  width: '100%',
+  display: 'flex'
 })
+
+const EditableTemplate = styled('div')``
 
 class TemplatePromptItem extends Component<Props, State> {
   state = {
@@ -118,19 +122,23 @@ class TemplatePromptItem extends Component<Props, State> {
         onMouseLeave={this.onMouseLeave}
       >
         <PromptAndDescription>
-          <EditableTemplatePrompt
-            isEditingDescription={isEditingDescription}
-            isHover={isHover}
-            question={question}
-            promptId={promptId}
-            prompts={prompts}
-          />
-          <EditableTemplateDescription
-            description={description}
-            onEditingChange={this.onEditDescription}
-            promptId={promptId}
-          />
+          <EditableTemplateColor prompt={prompt} prompts={prompts} />
+          <EditableTemplate>
+            <EditableTemplatePrompt
+              isEditingDescription={isEditingDescription}
+              isHover={isHover}
+              question={question}
+              promptId={promptId}
+              prompts={prompts}
+            />
+            <EditableTemplateDescription
+              description={description}
+              onEditingChange={this.onEditDescription}
+              promptId={promptId}
+            />
+          </EditableTemplate>
         </PromptAndDescription>
+
         {canRemove && (
           <RemovePromptIcon isHover={isHover} onClick={this.removePrompt}>
             cancel
@@ -149,6 +157,7 @@ export default createFragmentContainer<PassedProps>(
         id
         question
         description
+        color
       }
     `
   }

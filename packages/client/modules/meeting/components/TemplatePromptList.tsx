@@ -104,6 +104,7 @@ export default createFragmentContainer(withAtmosphere(withMutationProps(Template
       id
       sortOrder
       question
+      color
       ...TemplatePromptItem_prompt
       ...EditableTemplatePrompt_prompts
     }
