@@ -164,7 +164,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           ...this.db.users[0],
           newMeeting: {
             ...this.db.newMeeting,
-            reflectionGroups: this.db.newMeeting.reflectionGroups!.filter(
+            reflectionGroups: (this.db.newMeeting as any).reflectionGroups.filter(
               (group) => group.voterIds.length > 0
             )
           }
@@ -187,7 +187,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           ...this.db.users[0],
           newMeeting: {
             ...this.db.newMeeting,
-            reflectionGroups: this.db.newMeeting.reflectionGroups!.filter(
+            reflectionGroups: (this.db.newMeeting as any).reflectionGroups.filter(
               (group) => group.voterIds.length > 0
             ),
             meetingMembers: this.db.newMeeting.meetingMembers!.map((member) => ({
@@ -794,7 +794,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
             oldReflectionGroup.title = oldTitle
           }
         } else {
-          const meetingGroups = this.db.newMeeting.reflectionGroups!
+          const meetingGroups = (this.db.newMeeting as any).reflectionGroups
           meetingGroups.splice(meetingGroups.indexOf(oldReflectionGroup as any), 1)
           Object.assign(oldReflectionGroup, {
             isActive: false,
@@ -850,7 +850,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
                 oldReflectionGroup.title = oldTitle
               }
             } else {
-              const meetingGroups = this.db.newMeeting.reflectionGroups!
+              const meetingGroups = (this.db.newMeeting as any).reflectionGroups
               meetingGroups.splice(meetingGroups.indexOf(oldReflectionGroup as any), 1)
               oldReflectionGroup.isActive = false
               oldReflectionGroup.updatedAt = now
@@ -917,7 +917,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       removedReflectionGroupIds.forEach((groupId) => {
         const group = this.db.reflectionGroups.find((group) => group.id === groupId)!
         group.isActive = false
-        const meetingGroups = this.db.newMeeting.reflectionGroups!
+        const meetingGroups = (this.db.newMeeting as any).reflectionGroups
         meetingGroups.splice(meetingGroups.indexOf(group as any), 1)
         group.reflections!.length = 0
       })

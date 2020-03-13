@@ -15,6 +15,7 @@ import {setStageTimerMeetingUpdater} from '../mutations/SetStageTimerMutation'
 import {startDraggingReflectionMeetingUpdater} from '../mutations/StartDraggingReflectionMutation'
 import {MeetingSubscriptionResponse} from '__generated__/MeetingSubscription.graphql'
 import {addCommentMeetingUpdater} from 'mutations/AddCommentMutation'
+import {deleteCommentMeetingUpdater} from 'mutations/DeleteCommentMutation'
 
 const subscription = graphql`
   subscription MeetingSubscription($meetingId: ID!) {
@@ -50,8 +51,9 @@ const onNextHandlers = {
 }
 
 const updateHandlers = {
-  AddCommentPayload: addCommentMeetingUpdater,
+  AddCommentSuccess: addCommentMeetingUpdater,
   CreateReflectionPayload: createReflectionMeetingUpdater,
+  DeleteCommentSuccess: deleteCommentMeetingUpdater,
   DragDiscussionTopicPayload: dragDiscussionTopicMeetingUpdater,
   EditReflectionPayload: editReflectionMeetingUpdater,
   EndDraggingReflectionPayload: endDraggingReflectionMeetingUpdater,

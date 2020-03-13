@@ -74,7 +74,7 @@ const handleDeleteComment = (comment, store) => {
   }
 }
 
-export const DeleteCommentMeetingUpdater: SharedUpdater<DeleteCommentMutation_meeting> = (
+export const deleteCommentMeetingUpdater: SharedUpdater<DeleteCommentMutation_meeting> = (
   payload,
   {store}
 ) => {
@@ -89,7 +89,7 @@ const DeleteCommentMutation: SimpleMutation<TDeleteCommentMutation> = (atmospher
     variables,
     updater: (store) => {
       const payload = store.getRootField('deleteComment')
-      DeleteCommentMeetingUpdater(payload as any, {atmosphere, store})
+      deleteCommentMeetingUpdater(payload as any, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
       const {commentId} = variables

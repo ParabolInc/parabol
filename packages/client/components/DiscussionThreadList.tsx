@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import useInitialRender from 'hooks/useInitialRender'
-import React, {forwardRef, RefObject, useEffect} from 'react'
+import React, {forwardRef, RefObject} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {DiscussionThreadList_meeting} from '__generated__/DiscussionThreadList_meeting.graphql'
 import {DiscussionThreadList_threadables} from '__generated__/DiscussionThreadList_threadables.graphql'
 import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import ThreadedItem from './ThreadedItem'
+import useScrollThreadList from 'hooks/useScrollThreadList'
 
 const EmptyWrapper = styled('div')({
   alignItems: 'center',
@@ -39,6 +39,7 @@ interface Props {
 const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
   const {editorRef, meeting, reflectionGroupId, threadables} = props
   const isEmpty = threadables.length === 0
+  useScrollThreadList(threadables, editorRef, ref)
   if (isEmpty) {
     return (
       <EmptyWrapper>
@@ -46,28 +47,6 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
       </EmptyWrapper>
     )
   }
-  const isInit = useInitialRender()
-  // if we're at or near the bottom of the scroll container
-  // and the body is the active element
-  // then scroll to the bottom whenever threadables changes
-
-  useEffect(() => {
-    const {current: el} = ref
-    if (!el) return
-
-    const {scrollTop, scrollHeight, clientHeight} = el
-    if (isInit) {
-      el.scrollTo({top: scrollHeight})
-      return
-    }
-    // get the element for the draft-js el or android fallback
-    const edEl = (editorRef.current as any)?.editor || editorRef.current
-
-    // if i'm writing something or i'm almost at the bottom, go to the bottom
-    if (document.activeElement === edEl || scrollTop + clientHeight > scrollHeight - 20) {
-      el.scrollTo({top: scrollHeight, behavior: 'smooth'})
-    }
-  }, [isInit, threadables])
 
   return (
     <Wrapper ref={ref}>
