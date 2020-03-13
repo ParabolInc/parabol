@@ -3028,6 +3028,11 @@ export interface IMutation {
   reflectTemplatePromptUpdateDescription: IReflectTemplatePromptUpdateDescriptionPayload | null
 
   /**
+   * Update the color of a reflection prompt
+   */
+  reflectTemplatePromptUpdateColor: IReflectTemplatePromptUpdateDescriptionPayload | null
+
+  /**
    * Remove an agenda item
    */
   removeAgendaItem: IRemoveAgendaItemPayload | null
@@ -3667,6 +3672,11 @@ export interface IPromoteToTeamLeadOnMutationArguments {
 export interface IReflectTemplatePromptUpdateDescriptionOnMutationArguments {
   promptId: string
   description: string
+}
+
+export interface IReflectTemplatePromptUpdateColorOnMutationArguments {
+  promptId: string
+  color: string
 }
 
 export interface IRemoveAgendaItemOnMutationArguments {
@@ -4592,6 +4602,11 @@ export interface IRetroPhaseItem {
    * The question to answer during the phase of the retrospective (eg What went well?)
    */
   question: string
+
+  /**
+   * The color
+   */
+  color: string
 
   /**
    * The description to the question for further context. A long version of the question.
@@ -6714,6 +6729,7 @@ export type TeamSubscriptionPayload =
   | IAddReflectTemplatePromptPayload
   | IMoveReflectTemplatePromptPayload
   | IReflectTemplatePromptUpdateDescriptionPayload
+  | IReflectTemplatePromptUpdateColorPayload
   | IRemoveAtlassianAuthPayload
   | IRemoveGitHubAuthPayload
   | IRemoveSlackAuthPayload
@@ -6724,6 +6740,12 @@ export type TeamSubscriptionPayload =
   | ISetCheckInEnabledPayload
   | ISetSlackNotificationPayload
   | IUpdateUserProfilePayload
+
+export interface IReflectTemplatePromptUpdateColorPayload {
+  __typename: 'ReflectTemplatePromptUpdateColorPayload'
+  error: IStandardMutationError | null
+  prompt: IRetroPhaseItem | null
+}
 
 /**
  * An authentication strategy using Google

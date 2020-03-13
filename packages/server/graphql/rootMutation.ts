@@ -65,6 +65,7 @@ import addAtlassianAuth from './mutations/addAtlassianAuth'
 import removeAtlassianAuth from './mutations/removeAtlassianAuth'
 import createJiraIssue from './mutations/createJiraIssue'
 import reflectTemplatePromptUpdateDescription from './mutations/reflectTemplatePromptUpdateDescription'
+import reflectTemplatePromptUpdateColor from './mutations/reflectTemplatePromptUpdateColor'
 import addGitHubAuth from './mutations/addGitHubAuth'
 import removeGitHubAuth from './mutations/removeGitHubAuth'
 import removeSlackAuth from './mutations/removeSlackAuth'
@@ -145,6 +146,7 @@ export default new GraphQLObjectType<any, Context, any>({
     promoteNewMeetingFacilitator,
     promoteToTeamLead,
     reflectTemplatePromptUpdateDescription,
+    reflectTemplatePromptUpdateColor,
     removeAgendaItem,
     removeAtlassianAuth,
     removeGitHubAuth,

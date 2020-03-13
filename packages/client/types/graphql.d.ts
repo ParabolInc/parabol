@@ -4208,6 +4208,7 @@ export interface IReflectTemplate {
    */
   teamId: string
   updatedAt: any
+  color: string
 }
 
 /**

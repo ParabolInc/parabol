@@ -8,6 +8,7 @@ interface Input {
   question: string
   description: string
   title?: string
+  color: string
 }
 
 export default class RetrospectivePrompt {
@@ -22,9 +23,10 @@ export default class RetrospectivePrompt {
   question: string
   title: string
   updatedAt = new Date()
+  color: string
 
   constructor(input: Input) {
-    const {teamId, templateId, sortOrder, question, description, title} = input
+    const {teamId, templateId, sortOrder, question, description, title, color} = input
     this.id = shortid.generate()
     this.phaseItemType = CustomPhaseItemTypeEnum.retroPhaseItem
     this.sortOrder = sortOrder
@@ -33,5 +35,6 @@ export default class RetrospectivePrompt {
     this.question = question
     this.description = description || ''
     this.title = title || question
+    this.color = color || '#fff'
   }
 }
