@@ -42,7 +42,8 @@ const NewMeetingBlock = styled('div')<{innerWidth: number; isDesktop: boolean}>(
     backgroundRepeat: 'no-repeat',
     display: 'flex',
     flexDirection: 'column',
-    justifyItems: 'center'
+    justifyItems: 'center',
+    minHeight: '100%'
   },
   ({innerWidth, isDesktop}) =>
     isDesktop && {
@@ -51,6 +52,7 @@ const NewMeetingBlock = styled('div')<{innerWidth: number; isDesktop: boolean}>(
       // the wave is 2560x231, so to figure out the offset from the center, we need to find how much scaling there was
       backgroundPositionY: `calc(50% - ${Math.floor(((innerWidth / 2560) * 231) / 2 - 1)}px), 0`,
       height: '100%',
+      minHeight: 0,
       overflow: 'auto'
     }
 )
@@ -62,7 +64,8 @@ const NewMeetingInner = styled('div')<{isDesktop: boolean}>(
     gridTemplateAreas: `'picker' 'howto' 'settings' 'actions'`,
     gridTemplateColumns: '100%',
     gridTemplateRows: 'auto',
-    justifyItems: 'center'
+    justifyItems: 'center',
+    margin: 'auto'
   },
   ({isDesktop}) =>
     isDesktop && {
@@ -70,7 +73,6 @@ const NewMeetingInner = styled('div')<{isDesktop: boolean}>(
       gridTemplateColumns: 'minmax(0, 4fr) minmax(0, 3fr)',
       gridTemplateRows: 'auto 3fr',
       height: '100%',
-      margin: 'auto',
       maxHeight: 900,
       maxWidth: 1400,
       padding: '0 32px 16px 64px'
