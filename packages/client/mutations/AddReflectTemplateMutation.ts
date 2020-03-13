@@ -43,8 +43,8 @@ export const addReflectTemplateTeamUpdater: SharedUpdater<AddReflectTemplateMuta
   handleAddReflectTemplate(template, store)
   const filterFn = (obj) => {
     return (
-      obj.__typename === 'RetrospectiveMeetingSettings' &&
-      obj.reflectTemplates?.__refs?.includes(templateId)
+      obj?.__typename === 'RetrospectiveMeetingSettings' &&
+      obj?.reflectTemplates?.__refs?.includes(templateId)
     )
   }
   const settingsRecord = getCachedRecord(store, filterFn)

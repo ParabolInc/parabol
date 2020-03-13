@@ -67,13 +67,16 @@ $ cd action
 $ cp packages/server/.env.example packages/server/.env # Add your own vars here
 $ rethinkdb &
 $ yarn
+$ yarn postdeploy
 $ yarn quickstart
 ```
 _Remember: if RethinkDB is running locally, you can reach its dashboard at
 [http://localhost:8080](http://localhost:8080) by default._
 
-### Development
+### Running in Development
 ```bash
+$ yarn build:relay
+$ yarn db:migrate
 $ yarn dev
 ```
 
@@ -86,6 +89,15 @@ $ npm run db:migrate
 The database schema version is managed by
 [migrate-rethinkdb](https://github.com/ParabolInc/migrate-rethinkdb).
 Migration scripts are stored in `./packages/server/database/migrations`.
+
+### Debugging
+
+#### Debugging in Production
+
+Note: the file [sendToSentry.ts](packages/server/utils/sendToSentry.js) contains
+a function `sendToSentry(...)` that will mask server errors from being emitted to
+the console in production. You must change the `if (!PROD) {` clause within this
+function to `if (true) {` if you wish to see errors emitted to the console.
 
 ## Getting Involved
 
