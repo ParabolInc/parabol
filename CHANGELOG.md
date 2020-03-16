@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.0.0 2020-Mar-16
+
+### Added
+* Threaded Discussions
+
+### Changed
+* Replaced .googlecloudkey with .env vars
+
 ## 4.24.0 2020-Mar-04
 
 ### Added
