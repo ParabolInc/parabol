@@ -12,7 +12,7 @@ import isTempId from '../../utils/relay/isTempId'
 import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
-import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
+import {NewMeetingPhaseTypeEnum, ReactableEnum} from '../../types/graphql'
 import {ReflectionCard_meeting} from '__generated__/ReflectionCard_meeting.graphql'
 import isAndroid from '../../utils/draftjs/isAndroid'
 import convertToTaskContent from '../../utils/draftjs/convertToTaskContent'
@@ -21,7 +21,12 @@ import ReflectionCardFooter from './ReflectionCardFooter'
 import useEditorState from '../../hooks/useEditorState'
 import isPhaseComplete from '../../utils/meetings/isPhaseComplete'
 import ReactjiSection from './ReactjiSection'
-import AddReactjiToReflectionMutation from 'mutations/AddReactjiToReflectionMutation'
+import AddReactjiToReactableMutation from 'mutations/AddReactjiToReactableMutation'
+import styled from '@emotion/styled'
+
+const StyledReacjis = styled(ReactjiSection)({
+  padding: '0 14px 12px'
+})
 
 interface Props {
   isClipped?: boolean
@@ -155,9 +160,14 @@ const ReflectionCard = (props: Props) => {
       return reactji.isViewerReactji && reactji.id.split(':')[1] === emojiId
     })
     submitMutation()
-    AddReactjiToReflectionMutation(
+    AddReactjiToReactableMutation(
       atmosphere,
-      {reflectionId, isRemove, reactji: emojiId},
+      {
+        reactableId: reflectionId,
+        reactableType: ReactableEnum.REFLECTION,
+        isRemove,
+        reactji: emojiId
+      },
       {onCompleted, onError}
     )
   }
@@ -186,7 +196,7 @@ const ReflectionCard = (props: Props) => {
       {!readOnly && (
         <ReflectionCardDeleteButton meetingId={meetingId} reflectionId={reflectionId} />
       )}
-      {showReactji && <ReactjiSection reactjis={reactjis} onToggle={onToggleReactji} />}
+      {showReactji && <StyledReacjis reactjis={reactjis} onToggle={onToggleReactji} />}
     </ReflectionCardRoot>
   )
 }

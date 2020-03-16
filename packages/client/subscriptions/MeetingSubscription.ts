@@ -14,13 +14,17 @@ import {removeReflectionMeetingUpdater} from '../mutations/RemoveReflectionMutat
 import {setStageTimerMeetingUpdater} from '../mutations/SetStageTimerMutation'
 import {startDraggingReflectionMeetingUpdater} from '../mutations/StartDraggingReflectionMutation'
 import {MeetingSubscriptionResponse} from '__generated__/MeetingSubscription.graphql'
+import {addCommentMeetingUpdater} from 'mutations/AddCommentMutation'
+import {deleteCommentMeetingUpdater} from 'mutations/DeleteCommentMutation'
 
 const subscription = graphql`
   subscription MeetingSubscription($meetingId: ID!) {
     meetingSubscription(meetingId: $meetingId) {
       __typename
-      ...AddReactjiToReflectionMutation_meeting @relay(mask: false)
+      ...AddReactjiToReactableMutation_meeting @relay(mask: false)
+      ...AddCommentMutation_meeting @relay(mask: false)
       ...CreateReflectionMutation_meeting @relay(mask: false)
+      ...DeleteCommentMutation_meeting @relay(mask: false)
       ...DragDiscussionTopicMutation_meeting @relay(mask: false)
       ...EditReflectionMutation_meeting @relay(mask: false)
       ...EndDraggingReflectionMutation_meeting @relay(mask: false)
@@ -31,6 +35,7 @@ const subscription = graphql`
       ...SetPhaseFocusMutation_meeting @relay(mask: false)
       ...SetStageTimerMutation_meeting @relay(mask: false)
       ...StartDraggingReflectionMutation_meeting @relay(mask: false)
+      ...UpdateCommentContentMutation_meeting @relay(mask: false)
       ...UpdateNewCheckInQuestionMutation_meeting @relay(mask: false)
       ...UpdateDragLocationMutation_meeting @relay(mask: false)
       ...UpdateReflectionContentMutation_meeting @relay(mask: false)
@@ -46,7 +51,9 @@ const onNextHandlers = {
 }
 
 const updateHandlers = {
+  AddCommentSuccess: addCommentMeetingUpdater,
   CreateReflectionPayload: createReflectionMeetingUpdater,
+  DeleteCommentSuccess: deleteCommentMeetingUpdater,
   DragDiscussionTopicPayload: dragDiscussionTopicMeetingUpdater,
   EditReflectionPayload: editReflectionMeetingUpdater,
   EndDraggingReflectionPayload: endDraggingReflectionMeetingUpdater,

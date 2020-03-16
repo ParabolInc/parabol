@@ -50,7 +50,7 @@ class AddTemplatePrompt extends Component<Props> {
     if (submitting) return
     submitMutation()
     const sortOrders = prompts.map(({sortOrder}) => sortOrder)
-    const sortOrder = Math.max(...sortOrders) + 1 + dndNoise()
+    const sortOrder = Math.max(0, ...sortOrders) + 1 + dndNoise()
     const promptCount = prompts.length
     AddReflectTemplatePromptMutation(
       atmosphere,

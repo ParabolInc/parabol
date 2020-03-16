@@ -32,18 +32,24 @@ const ReactjiPicker = lazyPreload(() =>
 )
 
 interface Props {
+  className?: string
   onToggle: (emojiId: string) => void
 }
 
 const AddReactjiButton = (props: Props) => {
-  const {onToggle} = props
+  const {className, onToggle} = props
   const {menuProps, menuPortal, originRef, togglePortal} = useMenu(MenuPosition.UPPER_LEFT, {
     menuContentStyles: {paddingTop: 0, paddingBottom: 0}
   })
 
   return (
     <>
-      <Button onClick={togglePortal} ref={originRef} onMouseEnter={ReactjiPicker.preload}>
+      <Button
+        className={className}
+        onClick={togglePortal}
+        ref={originRef}
+        onMouseEnter={ReactjiPicker.preload}
+      >
         <AddIcon alt='' src={icon} />
       </Button>
       {menuPortal(<ReactjiPicker menuProps={menuProps} onClick={onToggle} />)}

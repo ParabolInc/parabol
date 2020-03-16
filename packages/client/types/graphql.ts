@@ -2817,9 +2817,19 @@ export interface IMutation {
   addAtlassianAuth: IAddAtlassianAuthPayload
 
   /**
+   * Add a comment to a discussion
+   */
+  addComment: AddCommentPayload
+
+  /**
    * Add or remove a reactji to a reflection
    */
   addReactjiToReflection: AddReactjiToReflectionPayload
+
+  /**
+   * Add or remove a reactji from a reactable
+   */
+  addReactjiToReactable: AddReactjiToReactablePayload
 
   /**
    * Add a new template full of prompts
@@ -2896,6 +2906,11 @@ export interface IMutation {
    * Create a PUT URL on the CDN for the currently authenticated user’s profile picture
    */
   createUserPicturePutUrl: ICreateUserPicturePutUrlPayload | null
+
+  /**
+   * Delete a comment from a discussion
+   */
+  deleteComment: DeleteCommentPayload
 
   /**
    * Delete (not archive!) a task
@@ -3154,6 +3169,11 @@ export interface IMutation {
   updateAgendaItem: IUpdateAgendaItemPayload | null
 
   /**
+   * Update the content of a comment
+   */
+  updateCommentContent: UpdateCommentContentPayload | null
+
+  /**
    * Update an existing credit card on file
    */
   updateCreditCard: IUpdateCreditCardPayload | null
@@ -3235,11 +3255,40 @@ export interface IAddAtlassianAuthOnMutationArguments {
   teamId: string
 }
 
+export interface IAddCommentOnMutationArguments {
+  /**
+   * A partial new comment
+   */
+  comment: IAddCommentInput
+}
+
 export interface IAddReactjiToReflectionOnMutationArguments {
   /**
    * The reflection getting the reaction
    */
   reflectionId: string
+
+  /**
+   * the id of the reactji to add
+   */
+  reactji: string
+
+  /**
+   * If true, remove the reaction, else add it
+   */
+  isRemove?: boolean | null
+}
+
+export interface IAddReactjiToReactableOnMutationArguments {
+  /**
+   * The id of the reactable
+   */
+  reactableId: string
+
+  /**
+   * the type of the
+   */
+  reactableType: ReactableEnum
 
   /**
    * the id of the reactji to add
@@ -3441,6 +3490,10 @@ export interface ICreateUserPicturePutUrlOnMutationArguments {
    * a png version of the above image
    */
   pngVersion?: IImageMetadataInput | null
+}
+
+export interface IDeleteCommentOnMutationArguments {
+  commentId: string
 }
 
 export interface IDeleteTaskOnMutationArguments {
@@ -3883,6 +3936,15 @@ export interface IUpdateAgendaItemOnMutationArguments {
   updatedAgendaItem: IUpdateAgendaItemInput
 }
 
+export interface IUpdateCommentContentOnMutationArguments {
+  commentId: string
+
+  /**
+   * A stringified draft-js document containing thoughts
+   */
+  content: string
+}
+
 export interface IUpdateCreditCardOnMutationArguments {
   /**
    * the org requesting the changed billing
@@ -4132,15 +4194,176 @@ export interface IAddAtlassianAuthPayload {
   user: IUser | null
 }
 
+export interface IAddCommentInput {
+  /**
+   * A stringified draft-js document containing thoughts
+   */
+  content: string
+
+  /**
+   * true if the comment should be anonymous
+   */
+  isAnonymous?: boolean | null
+  meetingId: string
+
+  /**
+   * foreign key for the reflection group or agenda item this was created from
+   */
+  threadId: string
+  threadSource: ThreadSourceEnum
+  threadSortOrder: number
+  threadParentId?: string | null
+}
+
 /**
- * Return object for AddReactjiToReflectionPayload
+ * Return object for AddCommentPayload
  */
-export type AddReactjiToReflectionPayload = IErrorPayload | IAddReactjiToReflectionSuccess
+export type AddCommentPayload = IErrorPayload | IAddCommentSuccess
 
 export interface IErrorPayload {
   __typename: 'ErrorPayload'
   error: IStandardMutationError
 }
+
+export interface IAddCommentSuccess {
+  __typename: 'AddCommentSuccess'
+
+  /**
+   * the comment just created
+   */
+  comment: IComment
+}
+
+/**
+ * A comment on a thread
+ */
+export interface IComment {
+  __typename: 'Comment'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * The rich text body of the item, if inactive, a tombstone text
+   */
+  content: string
+
+  /**
+   * The timestamp the item was created
+   */
+  createdAt: any
+
+  /**
+   * The userId that created the item, null if anonymous
+   */
+  createdBy: string | null
+
+  /**
+   * The user that created the item, null if anonymous
+   */
+  createdByUser: IUser | null
+
+  /**
+   * the replies to this threadable item
+   */
+  replies: Array<Threadable>
+
+  /**
+   * The ID of the thread
+   */
+  threadId: string | null
+
+  /**
+   * The item that spurred the threaded discussion
+   */
+  threadSource: ThreadSourceEnum | null
+
+  /**
+   * the parent, if this threadable is a reply, else null
+   */
+  threadParentId: string | null
+
+  /**
+   * the order of this threadable, relative to threadParentId
+   */
+  threadSortOrder: number | null
+
+  /**
+   * The timestamp the item was updated
+   */
+  updatedAt: any
+
+  /**
+   * All the reactjis for the given reflection
+   */
+  reactjis: Array<IReactji>
+
+  /**
+   * true if the agenda item has not been processed or deleted
+   */
+  isActive: boolean
+
+  /**
+   * true if the comment is anonymous, else false
+   */
+  isAnonymous: boolean
+
+  /**
+   * true if the viewer wrote this comment, else false
+   */
+  isViewerComment: boolean
+}
+
+/**
+ * An item that can have reactjis
+ */
+export type Reactable = IComment | IRetroReflection
+
+/**
+ * An item that can have reactjis
+ */
+export interface IReactable {
+  __typename: 'Reactable'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * All the reactjis for the given reflection
+   */
+  reactjis: Array<IReactji>
+}
+
+/**
+ * An aggregate of reactji metadata
+ */
+export interface IReactji {
+  __typename: 'Reactji'
+
+  /**
+   * composite of entity:reactjiId
+   */
+  id: string
+
+  /**
+   * The number of users who have added this reactji
+   */
+  count: number
+
+  /**
+   * true if the viewer is included in the count, else false
+   */
+  isViewerReactji: boolean
+}
+
+/**
+ * Return object for AddReactjiToReflectionPayload
+ */
+export type AddReactjiToReflectionPayload = IErrorPayload | IAddReactjiToReflectionSuccess
 
 export interface IAddReactjiToReflectionSuccess {
   __typename: 'AddReactjiToReflectionSuccess'
@@ -4161,6 +4384,11 @@ export interface IRetroReflection {
    * shortid
    */
   id: string
+
+  /**
+   * All the reactjis for the given reflection
+   */
+  reactjis: Array<IReactji>
 
   /**
    * The ID of the group that the autogrouper assigned the reflection. Error rate = Sum(autoId != Id) / autoId.count()
@@ -4217,11 +4445,6 @@ export interface IRetroReflection {
    * The plaintext version of content
    */
   plaintextContent: string
-
-  /**
-   * All the reactjis for the given reflection
-   */
-  reactjis: Array<IReactji>
 
   /**
    * The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group.
@@ -4362,6 +4585,11 @@ export interface IRetrospectiveMeeting {
   nextAutoGroupThreshold: number | null
 
   /**
+   * a single reflection group
+   */
+  reflectionGroup: IRetroReflectionGroup | null
+
+  /**
    * The grouped reflections
    */
   reflectionGroups: Array<IRetroReflectionGroup>
@@ -4385,6 +4613,10 @@ export interface IRetrospectiveMeeting {
    * The sum total of the votes remaining for the meeting members that are present in the meeting
    */
   votesRemaining: number
+}
+
+export interface IReflectionGroupOnRetrospectiveMeetingArguments {
+  reflectionGroupId: string
 }
 
 export interface IReflectionGroupsOnRetrospectiveMeetingArguments {
@@ -4423,13 +4655,6 @@ export interface IRetrospectiveMeetingMember {
    */
   tasks: Array<ITask>
   votesRemaining: number
-}
-
-/**
- * sorts for the reflection group. default is sortOrder. sorting by voteCount filters out items without votes.
- */
-export const enum ReflectionGroupSortEnum {
-  voteCount = 'voteCount'
 }
 
 /**
@@ -4530,9 +4755,9 @@ export interface IThreadOnRetroReflectionGroupArguments {
   first: number
 
   /**
-   * the datetime cursor
+   * the incrementing sort order in string format
    */
-  after?: any | null
+  after?: string | null
 }
 
 /**
@@ -4641,9 +4866,9 @@ export interface IThreadableConnection {
   __typename: 'ThreadableConnection'
 
   /**
-   * Page info with cursors coerced to ISO8601 dates
+   * Page info with strings (sortOrder) as cursors
    */
-  pageInfo: IPageInfoDateCursor | null
+  pageInfo: IPageInfo | null
 
   /**
    * A list of edges.
@@ -4661,7 +4886,14 @@ export interface IThreadableEdge {
    * The item at the end of the edge
    */
   node: Threadable
-  cursor: any | null
+  cursor: string | null
+}
+
+/**
+ * sorts for the reflection group. default is sortOrder. sorting by voteCount filters out items without votes.
+ */
+export const enum ReflectionGroupSortEnum {
+  voteCount = 'voteCount'
 }
 
 /**
@@ -4718,25 +4950,25 @@ export interface IRetrospectiveMeetingSettings {
 }
 
 /**
- * An aggregate of reactji metadata
+ * The type of reactable
  */
-export interface IReactji {
-  __typename: 'Reactji'
+export const enum ReactableEnum {
+  COMMENT = 'COMMENT',
+  REFLECTION = 'REFLECTION'
+}
+
+/**
+ * Return object for AddReactjiToReactablePayload
+ */
+export type AddReactjiToReactablePayload = IErrorPayload | IAddReactjiToReactableSuccess
+
+export interface IAddReactjiToReactableSuccess {
+  __typename: 'AddReactjiToReactableSuccess'
 
   /**
-   * composite of entity:reactjiId
+   * the Reactable with the updated list of reactjis
    */
-  id: string
-
-  /**
-   * The number of users who have added this reactji
-   */
-  count: number
-
-  /**
-   * true if the viewer is included in the count, else false
-   */
-  isViewerReactji: boolean
+  reactable: Reactable
 }
 
 export interface IAddReflectTemplatePayload {
@@ -5164,6 +5396,21 @@ export interface ICreateUserPicturePutUrlPayload {
   error: IStandardMutationError | null
   url: any | null
   pngUrl: any | null
+}
+
+/**
+ * Return object for DeleteCommentPayload
+ */
+export type DeleteCommentPayload = IErrorPayload | IDeleteCommentSuccess
+
+export interface IDeleteCommentSuccess {
+  __typename: 'DeleteCommentSuccess'
+  commentId: string
+
+  /**
+   * the comment just deleted
+   */
+  comment: IComment
 }
 
 export interface IDeleteTaskPayload {
@@ -6237,6 +6484,20 @@ export interface IUpdateAgendaItemPayload {
   error: IStandardMutationError | null
 }
 
+/**
+ * Return object for UpdateCommentContentPayload
+ */
+export type UpdateCommentContentPayload = IErrorPayload | IUpdateCommentContentSuccess
+
+export interface IUpdateCommentContentSuccess {
+  __typename: 'UpdateCommentContentSuccess'
+
+  /**
+   * the comment with updated content
+   */
+  comment: IComment
+}
+
 export interface IUpdateCreditCardPayload {
   __typename: 'UpdateCreditCardPayload'
   error: IStandardMutationError | null
@@ -6478,9 +6739,12 @@ export interface IMeetingSubscriptionOnSubscriptionArguments {
 }
 
 export type MeetingSubscriptionPayload =
+  | IAddCommentSuccess
   | IAddReactjiToReflectionSuccess
+  | IAddReactjiToReactableSuccess
   | IAutoGroupReflectionsPayload
   | ICreateReflectionPayload
+  | IDeleteCommentSuccess
   | IDragDiscussionTopicPayload
   | IEndDraggingReflectionPayload
   | IEditReflectionPayload
@@ -6491,6 +6755,7 @@ export type MeetingSubscriptionPayload =
   | ISetPhaseFocusPayload
   | ISetStageTimerPayload
   | IStartDraggingReflectionPayload
+  | IUpdateCommentContentSuccess
   | IUpdateDragLocationPayload
   | IUpdateNewCheckInQuestionPayload
   | IUpdateReflectionContentPayload
@@ -8043,88 +8308,6 @@ export interface IJiraRemoteProjectCategory {
   id: string
   name: string
   description: string
-}
-
-/**
- * A comment on a thread
- */
-export interface IComment {
-  __typename: 'Comment'
-
-  /**
-   * shortid
-   */
-  id: string
-
-  /**
-   * The rich text body of the item
-   */
-  content: string
-
-  /**
-   * The timestamp the item was created
-   */
-  createdAt: any
-
-  /**
-   * The userId that created the item, null if anonymous
-   */
-  createdBy: string | null
-
-  /**
-   * The user that created the item, null if anonymous
-   */
-  createdByUser: IUser | null
-
-  /**
-   * the replies to this threadable item
-   */
-  replies: Array<Threadable>
-
-  /**
-   * The ID of the thread
-   */
-  threadId: string | null
-
-  /**
-   * The item that spurred the threaded discussion
-   */
-  threadSource: ThreadSourceEnum | null
-
-  /**
-   * the parent, if this threadable is a reply, else null
-   */
-  threadParentId: string | null
-
-  /**
-   * the order of this threadable, relative to threadParentId
-   */
-  threadSortOrder: number | null
-
-  /**
-   * The timestamp the item was updated
-   */
-  updatedAt: any
-
-  /**
-   * true if the agenda item has not been processed or deleted
-   */
-  isActive: boolean
-
-  /**
-   * true if the comment is anonymous, else false
-   */
-  isAnonymous: boolean
-
-  /**
-   * true if the viewer wrote this comment, else false
-   */
-  isViewerComment: boolean
-
-  /**
-   * All the reactjis for the given reflection
-   */
-  reactjis: Array<IReactji>
 }
 
 // tslint:enable

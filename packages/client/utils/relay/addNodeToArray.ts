@@ -1,22 +1,30 @@
-import {Variables} from 'relay-runtime'
+import {Variables, RecordProxy} from 'relay-runtime'
 
-const getDescendingIdx = (newName, arr, sortValue) => {
+export const getDescendingIdx = (
+  newName: string | number,
+  arr: (RecordProxy | null)[],
+  sortValue: string
+) => {
   let nextIdx
   for (nextIdx = 0; nextIdx < arr.length; nextIdx++) {
     const node = arr[nextIdx]
     if (!node) continue
-    const nodeName = node.getValue(sortValue)
+    const nodeName = node.getValue(sortValue) as string | number
     if (nodeName < newName) break
   }
   return nextIdx
 }
 
-const getAscendingIdx = (newName, arr, sortValue) => {
+export const getAscendingIdx = (
+  newName: string | number,
+  arr: (RecordProxy | null)[],
+  sortValue: string
+) => {
   let nextIdx
   for (nextIdx = 0; nextIdx < arr.length; nextIdx++) {
     const node = arr[nextIdx]
     if (!node) continue
-    const nodeName = node.getValue(sortValue)
+    const nodeName = node.getValue(sortValue) as string | number
     if (nodeName > newName) break
   }
   return nextIdx
@@ -26,7 +34,13 @@ interface Options {
   descending?: boolean
   storageKeyArgs?: Variables
 }
-const addNodeToArray = (newNode, parent, arrayName, sortValue, options: Options = {}) => {
+const addNodeToArray = (
+  newNode: RecordProxy | null | undefined,
+  parent: RecordProxy | null | undefined,
+  arrayName: string,
+  sortValue: string,
+  options: Options = {}
+) => {
   if (!newNode || !parent) return
   const {descending, storageKeyArgs} = options
   // create an empty array so we don't have to make sure all of our mutations are bullet proof.
@@ -39,7 +53,7 @@ const addNodeToArray = (newNode, parent, arrayName, sortValue, options: Options 
     const node = arr[ii]
     if (node && node.getDataID() === nodeDataId) return
   }
-  const newName = newNode.getValue(sortValue)
+  const newName = newNode.getValue(sortValue) as string | number
   const idxFinder = descending ? getDescendingIdx : getAscendingIdx
   const nextIdx = idxFinder(newName, arr, sortValue)
   const newArr = [...arr.slice(0, nextIdx), newNode, ...arr.slice(nextIdx)]

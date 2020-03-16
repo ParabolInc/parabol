@@ -46,11 +46,14 @@ export const commentsByThreadId = new LoaderMakerForeign(
   'threadId',
   async (threadIds) => {
     const r = await getRethink()
-    return r
-      .table('Comment')
-      .getAll(r.args(threadIds), {index: 'threadId'})
-      .filter({isActive: true})
-      .run()
+    return (
+      r
+        .table('Comment')
+        .getAll(r.args(threadIds), {index: 'threadId'})
+        // include deleted comments so we can replace them with tombstones
+        // .filter({isActive: true})
+        .run()
+    )
   }
 )
 

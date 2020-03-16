@@ -5,7 +5,7 @@ import makeDiscussionStage from '../../utils/makeDiscussionStage'
 import mapGroupsToStages from '../../utils/makeGroupsToStages'
 import taskLookup from './taskLookup'
 import reactjiLookup from './reactjiLookup'
-import {ThreadSourceEnum} from 'types/graphql'
+import {ThreadSourceEnum, ReactableEnum} from 'types/graphql'
 
 const removeEmptyReflections = (db) => {
   const reflections = db.reflections.filter((reflection) => reflection.isActive)
@@ -37,7 +37,11 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
   const reflectionGroup = db.reflectionGroups.find((group) => group.id === reflectionGroupId)
   const {reflections} = reflectionGroup
   const stageTasks = [] as string[]
-  const reactions = [] as {reflectionId: string; reactji: string}[]
+  const reactions = [] as {
+    reactableType: ReactableEnum.REFLECTION
+    reactableId: string
+    reactji: string
+  }[]
   reflections.forEach((reflection) => {
     const tasks = taskLookup[reflection.id]
     if (tasks) {
@@ -45,13 +49,19 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
     }
     const reactjis = reactjiLookup[reflection.id]
     if (reactjis) {
-      reactions.push(...reactjis.map((reactji) => ({reflectionId: reflection.id, reactji})))
+      reactions.push(
+        ...reactjis.map((reactji) => ({
+          reactableType: ReactableEnum.REFLECTION,
+          reactableId: reflection.id,
+          reactji
+        }))
+      )
     }
   })
   const ops = [] as any[]
   reactions.forEach((variables) => {
     const baseOp = {
-      op: 'AddReactjiToReflectionMutation',
+      op: 'AddReactjiToReactableMutation',
       delay: 1000,
       variables
     }
@@ -77,7 +87,9 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
               sortOrder: idx,
               status: ACTIVE,
               threadId: reflectionGroupId,
-              threadSource: ThreadSourceEnum.REFLECTION_GROUP
+              threadParentId: null,
+              threadSource: ThreadSourceEnum.REFLECTION_GROUP,
+              threadSortOrder: idx
             }
           }
         },

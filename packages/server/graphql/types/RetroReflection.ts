@@ -11,19 +11,21 @@ import Reflection from '../../database/types/Reflection'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import {resolveForSU} from '../resolvers'
+import resolveReactjis from '../resolvers/resolveReactjis'
 import GoogleAnalyzedEntity from './GoogleAnalyzedEntity'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
-import Reactji from './Reactji'
+import Reactable, {reactableFields} from './Reactable'
 import RetroPhaseItem from './RetroPhaseItem'
 import RetroReflectionGroup from './RetroReflectionGroup'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
 import Team from './Team'
-import getGroupedReactjis from '../../utils/getGroupedReactjis'
 
 const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
   name: 'RetroReflection',
   description: 'A reflection created during the reflect phase of a retrospective',
+  interfaces: () => [Reactable],
   fields: () => ({
+    ...reactableFields(),
     id: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'shortid'
@@ -93,12 +95,9 @@ const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
       type: new GraphQLNonNull(GraphQLString)
     },
     reactjis: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(Reactji))),
+      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(require('./Reactji').default))),
       description: 'All the reactjis for the given reflection',
-      resolve: ({reactjis, id: reflectionId}, _args, {authToken}) => {
-        const viewerId = getUserId(authToken)
-        return getGroupedReactjis(reactjis, viewerId, reflectionId)
-      }
+      resolve: resolveReactjis
     },
     retroPhaseItemId: {
       type: new GraphQLNonNull(GraphQLID),

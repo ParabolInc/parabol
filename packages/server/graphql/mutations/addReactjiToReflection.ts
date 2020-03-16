@@ -1,3 +1,4 @@
+// DEPRECATED, USE ADDREACTJITOENTITY
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
@@ -61,7 +62,7 @@ const addReactjiToReflection = {
       const nextReactjiId = `${reflectionId}:${reactji}`
       const isReactjiPresent = !!groupedReactjis.find((agg) => agg.id === nextReactjiId)
       // console.log('is present', isReactjiPresent, reactji, groupedReactjis)
-      if (!isReactjiPresent && groupedReactjis.length >= Threshold.REFLECTION_REACTJIS) {
+      if (!isReactjiPresent && groupedReactjis.length >= Threshold.MAX_REACTJIS) {
         return {error: {message: `Reactji limit reached`}}
       }
     }

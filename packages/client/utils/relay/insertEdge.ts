@@ -1,3 +1,6 @@
+import {RecordProxy} from 'relay-runtime'
+import {getAscendingIdx, getDescendingIdx} from './addNodeToArray'
+
 export const insertEdgeBefore = (connection, newEdge, propName) => {
   const edges = connection.getLinkedRecords('edges')
   const newName = newEdge.getLinkedRecord('node').getValue(propName)
@@ -24,16 +27,21 @@ export const insertNodeBefore = (nodes, newNode, propName) => {
 }
 
 // will build when needed
-export const insertEdgeAfter = (connection, newEdge, propName) => {
-  const edges = connection.getLinkedRecords('edges')
-  const newName = newEdge.getLinkedRecord('node').getValue(propName)
-  const newEdgeIdx = edges.findIndex((edge) => {
-    const edgeName = edge ? edge.getLinkedRecord('node').getValue(propName) : ''
-    return edgeName < newName
-  })
-  const nextEdges =
-    newEdgeIdx === -1
-      ? [newEdge, ...edges]
-      : [...edges.slice(0, newEdgeIdx), newEdge, ...edges.slice(newEdgeIdx)]
+interface Options {
+  isAscending?: boolean | undefined
+}
+export const insertEdgeAfter = (
+  connection: RecordProxy,
+  newEdge: RecordProxy,
+  sortValue: string,
+  options: Options = {}
+) => {
+  const {isAscending} = options
+  const edges = connection.getLinkedRecords('edges')!
+  const nodes = edges.map((edge) => edge.getLinkedRecord('node'))
+  const idxFinder = isAscending ? getAscendingIdx : getDescendingIdx
+  const newName = newEdge.getLinkedRecord('node')!.getValue(sortValue) as string | number
+  const nextIdx = idxFinder(newName, nodes, sortValue)
+  const nextEdges = [...edges.slice(0, nextIdx), newEdge, ...edges.slice(nextIdx)]
   connection.setLinkedRecords(nextEdges, 'edges')
 }

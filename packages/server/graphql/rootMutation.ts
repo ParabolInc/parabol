@@ -85,10 +85,14 @@ import invalidateSessions from './mutations/invalidateSessions'
 import createMassInvitation from './mutations/createMassInvitation'
 import renameMeeting from './mutations/renameMeeting'
 import addReactjiToReflection from './mutations/addReactjiToReflection'
+import addReactjiToReactable from './mutations/addReactjiToReactable'
 import setAppLocation from './mutations/setAppLocation'
 import deleteUser from './mutations/deleteUser'
 import verifyEmail from './mutations/verifyEmail'
 import archiveOrganization from './mutations/archiveOrganization'
+import addComment from './mutations/addComment'
+import deleteComment from './mutations/deleteComment'
+import updateCommentContent from './mutations/updateCommentContent'
 
 interface Context extends InternalContext, GQLContext {}
 
@@ -98,7 +102,9 @@ export default new GraphQLObjectType<any, Context, any>({
     acceptTeamInvitation,
     addAgendaItem,
     addAtlassianAuth,
-    addReactjiToReflection,
+    addComment,
+    addReactjiToReflection, // DEPRECATED, delete after 4.25.0
+    addReactjiToReactable,
     addReflectTemplate,
     addReflectTemplatePrompt,
     addSlackAuth,
@@ -119,6 +125,7 @@ export default new GraphQLObjectType<any, Context, any>({
     createReflection,
     createTask,
     createUserPicturePutUrl,
+    deleteComment,
     deleteTask,
     deleteUser,
     denyPushInvitation,
@@ -171,6 +178,7 @@ export default new GraphQLObjectType<any, Context, any>({
     startNewMeeting,
     toggleAgendaList,
     updateAgendaItem,
+    updateCommentContent,
     updateCreditCard,
     updateOrg,
     updateNewCheckInQuestion,

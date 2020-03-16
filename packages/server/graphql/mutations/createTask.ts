@@ -17,6 +17,7 @@ import normalizeRawDraftJS from '../../../client/validation/normalizeRawDraftJS'
 import NotificationTaskInvolves from '../../database/types/NotificationTaskInvolves'
 import {ITeamMember} from 'parabol-client/types/graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import validateThreadableReflectionGroupId from './validateThreadableReflectionGroupId'
 
 const validateTaskAgendaItemId = async (
   threadSource: ThreadSourceEnum | null,
@@ -29,23 +30,6 @@ const validateTaskAgendaItemId = async (
     const agendaItem = await dataLoader.get('agendaItems').load(agendaItemId)
     if (!agendaItem || agendaItem.teamId !== teamId) {
       return 'Invalid agenda item ID'
-    }
-  }
-  return undefined
-}
-
-const validateTaskReflectionGroupId = async (
-  threadSource: ThreadSourceEnum | null,
-  threadId: string | null | undefined,
-  meetingId: string | null | undefined,
-  dataLoader: DataLoaderWorker
-) => {
-  const reflectionGroupId =
-    threadSource === ThreadSourceEnum.REFLECTION_GROUP ? threadId : undefined
-  if (reflectionGroupId) {
-    const reflectionGroup = await dataLoader.get('retroReflectionGroups').load(reflectionGroupId)
-    if (!reflectionGroup || reflectionGroup.meetingId !== meetingId) {
-      return 'Invalid reflection group ID'
     }
   }
   return undefined
@@ -116,7 +100,7 @@ export default {
     const errors = await Promise.all([
       // threadParentId not validated because if it's invalid it simply won't appear
       validateTaskAgendaItemId(threadSource, threadId, teamId, dataLoader),
-      validateTaskReflectionGroupId(threadSource, threadId, meetingId, dataLoader),
+      validateThreadableReflectionGroupId(threadSource, threadId, meetingId, dataLoader),
       validateTaskMeetingId(meetingId, teamId, dataLoader),
       validateTaskUserId(userId, teamId, dataLoader)
     ])

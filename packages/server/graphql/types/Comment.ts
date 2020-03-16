@@ -1,19 +1,38 @@
-import {GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLBoolean, GraphQLID} from 'graphql'
+import {
+  GraphQLBoolean,
+  GraphQLID,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
+} from 'graphql'
+import {getUserId} from '../../utils/authorization'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import PageInfoDateCursor from './PageInfoDateCursor'
+import Reactable, {reactableFields} from './Reactable'
 import Reactji from './Reactji'
 import Threadable, {threadableFields} from './Threadable'
-import {getUserId} from '../../utils/authorization'
-import getGroupedReactjis from '../../utils/getGroupedReactjis'
+import resolveReactjis from '../resolvers/resolveReactjis'
+import convertToTaskContent from '../../../client/utils/draftjs/convertToTaskContent'
+
+const TOMBSTONE = convertToTaskContent('[deleted]')
 
 const Comment = new GraphQLObjectType<any, GQLContext, any>({
   name: 'Comment',
   description: 'A comment on a thread',
-  interfaces: () => [Threadable],
+  interfaces: () => [Reactable, Threadable],
   fields: () => ({
     ...threadableFields(),
+    ...reactableFields(),
+    content: {
+      type: GraphQLNonNull(GraphQLString),
+      description: 'The rich text body of the item, if inactive, a tombstone text',
+      resolve: ({isActive, content}) => {
+        return isActive ? content : TOMBSTONE
+      }
+    },
     createdAt: {
       type: GraphQLNonNull(GraphQLISO8601Type),
       description: 'The timestamp the item was created'
@@ -28,8 +47,8 @@ const Comment = new GraphQLObjectType<any, GQLContext, any>({
     createdByUser: {
       type: require('./User').default,
       description: 'The user that created the item, null if anonymous',
-      resolve: ({createdBy, isAnonymous}, _args, {dataLoader}: GQLContext) => {
-        return isAnonymous ? null : dataLoader.get('users').load(createdBy)
+      resolve: ({createdBy, isActive, isAnonymous}, _args, {dataLoader}: GQLContext) => {
+        return isAnonymous || !isActive ? null : dataLoader.get('users').load(createdBy)
       }
     },
     isActive: {
@@ -45,17 +64,17 @@ const Comment = new GraphQLObjectType<any, GQLContext, any>({
     isViewerComment: {
       type: GraphQLNonNull(GraphQLBoolean),
       description: 'true if the viewer wrote this comment, else false',
-      resolve: ({createdBy}, _args, {authToken}) => {
+      resolve: ({createdBy, isActive}, _args, {authToken}) => {
         const viewerId = getUserId(authToken)
-        return viewerId === createdBy
+        return isActive ? viewerId === createdBy : false
       }
     },
     reactjis: {
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(Reactji))),
       description: 'All the reactjis for the given reflection',
-      resolve: ({reactjis, id: commentId}, _args, {authToken}) => {
-        const viewerId = getUserId(authToken)
-        return getGroupedReactjis(reactjis, viewerId, commentId)
+      resolve: (source, args, context) => {
+        const {isActive} = source
+        return isActive ? resolveReactjis(source, args, context) : []
       }
     }
   })

@@ -1,5 +1,6 @@
 import graphQLSubscriptionType from '../graphQLSubscriptionType'
 import {AddReactjiToReflectionSuccess} from './AddReactjiToReflectionPayload'
+import {AddReactjiToReactableSuccess} from './AddReactjiToReactablePayload'
 import AutoGroupReflectionsPayload from './AutoGroupReflectionsPayload'
 import CreateReflectionPayload from './CreateReflectionPayload'
 import DragDiscussionTopicPayload from './DragDiscussionTopicPayload'
@@ -17,11 +18,17 @@ import UpdateNewCheckInQuestionPayload from './UpdateNewCheckInQuestionPayload'
 import UpdateReflectionContentPayload from './UpdateReflectionContentPayload'
 import UpdateReflectionGroupTitlePayload from './UpdateReflectionGroupTitlePayload'
 import VoteForReflectionGroupPayload from './VoteForReflectionGroupPayload'
+import {AddCommentSuccess} from './AddCommentPayload'
+import {DeleteCommentSuccess} from './DeleteCommentPayload'
+import {UpdateCommentContentSuccess} from './UpdateCommentContentPayload'
 
 const types = [
-  AddReactjiToReflectionSuccess,
+  AddCommentSuccess,
+  AddReactjiToReflectionSuccess, // DEPRECATED
+  AddReactjiToReactableSuccess,
   AutoGroupReflectionsPayload,
   CreateReflectionPayload,
+  DeleteCommentSuccess,
   DragDiscussionTopicPayload,
   EndDraggingReflectionPayload,
   EditReflectionPayload,
@@ -32,6 +39,7 @@ const types = [
   SetPhaseFocusPayload,
   SetStageTimerPayload,
   StartDraggingReflectionPayload,
+  UpdateCommentContentSuccess,
   UpdateDragLocationPayload,
   UpdateNewCheckInQuestionPayload,
   UpdateReflectionContentPayload,

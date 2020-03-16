@@ -1,20 +1,21 @@
+import getReflectionGroupThreadConn from 'mutations/connections/getReflectionGroupThreadConn'
+import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import {ThreadSourceEnum} from 'types/graphql'
+import addNodeToArray from '../../utils/relay/addNodeToArray'
+import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
 import getArchivedTasksConn from '../connections/getArchivedTasksConn'
 import getTeamTasksConn from '../connections/getTeamTasksConn'
 import getUserTasksConn from '../connections/getUserTasksConn'
 import pluralizeHandler from './pluralizeHandler'
-import getNodeById from '../../utils/relay/getNodeById'
-import {insertEdgeAfter} from '../../utils/relay/insertEdge'
-import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
-import {ConnectionHandler, RecordSourceSelectorProxy} from 'relay-runtime'
-import addNodeToArray from '../../utils/relay/addNodeToArray'
-import {RecordProxy} from 'relay-runtime'
-import {ThreadSourceEnum} from 'types/graphql'
+import safePutNodeInConn from './safePutNodeInConn'
 
 type Task = RecordProxy<{
   readonly id: string
   readonly teamId: string
   readonly tags: readonly string[]
   readonly threadId: string | null
+  readonly threadSource: string | null
+  readonly threadParentId: string | null
   readonly meetingId: string | null
   readonly updatedAt: string | null
   readonly userId: string
@@ -30,6 +31,11 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
   const taskId = task.getValue('id')
   const tags = task.getValue('tags')
   const threadSource = task.getValue('threadSource')
+  const threadParentId = task.getValue('threadParentId')
+  if (threadParentId) {
+    addNodeToArray(task, store.get(threadParentId), 'replies', 'threadSortOrder')
+    return
+  }
   const reflectionGroupId =
     threadSource === ThreadSourceEnum.REFLECTION_GROUP ? task.getValue('threadId') : undefined
   const meetingId = task.getValue('meetingId')
@@ -38,29 +44,23 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
   const team = store.get(teamId)
   const teamConn = getTeamTasksConn(team)
   const userConn = getUserTasksConn(viewer)
-  const reflectionGroup = reflectionGroupId && store.get(reflectionGroupId)
-  const meeting = meetingId && store.get(meetingId)
-  const safePutNodeInConn = (conn) => {
-    if (conn && !getNodeById(taskId, conn)) {
-      const newEdge = ConnectionHandler.createEdge(store, conn, task, 'TaskEdge')
-      newEdge.setValue(task.getValue('updatedAt'), 'cursor')
-      insertEdgeAfter(conn, newEdge, 'updatedAt')
-    }
-  }
+  const reflectionGroup = (reflectionGroupId && store.get(reflectionGroupId)) || null
+  const reflectionGroupConn = getReflectionGroupThreadConn(reflectionGroup)
+  const meeting = meetingId ? store.get(meetingId) : null
 
   if (isNowArchived) {
     safeRemoveNodeFromConn(taskId, teamConn)
     safeRemoveNodeFromConn(taskId, userConn)
-    safePutNodeInConn(archiveConn)
+    safePutNodeInConn(archiveConn, task, store)
   } else {
     safeRemoveNodeFromConn(taskId, archiveConn)
-    safePutNodeInConn(teamConn)
-    addNodeToArray(task, reflectionGroup, 'tasks', 'createdAt')
+    safePutNodeInConn(teamConn, task, store)
+    safePutNodeInConn(reflectionGroupConn, task, store, 'threadSortOrder', true)
     addNodeToArray(task, meeting, 'tasks', 'createdAt')
     if (userConn) {
       const ownedByViewer = task.getValue('userId') === viewerId
       if (ownedByViewer) {
-        safePutNodeInConn(userConn)
+        safePutNodeInConn(userConn, task, store)
       } else {
         safeRemoveNodeFromConn(taskId, userConn)
       }

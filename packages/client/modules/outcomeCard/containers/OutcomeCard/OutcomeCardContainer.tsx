@@ -14,20 +14,28 @@ import {OutcomeCardContainer_task} from '__generated__/OutcomeCardContainer_task
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useRefState from '../../../../hooks/useRefState'
 import useTaskChildFocus from '../../../../hooks/useTaskChildFocus'
+import useScrollIntoView from 'hooks/useScrollIntoVIew'
+import styled from '@emotion/styled'
+
+const Wrapper = styled('div')({
+  outline: 'none'
+})
 
 interface Props {
   area: AreaEnum
   contentState: ContentState
+  className?: string
   isAgenda: boolean | undefined
   isDraggingOver: TaskStatusEnum | undefined
   task: OutcomeCardContainer_task
 }
 
 const OutcomeCardContainer = memo((props: Props) => {
-  const {contentState, isDraggingOver, task, area, isAgenda} = props
+  const {contentState, className, isDraggingOver, task, area, isAgenda} = props
   const {id: taskId, team} = task
   const {id: teamId} = team
   const atmosphere = useAtmosphere()
+  const ref = useRef<HTMLDivElement>(null)
   const [isTaskHovered, setIsTaskHovered] = useState(false)
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const [editorStateRef, setEditorStateRef] = useRefState<EditorState>(() => {
@@ -82,10 +90,11 @@ const OutcomeCardContainer = memo((props: Props) => {
     setEditorStateRef(newEditorState)
   }, [contentState, editorStateRef])
 
+  useScrollIntoView(ref, !contentState.hasText())
   return (
-    <div
+    <Wrapper
       tabIndex={-1}
-      style={{outline: 'none'}}
+      className={className}
       onFocus={() => {
         // clicking into text requires this be triggered all the time
         addTaskChild('root')
@@ -96,6 +105,7 @@ const OutcomeCardContainer = memo((props: Props) => {
       }}
       onMouseEnter={() => setIsTaskHovered(true)}
       onMouseLeave={() => setIsTaskHovered(false)}
+      ref={ref}
     >
       <OutcomeCard
         area={area}
@@ -109,7 +119,7 @@ const OutcomeCardContainer = memo((props: Props) => {
         setEditorState={setEditorStateRef}
         useTaskChild={useTaskChild}
       />
-    </div>
+    </Wrapper>
   )
 })
 

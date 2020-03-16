@@ -62,7 +62,7 @@ interface Props {
   phaseRef: RefObject<HTMLDivElement>
   meeting: ReflectionGroup_meeting
   reflectionGroup: ReflectionGroup_reflectionGroup
-  swipeColumn: SwipeColumn
+  swipeColumn?: SwipeColumn
 }
 
 const ReflectionGroup = (props: Props) => {

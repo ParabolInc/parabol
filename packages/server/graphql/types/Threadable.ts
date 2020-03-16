@@ -2,17 +2,17 @@ import {
   GraphQLFloat,
   GraphQLID,
   GraphQLInterfaceType,
+  GraphQLList,
   GraphQLNonNull,
-  GraphQLString,
-  GraphQLList
+  GraphQLString
 } from 'graphql'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
-import GraphQLISO8601Type from './GraphQLISO8601Type'
-import PageInfoDateCursor from './PageInfoDateCursor'
-import ThreadSourceEnum from './ThreadSourceEnum'
-import Task from './Task'
 import Comment from './Comment'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
+import PageInfo from './PageInfo'
+import Task from './Task'
+import ThreadSourceEnum from './ThreadSourceEnum'
 
 export const threadableFields = () => ({
   id: {
@@ -38,6 +38,10 @@ export const threadableFields = () => ({
       return dataLoader.get('users').load(createdBy)
     }
   },
+  // isThreadTombstone: {
+  //   type: GraphQLBoolean,
+  //   description: 'true if the item has been deleted but still has replies, else falsy'
+  // },
   replies: {
     type: GraphQLNonNull(GraphQLList(GraphQLNonNull(Threadable))),
     description: 'the replies to this threadable item',
@@ -79,13 +83,13 @@ const {connectionType, edgeType} = connectionDefinitions({
   nodeType: Threadable,
   edgeFields: () => ({
     cursor: {
-      type: GraphQLISO8601Type
+      type: GraphQLString
     }
   }),
   connectionFields: () => ({
     pageInfo: {
-      type: PageInfoDateCursor,
-      description: 'Page info with cursors coerced to ISO8601 dates'
+      type: PageInfo,
+      description: 'Page info with strings (sortOrder) as cursors'
     }
   })
 })

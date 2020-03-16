@@ -24,6 +24,15 @@ graphql`
   fragment CreateTaskMutation_task on CreateTaskPayload {
     task {
       ...CompleteTaskFrag @relay(mask: false)
+      ...ThreadedItemReply_threadable
+      ...ThreadedItem_threadable
+      threadSource
+      threadId
+      threadSortOrder
+      threadParentId
+      replies {
+        ...ThreadedRepliesList_replies
+      }
     }
   }
 `
@@ -118,6 +127,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
         .setLinkedRecord(store.get(teamId)!, 'team')
         .setLinkedRecord(store.get(userId)!, 'user')
         .setLinkedRecord(viewer, 'createdByUser')
+        .setLinkedRecords([], 'replies')
       const editorPayload = getOptimisticTaskEditor(store, userId, taskId, isEditing)
       handleEditTask(editorPayload, store)
       handleUpsertTasks(task as any, store)

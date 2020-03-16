@@ -72,7 +72,7 @@ interface Props {
   phaseRef: RefObject<HTMLDivElement>
   prompt: GroupingKanbanColumn_prompt
   reflectionGroups: GroupingKanbanColumn_reflectionGroups
-  swipeColumn: SwipeColumn
+  swipeColumn?: SwipeColumn
 }
 
 const GroupingKanbanColumn = (props: Props) => {

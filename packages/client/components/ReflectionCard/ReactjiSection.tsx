@@ -14,22 +14,22 @@ const Wrapper = styled('div')({
   display: 'flex',
   flexWrap: 'wrap',
   justifyItems: 'center',
-  justifyContent: 'start',
-  padding: '0 14px 12px'
+  justifyContent: 'start'
 })
 
 interface Props {
+  className?: string
   onToggle: (emojiId: string) => void
   reactjis: ReactjiSection_reactjis
 }
 
 const ReactjiSection = (props: Props) => {
-  const {onToggle, reactjis} = props
+  const {className, onToggle, reactjis} = props
   const animatedReactjis = reactjis.map((reactji) => ({...reactji, key: reactji.id}))
   const tranChildren = useTransition(animatedReactjis)
   const isInit = useInitialRender()
   return (
-    <Wrapper>
+    <Wrapper className={className}>
       {tranChildren.map((transReactji) => {
         return (
           <ReactjiCount
@@ -41,7 +41,7 @@ const ReactjiSection = (props: Props) => {
           />
         )
       })}
-      {tranChildren.length <= Threshold.REFLECTION_REACTJIS - 1 && (
+      {tranChildren.length <= Threshold.MAX_REACTJIS - 1 && (
         <AddReactjiButton onToggle={onToggle} />
       )}
     </Wrapper>

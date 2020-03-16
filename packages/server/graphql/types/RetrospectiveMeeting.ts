@@ -4,7 +4,8 @@ import {
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
-  GraphQLObjectType
+  GraphQLObjectType,
+  GraphQLID
 } from 'graphql'
 import NewMeeting, {newMeetingFields} from './NewMeeting'
 import RetroReflectionGroup from './RetroReflectionGroup'
@@ -50,6 +51,22 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLFloat,
       description:
         'the next smallest distance threshold to guarantee at least 1 more grouping will be achieved'
+    },
+    reflectionGroup: {
+      type: RetroReflectionGroup,
+      description: 'a single reflection group',
+      args: {
+        reflectionGroupId: {
+          type: GraphQLNonNull(GraphQLID)
+        }
+      },
+      resolve: async ({id: meetingId}, {reflectionGroupId}, {dataLoader}) => {
+        const reflectionGroup = await dataLoader
+          .get('retroReflectionGroups')
+          .load(reflectionGroupId)
+        if (reflectionGroup.meetingId !== meetingId) return null
+        return reflectionGroup
+      }
     },
     reflectionGroups: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroReflectionGroup))),

@@ -1,13 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {StandardMutation} from '../types/relayMutations'
-import {AddReactjiToReflectionMutation as TAddReactjiToReflectionMutation} from '../__generated__/AddReactjiToReflectionMutation.graphql'
+import {IComment, IRetroReflection} from 'types/graphql'
 import createProxyRecord from 'utils/relay/createProxyRecord'
-import {IRetroReflection} from 'types/graphql'
+import {StandardMutation} from '../types/relayMutations'
+import {AddReactjiToReactableMutation as TAddReactjiToReactableMutation} from '../__generated__/AddReactjiToReactableMutation.graphql'
 
 graphql`
-  fragment AddReactjiToReflectionMutation_meeting on AddReactjiToReflectionSuccess {
-    reflection {
+  fragment AddReactjiToReactableMutation_meeting on AddReactjiToReactableSuccess {
+    reactable {
       reactjis {
         id
         isViewerReactji
@@ -18,36 +18,42 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation AddReactjiToReflectionMutation(
-    $reflectionId: ID!
+  mutation AddReactjiToReactableMutation(
+    $reactableId: ID!
+    $reactableType: ReactableEnum!
     $reactji: String!
     $isRemove: Boolean
   ) {
-    addReactjiToReflection(reflectionId: $reflectionId, reactji: $reactji, isRemove: $isRemove) {
+    addReactjiToReactable(
+      reactableId: $reactableId
+      reactableType: $reactableType
+      reactji: $reactji
+      isRemove: $isRemove
+    ) {
       ... on ErrorPayload {
         error {
           message
         }
       }
-      ...AddReactjiToReflectionMutation_meeting @relay(mask: false)
+      ...AddReactjiToReactableMutation_meeting @relay(mask: false)
     }
   }
 `
 
-const AddReactjiToReflectionMutation: StandardMutation<TAddReactjiToReflectionMutation> = (
+const AddReactjiToReactableMutation: StandardMutation<TAddReactjiToReactableMutation> = (
   atmosphere,
   variables,
   {onError, onCompleted}
 ) => {
-  return commitMutation<TAddReactjiToReflectionMutation>(atmosphere, {
+  return commitMutation<TAddReactjiToReactableMutation>(atmosphere, {
     mutation,
     variables,
     optimisticUpdater: (store) => {
-      const {reflectionId, reactji, isRemove} = variables
-      const id = `${reflectionId}:${reactji}`
-      const reflection = store.get<IRetroReflection>(reflectionId)
-      if (!reflection) return
-      const reactjis = reflection.getLinkedRecords('reactjis')
+      const {reactableId, reactji, isRemove} = variables
+      const id = `${reactableId}:${reactji}`
+      const reactable = store.get<IRetroReflection | IComment>(reactableId)
+      if (!reactable) return
+      const reactjis = reactable.getLinkedRecords('reactjis')
       const reactjiIdx = reactjis.findIndex((reactji) => reactji.getValue('id') === id)
       if (isRemove) {
         if (reactjiIdx === -1) return
@@ -55,7 +61,7 @@ const AddReactjiToReflectionMutation: StandardMutation<TAddReactjiToReflectionMu
         const count = reactji.getValue('count')
         if (count === 1) {
           const nextReactjis = [...reactjis.slice(0, reactjiIdx), ...reactjis.slice(reactjiIdx + 1)]
-          reflection.setLinkedRecords(nextReactjis, 'reactjis')
+          reactable.setLinkedRecords(nextReactjis, 'reactjis')
         } else {
           reactji.setValue(count - 1, 'count')
           reactji.setValue(false, 'isViewerReactji')
@@ -70,7 +76,7 @@ const AddReactjiToReflectionMutation: StandardMutation<TAddReactjiToReflectionMu
               isViewerReactji: true
             })
           const nextReactjis = [...reactjis, optimisticReactji]
-          reflection.setLinkedRecords(nextReactjis, 'reactjis')
+          reactable.setLinkedRecords(nextReactjis, 'reactjis')
         } else {
           const reactji = reactjis[reactjiIdx]
           const count = reactji.getValue('count')
@@ -84,4 +90,4 @@ const AddReactjiToReflectionMutation: StandardMutation<TAddReactjiToReflectionMu
   })
 }
 
-export default AddReactjiToReflectionMutation
+export default AddReactjiToReactableMutation
