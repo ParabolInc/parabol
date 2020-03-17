@@ -2,12 +2,12 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {DiscussionThreadEnum} from 'types/constEnums'
 import {Elevation} from '../styles/elevation'
 import DiscussionThreadInput from './DiscussionThreadInput'
 import DiscussionThreadList from './DiscussionThreadList'
 import {DiscussionThread_viewer} from '__generated__/DiscussionThread_viewer.graphql'
-import {Breakpoint} from 'types/constEnums'
+import {Breakpoint, DiscussionThreadEnum} from 'types/constEnums'
+import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 
 const Wrapper = styled('div')({
   background: '#fff',
@@ -19,7 +19,7 @@ const Wrapper = styled('div')({
   marginBottom: 64,
   overflow: 'hidden',
   width: 'calc(100% - 16px)',
-  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
+  [makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)]: {
     width: DiscussionThreadEnum.WIDTH
   }
 })

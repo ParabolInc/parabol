@@ -62,7 +62,7 @@ const LabelContainer = styled(LabelHeading)<{isDesktop: boolean}>(({isDesktop}) 
 const DiscussHeader = styled('div')({
   alignItems: 'center',
   display: 'flex',
-  margin: '0 0 1.25rem'
+  margin: '0 0 8px'
 })
 
 const ColumnsContainer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
@@ -92,10 +92,10 @@ const VoteMeta = styled('div')({
   borderRadius: '5em',
   color: '#FFFFFF',
   display: 'flex',
-  fontSize: ICON_SIZE.MD18,
+  fontSize: 16,
   fontWeight: 600,
-  margin: '.125rem 0 0 1rem',
-  padding: '.125rem .75rem'
+  margin: '0 0 0 16px',
+  padding: '2px 12px'
 })
 
 const VoteIcon = styled(Icon)({
@@ -119,6 +119,7 @@ const ReflectionColumn = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   height: isDesktop ? '100%' : undefined,
   flex: isDesktop ? 1 : undefined,
   overflow: 'auto',
+  padding: '8px 0 0',
   width: '100%'
 }))
 
@@ -129,6 +130,7 @@ const TaskColumn = styled('div')({
   flexDirection: 'column',
   height: '100%',
   overflow: 'auto',
+  padding: '8px 0 0',
   width: '100%'
 })
 

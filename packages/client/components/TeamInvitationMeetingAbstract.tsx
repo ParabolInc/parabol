@@ -1,6 +1,7 @@
 import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
 import {PALETTE} from '../styles/paletteV2'
+import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 
 const PageContainer = styled('div')({
   alignItems: 'center',
@@ -48,7 +49,7 @@ const MeetingAbstractContainer = styled(PageContainer)({
 
 const AbstractSidebar = styled('div')({
   display: 'none',
-  '@media screen and (min-width: 640px)': {
+  [makeMinWidthMediaQuery(640)]: {
     display: 'block',
     backgroundColor: 'white',
     flexShrink: 0,

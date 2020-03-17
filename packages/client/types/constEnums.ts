@@ -19,7 +19,7 @@ export const enum BezierCurve {
 export const enum Breakpoint {
   INVOICE = 512,
   INVOICE_LABEL = 384,
-  SIDEBAR_LEFT = 800,
+  SIDEBAR_LEFT = 1024,
   MEETING_FACILITATOR_BAR = 480,
   NEW_MEETING_GRID = 1112,
   NEW_MEETING_SELECTOR = 500,

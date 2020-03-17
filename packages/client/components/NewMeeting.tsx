@@ -18,6 +18,7 @@ import {mod} from 'react-swipeable-views-core'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {Breakpoint} from '../types/constEnums'
 import useStoreQueryRetry from 'hooks/useStoreQueryRetry'
+import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 
 interface Props {
   retry(): void
@@ -25,7 +26,7 @@ interface Props {
   viewer: NewMeeting_viewer
 }
 
-const MEDIA_QUERY_VERTICAL_CENTERING = '@media screen and (min-height: 840px)'
+const MEDIA_QUERY_VERTICAL_CENTERING = makeMinWidthMediaQuery(840)
 
 const IllustrationAndSelector = styled('div')({
   gridArea: 'picker',
