@@ -70,7 +70,7 @@
     "@mattkrick/fast-rtc-swarm": "^0.3.3",
     "@mattkrick/graphql-trebuchet-client": "^1.0.0",
     "@mattkrick/sanitize-svg": "^0.2.1",
-    "@mattkrick/trebuchet-client": "^1.2.0",
+    "@mattkrick/trebuchet-client": "^2.0.0",
     "@sentry/browser": "^5.8.0",
     "core-js": "^3.1.4",
     "draft-js": "https://github.com/mattkrick/draft-js/tarball/559a21968370c4944511657817d601a6c4ade0f6",
