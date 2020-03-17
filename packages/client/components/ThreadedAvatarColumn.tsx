@@ -5,7 +5,7 @@ import Avatar from './Avatar/Avatar'
 
 const AvatarCol = styled('div')<{isReply: boolean | undefined}>(({isReply}) => ({
   display: 'flex',
-  paddingRight: 12,
+  paddingRight: 8,
   paddingLeft: isReply ? undefined : 8
 }))
 

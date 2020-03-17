@@ -7,6 +7,7 @@ import {Elevation} from '../styles/elevation'
 import DiscussionThreadInput from './DiscussionThreadInput'
 import DiscussionThreadList from './DiscussionThreadList'
 import {DiscussionThread_viewer} from '__generated__/DiscussionThread_viewer.graphql'
+import {Breakpoint} from 'types/constEnums'
 
 const Wrapper = styled('div')({
   background: '#fff',
@@ -17,7 +18,10 @@ const Wrapper = styled('div')({
   height: '100%',
   marginBottom: 64,
   overflow: 'hidden',
-  width: DiscussionThreadEnum.WIDTH
+  width: 'calc(100% - 16px)',
+  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT})`]: {
+    width: DiscussionThreadEnum.WIDTH
+  }
 })
 
 interface Props {
