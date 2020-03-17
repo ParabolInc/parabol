@@ -80,9 +80,9 @@ const NewMeetingInner = styled('div')<{isDesktop: boolean}>(
       gridTemplateAreas: `'picker howto' 'settings actions'`,
       gridTemplateColumns: 'minmax(0, 4fr) minmax(0, 3fr)',
       gridTemplateRows: 'auto 3fr',
-      flex: 1,
+      height: '100%',
       margin: 'auto',
-      maxHeight: 900,
+      maxHeight: 640,
       maxWidth: 1400,
       padding: '0 32px 16px 64px'
     }
