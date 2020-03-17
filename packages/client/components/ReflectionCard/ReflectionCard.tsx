@@ -35,7 +35,7 @@ interface Props {
   stackCount?: number
   showOriginFooter?: boolean
   showReactji?: boolean
-  dataCy: string
+  dataCy?: string
 }
 
 const getReadOnly = (
@@ -196,7 +196,11 @@ const ReflectionCard = (props: Props) => {
       />
       {error && <StyledError onClick={clearError}>{error.message}</StyledError>}
       {!readOnly && (
-        <ReflectionCardDeleteButton dataCy={`reflection-delete`} meetingId={meetingId} reflectionId={reflectionId} />
+        <ReflectionCardDeleteButton
+          dataCy={`reflection-delete`}
+          meetingId={meetingId}
+          reflectionId={reflectionId}
+        />
       )}
       {showReactji && <StyledReacjis reactjis={reactjis} onToggle={onToggleReactji} />}
     </ReflectionCardRoot>
