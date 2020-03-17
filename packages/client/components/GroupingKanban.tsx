@@ -28,7 +28,7 @@ const ColumnsBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   justifyContent: 'center',
   margin: '0 auto',
   overflow: 'auto',
-  padding: isDesktop ? '16px 0' : undefined,
+  padding: isDesktop ? '0 0 16px' : undefined,
   width: '100%'
 }))
 

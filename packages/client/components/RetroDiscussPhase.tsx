@@ -55,6 +55,7 @@ const LabelContainer = styled(LabelHeading)<{isDesktop: boolean}>(({isDesktop}) 
   margin: '0 16px',
   padding: isDesktop ? '0 0 8px' : undefined,
   position: 'sticky',
+  textTransform: 'none',
   top: 0,
   zIndex: 2
 }))
@@ -62,7 +63,7 @@ const LabelContainer = styled(LabelHeading)<{isDesktop: boolean}>(({isDesktop}) 
 const DiscussHeader = styled('div')({
   alignItems: 'center',
   display: 'flex',
-  margin: '0 0 8px'
+  margin: '0 0 12px'
 })
 
 const ColumnsContainer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
@@ -109,7 +110,6 @@ const DiscussPhaseWrapper = styled('div')({
   flex: 1,
   flexDirection: 'column',
   overflow: 'hidden',
-  paddingTop: 16,
   width: '100%'
 })
 
@@ -119,7 +119,6 @@ const ReflectionColumn = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   height: isDesktop ? '100%' : undefined,
   flex: isDesktop ? 1 : undefined,
   overflow: 'auto',
-  padding: '8px 0 0',
   width: '100%'
 }))
 
@@ -130,7 +129,7 @@ const TaskColumn = styled('div')({
   flexDirection: 'column',
   height: '100%',
   overflow: 'auto',
-  padding: '8px 0 0',
+  padding: '4px 0 0',
   width: '100%'
 })
 

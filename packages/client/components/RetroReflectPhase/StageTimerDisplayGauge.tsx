@@ -3,26 +3,28 @@ import styled from '@emotion/styled'
 import {countdown} from '../../utils/date/relativeDate'
 import {PALETTE} from '../../styles/paletteV2'
 import useRefreshInterval from '../../hooks/useRefreshInterval'
-import {snackbarShadow} from '../../styles/elevation'
+import useBreakpoint from '../../hooks/useBreakpoint'
 import {DECELERATE, fadeIn} from '../../styles/animation'
-import {ZIndex} from '../../types/constEnums'
+import {Breakpoint, ZIndex} from '../../types/constEnums'
 
 interface Props {
   endTime: string
 }
 
-const Gauge = styled('div')<{isTimeUp: boolean}>(({isTimeUp}) => ({
+const Gauge = styled('div')<{isTimeUp: boolean; isDesktop}>(({isTimeUp, isDesktop}) => ({
   alignItems: 'flex-end',
   animation: `${fadeIn.toString()} 300ms ${DECELERATE}`,
   color: isTimeUp ? PALETTE.TEXT_MAIN : '#FFFFFF',
   background: isTimeUp ? PALETTE.BACKGROUND_YELLOW : PALETTE.BACKGROUND_GREEN,
-  boxShadow: snackbarShadow,
-  borderRadius: 2,
+  borderRadius: 4,
   display: 'flex',
+  fontVariantNumeric: 'tabular-nums',
   fontWeight: 600,
   justifyContent: 'center',
-  minWidth: 112,
-  padding: 8,
+  lineHeight: '28px',
+  margin: isDesktop ? '0 0 16px' : '0 0 8px',
+  minWidth: 72,
+  padding: '0 8px',
   transition: `background 1s ${DECELERATE}`,
   userSelect: 'none',
   zIndex: ZIndex.SNACKBAR
@@ -31,9 +33,14 @@ const Gauge = styled('div')<{isTimeUp: boolean}>(({isTimeUp}) => ({
 const StageTimerDisplayGauge = (props: Props) => {
   const {endTime} = props
   useRefreshInterval(1000)
+  const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const timeLeft = endTime && countdown(endTime)
   const fromNow = timeLeft || 'Time’s Up!'
-  return <Gauge isTimeUp={!timeLeft}>{fromNow}</Gauge>
+  return (
+    <Gauge isDesktop={isDesktop} isTimeUp={!timeLeft}>
+      {fromNow}
+    </Gauge>
+  )
 }
 
 export default StageTimerDisplayGauge

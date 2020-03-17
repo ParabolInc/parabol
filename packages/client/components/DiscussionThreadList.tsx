@@ -36,6 +36,7 @@ const Header = styled(LabelHeading)({
   borderBottom: `1px solid ${PALETTE.BORDER_LIGHTER}`,
   margin: '0 0 8px',
   padding: '6px 12px 12px',
+  textTransform: 'none',
   width: '100%'
 })
 

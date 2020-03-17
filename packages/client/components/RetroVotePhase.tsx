@@ -50,11 +50,12 @@ const VoteMeta = styled('div')({
   borderBottom: `.0625rem solid ${PALETTE.BORDER_LIGHT}`,
   display: 'flex',
   justifyContent: 'center',
-  margin: '0 auto 1rem',
-  padding: '.5rem .5rem',
+  margin: '0 auto 8px',
+  padding: 8,
   width: '100%',
   [votePhaseBreakpoint]: {
-    padding: '0 0 .5rem'
+    margin: '0 auto 16px',
+    padding: '0 0 8px'
   }
 })
 
@@ -73,13 +74,13 @@ const StyledMetaBlock = styled(MetaBlock)({
 })
 
 const Label = styled(LabelHeading)({
-  fontSize: 11,
-  marginRight: '.5rem',
+  fontSize: 12,
+  marginRight: 8,
+  textTransform: 'none',
   whiteSpace: 'nowrap',
   [votePhaseBreakpoint]: {
-    fontSize: 12,
-    marginRight: '.75rem',
-    paddingTop: '.125rem'
+    marginRight: 12,
+    paddingTop: 2
   }
 })
 

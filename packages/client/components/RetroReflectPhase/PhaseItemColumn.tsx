@@ -31,7 +31,7 @@ const ColumnWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   flexDirection: 'column',
   flex: 1,
   justifyContent: 'flex-start',
-  margin: isDesktop ? '16px 8px' : undefined,
+  margin: isDesktop ? '0 8px 16px' : undefined,
   minHeight: isDesktop ? undefined : '100%'
 }))
 
@@ -219,7 +219,10 @@ const PhaseItemColumn = (props: Props) => {
               <Description>{description}</Description>
             </PromptHeader>
             <EditorSection data-cy={`editor-section-${question}`}>
-              <EditorAndStatus data-cy={`editor-status-${question}`} isGroupingComplete={isComplete}>
+              <EditorAndStatus
+                data-cy={`editor-status-${question}`}
+                isGroupingComplete={isComplete}
+              >
                 <PhaseItemEditor
                   dataCy={`phase-item-editor-${question}`}
                   cardsInFlightRef={cardsInFlightRef}
