@@ -253,7 +253,7 @@ export default {
     const result = await finishMeetingType(completedMeeting, dataLoader)
     await shuffleCheckInOrder(teamId)
     const updatedTaskIds = (result && result.updatedTaskIds) || []
-    const {facilitatorUserId, name: meetingName} = completedMeeting
+    const {facilitatorUserId} = completedMeeting
     const nonFacilitators = presentMemberUserIds.filter((userId) => userId !== facilitatorUserId)
     const traits = {
       wasFacilitator: false,
