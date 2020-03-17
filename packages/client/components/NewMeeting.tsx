@@ -25,14 +25,22 @@ interface Props {
   viewer: NewMeeting_viewer
 }
 
+const MEDIA_QUERY_VERTICAL_CENTERING = '@media screen and (min-height: 840px)'
+
 const IllustrationAndSelector = styled('div')({
   gridArea: 'picker',
   width: '100%'
 })
 
 const TeamAndSettings = styled('div')<{isDesktop}>(({isDesktop}) => ({
+  alignItems: 'center',
+  display: 'flex',
+  flexDirection: 'column',
   gridArea: 'settings',
-  paddingTop: isDesktop ? 32 : undefined
+  paddingTop: isDesktop ? 32 : undefined,
+  [MEDIA_QUERY_VERTICAL_CENTERING]: {
+    minHeight: isDesktop ? undefined : 166
+  }
 }))
 
 const NewMeetingBlock = styled('div')<{innerWidth: number; isDesktop: boolean}>(
@@ -60,20 +68,20 @@ const NewMeetingBlock = styled('div')<{innerWidth: number; isDesktop: boolean}>(
 const NewMeetingInner = styled('div')<{isDesktop: boolean}>(
   {
     alignItems: 'flex-start',
-    display: 'grid',
-    gridTemplateAreas: `'picker' 'howto' 'settings' 'actions'`,
-    gridTemplateColumns: '100%',
-    gridTemplateRows: 'auto',
     justifyItems: 'center',
-    margin: 'auto',
-    minHeight: 'calc(100vh - 56px)'
+    margin: '0 auto auto',
+    [MEDIA_QUERY_VERTICAL_CENTERING]: {
+      marginTop: 'auto'
+    }
   },
   ({isDesktop}) =>
     isDesktop && {
+      display: 'grid',
       gridTemplateAreas: `'picker howto' 'settings actions'`,
       gridTemplateColumns: 'minmax(0, 4fr) minmax(0, 3fr)',
       gridTemplateRows: 'auto 3fr',
-      height: '100%',
+      flex: 1,
+      margin: 'auto',
       maxHeight: 900,
       maxWidth: 1400,
       padding: '0 32px 16px 64px'

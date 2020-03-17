@@ -39,7 +39,7 @@ interface Props {
 
 const NewMeetingActionsCurrentMeetings = (props: Props) => {
   const {meetingType, team} = props
-  const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_SELECTOR)
+  const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_GRID)
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu<HTMLButtonElement>(
     MenuPosition.LOWER_RIGHT,
     {isDropdown: true}

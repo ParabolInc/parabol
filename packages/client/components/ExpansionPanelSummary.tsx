@@ -12,6 +12,7 @@ const DropdownIcon = styled(Icon)({
 const Label = styled('div')({
   alignItems: 'center',
   color: PALETTE.LINK_BLUE,
+  cursor: 'pointer',
   display: 'flex',
   fontWeight: 600,
   justifyContent: 'center'

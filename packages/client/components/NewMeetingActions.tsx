@@ -24,8 +24,11 @@ const ButtonBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   height: '100%',
   justifyContent: isDesktop ? 'flex-start' : 'flex-end',
   gridArea: 'actions',
-  padding: isDesktop ? '32px 8px' : '24px 8px',
-  width: '100%'
+  padding: '24px 8px',
+  width: '100%',
+  [newMeetingGridMediaQuery]: {
+    padding: '32px 8px'
+  }
 }))
 
 const StartButton = styled(PrimaryButton)({
