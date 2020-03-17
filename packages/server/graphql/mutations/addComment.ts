@@ -10,7 +10,8 @@ import {GQLContext} from '../graphql'
 import AddCommentInput from '../types/AddCommentInput'
 import AddCommentPayload from '../types/AddCommentPayload'
 import validateThreadableReflectionGroupId from './validateThreadableReflectionGroupId'
-import {IAddCommentOnMutationArguments} from 'parabol-client/types/graphql'
+import {IAddCommentOnMutationArguments, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
+import sendSegmentEvent from '../../utils/sendSegmentEvent'
 
 const addComment = {
   type: GraphQLNonNull(AddCommentPayload),
@@ -35,7 +36,8 @@ const addComment = {
     const {meetingId, threadId, threadSource} = comment
     const meetingMemberId = toTeamMemberId(meetingId, viewerId)
 
-    const [viewerMeetingMember, threadError] = await Promise.all([
+    const [meeting, viewerMeetingMember, threadError] = await Promise.all([
+      dataLoader.get('newMeetings').load(meetingId),
       dataLoader.get('meetingMembers').load(meetingMemberId),
       validateThreadableReflectionGroupId(threadSource, threadId, meetingId, dataLoader)
     ])
@@ -51,14 +53,26 @@ const addComment = {
     const content = normalizeRawDraftJS(comment.content)
 
     const dbComment = new Comment({...comment, content, createdBy: viewerId})
-    const {id: commentId} = dbComment
+    const {id: commentId, isAnonymous, threadParentId} = dbComment
     await r
       .table('Comment')
       .insert(dbComment)
       .run()
 
     const data = {commentId}
-
+    const {phases, teamId} = meeting!
+    const discussPhase = phases.find(
+      (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.discuss
+    )!
+    const {stages} = discussPhase
+    const isAsync = stages.some((stage) => stage.isAsync)
+    sendSegmentEvent('Comment added', viewerId, {
+      meetingId,
+      teamId,
+      isAnonymous,
+      isAsync,
+      isReply: !!threadParentId
+    }).catch()
     publish(SubscriptionChannel.MEETING, meetingId, 'AddCommentSuccess', data, subOptions)
     return data
   }

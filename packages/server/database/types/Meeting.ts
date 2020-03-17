@@ -26,7 +26,6 @@ export default class Meeting {
   endedAt: Date | undefined | null = undefined
   facilitatorStageId: string
   facilitatorUserId: string
-  isAsync: undefined
   meetingCount: number
   meetingNumber: number
   name: string

@@ -262,7 +262,6 @@ export default {
       teamId,
       meetingNumber
     }
-    const eventName = `${meetingName} Completed`
     let meetingTemplateName
     if (meetingType === MeetingTypeEnum.retrospective) {
       const reflectPhase = phases.find(
@@ -275,7 +274,7 @@ export default {
     const segmentData = {...traits, meetingType, meetingTemplateName}
     const facilitatorSegmentData = {...segmentData, wasFacilitator: true}
     sendSegmentEvent('Meeting Completed', facilitatorUserId, facilitatorSegmentData).catch()
-    sendSegmentEvent(eventName, nonFacilitators, segmentData).catch()
+    sendSegmentEvent('Meeting Completed', nonFacilitators, segmentData).catch()
     sendSegmentIdentify(presentMemberUserIds).catch()
     sendNewMeetingSummary(completedMeeting, context).catch(console.log)
 

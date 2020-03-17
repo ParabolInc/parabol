@@ -11,13 +11,18 @@ import getTypeFromEntityMap from '../../../client/utils/draftjs/getTypeFromEntit
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import standardError from '../../utils/standardError'
 import Task from '../../database/types/Task'
-import {ICreateTaskOnMutationArguments, ThreadSourceEnum} from '../../../client/types/graphql'
+import {
+  ICreateTaskOnMutationArguments,
+  ThreadSourceEnum,
+  NewMeetingPhaseTypeEnum
+} from '../../../client/types/graphql'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import normalizeRawDraftJS from '../../../client/validation/normalizeRawDraftJS'
 import NotificationTaskInvolves from '../../database/types/NotificationTaskInvolves'
 import {ITeamMember} from 'parabol-client/types/graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import validateThreadableReflectionGroupId from './validateThreadableReflectionGroupId'
+import sendSegmentEvent from '../../utils/sendSegmentEvent'
 
 const validateTaskAgendaItemId = async (
   threadSource: ThreadSourceEnum | null,
@@ -204,6 +209,26 @@ export default {
         publish(SubscriptionChannel.TASK, teamMember.userId, 'CreateTaskPayload', data, subOptions)
       }
     })
+
+    let isAsync
+    if (meetingId) {
+      const meeting = await dataLoader.get('newMeetings').load(meetingId)
+      if (!meeting) return
+      const {phases} = meeting
+      const discussPhase = phases.find(
+        (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.discuss
+      )!
+      const {stages} = discussPhase
+      isAsync = stages.some((stage) => stage.isAsync)
+    }
+
+    sendSegmentEvent('Task added', viewerId, {
+      meetingId,
+      teamId,
+      isAsync,
+      isReply: !!threadParentId
+    }).catch()
+
     return data
   }
 }
