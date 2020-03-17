@@ -11,6 +11,7 @@ import rateLimit from '../rateLimit'
 import SignUpWithPasswordPayload from '../types/SignUpWithPasswordPayload'
 import attemptLogin from './helpers/attemptLogin'
 import bootstrapNewUser from './helpers/bootstrapNewUser'
+import {ISignUpWithPasswordOnMutationArguments} from 'parabol-client/types/graphql'
 
 const signUpWithPassword = {
   type: new GraphQLNonNull(SignUpWithPasswordPayload),
@@ -31,55 +32,59 @@ const signUpWithPassword = {
       description: 'used to determine what suggested actions to create'
     }
   },
-  resolve: rateLimit({perMinute: 50, perHour: 500})(async (_source, args, context: GQLContext) => {
-    const {email, invitationToken, password, segmentId} = args
-    const r = await getRethink()
-    const isOrganic = !invitationToken
-    const {ip} = context
-    const loginAttempt = await attemptLogin(email, password, ip)
-    if (loginAttempt.userId) {
-      context.authToken = loginAttempt.authToken
-      return {
-        userId: loginAttempt.userId,
-        authToken: encodeAuthToken(loginAttempt.authToken)
+  resolve: rateLimit({perMinute: 50, perHour: 500})(
+    async (_source, args: ISignUpWithPasswordOnMutationArguments, context: GQLContext) => {
+      const {invitationToken, password, segmentId} = args
+      const denormEmail = args.email
+      const email = denormEmail.toLowerCase()
+      const r = await getRethink()
+      const isOrganic = !invitationToken
+      const {ip} = context
+      const loginAttempt = await attemptLogin(email, password, ip)
+      if (loginAttempt.userId) {
+        context.authToken = loginAttempt.authToken
+        return {
+          userId: loginAttempt.userId,
+          authToken: encodeAuthToken(loginAttempt.authToken)
+        }
       }
-    }
-    const {error} = loginAttempt
-    if (error === AuthenticationError.USER_EXISTS_GOOGLE) {
-      return {error: {message: 'Try logging in with Google'}}
-    } else if (error === AuthenticationError.INVALID_PASSWORD) {
-      return {error: {message: 'User already exists'}}
-    }
+      const {error} = loginAttempt
+      if (error === AuthenticationError.USER_EXISTS_GOOGLE) {
+        return {error: {message: 'Try logging in with Google'}}
+      } else if (error === AuthenticationError.INVALID_PASSWORD) {
+        return {error: {message: 'User already exists'}}
+      }
 
-    // it's a new user!
-    const [nickname, domain] = email.split('@')
-    if (!nickname || !domain) {
-      return {error: {message: 'Invalid email'}}
-    }
-    const verificationRequired = await isEmailVerificationRequired(domain)
-    if (verificationRequired) {
-      const existingVerification = await r
-        .table('EmailVerification')
-        .getAll(email, {index: 'email'})
-        .filter((row) => row('expiration').gt(new Date()))
-        .nth(0)
-        .default(null)
-        .run()
-      if (existingVerification) {
-        return {error: {message: 'Verification email already sent'}}
+      // it's a new user!
+      const [nickname, domain] = email.split('@')
+      if (!nickname || !domain) {
+        return {error: {message: 'Invalid email'}}
       }
-      console.log('create with arg', args)
-      return createEmailVerification(args)
+      const verificationRequired = await isEmailVerificationRequired(domain)
+      if (verificationRequired) {
+        const existingVerification = await r
+          .table('EmailVerification')
+          .getAll(email, {index: 'email'})
+          .filter((row) => row('expiration').gt(new Date()))
+          .nth(0)
+          .default(null)
+          .run()
+        if (existingVerification) {
+          return {error: {message: 'Verification email already sent'}}
+        }
+        console.log('create with arg', args)
+        return createEmailVerification(args)
+      }
+      const hashedPassword = await bcrypt.hash(password, Security.SALT_ROUNDS)
+      const newUser = createNewLocalUser({email, hashedPassword, isEmailVerified: false, segmentId})
+      // MUTATIVE
+      context.authToken = await bootstrapNewUser(newUser, isOrganic, segmentId)
+      return {
+        userId: newUser.id,
+        authToken: encodeAuthToken(context.authToken)
+      }
     }
-    const hashedPassword = await bcrypt.hash(password, Security.SALT_ROUNDS)
-    const newUser = createNewLocalUser({email, hashedPassword, isEmailVerified: false, segmentId})
-    // MUTATIVE
-    context.authToken = await bootstrapNewUser(newUser, isOrganic, segmentId)
-    return {
-      userId: newUser.id,
-      authToken: encodeAuthToken(context.authToken)
-    }
-  })
+  )
 }
 
 export default signUpWithPassword

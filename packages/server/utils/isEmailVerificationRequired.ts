@@ -1,6 +1,7 @@
 import getRethink from '../database/rethinkDriver'
 
-const isEmailVerificationRequired = async (domain: string) => {
+const isEmailVerificationRequired = async (denormDomain: string) => {
+  const domain = denormDomain.toLowerCase()
   const r = await getRethink()
   return r
     .table('SecureDomain')

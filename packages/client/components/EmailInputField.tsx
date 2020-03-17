@@ -30,6 +30,7 @@ const EmailInputField = (props: Props) => {
         onBlur={onBlur}
         onChange={onChange}
         placeholder='you@company.co'
+        type={'email'}
         value={value}
       />
     </React.Fragment>
