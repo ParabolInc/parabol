@@ -18,11 +18,11 @@ const EmailVerificationEmail = (props: ResetPasswordEmailProps) => {
     <Layout maxWidth={544}>
       <EmailBlock innerMaxWidth={innerMaxWidth}>
         <Header />
-        <p style={emailCopyStyle}>{'Verification Complete!'}</p>
-        <p style={emailCopyStyle}>{`Just click the link below.`}</p>
+        <p style={emailCopyStyle}>{'Hello 👋'}</p>
+        <p style={emailCopyStyle}>{'Tap the link below to verify your email.'}</p>
         <p style={emailCopyStyle}>
-          <a href={verificationURL} style={emailLinkStyle} title='Verify Email'>
-            {'Verify Email'}
+          <a href={verificationURL} style={emailLinkStyle} title='Verify My Email'>
+            {'Verify My Email'}
           </a>
         </p>
         <p style={emailCopyStyle}>
