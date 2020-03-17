@@ -34,6 +34,7 @@ interface Props {
   phaseEditorRef: React.RefObject<HTMLDivElement>
   retroPhaseItemId: string
   stackTopRef: RefObject<HTMLDivElement>
+  dataCy: string
 }
 
 const PhaseItemEditor = (props: Props) => {
@@ -44,7 +45,8 @@ const PhaseItemEditor = (props: Props) => {
     retroPhaseItemId,
     stackTopRef,
     cardsInFlightRef,
-    setCardsInFlight
+    setCardsInFlight,
+    dataCy
   } = props
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation} = useMutationProps()
@@ -161,8 +163,9 @@ const PhaseItemEditor = (props: Props) => {
 
   return (
     <>
-      <ReflectionCardRoot ref={phaseEditorRef}>
+      <ReflectionCardRoot data-cy={dataCy} ref={phaseEditorRef}>
         <ReflectionEditorWrapper
+          dataCy={`${dataCy}-wrapper`}
           isPhaseItemEditor
           ariaLabel='Edit this reflection'
           editorState={editorState}

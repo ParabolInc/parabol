@@ -59,3 +59,27 @@ declare global {
     }
   }
 }
+
+const visitReflect = () => {
+  cy.visit('/retrospective-demo/reflect')
+  cy.get('[data-cy=start-demo-button]').should('be.visible').click().then(() => {
+    cy.get('[data-cy=sidebar-header]').find('button').should('be.visible').click()
+  })
+}
+
+const visitPhase = (phase: string, idx='') => {
+  cy.get(`[data-cy=next-${phase}]:not(:disabled)`).should('be.visible').pipe(click).should($el => {
+    expect($el).to.not.exist
+  })
+
+  cy.url().should('be.eq', `http://localhost:3000/retrospective-demo/${phase}${idx}`)
+}
+
+const click = $el => {
+  return $el.click()
+}
+
+Cypress.Commands.add('visitReflect', visitReflect)
+
+Cypress.Commands.add('visitPhase', visitPhase)
+

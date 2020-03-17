@@ -1,4 +1,5 @@
 import './commands'
+import 'cypress-pipe'
 
 // Use for debugging
 // Cypress.on('window:before:load', (win) => {

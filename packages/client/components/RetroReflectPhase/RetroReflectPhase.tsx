@@ -125,6 +125,7 @@ const RetroReflectPhase = (props: Props) => {
         {!isComplete && <StageTimerControl defaultTimeLimit={5} meeting={meeting} />}
         <CenterControlBlock isComplete={isComplete}>
           <BottomNavControl
+            dataCy={`next-${nextPhaseLabel.toLowerCase()}`}
             isBouncing={isDemoStageComplete || isReadyToGroup}
             disabled={isEmpty}
             onClick={() => gotoNext()}
