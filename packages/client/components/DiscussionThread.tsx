@@ -29,7 +29,7 @@ const DiscussionThread = (props: Props) => {
   const meeting = viewer.meeting!
   const {replyingToCommentId, reflectionGroup} = meeting
   const {id: reflectionGroupId, thread} = reflectionGroup!
-  const {edges} = thread
+  const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
   const threadables = edges.map(({node}) => node)
   const getMaxSortOrder = () => {
     return Math.max(0, ...threadables.map((threadable) => threadable.threadSortOrder || 0))

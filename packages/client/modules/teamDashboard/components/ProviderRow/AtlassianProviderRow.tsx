@@ -88,6 +88,7 @@ const SiteList = styled('div')({})
 const SiteAvatar = styled('img')<{idx: number}>(({idx}) => ({
   animationName: fadeIn.toString(),
   animationDuration: '300ms',
+  animationFillMode: 'forwards',
   animationTimingFunction: DECELERATE,
   animationDelay: `${idx * 100}ms`,
   animationIterationCount: 1,

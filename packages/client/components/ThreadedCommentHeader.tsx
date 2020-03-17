@@ -29,10 +29,17 @@ interface Props {
   onReply: () => void
 }
 
+const getName = (comment) => {
+  const {isActive, createdByUser, isViewerComment} = comment
+  if (!isActive) return 'Message Deleted'
+  if (createdByUser?.preferredName) return createdByUser.preferredName
+  return isViewerComment ? 'Anonymous (You)' : 'Anonymous'
+}
+
 const ThreadedCommentHeader = (props: Props) => {
   const {comment, onReply, editComment, onToggleReactji} = props
-  const {id: commentId, createdByUser, isActive, isViewerComment, reactjis, updatedAt} = comment
-  const name = isActive ? createdByUser?.preferredName ?? 'Anonymous' : 'Messaged Deleted'
+  const {id: commentId, isActive, isViewerComment, reactjis, updatedAt} = comment
+  const name = getName(comment)
   const hasReactjis = reactjis.length > 0
   return (
     <ThreadedItemHeaderDescription title={name} subTitle={relativeDate(updatedAt)}>

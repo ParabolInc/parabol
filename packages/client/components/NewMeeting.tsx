@@ -65,7 +65,8 @@ const NewMeetingInner = styled('div')<{isDesktop: boolean}>(
     gridTemplateColumns: '100%',
     gridTemplateRows: 'auto',
     justifyItems: 'center',
-    margin: 'auto'
+    margin: 'auto',
+    minHeight: 'calc(100vh - 56px)'
   },
   ({isDesktop}) =>
     isDesktop && {
