@@ -62,11 +62,12 @@ interface Props {
   phaseRef: RefObject<HTMLDivElement>
   meeting: ReflectionGroup_meeting
   reflectionGroup: ReflectionGroup_reflectionGroup
-  swipeColumn?: SwipeColumn
+  swipeColumn: SwipeColumn
+  dataCy: string
 }
 
 const ReflectionGroup = (props: Props) => {
-  const {meeting, phaseRef, reflectionGroup, swipeColumn} = props
+  const {meeting, phaseRef, reflectionGroup, swipeColumn, dataCy} = props
   const groupRef = useRef<HTMLDivElement>(null)
   const {localPhase, localStage} = meeting
   const {phaseType} = localPhase
@@ -162,9 +163,11 @@ const ReflectionGroup = (props: Props) => {
         {...{[DragAttribute.DROPPABLE]: reflectionGroupId}}
         ref={groupRef}
         staticReflectionCount={staticReflections.length}
+        data-cy={dataCy}
       >
         {showHeader && (
           <ReflectionGroupHeader
+            dataCy={`${dataCy}-header`}
             ref={headerRef}
             meeting={meeting}
             reflectionGroup={reflectionGroup}
@@ -172,18 +175,20 @@ const ReflectionGroup = (props: Props) => {
             titleInputRef={titleInputRef}
           />
         )}
-        <CardStack ref={stackRef} onClick={onClick}>
+        <CardStack data-cy={`${dataCy}-stack`} ref={stackRef} onClick={onClick}>
           {reflections.map((reflection) => {
             const staticIdx = staticReflections.indexOf(reflection)
             const {id: reflectionId, isDropping} = reflection
             return (
               <ReflectionWrapper
+                data-cy={`${dataCy}-card-${staticIdx}`}
                 key={reflectionId}
                 groupCount={reflections.length}
                 staticIdx={staticIdx}
                 isDropping={isDropping}
               >
                 <DraggableReflectionCard
+                  dataCy={`${dataCy}-card-${staticIdx}`}
                   key={reflection.id}
                   staticIdx={staticIdx}
                   isClipped={staticIdx !== 0}

@@ -97,6 +97,7 @@ const RetroGroupPhase = (props: Props) => {
         {!isComplete && <StageTimerControl defaultTimeLimit={5} meeting={meeting} />}
         <CenteredControlBlock isComplete={isComplete}>
           <BottomNavControl
+            dataCy={`next-${nextPhaseLabel.toLowerCase()}`}
             isBouncing={isDemoStageComplete || (!isAsync && !isComplete && timedOut)}
             disabled={isDemoRoute() && !isDemoStageComplete}
             onClick={() => gotoNext()}
