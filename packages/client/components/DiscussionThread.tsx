@@ -19,7 +19,7 @@ const Wrapper = styled('div')({
   marginBottom: 64,
   overflow: 'hidden',
   width: 'calc(100% - 16px)',
-  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT})`]: {
+  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
     width: DiscussionThreadEnum.WIDTH
   }
 })
