@@ -96,7 +96,7 @@ class ReflectionGroupVoting extends Component<Props> {
 
   render() {
     const {meeting, reflectionGroup, isExpanded} = this.props
-    const viewerVoteCount = reflectionGroup.viewerVoteCount || 0
+    const viewerVoteCount = Math.max(0, reflectionGroup.viewerVoteCount || 0)
     const {localStage, settings, viewerMeetingMember} = meeting
     const {maxVotesPerGroup} = settings
     const {votesRemaining} = viewerMeetingMember

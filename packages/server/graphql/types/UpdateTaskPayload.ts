@@ -27,7 +27,7 @@ const UpdateTaskPayload = new GraphQLObjectType<any, GQLContext>({
       type: NotifyTaskInvolves,
       resolve: async ({notificationsToAdd}, _args, {authToken}) => {
         const viewerId = getUserId(authToken)
-        return notificationsToAdd.find((notification) => notification.userId === viewerId)
+        return notificationsToAdd?.find((notification) => notification.userId === viewerId) ?? null
       }
     }
   })

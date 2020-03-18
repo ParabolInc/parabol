@@ -111,7 +111,12 @@ export default {
         },
         {returnChanges: true}
       )('changes')(0)('old_val')('facilitatorStageId')
+      .default(null)
       .run()
+
+    if (!oldFacilitatorStageId) {
+      return {error: {message: 'Stage already advanced'}}
+    }
 
     const data = {
       meetingId,

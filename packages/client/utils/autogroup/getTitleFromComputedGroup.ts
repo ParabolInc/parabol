@@ -65,6 +65,7 @@ const getTitleFromComputedGroup = (
   }
   if (titleArr.length === 0) {
     const [firstReflection] = reflections
+    if (!firstReflection) return 'Unknown Topic'
     const text = extractTextFromDraftString(firstReflection.content)
     const maxStr = text.trim().slice(0, MAX_CHARS)
     const lastSpace = maxStr.lastIndexOf(' ')
