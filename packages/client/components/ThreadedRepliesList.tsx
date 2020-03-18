@@ -16,6 +16,9 @@ interface Props {
 
 const ThreadedRepliesList = (props: Props) => {
   const {replies, setReplyMention, meeting, reflectionGroupId} = props
+  // https://sentry.io/organizations/parabol/issues/1569570376/?project=107196&query=is%3Aunresolved
+  // not sure why this is required addComment and createTask but request replies
+  if (!replies) return null
   return (
     <>
       {replies.map((reply) => {

@@ -30,7 +30,7 @@ const UpgradeToProPayload = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLList(new GraphQLNonNull(NewMeeting)),
       description: 'the meetings that were showing conversion modals',
       resolve: ({meetingIds}, _args, {dataLoader}) => {
-        return dataLoader.get('newMeetings').loadMany(meetingIds)
+        return meetingIds ? dataLoader.get('newMeetings').loadMany(meetingIds) : null
       }
     }
   })
