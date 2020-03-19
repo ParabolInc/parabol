@@ -34,10 +34,8 @@ export default {
     const now = new Date()
 
     const manager = await AzureDevopsManager.init(code)
-    // const manager = new AzureDevopsManager('', '')
-
     // TODO: List Accounts
-    // const sites = await manager.getAz getAccessibleResources()
+    // const sites = await manager.getAccessibleResources()
     // if (!Array.isArray(sites)) {
     //   return standardError(new Error(sites.message), {userId: viewerId})
     // }
@@ -46,17 +44,12 @@ export default {
       return standardError(new Error(accounts.message), {userId: viewerId})
     }
 
-    // const organizations = sites.map((cloud) => cloud.id)
-    // const self = await manager.getMyself() //getMyself(organizations[0])
+    // const cloudIds = sites.map((cloud) => cloud.id)
+    // const self = await manager.getMyself(cloudIds[0])
     // if (!('accountId' in self)) {
     //   return standardError(new Error(self.message), {userId: viewerId})
     // }
     // const {accessToken, refreshToken} = manager
-
-    // AccountId: string
-    // NamespaceId: string
-    // AccountName: string
-
     const organizations = accounts.map((organization) => [
       organization.AccountId,
       organization.AccountName
@@ -78,7 +71,7 @@ export default {
     const updateDoc = {
       isActive: true,
       accessToken,
-      profileId: self.id,
+      accountId: self.accountId,
       organizations,
       refreshToken,
       teamId,

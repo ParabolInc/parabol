@@ -1,4 +1,9 @@
-import {IAgendaItem, IAtlassianAuth, INewFeatureBroadcast} from 'parabol-client/types/graphql'
+import {
+  IAgendaItem,
+  IAtlassianAuth,
+  IAzureDevopsAuth,
+  INewFeatureBroadcast
+} from 'parabol-client/types/graphql'
 import {r} from 'rethinkdb-ts'
 import MeetingMember from '../database/types/MeetingMember'
 import Organization from '../database/types/Organization'
@@ -49,6 +54,10 @@ export type RethinkTypes = {
   AtlassianAuth: {
     type: IAtlassianAuth
     index: 'atlassianUserId' | 'userId' | 'teamId'
+  }
+  AzureDevopsAuth: {
+    type: IAzureDevopsAuth
+    index: 'azureDevopsUserId' | 'userId' | 'teamId'
   }
   Comment: {
     type: Comment
