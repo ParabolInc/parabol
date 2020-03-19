@@ -22,7 +22,7 @@ interface Props {
 
 const SuggestedIntegrationAzureDevopsMenuItem = forwardRef((props: Props, ref: any) => {
   const {suggestedIntegration, taskId, submitMutation, onError, onCompleted, query} = props
-  const {organization, projectKey, projectName} = suggestedIntegration
+  const {organization, projectName} = suggestedIntegration
   const atmosphere = useAtmosphere()
   return (
     <MenuItem
