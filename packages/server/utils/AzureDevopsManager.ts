@@ -23,8 +23,7 @@ class AzureDevopsManager extends AzureDevopsClientManager {
     return AzureDevopsManager.fetchToken({
       code,
       grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-      // redirect_uri: makeAppLink('auth/azuredevops')
-      redirect_uri: 'https://jdahost:3000/auth/azuredevops'
+      redirect_uri: makeAppLink('auth/azuredevops')
     })
   }
 
@@ -32,8 +31,7 @@ class AzureDevopsManager extends AzureDevopsClientManager {
     return AzureDevopsManager.fetchToken({
       code: refreshToken,
       grant_type: 'refresh_token',
-      // redirect_uri: makeAppLink('auth/azuredevops')
-      redirect_uri: 'https://jdahost:3000/auth/azuredevops'
+      redirect_uri: makeAppLink('auth/azuredevops')
     })
   }
 

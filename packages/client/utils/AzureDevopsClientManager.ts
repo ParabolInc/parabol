@@ -155,17 +155,17 @@ class AzureDevopsClientManager {
       .toString(36)
       .substring(5)
 
-    // Callbackurl hack
-    AddAzureDevopsAuthMutation(
-      atmosphere,
-      {
-        code:
-          'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im9PdmN6NU1fN3AtSGpJS2xGWHo5M3VfVjBabyJ9.eyJhdWkiOiI5N2QwMDdhZC0wNzhhLTRlMmItYjQ2Zi00OWZlMjNhMGYxYjEiLCJuYW1laWQiOiJhZWFjMDg0MS0zYjgwLTQ5MjQtOTEyMC1mNGU3NDk4NzE1NzciLCJzY3AiOiJ2c28uZ3JhcGhfbWFuYWdlIHZzby5wcm9qZWN0X21hbmFnZSB2c28udG9rZW5hZG1pbmlzdHJhdGlvbiB2c28udG9rZW5zIHZzby53b3JrX2Z1bGwgdnNvLmF1dGhvcml6YXRpb25fZ3JhbnQiLCJpc3MiOiJhcHAudnN0b2tlbi52aXN1YWxzdHVkaW8uY29tIiwiYXVkIjoiYXBwLnZzdG9rZW4udmlzdWFsc3R1ZGlvLmNvbSIsIm5iZiI6MTU3Nzk4MDY4MSwiZXhwIjoxNTc3OTgxNTgxfQ.rirrDZ-8CubrcpYUoWRp4w9iB5mJCmSeTKI-X3t4Hzaq9Ybpza78zoWZceuF2JsFIt_K5x7-GqgbFpnB9Jr3RxPO8AeNBU9I9DmIgE0EGX-WKWzVrqJqZdmueLbXhekXUehsvGnJj9b3KpA1A1JNR4c2hwvB0W1yJj_Cp1kKnSHm2XHYivg_NdT1QE6V2yTXFRmN7Qt-iVzU0JoPmcHkuv7HJ9aRhNTosL_sy7HUPnzhn_HiTKbA6CElcpKAU9K36tdGOo60XrCm1aav0hQL-5oGlS_07FXUvOj0Us1wuw1bTq4Wz0S94PjqO0y7eDoQ8kN5eEVsq1hv0DtuWxvmQw',
-        teamId
-      },
-      {onError, onCompleted}
-    )
-    return
+    // // Callbackurl hack
+    // AddAzureDevopsAuthMutation(
+    //   atmosphere,
+    //   {
+    //     code:
+    //       'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im9PdmN6NU1fN3AtSGpJS2xGWHo5M3VfVjBabyJ9.eyJhdWkiOiI3MTNhNTk2My04YzUxLTQ4NzQtYjE0Ni00MDg5NDc0YWMwZGYiLCJuYW1laWQiOiJhZWFjMDg0MS0zYjgwLTQ5MjQtOTEyMC1mNGU3NDk4NzE1NzciLCJzY3AiOiJ2c28uZ3JhcGhfbWFuYWdlIHZzby5wcm9qZWN0X21hbmFnZSB2c28udG9rZW5hZG1pbmlzdHJhdGlvbiB2c28udG9rZW5zIHZzby53b3JrX2Z1bGwgdnNvLmF1dGhvcml6YXRpb25fZ3JhbnQiLCJpc3MiOiJhcHAudnN0b2tlbi52aXN1YWxzdHVkaW8uY29tIiwiYXVkIjoiYXBwLnZzdG9rZW4udmlzdWFsc3R1ZGlvLmNvbSIsIm5iZiI6MTU3ODA1OTI2MywiZXhwIjoxNTc4MDYwMTYzfQ.l-EgPfZW6V4sqyLnaX5oKySddqt9htmrQQZEONtLAY7nIsQHI4lzKnyxy1KOucjKOF5RhUpBFlb7oSDIw6Er5YSbnc1FnmmdgQXIQw-CjPNXatAcpttkpmFWMZ0pBrfzNxvWmPlyvUs-XJQxuOGT7ZMOun9_65iIQco3F5GPDruXD4zstuxpp_DSyqT1WEKS6SpDRI_dVq9NBqPWLKiwef9EQY4YU8eL8Rq566QjnIIWRH4PXA9dlqDj8urR-OK0Uo9rMsE7YMWtImEny5XgWhcfCHK4FjroXNl8FmIgEYAw68ZRMt2OF9Afoi9BkP9Ivg0DN0hJPBDTrOi7ADXZvw',
+    //     teamId
+    //   },
+    //   {onError, onCompleted}
+    // )
+    // return
 
     // const redirect = makeHref('/auth/azuredevops')
     const redirect = 'https://jdahost:3000/auth/azuredevops'
