@@ -5,8 +5,9 @@ import SidebarToggle from './SidebarToggle'
 import isDemoRoute from '../utils/isDemoRoute'
 import hasToken from '../utils/hasToken'
 import {meetingAvatarMediaQueries} from '../styles/meeting'
+import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 
-const localHeaderBreakpoint = '@media screen and (min-width: 600px)'
+const localHeaderBreakpoint = makeMinWidthMediaQuery(600)
 
 const MeetingTopBarStyles = styled('div')({
   alignItems: 'flex-start',

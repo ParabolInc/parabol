@@ -14,7 +14,7 @@ interface Props {
 const containerStyle = {height: '100%'}
 const innerStyle = {width: '100%', padding: '0 16px', height: '100%'}
 const slideContainer = {
-  padding: '8px 4px 0'
+  padding: '0 4px'
 }
 
 const StepperDots = styled('div')({

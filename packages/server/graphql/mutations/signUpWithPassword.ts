@@ -72,7 +72,6 @@ const signUpWithPassword = {
         if (existingVerification) {
           return {error: {message: 'Verification email already sent'}}
         }
-        console.log('create with arg', args)
         return createEmailVerification(args)
       }
       const hashedPassword = await bcrypt.hash(password, Security.SALT_ROUNDS)

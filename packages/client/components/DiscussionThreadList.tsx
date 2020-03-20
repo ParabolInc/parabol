@@ -6,14 +6,17 @@ import {DiscussionThreadList_meeting} from '__generated__/DiscussionThreadList_m
 import {DiscussionThreadList_threadables} from '__generated__/DiscussionThreadList_threadables.graphql'
 import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import ThreadedItem from './ThreadedItem'
+import LabelHeading from './LabelHeading/LabelHeading'
 import useScrollThreadList from 'hooks/useScrollThreadList'
+import {PALETTE} from '../styles/paletteV2'
 
 const EmptyWrapper = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
   height: '100%',
-  justifyContent: 'center'
+  justifyContent: 'center',
+  paddingTop: 8
 })
 
 const Wrapper = styled('div')({
@@ -26,7 +29,15 @@ const Wrapper = styled('div')({
 
 // https://stackoverflow.com/questions/36130760/use-justify-content-flex-end-and-to-have-vertical-scrollbar
 const PusherDowner = styled('div')({
-  margin: 'auto'
+  margin: '0 0 auto'
+})
+
+const Header = styled(LabelHeading)({
+  borderBottom: `1px solid ${PALETTE.BORDER_LIGHTER}`,
+  margin: '0 0 8px',
+  padding: '6px 12px 12px',
+  textTransform: 'none',
+  width: '100%'
 })
 
 interface Props {
@@ -40,9 +51,11 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
   const {editorRef, meeting, reflectionGroupId, threadables} = props
   const isEmpty = threadables.length === 0
   useScrollThreadList(threadables, editorRef, ref)
+  const HeaderBlock = () => <Header>{'Discussion & Takeaway Tasks'}</Header>
   if (isEmpty) {
     return (
       <EmptyWrapper>
+        <HeaderBlock />
         <DiscussionThreadListEmptyState />
       </EmptyWrapper>
     )
@@ -50,6 +63,7 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
 
   return (
     <Wrapper ref={ref}>
+      <HeaderBlock />
       <PusherDowner />
       {threadables.map((threadable) => {
         const {id} = threadable

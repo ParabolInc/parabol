@@ -2,17 +2,22 @@ import IconLabel from '../IconLabel'
 import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
 import FloatingActionButton from '../FloatingActionButton'
-import {ZIndex} from '../../types/constEnums'
+import {Breakpoint, ZIndex} from '../../types/constEnums'
+import makeMinWidthMediaQuery from '../../utils/makeMinWidthMediaQuery'
 
 const StyledButton = styled(FloatingActionButton)({
-  bottom: 20,
+  bottom: 16,
   height: 32,
   paddingLeft: 0,
   paddingRight: 0,
   position: 'absolute',
-  right: 20,
+  right: 16,
   width: 32,
-  zIndex: ZIndex.FAB
+  zIndex: ZIndex.FAB,
+  [makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)]: {
+    bottom: 20,
+    right: 20
+  }
 })
 
 interface Props {

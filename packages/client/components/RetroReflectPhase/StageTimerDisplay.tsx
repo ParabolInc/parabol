@@ -4,26 +4,28 @@ import graphql from 'babel-plugin-relay/macro'
 import {StageTimerDisplay_stage} from '../../__generated__/StageTimerDisplay_stage.graphql'
 import styled from '@emotion/styled'
 import StageTimerDisplayGauge from './StageTimerDisplayGauge'
-import useBreakpoint from '../../hooks/useBreakpoint'
-import {Breakpoint} from '../../types/constEnums'
+import {Breakpoint} from 'types/constEnums'
 
 interface Props {
   stage: StageTimerDisplay_stage
 }
 
-const DisplayRow = styled('div')<{isDesktop}>(({isDesktop}) => ({
+const DisplayRow = styled('div')({
   display: 'flex',
   justifyContent: 'center',
-  // desktop: dont' want stuff to move when it turns on
-  minHeight: isDesktop ? 36 : undefined
-}))
+  [`@media screen and (min-height: 800px) and (min-width: ${Breakpoint.SINGLE_REFLECTION_COLUMN}px)`]: {
+    // for larger viewports: dont' want stuff to move when it turns on
+    // adding a min-height, we lose too much vertical real estate when the timer is not used
+    // todo: float over top bar when there’s room @ laptop+ breakpoint
+    minHeight: 44
+  }
+})
 
 const StageTimerDisplay = (props: Props) => {
   const {stage} = props
   const {localScheduledEndTime, isComplete} = stage
-  const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   return (
-    <DisplayRow isDesktop={isDesktop}>
+    <DisplayRow>
       {localScheduledEndTime && !isComplete ? (
         <StageTimerDisplayGauge endTime={localScheduledEndTime} />
       ) : null}

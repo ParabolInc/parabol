@@ -79,6 +79,17 @@ interface GQLDemoEmitter {
   new (): StrictEventEmitter<EventEmitter, DemoEvents>
 }
 
+const reflectionGroupThread = {
+  __typename: 'ThreadableConnection',
+  edges: [],
+  pageInfo: {
+    __typename: 'PageInfo',
+    startCursor: null,
+    endCursor: null,
+    hasNextPage: false,
+    hasPreviousPage: false
+  }
+}
 class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   atmosphere: LocalAtmosphere
   db: ReturnType<typeof initDB>
@@ -438,17 +449,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         reflections: [reflection],
         sortOrder,
         tasks: [],
-        thread: {
-          __typename: 'ThreadableConnection',
-          edges: [],
-          pageInfo: {
-            __typename: 'PageInfo',
-            startCursor: null,
-            endCursor: null,
-            hasNextPage: false,
-            hasPreviousPage: false
-          }
-        },
+        thread: {...reflectionGroupThread},
         titleIsUserDefined: false,
         updatedAt: now,
         voterIds: []
@@ -770,6 +771,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           reflections: [reflection],
           sortOrder: 0,
           tasks: [],
+          thread: {...reflectionGroupThread},
           updatedAt: now,
           voterIds: []
         } as any

@@ -5,7 +5,7 @@ import AreaEnum from '../types/AreaEnum'
 import CreateTaskInput from '../types/CreateTaskInput'
 import CreateTaskPayload from '../types/CreateTaskPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
-import publish from '../../utils/publish'
+import publish, {SubOptions} from '../../utils/publish'
 import shortid from 'shortid'
 import getTypeFromEntityMap from '../../../client/utils/draftjs/getTypeFromEntityMap'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
@@ -64,6 +64,107 @@ export const validateTaskUserId = async (
   return teamMember ? undefined : 'Invalid user ID'
 }
 
+const sendToSentryTaskCreated = async (
+  meetingId: string | null | undefined,
+  viewerId: string,
+  teamId: string,
+  isReply: boolean,
+  dataLoader: DataLoaderWorker
+) => {
+  let isAsync
+  if (meetingId) {
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    if (!meeting) return
+    const {phases} = meeting
+    const discussPhase = phases.find(
+      ({phaseType}) =>
+        phaseType === NewMeetingPhaseTypeEnum.discuss ||
+        phaseType === NewMeetingPhaseTypeEnum.agendaitems
+    )
+    if (discussPhase) {
+      const {stages} = discussPhase
+      isAsync = stages.some((stage) => stage.isAsync)
+    }
+  }
+
+  sendSegmentEvent('Task added', viewerId, {
+    meetingId,
+    teamId,
+    isAsync,
+    isReply
+  }).catch()
+}
+
+const handleAddTaskNotifications = async (
+  teamMembers: any[],
+  task: Task,
+  viewerId: string,
+  teamId: string,
+  subOptions: SubOptions,
+  dataLoader: DataLoaderWorker
+) => {
+  const r = await getRethink()
+  const {id: taskId, content, tags, userId} = task
+  const usersIdsToIgnore = await getUsersToIgnore(viewerId, teamId, dataLoader)
+
+  // Handle notifications
+  // Almost always you start out with a blank card assigned to you (except for filtered team dash)
+  const changeAuthorId = toTeamMemberId(teamId, viewerId)
+  const notificationsToAdd = [] as NotificationTaskInvolves[]
+  if (viewerId !== userId && !usersIdsToIgnore.includes(userId)) {
+    notificationsToAdd.push(
+      new NotificationTaskInvolves({
+        involvement: 'ASSIGNEE',
+        taskId,
+        changeAuthorId,
+        teamId,
+        userId
+      })
+    )
+  }
+
+  const {entityMap} = JSON.parse(content)
+  getTypeFromEntityMap('MENTION', entityMap)
+    .filter(
+      (mention) => mention !== viewerId && mention !== userId && !usersIdsToIgnore.includes(mention)
+    )
+    .forEach((mentioneeUserId) => {
+      notificationsToAdd.push(
+        new NotificationTaskInvolves({
+          userId: mentioneeUserId,
+          involvement: 'MENTIONEE',
+          taskId,
+          changeAuthorId,
+          teamId
+        })
+      )
+    })
+  const data = {taskId, notifications: notificationsToAdd}
+
+  if (notificationsToAdd.length) {
+    // don't await to speed up task creation
+    r.table('Notification')
+      .insert(notificationsToAdd)
+      .run()
+    notificationsToAdd.forEach((notification) => {
+      publish(
+        SubscriptionChannel.NOTIFICATION,
+        notification.userId,
+        'CreateTaskPayload',
+        data,
+        subOptions
+      )
+    })
+  }
+
+  const isPrivate = tags.includes('private')
+  teamMembers.forEach((teamMember) => {
+    if (!isPrivate || teamMember.userId === userId) {
+      publish(SubscriptionChannel.TASK, teamMember.userId, 'CreateTaskPayload', data, subOptions)
+    }
+  })
+}
+
 export default {
   type: GraphQLNonNull(CreateTaskPayload),
   description: 'Create a new task, triggering a CreateCard for other viewers',
@@ -84,7 +185,6 @@ export default {
   ) {
     const r = await getRethink()
     const operationId = dataLoader.share()
-    const subOptions = {operationId, mutatorId}
     const viewerId = getUserId(authToken)
 
     const {
@@ -129,7 +229,7 @@ export default {
       threadParentId,
       userId
     })
-    const {id: taskId, updatedAt, tags} = task
+    const {id: taskId, updatedAt} = task
     const history = {
       id: shortid.generate(),
       content,
@@ -139,6 +239,7 @@ export default {
       userId,
       updatedAt
     }
+
     const {teamMembers} = await r({
       task: r.table('Task').insert(task),
       history: r.table('TaskHistory').insert(history),
@@ -150,85 +251,17 @@ export default {
         })
         .coerceTo('array') as unknown) as ITeamMember[]
     }).run()
-    const usersIdsToIgnore = await getUsersToIgnore(viewerId, teamId, dataLoader)
 
-    // Handle notifications
-    // Almost always you start out with a blank card assigned to you (except for filtered team dash)
-    const changeAuthorId = toTeamMemberId(teamId, viewerId)
-    const notificationsToAdd = [] as NotificationTaskInvolves[]
-    if (viewerId !== userId && !usersIdsToIgnore.includes(userId)) {
-      notificationsToAdd.push(
-        new NotificationTaskInvolves({
-          involvement: 'ASSIGNEE',
-          taskId,
-          changeAuthorId,
-          teamId,
-          userId
-        })
-      )
-    }
-
-    const {entityMap} = JSON.parse(content)
-    getTypeFromEntityMap('MENTION', entityMap)
-      .filter(
-        (mention) =>
-          mention !== viewerId && mention !== userId && !usersIdsToIgnore.includes(mention)
-      )
-      .forEach((mentioneeUserId) => {
-        notificationsToAdd.push(
-          new NotificationTaskInvolves({
-            userId: mentioneeUserId,
-            involvement: 'MENTIONEE',
-            taskId,
-            changeAuthorId,
-            teamId
-          })
-        )
-      })
-    const data = {taskId, notifications: notificationsToAdd}
-
-    if (notificationsToAdd.length) {
-      await r
-        .table('Notification')
-        .insert(notificationsToAdd)
-        .run()
-      notificationsToAdd.forEach((notification) => {
-        publish(
-          SubscriptionChannel.NOTIFICATION,
-          notification.userId,
-          'CreateTaskPayload',
-          data,
-          subOptions
-        )
-      })
-    }
-
-    const isPrivate = tags.includes('private')
-    teamMembers.forEach((teamMember) => {
-      if (!isPrivate || teamMember.userId === userId) {
-        publish(SubscriptionChannel.TASK, teamMember.userId, 'CreateTaskPayload', data, subOptions)
-      }
-    })
-
-    let isAsync
-    if (meetingId) {
-      const meeting = await dataLoader.get('newMeetings').load(meetingId)
-      if (!meeting) return
-      const {phases} = meeting
-      const discussPhase = phases.find(
-        (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.discuss
-      )!
-      const {stages} = discussPhase
-      isAsync = stages.some((stage) => stage.isAsync)
-    }
-
-    sendSegmentEvent('Task added', viewerId, {
-      meetingId,
+    handleAddTaskNotifications(
+      teamMembers,
+      task,
+      viewerId,
       teamId,
-      isAsync,
-      isReply: !!threadParentId
-    }).catch()
+      {operationId, mutatorId},
+      dataLoader
+    ).catch()
 
-    return data
+    sendToSentryTaskCreated(meetingId, viewerId, teamId, !!threadParentId, dataLoader).catch()
+    return {taskId}
   }
 }
