@@ -72,7 +72,7 @@ export type RethinkTypes = {
   }
   InvoiceItemHook: {
     type: InvoiceItemHook
-    index: 'prorationDate' | 'userId'
+    index: 'prorationDate' | 'stripeSubscriptionId'
   }
   MassInvitation: {
     type: MassInvitation

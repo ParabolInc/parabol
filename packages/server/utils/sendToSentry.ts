@@ -7,7 +7,7 @@ export interface SentryOptions {
   sampleRate?: number
   userId?: string
   tags?: {
-    [tag: string]: string
+    [tag: string]: string | number
   }
 }
 
@@ -15,7 +15,7 @@ export interface SentryOptions {
 // @ts-ignore
 const sendToSentry = async (error: Error, options: SentryOptions = {}): void => {
   if (!PROD) {
-    console.error('SEND TO SENTRY', error)
+    console.error('SEND TO SENTRY', error, options.tags)
   }
   const r = await getRethink()
   const {sampleRate, tags, userId} = options
