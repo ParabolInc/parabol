@@ -33,7 +33,7 @@ const sendToSentry = async (error: Error, options: SentryOptions = {}): void => 
     user && scope.setUser(user)
     if (tags) {
       Object.keys(tags).forEach((tag) => {
-        scope.setTag(tag, tags[tag])
+        scope.setTag(tag, String(tags[tag]))
       })
     }
     Sentry.captureException(error)
