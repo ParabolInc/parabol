@@ -53,7 +53,7 @@ export default {
     try {
       await upgradeToPro(orgId, stripeToken, email)
     } catch (e) {
-      return standardError(e.param ? new Error(e.param) : e, {userId: viewerId})
+      return standardError(e.param ? new Error(e.param) : e, {userId: viewerId, tags: e})
     }
 
     const activeMeetings = await hideConversionModal(orgId, dataLoader)
