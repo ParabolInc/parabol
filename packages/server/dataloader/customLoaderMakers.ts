@@ -57,7 +57,6 @@ export const reactables = (parent: RethinkDataLoader) => {
       const reactables = reactableResults.flat()
       const keyIds = keys.map(({id}) => id)
       const ret = normalizeRethinkDbResults(keyIds, reactables)
-      console.log('react', ret)
       return ret
     },
     {

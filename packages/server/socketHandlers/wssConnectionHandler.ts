@@ -44,7 +44,7 @@ const wssConnectionHandler = (socket: WebSocket, req: HttpRequest) => {
       // internal error (bad auth)
       sendToSentry(new Error(`WebSocket error: not authenticated`), {
         tags: {ip: clientIp},
-        sampleRate: 0.03
+        sampleRate: 0.01
       })
       socket.end(1011)
       return
