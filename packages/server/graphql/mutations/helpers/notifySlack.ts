@@ -154,7 +154,10 @@ export const notifySlackTimeLimitStart = async (
     const fallbackTime = formatTime(scheduledEndTime)
     const fallbackZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Eastern Time'
     const fallback = `${fallbackDate} at ${fallbackTime} (${fallbackZone})`
-    const situation = `The *${phaseLabel} Phase* for ${meetingName} on ${team.name} has begun!`
+    const situation = `The *${phaseLabel} Phase* for ${meetingName} on ${team.name} has begun!`.replace(
+      '#',
+      ''
+    )
     const constraint = `You have until *<!date^${toEpochSeconds(
       scheduledEndTime
     )}^{date_short_pretty} at {time}|${fallback}>* to complete it.`

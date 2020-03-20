@@ -168,13 +168,13 @@ export default class Atmosphere extends Environment {
 
   trySockets = () => {
     const wsProtocol = window.location.protocol.replace('http', 'ws')
-    const url = `${wsProtocol}//${window.location.host}/?token=${this.authToken}`
-    return new SocketTrebuchet({url})
+    const getUrl = () => `${wsProtocol}//${window.location.host}/?token=${this.authToken}`
+    return new SocketTrebuchet({getUrl})
   }
 
   trySSE = () => {
-    const url = `/sse/?token=${this.authToken}`
-    return new SSETrebuchet({url, fetchData: this.fetchHTTP, fetchPing: this.fetchPing})
+    const getUrl = () => `/sse/?token=${this.authToken}`
+    return new SSETrebuchet({getUrl, fetchData: this.fetchHTTP, fetchPing: this.fetchPing})
   }
 
   async promiseToUpgrade() {
