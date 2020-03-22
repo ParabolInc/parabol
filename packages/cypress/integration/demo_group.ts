@@ -114,7 +114,9 @@ describe('Test Group page Demo', () => {
   })
 
   it('Test new group creation', () => {
+    
     addReflection('Start', 'New Group 1')
+    
     addReflection('Stop', 'New Group 2')
 
     createGroup('Start', 'Stop')
@@ -122,6 +124,8 @@ describe('Test Group page Demo', () => {
 
   it('Verify that robots can group cards', () => {
     
+    cy.wait(3000)
+
     checkGroup('Start', 3)
 
     checkGroup('Continue', 3)
