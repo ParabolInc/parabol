@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.1.0 2020-Mar-22
+
+### Added
+* Internal slack pulse
+
 ## 5.0.1 2020-Mar-18
 
 ### Fixed
