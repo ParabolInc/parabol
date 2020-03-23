@@ -15,19 +15,19 @@
 
 ## Stack Information
 
-| Concern                                             | Solution                                                   |
-| --------------------------------------------------- | ---------------------------------------------------------- |
-| Server                                              | [Node](https://nodejs.org/)                                |
-| Server Framework                                    | [Express](http://expressjs.com/)                           |
-| Database                                            | [RethinkDB](https://www.rethinkdb.com/)                    |
-| PubSub                                              | [Redis](https://redis.io)                                  |
-| Data Transport                                      | [GraphQL](https://github.com/graphql/graphql-js)           |
-| BidirectionalTransport (WebSocket, SSE, WebRTC, ec) | [trebuchet](https://github.com/mattkrick/trebuchet-client) |
-| Client Cache                                        | [Relay](https://facebook.github.io/relay/)                 |
-| UI Framework                                        | [React](https://facebook.github.io/react/)                 |
-| Styling                                             | [Emotion](https://emotion.sh/)                             |
-| Unit Testing                                        | [jest](https://facebook.github.io/jest)                    |
-| Integration Testing                                 | [Cypress](https://cypress.io)                              |
+| Concern                | Solution                                                       |
+| ---------------------- | -------------------------------------------------------------- |
+| Server                 | [Node](https://nodejs.org/)                                    |
+| Server Framework       | [uWebSockts.js](https://github.com/uNetworking/uWebSockets.js) |
+| Database               | [RethinkDB](https://www.rethinkdb.com/)                        |
+| PubSub                 | [Redis](https://redis.io)                                      |
+| Data Transport         | [GraphQL](https://github.com/graphql/graphql-js)               |
+| Real-time Connectivity | [trebuchet](https://github.com/mattkrick/trebuchet-client)     |
+| Client Cache           | [Relay](https://facebook.github.io/relay/)                     |
+| UI Framework           | [React](https://facebook.github.io/react/)                     |
+| Styling                | [Emotion](https://emotion.sh/)                                 |
+| Unit Testing           | [jest](https://facebook.github.io/jest)                        |
+| Integration Testing    | [Cypress](https://cypress.io)                                  |
 
 ## Setup
 
