@@ -15,6 +15,7 @@ import EditableText from './EditableText'
 import Facilitator from './Facilitator'
 import LogoBlock from './LogoBlock/LogoBlock'
 import SidebarToggle from './SidebarToggle'
+import InactiveTag from './Tag/InactiveTag'
 
 const MeetingName = styled('div')({
   fontSize: 20,
@@ -63,6 +64,11 @@ const TeamDashboardLink = styled(Link)({
   }
 })
 
+const MeetingCompletedTag = styled(InactiveTag)({
+  display: 'inline-flex',
+  margin: '4px 0 0 0'
+})
+
 interface Props {
   children: ReactNode
   handleMenuClick: () => void
@@ -73,7 +79,7 @@ interface Props {
 const NewMeetingSidebar = (props: Props) => {
   const {children, handleMenuClick, toggleSidebar, meeting} = props
   const {error, submitMutation, submitting, onCompleted, onError} = useMutationProps()
-  const {id: meetingId, team, name: meetingName, facilitatorUserId} = meeting
+  const {id: meetingId, endedAt, team, name: meetingName, facilitatorUserId} = meeting
   const {id: teamId, name: teamName} = team
   const teamLink = isDemoRoute() ? '/create-account' : `/team/${teamId}`
   const atmosphere = useAtmosphere()
@@ -101,7 +107,7 @@ const NewMeetingSidebar = (props: Props) => {
 
   return (
     <SidebarParent>
-      <SidebarHeader data-cy="sidebar-header">
+      <SidebarHeader data-cy='sidebar-header'>
         <StyledToggle onClick={toggleSidebar} />
         <div>
           {isFacilitator ? (
@@ -121,6 +127,7 @@ const NewMeetingSidebar = (props: Props) => {
             {'Team: '}
             {teamName}
           </TeamDashboardLink>
+          {endedAt && <MeetingCompletedTag>Meeting Completed</MeetingCompletedTag>}
         </div>
       </SidebarHeader>
       <Facilitator meeting={meeting} />
@@ -135,6 +142,7 @@ export default createFragmentContainer(NewMeetingSidebar, {
     fragment NewMeetingSidebar_meeting on NewMeeting {
       ...Facilitator_meeting
       id
+      endedAt
       facilitatorUserId
       name
       team {

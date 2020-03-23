@@ -113,14 +113,14 @@ const StyledBadge = styled(Badge)({
 })
 
 interface Props {
-  children: ReactNode
+  children?: ReactNode
   handleClick?: () => void
   isActive: boolean
   isCollapsible?: boolean
   isFacilitatorPhase: boolean
   isUnsyncedFacilitatorPhase: boolean
   isUnsyncedFacilitatorStage?: boolean
-  phaseCount: number | null | undefined
+  phaseCount?: number | null
   phaseType: string
 }
 

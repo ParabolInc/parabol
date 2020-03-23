@@ -33,19 +33,19 @@ of our progress, philosophy, and more in
 Action is a Node.js application based upon the
 [Meatier](https://github.com/mattkrick/meatier) stack:
 
-| Concern            | Solution                                                |
-|--------------------|---------------------------------------------------------|
-| Server             | [Node](https://nodejs.org/)                         |
-| Server Framework   | [Express](http://expressjs.com/)                        |
-| Database           | [RethinkDB](https://www.rethinkdb.com/)                 |
-| PubSub | [Redis](https://redis.io) |
-| Data Transport     | [GraphQL](https://github.com/graphql/graphql-js)        |
-| BidirectionalTransport (WebSocket, SSE, WebRTC, ec) | [trebuchet](https://github.com/mattkrick/trebuchet-client)               |
-| Client Cache  | [Relay](https://facebook.github.io/relay/)              |
-| UI Framework    | [React](https://facebook.github.io/react/)              |
-| Styling            | [Emotion](https://emotion.sh/)          |
-| Unit Testing       | [jest](https://facebook.github.io/jest)                 |
-| Integration Testing | [Cypress](https://cypress.io) |
+| Concern                                             | Solution                                                   |
+| --------------------------------------------------- | ---------------------------------------------------------- |
+| Server                                              | [Node](https://nodejs.org/)                                |
+| Server Framework                                    | [Express](http://expressjs.com/)                           |
+| Database                                            | [RethinkDB](https://www.rethinkdb.com/)                    |
+| PubSub                                              | [Redis](https://redis.io)                                  |
+| Data Transport                                      | [GraphQL](https://github.com/graphql/graphql-js)           |
+| BidirectionalTransport (WebSocket, SSE, WebRTC, ec) | [trebuchet](https://github.com/mattkrick/trebuchet-client) |
+| Client Cache                                        | [Relay](https://facebook.github.io/relay/)                 |
+| UI Framework                                        | [React](https://facebook.github.io/react/)                 |
+| Styling                                             | [Emotion](https://emotion.sh/)                             |
+| Unit Testing                                        | [jest](https://facebook.github.io/jest)                    |
+| Integration Testing                                 | [Cypress](https://cypress.io)                              |
 
 ## Setup
 
@@ -127,4 +127,3 @@ Copyright (c) 2016-present, Parabol, Inc.
 This codebase is dual-licensed under the GNU AFFERO GENERAL PUBLIC LICENSE,
 Version 3.0 while holding, at Parabol's sole discretion, the right to create
 new licenses. For details please read [LICENSE](LICENSE).
-

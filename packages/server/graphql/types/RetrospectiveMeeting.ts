@@ -40,6 +40,10 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
         'the threshold used to achieve the autogroup. Useful for model tuning. Serves as a flag if autogroup was used.',
       resolve: resolveForSU('autoGroupThreshold')
     },
+    commentCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: 'The number of comments generated in the meeting'
+    },
     meetingMembers: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetrospectiveMeetingMember))),
       description: 'The team members that were active during the time of the meeting',
@@ -51,6 +55,10 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLFloat,
       description:
         'the next smallest distance threshold to guarantee at least 1 more grouping will be achieved'
+    },
+    reflectionCount: {
+      type: GraphQLNonNull(GraphQLInt),
+      description: 'The number of reflections generated in the meeting'
     },
     reflectionGroup: {
       type: RetroReflectionGroup,
@@ -101,14 +109,7 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
     },
     taskCount: {
       type: new GraphQLNonNull(GraphQLInt),
-      description: 'The number of tasks generated in the meeting',
-      resolve: async ({id: meetingId}, _args, {authToken, dataLoader}) => {
-        const viewerId = getUserId(authToken)
-        const meeting = await dataLoader.get('newMeetings').load(meetingId)
-        const {teamId} = meeting
-        const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
-        return filterTasksByMeeting(teamTasks, meetingId, viewerId).length
-      }
+      description: 'The number of tasks generated in the meeting'
     },
     tasks: {
       type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(Task))),
@@ -120,6 +121,10 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
         const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
         return filterTasksByMeeting(teamTasks, meetingId, viewerId)
       }
+    },
+    topicCount: {
+      type: GraphQLNonNull(GraphQLInt),
+      description: 'The number of topics generated in the meeting'
     },
     votesRemaining: {
       type: new GraphQLNonNull(GraphQLInt),

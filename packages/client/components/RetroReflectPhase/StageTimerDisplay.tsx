@@ -5,6 +5,7 @@ import {StageTimerDisplay_stage} from '../../__generated__/StageTimerDisplay_sta
 import styled from '@emotion/styled'
 import StageTimerDisplayGauge from './StageTimerDisplayGauge'
 import {Breakpoint} from 'types/constEnums'
+import StageCompleteTag from './StageCompleteTag'
 
 interface Props {
   stage: StageTimerDisplay_stage
@@ -29,6 +30,7 @@ const StageTimerDisplay = (props: Props) => {
       {localScheduledEndTime && !isComplete ? (
         <StageTimerDisplayGauge endTime={localScheduledEndTime} />
       ) : null}
+      <StageCompleteTag isComplete={isComplete} />
     </DisplayRow>
   )
 }

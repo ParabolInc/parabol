@@ -1,42 +1,33 @@
-import {
-  ACTION,
-  AGENDA_ITEMS,
-  CHECKIN,
-  DISCUSS,
-  FIRST_CALL,
-  GROUP,
-  LAST_CALL,
-  REFLECT,
-  RETROSPECTIVE,
-  UPDATES,
-  VOTE
-} from '../constants'
+import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
+import {ACTION, RETROSPECTIVE} from '../constants'
 
 /* Used by the server! cannot convert to enums yet */
 
 /* These are the labels show to the viewer */
 export const phaseLabelLookup = {
-  [CHECKIN]: 'Social Check-in',
-  [REFLECT]: 'Reflect',
-  [GROUP]: 'Group',
-  [VOTE]: 'Vote',
-  [DISCUSS]: 'Discuss',
-  [UPDATES]: 'Solo Updates',
-  [FIRST_CALL]: 'First Call',
-  [AGENDA_ITEMS]: 'Team Agenda',
-  [LAST_CALL]: 'Last Call'
+  [NewMeetingPhaseTypeEnum.checkin]: 'Social Check-in',
+  [NewMeetingPhaseTypeEnum.reflect]: 'Reflect',
+  [NewMeetingPhaseTypeEnum.group]: 'Group',
+  [NewMeetingPhaseTypeEnum.vote]: 'Vote',
+  [NewMeetingPhaseTypeEnum.discuss]: 'Discuss',
+  [NewMeetingPhaseTypeEnum.updates]: 'Solo Updates',
+  [NewMeetingPhaseTypeEnum.firstcall]: 'First Call',
+  [NewMeetingPhaseTypeEnum.agendaitems]: 'Team Agenda',
+  [NewMeetingPhaseTypeEnum.lastcall]: 'Last Call',
+  [NewMeetingPhaseTypeEnum.SUMMARY]: 'Summary'
 }
 
 export const phaseIconLookup = {
-  [CHECKIN]: 'group',
-  [REFLECT]: 'edit',
-  [GROUP]: 'group_work',
-  [VOTE]: 'thumbs_up_down',
-  [DISCUSS]: 'comment',
-  [UPDATES]: 'update',
-  [FIRST_CALL]: 'comment',
-  [AGENDA_ITEMS]: 'comment',
-  [LAST_CALL]: 'comment'
+  [NewMeetingPhaseTypeEnum.checkin]: 'group',
+  [NewMeetingPhaseTypeEnum.reflect]: 'edit',
+  [NewMeetingPhaseTypeEnum.group]: 'group_work',
+  [NewMeetingPhaseTypeEnum.vote]: 'thumbs_up_down',
+  [NewMeetingPhaseTypeEnum.discuss]: 'comment',
+  [NewMeetingPhaseTypeEnum.updates]: 'update',
+  [NewMeetingPhaseTypeEnum.firstcall]: 'comment',
+  [NewMeetingPhaseTypeEnum.agendaitems]: 'comment',
+  [NewMeetingPhaseTypeEnum.lastcall]: 'comment',
+  [NewMeetingPhaseTypeEnum.SUMMARY]: 'receipt'
 }
 
 export const meetingTypeToIcon = {
@@ -45,13 +36,14 @@ export const meetingTypeToIcon = {
 } as const
 
 export const phaseTypeToSlug = {
-  [CHECKIN]: 'checkin',
-  [REFLECT]: 'reflect',
-  [GROUP]: 'group',
-  [VOTE]: 'vote',
-  [DISCUSS]: 'discuss',
-  [UPDATES]: 'updates',
-  [FIRST_CALL]: 'firstcall',
-  [AGENDA_ITEMS]: 'agendaitems',
-  [LAST_CALL]: 'lastcall'
+  [NewMeetingPhaseTypeEnum.checkin]: 'checkin',
+  [NewMeetingPhaseTypeEnum.reflect]: 'reflect',
+  [NewMeetingPhaseTypeEnum.group]: 'group',
+  [NewMeetingPhaseTypeEnum.vote]: 'vote',
+  [NewMeetingPhaseTypeEnum.discuss]: 'discuss',
+  [NewMeetingPhaseTypeEnum.updates]: 'updates',
+  [NewMeetingPhaseTypeEnum.firstcall]: 'firstcall',
+  [NewMeetingPhaseTypeEnum.agendaitems]: 'agendaitems',
+  [NewMeetingPhaseTypeEnum.lastcall]: 'lastcall',
+  [NewMeetingPhaseTypeEnum.SUMMARY]: 'summary'
 }
