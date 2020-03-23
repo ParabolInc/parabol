@@ -1,10 +1,10 @@
 import getRethink from '../../../../database/rethinkDriver'
 
-type FilterField = 'createdAt' | 'lastSeenAt'
+type DomainFilterField = 'createdAt' | 'lastSeenAt'
 const authCountByDomain = async (
   after: Date | null | undefined,
   isActive: boolean | null | undefined,
-  filterField: FilterField
+  filterField: DomainFilterField
 ) => {
   const r = await getRethink()
   const activeFilter = isActive ? {inactive: false} : {}
@@ -24,7 +24,7 @@ const authCountByDomain = async (
     .ungroup()
     .map((row) => ({domain: row('group'), total: row('reduction')}))
     .orderBy(r.desc('total'))
-    .run()
+    .run() as Promise<{domain: string; total: number}[]>
 }
 
 export default authCountByDomain
