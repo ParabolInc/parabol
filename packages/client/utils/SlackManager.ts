@@ -228,6 +228,18 @@ class SlackManager {
     this.fetch = options.fetch || window.fetch.bind(window)
   }
 
+  private async post<T>(url: string, payload: any): Promise<T | ErrorResponse> {
+    const res = await this.fetch(url, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json' as const,
+        Authorization: `Bearer ${this.token}`,
+        'Content-Type': 'application/json;charset=utf-8'
+      },
+      body: JSON.stringify(payload)
+    })
+    return res.json()
+  }
   async get<T>(url: string): Promise<T | ErrorResponse> {
     const record = this.cache[url]
     if (!record) {
@@ -286,10 +298,15 @@ class SlackManager {
     )
   }
 
-  postMessage(channelId: string, text: string) {
-    return this.get<PostMessageResponse>(
-      `https://slack.com/api/chat.postMessage?token=${this.token}&channel=${channelId}&text=${text}&unfurl_links=true`
-    )
+  postMessage(channelId: string, text: string | Array<{type: string}>) {
+    const prop = typeof text === 'string' ? 'text' : Array.isArray(text) ? 'blocks' : null
+    if (!prop) throw new Error('Invalid Slack postMessage')
+    const payload = {
+      channel: channelId,
+      unfurl_links: true,
+      [prop]: text
+    }
+    return this.post<PostMessageResponse>('https://slack.com/api/chat.postMessage', payload)
   }
 
   updateMessage(channelId: string, text: string, ts: string) {
