@@ -45,7 +45,7 @@
 $ git clone https://github.com/ParabolInc/parabol.git
 $ cd parabol
 $ cp packages/server/.env.example packages/server/.env # Add your own vars here
-$ rethinkdb &
+$ rethinkdb & # Or if you prefer docker: $ docker-compose up -d db
 $ yarn
 $ yarn db:migrate
 $ yarn dev
